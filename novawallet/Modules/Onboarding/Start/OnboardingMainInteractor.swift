@@ -41,8 +41,6 @@ private extension OnboardingMainInteractor {
     func handleMigration(message: WalletMigrationMessage) {
         switch message {
         case let .start(model):
-            recordConsent()
-
             presenter?.didSuggestWalletMigration(with: model)
         default:
             break
@@ -54,8 +52,6 @@ private extension OnboardingMainInteractor {
             return
         }
 
-        recordConsent()
-
         switch definition {
         case .keystore:
             presenter?.didSuggestSecretImport(source: .keystore)
@@ -64,6 +60,11 @@ private extension OnboardingMainInteractor {
         }
     }
 
+    /// Only the deliberate acceptance on this screen records consent. The automatic routes (secret
+    /// import deep link, wallet migration message) push another screen over the welcome screen
+    /// without the agreement ever being shown, so they must not record anything: such a user is
+    /// asked by the post launch sheet instead.
+    ///
     /// This screen never fetches the config, so acceptance normally takes the pending sync branch
     /// and the versions are written by the first successful fetch.
     ///

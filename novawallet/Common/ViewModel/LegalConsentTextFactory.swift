@@ -6,35 +6,62 @@ import UIKit
 /// Each link is resolved by its own marker rather than by split index, so a translation is free to
 /// reorder `%1$@` and `%2$@` without the Terms label landing on the Privacy link.
 ///
+/// Every string goes through `localizedOrDevelopmentValue()`: the consent sheet is not dismissible,
+/// so a key missing from the selected catalog would otherwise leave the user with the raw key and —
+/// since the marker-less template then places no link at all — no way to reach either document.
+///
 /// `CompoundAttributedStringDecorator.legal(for:marker:)` is deliberately left untouched so
 /// `NotificationsSetupViewController` keeps rendering as it does today.
 enum LegalConsentTextFactory {
+    struct Link {
+        let marker: String
+        let type: LegalDocumentType
+        let title: String
+    }
+
     static func createAgreementText(for locale: Locale) -> NSAttributedString {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+        let agreement = strings.legalConsentAgreement
 
-        let template = strings.legalConsentAgreement(
-            Constants.termsMarker,
-            Constants.privacyMarker
-        ) as NSString
-
-        let links: [(marker: String, type: LegalDocumentType, title: String)] = [
-            (Constants.termsMarker, .termsOfService, strings.commonTermsOfService()),
-            (Constants.privacyMarker, .privacyNotice, strings.commonPrivacyNotice())
+        let links: [Link] = [
+            Link(
+                marker: Constants.termsMarker,
+                type: .termsOfService,
+                title: strings.commonTermsOfService.localizedOrDevelopmentValue()
+            ),
+            Link(
+                marker: Constants.privacyMarker,
+                type: .privacyNotice,
+                title: strings.commonPrivacyNotice.localizedOrDevelopmentValue()
+            )
         ]
 
-        let placements = links
-            .compactMap { link -> Placement? in
-                let range = template.range(of: link.marker)
+        // The English source is kept as a second candidate: a catalog may carry the key with a
+        // placeholder dropped in translation, which yields a sentence holding fewer markers than
+        // links and would silently lose a document.
+        let templates = [
+            agreement.localizedOrDevelopmentValue(Constants.termsMarker, Constants.privacyMarker),
+            agreement.formattedDevelopmentValue(Constants.termsMarker, Constants.privacyMarker)
+        ].compactMap { $0 }
 
-                guard range.location != NSNotFound else {
-                    return nil
-                }
+        return createAgreementText(from: templates, links: links)
+    }
 
-                return Placement(range: range, title: link.title, type: link.type)
+    /// Renders the first candidate template that still carries a marker for every link. A template
+    /// that lost markers in every candidate is broken, and its dropped documents are appended
+    /// instead: the user is asked to consent to documents, so they must always be able to open them.
+    static func createAgreementText(from templates: [String], links: [Link]) -> NSAttributedString {
+        for template in templates.map({ $0 as NSString }) {
+            let placements = createPlacements(in: template, links: links)
+
+            guard placements.count == links.count else {
+                continue
             }
-            .sorted { $0.range.location < $1.range.location }
 
-        return createAttributedString(from: template, placements: placements)
+            return createAttributedString(from: template, placements: placements)
+        }
+
+        return createSalvagedString(from: (templates.first ?? "") as NSString, links: links)
     }
 }
 
@@ -45,6 +72,20 @@ private extension LegalConsentTextFactory {
         let range: NSRange
         let title: String
         let type: LegalDocumentType
+    }
+
+    static func createPlacements(in template: NSString, links: [Link]) -> [Placement] {
+        links
+            .compactMap { link -> Placement? in
+                let range = template.range(of: link.marker)
+
+                guard range.location != NSNotFound else {
+                    return nil
+                }
+
+                return Placement(range: range, title: link.title, type: link.type)
+            }
+            .sorted { $0.range.location < $1.range.location }
     }
 
     static func createAttributedString(
@@ -87,6 +128,32 @@ private extension LegalConsentTextFactory {
         return result
     }
 
+    static func createSalvagedString(from template: NSString, links: [Link]) -> NSAttributedString {
+        let placements = createPlacements(in: template, links: links)
+        let placedTypes = Set(placements.map(\.type))
+
+        let result = NSMutableAttributedString(
+            attributedString: createAttributedString(from: template, placements: placements)
+        )
+
+        for link in links where !placedTypes.contains(link.type) {
+            result.append(
+                NSAttributedString(
+                    string: Constants.appendedLinkSeparator,
+                    attributes: baseAttributes()
+                )
+            )
+            result.append(
+                NSAttributedString(
+                    string: link.title,
+                    attributes: linkAttributes(for: link.type)
+                )
+            )
+        }
+
+        return result
+    }
+
     static func baseAttributes() -> [NSAttributedString.Key: Any] {
         [
             .font: Constants.style.font,
@@ -115,5 +182,7 @@ private extension LegalConsentTextFactory {
 
         static let termsMarker = "{TOS}"
         static let privacyMarker = "{PN}"
+
+        static let appendedLinkSeparator = " "
     }
 }

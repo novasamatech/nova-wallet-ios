@@ -31,11 +31,13 @@ private extension LegalConsentPresenter {
         let locale = localizationManager.selectedLocale
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
+        // The sheet cannot be dismissed, so a key still missing from the selected catalog would
+        // hard lock the user behind the raw keys: every string falls back to the English source.
         let viewModel = LegalConsentViewModel(
-            title: strings.legalConsentTitle(),
-            subtitle: strings.legalConsentSubtitle(),
+            title: strings.legalConsentTitle.localizedOrDevelopmentValue(),
+            subtitle: strings.legalConsentSubtitle.localizedOrDevelopmentValue(),
             agreement: LegalConsentTextFactory.createAgreementText(for: locale),
-            acceptTitle: strings.legalConsentAccept(),
+            acceptTitle: strings.legalConsentAccept.localizedOrDevelopmentValue(),
             consentAccepted: consentAccepted
         )
 

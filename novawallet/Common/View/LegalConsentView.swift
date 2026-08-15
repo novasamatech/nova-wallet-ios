@@ -8,7 +8,13 @@ import UIKit_iOS
 /// Here the checkbox and the text view are siblings: tapping a link opens a document, tapping the
 /// surrounding text does nothing, and neither toggles the checkbox.
 final class LegalConsentView: UIView {
-    let checkboxControl = CheckboxHitControl()
+    /// The checkbox gates both welcome screen buttons and the accept button on the non dismissible
+    /// sheet, so it has to be reachable by VoiceOver: the control carries the semantics, the image
+    /// view inside it is decoration.
+    let checkboxControl: UIControl = .create { view in
+        view.isAccessibilityElement = true
+        view.accessibilityTraits = .button
+    }
 
     let checkboxImageView: UIImageView = .create { view in
         view.contentMode = .center
@@ -56,6 +62,10 @@ final class LegalConsentView: UIView {
 extension LegalConsentView {
     func bind(agreement: NSAttributedString) {
         textView.attributedText = agreement
+
+        // The sentence is exactly what ticking the box commits to and it is already rendered for
+        // the selected language, so it labels the control without a second string to translate.
+        checkboxControl.accessibilityLabel = agreement.string
     }
 }
 
@@ -63,23 +73,32 @@ extension LegalConsentView {
 
 private extension LegalConsentView {
     func setupLayout() {
+        // The artwork is small, so the control is grown to the 44pt minimum touch target and the
+        // artwork is pinned to its top left corner. Growing the target around the artwork instead
+        // would place it above and left of this view, outside the bounds our own superview hit
+        // tests against, and those points would never reach the control.
         addSubview(checkboxControl)
         checkboxControl.snp.makeConstraints { make in
             make.leading.top.equalToSuperview()
-            make.size.equalTo(Constants.checkboxSize)
+            make.size.equalTo(Constants.checkboxTouchTarget)
             make.bottom.lessThanOrEqualToSuperview()
         }
 
         checkboxControl.addSubview(checkboxImageView)
         checkboxImageView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.leading.top.equalToSuperview()
+            make.size.equalTo(Constants.checkboxSize)
         }
 
         textView.delegate = self
 
+        // Positioned off the artwork rather than off the control, so the sentence keeps sitting
+        // 12pt from the tick and its first line keeps aligning with the top of the tick.
+        // The text view is added last and therefore stays above the part of the target that runs
+        // under it: taps on the copy keep doing nothing instead of toggling the checkbox.
         addSubview(textView)
         textView.snp.makeConstraints { make in
-            make.leading.equalTo(checkboxControl.snp.trailing).offset(Constants.spacing)
+            make.leading.equalTo(checkboxImageView.snp.trailing).offset(Constants.spacing)
             make.top.trailing.bottom.equalToSuperview()
         }
 
@@ -94,6 +113,10 @@ private extension LegalConsentView {
         checkboxImageView.image = isChecked
             ? R.image.iconCheckbox()
             : R.image.iconCheckboxEmpty()
+
+        // VoiceOver speaks `.selected` itself, in its own language, so the tick state needs no
+        // string of ours.
+        checkboxControl.accessibilityTraits = isChecked ? [.button, .selected] : .button
     }
 
     @objc func actionCheckbox() {
@@ -135,29 +158,12 @@ final class LegalConsentTextView: UITextView {
     }
 }
 
-// MARK: - CheckboxHitControl
-
-/// The checkbox artwork is small, so the touch target is expanded without stealing taps from the
-/// adjacent links.
-final class CheckboxHitControl: UIControl {
-    override func point(inside point: CGPoint, with _: UIEvent?) -> Bool {
-        bounds
-            .insetBy(dx: -Constants.hitAreaInset, dy: -Constants.hitAreaInset)
-            .contains(point)
-    }
-}
-
 // MARK: - Constants
-
-private extension CheckboxHitControl {
-    enum Constants {
-        static let hitAreaInset: CGFloat = 10.0
-    }
-}
 
 private extension LegalConsentView {
     enum Constants {
         static let checkboxSize: CGFloat = 24.0
+        static let checkboxTouchTarget: CGFloat = 44.0
         static let spacing: CGFloat = 12.0
     }
 }
