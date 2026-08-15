@@ -6611,6 +6611,7 @@
 		5A17C1192F0100000000E001 /* LegalConsentViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C1092F0100000000E001 /* LegalConsentViewFactory.swift */; };
 		5A17C0B12F0100000000E001 /* LegalDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C0A12F0100000000E001 /* LegalDocument.swift */; };
 		5A17C0B22F0100000000E001 /* LegalDocumentsRemote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C0A22F0100000000E001 /* LegalDocumentsRemote.swift */; };
+		8A1C0E832F0500000000B104 /* LegalConsentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1C0E822F0500000000B104 /* LegalConsentViewModel.swift */; };
 		8A1C0E622F0300000000B102 /* FullDateCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1C0E612F0300000000B102 /* FullDateCodable.swift */; };
 		5A17C0B32F0100000000E001 /* LegalConsentRepositoryProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C0A32F0100000000E001 /* LegalConsentRepositoryProtocols.swift */; };
 		5A17C0B42F0100000000E001 /* LegalDocumentsFetchOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C0A42F0100000000E001 /* LegalDocumentsFetchOperationFactory.swift */; };
@@ -12962,6 +12963,7 @@
 		000000005DD4620A939B6F76 /* AssetExchangeCommissionNetFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeCommissionNetFlow.swift; sourceTree = "<group>"; };
 		5A17C1012F0100000000E001 /* LegalConsentTextFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentTextFactory.swift; sourceTree = "<group>"; };
 		5A17C1022F0100000000E001 /* LegalConsentView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentView.swift; sourceTree = "<group>"; };
+		8A1C0E822F0500000000B104 /* LegalConsentViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentViewModel.swift; sourceTree = "<group>"; };
 		5A17C1032F0100000000E001 /* LegalConsentProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentProtocols.swift; sourceTree = "<group>"; };
 		5A17C1042F0100000000E001 /* LegalConsentWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentWireframe.swift; sourceTree = "<group>"; };
 		5A17C1052F0100000000E001 /* LegalConsentPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentPresenter.swift; sourceTree = "<group>"; };
@@ -30394,6 +30396,14 @@
 			path = GovernanceUnlockSetup;
 			sourceTree = "<group>";
 		};
+		8A1C0E812F0500000000B104 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				8A1C0E822F0500000000B104 /* LegalConsentViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
 		5A17C1002F0100000000E001 /* LegalConsent */ = {
 			isa = PBXGroup;
 			children = (
@@ -30404,6 +30414,7 @@
 				5A17C1072F0100000000E001 /* LegalConsentViewController.swift */,
 				5A17C1082F0100000000E001 /* LegalConsentViewLayout.swift */,
 				5A17C1092F0100000000E001 /* LegalConsentViewFactory.swift */,
+				8A1C0E812F0500000000B104 /* ViewModel */,
 			);
 			path = LegalConsent;
 			sourceTree = "<group>";
@@ -31280,6 +31291,7 @@
 				5A17C1192F0100000000E001 /* LegalConsentViewFactory.swift in Sources */,
 				5A17C0B12F0100000000E001 /* LegalDocument.swift in Sources */,
 				5A17C0B22F0100000000E001 /* LegalDocumentsRemote.swift in Sources */,
+				8A1C0E832F0500000000B104 /* LegalConsentViewModel.swift in Sources */,
 				8A1C0E622F0300000000B102 /* FullDateCodable.swift in Sources */,
 				5A17C0B32F0100000000E001 /* LegalConsentRepositoryProtocols.swift in Sources */,
 				5A17C0B42F0100000000E001 /* LegalDocumentsFetchOperationFactory.swift in Sources */,

@@ -1,14 +1,6 @@
 import Foundation
 import Foundation_iOS
 
-struct LegalConsentViewModel {
-    let title: String
-    let subtitle: String
-    let agreement: NSAttributedString
-    let acceptTitle: String
-    let consentAccepted: Bool
-}
-
 protocol LegalConsentViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: LegalConsentViewModel)
     func didReceiveConsent(accepted: Bool)
