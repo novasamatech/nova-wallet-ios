@@ -7,6 +7,7 @@ final class OnboardingMainPresenter {
     let interactor: OnboardingMainInteractorInputProtocol
 
     let legalData: LegalData
+    let legalTextFactory: LegalConsentTextFactoryProtocol
     let localizationManager: LocalizationManagerProtocol
 
     private var consentAccepted: Bool = false
@@ -15,11 +16,13 @@ final class OnboardingMainPresenter {
         interactor: OnboardingMainInteractorInputProtocol,
         wireframe: OnboardingMainWireframeProtocol,
         legalData: LegalData,
+        legalTextFactory: LegalConsentTextFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.legalData = legalData
+        self.legalTextFactory = legalTextFactory
         self.localizationManager = localizationManager
     }
 }
@@ -29,7 +32,7 @@ final class OnboardingMainPresenter {
 private extension OnboardingMainPresenter {
     func provideViewModel() {
         let viewModel = OnboardingMainViewModel(
-            agreement: LegalConsentTextFactory.createAgreementText(
+            agreement: legalTextFactory.createAgreementText(
                 for: localizationManager.selectedLocale,
                 termsURL: legalData.termsUrl,
                 privacyURL: legalData.privacyPolicyUrl

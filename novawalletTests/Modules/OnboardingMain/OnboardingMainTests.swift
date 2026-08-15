@@ -234,6 +234,7 @@ class OnboardingMainTests: XCTestCase {
             interactor: interactor,
             wireframe: wireframe,
             legalData: legal,
+            legalTextFactory: LegalConsentTextFactory(),
             localizationManager: LocalizationManager.shared
         )
 

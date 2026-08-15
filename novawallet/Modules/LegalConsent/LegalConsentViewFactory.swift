@@ -21,6 +21,7 @@ struct LegalConsentViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             legalData: legalData,
+            legalTextFactory: LegalConsentTextFactory(),
             localizationManager: LocalizationManager.shared
         )
 
