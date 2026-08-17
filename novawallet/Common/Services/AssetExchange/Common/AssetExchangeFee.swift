@@ -16,6 +16,7 @@ struct AssetExchangeFee: Equatable {
     let intermediateFeesInAssetIn: Balance
     let slippage: BigRational
     let feeAssetId: ChainAssetId
+    let commission: AssetExchangeCommission?
 }
 
 extension AssetExchangeFee {

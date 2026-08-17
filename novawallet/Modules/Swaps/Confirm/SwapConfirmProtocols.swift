@@ -3,7 +3,7 @@ import BigInt
 
 protocol SwapConfirmViewProtocol: ControllerBackedProtocol {
     func didReceiveAssetIn(viewModel: SwapAssetAmountViewModel)
-    func didReceiveAssetOut(viewModel: SwapAssetAmountViewModel)
+    func didReceiveAssetOut(viewModel: LoadableViewModelState<SwapAssetAmountViewModel>)
     func didReceiveRate(viewModel: LoadableViewModelState<String>)
     func didReceiveRoute(viewModel: LoadableViewModelState<[SwapRouteItemView.ItemViewModel]>)
     func didReceiveExecutionTime(viewModel: LoadableViewModelState<String>)

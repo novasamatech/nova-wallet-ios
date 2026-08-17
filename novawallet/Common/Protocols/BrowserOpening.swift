@@ -27,4 +27,12 @@ extension BrowserOpening {
 
         browserNavigation.openBrowser(with: result)
     }
+
+    func minimizeBrowser() {
+        guard let browserNavigation = BrowserNavigationFactory.createNavigation() else {
+            return
+        }
+
+        browserNavigation.minimizeBrowser()
+    }
 }

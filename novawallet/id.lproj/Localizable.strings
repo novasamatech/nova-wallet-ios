@@ -411,6 +411,7 @@
 "staking.set.validators.message" = "Validator tidak dipilih";
 "staking.max.nominators.reached.message" = "Jumlah maksimum nominator telah tercapai. Coba lagi nanti";
 "staking.custom.blocked.warning" = "Validator ini tidak menerima nominasi saat ini. Silakan coba lagi di era berikutnya.";
+"staking.custom.locked.validator.message" = "This validator is operated by Nova and is always part of your nomination.";
 "staking.alert.start.next.era.message" = "Silakan tunggu era berikutnya untuk dimulai.";
 "staking.custom.proceed.button.disabled.title" = "Pilih validator (maks %li)";
 "staking.custom.proceed.button.enabled.title" = "Tampilkan yang dipilih: %li (maks %li)";
@@ -1359,7 +1360,7 @@
 "polkadot.staking.promotion.message" = "Menerima DOT Anda kembali dari crowdloans? Mulai melakukan staking DOT Anda hari ini untuk mendapatkan imbalan maksimal yang mungkin!";
 "swaps.violating.consumers.message" = "Anda harus menyisihkan setidaknya %@ setelah membayar biaya jaringan %@ karena Anda memegang token yang tidak mencukupi";
 "common.receive.not.sufficient.native.asset.error" = "Anda harus menyisihkan setidaknya %@ untuk menerima token %@";
-"swaps.rate.description" = "Kurs pertukaran antara dua cryptocurrency yang berbeda. Ini menggambarkan seberapa banyak cryptocurrency itu yang bisa Anda dapatkan dalam pertukaran dengan sejumlah tertentu cryptocurrency lain.";
+"swaps.rate.description" = "Kurs terbaik yang ditemukan dari sumber likuiditas yang tersedia.";
 "swaps.setup.price.difference.description" = "Perbedaan harga merujuk pada perbedaan harga antara dua aset yang berbeda. Ketika melakukan swap dalam kripto, perbedaan harga biasanya adalah perbedaan antara harga aset yang Anda tukarkan dengan harga aset yang Anda tukar.";
 "swaps.setup.slippage.description" = "Slippage adalah kejadian umum dalam perdagangan terdesentralisasi di mana harga akhir dari transaksi swap mungkin sedikit berbeda dari harga yang diharapkan, karena kondisi pasar yang berubah.";
 "swaps.network.fee.description" = "Biaya jaringan yang dibebankan oleh blockchain untuk memproses dan memvalidasi transaksi. Bisa bervariasi tergantung pada kondisi jaringan atau kecepatan transaksi.";
@@ -1755,7 +1756,7 @@
 "sec.time.units" = "detik";
 "swaps.execution.dont.close.app" = "Jangan tutup aplikasinya!";
 "swaps.details.exec.time" = "Waktu eksekusi";
-"swaps.details.total.fee" = "Biaya total";
+"swaps.details.total.fee" = "Biaya jaringan";
 "swaps.label.transfer" = "Transfer";
 "swaps.label.swap" = "Tukar";
 "swap.route.details.subtitle" = "Jalur yang akan diambil token Anda melalui berbagai jaringan untuk mendapatkan token yang diinginkan.";
@@ -2035,3 +2036,16 @@
 "create.watch.only.missing.any.address" = "Masukkan setidaknya satu alamat...";
 "asset.list.watch.only.balance" = "Saldo untuk dilihat saja";
 "create.watch.only.subtitle" = "Lacak aktivitas dompet tanpa kunci privat.\nAnda tidak akan dapat melakukan transaksi apapun.";
+"common.go.to.staking" = "Buka Staking";
+"dapp.staking.banner.message" = "Ingin melakukan staking? Nova Wallet memiliki fitur staking bawaan.";
+"dapp.staking.notice.continue" = "Lanjutkan ke situs";
+"dapp.staking.notice.message" = "Situs staking pihak ketiga sering kali tidak lagi tersedia. Kami menyarankan Anda menggunakan fitur staking bawaan Nova Wallet.";
+"dapp.staking.notice.title" = "Pemberitahuan";
+"swaps.commission.disclosure" = "Termasuk biaya Nova sebesar %@.";
+"swaps.rate.includes.commission.description" = "Kurs terbaik yang ditemukan, termasuk biaya Nova Wallet sebesar %@.";
+"common.terms.of.service" = "Ketentuan Layanan";
+"common.privacy.notice" = "Pemberitahuan Privasi";
+"legal.consent.agreement" = "Saya menyetujui %1$@ dan mengakui %2$@.";
+"legal.consent.title" = "Ketentuan yang Diperbarui";
+"legal.consent.subtitle" = "Kami telah memperbarui Ketentuan Layanan dan Pemberitahuan Privasi kami. Harap tinjau dan setujui dokumen yang diperbarui untuk terus menggunakan Nova Wallet.";
+"legal.consent.accept" = "Setujui dan Lanjutkan";

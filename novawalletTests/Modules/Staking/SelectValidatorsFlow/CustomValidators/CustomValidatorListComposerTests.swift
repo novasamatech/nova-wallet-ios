@@ -168,9 +168,9 @@ class CustomValidatorListComposerTests: XCTestCase {
 
         let preferences = generator.createSelectedValidators(from: [generator.clusterValidatorChild1])
 
-        let expectedResult = (allValidators + preferences).sorted {
+        let expectedResult = allValidators.sorted {
             $0.stakeReturn >= $1.stakeReturn
-        }
+        } + preferences
 
         let filter = CustomValidatorListFilter.defaultFilter()
         let composer = CustomValidatorListComposer(filter: filter)
@@ -197,9 +197,9 @@ class CustomValidatorListComposerTests: XCTestCase {
 
         let preferrences = generator.createSelectedValidators(from: [generator.clusterValidatorChild1])
 
-        let expectedResult = (goodValidators + preferrences).sorted {
+        let expectedResult = goodValidators.sorted {
             $0.stakeReturn >= $1.stakeReturn
-        }
+        } + preferrences
 
         let filter = CustomValidatorListFilter.recommendedFilter(havingIdentity: true)
         let composer = CustomValidatorListComposer(filter: filter)
@@ -211,5 +211,46 @@ class CustomValidatorListComposerTests: XCTestCase {
         // then
 
         XCTAssertEqual(result, expectedResult)
+    }
+
+    func testPreferrencesSurviveFiltersThatWouldRejectThem() {
+        // given
+        let generator = CustomValidatorListTestDataGenerator.self
+        let allValidators = generator.createSelectedValidators(from: generator.goodValidators)
+
+        let preferrences = generator.createSelectedValidators(
+            from: [generator.slashedValidator, generator.noIdentityValidator]
+        )
+
+        let filter = CustomValidatorListFilter.recommendedFilter(havingIdentity: true)
+        let composer = CustomValidatorListComposer(filter: filter)
+
+        // when
+
+        let result = composer.compose(from: allValidators, preferrences: preferrences)
+
+        // then
+
+        let expectedOrder = [generator.noIdentityValidator.address, generator.slashedValidator.address]
+        XCTAssertEqual(result.suffix(2).map(\.address), expectedOrder)
+    }
+
+    func testPreferrencesAreNotDuplicatedWhenAlsoElected() {
+        // given
+        let generator = CustomValidatorListTestDataGenerator.self
+        let allValidators = generator.createSelectedValidators(from: generator.goodValidators)
+        let preferrences = [allValidators[0]]
+
+        let filter = CustomValidatorListFilter.defaultFilter()
+        let composer = CustomValidatorListComposer(filter: filter)
+
+        // when
+
+        let result = composer.compose(from: allValidators, preferrences: preferrences)
+
+        // then
+
+        XCTAssertEqual(result.count, allValidators.count)
+        XCTAssertEqual(result.last?.address, preferrences[0].address)
     }
 }

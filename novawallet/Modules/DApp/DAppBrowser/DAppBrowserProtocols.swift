@@ -87,7 +87,8 @@ protocol DAppBrowserInteractorOutputProtocol: AnyObject {
 
 protocol DAppBrowserWireframeProtocol: DAppAlertPresentable,
     ErrorPresentable,
-    DAppBrowserSearchPresentable {
+    DAppBrowserSearchPresentable,
+    DAppStakingNoticePresentable {
     func presentOperationConfirm(
         from view: DAppBrowserViewProtocol?,
         request: DAppOperationRequest,

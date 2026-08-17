@@ -130,7 +130,8 @@ final class StakingSharedStateFactory {
             chainRegistry: chainRegistry
         ).createStakingDurationOperationFactory(
             for: chainAsset.chain,
-            timeModel: timeModel
+            timeModel: timeModel,
+            operationQueue: syncOperationQueue
         )
 
         let rewardCalculatorService = try stakingServiceFactory.createRewardCalculatorService(

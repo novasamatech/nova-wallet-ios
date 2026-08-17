@@ -182,7 +182,7 @@ extension StartStakingInfoRelaychainPresenter {
                 return nil
             }
 
-            return networkInfo.stakingDuration.unlocking
+            return networkInfo.stakingDuration.unlocking.nominator
         }
     }
 }

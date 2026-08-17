@@ -411,6 +411,7 @@
 "staking.set.validators.message" = "Doğrulayıcılar seçilmedi";
 "staking.max.nominators.reached.message" = "Maksimum aday sayısına ulaşıldı. Daha sonra tekrar deneyin";
 "staking.custom.blocked.warning" = "Bu doğrulayıcı şu anda adaylık kabul etmiyor. Lütfen, bir sonraki era'da tekrar deneyin.";
+"staking.custom.locked.validator.message" = "This validator is operated by Nova and is always part of your nomination.";
 "staking.alert.start.next.era.message" = "Lütfen bir sonraki devrin başlamasını bekleyin.";
 "staking.custom.proceed.button.disabled.title" = "Doğrulayıcı seç (%li maks.)";
 "staking.custom.proceed.button.enabled.title" = "Seçilenleri göster: %li (%li maks.)";
@@ -1359,7 +1360,7 @@
 "polkadot.staking.promotion.message" = "Crowdloan'larınızdan DOT'unuzu geri aldınız mı? Bugün DOT'unuzu stake etmeye başlayın ve mümkün olan en yüksek ödülleri alın!";
 "swaps.violating.consumers.message" = "Ödeme yaptıktan sonra ağ ücreti olarak %@ tutarında en azından %@ tutmanız gerekmektedir çünkü yeterli olmayan tokenlara sahipsiniz";
 "common.receive.not.sufficient.native.asset.error" = "%@ token almak için en az %@ tutmalısınız";
-"swaps.rate.description" = "İki farklı kriptopara arasındaki döviz kuru. Belirli bir miktar başka bir kriptopara karşılığında ne kadar kriptopara alabileceğinizi gösterir.";
+"swaps.rate.description" = "Mevcut likidite kaynakları arasından bulunan en iyi kur.";
 "swaps.setup.price.difference.description" = "Fiyat farkı, iki farklı varlık arasındaki fiyat farkını ifade eder. Kripto takas yaparken, fiyat farkı genellikle takas ettiğiniz varlığın fiyatı ile takas ettiğiniz varlığın fiyatı arasındaki farktır.";
 "swaps.setup.slippage.description" = "Takas kayması, değişken piyasa koşulları nedeniyle, bir takas işleminin nihai fiyatının beklenen fiyattan küçük bir miktar farklılık gösterebileceği merkeziyetsiz ticarette yaygın bir durumdur.";
 "swaps.network.fee.description" = "Herhangi bir işlemi işlemek ve doğrulamak için blockchain tarafından alınan ağ ücretleri. Ağ koşullarına veya işlem hızına bağlı olarak değişebilir.";
@@ -1755,7 +1756,7 @@
 "sec.time.units" = "sn";
 "swaps.execution.dont.close.app" = "Uygulamayı kapatmayın!";
 "swaps.details.exec.time" = "Gerçekleşme süresi";
-"swaps.details.total.fee" = "Toplam Ücret";
+"swaps.details.total.fee" = "Ağ ücretleri";
 "swaps.label.transfer" = "Transfer";
 "swaps.label.swap" = "Takas";
 "swap.route.details.subtitle" = "Token'ınızın farklı ağlardan geçerek istenen token'a ulaşmak için alacağı yol.";
@@ -2035,3 +2036,16 @@
 "create.watch.only.missing.any.address" = "En az bir adres girin...";
 "asset.list.watch.only.balance" = "Sadece-izleme bakiyesi";
 "create.watch.only.subtitle" = "Cüzdan aktivitesini özel anahtar olmadan izleyin.\nHerhangi bir işlem gerçekleştiremezsiniz.";
+"common.go.to.staking" = "Staking'e Git";
+"dapp.staking.banner.message" = "Stake etmek mi istiyorsunuz? Nova Wallet'ta yerleşik staking özelliği bulunur.";
+"dapp.staking.notice.continue" = "Siteye devam et";
+"dapp.staking.notice.message" = "Üçüncü taraf staking siteleri çoğu zaman kullanımdan kaldırılır. Nova Wallet'ın yerleşik staking özelliklerini kullanmanızı öneririz.";
+"dapp.staking.notice.title" = "Bildirim";
+"swaps.commission.disclosure" = "%@ Nova ücretini içerir.";
+"swaps.rate.includes.commission.description" = "%@ Nova Wallet ücretini içeren, bulunan en iyi kur.";
+"common.terms.of.service" = "Hizmet Koşulları";
+"common.privacy.notice" = "Gizlilik Bildirimi";
+"legal.consent.agreement" = "%1$@ sözleşmesini kabul ediyor ve %2$@ belgesini okuduğumu onaylıyorum.";
+"legal.consent.title" = "Güncellenen Koşullar";
+"legal.consent.subtitle" = "Hizmet Koşullarımızı ve Gizlilik Bildirimimizi güncelledik. Nova Wallet'ı kullanmaya devam etmek için lütfen güncellenen belgeleri inceleyip kabul edin.";
+"legal.consent.accept" = "Kabul et ve devam et";

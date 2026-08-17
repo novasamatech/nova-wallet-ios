@@ -12,11 +12,7 @@ final class OnboardingMainViewLayout: UIView, AdaptiveDesignable {
         imageView.contentMode = .scaleAspectFit
     }
 
-    let termsLabel: UILabel = .create { label in
-        label.isUserInteractionEnabled = true
-        label.numberOfLines = 0
-        label.textAlignment = .center
-    }
+    let consentView = LegalConsentView()
 
     let createButton: TriangularedButton = .create { button in
         button.applyDefaultStyle()
@@ -54,15 +50,9 @@ final class OnboardingMainViewLayout: UIView, AdaptiveDesignable {
 
         logo.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
 
-        addSubview(termsLabel)
-        termsLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(20)
-            make.bottom.equalTo(safeAreaLayoutGuide).offset(-16)
-        }
-
         addSubview(importButton)
         importButton.snp.makeConstraints { make in
-            make.bottom.equalTo(termsLabel.snp.top).offset(-24)
+            make.bottom.equalTo(safeAreaLayoutGuide).offset(-Constants.bottomInset)
             make.centerX.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.height.equalTo(UIConstants.actionHeight)
@@ -70,10 +60,27 @@ final class OnboardingMainViewLayout: UIView, AdaptiveDesignable {
 
         addSubview(createButton)
         createButton.snp.makeConstraints { make in
-            make.bottom.equalTo(importButton.snp.top).offset(-12)
+            make.bottom.equalTo(importButton.snp.top).offset(-Constants.buttonSpacing)
             make.centerX.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.height.equalTo(UIConstants.actionHeight)
         }
+
+        addSubview(consentView)
+        consentView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(Constants.consentHorizontalInset)
+            make.bottom.equalTo(createButton.snp.top).offset(-Constants.consentToButtons)
+        }
+    }
+}
+
+// MARK: - Constants
+
+private extension OnboardingMainViewLayout {
+    enum Constants {
+        static let buttonSpacing: CGFloat = 12.0
+        static let bottomInset: CGFloat = 16.0
+        static let consentHorizontalInset: CGFloat = 20.0
+        static let consentToButtons: CGFloat = 24.0
     }
 }

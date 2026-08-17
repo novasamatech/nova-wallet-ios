@@ -4,6 +4,16 @@ import SubstrateSdk
 enum HydraRouter {
     static let moduleName = "Router"
 
+    static func getPalletAccountId(for size: Int) throws -> AccountId {
+        guard let accountIdPrefix = "modlrouterex".data(using: .utf8) else {
+            throw CommonError.dataCorruption
+        }
+
+        let zeroAccountId = AccountId.zeroAccountId(of: size)
+
+        return (accountIdPrefix + zeroAccountId).prefix(size)
+    }
+
     enum PoolType: Codable {
         static let xykField = "XYK"
         static let lbpField = "LBP"

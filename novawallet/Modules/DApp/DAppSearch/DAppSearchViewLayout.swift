@@ -13,6 +13,10 @@ final class DAppSearchViewLayout: UIView {
         view.borderType = []
     }
 
+    let stakingBannerView: DAppStakingBannerView = .create { view in
+        view.isHidden = true
+    }
+
     let tableView: UITableView = {
         let view = UITableView()
         view.backgroundColor = .clear
@@ -40,9 +44,18 @@ final class DAppSearchViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func setStakingBanner(visible: Bool) {
+        stakingBannerView.isHidden = !visible
+
+        stakingBannerView.snp.updateConstraints { make in
+            make.height.equalTo(visible ? Constants.stakingBannerHeight : 0.0)
+        }
+    }
+
     private func setupLayout() {
         addSubview(topBackgroundView)
         addSubview(categoriesView)
+        addSubview(stakingBannerView)
         addSubview(tableView)
 
         categoriesView.snp.makeConstraints { make in
@@ -56,8 +69,14 @@ final class DAppSearchViewLayout: UIView {
             make.bottom.equalTo(categoriesView).inset(-Constants.categoriesViewVerticalInset)
         }
 
-        tableView.snp.makeConstraints { make in
+        stakingBannerView.snp.makeConstraints { make in
             make.top.equalTo(topBackgroundView.snp.bottom)
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(0.0)
+        }
+
+        tableView.snp.makeConstraints { make in
+            make.top.equalTo(stakingBannerView.snp.bottom)
             make.leading.trailing.bottom.equalToSuperview()
         }
     }
@@ -68,5 +87,6 @@ final class DAppSearchViewLayout: UIView {
 private extension DAppSearchViewLayout {
     enum Constants {
         static let categoriesViewVerticalInset: CGFloat = 8.0
+        static let stakingBannerHeight: CGFloat = 64.0
     }
 }

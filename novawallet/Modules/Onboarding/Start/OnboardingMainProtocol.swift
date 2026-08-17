@@ -1,14 +1,19 @@
 import Foundation
 import Foundation_iOS
 
-protocol OnboardingMainViewProtocol: ControllerBackedProtocol {}
+protocol OnboardingMainViewProtocol: ControllerBackedProtocol {
+    func didReceive(viewModel: OnboardingMainViewModel)
+    func didReceiveConsent(accepted: Bool)
+}
 
 protocol OnboardingMainPresenterProtocol: AnyObject {
     func setup()
+    func viewWillAppear()
+    func updateLocalization()
+    func toggleConsent()
     func activateSignup()
     func activateAccountRestore()
-    func activateTerms()
-    func activatePrivacy()
+    func activateLegalDocument(url: URL)
 }
 
 protocol OnboardingMainWireframeProtocol: WebPresentable, ErrorPresentable, AlertPresentable, ActionsManagePresentable {
@@ -20,6 +25,7 @@ protocol OnboardingMainWireframeProtocol: WebPresentable, ErrorPresentable, Aler
 
 protocol OnboardingMainInteractorInputProtocol: AnyObject {
     func setup()
+    func acceptLegalDocuments()
 }
 
 protocol OnboardingMainInteractorOutputProtocol: AnyObject {

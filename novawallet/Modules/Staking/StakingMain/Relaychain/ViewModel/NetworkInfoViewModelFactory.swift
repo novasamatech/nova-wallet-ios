@@ -121,7 +121,7 @@ final class NetworkInfoViewModelFactory {
     private func createLockUpPeriodViewModel(
         with networkStakingInfo: NetworkStakingInfo
     ) -> LocalizableResource<String> {
-        networkStakingInfo.stakingDuration.localizableUnlockingString
+        networkStakingInfo.stakingDuration.localizableNominatorUnlockingString
     }
 
     private func createStakingPeriod() -> LocalizableResource<String> {
@@ -190,7 +190,7 @@ extension NetworkInfoViewModelFactory: NetworkInfoViewModelFactoryProtocol {
             )
         }?.value(for: locale)
 
-        let lockUpPeriod = params.duration?.localizableUnlockingString.value(for: locale)
+        let lockUpPeriod = params.duration?.localizableNominatorUnlockingString.value(for: locale)
 
         let stakingPeriod = createStakingPeriod().value(for: locale)
 

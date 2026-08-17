@@ -411,6 +411,7 @@
 "staking.set.validators.message" = "Validadores não foram selecionados";
 "staking.max.nominators.reached.message" = "O número máximo de nominadores foi alcançado. Tente novamente mais tarde";
 "staking.custom.blocked.warning" = "Este validador não está aceitando nomeações neste momento. Por favor, tente novamente na próxima era.";
+"staking.custom.locked.validator.message" = "This validator is operated by Nova and is always part of your nomination.";
 "staking.alert.start.next.era.message" = "Por favor, aguarde o início da próxima era.";
 "staking.custom.proceed.button.disabled.title" = "Selecionar validadores (máx %li)";
 "staking.custom.proceed.button.enabled.title" = "Mostrar selecionados: %li (máx %li)";
@@ -1359,7 +1360,7 @@
 "polkadot.staking.promotion.message" = "Recebeu de volta seus DOTs dos crowdloans? Comece a fazer staking dos seus DOTs hoje mesmo para obter as recompensas máximas possíveis!";
 "swaps.violating.consumers.message" = "Você deve manter pelo menos %@ após pagar a taxa de rede %@, pois você está com tokens insuficientes";
 "common.receive.not.sufficient.native.asset.error" = "Você deve manter pelo menos %@ para receber o token %@";
-"swaps.rate.description" = "Taxa de câmbio entre duas criptomoedas diferentes. Representa quanto de uma criptomoeda você pode obter em troca por uma certa quantidade de outra criptomoeda.";
+"swaps.rate.description" = "A melhor taxa encontrada entre as fontes de liquidez disponíveis.";
 "swaps.setup.price.difference.description" = "Diferença de preço refere-se à diferença de preço entre dois ativos diferentes. Ao fazer uma troca em cripto, a diferença de preço geralmente é entre o preço do ativo que você está trocando e o preço do ativo com o qual você está trocando.";
 "swaps.setup.slippage.description" = "Deslizamento em trocas é um acontecimento comum em negociações descentralizadas onde o preço final de uma transação de troca pode diferir ligeiramente do preço esperado, devido às condições de mercado em mudança.";
 "swaps.network.fee.description" = "Uma taxa de rede cobrada pela blockchain para processar e validar quaisquer transações. Pode variar dependendo das condições da rede ou velocidade da transação.";
@@ -1755,7 +1756,7 @@
 "sec.time.units" = "seg";
 "swaps.execution.dont.close.app" = "Não feche o aplicativo!";
 "swaps.details.exec.time" = "Tempo de execução";
-"swaps.details.total.fee" = "Taxa total";
+"swaps.details.total.fee" = "Taxas de rede";
 "swaps.label.transfer" = "Transferência";
 "swaps.label.swap" = "Troca";
 "swap.route.details.subtitle" = "O caminho que seu token percorrerá através de diferentes redes para obter o token desejado.";
@@ -2035,3 +2036,16 @@
 "create.watch.only.missing.any.address" = "Insira pelo menos um endereço...";
 "asset.list.watch.only.balance" = "Saldo somente de visualização";
 "create.watch.only.subtitle" = "Acompanhe a atividade da carteira sem uma chave privada.\nVocê não poderá realizar transações.";
+"common.go.to.staking" = "Ir para staking";
+"dapp.staking.banner.message" = "Quer fazer staking? A Nova Wallet oferece staking integrado.";
+"dapp.staking.notice.continue" = "Continuar para o site";
+"dapp.staking.notice.message" = "Sites de staking de terceiros frequentemente ficam desatualizados. Recomendamos usar os recursos de staking integrados da Nova Wallet.";
+"dapp.staking.notice.title" = "Aviso";
+"swaps.commission.disclosure" = "Inclui uma taxa Nova de %@.";
+"swaps.rate.includes.commission.description" = "A melhor taxa encontrada, incluindo uma taxa da Nova Wallet de %@.";
+"common.terms.of.service" = "Termos de serviço";
+"common.privacy.notice" = "Aviso de privacidade";
+"legal.consent.agreement" = "Concordo com os %1$@ e reconheço os %2$@.";
+"legal.consent.title" = "Termos atualizados";
+"legal.consent.subtitle" = "Atualizamos nossos Termos de serviço e Aviso de privacidade. Revise e aceite os documentos atualizados para continuar usando a Nova Wallet.";
+"legal.consent.accept" = "Aceitar e continuar";

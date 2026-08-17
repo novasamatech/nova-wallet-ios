@@ -12,6 +12,7 @@ final class DAppBrowserTabListPresenter {
     private let viewModelFactory: DAppBrowserTabListViewModelFactoryProtocol
 
     private var tabs: [DAppBrowserTab] = []
+    private var pendingStakingSearchResult: DAppSearchResult?
 
     init(
         interactor: DAppBrowserTabListInteractorInputProtocol,
@@ -38,6 +39,20 @@ private extension DAppBrowserTabListPresenter {
         )
 
         view?.didReceive(viewModels)
+    }
+
+    func openTab(for result: DAppSearchResult) {
+        guard let tab = DAppBrowserTab(from: result, metaId: metaId) else {
+            return
+        }
+
+        tabs.append(tab)
+        provideTabs()
+
+        wireframe.showTab(
+            tab,
+            from: view
+        )
     }
 }
 
@@ -114,17 +129,29 @@ extension DAppBrowserTabListPresenter: DAppBrowserTabListInteractorOutputProtoco
 // MARK: DAppSearchDelegate
 
 extension DAppBrowserTabListPresenter: DAppSearchDelegate {
-    func didCompleteDAppSearchResult(_ result: DAppSearchResult) {
-        guard let tab = DAppBrowserTab(from: result, metaId: metaId) else {
+    func didCompleteDAppSearchResult(
+        _ result: DAppSearchResult,
+        isThirdPartyStaking: Bool
+    ) {
+        if isThirdPartyStaking {
+            pendingStakingSearchResult = result
+            wireframe.presentStakingNotice(from: view, delegate: self)
+        } else {
+            openTab(for: result)
+        }
+    }
+}
+
+// MARK: DAppStakingNoticeDelegate
+
+extension DAppBrowserTabListPresenter: DAppStakingNoticeDelegate {
+    func dappStakingNoticeDidSelectContinue() {
+        guard let result = pendingStakingSearchResult else {
             return
         }
 
-        tabs.append(tab)
-        provideTabs()
+        pendingStakingSearchResult = nil
 
-        wireframe.showTab(
-            tab,
-            from: view
-        )
+        openTab(for: result)
     }
 }

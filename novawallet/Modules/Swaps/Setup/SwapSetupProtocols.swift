@@ -16,6 +16,7 @@ protocol SwapSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveRoute(viewModel: LoadableViewModelState<[SwapRouteItemView.ItemViewModel]>)
     func didReceiveExecutionTime(viewModel: LoadableViewModelState<String>)
     func didReceiveNetworkFee(viewModel: LoadableViewModelState<NetworkFeeInfoViewModel>)
+    func didReceiveCommissionDisclosure(viewModel: String?)
     func didReceiveDetailsState(isAvailable: Bool)
     func didReceiveSettingsState(isAvailable: Bool)
     func didReceive(issues: [SwapSetupViewIssue])

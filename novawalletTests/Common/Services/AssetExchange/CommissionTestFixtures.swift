@@ -1,0 +1,217 @@
+import Foundation
+@testable import novawallet
+import Operation_iOS
+import SubstrateSdk
+import BigInt
+import Cuckoo
+
+enum CommissionTestFixtures {
+    static let chain = ChainModelGenerator.generateChain(
+        defaultChainId: KnowChainId.hydra,
+        generatingAssets: 8,
+        addressPrefix: 63
+    )
+
+    static func asset(_ id: AssetModel.Id) -> ChainAssetId {
+        ChainAssetId(chainId: chain.chainId, assetId: id)
+    }
+
+    static func chainAsset(_ id: AssetModel.Id) -> ChainAsset {
+        try! chain.chainAssetOrError(for: id)
+    }
+
+    static func metaOperation(
+        amountIn: Balance,
+        amountOut: Balance,
+        label: AssetExchangeMetaOperationLabel = .swap
+    ) -> AssetExchangeMetaOperationProtocol {
+        StubMetaOperation(
+            assetIn: chainAsset(0),
+            assetOut: chainAsset(1),
+            amountIn: amountIn,
+            amountOut: amountOut,
+            label: label
+        )
+    }
+
+    static func createPath(_ types: [AssetExchangeEdgeType]) -> AssetExchangeGraphPath {
+        types.enumerated().map { index, type in
+            AnyAssetExchangeEdge(
+                StubAssetExchangeEdge(
+                    origin: asset(AssetModel.Id(index)),
+                    destination: asset(AssetModel.Id(index + 1)),
+                    type: type,
+                    chain: chain
+                )
+            )
+        }
+    }
+
+    static func createRoute(
+        _ types: [AssetExchangeEdgeType],
+        amounts: [Balance],
+        direction: AssetConversion.Direction = .sell
+    ) -> AssetExchangeRoute {
+        let items = zip(createPath(types), amounts).map { edge, amount in
+            AssetExchangeRouteItem(edge: edge, amount: amount, quote: amount)
+        }
+
+        return AssetExchangeRoute(items: items, amount: amounts.first ?? 0, direction: direction)
+    }
+
+    static func createRoute(
+        _ types: [AssetExchangeEdgeType],
+        amount: Balance,
+        direction: AssetConversion.Direction = .sell
+    ) -> AssetExchangeRoute {
+        createRoute(types, amounts: Array(repeating: amount, count: types.count), direction: direction)
+    }
+
+    static func ormlInfo(existentialDeposit: Balance) -> AssetStorageInfo {
+        .orml(
+            info: OrmlTokenStorageInfo(
+                currencyId: .stringValue("0"),
+                currencyData: Data(),
+                module: "Tokens",
+                existentialDeposit: existentialDeposit,
+                canTransferAll: true
+            )
+        )
+    }
+
+    static func ormlHydrationEvmInfo(module: String = "Currencies") -> AssetStorageInfo {
+        .ormlHydrationEvm(
+            info: OrmlTokenStorageInfo(
+                currencyId: .stringValue("0"),
+                currencyData: Data(),
+                module: module,
+                existentialDeposit: 1,
+                canTransferAll: true
+            )
+        )
+    }
+
+    static func ormlInfo(module: String) -> AssetStorageInfo {
+        .orml(
+            info: OrmlTokenStorageInfo(
+                currencyId: .stringValue("0"),
+                currencyData: Data(),
+                module: module,
+                existentialDeposit: 1,
+                canTransferAll: true
+            )
+        )
+    }
+
+    static func nativeInfo() -> AssetStorageInfo {
+        .native(info: NativeTokenStorageInfo(canTransferAll: true, transferCallPath: .transferAllowDeath))
+    }
+
+    static func makeCallArgs(
+        direction: AssetConversion.Direction,
+        amountIn: Balance,
+        amountOut: Balance,
+        slippage: BigRational
+    ) -> AssetConversion.CallArgs {
+        AssetConversion.CallArgs(
+            assetIn: ChainAssetId(chainId: KnowChainId.hydra, assetId: 0),
+            amountIn: amountIn,
+            assetOut: ChainAssetId(chainId: KnowChainId.hydra, assetId: 1),
+            amountOut: amountOut,
+            receiver: Data(repeating: 2, count: 32),
+            direction: direction,
+            slippage: slippage
+        )
+    }
+
+    static func makeCommission(amount: Balance = 8428) -> AssetExchangeCommission {
+        AssetExchangeCommission(
+            chargingEdgeIndex: 0,
+            asset: ChainAssetId(chainId: KnowChainId.hydra, assetId: 1),
+            amount: amount,
+            beneficiary: Data(repeating: 3, count: 32)
+        )
+    }
+
+    static func makeCommission(
+        chargingEdgeIndex: Int,
+        amount: Balance
+    ) -> AssetExchangeCommission {
+        AssetExchangeCommission(
+            chargingEdgeIndex: chargingEdgeIndex,
+            asset: ChainAssetId(chainId: KnowChainId.hydra, assetId: 1),
+            amount: amount,
+            beneficiary: beneficiary
+        )
+    }
+
+    static func makeSwapParams(
+        commission: AssetExchangeCommission?,
+        storageInfo: AssetStorageInfo?,
+        callArgs: AssetConversion.CallArgs
+    ) -> HydraExchangeSwapParams {
+        HydraExchangeSwapParams(
+            params: .init(referral: Data(repeating: 9, count: 32)),
+            updateReferral: nil,
+            swap: .omniSell(
+                HydraOmnipool.SellCall(
+                    assetIn: 0,
+                    assetOut: 1,
+                    amount: callArgs.amountIn,
+                    minBuyAmount: callArgs.amountOut
+                )
+            ),
+            commission: HydraExchangeExtrinsicParamsFactory.commissionParams(
+                for: commission,
+                storageInfo: storageInfo
+            )
+        )
+    }
+
+    static func makeRecordedCalls(_ params: HydraExchangeSwapParams) throws -> [CallCodingPath] {
+        try record(params).addedCalls
+    }
+
+    static func record(_ params: HydraExchangeSwapParams) throws -> RecordingExtrinsicBuilder {
+        let builder = RecordingExtrinsicBuilder()
+        _ = try HydraExchangeExtrinsicConverter.addingOperation(from: params, builder: builder)
+        return builder
+    }
+
+    static let beneficiary = AccountId(repeating: 1, count: 32)
+
+    static func createPolicy() -> AssetExchangeCommissionPolicy {
+        AssetExchangeCommissionPolicy(
+            rate: AssetExchangeCommissionConstants.rate,
+            beneficiary: beneficiary
+        )
+    }
+}
+
+extension MockAssetsExchangeGraphProtocol {
+    func applyDefault(paths: [AssetExchangeGraphPath]) -> MockAssetsExchangeGraphProtocol {
+        stub(self) { stub in
+            stub.fetchPaths(from: any(), to: any(), maxTopPaths: any()).thenReturn(paths)
+            stub.fetchAssetsIn(given: any()).thenReturn([])
+            stub.fetchAssetsOut(given: any()).thenReturn([])
+        }
+
+        return self
+    }
+}
+
+extension CommissionTestFixtures {
+    static func makeGraph(paths: [AssetExchangeGraphPath] = []) -> MockAssetsExchangeGraphProtocol {
+        MockAssetsExchangeGraphProtocol().applyDefault(paths: paths)
+    }
+
+    static func makeFactory() -> AssetsExchangeOperationFactory {
+        AssetsExchangeOperationFactory(
+            graph: makeGraph(),
+            pathCostEstimator: MockAssetsExchangePathCostEstimator(),
+            commissionPolicy: createPolicy(),
+            operationQueue: OperationQueue(),
+            logger: Logger.shared
+        )
+    }
+}

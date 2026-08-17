@@ -93,6 +93,14 @@ enum Staking {
         StorageCodingPath(moduleName: module, itemName: "Validators")
     }
 
+    static var areNominatorsSlashable: StorageCodingPath {
+        StorageCodingPath(moduleName: module, itemName: "AreNominatorsSlashable")
+    }
+
+    static var lastValidatorEra: StorageCodingPath {
+        StorageCodingPath(moduleName: module, itemName: "LastValidatorEra")
+    }
+
     static var historyDepthCostantPath: ConstantCodingPath {
         ConstantCodingPath(moduleName: module, constantName: "HistoryDepth")
     }
@@ -111,6 +119,10 @@ enum Staking {
 
     static var lockUpPeriodPath: ConstantCodingPath {
         ConstantCodingPath(moduleName: module, constantName: "BondingDuration")
+    }
+
+    static var nominatorFastUnbondDurationPath: ConstantCodingPath {
+        ConstantCodingPath(moduleName: module, constantName: "NominatorFastUnbondDuration")
     }
 
     static var eraLengthPath: ConstantCodingPath {

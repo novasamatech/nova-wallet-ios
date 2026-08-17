@@ -35,6 +35,24 @@ extension ExtrinsicProcessor: ExtrinsicProcessing {
 
             let runtimeJsonContext = coderFactory.createRuntimeJsonContext()
 
+            if let processingResult = matchAssetHubSwap(
+                extrinsicIndex: extrinsicIndex,
+                extrinsic: extrinsic,
+                eventRecords: eventRecords,
+                codingFactory: coderFactory
+            ) {
+                return processingResult
+            }
+
+            if let processingResult = matchHydraSwap(
+                extrinsicIndex: extrinsicIndex,
+                extrinsic: extrinsic,
+                eventRecords: eventRecords,
+                codingFactory: coderFactory
+            ) {
+                return processingResult
+            }
+
             if let processingResult = matchBalancesTransfer(
                 extrinsicIndex: extrinsicIndex,
                 extrinsic: extrinsic,
@@ -65,24 +83,6 @@ extension ExtrinsicProcessor: ExtrinsicProcessing {
             }
 
             if let processingResult = matchEquilibriumTransfer(
-                extrinsicIndex: extrinsicIndex,
-                extrinsic: extrinsic,
-                eventRecords: eventRecords,
-                codingFactory: coderFactory
-            ) {
-                return processingResult
-            }
-
-            if let processingResult = matchAssetHubSwap(
-                extrinsicIndex: extrinsicIndex,
-                extrinsic: extrinsic,
-                eventRecords: eventRecords,
-                codingFactory: coderFactory
-            ) {
-                return processingResult
-            }
-
-            if let processingResult = matchHydraSwap(
                 extrinsicIndex: extrinsicIndex,
                 extrinsic: extrinsic,
                 eventRecords: eventRecords,

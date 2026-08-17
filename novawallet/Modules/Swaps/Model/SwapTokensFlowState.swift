@@ -17,6 +17,7 @@ final class SwapTokensFlowState {
     let priceStore: AssetExchangePriceStoring
     let assetExchangeParams: AssetExchangeGraphProvidingParams
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
+    let commissionPolicy: AssetExchangeCommissionPolicyProtocol
 
     private var assetExchangeService: AssetsExchangeServiceProtocol?
     private var delayedCallExecProvider: WalletDelayedExecutionProviding?
@@ -33,6 +34,10 @@ final class SwapTokensFlowState {
             chainRegistry: assetExchangeParams.chainRegistry,
             storageFacade: assetExchangeParams.substrateStorageFacade,
             operationManager: OperationManager(operationQueue: assetExchangeParams.operationQueue),
+            logger: assetExchangeParams.logger
+        )
+
+        commissionPolicy = AssetExchangeCommissionPolicyFactory.createHydrationPolicy(
             logger: assetExchangeParams.logger
         )
     }
@@ -104,6 +109,7 @@ extension SwapTokensFlowState: SwapTokensFlowStateProtocol {
             feeSupportProvider: feeSupportProvider,
             exchangesStateMediator: exchangesStateMediator,
             pathCostEstimator: pathCostEstimator,
+            commissionPolicy: commissionPolicy,
             operationQueue: assetExchangeParams.operationQueue,
             logger: Logger.shared
         )

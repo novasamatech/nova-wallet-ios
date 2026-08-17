@@ -411,6 +411,7 @@
 "staking.set.validators.message" = "I validatori non sono selezionati";
 "staking.max.nominators.reached.message" = "Il numero massimo di nominati è stato raggiunto. Riprova più tardi";
 "staking.custom.blocked.warning" = "Questo validatore al momento non accetta nomineazioni. Riprova nella prossima era.";
+"staking.custom.locked.validator.message" = "This validator is operated by Nova and is always part of your nomination.";
 "staking.alert.start.next.era.message" = "Attendere l'inizio della prossima era.";
 "staking.custom.proceed.button.disabled.title" = "Seleziona validatori (max %li)";
 "staking.custom.proceed.button.enabled.title" = "Mostra selezionati: %li (max %li)";
@@ -1359,7 +1360,7 @@
 "polkadot.staking.promotion.message" = "Hai ricevuto i tuoi DOT dai crowdloan? Inizia a fare staking dei tuoi DOT oggi per ottenere il massimo delle ricompense possibili!";
 "swaps.violating.consumers.message" = "Dovresti mantenere almeno %@ dopo aver pagato una commissione di rete di %@, in quanto detieni token non sufficienti";
 "common.receive.not.sufficient.native.asset.error" = "Devi mantenere almeno %@ per ricevere il token %@";
-"swaps.rate.description" = "Tasso di cambio tra due diverse criptovalute. Rappresenta quanto di una criptovaluta puoi ottenere in cambio di una certa quantità di un'altra criptovaluta.";
+"swaps.rate.description" = "Il miglior tasso trovato tra le fonti di liquidità disponibili.";
 "swaps.setup.price.difference.description" = "La differenza di prezzo si riferisce alla differenza di prezzo tra due diversi asset. Quando si effettua uno scambio in criptovaluta, la differenza di prezzo è di solito la differenza tra il prezzo dell'asset che stai scambiando e il prezzo dell'asset con cui stai scambiando.";
 "swaps.setup.slippage.description" = "Il cambio di scivolamento è un evento comune nel trading decentralizzato in cui il prezzo finale di una transazione di scambio potrebbe differire leggermente dal prezzo atteso, a causa delle mutevoli condizioni di mercato.";
 "swaps.network.fee.description" = "Una tariffa di rete addebitata dal blockchain per elaborare e convalidare qualsiasi transazione. Può variare a seconda delle condizioni di rete o della velocità delle transazioni.";
@@ -1755,7 +1756,7 @@
 "sec.time.units" = "sec";
 "swaps.execution.dont.close.app" = "Non chiudere l'app!";
 "swaps.details.exec.time" = "Tempo di esecuzione";
-"swaps.details.total.fee" = "Commissione totale";
+"swaps.details.total.fee" = "Commissioni di rete";
 "swaps.label.transfer" = "Trasferimento";
 "swaps.label.swap" = "Scambio";
 "swap.route.details.subtitle" = "Il percorso che il tuo token seguirà attraverso diverse reti per ottenere il token desiderato.";
@@ -2035,3 +2036,16 @@
 "create.watch.only.missing.any.address" = "Inserisci almeno un indirizzo...";
 "asset.list.watch.only.balance" = "Saldo solo visualizzazione";
 "create.watch.only.subtitle" = "Tieni traccia dell’attività del portafoglio senza una chiave privata.\nNon potrai eseguire alcuna transazione.";
+"common.go.to.staking" = "Vai allo staking";
+"dapp.staking.banner.message" = "Vuoi fare staking? Nova Wallet offre lo staking integrato.";
+"dapp.staking.notice.continue" = "Continua al sito";
+"dapp.staking.notice.message" = "I siti di staking di terze parti spesso diventano obsoleti. Ti consigliamo di utilizzare le funzionalità di staking integrate di Nova Wallet.";
+"dapp.staking.notice.title" = "Avviso";
+"swaps.commission.disclosure" = "Include la commissione Nova dello %@.";
+"swaps.rate.includes.commission.description" = "Il miglior tasso trovato, inclusa una commissione Nova Wallet dello %@.";
+"common.terms.of.service" = "Termini di servizio";
+"common.privacy.notice" = "Informativa sulla privacy";
+"legal.consent.agreement" = "Accetto i %1$@ e riconosco i %2$@.";
+"legal.consent.title" = "Termini aggiornati";
+"legal.consent.subtitle" = "Abbiamo aggiornato i nostri Termini di servizio e l'Informativa sulla privacy. Esamina e accetta i documenti aggiornati per continuare a utilizzare Nova Wallet.";
+"legal.consent.accept" = "Accetta e continua";

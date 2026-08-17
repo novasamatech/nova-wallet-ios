@@ -15,6 +15,7 @@ final class StakingUnbondSetupInteractor: RuntimeConstantFetching, AccountFetchi
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let stakingDurationOperationFactory: StakingDurationOperationFactoryProtocol
+    let unstakingDurationFactory: UnstakingDurationOperationMaking
     let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
     let accountRepositoryFactory: AccountRepositoryFactoryProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
@@ -37,6 +38,7 @@ final class StakingUnbondSetupInteractor: RuntimeConstantFetching, AccountFetchi
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         stakingDurationOperationFactory: StakingDurationOperationFactoryProtocol,
+        unstakingDurationFactory: UnstakingDurationOperationMaking,
         extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
         accountRepositoryFactory: AccountRepositoryFactoryProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
@@ -50,11 +52,27 @@ final class StakingUnbondSetupInteractor: RuntimeConstantFetching, AccountFetchi
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.stakingDurationOperationFactory = stakingDurationOperationFactory
+        self.unstakingDurationFactory = unstakingDurationFactory
         self.extrinsicServiceFactory = extrinsicServiceFactory
         self.accountRepositoryFactory = accountRepositoryFactory
         self.feeProxy = feeProxy
         self.operationQueue = operationQueue
         self.currencyManager = currencyManager
+    }
+
+    private func provideUnstakingVariant(for stash: AccountAddress) {
+        let wrapper = unstakingDurationFactory.createStashDurationVariantWrapper(
+            for: { try stash.toAccountId() },
+            chainId: chainAsset.chain.chainId
+        )
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            self?.presenter.didReceiveUnstakingVariant(result: result)
+        }
     }
 
     func handleControllerMetaAccount(response: MetaChainAccountResponse) {
@@ -136,6 +154,10 @@ extension StakingUnbondSetupInteractor: StakingLocalStorageSubscriber, StakingLo
             let maybeControllerId = try maybeStashItem.map { try $0.controller.toAccountId() }
 
             presenter.didReceiveStashItem(result: result)
+
+            if let stashItem = maybeStashItem {
+                provideUnstakingVariant(for: stashItem.stash)
+            }
 
             guard let controllerId = maybeControllerId else {
                 presenter.didReceiveStakingLedger(result: .success(nil))

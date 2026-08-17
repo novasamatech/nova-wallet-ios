@@ -31,6 +31,18 @@ final class SwapExecutionPresenter {
         priceStore.fetchPrice(for: model.chainAssetOut.chainAssetId)
     }
 
+    var chargesCommission: Bool {
+        quote.commission != nil
+    }
+
+    var netAmountOut: Balance {
+        quote.commissionNetFlow().netFinalAmountOut
+    }
+
+    var grossAmountOut: Balance {
+        quote.route.amountOut
+    }
+
     var feeAssetPrice: PriceData? {
         priceStore.fetchPrice(for: model.feeAsset.chainAssetId)
     }
@@ -106,7 +118,7 @@ final class SwapExecutionPresenter {
     private func provideAssetOutViewModel() {
         let viewModel = detailsViewModelFactory.assetViewModel(
             chainAsset: chainAssetOut,
-            amount: quote.route.amountOut,
+            amount: netAmountOut,
             priceData: receiveAssetPrice,
             locale: selectedLocale
         )
@@ -119,7 +131,7 @@ final class SwapExecutionPresenter {
             assetDisplayInfoIn: chainAssetIn.assetDisplayInfo,
             assetDisplayInfoOut: chainAssetOut.assetDisplayInfo,
             amountIn: model.quote.route.amountIn,
-            amountOut: model.quote.route.amountOut
+            amountOut: netAmountOut
         )
 
         let viewModel = detailsViewModelFactory.rateViewModel(from: params, locale: selectedLocale)
@@ -138,7 +150,7 @@ final class SwapExecutionPresenter {
             assetDisplayInfoIn: chainAssetIn.assetDisplayInfo,
             assetDisplayInfoOut: chainAssetOut.assetDisplayInfo,
             amountIn: quote.route.amountIn,
-            amountOut: quote.route.amountOut
+            amountOut: grossAmountOut
         )
 
         if let viewModel = detailsViewModelFactory.priceDifferenceViewModel(
@@ -266,7 +278,10 @@ extension SwapExecutionPresenter: SwapExecutionPresenterProtocol {
     }
 
     func showRateInfo() {
-        wireframe.showRateInfo(from: view)
+        wireframe.showRateInfo(
+            from: view,
+            commissionRate: chargesCommission ? AssetExchangeCommissionConstants.rate : nil
+        )
     }
 
     func showRouteDetails() {

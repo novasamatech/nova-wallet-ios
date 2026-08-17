@@ -12,6 +12,31 @@ protocol Recommendable {
     var blocked: Bool { get }
 }
 
+extension Recommendable {
+    var isLockEligible: Bool { !blocked && !oversubscribed }
+}
+
+extension Array where Element: Recommendable {
+    func reservingSlots(for reserved: [Element], limit: Int) -> [Element] {
+        var seen = Set<AccountAddress>()
+        let cappedReserved = reserved
+            .filter { seen.insert($0.address).inserted }
+            .prefix(limit)
+
+        let reservedAddresses = Set(cappedReserved.map(\.address))
+        let communityLimit = limit - cappedReserved.count
+
+        guard communityLimit > 0 else {
+            return Array(cappedReserved)
+        }
+
+        let community = filter { !reservedAddresses.contains($0.address) }
+            .prefix(communityLimit)
+
+        return Array(community) + Array(cappedReserved)
+    }
+}
+
 protocol RecommendationsComposing {
     associatedtype RecommendableType: Recommendable
 
@@ -98,22 +123,9 @@ extension RecommendationsComposer: RecommendationsComposing {
             recommendationList = composeWithoutIdentities(from: recommendables)
         }
 
-        let allIncludedAddresses = Set(recommendationList.map(\.address))
-        let validPreferences = preferrences
-            .filter { !allIncludedAddresses.contains($0.address) && !$0.oversubscribed && !$0.blocked }
-
-        let finalSize = recommendationList.count + validPreferences.count
-
-        let recommendationsWithPrefs: [RecommendableType]
-
-        if finalSize > resultSize {
-            let dropSize = finalSize - resultSize
-            recommendationsWithPrefs = recommendationList.dropLast(dropSize) + validPreferences
-        } else {
-            recommendationsWithPrefs = recommendationList + validPreferences
-        }
-
-        // make sure we don't overload the result with prefs
-        return Array(recommendationsWithPrefs.prefix(resultSize))
+        return recommendationList.reservingSlots(
+            for: preferrences.filter { $0.isLockEligible },
+            limit: resultSize
+        )
     }
 }

@@ -411,6 +411,7 @@
 "staking.set.validators.message" = "Các Validators chưa được chọn";
 "staking.max.nominators.reached.message" = "Đã đạt tối đa số lượng người đề cử. Thử lại sau";
 "staking.custom.blocked.warning" = "Người xác thực này hiện không chấp nhận đề cử. Vui lòng thử lại vào kỷ nguyên tiếp theo.";
+"staking.custom.locked.validator.message" = "This validator is operated by Nova and is always part of your nomination.";
 "staking.alert.start.next.era.message" = "Vui lòng đợi bắt đầu kỷ nguyên tiếp theo.";
 "staking.custom.proceed.button.disabled.title" = "Chọn trình xác thực (tối đa %li)";
 "staking.custom.proceed.button.enabled.title" = "Hiển thị đã chọn: %li (tối đa %li)";
@@ -1359,7 +1360,7 @@
 "polkadot.staking.promotion.message" = "Bạn đã nhận lại DOT từ crowdloans? Bắt đầu Stake DOT ngay hôm nay để nhận phần thưởng tối đa!";
 "swaps.violating.consumers.message" = "Bạn cần giữ ít nhất %@ sau khi trả phí mạng %@ vì bạn giữ các token không đủ";
 "common.receive.not.sufficient.native.asset.error" = "Bạn cần giữ ít nhất %@ để nhận được token %@";
-"swaps.rate.description" = "Tỷ giá trao đổi giữa hai loại tiền điện tử khác nhau. Nó thể hiện số lượng của một loại tiền điện tử mà bạn có thể nhận được để đổi lấy một số lượng nhất định của loại tiền điện tử khác.";
+"swaps.rate.description" = "Tỷ giá tốt nhất được tìm thấy từ các nguồn thanh khoản hiện có.";
 "swaps.setup.price.difference.description" = "Sự khác biệt về giá đề cập đến sự chênh lệch giá giữa hai tài sản khác nhau. Khi thực hiện hoán đổi trong tiền điện tử, sự khác biệt về giá thường là sự chênh lệch giữa giá của tài sản mà bạn đang hoán đổi và giá của tài sản mà bạn đang hoán đổi.";
 "swaps.setup.slippage.description" = "Trượt giá hoán đổi là một hiện tượng phổ biến trong giao dịch phi tập trung nơi giá cuối cùng của một giao dịch hoán đổi có thể hơi khác so với giá dự kiến do điều kiện thị trường thay đổi.";
 "swaps.network.fee.description" = "Một khoản phí mạng được tính bởi blockchain để xử lý và xác nhận bất kỳ giao dịch nào. Có thể thay đổi tùy thuộc vào điều kiện mạng hoặc tốc độ giao dịch.";
@@ -1755,7 +1756,7 @@
 "sec.time.units" = "giây";
 "swaps.execution.dont.close.app" = "Không đóng ứng dụng!";
 "swaps.details.exec.time" = "Thời gian thực hiện";
-"swaps.details.total.fee" = "Tổng phí";
+"swaps.details.total.fee" = "Phí mạng";
 "swaps.label.transfer" = "Chuyển";
 "swaps.label.swap" = "Hoán đổi";
 "swap.route.details.subtitle" = "Cách mà token của bạn sẽ đi qua các mạng lưới khác nhau để có được token mong muốn.";
@@ -2035,3 +2036,16 @@
 "create.watch.only.missing.any.address" = "Nhập ít nhất một địa chỉ...";
 "asset.list.watch.only.balance" = "Số dư chỉ theo dõi";
 "create.watch.only.subtitle" = "Theo dõi hoạt động ví mà không cần khóa riêng.\nBạn sẽ không thể thực hiện bất kỳ giao dịch nào.";
+"common.go.to.staking" = "Đi đến Staking";
+"dapp.staking.banner.message" = "Bạn muốn Stake? Nova Wallet có tính năng Staking tích hợp sẵn.";
+"dapp.staking.notice.continue" = "Tiếp tục đến trang web";
+"dapp.staking.notice.message" = "Các trang web Staking của bên thứ ba thường trở nên lỗi thời. Chúng tôi khuyên bạn nên sử dụng các tính năng Staking tích hợp sẵn của Nova Wallet.";
+"dapp.staking.notice.title" = "Thông báo";
+"swaps.commission.disclosure" = "Đã bao gồm phí Nova %@.";
+"swaps.rate.includes.commission.description" = "Tỷ giá tốt nhất được tìm thấy, đã bao gồm phí Nova Wallet %@.";
+"common.terms.of.service" = "Điều khoản dịch vụ";
+"common.privacy.notice" = "Thông báo về quyền riêng tư";
+"legal.consent.agreement" = "Tôi đồng ý với %1$@ và xác nhận đã đọc %2$@.";
+"legal.consent.title" = "Điều khoản đã cập nhật";
+"legal.consent.subtitle" = "Chúng tôi đã cập nhật Điều khoản dịch vụ và Thông báo về quyền riêng tư. Vui lòng xem xét và chấp nhận các tài liệu đã cập nhật để tiếp tục sử dụng Nova Wallet.";
+"legal.consent.accept" = "Chấp nhận và tiếp tục";

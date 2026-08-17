@@ -112,6 +112,8 @@ final class SwapSetupPresenter: SwapBasePresenter {
 
         fee = nil
         provideFeeViewModel()
+        provideCommissionDisclosureViewModel()
+        updateReceiveAmountFromQuote()
 
         interactor.calculateFee(for: quote.route, slippage: slippage, feeAsset: feeChainAsset)
     }
@@ -135,16 +137,18 @@ final class SwapSetupPresenter: SwapBasePresenter {
 
         provideIssues()
         provideDetailsViewModel()
+
+        provideCommissionDisclosureViewModel()
     }
 
     override func handleNewQuote(_ quote: AssetExchangeQuote, for quoteArgs: AssetConversion.QuoteArgs) {
         logger.debug("New quote: \(quote)")
 
         if let fee, !quote.hasSamePath(other: fee.route) {
-            // we need to keep fee in sync with quote
-            self.fee = nil
             maxCorrectionCounter.resetCounter()
         }
+        // we need to keep fee in sync with quote
+        fee = nil
 
         switch quoteArgs.direction {
         case .buy:
@@ -157,16 +161,12 @@ final class SwapSetupPresenter: SwapBasePresenter {
             providePayInputPriceViewModel()
             provideReceiveInputPriceViewModel()
         case .sell:
-            receiveAmountInput = receiveChainAsset.map {
-                quote.route.quote.decimal(assetInfo: $0.asset.displayInfo)
-            }
-
-            provideReceiveAmountInputViewModel()
-            provideReceiveInputPriceViewModel()
+            updateReceiveAmountFromQuote()
             providePayInputPriceViewModel()
         }
 
         provideRateViewModel()
+        provideCommissionDisclosureViewModel()
         provideRouteViewModel()
         provideExecutionTimeViewModel()
         provideButtonState()
@@ -179,17 +179,24 @@ final class SwapSetupPresenter: SwapBasePresenter {
         feeChainAssetId _: ChainAssetId?
     ) {
         provideFeeViewModel()
+        provideCommissionDisclosureViewModel()
+        updateReceiveAmountFromQuote()
+        provideRateViewModel()
 
         if case .rate = payAmountInput {
             providePayAmountInputViewModel()
             providePayInputPriceViewModel()
 
+            let correctionDirection = quoteArgs?.direction ?? .sell
+
             /*
              * As fee changes the max amount we might also refresh the quote but make sure
              * no deadlock.
              */
-            if maxCorrectionCounter.incrementCounterIfPossible() {
-                refreshQuote(direction: quoteArgs?.direction ?? .sell, forceUpdate: false)
+            if
+                !isMaxCorrectionConverged(for: correctionDirection),
+                maxCorrectionCounter.incrementCounterIfPossible() {
+                refreshQuote(direction: correctionDirection, forceUpdate: false)
             } else {
                 maxCorrectionCounter.resetCounter()
             }
@@ -260,6 +267,19 @@ extension SwapSetupPresenter {
 
         let maxAmount = getMaxModel().calculate()
         return input.absoluteValue(from: maxAmount)
+    }
+
+    private func isMaxCorrectionConverged(for direction: AssetConversion.Direction) -> Bool {
+        guard
+            direction == .sell,
+            let payChainAsset,
+            let payInPlank = getPayAmount(for: payAmountInput)?.toSubstrateAmount(
+                precision: Int16(payChainAsset.assetDisplayInfo.assetPrecision)
+            ) else {
+            return false
+        }
+
+        return payInPlank == quoteArgs?.amount
     }
 
     func getIssueParams() -> SwapIssueCheckParams {
@@ -355,6 +375,7 @@ extension SwapSetupPresenter {
         guard let receiveChainAsset = receiveChainAsset else {
             return
         }
+
         let amountInputViewModel = viewModelFactory.amountInputViewModel(
             chainAsset: receiveChainAsset,
             amount: receiveAmountInput,
@@ -383,7 +404,7 @@ extension SwapSetupPresenter {
                 assetDisplayInfoIn: payAssetDisplayInfo,
                 assetDisplayInfoOut: assetDisplayInfo,
                 amountIn: quote.route.amountIn,
-                amountOut: quote.route.amountOut
+                amountOut: grossAmountOut
             )
 
             differenceViewModel = viewModelFactory.priceDifferenceViewModel(
@@ -407,6 +428,20 @@ extension SwapSetupPresenter {
         providePayAssetViewModel()
         providePayInputPriceViewModel()
         providePayAmountInputViewModel()
+    }
+
+    private func updateReceiveAmountFromQuote() {
+        guard
+            quote != nil,
+            let receiveChainAsset,
+            quoteArgs?.direction == .sell else {
+            return
+        }
+
+        receiveAmountInput = netAmountOut.decimal(assetInfo: receiveChainAsset.asset.displayInfo)
+
+        provideReceiveAmountInputViewModel()
+        provideReceiveInputPriceViewModel()
     }
 
     private func provideReceiveAssetViews() {
@@ -449,7 +484,7 @@ extension SwapSetupPresenter {
                 assetDisplayInfoIn: assetDisplayInfoIn,
                 assetDisplayInfoOut: assetDisplayInfoOut,
                 amountIn: quote.route.amountIn,
-                amountOut: quote.route.amountOut
+                amountOut: netAmountOut
             ),
             locale: selectedLocale
         )
@@ -458,7 +493,7 @@ extension SwapSetupPresenter {
     }
 
     private func provideRouteViewModel() {
-        guard let quote, fee != nil else {
+        guard let quote else {
             view?.didReceiveRoute(viewModel: .loading)
             return
         }
@@ -487,6 +522,17 @@ extension SwapSetupPresenter {
         )
 
         view?.didReceiveNetworkFee(viewModel: .loaded(value: viewModel))
+    }
+
+    private func provideCommissionDisclosureViewModel() {
+        let viewModel = chargesCommission
+            ? viewModelFactory.commissionDisclosureViewModel(
+                rate: AssetExchangeCommissionConstants.rate,
+                locale: selectedLocale
+            )
+            : nil
+
+        view?.didReceiveCommissionDisclosure(viewModel: viewModel)
     }
 
     private func provideExecutionTimeViewModel() {
@@ -535,6 +581,7 @@ extension SwapSetupPresenter {
         }
 
         provideRateViewModel()
+        provideCommissionDisclosureViewModel()
         provideRouteViewModel()
         provideExecutionTimeViewModel()
         provideFeeViewModel()
@@ -601,6 +648,7 @@ extension SwapSetupPresenter {
 
         fee = nil
         provideFeeViewModel()
+        provideCommissionDisclosureViewModel()
 
         estimateFee()
     }
@@ -612,6 +660,7 @@ extension SwapSetupPresenter {
         provideButtonState()
         provideSettingsState()
         provideIssues()
+        provideCommissionDisclosureViewModel()
     }
 
     private func switchFeeChainAssetIfNecessary() {
@@ -665,6 +714,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
 
             self?.feeChainAsset = feeChainAsset
             self?.fee = nil
+            self?.quoteResult = nil
             self?.canPayFeeInPayAsset = false
 
             self?.providePayAssetViews()
@@ -689,6 +739,7 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     func selectReceiveToken() {
         wireframe.showReceiveTokenSelection(from: view, chainAsset: payChainAsset) { [weak self] chainAsset in
             self?.receiveChainAsset = chainAsset
+            self?.quoteResult = nil
             self?.provideReceiveAssetViews()
             self?.provideButtonState()
             self?.provideIssues()
@@ -791,7 +842,10 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     }
 
     func showRateInfo() {
-        wireframe.showRateInfo(from: view)
+        wireframe.showRateInfo(
+            from: view,
+            commissionRate: chargesCommission ? AssetExchangeCommissionConstants.rate : nil
+        )
     }
 
     func showRouteDetails() {

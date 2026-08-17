@@ -17,7 +17,8 @@ protocol RelaychainConsensusStateDepending {
 
     func createStakingDurationOperationFactory(
         for chain: ChainModel,
-        timeModel: StakingTimeModel
+        timeModel: StakingTimeModel,
+        operationQueue: OperationQueue
     ) -> StakingDurationOperationFactoryProtocol
 }
 
@@ -39,7 +40,12 @@ final class RelaychainConsensusStateDependingFactory: RelaychainConsensusStateDe
         )
 
         return NetworkStakingInfoOperationFactory(
+            chainId: chain.chainId,
             durationFactory: durationFactory,
+            unstakingDurationFactory: UnstakingDurationOperationFactory(
+                chainRegistry: chainRegistry,
+                operationQueue: operationQueue
+            ),
             votersOperationFactory: votersInfoOperationFactory
         )
     }
@@ -95,13 +101,15 @@ final class RelaychainConsensusStateDependingFactory: RelaychainConsensusStateDe
 
     func createStakingDurationOperationFactory(
         for chain: ChainModel,
-        timeModel: StakingTimeModel
+        timeModel: StakingTimeModel,
+        operationQueue: OperationQueue
     ) -> StakingDurationOperationFactoryProtocol {
         switch timeModel {
         case .babe:
             return BabeStakingDurationFactory(
                 chainId: chain.chainId,
-                chainRegistry: chainRegistry
+                chainRegistry: chainRegistry,
+                operationQueue: operationQueue
             )
         case let .auraGeneral(timelineChain, blockTimeService):
             return AuraStakingDurationFactory(
@@ -109,7 +117,8 @@ final class RelaychainConsensusStateDependingFactory: RelaychainConsensusStateDe
                 chainRegistry: chainRegistry,
                 blockTimeService: blockTimeService,
                 blockTimeOperationFactory: BlockTimeOperationFactory(chain: timelineChain),
-                sessionPeriodOperationFactory: PathStakingSessionPeriodOperationFactory(path: .electionsSessionPeriod)
+                sessionPeriodOperationFactory: PathStakingSessionPeriodOperationFactory(path: .electionsSessionPeriod),
+                operationQueue: operationQueue
             )
         case let .azero(timelineChain, blockTimeService):
             return AuraStakingDurationFactory(
@@ -117,7 +126,8 @@ final class RelaychainConsensusStateDependingFactory: RelaychainConsensusStateDe
                 chainRegistry: chainRegistry,
                 blockTimeService: blockTimeService,
                 blockTimeOperationFactory: BlockTimeOperationFactory(chain: timelineChain ?? chain),
-                sessionPeriodOperationFactory: PathStakingSessionPeriodOperationFactory(path: .azeroSessionPeriod)
+                sessionPeriodOperationFactory: PathStakingSessionPeriodOperationFactory(path: .azeroSessionPeriod),
+                operationQueue: operationQueue
             )
         }
     }

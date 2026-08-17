@@ -51,6 +51,17 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         detailsView.networkFeeCell
     }
 
+    private var commissionDisclosureView: UILabel?
+
+    func setCommissionDisclosure(_ text: String?) {
+        applyCaption(
+            on: &commissionDisclosureView,
+            after: detailsView,
+            text: text,
+            spacing: 8
+        )
+    }
+
     var payIssueLabel: UILabel?
 
     var receiveIssueLabel: UILabel?

@@ -411,6 +411,7 @@
 "staking.set.validators.message" = "Валидаторы не выбраны";
 "staking.max.nominators.reached.message" = "Достигнуто максимальное количество номинаторов. Пожалуйста, попробуйте позже";
 "staking.custom.blocked.warning" = "Этот валидатор не принимает номинации в данный момент. Пожалуйста, попробуйте снова в следующую эру.";
+"staking.custom.locked.validator.message" = "This validator is operated by Nova and is always part of your nomination.";
 "staking.alert.start.next.era.message" = "Пожалуйста, дождитесь начала следующей эры.";
 "staking.custom.proceed.button.disabled.title" = "Выбрать валидаторов (макс. %li)";
 "staking.custom.proceed.button.enabled.title" = "Показать выбранных: %li (макс. %li)";
@@ -1359,7 +1360,7 @@
 "polkadot.staking.promotion.message" = "Получили свои DOT из краудлоунов? Начните стейкать DOT уже сегодня, чтобы получить максимальные вознаграждения!";
 "swaps.violating.consumers.message" = "Вы должны сохранить как минимум %@ после оплаты сетевой комиссии %@, поскольку вы храните не самодостаточные токены";
 "common.receive.not.sufficient.native.asset.error" = "Вы должны сохранить как минимум %@, чтобы получить %@ токены";
-"swaps.rate.description" = "Курс обмена двух разных криптовалют. Он показывает, сколько криптовалюты вы можете получить в обмен на определенное количество другой криптовалюты.";
+"swaps.rate.description" = "Лучший найденный курс среди доступных источников ликвидности.";
 "swaps.setup.price.difference.description" = "Разница в цене представляет собой разницу между двумя различными активами. При обмене криптовалюты под разницей в цене обычно имеется ввиду разница между ценой актива, которую вы получаете и ценой актива, которую вы платите.";
 "swaps.setup.slippage.description" = "Проскальзывание - распространенное явление в децентрализованной торговле, когда конечная цена сделки по обмену может незначительно отличаться от ожидаемой в связи с изменением рыночных условий.";
 "swaps.network.fee.description" = "Комиссия сети, взимается блокчейном за обработку и проверку транзакций. Может варьироваться в зависимости от условий сети или скорости транзакции.";
@@ -1755,7 +1756,7 @@
 "sec.time.units" = "сек";
 "swaps.execution.dont.close.app" = "Не закрывайте приложение!";
 "swaps.details.exec.time" = "Время выполнения";
-"swaps.details.total.fee" = "Общая комиссия";
+"swaps.details.total.fee" = "Сетевые комиссии";
 "swaps.label.transfer" = "Перевод";
 "swaps.label.swap" = "Обмен";
 "swap.route.details.subtitle" = "Путь, по которому ваш токен пройдет через разные сети, чтобы получить желаемый токен.";
@@ -2035,3 +2036,16 @@
 "create.watch.only.missing.any.address" = "Введите хотя бы один адрес...";
 "asset.list.watch.only.balance" = "Только просмотр баланса";
 "create.watch.only.subtitle" = "Отслеживание активности кошелька без приватного ключа.\nВы не сможете выполнить никакие транзакции.";
+"common.go.to.staking" = "Перейти к Staking";
+"dapp.staking.banner.message" = "Хотите застейкать? В Nova Wallet есть встроенный Staking.";
+"dapp.staking.notice.continue" = "Перейти на сайт";
+"dapp.staking.notice.message" = "Сторонние сайты для Staking часто устаревают. Мы рекомендуем использовать встроенные функции Staking в Nova Wallet.";
+"dapp.staking.notice.title" = "Уведомление";
+"swaps.commission.disclosure" = "Включает комиссию Nova в размере %@.";
+"swaps.rate.includes.commission.description" = "Лучший найденный курс, включая комиссию Nova Wallet в размере %@.";
+"common.terms.of.service" = "Условия использования";
+"common.privacy.notice" = "Уведомление о конфиденциальности";
+"legal.consent.agreement" = "Я принимаю %1$@ и подтверждаю ознакомление с %2$@.";
+"legal.consent.title" = "Обновлённые условия";
+"legal.consent.subtitle" = "Мы обновили Условия использования и Уведомление о конфиденциальности. Ознакомьтесь с обновлёнными документами и примите их, чтобы продолжить пользоваться Nova Wallet.";
+"legal.consent.accept" = "Принять и продолжить";

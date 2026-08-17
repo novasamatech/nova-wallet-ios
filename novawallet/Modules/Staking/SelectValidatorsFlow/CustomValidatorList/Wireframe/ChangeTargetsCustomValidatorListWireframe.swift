@@ -1,10 +1,14 @@
 final class ChangeTargetsCustomValidatorListWireframe: CustomValidatorListWireframe {
     let state: ExistingBonding
 
-    init(state: ExistingBonding, stakingState: RelaychainStakingSharedStateProtocol) {
+    init(
+        state: ExistingBonding,
+        stakingState: RelaychainStakingSharedStateProtocol,
+        lockedAddresses: Set<AccountAddress>
+    ) {
         self.state = state
 
-        super.init(stakingState: stakingState)
+        super.init(stakingState: stakingState, lockedAddresses: lockedAddresses)
     }
 
     override func proceed(
@@ -18,7 +22,8 @@ final class ChangeTargetsCustomValidatorListWireframe: CustomValidatorListWirefr
             validatorList: validatorList,
             maxTargets: maxTargets,
             delegate: delegate,
-            state: state
+            state: state,
+            lockedAddresses: lockedAddresses
         ) else { return }
 
         view?.controller.navigationController?.pushViewController(

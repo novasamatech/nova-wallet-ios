@@ -9,6 +9,12 @@ protocol NPoolsUnstakeOperationFactoryProtocol {
 }
 
 final class NPoolsUnstakeOperationFactory {
+    let unstakingDurationFactory: UnstakingDurationOperationMaking
+
+    init(unstakingDurationFactory: UnstakingDurationOperationMaking) {
+        self.unstakingDurationFactory = unstakingDurationFactory
+    }
+
     private func createKnownPoolMemberChunksLimit(for chainId: ChainModel.Id) -> BaseOperation<UInt32?> {
         ClosureOperation<UInt32?> {
             switch chainId {
@@ -41,27 +47,19 @@ extension NPoolsUnstakeOperationFactory: NPoolsUnstakeOperationFactoryProtocol {
             }
         }
 
-        let unlockingOperation: PrimitiveConstantOperation<UInt32> = PrimitiveConstantOperation(
-            path: Staking.lockUpPeriodPath
-        )
-
-        unlockingOperation.configurationBlock = {
-            do {
-                unlockingOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-            } catch {
-                unlockingOperation.result = .failure(error)
-            }
-        }
-
         maxUnlockingsOperation.addDependency(codingFactoryOperation)
-        unlockingOperation.addDependency(codingFactoryOperation)
 
         let knownPoolMemberChunksOperation = createKnownPoolMemberChunksLimit(for: chain.chainId)
+
+        let unstakingDurationWrapper = unstakingDurationFactory.createUnstakingDurationWrapper(
+            for: chain.chainId
+        )
 
         let mapOperation = ClosureOperation<NominationPools.UnstakeLimits> {
             let maxUnlockChunks = try maxUnlockingsOperation.extractNoCancellableResultData()
             let maxMemberChunks = try knownPoolMemberChunksOperation.extractNoCancellableResultData()
-            let unlockingDuration = try unlockingOperation.extractNoCancellableResultData()
+            let unlockingDuration = try unstakingDurationWrapper.targetOperation
+                .extractNoCancellableResultData().nominator
 
             return .init(
                 globalMaxUnlockings: maxUnlockChunks,
@@ -73,9 +71,8 @@ extension NPoolsUnstakeOperationFactory: NPoolsUnstakeOperationFactoryProtocol {
         let dependencies = [
             codingFactoryOperation,
             maxUnlockingsOperation,
-            unlockingOperation,
             knownPoolMemberChunksOperation
-        ]
+        ] + unstakingDurationWrapper.allOperations
 
         dependencies.forEach { operation in
             mapOperation.addDependency(operation)

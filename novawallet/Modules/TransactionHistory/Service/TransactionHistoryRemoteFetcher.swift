@@ -57,9 +57,11 @@ final class TransactionHistoryRemoteFetcher: AnyCancellableCleaning {
                 do {
                     let result = try wrapper.targetOperation.extractNoCancellableResultData()
 
-                    let changes = result.historyItems
-                        .compactMap { $0.createTransaction(chainAsset: strongSelf.chainAsset) }
-                        .map { DataProviderChange.insert(newItem: $0) }
+                    let transactions = result.historyItems.compactMap {
+                        $0.createTransaction(chainAsset: strongSelf.chainAsset)
+                    }
+
+                    let changes = transactions.map { DataProviderChange.insert(newItem: $0) }
 
                     strongSelf.pagination = .init(count: strongSelf.pageSize, context: result.context)
 

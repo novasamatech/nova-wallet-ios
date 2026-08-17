@@ -411,6 +411,7 @@
 "staking.set.validators.message" = "验证人未被选择";
 "staking.max.nominators.reached.message" = "已达到提名人最大数量。请稍后再试";
 "staking.custom.blocked.warning" = "这个验证者目前不接受提名。请在下一个纪元再试。";
+"staking.custom.locked.validator.message" = "This validator is operated by Nova and is always part of your nomination.";
 "staking.alert.start.next.era.message" = "请等待下一个时代的开始。";
 "staking.custom.proceed.button.disabled.title" = "选择验证器（最多 %li）";
 "staking.custom.proceed.button.enabled.title" = "显示所选：%li（最多 %li）";
@@ -1359,7 +1360,7 @@
 "polkadot.staking.promotion.message" = "从众贷中收回你的 DOT 了吗？今天开始质押你的 DOT，以获得最大可能的奖励！";
 "swaps.violating.consumers.message" = "您在支付%@网络费后至少应保留%@，因为您持有的代币不足";
 "common.receive.not.sufficient.native.asset.error" = "您必须至少保留%@，以接收%@代币";
-"swaps.rate.description" = "两种不同加密货币之间的汇率。它表示您可以用一定数量的另一种加密货币交换获得多少加密货币。";
+"swaps.rate.description" = "从可用流动性来源中找到的最佳汇率。";
 "swaps.setup.price.difference.description" = "价格差异指的是两种不同资产之间的价格差。在加密货币交换中，价格差异通常是您要交换的资产的价格与您交换的资产的价格之间的差异。";
 "swaps.setup.slippage.description" = "在去中心化交易中，交换滑点是一种常见现象，由于市场条件的变化，交易的最终价格可能会与预期价格略有不同。";
 "swaps.network.fee.description" = "区块链收取的网络费用，用于处理和验证任何交易。可能会根据网络状况或交易速度而变化。";
@@ -1755,7 +1756,7 @@
 "sec.time.units" = "秒";
 "swaps.execution.dont.close.app" = "不要关闭应用程序!";
 "swaps.details.exec.time" = "执行时间";
-"swaps.details.total.fee" = "总费用";
+"swaps.details.total.fee" = "网络费用";
 "swaps.label.transfer" = "转移";
 "swaps.label.swap" = "交换";
 "swap.route.details.subtitle" = "你的代币通过不同网络到达所需代币的路径。";
@@ -2035,3 +2036,16 @@
 "create.watch.only.missing.any.address" = "请输入至少一个地址...";
 "asset.list.watch.only.balance" = "仅观察余额";
 "create.watch.only.subtitle" = "在没有私钥的情况下跟踪钱包活动。\n您将无法执行任何交易。";
+"common.go.to.staking" = "前往质押";
+"dapp.staking.banner.message" = "想要进行质押？Nova Wallet 内置质押功能。";
+"dapp.staking.notice.continue" = "继续访问网站";
+"dapp.staking.notice.message" = "第三方质押网站经常会被弃用。我们建议使用 Nova Wallet 内置的质押功能。";
+"dapp.staking.notice.title" = "注意";
+"swaps.commission.disclosure" = "包含 %@ Nova 手续费。";
+"swaps.rate.includes.commission.description" = "这是找到的最佳汇率，包含 %@ Nova Wallet 手续费。";
+"common.terms.of.service" = "服务条款";
+"common.privacy.notice" = "隐私声明";
+"legal.consent.agreement" = "我同意%1$@，并确认已知悉%2$@。";
+"legal.consent.title" = "更新后的条款";
+"legal.consent.subtitle" = "我们已更新《服务条款》和《隐私声明》。请查看并接受更新后的文件，以继续使用 Nova Wallet。";
+"legal.consent.accept" = "接受并继续";

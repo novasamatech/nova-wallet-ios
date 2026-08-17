@@ -75,6 +75,23 @@ extension RoundedButton {
         imageWithTitleView?.titleColor = R.color.colorButtonTextInactive()!
     }
 
+    func applyPrimaryStyle() {
+        roundedBackgroundView?.shadowOpacity = 0.0
+        roundedBackgroundView?.fillColor = R.color.colorButtonBackgroundPrimary()!
+        roundedBackgroundView?.highlightedFillColor = R.color.colorButtonBackgroundPrimary()!
+        roundedBackgroundView?.strokeColor = .clear
+        roundedBackgroundView?.highlightedStrokeColor = .clear
+        roundedBackgroundView?.cornerRadius = 10.0
+
+        imageWithTitleView?.titleColor = R.color.colorButtonText()!
+        imageWithTitleView?.titleFont = .semiBoldFootnote
+
+        contentInsets = UIEdgeInsets(top: 8.0, left: 12.0, bottom: 8.0, right: 12.0)
+
+        changesContentOpacityWhenHighlighted = true
+        opacityAnimationDuration = 0
+    }
+
     func applyTextStyle() {
         applyIconStyle()
 
