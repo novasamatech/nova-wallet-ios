@@ -3,9 +3,32 @@ import BigInt
 
 enum HydraFeeConversion {
     struct Price: Equatable {
+        static let divisor: BigUInt = 1_000_000_000_000_000_000
+
+        static let one = Price(inner: divisor)
+
         let inner: BigUInt
 
-        static let one = Price(inner: BigRational.fixedU128Divisor)
+        init(inner: BigUInt) {
+            self.inner = inner
+        }
+
+        init?(rational: BigRational) {
+            guard rational.denominator > 0 else {
+                return nil
+            }
+
+            let (quotient, remainder) = (Self.divisor * rational.numerator)
+                .quotientAndRemainder(dividingBy: rational.denominator)
+
+            let rounded = remainder > rational.denominator / 2 ? quotient + 1 : quotient
+
+            guard rounded.bitWidth <= 128 else {
+                return nil
+            }
+
+            inner = rounded
+        }
     }
 
     static func convertFee(_ nativeFee: BigUInt, price: Price) -> BigUInt {

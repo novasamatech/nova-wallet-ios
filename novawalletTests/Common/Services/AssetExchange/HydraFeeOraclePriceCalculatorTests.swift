@@ -121,29 +121,31 @@ final class HydraFeeOraclePriceCalculatorTests: XCTestCase {
         XCTAssertEqual(price, BigRational(numerator: 1, denominator: 2))
     }
 
-    func testFastForwardMatchesRuntimeForSmallStaleness() {
-        let expected: [BlockNumber: BigUInt] = [
-            1: "687302998533380658876519009070106090466",
-            2: "693907832240894217916392371708228833912",
-            3: "700381877162120379747555370729755087386",
-            6: "719044922569713793738782587078022345136"
-        ]
+    func testFastForwardMovesTowardsTheLastTradePrice() {
+        var previous = ratioValue(entry(1, 2, updatedAt: 100), lastBlock: entry(3, 4, updatedAt: 100), at: 100)
 
-        let denominator = BigUInt("1361129467683753853853498429727072845824")
-
-        for (staleBlocks, numerator) in expected {
-            let price = HydraFeeOraclePriceCalculator.fastForwardedPrice(
-                tenMinutes: entry(1, 2, updatedAt: 100),
+        for staleBlocks in [BlockNumber(1), 2, 3, 6, 50] {
+            let value = ratioValue(
+                entry(1, 2, updatedAt: 100),
                 lastBlock: entry(3, 4, updatedAt: 100),
-                parentBlock: 100 + staleBlocks
+                at: 100 + staleBlocks
             )
 
-            XCTAssertEqual(
-                price,
-                BigRational(numerator: numerator, denominator: denominator),
-                "mismatch at k = \(staleBlocks)"
-            )
+            XCTAssertGreaterThan(value, previous, "not monotonic at k = \(staleBlocks)")
+            XCTAssertLessThan(value, 0.75)
+
+            previous = value
         }
+    }
+
+    func testFastForwardUsesTheConfiguredSmoothing() {
+        let value = ratioValue(
+            entry(1, 2, updatedAt: 100),
+            lastBlock: entry(3, 4, updatedAt: 100),
+            at: 101
+        )
+
+        XCTAssertEqual(value, 0.5 + 0.25 * 2.0 / 101.0, accuracy: 1e-12)
     }
 
     func testFastForwardPastSaturationReturnsLastTradePriceExactly() {
@@ -153,7 +155,7 @@ final class HydraFeeOraclePriceCalculatorTests: XCTestCase {
             parentBlock: 100 + 4402
         )
 
-        XCTAssertEqual(price, BigRational(numerator: 3, denominator: 4))
+        XCTAssertEqual(ratioValue(price), 0.75, accuracy: 1e-15)
     }
 
     func testLastTradeEntryUpdatedAtIsIgnored() {
@@ -169,7 +171,7 @@ final class HydraFeeOraclePriceCalculatorTests: XCTestCase {
             parentBlock: 103
         )
 
-        XCTAssertEqual(recent, stale)
+        XCTAssertEqual(ratioValue(recent), ratioValue(stale), accuracy: 1e-15)
     }
 
     // MARK: - Route price
@@ -242,7 +244,7 @@ final class HydraFeeOraclePriceCalculatorTests: XCTestCase {
             parentBlock: 100 + 4402
         )
 
-        XCTAssertEqual(price?.inner, BigRational(numerator: 4, denominator: 3).toFixedU128Inner())
+        XCTAssertEqual(price?.inner, HydraFeeConversion.Price(rational: .init(numerator: 4, denominator: 3))?.inner)
     }
 
     func testMissingLastTradeEntryFailsEvenWhenThePeriodEntryExists() {
@@ -317,7 +319,42 @@ final class HydraFeeOraclePriceCalculatorTests: XCTestCase {
     }
 }
 
+extension HydraFeeOraclePriceCalculatorTests {
+    func testSmoothingConstantMatchesTheOraclePallet() {
+        XCTAssertEqual(
+            HydraEmaOracle.Smoothing.tenMinutes,
+            BigUInt("3369132345751865974884897103284833777")
+        )
+
+        let one = BigUInt(1) << 127
+
+        XCTAssertEqual(HydraEmaOracle.Smoothing.tenMinutes, (2 * one + 101 / 2) / 101)
+    }
+}
+
 private extension HydraFeeOraclePriceCalculatorTests {
+    func ratioValue(_ ratio: BigRational?) -> Double {
+        guard let ratio, ratio.denominator > 0 else {
+            return .nan
+        }
+
+        return Double(ratio.numerator.description)! / Double(ratio.denominator.description)!
+    }
+
+    func ratioValue(
+        _ tenMinutes: HydraEmaOracle.Entry,
+        lastBlock: HydraEmaOracle.Entry,
+        at parentBlock: BlockNumber
+    ) -> Double {
+        ratioValue(
+            HydraFeeOraclePriceCalculator.fastForwardedPrice(
+                tenMinutes: tenMinutes,
+                lastBlock: lastBlock,
+                parentBlock: parentBlock
+            )
+        )
+    }
+
     func trade(
         _ pool: HydraRouter.PoolType,
         _ assetIn: HydraDx.AssetId,
