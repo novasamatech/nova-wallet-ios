@@ -37,8 +37,40 @@ extension BigRational {
     static func fixedU128(value: BigUInt) -> BigRational {
         .init(
             numerator: value,
-            denominator: 1_000_000_000_000_000_000
+            denominator: fixedU128Divisor
         )
+    }
+}
+
+extension BigRational {
+    static let fixedU128Divisor: BigUInt = 1_000_000_000_000_000_000
+
+    func mul(_ other: BigRational) -> BigRational {
+        .init(
+            numerator: numerator * other.numerator,
+            denominator: denominator * other.denominator
+        )
+    }
+
+    var inverted: BigRational {
+        numerator == 0 ? self : .init(numerator: denominator, denominator: numerator)
+    }
+
+    func toFixedU128Inner() -> BigUInt? {
+        guard denominator > 0 else {
+            return nil
+        }
+
+        let (quotient, remainder) = (Self.fixedU128Divisor * numerator)
+            .quotientAndRemainder(dividingBy: denominator)
+
+        let rounded = remainder > denominator / 2 ? quotient + 1 : quotient
+
+        guard rounded.bitWidth <= 128 else {
+            return nil
+        }
+
+        return rounded
     }
 }
 

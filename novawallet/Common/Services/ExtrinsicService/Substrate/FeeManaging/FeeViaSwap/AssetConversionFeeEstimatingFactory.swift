@@ -6,25 +6,12 @@ final class AssetConversionFeeEstimatingFactory {
     let host: ExtrinsicFeeEstimatorHostProtocol
     let feeBufferInPercentage: BigRational
 
-    private var hydraFlowState: HydraFlowState?
-
     init(
         host: ExtrinsicFeeEstimatorHostProtocol,
         feeBufferInPercentage: BigRational = BigRational.percent(of: 0) // no overestimation by default
     ) {
         self.host = host
         self.feeBufferInPercentage = feeBufferInPercentage
-    }
-
-    private func setupHydraFlowState() -> HydraFlowState {
-        if let hydraFlowState {
-            return hydraFlowState
-        }
-
-        let hydraFlowState = AssetConversionFeeSharedStateStore.getOrCreateHydra(for: host)
-        self.hydraFlowState = hydraFlowState
-
-        return hydraFlowState
     }
 }
 
@@ -33,22 +20,21 @@ extension AssetConversionFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFacto
         switch AssetType(rawType: chainAsset.asset.type) {
         case .orml where chainAsset.chain.hasHydrationFees,
              .ormlHydrationEvm where chainAsset.chain.hasHydrationFees:
-            let hydraState = setupHydraFlowState()
-            let hydraQuoteFactory = HydraQuoteFactory(flowState: hydraState)
-
             let quoteFactory = HydraFeeQuoteFactory(
-                chain: chainAsset.chain,
-                realQuoteFactory: hydraQuoteFactory,
-                connection: host.connection,
-                runtimeService: host.runtimeProvider,
-                operationQueue: host.operationQueue
+                priceFactory: HydraFeeOraclePriceFactory(
+                    chain: chainAsset.chain,
+                    connection: host.connection,
+                    runtimeService: host.runtimeProvider,
+                    operationQueue: host.operationQueue,
+                    logger: host.logger
+                )
             )
 
             return ExtrinsicAssetConversionFeeEstimator(
                 chainAsset: chainAsset,
                 operationQueue: host.operationQueue,
                 quoteFactory: quoteFactory,
-                feeBufferInPercentage: feeBufferInPercentage
+                feeBufferInPercentage: .percent(of: 0)
             )
         case .statemine where chainAsset.chain.hasAssetHubFees:
             let assetHubQuoteFactory = AssetHubSwapOperationFactory(
