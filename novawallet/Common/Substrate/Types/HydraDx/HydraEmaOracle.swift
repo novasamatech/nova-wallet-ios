@@ -89,21 +89,5 @@ enum HydraEmaOracle {
 extension HydraEmaOracle {
     enum Smoothing {
         static let tenMinutes: BigUInt = (BigUInt(0x0288_DF0C_AC5B_3F5D) << 64) | BigUInt(0xC83C_D4E9_3028_8DF1)
-
-        static let tenMinutesComplement: BigUInt = HydraFraction.one - tenMinutes
-
-        static func complementPow(staleBlocks: UInt32) -> BigUInt {
-            guard staleBlocks > 1 else {
-                return staleBlocks == 0 ? HydraFraction.one : tenMinutesComplement
-            }
-
-            if
-                (HydraFraction.one / 10) / BigUInt(staleBlocks) > tenMinutes,
-                let value = HydraFraction.powiNearOne(tenMinutesComplement, exponent: staleBlocks) {
-                return value
-            }
-
-            return HydraFraction.saturatingPow(tenMinutesComplement, exponent: staleBlocks)
-        }
     }
 }

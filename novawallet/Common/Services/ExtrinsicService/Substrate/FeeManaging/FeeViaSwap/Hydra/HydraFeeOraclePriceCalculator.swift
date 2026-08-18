@@ -76,27 +76,18 @@ enum HydraFeeOraclePriceCalculator {
         tenMinutes: HydraEmaOracle.Entry,
         lastBlock: HydraEmaOracle.Entry,
         parentBlock: BlockNumber
-    ) -> BigRational {
+    ) -> BigRational? {
         let previous = tenMinutes.price.asBigRational
-        let incoming = lastBlock.price.asBigRational
 
         guard parentBlock > tenMinutes.updatedAt else {
             return previous
         }
 
-        let staleBlocks = parentBlock - tenMinutes.updatedAt
-        let complement = HydraEmaOracle.Smoothing.complementPow(staleBlocks: staleBlocks)
-
-        guard complement > 0 else {
-            return incoming
-        }
-
-        let one = HydraFraction.one
-
-        return BigRational(
-            numerator: previous.numerator * incoming.denominator * complement
-                + incoming.numerator * previous.denominator * (one - complement),
-            denominator: previous.denominator * incoming.denominator * one
+        return HydraEmaPriceMath.iteratedPrice(
+            previous: previous,
+            incoming: lastBlock.price.asBigRational,
+            iterations: parentBlock - tenMinutes.updatedAt,
+            smoothing: HydraEmaOracle.Smoothing.tenMinutes
         )
     }
 
@@ -114,11 +105,13 @@ enum HydraFeeOraclePriceCalculator {
                 return nil
             }
 
-            let price = fastForwardedPrice(
+            guard let price = fastForwardedPrice(
                 tenMinutes: tenMinutes,
                 lastBlock: lastBlock,
                 parentBlock: parentBlock
-            )
+            ) else {
+                return nil
+            }
 
             product = product.mul(leg.isInverted ? price.inverted : price)
         }
