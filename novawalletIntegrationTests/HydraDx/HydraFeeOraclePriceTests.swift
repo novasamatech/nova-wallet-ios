@@ -38,11 +38,7 @@ final class HydraFeeOraclePriceTests: XCTestCase {
     }
 
     func testNonAcceptedAssetRefusesToQuote() throws {
-        let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: SubstrateStorageTestFacade())
-
-        guard let chain = chainRegistry.getChain(for: KnowChainId.hydra) else {
-            throw ChainRegistryError.noChain(KnowChainId.hydra)
-        }
+        let chain = try makeEnvironment().chain
 
         var notAccepted: ChainAssetId?
 
@@ -73,18 +69,12 @@ final class HydraFeeOraclePriceTests: XCTestCase {
     }
 
     func testRuntimeVersionIsStillTheOneWeMirrored() throws {
-        let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: SubstrateStorageTestFacade())
+        let environment = try makeEnvironment()
 
-        guard let runtimeService = chainRegistry.getRuntimeProvider(for: KnowChainId.hydra) else {
-            throw ChainRegistryError.noChain(KnowChainId.hydra)
-        }
-
-        let operationQueue = OperationQueue()
-        let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
-
-        operationQueue.addOperations([codingFactoryOperation], waitUntilFinished: true)
-
-        let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+        let codingFactory = try run(
+            CompoundOperationWrapper(targetOperation: environment.runtimeService.fetchCoderFactoryOperation()),
+            in: environment
+        )
 
         Logger.shared.info("Hydration spec version: \(codingFactory.specVersion)")
 
@@ -104,7 +94,15 @@ final class HydraFeeOraclePriceTests: XCTestCase {
 }
 
 private extension HydraFeeOraclePriceTests {
-    func makeFactory() throws -> (HydraFeeOraclePriceFactory, OperationQueue) {
+    struct Environment {
+        let chainRegistry: ChainRegistryProtocol
+        let chain: ChainModel
+        let connection: ChainConnection
+        let runtimeService: RuntimeProviderProtocol
+        let operationQueue: OperationQueue
+    }
+
+    func makeEnvironment() throws -> Environment {
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
         let chainId = KnowChainId.hydra
@@ -116,49 +114,50 @@ private extension HydraFeeOraclePriceTests {
             throw ChainRegistryError.noChain(chainId)
         }
 
-        let operationQueue = OperationQueue()
-
-        let factory = HydraFeeOraclePriceFactory(
+        return Environment(
+            chainRegistry: chainRegistry,
             chain: chain,
             connection: connection,
             runtimeService: runtimeService,
-            operationQueue: operationQueue,
-            logger: Logger.shared
+            operationQueue: OperationQueue()
         )
+    }
 
-        return (factory, operationQueue)
+    func run<T>(
+        _ wrapper: CompoundOperationWrapper<T>,
+        in environment: Environment
+    ) throws -> T {
+        try withExtendedLifetime(environment) {
+            environment.operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)
+
+            return try wrapper.targetOperation.extractNoCancellableResultData()
+        }
     }
 
     func fetchPrice(for chainAssetId: ChainAssetId) throws -> HydraFeeConversion.Price {
-        let (factory, operationQueue) = try makeFactory()
+        let environment = try makeEnvironment()
 
-        let wrapper = factory.createPriceWrapper(for: chainAssetId)
+        let factory = HydraFeeOraclePriceFactory(
+            chain: environment.chain,
+            connection: environment.connection,
+            runtimeService: environment.runtimeService,
+            operationQueue: environment.operationQueue,
+            logger: Logger.shared
+        )
 
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)
-
-        return try wrapper.targetOperation.extractNoCancellableResultData()
+        return try run(factory.createPriceWrapper(for: chainAssetId), in: environment)
     }
 
     func fetchAcceptedCurrencyPrice(for chainAssetId: ChainAssetId) throws -> BigUInt? {
-        let storageFacade = SubstrateStorageTestFacade()
-        let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
-        let chainId = chainAssetId.chainId
+        let environment = try makeEnvironment()
+        let chain = environment.chain
 
-        guard
-            let chain = chainRegistry.getChain(for: chainId),
-            let connection = chainRegistry.getConnection(for: chainId),
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-            throw ChainRegistryError.noChain(chainId)
-        }
-
-        let operationQueue = OperationQueue()
-        let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
-
-        let requestFactory = StorageRequestFactory.createDefault(with: operationQueue)
+        let codingFactoryOperation = environment.runtimeService.fetchCoderFactoryOperation()
+        let requestFactory = StorageRequestFactory.createDefault(with: environment.operationQueue)
 
         let fetchWrapper: CompoundOperationWrapper<[StorageResponse<StringScaleMapper<BigUInt>>]>
         fetchWrapper = requestFactory.queryItems(
-            engine: connection,
+            engine: environment.connection,
             keyParams: {
                 let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
                 let chainAsset = try chain.chainAssetOrError(for: chainAssetId.assetId)
@@ -176,11 +175,10 @@ private extension HydraFeeOraclePriceTests {
 
         fetchWrapper.addDependency(operations: [codingFactoryOperation])
 
-        let allOperations = [codingFactoryOperation] + fetchWrapper.allOperations
-
-        operationQueue.addOperations(allOperations, waitUntilFinished: true)
-
-        let responses = try fetchWrapper.targetOperation.extractNoCancellableResultData()
+        let responses = try run(
+            fetchWrapper.insertingHead(operations: [codingFactoryOperation]),
+            in: environment
+        )
 
         return responses.first?.value?.value
     }
