@@ -88,7 +88,8 @@ enum HydraEmaOracle {
 
 extension HydraEmaOracle {
     enum Smoothing {
-        static let tenMinutesDurationMillis: BlockTime = 600_000
+        static let minuteDurationMillis: BlockTime = 60_000
+        static let tenMinutesInMinutes: BlockTime = 10
 
         static func value(forPeriodInBlocks blocks: BlockNumber) -> BigUInt {
             let denominator = BigUInt(max(blocks, 1)) + 1
@@ -103,7 +104,9 @@ extension HydraEmaOracle {
                 return nil
             }
 
-            return value(forPeriodInBlocks: BlockNumber(tenMinutesDurationMillis / blockTimeMillis))
+            let minutes = minuteDurationMillis / blockTimeMillis
+
+            return value(forPeriodInBlocks: BlockNumber(tenMinutesInMinutes * minutes))
         }
     }
 }
