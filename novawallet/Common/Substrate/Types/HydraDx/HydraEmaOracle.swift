@@ -88,6 +88,22 @@ enum HydraEmaOracle {
 
 extension HydraEmaOracle {
     enum Smoothing {
-        static let tenMinutes: BigUInt = (BigUInt(0x0288_DF0C_AC5B_3F5D) << 64) | BigUInt(0xC83C_D4E9_3028_8DF1)
+        static let tenMinutesDurationMillis: BlockTime = 600_000
+
+        static func value(forPeriodInBlocks blocks: BlockNumber) -> BigUInt {
+            let denominator = BigUInt(max(blocks, 1)) + 1
+
+            let (quotient, remainder) = (BigUInt(1) << 128).quotientAndRemainder(dividingBy: denominator)
+
+            return remainder > denominator / 2 ? quotient + 1 : quotient
+        }
+
+        static func tenMinutes(blockTimeMillis: BlockTime) -> BigUInt? {
+            guard blockTimeMillis > 0 else {
+                return nil
+            }
+
+            return value(forPeriodInBlocks: BlockNumber(tenMinutesDurationMillis / blockTimeMillis))
+        }
     }
 }

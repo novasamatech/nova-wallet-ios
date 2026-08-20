@@ -7,6 +7,9 @@ import BigInt
 final class HydraFeeOraclePriceTests: XCTestCase {
     private let dot = ChainAssetId(chainId: KnowChainId.hydra, assetId: 1)
 
+    private let mirroredSpecVersion: UInt32 = 435
+    private let mirroredTenMinutesSmoothing = BigUInt("3369132345751865974884897103284833777")
+
     func testOraclePriceForDot() throws {
         let price = try fetchPrice(for: dot)
 
@@ -77,6 +80,16 @@ final class HydraFeeOraclePriceTests: XCTestCase {
         )
 
         Logger.shared.info("Hydration spec version: \(codingFactory.specVersion)")
+
+        XCTAssertEqual(codingFactory.specVersion, mirroredSpecVersion)
+
+        let blockTime = environment.chain.defaultBlockTimeMillis
+
+        XCTAssertNotNil(blockTime)
+        XCTAssertEqual(
+            blockTime.flatMap { HydraEmaOracle.Smoothing.tenMinutes(blockTimeMillis: $0) },
+            mirroredTenMinutesSmoothing
+        )
 
         XCTAssertNotNil(
             codingFactory.metadata.getStorageMetadata(

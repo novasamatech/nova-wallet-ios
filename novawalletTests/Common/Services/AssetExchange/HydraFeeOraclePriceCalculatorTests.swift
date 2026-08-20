@@ -6,6 +6,8 @@ final class HydraFeeOraclePriceCalculatorTests: XCTestCase {
     private let native: HydraDx.AssetId = 0
     private let hub: HydraDx.AssetId = 1
 
+    private let smoothing = HydraEmaOracle.Smoothing.tenMinutes(blockTimeMillis: 6000)!
+
     // MARK: - Route resolution
 
     func testStoredRouteUsedVerbatimWhenRequestedInStoredOrder() {
@@ -105,7 +107,8 @@ final class HydraFeeOraclePriceCalculatorTests: XCTestCase {
         let price = HydraFeeOraclePriceCalculator.fastForwardedPrice(
             tenMinutes: entry(1, 2, updatedAt: 100),
             lastBlock: entry(3, 4, updatedAt: 100),
-            parentBlock: 100
+            parentBlock: 100,
+            smoothing: smoothing
         )
 
         XCTAssertEqual(price, BigRational(numerator: 1, denominator: 2))
@@ -115,7 +118,8 @@ final class HydraFeeOraclePriceCalculatorTests: XCTestCase {
         let price = HydraFeeOraclePriceCalculator.fastForwardedPrice(
             tenMinutes: entry(1, 2, updatedAt: 120),
             lastBlock: entry(3, 4, updatedAt: 120),
-            parentBlock: 100
+            parentBlock: 100,
+            smoothing: smoothing
         )
 
         XCTAssertEqual(price, BigRational(numerator: 1, denominator: 2))
@@ -152,7 +156,8 @@ final class HydraFeeOraclePriceCalculatorTests: XCTestCase {
         let price = HydraFeeOraclePriceCalculator.fastForwardedPrice(
             tenMinutes: entry(1, 2, updatedAt: 100),
             lastBlock: entry(3, 4, updatedAt: 100),
-            parentBlock: 100 + 4402
+            parentBlock: 100 + 4402,
+            smoothing: smoothing
         )
 
         XCTAssertEqual(ratioValue(price), 0.75, accuracy: 1e-15)
@@ -162,13 +167,15 @@ final class HydraFeeOraclePriceCalculatorTests: XCTestCase {
         let recent = HydraFeeOraclePriceCalculator.fastForwardedPrice(
             tenMinutes: entry(1, 2, updatedAt: 100),
             lastBlock: entry(3, 4, updatedAt: 100),
-            parentBlock: 103
+            parentBlock: 103,
+            smoothing: smoothing
         )
 
         let stale = HydraFeeOraclePriceCalculator.fastForwardedPrice(
             tenMinutes: entry(1, 2, updatedAt: 100),
             lastBlock: entry(3, 4, updatedAt: 42),
-            parentBlock: 103
+            parentBlock: 103,
+            smoothing: smoothing
         )
 
         XCTAssertEqual(ratioValue(recent), ratioValue(stale), accuracy: 1e-15)
@@ -191,7 +198,8 @@ final class HydraFeeOraclePriceCalculatorTests: XCTestCase {
         let price = HydraFeeOraclePriceCalculator.routePrice(
             legs: legs,
             entries: entries,
-            parentBlock: 100
+            parentBlock: 100,
+            smoothing: smoothing
         )
 
         XCTAssertEqual(price?.inner, BigUInt("1200000000000000000"))
@@ -216,7 +224,8 @@ final class HydraFeeOraclePriceCalculatorTests: XCTestCase {
         let price = HydraFeeOraclePriceCalculator.routePrice(
             legs: legs,
             entries: entries,
-            parentBlock: 100
+            parentBlock: 100,
+            smoothing: smoothing
         )
 
         XCTAssertEqual(price?.inner, BigUInt("833333333333333333"))
@@ -241,7 +250,8 @@ final class HydraFeeOraclePriceCalculatorTests: XCTestCase {
         let price = HydraFeeOraclePriceCalculator.routePrice(
             legs: [leg],
             entries: entries,
-            parentBlock: 100 + 4402
+            parentBlock: 100 + 4402,
+            smoothing: smoothing
         )
 
         XCTAssertEqual(price?.inner, HydraFeeConversion.Price(rational: .init(numerator: 4, denominator: 3))?.inner)
@@ -257,7 +267,8 @@ final class HydraFeeOraclePriceCalculatorTests: XCTestCase {
         let price = HydraFeeOraclePriceCalculator.routePrice(
             legs: [leg],
             entries: [leg.key(for: .tenMinutes): entry(1, 2, updatedAt: 100)],
-            parentBlock: 100
+            parentBlock: 100,
+            smoothing: smoothing
         )
 
         XCTAssertNil(price)
@@ -273,7 +284,8 @@ final class HydraFeeOraclePriceCalculatorTests: XCTestCase {
         let price = HydraFeeOraclePriceCalculator.routePrice(
             legs: [leg],
             entries: [leg.key(for: .lastBlock): entry(1, 2, updatedAt: 100)],
-            parentBlock: 100
+            parentBlock: 100,
+            smoothing: smoothing
         )
 
         XCTAssertNil(price)
@@ -292,7 +304,8 @@ final class HydraFeeOraclePriceCalculatorTests: XCTestCase {
                 leg.key(for: .tenMinutes): entry(0, 7, updatedAt: 100),
                 leg.key(for: .lastBlock): entry(0, 7, updatedAt: 100)
             ],
-            parentBlock: 100
+            parentBlock: 100,
+            smoothing: smoothing
         )
 
         XCTAssertEqual(price?.inner, 0)
@@ -312,7 +325,8 @@ final class HydraFeeOraclePriceCalculatorTests: XCTestCase {
                 leg.key(for: .tenMinutes): entry(1, 0, updatedAt: 100),
                 leg.key(for: .lastBlock): entry(1, 0, updatedAt: 100)
             ],
-            parentBlock: 100
+            parentBlock: 100,
+            smoothing: smoothing
         )
 
         XCTAssertNil(price)
@@ -320,15 +334,18 @@ final class HydraFeeOraclePriceCalculatorTests: XCTestCase {
 }
 
 extension HydraFeeOraclePriceCalculatorTests {
-    func testSmoothingConstantMatchesTheOraclePallet() {
+    func testSmoothingMatchesTheOraclePalletAtSixSecondBlocks() {
         XCTAssertEqual(
-            HydraEmaOracle.Smoothing.tenMinutes,
+            HydraEmaOracle.Smoothing.tenMinutes(blockTimeMillis: 6000),
             BigUInt("3369132345751865974884897103284833777")
         )
+    }
 
-        let one = BigUInt(1) << 127
-
-        XCTAssertEqual(HydraEmaOracle.Smoothing.tenMinutes, (2 * one + 101 / 2) / 101)
+    func testSmoothingMatchesTheOraclePalletAtTwoSecondBlocks() {
+        XCTAssertEqual(
+            HydraEmaOracle.Smoothing.tenMinutes(blockTimeMillis: 2000),
+            BigUInt("1130506202395144396888287732331455852")
+        )
     }
 }
 
@@ -350,7 +367,8 @@ private extension HydraFeeOraclePriceCalculatorTests {
             HydraFeeOraclePriceCalculator.fastForwardedPrice(
                 tenMinutes: tenMinutes,
                 lastBlock: lastBlock,
-                parentBlock: parentBlock
+                parentBlock: parentBlock,
+                smoothing: smoothing
             )
         )
     }

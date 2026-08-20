@@ -43,6 +43,7 @@ private extension HydraFeeOraclePriceFactory {
         let blockHash: BlockHashData
         let nativeAssetId: HydraDx.AssetId
         let hubAssetId: HydraDx.AssetId
+        let smoothing: BigUInt?
     }
 
     func createAcceptedCurrencyWrapper(
@@ -171,9 +172,16 @@ private extension HydraFeeOraclePriceFactory {
                 return .createWithResult(HydraFeeConversion.Price(inner: fallbackInner))
             }
 
+            guard let smoothing = context.smoothing else {
+                self.logger.warning("Hydration fee: unknown block time, using accepted currency")
+
+                return .createWithResult(HydraFeeConversion.Price(inner: fallbackInner))
+            }
+
             return self.createRoutePriceWrapper(
                 legs: legs,
                 parentBlock: parentBlock,
+                smoothing: smoothing,
                 fallbackInner: fallbackInner,
                 context: context
             )
@@ -190,6 +198,7 @@ private extension HydraFeeOraclePriceFactory {
     func createRoutePriceWrapper(
         legs: [HydraFeeOraclePriceCalculator.OracleLeg],
         parentBlock: BlockNumber,
+        smoothing: BigUInt,
         fallbackInner: BigUInt,
         context: Context
     ) -> CompoundOperationWrapper<HydraFeeConversion.Price> {
@@ -201,7 +210,8 @@ private extension HydraFeeOraclePriceFactory {
             let optPrice = HydraFeeOraclePriceCalculator.routePrice(
                 legs: legs,
                 entries: entries,
-                parentBlock: parentBlock
+                parentBlock: parentBlock,
+                smoothing: smoothing
             )
 
             guard let price = optPrice else {
@@ -278,7 +288,10 @@ extension HydraFeeOraclePriceFactory: HydraFeeOraclePriceFactoryProtocol {
                 codingFactory: try codingFactoryOperation.extractNoCancellableResultData(),
                 blockHash: try blockHashWrapper.targetOperation.extractNoCancellableResultData(),
                 nativeAssetId: try nativeAssetIdOperation.extractNoCancellableResultData(),
-                hubAssetId: try hubAssetIdOperation.extractNoCancellableResultData()
+                hubAssetId: try hubAssetIdOperation.extractNoCancellableResultData(),
+                smoothing: self.chain.defaultBlockTimeMillis.flatMap {
+                    HydraEmaOracle.Smoothing.tenMinutes(blockTimeMillis: $0)
+                }
             )
 
             let chainAsset = try self.chain.chainAssetOrError(for: chainAssetId.assetId)

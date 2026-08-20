@@ -75,7 +75,8 @@ enum HydraFeeOraclePriceCalculator {
     static func fastForwardedPrice(
         tenMinutes: HydraEmaOracle.Entry,
         lastBlock: HydraEmaOracle.Entry,
-        parentBlock: BlockNumber
+        parentBlock: BlockNumber,
+        smoothing: BigUInt
     ) -> BigRational? {
         let previous = tenMinutes.price.asBigRational
 
@@ -87,14 +88,15 @@ enum HydraFeeOraclePriceCalculator {
             previous: previous,
             incoming: lastBlock.price.asBigRational,
             iterations: parentBlock - tenMinutes.updatedAt,
-            smoothing: HydraEmaOracle.Smoothing.tenMinutes
+            smoothing: smoothing
         )
     }
 
     static func routePrice(
         legs: [OracleLeg],
         entries: [HydraEmaOracle.OracleKey: HydraEmaOracle.Entry],
-        parentBlock: BlockNumber
+        parentBlock: BlockNumber,
+        smoothing: BigUInt
     ) -> HydraFeeConversion.Price? {
         var numerator = BigUInt(1)
         var denominator = BigUInt(1)
@@ -109,7 +111,8 @@ enum HydraFeeOraclePriceCalculator {
             guard let price = fastForwardedPrice(
                 tenMinutes: tenMinutes,
                 lastBlock: lastBlock,
-                parentBlock: parentBlock
+                parentBlock: parentBlock,
+                smoothing: smoothing
             ) else {
                 return nil
             }
