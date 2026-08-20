@@ -7,62 +7,40 @@ final class HydraFeeOracleState {
         case notAccepted
     }
 
-    // Router.Routes and AcceptedCurrencies only change by governance, so reusing them across a
-    // burst of estimates costs nothing. The oracle entries and the block they are aged against
-    // stay uncached and pinned to one block hash.
     static let maxAge: TimeInterval = 30
 
-    private let mutex = NSLock()
-    private var routes: [HydraDx.AssetId: (value: [HydraRouter.Trade], at: Date)] = [:]
-    private var feeCurrencies: [HydraDx.AssetId: (value: FeeCurrency, at: Date)] = [:]
+    private let routes = InMemoryCache<HydraDx.AssetId, Cached<[HydraRouter.Trade]>>()
+    private let feeCurrencies = InMemoryCache<HydraDx.AssetId, Cached<FeeCurrency>>()
 
     func route(for assetId: HydraDx.AssetId) -> [HydraRouter.Trade]? {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        return Self.unexpired(routes[assetId])
+        routes.fetchValue(for: assetId)?.unexpired
     }
 
     func store(route: [HydraRouter.Trade], for assetId: HydraDx.AssetId) {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        routes[assetId] = (value: route, at: Date())
+        routes.store(value: Cached(value: route), for: assetId)
     }
 
     func feeCurrency(for assetId: HydraDx.AssetId) -> FeeCurrency? {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        return Self.unexpired(feeCurrencies[assetId])
+        feeCurrencies.fetchValue(for: assetId)?.unexpired
     }
 
     func store(feeCurrency: FeeCurrency, for assetId: HydraDx.AssetId) {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        feeCurrencies[assetId] = (value: feeCurrency, at: Date())
+        feeCurrencies.store(value: Cached(value: feeCurrency), for: assetId)
     }
 }
 
 private extension HydraFeeOracleState {
-    static func unexpired<T>(_ entry: (value: T, at: Date)?) -> T? {
-        guard let entry, Date().timeIntervalSince(entry.at) < maxAge else {
-            return nil
+    struct Cached<T> {
+        let value: T
+        let storedAt: Date
+
+        init(value: T) {
+            self.value = value
+            storedAt = Date()
         }
 
-        return entry.value
+        var unexpired: T? {
+            Date().timeIntervalSince(storedAt) < HydraFeeOracleState.maxAge ? value : nil
+        }
     }
 }
