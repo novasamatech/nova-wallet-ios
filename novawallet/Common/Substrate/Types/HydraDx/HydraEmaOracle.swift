@@ -88,7 +88,7 @@ enum HydraEmaOracle {
 
 extension HydraEmaOracle {
     enum Smoothing {
-        static let minuteDurationMillis: BlockTime = 60_000
+        static let minuteDurationMillis: BlockTime = 60000
         static let tenMinutesInMinutes: BlockTime = 10
 
         static func value(forPeriodInBlocks blocks: BlockNumber) -> BigUInt {
