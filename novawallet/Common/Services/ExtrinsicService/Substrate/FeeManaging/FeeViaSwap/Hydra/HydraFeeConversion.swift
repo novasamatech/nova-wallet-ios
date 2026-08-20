@@ -42,4 +42,5 @@ enum HydraFeeConversion {
 
 enum HydraFeeOraclePriceError: Error {
     case assetNotAcceptedAsFee(ChainAssetId)
+    case unsupportedQuoteDirection(AssetConversion.Direction)
 }

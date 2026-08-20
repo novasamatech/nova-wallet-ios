@@ -6,12 +6,18 @@ final class AssetConversionFeeEstimatingFactory {
     let host: ExtrinsicFeeEstimatorHostProtocol
     let feeBufferInPercentage: BigRational
 
+    private let hydraFeeOracleState: HydraFeeOracleState
+
     init(
         host: ExtrinsicFeeEstimatorHostProtocol,
         feeBufferInPercentage: BigRational = BigRational.percent(of: 0) // no overestimation by default
     ) {
         self.host = host
         self.feeBufferInPercentage = feeBufferInPercentage
+
+        hydraFeeOracleState = AssetConversionFeeSharedStateStore.getOrCreateHydraFeeOracleState(
+            for: host.chain.chainId
+        )
     }
 }
 
@@ -25,6 +31,7 @@ extension AssetConversionFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFacto
                     chain: chainAsset.chain,
                     connection: host.connection,
                     runtimeService: host.runtimeProvider,
+                    state: hydraFeeOracleState,
                     operationQueue: host.operationQueue,
                     logger: host.logger
                 )
@@ -34,7 +41,7 @@ extension AssetConversionFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFacto
                 chainAsset: chainAsset,
                 operationQueue: host.operationQueue,
                 quoteFactory: quoteFactory,
-                feeBufferInPercentage: .percent(of: 0)
+                feeBufferInPercentage: feeBufferInPercentage
             )
         case .statemine where chainAsset.chain.hasAssetHubFees:
             let assetHubQuoteFactory = AssetHubSwapOperationFactory(

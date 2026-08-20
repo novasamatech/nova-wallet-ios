@@ -13,6 +13,7 @@ final class HydraFeeOraclePriceFactory {
     let chain: ChainModel
     let connection: JSONRPCEngine
     let runtimeService: RuntimeProviderProtocol
+    let state: HydraFeeOracleState
     let blockHashFactory: BlockHashOperationFactoryProtocol
     let requestFactory: StorageRequestFactoryProtocol
     let operationQueue: OperationQueue
@@ -22,6 +23,7 @@ final class HydraFeeOraclePriceFactory {
         chain: ChainModel,
         connection: JSONRPCEngine,
         runtimeService: RuntimeProviderProtocol,
+        state: HydraFeeOracleState,
         operationQueue: OperationQueue,
         blockHashFactory: BlockHashOperationFactoryProtocol = BlockHashOperationFactory(),
         requestFactory: StorageRequestFactoryProtocol? = nil,
@@ -30,6 +32,7 @@ final class HydraFeeOraclePriceFactory {
         self.chain = chain
         self.connection = connection
         self.runtimeService = runtimeService
+        self.state = state
         self.blockHashFactory = blockHashFactory
         self.requestFactory = requestFactory ?? StorageRequestFactory.createDefault(with: operationQueue)
         self.operationQueue = operationQueue
@@ -46,10 +49,14 @@ private extension HydraFeeOraclePriceFactory {
         let smoothing: BigUInt?
     }
 
-    func createAcceptedCurrencyWrapper(
+    func createFeeCurrencyWrapper(
         for remoteAssetId: HydraDx.AssetId,
         context: Context
-    ) -> CompoundOperationWrapper<BigUInt?> {
+    ) -> CompoundOperationWrapper<HydraFeeOracleState.FeeCurrency> {
+        if let cached = state.feeCurrency(for: remoteAssetId) {
+            return .createWithResult(cached)
+        }
+
         let fetchWrapper: CompoundOperationWrapper<[StorageResponse<StringScaleMapper<BigUInt>>]>
         fetchWrapper = requestFactory.queryItems(
             engine: connection,
@@ -59,10 +66,15 @@ private extension HydraFeeOraclePriceFactory {
             at: context.blockHash
         )
 
-        let mapOperation = ClosureOperation<BigUInt?> {
+        let mapOperation = ClosureOperation<HydraFeeOracleState.FeeCurrency> {
             let responses = try fetchWrapper.targetOperation.extractNoCancellableResultData()
 
-            return responses.first?.value?.value
+            let feeCurrency: HydraFeeOracleState.FeeCurrency = responses.first?.value
+                .map { .accepted($0.value) } ?? .notAccepted
+
+            self.state.store(feeCurrency: feeCurrency, for: remoteAssetId)
+
+            return feeCurrency
         }
 
         mapOperation.addDependency(fetchWrapper.targetOperation)
@@ -92,6 +104,10 @@ private extension HydraFeeOraclePriceFactory {
         from remoteAssetId: HydraDx.AssetId,
         context: Context
     ) -> CompoundOperationWrapper<[HydraRouter.Trade]> {
+        if let cached = state.route(for: remoteAssetId) {
+            return .createWithResult(cached)
+        }
+
         let nativeAssetId = context.nativeAssetId
         let pair = HydraRouter.AssetPair(assetIn: remoteAssetId, assetOut: nativeAssetId).ordered
 
@@ -107,11 +123,15 @@ private extension HydraFeeOraclePriceFactory {
         let mapOperation = ClosureOperation<[HydraRouter.Trade]> {
             let responses = try fetchWrapper.targetOperation.extractNoCancellableResultData()
 
-            return HydraFeeOraclePriceCalculator.resolveRoute(
+            let route = HydraFeeOraclePriceCalculator.resolveRoute(
                 stored: responses.first?.value,
                 assetIn: remoteAssetId,
                 assetOut: nativeAssetId
             )
+
+            self.state.store(route: route, for: remoteAssetId)
+
+            return route
         }
 
         mapOperation.addDependency(fetchWrapper.targetOperation)
@@ -148,50 +168,38 @@ private extension HydraFeeOraclePriceFactory {
     }
 
     func createOraclePriceWrapper(
-        for remoteAssetId: HydraDx.AssetId,
+        for route: [HydraRouter.Trade],
+        parentBlock: BlockNumber,
         fallbackInner: BigUInt,
         context: Context
     ) -> CompoundOperationWrapper<HydraFeeConversion.Price> {
-        let blockNumberWrapper = createBlockNumberWrapper(context: context)
-        let routeWrapper = createRouteWrapper(from: remoteAssetId, context: context)
+        let optLegs = HydraFeeOraclePriceCalculator.oracleLegs(
+            for: route,
+            hubAssetId: context.hubAssetId
+        )
 
-        let priceWrapper = OperationCombiningService.compoundNonOptionalWrapper(
-            operationQueue: operationQueue
-        ) {
-            let parentBlock = try blockNumberWrapper.targetOperation.extractNoCancellableResultData()
-            let route = try routeWrapper.targetOperation.extractNoCancellableResultData()
+        guard let legs = optLegs else {
+            logger.warning("Hydration fee: route has no oracle price, using accepted currency")
 
-            let optLegs = HydraFeeOraclePriceCalculator.oracleLegs(
-                for: route,
-                hubAssetId: context.hubAssetId
-            )
-
-            guard let legs = optLegs, !legs.isEmpty else {
-                self.logger.warning("Hydration fee: route has no oracle price, using accepted currency")
-
-                return .createWithResult(HydraFeeConversion.Price(inner: fallbackInner))
-            }
-
-            guard let smoothing = context.smoothing else {
-                self.logger.warning("Hydration fee: unknown block time, using accepted currency")
-
-                return .createWithResult(HydraFeeConversion.Price(inner: fallbackInner))
-            }
-
-            return self.createRoutePriceWrapper(
-                legs: legs,
-                parentBlock: parentBlock,
-                smoothing: smoothing,
-                fallbackInner: fallbackInner,
-                context: context
-            )
+            return .createWithResult(HydraFeeConversion.Price(inner: fallbackInner))
         }
 
-        priceWrapper.addDependency(wrapper: blockNumberWrapper)
-        priceWrapper.addDependency(wrapper: routeWrapper)
+        guard !legs.isEmpty else {
+            return .createWithResult(.one)
+        }
 
-        return priceWrapper.insertingHead(
-            operations: blockNumberWrapper.allOperations + routeWrapper.allOperations
+        guard let smoothing = context.smoothing else {
+            logger.warning("Hydration fee: unknown block time, using accepted currency")
+
+            return .createWithResult(HydraFeeConversion.Price(inner: fallbackInner))
+        }
+
+        return createRoutePriceWrapper(
+            legs: legs,
+            parentBlock: parentBlock,
+            smoothing: smoothing,
+            fallbackInner: fallbackInner,
+            context: context
         )
     }
 
@@ -233,27 +241,39 @@ private extension HydraFeeOraclePriceFactory {
         remoteAssetId: HydraDx.AssetId,
         context: Context
     ) -> CompoundOperationWrapper<HydraFeeConversion.Price> {
-        let acceptedWrapper = createAcceptedCurrencyWrapper(for: remoteAssetId, context: context)
+        let feeCurrencyWrapper = createFeeCurrencyWrapper(for: remoteAssetId, context: context)
+        let blockNumberWrapper = createBlockNumberWrapper(context: context)
+        let routeWrapper = createRouteWrapper(from: remoteAssetId, context: context)
 
         let resultWrapper = OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) {
-            let optFallbackInner = try acceptedWrapper.targetOperation.extractNoCancellableResultData()
+            let feeCurrency = try feeCurrencyWrapper.targetOperation.extractNoCancellableResultData()
 
-            guard let fallbackInner = optFallbackInner else {
+            guard case let .accepted(fallbackInner) = feeCurrency else {
                 throw HydraFeeOraclePriceError.assetNotAcceptedAsFee(chainAssetId)
             }
 
+            let parentBlock = try blockNumberWrapper.targetOperation.extractNoCancellableResultData()
+            let route = try routeWrapper.targetOperation.extractNoCancellableResultData()
+
             return self.createOraclePriceWrapper(
-                for: remoteAssetId,
+                for: route,
+                parentBlock: parentBlock,
                 fallbackInner: fallbackInner,
                 context: context
             )
         }
 
-        resultWrapper.addDependency(wrapper: acceptedWrapper)
+        resultWrapper.addDependency(wrapper: feeCurrencyWrapper)
+        resultWrapper.addDependency(wrapper: blockNumberWrapper)
+        resultWrapper.addDependency(wrapper: routeWrapper)
 
-        return resultWrapper.insertingHead(operations: acceptedWrapper.allOperations)
+        return resultWrapper.insertingHead(
+            operations: feeCurrencyWrapper.allOperations
+                + blockNumberWrapper.allOperations
+                + routeWrapper.allOperations
+        )
     }
 }
 

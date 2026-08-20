@@ -154,6 +154,7 @@ private extension HydraFeeOraclePriceTests {
             chain: environment.chain,
             connection: environment.connection,
             runtimeService: environment.runtimeService,
+            state: HydraFeeOracleState(),
             operationQueue: environment.operationQueue,
             logger: Logger.shared
         )

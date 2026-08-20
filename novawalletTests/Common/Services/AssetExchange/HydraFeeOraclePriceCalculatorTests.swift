@@ -243,18 +243,60 @@ final class HydraFeeOraclePriceCalculatorTests: XCTestCase {
         )
 
         let entries = [
-            leg.key(for: .tenMinutes): entry(1, 2, updatedAt: 100),
-            leg.key(for: .lastBlock): entry(3, 4, updatedAt: 100)
+            leg.key(for: .tenMinutes): entry(1, 1, updatedAt: 100),
+            leg.key(for: .lastBlock): entry(3, 1, updatedAt: 100)
         ]
 
         let price = HydraFeeOraclePriceCalculator.routePrice(
             legs: [leg],
             entries: entries,
-            parentBlock: 100 + 4402,
+            parentBlock: 101,
             smoothing: smoothing
         )
 
-        XCTAssertEqual(price?.inner, HydraFeeConversion.Price(rational: .init(numerator: 4, denominator: 3))?.inner)
+        XCTAssertEqual(priceValue(price), 1.0 / (1.0 + 2.0 / 101.0 * 2.0), accuracy: 1e-12)
+    }
+
+    func testAaveOnlyRouteIsPricedOneToOne() {
+        let legs = HydraFeeOraclePriceCalculator.oracleLegs(for: [trade(.aave, 1001, 5)], hubAssetId: hub)
+
+        XCTAssertEqual(legs, [])
+
+        let price = HydraFeeOraclePriceCalculator.routePrice(
+            legs: legs!,
+            entries: [:],
+            parentBlock: 100,
+            smoothing: smoothing
+        )
+
+        XCTAssertEqual(price, .one)
+        XCTAssertEqual(
+            HydraFeeConversion.convertFee(BigUInt("1000000000000"), price: price!),
+            BigUInt("1000000000000")
+        )
+    }
+
+    func testZeroNumeratorPriceOnADescendingLegStaysZeroRatherThanInverting() {
+        let leg = HydraFeeOraclePriceCalculator.OracleLeg(
+            source: HydraEmaOracle.Source.xyk,
+            assetIn: 9,
+            assetOut: 4
+        )
+
+        XCTAssertTrue(leg.isInverted)
+
+        let price = HydraFeeOraclePriceCalculator.routePrice(
+            legs: [leg],
+            entries: [
+                leg.key(for: .tenMinutes): entry(0, 7, updatedAt: 100),
+                leg.key(for: .lastBlock): entry(0, 7, updatedAt: 100)
+            ],
+            parentBlock: 100,
+            smoothing: smoothing
+        )
+
+        XCTAssertEqual(price?.inner, 0)
+        XCTAssertEqual(HydraFeeConversion.convertFee(BigUInt("1000000000000"), price: price!), 1)
     }
 
     func testMissingLastTradeEntryFailsEvenWhenThePeriodEntryExists() {
@@ -350,6 +392,14 @@ extension HydraFeeOraclePriceCalculatorTests {
 }
 
 private extension HydraFeeOraclePriceCalculatorTests {
+    func priceValue(_ price: HydraFeeConversion.Price?) -> Double {
+        guard let price else {
+            return .nan
+        }
+
+        return Double(price.inner.description)! / Double(HydraFeeConversion.Price.divisor.description)!
+    }
+
     func ratioValue(_ ratio: BigRational?) -> Double {
         guard let ratio, ratio.denominator > 0 else {
             return .nan

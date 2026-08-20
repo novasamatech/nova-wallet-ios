@@ -8,7 +8,28 @@ private struct StateKey: Hashable {
 
 enum AssetConversionFeeSharedStateStore {
     private static var feeServices: [StateKey: WeakWrapper] = [:]
+    private static var feeOracleStates: [ChainModel.Id: WeakWrapper] = [:]
     private static let mutex = NSLock()
+
+    static func getOrCreateHydraFeeOracleState(
+        for chainId: ChainModel.Id
+    ) -> HydraFeeOracleState {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        if let state = feeOracleStates[chainId]?.target as? HydraFeeOracleState {
+            return state
+        }
+
+        let state = HydraFeeOracleState()
+
+        feeOracleStates[chainId] = WeakWrapper(target: state)
+
+        return state
+    }
 
     static func getOrCreateHydraFeeCurrencyService(
         for host: ExtrinsicFeeEstimatorHostProtocol,

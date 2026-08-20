@@ -173,20 +173,15 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
             substrateStorageFacade: substrateStorageFacade
         )
 
-        let customFeeEstimatingFactory = AssetExchangeFeeEstimatingFactory(
+        let customFeeEstimatingFactory = AssetExchangeFeeEstimatingRouter(
             graphProxy: graphProxy,
-            operationQueue: operationQueue,
-            feeBufferInPercentage: AssetExchangeFeeConstants.feeBufferInPercentage,
-            runtimeConversionFactory: AssetConversionFeeEstimatingFactory(
-                host: ExtrinsicFeeEstimatorHost(
-                    account: account,
-                    chain: chain,
-                    connection: connection,
-                    runtimeProvider: runtimeService,
-                    userStorageFacade: userStorageFacade,
-                    substrateStorageFacade: substrateStorageFacade,
-                    operationQueue: operationQueue
-                )
+            dependencies: .init(
+                wallet: selectedWallet,
+                userStorageFacade: userStorageFacade,
+                substrateStorageFacade: substrateStorageFacade,
+                chainRegistry: chainRegistry,
+                operationQueue: operationQueue,
+                logger: logger
             )
         )
 

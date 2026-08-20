@@ -11,6 +11,10 @@ final class HydraFeeQuoteFactory {
 
 extension HydraFeeQuoteFactory: AssetQuoteFactoryProtocol {
     func quote(for args: AssetConversion.QuoteArgs) -> CompoundOperationWrapper<AssetConversion.Quote> {
+        guard args.direction == .buy else {
+            return .createWithError(HydraFeeOraclePriceError.unsupportedQuoteDirection(args.direction))
+        }
+
         let priceWrapper = priceFactory.createPriceWrapper(for: args.assetIn)
 
         let mapOperation = ClosureOperation<AssetConversion.Quote> {
