@@ -186,8 +186,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/novasamatech/hydra-math-swift",
       "state" : {
-        "branch" : "feature/ema-oracle-price",
-        "revision" : "fa556a4dbb4f6e9c305e605c3d47daddcf32ca6c"
+        "revision" : "42dc4431d5757ee43992bd2a742a5399d2822240",
+        "version" : "0.6.0"
       }
     },
     {

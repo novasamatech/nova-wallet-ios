@@ -38303,8 +38303,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/novasamatech/hydra-math-swift";
 			requirement = {
-				branch = feature/ema-oracle-price;
-				kind = branch;
+				kind = exactVersion;
+				version = 0.6.0;
 			};
 		};
 		0C2BAA592E687D2F008157E7 /* XCRemoteSwiftPackageReference "ios-branch-sdk-spm" */ = {
