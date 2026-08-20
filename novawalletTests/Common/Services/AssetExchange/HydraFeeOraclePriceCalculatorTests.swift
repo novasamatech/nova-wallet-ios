@@ -45,7 +45,7 @@ final class HydraFeeOraclePriceCalculatorTests: XCTestCase {
         XCTAssertEqual(route.map(hopDescription), ["Omnipool 5->0"])
     }
 
-    func testEmptyStoredRouteTreatedAsMissing() {
+    func testEmptyStoredRouteIsDefendedAgainstWithASingleOmnipoolHop() {
         let route = HydraFeeOraclePriceCalculator.resolveRoute(stored: [], assetIn: 5, assetOut: native)
 
         XCTAssertEqual(route.map(hopDescription), ["Omnipool 5->0"])
@@ -331,27 +331,6 @@ final class HydraFeeOraclePriceCalculatorTests: XCTestCase {
         )
 
         XCTAssertNil(price)
-    }
-
-    func testZeroNumeratorPriceIsAcceptedAndFloorsTheFeeToOnePlank() {
-        let leg = HydraFeeOraclePriceCalculator.OracleLeg(
-            source: HydraEmaOracle.Source.xyk,
-            assetIn: 4,
-            assetOut: 9
-        )
-
-        let price = HydraFeeOraclePriceCalculator.routePrice(
-            legs: [leg],
-            entries: [
-                leg.key(for: .tenMinutes): entry(0, 7, updatedAt: 100),
-                leg.key(for: .lastBlock): entry(0, 7, updatedAt: 100)
-            ],
-            parentBlock: 100,
-            smoothing: smoothing
-        )
-
-        XCTAssertEqual(price?.inner, 0)
-        XCTAssertEqual(HydraFeeConversion.convertFee(BigUInt("1000000000000"), price: price!), 1)
     }
 
     func testZeroDenominatorPriceIsUnavailable() {

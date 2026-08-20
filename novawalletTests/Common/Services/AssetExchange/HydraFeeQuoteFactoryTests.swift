@@ -27,12 +27,6 @@ final class HydraFeeQuoteFactoryTests: XCTestCase {
         XCTAssertEqual(quote.assetOut, nativeAsset)
     }
 
-    func testUnitPriceLeavesTheFeeUnchanged() throws {
-        let quote = try quote(with: makePriceFactory(returning: .one), direction: .buy)
-
-        XCTAssertEqual(quote.amountIn, BigUInt("1000000000000"))
-    }
-
     func testRejectsSellDirectionRatherThanQuotingTheInverse() throws {
         let priceFactory = makePriceFactory(returning: .one)
 

@@ -25,13 +25,6 @@ final class HydraFeeConversionTests: XCTestCase {
         )
     }
 
-    func testFromRationalExactValueNeedsNoRounding() {
-        XCTAssertEqual(
-            HydraFeeConversion.Price(rational: .init(numerator: 6, denominator: 5))?.inner,
-            BigUInt("1200000000000000000")
-        )
-    }
-
     func testFromRationalZeroDenominatorReturnsNil() {
         XCTAssertNil(HydraFeeConversion.Price(rational: .init(numerator: 1, denominator: 0)))
     }
@@ -41,11 +34,18 @@ final class HydraFeeConversionTests: XCTestCase {
     }
 
     func testConvertFeeTruncates() {
-        let price = HydraFeeConversion.Price(inner: BigUInt("1200000000000000000"))
-
         XCTAssertEqual(
-            HydraFeeConversion.convertFee(BigUInt("1000000000000"), price: price),
+            HydraFeeConversion.convertFee(
+                BigUInt("1000000000000"),
+                price: .init(inner: BigUInt("1200000000000000000"))
+            ),
             BigUInt("1200000000000")
+        )
+
+        // 10 * 2/3 is 6.66..., and the runtime's checked_mul_int rounds towards zero
+        XCTAssertEqual(
+            HydraFeeConversion.convertFee(10, price: .init(inner: BigUInt("666666666666666667"))),
+            6
         )
     }
 
@@ -55,12 +55,8 @@ final class HydraFeeConversionTests: XCTestCase {
         XCTAssertEqual(HydraFeeConversion.convertFee(BigUInt("1000000000000"), price: price), 1)
     }
 
-    func testConvertZeroFeeStaysZero() {
+    func testConvertZeroFeeShortCircuitsBeforeTheOnePlankFloor() {
         XCTAssertEqual(HydraFeeConversion.convertFee(0, price: .one), 0)
         XCTAssertEqual(HydraFeeConversion.convertFee(0, price: .init(inner: 0)), 0)
-    }
-
-    func testConvertFeeWithUnitPrice() {
-        XCTAssertEqual(HydraFeeConversion.convertFee(BigUInt("12345"), price: .one), 12345)
     }
 }

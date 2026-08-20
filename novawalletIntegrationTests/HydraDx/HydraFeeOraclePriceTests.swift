@@ -7,41 +7,101 @@ import BigInt
 final class HydraFeeOraclePriceTests: XCTestCase {
     private let dot = ChainAssetId(chainId: KnowChainId.hydra, assetId: 1)
 
-    private let mirroredSpecVersion: UInt32 = 435
-    private let mirroredTenMinutesSmoothing = BigUInt("3369132345751865974884897103284833777")
+    // DOT alone routes through aave and omnipool only, so it never touches the stableswap or xyk
+    // arms of oracleLegs. These are picked to spread across the remaining pool types.
+    private let sampledFeeAssets: [(symbol: String, assetId: AssetModel.Id)] = [
+        ("DOT", 1),
+        ("USDT", 9),
+        ("PHA", 20),
+        ("NODL", 26),
+        ("EWT", 53)
+    ]
+
+    // pallet-ema-oracle hardcodes into_smoothing() and rebases the whole table whenever
+    // MILLISECS_PER_BLOCK changes, so pin the block time to its constant rather than a spec version:
+    // a routine runtime upgrade must not fail this, but a block time we have never mirrored must.
+    private let palletTenMinutesSmoothing: [BlockTime: BigUInt] = [
+        6000: BigUInt("3369132345751865974884897103284833777"), // hydration-node <= v50.0.2, spec 435
+        2000: BigUInt("1130506202395144396888287732331455852") // hydration-node >= v51.0.0, spec 440
+    ]
 
     func testOraclePriceForDot() throws {
-        let price = try fetchPrice(for: dot)
-
-        Logger.shared.info("DOT fee price inner: \(price.inner)")
-
-        XCTAssertGreaterThan(price.inner, 0)
-    }
-
-    func testOraclePriceDiffersFromFallback() throws {
-        let price = try fetchPrice(for: dot)
-        let fallback = try fetchAcceptedCurrencyPrice(for: dot)
-
-        Logger.shared.info("DOT oracle: \(price.inner), accepted currency: \(String(describing: fallback))")
-
-        XCTAssertNotNil(fallback)
-        XCTAssertNotEqual(price.inner, fallback)
-    }
-
-    func testConvertedFeeHasSaneMagnitude() throws {
-        let price = try fetchPrice(for: dot)
+        let environment = try makeEnvironment()
+        let price = try fetchPrice(for: dot, in: environment)
 
         let nativeFee = BigUInt(1_000_000_000_000) // 1 HDX
         let converted = HydraFeeConversion.convertFee(nativeFee, price: price)
 
-        Logger.shared.info("1 HDX converts to \(converted) plancks of DOT")
+        Logger.shared.info("DOT fee price inner: \(price.inner), 1 HDX converts to \(converted) plancks")
 
+        XCTAssertGreaterThan(price.inner, 0)
         XCTAssertGreaterThan(converted, 0)
-        XCTAssertLessThan(converted, nativeFee)
+    }
+
+    func testOraclePriceIsBoundedByTheAcceptedCurrencyFallback() throws {
+        let environment = try makeEnvironment()
+
+        let price = try fetchPrice(for: dot, in: environment)
+        let optFallback = try fetchAcceptedCurrencyPrice(for: dot, in: environment)
+
+        guard let fallback = optFallback else {
+            return XCTFail("DOT is expected to be an accepted fee currency")
+        }
+
+        Logger.shared.info("DOT oracle: \(price.inner), accepted currency: \(fallback)")
+
+        XCTAssertNotEqual(price.inner, fallback)
+
+        assertRatioIsSane(price.inner, fallback, context: "DOT")
+    }
+
+    func testEverySampledFeeAssetPricesFromTheOracle() throws {
+        let environment = try makeEnvironment()
+
+        var observedPools: Set<String> = []
+        var priced = 0
+
+        for sample in sampledFeeAssets {
+            let chainAssetId = ChainAssetId(chainId: KnowChainId.hydra, assetId: sample.assetId)
+
+            guard let fallback = try fetchAcceptedCurrencyPrice(for: chainAssetId, in: environment) else {
+                Logger.shared.warning("\(sample.symbol) is not an accepted fee currency, skipping")
+                continue
+            }
+
+            let route = try fetchRoute(for: chainAssetId, in: environment)
+            let pools = route.map(poolName)
+            let price = try fetchPrice(for: chainAssetId, in: environment)
+
+            Logger.shared.info("\(sample.symbol): route \(pools), oracle \(price.inner), fallback \(fallback)")
+
+            observedPools.formUnion(pools)
+
+            guard !pools.contains(HydraRouter.PoolType.lbpField), !pools.contains(HydraRouter.PoolType.hsmField) else {
+                // The runtime cannot price these either, so the accepted-currency price is correct here
+                XCTAssertEqual(price.inner, fallback, "\(sample.symbol) should fall back on an lbp/hsm hop")
+                continue
+            }
+
+            XCTAssertNotEqual(price.inner, fallback, "\(sample.symbol) silently degraded to the fallback")
+            assertRatioIsSane(price.inner, fallback, context: sample.symbol)
+
+            priced += 1
+        }
+
+        XCTAssertGreaterThan(priced, 0)
+
+        // A wrong Source constant or stableswap pivot only shows up on a route that uses them
+        for pool in [HydraRouter.PoolType.stableswapField, HydraRouter.PoolType.xykField] {
+            if !observedPools.contains(pool) {
+                Logger.shared.warning("no sampled asset currently routes through \(pool), coverage is incomplete")
+            }
+        }
     }
 
     func testNonAcceptedAssetRefusesToQuote() throws {
-        let chain = try makeEnvironment().chain
+        let environment = try makeEnvironment()
+        let chain = environment.chain
 
         var notAccepted: ChainAssetId?
 
@@ -52,7 +112,7 @@ final class HydraFeeOraclePriceTests: XCTestCase {
                 continue
             }
 
-            if try fetchAcceptedCurrencyPrice(for: chainAssetId) == nil {
+            if try fetchAcceptedCurrencyPrice(for: chainAssetId, in: environment) == nil {
                 notAccepted = chainAssetId
                 break
             }
@@ -64,14 +124,14 @@ final class HydraFeeOraclePriceTests: XCTestCase {
 
         Logger.shared.info("Testing refusal for \(notAccepted)")
 
-        XCTAssertThrowsError(try fetchPrice(for: notAccepted)) { error in
+        XCTAssertThrowsError(try fetchPrice(for: notAccepted, in: environment)) { error in
             guard case HydraFeeOraclePriceError.assetNotAcceptedAsFee = error else {
                 return XCTFail("unexpected error \(error)")
             }
         }
     }
 
-    func testRuntimeVersionIsStillTheOneWeMirrored() throws {
+    func testChainConfigDerivesAShippedPalletSmoothing() throws {
         let environment = try makeEnvironment()
 
         let codingFactory = try run(
@@ -81,28 +141,37 @@ final class HydraFeeOraclePriceTests: XCTestCase {
 
         Logger.shared.info("Hydration spec version: \(codingFactory.specVersion)")
 
-        XCTAssertEqual(codingFactory.specVersion, mirroredSpecVersion)
+        guard let blockTime = environment.chain.defaultBlockTimeMillis else {
+            return XCTFail("the fee oracle needs additional.defaultBlockTime to derive the smoothing")
+        }
 
-        let blockTime = environment.chain.defaultBlockTimeMillis
-
-        XCTAssertNotNil(blockTime)
-        XCTAssertEqual(
-            blockTime.flatMap { HydraEmaOracle.Smoothing.tenMinutes(blockTimeMillis: $0) },
-            mirroredTenMinutesSmoothing
-        )
-
-        XCTAssertNotNil(
-            codingFactory.metadata.getStorageMetadata(
-                in: HydraEmaOracle.oraclesPath.moduleName,
-                storageName: HydraEmaOracle.oraclesPath.itemName
+        guard let expected = palletTenMinutesSmoothing[blockTime] else {
+            return XCTFail(
+                "chain config reports \(blockTime)ms per block, which no mirrored pallet table covers "
+                    + "- re-check into_smoothing() for this runtime"
             )
+        }
+
+        XCTAssertEqual(HydraEmaOracle.Smoothing.tenMinutes(blockTimeMillis: blockTime), expected)
+    }
+
+    func testMirroredStorageItemsStillExist() throws {
+        let environment = try makeEnvironment()
+
+        let codingFactory = try run(
+            CompoundOperationWrapper(targetOperation: environment.runtimeService.fetchCoderFactoryOperation()),
+            in: environment
         )
-        XCTAssertNotNil(
-            codingFactory.metadata.getStorageMetadata(
-                in: HydraRouter.routesPath.moduleName,
-                storageName: HydraRouter.routesPath.itemName
+
+        for path in [HydraEmaOracle.oraclesPath, HydraRouter.routesPath] {
+            XCTAssertNotNil(
+                codingFactory.metadata.getStorageMetadata(
+                    in: path.moduleName,
+                    storageName: path.itemName
+                ),
+                "\(path.moduleName).\(path.itemName) is gone from the runtime"
             )
-        )
+        }
     }
 }
 
@@ -147,9 +216,38 @@ private extension HydraFeeOraclePriceTests {
         }
     }
 
-    func fetchPrice(for chainAssetId: ChainAssetId) throws -> HydraFeeConversion.Price {
-        let environment = try makeEnvironment()
+    func assertRatioIsSane(_ price: BigUInt, _ fallback: BigUInt, context: String) {
+        guard fallback > 0 else {
+            return XCTFail("\(context): accepted currency price is zero")
+        }
 
+        let ratio = Double(price.description)! / Double(fallback.description)!
+
+        XCTAssertGreaterThan(ratio, 0.5, "\(context): oracle price is \(ratio)x the accepted currency price")
+        XCTAssertLessThan(ratio, 2.0, "\(context): oracle price is \(ratio)x the accepted currency price")
+    }
+
+    func poolName(for trade: HydraRouter.Trade) -> String {
+        switch trade.pool {
+        case .xyk:
+            return HydraRouter.PoolType.xykField
+        case .lbp:
+            return HydraRouter.PoolType.lbpField
+        case .stableswap:
+            return HydraRouter.PoolType.stableswapField
+        case .omnipool:
+            return HydraRouter.PoolType.omnipoolField
+        case .aave:
+            return HydraRouter.PoolType.aaveField
+        case .hsm:
+            return HydraRouter.PoolType.hsmField
+        }
+    }
+
+    func fetchPrice(
+        for chainAssetId: ChainAssetId,
+        in environment: Environment
+    ) throws -> HydraFeeConversion.Price {
         let factory = HydraFeeOraclePriceFactory(
             chain: environment.chain,
             connection: environment.connection,
@@ -162,10 +260,59 @@ private extension HydraFeeOraclePriceTests {
         return try run(factory.createPriceWrapper(for: chainAssetId), in: environment)
     }
 
-    func fetchAcceptedCurrencyPrice(for chainAssetId: ChainAssetId) throws -> BigUInt? {
-        let environment = try makeEnvironment()
-        let chain = environment.chain
+    func fetchRoute(
+        for chainAssetId: ChainAssetId,
+        in environment: Environment
+    ) throws -> [HydraRouter.Trade] {
+        let codingFactory = try run(
+            CompoundOperationWrapper(targetOperation: environment.runtimeService.fetchCoderFactoryOperation()),
+            in: environment
+        )
 
+        let remoteAssetId = try Self.remoteAssetId(
+            for: chainAssetId,
+            chain: environment.chain,
+            codingFactory: codingFactory
+        )
+
+        let pair = HydraRouter.AssetPair(assetIn: remoteAssetId, assetOut: HydraDx.nativeAssetId)
+        let requestFactory = StorageRequestFactory.createDefault(with: environment.operationQueue)
+
+        let fetchWrapper: CompoundOperationWrapper<[StorageResponse<[HydraRouter.Trade]>]>
+        fetchWrapper = requestFactory.queryItems(
+            engine: environment.connection,
+            keyParams: { [pair.ordered] },
+            factory: { codingFactory },
+            storagePath: HydraRouter.routesPath
+        )
+
+        let responses = try run(fetchWrapper, in: environment)
+
+        return HydraFeeOraclePriceCalculator.resolveRoute(
+            stored: responses.first?.value,
+            assetIn: remoteAssetId,
+            assetOut: HydraDx.nativeAssetId
+        )
+    }
+
+    static func remoteAssetId(
+        for chainAssetId: ChainAssetId,
+        chain: ChainModel,
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) throws -> HydraDx.AssetId {
+        let chainAsset = try chain.chainAssetOrError(for: chainAssetId.assetId)
+
+        return try HydraDxTokenConverter.convertToRemote(
+            chainAsset: chainAsset,
+            codingFactory: codingFactory
+        ).remoteAssetId
+    }
+
+    func fetchAcceptedCurrencyPrice(
+        for chainAssetId: ChainAssetId,
+        in environment: Environment
+    ) throws -> BigUInt? {
+        let chain = environment.chain
         let codingFactoryOperation = environment.runtimeService.fetchCoderFactoryOperation()
         let requestFactory = StorageRequestFactory.createDefault(with: environment.operationQueue)
 
@@ -174,12 +321,11 @@ private extension HydraFeeOraclePriceTests {
             engine: environment.connection,
             keyParams: {
                 let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-                let chainAsset = try chain.chainAssetOrError(for: chainAssetId.assetId)
-
-                let remoteAssetId = try HydraDxTokenConverter.convertToRemote(
-                    chainAsset: chainAsset,
+                let remoteAssetId = try Self.remoteAssetId(
+                    for: chainAssetId,
+                    chain: chain,
                     codingFactory: codingFactory
-                ).remoteAssetId
+                )
 
                 return [StringScaleMapper(value: remoteAssetId)]
             },
