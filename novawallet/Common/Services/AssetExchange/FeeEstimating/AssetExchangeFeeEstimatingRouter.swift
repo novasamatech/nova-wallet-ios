@@ -28,8 +28,6 @@ private extension AssetExchangeFeeEstimatingRouter {
     func canSwapViaGraph(chainAsset: ChainAsset) -> Bool {
         switch AssetType(rawType: chainAsset.asset.type) {
         case .orml, .ormlHydrationEvm:
-            // Hydration never swaps the fee: pallet-transaction-multi-payment converts it with an
-            // EMA oracle price, so a graph quote would systematically under-estimate it
             chainAsset.chain.hasSwapHydra && !chainAsset.chain.hasHydrationFees
         case .statemine:
             chainAsset.chain.hasSwapHub
