@@ -42,7 +42,8 @@ final class StartStakingParachainInteractor: StartStakingInfoBaseInteractor, Any
         durationOperationFactory: ParaStkDurationOperationFactoryProtocol,
         sharedOperation: SharedOperationProtocol,
         operationQueue: OperationQueue,
-        eventCenter: EventCenterProtocol
+        eventCenter: EventCenterProtocol,
+        announcementsRepository: AnnouncementsRepositoryProtocol = AnnouncementsRepository.shared
     ) {
         self.state = state
         self.networkInfoFactory = networkInfoFactory
@@ -58,7 +59,8 @@ final class StartStakingParachainInteractor: StartStakingInfoBaseInteractor, Any
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             stakingDashboardProviderFactory: stakingDashboardProviderFactory,
             currencyManager: currencyManager,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            announcementsRepository: announcementsRepository
         )
     }
 

@@ -12,9 +12,11 @@ final class StakingDashboardInteractor {
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let stakingDashboardProviderFactory: StakingDashboardProviderFactoryProtocol
+    let announcementsRepository: AnnouncementsRepositoryProtocol
     let applicationHandler: ApplicationHandlerProtocol
     let stateObserver: Observable<StakingDashboardModel>
     let walletNotificationService: WalletNotificationServiceProtocol
+    let operationQueue: OperationQueue
 
     private var syncService: MultistakingSyncServiceProtocol?
     private var modelBuilder: StakingDashboardBuilderProtocol?
@@ -27,17 +29,21 @@ final class StakingDashboardInteractor {
 
     private var stakableAssets: Set<ChainAsset> = []
 
+    private let announcementsCancellableStore = CancellableCallStore()
+
     init(
         syncServiceFactory: MultistakingSyncServiceFactoryProtocol,
         walletSettings: SelectedWalletSettings,
         chainsStore: ChainsStoreProtocol,
         eventCenter: EventCenterProtocol,
         stakingDashboardProviderFactory: StakingDashboardProviderFactoryProtocol,
+        announcementsRepository: AnnouncementsRepositoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         stateObserver: Observable<StakingDashboardModel>,
         applicationHandler: ApplicationHandlerProtocol,
         walletNotificationService: WalletNotificationServiceProtocol,
+        operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol
     ) {
         self.syncServiceFactory = syncServiceFactory
@@ -45,11 +51,13 @@ final class StakingDashboardInteractor {
         self.eventCenter = eventCenter
         self.chainsStore = chainsStore
         self.stakingDashboardProviderFactory = stakingDashboardProviderFactory
+        self.announcementsRepository = announcementsRepository
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.applicationHandler = applicationHandler
         self.stateObserver = stateObserver
         self.walletNotificationService = walletNotificationService
+        self.operationQueue = operationQueue
         self.currencyManager = currencyManager
     }
 
@@ -152,6 +160,26 @@ final class StakingDashboardInteractor {
 
         modelBuilder?.applyWallet(model: wallet)
     }
+
+    private func provideAnnouncements() {
+        announcementsCancellableStore.cancel()
+
+        let fetchWrapper = announcementsRepository.fetchAnnouncementsWrapper(for: .staking)
+
+        executeCancellable(
+            wrapper: fetchWrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: announcementsCancellableStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(announcements):
+                self?.presenter?.didReceive(announcements: announcements)
+            case .failure:
+                break
+            }
+        }
+    }
 }
 
 extension StakingDashboardInteractor: StakingDashboardInteractorInputProtocol {
@@ -164,6 +192,7 @@ extension StakingDashboardInteractor: StakingDashboardInteractorInputProtocol {
         syncService = syncServiceFactory.createService(for: SelectedWalletSettings.shared.value)
 
         provideWallet()
+        provideAnnouncements()
         setupChainsStore()
         setupDashboardItemsSubscription()
         setupSyncStateSubscription()
@@ -193,6 +222,7 @@ extension StakingDashboardInteractor: StakingDashboardInteractorInputProtocol {
 
     func refresh() {
         syncService?.refreshOffchain()
+        provideAnnouncements()
     }
 }
 

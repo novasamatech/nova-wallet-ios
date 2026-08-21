@@ -2076,6 +2076,12 @@
 		2D8DE4E82E4A12D90004291B /* MultisigNotificationsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8DE4E72E4A12D90004291B /* MultisigNotificationsProtocols.swift */; };
 		2D8DE4EA2E4A14E80004291B /* MultisigNotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8DE4E92E4A14E80004291B /* MultisigNotificationsViewController.swift */; };
 		2D8E301A2EF2E11800A9FA61 /* GiftsStatusTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8E30192EF2E11800A9FA61 /* GiftsStatusTracker.swift */; };
+		AA10D36E115AD37DA9E18C5D /* Announcement.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10523AB2966171BEC93412 /* Announcement.swift */; };
+		AA10A37BBD8ADF1A6D7A5ECA /* AnnouncementsRemote.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1030111B389653327A3287 /* AnnouncementsRemote.swift */; };
+		AA10E5460EC1FC3854C41D9F /* AnnouncementsFetchOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10C950C086B16ED5F1D3C8 /* AnnouncementsFetchOperationFactory.swift */; };
+		AA10EA6773C5EDCB9AA19B51 /* AnnouncementsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10B560FE1B00688A98D3E1 /* AnnouncementsRepository.swift */; };
+		AA10060F567AA94CC8E0D223 /* AnnouncementViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA109F8B61C9CAC8CE836C51 /* AnnouncementViewModel.swift */; };
+		AA1041D2DDE33272269B066B /* StakingDashboardAnnouncementCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10893BE7F5B9F95CE3913E /* StakingDashboardAnnouncementCell.swift */; };
 		2D8E30212EF2FBD400A9FA61 /* WalletRemoteSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8E30202EF2FBD400A9FA61 /* WalletRemoteSubscriptionFactory.swift */; };
 		2D8E30272EF2FD0400A9FA61 /* GiftsStatusTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8E30262EF2FD0400A9FA61 /* GiftsStatusTrackerTests.swift */; };
 		2D8E30562EF2FE8700A9FA61 /* GiftsStatusTrackerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8E30552EF2FE8700A9FA61 /* GiftsStatusTrackerDelegate.swift */; };
@@ -8734,6 +8740,12 @@
 		2D8DE4E72E4A12D90004291B /* MultisigNotificationsProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationsProtocols.swift; sourceTree = "<group>"; };
 		2D8DE4E92E4A14E80004291B /* MultisigNotificationsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultisigNotificationsViewController.swift; sourceTree = "<group>"; };
 		2D8E30192EF2E11800A9FA61 /* GiftsStatusTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftsStatusTracker.swift; sourceTree = "<group>"; };
+		AA10523AB2966171BEC93412 /* Announcement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Announcement.swift; sourceTree = "<group>"; };
+		AA1030111B389653327A3287 /* AnnouncementsRemote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnouncementsRemote.swift; sourceTree = "<group>"; };
+		AA10C950C086B16ED5F1D3C8 /* AnnouncementsFetchOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnouncementsFetchOperationFactory.swift; sourceTree = "<group>"; };
+		AA10B560FE1B00688A98D3E1 /* AnnouncementsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnouncementsRepository.swift; sourceTree = "<group>"; };
+		AA109F8B61C9CAC8CE836C51 /* AnnouncementViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnouncementViewModel.swift; sourceTree = "<group>"; };
+		AA10893BE7F5B9F95CE3913E /* StakingDashboardAnnouncementCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDashboardAnnouncementCell.swift; sourceTree = "<group>"; };
 		2D8E30202EF2FBD400A9FA61 /* WalletRemoteSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletRemoteSubscriptionFactory.swift; sourceTree = "<group>"; };
 		2D8E30262EF2FD0400A9FA61 /* GiftsStatusTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftsStatusTrackerTests.swift; sourceTree = "<group>"; };
 		2D8E30552EF2FE8700A9FA61 /* GiftsStatusTrackerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftsStatusTrackerDelegate.swift; sourceTree = "<group>"; };
@@ -18307,6 +18319,17 @@
 			path = Gifts;
 			sourceTree = "<group>";
 		};
+		AA1014D50747A645B9585D3C /* Announcements */ = {
+			isa = PBXGroup;
+			children = (
+				AA10523AB2966171BEC93412 /* Announcement.swift */,
+				AA1030111B389653327A3287 /* AnnouncementsRemote.swift */,
+				AA10C950C086B16ED5F1D3C8 /* AnnouncementsFetchOperationFactory.swift */,
+				AA10B560FE1B00688A98D3E1 /* AnnouncementsRepository.swift */,
+			);
+			path = Announcements;
+			sourceTree = "<group>";
+		};
 		2D8E303A2EF2FE3900A9FA61 /* GiftsSyncService */ = {
 			isa = PBXGroup;
 			children = (
@@ -21306,6 +21329,7 @@
 		84155DE8253980D700A27058 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				AA1014D50747A645B9585D3C /* Announcements */,
 				2DC002ED2E8AEB6A00D49A42 /* AssetHubMigrationInfo */,
 				2D51D68A2E5D9F42008AB208 /* MultisigNotificationsPromo */,
 				2D06CC272E38F4E80093CA84 /* AppAttest */,
@@ -25080,6 +25104,7 @@
 				779F1F8C2B4D8A9100EF1EE9 /* NetworkFeeInfoViewModel.swift */,
 				8490140524A92F6D008F705E /* AttributedStringDecorator+Terms.swift */,
 				0CE9339B2C051F0E000F3EFE /* WalletPrimitiveViewModelFactory.swift */,
+				AA109F8B61C9CAC8CE836C51 /* AnnouncementViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -25740,6 +25765,7 @@
 				84B24FAB2A2F25FF00F9BF59 /* StakingDashboardActiveDetailsView.swift */,
 				84B24FAD2A2F6BEB00F9BF59 /* StakingDashboardInactiveCell.swift */,
 				84B24FAF2A2F7B6F00F9BF59 /* StakingDashboardMoreOptionsCell.swift */,
+				AA10893BE7F5B9F95CE3913E /* StakingDashboardAnnouncementCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -35279,6 +35305,12 @@
 				77CB33D72A3998FD00B6709A /* Array+Sort.swift in Sources */,
 				84B8AA8129F9097D00347A37 /* WalletConnectTransport.swift in Sources */,
 				2D8E301A2EF2E11800A9FA61 /* GiftsStatusTracker.swift in Sources */,
+				AA10D36E115AD37DA9E18C5D /* Announcement.swift in Sources */,
+				AA10A37BBD8ADF1A6D7A5ECA /* AnnouncementsRemote.swift in Sources */,
+				AA10E5460EC1FC3854C41D9F /* AnnouncementsFetchOperationFactory.swift in Sources */,
+				AA10EA6773C5EDCB9AA19B51 /* AnnouncementsRepository.swift in Sources */,
+				AA10060F567AA94CC8E0D223 /* AnnouncementViewModel.swift in Sources */,
+				AA1041D2DDE33272269B066B /* StakingDashboardAnnouncementCell.swift in Sources */,
 				0C3272932CD246DD00FC1B42 /* AssetExchangeOperationFee+Crosschain.swift in Sources */,
 				0C85F5BE2E133B8A003789DC /* CallWeightOperationFactory.swift in Sources */,
 				2DC002E72E8A5A0000D49A42 /* AHMInfoService.swift in Sources */,

@@ -49,7 +49,8 @@ final class StartStakingInfoMythosInteractor: StartStakingInfoBaseInteractor {
         sharedOperation: SharedOperationProtocol,
         operationQueue: OperationQueue,
         eventCenter: EventCenterProtocol,
-        logger: LoggerProtocol
+        logger: LoggerProtocol,
+        announcementsRepository: AnnouncementsRepositoryProtocol = AnnouncementsRepository.shared
     ) {
         self.state = state
         self.durationOperationFactory = durationOperationFactory
@@ -65,7 +66,8 @@ final class StartStakingInfoMythosInteractor: StartStakingInfoBaseInteractor {
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             stakingDashboardProviderFactory: stakingDashboardProviderFactory,
             currencyManager: currencyManager,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            announcementsRepository: announcementsRepository
         )
     }
 

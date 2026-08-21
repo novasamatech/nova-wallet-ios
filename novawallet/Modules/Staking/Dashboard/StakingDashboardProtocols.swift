@@ -29,6 +29,7 @@ protocol StakingDashboardInteractorOutputProtocol: AnyObject {
     func didReceive(wallet: MetaAccountModel)
     func didReceive(result: StakingDashboardBuilderResult)
     func didReceive(error: StakingDashboardInteractorError)
+    func didReceive(announcements: [Announcement])
     func didReceiveWalletsState(hasUpdates: Bool)
 }
 

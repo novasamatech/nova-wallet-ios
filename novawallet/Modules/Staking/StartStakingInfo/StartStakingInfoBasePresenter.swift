@@ -12,11 +12,13 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     let chainAsset: ChainAsset
     let logger: LoggerProtocol
     let accountManagementFilter: AccountManagementFilterProtocol
+    let announcementViewModelFactory: AnnouncementViewModelFactoryProtocol
 
     private(set) var price: PriceData?
     private(set) var accountExistense: AccountExistense?
     private var state: StartStakingStateProtocol?
     private var wallet: MetaAccountModel?
+    private var announcements: [Announcement] = []
 
     init(
         chainAsset: ChainAsset,
@@ -27,6 +29,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         localizationManager: LocalizationManagerProtocol,
         applicationConfig: ApplicationConfigProtocol,
         accountManagementFilter: AccountManagementFilterProtocol = AccountManagementFilter(),
+        announcementViewModelFactory: AnnouncementViewModelFactoryProtocol = AnnouncementViewModelFactory(),
         logger: LoggerProtocol
     ) {
         self.chainAsset = chainAsset
@@ -36,6 +39,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         self.balanceDerivationFactory = balanceDerivationFactory
         self.applicationConfig = applicationConfig
         self.accountManagementFilter = accountManagementFilter
+        self.announcementViewModelFactory = announcementViewModelFactory
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -62,6 +66,16 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
             let viewModel = startStakingViewModelFactory.noAccount(chain: chainAsset.chain, locale: selectedLocale)
             view?.didReceive(balance: viewModel)
         }
+    }
+
+    func provideAnnouncementModel() {
+        let viewModel = announcementViewModelFactory.createChainViewModel(
+            from: announcements,
+            chainId: chainAsset.chain.chainId,
+            locale: selectedLocale
+        )
+
+        view?.didReceive(announcement: viewModel)
     }
 
     func shouldUpdateEraDuration(for newValue: TimeInterval?, oldValue: TimeInterval?) -> Bool {
@@ -179,6 +193,11 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         }
     }
 
+    func didReceive(announcements: [Announcement]) {
+        self.announcements = announcements
+        provideAnnouncementModel()
+    }
+
     func didReceiveStakingEnabled() {
         wireframe.presentAlreadyHaveStaking(
             from: view,
@@ -243,6 +262,7 @@ extension StartStakingInfoBasePresenter: Localizable {
     func applyLocalization() {
         if view?.isSetup == true {
             provideBalanceModel()
+            provideAnnouncementModel()
             state.map(provideViewModel)
         }
     }
