@@ -18,7 +18,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     private(set) var accountExistense: AccountExistense?
     private var state: StartStakingStateProtocol?
     private var wallet: MetaAccountModel?
-    private var announcement: Announcement?
+    private var announcements: [Announcement] = []
 
     init(
         chainAsset: ChainAsset,
@@ -67,9 +67,11 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     }
 
     func provideAnnouncementModel() {
-        let viewModel = announcement.flatMap {
-            announcementViewModelFactory.createViewModel(from: $0, locale: selectedLocale)
-        }
+        let viewModel = announcementViewModelFactory.createChainViewModel(
+            from: announcements,
+            chainId: chainAsset.chain.chainId,
+            locale: selectedLocale
+        )
 
         view?.didReceive(announcement: viewModel)
     }
@@ -189,8 +191,8 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         }
     }
 
-    func didReceive(announcement: Announcement?) {
-        self.announcement = announcement
+    func didReceive(announcements: [Announcement]) {
+        self.announcements = announcements
         provideAnnouncementModel()
     }
 

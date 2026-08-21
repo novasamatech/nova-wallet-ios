@@ -7,6 +7,17 @@ struct AnnouncementViewModel: Equatable {
 
 protocol AnnouncementViewModelFactoryProtocol {
     func createViewModel(from announcement: Announcement, locale: Locale) -> AnnouncementViewModel?
+
+    func createGeneralViewModels(
+        from announcements: [Announcement],
+        locale: Locale
+    ) -> [AnnouncementViewModel]
+
+    func createChainViewModel(
+        from announcements: [Announcement],
+        chainId: ChainModel.Id,
+        locale: Locale
+    ) -> AnnouncementViewModel?
 }
 
 final class AnnouncementViewModelFactory: AnnouncementViewModelFactoryProtocol {
@@ -19,6 +30,27 @@ final class AnnouncementViewModelFactory: AnnouncementViewModelFactoryProtocol {
             style: announcement.style.alertStyle,
             message: message
         )
+    }
+
+    func createGeneralViewModels(
+        from announcements: [Announcement],
+        locale: Locale
+    ) -> [AnnouncementViewModel] {
+        announcements
+            .filter { $0.chainId == nil }
+            .compactMap { createViewModel(from: $0, locale: locale) }
+    }
+
+    func createChainViewModel(
+        from announcements: [Announcement],
+        chainId: ChainModel.Id,
+        locale: Locale
+    ) -> AnnouncementViewModel? {
+        announcements
+            .lazy
+            .filter { $0.chainId == chainId }
+            .compactMap { self.createViewModel(from: $0, locale: locale) }
+            .first
     }
 }
 

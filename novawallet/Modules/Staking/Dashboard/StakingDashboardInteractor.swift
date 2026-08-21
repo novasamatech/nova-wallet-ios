@@ -217,6 +217,7 @@ extension StakingDashboardInteractor: StakingDashboardInteractorInputProtocol {
 
     func refresh() {
         syncService?.refreshOffchain()
+        provideAnnouncements()
     }
 }
 

@@ -28,22 +28,3 @@ extension Announcement {
     }
 }
 
-extension Array where Element == Announcement {
-    func generalOnly() -> [Announcement] {
-        filter { $0.chainId == nil }
-    }
-
-    func groupedByChain() -> [ChainModel.Id: Announcement] {
-        reduce(into: [:]) { accum, announcement in
-            guard let chainId = announcement.chainId, accum[chainId] == nil else {
-                return
-            }
-
-            accum[chainId] = announcement
-        }
-    }
-
-    func firstAnnouncement(for chainId: ChainModel.Id) -> Announcement? {
-        first { $0.chainId == chainId }
-    }
-}

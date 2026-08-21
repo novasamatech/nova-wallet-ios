@@ -39,7 +39,7 @@ protocol StakingMainInteractorOutputProtocol: AnyObject {
     func didReceiveExpansion(_ isExpanded: Bool)
     func didReceiveRewardFilter(_ filter: StakingRewardFiltersPeriod)
     func didReceiveAHMInfo(_ ahmInfo: AHMFullInfo?)
-    func didReceiveAnnouncement(_ announcement: Announcement?)
+    func didReceiveAnnouncements(_ announcements: [Announcement])
 }
 
 protocol StakingMainWireframeProtocol: AlertPresentable, NoAccountSupportPresentable, WebPresentable {

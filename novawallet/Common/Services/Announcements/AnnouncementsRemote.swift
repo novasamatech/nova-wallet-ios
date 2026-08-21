@@ -3,10 +3,6 @@ import Foundation
 struct AnnouncementsRemote: Decodable {
     let sections: [String: [AnnouncementRemote?]]
 
-    init(sections: [String: [AnnouncementRemote?]]) {
-        self.sections = sections
-    }
-
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         sections = try container.decode([String: [AnnouncementRemote?]].self)

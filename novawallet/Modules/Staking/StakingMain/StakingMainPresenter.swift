@@ -12,11 +12,10 @@ final class StakingMainPresenter {
     let ahmViewModelFactory: AHMInfoViewModelFactoryProtocol
     let announcementViewModelFactory: AnnouncementViewModelFactoryProtocol
     let stakingOption: Multistaking.ChainAssetOption
-    let localizationManager: LocalizationManagerProtocol
     let logger: LoggerProtocol?
 
     private var ahmInfo: AHMFullInfo?
-    private var announcement: Announcement?
+    private var announcements: [Announcement] = []
     private var childPresenter: StakingMainChildPresenterProtocol?
     private var period: StakingRewardFiltersPeriod?
 
@@ -38,8 +37,8 @@ final class StakingMainPresenter {
         self.viewModelFactory = viewModelFactory
         self.ahmViewModelFactory = ahmViewModelFactory
         self.announcementViewModelFactory = announcementViewModelFactory
-        self.localizationManager = localizationManager
         self.logger = logger
+        self.localizationManager = localizationManager
     }
 }
 
@@ -56,7 +55,7 @@ private extension StakingMainPresenter {
         let ahmAlertModel: InlinableAlertView.Model? = if let ahmInfo {
             ahmViewModelFactory.createStakingDetailsAlertViewModel(
                 info: ahmInfo,
-                locale: localizationManager.selectedLocale
+                locale: selectedLocale
             )
         } else {
             nil
@@ -66,12 +65,11 @@ private extension StakingMainPresenter {
     }
 
     func provideAnnouncementModel() {
-        let viewModel = announcement.flatMap {
-            announcementViewModelFactory.createViewModel(
-                from: $0,
-                locale: localizationManager.selectedLocale
-            )
-        }
+        let viewModel = announcementViewModelFactory.createChainViewModel(
+            from: announcements,
+            chainId: stakingOption.chainAsset.chain.chainId,
+            locale: selectedLocale
+        )
 
         view?.didReceiveAnnouncement(viewModel: viewModel)
     }
@@ -167,12 +165,23 @@ extension StakingMainPresenter: StakingMainInteractorOutputProtocol {
         provideAHMAlertModel()
     }
 
-    func didReceiveAnnouncement(_ announcement: Announcement?) {
-        guard self.announcement != announcement else { return }
+    func didReceiveAnnouncements(_ announcements: [Announcement]) {
+        guard self.announcements != announcements else { return }
 
-        self.announcement = announcement
+        self.announcements = announcements
 
         provideAnnouncementModel()
+    }
+}
+
+// MARK: - Localizable
+
+extension StakingMainPresenter: Localizable {
+    func applyLocalization() {
+        if let view = view, view.isSetup {
+            provideAHMAlertModel()
+            provideAnnouncementModel()
+        }
     }
 }
 

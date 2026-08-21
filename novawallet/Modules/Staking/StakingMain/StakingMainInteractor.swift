@@ -119,9 +119,7 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
 
             switch result {
             case let .success(announcements):
-                presenter?.didReceiveAnnouncement(
-                    announcements.firstAnnouncement(for: chainAsset.chain.chainId)
-                )
+                presenter?.didReceiveAnnouncements(announcements)
             case let .failure(error):
                 logger.error("Failed on fetch announcements: \(error)")
             }

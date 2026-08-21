@@ -95,7 +95,7 @@ class StartStakingInfoBaseInteractor: StartStakingInfoInteractorInputProtocol, A
         )
     }
 
-    private func provideAnnouncement() {
+    private func provideAnnouncements() {
         let wrapper = announcementsRepository.fetchAnnouncementsWrapper(for: .staking)
 
         execute(
@@ -107,11 +107,9 @@ class StartStakingInfoBaseInteractor: StartStakingInfoInteractorInputProtocol, A
 
             switch result {
             case let .success(announcements):
-                basePresenter?.didReceive(
-                    announcement: announcements.firstAnnouncement(for: selectedChainAsset.chain.chainId)
-                )
+                basePresenter?.didReceive(announcements: announcements)
             case .failure:
-                basePresenter?.didReceive(announcement: nil)
+                basePresenter?.didReceive(announcements: [])
             }
         }
     }
@@ -122,14 +120,14 @@ class StartStakingInfoBaseInteractor: StartStakingInfoInteractorInputProtocol, A
         performAssetBalanceSubscription()
         performPriceSubscription()
         performStakingStateSubscription()
-        provideAnnouncement()
+        provideAnnouncements()
     }
 
     func remakeSubscriptions() {
         performAssetBalanceSubscription()
         performPriceSubscription()
         performStakingStateSubscription()
-        provideAnnouncement()
+        provideAnnouncements()
     }
 }
 

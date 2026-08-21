@@ -28,7 +28,8 @@ struct StakingDashboardViewFactory {
             assetFormatterFactory: AssetBalanceFormatterFactory(),
             priceAssetInfoFactory: priceAssetInfoFactory,
             chainAssetViewModelFactory: ChainAssetViewModelFactory(),
-            estimatedEarningsFormatter: NumberFormatter.percentBase.localizableResource()
+            estimatedEarningsFormatter: NumberFormatter.percentBase.localizableResource(),
+            announcementViewModelFactory: AnnouncementViewModelFactory()
         )
 
         let presenter = StakingDashboardPresenter(

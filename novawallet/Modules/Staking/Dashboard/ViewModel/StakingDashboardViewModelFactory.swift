@@ -38,18 +38,20 @@ final class StakingDashboardViewModelFactory {
     let assetFormatterFactory: AssetBalanceFormatterFactoryProtocol
     let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
     let estimatedEarningsFormatter: LocalizableResource<NumberFormatter>
-    let announcementViewModelFactory: AnnouncementViewModelFactoryProtocol = AnnouncementViewModelFactory()
+    let announcementViewModelFactory: AnnouncementViewModelFactoryProtocol
 
     init(
         assetFormatterFactory: AssetBalanceFormatterFactoryProtocol,
         priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
-        estimatedEarningsFormatter: LocalizableResource<NumberFormatter>
+        estimatedEarningsFormatter: LocalizableResource<NumberFormatter>,
+        announcementViewModelFactory: AnnouncementViewModelFactoryProtocol = AnnouncementViewModelFactory()
     ) {
         self.assetFormatterFactory = assetFormatterFactory
         self.priceAssetInfoFactory = priceAssetInfoFactory
         self.chainAssetViewModelFactory = chainAssetViewModelFactory
         self.estimatedEarningsFormatter = estimatedEarningsFormatter
+        self.announcementViewModelFactory = announcementViewModelFactory
     }
 
     private func createEstimatedEarnings(
@@ -255,18 +257,19 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
     ) -> StakingDashboardViewModel {
         let activeCounters = model.getActiveCounters()
 
-        let generalViewModels = announcements.generalOnly().compactMap {
-            announcementViewModelFactory.createViewModel(from: $0, locale: locale)
-        }
-
-        let announcementsByChain = announcements.groupedByChain()
+        let generalViewModels = announcementViewModelFactory.createGeneralViewModels(
+            from: announcements,
+            locale: locale
+        )
 
         let activeViewModels = model.active.map { item in
             let counter = activeCounters[item.chainAsset.chainAssetId] ?? 0
 
-            let announcement = announcementsByChain[item.chainAsset.chain.chainId].flatMap {
-                announcementViewModelFactory.createViewModel(from: $0, locale: locale)
-            }
+            let announcement = announcementViewModelFactory.createChainViewModel(
+                from: announcements,
+                chainId: item.chainAsset.chain.chainId,
+                locale: locale
+            )
 
             return createActiveStakingViewModel(
                 for: item,
@@ -306,8 +309,6 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
     ) -> StakingDashboardUpdateViewModel {
         let activeCounters = model.getActiveCounters()
 
-        let announcementsByChain = announcements.groupedByChain()
-
         let activeViewModels: [(Int, StakingDashboardEnabledViewModel)] = model.active.enumerated().compactMap { item in
             guard syncChange.byStakingOption.contains(item.1.stakingOption) else {
                 return nil
@@ -315,9 +316,11 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
 
             let counter = activeCounters[item.1.chainAsset.chainAssetId] ?? 0
 
-            let announcement = announcementsByChain[item.1.chainAsset.chain.chainId].flatMap {
-                announcementViewModelFactory.createViewModel(from: $0, locale: locale)
-            }
+            let announcement = announcementViewModelFactory.createChainViewModel(
+                from: announcements,
+                chainId: item.1.chainAsset.chain.chainId,
+                locale: locale
+            )
 
             let viewModel = createActiveStakingViewModel(
                 for: item.1,

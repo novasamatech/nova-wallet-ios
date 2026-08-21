@@ -22,7 +22,7 @@ protocol StartStakingInfoInteractorOutputProtocol: AnyObject {
     func didReceive(baseError: BaseStartStakingInfoError)
     func didReceive(wallet: MetaAccountModel, chainAccountId: AccountId?)
     func didReceiveStakingEnabled()
-    func didReceive(announcement: Announcement?)
+    func didReceive(announcements: [Announcement])
 }
 
 protocol StartStakingInfoRelaychainInteractorInputProtocol: StartStakingInfoInteractorInputProtocol {

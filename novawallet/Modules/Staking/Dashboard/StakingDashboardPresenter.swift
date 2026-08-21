@@ -192,7 +192,10 @@ extension StakingDashboardPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
             updateWalletView()
-            updateStakingsView()
+
+            if let lastResult {
+                reloadStakingView(using: lastResult.model)
+            }
         }
     }
 }
