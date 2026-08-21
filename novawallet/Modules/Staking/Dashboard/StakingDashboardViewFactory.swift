@@ -83,11 +83,13 @@ struct StakingDashboardViewFactory {
             chainsStore: ChainsStore(chainRegistry: chainRegistry),
             eventCenter: EventCenter.shared,
             stakingDashboardProviderFactory: stakingDashboardProviderFactory,
+            announcementsRepository: AnnouncementsRepository.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             stateObserver: stateObserver,
             applicationHandler: ApplicationHandler(),
             walletNotificationService: walletNotificationService,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             currencyManager: currencyManager
         )
     }

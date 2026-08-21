@@ -13,10 +13,10 @@ final class InlineAlertView: UIView {
         let view = IconDetailsView()
         view.mode = .iconDetails
         view.detailsLabel.numberOfLines = 0
-        view.iconWidth = 16.0
+        view.iconWidth = Constants.iconWidth
         view.detailsLabel.textColor = R.color.colorTextPrimary()
         view.detailsLabel.font = .caption1
-        view.spacing = 12.0
+        view.spacing = Constants.iconTextSpacing
         return view
     }()
 
@@ -41,34 +41,44 @@ final class InlineAlertView: UIView {
 
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview().inset(10.0)
-            make.leading.trailing.equalToSuperview().inset(16.0)
+            make.top.bottom.equalToSuperview().inset(Constants.verticalContentInset)
+            make.leading.trailing.equalToSuperview().inset(Constants.horizontalContentInset)
         }
     }
 }
 
 extension InlineAlertView {
+    func apply(style: Style) {
+        switch style {
+        case .error:
+            backgroundView.fillColor = R.color.colorErrorBlockBackground()!
+            contentView.imageView.image = R.image.iconSlash()
+        case .warning:
+            backgroundView.fillColor = R.color.colorWarningBlockBackground()!
+            contentView.imageView.image = R.image.iconWarning()
+        case .info:
+            backgroundView.fillColor = R.color.colorIndividualChipBackground()!
+            contentView.imageView.image = R.image.iconInfoAccent()
+        }
+
+        contentView.stackView.alignment = .top
+    }
+
     static func warning() -> InlineAlertView {
         let view = InlineAlertView()
-        view.backgroundView.fillColor = R.color.colorWarningBlockBackground()!
-        view.contentView.imageView.image = R.image.iconWarning()
-        view.contentView.stackView.alignment = .top
+        view.apply(style: .warning)
         return view
     }
 
     static func error() -> InlineAlertView {
         let view = InlineAlertView()
-        view.backgroundView.fillColor = R.color.colorErrorBlockBackground()!
-        view.contentView.imageView.image = R.image.iconSlash()!
-        view.contentView.stackView.alignment = .top
+        view.apply(style: .error)
         return view
     }
 
     static func info() -> InlineAlertView {
         let view = InlineAlertView()
-        view.backgroundView.fillColor = R.color.colorIndividualChipBackground()!
-        view.contentView.imageView.image = R.image.iconInfoAccent()!
-        view.contentView.stackView.alignment = .top
+        view.apply(style: .info)
         return view
     }
 
@@ -89,5 +99,29 @@ extension InlineAlertView {
         case error
         case warning
         case info
+    }
+}
+
+extension InlineAlertView {
+    enum Constants {
+        static let horizontalContentInset: CGFloat = 16
+        static let verticalContentInset: CGFloat = 10
+        static let iconWidth: CGFloat = 16
+        static let iconTextSpacing: CGFloat = 12
+    }
+
+    static func estimatedHeight(for message: String, width: CGFloat) -> CGFloat {
+        let minHeight = Constants.iconWidth + 2 * Constants.verticalContentInset
+
+        let textWidth = width - 2 * Constants.horizontalContentInset
+            - Constants.iconWidth - Constants.iconTextSpacing
+
+        guard textWidth > 0 else {
+            return minHeight
+        }
+
+        let textHeight = message.estimateHeight(for: .caption1, width: textWidth)
+
+        return max(ceil(textHeight) + 2 * Constants.verticalContentInset, minHeight)
     }
 }

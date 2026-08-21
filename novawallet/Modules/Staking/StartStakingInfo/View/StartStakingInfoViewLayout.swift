@@ -42,6 +42,15 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
     let balanceLabel = UILabel(style: .regularSubhedlineSecondary, textAlignment: .center, numberOfLines: 1)
     var paragraphViews: [ParagraphView] = []
 
+    lazy var footerContentView = UIView.vStack(spacing: Constants.footerSpacing, [
+        actionView,
+        balanceLabel
+    ])
+
+    private var announcementView: InlineAlertView?
+    private var announcementViewModel: AnnouncementViewModel?
+    private var appliedFooterExtra: CGFloat = 0
+
     init(headerStyle: MultiColorTextStyle, paragraphStyle: MultiColorTextStyle) {
         self.headerStyle = headerStyle
         self.paragraphStyle = paragraphStyle
@@ -55,6 +64,8 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
     }
 
     override func layoutSubviews() {
+        updateFooterHeightIfNeeded()
+
         super.layoutSubviews()
 
         if skeletonView != nil {
@@ -74,10 +85,6 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
 
         stackView.layoutMargins = Constants.containerInsets
 
-        let footerContentView = UIView.vStack(spacing: Constants.footerSpacing, [
-            actionView,
-            balanceLabel
-        ])
         footer.addSubview(footerContentView)
 
         actionView.snp.makeConstraints {
@@ -122,6 +129,50 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
         actionView.actionButton.imageWithTitleView?.title = R.string(
             preferredLanguages: locale.rLanguages
         ).localizable.stakingStartTitle()
+    }
+
+    func setAnnouncement(viewModel: AnnouncementViewModel?) {
+        announcementViewModel = viewModel
+
+        if let viewModel {
+            let banner: InlineAlertView
+
+            if let announcementView {
+                banner = announcementView
+            } else {
+                banner = InlineAlertView()
+                footerContentView.insertArrangedSubview(banner, at: 0)
+                announcementView = banner
+            }
+
+            banner.bind(announcement: viewModel)
+        } else {
+            announcementView?.removeFromSuperview()
+            announcementView = nil
+        }
+
+        setNeedsLayout()
+    }
+
+    private func updateFooterHeightIfNeeded() {
+        let extra = announcementViewModel.map {
+            InlineAlertView.estimatedHeight(
+                for: $0.message,
+                width: bounds.width - 2 * Constants.footerInsets.left
+            ) + Constants.footerSpacing
+        } ?? 0
+
+        guard bounds.width > 0, abs(extra - appliedFooterExtra) > 0.5 else {
+            return
+        }
+
+        appliedFooterExtra = extra
+
+        footer.snp.updateConstraints {
+            $0.height.equalTo(Constants.footerHeight + Constants.footerBorderWidth + extra)
+        }
+
+        stackView.layoutMargins.bottom = Constants.containerInsets.bottom + extra
     }
 
     private func set(title: AccentTextModel) {

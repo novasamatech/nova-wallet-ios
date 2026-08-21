@@ -14,6 +14,7 @@ final class StakingDashboardPresenter {
     private var lastResult: StakingDashboardBuilderResult?
     private var wallet: MetaAccountModel?
     private var hasWalletsListUpdates: Bool = false
+    private var announcements: [Announcement] = []
 
     init(
         interactor: StakingDashboardInteractorInputProtocol,
@@ -68,6 +69,7 @@ private extension StakingDashboardPresenter {
     func reloadStakingView(using model: StakingDashboardModel) {
         let viewModel = viewModelFactory.createViewModel(
             from: model,
+            announcements: announcements,
             privacyModeEnabled: privacyModeEnabled,
             locale: selectedLocale
         )
@@ -80,6 +82,7 @@ private extension StakingDashboardPresenter {
     ) {
         let updateViewModel = viewModelFactory.createUpdateViewModel(
             from: model,
+            announcements: announcements,
             syncChange: syncChange,
             privacyModeEnabled: privacyModeEnabled,
             locale: selectedLocale
@@ -166,6 +169,14 @@ extension StakingDashboardPresenter: StakingDashboardInteractorOutputProtocol {
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.interactor.retryDashboardSubscription()
             }
+        }
+    }
+
+    func didReceive(announcements: [Announcement]) {
+        self.announcements = announcements
+
+        if let lastResult {
+            reloadStakingView(using: lastResult.model)
         }
     }
 

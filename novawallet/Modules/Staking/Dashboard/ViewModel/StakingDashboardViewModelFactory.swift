@@ -5,6 +5,7 @@ import BigInt
 protocol StakingDashboardViewModelFactoryProtocol {
     func createActiveStakingViewModel(
         for model: StakingDashboardItemModel.Concrete,
+        announcement: AnnouncementViewModel?,
         privacyModeEnabled: Bool,
         singleActive: Bool,
         locale: Locale
@@ -18,6 +19,7 @@ protocol StakingDashboardViewModelFactoryProtocol {
 
     func createUpdateViewModel(
         from model: StakingDashboardModel,
+        announcements: [Announcement],
         syncChange: StakingDashboardBuilderResult.SyncChange,
         privacyModeEnabled: Bool,
         locale: Locale
@@ -25,6 +27,7 @@ protocol StakingDashboardViewModelFactoryProtocol {
 
     func createViewModel(
         from model: StakingDashboardModel,
+        announcements: [Announcement],
         privacyModeEnabled: Bool,
         locale: Locale
     ) -> StakingDashboardViewModel
@@ -35,6 +38,7 @@ final class StakingDashboardViewModelFactory {
     let assetFormatterFactory: AssetBalanceFormatterFactoryProtocol
     let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
     let estimatedEarningsFormatter: LocalizableResource<NumberFormatter>
+    let announcementViewModelFactory: AnnouncementViewModelFactoryProtocol = AnnouncementViewModelFactory()
 
     init(
         assetFormatterFactory: AssetBalanceFormatterFactoryProtocol,
@@ -154,6 +158,7 @@ final class StakingDashboardViewModelFactory {
 extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProtocol {
     func createActiveStakingViewModel(
         for model: StakingDashboardItemModel.Concrete,
+        announcement: AnnouncementViewModel?,
         privacyModeEnabled: Bool,
         singleActive: Bool,
         locale: Locale
@@ -199,7 +204,8 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
             status: status,
             yourStake: .wrapped(yourStake, with: privacyModeEnabled),
             estimatedEarnings: estimatedEarnings,
-            stakingType: stakingType
+            stakingType: stakingType,
+            announcement: announcement
         )
     }
 
@@ -243,16 +249,28 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
 
     func createViewModel(
         from model: StakingDashboardModel,
+        announcements: [Announcement],
         privacyModeEnabled: Bool,
         locale: Locale
     ) -> StakingDashboardViewModel {
         let activeCounters = model.getActiveCounters()
 
-        let activeViewModels = model.active.map {
-            let counter = activeCounters[$0.chainAsset.chainAssetId] ?? 0
+        let generalViewModels = announcements.generalOnly().compactMap {
+            announcementViewModelFactory.createViewModel(from: $0, locale: locale)
+        }
+
+        let announcementsByChain = announcements.groupedByChain()
+
+        let activeViewModels = model.active.map { item in
+            let counter = activeCounters[item.chainAsset.chainAssetId] ?? 0
+
+            let announcement = announcementsByChain[item.chainAsset.chain.chainId].flatMap {
+                announcementViewModelFactory.createViewModel(from: $0, locale: locale)
+            }
 
             return createActiveStakingViewModel(
-                for: $0,
+                for: item,
+                announcement: announcement,
                 privacyModeEnabled: privacyModeEnabled,
                 singleActive: counter <= 1,
                 locale: locale
@@ -270,6 +288,7 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
         let isLoading = model.isEmpty
 
         return .init(
+            announcements: generalViewModels,
             active: activeViewModels,
             inactive: inactiveViewModels,
             hasMoreOptions: true,
@@ -280,11 +299,14 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
 
     func createUpdateViewModel(
         from model: StakingDashboardModel,
+        announcements: [Announcement],
         syncChange: StakingDashboardBuilderResult.SyncChange,
         privacyModeEnabled: Bool,
         locale: Locale
     ) -> StakingDashboardUpdateViewModel {
         let activeCounters = model.getActiveCounters()
+
+        let announcementsByChain = announcements.groupedByChain()
 
         let activeViewModels: [(Int, StakingDashboardEnabledViewModel)] = model.active.enumerated().compactMap { item in
             guard syncChange.byStakingOption.contains(item.1.stakingOption) else {
@@ -292,8 +314,14 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
             }
 
             let counter = activeCounters[item.1.chainAsset.chainAssetId] ?? 0
+
+            let announcement = announcementsByChain[item.1.chainAsset.chain.chainId].flatMap {
+                announcementViewModelFactory.createViewModel(from: $0, locale: locale)
+            }
+
             let viewModel = createActiveStakingViewModel(
                 for: item.1,
+                announcement: announcement,
                 privacyModeEnabled: privacyModeEnabled,
                 singleActive: counter <= 1,
                 locale: locale

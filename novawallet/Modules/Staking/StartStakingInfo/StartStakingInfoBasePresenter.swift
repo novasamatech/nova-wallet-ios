@@ -12,11 +12,13 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     let chainAsset: ChainAsset
     let logger: LoggerProtocol
     let accountManagementFilter: AccountManagementFilterProtocol
+    let announcementViewModelFactory: AnnouncementViewModelFactoryProtocol = AnnouncementViewModelFactory()
 
     private(set) var price: PriceData?
     private(set) var accountExistense: AccountExistense?
     private var state: StartStakingStateProtocol?
     private var wallet: MetaAccountModel?
+    private var announcement: Announcement?
 
     init(
         chainAsset: ChainAsset,
@@ -62,6 +64,14 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
             let viewModel = startStakingViewModelFactory.noAccount(chain: chainAsset.chain, locale: selectedLocale)
             view?.didReceive(balance: viewModel)
         }
+    }
+
+    func provideAnnouncementModel() {
+        let viewModel = announcement.flatMap {
+            announcementViewModelFactory.createViewModel(from: $0, locale: selectedLocale)
+        }
+
+        view?.didReceive(announcement: viewModel)
     }
 
     func shouldUpdateEraDuration(for newValue: TimeInterval?, oldValue: TimeInterval?) -> Bool {
@@ -179,6 +189,11 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         }
     }
 
+    func didReceive(announcement: Announcement?) {
+        self.announcement = announcement
+        provideAnnouncementModel()
+    }
+
     func didReceiveStakingEnabled() {
         wireframe.presentAlreadyHaveStaking(
             from: view,
@@ -243,6 +258,7 @@ extension StartStakingInfoBasePresenter: Localizable {
     func applyLocalization() {
         if view?.isSetup == true {
             provideBalanceModel()
+            provideAnnouncementModel()
             state.map(provideViewModel)
         }
     }

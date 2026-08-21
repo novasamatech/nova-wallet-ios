@@ -12,6 +12,7 @@ final class StakingDashboardViewController: UIViewController, ViewHolder {
 
     private var isLoading: Bool { dashboardViewModel?.isLoading ?? false }
 
+    private var announcementItems: [AnnouncementViewModel] { dashboardViewModel?.announcements ?? [] }
     private var activeItems: [StakingDashboardEnabledViewModel] { dashboardViewModel?.active ?? [] }
     private var inactiveItems: [StakingDashboardDisabledViewModel] { dashboardViewModel?.inactive ?? [] }
     private var hasMoreOptions: Bool { dashboardViewModel?.hasMoreOptions ?? false }
@@ -57,6 +58,7 @@ final class StakingDashboardViewController: UIViewController, ViewHolder {
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
         )
 
+        rootView.collectionView.registerCellClass(StakingDashboardAnnouncementCell.self)
         rootView.collectionView.registerCellClass(StakingDashboardActiveCell.self)
         rootView.collectionView.registerCellClass(StakingDashboardInactiveCell.self)
         rootView.collectionView.registerCellClass(StakingDashboardMoreOptionsCell.self)
@@ -101,6 +103,8 @@ extension StakingDashboardViewController: UICollectionViewDataSource {
         switch sectionModel {
         case .walletSwitch:
             return 1
+        case .announcements:
+            return announcementItems.count
         case .activeStakings:
             return isLoading ? sectionModel.loadingCellsCount : activeItems.count
         case .inactiveStakings:
@@ -108,6 +112,33 @@ extension StakingDashboardViewController: UICollectionViewDataSource {
         case .moreOptions:
             return hasMoreOptions ? 1 : 0
         }
+    }
+
+    private func provideWalletSwitchCell(
+        _ collectionView: UICollectionView,
+        indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        let cell: WalletSwitchCollectionViewCell = collectionView.dequeueReusableCell(for: indexPath)!
+
+        cell.titleLabel.apply(style: .boldLargePrimary)
+
+        cell.walletSwitch.addTarget(
+            self,
+            action: #selector(actionSwitchWallet),
+            for: .touchUpInside
+        )
+
+        let title = R.string(
+            preferredLanguages: localizationManager.selectedLocale.rLanguages
+        ).localizable.stakingTitle()
+
+        cell.bind(title: title)
+
+        if let walletViewModel = walletViewModel {
+            cell.bind(viewModel: walletViewModel)
+        }
+
+        return cell
     }
 
     func collectionView(
@@ -120,25 +151,11 @@ extension StakingDashboardViewController: UICollectionViewDataSource {
 
         switch section {
         case .walletSwitch:
-            let cell: WalletSwitchCollectionViewCell = collectionView.dequeueReusableCell(for: indexPath)!
+            return provideWalletSwitchCell(collectionView, indexPath: indexPath)
+        case .announcements:
+            let cell: StakingDashboardAnnouncementCell = collectionView.dequeueReusableCell(for: indexPath)!
 
-            cell.titleLabel.apply(style: .boldLargePrimary)
-
-            cell.walletSwitch.addTarget(
-                self,
-                action: #selector(actionSwitchWallet),
-                for: .touchUpInside
-            )
-
-            let title = R.string(
-                preferredLanguages: localizationManager.selectedLocale.rLanguages
-            ).localizable.stakingTitle()
-
-            cell.bind(title: title)
-
-            if let walletViewModel = walletViewModel {
-                cell.bind(viewModel: walletViewModel)
-            }
+            cell.bind(viewModel: announcementItems[indexPath.row])
 
             return cell
         case .activeStakings:
@@ -196,7 +213,7 @@ extension StakingDashboardViewController: UICollectionViewDataSource {
             header.bind(title: title)
 
             return header
-        case .walletSwitch, .activeStakings, .moreOptions, .none:
+        case .walletSwitch, .announcements, .activeStakings, .moreOptions, .none:
             return UICollectionReusableView()
         }
     }
@@ -208,9 +225,30 @@ extension StakingDashboardViewController: UICollectionViewDelegateFlowLayout {
         layout _: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        let height = StakingDashboardSection(rawValue: indexPath.section)?.rowHeight ?? 0
+        guard let section = StakingDashboardSection(rawValue: indexPath.section) else {
+            return .zero
+        }
 
-        return CGSize(width: collectionView.frame.width, height: height)
+        let width = collectionView.frame.width
+
+        let height: CGFloat
+
+        switch section {
+        case .announcements:
+            height = StakingDashboardAnnouncementCell.estimateHeight(
+                for: announcementItems[indexPath.row],
+                collectionWidth: width
+            )
+        case .activeStakings where !isLoading:
+            height = StakingDashboardActiveCellView.estimateHeight(
+                for: activeItems[indexPath.row],
+                collectionWidth: width
+            )
+        default:
+            height = section.rowHeight
+        }
+
+        return CGSize(width: width, height: height)
     }
 
     func collectionView(
@@ -245,7 +283,7 @@ extension StakingDashboardViewController: UICollectionViewDelegateFlowLayout {
             }
         case .moreOptions:
             presenter.selectMoreOptions()
-        case .walletSwitch:
+        case .walletSwitch, .announcements:
             break
         }
     }
@@ -263,7 +301,15 @@ extension StakingDashboardViewController: UICollectionViewDelegateFlowLayout {
         layout _: UICollectionViewLayout,
         insetForSectionAt section: Int
     ) -> UIEdgeInsets {
-        StakingDashboardSection(rawValue: section)?.insets ?? .zero
+        guard let sectionModel = StakingDashboardSection(rawValue: section) else {
+            return .zero
+        }
+
+        if sectionModel == .announcements, announcementItems.isEmpty {
+            return .zero
+        }
+
+        return sectionModel.insets
     }
 
     func collectionView(

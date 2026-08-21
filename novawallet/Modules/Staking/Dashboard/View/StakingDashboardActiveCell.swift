@@ -10,6 +10,8 @@ final class StakingDashboardActiveCellView: UIView {
         static let leadingOffset = 16
         static let topOffset = 16
         static let assetIconSize = CGSize(width: 48, height: 48)
+        static let baseContentHeight: CGFloat = 160
+        static let detailsHeight: CGFloat = 152
     }
 
     let assetContainerView: GenericPairValueView<
@@ -38,6 +40,11 @@ final class StakingDashboardActiveCellView: UIView {
         view.contentInsets = .zero
         view.innerInsets = UIEdgeInsets(top: 12, left: 10, bottom: 12, right: 10)
         view.backgroundBlurView.contentView?.fillColor = R.color.colorInfoStakingCardBackground()!
+    }
+
+    let announcementView: InlineAlertView = .create { view in
+        view.backgroundView.cornerRadius = 10
+        view.backgroundView.roundingCorners = [.bottomLeft, .bottomRight]
     }
 
     let rewardsView: GenericMultiValueView<ShimmerSecureMultibalanceView> = .create { view in
@@ -121,6 +128,8 @@ final class StakingDashboardActiveCellView: UIView {
         if loadingState != .none {
             startLoadingIfNeeded()
         }
+
+        bindAnnouncement(viewModel.announcement)
     }
 
     func setRewardsText(
@@ -143,13 +152,33 @@ final class StakingDashboardActiveCellView: UIView {
         loadingState = .all
 
         startLoadingIfNeeded()
+
+        bindAnnouncement(nil)
+    }
+
+    private func bindAnnouncement(_ viewModel: AnnouncementViewModel?) {
+        if let viewModel {
+            if announcementView.superview == nil {
+                addSubview(announcementView)
+
+                announcementView.snp.makeConstraints { make in
+                    make.top.equalToSuperview().offset(Constants.baseContentHeight)
+                    make.leading.trailing.bottom.equalToSuperview()
+                }
+            }
+
+            announcementView.bind(announcement: viewModel)
+        } else {
+            announcementView.removeFromSuperview()
+        }
     }
 
     private func setupLayout() {
         addSubview(detailsView)
 
         detailsView.snp.makeConstraints { make in
-            make.top.bottom.trailing.equalToSuperview().inset(4)
+            make.top.trailing.equalToSuperview().inset(4)
+            make.height.equalTo(Constants.detailsHeight)
             make.width.equalTo(130)
         }
 
@@ -169,6 +198,22 @@ final class StakingDashboardActiveCellView: UIView {
         }
 
         assetView.setContentCompressionResistancePriority(.low, for: .horizontal)
+    }
+}
+
+extension StakingDashboardActiveCellView {
+    static func estimateHeight(
+        for viewModel: StakingDashboardEnabledViewModel,
+        collectionWidth: CGFloat
+    ) -> CGFloat {
+        guard let announcement = viewModel.announcement else {
+            return Constants.baseContentHeight
+        }
+
+        return Constants.baseContentHeight + InlineAlertView.estimatedHeight(
+            for: announcement.message,
+            width: collectionWidth - 2 * UIConstants.horizontalInset
+        )
     }
 }
 

@@ -10,11 +10,13 @@ final class StakingMainPresenter {
     let childPresenterFactory: StakingMainPresenterFactoryProtocol
     let viewModelFactory: StakingMainViewModelFactoryProtocol
     let ahmViewModelFactory: AHMInfoViewModelFactoryProtocol
+    let announcementViewModelFactory: AnnouncementViewModelFactoryProtocol
     let stakingOption: Multistaking.ChainAssetOption
     let localizationManager: LocalizationManagerProtocol
     let logger: LoggerProtocol?
 
     private var ahmInfo: AHMFullInfo?
+    private var announcement: Announcement?
     private var childPresenter: StakingMainChildPresenterProtocol?
     private var period: StakingRewardFiltersPeriod?
 
@@ -25,6 +27,7 @@ final class StakingMainPresenter {
         childPresenterFactory: StakingMainPresenterFactoryProtocol,
         viewModelFactory: StakingMainViewModelFactoryProtocol,
         ahmViewModelFactory: AHMInfoViewModelFactoryProtocol,
+        announcementViewModelFactory: AnnouncementViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol?
     ) {
@@ -34,6 +37,7 @@ final class StakingMainPresenter {
         self.childPresenterFactory = childPresenterFactory
         self.viewModelFactory = viewModelFactory
         self.ahmViewModelFactory = ahmViewModelFactory
+        self.announcementViewModelFactory = announcementViewModelFactory
         self.localizationManager = localizationManager
         self.logger = logger
     }
@@ -59,6 +63,17 @@ private extension StakingMainPresenter {
         }
 
         view?.didReceiveAHMAlert(viewModel: ahmAlertModel)
+    }
+
+    func provideAnnouncementModel() {
+        let viewModel = announcement.flatMap {
+            announcementViewModelFactory.createViewModel(
+                from: $0,
+                locale: localizationManager.selectedLocale
+            )
+        }
+
+        view?.didReceiveAnnouncement(viewModel: viewModel)
     }
 }
 
@@ -150,6 +165,14 @@ extension StakingMainPresenter: StakingMainInteractorOutputProtocol {
         self.ahmInfo = ahmInfo
 
         provideAHMAlertModel()
+    }
+
+    func didReceiveAnnouncement(_ announcement: Announcement?) {
+        guard self.announcement != announcement else { return }
+
+        self.announcement = announcement
+
+        provideAnnouncementModel()
     }
 }
 

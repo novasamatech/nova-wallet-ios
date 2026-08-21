@@ -8,6 +8,7 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
     weak var presenter: StakingMainInteractorOutputProtocol?
 
     let ahmInfoFactory: AHMFullInfoFactoryProtocol
+    let announcementsRepository: AnnouncementsRepositoryProtocol
     let settingsManager: SettingsManagerProtocol
     let selectedWalletSettings: SelectedWalletSettings
     let stakingOption: Multistaking.ChainAssetOption
@@ -22,6 +23,7 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
 
     init(
         ahmInfoFactory: AHMFullInfoFactoryProtocol,
+        announcementsRepository: AnnouncementsRepositoryProtocol,
         settingsManager: SettingsManagerProtocol,
         stakingOption: Multistaking.ChainAssetOption,
         selectedWalletSettings: SelectedWalletSettings,
@@ -31,6 +33,7 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
         logger: LoggerProtocol
     ) {
         self.ahmInfoFactory = ahmInfoFactory
+        self.announcementsRepository = announcementsRepository
         self.settingsManager = settingsManager
         self.stakingOption = stakingOption
         self.eventCenter = eventCenter
@@ -103,6 +106,27 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
             }
         }
     }
+
+    func provideAnnouncement() {
+        let fetchWrapper = announcementsRepository.fetchAnnouncementsWrapper(for: .staking)
+
+        execute(
+            wrapper: fetchWrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            guard let self else { return }
+
+            switch result {
+            case let .success(announcements):
+                presenter?.didReceiveAnnouncement(
+                    announcements.firstAnnouncement(for: chainAsset.chain.chainId)
+                )
+            case let .failure(error):
+                logger.error("Failed on fetch announcements: \(error)")
+            }
+        }
+    }
 }
 
 extension StakingMainInteractor: StakingMainInteractorInputProtocol {
@@ -110,6 +134,7 @@ extension StakingMainInteractor: StakingMainInteractorInputProtocol {
         presenter?.didReceiveExpansion(settingsManager.stakingNetworkExpansion)
 
         provideAHMInfo()
+        provideAnnouncement()
         provideStakingRewardsFilter()
 
         eventCenter.add(observer: self, dispatchIn: .main)

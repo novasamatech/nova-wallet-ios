@@ -46,6 +46,12 @@ final class StakingMainViewLayout: UIView {
 
     lazy var ahmAlertView = InlinableAlertView()
 
+    lazy var announcementContainerView: UIView = .create { view in
+        view.isHidden = true
+    }
+
+    lazy var announcementView = InlineAlertView()
+
     var rewardContainerView: UIView?
     var rewardView: StakingRewardView?
     lazy var alertsContainerView = UIView()
@@ -200,10 +206,14 @@ private extension StakingMainViewLayout {
     func showAHMAlertWithAnimation() {
         ahmAlertContainerView.alpha = 0
 
-        stackView.insertArrangedSubview(
-            ahmAlertContainerView,
-            at: 0
-        )
+        if announcementContainerView.superview != nil {
+            stackView.insertArranged(view: ahmAlertContainerView, after: announcementContainerView)
+        } else {
+            stackView.insertArrangedSubview(
+                ahmAlertContainerView,
+                at: 0
+            )
+        }
 
         ahmAlertContainerView.snp.makeConstraints { make in
             make.width.equalToSuperview()
@@ -221,6 +231,52 @@ private extension StakingMainViewLayout {
 
                 ahmAlertAppearanceAnimator.animate(
                     view: ahmAlertContainerView,
+                    completionBlock: nil
+                )
+            }
+        )
+    }
+
+    func hideAnnouncementWithAnimation() {
+        ahmAlertDisappearanceAnimator.animate(
+            view: announcementContainerView,
+            completionBlock: nil
+        )
+        ahmAlertLayoutChangesAnimator.animate(
+            block: { [weak self] in
+                self?.announcementContainerView.isHidden = true
+                self?.stackView.layoutIfNeeded()
+            },
+            completionBlock: { [weak self] _ in
+                self?.announcementContainerView.removeFromSuperview()
+            }
+        )
+    }
+
+    func showAnnouncementWithAnimation() {
+        announcementContainerView.alpha = 0
+
+        stackView.insertArrangedSubview(
+            announcementContainerView,
+            at: 0
+        )
+
+        announcementContainerView.snp.makeConstraints { make in
+            make.width.equalToSuperview()
+        }
+
+        ahmAlertLayoutChangesAnimator.animate(
+            block: { [weak self] in
+                guard let self else { return }
+
+                announcementContainerView.isHidden = false
+                stackView.layoutIfNeeded()
+            },
+            completionBlock: { [weak self] _ in
+                guard let self else { return }
+
+                ahmAlertAppearanceAnimator.animate(
+                    view: announcementContainerView,
                     completionBlock: nil
                 )
             }
@@ -426,6 +482,30 @@ extension StakingMainViewLayout {
             }
 
             hideAHMAlertWithAnimation()
+        }
+    }
+
+    func setAnnouncement(with viewModel: AnnouncementViewModel?) {
+        if let viewModel {
+            guard announcementContainerView.superview == nil else {
+                announcementView.bind(announcement: viewModel)
+                return
+            }
+
+            if announcementView.superview == nil {
+                announcementContainerView.addSubview(announcementView)
+                applyConstraints(for: announcementContainerView, innerView: announcementView)
+            }
+
+            announcementView.bind(announcement: viewModel)
+
+            showAnnouncementWithAnimation()
+        } else {
+            guard announcementView.superview != nil else {
+                return
+            }
+
+            hideAnnouncementWithAnimation()
         }
     }
 }
