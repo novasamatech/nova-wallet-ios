@@ -2082,9 +2082,6 @@
 		AA10EA6773C5EDCB9AA19B51 /* AnnouncementsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10B560FE1B00688A98D3E1 /* AnnouncementsRepository.swift */; };
 		AA10060F567AA94CC8E0D223 /* AnnouncementViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA109F8B61C9CAC8CE836C51 /* AnnouncementViewModel.swift */; };
 		AA1041D2DDE33272269B066B /* StakingDashboardAnnouncementCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10893BE7F5B9F95CE3913E /* StakingDashboardAnnouncementCell.swift */; };
-		AA10C00A78CE50F7A549C71C /* AnnouncementsRemoteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10382118B099BB5F997B47 /* AnnouncementsRemoteTests.swift */; };
-		AA10B92D282275A44582D8D6 /* AnnouncementsRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1079D6E0C5CE463E819FFD /* AnnouncementsRepositoryTests.swift */; };
-		AA20C4E19D3A47F2B6E01A11 /* AnnouncementViewModelFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA20F7B28C4D41E5A9D02B22 /* AnnouncementViewModelFactoryTests.swift */; };
 		2D8E30212EF2FBD400A9FA61 /* WalletRemoteSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8E30202EF2FBD400A9FA61 /* WalletRemoteSubscriptionFactory.swift */; };
 		2D8E30272EF2FD0400A9FA61 /* GiftsStatusTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8E30262EF2FD0400A9FA61 /* GiftsStatusTrackerTests.swift */; };
 		2D8E30562EF2FE8700A9FA61 /* GiftsStatusTrackerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D8E30552EF2FE8700A9FA61 /* GiftsStatusTrackerDelegate.swift */; };
@@ -8749,9 +8746,6 @@
 		AA10B560FE1B00688A98D3E1 /* AnnouncementsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnouncementsRepository.swift; sourceTree = "<group>"; };
 		AA109F8B61C9CAC8CE836C51 /* AnnouncementViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnouncementViewModel.swift; sourceTree = "<group>"; };
 		AA10893BE7F5B9F95CE3913E /* StakingDashboardAnnouncementCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDashboardAnnouncementCell.swift; sourceTree = "<group>"; };
-		AA10382118B099BB5F997B47 /* AnnouncementsRemoteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnouncementsRemoteTests.swift; sourceTree = "<group>"; };
-		AA1079D6E0C5CE463E819FFD /* AnnouncementsRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnouncementsRepositoryTests.swift; sourceTree = "<group>"; };
-		AA20F7B28C4D41E5A9D02B22 /* AnnouncementViewModelFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnouncementViewModelFactoryTests.swift; sourceTree = "<group>"; };
 		2D8E30202EF2FBD400A9FA61 /* WalletRemoteSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletRemoteSubscriptionFactory.swift; sourceTree = "<group>"; };
 		2D8E30262EF2FD0400A9FA61 /* GiftsStatusTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftsStatusTrackerTests.swift; sourceTree = "<group>"; };
 		2D8E30552EF2FE8700A9FA61 /* GiftsStatusTrackerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftsStatusTrackerDelegate.swift; sourceTree = "<group>"; };
@@ -18336,16 +18330,6 @@
 			path = Announcements;
 			sourceTree = "<group>";
 		};
-		AA1085F2B318402286CE41C8 /* Announcements */ = {
-			isa = PBXGroup;
-			children = (
-				AA10382118B099BB5F997B47 /* AnnouncementsRemoteTests.swift */,
-				AA20F7B28C4D41E5A9D02B22 /* AnnouncementViewModelFactoryTests.swift */,
-				AA1079D6E0C5CE463E819FFD /* AnnouncementsRepositoryTests.swift */,
-			);
-			path = Announcements;
-			sourceTree = "<group>";
-		};
 		2D8E303A2EF2FE3900A9FA61 /* GiftsSyncService */ = {
 			isa = PBXGroup;
 			children = (
@@ -22467,7 +22451,6 @@
 		84452F8725D5E6CC00F47EC5 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				AA1085F2B318402286CE41C8 /* Announcements */,
 				E6F3AA47E60B33CE93DF4903 /* AssetExchange */,
 				0C8FC2292E623F7000034ED3 /* DelegatedAccounts */,
 				0C41D20C2BF77F57000950EE /* CloudBackup */,
@@ -37356,9 +37339,6 @@
 				84B7C716289BFA79001A3566 /* DAppBrowserTests.swift in Sources */,
 				84FACB1725F559F200F32ED4 /* WestendStub.swift in Sources */,
 				2D8E30272EF2FD0400A9FA61 /* GiftsStatusTrackerTests.swift in Sources */,
-				AA10C00A78CE50F7A549C71C /* AnnouncementsRemoteTests.swift in Sources */,
-				AA20C4E19D3A47F2B6E01A11 /* AnnouncementViewModelFactoryTests.swift in Sources */,
-				AA10B92D282275A44582D8D6 /* AnnouncementsRepositoryTests.swift in Sources */,
 				84B7C71A289BFA79001A3566 /* DAppListGenerator.swift in Sources */,
 				0C803D0B2C9B805800AEB35B /* StringTrimmingTests.swift in Sources */,
 				844DAAE428AD24FA008E11DA /* LedgerTransportTests.swift in Sources */,

@@ -131,8 +131,6 @@ sources = [
     "novawallet/Common/Services/AssetExchange/AssetsExchangeGraph.swift",
     "novawallet/Common/Services/ExtrinsicService/Substrate/FeeManaging/FeeViaSwap/Hydra/HydraFeeOraclePriceFactory.swift",
     "novawallet/Common/LegalConsent/LegalConsentRepositoryProtocols.swift",
-    "novawallet/Common/Services/Announcements/AnnouncementsRepository.swift",
-    "novawallet/Common/Services/Announcements/AnnouncementsFetchOperationFactory.swift",
 ]
 
 exclude = [
