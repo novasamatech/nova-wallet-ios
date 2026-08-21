@@ -155,18 +155,26 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
     }
 
     private func updateFooterHeightIfNeeded() {
-        let extra = announcementViewModel.map {
+        let bannerHeight = announcementViewModel.map {
             InlineAlertView.estimatedHeight(
                 for: $0.message,
                 width: bounds.width - 2 * Constants.footerInsets.left
-            ) + Constants.footerSpacing
-        } ?? 0
+            )
+        }
+
+        let extra = bannerHeight.map { $0 + Constants.footerSpacing } ?? 0
 
         guard bounds.width > 0, abs(extra - appliedFooterExtra) > 0.5 else {
             return
         }
 
         appliedFooterExtra = extra
+
+        if let bannerHeight, let announcementView {
+            announcementView.snp.remakeConstraints { make in
+                make.height.equalTo(bannerHeight)
+            }
+        }
 
         footer.snp.updateConstraints {
             $0.height.equalTo(Constants.footerHeight + Constants.footerBorderWidth + extra)
