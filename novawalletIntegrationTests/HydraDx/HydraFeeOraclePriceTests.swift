@@ -5,6 +5,12 @@ import Operation_iOS
 import SubstrateSdk
 
 final class HydraFeeOraclePriceTests: XCTestCase {
+    private var context: Context!
+
+    override func setUpWithError() throws {
+        context = try makeContext()
+    }
+
     func testOraclePriceForDot() {
         performOraclePriceCheck(for: 1, symbol: "DOT")
     }
@@ -92,6 +98,7 @@ private extension HydraFeeOraclePriceTests {
     }
 
     struct Context {
+        let chainRegistry: ChainRegistryProtocol
         let chain: ChainModel
         let connection: ChainConnection
         let runtimeService: RuntimeProviderProtocol
@@ -120,8 +127,6 @@ private extension HydraFeeOraclePriceTests {
     }
 
     func performPriceFetch(for assetId: AssetModel.Id) throws -> HydraFeeConversion.Price {
-        let context = try makeContext()
-
         let factory = HydraFeeOraclePriceFactory(
             chain: context.chain,
             connection: context.connection,
@@ -135,7 +140,6 @@ private extension HydraFeeOraclePriceTests {
     }
 
     func performRouteFetch(for assetId: AssetModel.Id) throws -> [HydraRouter.Trade] {
-        let context = try makeContext()
         let codingFactory = try context.runCodingFactory()
         let remoteAssetId = try context.remoteAssetId(for: assetId, codingFactory: codingFactory)
         let pair = HydraRouter.AssetPair(assetIn: remoteAssetId, assetOut: HydraDx.nativeAssetId)
@@ -158,7 +162,6 @@ private extension HydraFeeOraclePriceTests {
     }
 
     func performAcceptedCurrencyFetch(for assetId: AssetModel.Id) throws -> BigUInt? {
-        let context = try makeContext()
         let codingFactory = try context.runCodingFactory()
         let remoteAssetId = try context.remoteAssetId(for: assetId, codingFactory: codingFactory)
 
@@ -174,16 +177,14 @@ private extension HydraFeeOraclePriceTests {
     }
 
     func performNonAcceptedAssetSearch() throws -> ChainAssetId? {
-        let context = try makeContext()
-
-        return try context.chain.assets
+        try context.chain.assets
             .map { context.chainAssetId(for: $0.assetId) }
             .filter { $0 != context.chain.utilityChainAssetId() }
             .first { try performAcceptedCurrencyFetch(for: $0.assetId) == nil }
     }
 
     func performBlockTimeFetch() throws -> BlockTime {
-        guard let blockTime = try makeContext().chain.defaultBlockTimeMillis else {
+        guard let blockTime = context.chain.defaultBlockTimeMillis else {
             throw ChainRegistryError.noChain(KnowChainId.hydra)
         }
 
@@ -191,7 +192,7 @@ private extension HydraFeeOraclePriceTests {
     }
 
     func performMetadataFetch() throws -> RuntimeMetadataProtocol {
-        try makeContext().runCodingFactory().metadata
+        try context.runCodingFactory().metadata
     }
 
     func makeContext() throws -> Context {
@@ -206,7 +207,12 @@ private extension HydraFeeOraclePriceTests {
             throw ChainRegistryError.noChain(chainId)
         }
 
-        return Context(chain: chain, connection: connection, runtimeService: runtimeService)
+        return Context(
+            chainRegistry: chainRegistry,
+            chain: chain,
+            connection: connection,
+            runtimeService: runtimeService
+        )
     }
 }
 
