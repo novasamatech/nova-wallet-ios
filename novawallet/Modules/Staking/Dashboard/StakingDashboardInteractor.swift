@@ -29,6 +29,8 @@ final class StakingDashboardInteractor {
 
     private var stakableAssets: Set<ChainAsset> = []
 
+    private let announcementsCancellableStore = CancellableCallStore()
+
     init(
         syncServiceFactory: MultistakingSyncServiceFactoryProtocol,
         walletSettings: SelectedWalletSettings,
@@ -160,11 +162,14 @@ final class StakingDashboardInteractor {
     }
 
     private func provideAnnouncements() {
+        announcementsCancellableStore.cancel()
+
         let fetchWrapper = announcementsRepository.fetchAnnouncementsWrapper(for: .staking)
 
-        execute(
+        executeCancellable(
             wrapper: fetchWrapper,
             inOperationQueue: operationQueue,
+            backingCallIn: announcementsCancellableStore,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {

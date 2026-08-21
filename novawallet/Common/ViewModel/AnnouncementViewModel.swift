@@ -6,8 +6,6 @@ struct AnnouncementViewModel: Equatable {
 }
 
 protocol AnnouncementViewModelFactoryProtocol {
-    func createViewModel(from announcement: Announcement, locale: Locale) -> AnnouncementViewModel?
-
     func createGeneralViewModels(
         from announcements: [Announcement],
         locale: Locale
@@ -21,7 +19,7 @@ protocol AnnouncementViewModelFactoryProtocol {
 }
 
 final class AnnouncementViewModelFactory: AnnouncementViewModelFactoryProtocol {
-    func createViewModel(from announcement: Announcement, locale: Locale) -> AnnouncementViewModel? {
+    private func createViewModel(from announcement: Announcement, locale: Locale) -> AnnouncementViewModel? {
         guard let message = announcement.message(for: locale) else {
             return nil
         }

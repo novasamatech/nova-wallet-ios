@@ -12,7 +12,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     let chainAsset: ChainAsset
     let logger: LoggerProtocol
     let accountManagementFilter: AccountManagementFilterProtocol
-    let announcementViewModelFactory: AnnouncementViewModelFactoryProtocol = AnnouncementViewModelFactory()
+    let announcementViewModelFactory: AnnouncementViewModelFactoryProtocol
 
     private(set) var price: PriceData?
     private(set) var accountExistense: AccountExistense?
@@ -29,6 +29,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         localizationManager: LocalizationManagerProtocol,
         applicationConfig: ApplicationConfigProtocol,
         accountManagementFilter: AccountManagementFilterProtocol = AccountManagementFilter(),
+        announcementViewModelFactory: AnnouncementViewModelFactoryProtocol = AnnouncementViewModelFactory(),
         logger: LoggerProtocol
     ) {
         self.chainAsset = chainAsset
@@ -38,6 +39,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         self.balanceDerivationFactory = balanceDerivationFactory
         self.applicationConfig = applicationConfig
         self.accountManagementFilter = accountManagementFilter
+        self.announcementViewModelFactory = announcementViewModelFactory
         self.logger = logger
         self.localizationManager = localizationManager
     }

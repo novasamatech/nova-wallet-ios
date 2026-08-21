@@ -27,4 +27,3 @@ extension Announcement {
         return content[Self.defaultContentKey]
     }
 }
-

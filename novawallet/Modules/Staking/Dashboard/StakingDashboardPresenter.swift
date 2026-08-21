@@ -173,6 +173,10 @@ extension StakingDashboardPresenter: StakingDashboardInteractorOutputProtocol {
     }
 
     func didReceive(announcements: [Announcement]) {
+        guard self.announcements != announcements else {
+            return
+        }
+
         self.announcements = announcements
 
         if let lastResult {
