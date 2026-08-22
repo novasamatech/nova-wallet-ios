@@ -2,8 +2,7 @@ import Foundation
 import SubstrateSdk
 import Operation_iOS
 
-final class StorageListSyncService<K: Encodable, U: JSONListConvertible, T: Decodable>: BaseSyncService,
-    AnyCancellableCleaning {
+final class StorageListSyncService<K: Encodable, U: JSONListConvertible, T: Decodable>: BaseSyncService {
     typealias RemoteResponse = (remoteKey: U, response: StorageResponse<T>)
     typealias LocalResponse = (remoteKey: U, response: T)
 
@@ -50,7 +49,8 @@ final class StorageListSyncService<K: Encodable, U: JSONListConvertible, T: Deco
     }
 
     override func stopSyncUp() {
-        clear(cancellable: &cancellable)
+        let call = _cancellable.exchange(nil)
+        call?.cancel()
     }
 }
 

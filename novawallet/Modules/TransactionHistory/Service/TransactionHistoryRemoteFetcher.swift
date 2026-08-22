@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-final class TransactionHistoryRemoteFetcher: AnyCancellableCleaning {
+final class TransactionHistoryRemoteFetcher {
     let operationFactory: WalletRemoteHistoryFactoryProtocol
     let operationQueue: OperationQueue
     let accountId: AccountId
@@ -30,7 +30,8 @@ final class TransactionHistoryRemoteFetcher: AnyCancellableCleaning {
     }
 
     deinit {
-        clear(cancellable: &pendingOperation)
+        let call = _pendingOperation.exchange(nil)
+        call?.cancel()
     }
 
     private func performFetch() {

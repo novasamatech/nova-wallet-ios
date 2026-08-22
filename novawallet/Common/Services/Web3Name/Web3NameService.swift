@@ -16,7 +16,7 @@ protocol Web3NameServiceProtocol {
     func setup()
 }
 
-final class Web3NameService: AnyCancellableCleaning {
+final class Web3NameService {
     @Atomic(defaultValue: nil) private var fetchRecipientsCancellableCall: CancellableCall?
     @Atomic(defaultValue: nil) private var fetchCoinListCancellableCall: CancellableCall?
 
@@ -221,7 +221,10 @@ extension Web3NameService: Web3NameServiceProtocol {
     }
 
     func cancel() {
-        clear(cancellable: &fetchCoinListCancellableCall)
-        clear(cancellable: &fetchRecipientsCancellableCall)
+        let coinListCall = _fetchCoinListCancellableCall.exchange(nil)
+        let recipientsCall = _fetchRecipientsCancellableCall.exchange(nil)
+
+        coinListCall?.cancel()
+        recipientsCall?.cancel()
     }
 }

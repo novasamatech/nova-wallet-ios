@@ -1,39 +1,62 @@
 import Foundation
 import Operation_iOS
 
+// Every access to the stored call goes through `mutex`: `store`/`clear`/`cancel`/`clearIfMatches`
+// are routinely called from a callback queue and from a teardown path on another thread at the
+// same time, and an unsynchronised swap lets two threads read the same reference and release it
+// twice. `cancel()` runs outside the lock because cancelling an operation graph can invoke a
+// completion block synchronously, which re-enters `clearIfMatches` (NSLock is not recursive).
 final class CancellableCallStore {
-    private(set) var operatingCall: OperatingCall?
+    private let mutex = NSLock()
+    private var call: OperatingCall?
+
+    var operatingCall: OperatingCall? {
+        mutex.lock()
+        defer { mutex.unlock() }
+
+        return call
+    }
 
     var hasCall: Bool {
         operatingCall != nil
     }
 
-    func store(call: OperatingCall) {
-        operatingCall = call
+    // Returns the displaced call so it is always released by the caller, outside the lock.
+    private func exchange(_ newCall: OperatingCall?, ifMatching expected: CancellableCall? = nil) -> OperatingCall? {
+        mutex.lock()
+        defer { mutex.unlock() }
+
+        if let expected, call !== expected {
+            return nil
+        }
+
+        let previous = call
+        call = newCall
+
+        return previous
+    }
+
+    func store(call newCall: OperatingCall) {
+        _ = exchange(newCall)
     }
 
     func clear() {
-        operatingCall = nil
+        _ = exchange(nil)
     }
 
     func cancel() {
-        let copy = operatingCall
-        operatingCall = nil
-        copy?.cancel()
+        exchange(nil)?.cancel()
     }
 
-    func clearIfMatches(call: OperatingCall) -> Bool {
-        guard matches(call: call) else {
-            return false
-        }
-
-        operatingCall = nil
-
-        return true
+    func clearIfMatches(call expected: OperatingCall) -> Bool {
+        exchange(nil, ifMatching: expected) != nil
     }
 
-    func matches(call: CancellableCall) -> Bool {
-        operatingCall === call
+    func matches(call expected: CancellableCall) -> Bool {
+        mutex.lock()
+        defer { mutex.unlock() }
+
+        return call === expected
     }
 
     func addDependency(to newCall: OperatingCall) {

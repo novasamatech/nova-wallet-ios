@@ -2,7 +2,7 @@ import Foundation
 import Keystore_iOS
 import Operation_iOS
 
-final class InAppUpdatesService: BaseSyncService, AnyCancellableCleaning {
+final class InAppUpdatesService: BaseSyncService {
     let repository: InAppUpdatesReleasesRepositoryProtocol
     let currentVersion: String
     let securityLayerService: SecurityLayerServiceProtocol
@@ -122,6 +122,7 @@ final class InAppUpdatesService: BaseSyncService, AnyCancellableCleaning {
     }
 
     override func stopSyncUp() {
-        clear(cancellable: &executingOperation)
+        let call = _executingOperation.exchange(nil)
+        call?.cancel()
     }
 }

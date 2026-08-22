@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 import Operation_iOS
 
-final class StorageItemSyncService<T: Decodable>: BaseSyncService, AnyCancellableCleaning {
+final class StorageItemSyncService<T: Decodable>: BaseSyncService {
     let storagePath: StorageCodingPath
     let repository: AnyDataProviderRepository<ChainStorageItem>
     let runtimeCodingService: RuntimeCodingServiceProtocol
@@ -47,7 +47,8 @@ final class StorageItemSyncService<T: Decodable>: BaseSyncService, AnyCancellabl
     }
 
     override func stopSyncUp() {
-        clear(cancellable: &cancellable)
+        let call = _cancellable.exchange(nil)
+        call?.cancel()
     }
 }
 

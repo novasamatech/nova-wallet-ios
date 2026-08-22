@@ -3,7 +3,7 @@ import Operation_iOS
 
 typealias TransactionSyncResultClosure = (WalletRemoteHistoryData) -> Void
 
-final class TransactionHistorySyncService: BaseSyncService, AnyCancellableCleaning {
+final class TransactionHistorySyncService: BaseSyncService {
     let remoteOperationFactory: WalletRemoteHistoryFactoryProtocol
     let repository: AnyDataProviderRepository<TransactionHistoryItem>
     let accountId: AccountId
@@ -138,6 +138,7 @@ final class TransactionHistorySyncService: BaseSyncService, AnyCancellableCleani
     }
 
     override func stopSyncUp() {
-        clear(cancellable: &cancellable)
+        let call = _cancellable.exchange(nil)
+        call?.cancel()
     }
 }
