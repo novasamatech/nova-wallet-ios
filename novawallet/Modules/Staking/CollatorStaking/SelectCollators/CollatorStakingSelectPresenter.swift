@@ -1,7 +1,7 @@
+import BigInt
 import Foundation
 import Foundation_iOS
 import SubstrateSdk
-import BigInt
 
 final class CollatorStakingSelectPresenter {
     weak var view: CollatorStakingSelectViewProtocol?
@@ -15,7 +15,7 @@ final class CollatorStakingSelectPresenter {
     private var collatorsPref: PreferredValidatorsProviderModel?
     private var price: PriceData?
 
-    private var sorting: CollatorsSortType = .rewards
+    private var sorting: CollatorsSortType
 
     private lazy var iconGenerator = PolkadotIconGenerator()
     private lazy var percentFormatter = NumberFormatter.percentSingle.localizableResource()
@@ -23,6 +23,7 @@ final class CollatorStakingSelectPresenter {
 
     let chainAsset: ChainAsset
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let defaultSorting: CollatorsSortType
     let logger: LoggerProtocol
 
     init(
@@ -31,6 +32,7 @@ final class CollatorStakingSelectPresenter {
         delegate: CollatorStakingSelectDelegate,
         chainAsset: ChainAsset,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        defaultSorting: CollatorsSortType = .rewards,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -39,6 +41,8 @@ final class CollatorStakingSelectPresenter {
         self.delegate = delegate
         self.chainAsset = chainAsset
         self.balanceViewModelFactory = balanceViewModelFactory
+        self.defaultSorting = defaultSorting
+        sorting = defaultSorting
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -116,11 +120,16 @@ final class CollatorStakingSelectPresenter {
                 subtitle: amount
             )
         case .minStake, .ownStake, .totalStake:
+            guard let apr = collatorInfo.apr else {
+                let title = R.string(preferredLanguages: languages).localizable.commonMinStakeColumn()
+                let amount = createBalanceViewModel(for: collatorInfo.minRewardableStake).amount
+
+                return TitleWithSubtitleViewModel(title: title, subtitle: amount)
+            }
+
             let title = R.string(preferredLanguages: languages).localizable.commonRewardsColumn()
 
-            let rewards = collatorInfo.apr.flatMap {
-                percentFormatter.value(for: selectedLocale).stringFromDecimal($0)
-            } ?? ""
+            let rewards = percentFormatter.value(for: selectedLocale).stringFromDecimal(apr) ?? ""
 
             return TitleWithSubtitleViewModel(title: title, subtitle: rewards)
         }
@@ -182,7 +191,7 @@ final class CollatorStakingSelectPresenter {
 
             let headerViewModel = createHeaderViewModel(for: collatorsViewModels.count)
 
-            let filtersApplied = sorting != CollatorsSortType.defaultType
+            let filtersApplied = sorting != defaultSorting
 
             let viewModel = CollatorSelectionScreenViewModel(
                 collators: collatorsViewModels,
@@ -258,7 +267,7 @@ extension CollatorStakingSelectPresenter: CollatorStakingSelectPresenterProtocol
     }
 
     func clearFilters() {
-        sorting = CollatorsSortType.defaultType
+        sorting = defaultSorting
 
         if let allCollators {
             applySortingAndSaveResult(allCollators)

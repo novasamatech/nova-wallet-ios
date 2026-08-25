@@ -5,7 +5,9 @@ struct SubtensorStakingPosition: Equatable {
     let hotkey: AccountId
     let netuid: UInt16
     let stakeAlpha: BigUInt
-    let emissionPerTempo: BigUInt
+    // StakeInfo.emission is AlphaDividendsPerSubnet[netuid, hotkey] — the hotkey-wide nominator
+    // dividend per tempo; scale by stakeAlpha / TotalHotkeyAlpha before showing a per-user rate
+    let hotkeyEmissionPerTempo: BigUInt
     let isRegistered: Bool
 }
 

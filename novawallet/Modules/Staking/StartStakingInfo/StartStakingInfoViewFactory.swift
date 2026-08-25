@@ -46,7 +46,14 @@ struct StartStakingInfoViewFactory {
                     type: selectedStakingType ?? mainStakingType
                 )
             )
-        case .subtensor, .unsupported, .nominationPools:
+        case .subtensor:
+            return createSubtensorView(
+                for: .init(
+                    chainAsset: chainAsset,
+                    type: selectedStakingType ?? mainStakingType
+                )
+            )
+        case .unsupported, .nominationPools:
             return nil
         }
     }

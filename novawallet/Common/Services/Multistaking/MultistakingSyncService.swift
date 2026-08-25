@@ -405,7 +405,10 @@ final class MultistakingSyncService {
             operationQueue: operationQueue
         )
 
-        let stakeStateFetchFactory = SubtensorStakeStateFetchFactory(operationFactory: apiOperationFactory)
+        let stakeStateFetchFactory = SubtensorStakeStateFetchFactory(
+            operationFactory: apiOperationFactory,
+            operationQueue: operationQueue
+        )
 
         return SubtensorMultistakingUpdateService(
             walletId: wallet.metaId,

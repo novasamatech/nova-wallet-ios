@@ -8,20 +8,25 @@ protocol SubtensorStakeStateFetchFactoryProtocol {
     ) -> CompoundOperationWrapper<Multistaking.SubtensorStakingState>
 }
 
-final class SubtensorStakeStateFetchFactory {
-    let operationFactory: SubtensorApiOperationFactoryProtocol
-
-    init(operationFactory: SubtensorApiOperationFactoryProtocol) {
-        self.operationFactory = operationFactory
-    }
+enum SubtensorStakeStateFetchFactoryError: Error {
+    case missingAlphaPrice(netuid: UInt16)
 }
 
-extension SubtensorStakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol {
-    func createStateWrapper(
-        for coldkey: AccountId
+final class SubtensorStakeStateFetchFactory {
+    let operationFactory: SubtensorApiOperationFactoryProtocol
+    let operationQueue: OperationQueue
+
+    init(operationFactory: SubtensorApiOperationFactoryProtocol, operationQueue: OperationQueue) {
+        self.operationFactory = operationFactory
+        self.operationQueue = operationQueue
+    }
+
+    private func createPinnedStateWrapper(
+        for coldkey: AccountId,
+        blockHash: BlockHash
     ) -> CompoundOperationWrapper<Multistaking.SubtensorStakingState> {
-        let stakeInfoWrapper = operationFactory.createStakeInfoWrapper(for: coldkey, blockHash: nil)
-        let pricesWrapper = operationFactory.createAlphaPricesWrapper(at: nil)
+        let stakeInfoWrapper = operationFactory.createStakeInfoWrapper(for: coldkey, blockHash: blockHash)
+        let pricesWrapper = operationFactory.createAlphaPricesWrapper(at: blockHash)
 
         let mergeOperation = ClosureOperation<Multistaking.SubtensorStakingState> {
             let stakeInfoList = try stakeInfoWrapper.targetOperation.extractNoCancellableResultData()
@@ -32,13 +37,19 @@ extension SubtensorStakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtoc
                     hotkey: stakeInfo.hotkey,
                     netuid: stakeInfo.netuid,
                     stakeAlpha: stakeInfo.stake,
-                    emissionPerTempo: stakeInfo.emission,
+                    hotkeyEmissionPerTempo: stakeInfo.emission,
                     isRegistered: stakeInfo.isRegistered
                 )
             }
 
             let prices = subnetPrices.reduce(into: [UInt16: BigUInt]()) { accum, subnetPrice in
                 accum[subnetPrice.netuid] = subnetPrice.price
+            }
+
+            for position in positions where position.netuid != SubtensorStakingPallet.rootNetuid {
+                guard prices[position.netuid] != nil else {
+                    throw SubtensorStakeStateFetchFactoryError.missingAlphaPrice(netuid: position.netuid)
+                }
             }
 
             return Multistaking.SubtensorStakingState(positions: positions, prices: prices)
@@ -51,5 +62,29 @@ extension SubtensorStakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtoc
             targetOperation: mergeOperation,
             dependencies: stakeInfoWrapper.allOperations + pricesWrapper.allOperations
         )
+    }
+}
+
+extension SubtensorStakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol {
+    func createStateWrapper(
+        for coldkey: AccountId
+    ) -> CompoundOperationWrapper<Multistaking.SubtensorStakingState> {
+        let blockHashWrapper = operationFactory.createBestBlockHashWrapper()
+
+        let stateWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+            operationQueue: operationQueue
+        ) { [weak self] in
+            guard let self else {
+                throw BaseOperationError.parentOperationCancelled
+            }
+
+            let blockHash = try blockHashWrapper.targetOperation.extractNoCancellableResultData()
+
+            return createPinnedStateWrapper(for: coldkey, blockHash: blockHash)
+        }
+
+        stateWrapper.addDependency(wrapper: blockHashWrapper)
+
+        return stateWrapper.insertingHead(operations: blockHashWrapper.allOperations)
     }
 }

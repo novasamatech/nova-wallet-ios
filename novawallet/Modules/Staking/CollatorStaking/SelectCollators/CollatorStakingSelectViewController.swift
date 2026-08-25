@@ -1,11 +1,12 @@
-import UIKit
 import Foundation_iOS
+import UIKit
 import UIKit_iOS
 
 final class CollatorStakingSelectViewController: UIViewController, ViewHolder {
     typealias RootViewType = CollatorStakingSelectViewLayout
 
     let presenter: CollatorStakingSelectPresenterProtocol
+    let statics: CollatorStakingDelegateStatics
 
     private var collatorViewModels: [CollatorSelectionViewModel] {
         state?.viewModel?.collators ?? []
@@ -27,9 +28,11 @@ final class CollatorStakingSelectViewController: UIViewController, ViewHolder {
 
     init(
         presenter: CollatorStakingSelectPresenterProtocol,
+        statics: CollatorStakingDelegateStatics = .collator,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
+        self.statics = statics
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -89,7 +92,7 @@ final class CollatorStakingSelectViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.parachainStakingSelectCollator()
+        title = statics.selectDelegateTitle.value(for: selectedLocale)
 
         rootView.clearButton.imageWithTitleView?.title = R.string(
             preferredLanguages: selectedLocale.rLanguages

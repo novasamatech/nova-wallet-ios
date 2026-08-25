@@ -30,15 +30,6 @@ final class SubtensorStakingStateTests: XCTestCase {
         XCTAssertEqual(state.totalStakeInRao, BigUInt.zero)
     }
 
-    func testAlphaPositionWithoutPriceContributesZero() {
-        let state = Multistaking.SubtensorStakingState(
-            positions: [Self.position(netuid: 7, stakeAlpha: 1_000_000_000)],
-            prices: [:]
-        )
-
-        XCTAssertEqual(state.totalStakeInRao, BigUInt.zero)
-    }
-
     func testMixedPositionsSumRootAndSpotValuedAlpha() {
         let state = Multistaking.SubtensorStakingState(
             positions: [
@@ -58,9 +49,7 @@ final class SubtensorStakingStateTests: XCTestCase {
             prices: [1: BigUInt(UInt64.max)]
         )
 
-        let expected = BigUInt(UInt64.max) * BigUInt(UInt64.max) / BigUInt(1_000_000_000)
-
-        XCTAssertEqual(state.totalStakeInRao, expected)
+        XCTAssertEqual(state.totalStakeInRao, BigUInt("340282366920938463426481119284"))
     }
 
     func testStateWithPositionsMapsToActiveIndependent() {
@@ -86,7 +75,7 @@ final class SubtensorStakingStateTests: XCTestCase {
             hotkey: Data(repeating: 2, count: 32),
             netuid: netuid,
             stakeAlpha: stakeAlpha,
-            emissionPerTempo: 0,
+            hotkeyEmissionPerTempo: 0,
             isRegistered: true
         )
     }

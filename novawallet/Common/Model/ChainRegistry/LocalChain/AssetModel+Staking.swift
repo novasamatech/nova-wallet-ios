@@ -13,6 +13,10 @@ extension AssetModel {
         stakings?.contains(.mythos) ?? false
     }
 
+    var hasSubtensorStaking: Bool {
+        stakings?.contains(.subtensor) ?? false
+    }
+
     var supportedStakings: [StakingType]? {
         stakings?.filter { $0 != .unsupported }
     }

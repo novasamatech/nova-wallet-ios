@@ -8,6 +8,8 @@ extension SubtensorStakingPallet {
         @BytesCodable var coldkey: AccountId
         @StringCodable var netuid: UInt16
         @StringCodable var stake: Balance
+        // locked/taoEmission/drain are literal zeros at spec 448 (stake_info.rs:79-82);
+        // real lock data comes only from StakeAvailability
         @StringCodable var locked: Balance
         @StringCodable var emission: Balance
         @StringCodable var taoEmission: Balance

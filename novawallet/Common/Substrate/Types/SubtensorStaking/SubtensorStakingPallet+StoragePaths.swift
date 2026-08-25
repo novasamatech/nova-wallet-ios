@@ -3,46 +3,66 @@ import SubstrateSdk
 
 extension SubtensorStakingPallet {
     static var stakingHotkeysPath: StorageCodingPath {
-        StorageCodingPath(moduleName: Self.name, itemName: "StakingHotkeys")
+        StorageCodingPath(moduleName: name, itemName: "StakingHotkeys")
     }
 
     static var totalHotkeyAlphaPath: StorageCodingPath {
-        StorageCodingPath(moduleName: Self.name, itemName: "TotalHotkeyAlpha")
+        StorageCodingPath(moduleName: name, itemName: "TotalHotkeyAlpha")
     }
 
     static var ownerPath: StorageCodingPath {
-        StorageCodingPath(moduleName: Self.name, itemName: "Owner")
+        StorageCodingPath(moduleName: name, itemName: "Owner")
+    }
+
+    static var delegatesTakePath: StorageCodingPath {
+        StorageCodingPath(moduleName: name, itemName: "Delegates")
     }
 
     static var subtokenEnabledPath: StorageCodingPath {
-        StorageCodingPath(moduleName: Self.name, itemName: "SubtokenEnabled")
+        StorageCodingPath(moduleName: name, itemName: "SubtokenEnabled")
     }
 
     static var tokenSymbolPath: StorageCodingPath {
-        StorageCodingPath(moduleName: Self.name, itemName: "TokenSymbol")
+        StorageCodingPath(moduleName: name, itemName: "TokenSymbol")
     }
 
     static var coldkeySwapAnnouncementsPath: StorageCodingPath {
-        StorageCodingPath(moduleName: Self.name, itemName: "ColdkeySwapAnnouncements")
+        StorageCodingPath(moduleName: name, itemName: "ColdkeySwapAnnouncements")
     }
 
     static var taoWeightPath: StorageCodingPath {
-        StorageCodingPath(moduleName: Self.name, itemName: "TaoWeight")
+        StorageCodingPath(moduleName: name, itemName: "TaoWeight")
     }
 
     static var rootStakeUnlockIntervalPath: StorageCodingPath {
-        StorageCodingPath(moduleName: Self.name, itemName: "RootStakeUnlockInterval")
+        StorageCodingPath(moduleName: name, itemName: "RootStakeUnlockInterval")
     }
 
     static var lastColdkeyHotkeyStakeBlockPath: StorageCodingPath {
-        StorageCodingPath(moduleName: Self.name, itemName: "LastColdkeyHotkeyStakeBlock")
+        StorageCodingPath(moduleName: name, itemName: "LastColdkeyHotkeyStakeBlock")
     }
 
     static var feeRatePath: StorageCodingPath {
-        StorageCodingPath(moduleName: Self.swapPalletName, itemName: "FeeRate")
+        StorageCodingPath(moduleName: swapPalletName, itemName: "FeeRate")
+    }
+
+    static var nominatorMinRequiredStakePath: StorageCodingPath {
+        StorageCodingPath(moduleName: name, itemName: "NominatorMinRequiredStake")
+    }
+
+    static var rootClaimableThresholdPath: StorageCodingPath {
+        StorageCodingPath(moduleName: name, itemName: "RootClaimableThreshold")
+    }
+
+    static var safeModeEnteredUntilPath: StorageCodingPath {
+        StorageCodingPath(moduleName: safeModePalletName, itemName: "EnteredUntil")
     }
 
     static var initialMinStakePath: ConstantCodingPath {
-        ConstantCodingPath(moduleName: Self.name, constantName: "InitialMinStake")
+        ConstantCodingPath(moduleName: name, constantName: "InitialMinStake")
+    }
+
+    static var initialDefaultDelegateTakePath: ConstantCodingPath {
+        ConstantCodingPath(moduleName: name, constantName: "InitialDefaultDelegateTake")
     }
 }

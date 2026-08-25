@@ -21,7 +21,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     let operationQueue: OperationQueue
 
     private var hotkeysSubscription: CallbackStorageSubscription<[BytesCodable]>?
-    private var alphaTriggerSubscription: CallbackBatchStorageSubscription<BatchStorageSubscriptionRawResult>?
+    private var alphaTriggerSubscription: CallbackBatchRawStorageSubscription?
     private var subscribedPositionKeys: Set<PositionKey>?
 
     private var fetchCallStore = CancellableCallStore()
@@ -158,6 +158,9 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         }
     }
 
+    // Keys cover only current positions: a stake to a tracked hotkey on a new subnet moves neither
+    // StakingHotkeys nor a subscribed key; until the extrinsic-monitor trigger lands in the
+    // root-flows stage such a position surfaces only on the next tracked-key epoch movement
     private func updateAlphaTriggerSubscription(for state: Multistaking.SubtensorStakingState) {
         let newKeys = Set(
             state.positions.map { PositionKey(hotkey: $0.hotkey, netuid: $0.netuid) }

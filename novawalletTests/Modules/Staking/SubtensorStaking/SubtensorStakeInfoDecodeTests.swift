@@ -6,7 +6,7 @@ import SubstrateSdk
 final class SubtensorStakeInfoDecodeTests: XCTestCase {
     let stakeInfoForColdkeyHex = "0x04f8d0eafbd29c52d8de8454bc05cd74b9e6d3db0ce043d8e543566a7ca477084484cec003c237e96caf516d446e7ca347f1c1439539f915438a806f099e31fd1c00dad5c80d0000000000"
 
-    let stakeAvailabilityHex = "0x0484cec003c237e96caf516d446e7ca347f1c1439539f915438a806f099e31fd1c080000dad5c80d00dad5c80d030002093d0042420f00c2c62d00"
+    let stakeAvailabilityHex = "0x0484cec003c237e96caf516d446e7ca347f1c1439539f915438a806f099e31fd1c040000dad5c80d00dad5c80d"
 
     let hotkeyHex = "0xf8d0eafbd29c52d8de8454bc05cd74b9e6d3db0ce043d8e543566a7ca4770844"
     let coldkeyHex = "0x84cec003c237e96caf516d446e7ca347f1c1439539f915438a806f099e31fd1c"
@@ -43,20 +43,46 @@ final class SubtensorStakeInfoDecodeTests: XCTestCase {
         let coldkeyAvailability = try XCTUnwrap(availabilities.first)
 
         XCTAssertEqual(coldkeyAvailability.coldkey, try Data(hexString: coldkeyHex))
-        XCTAssertEqual(coldkeyAvailability.subnets.count, 2)
+        XCTAssertEqual(coldkeyAvailability.subnets.count, 1)
 
         let rootAvailability = try XCTUnwrap(coldkeyAvailability.subnets.first)
 
-        XCTAssertEqual(rootAvailability.netuid, 0)
+        XCTAssertEqual(rootAvailability.netuid, SubtensorStakingPallet.rootNetuid)
         XCTAssertEqual(rootAvailability.availability.total, BigUInt(57_816_438))
         XCTAssertEqual(rootAvailability.availability.locked, 0)
         XCTAssertEqual(rootAvailability.availability.available, BigUInt(57_816_438))
+    }
 
-        let subnetAvailability = try XCTUnwrap(coldkeyAvailability.subnets.last)
+    func testStakeAvailabilityFixtureConsistentWithStakeInfoFixture() throws {
+        let stakeInfos: [SubtensorStakingPallet.StakeInfo] = try SubtensorFixtureDecoding.decodeRuntimeApiResult(
+            from: stakeInfoForColdkeyHex,
+            path: SubtensorStakingPallet.stakeInfoForColdkeyApi
+        )
 
-        XCTAssertEqual(subnetAvailability.netuid, 3)
-        XCTAssertEqual(subnetAvailability.availability.total, BigUInt(1_000_000))
-        XCTAssertEqual(subnetAvailability.availability.locked, BigUInt(250_000))
-        XCTAssertEqual(subnetAvailability.availability.available, BigUInt(750_000))
+        let availabilities: [SubtensorStakingPallet.ColdkeyStakeAvailability] = try SubtensorFixtureDecoding.decodeRuntimeApiResult(
+            from: stakeAvailabilityHex,
+            path: SubtensorStakingPallet.stakeAvailabilityForColdkeysApi
+        )
+
+        let coldkeyAvailability = try XCTUnwrap(availabilities.first)
+
+        XCTAssertEqual(Set(stakeInfos.map(\.coldkey)), [coldkeyAvailability.coldkey])
+        XCTAssertEqual(
+            Set(stakeInfos.map(\.netuid)),
+            Set(coldkeyAvailability.subnets.map(\.netuid))
+        )
+
+        for subnet in coldkeyAvailability.subnets {
+            let stakeTotal = stakeInfos
+                .filter { $0.netuid == subnet.netuid }
+                .reduce(BigUInt.zero) { $0 + $1.stake }
+
+            XCTAssertEqual(subnet.availability.total, stakeTotal)
+            XCTAssertLessThanOrEqual(subnet.availability.available, subnet.availability.total)
+            XCTAssertLessThanOrEqual(
+                subnet.availability.available + subnet.availability.locked,
+                subnet.availability.total
+            )
+        }
     }
 }

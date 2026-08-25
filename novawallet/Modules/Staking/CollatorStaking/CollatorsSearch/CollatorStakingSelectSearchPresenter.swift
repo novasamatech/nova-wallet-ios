@@ -1,7 +1,7 @@
-import Foundation
 import BigInt
-import SubstrateSdk
+import Foundation
 import Foundation_iOS
+import SubstrateSdk
 
 final class CollatorStakingSelectSearchPresenter {
     weak var view: CollatorStakingSelectSearchViewProtocol?
@@ -42,12 +42,18 @@ final class CollatorStakingSelectSearchPresenter {
         self.localizationManager = localizationManager
     }
 
+    private var displaysRewards: Bool {
+        collatorsInfo.contains { $0.apr != nil }
+    }
+
     private func createHeaderViewModel(for collatorsCount: Int) -> TitleWithSubtitleViewModel {
         let languages = selectedLocale.rLanguages
 
         let title = R.string(preferredLanguages: languages).localizable.commonSearchResultsNumber(collatorsCount)
 
-        let subtitle = R.string(preferredLanguages: languages).localizable.stakingRewardsTitle()
+        let subtitle = displaysRewards
+            ? R.string(preferredLanguages: languages).localizable.stakingRewardsTitle()
+            : R.string(preferredLanguages: languages).localizable.stakingValidatorTotalStake()
 
         return TitleWithSubtitleViewModel(title: title, subtitle: subtitle)
     }
@@ -72,6 +78,17 @@ final class CollatorStakingSelectSearchPresenter {
     private func createSortedByViewModel(
         for collatorInfo: CollatorStakingSelectionInfoProtocol
     ) -> TitleWithSubtitleViewModel {
+        guard displaysRewards else {
+            let decimalAmount = Decimal.fromSubstrateAmount(
+                collatorInfo.totalStake,
+                precision: chainAsset.assetDisplayInfo.assetPrecision
+            ) ?? 0
+
+            let amount = balanceViewModelFactory.amountFromValue(decimalAmount).value(for: selectedLocale)
+
+            return TitleWithSubtitleViewModel(title: amount)
+        }
+
         let rewards = collatorInfo.apr.flatMap {
             percentFormatter.value(for: selectedLocale).stringFromDecimal($0)
         } ?? ""
@@ -164,7 +181,13 @@ extension CollatorStakingSelectSearchPresenter: CollatorStakingSelectSearchPrese
                     return false
                 }
             }
-            .sorted { ($0.apr ?? 0) > ($1.apr ?? 0) }
+            .sorted { first, second in
+                if displaysRewards {
+                    (first.apr ?? 0) > (second.apr ?? 0)
+                } else {
+                    first.totalStake > second.totalStake
+                }
+            }
 
             filteredCollatorsInfo = Array(filteredInfoList)
         } else {

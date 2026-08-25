@@ -133,8 +133,21 @@ sources = [
     "novawallet/Common/LegalConsent/LegalConsentRepositoryProtocols.swift",
     "novawallet/Common/Substrate/Operations/SubtensorApi/SubtensorApiOperationFactory.swift",
     "novawallet/Common/Services/Multistaking/Subtensor/SubtensorStakeStateFetchFactory.swift",
+    "novawallet/Common/Services/Multistaking/MultistakingServices.swift",
+    "novawallet/Common/Validation/Validators/BaseDataValidatorFactory.swift",
+    "novawallet/Modules/Staking/Subtensor/Validation/SubtensorStakingValidationFactoryProtocol.swift",
+    "novawallet/Modules/Staking/Subtensor/Validation/SubtensorStakingErrorPresentable.swift",
+    "novawalletTests/Modules/Staking/SubtensorStaking/SubtensorStakingTestWireframe.swift",
+    "novawallet/Modules/Staking/Subtensor/Services/SubtensorStakingPositionsSyncService.swift",
+    "novawallet/Modules/Staking/Subtensor/Services/SubtensorSubnetsService.swift",
+    "novawallet/Modules/Staking/Subtensor/Services/SubtensorDelegatesService.swift",
+    "novawallet/Modules/Staking/Subtensor/Services/SubtensorRootClaimableService.swift",
+    "novawallet/Modules/Staking/Operations/SubtensorStaking/SubtensorPreflightFactory.swift",
+    "novawallet/Modules/Staking/Operations/SubtensorStaking/SubtensorNetworkInfoFactory.swift",
+    "novawallet/Modules/Staking/Subtensor/SubtensorStakingBase/SubtensorStakingBaseProtocols.swift",
+    "novawallet/Modules/Staking/Subtensor/SubtensorUnstakeSetup/SubtensorUnstakeSetupProtocols.swift",
 ]
 
 exclude = [
-"RootPresenterFactoryProtocol", "UsernameSetupViewFactoryProtocol", "OnboardingMainViewFactoryProtocol", "AccountCreateViewFactoryProtocol", "AccountImportViewFactoryProtocol", "AccountConfirmViewFactoryProtocol", "PinViewFactoryProtocol", "ProfileViewFactoryProtocol", "AccountManagementViewFactoryProtocol", "AccountInfoViewFactoryProtocol", "NetworkManagementViewFactoryProtocol", "NetworkInfoViewFactoryProtocol", "AddConnectionViewFactoryProtocol", "AccountExportPasswordViewFactoryProtocol", "ExportRestoreJsonViewFactoryProtocol", "ExportMnemonicViewFactoryProtocol", "StakingMainViewFactoryProtocol", "SelectValidatorsStartViewFactoryProtocol", "SelectValidatorsConfirmViewFactoryProtocol", "RecommendedValidatorListViewFactoryProtocol", "SelectedValidatorListViewFactoryProtocol", "CustomValidatorListViewFactoryProtocol", "ValidatorInfoViewFactoryProtocol", "WalletHistoryFilterViewFactoryProtocol", "StakingPayoutConfirmationViewFactoryProtocol", "StakingRewardDetailsViewFactoryProtocol", "StakingRewardPayoutsViewFactoryProtocol", "StakingPayoutConfirmViewModelFactoryProtocol", "YourValidatorListViewFactoryProtocol", "StakingUnbondSetupViewFactoryProtocol", "StakingUnbondConfirmViewFactoryProtocol", "StakingRedeemViewFactoryProtocol", "StakingBondMoreViewFactoryProtocol", "StakingRebondSetupViewFactoryProtocol", "ValidatorListFilterViewFactoryProtocol", "ValidatorSearchViewFactoryProtocol", "JSONRPCBatchHandler"
+"RootPresenterFactoryProtocol", "UsernameSetupViewFactoryProtocol", "OnboardingMainViewFactoryProtocol", "AccountCreateViewFactoryProtocol", "AccountImportViewFactoryProtocol", "AccountConfirmViewFactoryProtocol", "PinViewFactoryProtocol", "ProfileViewFactoryProtocol", "AccountManagementViewFactoryProtocol", "AccountInfoViewFactoryProtocol", "NetworkManagementViewFactoryProtocol", "NetworkInfoViewFactoryProtocol", "AddConnectionViewFactoryProtocol", "AccountExportPasswordViewFactoryProtocol", "ExportRestoreJsonViewFactoryProtocol", "ExportMnemonicViewFactoryProtocol", "StakingMainViewFactoryProtocol", "SelectValidatorsStartViewFactoryProtocol", "SelectValidatorsConfirmViewFactoryProtocol", "RecommendedValidatorListViewFactoryProtocol", "SelectedValidatorListViewFactoryProtocol", "CustomValidatorListViewFactoryProtocol", "ValidatorInfoViewFactoryProtocol", "WalletHistoryFilterViewFactoryProtocol", "StakingPayoutConfirmationViewFactoryProtocol", "StakingRewardDetailsViewFactoryProtocol", "StakingRewardPayoutsViewFactoryProtocol", "StakingPayoutConfirmViewModelFactoryProtocol", "YourValidatorListViewFactoryProtocol", "StakingUnbondSetupViewFactoryProtocol", "StakingUnbondConfirmViewFactoryProtocol", "StakingRedeemViewFactoryProtocol", "StakingBondMoreViewFactoryProtocol", "StakingRebondSetupViewFactoryProtocol", "ValidatorListFilterViewFactoryProtocol", "ValidatorSearchViewFactoryProtocol", "JSONRPCBatchHandler", "SubtensorStakingErrorPresentable"
 ]

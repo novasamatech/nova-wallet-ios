@@ -449,6 +449,18 @@
 		2D7A55062E5D000100000003 /* SubtensorStakingPallet+Swap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A55062E5D000100000001 /* SubtensorStakingPallet+Swap.swift */; };
 		2D7A55072E5D000100000002 /* SubtensorStakingPallet+RuntimeApis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A55072E5D000100000001 /* SubtensorStakingPallet+RuntimeApis.swift */; };
 		2D7A55082E5D000100000002 /* SubtensorApiOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A55082E5D000100000001 /* SubtensorApiOperationFactory.swift */; };
+		4B90A2012E5E000100000002 /* SubtensorStaking+Calls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B90A2012E5E000100000001 /* SubtensorStaking+Calls.swift */; };
+		4B90A2022E5E000100000002 /* SubtensorStakingPallet+Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B90A2022E5E000100000001 /* SubtensorStakingPallet+Events.swift */; };
+		4B90A2032E5E000100000002 /* SubtensorStakingValidationFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B90A2032E5E000100000001 /* SubtensorStakingValidationFactoryProtocol.swift */; };
+		4B90A2042E5E000100000002 /* SubtensorStakingValidationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B90A2042E5E000100000001 /* SubtensorStakingValidationFactory.swift */; };
+		4B90A2052E5E000100000002 /* SubtensorStakingErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B90A2052E5E000100000001 /* SubtensorStakingErrorPresentable.swift */; };
+		4B90A2062E5E000100000002 /* SubtensorStakingErrorMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B90A2062E5E000100000001 /* SubtensorStakingErrorMapper.swift */; };
+		4B90A2072E5E000100000002 /* SubtensorStakingTestWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B90A2072E5E000100000001 /* SubtensorStakingTestWireframe.swift */; };
+		4B90A2082E5E000100000002 /* SubtensorStakingCallsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B90A2082E5E000100000001 /* SubtensorStakingCallsTests.swift */; };
+		4B90A2092E5E000100000002 /* SubtensorStakingEventsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B90A2092E5E000100000001 /* SubtensorStakingEventsTests.swift */; };
+		4B90A20A2E5E000100000002 /* SubtensorSignedExtensionCodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B90A20A2E5E000100000001 /* SubtensorSignedExtensionCodingTests.swift */; };
+		4B90A20B2E5E000100000002 /* SubtensorStakingValidationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B90A20B2E5E000100000001 /* SubtensorStakingValidationFactoryTests.swift */; };
+		4B90A20C2E5E000100000002 /* SubtensorStakingErrorMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B90A20C2E5E000100000001 /* SubtensorStakingErrorMapperTests.swift */; };
 		2D7A55092E5D000100000002 /* SubtensorFixtureDecoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A55092E5D000100000001 /* SubtensorFixtureDecoding.swift */; };
 		2D7A550A2E5D000100000002 /* SubtensorStakeInfoDecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A550A2E5D000100000001 /* SubtensorStakeInfoDecodeTests.swift */; };
 		2D7A550B2E5D000100000002 /* SubtensorDynamicInfoDecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A550B2E5D000100000001 /* SubtensorDynamicInfoDecodeTests.swift */; };
@@ -460,10 +472,32 @@
 		2D7A56022E5D000200000002 /* SubtensorMultistakingUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A56022E5D000200000001 /* SubtensorMultistakingUpdateService.swift */; };
 		2D7A56032E5D000200000002 /* SubtensorStakeStateFetchFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A56032E5D000200000001 /* SubtensorStakeStateFetchFactory.swift */; };
 		2D7A56042E5D000200000002 /* StakingDashboardSubtensorMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A56042E5D000200000001 /* StakingDashboardSubtensorMapper.swift */; };
+		2D7A59012E5E000100000002 /* SubtensorStakingPallet+BasketInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A59012E5E000100000001 /* SubtensorStakingPallet+BasketInfo.swift */; };
+		2D7A59012E5E000100000003 /* SubtensorStakingPallet+BasketInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A59012E5E000100000001 /* SubtensorStakingPallet+BasketInfo.swift */; };
+		2D7A59022E5E000100000002 /* SubtensorStakingPositionsSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A59022E5E000100000001 /* SubtensorStakingPositionsSyncService.swift */; };
+		2D7A59032E5E000100000002 /* SubtensorSubnetsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A59032E5E000100000001 /* SubtensorSubnetsService.swift */; };
+		2D7A59042E5E000100000002 /* SubtensorDelegatesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A59042E5E000100000001 /* SubtensorDelegatesService.swift */; };
+		2D7A59052E5E000100000002 /* SubtensorRootClaimableService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A59052E5E000100000001 /* SubtensorRootClaimableService.swift */; };
+		2D7A59062E5E000100000002 /* SubtensorSessionCachingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A59062E5E000100000001 /* SubtensorSessionCachingService.swift */; };
+		2D7A59072E5E000100000002 /* SubtensorPreflightFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A59072E5E000100000001 /* SubtensorPreflightFactory.swift */; };
+		2D7A59082E5E000100000002 /* SubtensorNetworkInfoFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A59082E5E000100000001 /* SubtensorNetworkInfoFactory.swift */; };
+		2D7A59092E5E000100000002 /* SubtensorStakingSharedState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A59092E5E000100000001 /* SubtensorStakingSharedState.swift */; };
+		2D7A590A2E5E000100000002 /* SubtensorRootBasketDecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A590A2E5E000100000001 /* SubtensorRootBasketDecodeTests.swift */; };
+		2D7A590B2E5E000100000002 /* SubtensorPreflightValuesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A590B2E5E000100000001 /* SubtensorPreflightValuesTests.swift */; };
+		2D7A590C2E5E000100000002 /* SubtensorStakingPositionsSyncServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A590C2E5E000100000001 /* SubtensorStakingPositionsSyncServiceTests.swift */; };
+		2D7A590D2E5E000100000002 /* SubtensorRootClaimableServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A590D2E5E000100000001 /* SubtensorRootClaimableServiceTests.swift */; };
+		2D7A590E2E5E000100000002 /* StakingSharedStateFactory+Subtensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A590E2E5E000100000001 /* StakingSharedStateFactory+Subtensor.swift */; };
 		2D7A56052E5D000200000002 /* SubtensorStakingStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A56052E5D000200000001 /* SubtensorStakingStateTests.swift */; };
 		2D7A56062E5D000200000002 /* StakingDashboardSubtensorMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A56062E5D000200000001 /* StakingDashboardSubtensorMapperTests.swift */; };
 		2D7A56072E5D000200000002 /* SubtensorStakeStateFetchFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A56072E5D000200000001 /* SubtensorStakeStateFetchFactoryTests.swift */; };
 		2D7A56082E5D000200000002 /* SubtensorSubqueryTypeKeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A56082E5D000200000001 /* SubtensorSubqueryTypeKeyTests.swift */; };
+		2D7A57012E5D000300000002 /* SubtensorStakedBalance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A57012E5D000300000001 /* SubtensorStakedBalance.swift */; };
+		2D7A57022E5D000300000002 /* SubtensorStakedBalanceMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A57022E5D000300000001 /* SubtensorStakedBalanceMapper.swift */; };
+		2D7A57032E5D000300000002 /* SubtensorStakedBalanceUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A57032E5D000300000001 /* SubtensorStakedBalanceUpdatingService.swift */; };
+		2D7A57042E5D000300000002 /* SubtensorExternalBalanceServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A57042E5D000300000001 /* SubtensorExternalBalanceServiceFactory.swift */; };
+		2D7A57052E5D000300000002 /* SubtensorStakingTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A57052E5D000300000001 /* SubtensorStakingTypeTests.swift */; };
+		2D7A57062E5D000300000002 /* SubtensorExternalBalanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A57062E5D000300000001 /* SubtensorExternalBalanceTests.swift */; };
+		2D7A57072E5D000300000002 /* SubtensorExternalBalanceServiceFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A57072E5D000300000001 /* SubtensorExternalBalanceServiceFactoryTests.swift */; };
 		0C27F37D2DA6B3B000191FFF /* BlockLimitOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F37C2DA6B3B000191FFF /* BlockLimitOperationFactory.swift */; };
 		0C27F3822DA6C74100191FFF /* SystePallet+ConstantPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F3812DA6C74100191FFF /* SystePallet+ConstantPath.swift */; };
 		0C27F3842DA6CF2C00191FFF /* BlockWeight+Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F3832DA6CF2C00191FFF /* BlockWeight+Operation.swift */; };
@@ -1009,6 +1043,7 @@
 		0CA72A772D49EE0600B3FD02 /* MythosStkUnstakeInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA72A762D49EE0600B3FD02 /* MythosStkUnstakeInteractor.swift */; };
 		0CA72A792D49F7AB00B3FD02 /* MythosStakingIdentitiesSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA72A782D49F7AB00B3FD02 /* MythosStakingIdentitiesSyncService.swift */; };
 		0CA72A7B2D4A23ED00B3FD02 /* CollatorStakingHintsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA72A7A2D4A23ED00B3FD02 /* CollatorStakingHintsViewModelFactory.swift */; };
+		5D11AA032E5E000500000002 /* CollatorStakingDelegateStatics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D11AA032E5E000500000001 /* CollatorStakingDelegateStatics.swift */; };
 		0CA72A7E2D4A282000B3FD02 /* CollatorStakingUnstakeSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA72A7D2D4A282000B3FD02 /* CollatorStakingUnstakeSetupProtocols.swift */; };
 		0CA72A802D4A29FE00B3FD02 /* CollatorStkBaseUnstakeSetupLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA72A7F2D4A29FE00B3FD02 /* CollatorStkBaseUnstakeSetupLayout.swift */; };
 		0CA72A822D4A2AC900B3FD02 /* CollatorStkFullUnstakeSetupLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA72A812D4A2AC900B3FD02 /* CollatorStkFullUnstakeSetupLayout.swift */; };
@@ -1327,6 +1362,7 @@
 		0CE840E72BFBF225003C2B7A /* RuntimeFetchOperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE840E62BFBF225003C2B7A /* RuntimeFetchOperationFactoryTests.swift */; };
 		7A0DE1A72E5B10010043FA11 /* SignedExtensionConformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0DE1A62E5B10010043FA11 /* SignedExtensionConformanceTests.swift */; };
 		7A0DE1AA2E5C10010043FA11 /* SubtensorStakingApiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0DE1A92E5C10010043FA11 /* SubtensorStakingApiTests.swift */; };
+		7A0DE1B12E5F10010043FA11 /* SubtensorStakingWritePathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0DE1B02E5F10010043FA11 /* SubtensorStakingWritePathTests.swift */; };
 		0CE862152D64B61C00245992 /* ObservableSubscriptionStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE862142D64B61C00245992 /* ObservableSubscriptionStateStore.swift */; };
 		0CE862172D64D2E900245992 /* MythosStakeTransactionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE862162D64D2E900245992 /* MythosStakeTransactionModel.swift */; };
 		0CE862192D64E76300245992 /* StakingRewardsLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE862182D64E76300245992 /* StakingRewardsLocalSubscriptionFactory.swift */; };
@@ -6665,6 +6701,91 @@
 		5A17C0C22F0100000000E001 /* LegalConsentRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C0C12F0100000000E001 /* LegalConsentRepositoryTests.swift */; };
 		8A1C0E732F0400000000B103 /* FullDateCodableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1C0E722F0400000000B103 /* FullDateCodableTests.swift */; };
 		5A17C2042F0100000000E001 /* LegalConsentTextFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C2032F0100000000E001 /* LegalConsentTextFactoryTests.swift */; };
+		3E5C11012E5E000300000002 /* SubtensorStakeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11012E5E000300000001 /* SubtensorStakeModel.swift */; };
+		3E5C11022E5E000300000002 /* SubtensorUnstakeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11022E5E000300000001 /* SubtensorUnstakeModel.swift */; };
+		3E5C11032E5E000300000002 /* SubtensorStakingCallModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11032E5E000300000001 /* SubtensorStakingCallModel.swift */; };
+		3E5C11042E5E000300000002 /* SubtensorStakingConfirmModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11042E5E000300000001 /* SubtensorStakingConfirmModel.swift */; };
+		3E5C11052E5E000300000002 /* SubtensorUnstakeConfirmModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11052E5E000300000001 /* SubtensorUnstakeConfirmModel.swift */; };
+		3E5C11062E5E000300000002 /* SubtensorSubmissionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11062E5E000300000001 /* SubtensorSubmissionModel.swift */; };
+		3E5C11072E5E000300000002 /* SubtensorDelegateSelectionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11072E5E000300000001 /* SubtensorDelegateSelectionInfo.swift */; };
+		3E5C11082E5E000300000002 /* SubtensorStakingBaseInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11082E5E000300000001 /* SubtensorStakingBaseInteractor.swift */; };
+		3E5C11092E5E000300000002 /* SubtensorStakingBaseProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11092E5E000300000001 /* SubtensorStakingBaseProtocols.swift */; };
+		3E5C110A2E5E000300000002 /* SubtensorStakingDelegateBaseInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C110A2E5E000300000001 /* SubtensorStakingDelegateBaseInteractor.swift */; };
+		3E5C110B2E5E000300000002 /* SubtensorStakingSubmitInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C110B2E5E000300000001 /* SubtensorStakingSubmitInteractor.swift */; };
+		3E5C110C2E5E000300000002 /* SubtensorStakingEventMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C110C2E5E000300000001 /* SubtensorStakingEventMatcher.swift */; };
+		3E5C110D2E5E000300000002 /* SubtensorStakePresenterValidating.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C110D2E5E000300000001 /* SubtensorStakePresenterValidating.swift */; };
+		3E5C110E2E5E000300000002 /* SubtensorUnstakePresenterValidating.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C110E2E5E000300000001 /* SubtensorUnstakePresenterValidating.swift */; };
+		3E5C110F2E5E000300000002 /* SubtensorStakingSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C110F2E5E000300000001 /* SubtensorStakingSetupProtocols.swift */; };
+		3E5C11102E5E000300000002 /* SubtensorStakingSetupInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11102E5E000300000001 /* SubtensorStakingSetupInteractor.swift */; };
+		3E5C11112E5E000300000002 /* SubtensorStakingSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11112E5E000300000001 /* SubtensorStakingSetupPresenter.swift */; };
+		3E5C11122E5E000300000002 /* SubtensorStakingSetupWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11122E5E000300000001 /* SubtensorStakingSetupWireframe.swift */; };
+		3E5C11132E5E000300000002 /* SubtensorStakingSetupViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11132E5E000300000001 /* SubtensorStakingSetupViewFactory.swift */; };
+		3E5C11142E5E000300000002 /* SubtensorStakingConfirmProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11142E5E000300000001 /* SubtensorStakingConfirmProtocols.swift */; };
+		3E5C11152E5E000300000002 /* SubtensorStakingConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11152E5E000300000001 /* SubtensorStakingConfirmInteractor.swift */; };
+		3E5C11162E5E000300000002 /* SubtensorStakingConfirmPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11162E5E000300000001 /* SubtensorStakingConfirmPresenter.swift */; };
+		3E5C11172E5E000300000002 /* SubtensorStakingConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11172E5E000300000001 /* SubtensorStakingConfirmWireframe.swift */; };
+		3E5C11182E5E000300000002 /* SubtensorStakingConfirmViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11182E5E000300000001 /* SubtensorStakingConfirmViewFactory.swift */; };
+		3E5C11192E5E000300000002 /* SubtensorUnstakeSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11192E5E000300000001 /* SubtensorUnstakeSetupProtocols.swift */; };
+		3E5C111A2E5E000300000002 /* SubtensorUnstakeSetupInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C111A2E5E000300000001 /* SubtensorUnstakeSetupInteractor.swift */; };
+		3E5C111B2E5E000300000002 /* SubtensorUnstakeSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C111B2E5E000300000001 /* SubtensorUnstakeSetupPresenter.swift */; };
+		3E5C111C2E5E000300000002 /* SubtensorUnstakeSetupWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C111C2E5E000300000001 /* SubtensorUnstakeSetupWireframe.swift */; };
+		3E5C111D2E5E000300000002 /* SubtensorUnstakeSetupViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C111D2E5E000300000001 /* SubtensorUnstakeSetupViewFactory.swift */; };
+		3E5C111E2E5E000300000002 /* SubtensorUnstakeConfirmProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C111E2E5E000300000001 /* SubtensorUnstakeConfirmProtocols.swift */; };
+		3E5C111F2E5E000300000002 /* SubtensorUnstakeConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C111F2E5E000300000001 /* SubtensorUnstakeConfirmInteractor.swift */; };
+		3E5C11202E5E000300000002 /* SubtensorUnstakeConfirmPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11202E5E000300000001 /* SubtensorUnstakeConfirmPresenter.swift */; };
+		3E5C11212E5E000300000002 /* SubtensorUnstakeConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11212E5E000300000001 /* SubtensorUnstakeConfirmWireframe.swift */; };
+		3E5C11222E5E000300000002 /* SubtensorUnstakeConfirmViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11222E5E000300000001 /* SubtensorUnstakeConfirmViewFactory.swift */; };
+		3E5C11232E5E000300000002 /* SubtensorClaimRewardsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11232E5E000300000001 /* SubtensorClaimRewardsProtocols.swift */; };
+		3E5C11242E5E000300000002 /* SubtensorClaimRewardsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11242E5E000300000001 /* SubtensorClaimRewardsInteractor.swift */; };
+		3E5C11252E5E000300000002 /* SubtensorClaimRewardsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11252E5E000300000001 /* SubtensorClaimRewardsPresenter.swift */; };
+		3E5C11262E5E000300000002 /* SubtensorClaimRewardsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11262E5E000300000001 /* SubtensorClaimRewardsWireframe.swift */; };
+		3E5C11272E5E000300000002 /* SubtensorClaimRewardsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11272E5E000300000001 /* SubtensorClaimRewardsViewFactory.swift */; };
+		5D11AA012E5E000500000002 /* SubtensorClaimRewardsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D11AA012E5E000500000001 /* SubtensorClaimRewardsViewLayout.swift */; };
+		5D11AA022E5E000500000002 /* SubtensorClaimRewardsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D11AA022E5E000500000001 /* SubtensorClaimRewardsViewController.swift */; };
+		3E5C11282E5E000300000002 /* SubtensorClaimRewardsState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11282E5E000300000001 /* SubtensorClaimRewardsState.swift */; };
+		3E5C11292E5E000300000002 /* SubtensorClaimRewardsPresenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11292E5E000300000001 /* SubtensorClaimRewardsPresenting.swift */; };
+		3E5C112A2E5E000300000002 /* SubtensorStakableDelegateOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C112A2E5E000300000001 /* SubtensorStakableDelegateOperationFactory.swift */; };
+		3E5C112B2E5E000300000002 /* CollatorStakingSelectViewFactory+Subtensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C112B2E5E000300000001 /* CollatorStakingSelectViewFactory+Subtensor.swift */; };
+		3E5C112C2E5E000300000002 /* SubtensorSelectDelegatesWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C112C2E5E000300000001 /* SubtensorSelectDelegatesWireframe.swift */; };
+		3E5C112D2E5E000300000002 /* CollatorStakingSelectSearchViewFactory+Subtensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C112D2E5E000300000001 /* CollatorStakingSelectSearchViewFactory+Subtensor.swift */; };
+		3E5C112E2E5E000300000002 /* SubtensorSelectSearchWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C112E2E5E000300000001 /* SubtensorSelectSearchWireframe.swift */; };
+		3E5C112F2E5E000300000002 /* CollatorStakingInfoViewFactory+Subtensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C112F2E5E000300000001 /* CollatorStakingInfoViewFactory+Subtensor.swift */; };
+		3E5C11302E5E000300000002 /* SubtensorDelegateInfoInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11302E5E000300000001 /* SubtensorDelegateInfoInteractor.swift */; };
+		3E5C11312E5E000300000002 /* CollatorStakingSelectFiltersViewFactory+Subtensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11312E5E000300000001 /* CollatorStakingSelectFiltersViewFactory+Subtensor.swift */; };
+		3E5C11402E5E000300000002 /* SubtensorStakingCallModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11402E5E000300000001 /* SubtensorStakingCallModelTests.swift */; };
+		3E5C11412E5E000300000002 /* SubtensorClaimRewardsStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11412E5E000300000001 /* SubtensorClaimRewardsStateTests.swift */; };
+		3E5C11422E5E000300000002 /* SubtensorExecutedOutcomeParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11422E5E000300000001 /* SubtensorExecutedOutcomeParserTests.swift */; };
+		3E5C11432E5E000300000002 /* SubtensorDelegateSelectionInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11432E5E000300000001 /* SubtensorDelegateSelectionInfoTests.swift */; };
+		3E5C11442E5E000300000002 /* SubtensorUnstakeValidatingDepTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11442E5E000300000001 /* SubtensorUnstakeValidatingDepTests.swift */; };
+		5D11AA042E5E000500000002 /* SubtensorUnstakeSetupPresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D11AA042E5E000500000001 /* SubtensorUnstakeSetupPresenterTests.swift */; };
+		5D11AA052E5E000500000002 /* SubtensorStakePresenterValidatingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D11AA052E5E000500000001 /* SubtensorStakePresenterValidatingTests.swift */; };
+		5D11AA062E5E000500000002 /* SubtensorUnstakePresenterValidatingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D11AA062E5E000500000001 /* SubtensorUnstakePresenterValidatingTests.swift */; };
+		3E5C13012E5E000300000002 /* SubtensorStakingDetailsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C13012E5E000300000001 /* SubtensorStakingDetailsProtocols.swift */; };
+		3E5C13022E5E000300000002 /* SubtensorStakingDetailsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C13022E5E000300000001 /* SubtensorStakingDetailsInteractor.swift */; };
+		3E5C13032E5E000300000002 /* SubtensorStakingDetailsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C13032E5E000300000001 /* SubtensorStakingDetailsPresenter.swift */; };
+		3E5C13042E5E000300000002 /* SubtensorStakingDetailsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C13042E5E000300000001 /* SubtensorStakingDetailsWireframe.swift */; };
+		3E5C13052E5E000300000002 /* StakingMainPresenterFactory+Subtensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C13052E5E000300000001 /* StakingMainPresenterFactory+Subtensor.swift */; };
+		3E5C13062E5E000300000002 /* SubtensorStakingStateMachineProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C13062E5E000300000001 /* SubtensorStakingStateMachineProtocols.swift */; };
+		3E5C13072E5E000300000002 /* SubtensorStakingStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C13072E5E000300000001 /* SubtensorStakingStateMachine.swift */; };
+		3E5C13082E5E000300000002 /* SubtensorStakingCommonData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C13082E5E000300000001 /* SubtensorStakingCommonData.swift */; };
+		3E5C13092E5E000300000002 /* SubtensorStakingBaseState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C13092E5E000300000001 /* SubtensorStakingBaseState.swift */; };
+		3E5C130A2E5E000300000002 /* SubtensorStakingInitState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C130A2E5E000300000001 /* SubtensorStakingInitState.swift */; };
+		3E5C130B2E5E000300000002 /* SubtensorStakingNotStakedState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C130B2E5E000300000001 /* SubtensorStakingNotStakedState.swift */; };
+		3E5C130C2E5E000300000002 /* SubtensorStakingStakedState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C130C2E5E000300000001 /* SubtensorStakingStakedState.swift */; };
+		3E5C130D2E5E000300000002 /* SubtensorStkStateViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C130D2E5E000300000001 /* SubtensorStkStateViewModelFactory.swift */; };
+		3E5C130E2E5E000300000002 /* SubtensorStkStateViewModelFactory+Alerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C130E2E5E000300000001 /* SubtensorStkStateViewModelFactory+Alerts.swift */; };
+		3E5C130F2E5E000300000002 /* StakingSubtensorStatics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C130F2E5E000300000001 /* StakingSubtensorStatics.swift */; };
+		3E5C13102E5E000300000002 /* StartStakingInfoSubtensorProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C13102E5E000300000001 /* StartStakingInfoSubtensorProtocols.swift */; };
+		3E5C13112E5E000300000002 /* StartStakingInfoSubtensorInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C13112E5E000300000001 /* StartStakingInfoSubtensorInteractor.swift */; };
+		3E5C13122E5E000300000002 /* StartStakingInfoSubtensorPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C13122E5E000300000001 /* StartStakingInfoSubtensorPresenter.swift */; };
+		3E5C13132E5E000300000002 /* StartStakingInfoSubtensorWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C13132E5E000300000001 /* StartStakingInfoSubtensorWireframe.swift */; };
+		3E5C13142E5E000300000002 /* StartStakingInfoViewFactory+Subtensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C13142E5E000300000001 /* StartStakingInfoViewFactory+Subtensor.swift */; };
+		3E5C13152E5E000300000002 /* SubtensorHistoryFiltersProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C13152E5E000300000001 /* SubtensorHistoryFiltersProvider.swift */; };
+		3E5C13162E5E000300000002 /* SubtensorOperationGate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C13162E5E000300000001 /* SubtensorOperationGate.swift */; };
+		3E5C13172E5E000300000002 /* SubtensorStakingStateMachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C13172E5E000300000001 /* SubtensorStakingStateMachineTests.swift */; };
+		3E5C13182E5E000300000002 /* SubtensorStkStateViewModelFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C13182E5E000300000001 /* SubtensorStkStateViewModelFactoryTests.swift */; };
+		3E5C13192E5E000300000002 /* SubtensorOperationGateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C13192E5E000300000001 /* SubtensorOperationGateTests.swift */; };
+		3E5C131A2E5E000300000002 /* SubtensorHistoryFiltersProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C131A2E5E000300000001 /* SubtensorHistoryFiltersProviderTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -7132,6 +7253,32 @@
 		0C277DB82D83F360004FF053 /* MythosStkClaimRewardsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStkClaimRewardsModel.swift; sourceTree = "<group>"; };
 		0C277DBB2D847EAD004FF053 /* MythosClaimRewardsStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosClaimRewardsStateTests.swift; sourceTree = "<group>"; };
 		2D7A55012E5D000100000001 /* SubtensorStakingPallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingPallet.swift; sourceTree = "<group>"; };
+		4B90A2012E5E000100000001 /* SubtensorStaking+Calls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorStaking+Calls.swift"; sourceTree = "<group>"; };
+		4B90A2022E5E000100000001 /* SubtensorStakingPallet+Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorStakingPallet+Events.swift"; sourceTree = "<group>"; };
+		4B90A2032E5E000100000001 /* SubtensorStakingValidationFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingValidationFactoryProtocol.swift; sourceTree = "<group>"; };
+		4B90A2042E5E000100000001 /* SubtensorStakingValidationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingValidationFactory.swift; sourceTree = "<group>"; };
+		4B90A2052E5E000100000001 /* SubtensorStakingErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingErrorPresentable.swift; sourceTree = "<group>"; };
+		4B90A2062E5E000100000001 /* SubtensorStakingErrorMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingErrorMapper.swift; sourceTree = "<group>"; };
+		4B90A2072E5E000100000001 /* SubtensorStakingTestWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingTestWireframe.swift; sourceTree = "<group>"; };
+		4B90A2082E5E000100000001 /* SubtensorStakingCallsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingCallsTests.swift; sourceTree = "<group>"; };
+		4B90A2092E5E000100000001 /* SubtensorStakingEventsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingEventsTests.swift; sourceTree = "<group>"; };
+		4B90A20A2E5E000100000001 /* SubtensorSignedExtensionCodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSignedExtensionCodingTests.swift; sourceTree = "<group>"; };
+		4B90A20B2E5E000100000001 /* SubtensorStakingValidationFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingValidationFactoryTests.swift; sourceTree = "<group>"; };
+		4B90A20C2E5E000100000001 /* SubtensorStakingErrorMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingErrorMapperTests.swift; sourceTree = "<group>"; };
+		2D7A59012E5E000100000001 /* SubtensorStakingPallet+BasketInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorStakingPallet+BasketInfo.swift"; sourceTree = "<group>"; };
+		2D7A59022E5E000100000001 /* SubtensorStakingPositionsSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingPositionsSyncService.swift; sourceTree = "<group>"; };
+		2D7A59032E5E000100000001 /* SubtensorSubnetsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSubnetsService.swift; sourceTree = "<group>"; };
+		2D7A59042E5E000100000001 /* SubtensorDelegatesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorDelegatesService.swift; sourceTree = "<group>"; };
+		2D7A59052E5E000100000001 /* SubtensorRootClaimableService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorRootClaimableService.swift; sourceTree = "<group>"; };
+		2D7A59062E5E000100000001 /* SubtensorSessionCachingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSessionCachingService.swift; sourceTree = "<group>"; };
+		2D7A59072E5E000100000001 /* SubtensorPreflightFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorPreflightFactory.swift; sourceTree = "<group>"; };
+		2D7A59082E5E000100000001 /* SubtensorNetworkInfoFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorNetworkInfoFactory.swift; sourceTree = "<group>"; };
+		2D7A59092E5E000100000001 /* SubtensorStakingSharedState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingSharedState.swift; sourceTree = "<group>"; };
+		2D7A590A2E5E000100000001 /* SubtensorRootBasketDecodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorRootBasketDecodeTests.swift; sourceTree = "<group>"; };
+		2D7A590B2E5E000100000001 /* SubtensorPreflightValuesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorPreflightValuesTests.swift; sourceTree = "<group>"; };
+		2D7A590C2E5E000100000001 /* SubtensorStakingPositionsSyncServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingPositionsSyncServiceTests.swift; sourceTree = "<group>"; };
+		2D7A590D2E5E000100000001 /* SubtensorRootClaimableServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorRootClaimableServiceTests.swift; sourceTree = "<group>"; };
+		2D7A590E2E5E000100000001 /* StakingSharedStateFactory+Subtensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StakingSharedStateFactory+Subtensor.swift"; sourceTree = "<group>"; };
 		2D7A55022E5D000100000001 /* SubtensorStakingPallet+StoragePaths.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorStakingPallet+StoragePaths.swift"; sourceTree = "<group>"; };
 		2D7A55032E5D000100000001 /* SubtensorStakingPallet+StakeInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorStakingPallet+StakeInfo.swift"; sourceTree = "<group>"; };
 		2D7A55042E5D000100000001 /* SubtensorStakingPallet+DynamicInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorStakingPallet+DynamicInfo.swift"; sourceTree = "<group>"; };
@@ -7154,6 +7301,13 @@
 		2D7A56062E5D000200000001 /* StakingDashboardSubtensorMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDashboardSubtensorMapperTests.swift; sourceTree = "<group>"; };
 		2D7A56072E5D000200000001 /* SubtensorStakeStateFetchFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakeStateFetchFactoryTests.swift; sourceTree = "<group>"; };
 		2D7A56082E5D000200000001 /* SubtensorSubqueryTypeKeyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSubqueryTypeKeyTests.swift; sourceTree = "<group>"; };
+		2D7A57012E5D000300000001 /* SubtensorStakedBalance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakedBalance.swift; sourceTree = "<group>"; };
+		2D7A57022E5D000300000001 /* SubtensorStakedBalanceMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakedBalanceMapper.swift; sourceTree = "<group>"; };
+		2D7A57032E5D000300000001 /* SubtensorStakedBalanceUpdatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakedBalanceUpdatingService.swift; sourceTree = "<group>"; };
+		2D7A57042E5D000300000001 /* SubtensorExternalBalanceServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorExternalBalanceServiceFactory.swift; sourceTree = "<group>"; };
+		2D7A57052E5D000300000001 /* SubtensorStakingTypeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingTypeTests.swift; sourceTree = "<group>"; };
+		2D7A57062E5D000300000001 /* SubtensorExternalBalanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorExternalBalanceTests.swift; sourceTree = "<group>"; };
+		2D7A57072E5D000300000001 /* SubtensorExternalBalanceServiceFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorExternalBalanceServiceFactoryTests.swift; sourceTree = "<group>"; };
 		0C27F37C2DA6B3B000191FFF /* BlockLimitOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockLimitOperationFactory.swift; sourceTree = "<group>"; };
 		0C27F3812DA6C74100191FFF /* SystePallet+ConstantPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SystePallet+ConstantPath.swift"; sourceTree = "<group>"; };
 		0C27F3832DA6CF2C00191FFF /* BlockWeight+Operation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BlockWeight+Operation.swift"; sourceTree = "<group>"; };
@@ -7702,6 +7856,7 @@
 		0CA72A762D49EE0600B3FD02 /* MythosStkUnstakeInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStkUnstakeInteractor.swift; sourceTree = "<group>"; };
 		0CA72A782D49F7AB00B3FD02 /* MythosStakingIdentitiesSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakingIdentitiesSyncService.swift; sourceTree = "<group>"; };
 		0CA72A7A2D4A23ED00B3FD02 /* CollatorStakingHintsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollatorStakingHintsViewModelFactory.swift; sourceTree = "<group>"; };
+		5D11AA032E5E000500000001 /* CollatorStakingDelegateStatics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollatorStakingDelegateStatics.swift; sourceTree = "<group>"; };
 		0CA72A7D2D4A282000B3FD02 /* CollatorStakingUnstakeSetupProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollatorStakingUnstakeSetupProtocols.swift; sourceTree = "<group>"; };
 		0CA72A7F2D4A29FE00B3FD02 /* CollatorStkBaseUnstakeSetupLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollatorStkBaseUnstakeSetupLayout.swift; sourceTree = "<group>"; };
 		0CA72A812D4A2AC900B3FD02 /* CollatorStkFullUnstakeSetupLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollatorStkFullUnstakeSetupLayout.swift; sourceTree = "<group>"; };
@@ -8013,6 +8168,7 @@
 		0CE840E62BFBF225003C2B7A /* RuntimeFetchOperationFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeFetchOperationFactoryTests.swift; sourceTree = "<group>"; };
 		7A0DE1A62E5B10010043FA11 /* SignedExtensionConformanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignedExtensionConformanceTests.swift; sourceTree = "<group>"; };
 		7A0DE1A92E5C10010043FA11 /* SubtensorStakingApiTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingApiTests.swift; sourceTree = "<group>"; };
+		7A0DE1B02E5F10010043FA11 /* SubtensorStakingWritePathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingWritePathTests.swift; sourceTree = "<group>"; };
 		0CE862142D64B61C00245992 /* ObservableSubscriptionStateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableSubscriptionStateStore.swift; sourceTree = "<group>"; };
 		0CE862162D64D2E900245992 /* MythosStakeTransactionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosStakeTransactionModel.swift; sourceTree = "<group>"; };
 		0CE862182D64E76300245992 /* StakingRewardsLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRewardsLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
@@ -13064,6 +13220,91 @@
 		5A17C0C12F0100000000E001 /* LegalConsentRepositoryTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentRepositoryTests.swift; sourceTree = "<group>"; };
 		8A1C0E722F0400000000B103 /* FullDateCodableTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FullDateCodableTests.swift; sourceTree = "<group>"; };
 		5A17C2032F0100000000E001 /* LegalConsentTextFactoryTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentTextFactoryTests.swift; sourceTree = "<group>"; };
+		3E5C11012E5E000300000001 /* SubtensorStakeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakeModel.swift; sourceTree = "<group>"; };
+		3E5C11022E5E000300000001 /* SubtensorUnstakeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorUnstakeModel.swift; sourceTree = "<group>"; };
+		3E5C11032E5E000300000001 /* SubtensorStakingCallModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingCallModel.swift; sourceTree = "<group>"; };
+		3E5C11042E5E000300000001 /* SubtensorStakingConfirmModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingConfirmModel.swift; sourceTree = "<group>"; };
+		3E5C11052E5E000300000001 /* SubtensorUnstakeConfirmModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorUnstakeConfirmModel.swift; sourceTree = "<group>"; };
+		3E5C11062E5E000300000001 /* SubtensorSubmissionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSubmissionModel.swift; sourceTree = "<group>"; };
+		3E5C11072E5E000300000001 /* SubtensorDelegateSelectionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorDelegateSelectionInfo.swift; sourceTree = "<group>"; };
+		3E5C11082E5E000300000001 /* SubtensorStakingBaseInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingBaseInteractor.swift; sourceTree = "<group>"; };
+		3E5C11092E5E000300000001 /* SubtensorStakingBaseProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingBaseProtocols.swift; sourceTree = "<group>"; };
+		3E5C110A2E5E000300000001 /* SubtensorStakingDelegateBaseInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingDelegateBaseInteractor.swift; sourceTree = "<group>"; };
+		3E5C110B2E5E000300000001 /* SubtensorStakingSubmitInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingSubmitInteractor.swift; sourceTree = "<group>"; };
+		3E5C110C2E5E000300000001 /* SubtensorStakingEventMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingEventMatcher.swift; sourceTree = "<group>"; };
+		3E5C110D2E5E000300000001 /* SubtensorStakePresenterValidating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakePresenterValidating.swift; sourceTree = "<group>"; };
+		3E5C110E2E5E000300000001 /* SubtensorUnstakePresenterValidating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorUnstakePresenterValidating.swift; sourceTree = "<group>"; };
+		3E5C110F2E5E000300000001 /* SubtensorStakingSetupProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingSetupProtocols.swift; sourceTree = "<group>"; };
+		3E5C11102E5E000300000001 /* SubtensorStakingSetupInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingSetupInteractor.swift; sourceTree = "<group>"; };
+		3E5C11112E5E000300000001 /* SubtensorStakingSetupPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingSetupPresenter.swift; sourceTree = "<group>"; };
+		3E5C11122E5E000300000001 /* SubtensorStakingSetupWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingSetupWireframe.swift; sourceTree = "<group>"; };
+		3E5C11132E5E000300000001 /* SubtensorStakingSetupViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingSetupViewFactory.swift; sourceTree = "<group>"; };
+		3E5C11142E5E000300000001 /* SubtensorStakingConfirmProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingConfirmProtocols.swift; sourceTree = "<group>"; };
+		3E5C11152E5E000300000001 /* SubtensorStakingConfirmInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingConfirmInteractor.swift; sourceTree = "<group>"; };
+		3E5C11162E5E000300000001 /* SubtensorStakingConfirmPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingConfirmPresenter.swift; sourceTree = "<group>"; };
+		3E5C11172E5E000300000001 /* SubtensorStakingConfirmWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingConfirmWireframe.swift; sourceTree = "<group>"; };
+		3E5C11182E5E000300000001 /* SubtensorStakingConfirmViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingConfirmViewFactory.swift; sourceTree = "<group>"; };
+		3E5C11192E5E000300000001 /* SubtensorUnstakeSetupProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorUnstakeSetupProtocols.swift; sourceTree = "<group>"; };
+		3E5C111A2E5E000300000001 /* SubtensorUnstakeSetupInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorUnstakeSetupInteractor.swift; sourceTree = "<group>"; };
+		3E5C111B2E5E000300000001 /* SubtensorUnstakeSetupPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorUnstakeSetupPresenter.swift; sourceTree = "<group>"; };
+		3E5C111C2E5E000300000001 /* SubtensorUnstakeSetupWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorUnstakeSetupWireframe.swift; sourceTree = "<group>"; };
+		3E5C111D2E5E000300000001 /* SubtensorUnstakeSetupViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorUnstakeSetupViewFactory.swift; sourceTree = "<group>"; };
+		3E5C111E2E5E000300000001 /* SubtensorUnstakeConfirmProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorUnstakeConfirmProtocols.swift; sourceTree = "<group>"; };
+		3E5C111F2E5E000300000001 /* SubtensorUnstakeConfirmInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorUnstakeConfirmInteractor.swift; sourceTree = "<group>"; };
+		3E5C11202E5E000300000001 /* SubtensorUnstakeConfirmPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorUnstakeConfirmPresenter.swift; sourceTree = "<group>"; };
+		3E5C11212E5E000300000001 /* SubtensorUnstakeConfirmWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorUnstakeConfirmWireframe.swift; sourceTree = "<group>"; };
+		3E5C11222E5E000300000001 /* SubtensorUnstakeConfirmViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorUnstakeConfirmViewFactory.swift; sourceTree = "<group>"; };
+		3E5C11232E5E000300000001 /* SubtensorClaimRewardsProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimRewardsProtocols.swift; sourceTree = "<group>"; };
+		3E5C11242E5E000300000001 /* SubtensorClaimRewardsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimRewardsInteractor.swift; sourceTree = "<group>"; };
+		3E5C11252E5E000300000001 /* SubtensorClaimRewardsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimRewardsPresenter.swift; sourceTree = "<group>"; };
+		3E5C11262E5E000300000001 /* SubtensorClaimRewardsWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimRewardsWireframe.swift; sourceTree = "<group>"; };
+		3E5C11272E5E000300000001 /* SubtensorClaimRewardsViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimRewardsViewFactory.swift; sourceTree = "<group>"; };
+		5D11AA012E5E000500000001 /* SubtensorClaimRewardsViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimRewardsViewLayout.swift; sourceTree = "<group>"; };
+		5D11AA022E5E000500000001 /* SubtensorClaimRewardsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimRewardsViewController.swift; sourceTree = "<group>"; };
+		3E5C11282E5E000300000001 /* SubtensorClaimRewardsState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimRewardsState.swift; sourceTree = "<group>"; };
+		3E5C11292E5E000300000001 /* SubtensorClaimRewardsPresenting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimRewardsPresenting.swift; sourceTree = "<group>"; };
+		3E5C112A2E5E000300000001 /* SubtensorStakableDelegateOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakableDelegateOperationFactory.swift; sourceTree = "<group>"; };
+		3E5C112B2E5E000300000001 /* CollatorStakingSelectViewFactory+Subtensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CollatorStakingSelectViewFactory+Subtensor.swift"; sourceTree = "<group>"; };
+		3E5C112C2E5E000300000001 /* SubtensorSelectDelegatesWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSelectDelegatesWireframe.swift; sourceTree = "<group>"; };
+		3E5C112D2E5E000300000001 /* CollatorStakingSelectSearchViewFactory+Subtensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CollatorStakingSelectSearchViewFactory+Subtensor.swift"; sourceTree = "<group>"; };
+		3E5C112E2E5E000300000001 /* SubtensorSelectSearchWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSelectSearchWireframe.swift; sourceTree = "<group>"; };
+		3E5C112F2E5E000300000001 /* CollatorStakingInfoViewFactory+Subtensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CollatorStakingInfoViewFactory+Subtensor.swift"; sourceTree = "<group>"; };
+		3E5C11302E5E000300000001 /* SubtensorDelegateInfoInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorDelegateInfoInteractor.swift; sourceTree = "<group>"; };
+		3E5C11312E5E000300000001 /* CollatorStakingSelectFiltersViewFactory+Subtensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CollatorStakingSelectFiltersViewFactory+Subtensor.swift"; sourceTree = "<group>"; };
+		3E5C11402E5E000300000001 /* SubtensorStakingCallModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingCallModelTests.swift; sourceTree = "<group>"; };
+		3E5C11412E5E000300000001 /* SubtensorClaimRewardsStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimRewardsStateTests.swift; sourceTree = "<group>"; };
+		3E5C11422E5E000300000001 /* SubtensorExecutedOutcomeParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorExecutedOutcomeParserTests.swift; sourceTree = "<group>"; };
+		3E5C11432E5E000300000001 /* SubtensorDelegateSelectionInfoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorDelegateSelectionInfoTests.swift; sourceTree = "<group>"; };
+		3E5C11442E5E000300000001 /* SubtensorUnstakeValidatingDepTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorUnstakeValidatingDepTests.swift; sourceTree = "<group>"; };
+		5D11AA042E5E000500000001 /* SubtensorUnstakeSetupPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorUnstakeSetupPresenterTests.swift; sourceTree = "<group>"; };
+		5D11AA052E5E000500000001 /* SubtensorStakePresenterValidatingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakePresenterValidatingTests.swift; sourceTree = "<group>"; };
+		5D11AA062E5E000500000001 /* SubtensorUnstakePresenterValidatingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorUnstakePresenterValidatingTests.swift; sourceTree = "<group>"; };
+		3E5C13012E5E000300000001 /* SubtensorStakingDetailsProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingDetailsProtocols.swift; sourceTree = "<group>"; };
+		3E5C13022E5E000300000001 /* SubtensorStakingDetailsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingDetailsInteractor.swift; sourceTree = "<group>"; };
+		3E5C13032E5E000300000001 /* SubtensorStakingDetailsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingDetailsPresenter.swift; sourceTree = "<group>"; };
+		3E5C13042E5E000300000001 /* SubtensorStakingDetailsWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingDetailsWireframe.swift; sourceTree = "<group>"; };
+		3E5C13052E5E000300000001 /* StakingMainPresenterFactory+Subtensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StakingMainPresenterFactory+Subtensor.swift"; sourceTree = "<group>"; };
+		3E5C13062E5E000300000001 /* SubtensorStakingStateMachineProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingStateMachineProtocols.swift; sourceTree = "<group>"; };
+		3E5C13072E5E000300000001 /* SubtensorStakingStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingStateMachine.swift; sourceTree = "<group>"; };
+		3E5C13082E5E000300000001 /* SubtensorStakingCommonData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingCommonData.swift; sourceTree = "<group>"; };
+		3E5C13092E5E000300000001 /* SubtensorStakingBaseState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingBaseState.swift; sourceTree = "<group>"; };
+		3E5C130A2E5E000300000001 /* SubtensorStakingInitState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingInitState.swift; sourceTree = "<group>"; };
+		3E5C130B2E5E000300000001 /* SubtensorStakingNotStakedState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingNotStakedState.swift; sourceTree = "<group>"; };
+		3E5C130C2E5E000300000001 /* SubtensorStakingStakedState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingStakedState.swift; sourceTree = "<group>"; };
+		3E5C130D2E5E000300000001 /* SubtensorStkStateViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStkStateViewModelFactory.swift; sourceTree = "<group>"; };
+		3E5C130E2E5E000300000001 /* SubtensorStkStateViewModelFactory+Alerts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorStkStateViewModelFactory+Alerts.swift"; sourceTree = "<group>"; };
+		3E5C130F2E5E000300000001 /* StakingSubtensorStatics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingSubtensorStatics.swift; sourceTree = "<group>"; };
+		3E5C13102E5E000300000001 /* StartStakingInfoSubtensorProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoSubtensorProtocols.swift; sourceTree = "<group>"; };
+		3E5C13112E5E000300000001 /* StartStakingInfoSubtensorInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoSubtensorInteractor.swift; sourceTree = "<group>"; };
+		3E5C13122E5E000300000001 /* StartStakingInfoSubtensorPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoSubtensorPresenter.swift; sourceTree = "<group>"; };
+		3E5C13132E5E000300000001 /* StartStakingInfoSubtensorWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoSubtensorWireframe.swift; sourceTree = "<group>"; };
+		3E5C13142E5E000300000001 /* StartStakingInfoViewFactory+Subtensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StartStakingInfoViewFactory+Subtensor.swift"; sourceTree = "<group>"; };
+		3E5C13152E5E000300000001 /* SubtensorHistoryFiltersProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorHistoryFiltersProvider.swift; sourceTree = "<group>"; };
+		3E5C13162E5E000300000001 /* SubtensorOperationGate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorOperationGate.swift; sourceTree = "<group>"; };
+		3E5C13172E5E000300000001 /* SubtensorStakingStateMachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingStateMachineTests.swift; sourceTree = "<group>"; };
+		3E5C13182E5E000300000001 /* SubtensorStkStateViewModelFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStkStateViewModelFactoryTests.swift; sourceTree = "<group>"; };
+		3E5C13192E5E000300000001 /* SubtensorOperationGateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorOperationGateTests.swift; sourceTree = "<group>"; };
+		3E5C131A2E5E000300000001 /* SubtensorHistoryFiltersProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorHistoryFiltersProviderTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -13244,6 +13485,7 @@
 				39503B664F159E5D07FF6281 /* CollatorStakingSelectFiltersPresenter.swift */,
 				35A4A258D911C67F875E386D /* CollatorStakingSelectFiltersViewController.swift */,
 				ED010772D7CE0450BDF30707 /* CollatorStakingSelectFiltersViewFactory.swift */,
+				3E5C11312E5E000300000001 /* CollatorStakingSelectFiltersViewFactory+Subtensor.swift */,
 			);
 			path = CollatorFilters;
 			sourceTree = "<group>";
@@ -13672,6 +13914,8 @@
 				2D7A55052E5D000100000001 /* SubtensorStakingPallet+DelegateInfo.swift */,
 				2D7A55062E5D000100000001 /* SubtensorStakingPallet+Swap.swift */,
 				2D7A55072E5D000100000001 /* SubtensorStakingPallet+RuntimeApis.swift */,
+				4B90A2022E5E000100000001 /* SubtensorStakingPallet+Events.swift */,
+				2D7A59012E5E000100000001 /* SubtensorStakingPallet+BasketInfo.swift */,
 			);
 			path = SubtensorStaking;
 			sourceTree = "<group>";
@@ -13697,6 +13941,69 @@
 				2D7A56062E5D000200000001 /* StakingDashboardSubtensorMapperTests.swift */,
 				2D7A56072E5D000200000001 /* SubtensorStakeStateFetchFactoryTests.swift */,
 				2D7A56082E5D000200000001 /* SubtensorSubqueryTypeKeyTests.swift */,
+				2D7A57052E5D000300000001 /* SubtensorStakingTypeTests.swift */,
+				2D7A57062E5D000300000001 /* SubtensorExternalBalanceTests.swift */,
+				2D7A57072E5D000300000001 /* SubtensorExternalBalanceServiceFactoryTests.swift */,
+				4B90A2072E5E000100000001 /* SubtensorStakingTestWireframe.swift */,
+				4B90A2082E5E000100000001 /* SubtensorStakingCallsTests.swift */,
+				4B90A2092E5E000100000001 /* SubtensorStakingEventsTests.swift */,
+				3E5C11402E5E000300000001 /* SubtensorStakingCallModelTests.swift */,
+				3E5C11412E5E000300000001 /* SubtensorClaimRewardsStateTests.swift */,
+				3E5C11422E5E000300000001 /* SubtensorExecutedOutcomeParserTests.swift */,
+				3E5C11432E5E000300000001 /* SubtensorDelegateSelectionInfoTests.swift */,
+				3E5C11442E5E000300000001 /* SubtensorUnstakeValidatingDepTests.swift */,
+				5D11AA042E5E000500000001 /* SubtensorUnstakeSetupPresenterTests.swift */,
+				5D11AA052E5E000500000001 /* SubtensorStakePresenterValidatingTests.swift */,
+				5D11AA062E5E000500000001 /* SubtensorUnstakePresenterValidatingTests.swift */,
+				3E5C13172E5E000300000001 /* SubtensorStakingStateMachineTests.swift */,
+				3E5C13182E5E000300000001 /* SubtensorStkStateViewModelFactoryTests.swift */,
+				3E5C13192E5E000300000001 /* SubtensorOperationGateTests.swift */,
+				3E5C131A2E5E000300000001 /* SubtensorHistoryFiltersProviderTests.swift */,
+				4B90A20A2E5E000100000001 /* SubtensorSignedExtensionCodingTests.swift */,
+				4B90A20B2E5E000100000001 /* SubtensorStakingValidationFactoryTests.swift */,
+				4B90A20C2E5E000100000001 /* SubtensorStakingErrorMapperTests.swift */,
+				2D7A590A2E5E000100000001 /* SubtensorRootBasketDecodeTests.swift */,
+				2D7A590B2E5E000100000001 /* SubtensorPreflightValuesTests.swift */,
+				2D7A590C2E5E000100000001 /* SubtensorStakingPositionsSyncServiceTests.swift */,
+				2D7A590D2E5E000100000001 /* SubtensorRootClaimableServiceTests.swift */,
+			);
+			path = SubtensorStaking;
+			sourceTree = "<group>";
+		};
+		2D7A59F02E5E000100000001 /* Subtensor */ = {
+			isa = PBXGroup;
+			children = (
+				2D7A59F12E5E000100000001 /* Services */,
+				4B90A2122E5E000100000001 /* Validation */,
+				3E5C12A12E5E000300000001 /* Model */,
+				3E5C12A92E5E000300000001 /* Protocols */,
+				3E5C12A22E5E000300000001 /* SubtensorStakingBase */,
+				3E5C12A32E5E000300000001 /* SubtensorStakingSetup */,
+				3E5C12A42E5E000300000001 /* SubtensorStakingConfirm */,
+				3E5C12A52E5E000300000001 /* SubtensorUnstakeSetup */,
+				3E5C12A62E5E000300000001 /* SubtensorUnstakeConfirm */,
+				3E5C12A72E5E000300000001 /* SubtensorClaimRewards */,
+			);
+			path = Subtensor;
+			sourceTree = "<group>";
+		};
+		2D7A59F12E5E000100000001 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				2D7A59022E5E000100000001 /* SubtensorStakingPositionsSyncService.swift */,
+				2D7A59032E5E000100000001 /* SubtensorSubnetsService.swift */,
+				2D7A59042E5E000100000001 /* SubtensorDelegatesService.swift */,
+				2D7A59052E5E000100000001 /* SubtensorRootClaimableService.swift */,
+				2D7A59062E5E000100000001 /* SubtensorSessionCachingService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		2D7A59F22E5E000100000001 /* SubtensorStaking */ = {
+			isa = PBXGroup;
+			children = (
+				2D7A59072E5E000100000001 /* SubtensorPreflightFactory.swift */,
+				2D7A59082E5E000100000001 /* SubtensorNetworkInfoFactory.swift */,
 			);
 			path = SubtensorStaking;
 			sourceTree = "<group>";
@@ -13707,6 +14014,25 @@
 				2D7A56032E5D000200000001 /* SubtensorStakeStateFetchFactory.swift */,
 			);
 			path = Subtensor;
+			sourceTree = "<group>";
+		};
+		4B90A2102E5E000100000001 /* SubtensorStaking */ = {
+			isa = PBXGroup;
+			children = (
+				4B90A2012E5E000100000001 /* SubtensorStaking+Calls.swift */,
+			);
+			path = SubtensorStaking;
+			sourceTree = "<group>";
+		};
+		4B90A2122E5E000100000001 /* Validation */ = {
+			isa = PBXGroup;
+			children = (
+				4B90A2032E5E000100000001 /* SubtensorStakingValidationFactoryProtocol.swift */,
+				4B90A2042E5E000100000001 /* SubtensorStakingValidationFactory.swift */,
+				4B90A2052E5E000100000001 /* SubtensorStakingErrorPresentable.swift */,
+				4B90A2062E5E000100000001 /* SubtensorStakingErrorMapper.swift */,
+			);
+			path = Validation;
 			sourceTree = "<group>";
 		};
 		0C0F6D732D3A5C3100943A7C /* MythosStaking */ = {
@@ -13764,6 +14090,7 @@
 			isa = PBXGroup;
 			children = (
 				7A0DE1A92E5C10010043FA11 /* SubtensorStakingApiTests.swift */,
+				7A0DE1B02E5F10010043FA11 /* SubtensorStakingWritePathTests.swift */,
 			);
 			path = SubtensorStaking;
 			sourceTree = "<group>";
@@ -13869,6 +14196,7 @@
 				0C0F6DD82D413DEB00943A7C /* CollatorStakingAccountViewModelFactory.swift */,
 				0C0F6E182D442E1D00943A7C /* CollatorStakingStakeFlowTitle.swift */,
 				0CA72A7A2D4A23ED00B3FD02 /* CollatorStakingHintsViewModelFactory.swift */,
+				5D11AA032E5E000500000001 /* CollatorStakingDelegateStatics.swift */,
 				844138EB2830106B00AFEF6D /* CollatorStkNetworkInfoViewModelFactory.swift */,
 			);
 			path = ViewModel;
@@ -13907,6 +14235,7 @@
 				0C0F6DED2D4286E000943A7C /* CollatorStakingStakableFactory.swift */,
 				0C0F6DEF2D42878800943A7C /* ParaStkStakableCollatorsOperationFactory.swift */,
 				0C0F6DF22D428C0000943A7C /* MythosStakableCollatorOperationFactory.swift */,
+				3E5C112A2E5E000300000001 /* SubtensorStakableDelegateOperationFactory.swift */,
 			);
 			path = ElectedCollators;
 			sourceTree = "<group>";
@@ -13917,6 +14246,7 @@
 				53BE9DEF100A373868EDD03F /* ParaStkSelectCollatorsWireframe.swift */,
 				0C0F6DFB2D42AAE300943A7C /* CollatorStakingSelectWireframe.swift */,
 				0C0F6DFD2D42E5E400943A7C /* MythosStkSelectCollatorsWireframe.swift */,
+				3E5C112C2E5E000300000001 /* SubtensorSelectDelegatesWireframe.swift */,
 			);
 			path = Wireframe;
 			sourceTree = "<group>";
@@ -13927,6 +14257,7 @@
 				9D93D6B6DB7BACFEA6F2738C /* ParaStkCollatorInfoInteractor.swift */,
 				0C0F6E062D43A94600943A7C /* CollatorStakingInfoInteractor.swift */,
 				0C0F6E082D43AC4700943A7C /* MythosStkCollatorInfoInteractor.swift */,
+				3E5C11302E5E000300000001 /* SubtensorDelegateInfoInteractor.swift */,
 			);
 			path = Interactor;
 			sourceTree = "<group>";
@@ -13937,6 +14268,7 @@
 				53C2612BBF75CF0FBD91764E /* ParaStkCollatorsSearchWireframe.swift */,
 				0C0F6E0F2D43D32700943A7C /* CollatorStakingSelectSearchWireframe.swift */,
 				0C0F6E132D43D56100943A7C /* MythosStakingSelectSearchWireframe.swift */,
+				3E5C112E2E5E000300000001 /* SubtensorSelectSearchWireframe.swift */,
 			);
 			path = Wireframe;
 			sourceTree = "<group>";
@@ -14755,6 +15087,7 @@
 			children = (
 				0C59E8CB2AA5D631001E11F3 /* PooledBalanceService */,
 				880855EE28D099BD004255E7 /* CrowdloanService */,
+				2D7A57102E5D000300000001 /* SubtensorBalanceService */,
 			);
 			path = ExternalBalanceUpdater;
 			sourceTree = "<group>";
@@ -14766,6 +15099,14 @@
 				0C59E8CE2AA5D744001E11F3 /* PooledBalanceUpdatingState.swift */,
 			);
 			path = PooledBalanceService;
+			sourceTree = "<group>";
+		};
+		2D7A57102E5D000300000001 /* SubtensorBalanceService */ = {
+			isa = PBXGroup;
+			children = (
+				2D7A57032E5D000300000001 /* SubtensorStakedBalanceUpdatingService.swift */,
+			);
+			path = SubtensorBalanceService;
 			sourceTree = "<group>";
 		};
 		0C59E8D62AA6047A001E11F3 /* ExternalAssetBalance */ = {
@@ -14783,6 +15124,7 @@
 				0C59E8DE2AA60DAB001E11F3 /* ExternalAssetBalanceServiceFactoryProtocol.swift */,
 				0C59E8E02AA60FF0001E11F3 /* CrowdloanExternalServiceFactory.swift */,
 				0C59E8E22AA61252001E11F3 /* NominationPoolExternalServiceFactory.swift */,
+				2D7A57042E5D000300000001 /* SubtensorExternalBalanceServiceFactory.swift */,
 			);
 			path = ExternalAssetBalanceFactory;
 			sourceTree = "<group>";
@@ -14877,6 +15219,8 @@
 				0CAC44AB2A7A7FFD001EDE61 /* RelaychainConsensusStateDepending.swift */,
 				0C9C64372A8D6949004DC078 /* NPoolsStakingSharedState.swift */,
 				0C0F6D7A2D3A625400943A7C /* MythosStakingSharedState.swift */,
+				2D7A59092E5E000100000001 /* SubtensorStakingSharedState.swift */,
+				2D7A590E2E5E000100000001 /* StakingSharedStateFactory+Subtensor.swift */,
 			);
 			path = StakingSharedState;
 			sourceTree = "<group>";
@@ -16274,6 +16618,7 @@
 				0CE862222D65962C00245992 /* TransactionHistoryFilterProviderProtocol.swift */,
 				0CE8622F2D65A0B800245992 /* PoolStakingHistoryFiltersProvider.swift */,
 				0CE862312D65A26100245992 /* ConstantHistoryFiltersProvider.swift */,
+				3E5C13152E5E000300000001 /* SubtensorHistoryFiltersProvider.swift */,
 			);
 			path = Providers;
 			sourceTree = "<group>";
@@ -16740,6 +17085,7 @@
 				84350ACB284569560031EF24 /* CollatorStakingInfoViewController.swift */,
 				0C0F6E0A2D43C81000943A7C /* CollatorStakingInfoViewFactory+ParachainStaking.swift */,
 				0C0F6E0C2D43C85400943A7C /* CollatorStakingInfoViewFactory+Mythos.swift */,
+				3E5C112F2E5E000300000001 /* CollatorStakingInfoViewFactory+Subtensor.swift */,
 			);
 			path = CollatorInfo;
 			sourceTree = "<group>";
@@ -20176,6 +20522,7 @@
 				841C1EE99F5EA1713BA3F313 /* CollatorStakingSelectSearchInteractor.swift */,
 				8EB322463CF5036819A181E0 /* CollatorStakingSelectSearchViewController.swift */,
 				4C602661DE4D6CAC482AF721 /* CollatorStakingSelectSearchViewFactory.swift */,
+				3E5C112D2E5E000300000001 /* CollatorStakingSelectSearchViewFactory+Subtensor.swift */,
 			);
 			path = CollatorsSearch;
 			sourceTree = "<group>";
@@ -21558,6 +21905,7 @@
 			isa = PBXGroup;
 			children = (
 				0C0F6D8E2D3A9E9200943A7C /* MythosStaking */,
+				2D7A59F22E5E000100000001 /* SubtensorStaking */,
 				0C2F86872A723E4200593C01 /* NominationPools */,
 				846952A02852A1160083E0B4 /* StakingDuration */,
 				197665D4687743E790C415F0 /* UnstakingDuration */,
@@ -22839,6 +23187,7 @@
 				0CB06E742A68139C00C7EC99 /* StakingDashboardNominationPoolMapper.swift */,
 				0CC2E55D2A6AB2B7004092E7 /* StashItemMapper.swift */,
 				0C59E8D22AA5FBE2001E11F3 /* PooledAssetBalanceMapper.swift */,
+				2D7A57022E5D000300000001 /* SubtensorStakedBalanceMapper.swift */,
 				0C59E8D42AA5FC96001E11F3 /* ExternalAssetBalanceMapper.swift */,
 				0C37AFC92B5981B900009ECA /* ProxiedSettingsMapper.swift */,
 				2DDEE0EA2CEDD43A002E9289 /* DAppBrowserTabMapper.swift */,
@@ -22986,6 +23335,7 @@
 				0CA8AF372D88C31A00DB4E6A /* BalancesPallet */,
 				0CA8AF1F2D85E5B000DB4E6A /* Builder */,
 				0C0F6DE52D423B3300943A7C /* MythosStaking */,
+				4B90A2102E5E000100000001 /* SubtensorStaking */,
 				0CA957232B6A565D009AD757 /* HydraDx */,
 				0C495B8E2B42909600B8D339 /* Proxy */,
 				0CFA161A2B0CE83A007AF885 /* UtilityPallet */,
@@ -24482,6 +24832,7 @@
 				8455F1A32A1F606B003F072D /* OnchainStorage.swift */,
 				0C3205EB2A8A122D002EB914 /* FeeOutputModel.swift */,
 				0C59E8D02AA5FAC5001E11F3 /* PooledAssetBalance.swift */,
+				2D7A57012E5D000300000001 /* SubtensorStakedBalance.swift */,
 				0CD352942ACAF59900B3E446 /* BigRational.swift */,
 				77D2E2722B0542A50098F188 /* AmountPair.swift */,
 				778215D42B9591C2006C7D13 /* SharedSettingsManager.swift */,
@@ -27659,6 +28010,7 @@
 				B34182C356E2DACDF66A71FC /* Dashboard */,
 				84D41186283517A1001D6E06 /* Parachain */,
 				0C0F6DAE2D3EDEE100943A7C /* Mythos */,
+				2D7A59F02E5E000100000001 /* Subtensor */,
 				8493D3E727059B2B00157009 /* Services */,
 				AEC8C485266A5634005904F4 /* SelectValidatorsFlow */,
 				84DBEA4B265ED4F100FDF73C /* Validation */,
@@ -29481,6 +29833,7 @@
 			isa = PBXGroup;
 			children = (
 				8F7A1E3EDBEE67AC353B846D /* Mythos */,
+				3E5C13A12E5E000300000001 /* Subtensor */,
 				0C9C642E2A8D675B004DC078 /* NominationPools */,
 				841E5543282D78ED00C8438F /* Parachain */,
 				8473F4B0282BD564007CC55A /* Relaychain */,
@@ -29690,6 +30043,7 @@
 			isa = PBXGroup;
 			children = (
 				0C0F6D732D3A5C3100943A7C /* MythosStaking */,
+				3E5C13A52E5E000300000001 /* SubtensorStaking */,
 				7738FB5C2A4C5C3600797439 /* RelaychainStaking */,
 				7738FB5B2A4C5C2000797439 /* ParachainStaking */,
 				77F189452A49BD5E00E8B933 /* Model */,
@@ -29702,6 +30056,7 @@
 				694E15BA7E0C59E46D0A6612 /* StartStakingInfoViewFactory.swift */,
 				0CF193D62A861D7E003F12F6 /* StartStakingInfoConstants.swift */,
 				0C0F6D8A2D3A927D00943A7C /* StartStakingInfoViewFactory+Mythos.swift */,
+				3E5C13142E5E000300000001 /* StartStakingInfoViewFactory+Subtensor.swift */,
 			);
 			path = StartStakingInfo;
 			sourceTree = "<group>";
@@ -29777,6 +30132,7 @@
 				2336E4CAF4A1F627C39093FF /* CollatorStakingSelectViewFactory.swift */,
 				0C0F6DF62D42A96F00943A7C /* CollatorStakingSelectViewFactory+ParachainStaking.swift */,
 				0C0F6DF82D42A9BD00943A7C /* CollatorStakingSelectViewFactory+MythosStaking.swift */,
+				3E5C112B2E5E000300000001 /* CollatorStakingSelectViewFactory+Subtensor.swift */,
 			);
 			path = SelectCollators;
 			sourceTree = "<group>";
@@ -30628,6 +30984,171 @@
 			path = LegalConsent;
 			sourceTree = "<group>";
 		};
+		3E5C12A12E5E000300000001 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				3E5C11012E5E000300000001 /* SubtensorStakeModel.swift */,
+				3E5C11022E5E000300000001 /* SubtensorUnstakeModel.swift */,
+				3E5C11032E5E000300000001 /* SubtensorStakingCallModel.swift */,
+				3E5C11042E5E000300000001 /* SubtensorStakingConfirmModel.swift */,
+				3E5C11052E5E000300000001 /* SubtensorUnstakeConfirmModel.swift */,
+				3E5C11062E5E000300000001 /* SubtensorSubmissionModel.swift */,
+				3E5C11072E5E000300000001 /* SubtensorDelegateSelectionInfo.swift */,
+				3E5C13162E5E000300000001 /* SubtensorOperationGate.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		3E5C12A22E5E000300000001 /* SubtensorStakingBase */ = {
+			isa = PBXGroup;
+			children = (
+				3E5C11082E5E000300000001 /* SubtensorStakingBaseInteractor.swift */,
+				3E5C11092E5E000300000001 /* SubtensorStakingBaseProtocols.swift */,
+				3E5C110A2E5E000300000001 /* SubtensorStakingDelegateBaseInteractor.swift */,
+				3E5C110B2E5E000300000001 /* SubtensorStakingSubmitInteractor.swift */,
+				3E5C110C2E5E000300000001 /* SubtensorStakingEventMatcher.swift */,
+				3E5C110D2E5E000300000001 /* SubtensorStakePresenterValidating.swift */,
+				3E5C110E2E5E000300000001 /* SubtensorUnstakePresenterValidating.swift */,
+			);
+			path = SubtensorStakingBase;
+			sourceTree = "<group>";
+		};
+		3E5C12A32E5E000300000001 /* SubtensorStakingSetup */ = {
+			isa = PBXGroup;
+			children = (
+				3E5C110F2E5E000300000001 /* SubtensorStakingSetupProtocols.swift */,
+				3E5C11102E5E000300000001 /* SubtensorStakingSetupInteractor.swift */,
+				3E5C11112E5E000300000001 /* SubtensorStakingSetupPresenter.swift */,
+				3E5C11122E5E000300000001 /* SubtensorStakingSetupWireframe.swift */,
+				3E5C11132E5E000300000001 /* SubtensorStakingSetupViewFactory.swift */,
+			);
+			path = SubtensorStakingSetup;
+			sourceTree = "<group>";
+		};
+		3E5C12A42E5E000300000001 /* SubtensorStakingConfirm */ = {
+			isa = PBXGroup;
+			children = (
+				3E5C11142E5E000300000001 /* SubtensorStakingConfirmProtocols.swift */,
+				3E5C11152E5E000300000001 /* SubtensorStakingConfirmInteractor.swift */,
+				3E5C11162E5E000300000001 /* SubtensorStakingConfirmPresenter.swift */,
+				3E5C11172E5E000300000001 /* SubtensorStakingConfirmWireframe.swift */,
+				3E5C11182E5E000300000001 /* SubtensorStakingConfirmViewFactory.swift */,
+			);
+			path = SubtensorStakingConfirm;
+			sourceTree = "<group>";
+		};
+		3E5C12A52E5E000300000001 /* SubtensorUnstakeSetup */ = {
+			isa = PBXGroup;
+			children = (
+				3E5C11192E5E000300000001 /* SubtensorUnstakeSetupProtocols.swift */,
+				3E5C111A2E5E000300000001 /* SubtensorUnstakeSetupInteractor.swift */,
+				3E5C111B2E5E000300000001 /* SubtensorUnstakeSetupPresenter.swift */,
+				3E5C111C2E5E000300000001 /* SubtensorUnstakeSetupWireframe.swift */,
+				3E5C111D2E5E000300000001 /* SubtensorUnstakeSetupViewFactory.swift */,
+			);
+			path = SubtensorUnstakeSetup;
+			sourceTree = "<group>";
+		};
+		3E5C12A62E5E000300000001 /* SubtensorUnstakeConfirm */ = {
+			isa = PBXGroup;
+			children = (
+				3E5C111E2E5E000300000001 /* SubtensorUnstakeConfirmProtocols.swift */,
+				3E5C111F2E5E000300000001 /* SubtensorUnstakeConfirmInteractor.swift */,
+				3E5C11202E5E000300000001 /* SubtensorUnstakeConfirmPresenter.swift */,
+				3E5C11212E5E000300000001 /* SubtensorUnstakeConfirmWireframe.swift */,
+				3E5C11222E5E000300000001 /* SubtensorUnstakeConfirmViewFactory.swift */,
+			);
+			path = SubtensorUnstakeConfirm;
+			sourceTree = "<group>";
+		};
+		3E5C12A72E5E000300000001 /* SubtensorClaimRewards */ = {
+			isa = PBXGroup;
+			children = (
+				3E5C11232E5E000300000001 /* SubtensorClaimRewardsProtocols.swift */,
+				3E5C11242E5E000300000001 /* SubtensorClaimRewardsInteractor.swift */,
+				3E5C11252E5E000300000001 /* SubtensorClaimRewardsPresenter.swift */,
+				3E5C11262E5E000300000001 /* SubtensorClaimRewardsWireframe.swift */,
+				3E5C11272E5E000300000001 /* SubtensorClaimRewardsViewFactory.swift */,
+				5D11AA012E5E000500000001 /* SubtensorClaimRewardsViewLayout.swift */,
+				5D11AA022E5E000500000001 /* SubtensorClaimRewardsViewController.swift */,
+				3E5C12A82E5E000300000001 /* Model */,
+			);
+			path = SubtensorClaimRewards;
+			sourceTree = "<group>";
+		};
+		3E5C12A82E5E000300000001 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				3E5C11282E5E000300000001 /* SubtensorClaimRewardsState.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		3E5C13A12E5E000300000001 /* Subtensor */ = {
+			isa = PBXGroup;
+			children = (
+				3E5C13A22E5E000300000001 /* StateMachine */,
+				3E5C13A42E5E000300000001 /* ViewModel */,
+				3E5C13012E5E000300000001 /* SubtensorStakingDetailsProtocols.swift */,
+				3E5C13022E5E000300000001 /* SubtensorStakingDetailsInteractor.swift */,
+				3E5C13032E5E000300000001 /* SubtensorStakingDetailsPresenter.swift */,
+				3E5C13042E5E000300000001 /* SubtensorStakingDetailsWireframe.swift */,
+				3E5C13052E5E000300000001 /* StakingMainPresenterFactory+Subtensor.swift */,
+			);
+			path = Subtensor;
+			sourceTree = "<group>";
+		};
+		3E5C13A22E5E000300000001 /* StateMachine */ = {
+			isa = PBXGroup;
+			children = (
+				3E5C13A32E5E000300000001 /* States */,
+				3E5C13062E5E000300000001 /* SubtensorStakingStateMachineProtocols.swift */,
+				3E5C13072E5E000300000001 /* SubtensorStakingStateMachine.swift */,
+			);
+			path = StateMachine;
+			sourceTree = "<group>";
+		};
+		3E5C13A32E5E000300000001 /* States */ = {
+			isa = PBXGroup;
+			children = (
+				3E5C13082E5E000300000001 /* SubtensorStakingCommonData.swift */,
+				3E5C13092E5E000300000001 /* SubtensorStakingBaseState.swift */,
+				3E5C130A2E5E000300000001 /* SubtensorStakingInitState.swift */,
+				3E5C130B2E5E000300000001 /* SubtensorStakingNotStakedState.swift */,
+				3E5C130C2E5E000300000001 /* SubtensorStakingStakedState.swift */,
+			);
+			path = States;
+			sourceTree = "<group>";
+		};
+		3E5C13A42E5E000300000001 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				3E5C130D2E5E000300000001 /* SubtensorStkStateViewModelFactory.swift */,
+				3E5C130E2E5E000300000001 /* SubtensorStkStateViewModelFactory+Alerts.swift */,
+				3E5C130F2E5E000300000001 /* StakingSubtensorStatics.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		3E5C13A52E5E000300000001 /* SubtensorStaking */ = {
+			isa = PBXGroup;
+			children = (
+				3E5C13102E5E000300000001 /* StartStakingInfoSubtensorProtocols.swift */,
+				3E5C13112E5E000300000001 /* StartStakingInfoSubtensorInteractor.swift */,
+				3E5C13122E5E000300000001 /* StartStakingInfoSubtensorPresenter.swift */,
+				3E5C13132E5E000300000001 /* StartStakingInfoSubtensorWireframe.swift */,
+			);
+			path = SubtensorStaking;
+			sourceTree = "<group>";
+		};
+		3E5C12A92E5E000300000001 /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				3E5C11292E5E000300000001 /* SubtensorClaimRewardsPresenting.swift */,
+			);
+			path = Protocols;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -31014,6 +31535,7 @@
 				2D7A55042E5D000100000003 /* SubtensorStakingPallet+DynamicInfo.swift in Sources */,
 				2D7A55052E5D000100000003 /* SubtensorStakingPallet+DelegateInfo.swift in Sources */,
 				2D7A55062E5D000100000003 /* SubtensorStakingPallet+Swap.swift in Sources */,
+				2D7A59012E5E000100000003 /* SubtensorStakingPallet+BasketInfo.swift in Sources */,
 				2DEDEFD62E4D1594008F07B2 /* MythosStaking+StoragePath.swift in Sources */,
 				2DEDEFD72E4D1594008F07B2 /* MythosStakingPallet+Freezes.swift in Sources */,
 				2DEDEFD82E4D1594008F07B2 /* MythosStakingPallet+Candidates.swift in Sources */,
@@ -31398,6 +31920,7 @@
 				0CE840E72BFBF225003C2B7A /* RuntimeFetchOperationFactoryTests.swift in Sources */,
 				7A0DE1A72E5B10010043FA11 /* SignedExtensionConformanceTests.swift in Sources */,
 				7A0DE1AA2E5C10010043FA11 /* SubtensorStakingApiTests.swift in Sources */,
+				7A0DE1B12E5F10010043FA11 /* SubtensorStakingWritePathTests.swift in Sources */,
 				844133BB2860528500845987 /* XcmTransfersFeeTests.swift in Sources */,
 				0C2F86932A72648D00593C01 /* ActiveNominationPoolsTests.swift in Sources */,
 				849E16E42714D1BD0065B305 /* EthereumBaseIntegrationTests.swift in Sources */,
@@ -31837,6 +32360,7 @@
 				0CF6928E2C23EBEA000FC395 /* SharedSyncStatus.swift in Sources */,
 				2DA3AE9B2E5DE6C300689F65 /* RemovedWalletNotificationsCleaner.swift in Sources */,
 				0C59E8D32AA5FBE2001E11F3 /* PooledAssetBalanceMapper.swift in Sources */,
+				2D7A57022E5D000300000002 /* SubtensorStakedBalanceMapper.swift in Sources */,
 				84AE7AAB27D373A200495267 /* StackInfoTableCell.swift in Sources */,
 				84A59160292B468300BCCF8F /* EvmTransactionService.swift in Sources */,
 				845BB8C925E45D1500E5FCDC /* BondCall.swift in Sources */,
@@ -31906,6 +32430,7 @@
 				8490146D24A9487A008F705E /* ErrorPresentable+AlertText.swift in Sources */,
 				8460E71C284D41E7002896E9 /* ParaStkUnstakePresenter+Protocol.swift in Sources */,
 				0CA72A7B2D4A23ED00B3FD02 /* CollatorStakingHintsViewModelFactory.swift in Sources */,
+				5D11AA032E5E000500000002 /* CollatorStakingDelegateStatics.swift in Sources */,
 				0C38B5002B7A82F100882A8B /* TransactionPaymentPallet.swift in Sources */,
 				0C6FE8042D4CEA8E00E5B651 /* MythosStakingNetworkInfoFactory.swift in Sources */,
 				84FBECF92927403100FBEB83 /* EvmAssetContractId.swift in Sources */,
@@ -32574,6 +33099,7 @@
 				840D92A7278EE8690007B979 /* DAppSignBytesConfirmInteractor.swift in Sources */,
 				84EC2D1A276C6600009B0BE1 /* PolkadotExtensionExtrinsic.swift in Sources */,
 				0C59E8E32AA61252001E11F3 /* NominationPoolExternalServiceFactory.swift in Sources */,
+				2D7A57042E5D000300000002 /* SubtensorExternalBalanceServiceFactory.swift in Sources */,
 				0CEBAD652D64560C000EBA45 /* DispatchCallError+Display.swift in Sources */,
 				84B8AA8729F9115400347A37 /* WalletConnectTransportMessage.swift in Sources */,
 				84F98D9625E3E2B10040418E /* InMemoryDataProviderRepository.swift in Sources */,
@@ -34297,6 +34823,7 @@
 				AEAC690026EA729300346599 /* CoingeckoPriceData.swift in Sources */,
 				84C34204283124C600156569 /* StakingParachainWireframe.swift in Sources */,
 				0C59E8D12AA5FAC5001E11F3 /* PooledAssetBalance.swift in Sources */,
+				2D7A57012E5D000300000002 /* SubtensorStakedBalance.swift in Sources */,
 				84953F70293615D20033F47D /* AssetHistoryFactoryFacade.swift in Sources */,
 				2DCC87712C598DE40028C3CA /* CloudBackupUpdatePasswordConfirmWireframe.swift in Sources */,
 				84F13F1C26F2B8C2006725FF /* JSONRPCError+Presentable.swift in Sources */,
@@ -35244,6 +35771,95 @@
 				2D7A55062E5D000100000002 /* SubtensorStakingPallet+Swap.swift in Sources */,
 				2D7A55072E5D000100000002 /* SubtensorStakingPallet+RuntimeApis.swift in Sources */,
 				2D7A55082E5D000100000002 /* SubtensorApiOperationFactory.swift in Sources */,
+				3E5C11012E5E000300000002 /* SubtensorStakeModel.swift in Sources */,
+				3E5C11022E5E000300000002 /* SubtensorUnstakeModel.swift in Sources */,
+				3E5C11032E5E000300000002 /* SubtensorStakingCallModel.swift in Sources */,
+				3E5C11042E5E000300000002 /* SubtensorStakingConfirmModel.swift in Sources */,
+				3E5C11052E5E000300000002 /* SubtensorUnstakeConfirmModel.swift in Sources */,
+				3E5C11062E5E000300000002 /* SubtensorSubmissionModel.swift in Sources */,
+				3E5C11072E5E000300000002 /* SubtensorDelegateSelectionInfo.swift in Sources */,
+				3E5C11082E5E000300000002 /* SubtensorStakingBaseInteractor.swift in Sources */,
+				3E5C11092E5E000300000002 /* SubtensorStakingBaseProtocols.swift in Sources */,
+				3E5C110A2E5E000300000002 /* SubtensorStakingDelegateBaseInteractor.swift in Sources */,
+				3E5C110B2E5E000300000002 /* SubtensorStakingSubmitInteractor.swift in Sources */,
+				3E5C110C2E5E000300000002 /* SubtensorStakingEventMatcher.swift in Sources */,
+				3E5C110D2E5E000300000002 /* SubtensorStakePresenterValidating.swift in Sources */,
+				3E5C110E2E5E000300000002 /* SubtensorUnstakePresenterValidating.swift in Sources */,
+				3E5C110F2E5E000300000002 /* SubtensorStakingSetupProtocols.swift in Sources */,
+				3E5C11102E5E000300000002 /* SubtensorStakingSetupInteractor.swift in Sources */,
+				3E5C11112E5E000300000002 /* SubtensorStakingSetupPresenter.swift in Sources */,
+				3E5C11122E5E000300000002 /* SubtensorStakingSetupWireframe.swift in Sources */,
+				3E5C11132E5E000300000002 /* SubtensorStakingSetupViewFactory.swift in Sources */,
+				3E5C11142E5E000300000002 /* SubtensorStakingConfirmProtocols.swift in Sources */,
+				3E5C11152E5E000300000002 /* SubtensorStakingConfirmInteractor.swift in Sources */,
+				3E5C11162E5E000300000002 /* SubtensorStakingConfirmPresenter.swift in Sources */,
+				3E5C11172E5E000300000002 /* SubtensorStakingConfirmWireframe.swift in Sources */,
+				3E5C11182E5E000300000002 /* SubtensorStakingConfirmViewFactory.swift in Sources */,
+				3E5C11192E5E000300000002 /* SubtensorUnstakeSetupProtocols.swift in Sources */,
+				3E5C111A2E5E000300000002 /* SubtensorUnstakeSetupInteractor.swift in Sources */,
+				3E5C111B2E5E000300000002 /* SubtensorUnstakeSetupPresenter.swift in Sources */,
+				3E5C111C2E5E000300000002 /* SubtensorUnstakeSetupWireframe.swift in Sources */,
+				3E5C111D2E5E000300000002 /* SubtensorUnstakeSetupViewFactory.swift in Sources */,
+				3E5C111E2E5E000300000002 /* SubtensorUnstakeConfirmProtocols.swift in Sources */,
+				3E5C111F2E5E000300000002 /* SubtensorUnstakeConfirmInteractor.swift in Sources */,
+				3E5C11202E5E000300000002 /* SubtensorUnstakeConfirmPresenter.swift in Sources */,
+				3E5C11212E5E000300000002 /* SubtensorUnstakeConfirmWireframe.swift in Sources */,
+				3E5C11222E5E000300000002 /* SubtensorUnstakeConfirmViewFactory.swift in Sources */,
+				3E5C11232E5E000300000002 /* SubtensorClaimRewardsProtocols.swift in Sources */,
+				3E5C11242E5E000300000002 /* SubtensorClaimRewardsInteractor.swift in Sources */,
+				3E5C11252E5E000300000002 /* SubtensorClaimRewardsPresenter.swift in Sources */,
+				3E5C11262E5E000300000002 /* SubtensorClaimRewardsWireframe.swift in Sources */,
+				3E5C11272E5E000300000002 /* SubtensorClaimRewardsViewFactory.swift in Sources */,
+				5D11AA012E5E000500000002 /* SubtensorClaimRewardsViewLayout.swift in Sources */,
+				5D11AA022E5E000500000002 /* SubtensorClaimRewardsViewController.swift in Sources */,
+				3E5C11282E5E000300000002 /* SubtensorClaimRewardsState.swift in Sources */,
+				3E5C11292E5E000300000002 /* SubtensorClaimRewardsPresenting.swift in Sources */,
+				3E5C112A2E5E000300000002 /* SubtensorStakableDelegateOperationFactory.swift in Sources */,
+				3E5C112B2E5E000300000002 /* CollatorStakingSelectViewFactory+Subtensor.swift in Sources */,
+				3E5C112C2E5E000300000002 /* SubtensorSelectDelegatesWireframe.swift in Sources */,
+				3E5C112D2E5E000300000002 /* CollatorStakingSelectSearchViewFactory+Subtensor.swift in Sources */,
+				3E5C112E2E5E000300000002 /* SubtensorSelectSearchWireframe.swift in Sources */,
+				3E5C112F2E5E000300000002 /* CollatorStakingInfoViewFactory+Subtensor.swift in Sources */,
+				3E5C11302E5E000300000002 /* SubtensorDelegateInfoInteractor.swift in Sources */,
+				3E5C11312E5E000300000002 /* CollatorStakingSelectFiltersViewFactory+Subtensor.swift in Sources */,
+				3E5C13012E5E000300000002 /* SubtensorStakingDetailsProtocols.swift in Sources */,
+				3E5C13022E5E000300000002 /* SubtensorStakingDetailsInteractor.swift in Sources */,
+				3E5C13032E5E000300000002 /* SubtensorStakingDetailsPresenter.swift in Sources */,
+				3E5C13042E5E000300000002 /* SubtensorStakingDetailsWireframe.swift in Sources */,
+				3E5C13052E5E000300000002 /* StakingMainPresenterFactory+Subtensor.swift in Sources */,
+				3E5C13062E5E000300000002 /* SubtensorStakingStateMachineProtocols.swift in Sources */,
+				3E5C13072E5E000300000002 /* SubtensorStakingStateMachine.swift in Sources */,
+				3E5C13082E5E000300000002 /* SubtensorStakingCommonData.swift in Sources */,
+				3E5C13092E5E000300000002 /* SubtensorStakingBaseState.swift in Sources */,
+				3E5C130A2E5E000300000002 /* SubtensorStakingInitState.swift in Sources */,
+				3E5C130B2E5E000300000002 /* SubtensorStakingNotStakedState.swift in Sources */,
+				3E5C130C2E5E000300000002 /* SubtensorStakingStakedState.swift in Sources */,
+				3E5C130D2E5E000300000002 /* SubtensorStkStateViewModelFactory.swift in Sources */,
+				3E5C130E2E5E000300000002 /* SubtensorStkStateViewModelFactory+Alerts.swift in Sources */,
+				3E5C130F2E5E000300000002 /* StakingSubtensorStatics.swift in Sources */,
+				3E5C13102E5E000300000002 /* StartStakingInfoSubtensorProtocols.swift in Sources */,
+				3E5C13112E5E000300000002 /* StartStakingInfoSubtensorInteractor.swift in Sources */,
+				3E5C13122E5E000300000002 /* StartStakingInfoSubtensorPresenter.swift in Sources */,
+				3E5C13132E5E000300000002 /* StartStakingInfoSubtensorWireframe.swift in Sources */,
+				3E5C13142E5E000300000002 /* StartStakingInfoViewFactory+Subtensor.swift in Sources */,
+				3E5C13152E5E000300000002 /* SubtensorHistoryFiltersProvider.swift in Sources */,
+				3E5C13162E5E000300000002 /* SubtensorOperationGate.swift in Sources */,
+				4B90A2012E5E000100000002 /* SubtensorStaking+Calls.swift in Sources */,
+				4B90A2022E5E000100000002 /* SubtensorStakingPallet+Events.swift in Sources */,
+				4B90A2032E5E000100000002 /* SubtensorStakingValidationFactoryProtocol.swift in Sources */,
+				4B90A2042E5E000100000002 /* SubtensorStakingValidationFactory.swift in Sources */,
+				4B90A2052E5E000100000002 /* SubtensorStakingErrorPresentable.swift in Sources */,
+				4B90A2062E5E000100000002 /* SubtensorStakingErrorMapper.swift in Sources */,
+				2D7A59012E5E000100000002 /* SubtensorStakingPallet+BasketInfo.swift in Sources */,
+				2D7A59022E5E000100000002 /* SubtensorStakingPositionsSyncService.swift in Sources */,
+				2D7A59032E5E000100000002 /* SubtensorSubnetsService.swift in Sources */,
+				2D7A59042E5E000100000002 /* SubtensorDelegatesService.swift in Sources */,
+				2D7A59052E5E000100000002 /* SubtensorRootClaimableService.swift in Sources */,
+				2D7A59062E5E000100000002 /* SubtensorSessionCachingService.swift in Sources */,
+				2D7A59072E5E000100000002 /* SubtensorPreflightFactory.swift in Sources */,
+				2D7A59082E5E000100000002 /* SubtensorNetworkInfoFactory.swift in Sources */,
+				2D7A59092E5E000100000002 /* SubtensorStakingSharedState.swift in Sources */,
+				2D7A590E2E5E000100000002 /* StakingSharedStateFactory+Subtensor.swift in Sources */,
 				2736BAABAE1389260A0B28D6 /* AssetListViewFactory.swift in Sources */,
 				88E1E896289C021F00C123A8 /* CurrencyCollectionViewCell.swift in Sources */,
 				0C1D9AAA2B9723A4003CBAB8 /* Web3Alert+ChainId.swift in Sources */,
@@ -36414,6 +37030,7 @@
 				2D81FAEB2CC65CF800BA0E46 /* TokensManageSearchView.swift in Sources */,
 				347BBBBCC84CA155006FDCDB /* GovernanceSelectTracksViewLayout.swift in Sources */,
 				0C59E8CD2AA5D673001E11F3 /* PooledBalanceUpdatingService.swift in Sources */,
+				2D7A57032E5D000300000002 /* SubtensorStakedBalanceUpdatingService.swift in Sources */,
 				0C2DA8A42CC223D9001F79C8 /* AssetsHydraExchangeEdge.swift in Sources */,
 				0C71049C2C2C422500487E64 /* BaseLedgerWalletConfirmInteractor.swift in Sources */,
 				60B66AA63089FC2A3A701CF2 /* GovernanceSelectTracksViewFactory.swift in Sources */,
@@ -37476,12 +38093,37 @@
 				2D7A56052E5D000200000002 /* SubtensorStakingStateTests.swift in Sources */,
 				2D7A56062E5D000200000002 /* StakingDashboardSubtensorMapperTests.swift in Sources */,
 				2D7A56072E5D000200000002 /* SubtensorStakeStateFetchFactoryTests.swift in Sources */,
+				2D7A590A2E5E000100000002 /* SubtensorRootBasketDecodeTests.swift in Sources */,
+				2D7A590B2E5E000100000002 /* SubtensorPreflightValuesTests.swift in Sources */,
+				2D7A590C2E5E000100000002 /* SubtensorStakingPositionsSyncServiceTests.swift in Sources */,
+				2D7A590D2E5E000100000002 /* SubtensorRootClaimableServiceTests.swift in Sources */,
 				2D7A56082E5D000200000002 /* SubtensorSubqueryTypeKeyTests.swift in Sources */,
+				2D7A57052E5D000300000002 /* SubtensorStakingTypeTests.swift in Sources */,
+				2D7A57062E5D000300000002 /* SubtensorExternalBalanceTests.swift in Sources */,
+				2D7A57072E5D000300000002 /* SubtensorExternalBalanceServiceFactoryTests.swift in Sources */,
 				2D7A550A2E5D000100000002 /* SubtensorStakeInfoDecodeTests.swift in Sources */,
 				2D7A550B2E5D000100000002 /* SubtensorDynamicInfoDecodeTests.swift in Sources */,
 				2D7A550C2E5D000100000002 /* SubtensorDelegateInfoDecodeTests.swift in Sources */,
 				2D7A550D2E5D000100000002 /* SubtensorSwapApiDecodeTests.swift in Sources */,
 				2D7A550E2E5D000100000002 /* SubtensorStakingPalletTests.swift in Sources */,
+				4B90A2072E5E000100000002 /* SubtensorStakingTestWireframe.swift in Sources */,
+				4B90A2082E5E000100000002 /* SubtensorStakingCallsTests.swift in Sources */,
+				4B90A2092E5E000100000002 /* SubtensorStakingEventsTests.swift in Sources */,
+				3E5C11402E5E000300000002 /* SubtensorStakingCallModelTests.swift in Sources */,
+				3E5C11412E5E000300000002 /* SubtensorClaimRewardsStateTests.swift in Sources */,
+				3E5C11422E5E000300000002 /* SubtensorExecutedOutcomeParserTests.swift in Sources */,
+				3E5C11432E5E000300000002 /* SubtensorDelegateSelectionInfoTests.swift in Sources */,
+				3E5C11442E5E000300000002 /* SubtensorUnstakeValidatingDepTests.swift in Sources */,
+				5D11AA042E5E000500000002 /* SubtensorUnstakeSetupPresenterTests.swift in Sources */,
+				5D11AA052E5E000500000002 /* SubtensorStakePresenterValidatingTests.swift in Sources */,
+				5D11AA062E5E000500000002 /* SubtensorUnstakePresenterValidatingTests.swift in Sources */,
+				3E5C13172E5E000300000002 /* SubtensorStakingStateMachineTests.swift in Sources */,
+				3E5C13182E5E000300000002 /* SubtensorStkStateViewModelFactoryTests.swift in Sources */,
+				3E5C13192E5E000300000002 /* SubtensorOperationGateTests.swift in Sources */,
+				3E5C131A2E5E000300000002 /* SubtensorHistoryFiltersProviderTests.swift in Sources */,
+				4B90A20A2E5E000100000002 /* SubtensorSignedExtensionCodingTests.swift in Sources */,
+				4B90A20B2E5E000100000002 /* SubtensorStakingValidationFactoryTests.swift in Sources */,
+				4B90A20C2E5E000100000002 /* SubtensorStakingErrorMapperTests.swift in Sources */,
 				84F13F0E26F1D9B1006725FF /* CrowdloadSettingsTests.swift in Sources */,
 				845C7F06263C45EC0024E797 /* AnyProviderAutoCleaner.swift in Sources */,
 				84B7C734289BFA79001A3566 /* StakingRewardDetailsTests.swift in Sources */,
