@@ -33,7 +33,7 @@ extension StakingMainPresenterFactory: StakingMainPresenterFactoryProtocol {
             return createNominationPoolsPresenter(for: stakingOption.chainAsset, view: view)
         case .mythos:
             return createMythosPresenter(for: stakingOption, view: view)
-        case .unsupported:
+        case .subtensor, .unsupported:
             return nil
         }
     }

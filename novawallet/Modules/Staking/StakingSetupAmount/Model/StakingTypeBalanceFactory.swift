@@ -31,7 +31,7 @@ final class StakingTypeBalanceFactory: StakingTypeBalanceFactoryProtocol {
         switch stakingType {
         case .relaychain, .auraRelaychain, .azero, .none, .parachain, .turing, .mythos:
             return true
-        case .nominationPools, .unsupported:
+        case .nominationPools, .subtensor, .unsupported:
             return false
         }
     }
