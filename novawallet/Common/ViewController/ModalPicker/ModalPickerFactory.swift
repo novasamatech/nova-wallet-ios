@@ -1,9 +1,9 @@
 import Foundation
-import UIKit
-import UIKit_iOS
 import Foundation_iOS
 import NovaCrypto
 import SubstrateSdk
+import UIKit
+import UIKit_iOS
 
 typealias AccountDetailsPickerViewModel = LocalizableResource<SelectableViewModel<AccountDetailsSelectionViewModel>>
 
@@ -278,6 +278,7 @@ enum ModalPickerFactory {
     static func createCollatorsPickingList(
         _ items: [AccountDetailsPickerViewModel],
         actionViewModel: LocalizableResource<IconWithTitleViewModel>?,
+        title: LocalizableResource<String>? = nil,
         selectedIndex: Int,
         delegate: ModalPickerViewControllerDelegate?,
         context: AnyObject?
@@ -290,6 +291,7 @@ enum ModalPickerFactory {
         controller = createGenericCollatorsPickingList(
             items,
             actionViewModel: actionViewModel,
+            title: title,
             selectedIndex: selectedIndex,
             delegate: delegate,
             context: context
@@ -301,6 +303,7 @@ enum ModalPickerFactory {
     static func createGenericCollatorsPickingList<D: AccountDetailsSelectionDecorator>(
         _ items: [AccountDetailsPickerViewModel],
         actionViewModel: LocalizableResource<IconWithTitleViewModel>?,
+        title: LocalizableResource<String>? = nil,
         selectedIndex: Int,
         delegate: ModalPickerViewControllerDelegate?,
         context: AnyObject?
@@ -318,7 +321,7 @@ enum ModalPickerFactory {
         >
             = ModalPickerViewController(nib: R.nib.modalPickerViewController)
 
-        viewController.localizedTitle = LocalizableResource { locale in
+        viewController.localizedTitle = title ?? LocalizableResource { locale in
             R.string(preferredLanguages: locale.rLanguages).localizable.parachainStakingCollator()
         }
 

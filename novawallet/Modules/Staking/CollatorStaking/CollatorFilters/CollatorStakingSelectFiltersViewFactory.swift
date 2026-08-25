@@ -1,7 +1,7 @@
 import Foundation
 import Foundation_iOS
 
-struct CollatorStakingSelectFiltersViewFactory {
+enum CollatorStakingSelectFiltersViewFactory {
     static func createMythosStakingView(
         for sorting: CollatorsSortType,
         delegate: CollatorStakingSelectFiltersDelegate
@@ -27,6 +27,7 @@ struct CollatorStakingSelectFiltersViewFactory {
     static func createView(
         for sorting: CollatorsSortType,
         supportedSortingTypes: [CollatorsSortType],
+        defaultSorting: CollatorsSortType = .rewards,
         delegate: CollatorStakingSelectFiltersDelegate
     ) -> CollatorStakingSelectFiltersViewProtocol? {
         let wireframe = CollatorStakingSelectFiltersWireframe()
@@ -37,6 +38,7 @@ struct CollatorStakingSelectFiltersViewFactory {
             wireframe: wireframe,
             sorting: sorting,
             sortingTypes: supportedSortingTypes,
+            defaultSorting: defaultSorting,
             delegate: delegate,
             localizationManager: localizationManager
         )
