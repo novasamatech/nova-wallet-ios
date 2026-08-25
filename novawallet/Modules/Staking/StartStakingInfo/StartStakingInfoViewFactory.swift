@@ -46,7 +46,7 @@ struct StartStakingInfoViewFactory {
                     type: selectedStakingType ?? mainStakingType
                 )
             )
-        case .unsupported, .nominationPools:
+        case .subtensor, .unsupported, .nominationPools:
             return nil
         }
     }

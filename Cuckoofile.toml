@@ -135,6 +135,8 @@ sources = [
     "Packages/NovaAnalytics/Sources/NovaAnalytics/AnalyticsProtocols.swift",
     "Packages/NovaAuth/Sources/NovaAuth/API/NovaAuthRequest.swift",
     "novawallet/Common/GlobalConfig/GlobalConfigProvider.swift",
+    "novawallet/Common/Substrate/Operations/SubtensorApi/SubtensorApiOperationFactory.swift",
+    "novawallet/Common/Services/Multistaking/Subtensor/SubtensorStakeStateFetchFactory.swift",
 ]
 
 exclude = [
