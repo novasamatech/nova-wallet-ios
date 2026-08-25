@@ -1,6 +1,7 @@
 import Foundation
 @testable import novawallet
 import Operation_iOS
+import SubstrateSdk
 
 final class RuntimeCodingServiceStub {
     let factory: RuntimeCoderFactoryProtocol
@@ -42,5 +43,33 @@ extension RuntimeCodingServiceStub {
     ) throws -> RuntimeCodingServiceProtocol {
         let factory = try createWestendCodingFactory(specVersion: specVersion, txVersion: txVersion)
         return RuntimeCodingServiceStub(factory: factory)
+    }
+
+    static func createBittensorCodingFactory(
+        specVersion: UInt32 = 448,
+        txVersion: UInt32 = 1
+    ) throws -> RuntimeCoderFactoryProtocol {
+        let runtimeMetadataContainer = try RuntimeHelper.createRuntimeMetadata("bittensor-v15-metadata")
+
+        guard case let .v15(metadata) = runtimeMetadataContainer.runtimeMetadata else {
+            throw RuntimeHelperError.invalidCatalogMetadataName
+        }
+
+        let augmentationResult = RuntimeAugmentationFactory().createSubstrateAugmentation(for: metadata)
+
+        let typeCatalog = try TypeRegistryCatalog.createFromSiDefinition(
+            runtimeMetadata: metadata,
+            additionalNodes: augmentationResult.additionalNodes.nodes,
+            customExtensions: DefaultSignedExtensionCoders.createDefaultCoders(for: metadata),
+            customTypeMapper: CustomSiMappers.all,
+            customNameMapper: ScaleInfoCamelCaseMapper()
+        )
+
+        return RuntimeCoderFactory(
+            catalog: typeCatalog,
+            specVersion: specVersion,
+            txVersion: txVersion,
+            metadata: metadata
+        )
     }
 }

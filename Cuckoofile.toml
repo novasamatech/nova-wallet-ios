@@ -133,6 +133,8 @@ sources = [
     "novawallet/Common/Services/ExtrinsicService/Substrate/FeeManaging/FeeViaSwap/Hydra/HydraFeeOraclePriceFactory.swift",
     "novawallet/Common/LegalConsent/LegalConsentRepositoryProtocols.swift",
     "Packages/NovaAnalytics/Sources/NovaAnalytics/AnalyticsProtocols.swift",
+    "novawallet/Common/Substrate/Operations/SubtensorApi/SubtensorApiOperationFactory.swift",
+    "novawallet/Common/Services/Multistaking/Subtensor/SubtensorStakeStateFetchFactory.swift",
 ]
 
 exclude = [

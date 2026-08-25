@@ -208,6 +208,11 @@ final class MultistakingSyncService {
                 for: chainAssetOption.chainAsset,
                 stakingType: chainAssetOption.type
             )
+        case .subtensor:
+            createSubtensorStaking(
+                for: chainAssetOption.chainAsset,
+                stakingType: chainAssetOption.type
+            )
         case .unsupported:
             nil
         }
@@ -370,6 +375,45 @@ final class MultistakingSyncService {
             stakingType: stakingType,
             dashboardRepository: multistakingRepositoryFactory.createMythosRepository(),
             collatorsOperationFactory: collatorsOperationFactory,
+            cacheRepository: substrateRepositoryFactory.createChainStorageItemRepository(),
+            connection: connection,
+            runtimeService: runtimeService,
+            operationQueue: operationQueue,
+            workingQueue: workingQueue,
+            logger: logger
+        )
+    }
+
+    private func createSubtensorStaking(
+        for chainAsset: ChainAsset,
+        stakingType: StakingType
+    ) -> OnchainSyncServiceProtocol? {
+        guard
+            let account = wallet.fetch(for: chainAsset.chain.accountRequest()),
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
+            return nil
+        }
+
+        let runtimeConnectionStore = ChainRegistryRuntimeConnectionStore(
+            chainId: chainAsset.chain.chainId,
+            chainRegistry: chainRegistry
+        )
+
+        let apiOperationFactory = SubtensorApiOperationFactory(
+            runtimeConnectionStore: runtimeConnectionStore,
+            operationQueue: operationQueue
+        )
+
+        let stakeStateFetchFactory = SubtensorStakeStateFetchFactory(operationFactory: apiOperationFactory)
+
+        return SubtensorMultistakingUpdateService(
+            walletId: wallet.metaId,
+            accountId: account.accountId,
+            chainAsset: chainAsset,
+            stakingType: stakingType,
+            dashboardRepository: multistakingRepositoryFactory.createSubtensorRepository(),
+            stakeStateFetchFactory: stakeStateFetchFactory,
             cacheRepository: substrateRepositoryFactory.createChainStorageItemRepository(),
             connection: connection,
             runtimeService: runtimeService,
