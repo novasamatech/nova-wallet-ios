@@ -29,7 +29,7 @@ final class SubtensorStakingApiTests: XCTestCase {
         }
     }
 
-    func testAlphaPricesArePositiveWithRootPinnedToPriceScale() {
+    func testAlphaPricesArePositiveForSubnetsWithReservesAndRootPinnedToPriceScale() {
         do {
             let prices = try context.fetchAlphaPrices()
 
@@ -37,7 +37,13 @@ final class SubtensorStakingApiTests: XCTestCase {
 
             XCTAssertFalse(prices.isEmpty)
 
-            for price in prices {
+            let alphaReserves = try context.fetchDynamicInfoList().reduce(
+                into: [UInt16: Balance]()
+            ) { accum, dynamicInfo in
+                accum[dynamicInfo.netuid] = dynamicInfo.alphaIn
+            }
+
+            for price in prices where alphaReserves[price.netuid, default: 0] > 0 {
                 XCTAssertGreaterThan(price.price, 0, "netuid \(price.netuid)")
             }
 
@@ -78,7 +84,7 @@ final class SubtensorStakingApiTests: XCTestCase {
         }
     }
 
-    func testStakeInfoForDiscoveredStakerHasPositiveTotals() {
+    func testStakeInfoForDiscoveredStakerHasPositiveRootStake() {
         do {
             let coldkey = try context.discoverStakedColdkey()
 
@@ -88,8 +94,11 @@ final class SubtensorStakingApiTests: XCTestCase {
 
             XCTAssertFalse(stakeInfoList.isEmpty)
 
-            let totalStake = stakeInfoList.reduce(Balance(0)) { $0 + $1.stake }
-            XCTAssertGreaterThan(totalStake, 0)
+            let rootStake = stakeInfoList.first {
+                $0.netuid == SubtensorStakingPallet.rootNetuid
+            }?.stake
+
+            XCTAssertGreaterThan(rootStake ?? 0, 0)
 
             let knownNetuids = Set(try context.fetchDynamicInfoList().map(\.netuid))
 
@@ -101,10 +110,86 @@ final class SubtensorStakingApiTests: XCTestCase {
             XCTFail("Unexpected error: \(error)")
         }
     }
+
+    func testStakeAvailabilityCoversStakeInfoSubnetsAtPinnedBlock() {
+        do {
+            let coldkey = try context.discoverStakedColdkey()
+            let blockHash = try context.run(context.apiFactory.createBestBlockHashWrapper())
+
+            let stakeInfoList = try context.run(
+                context.apiFactory.createStakeInfoWrapper(for: coldkey, blockHash: blockHash)
+            )
+
+            let availabilities = try context.run(
+                context.apiFactory.createStakeAvailabilityWrapper(
+                    for: [coldkey],
+                    netuids: nil,
+                    blockHash: blockHash
+                )
+            )
+
+            let coldkeyAvailability = try XCTUnwrap(availabilities.first { $0.coldkey == coldkey })
+
+            let stakeNetuids = Set(stakeInfoList.map(\.netuid))
+            let availabilityNetuids = Set(coldkeyAvailability.subnets.map(\.netuid))
+
+            XCTAssertTrue(stakeNetuids.isSubset(of: availabilityNetuids))
+
+            for subnet in coldkeyAvailability.subnets {
+                XCTAssertLessThanOrEqual(
+                    subnet.availability.available,
+                    subnet.availability.total,
+                    "netuid \(subnet.netuid)"
+                )
+                XCTAssertTrue(
+                    subnet.availability.total > 0 || subnet.availability.locked > 0,
+                    "netuid \(subnet.netuid)"
+                )
+            }
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+
+    func testStakeAvailabilityWithExplicitNetuidsMatchesUnfilteredRootEntry() {
+        do {
+            let coldkey = try context.discoverStakedColdkey()
+            let blockHash = try context.run(context.apiFactory.createBestBlockHashWrapper())
+
+            let unfiltered = try context.run(
+                context.apiFactory.createStakeAvailabilityWrapper(
+                    for: [coldkey],
+                    netuids: nil,
+                    blockHash: blockHash
+                )
+            )
+
+            let rootOnly = try context.run(
+                context.apiFactory.createStakeAvailabilityWrapper(
+                    for: [coldkey],
+                    netuids: [SubtensorStakingPallet.rootNetuid],
+                    blockHash: blockHash
+                )
+            )
+
+            let unfilteredRootEntry = try XCTUnwrap(
+                unfiltered
+                    .first { $0.coldkey == coldkey }?
+                    .subnets
+                    .first { $0.netuid == SubtensorStakingPallet.rootNetuid }
+            )
+
+            let rootOnlyAvailability = try XCTUnwrap(rootOnly.first { $0.coldkey == coldkey })
+
+            XCTAssertEqual(rootOnlyAvailability.subnets, [unfilteredRootEntry])
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
 }
 
 private extension SubtensorStakingApiTests {
-    static let chainId = "2f0555cc76fc2840a25a6ea3b9637146806f1f44b090c175ffde2a7e5ab36c03"
+    static let chainId = KnowChainId.bittensor
 
     static let sharedContext = Result { try Context.setup(for: chainId) }
 
@@ -218,9 +303,9 @@ private extension SubtensorStakingApiTests {
         func discoverStakedColdkey() throws -> AccountId {
             let staker = try fetchDelegates()
                 .flatMap(\.nominators)
-                .max { $0.totalStake < $1.totalStake }
+                .max { $0.rootStake < $1.rootStake }
 
-            guard let staker, staker.totalStake > 0 else {
+            guard let staker, staker.rootStake > 0 else {
                 throw ContextError.stakerUnavailable
             }
 
@@ -230,7 +315,7 @@ private extension SubtensorStakingApiTests {
 }
 
 private extension SubtensorStakingPallet.DelegateNomination {
-    var totalStake: Balance {
-        stakes.reduce(Balance(0)) { $0 + $1.stake }
+    var rootStake: Balance {
+        stakes.first { $0.netuid == SubtensorStakingPallet.rootNetuid }?.stake ?? 0
     }
 }

@@ -1,13 +1,19 @@
-import UIKit
 import Foundation_iOS
+import UIKit
 
 final class CollatorStkUnstakeConfirmVC: UIViewController, ViewHolder {
     typealias RootViewType = CollatorStkUnstakeConfirmLayout
 
     let presenter: CollatorStkUnstakeConfirmPresenterProtocol
+    let statics: CollatorStakingDelegateStatics
 
-    init(presenter: CollatorStkUnstakeConfirmPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+    init(
+        presenter: CollatorStkUnstakeConfirmPresenterProtocol,
+        statics: CollatorStakingDelegateStatics = .collator,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
+        self.statics = statics
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -50,9 +56,7 @@ final class CollatorStkUnstakeConfirmVC: UIViewController, ViewHolder {
 
         rootView.networkFeeCell.rowContentView.locale = selectedLocale
 
-        rootView.collatorCell.titleLabel.text = R.string(
-            preferredLanguages: selectedLocale.rLanguages
-        ).localizable.parachainStakingCollator()
+        rootView.collatorCell.titleLabel.text = statics.delegateTitle.value(for: selectedLocale)
     }
 
     private func setupHandlers() {

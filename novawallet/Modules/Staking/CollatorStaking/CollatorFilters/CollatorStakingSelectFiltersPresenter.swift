@@ -10,11 +10,13 @@ final class CollatorStakingSelectFiltersPresenter {
     private var initialSorting: CollatorsSortType
 
     private let sortingTypes: [CollatorsSortType]
+    private let defaultSorting: CollatorsSortType
 
     init(
         wireframe: CollatorStakingSelectFiltersWireframeProtocol,
         sorting: CollatorsSortType,
         sortingTypes: [CollatorsSortType],
+        defaultSorting: CollatorsSortType,
         delegate: CollatorStakingSelectFiltersDelegate,
         localizationManager: LocalizationManagerProtocol
     ) {
@@ -22,6 +24,7 @@ final class CollatorStakingSelectFiltersPresenter {
         initialSorting = sorting
         currentSorting = sorting
         self.sortingTypes = sortingTypes
+        self.defaultSorting = defaultSorting
         self.delegate = delegate
         self.localizationManager = localizationManager
     }
@@ -48,7 +51,7 @@ final class CollatorStakingSelectFiltersPresenter {
         }
 
         let canApply = currentSorting != initialSorting
-        let canReset = currentSorting != CollatorsSortType.defaultType
+        let canReset = currentSorting != defaultSorting
 
         let viewModel = CollatorStakingSelectFiltersViewModel(
             sorting: sortingViewModels,
@@ -72,7 +75,7 @@ extension CollatorStakingSelectFiltersPresenter: CollatorStakingSelectFiltersPre
     }
 
     func resetFilter() {
-        currentSorting = CollatorsSortType.defaultType
+        currentSorting = defaultSorting
 
         provideViewModel()
     }

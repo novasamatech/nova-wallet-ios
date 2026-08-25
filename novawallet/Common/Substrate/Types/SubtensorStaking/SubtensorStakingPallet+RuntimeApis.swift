@@ -29,4 +29,12 @@ extension SubtensorStakingPallet {
     static var simSwapAlphaForTaoApi: StateCallPath {
         StateCallPath(module: Self.swapApiName, method: "sim_swap_alpha_for_tao")
     }
+
+    static var rootBasketOwedApi: StateCallPath {
+        StateCallPath(module: Self.betaBasketApiName, method: "get_root_basket_owed")
+    }
+
+    static var rootBasketPositionsApi: StateCallPath {
+        StateCallPath(module: Self.betaBasketApiName, method: "get_root_basket_positions")
+    }
 }
