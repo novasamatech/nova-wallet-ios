@@ -1,8 +1,8 @@
 import Foundation
 
 enum SubtensorExecutedOutcome: Equatable {
-    case staked(tao: Balance)
-    case unstaked(tao: Balance)
+    case staked(tao: Balance, alpha: Balance, netuid: UInt16)
+    case unstaked(tao: Balance, alpha: Balance, netuid: UInt16)
     case claimed(tao: Balance)
 }
 

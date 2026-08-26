@@ -12,6 +12,7 @@ final class SubtensorUnstakeConfirmPresenter {
     let model: SubtensorUnstakeConfirmModel
     let dataValidationFactory: SubtensorStakingValidationFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let quoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
     let logger: LoggerProtocol
 
     private(set) var fee: ExtrinsicFeeProtocol?
@@ -21,6 +22,7 @@ final class SubtensorUnstakeConfirmPresenter {
     private(set) var claimable: SubtensorRootClaimable?
     private(set) var preflight: SubtensorStakingPreflight?
     private(set) var currentBlock: BlockNumber?
+    private(set) var quoteFlow = SubtensorQuoteFlowModel()
 
     private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
     private lazy var displayAddressViewModelFactory = DisplayAddressViewModelFactory()
@@ -33,6 +35,7 @@ final class SubtensorUnstakeConfirmPresenter {
         model: SubtensorUnstakeConfirmModel,
         dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        quoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -43,6 +46,7 @@ final class SubtensorUnstakeConfirmPresenter {
         self.model = model
         self.dataValidationFactory = dataValidationFactory
         self.balanceViewModelFactory = balanceViewModelFactory
+        self.quoteViewModelFactory = quoteViewModelFactory
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -61,13 +65,128 @@ private extension SubtensorUnstakeConfirmPresenter {
         model.unstakeModel.isFullUnstake ? stakedAmountInPlank() : model.unstakeModel.amount
     }
 
-    func provideAmountViewModel() {
-        let amountDecimal = unstakingAmount().decimal(assetInfo: chainAsset.assetDisplayInfo)
+    var quoteView: SubtensorUnstakeConfirmViewProtocol? {
+        view as? SubtensorUnstakeConfirmViewProtocol
+    }
 
-        let viewModel = balanceViewModelFactory.balanceFromPrice(
-            amountDecimal,
-            priceData: price
-        ).value(for: selectedLocale)
+    func quoteArgs() -> SubtensorQuoteArgs? {
+        SubtensorQuoteFlowModel.unstakeArgs(for: model.target, amount: unstakingAmount())
+    }
+
+    /// the submitted limit follows the freshest spot so the tolerance protects against
+    /// movement after the last quote, not after the setup screen
+    func currentUnstakeModel() -> SubtensorUnstakeModel {
+        guard !model.target.isRoot else {
+            return model.unstakeModel
+        }
+
+        let spot = quoteFlow.freshQuote?.spotPrice ?? model.quote?.spotPrice ?? model.target.listedPrice
+
+        let tolerance = model.slippage ?? SubtensorSlippageTolerance.defaultTolerance
+
+        let limitPrice = model.target.unstakeLimitPrice(spot: spot, tolerance: tolerance)
+            ?? model.unstakeModel.limitPrice
+
+        return SubtensorUnstakeModel(
+            hotkey: model.unstakeModel.hotkey,
+            netuid: model.unstakeModel.netuid,
+            amount: model.unstakeModel.amount,
+            isFullUnstake: model.unstakeModel.isFullUnstake,
+            limitPrice: limitPrice
+        )
+    }
+
+    func updateQuoteOnEntry() {
+        guard let args = quoteArgs() else {
+            return
+        }
+
+        if quoteFlow.args == nil {
+            _ = quoteFlow.updateArgs(args)
+
+            if let seed = model.quote {
+                _ = quoteFlow.applyQuote(seed)
+            }
+        } else {
+            _ = quoteFlow.updateArgs(args)
+        }
+
+        interactor.refreshQuote(for: args)
+
+        provideQuoteViewModel()
+        provideSlippageViewModel()
+    }
+
+    func forceQuoteRefresh() {
+        guard let args = quoteArgs() else {
+            return
+        }
+
+        if quoteFlow.updateArgs(args) != nil {
+            provideQuoteViewModel()
+        }
+
+        interactor.refreshQuote(for: args)
+    }
+
+    func provideQuoteViewModel() {
+        let viewModel = quoteViewModelFactory.createQuotePanel(
+            for: quoteFlow.freshQuote,
+            target: model.target,
+            locale: selectedLocale
+        )
+
+        quoteView?.didReceiveQuote(viewModel: viewModel)
+    }
+
+    func provideSlippageViewModel() {
+        guard let slippage = model.slippage else {
+            quoteView?.didReceiveSlippage(viewModel: nil)
+            return
+        }
+
+        let viewModel = quoteViewModelFactory.createSlippageViewModel(
+            for: slippage,
+            locale: selectedLocale
+        )
+
+        quoteView?.didReceiveSlippage(viewModel: viewModel)
+    }
+
+    func getQuoteContext() -> SubtensorQuoteValidatingContext? {
+        guard !model.target.isRoot else {
+            return nil
+        }
+
+        return SubtensorQuoteValidatingContext(
+            args: quoteArgs(),
+            quote: quoteFlow.freshQuote,
+            limitPrice: currentUnstakeModel().limitPrice,
+            onQuoteRefresh: { [weak self] in
+                self?.forceQuoteRefresh()
+            }
+        )
+    }
+
+    func provideAmountViewModel() {
+        let displayInfo = model.target.assetDisplayInfo(basedOn: chainAsset.assetDisplayInfo)
+
+        let amountDecimal = unstakingAmount().decimal(assetInfo: displayInfo)
+
+        let viewModel: BalanceViewModelProtocol
+
+        if model.target.isRoot {
+            viewModel = balanceViewModelFactory.balanceFromPrice(
+                amountDecimal,
+                priceData: price
+            ).value(for: selectedLocale)
+        } else {
+            let amountString = AssetBalanceFormatterFactory().createTokenFormatter(
+                for: displayInfo
+            ).value(for: selectedLocale).stringFromDecimal(amountDecimal) ?? ""
+
+            viewModel = BalanceViewModel(amount: amountString, price: nil)
+        }
 
         view?.didReceiveAmount(viewModel: viewModel)
     }
@@ -109,11 +228,13 @@ private extension SubtensorUnstakeConfirmPresenter {
     }
 
     func provideHints() {
-        let hints = [
-            R.string(
-                preferredLanguages: selectedLocale.rLanguages
-            ).localizable.stakingSubtensorHintUnstakeInstant()
-        ]
+        let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
+
+        var hints = [strings.stakingSubtensorHintUnstakeInstant()]
+
+        if !model.target.isRoot {
+            hints.append(strings.stakingSubtensorHintSimulatedReceive())
+        }
 
         view?.didReceiveHints(viewModel: hints)
     }
@@ -122,7 +243,7 @@ private extension SubtensorUnstakeConfirmPresenter {
         fee = nil
         provideFeeViewModel()
 
-        interactor.estimateFee(for: .unstake(model.unstakeModel))
+        interactor.estimateFee(for: .unstake(currentUnstakeModel()))
     }
 
     func applyCurrentState() {
@@ -132,10 +253,13 @@ private extension SubtensorUnstakeConfirmPresenter {
         provideFeeViewModel()
         provideDelegateViewModel()
         provideHints()
+        provideQuoteViewModel()
+        provideSlippageViewModel()
     }
 
     func getValidationDependencies() -> SubtensorUnstakeValidatingDep {
         SubtensorUnstakeValidatingDep(
+            netuid: model.unstakeModel.netuid,
             amount: unstakingAmount(),
             stakedAmount: stakedAmountInPlank(),
             isFullUnstake: model.unstakeModel.isFullUnstake,
@@ -145,7 +269,7 @@ private extension SubtensorUnstakeConfirmPresenter {
             claimablePayout: claimable?.payout(for: model.unstakeModel.hotkey),
             currentBlock: currentBlock,
             blockTime: chainAsset.chain.defaultBlockTimeMillis ?? SubtensorStakingFlowConstants.blockTimeMillis,
-            assetDisplayInfo: chainAsset.assetDisplayInfo,
+            assetDisplayInfo: model.target.assetDisplayInfo(basedOn: chainAsset.assetDisplayInfo),
             onFeeRefresh: { [weak self] in
                 self?.refreshFee()
             },
@@ -154,15 +278,19 @@ private extension SubtensorUnstakeConfirmPresenter {
                     return
                 }
 
-                interactor.refreshPreflight(for: model.unstakeModel.hotkey)
-            }
+                interactor.refreshPreflight(for: model.unstakeModel.hotkey, netuid: model.unstakeModel.netuid)
+            },
+            // the amount here is already quoted and confirmed, so switching it behind the
+            // user would invalidate everything the screen is showing
+            onUnstakeAll: nil,
+            quoteContext: getQuoteContext()
         )
     }
 
     func createSuccessTitle(
         for submission: SubtensorSubmissionModel
     ) -> ExtrinsicSubmissionPresentingParams.Title {
-        guard case let .unstaked(tao) = submission.outcome, tao > 0 else {
+        guard case let .unstaked(tao, _, _) = submission.outcome, tao > 0 else {
             return .general(selectedLocale)
         }
 
@@ -185,7 +313,9 @@ extension SubtensorUnstakeConfirmPresenter: CollatorStkUnstakeConfirmPresenterPr
 
         interactor.setup()
 
-        interactor.refreshPreflight(for: model.unstakeModel.hotkey)
+        interactor.refreshPreflight(for: model.unstakeModel.hotkey, netuid: model.unstakeModel.netuid)
+
+        updateQuoteOnEntry()
 
         refreshFee()
     }
@@ -230,7 +360,7 @@ extension SubtensorUnstakeConfirmPresenter: CollatorStkUnstakeConfirmPresenterPr
 
             view?.didStartLoading()
 
-            interactor.submit(call: .unstake(model.unstakeModel))
+            interactor.submit(call: .unstake(currentUnstakeModel()))
         }
     }
 }
@@ -253,6 +383,7 @@ extension SubtensorUnstakeConfirmPresenter: SubtensorUnstakeConfirmInteractorOut
 
             applyCurrentState()
             refreshFee()
+            forceQuoteRefresh()
 
             wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
                 error,
@@ -293,6 +424,8 @@ extension SubtensorUnstakeConfirmPresenter: SubtensorUnstakeConfirmInteractorOut
         positionsState = state
 
         provideAmountViewModel()
+
+        updateQuoteOnEntry()
     }
 
     func didReceiveClaimable(_ claimable: SubtensorRootClaimable?) {
@@ -305,6 +438,18 @@ extension SubtensorUnstakeConfirmPresenter: SubtensorUnstakeConfirmInteractorOut
         logger.debug("Block number: \(blockNumber)")
 
         currentBlock = blockNumber
+
+        forceQuoteRefresh()
+    }
+
+    func didReceiveQuote(_ quote: SubtensorQuote) {
+        logger.debug("Quote: \(quote)")
+
+        guard quoteFlow.applyQuote(quote) else {
+            return
+        }
+
+        provideQuoteViewModel()
     }
 
     func didReceivePreflight(_ preflight: SubtensorStakingPreflight) {
@@ -331,8 +476,11 @@ extension SubtensorUnstakeConfirmPresenter: SubtensorUnstakeConfirmInteractorOut
                     return
                 }
 
-                interactor.refreshPreflight(for: model.unstakeModel.hotkey)
+                interactor.refreshPreflight(for: model.unstakeModel.hotkey, netuid: model.unstakeModel.netuid)
             }
+        case .quoteFailed:
+            quoteFlow.clearQuote()
+            provideQuoteViewModel()
         }
     }
 }

@@ -41,17 +41,30 @@ enum SubtensorUnstakeSetupViewFactory {
             chainAsset: chainAsset,
             dataValidationFactory: dataValidationFactory,
             balanceViewModelFactory: balanceViewModelFactory,
+            priceAssetInfoFactory: priceAssetInfoFactory,
             accountDetailsViewModelFactory: accountDetailsFactory,
+            quoteViewModelFactory: SubtensorQuoteViewModelFactory(chainAsset: chainAsset),
             initialPosition: initialPosition,
             localizationManager: localizationManager,
             logger: Logger.shared
         )
 
-        let view = CollatorStkPartialUnstakeSetupVC(
-            presenter: presenter,
-            statics: .subtensorValidator,
-            localizationManager: localizationManager
-        )
+        let isRootFlow = (initialPosition?.netuid ?? SubtensorStakingPallet.rootNetuid) ==
+            SubtensorStakingPallet.rootNetuid
+
+        let view: CollatorStkPartialUnstakeSetupViewProtocol = if isRootFlow {
+            CollatorStkPartialUnstakeSetupVC(
+                presenter: presenter,
+                statics: .subtensorValidator,
+                localizationManager: localizationManager
+            )
+        } else {
+            SubtensorUnstakeSetupVC(
+                presenter: presenter,
+                statics: .subtensorValidator,
+                localizationManager: localizationManager
+            )
+        }
 
         presenter.view = view
         interactor.presenter = presenter
@@ -116,6 +129,11 @@ enum SubtensorUnstakeSetupViewFactory {
             positionsSyncService: positionsSyncService,
             rootClaimableService: rootClaimableService,
             preflightFactory: preflightFactory,
+            quoteFactory: SubtensorQuoteOperationFactory(
+                operationFactory: state.apiOperationFactory,
+                operationQueue: operationQueue
+            ),
+            subnetsService: state.subnetsService,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,

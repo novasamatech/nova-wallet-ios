@@ -8,6 +8,7 @@ final class SubtensorUnstakeValidatingDepTests: XCTestCase {
     ) -> SubtensorStakingPreflight {
         SubtensorStakingPreflight(
             hotkeyExists: true,
+            subnetExists: true,
             subtokenEnabled: true,
             hasColdkeySwapAnnouncement: false,
             isSafeModeActive: false,
@@ -25,9 +26,12 @@ final class SubtensorUnstakeValidatingDepTests: XCTestCase {
         amount: Balance?,
         stakedAmount: Balance?,
         isFullUnstake: Bool,
-        preflight: SubtensorStakingPreflight?
+        preflight: SubtensorStakingPreflight?,
+        quoteContext: SubtensorQuoteValidatingContext? = nil,
+        netuid: UInt16 = SubtensorStakingPallet.rootNetuid
     ) -> SubtensorUnstakeValidatingDep {
         SubtensorUnstakeValidatingDep(
+            netuid: netuid,
             amount: amount,
             stakedAmount: stakedAmount,
             isFullUnstake: isFullUnstake,
@@ -39,7 +43,40 @@ final class SubtensorUnstakeValidatingDepTests: XCTestCase {
             blockTime: 12000,
             assetDisplayInfo: AssetBalanceDisplayInfo.units(for: 9),
             onFeeRefresh: {},
-            onPreflightRefresh: {}
+            onPreflightRefresh: {},
+            onUnstakeAll: nil,
+            quoteContext: quoteContext
+        )
+    }
+
+    private func makeQuoteContext(
+        alphaIn: Balance,
+        taoOut: Balance?,
+        spot: Balance
+    ) -> SubtensorQuoteValidatingContext {
+        let args = SubtensorQuoteArgs(netuid: 1, direction: .unstake(alphaIn: alphaIn))
+
+        let quote: SubtensorQuote? = taoOut.map { taoOut in
+            SubtensorQuote(
+                args: args,
+                sim: SubtensorStakingPallet.SimSwapResult(
+                    taoAmount: taoOut,
+                    alphaAmount: alphaIn,
+                    taoFee: 0,
+                    alphaFee: 0,
+                    taoSlippage: 0,
+                    alphaSlippage: 0
+                ),
+                spotPrice: spot,
+                feeRate: 33
+            )
+        }
+
+        return SubtensorQuoteValidatingContext(
+            args: args,
+            quote: quote,
+            limitPrice: nil,
+            onQuoteRefresh: {}
         )
     }
 
@@ -114,5 +151,63 @@ final class SubtensorUnstakeValidatingDepTests: XCTestCase {
         )
 
         XCTAssertEqual(dep.remainder, 700)
+    }
+
+    func testQuotedTaoOutIsAmountWithoutQuoteContext() {
+        let dep = makeDep(
+            amount: 300,
+            stakedAmount: 1000,
+            isFullUnstake: false,
+            preflight: makePreflight(availability: nil)
+        )
+
+        XCTAssertEqual(dep.quotedTaoOut, 300)
+    }
+
+    func testQuotedTaoOutComesFromSimulationForSubnetPosition() {
+        let dep = makeDep(
+            amount: 300,
+            stakedAmount: 1000,
+            isFullUnstake: false,
+            preflight: makePreflight(availability: nil),
+            quoteContext: makeQuoteContext(alphaIn: 300, taoOut: 150, spot: 500_000_000)
+        )
+
+        XCTAssertEqual(dep.quotedTaoOut, 150)
+    }
+
+    func testQuotedTaoOutMissingWhileSubnetQuotePending() {
+        let dep = makeDep(
+            amount: 300,
+            stakedAmount: 1000,
+            isFullUnstake: false,
+            preflight: makePreflight(availability: nil),
+            quoteContext: makeQuoteContext(alphaIn: 300, taoOut: nil, spot: 500_000_000)
+        )
+
+        XCTAssertNil(dep.quotedTaoOut)
+    }
+
+    func testRemainderTaoValueScalesAlphaBySpotPrice() {
+        let dep = makeDep(
+            amount: 300,
+            stakedAmount: 1000,
+            isFullUnstake: false,
+            preflight: makePreflight(availability: nil),
+            quoteContext: makeQuoteContext(alphaIn: 300, taoOut: 150, spot: 500_000_000)
+        )
+
+        XCTAssertEqual(dep.remainderTaoValue, 350)
+    }
+
+    func testRemainderTaoValueEqualsRemainderOnRoot() {
+        let dep = makeDep(
+            amount: 300,
+            stakedAmount: 1000,
+            isFullUnstake: false,
+            preflight: makePreflight(availability: nil)
+        )
+
+        XCTAssertEqual(dep.remainderTaoValue, 700)
     }
 }

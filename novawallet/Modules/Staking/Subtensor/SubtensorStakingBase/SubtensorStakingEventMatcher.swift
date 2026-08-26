@@ -28,7 +28,7 @@ enum SubtensorExecutedOutcomeParser {
                     to: SubtensorStakingPallet.StakeAddedEvent.self,
                     with: context.toRawContext()
                 ) {
-                return .staked(tao: added.tao)
+                return .staked(tao: added.tao, alpha: added.alpha, netuid: added.netuid)
             }
 
             if
@@ -37,7 +37,7 @@ enum SubtensorExecutedOutcomeParser {
                     to: SubtensorStakingPallet.StakeRemovedEvent.self,
                     with: context.toRawContext()
                 ) {
-                return .unstaked(tao: removed.tao)
+                return .unstaked(tao: removed.tao, alpha: removed.alpha, netuid: removed.netuid)
             }
 
             if

@@ -10,6 +10,7 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
     let positionsSyncService: SubtensorPositionsSyncServiceProtocol
     let rootClaimableService: SubtensorRootClaimableServiceProtocol
     let preflightFactory: SubtensorPreflightFactoryProtocol
+    let quoteFactory: SubtensorQuoteOperationFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
@@ -22,7 +23,9 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
     private var priceProvider: StreamableProvider<PriceData>?
     private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
     private var feeDebouncer = Debouncer(delay: 0.25)
+    private var quoteDebouncer = Debouncer(delay: 0.25)
     private let preflightCallStore = CancellableCallStore()
+    private let quoteCallStore = CancellableCallStore()
 
     init(
         chainAsset: ChainAsset,
@@ -30,6 +33,7 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
         positionsSyncService: SubtensorPositionsSyncServiceProtocol,
         rootClaimableService: SubtensorRootClaimableServiceProtocol,
         preflightFactory: SubtensorPreflightFactoryProtocol,
+        quoteFactory: SubtensorQuoteOperationFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
@@ -44,6 +48,7 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
         self.positionsSyncService = positionsSyncService
         self.rootClaimableService = rootClaimableService
         self.preflightFactory = preflightFactory
+        self.quoteFactory = quoteFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
@@ -57,6 +62,7 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
 
     deinit {
         preflightCallStore.cancel()
+        quoteCallStore.cancel()
 
         positionsSyncService.remove(observer: self)
         rootClaimableService.remove(observer: self)
@@ -160,13 +166,13 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
         }
     }
 
-    func refreshPreflight(for hotkey: AccountId) {
+    func refreshPreflight(for hotkey: AccountId, netuid: UInt16) {
         preflightCallStore.cancel()
 
         let wrapper = preflightFactory.createPreflightWrapper(
             for: selectedAccount.accountId,
             hotkey: hotkey,
-            netuid: SubtensorStakingPallet.rootNetuid
+            netuid: netuid
         )
 
         executeCancellable(
@@ -180,6 +186,32 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
                 self?.basePresenter?.didReceivePreflight(preflight)
             case let .failure(error):
                 self?.basePresenter?.didReceiveBaseError(.preflightFailed(error))
+            }
+        }
+    }
+
+    func refreshQuote(for args: SubtensorQuoteArgs) {
+        quoteDebouncer.debounce { [weak self] in
+            guard let self else {
+                return
+            }
+
+            quoteCallStore.cancel()
+
+            let wrapper = quoteFactory.createQuoteWrapper(for: args)
+
+            executeCancellable(
+                wrapper: wrapper,
+                inOperationQueue: operationQueue,
+                backingCallIn: quoteCallStore,
+                runningCallbackIn: .main
+            ) { [weak self] result in
+                switch result {
+                case let .success(quote):
+                    self?.basePresenter?.didReceiveQuote(quote)
+                case let .failure(error):
+                    self?.basePresenter?.didReceiveBaseError(.quoteFailed(error))
+                }
             }
         }
     }

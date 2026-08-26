@@ -18,6 +18,7 @@ class SubtensorStakingSubmitInteractor: SubtensorStakingBaseInteractor {
         positionsSyncService: SubtensorPositionsSyncServiceProtocol,
         rootClaimableService: SubtensorRootClaimableServiceProtocol,
         preflightFactory: SubtensorPreflightFactoryProtocol,
+        quoteFactory: SubtensorQuoteOperationFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
@@ -42,6 +43,7 @@ class SubtensorStakingSubmitInteractor: SubtensorStakingBaseInteractor {
             positionsSyncService: positionsSyncService,
             rootClaimableService: rootClaimableService,
             preflightFactory: preflightFactory,
+            quoteFactory: quoteFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
@@ -117,6 +119,13 @@ class SubtensorStakingSubmitInteractor: SubtensorStakingBaseInteractor {
 
 extension SubtensorStakingSubmitInteractor: SubtensorStakingSubmitInteractorInputProtocol {
     func submit(call: SubtensorStakingCallModel) {
+        do {
+            try call.ensureSlippageProtected()
+        } catch {
+            submitPresenter?.didReceiveSubmissionResult(.failure(error))
+            return
+        }
+
         sharedOperation?.markSent()
 
         submitAndMonitor(call: call) { [weak self] result, submitted in

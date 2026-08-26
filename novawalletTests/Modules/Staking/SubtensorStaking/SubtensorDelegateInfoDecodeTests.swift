@@ -20,7 +20,7 @@ final class SubtensorDelegateInfoDecodeTests: XCTestCase {
         let delegate = try XCTUnwrap(delegates.first)
 
         XCTAssertEqual(delegate.delegateSs58, try Data(hexString: delegateHex))
-        XCTAssertEqual(delegate.take, 11_796)
+        XCTAssertEqual(delegate.take, 11796)
         XCTAssertEqual(delegate.ownerSs58, try Data(hexString: nominatorHex))
         XCTAssertEqual(delegate.registeredNetuids, [11, 99])
         XCTAssertEqual(delegate.validatorPermitNetuids, [])

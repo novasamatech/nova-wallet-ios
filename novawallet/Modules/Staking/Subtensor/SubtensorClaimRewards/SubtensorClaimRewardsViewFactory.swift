@@ -117,6 +117,10 @@ enum SubtensorClaimRewardsViewFactory {
             positionsSyncService: positionsSyncService,
             rootClaimableService: rootClaimableService,
             preflightFactory: preflightFactory,
+            quoteFactory: SubtensorQuoteOperationFactory(
+                operationFactory: state.apiOperationFactory,
+                operationQueue: operationQueue
+            ),
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,

@@ -8,6 +8,9 @@ struct SubtensorNetworkInfo: Equatable {
     let effectiveNominatorMinStake: Balance
     let rootUnlockInterval: UInt64
     let rootClaimableThreshold: Balance
+    /// `SafeMode.EnteredUntil` is OptionQuery and the pallet clears it on expiry, so its mere
+    /// presence is the runtime's own `is_entered()` predicate — no block comparison needed
+    let isSafeModeActive: Bool
 }
 
 protocol SubtensorNetworkInfoFactoryProtocol {
@@ -87,6 +90,15 @@ extension SubtensorNetworkInfoFactory: SubtensorNetworkInfoFactoryProtocol {
 
             thresholdWrapper.allOperations.forEach { $0.addDependency(codingFactoryOperation) }
 
+            let safeModeWrapper: CompoundOperationWrapper<StorageResponse<StringScaleMapper<BlockNumber>>>
+            safeModeWrapper = requestFactory.queryItem(
+                engine: engine,
+                factory: codingFactoryClosure,
+                storagePath: SubtensorStakingPallet.safeModeEnteredUntilPath
+            )
+
+            safeModeWrapper.allOperations.forEach { $0.addDependency(codingFactoryOperation) }
+
             let mergeOperation = ClosureOperation<SubtensorNetworkInfo> {
                 let minStake = try minStakeOperation.extractNoCancellableResultData()
 
@@ -99,6 +111,9 @@ extension SubtensorNetworkInfoFactory: SubtensorNetworkInfoFactoryProtocol {
                 let thresholdBits = try thresholdWrapper.targetOperation
                     .extractNoCancellableResultData().first?.value?.bits
 
+                let isSafeModeActive = try safeModeWrapper.targetOperation
+                    .extractNoCancellableResultData().data != nil
+
                 return SubtensorNetworkInfo(
                     minStake: minStake,
                     effectiveNominatorMinStake: SubtensorStakingPreflight.effectiveNominatorMinStake(
@@ -108,7 +123,8 @@ extension SubtensorNetworkInfoFactory: SubtensorNetworkInfoFactoryProtocol {
                     rootUnlockInterval: rootUnlockInterval,
                     rootClaimableThreshold: SubtensorStakingPreflight.rootClaimableThreshold(
                         fromBits: thresholdBits
-                    )
+                    ),
+                    isSafeModeActive: isSafeModeActive
                 )
             }
 
@@ -116,11 +132,13 @@ extension SubtensorNetworkInfoFactory: SubtensorNetworkInfoFactoryProtocol {
             mergeOperation.addDependency(unlockIntervalWrapper.targetOperation)
             mergeOperation.addDependency(minNominatorFactorWrapper.targetOperation)
             mergeOperation.addDependency(thresholdWrapper.targetOperation)
+            mergeOperation.addDependency(safeModeWrapper.targetOperation)
 
             let dependencies = [codingFactoryOperation, minStakeOperation] +
                 unlockIntervalWrapper.allOperations +
                 minNominatorFactorWrapper.allOperations +
-                thresholdWrapper.allOperations
+                thresholdWrapper.allOperations +
+                safeModeWrapper.allOperations
 
             return CompoundOperationWrapper(
                 targetOperation: mergeOperation,

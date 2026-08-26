@@ -1,17 +1,14 @@
 import Foundation
 import Foundation_iOS
 
-struct SwapSlippageViewFactory {
+enum SwapSlippageViewFactory {
     static func createView(
         percent: BigRational?,
         chainAsset: ChainAsset,
+        config: SlippageConfig = SlippageConfig.defaultConfig,
         completionHandler: @escaping (BigRational) -> Void
     ) -> SwapSlippageViewProtocol? {
         let wireframe = SwapSlippageWireframe()
-
-        let amountFormatter = NumberFormatter.amount
-        amountFormatter.maximumFractionDigits = 4
-        amountFormatter.maximumSignificantDigits = 4
 
         let percentFormatter = NumberFormatter.percentSingle
 
@@ -20,7 +17,7 @@ struct SwapSlippageViewFactory {
             percentFormatterLocalizable: percentFormatter.localizableResource(),
             localizationManager: LocalizationManager.shared,
             initSlippage: percent,
-            config: SlippageConfig.defaultConfig,
+            config: config,
             chainAsset: chainAsset,
             completionHandler: completionHandler
         )

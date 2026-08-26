@@ -52,22 +52,30 @@ final class SubtensorStakePresenterValidatingTests: XCTestCase {
             when(stub.noColdkeySwapInProgress(hasAnnouncement: any(), locale: any()))
                 .thenReturn(makePassingValidator())
             when(stub.safeModeInactive(safeModeActive: any(), locale: any())).thenReturn(makePassingValidator())
+            when(stub.hasFreshQuote(any(), for: any(), locale: any(), onRetry: any()))
+                .thenReturn(makePassingValidator())
+            when(stub.orderWithinSlippageTolerance(quote: any(), limitPrice: any(), locale: any()))
+                .thenReturn(makePassingValidator())
+            when(stub.priceImpactAcceptable(quote: any(), locale: any())).thenReturn(makePassingValidator())
         }
 
         return factory
     }
 
-    private func makeDep() -> SubtensorStakeValidatingDep {
+    private func makeDep(
+        quoteContext: SubtensorQuoteValidatingContext? = nil
+    ) -> SubtensorStakeValidatingDep {
         SubtensorStakeValidatingDep(
             amount: 1_000_000_000,
             balance: nil,
             fee: nil,
             existentialDeposit: nil,
             preflight: nil,
-            netuid: SubtensorStakingPallet.rootNetuid,
+            netuid: quoteContext != nil ? 1 : SubtensorStakingPallet.rootNetuid,
             assetDisplayInfo: AssetBalanceDisplayInfo.units(for: 9),
             onFeeRefresh: {},
-            onPreflightRefresh: {}
+            onPreflightRefresh: {},
+            quoteContext: quoteContext
         )
     }
 
@@ -109,5 +117,42 @@ final class SubtensorStakePresenterValidatingTests: XCTestCase {
         )
         verify(factory).noColdkeySwapInProgress(hasAnnouncement: any(), locale: any())
         verify(factory).safeModeInactive(safeModeActive: any(), locale: any())
+    }
+
+    func testRootStakeValidationListSkipsQuoteRules() {
+        let factory = makeStubbedFactory()
+
+        _ = ValidatingFixture().createStakeValidations(
+            for: makeDep(),
+            dataValidationFactory: factory,
+            selectedLocale: locale
+        )
+
+        verify(factory, never()).hasFreshQuote(any(), for: any(), locale: any(), onRetry: any())
+        verify(factory, never()).orderWithinSlippageTolerance(quote: any(), limitPrice: any(), locale: any())
+        verify(factory, never()).priceImpactAcceptable(quote: any(), locale: any())
+    }
+
+    func testSubnetStakeValidationListAppendsQuoteRules() {
+        let factory = makeStubbedFactory()
+
+        let context = SubtensorQuoteValidatingContext(
+            args: SubtensorQuoteArgs(netuid: 1, direction: .stake(taoIn: 1_000_000_000)),
+            quote: nil,
+            limitPrice: 7_721_671,
+            onQuoteRefresh: {}
+        )
+
+        let validations = ValidatingFixture().createStakeValidations(
+            for: makeDep(quoteContext: context),
+            dataValidationFactory: factory,
+            selectedLocale: locale
+        )
+
+        XCTAssertEqual(validations.count, 13)
+
+        verify(factory).hasFreshQuote(any(), for: any(), locale: any(), onRetry: any())
+        verify(factory).orderWithinSlippageTolerance(quote: any(), limitPrice: any(), locale: any())
+        verify(factory).priceImpactAcceptable(quote: any(), locale: any())
     }
 }

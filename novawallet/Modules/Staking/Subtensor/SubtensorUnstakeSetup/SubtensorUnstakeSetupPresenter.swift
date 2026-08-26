@@ -9,8 +9,11 @@ final class SubtensorUnstakeSetupPresenter {
     let logger: LoggerProtocol
 
     let chainAsset: ChainAsset
+    let flowNetuid: UInt16
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     let accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol
+    let quoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
     let dataValidationFactory: SubtensorStakingValidationFactoryProtocol
 
     private(set) var inputResult: AmountInputResult?
@@ -23,6 +26,12 @@ final class SubtensorUnstakeSetupPresenter {
     private(set) var delegateDisplayAddress: DisplayAddress?
     private(set) var delegateIdentities: [AccountId: AccountIdentity]?
     private(set) var currentBlock: BlockNumber?
+    private(set) var positionsSyncFailed = false
+
+    private(set) var selectedTarget: SubtensorStakeTarget?
+    private(set) var slippage: BigRational = SubtensorSlippageTolerance.defaultTolerance
+    private(set) var quoteFlow = SubtensorQuoteFlowModel()
+    private var cachedInputBalanceViewModelFactory: BalanceViewModelFactoryProtocol?
 
     init(
         interactor: SubtensorUnstakeSetupInteractorInputProtocol,
@@ -30,7 +39,9 @@ final class SubtensorUnstakeSetupPresenter {
         chainAsset: ChainAsset,
         dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
         accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol,
+        quoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol,
         initialPosition: SubtensorStakingPosition?,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
@@ -40,8 +51,16 @@ final class SubtensorUnstakeSetupPresenter {
         self.chainAsset = chainAsset
         self.dataValidationFactory = dataValidationFactory
         self.balanceViewModelFactory = balanceViewModelFactory
+        self.priceAssetInfoFactory = priceAssetInfoFactory
         self.accountDetailsViewModelFactory = accountDetailsViewModelFactory
+        self.quoteViewModelFactory = quoteViewModelFactory
         self.logger = logger
+
+        flowNetuid = initialPosition?.netuid ?? SubtensorStakingPallet.rootNetuid
+
+        if flowNetuid == SubtensorStakingPallet.rootNetuid {
+            selectedTarget = .root
+        }
 
         if
             let initialPosition,
@@ -53,13 +72,74 @@ final class SubtensorUnstakeSetupPresenter {
     }
 }
 
+extension SubtensorUnstakeSetupPresenter {
+    var unstakeBasis: SubtensorUnstakeBasis {
+        SubtensorUnstakeBasis.make(
+            staked: stakedAmountInPlank(),
+            availability: preflight?.stakeAvailability
+        )
+    }
+}
+
 private extension SubtensorUnstakeSetupPresenter {
+    var isRootFlow: Bool {
+        flowNetuid == SubtensorStakingPallet.rootNetuid
+    }
+
+    var quoteView: SubtensorUnstakeSetupViewProtocol? {
+        view as? SubtensorUnstakeSetupViewProtocol
+    }
+
     func getDelegateAccount() -> AccountId? {
         try? delegateDisplayAddress?.address.toAccountId(using: chainAsset.chain.chainFormat)
     }
 
-    func rootPositions() -> [SubtensorStakingPosition] {
-        (positionsState?.positions ?? []).filter { $0.netuid == SubtensorStakingPallet.rootNetuid }
+    func flowPositions() -> [SubtensorStakingPosition] {
+        (positionsState?.positions ?? []).filter { $0.netuid == flowNetuid }
+    }
+
+    func inputDisplayInfo() -> AssetBalanceDisplayInfo {
+        guard !isRootFlow else {
+            return chainAsset.assetDisplayInfo
+        }
+
+        if let selectedTarget {
+            return selectedTarget.assetDisplayInfo(basedOn: chainAsset.assetDisplayInfo)
+        }
+
+        let taoDisplayInfo = chainAsset.assetDisplayInfo
+
+        return AssetBalanceDisplayInfo(
+            displayPrecision: taoDisplayInfo.displayPrecision,
+            assetPrecision: taoDisplayInfo.assetPrecision,
+            symbol: "SN\(flowNetuid)",
+            symbolValueSeparator: taoDisplayInfo.symbolValueSeparator,
+            symbolPosition: taoDisplayInfo.symbolPosition,
+            icon: nil
+        )
+    }
+
+    func makeInputBalanceViewModelFactory() -> BalanceViewModelFactoryProtocol {
+        guard !isRootFlow else {
+            return balanceViewModelFactory
+        }
+
+        if let cachedInputBalanceViewModelFactory {
+            return cachedInputBalanceViewModelFactory
+        }
+
+        let factory = BalanceViewModelFactory(
+            targetAssetInfo: inputDisplayInfo(),
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
+
+        cachedInputBalanceViewModelFactory = factory
+
+        return factory
+    }
+
+    func inputPriceData() -> PriceData? {
+        isRootFlow ? price : nil
     }
 
     func stakedAmountInPlank() -> Balance {
@@ -67,33 +147,45 @@ private extension SubtensorUnstakeSetupPresenter {
             return 0
         }
 
-        return rootPositions().first { $0.hotkey == hotkey }?.stakeAlpha ?? 0
+        return flowPositions().first { $0.hotkey == hotkey }?.stakeAlpha ?? 0
     }
 
-    func stakedAmountDecimal() -> Decimal {
-        stakedAmountInPlank().decimal(assetInfo: chainAsset.assetDisplayInfo)
+    func availableAmountDecimal() -> Decimal {
+        unstakeBasis.available.decimal(assetInfo: inputDisplayInfo())
     }
 
     func inputAmountInPlank() -> Balance? {
-        let inputAmount = inputResult?.absoluteValue(from: stakedAmountDecimal()) ?? 0
+        let inputAmount = inputResult?.absoluteValue(from: availableAmountDecimal()) ?? 0
 
         let amount = inputAmount.toSubstrateAmount(
-            precision: chainAsset.assetDisplayInfo.assetPrecision
+            precision: inputDisplayInfo().assetPrecision
         )
 
-        return amount.map { min($0, stakedAmountInPlank()) }
+        return amount.map { min($0, unstakeBasis.available) }
     }
 
+    /// a max input only closes the position when nothing of it is locked, otherwise
+    /// `remove_stake_full_limit` would be submitted for more than the chain allows
     func isFullUnstake() -> Bool {
-        guard let inputResult else {
+        let basis = unstakeBasis
+
+        guard let inputResult, basis.staked > 0 else {
             return false
         }
 
         if case let .rate(value) = inputResult, value >= 1 {
-            return true
+            return basis.isFullyAvailable
         }
 
-        return inputAmountInPlank() == stakedAmountInPlank() && stakedAmountInPlank() > 0
+        return inputAmountInPlank() == basis.staked
+    }
+
+    func currentSpotPrice() -> Balance? {
+        quoteFlow.freshQuote?.spotPrice ?? selectedTarget?.listedPrice
+    }
+
+    func currentLimitPrice() -> Balance? {
+        selectedTarget?.unstakeLimitPrice(spot: currentSpotPrice(), tolerance: slippage)
     }
 
     func getUnstakeModel() -> SubtensorUnstakeModel? {
@@ -101,16 +193,23 @@ private extension SubtensorUnstakeSetupPresenter {
             return nil
         }
 
+        let limitPrice = currentLimitPrice()
+
+        guard isRootFlow || limitPrice != nil else {
+            return nil
+        }
+
         return SubtensorUnstakeModel(
             hotkey: hotkey,
-            netuid: SubtensorStakingPallet.rootNetuid,
+            netuid: flowNetuid,
             amount: amount,
-            isFullUnstake: isFullUnstake()
+            isFullUnstake: isFullUnstake(),
+            limitPrice: limitPrice
         )
     }
 
     func claimablePayout() -> Balance? {
-        guard let hotkey = getDelegateAccount() else {
+        guard isRootFlow, let hotkey = getDelegateAccount() else {
             return nil
         }
 
@@ -118,9 +217,9 @@ private extension SubtensorUnstakeSetupPresenter {
     }
 
     func provideAmountInputViewModel() {
-        let inputAmount = inputResult?.absoluteValue(from: stakedAmountDecimal())
+        let inputAmount = inputResult?.absoluteValue(from: availableAmountDecimal())
 
-        let viewModel = balanceViewModelFactory.createBalanceInputViewModel(
+        let viewModel = makeInputBalanceViewModelFactory().createBalanceInputViewModel(
             inputAmount
         ).value(for: selectedLocale)
 
@@ -136,17 +235,21 @@ private extension SubtensorUnstakeSetupPresenter {
     }
 
     func provideAssetViewModel() {
-        let stakedDecimal = stakedAmountDecimal()
+        let availableDecimal = availableAmountDecimal()
 
-        let inputAmount = inputResult?.absoluteValue(from: stakedDecimal) ?? 0
+        let inputAmount = inputResult?.absoluteValue(from: availableDecimal) ?? 0
 
-        let viewModel = balanceViewModelFactory.createAssetBalanceViewModel(
+        let viewModel = makeInputBalanceViewModelFactory().createAssetBalanceViewModel(
             inputAmount,
-            balance: stakedDecimal,
-            priceData: price
+            balance: availableDecimal,
+            priceData: inputPriceData()
         ).value(for: selectedLocale)
 
         view?.didReceiveAssetBalance(viewModel: viewModel)
+    }
+
+    func provideUnstakeAvailability() {
+        quoteView?.didReceiveUnstakeUnavailable(unstakeBasis.isFullyLocked)
     }
 
     func provideMinStakeViewModel() {
@@ -189,6 +292,9 @@ private extension SubtensorUnstakeSetupPresenter {
             let viewModel = accountDetailsViewModelFactory.createCollator(
                 from: delegateDisplayAddress,
                 stakedAmount: stakedAmountInPlank(),
+                // the position is held in alpha on the subnet lane, so the row follows the
+                // input denomination rather than the chain asset
+                assetDisplayInfo: inputDisplayInfo(),
                 locale: selectedLocale
             )
 
@@ -199,13 +305,60 @@ private extension SubtensorUnstakeSetupPresenter {
     }
 
     func provideHints() {
-        let hints = [
-            R.string(
-                preferredLanguages: selectedLocale.rLanguages
-            ).localizable.stakingSubtensorHintUnstakeInstant()
-        ]
+        let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
+
+        var hints: [String] = []
+
+        let basis = unstakeBasis
+
+        if basis.isFullyLocked {
+            hints.append(strings.stakingSubtensorUnstakeNothingAvailableHint())
+        } else if basis.locked > 0 {
+            let lockedDecimal = basis.locked.decimal(assetInfo: inputDisplayInfo())
+
+            let lockedAmount = makeInputBalanceViewModelFactory().amountFromValue(
+                lockedDecimal
+            ).value(for: selectedLocale)
+
+            hints.append(strings.stakingSubtensorUnstakeLockedPortionHint(lockedAmount))
+        }
+
+        hints.append(strings.stakingSubtensorHintUnstakeInstant())
+
+        if !isRootFlow {
+            hints.append(strings.stakingSubtensorHintSimulatedReceive())
+        }
 
         view?.didReceiveHints(viewModel: hints)
+    }
+
+    func provideQuoteViewModel() {
+        guard let selectedTarget else {
+            quoteView?.didReceiveQuote(viewModel: nil)
+            return
+        }
+
+        let viewModel = quoteViewModelFactory.createQuotePanel(
+            for: quoteFlow.freshQuote,
+            target: selectedTarget,
+            locale: selectedLocale
+        )
+
+        quoteView?.didReceiveQuote(viewModel: viewModel)
+    }
+
+    func provideSlippageViewModel() {
+        guard !isRootFlow else {
+            quoteView?.didReceiveSlippage(viewModel: nil)
+            return
+        }
+
+        let viewModel = quoteViewModelFactory.createSlippageViewModel(
+            for: slippage,
+            locale: selectedLocale
+        )
+
+        quoteView?.didReceiveSlippage(viewModel: viewModel)
     }
 
     func refreshFee() {
@@ -218,12 +371,53 @@ private extension SubtensorUnstakeSetupPresenter {
 
         let model = SubtensorUnstakeModel(
             hotkey: hotkey,
-            netuid: SubtensorStakingPallet.rootNetuid,
+            netuid: flowNetuid,
             amount: inputAmountInPlank() ?? 0,
-            isFullUnstake: isFullUnstake()
+            isFullUnstake: isFullUnstake(),
+            limitPrice: currentLimitPrice()
         )
 
         interactor.estimateFee(for: .unstake(model))
+    }
+
+    func updateQuote() {
+        guard let selectedTarget else {
+            return
+        }
+
+        let args = SubtensorQuoteFlowModel.unstakeArgs(
+            for: selectedTarget,
+            amount: inputAmountInPlank()
+        )
+
+        if let refreshArgs = quoteFlow.updateArgs(args) {
+            interactor.refreshQuote(for: refreshArgs)
+        }
+
+        provideQuoteViewModel()
+    }
+
+    /// a forced refresh re-derives the args from the current state instead of replaying
+    /// a stored snapshot, so a positions or target change can never pin the quote to stale args
+    func forceQuoteRefresh() {
+        guard let selectedTarget else {
+            return
+        }
+
+        let args = SubtensorQuoteFlowModel.unstakeArgs(
+            for: selectedTarget,
+            amount: inputAmountInPlank()
+        )
+
+        if quoteFlow.updateArgs(args) != nil {
+            provideQuoteViewModel()
+        }
+
+        guard let args else {
+            return
+        }
+
+        interactor.refreshQuote(for: args)
     }
 
     func setupInitialDelegate() {
@@ -231,7 +425,7 @@ private extension SubtensorUnstakeSetupPresenter {
             return
         }
 
-        let optMaxPosition = rootPositions().max { $0.stakeAlpha < $1.stakeAlpha }
+        let optMaxPosition = flowPositions().max { $0.stakeAlpha < $1.stakeAlpha }
 
         guard
             let position = optMaxPosition,
@@ -256,9 +450,12 @@ private extension SubtensorUnstakeSetupPresenter {
         provideDelegateViewModel()
         provideAssetViewModel()
         provideAmountInputViewModel()
+        provideHints()
+        provideUnstakeAvailability()
 
-        interactor.applyDelegate(with: hotkey)
+        interactor.applyDelegate(with: hotkey, netuid: flowNetuid)
         refreshFee()
+        updateQuote()
     }
 
     func updateView() {
@@ -269,10 +466,45 @@ private extension SubtensorUnstakeSetupPresenter {
         provideTransferableViewModel()
         provideHints()
         provideFeeViewModel()
+        provideQuoteViewModel()
+        provideSlippageViewModel()
+        provideUnstakeAvailability()
+    }
+
+    func getQuoteContext() -> SubtensorQuoteValidatingContext? {
+        guard !isRootFlow else {
+            return nil
+        }
+
+        return SubtensorQuoteValidatingContext(
+            args: selectedTarget.flatMap { target in
+                SubtensorQuoteFlowModel.unstakeArgs(for: target, amount: inputAmountInPlank())
+            },
+            quote: quoteFlow.freshQuote,
+            limitPrice: currentLimitPrice(),
+            onQuoteRefresh: { [weak self] in
+                self?.forceQuoteRefresh()
+            }
+        )
+    }
+}
+
+extension SubtensorUnstakeSetupPresenter {
+    /// closing the position is only on offer while the whole of it is unlocked: with a locked
+    /// portion a max input still leaves a remainder, so the offer would re-raise the same warning
+    func makeUnstakeAllOffer() -> (() -> Void)? {
+        guard unstakeBasis.isFullyAvailable else {
+            return nil
+        }
+
+        return { [weak self] in
+            self?.selectAmountPercentage(1.0)
+        }
     }
 
     func getValidationDependencies() -> SubtensorUnstakeValidatingDep {
         SubtensorUnstakeValidatingDep(
+            netuid: flowNetuid,
             amount: inputAmountInPlank(),
             stakedAmount: stakedAmountInPlank(),
             isFullUnstake: isFullUnstake(),
@@ -282,7 +514,7 @@ private extension SubtensorUnstakeSetupPresenter {
             claimablePayout: claimablePayout(),
             currentBlock: currentBlock,
             blockTime: chainAsset.chain.defaultBlockTimeMillis ?? SubtensorStakingFlowConstants.blockTimeMillis,
-            assetDisplayInfo: chainAsset.assetDisplayInfo,
+            assetDisplayInfo: inputDisplayInfo(),
             onFeeRefresh: { [weak self] in
                 self?.refreshFee()
             },
@@ -291,13 +523,19 @@ private extension SubtensorUnstakeSetupPresenter {
                     return
                 }
 
-                interactor.applyDelegate(with: hotkey)
+                interactor.applyDelegate(with: hotkey, netuid: flowNetuid)
+            },
+            onUnstakeAll: makeUnstakeAllOffer(),
+            quoteContext: getQuoteContext(),
+            positionsSyncFailed: positionsSyncFailed,
+            onPositionsRefresh: { [weak self] in
+                self?.interactor.refreshPositions()
             }
         )
     }
 }
 
-extension SubtensorUnstakeSetupPresenter: CollatorStkPartialUnstakeSetupPresenterProtocol {
+extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol {
     func setup() {
         setupInitialDelegate()
 
@@ -306,14 +544,14 @@ extension SubtensorUnstakeSetupPresenter: CollatorStkPartialUnstakeSetupPresente
         interactor.setup()
 
         if let hotkey = getDelegateAccount() {
-            interactor.applyDelegate(with: hotkey)
+            interactor.applyDelegate(with: hotkey, netuid: flowNetuid)
         }
 
         refreshFee()
     }
 
     func selectCollator() {
-        let positions = rootPositions()
+        let positions = flowPositions()
 
         guard !positions.isEmpty else {
             return
@@ -329,7 +567,8 @@ extension SubtensorUnstakeSetupPresenter: CollatorStkPartialUnstakeSetupPresente
         let viewModels = accountDetailsViewModelFactory.createViewModels(
             from: stakedDelegates,
             identities: delegateIdentities,
-            disabled: []
+            disabled: [],
+            assetDisplayInfo: inputDisplayInfo()
         )
 
         let selectedDelegate = getDelegateAccount()
@@ -346,10 +585,24 @@ extension SubtensorUnstakeSetupPresenter: CollatorStkPartialUnstakeSetupPresente
         )
     }
 
+    func selectSlippage() {
+        wireframe.showSlippageEdit(from: view, current: slippage) { [weak self] newValue in
+            guard let self else {
+                return
+            }
+
+            slippage = newValue
+
+            provideSlippageViewModel()
+            refreshFee()
+        }
+    }
+
     func updateAmount(_ newValue: Decimal?) {
         inputResult = newValue.map { .absolute($0) }
 
         refreshFee()
+        updateQuote()
         provideAssetViewModel()
     }
 
@@ -359,6 +612,7 @@ extension SubtensorUnstakeSetupPresenter: CollatorStkPartialUnstakeSetupPresente
         provideAmountInputViewModel()
 
         refreshFee()
+        updateQuote()
         provideAssetViewModel()
     }
 
@@ -379,7 +633,10 @@ extension SubtensorUnstakeSetupPresenter: CollatorStkPartialUnstakeSetupPresente
                 from: view,
                 model: SubtensorUnstakeConfirmModel(
                     delegate: delegate,
-                    unstakeModel: unstakeModel
+                    unstakeModel: unstakeModel,
+                    target: selectedTarget ?? .root,
+                    slippage: isRootFlow ? nil : slippage,
+                    quote: quoteFlow.freshQuote
                 )
             )
         }
@@ -401,6 +658,47 @@ extension SubtensorUnstakeSetupPresenter: ModalPickerViewControllerDelegate {
 extension SubtensorUnstakeSetupPresenter: SubtensorUnstakePresenterValidating {}
 
 extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputProtocol {
+    func didReceiveSubnetsInfo(_ info: SubtensorSubnetsInfo) {
+        logger.debug("Subnets info received")
+
+        guard
+            !isRootFlow,
+            let subnetInfo = info.subnets.first(where: { $0.netuid == flowNetuid }),
+            let subnetPrice = info.prices[flowNetuid] else {
+            return
+        }
+
+        selectedTarget = .subnet(info: subnetInfo, price: subnetPrice)
+        cachedInputBalanceViewModelFactory = nil
+
+        provideAmountInputViewModel()
+        provideAssetViewModel()
+        provideSlippageViewModel()
+        // the alpha symbol only becomes known here, and the locked-portion hint carries it
+        provideHints()
+
+        updateQuote()
+        refreshFee()
+    }
+
+    func didReceiveSubnetsInfoError(_ error: Error) {
+        logger.error("Subnets info failed: \(error)")
+
+        guard !isRootFlow else {
+            return
+        }
+
+        wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+            self?.interactor.retrySubnetsInfo()
+        }
+    }
+
+    func didReceivePositionsSyncFailed(_ isFailed: Bool) {
+        logger.debug("Positions sync failed: \(isFailed)")
+
+        positionsSyncFailed = isFailed
+    }
+
     func didReceiveAssetBalance(_ balance: AssetBalance?) {
         logger.debug("Balance: \(String(describing: balance))")
 
@@ -438,15 +736,18 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
             setupInitialDelegate()
 
             if let hotkey = getDelegateAccount() {
-                interactor.applyDelegate(with: hotkey)
+                interactor.applyDelegate(with: hotkey, netuid: flowNetuid)
             }
         }
 
         provideDelegateViewModel()
         provideAssetViewModel()
         provideAmountInputViewModelIfInputRate()
+        provideHints()
+        provideUnstakeAvailability()
 
         refreshFee()
+        updateQuote()
     }
 
     func didReceiveClaimable(_ claimable: SubtensorRootClaimable?) {
@@ -459,12 +760,40 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
         logger.debug("Block number: \(blockNumber)")
 
         currentBlock = blockNumber
+
+        forceQuoteRefresh()
+    }
+
+    func didReceiveQuote(_ quote: SubtensorQuote) {
+        logger.debug("Quote: \(quote)")
+
+        guard quoteFlow.applyQuote(quote) else {
+            return
+        }
+
+        provideQuoteViewModel()
     }
 
     func didReceivePreflight(_ preflight: SubtensorStakingPreflight) {
         logger.debug("Preflight: \(preflight)")
 
+        // availability arrives after first paint and again on every delegate change, so the
+        // input basis has to re-derive the same way it does when positions land
+        let availabilityChanged = self.preflight?.stakeAvailability != preflight.stakeAvailability
+
         self.preflight = preflight
+
+        guard availabilityChanged else {
+            return
+        }
+
+        provideAssetViewModel()
+        provideAmountInputViewModelIfInputRate()
+        provideHints()
+        provideUnstakeAvailability()
+
+        refreshFee()
+        updateQuote()
     }
 
     func didReceiveExistentialDeposit(_ deposit: Balance) {
@@ -500,8 +829,11 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
                     return
                 }
 
-                interactor.applyDelegate(with: hotkey)
+                interactor.applyDelegate(with: hotkey, netuid: flowNetuid)
             }
+        case .quoteFailed:
+            quoteFlow.clearQuote()
+            provideQuoteViewModel()
         }
     }
 }

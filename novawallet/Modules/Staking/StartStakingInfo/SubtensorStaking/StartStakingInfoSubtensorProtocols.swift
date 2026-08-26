@@ -4,6 +4,7 @@ protocol StartStakingInfoSubtensorInteractorInputProtocol: StartStakingInfoInter
 
 protocol StartStakingInfoSubtensorInteractorOutputProtocol: StartStakingInfoInteractorOutputProtocol {
     func didReceive(networkInfo: SubtensorNetworkInfo)
+    func didReceive(rootAnnualReturn: Decimal?)
 }
 
 protocol StartStakingInfoSubtensorWireframeProtocol: StartStakingInfoWireframeProtocol,

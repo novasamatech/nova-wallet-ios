@@ -1,11 +1,44 @@
 import BigInt
 import Foundation
 
+struct SubtensorQuoteValidatingContext {
+    let args: SubtensorQuoteArgs?
+    let quote: SubtensorQuote?
+    let limitPrice: Balance?
+    let onQuoteRefresh: () -> Void
+}
+
 protocol SubtensorStakingValidationFactoryProtocol: BaseDataValidatingFactoryProtocol {
     func hasPreflight(
         _ preflight: SubtensorStakingPreflight?,
         locale: Locale,
         onRetry: @escaping () -> Void
+    ) -> DataValidating
+
+    func hasFreshQuote(
+        _ quote: SubtensorQuote?,
+        for args: SubtensorQuoteArgs?,
+        locale: Locale,
+        onRetry: @escaping () -> Void
+    ) -> DataValidating
+
+    /// spec §3.2 — a failed positions resync blocks the operation instead of letting a stale
+    /// stake amount become the basis of an extrinsic
+    func positionsAreFresh(
+        syncFailed: Bool,
+        locale: Locale,
+        onRetry: @escaping () -> Void
+    ) -> DataValidating
+
+    func orderWithinSlippageTolerance(
+        quote: SubtensorQuote?,
+        limitPrice: Balance?,
+        locale: Locale
+    ) -> DataValidating
+
+    func priceImpactAcceptable(
+        quote: SubtensorQuote?,
+        locale: Locale
     ) -> DataValidating
 
     func hasMinStakeAmount(
@@ -51,9 +84,12 @@ protocol SubtensorStakingValidationFactoryProtocol: BaseDataValidatingFactoryPro
         locale: Locale
     ) -> DataValidating
 
+    /// `assetDisplayInfo` overrides the factory's chain asset because the available figure is
+    /// denominated in alpha on the subnet lane
     func unstakeNotExceedsAvailable(
         amount: Balance?,
         available: Balance?,
+        assetDisplayInfo: AssetBalanceDisplayInfo?,
         locale: Locale
     ) -> DataValidating
 
@@ -67,6 +103,7 @@ protocol SubtensorStakingValidationFactoryProtocol: BaseDataValidatingFactoryPro
     func remainderNotBelowNominatorMin(
         remainder: Balance?,
         nominatorMinStake: Balance?,
+        onUnstakeAll: (() -> Void)?,
         locale: Locale
     ) -> DataValidating
 

@@ -8,6 +8,7 @@ protocol SubtensorStakingSharedStateProtocol: AnyObject {
     var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol { get }
     var subnetsService: SubtensorSubnetsServiceProtocol { get }
     var delegatesService: SubtensorDelegatesServiceProtocol { get }
+    var rewardCalculatorService: SubtensorRewardCalculatorServiceProtocol { get }
     var apiOperationFactory: SubtensorApiOperationFactoryProtocol { get }
 
     var positionsSyncService: SubtensorPositionsSyncServiceProtocol? { get }
@@ -28,6 +29,7 @@ final class SubtensorStakingSharedState {
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let subnetsService: SubtensorSubnetsServiceProtocol
     let delegatesService: SubtensorDelegatesServiceProtocol
+    let rewardCalculatorService: SubtensorRewardCalculatorServiceProtocol
     let apiOperationFactory: SubtensorApiOperationFactoryProtocol
     let stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol
     let operationQueue: OperationQueue
@@ -45,6 +47,7 @@ final class SubtensorStakingSharedState {
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         subnetsService: SubtensorSubnetsServiceProtocol,
         delegatesService: SubtensorDelegatesServiceProtocol,
+        rewardCalculatorService: SubtensorRewardCalculatorServiceProtocol,
         apiOperationFactory: SubtensorApiOperationFactoryProtocol,
         stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol,
         operationQueue: OperationQueue,
@@ -56,6 +59,7 @@ final class SubtensorStakingSharedState {
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         self.subnetsService = subnetsService
         self.delegatesService = delegatesService
+        self.rewardCalculatorService = rewardCalculatorService
         self.apiOperationFactory = apiOperationFactory
         self.stakeStateFetchFactory = stakeStateFetchFactory
         self.operationQueue = operationQueue

@@ -3,6 +3,7 @@ import Foundation
 protocol SubtensorStakingDetailsInteractorInputProtocol: AnyObject {
     func setup()
     func update(totalRewardFilter: StakingRewardFiltersPeriod)
+    func retryPositionsSync()
 }
 
 protocol SubtensorStakingDetailsInteractorOutputProtocol: AnyObject {
@@ -16,19 +17,31 @@ protocol SubtensorStakingDetailsInteractorOutputProtocol: AnyObject {
     func didReceiveSubnetsInfo(_ subnetsInfo: SubtensorSubnetsInfo)
     func didReceiveNetworkInfo(_ networkInfo: SubtensorNetworkInfo)
     func didReceiveTotalReward(_ totalReward: TotalRewardItem?)
+    func didReceiveSyncFailure(_ isFailed: Bool)
 }
 
 protocol SubtensorStakingDetailsWireframeProtocol: AlertPresentable, ErrorPresentable,
-    MessageSheetPresentable, SubtensorClaimRewardsPresenting {
+    CommonRetryable, MessageSheetPresentable, SubtensorClaimRewardsPresenting {
     func showStakeTokens(
         from view: ControllerBackedProtocol?,
         initialPosition: SubtensorStakingPosition?
     )
 
-    func showUnstakeTokens(from view: ControllerBackedProtocol?)
+    func showUnstakeTokens(
+        from view: ControllerBackedProtocol?,
+        initialPosition: SubtensorStakingPosition?
+    )
 
     func showPositionList(
         from view: ControllerBackedProtocol?,
-        viewModels: [AccountDetailsPickerViewModel]
+        viewModels: [AccountDetailsPickerViewModel],
+        showsCompoundingNote: Bool
+    )
+
+    func showUnstakePositionSelection(
+        from view: ControllerBackedProtocol?,
+        viewModels: [AccountDetailsPickerViewModel],
+        delegate: ModalPickerViewControllerDelegate,
+        context: AnyObject?
     )
 }

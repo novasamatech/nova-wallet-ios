@@ -20,4 +20,23 @@ final class SubtensorUnstakeSetupWireframe: SubtensorUnstakeSetupWireframeProtoc
 
         view?.controller.navigationController?.pushViewController(confirmView.controller, animated: true)
     }
+
+    func showSlippageEdit(
+        from view: CollatorStkPartialUnstakeSetupViewProtocol?,
+        current: BigRational,
+        completion: @escaping (BigRational) -> Void
+    ) {
+        guard let slippageView = SwapSlippageViewFactory.createSubtensorView(
+            percent: current,
+            chainAsset: state.stakingOption.chainAsset,
+            completionHandler: completion
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            slippageView.controller,
+            animated: true
+        )
+    }
 }

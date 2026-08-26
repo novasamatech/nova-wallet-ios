@@ -219,7 +219,8 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
             performRedeemAction()
         case .nominatorChangeValidators:
             wireframe.showYourCollators(from: view)
-        case .rebag, .waitingNextEra, .bondedSetValidators, .nominatorAllOversubscribed:
+        case .rebag, .waitingNextEra, .bondedSetValidators, .nominatorAllOversubscribed,
+             .chainMaintenance, .claimRewards:
             break
         }
     }

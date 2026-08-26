@@ -66,20 +66,20 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
         }
     }
 
+    /// The Subtensor paragraphs must survive whether or not the root APY resolves — the base
+    /// implementation renders nothing Subtensor-specific, so gating this on a nil APY would
+    /// silently drop the instant-unstake and claim-restake notes the moment the engine starts
+    /// returning a number.
     override func provideViewModel(state: StartStakingStateProtocol) {
         super.provideViewModel(state: state)
 
-        guard state.maxApy == nil, let minStake = state.minStake else {
+        guard let minStake = state.minStake else {
             return
         }
 
         let locale = selectedLocale
-        let symbol = chainAsset.asset.displayInfo.symbol
 
-        let title = AccentTextModel(
-            text: R.string(preferredLanguages: locale.rLanguages).localizable.stakingStakeFormat(symbol),
-            accents: [symbol]
-        )
+        let title = createTitle(for: state, locale: locale)
 
         let wikiUrl = startStakingViewModelFactory.wikiModel(
             url: chainAsset.chain.stakingWiki ?? applicationConfig.websiteURL,
@@ -92,13 +92,48 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
             locale: locale
         )
 
+        let model = StartStakingViewModel(
+            title: title,
+            paragraphs: createParagraphs(for: state, minStake: minStake, locale: locale),
+            wikiUrl: wikiUrl,
+            termsUrl: termsUrl
+        )
+
+        view?.didReceive(viewModel: .loaded(value: model))
+    }
+}
+
+private extension StartStakingInfoSubtensorPresenter {
+    func createTitle(for state: StartStakingStateProtocol, locale: Locale) -> AccentTextModel {
+        guard let maxApy = state.maxApy else {
+            let symbol = chainAsset.asset.displayInfo.symbol
+
+            return AccentTextModel(
+                text: R.string(preferredLanguages: locale.rLanguages).localizable.stakingStakeFormat(symbol),
+                accents: [symbol]
+            )
+        }
+
+        return startStakingViewModelFactory.earnupModel(
+            earnings: maxApy,
+            chainAsset: chainAsset,
+            locale: locale
+        )
+    }
+
+    func createParagraphs(
+        for state: StartStakingStateProtocol,
+        minStake: BigUInt,
+        locale: Locale
+    ) -> [ParagraphView.Model] {
         let govModel = state.shouldHaveGovInfo ? startStakingViewModelFactory.govModel(
             amount: state.govThresholdAmount,
             chainAsset: chainAsset,
             locale: locale
         ) : nil
 
-        let paragraphs = [
+        return [
+            self.state.isSafeModeActive ? createSafeModeModel(for: locale) : nil,
             startStakingViewModelFactory.stakeModel(
                 minStake: minStake,
                 rewardStartDelay: Constants.rootRewardsAccrualEstimate,
@@ -114,22 +149,12 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
                 locale: locale
             ),
             createClaimRestakeNoteModel(for: locale),
+            state.maxApy != nil ? createApyCaveatModel(for: locale) : nil,
             govModel,
             startStakingViewModelFactory.recommendationModel(locale: locale)
         ].compactMap { $0 }
-
-        let model = StartStakingViewModel(
-            title: title,
-            paragraphs: paragraphs,
-            wikiUrl: wikiUrl,
-            termsUrl: termsUrl
-        )
-
-        view?.didReceive(viewModel: .loaded(value: model))
     }
-}
 
-private extension StartStakingInfoSubtensorPresenter {
     enum Constants {
         /// root dividends land in the claimable basket roughly every two days on-chain
         static let rootRewardsAccrualEstimate: TimeInterval = 2 * 24 * 3600
@@ -157,6 +182,19 @@ private extension StartStakingInfoSubtensorPresenter {
         )
     }
 
+    /// spec §4.4 rule 7 asks for a chain-wide notice rather than a per-transaction error, and the
+    /// staking main screen only reaches users who already hold a position
+    func createSafeModeModel(for locale: Locale) -> ParagraphView.Model {
+        let text = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingSubtensorSafeModeMessage()
+
+        return .init(
+            image: R.image.iconWarning(),
+            text: AccentTextModel(text: text, accents: [])
+        )
+    }
+
     func createClaimRestakeNoteModel(for locale: Locale) -> ParagraphView.Model {
         let text = R.string(
             preferredLanguages: locale.rLanguages
@@ -164,6 +202,19 @@ private extension StartStakingInfoSubtensorPresenter {
 
         return .init(
             image: R.image.cup(),
+            text: AccentTextModel(text: text, accents: [])
+        )
+    }
+
+    /// spec §6.2 caveats — only shown alongside a rendered percentage, so the tile never carries
+    /// a disclaimer about a number it is not showing
+    func createApyCaveatModel(for locale: Locale) -> ParagraphView.Model {
+        let text = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingSubtensorApyDeclinesNote()
+
+        return .init(
+            image: R.image.iconInfoAccent(),
             text: AccentTextModel(text: text, accents: [])
         )
     }
@@ -175,12 +226,19 @@ extension StartStakingInfoSubtensorPresenter: StartStakingInfoSubtensorInteracto
 
         state.networkInfo = networkInfo
     }
+
+    func didReceive(rootAnnualReturn: Decimal?) {
+        logger.debug("Root annual return: \(String(describing: rootAnnualReturn))")
+
+        state.rootAnnualReturn = rootAnnualReturn
+    }
 }
 
 extension StartStakingInfoSubtensorPresenter {
     struct State: StartStakingStateProtocol, Equatable {
         let chainAsset: ChainAsset
         var networkInfo: SubtensorNetworkInfo?
+        var rootAnnualReturn: Decimal?
 
         var minStake: BigUInt? {
             networkInfo?.minStake
@@ -203,8 +261,14 @@ extension StartStakingInfoSubtensorPresenter {
             Constants.rootRewardsAccrualEstimate
         }
 
+        /// nil keeps the APY-less tile, which is the fallback the empirical gate of spec §6.2 asks
+        /// for whenever the engine cannot produce an honest number
         var maxApy: Decimal? {
-            nil
+            rootAnnualReturn
+        }
+
+        var isSafeModeActive: Bool {
+            networkInfo?.isSafeModeActive ?? false
         }
 
         var rewardsAutoPayoutThresholdAmount: BigUInt? {

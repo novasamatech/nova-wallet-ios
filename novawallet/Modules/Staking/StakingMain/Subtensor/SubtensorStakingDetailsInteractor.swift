@@ -102,6 +102,14 @@ private extension SubtensorStakingDetailsInteractor {
         ) { [weak self] _, newState in
             self?.presenter?.didReceivePositionsState(newState)
         }
+
+        sharedState.positionsSyncService?.add(
+            failureObserver: self,
+            sendStateOnSubscription: false,
+            queue: .main
+        ) { [weak self] _, isFailed in
+            self?.presenter?.didReceiveSyncFailure(isFailed)
+        }
     }
 
     func makeClaimableSubscription() {
@@ -200,6 +208,10 @@ extension SubtensorStakingDetailsInteractor: SubtensorStakingDetailsInteractorIn
         totalRewardInterval = totalRewardFilter.interval
         makeTotalRewardSubscription()
     }
+
+    func retryPositionsSync() {
+        sharedState.positionsSyncService?.refresh()
+    }
 }
 
 extension SubtensorStakingDetailsInteractor: WalletLocalStorageSubscriber,
@@ -246,6 +258,10 @@ extension SubtensorStakingDetailsInteractor: ApplicationHandlerDelegate {
         priceProvider?.refresh()
         totalRewardProvider?.refresh()
         sharedState.positionsSyncService?.refresh()
+
+        // safe mode is chain-wide and can clear while the app is backgrounded, so the banner
+        // must have a chance to disappear on its own
+        provideNetworkInfo()
     }
 }
 

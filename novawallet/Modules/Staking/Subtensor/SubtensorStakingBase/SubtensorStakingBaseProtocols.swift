@@ -2,10 +2,20 @@ import Foundation
 
 enum SubtensorStakingFlowConstants {
     static let blockTimeMillis: BlockTime = 12000
+
+    static let priceImpactWarningThreshold = BigRational(numerator: 1, denominator: 100)
+
+    static let quoteStalenessWindow: TimeInterval = 15
+
+    static func isHighPriceImpact(_ impact: BigRational) -> Bool {
+        let threshold = priceImpactWarningThreshold
+
+        return impact.numerator * threshold.denominator > threshold.numerator * impact.denominator
+    }
 }
 
-// the estimator cannot see the fee-in-alpha path and alpha-paid fees are final,
-// so every TAO-denominated fee estimate is displayed as approximate
+/// the estimator cannot see the fee-in-alpha path and alpha-paid fees are final,
+/// so every TAO-denominated fee estimate is displayed as approximate
 extension BalanceViewModelProtocol {
     func approximatelyForSubtensorFee() -> BalanceViewModelProtocol {
         BalanceViewModel(amount: amount.approximately(), price: price)
@@ -15,7 +25,8 @@ extension BalanceViewModelProtocol {
 protocol SubtensorStakingBaseInteractorInputProtocol: AnyObject {
     func setup()
     func estimateFee(for call: SubtensorStakingCallModel)
-    func refreshPreflight(for hotkey: AccountId)
+    func refreshPreflight(for hotkey: AccountId, netuid: UInt16)
+    func refreshQuote(for args: SubtensorQuoteArgs)
 }
 
 protocol SubtensorStakingBaseInteractorOutputProtocol: AnyObject {
@@ -26,6 +37,7 @@ protocol SubtensorStakingBaseInteractorOutputProtocol: AnyObject {
     func didReceiveClaimable(_ claimable: SubtensorRootClaimable?)
     func didReceiveBlockNumber(_ blockNumber: BlockNumber)
     func didReceivePreflight(_ preflight: SubtensorStakingPreflight)
+    func didReceiveQuote(_ quote: SubtensorQuote)
     func didReceiveExistentialDeposit(_ deposit: Balance)
     func didReceiveBaseError(_ error: SubtensorStakingBaseError)
 }
@@ -33,10 +45,11 @@ protocol SubtensorStakingBaseInteractorOutputProtocol: AnyObject {
 enum SubtensorStakingBaseError: Error {
     case feeFailed(Error)
     case preflightFailed(Error)
+    case quoteFailed(Error)
 }
 
 protocol SubtensorStakingDelegateInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {
-    func applyDelegate(with accountId: AccountId)
+    func applyDelegate(with accountId: AccountId, netuid: UInt16)
 }
 
 protocol SubtensorStakingDelegateInteractorOutputProtocol: SubtensorStakingBaseInteractorOutputProtocol {

@@ -5,6 +5,7 @@ import SubstrateSdk
 
 struct SubtensorStakingPreflight: Equatable {
     let hotkeyExists: Bool
+    let subnetExists: Bool
     let subtokenEnabled: Bool
     let hasColdkeySwapAnnouncement: Bool
     let isSafeModeActive: Bool
@@ -18,7 +19,7 @@ struct SubtensorStakingPreflight: Equatable {
 }
 
 extension SubtensorStakingPreflight {
-    // NominatorMinRequiredStake stores a per-million factor of the min stake constant, not raos
+    /// NominatorMinRequiredStake stores a per-million factor of the min stake constant, not raos
     static func effectiveNominatorMinStake(minStake: Balance, factor: Balance) -> Balance {
         minStake * factor / BigUInt(1_000_000)
     }
@@ -63,6 +64,7 @@ final class SubtensorPreflightFactory {
 private extension SubtensorPreflightFactory {
     struct StorageReads {
         let owner: CompoundOperationWrapper<[StorageResponse<JSON>]>
+        let networksAdded: CompoundOperationWrapper<[StorageResponse<Bool>]>
         let subtokenEnabled: CompoundOperationWrapper<[StorageResponse<Bool>]>
         let swapAnnouncement: CompoundOperationWrapper<[StorageResponse<JSON>]>
         let safeMode: CompoundOperationWrapper<StorageResponse<JSON>>
@@ -73,15 +75,16 @@ private extension SubtensorPreflightFactory {
         let delegateTake: CompoundOperationWrapper<[StorageResponse<StringScaleMapper<UInt16>>]>
 
         var allOperations: [Operation] {
-            owner.allOperations + subtokenEnabled.allOperations + swapAnnouncement.allOperations +
-                safeMode.allOperations + unlockInterval.allOperations + lastStakeBlock.allOperations +
-                minNominatorFactor.allOperations + claimableThresholdBits.allOperations +
-                delegateTake.allOperations
+            owner.allOperations + networksAdded.allOperations + subtokenEnabled.allOperations +
+                swapAnnouncement.allOperations + safeMode.allOperations + unlockInterval.allOperations +
+                lastStakeBlock.allOperations + minNominatorFactor.allOperations +
+                claimableThresholdBits.allOperations + delegateTake.allOperations
         }
 
         var targetOperations: [Operation] {
             [
                 owner.targetOperation,
+                networksAdded.targetOperation,
                 subtokenEnabled.targetOperation,
                 swapAnnouncement.targetOperation,
                 safeMode.targetOperation,
@@ -108,6 +111,13 @@ private extension SubtensorPreflightFactory {
                 keyParams: { [BytesCodable(wrappedValue: hotkey)] },
                 factory: codingFactoryClosure,
                 storagePath: SubtensorStakingPallet.ownerPath,
+                options: StorageQueryListOptions()
+            ),
+            networksAdded: requestFactory.queryItems(
+                engine: engine,
+                keyParams: { [StringScaleMapper(value: netuid)] },
+                factory: codingFactoryClosure,
+                storagePath: SubtensorStakingPallet.networksAddedPath,
                 options: StorageQueryListOptions()
             ),
             subtokenEnabled: requestFactory.queryItems(
@@ -176,6 +186,9 @@ private extension SubtensorPreflightFactory {
             let hotkeyExists = try reads.owner.targetOperation
                 .extractNoCancellableResultData().first?.data != nil
 
+            let networksAddedValue = try reads.networksAdded.targetOperation
+                .extractNoCancellableResultData().first?.value ?? false
+
             let subtokenValue = try reads.subtokenEnabled.targetOperation
                 .extractNoCancellableResultData().first?.value ?? false
 
@@ -213,6 +226,7 @@ private extension SubtensorPreflightFactory {
 
             return SubtensorStakingPreflight(
                 hotkeyExists: hotkeyExists,
+                subnetExists: netuid == SubtensorStakingPallet.rootNetuid || networksAddedValue,
                 subtokenEnabled: netuid == SubtensorStakingPallet.rootNetuid || subtokenValue,
                 hasColdkeySwapAnnouncement: hasAnnouncement,
                 isSafeModeActive: isSafeModeActive,

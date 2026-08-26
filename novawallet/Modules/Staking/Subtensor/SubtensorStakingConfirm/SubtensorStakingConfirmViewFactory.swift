@@ -42,18 +42,28 @@ enum SubtensorStakingConfirmViewFactory {
             model: model,
             dataValidationFactory: dataValidationFactory,
             balanceViewModelFactory: balanceViewModelFactory,
+            quoteViewModelFactory: SubtensorQuoteViewModelFactory(chainAsset: chainAsset),
             localizationManager: localizationManager,
             logger: Logger.shared
         )
 
         let screenTitle = CollatorStakingStakeScreenTitle.confirm(hasStake: model.isStakeMore)
 
-        let view = CollatorStakingConfirmViewController(
-            presenter: presenter,
-            localizableTitle: screenTitle(),
-            statics: .subtensorValidator,
-            localizationManager: localizationManager
-        )
+        let view: CollatorStakingConfirmViewProtocol = if model.target.isRoot {
+            CollatorStakingConfirmViewController(
+                presenter: presenter,
+                localizableTitle: screenTitle(),
+                statics: .subtensorValidator,
+                localizationManager: localizationManager
+            )
+        } else {
+            SubtensorStakingConfirmViewController(
+                presenter: presenter,
+                localizableTitle: screenTitle(),
+                statics: .subtensorValidator,
+                localizationManager: localizationManager
+            )
+        }
 
         presenter.view = view
         interactor.presenter = presenter
@@ -123,6 +133,10 @@ enum SubtensorStakingConfirmViewFactory {
             positionsSyncService: positionsSyncService,
             rootClaimableService: rootClaimableService,
             preflightFactory: preflightFactory,
+            quoteFactory: SubtensorQuoteOperationFactory(
+                operationFactory: state.apiOperationFactory,
+                operationQueue: operationQueue
+            ),
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,

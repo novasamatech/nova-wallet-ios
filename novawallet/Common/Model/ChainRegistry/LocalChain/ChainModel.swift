@@ -226,7 +226,10 @@ struct ChainModel: Equatable, Hashable {
 
     func chainAssetsWithExternalBalances() -> [ChainAsset] {
         assets.compactMap { asset in
-            guard asset.hasPoolStaking || asset.isUtility && hasCrowdloans else {
+            guard
+                asset.hasPoolStaking
+                || asset.hasSubtensorStaking
+                || asset.isUtility && hasCrowdloans else {
                 return nil
             }
 

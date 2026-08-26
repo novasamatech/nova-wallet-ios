@@ -24,6 +24,9 @@ final class CollatorStakingSelectPresenter {
     let chainAsset: ChainAsset
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let defaultSorting: CollatorsSortType
+    /// lanes without a per-collator return, such as Subtensor delegates, show min stake in the
+    /// secondary column instead
+    let displaysRewards: Bool
     let logger: LoggerProtocol
 
     init(
@@ -33,6 +36,7 @@ final class CollatorStakingSelectPresenter {
         chainAsset: ChainAsset,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         defaultSorting: CollatorsSortType = .rewards,
+        displaysRewards: Bool = true,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -42,6 +46,7 @@ final class CollatorStakingSelectPresenter {
         self.chainAsset = chainAsset
         self.balanceViewModelFactory = balanceViewModelFactory
         self.defaultSorting = defaultSorting
+        self.displaysRewards = displaysRewards
         sorting = defaultSorting
         self.logger = logger
         self.localizationManager = localizationManager
@@ -120,7 +125,7 @@ final class CollatorStakingSelectPresenter {
                 subtitle: amount
             )
         case .minStake, .ownStake, .totalStake:
-            guard let apr = collatorInfo.apr else {
+            guard displaysRewards else {
                 let title = R.string(preferredLanguages: languages).localizable.commonMinStakeColumn()
                 let amount = createBalanceViewModel(for: collatorInfo.minRewardableStake).amount
 
@@ -129,7 +134,9 @@ final class CollatorStakingSelectPresenter {
 
             let title = R.string(preferredLanguages: languages).localizable.commonRewardsColumn()
 
-            let rewards = percentFormatter.value(for: selectedLocale).stringFromDecimal(apr) ?? ""
+            let rewards = collatorInfo.apr.flatMap {
+                percentFormatter.value(for: selectedLocale).stringFromDecimal($0)
+            } ?? ""
 
             return TitleWithSubtitleViewModel(title: title, subtitle: rewards)
         }
