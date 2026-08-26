@@ -17,7 +17,8 @@ final class SubtensorStakingPalletTests: XCTestCase {
             SubtensorStakingPallet.taoWeightPath,
             SubtensorStakingPallet.rootStakeUnlockIntervalPath,
             SubtensorStakingPallet.lastColdkeyHotkeyStakeBlockPath,
-            SubtensorStakingPallet.feeRatePath
+            SubtensorStakingPallet.feeRatePath,
+            SubtensorStakingPallet.subnetOwnerCutPath
         ]
 
         for storagePath in storagePaths {

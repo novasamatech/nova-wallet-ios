@@ -1,8 +1,8 @@
-import XCTest
-@testable import novawallet
 import BigInt
+@testable import novawallet
 import Operation_iOS
 import SubstrateSdk
+import XCTest
 
 final class SubtensorStakingApiTests: XCTestCase {
     private var context: Context!
@@ -56,10 +56,45 @@ final class SubtensorStakingApiTests: XCTestCase {
 
     func testAlphaPricesCoverSameSubnetsAsDynamicInfo() {
         do {
-            let dynamicNetuids = Set(try context.fetchDynamicInfoList().map(\.netuid))
-            let priceNetuids = Set(try context.fetchAlphaPrices().map(\.netuid))
+            let dynamicNetuids = try Set(context.fetchDynamicInfoList().map(\.netuid))
+            let priceNetuids = try Set(context.fetchAlphaPrices().map(\.netuid))
 
             XCTAssertEqual(dynamicNetuids, priceNetuids)
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+
+    func testSingleAlphaPriceMatchesAllPricesAtPinnedBlock() {
+        do {
+            let blockHash = try context.run(context.apiFactory.createBestBlockHashWrapper())
+
+            let prices = try context.run(context.apiFactory.createAlphaPricesWrapper(at: blockHash))
+
+            let rootPrice = try context.run(
+                context.apiFactory.createAlphaPriceWrapper(
+                    for: SubtensorStakingPallet.rootNetuid,
+                    blockHash: blockHash
+                )
+            )
+
+            XCTAssertEqual(
+                rootPrice,
+                prices.first { $0.netuid == SubtensorStakingPallet.rootNetuid }?.price
+            )
+
+            let subnetPrice = try XCTUnwrap(
+                prices.first { $0.netuid != SubtensorStakingPallet.rootNetuid && $0.price > 0 }
+            )
+
+            let singlePrice = try context.run(
+                context.apiFactory.createAlphaPriceWrapper(
+                    for: subnetPrice.netuid,
+                    blockHash: blockHash
+                )
+            )
+
+            XCTAssertEqual(singlePrice, subnetPrice.price)
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
@@ -100,7 +135,7 @@ final class SubtensorStakingApiTests: XCTestCase {
 
             XCTAssertGreaterThan(rootStake ?? 0, 0)
 
-            let knownNetuids = Set(try context.fetchDynamicInfoList().map(\.netuid))
+            let knownNetuids = try Set(context.fetchDynamicInfoList().map(\.netuid))
 
             for stakeInfo in stakeInfoList {
                 XCTAssertEqual(stakeInfo.coldkey, coldkey)

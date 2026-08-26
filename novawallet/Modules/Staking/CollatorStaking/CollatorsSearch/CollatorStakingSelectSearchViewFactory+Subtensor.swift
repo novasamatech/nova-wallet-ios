@@ -11,7 +11,8 @@ extension CollatorStakingSelectSearchViewFactory {
             for: SubtensorSelectSearchWireframe(sharedState: state),
             chainAsset: state.stakingOption.chainAsset,
             collators: delegates,
-            delegate: delegate
+            delegate: delegate,
+            displaysRewards: false
         )
     }
 }

@@ -53,7 +53,20 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
         networkInfoCancellableStore.cancel()
     }
 
-    private func provideNetworkInfo() {
+    override func setup() {
+        super.setup()
+
+        state.setup(for: selectedAccount?.chainAccount.accountId)
+
+        provideNetworkInfo()
+        provideRootAnnualReturn()
+    }
+}
+
+// MARK: Private
+
+private extension StartStakingInfoSubtensorInteractor {
+    func provideNetworkInfo() {
         networkInfoCancellableStore.cancel()
 
         let wrapper = networkInfoFactory.createNetworkInfoWrapper()
@@ -73,12 +86,19 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
         }
     }
 
-    override func setup() {
-        super.setup()
-
-        state.setup(for: selectedAccount?.chainAccount.accountId)
-
-        provideNetworkInfo()
+    func provideRootAnnualReturn() {
+        state.rewardCalculatorService.fetchEngine(runningCompletionIn: .main) { [weak self] result in
+            switch result {
+            case let .success(engine):
+                // the take is per delegate and unknown before a delegate is picked, so the entry
+                // screen shows the gross network-average rate (spec §6.2)
+                self?.presenter?.didReceive(rootAnnualReturn: engine.rootAnnualReturn())
+            case let .failure(error):
+                // the tile degrades to its APY-less variant rather than showing a guess
+                self?.logger.error("Root APY unavailable: \(error)")
+                self?.presenter?.didReceive(rootAnnualReturn: nil)
+            }
+        }
     }
 }
 

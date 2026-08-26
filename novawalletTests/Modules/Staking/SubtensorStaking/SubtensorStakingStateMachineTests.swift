@@ -13,6 +13,7 @@ final class SubtensorStakingStateMachineTests: XCTestCase {
             netuid: netuid,
             stakeAlpha: stake,
             hotkeyEmissionPerTempo: 0,
+            totalHotkeyAlpha: nil,
             isRegistered: registered
         )
     }
@@ -149,5 +150,47 @@ final class SubtensorStakingStateMachineTests: XCTestCase {
         machine.state.process(account: nil)
 
         XCTAssertTrue(machine.state is SubtensorStakingInitState)
+    }
+
+    func testSyncFailureIsCarriedIntoCommonDataWithoutLeavingStakedState() {
+        let machine = SubtensorStakingStateMachine()
+
+        machine.state.process(positionsState: makeStakingState(positions: [makePosition()]))
+        machine.state.process(positionsSyncFailed: true)
+
+        let stakedState = machine.state as? SubtensorStakingStakedState
+
+        XCTAssertEqual(stakedState?.commonData.positionsSyncFailed, true)
+    }
+
+    func testRecoveredSyncClearsTheFailureFlag() {
+        let machine = SubtensorStakingStateMachine()
+
+        machine.state.process(positionsState: makeStakingState(positions: [makePosition()]))
+        machine.state.process(positionsSyncFailed: true)
+        machine.state.process(positionsSyncFailed: false)
+
+        let stakedState = machine.state as? SubtensorStakingStakedState
+
+        XCTAssertEqual(stakedState?.commonData.positionsSyncFailed, false)
+    }
+
+    func testSafeModeFlagIsCarriedIntoCommonData() {
+        let machine = SubtensorStakingStateMachine()
+
+        machine.state.process(positionsState: makeStakingState(positions: [makePosition()]))
+        machine.state.process(
+            networkInfo: SubtensorNetworkInfo(
+                minStake: 500_000,
+                effectiveNominatorMinStake: 5_000_000,
+                rootUnlockInterval: 0,
+                rootClaimableThreshold: 500_000,
+                isSafeModeActive: true
+            )
+        )
+
+        let stakedState = machine.state as? SubtensorStakingStakedState
+
+        XCTAssertEqual(stakedState?.commonData.networkInfo?.isSafeModeActive, true)
     }
 }

@@ -8,7 +8,21 @@ struct SubtensorStakingPosition: Equatable {
     // StakeInfo.emission is AlphaDividendsPerSubnet[netuid, hotkey] — the hotkey-wide nominator
     // dividend per tempo; scale by stakeAlpha / TotalHotkeyAlpha before showing a per-user rate
     let hotkeyEmissionPerTempo: BigUInt
+    // TotalHotkeyAlpha[hotkey, netuid], the denominator of that scaling. Nil until the positions
+    // subscription has delivered it, which is one refresh behind the first state fetch
+    let totalHotkeyAlpha: BigUInt?
     let isRegistered: Bool
+
+    func byReplacing(totalHotkeyAlpha: BigUInt?) -> SubtensorStakingPosition {
+        SubtensorStakingPosition(
+            hotkey: hotkey,
+            netuid: netuid,
+            stakeAlpha: stakeAlpha,
+            hotkeyEmissionPerTempo: hotkeyEmissionPerTempo,
+            totalHotkeyAlpha: totalHotkeyAlpha,
+            isRegistered: isRegistered
+        )
+    }
 }
 
 extension Multistaking {

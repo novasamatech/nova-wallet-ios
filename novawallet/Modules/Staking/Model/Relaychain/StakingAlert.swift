@@ -10,15 +10,18 @@ enum StakingAlert {
     case redeemUnbonded(LocalizableResource<String>)
     case waitingNextEra
     case rebag
+    /// informational, chain-level notice with no action attached
+    case chainMaintenance(title: LocalizableResource<String>, details: LocalizableResource<String>)
+    case claimRewards(title: LocalizableResource<String>, details: LocalizableResource<String>)
 }
 
 extension StakingAlert {
     var hasAssociatedAction: Bool {
         switch self {
         case .nominatorLowStake, .nominatorChangeValidators, .redeemUnbonded, .bondedSetValidators,
-             .nominatorAllOversubscribed, .rebag:
+             .nominatorAllOversubscribed, .rebag, .claimRewards:
             return true
-        case .waitingNextEra:
+        case .waitingNextEra, .chainMaintenance:
             return false
         }
     }
@@ -26,9 +29,9 @@ extension StakingAlert {
     var icon: UIImage? {
         switch self {
         case .nominatorChangeValidators, .nominatorLowStake, .redeemUnbonded, .bondedSetValidators,
-             .nominatorAllOversubscribed, .rebag:
+             .nominatorAllOversubscribed, .rebag, .claimRewards:
             return R.image.iconWarning()
-        case .waitingNextEra:
+        case .waitingNextEra, .chainMaintenance:
             return R.image.iconPending()
         }
     }
@@ -51,6 +54,8 @@ extension StakingAlert {
             ).localizable.stakingNominatorStatusAlertWaitingMessage()
         case .rebag:
             return R.string(preferredLanguages: locale.rLanguages).localizable.stakingImprovements()
+        case let .chainMaintenance(localizedTitle, _), let .claimRewards(localizedTitle, _):
+            return localizedTitle.value(for: locale)
         }
     }
 
@@ -70,6 +75,8 @@ extension StakingAlert {
             return R.string(preferredLanguages: locale.rLanguages).localizable.stakingAlertStartNextEraMessage()
         case .rebag:
             return R.string(preferredLanguages: locale.rLanguages).localizable.stakingRebagAlertMessage()
+        case let .chainMaintenance(_, localizedString), let .claimRewards(_, localizedString):
+            return localizedString.value(for: locale)
         }
     }
 }

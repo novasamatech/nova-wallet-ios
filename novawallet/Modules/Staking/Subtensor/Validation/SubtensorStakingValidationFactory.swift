@@ -5,7 +5,9 @@ import Foundation_iOS
 final class SubtensorStakingValidationFactory {
     weak var view: ControllerBackedProtocol?
 
-    var basePresentable: BaseErrorPresentable { presentable }
+    var basePresentable: BaseErrorPresentable {
+        presentable
+    }
 
     let presentable: SubtensorStakingErrorPresentable
     let assetDisplayInfo: AssetBalanceDisplayInfo
@@ -13,6 +15,10 @@ final class SubtensorStakingValidationFactory {
 
     private(set) lazy var balanceViewModelFactory: BalanceViewModelFactoryProtocol = BalanceViewModelFactory(
         targetAssetInfo: assetDisplayInfo,
+        priceAssetInfoFactory: priceAssetInfoFactory
+    )
+
+    private lazy var balanceViewModelFacade = BalanceViewModelFactoryFacade(
         priceAssetInfoFactory: priceAssetInfoFactory
     )
 
@@ -34,6 +40,33 @@ final class SubtensorStakingValidationFactory {
 
         return balanceViewModelFactory.amountFromValue(decimal).value(for: locale)
     }
+
+    private func formatAmount(
+        _ value: Balance,
+        assetDisplayInfo: AssetBalanceDisplayInfo?,
+        locale: Locale
+    ) -> String {
+        guard let assetDisplayInfo, assetDisplayInfo != self.assetDisplayInfo else {
+            return formatAmount(value, locale: locale)
+        }
+
+        let decimal = Decimal.fromSubstrateAmount(
+            value,
+            precision: assetDisplayInfo.assetPrecision
+        ) ?? 0
+
+        return balanceViewModelFacade.amountFromValue(
+            targetAssetInfo: assetDisplayInfo,
+            value: decimal
+        ).value(for: locale)
+    }
+
+    private func formatImpact(_ impact: BigRational, locale: Locale) -> String {
+        let formatter = NumberFormatter.percentSingle
+        formatter.locale = locale
+
+        return formatter.stringFromDecimal(impact.decimalOrZeroValue) ?? ""
+    }
 }
 
 extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryProtocol {
@@ -50,6 +83,102 @@ extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryPr
             presentable.presentPreflightNotReceived(view, onRetry: onRetry, locale: locale)
         }, preservesCondition: {
             preflight != nil
+        })
+    }
+
+    func hasFreshQuote(
+        _ quote: SubtensorQuote?,
+        for args: SubtensorQuoteArgs?,
+        locale: Locale,
+        onRetry: @escaping () -> Void
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let self, let view else {
+                return
+            }
+
+            presentable.presentQuoteMissing(view, onRetry: onRetry, locale: locale)
+        }, preservesCondition: {
+            guard let args, let quote, quote.args == args else {
+                return false
+            }
+
+            return Date().timeIntervalSince(quote.capturedAt) <=
+                SubtensorStakingFlowConstants.quoteStalenessWindow
+        })
+    }
+
+    func positionsAreFresh(
+        syncFailed: Bool,
+        locale: Locale,
+        onRetry: @escaping () -> Void
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let self, let view else {
+                return
+            }
+
+            presentable.presentStalePositions(view, onRetry: onRetry, locale: locale)
+        }, preservesCondition: {
+            !syncFailed
+        })
+    }
+
+    func orderWithinSlippageTolerance(
+        quote: SubtensorQuote?,
+        limitPrice: Balance?,
+        locale: Locale
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let self, let view else {
+                return
+            }
+
+            presentable.presentOrderBeyondTolerance(view, locale: locale)
+        }, preservesCondition: {
+            guard
+                let quote,
+                let limitPrice,
+                let implied = quote.impliedExecutionPrice else {
+                return true
+            }
+
+            // the chain gates on the marginal pool price; an average execution price at or
+            // beyond the limit means the order's own size already breaks the tolerance
+            switch quote.args.direction {
+            case .stake:
+                return implied < limitPrice
+            case .unstake:
+                return implied > limitPrice
+            }
+        })
+    }
+
+    func priceImpactAcceptable(
+        quote: SubtensorQuote?,
+        locale: Locale
+    ) -> DataValidating {
+        WarningConditionViolation(onWarning: { [weak self] delegate in
+            guard let self, let view else {
+                return
+            }
+
+            let impact = quote?.priceImpact ?? BigRational(numerator: 0, denominator: 1)
+
+            presentable.presentHighPriceImpact(
+                view,
+                impact: formatImpact(impact, locale: locale),
+                action: {
+                    delegate.didCompleteWarningHandling()
+                },
+                locale: locale
+            )
+        }, preservesCondition: {
+            guard let impact = quote?.priceImpact else {
+                return true
+            }
+
+            return !SubtensorStakingFlowConstants.isHighPriceImpact(impact)
         })
     }
 
@@ -209,6 +338,7 @@ extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryPr
     func unstakeNotExceedsAvailable(
         amount: Balance?,
         available: Balance?,
+        assetDisplayInfo: AssetBalanceDisplayInfo?,
         locale: Locale
     ) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in
@@ -218,7 +348,11 @@ extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryPr
 
             presentable.presentUnstakeExceedsAvailable(
                 view,
-                available: formatAmount(available ?? 0, locale: locale),
+                available: formatAmount(
+                    available ?? 0,
+                    assetDisplayInfo: assetDisplayInfo,
+                    locale: locale
+                ),
                 locale: locale
             )
         }, preservesCondition: {
@@ -262,6 +396,7 @@ extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryPr
     func remainderNotBelowNominatorMin(
         remainder: Balance?,
         nominatorMinStake: Balance?,
+        onUnstakeAll: (() -> Void)?,
         locale: Locale
     ) -> DataValidating {
         WarningConditionViolation(onWarning: { [weak self] delegate in
@@ -276,6 +411,9 @@ extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryPr
                 action: {
                     delegate.didCompleteWarningHandling()
                 },
+                // deliberately does not resume the stopped run: the amount the runner
+                // captured is the dust one, so the form has to be re-entered instead
+                unstakeAllAction: onUnstakeAll,
                 locale: locale
             )
         }, preservesCondition: {

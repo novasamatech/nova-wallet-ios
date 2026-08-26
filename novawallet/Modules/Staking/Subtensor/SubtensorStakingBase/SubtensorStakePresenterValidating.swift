@@ -10,6 +10,7 @@ struct SubtensorStakeValidatingDep {
     let assetDisplayInfo: AssetBalanceDisplayInfo
     let onFeeRefresh: () -> Void
     let onPreflightRefresh: () -> Void
+    var quoteContext: SubtensorQuoteValidatingContext?
 
     var amountDecimal: Decimal {
         amount?.decimal(assetInfo: assetDisplayInfo) ?? 0
@@ -30,7 +31,7 @@ extension SubtensorStakePresenterValidating {
         dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
         selectedLocale: Locale
     ) -> [DataValidating] {
-        [
+        var validations: [DataValidating] = [
             dataValidationFactory.has(
                 fee: dep.fee,
                 locale: selectedLocale,
@@ -41,8 +42,29 @@ extension SubtensorStakePresenterValidating {
                 dep.preflight,
                 locale: selectedLocale,
                 onRetry: { dep.onPreflightRefresh() }
-            ),
+            )
+        ]
 
+        if let quoteContext = dep.quoteContext {
+            validations.append(
+                dataValidationFactory.hasFreshQuote(
+                    quoteContext.quote,
+                    for: quoteContext.args,
+                    locale: selectedLocale,
+                    onRetry: { quoteContext.onQuoteRefresh() }
+                )
+            )
+
+            validations.append(
+                dataValidationFactory.orderWithinSlippageTolerance(
+                    quote: quoteContext.quote,
+                    limitPrice: quoteContext.limitPrice,
+                    locale: selectedLocale
+                )
+            )
+        }
+
+        validations.append(contentsOf: [
             dataValidationFactory.canSpendAmountInPlank(
                 balance: dep.balance?.transferable,
                 spendingAmount: dep.amountDecimal,
@@ -69,7 +91,7 @@ extension SubtensorStakePresenterValidating {
             dataValidationFactory.hasMinStakeAmount(
                 amount: dep.amount,
                 minStake: dep.preflight?.minStake,
-                quotedSwapFee: nil,
+                quotedSwapFee: dep.quoteContext?.quote?.poolFee,
                 locale: selectedLocale
             ),
 
@@ -80,7 +102,7 @@ extension SubtensorStakePresenterValidating {
 
             dataValidationFactory.subnetStakingEnabled(
                 netuid: dep.netuid,
-                subnetExists: dep.preflight.map { _ in true },
+                subnetExists: dep.preflight?.subnetExists,
                 subtokenEnabled: dep.preflight?.subtokenEnabled,
                 locale: selectedLocale
             ),
@@ -94,7 +116,20 @@ extension SubtensorStakePresenterValidating {
                 safeModeActive: dep.preflight?.isSafeModeActive,
                 locale: selectedLocale
             )
-        ]
+        ])
+
+        // the impact warning runs after every hard error rule so a blocked submission
+        // is never preceded by a proceed-anyway prompt
+        if let quoteContext = dep.quoteContext {
+            validations.append(
+                dataValidationFactory.priceImpactAcceptable(
+                    quote: quoteContext.quote,
+                    locale: selectedLocale
+                )
+            )
+        }
+
+        return validations
     }
 
     func validateStake(

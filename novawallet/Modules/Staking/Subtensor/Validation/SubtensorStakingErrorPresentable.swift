@@ -7,6 +7,27 @@ protocol SubtensorStakingErrorPresentable: BaseErrorPresentable {
         locale: Locale?
     )
 
+    func presentQuoteMissing(
+        _ view: ControllerBackedProtocol,
+        onRetry: @escaping () -> Void,
+        locale: Locale?
+    )
+
+    func presentStalePositions(
+        _ view: ControllerBackedProtocol,
+        onRetry: @escaping () -> Void,
+        locale: Locale?
+    )
+
+    func presentOrderBeyondTolerance(_ view: ControllerBackedProtocol, locale: Locale?)
+
+    func presentHighPriceImpact(
+        _ view: ControllerBackedProtocol,
+        impact: String,
+        action: @escaping () -> Void,
+        locale: Locale?
+    )
+
     func presentStakeAmountTooLow(_ view: ControllerBackedProtocol, minStake: String, locale: Locale?)
 
     func presentStakeAllWarning(
@@ -40,6 +61,7 @@ protocol SubtensorStakingErrorPresentable: BaseErrorPresentable {
         remainder: String,
         minStake: String,
         action: @escaping () -> Void,
+        unstakeAllAction: (() -> Void)?,
         locale: Locale?
     )
 
@@ -64,6 +86,38 @@ extension SubtensorStakingErrorPresentable where Self: AlertPresentable & Common
     ) {
         presentRequestStatus(on: view, locale: locale, retryAction: onRetry)
     }
+
+    func presentQuoteMissing(
+        _ view: ControllerBackedProtocol,
+        onRetry: @escaping () -> Void,
+        locale: Locale?
+    ) {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        presentRequestStatus(
+            on: view,
+            title: strings.stakingSubtensorQuoteMissingTitle(),
+            message: strings.stakingSubtensorQuoteMissingMessage(),
+            locale: locale,
+            retryAction: onRetry
+        )
+    }
+
+    func presentStalePositions(
+        _ view: ControllerBackedProtocol,
+        onRetry: @escaping () -> Void,
+        locale: Locale?
+    ) {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        presentRequestStatus(
+            on: view,
+            title: strings.stakingSubtensorAlertStaleTitle(),
+            message: strings.stakingSubtensorAlertStaleMessage(),
+            locale: locale,
+            retryAction: onRetry
+        )
+    }
 }
 
 extension SubtensorStakingErrorPresentable where Self: AlertPresentable & ErrorPresentable {
@@ -87,6 +141,43 @@ extension SubtensorStakingErrorPresentable where Self: AlertPresentable & ErrorP
             view: view,
             locale: locale
         )
+    }
+
+    func presentOrderBeyondTolerance(_ view: ControllerBackedProtocol, locale: Locale?) {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        presentError(
+            title: strings.stakingSubtensorSelfImpactTitle(),
+            message: strings.stakingSubtensorSelfImpactMessage(),
+            view: view,
+            locale: locale
+        )
+    }
+
+    func presentHighPriceImpact(
+        _ view: ControllerBackedProtocol,
+        impact: String,
+        action: @escaping () -> Void,
+        locale: Locale?
+    ) {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        let proceedAction = AlertPresentableAction(
+            title: strings.commonProceed(),
+            style: .destructive,
+            handler: action
+        )
+
+        let cancelAction = AlertPresentableAction(title: strings.commonCancel())
+
+        let viewModel = AlertPresentableViewModel(
+            title: strings.stakingSubtensorPriceImpactWarningTitle(),
+            message: strings.stakingSubtensorPriceImpactWarningMessage(impact),
+            actions: [cancelAction, proceedAction],
+            closeAction: nil
+        )
+
+        present(viewModel: viewModel, style: .alert, from: view)
     }
 
     func presentStakeAllWarning(
@@ -198,17 +289,39 @@ extension SubtensorStakingErrorPresentable where Self: AlertPresentable & ErrorP
         remainder: String,
         minStake: String,
         action: @escaping () -> Void,
+        unstakeAllAction: (() -> Void)?,
         locale: Locale?
     ) {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
-        presentWarning(
-            for: strings.stakingSubtensorDustRemainderTitle(),
-            message: strings.stakingSubtensorDustRemainderMessage(remainder, minStake),
-            action: action,
-            view: view,
-            locale: locale
+        guard let unstakeAllAction else {
+            presentWarning(
+                for: strings.stakingSubtensorDustRemainderTitle(),
+                message: strings.stakingSubtensorDustRemainderMessage(remainder, minStake),
+                action: action,
+                view: view,
+                locale: locale
+            )
+
+            return
+        }
+
+        let proceedAction = AlertPresentableAction(title: strings.commonProceed(), handler: action)
+
+        let closeAllAction = AlertPresentableAction(
+            title: strings.stakingSubtensorDustRemainderAction(),
+            style: .destructive,
+            handler: unstakeAllAction
         )
+
+        let viewModel = AlertPresentableViewModel(
+            title: strings.stakingSubtensorDustRemainderTitle(),
+            message: strings.stakingSubtensorDustRemainderMessage(remainder, minStake),
+            actions: [proceedAction, closeAllAction],
+            closeAction: strings.commonCancel()
+        )
+
+        present(viewModel: viewModel, style: .alert, from: view)
     }
 
     func presentUnstakeLocked(_ view: ControllerBackedProtocol, eta: String, locale: Locale?) {

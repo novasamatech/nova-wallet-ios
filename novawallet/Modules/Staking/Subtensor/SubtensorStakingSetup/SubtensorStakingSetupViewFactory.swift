@@ -42,6 +42,7 @@ enum SubtensorStakingSetupViewFactory {
             dataValidationFactory: dataValidationFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             accountDetailsViewModelFactory: accountDetailsFactory,
+            quoteViewModelFactory: SubtensorQuoteViewModelFactory(chainAsset: chainAsset),
             initialPosition: initialPosition,
             localizationManager: localizationManager,
             logger: Logger.shared
@@ -52,7 +53,7 @@ enum SubtensorStakingSetupViewFactory {
             assetSymbol: chainAsset.asset.symbol
         )
 
-        let view = CollatorStakingSetupViewController(
+        let view = SubtensorStakingSetupViewController(
             presenter: presenter,
             localizableTitle: localizableTitle(),
             statics: .subtensorValidator,
@@ -122,6 +123,11 @@ enum SubtensorStakingSetupViewFactory {
             positionsSyncService: positionsSyncService,
             rootClaimableService: rootClaimableService,
             preflightFactory: preflightFactory,
+            quoteFactory: SubtensorQuoteOperationFactory(
+                operationFactory: state.apiOperationFactory,
+                operationQueue: operationQueue
+            ),
+            rewardCalculatorService: state.rewardCalculatorService,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,

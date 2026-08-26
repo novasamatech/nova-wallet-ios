@@ -33,14 +33,14 @@ final class SubtensorStakingStateTests: XCTestCase {
     func testMixedPositionsSumRootAndSpotValuedAlpha() {
         let state = Multistaking.SubtensorStakingState(
             positions: [
-                Self.position(netuid: 0, stakeAlpha: 1_000),
+                Self.position(netuid: 0, stakeAlpha: 1000),
                 Self.position(netuid: 3, stakeAlpha: 10),
                 Self.position(netuid: 4, stakeAlpha: 5)
             ],
             prices: [0: 1_000_000_000, 3: 2_000_000_000, 4: 1_000_000_000]
         )
 
-        XCTAssertEqual(state.totalStakeInRao, BigUInt(1_025))
+        XCTAssertEqual(state.totalStakeInRao, BigUInt(1025))
     }
 
     func testLargeStakeValuationDoesNotOverflow() {
@@ -76,6 +76,7 @@ final class SubtensorStakingStateTests: XCTestCase {
             netuid: netuid,
             stakeAlpha: stakeAlpha,
             hotkeyEmissionPerTempo: 0,
+            totalHotkeyAlpha: nil,
             isRegistered: true
         )
     }

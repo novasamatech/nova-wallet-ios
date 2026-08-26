@@ -11,6 +11,38 @@ struct SubtensorStakingCommonData {
     let networkInfo: SubtensorNetworkInfo?
     let totalReward: TotalRewardItem?
     let totalRewardFilter: StakingRewardFiltersPeriod?
+    /// last positions resync failed and the rendered amounts may be stale (spec §3.2)
+    let positionsSyncFailed: Bool
+}
+
+private extension SubtensorStakingCommonData {
+    func copy(
+        account: MetaChainAccountResponse?? = nil,
+        chainAsset: ChainAsset?? = nil,
+        balance: AssetBalance?? = nil,
+        price: PriceData?? = nil,
+        claimable: SubtensorRootClaimable?? = nil,
+        delegates: [SubtensorDelegate]?? = nil,
+        subnetsInfo: SubtensorSubnetsInfo?? = nil,
+        networkInfo: SubtensorNetworkInfo?? = nil,
+        totalReward: TotalRewardItem?? = nil,
+        totalRewardFilter: StakingRewardFiltersPeriod?? = nil,
+        positionsSyncFailed: Bool? = nil
+    ) -> SubtensorStakingCommonData {
+        SubtensorStakingCommonData(
+            account: account ?? self.account,
+            chainAsset: chainAsset ?? self.chainAsset,
+            balance: balance ?? self.balance,
+            price: price ?? self.price,
+            claimable: claimable ?? self.claimable,
+            delegates: delegates ?? self.delegates,
+            subnetsInfo: subnetsInfo ?? self.subnetsInfo,
+            networkInfo: networkInfo ?? self.networkInfo,
+            totalReward: totalReward ?? self.totalReward,
+            totalRewardFilter: totalRewardFilter ?? self.totalRewardFilter,
+            positionsSyncFailed: positionsSyncFailed ?? self.positionsSyncFailed
+        )
+    }
 }
 
 extension SubtensorStakingCommonData {
@@ -25,157 +57,52 @@ extension SubtensorStakingCommonData {
             subnetsInfo: nil,
             networkInfo: nil,
             totalReward: nil,
-            totalRewardFilter: nil
+            totalRewardFilter: nil,
+            positionsSyncFailed: false
         )
     }
 
     func byReplacing(account: MetaChainAccountResponse?) -> SubtensorStakingCommonData {
-        SubtensorStakingCommonData(
-            account: account,
-            chainAsset: chainAsset,
-            balance: balance,
-            price: price,
-            claimable: claimable,
-            delegates: delegates,
-            subnetsInfo: subnetsInfo,
-            networkInfo: networkInfo,
-            totalReward: totalReward,
-            totalRewardFilter: totalRewardFilter
-        )
+        copy(account: .some(account))
     }
 
     func byReplacing(chainAsset: ChainAsset?) -> SubtensorStakingCommonData {
-        SubtensorStakingCommonData(
-            account: account,
-            chainAsset: chainAsset,
-            balance: balance,
-            price: price,
-            claimable: claimable,
-            delegates: delegates,
-            subnetsInfo: subnetsInfo,
-            networkInfo: networkInfo,
-            totalReward: totalReward,
-            totalRewardFilter: totalRewardFilter
-        )
+        copy(chainAsset: .some(chainAsset))
     }
 
     func byReplacing(balance: AssetBalance?) -> SubtensorStakingCommonData {
-        SubtensorStakingCommonData(
-            account: account,
-            chainAsset: chainAsset,
-            balance: balance,
-            price: price,
-            claimable: claimable,
-            delegates: delegates,
-            subnetsInfo: subnetsInfo,
-            networkInfo: networkInfo,
-            totalReward: totalReward,
-            totalRewardFilter: totalRewardFilter
-        )
+        copy(balance: .some(balance))
     }
 
     func byReplacing(price: PriceData?) -> SubtensorStakingCommonData {
-        SubtensorStakingCommonData(
-            account: account,
-            chainAsset: chainAsset,
-            balance: balance,
-            price: price,
-            claimable: claimable,
-            delegates: delegates,
-            subnetsInfo: subnetsInfo,
-            networkInfo: networkInfo,
-            totalReward: totalReward,
-            totalRewardFilter: totalRewardFilter
-        )
+        copy(price: .some(price))
     }
 
     func byReplacing(claimable: SubtensorRootClaimable?) -> SubtensorStakingCommonData {
-        SubtensorStakingCommonData(
-            account: account,
-            chainAsset: chainAsset,
-            balance: balance,
-            price: price,
-            claimable: claimable,
-            delegates: delegates,
-            subnetsInfo: subnetsInfo,
-            networkInfo: networkInfo,
-            totalReward: totalReward,
-            totalRewardFilter: totalRewardFilter
-        )
+        copy(claimable: .some(claimable))
     }
 
     func byReplacing(delegates: [SubtensorDelegate]?) -> SubtensorStakingCommonData {
-        SubtensorStakingCommonData(
-            account: account,
-            chainAsset: chainAsset,
-            balance: balance,
-            price: price,
-            claimable: claimable,
-            delegates: delegates,
-            subnetsInfo: subnetsInfo,
-            networkInfo: networkInfo,
-            totalReward: totalReward,
-            totalRewardFilter: totalRewardFilter
-        )
+        copy(delegates: .some(delegates))
     }
 
     func byReplacing(subnetsInfo: SubtensorSubnetsInfo?) -> SubtensorStakingCommonData {
-        SubtensorStakingCommonData(
-            account: account,
-            chainAsset: chainAsset,
-            balance: balance,
-            price: price,
-            claimable: claimable,
-            delegates: delegates,
-            subnetsInfo: subnetsInfo,
-            networkInfo: networkInfo,
-            totalReward: totalReward,
-            totalRewardFilter: totalRewardFilter
-        )
+        copy(subnetsInfo: .some(subnetsInfo))
     }
 
     func byReplacing(networkInfo: SubtensorNetworkInfo?) -> SubtensorStakingCommonData {
-        SubtensorStakingCommonData(
-            account: account,
-            chainAsset: chainAsset,
-            balance: balance,
-            price: price,
-            claimable: claimable,
-            delegates: delegates,
-            subnetsInfo: subnetsInfo,
-            networkInfo: networkInfo,
-            totalReward: totalReward,
-            totalRewardFilter: totalRewardFilter
-        )
+        copy(networkInfo: .some(networkInfo))
     }
 
     func byReplacing(totalReward: TotalRewardItem?) -> SubtensorStakingCommonData {
-        SubtensorStakingCommonData(
-            account: account,
-            chainAsset: chainAsset,
-            balance: balance,
-            price: price,
-            claimable: claimable,
-            delegates: delegates,
-            subnetsInfo: subnetsInfo,
-            networkInfo: networkInfo,
-            totalReward: totalReward,
-            totalRewardFilter: totalRewardFilter
-        )
+        copy(totalReward: .some(totalReward))
     }
 
     func byReplacing(totalRewardFilter: StakingRewardFiltersPeriod?) -> SubtensorStakingCommonData {
-        SubtensorStakingCommonData(
-            account: account,
-            chainAsset: chainAsset,
-            balance: balance,
-            price: price,
-            claimable: claimable,
-            delegates: delegates,
-            subnetsInfo: subnetsInfo,
-            networkInfo: networkInfo,
-            totalReward: totalReward,
-            totalRewardFilter: totalRewardFilter
-        )
+        copy(totalRewardFilter: .some(totalRewardFilter))
+    }
+
+    func byReplacing(positionsSyncFailed: Bool) -> SubtensorStakingCommonData {
+        copy(positionsSyncFailed: positionsSyncFailed)
     }
 }

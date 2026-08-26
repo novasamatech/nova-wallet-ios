@@ -7,7 +7,8 @@ protocol SubtensorStkStateViewModelFactoryProtocol {
 
     func createPositionViewModels(
         for stakingState: Multistaking.SubtensorStakingState,
-        commonData: SubtensorStakingCommonData
+        commonData: SubtensorStakingCommonData,
+        selectable: Bool
     ) -> [AccountDetailsPickerViewModel]
 
     func createNetworkInfoViewModel(
@@ -16,6 +17,8 @@ protocol SubtensorStkStateViewModelFactoryProtocol {
         price: PriceData?,
         locale: Locale
     ) -> NetworkStakingInfoViewModel
+
+    func hasAlphaPositions(in stakingState: Multistaking.SubtensorStakingState) -> Bool
 }
 
 final class SubtensorStkStateViewModelFactory {
@@ -31,6 +34,22 @@ final class SubtensorStkStateViewModelFactory {
 }
 
 extension SubtensorStkStateViewModelFactory {
+    /// single source of the claimable figure so the reward row and the claim alert cannot disagree
+    func eligibleClaimableTotal(for commonData: SubtensorStakingCommonData) -> Balance? {
+        let claimableThreshold = commonData.networkInfo?.rootClaimableThreshold ??
+            SubtensorStakingPallet.defaultRootClaimableThreshold
+
+        return commonData.claimable.map {
+            $0.claimState(threshold: claimableThreshold).eligibleTotal
+        }
+    }
+
+    /// root rewards are a manual claim, so a compounding note may only appear when the list
+    /// actually contains a subnet position (spec §6.5 vs §6.6)
+    func hasAlphaPositions(in stakingState: Multistaking.SubtensorStakingState) -> Bool {
+        stakingState.positions.contains { $0.netuid != SubtensorStakingPallet.rootNetuid }
+    }
+
     func createStakingStatus(
         for stakingState: Multistaking.SubtensorStakingState
     ) -> NominationViewStatus {
@@ -94,12 +113,7 @@ extension SubtensorStkStateViewModelFactory {
             )
         }
 
-        let claimableThreshold = commonData.networkInfo?.rootClaimableThreshold ??
-            SubtensorStakingPallet.defaultRootClaimableThreshold
-
-        let eligibleClaimable = commonData.claimable.map {
-            $0.claimState(threshold: claimableThreshold).eligibleTotal
-        }
+        let eligibleClaimable = eligibleClaimableTotal(for: commonData)
 
         let localizedClaimableRewards = eligibleClaimable.map { eligibleTotal in
             balanceViewModelFactory.balanceFromPrice(
@@ -166,7 +180,7 @@ extension SubtensorStkStateViewModelFactory: SubtensorStakingStateVisitorProtoco
             viewStatus: status
         )
 
-        let alerts = createAlerts(for: state.stakingState)
+        let alerts = createAlerts(for: state.stakingState, commonData: state.commonData)
 
         let reward = createStakingRewardViewModel(for: chainAsset, commonData: state.commonData)
 
@@ -218,7 +232,8 @@ extension SubtensorStkStateViewModelFactory: SubtensorStkStateViewModelFactoryPr
 
     func createPositionViewModels(
         for stakingState: Multistaking.SubtensorStakingState,
-        commonData: SubtensorStakingCommonData
+        commonData: SubtensorStakingCommonData,
+        selectable: Bool
     ) -> [AccountDetailsPickerViewModel] {
         guard let chainAsset = commonData.chainAsset else {
             return []
@@ -230,22 +245,47 @@ extension SubtensorStkStateViewModelFactory: SubtensorStkStateViewModelFactoryPr
             accum[delegate.info.delegateSs58] = delegate.identity
         }
 
-        let sortedPositions = stakingState.positions.sorted { lhs, rhs in
-            if (lhs.netuid == SubtensorStakingPallet.rootNetuid) !=
-                (rhs.netuid == SubtensorStakingPallet.rootNetuid) {
-                return lhs.netuid == SubtensorStakingPallet.rootNetuid
-            }
-
-            return lhs.stakeAlpha > rhs.stakeAlpha
-        }
-
-        return sortedPositions.map { position in
+        return stakingState.positions.sortedForSubtensorDisplay().map { position in
             createPositionViewModel(
                 for: position,
                 chainAsset: chainAsset,
                 identities: identities,
-                subnetsInfo: commonData.subnetsInfo
+                subnetsInfo: commonData.subnetsInfo,
+                selectable: selectable
             )
+        }
+    }
+}
+
+private extension SubtensorStkStateViewModelFactory {
+    /// spec §6.1 — the position's share of one tempo of hotkey-wide dividends, annualised to a day.
+    /// Root positions are structurally excluded: the runtime never writes alpha dividends for the
+    /// root subnet, so a rate there would be a fabricated zero rather than an estimate.
+    func createRateSuffix(
+        for position: SubtensorStakingPosition,
+        displayInfo: AssetBalanceDisplayInfo,
+        subnetsInfo: SubtensorSubnetsInfo?
+    ) -> LocalizableResource<String>? {
+        let tempo = subnetsInfo?.subnets.first { $0.netuid == position.netuid }?.tempo
+
+        guard
+            let perDayRao = SubtensorPositionRateCalculator.alphaPerDayRao(
+                for: position,
+                tempo: tempo
+            ),
+            perDayRao > 0 else {
+            return nil
+        }
+
+        let formatter = AssetBalanceFormatterFactory().createTokenFormatter(for: displayInfo)
+        let perDayDecimal = perDayRao.decimal(assetInfo: displayInfo)
+
+        return LocalizableResource { locale in
+            let amount = formatter.value(for: locale).stringFromDecimal(perDayDecimal) ?? ""
+
+            return R.string(
+                preferredLanguages: locale.rLanguages
+            ).localizable.stakingSubtensorRatePerDayFormat(amount)
         }
     }
 }
@@ -255,7 +295,8 @@ private extension SubtensorStkStateViewModelFactory {
         for position: SubtensorStakingPosition,
         chainAsset: ChainAsset,
         identities: [AccountId: AccountIdentity],
-        subnetsInfo: SubtensorSubnetsInfo?
+        subnetsInfo: SubtensorSubnetsInfo?,
+        selectable: Bool
     ) -> AccountDetailsPickerViewModel {
         let addressViewModel: DisplayAddressViewModel
         let address = try? position.hotkey.toAddress(using: chainAsset.chain.chainFormat)
@@ -277,9 +318,17 @@ private extension SubtensorStkStateViewModelFactory {
 
         let amountDecimal = position.stakeAlpha.decimal(assetInfo: displayInfo)
 
+        let rateSuffix = createRateSuffix(
+            for: position,
+            displayInfo: displayInfo,
+            subnetsInfo: subnetsInfo
+        )
+
         return LocalizableResource { locale in
             let detailsTitle = R.string(preferredLanguages: locale.rLanguages).localizable.commonStakedPrefix()
-            let detailsSubtitle = formatter.value(for: locale).stringFromDecimal(amountDecimal) ?? ""
+            let amount = formatter.value(for: locale).stringFromDecimal(amountDecimal) ?? ""
+
+            let detailsSubtitle = rateSuffix.map { "\(amount) · \($0.value(for: locale))" } ?? amount
 
             let details = TitleWithSubtitleViewModel(title: detailsTitle, subtitle: detailsSubtitle)
 
@@ -288,7 +337,7 @@ private extension SubtensorStkStateViewModelFactory {
                 details: details
             )
 
-            return SelectableViewModel(underlyingViewModel: accountDetails, selectable: false)
+            return SelectableViewModel(underlyingViewModel: accountDetails, selectable: selectable)
         }
     }
 

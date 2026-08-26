@@ -134,7 +134,8 @@ extension MythosStakingDetailsPresenter: StakingMainChildPresenterProtocol {
             handleStakeMoreAction()
         case .nominatorChangeValidators:
             wireframe.showYourCollators(from: view)
-        case .rebag, .waitingNextEra, .nominatorAllOversubscribed, .nominatorLowStake:
+        case .rebag, .waitingNextEra, .nominatorAllOversubscribed, .nominatorLowStake,
+             .chainMaintenance, .claimRewards:
             // not applicable to Mythos staking
             break
         }

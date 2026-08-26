@@ -20,6 +20,7 @@ protocol SubtensorStakingStateProtocol {
     func process(networkInfo: SubtensorNetworkInfo?)
     func process(totalReward: TotalRewardItem?)
     func process(totalRewardFilter: StakingRewardFiltersPeriod?)
+    func process(positionsSyncFailed: Bool)
 }
 
 protocol SubtensorStakingStateMachineProtocol: AnyObject {

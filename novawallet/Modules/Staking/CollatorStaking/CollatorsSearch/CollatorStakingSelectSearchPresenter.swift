@@ -14,6 +14,9 @@ final class CollatorStakingSelectSearchPresenter {
     let chainAsset: ChainAsset
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let collatorsInfo: [CollatorStakingSelectionInfoProtocol]
+    /// lanes without a per-collator return, such as Subtensor delegates, rank and label the
+    /// screen by total stake instead
+    let displaysRewards: Bool
     let logger: LoggerProtocol
 
     private var filteredCollatorsInfo: [CollatorStakingSelectionInfoProtocol]?
@@ -27,6 +30,7 @@ final class CollatorStakingSelectSearchPresenter {
         collatorsInfo: [CollatorStakingSelectionInfoProtocol],
         delegate: CollatorStakingSelectDelegate,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        displaysRewards: Bool = true,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -36,14 +40,11 @@ final class CollatorStakingSelectSearchPresenter {
         self.delegate = delegate
         self.balanceViewModelFactory = balanceViewModelFactory
         self.collatorsInfo = collatorsInfo
+        self.displaysRewards = displaysRewards
 
         self.logger = logger
 
         self.localizationManager = localizationManager
-    }
-
-    private var displaysRewards: Bool {
-        collatorsInfo.contains { $0.apr != nil }
     }
 
     private func createHeaderViewModel(for collatorsCount: Int) -> TitleWithSubtitleViewModel {

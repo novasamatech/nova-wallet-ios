@@ -42,15 +42,24 @@ enum SubtensorUnstakeConfirmViewFactory {
             model: model,
             dataValidationFactory: dataValidationFactory,
             balanceViewModelFactory: balanceViewModelFactory,
+            quoteViewModelFactory: SubtensorQuoteViewModelFactory(chainAsset: chainAsset),
             localizationManager: localizationManager,
             logger: Logger.shared
         )
 
-        let view = CollatorStkUnstakeConfirmVC(
-            presenter: presenter,
-            statics: .subtensorValidator,
-            localizationManager: localizationManager
-        )
+        let view: CollatorStkUnstakeConfirmViewProtocol = if model.target.isRoot {
+            CollatorStkUnstakeConfirmVC(
+                presenter: presenter,
+                statics: .subtensorValidator,
+                localizationManager: localizationManager
+            )
+        } else {
+            SubtensorUnstakeConfirmVC(
+                presenter: presenter,
+                statics: .subtensorValidator,
+                localizationManager: localizationManager
+            )
+        }
 
         presenter.view = view
         interactor.presenter = presenter
@@ -120,6 +129,10 @@ enum SubtensorUnstakeConfirmViewFactory {
             positionsSyncService: positionsSyncService,
             rootClaimableService: rootClaimableService,
             preflightFactory: preflightFactory,
+            quoteFactory: SubtensorQuoteOperationFactory(
+                operationFactory: state.apiOperationFactory,
+                operationQueue: operationQueue
+            ),
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
