@@ -45,13 +45,79 @@ final class SubtensorSwapApiDecodeTests: XCTestCase {
 
         XCTAssertEqual(simSwapResult.taoAmount, BigUInt(1_000_000_000))
         XCTAssertEqual(simSwapResult.alphaAmount, BigUInt(128_000_000_000))
-        XCTAssertEqual(simSwapResult.taoFee, BigUInt(90_000))
-        XCTAssertEqual(simSwapResult.alphaFee, BigUInt(45_000))
+        XCTAssertEqual(simSwapResult.taoFee, BigUInt(90000))
+        XCTAssertEqual(simSwapResult.alphaFee, BigUInt(45000))
         XCTAssertEqual(simSwapResult.taoSlippage, BigUInt(500_000))
         XCTAssertEqual(simSwapResult.alphaSlippage, BigUInt(250_000))
+    }
+
+    func testCapturedSingleAlphaPriceDecodesAsPlainU64() throws {
+        let price: StringScaleMapper<Balance> = try SubtensorFixtureDecoding.decodeRuntimeApiResult(
+            from: Self.capturedAlphaPriceNetuid1Hex,
+            path: StateCallPath(module: SubtensorStakingPallet.swapApiName, method: "current_alpha_price")
+        )
+
+        XCTAssertEqual(price.value, BigUInt(7_683_255))
+    }
+
+    func testCapturedBuySimPopulatesOnlyTaoFeeAndAlphaSlippage() throws {
+        let simSwapResult: SubtensorStakingPallet.SimSwapResult = try SubtensorFixtureDecoding.decodeRuntimeApiResult(
+            from: Self.capturedSimSwapTaoForAlphaHex,
+            path: SubtensorStakingPallet.simSwapTaoForAlphaApi
+        )
+
+        XCTAssertEqual(simSwapResult.taoAmount, BigUInt(999_496_453))
+        XCTAssertEqual(simSwapResult.alphaAmount, BigUInt(130_082_405_209))
+        XCTAssertEqual(simSwapResult.taoFee, BigUInt(503_547))
+        XCTAssertEqual(simSwapResult.alphaFee, 0)
+        XCTAssertEqual(simSwapResult.taoSlippage, 0)
+        XCTAssertEqual(simSwapResult.alphaSlippage, BigUInt(70_762_340))
+    }
+
+    func testCapturedBuySimHoldsInputSideFeeInvariant() throws {
+        let simSwapResult: SubtensorStakingPallet.SimSwapResult = try SubtensorFixtureDecoding.decodeRuntimeApiResult(
+            from: Self.capturedSimSwapTaoForAlphaHex,
+            path: SubtensorStakingPallet.simSwapTaoForAlphaApi
+        )
+
+        XCTAssertEqual(simSwapResult.taoAmount + simSwapResult.taoFee, BigUInt(1_000_000_000))
+    }
+
+    func testCapturedSellSimPopulatesOnlyAlphaFeeAndTaoSlippage() throws {
+        let simSwapResult: SubtensorStakingPallet.SimSwapResult = try SubtensorFixtureDecoding.decodeRuntimeApiResult(
+            from: Self.capturedSimSwapAlphaForTaoHex,
+            path: SubtensorStakingPallet.simSwapAlphaForTaoApi
+        )
+
+        XCTAssertEqual(simSwapResult.taoAmount, BigUInt(998_912_946))
+        XCTAssertEqual(simSwapResult.alphaAmount, BigUInt(130_016_902_511))
+        XCTAssertEqual(simSwapResult.taoFee, 0)
+        XCTAssertEqual(simSwapResult.alphaFee, BigUInt(65_502_698))
+        XCTAssertEqual(simSwapResult.taoSlippage, BigUInt(543_368))
+        XCTAssertEqual(simSwapResult.alphaSlippage, 0)
+    }
+
+    func testCapturedSellSimHoldsInputSideFeeInvariant() throws {
+        let simSwapResult: SubtensorStakingPallet.SimSwapResult = try SubtensorFixtureDecoding.decodeRuntimeApiResult(
+            from: Self.capturedSimSwapAlphaForTaoHex,
+            path: SubtensorStakingPallet.simSwapAlphaForTaoApi
+        )
+
+        XCTAssertEqual(
+            simSwapResult.alphaAmount + simSwapResult.alphaFee,
+            BigUInt(130_082_405_209)
+        )
     }
 }
 
 extension SubtensorSwapApiDecodeTests {
+    static let capturedAlphaPriceNetuid1Hex = "0xb73c750000000000"
+
+    static let capturedSimSwapTaoForAlphaHex =
+        "0x051b933b0000000059fb83491e000000fbae0700000000000000000000000000000000000000000064bf370400000000"
+
+    static let capturedSimSwapAlphaForTaoHex =
+        "0xb2338a3b000000006f7d9c451e0000000000000000000000ea7de70300000000884a0800000000000000000000000000"
+
     static let alphaPriceAllHex = "0x0502000000ca9a3b0000000001000a537600000000000200c7ff2e00000000000300fc70bc01000000000400649c5f030000000005004d5cc100000000000600e3962a00000000000700ac4f3100000000000800b50cac01000000000900ba6bd601000000000a0026836a00000000000b00b1ab6c00000000000c0041424b00000000000d00dee25b00000000000e00d3159200000000000f0006a1f901000000001000bacf1d000000000011008e339100000000001200524f40000000000013009858a5000000000014000c4629000000000015003bba3a00000000001600cc653100000000001700e7c63a00000000001800a07d3e00000000001900a4aa9f00000000001a00dcc73b00000000001b0041272500000000001c002b720f01000000001d00afae2a00000000001e00a0a63600000000001f0029ae4c00000000002000da4e2f0000000000210039624d000000000022009e4cb900000000002300212f24000000000024002d44500000000000250067643c00000000002600bbfb8800000000002700b2117f00000000002800c8745400000000002900e82c4b00000000002a0081a62500000000002b00daff4a00000000002c007ab18002000000002d0046d42c00000000002e008dd83b00000000002f0010c42900000000003000bfb641000000000031009ec7a00000000000320003644800000000003300bf60ce040000000034008af863000000000035007451b301000000003600cc9248000000000037006d162b0000000000380090a3f90000000000390050324f00000000003a0060eb8d00000000003b0020da2200000000003c003e104d00000000003d00bbfe6b00000000003e003b3ea900000000003f00ce977f00000000004000c5508604000000004100ee932f00000000004200570c25000000000043008e68550000000000440079f65001000000004500bef19100000000004600da268c000000000047008da25c00000000004800cdcb2400000000004900efe63100000000004a0056973500000000004b001d781401000000004c00aa5b2600000000004d00e10c5c00000000004e00dd315200000000004f00a13b69000000000050006e06ec000000000051003cb66600000000005200b5a32f000000000053003c479e00000000005400b5c02200000000005500b7764f0000000000560052665b0000000000570021b93b0000000000580007dc42000000000059009ba73500000000005a00882e9802000000005b002a807700000000005c0063b44500000000005d00f66cea00000000005e0097212f00000000005f00d70aba02000000006000a96e7700000000006100cdcb68010000000062002f212c0000000000630019c03a00000000006400e48a4d0000000000650031204600000000006600bcd296000000000067007f4e91000000000068004b964200000000006900584b7000000000006a00f26a3300000000006b0046cde603000000006c00a0a82f00000000006d0099862700000000006e008c2c9f00000000006f004c286300000000007000633f350000000000710030b52700000000007200a908a900000000007300fea42800000000007400a9577300000000007500b4192600000000007600a7a09f00000000007700b0882900000000007800640e2903000000007900f2f64400000000007a0021584900000000007b00455f2600000000007c000091b800000000007d002f223000000000007e004c704000000000007f00bdf02e00000000008000c4c72c0000000000"
 }

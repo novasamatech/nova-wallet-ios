@@ -44,7 +44,7 @@ final class SubtensorExecutedOutcomeParserTests: XCTestCase {
             codingFactory: codingFactory
         )
 
-        XCTAssertEqual(outcome, .staked(tao: 1_000_000_000))
+        XCTAssertEqual(outcome, .staked(tao: 1_000_000_000, alpha: 4_000_000_000, netuid: 0))
     }
 
     func testStakeRemovedEventParsesToUnstakedOutcomeWithTaoAmount() throws {
@@ -60,7 +60,7 @@ final class SubtensorExecutedOutcomeParserTests: XCTestCase {
             codingFactory: codingFactory
         )
 
-        XCTAssertEqual(outcome, .unstaked(tao: 1_000_000_000))
+        XCTAssertEqual(outcome, .unstaked(tao: 1_000_000_000, alpha: 4_000_000_000, netuid: 1))
     }
 
     func testFeeInAlphaStakeRemovedPrecedingDispatchEventReportsDispatchAmount() throws {
@@ -80,7 +80,7 @@ final class SubtensorExecutedOutcomeParserTests: XCTestCase {
             codingFactory: codingFactory
         )
 
-        XCTAssertEqual(outcome, .unstaked(tao: 1_000_000_000))
+        XCTAssertEqual(outcome, .unstaked(tao: 1_000_000_000, alpha: 4_000_000_000, netuid: 1))
     }
 
     func testRootClaimedEventParsesToClaimedOutcome() throws {

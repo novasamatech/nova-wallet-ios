@@ -35,7 +35,7 @@ final class SubtensorDelegateSelectionInfoTests: XCTestCase {
         var payload = Data()
         payload.append(compact(1))
         payload.append(delegateAccount)
-        payload.append(compact(11_796))
+        payload.append(compact(11796))
 
         payload.append(compact(3))
         payload.append(encodeNominator(ownerAccount, stakes: [(0, 100), (5, 7)]))
@@ -87,7 +87,7 @@ final class SubtensorDelegateSelectionInfoTests: XCTestCase {
             minStake: 2_000_000
         )
 
-        XCTAssertEqual(info.take, 11_796)
+        XCTAssertEqual(info.take, 11796)
         XCTAssertEqual(info.minRewardableStake, 2_000_000)
     }
 

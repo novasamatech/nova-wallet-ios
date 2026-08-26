@@ -2,16 +2,20 @@ import Foundation
 import Foundation_iOS
 
 protocol CollatorStakingAccountViewModelFactoryProtocol {
+    /// `assetDisplayInfo` overrides the chain asset for lanes whose amounts are not denominated in
+    /// the utility token, such as the Subtensor subnet lane where a position is held in alpha
     func createCollator(
         from collatorAddress: DisplayAddress,
         stakedAmount: Balance?,
+        assetDisplayInfo: AssetBalanceDisplayInfo?,
         locale: Locale
     ) -> AccountDetailsSelectionViewModel
 
     func createViewModels(
         from stakeDistribution: [CollatorStakingAccountViewModelFactory.StakedCollator],
         identities: [AccountId: AccountIdentity]?,
-        disabled: Set<AccountId>
+        disabled: Set<AccountId>,
+        assetDisplayInfo: AssetBalanceDisplayInfo?
     ) -> [LocalizableResource<SelectableViewModel<AccountDetailsSelectionViewModel>>]
 
     func createUnstakingViewModels(
@@ -20,10 +24,39 @@ protocol CollatorStakingAccountViewModelFactoryProtocol {
     ) -> [LocalizableResource<AccountDetailsSelectionViewModel>]
 }
 
+extension CollatorStakingAccountViewModelFactoryProtocol {
+    func createCollator(
+        from collatorAddress: DisplayAddress,
+        stakedAmount: Balance?,
+        locale: Locale
+    ) -> AccountDetailsSelectionViewModel {
+        createCollator(
+            from: collatorAddress,
+            stakedAmount: stakedAmount,
+            assetDisplayInfo: nil,
+            locale: locale
+        )
+    }
+
+    func createViewModels(
+        from stakeDistribution: [CollatorStakingAccountViewModelFactory.StakedCollator],
+        identities: [AccountId: AccountIdentity]?,
+        disabled: Set<AccountId>
+    ) -> [LocalizableResource<SelectableViewModel<AccountDetailsSelectionViewModel>>] {
+        createViewModels(
+            from: stakeDistribution,
+            identities: identities,
+            disabled: disabled,
+            assetDisplayInfo: nil
+        )
+    }
+}
+
 final class CollatorStakingAccountViewModelFactory {
     let formatter: LocalizableResource<TokenFormatter>
     let chainAsset: ChainAsset
     private lazy var displayAddressFactory = DisplayAddressViewModelFactory()
+    private let formatterFactory = AssetBalanceFormatterFactory()
 
     var chainFormat: ChainFormat {
         chainAsset.chain.chainFormat
@@ -33,12 +66,27 @@ final class CollatorStakingAccountViewModelFactory {
         self.chainAsset = chainAsset
         formatter = AssetBalanceFormatterFactory().createTokenFormatter(for: chainAsset.assetDisplayInfo)
     }
+
+    private func resolveDisplayInfo(_ assetDisplayInfo: AssetBalanceDisplayInfo?) -> AssetBalanceDisplayInfo {
+        assetDisplayInfo ?? chainAsset.assetDisplayInfo
+    }
+
+    private func resolveFormatter(
+        for assetDisplayInfo: AssetBalanceDisplayInfo?
+    ) -> LocalizableResource<TokenFormatter> {
+        guard let assetDisplayInfo, assetDisplayInfo != chainAsset.assetDisplayInfo else {
+            return formatter
+        }
+
+        return formatterFactory.createTokenFormatter(for: assetDisplayInfo)
+    }
 }
 
 extension CollatorStakingAccountViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol {
     func createCollator(
         from collatorAddress: DisplayAddress,
         stakedAmount: Balance?,
+        assetDisplayInfo: AssetBalanceDisplayInfo?,
         locale: Locale
     ) -> AccountDetailsSelectionViewModel {
         let addressModel = displayAddressFactory.createViewModel(from: collatorAddress)
@@ -48,9 +96,11 @@ extension CollatorStakingAccountViewModelFactory: CollatorStakingAccountViewMode
         if let stakedAmount {
             let detailsName = R.string(preferredLanguages: locale.rLanguages).localizable.commonStakedPrefix()
 
-            let stakedDecimal = stakedAmount.decimal(assetInfo: chainAsset.assetDisplayInfo)
+            let stakedDecimal = stakedAmount.decimal(assetInfo: resolveDisplayInfo(assetDisplayInfo))
 
-            let stakedAmount = formatter.value(for: locale).stringFromDecimal(stakedDecimal) ?? ""
+            let amountFormatter = resolveFormatter(for: assetDisplayInfo)
+
+            let stakedAmount = amountFormatter.value(for: locale).stringFromDecimal(stakedDecimal) ?? ""
 
             details = TitleWithSubtitleViewModel(title: detailsName, subtitle: stakedAmount)
         } else {
@@ -63,9 +113,13 @@ extension CollatorStakingAccountViewModelFactory: CollatorStakingAccountViewMode
     func createViewModels(
         from stakeDistribution: [StakedCollator],
         identities: [AccountId: AccountIdentity]?,
-        disabled: Set<AccountId>
+        disabled: Set<AccountId>,
+        assetDisplayInfo: AssetBalanceDisplayInfo?
     ) -> [LocalizableResource<SelectableViewModel<AccountDetailsSelectionViewModel>>] {
-        stakeDistribution.map { stake in
+        let displayInfo = resolveDisplayInfo(assetDisplayInfo)
+        let amountFormatter = resolveFormatter(for: assetDisplayInfo)
+
+        return stakeDistribution.map { stake in
             let addressViewModel: DisplayAddressViewModel
             let address = try? stake.collator.toAddress(using: chainFormat)
 
@@ -76,14 +130,10 @@ extension CollatorStakingAccountViewModelFactory: CollatorStakingAccountViewMode
                 addressViewModel = displayAddressFactory.createViewModel(from: address ?? "")
             }
 
-            let amountDecimal = stake.amount.decimal(assetInfo: chainAsset.assetDisplayInfo)
+            let amountDecimal = stake.amount.decimal(assetInfo: displayInfo)
 
-            let localizedAmountString = LocalizableResource<String> { [weak self] locale in
-                if let formatter = self?.formatter {
-                    return formatter.value(for: locale).stringFromDecimal(amountDecimal) ?? ""
-                } else {
-                    return ""
-                }
+            let localizedAmountString = LocalizableResource<String> { locale in
+                amountFormatter.value(for: locale).stringFromDecimal(amountDecimal) ?? ""
             }
 
             let selectable = !disabled.contains(stake.collator)

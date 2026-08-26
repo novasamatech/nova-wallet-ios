@@ -131,6 +131,7 @@ final class StakingDashboardSubtensorMapperTests: XCTestCase {
                     netuid: 0,
                     stakeAlpha: stakeAlpha,
                     hotkeyEmissionPerTempo: 0,
+                    totalHotkeyAlpha: nil,
                     isRegistered: true
                 )
             ],

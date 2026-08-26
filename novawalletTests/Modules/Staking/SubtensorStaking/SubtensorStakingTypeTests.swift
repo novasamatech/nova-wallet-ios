@@ -40,6 +40,23 @@ final class SubtensorStakingTypeTests: XCTestCase {
         XCTAssertFalse(createAsset(stakings: nil).hasSubtensorStaking)
     }
 
+    func testSubtensorStakingAssetAdmittedToExternalBalances() {
+        let asset = createAsset(stakings: [.subtensor])
+        let chain = ChainModelGenerator.generateChain(assets: [asset], addressPrefix: 42)
+
+        XCTAssertEqual(
+            chain.chainAssetIdsWithExternalBalances(),
+            [ChainAssetId(chainId: chain.chainId, assetId: asset.assetId)]
+        )
+    }
+
+    func testMythosStakingAssetNotAdmittedToExternalBalances() {
+        let asset = createAsset(stakings: [.mythos])
+        let chain = ChainModelGenerator.generateChain(assets: [asset], addressPrefix: 42)
+
+        XCTAssertTrue(chain.chainAssetIdsWithExternalBalances().isEmpty)
+    }
+
     private func createAsset(stakings: [StakingType]?) -> AssetModel {
         AssetModel(
             assetId: 0,

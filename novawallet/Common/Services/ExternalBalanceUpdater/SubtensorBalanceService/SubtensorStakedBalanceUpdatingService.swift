@@ -59,6 +59,13 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
         clearSubscriptions()
     }
 
+    // throttle() skips stopSyncUp() when a fetch already completed, so the storage
+    // subscriptions must be released here as well
+    override func deactivate() {
+        fetchCallStore.cancel()
+        clearSubscriptions()
+    }
+
     private func clearSubscriptions() {
         hotkeysSubscription = nil
 

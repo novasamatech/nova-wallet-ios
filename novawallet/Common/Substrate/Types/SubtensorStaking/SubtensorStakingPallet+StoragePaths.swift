@@ -22,6 +22,10 @@ extension SubtensorStakingPallet {
         StorageCodingPath(moduleName: name, itemName: "SubtokenEnabled")
     }
 
+    static var networksAddedPath: StorageCodingPath {
+        StorageCodingPath(moduleName: name, itemName: "NetworksAdded")
+    }
+
     static var tokenSymbolPath: StorageCodingPath {
         StorageCodingPath(moduleName: name, itemName: "TokenSymbol")
     }
@@ -32,6 +36,11 @@ extension SubtensorStakingPallet {
 
     static var taoWeightPath: StorageCodingPath {
         StorageCodingPath(moduleName: name, itemName: "TaoWeight")
+    }
+
+    /// chain-wide StorageValue, not a per-subnet map (subtensor: `pallets/subtensor/src/lib.rs:2015`)
+    static var subnetOwnerCutPath: StorageCodingPath {
+        StorageCodingPath(moduleName: name, itemName: "SubnetOwnerCut")
     }
 
     static var rootStakeUnlockIntervalPath: StorageCodingPath {

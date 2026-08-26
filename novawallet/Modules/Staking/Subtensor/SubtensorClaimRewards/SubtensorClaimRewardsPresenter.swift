@@ -172,7 +172,7 @@ private extension SubtensorClaimRewardsPresenter {
             of: chainAsset.chain.accountIdSize
         )
 
-        interactor.refreshPreflight(for: hotkey)
+        interactor.refreshPreflight(for: hotkey, netuid: SubtensorStakingPallet.rootNetuid)
     }
 
     func createSuccessTitle(
@@ -324,6 +324,10 @@ extension SubtensorClaimRewardsPresenter: SubtensorClaimRewardsInteractorOutputP
         logger.debug("Block number: \(blockNumber)")
     }
 
+    func didReceiveQuote(_ quote: SubtensorQuote) {
+        logger.debug("Quote: \(quote)")
+    }
+
     func didReceivePreflight(_ preflight: SubtensorStakingPreflight) {
         logger.debug("Preflight: \(preflight)")
 
@@ -351,6 +355,8 @@ extension SubtensorClaimRewardsPresenter: SubtensorClaimRewardsInteractorOutputP
             wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
                 self?.refreshPreflight()
             }
+        case .quoteFailed:
+            break
         }
     }
 }

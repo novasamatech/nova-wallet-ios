@@ -114,4 +114,10 @@ class SubtensorStakingBaseState: SubtensorStakingStateProtocol {
 
         stateMachine?.transit(to: self)
     }
+
+    func process(positionsSyncFailed: Bool) {
+        commonData = commonData.byReplacing(positionsSyncFailed: positionsSyncFailed)
+
+        stateMachine?.transit(to: self)
+    }
 }

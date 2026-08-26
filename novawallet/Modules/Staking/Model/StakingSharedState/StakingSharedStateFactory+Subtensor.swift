@@ -28,23 +28,49 @@ extension StakingSharedStateFactory {
             logger: logger
         )
 
+        let subnetsService = SubtensorSubnetsService(
+            operationFactory: apiOperationFactory,
+            operationQueue: syncOperationQueue,
+            logger: logger
+        )
+
         return SubtensorStakingSharedState(
             stakingOption: stakingOption,
             chainRegistry: chainRegistry,
             generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
-            subnetsService: SubtensorSubnetsService(
-                operationFactory: apiOperationFactory,
-                operationQueue: syncOperationQueue,
-                logger: logger
-            ),
+            subnetsService: subnetsService,
             delegatesService: createDelegatesService(
                 for: stakingOption,
+                runtimeConnectionStore: runtimeConnectionStore
+            ),
+            rewardCalculatorService: createRewardCalculatorService(
+                subnetsService: subnetsService,
                 runtimeConnectionStore: runtimeConnectionStore
             ),
             apiOperationFactory: apiOperationFactory,
             stakeStateFetchFactory: stakeStateFetchFactory,
             operationQueue: syncOperationQueue,
             workingQueue: .global(),
+            logger: logger
+        )
+    }
+
+    private func createRewardCalculatorService(
+        subnetsService: SubtensorSubnetsServiceProtocol,
+        runtimeConnectionStore: RuntimeConnectionStoring
+    ) -> SubtensorRewardCalculatorService {
+        let inputsService = SubtensorRootAprInputsService(
+            operationFactory: SubtensorRootAprOperationFactory(
+                runtimeConnectionStore: runtimeConnectionStore,
+                operationQueue: syncOperationQueue
+            ),
+            operationQueue: syncOperationQueue,
+            logger: logger
+        )
+
+        return SubtensorRewardCalculatorService(
+            subnetsService: subnetsService,
+            inputsService: inputsService,
             logger: logger
         )
     }

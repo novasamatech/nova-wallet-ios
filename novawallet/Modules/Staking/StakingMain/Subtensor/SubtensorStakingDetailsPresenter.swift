@@ -12,6 +12,8 @@ final class SubtensorStakingDetailsPresenter {
 
     let stateMachine: SubtensorStakingStateMachineProtocol
 
+    private var positionsSyncFailed = false
+
     var stakingState: Multistaking.SubtensorStakingState? {
         stateMachine.viewState { (state: SubtensorStakingStakedState) in
             state.stakingState
@@ -102,7 +104,29 @@ private extension SubtensorStakingDetailsPresenter {
 
     func handleUnstakeAction() {
         runIfOperationsAllowed { [weak self] in
-            self?.wireframe.showUnstakeTokens(from: self?.view)
+            guard let self else {
+                return
+            }
+
+            let positions = (stakingState?.positions ?? []).sortedForSubtensorDisplay()
+
+            guard positions.count > 1, let stakingState, let commonData else {
+                wireframe.showUnstakeTokens(from: view, initialPosition: positions.first)
+                return
+            }
+
+            let viewModels = viewModelFactory.createPositionViewModels(
+                for: stakingState,
+                commonData: commonData,
+                selectable: true
+            )
+
+            wireframe.showUnstakePositionSelection(
+                from: view,
+                viewModels: viewModels,
+                delegate: self,
+                context: positions as NSArray
+            )
         }
     }
 
@@ -113,14 +137,31 @@ private extension SubtensorStakingDetailsPresenter {
 
         let viewModels = viewModelFactory.createPositionViewModels(
             for: stakingState,
-            commonData: commonData
+            commonData: commonData,
+            selectable: false
         )
 
         guard !viewModels.isEmpty else {
             return
         }
 
-        wireframe.showPositionList(from: view, viewModels: viewModels)
+        wireframe.showPositionList(
+            from: view,
+            viewModels: viewModels,
+            showsCompoundingNote: viewModelFactory.hasAlphaPositions(in: stakingState)
+        )
+    }
+}
+
+extension SubtensorStakingDetailsPresenter: ModalPickerViewControllerDelegate {
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
+        guard
+            let positions = context as? [SubtensorStakingPosition],
+            index >= 0, index < positions.count else {
+            return
+        }
+
+        wireframe.showUnstakeTokens(from: view, initialPosition: positions[index])
     }
 }
 
@@ -164,8 +205,10 @@ extension SubtensorStakingDetailsPresenter: StakingMainChildPresenterProtocol {
         switch alert {
         case .nominatorChangeValidators:
             handlePositionListAction()
+        case .claimRewards:
+            performClaimRewards()
         case .redeemUnbonded, .bondedSetValidators, .rebag, .waitingNextEra,
-             .nominatorAllOversubscribed, .nominatorLowStake:
+             .nominatorAllOversubscribed, .nominatorLowStake, .chainMaintenance:
             // not applicable to Subtensor staking
             break
         }
@@ -246,5 +289,27 @@ extension SubtensorStakingDetailsPresenter: SubtensorStakingDetailsInteractorOut
         logger.debug("Total reward: \(String(describing: totalReward))")
 
         stateMachine.state.process(totalReward: totalReward)
+    }
+
+    func didReceiveSyncFailure(_ isFailed: Bool) {
+        logger.debug("Positions sync failed: \(isFailed)")
+
+        let isRisingEdge = isFailed && !positionsSyncFailed
+        positionsSyncFailed = isFailed
+
+        stateMachine.state.process(positionsSyncFailed: isFailed)
+
+        // a cold failure leaves the whole screen empty, so it needs a retry rather than a badge;
+        // only the rising edge surfaces it, never every backoff tick
+        guard isRisingEdge, stakingState == nil else {
+            return
+        }
+
+        wireframe.presentRequestStatus(
+            on: view,
+            locale: localizationManager.selectedLocale
+        ) { [weak self] in
+            self?.interactor.retryPositionsSync()
+        }
     }
 }

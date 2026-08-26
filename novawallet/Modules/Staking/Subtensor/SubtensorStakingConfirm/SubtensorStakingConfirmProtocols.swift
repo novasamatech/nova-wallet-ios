@@ -1,5 +1,10 @@
 import Foundation
 
+protocol SubtensorStakingConfirmViewProtocol: CollatorStakingConfirmViewProtocol {
+    func didReceiveQuote(viewModel: SubtensorQuotePanelViewModel?)
+    func didReceiveSlippage(viewModel: String?)
+}
+
 protocol SubtensorStakingConfirmInteractorInputProtocol: SubtensorStakingSubmitInteractorInputProtocol {}
 
 protocol SubtensorStakingConfirmInteractorOutputProtocol: SubtensorStakingSubmitInteractorOutputProtocol {}

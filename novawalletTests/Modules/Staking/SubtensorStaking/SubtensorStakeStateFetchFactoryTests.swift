@@ -32,6 +32,7 @@ final class SubtensorStakeStateFetchFactoryTests: XCTestCase {
                     netuid: 5,
                     stakeAlpha: 2_000_000_000,
                     hotkeyEmissionPerTempo: 123,
+                    totalHotkeyAlpha: nil,
                     isRegistered: true
                 )
             ]

@@ -17,6 +17,7 @@ class SubtensorStakingDelegateBaseInteractor: SubtensorStakingBaseInteractor {
         positionsSyncService: SubtensorPositionsSyncServiceProtocol,
         rootClaimableService: SubtensorRootClaimableServiceProtocol,
         preflightFactory: SubtensorPreflightFactoryProtocol,
+        quoteFactory: SubtensorQuoteOperationFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
@@ -35,6 +36,7 @@ class SubtensorStakingDelegateBaseInteractor: SubtensorStakingBaseInteractor {
             positionsSyncService: positionsSyncService,
             rootClaimableService: rootClaimableService,
             preflightFactory: preflightFactory,
+            quoteFactory: quoteFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
@@ -84,7 +86,7 @@ private extension SubtensorStakingDelegateBaseInteractor {
 }
 
 extension SubtensorStakingDelegateBaseInteractor: SubtensorStakingDelegateInteractorInputProtocol {
-    func applyDelegate(with accountId: AccountId) {
-        refreshPreflight(for: accountId)
+    func applyDelegate(with accountId: AccountId, netuid: UInt16) {
+        refreshPreflight(for: accountId, netuid: netuid)
     }
 }

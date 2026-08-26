@@ -184,6 +184,7 @@ final class SubtensorRootClaimableServiceTests: XCTestCase {
                     netuid: SubtensorStakingPallet.rootNetuid,
                     stakeAlpha: stake,
                     hotkeyEmissionPerTempo: 0,
+                    totalHotkeyAlpha: nil,
                     isRegistered: false
                 )
             ],

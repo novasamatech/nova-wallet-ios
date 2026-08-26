@@ -48,6 +48,7 @@ extension CollatorStakingSelectViewFactory {
             wireframe: wireframe,
             currencyManager: currencyManager,
             defaultSorting: .totalStake,
+            displaysRewards: false,
             statics: .subtensorValidator
         )
     }
