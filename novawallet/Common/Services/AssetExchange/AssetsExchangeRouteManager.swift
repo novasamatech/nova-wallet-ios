@@ -219,7 +219,15 @@ private extension AssetsExchangeRouteManager {
             do {
                 grossedRoute = try routeWrapper.targetOperation.extractNoCancellableResultData()
             } catch let error as HydraExchangeTradeLimitError {
-                self.logger.warning("Grossed up requote hit a pool trade limit, falling back: \(error)")
+                self.logger.warning("Grossed up requote hit a pool trade limit: \(error)")
+
+                // The candidate was quoted for exactly the requested amount out, so it only delivers
+                // that amount while nothing is deducted from it. Charging the commission on it would
+                // hand the user less than they asked for without ever saying so, and no route is the
+                // honest answer there.
+                guard commissionPolicy.resolveCommission(for: candidate.route) == nil else {
+                    return nil
+                }
 
                 return candidate.route
             }

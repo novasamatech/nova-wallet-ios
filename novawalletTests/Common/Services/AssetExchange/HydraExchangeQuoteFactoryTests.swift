@@ -49,6 +49,30 @@ final class HydraExchangeQuoteFactoryTests: XCTestCase {
         XCTAssertGreaterThan(quote, inRatioBound)
     }
 
+    func testXYKBuyPoolMathRoundsUpIntoRejectionAtTheAmountAndroidsFloorCapAccepts() throws {
+        let remoteState = HydraXYK.QuoteRemoteState(assetInBalance: 3000, assetOutBalance: 1000)
+        let feeParams = try Self.exchangeFee()
+        let ratios = HydraExchangeTradeLimits.Ratios(maxInRatio: 3, maxOutRatio: 3)
+
+        XCTAssertNoThrow(
+            try HydraXYKSwapQuoteFactory.calculateBuyQuote(
+                for: 249,
+                remoteState: remoteState,
+                feeParams: feeParams,
+                ratios: ratios
+            )
+        )
+
+        assertExceedsPoolTradeLimit(
+            try HydraXYKSwapQuoteFactory.calculateBuyQuote(
+                for: 250,
+                remoteState: remoteState,
+                feeParams: feeParams,
+                ratios: ratios
+            )
+        )
+    }
+
     func testXYKSellRejectsAnAmountInAboveTheBoundOfTheInSideReserve() throws {
         assertExceedsPoolTradeLimit(
             try HydraXYKSwapQuoteFactory.calculateSellQuote(
