@@ -32,4 +32,39 @@ final class AssetExchangeGraphProxyTests: XCTestCase {
 
         XCTAssertEqual(quote.amountIn, 1_000_000_000)
     }
+
+    func testFeeConversionSurfacesNoRouteRatherThanATradeLimitError() throws {
+        let overLimitPath = CommissionTestFixtures.createPath([.hydraSwap]) { _, _ in
+            throw HydraExchangeTradeLimitError.exceedsPoolTradeLimit
+        }
+
+        let graph = CommissionTestFixtures.makeGraph(paths: [overLimitPath])
+
+        let proxy = AssetExchangeGraphProxy(
+            pathCostEstimator: MockAssetsExchangePathCostEstimator(),
+            operationQueue: OperationQueue(),
+            logger: Logger.shared
+        )
+
+        proxy.install(graph: graph)
+
+        try withExtendedLifetime(graph) {
+            let wrapper = proxy.quote(
+                for: AssetConversion.QuoteArgs(
+                    assetIn: CommissionTestFixtures.asset(0),
+                    assetOut: CommissionTestFixtures.asset(1),
+                    amount: 1_000_000_000,
+                    direction: .buy
+                )
+            )
+
+            OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+
+            XCTAssertThrowsError(try wrapper.targetOperation.extractNoCancellableResultData()) { error in
+                guard case AssetExchangeGraphProxyError.noRoute = error else {
+                    return XCTFail("unexpected error \(error)")
+                }
+            }
+        }
+    }
 }

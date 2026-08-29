@@ -4,6 +4,11 @@ import SubstrateSdk
 import BigInt
 
 final class HydraOmnipoolQuoteFactory {
+    private struct PalletConstants {
+        let defaultFee: HydraDx.FeeEntry
+        let ratios: HydraExchangeTradeLimits.Ratios
+    }
+
     let flowState: HydraOmnipoolFlowState
 
     init(flowState: HydraOmnipoolFlowState) {
@@ -20,7 +25,7 @@ final class HydraOmnipoolQuoteFactory {
         return CompoundOperationWrapper(targetOperation: operation)
     }
 
-    private func createDefaultFeeWrapper() -> CompoundOperationWrapper<HydraDx.FeeEntry> {
+    private func createPalletConstantsWrapper() -> CompoundOperationWrapper<PalletConstants> {
         let coderFactoryOperation = flowState.runtimeProvider.fetchCoderFactoryOperation()
 
         let assetFeeOperation = StorageConstantOperation<HydraDx.FeeParameters>.operation(
@@ -37,20 +42,68 @@ final class HydraOmnipoolQuoteFactory {
 
         protocolFeeOperation.addDependency(coderFactoryOperation)
 
-        let mergeOperation = ClosureOperation<HydraDx.FeeEntry> {
+        let maxInRatioOperation: BaseOperation<Balance> = PrimitiveConstantOperation.operation(
+            for: HydraOmnipool.maxInRatioPath,
+            dependingOn: coderFactoryOperation
+        )
+
+        maxInRatioOperation.addDependency(coderFactoryOperation)
+
+        let maxOutRatioOperation: BaseOperation<Balance> = PrimitiveConstantOperation.operation(
+            for: HydraOmnipool.maxOutRatioPath,
+            dependingOn: coderFactoryOperation
+        )
+
+        maxOutRatioOperation.addDependency(coderFactoryOperation)
+
+        let mergeOperation = ClosureOperation<PalletConstants> {
             let assetFee = try assetFeeOperation.extractNoCancellableResultData().minFee
             let protocolFee = try protocolFeeOperation.extractNoCancellableResultData().minFee
 
-            return HydraDx.FeeEntry(assetFee: assetFee, protocolFee: protocolFee)
+            let ratios = try Self.extractRatios(
+                maxInRatioOperation: maxInRatioOperation,
+                maxOutRatioOperation: maxOutRatioOperation
+            )
+
+            return PalletConstants(
+                defaultFee: HydraDx.FeeEntry(assetFee: assetFee, protocolFee: protocolFee),
+                ratios: ratios
+            )
         }
 
         mergeOperation.addDependency(assetFeeOperation)
         mergeOperation.addDependency(protocolFeeOperation)
+        mergeOperation.addDependency(maxInRatioOperation)
+        mergeOperation.addDependency(maxOutRatioOperation)
 
         return CompoundOperationWrapper(
             targetOperation: mergeOperation,
-            dependencies: [coderFactoryOperation, assetFeeOperation, protocolFeeOperation]
+            dependencies: [
+                coderFactoryOperation,
+                assetFeeOperation,
+                protocolFeeOperation,
+                maxInRatioOperation,
+                maxOutRatioOperation
+            ]
         )
+    }
+
+    private static func extractRatios(
+        maxInRatioOperation: BaseOperation<Balance>,
+        maxOutRatioOperation: BaseOperation<Balance>
+    ) throws -> HydraExchangeTradeLimits.Ratios {
+        do {
+            let maxInRatio = try maxInRatioOperation.extractNoCancellableResultData()
+            let maxOutRatio = try maxOutRatioOperation.extractNoCancellableResultData()
+
+            return HydraExchangeTradeLimits.Ratios(maxInRatio: maxInRatio, maxOutRatio: maxOutRatio)
+        } catch {
+            if let storageError = error as? StorageDecodingOperationError, storageError == .invalidStoragePath {
+                throw HydraExchangeTradeLimitError.ratiosUnavailable(pallet: HydraOmnipool.moduleName)
+            } else {
+                throw error
+            }
+        }
     }
 
     private func deriveApiParams(
@@ -83,13 +136,34 @@ final class HydraOmnipoolQuoteFactory {
     private func calculateQuote(
         for direction: AssetConversion.Direction,
         args: HydraOmnipoolApi.Params,
-        amount: BigUInt
+        amount: BigUInt,
+        ratios: HydraExchangeTradeLimits.Ratios
     ) throws -> BigUInt {
         switch direction {
         case .sell:
-            return try HydraOmnipoolApi.calculateOutGivenIn(for: args, amountIn: amount)
+            let amountOut = try HydraOmnipoolApi.calculateOutGivenIn(for: args, amountIn: amount)
+
+            try HydraExchangeTradeLimits.validateOmnipool(
+                amountIn: amount,
+                amountOut: amountOut,
+                reserveIn: args.assetInBalance,
+                reserveOut: args.assetOutBalance,
+                ratios: ratios
+            )
+
+            return amountOut
         case .buy:
-            return try HydraOmnipoolApi.calculateInGivenOut(for: args, amountOut: amount)
+            let amountIn = try HydraOmnipoolApi.calculateInGivenOut(for: args, amountOut: amount)
+
+            try HydraExchangeTradeLimits.validateOmnipool(
+                amountIn: amountIn,
+                amountOut: amount,
+                reserveIn: args.assetInBalance,
+                reserveOut: args.assetOutBalance,
+                ratios: ratios
+            )
+
+            return amountIn
         }
     }
 }
@@ -99,25 +173,26 @@ extension HydraOmnipoolQuoteFactory {
         let remotePair = HydraDx.RemoteSwapPair(assetIn: args.assetIn, assetOut: args.assetOut)
         let quoteStateWrapper = createQuoteStateWrapper(for: remotePair)
 
-        let defaultFeeWrapper = createDefaultFeeWrapper()
+        let constantsWrapper = createPalletConstantsWrapper()
 
         let calculateOperation = ClosureOperation<BigUInt> {
             let quoteState = try quoteStateWrapper.targetOperation.extractNoCancellableResultData()
-            let defaultFee = try defaultFeeWrapper.targetOperation.extractNoCancellableResultData()
+            let constants = try constantsWrapper.targetOperation.extractNoCancellableResultData()
 
-            let apiParams = try self.deriveApiParams(from: quoteState, defaultFee: defaultFee)
+            let apiParams = try self.deriveApiParams(from: quoteState, defaultFee: constants.defaultFee)
 
             return try self.calculateQuote(
                 for: args.direction,
                 args: apiParams,
-                amount: args.amount
+                amount: args.amount,
+                ratios: constants.ratios
             )
         }
 
-        calculateOperation.addDependency(defaultFeeWrapper.targetOperation)
+        calculateOperation.addDependency(constantsWrapper.targetOperation)
         calculateOperation.addDependency(quoteStateWrapper.targetOperation)
 
-        let dependencies = quoteStateWrapper.allOperations + defaultFeeWrapper.allOperations
+        let dependencies = quoteStateWrapper.allOperations + constantsWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: calculateOperation, dependencies: dependencies)
     }

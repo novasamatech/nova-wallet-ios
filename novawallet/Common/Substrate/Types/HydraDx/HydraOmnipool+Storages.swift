@@ -5,6 +5,14 @@ extension HydraOmnipool {
         ConstantCodingPath(moduleName: Self.moduleName, constantName: "HubAssetId")
     }
 
+    static var maxInRatioPath: ConstantCodingPath {
+        ConstantCodingPath(moduleName: Self.moduleName, constantName: "MaxInRatio")
+    }
+
+    static var maxOutRatioPath: ConstantCodingPath {
+        ConstantCodingPath(moduleName: Self.moduleName, constantName: "MaxOutRatio")
+    }
+
     static var assetsPath: StorageCodingPath {
         StorageCodingPath(moduleName: Self.moduleName, itemName: "Assets")
     }

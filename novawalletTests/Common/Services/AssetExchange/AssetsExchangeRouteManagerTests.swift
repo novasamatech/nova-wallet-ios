@@ -103,6 +103,83 @@ final class AssetsExchangeRouteManagerTests: XCTestCase {
         XCTAssertEqual(route.amountOut, 1_008_500_000)
     }
 
+    func testOverLimitCandidateIsDroppedAndTheWorkingAlternativeWins() throws {
+        let manager = AssetsExchangeRouteManager(
+            possiblePaths: [
+                makeSingleEdgePath(type: .hydraSwap) { _, _ in
+                    throw HydraExchangeTradeLimitError.exceedsPoolTradeLimit
+                },
+                makeSingleEdgePath(type: .assetHubSwap, quote: 900_000_000)
+            ],
+            pathCostEstimator: MockAssetsExchangePathCostEstimator(),
+            commissionPolicy: CommissionTestFixtures.createPolicy(),
+            operationQueue: OperationQueue(),
+            logger: Logger.shared
+        )
+
+        let wrapper = manager.fetchRoute(for: 1_000_000_000, direction: .sell)
+
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+
+        let route = try XCTUnwrap(try wrapper.targetOperation.extractNoCancellableResultData())
+
+        XCTAssertEqual(route.items.first?.edge.type, .assetHubSwap)
+        XCTAssertEqual(route.amountOut, 900_000_000)
+    }
+
+    func testAllCandidatesOverLimitYieldNoRouteRatherThanFailingTheSearch() throws {
+        let manager = AssetsExchangeRouteManager(
+            possiblePaths: [
+                makeSingleEdgePath(type: .hydraSwap) { _, _ in
+                    throw HydraExchangeTradeLimitError.exceedsPoolTradeLimit
+                },
+                makeSingleEdgePath(type: .assetHubSwap) { _, _ in
+                    throw HydraExchangeTradeLimitError.exceedsPoolTradeLimit
+                }
+            ],
+            pathCostEstimator: MockAssetsExchangePathCostEstimator(),
+            commissionPolicy: CommissionTestFixtures.createPolicy(),
+            operationQueue: OperationQueue(),
+            logger: Logger.shared
+        )
+
+        let wrapper = manager.fetchRoute(for: 1_000_000_000, direction: .sell)
+
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+
+        XCTAssertNil(try wrapper.targetOperation.extractNoCancellableResultData())
+    }
+
+    func testBuyWinnerFallsBackToTheUngrossedRouteWhenTheGrossedUpRequoteIsOverLimit() throws {
+        let amountOut: Balance = 1_000_000_000
+        let amountIn: Balance = 100_000_000_000
+
+        let manager = AssetsExchangeRouteManager(
+            possiblePaths: [
+                makeSingleEdgePath(type: .hydraSwap) { amount, _ in
+                    guard amount == amountOut else {
+                        throw HydraExchangeTradeLimitError.exceedsPoolTradeLimit
+                    }
+
+                    return amountIn
+                }
+            ],
+            pathCostEstimator: MockAssetsExchangePathCostEstimator(),
+            commissionPolicy: CommissionTestFixtures.createPolicy(),
+            operationQueue: OperationQueue(),
+            logger: Logger.shared
+        )
+
+        let wrapper = manager.fetchRoute(for: amountOut, direction: .buy)
+
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+
+        let route = try XCTUnwrap(try wrapper.targetOperation.extractNoCancellableResultData())
+
+        XCTAssertEqual(route.amountOut, amountOut)
+        XCTAssertEqual(route.amountIn, amountIn)
+    }
+
     func testNonChargingBuyWinnerIsQuotedOnce() throws {
         let counter = QuoteCallCounter()
 
@@ -132,7 +209,7 @@ final class AssetsExchangeRouteManagerTests: XCTestCase {
 private extension AssetsExchangeRouteManagerTests {
     func makeSingleEdgePath(
         type: AssetExchangeEdgeType,
-        quoteClosure: @escaping (Balance, AssetConversion.Direction) -> Balance
+        quoteClosure: @escaping (Balance, AssetConversion.Direction) throws -> Balance
     ) -> AssetExchangeGraphPath {
         [
             AnyAssetExchangeEdge(

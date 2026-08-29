@@ -214,7 +214,15 @@ private extension AssetsExchangeRouteManager {
         )
 
         let mappingOperation = ClosureOperation<AssetExchangeRoute?> {
-            let grossedRoute = try routeWrapper.targetOperation.extractNoCancellableResultData()
+            let grossedRoute: AssetExchangeRoute
+
+            do {
+                grossedRoute = try routeWrapper.targetOperation.extractNoCancellableResultData()
+            } catch {
+                self.logger.warning("Grossed up requote failed, falling back to the winning route: \(error)")
+
+                return candidate.route
+            }
 
             guard commissionPolicy.resolveCommission(for: grossedRoute) != nil else {
                 return candidate.route

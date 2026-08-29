@@ -8,4 +8,12 @@ extension HydraXYK {
     static var exchangeFeePath: ConstantCodingPath {
         ConstantCodingPath(moduleName: Self.name, constantName: "GetExchangeFee")
     }
+
+    static var maxInRatioPath: ConstantCodingPath {
+        ConstantCodingPath(moduleName: Self.name, constantName: "MaxInRatio")
+    }
+
+    static var maxOutRatioPath: ConstantCodingPath {
+        ConstantCodingPath(moduleName: Self.name, constantName: "MaxOutRatio")
+    }
 }
