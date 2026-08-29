@@ -10,6 +10,10 @@ final class AssetsExchangeRouteManager {
         var comparableAmountOut: Balance {
             route.quote.subtractOrZero(additionalEstimatedCost.amountInAssetOut)
         }
+
+        var comparableAmountIn: Balance {
+            route.quote + additionalEstimatedCost.amountInAssetIn
+        }
     }
 
     let possiblePaths: [AssetExchangeGraphPath]
@@ -115,7 +119,7 @@ extension AssetsExchangeRouteManager {
             return (path: path, route: routeWrapper, cost: costWrapper)
         }
 
-        let winnerCalculator = ClosureOperation<AssetExchangeRouteWithCost?> {
+        let candidatesOperation = ClosureOperation<[AssetExchangeRouteWithCost]> {
             let exchangeRoutes: [AssetExchangeRouteWithCost] = routeWithCostWrappers.compactMap { pathWrappers in
                 do {
                     let route = try pathWrappers.route.targetOperation.extractNoCancellableResultData()
@@ -137,40 +141,75 @@ extension AssetsExchangeRouteManager {
                 }
             }
 
-            switch direction {
-            case .sell:
-                return exchangeRoutes.max { res1, res2 in
-                    res1.comparableAmountOut < res2.comparableAmountOut
-                }
-            case .buy:
-                return exchangeRoutes.min { res1, res2 in
-                    let value1 = res1.route.quote + res1.additionalEstimatedCost.amountInAssetIn
-                    let value2 = res2.route.quote + res2.additionalEstimatedCost.amountInAssetIn
-
-                    return value1 < value2
-                }
-            }
+            return self.sortedCandidates(exchangeRoutes, direction: direction)
         }
 
         let dependencies = routeWithCostWrappers.flatMap { routeWithCostWrapper in
             routeWithCostWrapper.route.allOperations + routeWithCostWrapper.cost.allOperations
         }
 
-        dependencies.forEach { winnerCalculator.addDependency($0) }
+        dependencies.forEach { candidatesOperation.addDependency($0) }
 
         let finalWrapper = createWinnerRouteWrapper(
-            from: winnerCalculator,
+            from: candidatesOperation,
             amount: amount,
             direction: direction
         )
 
-        return finalWrapper.insertingHead(operations: dependencies + [winnerCalculator])
+        return finalWrapper.insertingHead(operations: dependencies + [candidatesOperation])
     }
 }
 
 private extension AssetsExchangeRouteManager {
+    /// Signals that a single `.buy` candidate cannot serve the requested amount out, because grossing
+    /// it up for the commission trips a pool trade limit and charging that commission on its un-grossed
+    /// quote would hand the user less than they asked for. `createBuyRouteWrapper` is the only handler
+    /// and answers it by moving on to the next candidate, so it never escapes the route search.
+    ///
+    /// It is deliberately not `nil`: `nil` means no route at all and is reached only once every
+    /// candidate is exhausted. Any other failure of the re-quote — a timeout, a decode error,
+    /// `tradeDisabled` — is a different type and keeps propagating untouched.
+    enum CandidateRejection: Error {
+        case cannotServeRequestedAmount
+    }
+
+    /// Candidates ordered best first: descending output for `.sell`, ascending input for `.buy` — the
+    /// orders the `max`/`min` this replaced expressed. Ties break on the original position, which makes
+    /// the order total and so pins the head to the same candidate `max`/`min` returned: both keep the
+    /// first extremal element, while `sorted(by:)` is not documented to be stable.
+    func sortedCandidates(
+        _ candidates: [AssetExchangeRouteWithCost],
+        direction: AssetConversion.Direction
+    ) -> [AssetExchangeRouteWithCost] {
+        candidates
+            .enumerated()
+            .sorted { lhs, rhs in
+                switch direction {
+                case .sell:
+                    let lhsValue = lhs.element.comparableAmountOut
+                    let rhsValue = rhs.element.comparableAmountOut
+
+                    guard lhsValue != rhsValue else {
+                        return lhs.offset < rhs.offset
+                    }
+
+                    return lhsValue > rhsValue
+                case .buy:
+                    let lhsValue = lhs.element.comparableAmountIn
+                    let rhsValue = rhs.element.comparableAmountIn
+
+                    guard lhsValue != rhsValue else {
+                        return lhs.offset < rhs.offset
+                    }
+
+                    return lhsValue < rhsValue
+                }
+            }
+            .map(\.element)
+    }
+
     func createWinnerRouteWrapper(
-        from winnerCalculator: BaseOperation<AssetExchangeRouteWithCost?>,
+        from candidatesOperation: BaseOperation<[AssetExchangeRouteWithCost]>,
         amount: Balance,
         direction: AssetConversion.Direction
     ) -> CompoundOperationWrapper<AssetExchangeRoute?> {
@@ -178,23 +217,58 @@ private extension AssetsExchangeRouteManager {
         wrapper = OperationCombiningService.compoundNonOptionalWrapper(
             operationManager: OperationManager(operationQueue: operationQueue)
         ) {
-            guard let winner = try winnerCalculator.extractNoCancellableResultData() else {
-                return .createWithResult(nil)
-            }
+            let candidates = try candidatesOperation.extractNoCancellableResultData()
 
             switch direction {
             case .sell:
-                return .createWithResult(winner.route)
+                return .createWithResult(candidates.first?.route)
             case .buy:
-                return self.createGrossedUpQuote(for: winner, amount: amount)
+                return self.createBuyRouteWrapper(from: candidates, amount: amount)
             }
         }
 
-        wrapper.addDependency(operations: [winnerCalculator])
+        wrapper.addDependency(operations: [candidatesOperation])
 
         return wrapper
     }
 
+    /// Walks the sorted candidates until one of them survives the commission gross-up. The walk is
+    /// lazy: the next candidate is only re-quoted once the current one has been rejected, so the common
+    /// path where the best candidate serves costs exactly one gross-up re-quote.
+    func createBuyRouteWrapper(
+        from candidates: [AssetExchangeRouteWithCost],
+        amount: Balance
+    ) -> CompoundOperationWrapper<AssetExchangeRoute?> {
+        guard let candidate = candidates.first else {
+            return .createWithResult(nil)
+        }
+
+        let grossedUpWrapper = createGrossedUpQuote(for: candidate, amount: amount)
+
+        let wrapper: CompoundOperationWrapper<AssetExchangeRoute?>
+        wrapper = OperationCombiningService.compoundNonOptionalWrapper(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) {
+            do {
+                let route = try grossedUpWrapper.targetOperation.extractNoCancellableResultData()
+
+                return .createWithResult(route)
+            } catch CandidateRejection.cannotServeRequestedAmount {
+                return self.createBuyRouteWrapper(
+                    from: Array(candidates.dropFirst()),
+                    amount: amount
+                )
+            }
+        }
+
+        wrapper.addDependency(wrapper: grossedUpWrapper)
+
+        return wrapper.insertingHead(operations: grossedUpWrapper.allOperations)
+    }
+
+    /// Re-quotes one candidate at the grossed-up amount out. It never yields `nil`: a candidate the
+    /// pool trade limits make unusable throws `CandidateRejection` instead, so that "try the next
+    /// candidate" is never confused with "no route".
     func createGrossedUpQuote(
         for candidate: AssetExchangeRouteWithCost,
         amount: Balance
@@ -223,10 +297,10 @@ private extension AssetsExchangeRouteManager {
 
                 // The candidate was quoted for exactly the requested amount out, so it only delivers
                 // that amount while nothing is deducted from it. Charging the commission on it would
-                // hand the user less than they asked for without ever saying so, and no route is the
-                // honest answer there.
+                // hand the user less than they asked for without ever saying so, so this candidate is
+                // out and the walk moves on to the next one.
                 guard commissionPolicy.resolveCommission(for: candidate.route) == nil else {
-                    return nil
+                    throw CandidateRejection.cannotServeRequestedAmount
                 }
 
                 return candidate.route
