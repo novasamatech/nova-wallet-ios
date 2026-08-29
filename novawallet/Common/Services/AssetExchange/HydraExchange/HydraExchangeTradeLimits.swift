@@ -1,5 +1,7 @@
 import Foundation
 import BigInt
+import Operation_iOS
+import SubstrateSdk
 
 enum HydraExchangeTradeLimitError: Error {
     /// The trade exceeds one of the pool's per-trade ratio bounds.
@@ -75,5 +77,67 @@ private extension HydraExchangeTradeLimits {
         guard amount <= maxAmount else {
             throw HydraExchangeTradeLimitError.exceedsPoolTradeLimit
         }
+    }
+}
+
+extension HydraExchangeTradeLimits {
+    /// The `MaxInRatio` / `MaxOutRatio` pair of a single pallet. Each pool type owns its own pair and
+    /// never borrows the other's, so the paths travel with the name reported when one is absent.
+    struct RatioConstants {
+        let pallet: String
+        let maxInRatioPath: ConstantCodingPath
+        let maxOutRatioPath: ConstantCodingPath
+
+        static let xyk = RatioConstants(
+            pallet: HydraXYK.name,
+            maxInRatioPath: HydraXYK.maxInRatioPath,
+            maxOutRatioPath: HydraXYK.maxOutRatioPath
+        )
+
+        static let omnipool = RatioConstants(
+            pallet: HydraOmnipool.moduleName,
+            maxInRatioPath: HydraOmnipool.maxInRatioPath,
+            maxOutRatioPath: HydraOmnipool.maxOutRatioPath
+        )
+    }
+
+    /// Fetches both ratios of one pallet with no fallback value, so a constant missing from metadata
+    /// fails the quote instead of being read as "unlimited".
+    static func createRatiosWrapper(
+        for constants: RatioConstants,
+        dependingOn coderFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
+    ) -> CompoundOperationWrapper<Ratios> {
+        let maxInRatioOperation: BaseOperation<Balance> = PrimitiveConstantOperation.operation(
+            for: constants.maxInRatioPath,
+            dependingOn: coderFactoryOperation
+        )
+
+        maxInRatioOperation.addDependency(coderFactoryOperation)
+
+        let maxOutRatioOperation: BaseOperation<Balance> = PrimitiveConstantOperation.operation(
+            for: constants.maxOutRatioPath,
+            dependingOn: coderFactoryOperation
+        )
+
+        maxOutRatioOperation.addDependency(coderFactoryOperation)
+
+        let mergeOperation = ClosureOperation<Ratios> {
+            do {
+                let maxInRatio = try maxInRatioOperation.extractNoCancellableResultData()
+                let maxOutRatio = try maxOutRatioOperation.extractNoCancellableResultData()
+
+                return Ratios(maxInRatio: maxInRatio, maxOutRatio: maxOutRatio)
+            } catch let error as StorageDecodingOperationError where error == .invalidStoragePath {
+                throw HydraExchangeTradeLimitError.ratiosUnavailable(pallet: constants.pallet)
+            }
+        }
+
+        mergeOperation.addDependency(maxInRatioOperation)
+        mergeOperation.addDependency(maxOutRatioOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: mergeOperation,
+            dependencies: [maxInRatioOperation, maxOutRatioOperation]
+        )
     }
 }

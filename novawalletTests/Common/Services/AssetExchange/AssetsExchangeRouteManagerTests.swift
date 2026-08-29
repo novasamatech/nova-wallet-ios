@@ -180,6 +180,67 @@ final class AssetsExchangeRouteManagerTests: XCTestCase {
         XCTAssertEqual(route.amountIn, amountIn)
     }
 
+    func testBuyWinnerSurfacesANonLimitFailureOfTheGrossedUpRequote() {
+        let amountOut: Balance = 1_000_000_000
+
+        let manager = AssetsExchangeRouteManager(
+            possiblePaths: [
+                makeSingleEdgePath(type: .hydraSwap) { amount, _ in
+                    guard amount == amountOut else {
+                        throw StubAssetExchangeEdgeError.notSupported
+                    }
+
+                    return 100_000_000_000
+                }
+            ],
+            pathCostEstimator: MockAssetsExchangePathCostEstimator(),
+            commissionPolicy: CommissionTestFixtures.createPolicy(),
+            operationQueue: OperationQueue(),
+            logger: Logger.shared
+        )
+
+        let wrapper = manager.fetchRoute(for: amountOut, direction: .buy)
+
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+
+        XCTAssertThrowsError(try wrapper.targetOperation.extractNoCancellableResultData()) { error in
+            guard case StubAssetExchangeEdgeError.notSupported = error else {
+                return XCTFail("unexpected error \(error)")
+            }
+        }
+    }
+
+    func testBuyFallbackRouteStillPaysCommissionAndSoNetsLessThanRequested() throws {
+        let amountOut: Balance = 1_000_000_000
+        let policy = CommissionTestFixtures.createPolicy()
+
+        let manager = AssetsExchangeRouteManager(
+            possiblePaths: [
+                makeSingleEdgePath(type: .hydraSwap) { amount, _ in
+                    guard amount == amountOut else {
+                        throw HydraExchangeTradeLimitError.exceedsPoolTradeLimit
+                    }
+
+                    return 100_000_000_000
+                }
+            ],
+            pathCostEstimator: MockAssetsExchangePathCostEstimator(),
+            commissionPolicy: policy,
+            operationQueue: OperationQueue(),
+            logger: Logger.shared
+        )
+
+        let wrapper = manager.fetchRoute(for: amountOut, direction: .buy)
+
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+
+        let route = try XCTUnwrap(try wrapper.targetOperation.extractNoCancellableResultData())
+        let commission = try XCTUnwrap(policy.resolveCommission(for: route))
+
+        XCTAssertEqual(commission.amount, policy.rateOfGross.mul(value: amountOut))
+        XCTAssertLessThan(route.amountOut.subtractOrZero(commission.amount), amountOut)
+    }
+
     func testNonChargingBuyWinnerIsQuotedOnce() throws {
         let counter = QuoteCallCounter()
 

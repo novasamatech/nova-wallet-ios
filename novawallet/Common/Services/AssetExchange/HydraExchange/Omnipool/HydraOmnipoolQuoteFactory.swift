@@ -42,28 +42,16 @@ final class HydraOmnipoolQuoteFactory {
 
         protocolFeeOperation.addDependency(coderFactoryOperation)
 
-        let maxInRatioOperation: BaseOperation<Balance> = PrimitiveConstantOperation.operation(
-            for: HydraOmnipool.maxInRatioPath,
+        let ratiosWrapper = HydraExchangeTradeLimits.createRatiosWrapper(
+            for: .omnipool,
             dependingOn: coderFactoryOperation
         )
-
-        maxInRatioOperation.addDependency(coderFactoryOperation)
-
-        let maxOutRatioOperation: BaseOperation<Balance> = PrimitiveConstantOperation.operation(
-            for: HydraOmnipool.maxOutRatioPath,
-            dependingOn: coderFactoryOperation
-        )
-
-        maxOutRatioOperation.addDependency(coderFactoryOperation)
 
         let mergeOperation = ClosureOperation<PalletConstants> {
             let assetFee = try assetFeeOperation.extractNoCancellableResultData().minFee
             let protocolFee = try protocolFeeOperation.extractNoCancellableResultData().minFee
 
-            let ratios = try Self.extractRatios(
-                maxInRatioOperation: maxInRatioOperation,
-                maxOutRatioOperation: maxOutRatioOperation
-            )
+            let ratios = try ratiosWrapper.targetOperation.extractNoCancellableResultData()
 
             return PalletConstants(
                 defaultFee: HydraDx.FeeEntry(assetFee: assetFee, protocolFee: protocolFee),
@@ -73,37 +61,16 @@ final class HydraOmnipoolQuoteFactory {
 
         mergeOperation.addDependency(assetFeeOperation)
         mergeOperation.addDependency(protocolFeeOperation)
-        mergeOperation.addDependency(maxInRatioOperation)
-        mergeOperation.addDependency(maxOutRatioOperation)
+        mergeOperation.addDependency(ratiosWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: mergeOperation,
             dependencies: [
                 coderFactoryOperation,
                 assetFeeOperation,
-                protocolFeeOperation,
-                maxInRatioOperation,
-                maxOutRatioOperation
-            ]
+                protocolFeeOperation
+            ] + ratiosWrapper.allOperations
         )
-    }
-
-    private static func extractRatios(
-        maxInRatioOperation: BaseOperation<Balance>,
-        maxOutRatioOperation: BaseOperation<Balance>
-    ) throws -> HydraExchangeTradeLimits.Ratios {
-        do {
-            let maxInRatio = try maxInRatioOperation.extractNoCancellableResultData()
-            let maxOutRatio = try maxOutRatioOperation.extractNoCancellableResultData()
-
-            return HydraExchangeTradeLimits.Ratios(maxInRatio: maxInRatio, maxOutRatio: maxOutRatio)
-        } catch {
-            if let storageError = error as? StorageDecodingOperationError, storageError == .invalidStoragePath {
-                throw HydraExchangeTradeLimitError.ratiosUnavailable(pallet: HydraOmnipool.moduleName)
-            } else {
-                throw error
-            }
-        }
     }
 
     private func deriveApiParams(
@@ -133,7 +100,7 @@ final class HydraOmnipoolQuoteFactory {
         )
     }
 
-    private func calculateQuote(
+    static func calculateQuote(
         for direction: AssetConversion.Direction,
         args: HydraOmnipoolApi.Params,
         amount: BigUInt,
@@ -181,7 +148,7 @@ extension HydraOmnipoolQuoteFactory {
 
             let apiParams = try self.deriveApiParams(from: quoteState, defaultFee: constants.defaultFee)
 
-            return try self.calculateQuote(
+            return try Self.calculateQuote(
                 for: args.direction,
                 args: apiParams,
                 amount: args.amount,

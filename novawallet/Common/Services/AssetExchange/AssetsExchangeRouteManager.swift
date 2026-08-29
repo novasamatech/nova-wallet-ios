@@ -218,8 +218,8 @@ private extension AssetsExchangeRouteManager {
 
             do {
                 grossedRoute = try routeWrapper.targetOperation.extractNoCancellableResultData()
-            } catch {
-                self.logger.warning("Grossed up requote failed, falling back to the winning route: \(error)")
+            } catch let error as HydraExchangeTradeLimitError {
+                self.logger.warning("Grossed up requote hit a pool trade limit, falling back: \(error)")
 
                 return candidate.route
             }

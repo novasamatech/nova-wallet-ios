@@ -34,65 +34,28 @@ final class HydraXYKSwapQuoteFactory {
 
         feeParamsOperation.addDependency(coderFactoryOperation)
 
-        let maxInRatioOperation: BaseOperation<Balance> = PrimitiveConstantOperation.operation(
-            for: HydraXYK.maxInRatioPath,
+        let ratiosWrapper = HydraExchangeTradeLimits.createRatiosWrapper(
+            for: .xyk,
             dependingOn: coderFactoryOperation
         )
-
-        maxInRatioOperation.addDependency(coderFactoryOperation)
-
-        let maxOutRatioOperation: BaseOperation<Balance> = PrimitiveConstantOperation.operation(
-            for: HydraXYK.maxOutRatioPath,
-            dependingOn: coderFactoryOperation
-        )
-
-        maxOutRatioOperation.addDependency(coderFactoryOperation)
 
         let mergeOperation = ClosureOperation<PalletConstants> {
             let feeParams = try feeParamsOperation.extractNoCancellableResultData()
-
-            let ratios = try Self.extractRatios(
-                maxInRatioOperation: maxInRatioOperation,
-                maxOutRatioOperation: maxOutRatioOperation
-            )
+            let ratios = try ratiosWrapper.targetOperation.extractNoCancellableResultData()
 
             return PalletConstants(feeParams: feeParams, ratios: ratios)
         }
 
         mergeOperation.addDependency(feeParamsOperation)
-        mergeOperation.addDependency(maxInRatioOperation)
-        mergeOperation.addDependency(maxOutRatioOperation)
+        mergeOperation.addDependency(ratiosWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: mergeOperation,
-            dependencies: [
-                coderFactoryOperation,
-                feeParamsOperation,
-                maxInRatioOperation,
-                maxOutRatioOperation
-            ]
+            dependencies: [coderFactoryOperation, feeParamsOperation] + ratiosWrapper.allOperations
         )
     }
 
-    private static func extractRatios(
-        maxInRatioOperation: BaseOperation<Balance>,
-        maxOutRatioOperation: BaseOperation<Balance>
-    ) throws -> HydraExchangeTradeLimits.Ratios {
-        do {
-            let maxInRatio = try maxInRatioOperation.extractNoCancellableResultData()
-            let maxOutRatio = try maxOutRatioOperation.extractNoCancellableResultData()
-
-            return HydraExchangeTradeLimits.Ratios(maxInRatio: maxInRatio, maxOutRatio: maxOutRatio)
-        } catch {
-            if let storageError = error as? StorageDecodingOperationError, storageError == .invalidStoragePath {
-                throw HydraExchangeTradeLimitError.ratiosUnavailable(pallet: HydraXYK.name)
-            } else {
-                throw error
-            }
-        }
-    }
-
-    private func calculateSellQuote(
+    static func calculateSellQuote(
         for amount: BigUInt,
         remoteState: HydraXYK.QuoteRemoteState,
         feeParams: HydraXYK.ExchangeFeeParams,
@@ -121,7 +84,7 @@ final class HydraXYKSwapQuoteFactory {
         return amountOut > fee ? amountOut - fee : 0
     }
 
-    private func calculateBuyQuote(
+    static func calculateBuyQuote(
         for amount: BigUInt,
         remoteState: HydraXYK.QuoteRemoteState,
         feeParams: HydraXYK.ExchangeFeeParams,
@@ -164,7 +127,7 @@ extension HydraXYKSwapQuoteFactory {
 
             switch args.direction {
             case .sell:
-                return try self.calculateSellQuote(
+                return try Self.calculateSellQuote(
                     for: args.amount,
                     remoteState: quoteState,
                     feeParams: constants.feeParams,
@@ -172,7 +135,7 @@ extension HydraXYKSwapQuoteFactory {
                 )
 
             case .buy:
-                return try self.calculateBuyQuote(
+                return try Self.calculateBuyQuote(
                     for: args.amount,
                     remoteState: quoteState,
                     feeParams: constants.feeParams,

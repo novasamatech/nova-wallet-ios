@@ -6,89 +6,125 @@ import BigInt
 
 final class HydraExchangeRatioConstantsTests: XCTestCase {
     func testXYKRatioConstantsAddressTheXYKPallet() {
-        XCTAssertEqual(HydraXYK.maxInRatioPath.moduleName, "XYK")
-        XCTAssertEqual(HydraXYK.maxInRatioPath.constantName, "MaxInRatio")
-        XCTAssertEqual(HydraXYK.maxOutRatioPath.moduleName, "XYK")
-        XCTAssertEqual(HydraXYK.maxOutRatioPath.constantName, "MaxOutRatio")
+        let constants = HydraExchangeTradeLimits.RatioConstants.xyk
+
+        XCTAssertEqual(constants.pallet, "XYK")
+        XCTAssertEqual(constants.maxInRatioPath.moduleName, "XYK")
+        XCTAssertEqual(constants.maxInRatioPath.constantName, "MaxInRatio")
+        XCTAssertEqual(constants.maxOutRatioPath.moduleName, "XYK")
+        XCTAssertEqual(constants.maxOutRatioPath.constantName, "MaxOutRatio")
     }
 
     func testOmnipoolRatioConstantsAddressTheOmnipoolPallet() {
-        XCTAssertEqual(HydraOmnipool.maxInRatioPath.moduleName, "Omnipool")
-        XCTAssertEqual(HydraOmnipool.maxInRatioPath.constantName, "MaxInRatio")
-        XCTAssertEqual(HydraOmnipool.maxOutRatioPath.moduleName, "Omnipool")
-        XCTAssertEqual(HydraOmnipool.maxOutRatioPath.constantName, "MaxOutRatio")
+        let constants = HydraExchangeTradeLimits.RatioConstants.omnipool
+
+        XCTAssertEqual(constants.pallet, "Omnipool")
+        XCTAssertEqual(constants.maxInRatioPath.moduleName, "Omnipool")
+        XCTAssertEqual(constants.maxInRatioPath.constantName, "MaxInRatio")
+        XCTAssertEqual(constants.maxOutRatioPath.moduleName, "Omnipool")
+        XCTAssertEqual(constants.maxOutRatioPath.constantName, "MaxOutRatio")
     }
 
-    func testMissingXYKRatioFailsClosedWithoutDisturbingTheOmnipoolRatios() throws {
-        let codingFactory = try makeCodingFactory(
-            xykRatios: ["MaxOutRatio": 3],
-            omnipoolRatios: ["MaxInRatio": 3, "MaxOutRatio": 3]
-        )
-
-        XCTAssertThrowsError(try fetchRatio(at: HydraXYK.maxInRatioPath, using: codingFactory)) { error in
-            guard
-                let storageError = error as? StorageDecodingOperationError,
-                storageError == .invalidStoragePath else {
-                return XCTFail("unexpected error \(error)")
-            }
-        }
-
-        XCTAssertEqual(try fetchRatio(at: HydraXYK.maxOutRatioPath, using: codingFactory), 3)
-        XCTAssertEqual(try fetchRatio(at: HydraOmnipool.maxInRatioPath, using: codingFactory), 3)
-        XCTAssertEqual(try fetchRatio(at: HydraOmnipool.maxOutRatioPath, using: codingFactory), 3)
-    }
-
-    func testMissingOmnipoolRatioFailsClosedWithoutDisturbingTheXYKRatios() throws {
+    func testEachPalletReadsItsOwnRatiosRatherThanTheOtherPalletsPair() throws {
         let codingFactory = try makeCodingFactory(
             xykRatios: ["MaxInRatio": 3, "MaxOutRatio": 3],
-            omnipoolRatios: ["MaxOutRatio": 3]
+            omnipoolRatios: ["MaxInRatio": 5, "MaxOutRatio": 7]
         )
 
-        XCTAssertThrowsError(try fetchRatio(at: HydraOmnipool.maxInRatioPath, using: codingFactory)) { error in
-            guard
-                let storageError = error as? StorageDecodingOperationError,
-                storageError == .invalidStoragePath else {
-                return XCTFail("unexpected error \(error)")
-            }
-        }
+        XCTAssertEqual(
+            try fetchRatios(for: .xyk, using: codingFactory),
+            HydraExchangeTradeLimits.Ratios(maxInRatio: 3, maxOutRatio: 3)
+        )
 
-        XCTAssertEqual(try fetchRatio(at: HydraXYK.maxInRatioPath, using: codingFactory), 3)
-        XCTAssertEqual(try fetchRatio(at: HydraXYK.maxOutRatioPath, using: codingFactory), 3)
+        XCTAssertEqual(
+            try fetchRatios(for: .omnipool, using: codingFactory),
+            HydraExchangeTradeLimits.Ratios(maxInRatio: 5, maxOutRatio: 7)
+        )
+    }
+
+    func testMissingXYKRatioFailsTheXYKQuoteWithoutDisturbingTheOmnipoolRatios() throws {
+        let codingFactory = try makeCodingFactory(
+            xykRatios: ["MaxOutRatio": 3],
+            omnipoolRatios: ["MaxInRatio": 5, "MaxOutRatio": 7]
+        )
+
+        assertRatiosUnavailable(
+            try fetchRatios(for: .xyk, using: codingFactory),
+            pallet: "XYK"
+        )
+
+        XCTAssertEqual(
+            try fetchRatios(for: .omnipool, using: codingFactory),
+            HydraExchangeTradeLimits.Ratios(maxInRatio: 5, maxOutRatio: 7)
+        )
+    }
+
+    func testMissingOmnipoolRatioFailsTheOmnipoolQuoteWithoutDisturbingTheXYKRatios() throws {
+        let codingFactory = try makeCodingFactory(
+            xykRatios: ["MaxInRatio": 3, "MaxOutRatio": 3],
+            omnipoolRatios: ["MaxOutRatio": 7]
+        )
+
+        assertRatiosUnavailable(
+            try fetchRatios(for: .omnipool, using: codingFactory),
+            pallet: "Omnipool"
+        )
+
+        XCTAssertEqual(
+            try fetchRatios(for: .xyk, using: codingFactory),
+            HydraExchangeTradeLimits.Ratios(maxInRatio: 3, maxOutRatio: 3)
+        )
     }
 
     func testRatioConstantsDecodeAtFullBalanceWidth() throws {
         let wide = try XCTUnwrap(Balance("340282366920938463463374607431768211455"))
 
         let codingFactory = try makeCodingFactory(
-            xykRatios: ["MaxInRatio": wide],
+            xykRatios: ["MaxInRatio": wide, "MaxOutRatio": wide],
             omnipoolRatios: [:]
         )
 
-        XCTAssertEqual(try fetchRatio(at: HydraXYK.maxInRatioPath, using: codingFactory), wide)
+        XCTAssertEqual(
+            try fetchRatios(for: .xyk, using: codingFactory),
+            HydraExchangeTradeLimits.Ratios(maxInRatio: wide, maxOutRatio: wide)
+        )
     }
 }
 
 private extension HydraExchangeRatioConstantsTests {
-    func fetchRatio(at path: ConstantCodingPath, using codingFactory: RuntimeCoderFactoryProtocol) throws -> Balance {
+    func fetchRatios(
+        for constants: HydraExchangeTradeLimits.RatioConstants,
+        using codingFactory: RuntimeCoderFactoryProtocol
+    ) throws -> HydraExchangeTradeLimits.Ratios {
         let coderFactoryOperation = RuntimeCodingServiceStub(
             factory: codingFactory
         ).fetchCoderFactoryOperation()
 
-        let ratioOperation: BaseOperation<Balance> = PrimitiveConstantOperation.operation(
-            for: path,
+        let wrapper = HydraExchangeTradeLimits.createRatiosWrapper(
+            for: constants,
             dependingOn: coderFactoryOperation
         )
 
-        ratioOperation.addDependency(coderFactoryOperation)
+        let totalWrapper = wrapper.insertingHead(operations: [coderFactoryOperation])
 
-        let wrapper = CompoundOperationWrapper(
-            targetOperation: ratioOperation,
-            dependencies: [coderFactoryOperation]
-        )
+        OperationQueue().addOperations(totalWrapper.allOperations, waitUntilFinished: true)
 
-        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+        return try totalWrapper.targetOperation.extractNoCancellableResultData()
+    }
 
-        return try wrapper.targetOperation.extractNoCancellableResultData()
+    func assertRatiosUnavailable<T>(
+        _ expression: @autoclosure () throws -> T,
+        pallet: String,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        XCTAssertThrowsError(try expression(), file: file, line: line) { error in
+            guard
+                case let HydraExchangeTradeLimitError.ratiosUnavailable(reportedPallet) = error,
+                reportedPallet == pallet else {
+                return XCTFail("unexpected error \(error)", file: file, line: line)
+            }
+        }
     }
 
     func makeCodingFactory(
