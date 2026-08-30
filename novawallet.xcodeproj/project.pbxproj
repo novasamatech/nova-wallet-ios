@@ -6643,6 +6643,8 @@
 		000000002DFB06FC4BBE0FDB /* HydraExchangeQuoteFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000005D5616EA603AE085 /* HydraExchangeQuoteFactoryTests.swift */; };
 		000000007CF9135B4D967A7E /* AssetExchangeTradeLimitVerdict.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000007FF0D316D4074BC0 /* AssetExchangeTradeLimitVerdict.swift */; };
 		000000005D8D3B6BA44E3300 /* HydraOmnipoolTestFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000169319DCD616FD8E /* HydraOmnipoolTestFixtures.swift */; };
+		000000002C195A8F7137D13E /* AssetExchangeTradeLimitedEdgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000007EC19F00C01469E5 /* AssetExchangeTradeLimitedEdgeTests.swift */; };
+		0000000047E40D3238A9E4DE /* AssetExchangeTradeLimitedEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000107456317CBC4C61 /* AssetExchangeTradeLimitedEdge.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -13026,6 +13028,8 @@
 		000000005D5616EA603AE085 /* HydraExchangeQuoteFactoryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HydraExchangeQuoteFactoryTests.swift; sourceTree = "<group>"; };
 		000000007FF0D316D4074BC0 /* AssetExchangeTradeLimitVerdict.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeTradeLimitVerdict.swift; sourceTree = "<group>"; };
 		00000000169319DCD616FD8E /* HydraOmnipoolTestFixtures.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HydraOmnipoolTestFixtures.swift; sourceTree = "<group>"; };
+		000000007EC19F00C01469E5 /* AssetExchangeTradeLimitedEdgeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeTradeLimitedEdgeTests.swift; sourceTree = "<group>"; };
+		00000000107456317CBC4C61 /* AssetExchangeTradeLimitedEdge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeTradeLimitedEdge.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -15240,6 +15244,7 @@
 				0CE94FF52D04A3C100E31D0C /* AssetsExchangePathCostEstimator.swift */,
 				0CE94FF72D050EE300E31D0C /* AssetExchangeOperationPrototypeFactory.swift */,
 				000000007FF0D316D4074BC0 /* AssetExchangeTradeLimitVerdict.swift */,
+				00000000107456317CBC4C61 /* AssetExchangeTradeLimitedEdge.swift */,
 			);
 			path = AssetExchange;
 			sourceTree = "<group>";
@@ -22502,6 +22507,7 @@
 				0000000066609881CB682044 /* AssetExchangeCommissionNetFlowTests.swift */,
 				000000005D5616EA603AE085 /* HydraExchangeQuoteFactoryTests.swift */,
 				00000000169319DCD616FD8E /* HydraOmnipoolTestFixtures.swift */,
+				000000007EC19F00C01469E5 /* AssetExchangeTradeLimitedEdgeTests.swift */,
 			);
 			path = AssetExchange;
 			sourceTree = "<group>";
@@ -37226,6 +37232,7 @@
 				000000005144D6E9BF145F04 /* ValidatorSelectionCounter.swift in Sources */,
 				000000006B5FE56FE3E983F6 /* AssetExchangeCommissionNetFlow.swift in Sources */,
 				000000007CF9135B4D967A7E /* AssetExchangeTradeLimitVerdict.swift in Sources */,
+				0000000047E40D3238A9E4DE /* AssetExchangeTradeLimitedEdge.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -37433,6 +37440,7 @@
 				000000007C2FD98856D6F69F /* AssetExchangeCommissionNetFlowTests.swift in Sources */,
 				000000002DFB06FC4BBE0FDB /* HydraExchangeQuoteFactoryTests.swift in Sources */,
 				000000005D8D3B6BA44E3300 /* HydraOmnipoolTestFixtures.swift in Sources */,
+				000000002C195A8F7137D13E /* AssetExchangeTradeLimitedEdgeTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

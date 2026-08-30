@@ -9,7 +9,7 @@ final class HydraXYKSwapQuoteFactory {
         self.flowState = flowState
     }
 
-    private func createQuoteStateWrapper(
+    func quoteStateWrapper(
         for remoteSwapPair: HydraDx.RemoteSwapPair
     ) -> CompoundOperationWrapper<HydraXYK.QuoteRemoteState> {
         let quoteService = flowState.setupQuoteService(for: remoteSwapPair)
@@ -79,7 +79,7 @@ final class HydraXYKSwapQuoteFactory {
 extension HydraXYKSwapQuoteFactory {
     func quote(for args: HydraExchange.QuoteArgs) -> CompoundOperationWrapper<BigUInt> {
         let remotePair = HydraDx.RemoteSwapPair(assetIn: args.assetIn, assetOut: args.assetOut)
-        let quoteStateWrapper = createQuoteStateWrapper(for: remotePair)
+        let quoteStateWrapper = quoteStateWrapper(for: remotePair)
 
         let feeParamsWrapper = createFeeParamsWrapper()
 

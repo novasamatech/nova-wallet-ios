@@ -10,7 +10,7 @@ final class HydraOmnipoolQuoteFactory {
         self.flowState = flowState
     }
 
-    private func createQuoteStateWrapper(
+    func quoteStateWrapper(
         for remoteSwapPair: HydraDx.RemoteSwapPair
     ) -> CompoundOperationWrapper<HydraOmnipool.QuoteRemoteState> {
         let quoteService = flowState.setupQuoteService(for: remoteSwapPair)
@@ -20,7 +20,7 @@ final class HydraOmnipoolQuoteFactory {
         return CompoundOperationWrapper(targetOperation: operation)
     }
 
-    private func createDefaultFeeWrapper() -> CompoundOperationWrapper<HydraDx.FeeEntry> {
+    func defaultFeeWrapper() -> CompoundOperationWrapper<HydraDx.FeeEntry> {
         let coderFactoryOperation = flowState.runtimeProvider.fetchCoderFactoryOperation()
 
         let assetFeeOperation = StorageConstantOperation<HydraDx.FeeParameters>.operation(
@@ -53,7 +53,7 @@ final class HydraOmnipoolQuoteFactory {
         )
     }
 
-    private func deriveApiParams(
+    func deriveApiParams(
         from remoteState: HydraOmnipool.QuoteRemoteState,
         defaultFee: HydraDx.FeeEntry
     ) throws -> HydraOmnipoolApi.Params {
@@ -97,9 +97,9 @@ final class HydraOmnipoolQuoteFactory {
 extension HydraOmnipoolQuoteFactory {
     func quote(for args: HydraExchange.QuoteArgs) -> CompoundOperationWrapper<BigUInt> {
         let remotePair = HydraDx.RemoteSwapPair(assetIn: args.assetIn, assetOut: args.assetOut)
-        let quoteStateWrapper = createQuoteStateWrapper(for: remotePair)
+        let quoteStateWrapper = quoteStateWrapper(for: remotePair)
 
-        let defaultFeeWrapper = createDefaultFeeWrapper()
+        let defaultFeeWrapper = defaultFeeWrapper()
 
         let calculateOperation = ClosureOperation<BigUInt> {
             let quoteState = try quoteStateWrapper.targetOperation.extractNoCancellableResultData()

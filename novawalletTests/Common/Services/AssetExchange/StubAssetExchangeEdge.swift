@@ -6,7 +6,7 @@ enum StubAssetExchangeEdgeError: Error {
     case notSupported
 }
 
-final class StubAssetExchangeEdge {
+class StubAssetExchangeEdge {
     let origin: ChainAssetId
     let destination: ChainAssetId
     let type: AssetExchangeEdgeType
@@ -222,5 +222,28 @@ extension AssetExchangeAtomicOperationArgs {
             feeAsset: feeAsset,
             commission: other.commission ?? commission
         )
+    }
+}
+
+final class StubTradeLimitedExchangeEdge: StubAssetExchangeEdge, AssetExchangeTradeLimitedEdge {
+    let verdict: AssetExchangeTradeLimitVerdict
+
+    init(
+        origin: ChainAssetId,
+        destination: ChainAssetId,
+        type: AssetExchangeEdgeType,
+        chain: ChainModel,
+        verdict: AssetExchangeTradeLimitVerdict = .withinLimit
+    ) {
+        self.verdict = verdict
+
+        super.init(origin: origin, destination: destination, type: type, chain: chain)
+    }
+
+    func tradeLimitVerdict(
+        amount _: Balance,
+        direction _: AssetConversion.Direction
+    ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict> {
+        .createWithResult(verdict)
     }
 }
