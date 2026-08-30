@@ -186,7 +186,7 @@ extension HydraExchangeTradeLimits {
     }
 }
 
-extension HydraExchangeTradeLimits {
+private extension HydraExchangeTradeLimits {
     static func exceeds(amount: Balance, reserve: Balance, ratio: Balance) throws -> Bool {
         let maxAmount = try bound(reserve: reserve, ratio: ratio)
 
