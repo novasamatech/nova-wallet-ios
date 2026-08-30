@@ -577,6 +577,7 @@
 		0C39766B2C32615A00998DD6 /* HydraXYK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C39766A2C32615A00998DD6 /* HydraXYK.swift */; };
 		0C39766D2C3261A000998DD6 /* HydraXYK+Storages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C39766C2C3261A000998DD6 /* HydraXYK+Storages.swift */; };
 		0C39766F2C326C4E00998DD6 /* HydraXYKTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C39766E2C326C4E00998DD6 /* HydraXYKTests.swift */; };
+		0C39AA112DE1470000998DD6 /* HydraExchangeTradeLimitsIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C39AA102DE1470000998DD6 /* HydraExchangeTradeLimitsIntegrationTests.swift */; };
 		0C3976A32C32E27C00998DD6 /* HydraXYKSwapApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3976A22C32E27C00998DD6 /* HydraXYKSwapApi.swift */; };
 		0C3976A52C33050600998DD6 /* HydraXYKSwapQuoteFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3976A42C33050600998DD6 /* HydraXYKSwapQuoteFactory.swift */; };
 		0C3976A92C330A1D00998DD6 /* HydraXYK+PoolAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3976A82C330A1D00998DD6 /* HydraXYK+PoolAccount.swift */; };
@@ -7245,6 +7246,7 @@
 		0C39766A2C32615A00998DD6 /* HydraXYK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraXYK.swift; sourceTree = "<group>"; };
 		0C39766C2C3261A000998DD6 /* HydraXYK+Storages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HydraXYK+Storages.swift"; sourceTree = "<group>"; };
 		0C39766E2C326C4E00998DD6 /* HydraXYKTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraXYKTests.swift; sourceTree = "<group>"; };
+		0C39AA102DE1470000998DD6 /* HydraExchangeTradeLimitsIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExchangeTradeLimitsIntegrationTests.swift; sourceTree = "<group>"; };
 		0C3976A22C32E27C00998DD6 /* HydraXYKSwapApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraXYKSwapApi.swift; sourceTree = "<group>"; };
 		0C3976A42C33050600998DD6 /* HydraXYKSwapQuoteFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraXYKSwapQuoteFactory.swift; sourceTree = "<group>"; };
 		0C3976A82C330A1D00998DD6 /* HydraXYK+PoolAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HydraXYK+PoolAccount.swift"; sourceTree = "<group>"; };
@@ -15346,6 +15348,7 @@
 				0CCCDF852B64CCC100473D42 /* HydraOmnipoolSwapTests.swift */,
 				0CA7197A2B773172000B086E /* HydraStableswapTests.swift */,
 				0C39766E2C326C4E00998DD6 /* HydraXYKTests.swift */,
+				0C39AA102DE1470000998DD6 /* HydraExchangeTradeLimitsIntegrationTests.swift */,
 			);
 			path = HydraDx;
 			sourceTree = "<group>";
@@ -31337,6 +31340,7 @@
 				8499FE7D27BE61E000712589 /* UniquesIntegrationTests.swift in Sources */,
 				84216FD82827A35F00479375 /* ParaStakingRewardCalculatorTests.swift in Sources */,
 				0C39766F2C326C4E00998DD6 /* HydraXYKTests.swift in Sources */,
+				0C39AA112DE1470000998DD6 /* HydraExchangeTradeLimitsIntegrationTests.swift in Sources */,
 				847A25C328D84A9C006AC9F5 /* ReferendumFetchTests.swift in Sources */,
 				0C7CF4D22BD4C1600015DD45 /* CloudBackupFacadeTests.swift in Sources */,
 				84161DB627C39013005DF668 /* NftSyncIntegrationTests.swift in Sources */,
