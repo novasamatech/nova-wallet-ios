@@ -12,6 +12,13 @@ class AnyAssetExchangeEdge {
     /// `nil` for an edge type that has no trade limits. This eraser captures closures rather than
     /// boxing the edge, so `AnyAssetExchangeEdge` never conforms to `AssetExchangeTradeLimitedEdge`
     /// and a downstream `as?` can never succeed — the forwarder is the only way through.
+    ///
+    /// An edge can also arrive here *already erased*. All four Hydration exchanges hand back
+    /// `AnyAssetExchangeEdge` values, and `AssetsExchangeGraphProvider` erases every edge again, so
+    /// every Hydration hop reaches the graph double-wrapped. `init` must therefore fall through to an
+    /// inner eraser's stored closure: testing the concrete conformance alone finds nothing on the
+    /// inner eraser, and every hop then silently reports "no trade limits" — a green build, a green
+    /// suite, and a validation that never fires. The `??` branch is load-bearing, not redundant.
     private let fetchTradeLimitVerdict: (
         (Balance, AssetConversion.Direction) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict>
     )?
@@ -44,6 +51,7 @@ class AnyAssetExchangeEdge {
         fetchDestination = { edge.destination }
         fetchQuote = edge.quote
         fetchTradeLimitVerdict = (edge as? AssetExchangeTradeLimitedEdge)?.tradeLimitVerdict
+            ?? (edge as? AnyAssetExchangeEdge)?.fetchTradeLimitVerdict
         beginOperationClosure = edge.beginOperation
         appendToOperationClosure = edge.appendToOperation
         shouldIgnoreFeeRequirementClosure = edge.shouldIgnoreFeeRequirement
