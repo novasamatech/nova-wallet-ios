@@ -30,8 +30,8 @@ final class HydraExchangeTradeLimitsIntegrationTests: XCTestCase {
     }
 
     private func performRatiosFetch(
-        for constants: HydraExchangeTradeLimits.RatioConstants
-    ) throws -> HydraExchangeTradeLimits.Ratios {
+        for constants: HydraExchangeTradeLimits.PalletLimitConstants
+    ) throws -> HydraExchangeTradeLimits.PoolLimits {
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
 
@@ -43,7 +43,7 @@ final class HydraExchangeTradeLimitsIntegrationTests: XCTestCase {
 
         let coderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
-        let wrapper = HydraExchangeTradeLimits.createRatiosWrapper(
+        let wrapper = HydraExchangeTradeLimits.createPoolLimitsWrapper(
             for: constants,
             dependingOn: coderFactoryOperation
         ).insertingHead(operations: [coderFactoryOperation])

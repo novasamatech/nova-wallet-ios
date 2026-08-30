@@ -8,7 +8,7 @@ final class HydraExchangeTradeLimitsTests: XCTestCase {
     }
 
     func testOmnipoolAppliesEachRatioToItsOwnSideOfThePool() {
-        let ratios = HydraExchangeTradeLimits.Ratios(maxInRatio: 3, maxOutRatio: 6)
+        let limits = HydraExchangeTradeLimits.PoolLimits(maxInRatio: 3, maxOutRatio: 6, minTradingLimit: nil)
 
         XCTAssertNoThrow(
             try HydraExchangeTradeLimits.validateOmnipool(
@@ -16,7 +16,7 @@ final class HydraExchangeTradeLimitsTests: XCTestCase {
                 amountOut: 90000,
                 reserveIn: 900_000,
                 reserveOut: 600_000,
-                ratios: ratios
+                limits: limits
             )
         )
 
@@ -26,7 +26,7 @@ final class HydraExchangeTradeLimitsTests: XCTestCase {
                 amountOut: 180_000,
                 reserveIn: 900_000,
                 reserveOut: 600_000,
-                ratios: ratios
+                limits: limits
             )
         )
     }

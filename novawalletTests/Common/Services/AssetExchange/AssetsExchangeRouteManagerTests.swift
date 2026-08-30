@@ -107,7 +107,7 @@ final class AssetsExchangeRouteManagerTests: XCTestCase {
         let manager = AssetsExchangeRouteManager(
             possiblePaths: [
                 makeSingleEdgePath(type: .hydraSwap) { _, _ in
-                    throw HydraExchangeTradeLimitError.exceedsPoolTradeLimit
+                    throw HydraExchangeTradeLimitError.exceedsPoolTradeLimit(nil)
                 },
                 makeSingleEdgePath(type: .assetHubSwap, quote: 900_000_000)
             ],
@@ -131,10 +131,10 @@ final class AssetsExchangeRouteManagerTests: XCTestCase {
         let manager = AssetsExchangeRouteManager(
             possiblePaths: [
                 makeSingleEdgePath(type: .hydraSwap) { _, _ in
-                    throw HydraExchangeTradeLimitError.exceedsPoolTradeLimit
+                    throw HydraExchangeTradeLimitError.exceedsPoolTradeLimit(nil)
                 },
                 makeSingleEdgePath(type: .assetHubSwap) { _, _ in
-                    throw HydraExchangeTradeLimitError.exceedsPoolTradeLimit
+                    throw HydraExchangeTradeLimitError.exceedsPoolTradeLimit(nil)
                 }
             ],
             pathCostEstimator: MockAssetsExchangePathCostEstimator(),
@@ -220,6 +220,89 @@ final class AssetsExchangeRouteManagerTests: XCTestCase {
         }
     }
 
+    func testReportedCapIsTheLargestAdjustableOneAcrossEveryDroppedCandidate() throws {
+        let failure = try fetchRouteExpectingTradeLimit(
+            paths: [
+                makeTradeLimitedPath(cap: 100_000_000),
+                makeTradeLimitedPath(cap: 300_000_000),
+                makeTwoHopTradeLimitedPath(limitedIndex: 1, cap: 900_000_000)
+            ],
+            amount: 1_000_000_000,
+            direction: .sell
+        )
+
+        XCTAssertEqual(failure.maxGivenAmount, 300_000_000)
+        XCTAssertTrue(failure.isUserInputAdjustable)
+    }
+
+    func testBuyLimitedOnTheHopQuotedLastIsReportedAsNotAdjustable() throws {
+        let failure = try fetchRouteExpectingTradeLimit(
+            paths: [makeTwoHopTradeLimitedPath(limitedIndex: 0, cap: 500_000_000)],
+            amount: 1_000_000_000,
+            direction: .buy
+        )
+
+        XCTAssertFalse(failure.isUserInputAdjustable)
+    }
+
+    func testBuySuggestionStaysInsideTheHeadroomedCapAfterTheCommissionGrossUp() throws {
+        let cap: Balance = 500_000_000
+        let path = makeTradeLimitedPath(cap: cap)
+
+        let failure = try fetchRouteExpectingTradeLimit(
+            paths: [path],
+            amount: 1_000_000_000,
+            direction: .buy
+        )
+
+        let suggestion = try XCTUnwrap(failure.suggestion())
+        let grossedUp = CommissionTestFixtures.createPolicy().grossingUpAmountOut(suggestion, for: path)
+
+        XCTAssertGreaterThan(grossedUp, suggestion)
+        XCTAssertLessThanOrEqual(grossedUp, AssetExchangeTradeLimitFailure.headroom.mul(value: cap))
+    }
+
+    func testCapIsReportedWhenTheOnlyCandidateIsDroppedByTheCommissionGrossUp() throws {
+        let amountOut: Balance = 1_000_000_000
+
+        let failure = try fetchRouteExpectingTradeLimit(
+            paths: [
+                makeCapLimitedGrossUpPath(
+                    servingAmountOut: amountOut,
+                    amountIn: 100_000_000_000,
+                    cap: 500_000_000
+                )
+            ],
+            amount: amountOut,
+            direction: .buy
+        )
+
+        XCTAssertEqual(failure.maxGivenAmount, 500_000_000)
+    }
+
+    func testBuyWalkReportsTheLargestCapItPassedRatherThanTheLastOne() throws {
+        let amountOut: Balance = 1_000_000_000
+
+        let failure = try fetchRouteExpectingTradeLimit(
+            paths: [
+                makeCapLimitedGrossUpPath(
+                    servingAmountOut: amountOut,
+                    amountIn: 100_000_000_000,
+                    cap: 900_000_000
+                ),
+                makeCapLimitedGrossUpPath(
+                    servingAmountOut: amountOut,
+                    amountIn: 100_500_000_000,
+                    cap: 200_000_000
+                )
+            ],
+            amount: amountOut,
+            direction: .buy
+        )
+
+        XCTAssertEqual(failure.maxGivenAmount, 900_000_000)
+    }
+
     func testNonChargingBuyWinnerIsQuotedOnce() throws {
         let counter = QuoteCallCounter()
 
@@ -268,10 +351,84 @@ private extension AssetsExchangeRouteManagerTests {
         makeSingleEdgePath(type: type) { _, _ in quote }
     }
 
+    static func tradeLimitError(cap: Balance) -> HydraExchangeTradeLimitError {
+        .exceedsPoolTradeLimit(
+            HydraExchangePoolTradeCap(
+                maxGivenAmount: cap,
+                minTradingLimit: 1000,
+                limitedAsset: CommissionTestFixtures.chainAsset(0)
+            )
+        )
+    }
+
+    func makeTradeLimitedPath(cap: Balance) -> AssetExchangeGraphPath {
+        makeSingleEdgePath(type: .hydraSwap) { _, _ in
+            throw Self.tradeLimitError(cap: cap)
+        }
+    }
+
+    func makeTwoHopTradeLimitedPath(limitedIndex: Int, cap: Balance) -> AssetExchangeGraphPath {
+        (0 ..< 2).map { index in
+            AnyAssetExchangeEdge(
+                StubAssetExchangeEdge(
+                    origin: CommissionTestFixtures.asset(AssetModel.Id(index)),
+                    destination: CommissionTestFixtures.asset(AssetModel.Id(index + 1)),
+                    type: .hydraSwap,
+                    chain: CommissionTestFixtures.chain,
+                    quoteClosure: { amount, _ in
+                        guard index == limitedIndex else {
+                            return amount
+                        }
+
+                        throw Self.tradeLimitError(cap: cap)
+                    }
+                )
+            )
+        }
+    }
+
+    func fetchRouteExpectingTradeLimit(
+        paths: [AssetExchangeGraphPath],
+        amount: Balance,
+        direction: AssetConversion.Direction,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) throws -> AssetExchangeTradeLimitFailure {
+        var reported: AssetExchangeTradeLimitFailure?
+
+        XCTAssertThrowsError(
+            try fetchRoute(paths: paths, amount: amount, direction: direction),
+            file: file,
+            line: line
+        ) { error in
+            guard let failure = error as? AssetExchangeTradeLimitFailure else {
+                return XCTFail("unexpected error \(error)", file: file, line: line)
+            }
+
+            reported = failure
+        }
+
+        return try XCTUnwrap(reported, file: file, line: line)
+    }
+
     func makeLimitedGrossUpPath(servingAmountOut: Balance, amountIn: Balance) -> AssetExchangeGraphPath {
         makeSingleEdgePath(type: .hydraSwap) { amount, _ in
             guard amount == servingAmountOut else {
-                throw HydraExchangeTradeLimitError.exceedsPoolTradeLimit
+                throw HydraExchangeTradeLimitError.exceedsPoolTradeLimit(nil)
+            }
+
+            return amountIn
+        }
+    }
+
+    func makeCapLimitedGrossUpPath(
+        servingAmountOut: Balance,
+        amountIn: Balance,
+        cap: Balance
+    ) -> AssetExchangeGraphPath {
+        makeSingleEdgePath(type: .hydraSwap) { amount, _ in
+            guard amount == servingAmountOut else {
+                throw Self.tradeLimitError(cap: cap)
             }
 
             return amountIn
@@ -307,7 +464,7 @@ private extension AssetsExchangeRouteManagerTests {
             possiblePaths: [
                 makeSingleEdgePath(type: .hydraSwap) { amount, _ in
                     guard amount == amountOut else {
-                        throw HydraExchangeTradeLimitError.exceedsPoolTradeLimit
+                        throw HydraExchangeTradeLimitError.exceedsPoolTradeLimit(nil)
                     }
 
                     return amount * 100

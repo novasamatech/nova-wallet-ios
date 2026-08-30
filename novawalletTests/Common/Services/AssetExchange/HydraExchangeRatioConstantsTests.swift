@@ -13,12 +13,12 @@ final class HydraExchangeRatioConstantsTests: XCTestCase {
 
         XCTAssertEqual(
             try fetchRatios(for: .xyk, using: codingFactory),
-            HydraExchangeTradeLimits.Ratios(maxInRatio: 3, maxOutRatio: 3)
+            HydraExchangeTradeLimits.PoolLimits(maxInRatio: 3, maxOutRatio: 3, minTradingLimit: nil)
         )
 
         XCTAssertEqual(
             try fetchRatios(for: .omnipool, using: codingFactory),
-            HydraExchangeTradeLimits.Ratios(maxInRatio: 5, maxOutRatio: 7)
+            HydraExchangeTradeLimits.PoolLimits(maxInRatio: 5, maxOutRatio: 7, minTradingLimit: nil)
         )
     }
 
@@ -35,7 +35,7 @@ final class HydraExchangeRatioConstantsTests: XCTestCase {
 
         XCTAssertEqual(
             try fetchRatios(for: .omnipool, using: codingFactory),
-            HydraExchangeTradeLimits.Ratios(maxInRatio: 5, maxOutRatio: 7)
+            HydraExchangeTradeLimits.PoolLimits(maxInRatio: 5, maxOutRatio: 7, minTradingLimit: nil)
         )
     }
 
@@ -52,21 +52,21 @@ final class HydraExchangeRatioConstantsTests: XCTestCase {
 
         XCTAssertEqual(
             try fetchRatios(for: .xyk, using: codingFactory),
-            HydraExchangeTradeLimits.Ratios(maxInRatio: 3, maxOutRatio: 3)
+            HydraExchangeTradeLimits.PoolLimits(maxInRatio: 3, maxOutRatio: 3, minTradingLimit: nil)
         )
     }
 }
 
 private extension HydraExchangeRatioConstantsTests {
     func fetchRatios(
-        for constants: HydraExchangeTradeLimits.RatioConstants,
+        for constants: HydraExchangeTradeLimits.PalletLimitConstants,
         using codingFactory: RuntimeCoderFactoryProtocol
-    ) throws -> HydraExchangeTradeLimits.Ratios {
+    ) throws -> HydraExchangeTradeLimits.PoolLimits {
         let coderFactoryOperation = RuntimeCodingServiceStub(
             factory: codingFactory
         ).fetchCoderFactoryOperation()
 
-        let wrapper = HydraExchangeTradeLimits.createRatiosWrapper(
+        let wrapper = HydraExchangeTradeLimits.createPoolLimitsWrapper(
             for: constants,
             dependingOn: coderFactoryOperation
         )

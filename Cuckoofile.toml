@@ -129,6 +129,7 @@ sources = [
     "novawallet/Common/DataProvider/GeneralStorageSubscriptionFactory.swift",
     "novawallet/Common/DataProvider/GiftsLocalSubscriptionFactory.swift",
     "novawallet/Common/Services/AssetExchange/AssetsExchangeGraph.swift",
+    "novawallet/Common/Services/AssetExchange/HydraExchange/HydraExchangeHost.swift",
     "novawallet/Common/Services/ExtrinsicService/Substrate/FeeManaging/FeeViaSwap/Hydra/HydraFeeOraclePriceFactory.swift",
     "novawallet/Common/LegalConsent/LegalConsentRepositoryProtocols.swift",
 ]

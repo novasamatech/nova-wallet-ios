@@ -39,6 +39,7 @@ protocol SwapSetupPresenterProtocol: AnyObject {
     func showRouteDetails()
     func selectMaxPayAmount()
     func depositInsufficientToken()
+    func applyPoolTradeLimit()
 }
 
 protocol SwapSetupInteractorInputProtocol: SwapBaseInteractorInputProtocol {
@@ -114,4 +115,39 @@ enum SwapSetupViewIssue: Equatable {
     case minBalanceViolation(String)
     case noLiqudity
     case zeroReceiveAmount
+    case poolTradeLimit(SwapPoolTradeLimitViewModel)
+}
+
+/// Which of the two amount fields an inline issue is about. Android's dialog is modal and so has no
+/// field affinity to get wrong; rendering inline forces the choice, and getting it wrong points the
+/// user at an input the message does not describe.
+enum SwapAmountFieldSide {
+    case pay
+    case receive
+
+    /// The field a cap measured in `direction` is about — the same field `applySuggestedAmount` fills
+    /// and focuses, so the decoration, the copy and the tap can never point at different inputs.
+    init(direction: AssetConversion.Direction) {
+        self = switch direction {
+        case .sell: .pay
+        case .buy: .receive
+        }
+    }
+}
+
+/// Android shows this as a dialog on the user's tap. On the setup screen a failed quote is automatic —
+/// it re-fires on every keystroke and every debounced reserve tick — so a modal there would pop while
+/// the user types. It renders inline instead, in the same label `.noLiqudity` uses, with the tap-apply
+/// as a button beneath the field it fills. The copy, the amount and the one-tap action are Android's.
+struct SwapPoolTradeLimitViewModel: Equatable {
+    let message: String
+
+    /// `nil` where there is nothing for a button to fill in: an intermediate hop's cap, or a spent
+    /// correction budget.
+    let applyTitle: String?
+
+    /// The field the message describes and the button fills: the pay field for a `.sell` cap, the
+    /// receive field for a `.buy` one. It is the side the user typed into either way, so it is also
+    /// where an intermediate hop's unactionable route message belongs.
+    let side: SwapAmountFieldSide
 }

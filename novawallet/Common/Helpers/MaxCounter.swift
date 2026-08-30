@@ -9,6 +9,12 @@ struct MaxCounter {
         self.maxCount = maxCount
     }
 
+    /// Whether a further increment would be granted. For deciding up front whether to offer an action
+    /// at all, so that no affordance is shown whose tap the counter would then swallow.
+    func hasBudget() -> Bool {
+        counter < maxCount
+    }
+
     mutating func incrementCounterIfPossible() -> Bool {
         if counter < maxCount {
             counter += 1

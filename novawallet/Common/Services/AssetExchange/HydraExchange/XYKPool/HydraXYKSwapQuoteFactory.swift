@@ -5,7 +5,7 @@ import BigInt
 final class HydraXYKSwapQuoteFactory {
     private struct PalletConstants {
         let feeParams: HydraXYK.ExchangeFeeParams
-        let ratios: HydraExchangeTradeLimits.Ratios
+        let limits: HydraExchangeTradeLimits.PoolLimits
     }
 
     let flowState: HydraXYKFlowState
@@ -34,24 +34,24 @@ final class HydraXYKSwapQuoteFactory {
 
         feeParamsOperation.addDependency(coderFactoryOperation)
 
-        let ratiosWrapper = HydraExchangeTradeLimits.createRatiosWrapper(
+        let limitsWrapper = HydraExchangeTradeLimits.createPoolLimitsWrapper(
             for: .xyk,
             dependingOn: coderFactoryOperation
         )
 
         let mergeOperation = ClosureOperation<PalletConstants> {
             let feeParams = try feeParamsOperation.extractNoCancellableResultData()
-            let ratios = try ratiosWrapper.targetOperation.extractNoCancellableResultData()
+            let limits = try limitsWrapper.targetOperation.extractNoCancellableResultData()
 
-            return PalletConstants(feeParams: feeParams, ratios: ratios)
+            return PalletConstants(feeParams: feeParams, limits: limits)
         }
 
         mergeOperation.addDependency(feeParamsOperation)
-        mergeOperation.addDependency(ratiosWrapper.targetOperation)
+        mergeOperation.addDependency(limitsWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: mergeOperation,
-            dependencies: [coderFactoryOperation, feeParamsOperation] + ratiosWrapper.allOperations
+            dependencies: [coderFactoryOperation, feeParamsOperation] + limitsWrapper.allOperations
         )
     }
 
@@ -59,7 +59,7 @@ final class HydraXYKSwapQuoteFactory {
         for amount: BigUInt,
         remoteState: HydraXYK.QuoteRemoteState,
         feeParams: HydraXYK.ExchangeFeeParams,
-        ratios: HydraExchangeTradeLimits.Ratios
+        limits: HydraExchangeTradeLimits.PoolLimits
     ) throws -> BigUInt {
         let amountOut = try HydraXYKSwapApi.calculateOutGivenIn(
             for: remoteState.assetInBalance,
@@ -72,7 +72,7 @@ final class HydraXYKSwapQuoteFactory {
             amountOutPreFee: amountOut,
             reserveIn: remoteState.assetInBalance,
             reserveOut: remoteState.assetOutBalance,
-            ratios: ratios
+            limits: limits
         )
 
         let fee = try HydraXYKSwapApi.calculaPoolFee(
@@ -88,7 +88,7 @@ final class HydraXYKSwapQuoteFactory {
         for amount: BigUInt,
         remoteState: HydraXYK.QuoteRemoteState,
         feeParams: HydraXYK.ExchangeFeeParams,
-        ratios: HydraExchangeTradeLimits.Ratios
+        limits: HydraExchangeTradeLimits.PoolLimits
     ) throws -> BigUInt {
         let amountIn = try HydraXYKSwapApi.calculateInGivenOut(
             for: remoteState.assetInBalance,
@@ -101,7 +101,7 @@ final class HydraXYKSwapQuoteFactory {
             amountInPreFee: amountIn,
             reserveIn: remoteState.assetInBalance,
             reserveOut: remoteState.assetOutBalance,
-            ratios: ratios
+            limits: limits
         )
 
         let fee = try HydraXYKSwapApi.calculaPoolFee(
@@ -131,7 +131,7 @@ extension HydraXYKSwapQuoteFactory {
                     for: args.amount,
                     remoteState: quoteState,
                     feeParams: constants.feeParams,
-                    ratios: constants.ratios
+                    limits: constants.limits
                 )
 
             case .buy:
@@ -139,7 +139,7 @@ extension HydraXYKSwapQuoteFactory {
                     for: args.amount,
                     remoteState: quoteState,
                     feeParams: constants.feeParams,
-                    ratios: constants.ratios
+                    limits: constants.limits
                 )
             }
         }

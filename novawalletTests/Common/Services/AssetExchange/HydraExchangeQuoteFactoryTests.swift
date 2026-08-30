@@ -11,7 +11,7 @@ final class HydraExchangeQuoteFactoryTests: XCTestCase {
             for: 334,
             remoteState: remoteState,
             feeParams: feeParams,
-            ratios: HydraExchangeTradeLimits.Ratios(maxInRatio: 2, maxOutRatio: 1)
+            limits: HydraExchangeTradeLimits.PoolLimits(maxInRatio: 2, maxOutRatio: 1, minTradingLimit: nil)
         )
 
         let outRatioBound = try HydraExchangeTradeLimits.bound(
@@ -26,7 +26,7 @@ final class HydraExchangeQuoteFactoryTests: XCTestCase {
                 for: 334,
                 remoteState: remoteState,
                 feeParams: feeParams,
-                ratios: HydraExchangeTradeLimits.Ratios(maxInRatio: 2, maxOutRatio: 4)
+                limits: HydraExchangeTradeLimits.PoolLimits(maxInRatio: 2, maxOutRatio: 4, minTradingLimit: nil)
             )
         )
     }
@@ -38,7 +38,7 @@ final class HydraExchangeQuoteFactoryTests: XCTestCase {
             for: 249_600,
             remoteState: remoteState,
             feeParams: try Self.exchangeFee(),
-            ratios: HydraExchangeTradeLimits.Ratios(maxInRatio: 3, maxOutRatio: 3)
+            limits: HydraExchangeTradeLimits.PoolLimits(maxInRatio: 3, maxOutRatio: 3, minTradingLimit: nil)
         )
 
         let inRatioBound = try HydraExchangeTradeLimits.bound(
@@ -52,14 +52,14 @@ final class HydraExchangeQuoteFactoryTests: XCTestCase {
     func testXYKBuyPoolMathRoundsUpIntoRejectionAtTheAmountAndroidsFloorCapAccepts() throws {
         let remoteState = HydraXYK.QuoteRemoteState(assetInBalance: 3000, assetOutBalance: 1000)
         let feeParams = try Self.exchangeFee()
-        let ratios = HydraExchangeTradeLimits.Ratios(maxInRatio: 3, maxOutRatio: 3)
+        let limits = HydraExchangeTradeLimits.PoolLimits(maxInRatio: 3, maxOutRatio: 3, minTradingLimit: nil)
 
         XCTAssertNoThrow(
             try HydraXYKSwapQuoteFactory.calculateBuyQuote(
                 for: 249,
                 remoteState: remoteState,
                 feeParams: feeParams,
-                ratios: ratios
+                limits: limits
             )
         )
 
@@ -68,7 +68,7 @@ final class HydraExchangeQuoteFactoryTests: XCTestCase {
                 for: 250,
                 remoteState: remoteState,
                 feeParams: feeParams,
-                ratios: ratios
+                limits: limits
             )
         )
     }
@@ -79,7 +79,7 @@ final class HydraExchangeQuoteFactoryTests: XCTestCase {
                 for: 1500,
                 remoteState: HydraXYK.QuoteRemoteState(assetInBalance: 3000, assetOutBalance: 6000),
                 feeParams: try Self.exchangeFee(),
-                ratios: HydraExchangeTradeLimits.Ratios(maxInRatio: 3, maxOutRatio: 1)
+                limits: HydraExchangeTradeLimits.PoolLimits(maxInRatio: 3, maxOutRatio: 1, minTradingLimit: nil)
             )
         )
     }
@@ -90,7 +90,73 @@ final class HydraExchangeQuoteFactoryTests: XCTestCase {
                 for: 2001,
                 remoteState: HydraXYK.QuoteRemoteState(assetInBalance: 9000, assetOutBalance: 6000),
                 feeParams: try Self.exchangeFee(),
-                ratios: HydraExchangeTradeLimits.Ratios(maxInRatio: 1, maxOutRatio: 3)
+                limits: HydraExchangeTradeLimits.PoolLimits(maxInRatio: 1, maxOutRatio: 3, minTradingLimit: nil)
+            )
+        )
+    }
+
+    func testXYKSellReportsTheLargestAmountInAcceptedWhenTheOutSideBindsFirst() throws {
+        let remoteState = HydraXYK.QuoteRemoteState(assetInBalance: 1000, assetOutBalance: 1000)
+        let feeParams = try Self.exchangeFee()
+        let limits = HydraExchangeTradeLimits.PoolLimits(maxInRatio: 3, maxOutRatio: 10, minTradingLimit: nil)
+
+        let cap = try reportedCap(
+            try HydraXYKSwapQuoteFactory.calculateSellQuote(
+                for: 400,
+                remoteState: remoteState,
+                feeParams: feeParams,
+                limits: limits
+            )
+        )
+
+        XCTAssertNoThrow(
+            try HydraXYKSwapQuoteFactory.calculateSellQuote(
+                for: cap,
+                remoteState: remoteState,
+                feeParams: feeParams,
+                limits: limits
+            )
+        )
+
+        assertExceedsPoolTradeLimit(
+            try HydraXYKSwapQuoteFactory.calculateSellQuote(
+                for: cap + 1,
+                remoteState: remoteState,
+                feeParams: feeParams,
+                limits: limits
+            )
+        )
+    }
+
+    func testXYKBuyReportsTheLargestAmountOutTheRoundedUpPoolMathStillAccepts() throws {
+        let remoteState = HydraXYK.QuoteRemoteState(assetInBalance: 300_000, assetOutBalance: 1_000_000)
+        let feeParams = try Self.exchangeFee()
+        let limits = HydraExchangeTradeLimits.PoolLimits(maxInRatio: 3, maxOutRatio: 3, minTradingLimit: nil)
+
+        let cap = try reportedCap(
+            try HydraXYKSwapQuoteFactory.calculateBuyQuote(
+                for: 400_000,
+                remoteState: remoteState,
+                feeParams: feeParams,
+                limits: limits
+            )
+        )
+
+        XCTAssertNoThrow(
+            try HydraXYKSwapQuoteFactory.calculateBuyQuote(
+                for: cap,
+                remoteState: remoteState,
+                feeParams: feeParams,
+                limits: limits
+            )
+        )
+
+        assertExceedsPoolTradeLimit(
+            try HydraXYKSwapQuoteFactory.calculateBuyQuote(
+                for: cap + 1,
+                remoteState: remoteState,
+                feeParams: feeParams,
+                limits: limits
             )
         )
     }
@@ -103,7 +169,7 @@ final class HydraExchangeQuoteFactoryTests: XCTestCase {
                 assetOutBalance: 9_000_000_000_000
             ),
             amount: 100_000_000_000,
-            ratios: HydraExchangeTradeLimits.Ratios(maxInRatio: 3, maxOutRatio: 1)
+            limits: HydraExchangeTradeLimits.PoolLimits(maxInRatio: 3, maxOutRatio: 1, minTradingLimit: nil)
         )
 
         XCTAssertGreaterThan(quote, 0)
@@ -118,7 +184,7 @@ final class HydraExchangeQuoteFactoryTests: XCTestCase {
                     assetOutBalance: 9_000_000_000_000
                 ),
                 amount: 1_000_000_000_001,
-                ratios: HydraExchangeTradeLimits.Ratios(maxInRatio: 3, maxOutRatio: 1)
+                limits: HydraExchangeTradeLimits.PoolLimits(maxInRatio: 3, maxOutRatio: 1, minTradingLimit: nil)
             )
         )
     }
@@ -132,7 +198,7 @@ final class HydraExchangeQuoteFactoryTests: XCTestCase {
                     assetOutBalance: 3_000_000_000_000
                 ),
                 amount: 1_000_000_000_001,
-                ratios: HydraExchangeTradeLimits.Ratios(maxInRatio: 1, maxOutRatio: 3)
+                limits: HydraExchangeTradeLimits.PoolLimits(maxInRatio: 1, maxOutRatio: 3, minTradingLimit: nil)
             )
         )
     }
@@ -174,6 +240,24 @@ private extension HydraExchangeQuoteFactoryTests {
         """
 
         return try JSONDecoder().decode(HydraOmnipool.AssetState.self, from: Data(json.utf8))
+    }
+
+    func reportedCap<T>(
+        _ expression: @autoclosure () throws -> T,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) throws -> Balance {
+        var reported: Balance?
+
+        XCTAssertThrowsError(try expression(), file: file, line: line) { error in
+            guard case let HydraExchangeTradeLimitError.exceedsPoolTradeLimit(cap) = error else {
+                return XCTFail("unexpected error \(error)", file: file, line: line)
+            }
+
+            reported = cap?.maxGivenAmount
+        }
+
+        return try XCTUnwrap(reported, file: file, line: line)
     }
 
     func assertExceedsPoolTradeLimit<T>(

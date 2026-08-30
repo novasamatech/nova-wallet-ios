@@ -226,6 +226,16 @@ class SwapBasePresenter {
         fatalError("Must be implemented by parent class")
     }
 
+    func applyPoolTradeLimit(amount _: Balance, direction _: AssetConversion.Direction) {
+        fatalError("Must be implemented by parent class")
+    }
+
+    /// Whether another tap-apply is still inside the correction budget (FR-17). Read while the
+    /// validators are being built, which happens on the user's own tap, so it is never stale.
+    func canApplyPoolTradeLimit() -> Bool {
+        false
+    }
+
     func handleBaseError(_: SwapBaseError) {}
 
     func handleNewQuote(_: AssetExchangeQuote, for _: AssetConversion.QuoteArgs) {}
@@ -312,6 +322,11 @@ class SwapBasePresenter {
                 self?.quoteResult = .success(quote)
                 self?.handleNewQuote(quote, for: swapModel.quoteArgs)
             },
+            poolTradeLimitAction: canApplyPoolTradeLimit()
+                ? { [weak self] amount, direction in
+                    self?.applyPoolTradeLimit(amount: amount, direction: direction)
+                }
+                : nil,
             locale: locale
         )
     }

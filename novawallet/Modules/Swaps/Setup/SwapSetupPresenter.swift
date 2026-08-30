@@ -36,6 +36,11 @@ final class SwapSetupPresenter: SwapBasePresenter {
      */
     private var maxCorrectionCounter = MaxCounter.feeCorrection()
 
+    /// Applying a pool's maximum re-quotes, and that re-quote can trip the limit again while reserves
+    /// keep moving. Bounded the same way; a quote that finally succeeds ends the cycle and gives the
+    /// budget back. Not `private`: the apply itself lives in `SwapSetupPresenter+PoolTradeLimit`.
+    var poolLimitCorrectionCounter = MaxCounter.feeCorrection()
+
     init(
         initState: SwapSetupInitState,
         interactor: SwapSetupInteractorInputProtocol,
@@ -126,6 +131,14 @@ final class SwapSetupPresenter: SwapBasePresenter {
         provideIssues()
     }
 
+    override func canApplyPoolTradeLimit() -> Bool {
+        poolLimitCorrectionCounter.hasBudget()
+    }
+
+    override func applyPoolTradeLimit(amount: Balance, direction: AssetConversion.Direction) {
+        applySuggestedAmount(amount, direction: direction)
+    }
+
     override func handleBaseError(_ error: SwapBaseError) {
         handleBaseError(
             error,
@@ -147,6 +160,10 @@ final class SwapSetupPresenter: SwapBasePresenter {
         if let fee, !quote.hasSamePath(other: fee.route) {
             maxCorrectionCounter.resetCounter()
         }
+
+        // A quote that succeeds is the end of any tap-apply correction cycle (FR-17).
+        poolLimitCorrectionCounter.resetCounter()
+
         // we need to keep fee in sync with quote
         fee = nil
 
@@ -293,7 +310,8 @@ extension SwapSetupPresenter {
             payAssetExistense: payAssetBalanceExistense,
             receiveAssetExistense: receiveAssetBalanceExistense,
             quoteResult: quoteResult,
-            fee: fee
+            fee: fee,
+            canApplyPoolTradeLimit: canApplyPoolTradeLimit()
         )
     }
 
@@ -423,7 +441,7 @@ extension SwapSetupPresenter {
         ))
     }
 
-    private func providePayAssetViews() {
+    func providePayAssetViews() {
         providePayTitle()
         providePayAssetViewModel()
         providePayInputPriceViewModel()
@@ -444,7 +462,7 @@ extension SwapSetupPresenter {
         provideReceiveInputPriceViewModel()
     }
 
-    private func provideReceiveAssetViews() {
+    func provideReceiveAssetViews() {
         provideReceiveTitle()
         provideReceiveAssetViewModel()
         provideReceiveInputPriceViewModel()

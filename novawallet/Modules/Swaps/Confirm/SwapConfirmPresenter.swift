@@ -17,6 +17,12 @@ final class SwapConfirmPresenter: SwapBasePresenter {
 
     private var quoteArgs: AssetConversion.QuoteArgs
 
+    /*
+     *  Applying a pool trade limit re-quotes, which can trip the limit again while reserves keep
+     *  moving. Bounded the same way the fee/max cycle is, so the suggestion cannot be offered forever.
+     */
+    private var poolLimitCorrectionCounter = MaxCounter.feeCorrection()
+
     init(
         interactor: SwapConfirmInteractorInputProtocol,
         wireframe: SwapConfirmWireframeProtocol,
@@ -115,6 +121,29 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         interactor.calculateQuote(for: quoteArgs)
     }
 
+    override func canApplyPoolTradeLimit() -> Bool {
+        poolLimitCorrectionCounter.hasBudget()
+    }
+
+    override func applyPoolTradeLimit(amount: Balance, direction: AssetConversion.Direction) {
+        guard poolLimitCorrectionCounter.incrementCounterIfPossible() else {
+            return
+        }
+
+        // Unlike `applySwapMax`, the direction is the one the cap was measured in: a `.buy` cap bounds
+        // the amount out, and re-quoting it as a sell would ask the pool an entirely different question.
+        quoteArgs = AssetConversion.QuoteArgs(
+            assetIn: initState.quoteArgs.assetIn,
+            assetOut: initState.quoteArgs.assetOut,
+            amount: amount,
+            direction: direction
+        )
+
+        view?.didReceiveStartLoading()
+
+        interactor.calculateQuote(for: quoteArgs)
+    }
+
     override func handleBaseError(_ error: SwapBaseError) {
         handleBaseError(
             error,
@@ -132,6 +161,11 @@ final class SwapConfirmPresenter: SwapBasePresenter {
     override func handleNewQuote(_ quote: AssetExchangeQuote, for _: AssetConversion.QuoteArgs) {
         quoteResult = .success(quote)
         fee = nil
+
+        // A quote that succeeds is the end of any tap-apply correction cycle (FR-17), same as on the
+        // setup screen. Without it the budget only ever runs down, and this screen has no amount field
+        // to fall back on: the third dialog would name an amount with no way left to reach it.
+        poolLimitCorrectionCounter.resetCounter()
 
         view?.didReceiveStopLoading()
 

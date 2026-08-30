@@ -43,13 +43,16 @@ extension AssetsHydraXYKExchangeEdge: AssetExchangableGraphEdge {
         amount: Balance,
         direction: AssetConversion.Direction
     ) -> CompoundOperationWrapper<Balance> {
-        quoteFactory.quote(
-            for: .init(
-                assetIn: remoteSwapPair.assetIn,
-                assetOut: remoteSwapPair.assetOut,
-                amount: amount,
-                direction: direction
-            )
+        namingLimitedAsset(
+            quoteFactory.quote(
+                for: .init(
+                    assetIn: remoteSwapPair.assetIn,
+                    assetOut: remoteSwapPair.assetOut,
+                    amount: amount,
+                    direction: direction
+                )
+            ),
+            direction: direction
         )
     }
 
