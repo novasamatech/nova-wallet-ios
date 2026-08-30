@@ -77,6 +77,32 @@ final class HydraExchangeQuoteFactoryTests: XCTestCase {
 
         XCTAssertNil(breach.limitedAsset)
     }
+
+    func testOmnipoolSellWithinBothRatiosIsWithinLimit() throws {
+        let verdict = try HydraOmnipoolQuoteFactory.tradeLimitVerdict(
+            for: 1000,
+            direction: .sell,
+            params: try HydraOmnipoolTestFixtures.params(assetInBalance: 900_000, assetOutBalance: 600_000),
+            limits: Self.limits(maxInRatio: 3, maxOutRatio: 3)
+        )
+
+        XCTAssertEqual(verdict, .withinLimit)
+    }
+
+    func testOmnipoolSellAboveTheInRatioBoundIsABreach() throws {
+        let verdict = try HydraOmnipoolQuoteFactory.tradeLimitVerdict(
+            for: 400_000,
+            direction: .sell,
+            params: try HydraOmnipoolTestFixtures.params(assetInBalance: 900_000, assetOutBalance: 600_000),
+            limits: Self.limits(maxInRatio: 3, maxOutRatio: 3)
+        )
+
+        guard case let .exceeds(breach) = verdict else {
+            return XCTFail("expected a breach")
+        }
+
+        XCTAssertNil(breach.limitedAsset)
+    }
 }
 
 private extension HydraExchangeQuoteFactoryTests {

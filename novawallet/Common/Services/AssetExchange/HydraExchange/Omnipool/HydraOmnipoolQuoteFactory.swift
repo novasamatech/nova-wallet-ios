@@ -122,3 +122,53 @@ extension HydraOmnipoolQuoteFactory {
         return CompoundOperationWrapper(targetOperation: calculateOperation, dependencies: dependencies)
     }
 }
+
+extension HydraOmnipoolQuoteFactory {
+    /// Answers the Omnipool pallet's `sell` / `buy` ratio checks for one hop. Unlike XYK these run on
+    /// the quoted amounts with no pre-fee adjustment (FR-3).
+    ///
+    /// The **check** is exact in both directions because it runs the pallet's own predicates on the
+    /// amounts. The **cap** is only closed-form on the direct side, so `omnipoolCap` may return `nil`;
+    /// the breach still blocks, it just carries no number (FR-16).
+    static func tradeLimitVerdict(
+        for amount: Balance,
+        direction: AssetConversion.Direction,
+        params: HydraOmnipoolApi.Params,
+        limits: HydraExchangeTradeLimits.PoolLimits
+    ) throws -> AssetExchangeTradeLimitVerdict {
+        let amountIn: Balance
+        let amountOut: Balance
+
+        switch direction {
+        case .sell:
+            amountIn = amount
+            amountOut = try HydraOmnipoolApi.calculateOutGivenIn(for: params, amountIn: amount)
+        case .buy:
+            amountOut = amount
+            amountIn = try HydraOmnipoolApi.calculateInGivenOut(for: params, amountOut: amount)
+        }
+
+        let exceeds = try HydraExchangeTradeLimits.omnipoolExceedsLimit(
+            amountIn: amountIn,
+            amountOut: amountOut,
+            reserveIn: params.assetInBalance,
+            reserveOut: params.assetOutBalance,
+            limits: limits
+        )
+
+        guard exceeds else {
+            return .withinLimit
+        }
+
+        return .exceeds(
+            .init(
+                maxGivenAmount: try HydraExchangeTradeLimits.omnipoolCap(
+                    direction: direction,
+                    params: params,
+                    limits: limits
+                ),
+                minTradingLimit: limits.minTradingLimit
+            )
+        )
+    }
+}
