@@ -340,6 +340,26 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
         )
     }
 
+    func requestValidatingPoolTradeLimits(
+        for route: AssetExchangeRoute,
+        completion: @escaping (SwapPoolTradeLimitCheck) -> Void
+    ) {
+        execute(
+            wrapper: route.poolTradeLimitCheckWrapper(),
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { result in
+            switch result {
+            case let .success(check):
+                completion(check)
+            case .failure:
+                // The app could not establish whether the trade is legal, so it must not be signed
+                // (FR-6). A missing ratio constant reaches here.
+                completion(.blocked(nil))
+            }
+        }
+    }
+
     func requestValidatingIntermediateED(
         for operations: [AssetExchangeMetaOperationProtocol],
         netFlow: AssetExchangeCommissionNetFlow,

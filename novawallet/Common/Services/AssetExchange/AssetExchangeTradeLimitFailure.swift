@@ -6,7 +6,7 @@ import Foundation
 ///
 /// It is raised only when the search would otherwise have returned `nil`. Where any candidate path
 /// survives, the user gets their swap and never learns a limit was involved (§8).
-struct AssetExchangeTradeLimitFailure: Error {
+struct AssetExchangeTradeLimitFailure: Error, Equatable {
     /// The pool asset the cap is denominated in — the user's own asset whenever
     /// `isUserInputAdjustable`, an intermediate asset otherwise.
     let limitedAsset: ChainAsset
@@ -15,8 +15,9 @@ struct AssetExchangeTradeLimitFailure: Error {
     let maxGivenAmount: Balance
 
     /// `MinTradingLimit`. A suggestion below it would be rejected on chain for a different reason, so
-    /// there is no usable amount at all and nothing is suggested (FR-15).
-    let minTradingLimit: Balance
+    /// there is no usable amount at all and nothing is suggested (FR-15). `nil` when the pool did not
+    /// report the constant, which means no floor at all — it suppresses the suggestion for nobody.
+    let minTradingLimit: Balance?
 
     /// The direction the cap was measured in: a cap on the amount in for `.sell`, on the amount out
     /// for `.buy`.
@@ -54,7 +55,7 @@ extension AssetExchangeTradeLimitFailure {
             grossUpInverse.mul(value: headroomed)
         }
 
-        guard suggested >= minTradingLimit else {
+        guard suggested >= (minTradingLimit ?? 0) else {
             return nil
         }
 
