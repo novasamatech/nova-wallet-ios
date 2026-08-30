@@ -17,8 +17,12 @@ class AnyAssetExchangeEdge {
     /// `AnyAssetExchangeEdge` values, and `AssetsExchangeGraphProvider` erases every edge again, so
     /// every Hydration hop reaches the graph double-wrapped. `init` must therefore fall through to an
     /// inner eraser's stored closure: testing the concrete conformance alone finds nothing on the
-    /// inner eraser, and every hop then silently reports "no trade limits" — a green build, a green
-    /// suite, and a validation that never fires. The `??` branch is load-bearing, not redundant.
+    /// inner eraser, and every hop then silently reports "no trade limits", so the validation never
+    /// fires. The double-erasure cases in `AssetExchangeTradeLimitedEdgeTests` exist to go red if the
+    /// `??` branch is dropped.
+    ///
+    /// Any optional capability stored on this eraser later must repeat the same fall-through: look for
+    /// the concrete conformance first, then for an inner eraser's stored closure.
     private let fetchTradeLimitVerdict: (
         (Balance, AssetConversion.Direction) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict>
     )?
