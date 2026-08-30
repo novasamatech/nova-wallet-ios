@@ -3,77 +3,9 @@ import BigInt
 import Operation_iOS
 import SubstrateSdk
 
-/// Everything known about the trade cap of the pool that rejected a quote, accumulated as the rejection
-/// travels outwards. Each layer fills in only what it alone can know:
-///
-/// - the quote factory holds the reserves and the pallet constants, so it fills `maxGivenAmount` and
-///   `minTradingLimit`;
-/// - the edge maps `HydraDx.AssetId` to a local `ChainAsset` through its own chain, so it fills
-///   `limitedAsset`;
-/// - the route manager knows the hop's position in the path, so it fills `isUserInputAdjustable`.
-///
-/// Every field a layer could not fill stays `nil`, and a cap that never became complete simply prunes
-/// the candidate path without being reported — exactly what happened before any of this existed.
-///
-/// The whole thing rides inside the one existing `exceedsPoolTradeLimit` case for its whole journey.
-/// A second error type would silently regress FR-7, whose gross-up fallback catches this one by type.
-struct HydraExchangePoolTradeCap: Equatable {
-    /// The largest *given* amount the pool accepts in the quoted direction: the amount in for `.sell`,
-    /// the amount out for `.buy`. This is the exact runtime supremum with no headroom — FR-1 is about
-    /// the threshold, and the threshold does not move. The Android 0.95 headroom is applied later, to
-    /// the suggestion only.
-    let maxGivenAmount: Balance
-
-    /// `XYK.MinTradingLimit` / `Omnipool.MinimumTradingLimit`. `nil` when the constant is absent from
-    /// metadata, which suppresses the suggestion without failing the quote.
-    let minTradingLimit: Balance?
-
-    /// The pool asset the cap is denominated in. Only the edge can name it, so it is `nil` until then.
-    let limitedAsset: ChainAsset?
-
-    /// Whether the violated hop is the one quoted directly from the amount the user typed. Only the
-    /// route search knows a hop's position, so it is `nil` until then.
-    let isUserInputAdjustable: Bool?
-
-    init(
-        maxGivenAmount: Balance,
-        minTradingLimit: Balance?,
-        limitedAsset: ChainAsset? = nil,
-        isUserInputAdjustable: Bool? = nil
-    ) {
-        self.maxGivenAmount = maxGivenAmount
-        self.minTradingLimit = minTradingLimit
-        self.limitedAsset = limitedAsset
-        self.isUserInputAdjustable = isUserInputAdjustable
-    }
-
-    func naming(limitedAsset: ChainAsset) -> HydraExchangePoolTradeCap {
-        .init(
-            maxGivenAmount: maxGivenAmount,
-            minTradingLimit: minTradingLimit,
-            limitedAsset: limitedAsset,
-            isUserInputAdjustable: isUserInputAdjustable
-        )
-    }
-
-    func marking(isUserInputAdjustable: Bool) -> HydraExchangePoolTradeCap {
-        .init(
-            maxGivenAmount: maxGivenAmount,
-            minTradingLimit: minTradingLimit,
-            limitedAsset: limitedAsset,
-            isUserInputAdjustable: isUserInputAdjustable
-        )
-    }
-}
-
 enum HydraExchangeTradeLimitError: Error {
-    /// The trade exceeds one of the pool's per-trade ratio bounds. The payload is best-effort: it is
-    /// `nil`, or incomplete, whenever the cap could not be established, and the rejection then only
-    /// prunes the candidate path.
-    case exceedsPoolTradeLimit(HydraExchangePoolTradeCap?)
-
-    /// A ratio constant is absent from runtime metadata.
-    /// The pool cannot be validated, so it cannot be quoted.
+    /// A ratio constant is absent from runtime metadata. The pool cannot be validated, so the swap
+    /// cannot proceed (FR-6).
     case ratiosUnavailable(pallet: String)
 
     /// A ratio decoded as zero.
@@ -103,72 +35,44 @@ enum HydraExchangeTradeLimits {
         return reserve / ratio
     }
 
-    static func validateXYKSell(
+    /// `validate_sell`: the amount in against `MaxInRatio`, and the **pre-fee** amount out against
+    /// `MaxOutRatio`. The pallet's `ensure!` sits between the math call and `calculate_fee`, so the
+    /// post-fee quote is never the checked quantity (FR-2).
+    static func xykSellExceedsLimit(
         amountIn: Balance,
         amountOutPreFee: Balance,
         reserveIn: Balance,
         reserveOut: Balance,
         limits: PoolLimits
-    ) throws {
-        guard
-            try !exceeds(amount: amountIn, reserve: reserveIn, ratio: limits.maxInRatio),
-            try !exceeds(amount: amountOutPreFee, reserve: reserveOut, ratio: limits.maxOutRatio)
-        else {
-            throw HydraExchangeTradeLimitError.exceedsPoolTradeLimit(
-                .init(
-                    maxGivenAmount: try maxSellAmountIn(
-                        reserveIn: reserveIn,
-                        reserveOut: reserveOut,
-                        limits: limits
-                    ),
-                    minTradingLimit: limits.minTradingLimit,
-                    limitedAsset: nil
-                )
-            )
-        }
+    ) throws -> Bool {
+        try exceeds(amount: amountIn, reserve: reserveIn, ratio: limits.maxInRatio)
+            || (try exceeds(amount: amountOutPreFee, reserve: reserveOut, ratio: limits.maxOutRatio))
     }
 
-    static func validateXYKBuy(
+    /// `validate_buy`: the amount out against `MaxOutRatio`, and the **pre-fee** amount in against
+    /// `MaxInRatio`.
+    static func xykBuyExceedsLimit(
         amountOut: Balance,
         amountInPreFee: Balance,
         reserveIn: Balance,
         reserveOut: Balance,
         limits: PoolLimits
-    ) throws {
-        guard
-            try !exceeds(amount: amountOut, reserve: reserveOut, ratio: limits.maxOutRatio),
-            try !exceeds(amount: amountInPreFee, reserve: reserveIn, ratio: limits.maxInRatio)
-        else {
-            throw HydraExchangeTradeLimitError.exceedsPoolTradeLimit(
-                .init(
-                    maxGivenAmount: try maxBuyAmountOut(
-                        reserveIn: reserveIn,
-                        reserveOut: reserveOut,
-                        limits: limits
-                    ),
-                    minTradingLimit: limits.minTradingLimit,
-                    limitedAsset: nil
-                )
-            )
-        }
+    ) throws -> Bool {
+        try exceeds(amount: amountOut, reserve: reserveOut, ratio: limits.maxOutRatio)
+            || (try exceeds(amount: amountInPreFee, reserve: reserveIn, ratio: limits.maxInRatio))
     }
 
-    /// Unlike the XYK pair this reports no cap of its own: an Omnipool cap needs a probe through the
-    /// pool math, and keeping that out of the validator is what lets the validation stay pure
-    /// arithmetic (NFR-2). `HydraOmnipoolQuoteFactory` attaches the cap on the way out.
-    static func validateOmnipool(
+    /// Omnipool checks the quoted amounts directly: its `MaxOutRatio` check runs before
+    /// `account_for_fee_taken`, which never touches `delta_reserve` (FR-3).
+    static func omnipoolExceedsLimit(
         amountIn: Balance,
         amountOut: Balance,
         reserveIn: Balance,
         reserveOut: Balance,
         limits: PoolLimits
-    ) throws {
-        guard
-            try !exceeds(amount: amountIn, reserve: reserveIn, ratio: limits.maxInRatio),
-            try !exceeds(amount: amountOut, reserve: reserveOut, ratio: limits.maxOutRatio)
-        else {
-            throw HydraExchangeTradeLimitError.exceedsPoolTradeLimit(nil)
-        }
+    ) throws -> Bool {
+        try exceeds(amount: amountIn, reserve: reserveIn, ratio: limits.maxInRatio)
+            || (try exceeds(amount: amountOut, reserve: reserveOut, ratio: limits.maxOutRatio))
     }
 }
 
@@ -282,7 +186,7 @@ extension HydraExchangeTradeLimits {
     }
 }
 
-private extension HydraExchangeTradeLimits {
+extension HydraExchangeTradeLimits {
     static func exceeds(amount: Balance, reserve: Balance, ratio: Balance) throws -> Bool {
         let maxAmount = try bound(reserve: reserve, ratio: ratio)
 

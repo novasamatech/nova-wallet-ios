@@ -7,11 +7,11 @@ final class HydraExchangeTradeLimitsTests: XCTestCase {
         assertRatioUnusable(try HydraExchangeTradeLimits.bound(reserve: 1000, ratio: 0))
     }
 
-    func testOmnipoolAppliesEachRatioToItsOwnSideOfThePool() {
+    func testOmnipoolAppliesEachRatioToItsOwnSideOfThePool() throws {
         let limits = HydraExchangeTradeLimits.PoolLimits(maxInRatio: 3, maxOutRatio: 6, minTradingLimit: nil)
 
-        XCTAssertNoThrow(
-            try HydraExchangeTradeLimits.validateOmnipool(
+        XCTAssertFalse(
+            try HydraExchangeTradeLimits.omnipoolExceedsLimit(
                 amountIn: 250_000,
                 amountOut: 90000,
                 reserveIn: 900_000,
@@ -20,8 +20,8 @@ final class HydraExchangeTradeLimitsTests: XCTestCase {
             )
         )
 
-        assertExceedsPoolTradeLimit(
-            try HydraExchangeTradeLimits.validateOmnipool(
+        XCTAssertTrue(
+            try HydraExchangeTradeLimits.omnipoolExceedsLimit(
                 amountIn: 120_000,
                 amountOut: 180_000,
                 reserveIn: 900_000,
@@ -33,18 +33,6 @@ final class HydraExchangeTradeLimitsTests: XCTestCase {
 }
 
 private extension HydraExchangeTradeLimitsTests {
-    func assertExceedsPoolTradeLimit<T>(
-        _ expression: @autoclosure () throws -> T,
-        file: StaticString = #filePath,
-        line: UInt = #line
-    ) {
-        XCTAssertThrowsError(try expression(), file: file, line: line) { error in
-            guard case HydraExchangeTradeLimitError.exceedsPoolTradeLimit = error else {
-                return XCTFail("unexpected error \(error)", file: file, line: line)
-            }
-        }
-    }
-
     func assertRatioUnusable<T>(
         _ expression: @autoclosure () throws -> T,
         file: StaticString = #filePath,
