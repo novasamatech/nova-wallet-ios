@@ -6647,6 +6647,7 @@
 		0000000047E40D3238A9E4DE /* AssetExchangeTradeLimitedEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000107456317CBC4C61 /* AssetExchangeTradeLimitedEdge.swift */; };
 		000000007F2CD68520CB8A19 /* AssetExchangeTradeLimitRouteWalkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00000000188BCE3441EEAFDA /* AssetExchangeTradeLimitRouteWalkTests.swift */; };
 		000000002384221D1527B8A1 /* SwapPoolTradeLimitCheck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000004024BA48453ACABB /* SwapPoolTradeLimitCheck.swift */; };
+		0000000062EC28C9A5867EF9 /* SwapPoolTradeLimitReportingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000006021CDD40B9782F8 /* SwapPoolTradeLimitReportingTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -13034,6 +13035,7 @@
 		00000000107456317CBC4C61 /* AssetExchangeTradeLimitedEdge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeTradeLimitedEdge.swift; sourceTree = "<group>"; };
 		00000000188BCE3441EEAFDA /* AssetExchangeTradeLimitRouteWalkTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeTradeLimitRouteWalkTests.swift; sourceTree = "<group>"; };
 		000000004024BA48453ACABB /* SwapPoolTradeLimitCheck.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapPoolTradeLimitCheck.swift; sourceTree = "<group>"; };
+		000000006021CDD40B9782F8 /* SwapPoolTradeLimitReportingTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapPoolTradeLimitReportingTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -20226,6 +20228,7 @@
 			children = (
 				0C3976B22C33BFB700998DD6 /* HydraPoolAccountTests.swift */,
 				5A9C6892F10913B65D01751A /* SwapModelTests.swift */,
+				000000006021CDD40B9782F8 /* SwapPoolTradeLimitReportingTests.swift */,
 			);
 			path = Swaps;
 			sourceTree = "<group>";
@@ -37449,6 +37452,7 @@
 				000000005D8D3B6BA44E3300 /* HydraOmnipoolTestFixtures.swift in Sources */,
 				000000002C195A8F7137D13E /* AssetExchangeTradeLimitedEdgeTests.swift in Sources */,
 				000000007F2CD68520CB8A19 /* AssetExchangeTradeLimitRouteWalkTests.swift in Sources */,
+				0000000062EC28C9A5867EF9 /* SwapPoolTradeLimitReportingTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

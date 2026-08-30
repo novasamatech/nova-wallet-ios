@@ -326,6 +326,25 @@ class SwapBasePresenter {
         )
     }
 
+    func getPoolTradeLimitValidation(
+        for swapModel: SwapModel,
+        interactor: SwapBaseInteractorInputProtocol,
+        locale: Locale
+    ) -> DataValidating {
+        dataValidatingFactory.noPoolTradeLimitExceeded(
+            params: swapModel,
+            remoteValidatingClosure: { route, completion in
+                interactor.requestValidatingPoolTradeLimits(for: route, completion: completion)
+            },
+            poolTradeLimitAction: canApplyPoolTradeLimit()
+                ? { [weak self] amount, direction in
+                    self?.applyPoolTradeLimit(amount: amount, direction: direction)
+                }
+                : nil,
+            locale: locale
+        )
+    }
+
     func getBaseValidations(
         for swapModel: SwapModel,
         interactor: SwapBaseInteractorInputProtocol,
@@ -361,6 +380,10 @@ class SwapBasePresenter {
                 locale: locale
             )
         ]
+
+        baseValidations.append(
+            getPoolTradeLimitValidation(for: swapModel, interactor: interactor, locale: locale)
+        )
 
         // for last operation validation is covered by canReceive
         if let edValidation = getIntermediateEdValidation(for: swapModel, interactor: interactor, locale: locale) {
