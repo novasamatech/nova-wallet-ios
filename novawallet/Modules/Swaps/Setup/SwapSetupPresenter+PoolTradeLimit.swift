@@ -35,27 +35,4 @@ extension SwapSetupPresenter {
             view?.didReceive(focus: .receiveAsset)
         }
     }
-
-    /// The inline button under the field the cap is measured in. It reads the same `suggestion()` the
-    /// message was built from, so the amount it fills in is always the amount the user was shown.
-    func applyPoolTradeLimit() {
-        guard
-            let failure = poolTradeLimitFailure,
-            failure.isUserInputAdjustable,
-            let suggestion = failure.suggestion()
-        else {
-            return
-        }
-
-        applySuggestedAmount(suggestion, direction: failure.direction)
-    }
-
-    /// The pool trade limit the current quote failure is reporting, if it is reporting one at all.
-    private var poolTradeLimitFailure: AssetExchangeTradeLimitFailure? {
-        guard case let .failure(error) = quoteResult else {
-            return nil
-        }
-
-        return error as? AssetExchangeTradeLimitFailure
-    }
 }

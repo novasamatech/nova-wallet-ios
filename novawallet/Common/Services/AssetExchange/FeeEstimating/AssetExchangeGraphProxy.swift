@@ -55,19 +55,7 @@ extension AssetExchangeGraphProxy: AssetQuoteFactoryProtocol {
         let bestRouteWrapper = routeManager.fetchRoute(for: args.amount, direction: args.direction)
 
         let mappingOperation = ClosureOperation<AssetConversion.Quote> {
-            let bestRoute: AssetExchangeRoute?
-
-            do {
-                bestRoute = try bestRouteWrapper.targetOperation.extractNoCancellableResultData()
-            } catch is AssetExchangeTradeLimitFailure {
-                // This path converts a fee into the native asset, not a swap the user asked for. A thin
-                // pool on it must not turn an unrelated extrinsic's fee estimation into a trade-limit
-                // error naming an asset the user never typed, so it reports the same `noRoute` it
-                // always did (FR-8). Every other failure still propagates.
-                throw AssetExchangeGraphProxyError.noRoute(args)
-            }
-
-            guard let route = bestRoute else {
+            guard let route = try bestRouteWrapper.targetOperation.extractNoCancellableResultData() else {
                 throw AssetExchangeGraphProxyError.noRoute(args)
             }
 

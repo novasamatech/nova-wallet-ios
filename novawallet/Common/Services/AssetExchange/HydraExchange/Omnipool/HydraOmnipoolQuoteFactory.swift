@@ -4,11 +4,6 @@ import SubstrateSdk
 import BigInt
 
 final class HydraOmnipoolQuoteFactory {
-    private struct PalletConstants {
-        let defaultFee: HydraDx.FeeEntry
-        let limits: HydraExchangeTradeLimits.PoolLimits
-    }
-
     let flowState: HydraOmnipoolFlowState
 
     init(flowState: HydraOmnipoolFlowState) {
@@ -25,7 +20,7 @@ final class HydraOmnipoolQuoteFactory {
         return CompoundOperationWrapper(targetOperation: operation)
     }
 
-    private func createPalletConstantsWrapper() -> CompoundOperationWrapper<PalletConstants> {
+    private func createDefaultFeeWrapper() -> CompoundOperationWrapper<HydraDx.FeeEntry> {
         let coderFactoryOperation = flowState.runtimeProvider.fetchCoderFactoryOperation()
 
         let assetFeeOperation = StorageConstantOperation<HydraDx.FeeParameters>.operation(
@@ -42,34 +37,19 @@ final class HydraOmnipoolQuoteFactory {
 
         protocolFeeOperation.addDependency(coderFactoryOperation)
 
-        let limitsWrapper = HydraExchangeTradeLimits.createPoolLimitsWrapper(
-            for: .omnipool,
-            dependingOn: coderFactoryOperation
-        )
-
-        let mergeOperation = ClosureOperation<PalletConstants> {
+        let mergeOperation = ClosureOperation<HydraDx.FeeEntry> {
             let assetFee = try assetFeeOperation.extractNoCancellableResultData().minFee
             let protocolFee = try protocolFeeOperation.extractNoCancellableResultData().minFee
 
-            let limits = try limitsWrapper.targetOperation.extractNoCancellableResultData()
-
-            return PalletConstants(
-                defaultFee: HydraDx.FeeEntry(assetFee: assetFee, protocolFee: protocolFee),
-                limits: limits
-            )
+            return HydraDx.FeeEntry(assetFee: assetFee, protocolFee: protocolFee)
         }
 
         mergeOperation.addDependency(assetFeeOperation)
         mergeOperation.addDependency(protocolFeeOperation)
-        mergeOperation.addDependency(limitsWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: mergeOperation,
-            dependencies: [
-                coderFactoryOperation,
-                assetFeeOperation,
-                protocolFeeOperation
-            ] + limitsWrapper.allOperations
+            dependencies: [coderFactoryOperation, assetFeeOperation, protocolFeeOperation]
         )
     }
 
@@ -100,75 +80,16 @@ final class HydraOmnipoolQuoteFactory {
         )
     }
 
-    static func calculateQuote(
+    private func calculateQuote(
         for direction: AssetConversion.Direction,
         args: HydraOmnipoolApi.Params,
-        amount: BigUInt,
-        limits: HydraExchangeTradeLimits.PoolLimits
+        amount: BigUInt
     ) throws -> BigUInt {
         switch direction {
         case .sell:
-            let amountOut = try HydraOmnipoolApi.calculateOutGivenIn(for: args, amountIn: amount)
-
-            try validateTradeLimits(
-                direction: .sell,
-                amountIn: amount,
-                amountOut: amountOut,
-                args: args,
-                limits: limits
-            )
-
-            return amountOut
+            return try HydraOmnipoolApi.calculateOutGivenIn(for: args, amountIn: amount)
         case .buy:
-            let amountIn = try HydraOmnipoolApi.calculateInGivenOut(for: args, amountOut: amount)
-
-            try validateTradeLimits(
-                direction: .buy,
-                amountIn: amountIn,
-                amountOut: amount,
-                args: args,
-                limits: limits
-            )
-
-            return amountIn
-        }
-    }
-
-    /// The Omnipool cap needs a probe through the pool math, which `HydraExchangeTradeLimits` keeps out
-    /// of its validators so they stay pure arithmetic. So the probe runs here instead — only on a quote
-    /// that has already been rejected, which is what keeps it off the happy path (NFR-1). Every other
-    /// failure, a missing ratio included, propagates untouched.
-    private static func validateTradeLimits(
-        direction: AssetConversion.Direction,
-        amountIn: BigUInt,
-        amountOut: BigUInt,
-        args: HydraOmnipoolApi.Params,
-        limits: HydraExchangeTradeLimits.PoolLimits
-    ) throws {
-        do {
-            try HydraExchangeTradeLimits.validateOmnipool(
-                amountIn: amountIn,
-                amountOut: amountOut,
-                reserveIn: args.assetInBalance,
-                reserveOut: args.assetOutBalance,
-                limits: limits
-            )
-        } catch HydraExchangeTradeLimitError.exceedsPoolTradeLimit {
-            let cap = try HydraExchangeTradeLimits.omnipoolCap(
-                direction: direction,
-                params: args,
-                limits: limits
-            )
-
-            throw HydraExchangeTradeLimitError.exceedsPoolTradeLimit(
-                cap.map {
-                    HydraExchangePoolTradeCap(
-                        maxGivenAmount: $0,
-                        minTradingLimit: limits.minTradingLimit,
-                        limitedAsset: nil
-                    )
-                }
-            )
+            return try HydraOmnipoolApi.calculateInGivenOut(for: args, amountOut: amount)
         }
     }
 }
@@ -178,26 +99,25 @@ extension HydraOmnipoolQuoteFactory {
         let remotePair = HydraDx.RemoteSwapPair(assetIn: args.assetIn, assetOut: args.assetOut)
         let quoteStateWrapper = createQuoteStateWrapper(for: remotePair)
 
-        let constantsWrapper = createPalletConstantsWrapper()
+        let defaultFeeWrapper = createDefaultFeeWrapper()
 
         let calculateOperation = ClosureOperation<BigUInt> {
             let quoteState = try quoteStateWrapper.targetOperation.extractNoCancellableResultData()
-            let constants = try constantsWrapper.targetOperation.extractNoCancellableResultData()
+            let defaultFee = try defaultFeeWrapper.targetOperation.extractNoCancellableResultData()
 
-            let apiParams = try self.deriveApiParams(from: quoteState, defaultFee: constants.defaultFee)
+            let apiParams = try self.deriveApiParams(from: quoteState, defaultFee: defaultFee)
 
-            return try Self.calculateQuote(
+            return try self.calculateQuote(
                 for: args.direction,
                 args: apiParams,
-                amount: args.amount,
-                limits: constants.limits
+                amount: args.amount
             )
         }
 
-        calculateOperation.addDependency(constantsWrapper.targetOperation)
+        calculateOperation.addDependency(defaultFeeWrapper.targetOperation)
         calculateOperation.addDependency(quoteStateWrapper.targetOperation)
 
-        let dependencies = quoteStateWrapper.allOperations + constantsWrapper.allOperations
+        let dependencies = quoteStateWrapper.allOperations + defaultFeeWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: calculateOperation, dependencies: dependencies)
     }

@@ -322,11 +322,6 @@ class SwapBasePresenter {
                 self?.quoteResult = .success(quote)
                 self?.handleNewQuote(quote, for: swapModel.quoteArgs)
             },
-            poolTradeLimitAction: canApplyPoolTradeLimit()
-                ? { [weak self] amount, direction in
-                    self?.applyPoolTradeLimit(amount: amount, direction: direction)
-                }
-                : nil,
             locale: locale
         )
     }

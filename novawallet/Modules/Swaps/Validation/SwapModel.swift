@@ -69,10 +69,6 @@ struct SwapModel {
     enum InvalidQuoteReason {
         case rateChange(InvalidQuoteDueRateChange)
         case noLiqudity
-
-        /// Every candidate path ran into a pool trade limit while re-validating. Reserves move between
-        /// the quote and the tap on a thin pool, so a swap that quoted cleanly can arrive here.
-        case poolTradeLimit(AssetExchangeTradeLimitFailure)
     }
 
     typealias QuoteValidateClosure = (Result<AssetExchangeQuote, Error>) -> Void
@@ -447,12 +443,8 @@ struct SwapModel {
                 } else {
                     completion(nil)
                 }
-            case let .failure(error):
-                if let tradeLimit = error as? AssetExchangeTradeLimitFailure {
-                    completion(.poolTradeLimit(tradeLimit))
-                } else {
-                    completion(.noLiqudity)
-                }
+            case .failure:
+                completion(.noLiqudity)
             }
         }
     }

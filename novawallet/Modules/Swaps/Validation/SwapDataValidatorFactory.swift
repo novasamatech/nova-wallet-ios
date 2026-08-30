@@ -37,7 +37,6 @@ protocol SwapDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
         params: SwapModel,
         remoteValidatingClosure: @escaping SwapRemoteValidatingClosure,
         onQuoteUpdate: @escaping (AssetExchangeQuote) -> Void,
-        poolTradeLimitAction: SwapPoolTradeLimitApplying?,
         locale: Locale
     ) -> DataValidating
 
@@ -321,7 +320,6 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
         params: SwapModel,
         remoteValidatingClosure: @escaping SwapRemoteValidatingClosure,
         onQuoteUpdate: @escaping (AssetExchangeQuote) -> Void,
-        poolTradeLimitAction: SwapPoolTradeLimitApplying?,
         locale: Locale
     ) -> DataValidating {
         var reason: SwapModel.InvalidQuoteReason?
@@ -382,15 +380,6 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
                 case .noLiqudity:
                     self?.presentable.presentNotEnoughLiquidity(
                         from: view,
-                        locale: locale
-                    )
-
-                case let .poolTradeLimit(failure):
-                    self?.presentPoolTradeLimit(
-                        failure,
-                        from: view,
-                        viewModelFactory: viewModelFactory,
-                        applying: poolTradeLimitAction,
                         locale: locale
                     )
                 }
@@ -465,39 +454,6 @@ final class SwapDataValidatorFactory: SwapDataValidatorFactoryProtocol {
 
                 remoteValidatingClosure(closureParams)
             }
-        )
-    }
-}
-
-private extension SwapDataValidatorFactory {
-    /// The suggestion below the pool's own minimum has no usable amount behind it, so it degrades to
-    /// the generic message rather than naming a number the chain would reject for a second reason.
-    func presentPoolTradeLimit(
-        _ failure: AssetExchangeTradeLimitFailure,
-        from view: ControllerBackedProtocol,
-        viewModelFactory: BalanceViewModelFactoryFacadeProtocol,
-        applying poolTradeLimitAction: SwapPoolTradeLimitApplying?,
-        locale: Locale
-    ) {
-        guard
-            let suggestion = failure.suggestion(),
-            let displayError = SwapDisplayError.PoolTradeLimit.build(
-                from: failure,
-                canApply: failure.isUserInputAdjustable && poolTradeLimitAction != nil,
-                viewModelFactory: viewModelFactory,
-                locale: locale
-            )
-        else {
-            presentable.presentNotEnoughLiquidity(from: view, locale: locale)
-
-            return
-        }
-
-        presentable.presentPoolTradeLimit(
-            from: view,
-            reason: displayError,
-            applyAction: { poolTradeLimitAction?(suggestion, failure.direction) },
-            locale: locale
         )
     }
 }

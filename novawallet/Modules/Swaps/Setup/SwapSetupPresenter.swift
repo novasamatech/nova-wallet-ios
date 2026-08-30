@@ -310,8 +310,7 @@ extension SwapSetupPresenter {
             payAssetExistense: payAssetBalanceExistense,
             receiveAssetExistense: receiveAssetBalanceExistense,
             quoteResult: quoteResult,
-            fee: fee,
-            canApplyPoolTradeLimit: canApplyPoolTradeLimit()
+            fee: fee
         )
     }
 

@@ -11,14 +11,14 @@ final class StubAssetExchangeEdge {
     let destination: ChainAssetId
     let type: AssetExchangeEdgeType
     let chain: ChainModel
-    let quoteClosure: (Balance, AssetConversion.Direction) throws -> Balance
+    let quoteClosure: (Balance, AssetConversion.Direction) -> Balance
 
     init(
         origin: ChainAssetId,
         destination: ChainAssetId,
         type: AssetExchangeEdgeType,
         chain: ChainModel,
-        quoteClosure: @escaping (Balance, AssetConversion.Direction) throws -> Balance = { amount, _ in amount }
+        quoteClosure: @escaping (Balance, AssetConversion.Direction) -> Balance = { amount, _ in amount }
     ) {
         self.origin = origin
         self.destination = destination
@@ -30,11 +30,7 @@ final class StubAssetExchangeEdge {
 
 extension StubAssetExchangeEdge: AssetExchangableGraphEdge {
     func quote(amount: Balance, direction: AssetConversion.Direction) -> CompoundOperationWrapper<Balance> {
-        do {
-            return .createWithResult(try quoteClosure(amount, direction))
-        } catch {
-            return .createWithError(error)
-        }
+        .createWithResult(quoteClosure(amount, direction))
     }
 
     func addingWeight(to currentWeight: Int, predecessor _: AnyGraphEdgeProtocol?) -> Int {

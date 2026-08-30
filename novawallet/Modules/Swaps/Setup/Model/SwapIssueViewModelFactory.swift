@@ -68,45 +68,12 @@ final class SwapIssueViewModelFactory {
         return .minBalanceViolation(minBalanceString)
     }
 
-    func detectPoolTradeLimit(in model: SwapIssueCheckParams, locale: Locale) -> SwapSetupViewIssue? {
-        poolTradeLimit(in: model, locale: locale).map { .poolTradeLimit($0) }
-    }
-
-    func detectNoLiquidity(in model: SwapIssueCheckParams, locale: Locale) -> SwapSetupViewIssue? {
-        guard
-            case .failure = model.quoteResult,
-            poolTradeLimit(in: model, locale: locale) == nil
-        else {
+    func detectNoLiquidity(in model: SwapIssueCheckParams) -> SwapSetupViewIssue? {
+        if case .failure = model.quoteResult {
+            return .noLiqudity
+        } else {
             return nil
         }
-
-        return .noLiqudity
-    }
-}
-
-private extension SwapIssueViewModelFactory {
-    /// Both pay-side quote-failure issues read this one classifier, so they are mutually exclusive by
-    /// construction. Ordering them in `detectIssues` would not do: `displayPayIssue` reuses a single
-    /// label, so whichever fires later overwrites the other and the cap message would never render.
-    func poolTradeLimit(in model: SwapIssueCheckParams, locale: Locale) -> SwapPoolTradeLimitViewModel? {
-        guard
-            case let .failure(error) = model.quoteResult,
-            let failure = error as? AssetExchangeTradeLimitFailure,
-            let displayError = SwapDisplayError.PoolTradeLimit.build(
-                from: failure,
-                canApply: failure.isUserInputAdjustable && model.canApplyPoolTradeLimit,
-                viewModelFactory: balanceViewModelFactoryFacade,
-                locale: locale
-            )
-        else {
-            return nil
-        }
-
-        return SwapPoolTradeLimitViewModel(
-            message: displayError.message,
-            applyTitle: displayError.applyTitle,
-            side: SwapAmountFieldSide(direction: failure.direction)
-        )
     }
 }
 
@@ -117,8 +84,7 @@ extension SwapIssueViewModelFactory: SwapIssueViewModelFactoryProtocol {
             detectZeroReceiveAmount(in: model),
             detectInsufficientBalance(in: model),
             detectMinBalanceViolationOnReceive(in: model, locale: locale),
-            detectPoolTradeLimit(in: model, locale: locale),
-            detectNoLiquidity(in: model, locale: locale)
+            detectNoLiquidity(in: model)
         ].compactMap { $0 }
     }
 }

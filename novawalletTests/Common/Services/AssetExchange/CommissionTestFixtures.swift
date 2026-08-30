@@ -35,21 +35,13 @@ enum CommissionTestFixtures {
     }
 
     static func createPath(_ types: [AssetExchangeEdgeType]) -> AssetExchangeGraphPath {
-        createPath(types) { amount, _ in amount }
-    }
-
-    static func createPath(
-        _ types: [AssetExchangeEdgeType],
-        quoteClosure: @escaping (Balance, AssetConversion.Direction) throws -> Balance
-    ) -> AssetExchangeGraphPath {
         types.enumerated().map { index, type in
             AnyAssetExchangeEdge(
                 StubAssetExchangeEdge(
                     origin: asset(AssetModel.Id(index)),
                     destination: asset(AssetModel.Id(index + 1)),
                     type: type,
-                    chain: chain,
-                    quoteClosure: quoteClosure
+                    chain: chain
                 )
             )
         }

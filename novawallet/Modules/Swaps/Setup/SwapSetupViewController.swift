@@ -91,11 +91,6 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
             action: #selector(depositTokenAction),
             for: .touchUpInside
         )
-        rootView.poolTradeLimitButton.addTarget(
-            self,
-            action: #selector(poolTradeLimitAction),
-            for: .touchUpInside
-        )
 
         rootView.detailsView.delegate = self
     }
@@ -189,10 +184,6 @@ final class SwapSetupViewController: UIViewController, ViewHolder {
 
     @objc private func depositTokenAction() {
         presenter.depositInsufficientToken()
-    }
-
-    @objc private func poolTradeLimitAction() {
-        presenter.applyPoolTradeLimit()
     }
 }
 
@@ -298,7 +289,6 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
     func didReceive(issues: [SwapSetupViewIssue]) {
         rootView.hideIssues()
         rootView.changeDepositTokenButtonVisibility(hidden: true)
-        rootView.changePoolTradeLimitButtonVisibility(hidden: true)
 
         issues.forEach { issue in
             switch issue {
@@ -330,12 +320,6 @@ extension SwapSetupViewController: SwapSetupViewProtocol {
                 ).localizable.swapsNotEnoughLiquidity()
 
                 rootView.displayPayIssue(with: message)
-            case let .poolTradeLimit(viewModel):
-                rootView.displayPoolTradeLimit(
-                    message: viewModel.message,
-                    applyTitle: viewModel.applyTitle,
-                    on: viewModel.side
-                )
             }
         }
     }

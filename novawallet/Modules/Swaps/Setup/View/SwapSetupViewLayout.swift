@@ -11,15 +11,6 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         $0.imageWithTitleView?.titleColor = R.color.colorButtonTextAccent()
     }
 
-    /// Applies a pool's maximum tradable amount to the pay or receive field. Shaped like
-    /// `depositTokenButton` rather than sharing it: that one's title is owned by the pay asset and it
-    /// is shown by two unrelated issues. It is moved under whichever field it fills, so it never sits
-    /// beneath an input it does not change.
-    let poolTradeLimitButton: TriangularedButton = .create {
-        $0.applySecondaryDefaultStyle()
-        $0.imageWithTitleView?.titleColor = R.color.colorButtonTextAccent()
-    }
-
     let receiveAmountView: TitleHorizontalMultiValueView = .create {
         $0.titleView.apply(style: .footnoteSecondary)
         $0.detailsTitleLabel.apply(style: .footnoteSecondary)
@@ -135,10 +126,6 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         depositTokenButton.snp.makeConstraints {
             $0.height.equalTo(44)
         }
-        addArrangedSubview(poolTradeLimitButton, spacingAfter: 24)
-        poolTradeLimitButton.snp.makeConstraints {
-            $0.height.equalTo(44)
-        }
         addArrangedSubview(receiveAmountView, spacingAfter: 8)
         receiveAmountView.snp.makeConstraints {
             $0.height.equalTo(18)
@@ -193,39 +180,6 @@ final class SwapSetupViewLayout: ScrollableContainerLayoutView {
         }
         depositTokenButton.isHidden = hidden
         setNeedsLayout()
-    }
-
-    func changePoolTradeLimitButtonVisibility(hidden: Bool) {
-        poolTradeLimitButton.isHidden = hidden
-        setNeedsLayout()
-    }
-
-    /// Renders the cap against the field it is measured in and parks the apply button directly beneath
-    /// that field's message. A `.buy` cap is denominated in the receive asset and the tap rewrites the
-    /// receive field, so putting either on the pay side would flag an input the user did not type the
-    /// offending number into and offer to change a different one.
-    func displayPoolTradeLimit(message: String, applyTitle: String?, on side: SwapAmountFieldSide) {
-        let anchor: UIView
-
-        switch side {
-        case .pay:
-            displayPayIssue(with: message)
-            anchor = depositTokenButton
-        case .receive:
-            displayReceiveIssue(with: message)
-            anchor = receiveIssueLabel ?? receiveAmountInputView
-        }
-
-        guard let applyTitle else {
-            return
-        }
-
-        poolTradeLimitButton.imageWithTitleView?.title = applyTitle
-
-        stackView.removeArrangedSubview(poolTradeLimitButton)
-        insertArrangedSubview(poolTradeLimitButton, after: anchor, spacingAfter: 24)
-
-        changePoolTradeLimitButtonVisibility(hidden: false)
     }
 
     func hideIssues() {

@@ -11,8 +11,4 @@ struct SwapIssueCheckParams {
     let receiveAssetExistense: AssetBalanceExistence?
     let quoteResult: Result<AssetExchangeQuote, Error>?
     let fee: AssetExchangeFee?
-
-    /// Whether another tap-apply of a pool trade limit is still inside the correction budget (FR-17).
-    /// Carried in so that the issue detection stays a pure function of its input.
-    let canApplyPoolTradeLimit: Bool
 }
