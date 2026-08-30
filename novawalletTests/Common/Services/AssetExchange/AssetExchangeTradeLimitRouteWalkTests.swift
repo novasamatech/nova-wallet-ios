@@ -62,6 +62,23 @@ final class AssetExchangeTradeLimitRouteWalkTests: XCTestCase {
         XCTAssertEqual(try Self.run(route), .blocked(nil))
     }
 
+    func testUnavailableVerdictPropagatesInsteadOfPassingTheHop() {
+        let route = Self.route(direction: .sell, hops: [.verdictUnavailable, .withinLimit])
+
+        XCTAssertThrowsError(try Self.run(route)) { error in
+            XCTAssertEqual(error as? StubAssetExchangeEdgeError, .verdictUnavailable)
+        }
+    }
+
+    func testSingleHopBuyIsUserAdjustable() throws {
+        let route = Self.route(direction: .buy, hops: [.breaching])
+
+        XCTAssertEqual(
+            try Self.run(route),
+            .blocked(Self.failure(direction: .buy, isUserInputAdjustable: true))
+        )
+    }
+
     func testDoubleErasedHopReportsItsBreach() throws {
         let route = Self.route(
             direction: .sell,
@@ -82,6 +99,7 @@ private extension AssetExchangeTradeLimitRouteWalkTests {
         case withinLimit
         case breaching
         case breachingWithoutCap
+        case verdictUnavailable
     }
 
     static let chain = ChainModelGenerator.generateChain(generatingAssets: 2, addressPrefix: 0)
@@ -123,18 +141,22 @@ private extension AssetExchangeTradeLimitRouteWalkTests {
             return tradeLimitedEdge(verdict: .exceeds(breach(maxGivenAmount: maxGivenAmount)))
         case .breachingWithoutCap:
             return tradeLimitedEdge(verdict: .exceeds(breach(maxGivenAmount: nil)))
+        case .verdictUnavailable:
+            return tradeLimitedEdge(verdictError: StubAssetExchangeEdgeError.verdictUnavailable)
         }
     }
 
     static func tradeLimitedEdge(
-        verdict: AssetExchangeTradeLimitVerdict
+        verdict: AssetExchangeTradeLimitVerdict = .withinLimit,
+        verdictError: Error? = nil
     ) -> StubTradeLimitedExchangeEdge {
         StubTradeLimitedExchangeEdge(
             origin: limitedAsset.chainAssetId,
             destination: limitedAsset.chainAssetId,
             type: .hydraSwap,
             chain: limitedAsset.chain,
-            verdict: verdict
+            verdict: verdict,
+            verdictError: verdictError
         )
     }
 

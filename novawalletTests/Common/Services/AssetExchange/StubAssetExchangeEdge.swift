@@ -4,6 +4,7 @@ import Operation_iOS
 
 enum StubAssetExchangeEdgeError: Error {
     case notSupported
+    case verdictUnavailable
 }
 
 class StubAssetExchangeEdge {
@@ -227,15 +228,18 @@ extension AssetExchangeAtomicOperationArgs {
 
 final class StubTradeLimitedExchangeEdge: StubAssetExchangeEdge, AssetExchangeTradeLimitedEdge {
     let verdict: AssetExchangeTradeLimitVerdict
+    let verdictError: Error?
 
     init(
         origin: ChainAssetId,
         destination: ChainAssetId,
         type: AssetExchangeEdgeType,
         chain: ChainModel,
-        verdict: AssetExchangeTradeLimitVerdict = .withinLimit
+        verdict: AssetExchangeTradeLimitVerdict = .withinLimit,
+        verdictError: Error? = nil
     ) {
         self.verdict = verdict
+        self.verdictError = verdictError
 
         super.init(origin: origin, destination: destination, type: type, chain: chain)
     }
@@ -244,6 +248,10 @@ final class StubTradeLimitedExchangeEdge: StubAssetExchangeEdge, AssetExchangeTr
         amount _: Balance,
         direction _: AssetConversion.Direction
     ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict> {
-        .createWithResult(verdict)
+        if let verdictError {
+            return .createWithError(verdictError)
+        }
+
+        return .createWithResult(verdict)
     }
 }
