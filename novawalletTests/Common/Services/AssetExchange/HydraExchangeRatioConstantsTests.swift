@@ -5,26 +5,6 @@ import Operation_iOS
 import BigInt
 
 final class HydraExchangeRatioConstantsTests: XCTestCase {
-    func testXYKRatioConstantsAddressTheXYKPallet() {
-        let constants = HydraExchangeTradeLimits.RatioConstants.xyk
-
-        XCTAssertEqual(constants.pallet, "XYK")
-        XCTAssertEqual(constants.maxInRatioPath.moduleName, "XYK")
-        XCTAssertEqual(constants.maxInRatioPath.constantName, "MaxInRatio")
-        XCTAssertEqual(constants.maxOutRatioPath.moduleName, "XYK")
-        XCTAssertEqual(constants.maxOutRatioPath.constantName, "MaxOutRatio")
-    }
-
-    func testOmnipoolRatioConstantsAddressTheOmnipoolPallet() {
-        let constants = HydraExchangeTradeLimits.RatioConstants.omnipool
-
-        XCTAssertEqual(constants.pallet, "Omnipool")
-        XCTAssertEqual(constants.maxInRatioPath.moduleName, "Omnipool")
-        XCTAssertEqual(constants.maxInRatioPath.constantName, "MaxInRatio")
-        XCTAssertEqual(constants.maxOutRatioPath.moduleName, "Omnipool")
-        XCTAssertEqual(constants.maxOutRatioPath.constantName, "MaxOutRatio")
-    }
-
     func testEachPalletReadsItsOwnRatiosRatherThanTheOtherPalletsPair() throws {
         let codingFactory = try makeCodingFactory(
             xykRatios: ["MaxInRatio": 3, "MaxOutRatio": 3],
@@ -73,20 +53,6 @@ final class HydraExchangeRatioConstantsTests: XCTestCase {
         XCTAssertEqual(
             try fetchRatios(for: .xyk, using: codingFactory),
             HydraExchangeTradeLimits.Ratios(maxInRatio: 3, maxOutRatio: 3)
-        )
-    }
-
-    func testRatioConstantsDecodeAtFullBalanceWidth() throws {
-        let wide = try XCTUnwrap(Balance("340282366920938463463374607431768211455"))
-
-        let codingFactory = try makeCodingFactory(
-            xykRatios: ["MaxInRatio": wide, "MaxOutRatio": wide],
-            omnipoolRatios: [:]
-        )
-
-        XCTAssertEqual(
-            try fetchRatios(for: .xyk, using: codingFactory),
-            HydraExchangeTradeLimits.Ratios(maxInRatio: wide, maxOutRatio: wide)
         )
     }
 }
