@@ -25,12 +25,6 @@ class AssetsHydraExchangeEdge {
         self.host = host
     }
 
-    /// The pool asset a cap is denominated in: `origin` for a sell, `destination` for a buy, matching
-    /// the direction the cap was measured in.
-    ///
-    /// This edge is the one place that has both the remote pair and the chain — the quote factories
-    /// work in `HydraDx.AssetId` space and cannot resolve a local `ChainAsset`, and the route walk
-    /// holds only a type-erased edge.
     func limitedAsset(for direction: AssetConversion.Direction) -> ChainAsset? {
         let localAssetId = switch direction {
         case .sell: origin

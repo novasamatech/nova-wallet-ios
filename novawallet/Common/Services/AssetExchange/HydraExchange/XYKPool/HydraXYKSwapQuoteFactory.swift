@@ -114,10 +114,6 @@ extension HydraXYKSwapQuoteFactory {
 }
 
 extension HydraXYKSwapQuoteFactory {
-    /// Answers the XYK pallet's `validate_sell` / `validate_buy` for one hop, and derives the cap in
-    /// the same pass — the reserves are already in hand, so reporting costs no extra round trip.
-    ///
-    /// Static and reserve-driven so the arithmetic is testable without a flow state (NFR-2).
     static func tradeLimitVerdict(
         for amount: Balance,
         direction: AssetConversion.Direction,

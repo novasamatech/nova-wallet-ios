@@ -36,9 +36,6 @@ final class SwapSetupPresenter: SwapBasePresenter {
      */
     private var maxCorrectionCounter = MaxCounter.feeCorrection()
 
-    /// Applying a pool's maximum re-quotes, and that re-quote can trip the limit again while reserves
-    /// keep moving. Bounded the same way; a swap that finally clears the limits gives the budget back.
-    /// Not `private`: the apply itself lives in `SwapSetupPresenter+PoolTradeLimit`.
     var poolLimitCorrectionCounter = MaxCounter.feeCorrection()
 
     init(

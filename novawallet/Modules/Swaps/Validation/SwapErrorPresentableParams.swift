@@ -35,18 +35,11 @@ enum SwapDisplayError {
         let title: String
         let message: String
 
-        /// `nil` when there is nothing to apply: an intermediate hop's cap is denominated in an asset
-        /// the user never typed, and a spent correction budget means another tap would not converge.
         let applyTitle: String?
     }
 }
 
 extension SwapDisplayError.PoolTradeLimit {
-    /// The inline issue on the setup screen and the alert on the confirm screen are both built here, so
-    /// the amount named in the message is always the amount the action fills in.
-    ///
-    /// `nil` means there is nothing worth saying: the pool's own minimum is above anything it would
-    /// accept, so no amount works and the generic "not enough liquidity" is the honest answer (FR-15).
     static func build(
         from failure: AssetExchangeTradeLimitFailure,
         canApply: Bool,
@@ -68,8 +61,6 @@ extension SwapDisplayError.PoolTradeLimit {
         }
 
         guard failure.isUserInputAdjustable else {
-            // An intermediate hop, so there is no field to fill. Android quotes the exact cap here
-            // rather than the undershot suggestion, because nothing is going to be applied from it.
             return .init(
                 title: strings.swapFailurePoolTradeLimitTitle(),
                 message: strings.swapFailurePoolTradeLimitRouteMessage(

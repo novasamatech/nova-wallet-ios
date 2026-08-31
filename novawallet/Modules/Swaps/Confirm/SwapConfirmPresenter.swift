@@ -17,10 +17,6 @@ final class SwapConfirmPresenter: SwapBasePresenter {
 
     private var quoteArgs: AssetConversion.QuoteArgs
 
-    /*
-     *  Applying a pool trade limit re-quotes, which can trip the limit again while reserves keep
-     *  moving. Bounded the same way the fee/max cycle is, so the suggestion cannot be offered forever.
-     */
     private var poolLimitCorrectionCounter = MaxCounter.feeCorrection()
 
     init(
@@ -134,8 +130,6 @@ final class SwapConfirmPresenter: SwapBasePresenter {
             return
         }
 
-        // Unlike `applySwapMax`, the direction is the one the cap was measured in: a `.buy` cap bounds
-        // the amount out, and re-quoting it as a sell would ask the pool an entirely different question.
         quoteArgs = AssetConversion.QuoteArgs(
             assetIn: initState.quoteArgs.assetIn,
             assetOut: initState.quoteArgs.assetOut,

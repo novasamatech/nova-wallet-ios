@@ -353,8 +353,6 @@ class SwapBaseInteractor: AnyCancellableCleaning, AnyProviderAutoCleaning, SwapB
             case let .success(check):
                 completion(check)
             case .failure:
-                // The app could not establish whether the trade is legal, so it must not be signed
-                // (FR-6). A missing ratio constant reaches here.
                 completion(.blocked(nil))
             }
         }

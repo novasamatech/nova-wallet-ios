@@ -17,8 +17,6 @@ extension HydraXYK {
         ConstantCodingPath(moduleName: Self.name, constantName: "MaxOutRatio")
     }
 
-    /// Named `MinTradingLimit` here and `MinimumTradingLimit` in Omnipool, even though both bind the
-    /// same runtime value. Copying either name into the other pallet throws `invalidStoragePath`.
     static var minTradingLimitPath: ConstantCodingPath {
         ConstantCodingPath(moduleName: Self.name, constantName: "MinTradingLimit")
     }

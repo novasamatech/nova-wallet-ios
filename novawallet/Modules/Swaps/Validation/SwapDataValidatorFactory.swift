@@ -11,9 +11,6 @@ struct SwapInterEDValidatingParams {
 
 typealias SwapInterEDValidatingClosure = (SwapInterEDValidatingParams) -> Void
 
-/// Applies a pool trade limit's suggested amount and re-quotes. `nil` where the correction budget is
-/// spent: the dialog then states the cap without offering to fill it in, so a tap can never do nothing
-/// and the tap-apply cycle stays bounded (FR-17).
 typealias SwapPoolTradeLimitApplying = (Balance, AssetConversion.Direction) -> Void
 
 protocol SwapDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {

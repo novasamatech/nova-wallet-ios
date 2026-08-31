@@ -1,6 +1,5 @@
 import Foundation
 
-/// Runs the route walk and calls back with its answer.
 typealias SwapPoolTradeLimitValidatingClosure =
     (AssetExchangeRoute, @escaping (SwapPoolTradeLimitCheck) -> Void) -> Void
 
@@ -28,9 +27,6 @@ extension SwapDataValidatorFactory {
                         viewModelFactory: viewModelFactory,
                         locale: locale
                     ) else {
-                    // Nothing nameable: an underivable cap, a cap that headrooms to zero, or a cap the
-                    // pool's own minimum sits above. The generic message is the honest answer rather
-                    // than a number that cannot work.
                     self?.presentable.presentNotEnoughLiquidity(from: view, locale: locale)
 
                     return

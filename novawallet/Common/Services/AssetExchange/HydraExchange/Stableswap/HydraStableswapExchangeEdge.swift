@@ -76,7 +76,6 @@ extension HydraStableswapExchangeEdge: AssetExchangableGraphEdge {
         )
     }
 
-    // stableswap has no MaxInRatio/MaxOutRatio, only MinTradingLimit — out of scope per spec §2
     func tradeLimitVerdict(
         amount _: Balance,
         direction _: AssetConversion.Direction

@@ -124,12 +124,6 @@ extension HydraOmnipoolQuoteFactory {
 }
 
 extension HydraOmnipoolQuoteFactory {
-    /// Answers the Omnipool pallet's `sell` / `buy` ratio checks for one hop. Unlike XYK these run on
-    /// the quoted amounts with no pre-fee adjustment (FR-3).
-    ///
-    /// The **check** is exact in both directions because it runs the pallet's own predicates on the
-    /// amounts. The **cap** is only closed-form on the direct side, so `omnipoolCap` may return `nil`;
-    /// the breach still blocks, it just carries no number (FR-16).
     static func tradeLimitVerdict(
         for amount: Balance,
         direction: AssetConversion.Direction,
