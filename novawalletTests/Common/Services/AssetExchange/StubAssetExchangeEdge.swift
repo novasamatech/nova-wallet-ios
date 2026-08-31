@@ -4,34 +4,27 @@ import Operation_iOS
 
 enum StubAssetExchangeEdgeError: Error {
     case notSupported
-    case verdictUnavailable
 }
 
-class StubAssetExchangeEdge {
+final class StubAssetExchangeEdge {
     let origin: ChainAssetId
     let destination: ChainAssetId
     let type: AssetExchangeEdgeType
     let chain: ChainModel
     let quoteClosure: (Balance, AssetConversion.Direction) -> Balance
-    let verdict: AssetExchangeTradeLimitVerdict
-    let verdictError: Error?
 
     init(
         origin: ChainAssetId,
         destination: ChainAssetId,
         type: AssetExchangeEdgeType,
         chain: ChainModel,
-        quoteClosure: @escaping (Balance, AssetConversion.Direction) -> Balance = { amount, _ in amount },
-        verdict: AssetExchangeTradeLimitVerdict = .withinLimit,
-        verdictError: Error? = nil
+        quoteClosure: @escaping (Balance, AssetConversion.Direction) -> Balance = { amount, _ in amount }
     ) {
         self.origin = origin
         self.destination = destination
         self.type = type
         self.chain = chain
         self.quoteClosure = quoteClosure
-        self.verdict = verdict
-        self.verdictError = verdictError
     }
 }
 
@@ -44,11 +37,7 @@ extension StubAssetExchangeEdge: AssetExchangableGraphEdge {
         amount _: Balance,
         direction _: AssetConversion.Direction
     ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict> {
-        if let verdictError {
-            return .createWithError(verdictError)
-        }
-
-        return .createWithResult(verdict)
+        .createWithResult(.withinLimit)
     }
 
     func addingWeight(to currentWeight: Int, predecessor _: AnyGraphEdgeProtocol?) -> Int {
