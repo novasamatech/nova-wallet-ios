@@ -71,4 +71,12 @@ extension HydraAaveExchangeEdge: AssetExchangableGraphEdge {
             args: args
         )
     }
+
+    // Aave pool edges route through the executor without ratio gates — out of scope per spec §2
+    func tradeLimitVerdict(
+        amount _: Balance,
+        direction _: AssetConversion.Direction
+    ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict> {
+        .createWithResult(.withinLimit)
+    }
 }

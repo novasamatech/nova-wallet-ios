@@ -13,6 +13,9 @@ final class SwapPoolTradeLimitReportingTests: XCTestCase {
         let failure = Self.failure(maxGivenAmount: 1_000_000, direction: .buy)
 
         let suggestion = try XCTUnwrap(failure.suggestion())
+
+        XCTAssertEqual(suggestion, 941_993)
+
         let rate = AssetExchangeCommissionConstants.rate
         let grossedUp = suggestion + rate.mul(value: suggestion)
 
@@ -31,6 +34,12 @@ final class SwapPoolTradeLimitReportingTests: XCTestCase {
 
     func testCapOfZeroIsNotOffered() {
         let failure = Self.failure(maxGivenAmount: 0, direction: .sell)
+
+        XCTAssertNil(failure.suggestion())
+    }
+
+    func testCapThatHeadroomsToZeroIsNotOffered() {
+        let failure = Self.failure(maxGivenAmount: 1, direction: .sell)
 
         XCTAssertNil(failure.suggestion())
     }

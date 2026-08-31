@@ -38,12 +38,3 @@ protocol AssetExchangableGraphEdge: GraphQuotableEdge {
         _ currentPrototype: AssetExchangeOperationPrototypeProtocol
     ) throws -> AssetExchangeOperationPrototypeProtocol?
 }
-
-extension AssetExchangableGraphEdge {
-    func tradeLimitVerdict(
-        amount _: Balance,
-        direction _: AssetConversion.Direction
-    ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict> {
-        .createWithResult(.withinLimit)
-    }
-}

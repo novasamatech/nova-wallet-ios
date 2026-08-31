@@ -79,6 +79,14 @@ extension CrosschainExchangeEdge: AssetExchangableGraphEdge {
         shouldProhibitTransferOutAll()
     }
 
+    // an XCM transfer, not a Hydration pool trade — no trade limit applies
+    func tradeLimitVerdict(
+        amount _: Balance,
+        direction _: AssetConversion.Direction
+    ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict> {
+        .createWithResult(.withinLimit)
+    }
+
     func beginMetaOperation(
         for amountIn: Balance,
         amountOut: Balance
