@@ -125,6 +125,10 @@ final class SwapConfirmPresenter: SwapBasePresenter {
         poolLimitCorrectionCounter.hasBudget()
     }
 
+    override func resetPoolTradeLimitCorrection() {
+        poolLimitCorrectionCounter.resetCounter()
+    }
+
     override func applyPoolTradeLimit(amount: Balance, direction: AssetConversion.Direction) {
         guard poolLimitCorrectionCounter.incrementCounterIfPossible() else {
             return
@@ -161,11 +165,6 @@ final class SwapConfirmPresenter: SwapBasePresenter {
     override func handleNewQuote(_ quote: AssetExchangeQuote, for _: AssetConversion.QuoteArgs) {
         quoteResult = .success(quote)
         fee = nil
-
-        // A quote that succeeds is the end of any tap-apply correction cycle (FR-17), same as on the
-        // setup screen. Without it the budget only ever runs down, and this screen has no amount field
-        // to fall back on: the third dialog would name an amount with no way left to reach it.
-        poolLimitCorrectionCounter.resetCounter()
 
         view?.didReceiveStopLoading()
 

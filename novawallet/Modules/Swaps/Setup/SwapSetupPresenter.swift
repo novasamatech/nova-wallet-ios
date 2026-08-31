@@ -37,8 +37,8 @@ final class SwapSetupPresenter: SwapBasePresenter {
     private var maxCorrectionCounter = MaxCounter.feeCorrection()
 
     /// Applying a pool's maximum re-quotes, and that re-quote can trip the limit again while reserves
-    /// keep moving. Bounded the same way; a quote that finally succeeds ends the cycle and gives the
-    /// budget back. Not `private`: the apply itself lives in `SwapSetupPresenter+PoolTradeLimit`.
+    /// keep moving. Bounded the same way; a swap that finally clears the limits gives the budget back.
+    /// Not `private`: the apply itself lives in `SwapSetupPresenter+PoolTradeLimit`.
     var poolLimitCorrectionCounter = MaxCounter.feeCorrection()
 
     init(
@@ -135,6 +135,10 @@ final class SwapSetupPresenter: SwapBasePresenter {
         poolLimitCorrectionCounter.hasBudget()
     }
 
+    override func resetPoolTradeLimitCorrection() {
+        poolLimitCorrectionCounter.resetCounter()
+    }
+
     override func applyPoolTradeLimit(amount: Balance, direction: AssetConversion.Direction) {
         applySuggestedAmount(amount, direction: direction)
     }
@@ -160,9 +164,6 @@ final class SwapSetupPresenter: SwapBasePresenter {
         if let fee, !quote.hasSamePath(other: fee.route) {
             maxCorrectionCounter.resetCounter()
         }
-
-        // A quote that succeeds is the end of any tap-apply correction cycle (FR-17).
-        poolLimitCorrectionCounter.resetCounter()
 
         // we need to keep fee in sync with quote
         fee = nil

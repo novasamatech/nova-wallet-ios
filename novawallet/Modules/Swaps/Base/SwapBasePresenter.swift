@@ -230,11 +230,19 @@ class SwapBasePresenter {
         fatalError("Must be implemented by parent class")
     }
 
-    /// Whether another tap-apply is still inside the correction budget (FR-17). Read while the
+    /// Whether another tap-apply is still inside the correction budget (FR-15). Read while the
     /// validators are being built, which happens on the user's own tap, so it is never stale.
     func canApplyPoolTradeLimit() -> Bool {
         false
     }
+
+    /// Hands the tap-apply budget back once a swap actually clears the pool limits (FR-15).
+    ///
+    /// The cycle ends when the validation passes, not when a quote succeeds. Since quoting stopped
+    /// rejecting over-limit amounts, every apply produces a successful quote, so resetting there
+    /// would reset the budget on the very re-quote the apply caused and the bound could never bind.
+    /// A validation pass is the one signal the apply cannot produce on its own.
+    func resetPoolTradeLimitCorrection() {}
 
     func handleBaseError(_: SwapBaseError) {}
 
@@ -333,8 +341,14 @@ class SwapBasePresenter {
     ) -> DataValidating {
         dataValidatingFactory.noPoolTradeLimitExceeded(
             params: swapModel,
-            remoteValidatingClosure: { route, completion in
-                interactor.requestValidatingPoolTradeLimits(for: route, completion: completion)
+            remoteValidatingClosure: { [weak self] route, completion in
+                interactor.requestValidatingPoolTradeLimits(for: route) { check in
+                    if case .withinLimits = check {
+                        self?.resetPoolTradeLimitCorrection()
+                    }
+
+                    completion(check)
+                }
             },
             poolTradeLimitAction: canApplyPoolTradeLimit()
                 ? { [weak self] amount, direction in
