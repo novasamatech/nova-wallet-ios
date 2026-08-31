@@ -41,21 +41,6 @@ final class AssetExchangeTradeLimitRouteWalkTests: XCTestCase {
         XCTAssertEqual(try Self.run(route), .withinLimits)
     }
 
-    func testRouteWithoutAnyTradeLimitedHopIsWithinLimits() throws {
-        let route = Self.route(direction: .sell, hops: [.unlimited, .unlimited])
-
-        XCTAssertEqual(try Self.run(route), .withinLimits)
-    }
-
-    func testHopWithoutTradeLimitsDoesNotStopTheWalk() throws {
-        let route = Self.route(direction: .sell, hops: [.unlimited, .breaching])
-
-        XCTAssertEqual(
-            try Self.run(route),
-            .blocked(Self.failure(direction: .sell, isUserInputAdjustable: false))
-        )
-    }
-
     func testBreachWithNoCapBlocksWithoutAFailure() throws {
         let route = Self.route(direction: .sell, hops: [.breachingWithoutCap, .withinLimit])
 
@@ -95,7 +80,6 @@ final class AssetExchangeTradeLimitRouteWalkTests: XCTestCase {
 
 private extension AssetExchangeTradeLimitRouteWalkTests {
     enum Hop {
-        case unlimited
         case withinLimit
         case breaching
         case breachingWithoutCap
@@ -128,13 +112,6 @@ private extension AssetExchangeTradeLimitRouteWalkTests {
 
     static func edge(for hop: Hop) -> StubAssetExchangeEdge {
         switch hop {
-        case .unlimited:
-            return StubAssetExchangeEdge(
-                origin: limitedAsset.chainAssetId,
-                destination: limitedAsset.chainAssetId,
-                type: .hydraSwap,
-                chain: limitedAsset.chain
-            )
         case .withinLimit:
             return tradeLimitedEdge(verdict: .withinLimit)
         case .breaching:
@@ -149,8 +126,8 @@ private extension AssetExchangeTradeLimitRouteWalkTests {
     static func tradeLimitedEdge(
         verdict: AssetExchangeTradeLimitVerdict = .withinLimit,
         verdictError: Error? = nil
-    ) -> StubTradeLimitedExchangeEdge {
-        StubTradeLimitedExchangeEdge(
+    ) -> StubAssetExchangeEdge {
+        StubAssetExchangeEdge(
             origin: limitedAsset.chainAssetId,
             destination: limitedAsset.chainAssetId,
             type: .hydraSwap,

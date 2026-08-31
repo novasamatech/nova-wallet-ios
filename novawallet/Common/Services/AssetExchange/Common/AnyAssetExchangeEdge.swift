@@ -9,23 +9,10 @@ class AnyAssetExchangeEdge {
     private let fetchDestination: () -> ChainAssetId
     private let fetchQuote: (Balance, AssetConversion.Direction) -> CompoundOperationWrapper<Balance>
 
-    /// `nil` for an edge type that has no trade limits. This eraser captures closures rather than
-    /// boxing the edge, so `AnyAssetExchangeEdge` never conforms to `AssetExchangeTradeLimitedEdge`
-    /// and a downstream `as?` can never succeed — the forwarder is the only way through.
-    ///
-    /// An edge can also arrive here *already erased*. All four Hydration exchanges hand back
-    /// `AnyAssetExchangeEdge` values, and `AssetsExchangeGraphProvider` erases every edge again, so
-    /// every Hydration hop reaches the graph double-wrapped. `init` must therefore fall through to an
-    /// inner eraser's stored closure: testing the concrete conformance alone finds nothing on the
-    /// inner eraser, and every hop then silently reports "no trade limits", so the validation never
-    /// fires. The double-erasure cases in `AssetExchangeTradeLimitedEdgeTests` exist to go red if the
-    /// `??` branch is dropped.
-    ///
-    /// Any optional capability stored on this eraser later must repeat the same fall-through: look for
-    /// the concrete conformance first, then for an inner eraser's stored closure.
     private let fetchTradeLimitVerdict: (
-        (Balance, AssetConversion.Direction) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict>
-    )?
+        Balance,
+        AssetConversion.Direction
+    ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict>
 
     private let beginOperationClosure: (AssetExchangeAtomicOperationArgs) throws -> AssetExchangeAtomicOperationProtocol
     private let appendToOperationClosure: (
@@ -54,8 +41,7 @@ class AnyAssetExchangeEdge {
         fetchOrigin = { edge.origin }
         fetchDestination = { edge.destination }
         fetchQuote = edge.quote
-        fetchTradeLimitVerdict = (edge as? AssetExchangeTradeLimitedEdge)?.tradeLimitVerdict
-            ?? (edge as? AnyAssetExchangeEdge)?.fetchTradeLimitVerdict
+        fetchTradeLimitVerdict = edge.tradeLimitVerdict
         beginOperationClosure = edge.beginOperation
         appendToOperationClosure = edge.appendToOperation
         shouldIgnoreFeeRequirementClosure = edge.shouldIgnoreFeeRequirement
@@ -78,8 +64,8 @@ extension AnyAssetExchangeEdge: AssetExchangableGraphEdge {
     func tradeLimitVerdict(
         amount: Balance,
         direction: AssetConversion.Direction
-    ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict>? {
-        fetchTradeLimitVerdict?(amount, direction)
+    ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict> {
+        fetchTradeLimitVerdict(amount, direction)
     }
 
     var origin: ChainAssetId { fetchOrigin() }

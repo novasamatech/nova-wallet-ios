@@ -14,8 +14,8 @@ enum SwapPoolTradeLimitCheck: Equatable {
 }
 
 extension AssetExchangeRoute {
-    /// Asks each trade-limited hop whether its pallet would reject that hop's *given* amount, and stops
-    /// at the first that would.
+    /// Asks each hop whether its pallet would reject that hop's *given* amount, and stops at the first
+    /// that would. A hop with no trade limits answers `.withinLimit` by default.
     ///
     /// `item.amount` is the given amount — the input for a sell, the output for a buy — because of how
     /// each item was built, not because of where it sits: it is whatever was handed to that hop's quote
@@ -36,10 +36,6 @@ extension AssetExchangeRoute {
 
         let mergeOperation = ClosureOperation<SwapPoolTradeLimitCheck> {
             for (index, verdictWrapper) in verdictWrappers.enumerated() {
-                guard let verdictWrapper else {
-                    continue
-                }
-
                 let verdict = try verdictWrapper.targetOperation.extractNoCancellableResultData()
 
                 guard case let .exceeds(breach) = verdict else {
@@ -71,7 +67,7 @@ extension AssetExchangeRoute {
             return .withinLimits
         }
 
-        let dependencies = verdictWrappers.compactMap { $0 }.flatMap(\.allOperations)
+        let dependencies = verdictWrappers.flatMap(\.allOperations)
 
         dependencies.forEach { mergeOperation.addDependency($0) }
 

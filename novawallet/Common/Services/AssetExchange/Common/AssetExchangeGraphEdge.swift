@@ -17,6 +17,11 @@ protocol AssetExchangableGraphEdge: GraphQuotableEdge {
 
     func requiresOriginKeepAliveOnIntermediatePosition() -> Bool
 
+    func tradeLimitVerdict(
+        amount: Balance,
+        direction: AssetConversion.Direction
+    ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict>
+
     var type: AssetExchangeEdgeType { get }
 
     func beginMetaOperation(for amountIn: Balance, amountOut: Balance) throws -> AssetExchangeMetaOperationProtocol
@@ -32,4 +37,13 @@ protocol AssetExchangableGraphEdge: GraphQuotableEdge {
     func appendToOperationPrototype(
         _ currentPrototype: AssetExchangeOperationPrototypeProtocol
     ) throws -> AssetExchangeOperationPrototypeProtocol?
+}
+
+extension AssetExchangableGraphEdge {
+    func tradeLimitVerdict(
+        amount _: Balance,
+        direction _: AssetConversion.Direction
+    ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict> {
+        .createWithResult(.withinLimit)
+    }
 }

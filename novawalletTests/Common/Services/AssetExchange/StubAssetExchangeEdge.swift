@@ -13,25 +13,42 @@ class StubAssetExchangeEdge {
     let type: AssetExchangeEdgeType
     let chain: ChainModel
     let quoteClosure: (Balance, AssetConversion.Direction) -> Balance
+    let verdict: AssetExchangeTradeLimitVerdict
+    let verdictError: Error?
 
     init(
         origin: ChainAssetId,
         destination: ChainAssetId,
         type: AssetExchangeEdgeType,
         chain: ChainModel,
-        quoteClosure: @escaping (Balance, AssetConversion.Direction) -> Balance = { amount, _ in amount }
+        quoteClosure: @escaping (Balance, AssetConversion.Direction) -> Balance = { amount, _ in amount },
+        verdict: AssetExchangeTradeLimitVerdict = .withinLimit,
+        verdictError: Error? = nil
     ) {
         self.origin = origin
         self.destination = destination
         self.type = type
         self.chain = chain
         self.quoteClosure = quoteClosure
+        self.verdict = verdict
+        self.verdictError = verdictError
     }
 }
 
 extension StubAssetExchangeEdge: AssetExchangableGraphEdge {
     func quote(amount: Balance, direction: AssetConversion.Direction) -> CompoundOperationWrapper<Balance> {
         .createWithResult(quoteClosure(amount, direction))
+    }
+
+    func tradeLimitVerdict(
+        amount _: Balance,
+        direction _: AssetConversion.Direction
+    ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict> {
+        if let verdictError {
+            return .createWithError(verdictError)
+        }
+
+        return .createWithResult(verdict)
     }
 
     func addingWeight(to currentWeight: Int, predecessor _: AnyGraphEdgeProtocol?) -> Int {
@@ -223,35 +240,5 @@ extension AssetExchangeAtomicOperationArgs {
             feeAsset: feeAsset,
             commission: other.commission ?? commission
         )
-    }
-}
-
-final class StubTradeLimitedExchangeEdge: StubAssetExchangeEdge, AssetExchangeTradeLimitedEdge {
-    let verdict: AssetExchangeTradeLimitVerdict
-    let verdictError: Error?
-
-    init(
-        origin: ChainAssetId,
-        destination: ChainAssetId,
-        type: AssetExchangeEdgeType,
-        chain: ChainModel,
-        verdict: AssetExchangeTradeLimitVerdict = .withinLimit,
-        verdictError: Error? = nil
-    ) {
-        self.verdict = verdict
-        self.verdictError = verdictError
-
-        super.init(origin: origin, destination: destination, type: type, chain: chain)
-    }
-
-    func tradeLimitVerdict(
-        amount _: Balance,
-        direction _: AssetConversion.Direction
-    ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict> {
-        if let verdictError {
-            return .createWithError(verdictError)
-        }
-
-        return .createWithResult(verdict)
     }
 }

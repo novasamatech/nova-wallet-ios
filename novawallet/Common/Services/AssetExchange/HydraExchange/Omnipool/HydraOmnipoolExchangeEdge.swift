@@ -73,7 +73,7 @@ extension HydraOmnipoolExchangeEdge: AssetExchangableGraphEdge {
     }
 }
 
-extension HydraOmnipoolExchangeEdge: AssetExchangeTradeLimitedEdge {
+extension HydraOmnipoolExchangeEdge {
     func tradeLimitVerdict(
         amount: Balance,
         direction: AssetConversion.Direction
