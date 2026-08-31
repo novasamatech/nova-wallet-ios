@@ -52,7 +52,6 @@ extension HydraDx {
         }
     }
 
-    typealias LocalSwapRoute = SwapRoute<ChainAssetId>
     typealias RemoteSwapRoute = SwapRoute<HydraDx.AssetId>
 }
 

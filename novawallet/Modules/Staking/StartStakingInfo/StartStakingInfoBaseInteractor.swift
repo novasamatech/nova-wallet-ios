@@ -11,6 +11,7 @@ class StartStakingInfoBaseInteractor: StartStakingInfoInteractorInputProtocol, A
     let selectedWalletSettings: SelectedWalletSettings
     let selectedStakingType: StakingType?
     let sharedOperation: SharedOperationStatusProtocol
+    let announcementsRepository: AnnouncementsRepositoryProtocol
 
     private(set) var priceProvider: StreamableProvider<PriceData>?
     private(set) var balanceProvider: StreamableProvider<AssetBalance>?
@@ -27,12 +28,14 @@ class StartStakingInfoBaseInteractor: StartStakingInfoInteractorInputProtocol, A
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         stakingDashboardProviderFactory: StakingDashboardProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        announcementsRepository: AnnouncementsRepositoryProtocol = AnnouncementsRepository.shared
     ) {
         self.selectedWalletSettings = selectedWalletSettings
         self.selectedChainAsset = selectedChainAsset
         self.selectedStakingType = selectedStakingType
         self.sharedOperation = sharedOperation
+        self.announcementsRepository = announcementsRepository
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.stakingDashboardProviderFactory = stakingDashboardProviderFactory
@@ -92,18 +95,39 @@ class StartStakingInfoBaseInteractor: StartStakingInfoInteractorInputProtocol, A
         )
     }
 
+    private func provideAnnouncements() {
+        let wrapper = announcementsRepository.fetchAnnouncementsWrapper(for: .staking)
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            guard let self else { return }
+
+            switch result {
+            case let .success(announcements):
+                basePresenter?.didReceive(announcements: announcements)
+            case .failure:
+                basePresenter?.didReceive(announcements: [])
+            }
+        }
+    }
+
     func setup() {
         setupSelectedAccount()
 
         performAssetBalanceSubscription()
         performPriceSubscription()
         performStakingStateSubscription()
+        provideAnnouncements()
     }
 
     func remakeSubscriptions() {
         performAssetBalanceSubscription()
         performPriceSubscription()
         performStakingStateSubscription()
+        provideAnnouncements()
     }
 }
 

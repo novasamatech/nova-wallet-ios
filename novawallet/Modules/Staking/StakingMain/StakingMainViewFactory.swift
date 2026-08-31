@@ -45,6 +45,7 @@ enum StakingMainViewFactory {
             childPresenterFactory: childPresenterFactory,
             viewModelFactory: StakingMainViewModelFactory(),
             ahmViewModelFactory: AHMInfoViewModelFactory(),
+            announcementViewModelFactory: AnnouncementViewModelFactory(),
             localizationManager: localizationManager,
             logger: Logger.shared
         )
@@ -72,6 +73,7 @@ enum StakingMainViewFactory {
 
         return .init(
             ahmInfoFactory: ahmInfoFactory,
+            announcementsRepository: AnnouncementsRepository.shared,
             settingsManager: settings,
             stakingOption: stakingOption,
             selectedWalletSettings: SelectedWalletSettings.shared,

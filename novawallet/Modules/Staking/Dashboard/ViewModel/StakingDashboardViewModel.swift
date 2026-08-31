@@ -29,6 +29,7 @@ struct StakingDashboardEnabledViewModel {
     let yourStake: SecuredViewModel<LoadableViewModelState<BalanceViewModelProtocol>>
     let estimatedEarnings: LoadableViewModelState<String?>
     let stakingType: TitleIconViewModel?
+    let announcement: AnnouncementViewModel?
 }
 
 struct StakingDashboardDisabledViewModel {
@@ -39,6 +40,7 @@ struct StakingDashboardDisabledViewModel {
 }
 
 struct StakingDashboardViewModel {
+    let announcements: [AnnouncementViewModel]
     let active: [StakingDashboardEnabledViewModel]
     let inactive: [StakingDashboardDisabledViewModel]
     let hasMoreOptions: Bool
@@ -59,6 +61,7 @@ struct StakingDashboardViewModel {
         }
 
         return .init(
+            announcements: announcements,
             active: newActive,
             inactive: newInactive,
             hasMoreOptions: hasMoreOptions,

@@ -1,3 +1,4 @@
+import Foundation
 import Operation_iOS
 import SubstrateSdk
 
@@ -6,6 +7,10 @@ protocol BlockHashOperationFactoryProtocol {
         connection: JSONRPCEngine,
         for numberClosure: @escaping () throws -> BlockNumber
     ) -> BaseOperation<String>
+
+    func createBestBlockHashWrapper(
+        connection: JSONRPCEngine
+    ) -> CompoundOperationWrapper<BlockHashData>
 }
 
 class BlockHashOperationFactory: BlockHashOperationFactoryProtocol {
@@ -28,5 +33,27 @@ class BlockHashOperationFactory: BlockHashOperationFactoryProtocol {
         }
 
         return requestOperation
+    }
+
+    func createBestBlockHashWrapper(
+        connection: JSONRPCEngine
+    ) -> CompoundOperationWrapper<BlockHashData> {
+        let requestOperation = JSONRPCListOperation<String>(
+            engine: connection,
+            method: RPCMethod.getBlockHash
+        )
+
+        let mapOperation = ClosureOperation<BlockHashData> {
+            let hexHash = try requestOperation.extractNoCancellableResultData()
+
+            return try Data(hexString: hexHash)
+        }
+
+        mapOperation.addDependency(requestOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: mapOperation,
+            dependencies: [requestOperation]
+        )
     }
 }

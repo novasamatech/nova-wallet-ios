@@ -6,7 +6,7 @@ final class AssetConversionFeeEstimatingFactory {
     let host: ExtrinsicFeeEstimatorHostProtocol
     let feeBufferInPercentage: BigRational
 
-    private var hydraFlowState: HydraFlowState?
+    private let hydraFeeOracleState: HydraFeeOracleState
 
     init(
         host: ExtrinsicFeeEstimatorHostProtocol,
@@ -14,17 +14,10 @@ final class AssetConversionFeeEstimatingFactory {
     ) {
         self.host = host
         self.feeBufferInPercentage = feeBufferInPercentage
-    }
 
-    private func setupHydraFlowState() -> HydraFlowState {
-        if let hydraFlowState {
-            return hydraFlowState
-        }
-
-        let hydraFlowState = AssetConversionFeeSharedStateStore.getOrCreateHydra(for: host)
-        self.hydraFlowState = hydraFlowState
-
-        return hydraFlowState
+        hydraFeeOracleState = AssetConversionFeeSharedStateStore.getOrCreateHydraFeeOracleState(
+            for: host.chain.chainId
+        )
     }
 }
 
@@ -33,15 +26,15 @@ extension AssetConversionFeeEstimatingFactory: ExtrinsicCustomFeeEstimatingFacto
         switch AssetType(rawType: chainAsset.asset.type) {
         case .orml where chainAsset.chain.hasHydrationFees,
              .ormlHydrationEvm where chainAsset.chain.hasHydrationFees:
-            let hydraState = setupHydraFlowState()
-            let hydraQuoteFactory = HydraQuoteFactory(flowState: hydraState)
-
             let quoteFactory = HydraFeeQuoteFactory(
-                chain: chainAsset.chain,
-                realQuoteFactory: hydraQuoteFactory,
-                connection: host.connection,
-                runtimeService: host.runtimeProvider,
-                operationQueue: host.operationQueue
+                priceFactory: HydraFeeOraclePriceFactory(
+                    chain: chainAsset.chain,
+                    connection: host.connection,
+                    runtimeService: host.runtimeProvider,
+                    state: hydraFeeOracleState,
+                    operationQueue: host.operationQueue,
+                    logger: host.logger
+                )
             )
 
             return ExtrinsicAssetConversionFeeEstimator(

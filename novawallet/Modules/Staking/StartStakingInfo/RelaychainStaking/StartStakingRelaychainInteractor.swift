@@ -44,7 +44,8 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
         eraCoundownOperationFactory: EraCountdownOperationFactoryProtocol,
         sharedOperation: SharedOperationProtocol,
         eventCenter: EventCenterProtocol,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        announcementsRepository: AnnouncementsRepositoryProtocol = AnnouncementsRepository.shared
     ) {
         self.state = state
         self.chainRegistry = chainRegistry
@@ -61,7 +62,8 @@ final class StartStakingRelaychainInteractor: StartStakingInfoBaseInteractor, An
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             stakingDashboardProviderFactory: stakingDashboardProviderFactory,
             currencyManager: currencyManager,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            announcementsRepository: announcementsRepository
         )
     }
 

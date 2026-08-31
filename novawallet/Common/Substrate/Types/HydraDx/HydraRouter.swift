@@ -20,12 +20,14 @@ enum HydraRouter {
         static let stableswapField = "Stableswap"
         static let omnipoolField = "Omnipool"
         static let aaveField = "Aave"
+        static let hsmField = "HSM"
 
         case xyk
         case lbp
         case stableswap(HydraDx.AssetId)
         case omnipool
         case aave
+        case hsm
 
         init(from decoder: Decoder) throws {
             var unkeyedContainer = try decoder.unkeyedContainer()
@@ -44,6 +46,8 @@ enum HydraRouter {
                 self = .omnipool
             case Self.aaveField:
                 self = .aave
+            case Self.hsmField:
+                self = .hsm
             default:
                 throw DecodingError.dataCorruptedError(
                     in: unkeyedContainer,
@@ -70,6 +74,9 @@ enum HydraRouter {
                 try unkeyedContainer.encode(JSON.null)
             case .aave:
                 try unkeyedContainer.encode(Self.aaveField)
+                try unkeyedContainer.encode(JSON.null)
+            case .hsm:
+                try unkeyedContainer.encode(Self.hsmField)
                 try unkeyedContainer.encode(JSON.null)
             }
         }

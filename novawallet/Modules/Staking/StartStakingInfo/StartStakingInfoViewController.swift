@@ -107,6 +107,10 @@ extension StartStakingInfoViewController: StartStakingInfoViewProtocol {
         self.balance = balance
         rootView.updateBalanceButton(text: balance, locale: selectedLocale)
     }
+
+    func didReceive(announcement: AnnouncementViewModel?) {
+        rootView.setAnnouncement(viewModel: announcement)
+    }
 }
 
 extension StartStakingInfoViewController: Localizable {
