@@ -3,7 +3,7 @@ import Foundation
 struct AssetExchangeTradeLimitFailure: Error, Equatable {
     let limitedAsset: ChainAsset
 
-    let maxGivenAmount: Balance
+    let maxGivenAmount: Balance?
 
     let minTradingLimit: Balance?
 
@@ -16,6 +16,10 @@ extension AssetExchangeTradeLimitFailure {
     static let headroom = BigRational.percent(of: 95)
 
     func suggestion() -> Balance? {
+        guard let maxGivenAmount else {
+            return nil
+        }
+
         let headroomed = Self.headroom.mul(value: maxGivenAmount)
 
         let suggested = switch direction {

@@ -28,16 +28,14 @@ extension AssetExchangeRoute {
                 case .buy: index == lastIndex
                 }
 
-                guard
-                    let limitedAsset = breach.limitedAsset,
-                    let maxGivenAmount = breach.maxGivenAmount else {
+                guard let limitedAsset = breach.limitedAsset else {
                     return .blocked(nil)
                 }
 
                 return .blocked(
                     AssetExchangeTradeLimitFailure(
                         limitedAsset: limitedAsset,
-                        maxGivenAmount: maxGivenAmount,
+                        maxGivenAmount: breach.maxGivenAmount,
                         minTradingLimit: breach.minTradingLimit,
                         direction: routeDirection,
                         isUserInputAdjustable: isUserInputAdjustable

@@ -18,18 +18,18 @@ extension SwapDataValidatorFactory {
                     return
                 }
 
-                guard
-                    let failure,
-                    let displayError = SwapDisplayError.PoolTradeLimit.build(
-                        from: failure,
-                        canApply: failure.isUserInputAdjustable && poolTradeLimitAction != nil,
-                        viewModelFactory: viewModelFactory,
-                        locale: locale
-                    ) else {
+                guard let failure else {
                     self?.presentable.presentNotEnoughLiquidity(from: view, locale: locale)
 
                     return
                 }
+
+                let displayError = SwapDisplayError.PoolTradeLimit.build(
+                    from: failure,
+                    canApply: failure.isUserInputAdjustable && poolTradeLimitAction != nil,
+                    viewModelFactory: viewModelFactory,
+                    locale: locale
+                )
 
                 self?.presentable.presentPoolTradeLimit(
                     from: view,
