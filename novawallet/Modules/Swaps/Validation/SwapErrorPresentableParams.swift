@@ -46,10 +46,6 @@ extension SwapDisplayError.PoolTradeLimit {
         viewModelFactory: BalanceViewModelFactoryFacadeProtocol,
         locale: Locale
     ) -> SwapDisplayError.PoolTradeLimit? {
-        guard let suggestion = failure.suggestion() else {
-            return nil
-        }
-
         let assetInfo = failure.limitedAsset.assetDisplayInfo
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
@@ -69,6 +65,10 @@ extension SwapDisplayError.PoolTradeLimit {
                 ),
                 applyTitle: nil
             )
+        }
+
+        guard let suggestion = failure.suggestion() else {
+            return nil
         }
 
         return .init(

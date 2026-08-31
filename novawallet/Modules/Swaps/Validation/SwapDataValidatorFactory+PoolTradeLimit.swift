@@ -20,7 +20,6 @@ extension SwapDataValidatorFactory {
 
                 guard
                     let failure,
-                    let suggestion = failure.suggestion(),
                     let displayError = SwapDisplayError.PoolTradeLimit.build(
                         from: failure,
                         canApply: failure.isUserInputAdjustable && poolTradeLimitAction != nil,
@@ -35,7 +34,13 @@ extension SwapDataValidatorFactory {
                 self?.presentable.presentPoolTradeLimit(
                     from: view,
                     reason: displayError,
-                    applyAction: { poolTradeLimitAction?(suggestion, failure.direction) },
+                    applyAction: {
+                        guard let suggestion = failure.suggestion() else {
+                            return
+                        }
+
+                        poolTradeLimitAction?(suggestion, failure.direction)
+                    },
                     locale: locale
                 )
             },
