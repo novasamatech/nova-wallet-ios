@@ -17,6 +17,10 @@ final class SwapPoolTradeLimitReportingTests: XCTestCase {
         let grossedUp = suggestion + rate.mul(value: suggestion)
 
         XCTAssertLessThanOrEqual(grossedUp, failure.maxGivenAmount)
+        XCTAssertLessThan(
+            suggestion,
+            AssetExchangeTradeLimitFailure.headroom.mul(value: failure.maxGivenAmount)
+        )
     }
 
     func testSuggestionBelowTheMinimumTradingLimitIsNotOffered() {

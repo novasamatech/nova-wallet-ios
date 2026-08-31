@@ -55,9 +55,10 @@ extension AssetExchangeTradeLimitFailure {
             grossUpInverse.mul(value: headroomed)
         }
 
-        // A degenerate pool — an empty reserve, or one holding less than its own ratio divisor — caps
-        // the trade at zero, and the headroom leaves it there. "Swap at most 0" is not an offer, so it
-        // falls through to the generic message rather than filling a zero into the field.
+        // Anything that headrooms to zero. A degenerate pool — an empty reserve, or one holding less
+        // than its own ratio divisor — caps the trade at zero outright, and a cap small enough for the
+        // 0.95 to round away lands here too. "Swap at most 0" is not an offer, so it falls through to
+        // the generic message rather than filling a zero into the field.
         guard suggested > 0, suggested >= (minTradingLimit ?? 0) else {
             return nil
         }
