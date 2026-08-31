@@ -90,7 +90,10 @@ extension AssetsHydraXYKExchangeEdge {
         let stateWrapper = quoteFactory.quoteStateWrapper(for: remoteSwapPair)
 
         let verdictOperation = ClosureOperation<AssetExchangeTradeLimitVerdict> {
-            let limits = try limitsWrapper.targetOperation.extractNoCancellableResultData()
+            guard let limits = try limitsWrapper.targetOperation.extractNoCancellableResultData() else {
+                return .withinLimit
+            }
+
             let remoteState = try stateWrapper.targetOperation.extractNoCancellableResultData()
 
             let verdict = try HydraXYKSwapQuoteFactory.tradeLimitVerdict(

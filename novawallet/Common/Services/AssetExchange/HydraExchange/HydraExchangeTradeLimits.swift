@@ -4,8 +4,6 @@ import Operation_iOS
 import SubstrateSdk
 
 enum HydraExchangeTradeLimitError: Error {
-    case ratiosUnavailable(pallet: String)
-
     case ratioUnusable
 }
 
@@ -155,20 +153,17 @@ private extension HydraExchangeTradeLimits {
 
 extension HydraExchangeTradeLimits {
     struct PalletLimitConstants {
-        let pallet: String
         let maxInRatioPath: ConstantCodingPath
         let maxOutRatioPath: ConstantCodingPath
         let minTradingLimitPath: ConstantCodingPath
 
         static let xyk = PalletLimitConstants(
-            pallet: HydraXYK.name,
             maxInRatioPath: HydraXYK.maxInRatioPath,
             maxOutRatioPath: HydraXYK.maxOutRatioPath,
             minTradingLimitPath: HydraXYK.minTradingLimitPath
         )
 
         static let omnipool = PalletLimitConstants(
-            pallet: HydraOmnipool.moduleName,
             maxInRatioPath: HydraOmnipool.maxInRatioPath,
             maxOutRatioPath: HydraOmnipool.maxOutRatioPath,
             minTradingLimitPath: HydraOmnipool.minTradingLimitPath
@@ -178,7 +173,7 @@ extension HydraExchangeTradeLimits {
     static func createPoolLimitsWrapper(
         for constants: PalletLimitConstants,
         dependingOn coderFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
-    ) -> CompoundOperationWrapper<PoolLimits> {
+    ) -> CompoundOperationWrapper<PoolLimits?> {
         let maxInRatioOperation: BaseOperation<Balance> = PrimitiveConstantOperation.operation(
             for: constants.maxInRatioPath,
             dependingOn: coderFactoryOperation
@@ -200,7 +195,7 @@ extension HydraExchangeTradeLimits {
 
         minTradingLimitOperation.addDependency(coderFactoryOperation)
 
-        let mergeOperation = ClosureOperation<PoolLimits> {
+        let mergeOperation = ClosureOperation<PoolLimits?> {
             let minTradingLimit: Balance?
 
             do {
@@ -219,7 +214,7 @@ extension HydraExchangeTradeLimits {
                     minTradingLimit: minTradingLimit
                 )
             } catch let error as StorageDecodingOperationError where error == .invalidStoragePath {
-                throw HydraExchangeTradeLimitError.ratiosUnavailable(pallet: constants.pallet)
+                return nil
             }
         }
 

@@ -91,7 +91,10 @@ extension HydraOmnipoolExchangeEdge {
         let feeWrapper = quoteFactory.defaultFeeWrapper()
 
         let verdictOperation = ClosureOperation<AssetExchangeTradeLimitVerdict> {
-            let limits = try limitsWrapper.targetOperation.extractNoCancellableResultData()
+            guard let limits = try limitsWrapper.targetOperation.extractNoCancellableResultData() else {
+                return .withinLimit
+            }
+
             let remoteState = try stateWrapper.targetOperation.extractNoCancellableResultData()
             let defaultFee = try feeWrapper.targetOperation.extractNoCancellableResultData()
 
