@@ -2056,3 +2056,7 @@ Do you want to continue?";
 "legal.consent.title" = "Updated Terms";
 "legal.consent.subtitle" = "We’ve updated our Terms of Service and Privacy Notice. Please review and accept the updated documents to continue using Nova Wallet.";
 "legal.consent.accept" = "Accept and Continue";
+"swap.failure.pool.trade.limit.title" = "Amount exceeds pool limit";
+"swap.failure.pool.trade.limit.message" = "The %1$@ liquidity pool limits the size of a single swap. The maximum you can swap right now is %2$@.";
+"swap.failure.pool.trade.limit.route.message" = "Your swap is routed through a %1$@ liquidity pool that allows at most %2$@ per single swap. Try a smaller amount.";
+"swap.failure.pool.trade.limit.unknown.max.message" = "The %1$@ liquidity pool can't take a swap this large right now. Try a smaller amount.";

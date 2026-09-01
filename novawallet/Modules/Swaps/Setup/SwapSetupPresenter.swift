@@ -36,6 +36,8 @@ final class SwapSetupPresenter: SwapBasePresenter {
      */
     private var maxCorrectionCounter = MaxCounter.feeCorrection()
 
+    var poolLimitCorrectionCounter = MaxCounter.feeCorrection()
+
     init(
         initState: SwapSetupInitState,
         interactor: SwapSetupInteractorInputProtocol,
@@ -126,6 +128,18 @@ final class SwapSetupPresenter: SwapBasePresenter {
         provideIssues()
     }
 
+    override func canApplyPoolTradeLimit() -> Bool {
+        poolLimitCorrectionCounter.hasBudget()
+    }
+
+    override func resetPoolTradeLimitCorrection() {
+        poolLimitCorrectionCounter.resetCounter()
+    }
+
+    override func applyPoolTradeLimit(amount: Balance, direction: AssetConversion.Direction) {
+        applySuggestedAmount(amount, direction: direction)
+    }
+
     override func handleBaseError(_ error: SwapBaseError) {
         handleBaseError(
             error,
@@ -147,6 +161,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
         if let fee, !quote.hasSamePath(other: fee.route) {
             maxCorrectionCounter.resetCounter()
         }
+
         // we need to keep fee in sync with quote
         fee = nil
 
@@ -423,7 +438,7 @@ extension SwapSetupPresenter {
         ))
     }
 
-    private func providePayAssetViews() {
+    func providePayAssetViews() {
         providePayTitle()
         providePayAssetViewModel()
         providePayInputPriceViewModel()
@@ -444,7 +459,7 @@ extension SwapSetupPresenter {
         provideReceiveInputPriceViewModel()
     }
 
-    private func provideReceiveAssetViews() {
+    func provideReceiveAssetViews() {
         provideReceiveTitle()
         provideReceiveAssetViewModel()
         provideReceiveInputPriceViewModel()

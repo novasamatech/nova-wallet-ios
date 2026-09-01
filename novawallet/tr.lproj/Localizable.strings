@@ -2049,3 +2049,7 @@
 "legal.consent.title" = "Güncellenen Koşullar";
 "legal.consent.subtitle" = "Hizmet Koşullarımızı ve Gizlilik Bildirimimizi güncelledik. Nova Wallet'ı kullanmaya devam etmek için lütfen güncellenen belgeleri inceleyip kabul edin.";
 "legal.consent.accept" = "Kabul et ve devam et";
+"swap.failure.pool.trade.limit.title" = "Miktar havuz limitini aşıyor";
+"swap.failure.pool.trade.limit.message" = "%1$@ likidite havuzu tek bir takasın büyüklüğünü sınırlıyor. Şu anda takas edebileceğiniz en yüksek miktar %2$@.";
+"swap.failure.pool.trade.limit.route.message" = "Takasınız %1$@ likidite havuzundan geçiyor; bu havuz tek takas başına en fazla %2$@ izin veriyor. Daha küçük bir miktar deneyin.";
+"swap.failure.pool.trade.limit.unknown.max.message" = "%1$@ likidite havuzu şu anda bu kadar büyük bir takası kabul edemiyor. Daha küçük bir miktar deneyin.";

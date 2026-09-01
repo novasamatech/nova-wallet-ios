@@ -25,6 +25,15 @@ class AssetsHydraExchangeEdge {
         self.host = host
     }
 
+    func limitedAsset(for direction: AssetConversion.Direction) -> ChainAsset? {
+        let localAssetId = switch direction {
+        case .sell: origin
+        case .buy: destination
+        }
+
+        return host.chain.chainAsset(for: localAssetId.assetId)
+    }
+
     func appendToOperation(
         _ operation: AssetExchangeAtomicOperationProtocol,
         edge: any HydraExchangeAtomicOperation.Edge,

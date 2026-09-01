@@ -2049,3 +2049,7 @@
 "legal.consent.title" = "Termos atualizados";
 "legal.consent.subtitle" = "Atualizamos nossos Termos de serviço e Aviso de privacidade. Revise e aceite os documentos atualizados para continuar usando a Nova Wallet.";
 "legal.consent.accept" = "Aceitar e continuar";
+"swap.failure.pool.trade.limit.title" = "A quantia excede o limite do pool";
+"swap.failure.pool.trade.limit.message" = "O pool de liquidez de %1$@ limita o tamanho de uma única troca. A quantia máxima que pode trocar neste momento é %2$@.";
+"swap.failure.pool.trade.limit.route.message" = "A sua troca passa por um pool de liquidez de %1$@ que permite no máximo %2$@ por troca. Experimente uma quantia menor.";
+"swap.failure.pool.trade.limit.unknown.max.message" = "O pool de liquidez de %1$@ não consegue aceitar uma troca tão grande neste momento. Experimente uma quantia menor.";

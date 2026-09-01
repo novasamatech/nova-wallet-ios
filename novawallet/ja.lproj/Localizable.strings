@@ -2049,3 +2049,7 @@
 "legal.consent.title" = "更新された利用規約";
 "legal.consent.subtitle" = "利用規約とプライバシーに関する通知を更新しました。Nova Walletの利用を続けるには、更新された文書を確認して同意してください。";
 "legal.consent.accept" = "同意して続行";
+"swap.failure.pool.trade.limit.title" = "金額がプールの上限を超えています";
+"swap.failure.pool.trade.limit.message" = "%1$@の流動性プールは1回のスワップの規模を制限しています。現在スワップできる最大金額は%2$@です。";
+"swap.failure.pool.trade.limit.route.message" = "このスワップは%1$@の流動性プールを経由します。このプールは1回のスワップにつき最大%2$@までです。金額を小さくしてお試しください。";
+"swap.failure.pool.trade.limit.unknown.max.message" = "%1$@の流動性プールは、現在これほど大きなスワップを受け付けられません。金額を小さくしてお試しください。";

@@ -9,6 +9,10 @@ struct MaxCounter {
         self.maxCount = maxCount
     }
 
+    func hasBudget() -> Bool {
+        counter < maxCount
+    }
+
     mutating func incrementCounterIfPossible() -> Bool {
         if counter < maxCount {
             counter += 1

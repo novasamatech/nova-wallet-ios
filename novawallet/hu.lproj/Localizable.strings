@@ -2049,3 +2049,7 @@
 "legal.consent.title" = "Frissített feltételek";
 "legal.consent.subtitle" = "Frissítettük a Szolgáltatási feltételeket és az Adatvédelmi nyilatkozatot. A Nova Wallet további használatához tekintsd át és fogadd el a frissített dokumentumokat.";
 "legal.consent.accept" = "Elfogadás és folytatás";
+"swap.failure.pool.trade.limit.title" = "Az összeg meghaladja a pool limitjét";
+"swap.failure.pool.trade.limit.message" = "A(z) %1$@ likviditási pool korlátozza az egyetlen cserében mozgatható összeget. Jelenleg legfeljebb %2$@ cserélhető.";
+"swap.failure.pool.trade.limit.route.message" = "A cseréd egy %1$@ likviditási poolon halad át, amely legfeljebb %2$@ összeget enged egyetlen cserében. Próbálj meg kisebb összeget.";
+"swap.failure.pool.trade.limit.unknown.max.message" = "A(z) %1$@ likviditási pool jelenleg nem tud ekkora cserét fogadni. Próbálj meg kisebb összeget.";

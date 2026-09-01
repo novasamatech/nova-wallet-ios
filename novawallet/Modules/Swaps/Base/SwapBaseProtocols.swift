@@ -11,6 +11,11 @@ protocol SwapBaseInteractorInputProtocol: AnyObject {
         completion: @escaping (Result<AssetExchangeQuote, Error>) -> Void
     )
 
+    func requestValidatingPoolTradeLimits(
+        for route: AssetExchangeRoute,
+        completion: @escaping (SwapPoolTradeLimitCheck) -> Void
+    )
+
     func requestValidatingIntermediateED(
         for operations: [AssetExchangeMetaOperationProtocol],
         netFlow: AssetExchangeCommissionNetFlow,
