@@ -2049,3 +2049,7 @@
 "legal.consent.title" = "Termini aggiornati";
 "legal.consent.subtitle" = "Abbiamo aggiornato i nostri Termini di servizio e l'Informativa sulla privacy. Esamina e accetta i documenti aggiornati per continuare a utilizzare Nova Wallet.";
 "legal.consent.accept" = "Accetta e continua";
+"swap.failure.pool.trade.limit.title" = "L'importo supera il limite del pool";
+"swap.failure.pool.trade.limit.message" = "Il pool di liquidità %1$@ limita la dimensione di un singolo scambio. L'importo massimo che puoi scambiare ora è %2$@.";
+"swap.failure.pool.trade.limit.route.message" = "Il tuo scambio passa attraverso un pool di liquidità %1$@ che consente al massimo %2$@ per singolo scambio. Prova un importo inferiore.";
+"swap.failure.pool.trade.limit.unknown.max.message" = "Il pool di liquidità %1$@ non può accettare uno scambio così grande in questo momento. Prova un importo inferiore.";
