@@ -1664,6 +1664,7 @@
 		2D06CC2D2E38F52E0093CA84 /* AppAttestModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC2C2E38F52E0093CA84 /* AppAttestModel.swift */; };
 		2D06CC312E38F5990093CA84 /* AppAttestService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC302E38F5990093CA84 /* AppAttestService.swift */; };
 		FEEDC0000000000000000008 /* DeviceCheckAttesting.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDC0000000000000000007 /* DeviceCheckAttesting.swift */; };
+		FEEDC000000000000000000A /* AttestationClientData.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDC0000000000000000009 /* AttestationClientData.swift */; };
 		2D06CC362E3BBC280093CA84 /* AppAttestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC352E3BBC280093CA84 /* AppAttestError.swift */; };
 		2D06CC432E3BDB5B0093CA84 /* Base64Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC422E3BDB5B0093CA84 /* Base64Codable.swift */; };
 		2D06CC442E3BDB5B0093CA84 /* Base64Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC422E3BDB5B0093CA84 /* Base64Codable.swift */; };
@@ -6626,6 +6627,7 @@
 		5A17C0B62F0100000000E001 /* LegalConsentRepository+Singleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C0A62F0100000000E001 /* LegalConsentRepository+Singleton.swift */; };
 		5A17C0C22F0100000000E001 /* LegalConsentRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C0C12F0100000000E001 /* LegalConsentRepositoryTests.swift */; };
 		FEEDC0000000000000000002 /* AppAttestServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDC0000000000000000001 /* AppAttestServiceTests.swift */; };
+		FEEDC0000000000000000005 /* AttestationClientDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDC0000000000000000004 /* AttestationClientDataTests.swift */; };
 		8A1C0E732F0400000000B103 /* FullDateCodableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1C0E722F0400000000B103 /* FullDateCodableTests.swift */; };
 		5A17C2042F0100000000E001 /* LegalConsentTextFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C2032F0100000000E001 /* LegalConsentTextFactoryTests.swift */; };
 		000000007CF9135B4D967A7E /* AssetExchangeTradeLimitVerdict.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000007FF0D316D4074BC0 /* AssetExchangeTradeLimitVerdict.swift */; };
@@ -8333,6 +8335,7 @@
 		2D06CC2C2E38F52E0093CA84 /* AppAttestModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestModel.swift; sourceTree = "<group>"; };
 		2D06CC302E38F5990093CA84 /* AppAttestService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestService.swift; sourceTree = "<group>"; };
 		FEEDC0000000000000000007 /* DeviceCheckAttesting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceCheckAttesting.swift; sourceTree = "<group>"; };
+		FEEDC0000000000000000009 /* AttestationClientData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttestationClientData.swift; sourceTree = "<group>"; };
 		2D06CC352E3BBC280093CA84 /* AppAttestError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestError.swift; sourceTree = "<group>"; };
 		2D06CC422E3BDB5B0093CA84 /* Base64Codable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Base64Codable.swift; sourceTree = "<group>"; };
 		8A1C0E612F0300000000B102 /* FullDateCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullDateCodable.swift; sourceTree = "<group>"; };
@@ -12997,6 +13000,7 @@
 		5A17C0A62F0100000000E001 /* LegalConsentRepository+Singleton.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "LegalConsentRepository+Singleton.swift"; sourceTree = "<group>"; };
 		5A17C0C12F0100000000E001 /* LegalConsentRepositoryTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentRepositoryTests.swift; sourceTree = "<group>"; };
 		FEEDC0000000000000000001 /* AppAttestServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppAttestServiceTests.swift; sourceTree = "<group>"; };
+		FEEDC0000000000000000004 /* AttestationClientDataTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AttestationClientDataTests.swift; sourceTree = "<group>"; };
 		8A1C0E722F0400000000B103 /* FullDateCodableTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FullDateCodableTests.swift; sourceTree = "<group>"; };
 		5A17C2032F0100000000E001 /* LegalConsentTextFactoryTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentTextFactoryTests.swift; sourceTree = "<group>"; };
 		000000007FF0D316D4074BC0 /* AssetExchangeTradeLimitVerdict.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeTradeLimitVerdict.swift; sourceTree = "<group>"; };
@@ -16879,6 +16883,14 @@
 				2D0673952E142401006392EB /* MultisigErrorPresentable.swift */,
 			);
 			path = Validation;
+			sourceTree = "<group>";
+		};
+		FEEDC000000000000000000B /* Attestation */ = {
+			isa = PBXGroup;
+			children = (
+				FEEDC0000000000000000009 /* AttestationClientData.swift */,
+			);
+			path = Attestation;
 			sourceTree = "<group>";
 		};
 		2D06CC272E38F4E80093CA84 /* AppAttest */ = {
@@ -21300,6 +21312,7 @@
 				2DC002ED2E8AEB6A00D49A42 /* AssetHubMigrationInfo */,
 				2D51D68A2E5D9F42008AB208 /* MultisigNotificationsPromo */,
 				2D06CC272E38F4E80093CA84 /* AppAttest */,
+				FEEDC000000000000000000B /* Attestation */,
 				0CD9801D2E268EA4005251E1 /* WalletDelayedExecution */,
 				0C521C0E2E1728C500ABAC97 /* CallFormatting */,
 				2D32D7322DCBBF490016354C /* DelegatedAccounts */,
@@ -22423,10 +22436,19 @@
 			path = AppAttest;
 			sourceTree = "<group>";
 		};
+		FEEDC0000000000000000006 /* Attestation */ = {
+			isa = PBXGroup;
+			children = (
+				FEEDC0000000000000000004 /* AttestationClientDataTests.swift */,
+			);
+			path = Attestation;
+			sourceTree = "<group>";
+		};
 		84452F8725D5E6CC00F47EC5 /* Services */ = {
 			isa = PBXGroup;
 			children = (
 				FEEDC0000000000000000003 /* AppAttest */,
+				FEEDC0000000000000000006 /* Attestation */,
 				E6F3AA47E60B33CE93DF4903 /* AssetExchange */,
 				0C8FC2292E623F7000034ED3 /* DelegatedAccounts */,
 				0C41D20C2BF77F57000950EE /* CloudBackup */,
@@ -35808,6 +35830,7 @@
 				77EFFC932A72A288009E28F8 /* StakingTypeBaseBannerView.swift in Sources */,
 				2D06CC312E38F5990093CA84 /* AppAttestService.swift in Sources */,
 				FEEDC0000000000000000008 /* DeviceCheckAttesting.swift in Sources */,
+				FEEDC000000000000000000A /* AttestationClientData.swift in Sources */,
 				C102544345E604976BF7AFFC /* LedgerNetworkSelectionWireframe.swift in Sources */,
 				7796C6FD2A174E6300D56094 /* StakingRewardFiltersPeriod+Title.swift in Sources */,
 				D71B2C6056D803C196DF4CDA /* LedgerNetworkSelectionPresenter.swift in Sources */,
@@ -37177,6 +37200,7 @@
 				79D4519A4D73DA1757414210 /* HydraFeeOraclePriceCalculatorTests.swift in Sources */,
 				5A17C0C22F0100000000E001 /* LegalConsentRepositoryTests.swift in Sources */,
 				FEEDC0000000000000000002 /* AppAttestServiceTests.swift in Sources */,
+				FEEDC0000000000000000005 /* AttestationClientDataTests.swift in Sources */,
 				8A1C0E732F0400000000B103 /* FullDateCodableTests.swift in Sources */,
 				5A17C2042F0100000000E001 /* LegalConsentTextFactoryTests.swift in Sources */,
 				AF33F165CCD72ED11E11C28D /* SubstrateTransferCommandFactoryTests.swift in Sources */,
