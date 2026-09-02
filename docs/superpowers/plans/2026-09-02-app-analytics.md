@@ -24,7 +24,7 @@ Every task's requirements implicitly include this section.
 - **No hand-written protocol doubles.** If Cuckoo can generate it, its file goes in `Cuckoofile.toml`. Convenience lives in an extension on the generated mock, following `novawalletTests/Mocks/MockApplicationService.swift`. Spec §11 Rule 2.
 - **Mock only what cannot run:** `DeviceCheckAttesting`, `AnalyticsUploadOperationFactoryProtocol`, `BackendAttestationRemoteFactoryProtocol`. CoreData, `SettingsManager`, the session tracker and time are real. Spec §11 Rule 1.
 - **Localized strings** go in `en.lproj/Localizable.strings` only and are read as `R.string(preferredLanguages: locale.rLanguages).localizable.someKey()` — never the bare `R.string.localizable` form.
-- **Commit messages are subject-line only**, lowercase, imperative, matching recent history (`translate the pool trade limit strings into the shipped locales`).
+- **Commit subjects are lowercase and imperative**, matching recent history (`translate the pool trade limit strings into the shipped locales`), and end with the `Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>` trailer.
 - **SwiftLint:** `type_body_length` 400/500; `identifier_name` rejects one-letter names (hence `schemaVersion` mapped to wire key `"v"`). Each `Model/Events/*` file stays under 150 lines.
 
 **Build:**
