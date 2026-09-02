@@ -15,7 +15,9 @@ Concretely, when this work is done the app can: show the consent prompt, honour 
 
 Two prior artefacts are superseded by this document: `.claude/SPEC-analytics.md` (deleted with this commit) and the design artifact `ff2be6d9-997a-4896-b896-783c38a490eb`. Where this spec is silent on a detail those documents covered, they remain useful reading, but this file is authoritative.
 
-Android parity source: PR #2324 (`pr2324/…`). Wire format, event names, property keys, bucket boundaries and the three attestation headers match Android byte-for-byte. `X-Signature` carries an App Attest assertion instead of a detached ECDSA signature — the one platform difference, isolated in the gateway's verifier (§7.6).
+Android parity source: novasamatech/nova-wallet-android PR **#2324**, head **`108899870`**. Paths in this document are repo-relative to that PR.
+
+**Verification status (2026-09-02).** Checked directly against the Android source: the 42 event names, the 32 property keys, the ten Android-sourced enums, the envelope shape, `POST v1/analytics/events`, the queue operations and its 500/50 constants, the bucket boundaries *and* raw values, the classifier sets, and the three signing vectors. An earlier revision of this document carried **invented bucket raw values** and truncated digest vectors; both are corrected here from the source. Note also that GitHub's `search/code` API returns 0 results for the `infrastructure/…/attestation/` package although it exists on the PR head — verify with a direct `contents/` path lookup, not code search. Wire format, event names, property keys, bucket boundaries and the three attestation headers match Android byte-for-byte. `X-Signature` carries an App Attest assertion instead of a detached ECDSA signature — the one platform difference, isolated in the gateway's verifier (§7.6).
 
 ## 1. Principles
 
@@ -185,7 +187,7 @@ The invariant is **byte stability, not value equality**: `encode(decode(encode(e
 
 ### 4.4 Event catalog (authoritative)
 
-This table is the contract. `AnalyticsEventName` has exactly these 42 cases and every factory in `Model/Events/*` produces exactly these keys. Names and keys are verbatim from `pr2324/…AnalyticsEvent.kt.NEW.txt:9-425`. Bare `.assetSymbol` / `.networkName` / … are `AnalyticsContentValue` cases; everything else is a closed enum, `Bool` or `Int`. "(omitted when nil)" means the key is absent from `props`, never `null`.
+This table is the contract. `AnalyticsEventName` has exactly these 42 cases and every factory in `Model/Events/*` produces exactly these keys. Names and keys are verbatim from `analytics/src/main/java/io/novafoundation/nova/analytics/AnalyticsEvent.kt`, and were **diffed against it on 2026-09-02**: all 42 names and all 32 keys match exactly. Bare `.assetSymbol` / `.networkName` / … are `AnalyticsContentValue` cases; everything else is a closed enum, `Bool` or `Int`. "(omitted when nil)" means the key is absent from `props`, never `null`.
 
 The **Trigger / dedupe** column is normative Android behaviour and is recorded here for the later integration PRs. In this work it constrains only the factory signatures — no call site implements a trigger except the three lifecycle rows.
 | # | Wire name | Swift factory | Properties (`key: Swift value type`) | Trigger / dedupe |
@@ -278,7 +280,7 @@ Android's 33rd key, `banner_title`, has no case: `Banner` carries `id`, `backgro
 
 ### 4.6 Enums
 
-`Model/AnalyticsEnums.swift`, `String` raw values verbatim from `AnalyticsEvent.kt.NEW.txt:430-507`:
+`Model/AnalyticsEnums.swift`. The ten Android-sourced enums below have `String` raw values verbatim from `analytics/src/main/java/io/novafoundation/nova/analytics/AnalyticsEvent.kt`, **verified case by case on 2026-09-02**:
 
 `AssetCategory` (`native_token, stablecoin, wrapped_token, other`) · `WalletCreationMethod` (`create, import_mnemonic, import_seed, import_json, import_ledger, import_parity_signer, import_polkadot_vault, import_watch_only, cloud_backup`) · `SwapSource` (`asset_details, main_screen, operation_details, retry`) · `SwapFailureReason` (`network_error, execution_reverted, user_cancelled, unknown`) · `StakingStage` (`landing, setup, type_selection, confirm`) · `SwapStage` (`setup, confirm`) · `FeatureId` (`staking, governance, crowdloans, dapps, nft, swap, buy, send, receive, settings`) · `OnboardingSource` (`fresh_install, add_wallet`) · `WalletCreationStep` (`welcome, backup, confirm_mnemonic, pin_setup, seed_entry, json_upload, ledger_connect, other`) · `SignSource` (`dapp_browser, walletconnect`).
 
@@ -293,15 +295,35 @@ Two properties that are string literals on Android become closed enums here, bec
 
 ### 4.7 Buckets and classifier
 
-`Model/AnalyticsBuckets.swift`, boundaries from `pr2324/…ValueBucketing.kt.NEW.txt:15-23,38-48,61-66`:
+`Model/AnalyticsBuckets.swift`. Boundaries **and raw values** transcribed from
+`analytics/src/main/java/io/novafoundation/nova/analytics/ValueBucketing.kt` in
+novasamatech/nova-wallet-android PR #2324 at head `108899870`, and verified against it.
+The raw values are the wire contract; the Swift case names are not.
 
-- `AmountBucket(usd: Decimal)` — exclusive upper bounds 1 / 10 / 100 / 1 000 / 10 000 / 100 000.
-- `DurationBucket(duration: TimeInterval)` — on `Int(duration)` (truncating, equal to Android's `ms / 1000`), bounds 5 / 15 / 30 / 60 / 300.
-- `SlippageBucket(percent: Decimal)` — inclusive 0.5 / 1 / 3.
+| Bucket | Bounds | Raw values, in order |
+|---|---|---|
+| `AmountBucket(usd: Decimal)` | exclusive `<` at 1 / 10 / 100 / 1 000 / 10 000 / 100 000 | `under_1`, `1_to_10`, `10_to_100`, `100_to_1k`, `1k_to_10k`, `10k_to_100k`, `over_100k` |
+| `DurationBucket(duration: TimeInterval)` | exclusive `<` at 5 / 15 / 30 / 60 / 300, applied to `Int(duration)` (truncating, equal to Android's `milliseconds / 1000`) | `under_5s`, `5s_to_15s`, `15s_to_30s`, `30s_to_60s`, `1m_to_5m`, `over_5m` |
+| `SlippageBucket(percent: Decimal)` | **inclusive** `<=` at 0.5 / 1 / 3 | `low`, `medium`, `high`, `custom` |
+
+Two things here are easy to get wrong and are load-bearing. **Slippage is not a range vocabulary** —
+it is a qualitative one, so `0.5` maps to `low` rather than to a "0.5-to-1" bucket, and anything
+above 3 is `custom`. And **slippage bounds are inclusive while the other two are exclusive**, so
+`AmountBucket(usd: 1)` is `1_to_10` but `SlippageBucket(percent: 0.5)` is `low`.
 
 Two amount initialisers, because Android treats swaps differently from everything else: `init(amount: Decimal, rate: Decimal?)` (missing rate ⇒ `0` ⇒ `under_1`) for send and staking, which call `amountToFiat` unguarded; and the failable `init?(amount:price: PriceData?)` used **only** by the three swap factories, because Android skips swap events without a fiat rate. `PriceData.decimalRate` is `Decimal?` (`Common/PriceProvider/Model/PriceData.swift:29`).
 
-`AssetCategoryClassifier.classify(_ symbol: String) -> AssetCategory` copies the three sets and the order NATIVE → STABLE → WRAPPED → `W`+NATIVE → other (`pr2324/…AssetCategoryClassifier.kt.NEW.txt:5-33`). `ChainModel.name` and `AssetModel.symbol` are Android's `Chain.name` / `symbol.value`.
+`AssetCategoryClassifier.classify(_ symbol: String) -> AssetCategory` upper-cases its input and
+applies the rules in order — NATIVE → STABLE → WRAPPED → `W`+NATIVE → other — so `WDOT` is
+`wrapped_token` and not `native_token`. Sets transcribed verbatim from
+`analytics/src/main/java/io/novafoundation/nova/analytics/AssetCategoryClassifier.kt` at the same
+commit:
+
+- **native** — `DOT`, `KSM`, `ETH`, `BTC`, `BNB`, `AVAX`, `MATIC`, `SOL`, `FTM`, `GLMR`, `MOVR`, `ASTR`, `ACA`, `CFG`, `HDX`, `INTR`, `KINT`, `PHA`, `ZTG`, `NODL`, `RING`, `TEER`, `TUR`, `UNQ`, `AZERO`
+- **stable** — `USDT`, `USDC`, `DAI`, `BUSD`, `TUSD`, `FRAX`, `LUSD`, `USDP`, `GUSD`, `USDD`, `CRVUSD`, `GHO`, `PYUSD`, `AUSD`, `IUSD`
+- **wrapped** — `WETH`, `WBTC`, `WBNB`, `WAVAX`, `WMATIC`, `WFTM`, `WGLMR`, `WMOVR`, `WDOT`, `WKSM`
+
+`ChainModel.name` and `AssetModel.symbol` are Android's `Chain.name` / `symbol.value`.
 
 ## 5. Storage
 
@@ -333,7 +355,7 @@ The bump is **permanent once a build ships**: a model-21 store cannot be reopene
 
 ### 5.2 Queue
 
-Requirements (Android `pr2324/…AnalyticsEventQueue.kt.NEW.txt:22-47`): persistent FIFO by insertion order, trim to newest 500, peek oldest 50, drop, count, clear.
+Requirements, from `analytics/src/main/java/io/novafoundation/nova/analytics/transport/AnalyticsEventQueue.kt` and the `ANALYTICS_QUEUE_MAX_SIZE = 500` / `ANALYTICS_BATCH_SIZE = 50` constants in its DI module, both **verified 2026-09-02**: persistent FIFO by insertion order, trim to newest 500, peek oldest 50, drop, count, clear. One deliberate divergence: Android drops by *count* (`deleteOldest`), iOS drops by *id*, so a concurrent enqueue can never cause iOS to delete an un-uploaded row.
 
 **Ordering is by `sequence`, a monotonic `Int64`, not wall-clock time** — a clock correction must not reorder the trim (`.claude/docs/code/data-persistence.md:128-129`). The service seeds an in-memory counter once per process, from the newest row via `RepositorySliceRequest(offset: 0, count: 1, reversed: true)`, on its first enqueue. `identifier = String(format: "%019lld", sequence)`. NEW `NSSortDescriptor.analyticsEventsBySequence` in `SortDescriptor+Storage.swift`.
 
@@ -536,7 +558,11 @@ Apple asks apps to attest sparingly, so a key is attested once; recovery always 
 
 **`client_id`** is per gateway URL and per consent cycle: a lowercase dashed UUID under `SettingsKey.gatewayAttestationClientId`, created lazily on the first signed request — never before the first consented flush — and deleted by `forgetClient()`. It is the gateway's lookup key for the registered credential, so two installs never share one and a re-consented user is a new client. It is independent of `install_id`. The provider clears the key row whenever it creates a client id, so the two cannot drift.
 
-**`AttestationClientData`** — three pure functions, byte-for-byte Android's `AttestationSigning` (`AttestationSigning.kt.NEW.txt:12-27`):
+**`AttestationClientData`** — three pure functions, byte-for-byte Android's `AttestationSigning`
+(`infrastructure/src/main/java/io/novafoundation/nova/infrastructure/attestation/AttestationSigning.kt`,
+PR #2324 head `108899870`). Note that Android's `signingPayload` returns the **hashed** payload,
+while `assertionClientData` below returns the unhashed string and `AppAttestService` applies the
+SHA-256 — the two compose to the same digest:
 
 ```swift
 func bodyDigestHex(_ body: Data) -> String                 // lowercase hex of sha256(body)
@@ -593,7 +619,7 @@ Verification: decode the CBOR attestation; validate the certificate chain to App
 
 **Environments:** the dev gateway accepts unattested requests from dev bundle ids (mode `none`, Simulator); production never does.
 
-**Test fixture.** An App Attest attestation and assertion cannot be produced off-device, so the deliverable for the backend is a **recorded sample** from a Debug build on a device — `{ challenge, client_id, key_id, attestation object, body, assertion }` — written by the `#if F_DEV` inspector (§8.4). The two digest vectors that already exist on Android (`AttestationSigningTest.kt.NEW.txt:7-38`) apply unchanged to iOS client data: `bodyDigestHex` and `signingPayload`. `attestationPayload` and the HMAC vector do not.
+**Test fixture.** An App Attest attestation and assertion cannot be produced off-device, so the deliverable for the backend is a **recorded sample** from a Debug build on a device — `{ challenge, client_id, key_id, attestation object, body, assertion }` — written by the `#if F_DEV` inspector (§8.4). Two of the five vectors in Android's `AttestationSigningTest.kt` apply unchanged to iOS client data — `bodyDigestHex` and `signingPayload` (both reproduced in §12) — while `attestationPayload` and the `sharedSecretToken` HMAC vector do not: Android digests `publicKeyBase64` where iOS digests `keyId`, and iOS implements no shared-secret mode.
 
 **What iOS cannot reproduce from the Android contract:** a detached ECDSA signature over arbitrary bytes (App Attest signs only through assertions), `public_key` at register, and the `shared_secret` dev mode.
 
@@ -805,7 +831,19 @@ Not an exhaustive list — these are the ones without which the design is unprov
 
 **Attestation**
 
-- `AttestationClientDataTests` against the Android vectors: body digest `2c3d64ea…49f4e7`, empty-body digest `e3b0c442…52b855`, signing payload `4469fb60…9c5c92`. *Catches: a UTF-8, hex-case or concatenation-order slip that no other test would see and that only manifests as a 401 from the gateway.*
+- `AttestationClientDataTests` against the Android vectors, transcribed verbatim from
+  `infrastructure/src/test/java/io/novafoundation/nova/infrastructure/attestation/AttestationSigningTest.kt`
+  at PR #2324 head `108899870`. Inputs: challenge `TEST_CHALLENGE_abc123`, client id
+  `6f2c1e4a-0000-4000-8000-000000000001`, body `{"v":1,"platform":"android","app_version":"10.9.1"}`
+  as UTF-8. Expected, lowercase hex, unprefixed:
+
+  | Function | Digest |
+  |---|---|
+  | `bodyDigestHex(body)` | `2c3d64eac83fc3f8bc8fe383d202bf4cc4b5b3c88328c87cc6695f8ecb49f4e7` |
+  | `bodyDigestHex(Data())` | `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855` |
+  | `sha256(assertionClientData(challenge:clientId:body:))` | `4469fb60ce2ad38af216bc5ac89188071392af288cfaa99eb62532843d9c5c92` |
+
+  *Catches: a UTF-8, hex-case or concatenation-order slip that no other test would see and that only manifests as a 401 from the gateway.*
 - `BackendAttestationProviderTests` — attest-once-then-assert; the key row is saved with `isAttested: false` **before** register; `markUnattested` forces a *new* key id next time; register 400 keeps the row and reuses the same key; register 401 sets `rejectedForProcess` and later calls short-circuit without touching the network; `invalidKeyId` discards the row at most once per launch; `forgetClient` regenerates the client id; unsupported yields `nil` headers
 - `BackendAttestationModeResolverTests` — all four input combinations
 - `AppAttestServiceTests`, the first coverage this file has ever had: the `clientData` closure receives the generated key id; the hash passed to DeviceCheck is SHA-256 of that client data; `DCError.invalidKey` → `.invalidKeyId`; `DCError.serverUnavailable` → `.serviceUnavailable`
