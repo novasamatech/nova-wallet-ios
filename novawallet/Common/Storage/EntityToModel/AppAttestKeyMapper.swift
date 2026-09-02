@@ -2,19 +2,19 @@ import Foundation
 import Operation_iOS
 import CoreData
 
-final class AppAttestBrowserSettingsMapper {
+final class AppAttestKeyMapper {
     var entityIdentifierFieldName: String {
-        #keyPath(CDAppAttestBrowserSettings.baseURL)
+        #keyPath(CDAppAttestKey.identifier)
     }
 
-    typealias DataProviderModel = AppAttestBrowserSettings
-    typealias CoreDataEntity = CDAppAttestBrowserSettings
+    typealias DataProviderModel = AppAttestKeySettings
+    typealias CoreDataEntity = CDAppAttestKey
 }
 
-extension AppAttestBrowserSettingsMapper: CoreDataMapperProtocol {
+extension AppAttestKeyMapper: CoreDataMapperProtocol {
     func transform(entity: CoreDataEntity) throws -> DataProviderModel {
         DataProviderModel(
-            baseURL: entity.baseURL!,
+            identifier: entity.identifier!,
             keyId: entity.keyId!,
             isAttested: entity.isAttested
         )
@@ -25,7 +25,7 @@ extension AppAttestBrowserSettingsMapper: CoreDataMapperProtocol {
         from model: DataProviderModel,
         using _: NSManagedObjectContext
     ) throws {
-        entity.baseURL = model.baseURL
+        entity.identifier = model.identifier
         entity.keyId = model.keyId
         entity.isAttested = model.isAttested
     }

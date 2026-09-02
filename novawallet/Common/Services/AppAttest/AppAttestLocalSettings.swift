@@ -1,12 +1,10 @@
 import Foundation
 import Operation_iOS
 
-struct AppAttestBrowserSettings: Codable {
-    let baseURL: String
+struct AppAttestKeySettings: Codable, Equatable {
+    let identifier: String
     let keyId: String
     let isAttested: Bool
 }
 
-extension AppAttestBrowserSettings: Identifiable {
-    var identifier: String { baseURL }
-}
+extension AppAttestKeySettings: Identifiable {}
