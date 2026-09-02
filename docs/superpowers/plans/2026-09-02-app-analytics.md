@@ -30,16 +30,18 @@ Every task's requirements implicitly include this section.
 **Build:**
 
 ```bash
-set -o pipefail && xcodebuild -project novawallet.xcodeproj -scheme novawallet -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 16' build 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild -project novawallet.xcodeproj -scheme novawallet -configuration Debug -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' build 2>&1 | xcbeautify --quiet
 ```
 
 **Targeted test** (always prefer this — the full suite is slow):
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsEventQueueTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsEventQueueTests 2>&1 | xcbeautify --quiet
 ```
 
-If the simulator name is ambiguous, pin the destination by id: `xcrun simctl list devices available` then `-destination 'platform=iOS Simulator,id=<UDID>'`.
+The destination is **pinned by UDID**, not by name: this machine has no `iPhone 16` (only iPhone 17 Pro / Pro Max), and a name-based destination fails outright. `A7A38DAB-F2A9-46E2-A4B8-4D0325304682` is iPhone 17 Pro on this machine. If it is missing, re-derive it with `xcrun simctl list devices available` and use whatever iPhone is present — do not fall back to a name.
+
+Each parallel worktree must pass its own `-derivedDataPath` (e.g. `-derivedDataPath ~/Library/Developer/Xcode/DerivedData/nova-<track>`) so concurrent builds do not contend.
 
 **Full unit suite (what CI runs):** `bundle exec fastlane run_unit_tests`
 
@@ -200,7 +202,7 @@ In `DAppBrowserTests.swift`, delete the attestation locals at `:74-90` (`appAtte
 - [ ] **Step 6: Build and run the browser tests**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/DAppBrowserTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/DAppBrowserTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: build succeeds, `DAppBrowserTests` passes. If the compiler reports an unresolved `DAppAttest*` or `DAppAssertionCallFactory` symbol, a pbxproj reference to a deleted file survived — search the pbxproj for that filename again.
@@ -297,7 +299,7 @@ final class AnalyticsUserModel21MigrationTests: XCTestCase {
 - [ ] **Step 2: Run it to verify it fails**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsUserModel21MigrationTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsUserModel21MigrationTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: compile failure — `version22`, `AppAttestKeySettings`, `AppAttestKeyMapper` and `CDAppAttestKey` do not exist.
@@ -420,7 +422,7 @@ Update the pbxproj file reference for the renamed mapper, and add the new test f
 - [ ] **Step 6: Run the test to verify it passes**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsUserModel21MigrationTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsUserModel21MigrationTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: PASS.
@@ -428,7 +430,7 @@ Expected: PASS.
 - [ ] **Step 7: Run the wider storage suite for regressions**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/MetaAccountMapperTests -only-testing:novawalletTests/AccountItemMapperTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/MetaAccountMapperTests -only-testing:novawalletTests/AccountItemMapperTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: PASS. These exercise the same store through the new model.
@@ -532,7 +534,7 @@ final class AnalyticsPendingEventMapperTests: XCTestCase {
 - [ ] **Step 2: Run it to verify it fails**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsPendingEventMapperTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsPendingEventMapperTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: compile failure — `AnalyticsPendingEvent` and `AnalyticsPendingEventMapper` do not exist.
@@ -642,7 +644,7 @@ Add all three new files to the appropriate targets in `project.pbxproj`.
 - [ ] **Step 6: Run the test to verify it passes**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsPendingEventMapperTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsPendingEventMapperTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: PASS, 4 tests.
@@ -836,7 +838,7 @@ final class AnalyticsEventQueueTests: XCTestCase {
 - [ ] **Step 2: Run them to verify they fail**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsEventQueueTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsEventQueueTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: compile failure — `CoreDataAnalyticsEventQueue` does not exist.
@@ -984,7 +986,7 @@ Add both new source files and the new test file to their targets in `project.pbx
 - [ ] **Step 6: Run the tests to verify they pass**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsEventQueueTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsEventQueueTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: PASS, 8 tests. If `testTrimKeepsTheNewestMaxCount` fails with 8 rows instead of 5, the `reversed:` flag on `overflowOperation` is inverted — it must be `true` so the offset skips the *newest* rows.
@@ -1112,7 +1114,7 @@ The last test is the one exception to "never assert a declaration against itself
 - [ ] **Step 2: Run them to verify they fail**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsPropertyValueTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsPropertyValueTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: compile failure — none of these types exist.
@@ -1305,7 +1307,7 @@ Add the six files to `project.pbxproj` and the test file to the test target.
 - [ ] **Step 5: Run the tests to verify they pass**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsPropertyValueTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsPropertyValueTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: PASS, 7 tests. If `testEventNameAndPropertyKeyRawValuesAreWireNames` reports 41 or 31, a row was dropped while transcribing — diff your enum against spec §4.4 and §4.5 rather than adjusting the expected count.
@@ -1449,7 +1451,7 @@ final class AssetCategoryClassifierTests: XCTestCase {
 - [ ] **Step 3: Run both suites to verify they fail**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsBucketsTests -only-testing:novawalletTests/AssetCategoryClassifierTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsBucketsTests -only-testing:novawalletTests/AssetCategoryClassifierTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: compile failure — none of the types exist.
@@ -1617,7 +1619,7 @@ Fill the three sets from the Android source before running the tests — they ar
 - [ ] **Step 7: Run both suites to verify they pass**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsBucketsTests -only-testing:novawalletTests/AssetCategoryClassifierTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsBucketsTests -only-testing:novawalletTests/AssetCategoryClassifierTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: PASS, 12 tests.
@@ -1782,7 +1784,7 @@ final class AnalyticsEventCatalogTests: XCTestCase {
 - [ ] **Step 2: Run it to verify it fails**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsEventCatalogTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsEventCatalogTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: compile failure — the factories do not exist.
@@ -1915,7 +1917,7 @@ and add one negative case outside the table:
 - [ ] **Step 6: Run the suite to verify it passes**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsEventCatalogTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsEventCatalogTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: PASS, 6 tests, with the catalog table covering all 42 event names.
@@ -1980,7 +1982,7 @@ final class AnalyticsEnvelopeTests: XCTestCase {
 - [ ] **Step 2: Run it to verify it fails**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsEnvelopeTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsEnvelopeTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: compile failure — `AnalyticsEnvelope` does not exist.
@@ -2016,7 +2018,7 @@ struct AnalyticsEnvelope: Encodable {
 - [ ] **Step 4: Run it to verify it passes**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsEnvelopeTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsEnvelopeTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: PASS.
@@ -2208,7 +2210,7 @@ final class AnalyticsConsentManagerTests: XCTestCase {
 - [ ] **Step 2: Run both to verify they fail**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsIdentityTests -only-testing:novawalletTests/AnalyticsConsentManagerTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsIdentityTests -only-testing:novawalletTests/AnalyticsConsentManagerTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: compile failure.
@@ -2397,7 +2399,7 @@ extension AnalyticsAvailabilityProvider: AnalyticsAvailabilityProviderProtocol {
 - [ ] **Step 6: Run the tests to verify they pass**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsIdentityTests -only-testing:novawalletTests/AnalyticsConsentManagerTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsIdentityTests -only-testing:novawalletTests/AnalyticsConsentManagerTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: PASS, 9 tests.
@@ -2714,7 +2716,7 @@ Extract `makeConsentedFixture(now:)`, `queueCount(_:)` and `peekNames(_:)` into 
 - [ ] **Step 3: Run both to verify they fail**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsConsentGateTests -only-testing:novawalletTests/AnalyticsServiceTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsConsentGateTests -only-testing:novawalletTests/AnalyticsServiceTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: compile failure — `AnalyticsService` does not exist.
@@ -2937,7 +2939,7 @@ It is declared in `AnalyticsProtocols.swift`, already in `Cuckoofile.toml` from 
 - [ ] **Step 6: Run both suites to verify they pass**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsConsentGateTests -only-testing:novawalletTests/AnalyticsServiceTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsConsentGateTests -only-testing:novawalletTests/AnalyticsServiceTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: PASS, 13 tests.
@@ -3109,7 +3111,7 @@ final class AnalyticsSessionTrackerTests: XCTestCase {
 - [ ] **Step 2: Run it to verify it fails**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsSessionTrackerTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsSessionTrackerTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: compile failure.
@@ -3241,7 +3243,7 @@ Note that `flushHandler(.background)` returns before the upload finishes; the co
 - [ ] **Step 5: Run the test to verify it passes**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsSessionTrackerTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsSessionTrackerTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: PASS, 6 tests.
@@ -3320,7 +3322,7 @@ final class AnalyticsFacadeFactoryTests: XCTestCase {
 - [ ] **Step 2: Run it to verify it fails**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsFacadeFactoryTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsFacadeFactoryTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: compile failure.
@@ -3418,7 +3420,7 @@ enum AnalyticsFacadeFactory {
 - [ ] **Step 4: Run the test to verify it passes**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsFacadeFactoryTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsFacadeFactoryTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: PASS, 3 tests.
@@ -3586,7 +3588,7 @@ final class AppAttestServiceTests: XCTestCase {
 - [ ] **Step 2: Run it to verify it fails**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AppAttestServiceTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AppAttestServiceTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: compile failure — `DeviceCheckAttesting` and the new signatures do not exist.
@@ -3640,7 +3642,7 @@ Add to `Cuckoofile.toml`:
 - [ ] **Step 6: Run the test to verify it passes**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AppAttestServiceTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AppAttestServiceTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: PASS, 5 tests.
@@ -3741,7 +3743,7 @@ final class AttestationClientDataTests: XCTestCase {
 - [ ] **Step 2: Run it to verify it fails**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AttestationClientDataTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AttestationClientDataTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: compile failure.
@@ -3774,7 +3776,7 @@ If the repo already has a lowercase hex helper (check `Data+Hex` / `toHexString(
 - [ ] **Step 4: Run it to verify it passes**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AttestationClientDataTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AttestationClientDataTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: PASS, 6 tests.
@@ -3913,7 +3915,7 @@ final class BackendAttestationModeResolverTests: XCTestCase {
 - [ ] **Step 2: Run them to verify they fail**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/BackendAttestationIdentityTests -only-testing:novawalletTests/BackendAttestationModeResolverTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/BackendAttestationIdentityTests -only-testing:novawalletTests/BackendAttestationModeResolverTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: compile failure.
@@ -4010,7 +4012,7 @@ The challenge response is `{ "challenge": String }` and the challenge is **opaqu
 - [ ] **Step 7: Run the tests to verify they pass**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/BackendAttestationIdentityTests -only-testing:novawalletTests/BackendAttestationModeResolverTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/BackendAttestationIdentityTests -only-testing:novawalletTests/BackendAttestationModeResolverTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: PASS, 7 tests.
@@ -4227,7 +4229,7 @@ Fill in `makeFixture` following `AnalyticsConsentGateTests`: a real `UserDataSto
 - [ ] **Step 2: Run it to verify it fails**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/BackendAttestationProviderTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/BackendAttestationProviderTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: compile failure.
@@ -4253,7 +4255,7 @@ In `AnalyticsService.swift`, change `handleConsentDisabled()` to `handleConsentD
 - [ ] **Step 5: Run the test to verify it passes**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/BackendAttestationProviderTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/BackendAttestationProviderTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: PASS, 11 tests.
@@ -4581,7 +4583,7 @@ Implement `seedCorruptRow` by writing a `CDAnalyticsEvent` with a `payload` that
 - [ ] **Step 3: Run both to verify they fail**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsUploaderTests -only-testing:novawalletTests/AnalyticsUploadRequestTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsUploaderTests -only-testing:novawalletTests/AnalyticsUploadRequestTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: compile failure.
@@ -4605,7 +4607,7 @@ Error handling per spec §6.3: `.rejected` ⇒ `queue.clearOperation()` + `attes
 - [ ] **Step 6: Run both to verify they pass**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsUploaderTests -only-testing:novawalletTests/AnalyticsUploadRequestTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsUploaderTests -only-testing:novawalletTests/AnalyticsUploadRequestTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: PASS, 13 tests.
@@ -4736,7 +4738,7 @@ final class AnalyticsKillSwitchTests: XCTestCase {
 - [ ] **Step 3: Run both to verify they fail**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/RootTests -only-testing:novawalletTests/AnalyticsKillSwitchTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/RootTests -only-testing:novawalletTests/AnalyticsKillSwitchTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: compile failure.
@@ -4790,7 +4792,7 @@ In `AnalyticsServiceFacade.setup()`, fetch the global config once (`GlobalConfig
 - [ ] **Step 7: Run both to verify they pass**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/RootTests -only-testing:novawalletTests/AnalyticsKillSwitchTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/RootTests -only-testing:novawalletTests/AnalyticsKillSwitchTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: PASS.
@@ -4939,7 +4941,7 @@ Fill in `assertPromptShown` by building `MainTabBarInteractor` with Cuckoo mocks
 - [ ] **Step 2: Run it to verify it fails**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsConsentPromptTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsConsentPromptTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: compile failure.
@@ -4984,7 +4986,7 @@ Add the five keys of spec §8.3 to `en.lproj/Localizable.strings` — `analytics
 - [ ] **Step 7: Run the test to verify it passes**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsConsentPromptTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsConsentPromptTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: PASS, 12 tests.
@@ -5095,7 +5097,7 @@ Match the existing helpers in `SettingsTests.swift` rather than inventing new on
 - [ ] **Step 2: Run it to verify it fails**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/SettingsTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/SettingsTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: compile failure.
@@ -5131,7 +5133,7 @@ Set `isAnalyticsOn` to `nil` when `consent.isAvailable` is false, and to `consen
 - [ ] **Step 6: Run the test to verify it passes**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/SettingsTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/SettingsTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: PASS.
@@ -5223,7 +5225,7 @@ final class AnalyticsAttestationFixtureRecorderTests: XCTestCase {
 - [ ] **Step 2: Run it to verify it fails**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsAttestationFixtureRecorderTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsAttestationFixtureRecorderTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: compile failure.
@@ -5239,7 +5241,7 @@ Add `case analyticsDebug` to `SettingsRow` inside `#if F_DEV`, append it to the 
 - [ ] **Step 5: Verify the Release build does not contain it**
 
 ```bash
-set -o pipefail && xcodebuild -project novawallet.xcodeproj -scheme novawallet -configuration Release -destination 'platform=iOS Simulator,name=iPhone 16' build 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild -project novawallet.xcodeproj -scheme novawallet -configuration Release -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' build 2>&1 | xcbeautify --quiet
 ```
 
 Expected: build succeeds. A compile error here means an `#if F_DEV` guard is missing or misplaced — the Release configuration defines `F_RELEASE`, not `F_DEV`.
@@ -5247,7 +5249,7 @@ Expected: build succeeds. A compile error here means an `#if F_DEV` guard is mis
 - [ ] **Step 6: Run the test to verify it passes**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/AnalyticsAttestationFixtureRecorderTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/AnalyticsAttestationFixtureRecorderTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: PASS, 2 tests.
@@ -5334,7 +5336,7 @@ If `PrivacyInfo.xcprivacy` is not copied into the **test** bundle, read it from 
 - [ ] **Step 2: Run it to verify it fails**
 
 ```bash
-set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:novawalletTests/PrivacyManifestTests 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' -only-testing:novawalletTests/PrivacyManifestTests 2>&1 | xcbeautify --quiet
 ```
 
 Expected: FAIL — the keys do not exist yet.
@@ -5367,7 +5369,7 @@ Expected: PASS. `GiftsSyncServiceTests` is known-flaky and pre-existing — if i
 - [ ] **Step 7: Build Release to confirm the flag gating**
 
 ```bash
-set -o pipefail && xcodebuild -project novawallet.xcodeproj -scheme novawallet -configuration Release -destination 'platform=iOS Simulator,name=iPhone 16' build 2>&1 | xcbeautify --quiet
+set -o pipefail && xcodebuild -project novawallet.xcodeproj -scheme novawallet -configuration Release -destination 'platform=iOS Simulator,id=A7A38DAB-F2A9-46E2-A4B8-4D0325304682' build 2>&1 | xcbeautify --quiet
 ```
 
 Expected: build succeeds with `F_ANALYTICS` undefined, so `AnalyticsFacadeFactory.createDefault()` returns the no-op facade.
