@@ -6630,6 +6630,13 @@
 		000000007CF9135B4D967A7E /* AssetExchangeTradeLimitVerdict.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000007FF0D316D4074BC0 /* AssetExchangeTradeLimitVerdict.swift */; };
 		000000002384221D1527B8A1 /* SwapPoolTradeLimitCheck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000004024BA48453ACABB /* SwapPoolTradeLimitCheck.swift */; };
 		000000006C043D814E99B2D6 /* SwapDataValidatorFactory+PoolTradeLimit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0000000044697AEF01295519 /* SwapDataValidatorFactory+PoolTradeLimit.swift */; };
+		FEEDB0000000000000000301 /* AnalyticsPropertyValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDB0000000000000000201 /* AnalyticsPropertyValue.swift */; };
+		FEEDB0000000000000000302 /* AnalyticsEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDB0000000000000000202 /* AnalyticsEvent.swift */; };
+		FEEDB0000000000000000303 /* AnalyticsEventName.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDB0000000000000000203 /* AnalyticsEventName.swift */; };
+		FEEDB0000000000000000304 /* AnalyticsPropertyKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDB0000000000000000204 /* AnalyticsPropertyKey.swift */; };
+		FEEDB0000000000000000305 /* ISO8601MillisFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDB0000000000000000205 /* ISO8601MillisFormatter.swift */; };
+		FEEDB0000000000000000306 /* AnalyticsEventRemote.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDB0000000000000000206 /* AnalyticsEventRemote.swift */; };
+		FEEDB0000000000000000501 /* AnalyticsPropertyValueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDB0000000000000000401 /* AnalyticsPropertyValueTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -13000,6 +13007,13 @@
 		000000007FF0D316D4074BC0 /* AssetExchangeTradeLimitVerdict.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeTradeLimitVerdict.swift; sourceTree = "<group>"; };
 		000000004024BA48453ACABB /* SwapPoolTradeLimitCheck.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapPoolTradeLimitCheck.swift; sourceTree = "<group>"; };
 		0000000044697AEF01295519 /* SwapDataValidatorFactory+PoolTradeLimit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SwapDataValidatorFactory+PoolTradeLimit.swift"; sourceTree = "<group>"; };
+		FEEDB0000000000000000201 /* AnalyticsPropertyValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsPropertyValue.swift; sourceTree = "<group>"; };
+		FEEDB0000000000000000202 /* AnalyticsEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsEvent.swift; sourceTree = "<group>"; };
+		FEEDB0000000000000000203 /* AnalyticsEventName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsEventName.swift; sourceTree = "<group>"; };
+		FEEDB0000000000000000204 /* AnalyticsPropertyKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsPropertyKey.swift; sourceTree = "<group>"; };
+		FEEDB0000000000000000205 /* ISO8601MillisFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ISO8601MillisFormatter.swift; sourceTree = "<group>"; };
+		FEEDB0000000000000000206 /* AnalyticsEventRemote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsEventRemote.swift; sourceTree = "<group>"; };
+		FEEDB0000000000000000401 /* AnalyticsPropertyValueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsPropertyValueTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -21294,6 +21308,7 @@
 		84155DE8253980D700A27058 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				FEEDAA0000000000000000A1 /* Analytics */,
 				AA1014D50747A645B9585D3C /* Announcements */,
 				2DC002ED2E8AEB6A00D49A42 /* AssetHubMigrationInfo */,
 				2D51D68A2E5D9F42008AB208 /* MultisigNotificationsPromo */,
@@ -22416,6 +22431,7 @@
 		84452F8725D5E6CC00F47EC5 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				FEEDAA0000000000000000A2 /* Analytics */,
 				E6F3AA47E60B33CE93DF4903 /* AssetExchange */,
 				0C8FC2292E623F7000034ED3 /* DelegatedAccounts */,
 				0C41D20C2BF77F57000950EE /* CloudBackup */,
@@ -30471,6 +30487,43 @@
 			path = LegalConsent;
 			sourceTree = "<group>";
 		};
+		FEEDAA0000000000000000A1 /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				FEEDB0000000000000000101 /* Model */,
+				FEEDB0000000000000000103 /* Network */,
+			);
+			path = Analytics;
+			sourceTree = "<group>";
+		};
+		FEEDAA0000000000000000A2 /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				FEEDB0000000000000000401 /* AnalyticsPropertyValueTests.swift */,
+			);
+			path = Analytics;
+			sourceTree = "<group>";
+		};
+		FEEDB0000000000000000101 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				FEEDB0000000000000000201 /* AnalyticsPropertyValue.swift */,
+				FEEDB0000000000000000202 /* AnalyticsEvent.swift */,
+				FEEDB0000000000000000203 /* AnalyticsEventName.swift */,
+				FEEDB0000000000000000204 /* AnalyticsPropertyKey.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		FEEDB0000000000000000103 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				FEEDB0000000000000000205 /* ISO8601MillisFormatter.swift */,
+				FEEDB0000000000000000206 /* AnalyticsEventRemote.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -37154,6 +37207,12 @@
 				000000007CF9135B4D967A7E /* AssetExchangeTradeLimitVerdict.swift in Sources */,
 				000000002384221D1527B8A1 /* SwapPoolTradeLimitCheck.swift in Sources */,
 				000000006C043D814E99B2D6 /* SwapDataValidatorFactory+PoolTradeLimit.swift in Sources */,
+				FEEDB0000000000000000301 /* AnalyticsPropertyValue.swift in Sources */,
+				FEEDB0000000000000000302 /* AnalyticsEvent.swift in Sources */,
+				FEEDB0000000000000000303 /* AnalyticsEventName.swift in Sources */,
+				FEEDB0000000000000000304 /* AnalyticsPropertyKey.swift in Sources */,
+				FEEDB0000000000000000305 /* ISO8601MillisFormatter.swift in Sources */,
+				FEEDB0000000000000000306 /* AnalyticsEventRemote.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -37357,6 +37416,7 @@
 				F4897BB126AED13D0075F291 /* EraCountdownOperationFactoryStub.swift in Sources */,
 				CC9C5C7E32F8E3E32C3C123A /* PolkadotRewardEngineTests.swift in Sources */,
 				000000007C2FD98856D6F69F /* AssetExchangeCommissionNetFlowTests.swift in Sources */,
+				FEEDB0000000000000000501 /* AnalyticsPropertyValueTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
