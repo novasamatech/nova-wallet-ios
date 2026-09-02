@@ -19,7 +19,7 @@ give a concrete fix.
 
 - [ ] Preconditions on user actions are `DataValidating` validators, not inline `if`s
 - [ ] Correct severity: `.error` aborts, `.warning` asks, `.asyncProcess` waits
-- [ ] Validators reuse `BaseDataValidatorFactory` where a check already exists
+- [ ] Validators reuse `BaseDataValidatingFactoryProtocol` where a check already exists
 - [ ] Validation runs before every submission path
 
 **Ref:** architecture/transactions.md

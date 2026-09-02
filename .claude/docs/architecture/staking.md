@@ -32,7 +32,7 @@ A relaychain shared state carries:
 
 - `globalRemoteSubscriptionService` — era, validator count, min bond, etc.
 - `accountRemoteSubscriptionService` — the user's ledger/nominations/controller
-- `eraValidatorService` — the current era's validator set (`EraValidatorsService`)
+- `eraValidatorService` — the current era's validator set (`EraValidatorService`)
 - `rewardCalculatorService` — APY engine (`RewardCalculatorService`)
 - `timeModel` — `StakingTimeModel` (era duration, unstaking duration)
 - `localSubscriptionFactory` — CoreData-backed staking providers
@@ -62,7 +62,7 @@ model support.
 `Modules/Staking/Services/RewardCalculatorService/`:
 
 - `RelayChain/` — inflation-based APY. `PolkadotRewardEngine` /
-  `PolkadotInflationPredictionFactory` / `PolkadotStakersRewardFactory` derive the APY from the
+  `PolkadotStakersRewardFactory` / `PolkadotStakersRewardFactory` derive the APY from the
   staking pallet's era reward allocation; `RewardCalculatorParamsServiceFactory` picks the engine per
   chain.
 - Parachain and Mythos have their own engines under the same directory.
@@ -91,8 +91,8 @@ Never hardcode era counts or block times — always derive them through these fa
 
 `SelectValidatorsFlow/` implements recommended + custom selection, filtering, and the confirm screen.
 `PreferredValidatorsProvider` pulls the curated list from `ApplicationConfig.preferredValidatorsURL`.
-`EraValidatorsService` supplies the on-chain set; paged fetching lives in
-`EraStakersPagedSearchOperationFactory` (see the integration test of the same name).
+`EraValidatorService` supplies the on-chain set; paged fetching lives in
+`StakingValidatorExposureFacade` (see the integration test of the same name).
 
 ## Operations Catalogue
 

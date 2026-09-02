@@ -48,7 +48,8 @@ them from a leaf screen.
 
 On-chain and off-chain data are normalised into `*Local` models before reaching the UI:
 
-`ReferendumLocal`, `ReferendumVotingLocal`, `ReferendumAccountVoteLocal`, `ReferendumActionLocal`,
+`ReferendumLocal`, `ReferendumAccountVotingDistribution`, `ReferendumTracksVotingDistribution`,
+`ReferendumAccountVoteLocal`, `ReferendumActionLocal`,
 `ReferendumMetadataLocal`, `ReferendumDelegatingLocal`, `ReferendumVoterLocal`,
 `GovernanceLockState`, `GovernanceUnlockSchedule`, `GovernanceDelegateState`.
 

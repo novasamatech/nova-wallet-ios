@@ -74,7 +74,7 @@ governance dApps, banners).
 - `Sessions`, `SessionDetails` — user-facing session management.
 - `States/` — request handling state machine, mirroring the browser transports.
 
-The WalletConnect project id comes from `CIKeys.generated.swift` (`wcProjectId`), injected by
+The WalletConnect project id comes from `CIKeys.generated.swift` (`WalletConnectCISecrets.projectId`), injected by
 Sourcery.
 
 ## Hard Rules

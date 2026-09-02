@@ -38,7 +38,7 @@ Key collaborators:
 - **`ExtrinsicSenderResolution`** — resolves who actually signs (self, proxy delegate, multisig
   signatory) and rewrites the call accordingly. Delegated wallets work because of this layer; never
   bypass it by signing with the delegator's account directly.
-- **`ExtrinsicFeeEstimationRegistry` / `FeeManaging`** — chooses the fee payment mode. `payingIn:`
+- **`ExtrinsicFeeEstimationRegistry` / `Common/Services/ExtrinsicService/Substrate/FeeManaging/`** — chooses the fee payment mode. `payingIn:`
   lets the user pay fees in a non-native asset (`FeeViaSwap`, asset conversion); `nil` means native.
 - **Era / nonce / metadata hash factories** — `MortalEraOperationFactory`,
   `TransactionNonceOperationFactory`, `MetadataHashOperationFactory` (metadata shortening for
@@ -87,7 +87,7 @@ How it works:
 - `.error` aborts. `.warning` and `.asyncProcess` pause; when the user confirms the warning (or the
   async check completes) the validator calls back through `DataValidatingDelegate` and the runner
   resumes from the next validator.
-- Common validators live in `BaseDataValidatorFactory` (`canSpendAmount`, `canPayFee`,
+- Common validators live in `BaseDataValidatingFactoryProtocol` (`canSpendAmount`, `canPayFee`,
   `canPayFeeSpendingAmount`, `has(fee:)`, `exsitentialDepositIsNotViolated`, `accountIsNotSystem`,
   `notViolatingMinBalancePaying`). Feature-specific factories extend it
   (`Modules/Transfer/Validation/`, `Modules/Staking/Validation/`, `Modules/Vote/Governance/Validating/`).
@@ -127,7 +127,7 @@ how the warning/resume behaviour and the localized error copy stay consistent.
 | Piece                                    | Role                                                    |
 |------------------------------------------|---------------------------------------------------------|
 | `XcmModelFactory` / `XcmDynamicModelFactory` | Build the XCM message for a route                   |
-| `XcmTransferResolutionService`           | Resolve reserve/destination chain path                   |
+| `XcmTransferResolutionFactory`           | Resolve reserve/destination chain path                   |
 | `XcmDynamicCrosschainFeeCalculator` / `XcmLegacyCrosschainFeeCalculator` | Origin + delivery + destination fees |
 | `XcmTransferDryRunner`                   | Dry-run the transfer where the chain supports it          |
 | `XcmDepositMonitoringService` / `XcmTokensArrivalDetector` | Detect arrival on the destination chain |
