@@ -6636,7 +6636,12 @@
 		FEEDB0000000000000000304 /* AnalyticsPropertyKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDB0000000000000000204 /* AnalyticsPropertyKey.swift */; };
 		FEEDB0000000000000000305 /* ISO8601MillisFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDB0000000000000000205 /* ISO8601MillisFormatter.swift */; };
 		FEEDB0000000000000000306 /* AnalyticsEventRemote.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDB0000000000000000206 /* AnalyticsEventRemote.swift */; };
+		FEEDB0000000000000000307 /* AnalyticsEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDB0000000000000000207 /* AnalyticsEnums.swift */; };
+		FEEDB0000000000000000308 /* AnalyticsBuckets.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDB0000000000000000208 /* AnalyticsBuckets.swift */; };
+		FEEDB0000000000000000309 /* AssetCategoryClassifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDB0000000000000000209 /* AssetCategoryClassifier.swift */; };
 		FEEDB0000000000000000501 /* AnalyticsPropertyValueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDB0000000000000000401 /* AnalyticsPropertyValueTests.swift */; };
+		FEEDB0000000000000000502 /* AnalyticsBucketsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDB0000000000000000402 /* AnalyticsBucketsTests.swift */; };
+		FEEDB0000000000000000503 /* AssetCategoryClassifierTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDB0000000000000000403 /* AssetCategoryClassifierTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -13013,7 +13018,12 @@
 		FEEDB0000000000000000204 /* AnalyticsPropertyKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsPropertyKey.swift; sourceTree = "<group>"; };
 		FEEDB0000000000000000205 /* ISO8601MillisFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ISO8601MillisFormatter.swift; sourceTree = "<group>"; };
 		FEEDB0000000000000000206 /* AnalyticsEventRemote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsEventRemote.swift; sourceTree = "<group>"; };
+		FEEDB0000000000000000207 /* AnalyticsEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsEnums.swift; sourceTree = "<group>"; };
+		FEEDB0000000000000000208 /* AnalyticsBuckets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsBuckets.swift; sourceTree = "<group>"; };
+		FEEDB0000000000000000209 /* AssetCategoryClassifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCategoryClassifier.swift; sourceTree = "<group>"; };
 		FEEDB0000000000000000401 /* AnalyticsPropertyValueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsPropertyValueTests.swift; sourceTree = "<group>"; };
+		FEEDB0000000000000000402 /* AnalyticsBucketsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsBucketsTests.swift; sourceTree = "<group>"; };
+		FEEDB0000000000000000403 /* AssetCategoryClassifierTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCategoryClassifierTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -30500,6 +30510,8 @@
 			isa = PBXGroup;
 			children = (
 				FEEDB0000000000000000401 /* AnalyticsPropertyValueTests.swift */,
+				FEEDB0000000000000000402 /* AnalyticsBucketsTests.swift */,
+				FEEDB0000000000000000403 /* AssetCategoryClassifierTests.swift */,
 			);
 			path = Analytics;
 			sourceTree = "<group>";
@@ -30511,6 +30523,9 @@
 				FEEDB0000000000000000202 /* AnalyticsEvent.swift */,
 				FEEDB0000000000000000203 /* AnalyticsEventName.swift */,
 				FEEDB0000000000000000204 /* AnalyticsPropertyKey.swift */,
+				FEEDB0000000000000000207 /* AnalyticsEnums.swift */,
+				FEEDB0000000000000000208 /* AnalyticsBuckets.swift */,
+				FEEDB0000000000000000209 /* AssetCategoryClassifier.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -37213,6 +37228,9 @@
 				FEEDB0000000000000000304 /* AnalyticsPropertyKey.swift in Sources */,
 				FEEDB0000000000000000305 /* ISO8601MillisFormatter.swift in Sources */,
 				FEEDB0000000000000000306 /* AnalyticsEventRemote.swift in Sources */,
+				FEEDB0000000000000000307 /* AnalyticsEnums.swift in Sources */,
+				FEEDB0000000000000000308 /* AnalyticsBuckets.swift in Sources */,
+				FEEDB0000000000000000309 /* AssetCategoryClassifier.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -37417,6 +37435,8 @@
 				CC9C5C7E32F8E3E32C3C123A /* PolkadotRewardEngineTests.swift in Sources */,
 				000000007C2FD98856D6F69F /* AssetExchangeCommissionNetFlowTests.swift in Sources */,
 				FEEDB0000000000000000501 /* AnalyticsPropertyValueTests.swift in Sources */,
+				FEEDB0000000000000000502 /* AnalyticsBucketsTests.swift in Sources */,
+				FEEDB0000000000000000503 /* AssetCategoryClassifierTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
