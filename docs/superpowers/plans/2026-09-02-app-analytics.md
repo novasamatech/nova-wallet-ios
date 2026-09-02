@@ -1356,23 +1356,23 @@ import XCTest
 
 final class AnalyticsBucketsTests: XCTestCase {
     func testAmountBucketBoundariesAreExclusiveUpperBounds() {
-        // Bounds: 1 / 10 / 100 / 1_000 / 10_000 / 100_000
+        // Bounds: 1 / 10 / 100 / 1_000 / 10_000 / 100_000, all exclusive (Android uses `<`).
         XCTAssertEqual(AmountBucket(usd: 0).rawValue, "under_1")
         XCTAssertEqual(AmountBucket(usd: 0.99).rawValue, "under_1")
-        XCTAssertEqual(AmountBucket(usd: 1).rawValue, "1_10")
-        XCTAssertEqual(AmountBucket(usd: 9.99).rawValue, "1_10")
-        XCTAssertEqual(AmountBucket(usd: 10).rawValue, "10_100")
-        XCTAssertEqual(AmountBucket(usd: 99.99).rawValue, "10_100")
-        XCTAssertEqual(AmountBucket(usd: 100).rawValue, "100_1000")
-        XCTAssertEqual(AmountBucket(usd: 1_000).rawValue, "1000_10000")
-        XCTAssertEqual(AmountBucket(usd: 10_000).rawValue, "10000_100000")
-        XCTAssertEqual(AmountBucket(usd: 100_000).rawValue, "over_100000")
-        XCTAssertEqual(AmountBucket(usd: 999_999_999).rawValue, "over_100000")
+        XCTAssertEqual(AmountBucket(usd: 1).rawValue, "1_to_10")
+        XCTAssertEqual(AmountBucket(usd: 9.99).rawValue, "1_to_10")
+        XCTAssertEqual(AmountBucket(usd: 10).rawValue, "10_to_100")
+        XCTAssertEqual(AmountBucket(usd: 99.99).rawValue, "10_to_100")
+        XCTAssertEqual(AmountBucket(usd: 100).rawValue, "100_to_1k")
+        XCTAssertEqual(AmountBucket(usd: 1_000).rawValue, "1k_to_10k")
+        XCTAssertEqual(AmountBucket(usd: 10_000).rawValue, "10k_to_100k")
+        XCTAssertEqual(AmountBucket(usd: 100_000).rawValue, "over_100k")
+        XCTAssertEqual(AmountBucket(usd: 999_999_999).rawValue, "over_100k")
     }
 
     func testAmountBucketWithoutRateFallsToZero() {
         XCTAssertEqual(AmountBucket(amount: 42, rate: nil).rawValue, "under_1")
-        XCTAssertEqual(AmountBucket(amount: 42, rate: 10).rawValue, "100_1000")
+        XCTAssertEqual(AmountBucket(amount: 42, rate: 10).rawValue, "100_to_1k")
     }
 
     func testFailableAmountBucketRequiresAPrice() {
@@ -1380,32 +1380,38 @@ final class AnalyticsBucketsTests: XCTestCase {
     }
 
     func testDurationBucketTruncatesLikeAndroidsIntegerDivision() {
-        // Bounds: 5 / 15 / 30 / 60 / 300, applied to Int(duration).
+        // Bounds: 5 / 15 / 30 / 60 / 300 seconds, exclusive, applied to Int(duration)
+        // — Android computes `milliseconds / 1000` with integer division.
         XCTAssertEqual(DurationBucket(duration: 0).rawValue, "under_5s")
         XCTAssertEqual(DurationBucket(duration: 4.999).rawValue, "under_5s")
-        XCTAssertEqual(DurationBucket(duration: 5).rawValue, "5_15s")
-        XCTAssertEqual(DurationBucket(duration: 14.999).rawValue, "5_15s")
-        XCTAssertEqual(DurationBucket(duration: 15).rawValue, "15_30s")
-        XCTAssertEqual(DurationBucket(duration: 30).rawValue, "30_60s")
-        XCTAssertEqual(DurationBucket(duration: 60).rawValue, "60_300s")
-        XCTAssertEqual(DurationBucket(duration: 300).rawValue, "over_300s")
+        XCTAssertEqual(DurationBucket(duration: 5).rawValue, "5s_to_15s")
+        XCTAssertEqual(DurationBucket(duration: 14.999).rawValue, "5s_to_15s")
+        XCTAssertEqual(DurationBucket(duration: 15).rawValue, "15s_to_30s")
+        XCTAssertEqual(DurationBucket(duration: 30).rawValue, "30s_to_60s")
+        XCTAssertEqual(DurationBucket(duration: 60).rawValue, "1m_to_5m")
+        XCTAssertEqual(DurationBucket(duration: 299).rawValue, "1m_to_5m")
+        XCTAssertEqual(DurationBucket(duration: 300).rawValue, "over_5m")
     }
 
     func testSlippageBucketBoundsAreInclusive() {
-        // Bounds: 0.5 / 1 / 3, inclusive.
-        XCTAssertEqual(SlippageBucket(percent: 0).rawValue, "under_0_5")
-        XCTAssertEqual(SlippageBucket(percent: 0.5).rawValue, "0_5_1")
-        XCTAssertEqual(SlippageBucket(percent: 1).rawValue, "1_3")
-        XCTAssertEqual(SlippageBucket(percent: 3).rawValue, "over_3")
+        // Android: percentage <= 0.5 -> LOW, <= 1.0 -> MEDIUM, <= 3.0 -> HIGH, else CUSTOM.
+        // The bounds are INCLUSIVE, so 0.5 is "low" and not the second bucket.
+        XCTAssertEqual(SlippageBucket(percent: 0).rawValue, "low")
+        XCTAssertEqual(SlippageBucket(percent: 0.5).rawValue, "low")
+        XCTAssertEqual(SlippageBucket(percent: 0.51).rawValue, "medium")
+        XCTAssertEqual(SlippageBucket(percent: 1).rawValue, "medium")
+        XCTAssertEqual(SlippageBucket(percent: 1.01).rawValue, "high")
+        XCTAssertEqual(SlippageBucket(percent: 3).rawValue, "high")
+        XCTAssertEqual(SlippageBucket(percent: 3.01).rawValue, "custom")
     }
 
     func testBucketsConvertToEnumeratedValues() {
-        XCTAssertEqual(AmountBucket(usd: 5).analyticsValue, .enumerated("1_10"))
+        XCTAssertEqual(AmountBucket(usd: 5).analyticsValue, .enumerated("1_to_10"))
     }
 }
 ```
 
-**Before implementing, open `pr2324/…ValueBucketing.kt.NEW.txt:15-23,38-48,61-66` and confirm every `rawValue` string above against the Android source.** The boundary *numbers* are fixed by spec §4.7; the *label strings* must match Android exactly, and if any differ from the ones written here, Android wins — fix the test, then implement to it.
+These raw values and boundary semantics are **transcribed from the Android source** at `analytics/src/main/java/io/novafoundation/nova/analytics/ValueBucketing.kt` on PR 2324's head (`108899870`) and verified against it. Do not change them.
 
 - [ ] **Step 2: Write the failing classifier test**
 
@@ -1446,7 +1452,7 @@ final class AssetCategoryClassifierTests: XCTestCase {
 }
 ```
 
-**Transcribe the three symbol sets and the rule order verbatim from `pr2324/…AssetCategoryClassifier.kt.NEW.txt:5-33`.** If Android's classifier is case-sensitive, delete `testClassificationIsCaseInsensitive` rather than diverging — parity beats taste here, and a mismatch would split the two platforms' data.
+These expectations are verified against the Android source: `WDOT` is in the explicit `WRAPPED_TOKENS` set *and* would be caught by the `W`+native rule, and `classify` upper-cases its input, so the case-insensitivity test holds.
 
 - [ ] **Step 3: Run both suites to verify they fail**
 
@@ -1499,22 +1505,28 @@ import Foundation
 
 enum AmountBucket: String, AnalyticsPropertyConvertible {
     case under1 = "under_1"
-    case from1To10 = "1_10"
-    case from10To100 = "10_100"
-    case from100To1000 = "100_1000"
-    case from1000To10000 = "1000_10000"
-    case from10000To100000 = "10000_100000"
-    case over100000 = "over_100000"
+    case from1To10 = "1_to_10"
+    case from10To100 = "10_to_100"
+    case from100To1k = "100_to_1k"
+    case from1kTo10k = "1k_to_10k"
+    case from10kTo100k = "10k_to_100k"
+    case over100k = "over_100k"
 
     init(usd: Decimal) {
-        self = switch usd {
-        case ..<1: .under1
-        case ..<10: .from1To10
-        case ..<100: .from10To100
-        case ..<1_000: .from100To1000
-        case ..<10_000: .from1000To10000
-        case ..<100_000: .from10000To100000
-        default: .over100000
+        self = if usd < 1 {
+            .under1
+        } else if usd < 10 {
+            .from1To10
+        } else if usd < 100 {
+            .from10To100
+        } else if usd < 1_000 {
+            .from100To1k
+        } else if usd < 10_000 {
+            .from1kTo10k
+        } else if usd < 100_000 {
+            .from10kTo100k
+        } else {
+            .over100k
         }
     }
 
@@ -1533,48 +1545,49 @@ enum AmountBucket: String, AnalyticsPropertyConvertible {
 
 enum DurationBucket: String, AnalyticsPropertyConvertible {
     case under5s = "under_5s"
-    case from5To15s = "5_15s"
-    case from15To30s = "15_30s"
-    case from30To60s = "30_60s"
-    case from60To300s = "60_300s"
-    case over300s = "over_300s"
+    case from5sTo15s = "5s_to_15s"
+    case from15sTo30s = "15s_to_30s"
+    case from30sTo60s = "30s_to_60s"
+    case from1mTo5m = "1m_to_5m"
+    case over5m = "over_5m"
 
-    /// Truncating to whole seconds reproduces Android's `ms / 1000` integer division.
+    /// Truncating to whole seconds reproduces Android's `milliseconds / 1000`
+    /// integer division.
     init(duration: TimeInterval) {
         self = switch Int(duration) {
         case ..<5: .under5s
-        case ..<15: .from5To15s
-        case ..<30: .from15To30s
-        case ..<60: .from30To60s
-        case ..<300: .from60To300s
-        default: .over300s
+        case ..<15: .from5sTo15s
+        case ..<30: .from15sTo30s
+        case ..<60: .from30sTo60s
+        case ..<300: .from1mTo5m
+        default: .over5m
         }
     }
 }
 
 enum SlippageBucket: String, AnalyticsPropertyConvertible {
-    case under0_5 = "under_0_5"
-    case from0_5To1 = "0_5_1"
-    case from1To3 = "1_3"
-    case over3 = "over_3"
+    case low
+    case medium
+    case high
+    case custom
 
+    /// Bounds are INCLUSIVE on Android (`percentage <= 0.5 -> LOW`), unlike the
+    /// exclusive amount and duration bounds.
     init(percent: Decimal) {
-        self = if percent < 0.5 {
-            .under0_5
-        } else if percent < 1 {
-            .from0_5To1
-        } else if percent < 3 {
-            .from1To3
+        self = if percent <= 0.5 {
+            .low
+        } else if percent <= 1 {
+            .medium
+        } else if percent <= 3 {
+            .high
         } else {
-            .over3
+            .custom
         }
     }
 }
 ```
 
-`Decimal` does not conform to the pattern-matching `~=` needed by `case ..<1:` in a `switch` over `Decimal` in all Swift versions. If `AmountBucket(usd:)` does not compile, rewrite it as the `if/else if` ladder used by `SlippageBucket` — the boundaries and the resulting cases are identical.
-
-SwiftLint's `identifier_name` may reject `under0_5`. If so, rename the cases (`underHalf`, `halfToOne`, `oneToThree`, `overThree`) — **the raw value strings must not change**, only the Swift case names.
+`DurationBucket` switches over `Int`, so the `case ..<5:` form is fine there. `AmountBucket` and `SlippageBucket` compare `Decimal` and therefore use `if/else if` ladders — `Decimal` does not support range pattern matching in a `switch` across all Swift versions.
 
 - [ ] **Step 6: Write the classifier**
 
@@ -1586,9 +1599,23 @@ import Foundation
 /// Order is load-bearing: NATIVE → STABLE → WRAPPED → "W" + NATIVE → other.
 /// Sets transcribed from pr2324/…AssetCategoryClassifier.kt.NEW.txt:5-33.
 enum AssetCategoryClassifier {
-    private static let native: Set<String> = [/* verbatim from the Android source */]
-    private static let stable: Set<String> = [/* verbatim from the Android source */]
-    private static let wrapped: Set<String> = [/* verbatim from the Android source */]
+    private static let native: Set<String> = [
+        "DOT", "KSM", "ETH", "BTC", "BNB", "AVAX", "MATIC",
+        "SOL", "FTM", "GLMR", "MOVR", "ASTR", "ACA", "CFG",
+        "HDX", "INTR", "KINT", "PHA", "ZTG", "NODL", "RING",
+        "TEER", "TUR", "UNQ", "AZERO"
+    ]
+
+    private static let stable: Set<String> = [
+        "USDT", "USDC", "DAI", "BUSD", "TUSD", "FRAX", "LUSD",
+        "USDP", "GUSD", "USDD", "CRVUSD", "GHO", "PYUSD",
+        "AUSD", "IUSD"
+    ]
+
+    private static let wrapped: Set<String> = [
+        "WETH", "WBTC", "WBNB", "WAVAX", "WMATIC", "WFTM",
+        "WGLMR", "WMOVR", "WDOT", "WKSM"
+    ]
 
     static func classify(_ symbol: String) -> AssetCategory {
         let normalized = symbol.uppercased()
@@ -1614,7 +1641,7 @@ enum AssetCategoryClassifier {
 }
 ```
 
-Fill the three sets from the Android source before running the tests — they are the only part of this file that is not already written.
+The three sets and the rule order are transcribed from `analytics/src/main/java/io/novafoundation/nova/analytics/AssetCategoryClassifier.kt` at PR 2324's head (`108899870`), including Android's `symbol.uppercase()` normalisation — so `testClassificationIsCaseInsensitive` is correct and stays.
 
 - [ ] **Step 7: Run both suites to verify they pass**
 
@@ -1697,7 +1724,7 @@ final class AnalyticsEventCatalogTests: XCTestCase {
             ),
             Row(
                 event: .sessionEnded(duration: 42),
-                expectedJSON: #"{"name":"session_ended","props":{"duration_bucket":"30_60s"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"name":"session_ended","props":{"duration_bucket":"30s_to_60s"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
@@ -1714,7 +1741,7 @@ final class AnalyticsEventCatalogTests: XCTestCase {
                     rate: 5
                 ),
                 // destination_network is absent, not null — the cross-chain-only key.
-                expectedJSON: #"{"name":"send_completed","props":{"amount_bucket":"10_100","asset":"DOT","network":"Polkadot"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"name":"send_completed","props":{"amount_bucket":"10_to_100","asset":"DOT","network":"Polkadot"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
@@ -1725,7 +1752,7 @@ final class AnalyticsEventCatalogTests: XCTestCase {
                     amount: 10,
                     rate: 1
                 ),
-                expectedJSON: #"{"name":"send_completed","props":{"amount_bucket":"10_100","asset":"USDT","destination_network":"Hydration","network":"Polkadot Asset Hub"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"name":"send_completed","props":{"amount_bucket":"10_to_100","asset":"USDT","destination_network":"Hydration","network":"Polkadot Asset Hub"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
@@ -3683,15 +3710,18 @@ import XCTest
 @testable import novawallet
 
 final class AttestationClientDataTests: XCTestCase {
-    // Vectors from pr2324/…AttestationSigningTest.kt.NEW.txt:7-38. These are the
+    // Verbatim from infrastructure/src/test/java/io/novafoundation/nova/infrastructure/
+    // attestation/AttestationSigningTest.kt at PR 2324's head (108899870). These are the
     // cross-platform contract: the gateway recomputes the same digest for both platforms.
-    private let bodyVector = (
-        body: Data(#"{"hello":"world"}"#.utf8),      // replace with the exact Android input
-        digest: "2c3d64ea…49f4e7"                    // replace with the full 64-char hex
-    )
+    private let challenge = "TEST_CHALLENGE_abc123"
+    private let clientId = "6f2c1e4a-0000-4000-8000-000000000001"
+    private let body = Data(#"{"v":1,"platform":"android","app_version":"10.9.1"}"#.utf8)
 
     func testBodyDigestMatchesTheAndroidVector() {
-        XCTAssertEqual(AttestationClientData.bodyDigestHex(bodyVector.body), bodyVector.digest)
+        XCTAssertEqual(
+            AttestationClientData.bodyDigestHex(body),
+            "2c3d64eac83fc3f8bc8fe383d202bf4cc4b5b3c88328c87cc6695f8ecb49f4e7"
+        )
     }
 
     func testEmptyBodyDigestIsTheKnownSha256OfNothing() {
@@ -3731,14 +3761,37 @@ final class AttestationClientDataTests: XCTestCase {
     }
 
     func testSigningPayloadMatchesTheAndroidVector() {
-        // AttestationSigningTest.kt.NEW.txt:32-38 — signing payload 4469fb60…9c5c92.
-        // Fill in Android's exact challenge, clientId and body, and assert the sha256
-        // of the produced client data against its published digest.
+        // Android's `signingPayload` returns sha256(utf8(challenge ‖ clientId ‖ bodyDigestHex)).
+        // On iOS the client data is that same *unhashed* string and AppAttestService applies
+        // the SHA-256, so the digest below is what DeviceCheck receives as clientDataHash.
+        let clientData = AttestationClientData.assertionClientData(
+            challenge: challenge,
+            clientId: clientId,
+            body: body
+        )
+
+        XCTAssertEqual(
+            clientData.sha256().map { String(format: "%02x", $0) }.joined(),
+            "4469fb60ce2ad38af216bc5ac89188071392af288cfaa99eb62532843d9c5c92"
+        )
+    }
+
+    func testAssertionClientDataIsTheAndroidPayloadBeforeHashing() {
+        let clientData = AttestationClientData.assertionClientData(
+            challenge: challenge,
+            clientId: clientId,
+            body: body
+        )
+
+        XCTAssertEqual(
+            String(data: clientData, encoding: .utf8),
+            challenge + clientId + "2c3d64eac83fc3f8bc8fe383d202bf4cc4b5b3c88328c87cc6695f8ecb49f4e7"
+        )
     }
 }
 ```
 
-**Before implementing, open `pr2324/…AttestationSigningTest.kt.NEW.txt:7-38` and fill in the three placeholders**: the body-vector input and its full 64-character digest, and the signing-payload case. The empty-body digest above is the well-known SHA-256 of the empty string and needs no source. **Do not implement against the placeholders** — a test with an invented expectation is worse than no test.
+Every vector above is transcribed from the Android test and verified. **Two of Android's five vectors deliberately have no iOS counterpart**, exactly as spec §7.6 states: `sharedSecretToken` (iOS implements no shared-secret mode) and `attestationPayload` (Android digests `publicKeyBase64`, iOS digests `keyId`, because the public key travels inside the App Attest certificate). Do not port either.
 
 - [ ] **Step 2: Run it to verify it fails**
 
