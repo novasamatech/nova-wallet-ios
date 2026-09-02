@@ -1,22 +1,21 @@
 import Foundation
 import DeviceCheck
 import Operation_iOS
-import CryptoKit
-import Keystore_iOS
 
 protocol AppAttestServiceProtocol {
     var isSupported: Bool { get }
 
+    /// `clientData` receives the key id — generated here when `keyId` is nil — because the
+    /// gateway's attestation client data is sha256(challenge ‖ clientId ‖ keyId).
     func createAttestationWrapper(
-        for challengeClosure: @escaping () throws -> Data,
-        using keyId: AppAttestKeyId?
-    ) -> CompoundOperationWrapper<AppAttestModel>
+        using keyId: AppAttestKeyId?,
+        clientData: @escaping (AppAttestKeyId) throws -> Data
+    ) -> CompoundOperationWrapper<AppAttestAttestation>
 
     func createAssertionWrapper(
-        challengeClosure: @escaping () throws -> Data,
-        dataClosure: @escaping () throws -> Data?,
-        keyId: AppAttestKeyId
-    ) -> CompoundOperationWrapper<AppAttestAssertionModel>
+        keyId: AppAttestKeyId,
+        clientData: @escaping () throws -> Data
+    ) -> CompoundOperationWrapper<AppAttestAssertion>
 }
 
 enum AppAttestServiceError: Error {
@@ -25,7 +24,6 @@ enum AppAttestServiceError: Error {
     case serviceUnavailable
     case attestationGeneric(Error?)
     case assertionGeneric(Error?)
-    case bundleIdUnavailable
 
     static func createDCSpecificError(
         from error: Error?,
@@ -51,23 +49,15 @@ enum AppAttestServiceError: Error {
 }
 
 final class AppAttestService {
-    let service: DCAppAttestService
-    let hashCalculator: AppAttestClientHashing
-    let bundle: Bundle
+    let service: DeviceCheckAttesting
 
-    init(
-        service: DCAppAttestService = DCAppAttestService.shared,
-        hashCalculator: AppAttestClientHashing = AppAttestClientHashCalculator(),
-        bundle: Bundle = .main
-    ) {
+    init(service: DeviceCheckAttesting = DCAppAttestService.shared) {
         self.service = service
-        self.hashCalculator = hashCalculator
-        self.bundle = bundle
     }
 
     private func createKeyIdOperation(
         using keyId: AppAttestKeyId?,
-        service: DCAppAttestService
+        service: DeviceCheckAttesting
     ) -> BaseOperation<AppAttestKeyId> {
         if let keyId {
             return .createWithResult(keyId)
@@ -86,18 +76,16 @@ final class AppAttestService {
 
     private func createAttestOperation(
         dependingOn keyIdOperation: BaseOperation<AppAttestKeyId>,
-        service: DCAppAttestService,
-        hashCalculator: AppAttestClientHashing,
-        challengeClosure: @escaping () throws -> Data
-    ) -> BaseOperation<AppAttestModel> {
+        service: DeviceCheckAttesting,
+        clientData: @escaping (AppAttestKeyId) throws -> Data
+    ) -> BaseOperation<AppAttestAttestation> {
         AsyncClosureOperation { completion in
             let keyId = try keyIdOperation.extractNoCancellableResultData()
-            let challenge = try challengeClosure()
-            let hash = try hashCalculator.hash(challenge: challenge, data: nil)
+            let clientDataHash = try clientData(keyId).sha256()
 
-            service.attestKey(keyId, clientDataHash: hash) { attestation, error in
+            service.attestKey(keyId, clientDataHash: clientDataHash) { attestation, error in
                 if let attestation {
-                    completion(.success(.init(keyId: keyId, challenge: challenge, result: attestation)))
+                    completion(.success(AppAttestAttestation(keyId: keyId, attestation: attestation)))
                 } else {
                     let attestationError = AppAttestServiceError.createDCSpecificError(
                         from: error,
@@ -115,48 +103,34 @@ extension AppAttestService: AppAttestServiceProtocol {
     var isSupported: Bool { service.isSupported }
 
     func createAttestationWrapper(
-        for challengeClosure: @escaping () throws -> Data,
-        using keyId: AppAttestKeyId?
-    ) -> CompoundOperationWrapper<AppAttestModel> {
+        using keyId: AppAttestKeyId?,
+        clientData: @escaping (AppAttestKeyId) throws -> Data
+    ) -> CompoundOperationWrapper<AppAttestAttestation> {
         let keyIdOperation = createKeyIdOperation(using: keyId, service: service)
         let attestationOperation = createAttestOperation(
             dependingOn: keyIdOperation,
             service: service,
-            hashCalculator: hashCalculator,
-            challengeClosure: challengeClosure
+            clientData: clientData
         )
 
         attestationOperation.addDependency(keyIdOperation)
 
-        return CompoundOperationWrapper(targetOperation: attestationOperation, dependencies: [keyIdOperation])
+        return CompoundOperationWrapper(
+            targetOperation: attestationOperation,
+            dependencies: [keyIdOperation]
+        )
     }
 
     func createAssertionWrapper(
-        challengeClosure: @escaping () throws -> Data,
-        dataClosure: @escaping () throws -> Data?,
-        keyId: AppAttestKeyId
-    ) -> CompoundOperationWrapper<AppAttestAssertionModel> {
-        let operation = AsyncClosureOperation { completionClosure in
-            let challenge = try challengeClosure()
-            let data = try dataClosure()
+        keyId: AppAttestKeyId,
+        clientData: @escaping () throws -> Data
+    ) -> CompoundOperationWrapper<AppAttestAssertion> {
+        let operation = AsyncClosureOperation<AppAttestAssertion> { completionClosure in
+            let clientDataHash = try clientData().sha256()
 
-            let hash = try self.hashCalculator.hash(challenge: challenge, data: data)
-
-            guard let bundleId = self.bundle.bundleIdentifier else {
-                throw AppAttestServiceError.bundleIdUnavailable
-            }
-
-            self.service.generateAssertion(keyId, clientDataHash: hash) { assertion, error in
+            self.service.generateAssertion(keyId, clientDataHash: clientDataHash) { assertion, error in
                 if let assertion {
-                    let model = AppAttestAssertionModel(
-                        keyId: keyId,
-                        challenge: challenge,
-                        assertion: assertion,
-                        bodyData: data,
-                        bundleId: bundleId
-                    )
-
-                    completionClosure(.success(model))
+                    completionClosure(.success(assertion))
                 } else {
                     let assertionError = AppAttestServiceError.createDCSpecificError(
                         from: error,
