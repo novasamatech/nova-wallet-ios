@@ -6653,6 +6653,8 @@
 		FEEDB0000000000000000318 /* AnalyticsEvent+Ramp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDB0000000000000000218 /* AnalyticsEvent+Ramp.swift */; };
 		FEEDB0000000000000000319 /* AnalyticsEvent+Misc.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDB0000000000000000219 /* AnalyticsEvent+Misc.swift */; };
 		FEEDB0000000000000000504 /* AnalyticsEventCatalogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDB0000000000000000404 /* AnalyticsEventCatalogTests.swift */; };
+		FEEDB0000000000000000320 /* AnalyticsEnvelope.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDB0000000000000000220 /* AnalyticsEnvelope.swift */; };
+		FEEDB0000000000000000505 /* AnalyticsEnvelopeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDB0000000000000000405 /* AnalyticsEnvelopeTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -13046,6 +13048,8 @@
 		FEEDB0000000000000000218 /* AnalyticsEvent+Ramp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnalyticsEvent+Ramp.swift"; sourceTree = "<group>"; };
 		FEEDB0000000000000000219 /* AnalyticsEvent+Misc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnalyticsEvent+Misc.swift"; sourceTree = "<group>"; };
 		FEEDB0000000000000000404 /* AnalyticsEventCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsEventCatalogTests.swift; sourceTree = "<group>"; };
+		FEEDB0000000000000000220 /* AnalyticsEnvelope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsEnvelope.swift; sourceTree = "<group>"; };
+		FEEDB0000000000000000405 /* AnalyticsEnvelopeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsEnvelopeTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -30535,6 +30539,7 @@
 				FEEDB0000000000000000402 /* AnalyticsBucketsTests.swift */,
 				FEEDB0000000000000000403 /* AssetCategoryClassifierTests.swift */,
 				FEEDB0000000000000000404 /* AnalyticsEventCatalogTests.swift */,
+				FEEDB0000000000000000405 /* AnalyticsEnvelopeTests.swift */,
 			);
 			path = Analytics;
 			sourceTree = "<group>";
@@ -30576,6 +30581,7 @@
 			children = (
 				FEEDB0000000000000000205 /* ISO8601MillisFormatter.swift */,
 				FEEDB0000000000000000206 /* AnalyticsEventRemote.swift */,
+				FEEDB0000000000000000220 /* AnalyticsEnvelope.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -37282,6 +37288,7 @@
 				FEEDB0000000000000000317 /* AnalyticsEvent+DApp.swift in Sources */,
 				FEEDB0000000000000000318 /* AnalyticsEvent+Ramp.swift in Sources */,
 				FEEDB0000000000000000319 /* AnalyticsEvent+Misc.swift in Sources */,
+				FEEDB0000000000000000320 /* AnalyticsEnvelope.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -37489,6 +37496,7 @@
 				FEEDB0000000000000000502 /* AnalyticsBucketsTests.swift in Sources */,
 				FEEDB0000000000000000503 /* AssetCategoryClassifierTests.swift in Sources */,
 				FEEDB0000000000000000504 /* AnalyticsEventCatalogTests.swift in Sources */,
+				FEEDB0000000000000000505 /* AnalyticsEnvelopeTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
