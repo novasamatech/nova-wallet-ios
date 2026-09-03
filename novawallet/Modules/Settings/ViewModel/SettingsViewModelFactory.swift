@@ -86,8 +86,16 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
                 createCommonViewViewModel(row: .github, locale: locale),
                 createCommonViewViewModel(row: .terms, locale: locale),
                 createCommonViewViewModel(row: .privacyPolicy, locale: locale)
-            ])
+            ] + debugRows(locale: locale))
         ]
+    }
+
+    private func debugRows(locale: Locale) -> [SettingsCellViewModel] {
+        #if F_DEV
+            [createCommonViewViewModel(row: .analyticsDebug, locale: locale)]
+        #else
+            []
+        #endif
     }
 
     private func createCommonViewViewModel(

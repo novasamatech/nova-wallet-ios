@@ -194,6 +194,10 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             interactor.toggleHideBalances()
         case .analytics:
             interactor.toggleAnalytics()
+        #if F_DEV
+            case .analyticsDebug:
+                wireframe.showAnalyticsDebug(from: view)
+        #endif
         case .changePin:
             wireframe.showPincodeChange(from: view)
         case .telegram:

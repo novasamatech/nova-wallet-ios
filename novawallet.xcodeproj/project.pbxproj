@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FEED20000000000000000101 /* AnalyticsAttestationFixtureRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED20000000000000000001 /* AnalyticsAttestationFixtureRecorder.swift */; };
+		FEED20000000000000000102 /* AnalyticsDebugInspectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED20000000000000000002 /* AnalyticsDebugInspectorViewController.swift */; };
+		FEED20000000000000000103 /* AnalyticsAttestationFixtureRecorderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED20000000000000000003 /* AnalyticsAttestationFixtureRecorderTests.swift */; };
 		FEED10000000000000000101 /* AnalyticsConsentSheetFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED10000000000000000001 /* AnalyticsConsentSheetFactory.swift */; };
 		FEED10000000000000000102 /* AnalyticsConsentPromptGate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED10000000000000000002 /* AnalyticsConsentPromptGate.swift */; };
 		FEED10000000000000000104 /* AnalyticsConsentPromptTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED10000000000000000004 /* AnalyticsConsentPromptTests.swift */; };
@@ -6739,6 +6742,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		FEED20000000000000000001 /* AnalyticsAttestationFixtureRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsAttestationFixtureRecorder.swift; sourceTree = "<group>"; };
+		FEED20000000000000000002 /* AnalyticsDebugInspectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsDebugInspectorViewController.swift; sourceTree = "<group>"; };
+		FEED20000000000000000003 /* AnalyticsAttestationFixtureRecorderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsAttestationFixtureRecorderTests.swift; sourceTree = "<group>"; };
 		FEED10000000000000000001 /* AnalyticsConsentSheetFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsConsentSheetFactory.swift; sourceTree = "<group>"; };
 		FEED10000000000000000002 /* AnalyticsConsentPromptGate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsConsentPromptGate.swift; sourceTree = "<group>"; };
 		FEED10000000000000000004 /* AnalyticsConsentPromptTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsConsentPromptTests.swift; sourceTree = "<group>"; };
@@ -13214,6 +13220,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		FEED20000000000000000004 /* Debug */ = {
+			isa = PBXGroup;
+			children = (
+				FEED20000000000000000001 /* AnalyticsAttestationFixtureRecorder.swift */,
+				FEED20000000000000000002 /* AnalyticsDebugInspectorViewController.swift */,
+			);
+			path = Debug;
+			sourceTree = "<group>";
+		};
 		FEED10000000000000000003 /* AnalyticsConsent */ = {
 			isa = PBXGroup;
 			children = (
@@ -30678,6 +30693,7 @@
 		FEEDAA0000000000000000A1 /* Analytics */ = {
 			isa = PBXGroup;
 			children = (
+				FEED20000000000000000004 /* Debug */,
 				FEEDD0000000000000000201 /* Helpers */,
 				FEEDB0000000000000000101 /* Model */,
 				FEEDB0000000000000000103 /* Network */,
@@ -30699,6 +30715,7 @@
 		FEEDAA0000000000000000A2 /* Analytics */ = {
 			isa = PBXGroup;
 			children = (
+				FEED20000000000000000003 /* AnalyticsAttestationFixtureRecorderTests.swift */,
 				FEEDB0000000000000000401 /* AnalyticsPropertyValueTests.swift */,
 				FEEDB0000000000000000402 /* AnalyticsBucketsTests.swift */,
 				FEEDB0000000000000000403 /* AssetCategoryClassifierTests.swift */,
@@ -37483,6 +37500,8 @@
 				FEEDB0000000000000000320 /* AnalyticsEnvelope.swift in Sources */,
 				FEEDE0000000000000000109 /* AnalyticsUploadOperationFactory.swift in Sources */,
 				FEEDE000000000000000010A /* AnalyticsUploader.swift in Sources */,
+				FEED20000000000000000101 /* AnalyticsAttestationFixtureRecorder.swift in Sources */,
+				FEED20000000000000000102 /* AnalyticsDebugInspectorViewController.swift in Sources */,
 				FEED10000000000000000101 /* AnalyticsConsentSheetFactory.swift in Sources */,
 				FEED10000000000000000102 /* AnalyticsConsentPromptGate.swift in Sources */,
 				FEEDA0000000000000000012 /* AnalyticsPendingEvent.swift in Sources */,
@@ -37721,6 +37740,7 @@
 				FEEDD0000000000000000108 /* AnalyticsConsentGateTests.swift in Sources */,
 				FEEDD0000000000000000109 /* AnalyticsServiceTests.swift in Sources */,
 				FEEDE000000000000000010B /* AnalyticsUploaderTests.swift in Sources */,
+				FEED20000000000000000103 /* AnalyticsAttestationFixtureRecorderTests.swift in Sources */,
 				FEED10000000000000000104 /* AnalyticsConsentPromptTests.swift in Sources */,
 				FEEDE000000000000000010C /* AnalyticsUploadRequestTests.swift in Sources */,
 				FEEDD000000000000000010D /* AnalyticsSessionTrackerTests.swift in Sources */,
