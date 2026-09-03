@@ -6665,6 +6665,8 @@
 		FEEDB0000000000000000319 /* AnalyticsEvent+Misc.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDB0000000000000000219 /* AnalyticsEvent+Misc.swift */; };
 		FEEDB0000000000000000504 /* AnalyticsEventCatalogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDB0000000000000000404 /* AnalyticsEventCatalogTests.swift */; };
 		FEEDB0000000000000000320 /* AnalyticsEnvelope.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDB0000000000000000220 /* AnalyticsEnvelope.swift */; };
+		FEEDE0000000000000000109 /* AnalyticsUploadOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDE0000000000000000009 /* AnalyticsUploadOperationFactory.swift */; };
+		FEEDE000000000000000010A /* AnalyticsUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDE000000000000000000A /* AnalyticsUploader.swift */; };
 		FEEDB0000000000000000505 /* AnalyticsEnvelopeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDB0000000000000000405 /* AnalyticsEnvelopeTests.swift */; };
 		FEEDA0000000000000000002 /* AnalyticsUserModel21MigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDA0000000000000000001 /* AnalyticsUserModel21MigrationTests.swift */; };
 		FEEDA0000000000000000016 /* AnalyticsPendingEventMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDA0000000000000000015 /* AnalyticsPendingEventMapperTests.swift */; };
@@ -6687,6 +6689,8 @@
 		FEEDD0000000000000000106 /* AnalyticsIdentityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000006 /* AnalyticsIdentityTests.swift */; };
 		FEEDD0000000000000000108 /* AnalyticsConsentGateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000008 /* AnalyticsConsentGateTests.swift */; };
 		FEEDD0000000000000000109 /* AnalyticsServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000009 /* AnalyticsServiceTests.swift */; };
+		FEEDE000000000000000010B /* AnalyticsUploaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDE000000000000000000B /* AnalyticsUploaderTests.swift */; };
+		FEEDE000000000000000010C /* AnalyticsUploadRequestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDE000000000000000000C /* AnalyticsUploadRequestTests.swift */; };
 		FEEDD000000000000000010A /* AnalyticsTestFixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD000000000000000000A /* AnalyticsTestFixture.swift */; };
 		FEEDD000000000000000010D /* AnalyticsSessionTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD000000000000000000D /* AnalyticsSessionTrackerTests.swift */; };
 		FEEDD0000000000000000111 /* AnalyticsFacadeFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000011 /* AnalyticsFacadeFactoryTests.swift */; };
@@ -13096,6 +13100,8 @@
 		FEEDB0000000000000000219 /* AnalyticsEvent+Misc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnalyticsEvent+Misc.swift"; sourceTree = "<group>"; };
 		FEEDB0000000000000000404 /* AnalyticsEventCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsEventCatalogTests.swift; sourceTree = "<group>"; };
 		FEEDB0000000000000000220 /* AnalyticsEnvelope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsEnvelope.swift; sourceTree = "<group>"; };
+		FEEDE0000000000000000009 /* AnalyticsUploadOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsUploadOperationFactory.swift; sourceTree = "<group>"; };
+		FEEDE000000000000000000A /* AnalyticsUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsUploader.swift; sourceTree = "<group>"; };
 		FEEDB0000000000000000405 /* AnalyticsEnvelopeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsEnvelopeTests.swift; sourceTree = "<group>"; };
 		FEEDA0000000000000000001 /* AnalyticsUserModel21MigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsUserModel21MigrationTests.swift; sourceTree = "<group>"; };
 		FEEDA0000000000000000015 /* AnalyticsPendingEventMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsPendingEventMapperTests.swift; sourceTree = "<group>"; };
@@ -13118,6 +13124,8 @@
 		FEEDD0000000000000000006 /* AnalyticsIdentityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsIdentityTests.swift; sourceTree = "<group>"; };
 		FEEDD0000000000000000008 /* AnalyticsConsentGateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsConsentGateTests.swift; sourceTree = "<group>"; };
 		FEEDD0000000000000000009 /* AnalyticsServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsServiceTests.swift; sourceTree = "<group>"; };
+		FEEDE000000000000000000B /* AnalyticsUploaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsUploaderTests.swift; sourceTree = "<group>"; };
+		FEEDE000000000000000000C /* AnalyticsUploadRequestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsUploadRequestTests.swift; sourceTree = "<group>"; };
 		FEEDD000000000000000000A /* AnalyticsTestFixture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsTestFixture.swift; sourceTree = "<group>"; };
 		FEEDD000000000000000000D /* AnalyticsSessionTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsSessionTrackerTests.swift; sourceTree = "<group>"; };
 		FEEDD0000000000000000011 /* AnalyticsFacadeFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsFacadeFactoryTests.swift; sourceTree = "<group>"; };
@@ -30652,6 +30660,7 @@
 				FEEDD0000000000000000003 /* AnalyticsIdentity.swift */,
 				FEEDD0000000000000000004 /* AnalyticsAvailabilityProvider.swift */,
 				FEEDD0000000000000000007 /* AnalyticsService.swift */,
+				FEEDE000000000000000000A /* AnalyticsUploader.swift */,
 				FEEDD000000000000000000B /* AnalyticsSessionTracker.swift */,
 				FEEDD000000000000000000E /* AnalyticsServiceFacade.swift */,
 				FEEDD000000000000000000F /* NoOpAnalyticsServiceFacade.swift */,
@@ -30677,6 +30686,8 @@
 				FEEDD0000000000000000009 /* AnalyticsServiceTests.swift */,
 				FEEDD000000000000000000D /* AnalyticsSessionTrackerTests.swift */,
 				FEEDD0000000000000000011 /* AnalyticsFacadeFactoryTests.swift */,
+				FEEDE000000000000000000B /* AnalyticsUploaderTests.swift */,
+				FEEDE000000000000000000C /* AnalyticsUploadRequestTests.swift */,
 			);
 			path = Analytics;
 			sourceTree = "<group>";
@@ -30719,6 +30730,7 @@
 				FEEDB0000000000000000205 /* ISO8601MillisFormatter.swift */,
 				FEEDB0000000000000000206 /* AnalyticsEventRemote.swift */,
 				FEEDB0000000000000000220 /* AnalyticsEnvelope.swift */,
+				FEEDE0000000000000000009 /* AnalyticsUploadOperationFactory.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -37441,6 +37453,8 @@
 				FEEDB0000000000000000318 /* AnalyticsEvent+Ramp.swift in Sources */,
 				FEEDB0000000000000000319 /* AnalyticsEvent+Misc.swift in Sources */,
 				FEEDB0000000000000000320 /* AnalyticsEnvelope.swift in Sources */,
+				FEEDE0000000000000000109 /* AnalyticsUploadOperationFactory.swift in Sources */,
+				FEEDE000000000000000010A /* AnalyticsUploader.swift in Sources */,
 				FEEDA0000000000000000012 /* AnalyticsPendingEvent.swift in Sources */,
 				FEEDA0000000000000000014 /* AnalyticsPendingEventMapper.swift in Sources */,
 				FEEDA0000000000000000021 /* AnalyticsProtocols.swift in Sources */,
@@ -37676,6 +37690,8 @@
 				FEEDD000000000000000010A /* AnalyticsTestFixture.swift in Sources */,
 				FEEDD0000000000000000108 /* AnalyticsConsentGateTests.swift in Sources */,
 				FEEDD0000000000000000109 /* AnalyticsServiceTests.swift in Sources */,
+				FEEDE000000000000000010B /* AnalyticsUploaderTests.swift in Sources */,
+				FEEDE000000000000000010C /* AnalyticsUploadRequestTests.swift in Sources */,
 				FEEDD000000000000000010D /* AnalyticsSessionTrackerTests.swift in Sources */,
 				FEEDD0000000000000000111 /* AnalyticsFacadeFactoryTests.swift in Sources */,
 			);
