@@ -133,6 +133,7 @@ sources = [
     "novawallet/Common/LegalConsent/LegalConsentRepositoryProtocols.swift",
     "novawallet/Common/Services/AppAttest/AppAttestService.swift",
     "novawallet/Common/Services/AppAttest/DeviceCheckAttesting.swift",
+    "novawallet/Common/Services/Analytics/AnalyticsProtocols.swift",
 ]
 
 exclude = [
