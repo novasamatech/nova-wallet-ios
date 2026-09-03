@@ -103,6 +103,46 @@ final class AnalyticsServiceTests: XCTestCase {
         XCTAssertEqual(try fixture.queueCount(), 0)
     }
 
+    func testCancelFlushReleasesTheSingleFlightSlot() throws {
+        // The facade's throttle() is symmetric (spec §3.2): it must abandon the in-flight
+        // flush, not just detach the handler, or the call store stays occupied for the
+        // rest of the process and every later flush is silently swallowed.
+        let fixture = AnalyticsTestFixture.makeConsented()
+
+        let firstStarted = XCTestExpectation(description: "first flush started")
+        let secondStarted = XCTestExpectation(description: "second flush started")
+
+        var wrappers: [CompoundOperationWrapper<Void>] = []
+
+        stub(fixture.uploader) { stub in
+            when(stub.flushWrapper(maxBatches: any())).then { _ in
+                let expectation = wrappers.isEmpty ? firstStarted : secondStarted
+                let wrapper = CompoundOperationWrapper(
+                    targetOperation: AsyncClosureOperation<Void> { _ in expectation.fulfill() }
+                )
+
+                wrappers.append(wrapper)
+
+                return wrapper
+            }
+        }
+
+        fixture.service.flush(reason: .manual)
+        wait(for: [firstStarted], timeout: 5)
+
+        // Single flight: the second call finds the store occupied and never reaches the
+        // uploader, so the store has to be released explicitly.
+        fixture.service.flush(reason: .manual)
+        XCTAssertEqual(wrappers.count, 1)
+
+        fixture.service.cancelFlush()
+        XCTAssertTrue(wrappers[0].targetOperation.isCancelled)
+
+        fixture.service.flush(reason: .manual)
+        wait(for: [secondStarted], timeout: 5)
+        XCTAssertEqual(wrappers.count, 2)
+    }
+
     func testEventPersistsWhileUploadInFlight() throws {
         // Persistence and networking are on different queues; a slow POST must not
         // block an enqueue.

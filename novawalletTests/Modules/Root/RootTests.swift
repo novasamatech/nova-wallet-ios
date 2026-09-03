@@ -138,13 +138,60 @@ class RootTests: XCTestCase {
         wait(for: [expectation], timeout: Constants.defaultExpectationDuration)
     }
 
+    func testAnalyticsSetupRunsBetweenTheMigratorsAndTheWalletSettings() {
+        // given
+
+        var order: [String] = []
+
+        let migrator = MockMigrating()
+
+        stub(migrator) { stub in
+            when(stub.migrate()).then { order.append("migrate") }
+        }
+
+        let analyticsFacade = MockAnalyticsServiceFacadeProtocol()
+
+        stub(analyticsFacade) { stub in
+            when(stub.setup()).then { order.append("analytics") }
+        }
+
+        // walletSettings.setup reaches its store by adding one operation to the queue it
+        // was built with, so the queue is a faithful "wallet settings started" probe.
+        let walletOperationQueue = RecordingOperationQueue { order.append("walletSettings") }
+
+        let walletSettings = SelectedWalletSettings(
+            storageFacade: UserDataStorageTestFacade(),
+            operationQueue: walletOperationQueue
+        )
+
+        let presenter = createPresenter(
+            wireframe: MockRootWireframeProtocol(),
+            walletSettings: walletSettings,
+            settings: InMemorySettingsManager(),
+            keystore: InMemoryKeychain(),
+            migrators: [migrator],
+            analyticsFacade: analyticsFacade
+        )
+
+        // when
+
+        presenter.interactor.setup()
+
+        // then
+
+        // A first consented enqueue before the migrators would open the user store
+        // concurrently with a synchronous migration that fatalErrors on a bad version.
+        XCTAssertEqual(order, ["migrate", "analytics", "walletSettings"])
+    }
+
     private func createPresenter(
         wireframe: MockRootWireframeProtocol,
         walletSettings: SelectedWalletSettings,
         settings: SettingsManagerProtocol,
         keystore: KeystoreProtocol,
         securityLayerInteractor: SecurityLayerInteractorInputProtocol? = nil,
-        migrators: [Migrating] = []
+        migrators: [Migrating] = [],
+        analyticsFacade: AnalyticsServiceFacadeProtocol? = nil
     ) -> RootPresenter {
         let chainRegistry = MockChainRegistryProtocol().applyDefault(for: Set())
         let actualSecurityLayerInteractor: SecurityLayerInteractorInputProtocol
@@ -161,6 +208,20 @@ class RootTests: XCTestCase {
             actualSecurityLayerInteractor = mockLayer
         }
 
+        let actualAnalyticsFacade: AnalyticsServiceFacadeProtocol
+
+        if let analyticsFacade = analyticsFacade {
+            actualAnalyticsFacade = analyticsFacade
+        } else {
+            let mockFacade = MockAnalyticsServiceFacadeProtocol()
+
+            stub(mockFacade) { stub in
+                when(stub.setup()).thenDoNothing()
+            }
+
+            actualAnalyticsFacade = mockFacade
+        }
+
         let interactor = RootInteractor(
             walletSettings: walletSettings,
             settings: settings,
@@ -169,6 +230,7 @@ class RootTests: XCTestCase {
             securityLayerInteractor: actualSecurityLayerInteractor,
             chainRegistryClosure: { chainRegistry },
             eventCenter: MockEventCenterProtocol(),
+            analyticsFacade: actualAnalyticsFacade,
             migrators: migrators
         )
         let presenter = RootPresenter()
@@ -186,5 +248,23 @@ class RootTests: XCTestCase {
         }
 
         return presenter
+    }
+}
+
+/// A probe, not a protocol double: Cuckoo cannot generate a mock for a Foundation class,
+/// and the only thing the test needs is the moment an operation is scheduled.
+private final class RecordingOperationQueue: OperationQueue {
+    private let onAdd: () -> Void
+
+    init(onAdd: @escaping () -> Void) {
+        self.onAdd = onAdd
+
+        super.init()
+    }
+
+    override func addOperation(_ operation: Operation) {
+        onAdd()
+
+        super.addOperation(operation)
     }
 }

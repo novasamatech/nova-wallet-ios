@@ -15,6 +15,7 @@ final class RootInteractor {
     let chainRegistryClosure: ChainRegistryLazyClosure
     let securityLayerInteractor: SecurityLayerInteractorInputProtocol
     let eventCenter: EventCenterProtocol
+    let analyticsFacade: AnalyticsServiceFacadeProtocol
     let migrators: [Migrating]
     let logger: LoggerProtocol
 
@@ -26,6 +27,7 @@ final class RootInteractor {
         securityLayerInteractor: SecurityLayerInteractorInputProtocol,
         chainRegistryClosure: @escaping ChainRegistryLazyClosure,
         eventCenter: EventCenterProtocol,
+        analyticsFacade: AnalyticsServiceFacadeProtocol,
         migrators: [Migrating],
         logger: LoggerProtocol = Logger.shared
     ) {
@@ -36,6 +38,7 @@ final class RootInteractor {
         self.securityLayerInteractor = securityLayerInteractor
         self.chainRegistryClosure = chainRegistryClosure
         self.eventCenter = eventCenter
+        self.analyticsFacade = analyticsFacade
         self.migrators = migrators
         self.logger = logger
     }
@@ -146,6 +149,12 @@ extension RootInteractor: RootInteractorInputProtocol {
         setupURLHandlingService()
         setupPushHandlingService()
         runMigrators()
+
+        // After runMigrators() and before walletSettings.setup (spec §3.2). runMigrators()
+        // is synchronous and performMigration() fatalErrors on an unknown store version;
+        // a first consented enqueue any earlier would open UserDataStorageFacade.shared
+        // concurrently with it.
+        analyticsFacade.setup()
 
         walletSettings.setup(runningCompletionIn: .main) { result in
             switch result {

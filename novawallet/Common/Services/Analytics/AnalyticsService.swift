@@ -17,6 +17,9 @@ final class AnalyticsService {
 
     private var currentFeature: String?
     private var lastFlushAt: Date = .distantPast
+    /// Seeded from the provider so the kill switch's enabled→disabled edge is detected
+    /// even though the config that flips it only arrives after `setup()`.
+    private var wasAvailable: Bool
 
     init(
         consent: AnalyticsConsentManagerProtocol,
@@ -39,6 +42,8 @@ final class AnalyticsService {
         self.uploadOperationQueue = uploadOperationQueue
         self.timeProvider = timeProvider
         self.logger = logger
+
+        wasAvailable = availability.isAvailable
 
         // The wipe lives next to the state it wipes, so opting out is guaranteed even
         // when nothing composed this service into a facade.
@@ -218,6 +223,50 @@ extension AnalyticsService {
         }
 
         flushLocked(reason: reason, now: timeProvider())
+    }
+
+    /// Spec §3.2. The facade's `throttle()` is symmetric, so an in-flight flush is
+    /// abandoned rather than left holding the single-flight slot for the rest of the
+    /// process, which would swallow every later flush.
+    func cancelFlush() {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        flushCallStore.cancel()
+    }
+
+    /// Spec §10. The kill switch's one-shot wipe, on the enabled→disabled edge only:
+    /// rows left by a previous, still-enabled process are cleared once, and a build that
+    /// was never available has nothing of its own to clear.
+    func handleAvailabilityChanged() {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        let isAvailable = availability.isAvailable
+
+        defer {
+            wasAvailable = isAvailable
+        }
+
+        guard wasAvailable, !isAvailable else {
+            return
+        }
+
+        // Same hazard as the opt-out wipe: a batch already in the air must not be dropped
+        // from a queue that is being cleared underneath it.
+        flushCallStore.cancel()
+
+        execute(
+            operation: queue.clearOperation(),
+            inOperationQueue: operationQueue,
+            runningCallbackIn: nil
+        ) { _ in }
     }
 
     /// Spec §6.5, in order. Runs on the consent manager's true→false edge.

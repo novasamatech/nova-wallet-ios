@@ -11,6 +11,10 @@ final class AnalyticsServiceFacade {
     private let settingsManager: SettingsManagerProtocol
     private let service: AnalyticsService
     private let sessionTracker: AnalyticsSessionTracking
+    private let availability: AnalyticsAvailabilityProvider
+    private let configProvider: GlobalConfigProviding
+    private let configOperationQueue: OperationQueue
+    private let logger: LoggerProtocol
 
     private let mutex = NSLock()
     private var isActive: Bool = false
@@ -48,7 +52,8 @@ final class AnalyticsServiceFacade {
             isAppAttestSupported: appAttest.isSupported
         )
 
-        // The remote kill switch is wired later; the mode is the whole gate for now.
+        // Optimistic until setup() resolves the remote config: fail-open is what makes a
+        // fetch error leave availability alone (spec §10).
         let availability = AnalyticsAvailabilityProvider(attestationMode: attestationMode)
 
         let consent = AnalyticsConsentManager(
@@ -112,6 +117,10 @@ final class AnalyticsServiceFacade {
         self.consent = consent
         self.service = service
         self.sessionTracker = sessionTracker
+        self.availability = availability
+        configProvider = GlobalConfigProvider.shared
+        configOperationQueue = OperationManagerFacade.sharedDefaultQueue
+        logger = Logger.shared
 
         // The opt-out wipe belongs to AnalyticsService, which observes the same manager.
         // The facade owns only the opt-in edge, which opens a session (spec §9).
@@ -144,6 +153,8 @@ extension AnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
 
         track(.appOpened(isFirstLaunch: settingsManager.isAppFirstLaunch))
         flush(reason: .launch)
+
+        resolveRemoteAvailability()
     }
 
     /// A real symmetric throttle: nothing on the launch path calls it, but the kill
@@ -160,6 +171,7 @@ extension AnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
         mutex.unlock()
 
         sessionTracker.throttle()
+        service.cancelFlush()
     }
 
     func track(_ event: AnalyticsEvent) {
@@ -175,6 +187,29 @@ extension AnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
 // MARK: - Private
 
 private extension AnalyticsServiceFacade {
+    /// Spec §10. `GlobalConfigProvider` caches after one fetch per process, so a change on
+    /// the server takes effect on the next cold start. Fail-open: a fetch error logs at
+    /// `.info` and leaves availability exactly as the attestation ladder set it.
+    func resolveRemoteAvailability() {
+        execute(
+            wrapper: configProvider.createConfigWrapper(),
+            inOperationQueue: configOperationQueue,
+            runningCallbackIn: nil
+        ) { [weak self] result in
+            guard let self else {
+                return
+            }
+
+            switch result {
+            case let .success(config):
+                availability.setRemoteEnabled(config.analytics?.enabled ?? true)
+                service.handleAvailabilityChanged()
+            case let .failure(error):
+                logger.info("Analytics remote config unavailable: \(error)")
+            }
+        }
+    }
+
     /// `CFBundleShortVersionString` only — `ApplicationConfig.version` appends the build
     /// number, which the gateway does not expect (spec §6.2).
     static var appVersion: String {
