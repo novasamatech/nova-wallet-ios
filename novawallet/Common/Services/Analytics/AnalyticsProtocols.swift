@@ -37,6 +37,22 @@ protocol AnalyticsAvailabilityProviderProtocol: AnyObject {
     var isAvailable: Bool { get }
 }
 
+protocol AnalyticsTrackingProtocol: AnyObject {
+    func track(_ event: AnalyticsEvent)
+}
+
+enum AnalyticsFlushReason {
+    case threshold
+    case interval
+    case launch
+    case background
+    case manual
+}
+
+protocol AnalyticsUploading: AnyObject {
+    func flushWrapper(maxBatches: Int) -> CompoundOperationWrapper<Void>
+}
+
 /// Declared here until the attestation seams land; it then moves to
 /// `Common/Services/Attestation/BackendAttestationProtocols.swift` unchanged.
 enum BackendAttestationMode {
