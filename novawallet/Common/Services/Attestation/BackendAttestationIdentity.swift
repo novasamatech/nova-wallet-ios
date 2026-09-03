@@ -7,6 +7,11 @@ final class BackendAttestationIdentity {
     private let settingsManager: SettingsManagerProtocol
     private let mutex = NSLock()
 
+    /// See `AnalyticsIdentity.isCreationBlocked`: an attestation chain still executing
+    /// during opt-out would otherwise mint a client id, attest a fresh key and register
+    /// it with the gateway after the user opted out.
+    private var isCreationBlocked: Bool = false
+
     init(settingsManager: SettingsManagerProtocol) {
         self.settingsManager = settingsManager
     }
@@ -15,7 +20,9 @@ final class BackendAttestationIdentity {
 // MARK: - BackendAttestationIdentityProtocol
 
 extension BackendAttestationIdentity: BackendAttestationIdentityProtocol {
-    func clientId() -> String {
+    /// `nil` once forgotten and not re-armed: the caller must fail the request rather than
+    /// register a new client for an opted-out install.
+    func clientId() -> String? {
         mutex.lock()
 
         defer {
@@ -24,6 +31,10 @@ extension BackendAttestationIdentity: BackendAttestationIdentityProtocol {
 
         if let existing = settingsManager.gatewayAttestationClientId {
             return existing
+        }
+
+        guard !isCreationBlocked else {
+            return nil
         }
 
         let created = UUID().uuidString.lowercased()
@@ -40,5 +51,16 @@ extension BackendAttestationIdentity: BackendAttestationIdentityProtocol {
         }
 
         settingsManager.gatewayAttestationClientId = nil
+        isCreationBlocked = true
+    }
+
+    func allowCreation() {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        isCreationBlocked = false
     }
 }

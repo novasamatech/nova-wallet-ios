@@ -20,9 +20,9 @@ final class AnalyticsServiceFacade {
     private var isActive: Bool = false
 
     private init() {
-        // Built once, lazily, on first reference. Never under -UNITTEST: AppDelegate
-        // returns before Root, so nothing reaches this in the unit-test process, where
-        // the factory resolves to NoOpAnalyticsServiceFacade.
+        // Built once, lazily, on first reference. AppDelegate returning early under
+        // -UNITTEST is not enough on its own — a test calling AnalyticsFacadeFactory
+        // directly would still land here — so the factory carries the same check.
         let settingsManager = SettingsManager.shared
 
         let repository: CoreDataRepository<AnalyticsPendingEvent, CDAnalyticsEvent> =

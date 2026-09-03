@@ -12,6 +12,10 @@ protocol BackendAttestationProviderProtocol: AnyObject {
 
     /// Opt-out: drop the key row and the client id.
     func forgetClient()
+
+    /// Re-consent: let the identity mint a new client id again after `forgetClient()`
+    /// latched it shut.
+    func allowClient()
 }
 
 protocol BackendAttestationRemoteFactoryProtocol {
@@ -23,8 +27,10 @@ protocol BackendAttestationRemoteFactoryProtocol {
 }
 
 protocol BackendAttestationIdentityProtocol {
-    func clientId() -> String
+    /// `nil` once forgotten and not re-armed.
+    func clientId() -> String?
     func forgetClientId()
+    func allowCreation()
 }
 
 enum BackendAttestationError: Error {

@@ -3,6 +3,12 @@ import Operation_iOS
 
 /// peek → sign → POST → drop, repeated while the gateway keeps accepting batches.
 /// A batch is dropped only after its 2xx, so delivery is at-least-once (spec §6.3).
+/// Thrown when consent is withdrawn while an upload chain is already executing, which
+/// `flushCallStore.cancel()` cannot stop. Ends the chain instead of minting a replacement id.
+enum AnalyticsUploadAbort: Error {
+    case consentWithdrawn
+}
+
 final class AnalyticsUploader {
     private let queue: AnalyticsEventQueueProtocol
     private let identity: AnalyticsIdentityProtocol
@@ -227,11 +233,18 @@ private extension AnalyticsUploader {
             }
         }
 
+        // Opt-out during an in-flight flush deletes the id and blocks re-creation. There is
+        // no batch to send without one, and minting a replacement is exactly the resurrection
+        // spec 6.5 forbids.
+        guard let installId = identity.installId() else {
+            throw AnalyticsUploadAbort.consentWithdrawn
+        }
+
         let envelope = AnalyticsEnvelope(
             schemaVersion: Constants.schemaVersion,
             platform: Constants.platform,
             appVersion: appVersion,
-            installId: identity.installId(),
+            installId: installId,
             sessionId: identity.sessionId,
             sentAt: ISO8601MillisFormatter.string(from: timeProvider()),
             events: events

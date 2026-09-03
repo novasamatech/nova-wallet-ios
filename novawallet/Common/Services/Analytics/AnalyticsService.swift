@@ -48,11 +48,18 @@ final class AnalyticsService {
         // The wipe lives next to the state it wipes, so opting out is guaranteed even
         // when nothing composed this service into a facade.
         consent.addObserver(with: self, queue: nil) { [weak self] oldValue, newValue in
-            guard oldValue, !newValue else {
+            guard oldValue != newValue else {
                 return
             }
 
-            self?.handleConsentDisabled(attestation: attestation)
+            if newValue {
+                // Re-arm the identities that opting out latched shut, so a re-consented
+                // user gets a brand new install id and gateway client rather than none.
+                self?.identity.allowCreation()
+                attestation?.allowClient()
+            } else {
+                self?.handleConsentDisabled(attestation: attestation)
+            }
         }
     }
 

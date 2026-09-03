@@ -28,9 +28,10 @@ protocol AnalyticsConsentManagerProtocol: AnyObject {
 protocol AnalyticsIdentityProtocol: AnyObject {
     var sessionId: String { get }
 
-    /// Created on first call, never before.
-    func installId() -> String
+    /// Created on first call, never before. `nil` once forgotten and not re-armed.
+    func installId() -> String?
     func forgetInstallId()
+    func allowCreation()
 }
 
 protocol AnalyticsAvailabilityProviderProtocol: AnyObject {
