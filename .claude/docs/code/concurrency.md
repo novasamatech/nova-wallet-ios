@@ -110,6 +110,7 @@ overwriting fresh ones; use it for anything the user can re-trigger.
 | `nftQueue`                | NFT sync and media                                |
 | `cloudBackupQueue`        | iCloud backup work                                |
 | `pendingMultisigQueue`    | Multisig operation sync                           |
+| `analyticsQueue`          | Analytics event persistence — **serial**          |
 | `sharedManager`           | `OperationManager` over `sharedDefaultQueue`      |
 
 Queues are injected through the ViewFactory so tests can substitute a synchronous queue.
