@@ -1,0 +1,134 @@
+import Foundation
+import Operation_iOS
+import Foundation_iOS
+import Keystore_iOS
+
+final class AnalyticsServiceFacade {
+    static let shared = AnalyticsServiceFacade()
+
+    let consent: AnalyticsConsentManagerProtocol
+
+    private let settingsManager: SettingsManagerProtocol
+    private let service: AnalyticsService
+    private let sessionTracker: AnalyticsSessionTracking
+
+    private let mutex = NSLock()
+    private var isActive: Bool = false
+
+    private init() {
+        // Built once, lazily, on first reference. Never under -UNITTEST: AppDelegate
+        // returns before Root, so nothing reaches this in the unit-test process, where
+        // the factory resolves to NoOpAnalyticsServiceFacade.
+        let settingsManager = SettingsManager.shared
+
+        let repository: CoreDataRepository<AnalyticsPendingEvent, CDAnalyticsEvent> =
+            UserDataStorageFacade.shared.createRepository(
+                filter: nil,
+                sortDescriptors: [.analyticsEventsBySequence],
+                mapper: AnyCoreDataMapper(AnalyticsPendingEventMapper())
+            )
+
+        let eventQueue = CoreDataAnalyticsEventQueue(
+            repository: AnyDataProviderRepository(repository),
+            operationQueue: OperationManagerFacade.analyticsQueue
+        )
+
+        // The attestation mode ladder and the remote kill switch are wired later; until
+        // then availability resolves to false, which is the safe side of the guard.
+        let availability = AnalyticsAvailabilityProvider(attestationMode: .unavailable)
+
+        let consent = AnalyticsConsentManager(
+            settingsManager: settingsManager,
+            availabilityProvider: availability
+        )
+
+        // Persistence runs on the serial analytics queue and the upload on the shared
+        // network queue, so an event is stored while a slow POST is in flight.
+        let service = AnalyticsService(
+            consent: consent,
+            availability: availability,
+            queue: eventQueue,
+            identity: AnalyticsIdentity(settingsManager: settingsManager),
+            uploader: UnwiredAnalyticsUploader(),
+            operationQueue: OperationManagerFacade.analyticsQueue,
+            uploadOperationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+
+        let sessionTracker = AnalyticsSessionTracker(
+            tracker: service,
+            flushHandler: { [weak service] reason in service?.flush(reason: reason) },
+            applicationHandler: ApplicationHandler(),
+            backgroundTaskRunner: UIApplicationBackgroundTaskRunner()
+        )
+
+        self.settingsManager = settingsManager
+        self.consent = consent
+        self.service = service
+        self.sessionTracker = sessionTracker
+
+        // The opt-out wipe belongs to AnalyticsService, which observes the same manager.
+        // The facade owns only the opt-in edge, which opens a session (spec §9).
+        consent.addObserver(with: self, queue: nil) { [weak self] oldValue, newValue in
+            guard !oldValue, newValue else {
+                return
+            }
+
+            self?.sessionTracker.startSession()
+        }
+    }
+}
+
+// MARK: - AnalyticsServiceFacadeProtocol
+
+extension AnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
+    func setup() {
+        mutex.lock()
+
+        guard !isActive else {
+            mutex.unlock()
+            return
+        }
+
+        isActive = true
+        mutex.unlock()
+
+        sessionTracker.setup()
+        sessionTracker.startSession()
+
+        track(.appOpened(isFirstLaunch: settingsManager.isAppFirstLaunch))
+        flush(reason: .launch)
+    }
+
+    /// A real symmetric throttle: nothing on the launch path calls it, but the kill
+    /// switch and the tests do.
+    func throttle() {
+        mutex.lock()
+
+        guard isActive else {
+            mutex.unlock()
+            return
+        }
+
+        isActive = false
+        mutex.unlock()
+
+        sessionTracker.throttle()
+    }
+
+    func track(_ event: AnalyticsEvent) {
+        // track() depends on consent and availability only, never on isActive.
+        service.track(event)
+    }
+
+    func flush(reason: AnalyticsFlushReason) {
+        service.flush(reason: reason)
+    }
+}
+
+/// Placeholder until the signed uploader lands: the flush path resolves to a no-op, so
+/// the queue simply keeps its rows instead of dropping them unsent.
+private final class UnwiredAnalyticsUploader: AnalyticsUploading {
+    func flushWrapper(maxBatches _: Int) -> CompoundOperationWrapper<Void> {
+        CompoundOperationWrapper.createWithResult(())
+    }
+}

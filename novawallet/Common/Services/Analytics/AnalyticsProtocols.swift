@@ -65,6 +65,12 @@ protocol AnalyticsSessionTracking: AnyObject {
     func startSession()
 }
 
+protocol AnalyticsServiceFacadeProtocol: AnalyticsTrackingProtocol, ApplicationServiceProtocol {
+    var consent: AnalyticsConsentManagerProtocol { get }
+
+    func flush(reason: AnalyticsFlushReason)
+}
+
 /// Declared here until the attestation seams land; it then moves to
 /// `Common/Services/Attestation/BackendAttestationProtocols.swift` unchanged.
 enum BackendAttestationMode {
