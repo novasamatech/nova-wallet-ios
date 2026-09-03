@@ -122,6 +122,18 @@ extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
         }
     }
 
+    func didRequestAnalyticsConsentOpen() {
+        wireframe.presentAnalyticsConsent(
+            from: view,
+            onEnable: { [weak self] in
+                self?.interactor.setAnalyticsConsent(enabled: true)
+            },
+            onDecline: { [weak self] in
+                self?.interactor.setAnalyticsConsent(enabled: false)
+            }
+        )
+    }
+
     func didRequestLegalConsentOpen() {
         wireframe.presentLegalConsent(from: view) { [weak self] in
             self?.interactor.requestNextOnLaunchAction()
