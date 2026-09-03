@@ -37,6 +37,7 @@ sources = [
     "novawallet/Modules/Staking/Services/StakingServiceFactory.swift",
     "novawallet/Common/Currency/CurrencyRepository.swift",
     "novawallet/Common/Services/ApplicationService.swift",
+    "novawallet/Common/Migration/Migrating.swift",
     "novawallet/Common/Protocols/LoadableViewProtocol.swift",
     "novawallet/Common/Protocols/ControllerBackedProtocol.swift",
     "novawallet/Common/Protocols/WebPresentable.swift",

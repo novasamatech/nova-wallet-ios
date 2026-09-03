@@ -6694,6 +6694,7 @@
 		FEEDD000000000000000010A /* AnalyticsTestFixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD000000000000000000A /* AnalyticsTestFixture.swift */; };
 		FEEDD000000000000000010D /* AnalyticsSessionTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD000000000000000000D /* AnalyticsSessionTrackerTests.swift */; };
 		FEEDD0000000000000000111 /* AnalyticsFacadeFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000011 /* AnalyticsFacadeFactoryTests.swift */; };
+		FEEDF0000000000000000101 /* AnalyticsKillSwitchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDF0000000000000000001 /* AnalyticsKillSwitchTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -13129,6 +13130,7 @@
 		FEEDD000000000000000000A /* AnalyticsTestFixture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsTestFixture.swift; sourceTree = "<group>"; };
 		FEEDD000000000000000000D /* AnalyticsSessionTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsSessionTrackerTests.swift; sourceTree = "<group>"; };
 		FEEDD0000000000000000011 /* AnalyticsFacadeFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsFacadeFactoryTests.swift; sourceTree = "<group>"; };
+		FEEDF0000000000000000001 /* AnalyticsKillSwitchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsKillSwitchTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -30686,6 +30688,7 @@
 				FEEDD0000000000000000009 /* AnalyticsServiceTests.swift */,
 				FEEDD000000000000000000D /* AnalyticsSessionTrackerTests.swift */,
 				FEEDD0000000000000000011 /* AnalyticsFacadeFactoryTests.swift */,
+				FEEDF0000000000000000001 /* AnalyticsKillSwitchTests.swift */,
 				FEEDE000000000000000000B /* AnalyticsUploaderTests.swift */,
 				FEEDE000000000000000000C /* AnalyticsUploadRequestTests.swift */,
 			);
@@ -37694,6 +37697,7 @@
 				FEEDE000000000000000010C /* AnalyticsUploadRequestTests.swift in Sources */,
 				FEEDD000000000000000010D /* AnalyticsSessionTrackerTests.swift in Sources */,
 				FEEDD0000000000000000111 /* AnalyticsFacadeFactoryTests.swift in Sources */,
+				FEEDF0000000000000000101 /* AnalyticsKillSwitchTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

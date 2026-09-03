@@ -10,6 +10,7 @@ import Cuckoo
 struct AnalyticsTestFixture {
     let service: AnalyticsService
     let consent: AnalyticsConsentManager
+    let availability: AnalyticsAvailabilityProvider
     let queue: CoreDataAnalyticsEventQueue
     let settings: InMemorySettingsManager
     let uploader: MockAnalyticsUploading
@@ -99,6 +100,7 @@ extension AnalyticsTestFixture {
         return AnalyticsTestFixture(
             service: service,
             consent: consent,
+            availability: availability,
             queue: eventQueue,
             settings: settings,
             uploader: uploader,
@@ -172,6 +174,22 @@ extension AnalyticsTestFixture {
         OperationQueue().addOperations([operation], waitUntilFinished: true)
 
         return try operation.extractNoCancellableResultData()
+    }
+
+    /// Writes straight to the queue, past the consent and availability guard, so a test
+    /// can stage the rows a previous process would have left behind.
+    func enqueueBypassingTheGuard(name: String) throws {
+        drain()
+
+        let wrapper = queue.enqueueWrapper(
+            name: name,
+            timestamp: Date(),
+            payload: Data("{}".utf8)
+        )
+
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+
+        _ = try wrapper.targetOperation.extractNoCancellableResultData()
     }
 
     func peekNames() throws -> [String] {
