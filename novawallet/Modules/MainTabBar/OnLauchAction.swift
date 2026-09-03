@@ -11,6 +11,12 @@ enum OnLaunchAction {
         }
     }
 
+    struct AnalyticsConsent: OnLaunchActionProtocol {
+        func accept(visitor: OnLaunchActionsQueueDelegate) {
+            visitor.onLaunchProcessAnalyticsConsent(self)
+        }
+    }
+
     struct PushNotificationsSetup: OnLaunchActionProtocol {
         func accept(visitor: OnLaunchActionsQueueDelegate) {
             visitor.onLaunchProccessPushNotificationsSetup(self)

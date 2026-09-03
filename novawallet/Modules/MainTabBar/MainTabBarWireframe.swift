@@ -563,6 +563,28 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
         }
     }
 
+    func presentAnalyticsConsent(
+        from view: MainTabBarViewProtocol?,
+        onEnable: @escaping () -> Void,
+        onDecline: @escaping () -> Void
+    ) {
+        let bottomSheet = AnalyticsConsentSheetFactory.createConsentSheet(
+            onEnable: onEnable,
+            onDecline: onDecline
+        )
+
+        guard let controllerToPresent = bottomSheet?.controller else {
+            // Without this the launch queue would stall on a sheet that never appeared.
+            onDecline()
+            return
+        }
+
+        view?.controller.topModalViewController.present(
+            controllerToPresent,
+            animated: true
+        )
+    }
+
     func presentLegalConsent(
         from view: MainTabBarViewProtocol?,
         completion: @escaping () -> Void

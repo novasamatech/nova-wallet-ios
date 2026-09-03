@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FEED10000000000000000101 /* AnalyticsConsentSheetFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED10000000000000000001 /* AnalyticsConsentSheetFactory.swift */; };
+		FEED10000000000000000102 /* AnalyticsConsentPromptGate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED10000000000000000002 /* AnalyticsConsentPromptGate.swift */; };
+		FEED10000000000000000104 /* AnalyticsConsentPromptTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED10000000000000000004 /* AnalyticsConsentPromptTests.swift */; };
 		A1B2C3D40003E5F600000002 /* HydraExchangeTradeLimits.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D40003E5F600000001 /* HydraExchangeTradeLimits.swift */; };
 		76D756FB38357EB7F59ADD89 /* HydraEmaPriceMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D20EB194EA42E03AA4B074 /* HydraEmaPriceMath.swift */; };
 		3AC4907731200D6A4CF08576 /* HydraFeeOraclePriceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35661006737595BC4261F218 /* HydraFeeOraclePriceTests.swift */; };
@@ -6736,6 +6739,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		FEED10000000000000000001 /* AnalyticsConsentSheetFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsConsentSheetFactory.swift; sourceTree = "<group>"; };
+		FEED10000000000000000002 /* AnalyticsConsentPromptGate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsConsentPromptGate.swift; sourceTree = "<group>"; };
+		FEED10000000000000000004 /* AnalyticsConsentPromptTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsConsentPromptTests.swift; sourceTree = "<group>"; };
 		A1B2C3D40003E5F600000001 /* HydraExchangeTradeLimits.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HydraExchangeTradeLimits.swift; sourceTree = "<group>"; };
 		07D20EB194EA42E03AA4B074 /* HydraEmaPriceMath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HydraEmaPriceMath.swift; sourceTree = "<group>"; };
 		35661006737595BC4261F218 /* HydraFeeOraclePriceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HydraFeeOraclePriceTests.swift; sourceTree = "<group>"; };
@@ -13208,6 +13214,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		FEED10000000000000000003 /* AnalyticsConsent */ = {
+			isa = PBXGroup;
+			children = (
+				FEED10000000000000000001 /* AnalyticsConsentSheetFactory.swift */,
+				FEED10000000000000000002 /* AnalyticsConsentPromptGate.swift */,
+			);
+			path = AnalyticsConsent;
+			sourceTree = "<group>";
+		};
+		FEED10000000000000000006 /* MainTabBar */ = {
+			isa = PBXGroup;
+			children = (
+				FEED10000000000000000004 /* AnalyticsConsentPromptTests.swift */,
+			);
+			path = MainTabBar;
+			sourceTree = "<group>";
+		};
 		004CB16144B71C42956A5D93 /* SwipeGovVotingList */ = {
 			isa = PBXGroup;
 			children = (
@@ -24379,6 +24402,7 @@
 				0274F684DCFA6D2AFEA43CF5 /* AssetPriceChart */,
 				028384EC1D6B48710C2236A2 /* UnifiedAddressPopup */,
 				F969E89D4A7D83173147E818 /* AHMInfo */,
+				FEED10000000000000000003 /* AnalyticsConsent */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -25969,6 +25993,7 @@
 				84B7C703289BFA79001A3566 /* WalletHistoryFilter */,
 				84B7C705289BFA79001A3566 /* AccountManagement */,
 				84B7C70A289BFA79001A3566 /* ControllerAccount */,
+				FEED10000000000000000006 /* MainTabBar */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -37458,6 +37483,8 @@
 				FEEDB0000000000000000320 /* AnalyticsEnvelope.swift in Sources */,
 				FEEDE0000000000000000109 /* AnalyticsUploadOperationFactory.swift in Sources */,
 				FEEDE000000000000000010A /* AnalyticsUploader.swift in Sources */,
+				FEED10000000000000000101 /* AnalyticsConsentSheetFactory.swift in Sources */,
+				FEED10000000000000000102 /* AnalyticsConsentPromptGate.swift in Sources */,
 				FEEDA0000000000000000012 /* AnalyticsPendingEvent.swift in Sources */,
 				FEEDA0000000000000000014 /* AnalyticsPendingEventMapper.swift in Sources */,
 				FEEDA0000000000000000021 /* AnalyticsProtocols.swift in Sources */,
@@ -37694,6 +37721,7 @@
 				FEEDD0000000000000000108 /* AnalyticsConsentGateTests.swift in Sources */,
 				FEEDD0000000000000000109 /* AnalyticsServiceTests.swift in Sources */,
 				FEEDE000000000000000010B /* AnalyticsUploaderTests.swift in Sources */,
+				FEED10000000000000000104 /* AnalyticsConsentPromptTests.swift in Sources */,
 				FEEDE000000000000000010C /* AnalyticsUploadRequestTests.swift in Sources */,
 				FEEDD000000000000000010D /* AnalyticsSessionTrackerTests.swift in Sources */,
 				FEEDD0000000000000000111 /* AnalyticsFacadeFactoryTests.swift in Sources */,
