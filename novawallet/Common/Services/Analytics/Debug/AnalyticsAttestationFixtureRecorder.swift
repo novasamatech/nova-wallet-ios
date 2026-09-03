@@ -7,7 +7,11 @@
     /// An attestation and an assertion cannot be produced off-device, so this is the only way
     /// to obtain one, and it must be recorded on a physical device.
     struct AnalyticsAttestationFixture: Encodable {
-        let challenge: String
+        /// Both challenges are recorded because the two client-data digests are built from
+        /// different ones: with only the assertion challenge the gateway cannot reconstruct
+        /// the attestation's `clientDataHash`, so `attestationBase64` is unverifiable.
+        let attestationChallenge: String
+        let assertionChallenge: String
         let clientId: String
         let keyId: String
         let attestationBase64: String
@@ -85,13 +89,16 @@
             let mapOperation = ClosureOperation<AnalyticsAttestationFixture> {
                 let attestation = try attestationWrapper.targetOperation.extractNoCancellableResultData()
                 let assertion = try assertionWrapper.targetOperation.extractNoCancellableResultData()
+                let attestChallenge = try attestChallengeWrapper.targetOperation
+                    .extractNoCancellableResultData()
                 let assertChallenge = try assertChallengeWrapper.targetOperation
                     .extractNoCancellableResultData()
 
                 return AnalyticsAttestationFixture(
-                    // The assertion challenge, not the attestation one: it is the challenge the
-                    // gateway must replay to reproduce the signature over `bodyBase64`.
-                    challenge: assertChallenge,
+                    attestationChallenge: attestChallenge,
+                    // The challenge the gateway must replay to reproduce the signature
+                    // over `bodyBase64`.
+                    assertionChallenge: assertChallenge,
                     clientId: clientId,
                     keyId: attestation.keyId,
                     attestationBase64: attestation.attestation.base64EncodedString(),

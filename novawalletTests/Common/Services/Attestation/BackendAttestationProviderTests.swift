@@ -7,6 +7,67 @@ import Cuckoo
 final class BackendAttestationProviderTests: XCTestCase {
     private let gatewayURL = URL(string: "https://gateway.example/")!
 
+    /// Where in the already-composed chain the user opts out. Each point sits after the
+    /// composition-time client id read, so only an execution-time gate can stop it.
+    private enum OptOutPoint {
+        case challenge
+        case attestation
+        case register
+    }
+
+    /// Records the registration requests that actually reached the transport. Counting
+    /// `createRegisterOperation` calls would not do: the operation is *constructed* before
+    /// the opt-out lands, and what must not happen is its request closure producing a value.
+    private final class RegisterRecorder {
+        private let mutex = NSLock()
+        private var requests: [BackendAttestationRegisterRequest] = []
+
+        func record(_ request: BackendAttestationRegisterRequest) {
+            mutex.lock()
+
+            defer {
+                mutex.unlock()
+            }
+
+            requests.append(request)
+        }
+
+        var recorded: [BackendAttestationRegisterRequest] {
+            mutex.lock()
+
+            defer {
+                mutex.unlock()
+            }
+
+            return requests
+        }
+    }
+
+    /// Fires its closure exactly once, however many times the chain reaches it — a signed
+    /// request asks for two challenges, and the opt-out must be injected at one point only.
+    private final class OneShotHook {
+        private let mutex = NSLock()
+        private var hasFired = false
+        private let body: () -> Void
+
+        init(_ body: @escaping () -> Void) {
+            self.body = body
+        }
+
+        func fire() {
+            mutex.lock()
+            let shouldFire = !hasFired
+            hasFired = true
+            mutex.unlock()
+
+            guard shouldFire else {
+                return
+            }
+
+            body()
+        }
+    }
+
     private struct Fixture {
         let provider: BackendAttestationProvider
         let appAttest: MockAppAttestServiceProtocol
@@ -14,12 +75,14 @@ final class BackendAttestationProviderTests: XCTestCase {
         let settings: InMemorySettingsManager
         let repository: AnyDataProviderRepository<AppAttestKeySettings>
         let operationQueue: OperationQueue
+        let registered: RegisterRecorder
     }
 
     private func makeFixture(
         mode: BackendAttestationMode = .appAttest,
         registerError: Error? = nil,
-        assertionError: Error? = nil
+        assertionError: Error? = nil,
+        optOutAt: OptOutPoint? = nil
     ) -> Fixture {
         let facade = UserDataStorageTestFacade()
         let coreDataRepository: CoreDataRepository<AppAttestKeySettings, CDAppAttestKey> =
@@ -31,6 +94,13 @@ final class BackendAttestationProviderTests: XCTestCase {
 
         let repository = AnyDataProviderRepository(coreDataRepository)
 
+        let registered = RegisterRecorder()
+
+        // Assigned after the provider exists; the hook only ever runs inside an operation,
+        // by which time the box is populated.
+        var providerBox: BackendAttestationProvider?
+        let optOutHook = OneShotHook { providerBox?.forgetClient() }
+
         let appAttest = MockAppAttestServiceProtocol()
         stub(appAttest) { stub in
             when(stub.isSupported.get).thenReturn(true)
@@ -40,6 +110,10 @@ final class BackendAttestationProviderTests: XCTestCase {
 
                 return CompoundOperationWrapper(targetOperation: ClosureOperation<AppAttestAttestation> {
                     _ = try clientData(resolvedKeyId)
+
+                    if optOutAt == .attestation {
+                        optOutHook.fire()
+                    }
 
                     return AppAttestAttestation(
                         keyId: resolvedKeyId,
@@ -64,12 +138,22 @@ final class BackendAttestationProviderTests: XCTestCase {
         let remote = MockBackendAttestationRemoteFactoryProtocol()
         stub(remote) { stub in
             when(stub.createChallengeWrapper()).then { _ in
-                CompoundOperationWrapper.createWithResult(UUID().uuidString)
+                CompoundOperationWrapper(targetOperation: ClosureOperation<String> {
+                    if optOutAt == .challenge {
+                        optOutHook.fire()
+                    }
+
+                    return UUID().uuidString
+                })
             }
 
             when(stub.createRegisterOperation(any())).then { requestClosure in
                 ClosureOperation<Void> {
-                    _ = try requestClosure()
+                    if optOutAt == .register {
+                        optOutHook.fire()
+                    }
+
+                    try registered.record(requestClosure())
 
                     if let registerError {
                         throw registerError
@@ -93,13 +177,16 @@ final class BackendAttestationProviderTests: XCTestCase {
             logger: Logger.shared
         )
 
+        providerBox = provider
+
         return Fixture(
             provider: provider,
             appAttest: appAttest,
             remote: remote,
             settings: settings,
             repository: repository,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            registered: registered
         )
     }
 
@@ -270,31 +357,103 @@ final class BackendAttestationProviderTests: XCTestCase {
         )
     }
 
-    func testOptOutMidChainNeverRegistersAFreshKey() throws {
+    func testOptOutBeforeTheChainStartsIsRefused() throws {
         let fixture = makeFixture()
 
-        // Opting out before the chain reaches its attest-and-register step must abort it.
-        // `forgetClient()` also clears the cached key, which would otherwise *force* a fresh
-        // attestation here — making opt-out worse than doing nothing.
         fixture.provider.forgetClient()
 
         XCTAssertThrowsError(try headers(fixture))
 
         XCTAssertNil(try storedRow(fixture))
         XCTAssertNil(fixture.settings.gatewayAttestationClientId)
+        XCTAssertEqual(fixture.registered.recorded.count, 0)
     }
 
-    func testALateRowWriteCannotResurrectTheDeletedKey() throws {
-        let fixture = makeFixture()
+    func testOptOutDuringTheChallengeNeverRegistersAFreshKey() throws {
+        try assertOptOutMidChainRegistersNothing(at: .challenge)
+    }
+
+    func testOptOutDuringTheAppleAttestationNeverRegistersAFreshKey() throws {
+        try assertOptOutMidChainRegistersNothing(at: .attestation)
+    }
+
+    func testOptOutJustBeforeTheRegisterPostNeverRegistersAFreshKey() throws {
+        try assertOptOutMidChainRegistersNothing(at: .register)
+    }
+
+    /// The chain is composed while consent is still on — the client id and the epoch are
+    /// read before any of these hooks fire — so nothing here is stopped by the entry guard.
+    private func assertOptOutMidChainRegistersNothing(at point: OptOutPoint) throws {
+        let fixture = makeFixture(optOutAt: point)
+
+        XCTAssertThrowsError(try headers(fixture))
+
+        XCTAssertEqual(
+            fixture.registered.recorded.count,
+            0,
+            "a registration reached the gateway after the user opted out at \(point)"
+        )
+        XCTAssertNil(try storedRow(fixture), "the key row survived an opt-out at \(point)")
+        XCTAssertNil(fixture.settings.gatewayAttestationClientId)
+    }
+
+    func testAKeyAttestedAcrossAnOptOutNeverSignsForTheNewClient() throws {
+        let fixture = makeFixture(optOutAt: .register)
+
+        XCTAssertThrowsError(try headers(fixture))
+
+        // Re-consent, then run a clean chain. If `cacheAttestedKeyId` had run on the far
+        // side of the opt-out, this would assert the *old* key — a key minted for the
+        // previous consent cycle signing for the new one.
+        fixture.provider.allowClient()
+        clearInvocations(fixture.appAttest)
+
         _ = try headers(fixture)
 
-        XCTAssertNotNil(try storedRow(fixture))
+        let captor = ArgumentCaptor<AppAttestKeyId?>()
+        verify(fixture.appAttest).createAttestationWrapper(using: captor.capture(), clientData: any())
+        XCTAssertNil(captor.value ?? nil)
+    }
 
-        fixture.provider.forgetClient()
+    /// The guard must not be `identity.clientId() != nil`: that accessor mints, so during
+    /// an opt-out→re-consent race it would write a brand new client id and then wave the
+    /// stale chain through to register the old one.
+    func testTheConsentGateReadsTheEpochWithoutMintingAnIdentity() {
+        let settings = InMemorySettingsManager()
+        let identity = BackendAttestationIdentity(settingsManager: settings)
 
-        // A save scheduled by the surviving chain must find the identity latched and write
-        // nothing, rather than restoring the row the wipe removed.
-        XCTAssertThrowsError(try headers(fixture))
-        XCTAssertNil(try storedRow(fixture))
+        identity.forgetClientId()
+        // Re-consent re-arms minting, which is what makes the two accessors differ here.
+        identity.allowCreation()
+
+        XCTAssertNil(settings.gatewayAttestationClientId)
+
+        _ = identity.consentEpoch
+
+        XCTAssertNil(
+            settings.gatewayAttestationClientId,
+            "the chain's consent gate minted a client id"
+        )
+
+        _ = identity.clientId()
+
+        XCTAssertNotNil(
+            settings.gatewayAttestationClientId,
+            "clientId() is expected to mint — that is precisely why it cannot be the gate"
+        )
+    }
+
+    func testTheEpochChangesOnEveryConsentBoundary() {
+        let identity = BackendAttestationIdentity(settingsManager: InMemorySettingsManager())
+
+        let initial = identity.consentEpoch
+        identity.forgetClientId()
+        let afterForget = identity.consentEpoch
+        identity.allowCreation()
+        let afterAllow = identity.consentEpoch
+
+        XCTAssertNotEqual(initial, afterForget)
+        XCTAssertNotEqual(afterForget, afterAllow)
+        XCTAssertNotEqual(initial, afterAllow)
     }
 }

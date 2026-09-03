@@ -28,6 +28,10 @@ protocol AnalyticsConsentManagerProtocol: AnyObject {
 protocol AnalyticsIdentityProtocol: AnyObject {
     var sessionId: String { get }
 
+    /// Increments on every consent-cycle boundary. Read it — never `installId()` — when
+    /// re-checking consent from inside an already-composed chain: `installId()` mints.
+    var consentEpoch: Int { get }
+
     /// Created on first call, never before. `nil` once forgotten and not re-armed.
     func installId() -> String?
     func forgetInstallId()
@@ -40,6 +44,15 @@ protocol AnalyticsAvailabilityProviderProtocol: AnyObject {
 
 protocol AnalyticsTrackingProtocol: AnyObject {
     func track(_ event: AnalyticsEvent)
+
+    /// Enqueues `event`, then flushes, calling `completion` once the flush chain has
+    /// settled. The background path needs it because both halves are fire-and-forget:
+    /// without it the `UIBackgroundTask` ends before the row is written.
+    func trackAndFlush(
+        _ event: AnalyticsEvent,
+        reason: AnalyticsFlushReason,
+        completion: @escaping () -> Void
+    )
 }
 
 enum AnalyticsFlushReason {

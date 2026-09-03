@@ -19,6 +19,15 @@ extension NoOpAnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
 
     func track(_: AnalyticsEvent) {}
 
+    func trackAndFlush(
+        _: AnalyticsEvent,
+        reason _: AnalyticsFlushReason,
+        completion: @escaping () -> Void
+    ) {
+        // Still called: the caller may be holding a background-task assertion on it.
+        completion()
+    }
+
     func flush(reason _: AnalyticsFlushReason) {}
 }
 

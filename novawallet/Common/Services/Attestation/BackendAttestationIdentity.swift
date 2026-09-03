@@ -12,6 +12,22 @@ final class BackendAttestationIdentity {
     /// it with the gateway after the user opted out.
     private var isCreationBlocked: Bool = false
 
+    /// See `AnalyticsIdentity.consentEpoch`. The attestation chain captures it beside the
+    /// client id and re-compares it — as a plain integer, never through `clientId()`,
+    /// which mints — before the register POST, before either row write and before the
+    /// attested-key cache is repopulated.
+    private var currentConsentEpoch: Int = 0
+
+    var consentEpoch: Int {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return currentConsentEpoch
+    }
+
     init(settingsManager: SettingsManagerProtocol) {
         self.settingsManager = settingsManager
     }
@@ -52,6 +68,7 @@ extension BackendAttestationIdentity: BackendAttestationIdentityProtocol {
 
         settingsManager.gatewayAttestationClientId = nil
         isCreationBlocked = true
+        currentConsentEpoch += 1
     }
 
     func allowCreation() {
@@ -62,5 +79,6 @@ extension BackendAttestationIdentity: BackendAttestationIdentityProtocol {
         }
 
         isCreationBlocked = false
+        currentConsentEpoch += 1
     }
 }

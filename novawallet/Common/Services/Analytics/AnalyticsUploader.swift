@@ -1,14 +1,14 @@
 import Foundation
 import Operation_iOS
 
-/// peek → sign → POST → drop, repeated while the gateway keeps accepting batches.
-/// A batch is dropped only after its 2xx, so delivery is at-least-once (spec §6.3).
 /// Thrown when consent is withdrawn while an upload chain is already executing, which
 /// `flushCallStore.cancel()` cannot stop. Ends the chain instead of minting a replacement id.
 enum AnalyticsUploadAbort: Error {
     case consentWithdrawn
 }
 
+/// peek → sign → POST → drop, repeated while the gateway keeps accepting batches.
+/// A batch is dropped only after its 2xx, so delivery is at-least-once (spec §6.3).
 final class AnalyticsUploader {
     private let queue: AnalyticsEventQueueProtocol
     private let identity: AnalyticsIdentityProtocol
@@ -59,6 +59,9 @@ private extension AnalyticsUploader {
         let body: Data
         let ids: [String]
         let isFull: Bool
+        /// The consent epoch the envelope was built under. Re-checked immediately before
+        /// the request is constructed, because everything between the two is asynchronous.
+        let epoch: Int
     }
 
     func createBatchesWrapper(remaining: Int) -> CompoundOperationWrapper<Void> {
@@ -96,7 +99,18 @@ private extension AnalyticsUploader {
                 return .createWithResult(.stop)
             }
 
-            let rows = try peekWrapper.targetOperation.extractNoCancellableResultData()
+            let rows: [AnalyticsPendingEvent]
+
+            do {
+                rows = try peekWrapper.targetOperation.extractNoCancellableResultData()
+            } catch {
+                // A row the mapper cannot read fails the whole fetch, so every later peek
+                // fails too and the queue wedges silently while it keeps filling to its
+                // cap. Analytics rows are not worth recovering individually.
+                logger.error("Analytics queue is unreadable, clearing it: \(error)")
+
+                return createClearWrapper()
+            }
 
             guard !rows.isEmpty else {
                 return .createWithResult(.stop)
@@ -114,11 +128,31 @@ private extension AnalyticsUploader {
 
     func createSendWrapper(batch: Batch) -> CompoundOperationWrapper<BatchOutcome> {
         let body = batch.body
+        let epoch = batch.epoch
 
-        let headersWrapper = attestation.createSignedHeadersWrapper { body }
+        // `BlockNetworkRequestFactory` calls these inside `NetworkOperation.main()`, so
+        // they are the last point before any byte of this batch exists as a request. The
+        // attestation round trip in between takes up to a minute on a stalled connection,
+        // which is ample time for the user to opt out — and `flushCallStore.cancel()`
+        // cannot reach a chain that is already executing.
+        let consentGate: () throws -> Void = { [weak self] in
+            guard let self, identity.consentEpoch == epoch else {
+                throw AnalyticsUploadAbort.consentWithdrawn
+            }
+        }
+
+        let headersWrapper = attestation.createSignedHeadersWrapper {
+            try consentGate()
+
+            return body
+        }
 
         let uploadOperation = uploadFactory.createUploadOperation(
-            bodyClosure: { body },
+            bodyClosure: {
+                try consentGate()
+
+                return body
+            },
             headersClosure: { try headersWrapper.targetOperation.extractNoCancellableResultData() }
         )
 
@@ -236,7 +270,13 @@ private extension AnalyticsUploader {
         // Opt-out during an in-flight flush deletes the id and blocks re-creation. There is
         // no batch to send without one, and minting a replacement is exactly the resurrection
         // spec 6.5 forbids.
-        guard let installId = identity.installId() else {
+        //
+        // Read epoch → id → epoch: the two are separate acquisitions of the identity's
+        // lock, so an opt-out landing between them would pair a forgotten install id with
+        // the epoch that forgot it and the send gate would let the batch through.
+        let epoch = identity.consentEpoch
+
+        guard let installId = identity.installId(), identity.consentEpoch == epoch else {
             throw AnalyticsUploadAbort.consentWithdrawn
         }
 
@@ -253,7 +293,8 @@ private extension AnalyticsUploader {
         return Batch(
             body: try AnalyticsCoding.encoder.encode(envelope),
             ids: rows.map(\.identifier),
-            isFull: rows.count == Constants.batchSize
+            isFull: rows.count == Constants.batchSize,
+            epoch: epoch
         )
     }
 }

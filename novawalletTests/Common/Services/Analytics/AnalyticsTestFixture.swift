@@ -37,7 +37,6 @@ extension AnalyticsTestFixture {
 
         let eventQueue = CoreDataAnalyticsEventQueue(
             repository: AnyDataProviderRepository(repository),
-            operationQueue: OperationQueue(),
             maxCount: 500
         )
 

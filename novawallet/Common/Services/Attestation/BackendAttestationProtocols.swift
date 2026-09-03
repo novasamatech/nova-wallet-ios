@@ -27,6 +27,10 @@ protocol BackendAttestationRemoteFactoryProtocol {
 }
 
 protocol BackendAttestationIdentityProtocol {
+    /// Increments on every consent-cycle boundary. The chain re-checks consent against
+    /// this, never by calling `clientId()` again — that accessor mints.
+    var consentEpoch: Int { get }
+
     /// `nil` once forgotten and not re-armed.
     func clientId() -> String?
     func forgetClientId()

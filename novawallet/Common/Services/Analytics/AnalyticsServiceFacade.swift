@@ -1,7 +1,7 @@
 import Foundation
-import Operation_iOS
 import Foundation_iOS
 import Keystore_iOS
+import Operation_iOS
 
 final class AnalyticsServiceFacade {
     static let shared = AnalyticsServiceFacade()
@@ -33,8 +33,7 @@ final class AnalyticsServiceFacade {
             )
 
         let eventQueue = CoreDataAnalyticsEventQueue(
-            repository: AnyDataProviderRepository(repository),
-            operationQueue: OperationManagerFacade.analyticsQueue
+            repository: AnyDataProviderRepository(repository)
         )
 
         let appAttest = AppAttestService()
@@ -108,7 +107,6 @@ final class AnalyticsServiceFacade {
 
         let sessionTracker = AnalyticsSessionTracker(
             tracker: service,
-            flushHandler: { [weak service] reason in service?.flush(reason: reason) },
             applicationHandler: ApplicationHandler(),
             backgroundTaskRunner: UIApplicationBackgroundTaskRunner()
         )
@@ -151,14 +149,20 @@ extension AnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
         sessionTracker.setup()
         sessionTracker.startSession()
 
-        track(.appOpened(isFirstLaunch: settingsManager.isAppFirstLaunch))
-        flush(reason: .launch)
+        // Ordered, not fire-and-forget: a bare track() + flush() pair lets the launch
+        // batch's peek run before app_opened and session_started have been written, so the
+        // two events the launch flush exists for normally miss it.
+        service.trackAndFlush(
+            .appOpened(isFirstLaunch: settingsManager.isAppFirstLaunch),
+            reason: .launch,
+            completion: {}
+        )
 
         resolveRemoteAvailability()
     }
 
-    /// A real symmetric throttle: nothing on the launch path calls it, but the kill
-    /// switch and the tests do.
+    /// A real symmetric throttle: the launch path never calls it, but the kill switch does
+    /// once the remote config turns analytics off, and so do the tests.
     func throttle() {
         mutex.lock()
 
@@ -177,6 +181,14 @@ extension AnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
     func track(_ event: AnalyticsEvent) {
         // track() depends on consent and availability only, never on isActive.
         service.track(event)
+    }
+
+    func trackAndFlush(
+        _ event: AnalyticsEvent,
+        reason: AnalyticsFlushReason,
+        completion: @escaping () -> Void
+    ) {
+        service.trackAndFlush(event, reason: reason, completion: completion)
     }
 
     func flush(reason: AnalyticsFlushReason) {
@@ -204,6 +216,15 @@ private extension AnalyticsServiceFacade {
             case let .success(config):
                 availability.setRemoteEnabled(config.analytics?.enabled ?? true)
                 service.handleAvailabilityChanged()
+
+                guard !availability.isAvailable else {
+                    return
+                }
+
+                // The kill switch stops collection at the source: without this the session
+                // tracker keeps observing foreground/background edges and keeps handing
+                // events to a service that silently discards every one of them.
+                throttle()
             case let .failure(error):
                 logger.info("Analytics remote config unavailable: \(error)")
             }

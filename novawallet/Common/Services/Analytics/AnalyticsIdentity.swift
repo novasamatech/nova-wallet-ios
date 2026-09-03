@@ -12,6 +12,22 @@ final class AnalyticsIdentity {
     /// mint a replacement — leaving an opted-out install holding an identifier.
     private var isCreationBlocked: Bool = false
 
+    /// Bumped on every consent-cycle boundary. A chain captures it beside the install id
+    /// and re-compares before each irreversible step, which `installId()` cannot serve as
+    /// — that accessor mints, so using it as a predicate writes a new id during an
+    /// opt-out→re-consent race and then sends the batch under the old one.
+    private var currentConsentEpoch: Int = 0
+
+    var consentEpoch: Int {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return currentConsentEpoch
+    }
+
     /// One per instance, therefore one per process. An iOS process can span days;
     /// the id is still per process (parity with Android). Rotated on re-consent, because a
     /// session id shared across an opt-out would let the gateway join the old install id to
@@ -70,6 +86,7 @@ extension AnalyticsIdentity: AnalyticsIdentityProtocol {
 
         settingsManager.analyticsInstallId = nil
         isCreationBlocked = true
+        currentConsentEpoch += 1
     }
 
     /// Called on the consent false to true edge, so a re-consented user gets a new id.
@@ -82,5 +99,6 @@ extension AnalyticsIdentity: AnalyticsIdentityProtocol {
 
         isCreationBlocked = false
         currentSessionId = UUID().uuidString.lowercased()
+        currentConsentEpoch += 1
     }
 }

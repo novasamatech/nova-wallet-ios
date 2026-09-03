@@ -5,12 +5,42 @@ import Keystore_iOS
 import Cuckoo
 
 final class AnalyticsUploaderTests: XCTestCase {
+    /// Counts the batches whose body the transport actually obtained. A consent gate that
+    /// throws inside `bodyClosure` leaves this at zero even though the upload *operation*
+    /// was constructed, which is the distinction the abort path turns on.
+    private final class BodyRecorder {
+        private let mutex = NSLock()
+        private var bodies: [Data] = []
+
+        func record(_ body: Data) {
+            mutex.lock()
+
+            defer {
+                mutex.unlock()
+            }
+
+            bodies.append(body)
+        }
+
+        var recorded: [Data] {
+            mutex.lock()
+
+            defer {
+                mutex.unlock()
+            }
+
+            return bodies
+        }
+    }
+
     private struct Fixture {
         let uploader: AnalyticsUploader
         let queue: CoreDataAnalyticsEventQueue
         let attestation: MockBackendAttestationProviderProtocol
         let uploadFactory: MockAnalyticsUploadOperationFactoryProtocol
         let settings: InMemorySettingsManager
+        let identity: AnalyticsIdentity
+        let sentBodies: BodyRecorder
     }
 
     /// `uploadResults` are consumed one per batch, so a test can script a 2xx then a 500.
@@ -18,6 +48,7 @@ final class AnalyticsUploaderTests: XCTestCase {
     /// AnalyticsIdentity; only the attestation provider and the upload factory are mocked.
     private func makeFixture(
         uploadResults: [Result<Void, Error>],
+        optOutDuringAttestation: Bool = false,
         timeProvider: @escaping () -> Date = { Date(timeIntervalSince1970: 1_772_445_600) }
     ) -> Fixture {
         let facade = UserDataStorageTestFacade()
@@ -30,16 +61,29 @@ final class AnalyticsUploaderTests: XCTestCase {
 
         let queue = CoreDataAnalyticsEventQueue(
             repository: AnyDataProviderRepository(repository),
-            operationQueue: OperationQueue(),
             maxCount: 500
         )
 
+        let settings = InMemorySettingsManager()
+        let identity = AnalyticsIdentity(settingsManager: settings)
+        let sentBodies = BodyRecorder()
+
         let attestation = MockBackendAttestationProviderProtocol()
         stub(attestation) { stub in
-            when(stub.createSignedHeadersWrapper(bodyClosure: any())).then { _ in
+            when(stub.createSignedHeadersWrapper(bodyClosure: any())).then { bodyClosure in
                 // A fresh wrapper per call: one instance cannot run twice.
-                CompoundOperationWrapper.createWithResult(
-                    [.clientId: "cid", .challenge: "chal", .signature: "sig"]
+                CompoundOperationWrapper(
+                    targetOperation: ClosureOperation<[AttestationHeaderKey: String]?> {
+                        if optOutDuringAttestation {
+                            // Stands in for the gateway challenge POST: the user opens
+                            // Settings while the request is on the wire.
+                            identity.forgetInstallId()
+                        }
+
+                        _ = try bodyClosure()
+
+                        return [.clientId: "cid", .challenge: "chal", .signature: "sig"]
+                    }
                 )
             }
             when(stub.markUnattested()).thenDoNothing()
@@ -53,17 +97,17 @@ final class AnalyticsUploaderTests: XCTestCase {
                 let next = remaining.isEmpty ? Result<Void, Error>.success(()) : remaining.removeFirst()
 
                 return ClosureOperation<Void> {
-                    _ = try body() // force the body closure so captors see it
+                    // Forces the body closure, so a consent gate inside it is exercised
+                    // exactly as `NetworkOperation.main()` would exercise it.
+                    sentBodies.record(try body())
                     try next.get()
                 }
             }
         }
 
-        let settings = InMemorySettingsManager()
-
         let uploader = AnalyticsUploader(
             queue: queue,
-            identity: AnalyticsIdentity(settingsManager: settings),
+            identity: identity,
             attestation: attestation,
             uploadFactory: uploadFactory,
             operationQueue: OperationQueue(),
@@ -77,7 +121,9 @@ final class AnalyticsUploaderTests: XCTestCase {
             queue: queue,
             attestation: attestation,
             uploadFactory: uploadFactory,
-            settings: settings
+            settings: settings,
+            identity: identity,
+            sentBodies: sentBodies
         )
     }
 
@@ -281,5 +327,86 @@ final class AnalyticsUploaderTests: XCTestCase {
         try flush(fixture)
 
         XCTAssertEqual(try queueCount(fixture), 0)
+    }
+
+    func testOptOutBeforeTheBatchIsBuiltSendsNothingAndMintsNothing() throws {
+        let fixture = makeFixture(uploadResults: [.success(())])
+        try seed(fixture, count: 1)
+
+        fixture.identity.forgetInstallId()
+
+        try flush(fixture)
+
+        XCTAssertTrue(fixture.sentBodies.recorded.isEmpty)
+        XCTAssertNil(
+            fixture.settings.analyticsInstallId,
+            "the abort path minted a replacement install id"
+        )
+        verify(fixture.uploadFactory, never()).createUploadOperation(
+            bodyClosure: any(),
+            headersClosure: any()
+        )
+    }
+
+    /// The envelope — install id, session id and every queued event — is built *before* the
+    /// attestation round trip, which takes up to a minute on a stalled connection. Nothing
+    /// downstream can cancel a chain that is already executing, so the last gate before the
+    /// request is the only thing standing between an opt-out and a real POST.
+    func testOptOutDuringTheAttestationRoundTripNeverPostsTheBatch() throws {
+        let fixture = makeFixture(
+            uploadResults: [.success(())],
+            optOutDuringAttestation: true
+        )
+        try seed(fixture, count: 1)
+
+        try flush(fixture)
+
+        XCTAssertTrue(
+            fixture.sentBodies.recorded.isEmpty,
+            "a batch reached the transport after the user opted out mid-flight"
+        )
+    }
+
+    func testABatchAbortedByAnOptOutIsNotTreatedAsDelivered() throws {
+        let fixture = makeFixture(
+            uploadResults: [.success(())],
+            optOutDuringAttestation: true
+        )
+        try seed(fixture, count: 3)
+
+        try flush(fixture)
+
+        // Dropping them here would be indistinguishable from a 2xx. The rows are the
+        // service's to wipe, and it wipes them for a different reason.
+        XCTAssertEqual(try queueCount(fixture), 3)
+    }
+
+    func testReconsentDuringAnInFlightBatchStillAbortsIt() throws {
+        let fixture = makeFixture(uploadResults: [.success(())])
+        try seed(fixture, count: 1)
+
+        // A pure "is there an id?" check would pass here: re-consent re-arms minting, so
+        // the accessor happily produces a *new* id while the batch still carries the old.
+        stub(fixture.attestation) { stub in
+            when(stub.createSignedHeadersWrapper(bodyClosure: any())).then { bodyClosure in
+                CompoundOperationWrapper(
+                    targetOperation: ClosureOperation<[AttestationHeaderKey: String]?> {
+                        fixture.identity.forgetInstallId()
+                        fixture.identity.allowCreation()
+
+                        _ = try bodyClosure()
+
+                        return [.clientId: "cid", .challenge: "chal", .signature: "sig"]
+                    }
+                )
+            }
+        }
+
+        try flush(fixture)
+
+        XCTAssertTrue(
+            fixture.sentBodies.recorded.isEmpty,
+            "a batch built for the previous consent cycle was sent under the new identity"
+        )
     }
 }
