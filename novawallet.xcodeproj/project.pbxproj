@@ -6631,6 +6631,9 @@
 		000000002384221D1527B8A1 /* SwapPoolTradeLimitCheck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000004024BA48453ACABB /* SwapPoolTradeLimitCheck.swift */; };
 		000000006C043D814E99B2D6 /* SwapDataValidatorFactory+PoolTradeLimit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0000000044697AEF01295519 /* SwapDataValidatorFactory+PoolTradeLimit.swift */; };
 		FEEDA0000000000000000002 /* AnalyticsUserModel21MigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDA0000000000000000001 /* AnalyticsUserModel21MigrationTests.swift */; };
+		FEEDA0000000000000000016 /* AnalyticsPendingEventMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDA0000000000000000015 /* AnalyticsPendingEventMapperTests.swift */; };
+		FEEDA0000000000000000012 /* AnalyticsPendingEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDA0000000000000000011 /* AnalyticsPendingEvent.swift */; };
+		FEEDA0000000000000000014 /* AnalyticsPendingEventMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDA0000000000000000013 /* AnalyticsPendingEventMapper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -13003,6 +13006,9 @@
 		000000004024BA48453ACABB /* SwapPoolTradeLimitCheck.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapPoolTradeLimitCheck.swift; sourceTree = "<group>"; };
 		0000000044697AEF01295519 /* SwapDataValidatorFactory+PoolTradeLimit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SwapDataValidatorFactory+PoolTradeLimit.swift"; sourceTree = "<group>"; };
 		FEEDA0000000000000000001 /* AnalyticsUserModel21MigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsUserModel21MigrationTests.swift; sourceTree = "<group>"; };
+		FEEDA0000000000000000015 /* AnalyticsPendingEventMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsPendingEventMapperTests.swift; sourceTree = "<group>"; };
+		FEEDA0000000000000000011 /* AnalyticsPendingEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsPendingEvent.swift; sourceTree = "<group>"; };
+		FEEDA0000000000000000013 /* AnalyticsPendingEventMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsPendingEventMapper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -21297,6 +21303,7 @@
 		84155DE8253980D700A27058 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				FEEDAA0000000000000000A1 /* Analytics */,
 				AA1014D50747A645B9585D3C /* Announcements */,
 				2DC002ED2E8AEB6A00D49A42 /* AssetHubMigrationInfo */,
 				2D51D68A2E5D9F42008AB208 /* MultisigNotificationsPromo */,
@@ -22419,6 +22426,7 @@
 		84452F8725D5E6CC00F47EC5 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				FEEDAA0000000000000000A2 /* Analytics */,
 				E6F3AA47E60B33CE93DF4903 /* AssetExchange */,
 				0C8FC2292E623F7000034ED3 /* DelegatedAccounts */,
 				0C41D20C2BF77F57000950EE /* CloudBackup */,
@@ -22695,6 +22703,7 @@
 				770ABB8D2B85593700132465 /* Web3TopicSettingsMapper.swift */,
 				2D06CC482E3C95A30093CA84 /* AppAttestKeyMapper.swift */,
 				0C0F6D6D2D39549100943A7C /* StakingDashboardMythosMapper.swift */,
+				FEEDA0000000000000000013 /* AnalyticsPendingEventMapper.swift */,
 			);
 			path = EntityToModel;
 			sourceTree = "<group>";
@@ -30475,6 +30484,30 @@
 			path = LegalConsent;
 			sourceTree = "<group>";
 		};
+		FEEDAA0000000000000000A1 /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				FEEDA0000000000000000010 /* Storage */,
+			);
+			path = Analytics;
+			sourceTree = "<group>";
+		};
+		FEEDAA0000000000000000A2 /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				FEEDA0000000000000000015 /* AnalyticsPendingEventMapperTests.swift */,
+			);
+			path = Analytics;
+			sourceTree = "<group>";
+		};
+		FEEDA0000000000000000010 /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+				FEEDA0000000000000000011 /* AnalyticsPendingEvent.swift */,
+			);
+			path = Storage;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -37158,6 +37191,8 @@
 				000000007CF9135B4D967A7E /* AssetExchangeTradeLimitVerdict.swift in Sources */,
 				000000002384221D1527B8A1 /* SwapPoolTradeLimitCheck.swift in Sources */,
 				000000006C043D814E99B2D6 /* SwapDataValidatorFactory+PoolTradeLimit.swift in Sources */,
+				FEEDA0000000000000000012 /* AnalyticsPendingEvent.swift in Sources */,
+				FEEDA0000000000000000014 /* AnalyticsPendingEventMapper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -37362,6 +37397,7 @@
 				CC9C5C7E32F8E3E32C3C123A /* PolkadotRewardEngineTests.swift in Sources */,
 				000000007C2FD98856D6F69F /* AssetExchangeCommissionNetFlowTests.swift in Sources */,
 				FEEDA0000000000000000002 /* AnalyticsUserModel21MigrationTests.swift in Sources */,
+				FEEDA0000000000000000016 /* AnalyticsPendingEventMapperTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
