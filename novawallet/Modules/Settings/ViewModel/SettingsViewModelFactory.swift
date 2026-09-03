@@ -49,8 +49,11 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
                 createNotificationsViewModel(row: .notifications, isOn: parameters.isNotificationsOn, locale: locale),
                 createValuableViewModel(row: .currency, value: currency, locale: locale),
                 createLanguageViewModel(from: language, locale: locale),
-                createCommonViewViewModel(row: .appearance, locale: locale)
-            ]),
+                createCommonViewViewModel(row: .appearance, locale: locale),
+                parameters.isAnalyticsOn.map {
+                    createSwitchViewModel(row: .analytics, isOn: $0, locale: locale)
+                }
+            ].compactMap { $0 }),
             (.security, [
                 createCommonViewViewModel(row: .backup, locale: locale),
                 parameters.isBiometricAuthOn.map {

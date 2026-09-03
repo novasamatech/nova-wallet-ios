@@ -34,6 +34,7 @@ struct SettingsViewFactory {
             biometryAuth: BiometryAuth(),
             walletNotificationService: serviceCoordinator.walletNotificationService,
             pushNotificationsFacade: PushNotificationsServiceFacade.shared,
+            analyticsConsent: AnalyticsFacadeFactory.createDefault().consent,
             privacyStateManager: PrivacyStateManager.shared,
             operationQueue: operationQueue
         )

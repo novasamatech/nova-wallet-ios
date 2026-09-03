@@ -19,6 +19,7 @@ final class SettingsInteractor {
     let privacyStateManager: PrivacyStateManagerProtocol
     let operationQueue: OperationQueue
     let pushNotificationsFacade: PushNotificationsServiceFacadeProtocol
+    let analyticsConsent: AnalyticsConsentManagerProtocol
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
@@ -29,6 +30,7 @@ final class SettingsInteractor {
         biometryAuth: BiometryAuthProtocol,
         walletNotificationService: WalletNotificationServiceProtocol,
         pushNotificationsFacade: PushNotificationsServiceFacadeProtocol,
+        analyticsConsent: AnalyticsConsentManagerProtocol,
         privacyStateManager: PrivacyStateManagerProtocol,
         operationQueue: OperationQueue
     ) {
@@ -39,6 +41,7 @@ final class SettingsInteractor {
         self.walletConnect = walletConnect
         self.walletNotificationService = walletNotificationService
         self.pushNotificationsFacade = pushNotificationsFacade
+        self.analyticsConsent = analyticsConsent
         self.privacyStateManager = privacyStateManager
         self.operationQueue = operationQueue
         self.currencyManager = currencyManager
@@ -89,6 +92,12 @@ private extension SettingsInteractor {
     func providePrivacyStateSettings() {
         presenter?.didReceive(hideBalancesOnLaunch: privacyStateManager.enablePrivacyModeOnLaunch)
     }
+
+    /// `nil` when the subsystem is unavailable, so the row disappears rather than showing a
+    /// switch that could never take effect.
+    func provideAnalyticsSettings() {
+        presenter?.didReceive(analyticsEnabled: analyticsConsent.isAvailable ? analyticsConsent.isEnabled : nil)
+    }
 }
 
 // MARK: - SettingsInteractorInputProtocol
@@ -103,6 +112,13 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
         applyCurrency()
         providePushNotificationsStatus()
         providePrivacyStateSettings()
+        provideAnalyticsSettings()
+
+        // The on-launch consent sheet and the opt-out wipe both flip the manager from
+        // outside Settings, so the row has to re-provide rather than only echo its own tap.
+        analyticsConsent.addObserver(with: self, queue: .main) { [weak self] _, _ in
+            self?.provideAnalyticsSettings()
+        }
 
         walletNotificationService.hasUpdatesObservable.addObserver(
             with: self,
@@ -138,6 +154,14 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
 
     func toggleHideBalances() {
         privacyStateManager.enablePrivacyModeOnLaunch.toggle()
+    }
+
+    /// Deliberately does not touch `markPromptSeen()`: the switch is the way back after
+    /// declining, and consuming the one-shot prompt state here would change launch behaviour.
+    func toggleAnalytics() {
+        analyticsConsent.setEnabled(!analyticsConsent.isEnabled)
+
+        provideAnalyticsSettings()
     }
 }
 
