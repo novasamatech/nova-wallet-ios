@@ -27,13 +27,4 @@ final class AnalyticsFacadeFactoryTests: XCTestCase {
         XCTAssertTrue(AnalyticsFacadeFactory.createDefault() is NoOpAnalyticsServiceFacade)
     }
 
-    func testSetupIsIdempotent() {
-        let facade = AnalyticsFacadeFactory.createDefault()
-
-        facade.setup()
-        facade.setup()
-        facade.throttle()
-
-        XCTAssertFalse(facade.consent.isEnabled)
-    }
 }

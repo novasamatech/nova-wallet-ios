@@ -269,4 +269,32 @@ final class BackendAttestationProviderTests: XCTestCase {
                 .hasSuffix(AttestationClientData.bodyDigestHex(body))
         )
     }
+
+    func testOptOutMidChainNeverRegistersAFreshKey() throws {
+        let fixture = makeFixture()
+
+        // Opting out before the chain reaches its attest-and-register step must abort it.
+        // `forgetClient()` also clears the cached key, which would otherwise *force* a fresh
+        // attestation here — making opt-out worse than doing nothing.
+        fixture.provider.forgetClient()
+
+        XCTAssertThrowsError(try headers(fixture))
+
+        XCTAssertNil(try storedRow(fixture))
+        XCTAssertNil(fixture.settings.gatewayAttestationClientId)
+    }
+
+    func testALateRowWriteCannotResurrectTheDeletedKey() throws {
+        let fixture = makeFixture()
+        _ = try headers(fixture)
+
+        XCTAssertNotNil(try storedRow(fixture))
+
+        fixture.provider.forgetClient()
+
+        // A save scheduled by the surviving chain must find the identity latched and write
+        // nothing, rather than restoring the row the wipe removed.
+        XCTAssertThrowsError(try headers(fixture))
+        XCTAssertNil(try storedRow(fixture))
+    }
 }

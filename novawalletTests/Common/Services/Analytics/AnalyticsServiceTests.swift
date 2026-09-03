@@ -81,9 +81,14 @@ final class AnalyticsServiceTests: XCTestCase {
         verify(fixture.uploader, atLeastOnce()).flushWrapper(maxBatches: equal(to: 1))
     }
 
-    func testOptOutCancelsAnInFlightFlush() throws {
-        // A POST already in the air must be abandoned so its batch is never dropped
-        // from a queue that is about to be wiped.
+    func testOptOutCancelsTheFlushCallStoreAndWipesTheQueue() throws {
+        // Scope: the call-store plumbing only. The stub returns a single flat operation, so
+        // this cannot show that a real in-flight upload is abandoned — against the production
+        // uploader the inner wrappers keep running, because
+        // `OperationCombiningService.cancel()` is a no-op (it never sets `.running` and never
+        // retains its wrappers). Spec 6.5 step 2 is therefore NOT covered by this test. What
+        // makes opt-out safe today is the identity latch, covered in AnalyticsIdentityTests
+        // and BackendAttestationProviderTests.
         let fixture = AnalyticsTestFixture.makeConsented()
         let started = XCTestExpectation(description: "flush started")
         let neverFinishes = CompoundOperationWrapper(
