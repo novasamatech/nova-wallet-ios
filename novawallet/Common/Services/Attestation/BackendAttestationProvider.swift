@@ -278,6 +278,14 @@ private extension BackendAttestationProvider {
                 return .createWithResult(row.keyId)
             }
 
+            // The client id was read before this chain started. Opting out since then latched
+            // the identity shut, and `invalidate()` cleared the cached key — which would
+            // otherwise *force* a fresh attestation here, registering a new key with the
+            // gateway for an install that just opted out.
+            guard identity.clientId() != nil else {
+                throw BackendAttestationError.unsupported
+            }
+
             return createAttestAndRegisterWrapper(clientId: clientId, existingKeyId: row?.keyId)
         }
 
@@ -368,8 +376,14 @@ private extension BackendAttestationProvider {
     ) -> BaseOperation<Void> {
         let identifier = rowIdentifier
 
-        return repository.saveOperation({
+        return repository.saveOperation({ [weak self] in
             let keyId = try keyIdClosure()
+
+            // Never write the row back for an install that opted out while this chain ran:
+            // `forgetClient()` deletes it, and a late save would resurrect it.
+            guard self?.identity.clientId() != nil else {
+                return []
+            }
 
             return [
                 AppAttestKeySettings(

@@ -13,8 +13,20 @@ final class AnalyticsIdentity {
     private var isCreationBlocked: Bool = false
 
     /// One per instance, therefore one per process. An iOS process can span days;
-    /// the id is still per process (parity with Android).
-    let sessionId: String = UUID().uuidString.lowercased()
+    /// the id is still per process (parity with Android). Rotated on re-consent, because a
+    /// session id shared across an opt-out would let the gateway join the old install id to
+    /// the new one and undo the point of minting a new one.
+    private var currentSessionId: String = UUID().uuidString.lowercased()
+
+    var sessionId: String {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return currentSessionId
+    }
 
     init(settingsManager: SettingsManagerProtocol) {
         self.settingsManager = settingsManager
@@ -69,5 +81,6 @@ extension AnalyticsIdentity: AnalyticsIdentityProtocol {
         }
 
         isCreationBlocked = false
+        currentSessionId = UUID().uuidString.lowercased()
     }
 }

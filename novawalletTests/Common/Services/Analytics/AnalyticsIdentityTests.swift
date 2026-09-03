@@ -67,4 +67,16 @@ final class AnalyticsIdentityTests: XCTestCase {
         XCTAssertNotNil(recreated)
         XCTAssertNotEqual(recreated, original)
     }
+
+    func testReConsentRotatesTheSessionIdSoTheTwoInstallsCannotBeJoined() {
+        let identity = AnalyticsIdentity(settingsManager: InMemorySettingsManager())
+
+        let beforeSession = identity.sessionId
+        identity.forgetInstallId()
+        identity.allowCreation()
+
+        // A shared session id would let the gateway link the pre-opt-out install id to the
+        // post-re-consent one, undoing the point of minting a new one.
+        XCTAssertNotEqual(identity.sessionId, beforeSession)
+    }
 }
