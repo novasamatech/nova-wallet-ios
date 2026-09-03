@@ -70,11 +70,3 @@ protocol AnalyticsServiceFacadeProtocol: AnalyticsTrackingProtocol, ApplicationS
 
     func flush(reason: AnalyticsFlushReason)
 }
-
-/// Declared here until the attestation seams land; it then moves to
-/// `Common/Services/Attestation/BackendAttestationProtocols.swift` unchanged.
-enum BackendAttestationMode {
-    case appAttest
-    case none
-    case unavailable
-}
