@@ -35,7 +35,7 @@ enum AnalyticsConsentSheetFactory {
         let viewModel = MessageSheetViewModel<UIImage, MessageSheetNoContentViewModel>(
             title: title,
             message: message,
-            graphics: R.image.iconNotificationRing(),
+            graphics: R.image.imageAnalyticsConsent(),
             content: nil,
             mainAction: enableAction,
             secondaryAction: declineAction

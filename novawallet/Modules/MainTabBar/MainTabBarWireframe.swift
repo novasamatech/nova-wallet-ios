@@ -566,7 +566,8 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
     func presentAnalyticsConsent(
         from view: MainTabBarViewProtocol?,
         onEnable: @escaping () -> Void,
-        onDecline: @escaping () -> Void
+        onDecline: @escaping () -> Void,
+        onUnavailable: @escaping () -> Void
     ) {
         let bottomSheet = AnalyticsConsentSheetFactory.createConsentSheet(
             onEnable: onEnable,
@@ -574,8 +575,9 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
         )
 
         guard let controllerToPresent = bottomSheet?.controller else {
-            // Without this the launch queue would stall on a sheet that never appeared.
-            onDecline()
+            // The launch queue must still advance, but the prompt has not been seen, so it
+            // stays owed rather than being marked declined on the user's behalf.
+            onUnavailable()
             return
         }
 

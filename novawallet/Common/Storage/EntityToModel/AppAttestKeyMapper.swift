@@ -13,9 +13,16 @@ final class AppAttestKeyMapper {
 
 extension AppAttestKeyMapper: CoreDataMapperProtocol {
     func transform(entity: CoreDataEntity) throws -> DataProviderModel {
-        DataProviderModel(
-            identifier: entity.identifier!,
-            keyId: entity.keyId!,
+        guard
+            let identifier = entity.identifier,
+            let keyId = entity.keyId
+        else {
+            throw CommonError.dataCorruption
+        }
+
+        return DataProviderModel(
+            identifier: identifier,
+            keyId: keyId,
             isAttested: entity.isAttested
         )
     }
