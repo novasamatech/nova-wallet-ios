@@ -40,7 +40,10 @@
         }
 
         func recordWrapper() -> CompoundOperationWrapper<AnalyticsAttestationFixture> {
-            let clientId = identity.clientId()
+            guard let clientId = identity.clientId() else {
+                return .createWithError(BackendAttestationError.unsupported)
+            }
+
             let body = Self.sampleBody
 
             let attestChallengeWrapper = remoteFactory.createChallengeWrapper()

@@ -190,7 +190,11 @@ private extension BackendAttestationProvider {
             break
         }
 
-        let clientId = identity.clientId()
+        // Same reason as the uploader's install id: never register a fresh attested client
+        // for an install that has opted out while this chain was already executing.
+        guard let clientId = identity.clientId() else {
+            return .createWithError(BackendAttestationError.unsupported)
+        }
 
         return createSignedChainWrapper(clientId: clientId, bodyClosure: bodyClosure)
     }
@@ -420,5 +424,9 @@ extension BackendAttestationProvider: BackendAttestationProviderProtocol {
         invalidate()
         identity.forgetClientId()
         deleteRow()
+    }
+
+    func allowClient() {
+        identity.allowCreation()
     }
 }

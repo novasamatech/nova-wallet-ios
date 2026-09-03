@@ -10,11 +10,11 @@ final class AnalyticsIdentityTests: XCTestCase {
         XCTAssertNil(settings.string(for: SettingsKey.analyticsInstallId.rawValue))
     }
 
-    func testInstallIdIsStableOnceCreated() {
+    func testInstallIdIsStableOnceCreated() throws {
         let settings = InMemorySettingsManager()
         let identity = AnalyticsIdentity(settingsManager: settings)
 
-        let first = identity.installId()
+        let first = try XCTUnwrap(identity.installId())
         XCTAssertEqual(identity.installId(), first)
         XCTAssertEqual(settings.string(for: SettingsKey.analyticsInstallId.rawValue), first)
         XCTAssertEqual(first, first.lowercased())
@@ -33,21 +33,38 @@ final class AnalyticsIdentityTests: XCTestCase {
         XCTAssertNil(settings.string(for: SettingsKey.analyticsInstallId.rawValue))
     }
 
-    func testNewInstallIdAfterForgetIsDifferent() {
-        let settings = InMemorySettingsManager()
-        let identity = AnalyticsIdentity(settingsManager: settings)
-
-        let first = identity.installId()
-        identity.forgetInstallId()
-
-        XCTAssertNotEqual(identity.installId(), first)
-    }
-
     func testSessionIdIsPerInstanceAndStable() {
         let settings = InMemorySettingsManager()
         let identity = AnalyticsIdentity(settingsManager: settings)
 
         XCTAssertEqual(identity.sessionId, identity.sessionId)
         XCTAssertNotEqual(AnalyticsIdentity(settingsManager: settings).sessionId, identity.sessionId)
+    }
+
+    func testForgetBlocksRecreationUntilConsentIsGrantedAgain() {
+        let settings = InMemorySettingsManager()
+        let identity = AnalyticsIdentity(settingsManager: settings)
+
+        _ = identity.installId()
+        identity.forgetInstallId()
+
+        // An upload chain still executing during opt-out reaches installId() after the
+        // wipe. Minting there would leave an opted-out install holding an identifier.
+        XCTAssertNil(identity.installId())
+        XCTAssertNil(settings.string(for: SettingsKey.analyticsInstallId.rawValue))
+    }
+
+    func testReConsentAllowsAFreshInstallId() {
+        let settings = InMemorySettingsManager()
+        let identity = AnalyticsIdentity(settingsManager: settings)
+
+        let original = identity.installId()
+        identity.forgetInstallId()
+        identity.allowCreation()
+
+        let recreated = identity.installId()
+
+        XCTAssertNotNil(recreated)
+        XCTAssertNotEqual(recreated, original)
     }
 }

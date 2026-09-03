@@ -20,12 +20,20 @@ final class AnalyticsFacadeFactoryTests: XCTestCase {
         XCTAssertFalse(facade.consent.isAvailable)
     }
 
+    func testUnitTestProcessNeverBuildsTheRealFacade() {
+        // With F_ANALYTICS on for Debug, an unguarded factory would hand tests the real
+        // singleton, which opens the developer's actual CoreData store, records a session
+        // and POSTs to the live gateway on every `xcodebuild test`.
+        XCTAssertTrue(AnalyticsFacadeFactory.createDefault() is NoOpAnalyticsServiceFacade)
+    }
+
     func testSetupIsIdempotent() {
         let facade = AnalyticsFacadeFactory.createDefault()
 
         facade.setup()
         facade.setup()
         facade.throttle()
-        // Reaching here without a crash or a duplicate delegate registration is the assertion.
+
+        XCTAssertFalse(facade.consent.isEnabled)
     }
 }

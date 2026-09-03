@@ -212,6 +212,14 @@ final class BackendAttestationProviderTests: XCTestCase {
 
         XCTAssertNil(try storedRow(fixture))
         XCTAssertNil(fixture.settings.gatewayAttestationClientId)
+
+        // Opting out latches minting shut, so an upload chain still executing cannot
+        // register a fresh attested client behind the user's back.
+        XCTAssertThrowsError(try headers(fixture))
+        XCTAssertNil(fixture.settings.gatewayAttestationClientId)
+
+        fixture.provider.allowClient()
+
         _ = try headers(fixture)
         XCTAssertNotEqual(fixture.settings.gatewayAttestationClientId, firstClientId)
     }
