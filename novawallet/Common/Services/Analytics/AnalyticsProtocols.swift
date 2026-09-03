@@ -53,6 +53,21 @@ protocol AnalyticsUploading: AnyObject {
     func flushWrapper(maxBatches: Int) -> CompoundOperationWrapper<Void>
 }
 
+/// Spec §6.3. A raw result factory produces these, because `successResponseBlock:`
+/// collapses 403 into `unexpectedStatusCode` and `processingBlock:` fails an empty 2xx.
+enum AnalyticsTransportError: Error, Equatable {
+    case rejected(statusCode: Int)
+    case clientError(statusCode: Int)
+    case serverError(statusCode: Int)
+}
+
+protocol AnalyticsUploadOperationFactoryProtocol {
+    func createUploadOperation(
+        bodyClosure: @escaping () throws -> Data,
+        headersClosure: @escaping () throws -> [AttestationHeaderKey: String]?
+    ) -> BaseOperation<Void>
+}
+
 protocol BackgroundTaskRunning {
     /// Calls `work` with a completion the caller must invoke; the runner ends the
     /// system task when it fires or when the task expires.
