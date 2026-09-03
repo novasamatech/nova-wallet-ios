@@ -1669,6 +1669,7 @@
 		FEEDE0000000000000000102 /* BackendAttestationIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDE0000000000000000002 /* BackendAttestationIdentity.swift */; };
 		FEEDE0000000000000000103 /* BackendAttestationModeResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDE0000000000000000003 /* BackendAttestationModeResolver.swift */; };
 		FEEDE0000000000000000104 /* BackendAttestationRemoteFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDE0000000000000000004 /* BackendAttestationRemoteFactory.swift */; };
+		FEEDE0000000000000000107 /* BackendAttestationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDE0000000000000000007 /* BackendAttestationProvider.swift */; };
 		2D06CC362E3BBC280093CA84 /* AppAttestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC352E3BBC280093CA84 /* AppAttestError.swift */; };
 		2D06CC432E3BDB5B0093CA84 /* Base64Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC422E3BDB5B0093CA84 /* Base64Codable.swift */; };
 		2D06CC442E3BDB5B0093CA84 /* Base64Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC422E3BDB5B0093CA84 /* Base64Codable.swift */; };
@@ -6634,6 +6635,7 @@
 		FEEDC0000000000000000005 /* AttestationClientDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDC0000000000000000004 /* AttestationClientDataTests.swift */; };
 		FEEDE0000000000000000105 /* BackendAttestationIdentityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDE0000000000000000005 /* BackendAttestationIdentityTests.swift */; };
 		FEEDE0000000000000000106 /* BackendAttestationModeResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDE0000000000000000006 /* BackendAttestationModeResolverTests.swift */; };
+		FEEDE0000000000000000108 /* BackendAttestationProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDE0000000000000000008 /* BackendAttestationProviderTests.swift */; };
 		8A1C0E732F0400000000B103 /* FullDateCodableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1C0E722F0400000000B103 /* FullDateCodableTests.swift */; };
 		5A17C2042F0100000000E001 /* LegalConsentTextFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C2032F0100000000E001 /* LegalConsentTextFactoryTests.swift */; };
 		000000007CF9135B4D967A7E /* AssetExchangeTradeLimitVerdict.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000007FF0D316D4074BC0 /* AssetExchangeTradeLimitVerdict.swift */; };
@@ -8395,6 +8397,7 @@
 		FEEDE0000000000000000002 /* BackendAttestationIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendAttestationIdentity.swift; sourceTree = "<group>"; };
 		FEEDE0000000000000000003 /* BackendAttestationModeResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendAttestationModeResolver.swift; sourceTree = "<group>"; };
 		FEEDE0000000000000000004 /* BackendAttestationRemoteFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendAttestationRemoteFactory.swift; sourceTree = "<group>"; };
+		FEEDE0000000000000000007 /* BackendAttestationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendAttestationProvider.swift; sourceTree = "<group>"; };
 		2D06CC352E3BBC280093CA84 /* AppAttestError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestError.swift; sourceTree = "<group>"; };
 		2D06CC422E3BDB5B0093CA84 /* Base64Codable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Base64Codable.swift; sourceTree = "<group>"; };
 		8A1C0E612F0300000000B102 /* FullDateCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullDateCodable.swift; sourceTree = "<group>"; };
@@ -13063,6 +13066,7 @@
 		FEEDC0000000000000000004 /* AttestationClientDataTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AttestationClientDataTests.swift; sourceTree = "<group>"; };
 		FEEDE0000000000000000005 /* BackendAttestationIdentityTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackendAttestationIdentityTests.swift; sourceTree = "<group>"; };
 		FEEDE0000000000000000006 /* BackendAttestationModeResolverTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackendAttestationModeResolverTests.swift; sourceTree = "<group>"; };
+		FEEDE0000000000000000008 /* BackendAttestationProviderTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackendAttestationProviderTests.swift; sourceTree = "<group>"; };
 		8A1C0E722F0400000000B103 /* FullDateCodableTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FullDateCodableTests.swift; sourceTree = "<group>"; };
 		5A17C2032F0100000000E001 /* LegalConsentTextFactoryTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentTextFactoryTests.swift; sourceTree = "<group>"; };
 		000000007FF0D316D4074BC0 /* AssetExchangeTradeLimitVerdict.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeTradeLimitVerdict.swift; sourceTree = "<group>"; };
@@ -17004,6 +17008,7 @@
 				FEEDE0000000000000000002 /* BackendAttestationIdentity.swift */,
 				FEEDE0000000000000000003 /* BackendAttestationModeResolver.swift */,
 				FEEDE0000000000000000004 /* BackendAttestationRemoteFactory.swift */,
+				FEEDE0000000000000000007 /* BackendAttestationProvider.swift */,
 			);
 			path = Attestation;
 			sourceTree = "<group>";
@@ -22558,6 +22563,7 @@
 				FEEDC0000000000000000004 /* AttestationClientDataTests.swift */,
 				FEEDE0000000000000000005 /* BackendAttestationIdentityTests.swift */,
 				FEEDE0000000000000000006 /* BackendAttestationModeResolverTests.swift */,
+				FEEDE0000000000000000008 /* BackendAttestationProviderTests.swift */,
 			);
 			path = Attestation;
 			sourceTree = "<group>";
@@ -36057,6 +36063,7 @@
 				FEEDE0000000000000000102 /* BackendAttestationIdentity.swift in Sources */,
 				FEEDE0000000000000000103 /* BackendAttestationModeResolver.swift in Sources */,
 				FEEDE0000000000000000104 /* BackendAttestationRemoteFactory.swift in Sources */,
+				FEEDE0000000000000000107 /* BackendAttestationProvider.swift in Sources */,
 				C102544345E604976BF7AFFC /* LedgerNetworkSelectionWireframe.swift in Sources */,
 				7796C6FD2A174E6300D56094 /* StakingRewardFiltersPeriod+Title.swift in Sources */,
 				D71B2C6056D803C196DF4CDA /* LedgerNetworkSelectionPresenter.swift in Sources */,
@@ -37463,6 +37470,7 @@
 				FEEDC0000000000000000005 /* AttestationClientDataTests.swift in Sources */,
 				FEEDE0000000000000000105 /* BackendAttestationIdentityTests.swift in Sources */,
 				FEEDE0000000000000000106 /* BackendAttestationModeResolverTests.swift in Sources */,
+				FEEDE0000000000000000108 /* BackendAttestationProviderTests.swift in Sources */,
 				8A1C0E732F0400000000B103 /* FullDateCodableTests.swift in Sources */,
 				5A17C2042F0100000000E001 /* LegalConsentTextFactoryTests.swift in Sources */,
 				AF33F165CCD72ED11E11C28D /* SubstrateTransferCommandFactoryTests.swift in Sources */,
