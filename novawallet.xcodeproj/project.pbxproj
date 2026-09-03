@@ -6670,11 +6670,14 @@
 		FEEDD0000000000000000103 /* AnalyticsIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000003 /* AnalyticsIdentity.swift */; };
 		FEEDD0000000000000000104 /* AnalyticsAvailabilityProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000004 /* AnalyticsAvailabilityProvider.swift */; };
 		FEEDD0000000000000000107 /* AnalyticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000007 /* AnalyticsService.swift */; };
+		FEEDD000000000000000010B /* AnalyticsSessionTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD000000000000000000B /* AnalyticsSessionTracker.swift */; };
+		FEEDD000000000000000010C /* BackgroundTaskRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD000000000000000000C /* BackgroundTaskRunner.swift */; };
 		FEEDD0000000000000000105 /* AnalyticsConsentManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000005 /* AnalyticsConsentManagerTests.swift */; };
 		FEEDD0000000000000000106 /* AnalyticsIdentityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000006 /* AnalyticsIdentityTests.swift */; };
 		FEEDD0000000000000000108 /* AnalyticsConsentGateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000008 /* AnalyticsConsentGateTests.swift */; };
 		FEEDD0000000000000000109 /* AnalyticsServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000009 /* AnalyticsServiceTests.swift */; };
 		FEEDD000000000000000010A /* AnalyticsTestFixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD000000000000000000A /* AnalyticsTestFixture.swift */; };
+		FEEDD000000000000000010D /* AnalyticsSessionTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD000000000000000000D /* AnalyticsSessionTrackerTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -13086,11 +13089,14 @@
 		FEEDD0000000000000000003 /* AnalyticsIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsIdentity.swift; sourceTree = "<group>"; };
 		FEEDD0000000000000000004 /* AnalyticsAvailabilityProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsAvailabilityProvider.swift; sourceTree = "<group>"; };
 		FEEDD0000000000000000007 /* AnalyticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsService.swift; sourceTree = "<group>"; };
+		FEEDD000000000000000000B /* AnalyticsSessionTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsSessionTracker.swift; sourceTree = "<group>"; };
+		FEEDD000000000000000000C /* BackgroundTaskRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTaskRunner.swift; sourceTree = "<group>"; };
 		FEEDD0000000000000000005 /* AnalyticsConsentManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsConsentManagerTests.swift; sourceTree = "<group>"; };
 		FEEDD0000000000000000006 /* AnalyticsIdentityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsIdentityTests.swift; sourceTree = "<group>"; };
 		FEEDD0000000000000000008 /* AnalyticsConsentGateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsConsentGateTests.swift; sourceTree = "<group>"; };
 		FEEDD0000000000000000009 /* AnalyticsServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsServiceTests.swift; sourceTree = "<group>"; };
 		FEEDD000000000000000000A /* AnalyticsTestFixture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsTestFixture.swift; sourceTree = "<group>"; };
+		FEEDD000000000000000000D /* AnalyticsSessionTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsSessionTrackerTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -30594,9 +30600,18 @@
 			path = LegalConsent;
 			sourceTree = "<group>";
 		};
+		FEEDD0000000000000000201 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				FEEDD000000000000000000C /* BackgroundTaskRunner.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
 		FEEDAA0000000000000000A1 /* Analytics */ = {
 			isa = PBXGroup;
 			children = (
+				FEEDD0000000000000000201 /* Helpers */,
 				FEEDB0000000000000000101 /* Model */,
 				FEEDB0000000000000000103 /* Network */,
 				FEEDA0000000000000000010 /* Storage */,
@@ -30605,6 +30620,7 @@
 				FEEDD0000000000000000003 /* AnalyticsIdentity.swift */,
 				FEEDD0000000000000000004 /* AnalyticsAvailabilityProvider.swift */,
 				FEEDD0000000000000000007 /* AnalyticsService.swift */,
+				FEEDD000000000000000000B /* AnalyticsSessionTracker.swift */,
 			);
 			path = Analytics;
 			sourceTree = "<group>";
@@ -30624,6 +30640,7 @@
 				FEEDD000000000000000000A /* AnalyticsTestFixture.swift */,
 				FEEDD0000000000000000008 /* AnalyticsConsentGateTests.swift */,
 				FEEDD0000000000000000009 /* AnalyticsServiceTests.swift */,
+				FEEDD000000000000000000D /* AnalyticsSessionTrackerTests.swift */,
 			);
 			path = Analytics;
 			sourceTree = "<group>";
@@ -37392,6 +37409,8 @@
 				FEEDD0000000000000000103 /* AnalyticsIdentity.swift in Sources */,
 				FEEDD0000000000000000104 /* AnalyticsAvailabilityProvider.swift in Sources */,
 				FEEDD0000000000000000107 /* AnalyticsService.swift in Sources */,
+				FEEDD000000000000000010B /* AnalyticsSessionTracker.swift in Sources */,
+				FEEDD000000000000000010C /* BackgroundTaskRunner.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -37610,6 +37629,7 @@
 				FEEDD000000000000000010A /* AnalyticsTestFixture.swift in Sources */,
 				FEEDD0000000000000000108 /* AnalyticsConsentGateTests.swift in Sources */,
 				FEEDD0000000000000000109 /* AnalyticsServiceTests.swift in Sources */,
+				FEEDD000000000000000010D /* AnalyticsSessionTrackerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

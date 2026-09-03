@@ -53,6 +53,18 @@ protocol AnalyticsUploading: AnyObject {
     func flushWrapper(maxBatches: Int) -> CompoundOperationWrapper<Void>
 }
 
+protocol BackgroundTaskRunning {
+    /// Calls `work` with a completion the caller must invoke; the runner ends the
+    /// system task when it fires or when the task expires.
+    func run(_ work: @escaping (@escaping () -> Void) -> Void)
+}
+
+protocol AnalyticsSessionTracking: AnyObject {
+    func setup()
+    func throttle()
+    func startSession()
+}
+
 /// Declared here until the attestation seams land; it then moves to
 /// `Common/Services/Attestation/BackendAttestationProtocols.swift` unchanged.
 enum BackendAttestationMode {
