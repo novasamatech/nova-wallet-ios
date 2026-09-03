@@ -130,6 +130,9 @@ extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
             },
             onDecline: { [weak self] in
                 self?.interactor.setAnalyticsConsent(enabled: false)
+            },
+            onUnavailable: { [weak self] in
+                self?.interactor.requestNextOnLaunchAction()
             }
         )
     }
