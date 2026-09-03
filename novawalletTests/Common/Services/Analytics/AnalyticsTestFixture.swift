@@ -13,6 +13,9 @@ struct AnalyticsTestFixture {
     let queue: CoreDataAnalyticsEventQueue
     let settings: InMemorySettingsManager
     let uploader: MockAnalyticsUploading
+    /// Present only when a `deviceCheck` double is supplied: a real provider over a real
+    /// `AppAttestService`, so a flush genuinely reaches DeviceCheck.
+    let attestation: BackendAttestationProvider?
     let operationQueue: OperationQueue
     let uploadOperationQueue: OperationQueue
 }
@@ -20,7 +23,8 @@ struct AnalyticsTestFixture {
 extension AnalyticsTestFixture {
     static func make(
         isAvailable: Bool = true,
-        now: @escaping () -> Date = { Date() }
+        now: @escaping () -> Date = { Date() },
+        deviceCheck: MockDeviceCheckAttesting? = nil
     ) -> AnalyticsTestFixture {
         let facade = UserDataStorageTestFacade()
         let repository: CoreDataRepository<AnalyticsPendingEvent, CDAnalyticsEvent> =
@@ -47,10 +51,28 @@ extension AnalyticsTestFixture {
             availabilityProvider: availability
         )
 
+        let attestation = deviceCheck.map {
+            makeAttestation(deviceCheck: $0, facade: facade, settings: settings)
+        }
+
         let uploader = MockAnalyticsUploading()
         stub(uploader) { stub in
             when(stub.flushWrapper(maxBatches: any())).then { _ in
-                CompoundOperationWrapper<Void>.createWithResult(())
+                guard let attestation else {
+                    return CompoundOperationWrapper<Void>.createWithResult(())
+                }
+
+                // A real flush signs the bytes it is about to send, so DeviceCheck is
+                // reached exactly when a flush runs and never otherwise.
+                let wrapper = attestation.createSignedHeadersWrapper { Data("{}".utf8) }
+
+                let mapOperation = ClosureOperation<Void> {
+                    _ = try wrapper.targetOperation.extractNoCancellableResultData()
+                }
+
+                mapOperation.addDependency(wrapper.targetOperation)
+
+                return wrapper.insertingTail(operation: mapOperation)
             }
         }
 
@@ -67,6 +89,7 @@ extension AnalyticsTestFixture {
             queue: eventQueue,
             identity: AnalyticsIdentity(settingsManager: settings),
             uploader: uploader,
+            attestation: attestation,
             operationQueue: operationQueue,
             uploadOperationQueue: uploadOperationQueue,
             timeProvider: now,
@@ -79,8 +102,47 @@ extension AnalyticsTestFixture {
             queue: eventQueue,
             settings: settings,
             uploader: uploader,
+            attestation: attestation,
             operationQueue: operationQueue,
             uploadOperationQueue: uploadOperationQueue
+        )
+    }
+
+    /// The remote gateway is the only piece that cannot run: DeviceCheck comes in as the
+    /// supplied double and everything between it and the queue is the production object.
+    private static func makeAttestation(
+        deviceCheck: MockDeviceCheckAttesting,
+        facade: UserDataStorageTestFacade,
+        settings: InMemorySettingsManager
+    ) -> BackendAttestationProvider {
+        let repository: CoreDataRepository<AppAttestKeySettings, CDAppAttestKey> =
+            facade.createRepository(
+                filter: nil,
+                sortDescriptors: [],
+                mapper: AnyCoreDataMapper(AppAttestKeyMapper())
+            )
+
+        let remote = MockBackendAttestationRemoteFactoryProtocol()
+        stub(remote) { stub in
+            when(stub.createChallengeWrapper()).then { _ in
+                CompoundOperationWrapper.createWithResult(UUID().uuidString)
+            }
+
+            when(stub.createRegisterOperation(any())).then { requestClosure in
+                ClosureOperation<Void> { _ = try requestClosure() }
+            }
+        }
+
+        return BackendAttestationProvider(
+            appAttest: AppAttestService(service: deviceCheck),
+            remoteFactory: remote,
+            identity: BackendAttestationIdentity(settingsManager: settings),
+            repository: AnyDataProviderRepository(repository),
+            gatewayURL: URL(string: "https://gateway.example/")!,
+            mode: .appAttest,
+            bundle: Bundle.main,
+            operationQueue: OperationQueue(),
+            logger: Logger.shared
         )
     }
 
@@ -95,6 +157,12 @@ extension AnalyticsTestFixture {
     /// is the whole synchronisation the assertions need. Never a sleep.
     func drain() {
         operationQueue.waitUntilAllOperationsAreFinished()
+    }
+
+    /// A flush runs on the upload queue; its inner attestation operations finish before
+    /// the outer wrapper does, so this one wait covers the whole signing chain.
+    func drainUploads() {
+        uploadOperationQueue.waitUntilAllOperationsAreFinished()
     }
 
     func queueCount() throws -> Int {

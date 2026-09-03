@@ -24,6 +24,7 @@ final class AnalyticsService {
         queue: AnalyticsEventQueueProtocol,
         identity: AnalyticsIdentityProtocol,
         uploader: AnalyticsUploading,
+        attestation: BackendAttestationProviderProtocol? = nil,
         operationQueue: OperationQueue,
         uploadOperationQueue: OperationQueue,
         timeProvider: @escaping () -> Date = { Date() },
@@ -46,7 +47,7 @@ final class AnalyticsService {
                 return
             }
 
-            self?.handleConsentDisabled()
+            self?.handleConsentDisabled(attestation: attestation)
         }
     }
 
@@ -220,7 +221,7 @@ extension AnalyticsService {
     }
 
     /// Spec §6.5, in order. Runs on the consent manager's true→false edge.
-    func handleConsentDisabled() {
+    func handleConsentDisabled(attestation: BackendAttestationProviderProtocol?) {
         mutex.lock()
 
         defer {
@@ -238,5 +239,9 @@ extension AnalyticsService {
 
         lastFlushAt = .distantPast
         currentFeature = nil
+
+        // Last: the gateway's key row and client id go too, so a re-consented user is a
+        // new client rather than a re-linkable one.
+        attestation?.forgetClient()
     }
 }
