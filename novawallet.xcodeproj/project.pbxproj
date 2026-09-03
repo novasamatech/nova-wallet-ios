@@ -6665,6 +6665,12 @@
 		FEEDA0000000000000000025 /* AnalyticsEventQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDA0000000000000000024 /* AnalyticsEventQueueTests.swift */; };
 		FEEDA0000000000000000021 /* AnalyticsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDA0000000000000000020 /* AnalyticsProtocols.swift */; };
 		FEEDA0000000000000000023 /* CoreDataAnalyticsEventQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDA0000000000000000022 /* CoreDataAnalyticsEventQueue.swift */; };
+		FEEDD0000000000000000101 /* SettingsExtension+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000001 /* SettingsExtension+Analytics.swift */; };
+		FEEDD0000000000000000102 /* AnalyticsConsentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000002 /* AnalyticsConsentManager.swift */; };
+		FEEDD0000000000000000103 /* AnalyticsIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000003 /* AnalyticsIdentity.swift */; };
+		FEEDD0000000000000000104 /* AnalyticsAvailabilityProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000004 /* AnalyticsAvailabilityProvider.swift */; };
+		FEEDD0000000000000000105 /* AnalyticsConsentManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000005 /* AnalyticsConsentManagerTests.swift */; };
+		FEEDD0000000000000000106 /* AnalyticsIdentityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000006 /* AnalyticsIdentityTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -13071,6 +13077,12 @@
 		FEEDA0000000000000000024 /* AnalyticsEventQueueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsEventQueueTests.swift; sourceTree = "<group>"; };
 		FEEDA0000000000000000020 /* AnalyticsProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsProtocols.swift; sourceTree = "<group>"; };
 		FEEDA0000000000000000022 /* CoreDataAnalyticsEventQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataAnalyticsEventQueue.swift; sourceTree = "<group>"; };
+		FEEDD0000000000000000001 /* SettingsExtension+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SettingsExtension+Analytics.swift"; sourceTree = "<group>"; };
+		FEEDD0000000000000000002 /* AnalyticsConsentManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsConsentManager.swift; sourceTree = "<group>"; };
+		FEEDD0000000000000000003 /* AnalyticsIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsIdentity.swift; sourceTree = "<group>"; };
+		FEEDD0000000000000000004 /* AnalyticsAvailabilityProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsAvailabilityProvider.swift; sourceTree = "<group>"; };
+		FEEDD0000000000000000005 /* AnalyticsConsentManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsConsentManagerTests.swift; sourceTree = "<group>"; };
+		FEEDD0000000000000000006 /* AnalyticsIdentityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsIdentityTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -24346,6 +24358,7 @@
 				849013D824A927E2008F705E /* KeystoreExtensions.swift */,
 				849013D924A927E2008F705E /* LocalizationManager+Shared.swift */,
 				849013DA24A927E2008F705E /* SettingsExtension.swift */,
+				FEEDD0000000000000000001 /* SettingsExtension+Analytics.swift */,
 				84CE6A302566800000559427 /* ByteLengthProcessor+Username.swift */,
 				84F6B64F2619E1ED0038F10D /* Int+Operations.swift */,
 			);
@@ -30580,6 +30593,9 @@
 				FEEDB0000000000000000103 /* Network */,
 				FEEDA0000000000000000010 /* Storage */,
 				FEEDA0000000000000000020 /* AnalyticsProtocols.swift */,
+				FEEDD0000000000000000002 /* AnalyticsConsentManager.swift */,
+				FEEDD0000000000000000003 /* AnalyticsIdentity.swift */,
+				FEEDD0000000000000000004 /* AnalyticsAvailabilityProvider.swift */,
 			);
 			path = Analytics;
 			sourceTree = "<group>";
@@ -30594,6 +30610,8 @@
 				FEEDB0000000000000000405 /* AnalyticsEnvelopeTests.swift */,
 				FEEDA0000000000000000015 /* AnalyticsPendingEventMapperTests.swift */,
 				FEEDA0000000000000000024 /* AnalyticsEventQueueTests.swift */,
+				FEEDD0000000000000000005 /* AnalyticsConsentManagerTests.swift */,
+				FEEDD0000000000000000006 /* AnalyticsIdentityTests.swift */,
 			);
 			path = Analytics;
 			sourceTree = "<group>";
@@ -37357,6 +37375,10 @@
 				FEEDA0000000000000000014 /* AnalyticsPendingEventMapper.swift in Sources */,
 				FEEDA0000000000000000021 /* AnalyticsProtocols.swift in Sources */,
 				FEEDA0000000000000000023 /* CoreDataAnalyticsEventQueue.swift in Sources */,
+				FEEDD0000000000000000101 /* SettingsExtension+Analytics.swift in Sources */,
+				FEEDD0000000000000000102 /* AnalyticsConsentManager.swift in Sources */,
+				FEEDD0000000000000000103 /* AnalyticsIdentity.swift in Sources */,
+				FEEDD0000000000000000104 /* AnalyticsAvailabilityProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -37570,6 +37592,8 @@
 				FEEDA0000000000000000002 /* AnalyticsUserModel21MigrationTests.swift in Sources */,
 				FEEDA0000000000000000016 /* AnalyticsPendingEventMapperTests.swift in Sources */,
 				FEEDA0000000000000000025 /* AnalyticsEventQueueTests.swift in Sources */,
+				FEEDD0000000000000000105 /* AnalyticsConsentManagerTests.swift in Sources */,
+				FEEDD0000000000000000106 /* AnalyticsIdentityTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -36,6 +36,10 @@ enum SettingsKey: String {
     case privacyModeSettings
     case legalConsentAcceptedVersions
     case legalConsentPendingSync
+    case analyticsEnabled
+    case analyticsPromptSeen
+    case analyticsInstallId
+    case gatewayAttestationClientId
 }
 
 extension SettingsManagerProtocol {
