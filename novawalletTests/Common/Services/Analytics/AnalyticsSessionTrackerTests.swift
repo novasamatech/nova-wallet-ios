@@ -14,51 +14,67 @@ private final class ImmediateBackgroundTaskRunner: BackgroundTaskRunning {
 }
 
 final class AnalyticsSessionTrackerTests: XCTestCase {
-    final class FlushBox {
-        var value: [AnalyticsFlushReason] = []
+    /// Holds what the tracker asked for and, crucially, the completion it was handed —
+    /// so a test can decide when the flush chain "finishes".
+    private final class TrackingRecorder {
+        var events: [AnalyticsEvent] = []
+        var flushReasons: [AnalyticsFlushReason] = []
+        var pendingCompletions: [() -> Void] = []
+
+        var eventNames: [String] { events.map(\.name.rawValue) }
+
+        func finishPendingFlushes() {
+            let completions = pendingCompletions
+            pendingCompletions = []
+            completions.forEach { $0() }
+        }
     }
 
     private struct Fixture {
         let tracker: AnalyticsSessionTracker
         let analytics: MockAnalyticsTrackingProtocol
         let runner: ImmediateBackgroundTaskRunner
-        let flushBox: FlushBox
-
-        var flushReasons: [AnalyticsFlushReason] { flushBox.value }
+        let recorder: TrackingRecorder
     }
 
     private func makeFixture(now: @escaping () -> Date = { Date() }) -> Fixture {
+        let recorder = TrackingRecorder()
+
         let analytics = MockAnalyticsTrackingProtocol()
         stub(analytics) { stub in
-            when(stub.track(any())).thenDoNothing()
+            when(stub.track(any())).then { event in
+                recorder.events.append(event)
+            }
+
+            when(stub.trackAndFlush(any(), reason: any(), completion: any()))
+                .then { event, reason, completion in
+                    recorder.events.append(event)
+                    recorder.flushReasons.append(reason)
+                    recorder.pendingCompletions.append(completion)
+                }
         }
 
         let runner = ImmediateBackgroundTaskRunner()
-        let box = FlushBox()
 
         let tracker = AnalyticsSessionTracker(
             tracker: analytics,
-            flushHandler: { box.value.append($0) },
             applicationHandler: ApplicationHandler(),
             backgroundTaskRunner: runner,
             timeProvider: now
         )
 
-        return Fixture(tracker: tracker, analytics: analytics, runner: runner, flushBox: box)
+        return Fixture(tracker: tracker, analytics: analytics, runner: runner, recorder: recorder)
     }
 
-    private func trackedNames(_ fixture: Fixture) -> [String] {
-        let captor = ArgumentCaptor<AnalyticsEvent>()
-        verify(fixture.analytics, atLeastOnce()).track(captor.capture())
-
-        return captor.allValues.map(\.name.rawValue)
+    private func enterBackground(_ fixture: Fixture) {
+        fixture.tracker.didReceiveDidEnterBackground(notification: .init(name: .init("test")))
     }
 
     func testSetupStartsASession() {
         let fixture = makeFixture()
         fixture.tracker.startSession()
 
-        XCTAssertEqual(trackedNames(fixture), ["session_started"])
+        XCTAssertEqual(fixture.recorder.eventNames, ["session_started"])
     }
 
     func testForegroundStartsAnotherSession() {
@@ -66,7 +82,7 @@ final class AnalyticsSessionTrackerTests: XCTestCase {
         fixture.tracker.startSession()
         fixture.tracker.didReceiveWillEnterForeground(notification: .init(name: .init("test")))
 
-        XCTAssertEqual(trackedNames(fixture), ["session_started", "session_started"])
+        XCTAssertEqual(fixture.recorder.eventNames, ["session_started", "session_started"])
     }
 
     func testBackgroundEndsTheSessionWithADurationBucketAndFlushes() {
@@ -75,42 +91,67 @@ final class AnalyticsSessionTrackerTests: XCTestCase {
 
         fixture.tracker.startSession()
         now = now.addingTimeInterval(42)
-        fixture.tracker.didReceiveDidEnterBackground(notification: .init(name: .init("test")))
+        enterBackground(fixture)
 
-        XCTAssertEqual(trackedNames(fixture), ["session_started", "session_ended"])
-        XCTAssertEqual(fixture.flushReasons, [.background])
-
-        let captor = ArgumentCaptor<AnalyticsEvent>()
-        verify(fixture.analytics, atLeastOnce()).track(captor.capture())
+        XCTAssertEqual(fixture.recorder.eventNames, ["session_started", "session_ended"])
+        XCTAssertEqual(fixture.recorder.flushReasons, [.background])
         XCTAssertEqual(
-            captor.allValues.last?.properties[.durationBucket],
+            fixture.recorder.events.last?.properties[.durationBucket],
             .enumerated(DurationBucket.from30sTo60s.rawValue)
         )
     }
 
     func testBackgroundWithoutAStartEmitsNothing() {
         let fixture = makeFixture()
-        fixture.tracker.didReceiveDidEnterBackground(notification: .init(name: .init("test")))
+        enterBackground(fixture)
 
-        verify(fixture.analytics, never()).track(any())
-        XCTAssertTrue(fixture.flushReasons.isEmpty)
+        XCTAssertTrue(fixture.recorder.events.isEmpty)
+        XCTAssertTrue(fixture.recorder.flushReasons.isEmpty)
     }
 
-    func testBackgroundWorkIsBracketedByABackgroundTask() {
+    /// The enqueue and the upload are both asynchronous, so ending the system task as soon
+    /// as they have been *started* releases the assertion before the session_ended row has
+    /// been written — iOS then suspends the process and the event is lost.
+    func testTheBackgroundTaskOutlivesTheWorkItBrackets() {
         let fixture = makeFixture()
         fixture.tracker.startSession()
-        fixture.tracker.didReceiveDidEnterBackground(notification: .init(name: .init("test")))
+
+        enterBackground(fixture)
 
         XCTAssertEqual(fixture.runner.beganCount, 1)
+        XCTAssertEqual(
+            fixture.runner.endedCount,
+            0,
+            "the background assertion was released while the flush was still running"
+        )
+
+        fixture.recorder.finishPendingFlushes()
+
         XCTAssertEqual(fixture.runner.endedCount, 1)
+    }
+
+    func testTheSessionEndIsOrderedAheadOfTheFlushThatCarriesIt() {
+        let fixture = makeFixture()
+        fixture.tracker.startSession()
+
+        enterBackground(fixture)
+
+        // One ordered call, not a bare track() followed by a flush(): that pair lets the
+        // flush's peek run before the session_ended row exists.
+        XCTAssertEqual(fixture.recorder.pendingCompletions.count, 1)
+        XCTAssertEqual(fixture.recorder.eventNames.last, "session_ended")
+
+        let captor = ArgumentCaptor<AnalyticsEvent>()
+        verify(fixture.analytics, times(1)).track(captor.capture())
+        XCTAssertEqual(captor.value?.name.rawValue, "session_started")
     }
 
     func testConsecutiveBackgroundsEmitOnlyOneEnd() {
         let fixture = makeFixture()
         fixture.tracker.startSession()
-        fixture.tracker.didReceiveDidEnterBackground(notification: .init(name: .init("test")))
-        fixture.tracker.didReceiveDidEnterBackground(notification: .init(name: .init("test")))
+        enterBackground(fixture)
+        enterBackground(fixture)
 
-        XCTAssertEqual(trackedNames(fixture), ["session_started", "session_ended"])
+        XCTAssertEqual(fixture.recorder.eventNames, ["session_started", "session_ended"])
     }
 }

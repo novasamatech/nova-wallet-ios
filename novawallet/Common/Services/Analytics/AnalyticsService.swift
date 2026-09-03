@@ -17,6 +17,13 @@ final class AnalyticsService {
 
     private var currentFeature: String?
     private var lastFlushAt: Date = .distantPast
+
+    /// Set when a wipe is issued, cleared only when it comes back successful. While it is
+    /// set no flush may run: a wipe that failed leaves pre-opt-out rows in the store, and
+    /// uploading them after re-consent would send data the user asked to have deleted
+    /// under the identity that replaced theirs.
+    private var isWipePending: Bool = false
+    private var isWipeInFlight: Bool = false
     /// Seeded from the provider so the kill switch's enabled→disabled edge is detected
     /// even though the config that flips it only arrives after `setup()`.
     private var wasAvailable: Bool
@@ -103,19 +110,35 @@ private extension AnalyticsService {
         let now = timeProvider()
 
         if count >= Constants.flushThreshold {
-            flushLocked(reason: .threshold, now: now)
+            flushLocked(reason: .threshold, now: now, completion: nil)
         } else if now.timeIntervalSince(lastFlushAt) >= Constants.flushInterval {
-            flushLocked(reason: .interval, now: now)
+            flushLocked(reason: .interval, now: now, completion: nil)
         }
     }
 
-    func flushLocked(reason: AnalyticsFlushReason, now: Date) {
+    /// Returns false when nothing was started, so the caller knows to run `completion`
+    /// itself rather than wait for a chain that does not exist.
+    @discardableResult
+    func flushLocked(
+        reason: AnalyticsFlushReason,
+        now: Date,
+        completion: (() -> Void)?
+    ) -> Bool {
         guard consent.isEnabled, availability.isAvailable else {
-            return
+            return false
+        }
+
+        guard !isWipePending else {
+            // Retry the wipe instead: the rows still in the store are the ones the user
+            // asked to be rid of.
+            logger.warning("Analytics flush skipped, a wipe is still owed")
+            wipeLocked()
+
+            return false
         }
 
         guard !flushCallStore.hasCall else {
-            return
+            return false
         }
 
         lastFlushAt = now
@@ -138,30 +161,66 @@ private extension AnalyticsService {
             if case let .failure(error) = result {
                 self?.logger.debug("Analytics flush failed: \(error)")
             }
+
+            completion?()
         }
+
+        return true
     }
-}
 
-// MARK: - AnalyticsTrackingProtocol
+    /// Spec §6.5 step 3 and §10's one-shot wipe. Failure is latched rather than logged and
+    /// forgotten, so the next flush attempt retries it instead of uploading what should
+    /// already be gone.
+    func wipeLocked() {
+        isWipePending = true
 
-extension AnalyticsService: AnalyticsTrackingProtocol {
-    func track(_ event: AnalyticsEvent) {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        // The one consent guard. No Date(), no UUID, no operation before this line passes.
-        guard consent.isEnabled, availability.isAvailable else {
+        guard !isWipeInFlight else {
+            // The clear already running deletes everything the retry would.
             return
         }
 
-        guard shouldRecordLocked(event) else {
+        isWipeInFlight = true
+
+        execute(
+            operation: queue.clearOperation(),
+            inOperationQueue: operationQueue,
+            runningCallbackIn: nil
+        ) { [weak self] result in
+            guard let self else {
+                return
+            }
+
+            mutex.lock()
+
+            defer {
+                mutex.unlock()
+            }
+
+            isWipeInFlight = false
+
+            switch result {
+            case .success:
+                isWipePending = false
+            case let .failure(error):
+                logger.error("Analytics queue wipe failed, retrying on the next flush: \(error)")
+            }
+        }
+    }
+
+    func trackInternal(_ event: AnalyticsEvent, completion: (() -> Void)?) {
+        mutex.lock()
+
+        // The one consent guard. No Date(), no UUID, no operation before this line passes.
+        guard consent.isEnabled, availability.isAvailable, shouldRecordLocked(event) else {
+            mutex.unlock()
+            completion?()
+
             return
         }
 
         let timestamp = timeProvider()
+
+        mutex.unlock()
 
         let payload: Data
 
@@ -169,6 +228,8 @@ extension AnalyticsService: AnalyticsTrackingProtocol {
             payload = try AnalyticsCoding.encoder.encode(event.wireProperties)
         } catch {
             logger.error("Analytics event dropped, unencodable: \(error)")
+            completion?()
+
             return
         }
 
@@ -215,6 +276,35 @@ extension AnalyticsService: AnalyticsTrackingProtocol {
             if case let .failure(error) = result {
                 self?.logger.error("Analytics enqueue failed: \(error)")
             }
+
+            completion?()
+        }
+    }
+}
+
+// MARK: - AnalyticsTrackingProtocol
+
+extension AnalyticsService: AnalyticsTrackingProtocol {
+    func track(_ event: AnalyticsEvent) {
+        trackInternal(event, completion: nil)
+    }
+
+    /// `track` and `flush` are both fire-and-forget, so calling them back to back leaves
+    /// the enqueue racing the peek that is meant to pick it up — and, on the background
+    /// path, lets the `UIBackgroundTask` end before either has run.
+    func trackAndFlush(
+        _ event: AnalyticsEvent,
+        reason: AnalyticsFlushReason,
+        completion: @escaping () -> Void
+    ) {
+        trackInternal(event) { [weak self] in
+            guard let self else {
+                completion()
+
+                return
+            }
+
+            flush(reason: reason, completion: completion)
         }
     }
 }
@@ -223,13 +313,19 @@ extension AnalyticsService: AnalyticsTrackingProtocol {
 
 extension AnalyticsService {
     func flush(reason: AnalyticsFlushReason) {
-        mutex.lock()
+        flush(reason: reason, completion: {})
+    }
 
-        defer {
-            mutex.unlock()
+    func flush(reason: AnalyticsFlushReason, completion: @escaping () -> Void) {
+        mutex.lock()
+        let started = flushLocked(reason: reason, now: timeProvider(), completion: completion)
+        mutex.unlock()
+
+        guard !started else {
+            return
         }
 
-        flushLocked(reason: reason, now: timeProvider())
+        completion()
     }
 
     /// Spec §3.2. The facade's `throttle()` is symmetric, so an in-flight flush is
@@ -269,11 +365,7 @@ extension AnalyticsService {
         // from a queue that is being cleared underneath it.
         flushCallStore.cancel()
 
-        execute(
-            operation: queue.clearOperation(),
-            inOperationQueue: operationQueue,
-            runningCallbackIn: nil
-        ) { _ in }
+        wipeLocked()
     }
 
     /// Spec §6.5, in order. Runs on the consent manager's true→false edge.
@@ -287,11 +379,7 @@ extension AnalyticsService {
         flushCallStore.cancel()
         identity.forgetInstallId()
 
-        execute(
-            operation: queue.clearOperation(),
-            inOperationQueue: operationQueue,
-            runningCallbackIn: nil
-        ) { _ in }
+        wipeLocked()
 
         lastFlushAt = .distantPast
         currentFeature = nil

@@ -1,18 +1,19 @@
 import Foundation
 import Operation_iOS
 
+/// Every method returns operations for the caller to schedule; the store's own context
+/// serialises them. Ordering that matters across *callers* — an enqueue that must be
+/// visible to the flush it triggers — is established by `AnalyticsService.trackAndFlush`,
+/// not here, which is why this type holds no queue of its own.
 final class CoreDataAnalyticsEventQueue {
     private let repository: AnyDataProviderRepository<AnalyticsPendingEvent>
-    private let operationQueue: OperationQueue
     private let maxCount: Int
 
     init(
         repository: AnyDataProviderRepository<AnalyticsPendingEvent>,
-        operationQueue: OperationQueue,
         maxCount: Int = 500
     ) {
         self.repository = repository
-        self.operationQueue = operationQueue
         self.maxCount = maxCount
     }
 }

@@ -57,8 +57,7 @@
             return AnalyticsDebugInspectorViewController(
                 facade: AnalyticsFacadeFactory.createDefault(),
                 eventQueue: CoreDataAnalyticsEventQueue(
-                    repository: AnyDataProviderRepository(repository),
-                    operationQueue: OperationManagerFacade.analyticsQueue
+                    repository: AnyDataProviderRepository(repository)
                 ),
                 attestationMode: BackendAttestationModeResolver.resolve(
                     isReleaseBuild: false,

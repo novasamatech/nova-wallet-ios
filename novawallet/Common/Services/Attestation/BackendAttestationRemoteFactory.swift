@@ -24,10 +24,20 @@ private extension BackendAttestationRemoteFactory {
         let challenge: String
     }
 
-    static func statusError(for statusCode: Int) -> BackendAttestationError? {
+    /// `.rejected` latches the whole process and makes the uploader wipe the queue, so it
+    /// may only come from an endpoint that actually carries this client's identity. The
+    /// challenge request sends no body and no client headers at all: a 401/403 there is the
+    /// gateway refusing everyone, and treating it as "this client is banned" destroys every
+    /// queued event on every flush until the app is relaunched.
+    static func statusError(
+        for statusCode: Int,
+        isClientAuthenticated: Bool
+    ) -> BackendAttestationError? {
         switch statusCode {
         case 401, 403:
-            return .rejected(statusCode: statusCode)
+            return isClientAuthenticated
+                ? .rejected(statusCode: statusCode)
+                : .clientError(statusCode: statusCode)
         case 400 ..< 500:
             return .clientError(statusCode: statusCode)
         case 500...:
@@ -63,8 +73,9 @@ private extension BackendAttestationRemoteFactory {
     }
 
     /// Maps transport and status onto `BackendAttestationError`, then hands the body to
-    /// `decoder`. A nil `decoder` means the endpoint returns no body of interest.
+    /// `decoder`. Endpoints with no body of interest pass a `decoder` that ignores it.
     static func createResultBlock<T>(
+        isClientAuthenticated: Bool,
         decoder: @escaping (Data?) throws -> T
     ) -> NetworkResultFactoryBlock<T> {
         { data, response, error in
@@ -74,7 +85,10 @@ private extension BackendAttestationRemoteFactory {
 
             if
                 let httpResponse = response as? HTTPURLResponse,
-                let statusError = statusError(for: httpResponse.statusCode) {
+                let statusError = statusError(
+                    for: httpResponse.statusCode,
+                    isClientAuthenticated: isClientAuthenticated
+                ) {
                 return .failure(statusError)
             }
 
@@ -87,7 +101,10 @@ private extension BackendAttestationRemoteFactory {
 
 extension BackendAttestationRemoteFactory: BackendAttestationRemoteFactoryProtocol {
     func createChallengeWrapper() -> CompoundOperationWrapper<String> {
-        let block: NetworkResultFactoryBlock<String> = Self.createResultBlock { data in
+        // No client id, no signature: this call is anonymous.
+        let block: NetworkResultFactoryBlock<String> = Self.createResultBlock(
+            isClientAuthenticated: false
+        ) { data in
             guard let data else {
                 throw AppAttestError.invalidResponse
             }
@@ -108,7 +125,9 @@ extension BackendAttestationRemoteFactory: BackendAttestationRemoteFactoryProtoc
     func createRegisterOperation(
         _ requestClosure: @escaping () throws -> BackendAttestationRegisterRequest
     ) -> BaseOperation<Void> {
-        let block: NetworkResultFactoryBlock<Void> = Self.createResultBlock { _ in () }
+        let block: NetworkResultFactoryBlock<Void> = Self.createResultBlock(
+            isClientAuthenticated: true
+        ) { _ in () }
 
         return createPostOperation(
             path: Constants.registerPath,

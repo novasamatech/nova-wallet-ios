@@ -61,7 +61,9 @@ private extension BackendAttestationProvider {
     }
 
     /// The key row is scoped to the gateway, so a host change starts a new credential.
-    var rowIdentifier: String { gatewayURL.absoluteString }
+    var rowIdentifier: String {
+        gatewayURL.absoluteString
+    }
 
     func cachedAttestedKeyId() -> AppAttestKeyId? {
         mutex.lock()
@@ -88,6 +90,15 @@ private extension BackendAttestationProvider {
         needsFreshKey = false
 
         return nil
+    }
+
+    /// The only consent re-check the chain is allowed to make. `identity.clientId()` mints,
+    /// so calling it as a predicate writes a fresh client id during an opt-out→re-consent
+    /// race and then registers the *old* one; comparing epochs has no side effect.
+    func requireEpoch(_ epoch: Int) throws {
+        guard identity.consentEpoch == epoch else {
+            throw BackendAttestationError.unsupported
+        }
     }
 
     func cacheAttestedKeyId(_ keyId: AppAttestKeyId) {
@@ -191,25 +202,44 @@ private extension BackendAttestationProvider {
         }
 
         // Same reason as the uploader's install id: never register a fresh attested client
-        // for an install that has opted out while this chain was already executing.
-        guard let clientId = identity.clientId() else {
+        // for an install that has opted out while this chain was already executing. The
+        // epoch captured here is what every later step compares against.
+        //
+        // Read epoch → id → epoch: `clientId()` and `consentEpoch` are two separate
+        // acquisitions of the identity's lock, so an opt-out landing between them would
+        // otherwise pair a forgotten client id with the epoch that forgot it, and every
+        // later gate would wave the chain through.
+        let epoch = identity.consentEpoch
+
+        guard let clientId = identity.clientId(), identity.consentEpoch == epoch else {
             return .createWithError(BackendAttestationError.unsupported)
         }
 
-        return createSignedChainWrapper(clientId: clientId, bodyClosure: bodyClosure)
+        return createSignedChainWrapper(
+            clientId: clientId,
+            epoch: epoch,
+            bodyClosure: bodyClosure
+        )
     }
 
     func createSignedChainWrapper(
         clientId: String,
+        epoch: Int,
         bodyClosure: @escaping () throws -> Data
     ) -> CompoundOperationWrapper<[AttestationHeaderKey: String]?> {
-        let attestedWrapper = ensureAttestedWrapper(clientId: clientId)
+        let attestedWrapper = ensureAttestedWrapper(clientId: clientId, epoch: epoch)
 
         // A fresh challenge per signed request: never cached, never reused (spec §7.5).
         let challengeWrapper = OperationCombiningService<String>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
-        ) { [remoteFactory] in
+        ) { [weak self, remoteFactory] in
             _ = try attestedWrapper.targetOperation.extractNoCancellableResultData()
+
+            guard let self else {
+                throw BackendAttestationError.unsupported
+            }
+
+            try requireEpoch(epoch)
 
             return remoteFactory.createChallengeWrapper()
         }
@@ -218,9 +248,15 @@ private extension BackendAttestationProvider {
 
         let assertionWrapper = OperationCombiningService<AppAttestAssertion>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
-        ) { [appAttest] in
+        ) { [weak self, appAttest] in
             let keyId = try attestedWrapper.targetOperation.extractNoCancellableResultData()
             let challenge = try challengeWrapper.targetOperation.extractNoCancellableResultData()
+
+            guard let self else {
+                throw BackendAttestationError.unsupported
+            }
+
+            try requireEpoch(epoch)
 
             return appAttest.createAssertionWrapper(keyId: keyId) {
                 let body = try bodyClosure()
@@ -253,7 +289,7 @@ private extension BackendAttestationProvider {
             .insertingTail(operation: mapOperation)
     }
 
-    func ensureAttestedWrapper(clientId: String) -> CompoundOperationWrapper<AppAttestKeyId> {
+    func ensureAttestedWrapper(clientId: String, epoch: Int) -> CompoundOperationWrapper<AppAttestKeyId> {
         let fetchOperation = repository.fetchOperation(
             by: { self.rowIdentifier },
             options: RepositoryFetchOptions()
@@ -270,7 +306,7 @@ private extension BackendAttestationProvider {
                 return .createWithResult(cached)
             }
 
-            let row = resolveRow(try fetchOperation.extractNoCancellableResultData())
+            let row = try resolveRow(fetchOperation.extractNoCancellableResultData())
 
             if let row, row.isAttested {
                 cacheAttestedKeyId(row.keyId)
@@ -278,15 +314,17 @@ private extension BackendAttestationProvider {
                 return .createWithResult(row.keyId)
             }
 
-            // The client id was read before this chain started. Opting out since then latched
-            // the identity shut, and `invalidate()` cleared the cached key — which would
-            // otherwise *force* a fresh attestation here, registering a new key with the
-            // gateway for an install that just opted out.
-            guard identity.clientId() != nil else {
-                throw BackendAttestationError.unsupported
-            }
+            // The client id was read before this chain started. Opting out since then bumped
+            // the epoch, and `invalidate()` cleared the cached key — which would otherwise
+            // *force* a fresh attestation here, registering a new key with the gateway for
+            // an install that just opted out.
+            try requireEpoch(epoch)
 
-            return createAttestAndRegisterWrapper(clientId: clientId, existingKeyId: row?.keyId)
+            return createAttestAndRegisterWrapper(
+                clientId: clientId,
+                epoch: epoch,
+                existingKeyId: row?.keyId
+            )
         }
 
         wrapper.addDependency(operations: [fetchOperation])
@@ -294,16 +332,81 @@ private extension BackendAttestationProvider {
         return wrapper.insertingHead(operations: [fetchOperation])
     }
 
+    /// challenge → attest → save unattested → register → save attested → cache, with an
+    /// epoch gate before every step that is irreversible from the user's point of view.
+    /// Each stage is its own function so those gates stay visible.
     func createAttestAndRegisterWrapper(
         clientId: String,
+        epoch: Int,
         existingKeyId: AppAttestKeyId?
     ) -> CompoundOperationWrapper<AppAttestKeyId> {
         let challengeWrapper = remoteFactory.createChallengeWrapper()
 
-        let attestationWrapper = OperationCombiningService<AppAttestAttestation>.compoundNonOptionalWrapper(
+        let attestationWrapper = createAttestationWrapper(
+            clientId: clientId,
+            epoch: epoch,
+            existingKeyId: existingKeyId,
+            challengeWrapper: challengeWrapper
+        )
+
+        attestationWrapper.addDependency(wrapper: challengeWrapper)
+
+        // Saved unattested BEFORE the register POST, so a retry after a failed register
+        // reuses the same attested key instead of burning a new one.
+        let saveUnattestedOperation = createSaveOperation(isAttested: false, epoch: epoch) {
+            try attestationWrapper.targetOperation.extractNoCancellableResultData().keyId
+        }
+
+        saveUnattestedOperation.addDependency(attestationWrapper.targetOperation)
+
+        let registerOperation = createRegisterOperation(
+            clientId: clientId,
+            epoch: epoch,
+            challengeWrapper: challengeWrapper,
+            attestationWrapper: attestationWrapper,
+            saveOperation: saveUnattestedOperation
+        )
+
+        registerOperation.addDependency(saveUnattestedOperation)
+
+        let saveAttestedOperation = createSaveOperation(isAttested: true, epoch: epoch) {
+            try registerOperation.extractNoCancellableResultData()
+
+            return try attestationWrapper.targetOperation.extractNoCancellableResultData().keyId
+        }
+
+        saveAttestedOperation.addDependency(registerOperation)
+
+        let mapOperation = createCacheOperation(
+            epoch: epoch,
+            attestationWrapper: attestationWrapper,
+            saveOperation: saveAttestedOperation
+        )
+
+        mapOperation.addDependency(saveAttestedOperation)
+
+        let dependencies = challengeWrapper.allOperations + attestationWrapper.allOperations +
+            [saveUnattestedOperation, registerOperation, saveAttestedOperation]
+
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
+    }
+
+    func createAttestationWrapper(
+        clientId: String,
+        epoch: Int,
+        existingKeyId: AppAttestKeyId?,
+        challengeWrapper: CompoundOperationWrapper<String>
+    ) -> CompoundOperationWrapper<AppAttestAttestation> {
+        OperationCombiningService<AppAttestAttestation>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
-        ) { [appAttest] in
+        ) { [weak self, appAttest] in
             let challenge = try challengeWrapper.targetOperation.extractNoCancellableResultData()
+
+            guard let self else {
+                throw BackendAttestationError.unsupported
+            }
+
+            try requireEpoch(epoch)
 
             return appAttest.createAttestationWrapper(using: existingKeyId) { keyId in
                 AttestationClientData.attestationClientData(
@@ -313,21 +416,28 @@ private extension BackendAttestationProvider {
                 )
             }
         }
+    }
 
-        attestationWrapper.addDependency(wrapper: challengeWrapper)
-
-        // Saved unattested BEFORE the register POST, so a retry after a failed register
-        // reuses the same attested key instead of burning a new one.
-        let saveUnattestedOperation = createSaveOperation(isAttested: false) {
-            try attestationWrapper.targetOperation.extractNoCancellableResultData().keyId
-        }
-
-        saveUnattestedOperation.addDependency(attestationWrapper.targetOperation)
-
+    func createRegisterOperation(
+        clientId: String,
+        epoch: Int,
+        challengeWrapper: CompoundOperationWrapper<String>,
+        attestationWrapper: CompoundOperationWrapper<AppAttestAttestation>,
+        saveOperation: BaseOperation<Void>
+    ) -> BaseOperation<Void> {
         let appPackage = bundle.bundleIdentifier ?? ""
 
-        let registerOperation = remoteFactory.createRegisterOperation {
-            try saveUnattestedOperation.extractNoCancellableResultData()
+        return remoteFactory.createRegisterOperation { [weak self] in
+            try saveOperation.extractNoCancellableResultData()
+
+            // The last gate before the registration leaves the device. The Apple attestKey
+            // round trip sits between here and the composition-time check, and it is the
+            // slowest hop in the chain.
+            guard let self else {
+                throw BackendAttestationError.unsupported
+            }
+
+            try requireEpoch(epoch)
 
             let challenge = try challengeWrapper.targetOperation.extractNoCancellableResultData()
             let attestation = try attestationWrapper.targetOperation.extractNoCancellableResultData()
@@ -342,36 +452,35 @@ private extension BackendAttestationProvider {
                 integrityToken: attestation.attestation.base64EncodedString()
             )
         }
+    }
 
-        registerOperation.addDependency(saveUnattestedOperation)
-
-        let saveAttestedOperation = createSaveOperation(isAttested: true) {
-            try registerOperation.extractNoCancellableResultData()
-
-            return try attestationWrapper.targetOperation.extractNoCancellableResultData().keyId
-        }
-
-        saveAttestedOperation.addDependency(registerOperation)
-
-        let mapOperation = ClosureOperation<AppAttestKeyId> { [weak self] in
-            try saveAttestedOperation.extractNoCancellableResultData()
+    func createCacheOperation(
+        epoch: Int,
+        attestationWrapper: CompoundOperationWrapper<AppAttestAttestation>,
+        saveOperation: BaseOperation<Void>
+    ) -> BaseOperation<AppAttestKeyId> {
+        ClosureOperation<AppAttestKeyId> { [weak self] in
+            try saveOperation.extractNoCancellableResultData()
 
             let keyId = try attestationWrapper.targetOperation.extractNoCancellableResultData().keyId
-            self?.cacheAttestedKeyId(keyId)
+
+            guard let self else {
+                throw BackendAttestationError.unsupported
+            }
+
+            // `cacheAttestedKeyId` also clears `needsFreshKey`, so caching here after an
+            // opt-out would let a key minted for the old client sign for the new one.
+            try requireEpoch(epoch)
+
+            cacheAttestedKeyId(keyId)
 
             return keyId
         }
-
-        mapOperation.addDependency(saveAttestedOperation)
-
-        let dependencies = challengeWrapper.allOperations + attestationWrapper.allOperations +
-            [saveUnattestedOperation, registerOperation, saveAttestedOperation]
-
-        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
 
     func createSaveOperation(
         isAttested: Bool,
+        epoch: Int,
         keyIdClosure: @escaping () throws -> AppAttestKeyId
     ) -> BaseOperation<Void> {
         let identifier = rowIdentifier
@@ -381,9 +490,11 @@ private extension BackendAttestationProvider {
 
             // Never write the row back for an install that opted out while this chain ran:
             // `forgetClient()` deletes it, and a late save would resurrect it.
-            guard self?.identity.clientId() != nil else {
+            guard let self else {
                 return []
             }
+
+            try requireEpoch(epoch)
 
             return [
                 AppAttestKeySettings(

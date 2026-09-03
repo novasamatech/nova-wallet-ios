@@ -60,11 +60,15 @@ extension AnalyticsUploadOperationFactory: AnalyticsUploadOperationFactoryProtoc
         bodyClosure: @escaping () throws -> Data,
         headersClosure: @escaping () throws -> [AttestationHeaderKey: String]?
     ) -> BaseOperation<Void> {
-        let requestFactory = BlockNetworkRequestFactory {
+        let requestFactory = BlockNetworkRequestFactory { [weak self] in
             let body = try bodyClosure()
             let headers = try headersClosure()
 
-            return try self.buildRequest(body: body, headers: headers)
+            guard let self else {
+                throw AnalyticsUploadAbort.consentWithdrawn
+            }
+
+            return try buildRequest(body: body, headers: headers)
         }
 
         let resultFactory = AnyNetworkResultFactory<Void> { _, response, error in

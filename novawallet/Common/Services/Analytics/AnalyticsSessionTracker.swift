@@ -5,7 +5,6 @@ import Foundation_iOS
 /// `ProcessLifecycleOwner.onStart/onStop`.
 final class AnalyticsSessionTracker {
     private let tracker: AnalyticsTrackingProtocol
-    private let flushHandler: (AnalyticsFlushReason) -> Void
     private let applicationHandler: ApplicationHandlerProtocol
     private let backgroundTaskRunner: BackgroundTaskRunning
     private let timeProvider: () -> Date
@@ -15,13 +14,11 @@ final class AnalyticsSessionTracker {
 
     init(
         tracker: AnalyticsTrackingProtocol,
-        flushHandler: @escaping (AnalyticsFlushReason) -> Void,
         applicationHandler: ApplicationHandlerProtocol,
         backgroundTaskRunner: BackgroundTaskRunning,
         timeProvider: @escaping () -> Date = { Date() }
     ) {
         self.tracker = tracker
-        self.flushHandler = flushHandler
         self.applicationHandler = applicationHandler
         self.backgroundTaskRunner = backgroundTaskRunner
         self.timeProvider = timeProvider
@@ -68,15 +65,22 @@ extension AnalyticsSessionTracker: ApplicationHandlerDelegate {
 
         let duration = timeProvider().timeIntervalSince(startedAt)
 
+        // `track` and `flush` both return the moment their operations are enqueued, so
+        // ending the system task after calling them released the background assertion
+        // before the session_ended row had been written — iOS then suspended the process
+        // and the event was lost. `trackAndFlush` fires the completion only once both the
+        // enqueue and the flush chain have settled.
         backgroundTaskRunner.run { [weak self] completion in
             guard let self else {
                 completion()
                 return
             }
 
-            tracker.track(.sessionEnded(duration: duration))
-            flushHandler(.background)
-            completion()
+            tracker.trackAndFlush(
+                .sessionEnded(duration: duration),
+                reason: .background,
+                completion: completion
+            )
         }
     }
 

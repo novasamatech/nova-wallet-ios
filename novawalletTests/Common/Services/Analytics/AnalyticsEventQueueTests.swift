@@ -1,21 +1,51 @@
 import XCTest
 @testable import novawallet
 import Operation_iOS
+import CoreData
+
+/// Writes a row the production mapper cannot read back: `name`, `timestamp` and `payload`
+/// are left nil, which is exactly the shape an interrupted migration or a truncated store
+/// leaves behind. `CoreDataMapperProtocol` has associated types, so Cuckoo cannot generate
+/// this; it is a fixture, not a stand-in for a mockable collaborator.
+private final class CorruptAnalyticsEventMapper: CoreDataMapperProtocol {
+    typealias DataProviderModel = AnalyticsPendingEvent
+    typealias CoreDataEntity = CDAnalyticsEvent
+
+    var entityIdentifierFieldName: String {
+        #keyPath(CDAnalyticsEvent.identifier)
+    }
+
+    func transform(entity _: CoreDataEntity) throws -> DataProviderModel {
+        throw CommonError.dataCorruption
+    }
+
+    func populate(
+        entity: CoreDataEntity,
+        from model: DataProviderModel,
+        using _: NSManagedObjectContext
+    ) throws {
+        entity.identifier = model.identifier
+        entity.sequence = model.sequence
+    }
+}
 
 final class AnalyticsEventQueueTests: XCTestCase {
     private func makeQueue(maxCount: Int = 500) -> CoreDataAnalyticsEventQueue {
-        let facade = UserDataStorageTestFacade()
-        let repository: CoreDataRepository<AnalyticsPendingEvent, CDAnalyticsEvent> =
-            facade.createRepository(
-                filter: nil,
-                sortDescriptors: [.analyticsEventsBySequence],
-                mapper: AnyCoreDataMapper(AnalyticsPendingEventMapper())
-            )
-
-        return CoreDataAnalyticsEventQueue(
-            repository: AnyDataProviderRepository(repository),
-            operationQueue: OperationQueue(),
+        CoreDataAnalyticsEventQueue(
+            repository: AnyDataProviderRepository(
+                makeRepository(facade: UserDataStorageTestFacade())
+            ),
             maxCount: maxCount
+        )
+    }
+
+    private func makeRepository(
+        facade: UserDataStorageTestFacade
+    ) -> CoreDataRepository<AnalyticsPendingEvent, CDAnalyticsEvent> {
+        facade.createRepository(
+            filter: nil,
+            sortDescriptors: [.analyticsEventsBySequence],
+            mapper: AnyCoreDataMapper(AnalyticsPendingEventMapper())
         )
     }
 
@@ -125,27 +155,78 @@ final class AnalyticsEventQueueTests: XCTestCase {
         XCTAssertEqual(try run(queue.countOperation()), 2)
     }
 
-    func testPoisonRowIsReportedAndCanBeDropped() throws {
-        // A row whose payload the mapper cannot read must be reachable by id so the
-        // uploader can delete it, rather than wedging the queue forever.
+    /// The row is written through a mapper that leaves the required attributes nil, so the
+    /// production mapper genuinely throws on it — the previous version of this test wrote a
+    /// perfectly good row and proved only that `dropOperation` deletes things.
+    func testAnUnreadableRowFailsThePeekAndSurvivesUntilCleared() throws {
         let facade = UserDataStorageTestFacade()
-        let goodRepository: CoreDataRepository<AnalyticsPendingEvent, CDAnalyticsEvent> =
-            facade.createRepository(
-                filter: nil,
-                sortDescriptors: [.analyticsEventsBySequence],
-                mapper: AnyCoreDataMapper(AnalyticsPendingEventMapper())
-            )
-
         let queue = CoreDataAnalyticsEventQueue(
-            repository: AnyDataProviderRepository(goodRepository),
-            operationQueue: OperationQueue(),
+            repository: AnyDataProviderRepository(makeRepository(facade: facade)),
             maxCount: 500
         )
 
         try enqueue(queue, ["a"])
-        let identifier = try run(queue.peekWrapper(count: 1))[0].identifier
+        try seedCorruptRow(facade: facade)
 
-        _ = try run(queue.dropOperation(ids: [identifier]))
+        XCTAssertEqual(try run(queue.countOperation()), 2)
+        XCTAssertThrowsError(
+            try run(queue.peekWrapper(count: 10)),
+            "one unreadable row must fail the whole fetch — that is what wedges the queue"
+        )
+
+        // The only recovery: counting and clearing never go through the mapper.
+        _ = try run(queue.clearOperation())
         XCTAssertEqual(try run(queue.countOperation()), 0)
+    }
+
+    func testARowIdentifierIsUniqueAcrossAClear() throws {
+        let queue = makeQueue()
+        try enqueue(queue, ["a", "b"])
+        let before = try run(queue.peekWrapper(count: 10)).map(\.identifier)
+
+        _ = try run(queue.clearOperation())
+        try enqueue(queue, ["c", "d"])
+        let after = try run(queue.peekWrapper(count: 10)).map(\.identifier)
+
+        // The sequence restarts at 0, so identifiers derived from it alone would collide —
+        // and a drop belonging to a batch that outlived the wipe would delete these rows.
+        XCTAssertTrue(
+            Set(before).isDisjoint(with: Set(after)),
+            "row identifiers were reused after a clear: \(before) vs \(after)"
+        )
+    }
+
+    func testADropFromBeforeAClearCannotDeleteTheRowsThatReplacedThem() throws {
+        let queue = makeQueue()
+        try enqueue(queue, ["a", "b"])
+        let staleIds = try run(queue.peekWrapper(count: 10)).map(\.identifier)
+
+        _ = try run(queue.clearOperation())
+        try enqueue(queue, ["c", "d"])
+
+        _ = try run(queue.dropOperation(ids: staleIds))
+
+        XCTAssertEqual(try run(queue.peekWrapper(count: 10)).map(\.name), ["c", "d"])
+    }
+
+    private func seedCorruptRow(facade: UserDataStorageTestFacade) throws {
+        let corruptRepository: CoreDataRepository<AnalyticsPendingEvent, CDAnalyticsEvent> =
+            facade.createRepository(
+                filter: nil,
+                sortDescriptors: [.analyticsEventsBySequence],
+                mapper: AnyCoreDataMapper(CorruptAnalyticsEventMapper())
+            )
+
+        _ = try run(corruptRepository.saveOperation({
+            [
+                AnalyticsPendingEvent(
+                    identifier: AnalyticsPendingEvent.identifier(for: 999),
+                    sequence: 999,
+                    name: "unused",
+                    timestamp: Date(timeIntervalSince1970: 1),
+                    payload: Data()
+                )
+            ]
+        }, { [] }))
     }
 }

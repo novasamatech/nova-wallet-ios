@@ -8,10 +8,15 @@ struct AnalyticsPendingEvent: Equatable {
     let timestamp: Date
     let payload: Data
 
-    /// FIFO order is a lexicographic sort over `identifier`, so the sequence is zero-padded
-    /// to the width of `Int64.max` (19 digits).
-    static func identifier(for sequence: Int64) -> String {
-        String(format: "%019lld", sequence)
+    /// FIFO order comes from the `analyticsEventsBySequence` sort descriptor, not from this
+    /// string — the sequence prefix is kept only so a row dump reads in order.
+    ///
+    /// The random suffix is what makes the identifier safe: `sequence` restarts at 0 after
+    /// `clearOperation()`, so without it a `dropOperation(ids:)` belonging to a batch that
+    /// outlived an opt-out wipe would delete brand-new, unrelated rows that happen to have
+    /// been allocated the same sequence numbers.
+    static func identifier(for sequence: Int64, unique: String = UUID().uuidString) -> String {
+        String(format: "%019lld", sequence) + "-" + unique
     }
 }
 
