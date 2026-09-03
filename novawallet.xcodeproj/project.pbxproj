@@ -6634,6 +6634,9 @@
 		FEEDA0000000000000000016 /* AnalyticsPendingEventMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDA0000000000000000015 /* AnalyticsPendingEventMapperTests.swift */; };
 		FEEDA0000000000000000012 /* AnalyticsPendingEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDA0000000000000000011 /* AnalyticsPendingEvent.swift */; };
 		FEEDA0000000000000000014 /* AnalyticsPendingEventMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDA0000000000000000013 /* AnalyticsPendingEventMapper.swift */; };
+		FEEDA0000000000000000025 /* AnalyticsEventQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDA0000000000000000024 /* AnalyticsEventQueueTests.swift */; };
+		FEEDA0000000000000000021 /* AnalyticsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDA0000000000000000020 /* AnalyticsProtocols.swift */; };
+		FEEDA0000000000000000023 /* CoreDataAnalyticsEventQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDA0000000000000000022 /* CoreDataAnalyticsEventQueue.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -13009,6 +13012,9 @@
 		FEEDA0000000000000000015 /* AnalyticsPendingEventMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsPendingEventMapperTests.swift; sourceTree = "<group>"; };
 		FEEDA0000000000000000011 /* AnalyticsPendingEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsPendingEvent.swift; sourceTree = "<group>"; };
 		FEEDA0000000000000000013 /* AnalyticsPendingEventMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsPendingEventMapper.swift; sourceTree = "<group>"; };
+		FEEDA0000000000000000024 /* AnalyticsEventQueueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsEventQueueTests.swift; sourceTree = "<group>"; };
+		FEEDA0000000000000000020 /* AnalyticsProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsProtocols.swift; sourceTree = "<group>"; };
+		FEEDA0000000000000000022 /* CoreDataAnalyticsEventQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataAnalyticsEventQueue.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -30488,6 +30494,7 @@
 			isa = PBXGroup;
 			children = (
 				FEEDA0000000000000000010 /* Storage */,
+				FEEDA0000000000000000020 /* AnalyticsProtocols.swift */,
 			);
 			path = Analytics;
 			sourceTree = "<group>";
@@ -30496,6 +30503,7 @@
 			isa = PBXGroup;
 			children = (
 				FEEDA0000000000000000015 /* AnalyticsPendingEventMapperTests.swift */,
+				FEEDA0000000000000000024 /* AnalyticsEventQueueTests.swift */,
 			);
 			path = Analytics;
 			sourceTree = "<group>";
@@ -30504,6 +30512,7 @@
 			isa = PBXGroup;
 			children = (
 				FEEDA0000000000000000011 /* AnalyticsPendingEvent.swift */,
+				FEEDA0000000000000000022 /* CoreDataAnalyticsEventQueue.swift */,
 			);
 			path = Storage;
 			sourceTree = "<group>";
@@ -37193,6 +37202,8 @@
 				000000006C043D814E99B2D6 /* SwapDataValidatorFactory+PoolTradeLimit.swift in Sources */,
 				FEEDA0000000000000000012 /* AnalyticsPendingEvent.swift in Sources */,
 				FEEDA0000000000000000014 /* AnalyticsPendingEventMapper.swift in Sources */,
+				FEEDA0000000000000000021 /* AnalyticsProtocols.swift in Sources */,
+				FEEDA0000000000000000023 /* CoreDataAnalyticsEventQueue.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -37398,6 +37409,7 @@
 				000000007C2FD98856D6F69F /* AssetExchangeCommissionNetFlowTests.swift in Sources */,
 				FEEDA0000000000000000002 /* AnalyticsUserModel21MigrationTests.swift in Sources */,
 				FEEDA0000000000000000016 /* AnalyticsPendingEventMapperTests.swift in Sources */,
+				FEEDA0000000000000000025 /* AnalyticsEventQueueTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
