@@ -1426,6 +1426,8 @@
 		0CF8174A2BBD0E8B00CB9183 /* WalletNameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF817492BBD0E8B00CB9183 /* WalletNameView.swift */; };
 		0CF8176C2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF8176B2BC3B57100CB9183 /* CloudBackupErrorPresentable.swift */; };
 		0CF8F6902E673E73007E41C4 /* Cuckoo in Frameworks */ = {isa = PBXBuildFile; productRef = 0CF8F68F2E673E73007E41C4 /* Cuckoo */; };
+		0CAA10032E7A0003007E41C4 /* SDKLogger in Frameworks */ = {isa = PBXBuildFile; productRef = 0CAA10022E7A0002007E41C4 /* SDKLogger */; };
+		0CAA10082E7A0008007E41C4 /* LoggerSDKConformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAA10072E7A0007007E41C4 /* LoggerSDKConformanceTests.swift */; };
 		0CF976722CEFF01D001D2801 /* SwapExecutionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF976712CEFF01D001D2801 /* SwapExecutionModel.swift */; };
 		0CF976752CF082BF001D2801 /* SwapExecutionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF976742CF082BF001D2801 /* SwapExecutionViewModel.swift */; };
 		0CF976772CF08EF9001D2801 /* OperationExecutionProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF976762CF08EF9001D2801 /* OperationExecutionProgressView.swift */; };
@@ -6091,6 +6093,7 @@
 		AEAC68F726E9FB8400346599 /* CoingeckoOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEAC68F626E9FB8400346599 /* CoingeckoOperationFactory.swift */; };
 		AEAC690026EA729300346599 /* CoingeckoPriceData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEAC68FF26EA729300346599 /* CoingeckoPriceData.swift */; };
 		AEAC690426EB891900346599 /* Logger+Substrate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEAC690326EB891900346599 /* Logger+Substrate.swift */; };
+		0CAA10052E7A0005007E41C4 /* Logger+SDKLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAA10042E7A0004007E41C4 /* Logger+SDKLogger.swift */; };
 		AEACD5F9265E94AB00A09892 /* StatusViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEACD5F8265E94AB00A09892 /* StatusViewModel.swift */; };
 		AEBE16E6262EA7C100DF257C /* StakingErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEBE16E5262EA7C100DF257C /* StakingErrors.swift */; };
 		AEBE173B262F3E6600DF257C /* StakingPayoutConfirmViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEBE173A262F3E6600DF257C /* StakingPayoutConfirmViewModelFactory.swift */; };
@@ -12546,6 +12549,8 @@
 		AEAC68F626E9FB8400346599 /* CoingeckoOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoingeckoOperationFactory.swift; sourceTree = "<group>"; };
 		AEAC68FF26EA729300346599 /* CoingeckoPriceData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoingeckoPriceData.swift; sourceTree = "<group>"; };
 		AEAC690326EB891900346599 /* Logger+Substrate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Logger+Substrate.swift"; sourceTree = "<group>"; };
+		0CAA10042E7A0004007E41C4 /* Logger+SDKLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Logger+SDKLogger.swift"; sourceTree = "<group>"; };
+		0CAA10072E7A0007007E41C4 /* LoggerSDKConformanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggerSDKConformanceTests.swift; sourceTree = "<group>"; };
 		AEACD5F8265E94AB00A09892 /* StatusViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusViewModel.swift; sourceTree = "<group>"; };
 		AEBE16E5262EA7C100DF257C /* StakingErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingErrors.swift; sourceTree = "<group>"; };
 		AEBE173A262F3E6600DF257C /* StakingPayoutConfirmViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingPayoutConfirmViewModelFactory.swift; sourceTree = "<group>"; };
@@ -13192,6 +13197,7 @@
 				0C1A0F482E68E01C00254E20 /* RswiftLibrary in Frameworks */,
 				0C8FCEC92E6734E900034ED3 /* ZMarkupParser in Frameworks */,
 				2D1673512EE9BCC0004ADA7F /* SubstrateSdk in Frameworks */,
+				0CAA10032E7A0003007E41C4 /* SDKLogger in Frameworks */,
 				2DB5869A2EB8753800950F7D /* Lottie in Frameworks */,
 				0C8FCED02E6735F300034ED3 /* FirebaseFirestore in Frameworks */,
 				0C8FCEAE2E672CB000034ED3 /* Reachability in Frameworks */,
@@ -21901,6 +21907,7 @@
 		842D1E7E24D0BED200C30A7A /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				0CAA10092E7A0009007E41C4 /* Logger */,
 				5A17C0C02F0100000000E001 /* LegalConsent */,
 				8A1C0E712F0400000000B103 /* PropertyWrappers */,
 				2D32C9922EFA35930094A036 /* FormatterCache */,
@@ -21933,6 +21940,14 @@
 				842D1E8024D0BEF400C30A7A /* RTests.swift */,
 			);
 			path = Rswift;
+			sourceTree = "<group>";
+		};
+		0CAA10092E7A0009007E41C4 /* Logger */ = {
+			isa = PBXGroup;
+			children = (
+				0CAA10072E7A0007007E41C4 /* LoggerSDKConformanceTests.swift */,
+			);
+			path = Logger;
 			sourceTree = "<group>";
 		};
 		842D1E8A24D208AF00C30A7A /* Mocks */ = {
@@ -22373,6 +22388,14 @@
 				0C27F38D2DA81B5E00191FFF /* JSON+BigUInt.swift */,
 			);
 			path = SubstrateSdk;
+			sourceTree = "<group>";
+		};
+		0CAA10062E7A0006007E41C4 /* SDKLogger */ = {
+			isa = PBXGroup;
+			children = (
+				0CAA10042E7A0004007E41C4 /* Logger+SDKLogger.swift */,
+			);
+			path = SDKLogger;
 			sourceTree = "<group>";
 		};
 		843910CF253F8DAD00E3C217 /* NetworkAvailabilityLayer */ = {
@@ -24445,6 +24468,7 @@
 			children = (
 				84F30EE225FFABEE00039D09 /* DataProvider */,
 				843910B7253EFB6E00E3C217 /* SubstrateSdk */,
+				0CAA10062E7A0006007E41C4 /* SDKLogger */,
 				8467FD5624EFD590005D486C /* Storage */,
 				84A2C90524E09DA60020D3B7 /* Operation */,
 				84DA3B1724C8200100B5E27F /* Model */,
@@ -30941,6 +30965,7 @@
 				0C8FCED32E67363000034ED3 /* XCRemoteSwiftPackageReference "metadata-shortener-ios" */,
 				0C8FCED62E6736E900034ED3 /* XCRemoteSwiftPackageReference "R" */,
 				0CF8F68E2E673E73007E41C4 /* XCRemoteSwiftPackageReference "Cuckoo" */,
+				0CAA10012E7A0001007E41C4 /* XCRemoteSwiftPackageReference "logger-ios" */,
 				0C32522B2E67477700E322DB /* XCRemoteSwiftPackageReference "WalletConnectSwiftV2" */,
 				0C2BAA1B2E677B6E008157E7 /* XCRemoteSwiftPackageReference "web3swift" */,
 				0C2BAA542E687BD0008157E7 /* XCRemoteSwiftPackageReference "hydra-math-swift" */,
@@ -32224,6 +32249,7 @@
 				844518D127CAB6FC00D0C52B /* NftImageViewModel.swift in Sources */,
 				0CB261F72A9E2D8400287305 /* StackSwitchCell.swift in Sources */,
 				AEAC690426EB891900346599 /* Logger+Substrate.swift in Sources */,
+				0CAA10052E7A0005007E41C4 /* Logger+SDKLogger.swift in Sources */,
 				84FF268228494EA4003EC78D /* ParaStkStakeConfirmPresenter+StakeMore.swift in Sources */,
 				0C8FDBCD2CB10E5800775D7F /* PayCardModel.swift in Sources */,
 				842349C02624E7B40066ACFE /* SubstrateAccountId.swift in Sources */,
@@ -37528,6 +37554,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0CAA10082E7A0008007E41C4 /* LoggerSDKConformanceTests.swift in Sources */,
 				A1B2C3D40002E5F600000002 /* HydraFeeQuoteFactoryTests.swift in Sources */,
 				02DF43D680493821FD9D7A35 /* HydraFeeConversionTests.swift in Sources */,
 				79D4519A4D73DA1757414210 /* HydraFeeOraclePriceCalculatorTests.swift in Sources */,
@@ -38880,6 +38907,14 @@
 				version = 2.1.1;
 			};
 		};
+		0CAA10012E7A0001007E41C4 /* XCRemoteSwiftPackageReference "logger-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/novasamatech/logger-ios";
+			requirement = {
+				kind = exactVersion;
+				version = 0.0.1;
+			};
+		};
 		2D16734F2EE9BCC0004ADA7F /* XCRemoteSwiftPackageReference "substrate-sdk-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/novasamatech/substrate-sdk-ios";
@@ -39114,6 +39149,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0CF8F68E2E673E73007E41C4 /* XCRemoteSwiftPackageReference "Cuckoo" */;
 			productName = Cuckoo;
+		};
+		0CAA10022E7A0002007E41C4 /* SDKLogger */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0CAA10012E7A0001007E41C4 /* XCRemoteSwiftPackageReference "logger-ios" */;
+			productName = SDKLogger;
 		};
 		2D1673502EE9BCC0004ADA7F /* SubstrateSdk */ = {
 			isa = XCSwiftPackageProductDependency;
