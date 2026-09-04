@@ -16,17 +16,17 @@ enum SettingsAppAttestKeyRepositoryError: Error {
 /// The lock is not optional. `BackendAttestationProvider` signs on a shared *concurrent*
 /// queue and UserDefaults gives per-key atomicity only, so an unguarded read-modify-write
 /// of the map drops concurrent saves.
-final class SettingsAppAttestKeyRepository {
+public final class SettingsAppAttestKeyRepository {
     /// A bare string literal rather than a `SettingsKey` case — every other settings key in
-    /// the app goes through that enum. This file moves into the standalone `NovaAppAttest`
-    /// package next, which cannot depend on the app's `SettingsKey` enum, so the key has to
-    /// be self-contained here rather than delegate to it.
-    static let storageKey = "appAttestKeys"
+    /// the app goes through that enum. This file lives in the standalone `NovaAppAttest`
+    /// package, which cannot depend on the app's `SettingsKey` enum, so the key has to be
+    /// self-contained here rather than delegate to it.
+    public static let storageKey = "appAttestKeys"
 
     private let settingsManager: SettingsManagerProtocol
     private let mutex = NSLock()
 
-    init(settingsManager: SettingsManagerProtocol) {
+    public init(settingsManager: SettingsManagerProtocol) {
         self.settingsManager = settingsManager
     }
 }
@@ -40,7 +40,7 @@ private extension SettingsAppAttestKeyRepository {
     /// row that fails to decode. The consequence is benign here — a fresh key and a
     /// re-register — and it is actually an improvement on the CoreData mapper this
     /// replaced, which threw `CommonError.dataCorruption` into a fetch that `resolveRow`
-    /// (`BackendAttestationProvider.swift:88-102`) does not absorb, wedging attestation
+    /// (`BackendAttestationProvider.swift:89-103`) does not absorb, wedging attestation
     /// permanently.
     func loadMap() -> [String: AppAttestKeySettings] {
         settingsManager.value(of: [String: AppAttestKeySettings].self, for: Self.storageKey) ?? [:]
@@ -84,9 +84,9 @@ private extension SettingsAppAttestKeyRepository {
 // MARK: - DataProviderRepositoryProtocol
 
 extension SettingsAppAttestKeyRepository: DataProviderRepositoryProtocol {
-    typealias Model = AppAttestKeySettings
+    public typealias Model = AppAttestKeySettings
 
-    func fetchOperation(
+    public func fetchOperation(
         by modelIdClosure: @escaping () throws -> String,
         options _: RepositoryFetchOptions
     ) -> BaseOperation<AppAttestKeySettings?> {
@@ -97,7 +97,7 @@ extension SettingsAppAttestKeyRepository: DataProviderRepositoryProtocol {
         }
     }
 
-    func fetchAllOperation(with _: RepositoryFetchOptions) -> BaseOperation<[AppAttestKeySettings]> {
+    public func fetchAllOperation(with _: RepositoryFetchOptions) -> BaseOperation<[AppAttestKeySettings]> {
         ClosureOperation { [weak self] in
             // Stable order so the result is deterministic. The provider never depends on
             // it; the tests do.
@@ -109,14 +109,14 @@ extension SettingsAppAttestKeyRepository: DataProviderRepositoryProtocol {
     /// Operation-iOS, so a slice cannot be honoured from outside that module at all.
     /// Nothing asks for one — the provider fetches by identifier — and
     /// `InMemoryDataProviderRepository` refuses slices the same way.
-    func fetchOperation(
+    public func fetchOperation(
         by _: RepositorySliceRequest,
         options _: RepositoryFetchOptions
     ) -> BaseOperation<[AppAttestKeySettings]> {
         BaseOperation.createWithError(SettingsAppAttestKeyRepositoryError.sliceFetchUnsupported)
     }
 
-    func saveOperation(
+    public func saveOperation(
         _ updateModelsBlock: @escaping () throws -> [AppAttestKeySettings],
         _ deleteIdsBlock: @escaping () throws -> [String]
     ) -> BaseOperation<Void> {
@@ -138,7 +138,7 @@ extension SettingsAppAttestKeyRepository: DataProviderRepositoryProtocol {
         }
     }
 
-    func replaceOperation(
+    public func replaceOperation(
         _ newModelsBlock: @escaping () throws -> [AppAttestKeySettings]
     ) -> BaseOperation<Void> {
         ClosureOperation { [weak self] in
@@ -152,7 +152,7 @@ extension SettingsAppAttestKeyRepository: DataProviderRepositoryProtocol {
         }
     }
 
-    func fetchCountOperation() -> BaseOperation<Int> {
+    public func fetchCountOperation() -> BaseOperation<Int> {
         ClosureOperation { [weak self] in
             self?.readMap().count ?? 0
         }
@@ -161,7 +161,7 @@ extension SettingsAppAttestKeyRepository: DataProviderRepositoryProtocol {
     /// A bare requirement of `DataProviderRepositoryProtocol`, not one the protocol
     /// extension defaults, so it is implemented here. Emptying the whole map is the point:
     /// the opt-out wipe has to take rows left behind by earlier client ids too.
-    func deleteAllOperation() -> BaseOperation<Void> {
+    public func deleteAllOperation() -> BaseOperation<Void> {
         ClosureOperation { [weak self] in
             self?.withMap { map in
                 map = [:]

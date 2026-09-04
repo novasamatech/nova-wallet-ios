@@ -1,5 +1,5 @@
 import XCTest
-@testable import novawallet
+@testable import NovaAppAttest
 
 final class BackendAttestationModeResolverTests: XCTestCase {
     func testSupportedDeviceUsesAppAttestInEveryConfiguration() {

@@ -1,6 +1,7 @@
 import XCTest
 @testable import novawallet
 import Keystore_iOS
+import NovaAppAttest
 
 final class AnalyticsIdentityTests: XCTestCase {
     func testInstallIdIsNotCreatedUntilItIsAsked() {
@@ -78,5 +79,16 @@ final class AnalyticsIdentityTests: XCTestCase {
         // A shared session id would let the gateway link the pre-opt-out install id to the
         // post-re-consent one, undoing the point of minting a new one.
         XCTAssertNotEqual(identity.sessionId, beforeSession)
+    }
+
+    /// Came from `BackendAttestationIdentityTests` when that file moved into `NovaAppAttest`.
+    /// It spans both identities, and `AnalyticsIdentity` is still an app type, so the
+    /// package's test target cannot hold it.
+    func testClientIdIsIndependentOfInstallId() {
+        let settings = InMemorySettingsManager()
+        let identity = BackendAttestationIdentity(settingsManager: settings)
+        let analytics = AnalyticsIdentity(settingsManager: settings)
+
+        XCTAssertNotEqual(identity.clientId(), analytics.installId())
     }
 }

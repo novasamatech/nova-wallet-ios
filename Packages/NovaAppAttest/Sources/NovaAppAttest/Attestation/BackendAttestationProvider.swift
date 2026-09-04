@@ -1,11 +1,12 @@
 import Foundation
 import Operation_iOS
+import SDKLogger
 
 /// Attest once, assert per request. Written fresh rather than generalised from the
 /// deleted `DAppAttestationProvider`: that type's UUID-keyed coalescing existed for
 /// concurrent browser calls, while the uploader is single-flight with serial batches,
 /// so this is a straight wrapper chain plus a little state.
-final class BackendAttestationProvider {
+public final class BackendAttestationProvider {
     private let appAttest: AppAttestServiceProtocol
     private let remoteFactory: BackendAttestationRemoteFactoryProtocol
     private let identity: BackendAttestationIdentityProtocol
@@ -14,7 +15,7 @@ final class BackendAttestationProvider {
     private let mode: BackendAttestationMode
     private let bundle: Bundle
     private let operationQueue: OperationQueue
-    private let logger: LoggerProtocol
+    private let logger: SDKLoggerProtocol
 
     private let mutex = NSLock()
 
@@ -26,7 +27,7 @@ final class BackendAttestationProvider {
     /// set the persisted row is ignored, so recovery can never re-attest the old key.
     private var needsFreshKey: Bool = false
 
-    init(
+    public init(
         appAttest: AppAttestServiceProtocol,
         remoteFactory: BackendAttestationRemoteFactoryProtocol,
         identity: BackendAttestationIdentityProtocol,
@@ -35,7 +36,7 @@ final class BackendAttestationProvider {
         mode: BackendAttestationMode,
         bundle: Bundle = .main,
         operationQueue: OperationQueue,
-        logger: LoggerProtocol = Logger.shared
+        logger: SDKLoggerProtocol
     ) {
         self.appAttest = appAttest
         self.remoteFactory = remoteFactory
@@ -534,7 +535,7 @@ private extension BackendAttestationProvider {
 // MARK: - BackendAttestationProviderProtocol
 
 extension BackendAttestationProvider: BackendAttestationProviderProtocol {
-    func createSignedHeadersWrapper(
+    public func createSignedHeadersWrapper(
         bodyClosure: @escaping () throws -> Data
     ) -> CompoundOperationWrapper<[AttestationHeaderKey: String]?> {
         // Deferred so the state checks read the state as it is when the request runs,
@@ -564,18 +565,18 @@ extension BackendAttestationProvider: BackendAttestationProviderProtocol {
         return wrapper.insertingTail(operation: resultOperation)
     }
 
-    func markUnattested() {
+    public func markUnattested() {
         invalidate()
         deleteRow()
     }
 
-    func forgetClient() {
+    public func forgetClient() {
         invalidate()
         identity.forgetClientId()
         deleteRow()
     }
 
-    func allowClient() {
+    public func allowClient() {
         identity.allowCreation()
     }
 }

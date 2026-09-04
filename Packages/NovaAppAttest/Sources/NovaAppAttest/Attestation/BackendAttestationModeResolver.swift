@@ -2,8 +2,8 @@ import Foundation
 
 /// Pure, with injected inputs so the ladder is unit-tested; the flags are read at the
 /// factory (.claude/docs/architecture/services-lifecycle.md:151-153).
-enum BackendAttestationModeResolver {
-    static func resolve(isReleaseBuild: Bool, isAppAttestSupported: Bool) -> BackendAttestationMode {
+public enum BackendAttestationModeResolver {
+    public static func resolve(isReleaseBuild: Bool, isAppAttestSupported: Bool) -> BackendAttestationMode {
         if isAppAttestSupported {
             return .appAttest
         }

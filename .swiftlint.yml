@@ -4,6 +4,8 @@ excluded:
   - R.generated.swift
   - novawalletTests
   - novawalletIntegrationTests
+  - Packages/NovaAppAttest/Tests
+  - Packages/NovaAppAttest/.build
   - NovaPushNotificationServiceExtension/R.generated.swift
   - vendor/bundle
   - .claude

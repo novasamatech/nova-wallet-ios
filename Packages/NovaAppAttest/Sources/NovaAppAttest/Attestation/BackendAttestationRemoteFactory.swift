@@ -4,10 +4,10 @@ import Operation_iOS
 /// The two gateway attestation endpoints of spec §7.6. The result factory is a raw
 /// `AnyNetworkResultFactory(block:)` because `successResponseBlock:` collapses 403 into
 /// `unexpectedStatusCode` and `processingBlock:` fails an empty 2xx body.
-final class BackendAttestationRemoteFactory {
+public final class BackendAttestationRemoteFactory {
     private let baseURL: URL
 
-    init(baseURL: URL) {
+    public init(baseURL: URL) {
         self.baseURL = baseURL
     }
 }
@@ -100,7 +100,7 @@ private extension BackendAttestationRemoteFactory {
 // MARK: - BackendAttestationRemoteFactoryProtocol
 
 extension BackendAttestationRemoteFactory: BackendAttestationRemoteFactoryProtocol {
-    func createChallengeWrapper() -> CompoundOperationWrapper<String> {
+    public func createChallengeWrapper() -> CompoundOperationWrapper<String> {
         // No client id, no signature: this call is anonymous.
         let block: NetworkResultFactoryBlock<String> = Self.createResultBlock(
             isClientAuthenticated: false
@@ -122,7 +122,7 @@ extension BackendAttestationRemoteFactory: BackendAttestationRemoteFactoryProtoc
         return CompoundOperationWrapper(targetOperation: operation)
     }
 
-    func createRegisterOperation(
+    public func createRegisterOperation(
         _ requestClosure: @escaping () throws -> BackendAttestationRegisterRequest
     ) -> BaseOperation<Void> {
         let block: NetworkResultFactoryBlock<Void> = Self.createResultBlock(

@@ -2,6 +2,7 @@ import Foundation
 import Foundation_iOS
 import Keystore_iOS
 import Operation_iOS
+import NovaAppAttest
 
 final class AnalyticsServiceFacade {
     static let shared = AnalyticsServiceFacade()
@@ -73,7 +74,8 @@ final class AnalyticsServiceFacade {
             repository: AnyDataProviderRepository(attestKeyRepository),
             gatewayURL: gatewayURL,
             mode: attestationMode,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: Logger.shared
         )
 
         let identity = AnalyticsIdentity(settingsManager: settingsManager)

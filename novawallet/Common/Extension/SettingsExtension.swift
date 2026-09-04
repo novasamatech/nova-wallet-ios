@@ -39,7 +39,6 @@ enum SettingsKey: String {
     case analyticsEnabled
     case analyticsPromptSeen
     case analyticsInstallId
-    case gatewayAttestationClientId
 }
 
 extension SettingsManagerProtocol {

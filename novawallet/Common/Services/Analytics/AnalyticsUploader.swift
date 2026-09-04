@@ -1,5 +1,6 @@
 import Foundation
 import Operation_iOS
+import NovaAppAttest
 
 /// Thrown when consent is withdrawn while an upload chain is already executing, which
 /// `flushCallStore.cancel()` cannot stop. Ends the chain instead of minting a replacement id.

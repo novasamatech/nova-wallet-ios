@@ -3,7 +3,7 @@ import DeviceCheck
 
 /// The seam that makes App Attest testable: DCAppAttestService.isSupported is false on
 /// Simulator, so without this every test of the state machine short-circuits.
-protocol DeviceCheckAttesting {
+public protocol DeviceCheckAttesting {
     var isSupported: Bool { get }
 
     func generateKey(completionHandler: @escaping (String?, Error?) -> Void)

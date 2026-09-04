@@ -2,7 +2,7 @@ import Foundation
 import DeviceCheck
 import Operation_iOS
 
-protocol AppAttestServiceProtocol {
+public protocol AppAttestServiceProtocol {
     var isSupported: Bool { get }
 
     /// `clientData` receives the key id — generated here when `keyId` is nil — because the
@@ -18,7 +18,7 @@ protocol AppAttestServiceProtocol {
     ) -> CompoundOperationWrapper<AppAttestAssertion>
 }
 
-enum AppAttestServiceError: Error {
+public enum AppAttestServiceError: Error {
     case keyIdGeneration(Error?)
     case invalidKeyId
     case serviceUnavailable
@@ -48,10 +48,10 @@ enum AppAttestServiceError: Error {
     }
 }
 
-final class AppAttestService {
+public final class AppAttestService {
     let service: DeviceCheckAttesting
 
-    init(service: DeviceCheckAttesting = DCAppAttestService.shared) {
+    public init(service: DeviceCheckAttesting = DCAppAttestService.shared) {
         self.service = service
     }
 
@@ -100,9 +100,9 @@ final class AppAttestService {
 }
 
 extension AppAttestService: AppAttestServiceProtocol {
-    var isSupported: Bool { service.isSupported }
+    public var isSupported: Bool { service.isSupported }
 
-    func createAttestationWrapper(
+    public func createAttestationWrapper(
         using keyId: AppAttestKeyId?,
         clientData: @escaping (AppAttestKeyId) throws -> Data
     ) -> CompoundOperationWrapper<AppAttestAttestation> {
@@ -121,7 +121,7 @@ extension AppAttestService: AppAttestServiceProtocol {
         )
     }
 
-    func createAssertionWrapper(
+    public func createAssertionWrapper(
         keyId: AppAttestKeyId,
         clientData: @escaping () throws -> Data
     ) -> CompoundOperationWrapper<AppAttestAssertion> {

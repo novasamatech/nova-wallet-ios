@@ -1,5 +1,6 @@
 import Foundation
 import Operation_iOS
+import NovaAppAttest
 
 final class AnalyticsService {
     private let consent: AnalyticsConsentManagerProtocol
