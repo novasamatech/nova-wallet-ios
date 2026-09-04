@@ -1673,6 +1673,7 @@
 		2D06CC2D2E38F52E0093CA84 /* AppAttestModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC2C2E38F52E0093CA84 /* AppAttestModel.swift */; };
 		2D06CC312E38F5990093CA84 /* AppAttestService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC302E38F5990093CA84 /* AppAttestService.swift */; };
 		FEEDC0000000000000000008 /* DeviceCheckAttesting.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDC0000000000000000007 /* DeviceCheckAttesting.swift */; };
+		FEEDC0000000000000000011 /* SettingsAppAttestKeyRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDC0000000000000000010 /* SettingsAppAttestKeyRepository.swift */; };
 		FEEDC000000000000000000A /* AttestationClientData.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDC0000000000000000009 /* AttestationClientData.swift */; };
 		FEEDE0000000000000000101 /* BackendAttestationProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDE0000000000000000001 /* BackendAttestationProtocols.swift */; };
 		FEEDE0000000000000000102 /* BackendAttestationIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDE0000000000000000002 /* BackendAttestationIdentity.swift */; };
@@ -1682,7 +1683,6 @@
 		2D06CC362E3BBC280093CA84 /* AppAttestError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC352E3BBC280093CA84 /* AppAttestError.swift */; };
 		2D06CC432E3BDB5B0093CA84 /* Base64Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC422E3BDB5B0093CA84 /* Base64Codable.swift */; };
 		2D06CC442E3BDB5B0093CA84 /* Base64Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC422E3BDB5B0093CA84 /* Base64Codable.swift */; };
-		2D06CC492E3C95A30093CA84 /* AppAttestKeyMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D06CC482E3C95A30093CA84 /* AppAttestKeyMapper.swift */; };
 		2D077E472BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D077E462BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift */; };
 		2D07803E2D12A175003E35B1 /* MercuryoCardParamsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D07803D2D12A175003E35B1 /* MercuryoCardParamsProvider.swift */; };
 		2D0780432D13273F003E35B1 /* DAppBrowserTabsButtonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D0780422D13273F003E35B1 /* DAppBrowserTabsButtonViewModel.swift */; };
@@ -6642,6 +6642,7 @@
 		5A17C0B62F0100000000E001 /* LegalConsentRepository+Singleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C0A62F0100000000E001 /* LegalConsentRepository+Singleton.swift */; };
 		5A17C0C22F0100000000E001 /* LegalConsentRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A17C0C12F0100000000E001 /* LegalConsentRepositoryTests.swift */; };
 		FEEDC0000000000000000002 /* AppAttestServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDC0000000000000000001 /* AppAttestServiceTests.swift */; };
+		FEEDC0000000000000000013 /* SettingsAppAttestKeyRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDC0000000000000000012 /* SettingsAppAttestKeyRepositoryTests.swift */; };
 		FEEDC0000000000000000005 /* AttestationClientDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDC0000000000000000004 /* AttestationClientDataTests.swift */; };
 		FEEDE0000000000000000105 /* BackendAttestationIdentityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDE0000000000000000005 /* BackendAttestationIdentityTests.swift */; };
 		FEEDE0000000000000000106 /* BackendAttestationModeResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDE0000000000000000006 /* BackendAttestationModeResolverTests.swift */; };
@@ -8414,6 +8415,7 @@
 		2D06CC2C2E38F52E0093CA84 /* AppAttestModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestModel.swift; sourceTree = "<group>"; };
 		2D06CC302E38F5990093CA84 /* AppAttestService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestService.swift; sourceTree = "<group>"; };
 		FEEDC0000000000000000007 /* DeviceCheckAttesting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceCheckAttesting.swift; sourceTree = "<group>"; };
+		FEEDC0000000000000000010 /* SettingsAppAttestKeyRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsAppAttestKeyRepository.swift; sourceTree = "<group>"; };
 		FEEDC0000000000000000009 /* AttestationClientData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttestationClientData.swift; sourceTree = "<group>"; };
 		FEEDE0000000000000000001 /* BackendAttestationProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendAttestationProtocols.swift; sourceTree = "<group>"; };
 		FEEDE0000000000000000002 /* BackendAttestationIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendAttestationIdentity.swift; sourceTree = "<group>"; };
@@ -8424,7 +8426,6 @@
 		2D06CC422E3BDB5B0093CA84 /* Base64Codable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Base64Codable.swift; sourceTree = "<group>"; };
 		8A1C0E612F0300000000B102 /* FullDateCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullDateCodable.swift; sourceTree = "<group>"; };
 		2D06CC472E3C94780093CA84 /* MultiassetUserDataModel17.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel17.xcdatamodel; sourceTree = "<group>"; };
-		2D06CC482E3C95A30093CA84 /* AppAttestKeyMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestKeyMapper.swift; sourceTree = "<group>"; };
 		2D077E462BFDCB8700FE422E /* ManualBackupChainTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualBackupChainTableViewCell.swift; sourceTree = "<group>"; };
 		2D07803D2D12A175003E35B1 /* MercuryoCardParamsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MercuryoCardParamsProvider.swift; sourceTree = "<group>"; };
 		2D0780422D13273F003E35B1 /* DAppBrowserTabsButtonViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTabsButtonViewModel.swift; sourceTree = "<group>"; };
@@ -13087,6 +13088,7 @@
 		5A17C0A62F0100000000E001 /* LegalConsentRepository+Singleton.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "LegalConsentRepository+Singleton.swift"; sourceTree = "<group>"; };
 		5A17C0C12F0100000000E001 /* LegalConsentRepositoryTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LegalConsentRepositoryTests.swift; sourceTree = "<group>"; };
 		FEEDC0000000000000000001 /* AppAttestServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppAttestServiceTests.swift; sourceTree = "<group>"; };
+		FEEDC0000000000000000012 /* SettingsAppAttestKeyRepositoryTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SettingsAppAttestKeyRepositoryTests.swift; sourceTree = "<group>"; };
 		FEEDC0000000000000000004 /* AttestationClientDataTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AttestationClientDataTests.swift; sourceTree = "<group>"; };
 		FEEDE0000000000000000005 /* BackendAttestationIdentityTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackendAttestationIdentityTests.swift; sourceTree = "<group>"; };
 		FEEDE0000000000000000006 /* BackendAttestationModeResolverTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackendAttestationModeResolverTests.swift; sourceTree = "<group>"; };
@@ -17077,6 +17079,7 @@
 				2D06CC352E3BBC280093CA84 /* AppAttestError.swift */,
 				2D06CC302E38F5990093CA84 /* AppAttestService.swift */,
 				FEEDC0000000000000000007 /* DeviceCheckAttesting.swift */,
+				FEEDC0000000000000000010 /* SettingsAppAttestKeyRepository.swift */,
 			);
 			path = AppAttest;
 			sourceTree = "<group>";
@@ -22626,6 +22629,7 @@
 			isa = PBXGroup;
 			children = (
 				FEEDC0000000000000000001 /* AppAttestServiceTests.swift */,
+				FEEDC0000000000000000012 /* SettingsAppAttestKeyRepositoryTests.swift */,
 			);
 			path = AppAttest;
 			sourceTree = "<group>";
@@ -22921,7 +22925,6 @@
 				0C37AFC92B5981B900009ECA /* ProxiedSettingsMapper.swift */,
 				2DDEE0EA2CEDD43A002E9289 /* DAppBrowserTabMapper.swift */,
 				770ABB8D2B85593700132465 /* Web3TopicSettingsMapper.swift */,
-				2D06CC482E3C95A30093CA84 /* AppAttestKeyMapper.swift */,
 				0C0F6D6D2D39549100943A7C /* StakingDashboardMythosMapper.swift */,
 				FEEDA0000000000000000013 /* AnalyticsPendingEventMapper.swift */,
 			);
@@ -34218,7 +34221,6 @@
 				0C0F6D702D3958CD00943A7C /* MythosStaking+StoragePath.swift in Sources */,
 				848B3000286EDE3800465BA2 /* ParaIdOperationFactory.swift in Sources */,
 				0CEB6B4D2CA6676900609DC2 /* VoteCardPanState.swift in Sources */,
-				2D06CC492E3C95A30093CA84 /* AppAttestKeyMapper.swift in Sources */,
 				2DBB28932CD432FB00DFA0AD /* CopyAddressPresentable.swift in Sources */,
 				84D8753A28EB0A93004065BD /* GovernanceChainSettings.swift in Sources */,
 				8443FE24255586230092893D /* ExportMnemonicConfirmProtocols.swift in Sources */,
@@ -36144,6 +36146,7 @@
 				77EFFC932A72A288009E28F8 /* StakingTypeBaseBannerView.swift in Sources */,
 				2D06CC312E38F5990093CA84 /* AppAttestService.swift in Sources */,
 				FEEDC0000000000000000008 /* DeviceCheckAttesting.swift in Sources */,
+				FEEDC0000000000000000011 /* SettingsAppAttestKeyRepository.swift in Sources */,
 				FEEDC000000000000000000A /* AttestationClientData.swift in Sources */,
 				FEEDE0000000000000000101 /* BackendAttestationProtocols.swift in Sources */,
 				FEEDE0000000000000000102 /* BackendAttestationIdentity.swift in Sources */,
@@ -37560,6 +37563,7 @@
 				79D4519A4D73DA1757414210 /* HydraFeeOraclePriceCalculatorTests.swift in Sources */,
 				5A17C0C22F0100000000E001 /* LegalConsentRepositoryTests.swift in Sources */,
 				FEEDC0000000000000000002 /* AppAttestServiceTests.swift in Sources */,
+				FEEDC0000000000000000013 /* SettingsAppAttestKeyRepositoryTests.swift in Sources */,
 				FEEDC0000000000000000005 /* AttestationClientDataTests.swift in Sources */,
 				FEEDE0000000000000000105 /* BackendAttestationIdentityTests.swift in Sources */,
 				FEEDE0000000000000000106 /* BackendAttestationModeResolverTests.swift in Sources */,

@@ -54,7 +54,7 @@ extension AnalyticsTestFixture {
         )
 
         let attestation = deviceCheck.map {
-            makeAttestation(deviceCheck: $0, facade: facade, settings: settings)
+            makeAttestation(deviceCheck: $0, settings: settings)
         }
 
         let uploader = MockAnalyticsUploading()
@@ -118,15 +118,9 @@ extension AnalyticsTestFixture {
     /// supplied double and everything between it and the queue is the production object.
     private static func makeAttestation(
         deviceCheck: MockDeviceCheckAttesting,
-        facade: UserDataStorageTestFacade,
         settings: InMemorySettingsManager
     ) -> BackendAttestationProvider {
-        let repository: CoreDataRepository<AppAttestKeySettings, CDAppAttestKey> =
-            facade.createRepository(
-                filter: nil,
-                sortDescriptors: [],
-                mapper: AnyCoreDataMapper(AppAttestKeyMapper())
-            )
+        let repository = SettingsAppAttestKeyRepository(settingsManager: settings)
 
         let remote = MockBackendAttestationRemoteFactoryProtocol()
         stub(remote) { stub in

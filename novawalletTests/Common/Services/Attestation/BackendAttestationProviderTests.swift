@@ -182,7 +182,6 @@ final class BackendAttestationProviderTests: XCTestCase {
         let repository: AnyDataProviderRepository<AppAttestKeySettings>
         let operationQueue: OperationQueue
         let registered: RegisterRecorder
-        let facade: UserDataStorageTestFacade
     }
 
     private func makeFixture(
@@ -194,17 +193,13 @@ final class BackendAttestationProviderTests: XCTestCase {
         optOutAfterAttestedSave: Bool = false,
         sharingStoreWith existing: Fixture? = nil
     ) -> Fixture {
-        // A second fixture over the same store and settings is what a relaunch looks like:
-        // the rows survive, every in-memory latch is gone.
-        let facade = existing?.facade ?? UserDataStorageTestFacade()
-        let coreDataRepository: CoreDataRepository<AppAttestKeySettings, CDAppAttestKey> =
-            facade.createRepository(
-                filter: nil,
-                sortDescriptors: [],
-                mapper: AnyCoreDataMapper(AppAttestKeyMapper())
-            )
+        let settings = existing?.settings ?? InMemorySettingsManager()
 
-        let realRepository = AnyDataProviderRepository(coreDataRepository)
+        // A second fixture over the same settings is what a relaunch looks like: the rows
+        // survive, every in-memory latch is gone.
+        let realRepository = AnyDataProviderRepository(
+            SettingsAppAttestKeyRepository(settingsManager: settings)
+        )
 
         let registered = RegisterRecorder()
 
@@ -292,7 +287,6 @@ final class BackendAttestationProviderTests: XCTestCase {
             }
         }
 
-        let settings = existing?.settings ?? InMemorySettingsManager()
         let operationQueue = OperationQueue()
 
         let provider = BackendAttestationProvider(
@@ -316,8 +310,7 @@ final class BackendAttestationProviderTests: XCTestCase {
             settings: settings,
             repository: repository,
             operationQueue: operationQueue,
-            registered: registered,
-            facade: facade
+            registered: registered
         )
     }
 

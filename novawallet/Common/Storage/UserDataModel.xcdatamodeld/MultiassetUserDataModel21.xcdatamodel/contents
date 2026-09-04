@@ -7,11 +7,6 @@
         <attribute name="sequence" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
-    <entity name="CDAppAttestKey" representedClassName="CDAppAttestKey" syncable="YES" codeGenerationType="class">
-        <attribute name="identifier" optional="YES" attributeType="String"/>
-        <attribute name="isAttested" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-        <attribute name="keyId" optional="YES" attributeType="String"/>
-    </entity>
     <entity name="CDChainAccount" representedClassName="CDChainAccount" syncable="YES" codeGenerationType="class">
         <attribute name="accountId" attributeType="String"/>
         <attribute name="chainId" attributeType="String"/>
