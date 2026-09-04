@@ -11,6 +11,7 @@ final class StubAssetExchangeEdge {
     let destination: ChainAssetId
     let type: AssetExchangeEdgeType
     let chain: ChainModel
+    let poolId: AssetExchangePoolId?
     let quoteClosure: (Balance, AssetConversion.Direction) -> Balance
 
     init(
@@ -18,12 +19,14 @@ final class StubAssetExchangeEdge {
         destination: ChainAssetId,
         type: AssetExchangeEdgeType,
         chain: ChainModel,
+        poolId: AssetExchangePoolId? = nil,
         quoteClosure: @escaping (Balance, AssetConversion.Direction) -> Balance = { amount, _ in amount }
     ) {
         self.origin = origin
         self.destination = destination
         self.type = type
         self.chain = chain
+        self.poolId = poolId
         self.quoteClosure = quoteClosure
     }
 }

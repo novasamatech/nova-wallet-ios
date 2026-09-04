@@ -25,6 +25,7 @@ class AnyAssetExchangeEdge {
     private let canPayFeesInIntermedPositionClosure: () -> Bool
     private let requiresKeepAliveOnIntermediatePositionClosure: () -> Bool
     private let typeClosure: () -> AssetExchangeEdgeType
+    private let poolIdClosure: () -> AssetExchangePoolId?
 
     private let beginMetaOperationClosure: (Balance, Balance) throws -> AssetExchangeMetaOperationProtocol
 
@@ -49,6 +50,7 @@ class AnyAssetExchangeEdge {
         canPayFeesInIntermedPositionClosure = edge.canPayNonNativeFeesInIntermediatePosition
         requiresKeepAliveOnIntermediatePositionClosure = edge.requiresOriginKeepAliveOnIntermediatePosition
         typeClosure = { edge.type }
+        poolIdClosure = { edge.poolId }
         beginMetaOperationClosure = edge.beginMetaOperation
         appendToMetaOperationClosure = edge.appendToMetaOperation
         beginOperationPrototypeClosure = edge.beginOperationPrototype
@@ -71,6 +73,7 @@ extension AnyAssetExchangeEdge: AssetExchangableGraphEdge {
     var origin: ChainAssetId { fetchOrigin() }
     var destination: ChainAssetId { fetchDestination() }
     var type: AssetExchangeEdgeType { typeClosure() }
+    var poolId: AssetExchangePoolId? { poolIdClosure() }
 
     func addingWeight(to currentWeight: Int, predecessor edge: AnyGraphEdgeProtocol?) -> Int {
         addingWeight(currentWeight, edge)

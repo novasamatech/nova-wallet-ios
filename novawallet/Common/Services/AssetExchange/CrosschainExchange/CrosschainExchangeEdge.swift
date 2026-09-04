@@ -34,6 +34,7 @@ final class CrosschainExchangeEdge {
 
 extension CrosschainExchangeEdge: AssetExchangableGraphEdge {
     var type: AssetExchangeEdgeType { .crossChain }
+    var poolId: AssetExchangePoolId? { nil }
 
     var weight: Int { AssetsExchange.defaultEdgeWeight }
 
