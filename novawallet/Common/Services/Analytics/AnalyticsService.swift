@@ -9,11 +9,17 @@ final class AnalyticsService {
     private let uploader: AnalyticsUploading
     private let operationQueue: OperationQueue
     private let uploadOperationQueue: OperationQueue
+    private let completionQueue: DispatchQueue
     private let timeProvider: () -> Date
     private let logger: LoggerProtocol
 
     private let mutex = NSLock()
     private let flushCallStore = CancellableCallStore()
+
+    /// Owned here rather than captured by `executeCancellable`'s callback, which is
+    /// silently dropped once the call store has been cancelled — that would strand the
+    /// caller's completion, and with it the `UIBackgroundTask` the background flush holds.
+    private var pendingFlushCompletions: [() -> Void] = []
 
     private var currentFeature: String?
     private var lastFlushAt: Date = .distantPast
@@ -37,6 +43,7 @@ final class AnalyticsService {
         attestation: BackendAttestationProviderProtocol? = nil,
         operationQueue: OperationQueue,
         uploadOperationQueue: OperationQueue,
+        completionQueue: DispatchQueue = DispatchQueue(label: "io.novawallet.analytics.completions"),
         timeProvider: @escaping () -> Date = { Date() },
         logger: LoggerProtocol = Logger.shared
     ) {
@@ -47,6 +54,7 @@ final class AnalyticsService {
         self.uploader = uploader
         self.operationQueue = operationQueue
         self.uploadOperationQueue = uploadOperationQueue
+        self.completionQueue = completionQueue
         self.timeProvider = timeProvider
         self.logger = logger
 
@@ -116,8 +124,9 @@ private extension AnalyticsService {
         }
     }
 
-    /// Returns false when nothing was started, so the caller knows to run `completion`
-    /// itself rather than wait for a chain that does not exist.
+    /// Returns false when no chain will ever settle for this caller, so it must run
+    /// `completion` itself. True means the completion has been parked and will be run
+    /// exactly once — by the chain finishing, or by whatever cancels it.
     @discardableResult
     func flushLocked(
         reason: AnalyticsFlushReason,
@@ -138,7 +147,18 @@ private extension AnalyticsService {
         }
 
         guard !flushCallStore.hasCall else {
-            return false
+            // Single-flight: wait for the chain that is already running rather than
+            // reporting settled while a POST is still on the wire — releasing the
+            // background assertion here is the very hazard this method exists to close.
+            if let completion {
+                pendingFlushCompletions.append(completion)
+            }
+
+            return true
+        }
+
+        if let completion {
+            pendingFlushCompletions.append(completion)
         }
 
         lastFlushAt = now
@@ -162,10 +182,35 @@ private extension AnalyticsService {
                 self?.logger.debug("Analytics flush failed: \(error)")
             }
 
-            completion?()
+            // Runs with `mutex` held — see `executeCancellable`'s `locking:` argument.
+            self?.releaseFlushCompletionsLocked()
         }
 
         return true
+    }
+
+    /// `executeCancellable` drops its callback once the call store has been cancelled, so
+    /// the completions cannot live there. Both routes out of a flush — the chain settling
+    /// and the chain being cancelled — end here, and the list is emptied before anything
+    /// runs, so each completion fires exactly once.
+    func releaseFlushCompletionsLocked() {
+        guard !pendingFlushCompletions.isEmpty else {
+            return
+        }
+
+        let pending = pendingFlushCompletions
+        pendingFlushCompletions = []
+
+        // Off the mutex: a completion is the caller's code, and NSLock is not recursive,
+        // so a completion that flushes or tracks again would deadlock here.
+        completionQueue.async {
+            pending.forEach { $0() }
+        }
+    }
+
+    func cancelFlushLocked() {
+        flushCallStore.cancel()
+        releaseFlushCompletionsLocked()
     }
 
     /// Spec §6.5 step 3 and §10's one-shot wipe. Failure is latched rather than logged and
@@ -220,13 +265,12 @@ private extension AnalyticsService {
 
         let timestamp = timeProvider()
 
-        mutex.unlock()
-
         let payload: Data
 
         do {
             payload = try AnalyticsCoding.encoder.encode(event.wireProperties)
         } catch {
+            mutex.unlock()
             logger.error("Analytics event dropped, unencodable: \(error)")
             completion?()
 
@@ -268,6 +312,10 @@ private extension AnalyticsService {
             dependencies: enqueueWrapper.allOperations + [countOperation]
         )
 
+        // Submitted while the mutex is still held, so it is ordered against the wipes in
+        // `handleConsentDisabled` and `handleAvailabilityChanged`, which submit their clear
+        // to the same serial queue under the same lock. Releasing the lock first let an
+        // event land in the store *after* the opt-out wipe had already run.
         execute(
             wrapper: totalWrapper,
             inOperationQueue: operationQueue,
@@ -279,6 +327,8 @@ private extension AnalyticsService {
 
             completion?()
         }
+
+        mutex.unlock()
     }
 }
 
@@ -338,7 +388,7 @@ extension AnalyticsService {
             mutex.unlock()
         }
 
-        flushCallStore.cancel()
+        cancelFlushLocked()
     }
 
     /// Spec §10. The kill switch's one-shot wipe, on the enabled→disabled edge only:
@@ -363,7 +413,7 @@ extension AnalyticsService {
 
         // Same hazard as the opt-out wipe: a batch already in the air must not be dropped
         // from a queue that is being cleared underneath it.
-        flushCallStore.cancel()
+        cancelFlushLocked()
 
         wipeLocked()
     }
@@ -376,7 +426,7 @@ extension AnalyticsService {
             mutex.unlock()
         }
 
-        flushCallStore.cancel()
+        cancelFlushLocked()
         identity.forgetInstallId()
 
         wipeLocked()

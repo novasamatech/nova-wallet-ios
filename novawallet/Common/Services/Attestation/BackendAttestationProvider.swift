@@ -468,8 +468,11 @@ private extension BackendAttestationProvider {
                 throw BackendAttestationError.unsupported
             }
 
-            // `cacheAttestedKeyId` also clears `needsFreshKey`, so caching here after an
-            // opt-out would let a key minted for the old client sign for the new one.
+            // Defence in depth, and deliberately unreachable today: `saveOperation` carries
+            // the same gate one operation earlier and throws, so no test can drive the
+            // chain this far. It stays because `cacheAttestedKeyId` also clears
+            // `needsFreshKey` — if the save gate ever becomes a skip rather than a throw,
+            // this is what stops a key minted for the old client signing for the new one.
             try requireEpoch(epoch)
 
             cacheAttestedKeyId(keyId)
