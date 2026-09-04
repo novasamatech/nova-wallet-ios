@@ -17,6 +17,10 @@ enum SettingsAppAttestKeyRepositoryError: Error {
 /// queue and UserDefaults gives per-key atomicity only, so an unguarded read-modify-write
 /// of the map drops concurrent saves.
 final class SettingsAppAttestKeyRepository {
+    /// A bare string literal rather than a `SettingsKey` case — every other settings key in
+    /// the app goes through that enum. This file moves into the standalone `NovaAppAttest`
+    /// package next, which cannot depend on the app's `SettingsKey` enum, so the key has to
+    /// be self-contained here rather than delegate to it.
     static let storageKey = "appAttestKeys"
 
     private let settingsManager: SettingsManagerProtocol
@@ -30,7 +34,14 @@ final class SettingsAppAttestKeyRepository {
 // MARK: - Private
 
 private extension SettingsAppAttestKeyRepository {
-    /// Callers must hold `mutex`.
+    /// Callers must hold `mutex`. Decodes the whole map as one JSON blob via `try?`
+    /// (`SettingsManagerProtocol.value(of:for:)`), so adding a non-optional field to
+    /// `AppAttestKeySettings` later would silently discard *every* row rather than the one
+    /// row that fails to decode. The consequence is benign here — a fresh key and a
+    /// re-register — and it is actually an improvement on the CoreData mapper this
+    /// replaced, which threw `CommonError.dataCorruption` into a fetch that `resolveRow`
+    /// (`BackendAttestationProvider.swift:88-102`) does not absorb, wedging attestation
+    /// permanently.
     func loadMap() -> [String: AppAttestKeySettings] {
         settingsManager.value(of: [String: AppAttestKeySettings].self, for: Self.storageKey) ?? [:]
     }
