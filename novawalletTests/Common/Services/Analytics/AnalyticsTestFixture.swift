@@ -19,6 +19,8 @@ struct AnalyticsTestFixture {
     let attestation: BackendAttestationProvider?
     let operationQueue: OperationQueue
     let uploadOperationQueue: OperationQueue
+    /// Serial, so `sync {}` on it is a complete drain of everything already queued.
+    let completionQueue: DispatchQueue
 }
 
 extension AnalyticsTestFixture {
@@ -82,6 +84,7 @@ extension AnalyticsTestFixture {
         operationQueue.maxConcurrentOperationCount = 1
 
         let uploadOperationQueue = OperationQueue()
+        let completionQueue = DispatchQueue(label: "test.analytics.completions")
 
         let service = AnalyticsService(
             consent: consent,
@@ -92,6 +95,7 @@ extension AnalyticsTestFixture {
             attestation: attestation,
             operationQueue: operationQueue,
             uploadOperationQueue: uploadOperationQueue,
+            completionQueue: completionQueue,
             timeProvider: now,
             logger: Logger.shared
         )
@@ -105,7 +109,8 @@ extension AnalyticsTestFixture {
             uploader: uploader,
             attestation: attestation,
             operationQueue: operationQueue,
-            uploadOperationQueue: uploadOperationQueue
+            uploadOperationQueue: uploadOperationQueue,
+            completionQueue: completionQueue
         )
     }
 
@@ -164,6 +169,12 @@ extension AnalyticsTestFixture {
     /// the outer wrapper does, so this one wait covers the whole signing chain.
     func drainUploads() {
         uploadOperationQueue.waitUntilAllOperationsAreFinished()
+    }
+
+    /// Flush completions are dispatched off the service's mutex, so an assertion about
+    /// them has to wait for that hop. Serial queue, so this drains everything queued.
+    func drainCompletions() {
+        completionQueue.sync {}
     }
 
     func queueCount() throws -> Int {

@@ -173,4 +173,225 @@ final class AnalyticsServiceTests: XCTestCase {
         release.fulfill()
         fixture.uploadOperationQueue.waitUntilAllOperationsAreFinished()
     }
+
+    /// `executeCancellable` drops its callback once the call store has been cancelled, so a
+    /// completion registered there is never run. The background handler hands over the
+    /// closure that ends its `UIBackgroundTask`, so losing it holds a system assertion open
+    /// until iOS expires it.
+    func testAFlushCompletionStillRunsWhenTheFlushIsCancelled() {
+        let fixture = AnalyticsTestFixture.makeConsented()
+        let gate = DispatchSemaphore(value: 0)
+        holdFlush(fixture, until: gate)
+
+        let completions = CompletionCounter()
+        let ranTwice = expectation(description: "completion ran a second time")
+        ranTwice.isInverted = true
+
+        fixture.service.flush(reason: .background) {
+            if completions.increment() > 1 {
+                ranTwice.fulfill()
+            }
+        }
+
+        fixture.service.cancelFlush()
+        fixture.drainCompletions()
+
+        XCTAssertEqual(completions.value, 1, "the cancelled flush stranded its completion")
+
+        gate.signal()
+        fixture.drainUploads()
+
+        // The chain's own callback fires after the operation reports finished, so this
+        // waits for the window in which a double invocation would land.
+        wait(for: [ranTwice], timeout: 1)
+    }
+
+    /// Reporting the flush settled because the single-flight slot is busy releases the
+    /// background assertion while a real POST is still on the wire — the same defect the
+    /// completion exists to close.
+    func testAFlushCompletionWaitsForTheFlushThatIsAlreadyRunning() {
+        let fixture = AnalyticsTestFixture.makeConsented()
+        let gate = DispatchSemaphore(value: 0)
+        holdFlush(fixture, until: gate)
+
+        fixture.service.flush(reason: .launch, completion: {})
+
+        let completions = CompletionCounter()
+        let released = expectation(description: "completion after the in-flight flush settles")
+
+        fixture.service.flush(reason: .background) {
+            completions.increment()
+            released.fulfill()
+        }
+
+        fixture.drainCompletions()
+
+        XCTAssertEqual(
+            completions.value,
+            0,
+            "the completion fired while the in-flight upload was still running"
+        )
+
+        gate.signal()
+        wait(for: [released], timeout: 5)
+
+        XCTAssertEqual(completions.value, 1)
+    }
+
+    func testAFlushCompletionRunsWhenThereIsNothingToFlush() {
+        let fixture = AnalyticsTestFixture.make(isAvailable: false)
+
+        let completions = CompletionCounter()
+        fixture.service.flush(reason: .background) { completions.increment() }
+        fixture.drainCompletions()
+
+        XCTAssertEqual(completions.value, 1)
+    }
+
+    func testAnOptOutReleasesTheCompletionOfTheFlushItCancels() {
+        let fixture = AnalyticsTestFixture.makeConsented()
+        let gate = DispatchSemaphore(value: 0)
+        holdFlush(fixture, until: gate)
+
+        let completions = CompletionCounter()
+        let ranTwice = expectation(description: "completion ran a second time")
+        ranTwice.isInverted = true
+
+        fixture.service.flush(reason: .background) {
+            if completions.increment() > 1 {
+                ranTwice.fulfill()
+            }
+        }
+
+        fixture.consent.setEnabled(false)
+        fixture.drain()
+        fixture.drainCompletions()
+
+        XCTAssertEqual(completions.value, 1)
+
+        gate.signal()
+        fixture.drainUploads()
+
+        wait(for: [ranTwice], timeout: 1)
+    }
+
+    /// The enqueue must be *submitted* while the service's mutex is held, because the
+    /// opt-out wipe submits its clear to the same serial queue under the same lock. Release
+    /// the lock first and an event lands in the store behind the wipe and is uploaded on the
+    /// next launch.
+    ///
+    /// Proved by mutual exclusion rather than by racing: a consent change attempted from
+    /// another thread at the moment of the enqueue must be unable to complete.
+    func testTheEnqueueIsSubmittedWhileTheConsentWipeIsLockedOut() {
+        let settings = InMemorySettingsManager()
+        let availability = AnalyticsAvailabilityProvider(attestationMode: .appAttest)
+        let consent = AnalyticsConsentManager(
+            settingsManager: settings,
+            availabilityProvider: availability
+        )
+        consent.setEnabled(true)
+
+        let wipeReachedConsentChange = DispatchSemaphore(value: 0)
+        // Two separate signals, deliberately: a DispatchSemaphore satisfies one waiter per
+        // signal, so probing and waiting on the same one would leave the final wait
+        // blocked forever whenever the probe succeeded — the test would hang on a
+        // regression instead of failing.
+        let wipeProbe = DispatchSemaphore(value: 0)
+        let wipeCompleted = expectation(description: "the consent change eventually completes")
+        let wipeWasBlocked = CompletionCounter()
+
+        let queue = MockAnalyticsEventQueueProtocol()
+        stub(queue) { stub in
+            when(stub.enqueueWrapper(name: any(), timestamp: any(), payload: any())).then { _, _, _ in
+                DispatchQueue.global().async {
+                    wipeReachedConsentChange.signal()
+                    consent.setEnabled(false)
+                    wipeProbe.signal()
+                    wipeCompleted.fulfill()
+                }
+
+                // The other thread is definitely inside setEnabled by now. If it cannot
+                // finish, it is parked on the mutex this call is holding.
+                wipeReachedConsentChange.wait()
+
+                if wipeProbe.wait(timeout: .now() + 0.5) == .timedOut {
+                    wipeWasBlocked.increment()
+                }
+
+                return CompoundOperationWrapper.createWithResult(())
+            }
+
+            when(stub.countOperation()).then { ClosureOperation<Int> { 0 } }
+            when(stub.clearOperation()).then { ClosureOperation<Void> {} }
+        }
+
+        let operationQueue = OperationQueue()
+        operationQueue.maxConcurrentOperationCount = 1
+
+        let uploader = MockAnalyticsUploading()
+        stub(uploader) { stub in
+            when(stub.flushWrapper(maxBatches: any())).then { _ in
+                CompoundOperationWrapper<Void>.createWithResult(())
+            }
+        }
+
+        let service = AnalyticsService(
+            consent: consent,
+            availability: availability,
+            queue: queue,
+            identity: AnalyticsIdentity(settingsManager: settings),
+            uploader: uploader,
+            operationQueue: operationQueue,
+            uploadOperationQueue: OperationQueue()
+        )
+
+        service.track(.novaCardOpened())
+
+        wait(for: [wipeCompleted], timeout: 5)
+        operationQueue.waitUntilAllOperationsAreFinished()
+
+        XCTAssertEqual(
+            wipeWasBlocked.value,
+            1,
+            "the opt-out wipe could run while the enqueue was still being submitted"
+        )
+    }
+
+    private func holdFlush(_ fixture: AnalyticsTestFixture, until gate: DispatchSemaphore) {
+        stub(fixture.uploader) { stub in
+            when(stub.flushWrapper(maxBatches: any())).then { _ in
+                CompoundOperationWrapper(targetOperation: ClosureOperation<Void> {
+                    gate.wait()
+                })
+            }
+        }
+    }
+}
+
+private final class CompletionCounter {
+    private let mutex = NSLock()
+    private var count = 0
+
+    @discardableResult
+    func increment() -> Int {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        count += 1
+
+        return count
+    }
+
+    var value: Int {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return count
+    }
 }
