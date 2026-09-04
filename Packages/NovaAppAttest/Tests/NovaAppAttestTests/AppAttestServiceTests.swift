@@ -1,8 +1,7 @@
 import XCTest
-@testable import novawallet
+@testable import NovaAppAttest
 import Operation_iOS
 import DeviceCheck
-import Cuckoo
 
 final class AppAttestServiceTests: XCTestCase {
     private func run<T>(_ wrapper: CompoundOperationWrapper<T>) throws -> T {
@@ -10,28 +9,19 @@ final class AppAttestServiceTests: XCTestCase {
         return try wrapper.targetOperation.extractNoCancellableResultData()
     }
 
-    private func makeDevice() -> MockDeviceCheckAttesting {
-        let device = MockDeviceCheckAttesting()
-        stub(device) { stub in
-            when(stub.isSupported.get).thenReturn(true)
-            when(stub.generateKey(completionHandler: any())).then { completion in
-                completion("generated-key-id", nil)
-            }
-            when(stub.attestKey(any(), clientDataHash: any(), completionHandler: any()))
-                .then { _, _, completion in completion(Data("attestation".utf8), nil) }
-            when(stub.generateAssertion(any(), clientDataHash: any(), completionHandler: any()))
-                .then { _, _, completion in completion(Data("assertion".utf8), nil) }
-        }
+    private func makeDevice() -> DeviceCheckAttestingSpy {
+        let device = DeviceCheckAttestingSpy()
+        device.isSupported = true
+        device.generateKeyResult = .success("generated-key-id")
+        device.attestKeyResult = .success(Data("attestation".utf8))
+        device.generateAssertionResult = .success(Data("assertion".utf8))
         return device
     }
 
-    private func makeDevice(failingAssertionWith error: Error) -> MockDeviceCheckAttesting {
-        let device = MockDeviceCheckAttesting()
-        stub(device) { stub in
-            when(stub.isSupported.get).thenReturn(true)
-            when(stub.generateAssertion(any(), clientDataHash: any(), completionHandler: any()))
-                .then { _, _, completion in completion(nil, error) }
-        }
+    private func makeDevice(failingAssertionWith error: Error) -> DeviceCheckAttestingSpy {
+        let device = DeviceCheckAttestingSpy()
+        device.isSupported = true
+        device.generateAssertionResult = .failure(error)
         return device
     }
 
@@ -57,7 +47,7 @@ final class AppAttestServiceTests: XCTestCase {
         let result = try run(service.createAttestationWrapper(using: "existing-key") { _ in Data() })
 
         XCTAssertEqual(result.keyId, "existing-key")
-        verify(device, never()).generateKey(completionHandler: any())
+        XCTAssertEqual(device.generateKeyCallCount, 0)
     }
 
     func testClientDataIsHashedWithSha256BeforeReachingDeviceCheck() throws {
@@ -67,9 +57,7 @@ final class AppAttestServiceTests: XCTestCase {
 
         _ = try run(service.createAssertionWrapper(keyId: "k", clientData: { clientData }))
 
-        let captor = ArgumentCaptor<Data>()
-        verify(device).generateAssertion(any(), clientDataHash: captor.capture(), completionHandler: any())
-        XCTAssertEqual(captor.value, clientData.sha256())
+        XCTAssertEqual(device.assertionClientDataHashes, [clientData.sha256()])
     }
 
     func testInvalidKeyDCErrorMapsToInvalidKeyId() {

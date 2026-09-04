@@ -3,7 +3,7 @@ import Keystore_iOS
 
 /// Per gateway URL and per consent cycle: the gateway's lookup key for the registered
 /// credential, so two installs never share one and a re-consented user is a new client.
-final class BackendAttestationIdentity {
+public final class BackendAttestationIdentity {
     private let settingsManager: SettingsManagerProtocol
     private let mutex = NSLock()
 
@@ -18,7 +18,7 @@ final class BackendAttestationIdentity {
     /// attested-key cache is repopulated.
     private var currentConsentEpoch: Int = 0
 
-    var consentEpoch: Int {
+    public var consentEpoch: Int {
         mutex.lock()
 
         defer {
@@ -28,7 +28,7 @@ final class BackendAttestationIdentity {
         return currentConsentEpoch
     }
 
-    init(settingsManager: SettingsManagerProtocol) {
+    public init(settingsManager: SettingsManagerProtocol) {
         self.settingsManager = settingsManager
     }
 }
@@ -38,7 +38,7 @@ final class BackendAttestationIdentity {
 extension BackendAttestationIdentity: BackendAttestationIdentityProtocol {
     /// `nil` once forgotten and not re-armed: the caller must fail the request rather than
     /// register a new client for an opted-out install.
-    func clientId() -> String? {
+    public func clientId() -> String? {
         mutex.lock()
 
         defer {
@@ -59,7 +59,7 @@ extension BackendAttestationIdentity: BackendAttestationIdentityProtocol {
         return created
     }
 
-    func forgetClientId() {
+    public func forgetClientId() {
         mutex.lock()
 
         defer {
@@ -71,7 +71,7 @@ extension BackendAttestationIdentity: BackendAttestationIdentityProtocol {
         currentConsentEpoch += 1
     }
 
-    func allowCreation() {
+    public func allowCreation() {
         mutex.lock()
 
         defer {

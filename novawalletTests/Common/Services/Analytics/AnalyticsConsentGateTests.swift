@@ -3,6 +3,7 @@ import XCTest
 import Operation_iOS
 import Keystore_iOS
 import Cuckoo
+import NovaAppAttest
 
 final class AnalyticsConsentGateTests: XCTestCase {
     private func makeDeviceCheck() -> MockDeviceCheckAttesting {

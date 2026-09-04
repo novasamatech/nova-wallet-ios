@@ -3,6 +3,7 @@ import XCTest
 import Operation_iOS
 import Keystore_iOS
 import Cuckoo
+import NovaAppAttest
 
 final class AnalyticsUploaderTests: XCTestCase {
     /// Counts the batches whose body the transport actually obtained. A consent gate that

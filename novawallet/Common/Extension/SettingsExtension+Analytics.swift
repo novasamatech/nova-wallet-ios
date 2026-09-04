@@ -35,18 +35,4 @@ extension SettingsManagerProtocol {
             }
         }
     }
-
-    var gatewayAttestationClientId: String? {
-        get {
-            string(for: SettingsKey.gatewayAttestationClientId.rawValue)
-        }
-
-        set {
-            if let newValue {
-                set(value: newValue, for: SettingsKey.gatewayAttestationClientId.rawValue)
-            } else {
-                removeValue(for: SettingsKey.gatewayAttestationClientId.rawValue)
-            }
-        }
-    }
 }

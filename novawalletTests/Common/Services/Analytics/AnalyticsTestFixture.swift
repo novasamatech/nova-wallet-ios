@@ -3,6 +3,7 @@ import XCTest
 import Operation_iOS
 import Keystore_iOS
 import Cuckoo
+import NovaAppAttest
 
 /// A fixture builder, not a protocol double. Everything except the uploader is the
 /// production object: the real queue over an in-memory store, the real settings, the

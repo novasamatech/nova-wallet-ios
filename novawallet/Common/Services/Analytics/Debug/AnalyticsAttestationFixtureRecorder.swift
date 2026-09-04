@@ -2,6 +2,7 @@
 
     import Foundation
     import Operation_iOS
+    import NovaAppAttest
 
     /// Spec §7.6's deliverable: the sample the gateway's iOS verifier is tested against.
     /// An attestation and an assertion cannot be produced off-device, so this is the only way

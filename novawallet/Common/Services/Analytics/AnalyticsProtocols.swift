@@ -1,5 +1,6 @@
 import Foundation
 import Operation_iOS
+import NovaAppAttest
 
 protocol AnalyticsEventQueueProtocol {
     /// Allocates the next sequence, persists the row, then trims to the newest `maxCount`.

@@ -1,4 +1,5 @@
 import Foundation
+import NovaAppAttest
 
 /// The single "off" besides consent: an unattestable device and a remote-disabled
 /// build are indistinguishable at the guard.

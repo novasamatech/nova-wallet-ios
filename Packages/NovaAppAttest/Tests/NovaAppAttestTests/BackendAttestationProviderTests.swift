@@ -1,8 +1,7 @@
 import XCTest
-@testable import novawallet
+@testable import NovaAppAttest
 import Operation_iOS
 import Keystore_iOS
-import Cuckoo
 
 final class BackendAttestationProviderTests: XCTestCase {
     private let gatewayURL = URL(string: "https://gateway.example/")!
@@ -53,7 +52,6 @@ final class BackendAttestationProviderTests: XCTestCase {
         init(_ body: @escaping () -> Void) {
             self.body = body
         }
-
 
         func fire() {
             mutex.lock()
@@ -176,8 +174,8 @@ final class BackendAttestationProviderTests: XCTestCase {
 
     private struct Fixture {
         let provider: BackendAttestationProvider
-        let appAttest: MockAppAttestServiceProtocol
-        let remote: MockBackendAttestationRemoteFactoryProtocol
+        let appAttest: AppAttestServiceSpy
+        let remote: BackendAttestationRemoteFactorySpy
         let settings: InMemorySettingsManager
         let repository: AnyDataProviderRepository<AppAttestKeySettings>
         let operationQueue: OperationQueue
@@ -226,65 +224,26 @@ final class BackendAttestationProviderTests: XCTestCase {
             }
         }
 
-        let appAttest = MockAppAttestServiceProtocol()
-        stub(appAttest) { stub in
-            when(stub.isSupported.get).thenReturn(true)
+        let appAttest = AppAttestServiceSpy()
 
-            when(stub.createAttestationWrapper(using: any(), clientData: any())).then { keyId, clientData in
-                let resolvedKeyId = keyId ?? UUID().uuidString
-
-                return CompoundOperationWrapper(targetOperation: ClosureOperation<AppAttestAttestation> {
-                    _ = try clientData(resolvedKeyId)
-
-                    if optOutAt == .attestation {
-                        optOutHook.fire()
-                    }
-
-                    return AppAttestAttestation(
-                        keyId: resolvedKeyId,
-                        attestation: Data("attestation-object".utf8)
-                    )
-                })
-            }
-
-            when(stub.createAssertionWrapper(keyId: any(), clientData: any())).then { _, clientData in
-                CompoundOperationWrapper(targetOperation: ClosureOperation<AppAttestAssertion> {
-                    _ = try clientData()
-
-                    if let assertionError {
-                        throw assertionError
-                    }
-
-                    return Data("assertion".utf8)
-                })
-            }
+        if optOutAt == .attestation {
+            appAttest.onAttestation = { optOutHook.fire() }
         }
 
-        let remote = MockBackendAttestationRemoteFactoryProtocol()
-        stub(remote) { stub in
-            when(stub.createChallengeWrapper()).then { _ in
-                CompoundOperationWrapper(targetOperation: ClosureOperation<String> {
-                    if optOutAt == .challenge {
-                        optOutHook.fire()
-                    }
+        if let assertionError {
+            appAttest.assertionResult = .failure(assertionError)
+        }
 
-                    return UUID().uuidString
-                })
-            }
+        let remote = BackendAttestationRemoteFactorySpy()
+        remote.registerError = registerError
+        remote.onRegisterRequest = { registered.record($0) }
 
-            when(stub.createRegisterOperation(any())).then { requestClosure in
-                ClosureOperation<Void> {
-                    if optOutAt == .register {
-                        optOutHook.fire()
-                    }
+        if optOutAt == .challenge {
+            remote.onChallenge = { optOutHook.fire() }
+        }
 
-                    try registered.record(requestClosure())
-
-                    if let registerError {
-                        throw registerError
-                    }
-                }
-            }
+        if optOutAt == .register {
+            remote.onRegister = { optOutHook.fire() }
         }
 
         let operationQueue = OperationQueue()
@@ -298,7 +257,7 @@ final class BackendAttestationProviderTests: XCTestCase {
             mode: mode,
             bundle: Bundle.main,
             operationQueue: operationQueue,
-            logger: Logger.shared
+            logger: SilentLogger()
         )
 
         providerBox = provider
@@ -340,21 +299,21 @@ final class BackendAttestationProviderTests: XCTestCase {
         XCTAssertNotNil(result?[.clientId])
         XCTAssertNotNil(result?[.challenge])
         XCTAssertNotNil(result?[.signature])
-        verify(fixture.appAttest, times(1)).createAttestationWrapper(using: any(), clientData: any())
-        verify(fixture.appAttest, times(1)).createAssertionWrapper(keyId: any(), clientData: any())
+        XCTAssertEqual(fixture.appAttest.attestationKeyIds.count, 1)
+        XCTAssertEqual(fixture.appAttest.assertionKeyIds.count, 1)
         XCTAssertEqual(try storedRow(fixture)?.isAttested, true)
     }
 
     func testSecondRequestSkipsAttestationAndOnlyAsserts() throws {
         let fixture = makeFixture()
         _ = try headers(fixture)
-        clearInvocations(fixture.appAttest)
+        fixture.appAttest.reset()
 
         _ = try headers(fixture)
 
         // Apple asks apps to attest sparingly: a key is attested once, ever.
-        verify(fixture.appAttest, never()).createAttestationWrapper(using: any(), clientData: any())
-        verify(fixture.appAttest, times(1)).createAssertionWrapper(keyId: any(), clientData: any())
+        XCTAssertTrue(fixture.appAttest.attestationKeyIds.isEmpty)
+        XCTAssertEqual(fixture.appAttest.assertionKeyIds.count, 1)
     }
 
     func testKeyIdIsPersistedBeforeRegisterSoARetryReusesTheSameKey() throws {
@@ -377,9 +336,9 @@ final class BackendAttestationProviderTests: XCTestCase {
 
         let keyId = try storedRow(fixture)?.keyId
 
-        clearInvocations(fixture.remote)
+        fixture.remote.reset()
         XCTAssertThrowsError(try headers(fixture))
-        verify(fixture.remote, atLeastOnce()).createChallengeWrapper()
+        XCTAssertGreaterThan(fixture.remote.challengeCallCount, 0)
         XCTAssertEqual(try storedRow(fixture)?.keyId, keyId)
     }
 
@@ -387,14 +346,14 @@ final class BackendAttestationProviderTests: XCTestCase {
         let fixture = makeFixture(registerError: BackendAttestationError.rejected(statusCode: 403))
 
         XCTAssertThrowsError(try headers(fixture))
-        clearInvocations(fixture.remote)
+        fixture.remote.reset()
 
         XCTAssertThrowsError(try headers(fixture)) { error in
             guard case BackendAttestationError.rejected = error else {
                 return XCTFail("expected .rejected, got \(error)")
             }
         }
-        verify(fixture.remote, never()).createChallengeWrapper()
+        XCTAssertEqual(fixture.remote.challengeCallCount, 0)
     }
 
     func testMarkUnattestedForcesAFreshKey() throws {
@@ -404,13 +363,12 @@ final class BackendAttestationProviderTests: XCTestCase {
         fixture.provider.markUnattested()
         XCTAssertNil(try storedRow(fixture))
 
-        clearInvocations(fixture.appAttest)
+        fixture.appAttest.reset()
         _ = try headers(fixture)
 
         // Recovery always means a NEW key, never a second attestation of the old one.
-        let captor = ArgumentCaptor<AppAttestKeyId?>()
-        verify(fixture.appAttest).createAttestationWrapper(using: captor.capture(), clientData: any())
-        XCTAssertNil(captor.value ?? nil)
+        XCTAssertEqual(fixture.appAttest.attestationKeyIds.count, 1)
+        XCTAssertNil(fixture.appAttest.attestationKeyIds.last ?? nil)
     }
 
     func testForgetClientDropsTheRowAndTheClientId() throws {
@@ -449,7 +407,7 @@ final class BackendAttestationProviderTests: XCTestCase {
         let fixture = makeFixture(mode: .none)
 
         XCTAssertNil(try headers(fixture))
-        verify(fixture.appAttest, never()).createAssertionWrapper(keyId: any(), clientData: any())
+        XCTAssertTrue(fixture.appAttest.assertionKeyIds.isEmpty)
     }
 
     func testUnavailableModeThrows() {
@@ -470,10 +428,9 @@ final class BackendAttestationProviderTests: XCTestCase {
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
         _ = try wrapper.targetOperation.extractNoCancellableResultData()
 
-        let captor = ArgumentCaptor<() throws -> Data>()
-        verify(fixture.appAttest).createAssertionWrapper(keyId: any(), clientData: captor.capture())
+        XCTAssertEqual(fixture.appAttest.assertionClientDataClosures.count, 1)
 
-        let clientData = try XCTUnwrap(captor.value)()
+        let clientData = try XCTUnwrap(fixture.appAttest.assertionClientDataClosures.last)()
         XCTAssertTrue(
             String(data: clientData, encoding: .utf8)!
                 .hasSuffix(AttestationClientData.bodyDigestHex(body))
@@ -528,8 +485,8 @@ final class BackendAttestationProviderTests: XCTestCase {
 
         XCTAssertThrowsError(try headers(fixture))
 
-        verify(fixture.appAttest, never()).createAttestationWrapper(using: any(), clientData: any())
-        verify(fixture.appAttest, never()).createAssertionWrapper(keyId: any(), clientData: any())
+        XCTAssertTrue(fixture.appAttest.attestationKeyIds.isEmpty)
+        XCTAssertTrue(fixture.appAttest.assertionKeyIds.isEmpty)
     }
 
     func testReconsentDuringTheChallengeNeverRegistersTheOldClient() throws {
@@ -572,16 +529,15 @@ final class BackendAttestationProviderTests: XCTestCase {
         XCTAssertNil(try storedRow(fixture))
 
         fixture.provider.allowClient()
-        clearInvocations(fixture.appAttest)
+        fixture.appAttest.reset()
 
         _ = try headers(fixture)
 
         // A repopulated cache would have short-circuited `ensureAttestedWrapper`, so no
         // attestation would have been requested at all — and the assertion below would be
         // signing with the previous cycle's key.
-        let captor = ArgumentCaptor<AppAttestKeyId?>()
-        verify(fixture.appAttest).createAttestationWrapper(using: captor.capture(), clientData: any())
-        XCTAssertNil(captor.value ?? nil)
+        XCTAssertEqual(fixture.appAttest.attestationKeyIds.count, 1)
+        XCTAssertNil(fixture.appAttest.attestationKeyIds.last ?? nil)
     }
 
     /// `deleteRow()` only logs a failure, and `needsFreshKey` and `consentEpoch` are
@@ -606,13 +562,9 @@ final class BackendAttestationProviderTests: XCTestCase {
 
         _ = try headers(relaunched)
 
-        let captor = ArgumentCaptor<AppAttestKeyId?>()
-        verify(relaunched.appAttest).createAttestationWrapper(
-            using: captor.capture(),
-            clientData: any()
-        )
+        XCTAssertEqual(relaunched.appAttest.attestationKeyIds.count, 1)
         XCTAssertNil(
-            captor.value ?? nil,
+            relaunched.appAttest.attestationKeyIds.last ?? nil,
             "the new consent cycle adopted the previous cycle's attested key"
         )
 
@@ -632,13 +584,12 @@ final class BackendAttestationProviderTests: XCTestCase {
         // side of the opt-out, this would assert the *old* key — a key minted for the
         // previous consent cycle signing for the new one.
         fixture.provider.allowClient()
-        clearInvocations(fixture.appAttest)
+        fixture.appAttest.reset()
 
         _ = try headers(fixture)
 
-        let captor = ArgumentCaptor<AppAttestKeyId?>()
-        verify(fixture.appAttest).createAttestationWrapper(using: captor.capture(), clientData: any())
-        XCTAssertNil(captor.value ?? nil)
+        XCTAssertEqual(fixture.appAttest.attestationKeyIds.count, 1)
+        XCTAssertNil(fixture.appAttest.attestationKeyIds.last ?? nil)
     }
 
     /// The guard must not be `identity.clientId() != nil`: that accessor mints, so during

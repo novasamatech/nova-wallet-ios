@@ -1,5 +1,6 @@
 import Foundation
 import Operation_iOS
+import NovaAppAttest
 
 /// Builds the events POST. The body is the `Data` it is handed and nothing else: the
 /// assertion signs those exact bytes, so a re-encode here would break every request.

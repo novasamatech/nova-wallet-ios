@@ -1,5 +1,5 @@
 import XCTest
-@testable import novawallet
+@testable import NovaAppAttest
 
 final class AttestationClientDataTests: XCTestCase {
     // Verbatim from infrastructure/src/test/java/io/novafoundation/nova/infrastructure/

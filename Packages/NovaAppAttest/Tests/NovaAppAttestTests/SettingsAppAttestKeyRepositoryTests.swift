@@ -1,7 +1,7 @@
 import XCTest
 import Operation_iOS
 import Keystore_iOS
-@testable import novawallet
+@testable import NovaAppAttest
 
 final class SettingsAppAttestKeyRepositoryTests: XCTestCase {
     private let operationQueue = OperationQueue()

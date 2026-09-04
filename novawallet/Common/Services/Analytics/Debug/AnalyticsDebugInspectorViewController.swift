@@ -3,6 +3,7 @@
     import UIKit
     import Operation_iOS
     import Keystore_iOS
+    import NovaAppAttest
 
     /// A deliberately plain `UIViewController`: a developer tool, not a VIPER module, and it
     /// never reaches Release. Titles and labels are literals, not localized keys.

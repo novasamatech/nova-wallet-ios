@@ -2,6 +2,7 @@ import XCTest
 @testable import novawallet
 import Operation_iOS
 import Cuckoo
+import NovaAppAttest
 
 // No `#if F_DEV` guard here: the test target does not define F_DEV, so guarding this file
 // would delete the whole suite and `-only-testing:` would silently report success. The app

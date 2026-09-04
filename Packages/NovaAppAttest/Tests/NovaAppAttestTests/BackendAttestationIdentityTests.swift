@@ -1,5 +1,5 @@
 import XCTest
-@testable import novawallet
+@testable import NovaAppAttest
 import Keystore_iOS
 
 final class BackendAttestationIdentityTests: XCTestCase {
@@ -7,7 +7,7 @@ final class BackendAttestationIdentityTests: XCTestCase {
         let settings = InMemorySettingsManager()
         _ = BackendAttestationIdentity(settingsManager: settings)
 
-        XCTAssertNil(settings.string(for: SettingsKey.gatewayAttestationClientId.rawValue))
+        XCTAssertNil(settings.gatewayAttestationClientId)
     }
 
     func testClientIdIsStableAndLowercaseUUID() throws {
@@ -26,18 +26,10 @@ final class BackendAttestationIdentityTests: XCTestCase {
         let first = try XCTUnwrap(identity.clientId())
         identity.forgetClientId()
 
-        XCTAssertNil(settings.string(for: SettingsKey.gatewayAttestationClientId.rawValue))
+        XCTAssertNil(settings.gatewayAttestationClientId)
 
         identity.allowCreation()
         XCTAssertNotEqual(identity.clientId(), first)
-    }
-
-    func testClientIdIsIndependentOfInstallId() {
-        let settings = InMemorySettingsManager()
-        let identity = BackendAttestationIdentity(settingsManager: settings)
-        let analytics = AnalyticsIdentity(settingsManager: settings)
-
-        XCTAssertNotEqual(identity.clientId(), analytics.installId())
     }
 
     func testForgetBlocksRecreationUntilConsentIsGrantedAgain() {
@@ -50,7 +42,7 @@ final class BackendAttestationIdentityTests: XCTestCase {
         // Without this, an attestation chain still running during opt-out would mint a
         // client id, attest a fresh key and register it with the gateway.
         XCTAssertNil(identity.clientId())
-        XCTAssertNil(settings.string(for: SettingsKey.gatewayAttestationClientId.rawValue))
+        XCTAssertNil(settings.gatewayAttestationClientId)
     }
 
     func testReConsentAllowsAFreshClientId() {

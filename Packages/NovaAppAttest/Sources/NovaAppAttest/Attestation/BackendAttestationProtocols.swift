@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-protocol BackendAttestationProviderProtocol: AnyObject {
+public protocol BackendAttestationProviderProtocol: AnyObject {
     /// nil ⇒ mode .none — the request goes out unsigned (dev builds only).
     func createSignedHeadersWrapper(
         bodyClosure: @escaping () throws -> Data
@@ -18,7 +18,7 @@ protocol BackendAttestationProviderProtocol: AnyObject {
     func allowClient()
 }
 
-protocol BackendAttestationRemoteFactoryProtocol {
+public protocol BackendAttestationRemoteFactoryProtocol {
     func createChallengeWrapper() -> CompoundOperationWrapper<String>
 
     func createRegisterOperation(
@@ -26,7 +26,7 @@ protocol BackendAttestationRemoteFactoryProtocol {
     ) -> BaseOperation<Void>
 }
 
-protocol BackendAttestationIdentityProtocol {
+public protocol BackendAttestationIdentityProtocol {
     /// Increments on every consent-cycle boundary. The chain re-checks consent against
     /// this, never by calling `clientId()` again — that accessor mints.
     var consentEpoch: Int { get }
@@ -37,7 +37,7 @@ protocol BackendAttestationIdentityProtocol {
     func allowCreation()
 }
 
-enum BackendAttestationError: Error {
+public enum BackendAttestationError: Error {
     case rejected(statusCode: Int)
     case clientError(statusCode: Int)
     case serverError(statusCode: Int)
@@ -45,7 +45,7 @@ enum BackendAttestationError: Error {
 }
 
 /// `Equatable` so the mode ladder can be asserted directly.
-enum BackendAttestationMode: Equatable {
+public enum BackendAttestationMode: Equatable {
     case appAttest
     case none
     case unavailable
@@ -53,7 +53,7 @@ enum BackendAttestationMode: Equatable {
 
 /// `HttpHeaderKey` in Operation-iOS carries only `contentType` and `authorization`,
 /// hence this enum.
-enum AttestationHeaderKey: String {
+public enum AttestationHeaderKey: String {
     case clientId = "X-Client-Id"
     case challenge = "X-Challenge"
     case signature = "X-Signature"
@@ -61,14 +61,14 @@ enum AttestationHeaderKey: String {
 
 /// `public_key` is deliberately absent — the public key travels inside the attestation's
 /// certificate and `key_id` takes its place in the digest (spec §7.6).
-struct BackendAttestationRegisterRequest: Encodable {
-    let clientId: String
-    let platform: String
-    let appPackage: String
-    let attestationType: String
-    let keyId: String
-    let challenge: String
-    let integrityToken: String
+public struct BackendAttestationRegisterRequest: Encodable {
+    public let clientId: String
+    public let platform: String
+    public let appPackage: String
+    public let attestationType: String
+    public let keyId: String
+    public let challenge: String
+    public let integrityToken: String
 
     enum CodingKeys: String, CodingKey {
         case clientId = "client_id"
