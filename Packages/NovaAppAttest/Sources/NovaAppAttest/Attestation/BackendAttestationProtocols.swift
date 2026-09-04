@@ -42,6 +42,12 @@ public enum BackendAttestationError: Error {
     case clientError(statusCode: Int)
     case serverError(statusCode: Int)
     case unsupported
+
+    /// A 2xx whose body the endpoint's decoder could not use — an empty challenge response,
+    /// say. Lives here rather than in an attestation-internal error type so that a consumer
+    /// of this package can catch everything `BackendAttestationRemoteFactory` throws by
+    /// naming one public enum.
+    case invalidResponse
 }
 
 /// `Equatable` so the mode ladder can be asserted directly.

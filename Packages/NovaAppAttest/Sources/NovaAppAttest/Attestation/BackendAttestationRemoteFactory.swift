@@ -106,7 +106,7 @@ extension BackendAttestationRemoteFactory: BackendAttestationRemoteFactoryProtoc
             isClientAuthenticated: false
         ) { data in
             guard let data else {
-                throw AppAttestError.invalidResponse
+                throw BackendAttestationError.invalidResponse
             }
 
             // The challenge is opaque and is never hex-decoded (spec §7.6).

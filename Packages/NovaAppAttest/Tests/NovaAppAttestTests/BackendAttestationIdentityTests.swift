@@ -45,6 +45,25 @@ final class BackendAttestationIdentityTests: XCTestCase {
         XCTAssertNil(settings.gatewayAttestationClientId)
     }
 
+    /// The only assertion that names the on-disk key. Every other test reads and writes
+    /// through `gatewayAttestationClientId`, so a typo in that accessor's literal would pass
+    /// the whole suite while silently orphaning the client id of every install that already
+    /// has one — and the key being unchanged is the entire "no migration needed" argument
+    /// for moving this accessor out of the app.
+    func testClientIdIsStoredUnderTheKeyExistingInstallsAlreadyHold() {
+        let settings = InMemorySettingsManager()
+        let identity = BackendAttestationIdentity(settingsManager: settings)
+
+        let created = identity.clientId()
+
+        XCTAssertNotNil(created)
+        XCTAssertEqual(settings.string(for: "gatewayAttestationClientId"), created)
+
+        identity.forgetClientId()
+
+        XCTAssertNil(settings.string(for: "gatewayAttestationClientId"))
+    }
+
     func testReConsentAllowsAFreshClientId() {
         let settings = InMemorySettingsManager()
         let identity = BackendAttestationIdentity(settingsManager: settings)
