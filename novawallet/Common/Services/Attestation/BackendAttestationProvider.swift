@@ -60,9 +60,18 @@ private extension BackendAttestationProvider {
         static let rejectedStatusCode = 403
     }
 
-    /// The key row is scoped to the gateway, so a host change starts a new credential.
-    var rowIdentifier: String {
-        gatewayURL.absoluteString
+    /// Scoped to the gateway *and* the client id, so a host change or a new consent cycle
+    /// starts a new credential.
+    ///
+    /// The client id is what makes opt-out durable. `deleteRow()` is best effort — it only
+    /// logs a failure — and `needsFreshKey` and `consentEpoch` are in-memory, so a process
+    /// that dies between `forgetClient()` and the row delete committing comes back with the
+    /// old row on disk and every in-memory latch reset. Keyed by gateway alone, the next
+    /// consent cycle would fetch that row, adopt its key at the `row.isAttested` branch —
+    /// which sits *before* any epoch gate — and sign with a credential the gateway holds
+    /// against the previous client id. Keyed by client id, the row is simply not found.
+    func rowIdentifier(for clientId: String) -> String {
+        gatewayURL.absoluteString + "|" + clientId
     }
 
     func cachedAttestedKeyId() -> AppAttestKeyId? {
@@ -123,9 +132,10 @@ private extension BackendAttestationProvider {
         needsFreshKey = true
     }
 
+    /// Every row, not just the current client's: the entity holds nothing but this
+    /// provider's credentials, and a cycle whose delete failed has left one behind.
     func deleteRow() {
-        let identifier = rowIdentifier
-        let operation = repository.saveOperation({ [] }, { [identifier] })
+        let operation = repository.deleteAllOperation()
 
         execute(
             operation: operation,
@@ -291,7 +301,7 @@ private extension BackendAttestationProvider {
 
     func ensureAttestedWrapper(clientId: String, epoch: Int) -> CompoundOperationWrapper<AppAttestKeyId> {
         let fetchOperation = repository.fetchOperation(
-            by: { self.rowIdentifier },
+            by: { self.rowIdentifier(for: clientId) },
             options: RepositoryFetchOptions()
         )
 
@@ -353,7 +363,11 @@ private extension BackendAttestationProvider {
 
         // Saved unattested BEFORE the register POST, so a retry after a failed register
         // reuses the same attested key instead of burning a new one.
-        let saveUnattestedOperation = createSaveOperation(isAttested: false, epoch: epoch) {
+        let saveUnattestedOperation = createSaveOperation(
+            isAttested: false,
+            epoch: epoch,
+            clientId: clientId
+        ) {
             try attestationWrapper.targetOperation.extractNoCancellableResultData().keyId
         }
 
@@ -369,7 +383,11 @@ private extension BackendAttestationProvider {
 
         registerOperation.addDependency(saveUnattestedOperation)
 
-        let saveAttestedOperation = createSaveOperation(isAttested: true, epoch: epoch) {
+        let saveAttestedOperation = createSaveOperation(
+            isAttested: true,
+            epoch: epoch,
+            clientId: clientId
+        ) {
             try registerOperation.extractNoCancellableResultData()
 
             return try attestationWrapper.targetOperation.extractNoCancellableResultData().keyId
@@ -486,9 +504,10 @@ private extension BackendAttestationProvider {
     func createSaveOperation(
         isAttested: Bool,
         epoch: Int,
+        clientId: String,
         keyIdClosure: @escaping () throws -> AppAttestKeyId
     ) -> BaseOperation<Void> {
-        let identifier = rowIdentifier
+        let identifier = rowIdentifier(for: clientId)
 
         return repository.saveOperation({ [weak self] in
             let keyId = try keyIdClosure()

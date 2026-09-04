@@ -182,6 +182,7 @@ final class BackendAttestationProviderTests: XCTestCase {
         let repository: AnyDataProviderRepository<AppAttestKeySettings>
         let operationQueue: OperationQueue
         let registered: RegisterRecorder
+        let facade: UserDataStorageTestFacade
     }
 
     private func makeFixture(
@@ -190,9 +191,12 @@ final class BackendAttestationProviderTests: XCTestCase {
         assertionError: Error? = nil,
         optOutAt: OptOutPoint? = nil,
         thenReconsent: Bool = false,
-        optOutAfterAttestedSave: Bool = false
+        optOutAfterAttestedSave: Bool = false,
+        sharingStoreWith existing: Fixture? = nil
     ) -> Fixture {
-        let facade = UserDataStorageTestFacade()
+        // A second fixture over the same store and settings is what a relaunch looks like:
+        // the rows survive, every in-memory latch is gone.
+        let facade = existing?.facade ?? UserDataStorageTestFacade()
         let coreDataRepository: CoreDataRepository<AppAttestKeySettings, CDAppAttestKey> =
             facade.createRepository(
                 filter: nil,
@@ -288,7 +292,7 @@ final class BackendAttestationProviderTests: XCTestCase {
             }
         }
 
-        let settings = InMemorySettingsManager()
+        let settings = existing?.settings ?? InMemorySettingsManager()
         let operationQueue = OperationQueue()
 
         let provider = BackendAttestationProvider(
@@ -312,7 +316,8 @@ final class BackendAttestationProviderTests: XCTestCase {
             settings: settings,
             repository: repository,
             operationQueue: operationQueue,
-            registered: registered
+            registered: registered,
+            facade: facade
         )
     }
 
@@ -327,12 +332,11 @@ final class BackendAttestationProviderTests: XCTestCase {
     private func storedRow(_ fixture: Fixture) throws -> AppAttestKeySettings? {
         fixture.operationQueue.waitUntilAllOperationsAreFinished()
 
-        let operation = fixture.repository.fetchOperation(
-            by: { self.gatewayURL.absoluteString },
-            options: RepositoryFetchOptions()
-        )
+        // Fetched by content rather than by identifier: the row id is scoped to the client
+        // id now, and these assertions are about whether *any* credential survives.
+        let operation = fixture.repository.fetchAllOperation(with: RepositoryFetchOptions())
         OperationQueue().addOperations([operation], waitUntilFinished: true)
-        return try operation.extractNoCancellableResultData()
+        return try operation.extractNoCancellableResultData().first
     }
 
     func testFirstRequestAttestsThenAsserts() throws {
@@ -585,6 +589,45 @@ final class BackendAttestationProviderTests: XCTestCase {
         let captor = ArgumentCaptor<AppAttestKeyId?>()
         verify(fixture.appAttest).createAttestationWrapper(using: captor.capture(), clientData: any())
         XCTAssertNil(captor.value ?? nil)
+    }
+
+    /// `deleteRow()` only logs a failure, and `needsFreshKey` and `consentEpoch` are
+    /// in-memory, so a force-quit between opting out and the delete committing brings the
+    /// app back with the old row on disk and every latch reset. The adoption branch in
+    /// `ensureAttestedWrapper` caches `row.keyId` *before* any epoch gate, so nothing there
+    /// can catch it — the row must not be findable at all under the new client id.
+    func testARowLeftBehindByAFailedOptOutDeleteIsNotAdoptedAfterReconsent() throws {
+        let first = makeFixture()
+        _ = try headers(first)
+
+        let survivingRow = try XCTUnwrap(try storedRow(first))
+        XCTAssertTrue(survivingRow.isAttested)
+
+        // Opt out with only the persisted half applied: the client id is gone, the row is
+        // not. Then relaunch — a fresh provider and identity over the same store.
+        first.settings.gatewayAttestationClientId = nil
+
+        let relaunched = makeFixture(sharingStoreWith: first)
+
+        XCTAssertNotNil(try storedRow(relaunched), "the stale row must still be on disk")
+
+        _ = try headers(relaunched)
+
+        let captor = ArgumentCaptor<AppAttestKeyId?>()
+        verify(relaunched.appAttest).createAttestationWrapper(
+            using: captor.capture(),
+            clientData: any()
+        )
+        XCTAssertNil(
+            captor.value ?? nil,
+            "the new consent cycle adopted the previous cycle's attested key"
+        )
+
+        let headersForNewClient = try headers(relaunched)
+        XCTAssertNotEqual(
+            headersForNewClient?[.clientId],
+            nil
+        )
     }
 
     func testAKeyAttestedAcrossAnOptOutNeverSignsForTheNewClient() throws {
