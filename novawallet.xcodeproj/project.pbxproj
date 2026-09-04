@@ -1017,6 +1017,7 @@
 		0CA81D542CE5108A00166969 /* AssetHubExchangeFeeSupportFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA81D532CE5108A00166969 /* AssetHubExchangeFeeSupportFetcher.swift */; };
 		0CA81D572CE5AF2600166969 /* AssetExchangeFeeSupportFetchersProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA81D562CE5AF2600166969 /* AssetExchangeFeeSupportFetchersProvider.swift */; };
 		0CA81D592CE60AA700166969 /* AssetExchangeEdgeType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA81D582CE60AA700166969 /* AssetExchangeEdgeType.swift */; };
+		F7F5B5BEB5FABB5FF53E8D85 /* AssetExchangePoolId.swift in Sources */ = {isa = PBXBuildFile; fileRef = A46468A4A3E40DBED37BFC05 /* AssetExchangePoolId.swift */; };
 		0CA8AD562CE06FA000ED9746 /* XcmTransactService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AD552CE06FA000ED9746 /* XcmTransactService.swift */; };
 		0CA8AD5A2CE0789100ED9746 /* WalletRemoteSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AD592CE0789100ED9746 /* WalletRemoteSubscription.swift */; };
 		0CA8AD622CE08FEE00ED9746 /* BlockEventsQueryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA8AD5B2CE08FEE00ED9746 /* BlockEventsQueryFactory.swift */; };
@@ -5596,6 +5597,8 @@
 		3185E9401279423ECA14DC29 /* AssetExchangeCommissionPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FB3A2AC2F2A632BA150650 /* AssetExchangeCommissionPolicyTests.swift */; };
 		8196EBD22DDAD2737F3767F8 /* HydraExchangeExtrinsicParamsFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BC3F73E3EA1C3C95EDBE6C /* HydraExchangeExtrinsicParamsFactoryTests.swift */; };
 		3F45C083BC601842FBBFD08E /* HydraExchangeAtomicOperationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15FD86DFB69D54DAC2636F05 /* HydraExchangeAtomicOperationTests.swift */; };
+		2DD2DA594997269200AFDCDD /* AssetExchangePathFilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8EB5C57DA2340B534BC7D9 /* AssetExchangePathFilterTests.swift */; };
+		ECD37C92F8EA802204A907B7 /* HydraSwapRoutePoolIdentityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D62A1D647644741D4C6D4A6 /* HydraSwapRoutePoolIdentityTests.swift */; };
 		A0720F255A511A623EE8C6F0 /* AssetsExchangeRouteManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C639F7A52A4668717369874 /* AssetsExchangeRouteManagerTests.swift */; };
 		E512B2B42B505AF2BEE87FB4 /* AssetExchangeGraphProxyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95559705353C1460D999A6AE /* AssetExchangeGraphProxyTests.swift */; };
 		881BA30929DC1B3000EB8C48 /* kilt-addresses.json in Resources */ = {isa = PBXBuildFile; fileRef = 881BA30829DC1B3000EB8C48 /* kilt-addresses.json */; };
@@ -7691,6 +7694,7 @@
 		0CA81D532CE5108A00166969 /* AssetHubExchangeFeeSupportFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubExchangeFeeSupportFetcher.swift; sourceTree = "<group>"; };
 		0CA81D562CE5AF2600166969 /* AssetExchangeFeeSupportFetchersProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeFeeSupportFetchersProvider.swift; sourceTree = "<group>"; };
 		0CA81D582CE60AA700166969 /* AssetExchangeEdgeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeEdgeType.swift; sourceTree = "<group>"; };
+		A46468A4A3E40DBED37BFC05 /* AssetExchangePoolId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangePoolId.swift; sourceTree = "<group>"; };
 		0CA8AD552CE06FA000ED9746 /* XcmTransactService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransactService.swift; sourceTree = "<group>"; };
 		0CA8AD592CE0789100ED9746 /* WalletRemoteSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletRemoteSubscription.swift; sourceTree = "<group>"; };
 		0CA8AD5B2CE08FEE00ED9746 /* BlockEventsQueryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockEventsQueryFactory.swift; sourceTree = "<group>"; };
@@ -11949,6 +11953,8 @@
 		F2FB3A2AC2F2A632BA150650 /* AssetExchangeCommissionPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeCommissionPolicyTests.swift; sourceTree = "<group>"; };
 		A3BC3F73E3EA1C3C95EDBE6C /* HydraExchangeExtrinsicParamsFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExchangeExtrinsicParamsFactoryTests.swift; sourceTree = "<group>"; };
 		15FD86DFB69D54DAC2636F05 /* HydraExchangeAtomicOperationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExchangeAtomicOperationTests.swift; sourceTree = "<group>"; };
+		0D8EB5C57DA2340B534BC7D9 /* AssetExchangePathFilterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangePathFilterTests.swift; sourceTree = "<group>"; };
+		8D62A1D647644741D4C6D4A6 /* HydraSwapRoutePoolIdentityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraSwapRoutePoolIdentityTests.swift; sourceTree = "<group>"; };
 		1C639F7A52A4668717369874 /* AssetsExchangeRouteManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchangeRouteManagerTests.swift; sourceTree = "<group>"; };
 		95559705353C1460D999A6AE /* AssetExchangeGraphProxyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeGraphProxyTests.swift; sourceTree = "<group>"; };
 		881BA30829DC1B3000EB8C48 /* kilt-addresses.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "kilt-addresses.json"; sourceTree = "<group>"; };
@@ -14052,6 +14058,7 @@
 				0C746DBD2CCF440800E9178B /* AssetExchangeAtomicOperation.swift */,
 				0C6353462CE46FB200EAB200 /* AssetExchangeSufficiencyProvider.swift */,
 				0CA81D582CE60AA700166969 /* AssetExchangeEdgeType.swift */,
+				A46468A4A3E40DBED37BFC05 /* AssetExchangePoolId.swift */,
 				0C12BC3D2CEA9DF800AB919D /* AssetExchangeTimeEstimation.swift */,
 				0CF4ADF82CEBF71A009C51FA /* AssetExchangeMetaOperationProtocol.swift */,
 				0CBABFEA2CED37E30047F29E /* AssetExchangeQuote.swift */,
@@ -22490,6 +22497,8 @@
 				F2FB3A2AC2F2A632BA150650 /* AssetExchangeCommissionPolicyTests.swift */,
 				A3BC3F73E3EA1C3C95EDBE6C /* HydraExchangeExtrinsicParamsFactoryTests.swift */,
 				15FD86DFB69D54DAC2636F05 /* HydraExchangeAtomicOperationTests.swift */,
+				0D8EB5C57DA2340B534BC7D9 /* AssetExchangePathFilterTests.swift */,
+				8D62A1D647644741D4C6D4A6 /* HydraSwapRoutePoolIdentityTests.swift */,
 				1C639F7A52A4668717369874 /* AssetsExchangeRouteManagerTests.swift */,
 				95559705353C1460D999A6AE /* AssetExchangeGraphProxyTests.swift */,
 				0000000066609881CB682044 /* AssetExchangeCommissionNetFlowTests.swift */,
@@ -35346,6 +35355,7 @@
 				0C0F6E2D2D46187400943A7C /* CollatorStakingValidatorFactory.swift in Sources */,
 				2D7978792E82A00F0049F02A /* NftSecureImageFactory.swift in Sources */,
 				0CA81D592CE60AA700166969 /* AssetExchangeEdgeType.swift in Sources */,
+				F7F5B5BEB5FABB5FF53E8D85 /* AssetExchangePoolId.swift in Sources */,
 				2D4F55262CCBFC4700B65B76 /* AssetOperationNetworkListCell.swift in Sources */,
 				84C3420B283187D800156569 /* BlockTimeEstimationService.swift in Sources */,
 				EB376E61CD1C39AC148DE80C /* NftListViewController.swift in Sources */,
@@ -37237,6 +37247,8 @@
 				3185E9401279423ECA14DC29 /* AssetExchangeCommissionPolicyTests.swift in Sources */,
 				8196EBD22DDAD2737F3767F8 /* HydraExchangeExtrinsicParamsFactoryTests.swift in Sources */,
 				3F45C083BC601842FBBFD08E /* HydraExchangeAtomicOperationTests.swift in Sources */,
+				2DD2DA594997269200AFDCDD /* AssetExchangePathFilterTests.swift in Sources */,
+				ECD37C92F8EA802204A907B7 /* HydraSwapRoutePoolIdentityTests.swift in Sources */,
 				A0720F255A511A623EE8C6F0 /* AssetsExchangeRouteManagerTests.swift in Sources */,
 				E512B2B42B505AF2BEE87FB4 /* AssetExchangeGraphProxyTests.swift in Sources */,
 				8B518898F682EABB39C9F7BF /* SwapModelTests.swift in Sources */,

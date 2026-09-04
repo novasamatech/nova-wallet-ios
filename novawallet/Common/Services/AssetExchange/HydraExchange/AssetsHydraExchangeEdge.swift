@@ -5,6 +5,12 @@ protocol AssetsHydraExchangeEdgeProtocol {
     var routeComponent: HydraDx.RemoteSwapRoute.Component { get }
 }
 
+extension AssetsHydraExchangeEdgeProtocol where Self: AssetsHydraExchangeEdge {
+    var poolId: AssetExchangePoolId? {
+        AssetExchangePoolId(chainId: host.chain.chainId, identifier: routeComponent.poolIdentifier)
+    }
+}
+
 class AssetsHydraExchangeEdge {
     let origin: ChainAssetId
     let destination: ChainAssetId

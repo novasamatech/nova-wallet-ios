@@ -262,6 +262,39 @@ final class AssetsExchangeTests: XCTestCase {
         }
     }
 
+    func testRoutesUSDCDOTHydrationNeverReenterPool() throws {
+        let params = buildCommonParams()
+
+        let hydrationChain = try params.chainRegistry.getChainOrError(for: KnowChainId.hydra)
+
+        let usdc = try hydrationChain.chainAssetForSymbolOrError("USDC").chainAssetId
+        let dot = try hydrationChain.chainAssetForSymbolOrError("DOT").chainAssetId
+
+        guard let graph = createGraph(for: params) else {
+            XCTFail("No graph")
+            return
+        }
+
+        let paths = graph.fetchPaths(from: usdc, to: dot, maxTopPaths: 10)
+
+        XCTAssertFalse(paths.isEmpty)
+
+        for path in paths {
+            let pathDescription = AssetsExchangeGraphDescription.getDescriptionForPath(
+                edges: path,
+                chainRegistry: params.chainRegistry
+            )
+
+            Logger.shared.info("Route: \(pathDescription)")
+
+            let reentersPool = zip(path, path.dropFirst()).contains { predecessor, edge in
+                edge.poolId != nil && edge.poolId == predecessor.poolId
+            }
+
+            XCTAssertFalse(reentersPool, "Route re-enters a pool: \(pathDescription)")
+        }
+    }
+
     func testRouteUSDTAHDOTAH() throws {
         let params = buildCommonParams()
 
