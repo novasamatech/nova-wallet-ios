@@ -1,27 +1,39 @@
 import Foundation
 import Operation_iOS
 
-// Operation-iOS 2.1.2 — the version the app pins, and therefore the version this package
-// must pin too — predates `OperationCombiningService`, the `Longrun` primitives and the
-// `CompoundOperationWrapper` conveniences below. The app carries its own copies for exactly
-// that reason (`Common/Operation/` and `Common/Extension/Operation/`), and
-// `BackendAttestationProvider` was written against them, so the package needs the same
-// pieces to compile at all.
+// A mirror of the app's operation helpers, carried here because Operation-iOS 2.1.2 — the
+// version the app pins, and therefore the version every package built beside it must pin —
+// predates `OperationCombiningService`, the `Longrun` primitives and the
+// `CompoundOperationWrapper` conveniences below. The app declares its own copies for exactly
+// that reason, and the code moved into `NovaAppAttest` (and, next, `NovaAnalytics`) was
+// written against them, so those packages need the same pieces to compile at all.
 //
-// Everything here is `internal`: the app keeps its own copies for its own call sites, and a
-// public duplicate would make every `wrapper.insertingHead(...)` in an app file that imports
-// `NovaAppAttest` ambiguous.
+// It mirrors six app files:
 //
-// Delete this file when the Operation-iOS pin moves to a release that ships these — the SDK
-// versions are identical in behaviour, only `public`.
+//   novawallet/Common/Operation/OperationCombiningService.swift
+//   novawallet/Common/Operation/Longrun/Longrun.swift
+//   novawallet/Common/Operation/Longrun/LongrunOperation.swift
+//   novawallet/Common/Extension/Operation/CompoundOperationWrapper+Result.swift
+//   novawallet/Common/Extension/Operation/CompoundOperationWrapper+Dependency.swift
+//   novawallet/Common/Extension/Operation/CompoundOperationWrapper+Add.swift
 //
-// Only the members `BackendAttestationProvider` actually uses are carried; the app's
-// `addDependencyIfExists`, `insertingHeadIfExists`, `compoundWrapper` and
-// `compoundOptionalWrapper` are left out rather than copied in unused.
+// THE RULE, because a mirror that has been edited cannot be diffed against its source:
+// every member present is byte-identical to its app original; members this package does not
+// use are absent entirely. Nothing here is pruned, repaired, renamed or reordered within a
+// member it does carry — so `operationsPerBatch` and its batching block stay even though no
+// caller here passes a batch size, and `State.running` stays even though nothing assigns it.
+// The two permitted deviations are access modifiers, which the module boundary forces, and
+// comments, which no diff of behaviour reads.
+//
+// Members left out because nothing here calls them: `addDependencyIfExists`,
+// `insertingHeadIfExists`, `compoundWrapper` and `compoundOptionalWrapper`.
+//
+// Delete this file — and this package — when the Operation-iOS pin moves to a release that
+// ships these; the SDK versions are identical in behaviour, only `public`.
 
 // MARK: - CompoundOperationWrapper+Result
 
-extension CompoundOperationWrapper {
+public extension CompoundOperationWrapper {
     static func createWithError(_ error: Error) -> CompoundOperationWrapper<ResultType> {
         let operation = BaseOperation<ResultType>()
         operation.result = .failure(error)
@@ -37,7 +49,7 @@ extension CompoundOperationWrapper {
 
 // MARK: - CompoundOperationWrapper+Dependency
 
-extension CompoundOperationWrapper {
+public extension CompoundOperationWrapper {
     func addDependency(operations: [Operation]) {
         allOperations.forEach { nextOperation in
             operations.forEach { prevOperation in
@@ -53,7 +65,7 @@ extension CompoundOperationWrapper {
 
 // MARK: - CompoundOperationWrapper+Add
 
-extension CompoundOperationWrapper {
+public extension CompoundOperationWrapper {
     func insertingHead(operations: [Operation]) -> CompoundOperationWrapper {
         .init(targetOperation: targetOperation, dependencies: operations + dependencies)
     }
@@ -117,7 +129,7 @@ enum OperationCombiningServiceError: Error {
     case noResult
 }
 
-final class OperationCombiningService<T>: Longrunable {
+public final class OperationCombiningService<T>: Longrunable {
     enum State {
         case waiting
         case running
@@ -150,6 +162,12 @@ final class OperationCombiningService<T>: Longrunable {
             return
         }
 
+        // A faithful copy of a defect in the app original, tracked separately: `.running` was
+        // intended here, and because the guard above has already established `.waiting` this
+        // assignment leaves the state unchanged, so `cancel()`'s `if state == .running` branch
+        // below is unreachable and cancelling the service never cancels the wrappers it
+        // combined. Fixing it here would fork the two copies silently and break the rule this
+        // file's header states, so it is left exactly as the app has it.
         state = .waiting
 
         do {
@@ -231,7 +249,7 @@ extension OperationCombiningService {
         return .init(targetOperation: mappingOperation, dependencies: [loadingOperation])
     }
 
-    static func compoundNonOptionalWrapper(
+    public static func compoundNonOptionalWrapper(
         operationQueue: OperationQueue,
         wrapperClosure: @escaping () throws -> CompoundOperationWrapper<T>
     ) -> CompoundOperationWrapper<T> {

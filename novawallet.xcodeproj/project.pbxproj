@@ -1428,6 +1428,7 @@
 		0CF8F6902E673E73007E41C4 /* Cuckoo in Frameworks */ = {isa = PBXBuildFile; productRef = 0CF8F68F2E673E73007E41C4 /* Cuckoo */; };
 		0CAA10032E7A0003007E41C4 /* SDKLogger in Frameworks */ = {isa = PBXBuildFile; productRef = 0CAA10022E7A0002007E41C4 /* SDKLogger */; };
 		FEEDAB0000000000000000A3 /* NovaAppAttest in Frameworks */ = {isa = PBXBuildFile; productRef = FEEDAB0000000000000000A2 /* NovaAppAttest */; };
+		FEEDAB0000000000000000B3 /* NovaOperationSupport in Frameworks */ = {isa = PBXBuildFile; productRef = FEEDAB0000000000000000B2 /* NovaOperationSupport */; };
 		0CAA10082E7A0008007E41C4 /* LoggerSDKConformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAA10072E7A0007007E41C4 /* LoggerSDKConformanceTests.swift */; };
 		0CF976722CEFF01D001D2801 /* SwapExecutionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF976712CEFF01D001D2801 /* SwapExecutionModel.swift */; };
 		0CF976752CF082BF001D2801 /* SwapExecutionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF976742CF082BF001D2801 /* SwapExecutionViewModel.swift */; };
@@ -13166,6 +13167,7 @@
 				2D1673512EE9BCC0004ADA7F /* SubstrateSdk in Frameworks */,
 				0CAA10032E7A0003007E41C4 /* SDKLogger in Frameworks */,
 				FEEDAB0000000000000000A3 /* NovaAppAttest in Frameworks */,
+				FEEDAB0000000000000000B3 /* NovaOperationSupport in Frameworks */,
 				2DB5869A2EB8753800950F7D /* Lottie in Frameworks */,
 				0C8FCED02E6735F300034ED3 /* FirebaseFirestore in Frameworks */,
 				0C8FCEAE2E672CB000034ED3 /* Reachability in Frameworks */,
@@ -30867,6 +30869,7 @@
 			mainGroup = 8490139F24A80984008F705E;
 			packageReferences = (
 				FEEDAB0000000000000000A1 /* XCLocalSwiftPackageReference "Packages/NovaAppAttest" */,
+				FEEDAB0000000000000000B1 /* XCLocalSwiftPackageReference "Packages/NovaOperationSupport" */,
 				0C8FCE9D2E672B2200034ED3 /* XCRemoteSwiftPackageReference "Keystore-iOS" */,
 				0C8FCEA02E672BB000034ED3 /* XCRemoteSwiftPackageReference "UIKit-iOS" */,
 				0C8FCEA62E672BFB00034ED3 /* XCRemoteSwiftPackageReference "Foundation-iOS" */,
@@ -38590,6 +38593,10 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/NovaAppAttest;
 		};
+		FEEDAB0000000000000000B1 /* XCLocalSwiftPackageReference "Packages/NovaOperationSupport" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/NovaOperationSupport;
+		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
@@ -39098,6 +39105,10 @@
 		FEEDAB0000000000000000A2 /* NovaAppAttest */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = NovaAppAttest;
+		};
+		FEEDAB0000000000000000B2 /* NovaOperationSupport */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = NovaOperationSupport;
 		};
 /* End XCSwiftPackageProductDependency section */
 

@@ -1,5 +1,6 @@
 import Foundation
 import Operation_iOS
+import NovaOperationSupport
 import SDKLogger
 
 /// Attest once, assert per request. Written fresh rather than generalised from the
