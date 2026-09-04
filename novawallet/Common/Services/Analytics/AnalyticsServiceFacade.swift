@@ -62,12 +62,7 @@ final class AnalyticsServiceFacade {
 
         let gatewayURL = ApplicationConfig.shared.gatewayURL
 
-        let attestKeyRepository: CoreDataRepository<AppAttestKeySettings, CDAppAttestKey> =
-            UserDataStorageFacade.shared.createRepository(
-                filter: nil,
-                sortDescriptors: [],
-                mapper: AnyCoreDataMapper(AppAttestKeyMapper())
-            )
+        let attestKeyRepository = SettingsAppAttestKeyRepository(settingsManager: settingsManager)
 
         // The provider signs on the shared queue: its wrapper chain nests, which a
         // serial queue could not run.

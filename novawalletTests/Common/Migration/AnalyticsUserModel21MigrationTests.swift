@@ -37,7 +37,7 @@ final class AnalyticsUserModel21MigrationTests: XCTestCase {
         let names = Set(try currentUserDataModel().entities.compactMap(\.name))
 
         XCTAssertTrue(names.contains("CDAnalyticsEvent"))
-        XCTAssertTrue(names.contains("CDAppAttestKey"))
+        XCTAssertFalse(names.contains("CDAppAttestKey"))
         XCTAssertFalse(names.contains("CDAppAttestBrowserSettings"))
     }
 
@@ -50,36 +50,6 @@ final class AnalyticsUserModel21MigrationTests: XCTestCase {
         XCTAssertEqual(entity.attributesByName["timestamp"]?.attributeType, .dateAttributeType)
         XCTAssertEqual(entity.attributesByName["payload"]?.attributeType, .binaryDataAttributeType)
         XCTAssertTrue(entity.relationshipsByName.isEmpty)
-    }
-
-    func testAppAttestKeyEntityShape() throws {
-        let entity = try XCTUnwrap(currentUserDataModel().entitiesByName["CDAppAttestKey"])
-
-        XCTAssertEqual(entity.attributesByName["identifier"]?.attributeType, .stringAttributeType)
-        XCTAssertEqual(entity.attributesByName["keyId"]?.attributeType, .stringAttributeType)
-        XCTAssertEqual(entity.attributesByName["isAttested"]?.attributeType, .booleanAttributeType)
-        XCTAssertTrue(entity.relationshipsByName.isEmpty)
-    }
-
-    func testAppAttestKeyRoundTrips() throws {
-        let facade = UserDataStorageTestFacade()
-        let repository: CoreDataRepository<AppAttestKeySettings, CDAppAttestKey> =
-            facade.createRepository(mapper: AnyCoreDataMapper(AppAttestKeyMapper()))
-
-        let settings = AppAttestKeySettings(
-            identifier: "https://gateway.example/",
-            keyId: "key-1",
-            isAttested: true
-        )
-
-        let saveOperation = repository.saveOperation({ [settings] }, { [] })
-        let fetchOperation = repository.fetchOperation(by: { settings.identifier }, options: .init())
-        fetchOperation.addDependency(saveOperation)
-
-        OperationQueue().addOperations([saveOperation, fetchOperation], waitUntilFinished: true)
-
-        let fetched = try fetchOperation.extractNoCancellableResultData()
-        XCTAssertEqual(fetched, settings)
     }
 
     func testStoreCreatedByPreviousModelMigratesAndKeepsWallets() throws {
@@ -106,7 +76,7 @@ final class AnalyticsUserModel21MigrationTests: XCTestCase {
         let entityNames = try migratedStoreEntityNames()
 
         XCTAssertTrue(entityNames.contains("CDAnalyticsEvent"))
-        XCTAssertTrue(entityNames.contains("CDAppAttestKey"))
+        XCTAssertFalse(entityNames.contains("CDAppAttestKey"))
         XCTAssertFalse(entityNames.contains("CDAppAttestBrowserSettings"))
 
         XCTAssertEqual(try migratedWalletNames(), [walletName])
