@@ -69,6 +69,111 @@ final class BackendAttestationProviderTests: XCTestCase {
         }
     }
 
+    /// Delegates to the real repository and fires a hook once the *attested* row has been
+    /// written. That is the only seam between `saveAttestedOperation` finishing and the
+    /// cache operation starting — the window the cache gate exists for.
+    /// `DataProviderRepositoryProtocol` has an associated type, so Cuckoo cannot generate
+    /// this; it is a fixture, not a stand-in for a mockable collaborator.
+    private final class SaveHookRepository: DataProviderRepositoryProtocol {
+        typealias Model = AppAttestKeySettings
+
+        private let wrapped: AnyDataProviderRepository<AppAttestKeySettings>
+        private let afterAttestedSave: () -> Void
+
+        init(
+            wrapping wrapped: AnyDataProviderRepository<AppAttestKeySettings>,
+            afterAttestedSave: @escaping () -> Void
+        ) {
+            self.wrapped = wrapped
+            self.afterAttestedSave = afterAttestedSave
+        }
+
+        func saveOperation(
+            _ updateModelsBlock: @escaping () throws -> [Model],
+            _ deleteIdsBlock: @escaping () throws -> [String]
+        ) -> BaseOperation<Void> {
+            let sawAttested = AttestedFlag()
+
+            let inner = wrapped.saveOperation({
+                let models = try updateModelsBlock()
+
+                if models.contains(where: \.isAttested) {
+                    sawAttested.set()
+                }
+
+                return models
+            }, deleteIdsBlock)
+
+            return ClosureOperation<Void> { [afterAttestedSave] in
+                OperationQueue().addOperations([inner], waitUntilFinished: true)
+                try inner.extractNoCancellableResultData()
+
+                guard sawAttested.value else {
+                    return
+                }
+
+                afterAttestedSave()
+            }
+        }
+
+        func fetchOperation(
+            by modelIdClosure: @escaping () throws -> String,
+            options: RepositoryFetchOptions
+        ) -> BaseOperation<Model?> {
+            wrapped.fetchOperation(by: modelIdClosure, options: options)
+        }
+
+        func fetchAllOperation(with options: RepositoryFetchOptions) -> BaseOperation<[Model]> {
+            wrapped.fetchAllOperation(with: options)
+        }
+
+        func fetchOperation(
+            by request: RepositorySliceRequest,
+            options: RepositoryFetchOptions
+        ) -> BaseOperation<[Model]> {
+            wrapped.fetchOperation(by: request, options: options)
+        }
+
+        func replaceOperation(
+            _ newModelsBlock: @escaping () throws -> [Model]
+        ) -> BaseOperation<Void> {
+            wrapped.replaceOperation(newModelsBlock)
+        }
+
+        func fetchCountOperation() -> BaseOperation<Int> {
+            wrapped.fetchCountOperation()
+        }
+
+        func deleteAllOperation() -> BaseOperation<Void> {
+            wrapped.deleteAllOperation()
+        }
+    }
+
+    private final class AttestedFlag {
+        private let mutex = NSLock()
+        private var flag = false
+
+        func set() {
+            mutex.lock()
+
+            defer {
+                mutex.unlock()
+            }
+
+            flag = true
+        }
+
+        var value: Bool {
+            mutex.lock()
+
+            defer {
+                mutex.unlock()
+            }
+
+            return flag
+        }
+    }
+
     private struct Fixture {
         let provider: BackendAttestationProvider
         let appAttest: MockAppAttestServiceProtocol
@@ -84,7 +189,8 @@ final class BackendAttestationProviderTests: XCTestCase {
         registerError: Error? = nil,
         assertionError: Error? = nil,
         optOutAt: OptOutPoint? = nil,
-        thenReconsent: Bool = false
+        thenReconsent: Bool = false,
+        optOutAfterAttestedSave: Bool = false
     ) -> Fixture {
         let facade = UserDataStorageTestFacade()
         let coreDataRepository: CoreDataRepository<AppAttestKeySettings, CDAppAttestKey> =
@@ -94,13 +200,23 @@ final class BackendAttestationProviderTests: XCTestCase {
                 mapper: AnyCoreDataMapper(AppAttestKeyMapper())
             )
 
-        let repository = AnyDataProviderRepository(coreDataRepository)
+        let realRepository = AnyDataProviderRepository(coreDataRepository)
 
         let registered = RegisterRecorder()
 
         // Assigned after the provider exists; the hook only ever runs inside an operation,
         // by which time the box is populated.
         var providerBox: BackendAttestationProvider?
+
+        // One-shot: the assertions run a second, clean chain, whose own attested save must
+        // not trip the hook again.
+        let saveHook = OneShotHook { providerBox?.forgetClient() }
+
+        let repository = optOutAfterAttestedSave
+            ? AnyDataProviderRepository(
+                SaveHookRepository(wrapping: realRepository) { saveHook.fire() }
+            )
+            : realRepository
         let optOutHook = OneShotHook {
             providerBox?.forgetClient()
 
@@ -446,6 +562,29 @@ final class BackendAttestationProviderTests: XCTestCase {
             "a client id from the previous consent cycle was registered after re-consent at \(point)"
         )
         XCTAssertNil(try storedRow(fixture), "the key row survived a re-consent at \(point)")
+    }
+
+    /// The two gates sit in different operations with an asynchronous CoreData write
+    /// between them, so an opt-out can pass the save gate and still reach the cache. Only
+    /// the gate before `cacheAttestedKeyId` stops the key minted for the previous consent
+    /// cycle from being re-armed — it also clears `needsFreshKey`, undoing `invalidate()`.
+    func testAnOptOutBetweenTheRowWriteAndTheCacheNeverResurrectsTheKey() throws {
+        let fixture = makeFixture(optOutAfterAttestedSave: true)
+
+        XCTAssertThrowsError(try headers(fixture))
+        XCTAssertNil(try storedRow(fixture))
+
+        fixture.provider.allowClient()
+        clearInvocations(fixture.appAttest)
+
+        _ = try headers(fixture)
+
+        // A repopulated cache would have short-circuited `ensureAttestedWrapper`, so no
+        // attestation would have been requested at all — and the assertion below would be
+        // signing with the previous cycle's key.
+        let captor = ArgumentCaptor<AppAttestKeyId?>()
+        verify(fixture.appAttest).createAttestationWrapper(using: captor.capture(), clientData: any())
+        XCTAssertNil(captor.value ?? nil)
     }
 
     func testAKeyAttestedAcrossAnOptOutNeverSignsForTheNewClient() throws {

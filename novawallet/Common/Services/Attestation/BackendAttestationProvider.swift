@@ -468,11 +468,13 @@ private extension BackendAttestationProvider {
                 throw BackendAttestationError.unsupported
             }
 
-            // Defence in depth, and deliberately unreachable today: `saveOperation` carries
-            // the same gate one operation earlier and throws, so no test can drive the
-            // chain this far. It stays because `cacheAttestedKeyId` also clears
-            // `needsFreshKey` — if the save gate ever becomes a skip rather than a throw,
-            // this is what stops a key minted for the old client signing for the new one.
+            // Not redundant with the gate in `createSaveOperation`: that one runs in the
+            // save operation, this one in a separate operation scheduled after it, and the
+            // asynchronous CoreData write sits between them. An opt-out landing in that
+            // window passes the save gate and reaches here, where it must still be caught —
+            // `cacheAttestedKeyId` clears `needsFreshKey` as well as setting the key, so it
+            // would undo `invalidate()` and leave a key minted for the previous consent
+            // cycle signing for the next one.
             try requireEpoch(epoch)
 
             cacheAttestedKeyId(keyId)
