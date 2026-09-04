@@ -14,14 +14,7 @@ final class DeviceCheckAttestingSpy: DeviceCheckAttesting {
 
     private let mutex = NSLock()
     private var recordedGenerateKeyCalls = 0
-    private var recordedAttestHashes: [Data] = []
     private var recordedAssertionHashes: [Data] = []
-
-    /// Separate from the assertion hashes because the tests capture the argument of one
-    /// specific call, the way the `ArgumentCaptor` they replace did.
-    var attestClientDataHashes: [Data] {
-        synchronised { recordedAttestHashes }
-    }
 
     var assertionClientDataHashes: [Data] {
         synchronised { recordedAssertionHashes }
@@ -42,11 +35,9 @@ final class DeviceCheckAttestingSpy: DeviceCheckAttesting {
 
     func attestKey(
         _: String,
-        clientDataHash: Data,
+        clientDataHash _: Data,
         completionHandler: @escaping (Data?, Error?) -> Void
     ) {
-        synchronised { recordedAttestHashes.append(clientDataHash) }
-
         switch attestKeyResult {
         case let .success(data): completionHandler(data, nil)
         case let .failure(error): completionHandler(nil, error)

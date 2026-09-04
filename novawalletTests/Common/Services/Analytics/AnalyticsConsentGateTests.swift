@@ -65,7 +65,10 @@ final class AnalyticsConsentGateTests: XCTestCase {
 
         // The wipe must have emptied the queue, deleted the id and dropped the gateway
         // client, and 50 more events must land nowhere.
-        XCTAssertNil(fixture.settings.gatewayAttestationClientId, "opt-out kept the gateway client id")
+        XCTAssertNil(
+            fixture.settings.string(for: "gatewayAttestationClientId"),
+            "opt-out kept the gateway client id"
+        )
 
         clearInvocations(fixture.uploader)
         clearInvocations(device)

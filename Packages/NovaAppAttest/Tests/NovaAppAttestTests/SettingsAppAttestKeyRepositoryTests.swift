@@ -98,6 +98,19 @@ final class SettingsAppAttestKeyRepositoryTests: XCTestCase {
         XCTAssertNil(settings.data(for: SettingsAppAttestKeyRepository.storageKey))
     }
 
+    /// The only assertion that names the on-disk key. Every other test reaches the store
+    /// through `SettingsAppAttestKeyRepository.storageKey`, so a typo in that literal would
+    /// pass the whole suite while silently orphaning the key rows of every install that
+    /// already holds them.
+    func testRowsAreStoredUnderTheKeyExistingInstallsAlreadyHold() throws {
+        let settings = InMemorySettingsManager()
+        let repository = SettingsAppAttestKeyRepository(settingsManager: settings)
+
+        _ = try run(repository.saveOperation({ [self.makeRow("a")] }, { [] }))
+
+        XCTAssertNotNil(settings.data(for: "appAttestKeys"))
+    }
+
     /// A relaunch: rows persist in the settings store, every in-memory latch is gone.
     func testRowsSurviveANewRepositoryOverTheSameSettings() throws {
         let settings = InMemorySettingsManager()

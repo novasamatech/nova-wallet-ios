@@ -70,8 +70,8 @@ final class BackendAttestationProviderTests: XCTestCase {
     /// Delegates to the real repository and fires a hook once the *attested* row has been
     /// written. That is the only seam between `saveAttestedOperation` finishing and the
     /// cache operation starting — the window the cache gate exists for.
-    /// `DataProviderRepositoryProtocol` has an associated type, so Cuckoo cannot generate
-    /// this; it is a fixture, not a stand-in for a mockable collaborator.
+    /// A fixture rather than a stand-in: it wraps the real repository and adds one
+    /// observation point, so the behaviour these tests run against is the repository's own.
     private final class SaveHookRepository: DataProviderRepositoryProtocol {
         typealias Model = AppAttestKeySettings
 

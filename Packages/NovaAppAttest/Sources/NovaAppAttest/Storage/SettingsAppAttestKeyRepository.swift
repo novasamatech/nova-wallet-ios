@@ -21,7 +21,11 @@ public final class SettingsAppAttestKeyRepository {
     /// the app goes through that enum. This file lives in the standalone `NovaAppAttest`
     /// package, which cannot depend on the app's `SettingsKey` enum, so the key has to be
     /// self-contained here rather than delegate to it.
-    public static let storageKey = "appAttestKeys"
+    ///
+    /// `internal`: an on-disk key name published as package API is something a consumer can
+    /// come to depend on, and then it can never be renamed. The only readers outside this
+    /// type are the package's own tests, through `@testable`.
+    static let storageKey = "appAttestKeys"
 
     private let settingsManager: SettingsManagerProtocol
     private let mutex = NSLock()
