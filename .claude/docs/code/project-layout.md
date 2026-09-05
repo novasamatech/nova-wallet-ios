@@ -1,7 +1,31 @@
 # Project Layout — Where Does It Belong?
 
-One Xcode project, no local SPM packages. The only structural boundary is `Common/` (shared) vs.
-`Modules/` (features). Placing code correctly is the most common review question.
+One Xcode project plus three local SPM packages under `Packages/`. The structural boundaries
+are `Common/` (shared) vs. `Modules/` (features) inside the app target, and the package
+boundary outside it. Placing code correctly is the most common review question.
+
+### Local Packages
+
+| The code knows about…                                                    | It belongs in    |
+|----------------------------------------------------------------------------|-------------------|
+| Analytics events, the queue, consent, the uploader                         | `Packages/NovaAnalytics` |
+| App Attest, DeviceCheck, gateway register/sign                             | `Packages/NovaAppAttest` |
+| Operation combining, longrun primitives, `CompoundOperationWrapper` helpers | `Packages/NovaOperationSupport` |
+
+`Packages/NovaOperationSupport` is not a domain boundary like the other two — it mirrors app
+code that Operation-iOS 2.1.2 does not provide (`OperationCombiningService`, the `Longrun`
+primitives, `insertingHead`/`insertingTail`, `addDependency(wrapper:)`, and the
+`CompoundOperationWrapper` result conveniences). Every member in it is byte-identical to its
+app original; it exists only because both `NovaAppAttest` and `NovaAnalytics` need these
+helpers, so without a shared package the repository would carry three copies of the same code.
+Delete the whole package once the Operation-iOS pin gains these types — do not "clean it up"
+before then, and do not let it grow anything that isn't a straight port of an existing app type.
+
+Nothing in a package may reference an app type — no `ApplicationConfig`, `GlobalConfig`,
+`Logger`, `UserDataStorageFacade`, `OperationManagerFacade`, `R.string` or
+`ApplicationServiceProtocol`. Host dependencies arrive through `AnalyticsConfiguration`.
+Package test targets take no external test dependencies: XCTest and hand-written doubles,
+never Cuckoo.
 
 ## Decision Table
 
