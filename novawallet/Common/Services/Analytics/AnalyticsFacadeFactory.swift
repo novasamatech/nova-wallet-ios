@@ -10,7 +10,12 @@ enum AnalyticsFacadeFactory {
     /// `F_ANALYTICS` for Debug makes every `xcodebuild test` run build the real facade,
     /// which opens the developer's actual store, records a session and POSTs to the live
     /// gateway.
-    static func createDefault() -> AnalyticsServiceFacadeProtocol {
+    ///
+    /// `AnalyticsDebugInspecting` rides along in the return type only so
+    /// `AnalyticsDebugInspectorViewController` (`F_DEV`) need not downcast. It is a separate
+    /// protocol precisely so the package's production contract does not carry it; both
+    /// facades conform unconditionally, so nothing here is configuration-dependent.
+    static func createDefault() -> AnalyticsServiceFacadeProtocol & AnalyticsDebugInspecting {
         #if F_ANALYTICS
             guard !ProcessInfo.processInfo.arguments.contains("-UNITTEST") else {
                 return NoOpAnalyticsServiceFacade.shared
@@ -22,14 +27,19 @@ enum AnalyticsFacadeFactory {
         #endif
     }
 
-    #if F_ANALYTICS
-        private static let sharedFacade: AnalyticsServiceFacadeProtocol = {
-            #if F_RELEASE
-                let isReleaseBuild = true
-            #else
-                let isReleaseBuild = false
-            #endif
+    /// Read outside `#if F_ANALYTICS` on purpose: nested inside it, the `true` branch
+    /// type-checks in no configuration at all, because `F_ANALYTICS` is defined only for
+    /// `debug`/`dev` and `F_RELEASE` only for `release`/`staging`. This is the flag that
+    /// picks the attestation ladder the day analytics ships in Release, so both branches
+    /// must compile everywhere.
+    #if F_RELEASE
+        private static let isReleaseBuild = true
+    #else
+        private static let isReleaseBuild = false
+    #endif
 
+    #if F_ANALYTICS
+        private static let sharedFacade: AnalyticsServiceFacadeProtocol & AnalyticsDebugInspecting = {
             let settingsManager = SettingsManager.shared
 
             return AnalyticsServiceFacade(
