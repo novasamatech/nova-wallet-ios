@@ -61,6 +61,8 @@ extension AnalyticsPropertyValue: Codable {
     }
 }
 
+/// Conformers are closed value sets only. `String` must never conform: free text would carry
+/// user data to the gateway.
 public protocol AnalyticsPropertyConvertible {
     var analyticsValue: AnalyticsPropertyValue { get }
 }
