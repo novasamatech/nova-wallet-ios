@@ -2,36 +2,34 @@ import Foundation
 import Foundation_iOS
 import Keystore_iOS
 import Operation_iOS
+import SDKLogger
 import NovaAppAttest
-import NovaAnalytics
 
-final class AnalyticsServiceFacade {
-    static let shared = AnalyticsServiceFacade()
+public final class AnalyticsServiceFacade {
+    public let consent: AnalyticsConsentManagerProtocol
 
-    let consent: AnalyticsConsentManagerProtocol
-
-    private let settingsManager: SettingsManagerProtocol
+    private let isFirstLaunch: () -> Bool
     private let service: AnalyticsService
     private let sessionTracker: AnalyticsSessionTracking
     private let availability: AnalyticsAvailabilityProvider
-    private let configProvider: GlobalConfigProviding
+    private let eventQueue: AnalyticsEventQueueProtocol
+    private let remoteSettings: AnalyticsRemoteSettings
     private let configOperationQueue: OperationQueue
-    private let logger: LoggerProtocol
+    private let logger: SDKLoggerProtocol
 
     private let mutex = NSLock()
     private var isActive: Bool = false
 
-    private init() {
-        // Built once, lazily, on first reference. AppDelegate returning early under
-        // -UNITTEST is not enough on its own — a test calling AnalyticsFacadeFactory
-        // directly would still land here — so the factory carries the same check.
-        let settingsManager = SettingsManager.shared
+    /// Composed from `configuration` alone. The host owns the singleton and the build-flag
+    /// gating — `AnalyticsFacadeFactory` in the app — so nothing here reaches back into it.
+    public init(configuration: AnalyticsConfiguration) {
+        let settingsManager = configuration.settingsManager
 
         // The package owns its persistence: its own model, its own sqlite, and a store
         // that drops an incompatible model rather than crashing a launch over unsent
-        // telemetry. Task 5 moves the directory into the injected configuration.
+        // telemetry. The directory is the host's to choose.
         let storageFacade = AnalyticsStorageFacade(
-            storeDirectory: UserStorageParams.sharedStorageDirectoryURL
+            storeDirectory: configuration.storeDirectory
         )
 
         let eventQueue = CoreDataAnalyticsEventQueue(
@@ -40,16 +38,10 @@ final class AnalyticsServiceFacade {
 
         let appAttest = AppAttestService()
 
-        #if F_RELEASE
-            let isReleaseBuild = true
-        #else
-            let isReleaseBuild = false
-        #endif
-
         // The ladder's inputs are read here, at the factory, so the resolver itself
         // stays pure and unit-tested (spec §7.5).
         let attestationMode = BackendAttestationModeResolver.resolve(
-            isReleaseBuild: isReleaseBuild,
+            isReleaseBuild: configuration.isReleaseBuild,
             isAppAttestSupported: appAttest.isSupported
         )
 
@@ -62,7 +54,7 @@ final class AnalyticsServiceFacade {
             availabilityProvider: availability
         )
 
-        let gatewayURL = ApplicationConfig.shared.gatewayURL
+        let gatewayURL = configuration.gatewayURL
 
         let attestKeyRepository = SettingsAppAttestKeyRepository(settingsManager: settingsManager)
 
@@ -75,8 +67,8 @@ final class AnalyticsServiceFacade {
             repository: AnyDataProviderRepository(attestKeyRepository),
             gatewayURL: gatewayURL,
             mode: attestationMode,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
-            logger: Logger.shared
+            operationQueue: configuration.operationQueue,
+            logger: configuration.logger
         )
 
         let identity = AnalyticsIdentity(settingsManager: settingsManager)
@@ -86,9 +78,9 @@ final class AnalyticsServiceFacade {
             identity: identity,
             attestation: attestation,
             uploadFactory: AnalyticsUploadOperationFactory(baseURL: gatewayURL),
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
-            appVersion: Self.appVersion,
-            logger: Logger.shared
+            operationQueue: configuration.operationQueue,
+            appVersion: configuration.appVersion,
+            logger: configuration.logger
         )
 
         // Persistence runs on the serial analytics queue and the upload on the shared
@@ -100,9 +92,9 @@ final class AnalyticsServiceFacade {
             identity: identity,
             uploader: uploader,
             attestation: attestation,
-            operationQueue: OperationManagerFacade.analyticsQueue,
-            uploadOperationQueue: OperationManagerFacade.sharedDefaultQueue,
-            logger: Logger.shared
+            operationQueue: configuration.analyticsOperationQueue,
+            uploadOperationQueue: configuration.operationQueue,
+            logger: configuration.logger
         )
 
         let sessionTracker = AnalyticsSessionTracker(
@@ -111,14 +103,15 @@ final class AnalyticsServiceFacade {
             backgroundTaskRunner: UIApplicationBackgroundTaskRunner()
         )
 
-        self.settingsManager = settingsManager
+        isFirstLaunch = configuration.isFirstLaunch
         self.consent = consent
         self.service = service
         self.sessionTracker = sessionTracker
         self.availability = availability
-        configProvider = GlobalConfigProvider.shared
-        configOperationQueue = OperationManagerFacade.sharedDefaultQueue
-        logger = Logger.shared
+        self.eventQueue = eventQueue
+        remoteSettings = configuration.remoteSettings
+        configOperationQueue = configuration.operationQueue
+        logger = configuration.logger
 
         // The opt-out wipe belongs to AnalyticsService, which observes the same manager.
         // The facade owns only the opt-in edge, which opens a session (spec §9).
@@ -135,7 +128,7 @@ final class AnalyticsServiceFacade {
 // MARK: - AnalyticsServiceFacadeProtocol
 
 extension AnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
-    func setup() {
+    public func setup() {
         mutex.lock()
 
         guard !isActive else {
@@ -153,7 +146,7 @@ extension AnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
         // batch's peek run before app_opened and session_started have been written, so the
         // two events the launch flush exists for normally miss it.
         service.trackAndFlush(
-            .appOpened(isFirstLaunch: settingsManager.isAppFirstLaunch),
+            .appOpened(isFirstLaunch: isFirstLaunch()),
             reason: .launch,
             completion: {}
         )
@@ -163,7 +156,7 @@ extension AnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
 
     /// A real symmetric throttle: the launch path never calls it, but the kill switch does
     /// once the remote config turns analytics off, and so do the tests.
-    func throttle() {
+    public func throttle() {
         mutex.lock()
 
         guard isActive else {
@@ -178,12 +171,12 @@ extension AnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
         service.cancelFlush()
     }
 
-    func track(_ event: AnalyticsEvent) {
+    public func track(_ event: AnalyticsEvent) {
         // track() depends on consent and availability only, never on isActive.
         service.track(event)
     }
 
-    func trackAndFlush(
+    public func trackAndFlush(
         _ event: AnalyticsEvent,
         reason: AnalyticsFlushReason,
         completion: @escaping () -> Void
@@ -191,20 +184,28 @@ extension AnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
         service.trackAndFlush(event, reason: reason, completion: completion)
     }
 
-    func flush(reason: AnalyticsFlushReason) {
+    public func flush(reason: AnalyticsFlushReason) {
         service.flush(reason: reason)
+    }
+
+    public func debugPendingEventsWrapper(count: Int) -> CompoundOperationWrapper<[AnalyticsPendingEvent]> {
+        eventQueue.peekWrapper(count: count)
+    }
+
+    public func debugClearPendingEventsOperation() -> BaseOperation<Void> {
+        eventQueue.clearOperation()
     }
 }
 
 // MARK: - Private
 
 private extension AnalyticsServiceFacade {
-    /// Spec §10. `GlobalConfigProvider` caches after one fetch per process, so a change on
+    /// Spec §10. The host's provider caches after one fetch per process, so a change on
     /// the server takes effect on the next cold start. Fail-open: a fetch error logs at
     /// `.info` and leaves availability exactly as the attestation ladder set it.
     func resolveRemoteAvailability() {
         execute(
-            wrapper: configProvider.createConfigWrapper(),
+            wrapper: remoteSettings.createRemoteEnabledWrapper(),
             inOperationQueue: configOperationQueue,
             runningCallbackIn: nil
         ) { [weak self] result in
@@ -213,8 +214,8 @@ private extension AnalyticsServiceFacade {
             }
 
             switch result {
-            case let .success(config):
-                availability.setRemoteEnabled(config.analytics?.enabled ?? true)
+            case let .success(isEnabled):
+                availability.setRemoteEnabled(isEnabled)
                 service.handleAvailabilityChanged()
 
                 guard !availability.isAvailable else {
@@ -229,13 +230,5 @@ private extension AnalyticsServiceFacade {
                 logger.info("Analytics remote config unavailable: \(error)")
             }
         }
-    }
-
-    /// `CFBundleShortVersionString` only — `ApplicationConfig.version` appends the build
-    /// number, which the gateway does not expect (spec §6.2).
-    static var appVersion: String {
-        let bundle = Bundle(for: AnalyticsServiceFacade.self)
-
-        return bundle.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
     }
 }

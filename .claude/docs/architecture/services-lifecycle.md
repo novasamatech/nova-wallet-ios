@@ -113,9 +113,12 @@ never reach for `.shared` inside a Presenter/Interactor method body.
 | `PushNotificationsServiceFacade.shared`       | Push registration and sync                   |
 | `ApplicationConfig.shared`                    | Static URLs, emails, deep-link scheme        |
 | `URLHandlingServiceFacade.shared`             | Deep link / universal link dispatch          |
-| `AnalyticsServiceFacade.shared`               | Consent-gated analytics; owned by Root       |
+| `AnalyticsFacadeFactory.createDefault()`      | Consent-gated analytics; owned by Root       |
 
-`AnalyticsServiceFacade` is set up by `RootInteractor.setup()` — after `runMigrators()` and
+`AnalyticsServiceFacade` lives in the `NovaAnalytics` package and takes an
+`AnalyticsConfiguration`, so the singleton and the build-flag gating are the app's:
+`AnalyticsFacadeFactory` is the only place that holds the instance. It is set up by
+`RootInteractor.setup()` — after `runMigrators()` and
 before `walletSettings.setup` — and deliberately *not* by `ServiceCoordinator`, which runs only
 after the pincode gate. Sessions and `app_opened` must be recorded on every launch, including
 one the user abandons at the pincode screen. Nothing is persisted or sent without consent.
