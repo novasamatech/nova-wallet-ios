@@ -24,8 +24,4 @@ extension NSSortDescriptor {
     static var nftsByCreationDesc: NSSortDescriptor {
         NSSortDescriptor(key: #keyPath(CDNft.createdAt), ascending: false)
     }
-
-    static var analyticsEventsBySequence: NSSortDescriptor {
-        NSSortDescriptor(key: #keyPath(CDAnalyticsEvent.sequence), ascending: true)
-    }
 }

@@ -1,6 +1,6 @@
 [modules.NovaModules]
 
-imports = ["Foundation", "Foundation_iOS", "Keystore_iOS", "SubstrateSdk", "NovaAppAttest",]
+imports = ["Foundation", "Foundation_iOS", "Keystore_iOS", "SubstrateSdk", "NovaAppAttest", "NovaAnalytics",]
 
 testableImports = ["novawallet"]
 
@@ -132,9 +132,8 @@ sources = [
     "novawallet/Common/Services/AssetExchange/AssetsExchangeGraph.swift",
     "novawallet/Common/Services/ExtrinsicService/Substrate/FeeManaging/FeeViaSwap/Hydra/HydraFeeOraclePriceFactory.swift",
     "novawallet/Common/LegalConsent/LegalConsentRepositoryProtocols.swift",
-    "novawallet/Common/Services/Analytics/AnalyticsProtocols.swift",
+    "Packages/NovaAnalytics/Sources/NovaAnalytics/AnalyticsProtocols.swift",
     "Packages/NovaAppAttest/Sources/NovaAppAttest/AppAttest/AppAttestService.swift",
-    "Packages/NovaAppAttest/Sources/NovaAppAttest/AppAttest/DeviceCheckAttesting.swift",
     "Packages/NovaAppAttest/Sources/NovaAppAttest/Attestation/BackendAttestationProtocols.swift",
 ]
 

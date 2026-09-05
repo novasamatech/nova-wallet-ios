@@ -4,6 +4,7 @@
     import Operation_iOS
     import Keystore_iOS
     import NovaAppAttest
+    import NovaAnalytics
 
     /// A deliberately plain `UIViewController`: a developer tool, not a VIPER module, and it
     /// never reaches Release. Titles and labels are literals, not localized keys.
@@ -46,19 +47,18 @@
         /// Composed here rather than in `SettingsWireframe` so a debug-only screen does not
         /// pull CoreData and settings imports into a file that ships.
         static func createDefault() -> AnalyticsDebugInspectorViewController {
-            let repository: CoreDataRepository<AnalyticsPendingEvent, CDAnalyticsEvent> =
-                UserDataStorageFacade.shared.createRepository(
-                    filter: nil,
-                    sortDescriptors: [.analyticsEventsBySequence],
-                    mapper: AnyCoreDataMapper(AnalyticsPendingEventMapper())
-                )
+            // Reads the package's own store, the same one the facade writes to. Task 5
+            // replaces this second opening with a debug accessor on the facade.
+            let storageFacade = AnalyticsStorageFacade(
+                storeDirectory: UserStorageParams.sharedStorageDirectoryURL
+            )
 
             let appAttest = AppAttestService()
 
             return AnalyticsDebugInspectorViewController(
                 facade: AnalyticsFacadeFactory.createDefault(),
                 eventQueue: CoreDataAnalyticsEventQueue(
-                    repository: AnyDataProviderRepository(repository)
+                    repository: storageFacade.createEventRepository()
                 ),
                 attestationMode: BackendAttestationModeResolver.resolve(
                     isReleaseBuild: false,
@@ -148,7 +148,9 @@
                     "Available: \(facade.consent.isAvailable)",
                     "Prompt seen: \(facade.consent.isPromptSeen)",
                     "Attestation mode: \(attestationMode)",
-                    "Install id present: \(settingsManager.analyticsInstallId != nil)"
+                    // The accessor is internal to NovaAnalytics, so this reads the raw key —
+                    // exactly the raw value the package writes under.
+                    "Install id present: \(settingsManager.string(for: "analyticsInstallId") != nil)"
                 ].joined(separator: "\n")
             }
         }
@@ -198,8 +200,14 @@
         }
 
         func share(fixture: AnalyticsAttestationFixture) {
+            // A local encoder rather than the package's `AnalyticsCoding`, which is
+            // internal to NovaAnalytics: this encodes an app-side fixture, not a wire
+            // envelope. `.sortedKeys` only, so the recorded sample stays reproducible.
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.sortedKeys]
+
             guard
-                let data = try? AnalyticsCoding.encoder.encode(fixture),
+                let data = try? encoder.encode(fixture),
                 let json = String(data: data, encoding: .utf8)
             else {
                 present(message: "Fixture could not be encoded")

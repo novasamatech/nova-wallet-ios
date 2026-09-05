@@ -3,6 +3,7 @@ import Foundation_iOS
 import Keystore_iOS
 import Operation_iOS
 import NovaAppAttest
+import NovaAnalytics
 
 final class AnalyticsServiceFacade {
     static let shared = AnalyticsServiceFacade()
@@ -26,15 +27,15 @@ final class AnalyticsServiceFacade {
         // directly would still land here — so the factory carries the same check.
         let settingsManager = SettingsManager.shared
 
-        let repository: CoreDataRepository<AnalyticsPendingEvent, CDAnalyticsEvent> =
-            UserDataStorageFacade.shared.createRepository(
-                filter: nil,
-                sortDescriptors: [.analyticsEventsBySequence],
-                mapper: AnyCoreDataMapper(AnalyticsPendingEventMapper())
-            )
+        // The package owns its persistence: its own model, its own sqlite, and a store
+        // that drops an incompatible model rather than crashing a launch over unsent
+        // telemetry. Task 5 moves the directory into the injected configuration.
+        let storageFacade = AnalyticsStorageFacade(
+            storeDirectory: UserStorageParams.sharedStorageDirectoryURL
+        )
 
         let eventQueue = CoreDataAnalyticsEventQueue(
-            repository: AnyDataProviderRepository(repository)
+            repository: storageFacade.createEventRepository()
         )
 
         let appAttest = AppAttestService()
@@ -86,7 +87,8 @@ final class AnalyticsServiceFacade {
             attestation: attestation,
             uploadFactory: AnalyticsUploadOperationFactory(baseURL: gatewayURL),
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
-            appVersion: Self.appVersion
+            appVersion: Self.appVersion,
+            logger: Logger.shared
         )
 
         // Persistence runs on the serial analytics queue and the upload on the shared
@@ -99,7 +101,8 @@ final class AnalyticsServiceFacade {
             uploader: uploader,
             attestation: attestation,
             operationQueue: OperationManagerFacade.analyticsQueue,
-            uploadOperationQueue: OperationManagerFacade.sharedDefaultQueue
+            uploadOperationQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: Logger.shared
         )
 
         let sessionTracker = AnalyticsSessionTracker(

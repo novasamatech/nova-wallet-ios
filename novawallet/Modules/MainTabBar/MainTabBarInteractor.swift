@@ -2,6 +2,7 @@ import Foundation
 import Keystore_iOS
 import SubstrateSdk
 import Foundation_iOS
+import NovaAnalytics
 
 final class MainTabBarInteractor: AnyProviderAutoCleaning {
     weak var presenter: MainTabBarInteractorOutputProtocol?

@@ -2,6 +2,7 @@ import Foundation
 import Keystore_iOS
 import NovaCrypto
 import Operation_iOS
+import NovaAnalytics
 
 enum ProfileInteractorError: Error {
     case noSelectedAccount

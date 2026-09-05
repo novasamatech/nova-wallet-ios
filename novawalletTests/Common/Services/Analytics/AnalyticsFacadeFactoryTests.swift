@@ -1,5 +1,6 @@
 import XCTest
 @testable import novawallet
+import NovaAnalytics
 
 final class AnalyticsFacadeFactoryTests: XCTestCase {
     func testCreateDefaultReturnsTheSameInstance() {

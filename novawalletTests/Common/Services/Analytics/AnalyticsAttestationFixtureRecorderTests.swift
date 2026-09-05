@@ -78,8 +78,13 @@ final class AnalyticsAttestationFixtureRecorderTests: XCTestCase {
     }
 
     func testFixtureSerializesEveryFieldTheGatewayNeeds() throws {
+        // A local encoder rather than NovaAnalytics' internal `AnalyticsCoding`: the
+        // fixture is an app type, and only its field names are asserted here.
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys]
+
         let json = String(
-            data: try AnalyticsCoding.encoder.encode(try record().fixture),
+            data: try encoder.encode(try record().fixture),
             encoding: .utf8
         )
 

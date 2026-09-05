@@ -1,4 +1,5 @@
 import Foundation
+import NovaAnalytics
 
 /// The `!F_ANALYTICS` implementation. It owns no queue, no identity and no consent state,
 /// so a build without the flag cannot record, identify or transmit anything at all.

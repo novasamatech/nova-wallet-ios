@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24299" systemVersion="25A362" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="CDAnalyticsEvent" representedClassName="CDAnalyticsEvent" syncable="YES" codeGenerationType="class">
-        <attribute name="identifier" optional="YES" attributeType="String"/>
-        <attribute name="name" optional="YES" attributeType="String"/>
-        <attribute name="payload" optional="YES" attributeType="Binary"/>
-        <attribute name="sequence" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-    </entity>
     <entity name="CDChainAccount" representedClassName="CDChainAccount" syncable="YES" codeGenerationType="class">
         <attribute name="accountId" attributeType="String"/>
         <attribute name="chainId" attributeType="String"/>
