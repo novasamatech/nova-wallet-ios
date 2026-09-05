@@ -13,7 +13,12 @@ struct AnalyticsTestFixture {
     let consent: AnalyticsConsentManager
     let availability: AnalyticsAvailabilityProvider
     let queue: CoreDataAnalyticsEventQueue
-    let settings: InMemorySettingsManager
+    /// Serialised, not a bare `InMemorySettingsManager`. One store is shared by
+    /// `AnalyticsIdentity`, `BackendAttestationIdentity` and `SettingsAppAttestKeyRepository`
+    /// — three separate locks over one `[String: Any]` — and the `deviceCheck:` fixtures run
+    /// a real attestation chain on its own queue concurrently with a flush on
+    /// `uploadOperationQueue`. Distinct keys do not make a `Dictionary` thread-safe.
+    let settings: SerialisedSettingsManager
     let uploader: AnalyticsUploadingSpy
     /// Present only when a `deviceCheck` double is supplied: a real provider over a real
     /// `AppAttestService`, so a flush genuinely reaches DeviceCheck.
@@ -37,7 +42,7 @@ extension AnalyticsTestFixture {
             maxCount: 500
         )
 
-        let settings = InMemorySettingsManager()
+        let settings = SerialisedSettingsManager()
 
         let availability = AnalyticsAvailabilityProvider(
             attestationMode: isAvailable ? .appAttest : .unavailable
@@ -111,7 +116,7 @@ extension AnalyticsTestFixture {
     /// supplied double and everything between it and the queue is the production object.
     private static func makeAttestation(
         deviceCheck: DeviceCheckAttestingSpy,
-        settings: InMemorySettingsManager
+        settings: SerialisedSettingsManager
     ) -> BackendAttestationProvider {
         let repository = SettingsAppAttestKeyRepository(settingsManager: settings)
 

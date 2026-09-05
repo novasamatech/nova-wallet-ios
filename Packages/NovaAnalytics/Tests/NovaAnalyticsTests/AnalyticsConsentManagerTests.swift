@@ -39,6 +39,67 @@ final class AnalyticsConsentManagerTests: XCTestCase {
         XCTAssertFalse(settings.bool(for: "analyticsEnabled") ?? true)
     }
 
+    func testRepeatingTheCurrentValueNotifiesNobody() {
+        let manager = AnalyticsConsentManager(
+            settingsManager: InMemorySettingsManager(),
+            availabilityProvider: StubAvailability(isAvailable: true)
+        )
+
+        let owner = NSObject()
+        var observed: [Bool] = []
+        manager.addObserver(with: owner, queue: nil) { _, new in observed.append(new) }
+
+        manager.setEnabled(false)
+        manager.setEnabled(true)
+        manager.setEnabled(true)
+
+        XCTAssertEqual(observed, [true])
+    }
+
+    func testRemoveObserverStopsNotifications() {
+        let manager = AnalyticsConsentManager(
+            settingsManager: InMemorySettingsManager(),
+            availabilityProvider: StubAvailability(isAvailable: true)
+        )
+
+        let owner = NSObject()
+        var observed: [Bool] = []
+        manager.addObserver(with: owner, queue: nil) { _, new in observed.append(new) }
+
+        manager.setEnabled(true)
+        manager.removeObserver(by: owner)
+        manager.setEnabled(false)
+
+        XCTAssertEqual(observed, [true])
+    }
+
+    /// `SettingsInteractor` adds an observer and never removes it, so an owner going away is
+    /// the ordinary path, not an edge case. Both observers are registered before the owner
+    /// dies, so what has to handle it is `notify()`'s own prune rather than the one
+    /// `addObserver` runs.
+    func testDeallocatedOwnerIsPrunedRatherThanNotified() {
+        let manager = AnalyticsConsentManager(
+            settingsManager: InMemorySettingsManager(),
+            availabilityProvider: StubAvailability(isAvailable: true)
+        )
+
+        let survivor = NSObject()
+        var observed: [Bool] = []
+        var transient: NSObject? = NSObject()
+
+        manager.addObserver(with: transient!, queue: nil) { _, _ in
+            XCTFail("a deallocated owner's closure ran")
+        }
+
+        manager.addObserver(with: survivor, queue: nil) { _, new in observed.append(new) }
+
+        transient = nil
+
+        manager.setEnabled(true)
+
+        XCTAssertEqual(observed, [true])
+    }
+
     func testMarkPromptSeenIsPersistedAndNeverCleared() {
         let settings = InMemorySettingsManager()
         let manager = AnalyticsConsentManager(

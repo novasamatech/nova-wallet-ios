@@ -4,8 +4,10 @@ import NovaAnalytics
 
 final class AnalyticsFacadeFactoryTests: XCTestCase {
     func testCreateDefaultReturnsTheSameInstance() {
-        // A second facade would mean a second lock, a second session id, a second
-        // currentFeature and a second flush call store.
+        // Under `-UNITTEST` both sides resolve to `NoOpAnalyticsServiceFacade.shared`, so
+        // what this pins is the no-op arm's own singleton — not `sharedFacade`, which a test
+        // process never builds. That the real facade is a singleton too rests on Swift's
+        // `static let` semantics, which no test can reach from here.
         XCTAssertTrue(AnalyticsFacadeFactory.createDefault() === AnalyticsFacadeFactory.createDefault())
     }
 

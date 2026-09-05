@@ -12,8 +12,16 @@ final class LoggerSDKConformanceTests: XCTestCase {
 
         XCTAssertTrue(logger is Logger)
 
-        // Reproduces the three-way collision in the test module: this concrete call site
-        // compiles only while `Logger` shadows the convenience forms itself.
+        // Reproduces the three-way collision in the test module: these concrete call sites
+        // compile only while `Logger` shadows the convenience forms itself.
+        //
+        // All five, because that is what the shadow declares. `verbose` and `warning` have
+        // no app call sites at all, so with only `info` here their shadows could be deleted
+        // and the whole suite would still pass.
+        Logger.shared.verbose("concrete call site stays unambiguous")
+        Logger.shared.debug("concrete call site stays unambiguous")
         Logger.shared.info("concrete call site stays unambiguous")
+        Logger.shared.warning("concrete call site stays unambiguous")
+        Logger.shared.error("concrete call site stays unambiguous")
     }
 }

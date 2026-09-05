@@ -100,9 +100,14 @@ final class SettingsAppAttestKeyRepositoryTests: XCTestCase {
 
     /// The only assertion that names the on-disk key. Every other test reaches the store
     /// through `SettingsAppAttestKeyRepository.storageKey`, so a typo in that literal would
-    /// pass the whole suite while silently orphaning the key rows of every install that
-    /// already holds them.
-    func testRowsAreStoredUnderTheKeyExistingInstallsAlreadyHold() throws {
+    /// pass the whole suite while silently orphaning whatever rows already exist under the
+    /// old name.
+    ///
+    /// No *shipped* install holds `appAttestKeys`: the key arrives with this branch, and the
+    /// rows it replaces lived in `CDAppAttestKey` with nothing migrating them. What is at
+    /// risk today is dev and TestFlight installs of this branch — and, from here on, every
+    /// install, which is why the literal is pinned rather than left to be retyped.
+    func testRowsAreStoredUnderThePinnedSettingsKey() throws {
         let settings = InMemorySettingsManager()
         let repository = SettingsAppAttestKeyRepository(settingsManager: settings)
 
@@ -147,88 +152,5 @@ final class SettingsAppAttestKeyRepositoryTests: XCTestCase {
         concurrent.addOperations(operations, waitUntilFinished: true)
 
         XCTAssertEqual(try run(repository.fetchCountOperation()), 64)
-    }
-}
-
-/// Serialises every call into a wrapped `SettingsManagerProtocol` behind an `NSLock`.
-///
-/// Exists only for `testConcurrentSavesDoNotLoseRows`. `InMemorySettingsManager` holds a
-/// bare unguarded `[String: Any]` (Keystore-iOS `InMemorySettingsManager.swift:4`), so with
-/// the repository's own lock removed the test process crashes on that dictionary instead of
-/// failing the assertion its doc comment names. Wrapping the store here makes every call
-/// atomic, so the *only* unguarded read-modify-write left in the picture is the repository's
-/// map — the one hazard the test claims to cover.
-private final class SerialisedSettingsManager: SettingsManagerProtocol {
-    private let wrapped: SettingsManagerProtocol
-    private let lock = NSLock()
-
-    init(wrapping wrapped: SettingsManagerProtocol) {
-        self.wrapped = wrapped
-    }
-
-    private func synchronised<T>(_ body: () -> T) -> T {
-        lock.lock()
-
-        defer {
-            lock.unlock()
-        }
-
-        return body()
-    }
-
-    func set(value: Bool, for key: String) {
-        synchronised { wrapped.set(value: value, for: key) }
-    }
-
-    func set(value: Int, for key: String) {
-        synchronised { wrapped.set(value: value, for: key) }
-    }
-
-    func set(value: Double, for key: String) {
-        synchronised { wrapped.set(value: value, for: key) }
-    }
-
-    func set(value: String, for key: String) {
-        synchronised { wrapped.set(value: value, for: key) }
-    }
-
-    func set(value: Data, for key: String) {
-        synchronised { wrapped.set(value: value, for: key) }
-    }
-
-    func set(anyValue: Any, for key: String) {
-        synchronised { wrapped.set(anyValue: anyValue, for: key) }
-    }
-
-    func bool(for key: String) -> Bool? {
-        synchronised { wrapped.bool(for: key) }
-    }
-
-    func integer(for key: String) -> Int? {
-        synchronised { wrapped.integer(for: key) }
-    }
-
-    func double(for key: String) -> Double? {
-        synchronised { wrapped.double(for: key) }
-    }
-
-    func string(for key: String) -> String? {
-        synchronised { wrapped.string(for: key) }
-    }
-
-    func data(for key: String) -> Data? {
-        synchronised { wrapped.data(for: key) }
-    }
-
-    func anyValue(for key: String) -> Any? {
-        synchronised { wrapped.anyValue(for: key) }
-    }
-
-    func removeValue(for key: String) {
-        synchronised { wrapped.removeValue(for: key) }
-    }
-
-    func removeAll() {
-        synchronised { wrapped.removeAll() }
     }
 }
