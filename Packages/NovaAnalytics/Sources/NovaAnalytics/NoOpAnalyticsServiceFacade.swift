@@ -1,12 +1,14 @@
 import Foundation
-import NovaAnalytics
+import Operation_iOS
+import NovaOperationSupport
 
-/// The `!F_ANALYTICS` implementation. It owns no queue, no identity and no consent state,
-/// so a build without the flag cannot record, identify or transmit anything at all.
-final class NoOpAnalyticsServiceFacade {
-    static let shared = NoOpAnalyticsServiceFacade()
+/// The implementation a host installs when analytics is compiled out. It owns no queue, no
+/// identity and no consent state, so such a build cannot record, identify or transmit
+/// anything at all.
+public final class NoOpAnalyticsServiceFacade {
+    public static let shared = NoOpAnalyticsServiceFacade()
 
-    let consent: AnalyticsConsentManagerProtocol = NoOpAnalyticsConsentManager()
+    public let consent: AnalyticsConsentManagerProtocol = NoOpAnalyticsConsentManager()
 
     private init() {}
 }
@@ -14,13 +16,13 @@ final class NoOpAnalyticsServiceFacade {
 // MARK: - AnalyticsServiceFacadeProtocol
 
 extension NoOpAnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
-    func setup() {}
+    public func setup() {}
 
-    func throttle() {}
+    public func throttle() {}
 
-    func track(_: AnalyticsEvent) {}
+    public func track(_: AnalyticsEvent) {}
 
-    func trackAndFlush(
+    public func trackAndFlush(
         _: AnalyticsEvent,
         reason _: AnalyticsFlushReason,
         completion: @escaping () -> Void
@@ -29,7 +31,15 @@ extension NoOpAnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
         completion()
     }
 
-    func flush(reason _: AnalyticsFlushReason) {}
+    public func flush(reason _: AnalyticsFlushReason) {}
+
+    public func debugPendingEventsWrapper(count _: Int) -> CompoundOperationWrapper<[AnalyticsPendingEvent]> {
+        .createWithResult([])
+    }
+
+    public func debugClearPendingEventsOperation() -> BaseOperation<Void> {
+        ClosureOperation {}
+    }
 }
 
 /// Always off, so the consent prompt is never shown and the Settings row stays hidden.

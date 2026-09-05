@@ -105,4 +105,14 @@ public protocol AnalyticsServiceFacadeProtocol: AnalyticsTrackingProtocol {
     func throttle()
 
     func flush(reason: AnalyticsFlushReason)
+
+    /// Read-only view of the pending queue for a host's debug tooling. Routed through the
+    /// facade rather than exposing the store, so a caller observes the same queue instance
+    /// as everything else — one lock, one call store, one session.
+    func debugPendingEventsWrapper(count: Int) -> CompoundOperationWrapper<[AnalyticsPendingEvent]>
+
+    /// Discards the pending queue, for that same tooling. Narrow on purpose: the queue
+    /// itself stays unexposed, because `enqueueWrapper` would let a host write rows that
+    /// never passed the consent gate.
+    func debugClearPendingEventsOperation() -> BaseOperation<Void>
 }

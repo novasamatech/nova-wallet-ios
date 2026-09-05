@@ -6638,11 +6638,10 @@
 		000000002384221D1527B8A1 /* SwapPoolTradeLimitCheck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000004024BA48453ACABB /* SwapPoolTradeLimitCheck.swift */; };
 		000000006C043D814E99B2D6 /* SwapDataValidatorFactory+PoolTradeLimit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0000000044697AEF01295519 /* SwapDataValidatorFactory+PoolTradeLimit.swift */; };
 		FEEDA0000000000000000002 /* AnalyticsUserModel21MigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDA0000000000000000001 /* AnalyticsUserModel21MigrationTests.swift */; };
-		FEEDD000000000000000010E /* AnalyticsServiceFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD000000000000000000E /* AnalyticsServiceFacade.swift */; };
-		FEEDD000000000000000010F /* NoOpAnalyticsServiceFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD000000000000000000F /* NoOpAnalyticsServiceFacade.swift */; };
 		FEEDD0000000000000000110 /* AnalyticsFacadeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000010 /* AnalyticsFacadeFactory.swift */; };
 		FEEDD0000000000000000111 /* AnalyticsFacadeFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000011 /* AnalyticsFacadeFactoryTests.swift */; };
 		FEEDAA0000000000000000B2 /* AnalyticsAppWiringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDAA0000000000000000B1 /* AnalyticsAppWiringTests.swift */; };
+		0000000021CDF4E8A8B04343 /* AnalyticsRemoteSettingsAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000005A7B94BE697EFEBE /* AnalyticsRemoteSettingsAdapter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -13018,11 +13017,10 @@
 		000000004024BA48453ACABB /* SwapPoolTradeLimitCheck.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapPoolTradeLimitCheck.swift; sourceTree = "<group>"; };
 		0000000044697AEF01295519 /* SwapDataValidatorFactory+PoolTradeLimit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SwapDataValidatorFactory+PoolTradeLimit.swift"; sourceTree = "<group>"; };
 		FEEDA0000000000000000001 /* AnalyticsUserModel21MigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsUserModel21MigrationTests.swift; sourceTree = "<group>"; };
-		FEEDD000000000000000000E /* AnalyticsServiceFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsServiceFacade.swift; sourceTree = "<group>"; };
-		FEEDD000000000000000000F /* NoOpAnalyticsServiceFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoOpAnalyticsServiceFacade.swift; sourceTree = "<group>"; };
 		FEEDD0000000000000000010 /* AnalyticsFacadeFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsFacadeFactory.swift; sourceTree = "<group>"; };
 		FEEDD0000000000000000011 /* AnalyticsFacadeFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsFacadeFactoryTests.swift; sourceTree = "<group>"; };
 		FEEDAA0000000000000000B1 /* AnalyticsAppWiringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsAppWiringTests.swift; sourceTree = "<group>"; };
+		000000005A7B94BE697EFEBE /* AnalyticsRemoteSettingsAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnalyticsRemoteSettingsAdapter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -30537,9 +30535,8 @@
 			isa = PBXGroup;
 			children = (
 				FEED20000000000000000004 /* Debug */,
-				FEEDD000000000000000000E /* AnalyticsServiceFacade.swift */,
-				FEEDD000000000000000000F /* NoOpAnalyticsServiceFacade.swift */,
 				FEEDD0000000000000000010 /* AnalyticsFacadeFactory.swift */,
+				000000005A7B94BE697EFEBE /* AnalyticsRemoteSettingsAdapter.swift */,
 			);
 			path = Analytics;
 			sourceTree = "<group>";
@@ -37241,9 +37238,8 @@
 				FEED20000000000000000102 /* AnalyticsDebugInspectorViewController.swift in Sources */,
 				FEED10000000000000000101 /* AnalyticsConsentSheetFactory.swift in Sources */,
 				FEED10000000000000000102 /* AnalyticsConsentPromptGate.swift in Sources */,
-				FEEDD000000000000000010E /* AnalyticsServiceFacade.swift in Sources */,
-				FEEDD000000000000000010F /* NoOpAnalyticsServiceFacade.swift in Sources */,
 				FEEDD0000000000000000110 /* AnalyticsFacadeFactory.swift in Sources */,
+				0000000021CDF4E8A8B04343 /* AnalyticsRemoteSettingsAdapter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

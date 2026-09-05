@@ -9,11 +9,17 @@
     /// A deliberately plain `UIViewController`: a developer tool, not a VIPER module, and it
     /// never reaches Release. Titles and labels are literals, not localized keys.
     ///
-    /// It composes the same public pieces production does rather than widening
-    /// `AnalyticsServiceFacadeProtocol` with debug-only members.
+    /// It reaches the pending queue through the facade's two `debug…` accessors rather than
+    /// opening the analytics store itself. A second `NSPersistentStoreCoordinator` over the
+    /// same sqlite would give this screen its own snapshot of a queue the facade is
+    /// concurrently writing — and a stale count here reads as a queue bug.
     final class AnalyticsDebugInspectorViewController: UIViewController {
+        /// Every row the peek is willing to return. The queue trims itself to 500, so a
+        /// larger window is what lets an exact count be reported rather than a truncated
+        /// one; `refresh()` still marks the result when it comes back full.
+        private static let pendingEventLimit = 1000
+
         private let facade: AnalyticsServiceFacadeProtocol
-        private let eventQueue: AnalyticsEventQueueProtocol
         private let attestationMode: BackendAttestationMode
         private let settingsManager: SettingsManagerProtocol
         private let recorder: AnalyticsAttestationFixtureRecorder
@@ -23,14 +29,12 @@
 
         init(
             facade: AnalyticsServiceFacadeProtocol,
-            eventQueue: AnalyticsEventQueueProtocol,
             attestationMode: BackendAttestationMode,
             settingsManager: SettingsManagerProtocol,
             recorder: AnalyticsAttestationFixtureRecorder,
             operationQueue: OperationQueue
         ) {
             self.facade = facade
-            self.eventQueue = eventQueue
             self.attestationMode = attestationMode
             self.settingsManager = settingsManager
             self.recorder = recorder
@@ -45,21 +49,12 @@
         }
 
         /// Composed here rather than in `SettingsWireframe` so a debug-only screen does not
-        /// pull CoreData and settings imports into a file that ships.
+        /// pull attestation and settings imports into a file that ships.
         static func createDefault() -> AnalyticsDebugInspectorViewController {
-            // Reads the package's own store, the same one the facade writes to. Task 5
-            // replaces this second opening with a debug accessor on the facade.
-            let storageFacade = AnalyticsStorageFacade(
-                storeDirectory: UserStorageParams.sharedStorageDirectoryURL
-            )
-
             let appAttest = AppAttestService()
 
             return AnalyticsDebugInspectorViewController(
                 facade: AnalyticsFacadeFactory.createDefault(),
-                eventQueue: CoreDataAnalyticsEventQueue(
-                    repository: storageFacade.createEventRepository()
-                ),
                 attestationMode: BackendAttestationModeResolver.resolve(
                     isReleaseBuild: false,
                     isAppAttestSupported: appAttest.isSupported
@@ -129,16 +124,18 @@
         }
 
         func refresh() {
-            let countOperation = eventQueue.countOperation()
-
             execute(
-                operation: countOperation,
+                wrapper: facade.debugPendingEventsWrapper(count: Self.pendingEventLimit),
                 inOperationQueue: operationQueue,
                 runningCallbackIn: .main
             ) { [weak self] result in
                 guard let self else { return }
 
-                let count = (try? result.get()).map(String.init) ?? "unknown"
+                // A full window means the queue may hold more, so say so rather than
+                // report the window size as the count.
+                let count = (try? result.get()).map { events in
+                    "\(events.count)" + (events.count < Self.pendingEventLimit ? "" : "+")
+                } ?? "unknown"
 
                 // Install id presence only — never the value, which is the pseudonymous
                 // identifier the whole design keeps out of logs.
@@ -169,7 +166,7 @@
 
         @objc func actionClear() {
             execute(
-                operation: eventQueue.clearOperation(),
+                operation: facade.debugClearPendingEventsOperation(),
                 inOperationQueue: operationQueue,
                 runningCallbackIn: .main
             ) { [weak self] _ in
