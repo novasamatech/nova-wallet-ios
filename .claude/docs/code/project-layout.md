@@ -21,6 +21,22 @@ helpers, so without a shared package the repository would carry three copies of 
 Delete the whole package once the Operation-iOS pin gains these types — do not "clean it up"
 before then, and do not let it grow anything that isn't a straight port of an existing app type.
 
+**Never `import NovaOperationSupport` from the app target.** Its `public extension
+CompoundOperationWrapper` declares the same six members the app declares in
+`novawallet/Common/Extension/Operation/`, so a single such import makes every one of those
+call sites ambiguous app-wide — the same collision class that forced the concrete-type
+shadowing in `Common/Extension/SDKLogger/Logger+SDKLogger.swift`. The app target does not
+link it; `NovaAnalytics` and `NovaAppAttest` pull it in transitively for their own use.
+
+**Publishing these packages is not a pure lift.** `NovaAnalytics` and `NovaAppAttest` both
+declare `.package(path: "../NovaOperationSupport")`, so moving either into its own
+`novasamatech/*` repository means either upstreaming those helpers into Operation-iOS first
+and deleting `NovaOperationSupport` (the preferred order — it is what the package's own README
+asks for), or inlining its one file into each consumer at publication time. Publishing
+`NovaOperationSupport` as a standalone repository is the option to avoid: it would ship a
+package that documents its own deletion and carries a knowingly-preserved broken `cancel()`.
+Until one of those happens, the three packages travel together.
+
 Nothing in a package may reference an app type — no `ApplicationConfig`, `GlobalConfig`,
 `Logger`, `UserDataStorageFacade`, `OperationManagerFacade`, `R.string` or
 `ApplicationServiceProtocol`. Host dependencies arrive through `AnalyticsConfiguration`.

@@ -126,10 +126,12 @@ Both run pinned versions through Mint, so results match CI and the build phases.
 ## Dependencies
 
 Mostly SPM, remote — plus three local packages under `Packages/`: `NovaAnalytics`,
-`NovaAppAttest`, and `NovaOperationSupport` (see project-layout.md). Each has its own
-`Package.resolved`; the app target's are pinned in
-`novawallet.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`, which also
-carries `logger-ios`, added when the local packages arrived.
+`NovaAppAttest`, and `NovaOperationSupport` (see project-layout.md). Versions are pinned in
+one place, `novawallet.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`,
+which also carries `logger-ios`, added when the local packages arrived. Testing a package on
+its own makes it write a `Packages/<Name>/Package.resolved`; those are git-ignored
+(`.gitignore:60-65`) and must not be committed — a package manifest pins exact versions, so
+a second resolved file adds nothing but a way for the two to disagree.
 
 Core (novasama-maintained):
 
