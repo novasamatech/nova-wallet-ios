@@ -152,6 +152,11 @@ final class AnalyticsUploaderTests: XCTestCase {
         try seed(fixture, count: 1)
         try flush(fixture)
 
+        // `.last` alone would still pass if the batch were signed or sent twice, which the
+        // bare `verify(mock)` this replaces ruled out by defaulting to `times(1)`.
+        XCTAssertEqual(fixture.attestation.signingCallCount, 1)
+        XCTAssertEqual(fixture.uploadFactory.callCount, 1)
+
         let signedBytes = try XCTUnwrap(fixture.attestation.signedBodyClosures.last)()
         let sentBytes = try XCTUnwrap(fixture.uploadFactory.bodyClosures.last)()
 
@@ -244,6 +249,10 @@ final class AnalyticsUploaderTests: XCTestCase {
         try seed(fixture, count: 1)
 
         try flush(fixture)
+
+        // As above: the bare `verify(mock)` this replaces pinned exactly one upload
+        // alongside capturing its body.
+        XCTAssertEqual(fixture.uploadFactory.callCount, 1)
 
         let json = String(
             data: try XCTUnwrap(fixture.uploadFactory.bodyClosures.last)(),
