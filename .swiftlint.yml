@@ -6,6 +6,8 @@ excluded:
   - novawalletIntegrationTests
   - Packages/NovaAppAttest/Tests
   - Packages/NovaAppAttest/.build
+  - Packages/NovaAnalytics/Tests
+  - Packages/NovaAnalytics/.build
   - Packages/NovaOperationSupport/Tests
   - Packages/NovaOperationSupport/.build
   - NovaPushNotificationServiceExtension/R.generated.swift

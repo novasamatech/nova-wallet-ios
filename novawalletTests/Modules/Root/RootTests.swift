@@ -2,6 +2,7 @@ import XCTest
 @testable import novawallet
 import Cuckoo
 import Keystore_iOS
+import NovaAnalytics
 
 class RootTests: XCTestCase {
     func testOnboardingDecision() throws {

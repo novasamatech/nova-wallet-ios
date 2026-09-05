@@ -4,6 +4,7 @@ import SubstrateSdk
 import Keystore_iOS
 import Foundation_iOS
 import Cuckoo
+import NovaAnalytics
 
 final class SettingsTests: XCTestCase {
     func testSettingsSuccessfullyLoaded() throws {
@@ -157,7 +158,9 @@ final class SettingsTests: XCTestCase {
         makeAnalyticsInteractor(consent: consent).toggleAnalytics()
 
         XCTAssertTrue(consent.isEnabled)
-        XCTAssertTrue(settings.isAnalyticsEnabled)
+        // The accessor is internal to NovaAnalytics, so this reads the raw key the
+        // package writes under.
+        XCTAssertEqual(settings.bool(for: "analyticsEnabled"), true)
     }
 
     func testTogglingDoesNotMarkThePromptSeen() {

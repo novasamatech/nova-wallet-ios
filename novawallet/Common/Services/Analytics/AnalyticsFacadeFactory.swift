@@ -1,4 +1,5 @@
 import Foundation
+import NovaAnalytics
 
 enum AnalyticsFacadeFactory {
     /// An accessor, not a builder. The only place in the app that touches either `.shared`,

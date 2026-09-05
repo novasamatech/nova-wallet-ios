@@ -4,6 +4,7 @@ import Keystore_iOS
 import NovaCrypto
 import Operation_iOS
 import Foundation_iOS
+import NovaAnalytics
 
 final class RootInteractor {
     weak var presenter: RootInteractorOutputProtocol?
@@ -152,7 +153,7 @@ extension RootInteractor: RootInteractorInputProtocol {
 
         // After runMigrators() and before walletSettings.setup (spec §3.2). runMigrators()
         // is synchronous and performMigration() fatalErrors on an unknown store version;
-        // a first consented enqueue any earlier would open UserDataStorageFacade.shared
+        // a first consented enqueue any earlier would open the analytics store
         // concurrently with it.
         analyticsFacade.setup()
 

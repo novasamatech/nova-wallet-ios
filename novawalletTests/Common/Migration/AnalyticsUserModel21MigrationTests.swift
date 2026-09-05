@@ -33,23 +33,15 @@ final class AnalyticsUserModel21MigrationTests: XCTestCase {
         XCTAssertNil(UserStorageVersion.version22.nextVersion)
     }
 
-    func testNewEntitiesExistAndOldOneIsGone() throws {
+    /// `CDAnalyticsEvent` now lives in `NovaAnalytics`'s own store and `CDAppAttestKey`
+    /// in `SettingsManager`, so v21's only remaining job is dropping the dead
+    /// `CDAppAttestBrowserSettings`.
+    func testNoExtractedEntityRemainsInTheUserStore() throws {
         let names = Set(try currentUserDataModel().entities.compactMap(\.name))
 
-        XCTAssertTrue(names.contains("CDAnalyticsEvent"))
+        XCTAssertFalse(names.contains("CDAnalyticsEvent"))
         XCTAssertFalse(names.contains("CDAppAttestKey"))
         XCTAssertFalse(names.contains("CDAppAttestBrowserSettings"))
-    }
-
-    func testAnalyticsEventEntityShape() throws {
-        let entity = try XCTUnwrap(currentUserDataModel().entitiesByName["CDAnalyticsEvent"])
-
-        XCTAssertEqual(entity.attributesByName["identifier"]?.attributeType, .stringAttributeType)
-        XCTAssertEqual(entity.attributesByName["sequence"]?.attributeType, .integer64AttributeType)
-        XCTAssertEqual(entity.attributesByName["name"]?.attributeType, .stringAttributeType)
-        XCTAssertEqual(entity.attributesByName["timestamp"]?.attributeType, .dateAttributeType)
-        XCTAssertEqual(entity.attributesByName["payload"]?.attributeType, .binaryDataAttributeType)
-        XCTAssertTrue(entity.relationshipsByName.isEmpty)
     }
 
     func testStoreCreatedByPreviousModelMigratesAndKeepsWallets() throws {
@@ -75,7 +67,7 @@ final class AnalyticsUserModel21MigrationTests: XCTestCase {
 
         let entityNames = try migratedStoreEntityNames()
 
-        XCTAssertTrue(entityNames.contains("CDAnalyticsEvent"))
+        XCTAssertFalse(entityNames.contains("CDAnalyticsEvent"))
         XCTAssertFalse(entityNames.contains("CDAppAttestKey"))
         XCTAssertFalse(entityNames.contains("CDAppAttestBrowserSettings"))
 
