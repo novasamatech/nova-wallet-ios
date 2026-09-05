@@ -54,12 +54,12 @@ dependency is iOS-only, so `swift test` builds for macOS and fails — test them
 (it mirrors app-only helper code — see project-layout.md); build it rather than testing it.
 
 ```bash
-cd Packages/NovaAppAttest && RUN_IN_CI=true xcodebuild test -scheme NovaAppAttest \
-  -destination 'platform=iOS Simulator,name=iPhone 16' -derivedDataPath /tmp/dd-NovaAppAttest
-cd Packages/NovaAnalytics && RUN_IN_CI=true xcodebuild test -scheme NovaAnalytics \
-  -destination 'platform=iOS Simulator,name=iPhone 16' -derivedDataPath /tmp/dd-NovaAnalytics
-cd Packages/NovaOperationSupport && RUN_IN_CI=true xcodebuild build -scheme NovaOperationSupport \
-  -destination 'platform=iOS Simulator,name=iPhone 16' -derivedDataPath /tmp/dd-NovaOperationSupport
+(cd Packages/NovaAppAttest && RUN_IN_CI=true xcodebuild test -scheme NovaAppAttest \
+  -destination 'platform=iOS Simulator,name=iPhone 16' -derivedDataPath /tmp/dd-NovaAppAttest)
+(cd Packages/NovaAnalytics && RUN_IN_CI=true xcodebuild test -scheme NovaAnalytics \
+  -destination 'platform=iOS Simulator,name=iPhone 16' -derivedDataPath /tmp/dd-NovaAnalytics)
+(cd Packages/NovaOperationSupport && RUN_IN_CI=true xcodebuild build -scheme NovaOperationSupport \
+  -destination 'platform=iOS Simulator,name=iPhone 16' -derivedDataPath /tmp/dd-NovaOperationSupport)
 ```
 
 Pin `-derivedDataPath` outside the shared DerivedData folder used by the app build.
@@ -143,7 +143,7 @@ Core (novasama-maintained):
 | `Crypto-iOS` (NovaCrypto) | 0.4.1  | Keypairs, signing, mnemonics                 |
 | `metadata-shortener-ios` | 0.2.1   | Metadata hash for hardware signing           |
 | `hydra-math-swift`       | 0.5.0   | Hydration pool maths                         |
-| `logger-ios`             | 0.0.1   | `SDKLogger`, used by the local packages      |
+| `logger-ios`             | 0.0.1   | `SDKLogger`, used by the app + local packages |
 | `WalletConnectSwiftV2`   | 1.9.9   | WalletConnect (fork)                         |
 | `web3swift`              | 3.3.1   | EVM (fork)                                   |
 | `Starscream`             | 4.0.13  | WebSocket (fork)                             |

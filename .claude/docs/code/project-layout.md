@@ -4,7 +4,7 @@ One Xcode project plus three local SPM packages under `Packages/`. The structura
 are `Common/` (shared) vs. `Modules/` (features) inside the app target, and the package
 boundary outside it. Placing code correctly is the most common review question.
 
-### Local Packages
+## Local Packages
 
 | The code knows about…                                                    | It belongs in    |
 |----------------------------------------------------------------------------|-------------------|
