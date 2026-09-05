@@ -32,8 +32,6 @@ final class AnalyticsConfigurationTests: XCTestCase {
         )
     }
 
-    /// The facade must be constructible from configuration alone — no singletons, no
-    /// Bundle lookups, nothing reaching back into a host app.
     func testFacadeBuildsFromConfigurationAlone() throws {
         let directory = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString)
@@ -47,9 +45,6 @@ final class AnalyticsConfigurationTests: XCTestCase {
         XCTAssertFalse(facade.consent.isEnabled)
     }
 
-    /// `appVersion` must come from configuration. Reading it from
-    /// `Bundle(for: AnalyticsServiceFacade.self)` inside a package resolves to the *package*
-    /// bundle and yields "".
     func testAppVersionComesFromConfigurationNotTheBundle() throws {
         let directory = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString)

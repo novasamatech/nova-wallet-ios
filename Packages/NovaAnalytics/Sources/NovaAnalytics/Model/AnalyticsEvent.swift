@@ -4,7 +4,6 @@ public struct AnalyticsEvent: Equatable {
     public let name: AnalyticsEventName
     public let properties: [AnalyticsPropertyKey: AnalyticsPropertyValue]
 
-    /// A nil value omits its key entirely — the wire never carries an explicit null.
     public init(
         name: AnalyticsEventName,
         properties: [AnalyticsPropertyKey: AnalyticsPropertyConvertible?] = [:]

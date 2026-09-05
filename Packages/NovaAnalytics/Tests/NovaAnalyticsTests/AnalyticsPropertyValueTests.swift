@@ -21,8 +21,6 @@ final class AnalyticsPropertyValueTests: XCTestCase {
     }
 
     func testIntEncodesAsNumberNotString() throws {
-        // The gateway reads nft_count as an integer; Android's Gson round-trip sends 3.0
-        // and iOS must not follow it into a string or a float.
         XCTAssertEqual(try encodeToString(["nft_count": .int(3)]), #"{"nft_count":3}"#)
     }
 
@@ -38,7 +36,6 @@ final class AnalyticsPropertyValueTests: XCTestCase {
         let decoded = try AnalyticsCoding.decoder.decode([String: AnalyticsPropertyValue].self, from: firstPass)
         let secondPass = try AnalyticsCoding.encoder.encode(decoded)
 
-        // Bytes are stable, values are not: a decoded .enumerated comes back as .content(.raw).
         XCTAssertEqual(firstPass, secondPass)
         XCTAssertEqual(decoded["c"], .content(.raw("setup")))
         XCTAssertEqual(decoded["a"], .bool(false))
@@ -63,8 +60,6 @@ final class AnalyticsPropertyValueTests: XCTestCase {
     }
 
     func testTimestampFormatCarriesMillisecondsInUTC() {
-        // Asserts the shape rather than a pinned calendar date: this fails for the two
-        // reasons that matter — milliseconds dropped, or a local timezone leaking in.
         let formatted = ISO8601MillisFormatter.string(from: Date(timeIntervalSince1970: 1_772_445_600.123))
         XCTAssertTrue(formatted.hasSuffix(".123Z"), formatted)
         XCTAssertEqual(formatted.count, 24, formatted)

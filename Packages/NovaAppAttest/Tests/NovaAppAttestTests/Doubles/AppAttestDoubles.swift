@@ -2,9 +2,6 @@ import Foundation
 import Operation_iOS
 @testable import NovaAppAttest
 
-/// Replaces `MockDeviceCheckAttesting`. Cuckoo is deliberately absent from package test
-/// targets: these packages are staged for publication, and a consumer's CI must not have to
-/// pull a code-generation plugin to run their tests.
 final class DeviceCheckAttestingSpy: DeviceCheckAttesting {
     var isSupported: Bool = true
 
@@ -68,20 +65,11 @@ final class DeviceCheckAttestingSpy: DeviceCheckAttesting {
     }
 }
 
-/// Replaces `MockAppAttestServiceProtocol`.
-///
-/// Calls are recorded where the Cuckoo mock recorded them — when the wrapper is *composed* —
-/// so `reset()` stands in for `clearInvocations` and the recorded arrays stand in for
-/// `verify(times:)` and `ArgumentCaptor`.
 final class AppAttestServiceSpy: AppAttestServiceProtocol {
     var isSupported: Bool = true
 
-    /// Unwrapped inside the wrapper rather than at composition time — the provider's epoch
-    /// guards run at execution time and the tests depend on a failure surfacing there.
     var assertionResult: Result<AppAttestAssertion, Error> = .success(Data("assertion".utf8))
 
-    /// Fires inside the attestation operation, after the client data closure has run: the
-    /// point at which the opt-out tests inject an opt-out mid-Apple-round-trip.
     var onAttestation: (() -> Void)?
 
     private let mutex = NSLock()
@@ -119,8 +107,6 @@ final class AppAttestServiceSpy: AppAttestServiceProtocol {
         let resolvedKeyId = keyId ?? UUID().uuidString
 
         return CompoundOperationWrapper(targetOperation: ClosureOperation {
-            // Calling clientData is what exercises the digest construction and the epoch
-            // gate the provider installs inside that closure.
             _ = try clientData(resolvedKeyId)
 
             hook?()
@@ -161,24 +147,14 @@ final class AppAttestServiceSpy: AppAttestServiceProtocol {
     }
 }
 
-/// Replaces `MockBackendAttestationRemoteFactoryProtocol`.
 final class BackendAttestationRemoteFactorySpy: BackendAttestationRemoteFactoryProtocol {
-    /// A closure rather than a stored `Result` because the gateway issues a fresh challenge
-    /// per request (spec §7.5) and the Cuckoo stub this replaces did the same; a stored
-    /// value would hand every request in a fixture the same challenge.
     var challenge: () throws -> String = { UUID().uuidString }
     var registerError: Error?
 
-    /// Records requests that actually reached the transport. Counting
-    /// `createRegisterOperation` calls would not do: the operation is *constructed* before
-    /// an opt-out lands, and what must not happen is its request closure producing a value.
     var onRegisterRequest: ((BackendAttestationRegisterRequest) -> Void)?
 
-    /// Runs at the top of the register operation, before its request closure — the hook the
-    /// "opt out just before the register POST" tests fire.
     var onRegister: (() -> Void)?
 
-    /// Runs before the challenge wrapper resolves — the hook the opt-out tests fire.
     var onChallenge: (() -> Void)?
 
     private let mutex = NSLock()

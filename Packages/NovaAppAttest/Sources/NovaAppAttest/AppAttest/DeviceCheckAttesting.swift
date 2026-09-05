@@ -1,8 +1,7 @@
 import Foundation
 import DeviceCheck
 
-/// The seam that makes App Attest testable: DCAppAttestService.isSupported is false on
-/// Simulator, so without this every test of the state machine short-circuits.
+/// Test seam over `DCAppAttestService`, which reports unsupported on Simulator.
 public protocol DeviceCheckAttesting {
     var isSupported: Bool { get }
 

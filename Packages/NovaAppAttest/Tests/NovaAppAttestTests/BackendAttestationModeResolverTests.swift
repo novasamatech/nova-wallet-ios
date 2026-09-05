@@ -21,7 +21,6 @@ final class BackendAttestationModeResolverTests: XCTestCase {
     }
 
     func testUnsupportedInReleaseIsUnavailable() {
-        // Feeds isAvailable=false: no prompt, no Settings row, track() drops.
         XCTAssertEqual(
             BackendAttestationModeResolver.resolve(isReleaseBuild: true, isAppAttestSupported: false),
             .unavailable

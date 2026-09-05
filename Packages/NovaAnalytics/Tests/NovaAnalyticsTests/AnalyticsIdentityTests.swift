@@ -29,8 +29,6 @@ final class AnalyticsIdentityTests: XCTestCase {
         _ = identity.installId()
         identity.forgetInstallId()
 
-        // The key must be absent, not replaced: an opted-out install has no id at all,
-        // so it is indistinguishable on the wire from a brand-new install.
         XCTAssertNil(settings.string(for: "analyticsInstallId"))
     }
 
@@ -49,8 +47,6 @@ final class AnalyticsIdentityTests: XCTestCase {
         _ = identity.installId()
         identity.forgetInstallId()
 
-        // An upload chain still executing during opt-out reaches installId() after the
-        // wipe. Minting there would leave an opted-out install holding an identifier.
         XCTAssertNil(identity.installId())
         XCTAssertNil(settings.string(for: "analyticsInstallId"))
     }
@@ -76,14 +72,9 @@ final class AnalyticsIdentityTests: XCTestCase {
         identity.forgetInstallId()
         identity.allowCreation()
 
-        // A shared session id would let the gateway link the pre-opt-out install id to the
-        // post-re-consent one, undoing the point of minting a new one.
         XCTAssertNotEqual(identity.sessionId, beforeSession)
     }
 
-    /// Came from `BackendAttestationIdentityTests` when that file moved into `NovaAppAttest`.
-    /// It spans both identities, and `AnalyticsIdentity` is still an app type, so the
-    /// package's test target cannot hold it.
     func testClientIdIsIndependentOfInstallId() {
         let settings = InMemorySettingsManager()
         let identity = BackendAttestationIdentity(settingsManager: settings)

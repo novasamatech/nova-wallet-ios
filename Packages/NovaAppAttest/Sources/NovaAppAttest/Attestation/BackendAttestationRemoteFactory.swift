@@ -1,9 +1,6 @@
 import Foundation
 import Operation_iOS
 
-/// The two gateway attestation endpoints of spec §7.6. The result factory is a raw
-/// `AnyNetworkResultFactory(block:)` because `successResponseBlock:` collapses 403 into
-/// `unexpectedStatusCode` and `processingBlock:` fails an empty 2xx body.
 public final class BackendAttestationRemoteFactory {
     private let baseURL: URL
 
@@ -24,11 +21,6 @@ private extension BackendAttestationRemoteFactory {
         let challenge: String
     }
 
-    /// `.rejected` latches the whole process and makes the uploader wipe the queue, so it
-    /// may only come from an endpoint that actually carries this client's identity. The
-    /// challenge request sends no body and no client headers at all: a 401/403 there is the
-    /// gateway refusing everyone, and treating it as "this client is banned" destroys every
-    /// queued event on every flush until the app is relaunched.
     static func statusError(
         for statusCode: Int,
         isClientAuthenticated: Bool
@@ -72,8 +64,6 @@ private extension BackendAttestationRemoteFactory {
         return NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
     }
 
-    /// Maps transport and status onto `BackendAttestationError`, then hands the body to
-    /// `decoder`. Endpoints with no body of interest pass a `decoder` that ignores it.
     static func createResultBlock<T>(
         isClientAuthenticated: Bool,
         decoder: @escaping (Data?) throws -> T
@@ -101,7 +91,6 @@ private extension BackendAttestationRemoteFactory {
 
 extension BackendAttestationRemoteFactory: BackendAttestationRemoteFactoryProtocol {
     public func createChallengeWrapper() -> CompoundOperationWrapper<String> {
-        // No client id, no signature: this call is anonymous.
         let block: NetworkResultFactoryBlock<String> = Self.createResultBlock(
             isClientAuthenticated: false
         ) { data in
@@ -109,7 +98,6 @@ extension BackendAttestationRemoteFactory: BackendAttestationRemoteFactoryProtoc
                 throw BackendAttestationError.invalidResponse
             }
 
-            // The challenge is opaque and is never hex-decoded (spec §7.6).
             return try JSONDecoder().decode(ChallengeResponse.self, from: data).challenge
         }
 

@@ -2,9 +2,6 @@ import XCTest
 @testable import NovaAppAttest
 
 final class AttestationClientDataTests: XCTestCase {
-    // Verbatim from infrastructure/src/test/java/io/novafoundation/nova/infrastructure/
-    // attestation/AttestationSigningTest.kt at PR 2324's head (108899870). These are the
-    // cross-platform contract: the gateway recomputes the same digest for both platforms.
     private let challenge = "TEST_CHALLENGE_abc123"
     private let clientId = "6f2c1e4a-0000-4000-8000-000000000001"
     private let body = Data(#"{"v":1,"platform":"android","app_version":"10.9.1"}"#.utf8)
@@ -53,9 +50,6 @@ final class AttestationClientDataTests: XCTestCase {
     }
 
     func testSigningPayloadMatchesTheAndroidVector() {
-        // Android's `signingPayload` returns sha256(utf8(challenge ‖ clientId ‖ bodyDigestHex)).
-        // On iOS the client data is that same *unhashed* string and AppAttestService applies
-        // the SHA-256, so the digest below is what DeviceCheck receives as clientDataHash.
         let clientData = AttestationClientData.assertionClientData(
             challenge: challenge,
             clientId: clientId,

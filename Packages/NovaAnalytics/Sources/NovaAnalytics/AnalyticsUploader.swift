@@ -4,14 +4,11 @@ import SDKLogger
 import NovaAppAttest
 import NovaOperationSupport
 
-/// Thrown when consent is withdrawn while an upload chain is already executing, which
-/// `flushCallStore.cancel()` cannot stop. Ends the chain instead of minting a replacement id.
 public enum AnalyticsUploadAbort: Error {
     case consentWithdrawn
 }
 
 /// peek → sign → POST → drop, repeated while the gateway keeps accepting batches.
-/// A batch is dropped only after its 2xx, so delivery is at-least-once (spec §6.3).
 public final class AnalyticsUploader {
     private let queue: AnalyticsEventQueueProtocol
     private let identity: AnalyticsIdentityProtocol
@@ -53,7 +50,6 @@ private extension AnalyticsUploader {
     }
 
     enum BatchOutcome {
-        /// The batch was full, so there may be more rows waiting.
         case drained
         case stop
     }
@@ -62,8 +58,6 @@ private extension AnalyticsUploader {
         let body: Data
         let ids: [String]
         let isFull: Bool
-        /// The consent epoch the envelope was built under. Re-checked immediately before
-        /// the request is constructed, because everything between the two is asynchronous.
         let epoch: Int
     }
 
@@ -107,9 +101,6 @@ private extension AnalyticsUploader {
             do {
                 rows = try peekWrapper.targetOperation.extractNoCancellableResultData()
             } catch {
-                // A row the mapper cannot read fails the whole fetch, so every later peek
-                // fails too and the queue wedges silently while it keeps filling to its
-                // cap. Analytics rows are not worth recovering individually.
                 logger.error("Analytics queue is unreadable, clearing it: \(error)")
 
                 return createClearWrapper()
@@ -119,8 +110,6 @@ private extension AnalyticsUploader {
                 return .createWithResult(.stop)
             }
 
-            // Encoded once, here: the same value is handed to the signer and to the
-            // request, so the bytes signed are the bytes sent.
             return createSendWrapper(batch: try createBatch(rows: rows))
         }
 
@@ -133,11 +122,6 @@ private extension AnalyticsUploader {
         let body = batch.body
         let epoch = batch.epoch
 
-        // `BlockNetworkRequestFactory` calls these inside `NetworkOperation.main()`, so
-        // they are the last point before any byte of this batch exists as a request. The
-        // attestation round trip in between takes up to a minute on a stalled connection,
-        // which is ample time for the user to opt out — and `flushCallStore.cancel()`
-        // cannot reach a chain that is already executing.
         let consentGate: () throws -> Void = { [weak self] in
             guard let self, identity.consentEpoch == epoch else {
                 throw AnalyticsUploadAbort.consentWithdrawn
@@ -184,13 +168,10 @@ private extension AnalyticsUploader {
         )
     }
 
-    /// Spec §6.3's outcome table, minus the 2xx row.
     func createFailureWrapper(_ error: Error, batch: Batch) -> CompoundOperationWrapper<BatchOutcome> {
         if let transportError = error as? AnalyticsTransportError {
             switch transportError {
             case .rejected:
-                // The gateway no longer knows this identity. The next flush attests a
-                // new key and re-registers; these events are gone.
                 logger.warning("Analytics upload rejected, clearing the queue: \(transportError)")
                 attestation.markUnattested()
 
@@ -207,13 +188,11 @@ private extension AnalyticsUploader {
         }
 
         if let attestationError = error as? BackendAttestationError, case .rejected = attestationError {
-            // Registration was refused for this whole process: nothing to re-attest.
             logger.warning("Gateway refused registration, clearing the queue")
 
             return createClearWrapper()
         }
 
-        // 5xx, transport, serviceUnavailable and encoding failures keep the queue.
         logger.debug("Analytics upload stopped: \(error)")
 
         return .createWithResult(.stop)
@@ -247,8 +226,6 @@ private extension AnalyticsUploader {
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [operation])
     }
 
-    /// `installId()` is called here and nowhere else, so the first flush is the first
-    /// moment an identity exists.
     func createBatch(rows: [AnalyticsPendingEvent]) throws -> Batch {
         let events = rows.compactMap { row -> AnalyticsEventRemote? in
             do {
@@ -263,20 +240,12 @@ private extension AnalyticsUploader {
                     props: props
                 )
             } catch {
-                // Poison: it leaves with the batch instead of wedging the queue forever.
                 logger.error("Analytics row \(row.identifier) is undecodable, dropping it")
 
                 return nil
             }
         }
 
-        // Opt-out during an in-flight flush deletes the id and blocks re-creation. There is
-        // no batch to send without one, and minting a replacement is exactly the resurrection
-        // spec 6.5 forbids.
-        //
-        // Read epoch → id → epoch: the two are separate acquisitions of the identity's
-        // lock, so an opt-out landing between them would pair a forgotten install id with
-        // the epoch that forgot it and the send gate would let the batch through.
         let epoch = identity.consentEpoch
 
         guard let installId = identity.installId(), identity.consentEpoch == epoch else {

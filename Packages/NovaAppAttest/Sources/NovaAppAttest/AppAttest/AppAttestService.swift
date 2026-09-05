@@ -5,8 +5,6 @@ import Operation_iOS
 public protocol AppAttestServiceProtocol {
     var isSupported: Bool { get }
 
-    /// `clientData` receives the key id — generated here when `keyId` is nil — because the
-    /// gateway's attestation client data is sha256(challenge ‖ clientId ‖ keyId).
     func createAttestationWrapper(
         using keyId: AppAttestKeyId?,
         clientData: @escaping (AppAttestKeyId) throws -> Data

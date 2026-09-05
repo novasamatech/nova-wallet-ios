@@ -5,9 +5,6 @@ import Keystore_iOS
 import NovaAppAttest
 
 final class AnalyticsUploaderTests: XCTestCase {
-    /// Counts the batches whose body the transport actually obtained. A consent gate that
-    /// throws inside `bodyClosure` leaves this at zero even though the upload *operation*
-    /// was constructed, which is the distinction the abort path turns on.
     private final class BodyRecorder {
         private let mutex = NSLock()
         private var bodies: [Data] = []
@@ -43,9 +40,6 @@ final class AnalyticsUploaderTests: XCTestCase {
         let sentBodies: BodyRecorder
     }
 
-    /// `uploadResults` are consumed one per batch, so a test can script a 2xx then a 500.
-    /// Real queue over AnalyticsStorageTestFacade, real InMemorySettingsManager and
-    /// AnalyticsIdentity; only the attestation provider and the upload factory are doubles.
     private func makeFixture(
         uploadResults: [Result<Void, Error>],
         optOutDuringAttestation: Bool = false,
@@ -65,9 +59,6 @@ final class AnalyticsUploaderTests: XCTestCase {
         let attestation = BackendAttestationProviderSpy()
 
         if optOutDuringAttestation {
-            // Stands in for the gateway challenge POST: the user opens Settings while the
-            // request is on the wire. The hook runs inside the operation, ahead of the body
-            // closure — exactly where the Cuckoo stub it replaces ran.
             attestation.onSigning = { identity.forgetInstallId() }
         }
 
@@ -113,8 +104,6 @@ final class AnalyticsUploaderTests: XCTestCase {
         }
     }
 
-    /// A payload the uploader cannot decode into properties. The row itself is perfectly
-    /// well-formed storage, which is exactly why it would wedge the queue forever.
     private func seedCorruptRow(_ fixture: Fixture) throws {
         try enqueue(
             fixture,
@@ -140,10 +129,6 @@ final class AnalyticsUploaderTests: XCTestCase {
     }
 
     func testSignedBytesAreTheSentBytes() throws {
-        // The failure this catches — a re-encode inside the request closure racing the
-        // signature against JSONEncoder's key order — breaks every request in
-        // production and is invisible in review. The clock advances on every read, so
-        // any second encode of the envelope produces a different `sent_at`.
         var tick: TimeInterval = 0
         let fixture = makeFixture(uploadResults: [.success(())], timeProvider: {
             tick += 1
@@ -152,8 +137,6 @@ final class AnalyticsUploaderTests: XCTestCase {
         try seed(fixture, count: 1)
         try flush(fixture)
 
-        // `.last` alone would still pass if the batch were signed or sent twice, which the
-        // bare `verify(mock)` this replaces ruled out by defaulting to `times(1)`.
         XCTAssertEqual(fixture.attestation.signingCallCount, 1)
         XCTAssertEqual(fixture.uploadFactory.callCount, 1)
 
@@ -178,7 +161,6 @@ final class AnalyticsUploaderTests: XCTestCase {
 
         try flush(fixture, maxBatches: 1)
 
-        // One batch of 50 uploaded, 100 rows remain for the next flush.
         XCTAssertEqual(try queueCount(fixture), 100)
         XCTAssertEqual(fixture.uploadFactory.callCount, 1)
     }
@@ -216,7 +198,6 @@ final class AnalyticsUploaderTests: XCTestCase {
 
         try flush(fixture)
 
-        // A register rejection is permanent for the process: nothing to re-attest.
         XCTAssertEqual(try queueCount(fixture), 0)
         XCTAssertEqual(fixture.attestation.markUnattestedCallCount, 0)
     }
@@ -230,7 +211,6 @@ final class AnalyticsUploaderTests: XCTestCase {
 
         try flush(fixture)
 
-        // The poisoned batch is discarded, the rest still goes.
         XCTAssertEqual(try queueCount(fixture), 0)
         XCTAssertEqual(fixture.uploadFactory.callCount, 2)
     }
@@ -250,8 +230,6 @@ final class AnalyticsUploaderTests: XCTestCase {
 
         try flush(fixture)
 
-        // As above: the bare `verify(mock)` this replaces pinned exactly one upload
-        // alongside capturing its body.
         XCTAssertEqual(fixture.uploadFactory.callCount, 1)
 
         let json = String(
@@ -301,10 +279,6 @@ final class AnalyticsUploaderTests: XCTestCase {
         XCTAssertEqual(fixture.uploadFactory.callCount, 0)
     }
 
-    /// The envelope — install id, session id and every queued event — is built *before* the
-    /// attestation round trip, which takes up to a minute on a stalled connection. Nothing
-    /// downstream can cancel a chain that is already executing, so the last gate before the
-    /// request is the only thing standing between an opt-out and a real POST.
     func testOptOutDuringTheAttestationRoundTripNeverPostsTheBatch() throws {
         let fixture = makeFixture(
             uploadResults: [.success(())],
@@ -329,8 +303,6 @@ final class AnalyticsUploaderTests: XCTestCase {
 
         try flush(fixture)
 
-        // Dropping them here would be indistinguishable from a 2xx. The rows are the
-        // service's to wipe, and it wipes them for a different reason.
         XCTAssertEqual(try queueCount(fixture), 3)
     }
 
@@ -338,8 +310,6 @@ final class AnalyticsUploaderTests: XCTestCase {
         let fixture = makeFixture(uploadResults: [.success(())])
         try seed(fixture, count: 1)
 
-        // A pure "is there an id?" check would pass here: re-consent re-arms minting, so
-        // the accessor happily produces a *new* id while the batch still carries the old.
         fixture.attestation.onSigning = {
             fixture.identity.forgetInstallId()
             fixture.identity.allowCreation()

@@ -1,8 +1,5 @@
 import Foundation
 
-/// Order is load-bearing: NATIVE -> STABLE -> WRAPPED -> "W" + NATIVE -> other.
-/// Sets transcribed from
-/// `analytics/src/main/java/io/novafoundation/nova/analytics/AssetCategoryClassifier.kt`.
 enum AssetCategoryClassifier {
     private static let native: Set<String> = [
         "DOT", "KSM", "ETH", "BTC", "BNB", "AVAX", "MATIC",

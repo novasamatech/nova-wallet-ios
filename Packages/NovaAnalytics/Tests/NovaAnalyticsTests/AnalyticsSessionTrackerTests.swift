@@ -15,8 +15,6 @@ private final class ImmediateBackgroundTaskRunner: BackgroundTaskRunning {
 final class AnalyticsSessionTrackerTests: XCTestCase {
     private struct Fixture {
         let tracker: AnalyticsSessionTracker
-        /// Holds what the tracker asked for and, crucially, the completion it was handed —
-        /// so a test can decide when the flush chain "finishes".
         let recorder: AnalyticsTrackingSpy
         let runner: ImmediateBackgroundTaskRunner
     }
@@ -78,9 +76,6 @@ final class AnalyticsSessionTrackerTests: XCTestCase {
         XCTAssertTrue(fixture.recorder.flushReasons.isEmpty)
     }
 
-    /// The enqueue and the upload are both asynchronous, so ending the system task as soon
-    /// as they have been *started* releases the assertion before the session_ended row has
-    /// been written — iOS then suspends the process and the event is lost.
     func testTheBackgroundTaskOutlivesTheWorkItBrackets() {
         let fixture = makeFixture()
         fixture.tracker.startSession()
@@ -105,8 +100,6 @@ final class AnalyticsSessionTrackerTests: XCTestCase {
 
         enterBackground(fixture)
 
-        // One ordered call, not a bare track() followed by a flush(): that pair lets the
-        // flush's peek run before the session_ended row exists.
         XCTAssertEqual(fixture.recorder.pendingCompletions.count, 1)
         XCTAssertEqual(fixture.recorder.eventNames.last, "session_ended")
 

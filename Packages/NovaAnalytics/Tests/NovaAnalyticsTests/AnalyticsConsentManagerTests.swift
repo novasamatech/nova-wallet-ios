@@ -73,10 +73,6 @@ final class AnalyticsConsentManagerTests: XCTestCase {
         XCTAssertEqual(observed, [true])
     }
 
-    /// `SettingsInteractor` adds an observer and never removes it, so an owner going away is
-    /// the ordinary path, not an edge case. Both observers are registered before the owner
-    /// dies, so what has to handle it is `notify()`'s own prune rather than the one
-    /// `addObserver` runs.
     func testDeallocatedOwnerIsPrunedRatherThanNotified() {
         let manager = AnalyticsConsentManager(
             settingsManager: InMemorySettingsManager(),

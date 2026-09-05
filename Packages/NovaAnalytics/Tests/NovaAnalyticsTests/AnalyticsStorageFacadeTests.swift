@@ -18,9 +18,6 @@ final class AnalyticsStorageFacadeTests: XCTestCase {
         try? FileManager.default.removeItem(at: directory)
     }
 
-    /// Proves the .xcdatamodeld actually compiled into the package bundle. SwiftPM runs
-    /// `momc` on it, but only if it is declared as a resource — and if it is not, this is
-    /// the only place that surfaces before a device crash.
     func testModelLoadsFromThePackageBundle() throws {
         let facade = AnalyticsStorageFacade(storeDirectory: directory)
 

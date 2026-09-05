@@ -2,8 +2,7 @@ import Foundation
 import Operation_iOS
 import NovaAppAttest
 
-/// Builds the events POST. The body is the `Data` it is handed and nothing else: the
-/// assertion signs those exact bytes, so a re-encode here would break every request.
+/// Builds the events POST from the exact `Data` it is handed, which the assertion signs.
 public final class AnalyticsUploadOperationFactory {
     private let baseURL: URL
 
@@ -11,8 +10,6 @@ public final class AnalyticsUploadOperationFactory {
         self.baseURL = baseURL
     }
 
-    /// Internal rather than private so the request contract is testable without a
-    /// network stack.
     func buildRequest(body: Data, headers: [AttestationHeaderKey: String]?) throws -> URLRequest {
         var request = URLRequest(url: baseURL.appending(path: Constants.eventsPath))
 
@@ -83,7 +80,6 @@ extension AnalyticsUploadOperationFactory: AnalyticsUploadOperationFactoryProtoc
                 return .failure(statusError)
             }
 
-            // A 2xx with an empty body is the expected success, so nothing is parsed.
             return .success(())
         }
 

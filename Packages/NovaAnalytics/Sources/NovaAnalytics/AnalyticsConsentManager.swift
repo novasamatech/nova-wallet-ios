@@ -2,13 +2,6 @@ import Foundation
 import Keystore_iOS
 import Operation_iOS
 
-/// The app's `Observable<Bool>` supplied the observer list before this type moved into the
-/// package, and it cannot come along: it is an app type used by 45 other app files, so
-/// carrying it here would either fork it or drag the app's whole notification vocabulary
-/// across the boundary. `addObserver`/`removeObserver` are requirements of
-/// `AnalyticsConsentManagerProtocol` — package-owned — so they are satisfied here directly.
-/// The semantics are the ones the observers were written against and are unchanged: owners
-/// are held weakly and pruned, and a closure runs only when the flag actually flips.
 public final class AnalyticsConsentManager {
     private struct ObserverWrapper {
         weak var owner: AnyObject?
@@ -60,8 +53,6 @@ extension AnalyticsConsentManager: AnalyticsConsentManagerProtocol {
 
     public var isPromptSeen: Bool { settingsManager.analyticsPromptSeen }
 
-    /// Only flips the flag and notifies. The opt-out wipe belongs to `AnalyticsService`,
-    /// which observes this manager: the manager owns no queue, identity or attestation.
     public func setEnabled(_ enabled: Bool) {
         settingsManager.isAnalyticsEnabled = enabled
 
@@ -75,7 +66,6 @@ extension AnalyticsConsentManager: AnalyticsConsentManagerProtocol {
         notify(oldState: oldState, newState: enabled)
     }
 
-    /// Never cleared — re-onboarding must not re-ask; the Settings switch is the way back.
     public func markPromptSeen() {
         settingsManager.analyticsPromptSeen = true
     }

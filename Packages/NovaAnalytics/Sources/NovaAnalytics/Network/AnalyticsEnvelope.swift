@@ -10,8 +10,6 @@ struct AnalyticsEnvelope: Encodable {
     let events: [AnalyticsEventRemote]
 
     enum CodingKeys: String, CodingKey {
-        /// SwiftLint's identifier_name rejects a one-letter property, so the wire key
-        /// "v" is reached through an explicit mapping.
         case schemaVersion = "v"
         case platform
         case appVersion = "app_version"

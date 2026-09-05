@@ -1,35 +1,7 @@
 import Foundation
 import Operation_iOS
 
-// A mirror of the app's operation helpers, carried here because Operation-iOS 2.1.2 — the
-// version the app pins, and therefore the version every package built beside it must pin —
-// predates `OperationCombiningService`, the `Longrun` primitives and the
-// `CompoundOperationWrapper` conveniences below. The app declares its own copies for exactly
-// that reason, and the code moved into `NovaAppAttest` (and, next, `NovaAnalytics`) was
-// written against them, so those packages need the same pieces to compile at all.
-//
-// It mirrors six app files:
-//
-//   novawallet/Common/Operation/OperationCombiningService.swift
-//   novawallet/Common/Operation/Longrun/Longrun.swift
-//   novawallet/Common/Operation/Longrun/LongrunOperation.swift
-//   novawallet/Common/Extension/Operation/CompoundOperationWrapper+Result.swift
-//   novawallet/Common/Extension/Operation/CompoundOperationWrapper+Dependency.swift
-//   novawallet/Common/Extension/Operation/CompoundOperationWrapper+Add.swift
-//
-// THE RULE, because a mirror that has been edited cannot be diffed against its source:
-// every member present is byte-identical to its app original; members this package does not
-// use are absent entirely. Nothing here is pruned, repaired, renamed or reordered within a
-// member it does carry — so `operationsPerBatch` and its batching block stay even though no
-// caller here passes a batch size, and `State.running` stays even though nothing assigns it.
-// The two permitted deviations are access modifiers, which the module boundary forces, and
-// comments, which no diff of behaviour reads.
-//
-// Members left out because nothing here calls them: `addDependencyIfExists`,
-// `insertingHeadIfExists`, `compoundWrapper` and `compoundOptionalWrapper`.
-//
-// Delete this file — and this package — when the Operation-iOS pin moves to a release that
-// ships these; the SDK versions are identical in behaviour, only `public`.
+// Mirrors app helpers absent from Operation-iOS 2.1.2; .claude/docs/code/project-layout.md says when to delete it.
 
 // MARK: - CompoundOperationWrapper+Result
 
@@ -162,12 +134,7 @@ public final class OperationCombiningService<T>: Longrunable {
             return
         }
 
-        // A faithful copy of a defect in the app original, tracked separately: `.running` was
-        // intended here, and because the guard above has already established `.waiting` this
-        // assignment leaves the state unchanged, so `cancel()`'s `if state == .running` branch
-        // below is unreachable and cancelling the service never cancels the wrappers it
-        // combined. Fixing it here would fork the two copies silently and break the rule this
-        // file's header states, so it is left exactly as the app has it.
+        // Faithful copy of an upstream Operation-iOS defect (`.running` was meant): do not repair it here.
         state = .waiting
 
         do {

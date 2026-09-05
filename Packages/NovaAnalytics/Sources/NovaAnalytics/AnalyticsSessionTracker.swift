@@ -1,8 +1,7 @@
 import Foundation
 import Foundation_iOS
 
-/// A session is a foreground period, the closest match to Android's
-/// `ProcessLifecycleOwner.onStart/onStop`.
+/// A session is one foreground period, matching Android's process lifecycle.
 public final class AnalyticsSessionTracker {
     private let tracker: AnalyticsTrackingProtocol
     private let applicationHandler: ApplicationHandlerProtocol
@@ -36,7 +35,6 @@ extension AnalyticsSessionTracker: AnalyticsSessionTracking {
         applicationHandler.delegate = nil
     }
 
-    /// Cold start: willEnterForeground is not posted on launch, so the facade calls this.
     public func startSession() {
         mutex.lock()
         sessionStartedAt = timeProvider()
@@ -65,11 +63,6 @@ extension AnalyticsSessionTracker: ApplicationHandlerDelegate {
 
         let duration = timeProvider().timeIntervalSince(startedAt)
 
-        // `track` and `flush` both return the moment their operations are enqueued, so
-        // ending the system task after calling them released the background assertion
-        // before the session_ended row had been written — iOS then suspended the process
-        // and the event was lost. `trackAndFlush` fires the completion only once both the
-        // enqueue and the flush chain have settled.
         backgroundTaskRunner.run { [weak self] completion in
             guard let self else {
                 completion()
@@ -84,12 +77,7 @@ extension AnalyticsSessionTracker: ApplicationHandlerDelegate {
         }
     }
 
-    /// Deliberately ignored: it fires for Control Centre, the Face ID sheet and incoming
-    /// calls, none of which end a session. The security layer already uses it for the
-    /// privacy overlay.
     public func didReceiveWillResignActive(notification _: Notification) {}
 
-    /// Deliberately ignored, as the counterpart of `didReceiveWillResignActive`: a session
-    /// starts on foreground, not on regaining first-responder-style activity.
     public func didReceiveDidBecomeActive(notification _: Notification) {}
 }

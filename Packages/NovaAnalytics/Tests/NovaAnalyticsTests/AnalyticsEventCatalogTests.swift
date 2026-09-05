@@ -20,8 +20,6 @@ final class AnalyticsEventCatalogTests: XCTestCase {
         return String(data: try AnalyticsCoding.encoder.encode(remote), encoding: .utf8)!
     }
 
-    /// One row per catalog entry of spec §4.4. Keys inside `props` are sorted, because
-    /// AnalyticsCoding.encoder sets .sortedKeys.
     private var catalog: [Row] {
         lifecycleRows + onboardingRows + navigationRows + swapRows
             + stakingRows + sendRows + dappRows + rampRows
@@ -65,7 +63,6 @@ final class AnalyticsEventCatalogTests: XCTestCase {
                 line: #line
             ),
             Row(
-                // Android never sets the duration, so duration_bucket is absent, not null.
                 event: .walletCreationCompleted(method: .create, duration: nil),
                 expectedJSON: #"{"name":"wallet_creation_completed","props":{"method":"create"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
@@ -96,7 +93,6 @@ final class AnalyticsEventCatalogTests: XCTestCase {
                 line: #line
             ),
             Row(
-                // nft_count must be a JSON number, not "3" and not 3.0.
                 event: .nftSectionOpened(count: 3),
                 expectedJSON: #"{"name":"nft_section_opened","props":{"nft_count":3},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
@@ -117,7 +113,6 @@ final class AnalyticsEventCatalogTests: XCTestCase {
                 line: #line
             ),
             Row(
-                // asset_in_category / asset_out_category are classified from the symbols.
                 event: .swapInitiated(
                     source: .mainScreen,
                     assetIn: .assetSymbol("DOT"),
@@ -192,7 +187,6 @@ final class AnalyticsEventCatalogTests: XCTestCase {
                 line: #line
             ),
             Row(
-                // A missing rate falls to 0, so send and staking still emit an event.
                 event: .stakingCompleted(type: .mythos, network: .networkName("Mythos"), amount: 10, rate: nil),
                 expectedJSON: #"{"name":"staking_completed","props":{"amount_bucket":"under_1","network":"Mythos","staking_type":"mythos"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
@@ -247,7 +241,6 @@ final class AnalyticsEventCatalogTests: XCTestCase {
                     amount: 10,
                     rate: 5
                 ),
-                // destination_network is absent, not null — the cross-chain-only key.
                 expectedJSON: #"{"name":"send_completed","props":{"amount_bucket":"10_to_100","asset":"DOT","network":"Polkadot"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
