@@ -6637,7 +6637,6 @@
 		000000007CF9135B4D967A7E /* AssetExchangeTradeLimitVerdict.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000007FF0D316D4074BC0 /* AssetExchangeTradeLimitVerdict.swift */; };
 		000000002384221D1527B8A1 /* SwapPoolTradeLimitCheck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000004024BA48453ACABB /* SwapPoolTradeLimitCheck.swift */; };
 		000000006C043D814E99B2D6 /* SwapDataValidatorFactory+PoolTradeLimit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0000000044697AEF01295519 /* SwapDataValidatorFactory+PoolTradeLimit.swift */; };
-		FEEDA0000000000000000002 /* AnalyticsUserModel21MigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDA0000000000000000001 /* AnalyticsUserModel21MigrationTests.swift */; };
 		FEEDD0000000000000000110 /* AnalyticsFacadeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000010 /* AnalyticsFacadeFactory.swift */; };
 		FEEDD0000000000000000111 /* AnalyticsFacadeFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000011 /* AnalyticsFacadeFactoryTests.swift */; };
 		FEEDAA0000000000000000B2 /* AnalyticsAppWiringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDAA0000000000000000B1 /* AnalyticsAppWiringTests.swift */; };
@@ -8368,7 +8367,6 @@
 		2D0C96F22EC9F2300034F9F8 /* GiftsLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftsLocalStorageSubscriber.swift; sourceTree = "<group>"; };
 		2D0C96F72EC9F25B0034F9F8 /* GiftsLocalSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftsLocalSubscriptionHandler.swift; sourceTree = "<group>"; };
 		2D0C96FC2EC9F2C20034F9F8 /* GiftsLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftsLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
-		FEEDA0000000000000000003 /* MultiassetUserDataModel21.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel21.xcdatamodel; sourceTree = "<group>"; };
 		2D0C97032ECA07960034F9F8 /* MultiassetUserDataModel20.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel20.xcdatamodel; sourceTree = "<group>"; };
 		2D0C97332ECA48710034F9F8 /* GiftsOnboardingVIew.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftsOnboardingVIew.swift; sourceTree = "<group>"; };
 		2D0C97592ECA49A30034F9F8 /* GiftsOnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftsOnboardingViewModel.swift; sourceTree = "<group>"; };
@@ -13016,7 +13014,6 @@
 		000000007FF0D316D4074BC0 /* AssetExchangeTradeLimitVerdict.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeTradeLimitVerdict.swift; sourceTree = "<group>"; };
 		000000004024BA48453ACABB /* SwapPoolTradeLimitCheck.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapPoolTradeLimitCheck.swift; sourceTree = "<group>"; };
 		0000000044697AEF01295519 /* SwapDataValidatorFactory+PoolTradeLimit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SwapDataValidatorFactory+PoolTradeLimit.swift"; sourceTree = "<group>"; };
-		FEEDA0000000000000000001 /* AnalyticsUserModel21MigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsUserModel21MigrationTests.swift; sourceTree = "<group>"; };
 		FEEDD0000000000000000010 /* AnalyticsFacadeFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsFacadeFactory.swift; sourceTree = "<group>"; };
 		FEEDD0000000000000000011 /* AnalyticsFacadeFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsFacadeFactoryTests.swift; sourceTree = "<group>"; };
 		FEEDAA0000000000000000B1 /* AnalyticsAppWiringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsAppWiringTests.swift; sourceTree = "<group>"; };
@@ -23895,7 +23892,6 @@
 			children = (
 				849ECD3426DE70B900F542A3 /* SingleToMultiassetUserMigrationTests.swift */,
 				0C053ECA2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift */,
-				FEEDA0000000000000000001 /* AnalyticsUserModel21MigrationTests.swift */,
 			);
 			path = Migration;
 			sourceTree = "<group>";
@@ -37444,7 +37440,6 @@
 				F4897BB126AED13D0075F291 /* EraCountdownOperationFactoryStub.swift in Sources */,
 				CC9C5C7E32F8E3E32C3C123A /* PolkadotRewardEngineTests.swift in Sources */,
 				000000007C2FD98856D6F69F /* AssetExchangeCommissionNetFlowTests.swift in Sources */,
-				FEEDA0000000000000000002 /* AnalyticsUserModel21MigrationTests.swift in Sources */,
 				FEED30000000000000000101 /* PrivacyManifestTests.swift in Sources */,
 				FEED20000000000000000103 /* AnalyticsAttestationFixtureRecorderTests.swift in Sources */,
 				FEED10000000000000000104 /* AnalyticsConsentPromptTests.swift in Sources */,
@@ -38939,7 +38934,6 @@
 		8467FD4F24EFD11E005D486C /* UserDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				FEEDA0000000000000000003 /* MultiassetUserDataModel21.xcdatamodel */,
 				2D0C97032ECA07960034F9F8 /* MultiassetUserDataModel20.xcdatamodel */,
 				2DA4D6582EB3BBD3006FCCC0 /* MultiassetUserDataModel19.xcdatamodel */,
 				2D32AA252E6604CF0083233B /* MultiassetUserDataModel18.xcdatamodel */,
@@ -38962,7 +38956,7 @@
 				848DE75726D595660045CD29 /* MultiassetUserDataModel.xcdatamodel */,
 				8467FD5024EFD11E005D486C /* UserDataModel.xcdatamodel */,
 			);
-			currentVersion = FEEDA0000000000000000003 /* MultiassetUserDataModel21.xcdatamodel */;
+			currentVersion = 2D0C97032ECA07960034F9F8 /* MultiassetUserDataModel20.xcdatamodel */;
 			path = UserDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
