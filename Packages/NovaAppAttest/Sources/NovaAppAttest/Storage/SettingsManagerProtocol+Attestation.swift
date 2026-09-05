@@ -12,8 +12,10 @@ import Keystore_iOS
 extension SettingsManagerProtocol {
     /// A bare string literal rather than an app `SettingsKey` case, for the same reason
     /// `SettingsAppAttestKeyRepository.storageKey` is one: this package cannot depend on the
-    /// app's key enum. The literal is exactly the raw value that enum produced, so an
-    /// install that already holds a client id keeps it across this move.
+    /// app's key enum. The literal is exactly the raw value that enum produced — which
+    /// matters for dev and TestFlight installs of this feature branch, not for shipped ones:
+    /// no released build ever wrote this key. It is pinned by a test so it stays stable from
+    /// here on, once installs do hold it.
     ///
     /// Lives here rather than in the app because `BackendAttestationIdentity` is the only
     /// writer: leaving a second definition behind in the app would let the two drift onto

@@ -180,8 +180,9 @@ class RootTests: XCTestCase {
 
         // then
 
-        // A first consented enqueue before the migrators would open the user store
-        // concurrently with a synchronous migration that fatalErrors on a bad version.
+        // Spec §3.2's ordering. It is not about store contention — analytics owns its own
+        // sqlite — but about staying inside loadOnLaunch(), which AppDelegate runs before it
+        // clears `isAppFirstLaunch`; see RootInteractor.setup().
         XCTAssertEqual(order, ["migrate", "analytics", "walletSettings"])
     }
 

@@ -2,7 +2,6 @@ import XCTest
 @testable import NovaAnalytics
 import Operation_iOS
 import Keystore_iOS
-import NovaOperationSupport
 
 final class AnalyticsServiceTests: XCTestCase {
     func testFeatureOpenedCollapsesConsecutiveDuplicates() throws {
