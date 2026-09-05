@@ -18,7 +18,11 @@ primitives, `insertingHead`/`insertingTail`, `addDependency(wrapper:)`, and the
 `CompoundOperationWrapper` result conveniences). Every member in it is byte-identical to its
 app original; it exists only because both `NovaAppAttest` and `NovaAnalytics` need these
 helpers, so without a shared package the repository would carry three copies of the same code.
-Delete the whole package once the Operation-iOS pin gains these types — do not "clean it up"
+These helpers already ship in Operation-iOS 2.5.0 — nothing needs upstreaming — but the app
+can't take that version yet: `substrate-sdk-ios` 4.5.2 pins Operation-iOS with `exact: "2.1.2"`,
+so SwiftPM has no overlapping version to resolve to; substrate-sdk 5.7.3 is the earliest tag
+that permits 2.5.0. Delete the whole package once the substrate-sdk v5 migration lands (branch
+`tech/substrate-sdk-v5`, substrate-sdk 5.10.0 + Operation-iOS 2.5.0) — do not "clean it up"
 before then, and do not let it grow anything that isn't a straight port of an existing app type.
 
 **Never `import NovaOperationSupport` from the app target.** Its `public extension
@@ -30,9 +34,10 @@ link it; `NovaAnalytics` and `NovaAppAttest` pull it in transitively for their o
 
 **Publishing these packages is not a pure lift.** `NovaAnalytics` and `NovaAppAttest` both
 declare `.package(path: "../NovaOperationSupport")`, so moving either into its own
-`novasamatech/*` repository means either upstreaming those helpers into Operation-iOS first
-and deleting `NovaOperationSupport` (the preferred order — it is what the package's own README
-asks for), or inlining its one file into each consumer at publication time. Publishing
+`novasamatech/*` repository means either waiting for the substrate-sdk v5 migration to unblock
+Operation-iOS 2.5.0 and deleting `NovaOperationSupport` first (the preferred order — it is what
+the package's own README asks for), or inlining its one file into each consumer at publication
+time. Publishing
 `NovaOperationSupport` as a standalone repository is the option to avoid: it would ship a
 package that documents its own deletion and carries a knowingly-preserved broken `cancel()`.
 Until one of those happens, the three packages travel together.
