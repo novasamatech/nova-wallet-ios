@@ -45,8 +45,10 @@ extension SettingsManagerProtocol {
 }
 
 /// Bare string literals rather than the app's `SettingsKey` cases, which this package cannot
-/// depend on. Each literal is exactly the raw value that enum produced, so an install that
-/// already holds a consent flag or an install id keeps it across this move.
+/// depend on. Each literal is exactly the raw value that enum produced — which matters for
+/// dev and TestFlight installs of this feature branch, not for shipped ones: no released
+/// build ever wrote these keys. They are pinned by tests so they stay stable from here on,
+/// once installs do hold them.
 enum AnalyticsSettingsKey {
     static let analyticsEnabled = "analyticsEnabled"
     static let analyticsPromptSeen = "analyticsPromptSeen"

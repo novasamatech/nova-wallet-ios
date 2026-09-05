@@ -22,6 +22,12 @@ public final class SettingsAppAttestKeyRepository {
     /// package, which cannot depend on the app's `SettingsKey` enum, so the key has to be
     /// self-contained here rather than delegate to it.
     ///
+    /// Nothing shipped has ever written it: before this branch the rows lived in
+    /// `CDAppAttestKey`, and nothing migrates them. Renaming it today would only strand dev
+    /// and TestFlight installs of this branch — but from the first release that carries it,
+    /// a rename silently orphans every real install's rows, so the literal is pinned by
+    /// `SettingsAppAttestKeyRepositoryTests` and must stay as written.
+    ///
     /// `internal`: an on-disk key name published as package API is something a consumer can
     /// come to depend on, and then it can never be renamed. The only readers outside this
     /// type are the package's own tests, through `@testable`.

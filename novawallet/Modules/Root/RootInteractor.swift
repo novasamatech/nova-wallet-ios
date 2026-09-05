@@ -151,10 +151,16 @@ extension RootInteractor: RootInteractorInputProtocol {
         setupPushHandlingService()
         runMigrators()
 
-        // After runMigrators() and before walletSettings.setup (spec §3.2). runMigrators()
-        // is synchronous and performMigration() fatalErrors on an unknown store version;
-        // a first consented enqueue any earlier would open the analytics store
-        // concurrently with it.
+        // After runMigrators() and before walletSettings.setup (spec §3.2).
+        //
+        // What the position actually buys is the `app_opened` flag: setup() reads
+        // isFirstLaunch(), and AppDelegate clears `isAppFirstLaunch` in
+        // markAppFirstTimeLaunchIfNeeded() — after loadOnLaunch(), which is what runs this
+        // method. Move the call out of the launch path and every first launch reports false.
+        //
+        // Not a store-contention constraint, whatever an earlier comment here claimed:
+        // analytics owns a separate sqlite with its own coordinator, so opening it while
+        // runMigrators() works on the user store is harmless.
         analyticsFacade.setup()
 
         walletSettings.setup(runningCompletionIn: .main) { result in
