@@ -1,7 +1,7 @@
 import Foundation
 import Foundation_iOS
 
-/// A session is one foreground period, matching Android's process lifecycle.
+/// A session is one foreground period.
 public final class AnalyticsSessionTracker {
     private let tracker: AnalyticsTrackingProtocol
     private let applicationHandler: ApplicationHandlerProtocol

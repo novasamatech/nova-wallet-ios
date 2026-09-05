@@ -180,9 +180,9 @@ class RootTests: XCTestCase {
 
         // then
 
-        // Spec §3.2's ordering. It is not about store contention — analytics owns its own
-        // sqlite — but about staying inside loadOnLaunch(), which AppDelegate runs before it
-        // clears `isAppFirstLaunch`; see RootInteractor.setup().
+        // The ordering is not about store contention — analytics owns its own sqlite — but
+        // about staying inside loadOnLaunch(), which AppDelegate runs before it clears
+        // `isAppFirstLaunch`; see RootInteractor.setup().
         XCTAssertEqual(order, ["migrate", "analytics", "walletSettings"])
     }
 

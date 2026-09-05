@@ -1,9 +1,9 @@
 import Foundation
 
-/// Spec §8.3's gate, split so both halves are pure and testable without a
-/// `MainTabBarInteractor` fixture. `isPossible` covers the locally known conditions and runs
-/// first so a launch that cannot prompt never issues the legal-documents fetch; `allows`
-/// covers the fetched tri-state. There is no third place the conjunction is written.
+/// Split so both halves are pure and testable without a `MainTabBarInteractor` fixture.
+/// `isPossible` covers the locally known conditions and runs first so a launch that cannot
+/// prompt never issues the legal-documents fetch; `allows` covers the fetched tri-state.
+/// There is no third place the conjunction is written.
 enum AnalyticsConsentPromptGate {
     static func isPossible(
         hasWallet: Bool,
