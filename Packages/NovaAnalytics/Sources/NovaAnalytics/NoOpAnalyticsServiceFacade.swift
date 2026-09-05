@@ -32,7 +32,11 @@ extension NoOpAnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
     }
 
     public func flush(reason _: AnalyticsFlushReason) {}
+}
 
+// MARK: - AnalyticsDebugInspecting
+
+extension NoOpAnalyticsServiceFacade: AnalyticsDebugInspecting {
     public func debugPendingEventsWrapper(count _: Int) -> CompoundOperationWrapper<[AnalyticsPendingEvent]> {
         .createWithResult([])
     }

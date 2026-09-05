@@ -187,7 +187,11 @@ extension AnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
     public func flush(reason: AnalyticsFlushReason) {
         service.flush(reason: reason)
     }
+}
 
+// MARK: - AnalyticsDebugInspecting
+
+extension AnalyticsServiceFacade: AnalyticsDebugInspecting {
     public func debugPendingEventsWrapper(count: Int) -> CompoundOperationWrapper<[AnalyticsPendingEvent]> {
         eventQueue.peekWrapper(count: count)
     }

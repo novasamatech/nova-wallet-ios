@@ -9,17 +9,19 @@
     /// A deliberately plain `UIViewController`: a developer tool, not a VIPER module, and it
     /// never reaches Release. Titles and labels are literals, not localized keys.
     ///
-    /// It reaches the pending queue through the facade's two `debug…` accessors rather than
-    /// opening the analytics store itself. A second `NSPersistentStoreCoordinator` over the
-    /// same sqlite would give this screen its own snapshot of a queue the facade is
-    /// concurrently writing — and a stale count here reads as a queue bug.
+    /// It reaches the pending queue through the two `AnalyticsDebugInspecting` accessors —
+    /// a protocol separate from `AnalyticsServiceFacadeProtocol`, so nothing but this screen
+    /// depends on them — rather than opening the analytics store itself. A second
+    /// `NSPersistentStoreCoordinator` over the same sqlite would give this screen its own
+    /// snapshot of a queue the facade is concurrently writing — and a stale count here reads
+    /// as a queue bug.
     final class AnalyticsDebugInspectorViewController: UIViewController {
         /// Every row the peek is willing to return. The queue trims itself to 500, so a
         /// larger window is what lets an exact count be reported rather than a truncated
         /// one; `refresh()` still marks the result when it comes back full.
         private static let pendingEventLimit = 1000
 
-        private let facade: AnalyticsServiceFacadeProtocol
+        private let facade: AnalyticsServiceFacadeProtocol & AnalyticsDebugInspecting
         private let attestationMode: BackendAttestationMode
         private let settingsManager: SettingsManagerProtocol
         private let recorder: AnalyticsAttestationFixtureRecorder
@@ -28,7 +30,7 @@
         private let statusLabel = UILabel()
 
         init(
-            facade: AnalyticsServiceFacadeProtocol,
+            facade: AnalyticsServiceFacadeProtocol & AnalyticsDebugInspecting,
             attestationMode: BackendAttestationMode,
             settingsManager: SettingsManagerProtocol,
             recorder: AnalyticsAttestationFixtureRecorder,
