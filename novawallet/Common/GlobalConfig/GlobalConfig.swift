@@ -8,7 +8,7 @@ struct GlobalConfig: Decodable {
     let analytics: AnalyticsRemoteConfig?
 }
 
-/// The remote kill switch (spec §10). `enabled == false` means exactly what an
+/// The remote kill switch. `enabled == false` means exactly what an
 /// unattestable device means, not a second upload-only "off".
 struct AnalyticsRemoteConfig: Decodable {
     let enabled: Bool

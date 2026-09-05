@@ -25,7 +25,7 @@ final class AnalyticsBucketsTests: XCTestCase {
         XCTAssertNil(AmountBucket(amount: 42, price: nil))
     }
 
-    func testDurationBucketTruncatesLikeAndroidsIntegerDivision() {
+    func testDurationBucketTruncatesOnIntegerDivision() {
         XCTAssertEqual(DurationBucket(duration: 0).rawValue, "under_5s")
         XCTAssertEqual(DurationBucket(duration: 4.999).rawValue, "under_5s")
         XCTAssertEqual(DurationBucket(duration: 5).rawValue, "5s_to_15s")

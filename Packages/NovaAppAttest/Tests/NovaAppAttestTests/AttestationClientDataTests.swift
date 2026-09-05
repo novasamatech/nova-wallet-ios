@@ -4,12 +4,12 @@ import XCTest
 final class AttestationClientDataTests: XCTestCase {
     private let challenge = "TEST_CHALLENGE_abc123"
     private let clientId = "6f2c1e4a-0000-4000-8000-000000000001"
-    private let body = Data(#"{"v":1,"platform":"android","app_version":"10.9.1"}"#.utf8)
+    private let body = Data(#"{"v":1,"platform":"ios","app_version":"10.9.1"}"#.utf8)
 
-    func testBodyDigestMatchesTheAndroidVector() {
+    func testBodyDigestMatchesThePinnedVector() {
         XCTAssertEqual(
             AttestationClientData.bodyDigestHex(body),
-            "2c3d64eac83fc3f8bc8fe383d202bf4cc4b5b3c88328c87cc6695f8ecb49f4e7"
+            "8c163c54b038b652cd8d3b74e4aba48eea48adee34c980349c69a19ee612ddbd"
         )
     }
 
@@ -49,7 +49,7 @@ final class AttestationClientDataTests: XCTestCase {
         XCTAssertEqual(String(data: clientData, encoding: .utf8), "CHALCIDKEY")
     }
 
-    func testSigningPayloadMatchesTheAndroidVector() {
+    func testSigningPayloadMatchesThePinnedVector() {
         let clientData = AttestationClientData.assertionClientData(
             challenge: challenge,
             clientId: clientId,
@@ -58,11 +58,11 @@ final class AttestationClientDataTests: XCTestCase {
 
         XCTAssertEqual(
             clientData.sha256().map { String(format: "%02x", $0) }.joined(),
-            "4469fb60ce2ad38af216bc5ac89188071392af288cfaa99eb62532843d9c5c92"
+            "00cf9f14e3bfb57e9d791b0322c00eeb9600a7bc4295dc66c3d3317ec29cc36c"
         )
     }
 
-    func testAssertionClientDataIsTheAndroidPayloadBeforeHashing() {
+    func testAssertionClientDataIsThePayloadBeforeHashing() {
         let clientData = AttestationClientData.assertionClientData(
             challenge: challenge,
             clientId: clientId,
@@ -71,7 +71,7 @@ final class AttestationClientDataTests: XCTestCase {
 
         XCTAssertEqual(
             String(data: clientData, encoding: .utf8),
-            challenge + clientId + "2c3d64eac83fc3f8bc8fe383d202bf4cc4b5b3c88328c87cc6695f8ecb49f4e7"
+            challenge + clientId + "8c163c54b038b652cd8d3b74e4aba48eea48adee34c980349c69a19ee612ddbd"
         )
     }
 }

@@ -31,7 +31,7 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
 
     /// Set before `didRequestLegalConsentOpen()`. The legal completion calls
     /// `requestNextOnLaunchAction()` immediately, so without this flag the analytics
-    /// sheet would follow the legal sheet in the same launch. Android skips it.
+    /// sheet would follow the legal sheet in the same launch.
     var didPresentLegalConsentThisLaunch: Bool = false
 
     deinit {

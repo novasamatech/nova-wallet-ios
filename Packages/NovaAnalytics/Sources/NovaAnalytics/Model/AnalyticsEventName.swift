@@ -1,6 +1,6 @@
 import Foundation
 
-/// The wire names of the event catalog; the raw values are the contract with Android.
+/// The raw values are the wire contract and must not be renamed.
 public enum AnalyticsEventName: String, CaseIterable {
     case appOpened = "app_opened"
     case sessionStarted = "session_started"
