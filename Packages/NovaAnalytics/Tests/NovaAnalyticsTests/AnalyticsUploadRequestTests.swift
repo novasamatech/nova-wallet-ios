@@ -15,7 +15,6 @@ final class AnalyticsUploadRequestTests: XCTestCase {
             headers: [.clientId: "cid", .challenge: "chal", .signature: "sig"]
         )
 
-        // The signature covers these exact bytes — never a re-encode.
         XCTAssertEqual(request.httpBody, body)
         XCTAssertEqual(request.httpMethod, "POST")
         XCTAssertEqual(request.url?.absoluteString, "https://gateway.example/v1/analytics/events")
@@ -29,7 +28,6 @@ final class AnalyticsUploadRequestTests: XCTestCase {
     func testUnsignedRequestOmitsTheAttestationHeaders() throws {
         let factory = makeFactory()
 
-        // Mode .none in dev builds: the request goes out unsigned.
         let request = try factory.buildRequest(body: Data("{}".utf8), headers: nil)
 
         XCTAssertNil(request.value(forHTTPHeaderField: "X-Signature"))

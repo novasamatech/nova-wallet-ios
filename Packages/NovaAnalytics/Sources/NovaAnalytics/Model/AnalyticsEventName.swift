@@ -1,8 +1,6 @@
 import Foundation
 
-/// The 42 wire names of the event catalog, in catalog order. Raw values are the contract
-/// with Android and the backend and are transcribed verbatim from
-/// `analytics/src/main/java/io/novafoundation/nova/analytics/AnalyticsEvent.kt`.
+/// The wire names of the event catalog; the raw values are the contract with Android.
 public enum AnalyticsEventName: String, CaseIterable {
     case appOpened = "app_opened"
     case sessionStarted = "session_started"

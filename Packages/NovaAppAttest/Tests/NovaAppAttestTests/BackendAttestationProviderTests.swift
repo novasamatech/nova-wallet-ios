@@ -6,17 +6,12 @@ import Keystore_iOS
 final class BackendAttestationProviderTests: XCTestCase {
     private let gatewayURL = URL(string: "https://gateway.example/")!
 
-    /// Where in the already-composed chain the user opts out. Each point sits after the
-    /// composition-time client id read, so only an execution-time gate can stop it.
     private enum OptOutPoint {
         case challenge
         case attestation
         case register
     }
 
-    /// Records the registration requests that actually reached the transport. Counting
-    /// `createRegisterOperation` calls would not do: the operation is *constructed* before
-    /// the opt-out lands, and what must not happen is its request closure producing a value.
     private final class RegisterRecorder {
         private let mutex = NSLock()
         private var requests: [BackendAttestationRegisterRequest] = []
@@ -42,8 +37,6 @@ final class BackendAttestationProviderTests: XCTestCase {
         }
     }
 
-    /// Fires its closure exactly once, however many times the chain reaches it — a signed
-    /// request asks for two challenges, and the opt-out must be injected at one point only.
     private final class OneShotHook {
         private let mutex = NSLock()
         private var hasFired = false
@@ -67,11 +60,6 @@ final class BackendAttestationProviderTests: XCTestCase {
         }
     }
 
-    /// Delegates to the real repository and fires a hook once the *attested* row has been
-    /// written. That is the only seam between `saveAttestedOperation` finishing and the
-    /// cache operation starting — the window the cache gate exists for.
-    /// A fixture rather than a stand-in: it wraps the real repository and adds one
-    /// observation point, so the behaviour these tests run against is the repository's own.
     private final class SaveHookRepository: DataProviderRepositoryProtocol {
         typealias Model = AppAttestKeySettings
 
@@ -193,20 +181,14 @@ final class BackendAttestationProviderTests: XCTestCase {
     ) -> Fixture {
         let settings = existing?.settings ?? InMemorySettingsManager()
 
-        // A second fixture over the same settings is what a relaunch looks like: the rows
-        // survive, every in-memory latch is gone.
         let realRepository = AnyDataProviderRepository(
             SettingsAppAttestKeyRepository(settingsManager: settings)
         )
 
         let registered = RegisterRecorder()
 
-        // Assigned after the provider exists; the hook only ever runs inside an operation,
-        // by which time the box is populated.
         var providerBox: BackendAttestationProvider?
 
-        // One-shot: the assertions run a second, clean chain, whose own attested save must
-        // not trip the hook again.
         let saveHook = OneShotHook { providerBox?.forgetClient() }
 
         let repository = optOutAfterAttestedSave
@@ -218,8 +200,6 @@ final class BackendAttestationProviderTests: XCTestCase {
             providerBox?.forgetClient()
 
             if thenReconsent {
-                // Re-arms minting. A `clientId() != nil` gate would now mint a *new* id and
-                // wave this stale chain through to register the old one.
                 providerBox?.allowClient()
             }
         }
@@ -279,13 +259,9 @@ final class BackendAttestationProviderTests: XCTestCase {
         return try wrapper.targetOperation.extractNoCancellableResultData()
     }
 
-    /// Recovery deletes the row through the provider's own queue, so the assertions wait
-    /// on it exactly as `AnalyticsTestFixture.drain()` waits on the service's queue.
     private func storedRow(_ fixture: Fixture) throws -> AppAttestKeySettings? {
         fixture.operationQueue.waitUntilAllOperationsAreFinished()
 
-        // Fetched by content rather than by identifier: the row id is scoped to the client
-        // id now, and these assertions are about whether *any* credential survives.
         let operation = fixture.repository.fetchAllOperation(with: RepositoryFetchOptions())
         OperationQueue().addOperations([operation], waitUntilFinished: true)
         return try operation.extractNoCancellableResultData().first
@@ -311,7 +287,6 @@ final class BackendAttestationProviderTests: XCTestCase {
 
         _ = try headers(fixture)
 
-        // Apple asks apps to attest sparingly: a key is attested once, ever.
         XCTAssertTrue(fixture.appAttest.attestationKeyIds.isEmpty)
         XCTAssertEqual(fixture.appAttest.assertionKeyIds.count, 1)
     }
@@ -327,8 +302,6 @@ final class BackendAttestationProviderTests: XCTestCase {
     }
 
     func testRegisterClientErrorKeepsTheRowAndDoesNotRejectTheProcess() throws {
-        // A 409/422/429 from a challenge that expired during the Apple round-trip is
-        // not a rejected client.
         let fixture = makeFixture(registerError: BackendAttestationError.clientError(statusCode: 409))
 
         XCTAssertThrowsError(try headers(fixture))
@@ -366,7 +339,6 @@ final class BackendAttestationProviderTests: XCTestCase {
         fixture.appAttest.reset()
         _ = try headers(fixture)
 
-        // Recovery always means a NEW key, never a second attestation of the old one.
         XCTAssertEqual(fixture.appAttest.attestationKeyIds.count, 1)
         XCTAssertNil(fixture.appAttest.attestationKeyIds.last ?? nil)
     }
@@ -381,8 +353,6 @@ final class BackendAttestationProviderTests: XCTestCase {
         XCTAssertNil(try storedRow(fixture))
         XCTAssertNil(fixture.settings.gatewayAttestationClientId)
 
-        // Opting out latches minting shut, so an upload chain still executing cannot
-        // register a fresh attested client behind the user's back.
         XCTAssertThrowsError(try headers(fixture))
         XCTAssertNil(fixture.settings.gatewayAttestationClientId)
 
@@ -398,7 +368,6 @@ final class BackendAttestationProviderTests: XCTestCase {
         XCTAssertThrowsError(try headers(fixture))
         XCTAssertNil(try storedRow(fixture))
 
-        // A second invalidKeyId must not loop into endless key generation.
         XCTAssertThrowsError(try headers(fixture))
         XCTAssertNotNil(try storedRow(fixture))
     }
@@ -461,8 +430,6 @@ final class BackendAttestationProviderTests: XCTestCase {
         try assertOptOutMidChainRegistersNothing(at: .register)
     }
 
-    /// The chain is composed while consent is still on — the client id and the epoch are
-    /// read before any of these hooks fire — so nothing here is stopped by the entry guard.
     private func assertOptOutMidChainRegistersNothing(at point: OptOutPoint) throws {
         let fixture = makeFixture(optOutAt: point)
 
@@ -477,9 +444,6 @@ final class BackendAttestationProviderTests: XCTestCase {
         XCTAssertNil(fixture.settings.gatewayAttestationClientId)
     }
 
-    /// The gate before the Secure Enclave work, not just the ones before the network calls:
-    /// generating and attesting a key for an install that has just opted out burns one of
-    /// Apple's per-key attestations and produces a credential nothing should ever hold.
     func testOptOutBeforeTheAttestationStepNeverTouchesAppAttest() throws {
         let fixture = makeFixture(optOutAt: .challenge)
 
@@ -501,10 +465,6 @@ final class BackendAttestationProviderTests: XCTestCase {
         try assertReconsentMidChainRegistersNothing(at: .register)
     }
 
-    /// The opt-out→re-consent race is what separates the epoch gate from the
-    /// `identity.clientId() != nil` predicate it replaced: after `allowClient()` that
-    /// accessor mints happily, so a chain composed in the previous consent cycle would sail
-    /// through every gate and register its stale client id against the new identity.
     private func assertReconsentMidChainRegistersNothing(at point: OptOutPoint) throws {
         let fixture = makeFixture(optOutAt: point, thenReconsent: true)
 
@@ -518,10 +478,6 @@ final class BackendAttestationProviderTests: XCTestCase {
         XCTAssertNil(try storedRow(fixture), "the key row survived a re-consent at \(point)")
     }
 
-    /// The two gates sit in different operations with an asynchronous CoreData write
-    /// between them, so an opt-out can pass the save gate and still reach the cache. Only
-    /// the gate before `cacheAttestedKeyId` stops the key minted for the previous consent
-    /// cycle from being re-armed — it also clears `needsFreshKey`, undoing `invalidate()`.
     func testAnOptOutBetweenTheRowWriteAndTheCacheNeverResurrectsTheKey() throws {
         let fixture = makeFixture(optOutAfterAttestedSave: true)
 
@@ -533,18 +489,10 @@ final class BackendAttestationProviderTests: XCTestCase {
 
         _ = try headers(fixture)
 
-        // A repopulated cache would have short-circuited `ensureAttestedWrapper`, so no
-        // attestation would have been requested at all — and the assertion below would be
-        // signing with the previous cycle's key.
         XCTAssertEqual(fixture.appAttest.attestationKeyIds.count, 1)
         XCTAssertNil(fixture.appAttest.attestationKeyIds.last ?? nil)
     }
 
-    /// `deleteRow()` only logs a failure, and `needsFreshKey` and `consentEpoch` are
-    /// in-memory, so a force-quit between opting out and the delete committing brings the
-    /// app back with the old row on disk and every latch reset. The adoption branch in
-    /// `ensureAttestedWrapper` caches `row.keyId` *before* any epoch gate, so nothing there
-    /// can catch it — the row must not be findable at all under the new client id.
     func testARowLeftBehindByAFailedOptOutDeleteIsNotAdoptedAfterReconsent() throws {
         let first = makeFixture()
         _ = try headers(first)
@@ -552,8 +500,6 @@ final class BackendAttestationProviderTests: XCTestCase {
         let survivingRow = try XCTUnwrap(try storedRow(first))
         XCTAssertTrue(survivingRow.isAttested)
 
-        // Opt out with only the persisted half applied: the client id is gone, the row is
-        // not. Then relaunch — a fresh provider and identity over the same store.
         first.settings.gatewayAttestationClientId = nil
 
         let relaunched = makeFixture(sharingStoreWith: first)
@@ -580,9 +526,6 @@ final class BackendAttestationProviderTests: XCTestCase {
 
         XCTAssertThrowsError(try headers(fixture))
 
-        // Re-consent, then run a clean chain. If `cacheAttestedKeyId` had run on the far
-        // side of the opt-out, this would assert the *old* key — a key minted for the
-        // previous consent cycle signing for the new one.
         fixture.provider.allowClient()
         fixture.appAttest.reset()
 
@@ -592,15 +535,11 @@ final class BackendAttestationProviderTests: XCTestCase {
         XCTAssertNil(fixture.appAttest.attestationKeyIds.last ?? nil)
     }
 
-    /// The guard must not be `identity.clientId() != nil`: that accessor mints, so during
-    /// an opt-out→re-consent race it would write a brand new client id and then wave the
-    /// stale chain through to register the old one.
     func testTheConsentGateReadsTheEpochWithoutMintingAnIdentity() {
         let settings = InMemorySettingsManager()
         let identity = BackendAttestationIdentity(settingsManager: settings)
 
         identity.forgetClientId()
-        // Re-consent re-arms minting, which is what makes the two accessors differ here.
         identity.allowCreation()
 
         XCTAssertNil(settings.gatewayAttestationClientId)

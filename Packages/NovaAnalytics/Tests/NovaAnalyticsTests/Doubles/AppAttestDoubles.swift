@@ -2,10 +2,6 @@ import Foundation
 import Operation_iOS
 import NovaAppAttest
 
-/// Replaces `MockDeviceCheckAttesting`. A duplicate of `NovaAppAttestTests`' spy rather
-/// than a shared one: two packages' test targets cannot import each other.
-///
-/// `reset()` stands in for Cuckoo's `clearInvocations`.
 final class DeviceCheckAttestingSpy: DeviceCheckAttesting {
     var isSupported: Bool = true
 
@@ -76,11 +72,7 @@ final class DeviceCheckAttestingSpy: DeviceCheckAttesting {
     }
 }
 
-/// Replaces `MockBackendAttestationRemoteFactoryProtocol`.
 final class BackendAttestationRemoteFactorySpy: BackendAttestationRemoteFactoryProtocol {
-    /// A closure rather than a stored `Result` because the gateway issues a fresh challenge
-    /// per request (spec §7.5) and the Cuckoo stub this replaces did the same; a stored
-    /// value would hand every request in a fixture the same challenge.
     var challenge: () throws -> String = { UUID().uuidString }
     var registerError: Error?
 

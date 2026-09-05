@@ -2,9 +2,6 @@ import Foundation
 import Operation_iOS
 import CoreData
 
-/// Replaces the app's `CommonError.dataCorruption`, which cannot cross the package
-/// boundary. Same meaning, same effect on the caller: `AnalyticsUploader` reacts to any
-/// error out of a peek by clearing the queue, and never inspects the case.
 enum AnalyticsPendingEventMapperError: Error {
     case dataCorruption
 }

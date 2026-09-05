@@ -5,7 +5,6 @@ public extension AnalyticsEvent {
         AnalyticsEvent(name: .swapScreenOpened, properties: [.source: source])
     }
 
-    /// Failable, because Android skips swap events without a fiat rate for the pay asset.
     static func swapInitiated(
         source: SwapSource,
         assetIn: AnalyticsContentValue,

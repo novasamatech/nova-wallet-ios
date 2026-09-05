@@ -7,9 +7,6 @@ private enum CorruptAnalyticsEventMapperError: Error {
     case dataCorruption
 }
 
-/// Writes a row the production mapper cannot read back: `name`, `timestamp` and `payload`
-/// are left nil, which is exactly the shape an interrupted migration or a truncated store
-/// leaves behind. It is a fixture, not a stand-in for a mockable collaborator.
 private final class CorruptAnalyticsEventMapper: CoreDataMapperProtocol {
     typealias DataProviderModel = AnalyticsPendingEvent
     typealias CoreDataEntity = CDAnalyticsEvent
@@ -65,8 +62,6 @@ final class AnalyticsEventQueueTests: XCTestCase {
     func testPeekReturnsOldestFirstRegardlessOfTimestamp() throws {
         let queue = makeQueue()
 
-        // Timestamps deliberately run backwards: FIFO must follow insertion order,
-        // not the clock, so that a device clock correction cannot reorder the queue.
         try run(queue.enqueueWrapper(
             name: "first",
             timestamp: Date(timeIntervalSince1970: 900),
@@ -134,7 +129,6 @@ final class AnalyticsEventQueueTests: XCTestCase {
 
         try enqueue(queue, ["c"])
 
-        // "b" was enqueued before "c" and must still come first.
         XCTAssertEqual(try run(queue.peekWrapper(count: 10)).map(\.name), ["b", "c"])
     }
 
@@ -148,9 +142,6 @@ final class AnalyticsEventQueueTests: XCTestCase {
         XCTAssertEqual(try run(queue.countOperation()), 2)
     }
 
-    /// The row is written through a mapper that leaves the required attributes nil, so the
-    /// production mapper genuinely throws on it — the previous version of this test wrote a
-    /// perfectly good row and proved only that `dropOperation` deletes things.
     func testAnUnreadableRowFailsThePeekAndSurvivesUntilCleared() throws {
         let facade = AnalyticsStorageTestFacade()
         let queue = CoreDataAnalyticsEventQueue(
@@ -167,7 +158,6 @@ final class AnalyticsEventQueueTests: XCTestCase {
             "one unreadable row must fail the whole fetch — that is what wedges the queue"
         )
 
-        // The only recovery: counting and clearing never go through the mapper.
         _ = try run(queue.clearOperation())
         XCTAssertEqual(try run(queue.countOperation()), 0)
     }
@@ -181,8 +171,6 @@ final class AnalyticsEventQueueTests: XCTestCase {
         try enqueue(queue, ["c", "d"])
         let after = try run(queue.peekWrapper(count: 10)).map(\.identifier)
 
-        // The sequence restarts at 0, so identifiers derived from it alone would collide —
-        // and a drop belonging to a batch that outlived the wipe would delete these rows.
         XCTAssertTrue(
             Set(before).isDisjoint(with: Set(after)),
             "row identifiers were reused after a clear: \(before) vs \(after)"

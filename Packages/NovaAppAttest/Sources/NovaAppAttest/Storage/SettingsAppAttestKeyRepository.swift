@@ -6,31 +6,9 @@ enum SettingsAppAttestKeyRepositoryError: Error {
     case sliceFetchUnsupported
 }
 
-/// Persists the app attest key rows as one JSON-encoded `[String: AppAttestKeySettings]`
-/// map under a single settings key.
-///
-/// One map rather than a key per row because `SettingsManagerProtocol` offers no key
-/// enumeration: `deleteAllOperation()` must clear every client's row, and with per-row keys
-/// there would be no way to find them. As one map it is a single `removeValue`.
-///
-/// The lock is not optional. `BackendAttestationProvider` signs on a shared *concurrent*
-/// queue and UserDefaults gives per-key atomicity only, so an unguarded read-modify-write
-/// of the map drops concurrent saves.
+/// Persists app attest key rows as one JSON map under a single settings key.
 public final class SettingsAppAttestKeyRepository {
-    /// A bare string literal rather than a `SettingsKey` case — every other settings key in
-    /// the app goes through that enum. This file lives in the standalone `NovaAppAttest`
-    /// package, which cannot depend on the app's `SettingsKey` enum, so the key has to be
-    /// self-contained here rather than delegate to it.
-    ///
-    /// Nothing shipped has ever written it: before this branch the rows lived in
-    /// `CDAppAttestKey`, and nothing migrates them. Renaming it today would only strand dev
-    /// and TestFlight installs of this branch — but from the first release that carries it,
-    /// a rename silently orphans every real install's rows, so the literal is pinned by
-    /// `SettingsAppAttestKeyRepositoryTests` and must stay as written.
-    ///
-    /// `internal`: an on-disk key name published as package API is something a consumer can
-    /// come to depend on, and then it can never be renamed. The only readers outside this
-    /// type are the package's own tests, through `@testable`.
+    // Stable on-disk settings key: changing this string orphans every stored row.
     static let storageKey = "appAttestKeys"
 
     private let settingsManager: SettingsManagerProtocol
@@ -44,20 +22,10 @@ public final class SettingsAppAttestKeyRepository {
 // MARK: - Private
 
 private extension SettingsAppAttestKeyRepository {
-    /// Callers must hold `mutex`. Decodes the whole map as one JSON blob via `try?`
-    /// (`SettingsManagerProtocol.value(of:for:)`), so adding a non-optional field to
-    /// `AppAttestKeySettings` later would silently discard *every* row rather than the one
-    /// row that fails to decode. The consequence is benign here — a fresh key and a
-    /// re-register — and it is actually an improvement on the CoreData mapper this
-    /// replaced, which threw `CommonError.dataCorruption` into a fetch that `resolveRow`
-    /// (`BackendAttestationProvider.swift:89-103`) does not absorb, wedging attestation
-    /// permanently.
     func loadMap() -> [String: AppAttestKeySettings] {
         settingsManager.value(of: [String: AppAttestKeySettings].self, for: Self.storageKey) ?? [:]
     }
 
-    /// Callers must hold `mutex`. An empty map removes the key outright rather than storing
-    /// `{}`, so an opt-out leaves nothing behind in the settings dump.
     func storeMap(_ map: [String: AppAttestKeySettings]) {
         if map.isEmpty {
             settingsManager.removeValue(for: Self.storageKey)
@@ -109,16 +77,10 @@ extension SettingsAppAttestKeyRepository: DataProviderRepositoryProtocol {
 
     public func fetchAllOperation(with _: RepositoryFetchOptions) -> BaseOperation<[AppAttestKeySettings]> {
         ClosureOperation { [weak self] in
-            // Stable order so the result is deterministic. The provider never depends on
-            // it; the tests do.
             self?.readMap().values.sorted { $0.identifier < $1.identifier } ?? []
         }
     }
 
-    /// `RepositorySliceRequest` keeps its offset, count and reversed flag internal to
-    /// Operation-iOS, so a slice cannot be honoured from outside that module at all.
-    /// Nothing asks for one — the provider fetches by identifier — and
-    /// `InMemoryDataProviderRepository` refuses slices the same way.
     public func fetchOperation(
         by _: RepositorySliceRequest,
         options _: RepositoryFetchOptions
@@ -131,8 +93,6 @@ extension SettingsAppAttestKeyRepository: DataProviderRepositoryProtocol {
         _ deleteIdsBlock: @escaping () throws -> [String]
     ) -> BaseOperation<Void> {
         ClosureOperation { [weak self] in
-            // Evaluated before the lock is taken: these closures carry the provider's epoch
-            // guards and may throw, and a throw must not leave the map half-written.
             let updated = try updateModelsBlock()
             let deletedIds = try deleteIdsBlock()
 
@@ -168,9 +128,6 @@ extension SettingsAppAttestKeyRepository: DataProviderRepositoryProtocol {
         }
     }
 
-    /// A bare requirement of `DataProviderRepositoryProtocol`, not one the protocol
-    /// extension defaults, so it is implemented here. Emptying the whole map is the point:
-    /// the opt-out wipe has to take rows left behind by earlier client ids too.
     public func deleteAllOperation() -> BaseOperation<Void> {
         ClosureOperation { [weak self] in
             self?.withMap { map in

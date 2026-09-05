@@ -1,8 +1,5 @@
 import Foundation
 
-/// Boundaries and raw values transcribed from
-/// `analytics/src/main/java/io/novafoundation/nova/analytics/ValueBucketing.kt`.
-/// The raw values are the wire contract; the Swift case names are not.
 public enum AmountBucket: String, AnalyticsPropertyConvertible {
     case under1 = "under_1"
     case from1To10 = "1_to_10"
@@ -30,17 +27,10 @@ public enum AmountBucket: String, AnalyticsPropertyConvertible {
         }
     }
 
-    /// Send and staking always emit: Android calls `amountToFiat` unguarded, so a missing
-    /// rate becomes 0 rather than a skipped event.
     public init(amount: Decimal, rate: Decimal?) {
         self.init(usd: amount * (rate ?? 0))
     }
 
-    /// Swap only: Android skips swap events without a fiat rate for the pay asset.
-    ///
-    /// Takes the rate rather than the app's `PriceData`, which is a wallet domain model and
-    /// cannot cross the boundary. The caller passes `priceData?.decimalRate`, so a price
-    /// that is absent and a price whose string will not parse both still yield `nil` here.
     public init?(amount: Decimal, price: Decimal?) {
         guard let rate = price else { return nil }
 
@@ -56,8 +46,6 @@ public enum DurationBucket: String, AnalyticsPropertyConvertible {
     case from1mTo5m = "1m_to_5m"
     case over5m = "over_5m"
 
-    /// Truncating to whole seconds reproduces Android's `milliseconds / 1000`
-    /// integer division.
     public init(duration: TimeInterval) {
         self = switch Int(duration) {
         case ..<5: .under5s
@@ -76,8 +64,6 @@ public enum SlippageBucket: String, AnalyticsPropertyConvertible {
     case high
     case custom
 
-    /// Bounds are INCLUSIVE on Android (`percentage <= 0.5 -> LOW`), unlike the
-    /// exclusive amount and duration bounds.
     public init(percent: Decimal) {
         self = if percent <= 0.5 {
             .low

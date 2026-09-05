@@ -23,7 +23,6 @@ final class AnalyticsServiceTests: XCTestCase {
         fixture.service.track(.novaCardOpened())
         fixture.service.track(.featureOpened(.staking))
 
-        // Returning from a detail screen must not re-fire feature_opened.
         XCTAssertEqual(try fixture.peekNames(), ["feature_opened", "nova_card_opened"])
     }
 
@@ -39,7 +38,7 @@ final class AnalyticsServiceTests: XCTestCase {
     func testThresholdFlushAtFiftyEvents() throws {
         let fixture = AnalyticsTestFixture.makeConsented(now: { Date(timeIntervalSince1970: 0) })
 
-        fixture.service.track(.novaCardOpened()) // consumes the distantPast flush
+        fixture.service.track(.novaCardOpened())
         fixture.drain()
         fixture.uploader.reset()
 
@@ -81,13 +80,6 @@ final class AnalyticsServiceTests: XCTestCase {
     }
 
     func testOptOutCancelsTheFlushCallStoreAndWipesTheQueue() throws {
-        // Scope: the call-store plumbing only. The stub returns a single flat operation, so
-        // this cannot show that a real in-flight upload is abandoned — against the production
-        // uploader the inner wrappers keep running, because
-        // `OperationCombiningService.cancel()` is a no-op (it never sets `.running` and never
-        // retains its wrappers). Spec 6.5 step 2 is therefore NOT covered by this test. What
-        // makes opt-out safe today is the identity latch, covered in AnalyticsIdentityTests
-        // and BackendAttestationProviderTests.
         let fixture = AnalyticsTestFixture.makeConsented()
         let started = XCTestExpectation(description: "flush started")
         let neverFinishes = CompoundOperationWrapper(
@@ -106,9 +98,6 @@ final class AnalyticsServiceTests: XCTestCase {
     }
 
     func testCancelFlushReleasesTheSingleFlightSlot() throws {
-        // The facade's throttle() is symmetric (spec §3.2): it must abandon the in-flight
-        // flush, not just detach the handler, or the call store stays occupied for the
-        // rest of the process and every later flush is silently swallowed.
         let fixture = AnalyticsTestFixture.makeConsented()
 
         let firstStarted = XCTestExpectation(description: "first flush started")
@@ -130,8 +119,6 @@ final class AnalyticsServiceTests: XCTestCase {
         fixture.service.flush(reason: .manual)
         wait(for: [firstStarted], timeout: 5)
 
-        // Single flight: the second call finds the store occupied and never reaches the
-        // uploader, so the store has to be released explicitly.
         fixture.service.flush(reason: .manual)
         XCTAssertEqual(wrappers.count, 1)
 
@@ -144,8 +131,6 @@ final class AnalyticsServiceTests: XCTestCase {
     }
 
     func testEventPersistsWhileUploadInFlight() throws {
-        // Persistence and networking are on different queues; a slow POST must not
-        // block an enqueue.
         let fixture = AnalyticsTestFixture.makeConsented()
         let uploadStarted = XCTestExpectation(description: "upload started")
         let release = XCTestExpectation(description: "released")
@@ -167,10 +152,6 @@ final class AnalyticsServiceTests: XCTestCase {
         fixture.uploadOperationQueue.waitUntilAllOperationsAreFinished()
     }
 
-    /// `executeCancellable` drops its callback once the call store has been cancelled, so a
-    /// completion registered there is never run. The background handler hands over the
-    /// closure that ends its `UIBackgroundTask`, so losing it holds a system assertion open
-    /// until iOS expires it.
     func testAFlushCompletionStillRunsWhenTheFlushIsCancelled() {
         let fixture = AnalyticsTestFixture.makeConsented()
         let gate = DispatchSemaphore(value: 0)
@@ -194,14 +175,9 @@ final class AnalyticsServiceTests: XCTestCase {
         gate.signal()
         fixture.drainUploads()
 
-        // The chain's own callback fires after the operation reports finished, so this
-        // waits for the window in which a double invocation would land.
         wait(for: [ranTwice], timeout: 1)
     }
 
-    /// Reporting the flush settled because the single-flight slot is busy releases the
-    /// background assertion while a real POST is still on the wire — the same defect the
-    /// completion exists to close.
     func testAFlushCompletionWaitsForTheFlushThatIsAlreadyRunning() {
         let fixture = AnalyticsTestFixture.makeConsented()
         let gate = DispatchSemaphore(value: 0)
@@ -268,13 +244,6 @@ final class AnalyticsServiceTests: XCTestCase {
         wait(for: [ranTwice], timeout: 1)
     }
 
-    /// The enqueue must be *submitted* while the service's mutex is held, because the
-    /// opt-out wipe submits its clear to the same serial queue under the same lock. Release
-    /// the lock first and an event lands in the store behind the wipe and is uploaded on the
-    /// next launch.
-    ///
-    /// Proved by mutual exclusion rather than by racing: a consent change attempted from
-    /// another thread at the moment of the enqueue must be unable to complete.
     func testTheEnqueueIsSubmittedWhileTheConsentWipeIsLockedOut() {
         let settings = InMemorySettingsManager()
         let availability = AnalyticsAvailabilityProvider(attestationMode: .appAttest)
@@ -285,10 +254,6 @@ final class AnalyticsServiceTests: XCTestCase {
         consent.setEnabled(true)
 
         let wipeReachedConsentChange = DispatchSemaphore(value: 0)
-        // Two separate signals, deliberately: a DispatchSemaphore satisfies one waiter per
-        // signal, so probing and waiting on the same one would leave the final wait
-        // blocked forever whenever the probe succeeded — the test would hang on a
-        // regression instead of failing.
         let wipeProbe = DispatchSemaphore(value: 0)
         let wipeCompleted = expectation(description: "the consent change eventually completes")
         let wipeWasBlocked = CompletionCounter()
@@ -302,8 +267,6 @@ final class AnalyticsServiceTests: XCTestCase {
                 wipeCompleted.fulfill()
             }
 
-            // The other thread is definitely inside setEnabled by now. If it cannot
-            // finish, it is parked on the mutex this call is holding.
             wipeReachedConsentChange.wait()
 
             if wipeProbe.wait(timeout: .now() + 0.5) == .timedOut {

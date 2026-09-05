@@ -3,10 +3,7 @@ import Operation_iOS
 import NovaOperationSupport
 import SDKLogger
 
-/// Attest once, assert per request. Written fresh rather than generalised from the
-/// deleted `DAppAttestationProvider`: that type's UUID-keyed coalescing existed for
-/// concurrent browser calls, while the uploader is single-flight with serial batches,
-/// so this is a straight wrapper chain plus a little state.
+/// Attests one App Attest key per install, then signs each gateway request with an assertion.
 public final class BackendAttestationProvider {
     private let appAttest: AppAttestServiceProtocol
     private let remoteFactory: BackendAttestationRemoteFactoryProtocol
@@ -24,8 +21,6 @@ public final class BackendAttestationProvider {
     private var rejectedForProcess: Bool = false
     private var invalidKeyIdDiscardedThisLaunch: Bool = false
 
-    /// Covers the window between a recovery and its asynchronous row delete: while it is
-    /// set the persisted row is ignored, so recovery can never re-attest the old key.
     private var needsFreshKey: Bool = false
 
     public init(
@@ -57,21 +52,9 @@ private extension BackendAttestationProvider {
     enum Constants {
         static let platform = "ios"
         static let attestationType = "app_attest"
-        /// The short-circuit reports the canonical "client refused" code of spec §7.6;
-        /// only the case, never the number, drives behaviour.
         static let rejectedStatusCode = 403
     }
 
-    /// Scoped to the gateway *and* the client id, so a host change or a new consent cycle
-    /// starts a new credential.
-    ///
-    /// The client id is what makes opt-out durable. `deleteRow()` is best effort — it only
-    /// logs a failure — and `needsFreshKey` and `consentEpoch` are in-memory, so a process
-    /// that dies between `forgetClient()` and the row delete committing comes back with the
-    /// old row on disk and every in-memory latch reset. Keyed by gateway alone, the next
-    /// consent cycle would fetch that row, adopt its key at the `row.isAttested` branch —
-    /// which sits *before* any epoch gate — and sign with a credential the gateway holds
-    /// against the previous client id. Keyed by client id, the row is simply not found.
     func rowIdentifier(for clientId: String) -> String {
         gatewayURL.absoluteString + "|" + clientId
     }
@@ -86,7 +69,6 @@ private extension BackendAttestationProvider {
         return needsFreshKey ? nil : attestedKeyId
     }
 
-    /// Consumes `needsFreshKey`, so the first read after a recovery always attests anew.
     func resolveRow(_ stored: AppAttestKeySettings?) -> AppAttestKeySettings? {
         mutex.lock()
 
@@ -103,9 +85,6 @@ private extension BackendAttestationProvider {
         return nil
     }
 
-    /// The only consent re-check the chain is allowed to make. `identity.clientId()` mints,
-    /// so calling it as a predicate writes a fresh client id during an opt-out→re-consent
-    /// race and then registers the *old* one; comparing epochs has no side effect.
     func requireEpoch(_ epoch: Int) throws {
         guard identity.consentEpoch == epoch else {
             throw BackendAttestationError.unsupported
@@ -134,8 +113,6 @@ private extension BackendAttestationProvider {
         needsFreshKey = true
     }
 
-    /// Every row, not just the current client's: the entity holds nothing but this
-    /// provider's credentials, and a cycle whose delete failed has left one behind.
     func deleteRow() {
         let operation = repository.deleteAllOperation()
 
@@ -150,8 +127,6 @@ private extension BackendAttestationProvider {
         }
     }
 
-    /// Spec §7.4's recovery table. Anything not listed — 5xx, transport,
-    /// `serviceUnavailable` — keeps every piece of state.
     func handleFailure(_ error: Error) {
         if let attestationError = error as? BackendAttestationError, case .rejected = attestationError {
             mutex.lock()
@@ -180,7 +155,6 @@ private extension BackendAttestationProvider {
         mutex.unlock()
 
         guard shouldDiscard else {
-            // A second invalidKeyId must not loop into endless key generation.
             return
         }
 
@@ -213,14 +187,6 @@ private extension BackendAttestationProvider {
             break
         }
 
-        // Same reason as the uploader's install id: never register a fresh attested client
-        // for an install that has opted out while this chain was already executing. The
-        // epoch captured here is what every later step compares against.
-        //
-        // Read epoch → id → epoch: `clientId()` and `consentEpoch` are two separate
-        // acquisitions of the identity's lock, so an opt-out landing between them would
-        // otherwise pair a forgotten client id with the epoch that forgot it, and every
-        // later gate would wave the chain through.
         let epoch = identity.consentEpoch
 
         guard let clientId = identity.clientId(), identity.consentEpoch == epoch else {
@@ -241,7 +207,6 @@ private extension BackendAttestationProvider {
     ) -> CompoundOperationWrapper<[AttestationHeaderKey: String]?> {
         let attestedWrapper = ensureAttestedWrapper(clientId: clientId, epoch: epoch)
 
-        // A fresh challenge per signed request: never cached, never reused (spec §7.5).
         let challengeWrapper = OperationCombiningService<String>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) { [weak self, remoteFactory] in
@@ -326,10 +291,6 @@ private extension BackendAttestationProvider {
                 return .createWithResult(row.keyId)
             }
 
-            // The client id was read before this chain started. Opting out since then bumped
-            // the epoch, and `invalidate()` cleared the cached key — which would otherwise
-            // *force* a fresh attestation here, registering a new key with the gateway for
-            // an install that just opted out.
             try requireEpoch(epoch)
 
             return createAttestAndRegisterWrapper(
@@ -344,9 +305,6 @@ private extension BackendAttestationProvider {
         return wrapper.insertingHead(operations: [fetchOperation])
     }
 
-    /// challenge → attest → save unattested → register → save attested → cache, with an
-    /// epoch gate before every step that is irreversible from the user's point of view.
-    /// Each stage is its own function so those gates stay visible.
     func createAttestAndRegisterWrapper(
         clientId: String,
         epoch: Int,
@@ -363,8 +321,6 @@ private extension BackendAttestationProvider {
 
         attestationWrapper.addDependency(wrapper: challengeWrapper)
 
-        // Saved unattested BEFORE the register POST, so a retry after a failed register
-        // reuses the same attested key instead of burning a new one.
         let saveUnattestedOperation = createSaveOperation(
             isAttested: false,
             epoch: epoch,
@@ -450,9 +406,6 @@ private extension BackendAttestationProvider {
         return remoteFactory.createRegisterOperation { [weak self] in
             try saveOperation.extractNoCancellableResultData()
 
-            // The last gate before the registration leaves the device. The Apple attestKey
-            // round trip sits between here and the composition-time check, and it is the
-            // slowest hop in the chain.
             guard let self else {
                 throw BackendAttestationError.unsupported
             }
@@ -488,13 +441,6 @@ private extension BackendAttestationProvider {
                 throw BackendAttestationError.unsupported
             }
 
-            // Not redundant with the gate in `createSaveOperation`: that one runs in the
-            // save operation, this one in a separate operation scheduled after it, and the
-            // asynchronous CoreData write sits between them. An opt-out landing in that
-            // window passes the save gate and reaches here, where it must still be caught —
-            // `cacheAttestedKeyId` clears `needsFreshKey` as well as setting the key, so it
-            // would undo `invalidate()` and leave a key minted for the previous consent
-            // cycle signing for the next one.
             try requireEpoch(epoch)
 
             cacheAttestedKeyId(keyId)
@@ -514,8 +460,6 @@ private extension BackendAttestationProvider {
         return repository.saveOperation({ [weak self] in
             let keyId = try keyIdClosure()
 
-            // Never write the row back for an install that opted out while this chain ran:
-            // `forgetClient()` deletes it, and a late save would resurrect it.
             guard let self else {
                 return []
             }
@@ -539,8 +483,6 @@ extension BackendAttestationProvider: BackendAttestationProviderProtocol {
     public func createSignedHeadersWrapper(
         bodyClosure: @escaping () throws -> Data
     ) -> CompoundOperationWrapper<[AttestationHeaderKey: String]?> {
-        // Deferred so the state checks read the state as it is when the request runs,
-        // not as it was when the flush was composed.
         let wrapper = OperationCombiningService<[AttestationHeaderKey: String]?>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) { [weak self] in

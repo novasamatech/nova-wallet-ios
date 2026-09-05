@@ -25,7 +25,6 @@ final class AnalyticsConsentGateTests: XCTestCase {
         XCTAssertNil(fixture.persistedInstallId(), message, line: line)
         XCTAssertEqual(fixture.uploader.flushCallCount, 0, message, line: line)
 
-        // No cryptographic key either: nothing exists before the user opts in.
         XCTAssertEqual(device.generateKeyCallCount, 0, message, line: line)
     }
 
@@ -51,8 +50,6 @@ final class AnalyticsConsentGateTests: XCTestCase {
         fixture.drainUploads()
         fixture.consent.setEnabled(false)
 
-        // The wipe must have emptied the queue, deleted the id and dropped the gateway
-        // client, and 50 more events must land nowhere.
         XCTAssertNil(
             fixture.settings.string(for: "gatewayAttestationClientId"),
             "opt-out kept the gateway client id"
@@ -90,8 +87,6 @@ final class AnalyticsConsentGateTests: XCTestCase {
     }
 
     func testConsentedFlushReachesDeviceCheck() throws {
-        // The positive control for every `generateKey` never-called assertion above: the
-        // path from a consented flush to DeviceCheck is real, so those are not vacuous.
         let device = makeDeviceCheck()
         let fixture = AnalyticsTestFixture.make(deviceCheck: device)
 

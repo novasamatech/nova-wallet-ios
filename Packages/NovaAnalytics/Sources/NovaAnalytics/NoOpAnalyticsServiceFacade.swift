@@ -2,9 +2,6 @@ import Foundation
 import Operation_iOS
 import NovaOperationSupport
 
-/// The implementation a host installs when analytics is compiled out. It owns no queue, no
-/// identity and no consent state, so such a build cannot record, identify or transmit
-/// anything at all.
 public final class NoOpAnalyticsServiceFacade {
     public static let shared = NoOpAnalyticsServiceFacade()
 
@@ -27,7 +24,6 @@ extension NoOpAnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
         reason _: AnalyticsFlushReason,
         completion: @escaping () -> Void
     ) {
-        // Still called: the caller may be holding a background-task assertion on it.
         completion()
     }
 
@@ -46,7 +42,6 @@ extension NoOpAnalyticsServiceFacade: AnalyticsDebugInspecting {
     }
 }
 
-/// Always off, so the consent prompt is never shown and the Settings row stays hidden.
 private final class NoOpAnalyticsConsentManager: AnalyticsConsentManagerProtocol {
     var isEnabled: Bool { false }
 

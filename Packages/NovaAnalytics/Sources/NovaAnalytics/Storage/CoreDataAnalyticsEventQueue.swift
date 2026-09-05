@@ -1,10 +1,6 @@
 import Foundation
 import Operation_iOS
 
-/// Every method returns operations for the caller to schedule; the store's own context
-/// serialises them. Ordering that matters across *callers* — an enqueue that must be
-/// visible to the flush it triggers — is established by `AnalyticsService.trackAndFlush`,
-/// not here, which is why this type holds no queue of its own.
 public final class CoreDataAnalyticsEventQueue {
     private let repository: AnyDataProviderRepository<AnalyticsPendingEvent>
     private let maxCount: Int
@@ -21,8 +17,6 @@ public final class CoreDataAnalyticsEventQueue {
 // MARK: - Private
 
 private extension CoreDataAnalyticsEventQueue {
-    /// The newest row, or nil when the queue is empty. `reversed: true` inverts the
-    /// ascending-by-sequence descriptor the repository was built with.
     func newestRowOperation() -> BaseOperation<[AnalyticsPendingEvent]> {
         repository.fetchOperation(
             by: RepositorySliceRequest(offset: 0, count: 1, reversed: true),
@@ -30,8 +24,6 @@ private extension CoreDataAnalyticsEventQueue {
         )
     }
 
-    /// Rows beyond the newest `maxCount`, newest-first. A single enqueue can overflow by
-    /// at most one in steady state, so a window of 50 is ample headroom.
     func overflowOperation() -> BaseOperation<[AnalyticsPendingEvent]> {
         repository.fetchOperation(
             by: RepositorySliceRequest(offset: maxCount, count: 50, reversed: true),

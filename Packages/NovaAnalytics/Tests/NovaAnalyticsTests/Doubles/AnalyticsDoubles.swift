@@ -4,9 +4,6 @@ import NovaAppAttest
 import NovaOperationSupport
 @testable import NovaAnalytics
 
-/// Replaces `MockAnalyticsEventQueueProtocol`. Cuckoo is deliberately absent from package
-/// test targets: these packages are staged for publication, and a consumer's CI must not
-/// have to pull a code-generation plugin to run their tests.
 final class AnalyticsEventQueueSpy: AnalyticsEventQueueProtocol {
     struct Enqueued: Equatable {
         let name: String
@@ -18,9 +15,6 @@ final class AnalyticsEventQueueSpy: AnalyticsEventQueueProtocol {
     var countResult: Int = 0
     var enqueueError: Error?
 
-    /// Runs synchronously inside `enqueueWrapper`, which is where the Cuckoo stub this
-    /// replaces also ran: `AnalyticsService` composes the enqueue while still holding its
-    /// mutex, and the mutual-exclusion test depends on that being the moment it fires.
     var onEnqueueComposition: ((String, Date, Data) -> Void)?
 
     private let mutex = NSLock()
@@ -93,8 +87,6 @@ final class AnalyticsEventQueueSpy: AnalyticsEventQueueProtocol {
     }
 }
 
-/// Replaces `MockAnalyticsTrackingProtocol`. Both methods record at call time, as the
-/// Cuckoo stubs did: `AnalyticsSessionTracker` calls them synchronously.
 final class AnalyticsTrackingSpy: AnalyticsTrackingProtocol {
     private(set) var events: [AnalyticsEvent] = []
     private(set) var trackedEvents: [AnalyticsEvent] = []
@@ -125,11 +117,6 @@ final class AnalyticsTrackingSpy: AnalyticsTrackingProtocol {
     }
 }
 
-/// Replaces `MockAnalyticsUploading`.
-///
-/// `flushStub` is re-assignable mid-test because several tests re-`stub(...)` the same
-/// Cuckoo mock after a first flush has already run; `maxBatchesCalls` and `reset()` stand
-/// in for `verify(times:)`/`equal(to:)` and `clearInvocations`.
 final class AnalyticsUploadingSpy: AnalyticsUploading {
     var flushStub: (Int) -> CompoundOperationWrapper<Void> = { _ in .createWithResult(()) }
 
@@ -167,15 +154,7 @@ final class AnalyticsUploadingSpy: AnalyticsUploading {
     }
 }
 
-/// Replaces `MockAnalyticsUploadOperationFactoryProtocol`.
-///
-/// The closures are recorded when the operation is *composed*, which is where the Cuckoo
-/// `ArgumentCaptor` picked them up; `onBody` fires when the operation actually runs the
-/// body closure, which is the distinction the abort path turns on — a consent gate that
-/// throws inside `bodyClosure` leaves nothing recorded there even though the operation was
-/// constructed.
 final class AnalyticsUploadOperationFactorySpy: AnalyticsUploadOperationFactoryProtocol {
-    /// Consumed one per batch, so a test can script a 2xx then a 500.
     var uploadResults: [Result<Void, Error>] = []
     var onBody: ((Data) -> Void)?
 
@@ -211,8 +190,6 @@ final class AnalyticsUploadOperationFactorySpy: AnalyticsUploadOperationFactoryP
         let onBody = onBody
 
         return ClosureOperation {
-            // Forces the body closure, so a consent gate inside it is exercised exactly as
-            // `NetworkOperation.main()` would exercise it.
             onBody?(try bodyClosure())
 
             try next.get()
@@ -230,20 +207,11 @@ final class AnalyticsUploadOperationFactorySpy: AnalyticsUploadOperationFactoryP
     }
 }
 
-/// Replaces `MockBackendAttestationProviderProtocol`. Lives in the analytics test target
-/// because that is where it is consumed, even though the protocol belongs to NovaAppAttest.
-///
-/// `headersStub` runs inside the returned operation rather than at composition time, so a
-/// test can opt out from within it — the exact window `AnalyticsUploader`'s consent gate
-/// exists to close.
 final class BackendAttestationProviderSpy: BackendAttestationProviderProtocol {
-    /// `nil` models mode `.none` — the request goes out unsigned.
     var headersStub: () throws -> [AttestationHeaderKey: String]? = {
         [.clientId: "cid", .challenge: "chal", .signature: "sig"]
     }
 
-    /// Runs inside the operation, before the body closure: where the opt-out tests inject
-    /// an opt-out mid-round-trip.
     var onSigning: (() -> Void)?
 
     private let mutex = NSLock()
@@ -253,13 +221,10 @@ final class BackendAttestationProviderSpy: BackendAttestationProviderProtocol {
     private var recordedForgetClient = 0
     private var recordedAllowClient = 0
 
-    /// The closures the uploader handed over, captured when the wrapper was composed.
     var signedBodyClosures: [() throws -> Data] {
         synchronised { recordedBodyClosures }
     }
 
-    /// The bodies the uploader actually asked to sign. Asserting on these is how the tests
-    /// prove the envelope was built before signing, not after.
     var signedBodies: [Data] {
         synchronised { recordedBodies }
     }
@@ -288,7 +253,6 @@ final class BackendAttestationProviderSpy: BackendAttestationProviderProtocol {
         let stub = headersStub
         let hook = onSigning
 
-        // A fresh wrapper per call: one instance cannot run twice.
         return CompoundOperationWrapper(
             targetOperation: ClosureOperation<[AttestationHeaderKey: String]?> { [weak self] in
                 hook?()

@@ -1,8 +1,5 @@
 import Foundation
 
-// The ten enums below carry raw values transcribed verbatim from
-// `analytics/src/main/java/io/novafoundation/nova/analytics/AnalyticsEvent.kt`.
-
 public enum AssetCategory: String, AnalyticsPropertyConvertible {
     case nativeToken = "native_token"
     case stablecoin
@@ -82,9 +79,6 @@ public enum SignSource: String, AnalyticsPropertyConvertible {
     case walletConnect = "walletconnect"
 }
 
-// The sets below are closed on iOS. Android sends bare string literals for these
-// properties; the raw values match what its call sites emit.
-
 public enum AnalyticsTab: String, AnalyticsPropertyConvertible {
     case assets
     case vote
@@ -100,8 +94,6 @@ public enum StakingAnalyticsType: String, AnalyticsPropertyConvertible {
     case unsupported
 }
 
-/// Android sends the exception class simple name; Swift type names would never match it
-/// and are unbounded, so the vocabulary is a closed set agreed jointly with Android.
 public enum TransactionFailureReason: String, AnalyticsPropertyConvertible {
     case userCancelled = "user_cancelled"
     case networkError = "network_error"
@@ -127,8 +119,6 @@ public enum VoteDirection: String, AnalyticsPropertyConvertible {
     case abstain
 }
 
-/// `noLockup` rather than `none`, so a call site passing `.none` for an optional
-/// conviction can never silently resolve to `Optional.none` and omit the key.
 public enum ConvictionLevel: String, AnalyticsPropertyConvertible {
     case noLockup = "0.1x"
     case locked1x = "1x"
@@ -139,16 +129,11 @@ public enum ConvictionLevel: String, AnalyticsPropertyConvertible {
     case locked6x = "6x"
 }
 
-/// Android sends only `dashboard`; iOS has a second entry point, so the enum carries
-/// both and `dashboard` stays byte-identical.
 public enum StakingFlowSource: String, AnalyticsPropertyConvertible {
     case dashboard
     case assetDetails = "asset_details"
 }
 
-/// Mirrors the raw values of `Banners.Domain`, plus `unknown` for Android's fallback.
-/// The `Banners.Domain -> AnalyticsBannerScreen` mapper belongs to `Modules`, so no
-/// `Modules` raw value crosses into `Common`.
 public enum AnalyticsBannerScreen: String, AnalyticsPropertyConvertible {
     case dApps = "dapps"
     case assets

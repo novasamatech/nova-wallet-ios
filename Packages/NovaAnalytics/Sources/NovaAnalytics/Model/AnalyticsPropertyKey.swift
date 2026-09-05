@@ -1,7 +1,5 @@
 import Foundation
 
-/// The 32 wire property keys. Android's 33rd key, `banner_title`, has no case: `Banner`
-/// carries `id`, `background`, `image`, `clipsToBounds` and `actionLink`, and no title.
 public enum AnalyticsPropertyKey: String, CaseIterable {
     case isFirstLaunch = "is_first_launch"
     case durationBucket = "duration_bucket"

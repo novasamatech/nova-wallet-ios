@@ -3,10 +3,8 @@ import Operation_iOS
 import NovaAppAttest
 
 public protocol AnalyticsEventQueueProtocol {
-    /// Allocates the next sequence, persists the row, then trims to the newest `maxCount`.
     func enqueueWrapper(name: String, timestamp: Date, payload: Data) -> CompoundOperationWrapper<Void>
 
-    /// The oldest `count` rows, in insertion order.
     func peekWrapper(count: Int) -> CompoundOperationWrapper<[AnalyticsPendingEvent]>
 
     func dropOperation(ids: [String]) -> BaseOperation<Void>
@@ -16,7 +14,6 @@ public protocol AnalyticsEventQueueProtocol {
 
 public protocol AnalyticsConsentManagerProtocol: AnyObject {
     var isEnabled: Bool { get }
-    /// Forwarded from the availability provider, so the guard reads one object.
     var isAvailable: Bool { get }
     var isPromptSeen: Bool { get }
 
@@ -29,11 +26,8 @@ public protocol AnalyticsConsentManagerProtocol: AnyObject {
 public protocol AnalyticsIdentityProtocol: AnyObject {
     var sessionId: String { get }
 
-    /// Increments on every consent-cycle boundary. Read it — never `installId()` — when
-    /// re-checking consent from inside an already-composed chain: `installId()` mints.
     var consentEpoch: Int { get }
 
-    /// Created on first call, never before. `nil` once forgotten and not re-armed.
     func installId() -> String?
     func forgetInstallId()
     func allowCreation()
@@ -46,9 +40,6 @@ public protocol AnalyticsAvailabilityProviderProtocol: AnyObject {
 public protocol AnalyticsTrackingProtocol: AnyObject {
     func track(_ event: AnalyticsEvent)
 
-    /// Enqueues `event`, then flushes, calling `completion` once the flush chain has
-    /// settled. The background path needs it because both halves are fire-and-forget:
-    /// without it the `UIBackgroundTask` ends before the row is written.
     func trackAndFlush(
         _ event: AnalyticsEvent,
         reason: AnalyticsFlushReason,
@@ -68,8 +59,6 @@ public protocol AnalyticsUploading: AnyObject {
     func flushWrapper(maxBatches: Int) -> CompoundOperationWrapper<Void>
 }
 
-/// Spec §6.3. A raw result factory produces these, because `successResponseBlock:`
-/// collapses 403 into `unexpectedStatusCode` and `processingBlock:` fails an empty 2xx.
 public enum AnalyticsTransportError: Error, Equatable {
     case rejected(statusCode: Int)
     case clientError(statusCode: Int)
@@ -84,8 +73,6 @@ public protocol AnalyticsUploadOperationFactoryProtocol {
 }
 
 public protocol BackgroundTaskRunning {
-    /// Calls `work` with a completion the caller must invoke; the runner ends the
-    /// system task when it fires or when the task expires.
     func run(_ work: @escaping (@escaping () -> Void) -> Void)
 }
 
@@ -98,28 +85,15 @@ public protocol AnalyticsSessionTracking: AnyObject {
 public protocol AnalyticsServiceFacadeProtocol: AnalyticsTrackingProtocol {
     var consent: AnalyticsConsentManagerProtocol { get }
 
-    /// `ApplicationServiceProtocol` is app-defined and cannot cross the boundary, so the
-    /// two members are declared here directly. `RootInteractor` calls `setup()` on the
-    /// concrete facade type and is unaffected.
     func setup()
     func throttle()
 
     func flush(reason: AnalyticsFlushReason)
 }
 
-/// The host's debug tooling, kept off `AnalyticsServiceFacadeProtocol` so the production
-/// contract carries no "wipe the pending queue" requirement: every conformer — a host's own
-/// facade, a generated mock — would otherwise have to implement one. A debug screen asks for
-/// `AnalyticsServiceFacadeProtocol & AnalyticsDebugInspecting` and gets both.
-///
-/// Both members route through the facade rather than exposing the store, so a caller
-/// observes the same queue instance as everything else — one lock, one call store, one
-/// session. Narrow on purpose in the other direction too: `enqueueWrapper` stays unexposed,
-/// because it would let a host write rows that never passed the consent gate.
+/// Debug-only queue inspection, kept off the production facade contract.
 public protocol AnalyticsDebugInspecting: AnyObject {
-    /// Read-only view of the pending queue.
     func debugPendingEventsWrapper(count: Int) -> CompoundOperationWrapper<[AnalyticsPendingEvent]>
 
-    /// Discards the pending queue.
     func debugClearPendingEventsOperation() -> BaseOperation<Void>
 }

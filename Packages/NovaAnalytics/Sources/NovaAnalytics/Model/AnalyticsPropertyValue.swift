@@ -1,7 +1,5 @@
 import Foundation
 
-/// The closed set of free-form strings analytics may carry. There is deliberately no case
-/// for an address, an account id, a raw amount, a payload or an error message.
 public enum AnalyticsContentValue: Equatable {
     case assetSymbol(String)
     case networkName(String)
@@ -10,7 +8,6 @@ public enum AnalyticsContentValue: Equatable {
     case bannerId(String)
     case signingMethod(String)
     case caip2Chain(String)
-    /// Produced only by decoding a persisted row. No factory creates it.
     case raw(String)
 
     public var stringValue: String {
@@ -36,8 +33,6 @@ public enum AnalyticsPropertyValue: Equatable {
 }
 
 extension AnalyticsPropertyValue: Codable {
-    /// Explicit, because the synthesized conformance emits the keyed {"bool":{"_0":true}}
-    /// shape and could never decode a row written as a JSON primitive.
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
 
@@ -85,6 +80,3 @@ extension AnalyticsContentValue: AnalyticsPropertyConvertible {
 public extension AnalyticsPropertyConvertible where Self: RawRepresentable, Self.RawValue == String {
     var analyticsValue: AnalyticsPropertyValue { .enumerated(rawValue) }
 }
-
-// String deliberately does NOT conform. This is the privacy boundary — adding a
-// `extension String: AnalyticsPropertyConvertible` would defeat the whole design.

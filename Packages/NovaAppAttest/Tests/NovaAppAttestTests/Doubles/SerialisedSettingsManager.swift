@@ -1,17 +1,6 @@
 import Foundation
 import Keystore_iOS
 
-/// Serialises every call into a wrapped `SettingsManagerProtocol` behind an `NSLock`.
-///
-/// `InMemorySettingsManager` holds a bare unguarded `[String: Any]` (Keystore-iOS
-/// `InMemorySettingsManager.swift:4`), so any test that lets two threads reach one instance
-/// crashes in `Dictionary` rather than failing its own assertion. Distinct keys do not make
-/// a `Dictionary` thread-safe: a resize triggered by one writer moves storage under the
-/// other. Wrapping the store makes every call atomic, so the only unguarded read-modify-write
-/// left in a test's picture is the one that test is actually about.
-///
-/// A duplicate of `NovaAnalyticsTests`' copy rather than a shared one: two packages' test
-/// targets cannot import each other.
 final class SerialisedSettingsManager: SettingsManagerProtocol {
     private let wrapped: SettingsManagerProtocol
     private let lock = NSLock()

@@ -17,8 +17,6 @@ final class AssetCategoryClassifierTests: XCTestCase {
     }
 
     func testWPrefixedNativeTokenIsWrappedNotNative() {
-        // The classifier's fourth rule: "W" + a native symbol. This ordering is the
-        // whole reason the rules are sequenced rather than independent.
         XCTAssertEqual(AssetCategoryClassifier.classify("WDOT"), .wrappedToken)
     }
 

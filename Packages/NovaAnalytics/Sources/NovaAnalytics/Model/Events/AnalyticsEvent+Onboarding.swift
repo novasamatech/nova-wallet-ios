@@ -13,7 +13,6 @@ public extension AnalyticsEvent {
         AnalyticsEvent(name: .walletCreationStarted)
     }
 
-    /// Android never sets the duration, so the bucket is omitted whenever it is nil.
     static func walletCreationCompleted(
         method: WalletCreationMethod,
         duration: TimeInterval?

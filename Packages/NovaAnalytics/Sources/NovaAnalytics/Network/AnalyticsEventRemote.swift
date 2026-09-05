@@ -7,8 +7,6 @@ struct AnalyticsEventRemote: Codable, Equatable {
 }
 
 enum AnalyticsCoding {
-    /// `.sortedKeys` makes the persisted payload and the uploaded envelope reproducible,
-    /// which is what lets the byte-stability test compare bytes rather than parsed values.
     static var encoder: JSONEncoder {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.sortedKeys]
