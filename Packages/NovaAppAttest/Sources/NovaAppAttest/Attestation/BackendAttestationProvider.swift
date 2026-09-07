@@ -117,6 +117,14 @@ private extension BackendAttestationProvider {
         return min(scaled, Constants.maxBackoff)
     }
 
+    /// The window is an absolute persisted date, so a clock moved backwards would wedge attestation for
+    /// the whole shift; nothing this class wrote can sit further out than one full backoff.
+    func isBackoffActive(until nextAttemptAt: Date) -> Bool {
+        let now = timeProvider()
+
+        return nextAttemptAt > now && nextAttemptAt <= now.addingTimeInterval(Constants.maxBackoff)
+    }
+
     func cachedAttestedKeyId() -> AppAttestKeyId? {
         mutex.lock()
 
@@ -461,7 +469,7 @@ private extension BackendAttestationProvider {
                 return .createWithResult(row.keyId)
             }
 
-            if let nextAttemptAt = row?.nextAttemptAt, nextAttemptAt > timeProvider() {
+            if let nextAttemptAt = row?.nextAttemptAt, isBackoffActive(until: nextAttemptAt) {
                 throw BackendAttestationError.retryLater(until: nextAttemptAt)
             }
 

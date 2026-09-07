@@ -500,6 +500,21 @@ final class BackendAttestationProviderTests: XCTestCase {
         XCTAssertNil(row.nextAttemptAt)
     }
 
+    func testAClockMovedBackwardsExpiresTheBackoffWindow() throws {
+        let fixture = makeFixture(registerError: BackendAttestationError.clientError(statusCode: 429))
+
+        XCTAssertThrowsError(try headers(fixture))
+        _ = try storedRow(fixture)
+
+        fixture.remote.registerError = nil
+        fixture.clock.advance(by: -30 * 86400)
+        fixture.appAttest.reset()
+
+        _ = try headers(fixture)
+
+        XCTAssertEqual(fixture.appAttest.attestationKeyIds.count, 1)
+    }
+
     func testAttestationGenericDiscardsTheRowSoAFreshKeyIsMinted() throws {
         let fixture = makeFixture(attestationError: AppAttestServiceError.attestationGeneric(nil))
 
