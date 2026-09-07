@@ -24,6 +24,7 @@ public final class BackendAttestationProvider {
     private var attestedKeyId: AppAttestKeyId?
     private var rejectedForProcess: Bool = false
     private var invalidKeyIdDiscardedThisLaunch: Bool = false
+    private var attestationGenericDiscardedThisLaunch: Bool = false
     private var unattestedMarkedThisLaunch: Bool = false
 
     private var needsFreshKey: Bool = false
@@ -88,6 +89,12 @@ private final class AttestationChainContextBox {
 // MARK: - State
 
 private extension BackendAttestationProvider {
+    /// Each trigger owns its own per-launch discard, so one spending its brake cannot silence another.
+    enum DiscardBrake {
+        case invalidKeyId
+        case attestationGeneric
+    }
+
     enum Constants {
         static let platform = "ios"
         static let attestationType = "app_attest"
@@ -216,12 +223,21 @@ private extension BackendAttestationProvider {
         }
     }
 
-    func discardRowOnce(_ context: AttestationChainContext) -> Bool {
+    func discardRowOnce(_ context: AttestationChainContext, brake: DiscardBrake) -> Bool {
         mutex.lock()
-        let shouldDiscard = !invalidKeyIdDiscardedThisLaunch
+
+        let shouldDiscard: Bool
+
+        switch brake {
+        case .invalidKeyId:
+            shouldDiscard = !invalidKeyIdDiscardedThisLaunch
+            invalidKeyIdDiscardedThisLaunch = true
+        case .attestationGeneric:
+            shouldDiscard = !attestationGenericDiscardedThisLaunch
+            attestationGenericDiscardedThisLaunch = true
+        }
 
         if shouldDiscard {
-            invalidKeyIdDiscardedThisLaunch = true
             attestedKeyId = nil
             needsFreshKey = true
         }
@@ -263,9 +279,9 @@ private extension BackendAttestationProvider {
     func handleAppleFailure(_ error: AppAttestServiceError, context: AttestationChainContext) {
         switch error {
         case .invalidKeyId:
-            _ = discardRowOnce(context)
+            _ = discardRowOnce(context, brake: .invalidKeyId)
         case .attestationGeneric:
-            if !discardRowOnce(context) {
+            if !discardRowOnce(context, brake: .attestationGeneric) {
                 applyBackoff(context)
             }
         case .serviceUnavailable:

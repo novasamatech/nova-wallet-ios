@@ -508,6 +508,26 @@ final class BackendAttestationProviderTests: XCTestCase {
         try assertNextAttempt(row, isAt: fixture.clock.now.addingTimeInterval(60))
     }
 
+    func testAnInvalidKeyIdAfterAGenericAttestationFailureStillDiscardsTheRow() throws {
+        let fixture = makeFixture(attestationError: AppAttestServiceError.attestationGeneric(nil))
+
+        XCTAssertThrowsError(try headers(fixture))
+        _ = try storedRow(fixture)
+
+        fixture.appAttest.attestationError = nil
+        fixture.appAttest.assertionResult = .failure(AppAttestServiceError.invalidKeyId)
+
+        XCTAssertThrowsError(try headers(fixture))
+        XCTAssertNil(try storedRow(fixture))
+
+        fixture.appAttest.assertionResult = .success(Data("assertion".utf8))
+        fixture.appAttest.reset()
+
+        _ = try headers(fixture)
+
+        XCTAssertEqual(fixture.appAttest.generateKeyCallCount, 1)
+    }
+
     func testRegisterRejectionShortCircuitsForTheRestOfTheProcess() throws {
         let fixture = makeFixture(registerError: BackendAttestationError.rejected(statusCode: 403))
 
