@@ -34,23 +34,21 @@ struct AnalyticsFlushSchedule {
         nextFlushAllowedAt = .distantPast
     }
 
+    /// The gateway hint is a floor under the escalating window, never a replacement for it.
     mutating func recordFailure(_ error: Error, now: Date) {
-        if
-            let transportError = error as? AnalyticsTransportError,
-            case let .retryLater(_, retryAfter?) = transportError {
-            nextFlushAllowedAt = now.addingTimeInterval(retryAfter)
-
-            return
-        }
-
         failureCount += 1
 
-        nextFlushAllowedAt = now.addingTimeInterval(
-            min(
-                Constants.backoffBase * pow(2, Double(failureCount - 1)),
-                Constants.backoffMax
-            )
+        let escalated = min(
+            Constants.backoffBase * pow(2, Double(failureCount - 1)),
+            Constants.backoffMax
         )
+
+        let window = min(
+            max(Self.retryHint(in: error) ?? 0, escalated),
+            Constants.maxWindow
+        )
+
+        nextFlushAllowedAt = now.addingTimeInterval(window)
     }
 
     mutating func forget() {
@@ -69,5 +67,17 @@ private extension AnalyticsFlushSchedule {
         static let thresholdMinInterval: TimeInterval = 15
         static let backoffBase: TimeInterval = 60
         static let backoffMax: TimeInterval = 3600
+        static let maxWindow: TimeInterval = 86400
+    }
+
+    static func retryHint(in error: Error) -> TimeInterval? {
+        guard
+            let transportError = error as? AnalyticsTransportError,
+            case let .retryLater(_, retryAfter) = transportError
+        else {
+            return nil
+        }
+
+        return retryAfter
     }
 }

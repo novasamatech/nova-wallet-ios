@@ -73,18 +73,23 @@ extension AnalyticsUploadOperationFactory {
         }
 
         if let seconds = Int(raw) {
-            return clamped(TimeInterval(seconds))
+            return sanitised(TimeInterval(seconds))
         }
 
         guard let date = HTTPDateFormatter.date(from: raw) else {
             return nil
         }
 
-        return clamped(date.timeIntervalSince(now))
+        return sanitised(date.timeIntervalSince(now))
     }
 
-    static func clamped(_ retryAfter: TimeInterval) -> TimeInterval {
-        min(max(retryAfter, 0), Constants.maxRetryAfter)
+    /// A delay that has already elapsed tells the schedule no more than a missing header does.
+    static func sanitised(_ retryAfter: TimeInterval) -> TimeInterval? {
+        guard retryAfter > 0 else {
+            return nil
+        }
+
+        return min(retryAfter, Constants.maxRetryAfter)
     }
 }
 
