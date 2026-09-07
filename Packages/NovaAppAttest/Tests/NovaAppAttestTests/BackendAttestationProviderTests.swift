@@ -654,6 +654,38 @@ final class BackendAttestationProviderTests: XCTestCase {
         XCTAssertEqual(try storedRow(fixture), reMinted)
     }
 
+    func testMarkUnattestedWithNoStoredClientIdKeepsItsBrakeForALaterCall() throws {
+        let fixture = makeFixture()
+
+        fixture.provider.markUnattested()
+
+        _ = try headers(fixture)
+
+        fixture.provider.markUnattested()
+
+        XCTAssertNil(try storedRow(fixture))
+    }
+
+    func testAConsentCycleRestoresTheMarkUnattestedBrake() throws {
+        let fixture = makeFixture()
+        _ = try headers(fixture)
+
+        fixture.provider.markUnattested()
+        _ = try storedRow(fixture)
+
+        fixture.provider.forgetClient()
+        _ = try storedRow(fixture)
+
+        fixture.provider.allowClient()
+
+        _ = try headers(fixture)
+        XCTAssertNotNil(try storedRow(fixture))
+
+        fixture.provider.markUnattested()
+
+        XCTAssertNil(try storedRow(fixture))
+    }
+
     func testForgetClientDropsTheRowAndTheClientId() throws {
         let fixture = makeFixture()
         _ = try headers(fixture)

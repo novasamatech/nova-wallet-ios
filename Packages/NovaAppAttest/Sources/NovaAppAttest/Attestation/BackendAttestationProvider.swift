@@ -160,6 +160,21 @@ private extension BackendAttestationProvider {
         needsFreshKey = false
     }
 
+    /// Both consent transitions mint an identity the gateway has never rejected, so every per-launch
+    /// brake starts over with it.
+    func clearLaunchBrakes() {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        rejectedForProcess = false
+        unattestedMarkedThisLaunch = false
+        invalidKeyIdDiscardedThisLaunch = false
+        attestationGenericDiscardedThisLaunch = false
+    }
+
     func deleteRow(_ identifier: String) {
         let operation = repository.saveOperation({ [] }, { [identifier] })
 
@@ -702,6 +717,12 @@ extension BackendAttestationProvider: BackendAttestationProviderProtocol {
     }
 
     public func markUnattested() {
+        guard let clientId = identity.existingClientId() else {
+            logger.warning("Events endpoint refused the assertion while no client id was stored")
+
+            return
+        }
+
         mutex.lock()
         let shouldDiscard = !unattestedMarkedThisLaunch
 
@@ -719,12 +740,6 @@ extension BackendAttestationProvider: BackendAttestationProviderProtocol {
             return
         }
 
-        guard let clientId = identity.existingClientId() else {
-            logger.warning("Events endpoint refused the assertion while no client id was stored")
-
-            return
-        }
-
         deleteRow(rowIdentifier(for: clientId))
     }
 
@@ -734,8 +749,9 @@ extension BackendAttestationProvider: BackendAttestationProviderProtocol {
         mutex.lock()
         attestedKeyId = nil
         needsFreshKey = true
-        rejectedForProcess = false
         mutex.unlock()
+
+        clearLaunchBrakes()
 
         identity.forgetClientId()
 
@@ -749,8 +765,6 @@ extension BackendAttestationProvider: BackendAttestationProviderProtocol {
     public func allowClient() {
         identity.allowCreation()
 
-        mutex.lock()
-        rejectedForProcess = false
-        mutex.unlock()
+        clearLaunchBrakes()
     }
 }
