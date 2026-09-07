@@ -23,6 +23,9 @@ public final class AnalyticsService {
     private var currentFeature: String?
     private var lastFlushAt: Date = .distantPast
 
+    private var failureCount: Int = 0
+    private var nextFlushAllowedAt: Date = .distantPast
+
     private var isWipePending: Bool = false
     private var isWipeInFlight: Bool = false
     private var wasAvailable: Bool
@@ -78,6 +81,9 @@ private extension AnalyticsService {
     enum Constants {
         static let flushThreshold = 50
         static let flushInterval: TimeInterval = 300
+        static let thresholdMinInterval: TimeInterval = 15
+        static let backoffBaseInterval: TimeInterval = 60
+        static let backoffMaxInterval: TimeInterval = 3600
         static let maxBatches = 10
         static let backgroundMaxBatches = 1
     }
@@ -102,12 +108,48 @@ private extension AnalyticsService {
 
     func flushIfNeededLocked(count: Int) {
         let now = timeProvider()
+        let sinceLastFlush = now.timeIntervalSince(lastFlushAt)
 
-        if count >= Constants.flushThreshold {
+        if count >= Constants.flushThreshold, sinceLastFlush >= Constants.thresholdMinInterval {
             flushLocked(reason: .threshold, now: now, completion: nil)
-        } else if now.timeIntervalSince(lastFlushAt) >= Constants.flushInterval {
+        } else if sinceLastFlush >= Constants.flushInterval {
             flushLocked(reason: .interval, now: now, completion: nil)
         }
+    }
+
+    func isFlushAllowedLocked(reason: AnalyticsFlushReason, now: Date) -> Bool {
+        switch reason {
+        case .threshold, .interval, .background:
+            return now >= nextFlushAllowedAt
+        case .launch, .manual:
+            return true
+        }
+    }
+
+    func resetFlushBackoffLocked() {
+        failureCount = 0
+        nextFlushAllowedAt = .distantPast
+    }
+
+    func handleFlushFailureLocked(_ error: Error) {
+        let now = timeProvider()
+
+        if
+            let transportError = error as? AnalyticsTransportError,
+            case let .retryLater(_, retryAfter?) = transportError {
+            nextFlushAllowedAt = now.addingTimeInterval(retryAfter)
+
+            return
+        }
+
+        failureCount += 1
+
+        let backoff = min(
+            Constants.backoffBaseInterval * pow(2, Double(failureCount - 1)),
+            Constants.backoffMaxInterval
+        )
+
+        nextFlushAllowedAt = now.addingTimeInterval(backoff)
     }
 
     @discardableResult
@@ -123,6 +165,12 @@ private extension AnalyticsService {
         guard !isWipePending else {
             logger.warning("Analytics flush skipped, a wipe is still owed")
             wipeLocked()
+
+            return false
+        }
+
+        guard isFlushAllowedLocked(reason: reason, now: now) else {
+            logger.debug("Analytics flush \(reason) held off until \(nextFlushAllowedAt)")
 
             return false
         }
@@ -154,11 +202,19 @@ private extension AnalyticsService {
             runningCallbackIn: nil,
             mutex: mutex
         ) { [weak self] result in
-            if case let .failure(error) = result {
-                self?.logger.debug("Analytics flush failed: \(error)")
+            guard let self else {
+                return
             }
 
-            self?.releaseFlushCompletionsLocked()
+            switch result {
+            case .success:
+                resetFlushBackoffLocked()
+            case let .failure(error):
+                logger.debug("Analytics flush failed: \(error)")
+                handleFlushFailureLocked(error)
+            }
+
+            releaseFlushCompletionsLocked()
         }
 
         return true
@@ -378,6 +434,8 @@ extension AnalyticsService {
 
         lastFlushAt = .distantPast
         currentFeature = nil
+
+        resetFlushBackoffLocked()
 
         attestation?.forgetClient()
     }
