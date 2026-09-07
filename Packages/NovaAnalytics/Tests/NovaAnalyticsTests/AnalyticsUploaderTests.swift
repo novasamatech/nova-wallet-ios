@@ -141,6 +141,13 @@ final class AnalyticsUploaderTests: XCTestCase {
         return try operation.extractNoCancellableResultData()
     }
 
+    private func queuedIdentifiers(_ fixture: Fixture) throws -> [String] {
+        let wrapper = fixture.queue.peekWrapper(count: 500)
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+
+        return try wrapper.targetOperation.extractNoCancellableResultData().map(\.identifier)
+    }
+
     private func transportError(forStatus statusCode: Int) throws -> AnalyticsTransportError {
         let response = try XCTUnwrap(HTTPURLResponse(
             url: URL(string: "https://gateway.example/v1/analytics/events")!,
@@ -385,6 +392,40 @@ final class AnalyticsUploaderTests: XCTestCase {
         try flush(fixture)
 
         XCTAssertEqual(try queueCount(fixture), 3)
+    }
+
+    func testTheWireIdIsTheStoredRowIdentifier() throws {
+        let fixture = makeFixture(uploadResults: [.success(())])
+        try seed(fixture, count: 1)
+
+        let identifier = try XCTUnwrap(queuedIdentifiers(fixture).first)
+
+        try flush(fixture)
+
+        let json = String(
+            data: try XCTUnwrap(fixture.sentBodies.recorded.first),
+            encoding: .utf8
+        )!
+
+        XCTAssertTrue(json.contains(#""id":"\#(identifier)""#))
+    }
+
+    func testAResentBatchCarriesTheByteIdenticalBody() throws {
+        let fixture = makeFixture(uploadResults: [
+            .failure(AnalyticsTransportError.serverError(statusCode: 500)),
+            .success(())
+        ])
+        try seed(fixture, count: 3)
+
+        XCTAssertNotNil(flushError(fixture))
+        try flush(fixture)
+
+        XCTAssertEqual(fixture.sentBodies.recorded.count, 2)
+        XCTAssertEqual(
+            fixture.sentBodies.recorded.first,
+            fixture.sentBodies.recorded.last,
+            "the retry rebuilt the batch instead of resending the same event ids"
+        )
     }
 
     func testReconsentDuringAnInFlightBatchStillAbortsIt() throws {

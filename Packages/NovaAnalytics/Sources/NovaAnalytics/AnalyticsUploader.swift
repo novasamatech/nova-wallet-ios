@@ -255,8 +255,9 @@ private extension AnalyticsUploader {
                 )
 
                 return AnalyticsEventRemote(
+                    id: row.identifier,
                     name: row.name,
-                    ts: ISO8601MillisFormatter.string(from: row.timestamp),
+                    timestamp: ISO8601MillisFormatter.string(from: row.timestamp),
                     props: props
                 )
             } catch {
