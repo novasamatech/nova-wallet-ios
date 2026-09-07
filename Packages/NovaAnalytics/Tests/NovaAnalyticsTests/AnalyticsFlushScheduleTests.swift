@@ -55,6 +55,20 @@ final class AnalyticsFlushScheduleTests: XCTestCase {
         )
 
         XCTAssertEqual(schedule.nextFlushAllowedAt, now.addingTimeInterval(86400))
+        XCTAssertFalse(schedule.allows(reason: .interval, now: now))
+        XCTAssertFalse(schedule.allows(reason: .interval, now: now.addingTimeInterval(86399)))
+        XCTAssertTrue(schedule.allows(reason: .interval, now: now.addingTimeInterval(86400)))
+    }
+
+    func testARetryAfterBeyondADayIsClampedToADay() {
+        var schedule = AnalyticsFlushSchedule()
+        schedule.recordFailure(
+            AnalyticsTransportError.retryLater(statusCode: 503, retryAfter: 2 * 86400),
+            now: now
+        )
+
+        XCTAssertEqual(schedule.nextFlushAllowedAt, now.addingTimeInterval(86400))
+        XCTAssertFalse(schedule.allows(reason: .interval, now: now.addingTimeInterval(1)))
     }
 
     func testRetryLaterWithoutADelayFallsBackToTheExponentialWindow() {
