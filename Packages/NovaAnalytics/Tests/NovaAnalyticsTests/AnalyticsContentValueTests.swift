@@ -25,12 +25,25 @@ final class AnalyticsContentValueTests: XCTestCase {
         try XCTUnwrap(URL(string: string))
     }
 
-    private func samples(for grammar: AnalyticsContentGrammar) -> [String] {
-        let alphabet = (0 ..< 128).compactMap { code -> Character? in
-            let scalar = Unicode.Scalar(UInt8(code))
+    private let asciiScalars = (0 ..< 128).map { Unicode.Scalar(UInt8($0)) }
+    private let caip2NamespaceLengths = 3 ... 8
+    private let caip2ReferenceLengths = 1 ... 32
 
-            return grammar.alphabet.contains(scalar) ? Character(scalar) : nil
+    private func alphabet(of grammar: AnalyticsContentGrammar) -> [Character] {
+        asciiScalars.filter(grammar.alphabet.contains).map { Character($0) }
+    }
+
+    private func samples(for kind: AnalyticsContentValue.Kind) -> [String] {
+        switch kind {
+        case .caip2Chain:
+            return caip2Samples(alphabet: alphabet(of: kind.grammar))
+        default:
+            return samples(for: kind.grammar)
         }
+    }
+
+    private func samples(for grammar: AnalyticsContentGrammar) -> [String] {
+        let alphabet = alphabet(of: grammar)
 
         var samples: [String] = []
 
@@ -38,6 +51,24 @@ final class AnalyticsContentValueTests: XCTestCase {
             for (offset, character) in alphabet.enumerated() {
                 samples.append(String(repeating: character, count: length))
                 samples.append(String((0 ..< length).map { alphabet[(offset + $0) % alphabet.count] }))
+            }
+        }
+
+        return samples
+    }
+
+    private func caip2Samples(alphabet: [Character]) -> [String] {
+        var samples: [String] = []
+
+        for character in alphabet {
+            for namespaceLength in caip2NamespaceLengths.bounds {
+                for referenceLength in caip2ReferenceLengths.bounds {
+                    let namespace = String(repeating: character, count: namespaceLength)
+                    let reference = String(repeating: character, count: referenceLength)
+
+                    samples.append("\(namespace):\(reference)")
+                    samples.append("\(String(repeating: "a", count: namespaceLength)):\(reference)")
+                }
             }
         }
 
@@ -218,10 +249,24 @@ final class AnalyticsContentValueTests: XCTestCase {
         let boundary = AnalyticsWirePayloadPolicy.grammar
 
         for kind in AnalyticsContentValue.Kind.allCases {
-            let accepted = samples(for: kind.grammar).filter(kind.grammar.accepts)
+            let grammar = kind.grammar
+
+            for scalar in asciiScalars where grammar.alphabet.contains(scalar) {
+                XCTAssertTrue(
+                    boundary.alphabet.contains(scalar),
+                    "\(kind) admits U+\(String(scalar.value, radix: 16)) which the boundary refuses"
+                )
+            }
+
+            XCTAssertGreaterThanOrEqual(grammar.lengths.lowerBound, boundary.lengths.lowerBound, "\(kind)")
+            XCTAssertLessThanOrEqual(grammar.lengths.upperBound, boundary.lengths.upperBound, "\(kind)")
+
+            let accepted = samples(for: kind).filter(grammar.accepts)
+            let exercised = Set(accepted.joined())
+            let uncovered = alphabet(of: grammar).filter { !exercised.contains($0) }
             let leaked = accepted.filter { !boundary.accepts($0) }
 
-            XCTAssertFalse(accepted.isEmpty, "\(kind) accepted none of its own samples")
+            XCTAssertTrue(uncovered.isEmpty, "\(kind) samples never exercise \(uncovered)")
             XCTAssertTrue(leaked.isEmpty, "\(kind) admits \(leaked.prefix(3)) which the boundary refuses")
         }
     }
@@ -242,5 +287,11 @@ final class AnalyticsContentValueTests: XCTestCase {
 
             XCTAssertTrue(AnalyticsWirePayloadPolicy.grammar.accepts(value.stringValue), value.stringValue)
         }
+    }
+}
+
+private extension ClosedRange where Bound == Int {
+    var bounds: [Int] {
+        [lowerBound, upperBound]
     }
 }
