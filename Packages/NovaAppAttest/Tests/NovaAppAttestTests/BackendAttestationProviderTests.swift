@@ -535,6 +535,20 @@ final class BackendAttestationProviderTests: XCTestCase {
         XCTAssertGreaterThan(fixture.remote.challengeCallCount, 0)
     }
 
+    func testForgetClientClearsTheProcessRejection() throws {
+        let fixture = makeFixture(registerError: BackendAttestationError.rejected(statusCode: 403))
+
+        XCTAssertThrowsError(try headers(fixture))
+
+        fixture.provider.forgetClient()
+
+        XCTAssertThrowsError(try headers(fixture)) { error in
+            guard case BackendAttestationError.unsupported = error else {
+                return XCTFail("expected .unsupported, got \(error)")
+            }
+        }
+    }
+
     func testForgetClientDeletesOnlyItsOwnRowAndClearsTheRejection() throws {
         let fixture = makeFixture(registerError: BackendAttestationError.rejected(statusCode: 403))
         try seedRow(fixture, clientId: "other-client")
