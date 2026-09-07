@@ -24,7 +24,7 @@ final class AnalyticsFlushScheduleTests: XCTestCase {
         XCTAssertEqual(windows, [60, 120, 240, 480, 960, 1920, 3600, 3600])
     }
 
-    func testRetryAfterReplacesTheExponentialWindowWithoutCountingAFailure() {
+    func testRetryAfterLengthensTheFirstWindowAndStillCountsTheFailure() {
         var schedule = AnalyticsFlushSchedule()
         schedule.recordFailure(
             AnalyticsTransportError.retryLater(statusCode: 429, retryAfter: 120),
@@ -32,7 +32,29 @@ final class AnalyticsFlushScheduleTests: XCTestCase {
         )
 
         XCTAssertEqual(schedule.nextFlushAllowedAt, now.addingTimeInterval(120))
-        XCTAssertEqual(schedule.failureCount, 0)
+        XCTAssertEqual(schedule.failureCount, 1)
+    }
+
+    func testAShortRetryAfterCannotShortenAnAlreadyEscalatedWindow() {
+        var schedule = AnalyticsFlushSchedule()
+        schedule.recordFailure(anyFailure, now: now)
+        schedule.recordFailure(anyFailure, now: now)
+        schedule.recordFailure(
+            AnalyticsTransportError.retryLater(statusCode: 429, retryAfter: 30),
+            now: now
+        )
+
+        XCTAssertEqual(schedule.nextFlushAllowedAt, now.addingTimeInterval(240))
+    }
+
+    func testADayLongRetryAfterIsHonouredInFull() {
+        var schedule = AnalyticsFlushSchedule()
+        schedule.recordFailure(
+            AnalyticsTransportError.retryLater(statusCode: 503, retryAfter: 86400),
+            now: now
+        )
+
+        XCTAssertEqual(schedule.nextFlushAllowedAt, now.addingTimeInterval(86400))
     }
 
     func testRetryLaterWithoutADelayFallsBackToTheExponentialWindow() {
@@ -88,6 +110,15 @@ final class AnalyticsFlushScheduleTests: XCTestCase {
         let schedule = AnalyticsFlushSchedule()
 
         XCTAssertEqual(schedule.reason(forQueuedCount: 1, now: now), .interval)
+    }
+
+    func testAClockThatMovedBackwardsDoesNotWedgeTheWindow() {
+        var schedule = AnalyticsFlushSchedule()
+        schedule.recordFailure(anyFailure, now: now)
+
+        let rewound = now.addingTimeInterval(-30 * 24 * 3600)
+
+        XCTAssertTrue(schedule.allows(reason: .interval, now: rewound))
     }
 
     func testForgettingClearsBothTheLastFlushAndTheWindow() {
