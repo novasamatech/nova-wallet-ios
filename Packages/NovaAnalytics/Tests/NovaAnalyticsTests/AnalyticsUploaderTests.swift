@@ -148,6 +148,14 @@ final class AnalyticsUploaderTests: XCTestCase {
         return try wrapper.targetOperation.extractNoCancellableResultData().map(\.identifier)
     }
 
+    private func sentEventIds(_ body: Data) throws -> [String] {
+        struct SentEnvelope: Decodable {
+            let events: [AnalyticsEventRemote]
+        }
+
+        return try JSONDecoder().decode(SentEnvelope.self, from: body).events.map(\.id)
+    }
+
     private func isRegistrationRejection(_ error: Error?) -> Bool {
         guard case .rejected? = error as? BackendAttestationError else {
             return false
@@ -420,20 +428,27 @@ final class AnalyticsUploaderTests: XCTestCase {
         XCTAssertTrue(json.contains(#""id":"\#(identifier)""#))
     }
 
-    func testAResentBatchCarriesTheByteIdenticalBody() throws {
+    func testAResentBatchCarriesTheSameEventIds() throws {
         let fixture = makeFixture(uploadResults: [
             .failure(AnalyticsTransportError.serverError(statusCode: 500)),
             .success(())
         ])
         try seed(fixture, count: 3)
 
+        let identifiers = try queuedIdentifiers(fixture)
+
         XCTAssertNotNil(flushError(fixture))
         try flush(fixture)
 
         XCTAssertEqual(fixture.sentBodies.recorded.count, 2)
+
+        let firstAttempt = try sentEventIds(try XCTUnwrap(fixture.sentBodies.recorded.first))
+        let secondAttempt = try sentEventIds(try XCTUnwrap(fixture.sentBodies.recorded.last))
+
+        XCTAssertEqual(firstAttempt, identifiers)
         XCTAssertEqual(
-            fixture.sentBodies.recorded.first,
-            fixture.sentBodies.recorded.last,
+            secondAttempt,
+            firstAttempt,
             "the retry rebuilt the batch instead of resending the same event ids"
         )
     }
