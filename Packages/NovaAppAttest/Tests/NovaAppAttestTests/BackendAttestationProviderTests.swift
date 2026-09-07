@@ -595,6 +595,16 @@ final class BackendAttestationProviderTests: XCTestCase {
         XCTAssertEqual(remaining.map(\.identifier), [rowIdentifier(for: "other-client")])
     }
 
+    func testMarkUnattestedDeletesThePersistedClientsRowWithNoChainInThisProcess() throws {
+        let fixture = makeFixture()
+        fixture.settings.gatewayAttestationClientId = "persisted-client"
+        try seedRow(fixture, clientId: "persisted-client")
+
+        fixture.provider.markUnattested()
+
+        XCTAssertNil(try storedRow(fixture, identifier: rowIdentifier(for: "persisted-client")))
+    }
+
     func testASecondMarkUnattestedKeepsTheReMintedRow() throws {
         let fixture = makeFixture()
         _ = try headers(fixture)
@@ -626,6 +636,16 @@ final class BackendAttestationProviderTests: XCTestCase {
 
         _ = try headers(fixture)
         XCTAssertNotEqual(fixture.settings.gatewayAttestationClientId, firstClientId)
+    }
+
+    func testForgetClientDeletesThePersistedClientsRowWithNoChainInThisProcess() throws {
+        let fixture = makeFixture()
+        fixture.settings.gatewayAttestationClientId = "persisted-client"
+        try seedRow(fixture, clientId: "persisted-client")
+
+        fixture.provider.forgetClient()
+
+        XCTAssertNil(try storedRow(fixture, identifier: rowIdentifier(for: "persisted-client")))
     }
 
     func testInvalidKeyIdDiscardsTheRowAtMostOncePerLaunch() throws {

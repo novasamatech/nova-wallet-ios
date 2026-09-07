@@ -25,7 +25,6 @@ public final class BackendAttestationProvider {
     private var rejectedForProcess: Bool = false
     private var invalidKeyIdDiscardedThisLaunch: Bool = false
     private var unattestedMarkedThisLaunch: Bool = false
-    private var lastRowIdentifier: String?
 
     private var needsFreshKey: Bool = false
 
@@ -152,16 +151,6 @@ private extension BackendAttestationProvider {
 
         attestedKeyId = keyId
         needsFreshKey = false
-    }
-
-    func rememberChain(_ context: AttestationChainContext) {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        lastRowIdentifier = context.rowIdentifier
     }
 
     func deleteRow(_ identifier: String) {
@@ -334,7 +323,6 @@ private extension BackendAttestationProvider {
         )
 
         contextBox.store(context)
-        rememberChain(context)
 
         return createSignedChainWrapper(
             clientId: clientId,
@@ -697,7 +685,6 @@ extension BackendAttestationProvider: BackendAttestationProviderProtocol {
     public func markUnattested() {
         mutex.lock()
         let shouldDiscard = !unattestedMarkedThisLaunch
-        let identifier = lastRowIdentifier
 
         if shouldDiscard {
             unattestedMarkedThisLaunch = true
@@ -713,31 +700,31 @@ extension BackendAttestationProvider: BackendAttestationProviderProtocol {
             return
         }
 
-        guard let identifier else {
-            logger.warning("Events endpoint refused the assertion before a client row was resolved")
+        guard let clientId = identity.existingClientId() else {
+            logger.warning("Events endpoint refused the assertion while no client id was stored")
 
             return
         }
 
-        deleteRow(identifier)
+        deleteRow(rowIdentifier(for: clientId))
     }
 
     public func forgetClient() {
+        let clientId = identity.existingClientId()
+
         mutex.lock()
-        let identifier = lastRowIdentifier
         attestedKeyId = nil
         needsFreshKey = true
         rejectedForProcess = false
-        lastRowIdentifier = nil
         mutex.unlock()
 
         identity.forgetClientId()
 
-        guard let identifier else {
+        guard let clientId else {
             return
         }
 
-        deleteRow(identifier)
+        deleteRow(rowIdentifier(for: clientId))
     }
 
     public func allowClient() {

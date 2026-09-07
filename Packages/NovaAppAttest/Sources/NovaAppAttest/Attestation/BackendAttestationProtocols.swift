@@ -25,6 +25,11 @@ public protocol BackendAttestationIdentityProtocol {
     var consentEpoch: Int { get }
 
     func clientId() -> String?
+
+    /// Reads the stored identifier without minting one, so cleanup paths that must not create a
+    /// client can still name the row that client owns.
+    func existingClientId() -> String?
+
     func forgetClientId()
     func allowCreation()
 }

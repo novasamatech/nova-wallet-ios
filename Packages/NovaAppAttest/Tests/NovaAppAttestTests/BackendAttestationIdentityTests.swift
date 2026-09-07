@@ -57,6 +57,31 @@ final class BackendAttestationIdentityTests: XCTestCase {
         XCTAssertNil(settings.string(for: "gatewayAttestationClientId"))
     }
 
+    func testExistingClientIdReadsAFreshStoreWithoutMinting() {
+        let settings = InMemorySettingsManager()
+        let identity = BackendAttestationIdentity(settingsManager: settings)
+
+        XCTAssertNil(identity.existingClientId())
+        XCTAssertNil(settings.gatewayAttestationClientId)
+    }
+
+    func testExistingClientIdReturnsTheIdThatClientIdMinted() throws {
+        let identity = BackendAttestationIdentity(settingsManager: InMemorySettingsManager())
+
+        let minted = try XCTUnwrap(identity.clientId())
+
+        XCTAssertEqual(identity.existingClientId(), minted)
+    }
+
+    func testExistingClientIdReturnsNilAfterForget() {
+        let identity = BackendAttestationIdentity(settingsManager: InMemorySettingsManager())
+
+        _ = identity.clientId()
+        identity.forgetClientId()
+
+        XCTAssertNil(identity.existingClientId())
+    }
+
     func testReConsentAllowsAFreshClientId() {
         let settings = InMemorySettingsManager()
         let identity = BackendAttestationIdentity(settingsManager: settings)
