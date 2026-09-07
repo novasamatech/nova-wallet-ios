@@ -21,10 +21,7 @@ public final class AnalyticsService {
     private var pendingFlushCompletions: [() -> Void] = []
 
     private var currentFeature: String?
-    private var lastFlushAt: Date = .distantPast
-
-    private var failureCount: Int = 0
-    private var nextFlushAllowedAt: Date = .distantPast
+    private var schedule = AnalyticsFlushSchedule()
 
     private var isWipePending: Bool = false
     private var isWipeInFlight: Bool = false
@@ -79,11 +76,6 @@ public final class AnalyticsService {
 
 private extension AnalyticsService {
     enum Constants {
-        static let flushThreshold = 50
-        static let flushInterval: TimeInterval = 300
-        static let thresholdMinInterval: TimeInterval = 15
-        static let backoffBaseInterval: TimeInterval = 60
-        static let backoffMaxInterval: TimeInterval = 3600
         static let maxBatches = 10
         static let backgroundMaxBatches = 1
     }
@@ -108,48 +100,12 @@ private extension AnalyticsService {
 
     func flushIfNeededLocked(count: Int) {
         let now = timeProvider()
-        let sinceLastFlush = now.timeIntervalSince(lastFlushAt)
 
-        if count >= Constants.flushThreshold, sinceLastFlush >= Constants.thresholdMinInterval {
-            flushLocked(reason: .threshold, now: now, completion: nil)
-        } else if sinceLastFlush >= Constants.flushInterval {
-            flushLocked(reason: .interval, now: now, completion: nil)
-        }
-    }
-
-    func isFlushAllowedLocked(reason: AnalyticsFlushReason, now: Date) -> Bool {
-        switch reason {
-        case .threshold, .interval, .background:
-            return now >= nextFlushAllowedAt
-        case .launch, .manual:
-            return true
-        }
-    }
-
-    func resetFlushBackoffLocked() {
-        failureCount = 0
-        nextFlushAllowedAt = .distantPast
-    }
-
-    func handleFlushFailureLocked(_ error: Error) {
-        let now = timeProvider()
-
-        if
-            let transportError = error as? AnalyticsTransportError,
-            case let .retryLater(_, retryAfter?) = transportError {
-            nextFlushAllowedAt = now.addingTimeInterval(retryAfter)
-
+        guard let reason = schedule.reason(forQueuedCount: count, now: now) else {
             return
         }
 
-        failureCount += 1
-
-        let backoff = min(
-            Constants.backoffBaseInterval * pow(2, Double(failureCount - 1)),
-            Constants.backoffMaxInterval
-        )
-
-        nextFlushAllowedAt = now.addingTimeInterval(backoff)
+        flushLocked(reason: reason, now: now, completion: nil)
     }
 
     @discardableResult
@@ -169,8 +125,8 @@ private extension AnalyticsService {
             return false
         }
 
-        guard isFlushAllowedLocked(reason: reason, now: now) else {
-            logger.debug("Analytics flush \(reason) held off until \(nextFlushAllowedAt)")
+        guard schedule.allows(reason: reason, now: now) else {
+            logger.debug("Analytics flush \(reason) held off until \(schedule.nextFlushAllowedAt)")
 
             return false
         }
@@ -187,7 +143,7 @@ private extension AnalyticsService {
             pendingFlushCompletions.append(completion)
         }
 
-        lastFlushAt = now
+        schedule.recordStart(at: now)
 
         let maxBatches = reason == .background
             ? Constants.backgroundMaxBatches
@@ -208,10 +164,10 @@ private extension AnalyticsService {
 
             switch result {
             case .success:
-                resetFlushBackoffLocked()
+                schedule.recordSuccess()
             case let .failure(error):
                 logger.debug("Analytics flush failed: \(error)")
-                handleFlushFailureLocked(error)
+                schedule.recordFailure(error, now: timeProvider())
             }
 
             releaseFlushCompletionsLocked()
@@ -432,10 +388,8 @@ public extension AnalyticsService {
 
         wipeLocked()
 
-        lastFlushAt = .distantPast
+        schedule.forget()
         currentFeature = nil
-
-        resetFlushBackoffLocked()
 
         attestation?.forgetClient()
     }
