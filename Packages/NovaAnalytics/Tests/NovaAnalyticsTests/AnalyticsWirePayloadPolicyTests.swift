@@ -80,12 +80,20 @@ final class AnalyticsWirePayloadPolicyTests: XCTestCase {
         )
     }
 
-    func testRegistryPunctuationMarksAKeyAsPoison() {
-        assertPoison(makeRow(payload: #"{"asset (old)":"RMRK"}"#))
+    func testParenthesesMarkAKeyAsPoison() {
+        assertPoison(makeRow(payload: #"{"asset(old)":"RMRK"}"#))
     }
 
-    func testRegistryPunctuationMarksANameAsPoison() {
-        assertPoison(makeRow(name: "nova card (opened)"))
+    func testParenthesesMarkANameAsPoison() {
+        assertPoison(makeRow(name: "nova_card(opened)"))
+    }
+
+    func testASpaceMarksAKeyAsPoison() {
+        assertPoison(makeRow(payload: #"{"asset old":"RMRK"}"#))
+    }
+
+    func testASpaceMarksANameAsPoison() {
+        assertPoison(makeRow(name: "nova_card opened"))
     }
 
     func testFreeTextValueMarksTheRowAsPoison() {
