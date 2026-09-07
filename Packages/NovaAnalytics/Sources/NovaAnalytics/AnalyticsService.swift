@@ -371,12 +371,12 @@ extension AnalyticsService: AnalyticsTrackingProtocol {
 
 // MARK: - Flush and wipe
 
-extension AnalyticsService {
-    public func flush(reason: AnalyticsFlushReason) {
+public extension AnalyticsService {
+    func flush(reason: AnalyticsFlushReason) {
         flush(reason: reason, completion: {})
     }
 
-    public func flush(reason: AnalyticsFlushReason, completion: @escaping () -> Void) {
+    func flush(reason: AnalyticsFlushReason, completion: @escaping () -> Void) {
         mutex.lock()
         let started = flushLocked(reason: reason, now: timeProvider(), completion: completion)
         mutex.unlock()
@@ -388,7 +388,7 @@ extension AnalyticsService {
         completion()
     }
 
-    public func cancelFlush() {
+    func cancelFlush() {
         mutex.lock()
 
         defer {
@@ -398,7 +398,7 @@ extension AnalyticsService {
         cancelFlushLocked()
     }
 
-    public func handleAvailabilityChanged() {
+    func handleAvailabilityChanged() {
         mutex.lock()
 
         defer {
@@ -420,7 +420,7 @@ extension AnalyticsService {
         wipeLocked()
     }
 
-    func handleConsentDisabled(attestation: BackendAttestationProviderProtocol?) {
+    internal func handleConsentDisabled(attestation: BackendAttestationProviderProtocol?) {
         mutex.lock()
 
         defer {
