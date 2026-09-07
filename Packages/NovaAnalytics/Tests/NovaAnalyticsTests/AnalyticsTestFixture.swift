@@ -10,6 +10,8 @@ struct AnalyticsTestFixture {
     let consent: AnalyticsConsentManager
     let availability: AnalyticsAvailabilityProvider
     let queue: CoreDataAnalyticsEventQueue
+    let clearInterceptor: AnalyticsEventQueueClearInterceptor
+    let identity: AnalyticsIdentity
     let settings: SerialisedSettingsManager
     let uploader: AnalyticsUploadingSpy
     let attestation: BackendAttestationProvider?
@@ -22,16 +24,16 @@ extension AnalyticsTestFixture {
     static func make(
         isAvailable: Bool = true,
         now: @escaping () -> Date = { Date() },
-        deviceCheck: DeviceCheckAttestingSpy? = nil
+        deviceCheck: DeviceCheckAttestingSpy? = nil,
+        settings: SerialisedSettingsManager = SerialisedSettingsManager(),
+        storage: AnalyticsStorageTestFacade = AnalyticsStorageTestFacade()
     ) -> AnalyticsTestFixture {
-        let facade = AnalyticsStorageTestFacade()
-
         let eventQueue = CoreDataAnalyticsEventQueue(
-            repository: AnyDataProviderRepository(facade.createEventRepository()),
+            repository: AnyDataProviderRepository(storage.createEventRepository()),
             maxCount: 500
         )
 
-        let settings = SerialisedSettingsManager()
+        let clearInterceptor = AnalyticsEventQueueClearInterceptor(wrapping: eventQueue)
 
         let availability = AnalyticsAvailabilityProvider(
             attestationMode: isAvailable ? .appAttest : .unavailable
@@ -69,11 +71,13 @@ extension AnalyticsTestFixture {
         let uploadOperationQueue = OperationQueue()
         let completionQueue = DispatchQueue(label: "test.analytics.completions")
 
+        let identity = AnalyticsIdentity(settingsManager: settings)
+
         let service = AnalyticsService(
             consent: consent,
             availability: availability,
-            queue: eventQueue,
-            identity: AnalyticsIdentity(settingsManager: settings),
+            queue: clearInterceptor,
+            identity: identity,
             uploader: uploader,
             attestation: attestation,
             operationQueue: operationQueue,
@@ -88,6 +92,8 @@ extension AnalyticsTestFixture {
             consent: consent,
             availability: availability,
             queue: eventQueue,
+            clearInterceptor: clearInterceptor,
+            identity: identity,
             settings: settings,
             uploader: uploader,
             attestation: attestation,
@@ -116,8 +122,12 @@ extension AnalyticsTestFixture {
         )
     }
 
-    static func makeConsented(now: @escaping () -> Date = { Date() }) -> AnalyticsTestFixture {
-        let fixture = make(now: now)
+    static func makeConsented(
+        now: @escaping () -> Date = { Date() },
+        settings: SerialisedSettingsManager = SerialisedSettingsManager(),
+        storage: AnalyticsStorageTestFacade = AnalyticsStorageTestFacade()
+    ) -> AnalyticsTestFixture {
+        let fixture = make(now: now, settings: settings, storage: storage)
         fixture.consent.setEnabled(true)
 
         return fixture
@@ -150,7 +160,8 @@ extension AnalyticsTestFixture {
         let wrapper = queue.enqueueWrapper(
             name: name,
             timestamp: Date(),
-            payload: Data("{}".utf8)
+            payload: Data("{}".utf8),
+            consentEpoch: identity.consentEpoch
         )
 
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
@@ -158,13 +169,17 @@ extension AnalyticsTestFixture {
         _ = try wrapper.targetOperation.extractNoCancellableResultData()
     }
 
-    func peekNames() throws -> [String] {
+    func peekEvents() throws -> [AnalyticsPendingEvent] {
         drain()
 
         let wrapper = queue.peekWrapper(count: 500)
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
 
-        return try wrapper.targetOperation.extractNoCancellableResultData().map(\.name)
+        return try wrapper.targetOperation.extractNoCancellableResultData()
+    }
+
+    func peekNames() throws -> [String] {
+        try peekEvents().map(\.name)
     }
 
     func persistedInstallId() -> String? {

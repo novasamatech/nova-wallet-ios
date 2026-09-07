@@ -3,6 +3,7 @@ import CoreData
 
 @objc(CDAnalyticsEvent)
 final class CDAnalyticsEvent: NSManagedObject {
+    @NSManaged var consentEpoch: Int64
     @NSManaged var identifier: String?
     @NSManaged var name: String?
     @NSManaged var payload: Data?

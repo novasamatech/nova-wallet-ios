@@ -129,7 +129,8 @@ final class AnalyticsUploaderTests: XCTestCase {
         let wrapper = fixture.queue.enqueueWrapper(
             name: "nova_card_opened",
             timestamp: timestamp,
-            payload: payload
+            payload: payload,
+            consentEpoch: fixture.identity.consentEpoch
         )
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
         _ = try wrapper.targetOperation.extractNoCancellableResultData()
@@ -468,5 +469,54 @@ final class AnalyticsUploaderTests: XCTestCase {
             fixture.sentBodies.recorded.isEmpty,
             "a batch built for the previous consent cycle was sent under the new identity"
         )
+    }
+
+    func testRowsFromAnEarlierConsentEpochAreDroppedWithoutBeingSent() throws {
+        let fixture = makeFixture(uploadResults: [.success(())])
+        try seed(fixture, count: 2)
+
+        advanceConsentEpoch(fixture)
+        try seed(fixture, count: 1)
+        let freshId = try XCTUnwrap(queuedIdentifiers(fixture).last)
+
+        try flush(fixture)
+
+        XCTAssertEqual(fixture.uploadFactory.callCount, 1)
+        XCTAssertEqual(try sentEventIds(try XCTUnwrap(fixture.sentBodies.recorded.first)), [freshId])
+        XCTAssertEqual(try queueCount(fixture), 0)
+    }
+
+    func testAPageThatIsEntirelyStaleIsRemovedWithoutAnUploadOrAnInstallId() throws {
+        let fixture = makeFixture(uploadResults: [.success(())])
+        try seed(fixture, count: 3)
+
+        advanceConsentEpoch(fixture)
+
+        try flush(fixture)
+
+        XCTAssertEqual(fixture.uploadFactory.callCount, 0)
+        XCTAssertEqual(fixture.attestation.signingCallCount, 0)
+        XCTAssertEqual(try queueCount(fixture), 0)
+        XCTAssertNil(fixture.settings.analyticsInstallId)
+    }
+
+    func testTheFlushContinuesPastAFullStalePage() throws {
+        let fixture = makeFixture(uploadResults: [.success(())])
+        try seed(fixture, count: 50)
+
+        advanceConsentEpoch(fixture)
+        try seed(fixture, count: 1)
+        let freshId = try XCTUnwrap(queuedIdentifiers(fixture).last)
+
+        try flush(fixture)
+
+        XCTAssertEqual(fixture.uploadFactory.callCount, 1)
+        XCTAssertEqual(try sentEventIds(try XCTUnwrap(fixture.sentBodies.recorded.first)), [freshId])
+        XCTAssertEqual(try queueCount(fixture), 0)
+    }
+
+    private func advanceConsentEpoch(_ fixture: Fixture) {
+        fixture.identity.forgetInstallId()
+        fixture.identity.allowCreation()
     }
 }

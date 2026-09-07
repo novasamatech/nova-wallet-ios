@@ -121,4 +121,24 @@ final class AnalyticsConsentManagerTests: XCTestCase {
         availability.isAvailable = true
         XCTAssertTrue(manager.isAvailable)
     }
+
+    func testTheErasureObligationOutlivesTheManagerThatRecordedIt() {
+        let settings = InMemorySettingsManager()
+        let manager = AnalyticsConsentManager(
+            settingsManager: settings,
+            availabilityProvider: StubAvailability(isAvailable: true)
+        )
+
+        XCTAssertFalse(manager.isErasureOwed)
+
+        manager.setErasureOwed(true)
+
+        XCTAssertEqual(settings.bool(for: "analyticsErasureOwed"), true)
+        XCTAssertTrue(
+            AnalyticsConsentManager(
+                settingsManager: settings,
+                availabilityProvider: StubAvailability(isAvailable: true)
+            ).isErasureOwed
+        )
+    }
 }

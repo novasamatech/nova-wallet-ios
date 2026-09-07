@@ -9,6 +9,7 @@ final class AnalyticsEventQueueSpy: AnalyticsEventQueueProtocol {
         let name: String
         let timestamp: Date
         let payload: Data
+        let consentEpoch: Int
     }
 
     var peekResult: [AnalyticsPendingEvent] = []
@@ -34,7 +35,12 @@ final class AnalyticsEventQueueSpy: AnalyticsEventQueueProtocol {
         synchronised { recordedClearCalls }
     }
 
-    func enqueueWrapper(name: String, timestamp: Date, payload: Data) -> CompoundOperationWrapper<Void> {
+    func enqueueWrapper(
+        name: String,
+        timestamp: Date,
+        payload: Data,
+        consentEpoch: Int
+    ) -> CompoundOperationWrapper<Void> {
         onEnqueueComposition?(name, timestamp, payload)
 
         let error = enqueueError
@@ -46,7 +52,12 @@ final class AnalyticsEventQueueSpy: AnalyticsEventQueueProtocol {
 
             self?.synchronised {
                 self?.recordedEnqueued.append(
-                    Enqueued(name: name, timestamp: timestamp, payload: payload)
+                    Enqueued(
+                        name: name,
+                        timestamp: timestamp,
+                        payload: payload,
+                        consentEpoch: consentEpoch
+                    )
                 )
             }
         })

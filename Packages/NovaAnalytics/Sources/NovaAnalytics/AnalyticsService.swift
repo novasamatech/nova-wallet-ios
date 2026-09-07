@@ -9,6 +9,7 @@ public final class AnalyticsService {
     private let queue: AnalyticsEventQueueProtocol
     private let identity: AnalyticsIdentityProtocol
     private let uploader: AnalyticsUploading
+    private let erasure: AnalyticsErasureCoordinator
     private let operationQueue: OperationQueue
     private let uploadOperationQueue: OperationQueue
     private let completionQueue: DispatchQueue
@@ -23,8 +24,6 @@ public final class AnalyticsService {
     private var currentFeature: String?
     private var schedule = AnalyticsFlushSchedule()
 
-    private var isWipePending: Bool = false
-    private var isWipeInFlight: Bool = false
     private var wasAvailable: Bool
 
     public init(
@@ -51,6 +50,13 @@ public final class AnalyticsService {
         self.timeProvider = timeProvider
         self.logger = logger
 
+        erasure = AnalyticsErasureCoordinator(
+            consent: consent,
+            queue: queue,
+            operationQueue: operationQueue,
+            logger: logger
+        )
+
         wasAvailable = availability.isAvailable
 
         consent.addObserver(with: self, queue: nil) { [weak self] oldValue, newValue in
@@ -65,6 +71,8 @@ public final class AnalyticsService {
                 self?.handleConsentDisabled(attestation: attestation)
             }
         }
+
+        erasure.drainOwed()
     }
 
     deinit {
@@ -118,9 +126,9 @@ private extension AnalyticsService {
             return false
         }
 
-        guard !isWipePending else {
+        guard !erasure.isPending else {
             logger.warning("Analytics flush skipped, a wipe is still owed")
-            wipeLocked()
+            erasure.retry()
 
             return false
         }
@@ -194,20 +202,10 @@ private extension AnalyticsService {
         releaseFlushCompletionsLocked()
     }
 
-    func wipeLocked() {
-        isWipePending = true
+    func createFlushDecisionOperation(after countOperation: BaseOperation<Int>) -> BaseOperation<Void> {
+        let operation = ClosureOperation<Void> { [weak self] in
+            let count = try countOperation.extractNoCancellableResultData()
 
-        guard !isWipeInFlight else {
-            return
-        }
-
-        isWipeInFlight = true
-
-        execute(
-            operation: queue.clearOperation(),
-            inOperationQueue: operationQueue,
-            runningCallbackIn: nil
-        ) { [weak self] result in
             guard let self else {
                 return
             }
@@ -218,15 +216,12 @@ private extension AnalyticsService {
                 mutex.unlock()
             }
 
-            isWipeInFlight = false
-
-            switch result {
-            case .success:
-                isWipePending = false
-            case let .failure(error):
-                logger.error("Analytics queue wipe failed, retrying on the next flush: \(error)")
-            }
+            flushIfNeededLocked(count: count)
         }
+
+        operation.addDependency(countOperation)
+
+        return operation
     }
 
     func trackInternal(_ event: AnalyticsEvent, completion: (() -> Void)?) {
@@ -256,29 +251,14 @@ private extension AnalyticsService {
         let enqueueWrapper = queue.enqueueWrapper(
             name: event.name.rawValue,
             timestamp: timestamp,
-            payload: payload
+            payload: payload,
+            consentEpoch: identity.consentEpoch
         )
 
         let countOperation = queue.countOperation()
         countOperation.addDependency(enqueueWrapper.targetOperation)
 
-        let flushDecisionOperation = ClosureOperation<Void> { [weak self] in
-            let count = try countOperation.extractNoCancellableResultData()
-
-            guard let self else {
-                return
-            }
-
-            mutex.lock()
-
-            defer {
-                mutex.unlock()
-            }
-
-            flushIfNeededLocked(count: count)
-        }
-
-        flushDecisionOperation.addDependency(countOperation)
+        let flushDecisionOperation = createFlushDecisionOperation(after: countOperation)
 
         let totalWrapper = CompoundOperationWrapper(
             targetOperation: flushDecisionOperation,
@@ -373,7 +353,7 @@ public extension AnalyticsService {
 
         cancelFlushLocked()
 
-        wipeLocked()
+        erasure.request()
     }
 
     internal func handleConsentDisabled(attestation: BackendAttestationProviderProtocol?) {
@@ -386,7 +366,7 @@ public extension AnalyticsService {
         cancelFlushLocked()
         identity.forgetInstallId()
 
-        wipeLocked()
+        erasure.request()
 
         schedule.forget()
         currentFeature = nil
