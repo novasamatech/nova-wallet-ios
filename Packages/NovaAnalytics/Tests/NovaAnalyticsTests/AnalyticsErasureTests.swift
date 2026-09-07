@@ -314,6 +314,35 @@ final class AnalyticsErasureTests: XCTestCase {
         XCTAssertEqual(try relaunch.queueCount(), 0)
     }
 
+    func testALaunchWithoutConsentRetiresTheKeyRowOrphanedByAnInterruptedOptOut() throws {
+        let settings = SerialisedSettingsManager()
+        let storage = AnalyticsStorageTestFacade()
+
+        let previousLaunch = AnalyticsTestFixture.makeConsented(
+            deviceCheck: DeviceCheckAttestingSpy(),
+            settings: settings,
+            storage: storage
+        )
+        previousLaunch.service.flush(reason: .manual)
+        previousLaunch.drain()
+        previousLaunch.drainUploads()
+
+        XCTAssertNotNil(settings.data(for: Keys.appAttestKeys))
+
+        settings.set(value: false, for: Keys.analyticsEnabled)
+        settings.removeValue(for: Keys.gatewayClientId)
+
+        let relaunch = AnalyticsTestFixture.make(
+            deviceCheck: DeviceCheckAttestingSpy(),
+            settings: settings,
+            storage: storage
+        )
+        relaunch.drain()
+        relaunch.drainAttestation()
+
+        XCTAssertNil(settings.data(for: Keys.appAttestKeys))
+    }
+
     func testAnOptOutDuringAnInFlightWipeAlsoClearsTheRowsTrackedMeanwhile() throws {
         let fixture = AnalyticsTestFixture.makeConsented()
         let firstClearStarted = expectation(description: "first clear started")

@@ -183,15 +183,23 @@ private extension BackendAttestationProvider {
     }
 
     func deleteRow(_ identifier: String) {
-        let operation = repository.saveOperation({ [] }, { [identifier] })
+        executeDelete(repository.saveOperation({ [] }, { [identifier] }))
+    }
 
+    /// An install owns one gateway client, so with no client id stored every remaining row is an orphan
+    /// of an opt-out that cleared the id before its row delete ran.
+    func deleteAllRows() {
+        executeDelete(repository.deleteAllOperation())
+    }
+
+    func executeDelete(_ operation: BaseOperation<Void>) {
         execute(
             operation: operation,
             inOperationQueue: operationQueue,
             runningCallbackIn: nil
         ) { [weak self] result in
             if case let .failure(error) = result {
-                self?.logger.error("Attestation key row delete failed: \(error)")
+                self?.logger.error("Attestation key delete failed: \(error)")
             }
         }
     }
@@ -762,11 +770,11 @@ extension BackendAttestationProvider: BackendAttestationProviderProtocol {
 
         identity.forgetClientId()
 
-        guard let clientId else {
-            return
+        if let clientId {
+            deleteRow(rowIdentifier(for: clientId))
+        } else {
+            deleteAllRows()
         }
-
-        deleteRow(rowIdentifier(for: clientId))
     }
 
     public func allowClient() {

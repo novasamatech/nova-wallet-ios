@@ -772,6 +772,29 @@ final class BackendAttestationProviderTests: XCTestCase {
         XCTAssertNil(try storedRow(fixture, identifier: rowIdentifier(for: "persisted-client")))
     }
 
+    func testForgetClientWithNoStoredClientIdDeletesEveryStoredRow() throws {
+        let fixture = makeFixture()
+        try seedRow(fixture, clientId: "orphaned-client")
+        try seedRow(fixture, clientId: "other-orphaned-client")
+
+        XCTAssertNil(fixture.settings.gatewayAttestationClientId)
+
+        fixture.provider.forgetClient()
+
+        XCTAssertEqual(try allRows(fixture), [])
+    }
+
+    func testForgetClientWithAStoredClientIdDeletesOnlyThatClientsRow() throws {
+        let fixture = makeFixture()
+        fixture.settings.gatewayAttestationClientId = "persisted-client"
+        try seedRow(fixture, clientId: "persisted-client")
+        try seedRow(fixture, clientId: "other-client")
+
+        fixture.provider.forgetClient()
+
+        XCTAssertEqual(try allRows(fixture).map(\.identifier), [rowIdentifier(for: "other-client")])
+    }
+
     func testInvalidKeyIdDiscardsTheRowAtMostOncePerLaunch() throws {
         let fixture = makeFixture(assertionError: AppAttestServiceError.invalidKeyId)
 
