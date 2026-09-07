@@ -12,7 +12,8 @@ final class AnalyticsWirePayloadPolicyTests: XCTestCase {
             sequence: 1,
             name: name,
             timestamp: Date(timeIntervalSince1970: 1_788_343_200.123),
-            payload: Data(payload.utf8)
+            payload: Data(payload.utf8),
+            consentEpoch: 1
         )
     }
 

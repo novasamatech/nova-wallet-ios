@@ -31,7 +31,8 @@ final class AnalyticsEventCatalogTests: XCTestCase {
             sequence: 1,
             name: event.name.rawValue,
             timestamp: timestamp,
-            payload: try AnalyticsCoding.encoder.encode(event.wireProperties)
+            payload: try AnalyticsCoding.encoder.encode(event.wireProperties),
+            consentEpoch: 1
         )
 
         let remote = try AnalyticsWirePayloadPolicy.vet(row)
