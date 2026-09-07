@@ -3,10 +3,10 @@ import Operation_iOS
 import NovaOperationSupport
 import SDKLogger
 
-/// Holds one attested App Attest key per (gateway, clientId) row. A key is re-minted only when
-/// Apple reports the identifier invalid, on the first events-endpoint rejection of a launch, or
-/// across a consent withdrawal; every other failure keeps the key and opens a persisted backoff
-/// window, because a failed request does not make a key bad and Apple counts minted keys per device.
+/// Holds one attested App Attest key per (gateway, clientId) row. It is re-minted when Apple calls the
+/// identifier invalid, on a launch's first generic attestKey failure, on its first events-endpoint
+/// rejection, and on a consent withdrawal or re-grant. Gateway failures and Apple's serviceUnavailable
+/// open the persisted backoff while the row is un-attested; the rest fall to the uploader's flush schedule.
 public final class BackendAttestationProvider {
     private let appAttest: AppAttestServiceProtocol
     private let remoteFactory: BackendAttestationRemoteFactoryProtocol
@@ -24,6 +24,7 @@ public final class BackendAttestationProvider {
     private var attestedKeyId: AppAttestKeyId?
     private var rejectedForProcess: Bool = false
     private var invalidKeyIdDiscardedThisLaunch: Bool = false
+    private var attestationGenericDiscardedThisLaunch: Bool = false
     private var unattestedMarkedThisLaunch: Bool = false
 
     private var needsFreshKey: Bool = false
@@ -88,6 +89,12 @@ private final class AttestationChainContextBox {
 // MARK: - State
 
 private extension BackendAttestationProvider {
+    /// Each trigger owns its own per-launch discard, so one spending its brake cannot silence another.
+    enum DiscardBrake {
+        case invalidKeyId
+        case attestationGeneric
+    }
+
     enum Constants {
         static let platform = "ios"
         static let attestationType = "app_attest"
@@ -108,6 +115,14 @@ private extension BackendAttestationProvider {
         let scaled = Constants.baseBackoff * pow(2, Double(attemptCount - 1))
 
         return min(scaled, Constants.maxBackoff)
+    }
+
+    /// The window is an absolute persisted date, so a clock moved backwards would wedge attestation for
+    /// the whole shift; nothing this class wrote can sit further out than one full backoff.
+    func isBackoffActive(until nextAttemptAt: Date) -> Bool {
+        let now = timeProvider()
+
+        return nextAttemptAt > now && nextAttemptAt <= now.addingTimeInterval(Constants.maxBackoff)
     }
 
     func cachedAttestedKeyId() -> AppAttestKeyId? {
@@ -153,6 +168,21 @@ private extension BackendAttestationProvider {
         needsFreshKey = false
     }
 
+    /// Both consent transitions mint an identity the gateway has never rejected, so every per-launch
+    /// brake starts over with it.
+    func clearLaunchBrakes() {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        rejectedForProcess = false
+        unattestedMarkedThisLaunch = false
+        invalidKeyIdDiscardedThisLaunch = false
+        attestationGenericDiscardedThisLaunch = false
+    }
+
     func deleteRow(_ identifier: String) {
         let operation = repository.saveOperation({ [] }, { [identifier] })
 
@@ -167,6 +197,8 @@ private extension BackendAttestationProvider {
         }
     }
 
+    /// A no-op on an attested row: the gate stops reading `nextAttemptAt` once a key is attested, so a
+    /// window there would only inflate `attemptCount`. The uploader's flush schedule is the brake there.
     func applyBackoff(_ context: AttestationChainContext) {
         let identifier = context.rowIdentifier
 
@@ -178,7 +210,8 @@ private extension BackendAttestationProvider {
         let saveOperation = repository.saveOperation({ [weak self] in
             guard
                 let self,
-                let row = try fetchOperation.extractNoCancellableResultData()
+                let row = try fetchOperation.extractNoCancellableResultData(),
+                !row.isAttested
             else {
                 return []
             }
@@ -216,12 +249,21 @@ private extension BackendAttestationProvider {
         }
     }
 
-    func discardRowOnce(_ context: AttestationChainContext) -> Bool {
+    func discardRowOnce(_ context: AttestationChainContext, brake: DiscardBrake) -> Bool {
         mutex.lock()
-        let shouldDiscard = !invalidKeyIdDiscardedThisLaunch
+
+        let shouldDiscard: Bool
+
+        switch brake {
+        case .invalidKeyId:
+            shouldDiscard = !invalidKeyIdDiscardedThisLaunch
+            invalidKeyIdDiscardedThisLaunch = true
+        case .attestationGeneric:
+            shouldDiscard = !attestationGenericDiscardedThisLaunch
+            attestationGenericDiscardedThisLaunch = true
+        }
 
         if shouldDiscard {
-            invalidKeyIdDiscardedThisLaunch = true
             attestedKeyId = nil
             needsFreshKey = true
         }
@@ -263,9 +305,9 @@ private extension BackendAttestationProvider {
     func handleAppleFailure(_ error: AppAttestServiceError, context: AttestationChainContext) {
         switch error {
         case .invalidKeyId:
-            _ = discardRowOnce(context)
+            _ = discardRowOnce(context, brake: .invalidKeyId)
         case .attestationGeneric:
-            if !discardRowOnce(context) {
+            if !discardRowOnce(context, brake: .attestationGeneric) {
                 applyBackoff(context)
             }
         case .serviceUnavailable:
@@ -427,7 +469,7 @@ private extension BackendAttestationProvider {
                 return .createWithResult(row.keyId)
             }
 
-            if let nextAttemptAt = row?.nextAttemptAt, nextAttemptAt > timeProvider() {
+            if let nextAttemptAt = row?.nextAttemptAt, isBackoffActive(until: nextAttemptAt) {
                 throw BackendAttestationError.retryLater(until: nextAttemptAt)
             }
 
@@ -683,6 +725,12 @@ extension BackendAttestationProvider: BackendAttestationProviderProtocol {
     }
 
     public func markUnattested() {
+        guard let clientId = identity.existingClientId() else {
+            logger.warning("Events endpoint refused the assertion while no client id was stored")
+
+            return
+        }
+
         mutex.lock()
         let shouldDiscard = !unattestedMarkedThisLaunch
 
@@ -700,12 +748,6 @@ extension BackendAttestationProvider: BackendAttestationProviderProtocol {
             return
         }
 
-        guard let clientId = identity.existingClientId() else {
-            logger.warning("Events endpoint refused the assertion while no client id was stored")
-
-            return
-        }
-
         deleteRow(rowIdentifier(for: clientId))
     }
 
@@ -715,8 +757,9 @@ extension BackendAttestationProvider: BackendAttestationProviderProtocol {
         mutex.lock()
         attestedKeyId = nil
         needsFreshKey = true
-        rejectedForProcess = false
         mutex.unlock()
+
+        clearLaunchBrakes()
 
         identity.forgetClientId()
 
@@ -730,8 +773,6 @@ extension BackendAttestationProvider: BackendAttestationProviderProtocol {
     public func allowClient() {
         identity.allowCreation()
 
-        mutex.lock()
-        rejectedForProcess = false
-        mutex.unlock()
+        clearLaunchBrakes()
     }
 }

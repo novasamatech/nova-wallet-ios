@@ -485,6 +485,36 @@ final class BackendAttestationProviderTests: XCTestCase {
         XCTAssertNil(row.nextAttemptAt)
     }
 
+    func testAChallengeFailureOnAnAttestedRowWritesNoBackoff() throws {
+        let fixture = makeFixture()
+        _ = try headers(fixture)
+
+        fixture.remote.challenge = { throw BackendAttestationError.clientError(statusCode: 429) }
+
+        XCTAssertThrowsError(try headers(fixture))
+
+        let row = try XCTUnwrap(try storedRow(fixture))
+
+        XCTAssertTrue(row.isAttested)
+        XCTAssertEqual(row.attemptCount, 0)
+        XCTAssertNil(row.nextAttemptAt)
+    }
+
+    func testAClockMovedBackwardsExpiresTheBackoffWindow() throws {
+        let fixture = makeFixture(registerError: BackendAttestationError.clientError(statusCode: 429))
+
+        XCTAssertThrowsError(try headers(fixture))
+        _ = try storedRow(fixture)
+
+        fixture.remote.registerError = nil
+        fixture.clock.advance(by: -30 * 86400)
+        fixture.appAttest.reset()
+
+        _ = try headers(fixture)
+
+        XCTAssertEqual(fixture.appAttest.attestationKeyIds.count, 1)
+    }
+
     func testAttestationGenericDiscardsTheRowSoAFreshKeyIsMinted() throws {
         let fixture = makeFixture(attestationError: AppAttestServiceError.attestationGeneric(nil))
 
@@ -500,12 +530,34 @@ final class BackendAttestationProviderTests: XCTestCase {
         let fixture = makeFixture(attestationError: AppAttestServiceError.attestationGeneric(nil))
 
         XCTAssertThrowsError(try headers(fixture))
+        _ = try storedRow(fixture)
+
         XCTAssertThrowsError(try headers(fixture))
 
         let row = try XCTUnwrap(try storedRow(fixture))
 
         XCTAssertEqual(row.attemptCount, 1)
         try assertNextAttempt(row, isAt: fixture.clock.now.addingTimeInterval(60))
+    }
+
+    func testAnInvalidKeyIdAfterAGenericAttestationFailureStillDiscardsTheRow() throws {
+        let fixture = makeFixture(attestationError: AppAttestServiceError.attestationGeneric(nil))
+
+        XCTAssertThrowsError(try headers(fixture))
+        _ = try storedRow(fixture)
+
+        fixture.appAttest.attestationError = nil
+        fixture.appAttest.assertionResult = .failure(AppAttestServiceError.invalidKeyId)
+
+        XCTAssertThrowsError(try headers(fixture))
+        XCTAssertNil(try storedRow(fixture))
+
+        fixture.appAttest.assertionResult = .success(Data("assertion".utf8))
+        fixture.appAttest.reset()
+
+        _ = try headers(fixture)
+
+        XCTAssertEqual(fixture.appAttest.generateKeyCallCount, 1)
     }
 
     func testRegisterRejectionShortCircuitsForTheRestOfTheProcess() throws {
@@ -541,6 +593,7 @@ final class BackendAttestationProviderTests: XCTestCase {
         XCTAssertThrowsError(try headers(fixture))
 
         fixture.provider.forgetClient()
+        _ = try storedRow(fixture)
 
         XCTAssertThrowsError(try headers(fixture)) { error in
             guard case BackendAttestationError.unsupported = error else {
@@ -610,6 +663,8 @@ final class BackendAttestationProviderTests: XCTestCase {
         _ = try headers(fixture)
 
         fixture.provider.markUnattested()
+        _ = try storedRow(fixture)
+
         _ = try headers(fixture)
 
         let reMinted = try XCTUnwrap(try storedRow(fixture))
@@ -617,6 +672,38 @@ final class BackendAttestationProviderTests: XCTestCase {
         fixture.provider.markUnattested()
 
         XCTAssertEqual(try storedRow(fixture), reMinted)
+    }
+
+    func testMarkUnattestedWithNoStoredClientIdKeepsItsBrakeForALaterCall() throws {
+        let fixture = makeFixture()
+
+        fixture.provider.markUnattested()
+
+        _ = try headers(fixture)
+
+        fixture.provider.markUnattested()
+
+        XCTAssertNil(try storedRow(fixture))
+    }
+
+    func testAConsentCycleRestoresTheMarkUnattestedBrake() throws {
+        let fixture = makeFixture()
+        _ = try headers(fixture)
+
+        fixture.provider.markUnattested()
+        _ = try storedRow(fixture)
+
+        fixture.provider.forgetClient()
+        _ = try storedRow(fixture)
+
+        fixture.provider.allowClient()
+
+        _ = try headers(fixture)
+        XCTAssertNotNil(try storedRow(fixture))
+
+        fixture.provider.markUnattested()
+
+        XCTAssertNil(try storedRow(fixture))
     }
 
     func testForgetClientDropsTheRowAndTheClientId() throws {
@@ -806,6 +893,8 @@ final class BackendAttestationProviderTests: XCTestCase {
         let fixture = makeFixture(optOutAt: .register)
 
         XCTAssertThrowsError(try headers(fixture))
+
+        _ = try storedRow(fixture)
 
         fixture.provider.allowClient()
         fixture.appAttest.reset()
