@@ -8,6 +8,8 @@ import NovaAppAttest
 // would delete the whole suite and `-only-testing:` would silently report success. The app
 // module is built with -DF_DEV in Debug, so these symbols exist and @testable can see them.
 final class AnalyticsAttestationFixtureRecorderTests: XCTestCase {
+    private static let generatedKeyId = "generated-key-id"
+
     private struct Recorded {
         let fixture: AnalyticsAttestationFixture
         let attestationClientData: Data
@@ -34,12 +36,16 @@ final class AnalyticsAttestationFixtureRecorderTests: XCTestCase {
         stub(appAttest) { stub in
             when(stub.isSupported.get).thenReturn(true)
 
-            when(stub.createAttestationWrapper(using: any(), clientData: any())).then { _, clientData in
+            when(stub.createKeyGenerationOperation()).then { _ in
+                ClosureOperation<AppAttestKeyId> { Self.generatedKeyId }
+            }
+
+            when(stub.createAttestationWrapper(using: any(), clientData: any())).then { keyId, clientData in
                 CompoundOperationWrapper(targetOperation: ClosureOperation<AppAttestAttestation> {
-                    clientDataStore.attestation = try clientData("key-id")
+                    clientDataStore.attestation = try clientData(keyId)
 
                     return AppAttestAttestation(
-                        keyId: "key-id",
+                        keyId: keyId,
                         attestation: Data("attestation-object".utf8)
                     )
                 })
@@ -132,6 +138,10 @@ final class AnalyticsAttestationFixtureRecorderTests: XCTestCase {
                 body: AnalyticsAttestationFixtureRecorder.sampleBody
             )
         )
+    }
+
+    func testTheGeneratedKeyIdIsTheOneAttested() throws {
+        XCTAssertEqual(try record().fixture.keyId, Self.generatedKeyId)
     }
 
     func testTheReportedBodyIsTheBodyThatWasSigned() throws {
