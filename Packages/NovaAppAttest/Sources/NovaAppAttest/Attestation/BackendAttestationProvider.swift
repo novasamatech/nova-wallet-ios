@@ -3,10 +3,10 @@ import Operation_iOS
 import NovaOperationSupport
 import SDKLogger
 
-/// Holds one attested App Attest key per (gateway, clientId) row. A key is re-minted only when
-/// Apple reports the identifier invalid, on the first events-endpoint rejection of a launch, or
-/// across a consent withdrawal; every other failure keeps the key and opens a persisted backoff
-/// window, because a failed request does not make a key bad and Apple counts minted keys per device.
+/// Holds one attested App Attest key per (gateway, clientId) row. It is re-minted when Apple calls the
+/// identifier invalid, on a launch's first generic attestKey failure, on its first events-endpoint
+/// rejection, and on a consent withdrawal or re-grant. Gateway failures and Apple's serviceUnavailable
+/// open the persisted backoff while the row is un-attested; the rest fall to the uploader's flush schedule.
 public final class BackendAttestationProvider {
     private let appAttest: AppAttestServiceProtocol
     private let remoteFactory: BackendAttestationRemoteFactoryProtocol
