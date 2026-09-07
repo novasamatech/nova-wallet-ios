@@ -55,10 +55,16 @@ extension AnalyticsConsentManager: AnalyticsConsentManagerProtocol {
 
     public var isErasureOwed: Bool { settingsManager.isAnalyticsErasureOwed }
 
+    /// A withdrawal reaches disk only behind its erasure obligation, so a kill in between leaves
+    /// consent on rather than consent off with rows to wipe.
     public func setEnabled(_ enabled: Bool) {
-        settingsManager.isAnalyticsEnabled = enabled
-
         let oldState = state
+
+        if oldState, !enabled {
+            settingsManager.isAnalyticsErasureOwed = true
+        }
+
+        settingsManager.isAnalyticsEnabled = enabled
         state = enabled
 
         guard oldState != enabled else {
