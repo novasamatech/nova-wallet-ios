@@ -75,7 +75,7 @@ public final class AnalyticsService {
         if consent.isEnabled {
             erasure.drainOwed()
         } else {
-            repairWithdrawnConsent()
+            repairWithdrawnConsent(attestation: attestation)
         }
     }
 
@@ -187,12 +187,14 @@ private extension AnalyticsService {
         return true
     }
 
-    /// A withdrawal that reached disk without its obligation, or rows and an identity left behind
-    /// by an older build, are repaired on every launch that starts without consent.
-    func repairWithdrawnConsent() {
+    /// A withdrawal that reached disk without its obligation, or rows, an identity and a gateway
+    /// client left behind by an older build, are repaired on every launch that starts without consent.
+    func repairWithdrawnConsent(attestation: BackendAttestationProviderProtocol?) {
         if identity.existingInstallId() != nil {
             identity.forgetInstallId()
         }
+
+        attestation?.forgetClient()
 
         erasure.request()
     }

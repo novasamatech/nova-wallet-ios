@@ -17,6 +17,7 @@ struct AnalyticsTestFixture {
     let attestation: BackendAttestationProvider?
     let operationQueue: OperationQueue
     let uploadOperationQueue: OperationQueue
+    let attestationOperationQueue: OperationQueue
     let completionQueue: DispatchQueue
 }
 
@@ -25,6 +26,8 @@ extension AnalyticsTestFixture {
         static let analyticsEnabled = "analyticsEnabled"
         static let analyticsInstallId = "analyticsInstallId"
         static let erasureOwed = "analyticsErasureOwed"
+        static let gatewayClientId = "gatewayAttestationClientId"
+        static let appAttestKeys = "appAttestKeys"
     }
 
     static func make(
@@ -50,8 +53,10 @@ extension AnalyticsTestFixture {
             availabilityProvider: availability
         )
 
+        let attestationOperationQueue = OperationQueue()
+
         let attestation = deviceCheck.map {
-            makeAttestation(deviceCheck: $0, settings: settings)
+            makeAttestation(deviceCheck: $0, settings: settings, operationQueue: attestationOperationQueue)
         }
 
         let uploader = AnalyticsUploadingSpy()
@@ -105,13 +110,15 @@ extension AnalyticsTestFixture {
             attestation: attestation,
             operationQueue: operationQueue,
             uploadOperationQueue: uploadOperationQueue,
+            attestationOperationQueue: attestationOperationQueue,
             completionQueue: completionQueue
         )
     }
 
     private static func makeAttestation(
         deviceCheck: DeviceCheckAttestingSpy,
-        settings: SerialisedSettingsManager
+        settings: SerialisedSettingsManager,
+        operationQueue: OperationQueue
     ) -> BackendAttestationProvider {
         let repository = SettingsAppAttestKeyRepository(settingsManager: settings)
 
@@ -123,19 +130,20 @@ extension AnalyticsTestFixture {
             gatewayURL: URL(string: "https://gateway.example/")!,
             mode: .appAttest,
             bundle: Bundle.main,
-            operationQueue: OperationQueue(),
+            operationQueue: operationQueue,
             logger: SilentLogger()
         )
     }
 
     static func makeConsented(
         now: @escaping () -> Date = { Date() },
+        deviceCheck: DeviceCheckAttestingSpy? = nil,
         settings: SerialisedSettingsManager = SerialisedSettingsManager(),
         storage: AnalyticsStorageTestFacade = AnalyticsStorageTestFacade()
     ) -> AnalyticsTestFixture {
         settings.set(value: true, for: Keys.analyticsEnabled)
 
-        return make(now: now, settings: settings, storage: storage)
+        return make(now: now, deviceCheck: deviceCheck, settings: settings, storage: storage)
     }
 
     func drain() {
@@ -144,6 +152,10 @@ extension AnalyticsTestFixture {
 
     func drainUploads() {
         uploadOperationQueue.waitUntilAllOperationsAreFinished()
+    }
+
+    func drainAttestation() {
+        attestationOperationQueue.waitUntilAllOperationsAreFinished()
     }
 
     func drainCompletions() {

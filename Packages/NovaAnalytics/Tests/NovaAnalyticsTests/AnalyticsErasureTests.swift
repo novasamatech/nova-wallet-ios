@@ -254,6 +254,41 @@ final class AnalyticsErasureTests: XCTestCase {
         XCTAssertEqual(settings.bool(for: Keys.erasureOwed), false)
     }
 
+    func testALaunchWithoutConsentRetiresTheGatewayClientLeftBehind() throws {
+        let settings = SerialisedSettingsManager()
+        let storage = AnalyticsStorageTestFacade()
+
+        let previousLaunch = AnalyticsTestFixture.makeConsented(
+            deviceCheck: DeviceCheckAttestingSpy(),
+            settings: settings,
+            storage: storage
+        )
+        previousLaunch.track(2, .novaCardOpened())
+        previousLaunch.service.flush(reason: .manual)
+        previousLaunch.drain()
+        previousLaunch.drainUploads()
+
+        XCTAssertNotNil(previousLaunch.identity.installId())
+        XCTAssertNotNil(settings.string(for: Keys.gatewayClientId))
+        XCTAssertNotNil(settings.data(for: Keys.appAttestKeys))
+        XCTAssertEqual(try previousLaunch.queueCount(), 2)
+
+        settings.set(value: false, for: Keys.analyticsEnabled)
+
+        let relaunch = AnalyticsTestFixture.make(
+            deviceCheck: DeviceCheckAttestingSpy(),
+            settings: settings,
+            storage: storage
+        )
+        relaunch.drain()
+        relaunch.drainAttestation()
+
+        XCTAssertNil(settings.string(for: Keys.gatewayClientId))
+        XCTAssertNil(settings.data(for: Keys.appAttestKeys))
+        XCTAssertNil(relaunch.persistedInstallId())
+        XCTAssertEqual(try relaunch.queueCount(), 0)
+    }
+
     func testAnOptOutDuringAnInFlightWipeAlsoClearsTheRowsTrackedMeanwhile() throws {
         let fixture = AnalyticsTestFixture.makeConsented()
         let firstClearStarted = expectation(description: "first clear started")
