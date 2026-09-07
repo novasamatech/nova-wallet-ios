@@ -174,6 +174,8 @@ private extension BackendAttestationProvider {
         }
     }
 
+    /// A no-op on an attested row: the gate stops reading `nextAttemptAt` once a key is attested, so a
+    /// window there would only inflate `attemptCount`. The uploader's flush schedule is the brake there.
     func applyBackoff(_ context: AttestationChainContext) {
         let identifier = context.rowIdentifier
 
@@ -185,7 +187,8 @@ private extension BackendAttestationProvider {
         let saveOperation = repository.saveOperation({ [weak self] in
             guard
                 let self,
-                let row = try fetchOperation.extractNoCancellableResultData()
+                let row = try fetchOperation.extractNoCancellableResultData(),
+                !row.isAttested
             else {
                 return []
             }

@@ -485,6 +485,21 @@ final class BackendAttestationProviderTests: XCTestCase {
         XCTAssertNil(row.nextAttemptAt)
     }
 
+    func testAChallengeFailureOnAnAttestedRowWritesNoBackoff() throws {
+        let fixture = makeFixture()
+        _ = try headers(fixture)
+
+        fixture.remote.challenge = { throw BackendAttestationError.clientError(statusCode: 429) }
+
+        XCTAssertThrowsError(try headers(fixture))
+
+        let row = try XCTUnwrap(try storedRow(fixture))
+
+        XCTAssertTrue(row.isAttested)
+        XCTAssertEqual(row.attemptCount, 0)
+        XCTAssertNil(row.nextAttemptAt)
+    }
+
     func testAttestationGenericDiscardsTheRowSoAFreshKeyIsMinted() throws {
         let fixture = makeFixture(attestationError: AppAttestServiceError.attestationGeneric(nil))
 
