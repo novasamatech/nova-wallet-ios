@@ -59,11 +59,11 @@ final class AnalyticsWirePayloadPolicyTests: XCTestCase {
     }
 
     func testEveryBoundaryCharacterPassesTheGate() throws {
-        let payload = #"{"k":"AZaz09 ._:-"}"#
+        let payload = #"{"k":"AZaz09 ._:-()"}"#
 
         XCTAssertEqual(
             try AnalyticsWirePayloadPolicy.vet(makeRow(payload: payload)).props,
-            ["k": .string("AZaz09 ._:-")]
+            ["k": .string("AZaz09 ._:-()")]
         )
     }
 
@@ -71,6 +71,21 @@ final class AnalyticsWirePayloadPolicyTests: XCTestCase {
         let value = String(repeating: "a", count: 64)
 
         XCTAssertNoThrow(try AnalyticsWirePayloadPolicy.vet(makeRow(payload: #"{"k":"\#(value)"}"#)))
+    }
+
+    func testRegistryPunctuationPassesInAValue() throws {
+        XCTAssertEqual(
+            try AnalyticsWirePayloadPolicy.vet(makeRow(payload: #"{"asset":"RMRK (old)"}"#)).props,
+            ["asset": .string("RMRK (old)")]
+        )
+    }
+
+    func testRegistryPunctuationMarksAKeyAsPoison() {
+        assertPoison(makeRow(payload: #"{"asset (old)":"RMRK"}"#))
+    }
+
+    func testRegistryPunctuationMarksANameAsPoison() {
+        assertPoison(makeRow(name: "nova card (opened)"))
     }
 
     func testFreeTextValueMarksTheRowAsPoison() {
@@ -113,11 +128,11 @@ final class AnalyticsWirePayloadPolicyTests: XCTestCase {
         XCTAssertThrowsError(try AnalyticsWirePayloadPolicy.vet(makeRow(payload: "not-json")))
     }
 
-    func testEveryDeclaredNameAndKeyFitsTheBoundaryGrammar() {
+    func testEveryDeclaredNameAndKeyFitsTheIdentifierGrammar() {
         let declared = AnalyticsEventName.allCases.map(\.rawValue) + AnalyticsPropertyKey.allCases.map(\.rawValue)
 
         for value in declared {
-            XCTAssertTrue(AnalyticsWirePayloadPolicy.grammar.accepts(value), value)
+            XCTAssertTrue(AnalyticsWirePayloadPolicy.identifierGrammar.accepts(value), value)
         }
     }
 

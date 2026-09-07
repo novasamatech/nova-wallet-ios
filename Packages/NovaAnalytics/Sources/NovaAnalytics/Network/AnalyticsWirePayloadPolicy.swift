@@ -8,7 +8,13 @@ enum AnalyticsWirePayloadPolicyError: Error {
 /// boundary grammar, otherwise the row is poison and never reaches an envelope.
 enum AnalyticsWirePayloadPolicy {
     static let grammar = AnalyticsContentGrammar(
-        alphabet: AnalyticsContentGrammar.Alphabet.alphanumerics.union(CharacterSet(charactersIn: " ._:-")),
+        alphabet: AnalyticsContentGrammar.Alphabet.alphanumerics.union(CharacterSet(charactersIn: " ._:-()")),
+        lengths: 1 ... 64
+    )
+
+    /// Ids are minted and names and keys are declared, so none of them ever needs registry punctuation.
+    static let identifierGrammar = AnalyticsContentGrammar(
+        alphabet: AnalyticsContentGrammar.Alphabet.alphanumerics.union(CharacterSet(charactersIn: "._-")),
         lengths: 1 ... 64
     )
 
@@ -28,11 +34,10 @@ enum AnalyticsWirePayloadPolicy {
     }
 
     static func validate(_ remote: AnalyticsEventRemote) throws {
-        let strings = [remote.id, remote.name]
-            + Array(remote.props.keys)
-            + remote.props.values.compactMap(\.storedString)
+        let identifiers = [remote.id, remote.name] + Array(remote.props.keys)
+        let values = remote.props.values.compactMap(\.storedString)
 
-        guard strings.allSatisfy(grammar.accepts) else {
+        guard identifiers.allSatisfy(identifierGrammar.accepts), values.allSatisfy(grammar.accepts) else {
             throw AnalyticsWirePayloadPolicyError.freeText
         }
     }
