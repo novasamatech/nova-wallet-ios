@@ -27,7 +27,6 @@ Any new dApp-facing capability plugs into the mediator; screens never talk to a 
 | `StateMachine/`                | Per-transport state machines: `PolkadotExtensionStates`, `MetamaskStates` |
 | `Tabs/`, `WebViewPool`         | Multi-tab browsing with pooled/reused web views                      |
 | `DAppBrowserWidget`            | The minimised browser presented over the tab bar by `NovaMainAppContainer` |
-| `Attest/`                      | App Attest based integrity checks for privileged dApp APIs           |
 
 The **state machine per transport** is the important design point: an incoming JS message is handled
 by the current state, which returns the next state plus an optional response/UI request. Add new
