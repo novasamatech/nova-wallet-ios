@@ -21,6 +21,12 @@ struct AnalyticsTestFixture {
 }
 
 extension AnalyticsTestFixture {
+    enum Keys {
+        static let analyticsEnabled = "analyticsEnabled"
+        static let analyticsInstallId = "analyticsInstallId"
+        static let erasureOwed = "analyticsErasureOwed"
+    }
+
     static func make(
         isAvailable: Bool = true,
         now: @escaping () -> Date = { Date() },
@@ -127,10 +133,9 @@ extension AnalyticsTestFixture {
         settings: SerialisedSettingsManager = SerialisedSettingsManager(),
         storage: AnalyticsStorageTestFacade = AnalyticsStorageTestFacade()
     ) -> AnalyticsTestFixture {
-        let fixture = make(now: now, settings: settings, storage: storage)
-        fixture.consent.setEnabled(true)
+        settings.set(value: true, for: Keys.analyticsEnabled)
 
-        return fixture
+        return make(now: now, settings: settings, storage: storage)
     }
 
     func drain() {
@@ -183,7 +188,7 @@ extension AnalyticsTestFixture {
     }
 
     func persistedInstallId() -> String? {
-        settings.string(for: "analyticsInstallId")
+        settings.string(for: Keys.analyticsInstallId)
     }
 
     func track(_ count: Int, _ event: @autoclosure () -> AnalyticsEvent) {

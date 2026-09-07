@@ -4,6 +4,7 @@ import Operation_iOS
 
 final class AnalyticsEventQueueClearInterceptor {
     var clearError: Error?
+    var onClearScheduled: (() -> Void)?
     var onClear: (() -> Void)?
 
     private let wrapped: AnalyticsEventQueueProtocol
@@ -57,6 +58,8 @@ extension AnalyticsEventQueueClearInterceptor: AnalyticsEventQueueProtocol {
     }
 
     func clearOperation() -> BaseOperation<Void> {
+        onClearScheduled?()
+
         let error = clearError
         let hook = onClear
         let deletion = wrapped.clearOperation()
