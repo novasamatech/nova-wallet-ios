@@ -19,7 +19,7 @@ struct AnalyticsFlushSchedule {
     func allows(reason: AnalyticsFlushReason, now: Date) -> Bool {
         switch reason {
         case .threshold, .interval, .background:
-            return now >= nextFlushAllowedAt
+            return !isHoldingOff(now: now)
         case .launch, .manual:
             return true
         }
@@ -68,6 +68,11 @@ private extension AnalyticsFlushSchedule {
         static let backoffBase: TimeInterval = 60
         static let backoffMax: TimeInterval = 3600
         static let maxWindow: TimeInterval = 86400
+    }
+
+    /// A window further out than the longest one `recordFailure` can arm means the clock moved back.
+    func isHoldingOff(now: Date) -> Bool {
+        now < nextFlushAllowedAt && nextFlushAllowedAt <= now.addingTimeInterval(Constants.maxWindow)
     }
 
     static func retryHint(in error: Error) -> TimeInterval? {

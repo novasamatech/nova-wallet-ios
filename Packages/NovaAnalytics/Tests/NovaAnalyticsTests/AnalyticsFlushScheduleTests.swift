@@ -112,6 +112,15 @@ final class AnalyticsFlushScheduleTests: XCTestCase {
         XCTAssertEqual(schedule.reason(forQueuedCount: 1, now: now), .interval)
     }
 
+    func testAClockThatMovedBackwardsDoesNotWedgeTheWindow() {
+        var schedule = AnalyticsFlushSchedule()
+        schedule.recordFailure(anyFailure, now: now)
+
+        let rewound = now.addingTimeInterval(-30 * 24 * 3600)
+
+        XCTAssertTrue(schedule.allows(reason: .interval, now: rewound))
+    }
+
     func testForgettingClearsBothTheLastFlushAndTheWindow() {
         var schedule = AnalyticsFlushSchedule()
         schedule.recordStart(at: now)
