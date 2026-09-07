@@ -103,6 +103,31 @@ final class AnalyticsErasureTests: XCTestCase {
         XCTAssertTrue(fixture.uploader.maxBatchesCalls.isEmpty)
     }
 
+    func testAConsentOffLaunchFlushDoesNotWarnAboutTheOwedWipe() {
+        let logger = RecordingLogger()
+        let fixture = AnalyticsTestFixture.make(clearError: ClearFailure(), logger: logger)
+        fixture.drain()
+
+        fixture.service.flush(reason: .launch)
+        fixture.drain()
+
+        XCTAssertEqual(fixture.settings.bool(for: Keys.erasureOwed), true)
+        XCTAssertEqual(logger.warnings, [])
+    }
+
+    func testAConsentedFlushRefusedByAnOwedWipeWarns() {
+        let logger = RecordingLogger()
+        let fixture = AnalyticsTestFixture.make(clearError: ClearFailure(), logger: logger)
+        fixture.drain()
+
+        fixture.consent.setEnabled(true)
+        fixture.service.flush(reason: .manual)
+        fixture.drain()
+
+        XCTAssertEqual(logger.warnings, ["Analytics flush skipped, a wipe is still owed"])
+        XCTAssertTrue(fixture.uploader.maxBatchesCalls.isEmpty)
+    }
+
     func testAFlushUploadsAgainOnceTheRetriedWipeSucceeds() throws {
         let fixture = makeFixtureWithAFailedOptOut()
 

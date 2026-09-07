@@ -4,6 +4,7 @@ import Operation_iOS
 import Keystore_iOS
 import NovaAppAttest
 import NovaOperationSupport
+import SDKLogger
 
 struct AnalyticsTestFixture {
     let service: AnalyticsService
@@ -34,8 +35,10 @@ extension AnalyticsTestFixture {
         isAvailable: Bool = true,
         now: @escaping () -> Date = { Date() },
         deviceCheck: DeviceCheckAttestingSpy? = nil,
+        clearError: Error? = nil,
         settings: SerialisedSettingsManager = SerialisedSettingsManager(),
-        storage: AnalyticsStorageTestFacade = AnalyticsStorageTestFacade()
+        storage: AnalyticsStorageTestFacade = AnalyticsStorageTestFacade(),
+        logger: SDKLoggerProtocol = SilentLogger()
     ) -> AnalyticsTestFixture {
         let eventQueue = CoreDataAnalyticsEventQueue(
             repository: AnyDataProviderRepository(storage.createEventRepository()),
@@ -43,6 +46,7 @@ extension AnalyticsTestFixture {
         )
 
         let clearInterceptor = AnalyticsEventQueueClearInterceptor(wrapping: eventQueue)
+        clearInterceptor.clearError = clearError
 
         let availability = AnalyticsAvailabilityProvider(
             attestationMode: isAvailable ? .appAttest : .unavailable
@@ -95,7 +99,7 @@ extension AnalyticsTestFixture {
             uploadOperationQueue: uploadOperationQueue,
             completionQueue: completionQueue,
             timeProvider: now,
-            logger: SilentLogger()
+            logger: logger
         )
 
         return AnalyticsTestFixture(

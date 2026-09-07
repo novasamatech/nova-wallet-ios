@@ -126,13 +126,15 @@ private extension AnalyticsService {
         now: Date,
         completion: (() -> Void)?
     ) -> Bool {
-        guard !erasure.retryIfOwed() else {
-            logger.warning("Analytics flush skipped, a wipe is still owed")
+        let isWipeOwed = erasure.retryIfOwed()
 
+        guard consent.isEnabled, availability.isAvailable else {
             return false
         }
 
-        guard consent.isEnabled, availability.isAvailable else {
+        guard !isWipeOwed else {
+            logger.warning("Analytics flush skipped, a wipe is still owed")
+
             return false
         }
 
