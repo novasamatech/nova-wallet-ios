@@ -5,8 +5,12 @@ import Operation_iOS
 public protocol AppAttestServiceProtocol {
     var isSupported: Bool { get }
 
+    /// Split from attestation so the caller can persist the identifier before attesting it:
+    /// Apple offers no way to recover a key identifier once it is lost.
+    func createKeyGenerationOperation() -> BaseOperation<AppAttestKeyId>
+
     func createAttestationWrapper(
-        using keyId: AppAttestKeyId?,
+        using keyId: AppAttestKeyId,
         clientData: @escaping (AppAttestKeyId) throws -> Data
     ) -> CompoundOperationWrapper<AppAttestAttestation>
 
@@ -52,16 +56,15 @@ public final class AppAttestService {
     public init(service: DeviceCheckAttesting = DCAppAttestService.shared) {
         self.service = service
     }
+}
 
-    private func createKeyIdOperation(
-        using keyId: AppAttestKeyId?,
-        service: DeviceCheckAttesting
-    ) -> BaseOperation<AppAttestKeyId> {
-        if let keyId {
-            return .createWithResult(keyId)
-        }
+extension AppAttestService: AppAttestServiceProtocol {
+    public var isSupported: Bool { service.isSupported }
 
-        return AsyncClosureOperation<AppAttestKeyId>(operationClosure: { completion in
+    public func createKeyGenerationOperation() -> BaseOperation<AppAttestKeyId> {
+        let service = service
+
+        return AsyncClosureOperation<AppAttestKeyId> { completion in
             service.generateKey { newKeyId, error in
                 if let newKeyId {
                     completion(.success(newKeyId))
@@ -69,16 +72,16 @@ public final class AppAttestService {
                     completion(.failure(AppAttestServiceError.keyIdGeneration(error)))
                 }
             }
-        })
+        }
     }
 
-    private func createAttestOperation(
-        dependingOn keyIdOperation: BaseOperation<AppAttestKeyId>,
-        service: DeviceCheckAttesting,
+    public func createAttestationWrapper(
+        using keyId: AppAttestKeyId,
         clientData: @escaping (AppAttestKeyId) throws -> Data
-    ) -> BaseOperation<AppAttestAttestation> {
-        AsyncClosureOperation { completion in
-            let keyId = try keyIdOperation.extractNoCancellableResultData()
+    ) -> CompoundOperationWrapper<AppAttestAttestation> {
+        let service = service
+
+        let operation = AsyncClosureOperation<AppAttestAttestation> { completion in
             let clientDataHash = try clientData(keyId).sha256()
 
             service.attestKey(keyId, clientDataHash: clientDataHash) { attestation, error in
@@ -94,39 +97,20 @@ public final class AppAttestService {
                 }
             }
         }
-    }
-}
 
-extension AppAttestService: AppAttestServiceProtocol {
-    public var isSupported: Bool { service.isSupported }
-
-    public func createAttestationWrapper(
-        using keyId: AppAttestKeyId?,
-        clientData: @escaping (AppAttestKeyId) throws -> Data
-    ) -> CompoundOperationWrapper<AppAttestAttestation> {
-        let keyIdOperation = createKeyIdOperation(using: keyId, service: service)
-        let attestationOperation = createAttestOperation(
-            dependingOn: keyIdOperation,
-            service: service,
-            clientData: clientData
-        )
-
-        attestationOperation.addDependency(keyIdOperation)
-
-        return CompoundOperationWrapper(
-            targetOperation: attestationOperation,
-            dependencies: [keyIdOperation]
-        )
+        return CompoundOperationWrapper(targetOperation: operation)
     }
 
     public func createAssertionWrapper(
         keyId: AppAttestKeyId,
         clientData: @escaping () throws -> Data
     ) -> CompoundOperationWrapper<AppAttestAssertion> {
+        let service = service
+
         let operation = AsyncClosureOperation<AppAttestAssertion> { completionClosure in
             let clientDataHash = try clientData().sha256()
 
-            self.service.generateAssertion(keyId, clientDataHash: clientDataHash) { assertion, error in
+            service.generateAssertion(keyId, clientDataHash: clientDataHash) { assertion, error in
                 if let assertion {
                     completionClosure(.success(assertion))
                 } else {
