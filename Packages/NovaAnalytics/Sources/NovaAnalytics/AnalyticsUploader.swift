@@ -117,7 +117,7 @@ private extension AnalyticsUploader {
             } catch {
                 logger.error("Analytics queue is unreadable, clearing it: \(error)")
 
-                return createClearWrapper()
+                return createClearWrapper(outcome: .stop)
             }
 
             guard !rows.isEmpty else {
@@ -189,7 +189,7 @@ private extension AnalyticsUploader {
                 logger.warning("Analytics upload rejected, clearing the queue: \(transportError)")
                 attestation.markUnattested()
 
-                return createClearWrapper()
+                return createClearWrapper(outcome: .failed(transportError))
             case .clientError:
                 logger.warning("Analytics batch refused, dropping it: \(transportError)")
 
@@ -204,7 +204,7 @@ private extension AnalyticsUploader {
         if let attestationError = error as? BackendAttestationError, case .rejected = attestationError {
             logger.warning("Gateway refused registration, clearing the queue")
 
-            return createClearWrapper()
+            return createClearWrapper(outcome: .failed(attestationError))
         }
 
         if error is AnalyticsUploadAbort {
@@ -232,13 +232,14 @@ private extension AnalyticsUploader {
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [operation])
     }
 
-    func createClearWrapper() -> CompoundOperationWrapper<BatchOutcome> {
+    /// Clearing the queue is not delivery, so a rejection still has to grade as a failed flush.
+    func createClearWrapper(outcome: BatchOutcome) -> CompoundOperationWrapper<BatchOutcome> {
         let operation = queue.clearOperation()
 
         let mapOperation = ClosureOperation<BatchOutcome> {
             try operation.extractNoCancellableResultData()
 
-            return .stop
+            return outcome
         }
 
         mapOperation.addDependency(operation)
