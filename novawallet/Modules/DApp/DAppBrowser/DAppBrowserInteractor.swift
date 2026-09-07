@@ -437,7 +437,7 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
     }
 
     func createTransportWrappers() -> [CompoundOperationWrapper<DAppTransportModel>] {
-        var wrappers = transports.map { transport in
+        transports.map { transport in
             let bridgeOperation = transport.createBridgeScriptOperation()
             let maybeSubscriptionScript = transport.createSubscriptionScript(for: dataSource)
             let transportName = transport.name
@@ -462,8 +462,6 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
 
             return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [bridgeOperation])
         }
-
-        return wrappers
     }
 
     func processAuth(response: DAppAuthResponse, forTransport name: String) {
