@@ -11,10 +11,15 @@ final class DeviceCheckAttestingSpy: DeviceCheckAttesting {
 
     private let mutex = NSLock()
     private var recordedGenerateKeyCalls = 0
+    private var recordedAttestationKeyIds: [String] = []
     private var recordedAssertionHashes: [Data] = []
 
     var assertionClientDataHashes: [Data] {
         synchronised { recordedAssertionHashes }
+    }
+
+    var attestationKeyIds: [String] {
+        synchronised { recordedAttestationKeyIds }
     }
 
     var generateKeyCallCount: Int {
@@ -31,10 +36,12 @@ final class DeviceCheckAttestingSpy: DeviceCheckAttesting {
     }
 
     func attestKey(
-        _: String,
+        _ keyId: String,
         clientDataHash _: Data,
         completionHandler: @escaping (Data?, Error?) -> Void
     ) {
+        synchronised { recordedAttestationKeyIds.append(keyId) }
+
         switch attestKeyResult {
         case let .success(data): completionHandler(data, nil)
         case let .failure(error): completionHandler(nil, error)
@@ -68,16 +75,28 @@ final class DeviceCheckAttestingSpy: DeviceCheckAttesting {
 final class AppAttestServiceSpy: AppAttestServiceProtocol {
     var isSupported: Bool = true
 
+    var keyGenerationError: Error?
+    var attestationError: Error?
     var assertionResult: Result<AppAttestAssertion, Error> = .success(Data("assertion".utf8))
 
     var onAttestation: (() -> Void)?
 
     private let mutex = NSLock()
-    private var recordedAttestationKeyIds: [AppAttestKeyId?] = []
+    private var recordedGenerateKeyCalls = 0
+    private var recordedGeneratedKeyIds: [AppAttestKeyId] = []
+    private var recordedAttestationKeyIds: [AppAttestKeyId] = []
     private var recordedAssertionKeyIds: [AppAttestKeyId] = []
     private var recordedAssertionClientData: [() throws -> Data] = []
 
-    var attestationKeyIds: [AppAttestKeyId?] {
+    var generateKeyCallCount: Int {
+        synchronised { recordedGenerateKeyCalls }
+    }
+
+    var generatedKeyIds: [AppAttestKeyId] {
+        synchronised { recordedGeneratedKeyIds }
+    }
+
+    var attestationKeyIds: [AppAttestKeyId] {
         synchronised { recordedAttestationKeyIds }
     }
 
@@ -91,28 +110,55 @@ final class AppAttestServiceSpy: AppAttestServiceProtocol {
 
     func reset() {
         synchronised {
+            recordedGenerateKeyCalls = 0
+            recordedGeneratedKeyIds = []
             recordedAttestationKeyIds = []
             recordedAssertionKeyIds = []
             recordedAssertionClientData = []
         }
     }
 
+    func createKeyGenerationOperation() -> BaseOperation<AppAttestKeyId> {
+        let error = keyGenerationError
+
+        let keyId: AppAttestKeyId = synchronised {
+            recordedGenerateKeyCalls += 1
+
+            let generated = "generated-key-\(UUID().uuidString)"
+            recordedGeneratedKeyIds.append(generated)
+
+            return generated
+        }
+
+        return ClosureOperation {
+            if let error {
+                throw AppAttestServiceError.keyIdGeneration(error)
+            }
+
+            return keyId
+        }
+    }
+
     func createAttestationWrapper(
-        using keyId: AppAttestKeyId?,
+        using keyId: AppAttestKeyId,
         clientData: @escaping (AppAttestKeyId) throws -> Data
     ) -> CompoundOperationWrapper<AppAttestAttestation> {
         synchronised { recordedAttestationKeyIds.append(keyId) }
 
         let hook = onAttestation
-        let resolvedKeyId = keyId ?? UUID().uuidString
+        let error = attestationError
 
         return CompoundOperationWrapper(targetOperation: ClosureOperation {
-            _ = try clientData(resolvedKeyId)
+            _ = try clientData(keyId)
 
             hook?()
 
+            if let error {
+                throw error
+            }
+
             return AppAttestAttestation(
-                keyId: resolvedKeyId,
+                keyId: keyId,
                 attestation: Data("attestation-object".utf8)
             )
         })
@@ -159,13 +205,21 @@ final class BackendAttestationRemoteFactorySpy: BackendAttestationRemoteFactoryP
 
     private let mutex = NSLock()
     private var recordedChallengeCalls = 0
+    private var recordedRegisterCalls = 0
 
     var challengeCallCount: Int {
         synchronised { recordedChallengeCalls }
     }
 
+    var registerCallCount: Int {
+        synchronised { recordedRegisterCalls }
+    }
+
     func reset() {
-        synchronised { recordedChallengeCalls = 0 }
+        synchronised {
+            recordedChallengeCalls = 0
+            recordedRegisterCalls = 0
+        }
     }
 
     func createChallengeWrapper() -> CompoundOperationWrapper<String> {
@@ -188,10 +242,12 @@ final class BackendAttestationRemoteFactorySpy: BackendAttestationRemoteFactoryP
         let hook = onRegister
         let onRequest = onRegisterRequest
 
-        return ClosureOperation {
+        return ClosureOperation { [weak self] in
             hook?()
 
             let request = try requestClosure()
+
+            self?.recordRegisterCall()
 
             onRequest?(request)
 
@@ -199,6 +255,10 @@ final class BackendAttestationRemoteFactorySpy: BackendAttestationRemoteFactoryP
                 throw error
             }
         }
+    }
+
+    private func recordRegisterCall() {
+        synchronised { recordedRegisterCalls += 1 }
     }
 
     private func synchronised<T>(_ body: () -> T) -> T {
