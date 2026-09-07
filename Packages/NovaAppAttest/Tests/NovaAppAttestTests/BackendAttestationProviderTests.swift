@@ -530,6 +530,8 @@ final class BackendAttestationProviderTests: XCTestCase {
         let fixture = makeFixture(attestationError: AppAttestServiceError.attestationGeneric(nil))
 
         XCTAssertThrowsError(try headers(fixture))
+        _ = try storedRow(fixture)
+
         XCTAssertThrowsError(try headers(fixture))
 
         let row = try XCTUnwrap(try storedRow(fixture))
@@ -591,6 +593,7 @@ final class BackendAttestationProviderTests: XCTestCase {
         XCTAssertThrowsError(try headers(fixture))
 
         fixture.provider.forgetClient()
+        _ = try storedRow(fixture)
 
         XCTAssertThrowsError(try headers(fixture)) { error in
             guard case BackendAttestationError.unsupported = error else {
@@ -660,6 +663,8 @@ final class BackendAttestationProviderTests: XCTestCase {
         _ = try headers(fixture)
 
         fixture.provider.markUnattested()
+        _ = try storedRow(fixture)
+
         _ = try headers(fixture)
 
         let reMinted = try XCTUnwrap(try storedRow(fixture))
@@ -888,6 +893,8 @@ final class BackendAttestationProviderTests: XCTestCase {
         let fixture = makeFixture(optOutAt: .register)
 
         XCTAssertThrowsError(try headers(fixture))
+
+        _ = try storedRow(fixture)
 
         fixture.provider.allowClient()
         fixture.appAttest.reset()
