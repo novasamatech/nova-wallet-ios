@@ -3,10 +3,11 @@ import Operation_iOS
 import NovaOperationSupport
 import SDKLogger
 
-/// Holds one attested App Attest key per (gateway, clientId) row. It is re-minted when Apple calls the
-/// identifier invalid, on a launch's first generic attestKey failure, on its first events-endpoint
-/// rejection, and on a consent withdrawal or re-grant. Gateway failures and Apple's serviceUnavailable
-/// open the persisted backoff while the row is un-attested; the rest fall to the uploader's flush schedule.
+/// Holds one attested App Attest key per (gateway, clientId) row. It is re-minted on a launch's first
+/// invalid-identifier report, generic attestKey failure and events-endpoint rejection, and on a consent cycle, which
+/// lifts the process-wide gateway rejection and the events-endpoint latch but not the two Apple brakes. A gateway
+/// client or server error, serviceUnavailable and a repeat generic attestKey failure open the persisted backoff
+/// on an un-attested row; anything else, a repeat invalid-identifier report included, waits on the flush schedule.
 public final class BackendAttestationProvider {
     private let appAttest: AppAttestServiceProtocol
     private let remoteFactory: BackendAttestationRemoteFactoryProtocol
@@ -168,9 +169,9 @@ private extension BackendAttestationProvider {
         needsFreshKey = false
     }
 
-    /// Both consent transitions mint an identity the gateway has never rejected, so every per-launch
-    /// brake starts over with it.
-    func clearLaunchBrakes() {
+    /// Both consent transitions mint an identity the gateway has never rejected, so its latches start over.
+    /// Apple's verdict on a key describes the device, not the identity, so those brakes stay launch scoped.
+    func clearGatewayBrakes() {
         mutex.lock()
 
         defer {
@@ -179,8 +180,6 @@ private extension BackendAttestationProvider {
 
         rejectedForProcess = false
         unattestedMarkedThisLaunch = false
-        invalidKeyIdDiscardedThisLaunch = false
-        attestationGenericDiscardedThisLaunch = false
     }
 
     func deleteRow(_ identifier: String) {
@@ -759,7 +758,7 @@ extension BackendAttestationProvider: BackendAttestationProviderProtocol {
         needsFreshKey = true
         mutex.unlock()
 
-        clearLaunchBrakes()
+        clearGatewayBrakes()
 
         identity.forgetClientId()
 
@@ -773,6 +772,6 @@ extension BackendAttestationProvider: BackendAttestationProviderProtocol {
     public func allowClient() {
         identity.allowCreation()
 
-        clearLaunchBrakes()
+        clearGatewayBrakes()
     }
 }
