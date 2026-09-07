@@ -32,19 +32,7 @@ public enum AnalyticsPropertyValue: Equatable {
     case content(AnalyticsContentValue)
 }
 
-extension AnalyticsPropertyValue: Codable {
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-
-        if let value = try? container.decode(Bool.self) {
-            self = .bool(value)
-        } else if let value = try? container.decode(Int.self) {
-            self = .int(value)
-        } else {
-            self = .content(.raw(try container.decode(String.self)))
-        }
-    }
-
+extension AnalyticsPropertyValue: Encodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
 

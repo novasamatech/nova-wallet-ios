@@ -6,6 +6,10 @@ final class AnalyticsPropertyValueTests: XCTestCase {
         String(data: try AnalyticsCoding.encoder.encode(props), encoding: .utf8)!
     }
 
+    private func decodeWire(_ data: Data) throws -> [String: AnalyticsWireValue] {
+        try AnalyticsCoding.decoder.decode([String: AnalyticsWireValue].self, from: data)
+    }
+
     func testEachCaseEncodesToItsJSONPrimitive() throws {
         let props: [String: AnalyticsPropertyValue] = [
             "a_bool": .bool(true),
@@ -24,7 +28,23 @@ final class AnalyticsPropertyValueTests: XCTestCase {
         XCTAssertEqual(try encodeToString(["nft_count": .int(3)]), #"{"nft_count":3}"#)
     }
 
-    func testDecodeIsLossyButWireStable() throws {
+    func testStoredPayloadDecodesIntoWireValues() throws {
+        let original: [String: AnalyticsPropertyValue] = [
+            "a": .bool(false),
+            "b": .int(0),
+            "c": .enumerated("setup"),
+            "d": .content(.dappHost("app.example.org"))
+        ]
+
+        let decoded = try decodeWire(try AnalyticsCoding.encoder.encode(original))
+
+        XCTAssertEqual(
+            decoded,
+            ["a": .bool(false), "b": .int(0), "c": .string("setup"), "d": .string("app.example.org")]
+        )
+    }
+
+    func testStoredPayloadIsByteStableThroughTheWireType() throws {
         let original: [String: AnalyticsPropertyValue] = [
             "a": .bool(false),
             "b": .int(0),
@@ -33,13 +53,16 @@ final class AnalyticsPropertyValueTests: XCTestCase {
         ]
 
         let firstPass = try AnalyticsCoding.encoder.encode(original)
-        let decoded = try AnalyticsCoding.decoder.decode([String: AnalyticsPropertyValue].self, from: firstPass)
-        let secondPass = try AnalyticsCoding.encoder.encode(decoded)
+        let secondPass = try AnalyticsCoding.encoder.encode(try decodeWire(firstPass))
 
         XCTAssertEqual(firstPass, secondPass)
-        XCTAssertEqual(decoded["c"], .content(.raw("setup")))
-        XCTAssertEqual(decoded["a"], .bool(false))
-        XCTAssertEqual(decoded["b"], .int(0))
+    }
+
+    func testWireDecoderRejectsAnythingButPrimitives() {
+        XCTAssertThrowsError(try decodeWire(Data(#"{"a":{"b":1}}"#.utf8)))
+        XCTAssertThrowsError(try decodeWire(Data(#"{"a":[1]}"#.utf8)))
+        XCTAssertThrowsError(try decodeWire(Data(#"{"a":null}"#.utf8)))
+        XCTAssertThrowsError(try decodeWire(Data(#"{"a":1.5}"#.utf8)))
     }
 
     func testNilPropertiesAreOmittedNotNulled() throws {

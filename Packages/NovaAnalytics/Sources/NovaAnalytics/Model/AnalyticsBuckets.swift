@@ -1,6 +1,6 @@
 import Foundation
 
-public enum AmountBucket: String, AnalyticsPropertyConvertible {
+public enum AmountBucket: String, CaseIterable, AnalyticsPropertyConvertible {
     case under1 = "under_1"
     case from1To10 = "1_to_10"
     case from10To100 = "10_to_100"
@@ -38,7 +38,7 @@ public enum AmountBucket: String, AnalyticsPropertyConvertible {
     }
 }
 
-public enum DurationBucket: String, AnalyticsPropertyConvertible {
+public enum DurationBucket: String, CaseIterable, AnalyticsPropertyConvertible {
     case under5s = "under_5s"
     case from5sTo15s = "5s_to_15s"
     case from15sTo30s = "15s_to_30s"
@@ -58,7 +58,7 @@ public enum DurationBucket: String, AnalyticsPropertyConvertible {
     }
 }
 
-public enum SlippageBucket: String, AnalyticsPropertyConvertible {
+public enum SlippageBucket: String, CaseIterable, AnalyticsPropertyConvertible {
     case low
     case medium
     case high

@@ -9,15 +9,18 @@ final class AnalyticsEventCatalogTests: XCTestCase {
     }
 
     private let identifier = "row-1"
-    private let timestamp = "2026-09-02T10:00:00.123Z"
+    private let timestamp = Date(timeIntervalSince1970: 1_788_343_200.123)
 
     private func serialize(_ event: AnalyticsEvent) throws -> String {
-        let remote = AnalyticsEventRemote(
-            id: identifier,
+        let row = AnalyticsPendingEvent(
+            identifier: identifier,
+            sequence: 1,
             name: event.name.rawValue,
             timestamp: timestamp,
-            props: event.wireProperties
+            payload: try AnalyticsCoding.encoder.encode(event.wireProperties)
         )
+
+        let remote = try AnalyticsWirePayloadPolicy.vet(row)
 
         return String(data: try AnalyticsCoding.encoder.encode(remote), encoding: .utf8)!
     }
@@ -399,7 +402,7 @@ final class AnalyticsEventCatalogTests: XCTestCase {
         for row in catalog {
             let first = try AnalyticsCoding.encoder.encode(row.event.wireProperties)
             let decoded = try AnalyticsCoding.decoder.decode(
-                [String: AnalyticsPropertyValue].self,
+                [String: AnalyticsWireValue].self,
                 from: first
             )
             let second = try AnalyticsCoding.encoder.encode(decoded)

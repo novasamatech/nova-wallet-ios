@@ -250,19 +250,9 @@ private extension AnalyticsUploader {
     func createBatch(rows: [AnalyticsPendingEvent]) throws -> Batch {
         let events = rows.compactMap { row -> AnalyticsEventRemote? in
             do {
-                let props = try AnalyticsCoding.decoder.decode(
-                    [String: AnalyticsPropertyValue].self,
-                    from: row.payload
-                )
-
-                return AnalyticsEventRemote(
-                    id: row.identifier,
-                    name: row.name,
-                    timestamp: ISO8601MillisFormatter.string(from: row.timestamp),
-                    props: props
-                )
+                return try AnalyticsWirePayloadPolicy.vet(row)
             } catch {
-                logger.error("Analytics row \(row.identifier) is undecodable, dropping it")
+                logger.error("Analytics row \(row.identifier) is unsendable, dropping it")
 
                 return nil
             }
