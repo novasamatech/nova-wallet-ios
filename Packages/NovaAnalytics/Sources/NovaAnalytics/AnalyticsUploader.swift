@@ -62,6 +62,14 @@ private extension AnalyticsUploader {
         let epoch: Int
     }
 
+    /// The peeked rows split into what the current consent epoch may send and what it must only delete.
+    struct Page {
+        let rows: [AnalyticsPendingEvent]
+        let dropIds: [String]
+        let isFull: Bool
+        let epoch: Int
+    }
+
     func createBatchesWrapper(remaining: Int) -> CompoundOperationWrapper<BatchOutcome> {
         guard remaining > 0 else {
             return .createWithResult(.stop)
@@ -124,7 +132,15 @@ private extension AnalyticsUploader {
                 return .createWithResult(.stop)
             }
 
-            return createSendWrapper(batch: try createBatch(rows: rows))
+            let page = selectPage(rows: rows)
+
+            guard !page.rows.isEmpty else {
+                logger.debug("Analytics page predates the consent epoch, dropping it unsent")
+
+                return createDropWrapper(ids: page.dropIds, isFull: page.isFull)
+            }
+
+            return createSendWrapper(batch: try createBatch(page: page))
         }
 
         sendWrapper.addDependency(wrapper: peekWrapper)
@@ -219,12 +235,16 @@ private extension AnalyticsUploader {
     }
 
     func createDropWrapper(batch: Batch) -> CompoundOperationWrapper<BatchOutcome> {
-        let operation = queue.dropOperation(ids: batch.ids)
+        createDropWrapper(ids: batch.ids, isFull: batch.isFull)
+    }
+
+    func createDropWrapper(ids: [String], isFull: Bool) -> CompoundOperationWrapper<BatchOutcome> {
+        let operation = queue.dropOperation(ids: ids)
 
         let mapOperation = ClosureOperation<BatchOutcome> {
             try operation.extractNoCancellableResultData()
 
-            return batch.isFull ? .drained : .stop
+            return isFull ? .drained : .stop
         }
 
         mapOperation.addDependency(operation)
@@ -247,7 +267,25 @@ private extension AnalyticsUploader {
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [operation])
     }
 
-    func createBatch(rows: [AnalyticsPendingEvent]) throws -> Batch {
+    func selectPage(rows: [AnalyticsPendingEvent]) -> Page {
+        let epoch = identity.consentEpoch
+        let current = rows.filter { $0.consentEpoch == epoch }
+
+        if current.count < rows.count {
+            logger.debug("Analytics rows from an earlier consent epoch dropped: \(rows.count - current.count)")
+        }
+
+        return Page(
+            rows: current,
+            dropIds: rows.map(\.identifier),
+            isFull: rows.count == Constants.batchSize,
+            epoch: epoch
+        )
+    }
+
+    func createBatch(page: Page) throws -> Batch {
+        let rows = page.rows
+
         let events = rows.compactMap { row -> AnalyticsEventRemote? in
             do {
                 let props = try AnalyticsCoding.decoder.decode(
@@ -268,7 +306,7 @@ private extension AnalyticsUploader {
             }
         }
 
-        let epoch = identity.consentEpoch
+        let epoch = page.epoch
 
         guard let installId = identity.installId(), identity.consentEpoch == epoch else {
             throw AnalyticsUploadAbort.consentWithdrawn
@@ -286,8 +324,8 @@ private extension AnalyticsUploader {
 
         return Batch(
             body: try AnalyticsCoding.encoder.encode(envelope),
-            ids: rows.map(\.identifier),
-            isFull: rows.count == Constants.batchSize,
+            ids: page.dropIds,
+            isFull: page.isFull,
             epoch: epoch
         )
     }
