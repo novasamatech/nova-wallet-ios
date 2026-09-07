@@ -375,7 +375,7 @@ final class AnalyticsServiceTests: XCTestCase {
         XCTAssertEqual(fixture.uploader.maxBatchesCalls, [10])
     }
 
-    func testRetryAfterSetsExactlyTheWindowTheGatewayAsksFor() {
+    func testARetryAfterLongerThanTheEscalatedWindowSetsTheHoldOff() {
         var now = Date(timeIntervalSince1970: 0)
         let fixture = makeFailingFixture(
             now: { now },
@@ -440,6 +440,41 @@ final class AnalyticsServiceTests: XCTestCase {
             fixture.uploadFactory.callCount,
             3,
             "the rejection was graded as a delivered flush and released the hold off"
+        )
+
+        now = now.addingTimeInterval(2)
+        flushAndSettle(fixture, reason: .interval)
+        XCTAssertEqual(fixture.uploadFactory.callCount, 4)
+    }
+
+    func testARetryAfterShorterThanTheEscalatedWindowDoesNotShortenTheHoldOff() throws {
+        var now = Date(timeIntervalSince1970: 0)
+        let fixture = makeGatewayFixture(
+            uploadResults: [
+                .failure(AnalyticsTransportError.serverError(statusCode: 500)),
+                .failure(AnalyticsTransportError.serverError(statusCode: 500)),
+                .failure(AnalyticsTransportError.retryLater(statusCode: 429, retryAfter: 30))
+            ],
+            now: { now }
+        )
+
+        try seed(fixture)
+        flushAndSettle(fixture, reason: .manual)
+
+        now = now.addingTimeInterval(60)
+        flushAndSettle(fixture, reason: .interval)
+
+        now = now.addingTimeInterval(120)
+        flushAndSettle(fixture, reason: .interval)
+
+        XCTAssertEqual(fixture.uploadFactory.callCount, 3)
+
+        now = now.addingTimeInterval(239)
+        flushAndSettle(fixture, reason: .interval)
+        XCTAssertEqual(
+            fixture.uploadFactory.callCount,
+            3,
+            "the gateway hint replaced the escalated window instead of flooring it"
         )
 
         now = now.addingTimeInterval(2)
