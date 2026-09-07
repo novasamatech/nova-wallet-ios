@@ -133,14 +133,15 @@ private extension AnalyticsUploader {
             }
 
             let page = selectPage(rows: rows)
+            let events = vetRows(page.rows)
 
-            guard !page.rows.isEmpty else {
-                logger.debug("Analytics page predates the consent epoch, dropping it unsent")
+            guard !events.isEmpty else {
+                logger.debug("Analytics page holds nothing sendable, dropping it unsent")
 
                 return createDropWrapper(ids: page.dropIds, isFull: page.isFull)
             }
 
-            return createSendWrapper(batch: try createBatch(page: page))
+            return createSendWrapper(batch: try createBatch(events: events, page: page))
         }
 
         sendWrapper.addDependency(wrapper: peekWrapper)
@@ -283,10 +284,8 @@ private extension AnalyticsUploader {
         )
     }
 
-    func createBatch(page: Page) throws -> Batch {
-        let rows = page.rows
-
-        let events = rows.compactMap { row -> AnalyticsEventRemote? in
+    func vetRows(_ rows: [AnalyticsPendingEvent]) -> [AnalyticsEventRemote] {
+        rows.compactMap { row -> AnalyticsEventRemote? in
             do {
                 return try AnalyticsWirePayloadPolicy.vet(row)
             } catch {
@@ -295,7 +294,9 @@ private extension AnalyticsUploader {
                 return nil
             }
         }
+    }
 
+    func createBatch(events: [AnalyticsEventRemote], page: Page) throws -> Batch {
         let epoch = page.epoch
 
         guard let installId = identity.installId(), identity.consentEpoch == epoch else {
