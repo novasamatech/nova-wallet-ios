@@ -4,7 +4,7 @@ public struct AnalyticsEvent: Equatable {
     public let name: AnalyticsEventName
     public let properties: [AnalyticsPropertyKey: AnalyticsPropertyValue]
 
-    public init(
+    init(
         name: AnalyticsEventName,
         properties: [AnalyticsPropertyKey: AnalyticsPropertyConvertible?] = [:]
     ) {

@@ -6,40 +6,56 @@ final class AnalyticsPropertyValueTests: XCTestCase {
         String(data: try AnalyticsCoding.encoder.encode(props), encoding: .utf8)!
     }
 
+    private func decodeWire(_ data: Data) throws -> [String: AnalyticsWireValue] {
+        try AnalyticsCoding.decoder.decode([String: AnalyticsWireValue].self, from: data)
+    }
+
     func testEachCaseEncodesToItsJSONPrimitive() throws {
         let props: [String: AnalyticsPropertyValue] = [
             "a_bool": .bool(true),
-            "b_int": .int(3),
             "c_enum": .enumerated("native_token"),
-            "d_content": .content(.assetSymbol("DOT"))
+            "d_content": .content(.assetSymbol("DOT")!)
         ]
 
         XCTAssertEqual(
             try encodeToString(props),
-            #"{"a_bool":true,"b_int":3,"c_enum":"native_token","d_content":"DOT"}"#
+            #"{"a_bool":true,"c_enum":"native_token","d_content":"DOT"}"#
         )
     }
 
-    func testIntEncodesAsNumberNotString() throws {
-        XCTAssertEqual(try encodeToString(["nft_count": .int(3)]), #"{"nft_count":3}"#)
-    }
-
-    func testDecodeIsLossyButWireStable() throws {
+    func testStoredPayloadDecodesIntoWireValues() throws {
         let original: [String: AnalyticsPropertyValue] = [
             "a": .bool(false),
-            "b": .int(0),
             "c": .enumerated("setup"),
-            "d": .content(.dappHost("app.example.org"))
+            "d": .content(.dappHost(URL(string: "https://app.example.org/trade")!)!)
+        ]
+
+        let decoded = try decodeWire(try AnalyticsCoding.encoder.encode(original))
+
+        XCTAssertEqual(
+            decoded,
+            ["a": .bool(false), "c": .string("setup"), "d": .string("app.example.org")]
+        )
+    }
+
+    func testStoredPayloadIsByteStableThroughTheWireType() throws {
+        let original: [String: AnalyticsPropertyValue] = [
+            "a": .bool(false),
+            "c": .enumerated("setup"),
+            "d": .content(.dappHost(URL(string: "https://app.example.org/trade")!)!)
         ]
 
         let firstPass = try AnalyticsCoding.encoder.encode(original)
-        let decoded = try AnalyticsCoding.decoder.decode([String: AnalyticsPropertyValue].self, from: firstPass)
-        let secondPass = try AnalyticsCoding.encoder.encode(decoded)
+        let secondPass = try AnalyticsCoding.encoder.encode(try decodeWire(firstPass))
 
         XCTAssertEqual(firstPass, secondPass)
-        XCTAssertEqual(decoded["c"], .content(.raw("setup")))
-        XCTAssertEqual(decoded["a"], .bool(false))
-        XCTAssertEqual(decoded["b"], .int(0))
+    }
+
+    func testWireDecoderRejectsAnythingButPrimitives() {
+        XCTAssertThrowsError(try decodeWire(Data(#"{"a":{"b":1}}"#.utf8)))
+        XCTAssertThrowsError(try decodeWire(Data(#"{"a":[1]}"#.utf8)))
+        XCTAssertThrowsError(try decodeWire(Data(#"{"a":null}"#.utf8)))
+        XCTAssertThrowsError(try decodeWire(Data(#"{"a":1.5}"#.utf8)))
     }
 
     func testNilPropertiesAreOmittedNotNulled() throws {
@@ -53,6 +69,15 @@ final class AnalyticsPropertyValueTests: XCTestCase {
 
         XCTAssertEqual(Set(event.properties.keys), [.asset])
         XCTAssertNil(event.properties[.destinationNetwork])
+    }
+
+    func testRejectedContentIsOmittedFromTheEvent() {
+        let event = AnalyticsEvent(
+            name: .sendCompleted,
+            properties: [.destinationNetwork: AnalyticsContentValue.networkName("Bob's  network!")]
+        )
+
+        XCTAssertTrue(event.properties.isEmpty)
     }
 
     func testRawRepresentableEnumsConvertForFree() {
@@ -70,6 +95,7 @@ final class AnalyticsPropertyValueTests: XCTestCase {
         XCTAssertEqual(AnalyticsEventName.signFailed.rawValue, "sign_failed")
         XCTAssertEqual(AnalyticsPropertyKey.isFirstLaunch.rawValue, "is_first_launch")
         XCTAssertEqual(AnalyticsPropertyKey.destinationNetwork.rawValue, "destination_network")
+        XCTAssertEqual(AnalyticsPropertyKey.nftCountBucket.rawValue, "nft_count_bucket")
         XCTAssertEqual(AnalyticsEventName.allCases.count, 42)
         XCTAssertEqual(AnalyticsPropertyKey.allCases.count, 32)
     }

@@ -370,6 +370,40 @@ final class AnalyticsUploaderTests: XCTestCase {
         XCTAssertEqual(try queueCount(fixture), 0)
     }
 
+    func testTamperedRowTextNeverReachesTheTransport() throws {
+        let fixture = makeFixture(uploadResults: [.success(())])
+        try enqueue(
+            fixture,
+            timestamp: Date(timeIntervalSince1970: 0),
+            payload: Data(#"{"asset":"alice's savings wallet!"}"#.utf8)
+        )
+        try seed(fixture, count: 1)
+
+        try flush(fixture)
+
+        let bodies = fixture.sentBodies.recorded.compactMap { String(data: $0, encoding: .utf8) }
+
+        XCTAssertEqual(bodies.count, 1)
+        XCTAssertFalse(try XCTUnwrap(bodies.first).contains("savings"))
+        XCTAssertEqual(try sentEventIds(try XCTUnwrap(fixture.sentBodies.recorded.first)).count, 1)
+        XCTAssertEqual(try queueCount(fixture), 0)
+    }
+
+    func testTamperedRowIsNeverSigned() throws {
+        let fixture = makeFixture(uploadResults: [.success(())])
+        try enqueue(
+            fixture,
+            timestamp: Date(timeIntervalSince1970: 0),
+            payload: Data(#"{"dapp_host":"https://alice:hunter2@bank.example/login"}"#.utf8)
+        )
+
+        try flush(fixture)
+
+        for body in fixture.attestation.signedBodies {
+            XCTAssertFalse(try XCTUnwrap(String(data: body, encoding: .utf8)).contains("hunter2"))
+        }
+    }
+
     func testOptOutBeforeTheBatchIsBuiltSendsNothingAndMintsNothing() throws {
         let fixture = makeFixture(uploadResults: [.success(())])
         try seed(fixture, count: 1)
