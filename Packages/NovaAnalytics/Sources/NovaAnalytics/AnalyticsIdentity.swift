@@ -71,6 +71,16 @@ extension AnalyticsIdentity: AnalyticsIdentityProtocol {
         return created
     }
 
+    public func existingInstallId() -> String? {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return settingsManager.analyticsInstallId
+    }
+
     public func forgetInstallId() {
         mutex.lock()
 

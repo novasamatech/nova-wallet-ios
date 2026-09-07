@@ -494,6 +494,8 @@ final class AnalyticsServiceTests: XCTestCase {
         )
 
         let settings = SerialisedSettingsManager()
+        settings.set(value: true, for: AnalyticsTestFixture.Keys.analyticsEnabled)
+
         let availability = AnalyticsAvailabilityProvider(attestationMode: .appAttest)
         let consent = AnalyticsConsentManager(
             settingsManager: settings,
@@ -527,8 +529,6 @@ final class AnalyticsServiceTests: XCTestCase {
             timeProvider: now,
             logger: SilentLogger()
         )
-
-        consent.setEnabled(true)
 
         return GatewayFixture(
             service: service,

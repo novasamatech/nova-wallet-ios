@@ -231,9 +231,33 @@ final class AnalyticsErasureTests: XCTestCase {
         XCTAssertEqual(try relaunch.queueCount(), 0)
     }
 
+    func testALaunchWithoutConsentRepairsTheRowsAndIdentityLeftBehind() throws {
+        let settings = SerialisedSettingsManager()
+        let storage = AnalyticsStorageTestFacade()
+
+        let previousLaunch = AnalyticsTestFixture.makeConsented(settings: settings, storage: storage)
+        previousLaunch.track(2, .novaCardOpened())
+        previousLaunch.drain()
+
+        XCTAssertNotNil(previousLaunch.identity.installId())
+        XCTAssertEqual(try previousLaunch.queueCount(), 2)
+
+        settings.set(value: false, for: Keys.analyticsEnabled)
+
+        XCTAssertNil(settings.bool(for: Keys.erasureOwed))
+
+        let relaunch = AnalyticsTestFixture.make(settings: settings, storage: storage)
+        relaunch.drain()
+
+        XCTAssertEqual(try relaunch.queueCount(), 0)
+        XCTAssertNil(relaunch.persistedInstallId())
+        XCTAssertEqual(settings.bool(for: Keys.erasureOwed), false)
+    }
+
     func testAnOptOutDuringAnInFlightWipeAlsoClearsTheRowsTrackedMeanwhile() throws {
         let fixture = AnalyticsTestFixture.makeConsented()
         let firstClearStarted = expectation(description: "first clear started")
+        firstClearStarted.assertForOverFulfill = false
         let secondClearRan = expectation(description: "second clear ran")
         let gate = DispatchSemaphore(value: 0)
 

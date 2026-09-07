@@ -36,6 +36,7 @@ public protocol AnalyticsIdentityProtocol: AnyObject {
     var consentEpoch: Int { get }
 
     func installId() -> String?
+    func existingInstallId() -> String?
     func forgetInstallId()
     func allowCreation()
 }

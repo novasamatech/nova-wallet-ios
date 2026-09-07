@@ -72,7 +72,11 @@ public final class AnalyticsService {
             }
         }
 
-        erasure.drainOwed()
+        if consent.isEnabled {
+            erasure.drainOwed()
+        } else {
+            repairWithdrawnConsent()
+        }
     }
 
     deinit {
@@ -181,6 +185,16 @@ private extension AnalyticsService {
         }
 
         return true
+    }
+
+    /// A withdrawal that reached disk without its obligation, or rows and an identity left behind
+    /// by an older build, are repaired on every launch that starts without consent.
+    func repairWithdrawnConsent() {
+        if identity.existingInstallId() != nil {
+            identity.forgetInstallId()
+        }
+
+        erasure.request()
     }
 
     func releaseFlushCompletionsLocked() {
