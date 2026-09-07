@@ -30,8 +30,18 @@ final class AnalyticsEventQueueClearInterceptor {
 }
 
 extension AnalyticsEventQueueClearInterceptor: AnalyticsEventQueueProtocol {
-    func enqueueWrapper(name: String, timestamp: Date, payload: Data) -> CompoundOperationWrapper<Void> {
-        wrapped.enqueueWrapper(name: name, timestamp: timestamp, payload: payload)
+    func enqueueWrapper(
+        name: String,
+        timestamp: Date,
+        payload: Data,
+        consentEpoch: Int
+    ) -> CompoundOperationWrapper<Void> {
+        wrapped.enqueueWrapper(
+            name: name,
+            timestamp: timestamp,
+            payload: payload,
+            consentEpoch: consentEpoch
+        )
     }
 
     func peekWrapper(count: Int) -> CompoundOperationWrapper<[AnalyticsPendingEvent]> {

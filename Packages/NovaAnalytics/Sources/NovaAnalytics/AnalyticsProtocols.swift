@@ -3,7 +3,12 @@ import Operation_iOS
 import NovaAppAttest
 
 public protocol AnalyticsEventQueueProtocol {
-    func enqueueWrapper(name: String, timestamp: Date, payload: Data) -> CompoundOperationWrapper<Void>
+    func enqueueWrapper(
+        name: String,
+        timestamp: Date,
+        payload: Data,
+        consentEpoch: Int
+    ) -> CompoundOperationWrapper<Void>
 
     func peekWrapper(count: Int) -> CompoundOperationWrapper<[AnalyticsPendingEvent]>
 

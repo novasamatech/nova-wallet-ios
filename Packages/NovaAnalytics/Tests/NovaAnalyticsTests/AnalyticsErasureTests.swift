@@ -169,6 +169,21 @@ final class AnalyticsErasureTests: XCTestCase {
         )
     }
 
+    func testAQueuedRowCarriesTheConsentEpochOfItsEnqueue() throws {
+        let fixture = AnalyticsTestFixture.makeConsented()
+
+        fixture.service.track(.novaCardOpened())
+
+        XCTAssertEqual(try fixture.peekEvents().map(\.consentEpoch), [fixture.identity.consentEpoch])
+
+        fixture.consent.setEnabled(false)
+        fixture.consent.setEnabled(true)
+        fixture.service.track(.novaCardOpened())
+
+        XCTAssertEqual(try fixture.peekEvents().map(\.consentEpoch), [fixture.identity.consentEpoch])
+        XCTAssertEqual(fixture.identity.consentEpoch, 3)
+    }
+
     private func makeFixtureWithAFailedOptOut() -> AnalyticsTestFixture {
         let fixture = AnalyticsTestFixture.makeConsented()
         fixture.clearInterceptor.clearError = ClearFailure()

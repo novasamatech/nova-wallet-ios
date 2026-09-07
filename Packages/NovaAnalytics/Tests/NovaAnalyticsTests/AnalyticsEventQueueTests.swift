@@ -54,7 +54,8 @@ final class AnalyticsEventQueueTests: XCTestCase {
             try run(queue.enqueueWrapper(
                 name: name,
                 timestamp: Date(timeIntervalSince1970: 1),
-                payload: Data("{}".utf8)
+                payload: Data("{}".utf8),
+                consentEpoch: 0
             ))
         }
     }
@@ -65,17 +66,20 @@ final class AnalyticsEventQueueTests: XCTestCase {
         try run(queue.enqueueWrapper(
             name: "first",
             timestamp: Date(timeIntervalSince1970: 900),
-            payload: Data("{}".utf8)
+            payload: Data("{}".utf8),
+            consentEpoch: 0
         ))
         try run(queue.enqueueWrapper(
             name: "second",
             timestamp: Date(timeIntervalSince1970: 100),
-            payload: Data("{}".utf8)
+            payload: Data("{}".utf8),
+            consentEpoch: 0
         ))
         try run(queue.enqueueWrapper(
             name: "third",
             timestamp: Date(timeIntervalSince1970: 500),
-            payload: Data("{}".utf8)
+            payload: Data("{}".utf8),
+            consentEpoch: 0
         ))
 
         let peeked = try run(queue.peekWrapper(count: 10))
@@ -190,6 +194,19 @@ final class AnalyticsEventQueueTests: XCTestCase {
         XCTAssertEqual(try run(queue.peekWrapper(count: 10)).map(\.name), ["c", "d"])
     }
 
+    func testEnqueueStampsTheRowWithTheGivenConsentEpoch() throws {
+        let queue = makeQueue()
+
+        try run(queue.enqueueWrapper(
+            name: "a",
+            timestamp: Date(timeIntervalSince1970: 1),
+            payload: Data("{}".utf8),
+            consentEpoch: 7
+        ))
+
+        XCTAssertEqual(try run(queue.peekWrapper(count: 1)).map(\.consentEpoch), [7])
+    }
+
     private func seedCorruptRow(facade: AnalyticsStorageTestFacade) throws {
         let corruptRepository = facade.createRepository(
             mapper: AnyCoreDataMapper(CorruptAnalyticsEventMapper())
@@ -202,7 +219,8 @@ final class AnalyticsEventQueueTests: XCTestCase {
                     sequence: 999,
                     name: "unused",
                     timestamp: Date(timeIntervalSince1970: 1),
-                    payload: Data()
+                    payload: Data(),
+                    consentEpoch: 0
                 )
             ]
         }, { [] }))

@@ -129,7 +129,8 @@ final class AnalyticsUploaderTests: XCTestCase {
         let wrapper = fixture.queue.enqueueWrapper(
             name: "nova_card_opened",
             timestamp: timestamp,
-            payload: payload
+            payload: payload,
+            consentEpoch: fixture.identity.consentEpoch
         )
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
         _ = try wrapper.targetOperation.extractNoCancellableResultData()

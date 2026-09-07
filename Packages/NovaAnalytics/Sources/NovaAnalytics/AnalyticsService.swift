@@ -202,6 +202,28 @@ private extension AnalyticsService {
         releaseFlushCompletionsLocked()
     }
 
+    func createFlushDecisionOperation(after countOperation: BaseOperation<Int>) -> BaseOperation<Void> {
+        let operation = ClosureOperation<Void> { [weak self] in
+            let count = try countOperation.extractNoCancellableResultData()
+
+            guard let self else {
+                return
+            }
+
+            mutex.lock()
+
+            defer {
+                mutex.unlock()
+            }
+
+            flushIfNeededLocked(count: count)
+        }
+
+        operation.addDependency(countOperation)
+
+        return operation
+    }
+
     func trackInternal(_ event: AnalyticsEvent, completion: (() -> Void)?) {
         mutex.lock()
 
@@ -229,29 +251,14 @@ private extension AnalyticsService {
         let enqueueWrapper = queue.enqueueWrapper(
             name: event.name.rawValue,
             timestamp: timestamp,
-            payload: payload
+            payload: payload,
+            consentEpoch: identity.consentEpoch
         )
 
         let countOperation = queue.countOperation()
         countOperation.addDependency(enqueueWrapper.targetOperation)
 
-        let flushDecisionOperation = ClosureOperation<Void> { [weak self] in
-            let count = try countOperation.extractNoCancellableResultData()
-
-            guard let self else {
-                return
-            }
-
-            mutex.lock()
-
-            defer {
-                mutex.unlock()
-            }
-
-            flushIfNeededLocked(count: count)
-        }
-
-        flushDecisionOperation.addDependency(countOperation)
+        let flushDecisionOperation = createFlushDecisionOperation(after: countOperation)
 
         let totalWrapper = CompoundOperationWrapper(
             targetOperation: flushDecisionOperation,

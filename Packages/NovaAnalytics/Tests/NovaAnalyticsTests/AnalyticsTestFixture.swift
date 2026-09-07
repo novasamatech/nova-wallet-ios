@@ -160,7 +160,8 @@ extension AnalyticsTestFixture {
         let wrapper = queue.enqueueWrapper(
             name: name,
             timestamp: Date(),
-            payload: Data("{}".utf8)
+            payload: Data("{}".utf8),
+            consentEpoch: identity.consentEpoch
         )
 
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)

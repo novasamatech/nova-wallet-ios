@@ -7,7 +7,7 @@ public final class AnalyticsIdentity {
 
     private var isCreationBlocked: Bool = false
 
-    private var currentConsentEpoch: Int = 0
+    private var currentConsentEpoch: Int
 
     public var consentEpoch: Int {
         mutex.lock()
@@ -33,6 +33,17 @@ public final class AnalyticsIdentity {
 
     public init(settingsManager: SettingsManagerProtocol) {
         self.settingsManager = settingsManager
+
+        currentConsentEpoch = settingsManager.analyticsConsentEpoch
+    }
+}
+
+// MARK: - Private
+
+private extension AnalyticsIdentity {
+    func advanceConsentEpochLocked() {
+        currentConsentEpoch += 1
+        settingsManager.analyticsConsentEpoch = currentConsentEpoch
     }
 }
 
@@ -69,7 +80,7 @@ extension AnalyticsIdentity: AnalyticsIdentityProtocol {
 
         settingsManager.analyticsInstallId = nil
         isCreationBlocked = true
-        currentConsentEpoch += 1
+        advanceConsentEpochLocked()
     }
 
     public func allowCreation() {
@@ -81,6 +92,6 @@ extension AnalyticsIdentity: AnalyticsIdentityProtocol {
 
         isCreationBlocked = false
         currentSessionId = UUID().uuidString.lowercased()
-        currentConsentEpoch += 1
+        advanceConsentEpochLocked()
     }
 }
