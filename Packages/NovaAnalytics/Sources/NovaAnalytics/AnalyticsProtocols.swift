@@ -62,6 +62,7 @@ public protocol AnalyticsUploading: AnyObject {
 public enum AnalyticsTransportError: Error, Equatable {
     case rejected(statusCode: Int)
     case clientError(statusCode: Int)
+    case retryLater(statusCode: Int, retryAfter: TimeInterval?)
     case serverError(statusCode: Int)
 }
 

@@ -52,6 +52,7 @@ private extension AnalyticsUploader {
     enum BatchOutcome {
         case drained
         case stop
+        case failed(Error)
     }
 
     struct Batch {
@@ -61,21 +62,34 @@ private extension AnalyticsUploader {
         let epoch: Int
     }
 
-    func createBatchesWrapper(remaining: Int) -> CompoundOperationWrapper<Void> {
+    func createBatchesWrapper(remaining: Int) -> CompoundOperationWrapper<BatchOutcome> {
         guard remaining > 0 else {
-            return .createWithResult(())
+            return .createWithResult(.stop)
         }
 
         let batchWrapper = createBatchWrapper()
 
-        let nextWrapper = OperationCombiningService<Void>.compoundNonOptionalWrapper(
+        let nextWrapper = OperationCombiningService<BatchOutcome>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) { [weak self] in
-            guard
-                let self,
-                case .drained = try batchWrapper.targetOperation.extractNoCancellableResultData()
-            else {
-                return .createWithResult(())
+            guard let self else {
+                return .createWithResult(.stop)
+            }
+
+            let outcome: BatchOutcome
+
+            do {
+                outcome = try batchWrapper.targetOperation.extractNoCancellableResultData()
+            } catch is AnalyticsUploadAbort {
+                logger.debug("Analytics batch abandoned before it was built")
+
+                return .createWithResult(.stop)
+            } catch {
+                return .createWithResult(.failed(error))
+            }
+
+            guard case .drained = outcome else {
+                return .createWithResult(outcome)
             }
 
             return createBatchesWrapper(remaining: remaining - 1)
@@ -180,10 +194,10 @@ private extension AnalyticsUploader {
                 logger.warning("Analytics batch refused, dropping it: \(transportError)")
 
                 return createDropWrapper(batch: batch)
-            case .serverError:
-                logger.debug("Analytics upload stopped: \(transportError)")
+            case .retryLater, .serverError:
+                logger.debug("Analytics upload retained for a later flush: \(transportError)")
 
-                return .createWithResult(.stop)
+                return .createWithResult(.failed(transportError))
             }
         }
 
@@ -193,9 +207,15 @@ private extension AnalyticsUploader {
             return createClearWrapper()
         }
 
-        logger.debug("Analytics upload stopped: \(error)")
+        if error is AnalyticsUploadAbort {
+            logger.debug("Analytics batch abandoned in flight")
 
-        return .createWithResult(.stop)
+            return .createWithResult(.stop)
+        }
+
+        logger.debug("Analytics upload retained for a later flush: \(error)")
+
+        return .createWithResult(.failed(error))
     }
 
     func createDropWrapper(batch: Batch) -> CompoundOperationWrapper<BatchOutcome> {
@@ -235,8 +255,9 @@ private extension AnalyticsUploader {
                 )
 
                 return AnalyticsEventRemote(
+                    id: row.identifier,
                     name: row.name,
-                    ts: ISO8601MillisFormatter.string(from: row.timestamp),
+                    timestamp: ISO8601MillisFormatter.string(from: row.timestamp),
                     props: props
                 )
             } catch {
@@ -275,6 +296,21 @@ private extension AnalyticsUploader {
 
 extension AnalyticsUploader: AnalyticsUploading {
     public func flushWrapper(maxBatches: Int) -> CompoundOperationWrapper<Void> {
-        createBatchesWrapper(remaining: maxBatches)
+        let batchesWrapper = createBatchesWrapper(remaining: maxBatches)
+
+        let mapOperation = ClosureOperation<Void> {
+            guard case let .failed(error) = try batchesWrapper
+                .targetOperation
+                .extractNoCancellableResultData()
+            else {
+                return
+            }
+
+            throw error
+        }
+
+        mapOperation.addDependency(batchesWrapper.targetOperation)
+
+        return batchesWrapper.insertingTail(operation: mapOperation)
     }
 }
