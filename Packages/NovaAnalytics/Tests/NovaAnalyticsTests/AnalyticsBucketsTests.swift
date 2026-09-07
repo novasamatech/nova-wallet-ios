@@ -47,6 +47,25 @@ final class AnalyticsBucketsTests: XCTestCase {
         XCTAssertEqual(SlippageBucket(percent: 3.01).rawValue, "custom")
     }
 
+    func testNftCountBucketBoundariesAreExclusiveUpperBounds() {
+        XCTAssertEqual(NftCountBucket(count: 0).rawValue, "0")
+        XCTAssertEqual(NftCountBucket(count: 1).rawValue, "1_to_10")
+        XCTAssertEqual(NftCountBucket(count: 9).rawValue, "1_to_10")
+        XCTAssertEqual(NftCountBucket(count: 10).rawValue, "10_to_100")
+        XCTAssertEqual(NftCountBucket(count: 99).rawValue, "10_to_100")
+        XCTAssertEqual(NftCountBucket(count: 100).rawValue, "over_100")
+        XCTAssertEqual(NftCountBucket(count: Int.max).rawValue, "over_100")
+    }
+
+    func testNegativeNftCountBucketsAsNone() {
+        XCTAssertEqual(NftCountBucket(count: -1).rawValue, "0")
+        XCTAssertEqual(NftCountBucket(count: Int.min).rawValue, "0")
+    }
+
+    func testNftCountBucketConvertsToEnumeratedValue() {
+        XCTAssertEqual(NftCountBucket(count: 412).analyticsValue, .enumerated("over_100"))
+    }
+
     func testBucketsConvertToEnumeratedValues() {
         XCTAssertEqual(AmountBucket(usd: 5).analyticsValue, .enumerated("1_to_10"))
     }

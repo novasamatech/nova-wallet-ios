@@ -98,8 +98,8 @@ final class AnalyticsEventCatalogTests: XCTestCase {
                 line: #line
             ),
             Row(
-                event: .nftSectionOpened(count: 3),
-                expectedJSON: #"{"id":"row-1","name":"nft_section_opened","props":{"nft_count":3},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                event: .nftSectionOpened(count: NftCountBucket(count: 3)),
+                expectedJSON: #"{"id":"row-1","name":"nft_section_opened","props":{"nft_count_bucket":"1_to_10"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(

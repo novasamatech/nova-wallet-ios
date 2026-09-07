@@ -27,7 +27,6 @@ public enum AnalyticsContentValue: Equatable {
 
 public enum AnalyticsPropertyValue: Equatable {
     case bool(Bool)
-    case int(Int)
     case enumerated(String)
     case content(AnalyticsContentValue)
 }
@@ -38,8 +37,6 @@ extension AnalyticsPropertyValue: Encodable {
 
         switch self {
         case let .bool(value):
-            try container.encode(value)
-        case let .int(value):
             try container.encode(value)
         case let .enumerated(value):
             try container.encode(value)
@@ -57,10 +54,6 @@ public protocol AnalyticsPropertyConvertible {
 
 extension Bool: AnalyticsPropertyConvertible {
     public var analyticsValue: AnalyticsPropertyValue { .bool(self) }
-}
-
-extension Int: AnalyticsPropertyConvertible {
-    public var analyticsValue: AnalyticsPropertyValue { .int(self) }
 }
 
 extension AnalyticsContentValue: AnalyticsPropertyConvertible {

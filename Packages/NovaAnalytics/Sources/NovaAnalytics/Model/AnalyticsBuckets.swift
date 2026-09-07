@@ -76,3 +76,22 @@ public enum SlippageBucket: String, CaseIterable, AnalyticsPropertyConvertible {
         }
     }
 }
+
+public enum NftCountBucket: String, CaseIterable, AnalyticsPropertyConvertible {
+    case none = "0"
+    case from1To10 = "1_to_10"
+    case from10To100 = "10_to_100"
+    case over100 = "over_100"
+
+    public init(count: Int) {
+        self = if count < 1 {
+            .none
+        } else if count < 10 {
+            .from1To10
+        } else if count < 100 {
+            .from10To100
+        } else {
+            .over100
+        }
+    }
+}

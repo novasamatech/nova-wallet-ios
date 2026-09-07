@@ -143,8 +143,9 @@ final class AnalyticsWirePayloadPolicyTests: XCTestCase {
             + enumeratedValues(AmountBucket.self)
             + enumeratedValues(DurationBucket.self)
             + enumeratedValues(SlippageBucket.self)
+            + enumeratedValues(NftCountBucket.self)
 
-        XCTAssertEqual(values.count, 102)
+        XCTAssertEqual(values.count, 106)
 
         for value in values {
             XCTAssertTrue(AnalyticsWirePayloadPolicy.grammar.accepts(value), value)

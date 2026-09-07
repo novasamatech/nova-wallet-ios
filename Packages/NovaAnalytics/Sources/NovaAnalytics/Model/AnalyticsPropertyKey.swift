@@ -31,6 +31,6 @@ public enum AnalyticsPropertyKey: String, CaseIterable {
     case provider
     case bannerId = "banner_id"
     case screen
-    case nftCount = "nft_count"
+    case nftCountBucket = "nft_count_bucket"
     case chain
 }
