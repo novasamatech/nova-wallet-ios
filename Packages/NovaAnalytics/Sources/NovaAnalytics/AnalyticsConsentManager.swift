@@ -53,6 +53,8 @@ extension AnalyticsConsentManager: AnalyticsConsentManagerProtocol {
 
     public var isPromptSeen: Bool { settingsManager.analyticsPromptSeen }
 
+    public var isErasureOwed: Bool { settingsManager.isAnalyticsErasureOwed }
+
     public func setEnabled(_ enabled: Bool) {
         settingsManager.isAnalyticsEnabled = enabled
 
@@ -64,6 +66,10 @@ extension AnalyticsConsentManager: AnalyticsConsentManagerProtocol {
         }
 
         notify(oldState: oldState, newState: enabled)
+    }
+
+    public func setErasureOwed(_ owed: Bool) {
+        settingsManager.isAnalyticsErasureOwed = owed
     }
 
     public func markPromptSeen() {

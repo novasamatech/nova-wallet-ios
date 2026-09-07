@@ -49,7 +49,11 @@ private final class NoOpAnalyticsConsentManager: AnalyticsConsentManagerProtocol
 
     var isPromptSeen: Bool { false }
 
+    var isErasureOwed: Bool { false }
+
     func setEnabled(_: Bool) {}
+
+    func setErasureOwed(_: Bool) {}
 
     func markPromptSeen() {}
 

@@ -35,6 +35,16 @@ extension SettingsManagerProtocol {
             }
         }
     }
+
+    var isAnalyticsErasureOwed: Bool {
+        get {
+            bool(for: AnalyticsSettingsKey.analyticsErasureOwed) ?? false
+        }
+
+        set {
+            set(value: newValue, for: AnalyticsSettingsKey.analyticsErasureOwed)
+        }
+    }
 }
 
 enum AnalyticsSettingsKey {
@@ -42,4 +52,5 @@ enum AnalyticsSettingsKey {
     static let analyticsEnabled = "analyticsEnabled"
     static let analyticsPromptSeen = "analyticsPromptSeen"
     static let analyticsInstallId = "analyticsInstallId"
+    static let analyticsErasureOwed = "analyticsErasureOwed"
 }

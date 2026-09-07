@@ -16,8 +16,10 @@ public protocol AnalyticsConsentManagerProtocol: AnyObject {
     var isEnabled: Bool { get }
     var isAvailable: Bool { get }
     var isPromptSeen: Bool { get }
+    var isErasureOwed: Bool { get }
 
     func setEnabled(_ enabled: Bool)
+    func setErasureOwed(_ owed: Bool)
     func markPromptSeen()
     func addObserver(with owner: AnyObject, queue: DispatchQueue?, closure: @escaping (Bool, Bool) -> Void)
     func removeObserver(by owner: AnyObject)
