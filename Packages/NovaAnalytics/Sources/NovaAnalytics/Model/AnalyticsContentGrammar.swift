@@ -5,6 +5,17 @@ import Foundation
 struct AnalyticsContentGrammar {
     let alphabet: CharacterSet
     let lengths: ClosedRange<Int>
+    let shape: (String) -> Bool
+
+    init(
+        alphabet: CharacterSet,
+        lengths: ClosedRange<Int>,
+        shape: @escaping (String) -> Bool = { _ in true }
+    ) {
+        self.alphabet = alphabet
+        self.lengths = lengths
+        self.shape = shape
+    }
 
     func accepts(_ value: String) -> Bool {
         let scalars = value.unicodeScalars
@@ -13,7 +24,7 @@ struct AnalyticsContentGrammar {
             return false
         }
 
-        return scalars.allSatisfy { $0.isASCII && alphabet.contains($0) }
+        return scalars.allSatisfy { $0.isASCII && alphabet.contains($0) } && shape(value)
     }
 }
 

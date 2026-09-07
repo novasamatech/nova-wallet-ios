@@ -11,6 +11,20 @@ final class AnalyticsEventCatalogTests: XCTestCase {
     private let identifier = "row-1"
     private let timestamp = Date(timeIntervalSince1970: 1_788_343_200.123)
 
+    private let dot = AnalyticsContentValue.assetSymbol("DOT")!
+    private let usdt = AnalyticsContentValue.assetSymbol("USDT")!
+    private let polkadot = AnalyticsContentValue.networkName("Polkadot")!
+    private let assetHub = AnalyticsContentValue.networkName("Polkadot Asset Hub")!
+    private let hydration = AnalyticsContentValue.networkName("Hydration")!
+    private let mythos = AnalyticsContentValue.networkName("Mythos")!
+    private let exampleHost = AnalyticsContentValue.dappHost(URL(string: "https://app.example.org/swap?from=alice")!)!
+    private let polkadotChain = AnalyticsContentValue.caip2Chain("polkadot:91b171bb158e2d3848fa23a9f1c25182")!
+    private let ethereumChain = AnalyticsContentValue.caip2Chain("eip155:1")!
+    private let signPayload = AnalyticsContentValue.signingMethod("polkadot_signPayload")!
+    private let sendTransaction = AnalyticsContentValue.signingMethod("eth_sendTransaction")!
+    private let mercuryo = AnalyticsContentValue.providerId("mercuryo")!
+    private let ahmBanner = AnalyticsContentValue.bannerId("ahm-2026")!
+
     private func serialize(_ event: AnalyticsEvent) throws -> String {
         let row = AnalyticsPendingEvent(
             identifier: identifier,
@@ -103,7 +117,7 @@ final class AnalyticsEventCatalogTests: XCTestCase {
                 line: #line
             ),
             Row(
-                event: .bannerClicked(id: .bannerId("ahm-2026"), screen: .assets),
+                event: .bannerClicked(id: ahmBanner, screen: .assets),
                 expectedJSON: #"{"id":"row-1","name":"banner_clicked","props":{"banner_id":"ahm-2026","screen":"assets"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             )
@@ -120,10 +134,10 @@ final class AnalyticsEventCatalogTests: XCTestCase {
             Row(
                 event: .swapInitiated(
                     source: .mainScreen,
-                    assetIn: .assetSymbol("DOT"),
-                    assetOut: .assetSymbol("USDT"),
-                    networkIn: .networkName("Polkadot"),
-                    networkOut: .networkName("Polkadot Asset Hub"),
+                    assetIn: dot,
+                    assetOut: usdt,
+                    networkIn: polkadot,
+                    networkOut: assetHub,
                     amount: 100,
                     price: 5
                 )!,
@@ -132,10 +146,10 @@ final class AnalyticsEventCatalogTests: XCTestCase {
             ),
             Row(
                 event: .swapConfirmed(
-                    assetIn: .assetSymbol("DOT"),
-                    assetOut: .assetSymbol("USDT"),
-                    networkIn: .networkName("Polkadot"),
-                    networkOut: .networkName("Polkadot Asset Hub"),
+                    assetIn: dot,
+                    assetOut: usdt,
+                    networkIn: polkadot,
+                    networkOut: assetHub,
                     amount: 100,
                     price: 5,
                     slippage: 0.5
@@ -145,10 +159,10 @@ final class AnalyticsEventCatalogTests: XCTestCase {
             ),
             Row(
                 event: .swapCompleted(
-                    assetIn: .assetSymbol("DOT"),
-                    assetOut: .assetSymbol("USDT"),
-                    networkIn: .networkName("Polkadot"),
-                    networkOut: .networkName("Polkadot Asset Hub"),
+                    assetIn: dot,
+                    assetOut: usdt,
+                    networkIn: polkadot,
+                    networkOut: assetHub,
                     amount: 100,
                     price: 5,
                     duration: 20
@@ -172,32 +186,32 @@ final class AnalyticsEventCatalogTests: XCTestCase {
     private var stakingRows: [Row] {
         [
             Row(
-                event: .stakingFlowOpened(network: .networkName("Polkadot"), source: .dashboard),
+                event: .stakingFlowOpened(network: polkadot, source: .dashboard),
                 expectedJSON: #"{"id":"row-1","name":"staking_flow_opened","props":{"network":"Polkadot","source":"dashboard"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
-                event: .stakingTypeSelected(type: .pool, network: .networkName("Polkadot")),
+                event: .stakingTypeSelected(type: .pool, network: polkadot),
                 expectedJSON: #"{"id":"row-1","name":"staking_type_selected","props":{"network":"Polkadot","staking_type":"pool"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
-                event: .stakingInitiated(type: .direct, network: .networkName("Polkadot"), amount: 10, rate: 5),
+                event: .stakingInitiated(type: .direct, network: polkadot, amount: 10, rate: 5),
                 expectedJSON: #"{"id":"row-1","name":"staking_initiated","props":{"amount_bucket":"10_to_100","network":"Polkadot","staking_type":"direct"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
-                event: .stakingConfirmed(type: .direct, network: .networkName("Polkadot"), amount: 10, rate: 5),
+                event: .stakingConfirmed(type: .direct, network: polkadot, amount: 10, rate: 5),
                 expectedJSON: #"{"id":"row-1","name":"staking_confirmed","props":{"amount_bucket":"10_to_100","network":"Polkadot","staking_type":"direct"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
-                event: .stakingCompleted(type: .mythos, network: .networkName("Mythos"), amount: 10, rate: nil),
+                event: .stakingCompleted(type: .mythos, network: mythos, amount: 10, rate: nil),
                 expectedJSON: #"{"id":"row-1","name":"staking_completed","props":{"amount_bucket":"under_1","network":"Mythos","staking_type":"mythos"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
-                event: .stakingFailed(type: .direct, network: .networkName("Polkadot"), reason: .networkError),
+                event: .stakingFailed(type: .direct, network: polkadot, reason: .networkError),
                 expectedJSON: #"{"id":"row-1","name":"staking_failed","props":{"network":"Polkadot","reason":"network_error","staking_type":"direct"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
@@ -207,17 +221,17 @@ final class AnalyticsEventCatalogTests: XCTestCase {
                 line: #line
             ),
             Row(
-                event: .unstakeInitiated(type: .pool, network: .networkName("Polkadot"), amount: 10, rate: 5),
+                event: .unstakeInitiated(type: .pool, network: polkadot, amount: 10, rate: 5),
                 expectedJSON: #"{"id":"row-1","name":"unstake_initiated","props":{"amount_bucket":"10_to_100","network":"Polkadot","staking_type":"pool"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
-                event: .unstakeCompleted(type: .pool, network: .networkName("Polkadot"), amount: 10, rate: 5),
+                event: .unstakeCompleted(type: .pool, network: polkadot, amount: 10, rate: 5),
                 expectedJSON: #"{"id":"row-1","name":"unstake_completed","props":{"amount_bucket":"10_to_100","network":"Polkadot","staking_type":"pool"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
-                event: .unstakeFailed(type: .unsupported, network: .networkName("Polkadot"), reason: .userCancelled),
+                event: .unstakeFailed(type: .unsupported, network: polkadot, reason: .userCancelled),
                 expectedJSON: #"{"id":"row-1","name":"unstake_failed","props":{"network":"Polkadot","reason":"user_cancelled","staking_type":"unsupported"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             )
@@ -228,8 +242,8 @@ final class AnalyticsEventCatalogTests: XCTestCase {
         [
             Row(
                 event: .sendInitiated(
-                    asset: .assetSymbol("DOT"),
-                    network: .networkName("Polkadot"),
+                    asset: dot,
+                    network: polkadot,
                     destinationNetwork: nil,
                     amount: 10,
                     rate: 5,
@@ -240,8 +254,8 @@ final class AnalyticsEventCatalogTests: XCTestCase {
             ),
             Row(
                 event: .sendCompleted(
-                    asset: .assetSymbol("DOT"),
-                    network: .networkName("Polkadot"),
+                    asset: dot,
+                    network: polkadot,
                     destinationNetwork: nil,
                     amount: 10,
                     rate: 5
@@ -251,9 +265,9 @@ final class AnalyticsEventCatalogTests: XCTestCase {
             ),
             Row(
                 event: .sendCompleted(
-                    asset: .assetSymbol("USDT"),
-                    network: .networkName("Polkadot Asset Hub"),
-                    destinationNetwork: .networkName("Hydration"),
+                    asset: usdt,
+                    network: assetHub,
+                    destinationNetwork: hydration,
                     amount: 10,
                     rate: 1
                 ),
@@ -262,9 +276,9 @@ final class AnalyticsEventCatalogTests: XCTestCase {
             ),
             Row(
                 event: .sendFailed(
-                    asset: .assetSymbol("DOT"),
-                    network: .networkName("Polkadot"),
-                    destinationNetwork: .networkName("Hydration"),
+                    asset: dot,
+                    network: polkadot,
+                    destinationNetwork: hydration,
                     reason: .unknown
                 ),
                 expectedJSON: #"{"id":"row-1","name":"send_failed","props":{"asset":"DOT","destination_network":"Hydration","network":"Polkadot","reason":"unknown"},"ts":"2026-09-02T10:00:00.123Z"}"#,
@@ -276,15 +290,15 @@ final class AnalyticsEventCatalogTests: XCTestCase {
     private var dappRows: [Row] {
         [
             Row(
-                event: .dappOpened(host: .dappHost("app.example.org"), source: .catalog, isKnown: true),
+                event: .dappOpened(host: exampleHost, source: .catalog, isKnown: true),
                 expectedJSON: #"{"id":"row-1","name":"dapp_opened","props":{"dapp_host":"app.example.org","is_known_dapp":true,"source":"catalog"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
                 event: .signRequestShown(
                     source: .dappBrowser,
-                    method: .signingMethod("polkadot_signPayload"),
-                    chain: .caip2Chain("polkadot:91b171bb158e2d3848fa23a9f1c25182")
+                    method: signPayload,
+                    chain: polkadotChain
                 ),
                 expectedJSON: #"{"id":"row-1","name":"sign_request_shown","props":{"chain":"polkadot:91b171bb158e2d3848fa23a9f1c25182","method":"polkadot_signPayload","source":"dapp_browser"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
@@ -292,8 +306,8 @@ final class AnalyticsEventCatalogTests: XCTestCase {
             Row(
                 event: .signApproved(
                     source: .dappBrowser,
-                    method: .signingMethod("polkadot_signPayload"),
-                    chain: .caip2Chain("polkadot:91b171bb158e2d3848fa23a9f1c25182")
+                    method: signPayload,
+                    chain: polkadotChain
                 ),
                 expectedJSON: #"{"id":"row-1","name":"sign_approved","props":{"chain":"polkadot:91b171bb158e2d3848fa23a9f1c25182","method":"polkadot_signPayload","source":"dapp_browser"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
@@ -301,8 +315,8 @@ final class AnalyticsEventCatalogTests: XCTestCase {
             Row(
                 event: .signRejected(
                     source: .walletConnect,
-                    method: .signingMethod("eth_sendTransaction"),
-                    chain: .caip2Chain("eip155:1")
+                    method: sendTransaction,
+                    chain: ethereumChain
                 ),
                 expectedJSON: #"{"id":"row-1","name":"sign_rejected","props":{"chain":"eip155:1","method":"eth_sendTransaction","source":"walletconnect"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
@@ -310,8 +324,8 @@ final class AnalyticsEventCatalogTests: XCTestCase {
             Row(
                 event: .signFailed(
                     source: .walletConnect,
-                    method: .signingMethod("eth_sendTransaction"),
-                    chain: .caip2Chain("eip155:1"),
+                    method: sendTransaction,
+                    chain: ethereumChain,
                     reason: .unsupportedRequest
                 ),
                 expectedJSON: #"{"id":"row-1","name":"sign_failed","props":{"chain":"eip155:1","method":"eth_sendTransaction","reason":"unsupported_request","source":"walletconnect"},"ts":"2026-09-02T10:00:00.123Z"}"#,
@@ -320,7 +334,7 @@ final class AnalyticsEventCatalogTests: XCTestCase {
             Row(
                 event: .governanceVoteCast(
                     direction: .aye,
-                    network: .networkName("Polkadot"),
+                    network: polkadot,
                     amount: 10,
                     rate: 5,
                     conviction: .locked3x
@@ -335,36 +349,36 @@ final class AnalyticsEventCatalogTests: XCTestCase {
         [
             Row(
                 event: .buyInitiated(
-                    provider: .providerId("mercuryo"),
-                    asset: .assetSymbol("DOT"),
-                    network: .networkName("Polkadot")
+                    provider: mercuryo,
+                    asset: dot,
+                    network: polkadot
                 ),
                 expectedJSON: #"{"id":"row-1","name":"buy_initiated","props":{"asset":"DOT","network":"Polkadot","provider":"mercuryo"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
                 event: .buyCompleted(
-                    provider: .providerId("mercuryo"),
-                    asset: .assetSymbol("DOT"),
-                    network: .networkName("Polkadot")
+                    provider: mercuryo,
+                    asset: dot,
+                    network: polkadot
                 ),
                 expectedJSON: #"{"id":"row-1","name":"buy_completed","props":{"asset":"DOT","network":"Polkadot","provider":"mercuryo"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
                 event: .sellInitiated(
-                    provider: .providerId("mercuryo"),
-                    asset: .assetSymbol("DOT"),
-                    network: .networkName("Polkadot")
+                    provider: mercuryo,
+                    asset: dot,
+                    network: polkadot
                 ),
                 expectedJSON: #"{"id":"row-1","name":"sell_initiated","props":{"asset":"DOT","network":"Polkadot","provider":"mercuryo"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
                 event: .sellCompleted(
-                    provider: .providerId("mercuryo"),
-                    asset: .assetSymbol("DOT"),
-                    network: .networkName("Polkadot")
+                    provider: mercuryo,
+                    asset: dot,
+                    network: polkadot
                 ),
                 expectedJSON: #"{"id":"row-1","name":"sell_completed","props":{"asset":"DOT","network":"Polkadot","provider":"mercuryo"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
@@ -414,29 +428,29 @@ final class AnalyticsEventCatalogTests: XCTestCase {
     func testSwapEventsAreSkippedWithoutAFiatRate() {
         XCTAssertNil(AnalyticsEvent.swapInitiated(
             source: .mainScreen,
-            assetIn: .assetSymbol("DOT"),
-            assetOut: .assetSymbol("USDT"),
-            networkIn: .networkName("Polkadot"),
-            networkOut: .networkName("Polkadot Asset Hub"),
+            assetIn: dot,
+            assetOut: usdt,
+            networkIn: polkadot,
+            networkOut: assetHub,
             amount: 100,
             price: nil
         ))
 
         XCTAssertNil(AnalyticsEvent.swapConfirmed(
-            assetIn: .assetSymbol("DOT"),
-            assetOut: .assetSymbol("USDT"),
-            networkIn: .networkName("Polkadot"),
-            networkOut: .networkName("Polkadot Asset Hub"),
+            assetIn: dot,
+            assetOut: usdt,
+            networkIn: polkadot,
+            networkOut: assetHub,
             amount: 100,
             price: nil,
             slippage: 0.5
         ))
 
         XCTAssertNil(AnalyticsEvent.swapCompleted(
-            assetIn: .assetSymbol("DOT"),
-            assetOut: .assetSymbol("USDT"),
-            networkIn: .networkName("Polkadot"),
-            networkOut: .networkName("Polkadot Asset Hub"),
+            assetIn: dot,
+            assetOut: usdt,
+            networkIn: polkadot,
+            networkOut: assetHub,
             amount: 100,
             price: nil,
             duration: 20

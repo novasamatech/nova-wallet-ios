@@ -14,7 +14,7 @@ final class AnalyticsPropertyValueTests: XCTestCase {
         let props: [String: AnalyticsPropertyValue] = [
             "a_bool": .bool(true),
             "c_enum": .enumerated("native_token"),
-            "d_content": .content(.assetSymbol("DOT"))
+            "d_content": .content(.assetSymbol("DOT")!)
         ]
 
         XCTAssertEqual(
@@ -27,7 +27,7 @@ final class AnalyticsPropertyValueTests: XCTestCase {
         let original: [String: AnalyticsPropertyValue] = [
             "a": .bool(false),
             "c": .enumerated("setup"),
-            "d": .content(.dappHost("app.example.org"))
+            "d": .content(.dappHost(URL(string: "https://app.example.org/trade")!)!)
         ]
 
         let decoded = try decodeWire(try AnalyticsCoding.encoder.encode(original))
@@ -42,7 +42,7 @@ final class AnalyticsPropertyValueTests: XCTestCase {
         let original: [String: AnalyticsPropertyValue] = [
             "a": .bool(false),
             "c": .enumerated("setup"),
-            "d": .content(.dappHost("app.example.org"))
+            "d": .content(.dappHost(URL(string: "https://app.example.org/trade")!)!)
         ]
 
         let firstPass = try AnalyticsCoding.encoder.encode(original)
@@ -69,6 +69,15 @@ final class AnalyticsPropertyValueTests: XCTestCase {
 
         XCTAssertEqual(Set(event.properties.keys), [.asset])
         XCTAssertNil(event.properties[.destinationNetwork])
+    }
+
+    func testRejectedContentIsOmittedFromTheEvent() {
+        let event = AnalyticsEvent(
+            name: .sendCompleted,
+            properties: [.destinationNetwork: AnalyticsContentValue.networkName("Bob's  network!")]
+        )
+
+        XCTAssertTrue(event.properties.isEmpty)
     }
 
     func testRawRepresentableEnumsConvertForFree() {
