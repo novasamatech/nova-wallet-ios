@@ -2,76 +2,70 @@ import Foundation
 import Keystore_iOS
 
 final class SerialisedSettingsManager: SettingsManagerProtocol {
-    private let wrapped: SettingsManagerProtocol
-    private let lock = NSLock()
-
-    init(wrapping wrapped: SettingsManagerProtocol = InMemorySettingsManager()) {
-        self.wrapped = wrapped
+    struct BoolWrite: Equatable {
+        let key: String
+        let value: Bool
     }
 
-    private func synchronised<T>(_ body: () -> T) -> T {
-        lock.lock()
+    private let store = Locked(InMemorySettingsManager())
+    private let recordedBoolWrites = Locked<[BoolWrite]>([])
 
-        defer {
-            lock.unlock()
-        }
-
-        return body()
-    }
+    var boolWrites: [BoolWrite] { recordedBoolWrites.value }
 
     func set(value: Bool, for key: String) {
-        synchronised { wrapped.set(value: value, for: key) }
+        recordedBoolWrites.update { $0.append(BoolWrite(key: key, value: value)) }
+        store.update { $0.set(value: value, for: key) }
     }
 
     func set(value: Int, for key: String) {
-        synchronised { wrapped.set(value: value, for: key) }
+        store.update { $0.set(value: value, for: key) }
     }
 
     func set(value: Double, for key: String) {
-        synchronised { wrapped.set(value: value, for: key) }
+        store.update { $0.set(value: value, for: key) }
     }
 
     func set(value: String, for key: String) {
-        synchronised { wrapped.set(value: value, for: key) }
+        store.update { $0.set(value: value, for: key) }
     }
 
     func set(value: Data, for key: String) {
-        synchronised { wrapped.set(value: value, for: key) }
+        store.update { $0.set(value: value, for: key) }
     }
 
     func set(anyValue: Any, for key: String) {
-        synchronised { wrapped.set(anyValue: anyValue, for: key) }
+        store.update { $0.set(anyValue: anyValue, for: key) }
     }
 
     func bool(for key: String) -> Bool? {
-        synchronised { wrapped.bool(for: key) }
+        store.read { $0.bool(for: key) }
     }
 
     func integer(for key: String) -> Int? {
-        synchronised { wrapped.integer(for: key) }
+        store.read { $0.integer(for: key) }
     }
 
     func double(for key: String) -> Double? {
-        synchronised { wrapped.double(for: key) }
+        store.read { $0.double(for: key) }
     }
 
     func string(for key: String) -> String? {
-        synchronised { wrapped.string(for: key) }
+        store.read { $0.string(for: key) }
     }
 
     func data(for key: String) -> Data? {
-        synchronised { wrapped.data(for: key) }
+        store.read { $0.data(for: key) }
     }
 
     func anyValue(for key: String) -> Any? {
-        synchronised { wrapped.anyValue(for: key) }
+        store.read { $0.anyValue(for: key) }
     }
 
     func removeValue(for key: String) {
-        synchronised { wrapped.removeValue(for: key) }
+        store.update { $0.removeValue(for: key) }
     }
 
     func removeAll() {
-        synchronised { wrapped.removeAll() }
+        store.update { $0.removeAll() }
     }
 }

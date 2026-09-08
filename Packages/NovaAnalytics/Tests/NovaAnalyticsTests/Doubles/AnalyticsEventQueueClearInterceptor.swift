@@ -5,28 +5,14 @@ import Operation_iOS
 final class AnalyticsEventQueueClearInterceptor {
     var clearError: Error?
     var onClearScheduled: (() -> Void)?
-    var onClear: (() -> Void)?
 
     private let wrapped: AnalyticsEventQueueProtocol
-    private let mutex = NSLock()
-    private var recordedClearCalls = 0
+    private let recordedClearCalls = Locked(0)
 
-    var clearCallCount: Int {
-        synchronised { recordedClearCalls }
-    }
+    var clearCallCount: Int { recordedClearCalls.value }
 
     init(wrapping wrapped: AnalyticsEventQueueProtocol) {
         self.wrapped = wrapped
-    }
-
-    private func synchronised<T>(_ body: () -> T) -> T {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        return body()
     }
 }
 
@@ -37,12 +23,7 @@ extension AnalyticsEventQueueClearInterceptor: AnalyticsEventQueueProtocol {
         payload: Data,
         consentEpoch: Int
     ) -> CompoundOperationWrapper<Void> {
-        wrapped.enqueueWrapper(
-            name: name,
-            timestamp: timestamp,
-            payload: payload,
-            consentEpoch: consentEpoch
-        )
+        wrapped.enqueueWrapper(name: name, timestamp: timestamp, payload: payload, consentEpoch: consentEpoch)
     }
 
     func peekWrapper(count: Int) -> CompoundOperationWrapper<[AnalyticsPendingEvent]> {
@@ -61,12 +42,11 @@ extension AnalyticsEventQueueClearInterceptor: AnalyticsEventQueueProtocol {
         onClearScheduled?()
 
         let error = clearError
-        let hook = onClear
+        let calls = recordedClearCalls
         let deletion = wrapped.clearOperation()
 
-        return ClosureOperation { [weak self] in
-            self?.synchronised { self?.recordedClearCalls += 1 }
-            hook?()
+        return ClosureOperation {
+            calls.update { $0 += 1 }
 
             if let error {
                 throw error
