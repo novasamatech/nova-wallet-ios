@@ -75,11 +75,15 @@ private struct FacadeFixture {
         XCTAssertEqual(XCTWaiter().wait(for: [settled], timeout: 10), .completed, file: file, line: line)
     }
 
-    func pendingNames() throws -> [String] {
+    func pendingEvents() throws -> [AnalyticsPendingEvent] {
         let wrapper = facade.debugPendingEventsWrapper(count: 500)
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
 
-        return try wrapper.targetOperation.extractNoCancellableResultData().map(\.name)
+        return try wrapper.targetOperation.extractNoCancellableResultData()
+    }
+
+    func pendingNames() throws -> [String] {
+        try pendingEvents().map(\.name)
     }
 
     func persistedInstallId() -> String? {
@@ -105,6 +109,7 @@ final class AnalyticsConfigurationTests: XCTestCase {
         directory: URL,
         settings: SettingsManagerProtocol = InMemorySettingsManager(),
         remoteSettings: AnalyticsRemoteSettings,
+        isFirstLaunch: @escaping () -> Bool = { false },
         operationQueue: OperationQueue = OperationQueue(),
         analyticsOperationQueue: OperationQueue = OperationQueue()
     ) -> AnalyticsConfiguration {
@@ -113,7 +118,7 @@ final class AnalyticsConfigurationTests: XCTestCase {
             appVersion: "10.9.0",
             storeDirectory: directory,
             isReleaseBuild: false,
-            isFirstLaunch: { false },
+            isFirstLaunch: isFirstLaunch,
             settingsManager: settings,
             remoteSettings: remoteSettings,
             logger: SilentLogger(),
@@ -132,7 +137,8 @@ final class AnalyticsConfigurationTests: XCTestCase {
 
     private func makeFacadeFixture(
         optedIn: Bool = false,
-        persistedRemoteEnabled: Bool? = nil
+        persistedRemoteEnabled: Bool? = nil,
+        isFirstLaunch: @escaping () -> Bool = { false }
     ) throws -> FacadeFixture {
         let settings = SerialisedSettingsManager()
         settings.set(value: optedIn, for: Keys.analyticsEnabled)
@@ -153,6 +159,7 @@ final class AnalyticsConfigurationTests: XCTestCase {
                 directory: directory,
                 settings: settings,
                 remoteSettings: remoteSettings,
+                isFirstLaunch: isFirstLaunch,
                 operationQueue: operationQueue,
                 analyticsOperationQueue: analyticsOperationQueue
             )
@@ -291,5 +298,26 @@ final class AnalyticsConfigurationTests: XCTestCase {
 
         XCTAssertEqual(fixture.remoteSettings.requestCount, 0)
         XCTAssertFalse(fixture.facade.consent.isAvailable)
+    }
+
+    func testTheFirstLaunchFactIsCapturedWhenSetupRunsNotWhenTheResolutionLands() throws {
+        var isFirstLaunch = true
+        let fixture = try makeFacadeFixture(optedIn: true, isFirstLaunch: { isFirstLaunch })
+        let requested = expectation(description: "remote settings requested")
+        let gate = DispatchSemaphore(value: 0)
+        fixture.remoteSettings.onRequest = { requested.fulfill() }
+        fixture.remoteSettings.gate = gate
+
+        fixture.facade.setup()
+        wait(for: [requested], timeout: 5)
+        isFirstLaunch = false
+
+        gate.signal()
+        fixture.drain()
+
+        let appOpened = try XCTUnwrap(fixture.pendingEvents().first { $0.name == "app_opened" })
+        let properties = try XCTUnwrap(JSONSerialization.jsonObject(with: appOpened.payload) as? [String: Any])
+
+        XCTAssertEqual(properties["is_first_launch"] as? Bool, true)
     }
 }

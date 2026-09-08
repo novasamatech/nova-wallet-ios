@@ -22,6 +22,7 @@ public final class AnalyticsServiceFacade {
     private var isSetUp: Bool = false
     private var isActive: Bool = false
     private var isResolving: Bool = false
+    private var isFirstLaunchAtSetup: Bool = false
 
     public init(configuration: AnalyticsConfiguration) {
         let settingsManager = configuration.settingsManager
@@ -131,6 +132,10 @@ extension AnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
         }
 
         isSetUp = true
+
+        // Read on the launch path: the host clears its first-launch flag once launch completes,
+        // long before the remote resolution lands.
+        isFirstLaunchAtSetup = isFirstLaunch()
         mutex.unlock()
 
         resolveRemoteAvailability()
@@ -267,7 +272,7 @@ private extension AnalyticsServiceFacade {
         sessionTracker.startSession()
 
         service.trackAndFlush(
-            .appOpened(isFirstLaunch: isFirstLaunch()),
+            .appOpened(isFirstLaunch: isFirstLaunchAtSetup),
             reason: .launch,
             completion: {}
         )
