@@ -272,7 +272,8 @@ final class AnalyticsServiceTests: XCTestCase {
 
     func testTheEnqueueIsSubmittedWhileTheConsentWipeIsLockedOut() {
         let settings = InMemorySettingsManager()
-        let availability = AnalyticsAvailabilityProvider(attestationMode: .appAttest)
+        let availability = AnalyticsAvailabilityProvider(attestationMode: .appAttest, settingsManager: settings)
+        availability.setRemoteEnabled(true)
         let consent = AnalyticsConsentManager(
             settingsManager: settings,
             availabilityProvider: availability
@@ -496,7 +497,8 @@ final class AnalyticsServiceTests: XCTestCase {
         let settings = SerialisedSettingsManager()
         settings.set(value: true, for: AnalyticsTestFixture.Keys.analyticsEnabled)
 
-        let availability = AnalyticsAvailabilityProvider(attestationMode: .appAttest)
+        let availability = AnalyticsAvailabilityProvider(attestationMode: .appAttest, settingsManager: settings)
+        availability.setRemoteEnabled(true)
         let consent = AnalyticsConsentManager(
             settingsManager: settings,
             availabilityProvider: availability

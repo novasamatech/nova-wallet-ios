@@ -95,4 +95,16 @@ extension AnalyticsConsentManager: AnalyticsConsentManagerProtocol {
     public func removeObserver(by owner: AnyObject) {
         observers = observers.filter { $0.owner !== owner && $0.owner !== nil }
     }
+
+    public func addAvailabilityObserver(
+        with owner: AnyObject,
+        queue: DispatchQueue?,
+        closure: @escaping (Bool) -> Void
+    ) {
+        availabilityProvider.addObserver(with: owner, queue: queue, closure: closure)
+    }
+
+    public func removeAvailabilityObserver(by owner: AnyObject) {
+        availabilityProvider.removeObserver(by: owner)
+    }
 }

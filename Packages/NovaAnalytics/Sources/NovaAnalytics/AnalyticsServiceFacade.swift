@@ -38,7 +38,10 @@ public final class AnalyticsServiceFacade {
             isAppAttestSupported: appAttest.isSupported
         )
 
-        let availability = AnalyticsAvailabilityProvider(attestationMode: attestationMode)
+        let availability = AnalyticsAvailabilityProvider(
+            attestationMode: attestationMode,
+            settingsManager: settingsManager
+        )
 
         let consent = AnalyticsConsentManager(
             settingsManager: settingsManager,

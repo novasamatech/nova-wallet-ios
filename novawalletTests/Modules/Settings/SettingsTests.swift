@@ -202,9 +202,13 @@ final class SettingsTests: XCTestCase {
     }
 
     func testUnavailableSubsystemReportsNilRatherThanFalse() {
+        let settings = InMemorySettingsManager()
         let consent = AnalyticsConsentManager(
-            settingsManager: InMemorySettingsManager(),
-            availabilityProvider: AnalyticsAvailabilityProvider(attestationMode: .unavailable)
+            settingsManager: settings,
+            availabilityProvider: AnalyticsAvailabilityProvider(
+                attestationMode: .unavailable,
+                settingsManager: settings
+            )
         )
         let interactor = makeAnalyticsInteractor(consent: consent)
         let output = AnalyticsSettingsOutputSpy()
@@ -269,12 +273,22 @@ final class SettingsTests: XCTestCase {
 // MARK: - Analytics helpers
 
 private extension SettingsTests {
+    func makeAvailability(
+        settings: SettingsManagerProtocol,
+        remoteEnabled: Bool
+    ) -> AnalyticsAvailabilityProvider {
+        let availability = AnalyticsAvailabilityProvider(attestationMode: .appAttest, settingsManager: settings)
+        availability.setRemoteEnabled(remoteEnabled)
+
+        return availability
+    }
+
     func makeConsent(
         settings: SettingsManagerProtocol = InMemorySettingsManager()
     ) -> AnalyticsConsentManager {
         AnalyticsConsentManager(
             settingsManager: settings,
-            availabilityProvider: AnalyticsAvailabilityProvider(attestationMode: .appAttest)
+            availabilityProvider: makeAvailability(settings: settings, remoteEnabled: true)
         )
     }
 
@@ -282,7 +296,7 @@ private extension SettingsTests {
         optedIn: Bool,
         settings: SettingsManagerProtocol = InMemorySettingsManager()
     ) -> AnalyticsConsentManager {
-        let availability = AnalyticsAvailabilityProvider(attestationMode: .appAttest)
+        let availability = makeAvailability(settings: settings, remoteEnabled: true)
         let consent = AnalyticsConsentManager(
             settingsManager: settings,
             availabilityProvider: availability

@@ -1,6 +1,7 @@
 import XCTest
 @testable import NovaAnalytics
 import Keystore_iOS
+import NovaAppAttest
 
 private final class StubAvailability: AnalyticsAvailabilityProviderProtocol {
     var isAvailable: Bool
@@ -8,6 +9,10 @@ private final class StubAvailability: AnalyticsAvailabilityProviderProtocol {
     init(isAvailable: Bool) {
         self.isAvailable = isAvailable
     }
+
+    func addObserver(with _: AnyObject, queue _: DispatchQueue?, closure _: @escaping (Bool) -> Void) {}
+
+    func removeObserver(by _: AnyObject) {}
 }
 
 final class AnalyticsConsentManagerTests: XCTestCase {
@@ -120,6 +125,25 @@ final class AnalyticsConsentManagerTests: XCTestCase {
         XCTAssertFalse(manager.isAvailable)
         availability.isAvailable = true
         XCTAssertTrue(manager.isAvailable)
+    }
+
+    func testAvailabilityObserversAreForwardedToTheProvider() {
+        let settings = InMemorySettingsManager()
+        let availability = AnalyticsAvailabilityProvider(attestationMode: .appAttest, settingsManager: settings)
+        let manager = AnalyticsConsentManager(
+            settingsManager: settings,
+            availabilityProvider: availability
+        )
+
+        let owner = NSObject()
+        var observed: [Bool] = []
+        manager.addAvailabilityObserver(with: owner, queue: nil) { observed.append($0) }
+
+        availability.setRemoteEnabled(true)
+        manager.removeAvailabilityObserver(by: owner)
+        availability.setRemoteEnabled(false)
+
+        XCTAssertEqual(observed, [true])
     }
 
     func testAWithdrawalIsWrittenOnlyAfterTheErasureObligation() {
