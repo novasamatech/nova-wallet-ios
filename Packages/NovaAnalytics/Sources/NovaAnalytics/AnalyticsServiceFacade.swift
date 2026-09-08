@@ -18,7 +18,9 @@ public final class AnalyticsServiceFacade {
     private let logger: SDKLoggerProtocol
 
     private let mutex = NSLock()
+    private var isSetUp: Bool = false
     private var isActive: Bool = false
+    private var isResolving: Bool = false
 
     public init(configuration: AnalyticsConfiguration) {
         let settingsManager = configuration.settingsManager
@@ -108,7 +110,7 @@ public final class AnalyticsServiceFacade {
                 return
             }
 
-            self?.sessionTracker.startSession()
+            self?.startSessionIfActive()
         }
     }
 }
@@ -119,22 +121,13 @@ extension AnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
     public func setup() {
         mutex.lock()
 
-        guard !isActive else {
+        guard !isSetUp else {
             mutex.unlock()
             return
         }
 
-        isActive = true
+        isSetUp = true
         mutex.unlock()
-
-        sessionTracker.setup()
-        sessionTracker.startSession()
-
-        service.trackAndFlush(
-            .appOpened(isFirstLaunch: isFirstLaunch()),
-            reason: .launch,
-            completion: {}
-        )
 
         resolveRemoteAvailability()
     }
@@ -142,16 +135,15 @@ extension AnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
     public func throttle() {
         mutex.lock()
 
-        guard isActive else {
+        guard isSetUp else {
             mutex.unlock()
             return
         }
 
-        isActive = false
+        isSetUp = false
         mutex.unlock()
 
-        sessionTracker.throttle()
-        service.cancelFlush()
+        reconcile()
     }
 
     public func track(_ event: AnalyticsEvent) {
@@ -187,28 +179,103 @@ extension AnalyticsServiceFacade: AnalyticsDebugInspecting {
 
 private extension AnalyticsServiceFacade {
     func resolveRemoteAvailability() {
+        mutex.lock()
+
+        guard isSetUp, !isResolving else {
+            mutex.unlock()
+            return
+        }
+
+        isResolving = true
+        mutex.unlock()
+
+        let remoteWrapper = remoteSettings.createRemoteEnabledWrapper()
+
+        // Applied as the wrapper's own tail, so the launch sequence is ordered behind the
+        // resolution on the queue itself rather than behind a completion block.
+        let applyOperation = ClosureOperation<Void> { [weak self] in
+            let result = Result { try remoteWrapper.targetOperation.extractNoCancellableResultData() }
+
+            self?.apply(remoteResult: result)
+        }
+
+        applyOperation.addDependency(remoteWrapper.targetOperation)
+
         execute(
-            wrapper: remoteSettings.createRemoteEnabledWrapper(),
+            wrapper: remoteWrapper.insertingTail(operation: applyOperation),
             inOperationQueue: configOperationQueue,
             runningCallbackIn: nil
-        ) { [weak self] result in
-            guard let self else {
-                return
-            }
-
-            switch result {
-            case let .success(isEnabled):
-                availability.setRemoteEnabled(isEnabled)
-                service.handleAvailabilityChanged()
-
-                guard !availability.isAvailable else {
-                    return
-                }
-
-                throttle()
-            case let .failure(error):
-                logger.info("Analytics remote config unavailable: \(error)")
-            }
+        ) { [weak self] _ in
+            self?.finishResolving()
         }
+    }
+
+    func apply(remoteResult: Result<Bool, Error>) {
+        switch remoteResult {
+        case let .success(isEnabled):
+            availability.setRemoteEnabled(isEnabled)
+            service.handleAvailabilityChanged()
+        case let .failure(error):
+            logger.info("Analytics remote config unavailable, keeping the last resolved state: \(error)")
+        }
+
+        finishResolving()
+        reconcile()
+    }
+
+    func finishResolving() {
+        mutex.lock()
+        isResolving = false
+        mutex.unlock()
+    }
+
+    func reconcile() {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        let shouldRun = isSetUp && availability.isAvailable
+
+        guard shouldRun != isActive else {
+            return
+        }
+
+        isActive = shouldRun
+
+        if shouldRun {
+            activateLocked()
+        } else {
+            deactivateLocked()
+        }
+    }
+
+    func activateLocked() {
+        sessionTracker.setup()
+        sessionTracker.startSession()
+
+        service.trackAndFlush(
+            .appOpened(isFirstLaunch: isFirstLaunch()),
+            reason: .launch,
+            completion: {}
+        )
+    }
+
+    func deactivateLocked() {
+        sessionTracker.throttle()
+        service.cancelFlush()
+    }
+
+    func startSessionIfActive() {
+        mutex.lock()
+        let isActive = self.isActive
+        mutex.unlock()
+
+        guard isActive else {
+            return
+        }
+
+        sessionTracker.startSession()
     }
 }
