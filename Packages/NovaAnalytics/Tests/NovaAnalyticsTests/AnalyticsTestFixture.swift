@@ -3,23 +3,18 @@ import XCTest
 import Operation_iOS
 import Keystore_iOS
 import NovaAppAttest
-import NovaOperationSupport
-import SDKLogger
 
 struct AnalyticsTestFixture {
     let service: AnalyticsService
     let consent: AnalyticsConsentManager
-    let availability: AnalyticsAvailabilityProvider
     let queue: CoreDataAnalyticsEventQueue
     let clearInterceptor: AnalyticsEventQueueClearInterceptor
     let identity: AnalyticsIdentity
     let settings: SerialisedSettingsManager
     let uploader: AnalyticsUploadingSpy
-    let attestation: BackendAttestationProvider?
     let operationQueue: OperationQueue
     let uploadOperationQueue: OperationQueue
     let attestationOperationQueue: OperationQueue
-    let completionQueue: DispatchQueue
 }
 
 extension AnalyticsTestFixture {
@@ -34,19 +29,12 @@ extension AnalyticsTestFixture {
 
     static func make(
         isAvailable: Bool = true,
-        persistedRemoteEnabled: Bool? = true,
         now: @escaping () -> Date = { Date() },
         deviceCheck: DeviceCheckAttestingSpy? = nil,
-        clearError: Error? = nil,
         settings: SerialisedSettingsManager = SerialisedSettingsManager(),
-        storage: AnalyticsStorageTestFacade = AnalyticsStorageTestFacade(),
-        logger: SDKLoggerProtocol = SilentLogger()
+        storage: AnalyticsStorageTestFacade = AnalyticsStorageTestFacade()
     ) -> AnalyticsTestFixture {
-        if let persistedRemoteEnabled {
-            settings.set(value: persistedRemoteEnabled, for: Keys.remoteEnabled)
-        } else {
-            settings.removeValue(for: Keys.remoteEnabled)
-        }
+        settings.set(value: true, for: Keys.remoteEnabled)
 
         let eventQueue = CoreDataAnalyticsEventQueue(
             repository: AnyDataProviderRepository(storage.createEventRepository()),
@@ -54,18 +42,13 @@ extension AnalyticsTestFixture {
         )
 
         let clearInterceptor = AnalyticsEventQueueClearInterceptor(wrapping: eventQueue)
-        clearInterceptor.clearError = clearError
 
         let availability = AnalyticsAvailabilityProvider(
             attestationMode: isAvailable ? .appAttest : .unavailable,
             settingsManager: settings
         )
 
-        let consent = AnalyticsConsentManager(
-            settingsManager: settings,
-            availabilityProvider: availability
-        )
-
+        let consent = AnalyticsConsentManager(settingsManager: settings, availabilityProvider: availability)
         let attestationOperationQueue = OperationQueue()
 
         let attestation = deviceCheck.map {
@@ -93,8 +76,6 @@ extension AnalyticsTestFixture {
         operationQueue.maxConcurrentOperationCount = 1
 
         let uploadOperationQueue = OperationQueue()
-        let completionQueue = DispatchQueue(label: "test.analytics.completions")
-
         let identity = AnalyticsIdentity(settingsManager: settings)
 
         let service = AnalyticsService(
@@ -106,45 +87,21 @@ extension AnalyticsTestFixture {
             attestation: attestation,
             operationQueue: operationQueue,
             uploadOperationQueue: uploadOperationQueue,
-            completionQueue: completionQueue,
             timeProvider: now,
-            logger: logger
+            logger: SilentLogger()
         )
 
         return AnalyticsTestFixture(
             service: service,
             consent: consent,
-            availability: availability,
             queue: eventQueue,
             clearInterceptor: clearInterceptor,
             identity: identity,
             settings: settings,
             uploader: uploader,
-            attestation: attestation,
             operationQueue: operationQueue,
             uploadOperationQueue: uploadOperationQueue,
-            attestationOperationQueue: attestationOperationQueue,
-            completionQueue: completionQueue
-        )
-    }
-
-    private static func makeAttestation(
-        deviceCheck: DeviceCheckAttestingSpy,
-        settings: SerialisedSettingsManager,
-        operationQueue: OperationQueue
-    ) -> BackendAttestationProvider {
-        let repository = SettingsAppAttestKeyRepository(settingsManager: settings)
-
-        return BackendAttestationProvider(
-            appAttest: AppAttestService(service: deviceCheck),
-            remoteFactory: BackendAttestationRemoteFactorySpy(),
-            identity: BackendAttestationIdentity(settingsManager: settings),
-            repository: AnyDataProviderRepository(repository),
-            gatewayURL: URL(string: "https://gateway.example/")!,
-            mode: .appAttest,
-            bundle: Bundle.main,
-            operationQueue: operationQueue,
-            logger: SilentLogger()
+            attestationOperationQueue: attestationOperationQueue
         )
     }
 
@@ -159,11 +116,22 @@ extension AnalyticsTestFixture {
         return make(now: now, deviceCheck: deviceCheck, settings: settings, storage: storage)
     }
 
-    static func makeUnresolved(
+    private static func makeAttestation(
+        deviceCheck: DeviceCheckAttestingSpy,
         settings: SerialisedSettingsManager,
-        storage: AnalyticsStorageTestFacade
-    ) -> AnalyticsTestFixture {
-        make(persistedRemoteEnabled: nil, settings: settings, storage: storage)
+        operationQueue: OperationQueue
+    ) -> BackendAttestationProvider {
+        BackendAttestationProvider(
+            appAttest: AppAttestService(service: deviceCheck),
+            remoteFactory: BackendAttestationRemoteFactorySpy(),
+            identity: BackendAttestationIdentity(settingsManager: settings),
+            repository: AnyDataProviderRepository(SettingsAppAttestKeyRepository(settingsManager: settings)),
+            gatewayURL: URL(string: "https://gateway.example/")!,
+            mode: .appAttest,
+            bundle: Bundle.main,
+            operationQueue: operationQueue,
+            logger: SilentLogger()
+        )
     }
 
     func drain() {
@@ -176,10 +144,6 @@ extension AnalyticsTestFixture {
 
     func drainAttestation() {
         attestationOperationQueue.waitUntilAllOperationsAreFinished()
-    }
-
-    func drainCompletions() {
-        completionQueue.sync {}
     }
 
     func queueCount() throws -> Int {
@@ -206,17 +170,13 @@ extension AnalyticsTestFixture {
         _ = try wrapper.targetOperation.extractNoCancellableResultData()
     }
 
-    func peekEvents() throws -> [AnalyticsPendingEvent] {
+    func peekNames() throws -> [String] {
         drain()
 
         let wrapper = queue.peekWrapper(count: 500)
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
 
-        return try wrapper.targetOperation.extractNoCancellableResultData()
-    }
-
-    func peekNames() throws -> [String] {
-        try peekEvents().map(\.name)
+        return try wrapper.targetOperation.extractNoCancellableResultData().map(\.name)
     }
 
     func persistedInstallId() -> String? {

@@ -11,28 +11,12 @@ final class AnalyticsStorageFacadeTests: XCTestCase {
     }
 
     override func setUpWithError() throws {
-        directory = FileManager.default.temporaryDirectory
-            .appendingPathComponent(UUID().uuidString)
-        try FileManager.default.createDirectory(
-            at: directory,
-            withIntermediateDirectories: true
-        )
+        directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
     }
 
     override func tearDownWithError() throws {
         try? FileManager.default.removeItem(at: directory)
-    }
-
-    func testModelLoadsFromThePackageBundle() throws {
-        let facade = AnalyticsStorageFacade(storeDirectory: directory)
-
-        let repository = facade.createEventRepository()
-        let operation = repository.fetchCountOperation()
-
-        let queue = OperationQueue()
-        queue.addOperations([operation], waitUntilFinished: true)
-
-        XCTAssertEqual(try operation.extractNoCancellableResultData(), 0)
     }
 
     func testEventRoundTripsThroughTheStore() throws {

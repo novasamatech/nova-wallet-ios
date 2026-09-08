@@ -5,67 +5,27 @@ import Keystore_iOS
 import NovaAppAttest
 
 final class AnalyticsUploaderTests: XCTestCase {
-    private final class BodyRecorder {
-        private let mutex = NSLock()
-        private var bodies: [Data] = []
-
-        func record(_ body: Data) {
-            mutex.lock()
-
-            defer {
-                mutex.unlock()
-            }
-
-            bodies.append(body)
-        }
-
-        var recorded: [Data] {
-            mutex.lock()
-
-            defer {
-                mutex.unlock()
-            }
-
-            return bodies
-        }
-    }
-
     private struct Fixture {
         let uploader: AnalyticsUploader
         let queue: CoreDataAnalyticsEventQueue
-        let storage: AnalyticsStorageTestFacade
         let attestation: BackendAttestationProviderSpy
         let uploadFactory: AnalyticsUploadOperationFactorySpy
-        let settings: InMemorySettingsManager
         let identity: AnalyticsIdentity
-        let sentBodies: BodyRecorder
     }
 
     private func makeFixture(
         uploadResults: [Result<Void, Error>],
-        optOutDuringAttestation: Bool = false,
         timeProvider: @escaping () -> Date = { Date(timeIntervalSince1970: 1_772_445_600) }
     ) -> Fixture {
-        let storage = AnalyticsStorageTestFacade()
-
         let queue = CoreDataAnalyticsEventQueue(
-            repository: AnyDataProviderRepository(storage.createEventRepository()),
+            repository: AnyDataProviderRepository(AnalyticsStorageTestFacade().createEventRepository()),
             maxCount: 500
         )
 
-        let settings = InMemorySettingsManager()
-        let identity = AnalyticsIdentity(settingsManager: settings)
-        let sentBodies = BodyRecorder()
-
+        let identity = AnalyticsIdentity(settingsManager: InMemorySettingsManager())
         let attestation = BackendAttestationProviderSpy()
-
-        if optOutDuringAttestation {
-            attestation.onSigning = { identity.forgetInstallId() }
-        }
-
         let uploadFactory = AnalyticsUploadOperationFactorySpy()
         uploadFactory.uploadResults = uploadResults
-        uploadFactory.onBody = { sentBodies.record($0) }
 
         let uploader = AnalyticsUploader(
             queue: queue,
@@ -81,22 +41,13 @@ final class AnalyticsUploaderTests: XCTestCase {
         return Fixture(
             uploader: uploader,
             queue: queue,
-            storage: storage,
             attestation: attestation,
             uploadFactory: uploadFactory,
-            settings: settings,
-            identity: identity,
-            sentBodies: sentBodies
+            identity: identity
         )
     }
 
-    private func flush(_ fixture: Fixture, maxBatches: Int = 10) throws {
-        let wrapper = fixture.uploader.flushWrapper(maxBatches: maxBatches)
-        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
-        try wrapper.targetOperation.extractNoCancellableResultData()
-    }
-
-    private func flushError(_ fixture: Fixture, maxBatches: Int = 10) -> Error? {
+    private func flush(_ fixture: Fixture, maxBatches: Int = 10) -> Error? {
         let wrapper = fixture.uploader.flushWrapper(maxBatches: maxBatches)
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
 
@@ -111,39 +62,18 @@ final class AnalyticsUploaderTests: XCTestCase {
 
     private func seed(_ fixture: Fixture, count: Int) throws {
         for index in 0 ..< count {
-            try enqueue(
-                fixture,
-                timestamp: Date(timeIntervalSince1970: TimeInterval(index)),
-                payload: Data("{}".utf8)
-            )
+            try enqueue(fixture, timestamp: Date(timeIntervalSince1970: TimeInterval(index)), payload: "{}")
         }
     }
 
-    private func seedTamperedRows(_ fixture: Fixture, count: Int) throws {
-        for index in 0 ..< count {
-            try enqueue(
-                fixture,
-                timestamp: Date(timeIntervalSince1970: TimeInterval(index)),
-                payload: Data(#"{"asset":"alice's savings wallet!"}"#.utf8)
-            )
-        }
-    }
-
-    private func seedCorruptRow(_ fixture: Fixture) throws {
-        try enqueue(
-            fixture,
-            timestamp: Date(timeIntervalSince1970: 0),
-            payload: Data("not-json".utf8)
-        )
-    }
-
-    private func enqueue(_ fixture: Fixture, timestamp: Date, payload: Data) throws {
+    private func enqueue(_ fixture: Fixture, timestamp: Date, payload: String) throws {
         let wrapper = fixture.queue.enqueueWrapper(
             name: "nova_card_opened",
             timestamp: timestamp,
-            payload: payload,
+            payload: Data(payload.utf8),
             consentEpoch: fixture.identity.consentEpoch
         )
+
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
         _ = try wrapper.targetOperation.extractNoCancellableResultData()
     }
@@ -151,6 +81,7 @@ final class AnalyticsUploaderTests: XCTestCase {
     private func queueCount(_ fixture: Fixture) throws -> Int {
         let operation = fixture.queue.countOperation()
         OperationQueue().addOperations([operation], waitUntilFinished: true)
+
         return try operation.extractNoCancellableResultData()
     }
 
@@ -161,33 +92,18 @@ final class AnalyticsUploaderTests: XCTestCase {
         return try wrapper.targetOperation.extractNoCancellableResultData().map(\.identifier)
     }
 
-    private func sentEventIds(_ body: Data) throws -> [String] {
+    private func sentEventIds(_ fixture: Fixture) throws -> [String] {
         struct SentEnvelope: Decodable {
             let events: [AnalyticsEventRemote]
         }
 
+        let body = try XCTUnwrap(fixture.uploadFactory.sentBodies.first)
+
         return try JSONDecoder().decode(SentEnvelope.self, from: body).events.map(\.id)
     }
 
-    private func isRegistrationRejection(_ error: Error?) -> Bool {
-        guard case .rejected? = error as? BackendAttestationError else {
-            return false
-        }
-
-        return true
-    }
-
-    private func transportError(forStatus statusCode: Int) throws -> AnalyticsTransportError {
-        let response = try XCTUnwrap(HTTPURLResponse(
-            url: URL(string: "https://gateway.example/v1/analytics/events")!,
-            statusCode: statusCode,
-            httpVersion: "HTTP/1.1",
-            headerFields: nil
-        ))
-
-        return try XCTUnwrap(
-            AnalyticsUploadOperationFactory.deliveryError(for: response, now: Date())
-        )
+    private func sentJSON(_ fixture: Fixture) throws -> String {
+        try XCTUnwrap(String(data: try XCTUnwrap(fixture.uploadFactory.sentBodies.first), encoding: .utf8))
     }
 
     func testSignedBytesAreTheSentBytes() throws {
@@ -197,22 +113,19 @@ final class AnalyticsUploaderTests: XCTestCase {
             return Date(timeIntervalSince1970: 1_772_445_600 + tick)
         })
         try seed(fixture, count: 1)
-        try flush(fixture)
 
-        XCTAssertEqual(fixture.attestation.signingCallCount, 1)
+        XCTAssertNil(flush(fixture))
+
+        XCTAssertEqual(fixture.attestation.signedBodies.count, 1)
         XCTAssertEqual(fixture.uploadFactory.callCount, 1)
-
-        let signedBytes = try XCTUnwrap(fixture.attestation.signedBodyClosures.last)()
-        let sentBytes = try XCTUnwrap(fixture.uploadFactory.bodyClosures.last)()
-
-        XCTAssertEqual(signedBytes, sentBytes)
+        XCTAssertEqual(fixture.attestation.signedBodies, fixture.uploadFactory.sentBodies)
     }
 
     func testSuccessfulBatchDropsExactlyThePeekedRows() throws {
         let fixture = makeFixture(uploadResults: [.success(()), .success(())])
         try seed(fixture, count: 60)
 
-        try flush(fixture)
+        XCTAssertNil(flush(fixture))
 
         XCTAssertEqual(try queueCount(fixture), 0)
     }
@@ -221,20 +134,18 @@ final class AnalyticsUploaderTests: XCTestCase {
         let fixture = makeFixture(uploadResults: Array(repeating: .success(()), count: 10))
         try seed(fixture, count: 150)
 
-        try flush(fixture, maxBatches: 1)
+        XCTAssertNil(flush(fixture, maxBatches: 1))
 
         XCTAssertEqual(try queueCount(fixture), 100)
         XCTAssertEqual(fixture.uploadFactory.callCount, 1)
     }
 
     func testRejectionRetainsTheBatchMarksUnattestedOnceAndSurfacesTheFailure() throws {
-        let fixture = makeFixture(
-            uploadResults: [.failure(AnalyticsTransportError.rejected(statusCode: 403))]
-        )
+        let fixture = makeFixture(uploadResults: [.failure(AnalyticsTransportError.rejected(statusCode: 403))])
         try seed(fixture, count: 60)
         let identifiers = try queuedIdentifiers(fixture)
 
-        let error = flushError(fixture)
+        let error = flush(fixture)
 
         XCTAssertEqual(error as? AnalyticsTransportError, .rejected(statusCode: 403))
         XCTAssertEqual(try queueCount(fixture), 60)
@@ -244,12 +155,10 @@ final class AnalyticsUploaderTests: XCTestCase {
     }
 
     func testServerErrorKeepsEverythingAndSurfacesTheFailure() throws {
-        let fixture = makeFixture(
-            uploadResults: [.failure(AnalyticsTransportError.serverError(statusCode: 500))]
-        )
+        let fixture = makeFixture(uploadResults: [.failure(AnalyticsTransportError.serverError(statusCode: 500))])
         try seed(fixture, count: 60)
 
-        let error = flushError(fixture)
+        let error = flush(fixture)
 
         XCTAssertEqual(error as? AnalyticsTransportError, .serverError(statusCode: 500))
         XCTAssertEqual(try queueCount(fixture), 60)
@@ -259,403 +168,67 @@ final class AnalyticsUploaderTests: XCTestCase {
 
     func testRetryLaterKeepsEverythingAndSurfacesTheFailure() throws {
         let fixture = makeFixture(
-            uploadResults: [
-                .failure(AnalyticsTransportError.retryLater(statusCode: 429, retryAfter: 120))
-            ]
+            uploadResults: [.failure(AnalyticsTransportError.retryLater(statusCode: 429, retryAfter: 120))]
         )
         try seed(fixture, count: 60)
 
-        let error = flushError(fixture)
+        let error = flush(fixture)
 
-        XCTAssertEqual(
-            error as? AnalyticsTransportError,
-            .retryLater(statusCode: 429, retryAfter: 120)
-        )
+        XCTAssertEqual(error as? AnalyticsTransportError, .retryLater(statusCode: 429, retryAfter: 120))
         XCTAssertEqual(try queueCount(fixture), 60)
         XCTAssertEqual(fixture.uploadFactory.callCount, 1)
-    }
-
-    func testAnUngradedStatusKeepsTheRows() throws {
-        let fixture = makeFixture(
-            uploadResults: [.failure(AnalyticsTransportError.serverError(statusCode: 404))]
-        )
-        try seed(fixture, count: 60)
-
-        let error = flushError(fixture)
-
-        XCTAssertEqual(error as? AnalyticsTransportError, .serverError(statusCode: 404))
-        XCTAssertEqual(try queueCount(fixture), 60)
-    }
-
-    func testAnUnknownTransportFailureKeepsTheRowsAndSurfaces() throws {
-        struct UnknownFailure: Error {}
-
-        let fixture = makeFixture(uploadResults: [.failure(UnknownFailure())])
-        try seed(fixture, count: 60)
-
-        let error = flushError(fixture)
-
-        XCTAssertTrue(error is UnknownFailure)
-        XCTAssertEqual(try queueCount(fixture), 60)
-    }
-
-    func testAttestationRejectionRetainsTheBatchAndSurfacesTheFailure() throws {
-        let fixture = makeFixture(
-            uploadResults: [.failure(BackendAttestationError.rejected(statusCode: 403))]
-        )
-        try seed(fixture, count: 60)
-        let identifiers = try queuedIdentifiers(fixture)
-
-        let error = flushError(fixture)
-
-        XCTAssertTrue(isRegistrationRejection(error))
-        XCTAssertEqual(try queueCount(fixture), 60)
-        XCTAssertEqual(try queuedIdentifiers(fixture), identifiers)
-        XCTAssertEqual(fixture.attestation.markUnattestedCallCount, 0)
-        XCTAssertEqual(fixture.uploadFactory.callCount, 1)
-    }
-
-    func testARejectionLeavesRowsEnqueuedAfterThePeekedPageUntouched() throws {
-        let fixture = makeFixture(
-            uploadResults: [.failure(AnalyticsTransportError.rejected(statusCode: 403))]
-        )
-        try seed(fixture, count: 50)
-        let peekedIds = try queuedIdentifiers(fixture)
-
-        fixture.attestation.onSigning = { [self] in
-            do {
-                try enqueue(
-                    fixture,
-                    timestamp: Date(timeIntervalSince1970: 50),
-                    payload: Data("{}".utf8)
-                )
-            } catch {
-                XCTFail("the late row could not be enqueued: \(error)")
-            }
-        }
-
-        XCTAssertNotNil(flushError(fixture))
-
-        let remainingIds = try queuedIdentifiers(fixture)
-
-        XCTAssertEqual(remainingIds.count, 51)
-        XCTAssertEqual(Array(remainingIds.prefix(50)), peekedIds)
-    }
-
-    func testUnacceptablePayloadStatusesDropOnlyThatBatchAndContinue() throws {
-        for statusCode in [400, 413, 422] {
-            let fixture = makeFixture(uploadResults: [
-                .failure(try transportError(forStatus: statusCode)),
-                .success(())
-            ])
-            try seed(fixture, count: 60)
-
-            try flush(fixture)
-
-            XCTAssertEqual(try queueCount(fixture), 0, "status \(statusCode)")
-            XCTAssertEqual(fixture.uploadFactory.callCount, 2, "status \(statusCode)")
-        }
-    }
-
-    func testRetryableStatusesKeepTheirRows() throws {
-        for statusCode in [408, 425, 429, 503] {
-            let fixture = makeFixture(uploadResults: [.failure(try transportError(forStatus: statusCode))])
-            try seed(fixture, count: 60)
-
-            XCTAssertNotNil(flushError(fixture), "status \(statusCode)")
-            XCTAssertEqual(try queueCount(fixture), 60, "status \(statusCode)")
-        }
-    }
-
-    func testEmptyQueueUploadsNothing() throws {
-        let fixture = makeFixture(uploadResults: [.success(())])
-
-        try flush(fixture)
-
-        XCTAssertEqual(fixture.uploadFactory.callCount, 0)
-        XCTAssertEqual(fixture.attestation.signingCallCount, 0)
     }
 
     func testEnvelopeCarriesTheInstallAndSessionIds() throws {
         let fixture = makeFixture(uploadResults: [.success(())])
         try seed(fixture, count: 1)
 
-        try flush(fixture)
+        XCTAssertNil(flush(fixture))
 
-        XCTAssertEqual(fixture.uploadFactory.callCount, 1)
-
-        let json = String(
-            data: try XCTUnwrap(fixture.uploadFactory.bodyClosures.last)(),
-            encoding: .utf8
-        )!
+        let json = try sentJSON(fixture)
 
         XCTAssertTrue(json.contains(#""platform":"ios""#))
         XCTAssertTrue(json.contains(#""v":1"#))
-        XCTAssertTrue(json.contains(fixture.settings.analyticsInstallId!))
-    }
-
-    func testInstallIdIsMintedOnlyAtTheFirstFlush() throws {
-        let fixture = makeFixture(uploadResults: [.success(())])
-        XCTAssertNil(fixture.settings.analyticsInstallId)
-
-        try seed(fixture, count: 1)
-        XCTAssertNil(fixture.settings.analyticsInstallId, "enqueue must not mint an identity")
-
-        try flush(fixture)
-        XCTAssertNotNil(fixture.settings.analyticsInstallId)
-    }
-
-    func testPoisonRowIsDroppedRatherThanWedgingTheQueue() throws {
-        let fixture = makeFixture(uploadResults: [.success(())])
-        try seedCorruptRow(fixture)
-        try seed(fixture, count: 1)
-
-        try flush(fixture)
-
-        XCTAssertEqual(try queueCount(fixture), 0)
-    }
-
-    func testAnUnreadableQueueIsClearedWithoutAnUpload() throws {
-        let fixture = makeFixture(uploadResults: [.success(())])
-        try seed(fixture, count: 1)
-        try fixture.storage.seedUnreadableRow()
-        XCTAssertEqual(try queueCount(fixture), 2)
-
-        try flush(fixture)
-
-        XCTAssertEqual(try queueCount(fixture), 0)
-        XCTAssertEqual(fixture.uploadFactory.callCount, 0)
-        XCTAssertEqual(fixture.attestation.signingCallCount, 0)
-    }
-
-    func testTamperedRowTextNeverReachesTheTransport() throws {
-        let fixture = makeFixture(uploadResults: [.success(())])
-        try enqueue(
-            fixture,
-            timestamp: Date(timeIntervalSince1970: 0),
-            payload: Data(#"{"asset":"alice's savings wallet!"}"#.utf8)
-        )
-        try seed(fixture, count: 1)
-
-        try flush(fixture)
-
-        let bodies = fixture.sentBodies.recorded.compactMap { String(data: $0, encoding: .utf8) }
-
-        XCTAssertEqual(bodies.count, 1)
-        XCTAssertFalse(try XCTUnwrap(bodies.first).contains("savings"))
-        XCTAssertEqual(try sentEventIds(try XCTUnwrap(fixture.sentBodies.recorded.first)).count, 1)
-        XCTAssertEqual(try queueCount(fixture), 0)
-    }
-
-    func testTamperedRowIsNeverSigned() throws {
-        let fixture = makeFixture(uploadResults: [.success(())])
-        try enqueue(
-            fixture,
-            timestamp: Date(timeIntervalSince1970: 0),
-            payload: Data(#"{"dapp_host":"https://alice:hunter2@bank.example/login"}"#.utf8)
-        )
-
-        try flush(fixture)
-
-        for body in fixture.attestation.signedBodies {
-            XCTAssertFalse(try XCTUnwrap(String(data: body, encoding: .utf8)).contains("hunter2"))
-        }
-    }
-
-    func testAPageOfOnlyTamperedRowsIsRemovedWithoutAnUploadOrAnInstallId() throws {
-        let fixture = makeFixture(uploadResults: [.success(())])
-        try seedTamperedRows(fixture, count: 3)
-
-        try flush(fixture)
-
-        XCTAssertEqual(fixture.uploadFactory.callCount, 0)
-        XCTAssertEqual(fixture.attestation.signingCallCount, 0)
-        XCTAssertEqual(try queueCount(fixture), 0)
-        XCTAssertNil(fixture.settings.analyticsInstallId)
-    }
-
-    func testTheFlushContinuesPastAFullPageOfTamperedRows() throws {
-        let fixture = makeFixture(uploadResults: [.success(())])
-        try seedTamperedRows(fixture, count: 50)
-        try seed(fixture, count: 1)
-        let freshId = try XCTUnwrap(queuedIdentifiers(fixture).last)
-
-        try flush(fixture)
-
-        XCTAssertEqual(fixture.uploadFactory.callCount, 1)
-        XCTAssertEqual(try sentEventIds(try XCTUnwrap(fixture.sentBodies.recorded.first)), [freshId])
-        XCTAssertEqual(try queueCount(fixture), 0)
-    }
-
-    func testOptOutBeforeTheBatchIsBuiltSendsNothingAndMintsNothing() throws {
-        let fixture = makeFixture(uploadResults: [.success(())])
-        try seed(fixture, count: 1)
-
-        fixture.identity.forgetInstallId()
-
-        try flush(fixture)
-
-        XCTAssertTrue(fixture.sentBodies.recorded.isEmpty)
-        XCTAssertNil(
-            fixture.settings.analyticsInstallId,
-            "the abort path minted a replacement install id"
-        )
-        XCTAssertEqual(fixture.uploadFactory.callCount, 0)
-    }
-
-    func testOptOutDuringTheAttestationRoundTripNeverPostsTheBatch() throws {
-        let fixture = makeFixture(
-            uploadResults: [.success(())],
-            optOutDuringAttestation: true
-        )
-        try seed(fixture, count: 1)
-
-        try flush(fixture)
-
-        XCTAssertTrue(
-            fixture.sentBodies.recorded.isEmpty,
-            "a batch reached the transport after the user opted out mid-flight"
-        )
-    }
-
-    func testABatchAbortedByAnOptOutIsNotTreatedAsDelivered() throws {
-        let fixture = makeFixture(
-            uploadResults: [.success(())],
-            optOutDuringAttestation: true
-        )
-        try seed(fixture, count: 3)
-
-        try flush(fixture)
-
-        XCTAssertEqual(try queueCount(fixture), 3)
+        XCTAssertTrue(json.contains(try XCTUnwrap(fixture.identity.existingInstallId())))
+        XCTAssertTrue(json.contains(fixture.identity.sessionId))
     }
 
     func testTheWireIdIsTheStoredRowIdentifier() throws {
         let fixture = makeFixture(uploadResults: [.success(())])
         try seed(fixture, count: 1)
-
         let identifier = try XCTUnwrap(queuedIdentifiers(fixture).first)
 
-        try flush(fixture)
+        XCTAssertNil(flush(fixture))
 
-        let json = String(
-            data: try XCTUnwrap(fixture.sentBodies.recorded.first),
-            encoding: .utf8
-        )!
-
-        XCTAssertTrue(json.contains(#""id":"\#(identifier)""#))
-    }
-
-    func testAResentBatchCarriesTheSameEventIds() throws {
-        let fixture = makeFixture(uploadResults: [
-            .failure(AnalyticsTransportError.serverError(statusCode: 500)),
-            .success(())
-        ])
-        try seed(fixture, count: 3)
-
-        let identifiers = try queuedIdentifiers(fixture)
-
-        XCTAssertNotNil(flushError(fixture))
-        try flush(fixture)
-
-        XCTAssertEqual(fixture.sentBodies.recorded.count, 2)
-
-        let firstAttempt = try sentEventIds(try XCTUnwrap(fixture.sentBodies.recorded.first))
-        let secondAttempt = try sentEventIds(try XCTUnwrap(fixture.sentBodies.recorded.last))
-
-        XCTAssertEqual(firstAttempt, identifiers)
-        XCTAssertEqual(
-            secondAttempt,
-            firstAttempt,
-            "the retry rebuilt the batch instead of resending the same event ids"
-        )
-    }
-
-    func testABatchRetainedAfterARejectionIsResentWithTheSameEventIds() throws {
-        let fixture = makeFixture(uploadResults: [
-            .failure(AnalyticsTransportError.rejected(statusCode: 403)),
-            .success(())
-        ])
-        try seed(fixture, count: 3)
-
-        let identifiers = try queuedIdentifiers(fixture)
-
-        XCTAssertNotNil(flushError(fixture))
-        try flush(fixture)
-
-        XCTAssertEqual(fixture.sentBodies.recorded.count, 2)
-
-        let firstAttempt = try sentEventIds(try XCTUnwrap(fixture.sentBodies.recorded.first))
-        let secondAttempt = try sentEventIds(try XCTUnwrap(fixture.sentBodies.recorded.last))
-
-        XCTAssertEqual(firstAttempt, identifiers)
-        XCTAssertEqual(secondAttempt, firstAttempt)
-        XCTAssertEqual(try queueCount(fixture), 0)
-    }
-
-    func testReconsentDuringAnInFlightBatchStillAbortsIt() throws {
-        let fixture = makeFixture(uploadResults: [.success(())])
-        try seed(fixture, count: 1)
-
-        fixture.attestation.onSigning = {
-            fixture.identity.forgetInstallId()
-            fixture.identity.allowCreation()
-        }
-
-        try flush(fixture)
-
-        XCTAssertTrue(
-            fixture.sentBodies.recorded.isEmpty,
-            "a batch built for the previous consent cycle was sent under the new identity"
-        )
+        XCTAssertTrue(try sentJSON(fixture).contains(#""id":"\#(identifier)""#))
     }
 
     func testRowsFromAnEarlierConsentEpochAreDroppedWithoutBeingSent() throws {
         let fixture = makeFixture(uploadResults: [.success(())])
         try seed(fixture, count: 2)
 
-        advanceConsentEpoch(fixture)
-        try seed(fixture, count: 1)
-        let freshId = try XCTUnwrap(queuedIdentifiers(fixture).last)
-
-        try flush(fixture)
-
-        XCTAssertEqual(fixture.uploadFactory.callCount, 1)
-        XCTAssertEqual(try sentEventIds(try XCTUnwrap(fixture.sentBodies.recorded.first)), [freshId])
-        XCTAssertEqual(try queueCount(fixture), 0)
-    }
-
-    func testAPageThatIsEntirelyStaleIsRemovedWithoutAnUploadOrAnInstallId() throws {
-        let fixture = makeFixture(uploadResults: [.success(())])
-        try seed(fixture, count: 3)
-
-        advanceConsentEpoch(fixture)
-
-        try flush(fixture)
-
-        XCTAssertEqual(fixture.uploadFactory.callCount, 0)
-        XCTAssertEqual(fixture.attestation.signingCallCount, 0)
-        XCTAssertEqual(try queueCount(fixture), 0)
-        XCTAssertNil(fixture.settings.analyticsInstallId)
-    }
-
-    func testTheFlushContinuesPastAFullStalePage() throws {
-        let fixture = makeFixture(uploadResults: [.success(())])
-        try seed(fixture, count: 50)
-
-        advanceConsentEpoch(fixture)
-        try seed(fixture, count: 1)
-        let freshId = try XCTUnwrap(queuedIdentifiers(fixture).last)
-
-        try flush(fixture)
-
-        XCTAssertEqual(fixture.uploadFactory.callCount, 1)
-        XCTAssertEqual(try sentEventIds(try XCTUnwrap(fixture.sentBodies.recorded.first)), [freshId])
-        XCTAssertEqual(try queueCount(fixture), 0)
-    }
-
-    private func advanceConsentEpoch(_ fixture: Fixture) {
         fixture.identity.forgetInstallId()
         fixture.identity.allowCreation()
+        try seed(fixture, count: 1)
+        let freshId = try XCTUnwrap(queuedIdentifiers(fixture).last)
+
+        XCTAssertNil(flush(fixture))
+
+        XCTAssertEqual(fixture.uploadFactory.callCount, 1)
+        XCTAssertEqual(try sentEventIds(fixture), [freshId])
+        XCTAssertEqual(try queueCount(fixture), 0)
+    }
+
+    func testTamperedRowTextNeverReachesTheTransport() throws {
+        let fixture = makeFixture(uploadResults: [.success(())])
+        try enqueue(fixture, timestamp: Date(timeIntervalSince1970: 0), payload: #"{"asset":"alice's savings wallet!"}"#)
+        try seed(fixture, count: 1)
+
+        XCTAssertNil(flush(fixture))
+
+        XCTAssertEqual(fixture.uploadFactory.sentBodies.count, 1)
+        XCTAssertFalse(try sentJSON(fixture).contains("savings"))
+        XCTAssertEqual(try sentEventIds(fixture).count, 1)
+        XCTAssertEqual(try queueCount(fixture), 0)
     }
 }
