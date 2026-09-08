@@ -26,7 +26,10 @@ public final class AnalyticsServiceFacade {
     private var isFirstLaunchAtSetup: Bool = false
     private var resolutionGeneration: Int = 0
 
-    // Serialises the applies, so a superseded resolution can never land after the current one.
+    // A failed fetch never advances this, so a value fetched before it still lands.
+    private var appliedGeneration: Int = 0
+
+    // Serialises the applies, so an older resolution can never land after a newer one.
     private let resolutionLock = NSLock()
 
     public convenience init(configuration: AnalyticsConfiguration) {
@@ -266,14 +269,15 @@ private extension AnalyticsServiceFacade {
             resolutionLock.unlock()
         }
 
-        guard isCurrent(generation: generation) else {
-            logger.debug("Analytics remote config resolution superseded, dropping it")
-            return
-        }
-
         switch remoteResult {
         case let .success(isEnabled):
+            guard isNewerThanApplied(generation: generation) else {
+                logger.debug("Analytics remote config resolution superseded, dropping it")
+                return
+            }
+
             service.handleRemoteResolved(isEnabled: isEnabled)
+            markApplied(generation: generation)
         case let .failure(error):
             logger.info("Analytics remote config unavailable, keeping the last resolved state: \(error)")
         }
@@ -281,14 +285,20 @@ private extension AnalyticsServiceFacade {
         reconcile()
     }
 
-    func isCurrent(generation: Int) -> Bool {
+    func isNewerThanApplied(generation: Int) -> Bool {
         mutex.lock()
 
         defer {
             mutex.unlock()
         }
 
-        return generation == resolutionGeneration
+        return generation > appliedGeneration
+    }
+
+    func markApplied(generation: Int) {
+        mutex.lock()
+        appliedGeneration = generation
+        mutex.unlock()
     }
 
     func reconcile() {

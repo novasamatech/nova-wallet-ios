@@ -433,6 +433,32 @@ final class AnalyticsConfigurationTests: XCTestCase {
         XCTAssertEqual(try fixture.pendingNames(), ["session_started", "app_opened"])
     }
 
+    func testAnOlderSuccessStillLandsWhenANewerResolutionFails() throws {
+        let fixture = try makeFacadeFixture(optedIn: true)
+        let olderRequested = expectation(description: "older resolution requested")
+        let olderGate = DispatchSemaphore(value: 0)
+        fixture.remoteSettings.onRequest = { olderRequested.fulfill() }
+        fixture.remoteSettings.gate = olderGate
+
+        fixture.facade.setup()
+        wait(for: [olderRequested], timeout: 5)
+
+        let newerRequested = expectation(description: "newer resolution requested")
+        fixture.remoteSettings.result = .failure(RemoteSettingsError.unreachable)
+        fixture.remoteSettings.onRequest = { newerRequested.fulfill() }
+        fixture.remoteSettings.gate = nil
+
+        fixture.refreshOnForeground()
+        wait(for: [newerRequested], timeout: 5)
+
+        olderGate.signal()
+        fixture.drain()
+
+        XCTAssertTrue(fixture.facade.consent.isAvailable)
+        XCTAssertEqual(fixture.settings.bool(for: Keys.remoteEnabled), true)
+        XCTAssertEqual(try fixture.pendingNames(), ["session_started", "app_opened"])
+    }
+
     func testTheFirstLaunchFactIsCapturedWhenSetupRunsNotWhenTheResolutionLands() throws {
         var isFirstLaunch = true
         let fixture = try makeFacadeFixture(optedIn: true, isFirstLaunch: { isFirstLaunch })
