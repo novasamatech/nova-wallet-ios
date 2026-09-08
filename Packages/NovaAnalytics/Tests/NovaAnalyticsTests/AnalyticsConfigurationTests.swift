@@ -51,13 +51,28 @@ private struct FacadeFixture {
     let analyticsOperationQueue: OperationQueue
     let directory: URL
 
-    func drain() {
-        operationQueue.waitUntilAllOperationsAreFinished()
-        drainRecording()
+    func drain(file: StaticString = #filePath, line: UInt = #line) {
+        let drained = XCTestExpectation(description: "operation queues drained")
+
+        DispatchQueue.global().async {
+            operationQueue.waitUntilAllOperationsAreFinished()
+            analyticsOperationQueue.waitUntilAllOperationsAreFinished()
+            drained.fulfill()
+        }
+
+        XCTAssertEqual(XCTWaiter().wait(for: [drained], timeout: 10), .completed, file: file, line: line)
     }
 
     func drainRecording() {
         analyticsOperationQueue.waitUntilAllOperationsAreFinished()
+    }
+
+    func recordAndSettleUploads(file: StaticString = #filePath, line: UInt = #line) {
+        let settled = XCTestExpectation(description: "in-flight flush settled")
+
+        facade.trackAndFlush(.novaCardOpened(), reason: .manual) { settled.fulfill() }
+
+        XCTAssertEqual(XCTWaiter().wait(for: [settled], timeout: 10), .completed, file: file, line: line)
     }
 
     func pendingNames() throws -> [String] {
@@ -229,7 +244,8 @@ final class AnalyticsConfigurationTests: XCTestCase {
 
         fixture.facade.setup()
         fixture.drain()
-        XCTAssertEqual(try fixture.pendingNames(), ["session_started", "app_opened"])
+        fixture.recordAndSettleUploads()
+        XCTAssertEqual(try fixture.pendingNames(), ["session_started", "app_opened", "nova_card_opened"])
 
         fixture.remoteSettings.result = .success(false)
         fixture.enterForeground()
