@@ -268,11 +268,41 @@ final class SettingsTests: XCTestCase {
 
         XCTAssertEqual(output.received, [nil])
     }
+
+    func testAnAvailabilityFlipToOffKeepsTheRowWhileConsentIsOn() {
+        let fixture = makeObservedAnalyticsFixture(optedIn: true, remoteEnabled: true)
+
+        waitForReProvide(fixture) { fixture.availability.setRemoteEnabled(false) }
+
+        XCTAssertEqual(fixture.output.received, [true, true])
+    }
+
+    func testAnAvailabilityFlipToOffHidesTheRowWhenConsentIsOff() {
+        let fixture = makeObservedAnalyticsFixture(optedIn: false, remoteEnabled: true)
+
+        waitForReProvide(fixture) { fixture.availability.setRemoteEnabled(false) }
+
+        XCTAssertEqual(fixture.output.received, [false, nil])
+    }
+
+    func testAnAvailabilityFlipBackOnReProvidesTheRow() {
+        let fixture = makeObservedAnalyticsFixture(optedIn: false, remoteEnabled: false)
+
+        waitForReProvide(fixture) { fixture.availability.setRemoteEnabled(true) }
+
+        XCTAssertEqual(fixture.output.received, [nil, false])
+    }
 }
 
 // MARK: - Analytics helpers
 
 private extension SettingsTests {
+    struct ObservedAnalyticsFixture {
+        let interactor: SettingsInteractor
+        let availability: AnalyticsAvailabilityProvider
+        let output: AnalyticsSettingsOutputSpy
+    }
+
     func makeAvailability(
         settings: SettingsManagerProtocol,
         remoteEnabled: Bool
@@ -306,6 +336,33 @@ private extension SettingsTests {
         availability.setRemoteEnabled(false)
 
         return consent
+    }
+
+    func makeObservedAnalyticsFixture(optedIn: Bool, remoteEnabled: Bool) -> ObservedAnalyticsFixture {
+        let settings = InMemorySettingsManager()
+        let availability = makeAvailability(settings: settings, remoteEnabled: remoteEnabled)
+        let consent = AnalyticsConsentManager(
+            settingsManager: settings,
+            availabilityProvider: availability
+        )
+        consent.setEnabled(optedIn)
+
+        let interactor = makeAnalyticsInteractor(consent: consent)
+        let output = AnalyticsSettingsOutputSpy()
+        interactor.presenter = output
+
+        interactor.setup()
+
+        return ObservedAnalyticsFixture(interactor: interactor, availability: availability, output: output)
+    }
+
+    func waitForReProvide(_ fixture: ObservedAnalyticsFixture, after flip: () -> Void) {
+        let delivered = XCTestExpectation(description: "availability change re-provided")
+        fixture.output.onReceive = { _ in delivered.fulfill() }
+
+        flip()
+
+        wait(for: [delivered], timeout: 1.0)
     }
 
     func preferenceRows(isAnalyticsOn: Bool?) -> [SettingsRow] {

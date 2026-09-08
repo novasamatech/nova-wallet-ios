@@ -123,6 +123,10 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
             self?.provideAnalyticsSettings()
         }
 
+        analyticsConsent.addAvailabilityObserver(with: self, queue: .main) { [weak self] _ in
+            self?.provideAnalyticsSettings()
+        }
+
         walletNotificationService.hasUpdatesObservable.addObserver(
             with: self,
             sendStateOnSubscription: true
