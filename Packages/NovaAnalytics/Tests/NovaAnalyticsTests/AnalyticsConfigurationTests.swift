@@ -300,6 +300,46 @@ final class AnalyticsConfigurationTests: XCTestCase {
         XCTAssertFalse(fixture.facade.consent.isAvailable)
     }
 
+    func testAnOlderResolutionThatLandsAfterANewerOneIsDropped() throws {
+        let fixture = try makeFacadeFixture(optedIn: true)
+        let olderRequested = expectation(description: "older resolution requested")
+        let olderGate = DispatchSemaphore(value: 0)
+        fixture.remoteSettings.result = .success(false)
+        fixture.remoteSettings.onRequest = { olderRequested.fulfill() }
+        fixture.remoteSettings.gate = olderGate
+
+        fixture.facade.setup()
+        wait(for: [olderRequested], timeout: 5)
+
+        let newerRequested = expectation(description: "newer resolution requested")
+        let newerGate = DispatchSemaphore(value: 0)
+        fixture.remoteSettings.result = .success(true)
+        fixture.remoteSettings.onRequest = { newerRequested.fulfill() }
+        fixture.remoteSettings.gate = newerGate
+
+        fixture.enterForeground()
+        wait(for: [newerRequested], timeout: 5)
+
+        let owner = NSObject()
+        let switchedOn = expectation(description: "the newer resolution switched analytics on")
+        fixture.facade.consent.addAvailabilityObserver(with: owner, queue: nil) { isAvailable in
+            if isAvailable {
+                switchedOn.fulfill()
+            }
+        }
+
+        newerGate.signal()
+        wait(for: [switchedOn], timeout: 5)
+
+        olderGate.signal()
+        fixture.drain()
+        fixture.facade.consent.removeAvailabilityObserver(by: owner)
+
+        XCTAssertTrue(fixture.facade.consent.isAvailable)
+        XCTAssertEqual(fixture.settings.bool(for: Keys.remoteEnabled), true)
+        XCTAssertEqual(try fixture.pendingNames(), ["session_started", "app_opened"])
+    }
+
     func testTheFirstLaunchFactIsCapturedWhenSetupRunsNotWhenTheResolutionLands() throws {
         var isFirstLaunch = true
         let fixture = try makeFacadeFixture(optedIn: true, isFirstLaunch: { isFirstLaunch })

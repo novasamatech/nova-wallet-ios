@@ -21,8 +21,11 @@ public final class AnalyticsServiceFacade {
     private let mutex = NSLock()
     private var isSetUp: Bool = false
     private var isActive: Bool = false
-    private var isResolving: Bool = false
     private var isFirstLaunchAtSetup: Bool = false
+    private var resolutionGeneration: Int = 0
+
+    // Serialises the applies, so a superseded resolution can never land after the current one.
+    private let resolutionLock = NSLock()
 
     public init(configuration: AnalyticsConfiguration) {
         let settingsManager = configuration.settingsManager
@@ -198,12 +201,13 @@ private extension AnalyticsServiceFacade {
     func resolveRemoteAvailability() {
         mutex.lock()
 
-        guard isSetUp, !isResolving else {
+        guard isSetUp else {
             mutex.unlock()
             return
         }
 
-        isResolving = true
+        resolutionGeneration += 1
+        let generation = resolutionGeneration
         mutex.unlock()
 
         let remoteWrapper = remoteSettings.createRemoteEnabledWrapper()
@@ -213,7 +217,7 @@ private extension AnalyticsServiceFacade {
         let applyOperation = ClosureOperation<Void> { [weak self] in
             let result = Result { try remoteWrapper.targetOperation.extractNoCancellableResultData() }
 
-            self?.apply(remoteResult: result)
+            self?.apply(remoteResult: result, generation: generation)
         }
 
         applyOperation.addDependency(remoteWrapper.targetOperation)
@@ -222,12 +226,21 @@ private extension AnalyticsServiceFacade {
             wrapper: remoteWrapper.insertingTail(operation: applyOperation),
             inOperationQueue: configOperationQueue,
             runningCallbackIn: nil
-        ) { [weak self] _ in
-            self?.finishResolving()
-        }
+        ) { _ in }
     }
 
-    func apply(remoteResult: Result<Bool, Error>) {
+    func apply(remoteResult: Result<Bool, Error>, generation: Int) {
+        resolutionLock.lock()
+
+        defer {
+            resolutionLock.unlock()
+        }
+
+        guard isCurrent(generation: generation) else {
+            logger.debug("Analytics remote config resolution superseded, dropping it")
+            return
+        }
+
         switch remoteResult {
         case let .success(isEnabled):
             service.handleRemoteResolved(isEnabled: isEnabled)
@@ -235,14 +248,17 @@ private extension AnalyticsServiceFacade {
             logger.info("Analytics remote config unavailable, keeping the last resolved state: \(error)")
         }
 
-        finishResolving()
         reconcile()
     }
 
-    func finishResolving() {
+    func isCurrent(generation: Int) -> Bool {
         mutex.lock()
-        isResolving = false
-        mutex.unlock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return generation == resolutionGeneration
     }
 
     func reconcile() {
