@@ -225,8 +225,7 @@ private extension AnalyticsServiceFacade {
     func apply(remoteResult: Result<Bool, Error>) {
         switch remoteResult {
         case let .success(isEnabled):
-            availability.setRemoteEnabled(isEnabled)
-            service.handleAvailabilityChanged()
+            service.handleRemoteResolved(isEnabled: isEnabled)
         case let .failure(error):
             logger.info("Analytics remote config unavailable, keeping the last resolved state: \(error)")
         }

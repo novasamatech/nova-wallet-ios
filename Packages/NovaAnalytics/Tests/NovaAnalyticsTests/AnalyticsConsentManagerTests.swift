@@ -5,9 +5,16 @@ import NovaAppAttest
 
 private final class StubAvailability: AnalyticsAvailabilityProviderProtocol {
     var isAvailable: Bool
+    var remoteState: AnalyticsRemoteState
 
     init(isAvailable: Bool) {
         self.isAvailable = isAvailable
+        remoteState = isAvailable ? .enabled : .disabled
+    }
+
+    func setRemoteEnabled(_ enabled: Bool) {
+        isAvailable = enabled
+        remoteState = enabled ? .enabled : .disabled
     }
 
     func addObserver(with _: AnyObject, queue _: DispatchQueue?, closure _: @escaping (Bool) -> Void) {}

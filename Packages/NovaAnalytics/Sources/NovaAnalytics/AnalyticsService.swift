@@ -72,10 +72,14 @@ public final class AnalyticsService {
             }
         }
 
-        if consent.isEnabled {
-            erasure.drainOwed()
-        } else {
+        if !consent.isEnabled {
             repairWithdrawnConsent(attestation: attestation)
+        } else if availability.remoteState == .disabled {
+            // A remote off that reached disk ahead of its wipe leaves rows a later on would upload.
+            // An unresolved seed keeps them: an opted-in install upgrading was never switched off.
+            erasure.request()
+        } else {
+            erasure.drainOwed()
         }
     }
 
@@ -219,8 +223,13 @@ private extension AnalyticsService {
         releaseFlushCompletionsLocked()
     }
 
-    func createFlushDecisionOperation(after countOperation: BaseOperation<Int>) -> BaseOperation<Void> {
-        let operation = ClosureOperation<Void> { [weak self] in
+    func createFlushDecisionWrapper(
+        after enqueueWrapper: CompoundOperationWrapper<Void>
+    ) -> CompoundOperationWrapper<Void> {
+        let countOperation = queue.countOperation()
+        countOperation.addDependency(enqueueWrapper.targetOperation)
+
+        let decisionOperation = ClosureOperation<Void> { [weak self] in
             let count = try countOperation.extractNoCancellableResultData()
 
             guard let self else {
@@ -236,12 +245,15 @@ private extension AnalyticsService {
             flushIfNeededLocked(count: count)
         }
 
-        operation.addDependency(countOperation)
+        decisionOperation.addDependency(countOperation)
 
-        return operation
+        return CompoundOperationWrapper(
+            targetOperation: decisionOperation,
+            dependencies: enqueueWrapper.allOperations + [countOperation]
+        )
     }
 
-    func trackInternal(_ event: AnalyticsEvent, completion: (() -> Void)?) {
+    func trackInternal(_ event: AnalyticsEvent, schedulesFlush: Bool, completion: (() -> Void)?) {
         mutex.lock()
 
         guard consent.isEnabled, availability.isAvailable, shouldRecordLocked(event) else {
@@ -272,15 +284,9 @@ private extension AnalyticsService {
             consentEpoch: identity.consentEpoch
         )
 
-        let countOperation = queue.countOperation()
-        countOperation.addDependency(enqueueWrapper.targetOperation)
-
-        let flushDecisionOperation = createFlushDecisionOperation(after: countOperation)
-
-        let totalWrapper = CompoundOperationWrapper(
-            targetOperation: flushDecisionOperation,
-            dependencies: enqueueWrapper.allOperations + [countOperation]
-        )
+        let totalWrapper = schedulesFlush
+            ? createFlushDecisionWrapper(after: enqueueWrapper)
+            : enqueueWrapper
 
         execute(
             wrapper: totalWrapper,
@@ -302,7 +308,7 @@ private extension AnalyticsService {
 
 extension AnalyticsService: AnalyticsTrackingProtocol {
     public func track(_ event: AnalyticsEvent) {
-        trackInternal(event, completion: nil)
+        trackInternal(event, schedulesFlush: true, completion: nil)
     }
 
     public func trackAndFlush(
@@ -310,7 +316,7 @@ extension AnalyticsService: AnalyticsTrackingProtocol {
         reason: AnalyticsFlushReason,
         completion: @escaping () -> Void
     ) {
-        trackInternal(event) { [weak self] in
+        trackInternal(event, schedulesFlush: true) { [weak self] in
             guard let self else {
                 completion()
 
@@ -325,6 +331,11 @@ extension AnalyticsService: AnalyticsTrackingProtocol {
 // MARK: - Flush and wipe
 
 public extension AnalyticsService {
+    /// Records the event without arming the schedule, for a launch whose flush waits for the foreground.
+    func trackDeferringFlush(_ event: AnalyticsEvent) {
+        trackInternal(event, schedulesFlush: false, completion: nil)
+    }
+
     func flush(reason: AnalyticsFlushReason) {
         flush(reason: reason, completion: {})
     }
@@ -351,26 +362,22 @@ public extension AnalyticsService {
         cancelFlushLocked()
     }
 
-    func handleAvailabilityChanged() {
+    /// The wipe obligation reaches disk before the remote off does, so a kill in between leaves
+    /// rows owed a wipe rather than rows a later on would upload.
+    func handleRemoteResolved(isEnabled: Bool) {
         mutex.lock()
 
         defer {
             mutex.unlock()
         }
 
-        let isAvailable = availability.isAvailable
-
-        defer {
-            wasAvailable = isAvailable
+        if wasAvailable, !isEnabled {
+            cancelFlushLocked()
+            erasure.request()
         }
 
-        guard wasAvailable, !isAvailable else {
-            return
-        }
-
-        cancelFlushLocked()
-
-        erasure.request()
+        availability.setRemoteEnabled(isEnabled)
+        wasAvailable = availability.isAvailable
     }
 
     internal func handleConsentDisabled(attestation: BackendAttestationProviderProtocol?) {

@@ -43,9 +43,17 @@ public protocol AnalyticsIdentityProtocol: AnyObject {
     func allowCreation()
 }
 
+public enum AnalyticsRemoteState: Equatable {
+    case unresolved
+    case enabled
+    case disabled
+}
+
 public protocol AnalyticsAvailabilityProviderProtocol: AnyObject {
     var isAvailable: Bool { get }
+    var remoteState: AnalyticsRemoteState { get }
 
+    func setRemoteEnabled(_ enabled: Bool)
     func addObserver(with owner: AnyObject, queue: DispatchQueue?, closure: @escaping (Bool) -> Void)
     func removeObserver(by owner: AnyObject)
 }
