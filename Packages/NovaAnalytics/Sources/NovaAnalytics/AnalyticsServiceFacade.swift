@@ -14,6 +14,7 @@ public final class AnalyticsServiceFacade {
     private let availability: AnalyticsAvailabilityProvider
     private let eventQueue: AnalyticsEventQueueProtocol
     private let remoteSettings: AnalyticsRemoteSettings
+    private let applicationHandler: ApplicationHandlerProtocol
     private let configOperationQueue: OperationQueue
     private let logger: SDKLoggerProtocol
 
@@ -102,6 +103,7 @@ public final class AnalyticsServiceFacade {
         self.availability = availability
         self.eventQueue = eventQueue
         remoteSettings = configuration.remoteSettings
+        applicationHandler = ApplicationHandler()
         configOperationQueue = configuration.operationQueue
         logger = configuration.logger
 
@@ -112,6 +114,8 @@ public final class AnalyticsServiceFacade {
 
             self?.startSessionIfActive()
         }
+
+        applicationHandler.delegate = self
     }
 }
 
@@ -160,6 +164,14 @@ extension AnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
 
     public func flush(reason: AnalyticsFlushReason) {
         service.flush(reason: reason)
+    }
+}
+
+// MARK: - ApplicationHandlerDelegate
+
+extension AnalyticsServiceFacade: ApplicationHandlerDelegate {
+    public func didReceiveWillEnterForeground(notification _: Notification) {
+        resolveRemoteAvailability()
     }
 }
 

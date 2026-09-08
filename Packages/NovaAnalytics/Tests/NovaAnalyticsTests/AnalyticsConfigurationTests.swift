@@ -71,6 +71,10 @@ private struct FacadeFixture {
         settings.string(for: AnalyticsTestFixture.Keys.analyticsInstallId)
     }
 
+    func enterForeground() {
+        facade.didReceiveWillEnterForeground(notification: Notification(name: .init("test")))
+    }
+
     func settle() {
         drain()
         try? FileManager.default.removeItem(at: directory)
@@ -218,5 +222,58 @@ final class AnalyticsConfigurationTests: XCTestCase {
 
         XCTAssertTrue(fixture.facade.consent.isAvailable)
         XCTAssertEqual(try fixture.pendingNames(), ["session_started", "app_opened"])
+    }
+
+    func testAForegroundRefreshThatResolvesOffWipesTheQueueAndStopsRecording() throws {
+        let fixture = try makeFacadeFixture(optedIn: true)
+
+        fixture.facade.setup()
+        fixture.drain()
+        XCTAssertEqual(try fixture.pendingNames(), ["session_started", "app_opened"])
+
+        fixture.remoteSettings.result = .success(false)
+        fixture.enterForeground()
+        fixture.drain()
+
+        XCTAssertEqual(fixture.remoteSettings.requestCount, 2)
+        XCTAssertFalse(fixture.facade.consent.isAvailable)
+        XCTAssertEqual(fixture.settings.bool(for: Keys.remoteEnabled), false)
+        XCTAssertEqual(try fixture.pendingNames(), [])
+
+        fixture.facade.track(.novaCardOpened())
+        fixture.drainRecording()
+
+        XCTAssertEqual(try fixture.pendingNames(), [])
+    }
+
+    func testAForegroundRefreshThatResolvesOnResumesRecording() throws {
+        let fixture = try makeFacadeFixture(optedIn: true, persistedRemoteEnabled: false)
+        fixture.remoteSettings.result = .success(false)
+
+        fixture.facade.setup()
+        fixture.drain()
+        XCTAssertEqual(try fixture.pendingNames(), [])
+
+        fixture.remoteSettings.result = .success(true)
+        fixture.enterForeground()
+        fixture.drain()
+
+        XCTAssertTrue(fixture.facade.consent.isAvailable)
+        XCTAssertEqual(try fixture.pendingNames(), ["session_started", "app_opened"])
+
+        fixture.facade.track(.novaCardOpened())
+        fixture.drainRecording()
+
+        XCTAssertEqual(try fixture.pendingNames(), ["session_started", "app_opened", "nova_card_opened"])
+    }
+
+    func testAForegroundRefreshBeforeSetupIsIgnored() throws {
+        let fixture = try makeFacadeFixture(optedIn: true)
+
+        fixture.enterForeground()
+        fixture.drain()
+
+        XCTAssertEqual(fixture.remoteSettings.requestCount, 0)
+        XCTAssertFalse(fixture.facade.consent.isAvailable)
     }
 }
