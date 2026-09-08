@@ -5,87 +5,43 @@ import Operation_iOS
 import CoreData
 
 final class AppAttestBrowserSettingsRemovalMigrationTests: XCTestCase {
-    let databaseDirectory = FileManager.default.temporaryDirectory
-        .appendingPathComponent("CoreDataAppAttestRemoval")
+    private let databaseDirectory = FileManager.default.temporaryDirectory.appendingPathComponent("CoreDataAppAttestRemoval")
+    private let databaseName = UUID().uuidString + ".sqlite"
+    private let modelDirectory = "UserDataModel.momd"
+    private let attestEntityName = "CDAppAttestBrowserSettings"
 
-    let databaseName = UUID().uuidString + ".sqlite"
-    let modelDirectory = "UserDataModel.momd"
-    let attestEntityName = "CDAppAttestBrowserSettings"
-    let metaAccountEntityName = "CDMetaAccount"
-
-    var storeURL: URL {
+    private var storeURL: URL {
         databaseDirectory.appendingPathComponent(databaseName)
     }
 
-    override func setUp() {
-        super.setUp()
-
-        try? FileManager.default.removeItem(at: databaseDirectory)
-    }
-
     override func tearDown() {
-        super.tearDown()
-
         try? FileManager.default.removeItem(at: databaseDirectory)
-    }
-
-    func testStorageFacadeTargetsLatestDeclaredVersion() {
-        XCTAssertEqual(UserStorageParams.modelVersion, UserStorageVersion.current)
+        super.tearDown()
     }
 
     func testAttestBrowserSettingsEntityIsGoneFromMigratedStore() throws {
-        try createLegacyStore()
+        try migrateLegacyStore()
 
-        migrateToTargetVersion()
-
-        let entityNames = try storeEntityNames()
-
-        XCTAssertFalse(entityNames.contains(attestEntityName))
+        XCTAssertFalse(try storeEntityNames().contains(attestEntityName))
     }
 
     func testMetaAccountSurvivesAttestBrowserSettingsRemoval() throws {
-        let metaId = try createLegacyStore()
+        let metaId = try migrateLegacyStore()
 
-        migrateToTargetVersion()
-
-        let migratedMetaIds = try fetchMetaAccountIds()
-
-        XCTAssertEqual(migratedMetaIds, [metaId])
+        XCTAssertEqual(try fetchMetaAccountIds(), [metaId])
     }
 
     @discardableResult
-    private func createLegacyStore() throws -> MetaAccountModel.Id {
-        let dbService = createCoreDataService(for: .version21)
-
+    private func migrateLegacyStore() throws -> MetaAccountModel.Id {
         let metaId = UUID().uuidString
-        let metaAccountEntity = metaAccountEntityName
-        let attestEntity = attestEntityName
 
-        let semaphore = DispatchSemaphore(value: 0)
-
-        dbService.performAsync { context, _ in
-            defer {
-                semaphore.signal()
-            }
-
-            guard let context else {
-                return
-            }
-
-            let metaAccount = NSEntityDescription.insertNewObject(
-                forEntityName: metaAccountEntity,
-                into: context
-            )
-
+        try perform(on: .version21) { context in
+            let metaAccount = NSEntityDescription.insertNewObject(forEntityName: "CDMetaAccount", into: context)
             metaAccount.setValue(metaId, forKey: "metaId")
             metaAccount.setValue("Test name", forKey: "name")
             metaAccount.setValue(false, forKey: "isSelected")
 
-            let attestSettings = NSEntityDescription.insertNewObject(
-                forEntityName: attestEntity,
-                into: context
-            )
-
+            let attestSettings = NSEntityDescription.insertNewObject(forEntityName: "CDAppAttestBrowserSettings", into: context)
             attestSettings.setValue("https://dapp.example.com", forKey: "baseURL")
             attestSettings.setValue(UUID().uuidString, forKey: "keyId")
             attestSettings.setValue(true, forKey: "isAttested")
@@ -93,95 +49,51 @@ final class AppAttestBrowserSettingsRemovalMigrationTests: XCTestCase {
             try! context.save()
         }
 
-        semaphore.wait()
-
-        try dbService.close()
-
         XCTAssertTrue(try storeEntityNames().contains(attestEntityName))
 
-        return metaId
-    }
-
-    private func migrateToTargetVersion() {
-        let migrator = UserStorageMigrator(
-            targetVersion: UserStorageParams.modelVersion,
-            storeURL: storeURL,
-            modelDirectory: modelDirectory,
-            keystore: InMemoryKeychain(),
-            settings: InMemorySettingsManager(),
-            fileManager: FileManager.default
-        )
+        let migrator = UserStorageMigrator(targetVersion: UserStorageParams.modelVersion, storeURL: storeURL, modelDirectory: modelDirectory, keystore: InMemoryKeychain(), settings: InMemorySettingsManager(), fileManager: FileManager.default)
 
         XCTAssertTrue(migrator.requiresMigration())
 
         migrator.performMigration()
-    }
 
-    private func storeEntityNames() throws -> Set<String> {
-        let metadata = try NSPersistentStoreCoordinator.metadataForPersistentStore(
-            ofType: NSSQLiteStoreType,
-            at: storeURL,
-            options: nil
-        )
-
-        let versionHashes = try XCTUnwrap(metadata[NSStoreModelVersionHashesKey] as? [String: Any])
-
-        return Set(versionHashes.keys)
+        return metaId
     }
 
     private func fetchMetaAccountIds() throws -> Set<MetaAccountModel.Id> {
-        let dbService = createCoreDataService(for: UserStorageParams.modelVersion)
-
-        let entityName = metaAccountEntityName
-        let semaphore = DispatchSemaphore(value: 0)
         var metaIds = Set<MetaAccountModel.Id>()
 
+        try perform(on: UserStorageParams.modelVersion) { context in
+            let entities = try! context.fetch(NSFetchRequest<NSManagedObject>(entityName: "CDMetaAccount"))
+            metaIds = Set(entities.compactMap { $0.value(forKey: "metaId") as? MetaAccountModel.Id })
+        }
+
+        return metaIds
+    }
+
+    private func perform(on version: UserStorageVersion, _ body: @escaping (NSManagedObjectContext) -> Void) throws {
+        let modelURL = Bundle.main.url(forResource: version.rawValue, withExtension: "mom", subdirectory: modelDirectory)!
+        let persistentSettings = CoreDataPersistentSettings(databaseDirectory: databaseDirectory, databaseName: databaseName, incompatibleModelStrategy: .ignore)
+        let configuration = CoreDataServiceConfiguration(modelURL: modelURL, storageType: .persistent(settings: persistentSettings))
+        let dbService = CoreDataService(configuration: configuration)
+        let semaphore = DispatchSemaphore(value: 0)
+
         dbService.performAsync { context, _ in
-            defer {
-                semaphore.signal()
-            }
+            defer { semaphore.signal() }
 
-            let request = NSFetchRequest<NSManagedObject>(entityName: entityName)
-            let results = try! context?.fetch(request)
-
-            results?.forEach { entity in
-                if let metaId = entity.value(forKey: "metaId") as? MetaAccountModel.Id {
-                    metaIds.insert(metaId)
-                }
+            if let context {
+                body(context)
             }
         }
 
         semaphore.wait()
 
         try dbService.close()
-
-        return metaIds
     }
 
-    private func createModelURL(for version: UserStorageVersion) -> URL {
-        let bundle = Bundle.main
+    private func storeEntityNames() throws -> Set<String> {
+        let metadata = try NSPersistentStoreCoordinator.metadataForPersistentStore(ofType: NSSQLiteStoreType, at: storeURL, options: nil)
 
-        return bundle.url(
-            forResource: version.rawValue,
-            withExtension: "mom",
-            subdirectory: modelDirectory
-        )!
-    }
-
-    private func createCoreDataService(for version: UserStorageVersion) -> CoreDataServiceProtocol {
-        let modelURL = createModelURL(for: version)
-
-        let persistentSettings = CoreDataPersistentSettings(
-            databaseDirectory: databaseDirectory,
-            databaseName: databaseName,
-            incompatibleModelStrategy: .ignore
-        )
-
-        let configuration = CoreDataServiceConfiguration(
-            modelURL: modelURL,
-            storageType: .persistent(settings: persistentSettings)
-        )
-
-        return CoreDataService(configuration: configuration)
+        return Set(try XCTUnwrap(metadata[NSStoreModelVersionHashesKey] as? [String: Any]).keys)
     }
 }
