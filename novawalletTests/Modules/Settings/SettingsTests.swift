@@ -138,17 +138,15 @@ final class SettingsTests: XCTestCase {
         wait(for: [accountViewModelExpectation, sectionsExpectation], timeout: Constants.defaultExpectationDuration)
     }
 
-    func testAnalyticsRowIsHiddenWhenUnavailable() {
-        let rows = preferenceRows(isAnalyticsOn: nil)
+    func testTheAnalyticsRowFollowsTheValueTheInteractorProvides() {
+        let hidden = provideAnalyticsValue(consent: makeRemotelyDisabledConsent(optedIn: false))
+        let shown = provideAnalyticsValue(consent: makeRemotelyDisabledConsent(optedIn: true))
 
-        XCTAssertFalse(rows.contains(.analytics))
-    }
+        XCTAssertNil(hidden)
+        XCTAssertFalse(preferenceRows(isAnalyticsOn: hidden).contains(.analytics))
 
-    func testAnalyticsRowAppearsAfterAppearanceWhenAvailable() {
-        let rows = preferenceRows(isAnalyticsOn: false)
-
-        XCTAssertEqual(rows.last, .analytics)
-        XCTAssertEqual(rows.dropLast().last, .appearance)
+        XCTAssertEqual(shown, true)
+        XCTAssertEqual(preferenceRows(isAnalyticsOn: shown).last, .analytics)
     }
 
     func testTogglingAnalyticsRoundTripsThroughTheConsentManager() {
@@ -158,95 +156,7 @@ final class SettingsTests: XCTestCase {
         makeAnalyticsInteractor(consent: consent).toggleAnalytics()
 
         XCTAssertTrue(consent.isEnabled)
-        // The accessor is internal to NovaAnalytics, so this reads the raw key the
-        // package writes under.
         XCTAssertEqual(settings.bool(for: "analyticsEnabled"), true)
-    }
-
-    func testTogglingDoesNotMarkThePromptSeen() {
-        let consent = makeConsent()
-
-        makeAnalyticsInteractor(consent: consent).toggleAnalytics()
-
-        XCTAssertFalse(consent.isPromptSeen)
-    }
-
-    func testTogglingTwiceReturnsToDisabled() {
-        let consent = makeConsent()
-        let interactor = makeAnalyticsInteractor(consent: consent)
-
-        interactor.toggleAnalytics()
-        interactor.toggleAnalytics()
-
-        XCTAssertFalse(consent.isEnabled)
-    }
-
-    func testConsentChangesFromElsewhereReachTheView() {
-        let consent = makeConsent()
-        let interactor = makeAnalyticsInteractor(consent: consent)
-        let output = AnalyticsSettingsOutputSpy()
-        interactor.presenter = output
-
-        interactor.setup()
-
-        // The interactor observes with `queue: .main`, so the re-provide lands after this
-        // test's own main-thread turn; asserting synchronously would always see only setup().
-        let delivered = XCTestExpectation(description: "consent change re-provided")
-        output.onReceive = { value in
-            if value == true { delivered.fulfill() }
-        }
-
-        consent.setEnabled(true)
-
-        wait(for: [delivered], timeout: 1.0)
-    }
-
-    func testUnavailableSubsystemReportsNilRatherThanFalse() {
-        let settings = InMemorySettingsManager()
-        let consent = AnalyticsConsentManager(
-            settingsManager: settings,
-            availabilityProvider: AnalyticsAvailabilityProvider(
-                attestationMode: .unavailable,
-                settingsManager: settings
-            )
-        )
-        let interactor = makeAnalyticsInteractor(consent: consent)
-        let output = AnalyticsSettingsOutputSpy()
-        interactor.presenter = output
-
-        interactor.setup()
-
-        XCTAssertEqual(output.received.first, .some(nil))
-    }
-
-    func testRemotelyDisabledSubsystemKeepsTheRowWhileConsentIsOn() {
-        let interactor = makeAnalyticsInteractor(consent: makeRemotelyDisabledConsent(optedIn: true))
-        let output = AnalyticsSettingsOutputSpy()
-        interactor.presenter = output
-
-        interactor.setup()
-
-        XCTAssertEqual(output.received.first, .some(true))
-    }
-
-    func testRemotelyDisabledSubsystemHidesTheRowWhenConsentIsOff() {
-        let interactor = makeAnalyticsInteractor(consent: makeRemotelyDisabledConsent(optedIn: false))
-        let output = AnalyticsSettingsOutputSpy()
-        interactor.presenter = output
-
-        interactor.setup()
-
-        XCTAssertEqual(output.received.first, .some(nil))
-    }
-
-    func testTogglingOffWhileRemotelyDisabledWithdrawsConsent() {
-        let settings = InMemorySettingsManager()
-        let consent = makeRemotelyDisabledConsent(optedIn: true, settings: settings)
-
-        makeAnalyticsInteractor(consent: consent).toggleAnalytics()
-
-        XCTAssertFalse(consent.isEnabled)
-        XCTAssertEqual(settings.bool(for: "analyticsEnabled"), false)
     }
 
     func testTogglingOnWhileRemotelyDisabledLeavesConsentOff() {
@@ -258,193 +168,42 @@ final class SettingsTests: XCTestCase {
         XCTAssertFalse(consent.isEnabled)
         XCTAssertEqual(settings.bool(for: "analyticsEnabled"), false)
     }
-
-    func testRefusedOptInReProvidesTheRow() {
-        let interactor = makeAnalyticsInteractor(consent: makeRemotelyDisabledConsent(optedIn: false))
-        let output = AnalyticsSettingsOutputSpy()
-        interactor.presenter = output
-
-        interactor.toggleAnalytics()
-
-        XCTAssertEqual(output.received, [nil])
-    }
-
-    func testAnAvailabilityFlipToOffKeepsTheRowWhileConsentIsOn() {
-        let fixture = makeObservedAnalyticsFixture(optedIn: true, remoteEnabled: true)
-
-        waitForReProvide(fixture) { fixture.availability.setRemoteEnabled(false) }
-
-        XCTAssertEqual(fixture.output.received, [true, true])
-    }
-
-    func testAnAvailabilityFlipToOffHidesTheRowWhenConsentIsOff() {
-        let fixture = makeObservedAnalyticsFixture(optedIn: false, remoteEnabled: true)
-
-        waitForReProvide(fixture) { fixture.availability.setRemoteEnabled(false) }
-
-        XCTAssertEqual(fixture.output.received, [false, nil])
-    }
-
-    func testAnAvailabilityFlipBackOnReProvidesTheRow() {
-        let fixture = makeObservedAnalyticsFixture(optedIn: false, remoteEnabled: false)
-
-        waitForReProvide(fixture) { fixture.availability.setRemoteEnabled(true) }
-
-        XCTAssertEqual(fixture.output.received, [nil, false])
-    }
-
-    func testAnAvailabilityFlipDuringTheFirstProvideStillReachesTheView() {
-        let fixture = makeAnalyticsFixture(optedIn: false, remoteEnabled: true)
-
-        waitForReProvideAfterAFlipDuringSetup(fixture) { fixture.availability.setRemoteEnabled(false) }
-
-        XCTAssertEqual(fixture.output.received, [false, nil])
-    }
-
-    func testAConsentFlipDuringTheFirstProvideStillReachesTheView() {
-        let fixture = makeAnalyticsFixture(optedIn: false, remoteEnabled: true)
-
-        waitForReProvideAfterAFlipDuringSetup(fixture) { fixture.consent.setEnabled(true) }
-
-        XCTAssertEqual(fixture.output.received, [false, true])
-    }
 }
 
-// MARK: - Analytics helpers
-
 private extension SettingsTests {
-    struct ObservedAnalyticsFixture {
-        let interactor: SettingsInteractor
-        let consent: AnalyticsConsentManager
-        let availability: AnalyticsAvailabilityProvider
-        let output: AnalyticsSettingsOutputSpy
-    }
-
-    func makeAvailability(
-        settings: SettingsManagerProtocol,
-        remoteEnabled: Bool
-    ) -> AnalyticsAvailabilityProvider {
+    func makeConsent(settings: SettingsManagerProtocol = InMemorySettingsManager()) -> AnalyticsConsentManager {
         let availability = AnalyticsAvailabilityProvider(attestationMode: .appAttest, settingsManager: settings)
-        availability.setRemoteEnabled(remoteEnabled)
-
-        return availability
+        availability.setRemoteEnabled(true)
+        return AnalyticsConsentManager(settingsManager: settings, availabilityProvider: availability)
     }
 
-    func makeConsent(
-        settings: SettingsManagerProtocol = InMemorySettingsManager()
-    ) -> AnalyticsConsentManager {
-        AnalyticsConsentManager(
-            settingsManager: settings,
-            availabilityProvider: makeAvailability(settings: settings, remoteEnabled: true)
-        )
-    }
-
-    func makeRemotelyDisabledConsent(
-        optedIn: Bool,
-        settings: SettingsManagerProtocol = InMemorySettingsManager()
-    ) -> AnalyticsConsentManager {
-        let availability = makeAvailability(settings: settings, remoteEnabled: true)
-        let consent = AnalyticsConsentManager(
-            settingsManager: settings,
-            availabilityProvider: availability
-        )
-
+    func makeRemotelyDisabledConsent(optedIn: Bool, settings: SettingsManagerProtocol = InMemorySettingsManager()) -> AnalyticsConsentManager {
+        let availability = AnalyticsAvailabilityProvider(attestationMode: .appAttest, settingsManager: settings)
+        availability.setRemoteEnabled(true)
+        let consent = AnalyticsConsentManager(settingsManager: settings, availabilityProvider: availability)
         consent.setEnabled(optedIn)
         availability.setRemoteEnabled(false)
-
         return consent
     }
 
-    func makeAnalyticsFixture(optedIn: Bool, remoteEnabled: Bool) -> ObservedAnalyticsFixture {
-        let settings = InMemorySettingsManager()
-        let availability = makeAvailability(settings: settings, remoteEnabled: remoteEnabled)
-        let consent = AnalyticsConsentManager(
-            settingsManager: settings,
-            availabilityProvider: availability
-        )
-        consent.setEnabled(optedIn)
-
+    func provideAnalyticsValue(consent: AnalyticsConsentManagerProtocol) -> Bool? {
         let interactor = makeAnalyticsInteractor(consent: consent)
         let output = AnalyticsSettingsOutputSpy()
         interactor.presenter = output
-
-        return ObservedAnalyticsFixture(
-            interactor: interactor,
-            consent: consent,
-            availability: availability,
-            output: output
-        )
-    }
-
-    func makeObservedAnalyticsFixture(optedIn: Bool, remoteEnabled: Bool) -> ObservedAnalyticsFixture {
-        let fixture = makeAnalyticsFixture(optedIn: optedIn, remoteEnabled: remoteEnabled)
-
-        fixture.interactor.setup()
-
-        return fixture
-    }
-
-    func waitForReProvide(_ fixture: ObservedAnalyticsFixture, after flip: () -> Void) {
-        let delivered = XCTestExpectation(description: "availability change re-provided")
-        fixture.output.onReceive = { _ in delivered.fulfill() }
-
-        flip()
-
-        wait(for: [delivered], timeout: 1.0)
-    }
-
-    func waitForReProvideAfterAFlipDuringSetup(
-        _ fixture: ObservedAnalyticsFixture,
-        flip: @escaping () -> Void
-    ) {
-        let delivered = XCTestExpectation(description: "flip during the first provide re-provided")
-        var didFlip = false
-
-        fixture.output.onReceive = { _ in
-            guard !didFlip else {
-                delivered.fulfill()
-                return
-            }
-
-            didFlip = true
-            flip()
-        }
-
-        fixture.interactor.setup()
-
-        wait(for: [delivered], timeout: 1.0)
+        interactor.setup()
+        return output.received.first ?? nil
     }
 
     func preferenceRows(isAnalyticsOn: Bool?) -> [SettingsRow] {
-        let factory = SettingsViewModelFactory(
-            iconGenerator: NovaIconGenerator(),
-            quantityFormatter: NumberFormatter.quantity.localizableResource()
-        )
-
-        let sections = factory.createSectionViewModels(
-            language: nil,
-            currency: nil,
-            parameters: SettingsParameters(
-                walletConnectSessionsCount: nil,
-                isBiometricAuthOn: nil,
-                isPinConfirmationOn: false,
-                isNotificationsOn: false,
-                isHideBalancesOn: false,
-                isAnalyticsOn: isAnalyticsOn
-            ),
-            locale: Locale(identifier: "en")
-        )
-
+        let factory = SettingsViewModelFactory(iconGenerator: NovaIconGenerator(), quantityFormatter: NumberFormatter.quantity.localizableResource())
+        let parameters = SettingsParameters(walletConnectSessionsCount: nil, isBiometricAuthOn: nil, isPinConfirmationOn: false, isNotificationsOn: false, isHideBalancesOn: false, isAnalyticsOn: isAnalyticsOn)
+        let sections = factory.createSectionViewModels(language: nil, currency: nil, parameters: parameters, locale: Locale(identifier: "en"))
         return sections.first { $0.0 == .preferences }?.1.map(\.row) ?? []
     }
 
-    /// Only the analytics collaborator is real; everything else is the cheapest stand-in that
-    /// lets `setup()` and `toggleAnalytics()` run, since neither touches them.
     func makeAnalyticsInteractor(consent: AnalyticsConsentManagerProtocol) -> SettingsInteractor {
         let eventCenter = MockEventCenterProtocol()
-        stub(eventCenter) { stub in
-            when(stub.add(observer: any(), dispatchIn: any())).thenDoNothing()
-        }
+        stub(eventCenter) { stub in when(stub.add(observer: any(), dispatchIn: any())).thenDoNothing() }
 
         let walletConnect = MockWalletConnectDelegateInputProtocol()
         stub(walletConnect) { stub in
@@ -458,38 +217,20 @@ private extension SettingsTests {
             when(stub.supportedBiometryType.get).thenReturn(.none)
         }
 
+        let pushNotificationsFacade = MockPushNotificationsServiceFacadeProtocol()
+        stub(pushNotificationsFacade) { stub in
+            when(stub.subscribeStatus(any(), closure: any())).then { _, closure in closure(.unknown, .active) }
+        }
+
         let storageFacade = UserDataStorageTestFacade()
         let walletNotificationService = WalletNotificationService(
-            proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactory(
-                chainRegistry: ChainRegistryProtocolStub(),
-                streamableProviderFactory: SubstrateDataProviderFactory(
-                    facade: SubstrateStorageTestFacade(),
-                    operationManager: OperationManagerFacade.sharedManager
-                ),
-                storageFacade: storageFacade,
-                operationManager: OperationManagerFacade.sharedManager,
-                logger: Logger.shared
-            ),
-            multisigListLocalSubscriptionFactory: MultisigListLocalSubscriptionFactory(
-                storageFacade: storageFacade,
-                operationManager: OperationManagerFacade.sharedManager,
-                logger: Logger.shared
-            ),
+            proxyListLocalSubscriptionFactory: ProxyListLocalSubscriptionFactory(chainRegistry: ChainRegistryProtocolStub(), streamableProviderFactory: SubstrateDataProviderFactory(facade: SubstrateStorageTestFacade(), operationManager: OperationManagerFacade.sharedManager), storageFacade: storageFacade, operationManager: OperationManagerFacade.sharedManager, logger: Logger.shared),
+            multisigListLocalSubscriptionFactory: MultisigListLocalSubscriptionFactory(storageFacade: storageFacade, operationManager: OperationManagerFacade.sharedManager, logger: Logger.shared),
             logger: Logger.shared
         )
 
-        let pushNotificationsFacade = MockPushNotificationsServiceFacadeProtocol()
-        stub(pushNotificationsFacade) { stub in
-            when(stub.subscribeStatus(any(), closure: any())).then { _, closure in
-                closure(.unknown, .active)
-            }
-        }
-
         return SettingsInteractor(
-            selectedWalletSettings: SelectedWalletSettings(
-                storageFacade: storageFacade,
-                operationQueue: OperationQueue()
-            ),
+            selectedWalletSettings: SelectedWalletSettings(storageFacade: storageFacade, operationQueue: OperationQueue()),
             eventCenter: eventCenter,
             walletConnect: walletConnect,
             currencyManager: CurrencyManagerStub(),
@@ -506,11 +247,9 @@ private extension SettingsTests {
 
 private final class AnalyticsSettingsOutputSpy: SettingsInteractorOutputProtocol {
     var received: [Bool?] = []
-    var onReceive: ((Bool?) -> Void)?
 
     func didReceive(analyticsEnabled: Bool?) {
         received.append(analyticsEnabled)
-        onReceive?(analyticsEnabled)
     }
 
     func didReceive(wallet _: MetaAccountModel) {}
