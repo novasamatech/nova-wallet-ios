@@ -47,6 +47,7 @@ private struct FacadeFixture {
     let facade: AnalyticsServiceFacade
     let remoteSettings: RemoteSettingsStub
     let settings: SerialisedSettingsManager
+    let sessionHandler: ApplicationHandlerStub
     let operationQueue: OperationQueue
     let analyticsOperationQueue: OperationQueue
     let directory: URL
@@ -91,6 +92,16 @@ private struct FacadeFixture {
     }
 
     func enterForeground() {
+        sessionHandler.enterForeground()
+        refreshOnForeground()
+    }
+
+    func enterBackground() {
+        sessionHandler.enterBackground()
+        facade.didReceiveDidEnterBackground(notification: Notification(name: .init("test")))
+    }
+
+    func refreshOnForeground() {
         facade.didReceiveWillEnterForeground(notification: Notification(name: .init("test")))
     }
 
@@ -148,6 +159,7 @@ final class AnalyticsConfigurationTests: XCTestCase {
         }
 
         let remoteSettings = RemoteSettingsStub()
+        let sessionHandler = ApplicationHandlerStub()
         let operationQueue = OperationQueue()
         let analyticsOperationQueue = OperationQueue()
         analyticsOperationQueue.maxConcurrentOperationCount = 1
@@ -162,13 +174,16 @@ final class AnalyticsConfigurationTests: XCTestCase {
                 isFirstLaunch: isFirstLaunch,
                 operationQueue: operationQueue,
                 analyticsOperationQueue: analyticsOperationQueue
-            )
+            ),
+            sessionApplicationHandler: sessionHandler,
+            backgroundTaskRunner: ImmediateBackgroundTaskRunner()
         )
 
         let fixture = FacadeFixture(
             facade: facade,
             remoteSettings: remoteSettings,
             settings: settings,
+            sessionHandler: sessionHandler,
             operationQueue: operationQueue,
             analyticsOperationQueue: analyticsOperationQueue,
             directory: directory
@@ -300,6 +315,84 @@ final class AnalyticsConfigurationTests: XCTestCase {
         XCTAssertFalse(fixture.facade.consent.isAvailable)
     }
 
+    func testAForegroundRefreshThatStaysOnDoesNotRerunTheLaunchSequence() throws {
+        let fixture = try makeFacadeFixture(optedIn: true)
+
+        fixture.facade.setup()
+        fixture.drain()
+        XCTAssertEqual(try fixture.pendingNames(), ["session_started", "app_opened"])
+
+        fixture.refreshOnForeground()
+        fixture.drain()
+
+        XCTAssertEqual(fixture.remoteSettings.requestCount, 2)
+        XCTAssertEqual(try fixture.pendingNames(), ["session_started", "app_opened"])
+        XCTAssertEqual(fixture.sessionHandler.delegateAssignments, [true])
+    }
+
+    func testAForegroundWhileOnStartsOneMoreSessionWithoutReopeningTheApp() throws {
+        let fixture = try makeFacadeFixture(optedIn: true)
+
+        fixture.facade.setup()
+        fixture.drain()
+
+        fixture.enterForeground()
+        fixture.drain()
+
+        XCTAssertEqual(try fixture.pendingNames(), ["session_started", "app_opened", "session_started"])
+        XCTAssertEqual(fixture.sessionHandler.delegateAssignments, [true])
+    }
+
+    func testAnOnOffOnRoundTripArmsAndThrottlesTheTrackerOnceEachWay() throws {
+        let fixture = try makeFacadeFixture(optedIn: true)
+
+        fixture.facade.setup()
+        fixture.drain()
+        fixture.recordAndSettleUploads()
+        XCTAssertEqual(fixture.sessionHandler.delegateAssignments, [true])
+
+        fixture.remoteSettings.result = .success(false)
+        fixture.refreshOnForeground()
+        fixture.drain()
+        XCTAssertEqual(fixture.sessionHandler.delegateAssignments, [true, false])
+        XCTAssertEqual(try fixture.pendingNames(), [])
+
+        fixture.remoteSettings.result = .success(true)
+        fixture.refreshOnForeground()
+        fixture.drain()
+
+        XCTAssertEqual(fixture.sessionHandler.delegateAssignments, [true, false, true])
+        XCTAssertEqual(try fixture.pendingNames(), ["session_started", "app_opened"])
+    }
+
+    func testAResolutionThatLandsInTheBackgroundDefersTheSessionAndTheLaunchFlush() throws {
+        let fixture = try makeFacadeFixture(optedIn: true)
+        let requested = expectation(description: "remote settings requested")
+        let gate = DispatchSemaphore(value: 0)
+        fixture.remoteSettings.onRequest = { requested.fulfill() }
+        fixture.remoteSettings.gate = gate
+
+        fixture.facade.setup()
+        wait(for: [requested], timeout: 5)
+        fixture.enterBackground()
+
+        gate.signal()
+        fixture.drain()
+
+        XCTAssertTrue(fixture.facade.consent.isAvailable)
+        XCTAssertEqual(fixture.sessionHandler.delegateAssignments, [true])
+        XCTAssertEqual(try fixture.pendingNames(), ["app_opened"])
+        XCTAssertNil(fixture.persistedInstallId())
+
+        fixture.remoteSettings.onRequest = nil
+        fixture.remoteSettings.gate = nil
+        fixture.enterForeground()
+        fixture.drain()
+
+        XCTAssertEqual(try fixture.pendingNames(), ["app_opened", "session_started"])
+        XCTAssertNotNil(fixture.persistedInstallId())
+    }
+
     func testAnOlderResolutionThatLandsAfterANewerOneIsDropped() throws {
         let fixture = try makeFacadeFixture(optedIn: true)
         let olderRequested = expectation(description: "older resolution requested")
@@ -317,7 +410,7 @@ final class AnalyticsConfigurationTests: XCTestCase {
         fixture.remoteSettings.onRequest = { newerRequested.fulfill() }
         fixture.remoteSettings.gate = newerGate
 
-        fixture.enterForeground()
+        fixture.refreshOnForeground()
         wait(for: [newerRequested], timeout: 5)
 
         let owner = NSObject()

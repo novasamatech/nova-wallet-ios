@@ -21,13 +21,27 @@ public final class AnalyticsServiceFacade {
     private let mutex = NSLock()
     private var isSetUp: Bool = false
     private var isActive: Bool = false
+    private var isInForeground: Bool = true
+    private var isLaunchFlushPending: Bool = false
     private var isFirstLaunchAtSetup: Bool = false
     private var resolutionGeneration: Int = 0
 
     // Serialises the applies, so a superseded resolution can never land after the current one.
     private let resolutionLock = NSLock()
 
-    public init(configuration: AnalyticsConfiguration) {
+    public convenience init(configuration: AnalyticsConfiguration) {
+        self.init(
+            configuration: configuration,
+            sessionApplicationHandler: ApplicationHandler(),
+            backgroundTaskRunner: UIApplicationBackgroundTaskRunner()
+        )
+    }
+
+    init(
+        configuration: AnalyticsConfiguration,
+        sessionApplicationHandler: ApplicationHandlerProtocol,
+        backgroundTaskRunner: BackgroundTaskRunning
+    ) {
         let settingsManager = configuration.settingsManager
 
         let storageFacade = AnalyticsStorageFacade(
@@ -96,8 +110,8 @@ public final class AnalyticsServiceFacade {
 
         let sessionTracker = AnalyticsSessionTracker(
             tracker: service,
-            applicationHandler: ApplicationHandler(),
-            backgroundTaskRunner: UIApplicationBackgroundTaskRunner()
+            applicationHandler: sessionApplicationHandler,
+            backgroundTaskRunner: backgroundTaskRunner
         )
 
         isFirstLaunch = configuration.isFirstLaunch
@@ -179,7 +193,23 @@ extension AnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
 
 extension AnalyticsServiceFacade: ApplicationHandlerDelegate {
     public func didReceiveWillEnterForeground(notification _: Notification) {
+        mutex.lock()
+        isInForeground = true
+        let shouldFlushLaunch = isLaunchFlushPending
+        isLaunchFlushPending = false
+        mutex.unlock()
+
+        if shouldFlushLaunch {
+            service.flush(reason: .launch)
+        }
+
         resolveRemoteAvailability()
+    }
+
+    public func didReceiveDidEnterBackground(notification _: Notification) {
+        mutex.lock()
+        isInForeground = false
+        mutex.unlock()
     }
 }
 
@@ -285,16 +315,21 @@ private extension AnalyticsServiceFacade {
 
     func activateLocked() {
         sessionTracker.setup()
-        sessionTracker.startSession()
 
-        service.trackAndFlush(
-            .appOpened(isFirstLaunch: isFirstLaunchAtSetup),
-            reason: .launch,
-            completion: {}
-        )
+        let appOpened = AnalyticsEvent.appOpened(isFirstLaunch: isFirstLaunchAtSetup)
+
+        guard isInForeground else {
+            service.trackDeferringFlush(appOpened)
+            isLaunchFlushPending = true
+            return
+        }
+
+        sessionTracker.startSession()
+        service.trackAndFlush(appOpened, reason: .launch, completion: {})
     }
 
     func deactivateLocked() {
+        isLaunchFlushPending = false
         sessionTracker.throttle()
         service.cancelFlush()
     }
