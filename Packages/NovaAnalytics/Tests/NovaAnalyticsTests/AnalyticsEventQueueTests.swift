@@ -1,33 +1,6 @@
 import XCTest
 @testable import NovaAnalytics
 import Operation_iOS
-import CoreData
-
-private enum CorruptAnalyticsEventMapperError: Error {
-    case dataCorruption
-}
-
-private final class CorruptAnalyticsEventMapper: CoreDataMapperProtocol {
-    typealias DataProviderModel = AnalyticsPendingEvent
-    typealias CoreDataEntity = CDAnalyticsEvent
-
-    var entityIdentifierFieldName: String {
-        #keyPath(CDAnalyticsEvent.identifier)
-    }
-
-    func transform(entity _: CoreDataEntity) throws -> DataProviderModel {
-        throw CorruptAnalyticsEventMapperError.dataCorruption
-    }
-
-    func populate(
-        entity: CoreDataEntity,
-        from model: DataProviderModel,
-        using _: NSManagedObjectContext
-    ) throws {
-        entity.identifier = model.identifier
-        entity.sequence = model.sequence
-    }
-}
 
 final class AnalyticsEventQueueTests: XCTestCase {
     private func makeQueue(maxCount: Int = 500) -> CoreDataAnalyticsEventQueue {
@@ -154,7 +127,7 @@ final class AnalyticsEventQueueTests: XCTestCase {
         )
 
         try enqueue(queue, ["a"])
-        try seedCorruptRow(facade: facade)
+        try facade.seedUnreadableRow()
 
         XCTAssertEqual(try run(queue.countOperation()), 2)
         XCTAssertThrowsError(
@@ -205,24 +178,5 @@ final class AnalyticsEventQueueTests: XCTestCase {
         ))
 
         XCTAssertEqual(try run(queue.peekWrapper(count: 1)).map(\.consentEpoch), [7])
-    }
-
-    private func seedCorruptRow(facade: AnalyticsStorageTestFacade) throws {
-        let corruptRepository = facade.createRepository(
-            mapper: AnyCoreDataMapper(CorruptAnalyticsEventMapper())
-        )
-
-        _ = try run(corruptRepository.saveOperation({
-            [
-                AnalyticsPendingEvent(
-                    identifier: AnalyticsPendingEvent.identifier(for: 999),
-                    sequence: 999,
-                    name: "unused",
-                    timestamp: Date(timeIntervalSince1970: 1),
-                    payload: Data(),
-                    consentEpoch: 0
-                )
-            ]
-        }, { [] }))
     }
 }

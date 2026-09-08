@@ -33,6 +33,7 @@ final class AnalyticsUploaderTests: XCTestCase {
     private struct Fixture {
         let uploader: AnalyticsUploader
         let queue: CoreDataAnalyticsEventQueue
+        let storage: AnalyticsStorageTestFacade
         let attestation: BackendAttestationProviderSpy
         let uploadFactory: AnalyticsUploadOperationFactorySpy
         let settings: InMemorySettingsManager
@@ -45,10 +46,10 @@ final class AnalyticsUploaderTests: XCTestCase {
         optOutDuringAttestation: Bool = false,
         timeProvider: @escaping () -> Date = { Date(timeIntervalSince1970: 1_772_445_600) }
     ) -> Fixture {
-        let facade = AnalyticsStorageTestFacade()
+        let storage = AnalyticsStorageTestFacade()
 
         let queue = CoreDataAnalyticsEventQueue(
-            repository: AnyDataProviderRepository(facade.createEventRepository()),
+            repository: AnyDataProviderRepository(storage.createEventRepository()),
             maxCount: 500
         )
 
@@ -80,6 +81,7 @@ final class AnalyticsUploaderTests: XCTestCase {
         return Fixture(
             uploader: uploader,
             queue: queue,
+            storage: storage,
             attestation: attestation,
             uploadFactory: uploadFactory,
             settings: settings,
@@ -411,6 +413,19 @@ final class AnalyticsUploaderTests: XCTestCase {
         try flush(fixture)
 
         XCTAssertEqual(try queueCount(fixture), 0)
+    }
+
+    func testAnUnreadableQueueIsClearedWithoutAnUpload() throws {
+        let fixture = makeFixture(uploadResults: [.success(())])
+        try seed(fixture, count: 1)
+        try fixture.storage.seedUnreadableRow()
+        XCTAssertEqual(try queueCount(fixture), 2)
+
+        try flush(fixture)
+
+        XCTAssertEqual(try queueCount(fixture), 0)
+        XCTAssertEqual(fixture.uploadFactory.callCount, 0)
+        XCTAssertEqual(fixture.attestation.signingCallCount, 0)
     }
 
     func testTamperedRowTextNeverReachesTheTransport() throws {
