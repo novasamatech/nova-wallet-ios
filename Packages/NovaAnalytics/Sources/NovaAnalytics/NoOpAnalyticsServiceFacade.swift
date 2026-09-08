@@ -64,4 +64,12 @@ private final class NoOpAnalyticsConsentManager: AnalyticsConsentManagerProtocol
     ) {}
 
     func removeObserver(by _: AnyObject) {}
+
+    func addAvailabilityObserver(
+        with _: AnyObject,
+        queue _: DispatchQueue?,
+        closure _: @escaping (Bool) -> Void
+    ) {}
+
+    func removeAvailabilityObserver(by _: AnyObject) {}
 }

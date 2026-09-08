@@ -28,6 +28,8 @@ public protocol AnalyticsConsentManagerProtocol: AnyObject {
     func markPromptSeen()
     func addObserver(with owner: AnyObject, queue: DispatchQueue?, closure: @escaping (Bool, Bool) -> Void)
     func removeObserver(by owner: AnyObject)
+    func addAvailabilityObserver(with owner: AnyObject, queue: DispatchQueue?, closure: @escaping (Bool) -> Void)
+    func removeAvailabilityObserver(by owner: AnyObject)
 }
 
 public protocol AnalyticsIdentityProtocol: AnyObject {
@@ -43,6 +45,9 @@ public protocol AnalyticsIdentityProtocol: AnyObject {
 
 public protocol AnalyticsAvailabilityProviderProtocol: AnyObject {
     var isAvailable: Bool { get }
+
+    func addObserver(with owner: AnyObject, queue: DispatchQueue?, closure: @escaping (Bool) -> Void)
+    func removeObserver(by owner: AnyObject)
 }
 
 public protocol AnalyticsTrackingProtocol: AnyObject {

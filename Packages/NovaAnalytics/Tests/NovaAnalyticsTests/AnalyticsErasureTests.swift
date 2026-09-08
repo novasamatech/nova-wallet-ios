@@ -444,9 +444,10 @@ final class AnalyticsErasureTests: XCTestCase {
     }
 
     private func makeCoordinatorFixture() -> CoordinatorFixture {
+        let settings = SerialisedSettingsManager()
         let consent = AnalyticsConsentManager(
-            settingsManager: SerialisedSettingsManager(),
-            availabilityProvider: AnalyticsAvailabilityProvider(attestationMode: .appAttest)
+            settingsManager: settings,
+            availabilityProvider: AnalyticsAvailabilityProvider(attestationMode: .appAttest, settingsManager: settings)
         )
 
         let clearInterceptor = AnalyticsEventQueueClearInterceptor(wrapping: AnalyticsEventQueueSpy())

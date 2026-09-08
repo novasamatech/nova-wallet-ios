@@ -29,10 +29,12 @@ extension AnalyticsTestFixture {
         static let erasureOwed = "analyticsErasureOwed"
         static let gatewayClientId = "gatewayAttestationClientId"
         static let appAttestKeys = "appAttestKeys"
+        static let remoteEnabled = "analyticsRemoteEnabled"
     }
 
     static func make(
         isAvailable: Bool = true,
+        resolvesRemote: Bool = true,
         now: @escaping () -> Date = { Date() },
         deviceCheck: DeviceCheckAttestingSpy? = nil,
         clearError: Error? = nil,
@@ -49,8 +51,13 @@ extension AnalyticsTestFixture {
         clearInterceptor.clearError = clearError
 
         let availability = AnalyticsAvailabilityProvider(
-            attestationMode: isAvailable ? .appAttest : .unavailable
+            attestationMode: isAvailable ? .appAttest : .unavailable,
+            settingsManager: settings
         )
+
+        if resolvesRemote {
+            availability.setRemoteEnabled(true)
+        }
 
         let consent = AnalyticsConsentManager(
             settingsManager: settings,
@@ -148,6 +155,13 @@ extension AnalyticsTestFixture {
         settings.set(value: true, for: Keys.analyticsEnabled)
 
         return make(now: now, deviceCheck: deviceCheck, settings: settings, storage: storage)
+    }
+
+    static func makeUnresolved(
+        settings: SerialisedSettingsManager,
+        storage: AnalyticsStorageTestFacade
+    ) -> AnalyticsTestFixture {
+        make(resolvesRemote: false, settings: settings, storage: storage)
     }
 
     func drain() {
