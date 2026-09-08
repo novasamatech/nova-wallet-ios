@@ -21,9 +21,27 @@ public final class AnalyticsServiceFacade {
     private let mutex = NSLock()
     private var isSetUp: Bool = false
     private var isActive: Bool = false
-    private var isResolving: Bool = false
+    private var isInForeground: Bool = true
+    private var isLaunchFlushPending: Bool = false
+    private var isFirstLaunchAtSetup: Bool = false
+    private var resolutionGeneration: Int = 0
 
-    public init(configuration: AnalyticsConfiguration) {
+    // Serialises the applies, so a superseded resolution can never land after the current one.
+    private let resolutionLock = NSLock()
+
+    public convenience init(configuration: AnalyticsConfiguration) {
+        self.init(
+            configuration: configuration,
+            sessionApplicationHandler: ApplicationHandler(),
+            backgroundTaskRunner: UIApplicationBackgroundTaskRunner()
+        )
+    }
+
+    init(
+        configuration: AnalyticsConfiguration,
+        sessionApplicationHandler: ApplicationHandlerProtocol,
+        backgroundTaskRunner: BackgroundTaskRunning
+    ) {
         let settingsManager = configuration.settingsManager
 
         let storageFacade = AnalyticsStorageFacade(
@@ -92,8 +110,8 @@ public final class AnalyticsServiceFacade {
 
         let sessionTracker = AnalyticsSessionTracker(
             tracker: service,
-            applicationHandler: ApplicationHandler(),
-            backgroundTaskRunner: UIApplicationBackgroundTaskRunner()
+            applicationHandler: sessionApplicationHandler,
+            backgroundTaskRunner: backgroundTaskRunner
         )
 
         isFirstLaunch = configuration.isFirstLaunch
@@ -131,6 +149,10 @@ extension AnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
         }
 
         isSetUp = true
+
+        // Read on the launch path: the host clears its first-launch flag once launch completes,
+        // long before the remote resolution lands.
+        isFirstLaunchAtSetup = isFirstLaunch()
         mutex.unlock()
 
         resolveRemoteAvailability()
@@ -171,7 +193,23 @@ extension AnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
 
 extension AnalyticsServiceFacade: ApplicationHandlerDelegate {
     public func didReceiveWillEnterForeground(notification _: Notification) {
+        mutex.lock()
+        isInForeground = true
+        let shouldFlushLaunch = isLaunchFlushPending
+        isLaunchFlushPending = false
+        mutex.unlock()
+
+        if shouldFlushLaunch {
+            service.flush(reason: .launch)
+        }
+
         resolveRemoteAvailability()
+    }
+
+    public func didReceiveDidEnterBackground(notification _: Notification) {
+        mutex.lock()
+        isInForeground = false
+        mutex.unlock()
     }
 }
 
@@ -193,12 +231,13 @@ private extension AnalyticsServiceFacade {
     func resolveRemoteAvailability() {
         mutex.lock()
 
-        guard isSetUp, !isResolving else {
+        guard isSetUp else {
             mutex.unlock()
             return
         }
 
-        isResolving = true
+        resolutionGeneration += 1
+        let generation = resolutionGeneration
         mutex.unlock()
 
         let remoteWrapper = remoteSettings.createRemoteEnabledWrapper()
@@ -208,7 +247,7 @@ private extension AnalyticsServiceFacade {
         let applyOperation = ClosureOperation<Void> { [weak self] in
             let result = Result { try remoteWrapper.targetOperation.extractNoCancellableResultData() }
 
-            self?.apply(remoteResult: result)
+            self?.apply(remoteResult: result, generation: generation)
         }
 
         applyOperation.addDependency(remoteWrapper.targetOperation)
@@ -217,28 +256,39 @@ private extension AnalyticsServiceFacade {
             wrapper: remoteWrapper.insertingTail(operation: applyOperation),
             inOperationQueue: configOperationQueue,
             runningCallbackIn: nil
-        ) { [weak self] _ in
-            self?.finishResolving()
-        }
+        ) { _ in }
     }
 
-    func apply(remoteResult: Result<Bool, Error>) {
+    func apply(remoteResult: Result<Bool, Error>, generation: Int) {
+        resolutionLock.lock()
+
+        defer {
+            resolutionLock.unlock()
+        }
+
+        guard isCurrent(generation: generation) else {
+            logger.debug("Analytics remote config resolution superseded, dropping it")
+            return
+        }
+
         switch remoteResult {
         case let .success(isEnabled):
-            availability.setRemoteEnabled(isEnabled)
-            service.handleAvailabilityChanged()
+            service.handleRemoteResolved(isEnabled: isEnabled)
         case let .failure(error):
             logger.info("Analytics remote config unavailable, keeping the last resolved state: \(error)")
         }
 
-        finishResolving()
         reconcile()
     }
 
-    func finishResolving() {
+    func isCurrent(generation: Int) -> Bool {
         mutex.lock()
-        isResolving = false
-        mutex.unlock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return generation == resolutionGeneration
     }
 
     func reconcile() {
@@ -265,16 +315,21 @@ private extension AnalyticsServiceFacade {
 
     func activateLocked() {
         sessionTracker.setup()
-        sessionTracker.startSession()
 
-        service.trackAndFlush(
-            .appOpened(isFirstLaunch: isFirstLaunch()),
-            reason: .launch,
-            completion: {}
-        )
+        let appOpened = AnalyticsEvent.appOpened(isFirstLaunch: isFirstLaunchAtSetup)
+
+        guard isInForeground else {
+            service.trackDeferringFlush(appOpened)
+            isLaunchFlushPending = true
+            return
+        }
+
+        sessionTracker.startSession()
+        service.trackAndFlush(appOpened, reason: .launch, completion: {})
     }
 
     func deactivateLocked() {
+        isLaunchFlushPending = false
         sessionTracker.throttle()
         service.cancelFlush()
     }

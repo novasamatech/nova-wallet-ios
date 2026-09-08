@@ -34,7 +34,7 @@ extension AnalyticsTestFixture {
 
     static func make(
         isAvailable: Bool = true,
-        resolvesRemote: Bool = true,
+        persistedRemoteEnabled: Bool? = true,
         now: @escaping () -> Date = { Date() },
         deviceCheck: DeviceCheckAttestingSpy? = nil,
         clearError: Error? = nil,
@@ -42,6 +42,12 @@ extension AnalyticsTestFixture {
         storage: AnalyticsStorageTestFacade = AnalyticsStorageTestFacade(),
         logger: SDKLoggerProtocol = SilentLogger()
     ) -> AnalyticsTestFixture {
+        if let persistedRemoteEnabled {
+            settings.set(value: persistedRemoteEnabled, for: Keys.remoteEnabled)
+        } else {
+            settings.removeValue(for: Keys.remoteEnabled)
+        }
+
         let eventQueue = CoreDataAnalyticsEventQueue(
             repository: AnyDataProviderRepository(storage.createEventRepository()),
             maxCount: 500
@@ -54,10 +60,6 @@ extension AnalyticsTestFixture {
             attestationMode: isAvailable ? .appAttest : .unavailable,
             settingsManager: settings
         )
-
-        if resolvesRemote {
-            availability.setRemoteEnabled(true)
-        }
 
         let consent = AnalyticsConsentManager(
             settingsManager: settings,
@@ -161,7 +163,7 @@ extension AnalyticsTestFixture {
         settings: SerialisedSettingsManager,
         storage: AnalyticsStorageTestFacade
     ) -> AnalyticsTestFixture {
-        make(resolvesRemote: false, settings: settings, storage: storage)
+        make(persistedRemoteEnabled: nil, settings: settings, storage: storage)
     }
 
     func drain() {

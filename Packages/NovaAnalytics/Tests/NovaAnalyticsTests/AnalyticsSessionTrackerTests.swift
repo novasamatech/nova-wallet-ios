@@ -2,16 +2,6 @@ import XCTest
 @testable import NovaAnalytics
 import Foundation_iOS
 
-private final class ImmediateBackgroundTaskRunner: BackgroundTaskRunning {
-    private(set) var beganCount = 0
-    private(set) var endedCount = 0
-
-    func run(_ work: @escaping (@escaping () -> Void) -> Void) {
-        beganCount += 1
-        work { self.endedCount += 1 }
-    }
-}
-
 final class AnalyticsSessionTrackerTests: XCTestCase {
     private struct Fixture {
         let tracker: AnalyticsSessionTracker
