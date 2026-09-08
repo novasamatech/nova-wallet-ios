@@ -5,11 +5,26 @@ import Operation_iOS
 private final class StubGlobalConfigProvider: GlobalConfigProviding {
     private let result: Result<GlobalConfig, Error>
 
+    private(set) var cachedRequestCount = 0
+    private(set) var freshRequestCount = 0
+
     init(result: Result<GlobalConfig, Error>) {
         self.result = result
     }
 
     func createConfigWrapper() -> CompoundOperationWrapper<GlobalConfig> {
+        cachedRequestCount += 1
+
+        return makeWrapper()
+    }
+
+    func createFreshConfigWrapper() -> CompoundOperationWrapper<GlobalConfig> {
+        freshRequestCount += 1
+
+        return makeWrapper()
+    }
+
+    private func makeWrapper() -> CompoundOperationWrapper<GlobalConfig> {
         let result = result
 
         return CompoundOperationWrapper(targetOperation: ClosureOperation { try result.get() })
@@ -34,9 +49,11 @@ final class AnalyticsRemoteSettingsAdapterTests: XCTestCase {
     }
 
     private func resolve(_ result: Result<GlobalConfig, Error>) throws -> Bool {
-        let adapter = AnalyticsRemoteSettingsAdapter(
-            configProvider: StubGlobalConfigProvider(result: result)
-        )
+        try resolve(with: StubGlobalConfigProvider(result: result))
+    }
+
+    private func resolve(with provider: StubGlobalConfigProvider) throws -> Bool {
+        let adapter = AnalyticsRemoteSettingsAdapter(configProvider: provider)
 
         let wrapper = adapter.createRemoteEnabledWrapper()
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
@@ -67,5 +84,16 @@ final class AnalyticsRemoteSettingsAdapterTests: XCTestCase {
         XCTAssertThrowsError(try resolve(.failure(StubConfigError.unreachable))) { error in
             XCTAssertTrue(error is StubConfigError)
         }
+    }
+
+    func testTheAdapterAsksForAFreshConfigRatherThanTheCachedOne() throws {
+        // The facade re-resolves on every foreground; the cached wrapper would answer all of
+        // them from the first successful launch fetch, making the switch a per-launch one.
+        let provider = StubGlobalConfigProvider(result: .success(makeConfig(analytics: nil)))
+
+        _ = try resolve(with: provider)
+
+        XCTAssertEqual(provider.freshRequestCount, 1)
+        XCTAssertEqual(provider.cachedRequestCount, 0)
     }
 }
