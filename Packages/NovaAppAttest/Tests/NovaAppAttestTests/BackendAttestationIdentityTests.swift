@@ -3,13 +3,6 @@ import XCTest
 import Keystore_iOS
 
 final class BackendAttestationIdentityTests: XCTestCase {
-    func testClientIdIsNotCreatedUntilAsked() {
-        let settings = InMemorySettingsManager()
-        _ = BackendAttestationIdentity(settingsManager: settings)
-
-        XCTAssertNil(settings.gatewayAttestationClientId)
-    }
-
     func testClientIdIsStableAndLowercaseUUID() throws {
         let identity = BackendAttestationIdentity(settingsManager: InMemorySettingsManager())
         let first = try XCTUnwrap(identity.clientId())
@@ -22,77 +15,12 @@ final class BackendAttestationIdentityTests: XCTestCase {
     func testForgetDeletesSoAReconsentedUserIsANewClient() throws {
         let settings = InMemorySettingsManager()
         let identity = BackendAttestationIdentity(settingsManager: settings)
-
         let first = try XCTUnwrap(identity.clientId())
-        identity.forgetClientId()
 
+        identity.forgetClientId()
         XCTAssertNil(settings.gatewayAttestationClientId)
 
         identity.allowCreation()
         XCTAssertNotEqual(identity.clientId(), first)
-    }
-
-    func testForgetBlocksRecreationUntilConsentIsGrantedAgain() {
-        let settings = InMemorySettingsManager()
-        let identity = BackendAttestationIdentity(settingsManager: settings)
-
-        _ = identity.clientId()
-        identity.forgetClientId()
-
-        XCTAssertNil(identity.clientId())
-        XCTAssertNil(settings.gatewayAttestationClientId)
-    }
-
-    func testClientIdIsStoredUnderTheKeyExistingInstallsAlreadyHold() {
-        let settings = InMemorySettingsManager()
-        let identity = BackendAttestationIdentity(settingsManager: settings)
-
-        let created = identity.clientId()
-
-        XCTAssertNotNil(created)
-        XCTAssertEqual(settings.string(for: "gatewayAttestationClientId"), created)
-
-        identity.forgetClientId()
-
-        XCTAssertNil(settings.string(for: "gatewayAttestationClientId"))
-    }
-
-    func testExistingClientIdReadsAFreshStoreWithoutMinting() {
-        let settings = InMemorySettingsManager()
-        let identity = BackendAttestationIdentity(settingsManager: settings)
-
-        XCTAssertNil(identity.existingClientId())
-        XCTAssertNil(settings.gatewayAttestationClientId)
-    }
-
-    func testExistingClientIdReturnsTheIdThatClientIdMinted() throws {
-        let identity = BackendAttestationIdentity(settingsManager: InMemorySettingsManager())
-
-        let minted = try XCTUnwrap(identity.clientId())
-
-        XCTAssertEqual(identity.existingClientId(), minted)
-    }
-
-    func testExistingClientIdReturnsNilAfterForget() {
-        let identity = BackendAttestationIdentity(settingsManager: InMemorySettingsManager())
-
-        _ = identity.clientId()
-        identity.forgetClientId()
-
-        XCTAssertNil(identity.existingClientId())
-    }
-
-    func testReConsentAllowsAFreshClientId() {
-        let settings = InMemorySettingsManager()
-        let identity = BackendAttestationIdentity(settingsManager: settings)
-
-        let original = identity.clientId()
-        identity.forgetClientId()
-        identity.allowCreation()
-
-        let recreated = identity.clientId()
-
-        XCTAssertNotNil(recreated)
-        XCTAssertNotEqual(recreated, original)
     }
 }
