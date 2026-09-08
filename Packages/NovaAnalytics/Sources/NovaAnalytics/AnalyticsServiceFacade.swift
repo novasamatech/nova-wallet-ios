@@ -18,6 +18,9 @@ public final class AnalyticsServiceFacade {
     private let configOperationQueue: OperationQueue
     private let logger: SDKLoggerProtocol
 
+    // Test seam: fires once a value has passed the generation check, before it reaches the service.
+    private let onResolutionAccepted: ((_ generation: Int) -> Void)?
+
     private let mutex = NSLock()
     private var isSetUp: Bool = false
     private var isActive: Bool = false
@@ -43,7 +46,8 @@ public final class AnalyticsServiceFacade {
     init(
         configuration: AnalyticsConfiguration,
         sessionApplicationHandler: ApplicationHandlerProtocol,
-        backgroundTaskRunner: BackgroundTaskRunning
+        backgroundTaskRunner: BackgroundTaskRunning,
+        onResolutionAccepted: ((_ generation: Int) -> Void)? = nil
     ) {
         let settingsManager = configuration.settingsManager
 
@@ -127,6 +131,7 @@ public final class AnalyticsServiceFacade {
         applicationHandler = ApplicationHandler()
         configOperationQueue = configuration.operationQueue
         logger = configuration.logger
+        self.onResolutionAccepted = onResolutionAccepted
 
         consent.addObserver(with: self, queue: nil) { [weak self] oldValue, newValue in
             guard !oldValue, newValue else {
@@ -276,6 +281,7 @@ private extension AnalyticsServiceFacade {
                 return
             }
 
+            onResolutionAccepted?(generation)
             service.handleRemoteResolved(isEnabled: isEnabled)
             markApplied(generation: generation)
         case let .failure(error):

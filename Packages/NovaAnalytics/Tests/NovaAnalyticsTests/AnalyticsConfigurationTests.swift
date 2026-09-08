@@ -149,7 +149,8 @@ final class AnalyticsConfigurationTests: XCTestCase {
     private func makeFacadeFixture(
         optedIn: Bool = false,
         persistedRemoteEnabled: Bool? = nil,
-        isFirstLaunch: @escaping () -> Bool = { false }
+        isFirstLaunch: @escaping () -> Bool = { false },
+        onResolutionAccepted: ((Int) -> Void)? = nil
     ) throws -> FacadeFixture {
         let settings = SerialisedSettingsManager()
         settings.set(value: optedIn, for: Keys.analyticsEnabled)
@@ -176,7 +177,8 @@ final class AnalyticsConfigurationTests: XCTestCase {
                 analyticsOperationQueue: analyticsOperationQueue
             ),
             sessionApplicationHandler: sessionHandler,
-            backgroundTaskRunner: ImmediateBackgroundTaskRunner()
+            backgroundTaskRunner: ImmediateBackgroundTaskRunner(),
+            onResolutionAccepted: onResolutionAccepted
         )
 
         let fixture = FacadeFixture(
@@ -450,6 +452,44 @@ final class AnalyticsConfigurationTests: XCTestCase {
 
         fixture.refreshOnForeground()
         wait(for: [newerRequested], timeout: 5)
+
+        olderGate.signal()
+        fixture.drain()
+
+        XCTAssertTrue(fixture.facade.consent.isAvailable)
+        XCTAssertEqual(fixture.settings.bool(for: Keys.remoteEnabled), true)
+        XCTAssertEqual(try fixture.pendingNames(), ["session_started", "app_opened"])
+    }
+
+    func testANewerResolutionWaitsForTheOlderApplyInProgressAndLandsLast() throws {
+        let olderAccepted = expectation(description: "older resolution accepted")
+        let olderGate = DispatchSemaphore(value: 0)
+        let newerAccepted = XCTestExpectation(description: "newer resolution accepted")
+
+        let fixture = try makeFacadeFixture(
+            optedIn: true,
+            onResolutionAccepted: { generation in
+                guard generation == 1 else {
+                    newerAccepted.fulfill()
+                    return
+                }
+
+                olderAccepted.fulfill()
+                _ = olderGate.wait(timeout: .now() + 5)
+            }
+        )
+        fixture.remoteSettings.result = .success(false)
+
+        fixture.facade.setup()
+        wait(for: [olderAccepted], timeout: 5)
+
+        let newerRequested = expectation(description: "newer resolution requested")
+        fixture.remoteSettings.result = .success(true)
+        fixture.remoteSettings.onRequest = { newerRequested.fulfill() }
+
+        fixture.refreshOnForeground()
+        wait(for: [newerRequested], timeout: 5)
+        XCTAssertEqual(XCTWaiter().wait(for: [newerAccepted], timeout: 1), .timedOut)
 
         olderGate.signal()
         fixture.drain()
