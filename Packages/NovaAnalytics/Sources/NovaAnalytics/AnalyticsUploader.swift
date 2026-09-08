@@ -125,7 +125,7 @@ private extension AnalyticsUploader {
             } catch {
                 logger.error("Analytics queue is unreadable, clearing it: \(error)")
 
-                return createClearWrapper(outcome: .stop)
+                return createClearWrapper()
             }
 
             guard !rows.isEmpty else {
@@ -199,14 +199,16 @@ private extension AnalyticsUploader {
         )
     }
 
+    /// A rejection describes the key or the client rather than the rows, so the batch waits for a
+    /// re-attested key; only a payload the gateway will never accept is dropped.
     func createFailureWrapper(_ error: Error, batch: Batch) -> CompoundOperationWrapper<BatchOutcome> {
         if let transportError = error as? AnalyticsTransportError {
             switch transportError {
             case .rejected:
-                logger.warning("Analytics upload rejected, clearing the queue: \(transportError)")
+                logger.warning("Analytics upload rejected, retaining the batch: \(transportError)")
                 attestation.markUnattested()
 
-                return createClearWrapper(outcome: .failed(transportError))
+                return .createWithResult(.failed(transportError))
             case .clientError:
                 logger.warning("Analytics batch refused, dropping it: \(transportError)")
 
@@ -219,9 +221,9 @@ private extension AnalyticsUploader {
         }
 
         if let attestationError = error as? BackendAttestationError, case .rejected = attestationError {
-            logger.warning("Gateway refused registration, clearing the queue")
+            logger.warning("Gateway refused registration, retaining the batch")
 
-            return createClearWrapper(outcome: .failed(attestationError))
+            return .createWithResult(.failed(attestationError))
         }
 
         if error is AnalyticsUploadAbort {
@@ -253,14 +255,13 @@ private extension AnalyticsUploader {
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [operation])
     }
 
-    /// Clearing the queue is not delivery, so a rejection still has to grade as a failed flush.
-    func createClearWrapper(outcome: BatchOutcome) -> CompoundOperationWrapper<BatchOutcome> {
+    func createClearWrapper() -> CompoundOperationWrapper<BatchOutcome> {
         let operation = queue.clearOperation()
 
         let mapOperation = ClosureOperation<BatchOutcome> {
             try operation.extractNoCancellableResultData()
 
-            return outcome
+            return .stop
         }
 
         mapOperation.addDependency(operation)
