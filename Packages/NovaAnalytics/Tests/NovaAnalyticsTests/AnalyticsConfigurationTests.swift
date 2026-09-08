@@ -395,6 +395,30 @@ final class AnalyticsConfigurationTests: XCTestCase {
         XCTAssertNotNil(fixture.persistedInstallId())
     }
 
+    func testADeferredLaunchFlushRunsOnTheFacadeForegroundRefreshWithoutASessionStart() throws {
+        let fixture = try makeFacadeFixture(optedIn: true)
+        let requested = expectation(description: "remote settings requested")
+        let gate = DispatchSemaphore(value: 0)
+        fixture.remoteSettings.onRequest = { requested.fulfill() }
+        fixture.remoteSettings.gate = gate
+
+        fixture.facade.setup()
+        wait(for: [requested], timeout: 5)
+        fixture.enterBackground()
+
+        gate.signal()
+        fixture.drain()
+        XCTAssertNil(fixture.persistedInstallId())
+
+        fixture.remoteSettings.onRequest = nil
+        fixture.remoteSettings.gate = nil
+        fixture.refreshOnForeground()
+        fixture.drain()
+
+        XCTAssertEqual(try fixture.pendingNames(), ["app_opened"])
+        XCTAssertNotNil(fixture.persistedInstallId())
+    }
+
     func testAnOlderResolutionThatLandsAfterANewerOneIsDropped() throws {
         let fixture = try makeFacadeFixture(optedIn: true)
         let olderRequested = expectation(description: "older resolution requested")
