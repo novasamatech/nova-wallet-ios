@@ -42,8 +42,7 @@ class ChainRegistryTests: XCTestCase {
             converter.update(
                 localModel: nil,
                 remoteModel: remoteModel,
-                additionalAssets: [],
-                order: Int64(index)
+                additionals: .init(additionalAssets: [], order: Int64(index))
             )
         }
 

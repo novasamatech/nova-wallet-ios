@@ -191,7 +191,7 @@ class AssetListBaseBuilder {
             state: state
         )
         .forEach { symbol, assetListModels in
-            let diffCalculator = AssetListModelHelpers.createAssetsDiffCalculator(from: assetListModels)
+            let diffCalculator = AssetListModelHelpers.createChainAssetsDiffCalculator(from: assetListModels)
 
             newGroupListsByChain[symbol] = diffCalculator
 
@@ -254,7 +254,8 @@ class AssetListBaseBuilder {
             applyListChanges(
                 for: &groupListsByChain,
                 key: $0.key,
-                changes: $0.value
+                changes: $0.value,
+                calculatorClosure: AssetListModelHelpers.createAssetsDiffCalculator(from:)
             )
         }
     }
@@ -264,7 +265,8 @@ class AssetListBaseBuilder {
             applyListChanges(
                 for: &groupListsByAsset,
                 key: $0.key,
-                changes: $0.value
+                changes: $0.value,
+                calculatorClosure: AssetListModelHelpers.createChainAssetsDiffCalculator(from:)
             )
         }
     }
@@ -272,7 +274,8 @@ class AssetListBaseBuilder {
     private func applyListChanges(
         for dict: inout [String: ListDifferenceCalculator<AssetListAssetModel>],
         key: String,
-        changes: [DataProviderChange<AssetListAssetModel>]
+        changes: [DataProviderChange<AssetListAssetModel>],
+        calculatorClosure: ([AssetListAssetModel]) -> ListDifferenceCalculator<AssetListAssetModel>
     ) {
         guard !changes.isEmpty else { return }
 
@@ -281,7 +284,7 @@ class AssetListBaseBuilder {
         } else {
             let assetModels = changes.compactMap(\.item)
 
-            dict[key] = AssetListModelHelpers.createAssetsDiffCalculator(from: assetModels)
+            dict[key] = calculatorClosure(assetModels)
         }
     }
 

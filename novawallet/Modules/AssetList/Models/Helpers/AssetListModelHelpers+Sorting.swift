@@ -1,7 +1,7 @@
 import Foundation
 
 extension AssetListModelHelpers {
-    static var assetSortingBlockDefaultByChain: (
+    static var assetSortByChain: (
         AssetListAssetModel,
         AssetListAssetModel
     ) -> Bool = { lhs, rhs in
@@ -17,7 +17,7 @@ extension AssetListModelHelpers {
         }
     }
 
-    static var assetSortingBlockDefaultByUtility: (
+    static var assetSortByUtilityThenPriority: (
         AssetListAssetModel,
         AssetListAssetModel
     ) -> Bool = { lhs, rhs in
@@ -26,7 +26,23 @@ extension AssetListModelHelpers {
         } else if let result = AssetListAssetModelComparator.by(\.totalAmountDecimal, lhs, rhs) {
             result
         } else {
-            AssetListAssetModelComparator.byChain(
+            AssetListAssetModelComparator.byAsset(
+                lhs: lhs,
+                rhs: rhs
+            )
+        }
+    }
+
+    static var chainAssetSortByUtilityThenPriority: (
+        AssetListAssetModel,
+        AssetListAssetModel
+    ) -> Bool = { lhs, rhs in
+        if let result = AssetListAssetModelComparator.by(\.totalValue, lhs, rhs) {
+            result
+        } else if let result = AssetListAssetModelComparator.by(\.totalAmountDecimal, lhs, rhs) {
+            result
+        } else {
+            AssetListAssetModelComparator.byChainAsset(
                 lhs: lhs,
                 rhs: rhs
             )
