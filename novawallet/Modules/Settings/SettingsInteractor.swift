@@ -94,10 +94,12 @@ private extension SettingsInteractor {
         presenter?.didReceive(hideBalancesOnLaunch: privacyStateManager.enablePrivacyModeOnLaunch)
     }
 
-    /// `nil` when the subsystem is unavailable, so the row disappears rather than showing a
-    /// switch that could never take effect.
+    /// The row outlives an unavailable subsystem while stored consent is on, because Settings is
+    /// the app's only opt-out path; `nil` — no row — only when there is nothing left to withdraw.
     func provideAnalyticsSettings() {
-        presenter?.didReceive(analyticsEnabled: analyticsConsent.isAvailable ? analyticsConsent.isEnabled : nil)
+        let hasRow = analyticsConsent.isAvailable || analyticsConsent.isEnabled
+
+        presenter?.didReceive(analyticsEnabled: hasRow ? analyticsConsent.isEnabled : nil)
     }
 }
 
@@ -157,10 +159,16 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
         privacyStateManager.enablePrivacyModeOnLaunch.toggle()
     }
 
+    /// Asymmetric on purpose: opting out always lands, while opting in needs an available
+    /// subsystem, so a row the kill switch left on screen cannot re-arm collection.
     /// Deliberately does not touch `markPromptSeen()`: the switch is the way back after
     /// declining, and consuming the one-shot prompt state here would change launch behaviour.
     func toggleAnalytics() {
-        analyticsConsent.setEnabled(!analyticsConsent.isEnabled)
+        let newValue = !analyticsConsent.isEnabled
+
+        if !newValue || analyticsConsent.isAvailable {
+            analyticsConsent.setEnabled(newValue)
+        }
 
         provideAnalyticsSettings()
     }

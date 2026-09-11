@@ -214,6 +214,56 @@ final class SettingsTests: XCTestCase {
 
         XCTAssertEqual(output.received.first, .some(nil))
     }
+
+    func testRemotelyDisabledSubsystemKeepsTheRowWhileConsentIsOn() {
+        let interactor = makeAnalyticsInteractor(consent: makeRemotelyDisabledConsent(optedIn: true))
+        let output = AnalyticsSettingsOutputSpy()
+        interactor.presenter = output
+
+        interactor.setup()
+
+        XCTAssertEqual(output.received.first, .some(true))
+    }
+
+    func testRemotelyDisabledSubsystemHidesTheRowWhenConsentIsOff() {
+        let interactor = makeAnalyticsInteractor(consent: makeRemotelyDisabledConsent(optedIn: false))
+        let output = AnalyticsSettingsOutputSpy()
+        interactor.presenter = output
+
+        interactor.setup()
+
+        XCTAssertEqual(output.received.first, .some(nil))
+    }
+
+    func testTogglingOffWhileRemotelyDisabledWithdrawsConsent() {
+        let settings = InMemorySettingsManager()
+        let consent = makeRemotelyDisabledConsent(optedIn: true, settings: settings)
+
+        makeAnalyticsInteractor(consent: consent).toggleAnalytics()
+
+        XCTAssertFalse(consent.isEnabled)
+        XCTAssertEqual(settings.bool(for: "analyticsEnabled"), false)
+    }
+
+    func testTogglingOnWhileRemotelyDisabledLeavesConsentOff() {
+        let settings = InMemorySettingsManager()
+        let consent = makeRemotelyDisabledConsent(optedIn: false, settings: settings)
+
+        makeAnalyticsInteractor(consent: consent).toggleAnalytics()
+
+        XCTAssertFalse(consent.isEnabled)
+        XCTAssertEqual(settings.bool(for: "analyticsEnabled"), false)
+    }
+
+    func testRefusedOptInReProvidesTheRow() {
+        let interactor = makeAnalyticsInteractor(consent: makeRemotelyDisabledConsent(optedIn: false))
+        let output = AnalyticsSettingsOutputSpy()
+        interactor.presenter = output
+
+        interactor.toggleAnalytics()
+
+        XCTAssertEqual(output.received, [nil])
+    }
 }
 
 // MARK: - Analytics helpers
@@ -226,6 +276,22 @@ private extension SettingsTests {
             settingsManager: settings,
             availabilityProvider: AnalyticsAvailabilityProvider(attestationMode: .appAttest)
         )
+    }
+
+    func makeRemotelyDisabledConsent(
+        optedIn: Bool,
+        settings: SettingsManagerProtocol = InMemorySettingsManager()
+    ) -> AnalyticsConsentManager {
+        let availability = AnalyticsAvailabilityProvider(attestationMode: .appAttest)
+        let consent = AnalyticsConsentManager(
+            settingsManager: settings,
+            availabilityProvider: availability
+        )
+
+        consent.setEnabled(optedIn)
+        availability.setRemoteEnabled(false)
+
+        return consent
     }
 
     func preferenceRows(isAnalyticsOn: Bool?) -> [SettingsRow] {
