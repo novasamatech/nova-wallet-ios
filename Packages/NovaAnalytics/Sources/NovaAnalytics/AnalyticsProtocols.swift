@@ -81,7 +81,12 @@ public protocol AnalyticsUploading: AnyObject {
 }
 
 public enum AnalyticsTransportError: Error, Equatable {
+    /// The binding is finished and the batch waits for a re-attested key.
     case rejected(statusCode: Int)
+    /// The proof was refused but the binding stands — an expired challenge, a counter the gateway
+    /// would not accept, a proxy answering instead. The batch waits and is proved again from scratch;
+    /// nothing about the key or the identity may change.
+    case proofRefused(statusCode: Int)
     case clientError(statusCode: Int)
     case retryLater(statusCode: Int, retryAfter: TimeInterval?)
     case serverError(statusCode: Int)

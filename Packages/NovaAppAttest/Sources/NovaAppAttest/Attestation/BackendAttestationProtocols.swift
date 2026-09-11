@@ -92,7 +92,7 @@ public enum BackendAttestationErrorCode: String, Decodable {
 
     /// Apple issues one attestation per key, so a verdict that invalidates the binding costs a new
     /// key — and a key the gateway will never rebind costs a new installation identifier with it.
-    var requiresFreshInstallation: Bool {
+    public var requiresFreshInstallation: Bool {
         switch self {
         case .unknownClient, .attestationFailed, .clientAlreadyRegistered:
             true
@@ -102,7 +102,7 @@ public enum BackendAttestationErrorCode: String, Decodable {
     }
 
     /// Policy denials that trying again cannot fix.
-    var stopsRetrying: Bool {
+    public var stopsRetrying: Bool {
         switch self {
         case .appNotAllowed, .bindingNotAllowed:
             true

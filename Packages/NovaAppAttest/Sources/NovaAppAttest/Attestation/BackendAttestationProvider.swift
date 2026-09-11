@@ -239,7 +239,7 @@ private extension BackendAttestationProvider {
 
     /// A no-op on an attested row: the gate stops reading `nextAttemptAt` once a key is attested, so a
     /// window there would only inflate `attemptCount`. The uploader's flush schedule is the brake there.
-    func applyBackoff(_ context: AttestationChainContext) {
+    func applyBackoff(_ context: AttestationChainContext, returningSpentKey: Bool = false) {
         let identifier = context.rowIdentifier
 
         let fetchOperation = repository.fetchOperation(
@@ -265,6 +265,7 @@ private extension BackendAttestationProvider {
                     identifier: row.identifier,
                     keyId: row.keyId,
                     isAttested: row.isAttested,
+                    isAttestationSpent: returningSpentKey ? false : row.isAttestationSpent,
                     attemptCount: attemptCount,
                     nextAttemptAt: timeProvider().addingTimeInterval(backoffInterval(for: attemptCount))
                 )
@@ -366,7 +367,9 @@ private extension BackendAttestationProvider {
 
             return true
         case .serviceUnavailable:
-            applyBackoff(context)
+            // Apple never produced an attestation, so the key is still unspent and the same one is
+            // retried rather than discarded.
+            applyBackoff(context, returningSpentKey: true)
 
             return false
         case .keyIdGeneration, .assertionGeneric:
@@ -606,10 +609,14 @@ private extension BackendAttestationProvider {
 
             try requireEpoch(context.epoch)
 
+            // Apple attests a key once: a row whose attestation was already spent needs a new
+            // key, not a second attestKey call that can only fail.
+            let reusableKeyId = row?.isAttestationSpent == true ? nil : row?.keyId
+
             return createAttestAndRegisterWrapper(
                 clientId: clientId,
                 context: context,
-                existingKeyId: row?.keyId
+                existingKeyId: reusableKeyId
             )
         }
 
@@ -641,6 +648,16 @@ private extension BackendAttestationProvider {
 
         challengeWrapper.addDependency(wrapper: keyIdWrapper)
 
+        let markSpentOperation = createSaveOperation(
+            isAttested: false,
+            isAttestationSpent: true,
+            context: context
+        ) {
+            try keyIdWrapper.targetOperation.extractNoCancellableResultData()
+        }
+
+        markSpentOperation.addDependency(challengeWrapper.targetOperation)
+
         let attestationWrapper = createAttestationWrapper(
             clientId: clientId,
             context: context,
@@ -649,6 +666,7 @@ private extension BackendAttestationProvider {
         )
 
         attestationWrapper.addDependency(wrapper: challengeWrapper)
+        attestationWrapper.addDependency(operations: [markSpentOperation])
 
         let registerOperation = createRegisterOperation(
             clientId: clientId,
@@ -659,7 +677,11 @@ private extension BackendAttestationProvider {
 
         registerOperation.addDependency(attestationWrapper.targetOperation)
 
-        let saveAttestedOperation = createSaveOperation(isAttested: true, context: context) {
+        let saveAttestedOperation = createSaveOperation(
+            isAttested: true,
+            isAttestationSpent: true,
+            context: context
+        ) {
             try registerOperation.extractNoCancellableResultData()
 
             return try attestationWrapper.targetOperation.extractNoCancellableResultData().keyId
@@ -676,7 +698,8 @@ private extension BackendAttestationProvider {
         mapOperation.addDependency(saveAttestedOperation)
 
         let dependencies = keyIdWrapper.allOperations + challengeWrapper.allOperations +
-            attestationWrapper.allOperations + [registerOperation, saveAttestedOperation]
+            [markSpentOperation] + attestationWrapper.allOperations +
+            [registerOperation, saveAttestedOperation]
 
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
@@ -693,7 +716,11 @@ private extension BackendAttestationProvider {
 
         let generationOperation = appAttest.createKeyGenerationOperation()
 
-        let saveOperation = createSaveOperation(isAttested: false, context: context) {
+        let saveOperation = createSaveOperation(
+            isAttested: false,
+            isAttestationSpent: false,
+            context: context
+        ) {
             try generationOperation.extractNoCancellableResultData()
         }
 
@@ -808,6 +835,7 @@ private extension BackendAttestationProvider {
 
     func createSaveOperation(
         isAttested: Bool,
+        isAttestationSpent: Bool,
         context: AttestationChainContext,
         keyIdClosure: @escaping () throws -> AppAttestKeyId
     ) -> BaseOperation<Void> {
@@ -827,6 +855,7 @@ private extension BackendAttestationProvider {
                     identifier: identifier,
                     keyId: keyId,
                     isAttested: isAttested,
+                    isAttestationSpent: isAttestationSpent,
                     attemptCount: 0,
                     nextAttemptAt: nil
                 )

@@ -42,22 +42,46 @@ extension AnalyticsUploadOperationFactory {
     }
 
     /// Only a graded 2xx lets the caller delete rows, so anything unreadable has to fail.
-    static func deliveryError(for response: URLResponse?, now: Date) -> AnalyticsTransportError? {
+    ///
+    /// This route crosses the gateway before it reaches telemetry, so a 4xx can be a verdict on the
+    /// installation, a refused proof, or a rejected payload — and only the error code tells them
+    /// apart. Grading an expired 60-second challenge as a verdict would burn an App Attest key on
+    /// every late flush.
+    static func deliveryError(
+        for response: URLResponse?,
+        data: Data?,
+        now: Date
+    ) -> AnalyticsTransportError? {
         guard let response = response as? HTTPURLResponse else {
             return .serverError(statusCode: Constants.ungradableStatusCode)
         }
 
+        let code = AttestationHTTP.errorCode(from: data)
+
         switch response.statusCode {
         case 200 ..< 300:
             return nil
-        case 401, 403:
-            return .rejected(statusCode: response.statusCode)
+        case 401, 403, 409:
+            guard let code else {
+                // A proxy can answer with an empty or non-JSON 401; that is transport, not a verdict.
+                return .proofRefused(statusCode: response.statusCode)
+            }
+
+            return code.requiresFreshInstallation
+                ? .rejected(statusCode: response.statusCode)
+                : .proofRefused(statusCode: response.statusCode)
         case 408, 425, 429, 503:
             return .retryLater(
                 statusCode: response.statusCode,
                 retryAfter: retryAfter(from: response, now: now)
             )
-        case 400, 413, 422:
+        case 400:
+            // The gateway's own 400s describe the proof and are worth proving again; a 400 telemetry
+            // raised about the payload never will be.
+            return code == nil
+                ? .clientError(statusCode: response.statusCode)
+                : .proofRefused(statusCode: response.statusCode)
+        case 413, 415, 422:
             return .clientError(statusCode: response.statusCode)
         default:
             return .serverError(statusCode: response.statusCode)
@@ -117,18 +141,21 @@ extension AnalyticsUploadOperationFactory: AnalyticsUploadOperationFactoryProtoc
             return Self.buildRequest(target: target, body: body, headers: headers)
         }
 
-        let resultFactory = AnyNetworkResultFactory<Void> { _, response, error in
+        let resultFactory = AnyNetworkResultFactory<Void> { data, response, error in
             if let error {
                 return .failure(error)
             }
 
-            if let deliveryError = Self.deliveryError(for: response, now: Date()) {
+            if let deliveryError = Self.deliveryError(for: response, data: data, now: Date()) {
                 return .failure(deliveryError)
             }
 
             return .success(())
         }
 
-        return NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+        let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+        operation.networkSession = AttestationHTTP.session
+
+        return operation
     }
 }

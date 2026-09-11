@@ -215,6 +215,10 @@ private extension AnalyticsUploader {
                 logger.warning("Analytics batch refused, dropping it: \(transportError)")
 
                 return createDropWrapper(batch: batch)
+            case .proofRefused:
+                logger.warning("Analytics proof refused, retaining the batch: \(transportError)")
+
+                return .createWithResult(.failed(transportError))
             case .retryLater, .serverError:
                 logger.debug("Analytics upload retained for a later flush: \(transportError)")
 

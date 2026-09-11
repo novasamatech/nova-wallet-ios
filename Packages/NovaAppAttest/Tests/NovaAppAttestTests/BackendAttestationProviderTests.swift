@@ -106,7 +106,7 @@ final class BackendAttestationProviderTests: XCTestCase {
         XCTAssertEqual(try storedRow()?.keyId, keyId)
     }
 
-    func testARegisterClientErrorKeepsTheKeyAndRetriesItOnlyOnceTheWindowExpires() throws {
+    func testARegisterClientErrorWaitsForTheWindowAndThenAttestsAFreshKey() throws {
         makeProvider(registerError: BackendAttestationError.clientError(statusCode: 429))
         XCTAssertThrowsError(try headers())
 
@@ -127,10 +127,13 @@ final class BackendAttestationProviderTests: XCTestCase {
         clock.advance(by: 61)
         XCTAssertThrowsError(try headers())
 
+        // The first attempt already spent this key's one attestation, so retrying it could only earn
+        // DCError.invalidKey: the window reopens on a freshly minted key instead.
         XCTAssertGreaterThan(remote.challengeCallCount, 0)
-        XCTAssertEqual(appAttest.attestationKeyIds, [row.keyId])
-        XCTAssertEqual(appAttest.generateKeyCallCount, 0)
-        XCTAssertEqual(try storedRow()?.keyId, row.keyId)
+        XCTAssertEqual(appAttest.generateKeyCallCount, 1)
+        XCTAssertFalse(appAttest.attestationKeyIds.contains(row.keyId))
+        XCTAssertEqual(appAttest.attestationKeyIds, appAttest.generatedKeyIds)
+        XCTAssertNotEqual(try storedRow()?.keyId, row.keyId)
     }
 
     func testRegisterRejectionShortCircuitsForTheRestOfTheProcess() throws {
@@ -190,7 +193,6 @@ final class BackendAttestationProviderTests: XCTestCase {
 
         XCTAssertEqual(remote.registerCallCount, 1)
         XCTAssertEqual(Set(remote.registeredClientIds).count, 1)
-        XCTAssertEqual(appAttest.generateKeyCallCount, 0)
 
         // A consent cycle mints an identity the gateway has never refused, so the brake starts over.
         provider.allowClient()

@@ -16,12 +16,17 @@ extension BackendAttestationRemoteFactory {
     /// when a proxy answered instead, and then nothing may be read as a verdict on the installation.
     static func statusError(
         for statusCode: Int,
+        expecting successStatus: Int,
         code: BackendAttestationErrorCode?,
         isClientAuthenticated: Bool
     ) -> BackendAttestationError? {
         switch statusCode {
-        case 200 ..< 300:
+        case successStatus:
             return nil
+        case 200 ..< 400:
+            // The gateway answers each bootstrap call with one exact status or an error envelope;
+            // any other success came from something in front of it and binds nothing.
+            return .invalidResponse
         case 401, 403, 409:
             // Only a request that carried the identity can be a verdict on it, and only a code that
             // says the binding is finished costs a key: an expired challenge is routine.
@@ -38,10 +43,8 @@ extension BackendAttestationRemoteFactory {
                 : .clientError(statusCode: statusCode)
         case 400 ..< 500:
             return .clientError(statusCode: statusCode)
-        case 500...:
-            return .serverError(statusCode: statusCode)
         default:
-            return nil
+            return .serverError(statusCode: statusCode)
         }
     }
 }
@@ -52,6 +55,8 @@ private extension BackendAttestationRemoteFactory {
     enum Constants {
         static let challengesPath = "v1/attestation/challenges"
         static let registerPath = "v1/attestation/register"
+        static let challengeSuccessStatus = 200
+        static let registerSuccessStatus = 204
     }
 
     struct ChallengeRequest: Encodable {
@@ -68,14 +73,6 @@ private extension BackendAttestationRemoteFactory {
 
     struct ChallengeResponse: Decodable {
         let challenge: String
-    }
-
-    struct ErrorEnvelope: Decodable {
-        struct Payload: Decodable {
-            let code: String
-        }
-
-        let error: Payload
     }
 
     func createPostOperation<T>(
@@ -97,23 +94,14 @@ private extension BackendAttestationRemoteFactory {
             return request
         }
 
-        return NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
-    }
+        let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+        operation.networkSession = AttestationHTTP.session
 
-    /// Unknown codes are preserved as a plain status: the contract adds codes over time and an
-    /// unrecognised one must never be upgraded into a verdict.
-    static func errorCode(from data: Data?) -> BackendAttestationErrorCode? {
-        guard
-            let data,
-            let envelope = try? JSONDecoder().decode(ErrorEnvelope.self, from: data)
-        else {
-            return nil
-        }
-
-        return BackendAttestationErrorCode(rawValue: envelope.error.code)
+        return operation
     }
 
     static func createResultBlock<T>(
+        expecting successStatus: Int,
         isClientAuthenticated: Bool,
         decoder: @escaping (Data?) throws -> T
     ) -> NetworkResultFactoryBlock<T> {
@@ -128,7 +116,8 @@ private extension BackendAttestationRemoteFactory {
 
             if let statusError = statusError(
                 for: httpResponse.statusCode,
-                code: errorCode(from: data),
+                expecting: successStatus,
+                code: AttestationHTTP.errorCode(from: data),
                 isClientAuthenticated: isClientAuthenticated
             ) {
                 return .failure(statusError)
@@ -154,8 +143,12 @@ extension BackendAttestationRemoteFactory: BackendAttestationRemoteFactoryProtoc
         clientId: String,
         purpose: AttestationProfile2.Purpose
     ) -> CompoundOperationWrapper<String> {
+        // A register-purpose challenge is anonymous, but a request-purpose one names a registered
+        // client: the gateway answers it with unknown_client or binding_not_allowed, which are
+        // verdicts on this installation and must be graded as such.
         let block: NetworkResultFactoryBlock<String> = Self.createResultBlock(
-            isClientAuthenticated: false
+            expecting: Constants.challengeSuccessStatus,
+            isClientAuthenticated: purpose == .request
         ) { data in
             guard let data else {
                 throw BackendAttestationError.invalidResponse
@@ -183,6 +176,7 @@ extension BackendAttestationRemoteFactory: BackendAttestationRemoteFactoryProtoc
         _ requestClosure: @escaping () throws -> BackendAttestationRegisterRequest
     ) -> BaseOperation<Void> {
         let block: NetworkResultFactoryBlock<Void> = Self.createResultBlock(
+            expecting: Constants.registerSuccessStatus,
             isClientAuthenticated: true
         ) { _ in () }
 
