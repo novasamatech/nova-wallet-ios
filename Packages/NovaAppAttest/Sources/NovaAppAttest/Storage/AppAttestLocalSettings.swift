@@ -28,14 +28,15 @@ public struct AppAttestKeySettings: Codable, Equatable {
     }
 
     // Rows written before the backoff fields existed must keep decoding, or every install
-    // upgrading into this version silently mints a new App Attest key.
+    // upgrading into this version silently mints a new App Attest key. A row predating
+    // `isAttestationSpent` has an unknown spend state, and only "spent" is a recoverable guess.
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         identifier = try container.decode(String.self, forKey: .identifier)
         keyId = try container.decode(String.self, forKey: .keyId)
         isAttested = try container.decode(Bool.self, forKey: .isAttested)
-        isAttestationSpent = try container.decodeIfPresent(Bool.self, forKey: .isAttestationSpent) ?? isAttested
+        isAttestationSpent = try container.decodeIfPresent(Bool.self, forKey: .isAttestationSpent) ?? true
         attemptCount = try container.decodeIfPresent(Int.self, forKey: .attemptCount) ?? 0
         nextAttemptAt = try container.decodeIfPresent(Date.self, forKey: .nextAttemptAt)
     }

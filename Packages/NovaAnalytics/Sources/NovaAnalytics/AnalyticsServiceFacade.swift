@@ -57,8 +57,6 @@ public final class AnalyticsServiceFacade {
 
         let appAttest = configuration.appAttestService
 
-        AttestationProfileMigrator.migrate(settingsManager: settingsManager)
-
         let attestationMode = BackendAttestationModeResolver.resolve(
             isAppAttestSupported: appAttest.isSupported
         )

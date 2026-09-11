@@ -17,24 +17,7 @@ extension SettingsManagerProtocol {
     }
 }
 
-extension SettingsManagerProtocol {
-    var gatewayAttestationProfile: Int? {
-        get {
-            integer(for: AttestationSettingsKey.gatewayAttestationProfile)
-        }
-
-        set {
-            if let newValue {
-                set(value: newValue, for: AttestationSettingsKey.gatewayAttestationProfile)
-            } else {
-                removeValue(for: AttestationSettingsKey.gatewayAttestationProfile)
-            }
-        }
-    }
-}
-
 enum AttestationSettingsKey {
-    // Stable on-disk settings keys: changing these strings orphans stored values.
+    // Stable on-disk settings key: changing this string orphans stored values.
     static let gatewayAttestationClientId = "gatewayAttestationClientId"
-    static let gatewayAttestationProfile = "gatewayAttestationProfile"
 }
