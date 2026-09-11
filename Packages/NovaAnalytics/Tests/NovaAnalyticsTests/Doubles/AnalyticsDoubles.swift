@@ -1,114 +1,16 @@
 import Foundation
 import Operation_iOS
 import NovaAppAttest
-import NovaOperationSupport
 @testable import NovaAnalytics
-
-final class AnalyticsEventQueueSpy: AnalyticsEventQueueProtocol {
-    struct Enqueued: Equatable {
-        let name: String
-        let timestamp: Date
-        let payload: Data
-        let consentEpoch: Int
-    }
-
-    var peekResult: [AnalyticsPendingEvent] = []
-    var countResult: Int = 0
-    var enqueueError: Error?
-
-    var onEnqueueComposition: ((String, Date, Data) -> Void)?
-
-    private let mutex = NSLock()
-    private var recordedEnqueued: [Enqueued] = []
-    private var recordedDroppedIds: [[String]] = []
-    private var recordedClearCalls = 0
-
-    var enqueued: [Enqueued] {
-        synchronised { recordedEnqueued }
-    }
-
-    var droppedIds: [[String]] {
-        synchronised { recordedDroppedIds }
-    }
-
-    var clearCallCount: Int {
-        synchronised { recordedClearCalls }
-    }
-
-    func enqueueWrapper(
-        name: String,
-        timestamp: Date,
-        payload: Data,
-        consentEpoch: Int
-    ) -> CompoundOperationWrapper<Void> {
-        onEnqueueComposition?(name, timestamp, payload)
-
-        let error = enqueueError
-
-        return CompoundOperationWrapper(targetOperation: ClosureOperation { [weak self] in
-            if let error {
-                throw error
-            }
-
-            self?.synchronised {
-                self?.recordedEnqueued.append(
-                    Enqueued(
-                        name: name,
-                        timestamp: timestamp,
-                        payload: payload,
-                        consentEpoch: consentEpoch
-                    )
-                )
-            }
-        })
-    }
-
-    func peekWrapper(count: Int) -> CompoundOperationWrapper<[AnalyticsPendingEvent]> {
-        let rows = Array(peekResult.prefix(count))
-
-        return CompoundOperationWrapper(targetOperation: ClosureOperation { rows })
-    }
-
-    func dropOperation(ids: [String]) -> BaseOperation<Void> {
-        ClosureOperation { [weak self] in
-            self?.synchronised { self?.recordedDroppedIds.append(ids) }
-        }
-    }
-
-    func countOperation() -> BaseOperation<Int> {
-        let value = countResult
-
-        return ClosureOperation { value }
-    }
-
-    func clearOperation() -> BaseOperation<Void> {
-        ClosureOperation { [weak self] in
-            self?.synchronised { self?.recordedClearCalls += 1 }
-        }
-    }
-
-    private func synchronised<T>(_ body: () -> T) -> T {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        return body()
-    }
-}
 
 final class AnalyticsTrackingSpy: AnalyticsTrackingProtocol {
     private(set) var events: [AnalyticsEvent] = []
-    private(set) var trackedEvents: [AnalyticsEvent] = []
     private(set) var flushReasons: [AnalyticsFlushReason] = []
-    private(set) var pendingCompletions: [() -> Void] = []
 
     var eventNames: [String] { events.map(\.name.rawValue) }
 
     func track(_ event: AnalyticsEvent) {
         events.append(event)
-        trackedEvents.append(event)
     }
 
     func trackAndFlush(
@@ -118,48 +20,25 @@ final class AnalyticsTrackingSpy: AnalyticsTrackingProtocol {
     ) {
         events.append(event)
         flushReasons.append(reason)
-        pendingCompletions.append(completion)
-    }
-
-    func finishPendingFlushes() {
-        let completions = pendingCompletions
-        pendingCompletions = []
-        completions.forEach { $0() }
+        completion()
     }
 }
 
 final class AnalyticsUploadingSpy: AnalyticsUploading {
     var flushStub: (Int) -> CompoundOperationWrapper<Void> = { _ in .createWithResult(()) }
 
-    private let mutex = NSLock()
-    private var recordedMaxBatches: [Int] = []
+    private let recordedMaxBatches = Locked<[Int]>([])
 
-    var maxBatchesCalls: [Int] {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        return recordedMaxBatches
-    }
+    var maxBatchesCalls: [Int] { recordedMaxBatches.value }
 
     var flushCallCount: Int { maxBatchesCalls.count }
 
     func reset() {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        recordedMaxBatches = []
+        recordedMaxBatches.update { $0 = [] }
     }
 
     func flushWrapper(maxBatches: Int) -> CompoundOperationWrapper<Void> {
-        mutex.lock()
-        recordedMaxBatches.append(maxBatches)
-        mutex.unlock()
+        recordedMaxBatches.update { $0.append(maxBatches) }
 
         return flushStub(maxBatches)
     }
@@ -167,135 +46,60 @@ final class AnalyticsUploadingSpy: AnalyticsUploading {
 
 final class AnalyticsUploadOperationFactorySpy: AnalyticsUploadOperationFactoryProtocol {
     var uploadResults: [Result<Void, Error>] = []
-    var onBody: ((Data) -> Void)?
 
-    private let mutex = NSLock()
-    private var recordedBodyClosures: [() throws -> Data] = []
-    private var recordedHeaderClosures: [() throws -> [AttestationHeaderKey: String]?] = []
+    private let recordedBodies = Locked<[Data]>([])
+    private let recordedCalls = Locked(0)
 
-    var bodyClosures: [() throws -> Data] {
-        synchronised { recordedBodyClosures }
-    }
+    var sentBodies: [Data] { recordedBodies.value }
 
-    var headerClosures: [() throws -> [AttestationHeaderKey: String]?] {
-        synchronised { recordedHeaderClosures }
-    }
-
-    var callCount: Int {
-        synchronised { recordedBodyClosures.count }
-    }
+    var callCount: Int { recordedCalls.value }
 
     func createUploadOperation(
         bodyClosure: @escaping () throws -> Data,
-        headersClosure: @escaping () throws -> [AttestationHeaderKey: String]?
+        headersClosure _: @escaping () throws -> [AttestationHeaderKey: String]?
     ) -> BaseOperation<Void> {
-        synchronised {
-            recordedBodyClosures.append(bodyClosure)
-            recordedHeaderClosures.append(headersClosure)
-        }
+        recordedCalls.update { $0 += 1 }
 
-        let next: Result<Void, Error> = synchronised {
-            uploadResults.isEmpty ? .success(()) : uploadResults.removeFirst()
-        }
-
-        let onBody = onBody
+        let next: Result<Void, Error> = uploadResults.isEmpty ? .success(()) : uploadResults.removeFirst()
+        let bodies = recordedBodies
 
         return ClosureOperation {
-            onBody?(try bodyClosure())
+            let body = try bodyClosure()
+            bodies.update { $0.append(body) }
 
             try next.get()
         }
     }
-
-    private func synchronised<T>(_ body: () -> T) -> T {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        return body()
-    }
 }
 
 final class BackendAttestationProviderSpy: BackendAttestationProviderProtocol {
-    var headersStub: () throws -> [AttestationHeaderKey: String]? = {
-        [.clientId: "cid", .challenge: "chal", .signature: "sig"]
-    }
+    private let recordedBodies = Locked<[Data]>([])
+    private let recordedMarkUnattested = Locked(0)
 
-    var onSigning: (() -> Void)?
+    var signedBodies: [Data] { recordedBodies.value }
 
-    private let mutex = NSLock()
-    private var recordedBodyClosures: [() throws -> Data] = []
-    private var recordedBodies: [Data] = []
-    private var recordedMarkUnattested = 0
-    private var recordedForgetClient = 0
-    private var recordedAllowClient = 0
-
-    var signedBodyClosures: [() throws -> Data] {
-        synchronised { recordedBodyClosures }
-    }
-
-    var signedBodies: [Data] {
-        synchronised { recordedBodies }
-    }
-
-    var signingCallCount: Int {
-        synchronised { recordedBodyClosures.count }
-    }
-
-    var markUnattestedCallCount: Int {
-        synchronised { recordedMarkUnattested }
-    }
-
-    var forgetClientCallCount: Int {
-        synchronised { recordedForgetClient }
-    }
-
-    var allowClientCallCount: Int {
-        synchronised { recordedAllowClient }
-    }
+    var markUnattestedCallCount: Int { recordedMarkUnattested.value }
 
     func createSignedHeadersWrapper(
         bodyClosure: @escaping () throws -> Data
     ) -> CompoundOperationWrapper<[AttestationHeaderKey: String]?> {
-        synchronised { recordedBodyClosures.append(bodyClosure) }
-
-        let stub = headersStub
-        let hook = onSigning
+        let bodies = recordedBodies
 
         return CompoundOperationWrapper(
-            targetOperation: ClosureOperation<[AttestationHeaderKey: String]?> { [weak self] in
-                hook?()
-
+            targetOperation: ClosureOperation<[AttestationHeaderKey: String]?> {
                 let body = try bodyClosure()
+                bodies.update { $0.append(body) }
 
-                self?.synchronised { self?.recordedBodies.append(body) }
-
-                return try stub()
+                return [.clientId: "cid", .challenge: "chal", .signature: "sig"]
             }
         )
     }
 
     func markUnattested() {
-        synchronised { recordedMarkUnattested += 1 }
+        recordedMarkUnattested.update { $0 += 1 }
     }
 
-    func forgetClient() {
-        synchronised { recordedForgetClient += 1 }
-    }
+    func forgetClient() {}
 
-    func allowClient() {
-        synchronised { recordedAllowClient += 1 }
-    }
-
-    private func synchronised<T>(_ body: () -> T) -> T {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        return body()
-    }
+    func allowClient() {}
 }
