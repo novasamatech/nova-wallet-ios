@@ -33,6 +33,7 @@ public enum BackendAttestationError: Error {
     case rejected(statusCode: Int)
     case clientError(statusCode: Int)
     case serverError(statusCode: Int)
+    case retryLater(until: Date)
     case unsupported
     case invalidResponse
 }
