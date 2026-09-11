@@ -29,25 +29,62 @@ public final class AnalyticsUploadOperationFactory {
     }
 }
 
-// MARK: - Private
+// MARK: - Delivery grading
 
-private extension AnalyticsUploadOperationFactory {
+extension AnalyticsUploadOperationFactory {
     enum Constants {
         static let eventsPath = "v1/analytics/events"
         static let timeout: TimeInterval = 15
+        static let retryAfterHeader = "Retry-After"
+        static let maxRetryAfter: TimeInterval = 86400
+        static let ungradableStatusCode = 0
     }
 
-    static func statusError(for statusCode: Int) -> AnalyticsTransportError? {
-        switch statusCode {
+    /// Only a graded 2xx lets the caller delete rows, so anything unreadable has to fail.
+    static func deliveryError(for response: URLResponse?, now: Date) -> AnalyticsTransportError? {
+        guard let response = response as? HTTPURLResponse else {
+            return .serverError(statusCode: Constants.ungradableStatusCode)
+        }
+
+        switch response.statusCode {
+        case 200 ..< 300:
+            return nil
         case 401, 403:
-            return .rejected(statusCode: statusCode)
-        case 400 ..< 500:
-            return .clientError(statusCode: statusCode)
-        case 500...:
-            return .serverError(statusCode: statusCode)
+            return .rejected(statusCode: response.statusCode)
+        case 408, 425, 429, 503:
+            return .retryLater(
+                statusCode: response.statusCode,
+                retryAfter: retryAfter(from: response, now: now)
+            )
+        case 400, 413, 422:
+            return .clientError(statusCode: response.statusCode)
         default:
+            return .serverError(statusCode: response.statusCode)
+        }
+    }
+
+    static func retryAfter(from response: HTTPURLResponse, now: Date) -> TimeInterval? {
+        let raw = response
+            .value(forHTTPHeaderField: Constants.retryAfterHeader)?
+            .trimmingCharacters(in: .whitespaces)
+
+        guard let raw, !raw.isEmpty else {
             return nil
         }
+
+        if let seconds = Int(raw) {
+            return clamped(TimeInterval(seconds))
+        }
+
+        guard let date = HTTPDateFormatter.date(from: raw) else {
+            return nil
+        }
+
+        return clamped(date.timeIntervalSince(now))
+    }
+
+    static func clamped(_ retryAfter: TimeInterval) -> TimeInterval {
+        min(max(retryAfter, 0), Constants.maxRetryAfter)
     }
 }
 
@@ -74,10 +111,8 @@ extension AnalyticsUploadOperationFactory: AnalyticsUploadOperationFactoryProtoc
                 return .failure(error)
             }
 
-            if
-                let httpResponse = response as? HTTPURLResponse,
-                let statusError = Self.statusError(for: httpResponse.statusCode) {
-                return .failure(statusError)
+            if let deliveryError = Self.deliveryError(for: response, now: Date()) {
+                return .failure(deliveryError)
             }
 
             return .success(())

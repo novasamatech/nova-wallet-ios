@@ -91,7 +91,20 @@ final class AnalyticsUploaderTests: XCTestCase {
     private func flush(_ fixture: Fixture, maxBatches: Int = 10) throws {
         let wrapper = fixture.uploader.flushWrapper(maxBatches: maxBatches)
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
-        _ = try? wrapper.targetOperation.extractNoCancellableResultData()
+        try wrapper.targetOperation.extractNoCancellableResultData()
+    }
+
+    private func flushError(_ fixture: Fixture, maxBatches: Int = 10) -> Error? {
+        let wrapper = fixture.uploader.flushWrapper(maxBatches: maxBatches)
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+
+        do {
+            try wrapper.targetOperation.extractNoCancellableResultData()
+
+            return nil
+        } catch {
+            return error
+        }
     }
 
     private func seed(_ fixture: Fixture, count: Int) throws {
@@ -126,6 +139,26 @@ final class AnalyticsUploaderTests: XCTestCase {
         let operation = fixture.queue.countOperation()
         OperationQueue().addOperations([operation], waitUntilFinished: true)
         return try operation.extractNoCancellableResultData()
+    }
+
+    private func queuedIdentifiers(_ fixture: Fixture) throws -> [String] {
+        let wrapper = fixture.queue.peekWrapper(count: 500)
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+
+        return try wrapper.targetOperation.extractNoCancellableResultData().map(\.identifier)
+    }
+
+    private func transportError(forStatus statusCode: Int) throws -> AnalyticsTransportError {
+        let response = try XCTUnwrap(HTTPURLResponse(
+            url: URL(string: "https://gateway.example/v1/analytics/events")!,
+            statusCode: statusCode,
+            httpVersion: "HTTP/1.1",
+            headerFields: nil
+        ))
+
+        return try XCTUnwrap(
+            AnalyticsUploadOperationFactory.deliveryError(for: response, now: Date())
+        )
     }
 
     func testSignedBytesAreTheSentBytes() throws {
@@ -177,17 +210,60 @@ final class AnalyticsUploaderTests: XCTestCase {
         XCTAssertEqual(fixture.attestation.markUnattestedCallCount, 1)
     }
 
-    func testServerErrorKeepsEverythingAndStops() throws {
+    func testServerErrorKeepsEverythingAndSurfacesTheFailure() throws {
         let fixture = makeFixture(
             uploadResults: [.failure(AnalyticsTransportError.serverError(statusCode: 500))]
         )
         try seed(fixture, count: 60)
 
-        try flush(fixture)
+        let error = flushError(fixture)
 
+        XCTAssertEqual(error as? AnalyticsTransportError, .serverError(statusCode: 500))
         XCTAssertEqual(try queueCount(fixture), 60)
         XCTAssertEqual(fixture.attestation.markUnattestedCallCount, 0)
         XCTAssertEqual(fixture.uploadFactory.callCount, 1)
+    }
+
+    func testRetryLaterKeepsEverythingAndSurfacesTheFailure() throws {
+        let fixture = makeFixture(
+            uploadResults: [
+                .failure(AnalyticsTransportError.retryLater(statusCode: 429, retryAfter: 120))
+            ]
+        )
+        try seed(fixture, count: 60)
+
+        let error = flushError(fixture)
+
+        XCTAssertEqual(
+            error as? AnalyticsTransportError,
+            .retryLater(statusCode: 429, retryAfter: 120)
+        )
+        XCTAssertEqual(try queueCount(fixture), 60)
+        XCTAssertEqual(fixture.uploadFactory.callCount, 1)
+    }
+
+    func testAnUngradedStatusKeepsTheRows() throws {
+        let fixture = makeFixture(
+            uploadResults: [.failure(AnalyticsTransportError.serverError(statusCode: 404))]
+        )
+        try seed(fixture, count: 60)
+
+        let error = flushError(fixture)
+
+        XCTAssertEqual(error as? AnalyticsTransportError, .serverError(statusCode: 404))
+        XCTAssertEqual(try queueCount(fixture), 60)
+    }
+
+    func testAnUnknownTransportFailureKeepsTheRowsAndSurfaces() throws {
+        struct UnknownFailure: Error {}
+
+        let fixture = makeFixture(uploadResults: [.failure(UnknownFailure())])
+        try seed(fixture, count: 60)
+
+        let error = flushError(fixture)
+
+        XCTAssertTrue(error is UnknownFailure)
+        XCTAssertEqual(try queueCount(fixture), 60)
     }
 
     func testAttestationRejectionClearsTheQueueWithoutReattesting() throws {
@@ -202,17 +278,29 @@ final class AnalyticsUploaderTests: XCTestCase {
         XCTAssertEqual(fixture.attestation.markUnattestedCallCount, 0)
     }
 
-    func testClientErrorDropsOnlyThatBatchAndContinues() throws {
-        let fixture = makeFixture(uploadResults: [
-            .failure(AnalyticsTransportError.clientError(statusCode: 422)),
-            .success(())
-        ])
-        try seed(fixture, count: 60)
+    func testUnacceptablePayloadStatusesDropOnlyThatBatchAndContinue() throws {
+        for statusCode in [400, 413, 422] {
+            let fixture = makeFixture(uploadResults: [
+                .failure(try transportError(forStatus: statusCode)),
+                .success(())
+            ])
+            try seed(fixture, count: 60)
 
-        try flush(fixture)
+            try flush(fixture)
 
-        XCTAssertEqual(try queueCount(fixture), 0)
-        XCTAssertEqual(fixture.uploadFactory.callCount, 2)
+            XCTAssertEqual(try queueCount(fixture), 0, "status \(statusCode)")
+            XCTAssertEqual(fixture.uploadFactory.callCount, 2, "status \(statusCode)")
+        }
+    }
+
+    func testRetryableStatusesKeepTheirRows() throws {
+        for statusCode in [408, 425, 429, 503] {
+            let fixture = makeFixture(uploadResults: [.failure(try transportError(forStatus: statusCode))])
+            try seed(fixture, count: 60)
+
+            XCTAssertNotNil(flushError(fixture), "status \(statusCode)")
+            XCTAssertEqual(try queueCount(fixture), 60, "status \(statusCode)")
+        }
     }
 
     func testEmptyQueueUploadsNothing() throws {
@@ -304,6 +392,40 @@ final class AnalyticsUploaderTests: XCTestCase {
         try flush(fixture)
 
         XCTAssertEqual(try queueCount(fixture), 3)
+    }
+
+    func testTheWireIdIsTheStoredRowIdentifier() throws {
+        let fixture = makeFixture(uploadResults: [.success(())])
+        try seed(fixture, count: 1)
+
+        let identifier = try XCTUnwrap(queuedIdentifiers(fixture).first)
+
+        try flush(fixture)
+
+        let json = String(
+            data: try XCTUnwrap(fixture.sentBodies.recorded.first),
+            encoding: .utf8
+        )!
+
+        XCTAssertTrue(json.contains(#""id":"\#(identifier)""#))
+    }
+
+    func testAResentBatchCarriesTheByteIdenticalBody() throws {
+        let fixture = makeFixture(uploadResults: [
+            .failure(AnalyticsTransportError.serverError(statusCode: 500)),
+            .success(())
+        ])
+        try seed(fixture, count: 3)
+
+        XCTAssertNotNil(flushError(fixture))
+        try flush(fixture)
+
+        XCTAssertEqual(fixture.sentBodies.recorded.count, 2)
+        XCTAssertEqual(
+            fixture.sentBodies.recorded.first,
+            fixture.sentBodies.recorded.last,
+            "the retry rebuilt the batch instead of resending the same event ids"
+        )
     }
 
     func testReconsentDuringAnInFlightBatchStillAbortsIt() throws {

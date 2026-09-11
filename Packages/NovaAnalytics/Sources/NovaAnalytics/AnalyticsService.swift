@@ -21,7 +21,7 @@ public final class AnalyticsService {
     private var pendingFlushCompletions: [() -> Void] = []
 
     private var currentFeature: String?
-    private var lastFlushAt: Date = .distantPast
+    private var schedule = AnalyticsFlushSchedule()
 
     private var isWipePending: Bool = false
     private var isWipeInFlight: Bool = false
@@ -76,8 +76,6 @@ public final class AnalyticsService {
 
 private extension AnalyticsService {
     enum Constants {
-        static let flushThreshold = 50
-        static let flushInterval: TimeInterval = 300
         static let maxBatches = 10
         static let backgroundMaxBatches = 1
     }
@@ -103,11 +101,11 @@ private extension AnalyticsService {
     func flushIfNeededLocked(count: Int) {
         let now = timeProvider()
 
-        if count >= Constants.flushThreshold {
-            flushLocked(reason: .threshold, now: now, completion: nil)
-        } else if now.timeIntervalSince(lastFlushAt) >= Constants.flushInterval {
-            flushLocked(reason: .interval, now: now, completion: nil)
+        guard let reason = schedule.reason(forQueuedCount: count, now: now) else {
+            return
         }
+
+        flushLocked(reason: reason, now: now, completion: nil)
     }
 
     @discardableResult
@@ -127,6 +125,12 @@ private extension AnalyticsService {
             return false
         }
 
+        guard schedule.allows(reason: reason, now: now) else {
+            logger.debug("Analytics flush \(reason) held off until \(schedule.nextFlushAllowedAt)")
+
+            return false
+        }
+
         guard !flushCallStore.hasCall else {
             if let completion {
                 pendingFlushCompletions.append(completion)
@@ -139,7 +143,7 @@ private extension AnalyticsService {
             pendingFlushCompletions.append(completion)
         }
 
-        lastFlushAt = now
+        schedule.recordStart(at: now)
 
         let maxBatches = reason == .background
             ? Constants.backgroundMaxBatches
@@ -154,11 +158,19 @@ private extension AnalyticsService {
             runningCallbackIn: nil,
             mutex: mutex
         ) { [weak self] result in
-            if case let .failure(error) = result {
-                self?.logger.debug("Analytics flush failed: \(error)")
+            guard let self else {
+                return
             }
 
-            self?.releaseFlushCompletionsLocked()
+            switch result {
+            case .success:
+                schedule.recordSuccess()
+            case let .failure(error):
+                logger.debug("Analytics flush failed: \(error)")
+                schedule.recordFailure(error, now: timeProvider())
+            }
+
+            releaseFlushCompletionsLocked()
         }
 
         return true
@@ -315,12 +327,12 @@ extension AnalyticsService: AnalyticsTrackingProtocol {
 
 // MARK: - Flush and wipe
 
-extension AnalyticsService {
-    public func flush(reason: AnalyticsFlushReason) {
+public extension AnalyticsService {
+    func flush(reason: AnalyticsFlushReason) {
         flush(reason: reason, completion: {})
     }
 
-    public func flush(reason: AnalyticsFlushReason, completion: @escaping () -> Void) {
+    func flush(reason: AnalyticsFlushReason, completion: @escaping () -> Void) {
         mutex.lock()
         let started = flushLocked(reason: reason, now: timeProvider(), completion: completion)
         mutex.unlock()
@@ -332,7 +344,7 @@ extension AnalyticsService {
         completion()
     }
 
-    public func cancelFlush() {
+    func cancelFlush() {
         mutex.lock()
 
         defer {
@@ -342,7 +354,7 @@ extension AnalyticsService {
         cancelFlushLocked()
     }
 
-    public func handleAvailabilityChanged() {
+    func handleAvailabilityChanged() {
         mutex.lock()
 
         defer {
@@ -364,7 +376,7 @@ extension AnalyticsService {
         wipeLocked()
     }
 
-    func handleConsentDisabled(attestation: BackendAttestationProviderProtocol?) {
+    internal func handleConsentDisabled(attestation: BackendAttestationProviderProtocol?) {
         mutex.lock()
 
         defer {
@@ -376,7 +388,7 @@ extension AnalyticsService {
 
         wipeLocked()
 
-        lastFlushAt = .distantPast
+        schedule.forget()
         currentFeature = nil
 
         attestation?.forgetClient()

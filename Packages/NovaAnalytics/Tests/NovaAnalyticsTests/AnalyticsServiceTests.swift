@@ -2,6 +2,7 @@ import XCTest
 @testable import NovaAnalytics
 import Operation_iOS
 import Keystore_iOS
+import NovaOperationSupport
 
 final class AnalyticsServiceTests: XCTestCase {
     func testFeatureOpenedCollapsesConsecutiveDuplicates() throws {
@@ -36,7 +37,8 @@ final class AnalyticsServiceTests: XCTestCase {
     }
 
     func testThresholdFlushAtFiftyEvents() throws {
-        let fixture = AnalyticsTestFixture.makeConsented(now: { Date(timeIntervalSince1970: 0) })
+        var now = Date(timeIntervalSince1970: 0)
+        let fixture = AnalyticsTestFixture.makeConsented(now: { now })
 
         fixture.service.track(.novaCardOpened())
         fixture.drain()
@@ -46,6 +48,30 @@ final class AnalyticsServiceTests: XCTestCase {
         fixture.drain()
         XCTAssertTrue(fixture.uploader.maxBatchesCalls.isEmpty)
 
+        now = now.addingTimeInterval(16)
+        fixture.service.track(.novaCardOpened())
+        fixture.drain()
+        XCTAssertEqual(fixture.uploader.maxBatchesCalls, [10])
+    }
+
+    func testTheThresholdDoesNotRefireWithinFifteenSecondsOfTheLastFlush() throws {
+        var now = Date(timeIntervalSince1970: 0)
+        let fixture = AnalyticsTestFixture.makeConsented(now: { now })
+
+        fixture.service.track(.novaCardOpened())
+        fixture.drain()
+
+        now = now.addingTimeInterval(16)
+        fixture.track(49, .novaCardOpened())
+        fixture.drain()
+        fixture.uploader.reset()
+
+        now = now.addingTimeInterval(14)
+        fixture.track(5, .novaCardOpened())
+        fixture.drain()
+        XCTAssertTrue(fixture.uploader.maxBatchesCalls.isEmpty)
+
+        now = now.addingTimeInterval(2)
         fixture.service.track(.novaCardOpened())
         fixture.drain()
         XCTAssertEqual(fixture.uploader.maxBatchesCalls, [10])
@@ -298,6 +324,108 @@ final class AnalyticsServiceTests: XCTestCase {
             1,
             "the opt-out wipe could run while the enqueue was still being submitted"
         )
+    }
+
+    func testAFailedFlushHoldsOffTheNextIntervalFlushForAMinute() {
+        var now = Date(timeIntervalSince1970: 0)
+        let fixture = makeFailingFixture(now: { now })
+
+        flushAndSettle(fixture, reason: .manual)
+        fixture.uploader.reset()
+
+        now = now.addingTimeInterval(59)
+        fixture.service.flush(reason: .interval)
+        XCTAssertTrue(fixture.uploader.maxBatchesCalls.isEmpty)
+
+        now = now.addingTimeInterval(2)
+        fixture.service.flush(reason: .interval)
+        XCTAssertEqual(fixture.uploader.maxBatchesCalls, [10])
+    }
+
+    func testASecondConsecutiveFailureDoublesTheHoldOff() {
+        var now = Date(timeIntervalSince1970: 0)
+        let fixture = makeFailingFixture(now: { now })
+
+        flushAndSettle(fixture, reason: .manual)
+
+        now = now.addingTimeInterval(60)
+        flushAndSettle(fixture, reason: .interval)
+        fixture.uploader.reset()
+
+        now = now.addingTimeInterval(119)
+        fixture.service.flush(reason: .interval)
+        XCTAssertTrue(fixture.uploader.maxBatchesCalls.isEmpty)
+
+        now = now.addingTimeInterval(2)
+        fixture.service.flush(reason: .interval)
+        XCTAssertEqual(fixture.uploader.maxBatchesCalls, [10])
+    }
+
+    func testASuccessfulFlushClearsTheHoldOff() {
+        let now = Date(timeIntervalSince1970: 0)
+        let fixture = makeFailingFixture(now: { now })
+
+        flushAndSettle(fixture, reason: .manual)
+
+        fixture.uploader.flushStub = { _ in .createWithResult(()) }
+        flushAndSettle(fixture, reason: .manual)
+        fixture.uploader.reset()
+
+        fixture.service.flush(reason: .interval)
+        XCTAssertEqual(fixture.uploader.maxBatchesCalls, [10])
+    }
+
+    func testRetryAfterSetsExactlyTheWindowTheGatewayAsksFor() {
+        var now = Date(timeIntervalSince1970: 0)
+        let fixture = makeFailingFixture(
+            now: { now },
+            error: AnalyticsTransportError.retryLater(statusCode: 429, retryAfter: 120)
+        )
+
+        flushAndSettle(fixture, reason: .manual)
+        fixture.uploader.reset()
+
+        now = now.addingTimeInterval(119)
+        fixture.service.flush(reason: .interval)
+        XCTAssertTrue(fixture.uploader.maxBatchesCalls.isEmpty)
+
+        now = now.addingTimeInterval(2)
+        fixture.service.flush(reason: .interval)
+        XCTAssertEqual(fixture.uploader.maxBatchesCalls, [10])
+    }
+
+    func testAFailingGatewayStopsEveryTrackedEventFromStartingAFlush() {
+        var now = Date(timeIntervalSince1970: 0)
+        let fixture = makeFailingFixture(now: { now })
+
+        fixture.track(50, .novaCardOpened())
+        fixture.drain()
+
+        flushAndSettle(fixture, reason: .manual)
+        fixture.uploader.reset()
+
+        now = now.addingTimeInterval(16)
+        fixture.track(5, .novaCardOpened())
+        fixture.drain()
+
+        XCTAssertTrue(fixture.uploader.maxBatchesCalls.isEmpty)
+    }
+
+    private func makeFailingFixture(
+        now: @escaping () -> Date,
+        error: Error = AnalyticsTransportError.serverError(statusCode: 500)
+    ) -> AnalyticsTestFixture {
+        let fixture = AnalyticsTestFixture.makeConsented(now: now)
+        fixture.uploader.flushStub = { _ in .createWithError(error) }
+
+        return fixture
+    }
+
+    private func flushAndSettle(_ fixture: AnalyticsTestFixture, reason: AnalyticsFlushReason) {
+        let settled = expectation(description: "flush settled")
+        fixture.service.flush(reason: reason) { settled.fulfill() }
+
+        wait(for: [settled], timeout: 5)
     }
 
     private func holdFlush(_ fixture: AnalyticsTestFixture, until gate: DispatchSemaphore) {

@@ -8,12 +8,14 @@ final class AnalyticsEventCatalogTests: XCTestCase {
         let line: UInt
     }
 
+    private let identifier = "row-1"
     private let timestamp = "2026-09-02T10:00:00.123Z"
 
     private func serialize(_ event: AnalyticsEvent) throws -> String {
         let remote = AnalyticsEventRemote(
+            id: identifier,
             name: event.name.rawValue,
-            ts: timestamp,
+            timestamp: timestamp,
             props: event.wireProperties
         )
 
@@ -29,17 +31,17 @@ final class AnalyticsEventCatalogTests: XCTestCase {
         [
             Row(
                 event: .appOpened(isFirstLaunch: false),
-                expectedJSON: #"{"name":"app_opened","props":{"is_first_launch":false},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"app_opened","props":{"is_first_launch":false},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
                 event: .sessionStarted(),
-                expectedJSON: #"{"name":"session_started","props":{},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"session_started","props":{},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
                 event: .sessionEnded(duration: 42),
-                expectedJSON: #"{"name":"session_ended","props":{"duration_bucket":"30s_to_60s"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"session_ended","props":{"duration_bucket":"30s_to_60s"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             )
         ]
@@ -49,27 +51,27 @@ final class AnalyticsEventCatalogTests: XCTestCase {
         [
             Row(
                 event: .onboardingStarted(source: .freshInstall),
-                expectedJSON: #"{"name":"onboarding_started","props":{"source":"fresh_install"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"onboarding_started","props":{"source":"fresh_install"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
                 event: .walletImportMethodSelected(method: .importMnemonic),
-                expectedJSON: #"{"name":"wallet_import_method_selected","props":{"method":"import_mnemonic"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"wallet_import_method_selected","props":{"method":"import_mnemonic"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
                 event: .walletCreationStarted(),
-                expectedJSON: #"{"name":"wallet_creation_started","props":{},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"wallet_creation_started","props":{},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
                 event: .walletCreationCompleted(method: .create, duration: nil),
-                expectedJSON: #"{"name":"wallet_creation_completed","props":{"method":"create"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"wallet_creation_completed","props":{"method":"create"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
                 event: .walletCreationAbandoned(lastStep: .confirmMnemonic),
-                expectedJSON: #"{"name":"wallet_creation_abandoned","props":{"last_step":"confirm_mnemonic"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"wallet_creation_abandoned","props":{"last_step":"confirm_mnemonic"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             )
         ]
@@ -79,27 +81,27 @@ final class AnalyticsEventCatalogTests: XCTestCase {
         [
             Row(
                 event: .featureOpened(.staking),
-                expectedJSON: #"{"name":"feature_opened","props":{"feature_id":"staking"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"feature_opened","props":{"feature_id":"staking"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
                 event: .tabSwitched(tab: .staking),
-                expectedJSON: #"{"name":"tab_switched","props":{"tab":"staking"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"tab_switched","props":{"tab":"staking"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
                 event: .novaCardOpened(),
-                expectedJSON: #"{"name":"nova_card_opened","props":{},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"nova_card_opened","props":{},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
                 event: .nftSectionOpened(count: 3),
-                expectedJSON: #"{"name":"nft_section_opened","props":{"nft_count":3},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"nft_section_opened","props":{"nft_count":3},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
                 event: .bannerClicked(id: .bannerId("ahm-2026"), screen: .assets),
-                expectedJSON: #"{"name":"banner_clicked","props":{"banner_id":"ahm-2026","screen":"assets"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"banner_clicked","props":{"banner_id":"ahm-2026","screen":"assets"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             )
         ]
@@ -109,7 +111,7 @@ final class AnalyticsEventCatalogTests: XCTestCase {
         [
             Row(
                 event: .swapScreenOpened(source: .assetDetails),
-                expectedJSON: #"{"name":"swap_screen_opened","props":{"source":"asset_details"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"swap_screen_opened","props":{"source":"asset_details"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
@@ -122,7 +124,7 @@ final class AnalyticsEventCatalogTests: XCTestCase {
                     amount: 100,
                     price: 5
                 )!,
-                expectedJSON: #"{"name":"swap_initiated","props":{"amount_bucket":"100_to_1k","asset_in":"DOT","asset_in_category":"native_token","asset_out":"USDT","asset_out_category":"stablecoin","network_in":"Polkadot","network_out":"Polkadot Asset Hub","source":"main_screen"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"swap_initiated","props":{"amount_bucket":"100_to_1k","asset_in":"DOT","asset_in_category":"native_token","asset_out":"USDT","asset_out_category":"stablecoin","network_in":"Polkadot","network_out":"Polkadot Asset Hub","source":"main_screen"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
@@ -135,7 +137,7 @@ final class AnalyticsEventCatalogTests: XCTestCase {
                     price: 5,
                     slippage: 0.5
                 )!,
-                expectedJSON: #"{"name":"swap_confirmed","props":{"amount_bucket":"100_to_1k","asset_in":"DOT","asset_out":"USDT","network_in":"Polkadot","network_out":"Polkadot Asset Hub","slippage_bucket":"low"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"swap_confirmed","props":{"amount_bucket":"100_to_1k","asset_in":"DOT","asset_out":"USDT","network_in":"Polkadot","network_out":"Polkadot Asset Hub","slippage_bucket":"low"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
@@ -148,17 +150,17 @@ final class AnalyticsEventCatalogTests: XCTestCase {
                     price: 5,
                     duration: 20
                 )!,
-                expectedJSON: #"{"name":"swap_completed","props":{"amount_bucket":"100_to_1k","asset_in":"DOT","asset_out":"USDT","duration_bucket":"15s_to_30s","network_in":"Polkadot","network_out":"Polkadot Asset Hub"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"swap_completed","props":{"amount_bucket":"100_to_1k","asset_in":"DOT","asset_out":"USDT","duration_bucket":"15s_to_30s","network_in":"Polkadot","network_out":"Polkadot Asset Hub"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
                 event: .swapFailed(reason: .executionReverted),
-                expectedJSON: #"{"name":"swap_failed","props":{"reason":"execution_reverted"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"swap_failed","props":{"reason":"execution_reverted"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
                 event: .swapAbandoned(stage: .setup),
-                expectedJSON: #"{"name":"swap_abandoned","props":{"stage":"setup"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"swap_abandoned","props":{"stage":"setup"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             )
         ]
@@ -168,52 +170,52 @@ final class AnalyticsEventCatalogTests: XCTestCase {
         [
             Row(
                 event: .stakingFlowOpened(network: .networkName("Polkadot"), source: .dashboard),
-                expectedJSON: #"{"name":"staking_flow_opened","props":{"network":"Polkadot","source":"dashboard"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"staking_flow_opened","props":{"network":"Polkadot","source":"dashboard"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
                 event: .stakingTypeSelected(type: .pool, network: .networkName("Polkadot")),
-                expectedJSON: #"{"name":"staking_type_selected","props":{"network":"Polkadot","staking_type":"pool"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"staking_type_selected","props":{"network":"Polkadot","staking_type":"pool"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
                 event: .stakingInitiated(type: .direct, network: .networkName("Polkadot"), amount: 10, rate: 5),
-                expectedJSON: #"{"name":"staking_initiated","props":{"amount_bucket":"10_to_100","network":"Polkadot","staking_type":"direct"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"staking_initiated","props":{"amount_bucket":"10_to_100","network":"Polkadot","staking_type":"direct"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
                 event: .stakingConfirmed(type: .direct, network: .networkName("Polkadot"), amount: 10, rate: 5),
-                expectedJSON: #"{"name":"staking_confirmed","props":{"amount_bucket":"10_to_100","network":"Polkadot","staking_type":"direct"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"staking_confirmed","props":{"amount_bucket":"10_to_100","network":"Polkadot","staking_type":"direct"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
                 event: .stakingCompleted(type: .mythos, network: .networkName("Mythos"), amount: 10, rate: nil),
-                expectedJSON: #"{"name":"staking_completed","props":{"amount_bucket":"under_1","network":"Mythos","staking_type":"mythos"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"staking_completed","props":{"amount_bucket":"under_1","network":"Mythos","staking_type":"mythos"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
                 event: .stakingFailed(type: .direct, network: .networkName("Polkadot"), reason: .networkError),
-                expectedJSON: #"{"name":"staking_failed","props":{"network":"Polkadot","reason":"network_error","staking_type":"direct"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"staking_failed","props":{"network":"Polkadot","reason":"network_error","staking_type":"direct"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
                 event: .stakingAbandoned(stage: .typeSelection),
-                expectedJSON: #"{"name":"staking_abandoned","props":{"stage":"type_selection"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"staking_abandoned","props":{"stage":"type_selection"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
                 event: .unstakeInitiated(type: .pool, network: .networkName("Polkadot"), amount: 10, rate: 5),
-                expectedJSON: #"{"name":"unstake_initiated","props":{"amount_bucket":"10_to_100","network":"Polkadot","staking_type":"pool"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"unstake_initiated","props":{"amount_bucket":"10_to_100","network":"Polkadot","staking_type":"pool"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
                 event: .unstakeCompleted(type: .pool, network: .networkName("Polkadot"), amount: 10, rate: 5),
-                expectedJSON: #"{"name":"unstake_completed","props":{"amount_bucket":"10_to_100","network":"Polkadot","staking_type":"pool"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"unstake_completed","props":{"amount_bucket":"10_to_100","network":"Polkadot","staking_type":"pool"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
                 event: .unstakeFailed(type: .unsupported, network: .networkName("Polkadot"), reason: .userCancelled),
-                expectedJSON: #"{"name":"unstake_failed","props":{"network":"Polkadot","reason":"user_cancelled","staking_type":"unsupported"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"unstake_failed","props":{"network":"Polkadot","reason":"user_cancelled","staking_type":"unsupported"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             )
         ]
@@ -230,7 +232,7 @@ final class AnalyticsEventCatalogTests: XCTestCase {
                     rate: 5,
                     isCrossChain: false
                 ),
-                expectedJSON: #"{"name":"send_initiated","props":{"amount_bucket":"10_to_100","asset":"DOT","asset_category":"native_token","is_cross_chain":false,"network":"Polkadot"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"send_initiated","props":{"amount_bucket":"10_to_100","asset":"DOT","asset_category":"native_token","is_cross_chain":false,"network":"Polkadot"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
@@ -241,7 +243,7 @@ final class AnalyticsEventCatalogTests: XCTestCase {
                     amount: 10,
                     rate: 5
                 ),
-                expectedJSON: #"{"name":"send_completed","props":{"amount_bucket":"10_to_100","asset":"DOT","network":"Polkadot"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"send_completed","props":{"amount_bucket":"10_to_100","asset":"DOT","network":"Polkadot"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
@@ -252,7 +254,7 @@ final class AnalyticsEventCatalogTests: XCTestCase {
                     amount: 10,
                     rate: 1
                 ),
-                expectedJSON: #"{"name":"send_completed","props":{"amount_bucket":"10_to_100","asset":"USDT","destination_network":"Hydration","network":"Polkadot Asset Hub"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"send_completed","props":{"amount_bucket":"10_to_100","asset":"USDT","destination_network":"Hydration","network":"Polkadot Asset Hub"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
@@ -262,7 +264,7 @@ final class AnalyticsEventCatalogTests: XCTestCase {
                     destinationNetwork: .networkName("Hydration"),
                     reason: .unknown
                 ),
-                expectedJSON: #"{"name":"send_failed","props":{"asset":"DOT","destination_network":"Hydration","network":"Polkadot","reason":"unknown"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"send_failed","props":{"asset":"DOT","destination_network":"Hydration","network":"Polkadot","reason":"unknown"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             )
         ]
@@ -272,7 +274,7 @@ final class AnalyticsEventCatalogTests: XCTestCase {
         [
             Row(
                 event: .dappOpened(host: .dappHost("app.example.org"), source: .catalog, isKnown: true),
-                expectedJSON: #"{"name":"dapp_opened","props":{"dapp_host":"app.example.org","is_known_dapp":true,"source":"catalog"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"dapp_opened","props":{"dapp_host":"app.example.org","is_known_dapp":true,"source":"catalog"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
@@ -281,7 +283,7 @@ final class AnalyticsEventCatalogTests: XCTestCase {
                     method: .signingMethod("polkadot_signPayload"),
                     chain: .caip2Chain("polkadot:91b171bb158e2d3848fa23a9f1c25182")
                 ),
-                expectedJSON: #"{"name":"sign_request_shown","props":{"chain":"polkadot:91b171bb158e2d3848fa23a9f1c25182","method":"polkadot_signPayload","source":"dapp_browser"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"sign_request_shown","props":{"chain":"polkadot:91b171bb158e2d3848fa23a9f1c25182","method":"polkadot_signPayload","source":"dapp_browser"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
@@ -290,7 +292,7 @@ final class AnalyticsEventCatalogTests: XCTestCase {
                     method: .signingMethod("polkadot_signPayload"),
                     chain: .caip2Chain("polkadot:91b171bb158e2d3848fa23a9f1c25182")
                 ),
-                expectedJSON: #"{"name":"sign_approved","props":{"chain":"polkadot:91b171bb158e2d3848fa23a9f1c25182","method":"polkadot_signPayload","source":"dapp_browser"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"sign_approved","props":{"chain":"polkadot:91b171bb158e2d3848fa23a9f1c25182","method":"polkadot_signPayload","source":"dapp_browser"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
@@ -299,7 +301,7 @@ final class AnalyticsEventCatalogTests: XCTestCase {
                     method: .signingMethod("eth_sendTransaction"),
                     chain: .caip2Chain("eip155:1")
                 ),
-                expectedJSON: #"{"name":"sign_rejected","props":{"chain":"eip155:1","method":"eth_sendTransaction","source":"walletconnect"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"sign_rejected","props":{"chain":"eip155:1","method":"eth_sendTransaction","source":"walletconnect"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
@@ -309,7 +311,7 @@ final class AnalyticsEventCatalogTests: XCTestCase {
                     chain: .caip2Chain("eip155:1"),
                     reason: .unsupportedRequest
                 ),
-                expectedJSON: #"{"name":"sign_failed","props":{"chain":"eip155:1","method":"eth_sendTransaction","reason":"unsupported_request","source":"walletconnect"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"sign_failed","props":{"chain":"eip155:1","method":"eth_sendTransaction","reason":"unsupported_request","source":"walletconnect"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
@@ -320,7 +322,7 @@ final class AnalyticsEventCatalogTests: XCTestCase {
                     rate: 5,
                     conviction: .locked3x
                 ),
-                expectedJSON: #"{"name":"governance_vote_cast","props":{"amount_bucket":"10_to_100","conviction_level":"3x","network":"Polkadot","vote_direction":"aye"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"governance_vote_cast","props":{"amount_bucket":"10_to_100","conviction_level":"3x","network":"Polkadot","vote_direction":"aye"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             )
         ]
@@ -334,7 +336,7 @@ final class AnalyticsEventCatalogTests: XCTestCase {
                     asset: .assetSymbol("DOT"),
                     network: .networkName("Polkadot")
                 ),
-                expectedJSON: #"{"name":"buy_initiated","props":{"asset":"DOT","network":"Polkadot","provider":"mercuryo"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"buy_initiated","props":{"asset":"DOT","network":"Polkadot","provider":"mercuryo"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
@@ -343,7 +345,7 @@ final class AnalyticsEventCatalogTests: XCTestCase {
                     asset: .assetSymbol("DOT"),
                     network: .networkName("Polkadot")
                 ),
-                expectedJSON: #"{"name":"buy_completed","props":{"asset":"DOT","network":"Polkadot","provider":"mercuryo"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"buy_completed","props":{"asset":"DOT","network":"Polkadot","provider":"mercuryo"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
@@ -352,7 +354,7 @@ final class AnalyticsEventCatalogTests: XCTestCase {
                     asset: .assetSymbol("DOT"),
                     network: .networkName("Polkadot")
                 ),
-                expectedJSON: #"{"name":"sell_initiated","props":{"asset":"DOT","network":"Polkadot","provider":"mercuryo"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"sell_initiated","props":{"asset":"DOT","network":"Polkadot","provider":"mercuryo"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             ),
             Row(
@@ -361,7 +363,7 @@ final class AnalyticsEventCatalogTests: XCTestCase {
                     asset: .assetSymbol("DOT"),
                     network: .networkName("Polkadot")
                 ),
-                expectedJSON: #"{"name":"sell_completed","props":{"asset":"DOT","network":"Polkadot","provider":"mercuryo"},"ts":"2026-09-02T10:00:00.123Z"}"#,
+                expectedJSON: #"{"id":"row-1","name":"sell_completed","props":{"asset":"DOT","network":"Polkadot","provider":"mercuryo"},"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: #line
             )
         ]
