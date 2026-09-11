@@ -10,8 +10,9 @@ public enum AttestationRequestTargetError: Error {
 ///
 /// The caller builds one and uses it both to construct the request and to ask for a proof, so the
 /// bytes that are sent and the bytes that are attested cannot drift apart. The fields are the ones
-/// the gateway signs — method, origin, path and content type — split the way its canonical form
-/// needs them rather than the way `URL` happens to store them.
+/// the gateway's canonical form needs — method, origin, path and content type — split the way it
+/// needs them rather than the way `URL` happens to store them. Only `url`, `method`, `contentType`
+/// and `origin` have readers today; the rest is what the request proof has to commit to.
 public struct AttestationRequestTarget: Equatable {
     public let url: URL
     public let method: String
@@ -28,14 +29,11 @@ public struct AttestationRequestTarget: Equatable {
             throw AttestationRequestTargetError.invalidAuthority
         }
 
-        guard
-            let scheme = components.scheme?.lowercased(),
-            let defaultPort = Self.defaultPort(for: scheme)
-        else {
+        guard let scheme = components.scheme?.lowercased(), Self.defaultPort(for: scheme) != nil else {
             throw AttestationRequestTargetError.unsupportedScheme
         }
 
-        guard let host = components.host?.lowercased(), Self.isCanonical(host: host) else {
+        guard let authority = Self.canonicalAuthority(scheme: scheme, components: components) else {
             throw AttestationRequestTargetError.invalidAuthority
         }
 
@@ -45,13 +43,11 @@ public struct AttestationRequestTarget: Equatable {
             throw AttestationRequestTargetError.invalidPath
         }
 
-        let effectivePort = components.port ?? defaultPort
-
         self.url = url
         self.method = method.uppercased()
         self.scheme = scheme
-        authority = effectivePort == defaultPort ? host : host + ":" + String(effectivePort)
-        port = String(effectivePort)
+        self.authority = authority.value
+        port = String(authority.port)
         self.path = path
         self.contentType = contentType
     }
@@ -61,13 +57,18 @@ public struct AttestationRequestTarget: Equatable {
 
 public extension AttestationRequestTarget {
     /// `scheme://host[:port]`, carrying the port only when it is not the scheme's default — the
-    /// spelling the gateway signs. Nil when the URL cannot be addressed that way.
+    /// spelling the gateway signs. Nil when the URL cannot be addressed that way. Deliberately
+    /// independent of the path, so it can name the origin of a base URL.
     static func origin(of url: URL) -> String? {
-        try? AttestationRequestTarget(
-            url: url,
-            method: "GET",
-            contentType: ""
-        ).origin
+        guard
+            let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+            let scheme = components.scheme?.lowercased(),
+            let authority = canonicalAuthority(scheme: scheme, components: components)
+        else {
+            return nil
+        }
+
+        return scheme + "://" + authority.value
     }
 }
 
@@ -84,6 +85,25 @@ private extension AttestationRequestTarget {
         case "http": 80
         default: nil
         }
+    }
+
+    /// The single place the host is validated and the default port is folded away, so the origin a
+    /// request is refused against is spelled exactly like the origin it is compared to.
+    static func canonicalAuthority(
+        scheme: String,
+        components: URLComponents
+    ) -> (value: String, port: Int)? {
+        guard
+            let defaultPort = defaultPort(for: scheme),
+            let host = components.host?.lowercased(),
+            isCanonical(host: host)
+        else {
+            return nil
+        }
+
+        let port = components.port ?? defaultPort
+
+        return (port == defaultPort ? host : host + ":" + String(port), port)
     }
 
     static func isCanonical(host: String) -> Bool {

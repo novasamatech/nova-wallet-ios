@@ -1,26 +1,37 @@
 import XCTest
 @testable import NovaAnalytics
+import NovaAppAttest
 
 final class AnalyticsUploadRequestTests: XCTestCase {
     private func makeFactory() -> AnalyticsUploadOperationFactory {
         AnalyticsUploadOperationFactory(baseURL: URL(string: "https://gateway.example/")!)
     }
 
-    func testTheSignedTargetIsTheOneTheRequestIsBuiltFrom() throws {
-        let target = try makeFactory().eventsTarget()
+    /// The proof is issued for the target, so the request has to follow the target and not the
+    /// base URL it happened to be derived from.
+    func testTheRequestFollowsTheTargetRatherThanTheBaseURL() throws {
+        let target = try AttestationRequestTarget(
+            url: URL(string: "https://elsewhere.example:8443/v1/other/path")!,
+            method: "put",
+            contentType: "text/plain"
+        )
 
-        XCTAssertEqual(target.method, "POST")
-        XCTAssertEqual(target.origin, "https://gateway.example")
-        XCTAssertEqual(target.port, "443")
-        XCTAssertEqual(target.path, "/v1/analytics/events")
-        XCTAssertEqual(target.contentType, "application/json")
+        let request = AnalyticsUploadOperationFactory.buildRequest(
+            target: target,
+            body: Data(),
+            headers: nil
+        )
+
+        XCTAssertEqual(request.url?.absoluteString, "https://elsewhere.example:8443/v1/other/path")
+        XCTAssertEqual(request.httpMethod, "PUT")
+        XCTAssertEqual(request.value(forHTTPHeaderField: "Content-Type"), "text/plain")
     }
 
     func testRequestCarriesTheBodyVerbatimAndTheThreeHeaders() throws {
         let factory = makeFactory()
 
         let body = Data(#"{"v":1,"events":[]}"#.utf8)
-        let request = factory.buildRequest(
+        let request = AnalyticsUploadOperationFactory.buildRequest(
             target: try factory.eventsTarget(),
             body: body,
             headers: [.clientId: "cid", .challenge: "chal", .signature: "sig"]
@@ -39,7 +50,7 @@ final class AnalyticsUploadRequestTests: XCTestCase {
     func testUnsignedRequestOmitsTheAttestationHeaders() throws {
         let factory = makeFactory()
 
-        let request = factory.buildRequest(
+        let request = AnalyticsUploadOperationFactory.buildRequest(
             target: try factory.eventsTarget(),
             body: Data("{}".utf8),
             headers: nil

@@ -10,7 +10,7 @@ public final class AnalyticsUploadOperationFactory {
         self.baseURL = baseURL
     }
 
-    func buildRequest(
+    static func buildRequest(
         target: AttestationRequestTarget,
         body: Data,
         headers: [AttestationHeaderKey: String]?
@@ -110,15 +110,11 @@ extension AnalyticsUploadOperationFactory: AnalyticsUploadOperationFactoryProtoc
         bodyClosure: @escaping () throws -> Data,
         headersClosure: @escaping () throws -> [AttestationHeaderKey: String]?
     ) -> BaseOperation<Void> {
-        let requestFactory = BlockNetworkRequestFactory { [weak self] in
+        let requestFactory = BlockNetworkRequestFactory {
             let body = try bodyClosure()
             let headers = try headersClosure()
 
-            guard let self else {
-                throw AnalyticsUploadAbort.consentWithdrawn
-            }
-
-            return buildRequest(target: target, body: body, headers: headers)
+            return Self.buildRequest(target: target, body: body, headers: headers)
         }
 
         let resultFactory = AnyNetworkResultFactory<Void> { _, response, error in

@@ -9,6 +9,34 @@ public final class BackendAttestationRemoteFactory {
     }
 }
 
+// MARK: - Status grading
+
+extension BackendAttestationRemoteFactory {
+    static func statusError(
+        for statusCode: Int,
+        isClientAuthenticated: Bool
+    ) -> BackendAttestationError? {
+        switch statusCode {
+        case 401, 403:
+            // Only a request that carried the identity can be a verdict on it. The challenge POST
+            // carries none, so a 401 there is an edge or proxy artefact and must never cost a key.
+            guard isClientAuthenticated else {
+                return .clientError(statusCode: statusCode)
+            }
+
+            return statusCode == 401
+                ? .unauthorized(statusCode: statusCode)
+                : .rejected(statusCode: statusCode)
+        case 400 ..< 500:
+            return .clientError(statusCode: statusCode)
+        case 500...:
+            return .serverError(statusCode: statusCode)
+        default:
+            return nil
+        }
+    }
+}
+
 // MARK: - Private
 
 private extension BackendAttestationRemoteFactory {
@@ -19,26 +47,6 @@ private extension BackendAttestationRemoteFactory {
 
     struct ChallengeResponse: Decodable {
         let challenge: String
-    }
-
-    static func statusError(
-        for statusCode: Int,
-        isClientAuthenticated: Bool
-    ) -> BackendAttestationError? {
-        switch statusCode {
-        case 401:
-            return .unauthorized(statusCode: statusCode)
-        case 403:
-            return isClientAuthenticated
-                ? .rejected(statusCode: statusCode)
-                : .clientError(statusCode: statusCode)
-        case 400 ..< 500:
-            return .clientError(statusCode: statusCode)
-        case 500...:
-            return .serverError(statusCode: statusCode)
-        default:
-            return nil
-        }
     }
 
     func createPostOperation<T>(

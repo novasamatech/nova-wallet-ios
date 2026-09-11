@@ -33,10 +33,11 @@ public protocol BackendAttestationIdentityProtocol {
     /// client can still name the row that client owns.
     func existingClientId() -> String?
 
-    /// Retires the stored identifier so the next `clientId()` mints a new one. Unlike
-    /// `forgetClientId` this is recovery, not consent withdrawal: creation stays allowed and the
-    /// consent epoch does not move, so a chain running under the current epoch survives it.
-    func resetClientId()
+    /// Retires `clientId` so the next `clientId()` mints a new one, and only while it is still the
+    /// stored one — a chain that failed under an identity the install has already moved on from must
+    /// not retire its successor. Unlike `forgetClientId` this is recovery, not consent withdrawal:
+    /// creation stays allowed and the consent epoch does not move.
+    func resetClientId(ifCurrent clientId: String)
 
     func forgetClientId()
     func allowCreation()

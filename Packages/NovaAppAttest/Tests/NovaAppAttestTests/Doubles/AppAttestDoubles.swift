@@ -74,6 +74,7 @@ final class AppAttestServiceSpy: AppAttestServiceProtocol {
 
 final class BackendAttestationRemoteFactorySpy: BackendAttestationRemoteFactoryProtocol {
     var registerError: Error?
+    var challengeError: Error?
     var onChallenge: (() -> Void)?
 
     private(set) var challengeCallCount = 0
@@ -89,9 +90,15 @@ final class BackendAttestationRemoteFactorySpy: BackendAttestationRemoteFactoryP
     func createChallengeWrapper() -> CompoundOperationWrapper<String> {
         challengeCallCount += 1
         let hook = onChallenge
+        let error = challengeError
 
         return CompoundOperationWrapper(targetOperation: ClosureOperation {
             hook?()
+
+            if let error {
+                throw error
+            }
+
             return UUID().uuidString
         })
     }

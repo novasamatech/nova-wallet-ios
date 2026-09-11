@@ -59,11 +59,15 @@ extension BackendAttestationIdentity: BackendAttestationIdentityProtocol {
         return settingsManager.gatewayAttestationClientId
     }
 
-    public func resetClientId() {
+    public func resetClientId(ifCurrent clientId: String) {
         mutex.lock()
 
         defer {
             mutex.unlock()
+        }
+
+        guard settingsManager.gatewayAttestationClientId == clientId else {
+            return
         }
 
         settingsManager.gatewayAttestationClientId = nil
