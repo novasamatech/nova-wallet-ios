@@ -337,4 +337,3 @@ private final class AnalyticsSettingsOutputSpy: SettingsInteractorOutputProtocol
     func didReceive(pushNotificationsStatus _: PushNotificationsStatus) {}
     func didReceive(hideBalancesOnLaunch _: Bool) {}
 }
-

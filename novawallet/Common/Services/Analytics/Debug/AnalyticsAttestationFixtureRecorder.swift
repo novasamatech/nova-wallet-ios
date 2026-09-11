@@ -49,32 +49,89 @@
                 return .createWithError(BackendAttestationError.unsupported)
             }
 
-            let body = Self.sampleBody
+            let keyGenerationOperation = appAttest.createKeyGenerationOperation()
 
             let attestChallengeWrapper = remoteFactory.createChallengeWrapper()
 
-            let attestationWrapper = appAttest.createAttestationWrapper(using: nil) { keyId in
-                let challenge = try attestChallengeWrapper.targetOperation.extractNoCancellableResultData()
+            let attestationWrapper = createAttestationWrapper(
+                clientId: clientId,
+                keyGenerationOperation: keyGenerationOperation,
+                challengeWrapper: attestChallengeWrapper
+            )
 
-                return AttestationClientData.attestationClientData(
-                    challenge: challenge,
-                    clientId: clientId,
-                    keyId: keyId
-                )
-            }
-
+            attestationWrapper.addDependency(operations: [keyGenerationOperation])
             attestationWrapper.addDependency(wrapper: attestChallengeWrapper)
 
             let assertChallengeWrapper = remoteFactory.createChallengeWrapper()
             assertChallengeWrapper.addDependency(wrapper: attestationWrapper)
 
-            let assertionWrapper = OperationCombiningService<AppAttestAssertion>.compoundNonOptionalWrapper(
+            let assertionWrapper = createAssertionWrapper(
+                clientId: clientId,
+                attestationWrapper: attestationWrapper,
+                challengeWrapper: assertChallengeWrapper
+            )
+
+            assertionWrapper.addDependency(wrapper: assertChallengeWrapper)
+
+            let mapOperation = createFixtureOperation(
+                clientId: clientId,
+                attestChallengeWrapper: attestChallengeWrapper,
+                assertChallengeWrapper: assertChallengeWrapper,
+                attestationWrapper: attestationWrapper,
+                assertionWrapper: assertionWrapper
+            )
+
+            mapOperation.addDependency(assertionWrapper.targetOperation)
+
+            return CompoundOperationWrapper(
+                targetOperation: mapOperation,
+                dependencies: [keyGenerationOperation]
+                    + attestChallengeWrapper.allOperations
+                    + attestationWrapper.allOperations
+                    + assertChallengeWrapper.allOperations
+                    + assertionWrapper.allOperations
+            )
+        }
+    }
+
+    // MARK: - Private
+
+    private extension AnalyticsAttestationFixtureRecorder {
+        func createAttestationWrapper(
+            clientId: String,
+            keyGenerationOperation: BaseOperation<AppAttestKeyId>,
+            challengeWrapper: CompoundOperationWrapper<String>
+        ) -> CompoundOperationWrapper<AppAttestAttestation> {
+            OperationCombiningService<AppAttestAttestation>.compoundNonOptionalWrapper(
+                operationQueue: operationQueue
+            ) { [appAttest] in
+                let keyId = try keyGenerationOperation.extractNoCancellableResultData()
+                let challenge = try challengeWrapper.targetOperation.extractNoCancellableResultData()
+
+                return appAttest.createAttestationWrapper(using: keyId) { attestingKeyId in
+                    AttestationClientData.attestationClientData(
+                        challenge: challenge,
+                        clientId: clientId,
+                        keyId: attestingKeyId
+                    )
+                }
+            }
+        }
+
+        func createAssertionWrapper(
+            clientId: String,
+            attestationWrapper: CompoundOperationWrapper<AppAttestAttestation>,
+            challengeWrapper: CompoundOperationWrapper<String>
+        ) -> CompoundOperationWrapper<AppAttestAssertion> {
+            let body = Self.sampleBody
+
+            return OperationCombiningService<AppAttestAssertion>.compoundNonOptionalWrapper(
                 operationQueue: operationQueue
             ) { [appAttest] in
                 let attestation = try attestationWrapper.targetOperation.extractNoCancellableResultData()
 
                 return appAttest.createAssertionWrapper(keyId: attestation.keyId) {
-                    let challenge = try assertChallengeWrapper.targetOperation
+                    let challenge = try challengeWrapper.targetOperation
                         .extractNoCancellableResultData()
 
                     return AttestationClientData.assertionClientData(
@@ -84,10 +141,18 @@
                     )
                 }
             }
+        }
 
-            assertionWrapper.addDependency(wrapper: assertChallengeWrapper)
+        func createFixtureOperation(
+            clientId: String,
+            attestChallengeWrapper: CompoundOperationWrapper<String>,
+            assertChallengeWrapper: CompoundOperationWrapper<String>,
+            attestationWrapper: CompoundOperationWrapper<AppAttestAttestation>,
+            assertionWrapper: CompoundOperationWrapper<AppAttestAssertion>
+        ) -> BaseOperation<AnalyticsAttestationFixture> {
+            let body = Self.sampleBody
 
-            let mapOperation = ClosureOperation<AnalyticsAttestationFixture> {
+            return ClosureOperation<AnalyticsAttestationFixture> {
                 let attestation = try attestationWrapper.targetOperation.extractNoCancellableResultData()
                 let assertion = try assertionWrapper.targetOperation.extractNoCancellableResultData()
                 let attestChallenge = try attestChallengeWrapper.targetOperation
@@ -107,16 +172,6 @@
                     assertionBase64: assertion.base64EncodedString()
                 )
             }
-
-            mapOperation.addDependency(assertionWrapper.targetOperation)
-
-            return CompoundOperationWrapper(
-                targetOperation: mapOperation,
-                dependencies: attestChallengeWrapper.allOperations
-                    + attestationWrapper.allOperations
-                    + assertChallengeWrapper.allOperations
-                    + assertionWrapper.allOperations
-            )
         }
     }
 
