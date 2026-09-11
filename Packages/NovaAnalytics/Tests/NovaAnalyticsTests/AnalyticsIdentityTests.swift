@@ -82,4 +82,18 @@ final class AnalyticsIdentityTests: XCTestCase {
 
         XCTAssertNotEqual(identity.clientId(), analytics.installId())
     }
+
+    func testTheConsentEpochSurvivesAFreshIdentityOverTheSameSettings() {
+        let settings = InMemorySettingsManager()
+        let identity = AnalyticsIdentity(settingsManager: settings)
+
+        XCTAssertEqual(identity.consentEpoch, 0)
+
+        identity.forgetInstallId()
+        identity.allowCreation()
+
+        XCTAssertEqual(identity.consentEpoch, 2)
+        XCTAssertEqual(settings.integer(for: "analyticsConsentEpoch"), 2)
+        XCTAssertEqual(AnalyticsIdentity(settingsManager: settings).consentEpoch, 2)
+    }
 }

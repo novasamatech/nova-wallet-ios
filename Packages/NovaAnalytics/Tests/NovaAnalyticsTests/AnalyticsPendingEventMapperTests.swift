@@ -12,7 +12,8 @@ final class AnalyticsPendingEventMapperTests: XCTestCase {
             sequence: 7,
             name: "app_opened",
             timestamp: Date(timeIntervalSince1970: 1_770_000_000),
-            payload: Data(#"{"is_first_launch":false}"#.utf8)
+            payload: Data(#"{"is_first_launch":false}"#.utf8),
+            consentEpoch: 3
         )
 
         let saveOperation = repository.saveOperation({ [event] }, { [] })
@@ -38,7 +39,8 @@ final class AnalyticsPendingEventMapperTests: XCTestCase {
             sequence: 1,
             name: "an_event_this_build_does_not_know",
             timestamp: Date(timeIntervalSince1970: 1),
-            payload: Data("{}".utf8)
+            payload: Data("{}".utf8),
+            consentEpoch: 0
         )
 
         let saveOperation = repository.saveOperation({ [event] }, { [] })

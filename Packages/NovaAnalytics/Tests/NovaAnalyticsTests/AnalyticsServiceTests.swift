@@ -530,14 +530,20 @@ final class AnalyticsServiceTests: XCTestCase {
 
         consent.setEnabled(true)
 
-        return GatewayFixture(service: service, queue: eventQueue, uploadFactory: uploadFactory)
+        return GatewayFixture(
+            service: service,
+            queue: eventQueue,
+            identity: identity,
+            uploadFactory: uploadFactory
+        )
     }
 
     private func seed(_ fixture: GatewayFixture) throws {
         let wrapper = fixture.queue.enqueueWrapper(
             name: "nova_card_opened",
             timestamp: Date(timeIntervalSince1970: 0),
-            payload: Data("{}".utf8)
+            payload: Data("{}".utf8),
+            consentEpoch: fixture.identity.consentEpoch
         )
 
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
@@ -581,6 +587,7 @@ final class AnalyticsServiceTests: XCTestCase {
 private struct GatewayFixture {
     let service: AnalyticsService
     let queue: CoreDataAnalyticsEventQueue
+    let identity: AnalyticsIdentity
     let uploadFactory: AnalyticsUploadOperationFactorySpy
 }
 

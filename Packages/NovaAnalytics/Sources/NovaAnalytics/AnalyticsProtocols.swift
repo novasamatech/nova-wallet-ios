@@ -3,7 +3,12 @@ import Operation_iOS
 import NovaAppAttest
 
 public protocol AnalyticsEventQueueProtocol {
-    func enqueueWrapper(name: String, timestamp: Date, payload: Data) -> CompoundOperationWrapper<Void>
+    func enqueueWrapper(
+        name: String,
+        timestamp: Date,
+        payload: Data,
+        consentEpoch: Int
+    ) -> CompoundOperationWrapper<Void>
 
     func peekWrapper(count: Int) -> CompoundOperationWrapper<[AnalyticsPendingEvent]>
 
@@ -16,8 +21,10 @@ public protocol AnalyticsConsentManagerProtocol: AnyObject {
     var isEnabled: Bool { get }
     var isAvailable: Bool { get }
     var isPromptSeen: Bool { get }
+    var isErasureOwed: Bool { get }
 
     func setEnabled(_ enabled: Bool)
+    func setErasureOwed(_ owed: Bool)
     func markPromptSeen()
     func addObserver(with owner: AnyObject, queue: DispatchQueue?, closure: @escaping (Bool, Bool) -> Void)
     func removeObserver(by owner: AnyObject)

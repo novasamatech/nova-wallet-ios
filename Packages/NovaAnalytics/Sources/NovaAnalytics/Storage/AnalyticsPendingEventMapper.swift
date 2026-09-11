@@ -31,7 +31,8 @@ extension AnalyticsPendingEventMapper: CoreDataMapperProtocol {
             sequence: entity.sequence,
             name: name,
             timestamp: timestamp,
-            payload: payload
+            payload: payload,
+            consentEpoch: Int(entity.consentEpoch)
         )
     }
 
@@ -45,5 +46,6 @@ extension AnalyticsPendingEventMapper: CoreDataMapperProtocol {
         entity.name = model.name
         entity.timestamp = model.timestamp
         entity.payload = model.payload
+        entity.consentEpoch = Int64(model.consentEpoch)
     }
 }

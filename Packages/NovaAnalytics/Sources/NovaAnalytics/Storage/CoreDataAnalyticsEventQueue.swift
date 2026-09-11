@@ -35,7 +35,12 @@ private extension CoreDataAnalyticsEventQueue {
 // MARK: - AnalyticsEventQueueProtocol
 
 extension CoreDataAnalyticsEventQueue: AnalyticsEventQueueProtocol {
-    public func enqueueWrapper(name: String, timestamp: Date, payload: Data) -> CompoundOperationWrapper<Void> {
+    public func enqueueWrapper(
+        name: String,
+        timestamp: Date,
+        payload: Data,
+        consentEpoch: Int
+    ) -> CompoundOperationWrapper<Void> {
         let newestOperation = newestRowOperation()
 
         let saveOperation = repository.saveOperation({
@@ -48,7 +53,8 @@ extension CoreDataAnalyticsEventQueue: AnalyticsEventQueueProtocol {
                     sequence: sequence,
                     name: name,
                     timestamp: timestamp,
-                    payload: payload
+                    payload: payload,
+                    consentEpoch: consentEpoch
                 )
             ]
         }, { [] })
