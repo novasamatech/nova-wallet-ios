@@ -20,7 +20,7 @@ public final class BackendAttestationProvider {
     private let gatewayURL: URL
     private let gatewayOrigin: String?
     private let mode: BackendAttestationMode
-    private let bundle: Bundle
+    private let appIdentity: AppAttestAppIdentity
     private let operationQueue: OperationQueue
     private let logger: SDKLoggerProtocol
     private let timeProvider: () -> Date
@@ -43,7 +43,7 @@ public final class BackendAttestationProvider {
         repository: AnyDataProviderRepository<AppAttestKeySettings>,
         gatewayURL: URL,
         mode: BackendAttestationMode,
-        bundle: Bundle = .main,
+        appIdentity: AppAttestAppIdentity,
         operationQueue: OperationQueue,
         logger: SDKLoggerProtocol,
         timeProvider: @escaping () -> Date = { Date() }
@@ -55,7 +55,7 @@ public final class BackendAttestationProvider {
         self.gatewayURL = gatewayURL
         gatewayOrigin = AttestationRequestTarget.origin(of: gatewayURL)
         self.mode = mode
-        self.bundle = bundle
+        self.appIdentity = appIdentity
         self.operationQueue = operationQueue
         self.logger = logger
         self.timeProvider = timeProvider
@@ -458,8 +458,6 @@ private extension BackendAttestationProvider {
         }
 
         switch mode {
-        case .none:
-            return .createWithResult(nil)
         case .unavailable:
             return .createWithError(BackendAttestationError.unsupported)
         case .appAttest:
@@ -497,6 +495,7 @@ private extension BackendAttestationProvider {
         return createSignedChainWrapper(
             clientId: clientId,
             context: context,
+            target: target,
             bodyClosure: bodyClosure
         )
     }
@@ -504,6 +503,7 @@ private extension BackendAttestationProvider {
     func createSignedChainWrapper(
         clientId: String,
         context: AttestationChainContext,
+        target: AttestationRequestTarget,
         bodyClosure: @escaping () throws -> Data
     ) -> CompoundOperationWrapper<[AttestationHeaderKey: String]?> {
         let attestedWrapper = ensureAttestedWrapper(clientId: clientId, context: context)
@@ -519,7 +519,7 @@ private extension BackendAttestationProvider {
 
             try requireEpoch(context.epoch)
 
-            return remoteFactory.createChallengeWrapper()
+            return remoteFactory.createChallengeWrapper(clientId: clientId, purpose: .request)
         }
 
         challengeWrapper.addDependency(wrapper: attestedWrapper)
@@ -539,10 +539,12 @@ private extension BackendAttestationProvider {
             return appAttest.createAssertionWrapper(keyId: keyId) {
                 let body = try bodyClosure()
 
-                return AttestationClientData.assertionClientData(
+                return AttestationProfile2.preimage(
+                    purpose: .request,
                     challenge: challenge,
                     clientId: clientId,
-                    body: body
+                    target: target,
+                    bodyDigest: AttestationProfile2.bodyDigest(body)
                 )
             }
         }
@@ -554,9 +556,10 @@ private extension BackendAttestationProvider {
             let assertion = try assertionWrapper.targetOperation.extractNoCancellableResultData()
 
             return [
+                .profile: String(AttestationProfile2.version),
                 .clientId: clientId,
                 .challenge: challenge,
-                .signature: assertion.base64EncodedString()
+                .appAttestAssertion: assertion.base64EncodedString()
             ]
         }
 
@@ -633,7 +636,7 @@ private extension BackendAttestationProvider {
 
             try requireEpoch(context.epoch)
 
-            return remoteFactory.createChallengeWrapper()
+            return remoteFactory.createChallengeWrapper(clientId: clientId, purpose: .register)
         }
 
         challengeWrapper.addDependency(wrapper: keyIdWrapper)
@@ -718,7 +721,7 @@ private extension BackendAttestationProvider {
     ) -> CompoundOperationWrapper<AppAttestAttestation> {
         OperationCombiningService<AppAttestAttestation>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
-        ) { [weak self, appAttest] in
+        ) { [weak self, appAttest, remoteFactory] in
             let keyId = try keyIdWrapper.targetOperation.extractNoCancellableResultData()
             let challenge = try challengeWrapper.targetOperation.extractNoCancellableResultData()
 
@@ -728,11 +731,24 @@ private extension BackendAttestationProvider {
 
             try requireEpoch(context.epoch)
 
+            // The registration proof commits to the register POST itself, and carries the binding
+            // digest where a protected request carries its body digest.
+            let target = try remoteFactory.registerTarget()
+            let identity = appIdentity
+
             return appAttest.createAttestationWrapper(using: keyId) { attestingKeyId in
-                AttestationClientData.attestationClientData(
+                AttestationProfile2.preimage(
+                    purpose: .register,
                     challenge: challenge,
                     clientId: clientId,
-                    keyId: attestingKeyId
+                    target: target,
+                    bodyDigest: AttestationProfile2.registrationDigest(
+                        platform: Constants.platform,
+                        appId: identity.appId,
+                        attestationType: Constants.attestationType,
+                        keyReference: attestingKeyId,
+                        appAttestEnvironment: identity.environment
+                    )
                 )
             }
         }
@@ -744,9 +760,7 @@ private extension BackendAttestationProvider {
         challengeWrapper: CompoundOperationWrapper<String>,
         attestationWrapper: CompoundOperationWrapper<AppAttestAttestation>
     ) -> BaseOperation<Void> {
-        let appPackage = bundle.bundleIdentifier ?? ""
-
-        return remoteFactory.createRegisterOperation { [weak self] in
+        remoteFactory.createRegisterOperation { [weak self] in
             let challenge = try challengeWrapper.targetOperation.extractNoCancellableResultData()
             let attestation = try attestationWrapper.targetOperation.extractNoCancellableResultData()
 
@@ -757,12 +771,14 @@ private extension BackendAttestationProvider {
             try requireEpoch(context.epoch)
 
             return BackendAttestationRegisterRequest(
+                profile: AttestationProfile2.version,
                 clientId: clientId,
-                platform: Constants.platform,
-                appPackage: appPackage,
-                attestationType: Constants.attestationType,
-                keyId: attestation.keyId,
                 challenge: challenge,
+                platform: Constants.platform,
+                appId: appIdentity.appId,
+                attestationType: Constants.attestationType,
+                keyReference: attestation.keyId,
+                appAttestEnvironment: appIdentity.environment,
                 integrityToken: attestation.attestation.base64EncodedString()
             )
         }

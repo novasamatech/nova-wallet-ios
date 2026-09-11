@@ -24,7 +24,7 @@
         private let facade: AnalyticsServiceFacadeProtocol & AnalyticsDebugInspecting
         private let attestationMode: BackendAttestationMode
         private let settingsManager: SettingsManagerProtocol
-        private let recorder: AnalyticsAttestationFixtureRecorder
+        private let recorder: AnalyticsAttestationFixtureRecorder?
         private let operationQueue: OperationQueue
 
         private let statusLabel = UILabel()
@@ -33,7 +33,7 @@
             facade: AnalyticsServiceFacadeProtocol & AnalyticsDebugInspecting,
             attestationMode: BackendAttestationMode,
             settingsManager: SettingsManagerProtocol,
-            recorder: AnalyticsAttestationFixtureRecorder,
+            recorder: AnalyticsAttestationFixtureRecorder?,
             operationQueue: OperationQueue
         ) {
             self.facade = facade
@@ -58,18 +58,34 @@
             return AnalyticsDebugInspectorViewController(
                 facade: AnalyticsFacadeFactory.createDefault(),
                 attestationMode: BackendAttestationModeResolver.resolve(
-                    isReleaseBuild: false,
                     isAppAttestSupported: appAttest.isSupported
                 ),
                 settingsManager: SettingsManager.shared,
-                recorder: AnalyticsAttestationFixtureRecorder(
-                    appAttest: appAttest,
-                    remoteFactory: BackendAttestationRemoteFactory(
-                        baseURL: ApplicationConfig.shared.gatewayURL
-                    ),
-                    identity: BackendAttestationIdentity(settingsManager: SettingsManager.shared),
-                    operationQueue: OperationManagerFacade.sharedDefaultQueue
-                ),
+                recorder: makeRecorder(appAttest: appAttest),
+                operationQueue: OperationManagerFacade.sharedDefaultQueue
+            )
+        }
+
+        /// Nil when the build carries no App ID prefix: without it the registration binding would
+        /// name an app the gateway cannot match, so there is nothing worth recording.
+        private static func makeRecorder(
+            appAttest: AppAttestServiceProtocol
+        ) -> AnalyticsAttestationFixtureRecorder? {
+            let gatewayURL = ApplicationConfig.shared.gatewayURL
+
+            guard
+                let appIdentity = ApplicationConfig.shared.appAttestAppIdentity,
+                let requestTarget = try? AnalyticsUploadOperationFactory(baseURL: gatewayURL).eventsTarget()
+            else {
+                return nil
+            }
+
+            return AnalyticsAttestationFixtureRecorder(
+                appAttest: appAttest,
+                remoteFactory: BackendAttestationRemoteFactory(baseURL: gatewayURL),
+                identity: BackendAttestationIdentity(settingsManager: SettingsManager.shared),
+                appIdentity: appIdentity,
+                requestTarget: requestTarget,
                 operationQueue: OperationManagerFacade.sharedDefaultQueue
             )
         }
@@ -182,6 +198,10 @@
         }
 
         @objc func actionRecordFixture() {
+            guard let recorder else {
+                return present(message: "No App ID prefix in this build; a fixture cannot be recorded")
+            }
+
             execute(
                 wrapper: recorder.recordWrapper(),
                 inOperationQueue: operationQueue,

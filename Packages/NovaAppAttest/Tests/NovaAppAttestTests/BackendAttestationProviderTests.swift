@@ -29,6 +29,10 @@ final class BackendAttestationProviderTests: XCTestCase {
             repository: repository,
             gatewayURL: URL(string: "https://gateway.example/")!,
             mode: .appAttest,
+            appIdentity: AppAttestAppIdentity(
+                appId: "ABCDEFGHIJ.io.novafoundation.novawallet.dev",
+                environment: "production"
+            ),
             operationQueue: operationQueue,
             logger: SilentLogger(),
             timeProvider: { [clock] in clock.now }
@@ -60,7 +64,9 @@ final class BackendAttestationProviderTests: XCTestCase {
         makeProvider()
         let result = try XCTUnwrap(try headers())
 
-        XCTAssertEqual(Set(result.keys), [.clientId, .challenge, .signature])
+        XCTAssertEqual(Set(result.keys), [.profile, .clientId, .challenge, .appAttestAssertion])
+        XCTAssertEqual(result[.profile], "2")
+        XCTAssertEqual(remote.challengePurposes, [.register, .request])
         XCTAssertEqual(appAttest.attestationKeyIds.count, 1)
         XCTAssertEqual(appAttest.assertionKeyIds.count, 1)
         XCTAssertEqual(try storedRow()?.isAttested, true)

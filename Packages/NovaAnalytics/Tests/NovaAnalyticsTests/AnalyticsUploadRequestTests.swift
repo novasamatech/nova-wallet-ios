@@ -34,7 +34,7 @@ final class AnalyticsUploadRequestTests: XCTestCase {
         let request = AnalyticsUploadOperationFactory.buildRequest(
             target: try factory.eventsTarget(),
             body: body,
-            headers: [.clientId: "cid", .challenge: "chal", .signature: "sig"]
+            headers: [.profile: "2", .clientId: "cid", .challenge: "chal", .appAttestAssertion: "assertion"]
         )
 
         XCTAssertEqual(request.httpBody, body)
@@ -43,7 +43,9 @@ final class AnalyticsUploadRequestTests: XCTestCase {
         XCTAssertEqual(request.value(forHTTPHeaderField: "Content-Type"), "application/json")
         XCTAssertEqual(request.value(forHTTPHeaderField: "X-Client-Id"), "cid")
         XCTAssertEqual(request.value(forHTTPHeaderField: "X-Challenge"), "chal")
-        XCTAssertEqual(request.value(forHTTPHeaderField: "X-Signature"), "sig")
+        XCTAssertEqual(request.value(forHTTPHeaderField: "X-Attestation-Profile"), "2")
+        XCTAssertEqual(request.value(forHTTPHeaderField: "X-App-Attest-Assertion"), "assertion")
+        XCTAssertNil(request.value(forHTTPHeaderField: "X-Signature"))
         XCTAssertEqual(request.timeoutInterval, 15)
     }
 
@@ -56,7 +58,7 @@ final class AnalyticsUploadRequestTests: XCTestCase {
             headers: nil
         )
 
-        XCTAssertNil(request.value(forHTTPHeaderField: "X-Signature"))
+        XCTAssertNil(request.value(forHTTPHeaderField: "X-App-Attest-Assertion"))
         XCTAssertNil(request.value(forHTTPHeaderField: "X-Client-Id"))
         XCTAssertNil(request.value(forHTTPHeaderField: "X-Challenge"))
         XCTAssertEqual(request.value(forHTTPHeaderField: "Content-Type"), "application/json")

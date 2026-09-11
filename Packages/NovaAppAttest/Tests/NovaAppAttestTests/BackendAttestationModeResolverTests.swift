@@ -2,19 +2,16 @@ import XCTest
 @testable import NovaAppAttest
 
 final class BackendAttestationModeResolverTests: XCTestCase {
-    private func resolve(isReleaseBuild: Bool, isAppAttestSupported: Bool) -> BackendAttestationMode {
-        BackendAttestationModeResolver.resolve(
-            isReleaseBuild: isReleaseBuild,
-            isAppAttestSupported: isAppAttestSupported
-        )
+    private func resolve(isAppAttestSupported: Bool) -> BackendAttestationMode {
+        BackendAttestationModeResolver.resolve(isAppAttestSupported: isAppAttestSupported)
     }
 
-    func testSupportedDeviceUsesAppAttestInEveryConfiguration() {
-        XCTAssertEqual(resolve(isReleaseBuild: true, isAppAttestSupported: true), .appAttest)
-        XCTAssertEqual(resolve(isReleaseBuild: false, isAppAttestSupported: true), .appAttest)
+    func testSupportedDeviceUsesAppAttest() {
+        XCTAssertEqual(resolve(isAppAttestSupported: true), .appAttest)
     }
 
-    func testUnsupportedInReleaseIsUnavailable() {
-        XCTAssertEqual(resolve(isReleaseBuild: true, isAppAttestSupported: false), .unavailable)
+    /// Profile 2 has no unattested variant of a protected route, so a Simulator cannot upload at all.
+    func testAnUnsupportedDeviceIsUnavailableRatherThanUnattested() {
+        XCTAssertEqual(resolve(isAppAttestSupported: false), .unavailable)
     }
 }

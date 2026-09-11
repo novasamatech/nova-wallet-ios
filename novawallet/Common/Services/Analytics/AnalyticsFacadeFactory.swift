@@ -1,6 +1,7 @@
 import Foundation
 import Keystore_iOS
 import NovaAnalytics
+import NovaAppAttest
 
 enum AnalyticsFacadeFactory {
     /// An accessor, not a builder. The only place in the app that touches the singleton, so
@@ -21,36 +22,38 @@ enum AnalyticsFacadeFactory {
                 return NoOpAnalyticsServiceFacade.shared
             }
 
+            // Without an App ID prefix nothing this install attests can be accepted, so analytics
+            // stays off rather than registering under an identity the gateway will refuse.
+            guard let sharedFacade else {
+                Logger.shared.warning("No App ID prefix in this build; analytics stays disabled")
+
+                return NoOpAnalyticsServiceFacade.shared
+            }
+
             return sharedFacade
         #else
             return NoOpAnalyticsServiceFacade.shared
         #endif
     }
 
-    /// Read outside `#if F_ANALYTICS` on purpose: nested inside it, the `true` branch
-    /// type-checks in no configuration at all, because `F_ANALYTICS` is defined only for
-    /// `debug`/`dev` and `F_RELEASE` only for `release`/`staging`. This is the flag that
-    /// picks the attestation ladder the day analytics ships in Release, so both branches
-    /// must compile everywhere.
-    #if F_RELEASE
-        private static let isReleaseBuild = true
-    #else
-        private static let isReleaseBuild = false
-    #endif
-
     #if F_ANALYTICS
-        private static let sharedFacade: AnalyticsServiceFacadeProtocol & AnalyticsDebugInspecting = {
+        private static let sharedFacade: (AnalyticsServiceFacadeProtocol & AnalyticsDebugInspecting)? = {
             let settingsManager = SettingsManager.shared
+
+            guard let appIdentity = ApplicationConfig.shared.appAttestAppIdentity else {
+                return nil
+            }
 
             return AnalyticsServiceFacade(
                 configuration: AnalyticsConfiguration(
                     gatewayURL: ApplicationConfig.shared.gatewayURL,
+                    appIdentity: appIdentity,
+                    appAttestService: AppAttestService(),
                     // `ApplicationConfig.version` appends the build number, which the
                     // gateway does not expect.
                     appVersion: Bundle.main
                         .infoDictionary?["CFBundleShortVersionString"] as? String ?? "",
                     storeDirectory: UserStorageParams.sharedStorageDirectoryURL,
-                    isReleaseBuild: isReleaseBuild,
                     isFirstLaunch: { settingsManager.isAppFirstLaunch },
                     settingsManager: settingsManager,
                     remoteSettings: AnalyticsRemoteSettingsAdapter(),

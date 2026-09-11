@@ -55,10 +55,11 @@ public final class AnalyticsServiceFacade {
             repository: storageFacade.createEventRepository()
         )
 
-        let appAttest = AppAttestService()
+        let appAttest = configuration.appAttestService
+
+        AttestationProfileMigrator.migrate(settingsManager: settingsManager)
 
         let attestationMode = BackendAttestationModeResolver.resolve(
-            isReleaseBuild: configuration.isReleaseBuild,
             isAppAttestSupported: appAttest.isSupported
         )
 
@@ -83,6 +84,7 @@ public final class AnalyticsServiceFacade {
             repository: AnyDataProviderRepository(attestKeyRepository),
             gatewayURL: gatewayURL,
             mode: attestationMode,
+            appIdentity: configuration.appIdentity,
             operationQueue: configuration.operationQueue,
             logger: configuration.logger
         )

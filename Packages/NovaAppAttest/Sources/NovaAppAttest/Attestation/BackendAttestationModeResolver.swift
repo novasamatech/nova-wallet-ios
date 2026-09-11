@@ -1,11 +1,9 @@
 import Foundation
 
 public enum BackendAttestationModeResolver {
-    public static func resolve(isReleaseBuild: Bool, isAppAttestSupported: Bool) -> BackendAttestationMode {
-        if isAppAttestSupported {
-            return .appAttest
-        }
-
-        return isReleaseBuild ? .unavailable : .none
+    /// Profile 2 defines no unattested variant of a protected route, so a device that cannot attest
+    /// has nothing to send — in any configuration, Simulator included.
+    public static func resolve(isAppAttestSupported: Bool) -> BackendAttestationMode {
+        isAppAttestSupported ? .appAttest : .unavailable
     }
 }

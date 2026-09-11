@@ -1,5 +1,6 @@
 import XCTest
 import Operation_iOS
+import NovaAppAttest
 @testable import NovaAnalytics
 
 private enum RemoteSettingsError: Error {
@@ -104,9 +105,10 @@ final class AnalyticsConfigurationTests: XCTestCase {
 
         let configuration = AnalyticsConfiguration(
             gatewayURL: URL(string: "https://127.0.0.1:1/")!,
+            appIdentity: AppAttestAppIdentity(appId: "ABCDEFGHIJ.com.example.nova", environment: "production"),
+            appAttestService: AppAttestService(service: DeviceCheckAttestingSpy()),
             appVersion: "10.9.0",
             storeDirectory: directory,
-            isReleaseBuild: false,
             isFirstLaunch: { false },
             settingsManager: settings,
             remoteSettings: remoteSettings,

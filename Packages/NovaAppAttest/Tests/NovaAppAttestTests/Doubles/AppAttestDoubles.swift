@@ -80,15 +80,31 @@ final class BackendAttestationRemoteFactorySpy: BackendAttestationRemoteFactoryP
     private(set) var challengeCallCount = 0
     private(set) var registerCallCount = 0
     private(set) var registeredClientIds: [String] = []
+    private(set) var challengePurposes: [AttestationProfile2.Purpose] = []
+    private(set) var registrations: [BackendAttestationRegisterRequest] = []
 
     func reset() {
         challengeCallCount = 0
         registerCallCount = 0
         registeredClientIds = []
+        challengePurposes = []
+        registrations = []
     }
 
-    func createChallengeWrapper() -> CompoundOperationWrapper<String> {
+    func registerTarget() throws -> AttestationRequestTarget {
+        try AttestationRequestTarget(
+            url: URL(string: "https://gateway.example/v1/attestation/register")!,
+            method: "post",
+            contentType: "application/json"
+        )
+    }
+
+    func createChallengeWrapper(
+        clientId _: String,
+        purpose: AttestationProfile2.Purpose
+    ) -> CompoundOperationWrapper<String> {
         challengeCallCount += 1
+        challengePurposes.append(purpose)
         let hook = onChallenge
         let error = challengeError
 
@@ -110,6 +126,7 @@ final class BackendAttestationRemoteFactorySpy: BackendAttestationRemoteFactoryP
             let request = try requestClosure()
             self?.registerCallCount += 1
             self?.registeredClientIds.append(request.clientId)
+            self?.registrations.append(request)
 
             if let error {
                 throw error

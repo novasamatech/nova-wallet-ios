@@ -1,5 +1,6 @@
 import Foundation
 import os
+import NovaAppAttest
 
 protocol ApplicationConfigProtocol {
     var termsURL: URL { get }
@@ -216,6 +217,29 @@ extension ApplicationConfig: ApplicationConfigProtocol {
             URL(string: "https://analytics-dev.novawallet.io/")!
         #endif
     }
+
+    /// The identity App Attest binds a key to, or nil when this build carries no App ID prefix and
+    /// therefore cannot produce an attestation the gateway would accept.
+    ///
+    /// The prefix comes from the build's own `$(AppIdentifierPrefix)` expansion rather than a
+    /// constant: Apple does not guarantee it equals the team identifier, and it is hashed into the
+    /// attestation's `rpIdHash`, so a guess fails inside Apple's own check.
+    var appAttestAppIdentity: AppAttestAppIdentity? {
+        let rawPrefix = Bundle.main.object(forInfoDictionaryKey: "AppIdentifierPrefix") as? String
+        let prefix = rawPrefix?.trimmingCharacters(in: CharacterSet(charactersIn: ". ")) ?? ""
+
+        guard !prefix.isEmpty, let bundleId = Bundle.main.bundleIdentifier else {
+            return nil
+        }
+
+        return AppAttestAppIdentity(appId: prefix + "." + bundleId, environment: appAttestEnvironment)
+    }
+
+    /// Tracks `com.apple.developer.devicecheck.appattest-environment` in the four
+    /// `novawallet*.entitlements` files, all of which declare `production`. A TestFlight or App Store
+    /// build attests as `production` whatever the entitlement says; `development` is Apple's sandbox
+    /// and would have to be set here and in the entitlement together.
+    private var appAttestEnvironment: String { "production" }
 
     var dAppsListURL: URL {
         #if F_RELEASE

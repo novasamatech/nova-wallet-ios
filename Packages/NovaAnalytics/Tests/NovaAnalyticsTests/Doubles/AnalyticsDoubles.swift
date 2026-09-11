@@ -100,7 +100,7 @@ final class BackendAttestationProviderSpy: BackendAttestationProviderProtocol {
                 let body = try bodyClosure()
                 bodies.update { $0.append(body) }
 
-                return [.clientId: "cid", .challenge: "chal", .signature: "sig"]
+                return [.profile: "2", .clientId: "cid", .challenge: "chal", .appAttestAssertion: "assertion"]
             }
         )
     }

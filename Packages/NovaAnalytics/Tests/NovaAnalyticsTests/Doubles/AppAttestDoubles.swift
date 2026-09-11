@@ -36,7 +36,18 @@ final class DeviceCheckAttestingSpy: DeviceCheckAttesting {
 }
 
 final class BackendAttestationRemoteFactorySpy: BackendAttestationRemoteFactoryProtocol {
-    func createChallengeWrapper() -> CompoundOperationWrapper<String> {
+    func registerTarget() throws -> AttestationRequestTarget {
+        try AttestationRequestTarget(
+            url: URL(string: "https://gateway.example/v1/attestation/register")!,
+            method: "post",
+            contentType: "application/json"
+        )
+    }
+
+    func createChallengeWrapper(
+        clientId _: String,
+        purpose _: AttestationProfile2.Purpose
+    ) -> CompoundOperationWrapper<String> {
         .createWithResult(UUID().uuidString)
     }
 

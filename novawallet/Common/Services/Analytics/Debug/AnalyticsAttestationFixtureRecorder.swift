@@ -8,14 +8,37 @@
     /// An attestation and an assertion cannot be produced off-device, so this is the only way
     /// to obtain one, and it must be recorded on a physical device.
     struct AnalyticsAttestationFixture: Encodable {
-        /// Both challenges are recorded because the two client-data digests are built from
-        /// different ones: with only the assertion challenge the gateway cannot reconstruct
-        /// the attestation's `clientDataHash`, so `attestationBase64` is unverifiable.
-        let attestationChallenge: String
-        let assertionChallenge: String
+        /// Everything profile 2 frames into the two preimages, so the gateway can rebuild both
+        /// digests from this file alone. The challenges differ because registration and a protected
+        /// request each consume their own.
+        struct Target: Encodable {
+            let method: String
+            let scheme: String
+            let authority: String
+            let port: String
+            let path: String
+            let contentType: String
+
+            init(_ target: AttestationRequestTarget) {
+                method = target.method
+                scheme = target.scheme
+                authority = target.authority
+                port = target.port
+                path = target.path
+                contentType = target.contentType
+            }
+        }
+
+        let profile: Int
         let clientId: String
+        let appId: String
+        let appAttestEnvironment: String
         let keyId: String
+        let attestationChallenge: String
+        let attestationTarget: Target
         let attestationBase64: String
+        let assertionChallenge: String
+        let assertionTarget: Target
         let bodyBase64: String
         let assertionBase64: String
     }
@@ -30,17 +53,23 @@
         private let appAttest: AppAttestServiceProtocol
         private let remoteFactory: BackendAttestationRemoteFactoryProtocol
         private let identity: BackendAttestationIdentityProtocol
+        private let appIdentity: AppAttestAppIdentity
+        private let requestTarget: AttestationRequestTarget
         private let operationQueue: OperationQueue
 
         init(
             appAttest: AppAttestServiceProtocol,
             remoteFactory: BackendAttestationRemoteFactoryProtocol,
             identity: BackendAttestationIdentityProtocol,
+            appIdentity: AppAttestAppIdentity,
+            requestTarget: AttestationRequestTarget,
             operationQueue: OperationQueue
         ) {
             self.appAttest = appAttest
             self.remoteFactory = remoteFactory
             self.identity = identity
+            self.appIdentity = appIdentity
+            self.requestTarget = requestTarget
             self.operationQueue = operationQueue
         }
 
@@ -49,12 +78,24 @@
                 return .createWithError(BackendAttestationError.unsupported)
             }
 
+            let registerTarget: AttestationRequestTarget
+
+            do {
+                registerTarget = try remoteFactory.registerTarget()
+            } catch {
+                return .createWithError(error)
+            }
+
             let keyGenerationOperation = appAttest.createKeyGenerationOperation()
 
-            let attestChallengeWrapper = remoteFactory.createChallengeWrapper()
+            let attestChallengeWrapper = remoteFactory.createChallengeWrapper(
+                clientId: clientId,
+                purpose: .register
+            )
 
             let attestationWrapper = createAttestationWrapper(
                 clientId: clientId,
+                target: registerTarget,
                 keyGenerationOperation: keyGenerationOperation,
                 challengeWrapper: attestChallengeWrapper
             )
@@ -62,7 +103,10 @@
             attestationWrapper.addDependency(operations: [keyGenerationOperation])
             attestationWrapper.addDependency(wrapper: attestChallengeWrapper)
 
-            let assertChallengeWrapper = remoteFactory.createChallengeWrapper()
+            let assertChallengeWrapper = remoteFactory.createChallengeWrapper(
+                clientId: clientId,
+                purpose: .request
+            )
             assertChallengeWrapper.addDependency(wrapper: attestationWrapper)
 
             let assertionWrapper = createAssertionWrapper(
@@ -75,6 +119,7 @@
 
             let mapOperation = createFixtureOperation(
                 clientId: clientId,
+                registerTarget: registerTarget,
                 attestChallengeWrapper: attestChallengeWrapper,
                 assertChallengeWrapper: assertChallengeWrapper,
                 attestationWrapper: attestationWrapper,
@@ -99,20 +144,31 @@
     private extension AnalyticsAttestationFixtureRecorder {
         func createAttestationWrapper(
             clientId: String,
+            target: AttestationRequestTarget,
             keyGenerationOperation: BaseOperation<AppAttestKeyId>,
             challengeWrapper: CompoundOperationWrapper<String>
         ) -> CompoundOperationWrapper<AppAttestAttestation> {
-            OperationCombiningService<AppAttestAttestation>.compoundNonOptionalWrapper(
+            let identity = appIdentity
+
+            return OperationCombiningService<AppAttestAttestation>.compoundNonOptionalWrapper(
                 operationQueue: operationQueue
             ) { [appAttest] in
                 let keyId = try keyGenerationOperation.extractNoCancellableResultData()
                 let challenge = try challengeWrapper.targetOperation.extractNoCancellableResultData()
 
                 return appAttest.createAttestationWrapper(using: keyId) { attestingKeyId in
-                    AttestationClientData.attestationClientData(
+                    AttestationProfile2.preimage(
+                        purpose: .register,
                         challenge: challenge,
                         clientId: clientId,
-                        keyId: attestingKeyId
+                        target: target,
+                        bodyDigest: AttestationProfile2.registrationDigest(
+                            platform: "ios",
+                            appId: identity.appId,
+                            attestationType: "app_attest",
+                            keyReference: attestingKeyId,
+                            appAttestEnvironment: identity.environment
+                        )
                     )
                 }
             }
@@ -124,6 +180,7 @@
             challengeWrapper: CompoundOperationWrapper<String>
         ) -> CompoundOperationWrapper<AppAttestAssertion> {
             let body = Self.sampleBody
+            let target = requestTarget
 
             return OperationCombiningService<AppAttestAssertion>.compoundNonOptionalWrapper(
                 operationQueue: operationQueue
@@ -134,10 +191,12 @@
                     let challenge = try challengeWrapper.targetOperation
                         .extractNoCancellableResultData()
 
-                    return AttestationClientData.assertionClientData(
+                    return AttestationProfile2.preimage(
+                        purpose: .request,
                         challenge: challenge,
                         clientId: clientId,
-                        body: body
+                        target: target,
+                        bodyDigest: AttestationProfile2.bodyDigest(body)
                     )
                 }
             }
@@ -145,12 +204,15 @@
 
         func createFixtureOperation(
             clientId: String,
+            registerTarget: AttestationRequestTarget,
             attestChallengeWrapper: CompoundOperationWrapper<String>,
             assertChallengeWrapper: CompoundOperationWrapper<String>,
             attestationWrapper: CompoundOperationWrapper<AppAttestAttestation>,
             assertionWrapper: CompoundOperationWrapper<AppAttestAssertion>
         ) -> BaseOperation<AnalyticsAttestationFixture> {
             let body = Self.sampleBody
+            let identity = appIdentity
+            let target = requestTarget
 
             return ClosureOperation<AnalyticsAttestationFixture> {
                 let attestation = try attestationWrapper.targetOperation.extractNoCancellableResultData()
@@ -161,13 +223,16 @@
                     .extractNoCancellableResultData()
 
                 return AnalyticsAttestationFixture(
-                    attestationChallenge: attestChallenge,
-                    // The challenge the gateway must replay to reproduce the signature
-                    // over `bodyBase64`.
-                    assertionChallenge: assertChallenge,
+                    profile: AttestationProfile2.version,
                     clientId: clientId,
+                    appId: identity.appId,
+                    appAttestEnvironment: identity.environment,
                     keyId: attestation.keyId,
+                    attestationChallenge: attestChallenge,
+                    attestationTarget: .init(registerTarget),
                     attestationBase64: attestation.attestation.base64EncodedString(),
+                    assertionChallenge: assertChallenge,
+                    assertionTarget: .init(target),
                     bodyBase64: body.base64EncodedString(),
                     assertionBase64: assertion.base64EncodedString()
                 )

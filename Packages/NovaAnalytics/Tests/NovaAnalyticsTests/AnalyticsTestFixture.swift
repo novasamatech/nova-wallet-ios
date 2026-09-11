@@ -152,7 +152,7 @@ extension AnalyticsTestFixture {
             repository: AnyDataProviderRepository(SettingsAppAttestKeyRepository(settingsManager: settings)),
             gatewayURL: URL(string: "https://gateway.example/")!,
             mode: .appAttest,
-            bundle: Bundle.main,
+            appIdentity: AppAttestAppIdentity(appId: "ABCDEFGHIJ.com.example.nova", environment: "production"),
             operationQueue: operationQueue,
             logger: SilentLogger()
         )
