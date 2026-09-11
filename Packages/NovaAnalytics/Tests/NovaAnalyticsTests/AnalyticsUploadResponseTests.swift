@@ -115,10 +115,17 @@ final class AnalyticsUploadResponseTests: XCTestCase {
         )
     }
 
-    func testARetryAfterInThePastBecomesNoDelay() throws {
+    func testARetryAfterInThePastIsTreatedAsAbsent() throws {
         XCTAssertEqual(
             try deliveryError(503, retryAfter: "Mon, 02 Mar 2026 09:00:00 GMT"),
-            .retryLater(statusCode: 503, retryAfter: 0)
+            .retryLater(statusCode: 503, retryAfter: nil)
+        )
+    }
+
+    func testAZeroRetryAfterIsTreatedAsAbsent() throws {
+        XCTAssertEqual(
+            try deliveryError(429, retryAfter: "0"),
+            .retryLater(statusCode: 429, retryAfter: nil)
         )
     }
 }

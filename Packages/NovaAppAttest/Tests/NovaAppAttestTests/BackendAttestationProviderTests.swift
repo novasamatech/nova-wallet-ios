@@ -706,6 +706,43 @@ final class BackendAttestationProviderTests: XCTestCase {
         XCTAssertNil(try storedRow(fixture))
     }
 
+    func testAConsentCycleDoesNotRestoreTheGenericAttestationBrake() throws {
+        let fixture = makeFixture(attestationError: AppAttestServiceError.attestationGeneric(nil))
+
+        XCTAssertThrowsError(try headers(fixture))
+        XCTAssertNil(try storedRow(fixture))
+
+        fixture.provider.forgetClient()
+        _ = try storedRow(fixture)
+
+        fixture.provider.allowClient()
+
+        XCTAssertThrowsError(try headers(fixture))
+
+        let row = try XCTUnwrap(try storedRow(fixture))
+
+        XCTAssertEqual(row.attemptCount, 1)
+        try assertNextAttempt(row, isAt: fixture.clock.now.addingTimeInterval(60))
+        XCTAssertEqual(fixture.appAttest.generateKeyCallCount, 2)
+    }
+
+    func testAConsentCycleDoesNotRestoreTheInvalidKeyIdBrake() throws {
+        let fixture = makeFixture(assertionError: AppAttestServiceError.invalidKeyId)
+
+        XCTAssertThrowsError(try headers(fixture))
+        XCTAssertNil(try storedRow(fixture))
+
+        fixture.provider.forgetClient()
+        _ = try storedRow(fixture)
+
+        fixture.provider.allowClient()
+
+        XCTAssertThrowsError(try headers(fixture))
+
+        XCTAssertEqual(try storedRow(fixture)?.isAttested, true)
+        XCTAssertEqual(fixture.appAttest.generateKeyCallCount, 2)
+    }
+
     func testForgetClientDropsTheRowAndTheClientId() throws {
         let fixture = makeFixture()
         _ = try headers(fixture)

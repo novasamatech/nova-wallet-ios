@@ -375,7 +375,7 @@ final class AnalyticsServiceTests: XCTestCase {
         XCTAssertEqual(fixture.uploader.maxBatchesCalls, [10])
     }
 
-    func testRetryAfterSetsExactlyTheWindowTheGatewayAsksFor() {
+    func testARetryAfterLongerThanTheEscalatedWindowSetsTheHoldOff() {
         var now = Date(timeIntervalSince1970: 0)
         let fixture = makeFailingFixture(
             now: { now },
@@ -411,6 +411,147 @@ final class AnalyticsServiceTests: XCTestCase {
         XCTAssertTrue(fixture.uploader.maxBatchesCalls.isEmpty)
     }
 
+    func testAGatewayRejectionKeepsEscalatingTheHoldOff() throws {
+        var now = Date(timeIntervalSince1970: 0)
+        let fixture = makeGatewayFixture(
+            uploadResults: [
+                .failure(AnalyticsTransportError.serverError(statusCode: 500)),
+                .failure(AnalyticsTransportError.serverError(statusCode: 500)),
+                .failure(AnalyticsTransportError.rejected(statusCode: 403))
+            ],
+            now: { now }
+        )
+
+        try seed(fixture)
+        flushAndSettle(fixture, reason: .manual)
+
+        now = now.addingTimeInterval(60)
+        flushAndSettle(fixture, reason: .interval)
+
+        now = now.addingTimeInterval(120)
+        flushAndSettle(fixture, reason: .interval)
+
+        try seed(fixture)
+        XCTAssertEqual(fixture.uploadFactory.callCount, 3)
+
+        now = now.addingTimeInterval(239)
+        flushAndSettle(fixture, reason: .interval)
+        XCTAssertEqual(
+            fixture.uploadFactory.callCount,
+            3,
+            "the rejection was graded as a delivered flush and released the hold off"
+        )
+
+        now = now.addingTimeInterval(2)
+        flushAndSettle(fixture, reason: .interval)
+        XCTAssertEqual(fixture.uploadFactory.callCount, 4)
+    }
+
+    func testARetryAfterShorterThanTheEscalatedWindowDoesNotShortenTheHoldOff() throws {
+        var now = Date(timeIntervalSince1970: 0)
+        let fixture = makeGatewayFixture(
+            uploadResults: [
+                .failure(AnalyticsTransportError.serverError(statusCode: 500)),
+                .failure(AnalyticsTransportError.serverError(statusCode: 500)),
+                .failure(AnalyticsTransportError.retryLater(statusCode: 429, retryAfter: 30))
+            ],
+            now: { now }
+        )
+
+        try seed(fixture)
+        flushAndSettle(fixture, reason: .manual)
+
+        now = now.addingTimeInterval(60)
+        flushAndSettle(fixture, reason: .interval)
+
+        now = now.addingTimeInterval(120)
+        flushAndSettle(fixture, reason: .interval)
+
+        XCTAssertEqual(fixture.uploadFactory.callCount, 3)
+
+        now = now.addingTimeInterval(239)
+        flushAndSettle(fixture, reason: .interval)
+        XCTAssertEqual(
+            fixture.uploadFactory.callCount,
+            3,
+            "the gateway hint replaced the escalated window instead of flooring it"
+        )
+
+        now = now.addingTimeInterval(2)
+        flushAndSettle(fixture, reason: .interval)
+        XCTAssertEqual(fixture.uploadFactory.callCount, 4)
+    }
+
+    private func makeGatewayFixture(
+        uploadResults: [Result<Void, Error>],
+        now: @escaping () -> Date
+    ) -> GatewayFixture {
+        let facade = AnalyticsStorageTestFacade()
+
+        let eventQueue = CoreDataAnalyticsEventQueue(
+            repository: AnyDataProviderRepository(facade.createEventRepository()),
+            maxCount: 500
+        )
+
+        let settings = SerialisedSettingsManager()
+        let availability = AnalyticsAvailabilityProvider(attestationMode: .appAttest)
+        let consent = AnalyticsConsentManager(
+            settingsManager: settings,
+            availabilityProvider: availability
+        )
+
+        let identity = AnalyticsIdentity(settingsManager: settings)
+
+        let uploadFactory = AnalyticsUploadOperationFactorySpy()
+        uploadFactory.uploadResults = uploadResults
+
+        let uploader = AnalyticsUploader(
+            queue: eventQueue,
+            identity: identity,
+            attestation: BackendAttestationProviderSpy(),
+            uploadFactory: uploadFactory,
+            operationQueue: OperationQueue(),
+            appVersion: "10.9.0",
+            timeProvider: now,
+            logger: SilentLogger()
+        )
+
+        let service = AnalyticsService(
+            consent: consent,
+            availability: availability,
+            queue: eventQueue,
+            identity: identity,
+            uploader: uploader,
+            operationQueue: OperationQueue(),
+            uploadOperationQueue: OperationQueue(),
+            timeProvider: now,
+            logger: SilentLogger()
+        )
+
+        consent.setEnabled(true)
+
+        return GatewayFixture(service: service, queue: eventQueue, uploadFactory: uploadFactory)
+    }
+
+    private func seed(_ fixture: GatewayFixture) throws {
+        let wrapper = fixture.queue.enqueueWrapper(
+            name: "nova_card_opened",
+            timestamp: Date(timeIntervalSince1970: 0),
+            payload: Data("{}".utf8)
+        )
+
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+
+        _ = try wrapper.targetOperation.extractNoCancellableResultData()
+    }
+
+    private func flushAndSettle(_ fixture: GatewayFixture, reason: AnalyticsFlushReason) {
+        let settled = expectation(description: "flush settled")
+        fixture.service.flush(reason: reason) { settled.fulfill() }
+
+        wait(for: [settled], timeout: 5)
+    }
+
     private func makeFailingFixture(
         now: @escaping () -> Date,
         error: Error = AnalyticsTransportError.serverError(statusCode: 500)
@@ -435,6 +576,12 @@ final class AnalyticsServiceTests: XCTestCase {
             })
         }
     }
+}
+
+private struct GatewayFixture {
+    let service: AnalyticsService
+    let queue: CoreDataAnalyticsEventQueue
+    let uploadFactory: AnalyticsUploadOperationFactorySpy
 }
 
 private final class CompletionCounter {
