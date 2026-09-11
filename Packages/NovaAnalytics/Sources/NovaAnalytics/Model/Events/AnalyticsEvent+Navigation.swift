@@ -13,7 +13,7 @@ public extension AnalyticsEvent {
         AnalyticsEvent(name: .novaCardOpened)
     }
 
-    static func nftSectionOpened(count: Int) -> AnalyticsEvent {
-        AnalyticsEvent(name: .nftSectionOpened, properties: [.nftCount: count])
+    static func nftSectionOpened(count: NftCountBucket) -> AnalyticsEvent {
+        AnalyticsEvent(name: .nftSectionOpened, properties: [.nftCountBucket: count])
     }
 }

@@ -1,6 +1,6 @@
 import Foundation
 
-public enum AmountBucket: String, AnalyticsPropertyConvertible {
+public enum AmountBucket: String, CaseIterable, AnalyticsPropertyConvertible {
     case under1 = "under_1"
     case from1To10 = "1_to_10"
     case from10To100 = "10_to_100"
@@ -38,7 +38,7 @@ public enum AmountBucket: String, AnalyticsPropertyConvertible {
     }
 }
 
-public enum DurationBucket: String, AnalyticsPropertyConvertible {
+public enum DurationBucket: String, CaseIterable, AnalyticsPropertyConvertible {
     case under5s = "under_5s"
     case from5sTo15s = "5s_to_15s"
     case from15sTo30s = "15s_to_30s"
@@ -58,7 +58,7 @@ public enum DurationBucket: String, AnalyticsPropertyConvertible {
     }
 }
 
-public enum SlippageBucket: String, AnalyticsPropertyConvertible {
+public enum SlippageBucket: String, CaseIterable, AnalyticsPropertyConvertible {
     case low
     case medium
     case high
@@ -73,6 +73,25 @@ public enum SlippageBucket: String, AnalyticsPropertyConvertible {
             .high
         } else {
             .custom
+        }
+    }
+}
+
+public enum NftCountBucket: String, CaseIterable, AnalyticsPropertyConvertible {
+    case none = "0"
+    case from1To10 = "1_to_10"
+    case from10To100 = "10_to_100"
+    case over100 = "over_100"
+
+    public init(count: Int) {
+        self = if count < 1 {
+            .none
+        } else if count < 10 {
+            .from1To10
+        } else if count < 100 {
+            .from10To100
+        } else {
+            .over100
         }
     }
 }

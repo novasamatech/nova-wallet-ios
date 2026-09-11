@@ -4,7 +4,7 @@ struct AnalyticsEventRemote: Codable, Equatable {
     let id: String
     let name: String
     let timestamp: String
-    let props: [String: AnalyticsPropertyValue]
+    let props: [String: AnalyticsWireValue]
 
     enum CodingKeys: String, CodingKey {
         case id
