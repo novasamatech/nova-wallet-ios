@@ -8,6 +8,7 @@ final class AnalyticsPendingEventMapperTests: XCTestCase {
 
         let event = AnalyticsPendingEvent(
             identifier: AnalyticsPendingEvent.identifier(for: 7),
+            eventId: AnalyticsPendingEvent.eventId(),
             sequence: 7,
             name: "app_opened",
             timestamp: Date(timeIntervalSince1970: 1_770_000_000),

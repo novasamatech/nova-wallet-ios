@@ -26,6 +26,7 @@ final class AnalyticsStorageFacadeTests: XCTestCase {
 
         let event = AnalyticsPendingEvent(
             identifier: AnalyticsPendingEvent.identifier(for: 0, unique: "u"),
+            eventId: "6f2c1e4a-0000-4000-8000-000000000001",
             sequence: 0,
             name: "app_opened",
             timestamp: Date(timeIntervalSince1970: 1_700_000_000),

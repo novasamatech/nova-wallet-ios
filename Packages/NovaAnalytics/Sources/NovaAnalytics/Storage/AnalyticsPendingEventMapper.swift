@@ -19,6 +19,7 @@ extension AnalyticsPendingEventMapper: CoreDataMapperProtocol {
     func transform(entity: CoreDataEntity) throws -> DataProviderModel {
         guard
             let identifier = entity.identifier,
+            let eventId = entity.eventId,
             let name = entity.name,
             let timestamp = entity.timestamp,
             let payload = entity.payload
@@ -28,6 +29,7 @@ extension AnalyticsPendingEventMapper: CoreDataMapperProtocol {
 
         return DataProviderModel(
             identifier: identifier,
+            eventId: eventId,
             sequence: entity.sequence,
             name: name,
             timestamp: timestamp,
@@ -42,6 +44,7 @@ extension AnalyticsPendingEventMapper: CoreDataMapperProtocol {
         using _: NSManagedObjectContext
     ) throws {
         entity.identifier = model.identifier
+        entity.eventId = model.eventId
         entity.sequence = model.sequence
         entity.name = model.name
         entity.timestamp = model.timestamp

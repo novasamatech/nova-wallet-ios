@@ -115,6 +115,7 @@ final class AnalyticsEventCatalogTests: XCTestCase {
     private func serialize(_ event: AnalyticsEvent) throws -> String {
         let row = AnalyticsPendingEvent(
             identifier: "row-1",
+            eventId: "6f2c1e4a-0000-4000-8000-000000000001",
             sequence: 1,
             name: event.name.rawValue,
             timestamp: Date(timeIntervalSince1970: 1_788_343_200.123),
@@ -131,7 +132,7 @@ final class AnalyticsEventCatalogTests: XCTestCase {
         for row in catalog {
             XCTAssertEqual(
                 try serialize(row.event),
-                #"{"id":"row-1",\#(row.wire),"ts":"2026-09-02T10:00:00.123Z"}"#,
+                #"{"id":"6f2c1e4a-0000-4000-8000-000000000001",\#(row.wire),"ts":"2026-09-02T10:00:00.123Z"}"#,
                 line: row.line
             )
         }

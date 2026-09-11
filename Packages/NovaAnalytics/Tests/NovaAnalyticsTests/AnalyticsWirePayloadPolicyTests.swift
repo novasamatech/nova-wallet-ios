@@ -5,6 +5,7 @@ final class AnalyticsWirePayloadPolicyTests: XCTestCase {
     private func makeRow(payload: String) -> AnalyticsPendingEvent {
         AnalyticsPendingEvent(
             identifier: "row-1",
+            eventId: "6f2c1e4a-0000-4000-8000-000000000001",
             sequence: 1,
             name: "nova_card_opened",
             timestamp: Date(timeIntervalSince1970: 1_788_343_200.123),
@@ -19,7 +20,7 @@ final class AnalyticsWirePayloadPolicyTests: XCTestCase {
         XCTAssertEqual(
             try AnalyticsWirePayloadPolicy.vet(row),
             AnalyticsEventRemote(
-                id: "row-1",
+                id: "6f2c1e4a-0000-4000-8000-000000000001",
                 name: "nova_card_opened",
                 timestamp: "2026-09-02T10:00:00.123Z",
                 props: ["asset": .string("DOT"), "is_cross_chain": .bool(false)]

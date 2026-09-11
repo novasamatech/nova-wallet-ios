@@ -22,7 +22,7 @@ enum AnalyticsWirePayloadPolicy {
         let props = try AnalyticsCoding.decoder.decode([String: AnalyticsWireValue].self, from: row.payload)
 
         let remote = AnalyticsEventRemote(
-            id: row.identifier,
+            id: row.eventId,
             name: row.name,
             timestamp: ISO8601MillisFormatter.string(from: row.timestamp),
             props: props

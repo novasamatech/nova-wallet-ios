@@ -92,6 +92,13 @@ final class AnalyticsUploaderTests: XCTestCase {
         return try wrapper.targetOperation.extractNoCancellableResultData().map(\.identifier)
     }
 
+    private func queuedEventIds(_ fixture: Fixture) throws -> [String] {
+        let wrapper = fixture.queue.peekWrapper(count: 500)
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+
+        return try wrapper.targetOperation.extractNoCancellableResultData().map(\.eventId)
+    }
+
     private func sentEventIds(_ fixture: Fixture) throws -> [String] {
         struct SentEnvelope: Decodable {
             let events: [AnalyticsEventRemote]
@@ -193,14 +200,19 @@ final class AnalyticsUploaderTests: XCTestCase {
         XCTAssertTrue(json.contains(fixture.identity.sessionId))
     }
 
-    func testTheWireIdIsTheStoredRowIdentifier() throws {
+    func testTheWireIdIsTheRowsUUIDAndNotItsQueueIdentifier() throws {
         let fixture = makeFixture(uploadResults: [.success(())])
         try seed(fixture, count: 1)
         let identifier = try XCTUnwrap(queuedIdentifiers(fixture).first)
+        let eventId = try XCTUnwrap(queuedEventIds(fixture).first)
 
         XCTAssertNil(flush(fixture))
 
-        XCTAssertTrue(try sentJSON(fixture).contains(#""id":"\#(identifier)""#))
+        // The events endpoint parses the id as a UUID, so the sequence-prefixed queue key cannot go
+        // on the wire however unique it is.
+        XCTAssertEqual(try sentEventIds(fixture), [eventId])
+        XCTAssertNotNil(UUID(uuidString: eventId))
+        XCTAssertFalse(try sentJSON(fixture).contains(identifier))
     }
 
     func testRowsFromAnEarlierConsentEpochAreDroppedWithoutBeingSent() throws {
@@ -210,12 +222,12 @@ final class AnalyticsUploaderTests: XCTestCase {
         fixture.identity.forgetInstallId()
         fixture.identity.allowCreation()
         try seed(fixture, count: 1)
-        let freshId = try XCTUnwrap(queuedIdentifiers(fixture).last)
+        let freshEventId = try XCTUnwrap(queuedEventIds(fixture).last)
 
         XCTAssertNil(flush(fixture))
 
         XCTAssertEqual(fixture.uploadFactory.callCount, 1)
-        XCTAssertEqual(try sentEventIds(fixture), [freshId])
+        XCTAssertEqual(try sentEventIds(fixture), [freshEventId])
         XCTAssertEqual(try queueCount(fixture), 0)
     }
 

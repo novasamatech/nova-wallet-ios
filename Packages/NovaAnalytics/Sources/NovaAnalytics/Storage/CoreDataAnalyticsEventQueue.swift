@@ -50,6 +50,7 @@ extension CoreDataAnalyticsEventQueue: AnalyticsEventQueueProtocol {
             return [
                 AnalyticsPendingEvent(
                     identifier: AnalyticsPendingEvent.identifier(for: sequence),
+                    eventId: AnalyticsPendingEvent.eventId(),
                     sequence: sequence,
                     name: name,
                     timestamp: timestamp,
