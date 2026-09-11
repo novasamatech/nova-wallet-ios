@@ -72,7 +72,11 @@ public final class AnalyticsService {
             }
         }
 
-        erasure.drainOwed()
+        if consent.isEnabled {
+            erasure.drainOwed()
+        } else {
+            repairWithdrawnConsent(attestation: attestation)
+        }
     }
 
     deinit {
@@ -122,13 +126,14 @@ private extension AnalyticsService {
         now: Date,
         completion: (() -> Void)?
     ) -> Bool {
+        let isWipeOwed = erasure.retryIfOwed()
+
         guard consent.isEnabled, availability.isAvailable else {
             return false
         }
 
-        guard !erasure.isPending else {
+        guard !isWipeOwed else {
             logger.warning("Analytics flush skipped, a wipe is still owed")
-            erasure.retry()
 
             return false
         }
@@ -182,6 +187,18 @@ private extension AnalyticsService {
         }
 
         return true
+    }
+
+    /// A withdrawal that reached disk without its obligation, or rows, an identity and a gateway
+    /// client left behind by an older build, are repaired on every launch that starts without consent.
+    func repairWithdrawnConsent(attestation: BackendAttestationProviderProtocol?) {
+        if identity.existingInstallId() != nil {
+            identity.forgetInstallId()
+        }
+
+        attestation?.forgetClient()
+
+        erasure.request()
     }
 
     func releaseFlushCompletionsLocked() {

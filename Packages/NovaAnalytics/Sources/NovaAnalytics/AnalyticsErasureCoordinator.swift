@@ -11,8 +11,7 @@ final class AnalyticsErasureCoordinator {
 
     private let mutex = NSLock()
     private var isOwed: Bool
-    private var isInFlight: Bool = false
-    private var isRequeued: Bool = false
+    private var outstandingClears: Int = 0
 
     init(
         consent: AnalyticsConsentManagerProtocol,
@@ -26,16 +25,6 @@ final class AnalyticsErasureCoordinator {
         self.logger = logger
 
         isOwed = consent.isErasureOwed
-    }
-
-    var isPending: Bool {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        return isOwed
     }
 
     func drainOwed() {
@@ -54,6 +43,8 @@ final class AnalyticsErasureCoordinator {
         scheduleLocked()
     }
 
+    /// Every request gets its own clear so that the serial queue orders it after exactly the rows
+    /// recorded before the withdrawal, and never after rows recorded under a later consent.
     func request() {
         mutex.lock()
 
@@ -64,24 +55,26 @@ final class AnalyticsErasureCoordinator {
         isOwed = true
         consent.setErasureOwed(true)
 
-        guard !isInFlight else {
-            // The running clear may already have passed rows enqueued since it was scheduled.
-            isRequeued = true
-
-            return
-        }
-
         scheduleLocked()
     }
 
-    func retry() {
+    /// Re-arms a failed wipe and reports whether one is still owed, in which case nothing may upload.
+    func retryIfOwed() -> Bool {
         mutex.lock()
 
         defer {
             mutex.unlock()
         }
 
-        scheduleLocked()
+        guard isOwed else {
+            return false
+        }
+
+        if outstandingClears == 0 {
+            scheduleLocked()
+        }
+
+        return true
     }
 }
 
@@ -89,12 +82,7 @@ final class AnalyticsErasureCoordinator {
 
 private extension AnalyticsErasureCoordinator {
     func scheduleLocked() {
-        guard !isInFlight else {
-            return
-        }
-
-        isInFlight = true
-        isRequeued = false
+        outstandingClears += 1
 
         let clearOperation = queue.clearOperation()
 
@@ -110,11 +98,11 @@ private extension AnalyticsErasureCoordinator {
                 mutex.unlock()
             }
 
-            isInFlight = false
+            outstandingClears -= 1
 
             try clearOperation.extractNoCancellableResultData()
 
-            completeLocked()
+            releaseIfSettledLocked()
         }
 
         settleOperation.addDependency(clearOperation)
@@ -135,10 +123,8 @@ private extension AnalyticsErasureCoordinator {
         }
     }
 
-    func completeLocked() {
-        guard !isRequeued else {
-            scheduleLocked()
-
+    func releaseIfSettledLocked() {
+        guard outstandingClears == 0 else {
             return
         }
 

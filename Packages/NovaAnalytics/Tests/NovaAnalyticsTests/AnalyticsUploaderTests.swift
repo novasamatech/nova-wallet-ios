@@ -117,6 +117,16 @@ final class AnalyticsUploaderTests: XCTestCase {
         }
     }
 
+    private func seedTamperedRows(_ fixture: Fixture, count: Int) throws {
+        for index in 0 ..< count {
+            try enqueue(
+                fixture,
+                timestamp: Date(timeIntervalSince1970: TimeInterval(index)),
+                payload: Data(#"{"asset":"alice's savings wallet!"}"#.utf8)
+            )
+        }
+    }
+
     private func seedCorruptRow(_ fixture: Fixture) throws {
         try enqueue(
             fixture,
@@ -402,6 +412,31 @@ final class AnalyticsUploaderTests: XCTestCase {
         for body in fixture.attestation.signedBodies {
             XCTAssertFalse(try XCTUnwrap(String(data: body, encoding: .utf8)).contains("hunter2"))
         }
+    }
+
+    func testAPageOfOnlyTamperedRowsIsRemovedWithoutAnUploadOrAnInstallId() throws {
+        let fixture = makeFixture(uploadResults: [.success(())])
+        try seedTamperedRows(fixture, count: 3)
+
+        try flush(fixture)
+
+        XCTAssertEqual(fixture.uploadFactory.callCount, 0)
+        XCTAssertEqual(fixture.attestation.signingCallCount, 0)
+        XCTAssertEqual(try queueCount(fixture), 0)
+        XCTAssertNil(fixture.settings.analyticsInstallId)
+    }
+
+    func testTheFlushContinuesPastAFullPageOfTamperedRows() throws {
+        let fixture = makeFixture(uploadResults: [.success(())])
+        try seedTamperedRows(fixture, count: 50)
+        try seed(fixture, count: 1)
+        let freshId = try XCTUnwrap(queuedIdentifiers(fixture).last)
+
+        try flush(fixture)
+
+        XCTAssertEqual(fixture.uploadFactory.callCount, 1)
+        XCTAssertEqual(try sentEventIds(try XCTUnwrap(fixture.sentBodies.recorded.first)), [freshId])
+        XCTAssertEqual(try queueCount(fixture), 0)
     }
 
     func testOptOutBeforeTheBatchIsBuiltSendsNothingAndMintsNothing() throws {

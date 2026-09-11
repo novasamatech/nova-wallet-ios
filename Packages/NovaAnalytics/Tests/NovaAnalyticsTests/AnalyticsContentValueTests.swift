@@ -5,8 +5,74 @@ final class AnalyticsContentValueTests: XCTestCase {
     private let freeText = "Alice's wallet, do not share"
     private let overlong = String(repeating: "a", count: 300)
 
+    private let registrySymbolsWithSpacesAndParentheses = [
+        "LP DOT-iBTC", "LP INTR-USDT", "LP KSM-KINT", "LP KSM-kBTC", "LP iBTC-USDT", "LP kBTC-USDT",
+        "RMRK (old)", "xcRMRK (old)"
+    ]
+
+    private let registryNamesWithParenthesisedSuffixes = [
+        "3DPass (PAUSED)", "Aleph Zero EVM (PAUSED)", "Amplitude (PAUSED)", "Argochain (PAUSED)",
+        "Crab (PAUSED)", "Crust Polkadot Parachain (PAUSED)", "Crust Shadow (PAUSED)", "DAO IPCI (PAUSED)",
+        "Dock (PAUSED)", "Edgeware (PAUSED)", "Exosama (PAUSED)", "Hashed Network (PAUSED)",
+        "Integritee Parachain (PAUSED)", "Interlay (PAUSED)", "KILT (PAUSED)", "Kabocha (PAUSED)",
+        "Kintsugi (PAUSED)", "Laos (PAUSED)", "Mangata X (PAUSED)", "Moonbeam (PAUSED)", "Moonriver (PAUSED)",
+        "Myriad (PAUSED)", "Nodle Parachain (PAUSED)", "Phala (PAUSED)", "Picasso (PAUSED)", "QUARTZ (PAUSED)",
+        "Subsocial (PAUSED)", "Tangle (PAUSED)", "Tanssi (PAUSED)", "Westend (TESTNET)", "Xode (PAUSED)",
+        "Zeitgeist (PAUSED)", "krest (PAUSED)"
+    ]
+
     private func url(_ string: String) throws -> URL {
         try XCTUnwrap(URL(string: string))
+    }
+
+    private let asciiScalars = (0 ..< 128).map { Unicode.Scalar(UInt8($0)) }
+    private let caip2NamespaceLengths = 3 ... 8
+    private let caip2ReferenceLengths = 1 ... 32
+
+    private func alphabet(of grammar: AnalyticsContentGrammar) -> [Character] {
+        asciiScalars.filter(grammar.alphabet.contains).map { Character($0) }
+    }
+
+    private func samples(for kind: AnalyticsContentValue.Kind) -> [String] {
+        switch kind {
+        case .caip2Chain:
+            return caip2Samples(alphabet: alphabet(of: kind.grammar))
+        default:
+            return samples(for: kind.grammar)
+        }
+    }
+
+    private func samples(for grammar: AnalyticsContentGrammar) -> [String] {
+        let alphabet = alphabet(of: grammar)
+
+        var samples: [String] = []
+
+        for length in grammar.lengths {
+            for (offset, character) in alphabet.enumerated() {
+                samples.append(String(repeating: character, count: length))
+                samples.append(String((0 ..< length).map { alphabet[(offset + $0) % alphabet.count] }))
+            }
+        }
+
+        return samples
+    }
+
+    private func caip2Samples(alphabet: [Character]) -> [String] {
+        var samples: [String] = []
+
+        for character in alphabet {
+            for namespaceLength in caip2NamespaceLengths.bounds {
+                for referenceLength in caip2ReferenceLengths.bounds {
+                    let namespace = String(repeating: character, count: namespaceLength)
+                    let reference = String(repeating: character, count: referenceLength)
+
+                    samples.append("\(namespace):\(reference)")
+                    samples.append("\(String(repeating: "a", count: namespaceLength)):\(reference)")
+                }
+            }
+        }
+
+        return samples
     }
 
     private func identifierFactories() -> [(String) -> AnalyticsContentValue?] {
@@ -23,13 +89,23 @@ final class AnalyticsContentValueTests: XCTestCase {
         }
     }
 
+    func testAssetSymbolAcceptsRegistrySymbolsWithSpacesAndParentheses() {
+        for symbol in registrySymbolsWithSpacesAndParentheses {
+            XCTAssertEqual(AnalyticsContentValue.assetSymbol(symbol)?.stringValue, symbol)
+        }
+    }
+
     func testAssetSymbolAcceptsUpToSixteenCharacters() {
         XCTAssertNotNil(AnalyticsContentValue.assetSymbol(String(repeating: "A", count: 16)))
         XCTAssertNil(AnalyticsContentValue.assetSymbol(String(repeating: "A", count: 17)))
     }
 
     func testAssetSymbolRejectsFreeText() {
-        for value in ["DOT USD", "DÖT", "DOT_2", "DOT:1", "", " DOT", "\u{212A}SM", freeText, overlong] {
+        let values = [
+            "DOT  USD", " DOT", "DOT ", "DOT\tUSD", "DÖT", "DOT_2", "DOT:1", "", " ", "\u{212A}SM", freeText, overlong
+        ]
+
+        for value in values {
             XCTAssertNil(AnalyticsContentValue.assetSymbol(value), value)
         }
     }
@@ -40,9 +116,15 @@ final class AnalyticsContentValueTests: XCTestCase {
         }
     }
 
-    func testNetworkNameAcceptsUpToThirtyTwoCharacters() {
-        XCTAssertNotNil(AnalyticsContentValue.networkName(String(repeating: "N", count: 32)))
-        XCTAssertNil(AnalyticsContentValue.networkName(String(repeating: "N", count: 33)))
+    func testNetworkNameAcceptsRegistryNamesWithParenthesisedSuffixes() {
+        for name in registryNamesWithParenthesisedSuffixes {
+            XCTAssertEqual(AnalyticsContentValue.networkName(name)?.stringValue, name)
+        }
+    }
+
+    func testNetworkNameAcceptsUpToFortyEightCharacters() {
+        XCTAssertNotNil(AnalyticsContentValue.networkName(String(repeating: "N", count: 48)))
+        XCTAssertNil(AnalyticsContentValue.networkName(String(repeating: "N", count: 49)))
     }
 
     func testNetworkNameRejectsFreeText() {
@@ -169,17 +251,23 @@ final class AnalyticsContentValueTests: XCTestCase {
         for kind in AnalyticsContentValue.Kind.allCases {
             let grammar = kind.grammar
 
-            for code in 0 ..< 128 {
-                let scalar = Unicode.Scalar(UInt8(code))
-
+            for scalar in asciiScalars where grammar.alphabet.contains(scalar) {
                 XCTAssertTrue(
-                    !grammar.alphabet.contains(scalar) || boundary.alphabet.contains(scalar),
-                    "\(kind) admits U+\(String(code, radix: 16)) which the boundary refuses"
+                    boundary.alphabet.contains(scalar),
+                    "\(kind) admits U+\(String(scalar.value, radix: 16)) which the boundary refuses"
                 )
             }
 
             XCTAssertGreaterThanOrEqual(grammar.lengths.lowerBound, boundary.lengths.lowerBound, "\(kind)")
             XCTAssertLessThanOrEqual(grammar.lengths.upperBound, boundary.lengths.upperBound, "\(kind)")
+
+            let accepted = samples(for: kind).filter(grammar.accepts)
+            let exercised = Set(accepted.joined())
+            let uncovered = alphabet(of: grammar).filter { !exercised.contains($0) }
+            let leaked = accepted.filter { !boundary.accepts($0) }
+
+            XCTAssertTrue(uncovered.isEmpty, "\(kind) samples never exercise \(uncovered)")
+            XCTAssertTrue(leaked.isEmpty, "\(kind) admits \(leaked.prefix(3)) which the boundary refuses")
         }
     }
 
@@ -199,5 +287,11 @@ final class AnalyticsContentValueTests: XCTestCase {
 
             XCTAssertTrue(AnalyticsWirePayloadPolicy.grammar.accepts(value.stringValue), value.stringValue)
         }
+    }
+}
+
+private extension ClosedRange where Bound == Int {
+    var bounds: [Int] {
+        [lowerBound, upperBound]
     }
 }

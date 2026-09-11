@@ -122,6 +122,38 @@ final class AnalyticsConsentManagerTests: XCTestCase {
         XCTAssertTrue(manager.isAvailable)
     }
 
+    func testAWithdrawalIsWrittenOnlyAfterTheErasureObligation() {
+        let settings = RecordingSettingsManager()
+        let manager = AnalyticsConsentManager(
+            settingsManager: settings,
+            availabilityProvider: StubAvailability(isAvailable: true)
+        )
+
+        manager.setEnabled(true)
+        manager.setEnabled(false)
+
+        XCTAssertEqual(
+            settings.boolWrites,
+            [
+                .init(key: "analyticsEnabled", value: true),
+                .init(key: "analyticsErasureOwed", value: true),
+                .init(key: "analyticsEnabled", value: false)
+            ]
+        )
+    }
+
+    func testDecliningWithoutPriorConsentOwesNoErasure() {
+        let settings = RecordingSettingsManager()
+        let manager = AnalyticsConsentManager(
+            settingsManager: settings,
+            availabilityProvider: StubAvailability(isAvailable: true)
+        )
+
+        manager.setEnabled(false)
+
+        XCTAssertEqual(settings.boolWrites, [.init(key: "analyticsEnabled", value: false)])
+    }
+
     func testTheErasureObligationOutlivesTheManagerThatRecordedIt() {
         let settings = InMemorySettingsManager()
         let manager = AnalyticsConsentManager(

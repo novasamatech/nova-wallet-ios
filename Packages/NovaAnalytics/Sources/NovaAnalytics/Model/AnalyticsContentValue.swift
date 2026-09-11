@@ -60,13 +60,14 @@ extension AnalyticsContentValue.Kind {
         switch self {
         case .assetSymbol:
             return AnalyticsContentGrammar(
-                alphabet: Alphabet.alphanumerics.union(CharacterSet(charactersIn: ".-")),
-                lengths: 1 ... 16
+                alphabet: Alphabet.registryLabel,
+                lengths: 1 ... 16,
+                shape: Self.isSingleSpaced
             )
         case .networkName:
             return AnalyticsContentGrammar(
-                alphabet: Alphabet.alphanumerics.union(CharacterSet(charactersIn: ".- ")),
-                lengths: 1 ... 32,
+                alphabet: Alphabet.registryLabel,
+                lengths: 1 ... 48,
                 shape: Self.isSingleSpaced
             )
         case .dappHost:

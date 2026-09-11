@@ -35,5 +35,6 @@ extension AnalyticsContentGrammar {
         static let digits = CharacterSet(charactersIn: "0123456789")
         static let letters = lowercase.union(uppercase)
         static let alphanumerics = letters.union(digits)
+        static let registryLabel = alphanumerics.union(CharacterSet(charactersIn: ".- ()"))
     }
 }
