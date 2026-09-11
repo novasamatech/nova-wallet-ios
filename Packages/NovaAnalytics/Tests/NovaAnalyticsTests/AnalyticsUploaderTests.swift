@@ -33,6 +33,7 @@ final class AnalyticsUploaderTests: XCTestCase {
     private struct Fixture {
         let uploader: AnalyticsUploader
         let queue: CoreDataAnalyticsEventQueue
+        let storage: AnalyticsStorageTestFacade
         let attestation: BackendAttestationProviderSpy
         let uploadFactory: AnalyticsUploadOperationFactorySpy
         let settings: InMemorySettingsManager
@@ -45,10 +46,10 @@ final class AnalyticsUploaderTests: XCTestCase {
         optOutDuringAttestation: Bool = false,
         timeProvider: @escaping () -> Date = { Date(timeIntervalSince1970: 1_772_445_600) }
     ) -> Fixture {
-        let facade = AnalyticsStorageTestFacade()
+        let storage = AnalyticsStorageTestFacade()
 
         let queue = CoreDataAnalyticsEventQueue(
-            repository: AnyDataProviderRepository(facade.createEventRepository()),
+            repository: AnyDataProviderRepository(storage.createEventRepository()),
             maxCount: 500
         )
 
@@ -80,6 +81,7 @@ final class AnalyticsUploaderTests: XCTestCase {
         return Fixture(
             uploader: uploader,
             queue: queue,
+            storage: storage,
             attestation: attestation,
             uploadFactory: uploadFactory,
             settings: settings,
@@ -225,17 +227,20 @@ final class AnalyticsUploaderTests: XCTestCase {
         XCTAssertEqual(fixture.uploadFactory.callCount, 1)
     }
 
-    func testRejectionClearsTheQueueMarksUnattestedAndSurfacesTheFailure() throws {
+    func testRejectionRetainsTheBatchMarksUnattestedOnceAndSurfacesTheFailure() throws {
         let fixture = makeFixture(
             uploadResults: [.failure(AnalyticsTransportError.rejected(statusCode: 403))]
         )
         try seed(fixture, count: 60)
+        let identifiers = try queuedIdentifiers(fixture)
 
         let error = flushError(fixture)
 
         XCTAssertEqual(error as? AnalyticsTransportError, .rejected(statusCode: 403))
-        XCTAssertEqual(try queueCount(fixture), 0)
+        XCTAssertEqual(try queueCount(fixture), 60)
+        XCTAssertEqual(try queuedIdentifiers(fixture), identifiers)
         XCTAssertEqual(fixture.attestation.markUnattestedCallCount, 1)
+        XCTAssertEqual(fixture.uploadFactory.callCount, 1)
     }
 
     func testServerErrorKeepsEverythingAndSurfacesTheFailure() throws {
@@ -294,17 +299,47 @@ final class AnalyticsUploaderTests: XCTestCase {
         XCTAssertEqual(try queueCount(fixture), 60)
     }
 
-    func testAttestationRejectionClearsTheQueueAndSurfacesTheFailure() throws {
+    func testAttestationRejectionRetainsTheBatchAndSurfacesTheFailure() throws {
         let fixture = makeFixture(
             uploadResults: [.failure(BackendAttestationError.rejected(statusCode: 403))]
         )
         try seed(fixture, count: 60)
+        let identifiers = try queuedIdentifiers(fixture)
 
         let error = flushError(fixture)
 
         XCTAssertTrue(isRegistrationRejection(error))
-        XCTAssertEqual(try queueCount(fixture), 0)
+        XCTAssertEqual(try queueCount(fixture), 60)
+        XCTAssertEqual(try queuedIdentifiers(fixture), identifiers)
         XCTAssertEqual(fixture.attestation.markUnattestedCallCount, 0)
+        XCTAssertEqual(fixture.uploadFactory.callCount, 1)
+    }
+
+    func testARejectionLeavesRowsEnqueuedAfterThePeekedPageUntouched() throws {
+        let fixture = makeFixture(
+            uploadResults: [.failure(AnalyticsTransportError.rejected(statusCode: 403))]
+        )
+        try seed(fixture, count: 50)
+        let peekedIds = try queuedIdentifiers(fixture)
+
+        fixture.attestation.onSigning = { [self] in
+            do {
+                try enqueue(
+                    fixture,
+                    timestamp: Date(timeIntervalSince1970: 50),
+                    payload: Data("{}".utf8)
+                )
+            } catch {
+                XCTFail("the late row could not be enqueued: \(error)")
+            }
+        }
+
+        XCTAssertNotNil(flushError(fixture))
+
+        let remainingIds = try queuedIdentifiers(fixture)
+
+        XCTAssertEqual(remainingIds.count, 51)
+        XCTAssertEqual(Array(remainingIds.prefix(50)), peekedIds)
     }
 
     func testUnacceptablePayloadStatusesDropOnlyThatBatchAndContinue() throws {
@@ -378,6 +413,19 @@ final class AnalyticsUploaderTests: XCTestCase {
         try flush(fixture)
 
         XCTAssertEqual(try queueCount(fixture), 0)
+    }
+
+    func testAnUnreadableQueueIsClearedWithoutAnUpload() throws {
+        let fixture = makeFixture(uploadResults: [.success(())])
+        try seed(fixture, count: 1)
+        try fixture.storage.seedUnreadableRow()
+        XCTAssertEqual(try queueCount(fixture), 2)
+
+        try flush(fixture)
+
+        XCTAssertEqual(try queueCount(fixture), 0)
+        XCTAssertEqual(fixture.uploadFactory.callCount, 0)
+        XCTAssertEqual(fixture.attestation.signingCallCount, 0)
     }
 
     func testTamperedRowTextNeverReachesTheTransport() throws {
@@ -521,6 +569,28 @@ final class AnalyticsUploaderTests: XCTestCase {
             firstAttempt,
             "the retry rebuilt the batch instead of resending the same event ids"
         )
+    }
+
+    func testABatchRetainedAfterARejectionIsResentWithTheSameEventIds() throws {
+        let fixture = makeFixture(uploadResults: [
+            .failure(AnalyticsTransportError.rejected(statusCode: 403)),
+            .success(())
+        ])
+        try seed(fixture, count: 3)
+
+        let identifiers = try queuedIdentifiers(fixture)
+
+        XCTAssertNotNil(flushError(fixture))
+        try flush(fixture)
+
+        XCTAssertEqual(fixture.sentBodies.recorded.count, 2)
+
+        let firstAttempt = try sentEventIds(try XCTUnwrap(fixture.sentBodies.recorded.first))
+        let secondAttempt = try sentEventIds(try XCTUnwrap(fixture.sentBodies.recorded.last))
+
+        XCTAssertEqual(firstAttempt, identifiers)
+        XCTAssertEqual(secondAttempt, firstAttempt)
+        XCTAssertEqual(try queueCount(fixture), 0)
     }
 
     func testReconsentDuringAnInFlightBatchStillAbortsIt() throws {

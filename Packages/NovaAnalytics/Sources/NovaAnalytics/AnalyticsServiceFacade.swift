@@ -14,13 +14,41 @@ public final class AnalyticsServiceFacade {
     private let availability: AnalyticsAvailabilityProvider
     private let eventQueue: AnalyticsEventQueueProtocol
     private let remoteSettings: AnalyticsRemoteSettings
+    private let applicationHandler: ApplicationHandlerProtocol
     private let configOperationQueue: OperationQueue
     private let logger: SDKLoggerProtocol
 
-    private let mutex = NSLock()
-    private var isActive: Bool = false
+    // Test seam: fires once a value has passed the generation check, before it reaches the service.
+    private let onResolutionAccepted: ((_ generation: Int) -> Void)?
 
-    public init(configuration: AnalyticsConfiguration) {
+    private let mutex = NSLock()
+    private var isSetUp: Bool = false
+    private var isActive: Bool = false
+    private var isInForeground: Bool = true
+    private var isLaunchFlushPending: Bool = false
+    private var isFirstLaunchAtSetup: Bool = false
+    private var resolutionGeneration: Int = 0
+
+    // A failed fetch never advances this, so a value fetched before it still lands.
+    private var appliedGeneration: Int = 0
+
+    // Serialises the applies, so an older resolution can never land after a newer one.
+    private let resolutionLock = NSLock()
+
+    public convenience init(configuration: AnalyticsConfiguration) {
+        self.init(
+            configuration: configuration,
+            sessionApplicationHandler: ApplicationHandler(),
+            backgroundTaskRunner: UIApplicationBackgroundTaskRunner()
+        )
+    }
+
+    init(
+        configuration: AnalyticsConfiguration,
+        sessionApplicationHandler: ApplicationHandlerProtocol,
+        backgroundTaskRunner: BackgroundTaskRunning,
+        onResolutionAccepted: ((_ generation: Int) -> Void)? = nil
+    ) {
         let settingsManager = configuration.settingsManager
 
         let storageFacade = AnalyticsStorageFacade(
@@ -38,7 +66,10 @@ public final class AnalyticsServiceFacade {
             isAppAttestSupported: appAttest.isSupported
         )
 
-        let availability = AnalyticsAvailabilityProvider(attestationMode: attestationMode)
+        let availability = AnalyticsAvailabilityProvider(
+            attestationMode: attestationMode,
+            settingsManager: settingsManager
+        )
 
         let consent = AnalyticsConsentManager(
             settingsManager: settingsManager,
@@ -86,8 +117,8 @@ public final class AnalyticsServiceFacade {
 
         let sessionTracker = AnalyticsSessionTracker(
             tracker: service,
-            applicationHandler: ApplicationHandler(),
-            backgroundTaskRunner: UIApplicationBackgroundTaskRunner()
+            applicationHandler: sessionApplicationHandler,
+            backgroundTaskRunner: backgroundTaskRunner
         )
 
         isFirstLaunch = configuration.isFirstLaunch
@@ -97,16 +128,20 @@ public final class AnalyticsServiceFacade {
         self.availability = availability
         self.eventQueue = eventQueue
         remoteSettings = configuration.remoteSettings
+        applicationHandler = ApplicationHandler()
         configOperationQueue = configuration.operationQueue
         logger = configuration.logger
+        self.onResolutionAccepted = onResolutionAccepted
 
         consent.addObserver(with: self, queue: nil) { [weak self] oldValue, newValue in
             guard !oldValue, newValue else {
                 return
             }
 
-            self?.sessionTracker.startSession()
+            self?.startSessionIfActive()
         }
+
+        applicationHandler.delegate = self
     }
 }
 
@@ -116,22 +151,17 @@ extension AnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
     public func setup() {
         mutex.lock()
 
-        guard !isActive else {
+        guard !isSetUp else {
             mutex.unlock()
             return
         }
 
-        isActive = true
+        isSetUp = true
+
+        // Read on the launch path: the host clears its first-launch flag once launch completes,
+        // long before the remote resolution lands.
+        isFirstLaunchAtSetup = isFirstLaunch()
         mutex.unlock()
-
-        sessionTracker.setup()
-        sessionTracker.startSession()
-
-        service.trackAndFlush(
-            .appOpened(isFirstLaunch: isFirstLaunch()),
-            reason: .launch,
-            completion: {}
-        )
 
         resolveRemoteAvailability()
     }
@@ -139,16 +169,15 @@ extension AnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
     public func throttle() {
         mutex.lock()
 
-        guard isActive else {
+        guard isSetUp else {
             mutex.unlock()
             return
         }
 
-        isActive = false
+        isSetUp = false
         mutex.unlock()
 
-        sessionTracker.throttle()
-        service.cancelFlush()
+        reconcile()
     }
 
     public func track(_ event: AnalyticsEvent) {
@@ -168,6 +197,30 @@ extension AnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
     }
 }
 
+// MARK: - ApplicationHandlerDelegate
+
+extension AnalyticsServiceFacade: ApplicationHandlerDelegate {
+    public func didReceiveWillEnterForeground(notification _: Notification) {
+        mutex.lock()
+        isInForeground = true
+        let shouldFlushLaunch = isLaunchFlushPending
+        isLaunchFlushPending = false
+        mutex.unlock()
+
+        if shouldFlushLaunch {
+            service.flush(reason: .launch)
+        }
+
+        resolveRemoteAvailability()
+    }
+
+    public func didReceiveDidEnterBackground(notification _: Notification) {
+        mutex.lock()
+        isInForeground = false
+        mutex.unlock()
+    }
+}
+
 // MARK: - AnalyticsDebugInspecting
 
 extension AnalyticsServiceFacade: AnalyticsDebugInspecting {
@@ -184,28 +237,128 @@ extension AnalyticsServiceFacade: AnalyticsDebugInspecting {
 
 private extension AnalyticsServiceFacade {
     func resolveRemoteAvailability() {
+        mutex.lock()
+
+        guard isSetUp else {
+            mutex.unlock()
+            return
+        }
+
+        resolutionGeneration += 1
+        let generation = resolutionGeneration
+        mutex.unlock()
+
+        let remoteWrapper = remoteSettings.createRemoteEnabledWrapper()
+
+        // Applied as the wrapper's own tail, so the launch sequence is ordered behind the
+        // resolution on the queue itself rather than behind a completion block.
+        let applyOperation = ClosureOperation<Void> { [weak self] in
+            let result = Result { try remoteWrapper.targetOperation.extractNoCancellableResultData() }
+
+            self?.apply(remoteResult: result, generation: generation)
+        }
+
+        applyOperation.addDependency(remoteWrapper.targetOperation)
+
         execute(
-            wrapper: remoteSettings.createRemoteEnabledWrapper(),
+            wrapper: remoteWrapper.insertingTail(operation: applyOperation),
             inOperationQueue: configOperationQueue,
             runningCallbackIn: nil
-        ) { [weak self] result in
-            guard let self else {
+        ) { _ in }
+    }
+
+    func apply(remoteResult: Result<Bool, Error>, generation: Int) {
+        resolutionLock.lock()
+
+        defer {
+            resolutionLock.unlock()
+        }
+
+        switch remoteResult {
+        case let .success(isEnabled):
+            guard isNewerThanApplied(generation: generation) else {
+                logger.debug("Analytics remote config resolution superseded, dropping it")
                 return
             }
 
-            switch result {
-            case let .success(isEnabled):
-                availability.setRemoteEnabled(isEnabled)
-                service.handleAvailabilityChanged()
-
-                guard !availability.isAvailable else {
-                    return
-                }
-
-                throttle()
-            case let .failure(error):
-                logger.info("Analytics remote config unavailable: \(error)")
-            }
+            onResolutionAccepted?(generation)
+            service.handleRemoteResolved(isEnabled: isEnabled)
+            markApplied(generation: generation)
+        case let .failure(error):
+            logger.info("Analytics remote config unavailable, keeping the last resolved state: \(error)")
         }
+
+        reconcile()
+    }
+
+    func isNewerThanApplied(generation: Int) -> Bool {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return generation > appliedGeneration
+    }
+
+    func markApplied(generation: Int) {
+        mutex.lock()
+        appliedGeneration = generation
+        mutex.unlock()
+    }
+
+    func reconcile() {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        let shouldRun = isSetUp && availability.isAvailable
+
+        guard shouldRun != isActive else {
+            return
+        }
+
+        isActive = shouldRun
+
+        if shouldRun {
+            activateLocked()
+        } else {
+            deactivateLocked()
+        }
+    }
+
+    func activateLocked() {
+        sessionTracker.setup()
+
+        let appOpened = AnalyticsEvent.appOpened(isFirstLaunch: isFirstLaunchAtSetup)
+
+        guard isInForeground else {
+            service.trackDeferringFlush(appOpened)
+            isLaunchFlushPending = true
+            return
+        }
+
+        sessionTracker.startSession()
+        service.trackAndFlush(appOpened, reason: .launch, completion: {})
+    }
+
+    func deactivateLocked() {
+        isLaunchFlushPending = false
+        sessionTracker.throttle()
+        service.cancelFlush()
+    }
+
+    func startSessionIfActive() {
+        mutex.lock()
+        let isActive = self.isActive
+        mutex.unlock()
+
+        guard isActive else {
+            return
+        }
+
+        sessionTracker.startSession()
     }
 }

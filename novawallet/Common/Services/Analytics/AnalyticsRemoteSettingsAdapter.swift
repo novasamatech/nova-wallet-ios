@@ -15,7 +15,11 @@ final class AnalyticsRemoteSettingsAdapter {
 
 extension AnalyticsRemoteSettingsAdapter: AnalyticsRemoteSettings {
     func createRemoteEnabledWrapper() -> CompoundOperationWrapper<Bool> {
-        let configWrapper = configProvider.createConfigWrapper()
+        // Always the fresh wrapper: the facade re-resolves on every foreground, and the cached
+        // one would answer every one of those from the first successful launch fetch, so a
+        // switch thrown mid-process would only land on the next launch. The launch call also
+        // fills the cache the other config consumers read.
+        let configWrapper = configProvider.createFreshConfigWrapper()
 
         // Fail-open on the value: a config with no analytics block means enabled. Fail-open
         // on the error is the facade's job — it leaves availability alone.

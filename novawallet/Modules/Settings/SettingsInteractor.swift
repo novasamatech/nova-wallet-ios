@@ -110,18 +110,23 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
         eventCenter.add(observer: self, dispatchIn: .main)
         walletConnect.add(delegate: self)
 
+        // Both subscriptions precede the first provide on purpose: the consent sheet and the
+        // remote kill switch flip the manager from background queues, so a flip landing between
+        // the provide and a later subscribe would be lost for the lifetime of the screen.
+        analyticsConsent.addObserver(with: self, queue: .main) { [weak self] _, _ in
+            self?.provideAnalyticsSettings()
+        }
+
+        analyticsConsent.addAvailabilityObserver(with: self, queue: .main) { [weak self] _ in
+            self?.provideAnalyticsSettings()
+        }
+
         provideUserSettings()
         provideWalletConnectSessionsCount()
         applyCurrency()
         providePushNotificationsStatus()
         providePrivacyStateSettings()
         provideAnalyticsSettings()
-
-        // The on-launch consent sheet and the opt-out wipe both flip the manager from
-        // outside Settings, so the row has to re-provide rather than only echo its own tap.
-        analyticsConsent.addObserver(with: self, queue: .main) { [weak self] _, _ in
-            self?.provideAnalyticsSettings()
-        }
 
         walletNotificationService.hasUpdatesObservable.addObserver(
             with: self,

@@ -29,10 +29,12 @@ extension AnalyticsTestFixture {
         static let erasureOwed = "analyticsErasureOwed"
         static let gatewayClientId = "gatewayAttestationClientId"
         static let appAttestKeys = "appAttestKeys"
+        static let remoteEnabled = "analyticsRemoteEnabled"
     }
 
     static func make(
         isAvailable: Bool = true,
+        persistedRemoteEnabled: Bool? = true,
         now: @escaping () -> Date = { Date() },
         deviceCheck: DeviceCheckAttestingSpy? = nil,
         clearError: Error? = nil,
@@ -40,6 +42,12 @@ extension AnalyticsTestFixture {
         storage: AnalyticsStorageTestFacade = AnalyticsStorageTestFacade(),
         logger: SDKLoggerProtocol = SilentLogger()
     ) -> AnalyticsTestFixture {
+        if let persistedRemoteEnabled {
+            settings.set(value: persistedRemoteEnabled, for: Keys.remoteEnabled)
+        } else {
+            settings.removeValue(for: Keys.remoteEnabled)
+        }
+
         let eventQueue = CoreDataAnalyticsEventQueue(
             repository: AnyDataProviderRepository(storage.createEventRepository()),
             maxCount: 500
@@ -49,7 +57,8 @@ extension AnalyticsTestFixture {
         clearInterceptor.clearError = clearError
 
         let availability = AnalyticsAvailabilityProvider(
-            attestationMode: isAvailable ? .appAttest : .unavailable
+            attestationMode: isAvailable ? .appAttest : .unavailable,
+            settingsManager: settings
         )
 
         let consent = AnalyticsConsentManager(
@@ -148,6 +157,13 @@ extension AnalyticsTestFixture {
         settings.set(value: true, for: Keys.analyticsEnabled)
 
         return make(now: now, deviceCheck: deviceCheck, settings: settings, storage: storage)
+    }
+
+    static func makeUnresolved(
+        settings: SerialisedSettingsManager,
+        storage: AnalyticsStorageTestFacade
+    ) -> AnalyticsTestFixture {
+        make(persistedRemoteEnabled: nil, settings: settings, storage: storage)
     }
 
     func drain() {

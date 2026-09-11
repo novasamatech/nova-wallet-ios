@@ -6641,6 +6641,7 @@
 		FEEDD0000000000000000111 /* AnalyticsFacadeFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000011 /* AnalyticsFacadeFactoryTests.swift */; };
 		FEEDAA0000000000000000B2 /* AnalyticsAppWiringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDAA0000000000000000B1 /* AnalyticsAppWiringTests.swift */; };
 		FEEDAA0000000000000000C2 /* AnalyticsRemoteSettingsAdapterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDAA0000000000000000C1 /* AnalyticsRemoteSettingsAdapterTests.swift */; };
+		FEEDAA0000000000000000D2 /* GlobalConfigProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDAA0000000000000000D1 /* GlobalConfigProviderTests.swift */; };
 		0000000021CDF4E8A8B04343 /* AnalyticsRemoteSettingsAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000005A7B94BE697EFEBE /* AnalyticsRemoteSettingsAdapter.swift */; };
 /* End PBXBuildFile section */
 
@@ -13021,6 +13022,7 @@
 		FEEDD0000000000000000011 /* AnalyticsFacadeFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsFacadeFactoryTests.swift; sourceTree = "<group>"; };
 		FEEDAA0000000000000000B1 /* AnalyticsAppWiringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsAppWiringTests.swift; sourceTree = "<group>"; };
 		FEEDAA0000000000000000C1 /* AnalyticsRemoteSettingsAdapterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsRemoteSettingsAdapterTests.swift; sourceTree = "<group>"; };
+		FEEDAA0000000000000000D1 /* GlobalConfigProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalConfigProviderTests.swift; sourceTree = "<group>"; };
 		000000005A7B94BE697EFEBE /* AnalyticsRemoteSettingsAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnalyticsRemoteSettingsAdapter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -21755,6 +21757,7 @@
 			isa = PBXGroup;
 			children = (
 				0CAA10092E7A0009007E41C4 /* Logger */,
+				FEEDAA0000000000000000D3 /* GlobalConfig */,
 				5A17C0C02F0100000000E001 /* LegalConsent */,
 				8A1C0E712F0400000000B103 /* PropertyWrappers */,
 				2D32C9922EFA35930094A036 /* FormatterCache */,
@@ -30553,6 +30556,14 @@
 			path = Analytics;
 			sourceTree = "<group>";
 		};
+		FEEDAA0000000000000000D3 /* GlobalConfig */ = {
+			isa = PBXGroup;
+			children = (
+				FEEDAA0000000000000000D1 /* GlobalConfigProviderTests.swift */,
+			);
+			path = GlobalConfig;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -37452,6 +37463,7 @@
 				FEEDD0000000000000000111 /* AnalyticsFacadeFactoryTests.swift in Sources */,
 				FEEDAA0000000000000000B2 /* AnalyticsAppWiringTests.swift in Sources */,
 				FEEDAA0000000000000000C2 /* AnalyticsRemoteSettingsAdapterTests.swift in Sources */,
+				FEEDAA0000000000000000D2 /* GlobalConfigProviderTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

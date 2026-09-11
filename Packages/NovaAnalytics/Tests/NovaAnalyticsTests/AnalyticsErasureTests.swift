@@ -53,11 +53,39 @@ final class AnalyticsErasureTests: XCTestCase {
             owedWhenScheduled.record(fixture.settings.bool(for: Keys.erasureOwed) ?? false)
         }
 
-        fixture.availability.setRemoteEnabled(false)
-        fixture.service.handleAvailabilityChanged()
+        fixture.service.handleRemoteResolved(isEnabled: false)
         fixture.drain()
 
         XCTAssertEqual(owedWhenScheduled.values, [true])
+    }
+
+    func testAKillSwitchPersistsTheObligationBeforeTheRemoteOff() throws {
+        let recording = RecordingSettingsManager()
+        let fixture = AnalyticsTestFixture.makeConsented(settings: SerialisedSettingsManager(wrapping: recording))
+        let gate = DispatchSemaphore(value: 0)
+
+        fixture.service.track(.novaCardOpened())
+        fixture.drain()
+        fixture.drainUploads()
+
+        fixture.clearInterceptor.onClear = {
+            XCTAssertEqual(gate.wait(timeout: .now() + 5), .success)
+        }
+
+        let writesBefore = recording.boolWrites.count
+        fixture.service.handleRemoteResolved(isEnabled: false)
+        let writes = Array(recording.boolWrites.dropFirst(writesBefore))
+
+        gate.signal()
+        fixture.drain()
+
+        XCTAssertEqual(
+            writes,
+            [
+                RecordingSettingsManager.BoolWrite(key: Keys.erasureOwed, value: true),
+                RecordingSettingsManager.BoolWrite(key: Keys.remoteEnabled, value: false)
+            ]
+        )
     }
 
     func testAFailedClearKeepsTheObligationAndTheRows() throws {
@@ -242,8 +270,7 @@ final class AnalyticsErasureTests: XCTestCase {
         let previousLaunch = AnalyticsTestFixture.makeConsented(settings: settings, storage: storage)
         previousLaunch.clearInterceptor.clearError = ClearFailure()
         previousLaunch.service.track(.novaCardOpened())
-        previousLaunch.availability.setRemoteEnabled(false)
-        previousLaunch.service.handleAvailabilityChanged()
+        previousLaunch.service.handleRemoteResolved(isEnabled: false)
         previousLaunch.drain()
 
         XCTAssertEqual(settings.bool(for: Keys.erasureOwed), true)
@@ -444,9 +471,10 @@ final class AnalyticsErasureTests: XCTestCase {
     }
 
     private func makeCoordinatorFixture() -> CoordinatorFixture {
+        let settings = SerialisedSettingsManager()
         let consent = AnalyticsConsentManager(
-            settingsManager: SerialisedSettingsManager(),
-            availabilityProvider: AnalyticsAvailabilityProvider(attestationMode: .appAttest)
+            settingsManager: settings,
+            availabilityProvider: AnalyticsAvailabilityProvider(attestationMode: .appAttest, settingsManager: settings)
         )
 
         let clearInterceptor = AnalyticsEventQueueClearInterceptor(wrapping: AnalyticsEventQueueSpy())

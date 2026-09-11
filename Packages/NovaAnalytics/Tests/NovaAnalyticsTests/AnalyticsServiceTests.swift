@@ -272,7 +272,8 @@ final class AnalyticsServiceTests: XCTestCase {
 
     func testTheEnqueueIsSubmittedWhileTheConsentWipeIsLockedOut() {
         let settings = InMemorySettingsManager()
-        let availability = AnalyticsAvailabilityProvider(attestationMode: .appAttest)
+        let availability = AnalyticsAvailabilityProvider(attestationMode: .appAttest, settingsManager: settings)
+        availability.setRemoteEnabled(true)
         let consent = AnalyticsConsentManager(
             settingsManager: settings,
             availabilityProvider: availability
@@ -431,8 +432,8 @@ final class AnalyticsServiceTests: XCTestCase {
         now = now.addingTimeInterval(120)
         flushAndSettle(fixture, reason: .interval)
 
-        try seed(fixture)
         XCTAssertEqual(fixture.uploadFactory.callCount, 3)
+        XCTAssertEqual(try queueCount(fixture), 1)
 
         now = now.addingTimeInterval(239)
         flushAndSettle(fixture, reason: .interval)
@@ -496,7 +497,8 @@ final class AnalyticsServiceTests: XCTestCase {
         let settings = SerialisedSettingsManager()
         settings.set(value: true, for: AnalyticsTestFixture.Keys.analyticsEnabled)
 
-        let availability = AnalyticsAvailabilityProvider(attestationMode: .appAttest)
+        let availability = AnalyticsAvailabilityProvider(attestationMode: .appAttest, settingsManager: settings)
+        availability.setRemoteEnabled(true)
         let consent = AnalyticsConsentManager(
             settingsManager: settings,
             availabilityProvider: availability
@@ -549,6 +551,13 @@ final class AnalyticsServiceTests: XCTestCase {
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
 
         _ = try wrapper.targetOperation.extractNoCancellableResultData()
+    }
+
+    private func queueCount(_ fixture: GatewayFixture) throws -> Int {
+        let operation = fixture.queue.countOperation()
+        OperationQueue().addOperations([operation], waitUntilFinished: true)
+
+        return try operation.extractNoCancellableResultData()
     }
 
     private func flushAndSettle(_ fixture: GatewayFixture, reason: AnalyticsFlushReason) {
