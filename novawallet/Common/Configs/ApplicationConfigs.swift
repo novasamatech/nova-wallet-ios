@@ -209,6 +209,14 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #endif
     }
 
+    var gatewayURL: URL {
+        #if F_RELEASE
+            URL(string: "https://analytics.novawallet.io/")!
+        #else
+            URL(string: "https://analytics-dev.novawallet.io/")!
+        #endif
+    }
+
     var dAppsListURL: URL {
         #if F_RELEASE
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/dapps/dapps.json")!

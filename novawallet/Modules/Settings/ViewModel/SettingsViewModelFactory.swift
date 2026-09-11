@@ -49,8 +49,11 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
                 createNotificationsViewModel(row: .notifications, isOn: parameters.isNotificationsOn, locale: locale),
                 createValuableViewModel(row: .currency, value: currency, locale: locale),
                 createLanguageViewModel(from: language, locale: locale),
-                createCommonViewViewModel(row: .appearance, locale: locale)
-            ]),
+                createCommonViewViewModel(row: .appearance, locale: locale),
+                parameters.isAnalyticsOn.map {
+                    createSwitchViewModel(row: .analytics, isOn: $0, locale: locale)
+                }
+            ].compactMap { $0 }),
             (.security, [
                 createCommonViewViewModel(row: .backup, locale: locale),
                 parameters.isBiometricAuthOn.map {
@@ -83,8 +86,16 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
                 createCommonViewViewModel(row: .github, locale: locale),
                 createCommonViewViewModel(row: .terms, locale: locale),
                 createCommonViewViewModel(row: .privacyPolicy, locale: locale)
-            ])
+            ] + debugRows(locale: locale))
         ]
+    }
+
+    private func debugRows(locale: Locale) -> [SettingsCellViewModel] {
+        #if F_DEV
+            [createCommonViewViewModel(row: .analyticsDebug, locale: locale)]
+        #else
+            []
+        #endif
     }
 
     private func createCommonViewViewModel(

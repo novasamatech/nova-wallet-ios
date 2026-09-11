@@ -563,6 +563,30 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
         }
     }
 
+    func presentAnalyticsConsent(
+        from view: MainTabBarViewProtocol?,
+        onEnable: @escaping () -> Void,
+        onDecline: @escaping () -> Void,
+        onUnavailable: @escaping () -> Void
+    ) {
+        let bottomSheet = AnalyticsConsentSheetFactory.createConsentSheet(
+            onEnable: onEnable,
+            onDecline: onDecline
+        )
+
+        guard let controllerToPresent = bottomSheet?.controller else {
+            // The launch queue must still advance, but the prompt has not been seen, so it
+            // stays owed rather than being marked declined on the user's behalf.
+            onUnavailable()
+            return
+        }
+
+        view?.controller.topModalViewController.present(
+            controllerToPresent,
+            animated: true
+        )
+    }
+
     func presentLegalConsent(
         from view: MainTabBarViewProtocol?,
         completion: @escaping () -> Void

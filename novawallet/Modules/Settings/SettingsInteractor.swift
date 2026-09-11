@@ -2,6 +2,7 @@ import Foundation
 import Keystore_iOS
 import NovaCrypto
 import Operation_iOS
+import NovaAnalytics
 
 enum ProfileInteractorError: Error {
     case noSelectedAccount
@@ -19,6 +20,7 @@ final class SettingsInteractor {
     let privacyStateManager: PrivacyStateManagerProtocol
     let operationQueue: OperationQueue
     let pushNotificationsFacade: PushNotificationsServiceFacadeProtocol
+    let analyticsConsent: AnalyticsConsentManagerProtocol
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
@@ -29,6 +31,7 @@ final class SettingsInteractor {
         biometryAuth: BiometryAuthProtocol,
         walletNotificationService: WalletNotificationServiceProtocol,
         pushNotificationsFacade: PushNotificationsServiceFacadeProtocol,
+        analyticsConsent: AnalyticsConsentManagerProtocol,
         privacyStateManager: PrivacyStateManagerProtocol,
         operationQueue: OperationQueue
     ) {
@@ -39,6 +42,7 @@ final class SettingsInteractor {
         self.walletConnect = walletConnect
         self.walletNotificationService = walletNotificationService
         self.pushNotificationsFacade = pushNotificationsFacade
+        self.analyticsConsent = analyticsConsent
         self.privacyStateManager = privacyStateManager
         self.operationQueue = operationQueue
         self.currencyManager = currencyManager
@@ -89,6 +93,14 @@ private extension SettingsInteractor {
     func providePrivacyStateSettings() {
         presenter?.didReceive(hideBalancesOnLaunch: privacyStateManager.enablePrivacyModeOnLaunch)
     }
+
+    /// The row outlives an unavailable subsystem while stored consent is on, because Settings is
+    /// the app's only opt-out path; `nil` — no row — only when there is nothing left to withdraw.
+    func provideAnalyticsSettings() {
+        let hasRow = analyticsConsent.isAvailable || analyticsConsent.isEnabled
+
+        presenter?.didReceive(analyticsEnabled: hasRow ? analyticsConsent.isEnabled : nil)
+    }
 }
 
 // MARK: - SettingsInteractorInputProtocol
@@ -98,11 +110,23 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
         eventCenter.add(observer: self, dispatchIn: .main)
         walletConnect.add(delegate: self)
 
+        // Both subscriptions precede the first provide on purpose: the consent sheet and the
+        // remote kill switch flip the manager from background queues, so a flip landing between
+        // the provide and a later subscribe would be lost for the lifetime of the screen.
+        analyticsConsent.addObserver(with: self, queue: .main) { [weak self] _, _ in
+            self?.provideAnalyticsSettings()
+        }
+
+        analyticsConsent.addAvailabilityObserver(with: self, queue: .main) { [weak self] _ in
+            self?.provideAnalyticsSettings()
+        }
+
         provideUserSettings()
         provideWalletConnectSessionsCount()
         applyCurrency()
         providePushNotificationsStatus()
         providePrivacyStateSettings()
+        provideAnalyticsSettings()
 
         walletNotificationService.hasUpdatesObservable.addObserver(
             with: self,
@@ -138,6 +162,20 @@ extension SettingsInteractor: SettingsInteractorInputProtocol {
 
     func toggleHideBalances() {
         privacyStateManager.enablePrivacyModeOnLaunch.toggle()
+    }
+
+    /// Asymmetric on purpose: opting out always lands, while opting in needs an available
+    /// subsystem, so a row the kill switch left on screen cannot re-arm collection.
+    /// Deliberately does not touch `markPromptSeen()`: the switch is the way back after
+    /// declining, and consuming the one-shot prompt state here would change launch behaviour.
+    func toggleAnalytics() {
+        let newValue = !analyticsConsent.isEnabled
+
+        if !newValue || analyticsConsent.isAvailable {
+            analyticsConsent.setEnabled(newValue)
+        }
+
+        provideAnalyticsSettings()
     }
 }
 

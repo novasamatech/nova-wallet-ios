@@ -15,6 +15,7 @@ final class SettingsPresenter {
     private var hasWalletsListUpdates: Bool = false
     private var pushNotificationsStatus: PushNotificationsStatus?
     private var hideBalances: Bool?
+    private var analyticsEnabled: Bool?
 
     private var wallet: MetaAccountModel?
     private var walletConnectSessionsCount: Int?
@@ -47,7 +48,8 @@ private extension SettingsPresenter {
             isBiometricAuthOn: biometrySettings?.isEnabled,
             isPinConfirmationOn: isPinConfirmationOn,
             isNotificationsOn: pushNotificationsStatus == .active,
-            isHideBalancesOn: hideBalances ?? false
+            isHideBalancesOn: hideBalances ?? false,
+            isAnalyticsOn: analyticsEnabled
         )
 
         let sectionViewModels = viewModelFactory.createSectionViewModels(
@@ -190,6 +192,12 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             }
         case .hideBalances:
             interactor.toggleHideBalances()
+        case .analytics:
+            interactor.toggleAnalytics()
+        #if F_DEV
+            case .analyticsDebug:
+                wireframe.showAnalyticsDebug(from: view)
+        #endif
         case .changePin:
             wireframe.showPincodeChange(from: view)
         case .telegram:
@@ -327,6 +335,12 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
 
     func didReceive(pushNotificationsStatus: PushNotificationsStatus) {
         self.pushNotificationsStatus = pushNotificationsStatus
+        updateView()
+    }
+
+    func didReceive(analyticsEnabled: Bool?) {
+        self.analyticsEnabled = analyticsEnabled
+
         updateView()
     }
 

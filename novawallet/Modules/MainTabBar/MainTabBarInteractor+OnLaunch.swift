@@ -19,6 +19,7 @@ extension MainTabBarInteractor {
 
     func startLaunchQueue(openedPendingScreen: Bool) {
         let promptActions: [OnLaunchActionProtocol] = [
+            OnLaunchAction.AnalyticsConsent(),
             OnLaunchAction.PushNotificationsSetup(),
             OnLaunchAction.AHMInfoSetup(),
             OnLaunchAction.MultisigNotificationsPromo()
@@ -89,7 +90,53 @@ private extension MainTabBarInteractor {
                     return
                 }
 
+                didPresentLegalConsentThisLaunch = true
+
                 presenter?.didRequestLegalConsentOpen()
+            }
+        }
+    }
+
+    func showAnalyticsConsentOrNextAction() {
+        guard AnalyticsConsentPromptGate.isPossible(
+            hasWallet: walletSettings.hasValue,
+            isPromptSeen: analyticsConsent.isPromptSeen,
+            isAvailable: analyticsConsent.isAvailable,
+            isEnabled: analyticsConsent.isEnabled,
+            didPresentLegalConsentThisLaunch: didPresentLegalConsentThisLaunch
+        ) else {
+            onLaunchQueue.runNext()
+            return
+        }
+
+        let wrapper = legalConsentRepository.legalConsentStatusWrapper()
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            guard let self else { return }
+
+            guard
+                case let .success(legalStatus) = result,
+                AnalyticsConsentPromptGate.allows(legalStatus: legalStatus)
+            else {
+                onLaunchQueue.runNext()
+                return
+            }
+
+            // Not `scheduleExecutionIfAuthorized`: it drops its closure when authorization
+            // fails, which would stall the queue and suppress every later prompt.
+            securedLayer.scheduleExecution { [weak self] isAuthorized in
+                guard let self else { return }
+
+                guard isAuthorized else {
+                    onLaunchQueue.runNext()
+                    return
+                }
+
+                presenter?.didRequestAnalyticsConsentOpen()
             }
         }
     }
@@ -137,6 +184,10 @@ private extension MainTabBarInteractor {
 extension MainTabBarInteractor: OnLaunchActionsQueueDelegate {
     func onLaunchProcessLegalConsent(_: OnLaunchAction.LegalConsent) {
         showLegalConsentOrNextAction()
+    }
+
+    func onLaunchProcessAnalyticsConsent(_: OnLaunchAction.AnalyticsConsent) {
+        showAnalyticsConsentOrNextAction()
     }
 
     func onLaunchProccessPushNotificationsSetup(_: OnLaunchAction.PushNotificationsSetup) {

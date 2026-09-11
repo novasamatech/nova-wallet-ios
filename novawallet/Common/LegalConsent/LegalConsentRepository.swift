@@ -97,6 +97,41 @@ extension LegalConsentRepository: LegalConsentRepositoryProtocol {
         )
     }
 
+    func legalConsentStatusWrapper() -> CompoundOperationWrapper<LegalConsentStatus> {
+        mutex.lock()
+
+        let cachedDocuments = documents
+
+        mutex.unlock()
+
+        if let cachedDocuments {
+            return .createWithResult(isConsentRequired(for: cachedDocuments) ? .required : .notRequired)
+        }
+
+        let fetchOperation = fetchFactory.fetchOperation()
+
+        let mapOperation = ClosureOperation<LegalConsentStatus> { [weak self] in
+            guard let self else { return .unavailable }
+
+            do {
+                let remote = try fetchOperation.extractNoCancellableResultData()
+
+                return handleLoaded(documents: remote.mapToDocuments()) ? .required : .notRequired
+            } catch {
+                logger.warning("Legal documents config unavailable: \(error)")
+
+                return .unavailable
+            }
+        }
+
+        mapOperation.addDependency(fetchOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: mapOperation,
+            dependencies: [fetchOperation]
+        )
+    }
+
     func acceptCurrentVersions(deferringWhenUnavailable: Bool) {
         mutex.lock()
 

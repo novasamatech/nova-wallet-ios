@@ -31,6 +31,7 @@ protocol SettingsInteractorInputProtocol: AnyObject {
     func updatePinConfirmationSettings(isOn: Bool)
     func connectWalletConnect(uri: String)
     func toggleHideBalances()
+    func toggleAnalytics()
 }
 
 protocol SettingsInteractorOutputProtocol: AnyObject {
@@ -44,6 +45,7 @@ protocol SettingsInteractorOutputProtocol: AnyObject {
     func didReceiveWalletsState(hasUpdates: Bool)
     func didReceive(pushNotificationsStatus: PushNotificationsStatus)
     func didReceive(hideBalancesOnLaunch: Bool)
+    func didReceive(analyticsEnabled: Bool?)
 }
 
 protocol SettingsWireframeProtocol:
@@ -72,4 +74,7 @@ protocol SettingsWireframeProtocol:
     func showBackup(from view: ControllerBackedProtocol?)
     func showNetworks(from view: ControllerBackedProtocol?)
     func showAppearance(from view: ControllerBackedProtocol?)
+    #if F_DEV
+        func showAnalyticsDebug(from view: ControllerBackedProtocol?)
+    #endif
 }

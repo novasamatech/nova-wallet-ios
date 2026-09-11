@@ -167,4 +167,13 @@ extension SettingsWireframe: SettingsWireframeProtocol {
             animated: true
         )
     }
+
+    #if F_DEV
+        func showAnalyticsDebug(from view: ControllerBackedProtocol?) {
+            let controller = AnalyticsDebugInspectorViewController.createDefault()
+            controller.hidesBottomBarWhenPushed = true
+
+            view?.controller.navigationController?.pushViewController(controller, animated: true)
+        }
+    #endif
 }

@@ -1,5 +1,5 @@
 {
-  "originHash" : "0734f3975635885728927ea114f6851993fc72604dfdb110c496dc604a69436b",
+  "originHash" : "ddea0393d008a670a4264f537d8af1dd9d7c22edd41191e7f2b05066d98121ad",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -242,6 +242,15 @@
       "state" : {
         "revision" : "a0bc79961d7be727d258d33d5a6b2f1023270ba1",
         "version" : "1.22.5"
+      }
+    },
+    {
+      "identity" : "logger-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/novasamatech/logger-ios",
+      "state" : {
+        "revision" : "cafece8626141b4430ddc8d5288d3444abd122de",
+        "version" : "0.0.1"
       }
     },
     {

@@ -2,6 +2,7 @@ import Foundation
 import Keystore_iOS
 import SubstrateSdk
 import Foundation_iOS
+import NovaAnalytics
 
 final class MainTabBarInteractor: AnyProviderAutoCleaning {
     weak var presenter: MainTabBarInteractorOutputProtocol?
@@ -21,11 +22,17 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
     let cloudBackupMediator: CloudBackupSyncMediating
     let settingsManager: SettingsManagerProtocol
     let legalConsentRepository: LegalConsentRepositoryProtocol
+    let analyticsConsent: AnalyticsConsentManagerProtocol
     let walletSettings: SelectedWalletSettings
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     var onLaunchQueue = OnLaunchActionsQueue(possibleActions: [])
+
+    /// Set before `didRequestLegalConsentOpen()`. The legal completion calls
+    /// `requestNextOnLaunchAction()` immediately, so without this flag the analytics
+    /// sheet would follow the legal sheet in the same launch.
+    var didPresentLegalConsentThisLaunch: Bool = false
 
     deinit {
         stopServices()
@@ -46,6 +53,7 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
         inAppUpdatesService: SyncServiceProtocol,
         settingsManager: SettingsManagerProtocol,
         legalConsentRepository: LegalConsentRepositoryProtocol,
+        analyticsConsent: AnalyticsConsentManagerProtocol,
         walletSettings: SelectedWalletSettings,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
@@ -64,6 +72,7 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
         self.inAppUpdatesService = inAppUpdatesService
         self.settingsManager = settingsManager
         self.legalConsentRepository = legalConsentRepository
+        self.analyticsConsent = analyticsConsent
         self.walletSettings = walletSettings
         self.operationQueue = operationQueue
         self.logger = logger
@@ -171,6 +180,18 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
 
     func setPushNotificationsSetupScreenSeen() {
         settingsManager.notificationsSetupSeen = true
+    }
+
+    /// Seen is persisted on either decision, so re-onboarding does not re-ask. The queue is
+    /// advanced in both branches or `PushNotificationsSetup` would never run.
+    func setAnalyticsConsent(enabled: Bool) {
+        if enabled {
+            analyticsConsent.setEnabled(true)
+        }
+
+        analyticsConsent.markPromptSeen()
+
+        onLaunchQueue.runNext()
     }
 
     func requestNextOnLaunchAction() {
