@@ -10,16 +10,17 @@ public final class AnalyticsUploadOperationFactory {
         self.baseURL = baseURL
     }
 
-    func buildRequest(body: Data, headers: [AttestationHeaderKey: String]?) throws -> URLRequest {
-        var request = URLRequest(url: baseURL.appending(path: Constants.eventsPath))
+    func buildRequest(
+        target: AttestationRequestTarget,
+        body: Data,
+        headers: [AttestationHeaderKey: String]?
+    ) -> URLRequest {
+        var request = URLRequest(url: target.url)
 
-        request.httpMethod = HttpMethod.post.rawValue
+        request.httpMethod = target.method
         request.httpBody = body
         request.timeoutInterval = Constants.timeout
-        request.setValue(
-            HttpContentType.json.rawValue,
-            forHTTPHeaderField: HttpHeaderKey.contentType.rawValue
-        )
+        request.setValue(target.contentType, forHTTPHeaderField: HttpHeaderKey.contentType.rawValue)
 
         headers?.forEach { key, value in
             request.setValue(value, forHTTPHeaderField: key.rawValue)
@@ -96,7 +97,16 @@ extension AnalyticsUploadOperationFactory {
 // MARK: - AnalyticsUploadOperationFactoryProtocol
 
 extension AnalyticsUploadOperationFactory: AnalyticsUploadOperationFactoryProtocol {
+    public func eventsTarget() throws -> AttestationRequestTarget {
+        try AttestationRequestTarget(
+            url: baseURL.appending(path: Constants.eventsPath),
+            method: HttpMethod.post.rawValue,
+            contentType: HttpContentType.json.rawValue
+        )
+    }
+
     public func createUploadOperation(
+        target: AttestationRequestTarget,
         bodyClosure: @escaping () throws -> Data,
         headersClosure: @escaping () throws -> [AttestationHeaderKey: String]?
     ) -> BaseOperation<Void> {
@@ -108,7 +118,7 @@ extension AnalyticsUploadOperationFactory: AnalyticsUploadOperationFactoryProtoc
                 throw AnalyticsUploadAbort.consentWithdrawn
             }
 
-            return try buildRequest(body: body, headers: headers)
+            return buildRequest(target: target, body: body, headers: headers)
         }
 
         let resultFactory = AnyNetworkResultFactory<Void> { _, response, error in

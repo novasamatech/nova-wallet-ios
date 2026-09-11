@@ -141,7 +141,7 @@ private extension AnalyticsUploader {
                 return createDropWrapper(ids: page.dropIds, isFull: page.isFull)
             }
 
-            return createSendWrapper(batch: try createBatch(events: events, page: page))
+            return try createSendWrapper(batch: createBatch(events: events, page: page))
         }
 
         sendWrapper.addDependency(wrapper: peekWrapper)
@@ -149,9 +149,10 @@ private extension AnalyticsUploader {
         return sendWrapper.insertingHead(operations: peekWrapper.allOperations)
     }
 
-    func createSendWrapper(batch: Batch) -> CompoundOperationWrapper<BatchOutcome> {
+    func createSendWrapper(batch: Batch) throws -> CompoundOperationWrapper<BatchOutcome> {
         let body = batch.body
         let epoch = batch.epoch
+        let target = try uploadFactory.eventsTarget()
 
         let consentGate: () throws -> Void = { [weak self] in
             guard let self, identity.consentEpoch == epoch else {
@@ -159,13 +160,14 @@ private extension AnalyticsUploader {
             }
         }
 
-        let headersWrapper = attestation.createSignedHeadersWrapper {
+        let headersWrapper = attestation.createSignedHeadersWrapper(target: target) {
             try consentGate()
 
             return body
         }
 
         let uploadOperation = uploadFactory.createUploadOperation(
+            target: target,
             bodyClosure: {
                 try consentGate()
 

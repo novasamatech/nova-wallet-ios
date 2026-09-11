@@ -54,10 +54,24 @@ final class AnalyticsUploadOperationFactorySpy: AnalyticsUploadOperationFactoryP
 
     var callCount: Int { recordedCalls.value }
 
+    private let recordedTargets = Locked<[AttestationRequestTarget]>([])
+
+    var sentTargets: [AttestationRequestTarget] { recordedTargets.value }
+
+    func eventsTarget() throws -> AttestationRequestTarget {
+        try AttestationRequestTarget(
+            url: URL(string: "https://gateway.example/v1/analytics/events")!,
+            method: "post",
+            contentType: "application/json"
+        )
+    }
+
     func createUploadOperation(
+        target: AttestationRequestTarget,
         bodyClosure: @escaping () throws -> Data,
         headersClosure _: @escaping () throws -> [AttestationHeaderKey: String]?
     ) -> BaseOperation<Void> {
+        recordedTargets.update { $0.append(target) }
         recordedCalls.update { $0 += 1 }
 
         let next: Result<Void, Error> = uploadResults.isEmpty ? .success(()) : uploadResults.removeFirst()
@@ -80,10 +94,16 @@ final class BackendAttestationProviderSpy: BackendAttestationProviderProtocol {
 
     var markUnattestedCallCount: Int { recordedMarkUnattested.value }
 
+    private let recordedSignedTargets = Locked<[AttestationRequestTarget]>([])
+
+    var signedTargets: [AttestationRequestTarget] { recordedSignedTargets.value }
+
     func createSignedHeadersWrapper(
+        target: AttestationRequestTarget,
         bodyClosure: @escaping () throws -> Data
     ) -> CompoundOperationWrapper<[AttestationHeaderKey: String]?> {
         let bodies = recordedBodies
+        recordedSignedTargets.update { $0.append(target) }
 
         return CompoundOperationWrapper(
             targetOperation: ClosureOperation<[AttestationHeaderKey: String]?> {

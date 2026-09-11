@@ -37,8 +37,14 @@ final class BackendAttestationProviderTests: XCTestCase {
         remote.onChallenge = optOutDuringChallenge ? { [weak provider] in provider?.forgetClient() } : nil
     }
 
-    private func headers() throws -> [AttestationHeaderKey: String]? {
-        let wrapper = provider.createSignedHeadersWrapper { Data("body".utf8) }
+    private func headers(host: String = "gateway.example") throws -> [AttestationHeaderKey: String]? {
+        let target = try AttestationRequestTarget(
+            url: URL(string: "https://\(host)/v1/analytics/events")!,
+            method: "post",
+            contentType: "application/json"
+        )
+
+        let wrapper = provider.createSignedHeadersWrapper(target: target) { Data("body".utf8) }
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
         return try wrapper.targetOperation.extractNoCancellableResultData()
     }
@@ -134,9 +140,11 @@ final class BackendAttestationProviderTests: XCTestCase {
         XCTAssertEqual(remote.challengeCallCount, 0)
     }
 
-    func testAnEventsEndpointRejectionReMintsTheKeyOncePerLaunch() throws {
+    func testAnEventsEndpointRejectionReMintsTheKeyAndTheClientIdOncePerLaunch() throws {
         makeProvider()
         _ = try headers()
+
+        let rejectedClientId = settings.gatewayAttestationClientId
 
         provider.markUnattested()
         XCTAssertNil(try storedRow())
@@ -146,11 +154,45 @@ final class BackendAttestationProviderTests: XCTestCase {
 
         XCTAssertEqual(appAttest.generateKeyCallCount, 1)
         XCTAssertEqual(appAttest.attestationKeyIds.count, 1)
+        XCTAssertNotEqual(settings.gatewayAttestationClientId, rejectedClientId)
 
         let reMinted = try XCTUnwrap(try storedRow())
 
         provider.markUnattested()
         XCTAssertEqual(try storedRow(), reMinted)
+    }
+
+    func testAnUnauthorizedRegisterRetiresTheIdentityAndRetriesExactlyOnce() throws {
+        makeProvider(registerError: BackendAttestationError.unauthorized(statusCode: 401))
+
+        XCTAssertThrowsError(try headers()) { error in
+            guard case BackendAttestationError.unauthorized = error else {
+                return XCTFail("expected .unauthorized, got \(error)")
+            }
+        }
+
+        XCTAssertEqual(remote.registerCallCount, 2)
+        XCTAssertEqual(remote.registeredClientIds.count, 2)
+        XCTAssertNotEqual(remote.registeredClientIds.first, remote.registeredClientIds.last)
+        XCTAssertEqual(appAttest.generateKeyCallCount, 2)
+
+        // A rejected binding is not a verdict on the app, so nothing latches until relaunch.
+        remote.reset()
+        XCTAssertThrowsError(try headers())
+        XCTAssertGreaterThan(remote.challengeCallCount, 0)
+    }
+
+    func testARequestForAnotherOriginIsNeverAttested() throws {
+        makeProvider()
+
+        XCTAssertThrowsError(try headers(host: "attacker.example")) { error in
+            guard case BackendAttestationError.unsupported = error else {
+                return XCTFail("expected .unsupported, got \(error)")
+            }
+        }
+
+        XCTAssertEqual(remote.challengeCallCount, 0)
+        XCTAssertEqual(appAttest.generateKeyCallCount, 0)
     }
 
     func testForgetClientDropsTheRowAndTheClientId() throws {

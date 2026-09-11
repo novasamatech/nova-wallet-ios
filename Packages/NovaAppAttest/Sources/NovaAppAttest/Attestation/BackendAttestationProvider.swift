@@ -14,6 +14,7 @@ public final class BackendAttestationProvider {
     private let identity: BackendAttestationIdentityProtocol
     private let repository: AnyDataProviderRepository<AppAttestKeySettings>
     private let gatewayURL: URL
+    private let gatewayOrigin: String?
     private let mode: BackendAttestationMode
     private let bundle: Bundle
     private let operationQueue: OperationQueue
@@ -26,6 +27,7 @@ public final class BackendAttestationProvider {
     private var rejectedForProcess: Bool = false
     private var invalidKeyIdDiscardedThisLaunch: Bool = false
     private var attestationGenericDiscardedThisLaunch: Bool = false
+    private var unauthorizedDiscardedThisLaunch: Bool = false
     private var unattestedMarkedThisLaunch: Bool = false
 
     private var needsFreshKey: Bool = false
@@ -47,6 +49,7 @@ public final class BackendAttestationProvider {
         self.identity = identity
         self.repository = repository
         self.gatewayURL = gatewayURL
+        gatewayOrigin = AttestationRequestTarget.origin(of: gatewayURL)
         self.mode = mode
         self.bundle = bundle
         self.operationQueue = operationQueue
@@ -94,6 +97,7 @@ private extension BackendAttestationProvider {
     enum DiscardBrake {
         case invalidKeyId
         case attestationGeneric
+        case unauthorized
     }
 
     enum Constants {
@@ -256,6 +260,9 @@ private extension BackendAttestationProvider {
         }
     }
 
+    /// Retires the key and the client id together. The gateway never rebinds an id to a different
+    /// key, so a new key under the old id is refused as a conflict for as long as that install
+    /// lives; the identity has to move with the key it was bound to.
     func discardRowOnce(_ context: AttestationChainContext, brake: DiscardBrake) -> Bool {
         mutex.lock()
 
@@ -268,6 +275,9 @@ private extension BackendAttestationProvider {
         case .attestationGeneric:
             shouldDiscard = !attestationGenericDiscardedThisLaunch
             attestationGenericDiscardedThisLaunch = true
+        case .unauthorized:
+            shouldDiscard = !unauthorizedDiscardedThisLaunch
+            unauthorizedDiscardedThisLaunch = true
         }
 
         if shouldDiscard {
@@ -281,6 +291,7 @@ private extension BackendAttestationProvider {
             return false
         }
 
+        identity.resetClientId()
         deleteRow(context.rowIdentifier)
 
         return true
@@ -326,18 +337,70 @@ private extension BackendAttestationProvider {
 
     func handleGatewayFailure(_ error: BackendAttestationError, context: AttestationChainContext) {
         switch error {
+        case .unauthorized:
+            _ = discardRowOnce(context, brake: .unauthorized)
         case .clientError, .serverError:
             applyBackoff(context)
         case .rejected, .retryLater, .unsupported, .invalidResponse:
             break
         }
     }
+
+    /// One retry per signing request, and only for the failure a fresh identity can actually fix.
+    func shouldRetryAfterRetiring(_ error: Error) -> Bool {
+        guard let attestationError = error as? BackendAttestationError else {
+            return false
+        }
+
+        guard case .unauthorized = attestationError else {
+            return false
+        }
+
+        return true
+    }
 }
 
 // MARK: - Chain
 
 private extension BackendAttestationProvider {
+    /// One full signing attempt, owning the context its failure handler needs.
+    func createAttemptWrapper(
+        target: AttestationRequestTarget,
+        bodyClosure: @escaping () throws -> Data
+    ) -> CompoundOperationWrapper<[AttestationHeaderKey: String]?> {
+        let contextBox = AttestationChainContextBox()
+
+        let wrapper = OperationCombiningService<[AttestationHeaderKey: String]?>.compoundNonOptionalWrapper(
+            operationQueue: operationQueue
+        ) { [weak self] in
+            guard let self else {
+                throw BackendAttestationError.unsupported
+            }
+
+            return createHeadersWrapper(
+                target: target,
+                bodyClosure: bodyClosure,
+                contextBox: contextBox
+            )
+        }
+
+        let resultOperation = ClosureOperation<[AttestationHeaderKey: String]?> { [weak self] in
+            do {
+                return try wrapper.targetOperation.extractNoCancellableResultData()
+            } catch {
+                self?.handleFailure(error, context: contextBox.value)
+
+                throw error
+            }
+        }
+
+        resultOperation.addDependency(wrapper.targetOperation)
+
+        return wrapper.insertingTail(operation: resultOperation)
+    }
+
     func createHeadersWrapper(
+        target: AttestationRequestTarget,
         bodyClosure: @escaping () throws -> Data,
         contextBox: AttestationChainContextBox
     ) -> CompoundOperationWrapper<[AttestationHeaderKey: String]?> {
@@ -358,6 +421,14 @@ private extension BackendAttestationProvider {
             return .createWithError(BackendAttestationError.unsupported)
         case .appAttest:
             break
+        }
+
+        // The proof does not name its destination yet, so refusing an off-gateway target here is
+        // what keeps an assertion minted for this client from being spent against another host.
+        guard let gatewayOrigin, target.origin == gatewayOrigin else {
+            logger.error("Refusing to attest a request for \(target.origin)")
+
+            return .createWithError(BackendAttestationError.unsupported)
         }
 
         let epoch = identity.consentEpoch
@@ -702,33 +773,36 @@ private extension BackendAttestationProvider {
 
 extension BackendAttestationProvider: BackendAttestationProviderProtocol {
     public func createSignedHeadersWrapper(
+        target: AttestationRequestTarget,
         bodyClosure: @escaping () throws -> Data
     ) -> CompoundOperationWrapper<[AttestationHeaderKey: String]?> {
-        let contextBox = AttestationChainContextBox()
+        let attemptWrapper = createAttemptWrapper(target: target, bodyClosure: bodyClosure)
 
-        let wrapper = OperationCombiningService<[AttestationHeaderKey: String]?>.compoundNonOptionalWrapper(
+        let retryWrapper = OperationCombiningService<[AttestationHeaderKey: String]?>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) { [weak self] in
             guard let self else {
                 throw BackendAttestationError.unsupported
             }
 
-            return createHeadersWrapper(bodyClosure: bodyClosure, contextBox: contextBox)
-        }
-
-        let resultOperation = ClosureOperation<[AttestationHeaderKey: String]?> { [weak self] in
             do {
-                return try wrapper.targetOperation.extractNoCancellableResultData()
-            } catch {
-                self?.handleFailure(error, context: contextBox.value)
+                let headers = try attemptWrapper.targetOperation.extractNoCancellableResultData()
 
-                throw error
+                return .createWithResult(headers)
+            } catch {
+                // The refused identity has already been retired, so this attempt registers a new
+                // one. Exactly one more attempt, never a loop.
+                guard shouldRetryAfterRetiring(error) else {
+                    throw error
+                }
+
+                return createAttemptWrapper(target: target, bodyClosure: bodyClosure)
             }
         }
 
-        resultOperation.addDependency(wrapper.targetOperation)
+        retryWrapper.addDependency(wrapper: attemptWrapper)
 
-        return wrapper.insertingTail(operation: resultOperation)
+        return retryWrapper.insertingHead(operations: attemptWrapper.allOperations)
     }
 
     public func markUnattested() {
@@ -755,6 +829,7 @@ extension BackendAttestationProvider: BackendAttestationProviderProtocol {
             return
         }
 
+        identity.resetClientId()
         deleteRow(rowIdentifier(for: clientId))
     }
 

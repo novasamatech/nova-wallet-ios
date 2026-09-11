@@ -18,6 +18,38 @@ struct AnalyticsTestFixture {
 }
 
 extension AnalyticsTestFixture {
+    static func eventsTarget() throws -> AttestationRequestTarget {
+        try AttestationRequestTarget(
+            url: URL(string: "https://gateway.example/v1/analytics/events")!,
+            method: "post",
+            contentType: "application/json"
+        )
+    }
+
+    static func signedHeadersWrapper(
+        attestation: BackendAttestationProviderProtocol
+    ) -> CompoundOperationWrapper<Void> {
+        let target: AttestationRequestTarget
+
+        do {
+            target = try eventsTarget()
+        } catch {
+            return .createWithError(error)
+        }
+
+        let wrapper = attestation.createSignedHeadersWrapper(target: target) { Data("{}".utf8) }
+
+        let mapOperation = ClosureOperation<Void> {
+            _ = try wrapper.targetOperation.extractNoCancellableResultData()
+        }
+
+        mapOperation.addDependency(wrapper.targetOperation)
+
+        return wrapper.insertingTail(operation: mapOperation)
+    }
+}
+
+extension AnalyticsTestFixture {
     enum Keys {
         static let analyticsEnabled = "analyticsEnabled"
         static let analyticsInstallId = "analyticsInstallId"
@@ -61,15 +93,7 @@ extension AnalyticsTestFixture {
                 return CompoundOperationWrapper<Void>.createWithResult(())
             }
 
-            let wrapper = attestation.createSignedHeadersWrapper { Data("{}".utf8) }
-
-            let mapOperation = ClosureOperation<Void> {
-                _ = try wrapper.targetOperation.extractNoCancellableResultData()
-            }
-
-            mapOperation.addDependency(wrapper.targetOperation)
-
-            return wrapper.insertingTail(operation: mapOperation)
+            return signedHeadersWrapper(attestation: attestation)
         }
 
         let operationQueue = OperationQueue()

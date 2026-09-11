@@ -26,7 +26,9 @@ private extension BackendAttestationRemoteFactory {
         isClientAuthenticated: Bool
     ) -> BackendAttestationError? {
         switch statusCode {
-        case 401, 403:
+        case 401:
+            return .unauthorized(statusCode: statusCode)
+        case 403:
             return isClientAuthenticated
                 ? .rejected(statusCode: statusCode)
                 : .clientError(statusCode: statusCode)

@@ -88,7 +88,12 @@ public enum AnalyticsTransportError: Error, Equatable {
 }
 
 public protocol AnalyticsUploadOperationFactoryProtocol {
+    /// The one target the events POST is built from and attested against, so the request that is
+    /// signed and the request that is sent cannot describe different destinations.
+    func eventsTarget() throws -> AttestationRequestTarget
+
     func createUploadOperation(
+        target: AttestationRequestTarget,
         bodyClosure: @escaping () throws -> Data,
         headersClosure: @escaping () throws -> [AttestationHeaderKey: String]?
     ) -> BaseOperation<Void>

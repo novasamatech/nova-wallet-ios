@@ -6,11 +6,22 @@ final class AnalyticsUploadRequestTests: XCTestCase {
         AnalyticsUploadOperationFactory(baseURL: URL(string: "https://gateway.example/")!)
     }
 
+    func testTheSignedTargetIsTheOneTheRequestIsBuiltFrom() throws {
+        let target = try makeFactory().eventsTarget()
+
+        XCTAssertEqual(target.method, "POST")
+        XCTAssertEqual(target.origin, "https://gateway.example")
+        XCTAssertEqual(target.port, "443")
+        XCTAssertEqual(target.path, "/v1/analytics/events")
+        XCTAssertEqual(target.contentType, "application/json")
+    }
+
     func testRequestCarriesTheBodyVerbatimAndTheThreeHeaders() throws {
         let factory = makeFactory()
 
         let body = Data(#"{"v":1,"events":[]}"#.utf8)
-        let request = try factory.buildRequest(
+        let request = factory.buildRequest(
+            target: try factory.eventsTarget(),
             body: body,
             headers: [.clientId: "cid", .challenge: "chal", .signature: "sig"]
         )
@@ -28,7 +39,11 @@ final class AnalyticsUploadRequestTests: XCTestCase {
     func testUnsignedRequestOmitsTheAttestationHeaders() throws {
         let factory = makeFactory()
 
-        let request = try factory.buildRequest(body: Data("{}".utf8), headers: nil)
+        let request = factory.buildRequest(
+            target: try factory.eventsTarget(),
+            body: Data("{}".utf8),
+            headers: nil
+        )
 
         XCTAssertNil(request.value(forHTTPHeaderField: "X-Signature"))
         XCTAssertNil(request.value(forHTTPHeaderField: "X-Client-Id"))

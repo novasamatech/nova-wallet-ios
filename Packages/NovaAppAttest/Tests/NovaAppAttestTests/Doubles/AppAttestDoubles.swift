@@ -78,10 +78,12 @@ final class BackendAttestationRemoteFactorySpy: BackendAttestationRemoteFactoryP
 
     private(set) var challengeCallCount = 0
     private(set) var registerCallCount = 0
+    private(set) var registeredClientIds: [String] = []
 
     func reset() {
         challengeCallCount = 0
         registerCallCount = 0
+        registeredClientIds = []
     }
 
     func createChallengeWrapper() -> CompoundOperationWrapper<String> {
@@ -98,8 +100,9 @@ final class BackendAttestationRemoteFactorySpy: BackendAttestationRemoteFactoryP
         let error = registerError
 
         return ClosureOperation { [weak self] in
-            _ = try requestClosure()
+            let request = try requestClosure()
             self?.registerCallCount += 1
+            self?.registeredClientIds.append(request.clientId)
 
             if let error {
                 throw error
