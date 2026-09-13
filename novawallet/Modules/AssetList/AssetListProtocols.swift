@@ -117,7 +117,7 @@ protocol AssetListInteractorOutputProtocol {
     func didReceive(wallet: MetaAccountModel)
 
     func didChange(name: String)
-    func didReceive(hidesZeroBalances: Bool)
+    func didReceive(hasHiddenAssets: Bool)
     func didReceive(result: AssetListBuilderResult)
     func didReceiveWalletConnect(sessionsCount: Int)
     func didReceiveWalletConnect(error: WalletConnectSessionsError)

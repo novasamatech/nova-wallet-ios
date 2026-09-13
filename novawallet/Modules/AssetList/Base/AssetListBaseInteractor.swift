@@ -14,6 +14,10 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber,
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+    let assetVisibilitySubscriptionFactory: AssetVisibilityLocalSubscriptionFactoryProtocol
+    let assetVisibilityWriter: AssetVisibilityWriting
+    let defaultAssetsProvider: DefaultAssetsProviding
+    let operationQueue: OperationQueue
     let logger: LoggerProtocol?
 
     private(set) var assetBalanceSubscriptions: [AccountId: StreamableProvider<AssetBalance>] = [:]
@@ -27,6 +31,14 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber,
     private(set) var availableTokenPrice: [ChainAssetId: AssetModel.PriceId] = [:]
     private(set) var availableChains: [ChainModel.Id: ChainModel] = [:]
     private(set) var enabledChains: [ChainModel.Id: ChainModel] = [:]
+    private(set) var accountChains: [ChainModel.Id: ChainModel] = [:]
+    private(set) var visibility: AssetVisibility?
+
+    private var visibilitySubscription: StreamableProvider<AssetVisibilityLocal>?
+    private var visibilityRows: [String: AssetVisibilityLocal]?
+    private var defaultAssets: DefaultAssetsList?
+    private var pendingChainChanges: [DataProviderChange<ChainModel>] = []
+    private var seedBarrierPassed = false
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
@@ -34,6 +46,10 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        assetVisibilitySubscriptionFactory: AssetVisibilityLocalSubscriptionFactoryProtocol,
+        assetVisibilityWriter: AssetVisibilityWriting,
+        defaultAssetsProvider: DefaultAssetsProviding,
+        operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
@@ -42,6 +58,10 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber,
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.externalBalancesSubscriptionFactory = externalBalancesSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
+        self.assetVisibilitySubscriptionFactory = assetVisibilitySubscriptionFactory
+        self.assetVisibilityWriter = assetVisibilityWriter
+        self.defaultAssetsProvider = defaultAssetsProvider
+        self.operationQueue = operationQueue
         self.logger = logger
         self.currencyManager = currencyManager
     }
@@ -74,31 +94,33 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber,
         }
     }
 
-    private func convertToAssetEnabledChanges(
+    private func convertToAssetVisibleChanges(
         _ changes: [DataProviderChange<ChainModel>],
-        allEnabledChains: [ChainModel.Id: ChainModel]
+        visibility: AssetVisibility
     ) -> [DataProviderChange<ChainModel>] {
         changes.compactMap { change in
             switch change {
             case let .insert(newItem), let .update(newItem):
-                let exists = allEnabledChains[newItem.chainId] != nil
+                let exists = enabledChains[newItem.chainId] != nil
 
-                let enabledAssets = newItem.assets.filter { $0.enabled }
-                let updatedChain = newItem.byChanging(assets: Set(enabledAssets))
-                let hasEnabledAssets = !enabledAssets.isEmpty
+                let visibleAssets = newItem.assets.filter { asset in
+                    visibility.isVisible(ChainAssetId(chainId: newItem.chainId, assetId: asset.assetId))
+                }
+                let updatedChain = newItem.byChanging(assets: Set(visibleAssets))
+                let hasVisibleAssets = !visibleAssets.isEmpty
 
-                if !exists, hasEnabledAssets {
+                if !exists, hasVisibleAssets {
                     return .insert(newItem: updatedChain)
-                } else if exists, hasEnabledAssets {
+                } else if exists, hasVisibleAssets {
                     return .update(newItem: updatedChain)
-                } else if exists, !hasEnabledAssets {
+                } else if exists, !hasVisibleAssets {
                     return .delete(deletedIdentifier: updatedChain.chainId)
                 } else {
                     return nil
                 }
 
             case let .delete(deletedIdentifier):
-                let exists = allEnabledChains[deletedIdentifier] != nil
+                let exists = enabledChains[deletedIdentifier] != nil
 
                 if exists {
                     return .delete(deletedIdentifier: deletedIdentifier)
@@ -115,13 +137,18 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber,
         }
 
         let accountDependentChanges = convertToAccountDependentChanges(changes, selectedWallet: selectedMetaAccount)
-        let assetDependentChanges = convertToAssetEnabledChanges(
-            accountDependentChanges,
-            allEnabledChains: enabledChains
-        )
+        accountChains = accountDependentChanges.mergeToDict(accountChains)
 
-        baseBuilder?.applyChainModelChanges(assetDependentChanges)
-        applyChanges(allChanges: changes, enabledChainChanges: assetDependentChanges)
+        guard let visibility else {
+            pendingChainChanges.append(contentsOf: changes)
+            return
+        }
+
+        let visibleChanges = convertToAssetVisibleChanges(accountDependentChanges, visibility: visibility)
+
+        baseBuilder?.applyChainModelChanges(visibleChanges)
+        applyChanges(allChanges: changes, enabledChainChanges: visibleChanges)
+        notifyHiddenAssets()
     }
 
     func applyChanges(
@@ -139,6 +166,10 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber,
     func resetWallet() {
         clearAccountSubscriptions()
         clearExternalBalancesSubscription()
+        clearVisibilitySubscription()
+
+        accountChains = [:]
+        pendingChainChanges = []
 
         guard let selectedMetaAccount = selectedWalletSettings.value else {
             return
@@ -150,14 +181,14 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber,
         availableChains = [:]
 
         let accountDependentChanges = convertToAccountDependentChanges(changes, selectedWallet: selectedMetaAccount)
-        let assetDependentChanges = convertToAssetEnabledChanges(
-            accountDependentChanges,
-            allEnabledChains: enabledChains
-        )
+        accountChains = accountDependentChanges.mergeToDict([:])
 
-        baseBuilder?.applyChainModelChanges(assetDependentChanges)
+        // the new wallet's rows snapshot feeds the builder through reapplyVisibility()
+        didResetWallet(allChanges: changes, enabledChainChanges: [])
 
-        didResetWallet(allChanges: changes, enabledChainChanges: assetDependentChanges)
+        if seedBarrierPassed {
+            subscribeVisibility()
+        }
     }
 
     func didResetWallet(
@@ -303,11 +334,15 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber,
 
     func setup() {
         subscribeChains()
+        fetchDefaultAssets()
+        subscribeVisibilityAfterSeed()
     }
 
     func getFullChain(for chainId: ChainModel.Id) -> ChainModel? {
         availableChains[chainId]
     }
+
+    func didResolveVisibility(hasHiddenAssets _: Bool) {}
 
     func handleAccountBalance(
         result: Result<[DataProviderChange<AssetBalance>], Error>,
@@ -399,6 +434,134 @@ extension AssetListBaseInteractor {
 
         baseBuilder?.applyBalances(results)
     }
+}
+
+// MARK: Private
+
+private extension AssetListBaseInteractor {
+    func fetchDefaultAssets() {
+        let wrapper = defaultAssetsProvider.createDefaultAssetsWrapper()
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(list):
+                self?.apply(defaultAssets: list)
+            case let .failure(error):
+                self?.logger?.error("Default assets are unavailable: \(error)")
+                self?.apply(defaultAssets: .empty)
+            }
+        }
+    }
+
+    func apply(defaultAssets list: DefaultAssetsList) {
+        defaultAssets = list
+
+        baseBuilder?.applyDefaultAssets(list)
+
+        resolveVisibilityIfPossible()
+    }
+
+    func subscribeVisibilityAfterSeed() {
+        assetVisibilityWriter.enqueueBarrier(callbackIn: .main) { [weak self] in
+            self?.seedBarrierPassed = true
+            self?.subscribeVisibility()
+        }
+    }
+
+    func subscribeVisibility() {
+        clearVisibilitySubscription()
+
+        guard let metaId = selectedWalletSettings.value?.metaId else {
+            return
+        }
+
+        visibilitySubscription = subscribeToAssetVisibilityProvider(for: metaId)
+    }
+
+    func clearVisibilitySubscription() {
+        clear(streamableProvider: &visibilitySubscription)
+
+        visibilityRows = nil
+        visibility = nil
+    }
+
+    func resolveVisibilityIfPossible() {
+        guard let defaultAssets, let visibilityRows else {
+            return
+        }
+
+        let rows = visibilityRows.values.reduce(into: [ChainAssetId: AssetVisibilityState]()) { accum, row in
+            accum[row.chainAssetId] = row.state
+        }
+
+        visibility = AssetVisibility(defaults: defaultAssets, rows: rows)
+
+        let bufferedChanges = pendingChainChanges
+        pendingChainChanges = []
+
+        if !bufferedChanges.isEmpty {
+            applyChanges(allChanges: bufferedChanges, enabledChainChanges: [])
+        }
+
+        reapplyVisibility()
+    }
+
+    func reapplyVisibility() {
+        guard let visibility else {
+            return
+        }
+
+        let changes = accountChains.values.map { DataProviderChange.update(newItem: $0) }
+        let visibleChanges = convertToAssetVisibleChanges(changes, visibility: visibility)
+
+        baseBuilder?.applyChainModelChanges(visibleChanges)
+        applyChanges(allChanges: [], enabledChainChanges: visibleChanges)
+        notifyHiddenAssets()
+    }
+
+    func notifyHiddenAssets() {
+        guard let visibility else {
+            return
+        }
+
+        let hasHiddenAssets = accountChains.values.contains { chain in
+            chain.assets.contains { asset in
+                !visibility.isVisible(ChainAssetId(chainId: chain.chainId, assetId: asset.assetId))
+            }
+        }
+
+        didResolveVisibility(hasHiddenAssets: hasHiddenAssets)
+    }
+}
+
+// MARK: AssetVisibilityLocalStorageSubscriber
+
+extension AssetListBaseInteractor: AssetVisibilityLocalStorageSubscriber, AssetVisibilitySubscriptionHandler {
+    func handleAssetVisibility(
+        result: Result<[DataProviderChange<AssetVisibilityLocal>], Error>,
+        metaId: MetaAccountModel.Id
+    ) {
+        guard metaId == selectedWalletSettings.value?.metaId else {
+            return
+        }
+
+        switch result {
+        case let .success(changes):
+            visibilityRows = changes.mergeToDict(visibilityRows ?? [:])
+            resolveVisibilityIfPossible()
+        case let .failure(error):
+            logger?.error("Can't observe asset visibility: \(error)")
+        }
+    }
+
+    func handleMetaAccountSettings(
+        result _: Result<[DataProviderChange<MetaAccountSettingsLocal>], Error>,
+        metaId _: MetaAccountModel.Id
+    ) {}
 }
 
 extension AssetListBaseInteractor: ExternalAssetBalanceSubscriptionHandler, ExternalAssetBalanceSubscriber {

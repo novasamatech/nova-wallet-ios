@@ -52,7 +52,8 @@ class AssetSearchBuilder: AnyCancellableCleaning {
             priceResult: model.priceResult,
             balanceResults: balanceResults,
             allChains: model.allChains,
-            externalBalances: model.externalBalances
+            externalBalances: model.externalBalances,
+            defaultRank: model.visibility?.defaults.rank ?? [:]
         )
     }
 
@@ -219,7 +220,7 @@ private extension AssetSearchBuilder {
             newGroups.append(groupModel)
         }
 
-        let groupsComparator = AssetListModelHelpers.assetListAssetGroupSortingBlock
+        let groupsComparator = AssetListModelHelpers.assetListAssetGroupSortingBlock(rank: state.defaultRank)
         newGroups.sort(by: groupsComparator)
 
         return (newGroups, newGroupListsByAsset)

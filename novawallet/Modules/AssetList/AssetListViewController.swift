@@ -22,7 +22,7 @@ final class AssetListViewController: UIViewController, ViewHolder {
     }()
 
     private var groupsViewModel: AssetListViewModel = .init(
-        isFiltered: false,
+        hasHiddenAssets: nil,
         listState: .list(groups: []),
         listGroupStyle: .tokens
     )

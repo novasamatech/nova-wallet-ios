@@ -36,6 +36,8 @@ final class AssetListInteractor: AssetListBaseInteractor {
     private var assetHoldsSubscriptions: [AccountId: StreamableProvider<AssetHold>] = [:]
     private var holds: [ChainAssetId: [AssetHold]] = [:]
 
+    private var lastBuilderModel: AssetListBuilderResult.Model = .init()
+
     init(
         selectedWalletSettings: SelectedWalletSettings,
         chainRegistry: ChainRegistryProtocol,
@@ -46,6 +48,10 @@ final class AssetListInteractor: AssetListBaseInteractor {
         pendingMultisigLocalSubscriptionFactory: MultisigOperationsLocalSubscriptionFactoryProtocol,
         externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        assetVisibilitySubscriptionFactory: AssetVisibilityLocalSubscriptionFactoryProtocol,
+        assetVisibilityWriter: AssetVisibilityWriting,
+        defaultAssetsProvider: DefaultAssetsProviding,
+        operationQueue: OperationQueue,
         eventCenter: EventCenterProtocol,
         settingsManager: SettingsManagerProtocol,
         currencyManager: CurrencyManagerProtocol,
@@ -65,6 +71,10 @@ final class AssetListInteractor: AssetListBaseInteractor {
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             externalBalancesSubscriptionFactory: externalBalancesSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            assetVisibilitySubscriptionFactory: assetVisibilitySubscriptionFactory,
+            assetVisibilityWriter: assetVisibilityWriter,
+            defaultAssetsProvider: defaultAssetsProvider,
+            operationQueue: operationQueue,
             currencyManager: currencyManager,
             logger: logger
         )
@@ -112,18 +122,18 @@ final class AssetListInteractor: AssetListBaseInteractor {
         modelBuilder = .init { [weak self] result in
             self?.presenter?.didReceive(result: result)
 
-            self?.assetListModelObservable.state = .init(value: .init(model: result.model))
+            self?.lastBuilderModel = result.model
+            self?.provideAssetListModel()
         }
 
         providerWalletInfo()
 
         walletConnect.add(delegate: self)
 
-        provideHidesZeroBalances()
         provideWalletConnectSessionsCount()
 
         subscribeMultisigOperationsIfNeeded()
-        subscribeChains()
+        super.setup()
 
         eventCenter.add(observer: self, dispatchIn: .main)
 
@@ -157,6 +167,12 @@ final class AssetListInteractor: AssetListBaseInteractor {
         super.handlePriceChanges(result)
 
         presenter?.didCompleteRefreshing()
+    }
+
+    override func didResolveVisibility(hasHiddenAssets: Bool) {
+        provideAssetListModel()
+
+        presenter?.didReceive(hasHiddenAssets: hasHiddenAssets)
     }
 }
 
@@ -197,9 +213,14 @@ private extension AssetListInteractor {
         modelBuilder?.applyWallet(selectedMetaAccount)
     }
 
-    func provideHidesZeroBalances() {
-        let value = settingsManager.hidesZeroBalances
-        presenter?.didReceive(hidesZeroBalances: value)
+    func provideAssetListModel() {
+        assetListModelObservable.state = .init(
+            value: .init(
+                model: lastBuilderModel,
+                chainsIncludingHidden: accountChains,
+                visibility: visibility
+            )
+        )
     }
 
     func clearNftSubscription() {
@@ -429,10 +450,6 @@ extension AssetListInteractor: EventVisitorProtocol {
         }
 
         presenter?.didChange(name: name)
-    }
-
-    func processHideZeroBalances(event _: HideZeroBalancesChanged) {
-        provideHidesZeroBalances()
     }
 }
 

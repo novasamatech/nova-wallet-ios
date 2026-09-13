@@ -188,8 +188,6 @@ private extension AssetListCollectionViewDataSource {
             for: .valueChanged
         )
 
-        settingsCell.manageButton.bind(showingBadge: groupsViewModel.isFiltered)
-
         return settingsCell
     }
 

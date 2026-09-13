@@ -49,7 +49,8 @@ final class GiftAssetSearchBuilder: AssetSearchBuilder {
             priceResult: model.priceResult,
             balanceResults: balanceResults,
             allChains: model.allChains,
-            externalBalances: nil
+            externalBalances: nil,
+            defaultRank: model.visibility?.defaults.rank ?? [:]
         )
     }
 
