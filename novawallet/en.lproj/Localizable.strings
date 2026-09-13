@@ -1091,6 +1091,11 @@
 "common.more.format" = "%@ (+%@ more)";
 "common.token.decimals" = "Decimals";
 "tokens.manage.partial.selected" = "%@ (%@ more)";
+"common.deselect.all" = "Deselect all";
+"tokens.manage.auto.add" = "Add tokens with positive balance";
+"tokens.manage.section.default" = "Default";
+"tokens.manage.section.others" = "Others";
+"tokens.manage.section.paused" = "Paused";
 "add.token.invalid.contract.address.message" = "The entered contract address is not ERC-20 contract.";
 "add.token.completion.message" = "%@ token added";
 "add.token.contract.metadata.error.title" = "Metadata fetch failed";

@@ -5051,6 +5051,15 @@
 		84BAD21C293B1BC200C55C49 /* ChainModelConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BAD21B293B1BC200C55C49 /* ChainModelConversion.swift */; };
 		84BAD220293B574900C55C49 /* MultichainToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BAD21F293B574900C55C49 /* MultichainToken.swift */; };
 		84BAD222293C655900C55C49 /* TokensManageViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BAD221293C655900C55C49 /* TokensManageViewModelFactory.swift */; };
+		7D0B9E33FF55490C8CB9FC5C /* TokensManageRootViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AD4E8162E6340C9902AFA96 /* TokensManageRootViewModel.swift */; };
+		E4010B01E994480BB688FB4F /* TokensManageChildViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F507F53384F48C99FC833CA /* TokensManageChildViewModel.swift */; };
+		0D7336BEEBD34F4B9CD566E8 /* TokensManageListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5EFC5B44D1C49949EE200D2 /* TokensManageListItem.swift */; };
+		66C2578EDA9F4D30A5E02ECF /* TokensManageHeaderActionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF97483537C24B5D8EAB54D9 /* TokensManageHeaderActionViewModel.swift */; };
+		E9361431C0524063B2636DBA /* TokensManageSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9F57ABA272A4E6A951E7A07 /* TokensManageSectionHeaderView.swift */; };
+		727D48612AB5448DBD8E87DD /* TokensManageAutoAddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAD026470284F8BAEC76335 /* TokensManageAutoAddView.swift */; };
+		7AED8432870D43FEAB2E05ED /* TokensManageRootCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DBA2AB5A8D243DD83355AB1 /* TokensManageRootCell.swift */; };
+		45E25D160ADE4931BC56D5D0 /* TokensManageNetworkChildCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56552BAC6AD748159820079C /* TokensManageNetworkChildCell.swift */; };
+		1BE1A5C8DC66435FAA5D61EC /* TokensManageTokenChildCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 908EEBB818174FF3A45950C1 /* TokensManageTokenChildCell.swift */; };
 		84BAFCD026AF585900871E86 /* SharedArrayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BAFCCF26AF585900871E86 /* SharedArrayTests.swift */; };
 		84BAFCD226AF5EE700871E86 /* IconDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BAFCD126AF5EE700871E86 /* IconDetailsView.swift */; };
 		84BAFCD626AF64CB00871E86 /* SelectValidatorsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BAFCD526AF64CB00871E86 /* SelectValidatorsViewLayout.swift */; };
@@ -11420,6 +11429,15 @@
 		84BAD21B293B1BC200C55C49 /* ChainModelConversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainModelConversion.swift; sourceTree = "<group>"; };
 		84BAD21F293B574900C55C49 /* MultichainToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultichainToken.swift; sourceTree = "<group>"; };
 		84BAD221293C655900C55C49 /* TokensManageViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensManageViewModelFactory.swift; sourceTree = "<group>"; };
+		5AD4E8162E6340C9902AFA96 /* TokensManageRootViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensManageRootViewModel.swift; sourceTree = "<group>"; };
+		3F507F53384F48C99FC833CA /* TokensManageChildViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensManageChildViewModel.swift; sourceTree = "<group>"; };
+		F5EFC5B44D1C49949EE200D2 /* TokensManageListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensManageListItem.swift; sourceTree = "<group>"; };
+		DF97483537C24B5D8EAB54D9 /* TokensManageHeaderActionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensManageHeaderActionViewModel.swift; sourceTree = "<group>"; };
+		E9F57ABA272A4E6A951E7A07 /* TokensManageSectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensManageSectionHeaderView.swift; sourceTree = "<group>"; };
+		3AAD026470284F8BAEC76335 /* TokensManageAutoAddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensManageAutoAddView.swift; sourceTree = "<group>"; };
+		4DBA2AB5A8D243DD83355AB1 /* TokensManageRootCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensManageRootCell.swift; sourceTree = "<group>"; };
+		56552BAC6AD748159820079C /* TokensManageNetworkChildCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensManageNetworkChildCell.swift; sourceTree = "<group>"; };
+		908EEBB818174FF3A45950C1 /* TokensManageTokenChildCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensManageTokenChildCell.swift; sourceTree = "<group>"; };
 		84BAFCCF26AF585900871E86 /* SharedArrayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedArrayTests.swift; sourceTree = "<group>"; };
 		84BAFCD126AF5EE700871E86 /* IconDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconDetailsView.swift; sourceTree = "<group>"; };
 		84BAFCD526AF64CB00871E86 /* SelectValidatorsViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectValidatorsViewLayout.swift; sourceTree = "<group>"; };
@@ -26391,6 +26409,11 @@
 				84AF08DE2941DB2300D0572B /* MultichainTokenView.swift */,
 				84BAD212293AFCDA00C55C49 /* TokensManageTableViewCell.swift */,
 				2D81FAEA2CC65CF800BA0E46 /* TokensManageSearchView.swift */,
+				E9F57ABA272A4E6A951E7A07 /* TokensManageSectionHeaderView.swift */,
+				3AAD026470284F8BAEC76335 /* TokensManageAutoAddView.swift */,
+				4DBA2AB5A8D243DD83355AB1 /* TokensManageRootCell.swift */,
+				56552BAC6AD748159820079C /* TokensManageNetworkChildCell.swift */,
+				908EEBB818174FF3A45950C1 /* TokensManageTokenChildCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -26400,6 +26423,10 @@
 			children = (
 				84BAD210293A2FB100C55C49 /* TokensManageViewModel.swift */,
 				84BAD221293C655900C55C49 /* TokensManageViewModelFactory.swift */,
+				5AD4E8162E6340C9902AFA96 /* TokensManageRootViewModel.swift */,
+				3F507F53384F48C99FC833CA /* TokensManageChildViewModel.swift */,
+				F5EFC5B44D1C49949EE200D2 /* TokensManageListItem.swift */,
+				DF97483537C24B5D8EAB54D9 /* TokensManageHeaderActionViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -34376,6 +34403,15 @@
 				0C1CF70B2E50976900B1DA66 /* AssetBalance+HydrationApi.swift in Sources */,
 				2D3EA7E02CFEDC0F0033AFD2 /* DAppCategoryViewModelFactory.swift in Sources */,
 				84BAD222293C655900C55C49 /* TokensManageViewModelFactory.swift in Sources */,
+				7D0B9E33FF55490C8CB9FC5C /* TokensManageRootViewModel.swift in Sources */,
+				E4010B01E994480BB688FB4F /* TokensManageChildViewModel.swift in Sources */,
+				0D7336BEEBD34F4B9CD566E8 /* TokensManageListItem.swift in Sources */,
+				66C2578EDA9F4D30A5E02ECF /* TokensManageHeaderActionViewModel.swift in Sources */,
+				E9361431C0524063B2636DBA /* TokensManageSectionHeaderView.swift in Sources */,
+				727D48612AB5448DBD8E87DD /* TokensManageAutoAddView.swift in Sources */,
+				7AED8432870D43FEAB2E05ED /* TokensManageRootCell.swift in Sources */,
+				45E25D160ADE4931BC56D5D0 /* TokensManageNetworkChildCell.swift in Sources */,
+				1BE1A5C8DC66435FAA5D61EC /* TokensManageTokenChildCell.swift in Sources */,
 				84F3B27427F4130800D64CF5 /* PhishingSites.swift in Sources */,
 				8430AAF12602306A005B1066 /* BondedState.swift in Sources */,
 				848F8B1D2863616E00204BC4 /* ChainsStore.swift in Sources */,
