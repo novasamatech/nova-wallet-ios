@@ -47,15 +47,6 @@ final class MultichainTokenView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func bind(viewModel: TokenManageViewModel) {
-        bind(
-            title: viewModel.symbol,
-            subtitle: viewModel.subtitle,
-            imageViewModel: viewModel.imageViewModel,
-            isOn: viewModel.isOn
-        )
-    }
-
     func bind(
         title: String,
         subtitle: String?,

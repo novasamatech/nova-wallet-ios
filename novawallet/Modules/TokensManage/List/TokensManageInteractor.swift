@@ -8,7 +8,6 @@ final class TokensManageInteractor {
     let chainRegistry: ChainRegistryProtocol
     let repository: AnyDataProviderRepository<ChainModel>
     let repositoryFactory: SubstrateRepositoryFactoryProtocol
-    let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
 
     private var settingsManager: SettingsManagerProtocol
@@ -17,14 +16,12 @@ final class TokensManageInteractor {
 
     init(
         chainRegistry: ChainRegistryProtocol,
-        eventCenter: EventCenterProtocol,
         settingsManager: SettingsManagerProtocol,
         repository: AnyDataProviderRepository<ChainModel>,
         repositoryFactory: SubstrateRepositoryFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
-        self.eventCenter = eventCenter
         self.settingsManager = settingsManager
         self.repository = repository
         self.repositoryFactory = repositoryFactory
@@ -69,18 +66,11 @@ final class TokensManageInteractor {
             dependencies: [clearLocksOperation, clearCrowdloanContributionOperation]
         )
     }
-
-    private func provideHidesZeroBalances() {
-        let hidesZeroBalances = settingsManager.hidesZeroBalances
-
-        presenter?.didReceive(hideZeroBalances: hidesZeroBalances)
-    }
 }
 
 extension TokensManageInteractor: TokensManageInteractorInputProtocol {
     func setup() {
         subscribeChains()
-        provideHidesZeroBalances()
     }
 
     func save(chainAssetIds: Set<ChainAssetId>, enabled: Bool, allChains: [ChainModel]) {
@@ -134,18 +124,6 @@ extension TokensManageInteractor: TokensManageInteractorInputProtocol {
             let clearTokenWrapper = createTokenClearWrapper(for: chainAssetIds)
             clearTokenWrapper.addDependency(operations: [saveOperation])
             operationQueue.addOperations(clearTokenWrapper.allOperations, waitUntilFinished: false)
-        }
-    }
-
-    func save(hideZeroBalances: Bool) {
-        let shouldNotify = hideZeroBalances != settingsManager.hidesZeroBalances
-
-        settingsManager.hidesZeroBalances = hideZeroBalances
-
-        provideHidesZeroBalances()
-
-        if shouldNotify {
-            eventCenter.notify(with: HideZeroBalancesChanged())
         }
     }
 }

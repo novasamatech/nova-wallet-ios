@@ -33,7 +33,6 @@ final class TokensManageViewController: UIViewController, ViewHolder {
 
         setupTopBar()
         setupSearchField()
-        setupFilter()
         setupTableView()
         setupLocalization()
 
@@ -45,14 +44,6 @@ final class TokensManageViewController: UIViewController, ViewHolder {
 
         rootView.addTokenButton.target = self
         rootView.addTokenButton.action = #selector(actionAddToken)
-    }
-
-    private func setupFilter() {
-        rootView.filterSwitch.addTarget(
-            self,
-            action: #selector(actionHideZeroBalances),
-            for: .valueChanged
-        )
     }
 
     private func setupSearchField() {
@@ -78,8 +69,6 @@ final class TokensManageViewController: UIViewController, ViewHolder {
         rootView.addTokenButton.title = R.string(preferredLanguages: languages).localizable.commonAddToken()
 
         let placeholder = R.string(preferredLanguages: languages).localizable.assetsSearchPlaceholder()
-
-        rootView.filterLabel.text = R.string(preferredLanguages: languages).localizable.assetsManageHideZeroBalances()
 
         rootView.searchTextField.attributedPlaceholder = NSAttributedString(
             string: placeholder,
@@ -119,21 +108,9 @@ final class TokensManageViewController: UIViewController, ViewHolder {
 
         presenter.search(query: query)
     }
-
-    @objc private func actionHideZeroBalances() {
-        presenter.performFilterChange(to: rootView.filterSwitch.isOn)
-    }
 }
 
 extension TokensManageViewController: TokensManageTableViewCellDelegate {
-    func tokensManageCellDidEdit(_ cell: TokensManageTableViewCell) {
-        guard let viewModel = getViewModel(for: cell) else {
-            return
-        }
-
-        presenter.performEdit(for: viewModel)
-    }
-
     func tokensManageCellDidSwitch(_ cell: TokensManageTableViewCell, isOn: Bool) {
         guard let viewModel = getViewModel(for: cell) else {
             return
@@ -144,13 +121,6 @@ extension TokensManageViewController: TokensManageTableViewCellDelegate {
 }
 
 extension TokensManageViewController: TokensManageViewProtocol {
-    func didReceive(hidesZeroBalances: Bool) {
-        rootView.filterSwitch.setOn(
-            hidesZeroBalances,
-            animated: true
-        )
-    }
-
     func didReceive(viewModels: [TokensManageViewModel]) {
         var snapshot = Snapshot()
         snapshot.appendSections([.main])

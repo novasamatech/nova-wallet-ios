@@ -661,13 +661,11 @@
 "dapp.search.query.section" = "Search";
 "dapp.search.app.section" = "DApps";
 "wallet.list.empty.message_v2" = "Your assets will appear here";
-"assets.manage.hide.zero.balances" = "Hide assets with zero balances";
 "wallet.send.dead.recipient.commission.asset.title" = "Recipient is not able to accept transfer";
 "wallet.send.dead.recipient.commission.asset.message" = "Your transfer will fail since the destination account does not have enough %@ to accept other token transfers";
 "transaction.min.balance.violation.message" = "You need to have at least %@ to pay this transaction fee and stay above the minimum network balance. Your current balance is: %@. You need to add %@ to your balance to perform this operation.";
 "common.era.format" = "#%@";
 "wallet.total.balance" = "Total balance";
-"assets.manage.title" = "Filters";
 "tabbar.dapps.title_2_4_3" = "Browser";
 "dapps.decoration.subtitle_2_4_3" = "Browse the web using\nyour accounts from Nova Wallet";
 "dapp.decoration.title_2_4_3" = "Welcome\nto Nova browser";

@@ -10,7 +10,6 @@ final class TokensManagePresenter {
 
     private(set) var chains: ListDifferenceCalculator<ChainModel>
     private(set) var tokenModels: [MultichainToken] = []
-    private(set) var hideZeroBalances: Bool = false
 
     private var query: String = ""
 
@@ -95,16 +94,6 @@ final class TokensManagePresenter {
         let chainAssetIds = token.instances.map(\.chainAssetId)
         interactor.save(chainAssetIds: Set(chainAssetIds), enabled: enabled, allChains: chains.allItems)
     }
-
-    private func changeHideZeroBalances(to value: Bool) {
-        guard hideZeroBalances != value else {
-            return
-        }
-
-        hideZeroBalances = value
-
-        view?.didReceive(hidesZeroBalances: value)
-    }
 }
 
 extension TokensManagePresenter: TokensManagePresenterProtocol {
@@ -122,26 +111,12 @@ extension TokensManagePresenter: TokensManagePresenterProtocol {
         wireframe.showAddToken(from: view)
     }
 
-    func performEdit(for viewModel: TokensManageViewModel) {
-        guard let token = tokenModels.first(where: { $0.symbol == viewModel.symbol }) else {
-            return
-        }
-
-        let allChains = chains.allItems.reduceToDict()
-
-        wireframe.showEditToken(from: view, token: token, allChains: allChains)
-    }
-
     func performSwitch(for viewModel: TokensManageViewModel, enabled: Bool) {
         guard let tokenIndex = tokenModels.firstIndex(where: { $0.symbol == viewModel.symbol }) else {
             return
         }
 
         saveChains(for: tokenModels[tokenIndex], enabled: enabled)
-    }
-
-    func performFilterChange(to value: Bool) {
-        interactor.save(hideZeroBalances: value)
     }
 }
 
@@ -150,10 +125,6 @@ extension TokensManagePresenter: TokensManageInteractorOutputProtocol {
         chains.apply(changes: changes)
 
         reloadTokens()
-    }
-
-    func didReceive(hideZeroBalances: Bool) {
-        changeHideZeroBalances(to: hideZeroBalances)
     }
 
     func didFailChainSave() {

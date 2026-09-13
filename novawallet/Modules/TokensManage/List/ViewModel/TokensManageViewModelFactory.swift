@@ -3,7 +3,6 @@ import Foundation_iOS
 
 protocol TokensManageViewModelFactoryProtocol {
     func createListViewModel(from token: MultichainToken, locale: Locale) -> TokensManageViewModel
-    func createSingleViewModel(from token: MultichainToken, locale: Locale) -> TokenManageViewModel
 }
 
 final class TokensManageViewModelFactory {
@@ -44,28 +43,22 @@ final class TokensManageViewModelFactory {
 
 extension TokensManageViewModelFactory: TokensManageViewModelFactoryProtocol {
     func createListViewModel(from token: MultichainToken, locale: Locale) -> TokensManageViewModel {
-        let model = createSingleViewModel(from: token, locale: locale)
+        let imageViewModel = assetIconViewModelFactory.createAssetIconViewModel(for: token.icon)
+        let subtitle = createSubtitle(from: token, locale: locale)
 
         var hasher = Hasher()
         hasher.combine(token.symbol)
         hasher.combine(token.icon)
-        hasher.combine(model.subtitle)
+        hasher.combine(subtitle)
         hasher.combine(token.enabled)
         let identifier = hasher.finalize()
 
         return .init(
             identifier: identifier,
-            symbol: model.symbol,
-            imageViewModel: model.imageViewModel,
-            subtitle: model.subtitle,
-            isOn: model.isOn
+            symbol: token.symbol,
+            imageViewModel: imageViewModel,
+            subtitle: subtitle,
+            isOn: token.enabled
         )
-    }
-
-    func createSingleViewModel(from token: MultichainToken, locale: Locale) -> TokenManageViewModel {
-        let imageViewModel = assetIconViewModelFactory.createAssetIconViewModel(for: token.icon)
-        let subtitle = createSubtitle(from: token, locale: locale)
-
-        return .init(symbol: token.symbol, imageViewModel: imageViewModel, subtitle: subtitle, isOn: token.enabled)
     }
 }

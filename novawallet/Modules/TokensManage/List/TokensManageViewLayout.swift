@@ -1,18 +1,10 @@
 import UIKit
 
 final class TokensManageViewLayout: UIView {
-    let searchView = TokensManageSearchView()
+    let searchView = TopCustomSearchView()
 
     var searchBar: CustomSearchBar {
         searchView.searchBar
-    }
-
-    var filterSwitch: UISwitch {
-        searchView.zeroBalanceFilterSwitch
-    }
-
-    var filterLabel: UILabel {
-        searchView.zeroBalanceFilterLabel
     }
 
     var searchTextField: UITextField {
@@ -88,6 +80,6 @@ final class TokensManageViewLayout: UIView {
 
 private extension TokensManageViewLayout {
     enum Constants {
-        static let preferredBarHeight: CGFloat = 98.0
+        static let preferredBarHeight: CGFloat = 64.0
     }
 }

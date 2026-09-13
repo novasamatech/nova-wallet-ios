@@ -2,7 +2,6 @@ import UIKit
 import UIKit_iOS
 
 protocol TokensManageTableViewCellDelegate: AnyObject {
-    func tokensManageCellDidEdit(_ cell: TokensManageTableViewCell)
     func tokensManageCellDidSwitch(_ cell: TokensManageTableViewCell, isOn: Bool)
 }
 
@@ -10,11 +9,6 @@ final class TokensManageTableViewCell: UITableViewCell {
     weak var delegate: TokensManageTableViewCellDelegate?
 
     let tokenView = MultichainTokenView()
-
-    let editButton: RoundedButton = .create { button in
-        button.applyIconStyle()
-        button.imageWithTitleView?.iconImage = R.image.iconPencil()?.tinted(with: R.color.colorIconSecondary()!)!
-    }
 
     let switchView: UISwitch = .create { view in
         view.onTintColor = R.color.colorIconAccent()
@@ -36,14 +30,12 @@ final class TokensManageTableViewCell: UITableViewCell {
     }
 
     func bind(viewModel: TokensManageViewModel) {
-        let tokenViewModel = TokenManageViewModel(
-            symbol: viewModel.symbol,
-            imageViewModel: viewModel.imageViewModel,
+        tokenView.bind(
+            title: viewModel.symbol,
             subtitle: viewModel.subtitle,
+            imageViewModel: viewModel.imageViewModel,
             isOn: viewModel.isOn
         )
-
-        tokenView.bind(viewModel: tokenViewModel)
 
         if viewModel.isOn != switchView.isOn {
             switchView.setOn(viewModel.isOn, animated: false)
@@ -51,12 +43,6 @@ final class TokensManageTableViewCell: UITableViewCell {
     }
 
     private func setupHandlers() {
-        editButton.addTarget(
-            self,
-            action: #selector(actionEdit),
-            for: .touchUpInside
-        )
-
         switchView.addTarget(
             self,
             action: #selector(actionSwitch),
@@ -68,32 +54,29 @@ final class TokensManageTableViewCell: UITableViewCell {
         contentView.addSubview(switchView)
 
         switchView.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.trailing.equalToSuperview().inset(Constants.horizontalInset)
             make.centerY.equalToSuperview()
-        }
-
-        contentView.addSubview(editButton)
-
-        editButton.snp.makeConstraints { make in
-            make.trailing.equalTo(switchView.snp.leading).offset(-16)
-            make.centerY.equalToSuperview()
-            make.size.equalTo(40)
         }
 
         contentView.addSubview(tokenView)
 
         tokenView.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
-            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.trailing.lessThanOrEqualTo(editButton.snp.leading)
+            make.leading.equalToSuperview().inset(Constants.horizontalInset)
+            make.trailing.lessThanOrEqualTo(switchView.snp.leading).offset(-Constants.contentSpacing)
         }
-    }
-
-    @objc func actionEdit() {
-        delegate?.tokensManageCellDidEdit(self)
     }
 
     @objc func actionSwitch() {
         delegate?.tokensManageCellDidSwitch(self, isOn: switchView.isOn)
+    }
+}
+
+// MARK: Constants
+
+private extension TokensManageTableViewCell {
+    enum Constants {
+        static let horizontalInset: CGFloat = 20
+        static let contentSpacing: CGFloat = 12
     }
 }
