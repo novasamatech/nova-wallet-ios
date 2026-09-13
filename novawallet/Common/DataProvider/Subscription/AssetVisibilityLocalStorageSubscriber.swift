@@ -13,6 +13,18 @@ protocol AssetVisibilitySubscriptionHandler {
     )
 }
 
+extension AssetVisibilitySubscriptionHandler {
+    func handleAssetVisibility(
+        result _: Result<[DataProviderChange<AssetVisibilityLocal>], Error>,
+        metaId _: MetaAccountModel.Id
+    ) {}
+
+    func handleMetaAccountSettings(
+        result _: Result<[DataProviderChange<MetaAccountSettingsLocal>], Error>,
+        metaId _: MetaAccountModel.Id
+    ) {}
+}
+
 protocol AssetVisibilityLocalStorageSubscriber: LocalStorageProviderObserving where Self: AnyObject {
     var assetVisibilitySubscriptionFactory: AssetVisibilityLocalSubscriptionFactoryProtocol { get }
     var assetVisibilitySubscriptionHandler: AssetVisibilitySubscriptionHandler { get }

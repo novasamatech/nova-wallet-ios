@@ -110,11 +110,6 @@ extension AutoAddTokensService: WalletLocalStorageSubscriber, WalletLocalSubscri
 // MARK: AssetVisibilityLocalStorageSubscriber
 
 extension AutoAddTokensService: AssetVisibilityLocalStorageSubscriber, AssetVisibilitySubscriptionHandler {
-    func handleAssetVisibility(
-        result _: Result<[DataProviderChange<AssetVisibilityLocal>], Error>,
-        metaId _: MetaAccountModel.Id
-    ) {}
-
     func handleMetaAccountSettings(
         result: Result<[DataProviderChange<MetaAccountSettingsLocal>], Error>,
         metaId: MetaAccountModel.Id
