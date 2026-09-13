@@ -52,5 +52,11 @@ final class OperationManagerFacade {
         return operationQueue
     }()
 
+    static let assetVisibilityQueue: OperationQueue = {
+        let operationQueue = OperationQueue()
+        operationQueue.maxConcurrentOperationCount = 1
+        return operationQueue
+    }()
+
     static let sharedManager = OperationManager(operationQueue: sharedDefaultQueue)
 }
