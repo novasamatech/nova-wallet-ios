@@ -555,11 +555,6 @@ extension AssetListBaseInteractor: AssetVisibilityLocalStorageSubscriber, AssetV
             logger?.error("Can't observe asset visibility: \(error)")
         }
     }
-
-    func handleMetaAccountSettings(
-        result _: Result<[DataProviderChange<MetaAccountSettingsLocal>], Error>,
-        metaId _: MetaAccountModel.Id
-    ) {}
 }
 
 extension AssetListBaseInteractor: ExternalAssetBalanceSubscriptionHandler, ExternalAssetBalanceSubscriber {
