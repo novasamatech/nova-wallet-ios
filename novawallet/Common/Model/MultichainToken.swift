@@ -18,28 +18,6 @@ struct MultichainToken {
 }
 
 extension Array where Element == ChainModel {
-    func createMultichainToken(for symbol: String) -> MultichainToken {
-        reduce(MultichainToken(symbol: symbol, instances: [])) { token, chain in
-            let assets = chain.assets.filter {
-                MultichainToken.reserveTokensOf(symbol: $0.symbol).contains(symbol)
-            }.sorted { $0.assetId < $1.assetId }
-
-            return assets.reduce(token) { accumToken, asset in
-                let chainAsset = ChainAsset(chain: chain, asset: asset)
-
-                let instance = MultichainToken.Instance(
-                    chainAssetId: chainAsset.chainAssetId,
-                    chainName: chain.name,
-                    testnet: chain.isTestnet,
-                    utility: chainAsset.isUtilityAsset,
-                    icon: asset.icon
-                )
-
-                return MultichainToken(symbol: symbol, instances: accumToken.instances + [instance])
-            }
-        }
-    }
-
     func getAssetSymbols() -> Set<AssetModel.Symbol> {
         let chainAssets = flatMap { $0.chainAssets() }
         return chainAssets.getAssetSymbols()
