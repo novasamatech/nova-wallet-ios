@@ -14,6 +14,7 @@ final class TokensManagePresenter {
     private var rows: [String: AssetVisibilityLocal]?
     private var defaults: DefaultAssetsList?
     private var hasReceivedChains: Bool = false
+    private var autoAddTokens: Bool?
     private var query: String = ""
     private var expandedGroupIds: Set<String> = []
     private var listedGroups: [String: TokensManageGroup] = [:]
@@ -53,38 +54,38 @@ final class TokensManagePresenter {
 // MARK: Private
 
 private extension TokensManagePresenter {
-    func filterTokens(_ tokens: [MultichainToken], for query: String) -> [MultichainToken] {
+    func applySearch(to sections: [TokensManageGroupSection]) -> [TokensManageGroupSection] {
         guard !query.isEmpty else {
-            return tokens
+            return sections
         }
 
-        let allTokensMatching = tokens.compactMap { token in
-            SearchMatch<MultichainToken>.matchString(for: query, recordField: token.symbol, record: token)
+        let groups = sections.flatMap(\.groups).compactMap { searchGroup($0) }
+
+        return [TokensManageGroupSection(kind: .results, groups: groups)]
+    }
+
+    func searchGroup(_ group: TokensManageGroup) -> TokensManageGroup? {
+        let members = group.members.filter { isMatchingQuery($0) }
+
+        guard !members.isEmpty else {
+            return nil
         }
 
-        let allMatchedTokens = allTokensMatching.map(\.item)
+        return TokensManageGroup(
+            id: group.id,
+            title: group.title,
+            icon: group.icon,
+            kind: group.kind,
+            isPaused: group.isPaused,
+            members: members
+        )
+    }
 
-        if allTokensMatching.contains(where: { $0.isFull }) {
-            return allMatchedTokens
-        }
+    func isMatchingQuery(_ member: TokensManageMember) -> Bool {
+        let symbolMatch = SearchMatch.matchString(for: query, recordField: member.symbol, record: member)
+        let chainMatch = SearchMatch.matchInclusion(for: query, recordField: member.chainName, record: member)
 
-        let matchedSymbols = Set(allMatchedTokens.map(\.symbol))
-
-        let allMatchedChains = tokens.filter { token in
-            let hasChainMatch = token.instances.contains { instance in
-                let match = SearchMatch<MultichainToken.Instance>.matchInclusion(
-                    for: query,
-                    recordField: instance.chainName,
-                    record: instance
-                )
-
-                return match != nil
-            }
-
-            return hasChainMatch && !matchedSymbols.contains(token.symbol)
-        }
-
-        return allMatchedTokens + allMatchedChains
+        return symbolMatch != nil || chainMatch != nil
     }
 
     func buildGroups(style: AssetListGroupsStyle, visibility: AssetVisibility) -> [TokensManageGroup] {
@@ -99,9 +100,8 @@ private extension TokensManagePresenter {
     func buildTokenGroups(visibility: AssetVisibility) -> [TokensManageGroup] {
         let syncingChains = chains.allItems.filter { $0.syncMode.enabled() }
         let chainsById = syncingChains.reduce(into: [ChainModel.Id: ChainModel]()) { $0[$1.chainId] = $1 }
-        let tokens = filterTokens(syncingChains.createMultichainTokens(), for: query)
 
-        return tokens.map { token in
+        return syncingChains.createMultichainTokens().map { token in
             let members = token.instances.compactMap { instance in
                 createTokenMember(for: instance.chainAssetId, chainsById: chainsById, visibility: visibility)
             }
@@ -195,35 +195,71 @@ private extension TokensManagePresenter {
         ].filter { !$0.groups.isEmpty }
     }
 
+    func listedMembers() -> [TokensManageMember] {
+        listedGroups.values.filter { !$0.isPaused }.flatMap(\.members)
+    }
+
+    func createHeaderAction() -> TokensManageHeaderActionViewModel {
+        let members = listedMembers()
+
+        guard !members.isEmpty else {
+            return TokensManageHeaderActionViewModel(kind: .selectAll, isEnabled: false)
+        }
+
+        let hasHiddenMember = members.contains { !$0.isVisible }
+
+        return TokensManageHeaderActionViewModel(
+            kind: hasHiddenMember ? .selectAll : .deselectAll,
+            isEnabled: true
+        )
+    }
+
     func resetView() {
         // clear first
         view?.didReceive(sections: [])
 
         // and then recreate the items
         updateView()
+
+        if let autoAddTokens {
+            view?.didReceive(autoAddTokens: autoAddTokens)
+        }
     }
 
     func updateView() {
         guard let groupStyle, let visibility, hasReceivedChains else {
             listedGroups = [:]
             view?.didReceive(sections: [])
+            view?.didReceive(headerAction: createHeaderAction())
             return
         }
 
         let groups = buildGroups(style: groupStyle, visibility: visibility)
-        listedGroups = groups.reduce(into: [:]) { $0[$1.id] = $1 }
+        let sections = applySearch(to: sortedSections(groups, defaults: visibility.defaults))
+        listedGroups = sections.flatMap(\.groups).reduce(into: [:]) { $0[$1.id] = $1 }
 
-        let sections = viewModelFactory.createSections(
-            from: sortedSections(groups, defaults: visibility.defaults),
+        let viewModels = viewModelFactory.createSections(
+            from: sections,
             expandedIds: expandedGroupIds,
             locale: selectedLocale
         )
 
-        view?.didReceive(sections: sections)
+        view?.didReceive(sections: viewModels)
+        view?.didReceive(headerAction: createHeaderAction())
     }
 
     func save(chainAssetIds: Set<ChainAssetId>, isOn: Bool) {
         interactor.save(chainAssetIds: chainAssetIds, state: isOn ? .visible : .hidden)
+    }
+
+    func saveListedMembers(isOn: Bool) {
+        let chainAssetIds = Set(listedMembers().map(\.chainAssetId))
+
+        guard !chainAssetIds.isEmpty else {
+            return
+        }
+
+        save(chainAssetIds: chainAssetIds, isOn: isOn)
     }
 }
 
@@ -242,6 +278,18 @@ extension TokensManagePresenter: TokensManagePresenterProtocol {
 
     func performAddToken() {
         wireframe.showAddToken(from: view)
+    }
+
+    func performSelectAll() {
+        saveListedMembers(isOn: true)
+    }
+
+    func performDeselectAll() {
+        saveListedMembers(isOn: false)
+    }
+
+    func performAutoAddChange(to isOn: Bool) {
+        interactor.save(autoAddTokensWithBalance: isOn)
     }
 
     func performExpand(for viewModel: TokensManageRootViewModel) {
@@ -287,7 +335,11 @@ extension TokensManagePresenter: TokensManageInteractorOutputProtocol {
         updateView()
     }
 
-    func didReceiveAutoAddTokens(enabled _: Bool) {}
+    func didReceiveAutoAddTokens(enabled: Bool) {
+        autoAddTokens = enabled
+
+        view?.didReceive(autoAddTokens: enabled)
+    }
 
     func didReceiveDefaultAssets(_ list: DefaultAssetsList) {
         defaults = list

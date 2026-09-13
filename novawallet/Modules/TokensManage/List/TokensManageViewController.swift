@@ -12,6 +12,7 @@ final class TokensManageViewController: UIViewController, ViewHolder {
 
     private lazy var dataSource = makeDataSource()
     private var sections: [TokensManageSection] = []
+    private var headerAction = TokensManageHeaderActionViewModel(kind: .selectAll, isEnabled: false)
 
     init(presenter: TokensManagePresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
@@ -34,6 +35,7 @@ final class TokensManageViewController: UIViewController, ViewHolder {
 
         setupTopBar()
         setupSearchField()
+        setupAutoAddView()
         setupTableView()
         setupLocalization()
 
@@ -45,7 +47,11 @@ final class TokensManageViewController: UIViewController, ViewHolder {
 
 private extension TokensManageViewController {
     func setupTopBar() {
-        navigationItem.rightBarButtonItem = rootView.addTokenButton
+        navigationItem.rightBarButtonItems = [rootView.headerActionButton, rootView.addTokenButton]
+
+        rootView.headerActionButton.isEnabled = headerAction.isEnabled
+        rootView.headerActionButton.target = self
+        rootView.headerActionButton.action = #selector(actionHeaderAction)
 
         rootView.addTokenButton.target = self
         rootView.addTokenButton.action = #selector(actionAddToken)
@@ -59,6 +65,14 @@ private extension TokensManageViewController {
         )
 
         rootView.searchTextField.delegate = self
+    }
+
+    func setupAutoAddView() {
+        rootView.autoAddView.switchView.addTarget(
+            self,
+            action: #selector(actionAutoAddChanged),
+            for: .valueChanged
+        )
     }
 
     func setupTableView() {
@@ -77,6 +91,7 @@ private extension TokensManageViewController {
         title = R.string(preferredLanguages: languages).localizable.tokensManageTitle()
 
         rootView.addTokenButton.title = R.string(preferredLanguages: languages).localizable.commonAddToken()
+        rootView.autoAddView.titleLabel.text = R.string(preferredLanguages: languages).localizable.tokensManageAutoAdd()
 
         let placeholder = R.string(preferredLanguages: languages).localizable.assetsSearchPlaceholder()
 
@@ -86,6 +101,19 @@ private extension TokensManageViewController {
                 NSAttributedString.Key.foregroundColor: R.color.colorHintText()!
             ]
         )
+
+        updateHeaderActionTitle()
+    }
+
+    func updateHeaderActionTitle() {
+        let languages = selectedLocale.rLanguages
+
+        switch headerAction.kind {
+        case .selectAll:
+            rootView.headerActionButton.title = R.string(preferredLanguages: languages).localizable.commonSelectAll()
+        case .deselectAll:
+            rootView.headerActionButton.title = R.string(preferredLanguages: languages).localizable.commonDeselectAll()
+        }
     }
 
     func item(for cell: UITableViewCell) -> TokensManageListItem? {
@@ -138,8 +166,21 @@ private extension TokensManageViewController {
         }
     }
 
+    @objc func actionHeaderAction() {
+        switch headerAction.kind {
+        case .selectAll:
+            presenter.performSelectAll()
+        case .deselectAll:
+            presenter.performDeselectAll()
+        }
+    }
+
     @objc func actionAddToken() {
         presenter.performAddToken()
+    }
+
+    @objc func actionAutoAddChanged() {
+        presenter.performAutoAddChange(to: rootView.autoAddView.switchView.isOn)
     }
 
     @objc func actionSearchEditingChanged() {
@@ -189,18 +230,25 @@ extension TokensManageViewController: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard let title = sections[safe: section]?.title else {
+        guard let section = sections[safe: section] else {
             return nil
         }
 
         let headerView: TokensManageSectionHeaderView = tableView.dequeueReusableHeaderFooterView()
-        headerView.bind(title: title)
+
+        if section.kind == .results {
+            headerView.bind(caption: section.title)
+        } else {
+            headerView.bind(title: section.title)
+        }
 
         return headerView
     }
 
-    func tableView(_: UITableView, heightForHeaderInSection _: Int) -> CGFloat {
-        TokensManageSectionHeaderView.Constants.titleHeight
+    func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        sections[safe: section]?.kind == .results
+            ? TokensManageSectionHeaderView.Constants.captionHeight
+            : TokensManageSectionHeaderView.Constants.titleHeight
     }
 }
 
@@ -221,6 +269,18 @@ extension TokensManageViewController: TokensManageViewProtocol {
 
         reloadEmptyState(animated: false)
     }
+
+    func didReceive(headerAction: TokensManageHeaderActionViewModel) {
+        self.headerAction = headerAction
+
+        rootView.headerActionButton.isEnabled = headerAction.isEnabled
+
+        updateHeaderActionTitle()
+    }
+
+    func didReceive(autoAddTokens: Bool) {
+        rootView.autoAddView.bind(isOn: autoAddTokens)
+    }
 }
 
 // MARK: EmptyState
@@ -233,8 +293,10 @@ extension TokensManageViewController: EmptyStateViewOwnerProtocol {
 extension TokensManageViewController: EmptyStateDataSource {
     var viewForEmptyState: UIView? {
         let emptyView = EmptyStateView()
-        emptyView.image = R.image.iconLoadingError()!
-        emptyView.title = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.assetsSearchEmpty()
+        emptyView.image = R.image.iconStartSearch()
+        emptyView.title = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.commonSearchStartTitle_v2_2_0()
         emptyView.titleColor = R.color.colorTextSecondary()!
         emptyView.titleFont = .regularFootnote
         return emptyView
@@ -248,7 +310,7 @@ extension TokensManageViewController: EmptyStateDataSource {
 extension TokensManageViewController: EmptyStateDelegate {
     var shouldDisplayEmptyState: Bool {
         let hasQuery = !(rootView.searchTextField.text ?? "").isEmpty
-        let hasNoItems = dataSource.snapshot().numberOfItems == 0
+        let hasNoItems = sections.allSatisfy { $0.items.isEmpty }
 
         return hasQuery && hasNoItems
     }

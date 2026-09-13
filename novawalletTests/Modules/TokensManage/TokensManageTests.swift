@@ -10,24 +10,29 @@ final class TokensManageTests: XCTestCase {
         // given
         let context = try TestContext.create()
         let view = MockTokensManageViewProtocol()
-        let lists = ListRecorder()
+        let lists = Recorder<[TokensManageSection]>()
+        let headerActions = Recorder<TokensManageHeaderActionViewModel>()
+        let autoAdds = Recorder<Bool>()
 
         addTeardownBlock { context.defaultsGate.signal() }
 
         stub(view) { stub in
             when(stub.isSetup.get).thenReturn(false, true)
             when(stub.didReceive(sections: any())).then { lists.record($0) }
+            when(stub.didReceive(headerAction: any())).then { headerActions.record($0) }
+            when(stub.didReceive(autoAddTokens: any())).then { autoAdds.record($0) }
         }
 
         let presenter = context.createPresenter(for: view)
 
         // when
-        let pendingLists = lists.expectation(forListCount: 2)
+        let pendingLists = lists.expectation(forCount: 2)
+        let autoAddResolved = autoAdds.expectation(forCount: 1)
         presenter.setup()
         wait(for: [pendingLists], timeout: 10.0)
         let listsWhilePending = lists.received
 
-        let resolvedList = lists.expectation(forListCount: 3)
+        let resolvedList = lists.expectation(forCount: 3)
         context.defaultsGate.signal()
         wait(for: [resolvedList], timeout: 10.0)
         let resolved = lists.received[2]
@@ -37,15 +42,36 @@ final class TokensManageTests: XCTestCase {
         let ethChildren = lists.received[3].childViewModels(in: "ETH")
         let snowbridgeChild = try XCTUnwrap(ethChildren.first { $0.chainAssetId == context.snowbridgeChainAssetId })
 
-        let revealedList = lists.expectation(forListCount: 5)
+        let revealedList = lists.expectation(forCount: 5)
         presenter.performSwitch(for: snowbridgeChild, isOn: true)
         wait(for: [revealedList], timeout: 10.0)
         let statesAfterChildSwitch = try fetchStatesAfterWrites(in: context)
 
-        let hiddenList = lists.expectation(forListCount: 6)
+        let hiddenList = lists.expectation(forCount: 6)
         presenter.performSwitch(for: ethRoot, isOn: false)
         wait(for: [hiddenList], timeout: 10.0)
         let statesAfterRootSwitch = try fetchStatesAfterWrites(in: context)
+
+        presenter.search(query: context.searchedChainName)
+        let searched = lists.received[6]
+        let searchedEthRoot = try XCTUnwrap(searched.rootViewModels().first { $0.groupId == "ETH" })
+        let headerActionWhileHidden = headerActions.received.last
+
+        let selectedList = lists.expectation(forCount: 8)
+        presenter.performSelectAll()
+        wait(for: [selectedList], timeout: 10.0)
+        let statesAfterSelectAll = try fetchStatesAfterWrites(in: context)
+        let headerActionAfterSelectAll = headerActions.received.last
+
+        wait(for: [autoAddResolved], timeout: 10.0)
+        let autoAddsBeforeChange = autoAdds.received
+        let autoAddDisabled = autoAdds.expectation(forCount: 2)
+        presenter.performAutoAddChange(to: false)
+        wait(for: [autoAddDisabled], timeout: 10.0)
+        let settingsAfterChange = try context.fetchSettings()
+
+        var expectedStatesAfterSelectAll = statesAfterRootSwitch
+        context.searchedChainAssetIds.forEach { expectedStatesAfterSelectAll[$0] = .visible }
 
         // then
         XCTAssertEqual(listsWhilePending, [[], []])
@@ -57,6 +83,17 @@ final class TokensManageTests: XCTestCase {
         XCTAssertEqual(statesAfterChildSwitch, [context.snowbridgeChainAssetId: .visible])
         XCTAssertEqual(statesAfterRootSwitch, context.ethChainAssetIds.reduce(into: [:]) { $0[$1] = .hidden })
         XCTAssertEqual(lists.received[5].reduceToSwitches(), ["DOT": true, "ETH": false, "USDC": false])
+        XCTAssertEqual(searched.map(\.kind), [.results])
+        XCTAssertEqual(searched.map { $0.rootGroupIds() }, [["ETH", "USDC"]])
+        XCTAssertEqual(searchedEthRoot.subtitle, context.searchedChainName)
+        XCTAssertEqual(headerActionWhileHidden, TokensManageHeaderActionViewModel(kind: .selectAll, isEnabled: true))
+        XCTAssertEqual(statesAfterSelectAll, expectedStatesAfterSelectAll)
+        XCTAssertEqual(headerActionAfterSelectAll, TokensManageHeaderActionViewModel(kind: .deselectAll, isEnabled: true))
+        XCTAssertEqual(autoAddsBeforeChange, [true])
+        XCTAssertEqual(
+            settingsAfterChange,
+            [MetaAccountSettingsLocal(metaId: context.wallet.metaId, autoAddTokensWithBalance: false)]
+        )
     }
 }
 
@@ -71,6 +108,8 @@ private extension TokensManageTests {
         let wallet: MetaAccountModel
         let ethChainAssetIds: Set<ChainAssetId>
         let snowbridgeChainAssetId: ChainAssetId
+        let searchedChainName: String
+        let searchedChainAssetIds: Set<ChainAssetId>
         let defaultsGate: DispatchSemaphore
 
         static func create() throws -> TestContext {
@@ -178,6 +217,8 @@ private extension TokensManageTests {
                 wallet: wallet,
                 ethChainAssetIds: ethChainAssetIds,
                 snowbridgeChainAssetId: ChainAssetId(chainId: assetHub.chainId, assetId: 0),
+                searchedChainName: assetHub.name,
+                searchedChainAssetIds: Set(assetHub.chainAssets().map(\.chainAssetId)),
                 defaultsGate: defaultsGate
             )
         }
@@ -208,25 +249,36 @@ private extension TokensManageTests {
                 using: userStorageFacade
             )
 
+            return try fetchAll(from: repository).reduce(into: [:]) { $0[$1.chainAssetId] = $1.state }
+        }
+
+        func fetchSettings() throws -> [MetaAccountSettingsLocal] {
+            let repository = AssetVisibilityRepositoryFactory.createSettingsRepository(
+                for: wallet.metaId,
+                using: userStorageFacade
+            )
+
+            return try fetchAll(from: repository)
+        }
+
+        func fetchAll<T>(from repository: AnyDataProviderRepository<T>) throws -> [T] {
             let fetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
             operationQueue.addOperations([fetchOperation], waitUntilFinished: true)
 
-            return try fetchOperation.extractNoCancellableResultData().reduce(into: [:]) {
-                $0[$1.chainAssetId] = $1.state
-            }
+            return try fetchOperation.extractNoCancellableResultData()
         }
     }
 
-    final class ListRecorder {
-        private(set) var received: [[TokensManageSection]] = []
+    final class Recorder<Value> {
+        private(set) var received: [Value] = []
         private var expectations: [Int: XCTestExpectation] = [:]
 
-        func record(_ list: [TokensManageSection]) {
-            received.append(list)
+        func record(_ value: Value) {
+            received.append(value)
             expectations[received.count]?.fulfill()
         }
 
-        func expectation(forListCount count: Int) -> XCTestExpectation {
+        func expectation(forCount count: Int) -> XCTestExpectation {
             let expectation = XCTestExpectation()
             expectations[count] = expectation
             return expectation
