@@ -159,7 +159,7 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber,
         availableChains = allChanges.mergeToDict(availableChains)
         enabledChains = enabledChainChanges.mergeToDict(enabledChains)
 
-        updateAssetBalanceSubscription(from: enabledChainChanges)
+        updateAssetBalanceSubscription()
         updatePriceSubscription(from: allChanges)
         updateExternalBalancesSubscription(from: Array(enabledChains.values))
     }
@@ -199,59 +199,56 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber,
         availableChains = allChanges.mergeToDict(availableChains)
         enabledChains = enabledChainChanges.mergeToDict(enabledChains)
 
-        updateAssetBalanceSubscription(from: enabledChainChanges)
+        updateAssetBalanceSubscription()
         updateExternalBalancesSubscription(from: Array(enabledChains.values))
     }
 
-    func updateAssetBalanceSubscription(from changes: [DataProviderChange<ChainModel>]) {
+    func updateAssetBalanceSubscription() {
         guard let selectedMetaAccount = selectedWalletSettings.value else {
             return
         }
 
         let previousMappingIds = Set(assetBalanceIdMapping.keys)
 
-        assetBalanceIdMapping = changes.reduce(into: assetBalanceIdMapping) { result, change in
-            switch change {
-            case let .insert(chain), let .update(chain):
-                guard let accountId = selectedMetaAccount.fetch(
-                    for: chain.accountRequest()
-                )?.accountId else {
-                    return
-                }
+        assetBalanceIdMapping = accountChains.values.reduce(
+            into: [String: AssetBalanceId]()
+        ) { result, chain in
+            guard let accountId = selectedMetaAccount.fetch(
+                for: chain.accountRequest()
+            )?.accountId else {
+                return
+            }
 
-                for asset in chain.assets {
-                    let assetBalanceRawId = AssetBalance.createIdentifier(
-                        for: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
-                        accountId: accountId
-                    )
+            for asset in chain.assets {
+                let assetBalanceRawId = AssetBalance.createIdentifier(
+                    for: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
+                    accountId: accountId
+                )
 
-                    if result[assetBalanceRawId] == nil {
-                        result[assetBalanceRawId] = AssetBalanceId(
-                            chainId: chain.chainId,
-                            assetId: asset.assetId,
-                            accountId: accountId
-                        )
-                    }
-                }
-            case let .delete(deletedIdentifier):
-                result = result.filter { $0.value.chainId != deletedIdentifier }
+                result[assetBalanceRawId] = AssetBalanceId(
+                    chainId: chain.chainId,
+                    assetId: asset.assetId,
+                    accountId: accountId
+                )
             }
         }
 
-        let newMappingKeys = Set(assetBalanceIdMapping.keys)
+        let addedMappingKeys = Set(assetBalanceIdMapping.keys).subtracting(previousMappingIds)
 
-        for newKey in newMappingKeys {
-            if !previousMappingIds.contains(newKey), let accountId = assetBalanceIdMapping[newKey]?.accountId {
+        for addedKey in addedMappingKeys {
+            if let accountId = assetBalanceIdMapping[addedKey]?.accountId {
                 assetBalanceSubscriptions[accountId] = nil
             }
         }
 
-        assetBalanceSubscriptions = changes.reduce(
-            intitial: assetBalanceSubscriptions,
-            selectedMetaAccount: selectedMetaAccount
-        ) { [weak self] in
-            self?.subscribeToAccountBalanceProvider(for: $0)
-        }
+        assetBalanceSubscriptions = accountChains.values
+            .map { DataProviderChange.update(newItem: $0) }
+            .reduce(
+                intitial: assetBalanceSubscriptions,
+                selectedMetaAccount: selectedMetaAccount
+            ) { [weak self] in
+                self?.subscribeToAccountBalanceProvider(for: $0)
+            }
     }
 
     func updatePriceSubscription(from changes: [DataProviderChange<ChainModel>]) {
