@@ -140,6 +140,7 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber,
         accountChains = accountDependentChanges.mergeToDict(accountChains)
 
         guard let visibility else {
+            availableChains = changes.mergeToDict(availableChains)
             pendingChainChanges.append(contentsOf: changes)
             return
         }
@@ -169,7 +170,6 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber,
         clearVisibilitySubscription()
 
         accountChains = [:]
-        pendingChainChanges = []
 
         guard let selectedMetaAccount = selectedWalletSettings.value else {
             return
@@ -177,6 +177,7 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber,
 
         let changes = availableChains.values.map { DataProviderChange.insert(newItem: $0) }
 
+        pendingChainChanges = changes
         enabledChains = [:]
         availableChains = [:]
 
