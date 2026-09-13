@@ -160,6 +160,12 @@ struct TransferConfirmCrossChainViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared,
             persistenceFilter: AccountTypeExtrinsicPersistenceFilter(),
+            selfReceiveRevealer: TransferSelfReceiveRevealer(
+                accountRepositoryFactory: AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared),
+                visibilityWriter: AssetVisibilityWriter.shared,
+                operationQueue: operationQueue,
+                logger: Logger.shared
+            ),
             currencyManager: currencyManager,
             operationQueue: operationQueue
         )

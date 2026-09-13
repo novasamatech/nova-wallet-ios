@@ -182,6 +182,7 @@ struct TransferConfirmOnChainViewFactory {
             persistExtrinsicService: persistentExtrinsicService,
             persistenceFilter: AccountTypeExtrinsicPersistenceFilter(),
             eventCenter: EventCenter.shared,
+            selfReceiveRevealer: createSelfReceiveRevealer(operationQueue: operationQueue),
             currencyManager: currencyManager,
             operationQueue: operationQueue
         )
@@ -256,8 +257,20 @@ struct TransferConfirmOnChainViewFactory {
             substrateStorageFacade: SubstrateDataStorageFacade.shared,
             transferAggregationWrapperFactory: assetTransferAggregationWrapperFactory,
             persistenceFilter: AccountTypeExtrinsicPersistenceFilter(),
+            selfReceiveRevealer: createSelfReceiveRevealer(operationQueue: operationQueue),
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+    }
+
+    private static func createSelfReceiveRevealer(
+        operationQueue: OperationQueue
+    ) -> TransferSelfReceiveRevealer {
+        TransferSelfReceiveRevealer(
+            accountRepositoryFactory: AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared),
+            visibilityWriter: AssetVisibilityWriter.shared,
+            operationQueue: operationQueue,
+            logger: Logger.shared
         )
     }
 }
