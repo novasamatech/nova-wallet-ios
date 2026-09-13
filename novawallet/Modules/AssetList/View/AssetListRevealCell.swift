@@ -14,6 +14,7 @@ final class AssetListRevealCell: CollectionViewContainerCell<AssetListRevealView
 
 final class AssetListRevealView: UIView {
     let searchImageView: UIImageView = .create { view in
+        view.contentMode = .scaleAspectFit
         view.image = R.image.iconSearchButton()?
             .withRenderingMode(.alwaysTemplate)
             .tinted(with: R.color.colorIconSecondary()!)
@@ -24,6 +25,7 @@ final class AssetListRevealView: UIView {
     }
 
     let accessoryImageView: UIImageView = .create { view in
+        view.contentMode = .scaleAspectFit
         view.image = R.image.iconSmallArrow()?
             .withRenderingMode(.alwaysTemplate)
             .tinted(with: R.color.colorIconSecondary()!)
