@@ -56,6 +56,8 @@ struct CustomNetworkSetupFinishStrategyFactory {
             networkToEdit: networkToEdit,
             selectedNode: selectedNode,
             repository: repository,
+            selectedWalletSettings: selectedWalletSettings,
+            visibilityWriter: visibilityWriter,
             operationQueue: operationQueue,
             chainRegistry: chainRegistry
         )
@@ -286,6 +288,8 @@ struct CustomNetworkEditStrategy: CustomNetworkSetupFinishStrategy {
     let selectedNode: ChainNodeModel
 
     let repository: AnyDataProviderRepository<ChainModel>
+    let selectedWalletSettings: SelectedWalletSettings
+    let visibilityWriter: AssetVisibilityWriting
     let operationQueue: OperationQueue
 
     let chainRegistry: ChainRegistryProtocol
@@ -297,7 +301,9 @@ struct CustomNetworkEditStrategy: CustomNetworkSetupFinishStrategy {
         processWithCheck(network, output: output) {
             var readyNetwork = network
 
-            if network.chainId == networkToEdit.chainId {
+            let chainIdChanged = network.chainId != networkToEdit.chainId
+
+            if !chainIdChanged {
                 var nodesToAdd = networkToEdit.nodes
 
                 if !network.nodes.contains(where: { $0.url == selectedNode.url }) {
@@ -307,7 +313,7 @@ struct CustomNetworkEditStrategy: CustomNetworkSetupFinishStrategy {
                 readyNetwork = network.adding(nodes: nodesToAdd)
             }
 
-            let deleteIds = network.chainId != networkToEdit.chainId
+            let deleteIds = chainIdChanged
                 ? [networkToEdit.chainId]
                 : []
 
@@ -324,6 +330,14 @@ struct CustomNetworkEditStrategy: CustomNetworkSetupFinishStrategy {
             ) { result in
                 switch result {
                 case .success:
+                    if chainIdChanged {
+                        revealAssets(
+                            of: readyNetwork,
+                            selectedWalletSettings: selectedWalletSettings,
+                            visibilityWriter: visibilityWriter
+                        )
+                    }
+
                     output?.didFinishWorkWithNetwork()
                 case .failure:
                     output?.didReceive(
