@@ -4,7 +4,6 @@ struct MultichainToken {
     struct Instance {
         let chainAssetId: ChainAssetId
         let chainName: String
-        let enabled: Bool
         let testnet: Bool
         let utility: Bool
         let icon: String?
@@ -15,41 +14,6 @@ struct MultichainToken {
 
     var icon: String? {
         instances.first(where: { $0.icon != nil })?.icon
-    }
-
-    var enabled: Bool {
-        instances.contains { $0.enabled }
-    }
-
-    func enabledInstances() -> [Instance] {
-        instances.filter { $0.enabled }
-    }
-}
-
-extension MultichainToken.Instance {
-    func byChanging(enabled: Bool) -> MultichainToken.Instance {
-        .init(
-            chainAssetId: chainAssetId,
-            chainName: chainName,
-            enabled: enabled,
-            testnet: testnet,
-            utility: utility,
-            icon: icon
-        )
-    }
-}
-
-extension MultichainToken {
-    func byChanging(enabled: Bool, for chainAssetId: ChainAssetId? = nil) -> MultichainToken {
-        let newInstances = instances.map { instance in
-            if chainAssetId == nil || chainAssetId == instance.chainAssetId {
-                return instance.byChanging(enabled: enabled)
-            } else {
-                return instance
-            }
-        }
-
-        return .init(symbol: symbol, instances: newInstances)
     }
 }
 
@@ -66,7 +30,6 @@ extension Array where Element == ChainModel {
                 let instance = MultichainToken.Instance(
                     chainAssetId: chainAsset.chainAssetId,
                     chainName: chain.name,
-                    enabled: asset.enabled,
                     testnet: chain.isTestnet,
                     utility: chainAsset.isUtilityAsset,
                     icon: asset.icon
@@ -138,7 +101,6 @@ extension Array where Element == ChainAsset {
             let instance = MultichainToken.Instance(
                 chainAssetId: chainAsset.chainAssetId,
                 chainName: chainAsset.chain.name,
-                enabled: chainAsset.asset.enabled,
                 testnet: chainAsset.chain.isTestnet,
                 utility: chainAsset.isUtilityAsset,
                 icon: chainAsset.asset.icon

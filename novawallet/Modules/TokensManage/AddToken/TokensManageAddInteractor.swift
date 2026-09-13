@@ -13,6 +13,8 @@ final class TokensManageAddInteractor: AnyCancellableCleaning {
     let priceIdParser: PriceUrlParserProtocol
     let priceOperationFactory: CoingeckoOperationFactoryProtocol
     let chainRepository: AnyDataProviderRepository<ChainModel>
+    let selectedWalletSettings: SelectedWalletSettings
+    let visibilityWriter: AssetVisibilityWriting
     let operationQueue: OperationQueue
 
     private var pendingQueryIds: [UInt16]?
@@ -24,6 +26,8 @@ final class TokensManageAddInteractor: AnyCancellableCleaning {
         priceIdParser: PriceUrlParserProtocol,
         priceOperationFactory: CoingeckoOperationFactoryProtocol,
         chainRepository: AnyDataProviderRepository<ChainModel>,
+        selectedWalletSettings: SelectedWalletSettings,
+        visibilityWriter: AssetVisibilityWriting,
         operationQueue: OperationQueue
     ) {
         self.chain = chain
@@ -32,6 +36,8 @@ final class TokensManageAddInteractor: AnyCancellableCleaning {
         self.priceIdParser = priceIdParser
         self.priceOperationFactory = priceOperationFactory
         self.chainRepository = chainRepository
+        self.selectedWalletSettings = selectedWalletSettings
+        self.visibilityWriter = visibilityWriter
         self.operationQueue = operationQueue
     }
 
@@ -112,6 +118,20 @@ final class TokensManageAddInteractor: AnyCancellableCleaning {
         }
     }
 
+    private func revealSavedToken(_ result: EvmTokenAddResult) {
+        guard let metaId = selectedWalletSettings.value?.metaId else {
+            return
+        }
+
+        visibilityWriter.setState(
+            metaId: metaId,
+            ids: [result.chainAsset.chainAssetId],
+            state: .visible,
+            runningCallbackIn: nil,
+            completion: nil
+        )
+    }
+
     private func performTokenSave(newToken: EvmTokenAddRequest, chain: ChainModel) {
         let priceIdWrapper = createPriceIdWrapper(for: newToken.priceIdUrl)
 
@@ -162,6 +182,8 @@ final class TokensManageAddInteractor: AnyCancellableCleaning {
                 do {
                     let result = try chainModifyOperation.extractNoCancellableResultData()
                     try saveOperation.extractNoCancellableResultData()
+
+                    self?.revealSavedToken(result)
 
                     self?.presenter?.didSaveEvmToken(result)
                 } catch {

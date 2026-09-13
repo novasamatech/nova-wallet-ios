@@ -4,15 +4,21 @@ import Operation_iOS
 struct CustomNetworkSetupFinishStrategyFactory {
     private let chainRegistry: ChainRegistryProtocol
     private let repository: AnyDataProviderRepository<ChainModel>
+    private let selectedWalletSettings: SelectedWalletSettings
+    private let visibilityWriter: AssetVisibilityWriting
     private let operationQueue: OperationQueue
 
     init(
         chainRegistry: ChainRegistryProtocol,
         repository: AnyDataProviderRepository<ChainModel>,
+        selectedWalletSettings: SelectedWalletSettings,
+        visibilityWriter: AssetVisibilityWriting,
         operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
         self.repository = repository
+        self.selectedWalletSettings = selectedWalletSettings
+        self.visibilityWriter = visibilityWriter
         self.operationQueue = operationQueue
     }
 
@@ -20,6 +26,8 @@ struct CustomNetworkSetupFinishStrategyFactory {
         CustomNetworkAddNewStrategy(
             repository: repository,
             preConfiguredNetwork: preConfiguredNetwork,
+            selectedWalletSettings: selectedWalletSettings,
+            visibilityWriter: visibilityWriter,
             operationQueue: operationQueue,
             chainRegistry: chainRegistry
         )
@@ -29,6 +37,8 @@ struct CustomNetworkSetupFinishStrategyFactory {
         CustomNetworkModifyStrategy(
             repository: repository,
             networkToModify: networkToModify,
+            selectedWalletSettings: selectedWalletSettings,
+            visibilityWriter: visibilityWriter,
             operationQueue: operationQueue,
             chainRegistry: chainRegistry
         )
@@ -148,6 +158,24 @@ extension CustomNetworkSetupFinishStrategy {
         )
     }
 
+    func revealAssets(
+        of network: ChainModel,
+        selectedWalletSettings: SelectedWalletSettings,
+        visibilityWriter: AssetVisibilityWriting
+    ) {
+        guard let metaId = selectedWalletSettings.value?.metaId else {
+            return
+        }
+
+        visibilityWriter.setState(
+            metaId: metaId,
+            ids: Set(network.chainAssets().map(\.chainAssetId)),
+            state: .visible,
+            runningCallbackIn: nil,
+            completion: nil
+        )
+    }
+
     func processWithCheck(
         _ network: ChainModel,
         output: CustomNetworkBaseInteractorOutputProtocol?,
@@ -187,6 +215,8 @@ extension CustomNetworkSetupFinishStrategy {
 struct CustomNetworkAddNewStrategy: CustomNetworkSetupFinishStrategy {
     let repository: AnyDataProviderRepository<ChainModel>
     let preConfiguredNetwork: ChainModel?
+    let selectedWalletSettings: SelectedWalletSettings
+    let visibilityWriter: AssetVisibilityWriting
     let operationQueue: OperationQueue
 
     let chainRegistry: ChainRegistryProtocol
@@ -215,6 +245,11 @@ struct CustomNetworkAddNewStrategy: CustomNetworkSetupFinishStrategy {
             ) { result in
                 switch result {
                 case .success:
+                    revealAssets(
+                        of: networkToSave,
+                        selectedWalletSettings: selectedWalletSettings,
+                        visibilityWriter: visibilityWriter
+                    )
                     output?.didFinishWorkWithNetwork()
                 case .failure:
                     output?.didReceive(
@@ -305,6 +340,8 @@ struct CustomNetworkEditStrategy: CustomNetworkSetupFinishStrategy {
 struct CustomNetworkModifyStrategy: CustomNetworkSetupFinishStrategy {
     let repository: AnyDataProviderRepository<ChainModel>
     let networkToModify: ChainModel
+    let selectedWalletSettings: SelectedWalletSettings
+    let visibilityWriter: AssetVisibilityWriting
     let operationQueue: OperationQueue
 
     let chainRegistry: ChainRegistryProtocol
@@ -331,6 +368,11 @@ struct CustomNetworkModifyStrategy: CustomNetworkSetupFinishStrategy {
         ) { result in
             switch result {
             case .success:
+                revealAssets(
+                    of: networkToSave,
+                    selectedWalletSettings: selectedWalletSettings,
+                    visibilityWriter: visibilityWriter
+                )
                 output?.didFinishWorkWithNetwork()
             case .failure:
                 output?.didReceive(

@@ -41,7 +41,7 @@ final class EquilibriumAssetBalanceUpdatingService: AssetBalanceBatchBaseUpdatin
         let newAssetsIds = chain
             .assets
             .reduce(into: [AssetModel.Id: EquilibriumAssetId]()) { result, asset in
-                if asset.enabled, let equilibriumAssetId = asset.equilibriumAssetId {
+                if let equilibriumAssetId = asset.equilibriumAssetId {
                     result[asset.assetId] = equilibriumAssetId
                 }
             }
