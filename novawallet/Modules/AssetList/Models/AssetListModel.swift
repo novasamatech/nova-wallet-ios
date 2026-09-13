@@ -39,3 +39,9 @@ struct AssetListModel {
         self.visibility = visibility
     }
 }
+
+extension AssetListModel {
+    func chains(includingHidden: Bool) -> [ChainModel.Id: ChainModel] {
+        includingHidden ? chainsIncludingHidden : allChains
+    }
+}

@@ -36,7 +36,7 @@ class AssetSearchBuilder: AnyCancellableCleaning {
     }
 
     func sourceChains(from model: AssetListModel) -> [ChainModel.Id: ChainModel] {
-        includesHiddenAssets ? model.chainsIncludingHidden : model.allChains
+        model.chains(includingHidden: includesHiddenAssets)
     }
 
     func assetListState(from model: AssetListModel) -> AssetListState {

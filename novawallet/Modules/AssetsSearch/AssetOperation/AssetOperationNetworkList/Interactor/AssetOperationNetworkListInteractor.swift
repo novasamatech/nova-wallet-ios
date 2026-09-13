@@ -7,6 +7,7 @@ class AssetOperationNetworkListInteractor {
     let workingQueueLabel: String = "com.nova.wallet.assets.networks.builder"
     let stateObservable: AssetListModelObservable
     let multichainToken: MultichainToken
+    let includesHiddenAssets: Bool
 
     let logger: LoggerProtocol
 
@@ -17,10 +18,12 @@ class AssetOperationNetworkListInteractor {
     init(
         multichainToken: MultichainToken,
         stateObservable: AssetListModelObservable,
+        includesHiddenAssets: Bool,
         logger: LoggerProtocol
     ) {
         self.multichainToken = multichainToken
         self.stateObservable = stateObservable
+        self.includesHiddenAssets = includesHiddenAssets
         self.logger = logger
     }
 
@@ -30,6 +33,7 @@ class AssetOperationNetworkListInteractor {
     ) -> AssetOperationNetworkBuilder {
         .init(
             chainAssets: chainAssets,
+            includesHiddenAssets: includesHiddenAssets,
             workingQueue: .init(
                 label: workingQueueLabel,
                 qos: .userInteractive
@@ -47,11 +51,13 @@ extension AssetOperationNetworkListInteractor: AssetOperationNetworkListInteract
     func setup() {
         let chainAssetIds = Set(multichainToken.instances.map(\.chainAssetId))
 
+        let chains = stateObservable.state.value.chains(includingHidden: includesHiddenAssets)
+
         let chainAssets = multichainToken.instances
             .compactMap { instance in
                 let chainId = instance.chainAssetId.chainId
 
-                return stateObservable.state.value.allChains[chainId]?.chainAssets()
+                return chains[chainId]?.chainAssets()
             }
             .flatMap { $0 }
             .filter { chainAssetIds.contains($0.chainAssetId) }
