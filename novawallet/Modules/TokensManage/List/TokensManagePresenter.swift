@@ -103,7 +103,12 @@ private extension TokensManagePresenter {
 
         return syncingChains.createMultichainTokens().map { token in
             let members = token.instances.compactMap { instance in
-                createTokenMember(for: instance.chainAssetId, chainsById: chainsById, visibility: visibility)
+                createTokenMember(
+                    for: instance.chainAssetId,
+                    groupSymbol: token.symbol,
+                    chainsById: chainsById,
+                    visibility: visibility
+                )
             }
 
             return TokensManageGroup(
@@ -119,6 +124,7 @@ private extension TokensManagePresenter {
 
     func createTokenMember(
         for chainAssetId: ChainAssetId,
+        groupSymbol: String,
         chainsById: [ChainModel.Id: ChainModel],
         visibility: AssetVisibility
     ) -> TokensManageMember? {
@@ -126,10 +132,14 @@ private extension TokensManagePresenter {
             return nil
         }
 
+        let variantSymbol = chainAsset.asset.symbol != groupSymbol
+            ? chainAsset.asset.symbol
+            : nil
+
         return TokensManageMember(
             chainAssetId: chainAssetId,
             title: chainAsset.chain.name,
-            subtitle: nil,
+            subtitle: variantSymbol,
             icon: .chain(chainAsset.chain),
             symbol: chainAsset.asset.symbol,
             chainName: chainAsset.chain.name,

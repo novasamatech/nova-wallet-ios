@@ -13,6 +13,15 @@ final class TokensManageNetworkChildCell: UITableViewCell {
         view.apply(style: .regularSubhedlinePrimary)
     }
 
+    let subtitleLabel: UILabel = .create { view in
+        view.apply(style: .footnoteSecondary)
+    }
+
+    private lazy var detailsView: UIStackView = .vStack(
+        alignment: .leading,
+        [titleLabel, subtitleLabel]
+    )
+
     let switchView: UISwitch = .create { view in
         view.onTintColor = R.color.colorIconAccent()
     }
@@ -35,10 +44,11 @@ final class TokensManageNetworkChildCell: UITableViewCell {
     }
 
     func bind(viewModel: TokensManageChildViewModel) {
+        titleLabel.apply(style: viewModel.isOn ? .regularSubhedlinePrimary : .regularSubhedlineSecondary)
         titleLabel.text = viewModel.title
-        titleLabel.textColor = viewModel.isOn
-            ? R.color.colorTextPrimary()
-            : R.color.colorTextSecondary()
+
+        subtitleLabel.text = viewModel.subtitle
+        subtitleLabel.isHidden = viewModel.subtitle == nil
 
         iconView.alpha = viewModel.isOn ? 1 : Constants.disabledIconAlpha
 
@@ -81,8 +91,8 @@ private extension TokensManageNetworkChildCell {
             make.centerY.equalToSuperview()
         }
 
-        contentView.addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { make in
+        contentView.addSubview(detailsView)
+        detailsView.snp.makeConstraints { make in
             make.leading.equalTo(iconView.snp.trailing).offset(Constants.contentSpacing)
             make.centerY.equalToSuperview()
             make.trailing.lessThanOrEqualTo(switchView.snp.leading).offset(-Constants.contentSpacing)

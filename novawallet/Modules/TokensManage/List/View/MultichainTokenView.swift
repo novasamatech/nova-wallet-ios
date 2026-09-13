@@ -63,10 +63,12 @@ final class MultichainTokenView: UIView {
 
         iconView.bind(viewModel: imageViewModel, settings: imageSettings)
 
-        detailsView.valueTop.text = title
-        detailsView.valueTop.textColor = style.titleColor
+        detailsView.bind(
+            topValue: title,
+            bottomValue: subtitle.flatMap { $0.isEmpty ? nil : $0 }
+        )
 
-        detailsView.valueBottom.text = subtitle
+        detailsView.valueTop.textColor = style.titleColor
         detailsView.valueBottom.textColor = style.subtitleColor
     }
 
