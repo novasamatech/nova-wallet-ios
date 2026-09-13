@@ -24,6 +24,7 @@ protocol ApplicationConfigProtocol {
     var phishingListURL: URL { get }
     var phishingDAppsURL: URL { get }
     var chainListURL: URL { get }
+    var defaultAssetsURL: URL { get }
     var xcmDynamicTransfersURL: URL { get }
     var xcmTransfersURL: URL { get }
     var globalConfigURL: URL { get }
@@ -156,6 +157,14 @@ extension ApplicationConfig: ApplicationConfigProtocol {
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/chains.json")!
         #else
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/chains_dev.json")!
+        #endif
+    }
+
+    var defaultAssetsURL: URL {
+        #if F_RELEASE
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/default_assets.json")!
+        #else
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/default_assets_dev.json")!
         #endif
     }
 

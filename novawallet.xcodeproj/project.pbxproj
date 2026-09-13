@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0434F652589F46A0B216EDEA /* AssetVisibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF69D48661D443A8296F49A /* AssetVisibility.swift */; };
+		7B2233F11F5949DCAD67325C /* AssetVisibilityLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = A02A13E56BFB4AE49E9148A8 /* AssetVisibilityLocal.swift */; };
+		FD100B1164C94B46BECBBEB9 /* AssetVisibilityState.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC53070644AD47A6912029FC /* AssetVisibilityState.swift */; };
+		276B31B0F2664225A5C01B38 /* DefaultAssetsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098B22AA9CE94825AD9E1B02 /* DefaultAssetsList.swift */; };
+		968C69E16E994F16A5EE0CE2 /* MetaAccountSettingsLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7BC8D74361451D840C7625 /* MetaAccountSettingsLocal.swift */; };
+		6100176943A140FC820CA540 /* DefaultAssetsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41B780CF9E1A41B396D3822F /* DefaultAssetsProvider.swift */; };
+		2B0FDC4ACA5847E28FAA5FB3 /* DefaultAssetsProvider+Singleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A5262BB08A4539A632CB09 /* DefaultAssetsProvider+Singleton.swift */; };
+		EA9542F6028143819F61C072 /* AssetVisibilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B67A1A6DAF84C3199B58880 /* AssetVisibilityTests.swift */; };
+		2E6D7084C14E4060BA9C105A /* DefaultAssetsProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53F4A524B3534C608B33C97C /* DefaultAssetsProviderTests.swift */; };
 		A1B2C3D40003E5F600000002 /* HydraExchangeTradeLimits.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D40003E5F600000001 /* HydraExchangeTradeLimits.swift */; };
 		76D756FB38357EB7F59ADD89 /* HydraEmaPriceMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D20EB194EA42E03AA4B074 /* HydraEmaPriceMath.swift */; };
 		3AC4907731200D6A4CF08576 /* HydraFeeOraclePriceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35661006737595BC4261F218 /* HydraFeeOraclePriceTests.swift */; };
@@ -6681,6 +6690,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		BEF69D48661D443A8296F49A /* AssetVisibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetVisibility.swift; sourceTree = "<group>"; };
+		A02A13E56BFB4AE49E9148A8 /* AssetVisibilityLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetVisibilityLocal.swift; sourceTree = "<group>"; };
+		EC53070644AD47A6912029FC /* AssetVisibilityState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetVisibilityState.swift; sourceTree = "<group>"; };
+		098B22AA9CE94825AD9E1B02 /* DefaultAssetsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultAssetsList.swift; sourceTree = "<group>"; };
+		0C7BC8D74361451D840C7625 /* MetaAccountSettingsLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetaAccountSettingsLocal.swift; sourceTree = "<group>"; };
+		41B780CF9E1A41B396D3822F /* DefaultAssetsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultAssetsProvider.swift; sourceTree = "<group>"; };
+		D2A5262BB08A4539A632CB09 /* DefaultAssetsProvider+Singleton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DefaultAssetsProvider+Singleton.swift"; sourceTree = "<group>"; };
+		6B67A1A6DAF84C3199B58880 /* AssetVisibilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetVisibilityTests.swift; sourceTree = "<group>"; };
+		53F4A524B3534C608B33C97C /* DefaultAssetsProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultAssetsProviderTests.swift; sourceTree = "<group>"; };
 		A1B2C3D40003E5F600000001 /* HydraExchangeTradeLimits.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HydraExchangeTradeLimits.swift; sourceTree = "<group>"; };
 		07D20EB194EA42E03AA4B074 /* HydraEmaPriceMath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HydraEmaPriceMath.swift; sourceTree = "<group>"; };
 		35661006737595BC4261F218 /* HydraFeeOraclePriceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HydraFeeOraclePriceTests.swift; sourceTree = "<group>"; };
@@ -13097,6 +13115,43 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8AAA25C585094D72AF33A651 /* AssetVisibility */ = {
+			isa = PBXGroup;
+			children = (
+				BEF69D48661D443A8296F49A /* AssetVisibility.swift */,
+				A02A13E56BFB4AE49E9148A8 /* AssetVisibilityLocal.swift */,
+				EC53070644AD47A6912029FC /* AssetVisibilityState.swift */,
+				098B22AA9CE94825AD9E1B02 /* DefaultAssetsList.swift */,
+				0C7BC8D74361451D840C7625 /* MetaAccountSettingsLocal.swift */,
+			);
+			path = AssetVisibility;
+			sourceTree = "<group>";
+		};
+		2E4ED365661A4DDB8B291B52 /* AssetVisibility */ = {
+			isa = PBXGroup;
+			children = (
+				41B780CF9E1A41B396D3822F /* DefaultAssetsProvider.swift */,
+				D2A5262BB08A4539A632CB09 /* DefaultAssetsProvider+Singleton.swift */,
+			);
+			path = AssetVisibility;
+			sourceTree = "<group>";
+		};
+		C3389899FB7941B39717A492 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				6B67A1A6DAF84C3199B58880 /* AssetVisibilityTests.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		126F54A34EA144D59BFD6D98 /* AssetVisibility */ = {
+			isa = PBXGroup;
+			children = (
+				53F4A524B3534C608B33C97C /* DefaultAssetsProviderTests.swift */,
+			);
+			path = AssetVisibility;
+			sourceTree = "<group>";
+		};
 		004CB16144B71C42956A5D93 /* SwipeGovVotingList */ = {
 			isa = PBXGroup;
 			children = (
@@ -21347,6 +21402,7 @@
 		84155DE8253980D700A27058 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				2E4ED365661A4DDB8B291B52 /* AssetVisibility */,
 				AA1014D50747A645B9585D3C /* Announcements */,
 				2DC002ED2E8AEB6A00D49A42 /* AssetHubMigrationInfo */,
 				2D51D68A2E5D9F42008AB208 /* MultisigNotificationsPromo */,
@@ -21768,6 +21824,7 @@
 		842D1E7E24D0BED200C30A7A /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				C3389899FB7941B39717A492 /* Model */,
 				5A17C0C02F0100000000E001 /* LegalConsent */,
 				8A1C0E712F0400000000B103 /* PropertyWrappers */,
 				2D32C9922EFA35930094A036 /* FormatterCache */,
@@ -22469,6 +22526,7 @@
 		84452F8725D5E6CC00F47EC5 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				126F54A34EA144D59BFD6D98 /* AssetVisibility */,
 				E6F3AA47E60B33CE93DF4903 /* AssetExchange */,
 				0C8FC2292E623F7000034ED3 /* DelegatedAccounts */,
 				0C41D20C2BF77F57000950EE /* CloudBackup */,
@@ -24306,6 +24364,7 @@
 		849013E024A9287F008F705E /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				8AAA25C585094D72AF33A651 /* AssetVisibility */,
 				0CD76AF42E57638700C6E34B /* AssetStorageInfo */,
 				0CCD18B62BA1EE180068D73A /* StatemineAsset */,
 				881CA22A29E406FF00159C5B /* Equilibrium */,
@@ -31356,6 +31415,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0434F652589F46A0B216EDEA /* AssetVisibility.swift in Sources */,
+				7B2233F11F5949DCAD67325C /* AssetVisibilityLocal.swift in Sources */,
+				FD100B1164C94B46BECBBEB9 /* AssetVisibilityState.swift in Sources */,
+				276B31B0F2664225A5C01B38 /* DefaultAssetsList.swift in Sources */,
+				968C69E16E994F16A5EE0CE2 /* MetaAccountSettingsLocal.swift in Sources */,
+				6100176943A140FC820CA540 /* DefaultAssetsProvider.swift in Sources */,
+				2B0FDC4ACA5847E28FAA5FB3 /* DefaultAssetsProvider+Singleton.swift in Sources */,
 				A1B2C3D40003E5F600000002 /* HydraExchangeTradeLimits.swift in Sources */,
 				76D756FB38357EB7F59ADD89 /* HydraEmaPriceMath.swift in Sources */,
 				A1B2C3D40001E5F600000002 /* HydraFeeOracleState.swift in Sources */,
@@ -37225,6 +37291,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EA9542F6028143819F61C072 /* AssetVisibilityTests.swift in Sources */,
+				2E6D7084C14E4060BA9C105A /* DefaultAssetsProviderTests.swift in Sources */,
 				A1B2C3D40002E5F600000002 /* HydraFeeQuoteFactoryTests.swift in Sources */,
 				02DF43D680493821FD9D7A35 /* HydraFeeConversionTests.swift in Sources */,
 				79D4519A4D73DA1757414210 /* HydraFeeOraclePriceCalculatorTests.swift in Sources */,
