@@ -11,6 +11,7 @@ enum WalletStorageCleanerFactory {
             using: operationQueue
         )
         let removedDAppSettingsCleaner = createRemovedWalletDAppSettingsCleaner()
+        let removedAssetVisibilityCleaner = createRemovedWalletAssetVisibilityCleaner()
         let updatedBrowserStateCleaner = createUpdatedWalletBrowserStateCleaner(
             using: operationQueue
         )
@@ -24,6 +25,7 @@ enum WalletStorageCleanerFactory {
             removedNotificationsSettingsCleaner,
             removedBrowserStateCleaner,
             removedDAppSettingsCleaner,
+            removedAssetVisibilityCleaner,
             updateNotificationsSettingsCleaner,
             updatedBrowserStateCleaner
         ]
@@ -66,6 +68,15 @@ enum WalletStorageCleanerFactory {
         )
 
         return dappSettingsCleaner
+    }
+
+    private static func createRemovedWalletAssetVisibilityCleaner() -> WalletStorageCleaning {
+        let storageFacade = UserDataStorageFacade.shared
+
+        return RemovedWalletAssetVisibilityCleaner(
+            visibilityRepository: AssetVisibilityRepositoryFactory.createVisibilityRepository(using: storageFacade),
+            settingsRepository: AssetVisibilityRepositoryFactory.createSettingsRepository(using: storageFacade)
+        )
     }
 
     private static func createRemovedNotificationsSettingsCleaner(

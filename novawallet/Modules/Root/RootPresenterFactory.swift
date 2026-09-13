@@ -21,6 +21,15 @@ final class RootPresenterFactory: RootPresenterFactoryProtocol {
             sharedSettingsManager: SharedSettingsManager()
         )
 
+        let assetVisibilitySeedMigrator = AssetVisibilitySeedMigrator(
+            settingsManager: settings,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared,
+            userStorageFacade: UserDataStorageFacade.shared,
+            seedQueue: OperationManagerFacade.assetVisibilityQueue,
+            workQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: Logger.shared
+        )
+
         let interactor = RootInteractor(
             walletSettings: SelectedWalletSettings.shared,
             settings: settings,
@@ -29,7 +38,12 @@ final class RootPresenterFactory: RootPresenterFactoryProtocol {
             securityLayerInteractor: SecurityLayerService.shared.interactor,
             chainRegistryClosure: { ChainRegistryFacade.sharedRegistry },
             eventCenter: EventCenter.shared,
-            migrators: [sharedSettingsMigrator, userDatabaseMigrator, substrateDatabaseMigrator],
+            migrators: [
+                sharedSettingsMigrator,
+                userDatabaseMigrator,
+                substrateDatabaseMigrator,
+                assetVisibilitySeedMigrator
+            ],
             logger: Logger.shared
         )
 

@@ -29,6 +29,7 @@ enum SettingsKey: String {
     case mythosRestakeEnabled
     case hideUnifiedAddressPopup
     case isAppFirstLaunch
+    case assetVisibilitySeeded
     case multisigNotificationsPromoSeen
     case ahmInfoShownChains
     case ahmAssetDetailsAlertClosedChains
@@ -46,6 +47,16 @@ extension SettingsManagerProtocol {
 
         set {
             set(value: newValue, for: SettingsKey.isAppFirstLaunch.rawValue)
+        }
+    }
+
+    var assetVisibilitySeeded: Bool {
+        get {
+            bool(for: SettingsKey.assetVisibilitySeeded.rawValue) ?? false
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.assetVisibilitySeeded.rawValue)
         }
     }
 
