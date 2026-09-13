@@ -1,129 +1,184 @@
-import UIKit
+import Foundation
 import Operation_iOS
 import Keystore_iOS
 
-final class TokensManageInteractor {
+final class TokensManageInteractor: AnyProviderAutoCleaning {
     weak var presenter: TokensManageInteractorOutputProtocol?
 
     let chainRegistry: ChainRegistryProtocol
-    let repository: AnyDataProviderRepository<ChainModel>
-    let repositoryFactory: SubstrateRepositoryFactoryProtocol
+    let selectedWalletSettings: SelectedWalletSettings
+    let settingsManager: SettingsManagerProtocol
+    let assetVisibilitySubscriptionFactory: AssetVisibilityLocalSubscriptionFactoryProtocol
+    let visibilityWriter: AssetVisibilityWriting
+    let settingsRepository: AnyDataProviderRepository<MetaAccountSettingsLocal>
+    let defaultAssetsProvider: DefaultAssetsProviding
     let operationQueue: OperationQueue
+    let logger: LoggerProtocol
 
-    private var settingsManager: SettingsManagerProtocol
-
-    private weak var pendingOperation: BaseOperation<Void>?
+    private var visibilityProvider: StreamableProvider<AssetVisibilityLocal>?
+    private var settingsProvider: StreamableProvider<MetaAccountSettingsLocal>?
 
     init(
         chainRegistry: ChainRegistryProtocol,
+        selectedWalletSettings: SelectedWalletSettings,
         settingsManager: SettingsManagerProtocol,
-        repository: AnyDataProviderRepository<ChainModel>,
-        repositoryFactory: SubstrateRepositoryFactoryProtocol,
-        operationQueue: OperationQueue
+        assetVisibilitySubscriptionFactory: AssetVisibilityLocalSubscriptionFactoryProtocol,
+        visibilityWriter: AssetVisibilityWriting,
+        settingsRepository: AnyDataProviderRepository<MetaAccountSettingsLocal>,
+        defaultAssetsProvider: DefaultAssetsProviding,
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
     ) {
         self.chainRegistry = chainRegistry
+        self.selectedWalletSettings = selectedWalletSettings
         self.settingsManager = settingsManager
-        self.repository = repository
-        self.repositoryFactory = repositoryFactory
+        self.assetVisibilitySubscriptionFactory = assetVisibilitySubscriptionFactory
+        self.visibilityWriter = visibilityWriter
+        self.settingsRepository = settingsRepository
+        self.defaultAssetsProvider = defaultAssetsProvider
         self.operationQueue = operationQueue
+        self.logger = logger
+    }
+}
+
+// MARK: TokensManageInteractorInputProtocol
+
+extension TokensManageInteractor: TokensManageInteractorInputProtocol {
+    func setup() {
+        presenter?.didReceiveGroupStyle(settingsManager.assetListGroupStyle)
+
+        subscribeChains()
+        fetchDefaultAssets()
+        subscribeVisibilityAfterSeed()
     }
 
-    private func subscribeChains() {
+    func save(chainAssetIds: Set<ChainAssetId>, state: AssetVisibilityState) {
+        guard let metaId = selectedWalletSettings.value?.metaId else {
+            return
+        }
+
+        visibilityWriter.setState(
+            metaId: metaId,
+            ids: chainAssetIds,
+            state: state,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            if case .failure = result {
+                self?.presenter?.didFailSave()
+            }
+        }
+    }
+
+    func save(autoAddTokensWithBalance: Bool) {
+        guard let metaId = selectedWalletSettings.value?.metaId else {
+            return
+        }
+
+        let settings = MetaAccountSettingsLocal(
+            metaId: metaId,
+            autoAddTokensWithBalance: autoAddTokensWithBalance
+        )
+
+        let saveOperation = settingsRepository.saveOperation({ [settings] }, { [] })
+
+        execute(
+            operation: saveOperation,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            if case let .failure(error) = result {
+                self?.logger.error("Can't save the auto add setting: \(error)")
+                self?.presenter?.didFailSave()
+            }
+        }
+    }
+}
+
+// MARK: AssetVisibilityLocalStorageSubscriber
+
+extension TokensManageInteractor: AssetVisibilityLocalStorageSubscriber, AssetVisibilitySubscriptionHandler {
+    func handleAssetVisibility(
+        result: Result<[DataProviderChange<AssetVisibilityLocal>], Error>,
+        metaId: MetaAccountModel.Id
+    ) {
+        guard metaId == selectedWalletSettings.value?.metaId else {
+            return
+        }
+
+        switch result {
+        case let .success(changes):
+            presenter?.didReceiveVisibility(changes: changes)
+        case let .failure(error):
+            logger.error("Can't observe asset visibility: \(error)")
+        }
+    }
+
+    func handleMetaAccountSettings(
+        result: Result<[DataProviderChange<MetaAccountSettingsLocal>], Error>,
+        metaId: MetaAccountModel.Id
+    ) {
+        guard metaId == selectedWalletSettings.value?.metaId else {
+            return
+        }
+
+        switch result {
+        case let .success(changes):
+            let enabled = changes.reduceToLastChange()?.autoAddTokensWithBalance
+                ?? MetaAccountSettingsLocal.defaultAutoAddTokensWithBalance
+
+            presenter?.didReceiveAutoAddTokens(enabled: enabled)
+        case let .failure(error):
+            logger.error("Can't observe the auto add setting: \(error)")
+        }
+    }
+}
+
+// MARK: Private
+
+private extension TokensManageInteractor {
+    func subscribeChains() {
         chainRegistry.chainsSubscribe(
             self,
             runningInQueue: .main,
-            filterStrategy: .enabledChains
+            filterStrategy: nil
         ) { [weak self] changes in
             self?.presenter?.didReceiveChainModel(changes: changes)
         }
     }
 
-    private func createBalanceClearOperation(for chainAssetIds: Set<ChainAssetId>) -> BaseOperation<Void> {
-        let repository = repositoryFactory.createAssetBalanceRepository(for: chainAssetIds)
-        return repository.deleteAllOperation()
-    }
+    func fetchDefaultAssets() {
+        let wrapper = defaultAssetsProvider.createDefaultAssetsWrapper()
 
-    private func createLocksClearOperation(for chainAssetIds: Set<ChainAssetId>) -> BaseOperation<Void> {
-        let repository = repositoryFactory.createAssetLocksRepository(chainAssetIds: chainAssetIds)
-        return repository.deleteAllOperation()
-    }
-
-    private func createCrowdloanContributionClearOperation(
-        for chainAssetIds: Set<ChainAssetId>
-    ) -> BaseOperation<Void> {
-        let chainIds = Set(chainAssetIds.filter { $0.assetId == 0 }.map(\.chainId))
-        let repository = repositoryFactory.createCrowdloanContributionRepository(chainIds: chainIds)
-        return repository.deleteAllOperation()
-    }
-
-    private func createTokenClearWrapper(for chainAssetIds: Set<ChainAssetId>) -> CompoundOperationWrapper<Void> {
-        let clearBalanceOperation = createBalanceClearOperation(for: chainAssetIds)
-        let clearLocksOperation = createLocksClearOperation(for: chainAssetIds)
-        let clearCrowdloanContributionOperation = createCrowdloanContributionClearOperation(for: chainAssetIds)
-
-        return CompoundOperationWrapper(
-            targetOperation: clearBalanceOperation,
-            dependencies: [clearLocksOperation, clearCrowdloanContributionOperation]
-        )
-    }
-}
-
-extension TokensManageInteractor: TokensManageInteractorInputProtocol {
-    func setup() {
-        subscribeChains()
-    }
-
-    func save(chainAssetIds: Set<ChainAssetId>, enabled: Bool, allChains: [ChainModel]) {
-        let chains = Set(chainAssetIds.map(\.chainId))
-
-        let saveOperation = repository.saveOperation({
-            allChains.compactMap { chain in
-                guard chains.contains(chain.chainId) else {
-                    return nil
-                }
-
-                let newAssets = chain.assets.map { asset in
-                    if chainAssetIds.contains(ChainAssetId(chainId: chain.chainId, assetId: asset.assetId)) {
-                        return asset.byChanging(enabled: enabled)
-                    } else {
-                        return asset
-                    }
-                }
-
-                return chain.byChanging(assets: Set(newAssets))
-            }
-        }, {
-            []
-        })
-
-        if let pendingOperation = pendingOperation {
-            saveOperation.addDependency(pendingOperation)
-
-            saveOperation.configurationBlock = {
-                do {
-                    try pendingOperation.extractNoCancellableResultData()
-                } catch {
-                    saveOperation.cancel()
-                }
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(list):
+                self?.presenter?.didReceiveDefaultAssets(list)
+            case let .failure(error):
+                self?.logger.error("Default assets are unavailable: \(error)")
+                self?.presenter?.didReceiveDefaultAssets(.empty)
             }
         }
+    }
 
-        pendingOperation = saveOperation
+    func subscribeVisibilityAfterSeed() {
+        visibilityWriter.enqueueBarrier(callbackIn: .main) { [weak self] in
+            self?.subscribeVisibility()
+        }
+    }
 
-        saveOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                if case .failure = saveOperation.result {
-                    self?.presenter?.didFailChainSave()
-                }
-            }
+    func subscribeVisibility() {
+        clear(streamableProvider: &visibilityProvider)
+        clear(streamableProvider: &settingsProvider)
+
+        guard let metaId = selectedWalletSettings.value?.metaId else {
+            return
         }
 
-        operationQueue.addOperation(saveOperation)
-
-        if !enabled {
-            let clearTokenWrapper = createTokenClearWrapper(for: chainAssetIds)
-            clearTokenWrapper.addDependency(operations: [saveOperation])
-            operationQueue.addOperations(clearTokenWrapper.allOperations, waitUntilFinished: false)
-        }
+        visibilityProvider = subscribeToAssetVisibilityProvider(for: metaId)
+        settingsProvider = subscribeToMetaAccountSettingsProvider(for: metaId)
     }
 }

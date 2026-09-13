@@ -13,12 +13,17 @@ protocol TokensManagePresenterProtocol: AnyObject {
 
 protocol TokensManageInteractorInputProtocol: AnyObject {
     func setup()
-    func save(chainAssetIds: Set<ChainAssetId>, enabled: Bool, allChains: [ChainModel])
+    func save(chainAssetIds: Set<ChainAssetId>, state: AssetVisibilityState)
+    func save(autoAddTokensWithBalance: Bool)
 }
 
 protocol TokensManageInteractorOutputProtocol: AnyObject {
+    func didReceiveGroupStyle(_ style: AssetListGroupsStyle)
     func didReceiveChainModel(changes: [DataProviderChange<ChainModel>])
-    func didFailChainSave()
+    func didReceiveVisibility(changes: [DataProviderChange<AssetVisibilityLocal>])
+    func didReceiveAutoAddTokens(enabled: Bool)
+    func didReceiveDefaultAssets(_ list: DefaultAssetsList)
+    func didFailSave()
 }
 
 protocol TokensManageWireframeProtocol: AnyObject {

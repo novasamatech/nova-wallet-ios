@@ -37,15 +37,25 @@ struct TokensManageViewFactory {
     }
 
     private static func createInteractor() -> TokensManageInteractor? {
-        let repository = SubstrateRepositoryFactory().createChainRepository()
-        let settingsManager = SettingsManager.shared
+        guard let selectedMetaId = SelectedWalletSettings.shared.value?.metaId else {
+            return nil
+        }
+
+        let settingsRepository = AssetVisibilityRepositoryFactory.createSettingsRepository(
+            for: selectedMetaId,
+            using: UserDataStorageFacade.shared
+        )
 
         return .init(
             chainRegistry: ChainRegistryFacade.sharedRegistry,
-            settingsManager: settingsManager,
-            repository: repository,
-            repositoryFactory: SubstrateRepositoryFactory(storageFacade: SubstrateDataStorageFacade.shared),
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            selectedWalletSettings: SelectedWalletSettings.shared,
+            settingsManager: SettingsManager.shared,
+            assetVisibilitySubscriptionFactory: AssetVisibilityLocalSubscriptionFactory.shared,
+            visibilityWriter: AssetVisibilityWriter.shared,
+            settingsRepository: settingsRepository,
+            defaultAssetsProvider: DefaultAssetsProvider.shared,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: Logger.shared
         )
     }
 }

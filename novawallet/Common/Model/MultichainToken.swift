@@ -145,9 +145,11 @@ extension Array where Element == ChainAsset {
             )
 
             let symbolExtensions = MultichainToken.reserveTokensOf(symbol: chainAsset.asset.symbol)
-            let tokenSymbol = symbolExtensions.first(
+            let reserveSymbol = symbolExtensions.first(
                 where: { validSymbols.contains($0) }
             ) ?? chainAsset.asset.symbol
+
+            let tokenSymbol = MultichainToken.bridgedParent(of: reserveSymbol, among: validSymbols) ?? reserveSymbol
 
             if let token = accum[tokenSymbol] {
                 accum[tokenSymbol] = MultichainToken(
@@ -174,5 +176,22 @@ extension MultichainToken {
         } else {
             return [symbol]
         }
+    }
+}
+
+extension MultichainToken {
+    private enum Constants {
+        static let bridgedSymbolSeparator: Character = "-"
+    }
+
+    // ETH-Snowbridge lists under ETH only while ETH itself is listed; a lone variant keeps its own row
+    static func bridgedParent(of symbol: String, among validSymbols: Set<AssetModel.Symbol>) -> String? {
+        guard let separatorIndex = symbol.firstIndex(of: Constants.bridgedSymbolSeparator) else {
+            return nil
+        }
+
+        let parent = String(symbol[..<separatorIndex])
+
+        return validSymbols.contains(parent) ? parent : nil
     }
 }

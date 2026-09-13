@@ -11,7 +11,22 @@ final class TokensManagePresenter {
     private(set) var chains: ListDifferenceCalculator<ChainModel>
     private(set) var tokenModels: [MultichainToken] = []
 
+    private var groupStyle: AssetListGroupsStyle?
+    private var rows: [String: AssetVisibilityLocal]?
+    private var defaults: DefaultAssetsList?
     private var query: String = ""
+
+    private var visibility: AssetVisibility? {
+        guard let rows, let defaults else {
+            return nil
+        }
+
+        let states = rows.values.reduce(into: [ChainAssetId: AssetVisibilityState]()) { accum, row in
+            accum[row.chainAssetId] = row.state
+        }
+
+        return AssetVisibility(defaults: defaults, rows: states)
+    }
 
     init(
         interactor: TokensManageInteractorInputProtocol,
@@ -31,14 +46,18 @@ final class TokensManagePresenter {
 
         self.localizationManager = localizationManager
     }
+}
 
-    private func reloadTokens() {
-        tokenModels = chains.allItems.createMultichainTokens()
+// MARK: Private
+
+private extension TokensManagePresenter {
+    func reloadTokens() {
+        tokenModels = chains.allItems.filter { $0.syncMode.enabled() }.createMultichainTokens()
 
         updateView()
     }
 
-    private func filterTokens(_ tokens: [MultichainToken], for query: String) -> [MultichainToken] {
+    func filterTokens(_ tokens: [MultichainToken], for query: String) -> [MultichainToken] {
         guard !query.isEmpty else {
             return tokens
         }
@@ -72,7 +91,7 @@ final class TokensManagePresenter {
         return allMatchedTokens + allMatchedChains
     }
 
-    private func resetView() {
+    func resetView() {
         // clear first
         view?.didReceive(viewModels: [])
 
@@ -80,21 +99,23 @@ final class TokensManagePresenter {
         updateView()
     }
 
-    private func updateView() {
+    func updateView() {
+        guard let visibility else {
+            view?.didReceive(viewModels: [])
+            return
+        }
+
         let filteredTokens = filterTokens(tokenModels, for: query)
 
         let viewModels = filteredTokens.map {
-            viewModelFactory.createListViewModel(from: $0, locale: selectedLocale)
+            viewModelFactory.createListViewModel(from: $0, visibility: visibility, locale: selectedLocale)
         }
 
         view?.didReceive(viewModels: viewModels)
     }
-
-    private func saveChains(for token: MultichainToken, enabled: Bool) {
-        let chainAssetIds = token.instances.map(\.chainAssetId)
-        interactor.save(chainAssetIds: Set(chainAssetIds), enabled: enabled, allChains: chains.allItems)
-    }
 }
+
+// MARK: TokensManagePresenterProtocol
 
 extension TokensManagePresenter: TokensManagePresenterProtocol {
     func setup() {
@@ -112,25 +133,49 @@ extension TokensManagePresenter: TokensManagePresenterProtocol {
     }
 
     func performSwitch(for viewModel: TokensManageViewModel, enabled: Bool) {
-        guard let tokenIndex = tokenModels.firstIndex(where: { $0.symbol == viewModel.symbol }) else {
+        guard let token = tokenModels.first(where: { $0.symbol == viewModel.symbol }) else {
             return
         }
 
-        saveChains(for: tokenModels[tokenIndex], enabled: enabled)
+        let chainAssetIds = Set(token.instances.map(\.chainAssetId))
+
+        interactor.save(chainAssetIds: chainAssetIds, state: enabled ? .visible : .hidden)
     }
 }
 
+// MARK: TokensManageInteractorOutputProtocol
+
 extension TokensManagePresenter: TokensManageInteractorOutputProtocol {
+    func didReceiveGroupStyle(_ style: AssetListGroupsStyle) {
+        groupStyle = style
+    }
+
     func didReceiveChainModel(changes: [DataProviderChange<ChainModel>]) {
         chains.apply(changes: changes)
 
         reloadTokens()
     }
 
-    func didFailChainSave() {
+    func didReceiveVisibility(changes: [DataProviderChange<AssetVisibilityLocal>]) {
+        rows = changes.mergeToDict(rows ?? [:])
+
+        updateView()
+    }
+
+    func didReceiveAutoAddTokens(enabled _: Bool) {}
+
+    func didReceiveDefaultAssets(_ list: DefaultAssetsList) {
+        defaults = list
+
+        updateView()
+    }
+
+    func didFailSave() {
         resetView()
     }
 }
+
+// MARK: Localizable
 
 extension TokensManagePresenter: Localizable {
     func applyLocalization() {
