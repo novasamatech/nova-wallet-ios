@@ -149,7 +149,10 @@ private extension AssetListFlowLayout {
             for: layoutStyle,
             collectionView,
             using: sectionsExpandableState,
-            assetsStartingSection: SectionType.assetsStartingSection,
+            sectionsLayout: .init(
+                startingSection: SectionType.assetsStartingSection,
+                trailingSectionsCount: SectionType.trailingSectionsCount
+            ),
             from: initialY
         )
 
@@ -333,6 +336,8 @@ extension AssetListFlowLayout {
             AssetListMeasurement.emptyStateCellHeight
         case .asset:
             assetCellHeight(for: indexPath)
+        case .revealRow:
+            AssetListMeasurement.revealRowHeight
         }
     }
 
@@ -351,6 +356,8 @@ extension AssetListFlowLayout {
             AssetListMeasurement.settingsInsets
         case .assetGroup:
             assetGroupInset(for: section)
+        case .tokensReveal:
+            AssetListMeasurement.revealInsets
         }
     }
 

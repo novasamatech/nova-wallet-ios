@@ -82,8 +82,14 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
             return matchingAssets.contains(chainAsset.chainAssetId)
         }
 
+        let includesHiddenAssets = switch selectionModel {
+        case .payForAsset: false
+        case .receivePayingWith: true
+        }
+
         builder = .init(
             filter: filter,
+            includesHiddenAssets: includesHiddenAssets,
             workingQueue: .init(
                 label: AssetsSearchInteractor.workingQueueLabel,
                 qos: .userInteractive

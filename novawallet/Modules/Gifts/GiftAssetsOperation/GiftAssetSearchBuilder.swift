@@ -10,6 +10,7 @@ final class GiftAssetSearchBuilder: AssetSearchBuilder {
         assetTransferAggregationFactory: AssetTransferAggregationFactoryProtocol,
         sufficiencyProvider: AssetExchangeSufficiencyProviding,
         filter: ChainAssetsFilter?,
+        includesHiddenAssets: Bool,
         workingQueue: DispatchQueue,
         callbackQueue: DispatchQueue,
         callbackClosure: @escaping (AssetSearchBuilderResult) -> Void,
@@ -21,6 +22,7 @@ final class GiftAssetSearchBuilder: AssetSearchBuilder {
 
         super.init(
             filter: filter,
+            includesHiddenAssets: includesHiddenAssets,
             workingQueue: workingQueue,
             callbackQueue: callbackQueue,
             callbackClosure: callbackClosure,
@@ -30,7 +32,9 @@ final class GiftAssetSearchBuilder: AssetSearchBuilder {
     }
 
     override func assetListState(from model: AssetListModel) -> AssetListState {
-        let chainAssets = model.allChains.flatMap { _, chain in
+        let chains = sourceChains(from: model)
+
+        let chainAssets = chains.flatMap { _, chain in
             chain.assets.map { ChainAssetId(chainId: chain.chainId, assetId: $0.assetId) }
         }
 
@@ -48,7 +52,7 @@ final class GiftAssetSearchBuilder: AssetSearchBuilder {
         return AssetListState(
             priceResult: model.priceResult,
             balanceResults: balanceResults,
-            allChains: model.allChains,
+            allChains: chains,
             externalBalances: nil,
             defaultRank: model.visibility?.defaults.rank ?? [:]
         )

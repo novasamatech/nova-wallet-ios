@@ -8,6 +8,7 @@ class AssetSearchBuilder: AnyCancellableCleaning {
     let operationQueue: OperationQueue
     let callbackClosure: (AssetSearchBuilderResult) -> Void
     let filter: ChainAssetsFilter?
+    let includesHiddenAssets: Bool
     let logger: LoggerProtocol
 
     private var state: AssetListState?
@@ -18,6 +19,7 @@ class AssetSearchBuilder: AnyCancellableCleaning {
 
     init(
         filter: ChainAssetsFilter?,
+        includesHiddenAssets: Bool,
         workingQueue: DispatchQueue,
         callbackQueue: DispatchQueue,
         callbackClosure: @escaping (AssetSearchBuilderResult) -> Void,
@@ -25,6 +27,7 @@ class AssetSearchBuilder: AnyCancellableCleaning {
         logger: LoggerProtocol
     ) {
         self.filter = filter
+        self.includesHiddenAssets = includesHiddenAssets
         self.workingQueue = workingQueue
         self.callbackQueue = callbackQueue
         self.callbackClosure = callbackClosure
@@ -32,8 +35,14 @@ class AssetSearchBuilder: AnyCancellableCleaning {
         self.logger = logger
     }
 
+    func sourceChains(from model: AssetListModel) -> [ChainModel.Id: ChainModel] {
+        includesHiddenAssets ? model.chainsIncludingHidden : model.allChains
+    }
+
     func assetListState(from model: AssetListModel) -> AssetListState {
-        let chainAssets = model.allChains.flatMap { _, chain in
+        let chains = sourceChains(from: model)
+
+        let chainAssets = chains.flatMap { _, chain in
             chain.assets.map { ChainAssetId(chainId: chain.chainId, assetId: $0.assetId) }
         }
 
@@ -51,7 +60,7 @@ class AssetSearchBuilder: AnyCancellableCleaning {
         return AssetListState(
             priceResult: model.priceResult,
             balanceResults: balanceResults,
-            allChains: model.allChains,
+            allChains: chains,
             externalBalances: model.externalBalances,
             defaultRank: model.visibility?.defaults.rank ?? [:]
         )

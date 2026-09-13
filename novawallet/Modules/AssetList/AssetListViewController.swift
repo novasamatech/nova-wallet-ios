@@ -218,6 +218,10 @@ extension AssetListViewController: AssetListCollectionManagerDelegate {
         presenter.selectAsset(for: chainAssetId)
     }
 
+    func selectTokensReveal() {
+        actionManage()
+    }
+
     func actionSelectAccount() {
         presenter.selectWallet()
     }

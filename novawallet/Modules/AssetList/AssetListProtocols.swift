@@ -49,6 +49,7 @@ protocol AssetListCollectionViewActionsDelegate: AnyObject {
 protocol AssetListCollectionSelectionDelegate: AnyObject {
     func selectAsset(for chainAssetId: ChainAssetId)
     func selectOrganizerItem(at index: Int)
+    func selectTokensReveal()
 }
 
 protocol AssetListCollectionViewLayoutDelegate: AnyObject {

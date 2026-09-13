@@ -2,7 +2,9 @@ import BigInt
 
 final class SpendAssetSearchBuilder: AssetSearchBuilder {
     override func assetListState(from model: AssetListModel) -> AssetListState {
-        let chainAssets = model.allChains.flatMap { _, chain in
+        let chains = sourceChains(from: model)
+
+        let chainAssets = chains.flatMap { _, chain in
             chain.assets.map { ChainAssetId(chainId: chain.chainId, assetId: $0.assetId) }
         }
 
@@ -20,7 +22,7 @@ final class SpendAssetSearchBuilder: AssetSearchBuilder {
         return AssetListState(
             priceResult: model.priceResult,
             balanceResults: balanceResults,
-            allChains: model.allChains,
+            allChains: chains,
             externalBalances: nil,
             defaultRank: model.visibility?.defaults.rank ?? [:]
         )
