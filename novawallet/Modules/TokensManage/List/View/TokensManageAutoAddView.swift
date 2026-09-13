@@ -7,6 +7,7 @@ final class TokensManageAutoAddView: UIView {
 
     let switchView: UISwitch = .create { view in
         view.onTintColor = R.color.colorIconAccent()
+        view.isOn = MetaAccountSettingsLocal.defaultAutoAddTokensWithBalance
     }
 
     override var intrinsicContentSize: CGSize {
