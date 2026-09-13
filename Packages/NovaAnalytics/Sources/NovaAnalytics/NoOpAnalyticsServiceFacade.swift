@@ -40,6 +40,8 @@ extension NoOpAnalyticsServiceFacade: AnalyticsDebugInspecting {
     public func debugClearPendingEventsOperation() -> BaseOperation<Void> {
         ClosureOperation {}
     }
+
+    public func debugResetAttestationIdentity() {}
 }
 
 private final class NoOpAnalyticsConsentManager: AnalyticsConsentManagerProtocol {

@@ -214,7 +214,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #if F_RELEASE
             URL(string: "https://analytics.novawallet.io/")!
         #else
-            URL(string: "https://analytics-dev.novawallet.io/")!
+            URL(string: "https://nova-infra-dev.novasama-tech.org/")!
         #endif
     }
 
@@ -236,10 +236,19 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     /// Tracks `com.apple.developer.devicecheck.appattest-environment` in the four
-    /// `novawallet*.entitlements` files, all of which declare `production`. A TestFlight or App Store
-    /// build attests as `production` whatever the entitlement says; `development` is Apple's sandbox
-    /// and would have to be set here and in the entitlement together.
-    private var appAttestEnvironment: String { "production" }
+    /// `novawallet*.entitlements` files: the `F_DEV` builds declare `development`, the rest
+    /// `production`. The two must move together — the entitlement decides which environment Apple
+    /// attests in, this string decides which one we claim, and the gateway rejects any pair that
+    /// disagrees. `development` is Apple's sandbox. A TestFlight or App Store build attests as
+    /// `production` whatever the entitlement says, which is safe here because those builds ship the
+    /// `F_RELEASE` branch.
+    private var appAttestEnvironment: String {
+        #if F_DEV
+            "development"
+        #else
+            "production"
+        #endif
+    }
 
     var dAppsListURL: URL {
         #if F_RELEASE

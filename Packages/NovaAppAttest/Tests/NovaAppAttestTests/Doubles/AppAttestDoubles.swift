@@ -75,6 +75,13 @@ final class AppAttestServiceSpy: AppAttestServiceProtocol {
 final class BackendAttestationRemoteFactorySpy: BackendAttestationRemoteFactoryProtocol {
     var registerError: Error?
     var challengeError: Error?
+
+    /// Mirrors the gateway: a request challenge names the client, so it is refused with the
+    /// identity-bearing 401 until a registration has bound one.
+    var isClientRegistered = false
+
+    /// Fails only the register-purpose challenge, so a test can reach that step past the probe.
+    var registerChallengeError: Error?
     var onChallenge: (() -> Void)?
 
     private(set) var challengeCallCount = 0
@@ -106,7 +113,11 @@ final class BackendAttestationRemoteFactorySpy: BackendAttestationRemoteFactoryP
         challengeCallCount += 1
         challengePurposes.append(purpose)
         let hook = onChallenge
-        let error = challengeError
+        let error = challengeError ?? (
+            purpose == .request
+                ? (isClientRegistered ? nil : BackendAttestationError.unauthorized(statusCode: 401))
+                : registerChallengeError
+        )
 
         return CompoundOperationWrapper(targetOperation: ClosureOperation {
             hook?()
@@ -131,6 +142,8 @@ final class BackendAttestationRemoteFactorySpy: BackendAttestationRemoteFactoryP
             if let error {
                 throw error
             }
+
+            self?.isClientRegistered = true
         }
     }
 }

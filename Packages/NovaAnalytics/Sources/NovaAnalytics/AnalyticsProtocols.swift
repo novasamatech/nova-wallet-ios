@@ -128,4 +128,8 @@ public protocol AnalyticsDebugInspecting: AnyObject {
     func debugPendingEventsWrapper(count: Int) -> CompoundOperationWrapper<[AnalyticsPendingEvent]>
 
     func debugClearPendingEventsOperation() -> BaseOperation<Void>
+
+    /// Retires the gateway client id and its key, so the next protected request mints a fresh
+    /// identity and attests it again from scratch. The pending queue is untouched.
+    func debugResetAttestationIdentity()
 }

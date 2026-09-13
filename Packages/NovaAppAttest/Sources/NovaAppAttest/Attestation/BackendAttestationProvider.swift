@@ -13,17 +13,17 @@ import SDKLogger
 /// schedule. A 401 that retired the identity is retried once in the same request; the events
 /// endpoint instead retains its batch and recovers on the next flush.
 public final class BackendAttestationProvider {
-    private let appAttest: AppAttestServiceProtocol
-    private let remoteFactory: BackendAttestationRemoteFactoryProtocol
-    private let identity: BackendAttestationIdentityProtocol
-    private let repository: AnyDataProviderRepository<AppAttestKeySettings>
-    private let gatewayURL: URL
-    private let gatewayOrigin: String?
-    private let mode: BackendAttestationMode
-    private let appIdentity: AppAttestAppIdentity
-    private let operationQueue: OperationQueue
-    private let logger: SDKLoggerProtocol
-    private let timeProvider: () -> Date
+    let appAttest: AppAttestServiceProtocol
+    let remoteFactory: BackendAttestationRemoteFactoryProtocol
+    let identity: BackendAttestationIdentityProtocol
+    let repository: AnyDataProviderRepository<AppAttestKeySettings>
+    let gatewayURL: URL
+    let gatewayOrigin: String?
+    let mode: BackendAttestationMode
+    let appIdentity: AppAttestAppIdentity
+    let operationQueue: OperationQueue
+    let logger: SDKLoggerProtocol
+    let timeProvider: () -> Date
 
     private let mutex = NSLock()
 
@@ -62,65 +62,9 @@ public final class BackendAttestationProvider {
     }
 }
 
-/// The row a running chain owns, so the failure handler never asks the identity for a client id —
-/// that call mints one.
-private struct AttestationChainContext {
-    let clientId: String
-    let rowIdentifier: String
-    let epoch: Int
-}
-
-private final class AttestationChainContextBox {
-    private let mutex = NSLock()
-    private var stored: AttestationChainContext?
-    private var retired: Bool = false
-
-    var value: AttestationChainContext? {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        return stored
-    }
-
-    /// Whether this attempt's failure actually retired the identity. Retrying without that is a
-    /// second run of the byte-identical request the gateway just refused.
-    var didRetire: Bool {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        return retired
-    }
-
-    func store(_ context: AttestationChainContext) {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        stored = context
-    }
-
-    func markRetired() {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        retired = true
-    }
-}
-
 // MARK: - State
 
-private extension BackendAttestationProvider {
+extension BackendAttestationProvider {
     /// Each trigger owns its own per-launch discard, so one spending its brake cannot silence another.
     enum DiscardBrake {
         case invalidKeyId
@@ -168,12 +112,16 @@ private extension BackendAttestationProvider {
         return needsFreshKey ? nil : attestedKeyId
     }
 
-    func resolveRow(_ stored: AppAttestKeySettings?) -> AppAttestKeySettings? {
+    /// Checks the epoch while holding the lock that guards the one-shot discard, so a chain the
+    /// consent cycle has already superseded cannot consume the signal armed for its successor.
+    func resolveRow(_ stored: AppAttestKeySettings?, epoch: Int) throws -> AppAttestKeySettings? {
         mutex.lock()
 
         defer {
             mutex.unlock()
         }
+
+        try requireEpoch(epoch)
 
         guard needsFreshKey else {
             return stored
@@ -213,6 +161,13 @@ private extension BackendAttestationProvider {
         rejectedForProcess = false
         unattestedMarkedThisLaunch = false
         unauthorizedDiscardedThisLaunch = false
+        // The persisted window a repeating 401 arms is gateway scoped too, so it starts over with
+        // the rest: the row carrying it is ignored once, and the next attempt mints a fresh key
+        // instead of waiting out a brake this consent cycle has already superseded. The cached key
+        // goes with the flag — the credentials gate resolves the row before it reads the cache, so
+        // a key left behind here would answer for a row that was just discarded.
+        attestedKeyId = nil
+        needsFreshKey = true
     }
 
     func deleteRow(_ identifier: String) {
@@ -355,20 +310,30 @@ private extension BackendAttestationProvider {
     }
 
     func handleAppleFailure(_ error: AppAttestServiceError, context: AttestationChainContext) -> Bool {
+        logger.warning("Attestation attempt failed in App Attest: \(error)")
+
         switch error {
         case .invalidKeyId:
-            return discardRowOnce(context, brake: .invalidKeyId)
+            return logDisposition(
+                discardRowOnce(context, brake: .invalidKeyId),
+                retired: "key identifier refused, retiring the key and the client id",
+                kept: "key identifier refused again this launch, keeping both until relaunch"
+            )
         case .attestationGeneric:
             if !discardRowOnce(context, brake: .attestationGeneric) {
+                logger.warning("attestKey failed again this launch; opening the persisted backoff")
                 applyBackoff(context)
 
                 return false
             }
 
+            logger.warning("attestKey failed; retiring the key and the client id")
+
             return true
         case .serviceUnavailable:
             // Apple never produced an attestation, so the key is still unspent and the same one is
             // retried rather than discarded.
+            logger.warning("Apple was unavailable; the key stays unspent and waits out a backoff")
             applyBackoff(context, returningSpentKey: true)
 
             return false
@@ -378,9 +343,24 @@ private extension BackendAttestationProvider {
     }
 
     func handleGatewayFailure(_ error: BackendAttestationError, context: AttestationChainContext) -> Bool {
+        logger.warning("Attestation attempt failed at the gateway: \(error)")
+
         switch error {
         case .unauthorized:
-            return discardRowOnce(context, brake: .unauthorized)
+            // Once this launch has spent its discard, a repeating 401 would otherwise leave a spent
+            // row with no window: every flush would then mint a fresh key and burn an attestKey call
+            // on a rejection nothing has changed. Fall through to the same brake the other gateway
+            // failures use.
+            guard discardRowOnce(context, brake: .unauthorized) else {
+                logger.warning("Gateway refused the identity again this launch; opening the backoff")
+                applyBackoff(context)
+
+                return false
+            }
+
+            logger.warning("Gateway refused the identity; retiring it and retrying once")
+
+            return true
         case .clientError, .serverError:
             applyBackoff(context)
 
@@ -388,6 +368,13 @@ private extension BackendAttestationProvider {
         case .rejected, .retryLater, .unsupported, .invalidResponse:
             return false
         }
+    }
+
+    /// Says which way a discard went, so a log reader can tell a retirement from a spent brake.
+    func logDisposition(_ didRetire: Bool, retired: String, kept: String) -> Bool {
+        logger.warning(didRetire ? retired : kept)
+
+        return didRetire
     }
 
     /// One retry per signing request, and only for the failure a fresh identity can actually fix.
@@ -402,465 +389,42 @@ private extension BackendAttestationProvider {
 
         return true
     }
-}
 
-// MARK: - Chain
-
-private extension BackendAttestationProvider {
-    /// One full signing attempt. `contextBox` carries out what its failure handler learned: which
-    /// identity ran, and whether that identity was retired.
-    func createAttemptWrapper(
-        target: AttestationRequestTarget,
-        bodyClosure: @escaping () throws -> Data,
-        contextBox: AttestationChainContextBox
-    ) -> CompoundOperationWrapper<[AttestationHeaderKey: String]?> {
-        let wrapper = OperationCombiningService<[AttestationHeaderKey: String]?>.compoundNonOptionalWrapper(
-            operationQueue: operationQueue
-        ) { [weak self] in
-            guard let self else {
-                throw BackendAttestationError.unsupported
-            }
-
-            return createHeadersWrapper(
-                target: target,
-                bodyClosure: bodyClosure,
-                contextBox: contextBox
-            )
-        }
-
-        let resultOperation = ClosureOperation<[AttestationHeaderKey: String]?> { [weak self] in
-            do {
-                return try wrapper.targetOperation.extractNoCancellableResultData()
-            } catch {
-                if self?.handleFailure(error, context: contextBox.value) == true {
-                    contextBox.markRetired()
-                }
-
-                throw error
-            }
-        }
-
-        resultOperation.addDependency(wrapper.targetOperation)
-
-        return wrapper.insertingTail(operation: resultOperation)
-    }
-
-    func createHeadersWrapper(
-        target: AttestationRequestTarget,
-        bodyClosure: @escaping () throws -> Data,
-        contextBox: AttestationChainContextBox
-    ) -> CompoundOperationWrapper<[AttestationHeaderKey: String]?> {
+    /// Whether the gateway has refused this installation for the rest of the process. The only
+    /// reader is the chain, in another file, so the lock stays with the state it guards.
+    var isRejectedForProcess: Bool {
         mutex.lock()
-        let isRejected = rejectedForProcess
-        mutex.unlock()
 
-        guard !isRejected else {
-            return .createWithError(
-                BackendAttestationError.rejected(statusCode: Constants.rejectedStatusCode)
-            )
+        defer {
+            mutex.unlock()
         }
 
-        switch mode {
-        case .unavailable:
-            return .createWithError(BackendAttestationError.unsupported)
-        case .appAttest:
-            break
-        }
-
-        // The proof does not name its destination yet, so refusing an off-gateway target here is
-        // what keeps an assertion minted for this client from being spent against another host.
-        guard let gatewayOrigin else {
-            logger.error("Gateway URL \(gatewayURL) has no canonical origin; nothing can be attested")
-
-            return .createWithError(BackendAttestationError.unsupported)
-        }
-
-        guard target.origin == gatewayOrigin else {
-            logger.error("Refusing to attest a request for \(target.origin)")
-
-            return .createWithError(BackendAttestationError.unsupported)
-        }
-
-        let epoch = identity.consentEpoch
-
-        guard let clientId = identity.clientId(), identity.consentEpoch == epoch else {
-            return .createWithError(BackendAttestationError.unsupported)
-        }
-
-        let context = AttestationChainContext(
-            clientId: clientId,
-            rowIdentifier: rowIdentifier(for: clientId),
-            epoch: epoch
-        )
-
-        contextBox.store(context)
-
-        return createSignedChainWrapper(
-            clientId: clientId,
-            context: context,
-            target: target,
-            bodyClosure: bodyClosure
-        )
+        return rejectedForProcess
     }
 
-    func createSignedChainWrapper(
-        clientId: String,
-        context: AttestationChainContext,
-        target: AttestationRequestTarget,
-        bodyClosure: @escaping () throws -> Data
-    ) -> CompoundOperationWrapper<[AttestationHeaderKey: String]?> {
-        let attestedWrapper = ensureAttestedWrapper(clientId: clientId, context: context)
+    /// The attested key this row names, remembering it so later requests in the process skip the
+    /// repository entirely.
+    func attestedKeyId(from row: AppAttestKeySettings?) -> AppAttestKeyId? {
+        mutex.lock()
 
-        let challengeWrapper = OperationCombiningService<String>.compoundNonOptionalWrapper(
-            operationQueue: operationQueue
-        ) { [weak self, remoteFactory] in
-            _ = try attestedWrapper.targetOperation.extractNoCancellableResultData()
-
-            guard let self else {
-                throw BackendAttestationError.unsupported
-            }
-
-            try requireEpoch(context.epoch)
-
-            return remoteFactory.createChallengeWrapper(clientId: clientId, purpose: .request)
+        defer {
+            mutex.unlock()
         }
 
-        challengeWrapper.addDependency(wrapper: attestedWrapper)
-
-        let assertionWrapper = OperationCombiningService<AppAttestAssertion>.compoundNonOptionalWrapper(
-            operationQueue: operationQueue
-        ) { [weak self, appAttest] in
-            let keyId = try attestedWrapper.targetOperation.extractNoCancellableResultData()
-            let challenge = try challengeWrapper.targetOperation.extractNoCancellableResultData()
-
-            guard let self else {
-                throw BackendAttestationError.unsupported
-            }
-
-            try requireEpoch(context.epoch)
-
-            return appAttest.createAssertionWrapper(keyId: keyId) {
-                let body = try bodyClosure()
-
-                return AttestationProfile2.preimage(
-                    purpose: .request,
-                    challenge: challenge,
-                    clientId: clientId,
-                    target: target,
-                    bodyDigest: AttestationProfile2.bodyDigest(body)
-                )
-            }
+        if !needsFreshKey, let cached = attestedKeyId {
+            return cached
         }
 
-        assertionWrapper.addDependency(wrapper: challengeWrapper)
-
-        let mapOperation = ClosureOperation<[AttestationHeaderKey: String]?> {
-            let challenge = try challengeWrapper.targetOperation.extractNoCancellableResultData()
-            let assertion = try assertionWrapper.targetOperation.extractNoCancellableResultData()
-
-            return [
-                .profile: String(AttestationProfile2.version),
-                .clientId: clientId,
-                .challenge: challenge,
-                .appAttestAssertion: assertion.base64EncodedString()
-            ]
+        // The row was read before the probe went out. A discard that landed while it was in flight
+        // retired exactly that row, so promoting the snapshot here would put the key the gateway
+        // just refused straight back into service and clear the signal asking for a new one.
+        guard !needsFreshKey, let row, row.isAttested else {
+            return nil
         }
 
-        mapOperation.addDependency(assertionWrapper.targetOperation)
+        attestedKeyId = row.keyId
 
-        return assertionWrapper
-            .insertingHead(operations: attestedWrapper.allOperations + challengeWrapper.allOperations)
-            .insertingTail(operation: mapOperation)
-    }
-
-    func ensureAttestedWrapper(
-        clientId: String,
-        context: AttestationChainContext
-    ) -> CompoundOperationWrapper<AppAttestKeyId> {
-        let identifier = context.rowIdentifier
-
-        let fetchOperation = repository.fetchOperation(
-            by: { identifier },
-            options: RepositoryFetchOptions()
-        )
-
-        let wrapper = OperationCombiningService<AppAttestKeyId>.compoundNonOptionalWrapper(
-            operationQueue: operationQueue
-        ) { [weak self] in
-            guard let self else {
-                throw BackendAttestationError.unsupported
-            }
-
-            if let cached = cachedAttestedKeyId() {
-                return .createWithResult(cached)
-            }
-
-            let row = try resolveRow(fetchOperation.extractNoCancellableResultData())
-
-            if let row, row.isAttested {
-                cacheAttestedKeyId(row.keyId)
-
-                return .createWithResult(row.keyId)
-            }
-
-            if let nextAttemptAt = row?.nextAttemptAt, isBackoffActive(until: nextAttemptAt) {
-                throw BackendAttestationError.retryLater(until: nextAttemptAt)
-            }
-
-            try requireEpoch(context.epoch)
-
-            // Apple attests a key once: a row whose attestation was already spent needs a new
-            // key, not a second attestKey call that can only fail.
-            let reusableKeyId = row?.isAttestationSpent == true ? nil : row?.keyId
-
-            return createAttestAndRegisterWrapper(
-                clientId: clientId,
-                context: context,
-                existingKeyId: reusableKeyId
-            )
-        }
-
-        wrapper.addDependency(operations: [fetchOperation])
-
-        return wrapper.insertingHead(operations: [fetchOperation])
-    }
-
-    func createAttestAndRegisterWrapper(
-        clientId: String,
-        context: AttestationChainContext,
-        existingKeyId: AppAttestKeyId?
-    ) -> CompoundOperationWrapper<AppAttestKeyId> {
-        let keyIdWrapper = createKeyIdWrapper(context: context, existingKeyId: existingKeyId)
-
-        let challengeWrapper = OperationCombiningService<String>.compoundNonOptionalWrapper(
-            operationQueue: operationQueue
-        ) { [weak self, remoteFactory] in
-            _ = try keyIdWrapper.targetOperation.extractNoCancellableResultData()
-
-            guard let self else {
-                throw BackendAttestationError.unsupported
-            }
-
-            try requireEpoch(context.epoch)
-
-            return remoteFactory.createChallengeWrapper(clientId: clientId, purpose: .register)
-        }
-
-        challengeWrapper.addDependency(wrapper: keyIdWrapper)
-
-        let markSpentOperation = createSaveOperation(
-            isAttested: false,
-            isAttestationSpent: true,
-            context: context
-        ) {
-            try keyIdWrapper.targetOperation.extractNoCancellableResultData()
-        }
-
-        markSpentOperation.addDependency(challengeWrapper.targetOperation)
-
-        let attestationWrapper = createAttestationWrapper(
-            clientId: clientId,
-            context: context,
-            keyIdWrapper: keyIdWrapper,
-            challengeWrapper: challengeWrapper
-        )
-
-        attestationWrapper.addDependency(wrapper: challengeWrapper)
-        attestationWrapper.addDependency(operations: [markSpentOperation])
-
-        let registerOperation = createRegisterOperation(
-            clientId: clientId,
-            context: context,
-            challengeWrapper: challengeWrapper,
-            attestationWrapper: attestationWrapper
-        )
-
-        registerOperation.addDependency(attestationWrapper.targetOperation)
-
-        let saveAttestedOperation = createSaveOperation(
-            isAttested: true,
-            isAttestationSpent: true,
-            context: context
-        ) {
-            try registerOperation.extractNoCancellableResultData()
-
-            return try attestationWrapper.targetOperation.extractNoCancellableResultData().keyId
-        }
-
-        saveAttestedOperation.addDependency(registerOperation)
-
-        let mapOperation = createCacheOperation(
-            context: context,
-            attestationWrapper: attestationWrapper,
-            saveOperation: saveAttestedOperation
-        )
-
-        mapOperation.addDependency(saveAttestedOperation)
-
-        let dependencies = keyIdWrapper.allOperations + challengeWrapper.allOperations +
-            [markSpentOperation] + attestationWrapper.allOperations +
-            [registerOperation, saveAttestedOperation]
-
-        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
-    }
-
-    /// Apple offers no way to look a key identifier up again, so a freshly minted one is written
-    /// before it is attested — otherwise a failed attestation orphans a production key for good.
-    func createKeyIdWrapper(
-        context: AttestationChainContext,
-        existingKeyId: AppAttestKeyId?
-    ) -> CompoundOperationWrapper<AppAttestKeyId> {
-        if let existingKeyId {
-            return .createWithResult(existingKeyId)
-        }
-
-        let generationOperation = appAttest.createKeyGenerationOperation()
-
-        let saveOperation = createSaveOperation(
-            isAttested: false,
-            isAttestationSpent: false,
-            context: context
-        ) {
-            try generationOperation.extractNoCancellableResultData()
-        }
-
-        saveOperation.addDependency(generationOperation)
-
-        let mapOperation = ClosureOperation<AppAttestKeyId> {
-            try saveOperation.extractNoCancellableResultData()
-
-            return try generationOperation.extractNoCancellableResultData()
-        }
-
-        mapOperation.addDependency(saveOperation)
-
-        return CompoundOperationWrapper(
-            targetOperation: mapOperation,
-            dependencies: [generationOperation, saveOperation]
-        )
-    }
-
-    func createAttestationWrapper(
-        clientId: String,
-        context: AttestationChainContext,
-        keyIdWrapper: CompoundOperationWrapper<AppAttestKeyId>,
-        challengeWrapper: CompoundOperationWrapper<String>
-    ) -> CompoundOperationWrapper<AppAttestAttestation> {
-        OperationCombiningService<AppAttestAttestation>.compoundNonOptionalWrapper(
-            operationQueue: operationQueue
-        ) { [weak self, appAttest, remoteFactory] in
-            let keyId = try keyIdWrapper.targetOperation.extractNoCancellableResultData()
-            let challenge = try challengeWrapper.targetOperation.extractNoCancellableResultData()
-
-            guard let self else {
-                throw BackendAttestationError.unsupported
-            }
-
-            try requireEpoch(context.epoch)
-
-            // The registration proof commits to the register POST itself, and carries the binding
-            // digest where a protected request carries its body digest.
-            let target = try remoteFactory.registerTarget()
-            let identity = appIdentity
-
-            return appAttest.createAttestationWrapper(using: keyId) { attestingKeyId in
-                AttestationProfile2.preimage(
-                    purpose: .register,
-                    challenge: challenge,
-                    clientId: clientId,
-                    target: target,
-                    bodyDigest: AttestationProfile2.registrationDigest(
-                        platform: Constants.platform,
-                        appId: identity.appId,
-                        attestationType: Constants.attestationType,
-                        keyReference: attestingKeyId,
-                        appAttestEnvironment: identity.environment
-                    )
-                )
-            }
-        }
-    }
-
-    func createRegisterOperation(
-        clientId: String,
-        context: AttestationChainContext,
-        challengeWrapper: CompoundOperationWrapper<String>,
-        attestationWrapper: CompoundOperationWrapper<AppAttestAttestation>
-    ) -> BaseOperation<Void> {
-        remoteFactory.createRegisterOperation { [weak self] in
-            let challenge = try challengeWrapper.targetOperation.extractNoCancellableResultData()
-            let attestation = try attestationWrapper.targetOperation.extractNoCancellableResultData()
-
-            guard let self else {
-                throw BackendAttestationError.unsupported
-            }
-
-            try requireEpoch(context.epoch)
-
-            return BackendAttestationRegisterRequest(
-                profile: AttestationProfile2.version,
-                clientId: clientId,
-                challenge: challenge,
-                platform: Constants.platform,
-                appId: appIdentity.appId,
-                attestationType: Constants.attestationType,
-                keyReference: attestation.keyId,
-                appAttestEnvironment: appIdentity.environment,
-                integrityToken: attestation.attestation.base64EncodedString()
-            )
-        }
-    }
-
-    func createCacheOperation(
-        context: AttestationChainContext,
-        attestationWrapper: CompoundOperationWrapper<AppAttestAttestation>,
-        saveOperation: BaseOperation<Void>
-    ) -> BaseOperation<AppAttestKeyId> {
-        ClosureOperation<AppAttestKeyId> { [weak self] in
-            try saveOperation.extractNoCancellableResultData()
-
-            let keyId = try attestationWrapper.targetOperation.extractNoCancellableResultData().keyId
-
-            guard let self else {
-                throw BackendAttestationError.unsupported
-            }
-
-            try requireEpoch(context.epoch)
-
-            cacheAttestedKeyId(keyId)
-
-            return keyId
-        }
-    }
-
-    func createSaveOperation(
-        isAttested: Bool,
-        isAttestationSpent: Bool,
-        context: AttestationChainContext,
-        keyIdClosure: @escaping () throws -> AppAttestKeyId
-    ) -> BaseOperation<Void> {
-        let identifier = context.rowIdentifier
-
-        return repository.saveOperation({ [weak self] in
-            let keyId = try keyIdClosure()
-
-            guard let self else {
-                return []
-            }
-
-            try requireEpoch(context.epoch)
-
-            return [
-                AppAttestKeySettings(
-                    identifier: identifier,
-                    keyId: keyId,
-                    isAttested: isAttested,
-                    isAttestationSpent: isAttestationSpent,
-                    attemptCount: 0,
-                    nextAttemptAt: nil
-                )
-            ]
-        }, { [] })
+        return row.keyId
     }
 }
 

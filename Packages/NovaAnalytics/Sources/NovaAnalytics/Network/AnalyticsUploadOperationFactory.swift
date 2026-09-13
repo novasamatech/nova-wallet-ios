@@ -1,13 +1,16 @@
 import Foundation
 import Operation_iOS
 import NovaAppAttest
+import SDKLogger
 
 /// Builds the events POST from the exact `Data` it is handed, which the assertion signs.
 public final class AnalyticsUploadOperationFactory {
     private let baseURL: URL
+    private let logger: SDKLoggerProtocol?
 
-    public init(baseURL: URL) {
+    public init(baseURL: URL, logger: SDKLoggerProtocol? = nil) {
         self.baseURL = baseURL
+        self.logger = logger
     }
 
     static func buildRequest(
@@ -141,12 +144,22 @@ extension AnalyticsUploadOperationFactory: AnalyticsUploadOperationFactoryProtoc
             return Self.buildRequest(target: target, body: body, headers: headers)
         }
 
+        let logger = logger
+
         let resultFactory = AnyNetworkResultFactory<Void> { data, response, error in
             if let error {
                 return .failure(error)
             }
 
             if let deliveryError = Self.deliveryError(for: response, data: data, now: Date()) {
+                // The grading keeps only the status, so the code that decided it would otherwise be
+                // lost — including a code this build does not recognise. Neither the body nor any
+                // header is logged: the code and status are the whole diagnostic.
+                let status = (response as? HTTPURLResponse)?.statusCode ?? Constants.ungradableStatusCode
+                let code = AttestationHTTP.rawErrorCode(from: data) ?? "<no envelope>"
+
+                logger?.warning("Analytics delivery refused: HTTP \(status) \(code) -> \(deliveryError)")
+
                 return .failure(deliveryError)
             }
 

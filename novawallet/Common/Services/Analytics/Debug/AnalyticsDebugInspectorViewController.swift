@@ -112,6 +112,8 @@
             let stack = UIStackView(
                 arrangedSubviews: [statusLabel]
                     + [
+                        ("Send one event now", #selector(actionSendOne)),
+                        ("Erase client id and key", #selector(actionEraseIdentity)),
                         ("Flush now", #selector(actionFlush)),
                         ("Clear queue", #selector(actionClear)),
                         ("Emit sample event", #selector(actionEmit)),
@@ -189,6 +191,56 @@
                 runningCallbackIn: .main
             ) { [weak self] _ in
                 self?.refresh()
+            }
+        }
+
+        /// One event, delivered in the same chain, so a whole attestation round trip can be watched
+        /// end to end. The queue is what reports the verdict: a delivered batch is deleted, while any
+        /// refusal retains it — and the gateway's own code for that refusal is on the log line
+        /// `Analytics delivery refused`.
+        @objc func actionSendOne() {
+            sendOneEvent(prefix: "Sent one event")
+        }
+
+        /// Erases the identity and stops there, leaving the install in the state a first run starts
+        /// from. Nothing is re-registered here on purpose: relaunching and letting the launch flush
+        /// drive it is what exercises a genuine cold run.
+        @objc func actionEraseIdentity() {
+            facade.debugResetAttestationIdentity()
+            refresh()
+            present(message: "Client id and key erased. Relaunch to watch a cold run.")
+        }
+
+        func sendOneEvent(prefix: String) {
+            pendingCount { [weak self] before in
+                guard let self else { return }
+
+                facade.trackAndFlush(.appOpened(isFirstLaunch: false), reason: .manual) { [weak self] in
+                    guard let self else { return }
+
+                    pendingCount { [weak self] after in
+                        guard let self else { return }
+
+                        let verdict = after < before + 1
+                            ? "delivered (queue \(before) -> \(after))"
+                            : "retained (queue \(before) -> \(after)) — see the log for the gateway code"
+
+                        present(message: "\(prefix): \(verdict)")
+                        refresh()
+                    }
+                }
+            }
+        }
+
+        /// The queue depth, or the window size when the peek comes back full; a failed read reports
+        /// zero so the verdict degrades to "retained" rather than claiming a delivery.
+        func pendingCount(_ completion: @escaping (Int) -> Void) {
+            execute(
+                wrapper: facade.debugPendingEventsWrapper(count: Self.pendingEventLimit),
+                inOperationQueue: operationQueue,
+                runningCallbackIn: .main
+            ) { result in
+                completion((try? result.get())?.count ?? 0)
             }
         }
 

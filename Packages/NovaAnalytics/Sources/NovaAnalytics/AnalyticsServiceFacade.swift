@@ -17,6 +17,8 @@ public final class AnalyticsServiceFacade {
     private let applicationHandler: ApplicationHandlerProtocol
     private let configOperationQueue: OperationQueue
     private let logger: SDKLoggerProtocol
+    /// Held only so the debug screen can retire the identity; nothing in the shipping flow reads it.
+    private let attestation: BackendAttestationProviderProtocol?
 
     private let mutex = NSLock()
     private var isSetUp: Bool = false
@@ -93,7 +95,10 @@ public final class AnalyticsServiceFacade {
             queue: eventQueue,
             identity: identity,
             attestation: attestation,
-            uploadFactory: AnalyticsUploadOperationFactory(baseURL: gatewayURL),
+            uploadFactory: AnalyticsUploadOperationFactory(
+                baseURL: gatewayURL,
+                logger: configuration.logger
+            ),
             operationQueue: configuration.operationQueue,
             appVersion: configuration.appVersion,
             logger: configuration.logger
@@ -127,6 +132,7 @@ public final class AnalyticsServiceFacade {
         applicationHandler = ApplicationHandler()
         configOperationQueue = configuration.operationQueue
         logger = configuration.logger
+        self.attestation = attestation
 
         consent.addObserver(with: self, queue: nil) { [weak self] oldValue, newValue in
             guard !oldValue, newValue else {
@@ -225,6 +231,14 @@ extension AnalyticsServiceFacade: AnalyticsDebugInspecting {
 
     public func debugClearPendingEventsOperation() -> BaseOperation<Void> {
         eventQueue.clearOperation()
+    }
+
+    public func debugResetAttestationIdentity() {
+        // Consent withdrawal and its restoration, back to back: the pair is what mints a new client
+        // id, deletes the key row and clears the gateway brakes, without touching the queue the way
+        // a real opt-out would.
+        attestation?.forgetClient()
+        attestation?.allowClient()
     }
 }
 

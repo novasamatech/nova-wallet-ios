@@ -60,13 +60,15 @@ final class BackendAttestationProviderTests: XCTestCase {
         return try operation.extractNoCancellableResultData().first
     }
 
-    func testFirstRequestAttestsThenAsserts() throws {
+    func testFirstRequestAttestsOnlyAfterTheGatewayRefusesTheRequestChallenge() throws {
         makeProvider()
         let result = try XCTUnwrap(try headers())
 
         XCTAssertEqual(Set(result.keys), [.profile, .clientId, .challenge, .appAttestAssertion])
         XCTAssertEqual(result[.profile], "2")
-        XCTAssertEqual(remote.challengePurposes, [.register, .request])
+        // The gateway's refusal is what starts attestation, so the request challenge is asked for
+        // before any key exists and asked for again once the binding does.
+        XCTAssertEqual(remote.challengePurposes, [.request, .register, .request])
         XCTAssertEqual(appAttest.attestationKeyIds.count, 1)
         XCTAssertEqual(appAttest.assertionKeyIds.count, 1)
         XCTAssertEqual(try storedRow()?.isAttested, true)
@@ -76,10 +78,14 @@ final class BackendAttestationProviderTests: XCTestCase {
         makeProvider()
         _ = try headers()
         appAttest.reset()
+        remote.reset()
         _ = try headers()
 
         XCTAssertTrue(appAttest.attestationKeyIds.isEmpty)
         XCTAssertEqual(appAttest.assertionKeyIds.count, 1)
+        // A gateway that still knows this client grants the challenge, so nothing registers again.
+        XCTAssertEqual(remote.challengePurposes, [.request])
+        XCTAssertEqual(remote.registerCallCount, 0)
     }
 
     func testAttestationFailureLeavesTheGeneratedKeyIdPersistedAsUnattested() throws {
@@ -134,6 +140,35 @@ final class BackendAttestationProviderTests: XCTestCase {
         XCTAssertFalse(appAttest.attestationKeyIds.contains(row.keyId))
         XCTAssertEqual(appAttest.attestationKeyIds, appAttest.generatedKeyIds)
         XCTAssertNotEqual(try storedRow()?.keyId, row.keyId)
+
+        // The ladder keeps its place across episodes: this second failure escalates instead of
+        // re-arming the first rung, so the window doubles rather than repeating 60 s.
+        let escalated = try XCTUnwrap(try storedRow())
+        XCTAssertEqual(escalated.attemptCount, 2)
+        XCTAssertEqual(escalated.nextAttemptAt, clock.now.addingTimeInterval(120))
+    }
+
+    func testARegisterChallengeFailureLeavesTheKeyUnspentAndTheLadderIntact() throws {
+        makeProvider()
+        remote.registerChallengeError = BackendAttestationError.serverError(statusCode: 503)
+
+        XCTAssertThrowsError(try headers())
+
+        // attestKey never ran, so the key this row names must still be usable: recording it spent
+        // would orphan a Secure Enclave key Apple can neither list nor delete.
+        let row = try XCTUnwrap(try storedRow())
+        XCTAssertFalse(row.isAttestationSpent)
+        XCTAssertTrue(appAttest.attestationKeyIds.isEmpty)
+        XCTAssertEqual(appAttest.generateKeyCallCount, 1)
+
+        // The same key is retried when the window reopens, and the ladder escalates.
+        clock.advance(by: 61)
+        appAttest.reset()
+        XCTAssertThrowsError(try headers())
+
+        XCTAssertEqual(appAttest.generateKeyCallCount, 0)
+        XCTAssertEqual(try storedRow()?.keyId, row.keyId)
+        XCTAssertEqual(try storedRow()?.attemptCount, 2)
     }
 
     func testRegisterRejectionShortCircuitsForTheRestOfTheProcess() throws {
@@ -185,18 +220,26 @@ final class BackendAttestationProviderTests: XCTestCase {
         XCTAssertNotEqual(remote.registeredClientIds.first, remote.registeredClientIds.last)
         XCTAssertEqual(appAttest.generateKeyCallCount, 2)
 
-        // A rejected binding is not a verdict on the app, so nothing latches until relaunch — but
-        // with the launch's one retirement spent, retrying would only replay the refused request.
+        // With the launch's one retirement spent, a repeating 401 arms the persisted window rather
+        // than replaying the request the gateway just refused: otherwise every flush would mint a
+        // key and spend an attestKey call on a verdict nothing has changed.
+        _ = try storedRow()
         remote.reset()
         appAttest.reset()
-        XCTAssertThrowsError(try headers())
+        XCTAssertThrowsError(try headers()) { error in
+            guard case BackendAttestationError.retryLater = error else {
+                return XCTFail("expected .retryLater, got \(error)")
+            }
+        }
 
-        XCTAssertEqual(remote.registerCallCount, 1)
-        XCTAssertEqual(Set(remote.registeredClientIds).count, 1)
+        XCTAssertEqual(remote.registerCallCount, 0)
+        XCTAssertEqual(appAttest.generateKeyCallCount, 0)
 
-        // A consent cycle mints an identity the gateway has never refused, so the brake starts over.
+        // A consent cycle mints an identity the gateway has never refused, so the launch brake and
+        // the window it armed both start over.
         provider.allowClient()
         remote.reset()
+        appAttest.reset()
         XCTAssertThrowsError(try headers())
 
         XCTAssertEqual(remote.registerCallCount, 2)
@@ -218,6 +261,18 @@ final class BackendAttestationProviderTests: XCTestCase {
         XCTAssertEqual(settings.gatewayAttestationClientId, attestedClientId)
         XCTAssertEqual(try storedRow(), attestedRow)
         XCTAssertEqual(appAttest.generateKeyCallCount, 0)
+    }
+
+    func testAChallengeFailureThatIsNotAVerdictNeverStartsAttestation() throws {
+        makeProvider()
+
+        // Only the gateway saying it does not know this client may start attestation. A 503 says
+        // nothing about the binding, so nothing is minted and no row is left behind.
+        remote.challengeError = BackendAttestationError.serverError(statusCode: 503)
+        XCTAssertThrowsError(try headers())
+
+        XCTAssertEqual(appAttest.generateKeyCallCount, 0)
+        XCTAssertNil(try storedRow())
     }
 
     func testARequestForAnotherOriginIsNeverAttested() throws {
@@ -260,5 +315,7 @@ final class BackendAttestationProviderTests: XCTestCase {
         XCTAssertEqual(remote.registerCallCount, 0)
         XCTAssertNil(try storedRow())
         XCTAssertNil(settings.gatewayAttestationClientId)
+        // Key generation is the one step the register subtree guards with no epoch check of its own.
+        XCTAssertEqual(appAttest.generateKeyCallCount, 0)
     }
 }
