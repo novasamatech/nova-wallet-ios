@@ -24,25 +24,7 @@ final class DefaultAssetsProvider {
     }
 }
 
-private extension DefaultAssetsProvider {
-    func extractList(from fetchOperation: BaseOperation<Data>) -> DefaultAssetsList {
-        do {
-            let data = try fetchOperation.extractNoCancellableResultData()
-            let remote = try JSONDecoder().decode(DefaultAssetsRemote.self, from: data)
-            let list = DefaultAssetsList(remote: remote)
-
-            guard !list.isEmpty else {
-                logger.error("Default assets config declares no assets")
-                return .empty
-            }
-
-            return list
-        } catch {
-            logger.error("Default assets config is unavailable: \(error)")
-            return .empty
-        }
-    }
-}
+// MARK: DefaultAssetsProviding
 
 extension DefaultAssetsProvider: DefaultAssetsProviding {
     func createDefaultAssetsWrapper() -> CompoundOperationWrapper<DefaultAssetsList> {
@@ -69,5 +51,27 @@ extension DefaultAssetsProvider: DefaultAssetsProviding {
         mapOperation.addDependency(fetchOperation)
 
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [fetchOperation])
+    }
+}
+
+// MARK: Private
+
+private extension DefaultAssetsProvider {
+    func extractList(from fetchOperation: BaseOperation<Data>) -> DefaultAssetsList {
+        do {
+            let data = try fetchOperation.extractNoCancellableResultData()
+            let remote = try JSONDecoder().decode(DefaultAssetsRemote.self, from: data)
+            let list = DefaultAssetsList(remote: remote)
+
+            guard !list.isEmpty else {
+                logger.error("Default assets config declares no assets")
+                return .empty
+            }
+
+            return list
+        } catch {
+            logger.error("Default assets config is unavailable: \(error)")
+            return .empty
+        }
     }
 }
