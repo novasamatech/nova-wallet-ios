@@ -56,6 +56,7 @@ struct TokensManageViewFactory {
             settingsRepository: settingsRepository,
             defaultAssetsProvider: DefaultAssetsProvider.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            settingsSaveQueue: OperationManagerFacade.assetVisibilityQueue,
             logger: Logger.shared
         )
     }

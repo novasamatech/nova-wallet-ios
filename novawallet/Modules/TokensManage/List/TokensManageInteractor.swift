@@ -13,6 +13,7 @@ final class TokensManageInteractor: AnyProviderAutoCleaning {
     let settingsRepository: AnyDataProviderRepository<MetaAccountSettingsLocal>
     let defaultAssetsProvider: DefaultAssetsProviding
     let operationQueue: OperationQueue
+    let settingsSaveQueue: OperationQueue
     let logger: LoggerProtocol
 
     private var visibilityProvider: StreamableProvider<AssetVisibilityLocal>?
@@ -27,6 +28,7 @@ final class TokensManageInteractor: AnyProviderAutoCleaning {
         settingsRepository: AnyDataProviderRepository<MetaAccountSettingsLocal>,
         defaultAssetsProvider: DefaultAssetsProviding,
         operationQueue: OperationQueue,
+        settingsSaveQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.chainRegistry = chainRegistry
@@ -37,6 +39,7 @@ final class TokensManageInteractor: AnyProviderAutoCleaning {
         self.settingsRepository = settingsRepository
         self.defaultAssetsProvider = defaultAssetsProvider
         self.operationQueue = operationQueue
+        self.settingsSaveQueue = settingsSaveQueue
         self.logger = logger
     }
 }
@@ -83,7 +86,7 @@ extension TokensManageInteractor: TokensManageInteractorInputProtocol {
 
         execute(
             operation: saveOperation,
-            inOperationQueue: operationQueue,
+            inOperationQueue: settingsSaveQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
             if case let .failure(error) = result {

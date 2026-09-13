@@ -199,6 +199,7 @@ private extension TokensManageTests {
                     logger: Logger.shared
                 ),
                 operationQueue: OperationQueue(),
+                settingsSaveQueue: writeQueue,
                 logger: Logger.shared
             )
 
