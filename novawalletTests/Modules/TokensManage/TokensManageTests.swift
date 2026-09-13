@@ -35,11 +35,11 @@ final class TokensManageTests: XCTestCase {
         let resolvedList = lists.expectation(forCount: 3)
         context.defaultsGate.signal()
         wait(for: [resolvedList], timeout: 10.0)
-        let resolved = lists.received[2]
+        let resolved = try XCTUnwrap(lists.received.dropFirst(2).first)
 
         let ethRoot = try XCTUnwrap(resolved.rootViewModels().first { $0.groupId == "ETH" })
         presenter.performExpand(for: ethRoot)
-        let ethChildren = lists.received[3].childViewModels(in: "ETH")
+        let ethChildren = try XCTUnwrap(lists.received.dropFirst(3).first).childViewModels(in: "ETH")
         let snowbridgeChild = try XCTUnwrap(ethChildren.first { $0.chainAssetId == context.snowbridgeChainAssetId })
 
         let revealedList = lists.expectation(forCount: 5)
@@ -53,7 +53,7 @@ final class TokensManageTests: XCTestCase {
         let statesAfterRootSwitch = try fetchStatesAfterWrites(in: context)
 
         presenter.search(query: context.searchedChainName)
-        let searched = lists.received[6]
+        let searched = try XCTUnwrap(lists.received.dropFirst(6).first)
         let searchedEthRoot = try XCTUnwrap(searched.rootViewModels().first { $0.groupId == "ETH" })
         let headerActionWhileHidden = headerActions.received.last
 
@@ -76,13 +76,16 @@ final class TokensManageTests: XCTestCase {
         // then
         XCTAssertEqual(listsWhilePending, [[], []])
         XCTAssertEqual(resolved.map(\.kind), [.default, .others])
-        XCTAssertEqual(resolved.map { $0.rootGroupIds() }, [["DOT", "ETH"], ["USDC"]])
+        XCTAssertEqual(resolved.map { $0.rootGroupIds() }, [["ETH", "DOT"], ["USDC"]])
         XCTAssertEqual(resolved.reduceToSwitches(), ["DOT": true, "ETH": true, "USDC": false])
         XCTAssertEqual(ethRoot.subtitle, "1 of 2 networks")
         XCTAssertEqual(Set(ethChildren.map(\.chainAssetId)), context.ethChainAssetIds)
         XCTAssertEqual(statesAfterChildSwitch, [context.snowbridgeChainAssetId: .visible])
         XCTAssertEqual(statesAfterRootSwitch, context.ethChainAssetIds.reduce(into: [:]) { $0[$1] = .hidden })
-        XCTAssertEqual(lists.received[5].reduceToSwitches(), ["DOT": true, "ETH": false, "USDC": false])
+        XCTAssertEqual(
+            try XCTUnwrap(lists.received.dropFirst(5).first).reduceToSwitches(),
+            ["DOT": true, "ETH": false, "USDC": false]
+        )
         XCTAssertEqual(searched.map(\.kind), [.results])
         XCTAssertEqual(searched.map { $0.rootGroupIds() }, [["ETH", "USDC"]])
         XCTAssertEqual(searchedEthRoot.subtitle, context.searchedChainName)
@@ -166,8 +169,8 @@ private extension TokensManageTests {
             let config = """
             {
               "defaultAssets": [
-                { "chainId": "\(polkadot.chainId)", "assetId": 0 },
-                { "chainId": "\(polkadot.chainId)", "assetId": 1 }
+                { "chainId": "\(polkadot.chainId)", "assetId": 1 },
+                { "chainId": "\(polkadot.chainId)", "assetId": 0 }
               ]
             }
             """

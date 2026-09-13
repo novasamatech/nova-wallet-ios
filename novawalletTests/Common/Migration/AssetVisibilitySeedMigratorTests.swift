@@ -13,11 +13,6 @@ final class AssetVisibilitySeedMigratorTests: XCTestCase {
         // when
         try context.migrator.migrate()
 
-        context.writer.showIfUndecided(
-            metaId: context.wallets[0].metaId,
-            ids: Set(context.allChainAssetIds)
-        )
-
         waitForSeedQueue(in: context)
 
         let seededStates = try context.wallets.map { try context.fetchStates(for: $0.metaId) }
@@ -48,9 +43,12 @@ final class AssetVisibilitySeedMigratorTests: XCTestCase {
     func testHideZeroOnListIsIdentical() throws {
         // given
         let context = try TestContext.create(hidesZeroBalances: true)
+        let revealedId = ChainAssetId(chainId: context.chains[0].chainId, assetId: 1)
 
         // when
         try context.migrator.migrate()
+
+        context.writer.showIfUndecided(metaId: context.wallets[0].metaId, ids: [revealedId])
 
         waitForSeedQueue(in: context)
 
@@ -58,8 +56,13 @@ final class AssetVisibilitySeedMigratorTests: XCTestCase {
         for wallet in context.wallets {
             let states = try context.fetchStates(for: wallet.metaId)
             let visibility = AssetVisibility(defaults: .empty, rows: states)
+            let revealed = wallet.metaId == context.wallets[0].metaId ? revealedId : nil
 
-            for chainAssetId in context.allChainAssetIds {
+            if let revealed {
+                XCTAssertEqual(states[revealed], .visible)
+            }
+
+            for chainAssetId in context.allChainAssetIds where chainAssetId != revealed {
                 let enabled = !context.disabledIds.contains(chainAssetId)
                 let hasBalance = try context.totalBalance(of: chainAssetId, for: wallet) > 0
 
