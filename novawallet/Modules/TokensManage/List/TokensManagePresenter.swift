@@ -9,12 +9,14 @@ final class TokensManagePresenter {
     let viewModelFactory: TokensManageViewModelFactoryProtocol
 
     private(set) var chains: ListDifferenceCalculator<ChainModel>
-    private(set) var tokenModels: [MultichainToken] = []
 
     private var groupStyle: AssetListGroupsStyle?
     private var rows: [String: AssetVisibilityLocal]?
     private var defaults: DefaultAssetsList?
+    private var hasReceivedChains: Bool = false
     private var query: String = ""
+    private var expandedGroupIds: Set<String> = []
+    private var listedGroups: [String: TokensManageGroup] = [:]
 
     private var visibility: AssetVisibility? {
         guard let rows, let defaults else {
@@ -51,12 +53,6 @@ final class TokensManagePresenter {
 // MARK: Private
 
 private extension TokensManagePresenter {
-    func reloadTokens() {
-        tokenModels = chains.allItems.filter { $0.syncMode.enabled() }.createMultichainTokens()
-
-        updateView()
-    }
-
     func filterTokens(_ tokens: [MultichainToken], for query: String) -> [MultichainToken] {
         guard !query.isEmpty else {
             return tokens
@@ -91,27 +87,143 @@ private extension TokensManagePresenter {
         return allMatchedTokens + allMatchedChains
     }
 
+    func buildGroups(style: AssetListGroupsStyle, visibility: AssetVisibility) -> [TokensManageGroup] {
+        switch style {
+        case .tokens:
+            return buildTokenGroups(visibility: visibility)
+        case .networks:
+            return buildNetworkGroups(visibility: visibility)
+        }
+    }
+
+    func buildTokenGroups(visibility: AssetVisibility) -> [TokensManageGroup] {
+        let syncingChains = chains.allItems.filter { $0.syncMode.enabled() }
+        let chainsById = syncingChains.reduce(into: [ChainModel.Id: ChainModel]()) { $0[$1.chainId] = $1 }
+        let tokens = filterTokens(syncingChains.createMultichainTokens(), for: query)
+
+        return tokens.map { token in
+            let members = token.instances.compactMap { instance in
+                createTokenMember(for: instance.chainAssetId, chainsById: chainsById, visibility: visibility)
+            }
+
+            return TokensManageGroup(
+                id: token.symbol,
+                title: token.symbol,
+                icon: .asset(token.icon),
+                kind: .token,
+                isPaused: false,
+                members: members
+            )
+        }
+    }
+
+    func createTokenMember(
+        for chainAssetId: ChainAssetId,
+        chainsById: [ChainModel.Id: ChainModel],
+        visibility: AssetVisibility
+    ) -> TokensManageMember? {
+        guard let chainAsset = chainsById[chainAssetId.chainId]?.chainAsset(for: chainAssetId.assetId) else {
+            return nil
+        }
+
+        return TokensManageMember(
+            chainAssetId: chainAssetId,
+            title: chainAsset.chain.name,
+            subtitle: nil,
+            icon: .chain(chainAsset.chain),
+            symbol: chainAsset.asset.symbol,
+            chainName: chainAsset.chain.name,
+            isVisible: visibility.isVisible(chainAssetId)
+        )
+    }
+
+    func buildNetworkGroups(visibility: AssetVisibility) -> [TokensManageGroup] {
+        chains.allItems.map { chain in
+            let members = chain.assets.sorted { $0.assetId < $1.assetId }.map { asset in
+                let chainAssetId = ChainAssetId(chainId: chain.chainId, assetId: asset.assetId)
+
+                return TokensManageMember(
+                    chainAssetId: chainAssetId,
+                    title: asset.symbol,
+                    subtitle: asset.name,
+                    icon: .asset(asset.icon),
+                    symbol: asset.symbol,
+                    chainName: chain.name,
+                    isVisible: visibility.isVisible(chainAssetId)
+                )
+            }
+
+            return TokensManageGroup(
+                id: chain.chainId,
+                title: chain.name,
+                icon: .chain(chain),
+                kind: .network,
+                isPaused: !chain.syncMode.enabled(),
+                members: members
+            )
+        }
+    }
+
+    func sortedSections(
+        _ groups: [TokensManageGroup],
+        defaults: DefaultAssetsList
+    ) -> [TokensManageGroupSection] {
+        var rankedDefaults: [(rank: Int, group: TokensManageGroup)] = []
+        var others: [TokensManageGroup] = []
+        var paused: [TokensManageGroup] = []
+
+        for group in groups {
+            let rank = group.members.compactMap { defaults.rank(of: $0.chainAssetId) }.min()
+
+            if group.isPaused {
+                paused.append(group)
+            } else if let rank {
+                rankedDefaults.append((rank, group))
+            } else {
+                others.append(group)
+            }
+        }
+
+        let sortedDefaults = rankedDefaults.enumerated().sorted {
+            ($0.element.rank, $0.offset) < ($1.element.rank, $1.offset)
+        }.map(\.element.group)
+
+        return [
+            TokensManageGroupSection(kind: .default, groups: sortedDefaults),
+            TokensManageGroupSection(kind: .others, groups: others),
+            TokensManageGroupSection(kind: .paused, groups: paused)
+        ].filter { !$0.groups.isEmpty }
+    }
+
     func resetView() {
         // clear first
-        view?.didReceive(viewModels: [])
+        view?.didReceive(sections: [])
 
         // and then recreate the items
         updateView()
     }
 
     func updateView() {
-        guard let visibility else {
-            view?.didReceive(viewModels: [])
+        guard let groupStyle, let visibility, hasReceivedChains else {
+            listedGroups = [:]
+            view?.didReceive(sections: [])
             return
         }
 
-        let filteredTokens = filterTokens(tokenModels, for: query)
+        let groups = buildGroups(style: groupStyle, visibility: visibility)
+        listedGroups = groups.reduce(into: [:]) { $0[$1.id] = $1 }
 
-        let viewModels = filteredTokens.map {
-            viewModelFactory.createListViewModel(from: $0, visibility: visibility, locale: selectedLocale)
-        }
+        let sections = viewModelFactory.createSections(
+            from: sortedSections(groups, defaults: visibility.defaults),
+            expandedIds: expandedGroupIds,
+            locale: selectedLocale
+        )
 
-        view?.didReceive(viewModels: viewModels)
+        view?.didReceive(sections: sections)
+    }
+
+    func save(chainAssetIds: Set<ChainAssetId>, isOn: Bool) {
+        interactor.save(chainAssetIds: chainAssetIds, state: isOn ? .visible : .hidden)
     }
 }
 
@@ -132,14 +244,26 @@ extension TokensManagePresenter: TokensManagePresenterProtocol {
         wireframe.showAddToken(from: view)
     }
 
-    func performSwitch(for viewModel: TokensManageViewModel, enabled: Bool) {
-        guard let token = tokenModels.first(where: { $0.symbol == viewModel.symbol }) else {
+    func performExpand(for viewModel: TokensManageRootViewModel) {
+        guard let group = listedGroups[viewModel.groupId], group.isExpandable else {
             return
         }
 
-        let chainAssetIds = Set(token.instances.map(\.chainAssetId))
+        expandedGroupIds.formSymmetricDifference([group.id])
 
-        interactor.save(chainAssetIds: chainAssetIds, state: enabled ? .visible : .hidden)
+        updateView()
+    }
+
+    func performSwitch(for root: TokensManageRootViewModel, isOn: Bool) {
+        guard let group = listedGroups[root.groupId], !group.isPaused else {
+            return
+        }
+
+        save(chainAssetIds: Set(group.members.map(\.chainAssetId)), isOn: isOn)
+    }
+
+    func performSwitch(for child: TokensManageChildViewModel, isOn: Bool) {
+        save(chainAssetIds: [child.chainAssetId], isOn: isOn)
     }
 }
 
@@ -152,8 +276,9 @@ extension TokensManagePresenter: TokensManageInteractorOutputProtocol {
 
     func didReceiveChainModel(changes: [DataProviderChange<ChainModel>]) {
         chains.apply(changes: changes)
+        hasReceivedChains = true
 
-        reloadTokens()
+        updateView()
     }
 
     func didReceiveVisibility(changes: [DataProviderChange<AssetVisibilityLocal>]) {

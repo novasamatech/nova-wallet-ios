@@ -15,7 +15,8 @@ struct TokensManageViewFactory {
 
         let viewModelFactory = TokensManageViewModelFactory(
             quantityFormater: formatter,
-            assetIconViewModelFactory: assetIconViewModelFactory
+            assetIconViewModelFactory: assetIconViewModelFactory,
+            networkViewModelFactory: NetworkViewModelFactory()
         )
 
         let presenter = TokensManagePresenter(

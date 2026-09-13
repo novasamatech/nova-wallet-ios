@@ -5,12 +5,13 @@ import UIKit_iOS
 final class TokensManageViewController: UIViewController, ViewHolder {
     typealias RootViewType = TokensManageViewLayout
 
-    typealias DataSource = UITableViewDiffableDataSource<UITableView.Section, TokensManageViewModel>
-    typealias Snapshot = NSDiffableDataSourceSnapshot<UITableView.Section, TokensManageViewModel>
+    typealias DataSource = UITableViewDiffableDataSource<TokensManageSectionKind, TokensManageListItem>
+    typealias Snapshot = NSDiffableDataSourceSnapshot<TokensManageSectionKind, TokensManageListItem>
 
     let presenter: TokensManagePresenterProtocol
 
     private lazy var dataSource = makeDataSource()
+    private var sections: [TokensManageSection] = []
 
     init(presenter: TokensManagePresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
@@ -38,15 +39,19 @@ final class TokensManageViewController: UIViewController, ViewHolder {
 
         presenter.setup()
     }
+}
 
-    private func setupTopBar() {
+// MARK: Private
+
+private extension TokensManageViewController {
+    func setupTopBar() {
         navigationItem.rightBarButtonItem = rootView.addTokenButton
 
         rootView.addTokenButton.target = self
         rootView.addTokenButton.action = #selector(actionAddToken)
     }
 
-    private func setupSearchField() {
+    func setupSearchField() {
         rootView.searchTextField.addTarget(
             self,
             action: #selector(actionSearchEditingChanged),
@@ -56,12 +61,17 @@ final class TokensManageViewController: UIViewController, ViewHolder {
         rootView.searchTextField.delegate = self
     }
 
-    private func setupTableView() {
-        rootView.tableView.rowHeight = 56
-        rootView.tableView.registerClassForCell(TokensManageTableViewCell.self)
+    func setupTableView() {
+        rootView.tableView.delegate = self
+        rootView.tableView.registerClassesForCell([
+            TokensManageRootCell.self,
+            TokensManageNetworkChildCell.self,
+            TokensManageTokenChildCell.self
+        ])
+        rootView.tableView.registerHeaderFooterView(withClass: TokensManageSectionHeaderView.self)
     }
 
-    private func setupLocalization() {
+    func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
         title = R.string(preferredLanguages: languages).localizable.tokensManageTitle()
@@ -78,59 +88,142 @@ final class TokensManageViewController: UIViewController, ViewHolder {
         )
     }
 
-    private func getViewModel(for cell: TokensManageTableViewCell) -> TokensManageViewModel? {
-        guard
-            let indexPath = rootView.tableView.indexPath(for: cell),
-            let viewModel = dataSource.itemIdentifier(for: indexPath) else {
+    func item(for cell: UITableViewCell) -> TokensManageListItem? {
+        guard let indexPath = rootView.tableView.indexPath(for: cell) else {
             return nil
         }
 
-        return viewModel
+        return dataSource.itemIdentifier(for: indexPath)
     }
 
-    private func makeDataSource() -> DataSource {
-        .init(tableView: rootView.tableView) { [weak self] tableView, _, viewModel in
-            let cell = tableView.dequeueReusableCellWithType(TokensManageTableViewCell.self)
+    func makeDataSource() -> DataSource {
+        .init(tableView: rootView.tableView) { [weak self] tableView, _, item in
+            switch item {
+            case let .root(viewModel):
+                let cell = tableView.dequeueReusableCellWithType(TokensManageRootCell.self)
+                cell?.delegate = self
+                cell?.bind(viewModel: viewModel)
+                return cell
+            case let .child(viewModel):
+                return self?.createChildCell(for: viewModel, in: tableView)
+            }
+        }
+    }
+
+    func createChildCell(for viewModel: TokensManageChildViewModel, in tableView: UITableView) -> UITableViewCell? {
+        switch viewModel.kind {
+        case .network:
+            let cell = tableView.dequeueReusableCellWithType(TokensManageNetworkChildCell.self)
             cell?.delegate = self
-
             cell?.bind(viewModel: viewModel)
-
+            return cell
+        case .token:
+            let cell = tableView.dequeueReusableCellWithType(TokensManageTokenChildCell.self)
+            cell?.delegate = self
+            cell?.bind(viewModel: viewModel)
             return cell
         }
     }
 
-    @objc private func actionAddToken() {
+    func rowHeight(for item: TokensManageListItem?) -> CGFloat {
+        switch item {
+        case .root:
+            return TokensManageRootCell.Constants.height
+        case let .child(viewModel):
+            return viewModel.kind == .network
+                ? TokensManageNetworkChildCell.Constants.height
+                : TokensManageTokenChildCell.Constants.height
+        case nil:
+            return 0
+        }
+    }
+
+    @objc func actionAddToken() {
         presenter.performAddToken()
     }
 
-    @objc private func actionSearchEditingChanged() {
+    @objc func actionSearchEditingChanged() {
         let query = rootView.searchTextField.text ?? ""
 
         presenter.search(query: query)
     }
 }
 
-extension TokensManageViewController: TokensManageTableViewCellDelegate {
-    func tokensManageCellDidSwitch(_ cell: TokensManageTableViewCell, isOn: Bool) {
-        guard let viewModel = getViewModel(for: cell) else {
+// MARK: TokensManageRootCellDelegate
+
+extension TokensManageViewController: TokensManageRootCellDelegate {
+    func rootCellDidSwitch(_ cell: TokensManageRootCell, isOn: Bool) {
+        guard case let .root(viewModel)? = item(for: cell) else {
             return
         }
 
-        presenter.performSwitch(for: viewModel, enabled: isOn)
+        presenter.performSwitch(for: viewModel, isOn: isOn)
     }
 }
 
+// MARK: TokensManageChildCellDelegate
+
+extension TokensManageViewController: TokensManageChildCellDelegate {
+    func childCellDidSwitch(_ cell: UITableViewCell, isOn: Bool) {
+        guard case let .child(viewModel)? = item(for: cell) else {
+            return
+        }
+
+        presenter.performSwitch(for: viewModel, isOn: isOn)
+    }
+}
+
+// MARK: UITableViewDelegate
+
+extension TokensManageViewController: UITableViewDelegate {
+    func tableView(_: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard case let .root(viewModel)? = dataSource.itemIdentifier(for: indexPath) else {
+            return
+        }
+
+        presenter.performExpand(for: viewModel)
+    }
+
+    func tableView(_: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        rowHeight(for: dataSource.itemIdentifier(for: indexPath))
+    }
+
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard let title = sections[safe: section]?.title else {
+            return nil
+        }
+
+        let headerView: TokensManageSectionHeaderView = tableView.dequeueReusableHeaderFooterView()
+        headerView.bind(title: title)
+
+        return headerView
+    }
+
+    func tableView(_: UITableView, heightForHeaderInSection _: Int) -> CGFloat {
+        TokensManageSectionHeaderView.Constants.titleHeight
+    }
+}
+
+// MARK: TokensManageViewProtocol
+
 extension TokensManageViewController: TokensManageViewProtocol {
-    func didReceive(viewModels: [TokensManageViewModel]) {
+    func didReceive(sections: [TokensManageSection]) {
+        self.sections = sections
+
         var snapshot = Snapshot()
-        snapshot.appendSections([.main])
-        snapshot.appendItems(viewModels)
+        snapshot.appendSections(sections.map(\.kind))
+
+        sections.forEach { section in
+            snapshot.appendItems(section.items, toSection: section.kind)
+        }
 
         dataSource.apply(snapshot, animatingDifferences: false)
 
         reloadEmptyState(animated: false)
     }
 }
+
+// MARK: EmptyState
 
 extension TokensManageViewController: EmptyStateViewOwnerProtocol {
     var emptyStateDelegate: EmptyStateDelegate { self }
@@ -152,6 +245,17 @@ extension TokensManageViewController: EmptyStateDataSource {
     }
 }
 
+extension TokensManageViewController: EmptyStateDelegate {
+    var shouldDisplayEmptyState: Bool {
+        let hasQuery = !(rootView.searchTextField.text ?? "").isEmpty
+        let hasNoItems = dataSource.snapshot().numberOfItems == 0
+
+        return hasQuery && hasNoItems
+    }
+}
+
+// MARK: UITextFieldDelegate
+
 extension TokensManageViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
@@ -159,14 +263,7 @@ extension TokensManageViewController: UITextFieldDelegate {
     }
 }
 
-extension TokensManageViewController: EmptyStateDelegate {
-    var shouldDisplayEmptyState: Bool {
-        let hasQuery = !(rootView.searchTextField.text ?? "").isEmpty
-        let hasNoItems = dataSource.snapshot().numberOfItems(inSection: .main) == 0
-
-        return hasQuery && hasNoItems
-    }
-}
+// MARK: Localizable
 
 extension TokensManageViewController: Localizable {
     func applyLocalization() {

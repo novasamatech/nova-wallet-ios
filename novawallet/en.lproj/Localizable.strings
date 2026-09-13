@@ -1085,10 +1085,8 @@
 "add.token.network.selection.title" = "Select network to add ERC-20 token";
 "common.disabled" = "Disabled";
 "tokens.manage.title" = "Manage tokens";
-"tokens.manage.all.selected" = "All networks";
 "common.more.format" = "%@ (+%@ more)";
 "common.token.decimals" = "Decimals";
-"tokens.manage.partial.selected" = "%@ (%@ more)";
 "common.deselect.all" = "Deselect all";
 "tokens.manage.auto.add" = "Add tokens with positive balance";
 "tokens.manage.section.default" = "Default";

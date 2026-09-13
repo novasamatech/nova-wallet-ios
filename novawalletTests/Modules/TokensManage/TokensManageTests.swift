@@ -16,7 +16,7 @@ final class TokensManageTests: XCTestCase {
 
         stub(view) { stub in
             when(stub.isSetup.get).thenReturn(false, true)
-            when(stub.didReceive(viewModels: any())).then { lists.record($0) }
+            when(stub.didReceive(sections: any())).then { lists.record($0) }
         }
 
         let presenter = context.createPresenter(for: view)
@@ -32,17 +32,31 @@ final class TokensManageTests: XCTestCase {
         wait(for: [resolvedList], timeout: 10.0)
         let resolved = lists.received[2]
 
-        let ethViewModel = try XCTUnwrap(resolved.first { $0.symbol == "ETH" })
-        let hiddenList = lists.expectation(forListCount: 4)
-        presenter.performSwitch(for: ethViewModel, enabled: false)
+        let ethRoot = try XCTUnwrap(resolved.rootViewModels().first { $0.groupId == "ETH" })
+        presenter.performExpand(for: ethRoot)
+        let ethChildren = lists.received[3].childViewModels(in: "ETH")
+        let snowbridgeChild = try XCTUnwrap(ethChildren.first { $0.chainAssetId == context.snowbridgeChainAssetId })
+
+        let revealedList = lists.expectation(forListCount: 5)
+        presenter.performSwitch(for: snowbridgeChild, isOn: true)
+        wait(for: [revealedList], timeout: 10.0)
+        let statesAfterChildSwitch = try fetchStatesAfterWrites(in: context)
+
+        let hiddenList = lists.expectation(forListCount: 6)
+        presenter.performSwitch(for: ethRoot, isOn: false)
         wait(for: [hiddenList], timeout: 10.0)
-        let statesAfterSwitch = try fetchStatesAfterWrites(in: context)
+        let statesAfterRootSwitch = try fetchStatesAfterWrites(in: context)
 
         // then
         XCTAssertEqual(listsWhilePending, [[], []])
+        XCTAssertEqual(resolved.map(\.kind), [.default, .others])
+        XCTAssertEqual(resolved.map { $0.rootGroupIds() }, [["DOT", "ETH"], ["USDC"]])
         XCTAssertEqual(resolved.reduceToSwitches(), ["DOT": true, "ETH": true, "USDC": false])
-        XCTAssertEqual(lists.received[3].reduceToSwitches(), ["DOT": true, "ETH": false, "USDC": false])
-        XCTAssertEqual(statesAfterSwitch, context.ethChainAssetIds.reduce(into: [:]) { $0[$1] = .hidden })
+        XCTAssertEqual(ethRoot.subtitle, "1 of 2 networks")
+        XCTAssertEqual(Set(ethChildren.map(\.chainAssetId)), context.ethChainAssetIds)
+        XCTAssertEqual(statesAfterChildSwitch, [context.snowbridgeChainAssetId: .visible])
+        XCTAssertEqual(statesAfterRootSwitch, context.ethChainAssetIds.reduce(into: [:]) { $0[$1] = .hidden })
+        XCTAssertEqual(lists.received[5].reduceToSwitches(), ["DOT": true, "ETH": false, "USDC": false])
     }
 }
 
@@ -56,6 +70,7 @@ private extension TokensManageTests {
         let interactor: TokensManageInteractor
         let wallet: MetaAccountModel
         let ethChainAssetIds: Set<ChainAssetId>
+        let snowbridgeChainAssetId: ChainAssetId
         let defaultsGate: DispatchSemaphore
 
         static func create() throws -> TestContext {
@@ -74,16 +89,16 @@ private extension TokensManageTests {
                 addressPrefix: 0
             )
 
-            let hydration = ChainModelGenerator.generateChain(
+            let assetHub = ChainModelGenerator.generateChain(
                 assets: [
-                    ChainModelGenerator.generateAssetWithId(0, symbol: "ETH"),
-                    ChainModelGenerator.generateAssetWithId(1, symbol: "ETH-Snowbridge"),
-                    ChainModelGenerator.generateAssetWithId(2, symbol: "USDC")
+                    ChainModelGenerator.generateAssetWithId(0, symbol: "ETH-Snowbridge"),
+                    ChainModelGenerator.generateAssetWithId(1, symbol: "USDC")
                 ],
-                addressPrefix: 63
+                defaultChainId: KnowChainId.polkadotAssetHub,
+                addressPrefix: 0
             )
 
-            let chainRegistry = MockChainRegistryProtocol().applyDefault(for: [polkadot, hydration])
+            let chainRegistry = MockChainRegistryProtocol().applyDefault(for: [polkadot, assetHub])
             let wallet = AccountGenerator.generateMetaAccount(generatingChainAccounts: 0)
 
             let selectedWalletSettings = SelectedWalletSettings(
@@ -149,7 +164,7 @@ private extension TokensManageTests {
             )
 
             let ethChainAssetIds = Set(
-                [polkadot, hydration]
+                [polkadot, assetHub]
                     .flatMap { $0.chainAssets() }
                     .filter { $0.asset.symbol.hasPrefix("ETH") }
                     .map(\.chainAssetId)
@@ -162,6 +177,7 @@ private extension TokensManageTests {
                 interactor: interactor,
                 wallet: wallet,
                 ethChainAssetIds: ethChainAssetIds,
+                snowbridgeChainAssetId: ChainAssetId(chainId: assetHub.chainId, assetId: 0),
                 defaultsGate: defaultsGate
             )
         }
@@ -169,7 +185,8 @@ private extension TokensManageTests {
         func createPresenter(for view: TokensManageViewProtocol) -> TokensManagePresenter {
             let viewModelFactory = TokensManageViewModelFactory(
                 quantityFormater: NumberFormatter.positiveQuantity.localizableResource(),
-                assetIconViewModelFactory: AssetIconViewModelFactory()
+                assetIconViewModelFactory: AssetIconViewModelFactory(),
+                networkViewModelFactory: NetworkViewModelFactory()
             )
 
             let presenter = TokensManagePresenter(
@@ -201,10 +218,10 @@ private extension TokensManageTests {
     }
 
     final class ListRecorder {
-        private(set) var received: [[TokensManageViewModel]] = []
+        private(set) var received: [[TokensManageSection]] = []
         private var expectations: [Int: XCTestExpectation] = [:]
 
-        func record(_ list: [TokensManageViewModel]) {
+        func record(_ list: [TokensManageSection]) {
             received.append(list)
             expectations[received.count]?.fulfill()
         }
@@ -229,8 +246,40 @@ private extension TokensManageTests {
     }
 }
 
-private extension Array where Element == TokensManageViewModel {
+private extension TokensManageSection {
+    func rootGroupIds() -> [String] {
+        items.compactMap { item in
+            if case let .root(viewModel) = item {
+                return viewModel.groupId
+            } else {
+                return nil
+            }
+        }
+    }
+}
+
+private extension Array where Element == TokensManageSection {
+    func rootViewModels() -> [TokensManageRootViewModel] {
+        flatMap(\.items).compactMap { item in
+            if case let .root(viewModel) = item {
+                return viewModel
+            } else {
+                return nil
+            }
+        }
+    }
+
+    func childViewModels(in groupId: String) -> [TokensManageChildViewModel] {
+        flatMap(\.items).compactMap { item in
+            if case let .child(viewModel) = item, viewModel.groupId == groupId {
+                return viewModel
+            } else {
+                return nil
+            }
+        }
+    }
+
     func reduceToSwitches() -> [String: Bool] {
-        reduce(into: [:]) { $0[$1.symbol] = $1.isOn }
+        rootViewModels().reduce(into: [:]) { $0[$1.groupId] = $1.isOn }
     }
 }

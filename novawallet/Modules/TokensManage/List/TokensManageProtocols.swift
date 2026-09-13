@@ -1,14 +1,16 @@
 import Operation_iOS
 
 protocol TokensManageViewProtocol: ControllerBackedProtocol {
-    func didReceive(viewModels: [TokensManageViewModel])
+    func didReceive(sections: [TokensManageSection])
 }
 
 protocol TokensManagePresenterProtocol: AnyObject {
     func setup()
     func search(query: String)
     func performAddToken()
-    func performSwitch(for viewModel: TokensManageViewModel, enabled: Bool)
+    func performExpand(for viewModel: TokensManageRootViewModel)
+    func performSwitch(for root: TokensManageRootViewModel, isOn: Bool)
+    func performSwitch(for child: TokensManageChildViewModel, isOn: Bool)
 }
 
 protocol TokensManageInteractorInputProtocol: AnyObject {
