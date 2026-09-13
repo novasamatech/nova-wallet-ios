@@ -37,6 +37,12 @@ final class AssetListCollectionViewDataSource: NSObject {
 // MARK: Private
 
 private extension AssetListCollectionViewDataSource {
+    var totalSections: Int {
+        AssetListFlowLayout.SectionType.sectionsCount(
+            groupsCount: groupsViewModel.listState.groups.count
+        )
+    }
+
     func provideAccountCell(
         _ collectionView: UICollectionView,
         indexPath: IndexPath
@@ -197,7 +203,7 @@ private extension AssetListCollectionViewDataSource {
     ) -> UICollectionViewCell {
         guard let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(
             indexPath.section,
-            in: collectionView
+            totalSections: totalSections
         ) else {
             return collectionView.dequeueReusableCellWithType(
                 EmptyCollectionCell.self,
@@ -413,13 +419,10 @@ private extension AssetListCollectionViewDataSource {
         return cell
     }
 
-    func numberOfItemsForAssetGroup(
-        _ section: Int,
-        in collectionView: UICollectionView
-    ) -> Int {
+    func numberOfItemsForAssetGroup(_ section: Int) -> Int {
         if let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(
             section,
-            in: collectionView
+            totalSections: totalSections
         ) {
             switch groupsViewModel.listState.groups[groupIndex] {
             case let .network(groupViewModel):
@@ -499,16 +502,14 @@ private extension AssetListCollectionViewDataSource {
 
 extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
     func numberOfSections(in _: UICollectionView) -> Int {
-        AssetListFlowLayout.SectionType.assetsStartingSection
-            + groupsViewModel.listState.groups.count
-            + AssetListFlowLayout.SectionType.trailingSectionsCount
+        totalSections
     }
 
     func collectionView(
-        _ collectionView: UICollectionView,
+        _: UICollectionView,
         numberOfItemsInSection section: Int
     ) -> Int {
-        switch AssetListFlowLayout.SectionType(section: section, in: collectionView) {
+        switch AssetListFlowLayout.SectionType(section: section, totalSections: totalSections) {
         case .summary:
             var itemsCount = 0
 
@@ -523,7 +524,7 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
         case .settings:
             return groupsViewModel.listState.isEmpty ? 2 : 1
         case .assetGroup:
-            return numberOfItemsForAssetGroup(section, in: collectionView)
+            return numberOfItemsForAssetGroup(section)
         case .tokensReveal:
             return groupsViewModel.hasHiddenAssets == nil ? 0 : 1
         }
@@ -533,7 +534,11 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
-        switch AssetListFlowLayout.CellType(indexPath: indexPath, in: collectionView) {
+        switch AssetListFlowLayout.CellType(
+            indexPath: indexPath,
+            totalSections: totalSections,
+            in: collectionView
+        ) {
         case .account:
             provideAccountCell(collectionView, indexPath: indexPath)
         case .alert:
@@ -573,7 +578,7 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
 
         let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(
             indexPath.section,
-            in: collectionView
+            totalSections: totalSections
         )
 
         // Configure the header view with the appropriate view model

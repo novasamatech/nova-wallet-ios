@@ -12,7 +12,7 @@ extension AssetListFlowLayout {
         case assetGroup
         case tokensReveal
 
-        init(section: Int, in collectionView: UICollectionView) {
+        init(section: Int, totalSections: Int) {
             switch section {
             case 0:
                 self = .summary
@@ -22,7 +22,7 @@ extension AssetListFlowLayout {
                 self = .banners
             case 3:
                 self = .settings
-            case collectionView.numberOfSections - 1:
+            case totalSections - 1:
                 self = .tokensReveal
             default:
                 self = .assetGroup
@@ -52,13 +52,17 @@ extension AssetListFlowLayout {
             1
         }
 
+        static func sectionsCount(groupsCount: Int) -> Int {
+            assetsStartingSection + groupsCount + trailingSectionsCount
+        }
+
         static func assetsGroupIndexFromSection(
             _ section: Int,
-            in collectionView: UICollectionView
+            totalSections: Int
         ) -> Int? {
             guard
                 section >= assetsStartingSection,
-                section < collectionView.numberOfSections - 1
+                section < totalSections - 1
             else {
                 return nil
             }
@@ -87,7 +91,11 @@ extension AssetListFlowLayout {
         case emptyState
         case revealRow(sectionIndex: Int)
 
-        init(indexPath: IndexPath, in collectionView: UICollectionView) {
+        init(
+            indexPath: IndexPath,
+            totalSections: Int,
+            in collectionView: UICollectionView
+        ) {
             switch indexPath.section {
             case 0 where indexPath.row == 0:
                 self = .account
@@ -101,7 +109,7 @@ extension AssetListFlowLayout {
                 self = .banner
             case 3:
                 self = indexPath.row == 0 ? .settings : .emptyState
-            case collectionView.numberOfSections - 1:
+            case totalSections - 1:
                 self = .revealRow(sectionIndex: indexPath.section)
             default:
                 self = .asset(sectionIndex: indexPath.section, itemIndex: indexPath.row)
