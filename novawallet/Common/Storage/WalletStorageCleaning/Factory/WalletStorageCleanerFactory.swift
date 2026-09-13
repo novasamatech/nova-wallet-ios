@@ -71,12 +71,7 @@ enum WalletStorageCleanerFactory {
     }
 
     private static func createRemovedWalletAssetVisibilityCleaner() -> WalletStorageCleaning {
-        let storageFacade = UserDataStorageFacade.shared
-
-        return RemovedWalletAssetVisibilityCleaner(
-            visibilityRepository: AssetVisibilityRepositoryFactory.createVisibilityRepository(using: storageFacade),
-            settingsRepository: AssetVisibilityRepositoryFactory.createSettingsRepository(using: storageFacade)
-        )
+        RemovedWalletAssetVisibilityCleaner(storageFacade: UserDataStorageFacade.shared)
     }
 
     private static func createRemovedNotificationsSettingsCleaner(

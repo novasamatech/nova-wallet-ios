@@ -2,15 +2,10 @@ import Foundation
 import Operation_iOS
 
 final class RemovedWalletAssetVisibilityCleaner {
-    private let visibilityRepository: AnyDataProviderRepository<AssetVisibilityLocal>
-    private let settingsRepository: AnyDataProviderRepository<MetaAccountSettingsLocal>
+    private let storageFacade: StorageFacadeProtocol
 
-    init(
-        visibilityRepository: AnyDataProviderRepository<AssetVisibilityLocal>,
-        settingsRepository: AnyDataProviderRepository<MetaAccountSettingsLocal>
-    ) {
-        self.visibilityRepository = visibilityRepository
-        self.settingsRepository = settingsRepository
+    init(storageFacade: StorageFacadeProtocol) {
+        self.storageFacade = storageFacade
     }
 }
 
@@ -30,22 +25,27 @@ extension RemovedWalletAssetVisibilityCleaner: WalletStorageCleaning {
             return .createWithResult(())
         }
 
+        let visibilityRepository = AssetVisibilityRepositoryFactory.createVisibilityRepository(
+            for: removedWalletsIds,
+            using: storageFacade
+        )
+        let settingsRepository = AssetVisibilityRepositoryFactory.createSettingsRepository(
+            for: removedWalletsIds,
+            using: storageFacade
+        )
+
         let fetchOptions = RepositoryFetchOptions()
         let fetchRowsOperation = visibilityRepository.fetchAllOperation(with: fetchOptions)
         let fetchSettingsOperation = settingsRepository.fetchAllOperation(with: fetchOptions)
 
         let removeRowsOperation = visibilityRepository.saveOperation({ [] }, {
-            try fetchRowsOperation.extractNoCancellableResultData()
-                .filter { removedWalletsIds.contains($0.metaId) }
-                .map(\.identifier)
+            try fetchRowsOperation.extractNoCancellableResultData().map(\.identifier)
         })
 
         removeRowsOperation.addDependency(fetchRowsOperation)
 
         let removeSettingsOperation = settingsRepository.saveOperation({ [] }, {
-            try fetchSettingsOperation.extractNoCancellableResultData()
-                .filter { removedWalletsIds.contains($0.metaId) }
-                .map(\.identifier)
+            try fetchSettingsOperation.extractNoCancellableResultData().map(\.identifier)
         })
 
         removeSettingsOperation.addDependency(fetchSettingsOperation)

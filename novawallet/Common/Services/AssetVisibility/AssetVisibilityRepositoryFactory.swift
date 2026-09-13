@@ -13,6 +13,16 @@ enum AssetVisibilityRepositoryFactory {
     }
 
     static func createVisibilityRepository(
+        for metaIds: Set<MetaAccountModel.Id>,
+        using storage: StorageFacadeProtocol
+    ) -> AnyDataProviderRepository<AssetVisibilityLocal> {
+        createVisibilityRepository(
+            filter: NSPredicate.assetVisibility(metaIds: metaIds),
+            using: storage
+        )
+    }
+
+    static func createVisibilityRepository(
         using storage: StorageFacadeProtocol
     ) -> AnyDataProviderRepository<AssetVisibilityLocal> {
         createVisibilityRepository(filter: nil, using: storage)
@@ -24,6 +34,16 @@ enum AssetVisibilityRepositoryFactory {
     ) -> AnyDataProviderRepository<MetaAccountSettingsLocal> {
         createSettingsRepository(
             filter: NSPredicate.metaAccountSettings(metaId: metaId),
+            using: storage
+        )
+    }
+
+    static func createSettingsRepository(
+        for metaIds: Set<MetaAccountModel.Id>,
+        using storage: StorageFacadeProtocol
+    ) -> AnyDataProviderRepository<MetaAccountSettingsLocal> {
+        createSettingsRepository(
+            filter: NSPredicate.metaAccountSettings(metaIds: metaIds),
             using: storage
         )
     }

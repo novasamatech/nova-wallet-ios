@@ -23,10 +23,7 @@ final class AssetVisibilityCleaningTests: XCTestCase {
             try save([createSettings(for: wallet)], to: context.settingsRepository, using: context.operationQueue)
         }
 
-        let cleaner = RemovedWalletAssetVisibilityCleaner(
-            visibilityRepository: context.visibilityRepository,
-            settingsRepository: context.settingsRepository
-        )
+        let cleaner = RemovedWalletAssetVisibilityCleaner(storageFacade: context.facade)
 
         let providers = createProviders(
             changes: [.delete(deletedIdentifier: removedWallet.identifier)],
