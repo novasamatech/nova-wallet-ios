@@ -120,8 +120,16 @@ extension MultichainToken {
 }
 
 extension MultichainToken {
-    static func variantSymbol(of symbol: String, inGroupWith groupSymbol: String) -> String? {
-        reserveTokensOf(symbol: symbol).contains(groupSymbol) ? nil : symbol
+    static func variantSymbol(
+        of symbol: String,
+        inGroupWith groupSymbol: String,
+        sharingChainWithSiblings sharesChain: Bool
+    ) -> String? {
+        if sharesChain || !reserveTokensOf(symbol: symbol).contains(groupSymbol) {
+            symbol
+        } else {
+            nil
+        }
     }
 }
 

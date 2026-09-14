@@ -102,10 +102,15 @@ private extension TokensManagePresenter {
         let chainsById = syncingChains.reduce(into: [ChainModel.Id: ChainModel]()) { $0[$1.chainId] = $1 }
 
         return syncingChains.createMultichainTokens().map { token in
+            let membersPerChain = token.instances.reduce(into: [ChainModel.Id: Int]()) { counts, instance in
+                counts[instance.chainAssetId.chainId, default: 0] += 1
+            }
+
             let members = token.instances.compactMap { instance in
                 createTokenMember(
                     for: instance.chainAssetId,
                     groupSymbol: token.symbol,
+                    sharesChain: membersPerChain[instance.chainAssetId.chainId, default: 0] > 1,
                     chainsById: chainsById,
                     visibility: visibility
                 )
@@ -125,6 +130,7 @@ private extension TokensManagePresenter {
     func createTokenMember(
         for chainAssetId: ChainAssetId,
         groupSymbol: String,
+        sharesChain: Bool,
         chainsById: [ChainModel.Id: ChainModel],
         visibility: AssetVisibility
     ) -> TokensManageMember? {
@@ -134,7 +140,8 @@ private extension TokensManagePresenter {
 
         let variantSymbol = MultichainToken.variantSymbol(
             of: chainAsset.asset.symbol,
-            inGroupWith: groupSymbol
+            inGroupWith: groupSymbol,
+            sharingChainWithSiblings: sharesChain
         )
 
         return TokensManageMember(
