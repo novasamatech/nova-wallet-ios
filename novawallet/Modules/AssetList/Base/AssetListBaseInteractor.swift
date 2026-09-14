@@ -35,6 +35,7 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber,
 
     private var visibilitySubscription: StreamableProvider<AssetVisibilityLocal>?
     private var visibilityRows: [String: AssetVisibilityLocal]?
+    private var visibilitySubscriptionFailed = false
     private var defaultAssets: DefaultAssetsList?
     private var pendingChainChanges: [DataProviderChange<ChainModel>] = []
 
@@ -431,7 +432,14 @@ extension AssetListBaseInteractor {
 
 private extension AssetListBaseInteractor {
     func fetchDefaultAssets() {
-        let wrapper = defaultAssetsProvider.createDefaultAssetsWrapper()
+        let wrapper: CompoundOperationWrapper<DefaultAssetsList>
+
+        if let cached = defaultAssetsProvider.cachedDefaultAssets {
+            apply(defaultAssets: cached)
+            wrapper = defaultAssetsProvider.createRefreshDefaultAssetsWrapper()
+        } else {
+            wrapper = defaultAssetsProvider.createDefaultAssetsWrapper()
+        }
 
         execute(
             wrapper: wrapper,
@@ -443,12 +451,16 @@ private extension AssetListBaseInteractor {
                 self?.apply(defaultAssets: list)
             case let .failure(error):
                 self?.logger?.error("Default assets are unavailable: \(error)")
-                self?.apply(defaultAssets: .empty)
+                self?.apply(defaultAssets: self?.defaultAssets ?? .empty)
             }
         }
     }
 
     func apply(defaultAssets list: DefaultAssetsList) {
+        guard defaultAssets != list else {
+            return
+        }
+
         defaultAssets = list
 
         baseBuilder?.applyDefaultAssets(list)
@@ -470,19 +482,24 @@ private extension AssetListBaseInteractor {
         clear(streamableProvider: &visibilitySubscription)
 
         visibilityRows = nil
+        visibilitySubscriptionFailed = false
         visibility = nil
     }
 
     func resolveVisibilityIfPossible() {
-        guard let defaultAssets, let visibilityRows else {
-            return
-        }
+        if visibilitySubscriptionFailed {
+            visibility = AssetVisibility(defaults: .empty, rows: [:])
+        } else {
+            guard let defaultAssets = defaultAssets ?? visibility?.defaults, let visibilityRows else {
+                return
+            }
 
-        let rows = visibilityRows.values.reduce(into: [ChainAssetId: AssetVisibilityState]()) { accum, row in
-            accum[row.chainAssetId] = row.state
-        }
+            let rows = visibilityRows.values.reduce(into: [ChainAssetId: AssetVisibilityState]()) { accum, row in
+                accum[row.chainAssetId] = row.state
+            }
 
-        visibility = AssetVisibility(defaults: defaultAssets, rows: rows)
+            visibility = AssetVisibility(defaults: defaultAssets, rows: rows)
+        }
 
         let bufferedChanges = pendingChainChanges
         pendingChainChanges = []
@@ -535,10 +552,13 @@ extension AssetListBaseInteractor: AssetVisibilityLocalStorageSubscriber, AssetV
 
         switch result {
         case let .success(changes):
+            visibilitySubscriptionFailed = false
             visibilityRows = changes.mergeToDict(visibilityRows ?? [:])
             resolveVisibilityIfPossible()
         case let .failure(error):
             logger?.error("Can't observe asset visibility: \(error)")
+            visibilitySubscriptionFailed = true
+            resolveVisibilityIfPossible()
         }
     }
 }

@@ -1,3 +1,4 @@
+import BigInt
 import Foundation
 import Operation_iOS
 
@@ -8,6 +9,7 @@ protocol AutoAddTokensServiceProtocol: ApplicationServiceProtocol {
 final class AutoAddTokensService: AnyProviderAutoCleaning {
     let chainRegistry: ChainRegistryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
+    let externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactoryProtocol
     let assetVisibilitySubscriptionFactory: AssetVisibilityLocalSubscriptionFactoryProtocol
     let visibilityWriter: AssetVisibilityWriting
     let defaultAssetsProvider: DefaultAssetsProviding
@@ -18,15 +20,18 @@ final class AutoAddTokensService: AnyProviderAutoCleaning {
 
     private var selectedMetaAccount: MetaAccountModel?
     private var balances: [String: AssetBalance] = [:]
+    private var externalBalances: [String: ExternalAssetBalance] = [:]
     private var autoAddEnabled: Bool?
     private var lastCandidates: Set<ChainAssetId> = []
     private var balancesProvider: StreamableProvider<AssetBalance>?
+    private var externalBalancesProvider: StreamableProvider<ExternalAssetBalance>?
     private var settingsProvider: StreamableProvider<MetaAccountSettingsLocal>?
 
     init(
         selectedMetaAccount: MetaAccountModel?,
         chainRegistry: ChainRegistryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
+        externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactoryProtocol,
         assetVisibilitySubscriptionFactory: AssetVisibilityLocalSubscriptionFactoryProtocol,
         visibilityWriter: AssetVisibilityWriting,
         defaultAssetsProvider: DefaultAssetsProviding,
@@ -36,6 +41,7 @@ final class AutoAddTokensService: AnyProviderAutoCleaning {
         self.selectedMetaAccount = selectedMetaAccount
         self.chainRegistry = chainRegistry
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
+        self.externalBalancesSubscriptionFactory = externalBalancesSubscriptionFactory
         self.assetVisibilitySubscriptionFactory = assetVisibilitySubscriptionFactory
         self.visibilityWriter = visibilityWriter
         self.defaultAssetsProvider = defaultAssetsProvider
@@ -55,6 +61,7 @@ extension AutoAddTokensService: AutoAddTokensServiceProtocol {
         }
 
         balancesProvider = subscribeAllBalancesProvider()
+        externalBalancesProvider = subscribeToAllExternalAssetBalancesProvider()
         subscribeSettings()
         warmUpDefaultAssets()
     }
@@ -67,9 +74,11 @@ extension AutoAddTokensService: AutoAddTokensServiceProtocol {
         }
 
         clear(streamableProvider: &balancesProvider)
+        clear(streamableProvider: &externalBalancesProvider)
         clear(streamableProvider: &settingsProvider)
 
         balances = [:]
+        externalBalances = [:]
         resetDiscovery()
     }
 
@@ -103,6 +112,28 @@ extension AutoAddTokensService: WalletLocalStorageSubscriber, WalletLocalSubscri
             revealAssetsWithBalance()
         case let .failure(error):
             logger.error("Can't observe balances: \(error)")
+        }
+    }
+}
+
+// MARK: ExternalAssetBalanceSubscriber
+
+extension AutoAddTokensService: ExternalAssetBalanceSubscriber, ExternalAssetBalanceSubscriptionHandler {
+    func handleAllExternalAssetBalances(
+        result: Result<[DataProviderChange<ExternalAssetBalance>], Error>
+    ) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        switch result {
+        case let .success(changes):
+            externalBalances = changes.mergeToDict(externalBalances)
+            revealAssetsWithBalance()
+        case let .failure(error):
+            logger.error("Can't observe external balances: \(error)")
         }
     }
 }
@@ -174,16 +205,23 @@ private extension AutoAddTokensService {
             return
         }
 
-        let candidates = Set(balances.values.compactMap { balance -> ChainAssetId? in
-            guard
-                balance.totalInPlank > 0,
-                let chain = chainRegistry.getChain(for: balance.chainAssetId.chainId),
-                wallet.fetch(for: chain.accountRequest())?.accountId == balance.accountId else {
-                return nil
-            }
-
-            return balance.chainAssetId
-        })
+        let ordinaryCandidates = balances.values.compactMap { balance in
+            positiveBalanceAssetId(
+                balance.chainAssetId,
+                amount: balance.totalInPlank,
+                accountId: balance.accountId,
+                wallet: wallet
+            )
+        }
+        let externalCandidates = externalBalances.values.compactMap { balance in
+            positiveBalanceAssetId(
+                balance.chainAssetId,
+                amount: balance.amount,
+                accountId: balance.accountId,
+                wallet: wallet
+            )
+        }
+        let candidates = Set(ordinaryCandidates).union(externalCandidates)
 
         guard candidates != lastCandidates else {
             return
@@ -198,5 +236,21 @@ private extension AutoAddTokensService {
             runningCallbackIn: nil,
             completion: nil
         )
+    }
+
+    func positiveBalanceAssetId(
+        _ chainAssetId: ChainAssetId,
+        amount: BigUInt,
+        accountId: AccountId,
+        wallet: MetaAccountModel
+    ) -> ChainAssetId? {
+        guard
+            amount > 0,
+            let chain = chainRegistry.getChain(for: chainAssetId.chainId),
+            wallet.fetch(for: chain.accountRequest())?.accountId == accountId else {
+            return nil
+        }
+
+        return chainAssetId
     }
 }

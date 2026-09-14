@@ -29,6 +29,8 @@ final class SwapExecutionInteractor {
 
 extension SwapExecutionInteractor: SwapExecutionInteractorInputProtocol {
     func submit(using estimation: AssetExchangeFee) {
+        let initiatingMetaId = selectedWalletSettings.value?.metaId
+
         osMediator.disableScreenSleep()
 
         let wrapper = assetsExchangeService.submit(
@@ -47,7 +49,7 @@ extension SwapExecutionInteractor: SwapExecutionInteractorInputProtocol {
 
             switch result {
             case let .success(amount):
-                self?.revealChainAssetOut()
+                self?.revealChainAssetOut(for: initiatingMetaId)
                 self?.presenter?.didCompleteFullExecution(received: amount)
             case let .failure(error):
                 self?.presenter?.didFailExecution(with: error)
@@ -59,14 +61,14 @@ extension SwapExecutionInteractor: SwapExecutionInteractorInputProtocol {
 // MARK: Private
 
 private extension SwapExecutionInteractor {
-    func revealChainAssetOut() {
-        guard let wallet = selectedWalletSettings.value else {
+    func revealChainAssetOut(for metaId: MetaAccountModel.Id?) {
+        guard let metaId else {
             return
         }
 
         visibilityWriter.apply(
             event: .userInitiatedReceipt,
-            metaId: wallet.metaId,
+            metaId: metaId,
             ids: [chainAssetOut.chainAssetId],
             runningCallbackIn: nil,
             completion: nil

@@ -26,7 +26,7 @@ final class AssetListCollectionViewDelegate: NSObject {
 private extension AssetListCollectionViewDelegate {
     var totalSections: Int {
         AssetListFlowLayout.SectionType.sectionsCount(
-            groupsCount: groupsViewModel.listState.groups.count
+            groupsCount: groupsViewModel.displayedGroups.count
         )
     }
 
@@ -43,7 +43,7 @@ private extension AssetListCollectionViewDelegate {
             return
         }
 
-        let groupViewModel = groupsViewModel.listState.groups[groupIndex]
+        let groupViewModel = groupsViewModel.displayedGroups[groupIndex]
 
         let chainAssetId: ChainAssetId
 
@@ -92,6 +92,7 @@ extension AssetListCollectionViewDelegate: UICollectionViewDelegateFlowLayout {
         let cellType = AssetListFlowLayout.CellType(
             indexPath: indexPath,
             totalSections: totalSections,
+            isLoading: groupsViewModel.isLoading,
             in: collectionView
         )
 
@@ -128,11 +129,12 @@ extension AssetListCollectionViewDelegate: UICollectionViewDelegateFlowLayout {
         let cellType = AssetListFlowLayout.CellType(
             indexPath: indexPath,
             totalSections: totalSections,
+            isLoading: groupsViewModel.isLoading,
             in: collectionView
         )
 
         switch cellType {
-        case .account, .settings, .emptyState, .totalBalance, .banner, .alert:
+        case .account, .settings, .loadingState, .emptyState, .totalBalance, .banner, .alert:
             break
         case let .organizerItem(itemIndex: itemIndex):
             selectionDelegate?.selectOrganizerItem(at: itemIndex)

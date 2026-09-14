@@ -254,6 +254,7 @@ extension ServiceCoordinator {
             selectedMetaAccount: walletSettings.value,
             chainRegistry: chainRegistry,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactory.shared,
             assetVisibilitySubscriptionFactory: AssetVisibilityLocalSubscriptionFactory.shared,
             visibilityWriter: AssetVisibilityWriter.shared,
             defaultAssetsProvider: DefaultAssetsProvider.shared,

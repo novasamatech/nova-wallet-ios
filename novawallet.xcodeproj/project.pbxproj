@@ -150,6 +150,7 @@
 		D0A200000000000000000004 /* TokensManageViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A200000000000000000003 /* TokensManageViewControllerTests.swift */; };
 		D0A300000000000000000002 /* AutoAddTokensServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A300000000000000000001 /* AutoAddTokensServiceTests.swift */; };
 		D0A300000000000000000004 /* AssetVisibilityRevealTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A300000000000000000003 /* AssetVisibilityRevealTests.swift */; };
+		D0A400000000000000000002 /* AssetListDefaultAssetsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A400000000000000000001 /* AssetListDefaultAssetsTests.swift */; };
 		0C06C48E2EC9E3D600E06744 /* BatchGenericSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C06C48D2EC9E3D600E06744 /* BatchGenericSubscriptionHandler.swift */; };
 		0C06C4F12ECA72C200E06744 /* CrowdloanLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C06C4F02ECA72C200E06744 /* CrowdloanLocalSubscriptionFactory.swift */; };
 		0C06C50A2ECA76DE00E06744 /* CrowdloanLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C06C5092ECA76DE00E06744 /* CrowdloanLocalStorageSubscriber.swift */; };
@@ -1656,6 +1657,7 @@
 		2D008A662CC5686D00BFEE99 /* AssetListCollectionViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D008A652CC5686D00BFEE99 /* AssetListCollectionViewDataSource.swift */; };
 		2D008A682CC57BFB00BFEE99 /* AssetListCollectionViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D008A672CC57BFA00BFEE99 /* AssetListCollectionViewDelegate.swift */; };
 		2D008A6A2CC59F3700BFEE99 /* AssetListCollectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D008A692CC59F3700BFEE99 /* AssetListCollectionManager.swift */; };
+		C0D3A5513D7F100100000002 /* AssetListLoadingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3A5513D7F100100000001 /* AssetListLoadingCell.swift */; };
 		2D02DBB72EFAA904008DBCF9 /* BlockNumberCallbackSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D02DBB62EFAA904008DBCF9 /* BlockNumberCallbackSubscriptionFactory.swift */; };
 		2D02DBC52EFAAFC7008DBCF9 /* BlockNumberRemoteSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D02DBC42EFAAFC7008DBCF9 /* BlockNumberRemoteSubscription.swift */; };
 		2D033C172ECC60F500562B82 /* GiftReclaimWalletChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D033C162ECC60F500562B82 /* GiftReclaimWalletChecker.swift */; };
@@ -6846,6 +6848,7 @@
 		D0A200000000000000000003 /* TokensManageViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensManageViewControllerTests.swift; sourceTree = "<group>"; };
 		D0A300000000000000000001 /* AutoAddTokensServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoAddTokensServiceTests.swift; sourceTree = "<group>"; };
 		D0A300000000000000000003 /* AssetVisibilityRevealTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetVisibilityRevealTests.swift; sourceTree = "<group>"; };
+		D0A400000000000000000001 /* AssetListDefaultAssetsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListDefaultAssetsTests.swift; sourceTree = "<group>"; };
 		0C06C48D2EC9E3D600E06744 /* BatchGenericSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchGenericSubscriptionHandler.swift; sourceTree = "<group>"; };
 		0C06C4D92ECA68E800E06744 /* SubstrateDataModel39.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel39.xcdatamodel; sourceTree = "<group>"; };
 		0C06C4F02ECA72C200E06744 /* CrowdloanLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
@@ -8356,6 +8359,7 @@
 		2D008A652CC5686D00BFEE99 /* AssetListCollectionViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListCollectionViewDataSource.swift; sourceTree = "<group>"; };
 		2D008A672CC57BFA00BFEE99 /* AssetListCollectionViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListCollectionViewDelegate.swift; sourceTree = "<group>"; };
 		2D008A692CC59F3700BFEE99 /* AssetListCollectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListCollectionManager.swift; sourceTree = "<group>"; };
+		C0D3A5513D7F100100000001 /* AssetListLoadingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListLoadingCell.swift; sourceTree = "<group>"; };
 		2D02DBB62EFAA904008DBCF9 /* BlockNumberCallbackSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockNumberCallbackSubscriptionFactory.swift; sourceTree = "<group>"; };
 		2D02DBC42EFAAFC7008DBCF9 /* BlockNumberRemoteSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockNumberRemoteSubscription.swift; sourceTree = "<group>"; };
 		2D033C162ECC60F500562B82 /* GiftReclaimWalletChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftReclaimWalletChecker.swift; sourceTree = "<group>"; };
@@ -25916,6 +25920,7 @@
 		84B7C680289BFA78001A3566 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				D0A400000000000000000004 /* AssetList */,
 				D0A200000000000000000005 /* TokensManage */,
 				2D8E30252EF2FCFB00A9FA61 /* Gifts */,
 				0C0AE4032DE459BF00D506F3 /* WalletMigration */,
@@ -25943,6 +25948,22 @@
 				84B7C70A289BFA79001A3566 /* ControllerAccount */,
 			);
 			path = Modules;
+			sourceTree = "<group>";
+		};
+		D0A400000000000000000003 /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				D0A400000000000000000001 /* AssetListDefaultAssetsTests.swift */,
+			);
+			path = Base;
+			sourceTree = "<group>";
+		};
+		D0A400000000000000000004 /* AssetList */ = {
+			isa = PBXGroup;
+			children = (
+				D0A400000000000000000003 /* Base */,
+			);
+			path = AssetList;
 			sourceTree = "<group>";
 		};
 		D0A200000000000000000005 /* TokensManage */ = {
@@ -27378,6 +27399,7 @@
 				847F2D4127A96D9200AFD476 /* AssetListNetworkGroupDecorationView.swift */,
 				2D3C71D02E1152F900DF9E49 /* AssetListOrganizerDecorationView.swift */,
 				8452585427ABF270004F9082 /* AssetListEmptyCell.swift */,
+				C0D3A5513D7F100100000001 /* AssetListLoadingCell.swift */,
 				2D3C71CE2E1151F500DF9E49 /* AssetListMultisigOperationsCell.swift */,
 				430F51B055B042799CFE20A3 /* AssetListRevealCell.swift */,
 				88DC3E26292CABCB00DBCE4D /* AssetListStyles.swift */,
@@ -35251,6 +35273,7 @@
 				0C521C002E147AA100ABAC97 /* MultisigOperationApproveInteractorError.swift in Sources */,
 				845B08082918C8DA005785D3 /* RemoteStorageSizeRequest.swift in Sources */,
 				8452585527ABF270004F9082 /* AssetListEmptyCell.swift in Sources */,
+				C0D3A5513D7F100100000002 /* AssetListLoadingCell.swift in Sources */,
 				2D8F0ECC2CEFC76300A22074 /* DAppBrowserTabManagerError.swift in Sources */,
 				888B8E95291D274B00AA78E9 /* MercuryoProvider.swift in Sources */,
 				0C11D85C2CCA3CCC003EC46D /* AssetsHydraXYKExchange.swift in Sources */,
@@ -37336,6 +37359,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D0A400000000000000000002 /* AssetListDefaultAssetsTests.swift in Sources */,
 				D0A200000000000000000002 /* DefaultAssetsProviderTests.swift in Sources */,
 				D0A200000000000000000004 /* TokensManageViewControllerTests.swift in Sources */,
 				D0A300000000000000000002 /* AutoAddTokensServiceTests.swift in Sources */,

@@ -13,6 +13,7 @@ enum AssetListMeasurement {
     static let bannerHeight = 102.0
     static let assetHeight: CGFloat = 56.0
     static let assetHeaderHeight: CGFloat = 45.0
+    static let loadingStateCellHeight: CGFloat = 230
     static let emptyStateCellHeight: CGFloat = 230
     static let revealRowHeight: CGFloat = 44.0
     static let decorationInset: CGFloat = 8.0

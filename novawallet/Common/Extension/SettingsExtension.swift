@@ -29,6 +29,7 @@ enum SettingsKey: String {
     case hideUnifiedAddressPopup
     case isAppFirstLaunch
     case assetVisibilitySeeded
+    case defaultAssetsConfiguration
     case multisigNotificationsPromoSeen
     case ahmInfoShownChains
     case ahmAssetDetailsAlertClosedChains
@@ -39,6 +40,20 @@ enum SettingsKey: String {
 }
 
 extension SettingsManagerProtocol {
+    var defaultAssetsConfiguration: Data? {
+        get {
+            data(for: SettingsKey.defaultAssetsConfiguration.rawValue)
+        }
+
+        set {
+            if let newValue {
+                set(value: newValue, for: SettingsKey.defaultAssetsConfiguration.rawValue)
+            } else {
+                removeValue(for: SettingsKey.defaultAssetsConfiguration.rawValue)
+            }
+        }
+    }
+
     var isAppFirstLaunch: Bool {
         get {
             bool(for: SettingsKey.isAppFirstLaunch.rawValue) ?? true

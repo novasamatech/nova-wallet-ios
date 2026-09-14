@@ -87,6 +87,7 @@ extension AssetListFlowLayout {
         case organizerItem(itemIndex: Int)
         case banner
         case settings
+        case loadingState
         case asset(sectionIndex: Int, itemIndex: Int)
         case emptyState
         case revealRow(sectionIndex: Int)
@@ -94,6 +95,7 @@ extension AssetListFlowLayout {
         init(
             indexPath: IndexPath,
             totalSections: Int,
+            isLoading: Bool,
             in collectionView: UICollectionView
         ) {
             switch indexPath.section {
@@ -108,7 +110,13 @@ extension AssetListFlowLayout {
             case 2:
                 self = .banner
             case 3:
-                self = indexPath.row == 0 ? .settings : .emptyState
+                self = if indexPath.row == 0 {
+                    .settings
+                } else if isLoading {
+                    .loadingState
+                } else {
+                    .emptyState
+                }
             case totalSections - 1:
                 self = .revealRow(sectionIndex: indexPath.section)
             default:
@@ -124,6 +132,7 @@ extension AssetListFlowLayout {
             case let .organizerItem(itemIndex): IndexPath(item: itemIndex, section: 1)
             case .banner: IndexPath(item: 0, section: 2)
             case .settings: IndexPath(item: 0, section: 3)
+            case .loadingState: IndexPath(item: 1, section: 3)
             case .emptyState: IndexPath(item: 1, section: 3)
             case let .asset(sectionIndex, itemIndex): IndexPath(item: itemIndex, section: sectionIndex)
             case let .revealRow(sectionIndex): IndexPath(item: 0, section: sectionIndex)

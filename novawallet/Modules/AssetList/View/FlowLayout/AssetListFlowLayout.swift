@@ -332,6 +332,8 @@ extension AssetListFlowLayout {
             bannersHeight
         case .settings:
             AssetListMeasurement.settingsHeight
+        case .loadingState:
+            AssetListMeasurement.loadingStateCellHeight
         case .emptyState:
             AssetListMeasurement.emptyStateCellHeight
         case .asset:

@@ -1,4 +1,5 @@
 import Foundation
+import Keystore_iOS
 
 extension DefaultAssetsProvider {
     private enum Constants {
@@ -12,6 +13,7 @@ extension DefaultAssetsProvider {
             ignoresCache: true
         ),
         chainRegistry: ChainRegistryFacade.sharedRegistry,
+        settingsManager: SettingsManager.shared,
         logger: Logger.shared
     )
 }

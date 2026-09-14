@@ -39,7 +39,7 @@ final class AssetListCollectionViewDataSource: NSObject {
 private extension AssetListCollectionViewDataSource {
     var totalSections: Int {
         AssetListFlowLayout.SectionType.sectionsCount(
-            groupsCount: groupsViewModel.listState.groups.count
+            groupsCount: groupsViewModel.displayedGroups.count
         )
     }
 
@@ -211,7 +211,7 @@ private extension AssetListCollectionViewDataSource {
             )!
         }
 
-        return switch groupsViewModel.listState.groups[groupIndex] {
+        return switch groupsViewModel.displayedGroups[groupIndex] {
         case let .network(groupViewModel):
             provideNetworkGroupAssetCell(
                 collectionView,
@@ -296,6 +296,20 @@ private extension AssetListCollectionViewDataSource {
 
         cell.bind(text: text, actionTitle: actionTitle)
         cell.actionButton.addTarget(self, action: #selector(actionBuySell), for: .touchUpInside)
+
+        return cell
+    }
+
+    func provideLoadingStateCell(
+        _ collectionView: UICollectionView,
+        indexPath: IndexPath
+    ) -> AssetListLoadingCell {
+        let cell = collectionView.dequeueReusableCellWithType(
+            AssetListLoadingCell.self,
+            for: indexPath
+        )!
+
+        cell.startAnimating()
 
         return cell
     }
@@ -424,7 +438,7 @@ private extension AssetListCollectionViewDataSource {
             section,
             totalSections: totalSections
         ) {
-            switch groupsViewModel.listState.groups[groupIndex] {
+            switch groupsViewModel.displayedGroups[groupIndex] {
             case let .network(groupViewModel):
                 return groupViewModel.assets.count
             case let .token(groupViewModel):
@@ -522,11 +536,11 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
         case .banners:
             return bannersAvailable == true ? 1 : 0
         case .settings:
-            return groupsViewModel.listState.isEmpty ? 2 : 1
+            return groupsViewModel.isLoading || groupsViewModel.listState.isEmpty ? 2 : 1
         case .assetGroup:
             return numberOfItemsForAssetGroup(section)
         case .tokensReveal:
-            return groupsViewModel.hasHiddenAssets == nil ? 0 : 1
+            return groupsViewModel.isLoading || groupsViewModel.hasHiddenAssets == nil ? 0 : 1
         }
     }
 
@@ -537,6 +551,7 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
         switch AssetListFlowLayout.CellType(
             indexPath: indexPath,
             totalSections: totalSections,
+            isLoading: groupsViewModel.isLoading,
             in: collectionView
         ) {
         case .account:
@@ -551,6 +566,8 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
             provideBannersCell(collectionView, indexPath: indexPath)
         case .settings:
             provideSettingsCell(collectionView, indexPath: indexPath)
+        case .loadingState:
+            provideLoadingStateCell(collectionView, indexPath: indexPath)
         case .emptyState:
             provideEmptyStateCell(collectionView, indexPath: indexPath)
         case .asset:
@@ -584,7 +601,7 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
         // Configure the header view with the appropriate view model
         if let groupIndex,
            groupsViewModel.listGroupStyle == .networks,
-           case let .network(viewModel) = groupsViewModel.listState.groups[groupIndex] {
+           case let .network(viewModel) = groupsViewModel.displayedGroups[groupIndex] {
             view.bind(viewModel: viewModel)
         }
 
