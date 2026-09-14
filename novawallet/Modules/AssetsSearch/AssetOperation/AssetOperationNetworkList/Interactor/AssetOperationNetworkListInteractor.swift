@@ -49,18 +49,11 @@ class AssetOperationNetworkListInteractor {
 
 extension AssetOperationNetworkListInteractor: AssetOperationNetworkListInteractorInputProtocol {
     func setup() {
-        let chainAssetIds = Set(multichainToken.instances.map(\.chainAssetId))
-
         let chains = stateObservable.state.value.chains(includingHidden: includesHiddenAssets)
 
-        let chainAssets = multichainToken.instances
-            .compactMap { instance in
-                let chainId = instance.chainAssetId.chainId
-
-                return chains[chainId]?.chainAssets()
-            }
-            .flatMap { $0 }
-            .filter { chainAssetIds.contains($0.chainAssetId) }
+        let chainAssets = multichainToken.instances.compactMap { instance in
+            chains[instance.chainAssetId.chainId]?.chainAsset(for: instance.chainAssetId.assetId)
+        }
 
         let resultClosure: (AssetOperationNetworkBuilderResult?) -> Void = { [weak self] result in
             guard let result else { return }
