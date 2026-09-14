@@ -153,6 +153,27 @@ private extension TokensManageViewController {
         }
     }
 
+    func bind(headerView: TokensManageSectionHeaderView, to section: TokensManageSection) {
+        if section.kind == .results {
+            headerView.bind(caption: section.title)
+        } else {
+            headerView.bind(title: section.title)
+        }
+    }
+
+    func refreshSectionHeaders() {
+        sections.enumerated().forEach { index, section in
+            guard
+                let headerView = rootView.tableView.headerView(
+                    forSection: index
+                ) as? TokensManageSectionHeaderView else {
+                return
+            }
+
+            bind(headerView: headerView, to: section)
+        }
+    }
+
     func rowHeight(for item: TokensManageListItem?) -> CGFloat {
         switch item {
         case .root:
@@ -236,11 +257,7 @@ extension TokensManageViewController: UITableViewDelegate {
 
         let headerView: TokensManageSectionHeaderView = tableView.dequeueReusableHeaderFooterView()
 
-        if section.kind == .results {
-            headerView.bind(caption: section.title)
-        } else {
-            headerView.bind(title: section.title)
-        }
+        bind(headerView: headerView, to: section)
 
         return headerView
     }
@@ -266,6 +283,8 @@ extension TokensManageViewController: TokensManageViewProtocol {
         }
 
         dataSource.apply(snapshot, animatingDifferences: false)
+
+        refreshSectionHeaders()
 
         reloadEmptyState(animated: false)
     }
