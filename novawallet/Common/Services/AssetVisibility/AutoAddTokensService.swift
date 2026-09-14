@@ -128,7 +128,6 @@ extension AutoAddTokensService: AssetVisibilityLocalStorageSubscriber, AssetVisi
         case let .success(changes):
             let wasEnabled = autoAddEnabled
 
-            // an empty snapshot or a deleted row is no decision, which reads as the default
             autoAddEnabled = changes.reduceToLastChange()?.autoAddTokensWithBalance
                 ?? MetaAccountSettingsLocal.defaultAutoAddTokensWithBalance
 
@@ -156,7 +155,6 @@ private extension AutoAddTokensService {
     }
 
     func warmUpDefaultAssets() {
-        // the list never enters the auto-add decision; the fetch only memoises it for the screens that read it
         let wrapper = defaultAssetsProvider.createDefaultAssetsWrapper()
 
         execute(

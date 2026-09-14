@@ -184,7 +184,6 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber,
         let accountDependentChanges = convertToAccountDependentChanges(changes, selectedWallet: selectedMetaAccount)
         accountChains = accountDependentChanges.mergeToDict([:])
 
-        // the new wallet's rows snapshot feeds the builder through reapplyVisibility()
         didResetWallet(allChanges: changes, enabledChainChanges: [])
 
         if seedBarrierPassed {

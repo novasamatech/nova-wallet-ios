@@ -138,7 +138,6 @@ extension MultichainToken {
         static let bridgedSymbolSeparator: Character = "-"
     }
 
-    // ETH-Snowbridge lists under ETH only while ETH itself is listed; a lone variant keeps its own row
     static func bridgedParent(of symbol: String, among validSymbols: Set<AssetModel.Symbol>) -> String? {
         guard let separatorIndex = symbol.firstIndex(of: Constants.bridgedSymbolSeparator) else {
             return nil

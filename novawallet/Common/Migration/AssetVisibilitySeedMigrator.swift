@@ -46,8 +46,6 @@ extension AssetVisibilitySeedMigrator: Migrating {
             disabledIds: try fetchDisabledAssetIds()
         )
 
-        // The root module owning the migrator is released right after launch,
-        // so the queued seed keeps the migrator alive until it completes.
         let seedOperation = ClosureOperation<Void> {
             try self.seed(with: input)
         }

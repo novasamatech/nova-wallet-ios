@@ -59,7 +59,6 @@ private extension TransferSelfReceiveRevealer {
         recipientAccountId: AccountId,
         in wallets: [MetaAccountModel]
     ) {
-        // the predicate also matches a wallet by its universal account id when a chain account overrides it
         let owners = wallets.filter {
             $0.fetch(for: destination.chain.accountRequest())?.accountId == recipientAccountId
         }

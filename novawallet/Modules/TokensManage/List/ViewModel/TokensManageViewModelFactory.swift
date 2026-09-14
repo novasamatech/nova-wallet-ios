@@ -49,7 +49,6 @@ private extension TokensManageViewModelFactory {
         expandedIds: Set<String>,
         locale: Locale
     ) -> TokensManageRootViewModel {
-        // a paused chain syncs nothing, so its row reads as off whatever the stored decisions say
         let visibleCount = group.isPaused ? 0 : group.members.filter(\.isVisible).count
 
         return TokensManageRootViewModel(
