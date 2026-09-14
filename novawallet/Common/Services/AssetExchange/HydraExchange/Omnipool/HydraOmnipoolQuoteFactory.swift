@@ -10,7 +10,7 @@ final class HydraOmnipoolQuoteFactory {
         self.flowState = flowState
     }
 
-    private func createQuoteStateWrapper(
+    func quoteStateWrapper(
         for remoteSwapPair: HydraDx.RemoteSwapPair
     ) -> CompoundOperationWrapper<HydraOmnipool.QuoteRemoteState> {
         let quoteService = flowState.setupQuoteService(for: remoteSwapPair)
@@ -20,7 +20,7 @@ final class HydraOmnipoolQuoteFactory {
         return CompoundOperationWrapper(targetOperation: operation)
     }
 
-    private func createDefaultFeeWrapper() -> CompoundOperationWrapper<HydraDx.FeeEntry> {
+    func defaultFeeWrapper() -> CompoundOperationWrapper<HydraDx.FeeEntry> {
         let coderFactoryOperation = flowState.runtimeProvider.fetchCoderFactoryOperation()
 
         let assetFeeOperation = StorageConstantOperation<HydraDx.FeeParameters>.operation(
@@ -53,7 +53,7 @@ final class HydraOmnipoolQuoteFactory {
         )
     }
 
-    private func deriveApiParams(
+    func deriveApiParams(
         from remoteState: HydraOmnipool.QuoteRemoteState,
         defaultFee: HydraDx.FeeEntry
     ) throws -> HydraOmnipoolApi.Params {
@@ -97,9 +97,9 @@ final class HydraOmnipoolQuoteFactory {
 extension HydraOmnipoolQuoteFactory {
     func quote(for args: HydraExchange.QuoteArgs) -> CompoundOperationWrapper<BigUInt> {
         let remotePair = HydraDx.RemoteSwapPair(assetIn: args.assetIn, assetOut: args.assetOut)
-        let quoteStateWrapper = createQuoteStateWrapper(for: remotePair)
+        let quoteStateWrapper = quoteStateWrapper(for: remotePair)
 
-        let defaultFeeWrapper = createDefaultFeeWrapper()
+        let defaultFeeWrapper = defaultFeeWrapper()
 
         let calculateOperation = ClosureOperation<BigUInt> {
             let quoteState = try quoteStateWrapper.targetOperation.extractNoCancellableResultData()
@@ -120,5 +120,49 @@ extension HydraOmnipoolQuoteFactory {
         let dependencies = quoteStateWrapper.allOperations + defaultFeeWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: calculateOperation, dependencies: dependencies)
+    }
+}
+
+extension HydraOmnipoolQuoteFactory {
+    static func tradeLimitVerdict(
+        for amount: Balance,
+        direction: AssetConversion.Direction,
+        params: HydraOmnipoolApi.Params,
+        limits: HydraExchangeTradeLimits.PoolLimits
+    ) throws -> AssetExchangeTradeLimitVerdict {
+        let amountIn: Balance
+        let amountOut: Balance
+
+        switch direction {
+        case .sell:
+            amountIn = amount
+            amountOut = try HydraOmnipoolApi.calculateOutGivenIn(for: params, amountIn: amount)
+        case .buy:
+            amountOut = amount
+            amountIn = try HydraOmnipoolApi.calculateInGivenOut(for: params, amountOut: amount)
+        }
+
+        let exceeds = try HydraExchangeTradeLimits.omnipoolExceedsLimit(
+            amountIn: amountIn,
+            amountOut: amountOut,
+            reserveIn: params.assetInBalance,
+            reserveOut: params.assetOutBalance,
+            limits: limits
+        )
+
+        guard exceeds else {
+            return .withinLimit
+        }
+
+        return .exceeds(
+            .init(
+                maxGivenAmount: try HydraExchangeTradeLimits.omnipoolCap(
+                    direction: direction,
+                    params: params,
+                    limits: limits
+                ),
+                minTradingLimit: limits.minTradingLimit
+            )
+        )
     }
 }

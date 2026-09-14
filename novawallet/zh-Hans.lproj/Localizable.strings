@@ -2049,3 +2049,7 @@
 "legal.consent.title" = "更新后的条款";
 "legal.consent.subtitle" = "我们已更新《服务条款》和《隐私声明》。请查看并接受更新后的文件，以继续使用 Nova Wallet。";
 "legal.consent.accept" = "接受并继续";
+"swap.failure.pool.trade.limit.title" = "金额超出流动性池上限";
+"swap.failure.pool.trade.limit.message" = "%1$@ 流动性池限制单次交换的规模。当前最多可交换 %2$@。";
+"swap.failure.pool.trade.limit.route.message" = "您的交换会经过 %1$@ 流动性池，该池单次交换最多允许 %2$@。请尝试更小的金额。";
+"swap.failure.pool.trade.limit.unknown.max.message" = "%1$@ 流动性池目前无法处理如此大额的交换。请尝试更小的金额。";

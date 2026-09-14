@@ -1,3 +1,5 @@
+import Foundation
+
 enum SwapDisplayError {
     struct InsufficientBalanceDueFeePayAsset {
         let available: String
@@ -27,5 +29,69 @@ enum SwapDisplayError {
 
     enum DustRemains {
         case dueSwap(DustRemainsDueSwap)
+    }
+
+    struct PoolTradeLimit {
+        let title: String
+        let message: String
+
+        let applyTitle: String?
+    }
+}
+
+extension SwapDisplayError.PoolTradeLimit {
+    static func build(
+        from failure: AssetExchangeTradeLimitFailure,
+        canApply: Bool,
+        viewModelFactory: BalanceViewModelFactoryFacadeProtocol,
+        locale: Locale
+    ) -> SwapDisplayError.PoolTradeLimit? {
+        let assetInfo = failure.limitedAsset.assetDisplayInfo
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        func format(_ amount: Balance) -> String {
+            viewModelFactory.amountFromValue(
+                targetAssetInfo: assetInfo,
+                value: amount.decimal(assetInfo: assetInfo)
+            ).value(for: locale)
+        }
+
+        func tooLargeForPool() -> SwapDisplayError.PoolTradeLimit {
+            .init(
+                title: strings.swapFailurePoolTradeLimitTitle(),
+                message: strings.swapFailurePoolTradeLimitUnknownMaxMessage(
+                    failure.limitedAsset.asset.symbol
+                ),
+                applyTitle: nil
+            )
+        }
+
+        guard let maxGivenAmount = failure.maxGivenAmount else {
+            return tooLargeForPool()
+        }
+
+        guard failure.isUserInputAdjustable else {
+            return .init(
+                title: strings.swapFailurePoolTradeLimitTitle(),
+                message: strings.swapFailurePoolTradeLimitRouteMessage(
+                    failure.limitedAsset.asset.symbol,
+                    format(maxGivenAmount)
+                ),
+                applyTitle: nil
+            )
+        }
+
+        guard let suggestion = failure.suggestion() else {
+            return nil
+        }
+
+        return .init(
+            title: strings.swapFailurePoolTradeLimitTitle(),
+            message: strings.swapFailurePoolTradeLimitMessage(
+                failure.limitedAsset.asset.symbol,
+                format(suggestion)
+            ),
+            applyTitle: canApply ? strings.commonSwapMax() : nil
+        )
     }
 }

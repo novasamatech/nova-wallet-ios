@@ -79,6 +79,13 @@ extension CrosschainExchangeEdge: AssetExchangableGraphEdge {
         shouldProhibitTransferOutAll()
     }
 
+    func tradeLimitVerdict(
+        amount _: Balance,
+        direction _: AssetConversion.Direction
+    ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict> {
+        .createWithResult(.withinLimit)
+    }
+
     func beginMetaOperation(
         for amountIn: Balance,
         amountOut: Balance

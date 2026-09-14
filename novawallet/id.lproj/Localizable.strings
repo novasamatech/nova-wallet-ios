@@ -2049,3 +2049,7 @@
 "legal.consent.title" = "Ketentuan yang Diperbarui";
 "legal.consent.subtitle" = "Kami telah memperbarui Ketentuan Layanan dan Pemberitahuan Privasi kami. Harap tinjau dan setujui dokumen yang diperbarui untuk terus menggunakan Nova Wallet.";
 "legal.consent.accept" = "Setujui dan Lanjutkan";
+"swap.failure.pool.trade.limit.title" = "Jumlah melebihi batas pool";
+"swap.failure.pool.trade.limit.message" = "Pool likuiditas %1$@ membatasi ukuran satu kali swap. Jumlah maksimum yang dapat Anda swap saat ini adalah %2$@.";
+"swap.failure.pool.trade.limit.route.message" = "Swap Anda dirutekan melalui pool likuiditas %1$@ yang hanya mengizinkan maksimal %2$@ per satu kali swap. Coba jumlah yang lebih kecil.";
+"swap.failure.pool.trade.limit.unknown.max.message" = "Pool likuiditas %1$@ tidak dapat menerima swap sebesar ini saat ini. Coba jumlah yang lebih kecil.";

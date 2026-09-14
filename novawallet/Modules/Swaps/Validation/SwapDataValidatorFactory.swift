@@ -11,6 +11,8 @@ struct SwapInterEDValidatingParams {
 
 typealias SwapInterEDValidatingClosure = (SwapInterEDValidatingParams) -> Void
 
+typealias SwapPoolTradeLimitApplying = (Balance, AssetConversion.Direction) -> Void
+
 protocol SwapDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
     func hasSufficientBalance(
         params: SwapModel,
@@ -38,6 +40,13 @@ protocol SwapDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
     func passesIntermediateEDValidation(
         params: SwapModel,
         remoteValidatingClosure: @escaping SwapInterEDValidatingClosure,
+        locale: Locale
+    ) -> DataValidating
+
+    func noPoolTradeLimitExceeded(
+        params: SwapModel,
+        remoteValidatingClosure: @escaping SwapPoolTradeLimitValidatingClosure,
+        poolTradeLimitAction: SwapPoolTradeLimitApplying?,
         locale: Locale
     ) -> DataValidating
 }

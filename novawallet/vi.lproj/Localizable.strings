@@ -2049,3 +2049,7 @@
 "legal.consent.title" = "Điều khoản đã cập nhật";
 "legal.consent.subtitle" = "Chúng tôi đã cập nhật Điều khoản dịch vụ và Thông báo về quyền riêng tư. Vui lòng xem xét và chấp nhận các tài liệu đã cập nhật để tiếp tục sử dụng Nova Wallet.";
 "legal.consent.accept" = "Chấp nhận và tiếp tục";
+"swap.failure.pool.trade.limit.title" = "Số lượng vượt quá giới hạn của pool";
+"swap.failure.pool.trade.limit.message" = "Pool thanh khoản %1$@ giới hạn quy mô của mỗi lần hoán đổi. Số lượng tối đa bạn có thể hoán đổi lúc này là %2$@.";
+"swap.failure.pool.trade.limit.route.message" = "Giao dịch hoán đổi của bạn đi qua pool thanh khoản %1$@, pool này chỉ cho phép tối đa %2$@ mỗi lần hoán đổi. Hãy thử số lượng nhỏ hơn.";
+"swap.failure.pool.trade.limit.unknown.max.message" = "Pool thanh khoản %1$@ hiện không thể tiếp nhận lệnh hoán đổi lớn như vậy. Hãy thử số lượng nhỏ hơn.";

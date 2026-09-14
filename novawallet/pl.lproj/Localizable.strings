@@ -2049,3 +2049,7 @@
 "legal.consent.title" = "Zaktualizowane warunki";
 "legal.consent.subtitle" = "Zaktualizowaliśmy nasze Warunki korzystania z usługi i Informację o prywatności. Zapoznaj się ze zaktualizowanymi dokumentami i zaakceptuj je, aby nadal korzystać z Nova Wallet.";
 "legal.consent.accept" = "Akceptuję i kontynuuję";
+"swap.failure.pool.trade.limit.title" = "Kwota przekracza limit puli";
+"swap.failure.pool.trade.limit.message" = "Pula płynności %1$@ ogranicza wielkość pojedynczej wymiany. Maksymalna kwota, jaką możesz teraz wymienić, to %2$@.";
+"swap.failure.pool.trade.limit.route.message" = "Twoja wymiana przechodzi przez pulę płynności %1$@, która dopuszcza najwyżej %2$@ na jedną wymianę. Spróbuj mniejszej kwoty.";
+"swap.failure.pool.trade.limit.unknown.max.message" = "Pula płynności %1$@ nie może teraz przyjąć tak dużej wymiany. Spróbuj mniejszej kwoty.";

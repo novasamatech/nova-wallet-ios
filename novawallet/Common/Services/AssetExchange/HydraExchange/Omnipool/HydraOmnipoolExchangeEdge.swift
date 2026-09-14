@@ -72,3 +72,60 @@ extension HydraOmnipoolExchangeEdge: AssetExchangableGraphEdge {
         )
     }
 }
+
+extension HydraOmnipoolExchangeEdge {
+    func tradeLimitVerdict(
+        amount: Balance,
+        direction: AssetConversion.Direction
+    ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict> {
+        let coderFactoryOperation = host.runtimeService.fetchCoderFactoryOperation()
+
+        let limitsWrapper = HydraExchangeTradeLimits.createPoolLimitsWrapper(
+            for: .omnipool,
+            dependingOn: coderFactoryOperation
+        )
+
+        limitsWrapper.addDependency(operations: [coderFactoryOperation])
+
+        let stateWrapper = quoteFactory.quoteStateWrapper(for: remoteSwapPair)
+        let feeWrapper = quoteFactory.defaultFeeWrapper()
+
+        let verdictOperation = ClosureOperation<AssetExchangeTradeLimitVerdict> {
+            guard let limits = try limitsWrapper.targetOperation.extractNoCancellableResultData() else {
+                return .withinLimit
+            }
+
+            let remoteState = try stateWrapper.targetOperation.extractNoCancellableResultData()
+            let defaultFee = try feeWrapper.targetOperation.extractNoCancellableResultData()
+
+            let params = try self.quoteFactory.deriveApiParams(
+                from: remoteState,
+                defaultFee: defaultFee
+            )
+
+            let verdict = try HydraOmnipoolQuoteFactory.tradeLimitVerdict(
+                for: amount,
+                direction: direction,
+                params: params,
+                limits: limits
+            )
+
+            guard let limitedAsset = self.limitedAsset(for: direction) else {
+                return verdict
+            }
+
+            return verdict.naming(limitedAsset: limitedAsset)
+        }
+
+        verdictOperation.addDependency(limitsWrapper.targetOperation)
+        verdictOperation.addDependency(stateWrapper.targetOperation)
+        verdictOperation.addDependency(feeWrapper.targetOperation)
+
+        let dependencies = [coderFactoryOperation]
+            + limitsWrapper.allOperations
+            + stateWrapper.allOperations
+            + feeWrapper.allOperations
+
+        return CompoundOperationWrapper(targetOperation: verdictOperation, dependencies: dependencies)
+    }
+}

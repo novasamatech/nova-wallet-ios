@@ -8,6 +8,12 @@ class AnyAssetExchangeEdge {
     private let fetchOrigin: () -> ChainAssetId
     private let fetchDestination: () -> ChainAssetId
     private let fetchQuote: (Balance, AssetConversion.Direction) -> CompoundOperationWrapper<Balance>
+
+    private let fetchTradeLimitVerdict: (
+        Balance,
+        AssetConversion.Direction
+    ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict>
+
     private let beginOperationClosure: (AssetExchangeAtomicOperationArgs) throws -> AssetExchangeAtomicOperationProtocol
     private let appendToOperationClosure: (
         AssetExchangeAtomicOperationProtocol,
@@ -35,6 +41,7 @@ class AnyAssetExchangeEdge {
         fetchOrigin = { edge.origin }
         fetchDestination = { edge.destination }
         fetchQuote = edge.quote
+        fetchTradeLimitVerdict = edge.tradeLimitVerdict
         beginOperationClosure = edge.beginOperation
         appendToOperationClosure = edge.appendToOperation
         shouldIgnoreFeeRequirementClosure = edge.shouldIgnoreFeeRequirement
@@ -52,6 +59,13 @@ class AnyAssetExchangeEdge {
 extension AnyAssetExchangeEdge: AssetExchangableGraphEdge {
     func quote(amount: Balance, direction: AssetConversion.Direction) -> CompoundOperationWrapper<Balance> {
         fetchQuote(amount, direction)
+    }
+
+    func tradeLimitVerdict(
+        amount: Balance,
+        direction: AssetConversion.Direction
+    ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict> {
+        fetchTradeLimitVerdict(amount, direction)
     }
 
     var origin: ChainAssetId { fetchOrigin() }

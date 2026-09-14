@@ -17,6 +17,8 @@ final class SwapConfirmPresenter: SwapBasePresenter {
 
     private var quoteArgs: AssetConversion.QuoteArgs
 
+    private var poolLimitCorrectionCounter = MaxCounter.feeCorrection()
+
     init(
         interactor: SwapConfirmInteractorInputProtocol,
         wireframe: SwapConfirmWireframeProtocol,
@@ -108,6 +110,31 @@ final class SwapConfirmPresenter: SwapBasePresenter {
             assetOut: initState.quoteArgs.assetOut,
             amount: maxAmountInPlank,
             direction: .sell
+        )
+
+        view?.didReceiveStartLoading()
+
+        interactor.calculateQuote(for: quoteArgs)
+    }
+
+    override func canApplyPoolTradeLimit() -> Bool {
+        poolLimitCorrectionCounter.hasBudget()
+    }
+
+    override func resetPoolTradeLimitCorrection() {
+        poolLimitCorrectionCounter.resetCounter()
+    }
+
+    override func applyPoolTradeLimit(amount: Balance, direction: AssetConversion.Direction) {
+        guard poolLimitCorrectionCounter.incrementCounterIfPossible() else {
+            return
+        }
+
+        quoteArgs = AssetConversion.QuoteArgs(
+            assetIn: initState.quoteArgs.assetIn,
+            assetOut: initState.quoteArgs.assetOut,
+            amount: amount,
+            direction: direction
         )
 
         view?.didReceiveStartLoading()

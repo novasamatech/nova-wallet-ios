@@ -33,6 +33,13 @@ extension StubAssetExchangeEdge: AssetExchangableGraphEdge {
         .createWithResult(quoteClosure(amount, direction))
     }
 
+    func tradeLimitVerdict(
+        amount _: Balance,
+        direction _: AssetConversion.Direction
+    ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict> {
+        .createWithResult(.withinLimit)
+    }
+
     func addingWeight(to currentWeight: Int, predecessor _: AnyGraphEdgeProtocol?) -> Int {
         currentWeight + 1
     }
