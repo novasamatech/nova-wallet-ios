@@ -90,7 +90,9 @@ private extension TokensManageViewController {
 
         title = R.string(preferredLanguages: languages).localizable.tokensManageTitle()
 
-        rootView.addTokenButton.title = R.string(preferredLanguages: languages).localizable.commonAddToken()
+        rootView.addTokenButton.accessibilityLabel = R.string(
+            preferredLanguages: languages
+        ).localizable.commonAddToken()
         rootView.autoAddView.titleLabel.text = R.string(preferredLanguages: languages).localizable.tokensManageAutoAdd()
 
         let placeholder = R.string(preferredLanguages: languages).localizable.assetsSearchPlaceholder()

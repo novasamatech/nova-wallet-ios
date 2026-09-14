@@ -13,7 +13,7 @@ final class TokensManageViewLayout: UIView {
 
     let headerActionButton: UIBarButtonItem = TokensManageViewLayout.createBarButtonItem()
 
-    let addTokenButton: UIBarButtonItem = TokensManageViewLayout.createBarButtonItem()
+    let addTokenButton: UIBarButtonItem = TokensManageViewLayout.createAddTokenButtonItem()
 
     let autoAddView = TokensManageAutoAddView()
 
@@ -61,6 +61,19 @@ private extension TokensManageViewLayout {
         ]
 
         button.setTitleTextAttributes(disabledAttributes, for: .disabled)
+
+        return button
+    }
+
+    static func createAddTokenButtonItem() -> UIBarButtonItem {
+        let button = UIBarButtonItem(
+            image: R.image.iconSmallAdd()?.withRenderingMode(.alwaysTemplate),
+            style: .plain,
+            target: nil,
+            action: nil
+        )
+
+        button.tintColor = R.color.colorButtonTextAccent()
 
         return button
     }
