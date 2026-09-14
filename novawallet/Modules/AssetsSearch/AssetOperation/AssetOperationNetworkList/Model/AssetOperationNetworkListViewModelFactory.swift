@@ -19,6 +19,7 @@ class AssetOperationNetworkListViewModelFactory {
 private extension AssetOperationNetworkListViewModelFactory {
     func createViewModel(
         from asset: AssetListAssetModel,
+        groupSymbol: String,
         using priceData: PriceData?,
         locale: Locale
     ) -> AssetOperationNetworkViewModel {
@@ -45,6 +46,10 @@ private extension AssetOperationNetworkListViewModelFactory {
 
         return AssetOperationNetworkViewModel(
             chainAsset: chainAssetViewModel,
+            variantSymbol: MultichainToken.variantSymbol(
+                of: asset.chainAssetModel.asset.symbol,
+                inGroupWith: groupSymbol
+            ),
             amount: balanceAmountString,
             value: balanceValueString
         )
@@ -61,12 +66,14 @@ private extension AssetOperationNetworkListViewModelFactory {
 extension AssetOperationNetworkListViewModelFactory {
     func createViewModels(
         assets: [AssetListAssetModel],
+        groupSymbol: String,
         priceData: [ChainAssetId: PriceData],
         locale: Locale
     ) -> [AssetOperationNetworkViewModel] {
         assets.compactMap { asset in
             createViewModel(
                 from: asset,
+                groupSymbol: groupSymbol,
                 using: priceData[asset.chainAssetModel.chainAssetId],
                 locale: locale
             )
