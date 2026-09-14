@@ -51,6 +51,9 @@ final class TokensManageTests: XCTestCase {
         presenter.performSwitch(for: ethRoot, isOn: false)
         wait(for: [hiddenList], timeout: 10.0)
         let statesAfterRootSwitch = try fetchStatesAfterWrites(in: context)
+        let hiddenEthRoot = try XCTUnwrap(
+            try XCTUnwrap(lists.received.dropFirst(5).first).rootViewModels().first { $0.groupId == "ETH" }
+        )
 
         presenter.search(query: context.searchedChainName)
         let searched = try XCTUnwrap(lists.received.dropFirst(6).first)
@@ -79,6 +82,7 @@ final class TokensManageTests: XCTestCase {
         XCTAssertEqual(resolved.map { $0.rootGroupIds() }, [["ETH", "DOT"], ["USDC"]])
         XCTAssertEqual(resolved.reduceToSwitches(), ["DOT": true, "ETH": true, "USDC": false])
         XCTAssertEqual(ethRoot.subtitle, "1 of 2 networks")
+        XCTAssertTrue(hiddenEthRoot.subtitle.hasSuffix("(+1 more)"))
         XCTAssertEqual(Set(ethChildren.map(\.chainAssetId)), context.ethChainAssetIds)
         XCTAssertEqual(statesAfterChildSwitch, [context.snowbridgeChainAssetId: .visible])
         XCTAssertEqual(statesAfterRootSwitch, context.ethChainAssetIds.reduce(into: [:]) { $0[$1] = .hidden })
@@ -229,7 +233,7 @@ private extension TokensManageTests {
 
         func createPresenter(for view: TokensManageViewProtocol) -> TokensManagePresenter {
             let viewModelFactory = TokensManageViewModelFactory(
-                quantityFormater: NumberFormatter.positiveQuantity.localizableResource(),
+                quantityFormater: NumberFormatter.quantity.localizableResource(),
                 assetIconViewModelFactory: AssetIconViewModelFactory(),
                 networkViewModelFactory: NetworkViewModelFactory()
             )

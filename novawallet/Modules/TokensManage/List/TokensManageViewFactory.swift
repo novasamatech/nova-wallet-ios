@@ -10,7 +10,7 @@ struct TokensManageViewFactory {
 
         let wireframe = TokensManageWireframe()
 
-        let formatter = NumberFormatter.positiveQuantity.localizableResource()
+        let formatter = NumberFormatter.quantity.localizableResource()
         let assetIconViewModelFactory = AssetIconViewModelFactory()
 
         let viewModelFactory = TokensManageViewModelFactory(
