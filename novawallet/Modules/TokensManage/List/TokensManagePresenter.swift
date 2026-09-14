@@ -132,9 +132,10 @@ private extension TokensManagePresenter {
             return nil
         }
 
-        let variantSymbol = chainAsset.asset.symbol != groupSymbol
-            ? chainAsset.asset.symbol
-            : nil
+        let variantSymbol = MultichainToken.variantSymbol(
+            of: chainAsset.asset.symbol,
+            inGroupWith: groupSymbol
+        )
 
         return TokensManageMember(
             chainAssetId: chainAssetId,

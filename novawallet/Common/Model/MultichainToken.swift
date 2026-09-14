@@ -120,6 +120,12 @@ extension MultichainToken {
 }
 
 extension MultichainToken {
+    static func variantSymbol(of symbol: String, inGroupWith groupSymbol: String) -> String? {
+        reserveTokensOf(symbol: symbol).contains(groupSymbol) ? nil : symbol
+    }
+}
+
+extension MultichainToken {
     private enum Constants {
         static let bridgedSymbolSeparator: Character = "-"
     }
