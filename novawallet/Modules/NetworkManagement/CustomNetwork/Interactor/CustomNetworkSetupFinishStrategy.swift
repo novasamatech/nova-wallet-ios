@@ -37,8 +37,6 @@ struct CustomNetworkSetupFinishStrategyFactory {
         CustomNetworkModifyStrategy(
             repository: repository,
             networkToModify: networkToModify,
-            selectedWalletSettings: selectedWalletSettings,
-            visibilityWriter: visibilityWriter,
             operationQueue: operationQueue,
             chainRegistry: chainRegistry
         )
@@ -169,10 +167,10 @@ extension CustomNetworkSetupFinishStrategy {
             return
         }
 
-        visibilityWriter.setState(
+        visibilityWriter.apply(
+            event: .userSet(isVisible: true),
             metaId: metaId,
             ids: Set(network.chainAssets().map(\.chainAssetId)),
-            state: .visible,
             runningCallbackIn: nil,
             completion: nil
         )
@@ -354,8 +352,6 @@ struct CustomNetworkEditStrategy: CustomNetworkSetupFinishStrategy {
 struct CustomNetworkModifyStrategy: CustomNetworkSetupFinishStrategy {
     let repository: AnyDataProviderRepository<ChainModel>
     let networkToModify: ChainModel
-    let selectedWalletSettings: SelectedWalletSettings
-    let visibilityWriter: AssetVisibilityWriting
     let operationQueue: OperationQueue
 
     let chainRegistry: ChainRegistryProtocol
@@ -382,11 +378,6 @@ struct CustomNetworkModifyStrategy: CustomNetworkSetupFinishStrategy {
         ) { result in
             switch result {
             case .success:
-                revealAssets(
-                    of: networkToSave,
-                    selectedWalletSettings: selectedWalletSettings,
-                    visibilityWriter: visibilityWriter
-                )
                 output?.didFinishWorkWithNetwork()
             case .failure:
                 output?.didReceive(

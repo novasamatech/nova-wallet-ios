@@ -15,7 +15,6 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber,
     let externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let assetVisibilitySubscriptionFactory: AssetVisibilityLocalSubscriptionFactoryProtocol
-    let assetVisibilityWriter: AssetVisibilityWriting
     let defaultAssetsProvider: DefaultAssetsProviding
     let operationQueue: OperationQueue
     let logger: LoggerProtocol?
@@ -38,7 +37,6 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber,
     private var visibilityRows: [String: AssetVisibilityLocal]?
     private var defaultAssets: DefaultAssetsList?
     private var pendingChainChanges: [DataProviderChange<ChainModel>] = []
-    private var seedBarrierPassed = false
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
@@ -47,7 +45,6 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber,
         externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         assetVisibilitySubscriptionFactory: AssetVisibilityLocalSubscriptionFactoryProtocol,
-        assetVisibilityWriter: AssetVisibilityWriting,
         defaultAssetsProvider: DefaultAssetsProviding,
         operationQueue: OperationQueue,
         currencyManager: CurrencyManagerProtocol,
@@ -59,7 +56,6 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber,
         self.externalBalancesSubscriptionFactory = externalBalancesSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.assetVisibilitySubscriptionFactory = assetVisibilitySubscriptionFactory
-        self.assetVisibilityWriter = assetVisibilityWriter
         self.defaultAssetsProvider = defaultAssetsProvider
         self.operationQueue = operationQueue
         self.logger = logger
@@ -186,9 +182,7 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber,
 
         didResetWallet(allChanges: changes, enabledChainChanges: [])
 
-        if seedBarrierPassed {
-            subscribeVisibility()
-        }
+        subscribeVisibility()
     }
 
     func didResetWallet(
@@ -332,7 +326,7 @@ class AssetListBaseInteractor: WalletLocalStorageSubscriber,
     func setup() {
         subscribeChains()
         fetchDefaultAssets()
-        subscribeVisibilityAfterSeed()
+        subscribeVisibility()
     }
 
     func getFullChain(for chainId: ChainModel.Id) -> ChainModel? {
@@ -460,13 +454,6 @@ private extension AssetListBaseInteractor {
         baseBuilder?.applyDefaultAssets(list)
 
         resolveVisibilityIfPossible()
-    }
-
-    func subscribeVisibilityAfterSeed() {
-        assetVisibilityWriter.enqueueBarrier(callbackIn: .main) { [weak self] in
-            self?.seedBarrierPassed = true
-            self?.subscribeVisibility()
-        }
     }
 
     func subscribeVisibility() {

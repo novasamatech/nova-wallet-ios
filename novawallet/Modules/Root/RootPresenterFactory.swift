@@ -25,9 +25,7 @@ final class RootPresenterFactory: RootPresenterFactoryProtocol {
             settingsManager: settings,
             substrateStorageFacade: SubstrateDataStorageFacade.shared,
             userStorageFacade: UserDataStorageFacade.shared,
-            seedQueue: OperationManagerFacade.assetVisibilityQueue,
-            workQueue: OperationManagerFacade.sharedDefaultQueue,
-            logger: Logger.shared
+            workQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
         let interactor = RootInteractor(

@@ -28,7 +28,6 @@ struct AssetListViewFactory {
             externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             assetVisibilitySubscriptionFactory: AssetVisibilityLocalSubscriptionFactory.shared,
-            assetVisibilityWriter: AssetVisibilityWriter.shared,
             defaultAssetsProvider: DefaultAssetsProvider.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             eventCenter: EventCenter.shared,

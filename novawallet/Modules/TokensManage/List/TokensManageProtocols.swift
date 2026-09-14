@@ -20,7 +20,7 @@ protocol TokensManagePresenterProtocol: AnyObject {
 
 protocol TokensManageInteractorInputProtocol: AnyObject {
     func setup()
-    func save(chainAssetIds: Set<ChainAssetId>, state: AssetVisibilityState)
+    func save(chainAssetIds: Set<ChainAssetId>, isVisible: Bool)
     func save(autoAddTokensWithBalance: Bool)
 }
 

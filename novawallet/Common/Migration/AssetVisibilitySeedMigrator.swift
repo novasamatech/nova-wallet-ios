@@ -1,5 +1,4 @@
 import Foundation
-import BigInt
 import CoreData
 import Keystore_iOS
 import Operation_iOS
@@ -12,24 +11,18 @@ final class AssetVisibilitySeedMigrator {
     private let settingsManager: SettingsManagerProtocol
     private let substrateStorageFacade: StorageFacadeProtocol
     private let userStorageFacade: StorageFacadeProtocol
-    private let seedQueue: OperationQueue
     private let workQueue: OperationQueue
-    private let logger: LoggerProtocol
 
     init(
         settingsManager: SettingsManagerProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
         userStorageFacade: StorageFacadeProtocol,
-        seedQueue: OperationQueue,
-        workQueue: OperationQueue,
-        logger: LoggerProtocol
+        workQueue: OperationQueue
     ) {
         self.settingsManager = settingsManager
         self.substrateStorageFacade = substrateStorageFacade
         self.userStorageFacade = userStorageFacade
-        self.seedQueue = seedQueue
         self.workQueue = workQueue
-        self.logger = logger
     }
 }
 
@@ -41,39 +34,19 @@ extension AssetVisibilitySeedMigrator: Migrating {
             return
         }
 
-        let input = SeedInput(
-            hidesZeroBalances: settingsManager.bool(for: Constants.legacyHidesZeroBalancesKey) ?? false,
-            disabledIds: try fetchDisabledAssetIds()
-        )
+        let disabledIds = try fetchDisabledAssetIds()
+        let wallets = try fetchWallets()
 
-        let seedOperation = ClosureOperation<Void> {
-            try self.seed(with: input)
-        }
+        try saveVisibility(for: wallets, disabledIds: disabledIds)
 
-        execute(
-            operation: seedOperation,
-            inOperationQueue: seedQueue,
-            runningCallbackIn: nil
-        ) { result in
-            switch result {
-            case .success:
-                self.settingsManager.removeValue(for: Constants.legacyHidesZeroBalancesKey)
-                self.settingsManager.assetVisibilitySeeded = true
-            case let .failure(error):
-                self.logger.error("Asset visibility seed failed: \(error)")
-            }
-        }
+        settingsManager.removeValue(for: Constants.legacyHidesZeroBalancesKey)
+        settingsManager.assetVisibilitySeeded = true
     }
 }
 
 // MARK: Private
 
 private extension AssetVisibilitySeedMigrator {
-    struct SeedInput {
-        let hidesZeroBalances: Bool
-        let disabledIds: Set<ChainAssetId>
-    }
-
     struct DisabledAssetLocal: Identifiable {
         let identifier: String
         let chainAssetId: ChainAssetId?
@@ -117,75 +90,33 @@ private extension AssetVisibilitySeedMigrator {
         return Set(disabledAssets.compactMap(\.chainAssetId))
     }
 
-    func seed(with input: SeedInput) throws {
+    func fetchWallets() throws -> [MetaAccountModel] {
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: userStorageFacade)
-        let wallets = try fetchAll(
+        return try fetchAll(
             from: accountRepositoryFactory.createMetaAccountRepository(for: nil, sortDescriptors: [])
         )
+    }
 
-        guard !wallets.isEmpty else {
+    func saveVisibility(
+        for wallets: [MetaAccountModel],
+        disabledIds: Set<ChainAssetId>
+    ) throws {
+        guard !wallets.isEmpty, !disabledIds.isEmpty else {
             return
         }
 
-        let substrateRepositoryFactory = SubstrateRepositoryFactory(storageFacade: substrateStorageFacade)
-        let chains = try fetchAll(from: substrateRepositoryFactory.createChainRepository())
-        let balances = try fetchAll(from: substrateRepositoryFactory.createAssetBalanceRepository())
-            .reduce(into: [String: AssetBalance]()) { $0[$1.identifier] = $1 }
-
-        for wallet in wallets {
-            let rows = chains.flatMap { chain in
-                createRows(for: wallet, chain: chain, balances: balances, input: input)
+        let rows = wallets.flatMap { wallet in
+            disabledIds.map { chainAssetId in
+                AssetVisibilityLocal(
+                    metaId: wallet.metaId,
+                    chainId: chainAssetId.chainId,
+                    assetId: chainAssetId.assetId,
+                    state: .hidden
+                )
             }
-
-            try save(rows: rows, for: wallet.metaId)
-        }
-    }
-
-    func createRows(
-        for wallet: MetaAccountModel,
-        chain: ChainModel,
-        balances: [String: AssetBalance],
-        input: SeedInput
-    ) -> [AssetVisibilityLocal] {
-        let accountId = wallet.fetch(for: chain.accountRequest())?.accountId
-
-        return chain.assets.map { asset in
-            let chainAssetId = ChainAssetId(chainId: chain.chainId, assetId: asset.assetId)
-
-            let balance = accountId.flatMap {
-                balances[AssetBalance.createIdentifier(for: chainAssetId, accountId: $0)]?.totalInPlank
-            }
-
-            return AssetVisibilityLocal(
-                metaId: wallet.metaId,
-                chainId: chain.chainId,
-                assetId: asset.assetId,
-                state: resolveState(for: chainAssetId, balance: balance ?? 0, input: input)
-            )
-        }
-    }
-
-    func resolveState(
-        for chainAssetId: ChainAssetId,
-        balance: BigUInt,
-        input: SeedInput
-    ) -> AssetVisibilityState {
-        if input.disabledIds.contains(chainAssetId) {
-            return .hidden
         }
 
-        guard input.hidesZeroBalances else {
-            return .visible
-        }
-
-        return balance > 0 ? .visible : .hiddenUntilBalance
-    }
-
-    func save(rows: [AssetVisibilityLocal], for metaId: MetaAccountModel.Id) throws {
-        let repository = AssetVisibilityRepositoryFactory.createVisibilityRepository(
-            for: metaId,
-            using: userStorageFacade
-        )
+        let repository = AssetVisibilityRepositoryFactory.createVisibilityRepository(using: userStorageFacade)
 
         let saveOperation = repository.saveOperation({ rows }, { [] })
 

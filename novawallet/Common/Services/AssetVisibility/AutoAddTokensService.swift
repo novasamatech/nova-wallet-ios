@@ -170,7 +170,7 @@ private extension AutoAddTokensService {
     }
 
     func revealAssetsWithBalance() {
-        guard let wallet = selectedMetaAccount, autoAddEnabled == true else {
+        guard let wallet = selectedMetaAccount else {
             return
         }
 
@@ -191,6 +191,12 @@ private extension AutoAddTokensService {
 
         lastCandidates = candidates
 
-        visibilityWriter.showIfUndecided(metaId: wallet.metaId, ids: candidates)
+        visibilityWriter.apply(
+            event: .passivePositiveBalance(autoAddEnabled: autoAddEnabled == true),
+            metaId: wallet.metaId,
+            ids: candidates,
+            runningCallbackIn: nil,
+            completion: nil
+        )
     }
 }

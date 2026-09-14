@@ -64,10 +64,10 @@ private extension SwapExecutionInteractor {
             return
         }
 
-        visibilityWriter.setState(
+        visibilityWriter.apply(
+            event: .userInitiatedReceipt,
             metaId: wallet.metaId,
             ids: [chainAssetOut.chainAssetId],
-            state: .visible,
             runningCallbackIn: nil,
             completion: nil
         )

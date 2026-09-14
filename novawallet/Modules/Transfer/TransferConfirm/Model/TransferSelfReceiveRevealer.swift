@@ -64,10 +64,10 @@ private extension TransferSelfReceiveRevealer {
         }
 
         owners.forEach { wallet in
-            visibilityWriter.setState(
+            visibilityWriter.apply(
+                event: .userInitiatedReceipt,
                 metaId: wallet.metaId,
                 ids: [destination.chainAssetId],
-                state: .visible,
                 runningCallbackIn: nil,
                 completion: nil
             )

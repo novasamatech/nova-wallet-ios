@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		0434F652589F46A0B216EDEA /* AssetVisibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF69D48661D443A8296F49A /* AssetVisibility.swift */; };
+		D0A100000000000000000004 /* AssetVisibilityPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A100000000000000000003 /* AssetVisibilityPolicy.swift */; };
+		D0A100000000000000000002 /* AssetVisibilityPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A100000000000000000001 /* AssetVisibilityPolicyTests.swift */; };
 		7B2233F11F5949DCAD67325C /* AssetVisibilityLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = A02A13E56BFB4AE49E9148A8 /* AssetVisibilityLocal.swift */; };
 		FD100B1164C94B46BECBBEB9 /* AssetVisibilityState.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC53070644AD47A6912029FC /* AssetVisibilityState.swift */; };
 		276B31B0F2664225A5C01B38 /* DefaultAssetsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098B22AA9CE94825AD9E1B02 /* DefaultAssetsList.swift */; };
@@ -142,6 +144,8 @@
 		0C03879A2D0CEDC9000A2F24 /* SwapFeeDetailsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0387992D0CEDC9000A2F24 /* SwapFeeDetailsViewModelFactory.swift */; };
 		0C03879C2D0F64F9000A2F24 /* HydraSwapParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C03879B2D0F64F9000A2F24 /* HydraSwapParams.swift */; };
 		0C053ECB2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C053ECA2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift */; };
+		D0A100000000000000000006 /* AssetVisibilitySeedMigratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A100000000000000000005 /* AssetVisibilitySeedMigratorTests.swift */; };
+		D0A10000000000000000000B /* AssetVisibilityWriterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A10000000000000000000A /* AssetVisibilityWriterTests.swift */; };
 		0C06C48E2EC9E3D600E06744 /* BatchGenericSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C06C48D2EC9E3D600E06744 /* BatchGenericSubscriptionHandler.swift */; };
 		0C06C4F12ECA72C200E06744 /* CrowdloanLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C06C4F02ECA72C200E06744 /* CrowdloanLocalSubscriptionFactory.swift */; };
 		0C06C50A2ECA76DE00E06744 /* CrowdloanLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C06C5092ECA76DE00E06744 /* CrowdloanLocalStorageSubscriber.swift */; };
@@ -6696,6 +6700,8 @@
 
 /* Begin PBXFileReference section */
 		BEF69D48661D443A8296F49A /* AssetVisibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetVisibility.swift; sourceTree = "<group>"; };
+		D0A100000000000000000003 /* AssetVisibilityPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetVisibilityPolicy.swift; sourceTree = "<group>"; };
+		D0A100000000000000000001 /* AssetVisibilityPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetVisibilityPolicyTests.swift; sourceTree = "<group>"; };
 		A02A13E56BFB4AE49E9148A8 /* AssetVisibilityLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetVisibilityLocal.swift; sourceTree = "<group>"; };
 		EC53070644AD47A6912029FC /* AssetVisibilityState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetVisibilityState.swift; sourceTree = "<group>"; };
 		098B22AA9CE94825AD9E1B02 /* DefaultAssetsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultAssetsList.swift; sourceTree = "<group>"; };
@@ -6831,6 +6837,8 @@
 		0C0387992D0CEDC9000A2F24 /* SwapFeeDetailsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapFeeDetailsViewModelFactory.swift; sourceTree = "<group>"; };
 		0C03879B2D0F64F9000A2F24 /* HydraSwapParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraSwapParams.swift; sourceTree = "<group>"; };
 		0C053ECA2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageLocationMigrationTests.swift; sourceTree = "<group>"; };
+		D0A100000000000000000005 /* AssetVisibilitySeedMigratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetVisibilitySeedMigratorTests.swift; sourceTree = "<group>"; };
+		D0A10000000000000000000A /* AssetVisibilityWriterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetVisibilityWriterTests.swift; sourceTree = "<group>"; };
 		0C06C48D2EC9E3D600E06744 /* BatchGenericSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchGenericSubscriptionHandler.swift; sourceTree = "<group>"; };
 		0C06C4D92ECA68E800E06744 /* SubstrateDataModel39.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel39.xcdatamodel; sourceTree = "<group>"; };
 		0C06C4F02ECA72C200E06744 /* CrowdloanLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
@@ -13130,12 +13138,29 @@
 			isa = PBXGroup;
 			children = (
 				BEF69D48661D443A8296F49A /* AssetVisibility.swift */,
+				D0A100000000000000000003 /* AssetVisibilityPolicy.swift */,
 				A02A13E56BFB4AE49E9148A8 /* AssetVisibilityLocal.swift */,
 				EC53070644AD47A6912029FC /* AssetVisibilityState.swift */,
 				098B22AA9CE94825AD9E1B02 /* DefaultAssetsList.swift */,
 				0C7BC8D74361451D840C7625 /* MetaAccountSettingsLocal.swift */,
 			);
 			path = AssetVisibility;
+			sourceTree = "<group>";
+		};
+		D0A100000000000000000007 /* AssetVisibility */ = {
+			isa = PBXGroup;
+			children = (
+				D0A100000000000000000001 /* AssetVisibilityPolicyTests.swift */,
+			);
+			path = AssetVisibility;
+			sourceTree = "<group>";
+		};
+		D0A100000000000000000008 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				D0A100000000000000000007 /* AssetVisibility */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		2E4ED365661A4DDB8B291B52 /* AssetVisibility */ = {
@@ -21817,6 +21842,7 @@
 		842D1E7E24D0BED200C30A7A /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				D0A100000000000000000008 /* Model */,
 				5A17C0C02F0100000000E001 /* LegalConsent */,
 				8A1C0E712F0400000000B103 /* PropertyWrappers */,
 				2D32C9922EFA35930094A036 /* FormatterCache */,
@@ -22518,6 +22544,7 @@
 		84452F8725D5E6CC00F47EC5 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				D0A100000000000000000009 /* AssetVisibility */,
 				E6F3AA47E60B33CE93DF4903 /* AssetExchange */,
 				0C8FC2292E623F7000034ED3 /* DelegatedAccounts */,
 				0C41D20C2BF77F57000950EE /* CloudBackup */,
@@ -22526,6 +22553,14 @@
 				881BA30629DBCD6300EB8C48 /* Web3NameIntegrityVerifierTests.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		D0A100000000000000000009 /* AssetVisibility */ = {
+			isa = PBXGroup;
+			children = (
+				D0A10000000000000000000A /* AssetVisibilityWriterTests.swift */,
+			);
+			path = AssetVisibility;
 			sourceTree = "<group>";
 		};
 		E6F3AA47E60B33CE93DF4903 /* AssetExchange */ = {
@@ -23942,6 +23977,7 @@
 		8489EDD8264DE40800FF997E /* Migration */ = {
 			isa = PBXGroup;
 			children = (
+				D0A100000000000000000005 /* AssetVisibilitySeedMigratorTests.swift */,
 				849ECD3426DE70B900F542A3 /* SingleToMultiassetUserMigrationTests.swift */,
 				0C053ECA2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift */,
 			);
@@ -31400,6 +31436,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0434F652589F46A0B216EDEA /* AssetVisibility.swift in Sources */,
+				D0A100000000000000000004 /* AssetVisibilityPolicy.swift in Sources */,
 				7B2233F11F5949DCAD67325C /* AssetVisibilityLocal.swift in Sources */,
 				FD100B1164C94B46BECBBEB9 /* AssetVisibilityState.swift in Sources */,
 				276B31B0F2664225A5C01B38 /* DefaultAssetsList.swift in Sources */,
@@ -37283,6 +37320,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D0A10000000000000000000B /* AssetVisibilityWriterTests.swift in Sources */,
+				D0A100000000000000000006 /* AssetVisibilitySeedMigratorTests.swift in Sources */,
+				D0A100000000000000000002 /* AssetVisibilityPolicyTests.swift in Sources */,
 				A1B2C3D40002E5F600000002 /* HydraFeeQuoteFactoryTests.swift in Sources */,
 				02DF43D680493821FD9D7A35 /* HydraFeeConversionTests.swift in Sources */,
 				79D4519A4D73DA1757414210 /* HydraFeeOraclePriceCalculatorTests.swift in Sources */,

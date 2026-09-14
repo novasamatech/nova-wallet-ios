@@ -123,10 +123,10 @@ final class TokensManageAddInteractor: AnyCancellableCleaning {
             return
         }
 
-        visibilityWriter.setState(
+        visibilityWriter.apply(
+            event: .userSet(isVisible: true),
             metaId: metaId,
             ids: [result.chainAsset.chainAssetId],
-            state: .visible,
             runningCallbackIn: nil,
             completion: nil
         )

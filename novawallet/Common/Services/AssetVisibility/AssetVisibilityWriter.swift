@@ -2,17 +2,13 @@ import Foundation
 import Operation_iOS
 
 protocol AssetVisibilityWriting: AnyObject {
-    func setState(
+    func apply(
+        event: AssetVisibilityEvent,
         metaId: MetaAccountModel.Id,
         ids: Set<ChainAssetId>,
-        state: AssetVisibilityState,
         runningCallbackIn queue: DispatchQueue?,
         completion: ((Result<Void, Error>) -> Void)?
     )
-
-    func showIfUndecided(metaId: MetaAccountModel.Id, ids: Set<ChainAssetId>)
-
-    func enqueueBarrier(callbackIn queue: DispatchQueue, completion: @escaping () -> Void)
 }
 
 final class AssetVisibilityWriter {
@@ -44,10 +40,10 @@ final class AssetVisibilityWriter {
 // MARK: AssetVisibilityWriting
 
 extension AssetVisibilityWriter: AssetVisibilityWriting {
-    func setState(
+    func apply(
+        event: AssetVisibilityEvent,
         metaId: MetaAccountModel.Id,
         ids: Set<ChainAssetId>,
-        state: AssetVisibilityState,
         runningCallbackIn queue: DispatchQueue?,
         completion: ((Result<Void, Error>) -> Void)?
     ) {
@@ -56,81 +52,41 @@ extension AssetVisibilityWriter: AssetVisibilityWriting {
                 throw CommonError.undefined
             }
 
-            let rows = ids.map {
-                AssetVisibilityLocal(
+            let states = try fetchStates(for: metaId)
+
+            let rows = ids.compactMap { id -> AssetVisibilityLocal? in
+                guard case let .set(state) = AssetVisibilityPolicy.decision(
+                    for: event,
+                    currentState: states[id]
+                ) else {
+                    return nil
+                }
+
+                return AssetVisibilityLocal(
                     metaId: metaId,
-                    chainId: $0.chainId,
-                    assetId: $0.assetId,
+                    chainId: id.chainId,
+                    assetId: id.assetId,
                     state: state
                 )
             }
 
-            try save(rows: rows, for: metaId)
-        }
-
-        execute(
-            operation: operation,
-            inOperationQueue: writeQueue,
-            runningCallbackIn: queue
-        ) { [weak self] result in
-            if case let .failure(error) = result {
-                self?.logger.error("Can't save visibility of \(ids.count) assets: \(error)")
-            }
-
-            completion?(result)
-        }
-    }
-
-    func showIfUndecided(metaId: MetaAccountModel.Id, ids: Set<ChainAssetId>) {
-        guard !ids.isEmpty else {
-            return
-        }
-
-        let operation = ClosureOperation<Void> { [weak self] in
-            guard let self else {
-                throw CommonError.undefined
-            }
-
-            let states = try fetchStates(for: metaId)
-
-            let undecided = ids.filter { states[$0] == nil || states[$0] == .hiddenUntilBalance }
-
-            guard !undecided.isEmpty else {
+            guard !rows.isEmpty else {
                 return
             }
 
-            let rows = undecided.map {
-                AssetVisibilityLocal(
-                    metaId: metaId,
-                    chainId: $0.chainId,
-                    assetId: $0.assetId,
-                    state: .visible
-                )
-            }
-
             try save(rows: rows, for: metaId)
         }
 
         execute(
             operation: operation,
             inOperationQueue: writeQueue,
-            runningCallbackIn: nil
+            runningCallbackIn: queue
         ) { [weak self] result in
             if case let .failure(error) = result {
-                self?.logger.error("Can't reveal \(ids.count) assets: \(error)")
+                self?.logger.error("Can't apply visibility event to \(ids.count) assets: \(error)")
             }
-        }
-    }
 
-    func enqueueBarrier(callbackIn queue: DispatchQueue, completion: @escaping () -> Void) {
-        let operation = ClosureOperation<Void> {}
-
-        execute(
-            operation: operation,
-            inOperationQueue: writeQueue,
-            runningCallbackIn: queue
-        ) { _ in
-            completion()
+            completion?(result)
         }
     }
 }

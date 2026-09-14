@@ -52,18 +52,18 @@ extension TokensManageInteractor: TokensManageInteractorInputProtocol {
 
         subscribeChains()
         fetchDefaultAssets()
-        subscribeVisibilityAfterSeed()
+        subscribeVisibility()
     }
 
-    func save(chainAssetIds: Set<ChainAssetId>, state: AssetVisibilityState) {
+    func save(chainAssetIds: Set<ChainAssetId>, isVisible: Bool) {
         guard let metaId = selectedWalletSettings.value?.metaId else {
             return
         }
 
-        visibilityWriter.setState(
+        visibilityWriter.apply(
+            event: .userSet(isVisible: isVisible),
             metaId: metaId,
             ids: chainAssetIds,
-            state: state,
             runningCallbackIn: .main
         ) { [weak self] result in
             if case .failure = result {
@@ -164,12 +164,6 @@ private extension TokensManageInteractor {
                 self?.logger.error("Default assets are unavailable: \(error)")
                 self?.presenter?.didReceiveDefaultAssets(.empty)
             }
-        }
-    }
-
-    func subscribeVisibilityAfterSeed() {
-        visibilityWriter.enqueueBarrier(callbackIn: .main) { [weak self] in
-            self?.subscribeVisibility()
         }
     }
 

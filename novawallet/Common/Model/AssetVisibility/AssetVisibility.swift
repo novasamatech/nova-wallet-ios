@@ -5,10 +5,9 @@ struct AssetVisibility {
     let rows: [ChainAssetId: AssetVisibilityState]
 
     func isVisible(_ id: ChainAssetId) -> Bool {
-        if let state = rows[id] {
-            return state == .visible
-        }
-
-        return defaults.isEmpty || defaults.contains(id)
+        AssetVisibilityPolicy.isVisible(
+            state: rows[id],
+            isDefault: defaults.isEmpty || defaults.contains(id)
+        )
     }
 }

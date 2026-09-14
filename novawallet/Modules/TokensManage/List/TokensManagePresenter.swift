@@ -267,7 +267,7 @@ private extension TokensManagePresenter {
     }
 
     func save(chainAssetIds: Set<ChainAssetId>, isOn: Bool) {
-        interactor.save(chainAssetIds: chainAssetIds, state: isOn ? .visible : .hidden)
+        interactor.save(chainAssetIds: chainAssetIds, isVisible: isOn)
     }
 
     func saveListedMembers(isOn: Bool) {
