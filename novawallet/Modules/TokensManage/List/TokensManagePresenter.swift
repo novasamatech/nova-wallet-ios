@@ -1,6 +1,6 @@
 import Foundation
-import Operation_iOS
 import Foundation_iOS
+import Operation_iOS
 
 final class TokensManagePresenter {
     weak var view: TokensManageViewProtocol?
@@ -213,28 +213,9 @@ private extension TokensManagePresenter {
         ].filter { !$0.groups.isEmpty }
     }
 
-    func listedMembers() -> [TokensManageMember] {
-        listedGroups.values.filter { !$0.isPaused }.flatMap(\.members)
-    }
-
-    func createHeaderAction() -> TokensManageHeaderActionViewModel {
-        let members = listedMembers()
-
-        guard !members.isEmpty else {
-            return TokensManageHeaderActionViewModel(kind: .selectAll, isEnabled: false)
-        }
-
-        let hasHiddenMember = members.contains { !$0.isVisible }
-
-        return TokensManageHeaderActionViewModel(
-            kind: hasHiddenMember ? .selectAll : .deselectAll,
-            isEnabled: true
-        )
-    }
-
     func resetView() {
         // clear first
-        view?.didReceive(sections: [])
+        view?.didReceive(sections: [], animated: false)
 
         // and then recreate the items
         updateView()
@@ -244,11 +225,10 @@ private extension TokensManagePresenter {
         }
     }
 
-    func updateView() {
+    func updateView(animated: Bool = false) {
         guard let groupStyle, let visibility, hasReceivedChains else {
             listedGroups = [:]
-            view?.didReceive(sections: [])
-            view?.didReceive(headerAction: createHeaderAction())
+            view?.didReceive(sections: [], animated: false)
             return
         }
 
@@ -262,22 +242,11 @@ private extension TokensManagePresenter {
             locale: selectedLocale
         )
 
-        view?.didReceive(sections: viewModels)
-        view?.didReceive(headerAction: createHeaderAction())
+        view?.didReceive(sections: viewModels, animated: animated)
     }
 
     func save(chainAssetIds: Set<ChainAssetId>, isOn: Bool) {
         interactor.save(chainAssetIds: chainAssetIds, isVisible: isOn)
-    }
-
-    func saveListedMembers(isOn: Bool) {
-        let chainAssetIds = Set(listedMembers().map(\.chainAssetId))
-
-        guard !chainAssetIds.isEmpty else {
-            return
-        }
-
-        save(chainAssetIds: chainAssetIds, isOn: isOn)
     }
 }
 
@@ -298,14 +267,6 @@ extension TokensManagePresenter: TokensManagePresenterProtocol {
         wireframe.showAddToken(from: view)
     }
 
-    func performSelectAll() {
-        saveListedMembers(isOn: true)
-    }
-
-    func performDeselectAll() {
-        saveListedMembers(isOn: false)
-    }
-
     func performAutoAddChange(to isOn: Bool) {
         interactor.save(autoAddTokensWithBalance: isOn)
     }
@@ -317,7 +278,7 @@ extension TokensManagePresenter: TokensManagePresenterProtocol {
 
         expandedGroupIds.formSymmetricDifference([group.id])
 
-        updateView()
+        updateView(animated: true)
     }
 
     func performSwitch(for root: TokensManageRootViewModel, isOn: Bool) {

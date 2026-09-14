@@ -1,6 +1,6 @@
+@testable import novawallet
 import Operation_iOS
 import XCTest
-@testable import novawallet
 
 final class AssetVisibilityWriterTests: XCTestCase {
     private let metaId = "test-wallet"
@@ -74,6 +74,23 @@ final class AssetVisibilityWriterTests: XCTestCase {
         // then
 
         XCTAssertEqual(try context.fetchState(metaId: metaId, assetId: assetId), .visible)
+    }
+
+    func testVisibilityWritesAreScopedPerWallet() throws {
+        // given
+
+        let context = TestContext()
+        let otherMetaId = "other-wallet"
+        try context.save(state: .hidden, metaId: metaId, assetId: assetId)
+
+        // when
+
+        try context.apply(event: .userInitiatedReceipt, metaId: otherMetaId, assetId: assetId)
+
+        // then
+
+        XCTAssertEqual(try context.fetchState(metaId: metaId, assetId: assetId), .hidden)
+        XCTAssertEqual(try context.fetchState(metaId: otherMetaId, assetId: assetId), .visible)
     }
 }
 

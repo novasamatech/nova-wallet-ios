@@ -1,18 +1,20 @@
-import UIKit
 import Foundation_iOS
+import UIKit
 import UIKit_iOS
 
 final class TokensManageViewController: UIViewController, ViewHolder {
     typealias RootViewType = TokensManageViewLayout
 
-    typealias DataSource = UITableViewDiffableDataSource<TokensManageSectionKind, TokensManageListItem>
-    typealias Snapshot = NSDiffableDataSourceSnapshot<TokensManageSectionKind, TokensManageListItem>
+    typealias DataSource = UITableViewDiffableDataSource<TokensManageSectionKind, TokensManageListItemIdentifier>
+    typealias Snapshot = NSDiffableDataSourceSnapshot<TokensManageSectionKind, TokensManageListItemIdentifier>
 
     let presenter: TokensManagePresenterProtocol
 
     private lazy var dataSource = makeDataSource()
     private var sections: [TokensManageSection] = []
-    private var headerAction = TokensManageHeaderActionViewModel(kind: .selectAll, isEnabled: false)
+    private var itemsByIdentifier: [TokensManageListItemIdentifier: TokensManageListItem] = [:]
+    private var animatedRootIdentifiers: Set<TokensManageListItemIdentifier> = []
+    private var snapshotVersion: UInt = 0
 
     init(presenter: TokensManagePresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
@@ -47,11 +49,7 @@ final class TokensManageViewController: UIViewController, ViewHolder {
 
 private extension TokensManageViewController {
     func setupTopBar() {
-        navigationItem.rightBarButtonItems = [rootView.headerActionButton, rootView.addTokenButton]
-
-        rootView.headerActionButton.isEnabled = headerAction.isEnabled
-        rootView.headerActionButton.target = self
-        rootView.headerActionButton.action = #selector(actionHeaderAction)
+        navigationItem.rightBarButtonItem = rootView.addTokenButton
 
         rootView.addTokenButton.target = self
         rootView.addTokenButton.action = #selector(actionAddToken)
@@ -103,19 +101,6 @@ private extension TokensManageViewController {
                 NSAttributedString.Key.foregroundColor: R.color.colorHintText()!
             ]
         )
-
-        updateHeaderActionTitle()
-    }
-
-    func updateHeaderActionTitle() {
-        let languages = selectedLocale.rLanguages
-
-        switch headerAction.kind {
-        case .selectAll:
-            rootView.headerActionButton.title = R.string(preferredLanguages: languages).localizable.commonSelectAll()
-        case .deselectAll:
-            rootView.headerActionButton.title = R.string(preferredLanguages: languages).localizable.commonDeselectAll()
-        }
     }
 
     func item(for cell: UITableViewCell) -> TokensManageListItem? {
@@ -123,20 +108,54 @@ private extension TokensManageViewController {
             return nil
         }
 
-        return dataSource.itemIdentifier(for: indexPath)
+        guard let identifier = dataSource.itemIdentifier(for: indexPath) else {
+            return nil
+        }
+
+        return itemsByIdentifier[identifier]
     }
 
     func makeDataSource() -> DataSource {
-        .init(tableView: rootView.tableView) { [weak self] tableView, _, item in
+        .init(tableView: rootView.tableView) { [weak self] tableView, _, identifier in
+            guard let self, let item = itemsByIdentifier[identifier] else {
+                return nil
+            }
+
             switch item {
             case let .root(viewModel):
                 let cell = tableView.dequeueReusableCellWithType(TokensManageRootCell.self)
                 cell?.delegate = self
-                cell?.bind(viewModel: viewModel)
+                cell?.bind(
+                    viewModel: viewModel,
+                    animated: animatedRootIdentifiers.contains(identifier)
+                )
                 return cell
             case let .child(viewModel):
-                return self?.createChildCell(for: viewModel, in: tableView)
+                return createChildCell(for: viewModel, in: tableView)
             }
+        }
+    }
+
+    func item(at indexPath: IndexPath) -> TokensManageListItem? {
+        guard let identifier = dataSource.itemIdentifier(for: indexPath) else {
+            return nil
+        }
+
+        return itemsByIdentifier[identifier]
+    }
+
+    func expandedRootIdentifiers(
+        in newItems: [TokensManageListItemIdentifier: TokensManageListItem]
+    ) -> Set<TokensManageListItemIdentifier> {
+        newItems.reduce(into: []) { result, entry in
+            guard
+                case let .root(newViewModel) = entry.value,
+                case let .root(oldViewModel)? = itemsByIdentifier[entry.key],
+                newViewModel.isExpanded != oldViewModel.isExpanded else {
+                return
+            }
+
+            result.insert(entry.key)
         }
     }
 
@@ -164,12 +183,12 @@ private extension TokensManageViewController {
     }
 
     func refreshSectionHeaders() {
-        sections.enumerated().forEach { index, section in
+        for (index, section) in sections.enumerated() {
             guard
                 let headerView = rootView.tableView.headerView(
                     forSection: index
                 ) as? TokensManageSectionHeaderView else {
-                return
+                continue
             }
 
             bind(headerView: headerView, to: section)
@@ -186,15 +205,6 @@ private extension TokensManageViewController {
                 : TokensManageTokenChildCell.Constants.height
         case nil:
             return 0
-        }
-    }
-
-    @objc func actionHeaderAction() {
-        switch headerAction.kind {
-        case .selectAll:
-            presenter.performSelectAll()
-        case .deselectAll:
-            presenter.performDeselectAll()
         }
     }
 
@@ -241,7 +251,7 @@ extension TokensManageViewController: TokensManageChildCellDelegate {
 
 extension TokensManageViewController: UITableViewDelegate {
     func tableView(_: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard case let .root(viewModel)? = dataSource.itemIdentifier(for: indexPath) else {
+        guard case let .root(viewModel)? = item(at: indexPath) else {
             return
         }
 
@@ -249,7 +259,7 @@ extension TokensManageViewController: UITableViewDelegate {
     }
 
     func tableView(_: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        rowHeight(for: dataSource.itemIdentifier(for: indexPath))
+        rowHeight(for: item(at: indexPath))
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -274,29 +284,39 @@ extension TokensManageViewController: UITableViewDelegate {
 // MARK: TokensManageViewProtocol
 
 extension TokensManageViewController: TokensManageViewProtocol {
-    func didReceive(sections: [TokensManageSection]) {
+    func didReceive(sections: [TokensManageSection], animated: Bool) {
+        snapshotVersion &+= 1
+        let appliedSnapshotVersion = snapshotVersion
+        let newItems = sections.flatMap(\.items).reduce(into: [:]) { result, item in
+            result[item.identifier] = item
+        }
+        let oldIdentifiers = Set(itemsByIdentifier.keys)
+        let newIdentifiers = Set(newItems.keys)
+
+        animatedRootIdentifiers = animated ? expandedRootIdentifiers(in: newItems) : []
         self.sections = sections
+        itemsByIdentifier = newItems
 
         var snapshot = Snapshot()
         snapshot.appendSections(sections.map(\.kind))
 
-        sections.forEach { section in
-            snapshot.appendItems(section.items, toSection: section.kind)
+        for section in sections {
+            snapshot.appendItems(section.items.map(\.identifier), toSection: section.kind)
         }
 
-        dataSource.apply(snapshot, animatingDifferences: false)
+        snapshot.reconfigureItems(Array(oldIdentifiers.intersection(newIdentifiers)))
+
+        dataSource.apply(snapshot, animatingDifferences: animated) { [weak self] in
+            guard let self, snapshotVersion == appliedSnapshotVersion else {
+                return
+            }
+
+            animatedRootIdentifiers = []
+        }
 
         refreshSectionHeaders()
 
-        reloadEmptyState(animated: false)
-    }
-
-    func didReceive(headerAction: TokensManageHeaderActionViewModel) {
-        self.headerAction = headerAction
-
-        rootView.headerActionButton.isEnabled = headerAction.isEnabled
-
-        updateHeaderActionTitle()
+        reloadEmptyState(animated: animated)
     }
 
     func didReceive(autoAddTokens: Bool) {
@@ -307,8 +327,13 @@ extension TokensManageViewController: TokensManageViewProtocol {
 // MARK: EmptyState
 
 extension TokensManageViewController: EmptyStateViewOwnerProtocol {
-    var emptyStateDelegate: EmptyStateDelegate { self }
-    var emptyStateDataSource: EmptyStateDataSource { self }
+    var emptyStateDelegate: EmptyStateDelegate {
+        self
+    }
+
+    var emptyStateDataSource: EmptyStateDataSource {
+        self
+    }
 }
 
 extension TokensManageViewController: EmptyStateDataSource {
@@ -331,7 +356,7 @@ extension TokensManageViewController: EmptyStateDataSource {
 extension TokensManageViewController: EmptyStateDelegate {
     var shouldDisplayEmptyState: Bool {
         let hasQuery = !(rootView.searchTextField.text ?? "").isEmpty
-        let hasNoItems = sections.allSatisfy { $0.items.isEmpty }
+        let hasNoItems = sections.allSatisfy(\.items.isEmpty)
 
         return hasQuery && hasNoItems
     }

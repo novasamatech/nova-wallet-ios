@@ -6,7 +6,14 @@ struct DefaultAssetRemote: Decodable {
 }
 
 struct DefaultAssetsRemote: Decodable {
+    static let supportedVersion: UInt = 1
+
+    let version: UInt?
     let defaultAssets: [DefaultAssetRemote]
+
+    var effectiveVersion: UInt {
+        version ?? Self.supportedVersion
+    }
 }
 
 struct DefaultAssetsList: Equatable {
@@ -15,7 +22,9 @@ struct DefaultAssetsList: Equatable {
     let ids: [ChainAssetId]
     let rank: [ChainAssetId: Int]
 
-    var isEmpty: Bool { ids.isEmpty }
+    var isEmpty: Bool {
+        ids.isEmpty
+    }
 
     init(ids: [ChainAssetId]) {
         self.ids = ids

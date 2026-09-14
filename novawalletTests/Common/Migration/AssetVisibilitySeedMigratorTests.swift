@@ -1,8 +1,8 @@
 import CoreData
 import Keystore_iOS
+@testable import novawallet
 import Operation_iOS
 import XCTest
-@testable import novawallet
 
 final class AssetVisibilitySeedMigratorTests: XCTestCase {
     private let workQueue = OperationQueue()
@@ -55,6 +55,37 @@ final class AssetVisibilitySeedMigratorTests: XCTestCase {
         XCTAssertTrue(settings.assetVisibilitySeeded)
         XCTAssertNil(
             settings.bool(for: AssetVisibilitySeedMigrator.Constants.legacyHidesZeroBalancesKey)
+        )
+    }
+
+    func testFailureKeepsMigrationPendingAndPreservesLegacySetting() throws {
+        // given
+
+        let settings = InMemorySettingsManager()
+        settings.set(
+            value: false,
+            for: AssetVisibilitySeedMigrator.Constants.legacyHidesZeroBalancesKey
+        )
+        let failingStorage = FailingStorageFacade(
+            configuration: SubstrateStorageTestFacade().databaseService.configuration
+        )
+        let migrator = AssetVisibilitySeedMigrator(
+            settingsManager: settings,
+            substrateStorageFacade: failingStorage,
+            userStorageFacade: UserDataStorageTestFacade(),
+            workQueue: workQueue
+        )
+
+        // when
+
+        XCTAssertThrowsError(try migrator.migrate())
+
+        // then
+
+        XCTAssertFalse(settings.assetVisibilitySeeded)
+        XCTAssertEqual(
+            settings.bool(for: AssetVisibilitySeedMigrator.Constants.legacyHidesZeroBalancesKey),
+            false
         )
     }
 }
@@ -126,4 +157,40 @@ private extension AssetVisibilitySeedMigratorTests {
 
         return try operation.extractNoCancellableResultData()
     }
+}
+
+private final class FailingStorageFacade: StorageFacadeProtocol {
+    let databaseService: CoreDataServiceProtocol
+
+    init(configuration: CoreDataServiceConfigurationProtocol) {
+        databaseService = FailingCoreDataService(configuration: configuration)
+    }
+
+    func createRepository<T: Identifiable, U: NSManagedObject>(
+        filter: NSPredicate?,
+        sortDescriptors: [NSSortDescriptor],
+        mapper: AnyCoreDataMapper<T, U>
+    ) -> CoreDataRepository<T, U> {
+        CoreDataRepository(
+            databaseService: databaseService,
+            mapper: mapper,
+            filter: filter,
+            sortDescriptors: sortDescriptors
+        )
+    }
+}
+
+private final class FailingCoreDataService: CoreDataServiceProtocol {
+    let configuration: CoreDataServiceConfigurationProtocol
+
+    init(configuration: CoreDataServiceConfigurationProtocol) {
+        self.configuration = configuration
+    }
+
+    func performAsync(block: @escaping CoreDataContextInvocationBlock) {
+        block(nil, CommonError.undefined)
+    }
+
+    func close() throws {}
+    func drop() throws {}
 }

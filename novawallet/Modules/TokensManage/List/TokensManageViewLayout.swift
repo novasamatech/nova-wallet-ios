@@ -11,8 +11,6 @@ final class TokensManageViewLayout: UIView {
         searchBar.textField
     }
 
-    let headerActionButton: UIBarButtonItem = TokensManageViewLayout.createBarButtonItem()
-
     let addTokenButton: UIBarButtonItem = TokensManageViewLayout.createAddTokenButtonItem()
 
     let autoAddView = TokensManageAutoAddView()
@@ -43,28 +41,6 @@ final class TokensManageViewLayout: UIView {
 // MARK: Private
 
 private extension TokensManageViewLayout {
-    static func createBarButtonItem() -> UIBarButtonItem {
-        let button = UIBarButtonItem()
-        button.style = .plain
-
-        let attributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: R.color.colorButtonTextAccent()!,
-            .font: UIFont.regularSubheadline
-        ]
-
-        button.setTitleTextAttributes(attributes, for: .normal)
-        button.setTitleTextAttributes(attributes, for: .highlighted)
-
-        let disabledAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: R.color.colorButtonTextInactive()!,
-            .font: UIFont.regularSubheadline
-        ]
-
-        button.setTitleTextAttributes(disabledAttributes, for: .disabled)
-
-        return button
-    }
-
     static func createAddTokenButtonItem() -> UIBarButtonItem {
         let button = UIBarButtonItem(
             image: R.image.iconSmallAdd()?.withRenderingMode(.alwaysTemplate),

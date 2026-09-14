@@ -34,7 +34,7 @@ final class TokensManageRootCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func bind(viewModel: TokensManageRootViewModel) {
+    func bind(viewModel: TokensManageRootViewModel, animated: Bool = false) {
         tokenView.bind(
             title: viewModel.title,
             subtitle: viewModel.subtitle,
@@ -45,9 +45,22 @@ final class TokensManageRootCell: UITableViewCell {
         tokenView.setIconCornerRadius(iconCornerRadius(for: viewModel.iconShape))
 
         chevronView.isHidden = !viewModel.isExpandable
-        chevronView.transform = viewModel.isExpanded
+        let chevronTransform: CGAffineTransform = viewModel.isExpanded
             ? CGAffineTransform(rotationAngle: .pi)
             : .identity
+
+        if animated {
+            UIView.animate(
+                withDuration: Constants.expansionAnimationDuration,
+                delay: 0,
+                options: [.beginFromCurrentState, .curveEaseInOut]
+            ) {
+                self.chevronView.transform = chevronTransform
+            }
+        } else {
+            chevronView.layer.removeAllAnimations()
+            chevronView.transform = chevronTransform
+        }
 
         contentView.alpha = viewModel.isPaused ? Constants.pausedAlpha : 1
         switchView.isEnabled = !viewModel.isPaused
@@ -115,5 +128,6 @@ extension TokensManageRootCell {
         static let chevronSize: CGFloat = 24
         static let roundedSquareIconRadius: CGFloat = 12
         static let pausedAlpha: CGFloat = 0.56
+        static let expansionAnimationDuration: TimeInterval = 0.25
     }
 }

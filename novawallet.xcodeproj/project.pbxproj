@@ -146,6 +146,10 @@
 		0C053ECB2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C053ECA2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift */; };
 		D0A100000000000000000006 /* AssetVisibilitySeedMigratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A100000000000000000005 /* AssetVisibilitySeedMigratorTests.swift */; };
 		D0A10000000000000000000B /* AssetVisibilityWriterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A10000000000000000000A /* AssetVisibilityWriterTests.swift */; };
+		D0A200000000000000000002 /* DefaultAssetsProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A200000000000000000001 /* DefaultAssetsProviderTests.swift */; };
+		D0A200000000000000000004 /* TokensManageViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A200000000000000000003 /* TokensManageViewControllerTests.swift */; };
+		D0A300000000000000000002 /* AutoAddTokensServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A300000000000000000001 /* AutoAddTokensServiceTests.swift */; };
+		D0A300000000000000000004 /* AssetVisibilityRevealTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A300000000000000000003 /* AssetVisibilityRevealTests.swift */; };
 		0C06C48E2EC9E3D600E06744 /* BatchGenericSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C06C48D2EC9E3D600E06744 /* BatchGenericSubscriptionHandler.swift */; };
 		0C06C4F12ECA72C200E06744 /* CrowdloanLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C06C4F02ECA72C200E06744 /* CrowdloanLocalSubscriptionFactory.swift */; };
 		0C06C50A2ECA76DE00E06744 /* CrowdloanLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C06C5092ECA76DE00E06744 /* CrowdloanLocalStorageSubscriber.swift */; };
@@ -5044,7 +5048,6 @@
 		7D0B9E33FF55490C8CB9FC5C /* TokensManageRootViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AD4E8162E6340C9902AFA96 /* TokensManageRootViewModel.swift */; };
 		E4010B01E994480BB688FB4F /* TokensManageChildViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F507F53384F48C99FC833CA /* TokensManageChildViewModel.swift */; };
 		0D7336BEEBD34F4B9CD566E8 /* TokensManageListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5EFC5B44D1C49949EE200D2 /* TokensManageListItem.swift */; };
-		66C2578EDA9F4D30A5E02ECF /* TokensManageHeaderActionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF97483537C24B5D8EAB54D9 /* TokensManageHeaderActionViewModel.swift */; };
 		E9361431C0524063B2636DBA /* TokensManageSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9F57ABA272A4E6A951E7A07 /* TokensManageSectionHeaderView.swift */; };
 		727D48612AB5448DBD8E87DD /* TokensManageAutoAddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AAD026470284F8BAEC76335 /* TokensManageAutoAddView.swift */; };
 		7AED8432870D43FEAB2E05ED /* TokensManageRootCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DBA2AB5A8D243DD83355AB1 /* TokensManageRootCell.swift */; };
@@ -6839,6 +6842,10 @@
 		0C053ECA2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageLocationMigrationTests.swift; sourceTree = "<group>"; };
 		D0A100000000000000000005 /* AssetVisibilitySeedMigratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetVisibilitySeedMigratorTests.swift; sourceTree = "<group>"; };
 		D0A10000000000000000000A /* AssetVisibilityWriterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetVisibilityWriterTests.swift; sourceTree = "<group>"; };
+		D0A200000000000000000001 /* DefaultAssetsProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultAssetsProviderTests.swift; sourceTree = "<group>"; };
+		D0A200000000000000000003 /* TokensManageViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensManageViewControllerTests.swift; sourceTree = "<group>"; };
+		D0A300000000000000000001 /* AutoAddTokensServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoAddTokensServiceTests.swift; sourceTree = "<group>"; };
+		D0A300000000000000000003 /* AssetVisibilityRevealTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetVisibilityRevealTests.swift; sourceTree = "<group>"; };
 		0C06C48D2EC9E3D600E06744 /* BatchGenericSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchGenericSubscriptionHandler.swift; sourceTree = "<group>"; };
 		0C06C4D92ECA68E800E06744 /* SubstrateDataModel39.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SubstrateDataModel39.xcdatamodel; sourceTree = "<group>"; };
 		0C06C4F02ECA72C200E06744 /* CrowdloanLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
@@ -11408,7 +11415,6 @@
 		5AD4E8162E6340C9902AFA96 /* TokensManageRootViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensManageRootViewModel.swift; sourceTree = "<group>"; };
 		3F507F53384F48C99FC833CA /* TokensManageChildViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensManageChildViewModel.swift; sourceTree = "<group>"; };
 		F5EFC5B44D1C49949EE200D2 /* TokensManageListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensManageListItem.swift; sourceTree = "<group>"; };
-		DF97483537C24B5D8EAB54D9 /* TokensManageHeaderActionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensManageHeaderActionViewModel.swift; sourceTree = "<group>"; };
 		E9F57ABA272A4E6A951E7A07 /* TokensManageSectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensManageSectionHeaderView.swift; sourceTree = "<group>"; };
 		3AAD026470284F8BAEC76335 /* TokensManageAutoAddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensManageAutoAddView.swift; sourceTree = "<group>"; };
 		4DBA2AB5A8D243DD83355AB1 /* TokensManageRootCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensManageRootCell.swift; sourceTree = "<group>"; };
@@ -22558,7 +22564,10 @@
 		D0A100000000000000000009 /* AssetVisibility */ = {
 			isa = PBXGroup;
 			children = (
+				D0A300000000000000000003 /* AssetVisibilityRevealTests.swift */,
 				D0A10000000000000000000A /* AssetVisibilityWriterTests.swift */,
+				D0A300000000000000000001 /* AutoAddTokensServiceTests.swift */,
+				D0A200000000000000000001 /* DefaultAssetsProviderTests.swift */,
 			);
 			path = AssetVisibility;
 			sourceTree = "<group>";
@@ -25907,6 +25916,7 @@
 		84B7C680289BFA78001A3566 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				D0A200000000000000000005 /* TokensManage */,
 				2D8E30252EF2FCFB00A9FA61 /* Gifts */,
 				0C0AE4032DE459BF00D506F3 /* WalletMigration */,
 				771901912AE2425400D9C918 /* Swaps */,
@@ -25933,6 +25943,14 @@
 				84B7C70A289BFA79001A3566 /* ControllerAccount */,
 			);
 			path = Modules;
+			sourceTree = "<group>";
+		};
+		D0A200000000000000000005 /* TokensManage */ = {
+			isa = PBXGroup;
+			children = (
+				D0A200000000000000000003 /* TokensManageViewControllerTests.swift */,
+			);
+			path = TokensManage;
 			sourceTree = "<group>";
 		};
 		84B7C683289BFA78001A3566 /* Settings */ = {
@@ -26381,7 +26399,6 @@
 				5AD4E8162E6340C9902AFA96 /* TokensManageRootViewModel.swift */,
 				3F507F53384F48C99FC833CA /* TokensManageChildViewModel.swift */,
 				F5EFC5B44D1C49949EE200D2 /* TokensManageListItem.swift */,
-				DF97483537C24B5D8EAB54D9 /* TokensManageHeaderActionViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -34356,7 +34373,6 @@
 				7D0B9E33FF55490C8CB9FC5C /* TokensManageRootViewModel.swift in Sources */,
 				E4010B01E994480BB688FB4F /* TokensManageChildViewModel.swift in Sources */,
 				0D7336BEEBD34F4B9CD566E8 /* TokensManageListItem.swift in Sources */,
-				66C2578EDA9F4D30A5E02ECF /* TokensManageHeaderActionViewModel.swift in Sources */,
 				E9361431C0524063B2636DBA /* TokensManageSectionHeaderView.swift in Sources */,
 				727D48612AB5448DBD8E87DD /* TokensManageAutoAddView.swift in Sources */,
 				7AED8432870D43FEAB2E05ED /* TokensManageRootCell.swift in Sources */,
@@ -37320,6 +37336,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D0A200000000000000000002 /* DefaultAssetsProviderTests.swift in Sources */,
+				D0A200000000000000000004 /* TokensManageViewControllerTests.swift in Sources */,
+				D0A300000000000000000002 /* AutoAddTokensServiceTests.swift in Sources */,
+				D0A300000000000000000004 /* AssetVisibilityRevealTests.swift in Sources */,
 				D0A10000000000000000000B /* AssetVisibilityWriterTests.swift in Sources */,
 				D0A100000000000000000006 /* AssetVisibilitySeedMigratorTests.swift in Sources */,
 				D0A100000000000000000002 /* AssetVisibilityPolicyTests.swift in Sources */,

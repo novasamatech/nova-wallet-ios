@@ -8,6 +8,7 @@ protocol DefaultAssetsProviding {
 final class DefaultAssetsProvider {
     let url: URL
     let dataOperationFactory: DataOperationFactoryProtocol
+    let chainRegistry: ChainRegistryProtocol
     let logger: LoggerProtocol
 
     @Atomic(defaultValue: nil)
@@ -16,10 +17,12 @@ final class DefaultAssetsProvider {
     init(
         url: URL,
         dataOperationFactory: DataOperationFactoryProtocol,
+        chainRegistry: ChainRegistryProtocol,
         logger: LoggerProtocol
     ) {
         self.url = url
         self.dataOperationFactory = dataOperationFactory
+        self.chainRegistry = chainRegistry
         self.logger = logger
     }
 }
@@ -61,10 +64,25 @@ private extension DefaultAssetsProvider {
         do {
             let data = try fetchOperation.extractNoCancellableResultData()
             let remote = try JSONDecoder().decode(DefaultAssetsRemote.self, from: data)
-            let list = DefaultAssetsList(remote: remote)
+
+            guard remote.effectiveVersion == DefaultAssetsRemote.supportedVersion else {
+                logger.error("Unsupported default assets config version: \(remote.effectiveVersion)")
+                return .empty
+            }
+
+            let resolvedIds = remote.defaultAssets.compactMap { remoteAsset -> ChainAssetId? in
+                let id = ChainAssetId(chainId: remoteAsset.chainId, assetId: remoteAsset.assetId)
+
+                guard chainRegistry.getChain(for: id.chainId)?.chainAsset(for: id.assetId) != nil else {
+                    return nil
+                }
+
+                return id
+            }
+            let list = DefaultAssetsList(ids: resolvedIds)
 
             guard !list.isEmpty else {
-                logger.error("Default assets config declares no assets")
+                logger.error("Default assets config resolves to no local assets")
                 return .empty
             }
 

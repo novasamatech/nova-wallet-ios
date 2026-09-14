@@ -11,6 +11,7 @@ extension DefaultAssetsProvider {
             timeout: Constants.fetchTimeout,
             ignoresCache: true
         ),
+        chainRegistry: ChainRegistryFacade.sharedRegistry,
         logger: Logger.shared
     )
 }
