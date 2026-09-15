@@ -73,7 +73,4 @@ protocol SettingsWireframeProtocol:
     func showBackup(from view: ControllerBackedProtocol?)
     func showNetworks(from view: ControllerBackedProtocol?)
     func showAppearance(from view: ControllerBackedProtocol?)
-    #if F_DEV
-        func showAnalyticsDebug(from view: ControllerBackedProtocol?)
-    #endif
 }

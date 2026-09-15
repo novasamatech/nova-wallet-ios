@@ -11,12 +11,7 @@ enum AnalyticsFacadeFactory {
     /// `F_ANALYTICS` for Debug makes every `xcodebuild test` run build the real facade,
     /// which opens the developer's actual store, records a session and POSTs to the live
     /// gateway.
-    ///
-    /// `AnalyticsDebugInspecting` rides along in the return type only so
-    /// `AnalyticsDebugInspectorViewController` (`F_DEV`) need not downcast. It is a separate
-    /// protocol precisely so the package's production contract does not carry it; both
-    /// facades conform unconditionally, so nothing here is configuration-dependent.
-    static func createDefault() -> AnalyticsServiceFacadeProtocol & AnalyticsDebugInspecting {
+    static func createDefault() -> AnalyticsServiceFacadeProtocol {
         #if F_ANALYTICS
             guard !ProcessInfo.processInfo.arguments.contains("-UNITTEST") else {
                 return NoOpAnalyticsServiceFacade.shared
@@ -37,7 +32,7 @@ enum AnalyticsFacadeFactory {
     }
 
     #if F_ANALYTICS
-        private static let sharedFacade: (AnalyticsServiceFacadeProtocol & AnalyticsDebugInspecting)? = {
+        private static let sharedFacade: AnalyticsServiceFacadeProtocol? = {
             let settingsManager = SettingsManager.shared
 
             guard let appIdentity = ApplicationConfig.shared.appAttestAppIdentity else {

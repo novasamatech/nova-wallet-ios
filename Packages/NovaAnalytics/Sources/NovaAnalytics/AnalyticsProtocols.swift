@@ -119,13 +119,3 @@ public protocol AnalyticsServiceFacadeProtocol: AnalyticsTrackingProtocol {
 
     func flush(reason: AnalyticsFlushReason)
 }
-
-/// Debug-only queue inspection, kept off the production facade contract.
-public protocol AnalyticsDebugInspecting: AnyObject {
-    func debugPendingEventsWrapper(count: Int) -> CompoundOperationWrapper<[AnalyticsPendingEvent]>
-
-    func debugClearPendingEventsOperation() -> BaseOperation<Void>
-
-    /// Retires the client identity and key for fresh attestation on the next request; preserves pending events.
-    func debugResetAttestationIdentity()
-}

@@ -1,6 +1,4 @@
 import Foundation
-import Operation_iOS
-import NovaOperationSupport
 
 public final class NoOpAnalyticsServiceFacade {
     public static let shared = NoOpAnalyticsServiceFacade()
@@ -28,20 +26,6 @@ extension NoOpAnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
     }
 
     public func flush(reason _: AnalyticsFlushReason) {}
-}
-
-// MARK: - AnalyticsDebugInspecting
-
-extension NoOpAnalyticsServiceFacade: AnalyticsDebugInspecting {
-    public func debugPendingEventsWrapper(count _: Int) -> CompoundOperationWrapper<[AnalyticsPendingEvent]> {
-        .createWithResult([])
-    }
-
-    public func debugClearPendingEventsOperation() -> BaseOperation<Void> {
-        ClosureOperation {}
-    }
-
-    public func debugResetAttestationIdentity() {}
 }
 
 private final class NoOpAnalyticsConsentManager: AnalyticsConsentManagerProtocol {

@@ -12,12 +12,10 @@ public final class AnalyticsServiceFacade {
     private let service: AnalyticsService
     private let sessionTracker: AnalyticsSessionTracking
     private let availability: AnalyticsAvailabilityProvider
-    private let eventQueue: AnalyticsEventQueueProtocol
     private let remoteSettings: AnalyticsRemoteSettings
     private let applicationHandler: ApplicationHandlerProtocol
     private let configOperationQueue: OperationQueue
     private let logger: SDKLoggerProtocol
-    private let attestation: BackendAttestationProviderProtocol?
 
     private let mutex = NSLock()
     private var isSetUp: Bool = false
@@ -126,12 +124,10 @@ public final class AnalyticsServiceFacade {
         self.service = service
         self.sessionTracker = sessionTracker
         self.availability = availability
-        self.eventQueue = eventQueue
         remoteSettings = configuration.remoteSettings
         applicationHandler = ApplicationHandler()
         configOperationQueue = configuration.operationQueue
         logger = configuration.logger
-        self.attestation = attestation
 
         consent.addObserver(with: self, queue: nil) { [weak self] oldValue, newValue in
             guard !oldValue, newValue else {
@@ -217,24 +213,6 @@ extension AnalyticsServiceFacade: ApplicationHandlerDelegate {
         mutex.lock()
         isInForeground = false
         mutex.unlock()
-    }
-}
-
-// MARK: - AnalyticsDebugInspecting
-
-extension AnalyticsServiceFacade: AnalyticsDebugInspecting {
-    public func debugPendingEventsWrapper(count: Int) -> CompoundOperationWrapper<[AnalyticsPendingEvent]> {
-        eventQueue.peekWrapper(count: count)
-    }
-
-    public func debugClearPendingEventsOperation() -> BaseOperation<Void> {
-        eventQueue.clearOperation()
-    }
-
-    public func debugResetAttestationIdentity() {
-        // Reset the attestation identity without clearing pending events.
-        attestation?.forgetClient()
-        attestation?.allowClient()
     }
 }
 

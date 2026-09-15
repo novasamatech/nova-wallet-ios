@@ -25,9 +25,6 @@ enum SettingsRow {
     case networks
     case appearance
     case privacy
-    #if F_DEV
-        case analyticsDebug
-    #endif
 }
 
 extension SettingsRow {
@@ -80,11 +77,6 @@ extension SettingsRow {
             R.string(preferredLanguages: locale.rLanguages).localizable.settingsAppearance()
         case .privacy:
             R.string(preferredLanguages: locale.rLanguages).localizable.settingsPrivacyTitle()
-        #if F_DEV
-            // A debug literal on purpose: this row never ships, so it gets no localized key.
-            case .analyticsDebug:
-                "Analytics Debug"
-        #endif
         }
     }
 
@@ -136,10 +128,6 @@ extension SettingsRow {
             R.image.iconAppearance()
         case .privacy:
             R.image.iconAnalyticsPrivacyShield()
-        #if F_DEV
-            case .analyticsDebug:
-                R.image.iconSettingsAnalytics()
-        #endif
         }
     }
 }

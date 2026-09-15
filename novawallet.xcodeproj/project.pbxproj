@@ -24,9 +24,6 @@
 		A5C200000000000000000107 /* AnalyticsPrivacyViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C200000000000000000007 /* AnalyticsPrivacyViewFactory.swift */; };
 		A5C200000000000000000108 /* AnalyticsPrivacyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C200000000000000000008 /* AnalyticsPrivacyTests.swift */; };
 		FEED30000000000000000101 /* PrivacyManifestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED30000000000000000001 /* PrivacyManifestTests.swift */; };
-		FEED20000000000000000101 /* AnalyticsAttestationFixtureRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED20000000000000000001 /* AnalyticsAttestationFixtureRecorder.swift */; };
-		FEED20000000000000000102 /* AnalyticsDebugInspectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED20000000000000000002 /* AnalyticsDebugInspectorViewController.swift */; };
-		FEED20000000000000000103 /* AnalyticsAttestationFixtureRecorderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED20000000000000000003 /* AnalyticsAttestationFixtureRecorderTests.swift */; };
 		FEED10000000000000000102 /* AnalyticsConsentPromptGate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED10000000000000000002 /* AnalyticsConsentPromptGate.swift */; };
 		FEED10000000000000000104 /* AnalyticsConsentPromptTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED10000000000000000004 /* AnalyticsConsentPromptTests.swift */; };
 		0434F652589F46A0B216EDEA /* AssetVisibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF69D48661D443A8296F49A /* AssetVisibility.swift */; };
@@ -6738,9 +6735,6 @@
 		A5C200000000000000000007 /* AnalyticsPrivacyViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsPrivacyViewFactory.swift; sourceTree = "<group>"; };
 		A5C200000000000000000008 /* AnalyticsPrivacyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsPrivacyTests.swift; sourceTree = "<group>"; };
 		FEED30000000000000000001 /* PrivacyManifestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyManifestTests.swift; sourceTree = "<group>"; };
-		FEED20000000000000000001 /* AnalyticsAttestationFixtureRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsAttestationFixtureRecorder.swift; sourceTree = "<group>"; };
-		FEED20000000000000000002 /* AnalyticsDebugInspectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsDebugInspectorViewController.swift; sourceTree = "<group>"; };
-		FEED20000000000000000003 /* AnalyticsAttestationFixtureRecorderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsAttestationFixtureRecorderTests.swift; sourceTree = "<group>"; };
 		FEED10000000000000000002 /* AnalyticsConsentPromptGate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsConsentPromptGate.swift; sourceTree = "<group>"; };
 		FEED10000000000000000004 /* AnalyticsConsentPromptTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsConsentPromptTests.swift; sourceTree = "<group>"; };
 		BEF69D48661D443A8296F49A /* AssetVisibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetVisibility.swift; sourceTree = "<group>"; };
@@ -13221,15 +13215,6 @@
 				A5C200000000000000000008 /* AnalyticsPrivacyTests.swift */,
 			);
 			path = AnalyticsPrivacy;
-			sourceTree = "<group>";
-		};
-		FEED20000000000000000004 /* Debug */ = {
-			isa = PBXGroup;
-			children = (
-				FEED20000000000000000001 /* AnalyticsAttestationFixtureRecorder.swift */,
-				FEED20000000000000000002 /* AnalyticsDebugInspectorViewController.swift */,
-			);
-			path = Debug;
 			sourceTree = "<group>";
 		};
 		FEED10000000000000000003 /* AnalyticsConsent */ = {
@@ -30721,7 +30706,6 @@
 		FEEDAA0000000000000000A1 /* Analytics */ = {
 			isa = PBXGroup;
 			children = (
-				FEED20000000000000000004 /* Debug */,
 				FEEDD0000000000000000010 /* AnalyticsFacadeFactory.swift */,
 				000000005A7B94BE697EFEBE /* AnalyticsRemoteSettingsAdapter.swift */,
 			);
@@ -30732,7 +30716,6 @@
 			isa = PBXGroup;
 			children = (
 				FEED30000000000000000001 /* PrivacyManifestTests.swift */,
-				FEED20000000000000000003 /* AnalyticsAttestationFixtureRecorderTests.swift */,
 				FEEDD0000000000000000011 /* AnalyticsFacadeFactoryTests.swift */,
 				FEEDAA0000000000000000B1 /* AnalyticsAppWiringTests.swift */,
 				FEEDAA0000000000000000C1 /* AnalyticsRemoteSettingsAdapterTests.swift */,
@@ -37460,8 +37443,6 @@
 				000000007CF9135B4D967A7E /* AssetExchangeTradeLimitVerdict.swift in Sources */,
 				000000002384221D1527B8A1 /* SwapPoolTradeLimitCheck.swift in Sources */,
 				000000006C043D814E99B2D6 /* SwapDataValidatorFactory+PoolTradeLimit.swift in Sources */,
-				FEED20000000000000000101 /* AnalyticsAttestationFixtureRecorder.swift in Sources */,
-				FEED20000000000000000102 /* AnalyticsDebugInspectorViewController.swift in Sources */,
 				FEED10000000000000000102 /* AnalyticsConsentPromptGate.swift in Sources */,
 				FEEDD0000000000000000110 /* AnalyticsFacadeFactory.swift in Sources */,
 				0000000021CDF4E8A8B04343 /* AnalyticsRemoteSettingsAdapter.swift in Sources */,
@@ -37679,7 +37660,6 @@
 				CC9C5C7E32F8E3E32C3C123A /* PolkadotRewardEngineTests.swift in Sources */,
 				000000007C2FD98856D6F69F /* AssetExchangeCommissionNetFlowTests.swift in Sources */,
 				FEED30000000000000000101 /* PrivacyManifestTests.swift in Sources */,
-				FEED20000000000000000103 /* AnalyticsAttestationFixtureRecorderTests.swift in Sources */,
 				FEED10000000000000000104 /* AnalyticsConsentPromptTests.swift in Sources */,
 				FEEDD0000000000000000111 /* AnalyticsFacadeFactoryTests.swift in Sources */,
 				FEEDAA0000000000000000B2 /* AnalyticsAppWiringTests.swift in Sources */,
