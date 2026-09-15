@@ -113,6 +113,6 @@ jobs:
         run: |
           xcodebuild test \
             -scheme "${{ matrix.package }}" \
-            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
             -derivedDataPath "${{ runner.temp }}/DerivedData-${{ matrix.package }}" \
             -only-testing:"${{ matrix.test-target }}"
