@@ -26,6 +26,7 @@ enum ChainModelGenerator {
                 typeExtras: nil,
                 buyProviders: nil,
                 sellProviders: nil,
+                displayPriority: nil,
                 enabled: true,
                 source: .remote
             )
@@ -90,7 +91,8 @@ enum ChainModelGenerator {
                 additional: nil,
                 syncMode: .full,
                 source: .remote,
-                connectionMode: .autoBalanced
+                connectionMode: .autoBalanced,
+                displayPriority: nil
             )
         }
     }
@@ -295,7 +297,8 @@ enum ChainModelGenerator {
             additional: nil,
             syncMode: enabled ? .full : .disabled,
             source: .remote,
-            connectionMode: .autoBalanced
+            connectionMode: .autoBalanced,
+            displayPriority: nil
         )
     }
 
@@ -323,6 +326,7 @@ enum ChainModelGenerator {
             typeExtras: nil,
             buyProviders: buyProviders,
             sellProviders: sellProviders,
+            displayPriority: nil,
             enabled: enabled,
             source: source
         )

@@ -62,7 +62,7 @@ class AssetOperationNetworkBuilder {
             )
         }
 
-        let comparator = AssetListModelHelpers.assetSortingBlockDefaultByChain
+        let comparator = AssetListModelHelpers.assetSortByUtilityThenPriority
 
         assetModels.sort(by: comparator)
 

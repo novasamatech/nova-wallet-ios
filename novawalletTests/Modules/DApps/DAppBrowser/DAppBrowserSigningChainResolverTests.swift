@@ -48,7 +48,8 @@ class DAppBrowserSigningChainResolverTests: XCTestCase {
             additional: ethereumChain.additional,
             syncMode: ethereumChain.syncMode,
             source: ethereumChain.source,
-            connectionMode: ethereumChain.connectionMode
+            connectionMode: ethereumChain.connectionMode,
+            displayPriority: nil
         )
 
         let substrateChain = ChainModelGenerator.generateChain(
