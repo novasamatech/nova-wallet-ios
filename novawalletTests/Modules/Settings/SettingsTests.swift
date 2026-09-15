@@ -204,7 +204,6 @@ private extension SettingsTests {
     }
 
     func makeUnattestableConsent(optedIn: Bool, settings: SettingsManagerProtocol = InMemorySettingsManager()) -> AnalyticsConsentManager {
-        // Record the decision on an install that can attest, then model one that cannot.
         makeConsent(settings: settings).setEnabled(optedIn)
 
         return AnalyticsConsentManager(

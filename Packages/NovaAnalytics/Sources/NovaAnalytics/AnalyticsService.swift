@@ -24,7 +24,6 @@ public final class AnalyticsService {
     private var currentFeature: String?
     private var schedule = AnalyticsFlushSchedule()
 
-    // Internal: the gateway resolver it takes is an implementation detail of this package.
     init(
         consent: AnalyticsConsentManagerProtocol,
         availability: AnalyticsAvailabilityProviderProtocol,

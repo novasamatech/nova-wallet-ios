@@ -18,7 +18,6 @@ public final class AnalyticsUploader {
     private let timeProvider: () -> Date
     private let logger: SDKLoggerProtocol
 
-    // Internal: the gateway resolver it takes is an implementation detail of this package.
     init(
         queue: AnalyticsEventQueueProtocol,
         identity: AnalyticsIdentityProtocol,
@@ -340,8 +339,6 @@ private extension AnalyticsUploader {
 // MARK: - AnalyticsUploading
 
 extension AnalyticsUploader: AnalyticsUploading {
-    /// The infra URL heads the chain: nothing can be signed or posted before it resolves, and a
-    /// failure to resolve it is retained like any other flush failure, so the queue survives it.
     public func flushWrapper(maxBatches: Int) -> CompoundOperationWrapper<Void> {
         let gatewayWrapper = gatewayResolver.createGatewayWrapper()
 

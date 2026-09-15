@@ -2,9 +2,6 @@ import Foundation
 import Operation_iOS
 import NovaAppAttest
 
-// Availability is fixed for the process: it depends only on whether this device and build can
-// attest at all. The observer API is kept because the consent manager and the settings screens
-// subscribe through it; nothing fires, because nothing can change it mid-process.
 public final class AnalyticsAvailabilityProvider {
     private struct ObserverWrapper {
         weak var owner: AnyObject?
