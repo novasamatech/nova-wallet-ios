@@ -6,12 +6,28 @@ protocol BlockTimeEstimationServiceProtocol: ApplicationServiceProtocol {
     func createEstimatedBlockTimeOperation() -> BaseOperation<EstimatedBlockTime>
 }
 
-struct EstimatedBlockTime: Codable {
+struct EstimatedBlockTime: Codable, Equatable {
     let blockTime: BlockTime
     let seqSize: Int
+    let windowStartBlock: BlockNumber?
+    let windowStartTime: BlockTime?
+
+    init(
+        blockTime: BlockTime,
+        seqSize: Int,
+        windowStartBlock: BlockNumber? = nil,
+        windowStartTime: BlockTime? = nil
+    ) {
+        self.blockTime = blockTime
+        self.seqSize = seqSize
+        self.windowStartBlock = windowStartBlock
+        self.windowStartTime = windowStartTime
+    }
 
     static func storageKey(for chainId: ChainModel.Id) -> String {
-        chainId + "_block_time"
+        // v2: samples are collected over block windows instead of consecutive deltas,
+        // older persisted values are not comparable
+        chainId + "_block_time_v2"
     }
 }
 
@@ -40,21 +56,6 @@ struct BlockTimeSubscriptionModel: BatchStorageSubscriptionResult {
 }
 
 final class BlockTimeEstimationService {
-    private struct Snapshot {
-        let blockTime: TimeInterval
-        let lastBlock: BlockNumber?
-        let seqSize: Int
-        let lastTime: BlockTime?
-
-        var estimatedBlockTime: EstimatedBlockTime {
-            EstimatedBlockTime(blockTime: BlockTime(blockTime.milliseconds), seqSize: seqSize)
-        }
-
-        static var empty: Snapshot {
-            Snapshot(blockTime: 0, lastBlock: nil, seqSize: 0, lastTime: nil)
-        }
-    }
-
     private struct PendingRequest {
         let resultClosure: (EstimatedBlockTime) -> Void
         let queue: DispatchQueue?
@@ -73,7 +74,7 @@ final class BlockTimeEstimationService {
         qos: .userInitiated
     )
 
-    private var snapshot: Snapshot?
+    private var snapshot: EstimatedBlockTime?
 
     private var subscription: CallbackBatchStorageSubscription<BlockTimeSubscriptionModel>?
 
@@ -109,7 +110,7 @@ final class BlockTimeEstimationService {
         let request = PendingRequest(resultClosure: closure, queue: queue)
 
         if let snapshot = snapshot {
-            deliver(estimatedBlockTime: snapshot.estimatedBlockTime, to: request)
+            deliver(estimatedBlockTime: snapshot, to: request)
         } else {
             pendingRequests[requestId] = request
         }
@@ -148,7 +149,7 @@ final class BlockTimeEstimationService {
                 let blockTime = try? JSONDecoder().decode(EstimatedBlockTime.self, from: object.data) {
                 return blockTime
             } else {
-                return EstimatedBlockTime(blockTime: 0, seqSize: 0)
+                return EstimatedBlockTime.initial
             }
         }
 
@@ -168,16 +169,9 @@ final class BlockTimeEstimationService {
 
     private func setupInitialSnapshot(for estimatedBlockTime: EstimatedBlockTime) {
         syncQueue.async { [weak self] in
-            let snapshot = Snapshot(
-                blockTime: estimatedBlockTime.blockTime.timeInterval,
-                lastBlock: nil,
-                seqSize: estimatedBlockTime.seqSize,
-                lastTime: nil
-            )
+            self?.snapshot = estimatedBlockTime
 
-            self?.snapshot = snapshot
-
-            self?.deliver(estimatedBlockTime: snapshot.estimatedBlockTime)
+            self?.deliver(estimatedBlockTime: estimatedBlockTime)
             self?.subscribeBlockNumber()
         }
     }
@@ -247,57 +241,20 @@ final class BlockTimeEstimationService {
             return
         }
 
-        // sync block number first
-        guard
-            let lastBlock = prevSnapshot.lastBlock,
-            model.blockNumber == lastBlock + 1 else {
-            let lastTime = model.blockNumber == prevSnapshot.lastBlock ? prevSnapshot.lastTime : nil
-            snapshot = Snapshot(
-                blockTime: prevSnapshot.blockTime,
-                lastBlock: model.blockNumber,
-                seqSize: prevSnapshot.seqSize,
-                lastTime: lastTime
-            )
+        let newSnapshot = prevSnapshot.observing(block: model.blockNumber, timestamp: model.timestamp)
+
+        guard newSnapshot != prevSnapshot else {
             return
         }
 
-        let currentTime = model.timestamp
+        snapshot = newSnapshot
 
-        // then sync time diff
-        if
-            let prevTime = prevSnapshot.lastTime,
-            currentTime > prevTime {
-            let newBlockTimeElement = (currentTime - prevTime).timeInterval
-
-            logger.debug("(\(chainId) Block time: \(newBlockTimeElement)")
-
-            let blockTime = prevSnapshot.blockTime
-            let seqSize = prevSnapshot.seqSize
-            let newBlockTime = (blockTime * TimeInterval(seqSize) + newBlockTimeElement) / TimeInterval(seqSize + 1)
-
-            logger.debug("\(chainId) Cumulative block time: \(newBlockTime)")
-
-            let newSnapshot = Snapshot(
-                blockTime: newBlockTime,
-                lastBlock: model.blockNumber,
-                seqSize: seqSize + 1,
-                lastTime: currentTime
-            )
-
-            snapshot = newSnapshot
-
-            let estimatedBlockTime = newSnapshot.estimatedBlockTime
-            save(blockTime: estimatedBlockTime)
-
-            deliver(estimatedBlockTime: estimatedBlockTime)
-        } else {
-            snapshot = Snapshot(
-                blockTime: prevSnapshot.blockTime,
-                lastBlock: model.blockNumber,
-                seqSize: prevSnapshot.seqSize,
-                lastTime: currentTime
-            )
+        if newSnapshot.seqSize != prevSnapshot.seqSize {
+            logger.debug("\(chainId) Block time sample at \(model.blockNumber): \(newSnapshot.blockTime) ms")
         }
+
+        save(blockTime: newSnapshot)
+        deliver(estimatedBlockTime: newSnapshot)
     }
 }
 
