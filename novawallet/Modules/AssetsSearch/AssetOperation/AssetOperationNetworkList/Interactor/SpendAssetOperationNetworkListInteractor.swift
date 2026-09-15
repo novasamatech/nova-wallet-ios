@@ -8,6 +8,7 @@ final class SpendAssetOperationNetworkListInteractor: AssetOperationNetworkListI
     ) -> AssetOperationNetworkBuilder {
         SpendAssetOperationNetworkBuilder(
             chainAssets: chainAssets,
+            includesHiddenAssets: includesHiddenAssets,
             workingQueue: .init(
                 label: workingQueueLabel,
                 qos: .userInteractive

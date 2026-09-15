@@ -29,6 +29,7 @@ final class ServiceCoordinator {
     let syncModeUpdateService: ChainSyncModeUpdateServiceProtocol
     let pushNotificationsFacade: PushNotificationsServiceFacadeProtocol
     let pendingMultisigSyncService: MultisigPendingOperationsServiceProtocol
+    let autoAddTokensService: AutoAddTokensServiceProtocol
 
     init(
         walletSettings: SelectedWalletSettings,
@@ -43,7 +44,8 @@ final class ServiceCoordinator {
         walletNotificationService: WalletNotificationServiceProtocol,
         syncModeUpdateService: ChainSyncModeUpdateServiceProtocol,
         pushNotificationsFacade: PushNotificationsServiceFacadeProtocol,
-        pendingMultisigSyncService: MultisigPendingOperationsServiceProtocol
+        pendingMultisigSyncService: MultisigPendingOperationsServiceProtocol,
+        autoAddTokensService: AutoAddTokensServiceProtocol
     ) {
         self.walletSettings = walletSettings
         self.substrateBalancesService = substrateBalancesService
@@ -58,6 +60,7 @@ final class ServiceCoordinator {
         self.syncModeUpdateService = syncModeUpdateService
         self.pushNotificationsFacade = pushNotificationsFacade
         self.pendingMultisigSyncService = pendingMultisigSyncService
+        self.autoAddTokensService = autoAddTokensService
     }
 }
 
@@ -71,6 +74,7 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
             equilibriumService.update(selectedMetaAccount: selectedMetaAccount)
             syncModeUpdateService.update(selectedMetaAccount: selectedMetaAccount)
             pendingMultisigSyncService.update(selectedMetaAccount: selectedMetaAccount)
+            autoAddTokensService.update(selectedMetaAccount: selectedMetaAccount)
         }
     }
 
@@ -102,6 +106,7 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
         walletNotificationService.setup()
         pushNotificationsFacade.setup()
         pendingMultisigSyncService.setup()
+        autoAddTokensService.setup()
     }
 
     func throttle() {
@@ -117,6 +122,7 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
         walletNotificationService.throttle()
         pushNotificationsFacade.throttle()
         pendingMultisigSyncService.throttle()
+        autoAddTokensService.throttle()
     }
 }
 
@@ -244,6 +250,18 @@ extension ServiceCoordinator {
             logger: logger
         )
 
+        let autoAddTokensService = AutoAddTokensService(
+            selectedMetaAccount: walletSettings.value,
+            chainRegistry: chainRegistry,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactory.shared,
+            assetVisibilitySubscriptionFactory: AssetVisibilityLocalSubscriptionFactory.shared,
+            visibilityWriter: AssetVisibilityWriter.shared,
+            defaultAssetsProvider: DefaultAssetsProvider.shared,
+            operationQueue: operationQueue,
+            logger: logger
+        )
+
         return ServiceCoordinator(
             walletSettings: walletSettings,
             substrateBalancesService: substrateBalancesService,
@@ -257,7 +275,8 @@ extension ServiceCoordinator {
             walletNotificationService: walletNotificationService,
             syncModeUpdateService: syncModeUpdateService,
             pushNotificationsFacade: PushNotificationsServiceFacade.shared,
-            pendingMultisigSyncService: MultisigPendingOperationsService.shared
+            pendingMultisigSyncService: MultisigPendingOperationsService.shared,
+            autoAddTokensService: autoAddTokensService
         )
     }
 }

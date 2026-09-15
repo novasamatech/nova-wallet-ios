@@ -94,7 +94,9 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
         viewController?.rootView.collectionView.registerCellClass(AssetListTotalBalanceCell.self)
         viewController?.rootView.collectionView.registerCellClass(AssetListAccountCell.self)
         viewController?.rootView.collectionView.registerCellClass(AssetListSettingsCell.self)
+        viewController?.rootView.collectionView.registerCellClass(AssetListLoadingCell.self)
         viewController?.rootView.collectionView.registerCellClass(AssetListEmptyCell.self)
+        viewController?.rootView.collectionView.registerCellClass(AssetListRevealCell.self)
         viewController?.rootView.collectionView.registerCellClass(AssetListNftsCell.self)
         viewController?.rootView.collectionView.registerCellClass(AssetListMultisigOperationsCell.self)
         viewController?.rootView.collectionView.registerCellClass(BannersContainerCollectionViewCell.self)
@@ -134,7 +136,10 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
             section >= AssetListFlowLayout.SectionType.assetsStartingSection
         }
 
-        let insertingIndexes = newViewModel.listState.groups.enumerated().map { index, _ in
+        let insertingSectionsCount = newViewModel.displayedGroups.count
+            + AssetListFlowLayout.SectionType.trailingSectionsCount
+
+        let insertingIndexes = (0 ..< insertingSectionsCount).map { index in
             AssetListFlowLayout.SectionType.assetsStartingSection + index
         }
 
@@ -156,7 +161,7 @@ extension AssetListCollectionManager: AssetListCollectionManagerProtocol {
             return
         }
 
-        groupsViewModel.listState.groups.enumerated().forEach { groupIndex, group in
+        groupsViewModel.displayedGroups.enumerated().forEach { groupIndex, group in
             guard case let .token(groupViewModel) = group else {
                 return
             }
@@ -247,5 +252,9 @@ extension AssetListCollectionManager: AssetListCollectionSelectionDelegate {
 
     func selectAsset(for chainAssetId: ChainAssetId) {
         delegate?.selectAsset(for: chainAssetId)
+    }
+
+    func selectTokensReveal() {
+        delegate?.actionManage()
     }
 }

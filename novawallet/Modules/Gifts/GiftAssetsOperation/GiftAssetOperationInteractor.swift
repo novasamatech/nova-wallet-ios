@@ -47,6 +47,7 @@ extension GiftAssetsOperationInteractor: AssetsSearchInteractorInputProtocol {
             assetTransferAggregationFactory: assetTransferAggregationFactory,
             sufficiencyProvider: assetSufficiencyProvider,
             filter: filter,
+            includesHiddenAssets: false,
             workingQueue: .init(
                 label: AssetsSearchInteractor.workingQueueLabel,
                 qos: .userInteractive

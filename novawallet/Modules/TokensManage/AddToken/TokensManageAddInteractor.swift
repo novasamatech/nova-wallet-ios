@@ -13,6 +13,8 @@ final class TokensManageAddInteractor: AnyCancellableCleaning {
     let priceIdParser: PriceUrlParserProtocol
     let priceOperationFactory: CoingeckoOperationFactoryProtocol
     let chainRepository: AnyDataProviderRepository<ChainModel>
+    let selectedWalletSettings: SelectedWalletSettings
+    let visibilityWriter: AssetVisibilityWriting
     let operationQueue: OperationQueue
 
     private var pendingQueryIds: [UInt16]?
@@ -24,6 +26,8 @@ final class TokensManageAddInteractor: AnyCancellableCleaning {
         priceIdParser: PriceUrlParserProtocol,
         priceOperationFactory: CoingeckoOperationFactoryProtocol,
         chainRepository: AnyDataProviderRepository<ChainModel>,
+        selectedWalletSettings: SelectedWalletSettings,
+        visibilityWriter: AssetVisibilityWriting,
         operationQueue: OperationQueue
     ) {
         self.chain = chain
@@ -32,6 +36,8 @@ final class TokensManageAddInteractor: AnyCancellableCleaning {
         self.priceIdParser = priceIdParser
         self.priceOperationFactory = priceOperationFactory
         self.chainRepository = chainRepository
+        self.selectedWalletSettings = selectedWalletSettings
+        self.visibilityWriter = visibilityWriter
         self.operationQueue = operationQueue
     }
 
@@ -112,7 +118,25 @@ final class TokensManageAddInteractor: AnyCancellableCleaning {
         }
     }
 
-    private func performTokenSave(newToken: EvmTokenAddRequest, chain: ChainModel) {
+    private func revealSavedToken(_ result: EvmTokenAddResult, for metaId: MetaAccountModel.Id?) {
+        guard let metaId else {
+            return
+        }
+
+        visibilityWriter.apply(
+            event: .userSet(isVisible: true),
+            metaId: metaId,
+            ids: [result.chainAsset.chainAssetId],
+            runningCallbackIn: nil,
+            completion: nil
+        )
+    }
+
+    private func performTokenSave(
+        newToken: EvmTokenAddRequest,
+        chain: ChainModel,
+        initiatingMetaId: MetaAccountModel.Id?
+    ) {
         let priceIdWrapper = createPriceIdWrapper(for: newToken.priceIdUrl)
 
         let contractExistenseWrapper = createContractExistenseWrapper(
@@ -162,6 +186,8 @@ final class TokensManageAddInteractor: AnyCancellableCleaning {
                 do {
                     let result = try chainModifyOperation.extractNoCancellableResultData()
                     try saveOperation.extractNoCancellableResultData()
+
+                    self?.revealSavedToken(result, for: initiatingMetaId)
 
                     self?.presenter?.didSaveEvmToken(result)
                 } catch {
@@ -222,6 +248,12 @@ extension TokensManageAddInteractor: TokensManageAddInteractorInputProtocol {
     }
 
     func save(newToken: EvmTokenAddRequest) {
-        performTokenSave(newToken: newToken, chain: chain)
+        let initiatingMetaId = selectedWalletSettings.value?.metaId
+
+        performTokenSave(
+            newToken: newToken,
+            chain: chain,
+            initiatingMetaId: initiatingMetaId
+        )
     }
 }

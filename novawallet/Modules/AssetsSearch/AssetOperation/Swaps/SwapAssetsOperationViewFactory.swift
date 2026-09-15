@@ -155,7 +155,8 @@ enum SwapAssetsOperationViewFactory {
             wireframe: SwapAssetsOperationWireframe(
                 state: state,
                 selectClosure: selectClosure,
-                selectClosureStrategy: selectClosureStrategy
+                selectClosureStrategy: selectClosureStrategy,
+                includesHiddenAssets: selectionModel.includesHiddenAssets
             ),
             logger: Logger.shared
         )

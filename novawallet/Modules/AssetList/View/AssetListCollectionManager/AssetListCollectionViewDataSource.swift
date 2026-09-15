@@ -37,6 +37,12 @@ final class AssetListCollectionViewDataSource: NSObject {
 // MARK: Private
 
 private extension AssetListCollectionViewDataSource {
+    var totalSections: Int {
+        AssetListFlowLayout.SectionType.sectionsCount(
+            groupsCount: groupsViewModel.displayedGroups.count
+        )
+    }
+
     func provideAccountCell(
         _ collectionView: UICollectionView,
         indexPath: IndexPath
@@ -188,8 +194,6 @@ private extension AssetListCollectionViewDataSource {
             for: .valueChanged
         )
 
-        settingsCell.manageButton.bind(showingBadge: groupsViewModel.isFiltered)
-
         return settingsCell
     }
 
@@ -198,7 +202,8 @@ private extension AssetListCollectionViewDataSource {
         indexPath: IndexPath
     ) -> UICollectionViewCell {
         guard let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(
-            indexPath.section
+            indexPath.section,
+            totalSections: totalSections
         ) else {
             return collectionView.dequeueReusableCellWithType(
                 EmptyCollectionCell.self,
@@ -206,7 +211,7 @@ private extension AssetListCollectionViewDataSource {
             )!
         }
 
-        return switch groupsViewModel.listState.groups[groupIndex] {
+        return switch groupsViewModel.displayedGroups[groupIndex] {
         case let .network(groupViewModel):
             provideNetworkGroupAssetCell(
                 collectionView,
@@ -284,13 +289,48 @@ private extension AssetListCollectionViewDataSource {
             for: indexPath
         )!
 
-        let text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.walletListEmptyMessage()
+        let text = R.string(preferredLanguages: selectedLocale.rLanguages).localizable.walletListEmptyMessage_v2()
         let actionTitle = R.string(
             preferredLanguages: selectedLocale.rLanguages
         ).localizable.walletListEmptyActionTitle()
 
         cell.bind(text: text, actionTitle: actionTitle)
         cell.actionButton.addTarget(self, action: #selector(actionBuySell), for: .touchUpInside)
+
+        return cell
+    }
+
+    func provideLoadingStateCell(
+        _ collectionView: UICollectionView,
+        indexPath: IndexPath
+    ) -> AssetListLoadingCell {
+        let cell = collectionView.dequeueReusableCellWithType(
+            AssetListLoadingCell.self,
+            for: indexPath
+        )!
+
+        cell.startAnimating()
+
+        return cell
+    }
+
+    func provideRevealCell(
+        _ collectionView: UICollectionView,
+        indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        guard let hasHiddenAssets = groupsViewModel.hasHiddenAssets else {
+            return collectionView.dequeueReusableCellWithType(
+                EmptyCollectionCell.self,
+                for: indexPath
+            )!
+        }
+
+        let cell = collectionView.dequeueReusableCellWithType(
+            AssetListRevealCell.self,
+            for: indexPath
+        )!
+
+        cell.bind(hasHiddenAssets: hasHiddenAssets, locale: selectedLocale)
 
         return cell
     }
@@ -394,8 +434,11 @@ private extension AssetListCollectionViewDataSource {
     }
 
     func numberOfItemsForAssetGroup(_ section: Int) -> Int {
-        if let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(section) {
-            switch groupsViewModel.listState.groups[groupIndex] {
+        if let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(
+            section,
+            totalSections: totalSections
+        ) {
+            switch groupsViewModel.displayedGroups[groupIndex] {
             case let .network(groupViewModel):
                 return groupViewModel.assets.count
             case let .token(groupViewModel):
@@ -473,14 +516,14 @@ private extension AssetListCollectionViewDataSource {
 
 extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
     func numberOfSections(in _: UICollectionView) -> Int {
-        AssetListFlowLayout.SectionType.assetsStartingSection + groupsViewModel.listState.groups.count
+        totalSections
     }
 
     func collectionView(
         _: UICollectionView,
         numberOfItemsInSection section: Int
     ) -> Int {
-        switch AssetListFlowLayout.SectionType(section: section) {
+        switch AssetListFlowLayout.SectionType(section: section, totalSections: totalSections) {
         case .summary:
             var itemsCount = 0
 
@@ -493,9 +536,11 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
         case .banners:
             return bannersAvailable == true ? 1 : 0
         case .settings:
-            return groupsViewModel.listState.isEmpty ? 2 : 1
+            return groupsViewModel.isLoading || groupsViewModel.listState.isEmpty ? 2 : 1
         case .assetGroup:
             return numberOfItemsForAssetGroup(section)
+        case .tokensReveal:
+            return groupsViewModel.isLoading || groupsViewModel.hasHiddenAssets == nil ? 0 : 1
         }
     }
 
@@ -503,7 +548,12 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
-        switch AssetListFlowLayout.CellType(indexPath: indexPath, in: collectionView) {
+        switch AssetListFlowLayout.CellType(
+            indexPath: indexPath,
+            totalSections: totalSections,
+            isLoading: groupsViewModel.isLoading,
+            in: collectionView
+        ) {
         case .account:
             provideAccountCell(collectionView, indexPath: indexPath)
         case .alert:
@@ -516,10 +566,14 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
             provideBannersCell(collectionView, indexPath: indexPath)
         case .settings:
             provideSettingsCell(collectionView, indexPath: indexPath)
+        case .loadingState:
+            provideLoadingStateCell(collectionView, indexPath: indexPath)
         case .emptyState:
             provideEmptyStateCell(collectionView, indexPath: indexPath)
         case .asset:
             provideAssetCell(collectionView, indexPath: indexPath)
+        case .revealRow:
+            provideRevealCell(collectionView, indexPath: indexPath)
         }
     }
 
@@ -539,10 +593,15 @@ extension AssetListCollectionViewDataSource: UICollectionViewDataSource {
             for: indexPath
         )!
 
+        let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(
+            indexPath.section,
+            totalSections: totalSections
+        )
+
         // Configure the header view with the appropriate view model
-        if let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(indexPath.section),
+        if let groupIndex,
            groupsViewModel.listGroupStyle == .networks,
-           case let .network(viewModel) = groupsViewModel.listState.groups[groupIndex] {
+           case let .network(viewModel) = groupsViewModel.displayedGroups[groupIndex] {
             view.bind(viewModel: viewModel)
         }
 

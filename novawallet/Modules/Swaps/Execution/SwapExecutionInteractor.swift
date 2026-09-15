@@ -4,15 +4,24 @@ final class SwapExecutionInteractor {
     weak var presenter: SwapExecutionInteractorOutputProtocol?
 
     let assetsExchangeService: AssetsExchangeServiceProtocol
+    let chainAssetOut: ChainAsset
+    let selectedWalletSettings: SelectedWalletSettings
+    let visibilityWriter: AssetVisibilityWriting
     let osMediator: OperatingSystemMediating
     let operationQueue: OperationQueue
 
     init(
         assetsExchangeService: AssetsExchangeServiceProtocol,
+        chainAssetOut: ChainAsset,
+        selectedWalletSettings: SelectedWalletSettings,
+        visibilityWriter: AssetVisibilityWriting,
         osMediator: OperatingSystemMediating,
         operationQueue: OperationQueue
     ) {
         self.assetsExchangeService = assetsExchangeService
+        self.chainAssetOut = chainAssetOut
+        self.selectedWalletSettings = selectedWalletSettings
+        self.visibilityWriter = visibilityWriter
         self.osMediator = osMediator
         self.operationQueue = operationQueue
     }
@@ -20,6 +29,8 @@ final class SwapExecutionInteractor {
 
 extension SwapExecutionInteractor: SwapExecutionInteractorInputProtocol {
     func submit(using estimation: AssetExchangeFee) {
+        let initiatingMetaId = selectedWalletSettings.value?.metaId
+
         osMediator.disableScreenSleep()
 
         let wrapper = assetsExchangeService.submit(
@@ -38,10 +49,29 @@ extension SwapExecutionInteractor: SwapExecutionInteractorInputProtocol {
 
             switch result {
             case let .success(amount):
+                self?.revealChainAssetOut(for: initiatingMetaId)
                 self?.presenter?.didCompleteFullExecution(received: amount)
             case let .failure(error):
                 self?.presenter?.didFailExecution(with: error)
             }
         }
+    }
+}
+
+// MARK: Private
+
+private extension SwapExecutionInteractor {
+    func revealChainAssetOut(for metaId: MetaAccountModel.Id?) {
+        guard let metaId else {
+            return
+        }
+
+        visibilityWriter.apply(
+            event: .userInitiatedReceipt,
+            metaId: metaId,
+            ids: [chainAssetOut.chainAssetId],
+            runningCallbackIn: nil,
+            completion: nil
+        )
     }
 }

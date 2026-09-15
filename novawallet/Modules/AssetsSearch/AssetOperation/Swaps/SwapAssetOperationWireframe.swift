@@ -5,21 +5,25 @@ final class SwapAssetsOperationWireframe: SwapAssetsOperationWireframeProtocol {
     let state: SwapTokensFlowStateProtocol
     let selectClosure: SwapAssetSelectionClosure
     let selectClosureStrategy: SubmoduleNavigationStrategy
+    let includesHiddenAssets: Bool
 
     init(
         state: SwapTokensFlowStateProtocol,
         selectClosure: @escaping SwapAssetSelectionClosure,
-        selectClosureStrategy: SubmoduleNavigationStrategy
+        selectClosureStrategy: SubmoduleNavigationStrategy,
+        includesHiddenAssets: Bool
     ) {
         self.state = state
         self.selectClosure = selectClosure
         self.selectClosureStrategy = selectClosureStrategy
+        self.includesHiddenAssets = includesHiddenAssets
     }
 
     func showSelectNetwork(from view: ControllerBackedProtocol?, multichainToken: MultichainToken) {
         guard let selectNetworkView = AssetOperationNetworkListViewFactory.createSwapsView(
             with: multichainToken,
             state: state,
+            includesHiddenAssets: includesHiddenAssets,
             selectClosure: selectClosure,
             selectClosureStrategy: selectClosureStrategy
         ) else {
