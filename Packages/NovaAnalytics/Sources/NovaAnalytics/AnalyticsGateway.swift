@@ -124,7 +124,7 @@ extension AnalyticsGatewayResolver {
 private extension AnalyticsGatewayResolver {
     func deleteAllStoredKeys() {
         execute(
-            wrapper: CompoundOperationWrapper(targetOperation: keyRepository.deleteAllOperation()),
+            operation: keyRepository.deleteAllOperation(),
             inOperationQueue: operationQueue,
             runningCallbackIn: nil
         ) { [weak self] result in
