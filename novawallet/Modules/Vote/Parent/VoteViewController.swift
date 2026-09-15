@@ -46,6 +46,7 @@ final class VoteViewController: UIViewController, ViewHolder {
         super.viewDidAppear(animated)
 
         presenter.becomeOnline()
+        presenter.didOpen(voteType: selectedType)
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -89,6 +90,8 @@ final class VoteViewController: UIViewController, ViewHolder {
 
     @objc func actionVoteTypeChanged() {
         setupChildView()
+
+        presenter.didOpen(voteType: selectedType)
     }
 
     private func setupChildView() {
@@ -135,6 +138,8 @@ extension VoteViewController: VoteViewProtocol {
         rootView.headerView.votingTypeSwitch.selectedSegmentIndex = Int(voteType.rawValue)
 
         setupChildView()
+
+        presenter.didOpen(voteType: voteType)
     }
 
     func showReferendumsDetails(_ index: Referenda.ReferendumIndex) {

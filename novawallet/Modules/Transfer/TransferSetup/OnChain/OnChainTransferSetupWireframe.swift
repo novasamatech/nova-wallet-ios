@@ -2,9 +2,14 @@ import Foundation
 
 class OnChainTransferSetupWireframe: OnChainTransferSetupWireframeProtocol {
     let transferCompletion: TransferCompletionClosure?
+    let analyticsFlow: TransferAnalyticsFlow
 
-    init(transferCompletion: TransferCompletionClosure?) {
+    init(
+        transferCompletion: TransferCompletionClosure?,
+        analyticsFlow: TransferAnalyticsFlow
+    ) {
         self.transferCompletion = transferCompletion
+        self.analyticsFlow = analyticsFlow
     }
 
     func showConfirmation(
@@ -19,7 +24,8 @@ class OnChainTransferSetupWireframe: OnChainTransferSetupWireframeProtocol {
             feeAsset: feeAsset,
             recepient: recepient,
             amount: sendingAmount,
-            transferCompletion: transferCompletion
+            transferCompletion: transferCompletion,
+            analyticsFlow: analyticsFlow
         ) else {
             return
         }

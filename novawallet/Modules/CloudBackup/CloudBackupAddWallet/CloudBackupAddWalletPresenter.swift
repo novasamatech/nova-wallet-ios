@@ -1,10 +1,15 @@
 import Foundation
 import Foundation_iOS
+import NovaAnalytics
 
-final class CloudBackupAddWalletPresenter: BaseUsernameSetupPresenter {
+final class CloudBackupAddWalletPresenter: BaseUsernameSetupPresenter, AnalyticsTracking {
     let wireframe: CloudBackupAddWalletWireframeProtocol
     let interactor: CloudBackupAddWalletInteractorInputProtocol
     let logger: LoggerProtocol
+
+    private let abandonTracker = AnalyticsAbandonTracker {
+        AnalyticsEvent.walletCreationAbandoned(lastStep: .other)
+    }
 
     init(
         interactor: CloudBackupAddWalletInteractorInputProtocol,
@@ -37,6 +42,8 @@ final class CloudBackupAddWalletPresenter: BaseUsernameSetupPresenter {
         super.setup()
 
         provideBadge()
+
+        trackAnalytics(.walletCreationStarted())
     }
 }
 
@@ -49,6 +56,10 @@ extension CloudBackupAddWalletPresenter: UsernameSetupPresenterProtocol {
 
 extension CloudBackupAddWalletPresenter: CloudBackupAddWalletInteractorOutputProtocol {
     func didCreateWallet() {
+        abandonTracker.markProceeded()
+
+        trackAnalytics(.walletCreationCompleted(method: .create, duration: nil))
+
         wireframe.proceed(from: view)
     }
 

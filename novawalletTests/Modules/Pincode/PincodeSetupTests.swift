@@ -21,7 +21,7 @@ class PincodeSetupTests: XCTestCase {
             locale: Locale.current
         )
 
-        let presenter = PinSetupPresenter()
+        let presenter = PinSetupPresenter(isWalletCreation: true)
         presenter.view = view
         presenter.wireframe = wireframe
         presenter.interactor = interactor

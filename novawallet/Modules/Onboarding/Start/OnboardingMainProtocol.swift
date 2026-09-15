@@ -29,6 +29,7 @@ protocol OnboardingMainInteractorInputProtocol: AnyObject {
 }
 
 protocol OnboardingMainInteractorOutputProtocol: AnyObject {
+    func didReceive(hasExistingWallets: Bool)
     func didSuggestSecretImport(source: SecretSource)
     func didSuggestWalletMigration(with message: WalletMigrationMessage.Start)
     func didReceiveError(_ error: Error)

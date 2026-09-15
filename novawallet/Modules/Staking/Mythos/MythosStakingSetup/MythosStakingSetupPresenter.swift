@@ -2,6 +2,7 @@ import Foundation
 import BigInt
 import SubstrateSdk
 import Foundation_iOS
+import NovaAnalytics
 
 final class MythosStakingSetupPresenter {
     weak var view: CollatorStakingSetupViewProtocol?
@@ -13,6 +14,9 @@ final class MythosStakingSetupPresenter {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol
     let dataValidationFactory: MythosStakingValidationFactoryProtocol
+    let stakingType: StakingAnalyticsType
+
+    let abandonTracker: AnalyticsAbandonTracker
 
     private(set) var inputResult: AmountInputResult?
     private(set) var rewardCalculator: CollatorStakingRewardCalculatorEngineProtocol?
@@ -39,6 +43,7 @@ final class MythosStakingSetupPresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol,
         initialStakingDetails: MythosStakingDetails?,
+        stakingType: StakingAnalyticsType,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -49,7 +54,14 @@ final class MythosStakingSetupPresenter {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.accountDetailsViewModelFactory = accountDetailsViewModelFactory
         stakingDetails = initialStakingDetails
+        self.stakingType = stakingType
         self.logger = logger
+        let isStartStakingFlow = initialStakingDetails == nil
+
+        abandonTracker = AnalyticsAbandonTracker {
+            isStartStakingFlow ? AnalyticsEvent.stakingAbandoned(stage: .setup) : nil
+        }
+
         self.localizationManager = localizationManager
     }
 }
@@ -389,15 +401,20 @@ extension MythosStakingSetupPresenter: CollatorStakingSetupPresenterProtocol {
     func proceed() {
         let onSuccess: () -> Void = { [weak self] in
             guard
-                let stakingModel = self?.getStakingModel(),
-                let collator = self?.collatorDisplayAddress else {
+                let self,
+                let stakingModel = getStakingModel(),
+                let collator = collatorDisplayAddress else {
                 return
             }
 
-            self?.wireframe.showConfirmation(
-                from: self?.view,
+            trackStakingInitiated(for: stakingModel)
+
+            abandonTracker.markProceeded()
+
+            wireframe.showConfirmation(
+                from: view,
                 model: MythosStakingConfirmModel(
-                    stakingDetails: self?.stakingDetails,
+                    stakingDetails: stakingDetails,
                     collator: collator,
                     stakeModel: stakingModel
                 )
@@ -519,6 +536,8 @@ extension MythosStakingSetupPresenter: MythosStakingSetupInteractorOutputProtoco
         logger.debug("Staking details: \(String(describing: details))")
 
         stakingDetails = details
+
+        updateAbandonEvent()
 
         provideAssetViewModel()
         provideAmountInputViewModelIfInputRate()

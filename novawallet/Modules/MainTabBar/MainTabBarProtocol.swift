@@ -16,6 +16,7 @@ protocol MainTabBarViewProtocol: ControllerBackedProtocol, MainTabBarProtocol {
 protocol MainTabBarPresenterProtocol: AnyObject {
     func setup()
     func viewDidAppear()
+    func didSelectTab(at index: Int)
     func activateStatusAction()
     func presentStatusAlert(_ closure: FlowStatusPresentingClosure)
     func presentDelayedOperationCreated()
