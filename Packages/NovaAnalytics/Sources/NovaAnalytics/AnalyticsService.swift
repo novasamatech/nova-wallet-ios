@@ -1,7 +1,6 @@
 import Foundation
 import Operation_iOS
 import SDKLogger
-import NovaAppAttest
 
 public final class AnalyticsService {
     private let consent: AnalyticsConsentManagerProtocol
