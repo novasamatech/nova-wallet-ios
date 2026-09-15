@@ -232,7 +232,10 @@ private extension AssetsSearchFlowLayout {
             for: layoutStyle,
             collectionView,
             using: sectionsExpandableState,
-            assetsStartingSection: SectionType.assetsStartingSection,
+            sectionsLayout: .init(
+                startingSection: SectionType.assetsStartingSection,
+                trailingSectionsCount: 0
+            ),
             from: initialY
         )
 

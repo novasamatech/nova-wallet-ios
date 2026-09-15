@@ -10,12 +10,13 @@ struct TokensManageViewFactory {
 
         let wireframe = TokensManageWireframe()
 
-        let formatter = NumberFormatter.positiveQuantity.localizableResource()
+        let formatter = NumberFormatter.quantity.localizableResource()
         let assetIconViewModelFactory = AssetIconViewModelFactory()
 
         let viewModelFactory = TokensManageViewModelFactory(
             quantityFormater: formatter,
-            assetIconViewModelFactory: assetIconViewModelFactory
+            assetIconViewModelFactory: assetIconViewModelFactory,
+            networkViewModelFactory: NetworkViewModelFactory()
         )
 
         let presenter = TokensManagePresenter(
@@ -37,17 +38,26 @@ struct TokensManageViewFactory {
     }
 
     private static func createInteractor() -> TokensManageInteractor? {
-        let repository = SubstrateRepositoryFactory().createChainRepository()
-        let eventCenter = EventCenter.shared
-        let settingsManager = SettingsManager.shared
+        guard let selectedMetaId = SelectedWalletSettings.shared.value?.metaId else {
+            return nil
+        }
+
+        let settingsRepository = AssetVisibilityRepositoryFactory.createSettingsRepository(
+            for: selectedMetaId,
+            using: UserDataStorageFacade.shared
+        )
 
         return .init(
             chainRegistry: ChainRegistryFacade.sharedRegistry,
-            eventCenter: eventCenter,
-            settingsManager: settingsManager,
-            repository: repository,
-            repositoryFactory: SubstrateRepositoryFactory(storageFacade: SubstrateDataStorageFacade.shared),
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            selectedWalletSettings: SelectedWalletSettings.shared,
+            settingsManager: SettingsManager.shared,
+            assetVisibilitySubscriptionFactory: AssetVisibilityLocalSubscriptionFactory.shared,
+            visibilityWriter: AssetVisibilityWriter.shared,
+            settingsRepository: settingsRepository,
+            defaultAssetsProvider: DefaultAssetsProvider.shared,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            settingsSaveQueue: OperationManagerFacade.assetVisibilityQueue,
+            logger: Logger.shared
         )
     }
 }

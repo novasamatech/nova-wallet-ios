@@ -295,7 +295,6 @@ private extension CustomNetworkSetupFactory {
                     typeExtras: nil,
                     buyProviders: nil,
                     sellProviders: nil,
-                    enabled: true,
                     source: .user
                 )
             )
@@ -343,7 +342,6 @@ private extension CustomNetworkSetupFactory {
                 typeExtras: nil,
                 buyProviders: nil,
                 sellProviders: nil,
-                enabled: true,
                 source: .user
             )
 

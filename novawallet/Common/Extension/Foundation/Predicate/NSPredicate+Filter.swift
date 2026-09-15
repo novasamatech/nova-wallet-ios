@@ -527,6 +527,38 @@ extension NSPredicate {
         )
     }
 
+    static func assetVisibility(metaId: MetaAccountModel.Id) -> NSPredicate {
+        NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDAssetVisibility.metaId),
+            metaId
+        )
+    }
+
+    static func assetVisibility(metaIds: Set<MetaAccountModel.Id>) -> NSPredicate {
+        NSPredicate(
+            format: "%K IN %@",
+            #keyPath(CDAssetVisibility.metaId),
+            Array(metaIds)
+        )
+    }
+
+    static func metaAccountSettings(metaId: MetaAccountModel.Id) -> NSPredicate {
+        NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDMetaAccountSettings.metaId),
+            metaId
+        )
+    }
+
+    static func metaAccountSettings(metaIds: Set<MetaAccountModel.Id>) -> NSPredicate {
+        NSPredicate(
+            format: "%K IN %@",
+            #keyPath(CDMetaAccountSettings.metaId),
+            Array(metaIds)
+        )
+    }
+
     static func pendingMultisigOperations(
         for chainId: ChainModel.Id,
         multisigAccountId: AccountId

@@ -35,6 +35,7 @@ class AssetListBaseBuilder {
     private(set) var allChains: [ChainModel.Id: ChainModel] = [:]
     private(set) var allAssetSymbols: Set<AssetModel.Symbol> = []
     private(set) var externalBalancesResult: Result<[ChainAssetId: [ExternalAssetBalance]], Error>?
+    private(set) var defaultRank: [ChainAssetId: Int] = [:]
 
     private(set) var scheduler: Scheduler?
 
@@ -55,7 +56,7 @@ class AssetListBaseBuilder {
             from: [],
             defaultComparingBy: \.chain
         )
-        assetGroups = AssetListModelHelpers.createAssetGroupsDiffCalculator(from: [])
+        assetGroups = AssetListModelHelpers.createAssetGroupsDiffCalculator(from: [], rank: defaultRank)
     }
 
     func rebuildModel() {
@@ -90,7 +91,7 @@ class AssetListBaseBuilder {
             from: [],
             defaultComparingBy: \.chain
         )
-        assetGroups = AssetListModelHelpers.createAssetGroupsDiffCalculator(from: [])
+        assetGroups = AssetListModelHelpers.createAssetGroupsDiffCalculator(from: [], rank: defaultRank)
         groupListsByChain = [:]
         groupListsByAsset = [:]
         externalBalancesResult = nil
@@ -207,7 +208,7 @@ class AssetListBaseBuilder {
             newGroups.append(groupModel)
         }
 
-        assetGroups = AssetListModelHelpers.createAssetGroupsDiffCalculator(from: newGroups)
+        assetGroups = AssetListModelHelpers.createAssetGroupsDiffCalculator(from: newGroups, rank: defaultRank)
         groupListsByAsset = newGroupListsByChain
     }
 
@@ -525,6 +526,22 @@ extension AssetListBaseBuilder {
             self?.resetStorages()
 
             self?.rebuildModelImmediate()
+        }
+    }
+
+    func applyDefaultAssets(_ list: DefaultAssetsList) {
+        workingQueue.async { [weak self] in
+            guard let self else {
+                return
+            }
+
+            defaultRank = list.rank
+            assetGroups = AssetListModelHelpers.createAssetGroupsDiffCalculator(
+                from: assetGroups.allItems,
+                rank: defaultRank
+            )
+
+            scheduleRebuildModel()
         }
     }
 }

@@ -23,6 +23,7 @@ enum UserStorageVersion: String, CaseIterable {
     case version20 = "MultiassetUserDataModel19"
     case version21 = "MultiassetUserDataModel20"
     case version22 = "MultiassetUserDataModel21"
+    case version23 = "MultiassetUserDataModel22"
 
     static var current: UserStorageVersion {
         guard let currentVersion = allCases.last else {
@@ -55,7 +56,8 @@ enum UserStorageVersion: String, CaseIterable {
         case .version19: .version20
         case .version20: .version21
         case .version21: .version22
-        case .version22: nil
+        case .version22: .version23
+        case .version23: nil
         }
     }
 }

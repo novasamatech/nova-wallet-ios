@@ -40,6 +40,7 @@ extension SendAssetsOperationInteractor: AssetsSearchInteractorInputProtocol {
 
         builder = .init(
             filter: filter,
+            includesHiddenAssets: false,
             workingQueue: .init(
                 label: AssetsSearchInteractor.workingQueueLabel,
                 qos: .userInteractive

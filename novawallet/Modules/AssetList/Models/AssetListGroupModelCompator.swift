@@ -23,6 +23,30 @@ enum AssetListGroupModelComparator {
         }
     }
 
+    static func byDefaultRank(
+        _ rank: [ChainAssetId: Int],
+        _ lhs: AssetListAssetGroupModel,
+        _ rhs: AssetListAssetGroupModel
+    ) -> Bool? {
+        let lhsRank = defaultRank(for: lhs.multichainToken, in: rank)
+        let rhsRank = defaultRank(for: rhs.multichainToken, in: rank)
+
+        switch (lhsRank, rhsRank) {
+        case let (lhsRank?, rhsRank?):
+            return lhsRank != rhsRank ? lhsRank < rhsRank : nil
+        case (.some, .none):
+            return true
+        case (.none, .some):
+            return false
+        case (.none, .none):
+            return nil
+        }
+    }
+
+    private static func defaultRank(for token: MultichainToken, in rank: [ChainAssetId: Int]) -> Int? {
+        token.instances.compactMap { rank[$0.chainAssetId] }.min()
+    }
+
     private static func priority(for token: MultichainToken) -> UInt8 {
         let matchesChain: (ChainModel.Id) -> Bool = { knownChainId in
             token.instances.contains { $0.chainAssetId.chainId == knownChainId && $0.utility }
