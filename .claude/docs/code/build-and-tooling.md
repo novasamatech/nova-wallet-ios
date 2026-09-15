@@ -18,7 +18,7 @@ Deployment target iOS 16.0; Swift language version 5.0.
 
 ```bash
 set -o pipefail && xcodebuild -project novawallet.xcodeproj -scheme novawallet \
-  -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 16' \
+  -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
   build 2>&1 | xcbeautify --quiet
 ```
 
@@ -26,7 +26,7 @@ Targeted tests first — the full suite is slow:
 
 ```bash
 set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet \
-  -destination 'platform=iOS Simulator,name=iPhone 16' \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
   -only-testing:novawalletTests/StakingUnbondSetupTests 2>&1 | xcbeautify --quiet
 ```
 
@@ -40,11 +40,14 @@ Integration tests are a separate scheme and are **not** part of CI:
 
 ```bash
 set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawalletIntegrationTests \
-  -destination 'platform=iOS Simulator,name=iPhone 16' 2>&1 | xcbeautify --quiet
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' 2>&1 | xcbeautify --quiet
 ```
 
 Schemes: `novawallet`, `novawalletIntegrationTests`, `NovaPushNotificationServiceExtension`.
-Test device in CI is iPhone 16 (`fastlane/Scanfile`).
+Test device in CI is iPhone 17 Pro (`fastlane/Scanfile`, and the package jobs in
+`.github/workflows/pull_request.yml`). The runner image carries no plain iPhone 16; a raw
+`xcodebuild` destination that names a missing device fails outright, while `scan` silently falls
+back to whatever is available.
 
 ### Local Package Suites
 
@@ -55,11 +58,11 @@ dependency is iOS-only, so `swift test` builds for macOS and fails — test them
 
 ```bash
 (cd Packages/NovaAppAttest && RUN_IN_CI=true xcodebuild test -scheme NovaAppAttest \
-  -destination 'platform=iOS Simulator,name=iPhone 16' -derivedDataPath /tmp/dd-NovaAppAttest)
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -derivedDataPath /tmp/dd-NovaAppAttest)
 (cd Packages/NovaAnalytics && RUN_IN_CI=true xcodebuild test -scheme NovaAnalytics \
-  -destination 'platform=iOS Simulator,name=iPhone 16' -derivedDataPath /tmp/dd-NovaAnalytics)
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -derivedDataPath /tmp/dd-NovaAnalytics)
 (cd Packages/NovaOperationSupport && RUN_IN_CI=true xcodebuild build -scheme NovaOperationSupport \
-  -destination 'platform=iOS Simulator,name=iPhone 16' -derivedDataPath /tmp/dd-NovaOperationSupport)
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -derivedDataPath /tmp/dd-NovaOperationSupport)
 ```
 
 Pin `-derivedDataPath` outside the shared DerivedData folder used by the app build.
