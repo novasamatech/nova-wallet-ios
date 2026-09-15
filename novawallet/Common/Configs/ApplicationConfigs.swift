@@ -227,12 +227,6 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #endif
     }
 
-    /// The identity App Attest binds a key to, or nil when this build carries no App ID prefix and
-    /// therefore cannot produce an attestation the gateway would accept.
-    ///
-    /// The prefix comes from the build's own `$(AppIdentifierPrefix)` expansion rather than a
-    /// constant: Apple does not guarantee it equals the team identifier, and it is hashed into the
-    /// attestation's `rpIdHash`, so a guess fails inside Apple's own check.
     var appAttestAppIdentity: AppAttestAppIdentity? {
         let rawPrefix = Bundle.main.object(forInfoDictionaryKey: "AppIdentifierPrefix") as? String
         let prefix = rawPrefix?.trimmingCharacters(in: CharacterSet(charactersIn: ". ")) ?? ""
@@ -244,13 +238,6 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         return AppAttestAppIdentity(appId: prefix + "." + bundleId, environment: appAttestEnvironment)
     }
 
-    /// Tracks `com.apple.developer.devicecheck.appattest-environment` in the four
-    /// `novawallet*.entitlements` files: the `F_DEV` builds declare `development`, the rest
-    /// `production`. The two must move together — the entitlement decides which environment Apple
-    /// attests in, this string decides which one we claim, and the gateway rejects any pair that
-    /// disagrees. `development` is Apple's sandbox. A TestFlight or App Store build attests as
-    /// `production` whatever the entitlement says, which is safe here because those builds ship the
-    /// `F_RELEASE` branch.
     private var appAttestEnvironment: String {
         #if F_DEV
             "development"
