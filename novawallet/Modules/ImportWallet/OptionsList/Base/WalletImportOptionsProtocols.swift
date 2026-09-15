@@ -10,7 +10,11 @@ protocol WalletImportOptionsPresenterProtocol: AnyObject {
 
 protocol WalletImportOptionsWireframeProtocol {
     func showPassphraseImport(from view: WalletImportOptionsViewProtocol?)
-    func showHardwareImport(from view: WalletImportOptionsViewProtocol?, locale: Locale)
+    func showHardwareImport(
+        from view: WalletImportOptionsViewProtocol?,
+        locale: Locale,
+        onSelection: @escaping (HardwareWalletOptions) -> Void
+    )
     func showWatchOnlyImport(from view: WalletImportOptionsViewProtocol?)
     func showSeedImport(from view: WalletImportOptionsViewProtocol?)
     func showRestoreJsonImport(from view: WalletImportOptionsViewProtocol?)

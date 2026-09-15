@@ -13,6 +13,7 @@ final class SwipeGovVotingConfirmPresenter: BaseReferendumVoteConfirmPresenter {
 
     private var votingItems: [VotingBasketItemLocal] = []
     private var referendums: [ReferendumIdLocal: ReferendumLocal] = [:]
+    private var submittedVotes: [ReferendumNewVote] = []
 
     init(
         initData: ReferendumVotingInitData,
@@ -105,6 +106,9 @@ extension SwipeGovVotingConfirmPresenter: SwipeGovVotingConfirmInteractorOutputP
     func didReceiveSuccessBatchVoting(_ sender: ExtrinsicSenderResolution?) {
         view?.didStopLoading()
 
+        submittedVotes.forEach { trackVoteCast($0) }
+        submittedVotes = []
+
         wireframe.presentExtrinsicSubmission(
             from: view,
             sender: sender,
@@ -158,6 +162,7 @@ private extension SwipeGovVotingConfirmPresenter {
             handlers: handlers,
             successClosure: { [weak self] in
                 guard let self else { return }
+                submittedVotes = votes
                 view?.didStartLoading()
                 interactor.submit(votes: votes)
             }

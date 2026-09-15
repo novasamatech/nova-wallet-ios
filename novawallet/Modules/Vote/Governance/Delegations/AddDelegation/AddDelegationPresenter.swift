@@ -3,7 +3,7 @@ import Foundation_iOS
 import Operation_iOS
 import BigInt
 
-final class AddDelegationPresenter {
+final class AddDelegationPresenter: AnalyticsTracking {
     weak var view: AddDelegationViewProtocol?
     let wireframe: AddDelegationWireframeProtocol
     let interactor: AddDelegationInteractorInputProtocol
@@ -103,6 +103,8 @@ final class AddDelegationPresenter {
 
 extension AddDelegationPresenter: AddDelegationPresenterProtocol {
     func setup() {
+        trackFeatureOpened(.governance)
+
         interactor.setup()
         view?.didReceive(order: selectedOrder)
         view?.didReceive(filter: selectedFilter)

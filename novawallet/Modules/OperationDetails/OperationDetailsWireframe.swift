@@ -1,4 +1,5 @@
 import Foundation
+import NovaAnalytics
 
 final class OperationDetailsWireframe: OperationDetailsWireframeProtocol {
     let operationState: AssetOperationState
@@ -34,6 +35,7 @@ final class OperationDetailsWireframe: OperationDetailsWireframeProtocol {
         guard let swapView = SwapSetupViewFactory.createView(
             state: swapState,
             initState: state,
+            source: .operationDetails,
             swapCompletionClosure: operationState.swapCompletionClosure
         ) else {
             return

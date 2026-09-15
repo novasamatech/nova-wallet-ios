@@ -10,40 +10,47 @@ struct DAppOperationConfirmViewFactory {
         type: DAppSigningType,
         delegate: DAppOperationConfirmDelegate
     ) -> DAppOperationConfirmViewProtocol? {
+        let signAnalyticsContext = DAppSignAnalyticsContext(request: request, type: type)
+
         switch type {
         case let .extrinsic(chain):
-            createGenericView(
+            return createGenericView(
                 for: createExtrinsicInteractor(for: request, chain: chain),
                 chain: .left(chain),
                 delegate: delegate,
+                signAnalyticsContext: signAnalyticsContext,
                 showsNetwork: true
             )
         case let .bytes(chain):
-            createGenericView(
+            return createGenericView(
                 for: createSignBytesInteractor(for: request, chain: chain),
                 chain: .left(chain),
                 delegate: delegate,
+                signAnalyticsContext: signAnalyticsContext,
                 showsNetwork: false
             )
         case let .ethereumSendTransaction(chain):
-            createEvmTransactionView(
+            return createEvmTransactionView(
                 for: chain,
                 request: request,
                 delegate: delegate,
+                signAnalyticsContext: signAnalyticsContext,
                 shouldSendTransaction: true
             )
         case let .ethereumSignTransaction(chain):
-            createEvmTransactionView(
+            return createEvmTransactionView(
                 for: chain,
                 request: request,
                 delegate: delegate,
+                signAnalyticsContext: signAnalyticsContext,
                 shouldSendTransaction: false
             )
         case let .ethereumBytes(chain):
-            createGenericView(
+            return createGenericView(
                 for: createEthereumPersonalSignInteractor(for: request),
                 chain: chain,
                 delegate: delegate,
+                signAnalyticsContext: signAnalyticsContext,
                 showsNetwork: false
             )
         }
@@ -55,6 +62,7 @@ private extension DAppOperationConfirmViewFactory {
         for chain: DAppEitherChain,
         request: DAppOperationRequest,
         delegate: DAppOperationConfirmDelegate,
+        signAnalyticsContext: DAppSignAnalyticsContext?,
         shouldSendTransaction: Bool
     ) -> DAppOperationConfirmViewProtocol? {
         guard
@@ -98,6 +106,7 @@ private extension DAppOperationConfirmViewFactory {
             viewModelFactory: DAppOperationGenericConfirmViewModelFactory(chain: chain),
             balanceViewModelFacade: balanceViewModelFacade,
             chain: chain,
+            signAnalyticsContext: signAnalyticsContext,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
@@ -117,6 +126,7 @@ private extension DAppOperationConfirmViewFactory {
         for interactor: (DAppOperationBaseInteractor & DAppOperationConfirmInteractorInputProtocol)?,
         chain: DAppEitherChain,
         delegate: DAppOperationConfirmDelegate,
+        signAnalyticsContext: DAppSignAnalyticsContext?,
         showsNetwork: Bool
     ) -> DAppOperationConfirmViewProtocol? {
         guard
@@ -142,6 +152,7 @@ private extension DAppOperationConfirmViewFactory {
             viewModelFactory: viewModelFactory,
             balanceViewModelFacade: balanceViewModelFacade,
             chain: chain,
+            signAnalyticsContext: signAnalyticsContext,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )

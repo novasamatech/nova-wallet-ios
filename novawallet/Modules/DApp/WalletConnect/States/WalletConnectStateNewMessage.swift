@@ -1,6 +1,7 @@
 import Foundation
 import WalletConnectSign
 import SubstrateSdk
+import NovaAnalytics
 
 final class WalletConnectStateNewMessage: WalletConnectBaseState {
     struct ResolutionResult {
@@ -25,11 +26,16 @@ final class WalletConnectStateNewMessage: WalletConnectBaseState {
     init(
         message: WalletConnectTransportMessage,
         stateMachine: WalletConnectStateMachineProtocol,
-        logger: LoggerProtocol
+        logger: LoggerProtocol,
+        signingAnalytics: WalletConnectSigningAnalytics
     ) {
         self.message = message
 
-        super.init(stateMachine: stateMachine, logger: logger)
+        super.init(
+            stateMachine: stateMachine,
+            logger: logger,
+            signingAnalytics: signingAnalytics
+        )
     }
 
     private func process(proposal: Session.Proposal, dataSource: DAppStateDataSource) {
@@ -57,7 +63,8 @@ final class WalletConnectStateNewMessage: WalletConnectBaseState {
             proposal: proposal,
             resolution: resolution,
             stateMachine: stateMachine,
-            logger: logger
+            logger: logger,
+            signingAnalytics: signingAnalytics
         )
 
         stateMachine.emit(authRequest: authRequest, nextState: nextState)
@@ -74,7 +81,11 @@ final class WalletConnectStateNewMessage: WalletConnectBaseState {
 
         stateMachine.emit(
             signDecision: decision,
-            nextState: WalletConnectStateReady(stateMachine: stateMachine, logger: logger),
+            nextState: WalletConnectStateReady(
+                stateMachine: stateMachine,
+                logger: logger,
+                signingAnalytics: signingAnalytics
+            ),
             error: error
         )
     }
@@ -131,17 +142,20 @@ final class WalletConnectStateNewMessage: WalletConnectBaseState {
 
         guard let method = WalletConnectMethod(rawValue: request.method) else {
             logger.warning("Rejecting unsupported method: \(request.method)")
+            signingAnalytics.trackSignFailed(request: request, reason: .unsupportedRequest)
             rejectRequest(request: request, reason: nil)
             return
         }
 
         guard let chain = WalletConnectModelFactory.resolveChain(for: request.chainId, chainsStore: chainsStore) else {
+            signingAnalytics.trackSignFailed(request: request, reason: .unsupportedRequest)
             rejectRequest(request: request, reason: "unsupported chain id: \(request.chainId)")
             return
         }
 
         guard
             let accountId = wallet.fetch(for: chain.accountRequest())?.accountId else {
+            signingAnalytics.trackSignFailed(request: request, reason: .unsupportedRequest)
             rejectRequest(request: request, reason: "missing account for chain: \(chain.chainId)")
             return
         }
@@ -170,7 +184,12 @@ final class WalletConnectStateNewMessage: WalletConnectBaseState {
                 operationData: operationData
             )
 
-            let nextState = WalletConnectStateSigning(request: request, stateMachine: stateMachine, logger: logger)
+            let nextState = WalletConnectStateSigning(
+                request: request,
+                stateMachine: stateMachine,
+                logger: logger,
+                signingAnalytics: signingAnalytics
+            )
 
             stateMachine.emit(
                 signingRequest: signingRequest,
@@ -178,6 +197,7 @@ final class WalletConnectStateNewMessage: WalletConnectBaseState {
                 nextState: nextState
             )
         } catch {
+            signingAnalytics.trackSignFailed(request: request, reason: .unsupportedRequest)
             rejectRequest(request: request, reason: "signing failed")
         }
     }
@@ -204,20 +224,26 @@ extension WalletConnectStateNewMessage: WalletConnectStateProtocol {
             process(proposal: proposal, dataSource: dataSource)
         case let .request(request, session):
             guard let session = session else {
+                signingAnalytics.trackSignFailed(request: request, reason: .noSession)
                 rejectRequest(request: request, reason: "missing session for request")
                 return
             }
 
             fetchWallet(for: session, dataSource: dataSource) { [weak self] optWallet in
+                guard let self else {
+                    return
+                }
+
                 if let wallet = optWallet {
-                    self?.processSign(
+                    processSign(
                         request: request,
                         session: session,
                         wallet: wallet,
                         chainsStore: dataSource.chainsStore
                     )
                 } else {
-                    self?.rejectRequest(request: request, reason: "missing wallet for session")
+                    signingAnalytics.trackSignFailed(request: request, reason: .noSession)
+                    rejectRequest(request: request, reason: "missing wallet for session")
                 }
             }
         }
