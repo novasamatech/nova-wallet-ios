@@ -123,19 +123,8 @@ extension AnalyticsGatewayResolver {
 
 private extension AnalyticsGatewayResolver {
     func deleteAllStoredKeys() {
-        let fetchOperation = keyRepository.fetchAllOperation(with: RepositoryFetchOptions())
-
-        let deleteOperation = keyRepository.saveOperation({ [] }, {
-            try fetchOperation.extractNoCancellableResultData().map(\.identifier)
-        })
-
-        deleteOperation.addDependency(fetchOperation)
-
         execute(
-            wrapper: CompoundOperationWrapper(
-                targetOperation: deleteOperation,
-                dependencies: [fetchOperation]
-            ),
+            wrapper: CompoundOperationWrapper(targetOperation: keyRepository.deleteAllOperation()),
             inOperationQueue: operationQueue,
             runningCallbackIn: nil
         ) { [weak self] result in
