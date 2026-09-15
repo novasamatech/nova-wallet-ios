@@ -26,6 +26,7 @@ final class AnalyticsGatewayResolver: AnalyticsGatewayResolving {
     private let operationQueue: OperationQueue
     private let logger: SDKLoggerProtocol
     private let identity: BackendAttestationIdentityProtocol
+    private let keyRepository: AnyDataProviderRepository<AppAttestKeySettings>
 
     private let mutex = NSLock()
     private var gateway: AnalyticsGateway?
@@ -48,6 +49,9 @@ final class AnalyticsGatewayResolver: AnalyticsGatewayResolving {
         self.logger = logger
 
         identity = BackendAttestationIdentity(settingsManager: settingsManager)
+        keyRepository = AnyDataProviderRepository(
+            SettingsAppAttestKeyRepository(settingsManager: settingsManager)
+        )
     }
 
     var resolved: AnalyticsGateway? {
@@ -119,19 +123,26 @@ extension AnalyticsGatewayResolver {
 
 private extension AnalyticsGatewayResolver {
     func deleteAllStoredKeys() {
-        let repository = AnyDataProviderRepository(
-            SettingsAppAttestKeyRepository(settingsManager: settingsManager)
-        )
+        let fetchOperation = keyRepository.fetchAllOperation(with: RepositoryFetchOptions())
 
-        let fetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
-
-        let deleteOperation = repository.saveOperation({ [] }, {
+        let deleteOperation = keyRepository.saveOperation({ [] }, {
             try fetchOperation.extractNoCancellableResultData().map(\.identifier)
         })
 
         deleteOperation.addDependency(fetchOperation)
 
-        operationQueue.addOperations([fetchOperation, deleteOperation], waitUntilFinished: false)
+        execute(
+            wrapper: CompoundOperationWrapper(
+                targetOperation: deleteOperation,
+                dependencies: [fetchOperation]
+            ),
+            inOperationQueue: operationQueue,
+            runningCallbackIn: nil
+        ) { [weak self] result in
+            if case let .failure(error) = result {
+                self?.logger.error("Analytics attest key wipe failed: \(error)")
+            }
+        }
     }
 
     func build(infraURL: URL) -> AnalyticsGateway {
@@ -149,9 +160,7 @@ private extension AnalyticsGatewayResolver {
             appAttest: appAttest,
             remoteFactory: BackendAttestationRemoteFactory(baseURL: infraURL),
             identity: identity,
-            repository: AnyDataProviderRepository(
-                SettingsAppAttestKeyRepository(settingsManager: settingsManager)
-            ),
+            repository: keyRepository,
             gatewayURL: infraURL,
             mode: attestationMode,
             appIdentity: appIdentity,

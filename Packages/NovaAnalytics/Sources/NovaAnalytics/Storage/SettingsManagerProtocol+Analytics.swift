@@ -55,7 +55,6 @@ extension SettingsManagerProtocol {
             set(value: newValue, for: AnalyticsSettingsKey.analyticsConsentEpoch)
         }
     }
-
 }
 
 enum AnalyticsSettingsKey {
