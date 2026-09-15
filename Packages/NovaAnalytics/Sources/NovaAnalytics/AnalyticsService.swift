@@ -75,8 +75,7 @@ public final class AnalyticsService {
         if !consent.isEnabled {
             repairWithdrawnConsent(attestation: attestation)
         } else if availability.remoteState == .disabled {
-            // A remote off that reached disk ahead of its wipe leaves rows a later on would upload.
-            // An unresolved seed keeps them: an opted-in install upgrading was never switched off.
+            // Persisted remote disablement requires a wipe before uploads can resume.
             erasure.request()
         } else {
             erasure.drainOwed()
@@ -193,8 +192,7 @@ private extension AnalyticsService {
         return true
     }
 
-    /// A withdrawal that reached disk without its obligation, or rows, an identity and a gateway
-    /// client left behind by an older build, are repaired on every launch that starts without consent.
+    // A previous withdrawal may have been interrupted before clearing local state.
     func repairWithdrawnConsent(attestation: BackendAttestationProviderProtocol?) {
         if identity.existingInstallId() != nil {
             identity.forgetInstallId()
@@ -316,7 +314,7 @@ extension AnalyticsService: AnalyticsTrackingProtocol {
         reason: AnalyticsFlushReason,
         completion: @escaping () -> Void
     ) {
-        trackInternal(event, schedulesFlush: true) { [weak self] in
+        trackInternal(event, schedulesFlush: false) { [weak self] in
             guard let self else {
                 completion()
 
@@ -331,7 +329,7 @@ extension AnalyticsService: AnalyticsTrackingProtocol {
 // MARK: - Flush and wipe
 
 public extension AnalyticsService {
-    /// Records the event without arming the schedule, for a launch whose flush waits for the foreground.
+    /// Records without scheduling a flush; the caller must flush when ready.
     func trackDeferringFlush(_ event: AnalyticsEvent) {
         trackInternal(event, schedulesFlush: false, completion: nil)
     }
@@ -362,8 +360,7 @@ public extension AnalyticsService {
         cancelFlushLocked()
     }
 
-    /// The wipe obligation reaches disk before the remote off does, so a kill in between leaves
-    /// rows owed a wipe rather than rows a later on would upload.
+    // Persist the wipe obligation before disabling uploads so interruption cannot skip erasure.
     func handleRemoteResolved(isEnabled: Bool) {
         mutex.lock()
 

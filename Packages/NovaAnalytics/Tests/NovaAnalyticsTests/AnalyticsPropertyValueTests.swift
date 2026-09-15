@@ -2,20 +2,20 @@ import XCTest
 @testable import NovaAnalytics
 
 final class AnalyticsPropertyValueTests: XCTestCase {
-    func testEachCaseEncodesToItsJSONPrimitive() throws {
+    func testEncodesJSONValues() throws {
         let props: [String: AnalyticsPropertyValue] = [
-            "a_bool": .bool(true),
-            "c_enum": .enumerated("native_token"),
-            "d_content": .content(.assetSymbol("DOT")!)
+            "enabled": .bool(true),
+            "category": .enumerated("native_token"),
+            "asset": .content(try XCTUnwrap(.assetSymbol("DOT")))
         ]
 
         XCTAssertEqual(
             String(data: try AnalyticsCoding.encoder.encode(props), encoding: .utf8),
-            #"{"a_bool":true,"c_enum":"native_token","d_content":"DOT"}"#
+            #"{"asset":"DOT","category":"native_token","enabled":true}"#
         )
     }
 
-    func testNilPropertiesAreOmittedNotNulled() throws {
+    func testOmitsNilProperties() {
         let event = AnalyticsEvent(
             name: .sendCompleted,
             properties: [
@@ -28,7 +28,7 @@ final class AnalyticsPropertyValueTests: XCTestCase {
         XCTAssertNil(event.properties[.destinationNetwork])
     }
 
-    func testTimestampFormatCarriesMillisecondsInUTC() {
+    func testTimestampIncludesUTCMilliseconds() {
         let formatted = ISO8601MillisFormatter.string(from: Date(timeIntervalSince1970: 1_772_445_600.123))
 
         XCTAssertTrue(formatted.hasSuffix(".123Z"), formatted)

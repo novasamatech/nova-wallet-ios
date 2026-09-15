@@ -33,6 +33,7 @@ final class MainTabBarInteractor: AnyProviderAutoCleaning {
     /// `requestNextOnLaunchAction()` immediately, so without this flag the analytics
     /// sheet would follow the legal sheet in the same launch.
     var didPresentLegalConsentThisLaunch: Bool = false
+    var didPresentAnalyticsConsentThisLaunch: Bool = false
 
     deinit {
         stopServices()
@@ -185,9 +186,7 @@ extension MainTabBarInteractor: MainTabBarInteractorInputProtocol {
     /// Seen is persisted on either decision, so re-onboarding does not re-ask. The queue is
     /// advanced in both branches or `PushNotificationsSetup` would never run.
     func setAnalyticsConsent(enabled: Bool) {
-        if enabled {
-            analyticsConsent.setEnabled(true)
-        }
+        analyticsConsent.setEnabled(enabled && analyticsConsent.isAvailable)
 
         analyticsConsent.markPromptSeen()
 

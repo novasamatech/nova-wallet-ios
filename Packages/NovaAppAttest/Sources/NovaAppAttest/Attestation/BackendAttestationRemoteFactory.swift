@@ -12,8 +12,6 @@ public final class BackendAttestationRemoteFactory {
 // MARK: - Status grading
 
 extension BackendAttestationRemoteFactory {
-    /// Grades a failed bootstrap call. `code` comes from the gateway's error envelope; it is absent
-    /// when a proxy answered instead, and then nothing may be read as a verdict on the installation.
     static func statusError(
         for statusCode: Int,
         expecting successStatus: Int,
@@ -24,12 +22,10 @@ extension BackendAttestationRemoteFactory {
         case successStatus:
             return nil
         case 200 ..< 400:
-            // The gateway answers each bootstrap call with one exact status or an error envelope;
-            // any other success came from something in front of it and binds nothing.
+            // Only the expected status confirms success; intermediaries may return other statuses.
             return .invalidResponse
         case 401, 403, 409:
-            // Only a request that carried the identity can be a verdict on it, and only a code that
-            // says the binding is finished costs a key: an expired challenge is routine.
+            // Retire an identity only when its authenticated request receives a binding error code.
             guard isClientAuthenticated, let code else {
                 return .clientError(statusCode: statusCode)
             }
@@ -128,7 +124,7 @@ private extension BackendAttestationRemoteFactory {
     }
 }
 
-// MARK: - BackendAttestationRemoteFactoryProtocol
+// MARK: - Remote factory protocol
 
 extension BackendAttestationRemoteFactory: BackendAttestationRemoteFactoryProtocol {
     public func registerTarget() throws -> AttestationRequestTarget {
@@ -143,9 +139,7 @@ extension BackendAttestationRemoteFactory: BackendAttestationRemoteFactoryProtoc
         clientId: String,
         purpose: AttestationProfile2.Purpose
     ) -> CompoundOperationWrapper<String> {
-        // A register-purpose challenge is anonymous, but a request-purpose one names a registered
-        // client: the gateway answers it with unknown_client or binding_not_allowed, which are
-        // verdicts on this installation and must be graded as such.
+        // Only request challenges authenticate a registered client and can invalidate its binding.
         let block: NetworkResultFactoryBlock<String> = Self.createResultBlock(
             expecting: Constants.challengeSuccessStatus,
             isClientAuthenticated: purpose == .request

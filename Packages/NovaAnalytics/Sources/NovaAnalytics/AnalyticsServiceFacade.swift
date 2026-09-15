@@ -17,7 +17,6 @@ public final class AnalyticsServiceFacade {
     private let applicationHandler: ApplicationHandlerProtocol
     private let configOperationQueue: OperationQueue
     private let logger: SDKLoggerProtocol
-    /// Held only so the debug screen can retire the identity; nothing in the shipping flow reads it.
     private let attestation: BackendAttestationProviderProtocol?
 
     private let mutex = NSLock()
@@ -28,10 +27,10 @@ public final class AnalyticsServiceFacade {
     private var isFirstLaunchAtSetup: Bool = false
     private var resolutionGeneration: Int = 0
 
-    // A failed fetch never advances this, so a value fetched before it still lands.
+    // Failed fetches must not supersede earlier successful resolutions.
     private var appliedGeneration: Int = 0
 
-    // Serialises the applies, so an older resolution can never land after a newer one.
+    // Serialise updates so older resolutions cannot overwrite newer ones.
     private let resolutionLock = NSLock()
 
     public convenience init(configuration: AnalyticsConfiguration) {
@@ -159,8 +158,7 @@ extension AnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
 
         isSetUp = true
 
-        // Read on the launch path: the host clears its first-launch flag once launch completes,
-        // long before the remote resolution lands.
+        // Capture before the host clears its first-launch flag and remote settings resolve.
         isFirstLaunchAtSetup = isFirstLaunch()
         mutex.unlock()
 
@@ -234,9 +232,7 @@ extension AnalyticsServiceFacade: AnalyticsDebugInspecting {
     }
 
     public func debugResetAttestationIdentity() {
-        // Consent withdrawal and its restoration, back to back: the pair is what mints a new client
-        // id, deletes the key row and clears the gateway brakes, without touching the queue the way
-        // a real opt-out would.
+        // Reset the attestation identity without clearing pending events.
         attestation?.forgetClient()
         attestation?.allowClient()
     }
@@ -259,8 +255,7 @@ private extension AnalyticsServiceFacade {
 
         let remoteWrapper = remoteSettings.createRemoteEnabledWrapper()
 
-        // Applied as the wrapper's own tail, so the launch sequence is ordered behind the
-        // resolution on the queue itself rather than behind a completion block.
+        // Queue the update so launch work cannot overtake the resolved setting.
         let applyOperation = ClosureOperation<Void> { [weak self] in
             let result = Result { try remoteWrapper.targetOperation.extractNoCancellableResultData() }
 

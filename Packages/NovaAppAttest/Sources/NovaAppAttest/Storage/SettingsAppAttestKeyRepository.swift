@@ -6,7 +6,6 @@ enum SettingsAppAttestKeyRepositoryError: Error {
     case sliceFetchUnsupported
 }
 
-/// Persists app attest key rows as one JSON map under a single settings key.
 public final class SettingsAppAttestKeyRepository {
     // Stable on-disk settings key: changing this string orphans every stored row.
     static let storageKey = "appAttestKeys"

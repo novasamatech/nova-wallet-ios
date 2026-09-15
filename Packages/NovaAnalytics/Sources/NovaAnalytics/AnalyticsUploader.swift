@@ -8,7 +8,7 @@ public enum AnalyticsUploadAbort: Error {
     case consentWithdrawn
 }
 
-/// peek → sign → POST → drop, repeated while the gateway keeps accepting batches.
+// peek → sign → POST → drop, repeated while the destination keeps accepting batches.
 public final class AnalyticsUploader {
     private let queue: AnalyticsEventQueueProtocol
     private let identity: AnalyticsIdentityProtocol
@@ -62,7 +62,7 @@ private extension AnalyticsUploader {
         let epoch: Int
     }
 
-    /// The peeked rows split into what the current consent epoch may send and what it must only delete.
+    // Only rows from the current consent epoch may upload.
     struct Page {
         let rows: [AnalyticsPendingEvent]
         let dropIds: [String]
@@ -188,7 +188,10 @@ private extension AnalyticsUploader {
             do {
                 try uploadOperation.extractNoCancellableResultData()
             } catch {
-                return createFailureWrapper(error, batch: batch)
+                let signedClientId = try? headersWrapper.targetOperation
+                    .extractNoCancellableResultData()?[.clientId]
+
+                return createFailureWrapper(error, batch: batch, signedClientId: signedClientId)
             }
 
             return createDropWrapper(batch: batch)
@@ -201,14 +204,20 @@ private extension AnalyticsUploader {
         )
     }
 
-    /// A rejection describes the key or the client rather than the rows, so the batch waits for a
-    /// re-attested key; only a payload the gateway will never accept is dropped.
-    func createFailureWrapper(_ error: Error, batch: Batch) -> CompoundOperationWrapper<BatchOutcome> {
+    // Keep batches for identity errors; discard only permanently rejected payloads.
+    func createFailureWrapper(
+        _ error: Error,
+        batch: Batch,
+        signedClientId: String?
+    ) -> CompoundOperationWrapper<BatchOutcome> {
         if let transportError = error as? AnalyticsTransportError {
             switch transportError {
             case .rejected:
                 logger.warning("Analytics upload rejected, retaining the batch: \(transportError)")
-                attestation.markUnattested()
+
+                if let signedClientId {
+                    attestation.markUnattested(ifCurrentClientId: signedClientId)
+                }
 
                 return .createWithResult(.failed(transportError))
             case .clientError:

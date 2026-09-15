@@ -1,6 +1,6 @@
 import Foundation
 
-/// RFC 9110 requires senders to use IMF-fixdate; the obsolete forms are left unparsed on purpose.
+// RFC 9110 requires senders to use IMF-fixdate; obsolete forms are intentionally unsupported.
 enum HTTPDateFormatter {
     private static let formatter: DateFormatter = {
         let formatter = DateFormatter()

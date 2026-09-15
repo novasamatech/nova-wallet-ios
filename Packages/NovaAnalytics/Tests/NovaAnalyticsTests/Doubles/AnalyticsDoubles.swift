@@ -25,34 +25,23 @@ final class AnalyticsTrackingSpy: AnalyticsTrackingProtocol {
 }
 
 final class AnalyticsUploadingSpy: AnalyticsUploading {
-    var flushStub: (Int) -> CompoundOperationWrapper<Void> = { _ in .createWithResult(()) }
-
     private let recordedMaxBatches = Locked<[Int]>([])
 
     var maxBatchesCalls: [Int] { recordedMaxBatches.value }
 
-    var flushCallCount: Int { maxBatchesCalls.count }
-
-    func reset() {
-        recordedMaxBatches.update { $0 = [] }
-    }
-
     func flushWrapper(maxBatches: Int) -> CompoundOperationWrapper<Void> {
         recordedMaxBatches.update { $0.append(maxBatches) }
 
-        return flushStub(maxBatches)
+        return .createWithResult(())
     }
 }
 
 final class AnalyticsUploadOperationFactorySpy: AnalyticsUploadOperationFactoryProtocol {
-    var uploadResults: [Result<Void, Error>] = []
+    var uploadResult: Result<Void, Error> = .success(())
 
     private let recordedBodies = Locked<[Data]>([])
-    private let recordedCalls = Locked(0)
 
     var sentBodies: [Data] { recordedBodies.value }
-
-    var callCount: Int { recordedCalls.value }
 
     func eventsTarget() throws -> AttestationRequestTarget {
         try AttestationRequestTarget(
@@ -67,27 +56,25 @@ final class AnalyticsUploadOperationFactorySpy: AnalyticsUploadOperationFactoryP
         bodyClosure: @escaping () throws -> Data,
         headersClosure _: @escaping () throws -> [AttestationHeaderKey: String]?
     ) -> BaseOperation<Void> {
-        recordedCalls.update { $0 += 1 }
-
-        let next: Result<Void, Error> = uploadResults.isEmpty ? .success(()) : uploadResults.removeFirst()
+        let result = uploadResult
         let bodies = recordedBodies
 
         return ClosureOperation {
             let body = try bodyClosure()
             bodies.update { $0.append(body) }
 
-            try next.get()
+            try result.get()
         }
     }
 }
 
 final class BackendAttestationProviderSpy: BackendAttestationProviderProtocol {
     private let recordedBodies = Locked<[Data]>([])
-    private let recordedMarkUnattested = Locked(0)
+    private let recordedMarkUnattested = Locked<[String]>([])
 
     var signedBodies: [Data] { recordedBodies.value }
 
-    var markUnattestedCallCount: Int { recordedMarkUnattested.value }
+    var markedUnattestedClientIds: [String] { recordedMarkUnattested.value }
 
     func createSignedHeadersWrapper(
         target _: AttestationRequestTarget,
@@ -105,11 +92,49 @@ final class BackendAttestationProviderSpy: BackendAttestationProviderProtocol {
         )
     }
 
-    func markUnattested() {
-        recordedMarkUnattested.update { $0 += 1 }
+    func markUnattested(ifCurrentClientId clientId: String) {
+        recordedMarkUnattested.update { $0.append(clientId) }
     }
 
     func forgetClient() {}
 
     func allowClient() {}
+}
+
+final class AnalyticsAvailabilityStub: AnalyticsAvailabilityProviderProtocol {
+    let isAvailable = true
+    let remoteState = AnalyticsRemoteState.enabled
+
+    func setRemoteEnabled(_: Bool) {}
+    func addObserver(with _: AnyObject, queue _: DispatchQueue?, closure _: @escaping (Bool) -> Void) {}
+    func removeObserver(by _: AnyObject) {}
+}
+
+final class AnalyticsConsentStub: AnalyticsConsentManagerProtocol {
+    var isEnabled: Bool
+    let isAvailable = true
+    let isPromptSeen = true
+    var isErasureOwed = false
+
+    init(isEnabled: Bool) {
+        self.isEnabled = isEnabled
+    }
+
+    func setEnabled(_ enabled: Bool) { isEnabled = enabled }
+    func setErasureOwed(_ owed: Bool) { isErasureOwed = owed }
+    func markPromptSeen() {}
+    func addObserver(with _: AnyObject, queue _: DispatchQueue?, closure _: @escaping (Bool, Bool) -> Void) {}
+    func removeObserver(by _: AnyObject) {}
+    func addAvailabilityObserver(with _: AnyObject, queue _: DispatchQueue?, closure _: @escaping (Bool) -> Void) {}
+    func removeAvailabilityObserver(by _: AnyObject) {}
+}
+
+final class AnalyticsIdentityStub: AnalyticsIdentityProtocol {
+    let sessionId = "66666666-7777-8888-9999-000000000000"
+    let consentEpoch = 0
+
+    func installId() -> String? { "11111111-2222-3333-4444-555555555555" }
+    func existingInstallId() -> String? { nil }
+    func forgetInstallId() {}
+    func allowCreation() {}
 }

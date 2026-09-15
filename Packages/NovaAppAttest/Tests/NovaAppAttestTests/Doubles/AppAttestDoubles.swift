@@ -29,20 +29,11 @@ final class AppAttestServiceSpy: AppAttestServiceProtocol {
     let isSupported = true
     var attestationError: Error?
 
-    private(set) var generateKeyCallCount = 0
     private(set) var generatedKeyIds: [AppAttestKeyId] = []
     private(set) var attestationKeyIds: [AppAttestKeyId] = []
     private(set) var assertionKeyIds: [AppAttestKeyId] = []
 
-    func reset() {
-        generateKeyCallCount = 0
-        generatedKeyIds = []
-        attestationKeyIds = []
-        assertionKeyIds = []
-    }
-
     func createKeyGenerationOperation() -> BaseOperation<AppAttestKeyId> {
-        generateKeyCallCount += 1
         let keyId = "generated-key-\(UUID().uuidString)"
         generatedKeyIds.append(keyId)
         return ClosureOperation { keyId }
@@ -73,30 +64,11 @@ final class AppAttestServiceSpy: AppAttestServiceProtocol {
 }
 
 final class BackendAttestationRemoteFactorySpy: BackendAttestationRemoteFactoryProtocol {
-    var registerError: Error?
-    var challengeError: Error?
-
-    /// Mirrors the gateway: a request challenge names the client, so it is refused with the
-    /// identity-bearing 401 until a registration has bound one.
-    var isClientRegistered = false
-
-    /// Fails only the register-purpose challenge, so a test can reach that step past the probe.
-    var registerChallengeError: Error?
+    private var isClientRegistered = false
     var onChallenge: (() -> Void)?
 
-    private(set) var challengeCallCount = 0
     private(set) var registerCallCount = 0
-    private(set) var registeredClientIds: [String] = []
     private(set) var challengePurposes: [AttestationProfile2.Purpose] = []
-    private(set) var registrations: [BackendAttestationRegisterRequest] = []
-
-    func reset() {
-        challengeCallCount = 0
-        registerCallCount = 0
-        registeredClientIds = []
-        challengePurposes = []
-        registrations = []
-    }
 
     func registerTarget() throws -> AttestationRequestTarget {
         try AttestationRequestTarget(
@@ -110,14 +82,11 @@ final class BackendAttestationRemoteFactorySpy: BackendAttestationRemoteFactoryP
         clientId _: String,
         purpose: AttestationProfile2.Purpose
     ) -> CompoundOperationWrapper<String> {
-        challengeCallCount += 1
         challengePurposes.append(purpose)
         let hook = onChallenge
-        let error = challengeError ?? (
-            purpose == .request
-                ? (isClientRegistered ? nil : BackendAttestationError.unauthorized(statusCode: 401))
-                : registerChallengeError
-        )
+        let error: BackendAttestationError? = purpose == .request && !isClientRegistered
+            ? .unauthorized(statusCode: 401)
+            : nil
 
         return CompoundOperationWrapper(targetOperation: ClosureOperation {
             hook?()
@@ -131,18 +100,9 @@ final class BackendAttestationRemoteFactorySpy: BackendAttestationRemoteFactoryP
     }
 
     func createRegisterOperation(_ requestClosure: @escaping () throws -> BackendAttestationRegisterRequest) -> BaseOperation<Void> {
-        let error = registerError
-
         return ClosureOperation { [weak self] in
-            let request = try requestClosure()
+            _ = try requestClosure()
             self?.registerCallCount += 1
-            self?.registeredClientIds.append(request.clientId)
-            self?.registrations.append(request)
-
-            if let error {
-                throw error
-            }
-
             self?.isClientRegistered = true
         }
     }

@@ -1,7 +1,6 @@
 import Foundation
 
-/// Content that is not a closed set still never carries free text: every factory fails on anything
-/// outside its grammar, and each grammar sits inside `AnalyticsWirePayloadPolicy.grammar`.
+// Each content grammar must stay within the wire grammar to prevent free-text uploads.
 public struct AnalyticsContentValue: Equatable {
     public enum Kind: CaseIterable {
         case assetSymbol
@@ -29,7 +28,7 @@ public struct AnalyticsContentValue: Equatable {
         make(.networkName, from: name)
     }
 
-    /// Only the host survives. Userinfo makes the whole URL a secret, so such a URL yields nothing.
+    /// Returns only the host; URLs containing credentials are rejected to protect private data.
     public static func dappHost(_ url: URL) -> AnalyticsContentValue? {
         guard url.user == nil, url.password == nil, let host = url.host else {
             return nil

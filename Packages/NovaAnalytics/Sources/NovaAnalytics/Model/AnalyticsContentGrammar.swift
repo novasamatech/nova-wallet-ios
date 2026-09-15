@@ -1,7 +1,6 @@
 import Foundation
 
-/// Membership is checked per unicode scalar rather than per `Character`: canonical equivalence
-/// would otherwise let U+212A KELVIN SIGN pass as "K".
+// Check Unicode scalars to prevent canonical equivalence from accepting U+212A KELVIN SIGN as "K".
 struct AnalyticsContentGrammar {
     let alphabet: CharacterSet
     let lengths: ClosedRange<Int>

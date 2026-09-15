@@ -3,8 +3,7 @@ import Operation_iOS
 
 public struct AnalyticsPendingEvent: Equatable {
     public let identifier: String
-    /// The identity the events endpoint reads, which requires a bare UUID. Kept apart from
-    /// `identifier`, whose sequence prefix orders the queue and is meaningless to the backend.
+    /// A bare UUID for the events endpoint; `identifier` includes a prefix used only for queue ordering.
     public let eventId: String
     public let sequence: Int64
     public let name: String

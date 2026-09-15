@@ -3,15 +3,6 @@ import Operation_iOS
 import NovaOperationSupport
 import SDKLogger
 
-/// Holds one attested App Attest key per (gateway, clientId) row, and retires the client id with it —
-/// the gateway never rebinds an id to a different key. Both are re-minted on a launch's first
-/// invalid-identifier report, generic attestKey failure, identity-bearing 401 and events-endpoint
-/// rejection, and on a consent cycle, which lifts the process-wide gateway rejection and both
-/// gateway-verdict latches but not the two Apple brakes. A gateway client or server error,
-/// serviceUnavailable and a repeat generic attestKey failure open the persisted backoff on an
-/// un-attested row; anything else, a repeat invalid-identifier report included, waits on the flush
-/// schedule. A 401 that retired the identity is retried once in the same request; the events
-/// endpoint instead retains its batch and recovers on the next flush.
 public final class BackendAttestationProvider {
     let appAttest: AppAttestServiceProtocol
     let remoteFactory: BackendAttestationRemoteFactoryProtocol
@@ -65,7 +56,7 @@ public final class BackendAttestationProvider {
 // MARK: - State
 
 extension BackendAttestationProvider {
-    /// Each trigger owns its own per-launch discard, so one spending its brake cannot silence another.
+    // Each trigger gets one discard per launch so one failure cannot suppress another's recovery.
     enum DiscardBrake {
         case invalidKeyId
         case attestationGeneric
@@ -94,8 +85,7 @@ extension BackendAttestationProvider {
         return min(scaled, Constants.maxBackoff)
     }
 
-    /// The window is an absolute persisted date, so a clock moved backwards would wedge attestation for
-    /// the whole shift; nothing this class wrote can sit further out than one full backoff.
+    // Ignore dates beyond the maximum backoff to recover from a clock moving backwards.
     func isBackoffActive(until nextAttemptAt: Date) -> Bool {
         let now = timeProvider()
 
@@ -112,8 +102,7 @@ extension BackendAttestationProvider {
         return needsFreshKey ? nil : attestedKeyId
     }
 
-    /// Checks the epoch while holding the lock that guards the one-shot discard, so a chain the
-    /// consent cycle has already superseded cannot consume the signal armed for its successor.
+    // Check the epoch under the lock so stale work cannot consume the current discard signal.
     func resolveRow(_ stored: AppAttestKeySettings?, epoch: Int) throws -> AppAttestKeySettings? {
         mutex.lock()
 
@@ -138,34 +127,51 @@ extension BackendAttestationProvider {
         }
     }
 
-    func cacheAttestedKeyId(_ keyId: AppAttestKeyId) {
+    // Retain the queued attempt's epoch so it cannot create an identity after consent changes.
+    func createChainContext(epoch: Int) throws -> AttestationChainContext {
         mutex.lock()
 
         defer {
             mutex.unlock()
         }
+
+        try requireEpoch(epoch)
+
+        guard !rejectedForProcess else {
+            throw BackendAttestationError.rejected(statusCode: Constants.rejectedStatusCode)
+        }
+
+        guard let clientId = identity.clientId() else {
+            throw BackendAttestationError.unsupported
+        }
+
+        return AttestationChainContext(
+            clientId: clientId,
+            rowIdentifier: rowIdentifier(for: clientId),
+            epoch: epoch
+        )
+    }
+
+    func cacheAttestedKeyId(_ keyId: AppAttestKeyId, epoch: Int) throws {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        try requireEpoch(epoch)
 
         attestedKeyId = keyId
         needsFreshKey = false
     }
 
-    /// Both consent transitions mint an identity the gateway has never rejected, so its latches start over.
-    /// Apple's verdict on a key describes the device, not the identity, so those brakes stay launch scoped.
-    func clearGatewayBrakes() {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
+    // The caller holds `mutex` across consent changes. Identity rejections reset with consent;
+    // Apple's device-level failure limits remain in effect for this launch.
+    private func clearGatewayBrakes() {
         rejectedForProcess = false
         unattestedMarkedThisLaunch = false
         unauthorizedDiscardedThisLaunch = false
-        // The persisted window a repeating 401 arms is gateway scoped too, so it starts over with
-        // the rest: the row carrying it is ignored once, and the next attempt mints a fresh key
-        // instead of waiting out a brake this consent cycle has already superseded. The cached key
-        // goes with the flag — the credentials gate resolves the row before it reads the cache, so
-        // a key left behind here would answer for a row that was just discarded.
+        // Clear the cache with the row so a discarded key cannot be reused after consent changes.
         attestedKeyId = nil
         needsFreshKey = true
     }
@@ -174,15 +180,30 @@ extension BackendAttestationProvider {
         executeDelete(repository.saveOperation({ [] }, { [identifier] }))
     }
 
-    /// An install owns one gateway client, so with no client id stored every remaining row is an orphan
-    /// of an opt-out that cleared the id before its row delete ran.
+    // Cleanup can run after another consent cycle starts, so preserve the current identity's row.
     func deleteAllRows() {
-        executeDelete(repository.deleteAllOperation())
+        let fetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
+
+        let deleteOperation = repository.saveOperation({ [] }, { [weak self] in
+            let rows = try fetchOperation.extractNoCancellableResultData()
+
+            guard let self else {
+                return []
+            }
+
+            let currentIdentifier = identity.existingClientId().map { self.rowIdentifier(for: $0) }
+
+            return rows.map(\.identifier).filter { $0 != currentIdentifier }
+        })
+
+        deleteOperation.addDependency(fetchOperation)
+
+        executeDelete(deleteOperation, dependencies: [fetchOperation])
     }
 
-    func executeDelete(_ operation: BaseOperation<Void>) {
+    func executeDelete(_ operation: BaseOperation<Void>, dependencies: [Operation] = []) {
         execute(
-            operation: operation,
+            wrapper: CompoundOperationWrapper(targetOperation: operation, dependencies: dependencies),
             inOperationQueue: operationQueue,
             runningCallbackIn: nil
         ) { [weak self] result in
@@ -192,9 +213,12 @@ extension BackendAttestationProvider {
         }
     }
 
-    /// A no-op on an attested row: the gate stops reading `nextAttemptAt` once a key is attested, so a
-    /// window there would only inflate `attemptCount`. The uploader's flush schedule is the brake there.
+    // Attested rows ignore backoff; incrementing their retry count would serve no purpose.
     func applyBackoff(_ context: AttestationChainContext, returningSpentKey: Bool = false) {
+        guard identity.consentEpoch == context.epoch else {
+            return
+        }
+
         let identifier = context.rowIdentifier
 
         let fetchOperation = repository.fetchOperation(
@@ -245,11 +269,17 @@ extension BackendAttestationProvider {
         }
     }
 
-    /// Retires the key and the client id together. The gateway never rebinds an id to a different
-    /// key, so a new key under the old id is refused as a conflict for as long as that install
-    /// lives; the identity has to move with the key it was bound to.
+    // A client identifier cannot bind to a replacement key, so retire both together.
     func discardRowOnce(_ context: AttestationChainContext, brake: DiscardBrake) -> Bool {
         mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        guard identity.consentEpoch == context.epoch else {
+            return false
+        }
 
         let shouldDiscard: Bool
 
@@ -270,8 +300,6 @@ extension BackendAttestationProvider {
             needsFreshKey = true
         }
 
-        mutex.unlock()
-
         guard shouldDiscard else {
             return false
         }
@@ -282,11 +310,17 @@ extension BackendAttestationProvider {
         return true
     }
 
-    /// Returns whether the identity was retired, which is what makes a retry worth running.
     @discardableResult
     func handleFailure(_ error: Error, context: AttestationChainContext?) -> Bool {
+        mutex.lock()
+
+        guard let context, identity.consentEpoch == context.epoch else {
+            mutex.unlock()
+
+            return false
+        }
+
         if let attestationError = error as? BackendAttestationError, case .rejected = attestationError {
-            mutex.lock()
             rejectedForProcess = true
             attestedKeyId = nil
             mutex.unlock()
@@ -296,9 +330,7 @@ extension BackendAttestationProvider {
             return false
         }
 
-        guard let context else {
-            return false
-        }
+        mutex.unlock()
 
         if let serviceError = error as? AppAttestServiceError {
             return handleAppleFailure(serviceError, context: context)
@@ -331,8 +363,7 @@ extension BackendAttestationProvider {
 
             return true
         case .serviceUnavailable:
-            // Apple never produced an attestation, so the key is still unspent and the same one is
-            // retried rather than discarded.
+            // No attestation was produced, so the unspent key can be reused.
             logger.warning("Apple was unavailable; the key stays unspent and waits out a backoff")
             applyBackoff(context, returningSpentKey: true)
 
@@ -347,10 +378,7 @@ extension BackendAttestationProvider {
 
         switch error {
         case .unauthorized:
-            // Once this launch has spent its discard, a repeating 401 would otherwise leave a spent
-            // row with no window: every flush would then mint a fresh key and burn an attestKey call
-            // on a rejection nothing has changed. Fall through to the same brake the other gateway
-            // failures use.
+            // Back off after the launch's discard is spent to avoid generating a key on every flush.
             guard discardRowOnce(context, brake: .unauthorized) else {
                 logger.warning("Gateway refused the identity again this launch; opening the backoff")
                 applyBackoff(context)
@@ -370,14 +398,12 @@ extension BackendAttestationProvider {
         }
     }
 
-    /// Says which way a discard went, so a log reader can tell a retirement from a spent brake.
     func logDisposition(_ didRetire: Bool, retired: String, kept: String) -> Bool {
         logger.warning(didRetire ? retired : kept)
 
         return didRetire
     }
 
-    /// One retry per signing request, and only for the failure a fresh identity can actually fix.
     func shouldRetryAfterRetiring(_ error: Error) -> Bool {
         guard let attestationError = error as? BackendAttestationError else {
             return false
@@ -390,34 +416,20 @@ extension BackendAttestationProvider {
         return true
     }
 
-    /// Whether the gateway has refused this installation for the rest of the process. The only
-    /// reader is the chain, in another file, so the lock stays with the state it guards.
-    var isRejectedForProcess: Bool {
+    func attestedKeyId(from row: AppAttestKeySettings?, epoch: Int) throws -> AppAttestKeyId? {
         mutex.lock()
 
         defer {
             mutex.unlock()
         }
 
-        return rejectedForProcess
-    }
-
-    /// The attested key this row names, remembering it so later requests in the process skip the
-    /// repository entirely.
-    func attestedKeyId(from row: AppAttestKeySettings?) -> AppAttestKeyId? {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
+        try requireEpoch(epoch)
 
         if !needsFreshKey, let cached = attestedKeyId {
             return cached
         }
 
-        // The row was read before the probe went out. A discard that landed while it was in flight
-        // retired exactly that row, so promoting the snapshot here would put the key the gateway
-        // just refused straight back into service and clear the signal asking for a new one.
+        // A discard during the probe invalidates this snapshot; do not restore its rejected key.
         guard !needsFreshKey, let row, row.isAttested else {
             return nil
         }
@@ -428,7 +440,7 @@ extension BackendAttestationProvider {
     }
 }
 
-// MARK: - BackendAttestationProviderProtocol
+// MARK: - Provider protocol
 
 extension BackendAttestationProvider: BackendAttestationProviderProtocol {
     public func createSignedHeadersWrapper(
@@ -436,11 +448,13 @@ extension BackendAttestationProvider: BackendAttestationProviderProtocol {
         bodyClosure: @escaping () throws -> Data
     ) -> CompoundOperationWrapper<[AttestationHeaderKey: String]?> {
         let contextBox = AttestationChainContextBox()
+        let epoch = identity.consentEpoch
 
         let attemptWrapper = createAttemptWrapper(
             target: target,
             bodyClosure: bodyClosure,
-            contextBox: contextBox
+            contextBox: contextBox,
+            epoch: epoch
         )
 
         let retryWrapper = OperationCombiningService<[AttestationHeaderKey: String]?>.compoundNonOptionalWrapper(
@@ -455,17 +469,20 @@ extension BackendAttestationProvider: BackendAttestationProviderProtocol {
 
                 return .createWithResult(headers)
             } catch {
-                // Only worth a second attempt when the first one actually retired the identity the
-                // gateway refused — otherwise this replays the request it just refused. Exactly one
-                // more attempt, never a loop.
+                // Retry once only after retiring the rejected identity.
                 guard shouldRetryAfterRetiring(error), contextBox.didRetire else {
                     throw error
+                }
+
+                guard let context = contextBox.value else {
+                    throw BackendAttestationError.unsupported
                 }
 
                 return createAttemptWrapper(
                     target: target,
                     bodyClosure: bodyClosure,
-                    contextBox: AttestationChainContextBox()
+                    contextBox: AttestationChainContextBox(),
+                    epoch: context.epoch
                 )
             }
         }
@@ -475,14 +492,17 @@ extension BackendAttestationProvider: BackendAttestationProviderProtocol {
         return retryWrapper.insertingHead(operations: attemptWrapper.allOperations)
     }
 
-    public func markUnattested() {
-        guard let clientId = identity.existingClientId() else {
-            logger.warning("Events endpoint refused the assertion while no client id was stored")
+    public func markUnattested(ifCurrentClientId clientId: String) {
+        mutex.lock()
 
+        defer {
+            mutex.unlock()
+        }
+
+        guard identity.existingClientId() == clientId else {
             return
         }
 
-        mutex.lock()
         let shouldDiscard = !unattestedMarkedThisLaunch
 
         if shouldDiscard {
@@ -490,8 +510,6 @@ extension BackendAttestationProvider: BackendAttestationProviderProtocol {
             attestedKeyId = nil
             needsFreshKey = true
         }
-
-        mutex.unlock()
 
         guard shouldDiscard else {
             logger.warning("Events endpoint refused the assertion again; keeping the key until relaunch")
@@ -504,16 +522,15 @@ extension BackendAttestationProvider: BackendAttestationProviderProtocol {
     }
 
     public func forgetClient() {
+        mutex.lock()
+
         let clientId = identity.existingClientId()
 
-        mutex.lock()
-        attestedKeyId = nil
-        needsFreshKey = true
-        mutex.unlock()
+        identity.forgetClientId()
 
         clearGatewayBrakes()
 
-        identity.forgetClientId()
+        mutex.unlock()
 
         if let clientId {
             deleteRow(rowIdentifier(for: clientId))
@@ -523,8 +540,25 @@ extension BackendAttestationProvider: BackendAttestationProviderProtocol {
     }
 
     public func allowClient() {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        let clientId = identity.existingClientId()
+
+        // A distinct row prevents writes prepared before consent changes from reaching the new identity.
+        if let clientId {
+            identity.resetClientId(ifCurrent: clientId)
+        }
+
         identity.allowCreation()
 
         clearGatewayBrakes()
+
+        if let clientId {
+            deleteRow(rowIdentifier(for: clientId))
+        }
     }
 }

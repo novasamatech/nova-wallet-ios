@@ -21,8 +21,8 @@ extension AnalyticsPropertyValue: Encodable {
     }
 }
 
-/// Conformers are closed value sets or grammar-checked content only. `String` must never conform:
-/// free text would carry user data to the gateway.
+/// Conformers must use closed value sets or validated content; `String` must never conform to prevent
+/// free text from exposing private data.
 public protocol AnalyticsPropertyConvertible {
     var analyticsValue: AnalyticsPropertyValue { get }
 }

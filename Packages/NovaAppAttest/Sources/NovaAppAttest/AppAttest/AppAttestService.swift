@@ -5,8 +5,7 @@ import Operation_iOS
 public protocol AppAttestServiceProtocol {
     var isSupported: Bool { get }
 
-    /// Split from attestation so the caller can persist the identifier before attesting it:
-    /// Apple offers no way to recover a key identifier once it is lost.
+    /// Persist the generated identifier before attesting; Apple cannot recover a lost identifier.
     func createKeyGenerationOperation() -> BaseOperation<AppAttestKeyId>
 
     func createAttestationWrapper(

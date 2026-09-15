@@ -97,14 +97,20 @@ private extension MainTabBarInteractor {
         }
     }
 
-    func showAnalyticsConsentOrNextAction() {
-        guard AnalyticsConsentPromptGate.isPossible(
+    func canPresentAnalyticsConsent() -> Bool {
+        AnalyticsConsentPromptGate.isPossible(
             hasWallet: walletSettings.hasValue,
             isPromptSeen: analyticsConsent.isPromptSeen,
             isAvailable: analyticsConsent.isAvailable,
             isEnabled: analyticsConsent.isEnabled,
             didPresentLegalConsentThisLaunch: didPresentLegalConsentThisLaunch
-        ) else {
+        )
+    }
+
+    func showAnalyticsConsentOrNextAction() {
+        guard !didPresentAnalyticsConsentThisLaunch else { return }
+
+        guard canPresentAnalyticsConsent() else {
             onLaunchQueue.runNext()
             return
         }
@@ -120,7 +126,8 @@ private extension MainTabBarInteractor {
 
             guard
                 case let .success(legalStatus) = result,
-                AnalyticsConsentPromptGate.allows(legalStatus: legalStatus)
+                AnalyticsConsentPromptGate.allows(legalStatus: legalStatus),
+                canPresentAnalyticsConsent()
             else {
                 onLaunchQueue.runNext()
                 return
@@ -129,12 +136,14 @@ private extension MainTabBarInteractor {
             // Not `scheduleExecutionIfAuthorized`: it drops its closure when authorization
             // fails, which would stall the queue and suppress every later prompt.
             securedLayer.scheduleExecution { [weak self] isAuthorized in
-                guard let self else { return }
+                guard let self, !didPresentAnalyticsConsentThisLaunch else { return }
 
-                guard isAuthorized else {
+                guard isAuthorized, canPresentAnalyticsConsent() else {
                     onLaunchQueue.runNext()
                     return
                 }
+
+                didPresentAnalyticsConsentThisLaunch = true
 
                 presenter?.didRequestAnalyticsConsentOpen()
             }

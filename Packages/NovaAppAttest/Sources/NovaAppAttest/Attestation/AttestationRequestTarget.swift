@@ -6,13 +6,7 @@ public enum AttestationRequestTargetError: Error {
     case invalidPath
 }
 
-/// The frozen HTTP target a proof is issued for.
-///
-/// The caller builds one and uses it both to construct the request and to ask for a proof, so the
-/// bytes that are sent and the bytes that are attested cannot drift apart. The fields are the ones
-/// the gateway's canonical form needs — method, origin, path and content type — split the way it
-/// needs them rather than the way `URL` happens to store them. Only `url`, `method`, `contentType`
-/// and `origin` have readers today; the rest is what the request proof has to commit to.
+/// Use the same target to construct the HTTP request and its proof so their signed fields match.
 public struct AttestationRequestTarget: Equatable {
     public let url: URL
     public let method: String
@@ -56,9 +50,8 @@ public struct AttestationRequestTarget: Equatable {
 // MARK: - Canonical origin
 
 public extension AttestationRequestTarget {
-    /// `scheme://host[:port]`, carrying the port only when it is not the scheme's default — the
-    /// spelling the gateway signs. Nil when the URL cannot be addressed that way. Deliberately
-    /// independent of the path, so it can name the origin of a base URL.
+    /// Returns `scheme://host[:port]` with default ports omitted, or nil for an unsupported origin.
+    /// The path does not affect the result.
     static func origin(of url: URL) -> String? {
         guard
             let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
@@ -87,8 +80,7 @@ private extension AttestationRequestTarget {
         }
     }
 
-    /// The single place the host is validated and the default port is folded away, so the origin a
-    /// request is refused against is spelled exactly like the origin it is compared to.
+    // Share normalization so origin validation and proof construction compare identical strings.
     static func canonicalAuthority(
         scheme: String,
         components: URLComponents

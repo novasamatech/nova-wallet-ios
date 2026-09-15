@@ -14,7 +14,7 @@ final class AnalyticsWirePayloadPolicyTests: XCTestCase {
         )
     }
 
-    func testWellFormedRowBecomesTheWireEvent() throws {
+    func testConvertsValidRow() throws {
         let row = makeRow(payload: #"{"asset":"DOT","is_cross_chain":false}"#)
 
         XCTAssertEqual(
@@ -28,7 +28,7 @@ final class AnalyticsWirePayloadPolicyTests: XCTestCase {
         )
     }
 
-    func testFreeTextValueMarksTheRowAsPoison() {
+    func testRejectsFreeText() {
         let row = makeRow(payload: #"{"asset":"my savings wallet!"}"#)
 
         XCTAssertThrowsError(try AnalyticsWirePayloadPolicy.vet(row)) { error in

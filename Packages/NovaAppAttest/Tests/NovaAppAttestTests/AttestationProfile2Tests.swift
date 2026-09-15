@@ -1,8 +1,6 @@
 import XCTest
 @testable import NovaAppAttest
 
-/// Pins the framing against the gateway's own `contracts/profile-2-vectors.json`. These are the
-/// bytes the server rebuilds and compares, so a change here is a wire break, not a refactor.
 final class AttestationProfile2Tests: XCTestCase {
     private struct Vector {
         let name: String
@@ -53,7 +51,7 @@ final class AttestationProfile2Tests: XCTestCase {
         ]
     }
 
-    func testThePreimageMatchesEveryGatewayVector() throws {
+    func testPreimageMatchesGatewayVectors() throws {
         for vector in vectors {
             let target = try AttestationRequestTarget(
                 url: XCTUnwrap(URL(string: vector.url)),
@@ -74,7 +72,7 @@ final class AttestationProfile2Tests: XCTestCase {
         }
     }
 
-    func testTheRegistrationBindingDigestMatchesTheGatewayVector() {
+    func testRegistrationDigestMatchesGatewayVector() {
         let digest = AttestationProfile2.registrationDigest(
             platform: "ios",
             appId: "ABCDEFGHIJ.com.example.nova",

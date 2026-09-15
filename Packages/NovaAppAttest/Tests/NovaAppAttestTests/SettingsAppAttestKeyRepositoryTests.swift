@@ -9,7 +9,7 @@ final class SettingsAppAttestKeyRepositoryTests: XCTestCase {
         return try operation.extractNoCancellableResultData()
     }
 
-    func testSavedRowIsFetchedBackById() throws {
+    func testSavesAndFetchesKeySettings() throws {
         let repository = SettingsAppAttestKeyRepository(settingsManager: InMemorySettingsManager())
         let row = AppAttestKeySettings(identifier: "gateway|client-a", keyId: "key-a", isAttested: true)
 
@@ -20,7 +20,7 @@ final class SettingsAppAttestKeyRepositoryTests: XCTestCase {
         XCTAssertEqual(fetched, row)
     }
 
-    func testLegacyRowWithoutTheBackoffFieldsStillDecodes() throws {
+    func testDecodesLegacyKeySettings() throws {
         let settings = InMemorySettingsManager()
         let legacy = Data(#"{"a":{"identifier":"a","keyId":"key-a","isAttested":true}}"#.utf8)
         settings.set(value: legacy, for: SettingsAppAttestKeyRepository.storageKey)

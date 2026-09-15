@@ -3,8 +3,7 @@ import Keystore_iOS
 import Operation_iOS
 import NovaAppAttest
 
-/// Unresolved reads as unavailable, so nothing is prompted, recorded or uploaded before the
-/// remote switch has been read at least once on this install.
+// Unresolved settings disable analytics until the remote switch has been read on this install.
 public final class AnalyticsAvailabilityProvider {
     private struct ObserverWrapper {
         weak var owner: AnyObject?

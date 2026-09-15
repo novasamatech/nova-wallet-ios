@@ -1,6 +1,6 @@
 import Foundation
 
-/// The raw values are the wire contract and must not be renamed.
+// The raw values are the wire contract and must not be renamed.
 public enum AnalyticsEventName: String, CaseIterable {
     case appOpened = "app_opened"
     case sessionStarted = "session_started"

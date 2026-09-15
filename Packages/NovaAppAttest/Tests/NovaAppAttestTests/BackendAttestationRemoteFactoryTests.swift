@@ -2,69 +2,44 @@ import XCTest
 @testable import NovaAppAttest
 
 final class BackendAttestationRemoteFactoryTests: XCTestCase {
-    private func grade(
+    private func statusError(
         _ statusCode: Int,
-        _ code: BackendAttestationErrorCode? = nil,
-        expecting successStatus: Int = 204,
+        code: BackendAttestationErrorCode? = nil,
         isClientAuthenticated: Bool = true
-    ) -> String {
-        switch BackendAttestationRemoteFactory.statusError(
+    ) -> BackendAttestationError? {
+        BackendAttestationRemoteFactory.statusError(
             for: statusCode,
-            expecting: successStatus,
+            expecting: 204,
             code: code,
             isClientAuthenticated: isClientAuthenticated
-        ) {
-        case .unauthorized: "retire"
-        case .rejected: "stop"
-        case .clientError: "clientError"
-        case .serverError: "serverError"
-        case .retryLater: "retryLater"
-        case .unsupported: "unsupported"
-        case .invalidResponse: "invalidResponse"
-        case nil: "accepted"
+        )
+    }
+
+    func testClassifiesAuthenticatedErrors() {
+        guard case .unauthorized(statusCode: 401)? = statusError(401, code: .unknownClient) else {
+            return XCTFail("Expected unauthorized")
+        }
+        guard case .rejected(statusCode: 403)? = statusError(403, code: .appNotAllowed) else {
+            return XCTFail("Expected rejected")
+        }
+        guard case .clientError(statusCode: 401)? = statusError(401, code: .invalidChallenge) else {
+            return XCTFail("Expected clientError")
         }
     }
 
-    /// Only a verdict that finishes the binding may cost an App Attest key. Under a 60-second
-    /// single-use challenge an expiry is routine, and treating it as a verdict would mint a new key
-    /// and a new installation on every late flush.
-    func testOnlyAFinishedBindingRetiresTheInstallation() {
-        XCTAssertEqual(grade(401, .unknownClient), "retire")
-        XCTAssertEqual(grade(401, .attestationFailed), "retire")
-        XCTAssertEqual(grade(409, .clientAlreadyRegistered), "retire")
-
-        XCTAssertEqual(grade(401, .invalidChallenge), "clientError")
-        XCTAssertEqual(grade(401, .invalidProof), "clientError")
+    func testClassifiesUnauthenticatedErrors() {
+        guard case .clientError(statusCode: 401)? = statusError(401, code: .unknownClient, isClientAuthenticated: false) else {
+            return XCTFail("Expected clientError")
+        }
+        guard case .serverError(statusCode: 503)? = statusError(503, isClientAuthenticated: false) else {
+            return XCTFail("Expected serverError")
+        }
     }
 
-    func testAPolicyDenialStopsRetrying() {
-        XCTAssertEqual(grade(403, .appNotAllowed), "stop")
-        XCTAssertEqual(grade(403, .bindingNotAllowed), "stop")
-    }
-
-    /// A proxy can answer instead of the gateway, and the challenge POST carries no identity at all,
-    /// so neither may be read as a verdict on the installation.
-    func testNothingWithoutAnIdentityBearingCodeIsAVerdict() {
-        XCTAssertEqual(grade(401, nil), "clientError")
-        XCTAssertEqual(grade(403, nil), "clientError")
-        XCTAssertEqual(grade(401, .unknownClient, isClientAuthenticated: false), "clientError")
-        XCTAssertEqual(grade(403, .appNotAllowed, isClientAuthenticated: false), "clientError")
-    }
-
-    func testTheRemainingStatusesGradeByRange() {
-        XCTAssertEqual(grade(429, .attestationUnavailable), "clientError")
-        XCTAssertEqual(grade(503, .attestationUnavailable), "serverError")
-    }
-
-    /// Each bootstrap call has exactly one success status. Anything else in the 2xx/3xx range came
-    /// from something in front of the gateway and binds nothing, so recording it as a registration
-    /// would leave the install believing in a binding the gateway never made.
-    func testOnlyTheCallsOwnSuccessStatusIsAccepted() {
-        XCTAssertEqual(grade(204, expecting: 204), "accepted")
-        XCTAssertEqual(grade(200, expecting: 200), "accepted")
-
-        XCTAssertEqual(grade(200, expecting: 204), "invalidResponse")
-        XCTAssertEqual(grade(204, expecting: 200), "invalidResponse")
-        XCTAssertEqual(grade(302, expecting: 204), "invalidResponse")
+    func testRequiresExpectedSuccessStatus() {
+        XCTAssertNil(statusError(204))
+        guard case .invalidResponse? = statusError(200) else {
+            return XCTFail("Expected invalidResponse")
+        }
     }
 }

@@ -4,15 +4,14 @@ enum AnalyticsWirePayloadPolicyError: Error {
     case freeText
 }
 
-/// The last gate before a body is signed: every string read back from a stored row must fit the
-/// boundary grammar, otherwise the row is poison and never reaches an envelope.
+// Revalidate stored strings before signing to prevent free text from reaching an envelope.
 enum AnalyticsWirePayloadPolicy {
     static let grammar = AnalyticsContentGrammar(
         alphabet: AnalyticsContentGrammar.Alphabet.alphanumerics.union(CharacterSet(charactersIn: " ._:-()")),
         lengths: 1 ... 64
     )
 
-    /// Ids are minted and names and keys are declared, so none of them ever needs registry punctuation.
+    // Generated IDs and declared names and keys need no registry punctuation.
     static let identifierGrammar = AnalyticsContentGrammar(
         alphabet: AnalyticsContentGrammar.Alphabet.alphanumerics.union(CharacterSet(charactersIn: "._-")),
         lengths: 1 ... 64

@@ -2,7 +2,6 @@ import Foundation
 import Operation_iOS
 import NovaOperationSupport
 
-/// Attesting a key with Apple and binding it at the gateway.
 extension BackendAttestationProvider {
     func createAttestAndRegisterWrapper(
         clientId: String,
@@ -32,15 +31,12 @@ extension BackendAttestationProvider {
             isAttestationSpent: true,
             context: context
         ) {
-            // The challenge this row is sequenced after, read so its failure actually stops the
-            // write: a failed dependency still lets its dependents run, and recording the key as
-            // spent when `attestKey` never saw it orphans a Secure Enclave key for good.
+            // Failed dependencies do not stop dependents; a failed challenge must leave the key unspent.
             _ = try challengeWrapper.targetOperation.extractNoCancellableResultData()
 
             return try keyIdWrapper.targetOperation.extractNoCancellableResultData()
         }
 
-        // Sequenced after the challenge, which also keeps the row read as late as possible.
         markSpentWrapper.addDependency(operations: [challengeWrapper.targetOperation])
 
         let attestationWrapper = createAttestationWrapper(
@@ -89,8 +85,7 @@ extension BackendAttestationProvider {
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
 
-    /// Apple offers no way to look a key identifier up again, so a freshly minted one is written
-    /// before it is attested — otherwise a failed attestation orphans a production key for good.
+    // Persist before attesting because Apple cannot recover a lost key identifier.
     func createKeyIdWrapper(
         context: AttestationChainContext,
         existingKeyId: AppAttestKeyId?
@@ -143,8 +138,6 @@ extension BackendAttestationProvider {
 
             try requireEpoch(context.epoch)
 
-            // The registration proof commits to the register POST itself, and carries the binding
-            // digest where a protected request carries its body digest.
             let target = try remoteFactory.registerTarget()
             let identity = appIdentity
 
@@ -210,23 +203,13 @@ extension BackendAttestationProvider {
                 throw BackendAttestationError.unsupported
             }
 
-            try requireEpoch(context.epoch)
-
-            cacheAttestedKeyId(keyId)
+            try cacheAttestedKeyId(keyId, epoch: context.epoch)
 
             return keyId
         }
     }
 
-    /// Writes the row, carrying its persisted `attemptCount` forward so a failure landing after this
-    /// save cannot reset the backoff ladder to its first rung.
-    ///
-    /// The count is fetched here rather than threaded down from the gate's snapshot: the gate reads
-    /// the row before the probe leaves the device, and `applyBackoff`'s increment is a fire-and-forget
-    /// write that may still be in flight then. Carrying a count onto an attested row is harmless —
-    /// `applyBackoff` writes only on an un-attested row and the gate ignores `nextAttemptAt` once a
-    /// row is attested — and every attested-to-unattested transition deletes the row rather than
-    /// rewriting it, so no episode inherits another's count.
+    // Read the latest retry count so an earlier snapshot cannot reset a concurrent backoff update.
     func createSaveWrapper(
         isAttested: Bool,
         isAttestationSpent: Bool,
@@ -249,8 +232,7 @@ extension BackendAttestationProvider {
 
             try requireEpoch(context.epoch)
 
-            // A failed read must not abort the write: losing the ladder's position costs one wasted
-            // window, while failing to persist a minted key orphans it for good.
+            // Preserve the new key even if the retry count cannot be read; lost key IDs are unrecoverable.
             let existing = (try? fetchOperation.extractNoCancellableResultData()) ?? nil
 
             return [

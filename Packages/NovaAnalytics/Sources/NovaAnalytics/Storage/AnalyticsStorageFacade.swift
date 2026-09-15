@@ -2,7 +2,7 @@ import Foundation
 import CoreData
 import Operation_iOS
 
-/// The analytics queue's own store, separate from the app's `UserDataModel.sqlite`.
+// Use a separate store so analytics data can be erased independently of wallet data.
 public final class AnalyticsStorageFacade {
     public static let databaseName = "AnalyticsDataModel.sqlite"
 

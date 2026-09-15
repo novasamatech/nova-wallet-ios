@@ -2,14 +2,12 @@ import Foundation
 import Operation_iOS
 import NovaOperationSupport
 
-/// Building the proof a single protected request travels with.
 extension BackendAttestationProvider {
-    /// One full signing attempt. `contextBox` carries out what its failure handler learned: which
-    /// identity ran, and whether that identity was retired.
     func createAttemptWrapper(
         target: AttestationRequestTarget,
         bodyClosure: @escaping () throws -> Data,
-        contextBox: AttestationChainContextBox
+        contextBox: AttestationChainContextBox,
+        epoch: Int
     ) -> CompoundOperationWrapper<[AttestationHeaderKey: String]?> {
         let wrapper = OperationCombiningService<[AttestationHeaderKey: String]?>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
@@ -21,7 +19,8 @@ extension BackendAttestationProvider {
             return createHeadersWrapper(
                 target: target,
                 bodyClosure: bodyClosure,
-                contextBox: contextBox
+                contextBox: contextBox,
+                epoch: epoch
             )
         }
 
@@ -45,14 +44,9 @@ extension BackendAttestationProvider {
     func createHeadersWrapper(
         target: AttestationRequestTarget,
         bodyClosure: @escaping () throws -> Data,
-        contextBox: AttestationChainContextBox
+        contextBox: AttestationChainContextBox,
+        epoch: Int
     ) -> CompoundOperationWrapper<[AttestationHeaderKey: String]?> {
-        guard !isRejectedForProcess else {
-            return .createWithError(
-                BackendAttestationError.rejected(statusCode: Constants.rejectedStatusCode)
-            )
-        }
-
         switch mode {
         case .unavailable:
             return .createWithError(BackendAttestationError.unsupported)
@@ -60,8 +54,7 @@ extension BackendAttestationProvider {
             break
         }
 
-        // The proof does not name its destination yet, so refusing an off-gateway target here is
-        // what keeps an assertion minted for this client from being spent against another host.
+        // Restrict signing to the configured origin so another host cannot obtain this client's proof.
         guard let gatewayOrigin else {
             logger.error("Gateway URL \(gatewayURL) has no canonical origin; nothing can be attested")
 
@@ -74,22 +67,18 @@ extension BackendAttestationProvider {
             return .createWithError(BackendAttestationError.unsupported)
         }
 
-        let epoch = identity.consentEpoch
+        let context: AttestationChainContext
 
-        guard let clientId = identity.clientId(), identity.consentEpoch == epoch else {
-            return .createWithError(BackendAttestationError.unsupported)
+        do {
+            context = try createChainContext(epoch: epoch)
+        } catch {
+            return .createWithError(error)
         }
-
-        let context = AttestationChainContext(
-            clientId: clientId,
-            rowIdentifier: rowIdentifier(for: clientId),
-            epoch: epoch
-        )
 
         contextBox.store(context)
 
         return createSignedChainWrapper(
-            clientId: clientId,
+            clientId: context.clientId,
             context: context,
             target: target,
             bodyClosure: bodyClosure
@@ -149,8 +138,7 @@ extension BackendAttestationProvider {
             .insertingTail(operation: mapOperation)
     }
 
-    /// The persisted window, read before anything leaves the device: a challenge spent behind an
-    /// open backoff would only be refused again, and it still costs the gateway's rate limit.
+    // Check persisted backoff before requesting a challenge to avoid consuming its rate limit.
     func createGateOperation(
         context: AttestationChainContext,
         fetchOperation: BaseOperation<AppAttestKeySettings?>
@@ -180,10 +168,7 @@ extension BackendAttestationProvider {
         return gateOperation
     }
 
-    /// The gateway's verdict on whether this installation is still registered.
-    ///
-    /// Built inside the closure rather than up front: a failed dependency still lets its dependents
-    /// run, so a probe created eagerly would reach the gateway straight through an open backoff.
+    // Failed dependencies do not stop dependents; create the probe only after the backoff check succeeds.
     func createProbeWrapper(
         clientId: String,
         context: AttestationChainContext,
@@ -208,13 +193,7 @@ extension BackendAttestationProvider {
         return probeWrapper
     }
 
-    /// Asks the gateway for a request challenge before any App Attest work happens.
-    ///
-    /// Registration is what the gateway asks for when it answers `unknown_client`, never something
-    /// this client decides for itself from local state: a challenge it grants means the installation
-    /// is still bound, and the key that binding names answers it with no attestation at all. The
-    /// cost of reading the verdict from the gateway rather than from disk is one refused challenge
-    /// on the first request of an unregistered install.
+    // Probe registration status before attesting; local state can outlive the remote binding.
     func createCredentialsWrapper(
         clientId: String,
         context: AttestationChainContext
@@ -250,9 +229,7 @@ extension BackendAttestationProvider {
             do {
                 challenge = try probeWrapper.targetOperation.extractNoCancellableResultData()
             } catch {
-                // A request challenge names the client, so the only verdict here that means "not
-                // registered" is the identity-bearing 401. Anything else — a policy refusal, a
-                // transport failure — is not an invitation to attest.
+                // Only an identity rejection requires registration; other failures must propagate.
                 guard
                     let attestationError = error as? BackendAttestationError,
                     case .unauthorized = attestationError
@@ -267,15 +244,13 @@ extension BackendAttestationProvider {
                 )
             }
 
-            if let keyId = attestedKeyId(from: row) {
+            if let keyId = try attestedKeyId(from: row, epoch: context.epoch) {
                 return .createWithResult(
                     AttestationCredentials(challenge: challenge, keyId: keyId)
                 )
             }
 
-            // Bound at the gateway but with no key left here, so the binding cannot be answered.
-            // Registering is the only way back, and a binding that really does survive answers it
-            // with the conflict this provider retires the installation on.
+            // A missing local key requires registration; a binding conflict then retires the identity.
             return createRegisteredCredentialsWrapper(
                 clientId: clientId,
                 context: context,
@@ -290,15 +265,13 @@ extension BackendAttestationProvider {
         )
     }
 
-    /// Registers, then takes the challenge the proof actually travels with: the probe's own
-    /// challenge was either refused outright or has been outlived by `attestKey`.
+    // Request a fresh challenge after attestation, which can outlast the probe's challenge.
     func createRegisteredCredentialsWrapper(
         clientId: String,
         context: AttestationChainContext,
         row: AppAttestKeySettings?
     ) -> CompoundOperationWrapper<AttestationCredentials> {
-        // Apple attests a key once: a row whose attestation was already spent needs a new key, not a
-        // second attestKey call that can only fail.
+        // Apple attests each key only once.
         let reusableKeyId = row?.isAttestationSpent == true ? nil : row?.keyId
 
         let registerWrapper = createAttestAndRegisterWrapper(

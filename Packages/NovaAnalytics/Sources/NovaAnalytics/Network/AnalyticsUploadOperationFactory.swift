@@ -3,7 +3,7 @@ import Operation_iOS
 import NovaAppAttest
 import SDKLogger
 
-/// Builds the events POST from the exact `Data` it is handed, which the assertion signs.
+// Preserve the exact body bytes covered by the assertion.
 public final class AnalyticsUploadOperationFactory {
     private let baseURL: URL
     private let logger: SDKLoggerProtocol?
@@ -44,12 +44,7 @@ extension AnalyticsUploadOperationFactory {
         static let ungradableStatusCode = 0
     }
 
-    /// Only a graded 2xx lets the caller delete rows, so anything unreadable has to fail.
-    ///
-    /// This route crosses the gateway before it reaches telemetry, so a 4xx can be a verdict on the
-    /// installation, a refused proof, or a rejected payload — and only the error code tells them
-    /// apart. Grading an expired 60-second challenge as a verdict would burn an App Attest key on
-    /// every late flush.
+    // Error codes distinguish identity, proof and payload failures, which require different retries.
     static func deliveryError(
         for response: URLResponse?,
         data: Data?,
@@ -66,7 +61,7 @@ extension AnalyticsUploadOperationFactory {
             return nil
         case 401, 403, 409:
             guard let code else {
-                // A proxy can answer with an empty or non-JSON 401; that is transport, not a verdict.
+                // An unstructured response cannot establish that the identity was rejected.
                 return .proofRefused(statusCode: response.statusCode)
             }
 
@@ -79,8 +74,7 @@ extension AnalyticsUploadOperationFactory {
                 retryAfter: retryAfter(from: response, now: now)
             )
         case 400:
-            // The gateway's own 400s describe the proof and are worth proving again; a 400 telemetry
-            // raised about the payload never will be.
+            // Retry recognized attestation errors; other 400 responses reject the payload.
             return code == nil
                 ? .clientError(statusCode: response.statusCode)
                 : .proofRefused(statusCode: response.statusCode)
@@ -111,7 +105,7 @@ extension AnalyticsUploadOperationFactory {
         return sanitised(date.timeIntervalSince(now))
     }
 
-    /// A delay that has already elapsed tells the schedule no more than a missing header does.
+    // An elapsed delay must not constrain the next attempt.
     static func sanitised(_ retryAfter: TimeInterval) -> TimeInterval? {
         guard retryAfter > 0 else {
             return nil
@@ -152,9 +146,7 @@ extension AnalyticsUploadOperationFactory: AnalyticsUploadOperationFactoryProtoc
             }
 
             if let deliveryError = Self.deliveryError(for: response, data: data, now: Date()) {
-                // The grading keeps only the status, so the code that decided it would otherwise be
-                // lost — including a code this build does not recognise. Neither the body nor any
-                // header is logged: the code and status are the whole diagnostic.
+                // Preserve unknown error codes for diagnostics without logging response bodies or headers.
                 let status = (response as? HTTPURLResponse)?.statusCode ?? Constants.ungradableStatusCode
                 let code = AttestationHTTP.rawErrorCode(from: data) ?? "<no envelope>"
 

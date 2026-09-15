@@ -1,7 +1,6 @@
 import Foundation
 import Keystore_iOS
 
-/// The gateway's client identifier, minted per install and per consent cycle.
 public final class BackendAttestationIdentity {
     private let settingsManager: SettingsManagerProtocol
     private let mutex = NSLock()
@@ -25,7 +24,7 @@ public final class BackendAttestationIdentity {
     }
 }
 
-// MARK: - BackendAttestationIdentityProtocol
+// MARK: - Identity protocol
 
 extension BackendAttestationIdentity: BackendAttestationIdentityProtocol {
     public func clientId() -> String? {

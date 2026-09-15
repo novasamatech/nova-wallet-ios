@@ -2,7 +2,7 @@ import XCTest
 @testable import NovaAnalytics
 
 final class AssetCategoryClassifierTests: XCTestCase {
-    func testNativeStableAndWrappedSymbolsAreRecognised() {
+    func testClassifiesKnownSymbols() {
         XCTAssertEqual(AssetCategoryClassifier.classify("DOT"), .nativeToken)
         XCTAssertEqual(AssetCategoryClassifier.classify("KSM"), .nativeToken)
         XCTAssertEqual(AssetCategoryClassifier.classify("USDT"), .stablecoin)
@@ -10,7 +10,7 @@ final class AssetCategoryClassifierTests: XCTestCase {
         XCTAssertEqual(AssetCategoryClassifier.classify("WETH"), .wrappedToken)
     }
 
-    func testUnknownSymbolFallsThroughToOther() {
+    func testUnknownSymbolIsOther() {
         XCTAssertEqual(AssetCategoryClassifier.classify("ZZZQQQ"), .other)
     }
 }

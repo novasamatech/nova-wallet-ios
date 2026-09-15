@@ -3,15 +3,11 @@ import Keystore_iOS
 import SDKLogger
 import NovaAppAttest
 
-/// Everything the analytics stack needs from its host — the whole package boundary.
 public struct AnalyticsConfiguration {
     public let gatewayURL: URL
 
-    /// The full App ID and App Attest environment the gateway binds this installation's key to.
     public let appIdentity: AppAttestAppIdentity
 
-    /// Injected rather than built in place: whether this device can attest decides whether analytics
-    /// runs at all, so a test must be able to answer it without a Secure Enclave.
     public let appAttestService: AppAttestServiceProtocol
 
     public let appVersion: String

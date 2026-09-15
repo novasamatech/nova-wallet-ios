@@ -2,14 +2,14 @@ import Foundation
 import Operation_iOS
 
 public protocol BackendAttestationProviderProtocol: AnyObject {
-    /// `target` must describe the request the headers will travel on: profile 2 binds the proof to
-    /// that exact method, origin, path and content type, so a proof cannot be moved to another one.
+    /// `target` must match the request's method, origin, path and content type; the proof binds them.
     func createSignedHeadersWrapper(
         target: AttestationRequestTarget,
         bodyClosure: @escaping () throws -> Data
     ) -> CompoundOperationWrapper<[AttestationHeaderKey: String]?>
 
-    func markUnattested()
+    /// A rejected upload may retire only the installation whose identifier signed that request.
+    func markUnattested(ifCurrentClientId clientId: String)
 
     func forgetClient()
 
@@ -17,12 +17,10 @@ public protocol BackendAttestationProviderProtocol: AnyObject {
 }
 
 public protocol BackendAttestationRemoteFactoryProtocol {
-    /// The frozen destination a registration proof commits to — the register POST itself, which is
-    /// what the gateway rebuilds when it checks the attestation's nonce.
+    /// Returns the registration POST target bound into the attestation's nonce.
     func registerTarget() throws -> AttestationRequestTarget
 
-    /// Challenges are bound to a client and a purpose: one issued to register cannot prove a
-    /// request, and neither survives being used twice.
+    /// Challenges are single-use and bound to a client and purpose.
     func createChallengeWrapper(
         clientId: String,
         purpose: AttestationProfile2.Purpose
@@ -38,30 +36,22 @@ public protocol BackendAttestationIdentityProtocol {
 
     func clientId() -> String?
 
-    /// Reads the stored identifier without minting one, so cleanup paths that must not create a
-    /// client can still name the row that client owns.
+    /// Reads the stored identifier without creating one, including during cleanup.
     func existingClientId() -> String?
 
-    /// Retires `clientId` so the next `clientId()` mints a new one, and only while it is still the
-    /// stored one — a chain that failed under an identity the install has already moved on from must
-    /// not retire its successor. Unlike `forgetClientId` this is recovery, not consent withdrawal:
-    /// creation stays allowed and the consent epoch does not move.
+    /// Retires only the matching stored identifier; stale failures cannot retire its successor.
+    /// The next `clientId()` creates a new identifier without changing consent or its epoch.
     func resetClientId(ifCurrent clientId: String)
 
     func forgetClientId()
     func allowCreation()
 }
 
-/// The app identity a key is bound to.
-///
-/// `appId` is the full App ID: the App ID prefix Apple issued, a dot, then the bundle identifier.
-/// The prefix is not assumed to be the team identifier, and it is not cosmetic — App Attest hashes
-/// the full App ID into the authenticator data's `rpIdHash`, so a wrong prefix fails Apple's own
-/// check inside the gateway and no server-side allowlist can rescue it.
+/// `appId` must contain Apple's App ID prefix, a dot, and the bundle identifier for `rpIdHash`.
+/// The App ID prefix is not necessarily the team identifier.
 public struct AppAttestAppIdentity: Equatable {
     public let appId: String
-    /// `development` is Apple's sandbox. A TestFlight or App Store build always attests as
-    /// `production` whatever the entitlement says.
+    /// `development` selects Apple's sandbox; TestFlight and App Store builds use `production`.
     public let environment: String
 
     public init(appId: String, environment: String) {
@@ -70,9 +60,7 @@ public struct AppAttestAppIdentity: Equatable {
     }
 }
 
-/// The gateway's error envelope. The status alone cannot say whether to retry, take a fresh
-/// challenge, or retire the installation — only the code can, and under a 60-second single-use
-/// challenge an expiry is routine rather than a verdict.
+/// Error codes determine recovery; an HTTP status alone does not identify an invalid installation.
 public enum BackendAttestationErrorCode: String, Decodable {
     case invalidRequest = "invalid_request"
     case unsupportedProfile = "unsupported_profile"
@@ -90,8 +78,7 @@ public enum BackendAttestationErrorCode: String, Decodable {
     case unsupportedMediaType = "unsupported_media_type"
     case attestationUnavailable = "attestation_unavailable"
 
-    /// Apple issues one attestation per key, so a verdict that invalidates the binding costs a new
-    /// key — and a key the gateway will never rebind costs a new installation identifier with it.
+    // A client identifier cannot bind to another key, so both must be replaced together.
     public var requiresFreshInstallation: Bool {
         switch self {
         case .unknownClient, .attestationFailed, .clientAlreadyRegistered:
@@ -101,7 +88,6 @@ public enum BackendAttestationErrorCode: String, Decodable {
         }
     }
 
-    /// Policy denials that trying again cannot fix.
     public var stopsRetrying: Bool {
         switch self {
         case .appNotAllowed, .bindingNotAllowed:
@@ -113,8 +99,7 @@ public enum BackendAttestationErrorCode: String, Decodable {
 }
 
 public enum BackendAttestationError: Error {
-    /// The binding is gone or no longer matches our key, so the installation is rebuilt rather than
-    /// retried as-is.
+    /// The binding is missing or invalid; recovery requires a new installation identity.
     case unauthorized(statusCode: Int)
     case rejected(statusCode: Int)
     case clientError(statusCode: Int)
@@ -133,8 +118,7 @@ public enum AttestationHeaderKey: String {
     case profile = "X-Attestation-Profile"
     case clientId = "X-Client-Id"
     case challenge = "X-Challenge"
-    /// iOS carries its proof here. The Android `X-Signature` header must never accompany it — the
-    /// gateway requires exactly one platform proof and rejects a request carrying both.
+    /// Must be the request's only platform proof header.
     case appAttestAssertion = "X-App-Attest-Assertion"
 }
 

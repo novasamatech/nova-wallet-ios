@@ -9,10 +9,19 @@ public final class AnalyticsConsentManager {
         let queue: DispatchQueue?
     }
 
+    private struct Transition {
+        let oldState: Bool
+        let newState: Bool
+        let recipients: [ObserverWrapper]
+    }
+
     private let settingsManager: SettingsManagerProtocol
     private let availabilityProvider: AnalyticsAvailabilityProviderProtocol
+    private let mutex = NSLock()
 
     private var observers: [ObserverWrapper] = []
+    private var pendingTransitions: [Transition] = []
+    private var isNotifying = false
     private var state: Bool
 
     public init(
@@ -29,16 +38,28 @@ public final class AnalyticsConsentManager {
 // MARK: - Private
 
 private extension AnalyticsConsentManager {
-    func notify(oldState: Bool, newState: Bool) {
-        observers = observers.filter { $0.owner !== nil }
+    func drainTransitions() {
+        while true {
+            mutex.lock()
 
-        observers.forEach { wrapper in
-            guard wrapper.owner != nil else {
+            guard !pendingTransitions.isEmpty else {
+                isNotifying = false
+                mutex.unlock()
+
                 return
             }
 
-            dispatchInQueueWhenPossible(wrapper.queue) {
-                wrapper.closure(oldState, newState)
+            let transition = pendingTransitions.removeFirst()
+            mutex.unlock()
+
+            transition.recipients.forEach { wrapper in
+                guard wrapper.owner != nil else {
+                    return
+                }
+
+                dispatchInQueueWhenPossible(wrapper.queue) {
+                    wrapper.closure(transition.oldState, transition.newState)
+                }
             }
         }
     }
@@ -47,17 +68,42 @@ private extension AnalyticsConsentManager {
 // MARK: - AnalyticsConsentManagerProtocol
 
 extension AnalyticsConsentManager: AnalyticsConsentManagerProtocol {
-    public var isEnabled: Bool { state }
+    public var isEnabled: Bool {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return state
+    }
 
     public var isAvailable: Bool { availabilityProvider.isAvailable }
 
-    public var isPromptSeen: Bool { settingsManager.analyticsPromptSeen }
+    public var isPromptSeen: Bool {
+        mutex.lock()
 
-    public var isErasureOwed: Bool { settingsManager.isAnalyticsErasureOwed }
+        defer {
+            mutex.unlock()
+        }
 
-    /// A withdrawal reaches disk only behind its erasure obligation, so a kill in between leaves
-    /// consent on rather than consent off with rows to wipe.
+        return settingsManager.analyticsPromptSeen
+    }
+
+    public var isErasureOwed: Bool {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return settingsManager.isAnalyticsErasureOwed
+    }
+
+    // Persist the wipe obligation before consent withdrawal so interruption cannot skip erasure.
     public func setEnabled(_ enabled: Bool) {
+        mutex.lock()
+
         let oldState = state
 
         if oldState, !enabled {
@@ -68,17 +114,42 @@ extension AnalyticsConsentManager: AnalyticsConsentManagerProtocol {
         state = enabled
 
         guard oldState != enabled else {
+            mutex.unlock()
             return
         }
 
-        notify(oldState: oldState, newState: enabled)
+        observers = observers.filter { $0.owner !== nil }
+        pendingTransitions.append(Transition(oldState: oldState, newState: enabled, recipients: observers))
+
+        // Reentrant and concurrent changes wait until the current transition's notifications are dispatched.
+        guard !isNotifying else {
+            mutex.unlock()
+            return
+        }
+
+        isNotifying = true
+        mutex.unlock()
+
+        drainTransitions()
     }
 
     public func setErasureOwed(_ owed: Bool) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
         settingsManager.isAnalyticsErasureOwed = owed
     }
 
     public func markPromptSeen() {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
         settingsManager.analyticsPromptSeen = true
     }
 
@@ -87,12 +158,24 @@ extension AnalyticsConsentManager: AnalyticsConsentManagerProtocol {
         queue: DispatchQueue?,
         closure: @escaping (Bool, Bool) -> Void
     ) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
         observers.append(ObserverWrapper(owner: owner, closure: closure, queue: queue))
 
         observers = observers.filter { $0.owner !== nil }
     }
 
     public func removeObserver(by owner: AnyObject) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
         observers = observers.filter { $0.owner !== owner && $0.owner !== nil }
     }
 

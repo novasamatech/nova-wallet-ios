@@ -1,7 +1,6 @@
 import Foundation
 
-/// What a stored payload decodes to. `int` stays decodable although the catalogue no longer emits
-/// one, so a numeric value in an older row ships instead of poisoning it.
+// Keep integer decoding compatible with previously stored payloads.
 enum AnalyticsWireValue: Equatable {
     case bool(Bool)
     case int(Int)

@@ -7,9 +7,7 @@ final class AnalyticsUploadRequestTests: XCTestCase {
         AnalyticsUploadOperationFactory(baseURL: URL(string: "https://gateway.example/")!)
     }
 
-    /// The proof is issued for the target, so the request has to follow the target and not the
-    /// base URL it happened to be derived from.
-    func testTheRequestFollowsTheTargetRatherThanTheBaseURL() throws {
+    func testUsesAttestationTarget() throws {
         let target = try AttestationRequestTarget(
             url: URL(string: "https://elsewhere.example:8443/v1/other/path")!,
             method: "put",
@@ -27,7 +25,7 @@ final class AnalyticsUploadRequestTests: XCTestCase {
         XCTAssertEqual(request.value(forHTTPHeaderField: "Content-Type"), "text/plain")
     }
 
-    func testRequestCarriesTheBodyVerbatimAndTheThreeHeaders() throws {
+    func testIncludesBodyAndAttestationHeaders() throws {
         let factory = makeFactory()
 
         let body = Data(#"{"v":1,"events":[]}"#.utf8)
@@ -49,7 +47,7 @@ final class AnalyticsUploadRequestTests: XCTestCase {
         XCTAssertEqual(request.timeoutInterval, 15)
     }
 
-    func testUnsignedRequestOmitsTheAttestationHeaders() throws {
+    func testOmitsUnsignedHeaders() throws {
         let factory = makeFactory()
 
         let request = AnalyticsUploadOperationFactory.buildRequest(

@@ -1,7 +1,7 @@
 import Foundation
 import DeviceCheck
 
-/// Test seam over `DCAppAttestService`, which reports unsupported on Simulator.
+/// App Attest operations; `DCAppAttestService` reports unsupported on Simulator.
 public protocol DeviceCheckAttesting {
     var isSupported: Bool { get }
 

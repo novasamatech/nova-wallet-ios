@@ -1,15 +1,12 @@
 import Foundation
 
-/// The row a running chain owns, so the failure handler never asks the identity for a client id —
-/// that call mints one.
+// Capture the owned identity so failure handling cannot create a replacement during cleanup.
 struct AttestationChainContext {
     let clientId: String
     let rowIdentifier: String
     let epoch: Int
 }
 
-/// The pair a request proof is minted from, resolved only once the gateway has said whether this
-/// installation still has to register.
 struct AttestationCredentials {
     let challenge: String
     let keyId: AppAttestKeyId
@@ -30,8 +27,6 @@ final class AttestationChainContextBox {
         return stored
     }
 
-    /// Whether this attempt's failure actually retired the identity. Retrying without that is a
-    /// second run of the byte-identical request the gateway just refused.
     var didRetire: Bool {
         mutex.lock()
 

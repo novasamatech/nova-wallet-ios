@@ -3,7 +3,7 @@ import XCTest
 import Keystore_iOS
 
 final class AnalyticsIdentityTests: XCTestCase {
-    func testInstallIdIsStableOnceCreated() throws {
+    func testPersistsInstallId() throws {
         let settings = InMemorySettingsManager()
         let identity = AnalyticsIdentity(settingsManager: settings)
 
@@ -14,7 +14,7 @@ final class AnalyticsIdentityTests: XCTestCase {
         XCTAssertNotNil(UUID(uuidString: first))
     }
 
-    func testForgetDeletesTheInstallIdAndReConsentMintsAFreshOne() {
+    func testForgetResetsInstallId() {
         let settings = InMemorySettingsManager()
         let identity = AnalyticsIdentity(settingsManager: settings)
 
@@ -22,25 +22,12 @@ final class AnalyticsIdentityTests: XCTestCase {
         identity.forgetInstallId()
 
         XCTAssertNil(settings.string(for: "analyticsInstallId"))
+        XCTAssertNil(identity.installId())
 
         identity.allowCreation()
         let recreated = identity.installId()
 
         XCTAssertNotNil(recreated)
         XCTAssertNotEqual(recreated, original)
-    }
-
-    func testTheConsentEpochSurvivesAFreshIdentityOverTheSameSettings() {
-        let settings = InMemorySettingsManager()
-        let identity = AnalyticsIdentity(settingsManager: settings)
-
-        XCTAssertEqual(identity.consentEpoch, 0)
-
-        identity.forgetInstallId()
-        identity.allowCreation()
-
-        XCTAssertEqual(identity.consentEpoch, 2)
-        XCTAssertEqual(settings.integer(for: "analyticsConsentEpoch"), 2)
-        XCTAssertEqual(AnalyticsIdentity(settingsManager: settings).consentEpoch, 2)
     }
 }

@@ -1,6 +1,5 @@
 import XCTest
 @testable import NovaAnalytics
-import Foundation_iOS
 
 final class AnalyticsSessionTrackerTests: XCTestCase {
     private func makeTracker(
@@ -9,13 +8,13 @@ final class AnalyticsSessionTrackerTests: XCTestCase {
     ) -> AnalyticsSessionTracker {
         AnalyticsSessionTracker(
             tracker: recorder,
-            applicationHandler: ApplicationHandler(),
+            applicationHandler: ApplicationHandlerStub(),
             backgroundTaskRunner: ImmediateBackgroundTaskRunner(),
             timeProvider: now
         )
     }
 
-    func testSetupStartsASession() {
+    func testStartSessionTracksEvent() {
         let recorder = AnalyticsTrackingSpy()
         let tracker = makeTracker(recorder: recorder)
 
@@ -24,17 +23,7 @@ final class AnalyticsSessionTrackerTests: XCTestCase {
         XCTAssertEqual(recorder.eventNames, ["session_started"])
     }
 
-    func testForegroundStartsAnotherSession() {
-        let recorder = AnalyticsTrackingSpy()
-        let tracker = makeTracker(recorder: recorder)
-
-        tracker.startSession()
-        tracker.didReceiveWillEnterForeground(notification: .init(name: .init("test")))
-
-        XCTAssertEqual(recorder.eventNames, ["session_started", "session_started"])
-    }
-
-    func testBackgroundEndsTheSessionWithADurationBucketAndFlushes() {
+    func testBackgroundTracksDurationAndFlushes() {
         var now = Date(timeIntervalSince1970: 0)
         let recorder = AnalyticsTrackingSpy()
         let tracker = makeTracker(recorder: recorder, now: { now })

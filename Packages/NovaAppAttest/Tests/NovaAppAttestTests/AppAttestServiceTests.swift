@@ -19,21 +19,21 @@ final class AppAttestServiceTests: XCTestCase {
         }
     }
 
-    func testClientDataIsHashedWithSha256BeforeReachingDeviceCheck() throws {
+    func testHashesAssertionClientData() throws {
         let device = DeviceCheckAttestingSpy()
         let service = AppAttestService(service: device)
-        let clientData = Data("the exact client data".utf8)
+        let clientData = Data("client-data".utf8)
 
         _ = try run(service.createAssertionWrapper(keyId: "k", clientData: { clientData }))
 
         XCTAssertEqual(device.assertionClientDataHashes, [clientData.sha256()])
     }
 
-    func testAttestationInvalidKeyMapsToInvalidKeyId() {
+    func testMapsInvalidKeyError() {
         assertAttestation(DCError(.invalidKey), maps: .invalidKeyId)
     }
 
-    func testAttestationServerUnavailableMapsToServiceUnavailable() {
+    func testMapsServerUnavailableError() {
         assertAttestation(DCError(.serverUnavailable), maps: .serviceUnavailable)
     }
 }

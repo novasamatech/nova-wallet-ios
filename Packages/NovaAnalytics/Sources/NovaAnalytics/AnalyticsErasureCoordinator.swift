@@ -2,7 +2,7 @@ import Foundation
 import Operation_iOS
 import SDKLogger
 
-/// The queue wipe owed after a consent withdrawal, persisted so that process death cannot cancel it.
+// Persist the wipe obligation so it survives process termination.
 final class AnalyticsErasureCoordinator {
     private let consent: AnalyticsConsentManagerProtocol
     private let queue: AnalyticsEventQueueProtocol
@@ -43,8 +43,7 @@ final class AnalyticsErasureCoordinator {
         scheduleLocked()
     }
 
-    /// Every request gets its own clear so that the serial queue orders it after exactly the rows
-    /// recorded before the withdrawal, and never after rows recorded under a later consent.
+    // Each withdrawal clears only rows queued before it; later consent must keep its rows.
     func request() {
         mutex.lock()
 
@@ -58,7 +57,7 @@ final class AnalyticsErasureCoordinator {
         scheduleLocked()
     }
 
-    /// Re-arms a failed wipe and reports whether one is still owed, in which case nothing may upload.
+    // Uploads remain blocked until the owed wipe succeeds.
     func retryIfOwed() -> Bool {
         mutex.lock()
 
@@ -86,7 +85,7 @@ private extension AnalyticsErasureCoordinator {
 
         let clearOperation = queue.clearOperation()
 
-        // Settling on the analytics queue itself makes the outcome visible to every enqueue behind the clear.
+        // Settle on the same queue so subsequent enqueues see the completed wipe.
         let settleOperation = ClosureOperation<Void> { [weak self] in
             guard let self else {
                 return

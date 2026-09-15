@@ -1,10 +1,14 @@
 import XCTest
 @testable import NovaAnalytics
-import Operation_iOS
+import CoreData
 
 final class AnalyticsPendingEventMapperTests: XCTestCase {
-    func testRowRoundTrips() throws {
-        let repository = AnalyticsStorageTestFacade().createEventRepository()
+    func testRoundTrip() throws {
+        let model = try XCTUnwrap(NSManagedObjectModel(contentsOf: AnalyticsStorageFacade.modelURL))
+        let context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
+        context.persistentStoreCoordinator = NSPersistentStoreCoordinator(managedObjectModel: model)
+        let entity = CDAnalyticsEvent(context: context)
+        let mapper = AnalyticsPendingEventMapper()
 
         let event = AnalyticsPendingEvent(
             identifier: AnalyticsPendingEvent.identifier(for: 7),
@@ -16,12 +20,8 @@ final class AnalyticsPendingEventMapperTests: XCTestCase {
             consentEpoch: 3
         )
 
-        let saveOperation = repository.saveOperation({ [event] }, { [] })
-        let fetchOperation = repository.fetchOperation(by: { event.identifier }, options: .init())
-        fetchOperation.addDependency(saveOperation)
+        try mapper.populate(entity: entity, from: event, using: context)
 
-        OperationQueue().addOperations([saveOperation, fetchOperation], waitUntilFinished: true)
-
-        XCTAssertEqual(try fetchOperation.extractNoCancellableResultData(), event)
+        XCTAssertEqual(try mapper.transform(entity: entity), event)
     }
 }

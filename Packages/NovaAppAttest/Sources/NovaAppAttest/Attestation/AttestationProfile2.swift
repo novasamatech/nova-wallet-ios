@@ -1,13 +1,7 @@
 import Foundation
 
-/// The exact bytes crypto profile 2 commits to.
-///
-/// The gateway rebuilds this preimage from the request it receives and compares its digest against
-/// the one App Attest signed, so the field list, its order and its framing are contract rather than
-/// convention. Callers hand the preimage to App Attest, which hashes it: the `clientDataHash` Apple
-/// receives is `SHA256(preimage)`, never the preimage itself and never a second hash of the digest.
-///
-/// Pinned by `profile-2-vectors.json` in the gateway contract.
+/// Profile 2 requires this field order and framing. Pass the preimage to App Attest so
+/// `clientDataHash` is exactly `SHA256(preimage)`.
 public enum AttestationProfile2 {
     public static let version = 2
 
@@ -15,7 +9,7 @@ public enum AttestationProfile2 {
         case register = 0x01
         case request = 0x02
 
-        /// The spelling the challenge envelope carries; the byte above is what the preimage carries.
+        /// Challenge envelopes use this string; the preimage uses `rawValue`.
         public var wireName: String {
             switch self {
             case .register: "register"
@@ -24,8 +18,7 @@ public enum AttestationProfile2 {
         }
     }
 
-    /// Stands in for the body digest of a registration, whose HTTP body cannot bind itself: it
-    /// carries the provider token that the binding is supposed to authenticate.
+    /// Replaces the body digest for registration, whose body contains the resulting attestation token.
     public static func registrationDigest(
         platform: String,
         appId: String,
@@ -44,8 +37,7 @@ public enum AttestationProfile2 {
         return preimage.sha256()
     }
 
-    /// The digest a protected request commits to: `SHA256` of the frozen entity bytes, and of zero
-    /// bytes when there is no body.
+    /// Hash the exact request body; use empty data for a request without a body.
     public static func bodyDigest(_ body: Data) -> Data {
         body.sha256()
     }
@@ -86,8 +78,7 @@ public enum AttestationProfile2 {
 // MARK: - Private
 
 private extension AttestationProfile2 {
-    /// `U32(byte count) || UTF-8`. Lengths count bytes, never characters; every field the contract
-    /// frames this way is bounded well below `UInt32` by the target and envelope validators.
+    // Lengths count UTF-8 bytes; validated fields fit within UInt32.
     static func lengthPrefixed(_ value: String) -> Data {
         let bytes = Data(value.utf8)
 

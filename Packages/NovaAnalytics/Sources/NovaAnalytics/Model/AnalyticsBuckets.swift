@@ -27,14 +27,17 @@ public enum AmountBucket: String, CaseIterable, AnalyticsPropertyConvertible {
         }
     }
 
-    public init(amount: Decimal, rate: Decimal?) {
-        self.init(usd: amount * (rate ?? 0))
+    public init?(amount: Decimal, rate: Decimal?) {
+        guard let rate, !amount.isNaN, !rate.isNaN else { return nil }
+
+        let usd = amount * rate
+        guard !usd.isNaN else { return nil }
+
+        self.init(usd: usd)
     }
 
     public init?(amount: Decimal, price: Decimal?) {
-        guard let rate = price else { return nil }
-
-        self.init(usd: amount * rate)
+        self.init(amount: amount, rate: price)
     }
 }
 

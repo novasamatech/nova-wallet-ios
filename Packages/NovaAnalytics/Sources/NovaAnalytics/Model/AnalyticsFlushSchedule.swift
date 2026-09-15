@@ -15,7 +15,7 @@ struct AnalyticsFlushSchedule {
         return sinceLastFlush >= Constants.interval ? .interval : nil
     }
 
-    /// A launch flush carries the events of the previous run and a manual one is a developer action.
+    // Launch flushes recover previous-run events; manual flushes explicitly bypass the delay.
     func allows(reason: AnalyticsFlushReason, now: Date) -> Bool {
         switch reason {
         case .threshold, .interval, .background:
@@ -34,7 +34,7 @@ struct AnalyticsFlushSchedule {
         nextFlushAllowedAt = .distantPast
     }
 
-    /// The gateway hint is a floor under the escalating window, never a replacement for it.
+    // The retry hint may lengthen the backoff, but must never shorten it.
     mutating func recordFailure(_ error: Error, now: Date) {
         failureCount += 1
 
@@ -70,7 +70,7 @@ private extension AnalyticsFlushSchedule {
         static let maxWindow: TimeInterval = 86400
     }
 
-    /// A window further out than the longest one `recordFailure` can arm means the clock moved back.
+    // A delay beyond the maximum window indicates the clock moved backwards.
     func isHoldingOff(now: Date) -> Bool {
         now < nextFlushAllowedAt && nextFlushAllowedAt <= now.addingTimeInterval(Constants.maxWindow)
     }

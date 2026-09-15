@@ -81,11 +81,9 @@ public protocol AnalyticsUploading: AnyObject {
 }
 
 public enum AnalyticsTransportError: Error, Equatable {
-    /// The binding is finished and the batch waits for a re-attested key.
+    /// Retain the batch until the key is attested again.
     case rejected(statusCode: Int)
-    /// The proof was refused but the binding stands — an expired challenge, a counter the gateway
-    /// would not accept, a proxy answering instead. The batch waits and is proved again from scratch;
-    /// nothing about the key or the identity may change.
+    /// Retain the batch and retry with a fresh proof, preserving the key and identity.
     case proofRefused(statusCode: Int)
     case clientError(statusCode: Int)
     case retryLater(statusCode: Int, retryAfter: TimeInterval?)
@@ -93,8 +91,7 @@ public enum AnalyticsTransportError: Error, Equatable {
 }
 
 public protocol AnalyticsUploadOperationFactoryProtocol {
-    /// The one target the events POST is built from and attested against, so the request that is
-    /// signed and the request that is sent cannot describe different destinations.
+    /// Use this same target for signing and sending the events request.
     func eventsTarget() throws -> AttestationRequestTarget
 
     func createUploadOperation(
@@ -129,7 +126,6 @@ public protocol AnalyticsDebugInspecting: AnyObject {
 
     func debugClearPendingEventsOperation() -> BaseOperation<Void>
 
-    /// Retires the gateway client id and its key, so the next protected request mints a fresh
-    /// identity and attests it again from scratch. The pending queue is untouched.
+    /// Retires the client identity and key for fresh attestation on the next request; preserves pending events.
     func debugResetAttestationIdentity()
 }
