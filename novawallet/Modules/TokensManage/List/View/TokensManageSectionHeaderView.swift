@@ -7,7 +7,7 @@ final class TokensManageSectionHeaderView: UITableViewHeaderFooterView {
         super.init(reuseIdentifier: reuseIdentifier)
 
         backgroundView = UIView()
-        backgroundView?.backgroundColor = .clear
+        backgroundView?.backgroundColor = R.color.colorSecondaryScreenBackground()
 
         setupLayout()
     }

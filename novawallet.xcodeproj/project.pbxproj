@@ -147,7 +147,6 @@
 		D0A100000000000000000006 /* AssetVisibilitySeedMigratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A100000000000000000005 /* AssetVisibilitySeedMigratorTests.swift */; };
 		D0A10000000000000000000B /* AssetVisibilityWriterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A10000000000000000000A /* AssetVisibilityWriterTests.swift */; };
 		D0A200000000000000000002 /* DefaultAssetsProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A200000000000000000001 /* DefaultAssetsProviderTests.swift */; };
-		D0A200000000000000000004 /* TokensManageViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A200000000000000000003 /* TokensManageViewControllerTests.swift */; };
 		D0A300000000000000000002 /* AutoAddTokensServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A300000000000000000001 /* AutoAddTokensServiceTests.swift */; };
 		D0A300000000000000000004 /* AssetVisibilityRevealTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A300000000000000000003 /* AssetVisibilityRevealTests.swift */; };
 		D0A400000000000000000002 /* AssetListDefaultAssetsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A400000000000000000001 /* AssetListDefaultAssetsTests.swift */; };
@@ -6845,7 +6844,6 @@
 		D0A100000000000000000005 /* AssetVisibilitySeedMigratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetVisibilitySeedMigratorTests.swift; sourceTree = "<group>"; };
 		D0A10000000000000000000A /* AssetVisibilityWriterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetVisibilityWriterTests.swift; sourceTree = "<group>"; };
 		D0A200000000000000000001 /* DefaultAssetsProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultAssetsProviderTests.swift; sourceTree = "<group>"; };
-		D0A200000000000000000003 /* TokensManageViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensManageViewControllerTests.swift; sourceTree = "<group>"; };
 		D0A300000000000000000001 /* AutoAddTokensServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoAddTokensServiceTests.swift; sourceTree = "<group>"; };
 		D0A300000000000000000003 /* AssetVisibilityRevealTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetVisibilityRevealTests.swift; sourceTree = "<group>"; };
 		D0A400000000000000000001 /* AssetListDefaultAssetsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetListDefaultAssetsTests.swift; sourceTree = "<group>"; };
@@ -25921,7 +25919,6 @@
 			isa = PBXGroup;
 			children = (
 				D0A400000000000000000004 /* AssetList */,
-				D0A200000000000000000005 /* TokensManage */,
 				2D8E30252EF2FCFB00A9FA61 /* Gifts */,
 				0C0AE4032DE459BF00D506F3 /* WalletMigration */,
 				771901912AE2425400D9C918 /* Swaps */,
@@ -25964,14 +25961,6 @@
 				D0A400000000000000000003 /* Base */,
 			);
 			path = AssetList;
-			sourceTree = "<group>";
-		};
-		D0A200000000000000000005 /* TokensManage */ = {
-			isa = PBXGroup;
-			children = (
-				D0A200000000000000000003 /* TokensManageViewControllerTests.swift */,
-			);
-			path = TokensManage;
 			sourceTree = "<group>";
 		};
 		84B7C683289BFA78001A3566 /* Settings */ = {
@@ -37361,7 +37350,6 @@
 			files = (
 				D0A400000000000000000002 /* AssetListDefaultAssetsTests.swift in Sources */,
 				D0A200000000000000000002 /* DefaultAssetsProviderTests.swift in Sources */,
-				D0A200000000000000000004 /* TokensManageViewControllerTests.swift in Sources */,
 				D0A300000000000000000002 /* AutoAddTokensServiceTests.swift in Sources */,
 				D0A300000000000000000004 /* AssetVisibilityRevealTests.swift in Sources */,
 				D0A10000000000000000000B /* AssetVisibilityWriterTests.swift in Sources */,
