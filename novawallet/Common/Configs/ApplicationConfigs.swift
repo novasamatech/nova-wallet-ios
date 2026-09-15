@@ -221,7 +221,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var gatewayURL: URL {
         #if F_RELEASE
-            URL(string: "https://analytics.novawallet.io/")!
+            URL(string: "https://nova-infra.novasama-tech.org/")!
         #else
             URL(string: "https://nova-infra-dev.novasama-tech.org/")!
         #endif
