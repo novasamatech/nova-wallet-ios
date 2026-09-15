@@ -219,14 +219,6 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #endif
     }
 
-    var gatewayURL: URL {
-        #if F_RELEASE
-            URL(string: "https://nova-infra.novasama-tech.org/")!
-        #else
-            URL(string: "https://nova-infra-dev.novasama-tech.org/")!
-        #endif
-    }
-
     var appAttestAppIdentity: AppAttestAppIdentity? {
         let rawPrefix = Bundle.main.object(forInfoDictionaryKey: "AppIdentifierPrefix") as? String
         let prefix = rawPrefix?.trimmingCharacters(in: CharacterSet(charactersIn: ". ")) ?? ""

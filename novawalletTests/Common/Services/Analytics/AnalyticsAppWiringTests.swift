@@ -6,12 +6,11 @@ final class AnalyticsAppWiringTests: XCTestCase {
         XCTAssertEqual(OperationManagerFacade.analyticsQueue.maxConcurrentOperationCount, 1)
     }
 
-    func testGlobalConfigDecodesTheAnalyticsSection() throws {
-        let json = Data(#"{"multiStakingApiUrl":"https://a.example","multisigsApiUrl":"https://b.example","proxyApiUrl":"https://c.example","analytics":{"enabled":false,"minVersion":"10.9.0"}}"#.utf8)
+    func testGlobalConfigDecodesTheInfraUrl() throws {
+        let json = Data(#"{"multiStakingApiUrl":"https://a.example","multisigsApiUrl":"https://b.example","proxyApiUrl":"https://c.example","infraUrl":"https://infra.example/"}"#.utf8)
 
         let config = try JSONDecoder().decode(GlobalConfig.self, from: json)
 
-        XCTAssertEqual(config.analytics?.enabled, false)
-        XCTAssertEqual(config.analytics?.minVersion, "10.9.0")
+        XCTAssertEqual(config.infraUrl.absoluteString, "https://infra.example/")
     }
 }

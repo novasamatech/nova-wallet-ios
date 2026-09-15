@@ -12,9 +12,7 @@ public final class AnalyticsServiceFacade {
     private let service: AnalyticsService
     private let sessionTracker: AnalyticsSessionTracking
     private let availability: AnalyticsAvailabilityProvider
-    private let remoteSettings: AnalyticsRemoteSettings
     private let applicationHandler: ApplicationHandlerProtocol
-    private let configOperationQueue: OperationQueue
     private let logger: SDKLoggerProtocol
 
     private let mutex = NSLock()
@@ -23,13 +21,6 @@ public final class AnalyticsServiceFacade {
     private var isInForeground: Bool = true
     private var isLaunchFlushPending: Bool = false
     private var isFirstLaunchAtSetup: Bool = false
-    private var resolutionGeneration: Int = 0
-
-    // Failed fetches must not supersede earlier successful resolutions.
-    private var appliedGeneration: Int = 0
-
-    // Serialise updates so older resolutions cannot overwrite newer ones.
-    private let resolutionLock = NSLock()
 
     public convenience init(configuration: AnalyticsConfiguration) {
         self.init(
@@ -60,28 +51,19 @@ public final class AnalyticsServiceFacade {
             isAppAttestSupported: appAttest.isSupported
         )
 
-        let availability = AnalyticsAvailabilityProvider(
-            attestationMode: attestationMode,
-            settingsManager: settingsManager
-        )
+        let availability = AnalyticsAvailabilityProvider(attestationMode: attestationMode)
 
         let consent = AnalyticsConsentManager(
             settingsManager: settingsManager,
             availabilityProvider: availability
         )
 
-        let gatewayURL = configuration.gatewayURL
-
-        let attestKeyRepository = SettingsAppAttestKeyRepository(settingsManager: settingsManager)
-
-        let attestation = BackendAttestationProvider(
+        let gatewayResolver = AnalyticsGatewayResolver(
+            infraURLProvider: configuration.infraURLProvider,
             appAttest: appAttest,
-            remoteFactory: BackendAttestationRemoteFactory(baseURL: gatewayURL),
-            identity: BackendAttestationIdentity(settingsManager: settingsManager),
-            repository: AnyDataProviderRepository(attestKeyRepository),
-            gatewayURL: gatewayURL,
-            mode: attestationMode,
+            attestationMode: attestationMode,
             appIdentity: configuration.appIdentity,
+            settingsManager: settingsManager,
             operationQueue: configuration.operationQueue,
             logger: configuration.logger
         )
@@ -91,11 +73,7 @@ public final class AnalyticsServiceFacade {
         let uploader = AnalyticsUploader(
             queue: eventQueue,
             identity: identity,
-            attestation: attestation,
-            uploadFactory: AnalyticsUploadOperationFactory(
-                baseURL: gatewayURL,
-                logger: configuration.logger
-            ),
+            gatewayResolver: gatewayResolver,
             operationQueue: configuration.operationQueue,
             appVersion: configuration.appVersion,
             logger: configuration.logger
@@ -107,7 +85,7 @@ public final class AnalyticsServiceFacade {
             queue: eventQueue,
             identity: identity,
             uploader: uploader,
-            attestation: attestation,
+            gatewayResolver: gatewayResolver,
             operationQueue: configuration.analyticsOperationQueue,
             uploadOperationQueue: configuration.operationQueue,
             logger: configuration.logger
@@ -124,9 +102,7 @@ public final class AnalyticsServiceFacade {
         self.service = service
         self.sessionTracker = sessionTracker
         self.availability = availability
-        remoteSettings = configuration.remoteSettings
         applicationHandler = ApplicationHandler()
-        configOperationQueue = configuration.operationQueue
         logger = configuration.logger
 
         consent.addObserver(with: self, queue: nil) { [weak self] oldValue, newValue in
@@ -154,11 +130,11 @@ extension AnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
 
         isSetUp = true
 
-        // Capture before the host clears its first-launch flag and remote settings resolve.
+        // Capture before the host clears its first-launch flag.
         isFirstLaunchAtSetup = isFirstLaunch()
         mutex.unlock()
 
-        resolveRemoteAvailability()
+        reconcile()
     }
 
     public func throttle() {
@@ -206,7 +182,7 @@ extension AnalyticsServiceFacade: ApplicationHandlerDelegate {
             service.flush(reason: .launch)
         }
 
-        resolveRemoteAvailability()
+        reconcile()
     }
 
     public func didReceiveDidEnterBackground(notification _: Notification) {
@@ -219,75 +195,6 @@ extension AnalyticsServiceFacade: ApplicationHandlerDelegate {
 // MARK: - Private
 
 private extension AnalyticsServiceFacade {
-    func resolveRemoteAvailability() {
-        mutex.lock()
-
-        guard isSetUp else {
-            mutex.unlock()
-            return
-        }
-
-        resolutionGeneration += 1
-        let generation = resolutionGeneration
-        mutex.unlock()
-
-        let remoteWrapper = remoteSettings.createRemoteEnabledWrapper()
-
-        // Queue the update so launch work cannot overtake the resolved setting.
-        let applyOperation = ClosureOperation<Void> { [weak self] in
-            let result = Result { try remoteWrapper.targetOperation.extractNoCancellableResultData() }
-
-            self?.apply(remoteResult: result, generation: generation)
-        }
-
-        applyOperation.addDependency(remoteWrapper.targetOperation)
-
-        execute(
-            wrapper: remoteWrapper.insertingTail(operation: applyOperation),
-            inOperationQueue: configOperationQueue,
-            runningCallbackIn: nil
-        ) { _ in }
-    }
-
-    func apply(remoteResult: Result<Bool, Error>, generation: Int) {
-        resolutionLock.lock()
-
-        defer {
-            resolutionLock.unlock()
-        }
-
-        switch remoteResult {
-        case let .success(isEnabled):
-            guard isNewerThanApplied(generation: generation) else {
-                logger.debug("Analytics remote config resolution superseded, dropping it")
-                return
-            }
-
-            service.handleRemoteResolved(isEnabled: isEnabled)
-            markApplied(generation: generation)
-        case let .failure(error):
-            logger.info("Analytics remote config unavailable, keeping the last resolved state: \(error)")
-        }
-
-        reconcile()
-    }
-
-    func isNewerThanApplied(generation: Int) -> Bool {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        return generation > appliedGeneration
-    }
-
-    func markApplied(generation: Int) {
-        mutex.lock()
-        appliedGeneration = generation
-        mutex.unlock()
-    }
-
     func reconcile() {
         mutex.lock()
 

@@ -1,9 +1,10 @@
 import Foundation
-import Keystore_iOS
 import Operation_iOS
 import NovaAppAttest
 
-// Unresolved settings disable analytics until the remote switch has been read on this install.
+// Availability is fixed for the process: it depends only on whether this device and build can
+// attest at all. The observer API is kept because the consent manager and the settings screens
+// subscribe through it; nothing fires, because nothing can change it mid-process.
 public final class AnalyticsAvailabilityProvider {
     private struct ObserverWrapper {
         weak var owner: AnyObject?
@@ -13,37 +14,11 @@ public final class AnalyticsAvailabilityProvider {
 
     private let mutex = NSLock()
     private let attestationMode: BackendAttestationMode
-    private let settingsManager: SettingsManagerProtocol
 
-    private var currentRemoteState: AnalyticsRemoteState
     private var observers: [ObserverWrapper] = []
 
-    public init(attestationMode: BackendAttestationMode, settingsManager: SettingsManagerProtocol) {
+    public init(attestationMode: BackendAttestationMode) {
         self.attestationMode = attestationMode
-        self.settingsManager = settingsManager
-
-        currentRemoteState = AnalyticsRemoteState(persisted: settingsManager.analyticsRemoteEnabled)
-    }
-}
-
-// MARK: - Private
-
-private extension AnalyticsAvailabilityProvider {
-    var isAvailableLocked: Bool {
-        attestationMode != .unavailable && currentRemoteState == .enabled
-    }
-}
-
-private extension AnalyticsRemoteState {
-    init(persisted: Bool?) {
-        switch persisted {
-        case .none:
-            self = .unresolved
-        case .some(true):
-            self = .enabled
-        case .some(false):
-            self = .disabled
-        }
     }
 }
 
@@ -51,54 +26,7 @@ private extension AnalyticsRemoteState {
 
 extension AnalyticsAvailabilityProvider: AnalyticsAvailabilityProviderProtocol {
     public var isAvailable: Bool {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        return isAvailableLocked
-    }
-
-    public var remoteState: AnalyticsRemoteState {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        return currentRemoteState
-    }
-
-    public func setRemoteEnabled(_ enabled: Bool) {
-        mutex.lock()
-
-        let wasAvailable = isAvailableLocked
-
-        currentRemoteState = enabled ? .enabled : .disabled
-        settingsManager.analyticsRemoteEnabled = enabled
-
-        let isAvailable = isAvailableLocked
-
-        guard wasAvailable != isAvailable else {
-            mutex.unlock()
-            return
-        }
-
-        observers = observers.filter { $0.owner != nil }
-        let recipients = observers
-
-        mutex.unlock()
-
-        recipients.forEach { wrapper in
-            guard wrapper.owner != nil else {
-                return
-            }
-
-            dispatchInQueueWhenPossible(wrapper.queue) {
-                wrapper.closure(isAvailable)
-            }
-        }
+        attestationMode != .unavailable
     }
 
     public func addObserver(

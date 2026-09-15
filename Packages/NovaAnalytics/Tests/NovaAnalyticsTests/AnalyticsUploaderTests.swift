@@ -11,8 +11,10 @@ final class AnalyticsUploaderTests: XCTestCase {
         let uploader = AnalyticsUploader(
             queue: queue,
             identity: AnalyticsIdentityStub(),
-            attestation: attestation,
-            uploadFactory: uploadFactory,
+            gatewayResolver: AnalyticsGatewayResolverStub(
+                attestation: attestation,
+                uploadFactory: uploadFactory
+            ),
             operationQueue: OperationQueue(),
             appVersion: "10.9.0",
             logger: SilentLogger()

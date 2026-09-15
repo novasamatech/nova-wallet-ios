@@ -103,9 +103,7 @@ final class BackendAttestationProviderSpy: BackendAttestationProviderProtocol {
 
 final class AnalyticsAvailabilityStub: AnalyticsAvailabilityProviderProtocol {
     let isAvailable = true
-    let remoteState = AnalyticsRemoteState.enabled
 
-    func setRemoteEnabled(_: Bool) {}
     func addObserver(with _: AnyObject, queue _: DispatchQueue?, closure _: @escaping (Bool) -> Void) {}
     func removeObserver(by _: AnyObject) {}
 }
@@ -137,4 +135,30 @@ final class AnalyticsIdentityStub: AnalyticsIdentityProtocol {
     func existingInstallId() -> String? { nil }
     func forgetInstallId() {}
     func allowCreation() {}
+}
+
+final class AnalyticsGatewayResolverStub: AnalyticsGatewayResolving {
+    private let gateway: AnalyticsGateway
+
+    private(set) var forgetCount: Int = 0
+    private(set) var allowCount: Int = 0
+
+    init(
+        attestation: BackendAttestationProviderProtocol,
+        uploadFactory: AnalyticsUploadOperationFactoryProtocol
+    ) {
+        gateway = AnalyticsGateway(attestation: attestation, uploadFactory: uploadFactory)
+    }
+
+    func createGatewayWrapper() -> CompoundOperationWrapper<AnalyticsGateway> {
+        .createWithResult(gateway)
+    }
+
+    func forgetClient() {
+        forgetCount += 1
+    }
+
+    func allowClient() {
+        allowCount += 1
+    }
 }

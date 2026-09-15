@@ -56,19 +56,6 @@ extension SettingsManagerProtocol {
         }
     }
 
-    var analyticsRemoteEnabled: Bool? {
-        get {
-            bool(for: AnalyticsSettingsKey.analyticsRemoteEnabled)
-        }
-
-        set {
-            if let newValue {
-                set(value: newValue, for: AnalyticsSettingsKey.analyticsRemoteEnabled)
-            } else {
-                removeValue(for: AnalyticsSettingsKey.analyticsRemoteEnabled)
-            }
-        }
-    }
 }
 
 enum AnalyticsSettingsKey {
@@ -78,5 +65,4 @@ enum AnalyticsSettingsKey {
     static let analyticsInstallId = "analyticsInstallId"
     static let analyticsErasureOwed = "analyticsErasureOwed"
     static let analyticsConsentEpoch = "analyticsConsentEpoch"
-    static let analyticsRemoteEnabled = "analyticsRemoteEnabled"
 }

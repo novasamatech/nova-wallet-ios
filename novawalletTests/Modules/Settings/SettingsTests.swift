@@ -139,8 +139,8 @@ final class SettingsTests: XCTestCase {
     }
 
     func testPrivacyRowFollowsTheValueTheInteractorProvides() {
-        let hidden = provideAnalyticsValue(consent: makeRemotelyDisabledConsent(optedIn: false))
-        let shown = provideAnalyticsValue(consent: makeRemotelyDisabledConsent(optedIn: true))
+        let hidden = provideAnalyticsValue(consent: makeUnattestableConsent(optedIn: false))
+        let shown = provideAnalyticsValue(consent: makeUnattestableConsent(optedIn: true))
 
         XCTAssertNil(hidden)
         XCTAssertEqual(preferenceRows(isAnalyticsOn: hidden).map(\.row), [
@@ -197,18 +197,20 @@ final class SettingsTests: XCTestCase {
 
 private extension SettingsTests {
     func makeConsent(settings: SettingsManagerProtocol = InMemorySettingsManager()) -> AnalyticsConsentManager {
-        let availability = AnalyticsAvailabilityProvider(attestationMode: .appAttest, settingsManager: settings)
-        availability.setRemoteEnabled(true)
-        return AnalyticsConsentManager(settingsManager: settings, availabilityProvider: availability)
+        AnalyticsConsentManager(
+            settingsManager: settings,
+            availabilityProvider: AnalyticsAvailabilityProvider(attestationMode: .appAttest)
+        )
     }
 
-    func makeRemotelyDisabledConsent(optedIn: Bool, settings: SettingsManagerProtocol = InMemorySettingsManager()) -> AnalyticsConsentManager {
-        let availability = AnalyticsAvailabilityProvider(attestationMode: .appAttest, settingsManager: settings)
-        availability.setRemoteEnabled(true)
-        let consent = AnalyticsConsentManager(settingsManager: settings, availabilityProvider: availability)
-        consent.setEnabled(optedIn)
-        availability.setRemoteEnabled(false)
-        return consent
+    func makeUnattestableConsent(optedIn: Bool, settings: SettingsManagerProtocol = InMemorySettingsManager()) -> AnalyticsConsentManager {
+        // Record the decision on an install that can attest, then model one that cannot.
+        makeConsent(settings: settings).setEnabled(optedIn)
+
+        return AnalyticsConsentManager(
+            settingsManager: settings,
+            availabilityProvider: AnalyticsAvailabilityProvider(attestationMode: .unavailable)
+        )
     }
 
     func provideAnalyticsValue(consent: AnalyticsConsentManagerProtocol) -> Bool? {

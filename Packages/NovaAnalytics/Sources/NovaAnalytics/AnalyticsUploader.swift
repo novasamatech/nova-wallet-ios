@@ -12,18 +12,17 @@ public enum AnalyticsUploadAbort: Error {
 public final class AnalyticsUploader {
     private let queue: AnalyticsEventQueueProtocol
     private let identity: AnalyticsIdentityProtocol
-    private let attestation: BackendAttestationProviderProtocol
-    private let uploadFactory: AnalyticsUploadOperationFactoryProtocol
+    private let gatewayResolver: AnalyticsGatewayResolving
     private let operationQueue: OperationQueue
     private let appVersion: String
     private let timeProvider: () -> Date
     private let logger: SDKLoggerProtocol
 
-    public init(
+    // Internal: the gateway resolver it takes is an implementation detail of this package.
+    init(
         queue: AnalyticsEventQueueProtocol,
         identity: AnalyticsIdentityProtocol,
-        attestation: BackendAttestationProviderProtocol,
-        uploadFactory: AnalyticsUploadOperationFactoryProtocol,
+        gatewayResolver: AnalyticsGatewayResolving,
         operationQueue: OperationQueue,
         appVersion: String,
         timeProvider: @escaping () -> Date = { Date() },
@@ -31,8 +30,7 @@ public final class AnalyticsUploader {
     ) {
         self.queue = queue
         self.identity = identity
-        self.attestation = attestation
-        self.uploadFactory = uploadFactory
+        self.gatewayResolver = gatewayResolver
         self.operationQueue = operationQueue
         self.appVersion = appVersion
         self.timeProvider = timeProvider
@@ -70,12 +68,12 @@ private extension AnalyticsUploader {
         let epoch: Int
     }
 
-    func createBatchesWrapper(remaining: Int) -> CompoundOperationWrapper<BatchOutcome> {
+    func createBatchesWrapper(remaining: Int, gateway: AnalyticsGateway) -> CompoundOperationWrapper<BatchOutcome> {
         guard remaining > 0 else {
             return .createWithResult(.stop)
         }
 
-        let batchWrapper = createBatchWrapper()
+        let batchWrapper = createBatchWrapper(gateway: gateway)
 
         let nextWrapper = OperationCombiningService<BatchOutcome>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
@@ -100,7 +98,7 @@ private extension AnalyticsUploader {
                 return .createWithResult(outcome)
             }
 
-            return createBatchesWrapper(remaining: remaining - 1)
+            return createBatchesWrapper(remaining: remaining - 1, gateway: gateway)
         }
 
         nextWrapper.addDependency(wrapper: batchWrapper)
@@ -108,7 +106,7 @@ private extension AnalyticsUploader {
         return nextWrapper.insertingHead(operations: batchWrapper.allOperations)
     }
 
-    func createBatchWrapper() -> CompoundOperationWrapper<BatchOutcome> {
+    func createBatchWrapper(gateway: AnalyticsGateway) -> CompoundOperationWrapper<BatchOutcome> {
         let peekWrapper = queue.peekWrapper(count: Constants.batchSize)
 
         let sendWrapper = OperationCombiningService<BatchOutcome>.compoundNonOptionalWrapper(
@@ -141,7 +139,7 @@ private extension AnalyticsUploader {
                 return createDropWrapper(ids: page.dropIds, isFull: page.isFull)
             }
 
-            return try createSendWrapper(batch: createBatch(events: events, page: page))
+            return try createSendWrapper(batch: createBatch(events: events, page: page), gateway: gateway)
         }
 
         sendWrapper.addDependency(wrapper: peekWrapper)
@@ -149,10 +147,10 @@ private extension AnalyticsUploader {
         return sendWrapper.insertingHead(operations: peekWrapper.allOperations)
     }
 
-    func createSendWrapper(batch: Batch) throws -> CompoundOperationWrapper<BatchOutcome> {
+    func createSendWrapper(batch: Batch, gateway: AnalyticsGateway) throws -> CompoundOperationWrapper<BatchOutcome> {
         let body = batch.body
         let epoch = batch.epoch
-        let target = try uploadFactory.eventsTarget()
+        let target = try gateway.uploadFactory.eventsTarget()
 
         let consentGate: () throws -> Void = { [weak self] in
             guard let self, identity.consentEpoch == epoch else {
@@ -160,13 +158,13 @@ private extension AnalyticsUploader {
             }
         }
 
-        let headersWrapper = attestation.createSignedHeadersWrapper(target: target) {
+        let headersWrapper = gateway.attestation.createSignedHeadersWrapper(target: target) {
             try consentGate()
 
             return body
         }
 
-        let uploadOperation = uploadFactory.createUploadOperation(
+        let uploadOperation = gateway.uploadFactory.createUploadOperation(
             target: target,
             bodyClosure: {
                 try consentGate()
@@ -191,7 +189,7 @@ private extension AnalyticsUploader {
                 let signedClientId = try? headersWrapper.targetOperation
                     .extractNoCancellableResultData()?[.clientId]
 
-                return createFailureWrapper(error, batch: batch, signedClientId: signedClientId)
+                return createFailureWrapper(error, batch: batch, signedClientId: signedClientId, gateway: gateway)
             }
 
             return createDropWrapper(batch: batch)
@@ -208,7 +206,8 @@ private extension AnalyticsUploader {
     func createFailureWrapper(
         _ error: Error,
         batch: Batch,
-        signedClientId: String?
+        signedClientId: String?,
+        gateway: AnalyticsGateway
     ) -> CompoundOperationWrapper<BatchOutcome> {
         if let transportError = error as? AnalyticsTransportError {
             switch transportError {
@@ -216,7 +215,7 @@ private extension AnalyticsUploader {
                 logger.warning("Analytics upload rejected, retaining the batch: \(transportError)")
 
                 if let signedClientId {
-                    attestation.markUnattested(ifCurrentClientId: signedClientId)
+                    gateway.attestation.markUnattested(ifCurrentClientId: signedClientId)
                 }
 
                 return .createWithResult(.failed(transportError))
@@ -341,8 +340,24 @@ private extension AnalyticsUploader {
 // MARK: - AnalyticsUploading
 
 extension AnalyticsUploader: AnalyticsUploading {
+    /// The infra URL heads the chain: nothing can be signed or posted before it resolves, and a
+    /// failure to resolve it is retained like any other flush failure, so the queue survives it.
     public func flushWrapper(maxBatches: Int) -> CompoundOperationWrapper<Void> {
-        let batchesWrapper = createBatchesWrapper(remaining: maxBatches)
+        let gatewayWrapper = gatewayResolver.createGatewayWrapper()
+
+        let batchesWrapper = OperationCombiningService<BatchOutcome>.compoundNonOptionalWrapper(
+            operationQueue: operationQueue
+        ) { [weak self] in
+            guard let self else {
+                return .createWithResult(.stop)
+            }
+
+            let gateway = try gatewayWrapper.targetOperation.extractNoCancellableResultData()
+
+            return createBatchesWrapper(remaining: maxBatches, gateway: gateway)
+        }
+
+        batchesWrapper.addDependency(wrapper: gatewayWrapper)
 
         let mapOperation = ClosureOperation<Void> {
             guard case let .failed(error) = try batchesWrapper
@@ -357,6 +372,8 @@ extension AnalyticsUploader: AnalyticsUploading {
 
         mapOperation.addDependency(batchesWrapper.targetOperation)
 
-        return batchesWrapper.insertingTail(operation: mapOperation)
+        return batchesWrapper
+            .insertingHead(operations: gatewayWrapper.allOperations)
+            .insertingTail(operation: mapOperation)
     }
 }

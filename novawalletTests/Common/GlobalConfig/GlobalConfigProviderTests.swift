@@ -35,20 +35,23 @@ final class GlobalConfigProviderTests: XCTestCase {
     }
 
     func testOnlyAFreshFetchObservesAChangedPayload() throws {
-        GlobalConfigStubURLProtocol.payload = makePayload(analyticsEnabled: true)
+        GlobalConfigStubURLProtocol.payload = makePayload(infraUrl: "https://first.example")
 
         let provider = GlobalConfigProvider(configUrl: configUrl)
 
-        XCTAssertEqual(try fetch(provider.createConfigWrapper()).analytics?.enabled, true)
+        XCTAssertEqual(try fetch(provider.createConfigWrapper()).infraUrl.absoluteString, "https://first.example")
 
-        GlobalConfigStubURLProtocol.payload = makePayload(analyticsEnabled: false)
+        GlobalConfigStubURLProtocol.payload = makePayload(infraUrl: "https://second.example")
 
-        XCTAssertEqual(try fetch(provider.createConfigWrapper()).analytics?.enabled, true)
-        XCTAssertEqual(try fetch(provider.createFreshConfigWrapper()).analytics?.enabled, false)
+        XCTAssertEqual(try fetch(provider.createConfigWrapper()).infraUrl.absoluteString, "https://first.example")
+        XCTAssertEqual(
+            try fetch(provider.createFreshConfigWrapper()).infraUrl.absoluteString,
+            "https://second.example"
+        )
     }
 
-    private func makePayload(analyticsEnabled: Bool) -> Data {
-        Data(#"{"multiStakingApiUrl":"https://a.example","multisigsApiUrl":"https://b.example","proxyApiUrl":"https://c.example","analytics":{"enabled":\#(analyticsEnabled)}}"#.utf8)
+    private func makePayload(infraUrl: String) -> Data {
+        Data(#"{"multiStakingApiUrl":"https://a.example","multisigsApiUrl":"https://b.example","proxyApiUrl":"https://c.example","infraUrl":"\#(infraUrl)"}"#.utf8)
     }
 
     private func fetch(_ wrapper: CompoundOperationWrapper<GlobalConfig>) throws -> GlobalConfig {

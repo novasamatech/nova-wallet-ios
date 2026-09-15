@@ -24,15 +24,14 @@ public final class AnalyticsService {
     private var currentFeature: String?
     private var schedule = AnalyticsFlushSchedule()
 
-    private var wasAvailable: Bool
-
-    public init(
+    // Internal: the gateway resolver it takes is an implementation detail of this package.
+    init(
         consent: AnalyticsConsentManagerProtocol,
         availability: AnalyticsAvailabilityProviderProtocol,
         queue: AnalyticsEventQueueProtocol,
         identity: AnalyticsIdentityProtocol,
         uploader: AnalyticsUploading,
-        attestation: BackendAttestationProviderProtocol? = nil,
+        gatewayResolver: AnalyticsGatewayResolving? = nil,
         operationQueue: OperationQueue,
         uploadOperationQueue: OperationQueue,
         completionQueue: DispatchQueue = DispatchQueue(label: "io.novawallet.analytics.completions"),
@@ -57,8 +56,6 @@ public final class AnalyticsService {
             logger: logger
         )
 
-        wasAvailable = availability.isAvailable
-
         consent.addObserver(with: self, queue: nil) { [weak self] oldValue, newValue in
             guard oldValue != newValue else {
                 return
@@ -66,17 +63,14 @@ public final class AnalyticsService {
 
             if newValue {
                 self?.identity.allowCreation()
-                attestation?.allowClient()
+                gatewayResolver?.allowClient()
             } else {
-                self?.handleConsentDisabled(attestation: attestation)
+                self?.handleConsentDisabled(gatewayResolver: gatewayResolver)
             }
         }
 
         if !consent.isEnabled {
-            repairWithdrawnConsent(attestation: attestation)
-        } else if availability.remoteState == .disabled {
-            // Persisted remote disablement requires a wipe before uploads can resume.
-            erasure.request()
+            repairWithdrawnConsent(gatewayResolver: gatewayResolver)
         } else {
             erasure.drainOwed()
         }
@@ -193,12 +187,12 @@ private extension AnalyticsService {
     }
 
     // A previous withdrawal may have been interrupted before clearing local state.
-    func repairWithdrawnConsent(attestation: BackendAttestationProviderProtocol?) {
+    func repairWithdrawnConsent(gatewayResolver: AnalyticsGatewayResolving?) {
         if identity.existingInstallId() != nil {
             identity.forgetInstallId()
         }
 
-        attestation?.forgetClient()
+        gatewayResolver?.forgetClient()
 
         erasure.request()
     }
@@ -360,24 +354,7 @@ public extension AnalyticsService {
         cancelFlushLocked()
     }
 
-    // Persist the wipe obligation before disabling uploads so interruption cannot skip erasure.
-    func handleRemoteResolved(isEnabled: Bool) {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        if wasAvailable, !isEnabled {
-            cancelFlushLocked()
-            erasure.request()
-        }
-
-        availability.setRemoteEnabled(isEnabled)
-        wasAvailable = availability.isAvailable
-    }
-
-    internal func handleConsentDisabled(attestation: BackendAttestationProviderProtocol?) {
+    internal func handleConsentDisabled(gatewayResolver: AnalyticsGatewayResolving?) {
         mutex.lock()
 
         defer {
@@ -392,6 +369,6 @@ public extension AnalyticsService {
         schedule.forget()
         currentFeature = nil
 
-        attestation?.forgetClient()
+        gatewayResolver?.forgetClient()
     }
 }

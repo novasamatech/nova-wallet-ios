@@ -6674,9 +6674,8 @@
 		FEEDD0000000000000000110 /* AnalyticsFacadeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000010 /* AnalyticsFacadeFactory.swift */; };
 		FEEDD0000000000000000111 /* AnalyticsFacadeFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000011 /* AnalyticsFacadeFactoryTests.swift */; };
 		FEEDAA0000000000000000B2 /* AnalyticsAppWiringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDAA0000000000000000B1 /* AnalyticsAppWiringTests.swift */; };
-		FEEDAA0000000000000000C2 /* AnalyticsRemoteSettingsAdapterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDAA0000000000000000C1 /* AnalyticsRemoteSettingsAdapterTests.swift */; };
 		FEEDAA0000000000000000D2 /* GlobalConfigProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDAA0000000000000000D1 /* GlobalConfigProviderTests.swift */; };
-		0000000021CDF4E8A8B04343 /* AnalyticsRemoteSettingsAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000005A7B94BE697EFEBE /* AnalyticsRemoteSettingsAdapter.swift */; };
+		0000000021CDF4E8A8B04343 /* AnalyticsInfraURLAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000005A7B94BE697EFEBE /* AnalyticsInfraURLAdapter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -13090,9 +13089,8 @@
 		FEEDD0000000000000000010 /* AnalyticsFacadeFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsFacadeFactory.swift; sourceTree = "<group>"; };
 		FEEDD0000000000000000011 /* AnalyticsFacadeFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsFacadeFactoryTests.swift; sourceTree = "<group>"; };
 		FEEDAA0000000000000000B1 /* AnalyticsAppWiringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsAppWiringTests.swift; sourceTree = "<group>"; };
-		FEEDAA0000000000000000C1 /* AnalyticsRemoteSettingsAdapterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsRemoteSettingsAdapterTests.swift; sourceTree = "<group>"; };
 		FEEDAA0000000000000000D1 /* GlobalConfigProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalConfigProviderTests.swift; sourceTree = "<group>"; };
-		000000005A7B94BE697EFEBE /* AnalyticsRemoteSettingsAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnalyticsRemoteSettingsAdapter.swift; sourceTree = "<group>"; };
+		000000005A7B94BE697EFEBE /* AnalyticsInfraURLAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnalyticsInfraURLAdapter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -30707,7 +30705,7 @@
 			isa = PBXGroup;
 			children = (
 				FEEDD0000000000000000010 /* AnalyticsFacadeFactory.swift */,
-				000000005A7B94BE697EFEBE /* AnalyticsRemoteSettingsAdapter.swift */,
+				000000005A7B94BE697EFEBE /* AnalyticsInfraURLAdapter.swift */,
 			);
 			path = Analytics;
 			sourceTree = "<group>";
@@ -30718,7 +30716,6 @@
 				FEED30000000000000000001 /* PrivacyManifestTests.swift */,
 				FEEDD0000000000000000011 /* AnalyticsFacadeFactoryTests.swift */,
 				FEEDAA0000000000000000B1 /* AnalyticsAppWiringTests.swift */,
-				FEEDAA0000000000000000C1 /* AnalyticsRemoteSettingsAdapterTests.swift */,
 			);
 			path = Analytics;
 			sourceTree = "<group>";
@@ -37445,7 +37442,7 @@
 				000000006C043D814E99B2D6 /* SwapDataValidatorFactory+PoolTradeLimit.swift in Sources */,
 				FEED10000000000000000102 /* AnalyticsConsentPromptGate.swift in Sources */,
 				FEEDD0000000000000000110 /* AnalyticsFacadeFactory.swift in Sources */,
-				0000000021CDF4E8A8B04343 /* AnalyticsRemoteSettingsAdapter.swift in Sources */,
+				0000000021CDF4E8A8B04343 /* AnalyticsInfraURLAdapter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -37663,7 +37660,6 @@
 				FEED10000000000000000104 /* AnalyticsConsentPromptTests.swift in Sources */,
 				FEEDD0000000000000000111 /* AnalyticsFacadeFactoryTests.swift in Sources */,
 				FEEDAA0000000000000000B2 /* AnalyticsAppWiringTests.swift in Sources */,
-				FEEDAA0000000000000000C2 /* AnalyticsRemoteSettingsAdapterTests.swift in Sources */,
 				FEEDAA0000000000000000D2 /* GlobalConfigProviderTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
