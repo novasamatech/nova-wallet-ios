@@ -4,6 +4,7 @@ import Keystore_iOS
 import NovaCrypto
 import Operation_iOS
 import Foundation_iOS
+import NovaAnalytics
 
 final class RootInteractor {
     weak var presenter: RootInteractorOutputProtocol?
@@ -15,6 +16,7 @@ final class RootInteractor {
     let chainRegistryClosure: ChainRegistryLazyClosure
     let securityLayerInteractor: SecurityLayerInteractorInputProtocol
     let eventCenter: EventCenterProtocol
+    let analyticsFacade: AnalyticsServiceFacadeProtocol
     let migrators: [Migrating]
     let logger: LoggerProtocol
 
@@ -26,6 +28,7 @@ final class RootInteractor {
         securityLayerInteractor: SecurityLayerInteractorInputProtocol,
         chainRegistryClosure: @escaping ChainRegistryLazyClosure,
         eventCenter: EventCenterProtocol,
+        analyticsFacade: AnalyticsServiceFacadeProtocol,
         migrators: [Migrating],
         logger: LoggerProtocol = Logger.shared
     ) {
@@ -36,6 +39,7 @@ final class RootInteractor {
         self.securityLayerInteractor = securityLayerInteractor
         self.chainRegistryClosure = chainRegistryClosure
         self.eventCenter = eventCenter
+        self.analyticsFacade = analyticsFacade
         self.migrators = migrators
         self.logger = logger
     }
@@ -146,6 +150,16 @@ extension RootInteractor: RootInteractorInputProtocol {
         setupURLHandlingService()
         setupPushHandlingService()
         runMigrators()
+
+        // Runs after runMigrators() and before walletSettings.setup because of the
+        // `app_opened` flag: setup() reads isFirstLaunch(), and AppDelegate clears
+        // `isAppFirstLaunch` in markAppFirstTimeLaunchIfNeeded() — after loadOnLaunch(),
+        // which is what runs this method. Move the call out of the launch path and every
+        // first launch reports false.
+        //
+        // Not a store-contention constraint: analytics owns a separate sqlite with its own
+        // coordinator, so opening it while runMigrators() works on the user store is harmless.
+        analyticsFacade.setup()
 
         walletSettings.setup(runningCompletionIn: .main) { result in
             switch result {

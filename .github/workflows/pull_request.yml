@@ -83,3 +83,36 @@ jobs:
 
       - name: Run tests
         run: bundle exec fastlane run_unit_tests
+
+  package-tests:
+    name: Run ${{ matrix.package }} unit tests
+    runs-on: macos-26
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - package: NovaAnalytics
+            test-target: NovaAnalyticsTests
+          - package: NovaAppAttest
+            test-target: NovaAppAttestTests
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "26.2"
+
+      - name: Run package unit tests
+        working-directory: Packages/${{ matrix.package }}
+        run: |
+          xcodebuild test \
+            -scheme "${{ matrix.package }}" \
+            -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
+            -derivedDataPath "${{ runner.temp }}/DerivedData-${{ matrix.package }}" \
+            -only-testing:"${{ matrix.test-target }}"
