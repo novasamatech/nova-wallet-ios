@@ -99,9 +99,8 @@ protocol MainTabBarWireframeProtocol: AlertPresentable,
         completion: @escaping () -> Void
     )
 
-    /// `onUnavailable` covers the sheet failing to construct. It must not be wired to the
-    /// decline handler: `markPromptSeen()` is never cleared, so recording a decision the
-    /// user was never shown locks them out of the prompt for the life of the install.
+    /// `onUnavailable` covers the full-screen view being unavailable. It must not record
+    /// a decline for a prompt the user did not see.
     func presentAnalyticsConsent(
         from view: MainTabBarViewProtocol?,
         onEnable: @escaping () -> Void,

@@ -50,8 +50,8 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
                 createValuableViewModel(row: .currency, value: currency, locale: locale),
                 createLanguageViewModel(from: language, locale: locale),
                 createCommonViewViewModel(row: .appearance, locale: locale),
-                parameters.isAnalyticsOn.map {
-                    createSwitchViewModel(row: .analytics, isOn: $0, locale: locale)
+                parameters.isAnalyticsOn.map { _ in
+                    createCommonViewViewModel(row: .privacy, locale: locale)
                 }
             ].compactMap { $0 }),
             (.security, [

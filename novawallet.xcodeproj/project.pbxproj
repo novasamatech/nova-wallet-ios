@@ -7,11 +7,26 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A5C100000000000000000101 /* AnalyticsConsentScreenProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C100000000000000000001 /* AnalyticsConsentScreenProtocols.swift */; };
+		A5C100000000000000000102 /* AnalyticsConsentScreenWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C100000000000000000002 /* AnalyticsConsentScreenWireframe.swift */; };
+		A5C100000000000000000103 /* AnalyticsConsentScreenPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C100000000000000000003 /* AnalyticsConsentScreenPresenter.swift */; };
+		A5C100000000000000000104 /* AnalyticsConsentScreenInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C100000000000000000004 /* AnalyticsConsentScreenInteractor.swift */; };
+		A5C100000000000000000105 /* AnalyticsConsentScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C100000000000000000005 /* AnalyticsConsentScreenViewController.swift */; };
+		A5C100000000000000000106 /* AnalyticsConsentScreenViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C100000000000000000006 /* AnalyticsConsentScreenViewLayout.swift */; };
+		A5C100000000000000000107 /* AnalyticsConsentScreenViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C100000000000000000007 /* AnalyticsConsentScreenViewFactory.swift */; };
+		A5C100000000000000000108 /* AnalyticsConsentScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C100000000000000000008 /* AnalyticsConsentScreenTests.swift */; };
+		A5C200000000000000000101 /* AnalyticsPrivacyProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C200000000000000000001 /* AnalyticsPrivacyProtocols.swift */; };
+		A5C200000000000000000102 /* AnalyticsPrivacyWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C200000000000000000002 /* AnalyticsPrivacyWireframe.swift */; };
+		A5C200000000000000000103 /* AnalyticsPrivacyPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C200000000000000000003 /* AnalyticsPrivacyPresenter.swift */; };
+		A5C200000000000000000104 /* AnalyticsPrivacyInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C200000000000000000004 /* AnalyticsPrivacyInteractor.swift */; };
+		A5C200000000000000000105 /* AnalyticsPrivacyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C200000000000000000005 /* AnalyticsPrivacyViewController.swift */; };
+		A5C200000000000000000106 /* AnalyticsPrivacyViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C200000000000000000006 /* AnalyticsPrivacyViewLayout.swift */; };
+		A5C200000000000000000107 /* AnalyticsPrivacyViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C200000000000000000007 /* AnalyticsPrivacyViewFactory.swift */; };
+		A5C200000000000000000108 /* AnalyticsPrivacyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C200000000000000000008 /* AnalyticsPrivacyTests.swift */; };
 		FEED30000000000000000101 /* PrivacyManifestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED30000000000000000001 /* PrivacyManifestTests.swift */; };
 		FEED20000000000000000101 /* AnalyticsAttestationFixtureRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED20000000000000000001 /* AnalyticsAttestationFixtureRecorder.swift */; };
 		FEED20000000000000000102 /* AnalyticsDebugInspectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED20000000000000000002 /* AnalyticsDebugInspectorViewController.swift */; };
 		FEED20000000000000000103 /* AnalyticsAttestationFixtureRecorderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED20000000000000000003 /* AnalyticsAttestationFixtureRecorderTests.swift */; };
-		FEED10000000000000000101 /* AnalyticsConsentSheetFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED10000000000000000001 /* AnalyticsConsentSheetFactory.swift */; };
 		FEED10000000000000000102 /* AnalyticsConsentPromptGate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED10000000000000000002 /* AnalyticsConsentPromptGate.swift */; };
 		FEED10000000000000000104 /* AnalyticsConsentPromptTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED10000000000000000004 /* AnalyticsConsentPromptTests.swift */; };
 		A1B2C3D40003E5F600000002 /* HydraExchangeTradeLimits.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D40003E5F600000001 /* HydraExchangeTradeLimits.swift */; };
@@ -6684,11 +6699,26 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A5C100000000000000000001 /* AnalyticsConsentScreenProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsConsentScreenProtocols.swift; sourceTree = "<group>"; };
+		A5C100000000000000000002 /* AnalyticsConsentScreenWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsConsentScreenWireframe.swift; sourceTree = "<group>"; };
+		A5C100000000000000000003 /* AnalyticsConsentScreenPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsConsentScreenPresenter.swift; sourceTree = "<group>"; };
+		A5C100000000000000000004 /* AnalyticsConsentScreenInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsConsentScreenInteractor.swift; sourceTree = "<group>"; };
+		A5C100000000000000000005 /* AnalyticsConsentScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsConsentScreenViewController.swift; sourceTree = "<group>"; };
+		A5C100000000000000000006 /* AnalyticsConsentScreenViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsConsentScreenViewLayout.swift; sourceTree = "<group>"; };
+		A5C100000000000000000007 /* AnalyticsConsentScreenViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsConsentScreenViewFactory.swift; sourceTree = "<group>"; };
+		A5C100000000000000000008 /* AnalyticsConsentScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsConsentScreenTests.swift; sourceTree = "<group>"; };
+		A5C200000000000000000001 /* AnalyticsPrivacyProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsPrivacyProtocols.swift; sourceTree = "<group>"; };
+		A5C200000000000000000002 /* AnalyticsPrivacyWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsPrivacyWireframe.swift; sourceTree = "<group>"; };
+		A5C200000000000000000003 /* AnalyticsPrivacyPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsPrivacyPresenter.swift; sourceTree = "<group>"; };
+		A5C200000000000000000004 /* AnalyticsPrivacyInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsPrivacyInteractor.swift; sourceTree = "<group>"; };
+		A5C200000000000000000005 /* AnalyticsPrivacyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsPrivacyViewController.swift; sourceTree = "<group>"; };
+		A5C200000000000000000006 /* AnalyticsPrivacyViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsPrivacyViewLayout.swift; sourceTree = "<group>"; };
+		A5C200000000000000000007 /* AnalyticsPrivacyViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsPrivacyViewFactory.swift; sourceTree = "<group>"; };
+		A5C200000000000000000008 /* AnalyticsPrivacyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsPrivacyTests.swift; sourceTree = "<group>"; };
 		FEED30000000000000000001 /* PrivacyManifestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyManifestTests.swift; sourceTree = "<group>"; };
 		FEED20000000000000000001 /* AnalyticsAttestationFixtureRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsAttestationFixtureRecorder.swift; sourceTree = "<group>"; };
 		FEED20000000000000000002 /* AnalyticsDebugInspectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsDebugInspectorViewController.swift; sourceTree = "<group>"; };
 		FEED20000000000000000003 /* AnalyticsAttestationFixtureRecorderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsAttestationFixtureRecorderTests.swift; sourceTree = "<group>"; };
-		FEED10000000000000000001 /* AnalyticsConsentSheetFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsConsentSheetFactory.swift; sourceTree = "<group>"; };
 		FEED10000000000000000002 /* AnalyticsConsentPromptGate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsConsentPromptGate.swift; sourceTree = "<group>"; };
 		FEED10000000000000000004 /* AnalyticsConsentPromptTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsConsentPromptTests.swift; sourceTree = "<group>"; };
 		A1B2C3D40003E5F600000001 /* HydraExchangeTradeLimits.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HydraExchangeTradeLimits.swift; sourceTree = "<group>"; };
@@ -13104,6 +13134,50 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A5C100000000000000000201 /* AnalyticsConsentScreen */ = {
+			isa = PBXGroup;
+			children = (
+				A5C100000000000000000001 /* AnalyticsConsentScreenProtocols.swift */,
+				A5C100000000000000000002 /* AnalyticsConsentScreenWireframe.swift */,
+				A5C100000000000000000003 /* AnalyticsConsentScreenPresenter.swift */,
+				A5C100000000000000000004 /* AnalyticsConsentScreenInteractor.swift */,
+				A5C100000000000000000005 /* AnalyticsConsentScreenViewController.swift */,
+				A5C100000000000000000006 /* AnalyticsConsentScreenViewLayout.swift */,
+				A5C100000000000000000007 /* AnalyticsConsentScreenViewFactory.swift */,
+			);
+			path = AnalyticsConsentScreen;
+			sourceTree = "<group>";
+		};
+		A5C100000000000000000202 /* AnalyticsConsentScreen */ = {
+			isa = PBXGroup;
+			children = (
+				A5C100000000000000000008 /* AnalyticsConsentScreenTests.swift */,
+			);
+			path = AnalyticsConsentScreen;
+			sourceTree = "<group>";
+		};
+		A5C200000000000000000201 /* AnalyticsPrivacy */ = {
+			isa = PBXGroup;
+			children = (
+				A5C200000000000000000001 /* AnalyticsPrivacyProtocols.swift */,
+				A5C200000000000000000002 /* AnalyticsPrivacyWireframe.swift */,
+				A5C200000000000000000003 /* AnalyticsPrivacyPresenter.swift */,
+				A5C200000000000000000004 /* AnalyticsPrivacyInteractor.swift */,
+				A5C200000000000000000005 /* AnalyticsPrivacyViewController.swift */,
+				A5C200000000000000000006 /* AnalyticsPrivacyViewLayout.swift */,
+				A5C200000000000000000007 /* AnalyticsPrivacyViewFactory.swift */,
+			);
+			path = AnalyticsPrivacy;
+			sourceTree = "<group>";
+		};
+		A5C200000000000000000202 /* AnalyticsPrivacy */ = {
+			isa = PBXGroup;
+			children = (
+				A5C200000000000000000008 /* AnalyticsPrivacyTests.swift */,
+			);
+			path = AnalyticsPrivacy;
+			sourceTree = "<group>";
+		};
 		FEED20000000000000000004 /* Debug */ = {
 			isa = PBXGroup;
 			children = (
@@ -13116,7 +13190,6 @@
 		FEED10000000000000000003 /* AnalyticsConsent */ = {
 			isa = PBXGroup;
 			children = (
-				FEED10000000000000000001 /* AnalyticsConsentSheetFactory.swift */,
 				FEED10000000000000000002 /* AnalyticsConsentPromptGate.swift */,
 			);
 			path = AnalyticsConsent;
@@ -24215,6 +24288,8 @@
 		849013D224A9268D008F705E /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				A5C100000000000000000201 /* AnalyticsConsentScreen */,
+				A5C200000000000000000201 /* AnalyticsPrivacy */,
 				5A17C1002F0100000000E001 /* LegalConsent */,
 				2DE37C402EA0D824007C43A0 /* Gifts */,
 				0C3B126E2DDC663400A61597 /* WalletMigration */,
@@ -25835,6 +25910,8 @@
 		84B7C680289BFA78001A3566 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				A5C100000000000000000202 /* AnalyticsConsentScreen */,
+				A5C200000000000000000202 /* AnalyticsPrivacy */,
 				2D8E30252EF2FCFB00A9FA61 /* Gifts */,
 				0C0AE4032DE459BF00D506F3 /* WalletMigration */,
 				771901912AE2425400D9C918 /* Swaps */,
@@ -31399,6 +31476,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A5C100000000000000000101 /* AnalyticsConsentScreenProtocols.swift in Sources */,
+				A5C100000000000000000102 /* AnalyticsConsentScreenWireframe.swift in Sources */,
+				A5C100000000000000000103 /* AnalyticsConsentScreenPresenter.swift in Sources */,
+				A5C100000000000000000104 /* AnalyticsConsentScreenInteractor.swift in Sources */,
+				A5C100000000000000000105 /* AnalyticsConsentScreenViewController.swift in Sources */,
+				A5C100000000000000000106 /* AnalyticsConsentScreenViewLayout.swift in Sources */,
+				A5C100000000000000000107 /* AnalyticsConsentScreenViewFactory.swift in Sources */,
+				A5C200000000000000000101 /* AnalyticsPrivacyProtocols.swift in Sources */,
+				A5C200000000000000000102 /* AnalyticsPrivacyWireframe.swift in Sources */,
+				A5C200000000000000000103 /* AnalyticsPrivacyPresenter.swift in Sources */,
+				A5C200000000000000000104 /* AnalyticsPrivacyInteractor.swift in Sources */,
+				A5C200000000000000000105 /* AnalyticsPrivacyViewController.swift in Sources */,
+				A5C200000000000000000106 /* AnalyticsPrivacyViewLayout.swift in Sources */,
+				A5C200000000000000000107 /* AnalyticsPrivacyViewFactory.swift in Sources */,
 				A1B2C3D40003E5F600000002 /* HydraExchangeTradeLimits.swift in Sources */,
 				76D756FB38357EB7F59ADD89 /* HydraEmaPriceMath.swift in Sources */,
 				A1B2C3D40001E5F600000002 /* HydraFeeOracleState.swift in Sources */,
@@ -37248,7 +37339,6 @@
 				000000006C043D814E99B2D6 /* SwapDataValidatorFactory+PoolTradeLimit.swift in Sources */,
 				FEED20000000000000000101 /* AnalyticsAttestationFixtureRecorder.swift in Sources */,
 				FEED20000000000000000102 /* AnalyticsDebugInspectorViewController.swift in Sources */,
-				FEED10000000000000000101 /* AnalyticsConsentSheetFactory.swift in Sources */,
 				FEED10000000000000000102 /* AnalyticsConsentPromptGate.swift in Sources */,
 				FEEDD0000000000000000110 /* AnalyticsFacadeFactory.swift in Sources */,
 				0000000021CDF4E8A8B04343 /* AnalyticsRemoteSettingsAdapter.swift in Sources */,
@@ -37259,6 +37349,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A5C100000000000000000108 /* AnalyticsConsentScreenTests.swift in Sources */,
+				A5C200000000000000000108 /* AnalyticsPrivacyTests.swift in Sources */,
 				0CAA10082E7A0008007E41C4 /* LoggerSDKConformanceTests.swift in Sources */,
 				A1B2C3D40002E5F600000002 /* HydraFeeQuoteFactoryTests.swift in Sources */,
 				02DF43D680493821FD9D7A35 /* HydraFeeConversionTests.swift in Sources */,

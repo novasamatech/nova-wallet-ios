@@ -31,7 +31,6 @@ protocol SettingsInteractorInputProtocol: AnyObject {
     func updatePinConfirmationSettings(isOn: Bool)
     func connectWalletConnect(uri: String)
     func toggleHideBalances()
-    func toggleAnalytics()
 }
 
 protocol SettingsInteractorOutputProtocol: AnyObject {

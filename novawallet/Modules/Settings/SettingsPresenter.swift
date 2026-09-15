@@ -6,7 +6,7 @@ final class SettingsPresenter {
     let viewModelFactory: SettingsViewModelFactoryProtocol
     let config: ApplicationConfigProtocol
     let interactor: SettingsInteractorInputProtocol
-    let wireframe: SettingsWireframeProtocol
+    let wireframe: SettingsWireframeProtocol & AnalyticsPrivacyPresentable
     let logger: LoggerProtocol?
 
     private var currency: String?
@@ -24,7 +24,7 @@ final class SettingsPresenter {
         viewModelFactory: SettingsViewModelFactoryProtocol,
         config: ApplicationConfigProtocol,
         interactor: SettingsInteractorInputProtocol,
-        wireframe: SettingsWireframeProtocol,
+        wireframe: SettingsWireframeProtocol & AnalyticsPrivacyPresentable,
         localizationManager: LocalizationManagerProtocol?,
         logger: LoggerProtocol? = nil
     ) {
@@ -192,8 +192,8 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             }
         case .hideBalances:
             interactor.toggleHideBalances()
-        case .analytics:
-            interactor.toggleAnalytics()
+        case .privacy:
+            wireframe.showPrivacy(from: view)
         #if F_DEV
             case .analyticsDebug:
                 wireframe.showAnalyticsDebug(from: view)

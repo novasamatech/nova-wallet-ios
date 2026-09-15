@@ -45,7 +45,7 @@ final class SettingsTests: XCTestCase {
             when(stub.supportedBiometryType.get).thenReturn(.none)
         }
 
-        let wireframe = MockSettingsWireframeProtocol()
+        let wireframe = SettingsWireframeSpy()
 
         let eventCenter = MockEventCenterProtocol()
         let streamableProviderFactory = SubstrateDataProviderFactory(
@@ -138,35 +138,60 @@ final class SettingsTests: XCTestCase {
         wait(for: [accountViewModelExpectation, sectionsExpectation], timeout: Constants.defaultExpectationDuration)
     }
 
-    func testTheAnalyticsRowFollowsTheValueTheInteractorProvides() {
+    func testPrivacyRowFollowsTheValueTheInteractorProvides() {
         let hidden = provideAnalyticsValue(consent: makeRemotelyDisabledConsent(optedIn: false))
         let shown = provideAnalyticsValue(consent: makeRemotelyDisabledConsent(optedIn: true))
 
         XCTAssertNil(hidden)
-        XCTAssertFalse(preferenceRows(isAnalyticsOn: hidden).contains(.analytics))
+        XCTAssertEqual(preferenceRows(isAnalyticsOn: hidden).map(\.row), [
+            .notifications, .currency, .language, .appearance
+        ])
 
         XCTAssertEqual(shown, true)
-        XCTAssertEqual(preferenceRows(isAnalyticsOn: shown).last, .analytics)
+        XCTAssertEqual(preferenceRows(isAnalyticsOn: shown).last?.row, .privacy)
     }
 
-    func testTogglingAnalyticsRoundTripsThroughTheConsentManager() {
-        let settings = InMemorySettingsManager()
-        let consent = makeConsent(settings: settings)
+    func testPrivacyRowUsesNavigationAccessoryRegardlessOfConsent() throws {
+        for enabled in [false, true] {
+            let consent = makeConsent()
+            consent.setEnabled(enabled)
+            let value = provideAnalyticsValue(consent: consent)
+            let row = try XCTUnwrap(preferenceRows(isAnalyticsOn: value).last)
 
-        makeAnalyticsInteractor(consent: consent).toggleAnalytics()
-
-        XCTAssertTrue(consent.isEnabled)
-        XCTAssertEqual(settings.bool(for: "analyticsEnabled"), true)
+            XCTAssertEqual(value, enabled)
+            XCTAssertEqual(row.row, .privacy)
+            guard case .none = row.accessory else {
+                XCTFail("Privacy must use the navigation accessory")
+                continue
+            }
+        }
     }
 
-    func testTogglingOnWhileRemotelyDisabledLeavesConsentOff() {
-        let settings = InMemorySettingsManager()
-        let consent = makeRemotelyDisabledConsent(optedIn: false, settings: settings)
+    func testSelectingPrivacyDoesNotChangeAnalyticsConsent() throws {
+        for enabled in [false, true] {
+            let settings = InMemorySettingsManager()
+            let consent = makeConsent(settings: settings)
+            consent.setEnabled(enabled)
+            let interactor = makeAnalyticsInteractor(consent: consent)
+            let wireframe = SettingsWireframeSpy()
+            let presenter = SettingsPresenter(
+                viewModelFactory: SettingsViewModelFactory(
+                    iconGenerator: NovaIconGenerator(),
+                    quantityFormatter: NumberFormatter.quantity.localizableResource()
+                ),
+                config: ApplicationConfig.shared,
+                interactor: interactor,
+                wireframe: wireframe,
+                localizationManager: LocalizationManager.shared
+            )
+            let row = try XCTUnwrap(preferenceRows(isAnalyticsOn: enabled).last)
 
-        makeAnalyticsInteractor(consent: consent).toggleAnalytics()
+            presenter.actionRow(row.row)
 
-        XCTAssertFalse(consent.isEnabled)
-        XCTAssertEqual(settings.bool(for: "analyticsEnabled"), false)
+            XCTAssertEqual(consent.isEnabled, enabled)
+            XCTAssertEqual(settings.bool(for: "analyticsEnabled"), enabled)
+            XCTAssertEqual(wireframe.privacyPresentationCount, 1)
+        }
     }
 }
 
@@ -194,11 +219,11 @@ private extension SettingsTests {
         return output.received.first ?? nil
     }
 
-    func preferenceRows(isAnalyticsOn: Bool?) -> [SettingsRow] {
+    func preferenceRows(isAnalyticsOn: Bool?) -> [SettingsCellViewModel] {
         let factory = SettingsViewModelFactory(iconGenerator: NovaIconGenerator(), quantityFormatter: NumberFormatter.quantity.localizableResource())
         let parameters = SettingsParameters(walletConnectSessionsCount: nil, isBiometricAuthOn: nil, isPinConfirmationOn: false, isNotificationsOn: false, isHideBalancesOn: false, isAnalyticsOn: isAnalyticsOn)
         let sections = factory.createSectionViewModels(language: nil, currency: nil, parameters: parameters, locale: Locale(identifier: "en"))
-        return sections.first { $0.0 == .preferences }?.1.map(\.row) ?? []
+        return sections.first { $0.0 == .preferences }?.1 ?? []
     }
 
     func makeAnalyticsInteractor(consent: AnalyticsConsentManagerProtocol) -> SettingsInteractor {
@@ -242,6 +267,14 @@ private extension SettingsTests {
             privacyStateManager: PrivacyStateManager.shared,
             operationQueue: OperationQueue()
         )
+    }
+}
+
+private final class SettingsWireframeSpy: MockSettingsWireframeProtocol, AnalyticsPrivacyPresentable, @unchecked Sendable {
+    var privacyPresentationCount = 0
+
+    func showPrivacy(from _: ControllerBackedProtocol?) {
+        privacyPresentationCount += 1
     }
 }
 

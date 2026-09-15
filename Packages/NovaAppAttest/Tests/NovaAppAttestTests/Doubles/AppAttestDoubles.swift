@@ -100,7 +100,7 @@ final class BackendAttestationRemoteFactorySpy: BackendAttestationRemoteFactoryP
     }
 
     func createRegisterOperation(_ requestClosure: @escaping () throws -> BackendAttestationRegisterRequest) -> BaseOperation<Void> {
-        return ClosureOperation { [weak self] in
+        ClosureOperation { [weak self] in
             _ = try requestClosure()
             self?.registerCallCount += 1
             self?.isClientRegistered = true
