@@ -3,6 +3,7 @@ import Foundation_iOS
 import UIKit.UIImage
 
 struct RampAction {
+    let providerId: String
     let type: RampActionType
     let logo: UIImage
     let descriptionText: LocalizableResource<String>

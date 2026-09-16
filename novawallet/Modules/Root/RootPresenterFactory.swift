@@ -36,6 +36,7 @@ final class RootPresenterFactory: RootPresenterFactoryProtocol {
             securityLayerInteractor: SecurityLayerService.shared.interactor,
             chainRegistryClosure: { ChainRegistryFacade.sharedRegistry },
             eventCenter: EventCenter.shared,
+            analyticsFacade: AnalyticsFacadeFactory.createDefault(),
             migrators: [
                 sharedSettingsMigrator,
                 userDatabaseMigrator,

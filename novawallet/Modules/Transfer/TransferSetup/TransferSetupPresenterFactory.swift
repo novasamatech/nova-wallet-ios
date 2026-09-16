@@ -1,4 +1,5 @@
 import Foundation
+import NovaAnalytics
 
 protocol TransferSetupPresenterFactoryProtocol {
     func createOnChainPresenter(
@@ -21,6 +22,7 @@ final class TransferSetupPresenterFactory: TransferSetupPresenterFactoryProtocol
     let chainRegistry: ChainRegistryProtocol
     let storageFacade: StorageFacadeProtocol
     let eventCenter: EventCenterProtocol
+    let analyticsFlow: TransferAnalyticsFlow
     let logger: LoggerProtocol
     let transferCompletion: TransferCompletionClosure?
 
@@ -29,6 +31,7 @@ final class TransferSetupPresenterFactory: TransferSetupPresenterFactoryProtocol
         chainRegistry: ChainRegistryProtocol,
         storageFacade: StorageFacadeProtocol,
         eventCenter: EventCenterProtocol,
+        analyticsFlow: TransferAnalyticsFlow,
         logger: LoggerProtocol,
         transferCompletion: TransferCompletionClosure?
     ) {
@@ -36,6 +39,7 @@ final class TransferSetupPresenterFactory: TransferSetupPresenterFactoryProtocol
         self.chainRegistry = chainRegistry
         self.storageFacade = storageFacade
         self.eventCenter = eventCenter
+        self.analyticsFlow = analyticsFlow
         self.logger = logger
         self.transferCompletion = transferCompletion
     }

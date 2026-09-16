@@ -1,6 +1,7 @@
 import Foundation
 import Foundation_iOS
 import Keystore_iOS
+import NovaAnalytics
 
 // swiftlint:disable function_body_length
 struct TransferConfirmCrossChainViewFactory {
@@ -10,7 +11,8 @@ struct TransferConfirmCrossChainViewFactory {
         xcmTransfers: XcmTransfers,
         recepient: AccountAddress,
         amount: Decimal,
-        transferCompletion: TransferCompletionClosure?
+        transferCompletion: TransferCompletionClosure?,
+        analyticsFlow: TransferAnalyticsFlow
     ) -> TransferConfirmOnChainViewProtocol? {
         let walletSettings = SelectedWalletSettings.shared
 
@@ -79,6 +81,7 @@ struct TransferConfirmCrossChainViewFactory {
             dataValidatingFactory: dataValidatingFactory,
             localizationManager: localizationManager,
             transferCompletion: transferCompletion,
+            analyticsFlow: analyticsFlow,
             logger: Logger.shared
         )
 

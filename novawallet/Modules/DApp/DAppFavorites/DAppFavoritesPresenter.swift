@@ -13,7 +13,7 @@ final class DAppFavoritesPresenter {
     let metaId: MetaAccountModel.Id
 
     private var favorites: [String: DAppFavorite] = [:]
-    private var dAppList: DAppList?
+    var dAppList: DAppList?
 
     init(
         interactor: DAppFavoritesInteractorInputProtocol,
@@ -74,6 +74,8 @@ extension DAppFavoritesPresenter: DAppFavoritesPresenterProtocol {
     }
 
     func selectDApp(with id: String) {
+        trackOpened(dAppId: id)
+
         wireframe.openBrowser(with: id)
     }
 }

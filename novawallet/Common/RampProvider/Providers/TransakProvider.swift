@@ -82,6 +82,7 @@ private extension TransakProvider {
         )
 
         let action = RampAction(
+            providerId: "transak",
             type: .offRamp,
             logo: R.image.transakLogo()!,
             descriptionText: LocalizableResource { locale in
@@ -120,6 +121,7 @@ private extension TransakProvider {
         )
 
         let action = RampAction(
+            providerId: "transak",
             type: .onRamp,
             logo: R.image.transakLogo()!,
             descriptionText: LocalizableResource { locale in

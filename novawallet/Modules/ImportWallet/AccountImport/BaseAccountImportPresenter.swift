@@ -218,6 +218,10 @@ class BaseAccountImportPresenter {
     internal func getAdvancedSettings() -> AdvancedWalletSettings? {
         fatalError("This function should be overriden")
     }
+
+    func didCompleteAccountImport() {
+        wireframe.proceed(from: view)
+    }
 }
 
 extension BaseAccountImportPresenter: AccountImportPresenterProtocol {
@@ -307,10 +311,6 @@ extension BaseAccountImportPresenter: SecretScanImportDelegate {
 }
 
 extension BaseAccountImportPresenter: AccountImportInteractorOutputProtocol {
-    func didCompleteAccountImport() {
-        wireframe.proceed(from: view)
-    }
-
     func didReceiveAccountImport(error: Error) {
         let locale = localizationManager?.selectedLocale ?? Locale.current
 

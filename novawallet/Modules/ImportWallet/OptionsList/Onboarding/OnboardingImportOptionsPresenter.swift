@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import NovaAnalytics
 
 final class OnboardingImportOptionsPresenter: WalletImportOptionsPresenter {
     let interactor: OnboardingImportOptionsInteractorInputProtocol
@@ -38,6 +39,8 @@ final class OnboardingImportOptionsPresenter: WalletImportOptionsPresenter {
                                 preferredLanguages: selectedLocale.rLanguages
                             ).localizable.cloudImportDescription(),
                             onAction: { [weak self] in
+                                self?.trackAnalytics(.walletImportMethodSelected(method: .cloudBackup))
+
                                 self?.view?.didStartLoading()
                                 self?.interactor.checkExistingBackup()
                             }
@@ -57,6 +60,8 @@ final class OnboardingImportOptionsPresenter: WalletImportOptionsPresenter {
                                 preferredLanguages: selectedLocale.rLanguages
                             ).localizable.passphraseImportDescription(),
                             onAction: { [weak self] in
+                                self?.selectImportMethod(.importMnemonic)
+
                                 self?.wireframe.showPassphraseImport(from: self?.view)
                             }
                         )
@@ -77,7 +82,12 @@ final class OnboardingImportOptionsPresenter: WalletImportOptionsPresenter {
                                     return
                                 }
 
-                                self.wireframe.showHardwareImport(from: self.view, locale: self.selectedLocale)
+                                self.wireframe.showHardwareImport(
+                                    from: self.view,
+                                    locale: self.selectedLocale
+                                ) { [weak self] option in
+                                    self?.selectHardwareWallet(option)
+                                }
                             }
                         )
                     )
@@ -95,6 +105,8 @@ final class OnboardingImportOptionsPresenter: WalletImportOptionsPresenter {
                                 preferredLanguages: selectedLocale.rLanguages
                             ).localizable.trustWalletImportDescription(),
                             onAction: { [weak self] in
+                                self?.selectImportMethod(.importMnemonic)
+
                                 self?.wireframe.showTrustWalletImport(from: self?.view)
                             }
                         )
@@ -111,6 +123,8 @@ final class OnboardingImportOptionsPresenter: WalletImportOptionsPresenter {
                                 preferredLanguages: selectedLocale.rLanguages
                             ).localizable.createWatchOnlyDetails(),
                             onAction: { [weak self] in
+                                self?.selectImportMethod(.importWatchOnly)
+
                                 self?.wireframe.showWatchOnlyImport(from: self?.view)
                             }
                         )
@@ -122,6 +136,8 @@ final class OnboardingImportOptionsPresenter: WalletImportOptionsPresenter {
                             image: R.image.iconSeed()!,
                             title: R.string(preferredLanguages: selectedLocale.rLanguages).localizable.importRawSeed(),
                             onAction: { [weak self] in
+                                self?.selectImportMethod(.importSeed)
+
                                 self?.wireframe.showSeedImport(from: self?.view)
                             }
                         )
@@ -133,6 +149,8 @@ final class OnboardingImportOptionsPresenter: WalletImportOptionsPresenter {
                                 preferredLanguages: selectedLocale.rLanguages
                             ).localizable.importRecoveryJson(),
                             onAction: { [weak self] in
+                                self?.selectImportMethod(.importJson)
+
                                 self?.wireframe.showRestoreJsonImport(from: self?.view)
                             }
                         )
@@ -152,6 +170,8 @@ extension OnboardingImportOptionsPresenter: OnboardingImportOptionsInteractorOut
         view?.didStopLoading()
 
         if backupExists {
+            abandonTracker.markProceeded()
+
             wireframe.showCloudImport(from: view)
         } else if let view {
             wireframe.presentBackupNotFound(from: view, locale: selectedLocale)
