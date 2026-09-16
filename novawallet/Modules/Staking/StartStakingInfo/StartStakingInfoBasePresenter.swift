@@ -78,6 +78,10 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         view?.didReceive(announcement: viewModel)
     }
 
+    func selectAnnouncementLink(url: URL) {
+        wireframe.openBrowser(with: .query(string: url.absoluteString))
+    }
+
     func shouldUpdateEraDuration(for newValue: TimeInterval?, oldValue: TimeInterval?) -> Bool {
         guard let oldValue = oldValue else {
             return true

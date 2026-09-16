@@ -143,6 +143,10 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
             style: .automatic
         )
     }
+
+    func selectAnnouncementLink(url: URL) {
+        wireframe.openBrowser(with: .query(string: url.absoluteString))
+    }
 }
 
 // MARK: - StakingMainInteractorOutputProtocol

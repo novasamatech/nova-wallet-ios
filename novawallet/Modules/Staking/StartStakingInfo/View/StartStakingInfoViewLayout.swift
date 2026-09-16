@@ -49,6 +49,8 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
 
     private var announcementView: InlineAlertView?
     private var announcementViewModel: AnnouncementViewModel?
+
+    var onAnnouncementLinkTap: ((URL) -> Void)?
     private var appliedFooterExtra: CGFloat = 0
 
     init(headerStyle: MultiColorTextStyle, paragraphStyle: MultiColorTextStyle) {
@@ -146,6 +148,10 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
             }
 
             banner.bind(announcement: viewModel)
+            banner.onLinkTap = { [weak self] in
+                guard let url = self?.announcementViewModel?.link?.url else { return }
+                self?.onAnnouncementLinkTap?(url)
+            }
         } else {
             announcementView?.removeFromSuperview()
             announcementView = nil
@@ -157,7 +163,7 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
     private func updateFooterHeightIfNeeded() {
         let bannerHeight = announcementViewModel.map {
             InlineAlertView.estimatedHeight(
-                for: $0.message,
+                for: $0,
                 width: bounds.width - 2 * Constants.footerInsets.left
             )
         }

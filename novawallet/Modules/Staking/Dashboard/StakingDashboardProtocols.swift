@@ -1,3 +1,4 @@
+import Foundation
 import Operation_iOS
 
 protocol StakingDashboardViewProtocol: ControllerBackedProtocol {
@@ -11,6 +12,7 @@ protocol StakingDashboardPresenterProtocol: AnyObject {
     func selectActiveStaking(at index: Int)
     func selectInactiveStaking(at index: Int)
     func selectMoreOptions()
+    func selectAnnouncementLink(url: URL)
     func switchWallet()
     func refresh()
 }
@@ -34,7 +36,7 @@ protocol StakingDashboardInteractorOutputProtocol: AnyObject {
 }
 
 protocol StakingDashboardWireframeProtocol: ErrorPresentable, AlertPresentable, CommonRetryable,
-    WalletSwitchPresentable {
+    WalletSwitchPresentable, BrowserOpening {
     func showMoreOptions(from view: ControllerBackedProtocol?)
     func showStakingDetails(
         from view: StakingDashboardViewProtocol?,

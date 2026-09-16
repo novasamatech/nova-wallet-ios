@@ -167,7 +167,7 @@ final class StakingDashboardActiveCellView: UIView {
                 }
             }
 
-            announcementView.bind(announcement: viewModel)
+            announcementView.bind(announcement: viewModel, includingLink: false)
         } else {
             announcementView.removeFromSuperview()
         }
