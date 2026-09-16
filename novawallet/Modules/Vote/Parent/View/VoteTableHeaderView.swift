@@ -11,14 +11,6 @@ final class VoteTableHeaderView: UIView {
 
     let walletSwitch = WalletSwitchControl()
 
-    let votingTypeSwitch: RoundedSegmentedControl = .create { view in
-        view.backgroundView.fillColor = R.color.colorSegmentedBackground()!
-        view.selectionColor = R.color.colorSegmentedTabActive()!
-        view.titleFont = .regularFootnote
-        view.selectedTitleColor = R.color.colorTextPrimary()!
-        view.titleColor = R.color.colorTextSecondary()!
-    }
-
     let chainSelectionView: VoteTableChainSelectionControl = .create {
         $0.preferredHeight = Constants.chainSelectionHeight
     }
@@ -64,16 +56,9 @@ private extension VoteTableHeaderView {
             make.centerY.equalTo(walletSwitch)
         }
 
-        addSubview(votingTypeSwitch)
-        votingTypeSwitch.snp.makeConstraints { make in
-            make.top.equalTo(walletSwitch.snp.bottom).offset(Constants.votingTypeSwitchTopOffset)
-            make.leading.trailing.equalToSuperview().inset(Constants.standardHorizontalInset)
-            make.height.equalTo(Constants.votingTypeSwitchHeight)
-        }
-
         addSubview(chainSelectionView)
         chainSelectionView.snp.makeConstraints { make in
-            make.top.equalTo(votingTypeSwitch.snp.bottom).offset(Constants.chainSelectionTopOffset)
+            make.top.equalTo(walletSwitch.snp.bottom).offset(Constants.chainSelectionTopOffset)
             make.leading.trailing.equalToSuperview().inset(Constants.standardHorizontalInset)
             make.bottom.equalToSuperview().inset(Constants.chainSelectionBottomInset)
             make.height.equalTo(Constants.chainSelectionHeight)
@@ -84,11 +69,6 @@ private extension VoteTableHeaderView {
         let languages = locale.rLanguages
 
         titleLabel.text = R.string(preferredLanguages: languages).localizable.tabbarVoteTitle()
-
-        votingTypeSwitch.titles = [
-            R.string(preferredLanguages: languages).localizable.tabbarGovernanceTitle(),
-            R.string(preferredLanguages: languages).localizable.tabbarCrowdloanTitle_v190()
-        ]
     }
 }
 
@@ -114,10 +94,8 @@ private extension VoteTableHeaderView {
     enum Constants {
         static let walletSwitchTopInset: CGFloat = 10.0
         static let titleTrailingOffset: CGFloat = 8.0
-        static let votingTypeSwitchTopOffset: CGFloat = 16.0
         static let standardHorizontalInset: CGFloat = 16.0
-        static let votingTypeSwitchHeight: CGFloat = 40.0
-        static let chainSelectionTopOffset: CGFloat = 8.0
+        static let chainSelectionTopOffset: CGFloat = 16.0
         static let chainSelectionBottomInset: CGFloat = 8.0
         static let chainSelectionHeight: CGFloat = 56.0
     }
