@@ -2,6 +2,6 @@ import Foundation
 
 extension PriceData {
     var analyticsRate: Decimal? {
-        decimalRate
+        AnalyticsCrossRateFactory.createProvider().normalisedRate(for: self)
     }
 }

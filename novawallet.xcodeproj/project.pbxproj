@@ -6710,6 +6710,8 @@
 		FEEDD0000000000000000110 /* AnalyticsFacadeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000010 /* AnalyticsFacadeFactory.swift */; };
 		89F2EB48AF00FF30488F8EBE /* AnalyticsChainAssetContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46CE9C7F5B6E8F9C301C2A75 /* AnalyticsChainAssetContent.swift */; };
 		4F9F2DE997E9F5E6BEFB353A /* AnalyticsAbandonTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A208D923EBE165FA8882C26C /* AnalyticsAbandonTracker.swift */; };
+		25B4F693016FF9989530FB27 /* AnalyticsCrossRateFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77EFD3FFD381C16C29223C8 /* AnalyticsCrossRateFactory.swift */; };
+		68F9327BC6B4FFB611B034B0 /* AnalyticsCrossRateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C7965F0E16BFAC2367B66DF /* AnalyticsCrossRateStore.swift */; };
 		7B00A4A080640387D26E2CDA /* AnalyticsTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F142EA4A5BB3CAC01D24C8AB /* AnalyticsTracking.swift */; };
 		3840CB0B596604E29D19D151 /* PriceData+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C1DF01F411A95B507811B3 /* PriceData+Analytics.swift */; };
 		14CB8F0D2639C9FDD9923595 /* FeatureNavigationTrackerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C996DFAABD9DBA72FC3AAAD /* FeatureNavigationTrackerFactory.swift */; };
@@ -13169,6 +13171,8 @@
 		FEEDD0000000000000000010 /* AnalyticsFacadeFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsFacadeFactory.swift; sourceTree = "<group>"; };
 		46CE9C7F5B6E8F9C301C2A75 /* AnalyticsChainAssetContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsChainAssetContent.swift; sourceTree = "<group>"; };
 		A208D923EBE165FA8882C26C /* AnalyticsAbandonTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsAbandonTracker.swift; sourceTree = "<group>"; };
+		A77EFD3FFD381C16C29223C8 /* AnalyticsCrossRateFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsCrossRateFactory.swift; sourceTree = "<group>"; };
+		3C7965F0E16BFAC2367B66DF /* AnalyticsCrossRateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsCrossRateStore.swift; sourceTree = "<group>"; };
 		F142EA4A5BB3CAC01D24C8AB /* AnalyticsTracking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsTracking.swift; sourceTree = "<group>"; };
 		57C1DF01F411A95B507811B3 /* PriceData+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PriceData+Analytics.swift"; sourceTree = "<group>"; };
 		1C996DFAABD9DBA72FC3AAAD /* FeatureNavigationTrackerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureNavigationTrackerFactory.swift; sourceTree = "<group>"; };
@@ -30831,6 +30835,8 @@
 				FEEDD0000000000000000010 /* AnalyticsFacadeFactory.swift */,
 				46CE9C7F5B6E8F9C301C2A75 /* AnalyticsChainAssetContent.swift */,
 				A208D923EBE165FA8882C26C /* AnalyticsAbandonTracker.swift */,
+				A77EFD3FFD381C16C29223C8 /* AnalyticsCrossRateFactory.swift */,
+				3C7965F0E16BFAC2367B66DF /* AnalyticsCrossRateStore.swift */,
 				F142EA4A5BB3CAC01D24C8AB /* AnalyticsTracking.swift */,
 				57C1DF01F411A95B507811B3 /* PriceData+Analytics.swift */,
 				1C996DFAABD9DBA72FC3AAAD /* FeatureNavigationTrackerFactory.swift */,
@@ -37612,6 +37618,8 @@
 				FEEDD0000000000000000110 /* AnalyticsFacadeFactory.swift in Sources */,
 				89F2EB48AF00FF30488F8EBE /* AnalyticsChainAssetContent.swift in Sources */,
 				4F9F2DE997E9F5E6BEFB353A /* AnalyticsAbandonTracker.swift in Sources */,
+				25B4F693016FF9989530FB27 /* AnalyticsCrossRateFactory.swift in Sources */,
+				68F9327BC6B4FFB611B034B0 /* AnalyticsCrossRateStore.swift in Sources */,
 				7B00A4A080640387D26E2CDA /* AnalyticsTracking.swift in Sources */,
 				3840CB0B596604E29D19D151 /* PriceData+Analytics.swift in Sources */,
 				14CB8F0D2639C9FDD9923595 /* FeatureNavigationTrackerFactory.swift in Sources */,
