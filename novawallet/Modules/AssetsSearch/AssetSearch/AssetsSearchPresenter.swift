@@ -119,7 +119,7 @@ private extension AssetsSearchPresenter {
         let state: AssetListGroupState = viewModels.isEmpty ? .empty : .list(groups: viewModels)
 
         let groupViewModel = AssetListViewModel(
-            isFiltered: false,
+            hasHiddenAssets: nil,
             listState: state,
             listGroupStyle: assetListStyle
         )

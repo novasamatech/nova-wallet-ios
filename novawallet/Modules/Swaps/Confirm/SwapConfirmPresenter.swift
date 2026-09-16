@@ -1,6 +1,7 @@
 import Foundation
 import BigInt
 import Foundation_iOS
+import NovaAnalytics
 
 final class SwapConfirmPresenter: SwapBasePresenter {
     weak var view: SwapConfirmViewProtocol?
@@ -18,6 +19,12 @@ final class SwapConfirmPresenter: SwapBasePresenter {
     private var quoteArgs: AssetConversion.QuoteArgs
 
     private var poolLimitCorrectionCounter = MaxCounter.feeCorrection()
+
+    private let abandonTracker = AnalyticsAbandonTracker {
+        AnalyticsEvent.swapAbandoned(stage: .confirm)
+    }
+
+    var confirmedAt: Date?
 
     init(
         interactor: SwapConfirmInteractorInputProtocol,
@@ -358,6 +365,14 @@ extension SwapConfirmPresenter {
 
         interactor.initiateSwapSubmission(of: executionModel)
     }
+
+    private func handleValidatedConfirmation() {
+        abandonTracker.markProceeded()
+
+        trackSwapConfirmed()
+
+        submit()
+    }
 }
 
 extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
@@ -438,6 +453,8 @@ extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
             return
         }
 
+        confirmedAt = Date()
+
         let validators = getBaseValidations(
             for: swapModel,
             interactor: interactor,
@@ -446,7 +463,7 @@ extension SwapConfirmPresenter: SwapConfirmPresenterProtocol {
 
         DataValidationRunner(validators: validators).runValidation(
             notifyingOnSuccess: { [weak self] in
-                self?.submit()
+                self?.handleValidatedConfirmation()
             },
             notifyingOnStop: { [weak self] _ in
                 self?.view?.didReceiveStopLoading()
@@ -462,6 +479,8 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutProtocol {
     func didCompleteSwapSubmission(with result: Result<ExtrinsicSubmittedModel, Error>) {
         switch result {
         case let .success(model):
+            trackSwapCompleted()
+
             wireframe.presentExtrinsicSubmission(
                 from: view,
                 sender: model.sender,
@@ -472,6 +491,8 @@ extension SwapConfirmPresenter: SwapConfirmInteractorOutProtocol {
             view?.didReceiveStopLoading()
 
             logger.error("Swap failed: \(error)")
+
+            trackAnalytics(.swapFailed(reason: error.analyticsSwapFailureReason))
 
             _ = wireframe.handleExtrinsicSigningErrorPresentation(
                 error,

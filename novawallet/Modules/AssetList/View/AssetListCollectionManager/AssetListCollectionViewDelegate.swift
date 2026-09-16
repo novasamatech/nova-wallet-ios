@@ -24,6 +24,12 @@ final class AssetListCollectionViewDelegate: NSObject {
 // MARK: Private
 
 private extension AssetListCollectionViewDelegate {
+    var totalSections: Int {
+        AssetListFlowLayout.SectionType.sectionsCount(
+            groupsCount: groupsViewModel.displayedGroups.count
+        )
+    }
+
     func processAssetSelect(
         _ collectionView: UICollectionView,
         at indexPath: IndexPath
@@ -31,12 +37,13 @@ private extension AssetListCollectionViewDelegate {
         guard
             let groupsLayoutDelegate,
             let groupIndex = AssetListFlowLayout.SectionType.assetsGroupIndexFromSection(
-                indexPath.section
+                indexPath.section,
+                totalSections: totalSections
             ) else {
             return
         }
 
-        let groupViewModel = groupsViewModel.listState.groups[groupIndex]
+        let groupViewModel = groupsViewModel.displayedGroups[groupIndex]
 
         let chainAssetId: ChainAssetId
 
@@ -82,7 +89,12 @@ extension AssetListCollectionViewDelegate: UICollectionViewDelegateFlowLayout {
     ) -> CGSize {
         guard let groupsLayoutDelegate else { return .zero }
 
-        let cellType = AssetListFlowLayout.CellType(indexPath: indexPath, in: collectionView)
+        let cellType = AssetListFlowLayout.CellType(
+            indexPath: indexPath,
+            totalSections: totalSections,
+            isLoading: groupsViewModel.isLoading,
+            in: collectionView
+        )
 
         let cellHeight = groupsLayoutDelegate.cellHeight(
             for: cellType,
@@ -100,13 +112,13 @@ extension AssetListCollectionViewDelegate: UICollectionViewDelegateFlowLayout {
         layout _: UICollectionViewLayout,
         referenceSizeForHeaderInSection section: Int
     ) -> CGSize {
-        switch AssetListFlowLayout.SectionType(section: section) {
+        switch AssetListFlowLayout.SectionType(section: section, totalSections: totalSections) {
         case .assetGroup where groupsViewModel.listGroupStyle == .networks:
             CGSize(
                 width: collectionView.frame.width,
                 height: AssetListMeasurement.assetHeaderHeight
             )
-        case .summary, .settings, .organizer, .banners, .assetGroup:
+        case .summary, .settings, .organizer, .banners, .assetGroup, .tokensReveal:
             .zero
         }
     }
@@ -114,15 +126,22 @@ extension AssetListCollectionViewDelegate: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
 
-        let cellType = AssetListFlowLayout.CellType(indexPath: indexPath, in: collectionView)
+        let cellType = AssetListFlowLayout.CellType(
+            indexPath: indexPath,
+            totalSections: totalSections,
+            isLoading: groupsViewModel.isLoading,
+            in: collectionView
+        )
 
         switch cellType {
-        case .account, .settings, .emptyState, .totalBalance, .banner, .alert:
+        case .account, .settings, .loadingState, .emptyState, .totalBalance, .banner, .alert:
             break
         case let .organizerItem(itemIndex: itemIndex):
             selectionDelegate?.selectOrganizerItem(at: itemIndex)
         case .asset:
             processAssetSelect(collectionView, at: indexPath)
+        case .revealRow:
+            selectionDelegate?.selectTokensReveal()
         }
     }
 
@@ -131,7 +150,7 @@ extension AssetListCollectionViewDelegate: UICollectionViewDelegateFlowLayout {
         layout _: UICollectionViewLayout,
         minimumLineSpacingForSectionAt section: Int
     ) -> CGFloat {
-        AssetListFlowLayout.SectionType(section: section).cellSpacing
+        AssetListFlowLayout.SectionType(section: section, totalSections: totalSections).cellSpacing
     }
 
     func collectionView(
@@ -139,7 +158,7 @@ extension AssetListCollectionViewDelegate: UICollectionViewDelegateFlowLayout {
         layout _: UICollectionViewLayout,
         insetForSectionAt section: Int
     ) -> UIEdgeInsets {
-        let sectionType = AssetListFlowLayout.SectionType(section: section)
+        let sectionType = AssetListFlowLayout.SectionType(section: section, totalSections: totalSections)
 
         return groupsLayoutDelegate?.sectionInsets(
             for: sectionType,

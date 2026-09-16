@@ -7,6 +7,7 @@ final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
     let persistExtrinsicService: PersistentExtrinsicServiceProtocol
     let persistenceFilter: ExtrinsicPersistenceFilterProtocol
     let eventCenter: EventCenterProtocol
+    let selfReceiveRevealer: TransferSelfReceiveRevealer
 
     var submitionPresenter: TransferConfirmOnChainInteractorOutputProtocol? {
         presenter as? TransferConfirmOnChainInteractorOutputProtocol
@@ -26,6 +27,7 @@ final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
         persistExtrinsicService: PersistentExtrinsicServiceProtocol,
         persistenceFilter: ExtrinsicPersistenceFilterProtocol,
         eventCenter: EventCenterProtocol,
+        selfReceiveRevealer: TransferSelfReceiveRevealer,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
@@ -33,6 +35,7 @@ final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
         self.persistExtrinsicService = persistExtrinsicService
         self.persistenceFilter = persistenceFilter
         self.eventCenter = eventCenter
+        self.selfReceiveRevealer = selfReceiveRevealer
 
         super.init(
             selectedAccount: selectedAccount,
@@ -66,7 +69,7 @@ final class TransferEvmOnChainConfirmInteractor: EvmOnChainTransferInteractor {
             switch result {
             case .success:
                 self.eventCenter.notify(with: WalletTransactionListUpdated())
-                self.submitionPresenter?.didCompleteSubmition(by: nil)
+                self.completeSubmission(recepient: details.receiver)
             case let .failure(error):
                 self.presenter?.didReceiveError(error)
             }
@@ -114,7 +117,7 @@ extension TransferEvmOnChainConfirmInteractor: TransferConfirmOnChainInteractorI
                 switch result {
                 case let .success(txHash):
                     guard persistenceFilter.canPersistExtrinsic(for: selectedAccount) else {
-                        submitionPresenter?.didCompleteSubmition(by: nil)
+                        completeSubmission(recepient: recepient)
                         return
                     }
 
@@ -133,7 +136,7 @@ extension TransferEvmOnChainConfirmInteractor: TransferConfirmOnChainInteractorI
 
                         persistExtrinsicAndComplete(details: details, type: transferType)
                     } else {
-                        submitionPresenter?.didCompleteSubmition(by: nil)
+                        completeSubmission(recepient: recepient)
                     }
 
                 case let .failure(error):
@@ -143,5 +146,22 @@ extension TransferEvmOnChainConfirmInteractor: TransferConfirmOnChainInteractorI
         } catch {
             presenter?.didReceiveError(error)
         }
+    }
+}
+
+// MARK: Private
+
+private extension TransferEvmOnChainConfirmInteractor {
+    func completeSubmission(recepient: AccountAddress) {
+        submitionPresenter?.didCompleteSubmition(by: nil)
+
+        guard let recipientAccountId = try? recepient.toAccountId(using: chain.chainFormat) else {
+            return
+        }
+
+        selfReceiveRevealer.reveal(
+            destination: ChainAsset(chain: chain, asset: asset),
+            recipientAccountId: recipientAccountId
+        )
     }
 }

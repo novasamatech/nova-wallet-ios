@@ -1,10 +1,13 @@
 import Foundation
 import Foundation_iOS
+import NovaAnalytics
 
-final class CloudBackupConfirmPasswordPresenter: BaseCloudBackupCreatePresenter {
+final class CloudBackupConfirmPasswordPresenter: BaseCloudBackupCreatePresenter, AnalyticsTracking {
     let interactor: CloudBackupCreateInteractorInputProtocol
 
     private var passwordToConfirm: String?
+
+    private let isWalletCreation: Bool
 
     init(
         interactor: CloudBackupCreateInteractorInputProtocol,
@@ -12,11 +15,13 @@ final class CloudBackupConfirmPasswordPresenter: BaseCloudBackupCreatePresenter 
         hintsViewModelFactory: CloudBackPasswordViewModelFactoryProtocol,
         passwordValidator: CloudBackupPasswordValidating,
         passwordToConfirm: String?,
+        isWalletCreation: Bool,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol = Logger.shared
     ) {
         self.interactor = interactor
         self.passwordToConfirm = passwordToConfirm
+        self.isWalletCreation = isWalletCreation
 
         super.init(
             wireframe: wireframe,
@@ -50,6 +55,10 @@ final class CloudBackupConfirmPasswordPresenter: BaseCloudBackupCreatePresenter 
 extension CloudBackupConfirmPasswordPresenter: CloudBackupCreateInteractorOutputProtocol {
     func didCreateWallet() {
         view?.didStopLoading()
+
+        if isWalletCreation {
+            trackAnalytics(.walletCreationCompleted(method: .create, duration: nil))
+        }
 
         wireframe.proceed(
             from: view,

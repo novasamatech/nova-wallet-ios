@@ -1,6 +1,7 @@
 import Foundation
 import Foundation_iOS
 import Keystore_iOS
+import NovaAnalytics
 
 final class UsernameSetupViewFactory: UsernameSetupViewFactoryProtocol {
     static func createViewForOnboarding() -> UsernameSetupViewProtocol? {

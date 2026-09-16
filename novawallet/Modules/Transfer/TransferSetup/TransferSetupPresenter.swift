@@ -1,8 +1,9 @@
 import Foundation
 import SubstrateSdk
 import Foundation_iOS
+import NovaAnalytics
 
-final class TransferSetupPresenter {
+final class TransferSetupPresenter: AnalyticsTracking {
     weak var view: TransferSetupViewProtocol?
 
     let interactor: TransferSetupInteractorIntputProtocol
@@ -16,6 +17,7 @@ final class TransferSetupPresenter {
     let childPresenterFactory: TransferSetupPresenterFactoryProtocol
     let logger: LoggerProtocol
     let web3NameViewModelFactory: Web3NameViewModelFactoryProtocol
+    let analyticsFlow: TransferAnalyticsFlow
 
     var childPresenter: TransferSetupChildPresenterProtocol?
 
@@ -74,6 +76,7 @@ final class TransferSetupPresenter {
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
         web3NameViewModelFactory: Web3NameViewModelFactoryProtocol,
+        analyticsFlow: TransferAnalyticsFlow,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
@@ -87,6 +90,7 @@ final class TransferSetupPresenter {
         self.chainAssetViewModelFactory = chainAssetViewModelFactory
         self.networkViewModelFactory = networkViewModelFactory
         self.web3NameViewModelFactory = web3NameViewModelFactory
+        self.analyticsFlow = analyticsFlow
         self.logger = logger
     }
 
@@ -292,6 +296,10 @@ final class TransferSetupPresenter {
 
 extension TransferSetupPresenter: TransferSetupPresenterProtocol {
     func setup() {
+        if analyticsFlow.tracksSendFunnel {
+            trackFeatureOpened(.send)
+        }
+
         provideChainsViewModel()
         childPresenter?.setup()
 

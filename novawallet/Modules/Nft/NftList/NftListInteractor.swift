@@ -19,6 +19,7 @@ final class NftListInteractor {
     private var priceProviders: [AssetModel.PriceId: StreamableProvider<PriceData>] = [:]
 
     private var nftProvider: StreamableProvider<NftModel>?
+    private var hasReportedSnapshot: Bool = false
 
     init(
         wallet: MetaAccountModel,
@@ -265,6 +266,12 @@ extension NftListInteractor: NftLocalStorageSubscriber, NftLocalSubscriptionHand
         case let .success(changes):
             let changes = updateNftsFromModel(changes: changes)
             presenter?.didReceiveNft(changes: changes)
+
+            if !hasReportedSnapshot {
+                hasReportedSnapshot = true
+
+                presenter?.didReceiveNftSnapshot(count: nfts.count)
+            }
         case let .failure(error):
             presenter?.didReceive(error: error)
         }

@@ -40,6 +40,7 @@ extension CloudBackupCreateViewFactory {
             hintsViewModelFactory: CloudBackPasswordViewModelFactory(flow: flow),
             passwordValidator: CloudBackupPasswordValidator(),
             passwordToConfirm: newPassword,
+            isWalletCreation: false,
             localizationManager: LocalizationManager.shared
         )
 

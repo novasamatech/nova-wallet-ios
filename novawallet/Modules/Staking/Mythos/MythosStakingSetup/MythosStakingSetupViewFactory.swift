@@ -46,6 +46,7 @@ struct MythosStakingSetupViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             accountDetailsViewModelFactory: accountDetailsFactory,
             initialStakingDetails: initialStakingDetails,
+            stakingType: state.stakingOption.type.analyticsType,
             localizationManager: localizationManager,
             logger: Logger.shared
         )

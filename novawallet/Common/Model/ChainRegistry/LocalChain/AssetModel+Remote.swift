@@ -1,7 +1,7 @@
 import Foundation
 
 extension AssetModel {
-    init(remoteModel: RemoteAssetModel, enabled: Bool) {
+    init(remoteModel: RemoteAssetModel) {
         assetId = remoteModel.assetId
         icon = remoteModel.icon
         name = remoteModel.name
@@ -13,7 +13,6 @@ extension AssetModel {
         typeExtras = remoteModel.typeExtras
         buyProviders = remoteModel.buyProviders
         sellProviders = remoteModel.sellProviders
-        self.enabled = enabled
         source = .remote
     }
 }

@@ -4,7 +4,6 @@ struct MultichainToken {
     struct Instance {
         let chainAssetId: ChainAssetId
         let chainName: String
-        let enabled: Bool
         let testnet: Bool
         let utility: Bool
         let icon: String?
@@ -16,67 +15,9 @@ struct MultichainToken {
     var icon: String? {
         instances.first(where: { $0.icon != nil })?.icon
     }
-
-    var enabled: Bool {
-        instances.contains { $0.enabled }
-    }
-
-    func enabledInstances() -> [Instance] {
-        instances.filter { $0.enabled }
-    }
-}
-
-extension MultichainToken.Instance {
-    func byChanging(enabled: Bool) -> MultichainToken.Instance {
-        .init(
-            chainAssetId: chainAssetId,
-            chainName: chainName,
-            enabled: enabled,
-            testnet: testnet,
-            utility: utility,
-            icon: icon
-        )
-    }
-}
-
-extension MultichainToken {
-    func byChanging(enabled: Bool, for chainAssetId: ChainAssetId? = nil) -> MultichainToken {
-        let newInstances = instances.map { instance in
-            if chainAssetId == nil || chainAssetId == instance.chainAssetId {
-                return instance.byChanging(enabled: enabled)
-            } else {
-                return instance
-            }
-        }
-
-        return .init(symbol: symbol, instances: newInstances)
-    }
 }
 
 extension Array where Element == ChainModel {
-    func createMultichainToken(for symbol: String) -> MultichainToken {
-        reduce(MultichainToken(symbol: symbol, instances: [])) { token, chain in
-            let assets = chain.assets.filter {
-                MultichainToken.reserveTokensOf(symbol: $0.symbol).contains(symbol)
-            }.sorted { $0.assetId < $1.assetId }
-
-            return assets.reduce(token) { accumToken, asset in
-                let chainAsset = ChainAsset(chain: chain, asset: asset)
-
-                let instance = MultichainToken.Instance(
-                    chainAssetId: chainAsset.chainAssetId,
-                    chainName: chain.name,
-                    enabled: asset.enabled,
-                    testnet: chain.isTestnet,
-                    utility: chainAsset.isUtilityAsset,
-                    icon: asset.icon
-                )
-
-                return MultichainToken(symbol: symbol, instances: accumToken.instances + [instance])
-            }
-        }
-    }
-
     func getAssetSymbols() -> Set<AssetModel.Symbol> {
         let chainAssets = flatMap { $0.chainAssets() }
         return chainAssets.getAssetSymbols()
@@ -138,16 +79,17 @@ extension Array where Element == ChainAsset {
             let instance = MultichainToken.Instance(
                 chainAssetId: chainAsset.chainAssetId,
                 chainName: chainAsset.chain.name,
-                enabled: chainAsset.asset.enabled,
                 testnet: chainAsset.chain.isTestnet,
                 utility: chainAsset.isUtilityAsset,
                 icon: chainAsset.asset.icon
             )
 
             let symbolExtensions = MultichainToken.reserveTokensOf(symbol: chainAsset.asset.symbol)
-            let tokenSymbol = symbolExtensions.first(
+            let reserveSymbol = symbolExtensions.first(
                 where: { validSymbols.contains($0) }
             ) ?? chainAsset.asset.symbol
+
+            let tokenSymbol = MultichainToken.bridgedParent(of: reserveSymbol, among: validSymbols) ?? reserveSymbol
 
             if let token = accum[tokenSymbol] {
                 accum[tokenSymbol] = MultichainToken(
@@ -174,5 +116,35 @@ extension MultichainToken {
         } else {
             return [symbol]
         }
+    }
+}
+
+extension MultichainToken {
+    static func variantSymbol(
+        of symbol: String,
+        inGroupWith groupSymbol: String,
+        sharingChainWithSiblings sharesChain: Bool
+    ) -> String? {
+        if sharesChain || !reserveTokensOf(symbol: symbol).contains(groupSymbol) {
+            symbol
+        } else {
+            nil
+        }
+    }
+}
+
+extension MultichainToken {
+    private enum Constants {
+        static let bridgedSymbolSeparator: Character = "-"
+    }
+
+    static func bridgedParent(of symbol: String, among validSymbols: Set<AssetModel.Symbol>) -> String? {
+        guard let separatorIndex = symbol.firstIndex(of: Constants.bridgedSymbolSeparator) else {
+            return nil
+        }
+
+        let parent = String(symbol[..<separatorIndex])
+
+        return validSymbols.contains(parent) ? parent : nil
     }
 }

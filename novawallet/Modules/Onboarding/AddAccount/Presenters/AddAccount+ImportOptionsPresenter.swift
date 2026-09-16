@@ -33,6 +33,8 @@ extension AddAccount {
                                     preferredLanguages: selectedLocale.rLanguages
                                 ).localizable.passphraseImportDescription(),
                                 onAction: { [weak self] in
+                                    self?.selectImportMethod(.importMnemonic)
+
                                     self?.wireframe.showPassphraseImport(from: self?.view)
                                 }
                             )
@@ -53,7 +55,12 @@ extension AddAccount {
                                         return
                                     }
 
-                                    self.wireframe.showHardwareImport(from: self.view, locale: self.selectedLocale)
+                                    self.wireframe.showHardwareImport(
+                                        from: self.view,
+                                        locale: self.selectedLocale
+                                    ) { [weak self] option in
+                                        self?.selectHardwareWallet(option)
+                                    }
                                 }
                             )
                         )
@@ -71,6 +78,8 @@ extension AddAccount {
                                     preferredLanguages: selectedLocale.rLanguages
                                 ).localizable.trustWalletImportDescription(),
                                 onAction: { [weak self] in
+                                    self?.selectImportMethod(.importMnemonic)
+
                                     self?.wireframe.showTrustWalletImport(from: self?.view)
                                 }
                             )
@@ -87,6 +96,8 @@ extension AddAccount {
                                     preferredLanguages: selectedLocale.rLanguages
                                 ).localizable.createWatchOnlyDetails(),
                                 onAction: { [weak self] in
+                                    self?.selectImportMethod(.importWatchOnly)
+
                                     self?.wireframe.showWatchOnlyImport(from: self?.view)
                                 }
                             )
@@ -100,6 +111,8 @@ extension AddAccount {
                                     preferredLanguages: selectedLocale.rLanguages
                                 ).localizable.importRawSeed(),
                                 onAction: { [weak self] in
+                                    self?.selectImportMethod(.importSeed)
+
                                     self?.wireframe.showSeedImport(from: self?.view)
                                 }
                             )
@@ -111,6 +124,8 @@ extension AddAccount {
                                     preferredLanguages: selectedLocale.rLanguages
                                 ).localizable.importRecoveryJson(),
                                 onAction: { [weak self] in
+                                    self?.selectImportMethod(.importJson)
+
                                     self?.wireframe.showRestoreJsonImport(from: self?.view)
                                 }
                             )

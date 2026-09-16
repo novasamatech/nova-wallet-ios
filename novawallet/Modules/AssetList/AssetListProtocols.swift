@@ -49,6 +49,7 @@ protocol AssetListCollectionViewActionsDelegate: AnyObject {
 protocol AssetListCollectionSelectionDelegate: AnyObject {
     func selectAsset(for chainAssetId: ChainAssetId)
     func selectOrganizerItem(at index: Int)
+    func selectTokensReveal()
 }
 
 protocol AssetListCollectionViewLayoutDelegate: AnyObject {
@@ -117,7 +118,7 @@ protocol AssetListInteractorOutputProtocol {
     func didReceive(wallet: MetaAccountModel)
 
     func didChange(name: String)
-    func didReceive(hidesZeroBalances: Bool)
+    func didReceive(hasHiddenAssets: Bool)
     func didReceive(result: AssetListBuilderResult)
     func didReceiveWalletConnect(sessionsCount: Int)
     func didReceiveWalletConnect(error: WalletConnectSessionsError)

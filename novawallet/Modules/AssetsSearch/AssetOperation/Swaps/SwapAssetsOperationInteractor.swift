@@ -84,6 +84,7 @@ final class SwapAssetsOperationInteractor: AnyCancellableCleaning {
 
         builder = .init(
             filter: filter,
+            includesHiddenAssets: selectionModel.includesHiddenAssets,
             workingQueue: .init(
                 label: AssetsSearchInteractor.workingQueueLabel,
                 qos: .userInteractive

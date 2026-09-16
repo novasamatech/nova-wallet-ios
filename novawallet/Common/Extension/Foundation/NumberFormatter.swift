@@ -97,10 +97,4 @@ extension NumberFormatter {
         numberFormatter.usesGroupingSeparator = true
         return numberFormatter
     }
-
-    static var positiveQuantity: NumberFormatter {
-        let formatter = quantity
-        formatter.positivePrefix = formatter.plusSign
-        return formatter
-    }
 }
