@@ -6,7 +6,7 @@ final class SettingsPresenter {
     let viewModelFactory: SettingsViewModelFactoryProtocol
     let config: ApplicationConfigProtocol
     let interactor: SettingsInteractorInputProtocol
-    let wireframe: SettingsWireframeProtocol
+    let wireframe: SettingsWireframeProtocol & AnalyticsPrivacyPresentable
     let logger: LoggerProtocol?
 
     private var currency: String?
@@ -15,6 +15,7 @@ final class SettingsPresenter {
     private var hasWalletsListUpdates: Bool = false
     private var pushNotificationsStatus: PushNotificationsStatus?
     private var hideBalances: Bool?
+    private var analyticsEnabled: Bool?
 
     private var wallet: MetaAccountModel?
     private var walletConnectSessionsCount: Int?
@@ -23,7 +24,7 @@ final class SettingsPresenter {
         viewModelFactory: SettingsViewModelFactoryProtocol,
         config: ApplicationConfigProtocol,
         interactor: SettingsInteractorInputProtocol,
-        wireframe: SettingsWireframeProtocol,
+        wireframe: SettingsWireframeProtocol & AnalyticsPrivacyPresentable,
         localizationManager: LocalizationManagerProtocol?,
         logger: LoggerProtocol? = nil
     ) {
@@ -47,7 +48,8 @@ private extension SettingsPresenter {
             isBiometricAuthOn: biometrySettings?.isEnabled,
             isPinConfirmationOn: isPinConfirmationOn,
             isNotificationsOn: pushNotificationsStatus == .active,
-            isHideBalancesOn: hideBalances ?? false
+            isHideBalancesOn: hideBalances ?? false,
+            isAnalyticsOn: analyticsEnabled
         )
 
         let sectionViewModels = viewModelFactory.createSectionViewModels(
@@ -190,6 +192,8 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             }
         case .hideBalances:
             interactor.toggleHideBalances()
+        case .privacy:
+            wireframe.showPrivacy(from: view)
         case .changePin:
             wireframe.showPincodeChange(from: view)
         case .telegram:
@@ -327,6 +331,12 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
 
     func didReceive(pushNotificationsStatus: PushNotificationsStatus) {
         self.pushNotificationsStatus = pushNotificationsStatus
+        updateView()
+    }
+
+    func didReceive(analyticsEnabled: Bool?) {
+        self.analyticsEnabled = analyticsEnabled
+
         updateView()
     }
 

@@ -1,12 +1,17 @@
 import Foundation
 import Foundation_iOS
 import BigInt
+import NovaAnalytics
 
 final class SwapSetupPresenter: SwapBasePresenter {
     weak var view: SwapSetupViewProtocol?
     let wireframe: SwapSetupWireframeProtocol
     let interactor: SwapSetupInteractorInputProtocol
     let initState: SwapSetupInitState
+    let source: SwapSource
+    let abandonTracker = AnalyticsAbandonTracker {
+        AnalyticsEvent.swapAbandoned(stage: .setup)
+    }
 
     private(set) var viewModelFactory: SwapsSetupViewModelFactoryProtocol
 
@@ -49,6 +54,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
         localizationManager: LocalizationManagerProtocol,
         selectedWallet: MetaAccountModel,
         slippageConfig: SlippageConfig,
+        source: SwapSource,
         logger: LoggerProtocol
     ) {
         self.initState = initState
@@ -60,6 +66,8 @@ final class SwapSetupPresenter: SwapBasePresenter {
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         slippage = slippageConfig.defaultSlippage
+
+        self.source = source
 
         super.init(
             selectedWallet: selectedWallet,
@@ -703,6 +711,8 @@ extension SwapSetupPresenter {
 
 extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     func setup() {
+        trackScreenOpened()
+
         updateViews()
 
         interactor.setup()
@@ -901,6 +911,8 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
                     quoteArgs: quoteArgs
                 )
 
+                self?.trackProceededToConfirmation(for: swapModel, quote: quote)
+
                 self?.wireframe.showConfirmation(
                     from: self?.view,
                     initState: confirmInitState
@@ -969,23 +981,6 @@ extension SwapSetupPresenter: Localizable {
     func applyLocalization() {
         if view?.isSetup == true {
             updateViews()
-        }
-    }
-}
-
-extension SwapSetupPresenter: RampFlowManaging, RampDelegate {
-    func rampDidComplete(
-        action: RampActionType,
-        chainAsset _: ChainAsset
-    ) {
-        wireframe.popTopControllers(from: view) { [weak self] in
-            guard let self else { return }
-
-            wireframe.presentRampDidComplete(
-                view: view,
-                action: action,
-                locale: selectedLocale
-            )
         }
     }
 }

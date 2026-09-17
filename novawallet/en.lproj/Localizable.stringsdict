@@ -226,5 +226,69 @@
 			<string>%li operations</string>
 		</dict>
 	</dict>
+	<key>tokens.manage.search.results</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@format@</string>
+		<key>format</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>li</string>
+			<key>one</key>
+			<string>%li result</string>
+			<key>other</key>
+			<string>%li results</string>
+		</dict>
+	</dict>
+	<key>tokens.manage.tokens.count</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@format@</string>
+		<key>format</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>li</string>
+			<key>one</key>
+			<string>%li token</string>
+			<key>other</key>
+			<string>%li tokens</string>
+		</dict>
+	</dict>
+	<key>tokens.manage.partial.networks</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$li of %2$#@total@</string>
+		<key>total</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>li</string>
+			<key>one</key>
+			<string>%li network</string>
+			<key>other</key>
+			<string>%li networks</string>
+		</dict>
+	</dict>
+	<key>tokens.manage.partial.tokens</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$li of %2$#@total@</string>
+		<key>total</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>li</string>
+			<key>one</key>
+			<string>%li token</string>
+			<key>other</key>
+			<string>%li tokens</string>
+		</dict>
+	</dict>
 </dict>
 </plist>

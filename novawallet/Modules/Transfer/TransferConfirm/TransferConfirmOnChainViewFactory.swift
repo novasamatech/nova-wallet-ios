@@ -1,6 +1,7 @@
 import Foundation
 import Foundation_iOS
 import Keystore_iOS
+import NovaAnalytics
 
 // swiftlint:disable function_body_length
 struct TransferConfirmOnChainViewFactory {
@@ -9,7 +10,8 @@ struct TransferConfirmOnChainViewFactory {
         feeAsset: ChainAsset,
         recepient: AccountAddress,
         amount: OnChainTransferAmount<Decimal>,
-        transferCompletion: TransferCompletionClosure?
+        transferCompletion: TransferCompletionClosure?,
+        analyticsFlow: TransferAnalyticsFlow
     ) -> TransferConfirmOnChainViewProtocol? {
         let walletSettings = SelectedWalletSettings.shared
 
@@ -104,7 +106,8 @@ struct TransferConfirmOnChainViewFactory {
             senderAccountAddress: senderAccountAddress,
             dataValidatingFactory: dataValidatingFactory,
             localizationManager: localizationManager,
-            transferCompletion: transferCompletion
+            transferCompletion: transferCompletion,
+            analyticsFlow: analyticsFlow
         )
 
         let view = TransferConfirmViewController(
@@ -182,6 +185,7 @@ struct TransferConfirmOnChainViewFactory {
             persistExtrinsicService: persistentExtrinsicService,
             persistenceFilter: AccountTypeExtrinsicPersistenceFilter(),
             eventCenter: EventCenter.shared,
+            selfReceiveRevealer: createSelfReceiveRevealer(operationQueue: operationQueue),
             currencyManager: currencyManager,
             operationQueue: operationQueue
         )
@@ -256,8 +260,20 @@ struct TransferConfirmOnChainViewFactory {
             substrateStorageFacade: SubstrateDataStorageFacade.shared,
             transferAggregationWrapperFactory: assetTransferAggregationWrapperFactory,
             persistenceFilter: AccountTypeExtrinsicPersistenceFilter(),
+            selfReceiveRevealer: createSelfReceiveRevealer(operationQueue: operationQueue),
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+    }
+
+    private static func createSelfReceiveRevealer(
+        operationQueue: OperationQueue
+    ) -> TransferSelfReceiveRevealer {
+        TransferSelfReceiveRevealer(
+            accountRepositoryFactory: AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared),
+            visibilityWriter: AssetVisibilityWriter.shared,
+            operationQueue: operationQueue,
+            logger: Logger.shared
         )
     }
 }

@@ -1,5 +1,6 @@
 import Foundation
 import BigInt
+import NovaAnalytics
 
 extension ParaStkStakeConfirmPresenter {
     func provideStartStakingHintsViewModel() {
@@ -73,6 +74,8 @@ extension ParaStkStakeConfirmPresenter {
         )
 
         validator.runValidation { [weak self] in
+            self?.trackStakingEvent(AnalyticsEvent.stakingConfirmed)
+
             self?.submitExtrinsic()
         }
     }

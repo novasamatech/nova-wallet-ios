@@ -4,15 +4,21 @@ import Operation_iOS
 struct CustomNetworkSetupFinishStrategyFactory {
     private let chainRegistry: ChainRegistryProtocol
     private let repository: AnyDataProviderRepository<ChainModel>
+    private let selectedWalletSettings: SelectedWalletSettings
+    private let visibilityWriter: AssetVisibilityWriting
     private let operationQueue: OperationQueue
 
     init(
         chainRegistry: ChainRegistryProtocol,
         repository: AnyDataProviderRepository<ChainModel>,
+        selectedWalletSettings: SelectedWalletSettings,
+        visibilityWriter: AssetVisibilityWriting,
         operationQueue: OperationQueue
     ) {
         self.chainRegistry = chainRegistry
         self.repository = repository
+        self.selectedWalletSettings = selectedWalletSettings
+        self.visibilityWriter = visibilityWriter
         self.operationQueue = operationQueue
     }
 
@@ -20,6 +26,8 @@ struct CustomNetworkSetupFinishStrategyFactory {
         CustomNetworkAddNewStrategy(
             repository: repository,
             preConfiguredNetwork: preConfiguredNetwork,
+            initiatingMetaId: selectedWalletSettings.value?.metaId,
+            visibilityWriter: visibilityWriter,
             operationQueue: operationQueue,
             chainRegistry: chainRegistry
         )
@@ -46,6 +54,8 @@ struct CustomNetworkSetupFinishStrategyFactory {
             networkToEdit: networkToEdit,
             selectedNode: selectedNode,
             repository: repository,
+            initiatingMetaId: selectedWalletSettings.value?.metaId,
+            visibilityWriter: visibilityWriter,
             operationQueue: operationQueue,
             chainRegistry: chainRegistry
         )
@@ -148,6 +158,24 @@ extension CustomNetworkSetupFinishStrategy {
         )
     }
 
+    func revealAssets(
+        of network: ChainModel,
+        for metaId: MetaAccountModel.Id?,
+        visibilityWriter: AssetVisibilityWriting
+    ) {
+        guard let metaId else {
+            return
+        }
+
+        visibilityWriter.apply(
+            event: .userSet(isVisible: true),
+            metaId: metaId,
+            ids: Set(network.chainAssets().map(\.chainAssetId)),
+            runningCallbackIn: nil,
+            completion: nil
+        )
+    }
+
     func processWithCheck(
         _ network: ChainModel,
         output: CustomNetworkBaseInteractorOutputProtocol?,
@@ -187,6 +215,8 @@ extension CustomNetworkSetupFinishStrategy {
 struct CustomNetworkAddNewStrategy: CustomNetworkSetupFinishStrategy {
     let repository: AnyDataProviderRepository<ChainModel>
     let preConfiguredNetwork: ChainModel?
+    let initiatingMetaId: MetaAccountModel.Id?
+    let visibilityWriter: AssetVisibilityWriting
     let operationQueue: OperationQueue
 
     let chainRegistry: ChainRegistryProtocol
@@ -215,6 +245,11 @@ struct CustomNetworkAddNewStrategy: CustomNetworkSetupFinishStrategy {
             ) { result in
                 switch result {
                 case .success:
+                    revealAssets(
+                        of: networkToSave,
+                        for: initiatingMetaId,
+                        visibilityWriter: visibilityWriter
+                    )
                     output?.didFinishWorkWithNetwork()
                 case .failure:
                     output?.didReceive(
@@ -251,6 +286,8 @@ struct CustomNetworkEditStrategy: CustomNetworkSetupFinishStrategy {
     let selectedNode: ChainNodeModel
 
     let repository: AnyDataProviderRepository<ChainModel>
+    let initiatingMetaId: MetaAccountModel.Id?
+    let visibilityWriter: AssetVisibilityWriting
     let operationQueue: OperationQueue
 
     let chainRegistry: ChainRegistryProtocol
@@ -262,7 +299,9 @@ struct CustomNetworkEditStrategy: CustomNetworkSetupFinishStrategy {
         processWithCheck(network, output: output) {
             var readyNetwork = network
 
-            if network.chainId == networkToEdit.chainId {
+            let chainIdChanged = network.chainId != networkToEdit.chainId
+
+            if !chainIdChanged {
                 var nodesToAdd = networkToEdit.nodes
 
                 if !network.nodes.contains(where: { $0.url == selectedNode.url }) {
@@ -272,7 +311,7 @@ struct CustomNetworkEditStrategy: CustomNetworkSetupFinishStrategy {
                 readyNetwork = network.adding(nodes: nodesToAdd)
             }
 
-            let deleteIds = network.chainId != networkToEdit.chainId
+            let deleteIds = chainIdChanged
                 ? [networkToEdit.chainId]
                 : []
 
@@ -289,6 +328,14 @@ struct CustomNetworkEditStrategy: CustomNetworkSetupFinishStrategy {
             ) { result in
                 switch result {
                 case .success:
+                    if chainIdChanged {
+                        revealAssets(
+                            of: readyNetwork,
+                            for: initiatingMetaId,
+                            visibilityWriter: visibilityWriter
+                        )
+                    }
+
                     output?.didFinishWorkWithNetwork()
                 case .failure:
                     output?.didReceive(

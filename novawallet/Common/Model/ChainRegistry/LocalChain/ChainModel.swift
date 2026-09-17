@@ -144,10 +144,6 @@ struct ChainModel: Equatable, Hashable {
         return assets.first { $0.assetId == assetId }
     }
 
-    func hasEnabledAsset() -> Bool {
-        assets.contains { $0.enabled }
-    }
-
     var hasUnifiedAddressPrefix: Bool {
         legacyAddressPrefix != nil
     }

@@ -18,7 +18,7 @@ Deployment target iOS 16.0; Swift language version 5.0.
 
 ```bash
 set -o pipefail && xcodebuild -project novawallet.xcodeproj -scheme novawallet \
-  -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 16' \
+  -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
   build 2>&1 | xcbeautify --quiet
 ```
 
@@ -26,7 +26,7 @@ Targeted tests first — the full suite is slow:
 
 ```bash
 set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawallet \
-  -destination 'platform=iOS Simulator,name=iPhone 16' \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
   -only-testing:novawalletTests/StakingUnbondSetupTests 2>&1 | xcbeautify --quiet
 ```
 
@@ -40,11 +40,32 @@ Integration tests are a separate scheme and are **not** part of CI:
 
 ```bash
 set -o pipefail && xcodebuild test -project novawallet.xcodeproj -scheme novawalletIntegrationTests \
-  -destination 'platform=iOS Simulator,name=iPhone 16' 2>&1 | xcbeautify --quiet
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' 2>&1 | xcbeautify --quiet
 ```
 
 Schemes: `novawallet`, `novawalletIntegrationTests`, `NovaPushNotificationServiceExtension`.
-Test device in CI is iPhone 16 (`fastlane/Scanfile`).
+Test device in CI is iPhone 17 Pro (`fastlane/Scanfile`, and the package jobs in
+`.github/workflows/pull_request.yml`). The runner image carries no plain iPhone 16; a raw
+`xcodebuild` destination that names a missing device fails outright, while `scan` silently falls
+back to whatever is available.
+
+### Local Package Suites
+
+`NovaAnalytics` and `NovaAppAttest` sources import UIKit/CoreData/DeviceCheck and every SDK
+dependency is iOS-only, so `swift test` builds for macOS and fails — test them through
+`xcodebuild` against a simulator destination instead. `NovaOperationSupport` has no test target
+(it mirrors app-only helper code — see project-layout.md); build it rather than testing it.
+
+```bash
+(cd Packages/NovaAppAttest && RUN_IN_CI=true xcodebuild test -scheme NovaAppAttest \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -derivedDataPath /tmp/dd-NovaAppAttest)
+(cd Packages/NovaAnalytics && RUN_IN_CI=true xcodebuild test -scheme NovaAnalytics \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -derivedDataPath /tmp/dd-NovaAnalytics)
+(cd Packages/NovaOperationSupport && RUN_IN_CI=true xcodebuild build -scheme NovaOperationSupport \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -derivedDataPath /tmp/dd-NovaOperationSupport)
+```
+
+Pin `-derivedDataPath` outside the shared DerivedData folder used by the app build.
 
 ## Build Configurations
 
@@ -107,8 +128,13 @@ Both run pinned versions through Mint, so results match CI and the build phases.
 
 ## Dependencies
 
-All SPM, all remote — there are no local packages. Versions are pinned in
-`novawallet.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`.
+Mostly SPM, remote — plus three local packages under `Packages/`: `NovaAnalytics`,
+`NovaAppAttest`, and `NovaOperationSupport` (see project-layout.md). Versions are pinned in
+one place, `novawallet.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`,
+which also carries `logger-ios`, added when the local packages arrived. Testing a package on
+its own makes it write a `Packages/<Name>/Package.resolved`; those are git-ignored
+(`.gitignore:60-65`) and must not be committed — a package manifest pins exact versions, so
+a second resolved file adds nothing but a way for the two to disagree.
 
 Core (novasama-maintained):
 
@@ -122,6 +148,7 @@ Core (novasama-maintained):
 | `Crypto-iOS` (NovaCrypto) | 0.4.1  | Keypairs, signing, mnemonics                 |
 | `metadata-shortener-ios` | 0.2.1   | Metadata hash for hardware signing           |
 | `hydra-math-swift`       | 0.5.0   | Hydration pool maths                         |
+| `logger-ios`             | 0.0.1   | `SDKLogger`, used by the app + local packages |
 | `WalletConnectSwiftV2`   | 1.9.9   | WalletConnect (fork)                         |
 | `web3swift`              | 3.3.1   | EVM (fork)                                   |
 | `Starscream`             | 4.0.13  | WebSocket (fork)                             |

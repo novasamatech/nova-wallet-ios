@@ -19,7 +19,6 @@ extension AssetModel {
             typeExtras: AssetTypeExtras.createFrom(evmContractAddress: request.contractAddress),
             buyProviders: nil,
             sellProviders: nil,
-            enabled: true,
             source: .user
         )
     }

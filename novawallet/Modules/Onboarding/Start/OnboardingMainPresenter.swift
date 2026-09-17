@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import NovaAnalytics
 
 final class OnboardingMainPresenter {
     weak var view: OnboardingMainViewProtocol?
@@ -9,7 +10,13 @@ final class OnboardingMainPresenter {
     let legalData: LegalData
     let localizationManager: LocalizationManagerProtocol
 
+    private let abandonTracker = AnalyticsAbandonTracker {
+        AnalyticsEvent.walletCreationAbandoned(lastStep: .welcome)
+    }
+
     private var consentAccepted: Bool = false
+    var hasExistingWallets: Bool = false
+    var isOnboardingStartedTracked: Bool = false
 
     init(
         interactor: OnboardingMainInteractorInputProtocol,
@@ -47,7 +54,11 @@ private extension OnboardingMainPresenter {
 
         interactor.acceptLegalDocuments()
 
+        abandonTracker.markProceeded()
+
         navigationClosure(view)
+
+        trackOnboardingStartedIfNeeded()
     }
 }
 
@@ -78,10 +89,14 @@ extension OnboardingMainPresenter: OnboardingMainPresenterProtocol {
         consentAccepted = !consentAccepted
 
         view?.didReceiveConsent(accepted: consentAccepted)
+
+        trackOnboardingStartedIfNeeded()
     }
 
     func activateSignup() {
         proceed { [weak self] view in
+            self?.trackAnalytics(.walletImportMethodSelected(method: .create))
+
             self?.wireframe.showSignup(from: view)
         }
     }
@@ -104,6 +119,10 @@ extension OnboardingMainPresenter: OnboardingMainPresenterProtocol {
 // MARK: - OnboardingMainInteractorOutputProtocol
 
 extension OnboardingMainPresenter: OnboardingMainInteractorOutputProtocol {
+    func didReceive(hasExistingWallets: Bool) {
+        self.hasExistingWallets = hasExistingWallets
+    }
+
     func didSuggestSecretImport(source: SecretSource) {
         wireframe.showAccountSecretImport(from: view, source: source)
     }

@@ -52,5 +52,18 @@ final class OperationManagerFacade {
         return operationQueue
     }()
 
+    static let assetVisibilityQueue: OperationQueue = {
+        let operationQueue = OperationQueue()
+        operationQueue.maxConcurrentOperationCount = 1
+        return operationQueue
+    }()
+
+    /// Serial: the analytics queue's enqueue -> trim and peek -> drop sequences must not interleave.
+    static let analyticsQueue: OperationQueue = {
+        let operationQueue = OperationQueue()
+        operationQueue.maxConcurrentOperationCount = 1
+        return operationQueue
+    }()
+
     static let sharedManager = OperationManager(operationQueue: sharedDefaultQueue)
 }

@@ -57,3 +57,9 @@ GoogleService-Info-*.plist
 GoogleService-Info.plist
 .source_packages/
 .mint/
+# Local SPM packages under Packages/: build products and the resolution state
+# xcodebuild writes when the package is tested on its own. The app's
+# Package.resolved is the single source of truth for versions.
+Packages/*/.build/
+Packages/*/.swiftpm/
+Packages/*/Package.resolved
