@@ -24,6 +24,9 @@ protocol AssetExchangableGraphEdge: GraphQuotableEdge {
 
     var type: AssetExchangeEdgeType { get }
 
+    /// The pool the edge trades through, when the route must not enter it twice
+    var poolId: AssetExchangePoolId? { get }
+
     func beginMetaOperation(for amountIn: Balance, amountOut: Balance) throws -> AssetExchangeMetaOperationProtocol
 
     func appendToMetaOperation(

@@ -57,3 +57,23 @@ extension HydraDx {
 
 extension HydraDx.SwapRoute.ComponentType: Equatable & Hashable where Asset: Equatable & Hashable {}
 extension HydraDx.SwapRoute.Component: Equatable & Hashable where Asset: Equatable & Hashable {}
+
+extension HydraDx.SwapRoute.Component {
+    /// Identifies the pool the component trades through within the chain
+    var poolIdentifier: String {
+        switch type {
+        case .omnipool:
+            return "omnipool"
+        case let .stableswap(poolAsset):
+            return "stableswap:\(poolAsset)"
+        case .xyk:
+            return "xyk:\(pairIdentifier)"
+        case .aave:
+            return "aave:\(pairIdentifier)"
+        }
+    }
+
+    private var pairIdentifier: String {
+        [assetIn, assetOut].map { "\($0)" }.sorted().joined(separator: "-")
+    }
+}
