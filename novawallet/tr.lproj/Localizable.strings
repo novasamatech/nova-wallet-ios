@@ -2055,7 +2055,6 @@
 "swap.failure.pool.trade.limit.unknown.max.message" = "%1$@ likidite havuzu şu anda bu kadar büyük bir takası kabul edemiyor. Daha küçük bir miktar deneyin.";
 "analytics.details.addresses" = "Cüzdan adresleriniz, işlem hash'leriniz veya kesin tutarlarınız asla paylaşılmaz";
 "analytics.details.identifiers" = "Kalıcı tanımlayıcılar yok — hiçbir şey verileri sizinle ilişkilendirmez";
-"analytics.details.ip" = "IP adresiniz analiz sağlayıcımızla asla paylaşılmaz — yalnızca ülkenizi belirlemek için kullanılır ve ardından silinir";
 "analytics.details.settings" = "Seçiminizi istediğiniz zaman Ayarlar'dan değiştirebilirsiniz";
 "analytics.privacy.description" = "Hangi özelliklerin kullanıldığını anlamamıza ve Nova Wallet'ı geliştirmemize yardımcı olur.";
 "analytics.prompt.decline" = "Kabul Etmiyorum";
@@ -2070,3 +2069,4 @@
 "tokens.manage.section.paused" = "Duraklatılanlar";
 "wallet.list.empty.message_v2" = "Varlıklarınız burada görünecek";
 "wallet.list.missing.token" = "Aradığınız token'ı bulamadınız mı?";
+"analytics.details.ip" = "IP adresiniz ülkenizi belirlemek için bir kez kullanılır, ardından silinir — analiz sağlayıcımıza hiçbir zaman ulaşmaz";

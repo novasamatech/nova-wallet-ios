@@ -2055,7 +2055,6 @@
 "swap.failure.pool.trade.limit.unknown.max.message" = "%1$@の流動性プールは、現在これほど大きなスワップを受け付けられません。金額を小さくしてお試しください。";
 "analytics.details.addresses" = "ウォレットアドレス、トランザクションハッシュ、正確な金額は決して収集しません";
 "analytics.details.identifiers" = "永続的な識別子はありません — データがあなたに紐づくことはありません";
-"analytics.details.ip" = "IPアドレスが分析プロバイダーと共有されることはありません — 国を記録するためだけに使用し、その後削除します";
 "analytics.details.settings" = "設定からいつでも選択を変更できます";
 "analytics.privacy.description" = "どの機能が使われているかを把握し、Nova Walletをより良くするのに役立ちます。";
 "analytics.prompt.decline" = "同意しない";
@@ -2070,3 +2069,4 @@
 "tokens.manage.section.paused" = "一時停止中";
 "wallet.list.empty.message_v2" = "あなたの資産がここに表示されます";
 "wallet.list.missing.token" = "トークンが見つかりませんか？";
+"analytics.details.ip" = "あなたのIPアドレスは国を記録するために一度だけ使用され、その後削除されます — アナリティクスプロバイダーに送信されることはありません";

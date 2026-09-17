@@ -2055,7 +2055,6 @@
 "swap.failure.pool.trade.limit.unknown.max.message" = "A(z) %1$@ likviditási pool jelenleg nem tud ekkora cserét fogadni. Próbálj meg kisebb összeget.";
 "analytics.details.addresses" = "Soha nem osztjuk meg tárcacímeit, tranzakcióazonosítóit vagy a pontos összegeket";
 "analytics.details.identifiers" = "Nincsenek állandó azonosítók — semmi sem kapcsolja az adatokat Önhöz";
-"analytics.details.ip" = "IP-címét soha nem osztjuk meg az analitikai szolgáltatónkkal — csak az országa megállapítására használjuk, majd töröljük";
 "analytics.details.settings" = "Beállításait bármikor módosíthatja a Beállításokban";
 "analytics.privacy.description" = "Segít megérteni, mely funkciókat használják, és jobbá tenni a Nova Walletet.";
 "analytics.prompt.decline" = "Nem fogadom el";
@@ -2070,3 +2069,4 @@
 "tokens.manage.section.paused" = "Szüneteltetve";
 "wallet.list.empty.message_v2" = "Eszközei itt jelennek majd meg";
 "wallet.list.missing.token" = "Hiányzik egy token?";
+"analytics.details.ip" = "Az IP-címedet egyszer használjuk fel az országod megállapításához, majd töröljük – soha nem jut el az analitikai szolgáltatónkhoz";

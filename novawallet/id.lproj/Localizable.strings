@@ -2055,7 +2055,6 @@
 "swap.failure.pool.trade.limit.unknown.max.message" = "Pool likuiditas %1$@ tidak dapat menerima swap sebesar ini saat ini. Coba jumlah yang lebih kecil.";
 "analytics.details.addresses" = "Bukan alamat dompet, hash transaksi, atau jumlah persis Anda";
 "analytics.details.identifiers" = "Tidak ada pengenal persisten — tidak ada yang menghubungkan data tersebut dengan Anda";
-"analytics.details.ip" = "IP Anda tidak pernah dibagikan kepada penyedia analitik kami — hanya digunakan untuk mengetahui negara Anda, lalu dihapus";
 "analytics.details.settings" = "Anda dapat mengubah pilihan kapan saja di Pengaturan";
 "analytics.privacy.description" = "Membantu kami memahami fitur mana yang digunakan dan menjadikan Nova Wallet lebih baik.";
 "analytics.prompt.decline" = "Tidak Setuju";
@@ -2070,3 +2069,4 @@
 "tokens.manage.section.paused" = "Dijeda";
 "wallet.list.empty.message_v2" = "Aset Anda akan muncul di sini";
 "wallet.list.missing.token" = "Tidak menemukan token?";
+"analytics.details.ip" = "Alamat IP Anda digunakan sekali untuk mencatat negara Anda, lalu dihapus — alamat tersebut tidak pernah sampai ke penyedia analitik kami";

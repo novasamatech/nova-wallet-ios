@@ -2055,7 +2055,6 @@
 "swap.failure.pool.trade.limit.unknown.max.message" = "Pool thanh khoản %1$@ hiện không thể tiếp nhận lệnh hoán đổi lớn như vậy. Hãy thử số lượng nhỏ hơn.";
 "analytics.details.addresses" = "Không bao giờ chia sẻ địa chỉ ví, mã hash giao dịch hoặc số tiền chính xác của bạn";
 "analytics.details.identifiers" = "Không có mã nhận dạng lâu dài — không gì liên kết dữ liệu với bạn";
-"analytics.details.ip" = "Địa chỉ IP của bạn không bao giờ được chia sẻ với nhà cung cấp dịch vụ phân tích của chúng tôi — chỉ được dùng để xác định quốc gia của bạn rồi bị xóa";
 "analytics.details.settings" = "Bạn có thể thay đổi lựa chọn của mình bất cứ lúc nào trong phần Cài đặt";
 "analytics.privacy.description" = "Giúp chúng tôi hiểu những tính năng nào được sử dụng và cải thiện Nova Wallet.";
 "analytics.prompt.decline" = "Không đồng ý";
@@ -2070,3 +2069,4 @@
 "tokens.manage.section.paused" = "Đã tạm dừng";
 "wallet.list.empty.message_v2" = "Tài sản của bạn sẽ xuất hiện ở đây";
 "wallet.list.missing.token" = "Không tìm thấy token cần tìm?";
+"analytics.details.ip" = "Địa chỉ IP của bạn được sử dụng một lần để xác định quốc gia, sau đó bị xóa — không bao giờ được gửi đến nhà cung cấp dịch vụ phân tích của chúng tôi";

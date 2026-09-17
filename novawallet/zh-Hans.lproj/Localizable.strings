@@ -2055,7 +2055,6 @@
 "swap.failure.pool.trade.limit.unknown.max.message" = "%1$@ 流动性池目前无法处理如此大额的交换。请尝试更小的金额。";
 "analytics.details.addresses" = "绝不会收集您的钱包地址、交易哈希或具体金额";
 "analytics.details.identifiers" = "没有持久性标识符——没有任何信息会将这些数据与您关联起来";
-"analytics.details.ip" = "您的 IP 地址绝不会与我们的分析服务提供商共享——仅用于确定您所在的国家/地区，之后即会删除";
 "analytics.details.settings" = "您可以随时在“设置”中更改选择";
 "analytics.privacy.description" = "帮助我们了解哪些功能正在使用，并改进 Nova Wallet。";
 "analytics.prompt.decline" = "不同意";
@@ -2070,3 +2069,4 @@
 "tokens.manage.section.paused" = "已暂停";
 "wallet.list.empty.message_v2" = "您的资产将显示在这里";
 "wallet.list.missing.token" = "没找到所需的代币？";
+"analytics.details.ip" = "您的 IP 仅使用一次以记录您所在的国家，随后即被删除——它绝不会传送给我们的分析服务提供商";

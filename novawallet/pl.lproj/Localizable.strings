@@ -2055,7 +2055,6 @@
 "swap.failure.pool.trade.limit.unknown.max.message" = "Pula płynności %1$@ nie może teraz przyjąć tak dużej wymiany. Spróbuj mniejszej kwoty.";
 "analytics.details.addresses" = "Nigdy nie są to adresy Twojego portfela, hashe transakcji ani dokładne kwoty";
 "analytics.details.identifiers" = "Brak stałych identyfikatorów — nic nie łączy danych z Tobą";
-"analytics.details.ip" = "Twój adres IP nigdy nie jest udostępniany naszemu dostawcy usług analitycznych — służy jedynie do określenia Twojego kraju, a następnie jest usuwany";
 "analytics.details.settings" = "Możesz zmienić swój wybór w dowolnym momencie w Ustawieniach";
 "analytics.privacy.description" = "Pomaga nam zrozumieć, które funkcje są używane, i ulepszać Nova Wallet.";
 "analytics.prompt.decline" = "Nie wyrażam zgody";
@@ -2070,3 +2069,4 @@
 "tokens.manage.section.paused" = "Wstrzymane";
 "wallet.list.empty.message_v2" = "Twoje aktywa pojawią się tutaj";
 "wallet.list.missing.token" = "Brakuje tokena?";
+"analytics.details.ip" = "Twój adres IP jest używany jednorazowo do określenia Twojego kraju, a następnie usuwany — nigdy nie trafia do naszego dostawcy usług analitycznych";

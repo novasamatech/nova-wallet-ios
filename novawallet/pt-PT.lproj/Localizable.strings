@@ -2055,7 +2055,6 @@
 "swap.failure.pool.trade.limit.unknown.max.message" = "O pool de liquidez de %1$@ não consegue aceitar uma troca tão grande neste momento. Experimente uma quantia menor.";
 "analytics.details.addresses" = "Nunca os endereços da sua carteira, hashes de transações ou valores exatos";
 "analytics.details.identifiers" = "Nenhum identificador persistente — nada vincula os dados a você";
-"analytics.details.ip" = "Seu IP nunca é compartilhado com nosso provedor de análises — usado apenas para identificar seu país e depois excluído";
 "analytics.details.settings" = "Altere sua escolha a qualquer momento em Configurações";
 "analytics.privacy.description" = "Ajuda-nos a entender quais recursos são usados e a tornar a Nova Wallet melhor.";
 "analytics.prompt.decline" = "Não concordo";
@@ -2070,3 +2069,4 @@
 "tokens.manage.section.paused" = "Pausados";
 "wallet.list.empty.message_v2" = "Seus ativos aparecerão aqui";
 "wallet.list.missing.token" = "Faltando um token?";
+"analytics.details.ip" = "Seu IP é usado uma vez para identificar seu país e, em seguida, excluído — ele nunca chega ao nosso provedor de análises";
