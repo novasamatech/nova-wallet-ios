@@ -1,8 +1,14 @@
 import UIKit
 
+struct AnnouncementLinkViewModel: Equatable {
+    let title: String
+    let url: URL
+}
+
 struct AnnouncementViewModel: Equatable {
     let style: InlineAlertView.Style
     let message: String
+    let link: AnnouncementLinkViewModel?
 }
 
 protocol AnnouncementViewModelFactoryProtocol {
@@ -26,8 +32,17 @@ final class AnnouncementViewModelFactory: AnnouncementViewModelFactoryProtocol {
 
         return AnnouncementViewModel(
             style: announcement.style.alertStyle,
-            message: message
+            message: message,
+            link: createLinkViewModel(from: announcement.link, locale: locale)
         )
+    }
+
+    private func createLinkViewModel(from link: Announcement.Link?, locale: Locale) -> AnnouncementLinkViewModel? {
+        guard let link, let title = link.title(for: locale) else {
+            return nil
+        }
+
+        return AnnouncementLinkViewModel(title: title, url: link.url)
     }
 
     func createGeneralViewModels(
@@ -53,9 +68,19 @@ final class AnnouncementViewModelFactory: AnnouncementViewModelFactoryProtocol {
 }
 
 extension InlineAlertView {
-    func bind(announcement viewModel: AnnouncementViewModel) {
+    func bind(announcement viewModel: AnnouncementViewModel, includingLink: Bool = true) {
         apply(style: viewModel.style)
         contentView.detailsLabel.text = viewModel.message
+
+        if includingLink, let link = viewModel.link {
+            setLink(title: link.title)
+        } else {
+            setLink(title: nil)
+        }
+    }
+
+    static func estimatedHeight(for viewModel: AnnouncementViewModel, width: CGFloat) -> CGFloat {
+        estimatedHeight(for: viewModel.message, width: width, hasLink: viewModel.link != nil)
     }
 }
 

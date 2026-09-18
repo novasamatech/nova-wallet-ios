@@ -126,6 +126,10 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
         wireframe.showMoreOptions(from: view)
     }
 
+    func selectAnnouncementLink(url: URL) {
+        wireframe.openBrowser(with: .query(string: url.absoluteString))
+    }
+
     func switchWallet() {
         wireframe.showWalletSwitch(from: view)
     }
