@@ -9,66 +9,20 @@ final class AssetHubExchangeAtomicOperationTests: XCTestCase {
         XCTAssertEqual(AssetHubExchangeAtomicOperation.guaranteedNetAmountOut(for: params), 981_657)
     }
 
-    func testBuyFallsBackToExactTargetLessCommission() throws {
-        let params = try createParams(swap: .exactOut(createBuyCall(amountOut: 1_008_500)), commission: 8500)
-
-        XCTAssertEqual(AssetHubExchangeAtomicOperation.guaranteedNetAmountOut(for: params), 1_000_000)
-    }
-
-    func testUnchargedSwapFallsBackToPalletMinimum() throws {
-        let params = try createParams(swap: .exactIn(createSellCall(amountOutMin: 990_085)), commission: nil)
-
-        XCTAssertEqual(AssetHubExchangeAtomicOperation.guaranteedNetAmountOut(for: params), 990_085)
-    }
-
-    func testCommissionAbovePalletBoundFallsBackToZero() throws {
-        let params = try createParams(swap: .exactIn(createSellCall(amountOutMin: 1000)), commission: 5000)
-
-        XCTAssertEqual(AssetHubExchangeAtomicOperation.guaranteedNetAmountOut(for: params), 0)
-    }
-
-    func testCommissionIsWaivedWhenItNoLongerFitsTheRescaledSwap() {
-        XCTAssertTrue(AssetHubExchangeAtomicOperation.shouldWaiveCommission(
-            on: AssetHubExchangePreparationError.invalidCommission
-        ))
-        XCTAssertTrue(AssetHubExchangeAtomicOperation.shouldWaiveCommission(
-            on: AssetHubExchangePreparationError.netOutputBelowMinimum
-        ))
-    }
-
-    func testUnreadyRecipientDoesNotWaiveCommission() {
-        XCTAssertFalse(AssetHubExchangeAtomicOperation.shouldWaiveCommission(
-            on: AssetHubExchangePreparationError.recipientUnavailable
-        ))
-    }
-
-    func testUnrelatedPreparationFailuresDoNotWaiveCommission() {
-        let errors: [Error] = [
-            AssetHubExchangePreparationError.invalidSlippage,
-            AssetHubExchangePreparationError.unsupportedStorage,
-            AssetHubExchangePreparationError.runtimeCallUnavailable(.transferKeepAlive),
-            CommonError.dataCorruption
-        ]
-
-        errors.forEach {
-            XCTAssertFalse(AssetHubExchangeAtomicOperation.shouldWaiveCommission(on: $0))
-        }
-    }
-
     func testSwapWithoutExecutionEventIsReportedAsNotDispatched() throws {
-        let fixture = try AssetHubHistoryFixture()
+        let codingFactory = try createCodingFactory()
         let verification = AssetConversionSwapVerification(
-            receiver: AssetHubHistoryFixture.sender,
-            path: AssetHubHistoryFixture.path,
-            bounds: .exactIn(amountIn: 1000, amountOutMin: 900),
+            receiver: Self.receiver,
+            path: [],
+            bounds: .exactIn(amountIn: 1_000_000, amountOutMin: 990_085),
             commission: nil
         )
 
         XCTAssertThrowsError(try AssetConversionEventParser(logger: Logger.shared).measure(
-            from: [fixture.fee(), fixture.proxyEvent(success: false), fixture.system()],
+            from: [],
             verification: verification,
-            origin: AssetHubHistoryFixture.sender,
-            using: fixture.codingFactory
+            origin: Self.receiver,
+            using: codingFactory
         )) {
             XCTAssertEqual($0 as? AssetHubExchangeEventError, .swapNotDispatched)
         }
@@ -98,23 +52,17 @@ private extension AssetHubExchangeAtomicOperationTests {
         )
     }
 
-    func createBuyCall(amountOut: Balance) -> AssetConversionPallet.SwapTokensForExactTokensCall {
-        .init(
-            path: [],
-            amountOut: amountOut,
-            amountInMax: 2_000_000,
-            sendTo: Self.receiver,
-            keepAlive: false
-        )
+    func createCodingFactory() throws -> RuntimeCoderFactoryProtocol {
+        let codingOperation = try RuntimeCodingServiceStub.createWestendService().fetchCoderFactoryOperation()
+        OperationQueue().addOperations([codingOperation], waitUntilFinished: true)
+
+        return try codingOperation.extractNoCancellableResultData()
     }
 
     func createParams(
         swap: AssetHubExchangeSwapParams.Swap,
         commission: Balance?
     ) throws -> AssetHubExchangeSwapParams {
-        let codingOperation = try RuntimeCodingServiceStub.createWestendService().fetchCoderFactoryOperation()
-        OperationQueue().addOperations([codingOperation], waitUntilFinished: true)
-
         return AssetHubExchangeSwapParams(
             callArgs: .init(
                 assetIn: ChainAssetId(chainId: "0", assetId: 0),
@@ -134,7 +82,7 @@ private extension AssetHubExchangeAtomicOperationTests {
                     assetStorageInfo: CommissionTestFixtures.nativeInfo()
                 )
             },
-            codingFactory: try codingOperation.extractNoCancellableResultData()
+            codingFactory: try createCodingFactory()
         )
     }
 }

@@ -180,20 +180,11 @@ enum CommissionTestFixtures {
 
     static let beneficiary = AccountId(repeating: 1, count: 32)
 
-    static let assetHubBeneficiary = AccountId(repeating: 7, count: 32)
-
-    static func createPolicy(
-        assetHubBeneficiaries: [ChainModel.Id: AccountId] = [:]
-    ) -> AssetExchangeCommissionPolicy {
+    static func createPolicy() -> AssetExchangeCommissionPolicy {
         AssetExchangeCommissionPolicy(
             rate: AssetExchangeCommissionConstants.rate,
-            beneficiary: beneficiary,
-            assetHubBeneficiaries: assetHubBeneficiaries
+            beneficiary: beneficiary
         )
-    }
-
-    static func createAssetHubEnabledPolicy() -> AssetExchangeCommissionPolicy {
-        createPolicy(assetHubBeneficiaries: [chain.chainId: assetHubBeneficiary])
     }
 }
 

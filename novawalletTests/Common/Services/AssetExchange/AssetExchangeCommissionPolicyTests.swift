@@ -49,98 +49,12 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
         )
     }
 
-    func testAssetHubEdgeChargesOnlyOnConfiguredChain() throws {
-        let route = CommissionTestFixtures.createRoute([.assetHubSwap], amount: 1_000_000)
-
-        XCTAssertNil(resolveCommission(using: CommissionTestFixtures.createPolicy(), route: route))
-
-        let commission = try XCTUnwrap(
-            resolveCommission(using: CommissionTestFixtures.createAssetHubEnabledPolicy(), route: route)
-        )
-
-        XCTAssertEqual(commission.chargingEdgeIndex, 0)
-        XCTAssertEqual(commission.amount, 8428)
-        XCTAssertEqual(commission.beneficiary, CommissionTestFixtures.assetHubBeneficiary)
-    }
-
-    func testChargesOnceOnLastEligibleEdgeOfMixedRoute() throws {
-        let policy = CommissionTestFixtures.createAssetHubEnabledPolicy()
-
-        let hydraLast = try XCTUnwrap(
-            resolveCommission(
-                using: policy,
-                route: CommissionTestFixtures.createRoute(
-                    [.assetHubSwap, .crossChain, .hydraSwap],
-                    amount: 1_000_000
-                )
-            )
-        )
-
-        XCTAssertEqual(hydraLast.chargingEdgeIndex, 2)
-        XCTAssertEqual(hydraLast.beneficiary, CommissionTestFixtures.beneficiary)
-
-        let assetHubLast = try XCTUnwrap(
-            resolveCommission(
-                using: policy,
-                route: CommissionTestFixtures.createRoute(
-                    [.hydraSwap, .crossChain, .assetHubSwap],
-                    amount: 1_000_000
-                )
-            )
-        )
-
-        XCTAssertEqual(assetHubLast.chargingEdgeIndex, 2)
-        XCTAssertEqual(assetHubLast.beneficiary, CommissionTestFixtures.assetHubBeneficiary)
-    }
-
-    func testTrailingCrossChainKeepsChargeOnAssetHubEdge() throws {
-        let commission = try XCTUnwrap(
-            resolveCommission(
-                using: CommissionTestFixtures.createAssetHubEnabledPolicy(),
-                route: CommissionTestFixtures.createRoute([.assetHubSwap, .crossChain], amount: 1_000_000)
-            )
-        )
-
-        XCTAssertEqual(commission.chargingEdgeIndex, 0)
-        XCTAssertEqual(commission.asset, CommissionTestFixtures.asset(1))
-    }
-
     func testAssetHubTreasuryAddressDecodesToExpectedAccount() throws {
         let accountId = try AssetExchangeCommissionConstants.assetHubBeneficiaryAddress.toAccountId()
 
         XCTAssertEqual(
             accountId.toHex(),
             "c743a46b2294ae6fc9bcc2de952b52899e8d1f335fc7810ee7a4d4a59d91d087"
-        )
-    }
-
-    func testAssetHubCollectionIsDisabledByDefault() throws {
-        XCTAssertTrue(AssetExchangeCommissionConstants.assetHubBeneficiaryAddresses.isEmpty)
-
-        let policy = AssetExchangeCommissionPolicyFactory.createSwapPolicy(
-            assetHubBeneficiaryAddresses: AssetExchangeCommissionConstants.assetHubBeneficiaryAddresses,
-            logger: Logger.shared
-        )
-
-        XCTAssertNil(
-            policy.resolveCommission(
-                for: CommissionTestFixtures.createRoute([.assetHubSwap], amount: 1_000_000)
-            )
-        )
-    }
-
-    func testInvalidAssetHubAddressDisablesOnlyThatChain() throws {
-        let policy = AssetExchangeCommissionPolicyFactory.createSwapPolicy(
-            assetHubBeneficiaryAddresses: [CommissionTestFixtures.chain.chainId: "not-an-address"],
-            logger: Logger.shared
-        )
-
-        let concretePolicy = try XCTUnwrap(policy as? AssetExchangeCommissionPolicy)
-
-        XCTAssertTrue(concretePolicy.assetHubBeneficiaries.isEmpty)
-        XCTAssertEqual(
-            concretePolicy.beneficiary,
-            try AssetExchangeCommissionConstants.hydrationBeneficiaryAddress.toAccountId()
         )
     }
 

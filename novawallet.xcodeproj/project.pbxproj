@@ -1360,7 +1360,6 @@
 		0CE862212D65960400245992 /* MythosHistoryFiltersProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE862202D65960400245992 /* MythosHistoryFiltersProvider.swift */; };
 		0CE8622B2D65960400245993 /* HydrationSwapHistoryFiltersProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE8622A2D65960400245993 /* HydrationSwapHistoryFiltersProvider.swift */; };
 		8F1CA930A6D6B851CD2751BA /* AssetHubSwapHistoryFiltersProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CE32808D157E7EB3209CB07 /* AssetHubSwapHistoryFiltersProvider.swift */; };
-		10D93B2BA74519B7EF9010D6 /* AssetHubSwapHistoryFiltersProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67A268F135D9519A4FD0CAF1 /* AssetHubSwapHistoryFiltersProviderTests.swift */; };
 		0CE862232D65962C00245992 /* TransactionHistoryFilterProviderProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE862222D65962C00245992 /* TransactionHistoryFilterProviderProtocol.swift */; };
 		0CE862252D659AB700245992 /* StateCallPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE862242D659AB700245992 /* StateCallPath.swift */; };
 		0CE862292D659B4100245992 /* StateCallRequestFactory+Additional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE862282D659B4100245992 /* StateCallRequestFactory+Additional.swift */; };
@@ -5674,9 +5673,7 @@
 		2DD2DA594997269200AFDCDD /* AssetExchangePathFilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8EB5C57DA2340B534BC7D9 /* AssetExchangePathFilterTests.swift */; };
 		ECD37C92F8EA802204A907B7 /* HydraSwapRoutePoolIdentityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D62A1D647644741D4C6D4A6 /* HydraSwapRoutePoolIdentityTests.swift */; };
 		A0720F255A511A623EE8C6F0 /* AssetsExchangeRouteManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C639F7A52A4668717369874 /* AssetsExchangeRouteManagerTests.swift */; };
-		AC00010000000000000000FB /* AssetHubCommissionDelegationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC00010000000000000000FA /* AssetHubCommissionDelegationTests.swift */; };
 		7C0D7FE145E7B35A277535C3 /* AssetHubExchangeAtomicOperationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABDFC47103BB4DAFA060F0F4 /* AssetHubExchangeAtomicOperationTests.swift */; };
-		6690E3FA157461A016470471 /* AssetHubExchangeRecipientReadinessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D83B8DF10E394B1C3828C2 /* AssetHubExchangeRecipientReadinessTests.swift */; };
 		AC00000000000000000000FB /* AssetHubExchangeExtrinsicParamsFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC00000000000000000000FA /* AssetHubExchangeExtrinsicParamsFactoryTests.swift */; };
 		E512B2B42B505AF2BEE87FB4 /* AssetExchangeGraphProxyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95559705353C1460D999A6AE /* AssetExchangeGraphProxyTests.swift */; };
 		881BA30929DC1B3000EB8C48 /* kilt-addresses.json in Resources */ = {isa = PBXBuildFile; fileRef = 881BA30829DC1B3000EB8C48 /* kilt-addresses.json */; };
@@ -6742,8 +6739,6 @@
 		FEEDAA0000000000000000B2 /* AnalyticsAppWiringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDAA0000000000000000B1 /* AnalyticsAppWiringTests.swift */; };
 		FEEDAA0000000000000000D2 /* GlobalConfigProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDAA0000000000000000D1 /* GlobalConfigProviderTests.swift */; };
 		0000000021CDF4E8A8B04343 /* AnalyticsInfraURLAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000005A7B94BE697EFEBE /* AnalyticsInfraURLAdapter.swift */; };
-		407138D8B72F44E7950850DE /* AssetHubSwapMatchingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D26D3612C3F4CD7B820BA55 /* AssetHubSwapMatchingTests.swift */; };
-		DC99EDF97B7248A8A2FFBB03 /* AssetHubSwapMatchingTests+Fixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFE0D8D31B548B0B3DAA380 /* AssetHubSwapMatchingTests+Fixtures.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -8131,7 +8126,6 @@
 		0CE862202D65960400245992 /* MythosHistoryFiltersProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosHistoryFiltersProvider.swift; sourceTree = "<group>"; };
 		0CE8622A2D65960400245993 /* HydrationSwapHistoryFiltersProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydrationSwapHistoryFiltersProvider.swift; sourceTree = "<group>"; };
 		5CE32808D157E7EB3209CB07 /* AssetHubSwapHistoryFiltersProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubSwapHistoryFiltersProvider.swift; sourceTree = "<group>"; };
-		67A268F135D9519A4FD0CAF1 /* AssetHubSwapHistoryFiltersProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubSwapHistoryFiltersProviderTests.swift; sourceTree = "<group>"; };
 		0CE862222D65962C00245992 /* TransactionHistoryFilterProviderProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryFilterProviderProtocol.swift; sourceTree = "<group>"; };
 		0CE862242D659AB700245992 /* StateCallPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateCallPath.swift; sourceTree = "<group>"; };
 		0CE862282D659B4100245992 /* StateCallRequestFactory+Additional.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StateCallRequestFactory+Additional.swift"; sourceTree = "<group>"; };
@@ -12129,9 +12123,7 @@
 		0D8EB5C57DA2340B534BC7D9 /* AssetExchangePathFilterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangePathFilterTests.swift; sourceTree = "<group>"; };
 		8D62A1D647644741D4C6D4A6 /* HydraSwapRoutePoolIdentityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraSwapRoutePoolIdentityTests.swift; sourceTree = "<group>"; };
 		1C639F7A52A4668717369874 /* AssetsExchangeRouteManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchangeRouteManagerTests.swift; sourceTree = "<group>"; };
-		AC00010000000000000000FA /* AssetHubCommissionDelegationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubCommissionDelegationTests.swift; sourceTree = "<group>"; };
 		ABDFC47103BB4DAFA060F0F4 /* AssetHubExchangeAtomicOperationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubExchangeAtomicOperationTests.swift; sourceTree = "<group>"; };
-		82D83B8DF10E394B1C3828C2 /* AssetHubExchangeRecipientReadinessTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubExchangeRecipientReadinessTests.swift; sourceTree = "<group>"; };
 		AC00000000000000000000FA /* AssetHubExchangeExtrinsicParamsFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubExchangeExtrinsicParamsFactoryTests.swift; sourceTree = "<group>"; };
 		95559705353C1460D999A6AE /* AssetExchangeGraphProxyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeGraphProxyTests.swift; sourceTree = "<group>"; };
 		881BA30829DC1B3000EB8C48 /* kilt-addresses.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "kilt-addresses.json"; sourceTree = "<group>"; };
@@ -13225,8 +13217,6 @@
 		FEEDAA0000000000000000B1 /* AnalyticsAppWiringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsAppWiringTests.swift; sourceTree = "<group>"; };
 		FEEDAA0000000000000000D1 /* GlobalConfigProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalConfigProviderTests.swift; sourceTree = "<group>"; };
 		000000005A7B94BE697EFEBE /* AnalyticsInfraURLAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnalyticsInfraURLAdapter.swift; sourceTree = "<group>"; };
-		7D26D3612C3F4CD7B820BA55 /* AssetHubSwapMatchingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetHubSwapMatchingTests.swift"; sourceTree = "<group>"; };
-		8BFE0D8D31B548B0B3DAA380 /* AssetHubSwapMatchingTests+Fixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetHubSwapMatchingTests+Fixtures.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -22804,7 +22794,6 @@
 		AC00020000000000000000FC /* ExtrinsicService */ = {
 			isa = PBXGroup;
 			children = (
-				AC00010000000000000000FA /* AssetHubCommissionDelegationTests.swift */,
 			);
 			path = ExtrinsicService;
 			sourceTree = "<group>";
@@ -22824,7 +22813,6 @@
 				8D62A1D647644741D4C6D4A6 /* HydraSwapRoutePoolIdentityTests.swift */,
 				1C639F7A52A4668717369874 /* AssetsExchangeRouteManagerTests.swift */,
 				AC00000000000000000000FA /* AssetHubExchangeExtrinsicParamsFactoryTests.swift */,
-				82D83B8DF10E394B1C3828C2 /* AssetHubExchangeRecipientReadinessTests.swift */,
 				ABDFC47103BB4DAFA060F0F4 /* AssetHubExchangeAtomicOperationTests.swift */,
 				95559705353C1460D999A6AE /* AssetExchangeGraphProxyTests.swift */,
 				0000000066609881CB682044 /* AssetExchangeCommissionNetFlowTests.swift */,
@@ -26170,7 +26158,6 @@
 		05FEF11D0AA427172EE4888A /* TransactionHistory */ = {
 			isa = PBXGroup;
 			children = (
-				67A268F135D9519A4FD0CAF1 /* AssetHubSwapHistoryFiltersProviderTests.swift */,
 			);
 			path = TransactionHistory;
 			sourceTree = "<group>";
@@ -30950,8 +30937,6 @@
 		4418DCC1D980497D96EF9A7B /* TransactionSubscription */ = {
 			isa = PBXGroup;
 			children = (
-				7D26D3612C3F4CD7B820BA55 /* AssetHubSwapMatchingTests.swift */,
-				8BFE0D8D31B548B0B3DAA380 /* AssetHubSwapMatchingTests+Fixtures.swift */,
 			);
 			path = TransactionSubscription;
 			sourceTree = "<group>";
@@ -37762,10 +37747,7 @@
 				2DD2DA594997269200AFDCDD /* AssetExchangePathFilterTests.swift in Sources */,
 				ECD37C92F8EA802204A907B7 /* HydraSwapRoutePoolIdentityTests.swift in Sources */,
 				A0720F255A511A623EE8C6F0 /* AssetsExchangeRouteManagerTests.swift in Sources */,
-				AC00010000000000000000FB /* AssetHubCommissionDelegationTests.swift in Sources */,
 				7C0D7FE145E7B35A277535C3 /* AssetHubExchangeAtomicOperationTests.swift in Sources */,
-				6690E3FA157461A016470471 /* AssetHubExchangeRecipientReadinessTests.swift in Sources */,
-				10D93B2BA74519B7EF9010D6 /* AssetHubSwapHistoryFiltersProviderTests.swift in Sources */,
 				AC00000000000000000000FB /* AssetHubExchangeExtrinsicParamsFactoryTests.swift in Sources */,
 				E512B2B42B505AF2BEE87FB4 /* AssetExchangeGraphProxyTests.swift in Sources */,
 				8B518898F682EABB39C9F7BF /* SwapModelTests.swift in Sources */,
@@ -37781,8 +37763,6 @@
 				84B7C735289BFA79001A3566 /* StakingRedeemTests.swift in Sources */,
 				84B7C714289BFA79001A3566 /* AccountCreateTests.swift in Sources */,
 				8454C2832632FC2500657DAD /* ExtrinsicProcessingTests.swift in Sources */,
-				DC99EDF97B7248A8A2FFBB03 /* AssetHubSwapMatchingTests+Fixtures.swift in Sources */,
-				407138D8B72F44E7950850DE /* AssetHubSwapMatchingTests.swift in Sources */,
 				0C495B942B4469DD00B8D339 /* ExtrinsicSenderResolutionStub.swift in Sources */,
 				0C27F38A2DA8027800191FFF /* SubstrateWeightTest.swift in Sources */,
 				0C41D21A2BF899EF000950EE /* MockCloudBackupAvailabilityService.swift in Sources */,
