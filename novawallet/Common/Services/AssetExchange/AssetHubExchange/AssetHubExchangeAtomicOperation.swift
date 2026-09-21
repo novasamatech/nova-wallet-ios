@@ -17,6 +17,21 @@ final class AssetHubExchangeAtomicOperation {
     }
 }
 
+extension AssetHubExchangeAtomicOperation {
+    static func guaranteedNetAmountOut(for params: AssetHubExchangeSwapParams) -> Balance {
+        let palletBound: Balance
+
+        switch params.swap {
+        case let .exactIn(call):
+            palletBound = call.amountOutMin
+        case let .exactOut(call):
+            palletBound = call.amountOut
+        }
+
+        return palletBound.subtractOrZero(params.commission?.amount ?? 0)
+    }
+}
+
 private extension AssetHubExchangeAtomicOperation {
     func createParamsWrapper(
         for swapLimit: AssetExchangeSwapLimit
@@ -74,16 +89,26 @@ private extension AssetHubExchangeAtomicOperation {
             case let .success(success):
                 let parser = AssetConversionEventParser(logger: self.host.logger)
 
-                let amountOut = try parser.extractDeposit(
-                    from: success.interestedEvents,
-                    params: params,
-                    origin: self.extractOrigin(from: submission.extrinsicSubmittedModel.sender),
-                    using: codingFactoryOperation.extractNoCancellableResultData()
-                )
+                do {
+                    let amountOut = try parser.extractDeposit(
+                        from: success.interestedEvents,
+                        params: params,
+                        origin: self.extractOrigin(from: submission.extrinsicSubmittedModel.sender),
+                        using: codingFactoryOperation.extractNoCancellableResultData()
+                    )
 
-                self.host.logger.debug("Arrived amount: \(String(amountOut))")
+                    self.host.logger.debug("Arrived amount: \(String(amountOut))")
 
-                return amountOut
+                    return amountOut
+                } catch {
+                    let guaranteed = Self.guaranteedNetAmountOut(for: params)
+
+                    self.host.logger.error(
+                        "Swap executed but output unverified (\(error)), using \(String(guaranteed))"
+                    )
+
+                    return guaranteed
+                }
             }
         }
 
