@@ -42,12 +42,10 @@ extension ExtrinsicProcessor {
         do {
             let context = codingFactory.createRuntimeJsonContext()
 
-            let maybeExtrinsicSender: AccountId? = try extrinsic.getSignedExtrinsic()?.signature.address.map(
-                to: MultiAddress.self,
-                with: context.toRawContext()
-            ).accountId
-
-            guard let extrinsicSender = maybeExtrinsicSender else {
+            guard let extrinsicSender = ExtrinsicExtraction.getSender(
+                from: extrinsic,
+                codingFactory: codingFactory
+            ) else {
                 return .notMatched
             }
 
@@ -61,7 +59,7 @@ extension ExtrinsicProcessor {
                 return .notMatched
             }
 
-            let fee: BigUInt
+            let fee: BigUInt?
             let feeAssetId: AssetModel.Id?
 
             if
@@ -69,21 +67,20 @@ extension ExtrinsicProcessor {
                 let customFeeAssetId = swapResult.customFee?.assetId {
                 fee = customFeeAmount
                 feeAssetId = customFeeAssetId
-            } else {
-                let optNativeFee = findFee(
-                    for: extrinsicIndex,
-                    sender: extrinsicSender,
-                    eventRecords: eventRecords,
-                    metadata: codingFactory.metadata,
-                    runtimeJsonContext: context
-                )
-
-                guard let nativeFee = optNativeFee else {
-                    return .unresolved
-                }
-
+            } else if let nativeFee = findFee(
+                for: extrinsicIndex,
+                sender: extrinsicSender,
+                eventRecords: eventRecords,
+                metadata: codingFactory.metadata,
+                runtimeJsonContext: context
+            ) {
                 fee = nativeFee.amount
                 feeAssetId = chain.utilityAsset()?.assetId
+            } else {
+                logger.debug("No fee found for Asset Hub swap \(extrinsicIndex) in \(chain.chainId)")
+
+                fee = nil
+                feeAssetId = nil
             }
 
             return .matched(.init(
@@ -105,8 +102,12 @@ extension ExtrinsicProcessor {
                 )
             ))
 
-        } catch {
+        } catch AssetHubSwapMatchingError.unresolvedCommission {
             return .unresolved
+        } catch {
+            logger.debug("Asset Hub swap matching skipped for \(extrinsicIndex) in \(chain.chainId): \(error)")
+
+            return .notMatched
         }
     }
 
@@ -138,7 +139,7 @@ extension ExtrinsicProcessor {
 
         // the commissioned batch must be recognized before the generic mapper flattens it,
         // otherwise history would show the gross output instead of what the user received
-        switch try AssetHubCommissionHistoryParser().parse(
+        switch AssetHubCommissionHistoryParser(logger: logger).parse(
             extrinsic: extrinsic,
             sender: sender,
             account: accountId,
@@ -150,7 +151,9 @@ extension ExtrinsicProcessor {
         ) {
         case .notCommissioned:
             break
-        case .pendingOrUncertain:
+        case let .recognizedButUnresolved(error):
+            logger.error("Unresolved Asset Hub commission in \(chain.chainId): \(error)")
+
             throw AssetHubSwapMatchingError.unresolvedCommission
         case let .swap(swap):
             return .init(
@@ -234,7 +237,7 @@ extension ExtrinsicProcessor {
             return try? record.event.params.map(to: type, with: context.toRawContext())
         }
 
-        guard let intendedArgs = try extractAssetHubSwapCallArgs(from: call, codingFactory: codingFactory) else {
+        guard let intendedArgs = try? extractAssetHubSwapCallArgs(from: call, codingFactory: codingFactory) else {
             return nil
         }
 
@@ -297,7 +300,7 @@ extension ExtrinsicProcessor {
             codingFactory: codingFactory
         )
 
-        guard let args = try extractAssetHubSwapCallArgs(from: call, codingFactory: codingFactory) else {
+        guard let args = try? extractAssetHubSwapCallArgs(from: call, codingFactory: codingFactory) else {
             return nil
         }
 

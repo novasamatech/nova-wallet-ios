@@ -1,6 +1,11 @@
 import Foundation
 import SubstrateSdk
 
+enum AssetHubCommissionHistoryError: Error {
+    case ambiguousCandidates
+    case undeterminedWrapperOutcome
+}
+
 struct AssetHubCommissionHistoryParser {
     struct Swap {
         let call: AnyRuntimeCall
@@ -15,7 +20,7 @@ struct AssetHubCommissionHistoryParser {
 
     enum Outcome {
         case notCommissioned
-        case pendingOrUncertain
+        case recognizedButUnresolved(Error)
         case swap(Swap)
     }
 
@@ -34,22 +39,38 @@ struct AssetHubCommissionHistoryParser {
         chain: ChainModel,
         codingFactory: RuntimeCoderFactoryProtocol,
         beneficiaries: Set<AccountId>
-    ) throws -> Outcome {
-        let candidates = try AssetHubCommissionTopology.findBatches(
+    ) -> Outcome {
+        guard !beneficiaries.isEmpty else {
+            return .notCommissioned
+        }
+
+        let candidates = AssetHubCommissionTopology.findBatches(
             in: extrinsic.call,
             extrinsicSender: sender,
             supportedAssetsPallets: PalletAssets.palletNames(for: chain),
             context: codingFactory.createRuntimeJsonContext()
         )
 
-        let prepared: [(batch: AssetHubCommissionedBatch, params: AssetHubExchangeSwapParams)]
-        prepared = try candidates.filter { $0.effectiveSender == account }.compactMap { candidate in
-            try createParams(
-                for: candidate,
-                chain: chain,
-                codingFactory: codingFactory,
-                beneficiaries: beneficiaries
-            ).map { (candidate, $0) }
+        var prepared: [(batch: AssetHubCommissionedBatch, params: AssetHubExchangeSwapParams)] = []
+        var ownedFailure: Error?
+
+        for candidate in candidates where candidate.effectiveSender == account {
+            do {
+                if let params = try createParams(
+                    for: candidate,
+                    chain: chain,
+                    codingFactory: codingFactory,
+                    beneficiaries: beneficiaries
+                ) {
+                    prepared.append((candidate, params))
+                }
+            } catch {
+                ownedFailure = error
+            }
+        }
+
+        if let ownedFailure {
+            return .recognizedButUnresolved(ownedFailure)
         }
 
         guard !prepared.isEmpty else {
@@ -60,26 +81,30 @@ struct AssetHubCommissionHistoryParser {
             prepared.count == 1,
             let candidate = prepared.first,
             !candidate.batch.hasUtilityAncestor else {
-            return .pendingOrUncertain
+            return .recognizedButUnresolved(AssetHubCommissionHistoryError.ambiguousCandidates)
         }
 
-        let optIsSuccess: Bool? = extrinsicSucceeded
-            ? try checkWrappersSucceeded(candidate.batch.wrappers, events: events, codingFactory: codingFactory)
-            : false
+        do {
+            let optIsSuccess: Bool? = extrinsicSucceeded
+                ? try checkWrappersSucceeded(candidate.batch.wrappers, events: events, codingFactory: codingFactory)
+                : false
 
-        guard let isSuccess = optIsSuccess else {
-            return .pendingOrUncertain
-        }
+            guard let isSuccess = optIsSuccess else {
+                return .recognizedButUnresolved(AssetHubCommissionHistoryError.undeterminedWrapperOutcome)
+            }
 
-        return .swap(
-            try createSwap(
-                for: candidate.batch,
-                params: candidate.params,
-                events: events,
-                isSuccess: isSuccess,
-                codingFactory: codingFactory
+            return .swap(
+                try createSwap(
+                    for: candidate.batch,
+                    params: candidate.params,
+                    events: events,
+                    isSuccess: isSuccess,
+                    codingFactory: codingFactory
+                )
             )
-        )
+        } catch {
+            return .recognizedButUnresolved(error)
+        }
     }
 }
 
@@ -185,13 +210,10 @@ private extension AssetHubCommissionHistoryParser {
     ) throws -> AssetHubExchangeSwapParams? {
         let context = codingFactory.createRuntimeJsonContext()
 
-        guard let swap = try decodeSwapCall(batch.swapCall, context: context) else {
-            return nil
-        }
-
-        let collection = try decodeCollectionCall(batch.commissionCall, context: context)
-
-        guard beneficiaries.contains(collection.beneficiary) else {
+        guard
+            let swap = (try? decodeSwapCall(batch.swapCall, context: context)) ?? nil,
+            let collection = try? decodeCollectionCall(batch.commissionCall, context: context),
+            beneficiaries.contains(collection.beneficiary) else {
             return nil
         }
 

@@ -17,7 +17,6 @@ struct AssetHubCommissionedBatch {
 }
 
 enum AssetHubCommissionTopologyError: Error {
-    case unsupportedProxyAddress
     case invalidMultisigSignatories
 }
 
@@ -27,8 +26,8 @@ enum AssetHubCommissionTopology {
         extrinsicSender: AccountId,
         supportedAssetsPallets: Set<String>,
         context: RuntimeJsonContext?
-    ) throws -> [AssetHubCommissionedBatch] {
-        try visit(
+    ) -> [AssetHubCommissionedBatch] {
+        visit(
             call,
             effectiveSender: extrinsicSender,
             supportedAssetsPallets: supportedAssetsPallets,
@@ -74,18 +73,23 @@ private extension AssetHubCommissionTopology {
         context: RuntimeJsonContext?,
         wrappers: [AssetHubDispatchWrapper],
         hasUtilityAncestor: Bool
-    ) throws -> [AssetHubCommissionedBatch] {
-        let call = try ExtrinsicExtraction.getCall(from: callJson, context: context)
+    ) -> [AssetHubCommissionedBatch] {
+        guard let call = try? ExtrinsicExtraction.getCall(from: callJson, context: context) else {
+            return []
+        }
 
         switch call.path {
         case Proxy.ProxyCall.callPath:
-            let proxy: Proxy.ProxyCall = try ExtrinsicExtraction.getCallArgs(from: call.args, context: context)
-
-            guard let real = proxy.real.accountId else {
-                throw AssetHubCommissionTopologyError.unsupportedProxyAddress
+            guard
+                let proxy: Proxy.ProxyCall = try? ExtrinsicExtraction.getCallArgs(
+                    from: call.args,
+                    context: context
+                ),
+                let real = proxy.real.accountId else {
+                return []
             }
 
-            return try visit(
+            return visit(
                 proxy.call,
                 effectiveSender: real,
                 supportedAssetsPallets: supportedAssetsPallets,
@@ -94,12 +98,14 @@ private extension AssetHubCommissionTopology {
                 hasUtilityAncestor: hasUtilityAncestor
             )
         case MultisigPallet.asMultiPath:
-            let multisig: MultisigPallet.AsMultiCall<JSON> = try ExtrinsicExtraction.getCallArgs(
+            guard let multisig: MultisigPallet.AsMultiCall<JSON> = try? ExtrinsicExtraction.getCallArgs(
                 from: call.args,
                 context: context
-            )
+            ) else {
+                return []
+            }
 
-            return try visitMultisig(
+            return visitMultisig(
                 call: multisig.call,
                 signatories: multisig.otherSignatories.map(\.wrappedValue),
                 threshold: multisig.threshold,
@@ -110,12 +116,14 @@ private extension AssetHubCommissionTopology {
                 hasUtilityAncestor: hasUtilityAncestor
             )
         case MultisigPallet.asMultiThreshold1Path:
-            let multisig: MultisigPallet.AsMultiThreshold1Call<JSON> = try ExtrinsicExtraction.getCallArgs(
+            guard let multisig: MultisigPallet.AsMultiThreshold1Call<JSON> = try? ExtrinsicExtraction.getCallArgs(
                 from: call.args,
                 context: context
-            )
+            ) else {
+                return []
+            }
 
-            return try visitMultisig(
+            return visitMultisig(
                 call: multisig.call,
                 signatories: multisig.otherSignatories.map(\.wrappedValue),
                 threshold: 1,
@@ -126,7 +134,7 @@ private extension AssetHubCommissionTopology {
                 hasUtilityAncestor: hasUtilityAncestor
             )
         default:
-            return try visitBatch(
+            return visitBatch(
                 call,
                 effectiveSender: effectiveSender,
                 supportedAssetsPallets: supportedAssetsPallets,
@@ -146,12 +154,14 @@ private extension AssetHubCommissionTopology {
         context: RuntimeJsonContext?,
         wrappers: [AssetHubDispatchWrapper],
         hasUtilityAncestor: Bool
-    ) throws -> [AssetHubCommissionedBatch] {
-        let origin = try deriveMultisigOrigin(
+    ) -> [AssetHubCommissionedBatch] {
+        guard let origin = try? deriveMultisigOrigin(
             sender: effectiveSender,
             others: signatories,
             threshold: threshold
-        )
+        ) else {
+            return []
+        }
 
         let wrapper = AssetHubDispatchWrapper.multisig(
             threshold: threshold,
@@ -160,7 +170,7 @@ private extension AssetHubCommissionTopology {
             call: call
         )
 
-        return try visit(
+        return visit(
             call,
             effectiveSender: origin,
             supportedAssetsPallets: supportedAssetsPallets,
@@ -177,12 +187,15 @@ private extension AssetHubCommissionTopology {
         context: RuntimeJsonContext?,
         wrappers: [AssetHubDispatchWrapper],
         hasUtilityAncestor: Bool
-    ) throws -> [AssetHubCommissionedBatch] {
-        guard UtilityPallet.isBatch(path: call.path) else {
+    ) -> [AssetHubCommissionedBatch] {
+        guard
+            UtilityPallet.isBatch(path: call.path),
+            let batch: UtilityPallet.Call = try? ExtrinsicExtraction.getCallArgs(
+                from: call.args,
+                context: context
+            ) else {
             return []
         }
-
-        let batch: UtilityPallet.Call = try ExtrinsicExtraction.getCallArgs(from: call.args, context: context)
 
         var matches: [AssetHubCommissionedBatch] = []
 
@@ -204,9 +217,11 @@ private extension AssetHubCommissionTopology {
         }
 
         for child in batch.calls {
-            let childJson = try child.toScaleCompatibleJSON(with: context?.toRawContext())
+            guard let childJson = try? child.toScaleCompatibleJSON(with: context?.toRawContext()) else {
+                continue
+            }
 
-            matches += try visit(
+            matches += visit(
                 childJson,
                 effectiveSender: effectiveSender,
                 supportedAssetsPallets: supportedAssetsPallets,

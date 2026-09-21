@@ -46,11 +46,16 @@ struct AssetHubHistoryFixture {
         }
     }
 
-    func process(_ call: AnyRuntimeCall, account: AccountId, events: [Event]) throws -> ExtrinsicProcessingResult? {
+    func process(
+        _ call: AnyRuntimeCall,
+        account: AccountId,
+        events: [Event],
+        beneficiaries: Set<AccountId> = [Self.beneficiary]
+    ) throws -> ExtrinsicProcessingResult? {
         let encoder = codingFactory.createEncoder()
         try encoder.append(signed(call), ofType: GenericType.extrinsic.name)
         let processor = ExtrinsicProcessor(
-            accountId: account, chain: chain, assetHubCommissionBeneficiaries: [Self.beneficiary]
+            accountId: account, chain: chain, assetHubCommissionBeneficiaries: beneficiaries
         )
         return processor.process(
             extrinsicIndex: 2,

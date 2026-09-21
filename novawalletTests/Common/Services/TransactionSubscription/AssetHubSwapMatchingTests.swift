@@ -213,6 +213,40 @@ final class AssetHubSwapMatchingTests: XCTestCase {
         XCTAssertNil(result.swap)
     }
 
+    func testEmptyBeneficiarySetPreservesGrossSwapHistory() throws {
+        let fixture = try Fixture()
+        let result = try XCTUnwrap(fixture.process(
+            fixture.charged(receiver: Fixture.sender), account: Fixture.sender,
+            events: [fixture.fee(), fixture.swapEvent(receiver: Fixture.sender), fixture.system()],
+            beneficiaries: []
+        ))
+        XCTAssertTrue(result.isSuccess)
+        XCTAssertEqual(result.swap?.amountOut, 950)
+    }
+
+    func testCommissionedSwapWithoutFeeEventKeepsNetOutput() throws {
+        let fixture = try Fixture()
+        let result = try XCTUnwrap(fixture.process(
+            fixture.charged(receiver: Fixture.sender), account: Fixture.sender,
+            events: [fixture.swapEvent(receiver: Fixture.sender),
+                     fixture.transferEvent(sender: Fixture.sender), fixture.system()]
+        ))
+        XCTAssertEqual(result.swap?.amountOut, 940)
+        XCTAssertNil(result.fee)
+    }
+
+    func testTwentyByteMultisigSignatoryYieldsNoCommissionedBatch() throws {
+        let fixture = try Fixture()
+        let call = try fixture.multisig(fixture.charged(receiver: Fixture.sender))
+        let batches = AssetHubCommissionTopology.findBatches(
+            in: try call.toScaleCompatibleJSON(with: fixture.context.toRawContext()),
+            extrinsicSender: AccountId(repeating: 1, count: 20),
+            supportedAssetsPallets: PalletAssets.palletNames(for: fixture.chain),
+            context: fixture.context
+        )
+        XCTAssertTrue(batches.isEmpty)
+    }
+
     func testUnrecognizedBeneficiaryPreservesGrossSwapHistory() throws {
         let fixture = try Fixture()
         let call = try fixture.batch([fixture.swap(receiver: Fixture.sender), fixture.collection(beneficiary: Fixture.other)])

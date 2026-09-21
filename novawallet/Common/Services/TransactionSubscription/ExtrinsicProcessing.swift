@@ -15,16 +15,29 @@ final class ExtrinsicProcessor {
     let accountId: AccountId
     let chain: ChainModel
     let assetHubCommissionBeneficiaries: Set<AccountId>
+    let logger: LoggerProtocol
 
     init(
         accountId: AccountId,
         chain: ChainModel,
-        assetHubCommissionBeneficiaries: Set<AccountId>? = nil
+        assetHubCommissionBeneficiaries: Set<AccountId>? = nil,
+        logger: LoggerProtocol = Logger.shared
     ) {
         self.accountId = accountId
         self.chain = chain
-        self.assetHubCommissionBeneficiaries = assetHubCommissionBeneficiaries
-            ?? AssetExchangeCommissionConstants.assetHubHistoryBeneficiaries(for: chain.chainId)
+        self.logger = logger
+
+        if let assetHubCommissionBeneficiaries {
+            self.assetHubCommissionBeneficiaries = assetHubCommissionBeneficiaries
+        } else {
+            let resolved = AssetExchangeCommissionConstants.assetHubHistoryBeneficiaries(for: chain.chainId)
+
+            resolved.invalid.forEach {
+                logger.error("Invalid Asset Hub commission beneficiary for \(chain.chainId): \($0)")
+            }
+
+            self.assetHubCommissionBeneficiaries = resolved.accountIds
+        }
     }
 }
 

@@ -189,6 +189,7 @@ enum ChainModelGenerator {
         isEthereumBased: Bool = false,
         hasProxy: Bool = true,
         hasMultisig: Bool = true,
+        hasSwapHub: Bool = false,
         enabled: Bool = true
     ) -> ChainModel {
         let assets = (0 ..< count).map { index in
@@ -210,6 +211,7 @@ enum ChainModelGenerator {
             isEthereumBased: isEthereumBased,
             hasProxy: hasProxy,
             hasMultisig: hasMultisig,
+            hasSwapHub: hasSwapHub,
             enabled: enabled
         )
     }
@@ -225,6 +227,7 @@ enum ChainModelGenerator {
         isEthereumBased: Bool = false,
         hasProxy: Bool = true,
         hasMultisig: Bool = true,
+        hasSwapHub: Bool = false,
         enabled: Bool = true
     ) -> ChainModel {
         let chainId = defaultChainId ?? Data.random(of: 32)!.toHex()
@@ -259,6 +262,10 @@ enum ChainModelGenerator {
 
         if isEthereumBased {
             options.append(.ethereumBased)
+        }
+
+        if hasSwapHub {
+            options.append(.swapHub)
         }
 
         let externalApis = generateExternaApis(

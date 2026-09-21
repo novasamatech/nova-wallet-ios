@@ -11,11 +11,29 @@ enum AssetExchangeCommissionConstants {
 
     static let historicalAssetHubBeneficiaryAddresses: [ChainModel.Id: [AccountAddress]] = [:]
 
-    static func assetHubHistoryBeneficiaries(for chainId: ChainModel.Id) -> Set<AccountId> {
+    struct HistoryBeneficiaries {
+        let accountIds: Set<AccountId>
+        let invalid: [AccountAddress]
+    }
+
+    static func assetHubHistoryBeneficiaries(for chainId: ChainModel.Id) -> HistoryBeneficiaries {
         let current = assetHubBeneficiaryAddresses[chainId].map { [$0] } ?? []
         let historical = historicalAssetHubBeneficiaryAddresses[chainId] ?? []
 
-        return Set((current + historical).compactMap { try? $0.toAccountId() })
+        var accountIds: Set<AccountId> = []
+        var invalid: [AccountAddress] = []
+
+        for address in current + historical {
+            if
+                let accountId = try? address.toAccountId(),
+                accountId.count == SubstrateConstants.accountIdLength {
+                accountIds.insert(accountId)
+            } else {
+                invalid.append(address)
+            }
+        }
+
+        return HistoryBeneficiaries(accountIds: accountIds, invalid: invalid)
     }
 }
 

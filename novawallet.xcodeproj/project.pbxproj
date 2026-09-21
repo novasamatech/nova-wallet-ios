@@ -1359,6 +1359,8 @@
 		0CE8621F2D65932E00245992 /* TransactionHistoryTransfersFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE8621E2D65932E00245992 /* TransactionHistoryTransfersFilter.swift */; };
 		0CE862212D65960400245992 /* MythosHistoryFiltersProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE862202D65960400245992 /* MythosHistoryFiltersProvider.swift */; };
 		0CE8622B2D65960400245993 /* HydrationSwapHistoryFiltersProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE8622A2D65960400245993 /* HydrationSwapHistoryFiltersProvider.swift */; };
+		8F1CA930A6D6B851CD2751BA /* AssetHubSwapHistoryFiltersProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CE32808D157E7EB3209CB07 /* AssetHubSwapHistoryFiltersProvider.swift */; };
+		10D93B2BA74519B7EF9010D6 /* AssetHubSwapHistoryFiltersProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67A268F135D9519A4FD0CAF1 /* AssetHubSwapHistoryFiltersProviderTests.swift */; };
 		0CE862232D65962C00245992 /* TransactionHistoryFilterProviderProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE862222D65962C00245992 /* TransactionHistoryFilterProviderProtocol.swift */; };
 		0CE862252D659AB700245992 /* StateCallPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE862242D659AB700245992 /* StateCallPath.swift */; };
 		0CE862292D659B4100245992 /* StateCallRequestFactory+Additional.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CE862282D659B4100245992 /* StateCallRequestFactory+Additional.swift */; };
@@ -8126,6 +8128,8 @@
 		0CE8621E2D65932E00245992 /* TransactionHistoryTransfersFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryTransfersFilter.swift; sourceTree = "<group>"; };
 		0CE862202D65960400245992 /* MythosHistoryFiltersProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MythosHistoryFiltersProvider.swift; sourceTree = "<group>"; };
 		0CE8622A2D65960400245993 /* HydrationSwapHistoryFiltersProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydrationSwapHistoryFiltersProvider.swift; sourceTree = "<group>"; };
+		5CE32808D157E7EB3209CB07 /* AssetHubSwapHistoryFiltersProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubSwapHistoryFiltersProvider.swift; sourceTree = "<group>"; };
+		67A268F135D9519A4FD0CAF1 /* AssetHubSwapHistoryFiltersProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubSwapHistoryFiltersProviderTests.swift; sourceTree = "<group>"; };
 		0CE862222D65962C00245992 /* TransactionHistoryFilterProviderProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionHistoryFilterProviderProtocol.swift; sourceTree = "<group>"; };
 		0CE862242D659AB700245992 /* StateCallPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateCallPath.swift; sourceTree = "<group>"; };
 		0CE862282D659B4100245992 /* StateCallRequestFactory+Additional.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StateCallRequestFactory+Additional.swift"; sourceTree = "<group>"; };
@@ -16474,6 +16478,7 @@
 			children = (
 				0CE862202D65960400245992 /* MythosHistoryFiltersProvider.swift */,
 				0CE8622A2D65960400245993 /* HydrationSwapHistoryFiltersProvider.swift */,
+				5CE32808D157E7EB3209CB07 /* AssetHubSwapHistoryFiltersProvider.swift */,
 				0CE862222D65962C00245992 /* TransactionHistoryFilterProviderProtocol.swift */,
 				0CE8622F2D65A0B800245992 /* PoolStakingHistoryFiltersProvider.swift */,
 				0CE862312D65A26100245992 /* ConstantHistoryFiltersProvider.swift */,
@@ -26156,9 +26161,18 @@
 			path = Preimage;
 			sourceTree = "<group>";
 		};
+		05FEF11D0AA427172EE4888A /* TransactionHistory */ = {
+			isa = PBXGroup;
+			children = (
+				67A268F135D9519A4FD0CAF1 /* AssetHubSwapHistoryFiltersProviderTests.swift */,
+			);
+			path = TransactionHistory;
+			sourceTree = "<group>";
+		};
 		84B7C680289BFA78001A3566 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				05FEF11D0AA427172EE4888A /* TransactionHistory */,
 				A5C100000000000000000202 /* AnalyticsConsentScreen */,
 				A5C200000000000000000202 /* AnalyticsPrivacy */,
 				D0A400000000000000000004 /* AssetList */,
@@ -33941,6 +33955,7 @@
 				2D3286F22E006667004D5D24 /* MultisigEventsSubscription.swift in Sources */,
 				0CE862212D65960400245992 /* MythosHistoryFiltersProvider.swift in Sources */,
 				0CE8622B2D65960400245993 /* HydrationSwapHistoryFiltersProvider.swift in Sources */,
+				8F1CA930A6D6B851CD2751BA /* AssetHubSwapHistoryFiltersProvider.swift in Sources */,
 				843910D4253F8DAD00E3C217 /* NetworkAvailabilityLayerPresenter.swift in Sources */,
 				84BFE89928C2320700140F1F /* ParaStkYieldBoostQuery.swift in Sources */,
 				0C3976642C2E722100998DD6 /* MessageSheetTimerWithBannerView.swift in Sources */,
@@ -37742,6 +37757,7 @@
 				ECD37C92F8EA802204A907B7 /* HydraSwapRoutePoolIdentityTests.swift in Sources */,
 				A0720F255A511A623EE8C6F0 /* AssetsExchangeRouteManagerTests.swift in Sources */,
 				AC00010000000000000000FB /* AssetHubCommissionDelegationTests.swift in Sources */,
+				10D93B2BA74519B7EF9010D6 /* AssetHubSwapHistoryFiltersProviderTests.swift in Sources */,
 				AC00000000000000000000FB /* AssetHubExchangeExtrinsicParamsFactoryTests.swift in Sources */,
 				E512B2B42B505AF2BEE87FB4 /* AssetExchangeGraphProxyTests.swift in Sources */,
 				8B518898F682EABB39C9F7BF /* SwapModelTests.swift in Sources */,
