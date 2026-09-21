@@ -1,8 +1,8 @@
 import Foundation
-import UIKit
 import Foundation_iOS
-import SubstrateSdk
 import NovaCrypto
+import SubstrateSdk
+import UIKit
 
 final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
     let iconGenerator: IconGenerating
@@ -39,12 +39,18 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
         parameters: SettingsParameters,
         locale: Locale
     ) -> [(SettingsSection, [SettingsCellViewModel])] {
-        [
-            (.general, [
-                createCommonViewViewModel(row: .wallets, locale: locale),
-                createWalletConnectViewModel(from: parameters.walletConnectSessionsCount, locale: locale),
-                createCommonViewViewModel(row: .networks, locale: locale)
-            ]),
+        var generalRows = [
+            createCommonViewViewModel(row: .wallets, locale: locale),
+            createWalletConnectViewModel(from: parameters.walletConnectSessionsCount, locale: locale),
+            createCommonViewViewModel(row: .networks, locale: locale)
+        ]
+
+        #if DEBUG
+            generalRows.append(createCommonViewViewModel(row: .subtensorStakingPreview, locale: locale))
+        #endif
+
+        return [
+            (.general, generalRows),
             (.preferences, [
                 createNotificationsViewModel(row: .notifications, isOn: parameters.isNotificationsOn, locale: locale),
                 createValuableViewModel(row: .currency, value: currency, locale: locale),
@@ -103,13 +109,11 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
 
         let subtitle = language?.title(in: locale)?.capitalized
 
-        let viewModel = SettingsCellViewModel(
+        return SettingsCellViewModel(
             row: .language,
             title: .init(title: title, icon: SettingsRow.language.icon),
             accessory: .init(optTitle: subtitle)
         )
-
-        return viewModel
     }
 
     private func createWalletConnectViewModel(

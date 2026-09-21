@@ -25,9 +25,17 @@ extension StartStakingInfoViewFactory {
             return nil
         }
 
-        let interactor = createSubtensorInteractor(state: state, currencyManager: currencyManager)
+        let strategiesDataSource = SubtensorStakingStrategiesMockDataSource()
+        let interactor = createSubtensorInteractor(
+            state: state,
+            currencyManager: currencyManager,
+            strategiesDataSource: strategiesDataSource
+        )
 
-        let wireframe = StartStakingInfoSubtensorWireframe(state: state)
+        let wireframe = StartStakingInfoSubtensorWireframe(
+            state: state,
+            strategiesDataSource: strategiesDataSource
+        )
 
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: stakingOption.chainAsset.assetDisplayInfo,
@@ -44,16 +52,16 @@ extension StartStakingInfoViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             startStakingViewModelFactory: startStakingViewModelFactory,
+            subtensorViewModelFactory: StartStakingInfoSubtensorViewModelFactory(),
             balanceDerivationFactory: StakingTypeBalanceFactory(stakingType: stakingOption.type),
             localizationManager: LocalizationManager.shared,
             applicationConfig: ApplicationConfig.shared,
             logger: Logger.shared
         )
 
-        let view = StartStakingInfoViewController(
+        let view = StartStakingInfoSubtensorViewController(
             presenter: presenter,
-            localizationManager: LocalizationManager.shared,
-            themeColor: stakingOption.chainAsset.chain.themeColor ?? R.color.colorPolkadotBrand()!
+            localizationManager: LocalizationManager.shared
         )
 
         presenter.view = view
@@ -64,7 +72,8 @@ extension StartStakingInfoViewFactory {
 
     private static func createSubtensorInteractor(
         state: SubtensorStakingSharedStateProtocol,
-        currencyManager: CurrencyManagerProtocol
+        currencyManager: CurrencyManagerProtocol,
+        strategiesDataSource: SubtensorStakingStrategiesDataSourceProtocol
     ) -> StartStakingInfoSubtensorInteractor {
         let stakingDashboardProviderFactory = StakingDashboardProviderFactory(
             chainRegistry: ChainRegistryFacade.sharedRegistry,
@@ -88,6 +97,7 @@ extension StartStakingInfoViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             stakingDashboardProviderFactory: stakingDashboardProviderFactory,
             networkInfoFactory: networkInfoFactory,
+            strategiesDataSource: strategiesDataSource,
             currencyManager: currencyManager,
             sharedOperation: state.startSharedOperation(),
             operationQueue: OperationManagerFacade.sharedDefaultQueue,

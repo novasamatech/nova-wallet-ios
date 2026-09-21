@@ -72,4 +72,13 @@ protocol SettingsWireframeProtocol:
     func showBackup(from view: ControllerBackedProtocol?)
     func showNetworks(from view: ControllerBackedProtocol?)
     func showAppearance(from view: ControllerBackedProtocol?)
+    #if DEBUG
+        func showSubtensorStakingPreview(from view: ControllerBackedProtocol?)
+    #endif
 }
+
+#if DEBUG
+    extension SettingsWireframeProtocol {
+        func showSubtensorStakingPreview(from _: ControllerBackedProtocol?) {}
+    }
+#endif

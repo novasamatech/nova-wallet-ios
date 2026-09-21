@@ -167,4 +167,16 @@ extension SettingsWireframe: SettingsWireframeProtocol {
             animated: true
         )
     }
+
+    #if DEBUG
+        func showSubtensorStakingPreview(from view: ControllerBackedProtocol?) {
+            let preview = StartStakingInfoSubtensorPreviewViewFactory.createView()
+
+            preview.controller.hidesBottomBarWhenPushed = true
+            view?.controller.navigationController?.pushViewController(
+                preview.controller,
+                animated: true
+            )
+        }
+    #endif
 }
