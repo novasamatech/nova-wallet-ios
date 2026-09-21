@@ -258,6 +258,30 @@ final class AssetHubSwapMatchingTests: XCTestCase {
         XCTAssertEqual(result.swap?.amountOut, 950)
     }
 
+    func testConfiguredBeneficiaryWithUndecodableSwapArgsRemainsUnresolved() throws {
+        let fixture = try Fixture()
+        let unreadableSwap = AnyRuntimeCall(
+            moduleName: AssetConversionPallet.name,
+            callName: AssetConversionPallet.swapExactTokenForTokensPath.callName,
+            args: .dictionaryValue([:])
+        )
+        let extrinsic = try fixture.signed(fixture.batch([unreadableSwap, fixture.collection()]))
+        let outcome = AssetHubCommissionHistoryParser().parse(
+            extrinsic: extrinsic,
+            sender: Fixture.sender,
+            account: Fixture.sender,
+            events: [],
+            extrinsicSucceeded: true,
+            chain: fixture.chain,
+            codingFactory: fixture.codingFactory,
+            beneficiaries: [Fixture.beneficiary]
+        )
+
+        guard case .recognizedButUnresolved = outcome else {
+            return XCTFail("Expected a recognized but unresolved commission")
+        }
+    }
+
     func testThresholdOneSuccessWithAndWithoutExecutionMarker() throws {
         let fixture = try Fixture()
         let origin = try AssetHubCommissionTopology.deriveMultisigOrigin(

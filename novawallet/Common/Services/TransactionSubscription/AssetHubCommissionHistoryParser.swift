@@ -182,10 +182,13 @@ private extension AssetHubCommissionHistoryParser {
         let context = codingFactory.createRuntimeJsonContext()
 
         guard
-            let swap = (try? decodeSwapCall(batch.swapCall, context: context)) ?? nil,
             let collection = try? decodeCollectionCall(batch.commissionCall, context: context),
             beneficiaries.contains(collection.beneficiary) else {
             return nil
+        }
+
+        guard let swap = try decodeSwapCall(batch.swapCall, context: context) else {
+            throw AssetHubCommissionHistoryError.unrecognizedCommissionedCall
         }
 
         guard
