@@ -124,19 +124,15 @@ private extension AssetHubCommissionHistoryParser {
         let netAmountOut: Balance
 
         if isSuccess {
-            netAmountOut = try AssetConversionEventParser(logger: logger).extractDeposit(
+            let measurement = try AssetConversionEventParser(logger: logger).measure(
                 from: events,
                 params: params,
                 origin: batch.effectiveSender,
                 using: codingFactory
             )
 
-            amountIn = try findMeasuredAmountIn(
-                in: events,
-                params: params,
-                origin: batch.effectiveSender,
-                codingFactory: codingFactory
-            )
+            netAmountOut = measurement.netAmountOut
+            amountIn = measurement.amountIn
         } else {
             guard params.callArgs.amountOut >= commission.amount else {
                 throw AssetHubExchangeEventError.outputUnderflow
@@ -156,50 +152,6 @@ private extension AssetHubCommissionHistoryParser {
             netAmountOut: netAmountOut,
             isSuccess: isSuccess
         )
-    }
-
-    func findMeasuredAmountIn(
-        in events: [Event],
-        params: AssetHubExchangeSwapParams,
-        origin: AccountId,
-        codingFactory: RuntimeCoderFactoryProtocol
-    ) throws -> Balance {
-        let context = codingFactory.createRuntimeJsonContext()
-
-        let swaps: [AssetConversionPallet.SwapExecutedEvent] = try events.compactMap { event in
-            guard
-                codingFactory.metadata.eventMatches(
-                    event,
-                    path: AssetConversionPallet.swapExecutedEvent
-                ) else {
-                return nil
-            }
-
-            let swap: AssetConversionPallet.SwapExecutedEvent = try ExtrinsicExtraction.getEventParams(
-                from: event,
-                context: context
-            )
-
-            guard
-                swap.who == origin,
-                swap.sendTo == params.callArgs.receiver,
-                swap.path.map(\.asset) == params.path else {
-                return nil
-            }
-
-            switch params.swap {
-            case let .exactIn(call):
-                return swap.amountIn == call.amountIn && swap.amountOut >= call.amountOutMin ? swap : nil
-            case let .exactOut(call):
-                return swap.amountOut == call.amountOut && swap.amountIn <= call.amountInMax ? swap : nil
-            }
-        }
-
-        guard swaps.count == 1, let measured = swaps.first else {
-            throw AssetHubExchangeEventError.missingOrAmbiguousSwap
-        }
-
-        return measured.amountIn
     }
 
     func createParams(

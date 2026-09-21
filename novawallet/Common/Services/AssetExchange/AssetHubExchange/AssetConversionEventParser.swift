@@ -9,7 +9,49 @@ enum AssetHubExchangeEventError: Error {
     case outputUnderflow
 }
 
+enum AssetConversionSwapBounds {
+    case exactIn(amountIn: Balance, amountOutMin: Balance)
+    case exactOut(amountOut: Balance, amountInMax: Balance)
+
+    init(swap: AssetHubExchangeSwapParams.Swap) {
+        switch swap {
+        case let .exactIn(call):
+            self = .exactIn(amountIn: call.amountIn, amountOutMin: call.amountOutMin)
+        case let .exactOut(call):
+            self = .exactOut(amountOut: call.amountOut, amountInMax: call.amountInMax)
+        }
+    }
+
+    func matches(event: AssetConversionPallet.SwapExecutedEvent) -> Bool {
+        switch self {
+        case let .exactIn(amountIn, amountOutMin):
+            return event.amountIn == amountIn && event.amountOut >= amountOutMin
+        case let .exactOut(amountOut, amountInMax):
+            return event.amountOut == amountOut && event.amountIn <= amountInMax
+        }
+    }
+
+    static func matches(
+        event: AssetConversionPallet.SwapExecutedEvent,
+        origin: AccountId,
+        receiver: AccountId,
+        path: [AssetConversionPallet.AssetId],
+        bounds: AssetConversionSwapBounds
+    ) -> Bool {
+        event.who == origin &&
+            event.sendTo == receiver &&
+            event.path.map(\.asset) == path &&
+            bounds.matches(event: event)
+    }
+}
+
 final class AssetConversionEventParser {
+    struct Measurement {
+        let amountIn: Balance
+        let grossAmountOut: Balance
+        let netAmountOut: Balance
+    }
+
     let logger: LoggerProtocol
 
     init(logger: LoggerProtocol) {
@@ -22,6 +64,15 @@ final class AssetConversionEventParser {
         origin: AccountId,
         using codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> Balance {
+        try measure(from: events, params: params, origin: origin, using: codingFactory).netAmountOut
+    }
+
+    func measure(
+        from events: [Event],
+        params: AssetHubExchangeSwapParams,
+        origin: AccountId,
+        using codingFactory: RuntimeCoderFactoryProtocol
+    ) throws -> Measurement {
         guard origin == params.callArgs.receiver else {
             throw AssetHubExchangeEventError.unexpectedOrigin
         }
@@ -33,7 +84,11 @@ final class AssetConversionEventParser {
         }
 
         guard let commission = params.commission else {
-            return measured.event.amountOut
+            return Measurement(
+                amountIn: measured.event.amountIn,
+                grossAmountOut: measured.event.amountOut,
+                netAmountOut: measured.event.amountOut
+            )
         }
 
         let collections = try findCollections(
@@ -57,7 +112,11 @@ final class AssetConversionEventParser {
 
         logger.debug("Measured swap output \(measured.event.amountOut), collected \(collected)")
 
-        return measured.event.amountOut - collected
+        return Measurement(
+            amountIn: measured.event.amountIn,
+            grossAmountOut: measured.event.amountOut,
+            netAmountOut: measured.event.amountOut - collected
+        )
     }
 }
 
@@ -89,27 +148,17 @@ private extension AssetConversionEventParser {
                 context: context
             )
 
-            guard
-                swap.who == origin,
-                swap.sendTo == params.callArgs.receiver,
-                swap.path.map(\.asset) == params.path,
-                matches(swap: swap, with: params.swap) else {
+            guard AssetConversionSwapBounds.matches(
+                event: swap,
+                origin: origin,
+                receiver: params.callArgs.receiver,
+                path: params.path,
+                bounds: .init(swap: params.swap)
+            ) else {
                 return nil
             }
 
             return MeasuredSwap(index: index, event: swap)
-        }
-    }
-
-    func matches(
-        swap: AssetConversionPallet.SwapExecutedEvent,
-        with call: AssetHubExchangeSwapParams.Swap
-    ) -> Bool {
-        switch call {
-        case let .exactIn(exactIn):
-            return swap.amountIn == exactIn.amountIn && swap.amountOut >= exactIn.amountOutMin
-        case let .exactOut(exactOut):
-            return swap.amountOut == exactOut.amountOut && swap.amountIn <= exactOut.amountInMax
         }
     }
 

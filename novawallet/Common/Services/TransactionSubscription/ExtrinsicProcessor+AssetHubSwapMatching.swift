@@ -374,17 +374,16 @@ private extension ExtrinsicProcessor {
         callPath: CallCodingPath,
         args: AssetHubSwapExtrinsicCallArgs
     ) -> Bool {
-        guard
-            swapEvent.who == sender,
-            swapEvent.sendTo == args.receiver,
-            swapEvent.path.map(\.asset) == args.path else {
-            return false
-        }
+        let bounds: AssetConversionSwapBounds = callPath == AssetConversionPallet.swapExactTokenForTokensPath
+            ? .exactIn(amountIn: args.amountIn, amountOutMin: args.amountOut)
+            : .exactOut(amountOut: args.amountOut, amountInMax: args.amountIn)
 
-        if callPath == AssetConversionPallet.swapExactTokenForTokensPath {
-            return swapEvent.amountIn == args.amountIn && swapEvent.amountOut >= args.amountOut
-        } else {
-            return swapEvent.amountOut == args.amountOut && swapEvent.amountIn <= args.amountIn
-        }
+        return AssetConversionSwapBounds.matches(
+            event: swapEvent,
+            origin: sender,
+            receiver: args.receiver,
+            path: args.path,
+            bounds: bounds
+        )
     }
 }
