@@ -259,7 +259,6 @@ extension AssetHubExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol 
                 case let .failure(failure):
                     throw failure.error
                 case .success:
-                    // a delayed call is only approved at this point, so it has no execution events yet
                     if !submission.extrinsicSubmittedModel.sender.delayedCallExecution() {
                         _ = try measuringWrapper.targetOperation.extractNoCancellableResultData()
                     }

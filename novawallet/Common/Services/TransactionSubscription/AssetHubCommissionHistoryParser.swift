@@ -9,9 +9,6 @@ enum AssetHubCommissionHistoryError: Error {
     case predictedOutputUnderflow
 }
 
-/// What a commissioned batch's calls claim, as decoded from history. The amounts are the call's own
-/// pallet bounds, not a quote: for a sell `amountOutBound` is `amount_out_min`, for a buy
-/// `amountInBound` is `amount_in_max`.
 struct AssetHubCommissionedSwapCall {
     let receiver: AccountId
     let assetIn: ChainAssetId

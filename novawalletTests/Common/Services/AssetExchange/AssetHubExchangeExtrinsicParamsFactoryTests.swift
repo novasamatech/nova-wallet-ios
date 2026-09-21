@@ -208,7 +208,6 @@ final class AssetHubExchangeExtrinsicParamsFactoryTests: XCTestCase {
 }
 
 private extension AssetHubExchangeExtrinsicParamsFactoryTests {
-    /// Mirrors the production builder, which carries the runtime json context before calls are added.
     func makeBuilder(for params: AssetHubExchangeSwapParams) -> ExtrinsicBuilderProtocol {
         ExtrinsicBuilder().with(runtimeJsonContext: params.codingFactory.createRuntimeJsonContext())
     }

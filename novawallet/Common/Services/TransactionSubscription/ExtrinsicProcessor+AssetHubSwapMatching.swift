@@ -137,8 +137,6 @@ extension ExtrinsicProcessor {
 
         let extrinsicEvents = eventRecords.filter { $0.extrinsicIndex == extrinsicIndex }
 
-        // the commissioned batch must be recognized before the generic mapper flattens it,
-        // otherwise history would show the gross output instead of what the user received
         switch AssetHubCommissionHistoryParser(logger: logger).parse(
             extrinsic: extrinsic,
             sender: sender,
