@@ -7,7 +7,9 @@ enum AssetExchangeCommissionConstants {
 
     static let assetHubBeneficiaryAddress = "15WGd8nfLawEAZcMjrWecJ3ngofF3UzTVU2YQjt4PApf6JCR"
 
-    static let assetHubBeneficiaryAddresses: [ChainModel.Id: AccountAddress] = [:]
+    static let assetHubBeneficiaryAddresses: [ChainModel.Id: AccountAddress] = [
+        KnowChainId.polkadotAssetHub: assetHubBeneficiaryAddress
+    ]
 
     static let historicalAssetHubBeneficiaryAddresses: [ChainModel.Id: [AccountAddress]] = [:]
 
