@@ -30,11 +30,21 @@ extension AssetHubExchangeAtomicOperation {
 
         return palletBound.subtractOrZero(params.commission?.amount ?? 0)
     }
+
+    static func shouldWaiveCommission(on error: Error) -> Bool {
+        switch error as? AssetHubExchangePreparationError {
+        case .invalidCommission, .netOutputBelowMinimum:
+            return true
+        case .recipientUnavailable, .invalidSlippage, .unsupportedStorage, .runtimeCallUnavailable, .none:
+            return false
+        }
+    }
 }
 
 private extension AssetHubExchangeAtomicOperation {
     func createParamsWrapper(
-        for swapLimit: AssetExchangeSwapLimit
+        for swapLimit: AssetExchangeSwapLimit,
+        commission: AssetExchangeCommission?
     ) -> CompoundOperationWrapper<AssetHubExchangeSwapParams> {
         let callArgs = AssetConversion.CallArgs(
             assetIn: edge.origin,
@@ -48,8 +58,45 @@ private extension AssetHubExchangeAtomicOperation {
 
         return host.extrinsicParamsFactory.createOperationWrapper(
             callArgs: callArgs,
-            commission: operationArgs.commission
+            commission: commission
         )
+    }
+
+    func createParamsWrapper(
+        for swapLimit: AssetExchangeSwapLimit
+    ) -> CompoundOperationWrapper<AssetHubExchangeSwapParams> {
+        createParamsWrapper(for: swapLimit, commission: operationArgs.commission)
+    }
+
+    func createWaivableParamsWrapper(
+        for swapLimit: AssetExchangeSwapLimit
+    ) -> CompoundOperationWrapper<AssetHubExchangeSwapParams> {
+        let chargedWrapper = createParamsWrapper(for: swapLimit, commission: operationArgs.commission)
+
+        let resolvingWrapper: CompoundOperationWrapper<AssetHubExchangeSwapParams>
+        resolvingWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+            operationQueue: host.operationQueue
+        ) {
+            do {
+                let params = try chargedWrapper.targetOperation.extractNoCancellableResultData()
+
+                return .createWithResult(params)
+            } catch {
+                guard Self.shouldWaiveCommission(on: error) else {
+                    throw error
+                }
+
+                self.host.logger.error(
+                    "Commission no longer fits the rescaled swap, collecting nothing: \(error)"
+                )
+
+                return self.createParamsWrapper(for: swapLimit, commission: nil)
+            }
+        }
+
+        resolvingWrapper.addDependency(wrapper: chargedWrapper)
+
+        return resolvingWrapper.insertingHead(operations: chargedWrapper.allOperations)
     }
 
     func createSubmissionWrapper(
@@ -152,7 +199,7 @@ extension AssetHubExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol 
     }
 
     func executeWrapper(for swapLimit: AssetExchangeSwapLimit) -> CompoundOperationWrapper<Balance> {
-        let paramsWrapper = createParamsWrapper(for: swapLimit)
+        let paramsWrapper = createWaivableParamsWrapper(for: swapLimit)
 
         let executionWrapper: CompoundOperationWrapper<Balance>
         executionWrapper = OperationCombiningService.compoundNonOptionalWrapper(

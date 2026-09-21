@@ -26,6 +26,34 @@ final class AssetHubExchangeAtomicOperationTests: XCTestCase {
 
         XCTAssertEqual(AssetHubExchangeAtomicOperation.guaranteedNetAmountOut(for: params), 0)
     }
+
+    func testCommissionIsWaivedWhenItNoLongerFitsTheRescaledSwap() {
+        XCTAssertTrue(AssetHubExchangeAtomicOperation.shouldWaiveCommission(
+            on: AssetHubExchangePreparationError.invalidCommission
+        ))
+        XCTAssertTrue(AssetHubExchangeAtomicOperation.shouldWaiveCommission(
+            on: AssetHubExchangePreparationError.netOutputBelowMinimum
+        ))
+    }
+
+    func testUnreadyRecipientDoesNotWaiveCommission() {
+        XCTAssertFalse(AssetHubExchangeAtomicOperation.shouldWaiveCommission(
+            on: AssetHubExchangePreparationError.recipientUnavailable
+        ))
+    }
+
+    func testUnrelatedPreparationFailuresDoNotWaiveCommission() {
+        let errors: [Error] = [
+            AssetHubExchangePreparationError.invalidSlippage,
+            AssetHubExchangePreparationError.unsupportedStorage,
+            AssetHubExchangePreparationError.runtimeCallUnavailable(.transferKeepAlive),
+            CommonError.dataCorruption
+        ]
+
+        errors.forEach {
+            XCTAssertFalse(AssetHubExchangeAtomicOperation.shouldWaiveCommission(on: $0))
+        }
+    }
 }
 
 private extension AssetHubExchangeAtomicOperationTests {
