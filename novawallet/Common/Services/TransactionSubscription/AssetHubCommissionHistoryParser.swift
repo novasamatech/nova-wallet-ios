@@ -4,6 +4,27 @@ import SubstrateSdk
 enum AssetHubCommissionHistoryError: Error {
     case ambiguousCandidates
     case undeterminedWrapperOutcome
+    case unrecognizedCommissionedCall
+    case unsupportedOutputAsset
+    case predictedOutputUnderflow
+}
+
+/// What a commissioned batch's calls claim, as decoded from history. The amounts are the call's own
+/// pallet bounds, not a quote: for a sell `amountOutBound` is `amount_out_min`, for a buy
+/// `amountInBound` is `amount_in_max`.
+struct AssetHubCommissionedSwapCall {
+    let receiver: AccountId
+    let assetIn: ChainAssetId
+    let assetOut: ChainAssetId
+    let amountInBound: Balance
+    let amountOutBound: Balance
+    let path: [AssetConversionPallet.AssetId]
+    let bounds: AssetConversionSwapBounds
+    let commission: AssetConversionSwapVerification.Commission
+
+    var verification: AssetConversionSwapVerification {
+        .init(receiver: receiver, path: path, bounds: bounds, commission: commission)
+    }
 }
 
 struct AssetHubCommissionHistoryParser {
@@ -51,18 +72,18 @@ struct AssetHubCommissionHistoryParser {
             context: codingFactory.createRuntimeJsonContext()
         )
 
-        var prepared: [(batch: AssetHubCommissionedBatch, params: AssetHubExchangeSwapParams)] = []
+        var prepared: [(batch: AssetHubCommissionedBatch, call: AssetHubCommissionedSwapCall)] = []
         var ownedFailure: Error?
 
         for candidate in candidates where candidate.effectiveSender == account {
             do {
-                if let params = try createParams(
+                if let call = try decodeCommissionedCall(
                     for: candidate,
                     chain: chain,
                     codingFactory: codingFactory,
                     beneficiaries: beneficiaries
                 ) {
-                    prepared.append((candidate, params))
+                    prepared.append((candidate, call))
                 }
             } catch {
                 ownedFailure = error
@@ -96,7 +117,7 @@ struct AssetHubCommissionHistoryParser {
             return .swap(
                 try createSwap(
                     for: candidate.batch,
-                    params: candidate.params,
+                    call: candidate.call,
                     events: events,
                     isSuccess: isSuccess,
                     codingFactory: codingFactory
@@ -111,14 +132,12 @@ struct AssetHubCommissionHistoryParser {
 private extension AssetHubCommissionHistoryParser {
     func createSwap(
         for batch: AssetHubCommissionedBatch,
-        params: AssetHubExchangeSwapParams,
+        call: AssetHubCommissionedSwapCall,
         events: [Event],
         isSuccess: Bool,
         codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> Swap {
-        guard let commission = params.commission else {
-            throw AssetHubExchangePreparationError.invalidCommission
-        }
+        let commission = call.commission
 
         let amountIn: Balance
         let netAmountOut: Balance
@@ -126,7 +145,7 @@ private extension AssetHubCommissionHistoryParser {
         if isSuccess {
             let measurement = try AssetConversionEventParser(logger: logger).measure(
                 from: events,
-                params: params,
+                verification: call.verification,
                 origin: batch.effectiveSender,
                 using: codingFactory
             )
@@ -134,32 +153,32 @@ private extension AssetHubCommissionHistoryParser {
             netAmountOut = measurement.netAmountOut
             amountIn = measurement.amountIn
         } else {
-            guard params.callArgs.amountOut >= commission.amount else {
-                throw AssetHubExchangeEventError.outputUnderflow
+            guard call.amountOutBound >= commission.amount else {
+                throw AssetHubCommissionHistoryError.predictedOutputUnderflow
             }
 
-            netAmountOut = params.callArgs.amountOut - commission.amount
-            amountIn = params.callArgs.amountIn
+            netAmountOut = call.amountOutBound - commission.amount
+            amountIn = call.amountInBound
         }
 
         return Swap(
             call: batch.swapCall,
             sender: batch.effectiveSender,
-            receiver: params.callArgs.receiver,
-            assetIn: params.callArgs.assetIn.assetId,
+            receiver: call.receiver,
+            assetIn: call.assetIn.assetId,
             amountIn: amountIn,
-            assetOut: params.callArgs.assetOut.assetId,
+            assetOut: call.assetOut.assetId,
             netAmountOut: netAmountOut,
             isSuccess: isSuccess
         )
     }
 
-    func createParams(
+    func decodeCommissionedCall(
         for batch: AssetHubCommissionedBatch,
         chain: ChainModel,
         codingFactory: RuntimeCoderFactoryProtocol,
         beneficiaries: Set<AccountId>
-    ) throws -> AssetHubExchangeSwapParams? {
+    ) throws -> AssetHubCommissionedSwapCall? {
         let context = codingFactory.createRuntimeJsonContext()
 
         guard
@@ -174,7 +193,7 @@ private extension AssetHubCommissionHistoryParser {
             collection.amount > 0,
             let remoteAssetIn = swap.path.first,
             let remoteAssetOut = swap.path.last else {
-            throw AssetHubExchangePreparationError.invalidCommission
+            throw AssetHubCommissionHistoryError.unrecognizedCommissionedCall
         }
 
         let conversionClosure = AssetHubTokensConverter.createPoolAssetToLocalClosure(
@@ -193,31 +212,26 @@ private extension AssetHubCommissionHistoryParser {
                 chain: chain,
                 conversionClosure: conversionClosure
             ) else {
-            throw AssetHubExchangePreparationError.unsupportedStorage
+            throw AssetHubCommissionHistoryError.unsupportedOutputAsset
         }
 
         let storageInfo = try AssetStorageInfo.extract(from: assetOut.asset, codingFactory: codingFactory)
 
         try validate(collection: collection, call: batch.commissionCall, storageInfo: storageInfo)
 
-        return AssetHubExchangeSwapParams(
-            callArgs: .init(
-                assetIn: assetIn.chainAssetId,
-                amountIn: swap.amountIn,
-                assetOut: assetOut.chainAssetId,
-                amountOut: swap.amountOut,
-                receiver: swap.receiver,
-                direction: swap.direction,
-                slippage: BigRational(numerator: 0, denominator: 1)
-            ),
+        return AssetHubCommissionedSwapCall(
+            receiver: swap.receiver,
+            assetIn: assetIn.chainAssetId,
+            assetOut: assetOut.chainAssetId,
+            amountInBound: swap.amountIn,
+            amountOutBound: swap.amountOut,
             path: swap.path,
-            swap: swap.call,
+            bounds: .init(swap: swap.call),
             commission: .init(
                 amount: collection.amount,
                 beneficiary: collection.beneficiary,
                 assetStorageInfo: storageInfo
-            ),
-            codingFactory: codingFactory
+            )
         )
     }
 

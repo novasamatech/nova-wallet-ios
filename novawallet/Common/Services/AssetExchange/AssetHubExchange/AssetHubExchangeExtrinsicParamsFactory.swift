@@ -3,11 +3,7 @@ import Operation_iOS
 import SubstrateSdk
 
 struct AssetHubExchangeSwapParams {
-    struct Commission {
-        let amount: Balance
-        let beneficiary: AccountId
-        let assetStorageInfo: AssetStorageInfo
-    }
+    typealias Commission = AssetConversionSwapVerification.Commission
 
     enum Swap {
         case exactIn(AssetConversionPallet.SwapExactTokensForTokensCall)
@@ -19,6 +15,15 @@ struct AssetHubExchangeSwapParams {
     let swap: Swap
     let commission: Commission?
     let codingFactory: RuntimeCoderFactoryProtocol
+
+    var verification: AssetConversionSwapVerification {
+        .init(
+            receiver: callArgs.receiver,
+            path: path,
+            bounds: .init(swap: swap),
+            commission: commission
+        )
+    }
 }
 
 protocol AssetHubExchangeExtrinsicParamsFactoryProtocol {

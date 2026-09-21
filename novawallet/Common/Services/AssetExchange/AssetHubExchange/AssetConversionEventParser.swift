@@ -45,6 +45,19 @@ enum AssetConversionSwapBounds {
     }
 }
 
+struct AssetConversionSwapVerification {
+    struct Commission {
+        let amount: Balance
+        let beneficiary: AccountId
+        let assetStorageInfo: AssetStorageInfo
+    }
+
+    let receiver: AccountId
+    let path: [AssetConversionPallet.AssetId]
+    let bounds: AssetConversionSwapBounds
+    let commission: Commission?
+}
+
 final class AssetConversionEventParser {
     struct Measurement {
         let amountIn: Balance
@@ -60,30 +73,40 @@ final class AssetConversionEventParser {
 
     func extractDeposit(
         from events: [Event],
-        params: AssetHubExchangeSwapParams,
+        verification: AssetConversionSwapVerification,
         origin: AccountId,
         using codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> Balance {
-        try measure(from: events, params: params, origin: origin, using: codingFactory).netAmountOut
+        try measure(
+            from: events,
+            verification: verification,
+            origin: origin,
+            using: codingFactory
+        ).netAmountOut
     }
 
     func measure(
         from events: [Event],
-        params: AssetHubExchangeSwapParams,
+        verification: AssetConversionSwapVerification,
         origin: AccountId,
         using codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> Measurement {
-        guard origin == params.callArgs.receiver else {
+        guard origin == verification.receiver else {
             throw AssetHubExchangeEventError.unexpectedOrigin
         }
 
-        let swaps = try findSwaps(in: events, params: params, origin: origin, using: codingFactory)
+        let swaps = try findSwaps(
+            in: events,
+            verification: verification,
+            origin: origin,
+            using: codingFactory
+        )
 
         guard swaps.count == 1, let measured = swaps.first else {
             throw AssetHubExchangeEventError.missingOrAmbiguousSwap
         }
 
-        guard let commission = params.commission else {
+        guard let commission = verification.commission else {
             return Measurement(
                 amountIn: measured.event.amountIn,
                 grossAmountOut: measured.event.amountOut,
@@ -128,7 +151,7 @@ private extension AssetConversionEventParser {
 
     func findSwaps(
         in events: [Event],
-        params: AssetHubExchangeSwapParams,
+        verification: AssetConversionSwapVerification,
         origin: AccountId,
         using codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> [MeasuredSwap] {
@@ -151,9 +174,9 @@ private extension AssetConversionEventParser {
             guard AssetConversionSwapBounds.matches(
                 event: swap,
                 origin: origin,
-                receiver: params.callArgs.receiver,
-                path: params.path,
-                bounds: .init(swap: params.swap)
+                receiver: verification.receiver,
+                path: verification.path,
+                bounds: verification.bounds
             ) else {
                 return nil
             }
@@ -164,7 +187,7 @@ private extension AssetConversionEventParser {
 
     func findCollections(
         in events: [Event],
-        commission: AssetHubExchangeSwapParams.Commission,
+        commission: AssetConversionSwapVerification.Commission,
         origin: AccountId,
         using codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> [Balance] {

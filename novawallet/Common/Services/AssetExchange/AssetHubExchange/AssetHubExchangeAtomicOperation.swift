@@ -139,7 +139,7 @@ private extension AssetHubExchangeAtomicOperation {
                 do {
                     let amountOut = try parser.extractDeposit(
                         from: success.interestedEvents,
-                        params: params,
+                        verification: params.verification,
                         origin: self.extractOrigin(from: submission.extrinsicSubmittedModel.sender),
                         using: codingFactoryOperation.extractNoCancellableResultData()
                     )

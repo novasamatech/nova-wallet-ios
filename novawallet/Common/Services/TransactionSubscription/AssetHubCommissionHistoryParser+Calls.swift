@@ -16,16 +16,16 @@ extension AssetHubCommissionHistoryParser {
         switch storageInfo {
         case .native:
             guard call.path == .transferKeepAlive else {
-                throw AssetHubExchangePreparationError.invalidCommission
+                throw AssetHubCommissionHistoryError.unrecognizedCommissionedCall
             }
         case let .statemine(info):
             guard
                 call.path == PalletAssets.assetsTransferKeepAlive(for: info.palletName),
                 collection.assetId == info.assetId else {
-                throw AssetHubExchangePreparationError.invalidCommission
+                throw AssetHubCommissionHistoryError.unrecognizedCommissionedCall
             }
         case .orml, .ormlHydrationEvm, .erc20, .evmNative, .equilibrium:
-            throw AssetHubExchangePreparationError.unsupportedStorage
+            throw AssetHubCommissionHistoryError.unsupportedOutputAsset
         }
     }
 
@@ -37,7 +37,7 @@ extension AssetHubCommissionHistoryParser {
             let transfer: TransferCall = try ExtrinsicExtraction.getCallArgs(from: call.args, context: context)
 
             guard let beneficiary = transfer.dest.accountId else {
-                throw AssetHubExchangePreparationError.invalidCommission
+                throw AssetHubCommissionHistoryError.unrecognizedCommissionedCall
             }
 
             return CollectionCall(beneficiary: beneficiary, amount: transfer.value, assetId: nil)
@@ -48,7 +48,7 @@ extension AssetHubCommissionHistoryParser {
             )
 
             guard let beneficiary = transfer.target.accountId else {
-                throw AssetHubExchangePreparationError.invalidCommission
+                throw AssetHubCommissionHistoryError.unrecognizedCommissionedCall
             }
 
             return CollectionCall(beneficiary: beneficiary, amount: transfer.amount, assetId: transfer.assetId)
