@@ -14,10 +14,17 @@ protocol ExtrinsicProcessing {
 final class ExtrinsicProcessor {
     let accountId: AccountId
     let chain: ChainModel
+    let assetHubCommissionBeneficiaries: Set<AccountId>
 
-    init(accountId: AccountId, chain: ChainModel) {
+    init(
+        accountId: AccountId,
+        chain: ChainModel,
+        assetHubCommissionBeneficiaries: Set<AccountId>? = nil
+    ) {
         self.accountId = accountId
         self.chain = chain
+        self.assetHubCommissionBeneficiaries = assetHubCommissionBeneficiaries
+            ?? AssetExchangeCommissionConstants.assetHubHistoryBeneficiaries(for: chain.chainId)
     }
 }
 
@@ -35,13 +42,18 @@ extension ExtrinsicProcessor: ExtrinsicProcessing {
 
             let runtimeJsonContext = coderFactory.createRuntimeJsonContext()
 
-            if let processingResult = matchAssetHubSwap(
+            switch matchAssetHubSwap(
                 extrinsicIndex: extrinsicIndex,
                 extrinsic: extrinsic,
                 eventRecords: eventRecords,
                 codingFactory: coderFactory
             ) {
+            case let .matched(processingResult):
                 return processingResult
+            case .unresolved:
+                return nil
+            case .notMatched:
+                break
             }
 
             if let processingResult = matchHydraSwap(

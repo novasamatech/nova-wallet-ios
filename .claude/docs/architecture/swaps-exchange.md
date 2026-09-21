@@ -59,6 +59,76 @@ asset, and some chains allow paying fees in non-native assets.
 `FeeViaSwap` in the extrinsic layer (`Common/Services/ExtrinsicService/Substrate/FeeManaging/FeeViaSwap/`)
 is the reverse direction: paying an ordinary extrinsic's fee in a non-native asset by swapping.
 
+## Nova Commission
+
+A configured swap route charges Nova's commission **once**, on the last eligible DEX edge.
+
+- `Commission/AssetExchangeCommissionConstants` holds the rate (0.85%), the Hydration beneficiary
+  and the per-chain Asset Hub enablement map. That map is **empty until a chain passes the launch
+  checks**; rotated addresses move to the historical map so history keeps recognising them.
+- `AssetExchangeCommissionPolicy` scans the path in reverse: `.hydraSwap` always charges,
+  `.assetHubSwap` charges only on a configured chain, `.crossChain` never does. A mixed route in
+  either order is still charged exactly once.
+- Amounts are output based. For gross output `G` the charge is `C = floor(G * 85 / 10085)` and the
+  user sees `N = G - C`. For a buy of net target `T` the route is quoted for
+  `G = T + floor(T * 85 / 10000)`.
+- `Common/AssetExchangeMetaOperationFactory` is the single grouping implementation. Both the UI
+  quote and `AssetsExchangeRouteManager`'s ranking use it, so candidates are compared by **net**
+  output (sell) and by the input each candidate needs for the grossed-up target (buy).
+- The internal `AssetExchangeGraphProxy` used by `FeeViaSwap` passes `commissionPolicy: nil` — fee
+  swaps are never charged.
+
+On Asset Hub the collection rides inside the swap's own extrinsic:
+
+- `AssetHubExchangeExtrinsicParamsFactory` prepares one `AssetHubExchangeSwapParams` reused by fee
+  estimation, execution and delayed submission, so all three agree on the exact calls and amount.
+  It rejects invalid slippage, a commission that is not smaller than the output, a beneficiary equal
+  to the swap receiver, a missing runtime call, and a net output below the output token's minimum.
+- `AssetHubExchangeCommissionRecipientFactory` requires native free balance ≥ native ED and
+  `providers > 0` for every positive collection, including Assets/ForeignAssets outputs. Token
+  outputs additionally need a live receivable treasury token account funded to its `minBalance`.
+  A sufficient-only token account does not satisfy this conservative native-provider policy.
+  Missing readiness rejects the charged swap; there is no silent waiver.
+- Before enabling a chain, provision/check the native account and every eligible output account.
+  Repeat the asset check whenever remote configuration adds an output token. This ongoing rollout
+  dependency must be addressed before enablement; the chain map is currently empty.
+  During rotation/disablement, preserve all prior recipients in the historical map first.
+- `AssetHubExchangeExtrinsicConverter` appends the swap then a keep-alive transfer and **seals them
+  into exactly one `Utility.batch_all` before sender resolution**. A proxy or multisig must wrap the
+  batch (`proxy(batch_all([...]))`), not each leaf, or an inner failure would not roll the swap back.
+- The pallet bound stays gross: a sell asks for `netMinimum + C` so that subtracting `C` afterwards
+  satisfies the net minimum shown in the UI.
+- `AssetHubExchangeDelegationPermission` resolves that batch by its `AssetConversion` leaf, so the
+  innermost proxy needs the swap-compatible permission (which also permits the transfer) rather than
+  a type that merely allows the outer `Utility` wrapper.
+
+Measured output and history:
+
+- `AssetConversionEventParser` matches the one swap event that belongs to the signed call plus the
+  one matching transfer to the configured beneficiary, and returns `measuredGross - verifiedTransfer`.
+  Missing, ambiguous or mismatching events throw rather than degrade to zero.
+- `AssetHubCommissionTopology` + `AssetHubCommissionHistoryParser` recognise the collection in
+  `ExtrinsicProcessor` **before** the generic nested mapper flattens the batch, so included swap
+  history stores measured net output. This flow currently creates no local pending swap row:
+  `PersistentExtrinsicService.saveSwap` has no callers. The matcher distinguishes an unrelated call from
+  an unresolved swap: only an unrelated call continues to transfer/other history matchers.
+  Pending approvals, parsing errors and ambiguous commissioned calls produce no record.
+- Commission history supports a direct atomic pair with a linear proxy/multisig wrapper chain.
+  An additional Utility ancestor leaves a known commissioned candidate unresolved, because
+  matching sibling events by origin/path/amount cannot prove which child executed.
+- Wrapper execution markers are checked outside inward in reverse event order. A correlated
+  failure is final even when undispatched descendants have no markers; successful ancestors
+  still require their descendants' execution markers. Multisig results must match the approver,
+  derived account and inner call hash. Threshold-1 multisig dispatch propagates its call result:
+  on runtimes without its own execution marker, inherit the successful enclosing dispatch result
+  and still check inner wrappers. On runtimes emitting a marker, validate and consume it normally.
+- Collection event matching uses the prepared output storage's actual pallet. Delegation and
+  commissioned topology accept configured statemine pallet names as well as the standard ones.
+
+A multi-operation buy keeps its existing semantics: the execution manager switches to exact-in after
+the first operation and rescales limits, so exact net target delivery is a single-operation
+guarantee.
+
 ## Execution
 
 `AssetExchangeExecutionManager` runs the route:

@@ -100,22 +100,29 @@ extension ExtrinsicDelegateSenderResolver: ExtrinsicSenderResolving {
 
         let allCalls = try builders
             .flatMap { $0.getCalls() }
-            .map { try $0.map(to: RuntimeCall<NoRuntimeArgs>.self, with: context.toRawContext()) }
+            .map { try $0.map(to: AnyRuntimeCall.self, with: context.toRawContext()) }
 
         let pathMerger = DelegationResolution.PathMerger()
+        let supportedAssetsPallets = PalletAssets.palletNames(for: chain)
 
         var resolutionFailures: [ExtrinsicSenderResolution.ResolutionDelegateFailure] = []
 
-        allCalls.forEach { call in
+        try allCalls.forEach { call in
             let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
             guard !pathMerger.hasPaths(for: callPath) else {
                 return
             }
 
+            let permissionPath = try AssetHubExchangeDelegationPermission.permissionPath(
+                for: call,
+                context: context,
+                supportedAssetsPallets: supportedAssetsPallets
+            )
+
             let paths = graph.resolveDelegations(
                 for: delegatedAccount.accountId,
                 delegationClass: delegationClass,
-                callPath: callPath
+                callPath: permissionPath
             ).filter { path in
                 path.components.first?.delegateId == delegateAccountId
             }
