@@ -16,10 +16,10 @@ enum AssetExchangeCommissionConstants {
         let invalid: [AccountAddress]
     }
 
-    static func assetHubHistoryBeneficiaries(for chainId: ChainModel.Id) -> HistoryBeneficiaries {
-        let current = assetHubBeneficiaryAddresses[chainId].map { [$0] } ?? []
-        let historical = historicalAssetHubBeneficiaryAddresses[chainId] ?? []
-
+    static func historyBeneficiaries(
+        current: [AccountAddress],
+        historical: [AccountAddress]
+    ) -> HistoryBeneficiaries {
         var accountIds: Set<AccountId> = []
         var invalid: [AccountAddress] = []
 
@@ -34,6 +34,13 @@ enum AssetExchangeCommissionConstants {
         }
 
         return HistoryBeneficiaries(accountIds: accountIds, invalid: invalid)
+    }
+
+    static func assetHubHistoryBeneficiaries(for chainId: ChainModel.Id) -> HistoryBeneficiaries {
+        historyBeneficiaries(
+            current: assetHubBeneficiaryAddresses[chainId].map { [$0] } ?? [],
+            historical: historicalAssetHubBeneficiaryAddresses[chainId] ?? []
+        )
     }
 }
 

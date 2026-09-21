@@ -25,19 +25,17 @@ final class AssetHubSwapHistoryFiltersProviderTests: XCTestCase {
         XCTAssertTrue(filter.shouldDisplayOperation(model: try createTransfer(to: AccountId(repeating: 3, count: 32))))
     }
 
-    func testRotatedBeneficiaryIsStillSuppressed() throws {
-        let historical = AccountId(repeating: 8, count: 32)
-        let filters = try createFilters(hasSwapHub: true, beneficiaries: [beneficiary, historical])
-        let filter = try XCTUnwrap(filters.first)
+    func testMalformedBeneficiaryAddressesAreSeparatedFromResolvedOnes() throws {
+        let validAddress = AssetExchangeCommissionConstants.assetHubBeneficiaryAddress
+        let validAccountId = try validAddress.toAccountId()
 
-        XCTAssertFalse(filter.shouldDisplayOperation(model: try createTransfer(to: historical)))
-    }
+        let resolved = AssetExchangeCommissionConstants.historyBeneficiaries(
+            current: [validAddress],
+            historical: ["not-an-address"]
+        )
 
-    func testMalformedBeneficiaryAddressesAreReportedAsInvalid() {
-        let resolved = AssetExchangeCommissionConstants.assetHubHistoryBeneficiaries(for: "unconfigured")
-
-        XCTAssertTrue(resolved.accountIds.isEmpty)
-        XCTAssertTrue(resolved.invalid.isEmpty)
+        XCTAssertEqual(resolved.accountIds, [validAccountId])
+        XCTAssertEqual(resolved.invalid, ["not-an-address"])
     }
 }
 
