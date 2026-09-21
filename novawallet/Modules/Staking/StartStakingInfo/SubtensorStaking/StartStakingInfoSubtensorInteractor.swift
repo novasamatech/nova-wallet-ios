@@ -14,9 +14,11 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
 
     let state: SubtensorStakingSharedStateProtocol
     let networkInfoFactory: SubtensorNetworkInfoFactoryProtocol
+    let strategiesDataSource: SubtensorStakingStrategiesDataSourceProtocol
     let logger: LoggerProtocol
 
     private let networkInfoCancellableStore = CancellableCallStore()
+    private let strategiesCancellableStore = CancellableCallStore()
 
     init(
         state: SubtensorStakingSharedStateProtocol,
@@ -25,6 +27,7 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         stakingDashboardProviderFactory: StakingDashboardProviderFactoryProtocol,
         networkInfoFactory: SubtensorNetworkInfoFactoryProtocol,
+        strategiesDataSource: SubtensorStakingStrategiesDataSourceProtocol,
         currencyManager: CurrencyManagerProtocol,
         sharedOperation: SharedOperationProtocol,
         operationQueue: OperationQueue,
@@ -32,6 +35,7 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
     ) {
         self.state = state
         self.networkInfoFactory = networkInfoFactory
+        self.strategiesDataSource = strategiesDataSource
         self.logger = logger
 
         super.init(
@@ -51,6 +55,7 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
         state.throttle()
 
         networkInfoCancellableStore.cancel()
+        strategiesCancellableStore.cancel()
     }
 
     override func setup() {
@@ -60,6 +65,7 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
 
         provideNetworkInfo()
         provideRootAnnualReturn()
+        provideStrategies()
     }
 }
 
@@ -100,6 +106,28 @@ private extension StartStakingInfoSubtensorInteractor {
             }
         }
     }
+
+    func provideStrategies() {
+        strategiesCancellableStore.cancel()
+
+        executeCancellable(
+            wrapper: strategiesDataSource.fetchStrategies(),
+            inOperationQueue: operationQueue,
+            backingCallIn: strategiesCancellableStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(strategies):
+                self?.presenter?.didReceive(strategies: strategies)
+            case let .failure(error):
+                self?.presenter?.didReceiveStrategies(error: error)
+            }
+        }
+    }
 }
 
-extension StartStakingInfoSubtensorInteractor: StartStakingInfoSubtensorInteractorInputProtocol {}
+extension StartStakingInfoSubtensorInteractor: StartStakingInfoSubtensorInteractorInputProtocol {
+    func retryStrategies() {
+        provideStrategies()
+    }
+}

@@ -3,12 +3,13 @@ import UIKit
 import UIKit_iOS
 
 class ExtendedPageControl: UIControl {
+    private let spacing: CGFloat
     private var dots: [UIView] = []
 
     private lazy var stackView: UIStackView = .create { view in
         view.axis = .horizontal
         view.alignment = .center
-        view.spacing = Constants.spacing
+        view.spacing = spacing
     }
 
     private let appearanceAnimator: ViewAnimatorProtocol = FadeAnimator(
@@ -47,12 +48,16 @@ class ExtendedPageControl: UIControl {
         }
     }
 
-    override init(frame: CGRect) {
+    init(frame: CGRect = .zero, spacing: CGFloat = Constants.spacing) {
+        self.spacing = spacing
+
         super.init(frame: frame)
         setupView()
     }
 
     required init?(coder: NSCoder) {
+        spacing = Constants.spacing
+
         super.init(coder: coder)
         setupView()
     }
@@ -159,8 +164,8 @@ private extension ExtendedPageControl {
     }
 
     func updateDots() {
-        dots.enumerated().forEach { index, dot in
-            if index == self.currentPage {
+        for (index, dot) in dots.enumerated() {
+            if index == currentPage {
                 dot.snp.updateConstraints { make in
                     make.width.equalTo(Constants.extendedDotWidth)
                 }

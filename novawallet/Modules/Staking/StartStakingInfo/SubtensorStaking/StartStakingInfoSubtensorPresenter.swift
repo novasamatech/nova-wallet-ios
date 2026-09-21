@@ -4,8 +4,10 @@ import Foundation_iOS
 
 final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
     let subtensorWireframe: StartStakingInfoSubtensorWireframeProtocol
+    let subtensorViewModelFactory: StartStakingInfoSubtensorViewModelFactoryProtocol
 
     private var walletType: MetaAccountModelType?
+    private var strategies: [SubtensorStakingStrategy] = []
 
     private var state: State {
         didSet {
@@ -20,12 +22,14 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
         interactor: StartStakingInfoSubtensorInteractorInputProtocol,
         wireframe: StartStakingInfoSubtensorWireframeProtocol,
         startStakingViewModelFactory: StartStakingViewModelFactoryProtocol,
+        subtensorViewModelFactory: StartStakingInfoSubtensorViewModelFactoryProtocol,
         balanceDerivationFactory: StakingTypeBalanceFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         applicationConfig: ApplicationConfigProtocol,
         logger: LoggerProtocol
     ) {
         subtensorWireframe = wireframe
+        self.subtensorViewModelFactory = subtensorViewModelFactory
         state = .init(chainAsset: chainAsset, networkInfo: nil)
 
         super.init(
@@ -42,7 +46,7 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
 
     override func setup() {
         super.setup()
-        view?.didReceive(viewModel: .loading)
+        (view as? StartStakingInfoSubtensorViewProtocol)?.didReceive(subtensorViewModel: .loading)
     }
 
     override func didReceive(wallet: MetaAccountModel, chainAccountId: AccountId?) {
@@ -58,7 +62,7 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
 
         switch SubtensorOperationGate.verdict(for: walletType) {
         case .allowed:
-            super.startStaking()
+            subtensorWireframe.showStrategies(from: view)
         case let .signerNotSupported(type):
             subtensorWireframe.presentSignerNotSupportedView(from: view, type: type) {}
         case .noSigning:
@@ -66,44 +70,39 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
         }
     }
 
-    /// The Subtensor paragraphs must survive whether or not the root APY resolves — the base
-    /// implementation renders nothing Subtensor-specific, so gating this on a nil APY would
-    /// silently drop the instant-unstake and claim-restake notes the moment the engine starts
-    /// returning a number.
     override func provideViewModel(state: StartStakingStateProtocol) {
         super.provideViewModel(state: state)
+        provideSubtensorViewModel()
+    }
+}
 
-        guard let minStake = state.minStake else {
-            return
-        }
+extension StartStakingInfoSubtensorPresenter: StartStakingInfoSubtensorPresenterProtocol {
+    func chooseManually() {
+        super.startStaking()
+    }
 
-        let locale = selectedLocale
-
-        let title = createTitle(for: state, locale: locale)
-
-        let wikiUrl = startStakingViewModelFactory.wikiModel(
-            url: chainAsset.chain.stakingWiki ?? applicationConfig.websiteURL,
-            chainAsset: chainAsset,
-            locale: locale
-        )
-
-        let termsUrl = startStakingViewModelFactory.termsModel(
-            url: applicationConfig.termsURL,
-            locale: locale
-        )
-
-        let model = StartStakingViewModel(
-            title: title,
-            paragraphs: createParagraphs(for: state, minStake: minStake, locale: locale),
-            wikiUrl: wikiUrl,
-            termsUrl: termsUrl
-        )
-
-        view?.didReceive(viewModel: .loaded(value: model))
+    func refreshContent() {
+        provideSubtensorViewModel()
+        provideBalanceModel()
     }
 }
 
 private extension StartStakingInfoSubtensorPresenter {
+    func provideSubtensorViewModel() {
+        guard !strategies.isEmpty else {
+            return
+        }
+
+        let viewModel = subtensorViewModelFactory.createViewModel(
+            from: strategies,
+            locale: selectedLocale
+        )
+
+        (view as? StartStakingInfoSubtensorViewProtocol)?.didReceive(
+            subtensorViewModel: .loaded(value: viewModel)
+        )
+    }
+
     func createTitle(for state: StartStakingStateProtocol, locale: Locale) -> AccentTextModel {
         guard let maxApy = state.maxApy else {
             let symbol = chainAsset.asset.displayInfo.symbol
@@ -231,6 +230,22 @@ extension StartStakingInfoSubtensorPresenter: StartStakingInfoSubtensorInteracto
         logger.debug("Root annual return: \(String(describing: rootAnnualReturn))")
 
         state.rootAnnualReturn = rootAnnualReturn
+    }
+
+    func didReceive(strategies: [SubtensorStakingStrategy]) {
+        self.strategies = strategies
+        provideSubtensorViewModel()
+    }
+
+    func didReceiveStrategies(error: Error) {
+        logger.error("Strategies request failed: \(error)")
+
+        subtensorWireframe.presentRequestStatus(
+            on: view,
+            locale: selectedLocale
+        ) { [weak self] in
+            (self?.baseInteractor as? StartStakingInfoSubtensorInteractorInputProtocol)?.retryStrategies()
+        }
     }
 }
 
