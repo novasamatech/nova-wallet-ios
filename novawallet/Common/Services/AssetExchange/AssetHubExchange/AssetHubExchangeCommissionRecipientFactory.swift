@@ -18,6 +18,38 @@ protocol AssetHubExchangeCommissionRecipientFactoryProtocol {
     ) -> CompoundOperationWrapper<Balance>
 }
 
+enum AssetHubExchangeRecipientReadiness {
+    static func nativeMinimumBalance(
+        accountInfo: AccountInfo?,
+        existentialDeposit: Balance
+    ) throws -> Balance {
+        guard
+            let accountInfo,
+            accountInfo.hasProviders,
+            accountInfo.data.free >= existentialDeposit else {
+            throw AssetHubExchangePreparationError.recipientUnavailable
+        }
+
+        return existentialDeposit
+    }
+
+    static func assetsMinimumBalance(
+        details: PalletAssets.Details?,
+        account: PalletAssets.Account?
+    ) throws -> Balance {
+        guard
+            let details,
+            !details.isFrozen,
+            let account,
+            account.canReceive,
+            account.balance >= details.minBalance else {
+            throw AssetHubExchangePreparationError.recipientUnavailable
+        }
+
+        return details.minBalance
+    }
+}
+
 final class AssetHubExchangeCommissionRecipientFactory {
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeCodingServiceProtocol
@@ -71,14 +103,10 @@ private extension AssetHubExchangeCommissionRecipientFactory {
             let existentialDeposit = try depositOperation.extractNoCancellableResultData()
             let accountInfo = try accountWrapper.targetOperation.extractNoCancellableResultData().first?.value
 
-            guard
-                let accountInfo,
-                accountInfo.hasProviders,
-                accountInfo.data.free >= existentialDeposit else {
-                throw AssetHubExchangePreparationError.recipientUnavailable
-            }
-
-            return existentialDeposit
+            return try AssetHubExchangeRecipientReadiness.nativeMinimumBalance(
+                accountInfo: accountInfo,
+                existentialDeposit: existentialDeposit
+            )
         }
 
         mappingOperation.addDependency(accountWrapper.targetOperation)
@@ -121,16 +149,10 @@ private extension AssetHubExchangeCommissionRecipientFactory {
             let details = try detailsWrapper.targetOperation.extractNoCancellableResultData().first?.value
             let account = try accountWrapper.targetOperation.extractNoCancellableResultData().first?.value
 
-            guard
-                let details,
-                !details.isFrozen,
-                let account,
-                account.canReceive,
-                account.balance >= details.minBalance else {
-                throw AssetHubExchangePreparationError.recipientUnavailable
-            }
-
-            return details.minBalance
+            return try AssetHubExchangeRecipientReadiness.assetsMinimumBalance(
+                details: details,
+                account: account
+            )
         }
 
         mappingOperation.addDependency(detailsWrapper.targetOperation)

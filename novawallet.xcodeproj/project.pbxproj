@@ -5675,6 +5675,7 @@
 		ECD37C92F8EA802204A907B7 /* HydraSwapRoutePoolIdentityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D62A1D647644741D4C6D4A6 /* HydraSwapRoutePoolIdentityTests.swift */; };
 		A0720F255A511A623EE8C6F0 /* AssetsExchangeRouteManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C639F7A52A4668717369874 /* AssetsExchangeRouteManagerTests.swift */; };
 		AC00010000000000000000FB /* AssetHubCommissionDelegationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC00010000000000000000FA /* AssetHubCommissionDelegationTests.swift */; };
+		6690E3FA157461A016470471 /* AssetHubExchangeRecipientReadinessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82D83B8DF10E394B1C3828C2 /* AssetHubExchangeRecipientReadinessTests.swift */; };
 		AC00000000000000000000FB /* AssetHubExchangeExtrinsicParamsFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC00000000000000000000FA /* AssetHubExchangeExtrinsicParamsFactoryTests.swift */; };
 		E512B2B42B505AF2BEE87FB4 /* AssetExchangeGraphProxyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95559705353C1460D999A6AE /* AssetExchangeGraphProxyTests.swift */; };
 		881BA30929DC1B3000EB8C48 /* kilt-addresses.json in Resources */ = {isa = PBXBuildFile; fileRef = 881BA30829DC1B3000EB8C48 /* kilt-addresses.json */; };
@@ -12128,6 +12129,7 @@
 		8D62A1D647644741D4C6D4A6 /* HydraSwapRoutePoolIdentityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraSwapRoutePoolIdentityTests.swift; sourceTree = "<group>"; };
 		1C639F7A52A4668717369874 /* AssetsExchangeRouteManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchangeRouteManagerTests.swift; sourceTree = "<group>"; };
 		AC00010000000000000000FA /* AssetHubCommissionDelegationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubCommissionDelegationTests.swift; sourceTree = "<group>"; };
+		82D83B8DF10E394B1C3828C2 /* AssetHubExchangeRecipientReadinessTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubExchangeRecipientReadinessTests.swift; sourceTree = "<group>"; };
 		AC00000000000000000000FA /* AssetHubExchangeExtrinsicParamsFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubExchangeExtrinsicParamsFactoryTests.swift; sourceTree = "<group>"; };
 		95559705353C1460D999A6AE /* AssetExchangeGraphProxyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeGraphProxyTests.swift; sourceTree = "<group>"; };
 		881BA30829DC1B3000EB8C48 /* kilt-addresses.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "kilt-addresses.json"; sourceTree = "<group>"; };
@@ -22820,6 +22822,7 @@
 				8D62A1D647644741D4C6D4A6 /* HydraSwapRoutePoolIdentityTests.swift */,
 				1C639F7A52A4668717369874 /* AssetsExchangeRouteManagerTests.swift */,
 				AC00000000000000000000FA /* AssetHubExchangeExtrinsicParamsFactoryTests.swift */,
+				82D83B8DF10E394B1C3828C2 /* AssetHubExchangeRecipientReadinessTests.swift */,
 				95559705353C1460D999A6AE /* AssetExchangeGraphProxyTests.swift */,
 				0000000066609881CB682044 /* AssetExchangeCommissionNetFlowTests.swift */,
 			);
@@ -37757,6 +37760,7 @@
 				ECD37C92F8EA802204A907B7 /* HydraSwapRoutePoolIdentityTests.swift in Sources */,
 				A0720F255A511A623EE8C6F0 /* AssetsExchangeRouteManagerTests.swift in Sources */,
 				AC00010000000000000000FB /* AssetHubCommissionDelegationTests.swift in Sources */,
+				6690E3FA157461A016470471 /* AssetHubExchangeRecipientReadinessTests.swift in Sources */,
 				10D93B2BA74519B7EF9010D6 /* AssetHubSwapHistoryFiltersProviderTests.swift in Sources */,
 				AC00000000000000000000FB /* AssetHubExchangeExtrinsicParamsFactoryTests.swift in Sources */,
 				E512B2B42B505AF2BEE87FB4 /* AssetExchangeGraphProxyTests.swift in Sources */,
