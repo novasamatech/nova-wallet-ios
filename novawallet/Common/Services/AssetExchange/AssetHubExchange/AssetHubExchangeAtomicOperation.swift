@@ -39,6 +39,17 @@ extension AssetHubExchangeAtomicOperation {
             return false
         }
     }
+
+    static func shouldUseGuaranteedBound(on error: Error) -> Bool {
+        switch error as? AssetHubExchangeEventError {
+        case .missingOrAmbiguousSwap, .missingOrAmbiguousCommission, .unexpectedCommissionAmount, .outputUnderflow:
+            return true
+        case .swapNotDispatched, .unexpectedOrigin:
+            return false
+        case .none:
+            return error as? AssetHubExchangePreparationError == .unsupportedStorage
+        }
+    }
 }
 
 private extension AssetHubExchangeAtomicOperation {
@@ -134,6 +145,7 @@ private extension AssetHubExchangeAtomicOperation {
             case let .failure(failure):
                 throw failure.error
             case let .success(success):
+                let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
                 let parser = AssetConversionEventParser(logger: self.host.logger)
 
                 do {
@@ -141,13 +153,17 @@ private extension AssetHubExchangeAtomicOperation {
                         from: success.interestedEvents,
                         verification: params.verification,
                         origin: self.extractOrigin(from: submission.extrinsicSubmittedModel.sender),
-                        using: codingFactoryOperation.extractNoCancellableResultData()
+                        using: codingFactory
                     )
 
                     self.host.logger.debug("Arrived amount: \(String(amountOut))")
 
                     return amountOut
                 } catch {
+                    guard Self.shouldUseGuaranteedBound(on: error) else {
+                        throw error
+                    }
+
                     let guaranteed = Self.guaranteedNetAmountOut(for: params)
 
                     self.host.logger.error(

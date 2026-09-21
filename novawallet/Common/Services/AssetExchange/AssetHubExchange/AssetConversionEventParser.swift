@@ -1,8 +1,9 @@
 import Foundation
 import SubstrateSdk
 
-enum AssetHubExchangeEventError: Error {
+enum AssetHubExchangeEventError: Error, Equatable {
     case unexpectedOrigin
+    case swapNotDispatched
     case missingOrAmbiguousSwap
     case missingOrAmbiguousCommission
     case unexpectedCommissionAmount
@@ -95,6 +96,10 @@ final class AssetConversionEventParser {
             throw AssetHubExchangeEventError.unexpectedOrigin
         }
 
+        guard events.contains(where: { isSwapExecuted($0, using: codingFactory) }) else {
+            throw AssetHubExchangeEventError.swapNotDispatched
+        }
+
         let swaps = try findSwaps(
             in: events,
             verification: verification,
@@ -149,6 +154,10 @@ private extension AssetConversionEventParser {
         let event: AssetConversionPallet.SwapExecutedEvent
     }
 
+    func isSwapExecuted(_ event: Event, using codingFactory: RuntimeCoderFactoryProtocol) -> Bool {
+        codingFactory.metadata.eventMatches(event, path: AssetConversionPallet.swapExecutedEvent)
+    }
+
     func findSwaps(
         in events: [Event],
         verification: AssetConversionSwapVerification,
@@ -158,11 +167,7 @@ private extension AssetConversionEventParser {
         let context = codingFactory.createRuntimeJsonContext()
 
         return try events.enumerated().compactMap { index, event in
-            guard
-                codingFactory.metadata.eventMatches(
-                    event,
-                    path: AssetConversionPallet.swapExecutedEvent
-                ) else {
+            guard isSwapExecuted(event, using: codingFactory) else {
                 return nil
             }
 

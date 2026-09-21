@@ -54,6 +54,34 @@ final class AssetHubExchangeAtomicOperationTests: XCTestCase {
             XCTAssertFalse(AssetHubExchangeAtomicOperation.shouldWaiveCommission(on: $0))
         }
     }
+
+    func testSwapWithoutExecutionEventIsReportedAsNotDispatched() throws {
+        let fixture = try AssetHubHistoryFixture()
+        let verification = AssetConversionSwapVerification(
+            receiver: AssetHubHistoryFixture.sender,
+            path: AssetHubHistoryFixture.path,
+            bounds: .exactIn(amountIn: 1000, amountOutMin: 900),
+            commission: nil
+        )
+
+        XCTAssertThrowsError(try AssetConversionEventParser(logger: Logger.shared).measure(
+            from: [fixture.fee(), fixture.proxyEvent(success: false), fixture.system()],
+            verification: verification,
+            origin: AssetHubHistoryFixture.sender,
+            using: fixture.codingFactory
+        )) {
+            XCTAssertEqual($0 as? AssetHubExchangeEventError, .swapNotDispatched)
+        }
+    }
+
+    func testUndispatchedSwapDoesNotFallBackToGuaranteedBound() {
+        XCTAssertFalse(AssetHubExchangeAtomicOperation.shouldUseGuaranteedBound(
+            on: AssetHubExchangeEventError.swapNotDispatched
+        ))
+        XCTAssertTrue(AssetHubExchangeAtomicOperation.shouldUseGuaranteedBound(
+            on: AssetHubExchangeEventError.missingOrAmbiguousCommission
+        ))
+    }
 }
 
 private extension AssetHubExchangeAtomicOperationTests {
