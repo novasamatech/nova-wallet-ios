@@ -28,10 +28,12 @@ extension SubstrateTransferCommandFactory {
             throw SubstratePreservingTransferError.concreteAmountRequired
         }
 
+        guard let callPath = Self.preservingTransferPath(for: assetStorageInfo) else {
+            throw SubstratePreservingTransferError.unsupportedStorage
+        }
+
         switch assetStorageInfo {
         case .native:
-            let callPath = CallCodingPath.transferKeepAlive
-
             let call = SubstrateCallFactory().nativeTransfer(
                 to: recipient,
                 amount: value,
@@ -40,8 +42,6 @@ extension SubstrateTransferCommandFactory {
 
             return (try builder.adding(call: call), callPath)
         case let .statemine(info):
-            let callPath = PalletAssets.assetsTransferKeepAlive(for: info.palletName)
-
             let args = PalletAssets.TransferCall(
                 assetId: info.assetId,
                 target: .accoundId(recipient),
@@ -53,6 +53,17 @@ extension SubstrateTransferCommandFactory {
             return (try builder.adding(call: call), callPath)
         case .orml, .ormlHydrationEvm, .erc20, .evmNative, .equilibrium:
             throw SubstratePreservingTransferError.unsupportedStorage
+        }
+    }
+
+    static func preservingTransferPath(for assetStorageInfo: AssetStorageInfo) -> CallCodingPath? {
+        switch assetStorageInfo {
+        case .native:
+            return .transferKeepAlive
+        case let .statemine(info):
+            return PalletAssets.assetsTransferKeepAlive(for: info.palletName)
+        case .orml, .ormlHydrationEvm, .erc20, .evmNative, .equilibrium:
+            return nil
         }
     }
 }

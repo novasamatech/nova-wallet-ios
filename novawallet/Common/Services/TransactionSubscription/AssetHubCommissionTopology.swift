@@ -37,6 +37,22 @@ enum AssetHubCommissionTopology {
         )
     }
 
+    static func commissionedCalls(
+        in batch: UtilityPallet.Call,
+        path: CallCodingPath,
+        supportedAssetsPallets: Set<String>
+    ) -> (swap: AnyRuntimeCall, commission: AnyRuntimeCall)? {
+        guard
+            path == UtilityPallet.batchAllPath,
+            batch.calls.count == 2,
+            AssetConversionPallet.isSwap(batch.calls[0].path),
+            isCollection(batch.calls[1], supportedAssetsPallets: supportedAssetsPallets) else {
+            return nil
+        }
+
+        return (swap: batch.calls[0], commission: batch.calls[1])
+    }
+
     static func deriveMultisigOrigin(
         sender: AccountId,
         others: [AccountId],
@@ -199,17 +215,17 @@ private extension AssetHubCommissionTopology {
 
         var matches: [AssetHubCommissionedBatch] = []
 
-        if
-            call.path == UtilityPallet.batchAllPath,
-            batch.calls.count == 2,
-            AssetConversionPallet.isSwap(batch.calls[0].path),
-            isCollection(batch.calls[1], supportedAssetsPallets: supportedAssetsPallets) {
+        if let commissioned = commissionedCalls(
+            in: batch,
+            path: call.path,
+            supportedAssetsPallets: supportedAssetsPallets
+        ) {
             matches.append(
                 AssetHubCommissionedBatch(
                     effectiveSender: effectiveSender,
                     batchCall: call,
-                    swapCall: batch.calls[0],
-                    commissionCall: batch.calls[1],
+                    swapCall: commissioned.swap,
+                    commissionCall: commissioned.commission,
                     wrappers: wrappers,
                     hasUtilityAncestor: hasUtilityAncestor
                 )

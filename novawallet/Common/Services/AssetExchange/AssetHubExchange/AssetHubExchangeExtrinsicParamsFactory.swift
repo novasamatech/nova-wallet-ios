@@ -71,14 +71,7 @@ private extension AssetHubExchangeExtrinsicParamsFactory {
             throw AssetHubExchangePreparationError.invalidCommission
         }
 
-        let transferPath: CallCodingPath
-
-        switch storageInfo {
-        case .native:
-            transferPath = .transferKeepAlive
-        case let .statemine(info):
-            transferPath = PalletAssets.assetsTransferKeepAlive(for: info.palletName)
-        case .orml, .ormlHydrationEvm, .erc20, .evmNative, .equilibrium:
+        guard let transferPath = SubstrateTransferCommandFactory.preservingTransferPath(for: storageInfo) else {
             throw AssetHubExchangePreparationError.unsupportedStorage
         }
 
