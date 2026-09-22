@@ -2202,7 +2202,6 @@
 		2DA4D5942EB35273006FCCC0 /* EvmGiftTransferSetupWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5932EB35273006FCCC0 /* EvmGiftTransferSetupWireframe.swift */; };
 		2DA4D5AE2EB3579E006FCCC0 /* EvmGiftTransferSetupInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5AD2EB3579E006FCCC0 /* EvmGiftTransferSetupInteractor.swift */; };
 		2DA4D5BD2EB364DA006FCCC0 /* SubstrateTransferCommandFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5BC2EB364DA006FCCC0 /* SubstrateTransferCommandFactory.swift */; };
-		AB0000001B9A7D1F8D1193F2 /* SubstrateTransferCommandFactory+Preservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000001B9A7D1F8D1193F1 /* SubstrateTransferCommandFactory+Preservation.swift */; };
 		2DA4D5C72EB365F1006FCCC0 /* EvmTransferCommandFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5C62EB365F1006FCCC0 /* EvmTransferCommandFactory.swift */; };
 		2DA4D5E62EB36B5B006FCCC0 /* AccumulatedFeeBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5E52EB36B5B006FCCC0 /* AccumulatedFeeBuilder.swift */; };
 		2DA4D5F02EB37596006FCCC0 /* GiftFeeDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA4D5EF2EB37596006FCCC0 /* GiftFeeDescription.swift */; };
@@ -8959,7 +8958,6 @@
 		2DA4D5932EB35273006FCCC0 /* EvmGiftTransferSetupWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmGiftTransferSetupWireframe.swift; sourceTree = "<group>"; };
 		2DA4D5AD2EB3579E006FCCC0 /* EvmGiftTransferSetupInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmGiftTransferSetupInteractor.swift; sourceTree = "<group>"; };
 		2DA4D5BC2EB364DA006FCCC0 /* SubstrateTransferCommandFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateTransferCommandFactory.swift; sourceTree = "<group>"; };
-		AB0000001B9A7D1F8D1193F1 /* SubstrateTransferCommandFactory+Preservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubstrateTransferCommandFactory+Preservation.swift"; sourceTree = "<group>"; };
 		2DA4D5C62EB365F1006FCCC0 /* EvmTransferCommandFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvmTransferCommandFactory.swift; sourceTree = "<group>"; };
 		2DA4D5E52EB36B5B006FCCC0 /* AccumulatedFeeBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccumulatedFeeBuilder.swift; sourceTree = "<group>"; };
 		2DA4D5EF2EB37596006FCCC0 /* GiftFeeDescription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftFeeDescription.swift; sourceTree = "<group>"; };
@@ -18773,7 +18771,6 @@
 			isa = PBXGroup;
 			children = (
 				2DA4D5BC2EB364DA006FCCC0 /* SubstrateTransferCommandFactory.swift */,
-				AB0000001B9A7D1F8D1193F1 /* SubstrateTransferCommandFactory+Preservation.swift */,
 				2DA4D5C62EB365F1006FCCC0 /* EvmTransferCommandFactory.swift */,
 			);
 			path = TransferCommands;
@@ -33031,7 +33028,6 @@
 				77EF9A702B9ECAE00034D619 /* PushNotificationHandlingService.swift in Sources */,
 				0C66102B2A73816000E44634 /* StakingSharedStateFactory.swift in Sources */,
 				2DA4D5BD2EB364DA006FCCC0 /* SubstrateTransferCommandFactory.swift in Sources */,
-				AB0000001B9A7D1F8D1193F2 /* SubstrateTransferCommandFactory+Preservation.swift in Sources */,
 				0C2B18B02BFE3FC600206EDE /* CloudBackupSyncResultChanges+Critical.swift in Sources */,
 				2D86C89B2EBA7A82003325FC /* GiftClaimNavigation.swift in Sources */,
 				77DC54862B1FE5C100C7E45A /* DelegatedAccountSyncService.swift in Sources */,
