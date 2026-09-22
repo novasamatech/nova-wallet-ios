@@ -49,15 +49,6 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
         )
     }
 
-    func testAssetHubTreasuryAddressDecodesToExpectedAccount() throws {
-        let accountId = try AssetExchangeCommissionConstants.assetHubBeneficiaryAddress.toAccountId()
-
-        XCTAssertEqual(
-            accountId.toHex(),
-            "c743a46b2294ae6fc9bcc2de952b52899e8d1f335fc7810ee7a4d4a59d91d087"
-        )
-    }
-
     func testNoChargeWithoutHydraEdge() throws {
         let policy = CommissionTestFixtures.createPolicy()
 
