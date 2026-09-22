@@ -262,6 +262,32 @@ final class AssetsExchangeTests: XCTestCase {
         }
     }
 
+    func testHydrationAaveDOTToADOTEdgeIsAvailable() throws {
+        let params = buildCommonParams()
+        let hydrationChain = try params.chainRegistry.getChainOrError(for: KnowChainId.hydra)
+
+        let dot = try hydrationChain.chainAssetForSymbolOrError("DOT").chainAssetId
+        let aDot = try hydrationChain.chainAssetForSymbolOrError("aDOT").chainAssetId
+
+        guard let graph = createGraph(for: params) else {
+            XCTFail("No graph")
+            return
+        }
+
+        let paths = graph.fetchPaths(from: dot, to: aDot, maxTopPaths: 10)
+        let containsDirectAaveEdge = paths.contains { path in
+            guard path.count == 1, let edge = path.first else {
+                return false
+            }
+
+            return edge.origin == dot &&
+                edge.destination == aDot &&
+                edge.poolId?.identifier.hasPrefix("aave:") == true
+        }
+
+        XCTAssertTrue(containsDirectAaveEdge, "Missing direct Hydration Aave DOT to aDOT edge")
+    }
+
     func testRoutesUSDCDOTHydrationNeverReenterPool() throws {
         let params = buildCommonParams()
 

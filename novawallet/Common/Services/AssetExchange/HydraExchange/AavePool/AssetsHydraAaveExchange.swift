@@ -3,16 +3,16 @@ import Operation_iOS
 
 final class AssetsHydraAaveExchange {
     let host: HydraExchangeHostProtocol
-    let apiOperationFactory: HydraAaveTradeExecutorFactoryProtocol
+    let flowState: HydraAaveFlowState
     let quoteFactory: HydraAaveSwapQuoteFactory
 
     init(
         host: HydraExchangeHostProtocol,
-        apiOperationFactory: HydraAaveTradeExecutorFactoryProtocol,
+        flowState: HydraAaveFlowState,
         quoteFactory: HydraAaveSwapQuoteFactory
     ) {
         self.host = host
-        self.apiOperationFactory = apiOperationFactory
+        self.flowState = flowState
         self.quoteFactory = quoteFactory
     }
 }
@@ -79,7 +79,7 @@ private extension AssetsHydraAaveExchange {
 
 extension AssetsHydraAaveExchange: AssetsExchangeProtocol {
     func availableDirectSwapConnections() -> CompoundOperationWrapper<[any AssetExchangableGraphEdge]> {
-        let allPairsWrapper = apiOperationFactory.createAaveTradePairs()
+        let allPairsWrapper = flowState.createPairsWrapper()
 
         let edgesWrapper = createEdgesWrapper(dependingOn: allPairsWrapper.targetOperation)
 
