@@ -3,6 +3,11 @@ import Operation_iOS
 import SubstrateSdk
 import BigInt
 
+enum SubstratePreservingTransferError: Error {
+    case concreteAmountRequired
+    case unsupportedStorage
+}
+
 final class SubstrateTransferCommandFactory {
     private lazy var callFactory = SubstrateCallFactory()
 
@@ -51,6 +56,60 @@ final class SubstrateTransferCommandFactory {
         case .erc20, .evmNative:
             // EVM transfers have a separate flow
             return (builder, nil)
+        }
+    }
+
+    func addingTransferCommand(
+        to builder: ExtrinsicBuilderProtocol,
+        amount: OnChainTransferAmount<BigUInt>,
+        recipient: AccountId,
+        assetStorageInfo: AssetStorageInfo,
+        preservingAccount: Bool
+    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
+        guard preservingAccount else {
+            return try addingTransferCommand(
+                to: builder,
+                amount: amount,
+                recipient: recipient,
+                assetStorageInfo: assetStorageInfo
+            )
+        }
+
+        guard case let .concrete(value) = amount else {
+            throw SubstratePreservingTransferError.concreteAmountRequired
+        }
+
+        guard let callPath = Self.preservingTransferPath(for: assetStorageInfo) else {
+            throw SubstratePreservingTransferError.unsupportedStorage
+        }
+
+        switch assetStorageInfo {
+        case .native:
+            let call = callFactory.nativeTransfer(to: recipient, amount: value, callPath: callPath)
+
+            return (try builder.adding(call: call), callPath)
+        case let .statemine(info):
+            let call = callFactory.assetsTransfer(
+                to: recipient,
+                info: info,
+                amount: value,
+                callPath: callPath
+            )
+
+            return (try builder.adding(call: call), callPath)
+        case .orml, .ormlHydrationEvm, .erc20, .evmNative, .equilibrium:
+            throw SubstratePreservingTransferError.unsupportedStorage
+        }
+    }
+
+    static func preservingTransferPath(for assetStorageInfo: AssetStorageInfo) -> CallCodingPath? {
+        switch assetStorageInfo {
+        case .native:
+            return .transferKeepAlive
+        case let .statemine(info):
+            return PalletAssets.assetsTransferKeepAlive(for: info.palletName)
+        case .orml, .ormlHydrationEvm, .erc20, .evmNative, .equilibrium:
+            return nil
         }
     }
 }
@@ -179,7 +238,8 @@ private extension SubstrateTransferCommandFactory {
         let call = callFactory.assetsTransfer(
             to: recipient,
             info: info,
-            amount: amount.value
+            amount: amount.value,
+            callPath: PalletAssets.assetsTransfer(for: info.palletName)
         )
 
         let newBuilder = try builder.adding(call: call)
