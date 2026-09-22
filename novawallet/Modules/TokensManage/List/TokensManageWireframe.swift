@@ -1,5 +1,4 @@
 import Foundation
-import UIKit_iOS
 
 final class TokensManageWireframe: TokensManageWireframeProtocol {
     func showAddToken(from view: TokensManageViewProtocol?) {
@@ -11,21 +10,5 @@ final class TokensManageWireframe: TokensManageWireframeProtocol {
             networkSelectionView.controller,
             animated: true
         )
-    }
-
-    func showEditToken(
-        from view: TokensManageViewProtocol?,
-        token: MultichainToken,
-        allChains: [ChainModel.Id: ChainModel]
-    ) {
-        guard let editView = TokenManageSingleViewFactory.createView(for: token, chains: allChains) else {
-            return
-        }
-
-        let factory = ModalSheetPresentationFactory(configuration: .novaManual)
-        editView.controller.modalTransitioningFactory = factory
-        editView.controller.modalPresentationStyle = .custom
-
-        view?.controller.present(editView.controller, animated: true, completion: nil)
     }
 }

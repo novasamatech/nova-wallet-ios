@@ -47,6 +47,8 @@ struct TokensManageAddViewFactory {
             priceIdParser: CoingeckoUrlParser(),
             priceOperationFactory: CoingeckoOperationFactory(),
             chainRepository: repository,
+            selectedWalletSettings: SelectedWalletSettings.shared,
+            visibilityWriter: AssetVisibilityWriter.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }

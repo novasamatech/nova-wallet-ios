@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import NovaAnalytics
 
 final class SwapExecutionPresenter {
     weak var view: SwapExecutionViewProtocol?
@@ -49,6 +50,8 @@ final class SwapExecutionPresenter {
 
     private var state: SwapExecutionState?
     private var execTimer: CountdownTimer?
+
+    var executionStartedAt: Date?
 
     init(
         model: SwapExecutionModel,
@@ -274,6 +277,8 @@ extension SwapExecutionPresenter: SwapExecutionPresenterProtocol {
 
         updateInProgressStateIfNeeded(for: 0)
 
+        executionStartedAt = Date()
+
         interactor.submit(using: model.fee)
     }
 
@@ -345,9 +350,13 @@ extension SwapExecutionPresenter: SwapExecutionInteractorOutputProtocol {
 
     func didCompleteFullExecution(received _: Balance) {
         updateCompletedStateIfNeeded()
+
+        trackSwapCompleted()
     }
 
     func didFailExecution(with error: Error) {
+        trackAnalytics(.swapFailed(reason: error.analyticsSwapFailureReason))
+
         updateFailedStateIfNeeded(with: error)
 
         _ = wireframe.handleExtrinsicSigningErrorPresentation(

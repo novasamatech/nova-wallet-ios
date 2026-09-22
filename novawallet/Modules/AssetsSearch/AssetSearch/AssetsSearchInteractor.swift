@@ -8,6 +8,7 @@ final class AssetsSearchInteractor {
 
     let stateObservable: AssetListModelObservable
     let filter: ChainAssetsFilter?
+    let includesHiddenAssets: Bool
     let logger: LoggerProtocol
 
     let settingsManager: SettingsManagerProtocol
@@ -17,11 +18,13 @@ final class AssetsSearchInteractor {
     init(
         stateObservable: AssetListModelObservable,
         filter: ChainAssetsFilter?,
+        includesHiddenAssets: Bool,
         settingsManager: SettingsManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.stateObservable = stateObservable
         self.filter = filter
+        self.includesHiddenAssets = includesHiddenAssets
         self.settingsManager = settingsManager
         self.logger = logger
     }
@@ -42,6 +45,7 @@ extension AssetsSearchInteractor: AssetsSearchInteractorInputProtocol {
 
         builder = .init(
             filter: filter,
+            includesHiddenAssets: includesHiddenAssets,
             workingQueue: .init(
                 label: AssetsSearchInteractor.workingQueueLabel,
                 qos: .userInteractive

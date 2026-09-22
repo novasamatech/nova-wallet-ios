@@ -33,19 +33,22 @@ extension AssetListModelHelpers {
         }
     }
 
-    static var assetListAssetGroupSortingBlock: (
-        AssetListAssetGroupModel,
-        AssetListAssetGroupModel
-    ) -> Bool = { lhs, rhs in
-        if let result = AssetListGroupModelComparator.by(\.value, lhs, rhs) {
-            result
-        } else if let result = AssetListGroupModelComparator.by(\.amount, lhs, rhs) {
-            result
-        } else {
-            AssetListGroupModelComparator.defaultComparator(
-                lhs: lhs,
-                rhs: rhs
-            )
+    static func assetListAssetGroupSortingBlock(
+        rank: [ChainAssetId: Int]
+    ) -> (AssetListAssetGroupModel, AssetListAssetGroupModel) -> Bool {
+        { lhs, rhs in
+            if let result = AssetListGroupModelComparator.by(\.value, lhs, rhs) {
+                result
+            } else if let result = AssetListGroupModelComparator.by(\.amount, lhs, rhs) {
+                result
+            } else if let result = AssetListGroupModelComparator.byDefaultRank(rank, lhs, rhs) {
+                result
+            } else {
+                AssetListGroupModelComparator.defaultComparator(
+                    lhs: lhs,
+                    rhs: rhs
+                )
+            }
         }
     }
 

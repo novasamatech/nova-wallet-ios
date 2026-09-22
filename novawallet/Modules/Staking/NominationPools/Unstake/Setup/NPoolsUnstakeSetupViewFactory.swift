@@ -41,6 +41,7 @@ struct NPoolsUnstakeSetupViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatorFactory: dataValidatingFactory,
             stakingActivity: stakingActivity,
+            stakingType: StakingType.nominationPools.analyticsType,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )

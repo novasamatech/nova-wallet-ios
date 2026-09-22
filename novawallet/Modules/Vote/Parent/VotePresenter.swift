@@ -1,6 +1,6 @@
 import Foundation
 
-final class VotePresenter {
+final class VotePresenter: AnalyticsTracking {
     weak var view: VoteViewProtocol?
 
     let interactor: VoteInteractorInputProtocol
@@ -91,6 +91,15 @@ extension VotePresenter: VotePresenterProtocol {
         }
         if view?.isSetup == true {
             view?.didReceive(voteType: .governance)
+        }
+    }
+
+    func didOpen(voteType: VoteType) {
+        switch voteType {
+        case .governance:
+            trackFeatureOpened(.governance)
+        case .crowdloan:
+            trackFeatureOpened(.crowdloans)
         }
     }
 }

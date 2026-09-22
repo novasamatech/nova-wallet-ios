@@ -1,7 +1,8 @@
 import Foundation
+import NovaAnalytics
 import Operation_iOS
 
-final class NftListPresenter {
+final class NftListPresenter: AnalyticsTracking {
     weak var view: NftListViewProtocol?
     let wireframe: NftListWireframeProtocol
     let interactor: NftListInteractorInputProtocol
@@ -34,6 +35,8 @@ final class NftListPresenter {
 
 extension NftListPresenter: NftListPresenterProtocol {
     func setup() {
+        trackFeatureOpened(.nft)
+
         interactor.setup()
     }
 
@@ -78,6 +81,10 @@ extension NftListPresenter: NftListInteractorOutputProtocol {
 
         viewModels.apply(changes: viewModelChanges)
         view?.didReceive(changes: viewModels.lastDifferences)
+    }
+
+    func didReceiveNftSnapshot(count: Int) {
+        trackAnalytics(.nftSectionOpened(count: NftCountBucket(count: count)))
     }
 
     func didReceive(error: Error) {

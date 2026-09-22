@@ -55,9 +55,7 @@ final class EvmNativeBalanceUpdatingService: AssetBalanceBatchBaseUpdatingServic
             return
         }
 
-        let optAssetId = chain.assets.first { asset in
-            asset.isEvmNative && asset.enabled
-        }?.assetId
+        let optAssetId = chain.assets.first { $0.isEvmNative }?.assetId
 
         guard subscribedAssets[chain.chainId] != optAssetId else {
             return

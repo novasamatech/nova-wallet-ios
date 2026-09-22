@@ -24,6 +24,7 @@ enum SettingsRow {
     case backup
     case networks
     case appearance
+    case privacy
 }
 
 extension SettingsRow {
@@ -74,6 +75,8 @@ extension SettingsRow {
             R.string(preferredLanguages: locale.rLanguages).localizable.connectionManagementTitle()
         case .appearance:
             R.string(preferredLanguages: locale.rLanguages).localizable.settingsAppearance()
+        case .privacy:
+            R.string(preferredLanguages: locale.rLanguages).localizable.settingsPrivacyTitle()
         }
     }
 
@@ -123,6 +126,8 @@ extension SettingsRow {
             R.image.iconNetworks()
         case .appearance:
             R.image.iconAppearance()
+        case .privacy:
+            R.image.iconAnalyticsPrivacyShield()
         }
     }
 }

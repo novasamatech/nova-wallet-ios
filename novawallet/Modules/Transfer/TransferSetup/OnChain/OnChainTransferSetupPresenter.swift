@@ -13,6 +13,7 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
 
     let phishingValidatingFactory: PhishingAddressValidatorFactoryProtocol
     let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
+    let analyticsFlow: TransferAnalyticsFlow
 
     var inputResult: AmountInputResult?
 
@@ -30,6 +31,7 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
         dataValidatingFactory: TransferDataValidatorFactoryProtocol,
         phishingValidatingFactory: PhishingAddressValidatorFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
+        analyticsFlow: TransferAnalyticsFlow,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -38,6 +40,7 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
         partialRecepientAddress = initialState.recepient
         inputResult = initialState.amount
         self.phishingValidatingFactory = phishingValidatingFactory
+        self.analyticsFlow = analyticsFlow
 
         super.init(
             chainAsset: chainAsset,
@@ -436,6 +439,8 @@ extension OnChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
             }
 
             logger?.debug("Did complete validation")
+
+            trackSendInitiated(amount: amountValue)
 
             let amount: OnChainTransferAmount<Decimal>
 

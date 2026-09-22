@@ -36,6 +36,8 @@ struct CustomNetworkViewFactory {
         let setupFinishStrategyFactory = CustomNetworkSetupFinishStrategyFactory(
             chainRegistry: chainRegistry,
             repository: repository,
+            selectedWalletSettings: SelectedWalletSettings.shared,
+            visibilityWriter: AssetVisibilityWriter.shared,
             operationQueue: operationQueue
         )
 
@@ -109,6 +111,8 @@ struct CustomNetworkViewFactory {
         let setupFinishStrategyFactory = CustomNetworkSetupFinishStrategyFactory(
             chainRegistry: chainRegistry,
             repository: repository,
+            selectedWalletSettings: SelectedWalletSettings.shared,
+            visibilityWriter: AssetVisibilityWriter.shared,
             operationQueue: operationQueue
         )
 

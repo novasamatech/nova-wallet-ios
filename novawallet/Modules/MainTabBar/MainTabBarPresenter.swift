@@ -1,7 +1,7 @@
 import Foundation
 import Foundation_iOS
 
-final class MainTabBarPresenter {
+final class MainTabBarPresenter: AnalyticsTracking {
     weak var view: MainTabBarViewProtocol?
     var interactor: MainTabBarInteractorInputProtocol!
     var wireframe: MainTabBarWireframeProtocol!
@@ -18,6 +18,18 @@ extension MainTabBarPresenter: MainTabBarPresenterProtocol {
     }
 
     func viewDidAppear() {}
+
+    func didSelectTab(at index: Int) {
+        guard let tab = MainTabBarIndex.analyticsTab(for: index) else {
+            return
+        }
+
+        trackTabSwitched(to: tab)
+
+        if let feature = MainTabBarIndex.analyticsFeature(for: index) {
+            trackFeatureOpened(feature)
+        }
+    }
 
     func activateStatusAction() {
         wireframe.presentCloudBackupSettings(from: view)
@@ -120,6 +132,21 @@ extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
         case .unknown:
             break
         }
+    }
+
+    func didRequestAnalyticsConsentOpen() {
+        wireframe.presentAnalyticsConsent(
+            from: view,
+            onEnable: { [weak self] in
+                self?.interactor.setAnalyticsConsent(enabled: true)
+            },
+            onDecline: { [weak self] in
+                self?.interactor.setAnalyticsConsent(enabled: false)
+            },
+            onUnavailable: { [weak self] in
+                self?.interactor.requestNextOnLaunchAction()
+            }
+        )
     }
 
     func didRequestLegalConsentOpen() {
