@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import NovaAnalytics
 
 final class MythosStkUnstakeConfirmPresenter {
     weak var view: CollatorStkUnstakeConfirmViewProtocol?
@@ -12,7 +13,10 @@ final class MythosStkUnstakeConfirmPresenter {
     let dataValidatingFactory: MythosStakingValidationFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let hintViewModelFactory: CollatorStakingHintsViewModelFactoryProtocol
+    let stakingType: StakingAnalyticsType
     let logger: LoggerProtocol
+
+    var submittedAmount: Balance?
 
     private(set) var fee: ExtrinsicFeeProtocol?
     private(set) var balance: AssetBalance?
@@ -36,6 +40,7 @@ final class MythosStkUnstakeConfirmPresenter {
         dataValidatingFactory: MythosStakingValidationFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         hintViewModelFactory: CollatorStakingHintsViewModelFactoryProtocol,
+        stakingType: StakingAnalyticsType,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -47,6 +52,7 @@ final class MythosStkUnstakeConfirmPresenter {
         self.dataValidatingFactory = dataValidatingFactory
         self.balanceViewModelFactory = balanceViewModelFactory
         self.hintViewModelFactory = hintViewModelFactory
+        self.stakingType = stakingType
         self.logger = logger
 
         self.localizationManager = localizationManager
@@ -179,6 +185,8 @@ final class MythosStkUnstakeConfirmPresenter {
         guard let model = getUnstakingModel() else {
             return
         }
+
+        submittedAmount = model.amount
 
         interactor.submit(model: model)
     }
@@ -330,6 +338,8 @@ extension MythosStkUnstakeConfirmPresenter: MythosStkUnstakeConfirmInteractorOut
 
         switch result {
         case let .success(model):
+            trackUnstakeEvent(AnalyticsEvent.unstakeCompleted)
+
             wireframe.presentExtrinsicSubmission(
                 from: view,
                 sender: model.sender,
@@ -337,6 +347,8 @@ extension MythosStkUnstakeConfirmPresenter: MythosStkUnstakeConfirmInteractorOut
                 locale: selectedLocale
             )
         case let .failure(error):
+            trackUnstakeFailure(for: error)
+
             wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
                 error,
                 view: view,

@@ -1,7 +1,34 @@
 import Foundation
 import Foundation_iOS
+import NovaAnalytics
 
 final class AccountImportPresenter: BaseAccountImportPresenter {
+    private let abandonTracker: AnalyticsAbandonTracker
+
+    override init(
+        secretSource: SecretSource,
+        metadataFactory: AccountImportMetadataFactoryProtocol
+    ) {
+        let lastStep: WalletCreationStep = switch secretSource {
+        case .keystore:
+            .jsonUpload
+        case .mnemonic, .seed:
+            .seedEntry
+        }
+
+        abandonTracker = AnalyticsAbandonTracker {
+            AnalyticsEvent.walletCreationAbandoned(lastStep: lastStep)
+        }
+
+        super.init(secretSource: secretSource, metadataFactory: metadataFactory)
+    }
+
+    override func didCompleteAccountImport() {
+        abandonTracker.markProceeded()
+
+        super.didCompleteAccountImport()
+    }
+
     override func processProceed() {
         guard
             let selectedCryptoType = selectedCryptoType,

@@ -10,6 +10,12 @@ final class MainTabBarViewController: UITabBarController {
 
     var syncStatus: SharedSyncStatus = .disabled
 
+    override var selectedIndex: Int {
+        didSet {
+            presenter.didSelectTab(at: selectedIndex)
+        }
+    }
+
     init(
         presenter: MainTabBarPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
@@ -43,6 +49,7 @@ final class MainTabBarViewController: UITabBarController {
         if !viewAppeared {
             viewAppeared = true
             presenter.setup()
+            presenter.didSelectTab(at: selectedIndex)
         }
 
         presenter.viewDidAppear()
@@ -85,6 +92,13 @@ extension MainTabBarViewController: UITabBarControllerDelegate {
         }
 
         return true
+    }
+
+    func tabBarController(
+        _: UITabBarController,
+        didSelect _: UIViewController
+    ) {
+        presenter.didSelectTab(at: selectedIndex)
     }
 }
 

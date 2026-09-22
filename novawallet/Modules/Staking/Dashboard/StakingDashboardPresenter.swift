@@ -1,8 +1,9 @@
 import Foundation
 import Operation_iOS
 import Foundation_iOS
+import NovaAnalytics
 
-final class StakingDashboardPresenter {
+final class StakingDashboardPresenter: AnalyticsTracking {
     weak var view: StakingDashboardViewProtocol?
     let wireframe: StakingDashboardWireframeProtocol
     let interactor: StakingDashboardInteractorInputProtocol
@@ -111,6 +112,12 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
         guard let item = lastResult?.model.inactive[index] else {
             return
         }
+
+        let event = item.chainAsset.chain.analyticsNetworkName.map { network in
+            AnalyticsEvent.stakingFlowOpened(network: network, source: .dashboard)
+        }
+
+        trackAnalytics(event)
 
         wireframe.showStartStaking(from: view, chainAsset: item.chainAsset)
     }

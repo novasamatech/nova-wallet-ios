@@ -1,8 +1,9 @@
 import Foundation
 import Foundation_iOS
 import BigInt
+import NovaAnalytics
 
-class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, StartStakingInfoPresenterProtocol {
+class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, StartStakingInfoPresenterProtocol, AnalyticsTracking {
     weak var view: StartStakingInfoViewProtocol?
     let wireframe: StartStakingInfoWireframeProtocol
     let baseInteractor: StartStakingInfoInteractorInputProtocol
@@ -13,6 +14,10 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     let logger: LoggerProtocol
     let accountManagementFilter: AccountManagementFilterProtocol
     let announcementViewModelFactory: AnnouncementViewModelFactoryProtocol
+
+    private let abandonTracker = AnalyticsAbandonTracker {
+        AnalyticsEvent.stakingAbandoned(stage: .landing)
+    }
 
     private(set) var price: PriceData?
     private(set) var accountExistense: AccountExistense?
@@ -215,6 +220,8 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     // MARK: - StartStakingInfoPresenterProtocol
 
     func setup() {
+        trackFeatureOpened(.staking)
+
         baseInteractor.setup()
     }
 
@@ -257,6 +264,8 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         case .noAccount:
             showNoAccountAlert()
         case .assetBalance:
+            abandonTracker.markProceeded()
+
             wireframe.showSetupAmount(from: view)
         }
     }

@@ -102,6 +102,7 @@ private extension MainTabBarViewFactory {
             inAppUpdatesService: inAppUpdatesService,
             settingsManager: settingsManager,
             legalConsentRepository: LegalConsentRepository.shared,
+            analyticsConsent: AnalyticsFacadeFactory.createDefault().consent,
             walletSettings: SelectedWalletSettings.shared,
             operationQueue: operationQueue,
             logger: logger
