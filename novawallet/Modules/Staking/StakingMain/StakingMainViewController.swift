@@ -94,6 +94,10 @@ private extension StakingMainViewController {
         rootView.ahmAlertView.learnMoreAction = { [weak self] _ in
             self?.presenter.handleAHMAlertLearnMore()
         }
+
+        rootView.announcementView.onLinkTap = { [weak self] in
+            self?.presenter.selectAnnouncementLink()
+        }
     }
 
     func setupLocalization() {

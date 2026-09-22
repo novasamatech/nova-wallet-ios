@@ -47,6 +47,8 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
         balanceLabel
     ])
 
+    var onAnnouncementLinkTap: (() -> Void)?
+
     private var announcementView: InlineAlertView?
     private var announcementViewModel: AnnouncementViewModel?
     private var appliedFooterExtra: CGFloat = 0
@@ -141,6 +143,9 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
                 banner = announcementView
             } else {
                 banner = InlineAlertView()
+                banner.onLinkTap = { [weak self] in
+                    self?.onAnnouncementLinkTap?()
+                }
                 footerContentView.insertArrangedSubview(banner, at: 0)
                 announcementView = banner
             }
@@ -157,7 +162,7 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
     private func updateFooterHeightIfNeeded() {
         let bannerHeight = announcementViewModel.map {
             InlineAlertView.estimatedHeight(
-                for: $0.message,
+                for: $0,
                 width: bounds.width - 2 * Constants.footerInsets.left
             )
         }

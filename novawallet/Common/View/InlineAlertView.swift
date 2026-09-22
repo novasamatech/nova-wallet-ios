@@ -2,23 +2,35 @@ import UIKit
 import UIKit_iOS
 
 final class InlineAlertView: UIView {
-    let backgroundView: RoundedView = {
-        let view = RoundedView()
-        view.applyFilledBackgroundStyle()
-        view.cornerRadius = 10.0
-        return view
-    }()
+    let backgroundView: RoundedView = .create {
+        $0.applyFilledBackgroundStyle()
+        $0.cornerRadius = 10.0
+    }
 
-    let contentView: IconDetailsView = {
-        let view = IconDetailsView()
-        view.mode = .iconDetails
-        view.detailsLabel.numberOfLines = 0
-        view.iconWidth = Constants.iconWidth
-        view.detailsLabel.textColor = R.color.colorTextPrimary()
-        view.detailsLabel.font = .caption1
-        view.spacing = Constants.iconTextSpacing
-        return view
-    }()
+    let contentView: IconDetailsView = .create {
+        $0.mode = .iconDetails
+        $0.detailsLabel.numberOfLines = 0
+        $0.iconWidth = Constants.iconWidth
+        $0.detailsLabel.textColor = R.color.colorTextPrimary()
+        $0.detailsLabel.font = .caption1
+        $0.spacing = Constants.iconTextSpacing
+    }
+
+    var onLinkTap: (() -> Void)?
+
+    private let stackView: UIStackView = .create {
+        $0.axis = .vertical
+        $0.alignment = .fill
+        $0.spacing = Constants.linkTopSpacing
+    }
+
+    private let linkContainerView: UIView = .create {
+        $0.isHidden = true
+    }
+
+    private let linkButton: UIButton = .create {
+        $0.contentHorizontalAlignment = .leading
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -26,6 +38,7 @@ final class InlineAlertView: UIView {
         backgroundColor = .clear
 
         setupLayout()
+        setupHandlers()
     }
 
     @available(*, unavailable)
@@ -39,11 +52,29 @@ final class InlineAlertView: UIView {
             make.edges.equalToSuperview()
         }
 
-        addSubview(contentView)
-        contentView.snp.makeConstraints { make in
+        addSubview(stackView)
+        stackView.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview().inset(Constants.verticalContentInset)
             make.leading.trailing.equalToSuperview().inset(Constants.horizontalContentInset)
         }
+
+        stackView.addArrangedSubview(contentView)
+        stackView.addArrangedSubview(linkContainerView)
+
+        linkContainerView.addSubview(linkButton)
+        linkButton.snp.makeConstraints { make in
+            make.top.bottom.trailing.equalToSuperview()
+            make.leading.equalToSuperview().offset(Constants.iconWidth + Constants.iconTextSpacing)
+            make.height.equalTo(Constants.linkRowHeight).priority(.high)
+        }
+    }
+
+    private func setupHandlers() {
+        linkButton.addTarget(self, action: #selector(actionLinkTap), for: .touchUpInside)
+    }
+
+    @objc private func actionLinkTap() {
+        onLinkTap?()
     }
 }
 
@@ -62,6 +93,16 @@ extension InlineAlertView {
         }
 
         contentView.stackView.alignment = .top
+    }
+
+    func setLink(title: String?) {
+        guard let title else {
+            linkContainerView.isHidden = true
+            return
+        }
+
+        linkButton.bindLearnMore(learnMoreText: title, style: .caption1Secondary)
+        linkContainerView.isHidden = false
     }
 
     static func warning() -> InlineAlertView {
@@ -108,20 +149,24 @@ extension InlineAlertView {
         static let verticalContentInset: CGFloat = 10
         static let iconWidth: CGFloat = 16
         static let iconTextSpacing: CGFloat = 12
+        static let linkRowHeight: CGFloat = 32
+        static let linkTopSpacing: CGFloat = 4
     }
 
-    static func estimatedHeight(for message: String, width: CGFloat) -> CGFloat {
+    static func estimatedHeight(for message: String, width: CGFloat, hasLink: Bool) -> CGFloat {
         let minHeight = Constants.iconWidth + 2 * Constants.verticalContentInset
 
         let textWidth = width - 2 * Constants.horizontalContentInset
             - Constants.iconWidth - Constants.iconTextSpacing
 
+        let linkHeight = hasLink ? Constants.linkTopSpacing + Constants.linkRowHeight : 0
+
         guard textWidth > 0 else {
-            return minHeight
+            return minHeight + linkHeight
         }
 
         let textHeight = message.estimateHeight(for: .caption1, width: textWidth)
 
-        return max(ceil(textHeight) + 2 * Constants.verticalContentInset, minHeight)
+        return max(ceil(textHeight) + 2 * Constants.verticalContentInset, minHeight) + linkHeight
     }
 }

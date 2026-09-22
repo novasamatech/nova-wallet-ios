@@ -63,7 +63,7 @@ private extension AssetHubExchangeAtomicOperationTests {
         swap: AssetHubExchangeSwapParams.Swap,
         commission: Balance?
     ) throws -> AssetHubExchangeSwapParams {
-        return AssetHubExchangeSwapParams(
+        AssetHubExchangeSwapParams(
             callArgs: .init(
                 assetIn: ChainAssetId(chainId: "0", assetId: 0),
                 amountIn: 1_000_000,

@@ -5668,6 +5668,7 @@
 		8814E858297E35D600A722FF /* GoveranaceDelegatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8814E857297E35D600A722FF /* GoveranaceDelegatePicker.swift */; };
 		881BA30529DBCB8100EB8C48 /* Web3NameIntegrityVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881BA30429DBCB8100EB8C48 /* Web3NameIntegrityVerifier.swift */; };
 		881BA30729DBCD6300EB8C48 /* Web3NameIntegrityVerifierTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881BA30629DBCD6300EB8C48 /* Web3NameIntegrityVerifierTests.swift */; };
+		5A1F0A022F1000000000E101 /* AnnouncementsRemoteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A1F0A012F1000000000E101 /* AnnouncementsRemoteTests.swift */; };
 		084A55D813829148011F4361 /* StubAssetExchangeEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DFAF629AA835CCB05AB8455 /* StubAssetExchangeEdge.swift */; };
 		4B1233664B97FD871610C205 /* CommissionTestFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D7635ED1643441A64783F63 /* CommissionTestFixtures.swift */; };
 		3185E9401279423ECA14DC29 /* AssetExchangeCommissionPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FB3A2AC2F2A632BA150650 /* AssetExchangeCommissionPolicyTests.swift */; };
@@ -12120,6 +12121,7 @@
 		8814E857297E35D600A722FF /* GoveranaceDelegatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoveranaceDelegatePicker.swift; sourceTree = "<group>"; };
 		881BA30429DBCB8100EB8C48 /* Web3NameIntegrityVerifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3NameIntegrityVerifier.swift; sourceTree = "<group>"; };
 		881BA30629DBCD6300EB8C48 /* Web3NameIntegrityVerifierTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3NameIntegrityVerifierTests.swift; sourceTree = "<group>"; };
+		5A1F0A012F1000000000E101 /* AnnouncementsRemoteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnouncementsRemoteTests.swift; sourceTree = "<group>"; };
 		1DFAF629AA835CCB05AB8455 /* StubAssetExchangeEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubAssetExchangeEdge.swift; sourceTree = "<group>"; };
 		3D7635ED1643441A64783F63 /* CommissionTestFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommissionTestFixtures.swift; sourceTree = "<group>"; };
 		F2FB3A2AC2F2A632BA150650 /* AssetExchangeCommissionPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeCommissionPolicyTests.swift; sourceTree = "<group>"; };
@@ -22783,6 +22785,7 @@
 				84300B2D26C110C400D64514 /* ChainRegistry */,
 				8454C2822632FC2500657DAD /* ExtrinsicProcessingTests.swift */,
 				881BA30629DBCD6300EB8C48 /* Web3NameIntegrityVerifierTests.swift */,
+				5A1F0A012F1000000000E101 /* AnnouncementsRemoteTests.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -37895,6 +37898,7 @@
 				84FACB1F25F55EC900F32ED4 /* RuntimeCodingServiceStub.swift in Sources */,
 				84B7C715289BFA79001A3566 /* AccountExportPasswordTests.swift in Sources */,
 				881BA30729DBCD6300EB8C48 /* Web3NameIntegrityVerifierTests.swift in Sources */,
+				5A1F0A022F1000000000E101 /* AnnouncementsRemoteTests.swift in Sources */,
 				84B7C729289BFA79001A3566 /* StartSelectValidatorsTests.swift in Sources */,
 				84B7C737289BFA79001A3566 /* StakingBondMoreTests.swift in Sources */,
 				0CE9B71A2DE74165007C7F5A /* LedgerEvmSignatureTest.swift in Sources */,
