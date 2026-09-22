@@ -13,14 +13,11 @@ protocol BlockTimeOperationFactoryProtocol {
 }
 
 final class BlockTimeOperationFactory {
-    static let callibrationSeqSize: Int = 10
+    static let callibrationSeqSize: BlockTime = 10
     static let fallbackBlockRelaychainTime: BlockTime = 6000
     static let fallbackBlockParachainTime: BlockTime = 2 * 6000
     static let fallbackThreshold: BlockTime = 500
 
-    /// Sampled block time is trusted only while it stays within this factor of the block time declared in the chain
-    /// config. The config is maintained remotely, whereas a sampling flaw (or a stale sample persisted before a runtime
-    /// upgrade) needs an app release to fix, so the config wins when the two disagree by this much.
     static let configuredBlockTimeToleranceFactor: BlockTime = 2
 
     let chain: ChainModel
@@ -65,39 +62,6 @@ final class BlockTimeOperationFactory {
     }
 }
 
-extension BlockTimeOperationFactory {
-    /// Blends on-device `estimated` block time with the `expected` one from constants/config: the more windows were
-    /// sampled (up to `callibrationSeqSize`) the more weight the samples get. When the chain config declares
-    /// `configured` block time, samples that are implausible against it are discarded and the configured value is used.
-    static func predictBlockTime(
-        estimated: EstimatedBlockTime,
-        expected: BlockTime,
-        configured: BlockTime?
-    ) -> BlockTime {
-        guard estimated.seqSize > 0 else {
-            return expected
-        }
-
-        if let configured, !isPlausible(sampled: estimated.blockTime, against: configured) {
-            return configured
-        }
-
-        let boundedSeqSize = BlockTime(min(estimated.seqSize, callibrationSeqSize))
-        let calibrationSize = BlockTime(callibrationSeqSize)
-        let estimatedPart = boundedSeqSize * estimated.blockTime
-        let constantsPart = (calibrationSize - boundedSeqSize) * expected
-
-        return (estimatedPart + constantsPart) / calibrationSize
-    }
-
-    private static func isPlausible(sampled: BlockTime, against configured: BlockTime) -> Bool {
-        let lowerBound = configured / configuredBlockTimeToleranceFactor
-        let upperBound = configured * configuredBlockTimeToleranceFactor
-
-        return (lowerBound ... upperBound).contains(sampled)
-    }
-}
-
 extension BlockTimeOperationFactory: BlockTimeOperationFactoryProtocol {
     func createBlockTimeOperation(
         from runtimeService: RuntimeCodingServiceProtocol,
@@ -114,17 +78,24 @@ extension BlockTimeOperationFactory: BlockTimeOperationFactoryProtocol {
 
         expectedWrapper.addDependency(operations: [codingFactoryOperation])
 
-        let configuredBlockTime = chain.defaultBlockTimeMillis
-
         let mapOperation = ClosureOperation<BlockTime> {
-            let estimatedBlockTime = try estimatedOperation.extractNoCancellableResultData()
+            let estimatedBlockTimeValue = try estimatedOperation.extractNoCancellableResultData()
             let expectedBlockTime = try expectedWrapper.targetOperation.extractNoCancellableResultData()
+                .timeInterval
 
-            return Self.predictBlockTime(
-                estimated: estimatedBlockTime,
-                expected: expectedBlockTime,
-                configured: configuredBlockTime
-            )
+            if let configuredBlockTime = self.chain.defaultBlockTimeMillis,
+               estimatedBlockTimeValue.blockTime < configuredBlockTime / Self.configuredBlockTimeToleranceFactor ||
+               estimatedBlockTimeValue.blockTime > configuredBlockTime * Self.configuredBlockTimeToleranceFactor {
+                return configuredBlockTime
+            }
+
+            let boundedSeqSize = min(BlockTime(estimatedBlockTimeValue.seqSize), Self.callibrationSeqSize)
+            let estimatedPart = TimeInterval(boundedSeqSize) * estimatedBlockTimeValue.blockTime.timeInterval
+            let constantsPart = TimeInterval(Self.callibrationSeqSize - boundedSeqSize) * expectedBlockTime
+
+            let resultTimeInterval = (estimatedPart + constantsPart) / TimeInterval(Self.callibrationSeqSize)
+
+            return BlockTime(resultTimeInterval.milliseconds)
         }
 
         mapOperation.addDependency(expectedWrapper.targetOperation)

@@ -6662,8 +6662,6 @@
 		000000007CF9135B4D967A7E /* AssetExchangeTradeLimitVerdict.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000007FF0D316D4074BC0 /* AssetExchangeTradeLimitVerdict.swift */; };
 		000000002384221D1527B8A1 /* SwapPoolTradeLimitCheck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000004024BA48453ACABB /* SwapPoolTradeLimitCheck.swift */; };
 		000000006C043D814E99B2D6 /* SwapDataValidatorFactory+PoolTradeLimit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0000000044697AEF01295519 /* SwapDataValidatorFactory+PoolTradeLimit.swift */; };
-		BC3645153AC229B84BBDE410 /* BlockTimeSampling.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6896646632BE286955228B9 /* BlockTimeSampling.swift */; };
-		EAF644F9999DE939E76E152D /* BlockTimeSamplingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4260BB7E6A3C5ED86FB20 /* BlockTimeSamplingTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -13067,8 +13065,6 @@
 		000000007FF0D316D4074BC0 /* AssetExchangeTradeLimitVerdict.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeTradeLimitVerdict.swift; sourceTree = "<group>"; };
 		000000004024BA48453ACABB /* SwapPoolTradeLimitCheck.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapPoolTradeLimitCheck.swift; sourceTree = "<group>"; };
 		0000000044697AEF01295519 /* SwapDataValidatorFactory+PoolTradeLimit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SwapDataValidatorFactory+PoolTradeLimit.swift"; sourceTree = "<group>"; };
-		C6896646632BE286955228B9 /* BlockTimeSampling.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BlockTimeSampling.swift; sourceTree = "<group>"; };
-		FDC4260BB7E6A3C5ED86FB20 /* BlockTimeSamplingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BlockTimeSamplingTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -14365,7 +14361,6 @@
 			isa = PBXGroup;
 			children = (
 				0C27F3892DA8027800191FFF /* SubstrateWeightTest.swift */,
-				FDC4260BB7E6A3C5ED86FB20 /* BlockTimeSamplingTests.swift */,
 				BC76E87DCFF3D7B4CE5B0906 /* SubstrateTransferCommandFactoryTests.swift */,
 			);
 			path = Substrate;
@@ -15841,7 +15836,6 @@
 			children = (
 				84329ECD28322E150020BC1C /* BlockTimeOperationFactory.swift */,
 				84C3420A283187D800156569 /* BlockTimeEstimationService.swift */,
-				C6896646632BE286955228B9 /* BlockTimeSampling.swift */,
 				0CBF1A142E447B51009EE38D /* BlockTimeEstimationServiceFactory.swift */,
 				0CBF1A162E44862E009EE38D /* ChainTimelineFacade.swift */,
 			);
@@ -35483,7 +35477,6 @@
 				0CA81D592CE60AA700166969 /* AssetExchangeEdgeType.swift in Sources */,
 				2D4F55262CCBFC4700B65B76 /* AssetOperationNetworkListCell.swift in Sources */,
 				84C3420B283187D800156569 /* BlockTimeEstimationService.swift in Sources */,
-				BC3645153AC229B84BBDE410 /* BlockTimeSampling.swift in Sources */,
 				EB376E61CD1C39AC148DE80C /* NftListViewController.swift in Sources */,
 				2DC002C32E840D9D00D49A42 /* DotsSecureView.swift in Sources */,
 				778215D52B9591C2006C7D13 /* SharedSettingsManager.swift in Sources */,
@@ -37391,7 +37384,6 @@
 				8454C2832632FC2500657DAD /* ExtrinsicProcessingTests.swift in Sources */,
 				0C495B942B4469DD00B8D339 /* ExtrinsicSenderResolutionStub.swift in Sources */,
 				0C27F38A2DA8027800191FFF /* SubstrateWeightTest.swift in Sources */,
-				EAF644F9999DE939E76E152D /* BlockTimeSamplingTests.swift in Sources */,
 				0C41D21A2BF899EF000950EE /* MockCloudBackupAvailabilityService.swift in Sources */,
 				0C053ECB2BA2FA5C003063A0 /* StorageLocationMigrationTests.swift in Sources */,
 				8836AF4828AA49AB00A94EDD /* Currency+btc.swift in Sources */,
