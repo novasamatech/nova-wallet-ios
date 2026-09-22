@@ -413,6 +413,8 @@
 		0C1CF7242E53AB4000B1DA66 /* HydraAavePoolsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF7232E53AB4000B1DA66 /* HydraAavePoolsService.swift */; };
 		0C1CF7262E53C20D00B1DA66 /* HydraAaveFlowState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF7252E53C20D00B1DA66 /* HydraAaveFlowState.swift */; };
 		0C1CF7282E53D2E500B1DA66 /* HydraAaveTradeExecutorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF7272E53D2E500B1DA66 /* HydraAaveTradeExecutorFactory.swift */; };
+		F1A0E0030000000000000001 /* HydraAaveContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A0E0040000000000000001 /* HydraAaveContract.swift */; };
+		F1A0E0050000000000000001 /* HydraAaveReservesDiscoveryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A0E0060000000000000001 /* HydraAaveReservesDiscoveryFactory.swift */; };
 		0C1CF72A2E54627400B1DA66 /* HydraAaveQuoteParamsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF7292E54627400B1DA66 /* HydraAaveQuoteParamsService.swift */; };
 		0C1CF72C2E54697C00B1DA66 /* RuntimeConnectionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF72B2E54697C00B1DA66 /* RuntimeConnectionStore.swift */; };
 		0C1CF72E2E54A73E00B1DA66 /* HydraExchange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1CF72D2E54A73E00B1DA66 /* HydraExchange.swift */; };
@@ -7184,6 +7186,8 @@
 		0C1CF7232E53AB4000B1DA66 /* HydraAavePoolsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAavePoolsService.swift; sourceTree = "<group>"; };
 		0C1CF7252E53C20D00B1DA66 /* HydraAaveFlowState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAaveFlowState.swift; sourceTree = "<group>"; };
 		0C1CF7272E53D2E500B1DA66 /* HydraAaveTradeExecutorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAaveTradeExecutorFactory.swift; sourceTree = "<group>"; };
+		F1A0E0040000000000000001 /* HydraAaveContract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAaveContract.swift; sourceTree = "<group>"; };
+		F1A0E0060000000000000001 /* HydraAaveReservesDiscoveryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAaveReservesDiscoveryFactory.swift; sourceTree = "<group>"; };
 		0C1CF7292E54627400B1DA66 /* HydraAaveQuoteParamsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraAaveQuoteParamsService.swift; sourceTree = "<group>"; };
 		0C1CF72B2E54697C00B1DA66 /* RuntimeConnectionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeConnectionStore.swift; sourceTree = "<group>"; };
 		0C1CF72D2E54A73E00B1DA66 /* HydraExchange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExchange.swift; sourceTree = "<group>"; };
@@ -14454,6 +14458,8 @@
 				0C1CF7232E53AB4000B1DA66 /* HydraAavePoolsService.swift */,
 				0C1CF7252E53C20D00B1DA66 /* HydraAaveFlowState.swift */,
 				0C1CF7272E53D2E500B1DA66 /* HydraAaveTradeExecutorFactory.swift */,
+				F1A0E0040000000000000001 /* HydraAaveContract.swift */,
+				F1A0E0060000000000000001 /* HydraAaveReservesDiscoveryFactory.swift */,
 				0C1CF7292E54627400B1DA66 /* HydraAaveQuoteParamsService.swift */,
 			);
 			path = AavePool;
@@ -34360,6 +34366,8 @@
 				2D3EA7D12CF9B9A70033AFD2 /* FadeContentDAppBrowserMaximizeTransition.swift in Sources */,
 				84222986283621F2009F0086 /* StakingRewardInfoViewModel.swift in Sources */,
 				0C1CF7282E53D2E500B1DA66 /* HydraAaveTradeExecutorFactory.swift in Sources */,
+				F1A0E0030000000000000001 /* HydraAaveContract.swift in Sources */,
+				F1A0E0050000000000000001 /* HydraAaveReservesDiscoveryFactory.swift in Sources */,
 				0C8FDB9F2CAD022700775D7F /* SubstrateDataModel.xcdatamodeld in Sources */,
 				84CFE443292B8F3E00CDDD7C /* TransferEvmOnChainConfirmInteractor.swift in Sources */,
 				95D8A7168C71BA5BA029321F /* TransferOnChainConfirmPresenter+Analytics.swift in Sources */,
