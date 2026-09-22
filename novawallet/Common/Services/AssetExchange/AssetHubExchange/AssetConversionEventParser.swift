@@ -62,7 +62,6 @@ struct AssetConversionSwapVerification {
 final class AssetConversionEventParser {
     struct Measurement {
         let amountIn: Balance
-        let grossAmountOut: Balance
         let netAmountOut: Balance
     }
 
@@ -114,7 +113,6 @@ final class AssetConversionEventParser {
         guard let commission = verification.commission else {
             return Measurement(
                 amountIn: measured.event.amountIn,
-                grossAmountOut: measured.event.amountOut,
                 netAmountOut: measured.event.amountOut
             )
         }
@@ -142,7 +140,6 @@ final class AssetConversionEventParser {
 
         return Measurement(
             amountIn: measured.event.amountIn,
-            grossAmountOut: measured.event.amountOut,
             netAmountOut: measured.event.amountOut - collected
         )
     }

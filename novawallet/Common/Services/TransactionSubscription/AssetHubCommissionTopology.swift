@@ -9,7 +9,6 @@ enum AssetHubDispatchWrapper {
 
 struct AssetHubCommissionedBatch {
     let effectiveSender: AccountId
-    let batchCall: AnyRuntimeCall
     let swapCall: AnyRuntimeCall
     let commissionCall: AnyRuntimeCall
     let wrappers: [AssetHubDispatchWrapper]
@@ -223,7 +222,6 @@ private extension AssetHubCommissionTopology {
             matches.append(
                 AssetHubCommissionedBatch(
                     effectiveSender: effectiveSender,
-                    batchCall: call,
                     swapCall: commissioned.swap,
                     commissionCall: commissioned.commission,
                     wrappers: wrappers,

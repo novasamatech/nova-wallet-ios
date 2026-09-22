@@ -61,7 +61,6 @@ extension AssetHubCommissionHistoryParser {
         let receiver: AccountId
         let amountIn: Balance
         let amountOut: Balance
-        let direction: AssetConversion.Direction
     }
 
     func decodeSwapCall(
@@ -80,8 +79,7 @@ extension AssetHubCommissionHistoryParser {
                 path: swap.path,
                 receiver: swap.sendTo,
                 amountIn: swap.amountIn,
-                amountOut: swap.amountOutMin,
-                direction: .sell
+                amountOut: swap.amountOutMin
             )
         case AssetConversionPallet.swapTokenForExactTokens:
             let swap: AssetConversionPallet.SwapTokensForExactTokensCall = try ExtrinsicExtraction.getCallArgs(
@@ -94,8 +92,7 @@ extension AssetHubCommissionHistoryParser {
                 path: swap.path,
                 receiver: swap.sendTo,
                 amountIn: swap.amountInMax,
-                amountOut: swap.amountOut,
-                direction: .buy
+                amountOut: swap.amountOut
             )
         default:
             return nil
