@@ -113,10 +113,6 @@ final class AssetExchangeNoCommissionPolicy: AssetExchangeCommissionPolicyProtoc
 }
 
 enum AssetExchangeCommissionPolicyFactory {
-    static func createHydrationPolicy(logger: LoggerProtocol) -> AssetExchangeCommissionPolicyProtocol {
-        createSwapPolicy(assetHubBeneficiaryAddresses: [:], logger: logger)
-    }
-
     static func createSwapPolicy(
         assetHubBeneficiaryAddresses: [ChainModel.Id: AccountAddress],
         logger: LoggerProtocol

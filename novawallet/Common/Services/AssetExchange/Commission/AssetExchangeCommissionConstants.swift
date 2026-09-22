@@ -44,6 +44,20 @@ enum AssetExchangeCommissionConstants {
             historical: historicalAssetHubBeneficiaryAddresses[chainId] ?? []
         )
     }
+
+    static func assetHubHistoryBeneficiaries(
+        for chainId: ChainModel.Id,
+        logger: LoggerProtocol,
+        context: String
+    ) -> Set<AccountId> {
+        let resolved = assetHubHistoryBeneficiaries(for: chainId)
+
+        resolved.invalid.forEach {
+            logger.error("Invalid Asset Hub \(context) beneficiary for \(chainId): \($0)")
+        }
+
+        return resolved.accountIds
+    }
 }
 
 extension BigRational {

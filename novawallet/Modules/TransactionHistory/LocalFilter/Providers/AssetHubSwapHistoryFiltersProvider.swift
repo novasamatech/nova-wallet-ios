@@ -5,26 +5,14 @@ final class AssetHubSwapHistoryFiltersProvider {
     let chainAsset: ChainAsset
     let beneficiaries: Set<AccountId>
 
-    init(
-        chainAsset: ChainAsset,
-        beneficiaries: Set<AccountId>? = nil,
-        logger: LoggerProtocol
-    ) {
+    init(chainAsset: ChainAsset, logger: LoggerProtocol) {
         self.chainAsset = chainAsset
 
-        if let beneficiaries {
-            self.beneficiaries = beneficiaries
-        } else {
-            let resolved = AssetExchangeCommissionConstants.assetHubHistoryBeneficiaries(
-                for: chainAsset.chain.chainId
-            )
-
-            resolved.invalid.forEach {
-                logger.error("Invalid Asset Hub history beneficiary for \(chainAsset.chain.chainId): \($0)")
-            }
-
-            self.beneficiaries = resolved.accountIds
-        }
+        beneficiaries = AssetExchangeCommissionConstants.assetHubHistoryBeneficiaries(
+            for: chainAsset.chain.chainId,
+            logger: logger,
+            context: "history"
+        )
     }
 }
 
