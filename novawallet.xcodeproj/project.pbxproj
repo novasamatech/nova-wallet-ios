@@ -5662,7 +5662,6 @@
 		3F45C083BC601842FBBFD08E /* HydraExchangeAtomicOperationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15FD86DFB69D54DAC2636F05 /* HydraExchangeAtomicOperationTests.swift */; };
 		2DD2DA594997269200AFDCDD /* AssetExchangePathFilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8EB5C57DA2340B534BC7D9 /* AssetExchangePathFilterTests.swift */; };
 		ECD37C92F8EA802204A907B7 /* HydraSwapRoutePoolIdentityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D62A1D647644741D4C6D4A6 /* HydraSwapRoutePoolIdentityTests.swift */; };
-		F1A0E0010000000000000001 /* HydraAaveContractTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A0E0020000000000000001 /* HydraAaveContractTests.swift */; };
 		A0720F255A511A623EE8C6F0 /* AssetsExchangeRouteManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C639F7A52A4668717369874 /* AssetsExchangeRouteManagerTests.swift */; };
 		E512B2B42B505AF2BEE87FB4 /* AssetExchangeGraphProxyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95559705353C1460D999A6AE /* AssetExchangeGraphProxyTests.swift */; };
 		881BA30929DC1B3000EB8C48 /* kilt-addresses.json in Resources */ = {isa = PBXBuildFile; fileRef = 881BA30829DC1B3000EB8C48 /* kilt-addresses.json */; };
@@ -12101,7 +12100,6 @@
 		15FD86DFB69D54DAC2636F05 /* HydraExchangeAtomicOperationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExchangeAtomicOperationTests.swift; sourceTree = "<group>"; };
 		0D8EB5C57DA2340B534BC7D9 /* AssetExchangePathFilterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangePathFilterTests.swift; sourceTree = "<group>"; };
 		8D62A1D647644741D4C6D4A6 /* HydraSwapRoutePoolIdentityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraSwapRoutePoolIdentityTests.swift; sourceTree = "<group>"; };
-		F1A0E0020000000000000001 /* HydraAaveContractTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydraExchange/AavePool/HydraAaveContractTests.swift; sourceTree = "<group>"; };
 		1C639F7A52A4668717369874 /* AssetsExchangeRouteManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsExchangeRouteManagerTests.swift; sourceTree = "<group>"; };
 		95559705353C1460D999A6AE /* AssetExchangeGraphProxyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeGraphProxyTests.swift; sourceTree = "<group>"; };
 		881BA30829DC1B3000EB8C48 /* kilt-addresses.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "kilt-addresses.json"; sourceTree = "<group>"; };
@@ -22761,7 +22759,6 @@
 		E6F3AA47E60B33CE93DF4903 /* AssetExchange */ = {
 			isa = PBXGroup;
 			children = (
-				F1A0E0020000000000000001 /* HydraAaveContractTests.swift */,
 				A1B2C3D40002E5F600000001 /* HydraFeeQuoteFactoryTests.swift */,
 				761F8E10F7E6FA8ECB54861D /* HydraFeeConversionTests.swift */,
 				4845A8C3A356404F029B6C19 /* HydraFeeOraclePriceCalculatorTests.swift */,
@@ -37679,7 +37676,6 @@
 				3F45C083BC601842FBBFD08E /* HydraExchangeAtomicOperationTests.swift in Sources */,
 				2DD2DA594997269200AFDCDD /* AssetExchangePathFilterTests.swift in Sources */,
 				ECD37C92F8EA802204A907B7 /* HydraSwapRoutePoolIdentityTests.swift in Sources */,
-				F1A0E0010000000000000001 /* HydraAaveContractTests.swift in Sources */,
 				A0720F255A511A623EE8C6F0 /* AssetsExchangeRouteManagerTests.swift in Sources */,
 				E512B2B42B505AF2BEE87FB4 /* AssetExchangeGraphProxyTests.swift in Sources */,
 				8B518898F682EABB39C9F7BF /* SwapModelTests.swift in Sources */,
