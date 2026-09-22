@@ -184,7 +184,7 @@ private extension AssetHubCommissionHistoryParser {
             return nil
         }
 
-        guard let swap = try decodeSwapCall(batch.swapCall, context: context) else {
+        guard let swap = try AssetConversionSwapCallDecoder.decode(batch.swapCall, context: context) else {
             throw AssetHubCommissionHistoryError.unrecognizedCommissionedCall
         }
 

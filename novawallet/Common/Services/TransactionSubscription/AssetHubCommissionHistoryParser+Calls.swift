@@ -62,11 +62,13 @@ extension AssetHubCommissionHistoryParser {
         let amountIn: Balance
         let amountOut: Balance
     }
+}
 
-    func decodeSwapCall(
+enum AssetConversionSwapCallDecoder {
+    static func decode(
         _ call: AnyRuntimeCall,
         context: RuntimeJsonContext
-    ) throws -> DecodedSwapCall? {
+    ) throws -> AssetHubCommissionHistoryParser.DecodedSwapCall? {
         switch call.path {
         case AssetConversionPallet.swapExactTokenForTokensPath:
             let swap: AssetConversionPallet.SwapExactTokensForTokensCall = try ExtrinsicExtraction.getCallArgs(
@@ -74,7 +76,7 @@ extension AssetHubCommissionHistoryParser {
                 context: context
             )
 
-            return DecodedSwapCall(
+            return .init(
                 call: .exactIn(swap),
                 path: swap.path,
                 receiver: swap.sendTo,
@@ -87,7 +89,7 @@ extension AssetHubCommissionHistoryParser {
                 context: context
             )
 
-            return DecodedSwapCall(
+            return .init(
                 call: .exactOut(swap),
                 path: swap.path,
                 receiver: swap.sendTo,

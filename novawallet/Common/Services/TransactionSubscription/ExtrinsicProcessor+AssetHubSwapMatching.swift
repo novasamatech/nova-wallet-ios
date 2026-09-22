@@ -12,13 +12,6 @@ private enum AssetHubSwapMatchingError: Error {
     case unresolvedCommission
 }
 
-private struct AssetHubSwapExtrinsicCallArgs {
-    let receiver: AccountId
-    let amountIn: BigUInt
-    let amountOut: BigUInt
-    let path: [AssetConversionPallet.AssetId]
-}
-
 private struct AssetHubSwapExtrinsicParsingResult {
     let callSender: AccountId
     let receiver: AccountId
@@ -235,12 +228,12 @@ extension ExtrinsicProcessor {
             return try? record.event.params.map(to: type, with: context.toRawContext())
         }
 
-        guard let intendedArgs = try? extractAssetHubSwapCallArgs(from: call, codingFactory: codingFactory) else {
+        guard let decoded = try? AssetConversionSwapCallDecoder.decode(call, context: context) else {
             return nil
         }
 
         let matchingEvents = swapEvents.filter {
-            matches(swapEvent: $0, sender: callSender, callPath: callPath, args: intendedArgs)
+            matches(swapEvent: $0, sender: callSender, decoded: decoded)
         }
 
         guard
@@ -293,18 +286,20 @@ extension ExtrinsicProcessor {
     ) throws -> AssetHubSwapExtrinsicParsingResult? {
         let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
 
+        let context = codingFactory.createRuntimeJsonContext()
+
         let conversionClosure = AssetHubTokensConverter.createPoolAssetToLocalClosure(
             for: chain,
             codingFactory: codingFactory
         )
 
-        guard let args = try? extractAssetHubSwapCallArgs(from: call, codingFactory: codingFactory) else {
+        guard let decoded = try? AssetConversionSwapCallDecoder.decode(call, context: context) else {
             return nil
         }
 
         guard
-            let remoteAssetIn = args.path.first,
-            let remoteAssetOut = args.path.last,
+            let remoteAssetIn = decoded.path.first,
+            let remoteAssetOut = decoded.path.last,
             let assetIn = AssetHubTokensConverter.convertFromMultilocationToLocal(
                 remoteAssetIn,
                 chain: chain,
@@ -320,11 +315,11 @@ extension ExtrinsicProcessor {
 
         return .init(
             callSender: callSender,
-            receiver: args.receiver,
+            receiver: decoded.receiver,
             assetIdIn: assetIn.asset.assetId,
-            amountIn: args.amountIn,
+            amountIn: decoded.amountIn,
             assetIdOut: assetOut.asset.assetId,
-            amountOut: args.amountOut,
+            amountOut: decoded.amountOut,
             callPath: callPath,
             call: call.args,
             customFee: customFee,
@@ -334,54 +329,17 @@ extension ExtrinsicProcessor {
 }
 
 private extension ExtrinsicProcessor {
-    func extractAssetHubSwapCallArgs(
-        from call: RuntimeCall<JSON>,
-        codingFactory: RuntimeCoderFactoryProtocol
-    ) throws -> AssetHubSwapExtrinsicCallArgs? {
-        let context = codingFactory.createRuntimeJsonContext()
-
-        switch CallCodingPath(moduleName: call.moduleName, callName: call.callName) {
-        case AssetConversionPallet.swapExactTokenForTokensPath:
-            let type = AssetConversionPallet.SwapExactTokensForTokensCall.self
-            let swapCall = try call.args.map(to: type, with: context.toRawContext())
-
-            return .init(
-                receiver: swapCall.sendTo,
-                amountIn: swapCall.amountIn,
-                amountOut: swapCall.amountOutMin,
-                path: swapCall.path
-            )
-        case AssetConversionPallet.swapTokenForExactTokens:
-            let type = AssetConversionPallet.SwapTokensForExactTokensCall.self
-            let swapCall = try call.args.map(to: type, with: context.toRawContext())
-
-            return .init(
-                receiver: swapCall.sendTo,
-                amountIn: swapCall.amountInMax,
-                amountOut: swapCall.amountOut,
-                path: swapCall.path
-            )
-        default:
-            return nil
-        }
-    }
-
     func matches(
         swapEvent: AssetConversionPallet.SwapExecutedEvent,
         sender: AccountId,
-        callPath: CallCodingPath,
-        args: AssetHubSwapExtrinsicCallArgs
+        decoded: AssetHubCommissionHistoryParser.DecodedSwapCall
     ) -> Bool {
-        let bounds: AssetConversionSwapBounds = callPath == AssetConversionPallet.swapExactTokenForTokensPath
-            ? .exactIn(amountIn: args.amountIn, amountOutMin: args.amountOut)
-            : .exactOut(amountOut: args.amountOut, amountInMax: args.amountIn)
-
-        return AssetConversionSwapBounds.matches(
+        AssetConversionSwapBounds.matches(
             event: swapEvent,
             origin: sender,
-            receiver: args.receiver,
-            path: args.path,
-            bounds: bounds
+            receiver: decoded.receiver,
+            path: decoded.path,
+            bounds: AssetConversionSwapBounds(swap: decoded.call)
         )
     }
 }
