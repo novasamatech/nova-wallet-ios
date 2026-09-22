@@ -16,7 +16,8 @@ extension TransactionHistoryLocalFilterFactory {
                     chainRegistry: chainRegistry,
                     operationQueue: operationQueue
                 ),
-                HydrationSwapHistoryFiltersProvider(chainAsset: chainAsset)
+                HydrationSwapHistoryFiltersProvider(chainAsset: chainAsset),
+                AssetHubSwapHistoryFiltersProvider(chainAsset: chainAsset, logger: logger)
             ],
             logger: logger
         )

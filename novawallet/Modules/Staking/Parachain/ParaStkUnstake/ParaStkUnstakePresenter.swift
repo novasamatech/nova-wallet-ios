@@ -1,6 +1,7 @@
 import Foundation
 import BigInt
 import Foundation_iOS
+import NovaAnalytics
 
 final class ParaStkUnstakePresenter {
     weak var view: CollatorStkPartialUnstakeSetupViewProtocol?
@@ -12,6 +13,7 @@ final class ParaStkUnstakePresenter {
     let dataValidatingFactory: ParaStkValidatorFactoryProtocol
     let accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol
     let hintViewModelFactory: CollatorStakingHintsViewModelFactoryProtocol
+    let stakingType: StakingAnalyticsType
 
     private(set) var inputResult: AmountInputResult?
     private(set) var fee: ExtrinsicFeeProtocol?
@@ -41,6 +43,7 @@ final class ParaStkUnstakePresenter {
         initialDelegator: ParachainStaking.Delegator?,
         initialScheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         delegationIdentities: [AccountId: AccountIdentity]?,
+        stakingType: StakingAnalyticsType,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -55,6 +58,7 @@ final class ParaStkUnstakePresenter {
         delegationsDict = initialDelegator?.delegationsDict()
         scheduledRequests = initialScheduledRequests
         self.delegationIdentities = delegationIdentities
+        self.stakingType = stakingType
         self.logger = logger
         self.localizationManager = localizationManager
     }

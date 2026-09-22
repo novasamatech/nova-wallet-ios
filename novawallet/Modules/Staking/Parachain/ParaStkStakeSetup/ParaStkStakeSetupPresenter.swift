@@ -1,6 +1,7 @@
 import Foundation
 import Foundation_iOS
 import BigInt
+import NovaAnalytics
 
 final class ParaStkStakeSetupPresenter {
     weak var view: CollatorStakingSetupViewProtocol?
@@ -11,6 +12,9 @@ final class ParaStkStakeSetupPresenter {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: ParaStkValidatorFactoryProtocol
     let accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol
+    let stakingType: StakingAnalyticsType
+    let isStartStakingFlow: Bool
+    let abandonTracker: AnalyticsAbandonTracker
 
     private(set) var inputResult: AmountInputResult?
     private(set) var fee: ExtrinsicFeeProtocol?
@@ -41,6 +45,7 @@ final class ParaStkStakeSetupPresenter {
         initialDelegator: ParachainStaking.Delegator?,
         initialScheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         delegationIdentities: [AccountId: AccountIdentity]?,
+        stakingType: StakingAnalyticsType,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -53,7 +58,15 @@ final class ParaStkStakeSetupPresenter {
         delegator = initialDelegator
         scheduledRequests = initialScheduledRequests
         self.delegationIdentities = delegationIdentities
+        self.stakingType = stakingType
         self.logger = logger
+        let isStartStakingFlow = initialDelegator == nil
+        self.isStartStakingFlow = isStartStakingFlow
+
+        abandonTracker = AnalyticsAbandonTracker {
+            isStartStakingFlow ? AnalyticsEvent.stakingAbandoned(stage: .setup) : nil
+        }
+
         self.localizationManager = localizationManager
     }
 

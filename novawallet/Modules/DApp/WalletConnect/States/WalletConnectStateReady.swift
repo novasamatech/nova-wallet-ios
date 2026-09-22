@@ -15,7 +15,8 @@ extension WalletConnectStateReady: WalletConnectStateProtocol {
         let nextState = WalletConnectStateNewMessage(
             message: message,
             stateMachine: stateMachine,
-            logger: logger
+            logger: logger,
+            signingAnalytics: signingAnalytics
         )
 
         stateMachine.emit(nextState: nextState)

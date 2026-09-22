@@ -1,5 +1,6 @@
 import Foundation
 import os
+import NovaAppAttest
 
 protocol ApplicationConfigProtocol {
     var termsURL: URL { get }
@@ -215,6 +216,25 @@ extension ApplicationConfig: ApplicationConfigProtocol {
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/global/config.json")!
         #else
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/global/config_dev.json")!
+        #endif
+    }
+
+    var appAttestAppIdentity: AppAttestAppIdentity? {
+        let rawPrefix = Bundle.main.object(forInfoDictionaryKey: "AppIdentifierPrefix") as? String
+        let prefix = rawPrefix?.trimmingCharacters(in: CharacterSet(charactersIn: ". ")) ?? ""
+
+        guard !prefix.isEmpty, let bundleId = Bundle.main.bundleIdentifier else {
+            return nil
+        }
+
+        return AppAttestAppIdentity(appId: prefix + "." + bundleId, environment: appAttestEnvironment)
+    }
+
+    private var appAttestEnvironment: String {
+        #if F_DEV
+            "development"
+        #else
+            "production"
         #endif
     }
 

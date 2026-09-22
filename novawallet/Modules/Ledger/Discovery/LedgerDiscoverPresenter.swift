@@ -1,9 +1,14 @@
 import Foundation
 import Foundation_iOS
+import NovaAnalytics
 
 final class LedgerDiscoverPresenter: LedgerPerformOperationPresenter {
     var wireframe: LedgerDiscoverWireframeProtocol? {
         baseWireframe as? LedgerDiscoverWireframeProtocol
+    }
+
+    private let abandonTracker = AnalyticsAbandonTracker {
+        AnalyticsEvent.walletCreationAbandoned(lastStep: .ledgerConnect)
     }
 
     init(
@@ -30,6 +35,8 @@ extension LedgerDiscoverPresenter: LedgerDiscoverInteractorOutputProtocol {
             guard let device = devices.first(where: { $0.identifier == deviceId }) else {
                 return
             }
+
+            abandonTracker.markProceeded()
 
             wireframe?.showAccountSelection(from: view, device: device)
         case let .failure(error):

@@ -22,6 +22,7 @@ final class AssetHubExchangeEdge {
 
 extension AssetHubExchangeEdge: AssetExchangableGraphEdge {
     var type: AssetExchangeEdgeType { .assetHubSwap }
+    var poolId: AssetExchangePoolId? { nil }
 
     var weight: Int { 3 * AssetsExchange.defaultEdgeWeight + 10 }
 

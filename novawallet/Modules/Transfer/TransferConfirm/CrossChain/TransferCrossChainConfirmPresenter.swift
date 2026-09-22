@@ -16,6 +16,9 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
 
     private lazy var walletIconGenerator = NovaIconGenerator()
     let transferCompletion: TransferCompletionClosure?
+    let analyticsFlow: TransferAnalyticsFlow
+
+    private var isSubmitting: Bool = false
 
     init(
         interactor: TransferConfirmCrossChainInteractorInputProtocol,
@@ -32,6 +35,7 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
         dataValidatingFactory: TransferDataValidatorFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         transferCompletion: TransferCompletionClosure?,
+        analyticsFlow: TransferAnalyticsFlow,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -41,6 +45,7 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
         self.amount = amount
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
         self.transferCompletion = transferCompletion
+        self.analyticsFlow = analyticsFlow
 
         super.init(
             originChainAsset: originChainAsset,
@@ -252,6 +257,12 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
     override func didReceiveError(_ error: Error) {
         super.didReceiveError(error)
 
+        if isSubmitting {
+            isSubmitting = false
+
+            trackSendFailed(error: error)
+        }
+
         view?.didStopLoading()
 
         let isHandledError = wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
@@ -306,6 +317,8 @@ extension TransferCrossChainConfirmPresenter: TransferConfirmPresenterProtocol {
 
             strongSelf.view?.didStartLoading()
 
+            strongSelf.isSubmitting = true
+
             strongSelf.interactor.submit(
                 amount: amountInPlank + crossChainFee.holdingPart,
                 recepient: strongSelf.recepientAccountAddress,
@@ -329,7 +342,11 @@ extension TransferCrossChainConfirmPresenter: TransferConfirmPresenterProtocol {
 
 extension TransferCrossChainConfirmPresenter: TransferConfirmCrossChainInteractorOutputProtocol {
     func didCompleteSubmition(by sender: ExtrinsicSenderResolution) {
+        isSubmitting = false
+
         view?.didStopLoading()
+
+        trackSendCompleted()
 
         // Note: that transferCompletion is not called for delayed transfers
         wireframe.presentExtrinsicSubmission(

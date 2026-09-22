@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import NovaAnalytics
 
 final class MythosStakingConfirmPresenter {
     weak var view: CollatorStakingConfirmViewProtocol?
@@ -13,6 +14,10 @@ final class MythosStakingConfirmPresenter {
     let collator: DisplayAddress
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidationFactory: MythosStakingValidationFactoryProtocol
+    let stakingType: StakingAnalyticsType
+
+    let abandonTracker: AnalyticsAbandonTracker
+    var isStartStakingSubmission: Bool = false
 
     private(set) var balance: AssetBalance?
     private(set) var frozenBalance: MythosStakingFrozenBalance?
@@ -35,6 +40,7 @@ final class MythosStakingConfirmPresenter {
         model: MythosStakingConfirmModel,
         dataValidationFactory: MythosStakingValidationFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        stakingType: StakingAnalyticsType,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -47,7 +53,14 @@ final class MythosStakingConfirmPresenter {
         stakingDetails = model.stakingDetails
         collator = model.collator
         self.balanceViewModelFactory = balanceViewModelFactory
+        self.stakingType = stakingType
         self.logger = logger
+        let isStartStakingFlow = model.stakingDetails == nil
+
+        abandonTracker = AnalyticsAbandonTracker {
+            isStartStakingFlow ? AnalyticsEvent.stakingAbandoned(stage: .confirm) : nil
+        }
+
         self.localizationManager = localizationManager
     }
 }
@@ -213,7 +226,11 @@ extension MythosStakingConfirmPresenter: CollatorStakingConfirmPresenterProtocol
     }
 
     func confirm() {
+        isStartStakingSubmission = stakingDetails == nil
+
         let onSuccess: () -> Void = { [weak self] in
+            self?.trackStakingEvent(AnalyticsEvent.stakingConfirmed)
+
             self?.submitExtrinsic()
         }
 
@@ -241,9 +258,15 @@ extension MythosStakingConfirmPresenter: MythosStakingConfirmInteractorOutputPro
 
         switch result {
         case let .success(model):
+            trackStakingEvent(AnalyticsEvent.stakingCompleted)
+
+            abandonTracker.markProceeded()
+
             wireframe.complete(on: view, sender: model.sender, locale: selectedLocale)
         case let .failure(error):
             logger.error("Submission error: \(error)")
+
+            trackStakingFailure(for: error)
 
             applyCurrentState()
             refreshFee()
@@ -297,6 +320,8 @@ extension MythosStakingConfirmPresenter: MythosStakingConfirmInteractorOutputPro
         logger.debug("Staking details: \(String(describing: details))")
 
         stakingDetails = details
+
+        updateAbandonEvent()
     }
 
     func didReceiveClaimableRewards(_ claimableRewards: MythosStakingClaimableRewards?) {
