@@ -18,6 +18,8 @@ final class BlockTimeOperationFactory {
     static let fallbackBlockParachainTime: BlockTime = 2 * 6000
     static let fallbackThreshold: BlockTime = 500
 
+    static let configuredBlockTimeToleranceFactor: BlockTime = 2
+
     let chain: ChainModel
 
     init(chain: ChainModel) {
@@ -80,6 +82,12 @@ extension BlockTimeOperationFactory: BlockTimeOperationFactoryProtocol {
             let estimatedBlockTimeValue = try estimatedOperation.extractNoCancellableResultData()
             let expectedBlockTime = try expectedWrapper.targetOperation.extractNoCancellableResultData()
                 .timeInterval
+
+            if let configuredBlockTime = self.chain.defaultBlockTimeMillis,
+               estimatedBlockTimeValue.blockTime < configuredBlockTime / Self.configuredBlockTimeToleranceFactor ||
+               estimatedBlockTimeValue.blockTime > configuredBlockTime * Self.configuredBlockTimeToleranceFactor {
+                return configuredBlockTime
+            }
 
             let boundedSeqSize = min(BlockTime(estimatedBlockTimeValue.seqSize), Self.callibrationSeqSize)
             let estimatedPart = TimeInterval(boundedSeqSize) * estimatedBlockTimeValue.blockTime.timeInterval
