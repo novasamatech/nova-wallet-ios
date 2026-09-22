@@ -31926,19 +31926,6 @@ class MockStakingMainPresenterProtocol: StakingMainPresenterProtocol, Cuckoo.Pro
         )
     }
 
-    func selectAnnouncementLink(url: URL) {
-        cuckoo_manager.call(
-            "selectAnnouncementLink(url: URL)",
-            parameters: url,
-            escapingParameters: url,
-            superclassCall:
-
-            Cuckoo.MockManager.crashOnProtocolSuperclassCall(),
-
-            defaultCall: __defaultImplStub!.selectAnnouncementLink(url: url)
-        )
-    }
-
     struct __StubbingProxy_StakingMainPresenterProtocol: Cuckoo.StubbingProxy {
         private let cuckoo_manager: Cuckoo.MockManager
 
@@ -31994,11 +31981,6 @@ class MockStakingMainPresenterProtocol: StakingMainPresenterProtocol, Cuckoo.Pro
         func handleAHMAlertLearnMore() -> Cuckoo.ProtocolStubNoReturnFunction<Void> {
             let matchers: [Cuckoo.ParameterMatcher<Void>] = []
             return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "handleAHMAlertLearnMore()", parameterMatchers: matchers))
-        }
-
-        func selectAnnouncementLink<M1: Cuckoo.Matchable>(url: M1) -> Cuckoo.ProtocolStubNoReturnFunction<URL> where M1.MatchedType == URL {
-            let matchers: [Cuckoo.ParameterMatcher<URL>] = [wrap(matchable: url) { $0 }]
-            return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "selectAnnouncementLink(url: URL)", parameterMatchers: matchers))
         }
     }
 
@@ -32072,12 +32054,6 @@ class MockStakingMainPresenterProtocol: StakingMainPresenterProtocol, Cuckoo.Pro
             let matchers: [Cuckoo.ParameterMatcher<Void>] = []
             return cuckoo_manager.verify("handleAHMAlertLearnMore()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
         }
-
-        @discardableResult
-        func selectAnnouncementLink<M1: Cuckoo.Matchable>(url: M1) -> Cuckoo.__DoNotUse<URL, Void> where M1.MatchedType == URL {
-            let matchers: [Cuckoo.ParameterMatcher<URL>] = [wrap(matchable: url) { $0 }]
-            return cuckoo_manager.verify("selectAnnouncementLink(url: URL)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-        }
     }
 }
 
@@ -32119,10 +32095,6 @@ class StakingMainPresenterProtocolStub: StakingMainPresenterProtocol {
     }
 
     func handleAHMAlertLearnMore() {
-        DefaultValueRegistry.defaultValue(for: Void.self)
-    }
-
-    func selectAnnouncementLink(url _: URL) {
         DefaultValueRegistry.defaultValue(for: Void.self)
     }
 }

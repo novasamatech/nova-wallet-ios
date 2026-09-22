@@ -73,17 +73,21 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         }
     }
 
-    func provideAnnouncementModel() {
-        let viewModel = announcementViewModelFactory.createChainViewModel(
+    private func createAnnouncementViewModel() -> AnnouncementViewModel? {
+        announcementViewModelFactory.createChainViewModel(
             from: announcements,
             chainId: chainAsset.chain.chainId,
             locale: selectedLocale
         )
-
-        view?.didReceive(announcement: viewModel)
     }
 
-    func selectAnnouncementLink(url: URL) {
+    func provideAnnouncementModel() {
+        view?.didReceive(announcement: createAnnouncementViewModel())
+    }
+
+    func selectAnnouncementLink() {
+        guard let url = createAnnouncementViewModel()?.link?.url else { return }
+
         wireframe.openBrowser(with: .query(string: url.absoluteString))
     }
 

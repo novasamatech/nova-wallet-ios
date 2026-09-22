@@ -96,8 +96,7 @@ private extension StakingMainViewController {
         }
 
         rootView.announcementView.onLinkTap = { [weak self] in
-            guard let url = self?.rootView.announcementLinkURL else { return }
-            self?.presenter.selectAnnouncementLink(url: url)
+            self?.presenter.selectAnnouncementLink()
         }
     }
 

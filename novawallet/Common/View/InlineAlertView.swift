@@ -2,41 +2,35 @@ import UIKit
 import UIKit_iOS
 
 final class InlineAlertView: UIView {
-    let backgroundView: RoundedView = {
-        let view = RoundedView()
-        view.applyFilledBackgroundStyle()
-        view.cornerRadius = 10.0
-        return view
-    }()
+    let backgroundView: RoundedView = .create {
+        $0.applyFilledBackgroundStyle()
+        $0.cornerRadius = 10.0
+    }
 
-    let contentView: IconDetailsView = {
-        let view = IconDetailsView()
-        view.mode = .iconDetails
-        view.detailsLabel.numberOfLines = 0
-        view.iconWidth = Constants.iconWidth
-        view.detailsLabel.textColor = R.color.colorTextPrimary()
-        view.detailsLabel.font = .caption1
-        view.spacing = Constants.iconTextSpacing
-        return view
-    }()
+    let contentView: IconDetailsView = .create {
+        $0.mode = .iconDetails
+        $0.detailsLabel.numberOfLines = 0
+        $0.iconWidth = Constants.iconWidth
+        $0.detailsLabel.textColor = R.color.colorTextPrimary()
+        $0.detailsLabel.font = .caption1
+        $0.spacing = Constants.iconTextSpacing
+    }
 
-    let linkButton: UIButton = {
-        let button = UIButton()
-        button.contentHorizontalAlignment = .leading
-        button.isHidden = true
-        return button
-    }()
-
-    /// Called when the user taps the link row bound through `setLink(title:)`.
     var onLinkTap: (() -> Void)?
 
-    private let stackView: UIStackView = {
-        let view = UIStackView()
-        view.axis = .vertical
-        view.alignment = .fill
-        view.spacing = Constants.linkTopSpacing
-        return view
-    }()
+    private let stackView: UIStackView = .create {
+        $0.axis = .vertical
+        $0.alignment = .fill
+        $0.spacing = Constants.linkTopSpacing
+    }
+
+    private let linkContainerView: UIView = .create {
+        $0.isHidden = true
+    }
+
+    private let linkButton: UIButton = .create {
+        $0.contentHorizontalAlignment = .leading
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -65,17 +59,14 @@ final class InlineAlertView: UIView {
         }
 
         stackView.addArrangedSubview(contentView)
+        stackView.addArrangedSubview(linkContainerView)
 
-        let linkContainer = UIView()
-        linkContainer.addSubview(linkButton)
+        linkContainerView.addSubview(linkButton)
         linkButton.snp.makeConstraints { make in
             make.top.bottom.trailing.equalToSuperview()
             make.leading.equalToSuperview().offset(Constants.iconWidth + Constants.iconTextSpacing)
-            make.height.equalTo(Constants.linkRowHeight)
+            make.height.equalTo(Constants.linkRowHeight).priority(.high)
         }
-
-        stackView.addArrangedSubview(linkContainer)
-        linkContainer.isHidden = true
     }
 
     private func setupHandlers() {
@@ -104,17 +95,14 @@ extension InlineAlertView {
         contentView.stackView.alignment = .top
     }
 
-    /// Shows a "Learn more ›" row under the message, or hides it when `title` is nil.
     func setLink(title: String?) {
         guard let title else {
-            linkButton.isHidden = true
-            linkButton.superview?.isHidden = true
+            linkContainerView.isHidden = true
             return
         }
 
         linkButton.bindLearnMore(learnMoreText: title, style: .caption1Secondary)
-        linkButton.isHidden = false
-        linkButton.superview?.isHidden = false
+        linkContainerView.isHidden = false
     }
 
     static func warning() -> InlineAlertView {
@@ -161,11 +149,11 @@ extension InlineAlertView {
         static let verticalContentInset: CGFloat = 10
         static let iconWidth: CGFloat = 16
         static let iconTextSpacing: CGFloat = 12
-        static let linkRowHeight: CGFloat = 24
+        static let linkRowHeight: CGFloat = 32
         static let linkTopSpacing: CGFloat = 4
     }
 
-    static func estimatedHeight(for message: String, width: CGFloat, hasLink: Bool = false) -> CGFloat {
+    static func estimatedHeight(for message: String, width: CGFloat, hasLink: Bool) -> CGFloat {
         let minHeight = Constants.iconWidth + 2 * Constants.verticalContentInset
 
         let textWidth = width - 2 * Constants.horizontalContentInset

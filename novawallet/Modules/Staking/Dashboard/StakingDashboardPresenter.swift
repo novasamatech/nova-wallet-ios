@@ -8,6 +8,7 @@ final class StakingDashboardPresenter: AnalyticsTracking {
     let wireframe: StakingDashboardWireframeProtocol
     let interactor: StakingDashboardInteractorInputProtocol
     let viewModelFactory: StakingDashboardViewModelFactoryProtocol
+    let announcementViewModelFactory: AnnouncementViewModelFactoryProtocol
     let logger: LoggerProtocol
 
     let walletViewModelFactory = WalletSwitchViewModelFactory()
@@ -21,6 +22,7 @@ final class StakingDashboardPresenter: AnalyticsTracking {
         interactor: StakingDashboardInteractorInputProtocol,
         wireframe: StakingDashboardWireframeProtocol,
         viewModelFactory: StakingDashboardViewModelFactoryProtocol,
+        announcementViewModelFactory: AnnouncementViewModelFactoryProtocol,
         privacyStateManager: PrivacyStateManagerProtocol,
         localizationManager: LocalizationManagerProtocol,
         appearanceFacade: AppearanceFacadeProtocol,
@@ -29,6 +31,7 @@ final class StakingDashboardPresenter: AnalyticsTracking {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.announcementViewModelFactory = announcementViewModelFactory
         self.logger = logger
         self.localizationManager = localizationManager
         self.privacyStateManager = privacyStateManager
@@ -126,7 +129,14 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
         wireframe.showMoreOptions(from: view)
     }
 
-    func selectAnnouncementLink(url: URL) {
+    func selectAnnouncementLink(at index: Int) {
+        let viewModels = announcementViewModelFactory.createGeneralViewModels(
+            from: announcements,
+            locale: selectedLocale
+        )
+
+        guard let url = viewModels[safe: index]?.link?.url else { return }
+
         wireframe.openBrowser(with: .query(string: url.absoluteString))
     }
 

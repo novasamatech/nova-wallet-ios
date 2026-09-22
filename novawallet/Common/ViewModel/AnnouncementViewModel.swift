@@ -79,8 +79,16 @@ extension InlineAlertView {
         }
     }
 
-    static func estimatedHeight(for viewModel: AnnouncementViewModel, width: CGFloat) -> CGFloat {
-        estimatedHeight(for: viewModel.message, width: width, hasLink: viewModel.link != nil)
+    static func estimatedHeight(
+        for viewModel: AnnouncementViewModel,
+        width: CGFloat,
+        includingLink: Bool = true
+    ) -> CGFloat {
+        estimatedHeight(
+            for: viewModel.message,
+            width: width,
+            hasLink: includingLink && viewModel.link != nil
+        )
     }
 }
 

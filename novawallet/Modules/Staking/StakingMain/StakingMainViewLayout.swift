@@ -52,8 +52,6 @@ final class StakingMainViewLayout: UIView {
 
     lazy var announcementView = InlineAlertView()
 
-    private(set) var announcementLinkURL: URL?
-
     var rewardContainerView: UIView?
     var rewardView: StakingRewardView?
     lazy var alertsContainerView = UIView()
@@ -435,8 +433,6 @@ extension StakingMainViewLayout {
     }
 
     func setAnnouncement(with viewModel: AnnouncementViewModel?) {
-        announcementLinkURL = viewModel?.link?.url
-
         if let viewModel {
             guard announcementContainerView.superview == nil else {
                 announcementView.bind(announcement: viewModel)

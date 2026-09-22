@@ -47,10 +47,10 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
         balanceLabel
     ])
 
+    var onAnnouncementLinkTap: (() -> Void)?
+
     private var announcementView: InlineAlertView?
     private var announcementViewModel: AnnouncementViewModel?
-
-    var onAnnouncementLinkTap: ((URL) -> Void)?
     private var appliedFooterExtra: CGFloat = 0
 
     init(headerStyle: MultiColorTextStyle, paragraphStyle: MultiColorTextStyle) {
@@ -143,15 +143,14 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
                 banner = announcementView
             } else {
                 banner = InlineAlertView()
+                banner.onLinkTap = { [weak self] in
+                    self?.onAnnouncementLinkTap?()
+                }
                 footerContentView.insertArrangedSubview(banner, at: 0)
                 announcementView = banner
             }
 
             banner.bind(announcement: viewModel)
-            banner.onLinkTap = { [weak self] in
-                guard let url = self?.announcementViewModel?.link?.url else { return }
-                self?.onAnnouncementLinkTap?(url)
-            }
         } else {
             announcementView?.removeFromSuperview()
             announcementView = nil

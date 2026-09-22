@@ -1,4 +1,3 @@
-import Foundation
 import BigInt
 
 protocol StartStakingInfoViewProtocol: AnyObject, ControllerBackedProtocol {
@@ -10,7 +9,7 @@ protocol StartStakingInfoViewProtocol: AnyObject, ControllerBackedProtocol {
 protocol StartStakingInfoPresenterProtocol: AnyObject {
     func setup()
     func startStaking()
-    func selectAnnouncementLink(url: URL)
+    func selectAnnouncementLink()
 }
 
 protocol StartStakingInfoInteractorInputProtocol: AnyObject {

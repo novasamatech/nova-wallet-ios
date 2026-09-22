@@ -211,8 +211,9 @@ extension StakingDashboardActiveCellView {
         }
 
         return Constants.baseContentHeight + InlineAlertView.estimatedHeight(
-            for: announcement.message,
-            width: collectionWidth - 2 * UIConstants.horizontalInset
+            for: announcement,
+            width: collectionWidth - 2 * UIConstants.horizontalInset,
+            includingLink: false
         )
     }
 }

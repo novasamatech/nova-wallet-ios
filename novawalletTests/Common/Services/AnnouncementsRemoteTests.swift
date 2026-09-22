@@ -110,8 +110,6 @@ final class AnnouncementsRemoteTests: XCTestCase {
         XCTAssertNil(link.title(for: Locale(identifier: "en")))
     }
 
-    // MARK: - Private
-
     private func decodeSingle(_ json: String) throws -> Announcement {
         let data = try XCTUnwrap(json.data(using: .utf8))
         let remote = try JSONDecoder().decode(AnnouncementsRemote.self, from: data)

@@ -68,8 +68,8 @@ final class StartStakingInfoViewController: UIViewController, ViewHolder {
     private func setupHandlers() {
         rootView.actionView.actionButton.addTarget(self, action: #selector(startStakingAction), for: .touchUpInside)
 
-        rootView.onAnnouncementLinkTap = { [weak self] url in
-            self?.presenter.selectAnnouncementLink(url: url)
+        rootView.onAnnouncementLinkTap = { [weak self] in
+            self?.presenter.selectAnnouncementLink()
         }
     }
 
