@@ -37,8 +37,6 @@ extension HydraAave {
             .uint(bits: 128)
         ])
 
-        // Minimal interface from deployments/hydration/Pool-Implementation.json
-        // in galacticcouncil/money-market.
         private static let abi: [ABI.Element] = [
             .function(
                 .init(
