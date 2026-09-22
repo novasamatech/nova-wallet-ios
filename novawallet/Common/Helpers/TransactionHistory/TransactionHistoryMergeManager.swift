@@ -95,11 +95,12 @@ final class TransactionHistoryMergeManager {
     ) -> TransactionHistoryMergeResult {
         let existingIds = Set(remoteItems.map(\.localIdentifier))
         let existingRemoteIds = Set(remoteItems.map(\.remoteIdentifier))
+        let localOnlySwapIds = findLocalOnlySwapIdentifiers(remoteItems: remoteItems, localItems: localItems)
 
         let minRemoteItem = remoteItems.last
 
         let identifiersToRemove: [String] = localItems.compactMap { item in
-            if existingIds.contains(item.identifier) {
+            if existingIds.contains(item.identifier), !localOnlySwapIds.contains(item.identifier) {
                 return item.identifier
             }
 
@@ -128,8 +129,12 @@ final class TransactionHistoryMergeManager {
             return TransactionHistoryMergeItem.local(item: item)
         }
 
-        let remoteMergeItems: [TransactionHistoryMergeItem] = remoteItems.map {
-            TransactionHistoryMergeItem.remote(remote: $0)
+        let remoteMergeItems: [TransactionHistoryMergeItem] = remoteItems.compactMap { item in
+            guard !localOnlySwapIds.contains(item.localIdentifier) else {
+                return nil
+            }
+
+            return TransactionHistoryMergeItem.remote(remote: item)
         }
 
         let transactionsItems = (localMergeItems + remoteMergeItems)
@@ -144,5 +149,19 @@ final class TransactionHistoryMergeManager {
         )
 
         return results
+    }
+}
+
+// MARK: Private
+
+private extension TransactionHistoryMergeManager {
+    func findLocalOnlySwapIdentifiers(
+        remoteItems: [WalletRemoteHistoryItemProtocol],
+        localItems: [TransactionHistoryItem]
+    ) -> Set<String> {
+        let remoteSwapIds = Set(remoteItems.filter { $0.label == .swaps }.map(\.localIdentifier))
+        let localSwapIds = Set(localItems.filter { $0.swap != nil }.map(\.identifier))
+
+        return localSwapIds.subtracting(remoteSwapIds)
     }
 }

@@ -37,7 +37,8 @@ final class SwapTokensFlowState {
             logger: assetExchangeParams.logger
         )
 
-        commissionPolicy = AssetExchangeCommissionPolicyFactory.createHydrationPolicy(
+        commissionPolicy = AssetExchangeCommissionPolicyFactory.createSwapPolicy(
+            assetHubBeneficiaryAddresses: AssetExchangeCommissionConstants.assetHubBeneficiaryAddresses,
             logger: assetExchangeParams.logger
         )
     }
