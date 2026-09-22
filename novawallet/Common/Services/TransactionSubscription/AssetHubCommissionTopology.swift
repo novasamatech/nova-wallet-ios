@@ -1,6 +1,5 @@
 import Foundation
 import SubstrateSdk
-import BigInt
 
 enum AssetHubDispatchWrapper {
     case proxy
@@ -57,26 +56,13 @@ enum AssetHubCommissionTopology {
         others: [AccountId],
         threshold: MultisigPallet.Threshold
     ) throws -> AccountId {
-        let signatories = (others + [sender]).sorted { $0.lexicographicallyPrecedes($1) }
-
         guard
             !others.isEmpty,
-            threshold > 0,
-            Int(threshold) <= signatories.count,
-            signatories.count < 1 << 30,
-            Set(signatories).count == signatories.count,
-            signatories.allSatisfy({ $0.count == SubstrateConstants.accountIdLength }),
             others == others.sorted(by: { $0.lexicographicallyPrecedes($1) }) else {
             throw AssetHubCommissionTopologyError.invalidMultisigSignatories
         }
 
-        let encoder = ScaleEncoder()
-        encoder.appendRaw(data: Data("modlpy/utilisuba".utf8))
-        try BigUInt(signatories.count).encode(scaleEncoder: encoder)
-        signatories.forEach { encoder.appendRaw(data: $0) }
-        encoder.appendRaw(data: Data(threshold.littleEndianBytes))
-
-        return try encoder.encode().blake2b32()
+        return try MultisigPallet.deriveAccountId(signatories: others + [sender], threshold: threshold)
     }
 }
 
