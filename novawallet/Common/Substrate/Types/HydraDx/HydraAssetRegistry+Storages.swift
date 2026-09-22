@@ -24,4 +24,12 @@ extension HydraAssetRegistry {
             ).value
         }
     }
+
+    struct AssetLocationValue: Decodable {
+        let location: XcmUni.RelativeLocation
+
+        init(from decoder: Decoder) throws {
+            location = try XcmUni.RelativeLocation(from: decoder, configuration: .V5)
+        }
+    }
 }

@@ -1,70 +1,104 @@
 import BigInt
 import Foundation
 import SubstrateSdk
+import Web3Core
+import web3swift
 
 extension HydraAave {
     enum ContractError: Error {
         case invalidAddress
+        case invalidCallData
         case invalidResponse
     }
 
     enum Contract {
         static let poolAddress = "0x1b02E051683b5cfaC5929C25E84adb26ECf87B38"
 
-        private static let getReservesListSelector = "0xd1946dbc"
-        private static let getReserveDataSelector = "0x35ea6a75"
-        private static let abiWordHexLength = 64
+        private static let getReservesListMethod = "getReservesList"
+        private static let getReserveDataMethod = "getReserveData"
         private static let addressByteLength = 20
-        private static let aTokenWordIndex = 8
+        private static let aTokenIndex = 8
         private static let assetPrecompilePrefix = Data(repeating: 0, count: 15) + Data([1])
+        private static let reserveDataABIType = ABI.Element.ParameterType.tuple(types: [
+            .tuple(types: [.uint(bits: 256)]),
+            .uint(bits: 128),
+            .uint(bits: 128),
+            .uint(bits: 128),
+            .uint(bits: 128),
+            .uint(bits: 128),
+            .uint(bits: 40),
+            .uint(bits: 16),
+            .address,
+            .address,
+            .address,
+            .address,
+            .uint(bits: 128),
+            .uint(bits: 128),
+            .uint(bits: 128)
+        ])
 
-        static func getReservesListCall() -> String {
-            getReservesListSelector
+        // Minimal interface from deployments/hydration/Pool-Implementation.json
+        // in galacticcouncil/money-market.
+        private static let abi: [ABI.Element] = [
+            .function(
+                .init(
+                    name: getReservesListMethod,
+                    inputs: [],
+                    outputs: [
+                        .init(name: "", type: .array(type: .address, length: 0))
+                    ],
+                    constant: true,
+                    payable: false
+                )
+            ),
+            .function(
+                .init(
+                    name: getReserveDataMethod,
+                    inputs: [
+                        .init(name: "asset", type: .address)
+                    ],
+                    outputs: [
+                        .init(name: "", type: reserveDataABIType)
+                    ],
+                    constant: true,
+                    payable: false
+                )
+            )
+        ]
+
+        static func getReservesListCall() throws -> String {
+            try encodeCall(method: getReservesListMethod, parameters: [])
         }
 
         static func getReserveDataCall(reserve: AccountId) throws -> String {
-            guard reserve.count == addressByteLength else {
+            guard let address = EthereumAddress(reserve) else {
                 throw ContractError.invalidAddress
             }
 
-            return getReserveDataSelector + reserve.toHex().leftPadding(
-                toLength: abiWordHexLength,
-                withPad: "0"
-            )
+            return try encodeCall(method: getReserveDataMethod, parameters: [address])
         }
 
         static func decodeReservesList(response: String) throws -> [AccountId] {
-            let normalized = normalize(response)
-            let offsetWord = try word(at: 0, in: normalized)
+            let result = try decodeResponse(response, method: getReservesListMethod)
 
-            guard
-                let offset = Int(offsetWord, radix: 16),
-                offset.isMultiple(of: abiWordHexLength / 2) else {
+            guard let addresses = result["0"] as? [EthereumAddress] else {
                 throw ContractError.invalidResponse
             }
 
-            let lengthWordIndex = offset / (abiWordHexLength / 2)
-            let responseWordCount = normalized.count / abiWordHexLength
-
-            guard lengthWordIndex < responseWordCount else {
-                throw ContractError.invalidResponse
-            }
-
-            let lengthWord = try word(at: lengthWordIndex, in: normalized)
-
-            guard
-                let length = Int(lengthWord, radix: 16),
-                length <= responseWordCount - lengthWordIndex - 1 else {
-                throw ContractError.invalidResponse
-            }
-
-            return try (0 ..< length).map { index in
-                try decodeAddress(from: word(at: lengthWordIndex + index + 1, in: normalized))
-            }
+            return addresses.map(\.addressData)
         }
 
         static func decodeATokenAddress(response: String) throws -> AccountId {
-            try decodeAddress(from: word(at: aTokenWordIndex, in: normalize(response)))
+            let result = try decodeResponse(response, method: getReserveDataMethod)
+
+            guard
+                let reserveData = result["0"] as? [Any],
+                reserveData.indices.contains(aTokenIndex),
+                let address = reserveData[aTokenIndex] as? EthereumAddress else {
+                throw ContractError.invalidResponse
+            }
+
+            return address.addressData
         }
 
         static func assetId(
@@ -82,103 +116,22 @@ extension HydraAave {
             return registeredAssets[address]
         }
 
-        static func findAccountKey20(in value: JSON) -> AccountId? {
-            switch value {
-            case let .dictionaryValue(dictionary):
-                if let accountKey = dictionary.first(where: {
-                    $0.key.caseInsensitiveCompare("AccountKey20") == .orderedSame
-                })?.value {
-                    return decodeAccountKey20(from: accountKey)
-                }
+        private static func encodeCall(method: String, parameters: [Any]) throws -> String {
+            let contract = try EthereumContract(abi: abi)
 
-                return dictionary.values.lazy.compactMap(findAccountKey20).first
-            case let .arrayValue(array):
-                if
-                    array.count == 2,
-                    array[0].stringValue?.caseInsensitiveCompare("AccountKey20") == .orderedSame {
-                    return decodeAccountKey20(from: array[1])
-                }
-
-                return array.lazy.compactMap(findAccountKey20).first
-            default:
-                return nil
+            guard let data = contract.method(method, parameters: parameters, extraData: Data()) else {
+                throw ContractError.invalidCallData
             }
+
+            return data.toHex(includePrefix: true)
         }
 
-        private static func normalize(_ value: String) -> String {
-            value.hasPrefix("0x") ? String(value.dropFirst(2)).lowercased() : value.lowercased()
-        }
-
-        private static func word(at index: Int, in response: String) throws -> String {
-            guard index >= 0 else {
+        private static func decodeResponse(_ response: String, method: String) throws -> [String: Any] {
+            do {
+                let data = try Data(hexString: response)
+                return try EthereumContract(abi: abi).decodeReturnData(method, data: data)
+            } catch {
                 throw ContractError.invalidResponse
-            }
-
-            let startOffset = index * abiWordHexLength
-            let endOffset = startOffset + abiWordHexLength
-
-            guard response.count >= endOffset else {
-                throw ContractError.invalidResponse
-            }
-
-            let start = response.index(response.startIndex, offsetBy: startOffset)
-            let end = response.index(response.startIndex, offsetBy: endOffset)
-            let result = String(response[start ..< end])
-
-            guard result.allSatisfy(\.isHexDigit) else {
-                throw ContractError.invalidResponse
-            }
-
-            return result
-        }
-
-        private static func decodeAddress(from word: String) throws -> AccountId {
-            let addressHexLength = addressByteLength * 2
-            let address = String(word.suffix(addressHexLength))
-
-            guard let result = try? AccountId(hexString: address), result.count == addressByteLength else {
-                throw ContractError.invalidResponse
-            }
-
-            return result
-        }
-
-        private static func decodeAccountKey20(from value: JSON) -> AccountId? {
-            switch value {
-            case let .stringValue(string):
-                guard let result = try? AccountId(hexString: string), result.count == addressByteLength else {
-                    return nil
-                }
-
-                return result
-            case let .dictionaryValue(dictionary):
-                if let key = dictionary.first(where: {
-                    $0.key.caseInsensitiveCompare("key") == .orderedSame
-                })?.value {
-                    return decodeAccountKey20(from: key)
-                }
-
-                return dictionary.values.lazy.compactMap(decodeAccountKey20).first
-            case let .arrayValue(array):
-                let bytes = array.compactMap { item -> UInt8? in
-                    if let value = item.unsignedIntValue, value <= UInt8.max {
-                        return UInt8(value)
-                    }
-
-                    if let value = item.stringValue {
-                        return UInt8(value)
-                    }
-
-                    return nil
-                }
-
-                if bytes.count == addressByteLength, bytes.count == array.count {
-                    return Data(bytes)
-                }
-
-                return array.lazy.compactMap(decodeAccountKey20).first
-            default:
-                return nil
             }
         }
     }

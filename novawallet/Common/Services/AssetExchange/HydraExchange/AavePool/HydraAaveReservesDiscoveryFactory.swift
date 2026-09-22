@@ -56,7 +56,7 @@ private extension HydraAaveReservesDiscoveryFactory {
 
         let request = UnkeyedRemoteStorageRequest(storagePath: HydraAssetRegistry.assetLocationsPath)
         let locationsWrapper: CompoundOperationWrapper<
-            [HydraAssetRegistry.AssetLocationKey: JSON]
+            [HydraAssetRegistry.AssetLocationKey: HydraAssetRegistry.AssetLocationValue]
         > = requestFactory.queryByPrefix(
             engine: connection,
             request: request,
@@ -70,11 +70,13 @@ private extension HydraAaveReservesDiscoveryFactory {
             let locations = try locationsWrapper.targetOperation.extractNoCancellableResultData()
 
             return locations.reduce(into: [:]) { result, item in
-                guard let accountId = HydraAave.Contract.findAccountKey20(in: item.value) else {
+                guard
+                    case let .accountKey20(account) = item.value.location.interior.items.last,
+                    account.accountId.count == 20 else {
                     return
                 }
 
-                result[accountId] = item.key.assetId
+                result[account.accountId] = item.key.assetId
             }
         }
 
@@ -125,9 +127,15 @@ private extension HydraAaveReservesDiscoveryFactory {
 
 extension HydraAaveReservesDiscoveryFactory: HydraAaveReservesDiscoveryFactoryProtocol {
     func createPairsWrapper() -> CompoundOperationWrapper<[HydraAave.TradePair]> {
-        let reservesCallOperation = createContractCallOperation(
-            data: HydraAave.Contract.getReservesListCall()
-        )
+        let reservesCallOperation: BaseOperation<String>
+
+        do {
+            reservesCallOperation = createContractCallOperation(
+                data: try HydraAave.Contract.getReservesListCall()
+            )
+        } catch {
+            return .createWithError(error)
+        }
 
         let reservesOperation = ClosureOperation<[AccountId]> {
             let response = try reservesCallOperation.extractNoCancellableResultData()
