@@ -167,7 +167,7 @@ final class StakingDashboardActiveCellView: UIView {
                 }
             }
 
-            announcementView.bind(announcement: viewModel)
+            announcementView.bind(announcement: viewModel, includingLink: false)
         } else {
             announcementView.removeFromSuperview()
         }
@@ -211,8 +211,9 @@ extension StakingDashboardActiveCellView {
         }
 
         return Constants.baseContentHeight + InlineAlertView.estimatedHeight(
-            for: announcement.message,
-            width: collectionWidth - 2 * UIConstants.horizontalInset
+            for: announcement,
+            width: collectionWidth - 2 * UIConstants.horizontalInset,
+            includingLink: false
         )
     }
 }

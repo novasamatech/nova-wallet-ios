@@ -2,11 +2,14 @@ import Foundation
 import BigInt
 import SubstrateSdk
 
-private struct AssetHubSwapExtrinsicCallArgs {
-    let receiver: AccountId
-    let amountIn: BigUInt
-    let amountOut: BigUInt
-    let path: [AssetConversionPallet.AssetId]
+enum AssetHubSwapMatch {
+    case notMatched
+    case unresolved
+    case matched(ExtrinsicProcessingResult)
+}
+
+private enum AssetHubSwapMatchingError: Error {
+    case unresolvedCommission
 }
 
 private struct AssetHubSwapExtrinsicParsingResult {
@@ -28,17 +31,15 @@ extension ExtrinsicProcessor {
         extrinsic: Extrinsic,
         eventRecords: [EventRecord],
         codingFactory: RuntimeCoderFactoryProtocol
-    ) -> ExtrinsicProcessingResult? {
+    ) -> AssetHubSwapMatch {
         do {
             let context = codingFactory.createRuntimeJsonContext()
 
-            let maybeExtrinsicSender: AccountId? = try extrinsic.getSignedExtrinsic()?.signature.address.map(
-                to: MultiAddress.self,
-                with: context.toRawContext()
-            ).accountId
-
-            guard let extrinsicSender = maybeExtrinsicSender else {
-                return nil
+            guard let extrinsicSender = ExtrinsicExtraction.getSender(
+                from: extrinsic,
+                codingFactory: codingFactory
+            ) else {
+                return .notMatched
             }
 
             guard let swapResult = try parseAssetHubSwapExtrinsic(
@@ -48,10 +49,10 @@ extension ExtrinsicProcessor {
                 eventRecords: eventRecords,
                 codingFactory: codingFactory
             ) else {
-                return nil
+                return .notMatched
             }
 
-            let fee: BigUInt
+            let fee: BigUInt?
             let feeAssetId: AssetModel.Id?
 
             if
@@ -59,24 +60,23 @@ extension ExtrinsicProcessor {
                 let customFeeAssetId = swapResult.customFee?.assetId {
                 fee = customFeeAmount
                 feeAssetId = customFeeAssetId
-            } else {
-                let optNativeFee = findFee(
-                    for: extrinsicIndex,
-                    sender: extrinsicSender,
-                    eventRecords: eventRecords,
-                    metadata: codingFactory.metadata,
-                    runtimeJsonContext: context
-                )
-
-                guard let nativeFee = optNativeFee else {
-                    return nil
-                }
-
+            } else if let nativeFee = findFee(
+                for: extrinsicIndex,
+                sender: extrinsicSender,
+                eventRecords: eventRecords,
+                metadata: codingFactory.metadata,
+                runtimeJsonContext: context
+            ) {
                 fee = nativeFee.amount
                 feeAssetId = chain.utilityAsset()?.assetId
+            } else {
+                logger.debug("No fee found for Asset Hub swap \(extrinsicIndex) in \(chain.chainId)")
+
+                fee = nil
+                feeAssetId = nil
             }
 
-            return .init(
+            return .matched(.init(
                 sender: swapResult.callSender,
                 callPath: swapResult.callPath,
                 call: swapResult.call,
@@ -93,10 +93,14 @@ extension ExtrinsicProcessor {
                     amountIn: swapResult.amountIn,
                     amountOut: swapResult.amountOut
                 )
-            )
+            ))
 
+        } catch AssetHubSwapMatchingError.unresolvedCommission {
+            return .unresolved
         } catch {
-            return nil
+            logger.debug("Asset Hub swap matching skipped for \(extrinsicIndex) in \(chain.chainId): \(error)")
+
+            return .notMatched
         }
     }
 
@@ -108,6 +112,54 @@ extension ExtrinsicProcessor {
         codingFactory: RuntimeCoderFactoryProtocol
     ) throws -> AssetHubSwapExtrinsicParsingResult? {
         let context = codingFactory.createRuntimeJsonContext()
+
+        guard
+            let isSuccess = matchStatus(
+                for: extrinsicIndex,
+                eventRecords: eventRecords,
+                metadata: codingFactory.metadata
+            ) else {
+            return nil
+        }
+
+        let customFee = findAssetsCustomFee(
+            for: extrinsicIndex,
+            eventRecords: eventRecords,
+            codingFactory: codingFactory
+        )
+
+        let extrinsicEvents = eventRecords.filter { $0.extrinsicIndex == extrinsicIndex }
+
+        switch AssetHubCommissionHistoryParser(logger: logger).parse(
+            extrinsic: extrinsic,
+            sender: sender,
+            account: accountId,
+            events: extrinsicEvents.map(\.event),
+            extrinsicSucceeded: isSuccess,
+            chain: chain,
+            codingFactory: codingFactory,
+            beneficiaries: assetHubCommissionBeneficiaries
+        ) {
+        case .notCommissioned:
+            break
+        case let .recognizedButUnresolved(error):
+            logger.error("Unresolved Asset Hub commission in \(chain.chainId): \(error)")
+
+            throw AssetHubSwapMatchingError.unresolvedCommission
+        case let .swap(swap):
+            return .init(
+                callSender: swap.sender,
+                receiver: swap.receiver,
+                assetIdIn: swap.assetIn,
+                amountIn: swap.amountIn,
+                assetIdOut: swap.assetOut,
+                amountOut: swap.netAmountOut,
+                callPath: swap.call.path,
+                call: swap.call.args,
+                customFee: customFee,
+                isSuccess: swap.isSuccess
+            )
+        }
 
         let callMapper = NestedExtrinsicCallMapper(extrinsicSender: sender)
 
@@ -135,26 +187,11 @@ extension ExtrinsicProcessor {
             return nil
         }
 
-        let customFee = findAssetsCustomFee(
-            for: extrinsicIndex,
-            eventRecords: eventRecords,
-            codingFactory: codingFactory
-        )
-
-        guard
-            let isSuccess = matchStatus(
-                for: extrinsicIndex,
-                eventRecords: eventRecords,
-                metadata: codingFactory.metadata
-            ) else {
-            return nil
-        }
-
         if isSuccess {
             return try findSuccessAssetHubSwapResult(
                 from: call,
                 callSender: mappingResult.callSender,
-                eventRecords: eventRecords.filter { $0.extrinsicIndex == extrinsicIndex },
+                eventRecords: extrinsicEvents,
                 customFee: customFee,
                 codingFactory: codingFactory
             )
@@ -191,8 +228,17 @@ extension ExtrinsicProcessor {
             return try? record.event.params.map(to: type, with: context.toRawContext())
         }
 
+        guard let decoded = try? AssetConversionSwapCallDecoder.decode(call, context: context) else {
+            return nil
+        }
+
+        let matchingEvents = swapEvents.filter {
+            matches(swapEvent: $0, sender: callSender, decoded: decoded)
+        }
+
         guard
-            let swap = swapEvents.last,
+            matchingEvents.count == 1,
+            let swap = matchingEvents.first,
             let remoteAssetIn = swap.path.first?.asset,
             let remoteAssetOut = swap.path.last?.asset
         else {
@@ -240,33 +286,20 @@ extension ExtrinsicProcessor {
     ) throws -> AssetHubSwapExtrinsicParsingResult? {
         let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
 
+        let context = codingFactory.createRuntimeJsonContext()
+
         let conversionClosure = AssetHubTokensConverter.createPoolAssetToLocalClosure(
             for: chain,
             codingFactory: codingFactory
         )
 
-        let context = codingFactory.createRuntimeJsonContext()
-        let args: AssetHubSwapExtrinsicCallArgs
-
-        switch callPath {
-        case AssetConversionPallet.swapExactTokenForTokensPath:
-            let type = AssetConversionPallet.SwapExactTokensForTokensCall.self
-            let call = try call.args.map(to: type, with: context.toRawContext())
-
-            args = .init(receiver: call.sendTo, amountIn: call.amountIn, amountOut: call.amountOutMin, path: call.path)
-
-        case AssetConversionPallet.swapTokenForExactTokens:
-            let type = AssetConversionPallet.SwapTokensForExactTokensCall.self
-            let call = try call.args.map(to: type, with: context.toRawContext())
-
-            args = .init(receiver: call.sendTo, amountIn: call.amountInMax, amountOut: call.amountOut, path: call.path)
-        default:
+        guard let decoded = try? AssetConversionSwapCallDecoder.decode(call, context: context) else {
             return nil
         }
 
         guard
-            let remoteAssetIn = args.path.first,
-            let remoteAssetOut = args.path.last,
+            let remoteAssetIn = decoded.path.first,
+            let remoteAssetOut = decoded.path.last,
             let assetIn = AssetHubTokensConverter.convertFromMultilocationToLocal(
                 remoteAssetIn,
                 chain: chain,
@@ -282,15 +315,31 @@ extension ExtrinsicProcessor {
 
         return .init(
             callSender: callSender,
-            receiver: args.receiver,
+            receiver: decoded.receiver,
             assetIdIn: assetIn.asset.assetId,
-            amountIn: args.amountIn,
+            amountIn: decoded.amountIn,
             assetIdOut: assetOut.asset.assetId,
-            amountOut: args.amountOut,
+            amountOut: decoded.amountOut,
             callPath: callPath,
             call: call.args,
             customFee: customFee,
             isSuccess: false
+        )
+    }
+}
+
+private extension ExtrinsicProcessor {
+    func matches(
+        swapEvent: AssetConversionPallet.SwapExecutedEvent,
+        sender: AccountId,
+        decoded: AssetHubCommissionHistoryParser.DecodedSwapCall
+    ) -> Bool {
+        AssetConversionSwapBounds.matches(
+            event: swapEvent,
+            origin: sender,
+            receiver: decoded.receiver,
+            path: decoded.path,
+            bounds: AssetConversionSwapBounds(swap: decoded.call)
         )
     }
 }

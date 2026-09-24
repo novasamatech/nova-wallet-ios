@@ -64,14 +64,16 @@ private extension StakingMainPresenter {
         view?.didReceiveAHMAlert(viewModel: ahmAlertModel)
     }
 
-    func provideAnnouncementModel() {
-        let viewModel = announcementViewModelFactory.createChainViewModel(
+    func createAnnouncementViewModel() -> AnnouncementViewModel? {
+        announcementViewModelFactory.createChainViewModel(
             from: announcements,
             chainId: stakingOption.chainAsset.chain.chainId,
             locale: selectedLocale
         )
+    }
 
-        view?.didReceiveAnnouncement(viewModel: viewModel)
+    func provideAnnouncementModel() {
+        view?.didReceiveAnnouncement(viewModel: createAnnouncementViewModel())
     }
 }
 
@@ -135,13 +137,15 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
     }
 
     func handleAHMAlertLearnMore() {
-        guard let view, let ahmInfo else { return }
+        guard let ahmInfo else { return }
 
-        wireframe.showWeb(
-            url: ahmInfo.info.wikiURL,
-            from: view,
-            style: .automatic
-        )
+        wireframe.openBrowser(with: .query(string: ahmInfo.info.wikiURL.absoluteString))
+    }
+
+    func selectAnnouncementLink() {
+        guard let url = createAnnouncementViewModel()?.link?.url else { return }
+
+        wireframe.openBrowser(with: .query(string: url.absoluteString))
     }
 }
 

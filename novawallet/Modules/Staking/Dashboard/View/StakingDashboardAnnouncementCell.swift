@@ -4,6 +4,11 @@ import UIKit_iOS
 final class StakingDashboardAnnouncementCell: UICollectionViewCell {
     let alertView = InlineAlertView()
 
+    var onLinkTap: (() -> Void)? {
+        get { alertView.onLinkTap }
+        set { alertView.onLinkTap = newValue }
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -35,7 +40,7 @@ extension StakingDashboardAnnouncementCell {
         collectionWidth: CGFloat
     ) -> CGFloat {
         InlineAlertView.estimatedHeight(
-            for: viewModel.message,
+            for: viewModel,
             width: collectionWidth - 2 * UIConstants.horizontalInset
         )
     }
