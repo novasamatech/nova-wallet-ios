@@ -10,7 +10,7 @@ extension StakingType {
             return .pool
         case .mythos:
             return .mythos
-        case .unsupported:
+        case .subtensor, .unsupported:
             return .unsupported
         }
     }

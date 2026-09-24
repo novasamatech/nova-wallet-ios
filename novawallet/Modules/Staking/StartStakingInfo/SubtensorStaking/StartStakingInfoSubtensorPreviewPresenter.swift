@@ -52,6 +52,8 @@ extension StartStakingInfoSubtensorPreviewPresenter: StartStakingInfoSubtensorPr
         wireframe.showStrategies(from: view)
     }
 
+    func selectAnnouncementLink() {}
+
     func chooseManually() {
         wireframe.showManualStaking(from: view)
     }

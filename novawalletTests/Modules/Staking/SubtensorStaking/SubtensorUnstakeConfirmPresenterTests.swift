@@ -27,7 +27,6 @@ final class SubtensorUnstakeConfirmPresenterTests: XCTestCase {
             typeExtras: nil,
             buyProviders: nil,
             sellProviders: nil,
-            enabled: true,
             source: .remote
         )
 
