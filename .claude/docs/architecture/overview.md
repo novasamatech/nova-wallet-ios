@@ -1,8 +1,8 @@
 # Architecture Overview
 
 Nova Wallet iOS is a non-custodial multi-chain wallet for the Polkadot/Kusama ecosystem plus EVM
-chains. It is a single Xcode project (no workspace packages) with one app target, one notification
-service extension, and two test targets.
+chains. It is a single Xcode project plus three local SPM packages under `Packages/`, with one app
+target, one notification service extension, and two test targets.
 
 ## Stack
 
@@ -17,7 +17,7 @@ service extension, and two test targets.
 | Persistence       | CoreData via two storage facades + `SettingsManager` (UserDefaults) + Keychain |
 | Resources         | R.swift (`R.color`, `R.image`, `R.string(preferredLanguages:).localizable`)   |
 | Localization      | `.strings` catalogs per language + `LocalizableResource<T>`                   |
-| Dependency mgmt   | Swift Package Manager, all remote (no local packages)                         |
+| Dependency mgmt   | Swift Package Manager, remote plus three local packages under `Packages/`    |
 | Codegen           | R.swift (build phase), Sourcery (CI keys), Cuckoo (test mocks, checked in)     |
 | CI/CD             | GitHub Actions + fastlane (Firebase distribution, TestFlight)                 |
 

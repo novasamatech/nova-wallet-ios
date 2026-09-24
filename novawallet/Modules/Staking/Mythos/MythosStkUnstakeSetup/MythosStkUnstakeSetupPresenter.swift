@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import NovaAnalytics
 
 final class MythosStkUnstakeSetupPresenter {
     weak var view: CollatorStkFullUnstakeSetupViewProtocol?
@@ -11,6 +12,7 @@ final class MythosStkUnstakeSetupPresenter {
     let dataValidatingFactory: MythosStakingValidationFactoryProtocol
     let accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol
     let hintViewModelFactory: CollatorStakingHintsViewModelFactoryProtocol
+    let stakingType: StakingAnalyticsType
 
     private(set) var fee: ExtrinsicFeeProtocol?
     private(set) var balance: AssetBalance?
@@ -33,6 +35,7 @@ final class MythosStkUnstakeSetupPresenter {
         dataValidatingFactory: MythosStakingValidationFactoryProtocol,
         accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol,
         hintViewModelFactory: CollatorStakingHintsViewModelFactoryProtocol,
+        stakingType: StakingAnalyticsType,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -43,6 +46,7 @@ final class MythosStkUnstakeSetupPresenter {
         self.dataValidatingFactory = dataValidatingFactory
         self.accountDetailsViewModelFactory = accountDetailsViewModelFactory
         self.hintViewModelFactory = hintViewModelFactory
+        self.stakingType = stakingType
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -63,7 +67,7 @@ private extension MythosStkUnstakeSetupPresenter {
         return stakingDetails?.stakeDistribution[collatorId]?.stake ?? 0
     }
 
-    func decimalStakingAmount() -> Decimal {
+    internal func decimalStakingAmount() -> Decimal {
         stakingAmountInPlank().decimal(assetInfo: chainAsset.assetDisplayInfo)
     }
 
@@ -292,6 +296,8 @@ extension MythosStkUnstakeSetupPresenter: CollatorStkFullUnstakeSetupPresenterPr
             guard let self, let collatorDisplayAddress else {
                 return
             }
+
+            trackUnstakeInitiated()
 
             wireframe.showConfirm(from: view, collator: collatorDisplayAddress)
         }

@@ -29,6 +29,12 @@ extension CoingeckoOperationFactoryProtocol {
 }
 
 final class CoingeckoOperationFactory {
+    private let crossRateUpdater: AnalyticsCrossRateUpdating?
+
+    init(crossRateUpdater: AnalyticsCrossRateUpdating? = AnalyticsCrossRateFactory.createUpdater()) {
+        self.crossRateUpdater = crossRateUpdater
+    }
+
     private func buildURLForAssets(
         _ tokenIds: [String],
         method: String,
@@ -116,6 +122,46 @@ final class CoingeckoOperationFactory {
     }
 }
 
+// MARK: - Private
+
+private extension CoingeckoOperationFactory {
+    static func currencyCodes(for currency: Currency) -> [String] {
+        let usdCode = Currency.usd.coingeckoId
+
+        guard currency.coingeckoId != usdCode else {
+            return [usdCode]
+        }
+
+        return [currency.coingeckoId, usdCode]
+    }
+
+    static func crossRate(
+        from priceData: [String: CoingeckoPriceData],
+        for currency: Currency
+    ) -> Decimal? {
+        let usdCode = Currency.usd.coingeckoId
+
+        guard currency.coingeckoId != usdCode else {
+            return 1
+        }
+
+        for rates in priceData.values.map(\.rates) {
+            guard
+                let usdPrice = rates[usdCode]?.price,
+                let displayPrice = rates[currency.coingeckoId]?.price,
+                usdPrice > 0,
+                displayPrice > 0
+            else {
+                continue
+            }
+
+            return usdPrice / displayPrice
+        }
+
+        return nil
+    }
+}
+
 extension CoingeckoOperationFactory: CoingeckoOperationFactoryProtocol {
     func fetchPriceOperation(
         for tokenIds: [String],
@@ -125,16 +171,20 @@ extension CoingeckoOperationFactory: CoingeckoOperationFactoryProtocol {
         guard let url = buildURLForAssets(
             tokenIds,
             method: PriceAPI.price,
-            currencies: [currency.coingeckoId]
+            currencies: Self.currencyCodes(for: currency)
         ) else {
             return BaseOperation.createWithError(NetworkBaseError.invalidUrl)
         }
 
-        return buildOperation(for: url) { data in
+        return buildOperation(for: url) { [weak crossRateUpdater] data in
             let priceData = try JSONDecoder().decode(
                 [String: CoingeckoPriceData].self,
                 from: data
             )
+
+            if let usdPerUnit = Self.crossRate(from: priceData, for: currency) {
+                crossRateUpdater?.save(usdPerUnit: usdPerUnit, for: currency)
+            }
 
             return tokenIds.compactMap { assetId in
                 let identifier = PriceData.createIdentifier(for: assetId, currencyId: currency.id)

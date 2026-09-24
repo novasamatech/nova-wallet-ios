@@ -16,6 +16,9 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
 
     private lazy var walletIconGenerator = NovaIconGenerator()
     let transferCompletion: TransferCompletionClosure?
+    let analyticsFlow: TransferAnalyticsFlow
+
+    private var isSubmitting: Bool = false
 
     init(
         interactor: TransferConfirmOnChainInteractorInputProtocol,
@@ -33,6 +36,7 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
         dataValidatingFactory: TransferDataValidatorFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         transferCompletion: TransferCompletionClosure?,
+        analyticsFlow: TransferAnalyticsFlow,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -42,6 +46,7 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
         self.amount = amount
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
         self.transferCompletion = transferCompletion
+        self.analyticsFlow = analyticsFlow
         super.init(
             chainAsset: chainAsset,
             feeAsset: feeAsset,
@@ -189,6 +194,12 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
     override func didReceiveError(_ error: Error) {
         super.didReceiveError(error)
 
+        if isSubmitting {
+            isSubmitting = false
+
+            trackSendFailed(error: error)
+        }
+
         view?.didStopLoading()
 
         wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
@@ -234,6 +245,8 @@ extension TransferOnChainConfirmPresenter: TransferConfirmPresenterProtocol {
 
             strongSelf.view?.didStartLoading()
 
+            strongSelf.isSubmitting = true
+
             strongSelf.interactor.submit(
                 amount: amountInPlank,
                 recepient: strongSelf.recepientAccountAddress,
@@ -253,7 +266,11 @@ extension TransferOnChainConfirmPresenter: TransferConfirmPresenterProtocol {
 
 extension TransferOnChainConfirmPresenter: TransferConfirmOnChainInteractorOutputProtocol {
     func didCompleteSubmition(by sender: ExtrinsicSenderResolution?) {
+        isSubmitting = false
+
         view?.didStopLoading()
+
+        trackSendCompleted()
 
         // Note: that transferCompletion is not called for delayed transfers
         wireframe.presentExtrinsicSubmission(

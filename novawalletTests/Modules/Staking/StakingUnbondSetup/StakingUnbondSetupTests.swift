@@ -137,6 +137,7 @@ class StakingUnbondSetupTests: XCTestCase {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: StakingDataValidatingFactory(presentable: wireframe),
             chainAsset: chainAsset,
+            stakingType: .direct,
             localizationManager: LocalizationManager.shared
         )
 

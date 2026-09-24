@@ -2,7 +2,7 @@ import Foundation
 import Foundation_iOS
 import Operation_iOS
 
-final class CrowdloanYourContributionsPresenter {
+final class CrowdloanYourContributionsPresenter: AnalyticsTracking {
     weak var view: CrowdloanContributionsViewProtocol?
     let wireframe: CrowdloanContributionsWireframeProtocol
     let interactor: CrowdloanContributionsInteractorInputProtocol
@@ -147,6 +147,8 @@ final class CrowdloanYourContributionsPresenter {
 
 extension CrowdloanYourContributionsPresenter: CrowdloanContributionsPresenterProtocol {
     func setup() {
+        trackFeatureOpened(.crowdloans)
+
         updateCrowdloans()
         interactor.setup()
     }

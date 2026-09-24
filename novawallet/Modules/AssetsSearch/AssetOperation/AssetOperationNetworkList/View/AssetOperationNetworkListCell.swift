@@ -14,7 +14,7 @@ class AssetOperationNetworkView: UIView {
         GenericPairValueView<
             GenericPairValueView<
                 UIImageView,
-                UILabel
+                MultiValueView
             >,
             MultiValueView
         >
@@ -23,7 +23,12 @@ class AssetOperationNetworkView: UIView {
 
         view.contentView.fView.setHorizontalAndSpacing(12)
         view.contentView.fView.fView.contentMode = .scaleAspectFit
-        view.contentView.fView.sView.apply(style: .regularSubhedlinePrimary)
+
+        view.contentView.fView.sView.valueTop.apply(style: .regularSubhedlinePrimary)
+        view.contentView.fView.sView.valueTop.textAlignment = .left
+        view.contentView.fView.sView.valueBottom.apply(style: .caption1Secondary)
+        view.contentView.fView.sView.valueBottom.textAlignment = .left
+        view.contentView.fView.sView.spacing = 2.0
 
         view.contentView.sView.valueTop.apply(style: .semiboldCalloutPrimary)
         view.contentView.sView.valueBottom.apply(style: .caption1Secondary)
@@ -38,7 +43,7 @@ class AssetOperationNetworkView: UIView {
         contentView.contentView.fView.fView
     }
 
-    var titleLabel: UILabel {
+    var detailsView: MultiValueView {
         contentView.contentView.fView.sView
     }
 
@@ -64,7 +69,10 @@ class AssetOperationNetworkView: UIView {
     func bind(viewModel: AssetOperationNetworkViewModel) {
         amountLabel.text = viewModel.amount
         valueLabel.text = viewModel.value
-        titleLabel.text = viewModel.chainAsset.networkViewModel.name
+        detailsView.bind(
+            topValue: viewModel.chainAsset.networkViewModel.name,
+            bottomValue: viewModel.variantSymbol
+        )
 
         viewModel.chainAsset.networkViewModel.icon?.loadImage(
             on: imageView,

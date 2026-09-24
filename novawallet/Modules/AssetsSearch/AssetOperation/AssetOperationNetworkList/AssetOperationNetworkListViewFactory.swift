@@ -39,6 +39,7 @@ extension AssetOperationNetworkListViewFactory {
         let interactor = SpendAssetOperationNetworkListInteractor(
             multichainToken: multichainToken,
             stateObservable: stateObservable,
+            includesHiddenAssets: false,
             logger: logger
         )
 
@@ -101,6 +102,7 @@ extension AssetOperationNetworkListViewFactory {
         let interactor = AssetOperationNetworkListInteractor(
             multichainToken: multichainToken,
             stateObservable: stateObservable,
+            includesHiddenAssets: rampType == .onRamp,
             logger: logger
         )
 
@@ -171,6 +173,7 @@ extension AssetOperationNetworkListViewFactory {
         let interactor = AssetOperationNetworkListInteractor(
             multichainToken: multichainToken,
             stateObservable: stateObservable,
+            includesHiddenAssets: true,
             logger: logger
         )
 
@@ -216,6 +219,7 @@ extension AssetOperationNetworkListViewFactory {
     static func createSwapsView(
         with multichainToken: MultichainToken,
         state: SwapTokensFlowStateProtocol,
+        includesHiddenAssets: Bool,
         selectClosure: @escaping SwapAssetSelectionClosure,
         selectClosureStrategy: SubmoduleNavigationStrategy
     ) -> AssetOperationNetworkListViewProtocol? {
@@ -228,6 +232,7 @@ extension AssetOperationNetworkListViewFactory {
         let interactor = SpendAssetOperationNetworkListInteractor(
             multichainToken: multichainToken,
             stateObservable: state.assetListObservable,
+            includesHiddenAssets: includesHiddenAssets,
             logger: logger
         )
 
@@ -237,6 +242,7 @@ extension AssetOperationNetworkListViewFactory {
                 multichainToken: multichainToken,
                 state: state,
                 currencyManager: currencyManager,
+                includesHiddenAssets: includesHiddenAssets,
                 selectClosure: selectClosure,
                 selectClosureStrategy: selectClosureStrategy
             )
@@ -257,7 +263,8 @@ extension AssetOperationNetworkListViewFactory {
         let wireframe = SwapAssetsOperationWireframe(
             state: dependencies.state,
             selectClosure: dependencies.selectClosure,
-            selectClosureStrategy: dependencies.selectClosureStrategy
+            selectClosureStrategy: dependencies.selectClosureStrategy,
+            includesHiddenAssets: dependencies.includesHiddenAssets
         )
 
         let presenter = SwapOperationNetworkListPresenter(
@@ -296,6 +303,7 @@ extension AssetOperationNetworkListViewFactory {
         let interactor = SpendAssetOperationNetworkListInteractor(
             multichainToken: multichainToken,
             stateObservable: stateObservable,
+            includesHiddenAssets: false,
             logger: logger
         )
 
@@ -373,6 +381,7 @@ private extension AssetOperationNetworkListViewFactory {
         let multichainToken: MultichainToken
         let state: SwapTokensFlowStateProtocol
         let currencyManager: CurrencyManager
+        let includesHiddenAssets: Bool
         let selectClosure: SwapAssetSelectionClosure
         let selectClosureStrategy: SubmoduleNavigationStrategy
     }

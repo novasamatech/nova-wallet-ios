@@ -24,7 +24,8 @@ struct WalletConnectServiceFactory {
         let transport = WalletConnectTransport(
             service: service,
             dataSource: dataSource,
-            logger: Logger.shared
+            logger: Logger.shared,
+            signingAnalytics: WalletConnectSigningAnalytics()
         )
 
         let presenter = WalletConnectPresenter(

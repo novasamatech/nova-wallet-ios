@@ -82,7 +82,6 @@ final class ChainModelMapper {
             typeExtras: typeExtras,
             buyProviders: buyProviders,
             sellProviders: sellProviders,
-            enabled: entity.enabled,
             source: source
         )
     }
@@ -125,7 +124,6 @@ final class ChainModelMapper {
             assetEntity.symbol = asset.symbol
             assetEntity.priceId = asset.priceId
             assetEntity.type = asset.type
-            assetEntity.enabled = asset.enabled
             assetEntity.source = asset.source.rawValue
 
             try updateStakings(on: assetEntity, newStakings: asset.stakings)

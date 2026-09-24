@@ -5,24 +5,31 @@ protocol HydraAavePoolsServiceProtocol: ApplicationServiceProtocol &
     BaseObservableStateStoreProtocol where RemoteState == [HydraAave.PoolData] {}
 
 final class HydraAavePoolsService: BaseObservableStateStore<[HydraAave.PoolData]> {
+    private static let individualRefreshInterval: TimeInterval = 20
+    private static let failedRefreshInterval: TimeInterval = 5
+
     let trigger: any ChainPollingStateStoring
     let apiFactory: HydraAaveTradeExecutorFactoryProtocol
+    let pairs: [HydraAave.TradePair]
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
 
     private var isActive: Bool = false
     private var currentBlockHash: BlockHashData?
+    private var nextPollDate: Date?
     private let callStore = CancellableCallStore()
 
     init(
         trigger: any ChainPollingStateStoring,
         apiFactory: HydraAaveTradeExecutorFactoryProtocol,
+        pairs: [HydraAave.TradePair],
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
         logger: LoggerProtocol
     ) {
         self.trigger = trigger
         self.apiFactory = apiFactory
+        self.pairs = pairs
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
 
@@ -42,6 +49,7 @@ private extension HydraAavePoolsService {
     func stopSync() {
         trigger.remove(observer: self)
         currentBlockHash = nil
+        nextPollDate = nil
 
         callStore.cancel()
     }
@@ -69,10 +77,19 @@ private extension HydraAavePoolsService {
     }
 
     func performPoll(for blockHash: BlockHashData) {
+        guard !callStore.hasCall else {
+            return
+        }
+
+        if let nextPollDate, nextPollDate > Date() {
+            return
+        }
+
         logger.debug("Polling on \(blockHash.toHex())")
 
         let fetchPoolsWrapper = apiFactory.createAaveTradePools(
-            for: blockHash.toHex(includePrefix: true)
+            for: pairs,
+            blockHash: blockHash.toHex(includePrefix: true)
         )
 
         executeCancellable(
@@ -87,12 +104,20 @@ private extension HydraAavePoolsService {
             }
 
             switch result {
-            case let .success(pools):
-                logger.debug("Received: \(String(describing: pools))")
+            case let .success(fetchResult):
+                logger.debug("Received: \(String(describing: fetchResult.pools))")
 
-                stateObservable.state = pools
+                stateObservable.state = fetchResult.pools
+
+                switch fetchResult.source {
+                case .aggregate:
+                    nextPollDate = nil
+                case .individual:
+                    nextPollDate = Date().addingTimeInterval(Self.individualRefreshInterval)
+                }
             case let .failure(error):
                 logger.error("Unexpected error: \(error)")
+                nextPollDate = Date().addingTimeInterval(Self.failedRefreshInterval)
             }
         }
     }

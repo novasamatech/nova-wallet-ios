@@ -44,6 +44,11 @@ extension AssetExchangePathFilter: GraphEdgeFiltering {
             return true
         }
 
+        // a pool modified by the previous hop can't be entered again in the same route
+        if let poolId = edge.poolId, poolId == predecessor.poolId {
+            return false
+        }
+
         let delayedCallExec = delayedCallExecVerifier.executesCallWithDelay(
             selectedWallet,
             chain: chainIn

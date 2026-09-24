@@ -16,6 +16,7 @@ protocol MainTabBarViewProtocol: ControllerBackedProtocol, MainTabBarProtocol {
 protocol MainTabBarPresenterProtocol: AnyObject {
     func setup()
     func viewDidAppear()
+    func didSelectTab(at index: Int)
     func activateStatusAction()
     func presentStatusAlert(_ closure: FlowStatusPresentingClosure)
     func presentDelayedOperationCreated()
@@ -24,6 +25,7 @@ protocol MainTabBarPresenterProtocol: AnyObject {
 protocol MainTabBarInteractorInputProtocol: AnyObject {
     func setup()
     func setPushNotificationsSetupScreenSeen()
+    func setAnalyticsConsent(enabled: Bool)
     func requestNextOnLaunchAction()
 }
 
@@ -36,6 +38,7 @@ protocol MainTabBarInteractorOutputProtocol: AnyObject {
     func didFoundCloudBackup(issue: CloudBackupSyncResult.Issue)
     func didRequestPushNotificationsSetupOpen()
     func didRequestLegalConsentOpen()
+    func didRequestAnalyticsConsentOpen()
     func didRequestMultisigNotificationsPromoOpen(with params: MultisigNotificationsPromoParams)
     func didRequestAHMInfoOpen(with info: [AHMRemoteData])
     func didSyncCloudBackup(on purpose: CloudBackupSynсPurpose)
@@ -95,6 +98,15 @@ protocol MainTabBarWireframeProtocol: AlertPresentable,
     func presentLegalConsent(
         from view: MainTabBarViewProtocol?,
         completion: @escaping () -> Void
+    )
+
+    /// `onUnavailable` covers the full-screen view being unavailable. It must not record
+    /// a decline for a prompt the user did not see.
+    func presentAnalyticsConsent(
+        from view: MainTabBarViewProtocol?,
+        onEnable: @escaping () -> Void,
+        onDecline: @escaping () -> Void,
+        onUnavailable: @escaping () -> Void
     )
 }
 

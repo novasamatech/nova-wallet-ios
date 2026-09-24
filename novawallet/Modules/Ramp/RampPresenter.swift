@@ -6,15 +6,26 @@ final class RampPresenter {
     var interactor: RampInteractorInputProtocol!
 
     let chainAsset: ChainAsset
+    let rampAction: RampAction
+
+    let analyticsContent: AnalyticsRampContent?
+    var didTrackCompletion: Bool = false
 
     init(
         wireframe: RampWireframeProtocol!,
         interactor: RampInteractorInputProtocol!,
-        chainAsset: ChainAsset
+        chainAsset: ChainAsset,
+        rampAction: RampAction
     ) {
         self.wireframe = wireframe
         self.interactor = interactor
         self.chainAsset = chainAsset
+        self.rampAction = rampAction
+
+        analyticsContent = AnalyticsRampContent(
+            providerId: rampAction.providerId,
+            chainAsset: chainAsset
+        )
     }
 }
 
@@ -32,6 +43,8 @@ extension RampPresenter: RampPresenterProtocol {
     }
 
     func setup() {
+        trackFlowOpened()
+
         interactor.setup()
     }
 }
@@ -51,6 +64,8 @@ extension RampPresenter: RampInteractorOutputProtocol {
     }
 
     func didCompleteOperation(action: RampAction) {
+        trackFlowCompleted(for: action.type)
+
         wireframe.complete(
             from: view,
             with: action.type,

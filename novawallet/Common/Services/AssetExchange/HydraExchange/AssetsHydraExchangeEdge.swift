@@ -5,6 +5,12 @@ protocol AssetsHydraExchangeEdgeProtocol {
     var routeComponent: HydraDx.RemoteSwapRoute.Component { get }
 }
 
+extension AssetsHydraExchangeEdgeProtocol where Self: AssetsHydraExchangeEdge {
+    var poolId: AssetExchangePoolId? {
+        AssetExchangePoolId(chainId: host.chain.chainId, identifier: routeComponent.poolIdentifier)
+    }
+}
+
 class AssetsHydraExchangeEdge {
     let origin: ChainAssetId
     let destination: ChainAssetId
@@ -23,6 +29,15 @@ class AssetsHydraExchangeEdge {
         self.destination = destination
         self.remoteSwapPair = remoteSwapPair
         self.host = host
+    }
+
+    func limitedAsset(for direction: AssetConversion.Direction) -> ChainAsset? {
+        let localAssetId = switch direction {
+        case .sell: origin
+        case .buy: destination
+        }
+
+        return host.chain.chainAsset(for: localAssetId.assetId)
     }
 
     func appendToOperation(

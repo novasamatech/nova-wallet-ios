@@ -1,6 +1,7 @@
 import Foundation
 import Foundation_iOS
 import BigInt
+import NovaAnalytics
 
 final class ParaStkUnstakeConfirmPresenter {
     weak var view: CollatorStkUnstakeConfirmViewProtocol?
@@ -14,6 +15,7 @@ final class ParaStkUnstakeConfirmPresenter {
     let dataValidatingFactory: ParaStkValidatorFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let hintViewModelFactory: CollatorStakingHintsViewModelFactoryProtocol
+    let stakingType: StakingAnalyticsType
     let logger: LoggerProtocol
 
     private(set) var fee: ExtrinsicFeeProtocol?
@@ -37,6 +39,7 @@ final class ParaStkUnstakeConfirmPresenter {
         dataValidatingFactory: ParaStkValidatorFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         hintViewModelFactory: CollatorStakingHintsViewModelFactoryProtocol,
+        stakingType: StakingAnalyticsType,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -49,11 +52,12 @@ final class ParaStkUnstakeConfirmPresenter {
         self.dataValidatingFactory = dataValidatingFactory
         self.balanceViewModelFactory = balanceViewModelFactory
         self.hintViewModelFactory = hintViewModelFactory
+        self.stakingType = stakingType
         self.logger = logger
         self.localizationManager = localizationManager
     }
 
-    private func unstakingAmount() -> Decimal {
+    func unstakingAmount() -> Decimal {
         let precision = chainAsset.assetDisplayInfo.assetPrecision
 
         let unstakingAmountInPlank: BigUInt
@@ -231,6 +235,8 @@ extension ParaStkUnstakeConfirmPresenter: ParaStkUnstakeConfirmInteractorOutputP
 
         switch result {
         case let .success(model):
+            trackUnstakeEvent(AnalyticsEvent.unstakeCompleted)
+
             wireframe.presentExtrinsicSubmission(
                 from: view,
                 sender: model.sender,
@@ -238,6 +244,8 @@ extension ParaStkUnstakeConfirmPresenter: ParaStkUnstakeConfirmInteractorOutputP
                 locale: selectedLocale
             )
         case let .failure(error):
+            trackUnstakeFailure(for: error)
+
             applyCurrentState()
             refreshFee()
 

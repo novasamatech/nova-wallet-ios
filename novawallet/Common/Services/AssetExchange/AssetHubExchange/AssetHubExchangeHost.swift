@@ -7,6 +7,7 @@ protocol AssetHubExchangeHostProtocol {
     var submissionMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol { get }
     var extrinsicOperationFactory: ExtrinsicOperationFactoryProtocol { get }
     var signingWrapper: SigningWrapperProtocol { get }
+    var extrinsicParamsFactory: AssetHubExchangeExtrinsicParamsFactoryProtocol { get }
     var runtimeService: RuntimeProviderProtocol { get }
     var connection: JSONRPCEngine { get }
     var operationQueue: OperationQueue { get }
@@ -22,6 +23,7 @@ final class AssetHubExchangeHost: AssetHubExchangeHostProtocol {
     let submissionMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol
     let extrinsicOperationFactory: ExtrinsicOperationFactoryProtocol
     let signingWrapper: SigningWrapperProtocol
+    let extrinsicParamsFactory: AssetHubExchangeExtrinsicParamsFactoryProtocol
     let runtimeService: RuntimeProviderProtocol
     let connection: JSONRPCEngine
     let executionTimeEstimator: AssetExchangeTimeEstimating
@@ -34,6 +36,7 @@ final class AssetHubExchangeHost: AssetHubExchangeHostProtocol {
         flowState: AssetHubFlowStateProtocol,
         submissionMonitorFactory: ExtrinsicSubmitMonitorFactoryProtocol,
         extrinsicOperationFactory: ExtrinsicOperationFactoryProtocol,
+        extrinsicParamsFactory: AssetHubExchangeExtrinsicParamsFactoryProtocol,
         signingWrapper: SigningWrapperProtocol,
         runtimeService: RuntimeProviderProtocol,
         connection: JSONRPCEngine,
@@ -47,6 +50,7 @@ final class AssetHubExchangeHost: AssetHubExchangeHostProtocol {
         self.submissionMonitorFactory = submissionMonitorFactory
         self.extrinsicOperationFactory = extrinsicOperationFactory
         self.signingWrapper = signingWrapper
+        self.extrinsicParamsFactory = extrinsicParamsFactory
         self.runtimeService = runtimeService
         self.connection = connection
         self.executionTimeEstimator = executionTimeEstimator

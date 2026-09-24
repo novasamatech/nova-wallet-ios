@@ -44,6 +44,7 @@ protocol SettingsInteractorOutputProtocol: AnyObject {
     func didReceiveWalletsState(hasUpdates: Bool)
     func didReceive(pushNotificationsStatus: PushNotificationsStatus)
     func didReceive(hideBalancesOnLaunch: Bool)
+    func didReceive(analyticsEnabled: Bool?)
 }
 
 protocol SettingsWireframeProtocol:

@@ -2,6 +2,7 @@ import XCTest
 @testable import novawallet
 import Cuckoo
 import Keystore_iOS
+import NovaAnalytics
 
 class RootTests: XCTestCase {
     func testOnboardingDecision() throws {
@@ -138,13 +139,37 @@ class RootTests: XCTestCase {
         wait(for: [expectation], timeout: Constants.defaultExpectationDuration)
     }
 
+    func testAnalyticsSetupRunsBetweenTheMigratorsAndTheWalletSettings() {
+        var order: [String] = []
+        let migrator = MockMigrating()
+        stub(migrator) { stub in when(stub.migrate()).then { order.append("migrate") } }
+        let analyticsFacade = MockAnalyticsServiceFacadeProtocol()
+        stub(analyticsFacade) { stub in when(stub.setup()).then { order.append("analytics") } }
+        let walletOperationQueue = RecordingOperationQueue()
+        walletOperationQueue.onAdd = { order.append("walletSettings") }
+
+        let presenter = createPresenter(
+            wireframe: MockRootWireframeProtocol(),
+            walletSettings: SelectedWalletSettings(storageFacade: UserDataStorageTestFacade(), operationQueue: walletOperationQueue),
+            settings: InMemorySettingsManager(),
+            keystore: InMemoryKeychain(),
+            migrators: [migrator],
+            analyticsFacade: analyticsFacade
+        )
+
+        presenter.interactor.setup()
+
+        XCTAssertEqual(order, ["migrate", "analytics", "walletSettings"])
+    }
+
     private func createPresenter(
         wireframe: MockRootWireframeProtocol,
         walletSettings: SelectedWalletSettings,
         settings: SettingsManagerProtocol,
         keystore: KeystoreProtocol,
         securityLayerInteractor: SecurityLayerInteractorInputProtocol? = nil,
-        migrators: [Migrating] = []
+        migrators: [Migrating] = [],
+        analyticsFacade: AnalyticsServiceFacadeProtocol? = nil
     ) -> RootPresenter {
         let chainRegistry = MockChainRegistryProtocol().applyDefault(for: Set())
         let actualSecurityLayerInteractor: SecurityLayerInteractorInputProtocol
@@ -161,6 +186,9 @@ class RootTests: XCTestCase {
             actualSecurityLayerInteractor = mockLayer
         }
 
+        let silentAnalyticsFacade = MockAnalyticsServiceFacadeProtocol()
+        stub(silentAnalyticsFacade) { stub in when(stub.setup()).thenDoNothing() }
+
         let interactor = RootInteractor(
             walletSettings: walletSettings,
             settings: settings,
@@ -169,6 +197,7 @@ class RootTests: XCTestCase {
             securityLayerInteractor: actualSecurityLayerInteractor,
             chainRegistryClosure: { chainRegistry },
             eventCenter: MockEventCenterProtocol(),
+            analyticsFacade: analyticsFacade ?? silentAnalyticsFacade,
             migrators: migrators
         )
         let presenter = RootPresenter()
@@ -186,5 +215,14 @@ class RootTests: XCTestCase {
         }
 
         return presenter
+    }
+}
+
+private final class RecordingOperationQueue: OperationQueue {
+    var onAdd: (() -> Void)?
+
+    override func addOperation(_ operation: Operation) {
+        onAdd?()
+        super.addOperation(operation)
     }
 }

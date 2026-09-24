@@ -340,17 +340,12 @@ class ChainSyncServiceTests: XCTestCase {
 
         let remoteItems = ChainModelGenerator.generateRemote(count: 16)
         let initMappedItems = remoteItems.enumerated().map { index, item in
-            let localChain = converter.update(
+            converter.update(
                 localModel: nil,
                 remoteModel: item,
                 additionalAssets: [],
                 order: Int64(index)
             )!
-
-            var assets = Array(localChain.assets)
-            assets[0] = assets[0].byChanging(enabled: false)
-
-            return localChain.byChanging(assets: Set(assets))
         }
 
         // apply new name
@@ -481,10 +476,7 @@ class ChainSyncServiceTests: XCTestCase {
                 order: Int64(index)
             )!
 
-            var assets = Array(localChain.assets)
-            assets[0] = assets[0].byChanging(enabled: false)
-
-            return initialLocalChainChange(localChain.byChanging(assets: Set(assets)))
+            return initialLocalChainChange(localChain)
         }
 
         // update remote items

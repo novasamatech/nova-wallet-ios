@@ -24,6 +24,7 @@ protocol NftListInteractorInputProtocol: AnyObject {
 protocol NftListInteractorOutputProtocol: AnyObject {
     func didReceiveNft(_ model: NftChainModel)
     func didReceiveNft(changes: [DataProviderChange<NftChainModel>])
+    func didReceiveNftSnapshot(count: Int)
     func didReceive(error: Error)
 }
 

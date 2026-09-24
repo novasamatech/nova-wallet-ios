@@ -33,7 +33,7 @@ final class AssetListPresenter: RampFlowManaging, BannersModuleInputOwnerProtoco
 
     private var name: String?
 
-    private var hidesZeroBalances: Bool?
+    private var hasHiddenAssets: Bool?
     private var hasWalletsUpdates: Bool = false
 
     private var organizerViewModel: AssetListOrganizerViewModel?
@@ -130,26 +130,24 @@ private extension AssetListPresenter {
     }
 
     func createAssetsViewModel() -> AssetListViewModel? {
-        guard let hidesZeroBalances, let assetListStyle else {
+        guard let assetListStyle else {
             return nil
         }
 
         let viewModels = createGroupViewModels()
-
-        let isFilterOn = hidesZeroBalances == true
 
         return if
             viewModels.isEmpty, !model.balanceResults.isEmpty,
             model.balanceResults.count >= model.allChains.count
         {
             .init(
-                isFiltered: isFilterOn,
+                hasHiddenAssets: hasHiddenAssets,
                 listState: .empty,
                 listGroupStyle: assetListStyle
             )
         } else {
             .init(
-                isFiltered: isFilterOn,
+                hasHiddenAssets: hasHiddenAssets,
                 listState: .list(groups: viewModels),
                 listGroupStyle: assetListStyle
             )
@@ -336,7 +334,7 @@ private extension AssetListPresenter {
     }
 
     func createGroupViewModels() -> [AssetListGroupType] {
-        guard let hidesZeroBalances, let assetListStyle else {
+        guard let assetListStyle else {
             return []
         }
 
@@ -347,52 +345,31 @@ private extension AssetListPresenter {
             model.chainGroups.compactMap {
                 createNetworkGroupViewModel(
                     from: $0,
-                    maybePrices: maybePrices,
-                    hidesZeroBalances: hidesZeroBalances
+                    maybePrices: maybePrices
                 )
             }
         case .tokens:
             model.assetGroups.compactMap {
                 createAssetGroupViewModel(
                     from: $0,
-                    maybePrices: maybePrices,
-                    hidesZeroBalances: hidesZeroBalances
+                    maybePrices: maybePrices
                 )
             }
         }
     }
 
-    func filterZeroBalances(_ assets: [AssetListAssetModel]) -> [AssetListAssetModel] {
-        let filteredAssets: [AssetListAssetModel]
-
-        filteredAssets = assets.filter { asset in
-            if let balance = try? asset.balanceResult?.get(), balance > 0 {
-                return true
-            } else {
-                return false
-            }
-        }
-
-        return filteredAssets
-    }
-
     func createAssetGroupViewModel(
         from groupModel: AssetListAssetGroupModel,
-        maybePrices: [ChainAssetId: PriceData]?,
-        hidesZeroBalances: Bool
+        maybePrices: [ChainAssetId: PriceData]?
     ) -> AssetListGroupType? {
         let assets = model.groupListsByAsset[groupModel.multichainToken.symbol] ?? []
 
-        let filteredAssets = hidesZeroBalances
-            ? filterZeroBalances(assets)
-            : assets
-
-        guard !filteredAssets.isEmpty else {
+        guard !assets.isEmpty else {
             return nil
         }
 
         let params = AssetListTokenGroupViewModelParams(
-            assetsList: filteredAssets,
+            assetsList: assets,
             group: groupModel,
             maybePrices: maybePrices,
             connected: true
@@ -410,22 +387,17 @@ private extension AssetListPresenter {
 
     func createNetworkGroupViewModel(
         from groupModel: AssetListChainGroupModel,
-        maybePrices: [ChainAssetId: PriceData]?,
-        hidesZeroBalances: Bool
+        maybePrices: [ChainAssetId: PriceData]?
     ) -> AssetListGroupType? {
         let chain = groupModel.chain
 
         let assets = model.groupListsByChain[chain.chainId] ?? []
 
-        let filteredAssets = hidesZeroBalances
-            ? filterZeroBalances(assets)
-            : assets
-
-        guard !filteredAssets.isEmpty else {
+        guard !assets.isEmpty else {
             return nil
         }
 
-        let assetInfoList: [AssetListAssetAccountInfo] = filteredAssets.map { asset in
+        let assetInfoList: [AssetListAssetAccountInfo] = assets.map { asset in
             AssetListPresenterHelpers.createAssetAccountInfo(
                 from: asset,
                 chain: chain,
@@ -724,6 +696,7 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
         walletIdenticon = wallet.walletIdenticonData()
 
         model = .init()
+        hasHiddenAssets = nil
 
         updateAssetsView()
         updateOrganizerView()
@@ -736,8 +709,8 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
         updateHeaderView()
     }
 
-    func didReceive(hidesZeroBalances: Bool) {
-        self.hidesZeroBalances = hidesZeroBalances
+    func didReceive(hasHiddenAssets: Bool) {
+        self.hasHiddenAssets = hasHiddenAssets
 
         updateAssetsView()
     }

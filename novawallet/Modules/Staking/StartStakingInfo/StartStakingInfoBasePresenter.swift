@@ -1,8 +1,9 @@
 import Foundation
 import Foundation_iOS
 import BigInt
+import NovaAnalytics
 
-class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, StartStakingInfoPresenterProtocol {
+class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, StartStakingInfoPresenterProtocol, AnalyticsTracking {
     weak var view: StartStakingInfoViewProtocol?
     let wireframe: StartStakingInfoWireframeProtocol
     let baseInteractor: StartStakingInfoInteractorInputProtocol
@@ -13,6 +14,10 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     let logger: LoggerProtocol
     let accountManagementFilter: AccountManagementFilterProtocol
     let announcementViewModelFactory: AnnouncementViewModelFactoryProtocol
+
+    private let abandonTracker = AnalyticsAbandonTracker {
+        AnalyticsEvent.stakingAbandoned(stage: .landing)
+    }
 
     private(set) var price: PriceData?
     private(set) var accountExistense: AccountExistense?
@@ -68,14 +73,22 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         }
     }
 
-    func provideAnnouncementModel() {
-        let viewModel = announcementViewModelFactory.createChainViewModel(
+    private func createAnnouncementViewModel() -> AnnouncementViewModel? {
+        announcementViewModelFactory.createChainViewModel(
             from: announcements,
             chainId: chainAsset.chain.chainId,
             locale: selectedLocale
         )
+    }
 
-        view?.didReceive(announcement: viewModel)
+    func provideAnnouncementModel() {
+        view?.didReceive(announcement: createAnnouncementViewModel())
+    }
+
+    func selectAnnouncementLink() {
+        guard let url = createAnnouncementViewModel()?.link?.url else { return }
+
+        wireframe.openBrowser(with: .query(string: url.absoluteString))
     }
 
     func shouldUpdateEraDuration(for newValue: TimeInterval?, oldValue: TimeInterval?) -> Bool {
@@ -211,6 +224,8 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     // MARK: - StartStakingInfoPresenterProtocol
 
     func setup() {
+        trackFeatureOpened(.staking)
+
         baseInteractor.setup()
     }
 
@@ -253,6 +268,8 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         case .noAccount:
             showNoAccountAlert()
         case .assetBalance:
+            abandonTracker.markProceeded()
+
             wireframe.showSetupAmount(from: view)
         }
     }

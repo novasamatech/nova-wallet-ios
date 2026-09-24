@@ -176,6 +176,7 @@ class DAppOperationConfirmTests: XCTestCase {
             viewModelFactory: DAppOperationGenericConfirmViewModelFactory(chain: .left(chain)),
             balanceViewModelFacade: balanceViewModelFactory,
             chain: .left(chain),
+            signAnalyticsContext: nil,
             localizationManager: LocalizationManager.shared
         )
 
@@ -299,6 +300,7 @@ class DAppOperationConfirmTests: XCTestCase {
             viewModelFactory: DAppOperationBytesConfirmViewModelFactory(chain: .left(chain)),
             balanceViewModelFacade: balanceViewModelFacade,
             chain: .left(chain),
+            signAnalyticsContext: nil,
             localizationManager: LocalizationManager.shared
         )
 

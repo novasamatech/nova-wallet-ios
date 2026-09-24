@@ -1,9 +1,10 @@
 import Foundation
 import Foundation_iOS
+import NovaAnalytics
 import SubstrateSdk
 import UIKit
 
-final class AssetReceivePresenter {
+final class AssetReceivePresenter: AnalyticsTracking {
     weak var view: AssetReceiveViewProtocol?
     let wireframe: AssetReceiveWireframeProtocol
     let interactor: AssetReceiveInteractorInputProtocol
@@ -108,6 +109,8 @@ extension AssetReceivePresenter: AssetReceivePresenterProtocol {
     }
 
     func setup() {
+        trackFeatureOpened(.receive)
+
         interactor.setup()
     }
 

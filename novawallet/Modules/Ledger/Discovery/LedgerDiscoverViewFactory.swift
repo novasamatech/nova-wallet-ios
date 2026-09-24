@@ -26,7 +26,11 @@ struct LedgerDiscoverViewFactory {
 
         let appName = createLedgerAppName(for: chain)
 
-        return createView(interactor: interactor, wireframe: wireframe, appName: appName)
+        return createView(
+            interactor: interactor,
+            wireframe: wireframe,
+            appName: appName
+        )
     }
 
     static func createNewPairingView(
@@ -56,7 +60,11 @@ struct LedgerDiscoverViewFactory {
 
         let appName = createLedgerAppName(for: chain)
 
-        return createView(interactor: interactor, wireframe: wireframe, appName: appName)
+        return createView(
+            interactor: interactor,
+            wireframe: wireframe,
+            appName: appName
+        )
     }
 
     static func createGenericLedgerView(for flow: WalletCreationFlow) -> ControllerBackedProtocol? {

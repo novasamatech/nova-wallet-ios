@@ -9,12 +9,17 @@ class WalletConnectStateAuthorizing: WalletConnectBaseState {
         proposal: Session.Proposal,
         resolution: WalletConnectProposalResolution,
         stateMachine: WalletConnectStateMachineProtocol,
-        logger: LoggerProtocol
+        logger: LoggerProtocol,
+        signingAnalytics: WalletConnectSigningAnalytics
     ) {
         self.proposal = proposal
         self.resolution = resolution
 
-        super.init(stateMachine: stateMachine, logger: logger)
+        super.init(
+            stateMachine: stateMachine,
+            logger: logger,
+            signingAnalytics: signingAnalytics
+        )
     }
 
     private func save(
@@ -77,7 +82,11 @@ extension WalletConnectStateAuthorizing: WalletConnectStateProtocol {
             return
         }
 
-        let nextState = WalletConnectStateReady(stateMachine: stateMachine, logger: logger)
+        let nextState = WalletConnectStateReady(
+            stateMachine: stateMachine,
+            logger: logger,
+            signingAnalytics: signingAnalytics
+        )
 
         save(
             authResponse: response,

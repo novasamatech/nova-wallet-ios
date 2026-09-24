@@ -8,7 +8,7 @@ final class DAppSearchPresenter: DAppSearchingByQuery {
     let interactor: DAppSearchInteractorInputProtocol
     let localizationManager: LocalizationManagerProtocol
 
-    private var dAppList: DAppList?
+    var dAppList: DAppList?
     private var favorites: [String: DAppFavorite]?
 
     private(set) var query: String?
@@ -89,6 +89,8 @@ extension DAppSearchPresenter: DAppSearchPresenterProtocol {
     }
 
     func setup() {
+        trackFeatureOpened(.dapps)
+
         if let query = query {
             view?.didReceive(initialQuery: query)
         }
@@ -122,12 +124,21 @@ extension DAppSearchPresenter: DAppSearchPresenterProtocol {
             .query(string: viewModel.identifier)
         }
 
+        trackDAppRowOpened(with: result)
+
         completeSearch(with: result)
     }
 
     func selectSearchQuery() {
         let proceedClosure: () -> Void = { [weak self] in
-            self?.completeSearch(with: .query(string: self?.query ?? ""))
+            guard let self else {
+                return
+            }
+
+            let searchQuery = query ?? ""
+
+            trackSearchQueryOpened(searchQuery)
+            completeSearch(with: .query(string: searchQuery))
         }
 
         guard search(by: query, in: dAppList).isEmpty else {

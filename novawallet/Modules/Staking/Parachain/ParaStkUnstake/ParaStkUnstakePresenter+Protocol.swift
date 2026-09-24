@@ -116,13 +116,19 @@ extension ParaStkUnstakePresenter: CollatorStkPartialUnstakeSetupPresenterProtoc
     }
 
     func proceed() {
+        let inputAmount = inputResult?.absoluteValue(from: decimalStakingAmount())
+
         let validationRunner = createValidationRunner()
         validationRunner.runValidation { [weak self] in
-            guard let collator = self?.collatorDisplayAddress, let callWrapper = self?.createCallWrapper() else {
+            guard let self, let collator = collatorDisplayAddress, let callWrapper = createCallWrapper() else {
                 return
             }
 
-            self?.wireframe.showUnstakingConfirm(from: self?.view, collator: collator, callWrapper: callWrapper)
+            if let amount = inputAmount {
+                trackUnstakeInitiated(amount: amount)
+            }
+
+            wireframe.showUnstakingConfirm(from: view, collator: collator, callWrapper: callWrapper)
         }
     }
 }

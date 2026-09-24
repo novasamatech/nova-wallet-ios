@@ -14,10 +14,12 @@ final class DAppOperationConfirmPresenter {
 
     let viewModelFactory: DAppOperationConfirmViewModelFactoryProtocol
     let balanceViewModelFacade: BalanceViewModelFactoryFacadeProtocol
+    let signAnalyticsContext: DAppSignAnalyticsContext?
 
     private var confirmationModel: DAppOperationConfirmModel?
     private var feeModel: FeeOutputModel?
     private var priceData: PriceData?
+    var didTrackSignOutcome: Bool = false
 
     init(
         interactor: DAppOperationConfirmInteractorInputProtocol,
@@ -26,6 +28,7 @@ final class DAppOperationConfirmPresenter {
         viewModelFactory: DAppOperationConfirmViewModelFactoryProtocol,
         balanceViewModelFacade: BalanceViewModelFactoryFacadeProtocol,
         chain: DAppEitherChain,
+        signAnalyticsContext: DAppSignAnalyticsContext?,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
@@ -35,6 +38,7 @@ final class DAppOperationConfirmPresenter {
         self.viewModelFactory = viewModelFactory
         self.balanceViewModelFacade = balanceViewModelFacade
         self.chain = chain
+        self.signAnalyticsContext = signAnalyticsContext
         self.logger = logger
 
         self.localizationManager = localizationManager
@@ -102,6 +106,8 @@ final class DAppOperationConfirmPresenter {
 
 extension DAppOperationConfirmPresenter: DAppOperationConfirmPresenterProtocol {
     func setup() {
+        trackSignRequestShown()
+
         provideConfirmationViewModel()
         provideFeeViewModel()
 
@@ -204,6 +210,8 @@ extension DAppOperationConfirmPresenter: DAppOperationConfirmInteractorOutputPro
     }
 
     func didReceive(responseResult: Result<DAppOperationResponse, Error>, for request: DAppOperationRequest) {
+        trackSignOutcome(for: responseResult)
+
         switch responseResult {
         case let .success(response):
             delegate?.didReceiveConfirmationResponse(response, for: request)

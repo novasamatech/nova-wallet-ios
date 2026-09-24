@@ -1,6 +1,7 @@
 import Foundation
 import BigInt
 import Foundation_iOS
+import NovaAnalytics
 
 final class StakingUnbondConfirmPresenter {
     weak var view: StakingUnbondConfirmViewProtocol?
@@ -13,6 +14,7 @@ final class StakingUnbondConfirmPresenter {
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     let assetInfo: AssetBalanceDisplayInfo
     let chain: ChainModel
+    let stakingType: StakingAnalyticsType
     let localizationManager: LocalizationManagerProtocol
     let logger: LoggerProtocol?
 
@@ -21,7 +23,7 @@ final class StakingUnbondConfirmPresenter {
     private var minimalBalance: Decimal?
     private var minNominatorBonded: Decimal?
     private var nomination: Staking.Nomination?
-    private var priceData: PriceData?
+    var priceData: PriceData?
     private var fee: ExtrinsicFeeProtocol?
     private var controller: MetaChainAccountResponse?
     private var stashItem: StashItem?
@@ -117,6 +119,7 @@ final class StakingUnbondConfirmPresenter {
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         assetInfo: AssetBalanceDisplayInfo,
         chain: ChainModel,
+        stakingType: StakingAnalyticsType,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
@@ -128,6 +131,7 @@ final class StakingUnbondConfirmPresenter {
         self.dataValidatingFactory = dataValidatingFactory
         self.assetInfo = assetInfo
         self.chain = chain
+        self.stakingType = stakingType
         self.localizationManager = localizationManager
         self.logger = logger
     }
@@ -338,6 +342,8 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
 
         switch result {
         case let .success(model):
+            trackUnstakeEvent(AnalyticsEvent.unstakeCompleted)
+
             wireframe.presentExtrinsicSubmission(
                 from: view,
                 sender: model.sender,
@@ -345,6 +351,8 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
                 locale: localizationManager.selectedLocale
             )
         case let .failure(error):
+            trackUnstakeFailure(for: error)
+
             wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
                 error,
                 view: view,

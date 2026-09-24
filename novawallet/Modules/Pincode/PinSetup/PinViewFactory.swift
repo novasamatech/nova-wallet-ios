@@ -14,7 +14,7 @@ class PinViewFactory: PinViewFactoryProtocol {
             R.string(preferredLanguages: locale.rLanguages).localizable.pincodeCreateTopTitle()
         }
 
-        let presenter = PinSetupPresenter()
+        let presenter = PinSetupPresenter(isWalletCreation: true)
         let interactor = PinSetupInteractor(
             secretManager: KeychainManager.shared,
             settingsManager: SettingsManager.shared,
@@ -46,7 +46,7 @@ class PinViewFactory: PinViewFactoryProtocol {
             R.string(preferredLanguages: locale.rLanguages).localizable.profilePincodeChangeTitle()
         }
 
-        let presenter = PinSetupPresenter()
+        let presenter = PinSetupPresenter(isWalletCreation: false)
         let interactor = PinChangeInteractor(secretManager: KeychainManager.shared)
         let wireframe = PinChangeWireframe(localizationManager: LocalizationManager.shared)
 

@@ -41,6 +41,7 @@ struct MythosStkUnstakeSetupViewFactory {
             dataValidatingFactory: dataValidatingFactory,
             accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactory(chainAsset: chainAsset),
             hintViewModelFactory: CollatorStakingHintsViewModelFactory(),
+            stakingType: state.stakingOption.type.analyticsType,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )

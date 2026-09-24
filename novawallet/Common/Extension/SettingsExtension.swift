@@ -7,7 +7,6 @@ enum SettingsKey: String {
     case biometryEnabled
     case crowdloadChainId
     case stakingNetworkExpansion
-    case hidesZeroBalances
     case selectedCurrency
     case governanceChainId
     case governanceType
@@ -29,6 +28,8 @@ enum SettingsKey: String {
     case mythosRestakeEnabled
     case hideUnifiedAddressPopup
     case isAppFirstLaunch
+    case assetVisibilitySeeded
+    case defaultAssetsConfiguration
     case multisigNotificationsPromoSeen
     case ahmInfoShownChains
     case ahmAssetDetailsAlertClosedChains
@@ -39,6 +40,20 @@ enum SettingsKey: String {
 }
 
 extension SettingsManagerProtocol {
+    var defaultAssetsConfiguration: Data? {
+        get {
+            data(for: SettingsKey.defaultAssetsConfiguration.rawValue)
+        }
+
+        set {
+            if let newValue {
+                set(value: newValue, for: SettingsKey.defaultAssetsConfiguration.rawValue)
+            } else {
+                removeValue(for: SettingsKey.defaultAssetsConfiguration.rawValue)
+            }
+        }
+    }
+
     var isAppFirstLaunch: Bool {
         get {
             bool(for: SettingsKey.isAppFirstLaunch.rawValue) ?? true
@@ -46,6 +61,16 @@ extension SettingsManagerProtocol {
 
         set {
             set(value: newValue, for: SettingsKey.isAppFirstLaunch.rawValue)
+        }
+    }
+
+    var assetVisibilitySeeded: Bool {
+        get {
+            bool(for: SettingsKey.assetVisibilitySeeded.rawValue) ?? false
+        }
+
+        set {
+            set(value: newValue, for: SettingsKey.assetVisibilitySeeded.rawValue)
         }
     }
 
@@ -133,16 +158,6 @@ extension SettingsManagerProtocol {
 
         set {
             set(value: newValue, for: SettingsKey.stakingNetworkExpansion.rawValue)
-        }
-    }
-
-    var hidesZeroBalances: Bool {
-        get {
-            bool(for: SettingsKey.hidesZeroBalances.rawValue) ?? false
-        }
-
-        set {
-            set(value: newValue, for: SettingsKey.hidesZeroBalances.rawValue)
         }
     }
 

@@ -11,6 +11,9 @@ struct SwapExecutionViewFactory {
 
         let interactor = SwapExecutionInteractor(
             assetsExchangeService: flowState.setupAssetExchangeService(),
+            chainAssetOut: model.chainAssetOut,
+            selectedWalletSettings: SelectedWalletSettings.shared,
+            visibilityWriter: AssetVisibilityWriter.shared,
             osMediator: OperatingSystemMediator(),
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )

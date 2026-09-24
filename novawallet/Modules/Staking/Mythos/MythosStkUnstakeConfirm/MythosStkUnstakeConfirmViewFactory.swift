@@ -46,6 +46,7 @@ struct MythosStkUnstakeConfirmViewFactory {
             dataValidatingFactory: dataValidatingFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             hintViewModelFactory: CollatorStakingHintsViewModelFactory(),
+            stakingType: state.stakingOption.type.analyticsType,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )

@@ -14,6 +14,7 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
     let wallet: MetaAccountModel
     let phishingValidatingFactory: PhishingAddressValidatorFactoryProtocol
     let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
+    let analyticsFlow: TransferAnalyticsFlow
 
     var inputResult: AmountInputResult?
 
@@ -31,6 +32,7 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
         dataValidatingFactory: TransferDataValidatorFactoryProtocol,
         phishingValidatingFactory: PhishingAddressValidatorFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
+        analyticsFlow: TransferAnalyticsFlow,
         logger: LoggerProtocol? = nil
     ) {
         self.wallet = wallet
@@ -40,6 +42,7 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
         partialRecepientAddress = initialState.recepient
         inputResult = initialState.amount
         self.phishingValidatingFactory = phishingValidatingFactory
+        self.analyticsFlow = analyticsFlow
 
         super.init(
             originChainAsset: originChainAsset,
@@ -463,6 +466,8 @@ extension CrossChainTransferSetupPresenter: TransferSetupChildPresenterProtocol 
             }
 
             self?.logger?.debug("Did complete validation")
+
+            self?.trackSendInitiated(amount: amount)
 
             self?.wireframe.showConfirmation(
                 from: self?.view,

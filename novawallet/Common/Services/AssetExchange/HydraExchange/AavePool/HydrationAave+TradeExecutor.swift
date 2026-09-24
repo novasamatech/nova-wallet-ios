@@ -10,6 +10,10 @@ extension HydraAave {
         StateCallPath(module: "AaveTradeExecutor", method: "pools")
     }
 
+    static var traderPoolPath: StateCallPath {
+        StateCallPath(module: "AaveTradeExecutor", method: "pool")
+    }
+
     struct PoolData: Decodable, Equatable {
         @StringCodable var reserve: HydraDx.AssetId
         @StringCodable var atoken: HydraDx.AssetId
@@ -17,15 +21,30 @@ extension HydraAave {
         @StringCodable var liqudityOut: Balance
     }
 
-    struct TradePair: Decodable {
+    struct TradePair: Decodable, Hashable {
         let asset1: HydraDx.AssetId
         let asset2: HydraDx.AssetId
+
+        init(asset1: HydraDx.AssetId, asset2: HydraDx.AssetId) {
+            self.asset1 = asset1
+            self.asset2 = asset2
+        }
 
         init(from decoder: any Decoder) throws {
             var container = try decoder.unkeyedContainer()
             asset1 = try container.decode(StringCodable.self).wrappedValue
             asset2 = try container.decode(StringCodable.self).wrappedValue
         }
+    }
+
+    enum PoolsSource {
+        case aggregate
+        case individual
+    }
+
+    struct PoolsFetchResult {
+        let pools: [PoolData]
+        let source: PoolsSource
     }
 }
 

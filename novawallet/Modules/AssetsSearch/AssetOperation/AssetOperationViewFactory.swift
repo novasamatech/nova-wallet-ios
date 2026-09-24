@@ -293,6 +293,7 @@ private extension AssetOperationViewFactory {
         let interactor = AssetsSearchInteractor(
             stateObservable: stateObservable,
             filter: filter,
+            includesHiddenAssets: true,
             settingsManager: SettingsManager.shared,
             logger: Logger.shared
         )
@@ -319,6 +320,7 @@ private extension AssetOperationViewFactory {
         let interactor = AssetsSearchInteractor(
             stateObservable: dependencies.stateObservable,
             filter: filter,
+            includesHiddenAssets: dependencies.rampType == .onRamp,
             settingsManager: SettingsManager.shared,
             logger: Logger.shared
         )

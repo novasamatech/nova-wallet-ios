@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import NovaAnalytics
 
 final class OnboardingWalletReadyPresenter {
     weak var view: OnboardingWalletReadyViewProtocol?
@@ -9,6 +10,10 @@ final class OnboardingWalletReadyPresenter {
     let walletName: String
     let logger: LoggerProtocol
     let localizationManager: LocalizationManagerProtocol
+
+    private let abandonTracker = AnalyticsAbandonTracker {
+        AnalyticsEvent.walletCreationAbandoned(lastStep: .backup)
+    }
 
     init(
         interactor: OnboardingWalletReadyInteractorInputProtocol,
@@ -36,12 +41,16 @@ extension OnboardingWalletReadyPresenter: OnboardingWalletReadyPresenterProtocol
     }
 
     func applyManualBackup() {
+        abandonTracker.markProceeded()
+
         wireframe.showManualBackup(from: view, walletName: walletName)
     }
 }
 
 extension OnboardingWalletReadyPresenter: OnboardingWalletReadyInteractorOutputProtocol {
     func didReceiveCloudBackupAvailable() {
+        abandonTracker.markProceeded()
+
         wireframe.showCloudBackup(from: view, walletName: walletName)
         view?.didStopBackupLoading()
     }

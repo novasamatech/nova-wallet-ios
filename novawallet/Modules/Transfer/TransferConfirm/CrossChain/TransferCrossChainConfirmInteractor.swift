@@ -7,6 +7,7 @@ final class TransferCrossChainConfirmInteractor: CrossChainTransferInteractor {
     let persistExtrinsicService: PersistentExtrinsicServiceProtocol
     let persistenceFilter: ExtrinsicPersistenceFilterProtocol
     let eventCenter: EventCenterProtocol
+    let selfReceiveRevealer: TransferSelfReceiveRevealer
 
     var submitionPresenter: TransferConfirmCrossChainInteractorOutputProtocol? {
         presenter as? TransferConfirmCrossChainInteractorOutputProtocol
@@ -29,6 +30,7 @@ final class TransferCrossChainConfirmInteractor: CrossChainTransferInteractor {
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
         persistenceFilter: ExtrinsicPersistenceFilterProtocol,
+        selfReceiveRevealer: TransferSelfReceiveRevealer,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) {
@@ -36,6 +38,7 @@ final class TransferCrossChainConfirmInteractor: CrossChainTransferInteractor {
         self.persistExtrinsicService = persistExtrinsicService
         self.persistenceFilter = persistenceFilter
         self.eventCenter = eventCenter
+        self.selfReceiveRevealer = selfReceiveRevealer
 
         super.init(
             selectedAccount: selectedAccount,
@@ -58,10 +61,11 @@ final class TransferCrossChainConfirmInteractor: CrossChainTransferInteractor {
 
     private func persistExtrinsicAndComplete(
         details: PersistExtrinsicDetails,
-        sender: ExtrinsicSenderResolution
+        sender: ExtrinsicSenderResolution,
+        recipientAccountId: AccountId
     ) {
         guard let utilityAsset = originChainAsset.chain.utilityAssets().first else {
-            submitionPresenter?.didCompleteSubmition(by: sender)
+            completeSubmission(by: sender, recipientAccountId: recipientAccountId)
             return
         }
 
@@ -76,7 +80,7 @@ final class TransferCrossChainConfirmInteractor: CrossChainTransferInteractor {
             switch result {
             case .success:
                 self?.eventCenter.notify(with: WalletTransactionListUpdated())
-                self?.submitionPresenter?.didCompleteSubmition(by: sender)
+                self?.completeSubmission(by: sender, recipientAccountId: recipientAccountId)
             case let .failure(error):
                 self?.presenter?.didReceiveError(error)
             }
@@ -93,16 +97,11 @@ extension TransferCrossChainConfirmInteractor: TransferConfirmCrossChainInteract
 
             let recepientAccountId = try recepient.toAccountId(using: destinationChainAsset.chain.chainFormat)
 
-            let destination = transferParties.destination.replacing(accountId: recepientAccountId)
-            let unweightedRequest = XcmUnweightedTransferRequest(
-                origin: transferParties.origin,
-                destination: destination,
-                reserve: transferParties.reserve,
-                metadata: transferParties.metadata,
-                amount: amount
+            let transferRequest = makeTransferRequest(
+                parties: transferParties,
+                amount: amount,
+                recepientAccountId: recepientAccountId
             )
-
-            let transferRequest = XcmTransferRequest(unweighted: unweightedRequest)
 
             let sender = try selectedAccount.accountId.toAddress(using: originChainAsset.chain.chainFormat)
 
@@ -115,8 +114,10 @@ extension TransferCrossChainConfirmInteractor: TransferConfirmCrossChainInteract
 
                 switch result {
                 case let .success(result):
+                    let submissionSender = result.submittedModel.sender
+
                     guard persistenceFilter.canPersistExtrinsic(for: selectedAccount) else {
-                        submitionPresenter?.didCompleteSubmition(by: result.submittedModel.sender)
+                        completeSubmission(by: submissionSender, recipientAccountId: recepientAccountId)
                         return
                     }
 
@@ -129,9 +130,13 @@ extension TransferCrossChainConfirmInteractor: TransferConfirmCrossChainInteract
                             fee: originFee?.amount
                         )
 
-                        persistExtrinsicAndComplete(details: details, sender: result.submittedModel.sender)
+                        persistExtrinsicAndComplete(
+                            details: details,
+                            sender: submissionSender,
+                            recipientAccountId: recepientAccountId
+                        )
                     } else {
-                        submitionPresenter?.didCompleteSubmition(by: result.submittedModel.sender)
+                        completeSubmission(by: submissionSender, recipientAccountId: recepientAccountId)
                     }
 
                 case let .failure(error):
@@ -141,5 +146,36 @@ extension TransferCrossChainConfirmInteractor: TransferConfirmCrossChainInteract
         } catch {
             presenter?.didReceiveError(error)
         }
+    }
+}
+
+// MARK: Private
+
+private extension TransferCrossChainConfirmInteractor {
+    func makeTransferRequest(
+        parties: XcmTransferParties,
+        amount: BigUInt,
+        recepientAccountId: AccountId
+    ) -> XcmTransferRequest {
+        let destination = parties.destination.replacing(accountId: recepientAccountId)
+
+        let unweightedRequest = XcmUnweightedTransferRequest(
+            origin: parties.origin,
+            destination: destination,
+            reserve: parties.reserve,
+            metadata: parties.metadata,
+            amount: amount
+        )
+
+        return XcmTransferRequest(unweighted: unweightedRequest)
+    }
+
+    func completeSubmission(by sender: ExtrinsicSenderResolution, recipientAccountId: AccountId) {
+        submitionPresenter?.didCompleteSubmition(by: sender)
+
+        selfReceiveRevealer.reveal(
+            destination: destinationChainAsset,
+            recipientAccountId: recipientAccountId
+        )
     }
 }

@@ -24,6 +24,7 @@ enum SettingsRow {
     case backup
     case networks
     case appearance
+    case privacy
     #if DEBUG
         case subtensorStakingPreview
     #endif
@@ -77,6 +78,8 @@ extension SettingsRow {
             R.string(preferredLanguages: locale.rLanguages).localizable.connectionManagementTitle()
         case .appearance:
             R.string(preferredLanguages: locale.rLanguages).localizable.settingsAppearance()
+        case .privacy:
+            R.string(preferredLanguages: locale.rLanguages).localizable.settingsPrivacyTitle()
         #if DEBUG
             case .subtensorStakingPreview:
                 "Bittensor staking preview"
@@ -130,6 +133,8 @@ extension SettingsRow {
             R.image.iconNetworks()
         case .appearance:
             R.image.iconAppearance()
+        case .privacy:
+            R.image.iconAnalyticsPrivacyShield()
         #if DEBUG
             case .subtensorStakingPreview:
                 R.image.iconTabStaking()

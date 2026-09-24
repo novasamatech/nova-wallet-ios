@@ -49,6 +49,7 @@ struct ParaStkUnstakeConfirmViewFactory {
             dataValidatingFactory: dataValidationFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             hintViewModelFactory: CollatorStakingHintsViewModelFactory(),
+            stakingType: state.stakingOption.type.analyticsType,
             localizationManager: localizationManager,
             logger: Logger.shared
         )

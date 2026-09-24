@@ -10,12 +10,14 @@ final class HydraAaveFlowState {
     let workingQueue: DispatchQueue
     let notificationsRegistrar: AssetsExchangeStateRegistring?
     let apiFactory: HydraAaveTradeExecutorFactoryProtocol
+    let reservesDiscoveryFactory: HydraAaveReservesDiscoveryFactoryProtocol
     let logger: LoggerProtocol
 
     let mutex = NSLock()
 
     private var quoteStateServices: [HydraDx.RemoteSwapPair: HydraAaveQuoteParamsService] = [:]
     private var poolsService: (any HydraAavePoolsServiceProtocol)?
+    private var discoveredPairs: [HydraAave.TradePair]?
 
     init(
         account: ChainAccountResponse,
@@ -35,6 +37,12 @@ final class HydraAaveFlowState {
         self.logger = logger
 
         apiFactory = HydraAaveTradeExecutorFactory(
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            operationQueue: operationQueue
+        )
+
+        reservesDiscoveryFactory = HydraAaveReservesDiscoveryFactory(
             connection: connection,
             runtimeProvider: runtimeProvider,
             operationQueue: operationQueue
@@ -77,6 +85,7 @@ private extension HydraAaveFlowState {
         let service = HydraAavePoolsService(
             trigger: pollingState,
             apiFactory: apiFactory,
+            pairs: discoveredPairs ?? [],
             operationQueue: operationQueue,
             workingQueue: workingQueue,
             logger: logger
@@ -89,9 +98,67 @@ private extension HydraAaveFlowState {
 
         return service
     }
+
+    func createRecoveringDiscoveryWrapper() -> CompoundOperationWrapper<[HydraAave.TradePair]> {
+        let discoveryWrapper = reservesDiscoveryFactory.createPairsWrapper()
+
+        let recoveryOperation = ClosureOperation<[HydraAave.TradePair]> {
+            (try? discoveryWrapper.targetOperation.extractNoCancellableResultData()) ?? []
+        }
+
+        recoveryOperation.addDependency(discoveryWrapper.targetOperation)
+
+        return discoveryWrapper.insertingTail(operation: recoveryOperation)
+    }
 }
 
 extension HydraAaveFlowState {
+    func createPairsWrapper() -> CompoundOperationWrapper<[HydraAave.TradePair]> {
+        mutex.lock()
+        let cachedPairs = discoveredPairs
+        mutex.unlock()
+
+        if let cachedPairs {
+            return .createWithResult(cachedPairs)
+        }
+
+        let aggregateWrapper = apiFactory.createAaveTradePairs()
+
+        let fallbackWrapper: CompoundOperationWrapper<[HydraAave.TradePair]>
+        fallbackWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+            operationQueue: operationQueue
+        ) {
+            if
+                let pairs = try? aggregateWrapper.targetOperation.extractNoCancellableResultData(),
+                !pairs.isEmpty {
+                return .createWithResult(pairs)
+            }
+
+            return self.createRecoveringDiscoveryWrapper()
+        }
+
+        fallbackWrapper.addDependency(wrapper: aggregateWrapper)
+
+        let storingOperation = ClosureOperation<[HydraAave.TradePair]> {
+            let pairs = try fallbackWrapper.targetOperation.extractNoCancellableResultData()
+
+            self.mutex.lock()
+            if self.discoveredPairs == nil {
+                self.discoveredPairs = pairs
+            }
+            let result = self.discoveredPairs ?? pairs
+            self.mutex.unlock()
+
+            return result
+        }
+
+        storingOperation.addDependency(fallbackWrapper.targetOperation)
+
+        return fallbackWrapper
+            .insertingHead(operations: aggregateWrapper.allOperations)
+            .insertingTail(operation: storingOperation)
+    }
+
     func resetServices() {
         mutex.lock()
 

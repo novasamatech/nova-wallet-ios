@@ -2,7 +2,7 @@ import Foundation
 import Foundation_iOS
 import SubstrateSdk
 
-final class ReferendumDetailsPresenter {
+final class ReferendumDetailsPresenter: AnalyticsTracking {
     weak var view: ReferendumDetailsViewProtocol?
     let wireframe: ReferendumDetailsWireframeProtocol
     let interactor: ReferendumDetailsInteractorInputProtocol
@@ -437,6 +437,8 @@ extension ReferendumDetailsPresenter {
 
 extension ReferendumDetailsPresenter: ReferendumDetailsPresenterProtocol {
     func setup() {
+        trackFeatureOpened(.governance)
+
         updateView()
 
         interactor.setup()

@@ -32,4 +32,8 @@ extension MultisigPallet {
     static var multisigApprovalEventPath: EventCodingPath {
         .init(moduleName: MultisigPallet.name, eventName: "MultisigApproval")
     }
+
+    static var multisigExecutedEventPath: EventCodingPath {
+        .init(moduleName: MultisigPallet.name, eventName: "MultisigExecuted")
+    }
 }

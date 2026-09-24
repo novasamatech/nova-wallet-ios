@@ -1,10 +1,6 @@
 import Foundation
 import Operation_iOS
 
-enum AssetHubExchangeAtomicOperationError: Error {
-    case noEventsInResult
-}
-
 final class AssetHubExchangeAtomicOperation {
     let host: AssetHubExchangeHostProtocol
     let edge: any AssetExchangableGraphEdge
@@ -19,115 +15,48 @@ final class AssetHubExchangeAtomicOperation {
         self.operationArgs = operationArgs
         self.edge = edge
     }
+}
 
-    private func createFeeWrapper() -> CompoundOperationWrapper<ExtrinsicFeeProtocol> {
-        let callArgs = AssetConversion.CallArgs(
-            assetIn: edge.origin,
-            amountIn: operationArgs.swapLimit.amountIn,
-            assetOut: edge.destination,
-            amountOut: operationArgs.swapLimit.amountOut,
-            receiver: host.selectedAccount.accountId,
-            direction: operationArgs.swapLimit.direction,
-            slippage: operationArgs.swapLimit.slippage
-        )
+extension AssetHubExchangeAtomicOperation {
+    static func guaranteedNetAmountOut(for params: AssetHubExchangeSwapParams) -> Balance {
+        let palletBound: Balance
 
-        let codingFactoryOperation = host.runtimeService.fetchCoderFactoryOperation()
+        switch params.swap {
+        case let .exactIn(call):
+            palletBound = call.amountOutMin
+        case let .exactOut(call):
+            palletBound = call.amountOut
+        }
 
-        let feeWrapper = host.extrinsicOperationFactory.estimateFeeOperation({ builder in
-            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+        return palletBound.subtractOrZero(params.commission?.amount ?? 0)
+    }
 
-            return try AssetHubExtrinsicConverter.addingOperation(
-                to: builder,
-                chain: self.host.chain,
-                args: callArgs,
-                codingFactory: codingFactory
-            )
-        }, payingIn: operationArgs.feeAsset)
+    static func shouldWaiveCommission(on error: Error) -> Bool {
+        switch error as? AssetHubExchangePreparationError {
+        case .invalidCommission, .netOutputBelowMinimum:
+            return true
+        case .recipientUnavailable, .invalidSlippage, .unsupportedStorage, .runtimeCallUnavailable, .none:
+            return false
+        }
+    }
 
-        feeWrapper.addDependency(operations: [codingFactoryOperation])
-
-        return feeWrapper.insertingHead(operations: [codingFactoryOperation])
+    static func shouldUseGuaranteedBound(on error: Error) -> Bool {
+        switch error as? AssetHubExchangeEventError {
+        case .missingOrAmbiguousSwap, .missingOrAmbiguousCommission, .unexpectedCommissionAmount, .outputUnderflow:
+            return true
+        case .swapNotDispatched, .unexpectedOrigin:
+            return false
+        case .none:
+            return error as? AssetHubExchangePreparationError == .unsupportedStorage
+        }
     }
 }
 
-extension AssetHubExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
-    func executeWrapper(for swapLimit: AssetExchangeSwapLimit) -> CompoundOperationWrapper<Balance> {
-        let codingFactoryOperation = host.runtimeService.fetchCoderFactoryOperation()
-
-        let executeWrapper = OperationCombiningService<Balance>.compoundNonOptionalWrapper(
-            operationQueue: host.operationQueue
-        ) {
-            let callArgs = AssetConversion.CallArgs(
-                assetIn: self.edge.origin,
-                amountIn: swapLimit.amountIn,
-                assetOut: self.edge.destination,
-                amountOut: swapLimit.amountOut,
-                receiver: self.host.selectedAccount.accountId,
-                direction: swapLimit.direction,
-                slippage: swapLimit.slippage
-            )
-
-            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-
-            let submittionWrapper = self.host.submissionMonitorFactory.submitAndMonitorWrapper(
-                extrinsicBuilderClosure: { builder in
-                    try AssetHubExtrinsicConverter.addingOperation(
-                        to: builder,
-                        chain: self.host.chain,
-                        args: callArgs,
-                        codingFactory: codingFactory
-                    )
-                },
-                payingIn: self.operationArgs.feeAsset,
-                signer: self.host.signingWrapper,
-                matchingEvents: AssetConversionEventsMatching()
-            )
-
-            let codingFactoryOperation = self.host.runtimeService.fetchCoderFactoryOperation()
-
-            let monitorOperation = ClosureOperation<Balance> {
-                let submittionResult = try submittionWrapper.targetOperation.extractNoCancellableResultData()
-                let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-
-                switch submittionResult.status {
-                case let .success(executionResult):
-                    let eventParser = AssetConversionEventParser(logger: self.host.logger)
-
-                    self.host.logger.debug("Execution success: \(executionResult.interestedEvents)")
-
-                    guard let amountOut = eventParser.extractDeposit(
-                        from: executionResult.interestedEvents,
-                        using: codingFactory
-                    ) else {
-                        throw AssetHubExchangeAtomicOperationError.noEventsInResult
-                    }
-
-                    self.host.logger.debug("Arrived amount: \(String(amountOut))")
-
-                    return amountOut
-                case let .failure(executionFailure):
-                    throw executionFailure.error
-                }
-            }
-
-            monitorOperation.addDependency(submittionWrapper.targetOperation)
-            monitorOperation.addDependency(codingFactoryOperation)
-
-            return submittionWrapper
-                .insertingHead(operations: [codingFactoryOperation])
-                .insertingTail(operation: monitorOperation)
-        }
-
-        executeWrapper.addDependency(operations: [codingFactoryOperation])
-
-        return executeWrapper.insertingHead(operations: [codingFactoryOperation])
-    }
-
-    func submitWrapper(
-        for swapLimit: AssetExchangeSwapLimit
-    ) -> CompoundOperationWrapper<ExtrinsicSubmittedModel> {
-        let codingFactoryOperation = host.runtimeService.fetchCoderFactoryOperation()
-
+private extension AssetHubExchangeAtomicOperation {
+    func createParamsWrapper(
+        for swapLimit: AssetExchangeSwapLimit,
+        commission: AssetExchangeCommission?
+    ) -> CompoundOperationWrapper<AssetHubExchangeSwapParams> {
         let callArgs = AssetConversion.CallArgs(
             assetIn: edge.origin,
             amountIn: swapLimit.amountIn,
@@ -138,37 +67,139 @@ extension AssetHubExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol 
             slippage: swapLimit.slippage
         )
 
-        let submittionWrapper = host.submissionMonitorFactory.submitAndMonitorWrapper(
-            extrinsicBuilderClosure: { builder in
-                let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-                return try AssetHubExtrinsicConverter.addingOperation(
-                    to: builder,
-                    chain: self.host.chain,
-                    args: callArgs,
-                    codingFactory: codingFactory
+        return host.extrinsicParamsFactory.createOperationWrapper(
+            callArgs: callArgs,
+            commission: commission
+        )
+    }
+
+    func createParamsWrapper(
+        for swapLimit: AssetExchangeSwapLimit
+    ) -> CompoundOperationWrapper<AssetHubExchangeSwapParams> {
+        createParamsWrapper(for: swapLimit, commission: operationArgs.commission)
+    }
+
+    func createWaivableParamsWrapper(
+        for swapLimit: AssetExchangeSwapLimit
+    ) -> CompoundOperationWrapper<AssetHubExchangeSwapParams> {
+        let chargedWrapper = createParamsWrapper(for: swapLimit, commission: operationArgs.commission)
+
+        let resolvingWrapper: CompoundOperationWrapper<AssetHubExchangeSwapParams>
+        resolvingWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+            operationQueue: host.operationQueue
+        ) {
+            do {
+                let params = try chargedWrapper.targetOperation.extractNoCancellableResultData()
+
+                return .createWithResult(params)
+            } catch {
+                guard Self.shouldWaiveCommission(on: error) else {
+                    throw error
+                }
+
+                self.host.logger.error(
+                    "Commission no longer fits the rescaled swap, collecting nothing: \(error)"
                 )
+
+                return self.createParamsWrapper(for: swapLimit, commission: nil)
+            }
+        }
+
+        resolvingWrapper.addDependency(wrapper: chargedWrapper)
+
+        return resolvingWrapper.insertingHead(operations: chargedWrapper.allOperations)
+    }
+
+    func createSubmissionWrapper(
+        for params: AssetHubExchangeSwapParams
+    ) -> CompoundOperationWrapper<ExtrinsicMonitorSubmission> {
+        host.submissionMonitorFactory.submitAndMonitorWrapper(
+            extrinsicBuilderClosure: { builder in
+                try AssetHubExchangeExtrinsicConverter.addingOperation(from: params, builder: builder)
             },
             payingIn: operationArgs.feeAsset,
             signer: host.signingWrapper,
-            matchingEvents: nil
+            matchingEvents: AssetConversionEventsMatching(commissionStorageInfo: params.commission?.assetStorageInfo)
         )
+    }
 
-        submittionWrapper.addDependency(operations: [codingFactoryOperation])
+    func extractOrigin(from sender: ExtrinsicSenderResolution) -> AccountId {
+        switch sender {
+        case let .current(account):
+            return account.accountId
+        case let .delegate(resolution):
+            return resolution.delegatedAccount.accountId
+        }
+    }
 
-        let mappingOperation = ClosureOperation<ExtrinsicSubmittedModel> {
-            let model = try submittionWrapper.targetOperation.extractNoCancellableResultData()
-            return model.extrinsicSubmittedModel
+    func createMeasuringWrapper(
+        for params: AssetHubExchangeSwapParams,
+        submissionWrapper: CompoundOperationWrapper<ExtrinsicMonitorSubmission>
+    ) -> CompoundOperationWrapper<Balance> {
+        let codingFactoryOperation = host.runtimeService.fetchCoderFactoryOperation()
+
+        let mappingOperation = ClosureOperation<Balance> {
+            let submission = try submissionWrapper.targetOperation.extractNoCancellableResultData()
+
+            switch submission.status {
+            case let .failure(failure):
+                throw failure.error
+            case let .success(success):
+                let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+                let parser = AssetConversionEventParser(logger: self.host.logger)
+
+                do {
+                    let amountOut = try parser.extractDeposit(
+                        from: success.interestedEvents,
+                        verification: params.verification,
+                        origin: self.extractOrigin(from: submission.extrinsicSubmittedModel.sender),
+                        using: codingFactory
+                    )
+
+                    self.host.logger.debug("Arrived amount: \(String(amountOut))")
+
+                    return amountOut
+                } catch {
+                    guard Self.shouldUseGuaranteedBound(on: error) else {
+                        throw error
+                    }
+
+                    let guaranteed = Self.guaranteedNetAmountOut(for: params)
+
+                    self.host.logger.error(
+                        "Swap executed but output unverified (\(error)), using \(String(guaranteed))"
+                    )
+
+                    return guaranteed
+                }
+            }
         }
 
-        mappingOperation.addDependency(submittionWrapper.targetOperation)
+        mappingOperation.addDependency(submissionWrapper.targetOperation)
+        mappingOperation.addDependency(codingFactoryOperation)
 
-        return submittionWrapper
+        return submissionWrapper
             .insertingHead(operations: [codingFactoryOperation])
             .insertingTail(operation: mappingOperation)
     }
+}
 
+extension AssetHubExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol {
     func estimateFee() -> CompoundOperationWrapper<AssetExchangeOperationFee> {
-        let feeWrapper = createFeeWrapper()
+        let paramsWrapper = createParamsWrapper(for: operationArgs.swapLimit)
+
+        let feeWrapper: CompoundOperationWrapper<ExtrinsicFeeProtocol>
+        feeWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+            operationQueue: host.operationQueue
+        ) {
+            let params = try paramsWrapper.targetOperation.extractNoCancellableResultData()
+
+            return self.host.extrinsicOperationFactory.estimateFeeOperation({ builder in
+                try AssetHubExchangeExtrinsicConverter.addingOperation(from: params, builder: builder)
+            }, payingIn: self.operationArgs.feeAsset)
+        }
+
+        feeWrapper.addDependency(wrapper: paramsWrapper)
 
         let mappingOperation = ClosureOperation<AssetExchangeOperationFee> {
             let extrinsicFee = try feeWrapper.targetOperation.extractNoCancellableResultData()
@@ -178,7 +209,73 @@ extension AssetHubExchangeAtomicOperation: AssetExchangeAtomicOperationProtocol 
 
         mappingOperation.addDependency(feeWrapper.targetOperation)
 
-        return feeWrapper.insertingTail(operation: mappingOperation)
+        return feeWrapper
+            .insertingHead(operations: paramsWrapper.allOperations)
+            .insertingTail(operation: mappingOperation)
+    }
+
+    func executeWrapper(for swapLimit: AssetExchangeSwapLimit) -> CompoundOperationWrapper<Balance> {
+        let paramsWrapper = createWaivableParamsWrapper(for: swapLimit)
+
+        let executionWrapper: CompoundOperationWrapper<Balance>
+        executionWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+            operationQueue: host.operationQueue
+        ) {
+            let params = try paramsWrapper.targetOperation.extractNoCancellableResultData()
+
+            return self.createMeasuringWrapper(
+                for: params,
+                submissionWrapper: self.createSubmissionWrapper(for: params)
+            )
+        }
+
+        executionWrapper.addDependency(wrapper: paramsWrapper)
+
+        return executionWrapper.insertingHead(operations: paramsWrapper.allOperations)
+    }
+
+    func submitWrapper(
+        for swapLimit: AssetExchangeSwapLimit
+    ) -> CompoundOperationWrapper<ExtrinsicSubmittedModel> {
+        let paramsWrapper = createParamsWrapper(for: swapLimit)
+
+        let submissionWrapper: CompoundOperationWrapper<ExtrinsicSubmittedModel>
+        submissionWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+            operationQueue: host.operationQueue
+        ) {
+            let params = try paramsWrapper.targetOperation.extractNoCancellableResultData()
+
+            let monitorWrapper = self.createSubmissionWrapper(for: params)
+
+            let measuringWrapper = self.createMeasuringWrapper(
+                for: params,
+                submissionWrapper: monitorWrapper
+            )
+
+            let mappingOperation = ClosureOperation<ExtrinsicSubmittedModel> {
+                let submission = try monitorWrapper.targetOperation.extractNoCancellableResultData()
+
+                switch submission.status {
+                case let .failure(failure):
+                    throw failure.error
+                case .success:
+                    if !submission.extrinsicSubmittedModel.sender.delayedCallExecution() {
+                        _ = try measuringWrapper.targetOperation.extractNoCancellableResultData()
+                    }
+
+                    return submission.extrinsicSubmittedModel
+                }
+            }
+
+            mappingOperation.addDependency(monitorWrapper.targetOperation)
+            mappingOperation.addDependency(measuringWrapper.targetOperation)
+
+            return measuringWrapper.insertingTail(operation: mappingOperation)
+        }
+
+        submissionWrapper.addDependency(wrapper: paramsWrapper)
+
+        return submissionWrapper.insertingHead(operations: paramsWrapper.allOperations)
     }
 
     func requiredAmountToGetAmountOut(

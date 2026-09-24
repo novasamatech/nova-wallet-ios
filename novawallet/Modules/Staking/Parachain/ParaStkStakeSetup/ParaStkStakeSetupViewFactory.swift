@@ -47,6 +47,7 @@ struct ParaStkStakeSetupViewFactory {
             initialDelegator: initialDelegator,
             initialScheduledRequests: initialScheduledRequests,
             delegationIdentities: delegationIdentities,
+            stakingType: state.stakingOption.type.analyticsType,
             localizationManager: localizationManager,
             logger: Logger.shared
         )

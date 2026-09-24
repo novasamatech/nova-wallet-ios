@@ -57,7 +57,6 @@ final class SubtensorExternalBalanceServiceFactoryTests: XCTestCase {
             typeExtras: nil,
             buyProviders: nil,
             sellProviders: nil,
-            enabled: true,
             source: .remote
         )
 

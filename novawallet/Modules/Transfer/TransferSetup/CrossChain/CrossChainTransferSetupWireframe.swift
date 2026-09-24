@@ -3,10 +3,16 @@ import Foundation
 final class CrossChainTransferSetupWireframe: CrossChainTransferSetupWireframeProtocol {
     let xcmTransfers: XcmTransfers
     let transferCompletion: TransferCompletionClosure?
+    let analyticsFlow: TransferAnalyticsFlow
 
-    init(xcmTransfers: XcmTransfers, transferCompletion: TransferCompletionClosure?) {
+    init(
+        xcmTransfers: XcmTransfers,
+        transferCompletion: TransferCompletionClosure?,
+        analyticsFlow: TransferAnalyticsFlow
+    ) {
         self.xcmTransfers = xcmTransfers
         self.transferCompletion = transferCompletion
+        self.analyticsFlow = analyticsFlow
     }
 
     func showConfirmation(
@@ -22,7 +28,8 @@ final class CrossChainTransferSetupWireframe: CrossChainTransferSetupWireframePr
             xcmTransfers: xcmTransfers,
             recepient: recepient,
             amount: sendingAmount,
-            transferCompletion: transferCompletion
+            transferCompletion: transferCompletion,
+            analyticsFlow: analyticsFlow
         ) else {
             return
         }

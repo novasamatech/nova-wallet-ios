@@ -27,7 +27,6 @@ struct AssetModel: Equatable, Codable, Hashable {
     let sellProviders: JSON?
 
     // local properties
-    let enabled: Bool
     let source: Source
 
     var isUtility: Bool { assetId == Self.utilityAssetId }
@@ -44,7 +43,6 @@ struct AssetModel: Equatable, Codable, Hashable {
         typeExtras: AssetTypeExtras?,
         buyProviders: JSON?,
         sellProviders: JSON?,
-        enabled: Bool,
         source: Source
     ) {
         self.assetId = assetId
@@ -58,7 +56,6 @@ struct AssetModel: Equatable, Codable, Hashable {
         self.typeExtras = typeExtras
         self.buyProviders = buyProviders
         self.sellProviders = sellProviders
-        self.enabled = enabled
         self.source = source
     }
 
@@ -70,25 +67,5 @@ struct AssetModel: Equatable, Codable, Hashable {
 extension AssetModel {
     var decimalPrecision: Int16 {
         Int16(bitPattern: precision)
-    }
-}
-
-extension AssetModel {
-    func byChanging(enabled: Bool) -> AssetModel {
-        .init(
-            assetId: assetId,
-            icon: icon,
-            name: name,
-            symbol: symbol,
-            precision: precision,
-            priceId: priceId,
-            stakings: stakings,
-            type: type,
-            typeExtras: typeExtras,
-            buyProviders: buyProviders,
-            sellProviders: sellProviders,
-            enabled: enabled,
-            source: source
-        )
     }
 }

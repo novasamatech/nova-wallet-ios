@@ -42,7 +42,10 @@ extension TransferSetupPresenterFactory {
         }
 
         if chainAsset.asset.isAnyEvm {
-            let evmWireframe = EvmOnChainTransferSetupWireframe(transferCompletion: transferCompletion)
+            let evmWireframe = EvmOnChainTransferSetupWireframe(
+                transferCompletion: transferCompletion,
+                analyticsFlow: analyticsFlow
+            )
             wireframe = evmWireframe
 
             let assetInfo = chainAsset.chain.utilityAssetDisplayInfo() ?? chainAsset.assetDisplayInfo
@@ -54,7 +57,10 @@ extension TransferSetupPresenterFactory {
 
             optInteractor = createEvmInteractor(for: chainAsset, validationProviderFactory: validationProviderFactory)
         } else {
-            wireframe = OnChainTransferSetupWireframe(transferCompletion: transferCompletion)
+            wireframe = OnChainTransferSetupWireframe(
+                transferCompletion: transferCompletion,
+                analyticsFlow: analyticsFlow
+            )
             optInteractor = createSubstrateInteractor(for: chainAsset)
         }
 
@@ -95,6 +101,7 @@ extension TransferSetupPresenterFactory {
             dataValidatingFactory: dataValidatingFactory,
             phishingValidatingFactory: phishingValidatingFactory,
             localizationManager: localizationManager,
+            analyticsFlow: analyticsFlow,
             logger: Logger.shared
         )
 

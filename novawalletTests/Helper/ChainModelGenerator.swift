@@ -26,7 +26,6 @@ enum ChainModelGenerator {
                 typeExtras: nil,
                 buyProviders: nil,
                 sellProviders: nil,
-                enabled: true,
                 source: .remote
             )
 
@@ -306,7 +305,6 @@ enum ChainModelGenerator {
         hasStaking: Bool = false,
         buyProviders: JSON? = nil,
         sellProviders: JSON? = nil,
-        enabled: Bool = true,
         source: AssetModel.Source = .remote
     ) -> AssetModel {
         let assetSymbol = symbol ?? String(UUID().uuidString.prefix(3))
@@ -323,7 +321,6 @@ enum ChainModelGenerator {
             typeExtras: nil,
             buyProviders: buyProviders,
             sellProviders: sellProviders,
-            enabled: enabled,
             source: source
         )
     }

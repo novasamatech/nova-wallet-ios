@@ -12,6 +12,7 @@ class AssetOperationNetworkBuilder {
     let workingQueue: DispatchQueue
     let callbackQueue: DispatchQueue
     let callbackClosure: (AssetOperationNetworkBuilderResult?) -> Void
+    let includesHiddenAssets: Bool
     let logger: LoggerProtocol
 
     private var chainAssets: [ChainAsset] = []
@@ -19,12 +20,14 @@ class AssetOperationNetworkBuilder {
 
     init(
         chainAssets: [ChainAsset],
+        includesHiddenAssets: Bool,
         workingQueue: DispatchQueue,
         callbackQueue: DispatchQueue,
         callbackClosure: @escaping (AssetOperationNetworkBuilderResult?) -> Void,
         logger: LoggerProtocol
     ) {
         self.chainAssets = chainAssets
+        self.includesHiddenAssets = includesHiddenAssets
         self.workingQueue = workingQueue
         self.callbackQueue = callbackQueue
         self.callbackClosure = callbackClosure
@@ -74,7 +77,9 @@ class AssetOperationNetworkBuilder {
     }
 
     func assetListState(from model: AssetListModel) -> AssetListState {
-        let chainAssets = model.allChains.flatMap { _, chain in
+        let chains = model.chains(includingHidden: includesHiddenAssets)
+
+        let chainAssets = chains.flatMap { _, chain in
             chain.assets.map { ChainAssetId(chainId: chain.chainId, assetId: $0.assetId) }
         }
 
@@ -92,7 +97,7 @@ class AssetOperationNetworkBuilder {
         return AssetListState(
             priceResult: model.priceResult,
             balanceResults: balanceResults,
-            allChains: model.allChains,
+            allChains: chains,
             externalBalances: model.externalBalances
         )
     }

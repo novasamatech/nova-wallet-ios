@@ -1,6 +1,7 @@
 import Foundation
 import BigInt
 import Foundation_iOS
+import NovaAnalytics
 
 final class ParaStkStakeConfirmPresenter {
     weak var view: CollatorStakingConfirmViewProtocol?
@@ -13,6 +14,9 @@ final class ParaStkStakeConfirmPresenter {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let collator: DisplayAddress
     let amount: Decimal
+    let stakingType: StakingAnalyticsType
+    let isStartStakingFlow: Bool
+    let abandonTracker: AnalyticsAbandonTracker
     let logger: LoggerProtocol
 
     private(set) var balance: AssetBalance?
@@ -39,6 +43,7 @@ final class ParaStkStakeConfirmPresenter {
         collator: DisplayAddress,
         amount: Decimal,
         initialDelegator: ParachainStaking.Delegator?,
+        stakingType: StakingAnalyticsType,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -51,7 +56,15 @@ final class ParaStkStakeConfirmPresenter {
         delegator = initialDelegator
         self.collator = collator
         self.amount = amount
+        self.stakingType = stakingType
         self.logger = logger
+        let isStartStakingFlow = initialDelegator == nil
+        self.isStartStakingFlow = isStartStakingFlow
+
+        abandonTracker = AnalyticsAbandonTracker {
+            isStartStakingFlow ? AnalyticsEvent.stakingAbandoned(stage: .confirm) : nil
+        }
+
         self.localizationManager = localizationManager
     }
 
@@ -298,12 +311,18 @@ extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmInteractorOutputProto
 
         switch result {
         case let .success(model):
+            trackStakingEvent(AnalyticsEvent.stakingCompleted)
+
+            abandonTracker.markProceeded()
+
             wireframe.complete(
                 on: view,
                 sender: model.sender,
                 locale: selectedLocale
             )
         case let .failure(error):
+            trackStakingFailure(for: error)
+
             applyCurrentState()
             refreshFee()
 

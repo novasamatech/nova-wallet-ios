@@ -1,12 +1,17 @@
 import Foundation
 import Foundation_iOS
 import BigInt
+import NovaAnalytics
 
 final class SwapSetupPresenter: SwapBasePresenter {
     weak var view: SwapSetupViewProtocol?
     let wireframe: SwapSetupWireframeProtocol
     let interactor: SwapSetupInteractorInputProtocol
     let initState: SwapSetupInitState
+    let source: SwapSource
+    let abandonTracker = AnalyticsAbandonTracker {
+        AnalyticsEvent.swapAbandoned(stage: .setup)
+    }
 
     private(set) var viewModelFactory: SwapsSetupViewModelFactoryProtocol
 
@@ -36,6 +41,8 @@ final class SwapSetupPresenter: SwapBasePresenter {
      */
     private var maxCorrectionCounter = MaxCounter.feeCorrection()
 
+    var poolLimitCorrectionCounter = MaxCounter.feeCorrection()
+
     init(
         initState: SwapSetupInitState,
         interactor: SwapSetupInteractorInputProtocol,
@@ -47,6 +54,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
         localizationManager: LocalizationManagerProtocol,
         selectedWallet: MetaAccountModel,
         slippageConfig: SlippageConfig,
+        source: SwapSource,
         logger: LoggerProtocol
     ) {
         self.initState = initState
@@ -58,6 +66,8 @@ final class SwapSetupPresenter: SwapBasePresenter {
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         slippage = slippageConfig.defaultSlippage
+
+        self.source = source
 
         super.init(
             selectedWallet: selectedWallet,
@@ -126,6 +136,18 @@ final class SwapSetupPresenter: SwapBasePresenter {
         provideIssues()
     }
 
+    override func canApplyPoolTradeLimit() -> Bool {
+        poolLimitCorrectionCounter.hasBudget()
+    }
+
+    override func resetPoolTradeLimitCorrection() {
+        poolLimitCorrectionCounter.resetCounter()
+    }
+
+    override func applyPoolTradeLimit(amount: Balance, direction: AssetConversion.Direction) {
+        applySuggestedAmount(amount, direction: direction)
+    }
+
     override func handleBaseError(_ error: SwapBaseError) {
         handleBaseError(
             error,
@@ -147,6 +169,7 @@ final class SwapSetupPresenter: SwapBasePresenter {
         if let fee, !quote.hasSamePath(other: fee.route) {
             maxCorrectionCounter.resetCounter()
         }
+
         // we need to keep fee in sync with quote
         fee = nil
 
@@ -423,7 +446,7 @@ extension SwapSetupPresenter {
         ))
     }
 
-    private func providePayAssetViews() {
+    func providePayAssetViews() {
         providePayTitle()
         providePayAssetViewModel()
         providePayInputPriceViewModel()
@@ -444,7 +467,7 @@ extension SwapSetupPresenter {
         provideReceiveInputPriceViewModel()
     }
 
-    private func provideReceiveAssetViews() {
+    func provideReceiveAssetViews() {
         provideReceiveTitle()
         provideReceiveAssetViewModel()
         provideReceiveInputPriceViewModel()
@@ -688,6 +711,8 @@ extension SwapSetupPresenter {
 
 extension SwapSetupPresenter: SwapSetupPresenterProtocol {
     func setup() {
+        trackScreenOpened()
+
         updateViews()
 
         interactor.setup()
@@ -886,6 +911,8 @@ extension SwapSetupPresenter: SwapSetupPresenterProtocol {
                     quoteArgs: quoteArgs
                 )
 
+                self?.trackProceededToConfirmation(for: swapModel, quote: quote)
+
                 self?.wireframe.showConfirmation(
                     from: self?.view,
                     initState: confirmInitState
@@ -954,23 +981,6 @@ extension SwapSetupPresenter: Localizable {
     func applyLocalization() {
         if view?.isSetup == true {
             updateViews()
-        }
-    }
-}
-
-extension SwapSetupPresenter: RampFlowManaging, RampDelegate {
-    func rampDidComplete(
-        action: RampActionType,
-        chainAsset _: ChainAsset
-    ) {
-        wireframe.popTopControllers(from: view) { [weak self] in
-            guard let self else { return }
-
-            wireframe.presentRampDidComplete(
-                view: view,
-                action: action,
-                locale: selectedLocale
-            )
         }
     }
 }

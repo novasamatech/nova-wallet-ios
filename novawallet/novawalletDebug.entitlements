@@ -10,7 +10,7 @@
 		<string>applinks:nova-wallet.app.link</string>
 	</array>
 	<key>com.apple.developer.devicecheck.appattest-environment</key>
-	<string>production</string>
+	<string>development</string>
 	<key>com.apple.developer.icloud-container-identifiers</key>
 	<array>
 		<string>iCloud.io.novafoundation.novawallet.dev.Documents</string>

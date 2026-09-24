@@ -48,6 +48,7 @@ private extension BanxaProvider {
         )
 
         let action = RampAction(
+            providerId: "banxa",
             type: .onRamp,
             logo: R.image.banxaLogo()!,
             descriptionText: LocalizableResource { locale in

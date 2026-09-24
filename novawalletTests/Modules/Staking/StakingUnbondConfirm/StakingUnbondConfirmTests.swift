@@ -151,6 +151,7 @@ class StakingUnbondConfirmTests: XCTestCase {
             dataValidatingFactory: StakingDataValidatingFactory(presentable: wireframe),
             assetInfo: assetInfo,
             chain: ChainModelGenerator.generate(count: 1).first!,
+            stakingType: .direct,
             localizationManager: LocalizationManager.shared
         )
 

@@ -47,8 +47,13 @@ final class MultichainTokenView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func bind(viewModel: TokenManageViewModel) {
-        let style: Style = viewModel.isOn ? MultichainTokenView.enabledStyle : MultichainTokenView.disabledStyle
+    func bind(
+        title: String,
+        subtitle: String?,
+        imageViewModel: ImageViewModelProtocol?,
+        isOn: Bool
+    ) {
+        let style: Style = isOn ? MultichainTokenView.enabledStyle : MultichainTokenView.disabledStyle
 
         let imageSettings = ImageViewModelSettings(
             targetSize: Constants.iconSize,
@@ -56,13 +61,19 @@ final class MultichainTokenView: UIView {
             opacity: style.iconOpacity
         )
 
-        iconView.bind(viewModel: viewModel.imageViewModel, settings: imageSettings)
+        iconView.bind(viewModel: imageViewModel, settings: imageSettings)
 
-        detailsView.valueTop.text = viewModel.symbol
+        detailsView.bind(
+            topValue: title,
+            bottomValue: subtitle.flatMap { $0.isEmpty ? nil : $0 }
+        )
+
         detailsView.valueTop.textColor = style.titleColor
-
-        detailsView.valueBottom.text = viewModel.subtitle
         detailsView.valueBottom.textColor = style.subtitleColor
+    }
+
+    func setIconCornerRadius(_ cornerRadius: CGFloat) {
+        iconView.backgroundView.cornerRadius = cornerRadius
     }
 
     private func setupLayout() {
@@ -103,7 +114,7 @@ extension MultichainTokenView {
         .init(
             titleColor: R.color.colorTextSecondary()!,
             subtitleColor: R.color.colorTextSecondary()!,
-            iconOpacity: 0.5
+            iconOpacity: 0.48
         )
     }
 }

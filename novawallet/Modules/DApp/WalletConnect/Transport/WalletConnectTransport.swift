@@ -41,6 +41,7 @@ final class WalletConnectTransport {
     let service: WalletConnectServiceProtocol
     let dataSource: DAppStateDataSource
     let logger: LoggerProtocol
+    let signingAnalytics: WalletConnectSigningAnalytics
 
     weak var delegate: WalletConnectTransportDelegate?
 
@@ -49,11 +50,13 @@ final class WalletConnectTransport {
     init(
         service: WalletConnectServiceProtocol,
         dataSource: DAppStateDataSource,
-        logger: LoggerProtocol
+        logger: LoggerProtocol,
+        signingAnalytics: WalletConnectSigningAnalytics
     ) {
         self.service = service
         self.dataSource = dataSource
         self.logger = logger
+        self.signingAnalytics = signingAnalytics
     }
 
     private func createSessionsMappingOperation(
@@ -203,7 +206,11 @@ extension WalletConnectTransport {
         service.delegate = self
         service.setup()
 
-        state = WalletConnectStateInitiating(stateMachine: self, logger: logger)
+        state = WalletConnectStateInitiating(
+            stateMachine: self,
+            logger: logger,
+            signingAnalytics: signingAnalytics
+        )
         state?.proceed(with: dataSource)
     }
 

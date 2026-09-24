@@ -71,6 +71,8 @@ private extension OnboardingMainInteractor {
 
 extension OnboardingMainInteractor: OnboardingMainInteractorInputProtocol {
     func setup() {
+        presenter?.didReceive(hasExistingWallets: walletSettings.hasValue)
+
         secretImportService.add(observer: self)
         suggestSecretImportIfNeeded()
 

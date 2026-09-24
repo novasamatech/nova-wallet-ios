@@ -81,7 +81,9 @@ final class TransactionSubscription {
         coderOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
         chain: ChainModel
     ) -> BaseOperation<[TransactionSubscriptionResult]> {
-        ClosureOperation<[TransactionSubscriptionResult]> {
+        let logger = logger
+
+        return ClosureOperation<[TransactionSubscriptionResult]> {
             let block = try fetchOperation
                 .extractNoCancellableResultData()
                 .block
@@ -94,7 +96,11 @@ final class TransactionSubscription {
 
             let coderFactory = try coderOperation.extractNoCancellableResultData()
 
-            let extrinsicProcessor = ExtrinsicProcessor(accountId: accountId, chain: chain)
+            let extrinsicProcessor = ExtrinsicProcessor(
+                accountId: accountId,
+                chain: chain,
+                logger: logger
+            )
 
             return block.extrinsics.enumerated().compactMap { index, hexExtrinsic in
                 do {

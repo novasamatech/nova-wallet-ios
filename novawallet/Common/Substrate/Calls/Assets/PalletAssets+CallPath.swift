@@ -7,6 +7,15 @@ extension PalletAssets {
         "ForeignAssets"
     ]
 
+    static func palletNames(for chain: ChainModel) -> Set<String> {
+        let configured = chain.assets.compactMap { asset -> String? in
+            guard asset.type == AssetType.statemine.rawValue,
+                  let extras = try? asset.typeExtras?.map(to: StatemineAssetExtras.self) else { return nil }
+            return extras.palletName ?? PalletAssets.name
+        }
+        return Set(knownPalletNames).union(configured)
+    }
+
     static func assetsTransfer(for palletName: String?) -> CallCodingPath {
         CallCodingPath(moduleName: palletName ?? PalletAssets.name, callName: "transfer")
     }

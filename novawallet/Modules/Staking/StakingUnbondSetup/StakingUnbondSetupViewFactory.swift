@@ -33,6 +33,7 @@ struct StakingUnbondSetupViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             chainAsset: chainAsset,
+            stakingType: state.stakingOption.type.analyticsType,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )

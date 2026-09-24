@@ -1,13 +1,17 @@
 import Foundation
 import Foundation_iOS
+import NovaAnalytics
 
-final class AccountConfirmPresenter {
+final class AccountConfirmPresenter: AnalyticsTracking {
     weak var view: AccountConfirmViewProtocol?
     let wireframe: AccountConfirmWireframeProtocol
     let interactor: AccountConfirmInteractorInputProtocol
 
     private let localizationManager: LocalizationManagerProtocol
     private let mnemonicViewModelFactory: MnemonicViewModelFactory
+    private let abandonTracker = AnalyticsAbandonTracker {
+        AnalyticsEvent.walletCreationAbandoned(lastStep: .confirmMnemonic)
+    }
 
     init(
         wireframe: AccountConfirmWireframeProtocol,
@@ -66,6 +70,10 @@ extension AccountConfirmPresenter: AccountConfirmInteractorOutputProtocol {
     }
 
     func didCompleteConfirmation() {
+        abandonTracker.markProceeded()
+
+        trackAnalytics(.walletCreationCompleted(method: .create, duration: nil))
+
         wireframe.proceed(from: view)
     }
 

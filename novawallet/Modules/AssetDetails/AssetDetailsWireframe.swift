@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 import UIKit_iOS
 import Foundation_iOS
+import NovaAnalytics
 
 final class AssetDetailsWireframe {
     let operationState: AssetOperationState
@@ -100,6 +101,7 @@ extension AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         guard let swapsView = SwapSetupViewFactory.createView(
             state: swapState,
             payChainAsset: chainAsset,
+            source: .assetDetails,
             swapCompletionClosure: operationState.swapCompletionClosure
         ) else {
             return

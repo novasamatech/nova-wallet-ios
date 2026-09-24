@@ -59,15 +59,7 @@ final class EvmAssetBalanceUpdatingService: AssetBalanceBatchBaseUpdatingService
             return
         }
 
-        let newAssetIdsList = chain.assets.compactMap { asset in
-            if asset.isEvmAsset, asset.enabled {
-                return asset.assetId
-            } else {
-                return nil
-            }
-        }
-
-        let newAssetIds = Set(newAssetIdsList)
+        let newAssetIds = Set(chain.assets.filter(\.isEvmAsset).map(\.assetId))
 
         guard subscribedAssets[chain.chainId] != newAssetIds else {
             return

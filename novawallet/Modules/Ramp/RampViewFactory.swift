@@ -29,7 +29,8 @@ final class RampViewFactory {
         let presenter = RampPresenter(
             wireframe: wireframe,
             interactor: interactor,
-            chainAsset: chainAsset
+            chainAsset: chainAsset,
+            rampAction: action
         )
 
         view.presenter = presenter

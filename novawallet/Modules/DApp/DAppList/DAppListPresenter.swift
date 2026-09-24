@@ -12,7 +12,7 @@ final class DAppListPresenter: BannersModuleInputOwnerProtocol {
     let viewModelFactory: DAppListViewModelFactoryProtocol
 
     private var wallet: MetaAccountModel?
-    private var dAppsResult: Result<DAppList, Error>?
+    var dAppsResult: Result<DAppList, Error>?
     private var categoryModels: [DAppCategory] = []
     private var favorites: [String: DAppFavorite]?
     private var hasFavorites: Bool { !(favorites ?? [:]).isEmpty }
@@ -99,6 +99,8 @@ extension DAppListPresenter: DAppListPresenterProtocol {
     }
 
     func selectDApp(with id: String) {
+        trackOpened(dAppId: id)
+
         wireframe.openBrowser(with: id)
     }
 

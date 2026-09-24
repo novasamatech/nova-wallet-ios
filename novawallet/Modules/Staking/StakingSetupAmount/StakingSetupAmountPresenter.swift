@@ -1,8 +1,9 @@
 import Foundation
 import Foundation_iOS
 import BigInt
+import NovaAnalytics
 
-final class StakingSetupAmountPresenter {
+final class StakingSetupAmountPresenter: AnalyticsTracking {
     weak var view: StakingSetupAmountViewProtocol?
     let wireframe: StakingSetupAmountWireframeProtocol
     let interactor: StakingSetupAmountInteractorInputProtocol
@@ -16,6 +17,10 @@ final class StakingSetupAmountPresenter {
     let chainAsset: ChainAsset
     let accountId: AccountId
     let logger: LoggerProtocol
+
+    private let abandonTracker = AnalyticsAbandonTracker {
+        AnalyticsEvent.stakingAbandoned(stage: .setup)
+    }
 
     private var setupMethod: StakingSelectionMethod = .recommendation(nil)
 
@@ -384,12 +389,25 @@ extension StakingSetupAmountPresenter: StakingSetupAmountPresenterProtocol {
 
         let validators = defaultValidations + recommendedValidations
         DataValidationRunner(validators: validators).runValidation { [weak self] in
-            guard let stakingOption = self?.setupMethod.selectedStakingOption else {
+            guard let self, let stakingOption = setupMethod.selectedStakingOption else {
                 return
             }
 
-            self?.wireframe.showConfirmation(
-                from: self?.view,
+            let event = chainAsset.chain.analyticsNetworkName.map { network in
+                AnalyticsEvent.stakingInitiated(
+                    type: stakingOption.analyticsType,
+                    network: network,
+                    amount: currentInputAmount,
+                    rate: self.priceData?.analyticsRate
+                )
+            }
+
+            trackAnalytics(event)
+
+            abandonTracker.markProceeded()
+
+            wireframe.showConfirmation(
+                from: view,
                 stakingOption: stakingOption,
                 amount: currentInputAmount
             )

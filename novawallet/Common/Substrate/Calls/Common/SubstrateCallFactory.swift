@@ -15,7 +15,8 @@ protocol SubstrateCallFactoryProtocol {
     func assetsTransfer(
         to receiver: AccountId,
         info: AssetsPalletStorageInfo,
-        amount: BigUInt
+        amount: BigUInt,
+        callPath: CallCodingPath
     ) -> RuntimeCall<PalletAssets.TransferCall>
 
     func ormlTransfer(
@@ -98,14 +99,14 @@ final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
     func assetsTransfer(
         to receiver: AccountId,
         info: AssetsPalletStorageInfo,
-        amount: BigUInt
+        amount: BigUInt,
+        callPath: CallCodingPath
     ) -> RuntimeCall<PalletAssets.TransferCall> {
         let args = PalletAssets.TransferCall(assetId: info.assetId, target: .accoundId(receiver), amount: amount)
-        let callCodingPath = PalletAssets.assetsTransfer(for: info.palletName)
 
         return RuntimeCall(
-            moduleName: callCodingPath.moduleName,
-            callName: callCodingPath.callName,
+            moduleName: callPath.moduleName,
+            callName: callPath.callName,
             args: args
         )
     }

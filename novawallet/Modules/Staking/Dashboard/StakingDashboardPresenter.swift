@@ -1,12 +1,14 @@
 import Foundation
 import Operation_iOS
 import Foundation_iOS
+import NovaAnalytics
 
-final class StakingDashboardPresenter {
+final class StakingDashboardPresenter: AnalyticsTracking {
     weak var view: StakingDashboardViewProtocol?
     let wireframe: StakingDashboardWireframeProtocol
     let interactor: StakingDashboardInteractorInputProtocol
     let viewModelFactory: StakingDashboardViewModelFactoryProtocol
+    let announcementViewModelFactory: AnnouncementViewModelFactoryProtocol
     let logger: LoggerProtocol
 
     let walletViewModelFactory = WalletSwitchViewModelFactory()
@@ -20,6 +22,7 @@ final class StakingDashboardPresenter {
         interactor: StakingDashboardInteractorInputProtocol,
         wireframe: StakingDashboardWireframeProtocol,
         viewModelFactory: StakingDashboardViewModelFactoryProtocol,
+        announcementViewModelFactory: AnnouncementViewModelFactoryProtocol,
         privacyStateManager: PrivacyStateManagerProtocol,
         localizationManager: LocalizationManagerProtocol,
         appearanceFacade: AppearanceFacadeProtocol,
@@ -28,6 +31,7 @@ final class StakingDashboardPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.announcementViewModelFactory = announcementViewModelFactory
         self.logger = logger
         self.localizationManager = localizationManager
         self.privacyStateManager = privacyStateManager
@@ -112,11 +116,28 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
             return
         }
 
+        let event = item.chainAsset.chain.analyticsNetworkName.map { network in
+            AnalyticsEvent.stakingFlowOpened(network: network, source: .dashboard)
+        }
+
+        trackAnalytics(event)
+
         wireframe.showStartStaking(from: view, chainAsset: item.chainAsset)
     }
 
     func selectMoreOptions() {
         wireframe.showMoreOptions(from: view)
+    }
+
+    func selectAnnouncementLink(at index: Int) {
+        let viewModels = announcementViewModelFactory.createGeneralViewModels(
+            from: announcements,
+            locale: selectedLocale
+        )
+
+        guard let url = viewModels[safe: index]?.link?.url else { return }
+
+        wireframe.openBrowser(with: .query(string: url.absoluteString))
     }
 
     func switchWallet() {

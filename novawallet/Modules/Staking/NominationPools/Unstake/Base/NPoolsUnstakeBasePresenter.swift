@@ -1,6 +1,7 @@
 import Foundation
 import BigInt
 import Foundation_iOS
+import NovaAnalytics
 
 class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
     weak var baseView: NPoolsUnstakeBaseViewProtocol?
@@ -12,6 +13,7 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
     let dataValidatorFactory: NominationPoolDataValidatorFactoryProtocol
     let stakingActivity: StakingActivityForValidating
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let stakingType: StakingAnalyticsType
     let logger: LoggerProtocol
 
     var assetBalance: AssetBalance?
@@ -37,6 +39,7 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatorFactory: NominationPoolDataValidatorFactoryProtocol,
         stakingActivity: StakingActivityForValidating,
+        stakingType: StakingAnalyticsType,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -47,6 +50,7 @@ class NPoolsUnstakeBasePresenter: NPoolsUnstakeBaseInteractorOutputProtocol {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatorFactory = dataValidatorFactory
         self.stakingActivity = stakingActivity
+        self.stakingType = stakingType
         self.logger = logger
         self.localizationManager = localizationManager
     }

@@ -72,3 +72,50 @@ extension AssetsHydraXYKExchangeEdge: AssetExchangableGraphEdge {
         )
     }
 }
+
+extension AssetsHydraXYKExchangeEdge {
+    func tradeLimitVerdict(
+        amount: Balance,
+        direction: AssetConversion.Direction
+    ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict> {
+        let coderFactoryOperation = host.runtimeService.fetchCoderFactoryOperation()
+
+        let limitsWrapper = HydraExchangeTradeLimits.createPoolLimitsWrapper(
+            for: .xyk,
+            dependingOn: coderFactoryOperation
+        )
+
+        limitsWrapper.addDependency(operations: [coderFactoryOperation])
+
+        let stateWrapper = quoteFactory.quoteStateWrapper(for: remoteSwapPair)
+
+        let verdictOperation = ClosureOperation<AssetExchangeTradeLimitVerdict> {
+            guard let limits = try limitsWrapper.targetOperation.extractNoCancellableResultData() else {
+                return .withinLimit
+            }
+
+            let remoteState = try stateWrapper.targetOperation.extractNoCancellableResultData()
+
+            let verdict = try HydraXYKSwapQuoteFactory.tradeLimitVerdict(
+                for: amount,
+                direction: direction,
+                remoteState: remoteState,
+                limits: limits
+            )
+
+            guard let limitedAsset = self.limitedAsset(for: direction) else {
+                return verdict
+            }
+
+            return verdict.naming(limitedAsset: limitedAsset)
+        }
+
+        verdictOperation.addDependency(limitsWrapper.targetOperation)
+        verdictOperation.addDependency(stateWrapper.targetOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: verdictOperation,
+            dependencies: [coderFactoryOperation] + limitsWrapper.allOperations + stateWrapper.allOperations
+        )
+    }
+}

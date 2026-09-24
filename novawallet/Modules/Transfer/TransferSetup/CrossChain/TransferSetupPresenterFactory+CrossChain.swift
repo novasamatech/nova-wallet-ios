@@ -22,7 +22,8 @@ extension TransferSetupPresenterFactory {
 
         let wireframe = CrossChainTransferSetupWireframe(
             xcmTransfers: xcmTransfers,
-            transferCompletion: transferCompletion
+            transferCompletion: transferCompletion,
+            analyticsFlow: analyticsFlow
         )
 
         let networkViewModelFactory = NetworkViewModelFactory()
@@ -83,6 +84,7 @@ extension TransferSetupPresenterFactory {
             dataValidatingFactory: dataValidatingFactory,
             phishingValidatingFactory: phishingValidatingFactory,
             localizationManager: LocalizationManager.shared,
+            analyticsFlow: analyticsFlow,
             logger: Logger.shared
         )
 

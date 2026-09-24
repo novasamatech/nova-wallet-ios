@@ -563,6 +563,33 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
         }
     }
 
+    func presentAnalyticsConsent(
+        from view: MainTabBarViewProtocol?,
+        onEnable: @escaping () -> Void,
+        onDecline: @escaping () -> Void,
+        onUnavailable: @escaping () -> Void
+    ) {
+        guard let presentingController = view?.controller.topModalViewController else {
+            onUnavailable()
+            return
+        }
+
+        let consentView = AnalyticsConsentScreenViewFactory.createView(
+            onEnable: onEnable,
+            onDecline: onDecline
+        )
+
+        guard let controllerToPresent = consentView?.controller else {
+            onUnavailable()
+            return
+        }
+
+        presentingController.present(
+            controllerToPresent,
+            animated: true
+        )
+    }
+
     func presentLegalConsent(
         from view: MainTabBarViewProtocol?,
         completion: @escaping () -> Void

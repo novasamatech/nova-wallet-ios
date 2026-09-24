@@ -24,6 +24,7 @@ protocol VotePresenterProtocol: AnyObject {
     func switchToGovernance(_ view: ReferendumsViewProtocol)
     func switchToCrowdloans(_ view: CrowdloansViewProtocol)
     func showReferendumsDetails(_ index: Referenda.ReferendumIndex)
+    func didOpen(voteType: VoteType)
 }
 
 protocol VoteInteractorInputProtocol: AnyObject {

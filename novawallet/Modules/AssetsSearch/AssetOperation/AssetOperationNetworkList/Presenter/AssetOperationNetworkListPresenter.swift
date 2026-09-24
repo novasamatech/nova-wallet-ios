@@ -40,6 +40,7 @@ private extension AssetOperationNetworkListPresenter {
 
         let viewModels = viewModelFactory.createViewModels(
             assets: resultModel.assets,
+            groupSymbol: multichainToken.symbol,
             priceData: resultModel.prices,
             locale: selectedLocale
         )

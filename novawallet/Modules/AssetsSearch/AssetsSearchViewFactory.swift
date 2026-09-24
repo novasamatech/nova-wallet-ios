@@ -14,6 +14,7 @@ struct AssetsSearchViewFactory {
         let interactor = AssetsSearchInteractor(
             stateObservable: stateObservable,
             filter: { $0.chain.syncMode.enabled() },
+            includesHiddenAssets: false,
             settingsManager: SettingsManager.shared,
             logger: Logger.shared
         )

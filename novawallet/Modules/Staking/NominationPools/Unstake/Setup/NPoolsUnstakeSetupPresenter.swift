@@ -1,6 +1,7 @@
 import Foundation
 import Foundation_iOS
 import BigInt
+import NovaAnalytics
 
 final class NPoolsUnstakeSetupPresenter: NPoolsUnstakeBasePresenter {
     var view: NPoolsUnstakeSetupViewProtocol? {
@@ -25,6 +26,7 @@ final class NPoolsUnstakeSetupPresenter: NPoolsUnstakeBasePresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatorFactory: NominationPoolDataValidatorFactoryProtocol,
         stakingActivity: StakingActivityForValidating,
+        stakingType: StakingAnalyticsType,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -36,6 +38,7 @@ final class NPoolsUnstakeSetupPresenter: NPoolsUnstakeBasePresenter {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatorFactory: dataValidatorFactory,
             stakingActivity: stakingActivity,
+            stakingType: stakingType,
             localizationManager: localizationManager,
             logger: logger
         )
@@ -209,11 +212,13 @@ extension NPoolsUnstakeSetupPresenter: NPoolsUnstakeSetupPresenterProtocol {
         DataValidationRunner(
             validators: baseValidations + [minStakeValidation]
         ).runValidation { [weak self] in
-            guard let unstakingAmount = optUnstakingAmount else {
+            guard let self, let unstakingAmount = optUnstakingAmount else {
                 return
             }
 
-            self?.wireframe?.showConfirm(from: self?.view, amount: unstakingAmount)
+            trackUnstakeEvent(AnalyticsEvent.unstakeInitiated, amount: unstakingAmount)
+
+            wireframe?.showConfirm(from: view, amount: unstakingAmount)
         }
     }
 }

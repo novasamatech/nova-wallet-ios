@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import UIKit_iOS
+import NovaAnalytics
 
 final class AssetListWireframe: AssetListWireframeProtocol {
     let applicationConfig: ApplicationConfigProtocol
@@ -281,6 +282,7 @@ final class AssetListWireframe: AssetListWireframeProtocol {
         guard let swapTokensView = SwapSetupViewFactory.createView(
             state: state,
             payChainAsset: payAsset,
+            source: .mainScreen,
             swapCompletionClosure: swapCompletionClosure
         ) else {
             return

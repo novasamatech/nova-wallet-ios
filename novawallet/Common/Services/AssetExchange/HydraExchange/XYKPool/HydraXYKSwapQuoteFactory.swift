@@ -9,7 +9,7 @@ final class HydraXYKSwapQuoteFactory {
         self.flowState = flowState
     }
 
-    private func createQuoteStateWrapper(
+    func quoteStateWrapper(
         for remoteSwapPair: HydraDx.RemoteSwapPair
     ) -> CompoundOperationWrapper<HydraXYK.QuoteRemoteState> {
         let quoteService = flowState.setupQuoteService(for: remoteSwapPair)
@@ -79,7 +79,7 @@ final class HydraXYKSwapQuoteFactory {
 extension HydraXYKSwapQuoteFactory {
     func quote(for args: HydraExchange.QuoteArgs) -> CompoundOperationWrapper<BigUInt> {
         let remotePair = HydraDx.RemoteSwapPair(assetIn: args.assetIn, assetOut: args.assetOut)
-        let quoteStateWrapper = createQuoteStateWrapper(for: remotePair)
+        let quoteStateWrapper = quoteStateWrapper(for: remotePair)
 
         let feeParamsWrapper = createFeeParamsWrapper()
 
@@ -110,5 +110,71 @@ extension HydraXYKSwapQuoteFactory {
         let dependencies = quoteStateWrapper.allOperations + feeParamsWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: calculateOperation, dependencies: dependencies)
+    }
+}
+
+extension HydraXYKSwapQuoteFactory {
+    static func tradeLimitVerdict(
+        for amount: Balance,
+        direction: AssetConversion.Direction,
+        remoteState: HydraXYK.QuoteRemoteState,
+        limits: HydraExchangeTradeLimits.PoolLimits
+    ) throws -> AssetExchangeTradeLimitVerdict {
+        let reserveIn = remoteState.assetInBalance
+        let reserveOut = remoteState.assetOutBalance
+
+        let exceeds: Bool
+        let cap: Balance
+
+        switch direction {
+        case .sell:
+            let amountOutPreFee = try HydraXYKSwapApi.calculateOutGivenIn(
+                for: reserveIn,
+                balanceOut: reserveOut,
+                amountIn: amount
+            )
+
+            exceeds = try HydraExchangeTradeLimits.xykSellExceedsLimit(
+                amountIn: amount,
+                amountOutPreFee: amountOutPreFee,
+                reserveIn: reserveIn,
+                reserveOut: reserveOut,
+                limits: limits
+            )
+
+            cap = try HydraExchangeTradeLimits.maxSellAmountIn(
+                reserveIn: reserveIn,
+                reserveOut: reserveOut,
+                limits: limits
+            )
+        case .buy:
+            let amountInPreFee = try HydraXYKSwapApi.calculateInGivenOut(
+                for: reserveIn,
+                balanceOut: reserveOut,
+                amountOut: amount
+            )
+
+            exceeds = try HydraExchangeTradeLimits.xykBuyExceedsLimit(
+                amountOut: amount,
+                amountInPreFee: amountInPreFee,
+                reserveIn: reserveIn,
+                reserveOut: reserveOut,
+                limits: limits
+            )
+
+            cap = try HydraExchangeTradeLimits.maxBuyAmountOut(
+                reserveIn: reserveIn,
+                reserveOut: reserveOut,
+                limits: limits
+            )
+        }
+
+        guard exceeds else {
+            return .withinLimit
+        }
+
+        return .exceeds(
+            .init(maxGivenAmount: cap, minTradingLimit: limits.minTradingLimit)
+        )
     }
 }

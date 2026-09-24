@@ -1,16 +1,19 @@
 import Foundation
 import Foundation_iOS
 import Operation_iOS
+import NovaAnalytics
 
 struct SwapSetupViewFactory {
     static func createView(
         state: SwapTokensFlowStateProtocol,
         payChainAsset: ChainAsset,
+        source: SwapSource,
         swapCompletionClosure: SwapCompletionClosure?
     ) -> SwapSetupViewProtocol? {
         createView(
             state: state,
             initState: .init(payChainAsset: payChainAsset),
+            source: source,
             swapCompletionClosure: swapCompletionClosure
         )
     }
@@ -18,6 +21,7 @@ struct SwapSetupViewFactory {
     static func createView(
         state: SwapTokensFlowStateProtocol,
         initState: SwapSetupInitState,
+        source: SwapSource,
         swapCompletionClosure: SwapCompletionClosure?
     ) -> SwapSetupViewProtocol? {
         guard
@@ -70,6 +74,7 @@ struct SwapSetupViewFactory {
             localizationManager: LocalizationManager.shared,
             selectedWallet: selectedWallet,
             slippageConfig: .defaultConfig,
+            source: source,
             logger: Logger.shared
         )
 

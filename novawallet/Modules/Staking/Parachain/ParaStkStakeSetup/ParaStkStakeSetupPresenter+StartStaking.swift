@@ -78,15 +78,19 @@ extension ParaStkStakeSetupPresenter {
         )
 
         validator.runValidation { [weak self] in
-            guard let collator = self?.collatorDisplayAddress, let amount = inputAmount else {
+            guard let self, let collator = collatorDisplayAddress, let amount = inputAmount else {
                 return
             }
 
-            self?.wireframe.showConfirmation(
-                from: self?.view,
+            trackStakingInitiated(amount: amount)
+
+            abandonTracker.markProceeded()
+
+            wireframe.showConfirmation(
+                from: view,
                 collator: collator,
                 amount: amount,
-                initialDelegator: self?.delegator
+                initialDelegator: delegator
             )
         }
     }

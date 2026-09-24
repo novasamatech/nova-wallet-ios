@@ -50,9 +50,10 @@ enum AssetListModelHelpers {
     }
 
     static func createAssetGroupsDiffCalculator(
-        from groups: [AssetListAssetGroupModel]
+        from groups: [AssetListAssetGroupModel],
+        rank: [ChainAssetId: Int]
     ) -> ListDifferenceCalculator<AssetListAssetGroupModel> {
-        let sortingBlock = AssetListModelHelpers.assetListAssetGroupSortingBlock
+        let sortingBlock = AssetListModelHelpers.assetListAssetGroupSortingBlock(rank: rank)
 
         let sortedGroups = groups.sorted(by: sortingBlock)
 

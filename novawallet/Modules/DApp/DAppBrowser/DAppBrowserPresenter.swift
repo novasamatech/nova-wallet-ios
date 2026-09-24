@@ -2,7 +2,7 @@ import Foundation
 import Foundation_iOS
 import Operation_iOS
 
-final class DAppBrowserPresenter {
+final class DAppBrowserPresenter: AnalyticsTracking {
     weak var view: DAppBrowserViewProtocol?
     let wireframe: DAppBrowserWireframeProtocol
     let interactor: DAppBrowserInteractorInputProtocol
@@ -101,6 +101,8 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
     }
 
     func setup() {
+        trackFeatureOpened(.dapps)
+
         interactor.setup()
     }
 

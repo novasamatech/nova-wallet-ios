@@ -93,6 +93,7 @@ private extension MercuryoProvider {
         )
 
         let action = RampAction(
+            providerId: "mercuryo",
             type: .onRamp,
             logo: R.image.mercuryoLogo()!,
             descriptionText: LocalizableResource { locale in
@@ -128,6 +129,7 @@ private extension MercuryoProvider {
         )
 
         let action = RampAction(
+            providerId: "mercuryo",
             type: .offRamp,
             logo: R.image.mercuryoLogo()!,
             descriptionText: LocalizableResource { locale in

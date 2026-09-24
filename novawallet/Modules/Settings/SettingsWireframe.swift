@@ -28,7 +28,7 @@ final class SettingsWireframe {
 
 // MARK: SettingsWireframeProtocol
 
-extension SettingsWireframe: SettingsWireframeProtocol {
+extension SettingsWireframe: SettingsWireframeProtocol, AnalyticsPrivacyPresentable {
     func showAccountDetails(for walletId: String, from view: ControllerBackedProtocol?) {
         guard let accountManagement = AccountManagementViewFactory.createView(for: walletId) else {
             return
@@ -164,6 +164,19 @@ extension SettingsWireframe: SettingsWireframeProtocol {
 
         view?.controller.navigationController?.pushViewController(
             appearanceView.controller,
+            animated: true
+        )
+    }
+
+    func showPrivacy(from view: ControllerBackedProtocol?) {
+        guard let privacyView = AnalyticsPrivacyViewFactory.createView() else {
+            return
+        }
+
+        privacyView.controller.hidesBottomBarWhenPushed = true
+
+        view?.controller.navigationController?.pushViewController(
+            privacyView.controller,
             animated: true
         )
     }

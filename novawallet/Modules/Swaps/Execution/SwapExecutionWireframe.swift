@@ -1,4 +1,5 @@
 import Foundation
+import NovaAnalytics
 
 final class SwapExecutionWireframe: SwapExecutionWireframeProtocol {
     let flowState: SwapTokensFlowStateProtocol
@@ -31,6 +32,7 @@ final class SwapExecutionWireframe: SwapExecutionWireframeProtocol {
         guard let swapView = SwapSetupViewFactory.createView(
             state: flowState,
             initState: .init(payChainAsset: payChainAsset, receiveChainAsset: receiveChainAsset),
+            source: .retry,
             swapCompletionClosure: completionClosure
         ) else {
             return

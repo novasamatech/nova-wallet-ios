@@ -1,8 +1,9 @@
 import Foundation
 import Foundation_iOS
 import BigInt
+import NovaAnalytics
 
-final class StakingUnbondSetupPresenter {
+final class StakingUnbondSetupPresenter: AnalyticsTracking {
     weak var view: StakingUnbondSetupViewProtocol?
     let wireframe: StakingUnbondSetupWireframeProtocol
     let interactor: StakingUnbondSetupInteractorInputProtocol
@@ -14,6 +15,7 @@ final class StakingUnbondSetupPresenter {
     let logger: LoggerProtocol?
     var assetInfo: AssetBalanceDisplayInfo { chainAsset.assetDisplayInfo }
     let chainAsset: ChainAsset
+    let stakingType: StakingAnalyticsType
 
     private var bonded: Decimal?
     private var balance: Decimal?
@@ -32,6 +34,7 @@ final class StakingUnbondSetupPresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         chainAsset: ChainAsset,
+        stakingType: StakingAnalyticsType,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
@@ -40,6 +43,7 @@ final class StakingUnbondSetupPresenter {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
         self.chainAsset = chainAsset
+        self.stakingType = stakingType
         self.localizationManager = localizationManager
         self.logger = logger
     }
@@ -158,11 +162,27 @@ extension StakingUnbondSetupPresenter: StakingUnbondSetupPresenterProtocol {
                 locale: locale
             )
         ]).runValidation { [weak self] in
-            if let amount = unbondAmount {
-                self?.wireframe.proceed(view: self?.view, amount: amount)
-            } else {
-                self?.logger?.warning("Missing amount after validation")
+            guard let self else {
+                return
             }
+
+            guard let amount = unbondAmount else {
+                logger?.warning("Missing amount after validation")
+                return
+            }
+
+            let event = chainAsset.chain.analyticsNetworkName.map { network in
+                AnalyticsEvent.unstakeInitiated(
+                    type: self.stakingType,
+                    network: network,
+                    amount: amount,
+                    rate: self.priceData?.analyticsRate
+                )
+            }
+
+            trackAnalytics(event)
+
+            wireframe.proceed(view: view, amount: amount)
         }
     }
 

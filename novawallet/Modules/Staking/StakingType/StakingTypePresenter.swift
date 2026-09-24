@@ -1,8 +1,9 @@
 import Foundation
 import Foundation_iOS
 import BigInt
+import NovaAnalytics
 
-final class StakingTypePresenter {
+final class StakingTypePresenter: AnalyticsTracking {
     weak var view: StakingTypeViewProtocol?
     weak var delegate: StakingTypeDelegate?
 
@@ -12,6 +13,10 @@ final class StakingTypePresenter {
     let chainAsset: ChainAsset
     let canChangeType: Bool
     let amount: BigUInt
+
+    private let abandonTracker = AnalyticsAbandonTracker {
+        AnalyticsEvent.stakingAbandoned(stage: .typeSelection)
+    }
 
     private var isPoolForced: Bool = false
     private var nominationPoolRestrictions: RelaychainStakingRestrictions?
@@ -314,6 +319,17 @@ extension StakingTypePresenter: StakingTypePresenterProtocol {
         guard let method = method else {
             return
         }
+
+        if let stakingOption = method.selectedStakingOption {
+            let event = chainAsset.chain.analyticsNetworkName.map { network in
+                AnalyticsEvent.stakingTypeSelected(type: stakingOption.analyticsType, network: network)
+            }
+
+            trackAnalytics(event)
+        }
+
+        abandonTracker.markProceeded()
+
         delegate?.changeStakingType(method: method)
         wireframe.complete(from: view)
     }

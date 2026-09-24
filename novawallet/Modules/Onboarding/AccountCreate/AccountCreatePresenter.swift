@@ -1,6 +1,12 @@
 import Foundation_iOS
+import NovaAnalytics
+
 final class AccountCreatePresenter: BaseAccountCreatePresenter {
     let walletName: String
+
+    private let abandonTracker = AnalyticsAbandonTracker {
+        AnalyticsEvent.walletCreationAbandoned(lastStep: .backup)
+    }
 
     init(
         interactor: AccountCreateInteractorInputProtocol,
@@ -34,6 +40,8 @@ final class AccountCreatePresenter: BaseAccountCreatePresenter {
             ethereumDerivationPath: ethereumDerivationPath,
             cryptoType: substrateCryptoType
         )
+
+        abandonTracker.markProceeded()
 
         wireframe.confirm(from: view, request: request, metadata: metadata)
     }

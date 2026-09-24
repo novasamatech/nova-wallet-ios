@@ -75,4 +75,11 @@ extension HydraStableswapExchangeEdge: AssetExchangableGraphEdge {
             args: args
         )
     }
+
+    func tradeLimitVerdict(
+        amount _: Balance,
+        direction _: AssetConversion.Direction
+    ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict> {
+        .createWithResult(.withinLimit)
+    }
 }

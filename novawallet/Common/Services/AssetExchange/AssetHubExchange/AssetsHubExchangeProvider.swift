@@ -100,12 +100,28 @@ final class AssetsHubExchangeProvider: AssetsExchangeBaseProvider {
 
             exchangeStateRegistrar.addStateProvider(flowState)
 
+            let extrinsicParamsFactory = AssetHubExchangeExtrinsicParamsFactory(
+                chain: chain,
+                runtimeProvider: runtimeService,
+                assetStorageInfoFactory: AssetStorageInfoOperationFactory(
+                    chainRegistry: chainRegistry,
+                    operationQueue: operationQueue
+                ),
+                recipientFactory: AssetHubExchangeCommissionRecipientFactory(
+                    connection: connection,
+                    runtimeProvider: runtimeService,
+                    operationQueue: operationQueue
+                ),
+                operationQueue: operationQueue
+            )
+
             let host = AssetHubExchangeHost(
                 chain: chain,
                 selectedAccount: selectedAccount,
                 flowState: flowState,
                 submissionMonitorFactory: submissionMonitorFactory,
                 extrinsicOperationFactory: extrinsicOperationFactory,
+                extrinsicParamsFactory: extrinsicParamsFactory,
                 signingWrapper: signingWrapper,
                 runtimeService: runtimeService,
                 connection: connection,

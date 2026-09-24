@@ -89,7 +89,10 @@ final class AssetExchangeCommissionPolicyTests: XCTestCase {
             "035ff76d86ca67ef0499f8597101aab0e6ad894a805cd93a51409bd6d71a8841"
         )
 
-        let policy = AssetExchangeCommissionPolicyFactory.createHydrationPolicy(logger: Logger.shared)
+        let policy = AssetExchangeCommissionPolicyFactory.createSwapPolicy(
+            assetHubBeneficiaryAddresses: [:],
+            logger: Logger.shared
+        )
 
         let concretePolicy = try XCTUnwrap(policy as? AssetExchangeCommissionPolicy)
         XCTAssertEqual(concretePolicy.beneficiary, expectedBeneficiary)

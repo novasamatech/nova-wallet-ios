@@ -9,6 +9,7 @@ final class BannersPresenter {
     private let wireframe: BannersWireframeProtocol
     private let interactor: BannersInteractorInputProtocol
     private let viewModelFactory: BannerViewModelFactoryProtocol
+    let domain: Banners.Domain
 
     private let closeActionAvailable: Bool
 
@@ -21,12 +22,14 @@ final class BannersPresenter {
         interactor: BannersInteractorInputProtocol,
         wireframe: BannersWireframeProtocol,
         viewModelFactory: BannerViewModelFactoryProtocol,
+        domain: Banners.Domain,
         locale: Locale,
         closeActionAvailable: Bool
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.domain = domain
         self.locale = locale
         self.closeActionAvailable = closeActionAvailable
     }
@@ -65,6 +68,8 @@ extension BannersPresenter: BannersPresenterProtocol {
         else {
             return
         }
+
+        trackBannerClicked(with: banner.id)
 
         wireframe.openActionLink(urlString: actionLink)
     }

@@ -59,6 +59,13 @@ protocol SwapErrorPresentable: BaseErrorPresentable {
         minAmount: String,
         locale: Locale
     )
+
+    func presentPoolTradeLimit(
+        from view: ControllerBackedProtocol?,
+        reason: SwapDisplayError.PoolTradeLimit,
+        applyAction: @escaping () -> Void,
+        locale: Locale
+    )
 }
 
 extension SwapErrorPresentable where Self: AlertPresentable & ErrorPresentable {
@@ -270,6 +277,36 @@ extension SwapErrorPresentable where Self: AlertPresentable & ErrorPresentable {
             title: title,
             message: message,
             actions: [cancelAction, continueAction],
+            closeAction: nil
+        )
+
+        present(viewModel: viewModel, style: .alert, from: view)
+    }
+
+    func presentPoolTradeLimit(
+        from view: ControllerBackedProtocol?,
+        reason: SwapDisplayError.PoolTradeLimit,
+        applyAction: @escaping () -> Void,
+        locale: Locale
+    ) {
+        guard let applyTitle = reason.applyTitle else {
+            let closeAction = R.string(preferredLanguages: locale.rLanguages).localizable.commonClose()
+
+            present(message: reason.message, title: reason.title, closeAction: closeAction, from: view)
+
+            return
+        }
+
+        let cancelAction = AlertPresentableAction(
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel()
+        )
+
+        let applyMaxAction = AlertPresentableAction(title: applyTitle, handler: applyAction)
+
+        let viewModel = AlertPresentableViewModel(
+            title: reason.title,
+            message: reason.message,
+            actions: [cancelAction, applyMaxAction],
             closeAction: nil
         )
 

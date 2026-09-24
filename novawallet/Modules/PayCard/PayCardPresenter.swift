@@ -1,7 +1,7 @@
 import Foundation
 import Foundation_iOS
 
-final class PayCardPresenter {
+final class PayCardPresenter: AnalyticsTracking {
     weak var view: PayCardViewProtocol?
     let wireframe: PayCardWireframeProtocol
     let interactor: PayCardInteractorInputProtocol
@@ -70,6 +70,8 @@ final class PayCardPresenter {
 
 extension PayCardPresenter: PayCardPresenterProtocol {
     func setup() {
+        trackNovaCardOpened()
+
         interactor.setup()
     }
 

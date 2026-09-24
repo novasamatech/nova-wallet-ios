@@ -51,6 +51,7 @@ struct ParaStkStakeConfirmViewFactory {
             collator: collator,
             amount: amount,
             initialDelegator: initialDelegator,
+            stakingType: state.stakingOption.type.analyticsType,
             localizationManager: localizationManager,
             logger: Logger.shared
         )

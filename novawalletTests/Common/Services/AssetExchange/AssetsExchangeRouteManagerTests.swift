@@ -69,15 +69,16 @@ final class AssetsExchangeRouteManagerTests: XCTestCase {
         XCTAssertEqual(route.amountIn, 1_000_000_000)
     }
 
-    func testSellRouteRanksOnGrossOutputIgnoringCommission() throws {
+    func testSellRouteRanksOnNetOutput() throws {
         let route = try fetchSellRoute(hydraQuote: 101_000_000_000, assetHubQuote: 100_500_000_000)
 
-        XCTAssertEqual(route.amountOut, 101_000_000_000)
-
         let gross: Balance = 101_000_000_000
-        let netOfWinner = gross - AssetExchangeCommissionConstants.rate.asShareOfGross.mul(value: gross)
+        let netOfCharged = gross - AssetExchangeCommissionConstants.rate.asShareOfGross.mul(value: gross)
 
-        XCTAssertLessThan(netOfWinner, 100_500_000_000)
+        XCTAssertLessThan(netOfCharged, 100_500_000_000)
+
+        XCTAssertEqual(route.items.first?.edge.type, .assetHubSwap)
+        XCTAssertEqual(route.amountOut, 100_500_000_000)
     }
 
     func testSellRouteRankingIsUnchangedWhenNoPathChargesCommission() throws {
@@ -90,16 +91,19 @@ final class AssetsExchangeRouteManagerTests: XCTestCase {
         XCTAssertEqual(route.amountOut, 101_000_000_000)
     }
 
-    func testBuyRouteRanksOnRawAmountIgnoringCommission() throws {
+    func testBuyRouteRanksOnGrossedUpInput() throws {
         let route = try fetchBuyRoute(hydraAmountIn: 100_000_000_000, assetHubAmountIn: 100_600_000_000)
+
+        XCTAssertEqual(route.items.first?.edge.type, .assetHubSwap)
+        XCTAssertEqual(route.amountIn, 100_600_000_000)
+        XCTAssertEqual(route.amountOut, 1_000_000_000)
+    }
+
+    func testChargingBuyWinnerIsQuotedForGrossTarget() throws {
+        let route = try fetchBuyRoute(hydraAmountIn: 100_000_000_000, assetHubAmountIn: 101_000_000_000)
 
         XCTAssertEqual(route.items.first?.edge.type, .hydraSwap)
         XCTAssertEqual(route.amountIn, 100_850_000_000)
-    }
-
-    func testBuyWinnerIsRequotedGrossedUp() throws {
-        let route = try fetchBuyRoute(hydraAmountIn: 100_000_000_000, assetHubAmountIn: 100_600_000_000)
-
         XCTAssertEqual(route.amountOut, 1_008_500_000)
     }
 

@@ -24,18 +24,21 @@ struct StakingDashboardViewFactory {
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
+        let announcementViewModelFactory = AnnouncementViewModelFactory()
+
         let viewModelFactory = StakingDashboardViewModelFactory(
             assetFormatterFactory: AssetBalanceFormatterFactory(),
             priceAssetInfoFactory: priceAssetInfoFactory,
             chainAssetViewModelFactory: ChainAssetViewModelFactory(),
             estimatedEarningsFormatter: NumberFormatter.percentBase.localizableResource(),
-            announcementViewModelFactory: AnnouncementViewModelFactory()
+            announcementViewModelFactory: announcementViewModelFactory
         )
 
         let presenter = StakingDashboardPresenter(
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
+            announcementViewModelFactory: announcementViewModelFactory,
             privacyStateManager: PrivacyStateManager.shared,
             localizationManager: LocalizationManager.shared,
             appearanceFacade: AppearanceFacade.shared,

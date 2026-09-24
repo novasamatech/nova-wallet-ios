@@ -2,6 +2,7 @@ import Foundation
 import Foundation_iOS
 import Keystore_iOS
 import Operation_iOS
+import NovaAnalytics
 
 struct StakingUnbondConfirmViewFactory {
     static func createView(
@@ -20,6 +21,7 @@ struct StakingUnbondConfirmViewFactory {
             wireframe: wireframe,
             amount: amount,
             chainAsset: state.stakingOption.chainAsset,
+            stakingType: state.stakingOption.type.analyticsType,
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
         )
 
@@ -39,6 +41,7 @@ struct StakingUnbondConfirmViewFactory {
         wireframe: StakingUnbondConfirmWireframeProtocol,
         amount: Decimal,
         chainAsset: ChainAsset,
+        stakingType: StakingAnalyticsType,
         priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) -> StakingUnbondConfirmPresenter {
         let assetInfo = chainAsset.assetDisplayInfo
@@ -60,6 +63,7 @@ struct StakingUnbondConfirmViewFactory {
             dataValidatingFactory: dataValidatingFactory,
             assetInfo: assetInfo,
             chain: chainAsset.chain,
+            stakingType: stakingType,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )

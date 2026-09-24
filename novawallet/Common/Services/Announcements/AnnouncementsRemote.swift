@@ -13,6 +13,12 @@ struct AnnouncementRemote: Decodable {
     let chainId: String?
     let style: String?
     let description: [String: String]?
+    let link: AnnouncementLinkRemote?
+}
+
+struct AnnouncementLinkRemote: Decodable {
+    let url: String?
+    let title: [String: String]?
 }
 
 extension AnnouncementsRemote {
@@ -34,7 +40,22 @@ private extension AnnouncementRemote {
         return Announcement(
             chainId: chainId,
             style: style,
-            content: description
+            content: description,
+            link: link?.mapToLink()
         )
+    }
+}
+
+private extension AnnouncementLinkRemote {
+    func mapToLink() -> Announcement.Link? {
+        guard
+            let title, !title.isEmpty,
+            let url = url.flatMap({ URL(string: $0) }),
+            url.scheme != nil, url.host != nil
+        else {
+            return nil
+        }
+
+        return Announcement.Link(url: url, title: title)
     }
 }

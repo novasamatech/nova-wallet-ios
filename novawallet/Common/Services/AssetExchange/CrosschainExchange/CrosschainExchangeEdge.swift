@@ -34,6 +34,7 @@ final class CrosschainExchangeEdge {
 
 extension CrosschainExchangeEdge: AssetExchangableGraphEdge {
     var type: AssetExchangeEdgeType { .crossChain }
+    var poolId: AssetExchangePoolId? { nil }
 
     var weight: Int { AssetsExchange.defaultEdgeWeight }
 
@@ -77,6 +78,13 @@ extension CrosschainExchangeEdge: AssetExchangableGraphEdge {
 
     func requiresOriginKeepAliveOnIntermediatePosition() -> Bool {
         shouldProhibitTransferOutAll()
+    }
+
+    func tradeLimitVerdict(
+        amount _: Balance,
+        direction _: AssetConversion.Direction
+    ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict> {
+        .createWithResult(.withinLimit)
     }
 
     func beginMetaOperation(

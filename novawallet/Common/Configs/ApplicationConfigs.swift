@@ -1,5 +1,6 @@
 import Foundation
 import os
+import NovaAppAttest
 
 protocol ApplicationConfigProtocol {
     var termsURL: URL { get }
@@ -24,6 +25,7 @@ protocol ApplicationConfigProtocol {
     var phishingListURL: URL { get }
     var phishingDAppsURL: URL { get }
     var chainListURL: URL { get }
+    var defaultAssetsURL: URL { get }
     var xcmDynamicTransfersURL: URL { get }
     var xcmTransfersURL: URL { get }
     var globalConfigURL: URL { get }
@@ -65,6 +67,7 @@ final class ApplicationConfig {
 }
 
 extension ApplicationConfig: ApplicationConfigProtocol {
+    // swiftlint:disable line_length
     var termsURL: URL {
         URL(string: "https://novawallet.io/terms")!
     }
@@ -122,7 +125,6 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     // swiftlint:enable force_cast
 
     var logoURL: URL {
-        // swiftlint:disable:next line_length
         let logoString = "https://raw.githubusercontent.com/novasamatech/branding/master/logos/Nova_Wallet_Horizontal_iOS_Ramp.png"
         return URL(string: logoString)!
     }
@@ -156,6 +158,14 @@ extension ApplicationConfig: ApplicationConfigProtocol {
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/chains.json")!
         #else
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/chains_dev.json")!
+        #endif
+    }
+
+    var defaultAssetsURL: URL {
+        #if F_RELEASE
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/default_assets.json")!
+        #else
+            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/chains/v22/default_assets_dev.json")!
         #endif
     }
 
@@ -209,6 +219,25 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #endif
     }
 
+    var appAttestAppIdentity: AppAttestAppIdentity? {
+        let rawPrefix = Bundle.main.object(forInfoDictionaryKey: "AppIdentifierPrefix") as? String
+        let prefix = rawPrefix?.trimmingCharacters(in: CharacterSet(charactersIn: ". ")) ?? ""
+
+        guard !prefix.isEmpty, let bundleId = Bundle.main.bundleIdentifier else {
+            return nil
+        }
+
+        return AppAttestAppIdentity(appId: prefix + "." + bundleId, environment: appAttestEnvironment)
+    }
+
+    private var appAttestEnvironment: String {
+        #if F_DEV
+            "development"
+        #else
+            "production"
+        #endif
+    }
+
     var dAppsListURL: URL {
         #if F_RELEASE
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/dapps/dapps.json")!
@@ -256,22 +285,18 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     var learnPayoutURL: URL {
-        // swiftlint:disable:next line_length
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki/staking/staking-faq#q-what-is-the-difference-between-restake-rewards-and-transferable-rewards")!
     }
 
     var learnControllerAccountURL: URL {
-        // swiftlint:disable:next line_length
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki/staking/staking-faq#q-what-are-stash-and-controller-accounts")!
     }
 
     var paritySignerTroubleshoutingURL: URL {
-        // swiftlint:disable:next line_length
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki/wallet-management/hardware-wallets/parity-signer/troubleshooting")!
     }
 
     var polkadotVaultTroubleshoutingURL: URL {
-        // swiftlint:disable:next line_length
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki/wallet-management/hardware-wallets/polkadot-vault/troubleshooting")!
     }
 
@@ -280,12 +305,10 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     var ledgerMigrationURL: URL {
-        // swiftlint:disable:next line_length
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki/wallet-management/hardware-wallets/ledger-nano-x/ledger-app-migration")!
     }
 
     var learnRecommendedValidatorsURL: URL {
-        // swiftlint:disable:next line_length
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki/staking/staking-faq#q-how-does-nova-wallet-select-validators-collators")!
     }
 
@@ -301,7 +324,6 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         URL(string: "https://docs.novawallet.io/nova-wallet-wiki/misc/developer-documentation/integrate-network")!
     }
 
-    // swiftlint:disable line_length
     var inAppUpdatesEntrypointURL: URL {
         #if F_RELEASE
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-wallet-ios-releases/master/updates/v1/entrypoint_release.json")!

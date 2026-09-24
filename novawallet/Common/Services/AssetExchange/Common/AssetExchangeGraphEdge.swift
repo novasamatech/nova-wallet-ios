@@ -17,7 +17,15 @@ protocol AssetExchangableGraphEdge: GraphQuotableEdge {
 
     func requiresOriginKeepAliveOnIntermediatePosition() -> Bool
 
+    func tradeLimitVerdict(
+        amount: Balance,
+        direction: AssetConversion.Direction
+    ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict>
+
     var type: AssetExchangeEdgeType { get }
+
+    /// The pool the edge trades through, when the route must not enter it twice
+    var poolId: AssetExchangePoolId? { get }
 
     func beginMetaOperation(for amountIn: Balance, amountOut: Balance) throws -> AssetExchangeMetaOperationProtocol
 

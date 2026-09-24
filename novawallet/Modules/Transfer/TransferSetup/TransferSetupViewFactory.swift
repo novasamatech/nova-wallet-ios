@@ -2,6 +2,7 @@ import Foundation
 import Foundation_iOS
 import Operation_iOS
 import BigInt
+import NovaAnalytics
 
 struct TransferSetupViewParams {
     let chainAsset: ChainAsset
@@ -29,7 +30,8 @@ enum TransferSetupViewFactory {
                 xcmTransfers: nil
             ),
             wireframe: TransferSetupWireframe(),
-            transferCompletion: transferCompletion
+            transferCompletion: transferCompletion,
+            analyticsFlow: .send
         )
     }
 
@@ -56,7 +58,8 @@ enum TransferSetupViewFactory {
                 xcmTransfers: xcmTransfers
             ),
             wireframe: TransferSetupOriginSelectionWireframe(assetListObservable: assetListObservable),
-            transferCompletion: transferCompletion
+            transferCompletion: transferCompletion,
+            analyticsFlow: .crossChainTopUp
         )
     }
 
@@ -93,7 +96,8 @@ enum TransferSetupViewFactory {
     static func createView(
         from params: TransferSetupViewParams,
         wireframe: TransferSetupWireframeProtocol,
-        transferCompletion: TransferCompletionClosure?
+        transferCompletion: TransferCompletionClosure?,
+        analyticsFlow: TransferAnalyticsFlow
     ) -> TransferSetupViewProtocol? {
         guard let wallet = SelectedWalletSettings.shared.value else {
             return nil
@@ -111,7 +115,11 @@ enum TransferSetupViewFactory {
 
         let initPresenterState = TransferSetupInputState(recepient: params.recepient?.address, amount: amount)
 
-        let presenterFactory = createPresenterFactory(for: wallet, transferCompletion: transferCompletion)
+        let presenterFactory = createPresenterFactory(
+            for: wallet,
+            transferCompletion: transferCompletion,
+            analyticsFlow: analyticsFlow
+        )
 
         let localizationManager = LocalizationManager.shared
 
@@ -132,6 +140,7 @@ enum TransferSetupViewFactory {
             chainAssetViewModelFactory: chainAssetViewModelFactory,
             networkViewModelFactory: networkViewModelFactory,
             web3NameViewModelFactory: viewModelFactory,
+            analyticsFlow: analyticsFlow,
             logger: Logger.shared
         )
 
@@ -181,13 +190,15 @@ enum TransferSetupViewFactory {
 private extension TransferSetupViewFactory {
     static func createPresenterFactory(
         for wallet: MetaAccountModel,
-        transferCompletion: TransferCompletionClosure?
+        transferCompletion: TransferCompletionClosure?,
+        analyticsFlow: TransferAnalyticsFlow
     ) -> TransferSetupPresenterFactory {
         TransferSetupPresenterFactory(
             wallet: wallet,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             storageFacade: SubstrateDataStorageFacade.shared,
             eventCenter: EventCenter.shared,
+            analyticsFlow: analyticsFlow,
             logger: Logger.shared,
             transferCompletion: transferCompletion
         )
@@ -225,7 +236,13 @@ private extension TransferSetupViewFactory {
 
         let initPresenterState = TransferSetupInputState(recepient: params.recepient?.address, amount: amount)
 
-        let presenterFactory = createPresenterFactory(for: wallet, transferCompletion: transferCompletion)
+        let analyticsFlow = flowType.analyticsFlow
+
+        let presenterFactory = createPresenterFactory(
+            for: wallet,
+            transferCompletion: transferCompletion,
+            analyticsFlow: analyticsFlow
+        )
 
         let localizationManager = LocalizationManager.shared
 
@@ -246,6 +263,7 @@ private extension TransferSetupViewFactory {
             chainAssetViewModelFactory: chainAssetViewModelFactory,
             networkViewModelFactory: networkViewModelFactory,
             web3NameViewModelFactory: viewModelFactory,
+            analyticsFlow: analyticsFlow,
             logger: Logger.shared
         )
 
@@ -314,5 +332,14 @@ private extension TransferSetupViewFactory {
     enum RampFlowTransferType {
         case offRamp
         case cardTopUp
+
+        var analyticsFlow: TransferAnalyticsFlow {
+            switch self {
+            case .offRamp:
+                .offRamp
+            case .cardTopUp:
+                .cardTopUp
+            }
+        }
     }
 }

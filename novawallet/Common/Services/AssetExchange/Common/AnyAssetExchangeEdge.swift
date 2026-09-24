@@ -8,6 +8,12 @@ class AnyAssetExchangeEdge {
     private let fetchOrigin: () -> ChainAssetId
     private let fetchDestination: () -> ChainAssetId
     private let fetchQuote: (Balance, AssetConversion.Direction) -> CompoundOperationWrapper<Balance>
+
+    private let fetchTradeLimitVerdict: (
+        Balance,
+        AssetConversion.Direction
+    ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict>
+
     private let beginOperationClosure: (AssetExchangeAtomicOperationArgs) throws -> AssetExchangeAtomicOperationProtocol
     private let appendToOperationClosure: (
         AssetExchangeAtomicOperationProtocol,
@@ -19,6 +25,7 @@ class AnyAssetExchangeEdge {
     private let canPayFeesInIntermedPositionClosure: () -> Bool
     private let requiresKeepAliveOnIntermediatePositionClosure: () -> Bool
     private let typeClosure: () -> AssetExchangeEdgeType
+    private let poolIdClosure: () -> AssetExchangePoolId?
 
     private let beginMetaOperationClosure: (Balance, Balance) throws -> AssetExchangeMetaOperationProtocol
 
@@ -35,6 +42,7 @@ class AnyAssetExchangeEdge {
         fetchOrigin = { edge.origin }
         fetchDestination = { edge.destination }
         fetchQuote = edge.quote
+        fetchTradeLimitVerdict = edge.tradeLimitVerdict
         beginOperationClosure = edge.beginOperation
         appendToOperationClosure = edge.appendToOperation
         shouldIgnoreFeeRequirementClosure = edge.shouldIgnoreFeeRequirement
@@ -42,6 +50,7 @@ class AnyAssetExchangeEdge {
         canPayFeesInIntermedPositionClosure = edge.canPayNonNativeFeesInIntermediatePosition
         requiresKeepAliveOnIntermediatePositionClosure = edge.requiresOriginKeepAliveOnIntermediatePosition
         typeClosure = { edge.type }
+        poolIdClosure = { edge.poolId }
         beginMetaOperationClosure = edge.beginMetaOperation
         appendToMetaOperationClosure = edge.appendToMetaOperation
         beginOperationPrototypeClosure = edge.beginOperationPrototype
@@ -54,9 +63,17 @@ extension AnyAssetExchangeEdge: AssetExchangableGraphEdge {
         fetchQuote(amount, direction)
     }
 
+    func tradeLimitVerdict(
+        amount: Balance,
+        direction: AssetConversion.Direction
+    ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict> {
+        fetchTradeLimitVerdict(amount, direction)
+    }
+
     var origin: ChainAssetId { fetchOrigin() }
     var destination: ChainAssetId { fetchDestination() }
     var type: AssetExchangeEdgeType { typeClosure() }
+    var poolId: AssetExchangePoolId? { poolIdClosure() }
 
     func addingWeight(to currentWeight: Int, predecessor edge: AnyGraphEdgeProtocol?) -> Int {
         addingWeight(currentWeight, edge)

@@ -156,6 +156,15 @@ extension StakingDashboardViewController: UICollectionViewDataSource {
             let cell: StakingDashboardAnnouncementCell = collectionView.dequeueReusableCell(for: indexPath)!
 
             cell.bind(viewModel: announcementItems[indexPath.row])
+            cell.onLinkTap = { [weak self, weak cell] in
+                guard
+                    let self,
+                    let cell,
+                    let row = rootView.collectionView.indexPath(for: cell)?.row
+                else { return }
+
+                presenter.selectAnnouncementLink(at: row)
+            }
 
             return cell
         case .activeStakings:

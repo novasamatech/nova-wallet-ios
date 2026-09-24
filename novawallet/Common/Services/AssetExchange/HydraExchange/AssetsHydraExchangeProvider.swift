@@ -145,11 +145,7 @@ final class AssetsHydraExchangeProvider: AssetsExchangeBaseProvider {
 
         return AssetsHydraAaveExchange(
             host: host,
-            apiOperationFactory: HydraAaveTradeExecutorFactory(
-                connection: host.connection,
-                runtimeProvider: host.runtimeService,
-                operationQueue: host.operationQueue
-            ),
+            flowState: flowState,
             quoteFactory: HydraAaveSwapQuoteFactory(flowState: flowState)
         )
     }

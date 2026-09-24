@@ -55,6 +55,7 @@ struct BannersViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
+            domain: domain,
             locale: locale,
             closeActionAvailable: closeFeatureAvailability(for: domain)
         )

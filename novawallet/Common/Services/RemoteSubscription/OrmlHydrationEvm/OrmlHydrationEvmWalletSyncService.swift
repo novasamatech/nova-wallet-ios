@@ -49,7 +49,7 @@ final class OrmlHydrationEvmWalletSyncService: AssetBalanceBatchBaseUpdatingServ
             return
         }
 
-        let newAssets = chain.assets.filter { $0.enabled && supportsAssetSubscription(for: $0) }
+        let newAssets = chain.assets.filter { supportsAssetSubscription(for: $0) }
         let newAssetIds = Set(newAssets.map(\.assetId))
 
         guard subscribedAssets[chain.chainId] != newAssetIds else {
@@ -60,7 +60,7 @@ final class OrmlHydrationEvmWalletSyncService: AssetBalanceBatchBaseUpdatingServ
         removeSubscription(for: chain.chainId)
 
         guard let anyAsset = chain.assets.first(where: { newAssetIds.contains($0.assetId) }) else {
-            logger.debug("No supported or enabled assets")
+            logger.debug("No supported assets")
             return
         }
 

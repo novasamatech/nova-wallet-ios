@@ -1,6 +1,7 @@
 import Foundation
 import Foundation_iOS
 import BigInt
+import NovaAnalytics
 
 final class NPoolsUnstakeConfirmPresenter: NPoolsUnstakeBasePresenter {
     var view: NPoolsUnstakeConfirmViewProtocol? {
@@ -31,6 +32,7 @@ final class NPoolsUnstakeConfirmPresenter: NPoolsUnstakeBasePresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatorFactory: NominationPoolDataValidatorFactoryProtocol,
         stakingActivity: StakingActivityForValidating,
+        stakingType: StakingAnalyticsType,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -45,6 +47,7 @@ final class NPoolsUnstakeConfirmPresenter: NPoolsUnstakeBasePresenter {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatorFactory: dataValidatorFactory,
             stakingActivity: stakingActivity,
+            stakingType: stakingType,
             localizationManager: localizationManager,
             logger: logger
         )
@@ -179,6 +182,8 @@ extension NPoolsUnstakeConfirmPresenter: NPoolsUnstakeConfirmInteractorOutputPro
 
         switch submissionResult {
         case let .success(model):
+            trackUnstakeEvent(AnalyticsEvent.unstakeCompleted, amount: unstakingAmount)
+
             wireframe?.presentExtrinsicSubmission(
                 from: view,
                 sender: model.sender,
@@ -186,6 +191,8 @@ extension NPoolsUnstakeConfirmPresenter: NPoolsUnstakeConfirmInteractorOutputPro
                 locale: selectedLocale
             )
         case let .failure(error):
+            trackUnstakeFailure(for: error)
+
             wireframe?.handleExtrinsicSigningErrorPresentationElseDefault(
                 error,
                 view: view,

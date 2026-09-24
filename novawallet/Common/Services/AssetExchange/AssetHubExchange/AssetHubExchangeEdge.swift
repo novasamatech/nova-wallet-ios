@@ -22,6 +22,7 @@ final class AssetHubExchangeEdge {
 
 extension AssetHubExchangeEdge: AssetExchangableGraphEdge {
     var type: AssetExchangeEdgeType { .assetHubSwap }
+    var poolId: AssetExchangePoolId? { nil }
 
     var weight: Int { 3 * AssetsExchange.defaultEdgeWeight + 10 }
 
@@ -88,6 +89,13 @@ extension AssetHubExchangeEdge: AssetExchangableGraphEdge {
 
     func requiresOriginKeepAliveOnIntermediatePosition() -> Bool {
         false
+    }
+
+    func tradeLimitVerdict(
+        amount _: Balance,
+        direction _: AssetConversion.Direction
+    ) -> CompoundOperationWrapper<AssetExchangeTradeLimitVerdict> {
+        .createWithResult(.withinLimit)
     }
 
     func beginMetaOperation(

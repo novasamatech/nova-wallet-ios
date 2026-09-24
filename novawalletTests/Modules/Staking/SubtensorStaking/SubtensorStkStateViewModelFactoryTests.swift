@@ -28,7 +28,6 @@ final class SubtensorStkStateViewModelFactoryTests: XCTestCase {
             typeExtras: nil,
             buyProviders: nil,
             sellProviders: nil,
-            enabled: true,
             source: .remote
         )
 

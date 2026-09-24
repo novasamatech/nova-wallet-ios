@@ -125,9 +125,26 @@ enum AssetListGroupState {
 }
 
 struct AssetListViewModel {
-    let isFiltered: Bool
+    let hasHiddenAssets: Bool?
     let listState: AssetListGroupState
     let listGroupStyle: AssetListGroupsStyle
+
+    var isLoading: Bool {
+        guard hasHiddenAssets != nil else {
+            return true
+        }
+
+        switch listState {
+        case .empty:
+            return false
+        case let .list(groups):
+            return groups.isEmpty
+        }
+    }
+
+    var displayedGroups: [AssetListGroupType] {
+        isLoading ? [] : listState.groups
+    }
 }
 
 // MARK: Group

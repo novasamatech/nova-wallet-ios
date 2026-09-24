@@ -5,10 +5,16 @@ class WalletImportOptionsWireframe: ActionsManagePresentable {
     class HDWalletsContext {
         let view: ControllerBackedProtocol?
         let options: [HardwareWalletOptions]
+        let onSelection: (HardwareWalletOptions) -> Void
 
-        init(view: ControllerBackedProtocol?, options: [HardwareWalletOptions]) {
+        init(
+            view: ControllerBackedProtocol?,
+            options: [HardwareWalletOptions],
+            onSelection: @escaping (HardwareWalletOptions) -> Void
+        ) {
             self.view = view
             self.options = options
+            self.onSelection = onSelection
         }
     }
 
@@ -30,15 +36,23 @@ class WalletImportOptionsWireframe: ActionsManagePresentable {
         showWalletRestore(from: view, secretSource: .mnemonic(.appDefault))
     }
 
-    func showHardwareImport(from view: WalletImportOptionsViewProtocol?, locale: Locale) {
-        showHardwareWalletSelection(from: view, locale: locale)
+    func showHardwareImport(
+        from view: WalletImportOptionsViewProtocol?,
+        locale: Locale,
+        onSelection: @escaping (HardwareWalletOptions) -> Void
+    ) {
+        showHardwareWalletSelection(from: view, locale: locale, onSelection: onSelection)
     }
 
     func showTrustWalletImport(from view: WalletImportOptionsViewProtocol?) {
         showWalletRestore(from: view, secretSource: .mnemonic(.trustWallet))
     }
 
-    func showHardwareWalletSelection(from view: WalletImportOptionsViewProtocol?, locale: Locale) {
+    func showHardwareWalletSelection(
+        from view: WalletImportOptionsViewProtocol?,
+        locale: Locale,
+        onSelection: @escaping (HardwareWalletOptions) -> Void
+    ) {
         guard let view = view else {
             return
         }
@@ -115,7 +129,8 @@ class WalletImportOptionsWireframe: ActionsManagePresentable {
             delegate: self,
             context: HDWalletsContext(
                 view: view,
-                options: hwWalletOptions
+                options: hwWalletOptions,
+                onSelection: onSelection
             )
         )
     }
@@ -141,6 +156,8 @@ extension WalletImportOptionsWireframe: ModalPickerViewControllerDelegate {
 
         let option = hdContext.options[index]
         let view = hdContext.view
+
+        hdContext.onSelection(option)
 
         switch option {
         case .paritySigner:

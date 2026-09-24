@@ -1,6 +1,7 @@
 import Foundation
 import BigInt
 import Foundation_iOS
+import NovaAnalytics
 
 class StartStakingConfirmPresenter {
     weak var view: StartStakingConfirmViewProtocol?
@@ -13,6 +14,10 @@ class StartStakingConfirmPresenter {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     let logger: LoggerProtocol
+
+    private let abandonTracker = AnalyticsAbandonTracker {
+        AnalyticsEvent.stakingAbandoned(stage: .confirm)
+    }
 
     var assetBalance: AssetBalance?
     var price: PriceData?
@@ -186,6 +191,8 @@ extension StartStakingConfirmPresenter: StartStakingConfirmPresenterProtocol {
         let validations = createValidations()
 
         DataValidationRunner(validators: validations).runValidation { [weak self] in
+            self?.trackStakingEvent(AnalyticsEvent.stakingConfirmed)
+
             self?.view?.didStartLoading()
             self?.interactor.submit()
         }
@@ -214,6 +221,10 @@ extension StartStakingConfirmPresenter: StartStakingConfirmInteractorOutputProto
 
     func didReceiveConfirmation(model: ExtrinsicSubmittedModel) {
         view?.didStopLoading()
+
+        trackStakingEvent(AnalyticsEvent.stakingCompleted)
+
+        abandonTracker.markProceeded()
 
         wireframe.presentExtrinsicSubmission(
             from: view,
@@ -247,6 +258,8 @@ extension StartStakingConfirmPresenter: StartStakingConfirmInteractorOutputProto
             }
         case let .confirmation(internalError):
             view?.didStopLoading()
+
+            trackStakingFailure(for: internalError)
 
             wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
                 internalError,

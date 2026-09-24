@@ -22,7 +22,7 @@ final class AssetListViewController: UIViewController, ViewHolder {
     }()
 
     private var groupsViewModel: AssetListViewModel = .init(
-        isFiltered: false,
+        hasHiddenAssets: nil,
         listState: .list(groups: []),
         listGroupStyle: .tokens
     )
@@ -216,6 +216,10 @@ extension AssetListViewController: AssetListCollectionManagerDelegate {
 
     func selectAsset(for chainAssetId: ChainAssetId) {
         presenter.selectAsset(for: chainAssetId)
+    }
+
+    func selectTokensReveal() {
+        actionManage()
     }
 
     func actionSelectAccount() {
