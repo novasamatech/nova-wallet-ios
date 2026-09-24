@@ -370,11 +370,7 @@
 		0C1A0F572E69EC5C00254E20 /* RswiftLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 0C1A0F562E69EC5C00254E20 /* RswiftLibrary */; };
 		0C1A104F2E6AE97300254E20 /* runtime-default.json in Resources */ = {isa = PBXBuildFile; fileRef = 0C1A104D2E6AE97300254E20 /* runtime-default.json */; };
 		0C1A10502E6AE97300254E20 /* runtime-westend.json in Resources */ = {isa = PBXBuildFile; fileRef = 0C1A104E2E6AE97300254E20 /* runtime-westend.json */; };
-		0C1A10552E6AEA2300254E20 /* runtime-default.json in Resources */ = {isa = PBXBuildFile; fileRef = 0C1A104D2E6AE97300254E20 /* runtime-default.json */; };
-		0C1A10562E6AEA2B00254E20 /* runtime-westend.json in Resources */ = {isa = PBXBuildFile; fileRef = 0C1A104E2E6AE97300254E20 /* runtime-westend.json */; };
-		0C1A10572E6AEA3300254E20 /* westend-metadata in Resources */ = {isa = PBXBuildFile; fileRef = 84FACB2C25F562CB00F32ED4 /* westend-metadata */; };
 		0C1A105D2E6AEB1400254E20 /* runtime-kusama.json in Resources */ = {isa = PBXBuildFile; fileRef = 0C1A105C2E6AEB1400254E20 /* runtime-kusama.json */; };
-		0C1A105E2E6AEB1400254E20 /* runtime-kusama.json in Resources */ = {isa = PBXBuildFile; fileRef = 0C1A105C2E6AEB1400254E20 /* runtime-kusama.json */; };
 		0C1BE19E2A46EDB40010933C /* String+ScientificInt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1BE19D2A46EDB40010933C /* String+ScientificInt.swift */; };
 		0C1BE1A02A46F1F00010933C /* ScientificStringParsing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1BE19F2A46F1F00010933C /* ScientificStringParsing.swift */; };
 		0C1BE1A22A46F93B0010933C /* BigUInt+Scientific.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C1BE1A12A46F93B0010933C /* BigUInt+Scientific.swift */; };
@@ -31154,7 +31150,6 @@
 				848E6BE1276328B500C91022 /* PublicSans-Medium.otf in Resources */,
 				84C1B98D24F55EB200FE5470 /* AccountTableViewCell.xib in Resources */,
 				849013FC24A92A05008F705E /* novawallet.release.xcconfig in Resources */,
-				0C1A105E2E6AEB1400254E20 /* runtime-kusama.json in Resources */,
 				0C846B922BE69079000EBFC2 /* PrivacyInfo.xcprivacy in Resources */,
 				2D3DCA8D2EC4E11600D57275 /* USDT_packing.json in Resources */,
 				8490145E24A94373008F705E /* Localizable.strings in Resources */,
@@ -31171,8 +31166,6 @@
 				849013FD24A92A05008F705E /* novawallet.debug.xcconfig in Resources */,
 				84D8F16724D81CB100AF43E9 /* TitleWithSubtitleTableViewCell.xib in Resources */,
 				848A837F274BB03F004493DD /* PublicSans-SemiBold.otf in Resources */,
-				0C1A10552E6AEA2300254E20 /* runtime-default.json in Resources */,
-				0C1A10562E6AEA2B00254E20 /* runtime-westend.json in Resources */,
 				849013B524A80986008F705E /* Assets.xcassets in Resources */,
 				848A8380274BB03F004493DD /* PublicSans-ExtraBold.otf in Resources */,
 				84D8F15724D80D5500AF43E9 /* ModalPickerViewController.xib in Resources */,
@@ -31198,7 +31191,6 @@
 				8842104C289BBA6400306F2C /* currencies.json in Resources */,
 				842876A924AE049B00D91AD8 /* SelectionSubtitleTableViewCell.xib in Resources */,
 				84AE11CB273C007E00B294B7 /* novawallet.staging.xcconfig in Resources */,
-				0C1A10572E6AEA3300254E20 /* westend-metadata in Resources */,
 				2D9835F42F28139F00B184D4 /* AppIcon.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
