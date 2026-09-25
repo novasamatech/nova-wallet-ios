@@ -1,5 +1,6 @@
 import XCTest
 @testable import NovaAnalytics
+import NovaAppAttest
 import Operation_iOS
 
 final class AnalyticsUploaderTests: XCTestCase {
@@ -7,13 +8,19 @@ final class AnalyticsUploaderTests: XCTestCase {
     private let attestation = BackendAttestationProviderSpy()
     private let uploadFactory = AnalyticsUploadOperationFactorySpy()
 
-    private func flush(maxBatches: Int = 10) throws {
+    private func flush(maxBatches: Int = 10, grantsExchanges: Bool = true) throws {
+        let attestationSource = AnalyticsAttestationSourceStub(
+            attestation: AnalyticsAttestation(gatewayURL: URL(string: "https://gateway.example/")!, provider: attestation),
+            grantsExchanges: grantsExchanges
+        )
+
         let uploader = AnalyticsUploader(
             queue: queue,
             identity: AnalyticsIdentityStub(),
             gatewayResolver: AnalyticsGatewayResolverStub(
                 attestation: attestation,
-                uploadFactory: uploadFactory
+                uploadFactory: uploadFactory,
+                attestationSource: attestationSource
             ),
             operationQueue: OperationQueue(),
             appVersion: "10.9.0",
@@ -78,5 +85,18 @@ final class AnalyticsUploaderTests: XCTestCase {
 
         XCTAssertEqual(queue.events, events)
         XCTAssertEqual(attestation.markedUnattestedClientIds, ["cid"])
+    }
+
+    func testBatchIsNeitherSignedNorSentWithoutTheExclusiveExchange() {
+        seed(count: 1)
+        let events = queue.events
+
+        XCTAssertThrowsError(try flush(grantsExchanges: false)) { error in
+            XCTAssertEqual(error as? AnalyticsAttestationSourceError, .exchangeWithheld)
+        }
+
+        XCTAssertTrue(attestation.signedBodies.isEmpty)
+        XCTAssertTrue(uploadFactory.sentBodies.isEmpty)
+        XCTAssertEqual(queue.events, events)
     }
 }

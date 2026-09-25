@@ -4,9 +4,7 @@ import SDKLogger
 import NovaAppAttest
 
 public struct AnalyticsConfiguration {
-    public let infraURLProvider: AnalyticsInfraURLProviding
-
-    public let appIdentity: AppAttestAppIdentity
+    public let attestationProvider: AnalyticsAttestationProviding
 
     public let appAttestService: AppAttestServiceProtocol
 
@@ -24,8 +22,7 @@ public struct AnalyticsConfiguration {
     public let analyticsOperationQueue: OperationQueue
 
     public init(
-        infraURLProvider: AnalyticsInfraURLProviding,
-        appIdentity: AppAttestAppIdentity,
+        attestationProvider: AnalyticsAttestationProviding,
         appAttestService: AppAttestServiceProtocol,
         appVersion: String,
         storeDirectory: URL,
@@ -35,8 +32,7 @@ public struct AnalyticsConfiguration {
         operationQueue: OperationQueue,
         analyticsOperationQueue: OperationQueue
     ) {
-        self.infraURLProvider = infraURLProvider
-        self.appIdentity = appIdentity
+        self.attestationProvider = attestationProvider
         self.appAttestService = appAttestService
         self.appVersion = appVersion
         self.storeDirectory = storeDirectory

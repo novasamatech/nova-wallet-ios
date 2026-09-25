@@ -29,14 +29,13 @@ enum AnalyticsFacadeFactory {
     private static let sharedFacade: AnalyticsServiceFacadeProtocol? = {
         let settingsManager = SettingsManager.shared
 
-        guard let appIdentity = ApplicationConfig.shared.appAttestAppIdentity else {
+        guard ApplicationConfig.shared.appAttestAppIdentity != nil else {
             return nil
         }
 
         return AnalyticsServiceFacade(
             configuration: AnalyticsConfiguration(
-                infraURLProvider: AnalyticsInfraURLAdapter(),
-                appIdentity: appIdentity,
+                attestationProvider: AnalyticsAttestationAdapter(holder: BackendAttestationHolder.shared),
                 appAttestService: AppAttestService(),
                 // `ApplicationConfig.version` appends the build number, which the
                 // gateway does not expect.

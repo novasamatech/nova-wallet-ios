@@ -2,6 +2,7 @@ import XCTest
 @testable import novawallet
 import BigInt
 import Cuckoo
+import Keystore_iOS
 import Operation_iOS
 
 final class SubtensorMultistakingUpdateServiceTests: XCTestCase {
@@ -12,36 +13,35 @@ final class SubtensorMultistakingUpdateServiceTests: XCTestCase {
     func testOwnStakingChangeResyncsTheDashboardRowWithTheHeadlineRate() throws {
         let context = try makeContext()
 
-        stub(context.fetchFactory) { stub in
-            when(stub.createStateWrapper(for: any())).then { _ in
-                CompoundOperationWrapper.createWithResult(Self.stakingState(stake: 2_000_000_000))
-            }
-        }
-
-        context.service.setup()
-
-        let persisted = expectation(description: "dashboard row persisted")
-        persisted.assertForOverFulfill = false
-
-        context.service.subscribeSyncState(self, queue: nil) { wasSyncing, isSyncing in
-            if wasSyncing, !isSyncing {
-                persisted.fulfill()
-            }
-        }
-
-        context.eventCenter.notify(
-            with: SubtensorStakingChanged(chainAssetId: context.chainAsset.chainAssetId, accountId: accountId)
-        )
-
-        wait(for: [persisted], timeout: 10)
-
-        context.service.unsubscribeSyncState(self)
-        context.service.throttle()
+        resyncAfterOwnStakingChange(context)
 
         let item = try fetchDashboardItem(using: context.repositoryFactory, chainAsset: context.chainAsset)
 
         XCTAssertEqual(item.stake, BigUInt(2_000_000_000))
         XCTAssertEqual(item.maxApy, Decimal(string: "0.40"))
+    }
+
+    func testFailedConfigFetchAfterARelaunchKeepsTheLastPersistedMaxApy() throws {
+        let storageFacade = SubstrateStorageTestFacade()
+        let settingsManager = InMemorySettingsManager()
+
+        let firstLaunch = try makeContext(storageFacade: storageFacade, settingsManager: settingsManager)
+
+        resyncAfterOwnStakingChange(firstLaunch)
+
+        let relaunch = try makeContext(
+            storageFacade: storageFacade,
+            settingsManager: settingsManager,
+            configResult: .failure(URLError(.notConnectedToInternet))
+        )
+
+        resyncAfterOwnStakingChange(relaunch)
+
+        let item = try fetchDashboardItem(using: relaunch.repositoryFactory, chainAsset: relaunch.chainAsset)
+
+        XCTAssertEqual(item.stake, BigUInt(2_000_000_000))
+        XCTAssertEqual(item.maxApy, Decimal(string: "0.40"))
+        verify(relaunch.configProvider, times(1)).createBackgroundConfigWrapper()
     }
 
     func testOnlyTheOwnAccountAndChainAssetChangeResyncs() throws {
@@ -77,6 +77,34 @@ final class SubtensorMultistakingUpdateServiceTests: XCTestCase {
         verify(context.fetchFactory, times(1)).createStateWrapper(for: equal(to: accountId))
     }
 
+    private func resyncAfterOwnStakingChange(_ context: Context) {
+        stub(context.fetchFactory) { stub in
+            when(stub.createStateWrapper(for: any())).then { _ in
+                CompoundOperationWrapper.createWithResult(Self.stakingState(stake: 2_000_000_000))
+            }
+        }
+
+        context.service.setup()
+
+        let persisted = expectation(description: "dashboard row persisted")
+        persisted.assertForOverFulfill = false
+
+        context.service.subscribeSyncState(self, queue: nil) { wasSyncing, isSyncing in
+            if wasSyncing, !isSyncing {
+                persisted.fulfill()
+            }
+        }
+
+        context.eventCenter.notify(
+            with: SubtensorStakingChanged(chainAssetId: context.chainAsset.chainAssetId, accountId: accountId)
+        )
+
+        wait(for: [persisted], timeout: 10)
+
+        context.service.unsubscribeSyncState(self)
+        context.service.throttle()
+    }
+
     private func drainEvents(of context: Context) {
         context.eventQueue.sync {}
         context.service.workingQueue.sync {}
@@ -85,14 +113,18 @@ final class SubtensorMultistakingUpdateServiceTests: XCTestCase {
     private struct Context {
         let service: SubtensorMultistakingUpdateService
         let fetchFactory: MockSubtensorStakeStateFetchFactoryProtocol
+        let configProvider: MockSubtensorEarnConfigProviderProtocol
         let eventCenter: EventCenter
         let eventQueue: DispatchQueue
         let repositoryFactory: MultistakingRepositoryFactory
         let chainAsset: ChainAsset
     }
 
-    private func makeContext() throws -> Context {
-        let storageFacade = SubstrateStorageTestFacade()
+    private func makeContext(
+        storageFacade: StorageFacadeProtocol = SubstrateStorageTestFacade(),
+        settingsManager: SettingsManagerProtocol = InMemorySettingsManager(),
+        configResult: Result<SubtensorEarnConfig, Error> = .success(SubtensorMultistakingUpdateServiceTests.earnConfig())
+    ) throws -> Context {
         let repositoryFactory = MultistakingRepositoryFactory(storageFacade: storageFacade)
         let fetchFactory = MockSubtensorStakeStateFetchFactoryProtocol()
         let configProvider = MockSubtensorEarnConfigProviderProtocol()
@@ -101,8 +133,13 @@ final class SubtensorMultistakingUpdateServiceTests: XCTestCase {
         let chainAsset = Self.subtensorChainAsset()
 
         stub(configProvider) { stub in
-            when(stub.createConfigWrapper()).then {
-                CompoundOperationWrapper.createWithResult(Self.earnConfig())
+            when(stub.createBackgroundConfigWrapper()).then {
+                switch configResult {
+                case let .success(config):
+                    return CompoundOperationWrapper.createWithResult(config)
+                case let .failure(error):
+                    return CompoundOperationWrapper.createWithError(error)
+                }
             }
         }
 
@@ -122,12 +159,14 @@ final class SubtensorMultistakingUpdateServiceTests: XCTestCase {
             workingQueue: DispatchQueue(label: "test.subtensor.multistaking"),
             logger: Logger.shared,
             earnConfigProvider: configProvider,
-            eventCenter: eventCenter
+            eventCenter: eventCenter,
+            settingsManager: settingsManager
         )
 
         return Context(
             service: service,
             fetchFactory: fetchFactory,
+            configProvider: configProvider,
             eventCenter: eventCenter,
             eventQueue: eventQueue,
             repositoryFactory: repositoryFactory,

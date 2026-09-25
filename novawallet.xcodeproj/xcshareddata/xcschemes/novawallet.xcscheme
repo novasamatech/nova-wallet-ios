@@ -129,6 +129,10 @@
             argument = "-FIRDebugEnabled."
             isEnabled = "YES">
          </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-BittensorApiFixtures"
+            isEnabled = "NO">
+         </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>
    <ProfileAction

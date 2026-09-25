@@ -274,6 +274,47 @@ final class BittensorAttestedTransportTests: XCTestCase {
         XCTAssertTrue(BittensorStubURLProtocol.recordedRequests.isEmpty)
     }
 
+    func testChallengeRateLimitFailsFastForSixtySeconds() throws {
+        BittensorStubURLProtocol.reset(replies: [makeReply(statusCode: 200, body: Data("{}".utf8))])
+
+        let provider = MockBackendAttestationProviderProtocol()
+        let headers: [AttestationHeaderKey: String] = [
+            .profile: "2",
+            .clientId: "client-a",
+            .challenge: "challenge-1",
+            .appAttestAssertion: "assertion-1"
+        ]
+
+        stub(provider) { stub in
+            when(stub.createSignedHeadersWrapper(target: any(), bodyClosure: any()))
+                .then { _, _ in
+                    CompoundOperationWrapper.createWithError(BackendAttestationError.clientError(statusCode: 429))
+                }
+                .then { _, _ in
+                    CompoundOperationWrapper<[AttestationHeaderKey: String]?>.createWithResult(headers)
+                }
+        }
+
+        var now: TimeInterval = 1000
+        let transport = makeTransport(provider: provider, timeProvider: { now })
+
+        let challengeError = fetchError(transport.createResponseWrapper(for: makeGetRequest()))
+
+        now += 59
+        let cooldownError = fetchError(transport.createResponseWrapper(for: makeGetRequest()))
+
+        now += 1
+        let response = try fetch(transport.createResponseWrapper(for: makeGetRequest()))
+
+        guard case .rateLimited = challengeError, case .rateLimited = cooldownError else {
+            return XCTFail("Unexpected results: \(String(describing: challengeError)), \(String(describing: cooldownError))")
+        }
+
+        XCTAssertEqual(response.body, Data("{}".utf8))
+        XCTAssertEqual(BittensorStubURLProtocol.recordedRequests.count, 1)
+        verify(provider, times(2)).createSignedHeadersWrapper(target: any(), bodyClosure: any())
+    }
+
     func testConcurrentCallsNeverOverlapSignAndSend() throws {
         BittensorStubURLProtocol.reset(
             replies: [
@@ -298,38 +339,141 @@ final class BittensorAttestedTransportTests: XCTestCase {
         )
     }
 
-    func testSeventhSignAttemptWithinAMinuteFailsRateLimited() throws {
-        BittensorStubURLProtocol.reset(
-            replies: (0 ..< 7).map { _ in makeReply(statusCode: 200, body: Data("{}".utf8)) }
-        )
+    func testSignWaitsForAnAnalyticsExchangeHoldingTheSharedGate() throws {
+        BittensorStubURLProtocol.reset(replies: [makeReply(statusCode: 200, body: Data("{}".utf8))])
 
-        let provider = makeProvider(clientIds: Array(repeating: "client-a", count: 7))
-        let transport = makeTransport(provider: provider)
+        let exchangeGate = BackendAttestationExchangeGate(operationQueue: OperationQueue())
+        let analytics = holdGate(exchangeGate)
+        let signedWhileHeld = expectation(description: "Signed while the analytics exchange held the gate")
+        signedWhileHeld.isInverted = true
 
-        for _ in 0 ..< BittensorSignBudget.maxAttempts {
-            _ = try fetch(transport.createResponseWrapper(for: makeGetRequest()))
+        let provider = makeProvider(clientIds: ["client-a"]) {
+            if analytics.isHolding {
+                signedWhileHeld.fulfill()
+            }
         }
 
-        let error = fetchError(transport.createResponseWrapper(for: makeGetRequest()))
+        let wrapper = makeTransport(provider: provider, exchangeGate: exchangeGate)
+            .createResponseWrapper(for: makeGetRequest())
 
-        guard case .rateLimited = error else {
-            return XCTFail("Unexpected result: \(String(describing: error))")
-        }
+        let completed = expectation(description: "Attested call finished")
+        wrapper.targetOperation.completionBlock = { completed.fulfill() }
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: false)
 
-        XCTAssertEqual(BittensorStubURLProtocol.recordedRequests.count, BittensorSignBudget.maxAttempts)
-        verify(provider, times(BittensorSignBudget.maxAttempts)).createSignedHeadersWrapper(
-            target: any(),
-            bodyClosure: any()
+        wait(for: [signedWhileHeld], timeout: 0.5)
+
+        analytics.release()
+
+        wait(for: [completed], timeout: 10)
+
+        XCTAssertNoThrow(try wrapper.targetOperation.extractNoCancellableResultData())
+        XCTAssertEqual(
+            BittensorStubURLProtocol.recordedEvents,
+            ["analytics-exchange", "analytics-response", "sign", "send", "response"]
         )
     }
 
-    private func makeTransport(provider: MockBackendAttestationProviderProtocol) -> BittensorAttestedTransport {
+    func testCallCancelledWhileWaitingForTheSharedGateNeverSignsAndFreesTheGate() {
+        BittensorStubURLProtocol.reset(replies: [])
+
+        let exchangeGate = BackendAttestationExchangeGate(operationQueue: OperationQueue())
+        let analytics = holdGate(exchangeGate)
+        let signed = expectation(description: "Cancelled call signed")
+        signed.isInverted = true
+
+        let provider = makeProvider(clientIds: ["client-a"]) {
+            signed.fulfill()
+        }
+
+        let wrapper = makeTransport(provider: provider, exchangeGate: exchangeGate)
+            .createResponseWrapper(for: makeGetRequest())
+
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: false)
+
+        wait(for: [signed], timeout: 0.5)
+
+        wrapper.cancel()
+        analytics.release()
+
+        let nextExchange = exchangeGate.createExclusiveWrapper {
+            CompoundOperationWrapper.createWithResult("next")
+        }
+
+        let nextCompleted = expectation(description: "Next exchange finished")
+        nextExchange.targetOperation.completionBlock = { nextCompleted.fulfill() }
+        OperationQueue().addOperations(nextExchange.allOperations, waitUntilFinished: false)
+
+        wait(for: [nextCompleted], timeout: 10)
+
+        XCTAssertEqual(try nextExchange.targetOperation.extractNoCancellableResultData(), "next")
+        XCTAssertTrue(BittensorStubURLProtocol.recordedRequests.isEmpty)
+        verify(provider, never()).createSignedHeadersWrapper(target: any(), bodyClosure: any())
+    }
+
+    func testUnsupportedDeviceFailsWithoutWaitingForTheSharedGate() {
+        BittensorStubURLProtocol.reset(replies: [])
+
+        let exchangeGate = BackendAttestationExchangeGate(operationQueue: OperationQueue())
+        let analytics = holdGate(exchangeGate)
         let holder = MockBittensorAttestationHolderProtocol()
-        let context = BittensorAttestationContext(baseURL: baseURL, provider: provider)
 
         stub(holder) { stub in
-            when(stub.createContextWrapper()).then {
-                CompoundOperationWrapper.createWithResult(context)
+            when(stub.createEndpointWrapper()).then {
+                CompoundOperationWrapper.createWithError(BittensorApiError.unsupportedDevice)
+            }
+        }
+
+        let transport = BittensorAttestedTransport(
+            holder: holder,
+            exchangeGate: exchangeGate,
+            operationQueue: OperationQueue(),
+            logger: Logger.shared
+        )
+
+        let error = fetchError(transport.createResponseWrapper(for: makeGetRequest()))
+
+        analytics.release()
+
+        guard case .unsupportedDevice = error else {
+            return XCTFail("Unexpected result: \(String(describing: error))")
+        }
+
+        XCTAssertTrue(BittensorStubURLProtocol.recordedRequests.isEmpty)
+    }
+
+    private func holdGate(_ exchangeGate: BackendAttestationExchangeGate) -> BittensorGateHolding {
+        let holding = BittensorGateHolding()
+        let started = expectation(description: "Analytics exchange holds the gate")
+
+        let wrapper = exchangeGate.createExclusiveWrapper {
+            CompoundOperationWrapper(targetOperation: AsyncClosureOperation<Void> { completion in
+                BittensorStubURLProtocol.record(event: "analytics-exchange")
+                holding.store {
+                    BittensorStubURLProtocol.record(event: "analytics-response")
+                    completion(.success(()))
+                }
+                started.fulfill()
+            })
+        }
+
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: false)
+
+        wait(for: [started], timeout: 10)
+
+        return holding
+    }
+
+    private func makeTransport(
+        provider: MockBackendAttestationProviderProtocol,
+        exchangeGate: BackendAttestationExchangeGate = BackendAttestationExchangeGate(operationQueue: OperationQueue()),
+        timeProvider: @escaping () -> TimeInterval = { 1000 }
+    ) -> BittensorAttestedTransport {
+        let holder = MockBittensorAttestationHolderProtocol()
+        let endpoint = BackendAttestationEndpoint(gatewayURL: baseURL, provider: provider)
+
+        stub(holder) { stub in
+            when(stub.createEndpointWrapper()).then {
+                CompoundOperationWrapper.createWithResult(endpoint)
             }
         }
 
@@ -338,16 +482,18 @@ final class BittensorAttestedTransportTests: XCTestCase {
 
         return BittensorAttestedTransport(
             holder: holder,
-            executor: BittensorAttestedRequestExecutor(timeProvider: { 1000 }),
+            exchangeGate: exchangeGate,
             session: URLSession(configuration: configuration),
             operationQueue: OperationQueue(),
+            timeProvider: timeProvider,
             logger: Logger.shared
         )
     }
 
     private func makeProvider(
         clientIds: [String],
-        signDelay: TimeInterval = 0
+        signDelay: TimeInterval = 0,
+        onSign: @escaping () -> Void = {}
     ) -> MockBackendAttestationProviderProtocol {
         let provider = MockBackendAttestationProviderProtocol()
         let lock = NSLock()
@@ -363,6 +509,7 @@ final class BittensorAttestedTransportTests: XCTestCase {
                 lock.unlock()
 
                 BittensorStubURLProtocol.record(event: "sign")
+                onSign()
 
                 let headers: [AttestationHeaderKey: String] = [
                     .profile: "2",
@@ -441,5 +588,35 @@ final class BittensorAttestedTransportTests: XCTestCase {
         } catch {
             return error as? BittensorApiError
         }
+    }
+}
+
+private final class BittensorGateHolding {
+    private let mutex = NSLock()
+    private var releaseClosure: (() -> Void)?
+
+    var isHolding: Bool {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return releaseClosure != nil
+    }
+
+    func store(_ closure: @escaping () -> Void) {
+        mutex.lock()
+        releaseClosure = closure
+        mutex.unlock()
+    }
+
+    func release() {
+        mutex.lock()
+        let closure = releaseClosure
+        releaseClosure = nil
+        mutex.unlock()
+
+        closure?()
     }
 }

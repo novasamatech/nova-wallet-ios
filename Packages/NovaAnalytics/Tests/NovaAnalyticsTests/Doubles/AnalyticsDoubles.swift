@@ -140,25 +140,73 @@ final class AnalyticsIdentityStub: AnalyticsIdentityProtocol {
 final class AnalyticsGatewayResolverStub: AnalyticsGatewayResolving {
     private let gateway: AnalyticsGateway
 
-    private(set) var forgetCount: Int = 0
-    private(set) var allowCount: Int = 0
-
     init(
         attestation: BackendAttestationProviderProtocol,
-        uploadFactory: AnalyticsUploadOperationFactoryProtocol
+        uploadFactory: AnalyticsUploadOperationFactoryProtocol,
+        attestationSource: AnalyticsAttestationProviding
     ) {
-        gateway = AnalyticsGateway(attestation: attestation, uploadFactory: uploadFactory)
+        gateway = AnalyticsGateway(
+            attestation: attestation,
+            uploadFactory: uploadFactory,
+            attestationSource: attestationSource
+        )
     }
 
     func createGatewayWrapper() -> CompoundOperationWrapper<AnalyticsGateway> {
         .createWithResult(gateway)
     }
+}
 
-    func forgetClient() {
-        forgetCount += 1
+enum AnalyticsAttestationSourceError: Error {
+    case exchangeWithheld
+}
+
+final class AnalyticsAttestationSourceStub: AnalyticsAttestationProviding {
+    private let attestation: AnalyticsAttestation
+    private let grantsExchanges: Bool
+
+    init(attestation: AnalyticsAttestation, grantsExchanges: Bool = true) {
+        self.attestation = attestation
+        self.grantsExchanges = grantsExchanges
     }
 
-    func allowClient() {
-        allowCount += 1
+    func createAttestationWrapper() -> CompoundOperationWrapper<AnalyticsAttestation> {
+        .createWithResult(attestation)
+    }
+
+    func createExclusiveWrapper<T>(
+        _ exchangeClosure: @escaping () throws -> CompoundOperationWrapper<T>
+    ) -> CompoundOperationWrapper<T> {
+        guard grantsExchanges else {
+            return .createWithError(AnalyticsAttestationSourceError.exchangeWithheld)
+        }
+
+        do {
+            return try exchangeClosure()
+        } catch {
+            return .createWithError(error)
+        }
+    }
+}
+
+final class AppAttestServiceStub: AppAttestServiceProtocol {
+    let isSupported = true
+
+    func createKeyGenerationOperation() -> BaseOperation<AppAttestKeyId> {
+        .createWithError(AppAttestServiceError.keyIdGeneration(nil))
+    }
+
+    func createAttestationWrapper(
+        using _: AppAttestKeyId,
+        clientData _: @escaping (AppAttestKeyId) throws -> Data
+    ) -> CompoundOperationWrapper<AppAttestAttestation> {
+        .createWithError(AppAttestServiceError.attestationGeneric(nil))
+    }
+
+    func createAssertionWrapper(
+        keyId _: AppAttestKeyId,
+        clientData _: @escaping () throws -> Data
+    ) -> CompoundOperationWrapper<AppAttestAssertion> {
+        .createWithError(AppAttestServiceError.assertionGeneric(nil))
     }
 }

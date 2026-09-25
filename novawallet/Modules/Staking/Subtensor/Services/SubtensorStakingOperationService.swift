@@ -14,6 +14,7 @@ final class SubtensorStakingOperationService {
     let eventCenter: EventCenterProtocol
     let errorMapper: SubtensorStakingErrorMapping
     let feeCalculator: SubtensorNovaFeeCalculator
+    let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
 
     init(
@@ -28,6 +29,7 @@ final class SubtensorStakingOperationService {
         eventCenter: EventCenterProtocol,
         errorMapper: SubtensorStakingErrorMapping = SubtensorStakingErrorMapper(),
         feeCalculator: SubtensorNovaFeeCalculator = SubtensorNovaFeeCalculator(),
+        operationQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue,
         workingQueue: DispatchQueue = .global(qos: .userInitiated)
     ) {
         self.chainAsset = chainAsset
@@ -41,17 +43,38 @@ final class SubtensorStakingOperationService {
         self.eventCenter = eventCenter
         self.errorMapper = errorMapper
         self.feeCalculator = feeCalculator
+        self.operationQueue = operationQueue
         self.workingQueue = workingQueue
     }
 }
 
 private extension SubtensorStakingOperationService {
-    func createMarkSentOperation() -> ClosureOperation<Void> {
-        ClosureOperation { [sharedOperation] in
-            DispatchQueue.main.async {
-                sharedOperation?.markSent()
-            }
-        }
+    func createSubmissionWrapper(
+        for operation: SubtensorStakingOperation,
+        builderClosure: @escaping ExtrinsicBuilderClosure
+    ) -> CompoundOperationWrapper<SubtensorStakingOperationOutcome> {
+        let submitWrapper = extrinsicSubmitMonitor.submitAndMonitorWrapper(
+            extrinsicBuilderClosure: builderClosure,
+            payingIn: nil,
+            signer: signer,
+            matchingEvents: SubtensorStakingEventMatcher()
+        )
+
+        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+        let outcomeOperation = createOutcomeOperation(
+            for: operation,
+            submissionOperation: submitWrapper.targetOperation,
+            codingFactoryOperation: codingFactoryOperation
+        )
+
+        outcomeOperation.addDependency(submitWrapper.targetOperation)
+        outcomeOperation.addDependency(codingFactoryOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: outcomeOperation,
+            dependencies: submitWrapper.allOperations + [codingFactoryOperation]
+        )
     }
 
     func createOutcomeOperation(
@@ -122,32 +145,68 @@ extension SubtensorStakingOperationService: SubtensorStakingOperationServiceProt
             return .createWithError(error)
         }
 
-        let markSentOperation = createMarkSentOperation()
+        let submission = SubtensorStakingSubmission(
+            sharedOperation: sharedOperation,
+            operationQueue: operationQueue
+        ) { [self] in
+            createSubmissionWrapper(for: operation, builderClosure: builderClosure)
+        }
 
-        let submitWrapper = extrinsicSubmitMonitor.submitAndMonitorWrapper(
-            extrinsicBuilderClosure: builderClosure,
-            payingIn: nil,
-            signer: signer,
-            matchingEvents: SubtensorStakingEventMatcher()
+        return CompoundOperationWrapper(targetOperation: LongrunOperation(longrun: AnyLongrun(longrun: submission)))
+    }
+}
+
+private final class SubtensorStakingSubmission: Longrunable {
+    typealias ResultType = SubtensorStakingOperationOutcome
+
+    private let sharedOperation: SharedOperationProtocol?
+    private let operationQueue: OperationQueue
+    private let submissionWrapperClosure: () -> CompoundOperationWrapper<ResultType>
+    private let mutex = NSLock()
+
+    private var isCancelled = false
+
+    init(
+        sharedOperation: SharedOperationProtocol?,
+        operationQueue: OperationQueue,
+        submissionWrapperClosure: @escaping () -> CompoundOperationWrapper<ResultType>
+    ) {
+        self.sharedOperation = sharedOperation
+        self.operationQueue = operationQueue
+        self.submissionWrapperClosure = submissionWrapperClosure
+    }
+
+    func start(with completionClosure: @escaping (Result<ResultType, Error>) -> Void) {
+        let submissionWrapper = submissionWrapperClosure()
+
+        mutex.lock()
+        let wasCancelled = isCancelled
+        mutex.unlock()
+
+        guard !wasCancelled else {
+            completionClosure(.failure(BaseOperationError.parentOperationCancelled))
+
+            return
+        }
+
+        let sharedOperation = sharedOperation
+
+        DispatchQueue.main.async {
+            sharedOperation?.markSent()
+        }
+
+        execute(
+            wrapper: submissionWrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: nil,
+            callbackClosure: completionClosure
         )
+    }
 
-        submitWrapper.addDependency(operations: [markSentOperation])
-
-        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-
-        let outcomeOperation = createOutcomeOperation(
-            for: operation,
-            submissionOperation: submitWrapper.targetOperation,
-            codingFactoryOperation: codingFactoryOperation
-        )
-
-        outcomeOperation.addDependency(submitWrapper.targetOperation)
-        outcomeOperation.addDependency(codingFactoryOperation)
-
-        return CompoundOperationWrapper(
-            targetOperation: outcomeOperation,
-            dependencies: [markSentOperation] + submitWrapper.allOperations + [codingFactoryOperation]
-        )
+    func cancel() {
+        mutex.lock()
+        isCancelled = true
+        mutex.unlock()
     }
 }
 

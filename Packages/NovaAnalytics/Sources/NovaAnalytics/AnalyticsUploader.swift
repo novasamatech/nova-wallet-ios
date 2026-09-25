@@ -175,6 +175,17 @@ private extension AnalyticsUploader {
 
         uploadOperation.addDependency(headersWrapper.targetOperation)
 
+        let gradeOperation = createGradeOperation(upload: uploadOperation, headers: headersWrapper, gateway: gateway)
+
+        let exchangeWrapper = gateway.attestationSource.createExclusiveWrapper {
+            try consentGate()
+
+            return CompoundOperationWrapper(
+                targetOperation: gradeOperation,
+                dependencies: headersWrapper.allOperations + [uploadOperation]
+            )
+        }
+
         let outcomeWrapper = OperationCombiningService<BatchOutcome>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) { [weak self] in
@@ -183,39 +194,49 @@ private extension AnalyticsUploader {
             }
 
             do {
-                try uploadOperation.extractNoCancellableResultData()
+                try exchangeWrapper.targetOperation.extractNoCancellableResultData()
             } catch {
-                let signedClientId = try? headersWrapper.targetOperation
-                    .extractNoCancellableResultData()?[.clientId]
-
-                return createFailureWrapper(error, batch: batch, signedClientId: signedClientId, gateway: gateway)
+                return createFailureWrapper(error, batch: batch)
             }
 
             return createDropWrapper(batch: batch)
         }
 
-        outcomeWrapper.addDependency(operations: [uploadOperation])
+        outcomeWrapper.addDependency(wrapper: exchangeWrapper)
 
-        return outcomeWrapper.insertingHead(
-            operations: headersWrapper.allOperations + [uploadOperation]
-        )
+        return outcomeWrapper.insertingHead(operations: exchangeWrapper.allOperations)
+    }
+
+    func createGradeOperation(
+        upload uploadOperation: BaseOperation<Void>,
+        headers headersWrapper: CompoundOperationWrapper<[AttestationHeaderKey: String]?>,
+        gateway: AnalyticsGateway
+    ) -> BaseOperation<Void> {
+        let gradeOperation = ClosureOperation<Void> {
+            do {
+                try uploadOperation.extractNoCancellableResultData()
+            } catch let error as AnalyticsTransportError {
+                let signedClientId = try? headersWrapper.targetOperation.extractNoCancellableResultData()?[.clientId]
+
+                if case .rejected = error, let signedClientId {
+                    gateway.attestation.markUnattested(ifCurrentClientId: signedClientId)
+                }
+
+                throw error
+            }
+        }
+
+        gradeOperation.addDependency(uploadOperation)
+
+        return gradeOperation
     }
 
     // Keep batches for identity errors; discard only permanently rejected payloads.
-    func createFailureWrapper(
-        _ error: Error,
-        batch: Batch,
-        signedClientId: String?,
-        gateway: AnalyticsGateway
-    ) -> CompoundOperationWrapper<BatchOutcome> {
+    func createFailureWrapper(_ error: Error, batch: Batch) -> CompoundOperationWrapper<BatchOutcome> {
         if let transportError = error as? AnalyticsTransportError {
             switch transportError {
             case .rejected:
                 logger.warning("Analytics upload rejected, retaining the batch: \(transportError)")
-
-                if let signedClientId {
-                    gateway.attestation.markUnattested(ifCurrentClientId: signedClientId)
-                }
 
                 return .createWithResult(.failed(transportError))
             case .clientError:

@@ -3,10 +3,11 @@ import Operation_iOS
 import NovaAppAttest
 
 struct BittensorAttestedPreparedRequest {
-    let context: BittensorAttestationContext
+    let provider: BackendAttestationProviderProtocol
     let target: AttestationRequestTarget
     let body: Data?
     let isRecommendationsRoute: Bool
+    let route: String
 }
 
 enum BittensorAttestedRequestBuilder {
@@ -14,7 +15,7 @@ enum BittensorAttestedRequestBuilder {
 
     static func prepare(
         _ request: BittensorApiRequest,
-        context: BittensorAttestationContext
+        endpoint: BackendAttestationEndpoint
     ) throws -> BittensorAttestedPreparedRequest {
         switch (request.method, request.jsonBody) {
         case (.get, nil), (.post, .some):
@@ -23,13 +24,13 @@ enum BittensorAttestedRequestBuilder {
             throw BittensorApiError.invalidRequest(code: nil, requestId: nil)
         }
 
-        let contentType = request.jsonBody == nil ? "" : Constants.jsonContentType
+        let contentType = request.jsonBody == nil ? "" : HttpContentType.json.rawValue
 
         let target: AttestationRequestTarget
 
         do {
             target = try AttestationRequestTarget(
-                url: try createURL(for: request, baseURL: context.baseURL),
+                url: try createURL(for: request, baseURL: endpoint.gatewayURL),
                 method: request.method.rawValue,
                 contentType: contentType
             )
@@ -38,22 +39,25 @@ enum BittensorAttestedRequestBuilder {
         }
 
         return BittensorAttestedPreparedRequest(
-            context: context,
+            provider: endpoint.provider,
             target: target,
             body: request.jsonBody,
-            isRecommendationsRoute: isRecommendationsRoute(request.pathTemplate)
+            isRecommendationsRoute: isRecommendationsRoute(request.pathTemplate),
+            route: "Bittensor \(request.method.rawValue) \(request.pathTemplate)"
         )
     }
 
     static func createSendOperation(
         for prepared: BittensorAttestedPreparedRequest,
-        headers: [AttestationHeaderKey: String],
-        session: URLSession
+        session: URLSession,
+        headersClosure: @escaping () throws -> [AttestationHeaderKey: String]
     ) -> NetworkOperation<BittensorAttestedResponse> {
         let target = prepared.target
         let body = prepared.body
 
         let requestFactory = BlockNetworkRequestFactory {
+            let headers = try headersClosure()
+
             var urlRequest = URLRequest(
                 url: target.url,
                 cachePolicy: .reloadIgnoringLocalCacheData,
@@ -64,7 +68,7 @@ enum BittensorAttestedRequestBuilder {
 
             if let body {
                 urlRequest.httpBody = body
-                urlRequest.setValue(target.contentType, forHTTPHeaderField: Constants.contentTypeHeader)
+                urlRequest.setValue(target.contentType, forHTTPHeaderField: HttpHeaderKey.contentType.rawValue)
             }
 
             headers.forEach { key, value in
@@ -86,7 +90,7 @@ enum BittensorAttestedRequestBuilder {
             return .success(
                 BittensorAttestedResponse(
                     statusCode: httpResponse.statusCode,
-                    contentType: httpResponse.value(forHTTPHeaderField: Constants.contentTypeHeader),
+                    contentType: httpResponse.value(forHTTPHeaderField: HttpHeaderKey.contentType.rawValue),
                     requestId: httpResponse.value(forHTTPHeaderField: Constants.requestIdHeader),
                     body: data ?? Data()
                 )
@@ -104,8 +108,6 @@ private extension BittensorAttestedRequestBuilder {
     enum Constants {
         static let apiRootPath = "/v1/bittensor"
         static let recommendationsPath = "/recommendations"
-        static let jsonContentType = "application/json"
-        static let contentTypeHeader = "Content-Type"
         static let requestIdHeader = "X-Request-ID"
     }
 

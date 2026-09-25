@@ -81,6 +81,73 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
         verify(context.eventCenter, never()).notify(with: any())
     }
 
+    func testSubmissionCancelledInFlightStaysSentUntilItFailsThenReopens() throws {
+        let dispatchError = DispatchCallError.module(
+            .init(
+                raw: .init(moduleIndex: 7, error: Data(repeating: 0, count: 4)),
+                display: .init(moduleName: "SubtensorModule", errorName: "SlippageTooHigh")
+            )
+        )
+
+        let submissionStarted = expectation(description: "submission started")
+        var completeSubmission: ((Result<ExtrinsicMonitorSubmission, Error>) -> Void)?
+        let submitMonitor = MockExtrinsicSubmitMonitorFactoryProtocol()
+
+        stub(submitMonitor) { stub in
+            when(stub.submitAndMonitorWrapper(
+                extrinsicBuilderClosure: any(),
+                payingIn: any(),
+                signer: any(),
+                matchingEvents: any()
+            )).then { _, _, _, _ in
+                CompoundOperationWrapper(targetOperation: AsyncClosureOperation<ExtrinsicMonitorSubmission> { completion in
+                    completeSubmission = completion
+                    submissionStarted.fulfill()
+                })
+            }
+        }
+
+        let operationQueue = OperationQueue()
+        let context = try makeContext(
+            status: .failure(.init(extrinsicHash: extrinsicHash, blockHash: blockHash, error: dispatchError)),
+            submitMonitor: submitMonitor,
+            operationQueue: operationQueue
+        )
+
+        stubRefreshAndNotify(context)
+
+        let wrapper = context.service.createSubmitWrapper(for: sellOperation)
+
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: false)
+
+        wait(for: [submissionStarted], timeout: 10)
+
+        wrapper.cancel()
+        drainMainQueue()
+
+        XCTAssertEqual(context.sharedOperation.status, .sent)
+
+        completeSubmission?(.success(ExtrinsicMonitorSubmission(
+            extrinsicSubmittedModel: ExtrinsicSubmittedModel(
+                txHash: extrinsicHash,
+                sender: .current(AccountGenerator.generateSubstrateChainAccountResponse(for: KnowChainId.bittensor))
+            ),
+            status: .failure(.init(extrinsicHash: extrinsicHash, blockHash: blockHash, error: dispatchError))
+        )))
+
+        operationQueue.waitUntilAllOperationsAreFinished()
+        drainMainQueue()
+
+        XCTAssertEqual(context.sharedOperation.status, .composing)
+        verify(submitMonitor, times(1)).submitAndMonitorWrapper(
+            extrinsicBuilderClosure: any(),
+            payingIn: any(),
+            signer: any(),
+            matchingEvents: any()
+        )
+        verify(context.positionsSyncService, never()).refresh()
+    }
+
     func testSubnetSellWithoutBeneficiaryFailsBeforeSubmission() throws {
         let context = try makeContext(
             status: .success(.init(extrinsicHash: extrinsicHash, blockHash: blockHash, interestedEvents: [])),
@@ -119,7 +186,9 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
 
     private func makeContext(
         status: SubstrateExtrinsicStatus,
-        beneficiary: AccountId? = Data(repeating: 0xBB, count: 32)
+        beneficiary: AccountId? = Data(repeating: 0xBB, count: 32),
+        submitMonitor: ExtrinsicSubmitMonitorFactoryProtocol? = nil,
+        operationQueue: OperationQueue = OperationQueue()
     ) throws -> Context {
         let chainAsset = makeChainAsset()
         let positionsSyncService = MockSubtensorPositionsSyncServiceProtocol()
@@ -141,13 +210,14 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
                 feeResult: .success(networkFee),
                 submittedModelResult: .success(submission.extrinsicSubmittedModel)
             ),
-            extrinsicSubmitMonitor: ExtrinsicSubmitMonitorFactoryStub(submission: submission),
+            extrinsicSubmitMonitor: submitMonitor ?? ExtrinsicSubmitMonitorFactoryStub(submission: submission),
             signer: DummySigner(cryptoType: .sr25519),
             runtimeProvider: RuntimeCodingServiceStub(factory: RuntimeCodingServiceStub.createBittensorCodingFactory()),
             positionsSyncService: positionsSyncService,
             sharedOperation: sharedOperation,
             eventCenter: eventCenter,
-            feeCalculator: SubtensorNovaFeeCalculator(beneficiary: beneficiary)
+            feeCalculator: SubtensorNovaFeeCalculator(beneficiary: beneficiary),
+            operationQueue: operationQueue
         )
 
         return Context(
@@ -210,6 +280,16 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
 
     private func le<T: FixedWidthInteger>(_ value: T) -> String {
         withUnsafeBytes(of: value.littleEndian) { Data($0) }.toHex()
+    }
+
+    private func drainMainQueue() {
+        let drained = expectation(description: "main queue drained")
+
+        DispatchQueue.main.async {
+            drained.fulfill()
+        }
+
+        wait(for: [drained], timeout: 10)
     }
 
     private func run<T>(_ wrapper: CompoundOperationWrapper<T>) -> Result<T, Error> {

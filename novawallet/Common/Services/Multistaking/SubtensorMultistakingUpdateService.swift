@@ -1,6 +1,7 @@
 import Foundation
 import SubstrateSdk
 import Operation_iOS
+import Keystore_iOS
 
 final class SubtensorMultistakingUpdateService: ObservableSyncService {
     struct PositionKey: Hashable {
@@ -24,6 +25,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     let cacheRepository: AnyDataProviderRepository<ChainStorageItem>
     let earnConfigProvider: SubtensorEarnConfigProviderProtocol?
     let eventCenter: EventCenterProtocol
+    let settingsManager: SettingsManagerProtocol
     let workingQueue: DispatchQueue
     let operationQueue: OperationQueue
 
@@ -48,7 +50,8 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         workingQueue: DispatchQueue,
         logger: LoggerProtocol,
         earnConfigProvider: SubtensorEarnConfigProviderProtocol? = nil,
-        eventCenter: EventCenterProtocol = EventCenter.shared
+        eventCenter: EventCenterProtocol = EventCenter.shared,
+        settingsManager: SettingsManagerProtocol = SettingsManager.shared
     ) {
         self.walletId = walletId
         self.accountId = accountId
@@ -61,6 +64,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         self.runtimeService = runtimeService
         self.earnConfigProvider = earnConfigProvider
         self.eventCenter = eventCenter
+        self.settingsManager = settingsManager
         self.workingQueue = workingQueue
         self.operationQueue = operationQueue
 
@@ -158,13 +162,16 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
 
     private func createFetchWrapper() -> CompoundOperationWrapper<FetchResult> {
         let stateWrapper = stakeStateFetchFactory.createStateWrapper(for: accountId)
-        let configWrapper = earnConfigProvider?.createConfigWrapper()
+        let configWrapper = earnConfigProvider?.createBackgroundConfigWrapper()
 
-        let mergeOperation = ClosureOperation<FetchResult> {
+        let mergeOperation = ClosureOperation<FetchResult> { [settingsManager] in
             let state = try stateWrapper.targetOperation.extractNoCancellableResultData()
-            let config = try? configWrapper?.targetOperation.extractNoCancellableResultData()
 
-            return FetchResult(state: state, maxApy: config?.headlineMaxAnnualRate)
+            let maxApy = configWrapper.flatMap {
+                Self.resolveMaxApy(from: $0.targetOperation, settingsManager: settingsManager)
+            }
+
+            return FetchResult(state: state, maxApy: maxApy)
         }
 
         mergeOperation.addDependency(stateWrapper.targetOperation)
@@ -177,6 +184,21 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
             targetOperation: mergeOperation,
             dependencies: stateWrapper.allOperations + (configWrapper?.allOperations ?? [])
         )
+    }
+
+    private static func resolveMaxApy(
+        from configOperation: BaseOperation<SubtensorEarnConfig>,
+        settingsManager: SettingsManagerProtocol
+    ) -> Decimal? {
+        guard let config = try? configOperation.extractNoCancellableResultData() else {
+            return settingsManager.subtensorLastHeadlineRate
+        }
+
+        if settingsManager.subtensorLastHeadlineRate != config.headlineMaxAnnualRate {
+            settingsManager.subtensorLastHeadlineRate = config.headlineMaxAnnualRate
+        }
+
+        return config.headlineMaxAnnualRate
     }
 
     private func performStateFetch() {
@@ -316,5 +338,25 @@ extension SubtensorMultistakingUpdateService: EventVisitorProtocol {
         markSyncingImmediate()
 
         performStateFetch()
+    }
+}
+
+private enum SubtensorDashboardSettingsKey {
+    static let lastHeadlineRate = "subtensorLastHeadlineRate"
+}
+
+private extension SettingsManagerProtocol {
+    var subtensorLastHeadlineRate: Decimal? {
+        get {
+            string(for: SubtensorDashboardSettingsKey.lastHeadlineRate).flatMap { Decimal(string: $0) }
+        }
+
+        set {
+            if let newValue {
+                set(value: newValue.description, for: SubtensorDashboardSettingsKey.lastHeadlineRate)
+            } else {
+                removeValue(for: SubtensorDashboardSettingsKey.lastHeadlineRate)
+            }
+        }
     }
 }

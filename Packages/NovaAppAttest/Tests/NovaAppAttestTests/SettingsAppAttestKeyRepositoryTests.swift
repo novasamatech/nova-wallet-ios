@@ -23,7 +23,7 @@ final class SettingsAppAttestKeyRepositoryTests: XCTestCase {
     func testDecodesLegacyKeySettings() throws {
         let settings = InMemorySettingsManager()
         let legacy = Data(#"{"a":{"identifier":"a","keyId":"key-a","isAttested":true}}"#.utf8)
-        settings.set(value: legacy, for: AttestationSettingsKey.appAttestKeys)
+        settings.set(value: legacy, for: SettingsAppAttestKeyRepository.storageKey)
 
         let repository = SettingsAppAttestKeyRepository(settingsManager: settings)
         let fetched = try run(repository.fetchOperation(by: { "a" }, options: RepositoryFetchOptions()))
@@ -32,20 +32,5 @@ final class SettingsAppAttestKeyRepositoryTests: XCTestCase {
         XCTAssertEqual(fetched?.isAttested, true)
         XCTAssertEqual(fetched?.attemptCount, 0)
         XCTAssertNil(fetched?.nextAttemptAt)
-    }
-
-    func testDeleteAllKeepsRowsOfAnotherStorageKey() throws {
-        let settings = InMemorySettingsManager()
-        let analytics = SettingsAppAttestKeyRepository(settingsManager: settings)
-        let bittensor = SettingsAppAttestKeyRepository(settingsManager: settings, storageKey: "bittensorAppAttestKeys")
-        let analyticsRow = AppAttestKeySettings(identifier: "gateway|client-a", keyId: "key-a", isAttested: true)
-        let bittensorRow = AppAttestKeySettings(identifier: "gateway|client-b", keyId: "key-b", isAttested: true)
-
-        _ = try run(analytics.saveOperation({ [analyticsRow] }, { [] }))
-        _ = try run(bittensor.saveOperation({ [bittensorRow] }, { [] }))
-        _ = try run(analytics.deleteAllOperation())
-
-        XCTAssertEqual(try run(analytics.fetchAllOperation(with: RepositoryFetchOptions())), [])
-        XCTAssertEqual(try run(bittensor.fetchAllOperation(with: RepositoryFetchOptions())), [bittensorRow])
     }
 }

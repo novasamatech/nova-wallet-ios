@@ -7,16 +7,14 @@ enum SettingsAppAttestKeyRepositoryError: Error {
 }
 
 public final class SettingsAppAttestKeyRepository {
+    // Stable on-disk settings key: changing this string orphans every stored row.
+    static let storageKey = "appAttestKeys"
+
     private let settingsManager: SettingsManagerProtocol
-    private let storageKey: String
     private let mutex = NSLock()
 
-    public init(
-        settingsManager: SettingsManagerProtocol,
-        storageKey: String = AttestationSettingsKey.appAttestKeys
-    ) {
+    public init(settingsManager: SettingsManagerProtocol) {
         self.settingsManager = settingsManager
-        self.storageKey = storageKey
     }
 }
 
@@ -24,14 +22,14 @@ public final class SettingsAppAttestKeyRepository {
 
 private extension SettingsAppAttestKeyRepository {
     func loadMap() -> [String: AppAttestKeySettings] {
-        settingsManager.value(of: [String: AppAttestKeySettings].self, for: storageKey) ?? [:]
+        settingsManager.value(of: [String: AppAttestKeySettings].self, for: Self.storageKey) ?? [:]
     }
 
     func storeMap(_ map: [String: AppAttestKeySettings]) {
         if map.isEmpty {
-            settingsManager.removeValue(for: storageKey)
+            settingsManager.removeValue(for: Self.storageKey)
         } else {
-            settingsManager.set(value: map, for: storageKey)
+            settingsManager.set(value: map, for: Self.storageKey)
         }
     }
 

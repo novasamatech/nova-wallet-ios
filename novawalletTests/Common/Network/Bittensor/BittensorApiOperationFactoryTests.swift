@@ -3,6 +3,35 @@ import XCTest
 import Cuckoo
 import Operation_iOS
 
+private final class ReplyLatch {
+    private let lock = NSLock()
+    private var isReleased = false
+    private var heldReplies: [() -> Void] = []
+
+    func hold(_ reply: @escaping () -> Void) {
+        lock.lock()
+
+        guard !isReleased else {
+            lock.unlock()
+            reply()
+            return
+        }
+
+        heldReplies.append(reply)
+        lock.unlock()
+    }
+
+    func release() {
+        lock.lock()
+        isReleased = true
+        let replies = heldReplies
+        heldReplies = []
+        lock.unlock()
+
+        replies.forEach { $0() }
+    }
+}
+
 private final class ManualClock {
     private let lock = NSLock()
     private var value: TimeInterval = 1000
@@ -164,14 +193,21 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
         verify(transport, times(2)).createResponseWrapper(for: any())
     }
 
+    func testResponsesAreStampedOnTheCacheClock() throws {
+        let clock = ManualClock()
+
+        let result = try fetch(makeFactory(clock: clock).createRecommendationsWrapper())
+
+        XCTAssertEqual(result.receivedAt, clock.now)
+    }
+
     func testConcurrentCallersShareOneFetchThatACancelledCallerDoesNotCancel() throws {
-        let fetchStarted = XCTestExpectation()
+        let replyLatch = ReplyLatch()
         let body = try makeBody(BittensorApiFixtureDocuments.subnets())
 
         let transport = makeTransport(
             replies: [makeResponse(body, requestId: "req-shared")],
-            delay: 0.3,
-            onRequest: { fetchStarted.fulfill() }
+            replyLatch: replyLatch
         )
 
         let factory = makeFactory(transport: transport)
@@ -182,10 +218,15 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
         let second = factory.createSubnetsWrapper()
         let completed = completionExpectation(for: [cancelled, first, second])
 
-        queue.addOperations(cancelled.allOperations + first.allOperations + second.allOperations, waitUntilFinished: false)
+        for wrapper in [cancelled, first, second] {
+            queue.addOperation(wrapper.targetOperation)
+            wrapper.dependencies.forEach { $0.start() }
+        }
 
-        wait(for: [fetchStarted], timeout: 5)
+        verify(transport, times(1)).createResponseWrapper(for: any())
+
         cancelled.cancel()
+        replyLatch.release()
         wait(for: [completed], timeout: 10)
 
         XCTAssertEqual(try first.targetOperation.extractNoCancellableResultData().requestId, "req-shared")
@@ -315,8 +356,7 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
 
     private func makeTransport(
         replies: [Result<BittensorApiRawResponse, Error>],
-        delay: TimeInterval = 0,
-        onRequest: @escaping () -> Void = {}
+        replyLatch: ReplyLatch? = nil
     ) -> MockBittensorApiTransportProtocol {
         let transport = MockBittensorApiTransportProtocol()
         let lock = NSLock()
@@ -330,12 +370,13 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
                     : remaining.removeFirst()
                 lock.unlock()
 
-                onRequest()
-
                 let operation = AsyncClosureOperation<BittensorApiRawResponse> { completion in
-                    DispatchQueue.global().asyncAfter(deadline: .now() + delay) {
+                    guard let replyLatch else {
                         completion(reply)
+                        return
                     }
+
+                    replyLatch.hold { completion(reply) }
                 }
 
                 return CompoundOperationWrapper(targetOperation: operation)
