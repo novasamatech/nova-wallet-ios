@@ -258,7 +258,7 @@ extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryPr
     }
 
     func subnetStakingEnabled(
-        netuid: UInt16,
+        netuid _: UInt16,
         subnetExists: Bool?,
         subtokenEnabled: Bool?,
         locale: Locale
@@ -270,11 +270,7 @@ extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryPr
 
             presentable.presentSubnetStakingDisabled(view, locale: locale)
         }, preservesCondition: {
-            guard subnetExists == true else {
-                return false
-            }
-
-            return netuid == SubtensorStakingPallet.rootNetuid || subtokenEnabled == true
+            subnetExists == true && subtokenEnabled == true
         })
     }
 
