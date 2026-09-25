@@ -46,7 +46,7 @@ extension RuntimeCodingServiceStub {
     }
 
     static func createBittensorCodingFactory(
-        specVersion: UInt32 = 448,
+        specVersion: UInt32 = 470,
         txVersion: UInt32 = 1
     ) throws -> RuntimeCoderFactoryProtocol {
         let runtimeMetadataContainer = try RuntimeHelper.createRuntimeMetadata("bittensor-v15-metadata")

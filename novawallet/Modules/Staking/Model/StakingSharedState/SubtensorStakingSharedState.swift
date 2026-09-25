@@ -2,6 +2,19 @@ import Foundation
 import SubstrateSdk
 import Operation_iOS
 
+struct SubtensorEarnServices {
+    let earnConfigProvider: SubtensorEarnConfigProviderProtocol
+    let earnSettings: SubtensorEarnSettingsProtocol
+    let validatorChainOperationFactory: SubtensorValidatorChainOperationFactoryProtocol
+    let yieldService: SubtensorYieldServiceProtocol
+    let recommendationService: SubtensorRecommendationServiceProtocol
+    let validatorDirectoryService: SubtensorValidatorDirectoryServiceProtocol
+    let discoveryService: SubtensorDiscoveryServiceProtocol
+    let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
+    let tradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol
+    let rootHoldFactory: SubtensorRootHoldFactoryProtocol
+}
+
 protocol SubtensorStakingSharedStateProtocol: AnyObject {
     var stakingOption: Multistaking.ChainAssetOption { get }
     var chainRegistry: ChainRegistryProtocol { get }
@@ -10,6 +23,7 @@ protocol SubtensorStakingSharedStateProtocol: AnyObject {
     var delegatesService: SubtensorDelegatesServiceProtocol { get }
     var rewardCalculatorService: SubtensorRewardCalculatorServiceProtocol { get }
     var apiOperationFactory: SubtensorApiOperationFactoryProtocol { get }
+    var earnServices: SubtensorEarnServices { get }
 
     var positionsSyncService: SubtensorPositionsSyncServiceProtocol? { get }
     var rootClaimableService: SubtensorRootClaimableServiceProtocol? { get }
@@ -21,6 +35,13 @@ protocol SubtensorStakingSharedStateProtocol: AnyObject {
     func setup(for accountId: AccountId?)
     func throttle()
     func startSharedOperation() -> SharedOperationProtocol
+
+    func createStakingOperationService(
+        for accountId: AccountId,
+        extrinsicService: ExtrinsicServiceProtocol,
+        extrinsicSubmitMonitor: ExtrinsicSubmitMonitorFactoryProtocol,
+        signer: SigningWrapperProtocol
+    ) throws -> SubtensorStakingOperationServiceProtocol
 }
 
 final class SubtensorStakingSharedState {
@@ -32,6 +53,8 @@ final class SubtensorStakingSharedState {
     let rewardCalculatorService: SubtensorRewardCalculatorServiceProtocol
     let apiOperationFactory: SubtensorApiOperationFactoryProtocol
     let stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol
+    let earnServices: SubtensorEarnServices
+    let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
     let logger: LoggerProtocol
@@ -50,6 +73,8 @@ final class SubtensorStakingSharedState {
         rewardCalculatorService: SubtensorRewardCalculatorServiceProtocol,
         apiOperationFactory: SubtensorApiOperationFactoryProtocol,
         stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol,
+        earnServices: SubtensorEarnServices,
+        eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
         logger: LoggerProtocol
@@ -62,6 +87,8 @@ final class SubtensorStakingSharedState {
         self.rewardCalculatorService = rewardCalculatorService
         self.apiOperationFactory = apiOperationFactory
         self.stakeStateFetchFactory = stakeStateFetchFactory
+        self.earnServices = earnServices
+        self.eventCenter = eventCenter
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
         self.logger = logger
@@ -141,5 +168,30 @@ extension SubtensorStakingSharedState: SubtensorStakingSharedStateProtocol {
         let operation = SharedOperation()
         sharedOperation = operation
         return operation
+    }
+
+    func createStakingOperationService(
+        for accountId: AccountId,
+        extrinsicService: ExtrinsicServiceProtocol,
+        extrinsicSubmitMonitor: ExtrinsicSubmitMonitorFactoryProtocol,
+        signer: SigningWrapperProtocol
+    ) throws -> SubtensorStakingOperationServiceProtocol {
+        let chainId = stakingOption.chainAsset.chain.chainId
+
+        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
+            throw ChainRegistryError.runtimeMetadaUnavailable
+        }
+
+        return SubtensorStakingOperationService(
+            chainAsset: stakingOption.chainAsset,
+            accountId: accountId,
+            extrinsicService: extrinsicService,
+            extrinsicSubmitMonitor: extrinsicSubmitMonitor,
+            signer: signer,
+            runtimeProvider: runtimeProvider,
+            positionsSyncService: positionsSyncService,
+            sharedOperation: sharedOperation,
+            eventCenter: eventCenter
+        )
     }
 }
