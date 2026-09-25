@@ -24,6 +24,7 @@ final class MultistakingSyncService {
     let substrateRepositoryFactory: SubstrateRepositoryFactoryProtocol
     let providerFactory: MultistakingProviderFactoryProtocol
     let offchainOperationFactory: MultistakingOffchainOperationFactoryProtocol
+    let earnConfigProvider: SubtensorEarnConfigProviderProtocol
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
     let logger: LoggerProtocol
@@ -47,6 +48,8 @@ final class MultistakingSyncService {
         multistakingRepositoryFactory: MultistakingRepositoryFactoryProtocol,
         substrateRepositoryFactory: SubstrateRepositoryFactoryProtocol,
         offchainOperationFactory: MultistakingOffchainOperationFactoryProtocol,
+        earnConfigProvider: SubtensorEarnConfigProviderProtocol =
+            SubtensorStakingProcessServices.sharedEarnConfigProvider,
         operationQueue: OperationQueue = OperationManagerFacade.assetsRepositoryQueue,
         workingQueue: DispatchQueue = DispatchQueue(
             label: "com.nova.wallet.staking.sync",
@@ -61,6 +64,7 @@ final class MultistakingSyncService {
         self.multistakingRepositoryFactory = multistakingRepositoryFactory
         self.substrateRepositoryFactory = substrateRepositoryFactory
         self.offchainOperationFactory = offchainOperationFactory
+        self.earnConfigProvider = earnConfigProvider
         self.workingQueue = workingQueue
         self.operationQueue = operationQueue
         self.logger = logger
@@ -422,7 +426,8 @@ final class MultistakingSyncService {
             runtimeService: runtimeService,
             operationQueue: operationQueue,
             workingQueue: workingQueue,
-            logger: logger
+            logger: logger,
+            earnConfigProvider: earnConfigProvider
         )
     }
 

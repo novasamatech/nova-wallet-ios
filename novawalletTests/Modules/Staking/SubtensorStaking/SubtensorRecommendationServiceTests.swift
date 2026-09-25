@@ -325,7 +325,7 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
         XCTAssertEqual(service.lastSeenClientGates(), expectedGates)
     }
 
-    func testShownAgeAddsTheUptimeElapsedSinceReceiptToTheServerAge() {
+    func testShownAgeAddsTheTimeElapsedSinceReceiptToTheServerAge() {
         let generation = SubtensorRecommendationGeneration(
             id: "8ebc85abd0bbeb6f282302ac48909c3d",
             sourceBlockNumber: 9_139_880,
@@ -340,7 +340,7 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
             isPartial: false
         )
 
-        XCTAssertEqual(generation.shownAge(atUptime: receivedAt + 95), 515)
+        XCTAssertEqual(generation.shownAge(at: receivedAt + 3600 + 30), 4050)
     }
 
     private func makeService(

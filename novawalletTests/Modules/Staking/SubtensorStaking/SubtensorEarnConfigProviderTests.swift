@@ -118,6 +118,41 @@ final class SubtensorEarnConfigProviderTests: XCTestCase {
         XCTAssertEqual(SubtensorEarnConfigStubURLProtocol.loadCount, 2)
     }
 
+    func testFailedBackgroundFetchIsNotRetriedUntilTheRetryIntervalPasses() throws {
+        SubtensorEarnConfigStubURLProtocol.reset(payloads: [nil, makePayload(headlineRate: "0.40")])
+
+        let provider = makeProvider()
+
+        XCTAssertThrowsError(try fetch(from: provider, inBackground: true))
+
+        now = SubtensorEarnConfigProvider.failureRetryInterval - 1
+
+        XCTAssertThrowsError(try fetch(from: provider, inBackground: true))
+        XCTAssertEqual(SubtensorEarnConfigStubURLProtocol.loadCount, 1)
+
+        now = SubtensorEarnConfigProvider.failureRetryInterval
+
+        let recoveredConfig = try fetch(from: provider, inBackground: true)
+
+        XCTAssertEqual(recoveredConfig.headlineMaxAnnualRate, Decimal(string: "0.40"))
+        XCTAssertEqual(SubtensorEarnConfigStubURLProtocol.loadCount, 2)
+    }
+
+    func testFailedBackgroundFetchDoesNotHoldTheNextInteractiveFetch() throws {
+        SubtensorEarnConfigStubURLProtocol.reset(payloads: [nil, makePayload(headlineRate: "0.40")])
+
+        let provider = makeProvider()
+
+        XCTAssertThrowsError(try fetch(from: provider, inBackground: true))
+
+        now = 1
+
+        let interactiveConfig = try fetch(from: provider)
+
+        XCTAssertEqual(interactiveConfig.headlineMaxAnnualRate, Decimal(string: "0.40"))
+        XCTAssertEqual(SubtensorEarnConfigStubURLProtocol.loadCount, 2)
+    }
+
     func testInvalidEntriesAreLoggedOnceAcrossRefreshes() throws {
         let invalidRootValidator = "141BZJmvZSXy3uiKoHmP1ZvUaq4b3ratkC5DE6GuU4K7je4W"
 
@@ -189,8 +224,11 @@ final class SubtensorEarnConfigProviderTests: XCTestCase {
         wait(for: [completed], timeout: 10)
     }
 
-    private func fetch(from provider: SubtensorEarnConfigProvider) throws -> SubtensorEarnConfig {
-        let wrapper = provider.createConfigWrapper()
+    private func fetch(
+        from provider: SubtensorEarnConfigProvider,
+        inBackground: Bool = false
+    ) throws -> SubtensorEarnConfig {
+        let wrapper = inBackground ? provider.createBackgroundConfigWrapper() : provider.createConfigWrapper()
 
         run([wrapper])
 

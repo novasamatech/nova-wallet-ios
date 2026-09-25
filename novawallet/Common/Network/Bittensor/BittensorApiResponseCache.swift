@@ -34,7 +34,6 @@ struct BittensorApiCacheEntry {
     let value: Any
     let requestId: String?
     let receivedAt: TimeInterval
-    let storedAt: TimeInterval
     let timeToLive: TimeInterval
     let generation: BittensorApiGenerationOrder?
 }
@@ -72,7 +71,6 @@ final class BittensorApiResponseCache {
     struct Receipt {
         let fetched: BittensorApiFetchedValue
         let receivedAt: TimeInterval
-        let storedAt: TimeInterval
     }
 
     static let routeNotPublishedLifetime: TimeInterval = 600
@@ -84,7 +82,6 @@ final class BittensorApiResponseCache {
     private let operationQueue: OperationQueue
     private let logger: LoggerProtocol
     private let timeProvider: () -> TimeInterval
-    private let uptimeProvider: () -> TimeInterval
     private let jitterProvider: () -> Double
     private let mutex = NSLock()
 
@@ -97,13 +94,11 @@ final class BittensorApiResponseCache {
         operationQueue: OperationQueue,
         logger: LoggerProtocol,
         timeProvider: @escaping () -> TimeInterval = BittensorMonotonicClock.now,
-        uptimeProvider: @escaping () -> TimeInterval = { ProcessInfo.processInfo.systemUptime },
         jitterProvider: @escaping () -> Double = { Double.random(in: 0 ... 1) }
     ) {
         self.operationQueue = operationQueue
         self.logger = logger
         self.timeProvider = timeProvider
-        self.uptimeProvider = uptimeProvider
         self.jitterProvider = jitterProvider
     }
 
@@ -203,7 +198,7 @@ private extension BittensorApiResponseCache {
             backoffs[job.routeKey] = nil
             negativeKeys(for: job).forEach { negativeEntries[$0] = nil }
 
-            let receipt = Receipt(fetched: fetched, receivedAt: uptimeProvider(), storedAt: now)
+            let receipt = Receipt(fetched: fetched, receivedAt: now)
 
             if previous == nil, isOlderThanNewestGeneration(fetched.generation) {
                 mutex.unlock()
@@ -264,7 +259,6 @@ private extension BittensorApiResponseCache {
             value: fetched.value,
             requestId: fetched.requestId,
             receivedAt: receipt.receivedAt,
-            storedAt: receipt.storedAt,
             timeToLive: fetched.timeToLive,
             generation: fetched.generation
         )
@@ -317,7 +311,7 @@ private extension BittensorApiResponseCache {
     }
 
     func isFresh(_ entry: BittensorApiCacheEntry, at now: TimeInterval) -> Bool {
-        let age = now - entry.storedAt
+        let age = now - entry.receivedAt
 
         return age >= 0 && age < entry.timeToLive
     }

@@ -9,7 +9,13 @@ final class SubtensorEarnConfigProvider: BaseFetchOperationFactory {
         let fetchedAt: TimeInterval
     }
 
+    struct FailureEntry {
+        let error: Error
+        let failedAt: TimeInterval
+    }
+
     static let cacheLifetime: TimeInterval = 30 * 60
+    static let failureRetryInterval: TimeInterval = 5 * 60
 
     private let configURL: URL
     private let operationQueue: OperationQueue
@@ -18,6 +24,7 @@ final class SubtensorEarnConfigProvider: BaseFetchOperationFactory {
     private let mutex = NSLock()
 
     private var cacheEntry: CacheEntry?
+    private var failureEntry: FailureEntry?
     private var pendingDeliveries: [UUID: Delivery] = [:]
     private var isFetching = false
     private var loggedInvalidEntries: Set<String> = []
@@ -30,9 +37,7 @@ final class SubtensorEarnConfigProvider: BaseFetchOperationFactory {
         configURL: URL,
         operationQueue: OperationQueue,
         logger: LoggerProtocol,
-        timeProvider: @escaping () -> TimeInterval = {
-            TimeInterval(clock_gettime_nsec_np(CLOCK_MONOTONIC)) / TimeInterval(NSEC_PER_SEC)
-        }
+        timeProvider: @escaping () -> TimeInterval = BittensorMonotonicClock.now
     ) {
         self.configURL = configURL
         self.operationQueue = operationQueue
@@ -43,8 +48,27 @@ final class SubtensorEarnConfigProvider: BaseFetchOperationFactory {
 
 extension SubtensorEarnConfigProvider: SubtensorEarnConfigProviderProtocol {
     func createConfigWrapper() -> CompoundOperationWrapper<SubtensorEarnConfig> {
-        if let config = freshConfig() {
+        createConfigWrapper(holdsFailures: false)
+    }
+
+    func createBackgroundConfigWrapper() -> CompoundOperationWrapper<SubtensorEarnConfig> {
+        createConfigWrapper(holdsFailures: true)
+    }
+}
+
+private extension SubtensorEarnConfigProvider {
+    enum Constants {
+        static let timeout: TimeInterval = 30
+    }
+
+    func createConfigWrapper(holdsFailures: Bool) -> CompoundOperationWrapper<SubtensorEarnConfig> {
+        switch immediateDelivery(holdsFailures: holdsFailures) {
+        case let .success(config):
             return .createWithResult(config)
+        case let .failure(error):
+            return .createWithError(error)
+        case nil:
+            break
         }
 
         let requestId = UUID()
@@ -57,7 +81,7 @@ extension SubtensorEarnConfigProvider: SubtensorEarnConfigProviderProtocol {
                     return
                 }
 
-                requestConfig(for: requestId, completion: completion)
+                requestConfig(for: requestId, holdsFailures: holdsFailures, completion: completion)
             },
             cancelationClosure: { [weak self] in
                 self?.cancelRequest(for: requestId)
@@ -66,12 +90,6 @@ extension SubtensorEarnConfigProvider: SubtensorEarnConfigProviderProtocol {
 
         return CompoundOperationWrapper(targetOperation: operation)
     }
-}
-
-private extension SubtensorEarnConfigProvider {
-    enum Constants {
-        static let timeout: TimeInterval = 30
-    }
 
     func isFresh(_ entry: CacheEntry) -> Bool {
         let age = timeProvider() - entry.fetchedAt
@@ -79,27 +97,41 @@ private extension SubtensorEarnConfigProvider {
         return age >= 0 && age < Self.cacheLifetime
     }
 
-    func freshConfig() -> SubtensorEarnConfig? {
+    func isWithinRetryInterval(_ entry: FailureEntry) -> Bool {
+        let age = timeProvider() - entry.failedAt
+
+        return age >= 0 && age < Self.failureRetryInterval
+    }
+
+    func immediateDelivery(holdsFailures: Bool) -> Result<SubtensorEarnConfig, Error>? {
         mutex.lock()
 
         defer {
             mutex.unlock()
         }
 
-        guard let cacheEntry, isFresh(cacheEntry) else {
+        return immediateDeliveryLocked(holdsFailures: holdsFailures)
+    }
+
+    func immediateDeliveryLocked(holdsFailures: Bool) -> Result<SubtensorEarnConfig, Error>? {
+        if let cacheEntry, isFresh(cacheEntry) {
+            return .success(cacheEntry.config)
+        }
+
+        guard holdsFailures, let failureEntry, isWithinRetryInterval(failureEntry) else {
             return nil
         }
 
-        return cacheEntry.config
+        return cacheEntry.map { .success($0.config) } ?? .failure(failureEntry.error)
     }
 
-    func requestConfig(for requestId: UUID, completion: @escaping Delivery) {
+    func requestConfig(for requestId: UUID, holdsFailures: Bool, completion: @escaping Delivery) {
         mutex.lock()
 
-        if let cacheEntry, isFresh(cacheEntry) {
+        if let immediate = immediateDeliveryLocked(holdsFailures: holdsFailures) {
             mutex.unlock()
 
-            completion(.success(cacheEntry.config))
+            completion(immediate)
 
             return
         }
@@ -168,6 +200,7 @@ private extension SubtensorEarnConfigProvider {
         switch result {
         case let .success(config):
             cacheEntry = CacheEntry(config: config, fetchedAt: timeProvider())
+            failureEntry = nil
 
             for entry in config.invalidEntries where loggedInvalidEntries.insert(entry).inserted {
                 newInvalidEntries.append(entry)
@@ -175,6 +208,7 @@ private extension SubtensorEarnConfigProvider {
 
             delivery = .success(config)
         case let .failure(error):
+            failureEntry = FailureEntry(error: error, failedAt: timeProvider())
             delivery = cacheEntry.map { .success($0.config) } ?? .failure(error)
         }
 

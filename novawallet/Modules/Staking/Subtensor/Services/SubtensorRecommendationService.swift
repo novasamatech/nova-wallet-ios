@@ -24,8 +24,8 @@ final class SubtensorRecommendationService {
 }
 
 extension SubtensorRecommendationGeneration {
-    func shownAge(atUptime uptime: TimeInterval = ProcessInfo.processInfo.systemUptime) -> TimeInterval {
-        TimeInterval(ageSeconds) + max(0, uptime - receivedAt)
+    func shownAge(at now: TimeInterval = BittensorMonotonicClock.now()) -> TimeInterval {
+        TimeInterval(ageSeconds) + max(0, now - receivedAt)
     }
 }
 
