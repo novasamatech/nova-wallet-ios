@@ -42,6 +42,10 @@ extension SubtensorStakingPallet {
         StateCallPath(module: betaBasketApiName, method: "get_root_basket_positions")
     }
 
+    static var rootBasketClaimPreviewsApi: StateCallPath {
+        StateCallPath(module: betaBasketApiName, method: "get_root_basket_claim_previews")
+    }
+
     /// network-wide beta basket NAV; sampled across two blocks it is the observed TAO flow to
     /// root stakers, which is what the spec §6.2 release gate validates the engine against
     /// (subtensor: `pallets/subtensor/src/staking/basket_views.rs:112-124`)

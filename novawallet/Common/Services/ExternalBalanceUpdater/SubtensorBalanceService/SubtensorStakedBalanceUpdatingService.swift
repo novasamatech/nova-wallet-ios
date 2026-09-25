@@ -14,6 +14,7 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
     let runtimeService: RuntimeCodingServiceProtocol
     let repository: AnyDataProviderRepository<SubtensorStakedBalance>
     let stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol
+    let eventCenter: EventCenterProtocol
     let workingQueue: DispatchQueue
     let operationQueue: OperationQueue
 
@@ -33,7 +34,8 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
         runtimeService: RuntimeCodingServiceProtocol,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
-        logger: LoggerProtocol
+        logger: LoggerProtocol,
+        eventCenter: EventCenterProtocol = EventCenter.shared
     ) {
         self.accountId = accountId
         self.chainAsset = chainAsset
@@ -41,6 +43,7 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
         self.stakeStateFetchFactory = stakeStateFetchFactory
         self.connection = connection
         self.runtimeService = runtimeService
+        self.eventCenter = eventCenter
         self.workingQueue = workingQueue
         self.operationQueue = operationQueue
 
@@ -50,6 +53,8 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
     override func performSyncUp() {
         clearSubscriptions()
         fetchCallStore.cancel()
+
+        eventCenter.add(observer: self, dispatchIn: workingQueue)
 
         makeHotkeysSubscription(for: accountId)
     }
@@ -62,6 +67,8 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
     // throttle() skips stopSyncUp() when a fetch already completed, so the storage
     // subscriptions must be released here as well
     override func deactivate() {
+        eventCenter.remove(observer: self)
+
         fetchCallStore.cancel()
         clearSubscriptions()
     }
@@ -144,9 +151,6 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
         }
     }
 
-    // Keys cover only current positions: a stake to a tracked hotkey on a new subnet moves neither
-    // StakingHotkeys nor a subscribed key, so external re-drives (polling refresh now, the
-    // extrinsic-monitor trigger in the root-flows stage) are required to close that gap
     private func updateAlphaTriggerSubscription(for state: Multistaking.SubtensorStakingState) {
         let newKeys = Set(
             state.positions.map { PositionKey(hotkey: $0.hotkey, netuid: $0.netuid) }
@@ -246,5 +250,26 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
                 self?.completeImmediate(error)
             }
         }
+    }
+}
+
+extension SubtensorStakedBalanceUpdatingService: EventVisitorProtocol {
+    func processSubtensorStakingChanged(event: SubtensorStakingChanged) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        guard
+            isActive,
+            event.accountId == accountId,
+            event.chainAssetId == chainAsset.chainAssetId else {
+            return
+        }
+
+        markSyncingImmediate()
+
+        performStateFetch()
     }
 }

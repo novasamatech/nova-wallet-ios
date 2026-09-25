@@ -39,6 +39,7 @@ extension StakingDashboardSubtensorMapper: CoreDataMapperProtocol {
         }
 
         entity.onchainState = state?.rawValue
+        entity.maxApy = model.maxApy.map { $0 as NSDecimalNumber }
     }
 
     func transform(entity _: CoreDataEntity) throws -> DataProviderModel {
