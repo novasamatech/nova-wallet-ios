@@ -168,7 +168,7 @@ private extension SubtensorClaimRewardsPresenter {
     }
 
     func refreshPreflight() {
-        let hotkey = claimable?.positions.first?.hotkey ?? AccountId.zeroAccountId(
+        let hotkey = claimable?.previews.first?.hotkey ?? AccountId.zeroAccountId(
             of: chainAsset.chain.accountIdSize
         )
 

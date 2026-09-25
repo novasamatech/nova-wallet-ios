@@ -70,6 +70,11 @@ protocol SubtensorApiOperationFactoryProtocol {
         blockHash: BlockHash?
     ) -> CompoundOperationWrapper<[SubtensorStakingPallet.RootBasketPosition]>
 
+    func createRootClaimPreviewsWrapper(
+        coldkey: AccountId,
+        blockHash: BlockHash?
+    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.BasketClaimPreview]>
+
     /// network-wide basket NAV, the observable the spec §6.2 root APY gate samples across blocks
     func createRootBasketTotalNavWrapper(
         at blockHash: BlockHash?
@@ -536,6 +541,17 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
     ) -> CompoundOperationWrapper<[SubtensorStakingPallet.RootBasketPosition]> {
         createWrapper(
             path: SubtensorStakingPallet.rootBasketPositionsApi,
+            blockHash: blockHash,
+            paramsClosure: createAccountParamsClosure(for: coldkey)
+        )
+    }
+
+    func createRootClaimPreviewsWrapper(
+        coldkey: AccountId,
+        blockHash: BlockHash?
+    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.BasketClaimPreview]> {
+        createWrapper(
+            path: SubtensorStakingPallet.rootBasketClaimPreviewsApi,
             blockHash: blockHash,
             paramsClosure: createAccountParamsClosure(for: coldkey)
         )

@@ -33,6 +33,17 @@ final class SubtensorPositionRateCalculatorTests: XCTestCase {
         XCTAssertEqual(rate, BigUInt(9_135_797_478))
     }
 
+    func testShareAboveTheHotkeyTotalIsClampedToTheWholeDividend() {
+        let rate = SubtensorPositionRateCalculator.alphaPerDayRao(
+            hotkeyEmissionPerTempo: 97022,
+            positionAlpha: 3_000_000_000,
+            totalHotkeyAlpha: 2_591_407_748,
+            tempo: chutesTempo
+        )
+
+        XCTAssertEqual(rate, BigUInt(1_940_440))
+    }
+
     func testShareScaledRateForAMidSizedDividendPool() {
         let rate = SubtensorPositionRateCalculator.alphaPerDayRao(
             hotkeyEmissionPerTempo: 12_308_252_437,

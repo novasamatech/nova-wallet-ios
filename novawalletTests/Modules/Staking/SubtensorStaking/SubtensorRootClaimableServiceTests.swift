@@ -10,23 +10,15 @@ final class SubtensorRootClaimableServiceTests: XCTestCase {
     let secondHotkey = Data(repeating: 3, count: 32)
     let bestBlockHash = "0x1122334455667788112233445566778811223344556677881122334455667788"
 
-    func testClaimablePublishedFromPositionsState() throws {
-        let positions = [
-            SubtensorStakingPallet.RootBasketPosition(
-                hotkey: firstHotkey,
-                owedShares: 100,
-                payout: BigUInt(128_709_394)
-            ),
-            SubtensorStakingPallet.RootBasketPosition(
-                hotkey: secondHotkey,
-                owedShares: 5,
-                payout: BigUInt(6168)
-            )
+    func testClaimablePublishedFromClaimPreviews() throws {
+        let previews = [
+            Self.claimPreview(hotkey: firstHotkey, accrued: 97_053_363, redeemable: 95_470_988, forfeited: 1_582_363),
+            Self.claimPreview(hotkey: secondHotkey, accrued: 820_106, redeemable: 5260, forfeited: 814_786)
         ]
 
         let context = try makeContext()
 
-        stubBasketCalls(context.apiFactory, owed: BigUInt(128_715_562), positions: positions)
+        stubClaimPreviews(context.apiFactory, previews: previews)
 
         context.positionsService.setup()
         context.claimableService.setup()
@@ -45,14 +37,29 @@ final class SubtensorRootClaimableServiceTests: XCTestCase {
 
         XCTAssertEqual(
             received,
-            SubtensorRootClaimable(owed: BigUInt(128_715_562), positions: positions)
+            SubtensorRootClaimable(
+                previews: [
+                    SubtensorRootClaimPreview(
+                        hotkey: firstHotkey,
+                        accrued: 97_053_363,
+                        redeemable: 95_470_988,
+                        forfeitedEstimate: 1_582_363
+                    ),
+                    SubtensorRootClaimPreview(
+                        hotkey: secondHotkey,
+                        accrued: 820_106,
+                        redeemable: 5260,
+                        forfeitedEstimate: 814_786
+                    )
+                ]
+            )
         )
     }
 
-    func testBasketCallsPinnedToFetchedBlockHash() throws {
+    func testClaimPreviewsPinnedToFetchedBlockHash() throws {
         let context = try makeContext()
 
-        stubBasketCalls(context.apiFactory, owed: 0, positions: [])
+        stubClaimPreviews(context.apiFactory, previews: [])
 
         context.positionsService.setup()
         context.claimableService.setup()
@@ -67,26 +74,23 @@ final class SubtensorRootClaimableServiceTests: XCTestCase {
 
         wait(for: [claimableExpectation], timeout: 10)
 
-        let owedHashCaptor = ArgumentCaptor<BlockHash?>()
-        let positionsHashCaptor = ArgumentCaptor<BlockHash?>()
+        let blockHashCaptor = ArgumentCaptor<BlockHash?>()
 
-        verify(context.apiFactory, times(1)).createRootBasketOwedWrapper(
-            for: any(),
-            blockHash: owedHashCaptor.capture()
-        )
-        verify(context.apiFactory, times(1)).createRootBasketPositionsWrapper(
-            for: any(),
-            blockHash: positionsHashCaptor.capture()
+        verify(context.apiFactory, times(1)).createRootClaimPreviewsWrapper(
+            coldkey: equal(to: coldkey),
+            blockHash: blockHashCaptor.capture()
         )
 
-        XCTAssertEqual(owedHashCaptor.value, bestBlockHash)
-        XCTAssertEqual(positionsHashCaptor.value, bestBlockHash)
+        XCTAssertEqual(blockHashCaptor.value, bestBlockHash)
     }
 
     func testClaimableRefreshedOnPositionsChange() throws {
         let context = try makeContext()
 
-        stubBasketCalls(context.apiFactory, owed: BigUInt(1000), positions: [])
+        stubClaimPreviews(
+            context.apiFactory,
+            previews: [Self.claimPreview(hotkey: firstHotkey, accrued: 1000, redeemable: 1000, forfeited: 0)]
+        )
 
         context.positionsService.setup()
         context.claimableService.setup()
@@ -101,7 +105,9 @@ final class SubtensorRootClaimableServiceTests: XCTestCase {
             claimablesExpectation.fulfill()
 
             if received.count == 1 {
-                self.stubBasketCalls(context.apiFactory, owed: BigUInt(2000), positions: [])
+                let preview = Self.claimPreview(hotkey: self.firstHotkey, accrued: 2000, redeemable: 1900, forfeited: 100)
+
+                self.stubClaimPreviews(context.apiFactory, previews: [preview])
                 self.stubPositionsFetch(context.fetchFactory, stake: 5_000_000_000)
                 context.positionsService.refresh()
             }
@@ -111,23 +117,66 @@ final class SubtensorRootClaimableServiceTests: XCTestCase {
 
         wait(for: [claimablesExpectation], timeout: 10)
 
-        XCTAssertEqual(received.last??.owed, BigUInt(2000))
+        XCTAssertEqual(received.last??.redeemable(for: firstHotkey), BigUInt(1900))
     }
 
-    func testPayoutForHotkey() {
+    func testRedeemableForHotkey() {
         let claimable = SubtensorRootClaimable(
-            owed: BigUInt(1500),
-            positions: [
-                SubtensorStakingPallet.RootBasketPosition(
+            previews: [
+                SubtensorRootClaimPreview(
                     hotkey: firstHotkey,
-                    owedShares: 10,
-                    payout: BigUInt(1500)
+                    accrued: 820_106,
+                    redeemable: 5260,
+                    forfeitedEstimate: 814_786
                 )
             ]
         )
 
-        XCTAssertEqual(claimable.payout(for: firstHotkey), BigUInt(1500))
-        XCTAssertEqual(claimable.payout(for: secondHotkey), 0)
+        XCTAssertEqual(claimable.redeemable(for: firstHotkey), BigUInt(5260))
+        XCTAssertEqual(claimable.redeemable(for: secondHotkey), 0)
+    }
+
+    func testThrottleAfterACompletedFetchRemovesThePositionsObserver() {
+        let positionsService = MockSubtensorPositionsSyncServiceProtocol()
+        let apiFactory = MockSubtensorApiOperationFactoryProtocol()
+
+        stubClaimPreviews(apiFactory, previews: [])
+
+        let state = Multistaking.SubtensorStakingState(positions: [], prices: [:])
+
+        stub(positionsService) { stub in
+            when(
+                stub.add(observer: any(), sendStateOnSubscription: any(), queue: any(), closure: any())
+            ).then { _, _, queue, closure in
+                (queue ?? .global()).async {
+                    closure(nil, state)
+                }
+            }
+            when(stub.remove(observer: any())).thenDoNothing()
+        }
+
+        let claimableService = SubtensorRootClaimableService(
+            coldkey: coldkey,
+            positionsSyncService: positionsService,
+            operationFactory: apiFactory,
+            operationQueue: OperationQueue()
+        )
+
+        let claimableExpectation = expectation(description: "claimable published")
+
+        claimableService.add(observer: self, sendStateOnSubscription: false, queue: .main) { _, _ in
+            claimableExpectation.fulfill()
+        }
+
+        claimableService.setup()
+
+        wait(for: [claimableExpectation], timeout: 10)
+
+        clearInvocations(positionsService)
+
+        claimableService.throttle()
+
+        verify(positionsService, times(1)).remove(observer: any())
     }
 
     private struct Context {
@@ -198,21 +247,37 @@ final class SubtensorRootClaimableServiceTests: XCTestCase {
         }
     }
 
-    private func stubBasketCalls(
+    private func stubClaimPreviews(
         _ apiFactory: MockSubtensorApiOperationFactoryProtocol,
-        owed: Balance,
-        positions: [SubtensorStakingPallet.RootBasketPosition]
+        previews: [SubtensorStakingPallet.BasketClaimPreview]
     ) {
         stub(apiFactory) { stub in
             when(stub.createBestBlockHashWrapper()).then {
                 CompoundOperationWrapper.createWithResult(self.bestBlockHash)
             }
-            when(stub.createRootBasketOwedWrapper(for: any(), blockHash: any())).then { _, _ in
-                CompoundOperationWrapper.createWithResult(owed)
-            }
-            when(stub.createRootBasketPositionsWrapper(for: any(), blockHash: any())).then { _, _ in
-                CompoundOperationWrapper.createWithResult(positions)
+            when(stub.createRootClaimPreviewsWrapper(coldkey: any(), blockHash: any())).then { _, _ in
+                CompoundOperationWrapper.createWithResult(previews)
             }
         }
+    }
+
+    private static func claimPreview(
+        hotkey: AccountId,
+        accrued: Balance,
+        redeemable: Balance,
+        forfeited: Balance
+    ) -> SubtensorStakingPallet.BasketClaimPreview {
+        SubtensorStakingPallet.BasketClaimPreview(
+            hotkey: hotkey,
+            owedShares: 1_000_000,
+            accruedTao: accrued,
+            redeemableTao: redeemable,
+            forfeitedTaoEst: forfeited,
+            rows: 120,
+            rowsToSell: 20,
+            dustRows: 100,
+            swept: 0,
+            flushedCredits: 3
+        )
     }
 }

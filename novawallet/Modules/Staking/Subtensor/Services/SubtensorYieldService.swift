@@ -29,23 +29,6 @@ final class SubtensorYieldService {
 }
 
 private extension SubtensorYieldService {
-    static func stamp(from component: BittensorApi.AvailableComponent) -> SubtensorBackendStamp {
-        SubtensorBackendStamp(
-            asOf: component.asOf,
-            freshness: component.freshness == .stale ? .stale : .fresh
-        )
-    }
-
-    static func aggregate(_ stamps: [SubtensorBackendStamp]) -> SubtensorBackendStamp? {
-        guard let oldest = stamps.min(by: { $0.asOf < $1.asOf }) else {
-            return nil
-        }
-
-        let isStale = stamps.contains { $0.freshness == .stale }
-
-        return SubtensorBackendStamp(asOf: oldest.asOf, freshness: isStale ? .stale : .fresh)
-    }
-
     static func perU16Take(fromFraction take: Decimal) -> UInt16? {
         guard take >= 0, take <= 1 else {
             return nil
@@ -79,9 +62,9 @@ private extension SubtensorYieldService {
         pages: BittensorApiPages<BittensorApi.AlphaYieldCollection>,
         logger: LoggerProtocol
     ) throws -> SubtensorAlphaYields {
-        let pageStamps = pages.pages.map { stamp(from: $0.value.meta.components.alphaYield) }
+        let pageStamps = pages.pages.map { SubtensorBackendStamp(component: $0.value.meta.components.alphaYield) }
 
-        guard let aggregateStamp = aggregate(pageStamps) else {
+        guard let aggregateStamp = SubtensorBackendStamp.aggregate(pageStamps) else {
             throw SubtensorYieldServiceError.missingYieldPage
         }
 

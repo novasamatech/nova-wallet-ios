@@ -213,7 +213,7 @@ private extension SubtensorUnstakeSetupPresenter {
             return nil
         }
 
-        return claimable?.payout(for: hotkey)
+        return claimable?.redeemable(for: hotkey)
     }
 
     func provideAmountInputViewModel() {

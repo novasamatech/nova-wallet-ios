@@ -134,7 +134,16 @@ final class SubtensorStakingStateMachineTests: XCTestCase {
 
         machine.state.process(positionsState: makeStakingState(positions: [makePosition()]))
 
-        let claimable = SubtensorRootClaimable(owed: 42, positions: [])
+        let claimable = SubtensorRootClaimable(
+            previews: [
+                SubtensorRootClaimPreview(
+                    hotkey: Data(repeating: 3, count: 32),
+                    accrued: 42,
+                    redeemable: 42,
+                    forfeitedEstimate: 0
+                )
+            ]
+        )
         machine.state.process(claimable: claimable)
 
         let stakedState = machine.state as? SubtensorStakingStakedState

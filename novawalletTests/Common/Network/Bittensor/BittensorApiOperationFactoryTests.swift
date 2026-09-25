@@ -190,7 +190,11 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
 
         XCTAssertEqual(try first.targetOperation.extractNoCancellableResultData().requestId, "req-shared")
         XCTAssertEqual(try second.targetOperation.extractNoCancellableResultData().requestId, "req-shared")
-        XCTAssertNil(cancelled.targetOperation.result)
+        XCTAssertThrowsError(try cancelled.targetOperation.extractNoCancellableResultData()) { error in
+            guard case .parentOperationCancelled = error as? BaseOperationError else {
+                return XCTFail("Unexpected error: \(error)")
+            }
+        }
         verify(transport, times(1)).createResponseWrapper(for: any())
     }
 

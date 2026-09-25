@@ -11,18 +11,17 @@ final class SubtensorClaimRewardsStateTests: XCTestCase {
         payouts: [(Data, BigUInt)],
         threshold: BigUInt
     ) -> SubtensorClaimRewardsState {
-        let positions = payouts.map { hotkey, payout in
-            SubtensorStakingPallet.RootBasketPosition(
+        let previews = payouts.map { hotkey, payout in
+            SubtensorRootClaimPreview(
                 hotkey: hotkey,
-                owedShares: 1,
-                payout: payout
+                accrued: payout,
+                redeemable: payout,
+                forfeitedEstimate: 0
             )
         }
 
-        let owed = payouts.reduce(BigUInt.zero) { $0 + $1.1 }
-
         return SubtensorClaimRewardsState(
-            claimable: SubtensorRootClaimable(owed: owed, positions: positions),
+            claimable: SubtensorRootClaimable(previews: previews),
             threshold: threshold
         )
     }

@@ -3,9 +3,14 @@ import Operation_iOS
 
 final class SubtensorHistoryFiltersProvider {
     let chainAsset: ChainAsset
+    let novaFeeBeneficiary: AccountId?
 
-    init(chainAsset: ChainAsset) {
+    init(
+        chainAsset: ChainAsset,
+        novaFeeBeneficiary: AccountId? = SubtensorNovaFeeCalculator.defaultBeneficiary
+    ) {
         self.chainAsset = chainAsset
+        self.novaFeeBeneficiary = novaFeeBeneficiary
     }
 }
 
@@ -25,6 +30,16 @@ extension SubtensorHistoryFiltersProvider: TransactionHistoryFilterProviderProto
             chainAsset: chainAsset
         )
 
-        return .createWithResult([filter])
+        guard let novaFeeBeneficiary else {
+            return .createWithResult([filter])
+        }
+
+        let novaFeeFilter = TransactionHistoryTransfersFilter(
+            ignoredSenders: [],
+            ignoredRecipients: [novaFeeBeneficiary],
+            chainAsset: chainAsset
+        )
+
+        return .createWithResult([filter, novaFeeFilter])
     }
 }

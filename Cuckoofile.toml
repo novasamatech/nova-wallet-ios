@@ -172,6 +172,7 @@ sources = [
     "novawallet/Modules/Staking/Subtensor/Services/SubtensorEarnSettingsProtocol.swift",
     "novawallet/Modules/Staking/Subtensor/Services/SubtensorStakingOperationServiceProtocol.swift",
     "novawallet/Common/Network/Bittensor/Transport/BittensorAttestationHolder.swift",
+    "novawallet/Common/Network/Coingecko/CoingeckoOperationFactory.swift",
     "novawallet/Common/GlobalConfig/GlobalConfigProvider.swift",
     "novawallet/Common/Logger/Logger.swift",
 ]

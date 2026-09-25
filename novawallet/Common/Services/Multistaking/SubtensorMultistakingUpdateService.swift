@@ -8,6 +8,11 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         let netuid: UInt16
     }
 
+    struct FetchResult {
+        let state: Multistaking.SubtensorStakingState
+        let maxApy: Decimal?
+    }
+
     let accountId: AccountId
     let walletId: MetaAccountModel.Id
     let chainAsset: ChainAsset
@@ -17,6 +22,8 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     let dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemSubtensorPart>
     let stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol
     let cacheRepository: AnyDataProviderRepository<ChainStorageItem>
+    let earnConfigProvider: SubtensorEarnConfigProviderProtocol?
+    let eventCenter: EventCenterProtocol
     let workingQueue: DispatchQueue
     let operationQueue: OperationQueue
 
@@ -39,7 +46,9 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         runtimeService: RuntimeCodingServiceProtocol,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
-        logger: LoggerProtocol
+        logger: LoggerProtocol,
+        earnConfigProvider: SubtensorEarnConfigProviderProtocol? = nil,
+        eventCenter: EventCenterProtocol = EventCenter.shared
     ) {
         self.walletId = walletId
         self.accountId = accountId
@@ -50,6 +59,8 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         self.cacheRepository = cacheRepository
         self.connection = connection
         self.runtimeService = runtimeService
+        self.earnConfigProvider = earnConfigProvider
+        self.eventCenter = eventCenter
         self.workingQueue = workingQueue
         self.operationQueue = operationQueue
 
@@ -59,6 +70,8 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     override func performSyncUp() {
         clearSubscriptions()
         fetchCallStore.cancel()
+
+        eventCenter.add(observer: self, dispatchIn: workingQueue)
 
         makeHotkeysSubscription(for: accountId, chainId: chainAsset.chain.chainId)
     }
@@ -71,6 +84,8 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     // throttle() skips stopSyncUp() when a fetch already completed, so the storage
     // subscriptions must be released here as well
     override func deactivate() {
+        eventCenter.remove(observer: self)
+
         fetchCallStore.cancel()
         clearSubscriptions()
     }
@@ -141,10 +156,33 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         }
     }
 
+    private func createFetchWrapper() -> CompoundOperationWrapper<FetchResult> {
+        let stateWrapper = stakeStateFetchFactory.createStateWrapper(for: accountId)
+        let configWrapper = earnConfigProvider?.createConfigWrapper()
+
+        let mergeOperation = ClosureOperation<FetchResult> {
+            let state = try stateWrapper.targetOperation.extractNoCancellableResultData()
+            let config = try? configWrapper?.targetOperation.extractNoCancellableResultData()
+
+            return FetchResult(state: state, maxApy: config?.headlineMaxAnnualRate)
+        }
+
+        mergeOperation.addDependency(stateWrapper.targetOperation)
+
+        if let configWrapper {
+            mergeOperation.addDependency(configWrapper.targetOperation)
+        }
+
+        return CompoundOperationWrapper(
+            targetOperation: mergeOperation,
+            dependencies: stateWrapper.allOperations + (configWrapper?.allOperations ?? [])
+        )
+    }
+
     private func performStateFetch() {
         fetchCallStore.cancel()
 
-        let wrapper = stakeStateFetchFactory.createStateWrapper(for: accountId)
+        let wrapper = createFetchWrapper()
 
         executeCancellable(
             wrapper: wrapper,
@@ -154,9 +192,9 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
             mutex: mutex
         ) { [weak self] result in
             switch result {
-            case let .success(state):
-                self?.updateAlphaTriggerSubscription(for: state)
-                self?.persistState(state)
+            case let .success(fetchResult):
+                self?.updateAlphaTriggerSubscription(for: fetchResult.state)
+                self?.persistState(fetchResult.state, maxApy: fetchResult.maxApy)
             case let .failure(error):
                 self?.logger.error("State fetch error: \(error)")
 
@@ -165,9 +203,6 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         }
     }
 
-    // Keys cover only current positions: a stake to a tracked hotkey on a new subnet moves neither
-    // StakingHotkeys nor a subscribed key; until the extrinsic-monitor trigger lands in the
-    // root-flows stage such a position surfaces only on the next tracked-key epoch movement
     private func updateAlphaTriggerSubscription(for state: Multistaking.SubtensorStakingState) {
         let newKeys = Set(
             state.positions.map { PositionKey(hotkey: $0.hotkey, netuid: $0.netuid) }
@@ -220,7 +255,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         alphaTriggerSubscription?.subscribe()
     }
 
-    private func persistState(_ state: Multistaking.SubtensorStakingState) {
+    private func persistState(_ state: Multistaking.SubtensorStakingState, maxApy: Decimal?) {
         logger.debug("Persisting state: \(state)")
 
         let stakingOption = Multistaking.OptionWithWallet(
@@ -230,7 +265,8 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
 
         let dashboardItem = Multistaking.DashboardItemSubtensorPart(
             stakingOption: stakingOption,
-            state: state
+            state: state,
+            maxApy: maxApy
         )
 
         let saveOperation = dashboardRepository.saveOperation({
@@ -259,5 +295,26 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
                 self?.completeImmediate(error)
             }
         }
+    }
+}
+
+extension SubtensorMultistakingUpdateService: EventVisitorProtocol {
+    func processSubtensorStakingChanged(event: SubtensorStakingChanged) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        guard
+            isActive,
+            event.accountId == accountId,
+            event.chainAssetId == chainAsset.chainAssetId else {
+            return
+        }
+
+        markSyncingImmediate()
+
+        performStateFetch()
     }
 }

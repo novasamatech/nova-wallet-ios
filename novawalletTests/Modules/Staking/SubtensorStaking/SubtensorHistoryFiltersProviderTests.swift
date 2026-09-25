@@ -28,8 +28,14 @@ final class SubtensorHistoryFiltersProviderTests: XCTestCase {
         return ChainAsset(chain: chain, asset: asset)
     }
 
-    private func fetchFilters(for chainAsset: ChainAsset) throws -> [TransactionHistoryLocalFilterProtocol] {
-        let wrapper = SubtensorHistoryFiltersProvider(chainAsset: chainAsset).createFiltersWrapper()
+    private func fetchFilters(
+        for chainAsset: ChainAsset,
+        novaFeeBeneficiary: AccountId? = nil
+    ) throws -> [TransactionHistoryLocalFilterProtocol] {
+        let wrapper = SubtensorHistoryFiltersProvider(
+            chainAsset: chainAsset,
+            novaFeeBeneficiary: novaFeeBeneficiary
+        ).createFiltersWrapper()
 
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
 
@@ -110,6 +116,21 @@ final class SubtensorHistoryFiltersProviderTests: XCTestCase {
         )
 
         XCTAssertFalse(filter.shouldDisplayOperation(model: unstakeTransfer))
+    }
+
+    func testNovaFeeTransferToBeneficiaryIsSuppressed() throws {
+        let chainAsset = makeChainAsset(stakings: [.subtensor])
+        let beneficiary = Data(repeating: 0xBB, count: 32)
+        let filters = try fetchFilters(for: chainAsset, novaFeeBeneficiary: beneficiary)
+
+        let novaFeeTransfer = try makeTransfer(
+            for: chainAsset,
+            sender: Data(repeating: 0x11, count: 32),
+            receiver: beneficiary,
+            callPath: .transferKeepAlive
+        )
+
+        XCTAssertFalse(TransactionHistoryAndPredicate(innerFilters: filters).shouldDisplayOperation(model: novaFeeTransfer))
     }
 
     func testFilterKeepsTransfersBetweenUserAccounts() throws {

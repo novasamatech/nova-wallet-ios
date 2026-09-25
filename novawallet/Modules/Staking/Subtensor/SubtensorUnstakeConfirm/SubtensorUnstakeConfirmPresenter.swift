@@ -266,7 +266,7 @@ private extension SubtensorUnstakeConfirmPresenter {
             balance: balance,
             fee: fee,
             preflight: preflight,
-            claimablePayout: claimable?.payout(for: model.unstakeModel.hotkey),
+            claimablePayout: claimable?.redeemable(for: model.unstakeModel.hotkey),
             currentBlock: currentBlock,
             blockTime: chainAsset.chain.defaultBlockTimeMillis ?? SubtensorStakingFlowConstants.blockTimeMillis,
             assetDisplayInfo: model.target.assetDisplayInfo(basedOn: chainAsset.assetDisplayInfo),

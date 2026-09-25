@@ -8,10 +8,6 @@ protocol SubtensorStakeStateFetchFactoryProtocol {
     ) -> CompoundOperationWrapper<Multistaking.SubtensorStakingState>
 }
 
-enum SubtensorStakeStateFetchFactoryError: Error {
-    case missingAlphaPrice(netuid: UInt16)
-}
-
 final class SubtensorStakeStateFetchFactory {
     let operationFactory: SubtensorApiOperationFactoryProtocol
     let operationQueue: OperationQueue
@@ -21,6 +17,88 @@ final class SubtensorStakeStateFetchFactory {
         self.operationQueue = operationQueue
     }
 
+    private static func heldNetuids(of stakeInfoList: [SubtensorStakingPallet.StakeInfo]) -> [UInt16] {
+        Array(Set(stakeInfoList.map(\.netuid))).sorted()
+    }
+
+    private static func createState(
+        coldkey: AccountId,
+        stakeInfoList: [SubtensorStakingPallet.StakeInfo],
+        subnetPrices: [SubtensorStakingPallet.SubnetPrice],
+        availabilityList: [SubtensorStakingPallet.ColdkeyStakeAvailability]
+    ) -> Multistaking.SubtensorStakingState {
+        let positions = stakeInfoList.map { stakeInfo in
+            SubtensorStakingPosition(
+                hotkey: stakeInfo.hotkey,
+                netuid: stakeInfo.netuid,
+                stakeAlpha: stakeInfo.stake,
+                hotkeyEmissionPerTempo: stakeInfo.emission,
+                totalHotkeyAlpha: nil,
+                isRegistered: stakeInfo.isRegistered
+            )
+        }
+
+        let prices = subnetPrices.reduce(into: [UInt16: BigUInt]()) { accum, subnetPrice in
+            accum[subnetPrice.netuid] = subnetPrice.price
+        }
+
+        let unpricedNetuids = positions.reduce(into: Set<UInt16>()) { accum, position in
+            guard position.netuid != SubtensorStakingPallet.rootNetuid else {
+                return
+            }
+
+            if (prices[position.netuid] ?? .zero) == .zero {
+                accum.insert(position.netuid)
+            }
+        }
+
+        let availability = (availabilityList.first { $0.coldkey == coldkey }?.subnets ?? []).reduce(
+            into: [UInt16: SubtensorStakingPallet.StakeAvailability]()
+        ) { accum, subnet in
+            accum[subnet.netuid] = subnet.availability
+        }
+
+        return Multistaking.SubtensorStakingState(
+            positions: positions,
+            prices: prices,
+            availability: availability,
+            unpricedNetuids: unpricedNetuids
+        )
+    }
+
+    private func createAvailabilityWrapper(
+        for coldkey: AccountId,
+        blockHash: BlockHash,
+        stakeInfoWrapper: CompoundOperationWrapper<[SubtensorStakingPallet.StakeInfo]>
+    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.ColdkeyStakeAvailability]> {
+        typealias Availability = [SubtensorStakingPallet.ColdkeyStakeAvailability]
+
+        let availabilityWrapper = OperationCombiningService<Availability>.compoundNonOptionalWrapper(
+            operationQueue: operationQueue
+        ) { [weak self] in
+            guard let self else {
+                throw BaseOperationError.parentOperationCancelled
+            }
+
+            let stakeInfoList = try stakeInfoWrapper.targetOperation.extractNoCancellableResultData()
+            let netuids = Self.heldNetuids(of: stakeInfoList)
+
+            guard !netuids.isEmpty else {
+                return .createWithResult([])
+            }
+
+            return operationFactory.createStakeAvailabilityWrapper(
+                for: [coldkey],
+                netuids: netuids,
+                blockHash: blockHash
+            )
+        }
+
+        availabilityWrapper.addDependency(wrapper: stakeInfoWrapper)
+
+        return availabilityWrapper
+    }
+
     private func createPinnedStateWrapper(
         for coldkey: AccountId,
         blockHash: BlockHash
@@ -28,40 +106,29 @@ final class SubtensorStakeStateFetchFactory {
         let stakeInfoWrapper = operationFactory.createStakeInfoWrapper(for: coldkey, blockHash: blockHash)
         let pricesWrapper = operationFactory.createAlphaPricesWrapper(at: blockHash)
 
+        let availabilityWrapper = createAvailabilityWrapper(
+            for: coldkey,
+            blockHash: blockHash,
+            stakeInfoWrapper: stakeInfoWrapper
+        )
+
         let mergeOperation = ClosureOperation<Multistaking.SubtensorStakingState> {
-            let stakeInfoList = try stakeInfoWrapper.targetOperation.extractNoCancellableResultData()
-            let subnetPrices = try pricesWrapper.targetOperation.extractNoCancellableResultData()
-
-            let positions = stakeInfoList.map { stakeInfo in
-                SubtensorStakingPosition(
-                    hotkey: stakeInfo.hotkey,
-                    netuid: stakeInfo.netuid,
-                    stakeAlpha: stakeInfo.stake,
-                    hotkeyEmissionPerTempo: stakeInfo.emission,
-                    totalHotkeyAlpha: nil,
-                    isRegistered: stakeInfo.isRegistered
-                )
-            }
-
-            let prices = subnetPrices.reduce(into: [UInt16: BigUInt]()) { accum, subnetPrice in
-                accum[subnetPrice.netuid] = subnetPrice.price
-            }
-
-            for position in positions where position.netuid != SubtensorStakingPallet.rootNetuid {
-                guard prices[position.netuid] != nil else {
-                    throw SubtensorStakeStateFetchFactoryError.missingAlphaPrice(netuid: position.netuid)
-                }
-            }
-
-            return Multistaking.SubtensorStakingState(positions: positions, prices: prices)
+            try Self.createState(
+                coldkey: coldkey,
+                stakeInfoList: stakeInfoWrapper.targetOperation.extractNoCancellableResultData(),
+                subnetPrices: pricesWrapper.targetOperation.extractNoCancellableResultData(),
+                availabilityList: availabilityWrapper.targetOperation.extractNoCancellableResultData()
+            )
         }
 
         mergeOperation.addDependency(stakeInfoWrapper.targetOperation)
         mergeOperation.addDependency(pricesWrapper.targetOperation)
+        mergeOperation.addDependency(availabilityWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: mergeOperation,
-            dependencies: stakeInfoWrapper.allOperations + pricesWrapper.allOperations
+            dependencies: stakeInfoWrapper.allOperations + pricesWrapper.allOperations +
+                availabilityWrapper.allOperations
         )
     }
 }
