@@ -15,6 +15,7 @@ enum SubtensorSlippageTolerance {
 enum SubtensorLimitPriceError: Error, Equatable {
     case zeroSpot
     case invalidTolerance
+    case zeroLimit
 }
 
 enum SubtensorLimitPriceCalculator {
@@ -52,6 +53,10 @@ enum SubtensorLimitPriceCalculator {
 
         // sell gate is strictly current > limit — cap at spot − 1 so an unmoved price executes
         let limit = min(ceiledLimit, spot - 1)
+
+        guard limit > 0 else {
+            throw SubtensorLimitPriceError.zeroLimit
+        }
 
         try SubtensorStakingPallet.ensureU64Amount(limit)
 

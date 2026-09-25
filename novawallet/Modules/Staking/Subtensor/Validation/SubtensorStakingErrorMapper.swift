@@ -17,6 +17,8 @@ enum SubtensorStakingSubmissionError: Error, Equatable {
     case rootClaimTooHeavy
     case safeModeActive
     case feeUnpayable
+    case notEnoughStakeToWithdraw
+    case tooManyStakingHotkeys
 }
 
 protocol SubtensorStakingErrorMapping {
@@ -25,6 +27,22 @@ protocol SubtensorStakingErrorMapping {
 
 final class SubtensorStakingErrorMapper {
     private static let poolInvalidTransactionCode = 1010
+    private static let poolCustomErrorPrefix = "Custom error: "
+    private static let coldkeySwapCustomCodes: Set<UInt8> = [0, 21]
+
+    private static func poolCustomErrorCode(from data: String?) -> UInt8? {
+        guard let data, data.hasPrefix(poolCustomErrorPrefix) else {
+            return nil
+        }
+
+        let code = data.dropFirst(poolCustomErrorPrefix.count)
+
+        guard !code.isEmpty, code.allSatisfy({ ("0" ... "9").contains($0) }) else {
+            return nil
+        }
+
+        return UInt8(code)
+    }
 
     private func map(moduleError: DispatchCallError.ModuleDisplayError) -> SubtensorStakingSubmissionError? {
         switch moduleError.moduleName {
@@ -42,8 +60,12 @@ final class SubtensorStakingErrorMapper {
     // swiftlint:disable:next cyclomatic_complexity
     private func mapSubtensorModule(errorName: String) -> SubtensorStakingSubmissionError? {
         switch errorName {
-        case "NotEnoughBalanceToStake":
+        case "NotEnoughBalanceToStake", "InsufficientTaoBalance":
             return .notEnoughBalanceToStake
+        case "NotEnoughStakeToWithdraw":
+            return .notEnoughStakeToWithdraw
+        case "TooManyStakingHotkeys":
+            return .tooManyStakingHotkeys
         case "StakeUnavailable":
             return .stakeUnavailable
         case "AmountTooLow":
@@ -62,7 +84,7 @@ final class SubtensorStakingErrorMapper {
             return .coldkeySwapInProgress
         case "RootStakeLocked":
             return .rootStakeLocked
-        case "BetaBasketSeedInProgress":
+        case "BetaBasketSeedInProgress", "BasketDepositPending":
             return .temporarilyUnavailable
         case "RootClaimTooHeavy":
             return .rootClaimTooHeavy
@@ -112,11 +134,21 @@ extension SubtensorStakingErrorMapper: SubtensorStakingErrorMapping {
             return SubtensorStakingSubmissionError.feeUnpayable
         }
 
+        if
+            let rpcError = error as? JSONRPCError,
+            rpcError.code == Self.poolInvalidTransactionCode,
+            let customCode = Self.poolCustomErrorCode(from: rpcError.data),
+            Self.coldkeySwapCustomCodes.contains(customCode) {
+            return SubtensorStakingSubmissionError.coldkeySwapInProgress
+        }
+
         return error
     }
 }
 
 extension SubtensorStakingSubmissionError: ErrorContentConvertible {
+    static let maxStakingHotkeys = 256
+
     // swiftlint:disable:next cyclomatic_complexity
     func toErrorContent(for locale: Locale?) -> ErrorContent {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
@@ -153,6 +185,10 @@ extension SubtensorStakingSubmissionError: ErrorContentConvertible {
             strings.stakingSubtensorSafeModeMessage()
         case .feeUnpayable:
             strings.stakingSubtensorErrorFeeUnpayable()
+        case .notEnoughStakeToWithdraw:
+            strings.commonNotEnoughBalanceMessage()
+        case .tooManyStakingHotkeys:
+            strings.parachainStakingFullMessage(String(Self.maxStakingHotkeys))
         }
 
         return ErrorContent(title: title, message: message)
