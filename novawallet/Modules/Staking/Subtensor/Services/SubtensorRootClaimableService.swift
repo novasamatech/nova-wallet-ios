@@ -3,11 +3,10 @@ import BigInt
 import Operation_iOS
 
 struct SubtensorRootClaimable: Equatable {
-    let owed: Balance
-    let positions: [SubtensorStakingPallet.RootBasketPosition]
+    let previews: [SubtensorRootClaimPreview]
 
-    func payout(for hotkey: AccountId) -> Balance {
-        positions.first { $0.hotkey == hotkey }?.payout ?? 0
+    func redeemable(for hotkey: AccountId) -> Balance {
+        previews.first { $0.hotkey == hotkey }?.redeemable ?? 0
     }
 }
 
@@ -65,7 +64,7 @@ final class SubtensorRootClaimableService: BaseSyncService {
                 self?.mutex.unlock()
             }
 
-            guard newState != nil else {
+            guard newState != nil, self?.isActive == true else {
                 return
             }
 
@@ -76,36 +75,39 @@ final class SubtensorRootClaimableService: BaseSyncService {
     override func stopSyncUp() {
         clearSubscriptionAndRequest()
     }
+
+    override func deactivate() {
+        clearSubscriptionAndRequest()
+    }
 }
 
 private extension SubtensorRootClaimableService {
     func createPinnedClaimableWrapper(
         at blockHash: BlockHash
     ) -> CompoundOperationWrapper<SubtensorRootClaimable> {
-        let owedWrapper = operationFactory.createRootBasketOwedWrapper(
-            for: coldkey,
+        let previewsWrapper = operationFactory.createRootClaimPreviewsWrapper(
+            coldkey: coldkey,
             blockHash: blockHash
         )
 
-        let positionsWrapper = operationFactory.createRootBasketPositionsWrapper(
-            for: coldkey,
-            blockHash: blockHash
-        )
+        let mappingOperation = ClosureOperation<SubtensorRootClaimable> {
+            let previews = try previewsWrapper.targetOperation.extractNoCancellableResultData()
 
-        let mergeOperation = ClosureOperation<SubtensorRootClaimable> {
-            let owed = try owedWrapper.targetOperation.extractNoCancellableResultData()
-            let positions = try positionsWrapper.targetOperation.extractNoCancellableResultData()
-
-            return SubtensorRootClaimable(owed: owed, positions: positions)
+            return SubtensorRootClaimable(
+                previews: previews.map { preview in
+                    SubtensorRootClaimPreview(
+                        hotkey: preview.hotkey,
+                        accrued: preview.accruedTao,
+                        redeemable: preview.redeemableTao,
+                        forfeitedEstimate: preview.forfeitedTaoEst
+                    )
+                }
+            )
         }
 
-        mergeOperation.addDependency(owedWrapper.targetOperation)
-        mergeOperation.addDependency(positionsWrapper.targetOperation)
+        mappingOperation.addDependency(previewsWrapper.targetOperation)
 
-        return CompoundOperationWrapper(
-            targetOperation: mergeOperation,
-            dependencies: owedWrapper.allOperations + positionsWrapper.allOperations
-        )
+        return previewsWrapper.insertingTail(operation: mappingOperation)
     }
 
     func updateClaimable() {

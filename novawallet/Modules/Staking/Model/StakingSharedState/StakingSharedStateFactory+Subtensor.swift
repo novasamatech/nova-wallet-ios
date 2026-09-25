@@ -6,6 +6,16 @@ extension StakingSharedStateFactory {
     func createSubtensorStaking(
         for stakingOption: Multistaking.ChainAssetOption
     ) throws -> SubtensorStakingSharedStateProtocol {
+        let chainId = stakingOption.chainAsset.chain.chainId
+
+        guard chainRegistry.getConnection(for: chainId) != nil else {
+            throw ChainRegistryError.connectionUnavailable
+        }
+
+        guard chainRegistry.getRuntimeProvider(for: chainId) != nil else {
+            throw ChainRegistryError.runtimeMetadaUnavailable
+        }
+
         let runtimeConnectionStore = ChainRegistryRuntimeConnectionStore(
             chainId: stakingOption.chainAsset.chain.chainId,
             chainRegistry: chainRegistry

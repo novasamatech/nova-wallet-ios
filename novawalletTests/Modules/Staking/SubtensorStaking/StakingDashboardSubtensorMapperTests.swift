@@ -36,6 +36,33 @@ final class StakingDashboardSubtensorMapperTests: XCTestCase {
         XCTAssertNil(item.state)
     }
 
+    func testPartWritesItsMaxApy() throws {
+        let repositoryFactory = MultistakingRepositoryFactory(storageFacade: SubstrateStorageTestFacade())
+
+        try saveSubtensorPart(
+            state: Self.stakingState(stakeAlpha: 57_816_438),
+            maxApy: Decimal(string: "0.40"),
+            walletId: walletId,
+            using: repositoryFactory
+        )
+
+        let item = try fetchDashboardItem(for: subtensorOption(), walletId: walletId, using: repositoryFactory)
+
+        XCTAssertEqual(item.maxApy, Decimal(string: "0.40"))
+    }
+
+    func testPartWithoutMaxApyClearsTheStoredValue() throws {
+        let repositoryFactory = MultistakingRepositoryFactory(storageFacade: SubstrateStorageTestFacade())
+        let state = Self.stakingState(stakeAlpha: 57_816_438)
+
+        try saveSubtensorPart(state: state, maxApy: Decimal(string: "0.40"), walletId: walletId, using: repositoryFactory)
+        try saveSubtensorPart(state: state, maxApy: nil, walletId: walletId, using: repositoryFactory)
+
+        let item = try fetchDashboardItem(for: subtensorOption(), walletId: walletId, using: repositoryFactory)
+
+        XCTAssertNil(item.maxApy)
+    }
+
     func testOffchainSyncOmittingSubtensorOptionKeepsOnchainRowWithoutApy() throws {
         let repositoryFactory = MultistakingRepositoryFactory(storageFacade: SubstrateStorageTestFacade())
         let operationQueue = OperationQueue()
@@ -173,12 +200,14 @@ final class StakingDashboardSubtensorMapperTests: XCTestCase {
 
     private func saveSubtensorPart(
         state: Multistaking.SubtensorStakingState,
+        maxApy: Decimal? = nil,
         walletId: MetaAccountModel.Id,
         using repositoryFactory: MultistakingRepositoryFactory
     ) throws {
         let part = Multistaking.DashboardItemSubtensorPart(
             stakingOption: Multistaking.OptionWithWallet(walletId: walletId, option: subtensorOption()),
-            state: state
+            state: state,
+            maxApy: maxApy
         )
 
         let repository = repositoryFactory.createSubtensorRepository()

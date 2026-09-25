@@ -258,12 +258,12 @@ final class SubtensorStkStateViewModelFactoryTests: XCTestCase {
         let state = makeStakedState(
             positions: [makePosition(hotkey: rootHotkey, netuid: 0, stake: 1_000_000_000)],
             claimable: SubtensorRootClaimable(
-                owed: 700_000,
-                positions: [
-                    SubtensorStakingPallet.RootBasketPosition(
+                previews: [
+                    SubtensorRootClaimPreview(
                         hotkey: rootHotkey,
-                        owedShares: 10,
-                        payout: 700_000
+                        accrued: 700_000,
+                        redeemable: 700_000,
+                        forfeitedEstimate: 0
                     )
                 ]
             )
@@ -285,12 +285,12 @@ final class SubtensorStkStateViewModelFactoryTests: XCTestCase {
         let state = makeStakedState(
             positions: [makePosition(hotkey: rootHotkey, netuid: 0, stake: 1_000_000_000)],
             claimable: SubtensorRootClaimable(
-                owed: 400_000,
-                positions: [
-                    SubtensorStakingPallet.RootBasketPosition(
+                previews: [
+                    SubtensorRootClaimPreview(
                         hotkey: rootHotkey,
-                        owedShares: 10,
-                        payout: 400_000
+                        accrued: 400_000,
+                        redeemable: 400_000,
+                        forfeitedEstimate: 0
                     )
                 ]
             )
@@ -312,17 +312,18 @@ final class SubtensorStkStateViewModelFactoryTests: XCTestCase {
         let state = makeStakedState(
             positions: [makePosition(hotkey: rootHotkey, netuid: 0, stake: 1_000_000_000)],
             claimable: SubtensorRootClaimable(
-                owed: 1_100_000,
-                positions: [
-                    SubtensorStakingPallet.RootBasketPosition(
+                previews: [
+                    SubtensorRootClaimPreview(
                         hotkey: rootHotkey,
-                        owedShares: 10,
-                        payout: 700_000
+                        accrued: 700_000,
+                        redeemable: 700_000,
+                        forfeitedEstimate: 0
                     ),
-                    SubtensorStakingPallet.RootBasketPosition(
+                    SubtensorRootClaimPreview(
                         hotkey: subnetHotkey,
-                        owedShares: 10,
-                        payout: 400_000
+                        accrued: 400_000,
+                        redeemable: 400_000,
+                        forfeitedEstimate: 0
                     )
                 ]
             )
@@ -343,7 +344,7 @@ final class SubtensorStkStateViewModelFactoryTests: XCTestCase {
     func testZeroClaimableDisablesClaimAction() {
         let state = makeStakedState(
             positions: [makePosition(hotkey: rootHotkey, netuid: 0, stake: 1_000_000_000)],
-            claimable: SubtensorRootClaimable(owed: 0, positions: [])
+            claimable: SubtensorRootClaimable(previews: [])
         )
 
         let reward = extractNominatorState(
@@ -483,12 +484,12 @@ final class SubtensorStkStateViewModelFactoryTests: XCTestCase {
         let state = makeStakedState(
             positions: [makePosition(hotkey: rootHotkey, netuid: 0, stake: 1_000_000_000)],
             claimable: SubtensorRootClaimable(
-                owed: 700_000,
-                positions: [
-                    SubtensorStakingPallet.RootBasketPosition(
+                previews: [
+                    SubtensorRootClaimPreview(
                         hotkey: rootHotkey,
-                        owedShares: 10,
-                        payout: 700_000
+                        accrued: 700_000,
+                        redeemable: 700_000,
+                        forfeitedEstimate: 0
                     )
                 ]
             )
@@ -512,12 +513,12 @@ final class SubtensorStkStateViewModelFactoryTests: XCTestCase {
         let state = makeStakedState(
             positions: [makePosition(hotkey: rootHotkey, netuid: 0, stake: 1_000_000_000)],
             claimable: SubtensorRootClaimable(
-                owed: 400_000,
-                positions: [
-                    SubtensorStakingPallet.RootBasketPosition(
+                previews: [
+                    SubtensorRootClaimPreview(
                         hotkey: rootHotkey,
-                        owedShares: 10,
-                        payout: 400_000
+                        accrued: 400_000,
+                        redeemable: 400_000,
+                        forfeitedEstimate: 0
                     )
                 ]
             )

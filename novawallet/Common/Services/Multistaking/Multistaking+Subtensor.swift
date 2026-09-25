@@ -29,27 +29,66 @@ extension Multistaking {
     struct SubtensorStakingState: Equatable {
         let positions: [SubtensorStakingPosition]
         let prices: [UInt16: BigUInt]
+        let availability: [UInt16: SubtensorStakingPallet.StakeAvailability]
+        let unpricedNetuids: Set<UInt16>
+
+        init(
+            positions: [SubtensorStakingPosition],
+            prices: [UInt16: BigUInt],
+            availability: [UInt16: SubtensorStakingPallet.StakeAvailability] = [:],
+            unpricedNetuids: Set<UInt16> = []
+        ) {
+            self.positions = positions
+            self.prices = prices
+            self.availability = availability
+            self.unpricedNetuids = unpricedNetuids
+        }
 
         var totalStakeInRao: BigUInt {
             positions.reduce(BigUInt.zero) { total, position in
-                guard position.netuid != SubtensorStakingPallet.rootNetuid else {
-                    return total + position.stakeAlpha
-                }
-
-                let price = prices[position.netuid] ?? .zero
-
-                return total + position.stakeAlpha * price / SubtensorStakingPallet.alphaPriceScale
+                total + (taoValue(of: position) ?? .zero)
             }
         }
 
         var hasActiveStaking: Bool {
             !positions.isEmpty
         }
+
+        func taoValue(of position: SubtensorStakingPosition) -> BigUInt? {
+            guard position.netuid != SubtensorStakingPallet.rootNetuid else {
+                return position.stakeAlpha
+            }
+
+            guard
+                !unpricedNetuids.contains(position.netuid),
+                let price = prices[position.netuid],
+                price > 0 else {
+                return nil
+            }
+
+            return position.stakeAlpha * price / SubtensorStakingPallet.alphaPriceScale
+        }
+
+        func byReplacing(positions: [SubtensorStakingPosition]) -> SubtensorStakingState {
+            SubtensorStakingState(
+                positions: positions,
+                prices: prices,
+                availability: availability,
+                unpricedNetuids: unpricedNetuids
+            )
+        }
     }
 
     struct DashboardItemSubtensorPart {
         let stakingOption: OptionWithWallet
         let state: SubtensorStakingState
+        let maxApy: Decimal?
+
+        init(stakingOption: OptionWithWallet, state: SubtensorStakingState, maxApy: Decimal? = nil) {
+            self.stakingOption = stakingOption
+            self.state = state
+            self.maxApy = maxApy
+        }
     }
 }
 

@@ -170,7 +170,7 @@ private extension SubtensorStakingPositionsSyncService {
             return position.byReplacing(totalHotkeyAlpha: hotkeyAlphaByPosition[key])
         }
 
-        return Multistaking.SubtensorStakingState(positions: positions, prices: state.prices)
+        return state.byReplacing(positions: positions)
     }
 
     func makeHotkeysSubscription(for accountId: AccountId) {

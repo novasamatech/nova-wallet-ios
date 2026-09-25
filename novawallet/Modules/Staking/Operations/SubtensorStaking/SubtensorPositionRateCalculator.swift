@@ -29,7 +29,8 @@ enum SubtensorPositionRateCalculator {
             return nil
         }
 
-        let numerator = hotkeyEmissionPerTempo * positionAlpha * blocksPerDay
+        let shareAlpha = min(positionAlpha, totalHotkeyAlpha)
+        let numerator = hotkeyEmissionPerTempo * shareAlpha * blocksPerDay
         let denominator = totalHotkeyAlpha * BigUInt(tempo)
 
         return numerator / denominator

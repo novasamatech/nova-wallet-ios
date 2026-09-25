@@ -5,8 +5,8 @@ struct SubtensorClaimRewardsState: Equatable {
     let claimable: SubtensorRootClaimable
     let threshold: Balance
 
-    var eligiblePositions: [SubtensorStakingPallet.RootBasketPosition] {
-        claimable.positions.filter { $0.payout > 0 && $0.payout >= threshold }
+    var eligiblePositions: [SubtensorRootClaimPreview] {
+        claimable.previews.filter { $0.redeemable > 0 && $0.redeemable >= threshold }
     }
 
     var eligibleHotkeys: [AccountId] {
@@ -14,13 +14,13 @@ struct SubtensorClaimRewardsState: Equatable {
     }
 
     var eligibleTotal: Balance {
-        eligiblePositions.reduce(Balance.zero) { $0 + $1.payout }
+        eligiblePositions.reduce(Balance.zero) { $0 + $1.redeemable }
     }
 
     var pendingTotal: Balance {
-        claimable.positions
-            .filter { $0.payout > 0 && $0.payout < threshold }
-            .reduce(Balance.zero) { $0 + $1.payout }
+        claimable.previews
+            .filter { $0.redeemable > 0 && $0.redeemable < threshold }
+            .reduce(Balance.zero) { $0 + $1.redeemable }
     }
 
     func totalFee(from singleClaimFee: ExtrinsicFeeProtocol) -> ExtrinsicFeeProtocol {
