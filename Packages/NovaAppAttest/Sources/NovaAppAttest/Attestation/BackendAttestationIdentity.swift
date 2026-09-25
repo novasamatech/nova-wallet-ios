@@ -3,6 +3,7 @@ import Keystore_iOS
 
 public final class BackendAttestationIdentity {
     private let settingsManager: SettingsManagerProtocol
+    private let storageKey: String
     private let mutex = NSLock()
 
     private var isCreationBlocked: Bool = false
@@ -19,8 +20,12 @@ public final class BackendAttestationIdentity {
         return currentConsentEpoch
     }
 
-    public init(settingsManager: SettingsManagerProtocol) {
+    public init(
+        settingsManager: SettingsManagerProtocol,
+        storageKey: String = AttestationSettingsKey.gatewayAttestationClientId
+    ) {
         self.settingsManager = settingsManager
+        self.storageKey = storageKey
     }
 }
 
@@ -34,7 +39,7 @@ extension BackendAttestationIdentity: BackendAttestationIdentityProtocol {
             mutex.unlock()
         }
 
-        if let existing = settingsManager.gatewayAttestationClientId {
+        if let existing = settingsManager.attestationClientId(for: storageKey) {
             return existing
         }
 
@@ -43,7 +48,7 @@ extension BackendAttestationIdentity: BackendAttestationIdentityProtocol {
         }
 
         let created = UUID().uuidString.lowercased()
-        settingsManager.gatewayAttestationClientId = created
+        settingsManager.setAttestationClientId(created, for: storageKey)
 
         return created
     }
@@ -55,7 +60,7 @@ extension BackendAttestationIdentity: BackendAttestationIdentityProtocol {
             mutex.unlock()
         }
 
-        return settingsManager.gatewayAttestationClientId
+        return settingsManager.attestationClientId(for: storageKey)
     }
 
     public func resetClientId(ifCurrent clientId: String) {
@@ -65,11 +70,11 @@ extension BackendAttestationIdentity: BackendAttestationIdentityProtocol {
             mutex.unlock()
         }
 
-        guard settingsManager.gatewayAttestationClientId == clientId else {
+        guard settingsManager.attestationClientId(for: storageKey) == clientId else {
             return
         }
 
-        settingsManager.gatewayAttestationClientId = nil
+        settingsManager.setAttestationClientId(nil, for: storageKey)
     }
 
     public func forgetClientId() {
@@ -79,7 +84,7 @@ extension BackendAttestationIdentity: BackendAttestationIdentityProtocol {
             mutex.unlock()
         }
 
-        settingsManager.gatewayAttestationClientId = nil
+        settingsManager.setAttestationClientId(nil, for: storageKey)
         isCreationBlocked = true
         currentConsentEpoch += 1
     }

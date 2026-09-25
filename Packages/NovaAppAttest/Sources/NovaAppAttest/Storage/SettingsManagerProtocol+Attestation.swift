@@ -4,20 +4,29 @@ import Keystore_iOS
 extension SettingsManagerProtocol {
     var gatewayAttestationClientId: String? {
         get {
-            string(for: AttestationSettingsKey.gatewayAttestationClientId)
+            attestationClientId(for: AttestationSettingsKey.gatewayAttestationClientId)
         }
 
         set {
-            if let newValue {
-                set(value: newValue, for: AttestationSettingsKey.gatewayAttestationClientId)
-            } else {
-                removeValue(for: AttestationSettingsKey.gatewayAttestationClientId)
-            }
+            setAttestationClientId(newValue, for: AttestationSettingsKey.gatewayAttestationClientId)
+        }
+    }
+
+    func attestationClientId(for storageKey: String) -> String? {
+        string(for: storageKey)
+    }
+
+    func setAttestationClientId(_ clientId: String?, for storageKey: String) {
+        if let clientId {
+            set(value: clientId, for: storageKey)
+        } else {
+            removeValue(for: storageKey)
         }
     }
 }
 
-enum AttestationSettingsKey {
+public enum AttestationSettingsKey {
     // Stable on-disk settings key: changing this string orphans stored values.
-    static let gatewayAttestationClientId = "gatewayAttestationClientId"
+    public static let gatewayAttestationClientId = "gatewayAttestationClientId"
+    public static let appAttestKeys = "appAttestKeys"
 }

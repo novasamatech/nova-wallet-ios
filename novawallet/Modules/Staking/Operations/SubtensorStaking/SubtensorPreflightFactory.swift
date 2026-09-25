@@ -16,6 +16,7 @@ struct SubtensorStakingPreflight: Equatable {
     let effectiveNominatorMinStake: Balance
     let rootClaimableThreshold: Balance
     let delegateTake: UInt16
+    var hotkeyOwner: AccountId?
 }
 
 extension SubtensorStakingPreflight {
@@ -63,7 +64,7 @@ final class SubtensorPreflightFactory {
 
 private extension SubtensorPreflightFactory {
     struct StorageReads {
-        let owner: CompoundOperationWrapper<[StorageResponse<JSON>]>
+        let owner: CompoundOperationWrapper<[StorageResponse<BytesCodable>]>
         let networksAdded: CompoundOperationWrapper<[StorageResponse<Bool>]>
         let subtokenEnabled: CompoundOperationWrapper<[StorageResponse<Bool>]>
         let swapAnnouncement: CompoundOperationWrapper<[StorageResponse<JSON>]>
@@ -183,8 +184,8 @@ private extension SubtensorPreflightFactory {
         availabilityWrapper: CompoundOperationWrapper<[SubtensorStakingPallet.ColdkeyStakeAvailability]>
     ) -> ClosureOperation<SubtensorStakingPreflight> {
         ClosureOperation<SubtensorStakingPreflight> {
-            let hotkeyExists = try reads.owner.targetOperation
-                .extractNoCancellableResultData().first?.data != nil
+            let ownerResponse = try reads.owner.targetOperation.extractNoCancellableResultData().first
+            let hotkeyExists = ownerResponse?.data != nil
 
             let networksAddedValue = try reads.networksAdded.targetOperation
                 .extractNoCancellableResultData().first?.value ?? false
@@ -226,8 +227,8 @@ private extension SubtensorPreflightFactory {
 
             return SubtensorStakingPreflight(
                 hotkeyExists: hotkeyExists,
-                subnetExists: netuid == SubtensorStakingPallet.rootNetuid || networksAddedValue,
-                subtokenEnabled: netuid == SubtensorStakingPallet.rootNetuid || subtokenValue,
+                subnetExists: networksAddedValue,
+                subtokenEnabled: subtokenValue,
                 hasColdkeySwapAnnouncement: hasAnnouncement,
                 isSafeModeActive: isSafeModeActive,
                 stakeAvailability: availability,
@@ -241,7 +242,8 @@ private extension SubtensorPreflightFactory {
                 rootClaimableThreshold: SubtensorStakingPreflight.rootClaimableThreshold(
                     fromBits: thresholdBits
                 ),
-                delegateTake: delegateTake
+                delegateTake: delegateTake,
+                hotkeyOwner: hotkeyExists ? ownerResponse?.value?.wrappedValue : nil
             )
         }
     }

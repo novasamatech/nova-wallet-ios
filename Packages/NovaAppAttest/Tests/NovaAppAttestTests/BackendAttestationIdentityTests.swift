@@ -36,4 +36,22 @@ final class BackendAttestationIdentityTests: XCTestCase {
         identity.allowCreation()
         XCTAssertNotEqual(identity.clientId(), first)
     }
+
+    func testIdentitiesWithDifferentStorageKeysDoNotShareClientId() throws {
+        let settings = InMemorySettingsManager()
+        let analytics = BackendAttestationIdentity(settingsManager: settings)
+        let bittensor = BackendAttestationIdentity(settingsManager: settings, storageKey: "bittensorAttestationClientId")
+
+        let analyticsClientId = try XCTUnwrap(analytics.clientId())
+        let bittensorClientId = try XCTUnwrap(bittensor.clientId())
+
+        XCTAssertNotEqual(analyticsClientId, bittensorClientId)
+        XCTAssertEqual(settings.gatewayAttestationClientId, analyticsClientId)
+        XCTAssertEqual(settings.string(for: "bittensorAttestationClientId"), bittensorClientId)
+
+        analytics.forgetClientId()
+
+        XCTAssertNil(analytics.existingClientId())
+        XCTAssertEqual(bittensor.existingClientId(), bittensorClientId)
+    }
 }

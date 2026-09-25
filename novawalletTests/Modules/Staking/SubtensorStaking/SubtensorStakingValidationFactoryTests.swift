@@ -173,8 +173,12 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
         verify(setup.presentable).presentHotkeyNotFound(any(), locale: any())
     }
 
-    func testSubnetStakingEnabledPassesOnRootWithoutSubtoken() {
+    func testSubnetStakingEnabledBlocksRootWithDisabledSubtoken() {
         let setup = makeSetup()
+
+        stub(setup.presentable) { stub in
+            when(stub.presentSubnetStakingDisabled(any(), locale: any())).thenDoNothing()
+        }
 
         let validator = setup.factory.subnetStakingEnabled(
             netuid: 0,
@@ -183,7 +187,9 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
             locale: locale
         )
 
-        assertCompleted(run(validator))
+        assertError(run(validator))
+
+        verify(setup.presentable).presentSubnetStakingDisabled(any(), locale: any())
     }
 
     func testSubnetStakingEnabledBlocksDisabledSubtoken() {

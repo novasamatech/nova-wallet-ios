@@ -159,6 +159,21 @@ sources = [
     "novawallet/Modules/Staking/Subtensor/SubtensorSubnetSelect/SubtensorSubnetSelectProtocols.swift",
     "novawallet/Modules/Staking/CollatorStaking/Setup/CollatorStakingSetupProtocols.swift",
     "novawallet/Modules/Swaps/Slippage/SwapSlippageProtocols.swift",
+    "novawallet/Common/Network/Bittensor/BittensorApiTransportProtocol.swift",
+    "novawallet/Common/Network/Bittensor/BittensorApiOperationFactoryProtocol.swift",
+    "novawallet/Modules/Staking/Operations/SubtensorStaking/SubtensorValidatorChainOperationFactoryProtocol.swift",
+    "novawallet/Modules/Staking/Operations/SubtensorStaking/SubtensorTradeQuoteFactoryProtocol.swift",
+    "novawallet/Modules/Staking/Subtensor/Services/SubtensorValidatorDirectoryServiceProtocol.swift",
+    "novawallet/Modules/Staking/Subtensor/Services/SubtensorYieldServiceProtocol.swift",
+    "novawallet/Modules/Staking/Subtensor/Services/SubtensorRecommendationServiceProtocol.swift",
+    "novawallet/Modules/Staking/Subtensor/Services/SubtensorDiscoveryServiceProtocol.swift",
+    "novawallet/Modules/Staking/Subtensor/Services/SubtensorPriceHistoryServiceProtocol.swift",
+    "novawallet/Modules/Staking/Subtensor/Services/SubtensorEarnConfigProviderProtocol.swift",
+    "novawallet/Modules/Staking/Subtensor/Services/SubtensorEarnSettingsProtocol.swift",
+    "novawallet/Modules/Staking/Subtensor/Services/SubtensorStakingOperationServiceProtocol.swift",
+    "novawallet/Common/Network/Bittensor/Transport/BittensorAttestationHolder.swift",
+    "novawallet/Common/GlobalConfig/GlobalConfigProvider.swift",
+    "novawallet/Common/Logger/Logger.swift",
 ]
 
 exclude = [

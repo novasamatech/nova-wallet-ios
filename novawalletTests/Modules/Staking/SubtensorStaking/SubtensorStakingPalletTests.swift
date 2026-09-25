@@ -12,7 +12,6 @@ final class SubtensorStakingPalletTests: XCTestCase {
             SubtensorStakingPallet.totalHotkeyAlphaPath,
             SubtensorStakingPallet.ownerPath,
             SubtensorStakingPallet.subtokenEnabledPath,
-            SubtensorStakingPallet.tokenSymbolPath,
             SubtensorStakingPallet.coldkeySwapAnnouncementsPath,
             SubtensorStakingPallet.taoWeightPath,
             SubtensorStakingPallet.rootStakeUnlockIntervalPath,

@@ -106,13 +106,15 @@ final class SubtensorLimitPriceTests: XCTestCase {
         XCTAssertEqual(limit, 99)
     }
 
-    func testSellLimitAtUnitSpotDegeneratesToZero() throws {
-        let limit = try SubtensorLimitPriceCalculator.sellLimit(
-            spot: 1,
-            tolerance: SubtensorSlippageTolerance.defaultTolerance
-        )
-
-        XCTAssertEqual(limit, 0)
+    func testSellLimitAtUnitSpotThrowsInsteadOfZero() {
+        XCTAssertThrowsError(
+            try SubtensorLimitPriceCalculator.sellLimit(
+                spot: 1,
+                tolerance: SubtensorSlippageTolerance.defaultTolerance
+            )
+        ) { error in
+            XCTAssertEqual(error as? SubtensorLimitPriceError, .zeroLimit)
+        }
     }
 
     func testBuyLimitOverflowingU64Throws() {

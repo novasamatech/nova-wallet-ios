@@ -26,10 +26,6 @@ extension SubtensorStakingPallet {
         StorageCodingPath(moduleName: name, itemName: "NetworksAdded")
     }
 
-    static var tokenSymbolPath: StorageCodingPath {
-        StorageCodingPath(moduleName: name, itemName: "TokenSymbol")
-    }
-
     static var coldkeySwapAnnouncementsPath: StorageCodingPath {
         StorageCodingPath(moduleName: name, itemName: "ColdkeySwapAnnouncements")
     }
@@ -65,6 +61,30 @@ extension SubtensorStakingPallet {
 
     static var safeModeEnteredUntilPath: StorageCodingPath {
         StorageCodingPath(moduleName: safeModePalletName, itemName: "EnteredUntil")
+    }
+
+    static var uidsPath: StorageCodingPath {
+        StorageCodingPath(moduleName: name, itemName: "Uids")
+    }
+
+    static var validatorPermitPath: StorageCodingPath {
+        StorageCodingPath(moduleName: name, itemName: "ValidatorPermit")
+    }
+
+    static var lastUpdatePath: StorageCodingPath {
+        StorageCodingPath(moduleName: name, itemName: "LastUpdate")
+    }
+
+    static var tempoPath: StorageCodingPath {
+        StorageCodingPath(moduleName: name, itemName: "Tempo")
+    }
+
+    static var activityCutoffFactorMilliPath: StorageCodingPath {
+        StorageCodingPath(moduleName: name, itemName: "ActivityCutoffFactorMilli")
+    }
+
+    static var identitiesV2Path: StorageCodingPath {
+        StorageCodingPath(moduleName: name, itemName: "IdentitiesV2")
     }
 
     static var initialMinStakePath: ConstantCodingPath {

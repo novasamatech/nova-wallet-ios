@@ -160,6 +160,55 @@ final class SubtensorStakingErrorMapperTests: XCTestCase {
         XCTAssertNotNil(mapped as? JSONRPCError)
     }
 
+    func testMapsNotEnoughStakeToWithdraw() {
+        let mapped = mapModuleError("SubtensorModule", "NotEnoughStakeToWithdraw")
+
+        XCTAssertEqual(mapped as? SubtensorStakingSubmissionError, .notEnoughStakeToWithdraw)
+    }
+
+    func testMapsTooManyStakingHotkeys() {
+        let mapped = mapModuleError("SubtensorModule", "TooManyStakingHotkeys")
+
+        XCTAssertEqual(mapped as? SubtensorStakingSubmissionError, .tooManyStakingHotkeys)
+    }
+
+    func testMapsInsufficientTaoBalanceToNotEnoughBalance() {
+        let mapped = mapModuleError("SubtensorModule", "InsufficientTaoBalance")
+
+        XCTAssertEqual(mapped as? SubtensorStakingSubmissionError, .notEnoughBalanceToStake)
+    }
+
+    func testMapsBasketDepositPendingToTemporarilyUnavailable() {
+        let mapped = mapModuleError("SubtensorModule", "BasketDepositPending")
+
+        XCTAssertEqual(mapped as? SubtensorStakingSubmissionError, .temporarilyUnavailable)
+    }
+
+    func testMapsPoolColdkeySwapAnnouncedCustomCode() throws {
+        let rpcError = try makeRpcError(code: 1010, data: "Custom error: 0")
+
+        let mapped = mapper.mapSubmission(error: rpcError)
+
+        XCTAssertEqual(mapped as? SubtensorStakingSubmissionError, .coldkeySwapInProgress)
+    }
+
+    func testMapsPoolColdkeySwapDisputedCustomCode() throws {
+        let rpcError = try makeRpcError(code: 1010, data: "Custom error: 21")
+
+        let mapped = mapper.mapSubmission(error: rpcError)
+
+        XCTAssertEqual(mapped as? SubtensorStakingSubmissionError, .coldkeySwapInProgress)
+    }
+
+    func testPoolRejectionWithOtherCustomCodePassesThrough() throws {
+        let rpcError = try makeRpcError(code: 1010, data: "Custom error: 210")
+
+        let mapped = mapper.mapSubmission(error: rpcError)
+
+        XCTAssertNil(mapped as? SubtensorStakingSubmissionError)
+        XCTAssertNotNil(mapped as? JSONRPCError)
+    }
+
     func testSafeModeContentUsesChainWideMessage() {
         let content = SubtensorStakingSubmissionError.safeModeActive.toErrorContent(for: locale())
 
