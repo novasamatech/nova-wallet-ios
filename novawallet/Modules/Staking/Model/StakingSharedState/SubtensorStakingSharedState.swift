@@ -58,6 +58,8 @@ final class SubtensorStakingSharedState {
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
     let logger: LoggerProtocol
+    let novaFeeCalculator: SubtensorNovaFeeCalculator
+    let positionsSyncServiceFactory: ((AccountId) -> SubtensorPositionsSyncServiceProtocol)?
 
     weak var sharedOperation: SharedOperationProtocol?
 
@@ -77,7 +79,9 @@ final class SubtensorStakingSharedState {
         eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
-        logger: LoggerProtocol
+        logger: LoggerProtocol,
+        novaFeeCalculator: SubtensorNovaFeeCalculator,
+        positionsSyncServiceFactory: ((AccountId) -> SubtensorPositionsSyncServiceProtocol)?
     ) {
         self.stakingOption = stakingOption
         self.chainRegistry = chainRegistry
@@ -92,6 +96,8 @@ final class SubtensorStakingSharedState {
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
         self.logger = logger
+        self.novaFeeCalculator = novaFeeCalculator
+        self.positionsSyncServiceFactory = positionsSyncServiceFactory
     }
 }
 
@@ -108,7 +114,7 @@ private extension SubtensorStakingSharedState {
             return nil
         }
 
-        let service = SubtensorStakingPositionsSyncService(
+        let service = positionsSyncServiceFactory?(accountId) ?? SubtensorStakingPositionsSyncService(
             accountId: accountId,
             stakeStateFetchFactory: stakeStateFetchFactory,
             connection: connection,
@@ -191,7 +197,8 @@ extension SubtensorStakingSharedState: SubtensorStakingSharedStateProtocol {
             runtimeProvider: runtimeProvider,
             positionsSyncService: positionsSyncService,
             sharedOperation: sharedOperation,
-            eventCenter: eventCenter
+            eventCenter: eventCenter,
+            feeCalculator: novaFeeCalculator
         )
     }
 }
