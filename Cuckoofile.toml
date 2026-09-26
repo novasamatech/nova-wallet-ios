@@ -151,6 +151,7 @@ sources = [
     "novawallet/Modules/Staking/Operations/SubtensorStaking/SubtensorPreflightFactory.swift",
     "novawallet/Modules/Staking/Operations/SubtensorStaking/SubtensorNetworkInfoFactory.swift",
     "novawallet/Modules/Staking/Operations/SubtensorStaking/SubtensorQuoteOperationFactory.swift",
+    "novawallet/Modules/Staking/Operations/SubtensorStaking/SubtensorRootHoldFactory.swift",
     "novawallet/Modules/Staking/Subtensor/SubtensorStakingBase/SubtensorStakingBaseProtocols.swift",
     "novawallet/Modules/Staking/Subtensor/SubtensorUnstakeSetup/SubtensorUnstakeSetupProtocols.swift",
     "novawallet/Modules/Staking/Subtensor/SubtensorStakingSetup/SubtensorStakingSetupProtocols.swift",

@@ -9,6 +9,17 @@ struct SubtensorStakingProcessServices {
     let isFixtureMode: Bool
 }
 
+struct SubtensorStakingChainServices {
+    let apiOperationFactory: SubtensorApiOperationFactoryProtocol
+    let subnetsService: SubtensorSubnetsServiceProtocol
+    let rewardCalculatorService: SubtensorRewardCalculatorServiceProtocol
+    let quoteOperationFactory: SubtensorQuoteOperationFactoryProtocol
+    let rootHoldFactory: SubtensorRootHoldFactoryProtocol
+    let positionsSyncServiceFactory: ((AccountId) -> SubtensorPositionsSyncServiceProtocol)?
+    let novaFeeCalculator: SubtensorNovaFeeCalculator
+    let settingsManager: SettingsManagerProtocol
+}
+
 extension SubtensorStakingProcessServices {
     static let sharedEarnConfigProvider: SubtensorEarnConfigProviderProtocol = SubtensorEarnConfigProvider(
         configURL: ApplicationConfig.shared.subtensorEarnConfigURL,
@@ -77,7 +88,8 @@ extension StakingSharedStateFactory {
 
     func createSubtensorStaking(
         for stakingOption: Multistaking.ChainAssetOption,
-        processServices: SubtensorStakingProcessServices
+        processServices: SubtensorStakingProcessServices,
+        chainServices: SubtensorStakingChainServices? = nil
     ) throws -> SubtensorStakingSharedStateProtocol {
         let chainId = stakingOption.chainAsset.chain.chainId
 
@@ -97,22 +109,51 @@ extension StakingSharedStateFactory {
         return createSubtensorSharedState(
             for: stakingOption,
             runtimeConnectionStore: runtimeConnectionStore,
-            processServices: processServices
+            processServices: processServices,
+            chainServices: chainServices ?? createChainServices(runtimeConnectionStore: runtimeConnectionStore)
+        )
+    }
+
+    private func createChainServices(
+        runtimeConnectionStore: RuntimeConnectionStoring
+    ) -> SubtensorStakingChainServices {
+        let apiOperationFactory = SubtensorApiOperationFactory(
+            runtimeConnectionStore: runtimeConnectionStore,
+            operationQueue: syncOperationQueue
+        )
+
+        let subnetsService = SubtensorSubnetsService(
+            operationFactory: apiOperationFactory,
+            operationQueue: syncOperationQueue,
+            logger: logger
+        )
+
+        return SubtensorStakingChainServices(
+            apiOperationFactory: apiOperationFactory,
+            subnetsService: subnetsService,
+            rewardCalculatorService: createRewardCalculatorService(
+                subnetsService: subnetsService,
+                runtimeConnectionStore: runtimeConnectionStore
+            ),
+            quoteOperationFactory: SubtensorQuoteOperationFactory(
+                operationFactory: apiOperationFactory,
+                operationQueue: syncOperationQueue
+            ),
+            rootHoldFactory: SubtensorRootHoldFactory(runtimeConnectionStore: runtimeConnectionStore),
+            positionsSyncServiceFactory: nil,
+            novaFeeCalculator: SubtensorNovaFeeCalculator(),
+            settingsManager: SettingsManager.shared
         )
     }
 
     private func createSubtensorSharedState(
         for stakingOption: Multistaking.ChainAssetOption,
         runtimeConnectionStore: RuntimeConnectionStoring,
-        processServices: SubtensorStakingProcessServices
+        processServices: SubtensorStakingProcessServices,
+        chainServices: SubtensorStakingChainServices
     ) -> SubtensorStakingSharedState {
-        let apiOperationFactory = SubtensorApiOperationFactory(
-            runtimeConnectionStore: runtimeConnectionStore,
-            operationQueue: syncOperationQueue
-        )
-
         let stakeStateFetchFactory = SubtensorStakeStateFetchFactory(
-            operationFactory: apiOperationFactory,
+            operationFactory: chainServices.apiOperationFactory,
             operationQueue: syncOperationQueue
         )
 
@@ -123,49 +164,38 @@ extension StakingSharedStateFactory {
             logger: logger
         )
 
-        let subnetsService = SubtensorSubnetsService(
-            operationFactory: apiOperationFactory,
-            operationQueue: syncOperationQueue,
-            logger: logger
-        )
-
-        let rewardCalculatorService = createRewardCalculatorService(
-            subnetsService: subnetsService,
-            runtimeConnectionStore: runtimeConnectionStore
-        )
-
         return SubtensorStakingSharedState(
             stakingOption: stakingOption,
             chainRegistry: chainRegistry,
             generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
-            subnetsService: subnetsService,
+            subnetsService: chainServices.subnetsService,
             delegatesService: createDelegatesService(
                 for: stakingOption,
                 runtimeConnectionStore: runtimeConnectionStore
             ),
-            rewardCalculatorService: rewardCalculatorService,
-            apiOperationFactory: apiOperationFactory,
+            rewardCalculatorService: chainServices.rewardCalculatorService,
+            apiOperationFactory: chainServices.apiOperationFactory,
             stakeStateFetchFactory: stakeStateFetchFactory,
             earnServices: createEarnServices(
                 for: stakingOption,
                 runtimeConnectionStore: runtimeConnectionStore,
-                apiOperationFactory: apiOperationFactory,
-                rewardCalculatorService: rewardCalculatorService,
-                processServices: processServices
+                processServices: processServices,
+                chainServices: chainServices
             ),
             eventCenter: eventCenter,
             operationQueue: syncOperationQueue,
             workingQueue: .global(),
-            logger: logger
+            logger: logger,
+            novaFeeCalculator: chainServices.novaFeeCalculator,
+            positionsSyncServiceFactory: chainServices.positionsSyncServiceFactory
         )
     }
 
     private func createEarnServices(
         for stakingOption: Multistaking.ChainAssetOption,
         runtimeConnectionStore: RuntimeConnectionStoring,
-        apiOperationFactory: SubtensorApiOperationFactoryProtocol,
-        rewardCalculatorService: SubtensorRewardCalculatorServiceProtocol,
-        processServices: SubtensorStakingProcessServices
+        processServices: SubtensorStakingProcessServices,
+        chainServices: SubtensorStakingChainServices
     ) -> SubtensorEarnServices {
         let validatorChainOperationFactory = processServices.createValidatorChainOperationFactory(
             runtimeConnectionStore: runtimeConnectionStore
@@ -173,7 +203,7 @@ extension StakingSharedStateFactory {
 
         let yieldService = SubtensorYieldService(
             apiOperationFactory: processServices.bittensorApiOperationFactory,
-            rewardCalculatorService: rewardCalculatorService,
+            rewardCalculatorService: chainServices.rewardCalculatorService,
             operationQueue: syncOperationQueue,
             logger: logger
         )
@@ -196,7 +226,7 @@ extension StakingSharedStateFactory {
 
         return SubtensorEarnServices(
             earnConfigProvider: processServices.earnConfigProvider,
-            earnSettings: SubtensorEarnSettings(settingsManager: SettingsManager.shared),
+            earnSettings: SubtensorEarnSettings(settingsManager: chainServices.settingsManager),
             validatorChainOperationFactory: validatorChainOperationFactory,
             yieldService: yieldService,
             recommendationService: recommendationService,
@@ -213,12 +243,10 @@ extension StakingSharedStateFactory {
                 earnConfigProvider: processServices.earnConfigProvider
             ),
             tradeQuoteFactory: SubtensorTradeQuoteFactory(
-                quoteFactory: SubtensorQuoteOperationFactory(
-                    operationFactory: apiOperationFactory,
-                    operationQueue: syncOperationQueue
-                )
+                quoteFactory: chainServices.quoteOperationFactory,
+                feeCalculator: chainServices.novaFeeCalculator
             ),
-            rootHoldFactory: SubtensorRootHoldFactory(runtimeConnectionStore: runtimeConnectionStore)
+            rootHoldFactory: chainServices.rootHoldFactory
         )
     }
 

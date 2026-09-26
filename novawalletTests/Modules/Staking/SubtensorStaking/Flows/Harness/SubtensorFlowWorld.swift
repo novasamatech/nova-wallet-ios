@@ -1,0 +1,200 @@
+import Foundation
+import Cuckoo
+import Keystore_iOS
+import NovaAppAttest
+import Operation_iOS
+import XCTest
+@testable import novawallet
+
+final class SubtensorFlowClock {
+    private let lock = NSLock()
+    private var current: TimeInterval
+
+    init(now: TimeInterval = 10000) {
+        current = now
+    }
+
+    var now: TimeInterval {
+        lock.lock()
+        defer { lock.unlock() }
+        return current
+    }
+
+    func advance(by interval: TimeInterval) {
+        lock.lock()
+        current += interval
+        lock.unlock()
+    }
+}
+
+final class SubtensorFlowWorld {
+    let clock: SubtensorFlowClock
+    let attestation: SubtensorFlowAttestation
+    let chainAsset: ChainAsset
+    let subnetsService: MockSubtensorSubnetsServiceProtocol
+    let rewardCalculatorService: MockSubtensorRewardCalculatorServiceProtocol
+    let quoteOperationFactory: MockSubtensorQuoteOperationFactoryProtocol
+    let rootHoldFactory: MockSubtensorRootHoldFactoryProtocol
+    let apiOperationFactory: MockSubtensorApiOperationFactoryProtocol
+    let positionsSyncService: MockSubtensorPositionsSyncServiceProtocol
+    let settingsManager: InMemorySettingsManager
+    let sharedState: SubtensorStakingSharedStateProtocol
+
+    private let factory: StakingSharedStateFactory
+    private let stakingOption: Multistaking.ChainAssetOption
+    private let processServices: SubtensorStakingProcessServices
+
+    init(novaFeeBeneficiary: AccountId? = SubtensorNovaFeeCalculator.defaultBeneficiary) throws {
+        let clock = SubtensorFlowClock()
+        let attestation = SubtensorFlowAttestation()
+        let chainAsset = SubtensorFlowChainWorld.chainAsset()
+        let stakingOption = Multistaking.ChainAssetOption(chainAsset: chainAsset, type: .subtensor)
+        let positionsSyncService = MockSubtensorPositionsSyncServiceProtocol()
+
+        self.clock = clock
+        self.attestation = attestation
+        self.chainAsset = chainAsset
+        self.positionsSyncService = positionsSyncService
+        subnetsService = MockSubtensorSubnetsServiceProtocol()
+        rewardCalculatorService = MockSubtensorRewardCalculatorServiceProtocol()
+        quoteOperationFactory = MockSubtensorQuoteOperationFactoryProtocol()
+        rootHoldFactory = MockSubtensorRootHoldFactoryProtocol()
+        apiOperationFactory = MockSubtensorApiOperationFactoryProtocol()
+        settingsManager = InMemorySettingsManager()
+
+        let transport = BittensorAttestedTransport(
+            holder: attestation.holder,
+            exchangeGate: BackendAttestationExchangeGate(operationQueue: OperationQueue()),
+            session: SubtensorFlowURLProtocol.makeSession(),
+            operationQueue: OperationQueue(),
+            timeProvider: { clock.now },
+            logger: Logger.shared
+        )
+
+        let cache = BittensorApiResponseCache(
+            operationQueue: OperationQueue(),
+            logger: Logger.shared,
+            timeProvider: { clock.now },
+            jitterProvider: { 0 }
+        )
+
+        let processServices = SubtensorStakingProcessServices(
+            bittensorApiOperationFactory: BittensorApiOperationFactory(
+                transport: transport,
+                cache: cache,
+                logger: Logger.shared
+            ),
+            earnConfigProvider: SubtensorEarnConfigProvider(
+                configURL: SubtensorFlowHost.earnConfig,
+                operationQueue: OperationQueue(),
+                logger: Logger.shared,
+                timeProvider: { clock.now }
+            ),
+            isFixtureMode: true
+        )
+
+        let chainServices = SubtensorStakingChainServices(
+            apiOperationFactory: apiOperationFactory,
+            subnetsService: subnetsService,
+            rewardCalculatorService: rewardCalculatorService,
+            quoteOperationFactory: quoteOperationFactory,
+            rootHoldFactory: rootHoldFactory,
+            positionsSyncServiceFactory: { _ in positionsSyncService },
+            novaFeeCalculator: SubtensorNovaFeeCalculator(beneficiary: novaFeeBeneficiary),
+            settingsManager: settingsManager
+        )
+
+        let factory = StakingSharedStateFactory(
+            storageFacade: SubstrateStorageTestFacade(),
+            chainRegistry: MockChainRegistryProtocol().applyDefault(for: [chainAsset.chain]),
+            delegatedAccountSyncService: nil,
+            eventCenter: EventCenter(),
+            syncOperationQueue: OperationQueue(),
+            repositoryOperationQueue: OperationQueue(),
+            applicationConfig: ApplicationConfig.shared,
+            logger: Logger.shared
+        )
+
+        self.factory = factory
+        self.stakingOption = stakingOption
+        self.processServices = processServices
+
+        sharedState = try factory.createSubtensorStaking(
+            for: stakingOption,
+            processServices: processServices,
+            chainServices: chainServices
+        )
+    }
+
+    var earnServices: SubtensorEarnServices {
+        sharedState.earnServices
+    }
+
+    func createProductionWiredTradeQuoteFactory() throws -> SubtensorTradeQuoteFactoryProtocol {
+        try factory.createSubtensorStaking(for: stakingOption, processServices: processServices)
+            .earnServices
+            .tradeQuoteFactory
+    }
+
+    func stubSubnets(_ info: SubtensorSubnetsInfo) {
+        stub(subnetsService) { stub in
+            when(stub.fetchSubnetsInfo(runningCompletionIn: any(), completion: any())).then { queue, completion in
+                queue.async {
+                    completion(.success(info))
+                }
+            }
+        }
+    }
+
+    func stubRootEngine(
+        grossRate: Decimal?,
+        netRates: [UInt16: Decimal]
+    ) -> MockSubtensorRewardCalculatorEngineProtocol {
+        let engine = MockSubtensorRewardCalculatorEngineProtocol()
+
+        stub(engine) { stub in
+            when(stub.isRootEmissionPaused.get).thenReturn(false)
+            when(stub.rootAnnualReturn()).thenReturn(grossRate)
+            when(stub.rootAnnualReturn(take: any())).then { take in
+                netRates[take]
+            }
+        }
+
+        stub(rewardCalculatorService) { stub in
+            when(stub.fetchEngine(runningCompletionIn: any(), completion: any())).then { queue, completion in
+                queue.async {
+                    completion(.success(engine))
+                }
+            }
+        }
+
+        return engine
+    }
+
+    func stubQuotes(_ quotes: [SubtensorQuote]) {
+        stub(quoteOperationFactory) { stub in
+            when(stub.createQuoteWrapper(for: any())).then { args in
+                guard let quote = quotes.first(where: { $0.args == args }) else {
+                    XCTFail("Unexpected chain quote \(args)")
+                    return .createWithError(SubtensorQuoteError.quoteUnavailable(netuid: args.netuid))
+                }
+
+                return .createWithResult(quote)
+            }
+        }
+    }
+
+    func createStakingOperationService(networkFee: Balance) throws -> SubtensorStakingOperationServiceProtocol {
+        try sharedState.createStakingOperationService(
+            for: SubtensorFlowChainWorld.coldkey,
+            extrinsicService: ExtrinsicServiceStub(
+                feeResult: .success(
+                    ExtrinsicFee(amount: networkFee, payer: nil, weight: .init(refTime: 0, proofSize: 0))
+                ),
+                submittedModelResult: .failure(BaseOperationError.parentOperationCancelled)
+            ),
+            extrinsicSubmitMonitor: ExtrinsicSubmitMonitorFactoryStub.dummy(),
+            signer: try DummySigner(cryptoType: .sr25519)
+        )
+    }
+}
