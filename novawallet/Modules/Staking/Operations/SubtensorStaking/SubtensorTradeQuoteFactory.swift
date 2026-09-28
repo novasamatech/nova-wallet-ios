@@ -30,6 +30,7 @@ private extension SubtensorTradeQuoteFactory {
 
     static func makeBuyQuote(
         from quote: SubtensorQuote,
+        grossTao: Balance,
         stakedTao: Balance,
         novaFee: SubtensorNovaFee?,
         tolerance: BigRational
@@ -42,8 +43,10 @@ private extension SubtensorTradeQuoteFactory {
 
         return SubtensorTradeQuote(
             quote: quote,
+            amountIn: grossTao,
             novaFee: novaFee,
             expectedOut: quote.expectedOut,
+            swapMinimumOut: minimumAlphaOut,
             minimumOut: minimumAlphaOut,
             limitPrice: limitPrice
         )
@@ -63,8 +66,10 @@ private extension SubtensorTradeQuoteFactory {
 
         return SubtensorTradeQuote(
             quote: quote,
+            amountIn: alpha,
             novaFee: novaFee,
             expectedOut: quote.expectedOut > feeAmount ? quote.expectedOut - feeAmount : 0,
+            swapMinimumOut: minimumTaoOut,
             minimumOut: minimumTaoOut > feeAmount ? minimumTaoOut - feeAmount : 0,
             limitPrice: limitPrice
         )
@@ -91,7 +96,13 @@ extension SubtensorTradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol {
             let mappingOperation = ClosureOperation<SubtensorTradeQuote> {
                 let quote = try quoteWrapper.targetOperation.extractNoCancellableResultData()
 
-                return try Self.makeBuyQuote(from: quote, stakedTao: stakedTao, novaFee: novaFee, tolerance: tolerance)
+                return try Self.makeBuyQuote(
+                    from: quote,
+                    grossTao: grossTao,
+                    stakedTao: stakedTao,
+                    novaFee: novaFee,
+                    tolerance: tolerance
+                )
             }
 
             mappingOperation.addDependency(quoteWrapper.targetOperation)

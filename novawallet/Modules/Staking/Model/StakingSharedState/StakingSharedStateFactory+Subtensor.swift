@@ -230,8 +230,10 @@ extension StakingSharedStateFactory {
             earnConfigProvider: processServices.earnConfigProvider,
             earnSettings: SubtensorEarnSettings(settingsManager: chainServices.settingsManager),
             validatorChainOperationFactory: validatorChainOperationFactory,
+            catalogueService: createCatalogueService(using: processServices),
             yieldService: yieldService,
             recommendationService: recommendationService,
+            rankingViewService: createRankingViewService(for: recommendationService),
             validatorDirectoryService: validatorDirectoryService,
             discoveryService: SubtensorDiscoveryService(
                 yieldService: yieldService,
@@ -250,6 +252,22 @@ extension StakingSharedStateFactory {
             ),
             rootHoldFactory: chainServices.rootHoldFactory
         )
+    }
+
+    private func createCatalogueService(
+        using processServices: SubtensorStakingProcessServices
+    ) -> SubtensorSubnetCatalogueServiceProtocol {
+        SubtensorSubnetCatalogueService(
+            apiOperationFactory: processServices.bittensorApiOperationFactory,
+            operationQueue: syncOperationQueue,
+            logger: logger
+        )
+    }
+
+    private func createRankingViewService(
+        for recommendationService: SubtensorRecommendationServiceProtocol
+    ) -> SubtensorRankingViewServiceProtocol {
+        SubtensorRankingViewService(recommendationService: recommendationService, logger: logger)
     }
 
     private func createPriceHistoryService(

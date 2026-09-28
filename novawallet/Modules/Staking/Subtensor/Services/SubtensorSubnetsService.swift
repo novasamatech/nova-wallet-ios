@@ -15,6 +15,12 @@ protocol SubtensorSubnetsServiceProtocol: AnyObject {
         runningCompletionIn queue: DispatchQueue,
         completion: @escaping (Result<SubtensorSubnetsInfo, Error>) -> Void
     )
+
+    func fetchSubnetsInfo(
+        forcingRefresh: Bool,
+        runningCompletionIn queue: DispatchQueue,
+        completion: @escaping (Result<SubtensorSubnetsInfo, Error>) -> Void
+    )
 }
 
 final class SubtensorSubnetsService: SubtensorSessionCachingService<SubtensorSubnetsInfo> {
@@ -90,6 +96,14 @@ extension SubtensorSubnetsService: SubtensorSubnetsServiceProtocol {
         runningCompletionIn queue: DispatchQueue,
         completion: @escaping (Result<SubtensorSubnetsInfo, Error>) -> Void
     ) {
-        fetch(runningCompletionIn: queue, completion: completion)
+        fetchSubnetsInfo(forcingRefresh: false, runningCompletionIn: queue, completion: completion)
+    }
+
+    func fetchSubnetsInfo(
+        forcingRefresh: Bool,
+        runningCompletionIn queue: DispatchQueue,
+        completion: @escaping (Result<SubtensorSubnetsInfo, Error>) -> Void
+    ) {
+        fetch(forcingRefresh: forcingRefresh, runningCompletionIn: queue, completion: completion)
     }
 }

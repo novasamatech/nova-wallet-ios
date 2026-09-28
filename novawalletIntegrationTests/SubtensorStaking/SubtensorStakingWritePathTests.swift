@@ -129,7 +129,7 @@ final class SubtensorStakingWritePathTests: XCTestCase {
                     hotkey: staker.hotkey,
                     netuid: SubtensorStakingPallet.rootNetuid,
                     amount: 0,
-                    isFullUnstake: true
+                    exitHotkeys: [staker.hotkey]
                 )
             )
 

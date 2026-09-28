@@ -21,8 +21,12 @@ final class SubtensorUnstakeConfirmPresenter {
     private(set) var positionsState: Multistaking.SubtensorStakingState?
     private(set) var claimable: SubtensorRootClaimable?
     private(set) var preflight: SubtensorStakingPreflight?
+    private(set) var existentialDeposit: Balance?
     private(set) var currentBlock: BlockNumber?
     private(set) var quoteFlow = SubtensorQuoteFlowModel()
+    private(set) var acknowledgedQuote: SubtensorTradeQuote?
+    private(set) var tradesUnavailable = false
+    private(set) var positionsSyncFailed = false
 
     private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
     private lazy var displayAddressViewModelFactory = DisplayAddressViewModelFactory()
@@ -44,6 +48,7 @@ final class SubtensorUnstakeConfirmPresenter {
         self.chainAsset = chainAsset
         self.selectedAccount = selectedAccount
         self.model = model
+        acknowledgedQuote = model.acknowledgedQuote
         self.dataValidationFactory = dataValidationFactory
         self.balanceViewModelFactory = balanceViewModelFactory
         self.quoteViewModelFactory = quoteViewModelFactory
@@ -69,69 +74,212 @@ private extension SubtensorUnstakeConfirmPresenter {
         view as? SubtensorUnstakeConfirmViewProtocol
     }
 
-    func quoteArgs() -> SubtensorQuoteArgs? {
-        SubtensorQuoteFlowModel.unstakeArgs(for: model.target, amount: unstakingAmount())
+    var tolerance: BigRational {
+        model.tolerance ?? SubtensorSlippageTolerance.defaultTolerance
     }
 
-    /// the submitted limit follows the freshest spot so the tolerance protects against
-    /// movement after the last quote, not after the setup screen
-    func currentUnstakeModel() -> SubtensorUnstakeModel {
-        guard !model.target.isRoot else {
-            return model.unstakeModel
+    func quoteRequest() -> SubtensorTradeQuoteRequest? {
+        let amount = unstakingAmount()
+
+        guard case let .subnet(info, _) = model.target, amount > 0 else {
+            return nil
         }
 
-        let spot = quoteFlow.freshQuote?.spotPrice ?? model.quote?.spotPrice ?? model.target.listedPrice
+        return .sell(netuid: info.netuid, alpha: amount, tolerance: tolerance)
+    }
 
-        let tolerance = model.slippage ?? SubtensorSlippageTolerance.defaultTolerance
+    func feeOperation() -> SubtensorStakingOperation? {
+        let unstakeModel = model.unstakeModel
 
-        let limitPrice = model.target.unstakeLimitPrice(spot: spot, tolerance: tolerance)
-            ?? model.unstakeModel.limitPrice
+        guard !model.target.isRoot else {
+            if let exitHotkeys = unstakeModel.exitHotkeys {
+                return .rootUnstakeAll(hotkeys: exitHotkeys)
+            }
 
-        return SubtensorUnstakeModel(
-            hotkey: model.unstakeModel.hotkey,
-            netuid: model.unstakeModel.netuid,
-            amount: model.unstakeModel.amount,
-            isFullUnstake: model.unstakeModel.isFullUnstake,
-            limitPrice: limitPrice
+            return .rootUnstake(hotkey: unstakeModel.hotkey, amount: unstakeModel.amount)
+        }
+
+        let limitPrice = acknowledgedQuote?.limitPrice ??
+            model.target.unstakeLimitPrice(spot: model.target.listedPrice, tolerance: tolerance)
+
+        let amount = unstakingAmount()
+        let listedTaoOut = model.target.listedPrice.map { amount * $0 / SubtensorStakingPallet.alphaPriceScale }
+
+        guard
+            let limitPrice,
+            let quotedTaoOut = quoteFlow.freshQuote?.quote.sim.taoAmount ?? listedTaoOut,
+            quotedTaoOut > 0 else {
+            return nil
+        }
+
+        return createSubnetOperation(
+            exitHotkeys: unstakeModel.exitHotkeys,
+            limitPrice: limitPrice,
+            quotedTaoOut: quotedTaoOut
         )
     }
 
-    func updateQuoteOnEntry() {
-        guard let args = quoteArgs() else {
+    func createSubnetOperation(
+        exitHotkeys: [AccountId]?,
+        limitPrice: Balance,
+        quotedTaoOut: Balance
+    ) -> SubtensorStakingOperation {
+        let unstakeModel = model.unstakeModel
+
+        if let exitHotkeys {
+            return .subnetSellAll(
+                hotkeys: exitHotkeys,
+                netuid: unstakeModel.netuid,
+                limitPrice: limitPrice,
+                quotedTaoOut: quotedTaoOut
+            )
+        } else {
+            return .subnetSell(
+                hotkey: unstakeModel.hotkey,
+                netuid: unstakeModel.netuid,
+                alpha: unstakeModel.amount,
+                limitPrice: limitPrice,
+                quotedTaoOut: quotedTaoOut
+            )
+        }
+    }
+
+    func createOperationAtTap() -> SubtensorStakingOperation? {
+        let unstakeModel = model.unstakeModel
+
+        let exitHotkeys: [AccountId]?
+
+        if unstakeModel.isFullUnstake {
+            guard let positionsState else {
+                presentStalePositions()
+                return nil
+            }
+
+            let verified = SubtensorConfirmTapRule.verifiedExitHotkeys(for: unstakeModel, in: positionsState)
+
+            guard let verified else {
+                presentGroupChanged()
+                return nil
+            }
+
+            exitHotkeys = verified
+        } else {
+            exitHotkeys = nil
+        }
+
+        guard !model.target.isRoot else {
+            if let exitHotkeys {
+                return .rootUnstakeAll(hotkeys: exitHotkeys)
+            }
+
+            return .rootUnstake(hotkey: unstakeModel.hotkey, amount: unstakeModel.amount)
+        }
+
+        switch SubtensorConfirmTapRule.quoteVerdict(latest: quoteFlow.freshQuote, acknowledged: acknowledgedQuote) {
+        case let .proceed(latest, acknowledged):
+            return createSubnetOperation(
+                exitHotkeys: exitHotkeys,
+                limitPrice: acknowledged.limitPrice,
+                quotedTaoOut: latest.quote.sim.taoAmount
+            )
+        case .quoteMissing:
+            presentQuoteMissing()
+            return nil
+        case .priceMoved:
+            presentPriceMoved()
+            return nil
+        }
+    }
+
+    func presentQuoteMissing() {
+        guard let view else {
             return
         }
 
-        if quoteFlow.args == nil {
-            _ = quoteFlow.updateArgs(args)
+        wireframe.presentQuoteMissing(view, onRetry: { [weak self] in
+            self?.forceQuoteRefresh()
+        }, locale: selectedLocale)
+    }
 
-            if let seed = model.quote {
+    func presentPriceMoved() {
+        guard let view else {
+            return
+        }
+
+        wireframe.presentOrderBeyondTolerance(view, locale: selectedLocale)
+    }
+
+    func presentStalePositions() {
+        guard let view else {
+            return
+        }
+
+        wireframe.presentStalePositions(view, onRetry: { [weak self] in
+            self?.interactor.refreshPositions()
+        }, locale: selectedLocale)
+    }
+
+    func presentGroupChanged() {
+        guard let view else {
+            return
+        }
+
+        let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
+
+        wireframe.present(
+            message: nil,
+            title: strings.stakingSubtensorAlertStaleTitle(),
+            closeAction: strings.commonClose(),
+            from: view
+        )
+    }
+
+    func submitAtTap() {
+        guard let operation = createOperationAtTap() else {
+            return
+        }
+
+        view?.didStartLoading()
+
+        interactor.submit(operation: operation)
+    }
+
+    func updateQuoteOnEntry() {
+        guard let request = quoteRequest() else {
+            return
+        }
+
+        if quoteFlow.request == nil {
+            _ = quoteFlow.updateRequest(request)
+
+            if let seed = model.acknowledgedQuote {
                 _ = quoteFlow.applyQuote(seed)
             }
         } else {
-            _ = quoteFlow.updateArgs(args)
+            _ = quoteFlow.updateRequest(request)
         }
 
-        interactor.refreshQuote(for: args)
+        interactor.refreshQuote(for: request)
 
         provideQuoteViewModel()
         provideSlippageViewModel()
     }
 
     func forceQuoteRefresh() {
-        guard let args = quoteArgs() else {
+        guard let request = quoteRequest() else {
             return
         }
 
-        if quoteFlow.updateArgs(args) != nil {
+        if quoteFlow.updateRequest(request) != nil {
             provideQuoteViewModel()
         }
 
-        interactor.refreshQuote(for: args)
+        interactor.refreshQuote(for: request)
     }
 
     func provideQuoteViewModel() {
         let viewModel = quoteViewModelFactory.createQuotePanel(
-            for: quoteFlow.freshQuote,
+            for: quoteFlow.freshQuote?.quote,
             target: model.target,
             locale: selectedLocale
         )
@@ -140,7 +288,7 @@ private extension SubtensorUnstakeConfirmPresenter {
     }
 
     func provideSlippageViewModel() {
-        guard let slippage = model.slippage else {
+        guard let slippage = model.tolerance else {
             quoteView?.didReceiveSlippage(viewModel: nil)
             return
         }
@@ -159,9 +307,9 @@ private extension SubtensorUnstakeConfirmPresenter {
         }
 
         return SubtensorQuoteValidatingContext(
-            args: quoteArgs(),
-            quote: quoteFlow.freshQuote,
-            limitPrice: currentUnstakeModel().limitPrice,
+            latestQuote: quoteFlow.freshQuote,
+            acknowledgedLimit: acknowledgedQuote?.limitPrice,
+            tradesUnavailable: tradesUnavailable,
             onQuoteRefresh: { [weak self] in
                 self?.forceQuoteRefresh()
             }
@@ -223,7 +371,7 @@ private extension SubtensorUnstakeConfirmPresenter {
     }
 
     func provideDelegateViewModel() {
-        let viewModel = displayAddressViewModelFactory.createViewModel(from: model.delegate)
+        let viewModel = displayAddressViewModelFactory.createViewModel(from: model.validator.display)
         view?.didReceiveCollator(viewModel: viewModel)
     }
 
@@ -243,7 +391,11 @@ private extension SubtensorUnstakeConfirmPresenter {
         fee = nil
         provideFeeViewModel()
 
-        interactor.estimateFee(for: .unstake(currentUnstakeModel()))
+        guard let operation = feeOperation() else {
+            return
+        }
+
+        interactor.estimateFee(for: operation)
     }
 
     func applyCurrentState() {
@@ -260,16 +412,20 @@ private extension SubtensorUnstakeConfirmPresenter {
     func getValidationDependencies() -> SubtensorUnstakeValidatingDep {
         SubtensorUnstakeValidatingDep(
             netuid: model.unstakeModel.netuid,
+            accountId: selectedAccount.chainAccount.accountId,
             amount: unstakingAmount(),
-            stakedAmount: stakedAmountInPlank(),
-            isFullUnstake: model.unstakeModel.isFullUnstake,
+            positionAlpha: stakedAmountInPlank(),
+            availability: preflight?.stakeAvailability,
+            exitHotkeys: model.unstakeModel.exitHotkeys,
             balance: balance,
             fee: fee,
+            existentialDeposit: existentialDeposit,
             preflight: preflight,
-            claimablePayout: claimable?.redeemable(for: model.unstakeModel.hotkey),
+            holds: nil,
             currentBlock: currentBlock,
             blockTime: chainAsset.chain.defaultBlockTimeMillis ?? SubtensorStakingFlowConstants.blockTimeMillis,
             assetDisplayInfo: model.target.assetDisplayInfo(basedOn: chainAsset.assetDisplayInfo),
+            syncFailed: positionsSyncFailed,
             onFeeRefresh: { [weak self] in
                 self?.refreshFee()
             },
@@ -280,17 +436,18 @@ private extension SubtensorUnstakeConfirmPresenter {
 
                 interactor.refreshPreflight(for: model.unstakeModel.hotkey, netuid: model.unstakeModel.netuid)
             },
-            // the amount here is already quoted and confirmed, so switching it behind the
-            // user would invalidate everything the screen is showing
+            onPositionsRefresh: { [weak self] in
+                self?.interactor.refreshPositions()
+            },
             onUnstakeAll: nil,
             quoteContext: getQuoteContext()
         )
     }
 
     func createSuccessTitle(
-        for submission: SubtensorSubmissionModel
+        for outcome: SubtensorStakingOperationOutcome
     ) -> ExtrinsicSubmissionPresentingParams.Title {
-        guard case let .unstaked(tao, _, _) = submission.outcome, tao > 0 else {
+        guard let tao = outcome.executed?.tao, tao > 0 else {
             return .general(selectedLocale)
         }
 
@@ -342,7 +499,7 @@ extension SubtensorUnstakeConfirmPresenter: CollatorStkUnstakeConfirmPresenterPr
 
         wireframe.presentAccountOptions(
             from: view,
-            address: model.delegate.address,
+            address: model.validator.display.address,
             chain: chainAsset.chain,
             locale: selectedLocale
         )
@@ -354,13 +511,7 @@ extension SubtensorUnstakeConfirmPresenter: CollatorStkUnstakeConfirmPresenterPr
             dataValidationFactory: dataValidationFactory,
             selectedLocale: selectedLocale
         ) { [weak self] in
-            guard let self else {
-                return
-            }
-
-            view?.didStartLoading()
-
-            interactor.submit(call: .unstake(currentUnstakeModel()))
+            self?.submitAtTap()
         }
     }
 }
@@ -368,18 +519,22 @@ extension SubtensorUnstakeConfirmPresenter: CollatorStkUnstakeConfirmPresenterPr
 extension SubtensorUnstakeConfirmPresenter: SubtensorUnstakePresenterValidating {}
 
 extension SubtensorUnstakeConfirmPresenter: SubtensorUnstakeConfirmInteractorOutputProtocol {
-    func didReceiveSubmissionResult(_ result: Result<SubtensorSubmissionModel, Error>) {
+    func didReceiveSubmissionResult(
+        _ result: Result<SubtensorStakingOperationOutcome, SubtensorStakingSubmissionFailure>
+    ) {
         view?.didStopLoading()
 
         switch result {
-        case let .success(submission):
+        case let .success(outcome):
             wireframe.complete(
                 on: view,
-                sender: submission.submitted.sender,
-                title: createSuccessTitle(for: submission)
+                sender: .current(selectedAccount.chainAccount),
+                title: createSuccessTitle(for: outcome)
             )
-        case let .failure(error):
-            logger.error("Submission error: \(error)")
+        case let .failure(failure):
+            logger.error("Submission error: \(failure)")
+
+            let error = failure.error
 
             applyCurrentState()
             refreshFee()
@@ -428,6 +583,12 @@ extension SubtensorUnstakeConfirmPresenter: SubtensorUnstakeConfirmInteractorOut
         updateQuoteOnEntry()
     }
 
+    func didReceivePositionsSyncFailed(_ isFailed: Bool) {
+        logger.debug("Positions sync failed: \(isFailed)")
+
+        positionsSyncFailed = isFailed
+    }
+
     func didReceiveClaimable(_ claimable: SubtensorRootClaimable?) {
         logger.debug("Claimable: \(String(describing: claimable))")
 
@@ -442,11 +603,17 @@ extension SubtensorUnstakeConfirmPresenter: SubtensorUnstakeConfirmInteractorOut
         forceQuoteRefresh()
     }
 
-    func didReceiveQuote(_ quote: SubtensorQuote) {
+    func didReceiveQuote(_ quote: SubtensorTradeQuote) {
         logger.debug("Quote: \(quote)")
 
         guard quoteFlow.applyQuote(quote) else {
             return
+        }
+
+        tradesUnavailable = false
+
+        if acknowledgedQuote == nil {
+            acknowledgedQuote = quote
         }
 
         provideQuoteViewModel()
@@ -460,10 +627,16 @@ extension SubtensorUnstakeConfirmPresenter: SubtensorUnstakeConfirmInteractorOut
 
     func didReceiveExistentialDeposit(_ deposit: Balance) {
         logger.debug("Existential deposit: \(deposit)")
+
+        existentialDeposit = deposit
     }
 
     func didReceiveBaseError(_ error: SubtensorStakingBaseError) {
         logger.error("Error: \(error)")
+
+        if error.isNovaFeeUnavailable {
+            tradesUnavailable = true
+        }
 
         switch error {
         case .feeFailed:

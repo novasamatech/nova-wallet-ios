@@ -40,7 +40,15 @@ final class SwapElementView: UIView {
         $0.detailsLabel.apply(style: .footnoteSecondary)
     }
 
+    var hidesHub: Bool = false {
+        didSet {
+            updateHubVisibility()
+        }
+    }
+
     private var hubImageViewModel: ImageViewModelProtocol?
+    private var hubBottomConstraint: Constraint?
+    private var priceBottomConstraint: Constraint?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -79,14 +87,17 @@ final class SwapElementView: UIView {
         priceLabel.snp.makeConstraints {
             $0.top.equalTo(valueLabel.snp.bottom).offset(2)
             $0.leading.trailing.equalToSuperview()
+            priceBottomConstraint = $0.bottom.equalToSuperview().constraint
         }
+
+        priceBottomConstraint?.deactivate()
 
         hubIconNameView.snp.makeConstraints {
             $0.top.equalTo(priceLabel.snp.bottom).offset(16)
             $0.leading.greaterThanOrEqualToSuperview()
             $0.trailing.lessThanOrEqualToSuperview()
             $0.centerX.equalToSuperview().priority(.high)
-            $0.bottom.equalToSuperview()
+            hubBottomConstraint = $0.bottom.equalToSuperview().constraint
         }
 
         backgroundView.snp.makeConstraints {
@@ -95,6 +106,18 @@ final class SwapElementView: UIView {
 
         contentView.snp.makeConstraints {
             $0.edges.equalToSuperview().inset(contentInsets)
+        }
+    }
+
+    private func updateHubVisibility() {
+        hubIconNameView.isHidden = hidesHub
+
+        if hidesHub {
+            hubBottomConstraint?.deactivate()
+            priceBottomConstraint?.activate()
+        } else {
+            priceBottomConstraint?.deactivate()
+            hubBottomConstraint?.activate()
         }
     }
 }

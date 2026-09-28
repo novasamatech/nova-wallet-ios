@@ -61,7 +61,7 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
     override func setup() {
         super.setup()
 
-        state.setup(for: selectedAccount?.chainAccount.accountId)
+        state.setup(for: selectedAccount)
 
         provideNetworkInfo()
         provideRootAnnualReturn()

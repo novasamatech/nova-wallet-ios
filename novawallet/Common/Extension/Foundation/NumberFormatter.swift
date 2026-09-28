@@ -38,6 +38,12 @@ extension NumberFormatter {
         return numberFormatter
     }
 
+    static var signedPercentSingle: NumberFormatter {
+        let numberFormatter = signedPercent
+        numberFormatter.maximumFractionDigits = 1
+        return numberFormatter
+    }
+
     static var percentAPY: NumberFormatter {
         let numberFormatter = percentBase
         numberFormatter.percentSymbol = "% APY"
@@ -74,6 +80,12 @@ extension NumberFormatter {
     static var percentHalfEven: NumberFormatter {
         let numberFormatter = percent
         numberFormatter.roundingMode = .halfEven
+        return numberFormatter
+    }
+
+    static var percentSingleHalfEven: NumberFormatter {
+        let numberFormatter = percentHalfEven
+        numberFormatter.minimumFractionDigits = 0
         return numberFormatter
     }
 

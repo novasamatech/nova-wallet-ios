@@ -101,6 +101,25 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
         )
     }
 
+    private func makeTradeQuote(taoIn: Balance, spotPrice: Balance) throws -> SubtensorTradeQuote {
+        let quote = makeQuote(taoIn: taoIn, spotPrice: spotPrice)
+        let limitPrice = try SubtensorLimitPriceCalculator.buyLimit(
+            spot: spotPrice,
+            tolerance: SubtensorSlippageTolerance.defaultTolerance
+        )
+        let swapMinimumOut = quote.sim.taoAmount * SubtensorStakingPallet.alphaPriceScale / limitPrice
+
+        return SubtensorTradeQuote(
+            quote: quote,
+            amountIn: taoIn,
+            novaFee: nil,
+            expectedOut: quote.sim.alphaAmount,
+            swapMinimumOut: swapMinimumOut,
+            minimumOut: swapMinimumOut,
+            limitPrice: limitPrice
+        )
+    }
+
     private func makeView() -> MockSubtensorStakingSetupViewProtocol {
         let view = MockSubtensorStakingSetupViewProtocol()
 
@@ -135,6 +154,32 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
         return engine
     }
 
+    private func makeSelectedAccount(for chainAsset: ChainAsset) -> MetaChainAccountResponse {
+        let accountId = Data(repeating: 0x11, count: 32)
+
+        let chainAccount = ChainAccountResponse(
+            metaId: UUID().uuidString,
+            chainId: chainAsset.chain.chainId,
+            accountId: accountId,
+            publicKey: accountId,
+            name: "test",
+            cryptoType: .sr25519,
+            addressPrefix: chainAsset.chain.addressPrefix,
+            isEthereumBased: false,
+            isChainAccount: false,
+            type: .secrets
+        )
+
+        return MetaChainAccountResponse(
+            metaId: UUID().uuidString,
+            substrateAccountId: accountId,
+            ethereumAccountId: nil,
+            walletIdenticonData: nil,
+            delegationId: nil,
+            chainAccount: chainAccount
+        )
+    }
+
     private func makeSetup(withPreflight: Bool = true) -> Setup {
         let chainAsset = makeChainAsset()
 
@@ -162,13 +207,17 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
             interactor: interactor,
             wireframe: wireframe,
             chainAsset: chainAsset,
+            selectedAccount: makeSelectedAccount(for: chainAsset),
             dataValidationFactory: dataValidationFactory,
             balanceViewModelFactory: BalanceViewModelFactory(
                 targetAssetInfo: chainAsset.assetDisplayInfo,
                 priceAssetInfoFactory: priceAssetInfoFactory
             ),
             accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactory(chainAsset: chainAsset),
-            quoteViewModelFactory: SubtensorQuoteViewModelFactory(chainAsset: chainAsset),
+            quoteViewModelFactory: SubtensorQuoteViewModelFactory(
+                chainAsset: chainAsset,
+                priceAssetInfoFactory: priceAssetInfoFactory
+            ),
             initialPosition: SubtensorStakingPosition(
                 hotkey: hotkey,
                 netuid: SubtensorStakingPallet.rootNetuid,
@@ -230,33 +279,36 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
         return captor.value
     }
 
-    func testRootProceedProducesModelWithoutLimitPriceOrSlippage() {
+    func testRootProceedOnTheExistingPositionHandsOverAnAddStakeWithoutTolerance() {
         let setup = makeSetup()
 
+        setup.presenter.didReceivePositions(makePositions(netuid: SubtensorStakingPallet.rootNetuid))
         setup.presenter.updateAmount(Decimal(string: "1"))
 
         let model = proceedAndCaptureModel(setup)
 
-        XCTAssertEqual(model?.stakeModel.netuid, SubtensorStakingPallet.rootNetuid)
-        XCTAssertNil(model?.stakeModel.limitPrice)
-        XCTAssertNil(model?.slippage)
+        XCTAssertEqual(model?.origin, .addStake)
         XCTAssertEqual(model?.target, .root)
+        XCTAssertEqual(model?.amount, 1_000_000_000)
+        XCTAssertNil(model?.tolerance)
     }
 
-    func testSubnetProceedDerivesLimitFromFreshQuoteSpot() {
+    func testSubnetProceedHandsOverANewPositionWithTheToleranceAndTheQuote() throws {
         let setup = makeSetup()
+        let quote = try makeTradeQuote(taoIn: 1_000_000_000, spotPrice: 7_683_255)
 
         setup.presenter.didSelectStakeTarget(makeSubnetTarget(price: 7_000_000))
         setup.presenter.updateAmount(Decimal(string: "1"))
-        setup.presenter.didReceiveQuote(makeQuote(taoIn: 1_000_000_000, spotPrice: 7_683_255))
+        setup.presenter.didReceiveQuote(quote)
         setup.presenter.didReceivePreflight(makePreflight())
 
         let model = proceedAndCaptureModel(setup)
 
-        XCTAssertEqual(model?.stakeModel.netuid, 1)
-        XCTAssertEqual(model?.stakeModel.limitPrice, 7_721_671)
-        XCTAssertEqual(model?.slippage, SubtensorSlippageTolerance.defaultTolerance)
-        XCTAssertEqual(model?.quote?.spotPrice, 7_683_255)
+        XCTAssertEqual(model?.origin, .newPosition)
+        XCTAssertEqual(model?.target.netuid, 1)
+        XCTAssertEqual(model?.validator.hotkey, hotkey)
+        XCTAssertEqual(model?.tolerance, SubtensorSlippageTolerance.defaultTolerance)
+        XCTAssertEqual(model?.acknowledgedQuote, quote)
     }
 
     func testSubnetProceedWithoutQuoteIsBlockedByValidation() {

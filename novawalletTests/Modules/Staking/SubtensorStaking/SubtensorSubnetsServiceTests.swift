@@ -160,6 +160,34 @@ final class SubtensorSubnetsServiceTests: XCTestCase {
         verify(apiFactory, times(1)).createSubtokenEnabledWrapper(for: any(), blockHash: any())
     }
 
+    func testForcedRefreshBypassesTheSessionCache() throws {
+        let apex = makeDynamicInfo(netuid: 1, name: "Apex")
+        let chutes = makeDynamicInfo(netuid: 64, name: "Chutes")
+
+        let apiFactory = makeApiFactory(subnets: [apex], prices: [], subtokenEnabled: [1])
+        let service = makeService(apiFactory: apiFactory)
+
+        _ = try fetchInfo(using: service)
+
+        stub(apiFactory) { stub in
+            when(stub.createAllDynamicInfoWrapper(at: any())).then { _ in
+                CompoundOperationWrapper.createWithResult([apex, chutes])
+            }
+        }
+
+        let refreshExpectation = expectation(description: "forced subnets fetch")
+        var refreshResult: Result<SubtensorSubnetsInfo, Error>?
+
+        service.fetchSubnetsInfo(forcingRefresh: true, runningCompletionIn: .main) { result in
+            refreshResult = result
+            refreshExpectation.fulfill()
+        }
+
+        wait(for: [refreshExpectation], timeout: 10)
+
+        XCTAssertEqual(try XCTUnwrap(refreshResult).get().subnets, [apex, chutes])
+    }
+
     private func makeDynamicInfo(netuid: UInt16, name: String) -> SubtensorStakingPallet.DynamicInfo {
         SubtensorStakingPallet.DynamicInfo(
             netuid: netuid,
@@ -195,18 +223,18 @@ final class SubtensorSubnetsServiceTests: XCTestCase {
         let apiFactory = MockSubtensorApiOperationFactoryProtocol()
 
         stub(apiFactory) { stub in
-            when(stub.createAllDynamicInfoWrapper(at: any())).thenReturn(
+            when(stub.createAllDynamicInfoWrapper(at: any())).then { _ in
                 CompoundOperationWrapper.createWithResult(subnets)
-            )
-            when(stub.createAlphaPricesWrapper(at: any())).thenReturn(
+            }
+            when(stub.createAlphaPricesWrapper(at: any())).then { _ in
                 CompoundOperationWrapper.createWithResult(prices)
-            )
-            when(stub.createSubtokenEnabledWrapper(for: any(), blockHash: any())).thenReturn(
+            }
+            when(stub.createSubtokenEnabledWrapper(for: any(), blockHash: any())).then { _, _ in
                 CompoundOperationWrapper.createWithResult(subtokenEnabled)
-            )
-            when(stub.createSubnetOwnerCutWrapper(blockHash: any())).thenReturn(
+            }
+            when(stub.createSubnetOwnerCutWrapper(blockHash: any())).then { _ in
                 CompoundOperationWrapper.createWithResult(ownerCut)
-            )
+            }
         }
 
         return apiFactory

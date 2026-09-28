@@ -2,44 +2,22 @@ import BigInt
 import Foundation
 
 struct SubtensorQuoteFlowModel: Equatable {
-    private(set) var args: SubtensorQuoteArgs?
-    private(set) var quote: SubtensorQuote?
+    private(set) var request: SubtensorTradeQuoteRequest?
+    private(set) var quote: SubtensorTradeQuote?
 
-    static func stakeArgs(
-        for target: SubtensorStakeTarget,
-        amount: Balance?
-    ) -> SubtensorQuoteArgs? {
-        guard case let .subnet(info, _) = target, let amount, amount > 0 else {
+    mutating func updateRequest(_ newRequest: SubtensorTradeQuoteRequest?) -> SubtensorTradeQuoteRequest? {
+        guard newRequest != request else {
             return nil
         }
 
-        return SubtensorQuoteArgs(netuid: info.netuid, direction: .stake(taoIn: amount))
-    }
-
-    static func unstakeArgs(
-        for target: SubtensorStakeTarget,
-        amount: Balance?
-    ) -> SubtensorQuoteArgs? {
-        guard case let .subnet(info, _) = target, let amount, amount > 0 else {
-            return nil
-        }
-
-        return SubtensorQuoteArgs(netuid: info.netuid, direction: .unstake(alphaIn: amount))
-    }
-
-    mutating func updateArgs(_ newArgs: SubtensorQuoteArgs?) -> SubtensorQuoteArgs? {
-        guard newArgs != args else {
-            return nil
-        }
-
-        args = newArgs
+        request = newRequest
         quote = nil
 
-        return newArgs
+        return newRequest
     }
 
-    mutating func applyQuote(_ newQuote: SubtensorQuote) -> Bool {
-        guard newQuote.args == args else {
+    mutating func applyQuote(_ newQuote: SubtensorTradeQuote) -> Bool {
+        guard let request, Self.isQuote(newQuote, for: request) else {
             return false
         }
 
@@ -48,16 +26,42 @@ struct SubtensorQuoteFlowModel: Equatable {
         return true
     }
 
-    /// a failed refresh must not leave the previous quote validating as fresh
     mutating func clearQuote() {
         quote = nil
     }
 
-    var freshQuote: SubtensorQuote? {
-        guard let quote, quote.args == args else {
+    var freshQuote: SubtensorTradeQuote? {
+        guard let request, let quote, Self.isQuote(quote, for: request) else {
             return nil
         }
 
         return quote
+    }
+}
+
+private extension SubtensorQuoteFlowModel {
+    static func isQuote(_ tradeQuote: SubtensorTradeQuote, for request: SubtensorTradeQuoteRequest) -> Bool {
+        guard
+            tradeQuote.quote.args.netuid == request.netuid,
+            tradeQuote.amountIn == request.amountIn else {
+            return false
+        }
+
+        let spotPrice = tradeQuote.quote.spotPrice
+
+        switch (request, tradeQuote.quote.args.direction) {
+        case let (.buy(_, _, tolerance), .stake):
+            return tradeQuote.limitPrice == (try? SubtensorLimitPriceCalculator.buyLimit(
+                spot: spotPrice,
+                tolerance: tolerance
+            ))
+        case let (.sell(_, _, tolerance), .unstake):
+            return tradeQuote.limitPrice == (try? SubtensorLimitPriceCalculator.sellLimit(
+                spot: spotPrice,
+                tolerance: tolerance
+            ))
+        case (.buy, .unstake), (.sell, .stake):
+            return false
+        }
     }
 }

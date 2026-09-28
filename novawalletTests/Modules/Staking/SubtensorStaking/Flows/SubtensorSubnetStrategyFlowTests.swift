@@ -130,8 +130,10 @@ final class SubtensorSubnetStrategyFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(slippage, BigRational(numerator: 5, denominator: 1000))
         XCTAssertEqual(buyQuote, SubtensorTradeQuote(
             quote: SubtensorFlowChainWorld.chutesBuyQuote,
+            amountIn: 5_000_000_000,
             novaFee: SubtensorNovaFee(amount: 42_141_794, beneficiary: SubtensorFlowChainWorld.novaFeeBeneficiary),
             expectedOut: 90_150_000_000,
+            swapMinimumOut: 89_712_471_929,
             minimumOut: 89_712_471_929,
             limitPrice: 55_236_040
         ))

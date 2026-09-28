@@ -32,7 +32,7 @@ final class SubtensorStakingCallModelTests: XCTestCase {
     }
 
     func testPartialUnstakeBuildsRemoveStakeCall() throws {
-        let model = SubtensorUnstakeModel(hotkey: hotkey, netuid: 0, amount: 500, isFullUnstake: false)
+        let model = SubtensorUnstakeModel(hotkey: hotkey, netuid: 0, amount: 500, exitHotkeys: nil)
 
         let builder = try applyToBuilder(.unstake(model))
 
@@ -49,7 +49,7 @@ final class SubtensorStakingCallModelTests: XCTestCase {
     }
 
     func testFullUnstakeBuildsRemoveStakeFullLimitCallWithoutLimitPrice() throws {
-        let model = SubtensorUnstakeModel(hotkey: hotkey, netuid: 0, amount: 500, isFullUnstake: true)
+        let model = SubtensorUnstakeModel(hotkey: hotkey, netuid: 0, amount: 500, exitHotkeys: [hotkey])
 
         let builder = try applyToBuilder(.unstake(model))
 
@@ -102,15 +102,9 @@ final class SubtensorStakingCallModelTests: XCTestCase {
     }
 
     func testPartialUnstakeWithLimitPriceBuildsRemoveStakeLimitFillOrKill() throws {
-        let model = SubtensorUnstakeModel(
-            hotkey: hotkey,
-            netuid: 5,
-            amount: 500,
-            isFullUnstake: false,
-            limitPrice: 7_644_839
-        )
+        let model = SubtensorUnstakeModel(hotkey: hotkey, netuid: 5, amount: 500, exitHotkeys: nil)
 
-        let builder = try applyToBuilder(.unstake(model))
+        let builder = try applyToBuilder(.unstake(model, limitPrice: 7_644_839))
 
         XCTAssertEqual(
             builder.addedCalls,
@@ -127,15 +121,9 @@ final class SubtensorStakingCallModelTests: XCTestCase {
     }
 
     func testFullUnstakeWithLimitPriceBuildsRemoveStakeFullLimitWithSome() throws {
-        let model = SubtensorUnstakeModel(
-            hotkey: hotkey,
-            netuid: 5,
-            amount: 500,
-            isFullUnstake: true,
-            limitPrice: 7_644_839
-        )
+        let model = SubtensorUnstakeModel(hotkey: hotkey, netuid: 5, amount: 500, exitHotkeys: [hotkey])
 
-        let builder = try applyToBuilder(.unstake(model))
+        let builder = try applyToBuilder(.unstake(model, limitPrice: 7_644_839))
 
         XCTAssertEqual(
             builder.addedCalls,
@@ -180,33 +168,27 @@ final class SubtensorStakingCallModelTests: XCTestCase {
     }
 
     func testRootUnstakeWithoutLimitPricePassesSlippageProtection() throws {
-        let model = SubtensorUnstakeModel(hotkey: hotkey, netuid: 0, amount: 500, isFullUnstake: false)
+        let model = SubtensorUnstakeModel(hotkey: hotkey, netuid: 0, amount: 500, exitHotkeys: nil)
 
         try SubtensorStakingCallModel.unstake(model).ensureSlippageProtected()
     }
 
     func testSubnetPartialUnstakeWithoutLimitPriceFailsSlippageProtection() {
-        let model = SubtensorUnstakeModel(hotkey: hotkey, netuid: 5, amount: 500, isFullUnstake: false)
+        let model = SubtensorUnstakeModel(hotkey: hotkey, netuid: 5, amount: 500, exitHotkeys: nil)
 
         XCTAssertThrowsError(try SubtensorStakingCallModel.unstake(model).ensureSlippageProtected())
     }
 
     func testSubnetFullUnstakeWithoutLimitPriceFailsSlippageProtection() {
-        let model = SubtensorUnstakeModel(hotkey: hotkey, netuid: 5, amount: 500, isFullUnstake: true)
+        let model = SubtensorUnstakeModel(hotkey: hotkey, netuid: 5, amount: 500, exitHotkeys: [hotkey])
 
         XCTAssertThrowsError(try SubtensorStakingCallModel.unstake(model).ensureSlippageProtected())
     }
 
     func testSubnetFullUnstakeWithLimitPricePassesSlippageProtection() throws {
-        let model = SubtensorUnstakeModel(
-            hotkey: hotkey,
-            netuid: 5,
-            amount: 500,
-            isFullUnstake: true,
-            limitPrice: 7_644_839
-        )
+        let model = SubtensorUnstakeModel(hotkey: hotkey, netuid: 5, amount: 500, exitHotkeys: [hotkey])
 
-        try SubtensorStakingCallModel.unstake(model).ensureSlippageProtected()
+        try SubtensorStakingCallModel.unstake(model, limitPrice: 7_644_839).ensureSlippageProtected()
     }
 
     func testClaimPassesSlippageProtection() throws {

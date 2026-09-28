@@ -9,53 +9,56 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
     private let hotkey = Data(repeating: 0x22, count: 32)
     private let beneficiary = Data(repeating: 0xBB, count: 32)
     private let netuid: UInt16 = 64
-    private let spotPrice: Balance = 7_683_225
+    private let spotPrice: Balance = 73_800_000
     private let tolerance = BigRational(numerator: 5, denominator: 1000)
+    private let grossTao: Balance = 5_000_000_000
+    private let stakedTao: Balance = 4_957_858_206
+    private let soldAlpha: Balance = 56_200_000_000
 
     func testBuyQuoteSimulatesTheStakeNetOfNovaFee() throws {
         let quoteFactory = MockSubtensorQuoteOperationFactoryProtocol()
-        let quote = makeQuote(direction: .stake(taoIn: 991_571_642), taoAmount: 991_571_642, alphaAmount: 128_800_000_000)
+        let quote = makeBuyQuote(alphaOut: 67_054_958_000)
 
         stubQuote(quoteFactory, returning: quote)
 
         let tradeQuote = try run(
-            makeFactory(quoteFactory).createBuyQuoteWrapper(netuid: netuid, grossTao: 1_000_000_000, tolerance: tolerance)
+            makeFactory(quoteFactory).createBuyQuoteWrapper(netuid: netuid, grossTao: grossTao, tolerance: tolerance)
         )
 
         let expected = SubtensorTradeQuote(
             quote: quote,
-            novaFee: SubtensorNovaFee(amount: 8_428_358, beneficiary: beneficiary),
-            expectedOut: 128_800_000_000,
-            minimumOut: 128_349_963_304,
-            limitPrice: 7_721_641
+            amountIn: 5_000_000_000,
+            novaFee: SubtensorNovaFee(amount: 42_141_794, beneficiary: beneficiary),
+            expectedOut: 67_054_958_000,
+            swapMinimumOut: 66_811_763_513,
+            minimumOut: 66_811_763_513,
+            limitPrice: 74_169_000
         )
 
         XCTAssertEqual(tradeQuote, expected)
         verify(quoteFactory).createQuoteWrapper(
-            for: equal(to: SubtensorQuoteArgs(netuid: netuid, direction: .stake(taoIn: 991_571_642)))
+            for: equal(to: SubtensorQuoteArgs(netuid: netuid, direction: .stake(taoIn: 4_957_858_206)))
         )
     }
 
     func testSellQuoteChargesNovaFeeOnTheQuotedTaoOut() throws {
         let quoteFactory = MockSubtensorQuoteOperationFactoryProtocol()
-        let quote = makeQuote(
-            direction: .unstake(alphaIn: 500_000_000_000),
-            taoAmount: 3_839_000_000,
-            alphaAmount: 500_000_000_000
-        )
+        let quote = makeSellQuote(taoOut: 4_145_000_000)
 
         stubQuote(quoteFactory, returning: quote)
 
         let tradeQuote = try run(
-            makeFactory(quoteFactory).createSellQuoteWrapper(netuid: netuid, alpha: 500_000_000_000, tolerance: tolerance)
+            makeFactory(quoteFactory).createSellQuoteWrapper(netuid: netuid, alpha: soldAlpha, tolerance: tolerance)
         )
 
         let expected = SubtensorTradeQuote(
             quote: quote,
-            novaFee: SubtensorNovaFee(amount: 32_356_470, beneficiary: beneficiary),
-            expectedOut: 3_806_643_530,
-            minimumOut: 3_788_123_266,
-            limitPrice: 7_644_809
+            amountIn: 56_200_000_000,
+            novaFee: SubtensorNovaFee(amount: 34_935_547, beneficiary: beneficiary),
+            expectedOut: 4_110_064_453,
+            swapMinimumOut: 4_124_744_148,
+            minimumOut: 4_089_808_601,
+            limitPrice: 73_431_000
         )
 
         XCTAssertEqual(tradeQuote, expected)
@@ -63,21 +66,17 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
 
     func testSellQuoteAndSellExtrinsicChargeTheSameNovaFee() throws {
         let quoteFactory = MockSubtensorQuoteOperationFactoryProtocol()
-        let alpha: Balance = 500_000_000_000
 
-        stubQuote(
-            quoteFactory,
-            returning: makeQuote(direction: .unstake(alphaIn: alpha), taoAmount: 3_839_000_000, alphaAmount: alpha)
-        )
+        stubQuote(quoteFactory, returning: makeSellQuote(taoOut: 4_145_000_000))
 
         let tradeQuote = try run(
-            makeFactory(quoteFactory).createSellQuoteWrapper(netuid: netuid, alpha: alpha, tolerance: tolerance)
+            makeFactory(quoteFactory).createSellQuoteWrapper(netuid: netuid, alpha: soldAlpha, tolerance: tolerance)
         )
 
         let operation = SubtensorStakingOperation.subnetSell(
             hotkey: hotkey,
             netuid: netuid,
-            alpha: alpha,
+            alpha: soldAlpha,
             limitPrice: tradeQuote.limitPrice,
             quotedTaoOut: tradeQuote.quote.sim.taoAmount
         )
@@ -94,12 +93,8 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
 
     func testBuyQuoteAndBuyExtrinsicChargeTheSameNovaFee() throws {
         let quoteFactory = MockSubtensorQuoteOperationFactoryProtocol()
-        let grossTao: Balance = 1_000_000_000
 
-        stubQuote(
-            quoteFactory,
-            returning: makeQuote(direction: .stake(taoIn: 991_571_642), taoAmount: 991_571_642, alphaAmount: 128_800_000_000)
-        )
+        stubQuote(quoteFactory, returning: makeBuyQuote(alphaOut: 67_054_958_000))
 
         let tradeQuote = try run(
             makeFactory(quoteFactory).createBuyQuoteWrapper(netuid: netuid, grossTao: grossTao, tolerance: tolerance)
@@ -124,6 +119,44 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
         XCTAssertEqual(stakeCall.amountStaked, tradeQuote.quote.args.direction.taoIn)
     }
 
+    func testBuyWhosePostTradePriceReachesTheLimitIsNotFillableAlthoughItsAveragePriceIsInside() throws {
+        let tradeQuote = try runBuyQuote(alphaOut: 66_964_347_135)
+
+        XCTAssertLessThan(try XCTUnwrap(tradeQuote.quote.impliedExecutionPrice), tradeQuote.limitPrice)
+        XCTAssertFalse(tradeQuote.isFillable)
+    }
+
+    func testBuyWhosePostTradePriceStaysInsideTheLimitIsFillable() throws {
+        let tradeQuote = try runBuyQuote(alphaOut: 67_054_958_000)
+
+        XCTAssertTrue(tradeQuote.isFillable)
+    }
+
+    func testSellWhosePostTradePriceReachesTheLimitIsNotFillableAlthoughItsAveragePriceIsInside() throws {
+        let tradeQuote = try runSellQuote(taoOut: 4_133_000_000)
+
+        XCTAssertGreaterThan(try XCTUnwrap(tradeQuote.quote.impliedExecutionPrice), tradeQuote.limitPrice)
+        XCTAssertFalse(tradeQuote.isFillable)
+    }
+
+    func testSellWhosePostTradePriceStaysInsideTheLimitIsFillable() throws {
+        let tradeQuote = try runSellQuote(taoOut: 4_145_000_000)
+
+        XCTAssertTrue(tradeQuote.isFillable)
+    }
+
+    func testBuyWhoseRoundedUpPostTradePriceEqualsTheAcceptedLimitIsNotFillable() throws {
+        let tradeQuote = try runBuyQuote(alphaOut: 66_978_585_515)
+
+        XCTAssertFalse(tradeQuote.isFillable(atLimit: 74_169_001))
+    }
+
+    func testSellWhoseRoundedDownPostTradePriceEqualsTheLimitIsNotFillable() throws {
+        let tradeQuote = try runSellQuote(taoOut: 4_135_094_907)
+
+        XCTAssertFalse(tradeQuote.isFillable)
+    }
+
     func testBuyQuoteWithoutBeneficiaryFailsClosed() {
         let quoteFactory = MockSubtensorQuoteOperationFactoryProtocol()
         let factory = SubtensorTradeQuoteFactory(
@@ -132,7 +165,7 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
         )
 
         XCTAssertThrowsError(
-            try run(factory.createBuyQuoteWrapper(netuid: netuid, grossTao: 1_000_000_000, tolerance: tolerance))
+            try run(factory.createBuyQuoteWrapper(netuid: netuid, grossTao: grossTao, tolerance: tolerance))
         ) { error in
             XCTAssertEqual(error as? SubtensorStakingOperationError, .novaFeeUnavailable)
         }
@@ -146,7 +179,7 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
         )
 
         XCTAssertThrowsError(
-            try run(factory.createSellQuoteWrapper(netuid: netuid, alpha: 500_000_000_000, tolerance: tolerance))
+            try run(factory.createSellQuoteWrapper(netuid: netuid, alpha: soldAlpha, tolerance: tolerance))
         ) { error in
             XCTAssertEqual(error as? SubtensorStakingOperationError, .novaFeeUnavailable)
         }
@@ -159,21 +192,61 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
         )
     }
 
+    private func runBuyQuote(alphaOut: Balance) throws -> SubtensorTradeQuote {
+        let quoteFactory = MockSubtensorQuoteOperationFactoryProtocol()
+
+        stubQuote(quoteFactory, returning: makeBuyQuote(alphaOut: alphaOut))
+
+        return try run(
+            makeFactory(quoteFactory).createBuyQuoteWrapper(netuid: netuid, grossTao: grossTao, tolerance: tolerance)
+        )
+    }
+
+    private func runSellQuote(taoOut: Balance) throws -> SubtensorTradeQuote {
+        let quoteFactory = MockSubtensorQuoteOperationFactoryProtocol()
+
+        stubQuote(quoteFactory, returning: makeSellQuote(taoOut: taoOut))
+
+        return try run(
+            makeFactory(quoteFactory).createSellQuoteWrapper(netuid: netuid, alpha: soldAlpha, tolerance: tolerance)
+        )
+    }
+
+    private func makeBuyQuote(alphaOut: Balance) -> SubtensorQuote {
+        makeQuote(
+            direction: .stake(taoIn: stakedTao),
+            sim: SubtensorStakingPallet.SimSwapResult(
+                taoAmount: 4_955_361_688,
+                alphaAmount: alphaOut,
+                taoFee: 2_496_518,
+                alphaFee: 0,
+                taoSlippage: 0,
+                alphaSlippage: 0
+            )
+        )
+    }
+
+    private func makeSellQuote(taoOut: Balance) -> SubtensorQuote {
+        makeQuote(
+            direction: .unstake(alphaIn: soldAlpha),
+            sim: SubtensorStakingPallet.SimSwapResult(
+                taoAmount: taoOut,
+                alphaAmount: 56_171_700_618,
+                taoFee: 0,
+                alphaFee: 28_299_382,
+                taoSlippage: 0,
+                alphaSlippage: 0
+            )
+        )
+    }
+
     private func makeQuote(
         direction: SubtensorQuoteArgs.Direction,
-        taoAmount: Balance,
-        alphaAmount: Balance
+        sim: SubtensorStakingPallet.SimSwapResult
     ) -> SubtensorQuote {
         SubtensorQuote(
             args: SubtensorQuoteArgs(netuid: netuid, direction: direction),
-            sim: SubtensorStakingPallet.SimSwapResult(
-                taoAmount: taoAmount,
-                alphaAmount: alphaAmount,
-                taoFee: 499_303,
-                alphaFee: 251_774_052,
-                taoSlippage: 0,
-                alphaSlippage: 0
-            ),
+            sim: sim,
             spotPrice: spotPrice,
             feeRate: 33,
             capturedAt: Date(timeIntervalSince1970: 1_790_000_000)

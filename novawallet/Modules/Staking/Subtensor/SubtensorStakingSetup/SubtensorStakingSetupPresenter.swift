@@ -9,6 +9,7 @@ final class SubtensorStakingSetupPresenter {
     let logger: LoggerProtocol
 
     let chainAsset: ChainAsset
+    let selectedAccount: MetaChainAccountResponse
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol
     let quoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
@@ -29,6 +30,7 @@ final class SubtensorStakingSetupPresenter {
     private(set) var selectedTarget: SubtensorStakeTarget = .root
     private(set) var slippage: BigRational = SubtensorSlippageTolerance.defaultTolerance
     private(set) var quoteFlow = SubtensorQuoteFlowModel()
+    private(set) var tradesUnavailable = false
     private(set) var rewardEngine: SubtensorRewardCalculatorEngineProtocol?
     private var hasAcknowledgedSubnetRisk = false
     private let initialNetuid: UInt16?
@@ -40,6 +42,7 @@ final class SubtensorStakingSetupPresenter {
         interactor: SubtensorStakingSetupInteractorInputProtocol,
         wireframe: SubtensorStakingSetupWireframeProtocol,
         chainAsset: ChainAsset,
+        selectedAccount: MetaChainAccountResponse,
         dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactoryProtocol,
@@ -51,6 +54,7 @@ final class SubtensorStakingSetupPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.chainAsset = chainAsset
+        self.selectedAccount = selectedAccount
         self.dataValidationFactory = dataValidationFactory
         self.balanceViewModelFactory = balanceViewModelFactory
         self.accountDetailsViewModelFactory = accountDetailsViewModelFactory
@@ -115,11 +119,19 @@ private extension SubtensorStakingSetupPresenter {
     }
 
     func currentSpotPrice() -> Balance? {
-        quoteFlow.freshQuote?.spotPrice ?? selectedTarget.listedPrice
+        quoteFlow.freshQuote?.quote.spotPrice ?? selectedTarget.listedPrice
     }
 
     func currentLimitPrice() -> Balance? {
         selectedTarget.stakeLimitPrice(spot: currentSpotPrice(), tolerance: slippage)
+    }
+
+    func stakeOrigin() -> SubtensorOperationOrigin {
+        guard existingStakeInPlank() != nil else {
+            return .newPosition
+        }
+
+        return selectedTarget.isRoot ? .addStake : .buyMore
     }
 
     func getStakeModel() -> SubtensorStakeModel? {
@@ -233,7 +245,7 @@ private extension SubtensorStakingSetupPresenter {
 
     func provideQuoteViewModel() {
         let viewModel = quoteViewModelFactory.createQuotePanel(
-            for: quoteFlow.freshQuote,
+            for: quoteFlow.freshQuote?.quote,
             target: selectedTarget,
             locale: selectedLocale
         )
@@ -291,32 +303,50 @@ private extension SubtensorStakingSetupPresenter {
         view?.didReceiveSlippage(viewModel: viewModel)
     }
 
+    func quoteRequest() -> SubtensorTradeQuoteRequest? {
+        guard case let .subnet(info, _) = selectedTarget, let amount = inputAmountInPlank(), amount > 0 else {
+            return nil
+        }
+
+        return .buy(netuid: info.netuid, grossTao: amount, tolerance: slippage)
+    }
+
+    func feeOperation() -> SubtensorStakingOperation? {
+        let hotkey = getDelegateAccount() ?? AccountId.zeroAccountId(of: chainAsset.chain.accountIdSize)
+        let amount = inputAmountInPlank() ?? 0
+
+        guard !selectedTarget.isRoot else {
+            return .rootStake(hotkey: hotkey, amount: amount)
+        }
+
+        guard let limitPrice = currentLimitPrice() else {
+            return nil
+        }
+
+        let placeholder = Decimal(1).toSubstrateAmount(precision: chainAsset.assetDisplayInfo.assetPrecision) ?? 1
+
+        return .subnetBuy(
+            hotkey: hotkey,
+            netuid: selectedTarget.netuid,
+            grossTao: amount > 0 ? amount : placeholder,
+            limitPrice: limitPrice
+        )
+    }
+
     func refreshFee() {
         fee = nil
         provideFeeViewModel()
 
-        let hotkey = getDelegateAccount() ?? AccountId.zeroAccountId(
-            of: chainAsset.chain.accountIdSize
-        )
+        guard let operation = feeOperation() else {
+            return
+        }
 
-        let model = SubtensorStakeModel(
-            hotkey: hotkey,
-            netuid: selectedTarget.netuid,
-            amount: inputAmountInPlank() ?? 0,
-            limitPrice: currentLimitPrice()
-        )
-
-        interactor.estimateFee(for: .stake(model))
+        interactor.estimateFee(for: operation)
     }
 
     func updateQuote() {
-        let args = SubtensorQuoteFlowModel.stakeArgs(
-            for: selectedTarget,
-            amount: inputAmountInPlank()
-        )
-
-        if let refreshArgs = quoteFlow.updateArgs(args) {
-            interactor.refreshQuote(for: refreshArgs)
+        if let request = quoteFlow.updateRequest(quoteRequest()) {
+            interactor.refreshQuote(for: request)
         }
 
         provideQuoteViewModel()
@@ -330,23 +360,18 @@ private extension SubtensorStakingSetupPresenter {
         updateQuote()
     }
 
-    /// a forced refresh re-derives the args from the current state instead of replaying
-    /// a stored snapshot, so a fee or balance change can never pin the quote to stale args
     func forceQuoteRefresh() {
-        let args = SubtensorQuoteFlowModel.stakeArgs(
-            for: selectedTarget,
-            amount: inputAmountInPlank()
-        )
+        let request = quoteRequest()
 
-        if quoteFlow.updateArgs(args) != nil {
+        if quoteFlow.updateRequest(request) != nil {
             provideQuoteViewModel()
         }
 
-        guard let args else {
+        guard let request else {
             return
         }
 
-        interactor.refreshQuote(for: args)
+        interactor.refreshQuote(for: request)
     }
 
     func changeDelegate(with accountId: AccountId, name: String?, take: UInt16?) {
@@ -397,13 +422,12 @@ private extension SubtensorStakingSetupPresenter {
             return nil
         }
 
+        let latestQuote = quoteFlow.freshQuote
+
         return SubtensorQuoteValidatingContext(
-            args: SubtensorQuoteFlowModel.stakeArgs(
-                for: selectedTarget,
-                amount: inputAmountInPlank()
-            ),
-            quote: quoteFlow.freshQuote,
-            limitPrice: currentLimitPrice(),
+            latestQuote: latestQuote,
+            acknowledgedLimit: latestQuote?.limitPrice,
+            tradesUnavailable: tradesUnavailable,
             onQuoteRefresh: { [weak self] in
                 self?.forceQuoteRefresh()
             }
@@ -562,13 +586,17 @@ extension SubtensorStakingSetupPresenter: SubtensorStakingSetupPresenterProtocol
             wireframe.showConfirmation(
                 from: view,
                 model: SubtensorStakingConfirmModel(
-                    delegate: delegate,
-                    delegateTake: delegateTake ?? preflight?.delegateTake,
-                    stakeModel: stakeModel,
-                    isStakeMore: existingStakeInPlank() != nil,
+                    origin: stakeOrigin(),
+                    account: selectedAccount,
                     target: selectedTarget,
-                    slippage: selectedTarget.isRoot ? nil : slippage,
-                    quote: quoteFlow.freshQuote
+                    validator: SubtensorConfirmValidator(
+                        hotkey: stakeModel.hotkey,
+                        display: delegate,
+                        annualRate: nil
+                    ),
+                    amount: stakeModel.amount,
+                    tolerance: selectedTarget.isRoot ? nil : slippage,
+                    acknowledgedQuote: selectedTarget.isRoot ? nil : quoteFlow.freshQuote
                 )
             )
         }
@@ -676,6 +704,10 @@ extension SubtensorStakingSetupPresenter: SubtensorStakingSetupInteractorOutputP
         provideRewardsViewModel()
     }
 
+    func didReceivePositionsSyncFailed(_ isFailed: Bool) {
+        logger.debug("Positions sync failed: \(isFailed)")
+    }
+
     func didReceiveClaimable(_ claimable: SubtensorRootClaimable?) {
         logger.debug("Claimable: \(String(describing: claimable))")
     }
@@ -688,12 +720,14 @@ extension SubtensorStakingSetupPresenter: SubtensorStakingSetupInteractorOutputP
         forceQuoteRefresh()
     }
 
-    func didReceiveQuote(_ quote: SubtensorQuote) {
+    func didReceiveQuote(_ quote: SubtensorTradeQuote) {
         logger.debug("Quote: \(quote)")
 
         guard quoteFlow.applyQuote(quote) else {
             return
         }
+
+        tradesUnavailable = false
 
         provideQuoteViewModel()
     }
@@ -738,6 +772,10 @@ extension SubtensorStakingSetupPresenter: SubtensorStakingSetupInteractorOutputP
 
     func didReceiveBaseError(_ error: SubtensorStakingBaseError) {
         logger.error("Error: \(error)")
+
+        if error.isNovaFeeUnavailable {
+            tradesUnavailable = true
+        }
 
         switch error {
         case .feeFailed:

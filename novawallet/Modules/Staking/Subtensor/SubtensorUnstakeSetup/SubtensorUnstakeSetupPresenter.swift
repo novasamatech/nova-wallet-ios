@@ -9,6 +9,7 @@ final class SubtensorUnstakeSetupPresenter {
     let logger: LoggerProtocol
 
     let chainAsset: ChainAsset
+    let selectedAccount: MetaChainAccountResponse
     let flowNetuid: UInt16
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
@@ -23,6 +24,7 @@ final class SubtensorUnstakeSetupPresenter {
     private(set) var positionsState: Multistaking.SubtensorStakingState?
     private(set) var claimable: SubtensorRootClaimable?
     private(set) var preflight: SubtensorStakingPreflight?
+    private(set) var existentialDeposit: Balance?
     private(set) var delegateDisplayAddress: DisplayAddress?
     private(set) var delegateIdentities: [AccountId: AccountIdentity]?
     private(set) var currentBlock: BlockNumber?
@@ -31,12 +33,14 @@ final class SubtensorUnstakeSetupPresenter {
     private(set) var selectedTarget: SubtensorStakeTarget?
     private(set) var slippage: BigRational = SubtensorSlippageTolerance.defaultTolerance
     private(set) var quoteFlow = SubtensorQuoteFlowModel()
+    private(set) var tradesUnavailable = false
     private var cachedInputBalanceViewModelFactory: BalanceViewModelFactoryProtocol?
 
     init(
         interactor: SubtensorUnstakeSetupInteractorInputProtocol,
         wireframe: SubtensorUnstakeSetupWireframeProtocol,
         chainAsset: ChainAsset,
+        selectedAccount: MetaChainAccountResponse,
         dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
@@ -49,6 +53,7 @@ final class SubtensorUnstakeSetupPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.chainAsset = chainAsset
+        self.selectedAccount = selectedAccount
         self.dataValidationFactory = dataValidationFactory
         self.balanceViewModelFactory = balanceViewModelFactory
         self.priceAssetInfoFactory = priceAssetInfoFactory
@@ -164,24 +169,16 @@ private extension SubtensorUnstakeSetupPresenter {
         return amount.map { min($0, unstakeBasis.available) }
     }
 
-    /// a max input only closes the position when nothing of it is locked, otherwise
-    /// `remove_stake_full_limit` would be submitted for more than the chain allows
-    func isFullUnstake() -> Bool {
-        let basis = unstakeBasis
-
-        guard let inputResult, basis.staked > 0 else {
-            return false
+    func groupExitHotkeys(for amount: Balance?) -> [AccountId]? {
+        guard let amount, let positionsState else {
+            return nil
         }
 
-        if case let .rate(value) = inputResult, value >= 1 {
-            return basis.isFullyAvailable
-        }
-
-        return inputAmountInPlank() == basis.staked
+        return SubtensorConfirmTapRule.groupExitHotkeys(for: amount, netuid: flowNetuid, in: positionsState)
     }
 
     func currentSpotPrice() -> Balance? {
-        quoteFlow.freshQuote?.spotPrice ?? selectedTarget?.listedPrice
+        quoteFlow.freshQuote?.quote.spotPrice ?? selectedTarget?.listedPrice
     }
 
     func currentLimitPrice() -> Balance? {
@@ -193,9 +190,7 @@ private extension SubtensorUnstakeSetupPresenter {
             return nil
         }
 
-        let limitPrice = currentLimitPrice()
-
-        guard isRootFlow || limitPrice != nil else {
+        guard isRootFlow || currentLimitPrice() != nil else {
             return nil
         }
 
@@ -203,8 +198,7 @@ private extension SubtensorUnstakeSetupPresenter {
             hotkey: hotkey,
             netuid: flowNetuid,
             amount: amount,
-            isFullUnstake: isFullUnstake(),
-            limitPrice: limitPrice
+            exitHotkeys: groupExitHotkeys(for: amount)
         )
     }
 
@@ -339,7 +333,7 @@ private extension SubtensorUnstakeSetupPresenter {
         }
 
         let viewModel = quoteViewModelFactory.createQuotePanel(
-            for: quoteFlow.freshQuote,
+            for: quoteFlow.freshQuote?.quote,
             target: selectedTarget,
             locale: selectedLocale
         )
@@ -361,63 +355,92 @@ private extension SubtensorUnstakeSetupPresenter {
         quoteView?.didReceiveSlippage(viewModel: viewModel)
     }
 
+    func quoteRequest() -> SubtensorTradeQuoteRequest? {
+        guard
+            case let .subnet(info, _) = selectedTarget,
+            let amount = inputAmountInPlank(),
+            amount > 0 else {
+            return nil
+        }
+
+        return .sell(netuid: info.netuid, alpha: amount, tolerance: slippage)
+    }
+
+    func feeOperation() -> SubtensorStakingOperation? {
+        let hotkey = getDelegateAccount() ?? AccountId.zeroAccountId(of: chainAsset.chain.accountIdSize)
+        let amount = inputAmountInPlank() ?? 0
+        let exitHotkeys = groupExitHotkeys(for: amount)
+
+        guard !isRootFlow else {
+            if let exitHotkeys {
+                return .rootUnstakeAll(hotkeys: exitHotkeys)
+            }
+
+            return .rootUnstake(hotkey: hotkey, amount: amount)
+        }
+
+        guard let limitPrice = currentLimitPrice(), let spotPrice = currentSpotPrice() else {
+            return nil
+        }
+
+        let placeholder = Decimal(1).toSubstrateAmount(precision: inputDisplayInfo().assetPrecision) ?? 1
+        let alpha = amount > 0 ? amount : placeholder
+        let quotedTaoOut = quoteFlow.freshQuote?.quote.sim.taoAmount ??
+            alpha * spotPrice / SubtensorStakingPallet.alphaPriceScale
+
+        guard quotedTaoOut > 0 else {
+            return nil
+        }
+
+        if let exitHotkeys {
+            return .subnetSellAll(
+                hotkeys: exitHotkeys,
+                netuid: flowNetuid,
+                limitPrice: limitPrice,
+                quotedTaoOut: quotedTaoOut
+            )
+        }
+
+        return .subnetSell(
+            hotkey: hotkey,
+            netuid: flowNetuid,
+            alpha: alpha,
+            limitPrice: limitPrice,
+            quotedTaoOut: quotedTaoOut
+        )
+    }
+
     func refreshFee() {
         fee = nil
         provideFeeViewModel()
 
-        let hotkey = getDelegateAccount() ?? AccountId.zeroAccountId(
-            of: chainAsset.chain.accountIdSize
-        )
-
-        let model = SubtensorUnstakeModel(
-            hotkey: hotkey,
-            netuid: flowNetuid,
-            amount: inputAmountInPlank() ?? 0,
-            isFullUnstake: isFullUnstake(),
-            limitPrice: currentLimitPrice()
-        )
-
-        interactor.estimateFee(for: .unstake(model))
-    }
-
-    func updateQuote() {
-        guard let selectedTarget else {
+        guard let operation = feeOperation() else {
             return
         }
 
-        let args = SubtensorQuoteFlowModel.unstakeArgs(
-            for: selectedTarget,
-            amount: inputAmountInPlank()
-        )
+        interactor.estimateFee(for: operation)
+    }
 
-        if let refreshArgs = quoteFlow.updateArgs(args) {
-            interactor.refreshQuote(for: refreshArgs)
+    func updateQuote() {
+        if let request = quoteFlow.updateRequest(quoteRequest()) {
+            interactor.refreshQuote(for: request)
         }
 
         provideQuoteViewModel()
     }
 
-    /// a forced refresh re-derives the args from the current state instead of replaying
-    /// a stored snapshot, so a positions or target change can never pin the quote to stale args
     func forceQuoteRefresh() {
-        guard let selectedTarget else {
-            return
-        }
+        let request = quoteRequest()
 
-        let args = SubtensorQuoteFlowModel.unstakeArgs(
-            for: selectedTarget,
-            amount: inputAmountInPlank()
-        )
-
-        if quoteFlow.updateArgs(args) != nil {
+        if quoteFlow.updateRequest(request) != nil {
             provideQuoteViewModel()
         }
 
-        guard let args else {
+        guard let request else {
             return
         }
 
-        interactor.refreshQuote(for: args)
+        interactor.refreshQuote(for: request)
     }
 
     func setupInitialDelegate() {
@@ -476,12 +499,12 @@ private extension SubtensorUnstakeSetupPresenter {
             return nil
         }
 
+        let latestQuote = quoteFlow.freshQuote
+
         return SubtensorQuoteValidatingContext(
-            args: selectedTarget.flatMap { target in
-                SubtensorQuoteFlowModel.unstakeArgs(for: target, amount: inputAmountInPlank())
-            },
-            quote: quoteFlow.freshQuote,
-            limitPrice: currentLimitPrice(),
+            latestQuote: latestQuote,
+            acknowledgedLimit: latestQuote?.limitPrice,
+            tradesUnavailable: tradesUnavailable,
             onQuoteRefresh: { [weak self] in
                 self?.forceQuoteRefresh()
             }
@@ -505,16 +528,20 @@ extension SubtensorUnstakeSetupPresenter {
     func getValidationDependencies() -> SubtensorUnstakeValidatingDep {
         SubtensorUnstakeValidatingDep(
             netuid: flowNetuid,
+            accountId: selectedAccount.chainAccount.accountId,
             amount: inputAmountInPlank(),
-            stakedAmount: stakedAmountInPlank(),
-            isFullUnstake: isFullUnstake(),
+            positionAlpha: stakedAmountInPlank(),
+            availability: preflight?.stakeAvailability,
+            exitHotkeys: groupExitHotkeys(for: inputAmountInPlank()),
             balance: balance,
             fee: fee,
+            existentialDeposit: existentialDeposit,
             preflight: preflight,
-            claimablePayout: claimablePayout(),
+            holds: nil,
             currentBlock: currentBlock,
             blockTime: chainAsset.chain.defaultBlockTimeMillis ?? SubtensorStakingFlowConstants.blockTimeMillis,
             assetDisplayInfo: inputDisplayInfo(),
+            syncFailed: positionsSyncFailed,
             onFeeRefresh: { [weak self] in
                 self?.refreshFee()
             },
@@ -525,12 +552,11 @@ extension SubtensorUnstakeSetupPresenter {
 
                 interactor.applyDelegate(with: hotkey, netuid: flowNetuid)
             },
-            onUnstakeAll: makeUnstakeAllOffer(),
-            quoteContext: getQuoteContext(),
-            positionsSyncFailed: positionsSyncFailed,
             onPositionsRefresh: { [weak self] in
                 self?.interactor.refreshPositions()
-            }
+            },
+            onUnstakeAll: makeUnstakeAllOffer(),
+            quoteContext: getQuoteContext()
         )
     }
 }
@@ -632,11 +658,17 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
             wireframe.showConfirm(
                 from: view,
                 model: SubtensorUnstakeConfirmModel(
-                    delegate: delegate,
-                    unstakeModel: unstakeModel,
+                    origin: isRootFlow ? .unstake : .sell,
+                    account: selectedAccount,
                     target: selectedTarget ?? .root,
-                    slippage: isRootFlow ? nil : slippage,
-                    quote: quoteFlow.freshQuote
+                    validator: SubtensorConfirmValidator(
+                        hotkey: unstakeModel.hotkey,
+                        display: delegate,
+                        annualRate: nil
+                    ),
+                    unstakeModel: unstakeModel,
+                    tolerance: isRootFlow ? nil : slippage,
+                    acknowledgedQuote: isRootFlow ? nil : quoteFlow.freshQuote
                 )
             )
         }
@@ -764,12 +796,14 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
         forceQuoteRefresh()
     }
 
-    func didReceiveQuote(_ quote: SubtensorQuote) {
+    func didReceiveQuote(_ quote: SubtensorTradeQuote) {
         logger.debug("Quote: \(quote)")
 
         guard quoteFlow.applyQuote(quote) else {
             return
         }
+
+        tradesUnavailable = false
 
         provideQuoteViewModel()
     }
@@ -798,6 +832,8 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
 
     func didReceiveExistentialDeposit(_ deposit: Balance) {
         logger.debug("Existential deposit: \(deposit)")
+
+        existentialDeposit = deposit
     }
 
     func didReceiveDelegateIdentities(_ identities: [AccountId: AccountIdentity]?) {
@@ -817,6 +853,10 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupInteractorOutputP
 
     func didReceiveBaseError(_ error: SubtensorStakingBaseError) {
         logger.error("Error: \(error)")
+
+        if error.isNovaFeeUnavailable {
+            tradesUnavailable = true
+        }
 
         switch error {
         case .feeFailed:

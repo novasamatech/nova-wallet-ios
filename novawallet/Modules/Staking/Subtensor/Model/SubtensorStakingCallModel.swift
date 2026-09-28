@@ -3,7 +3,7 @@ import SubstrateSdk
 
 enum SubtensorStakingCallModel {
     case stake(SubtensorStakeModel)
-    case unstake(SubtensorUnstakeModel)
+    case unstake(SubtensorUnstakeModel, limitPrice: Balance? = nil)
     case claim(hotkey: AccountId)
 }
 
@@ -20,8 +20,8 @@ extension SubtensorStakingCallModel {
             guard model.netuid == SubtensorStakingPallet.rootNetuid || model.limitPrice != nil else {
                 throw SubtensorStakingCallModelError.unprotectedSubnetOrder(netuid: model.netuid)
             }
-        case let .unstake(model):
-            guard model.netuid == SubtensorStakingPallet.rootNetuid || model.limitPrice != nil else {
+        case let .unstake(model, limitPrice):
+            guard model.netuid == SubtensorStakingPallet.rootNetuid || limitPrice != nil else {
                 throw SubtensorStakingCallModelError.unprotectedSubnetOrder(netuid: model.netuid)
             }
         case .claim:
@@ -54,16 +54,16 @@ extension SubtensorStakingCallModel {
 
                     return try builder.adding(call: call.runtimeCall())
                 }
-            case let .unstake(model) where model.isFullUnstake:
+            case let .unstake(model, limitPrice) where model.isFullUnstake:
                 let call = SubtensorStakingPallet.RemoveStakeFullLimitCall(
                     hotkey: model.hotkey,
                     netuid: model.netuid,
-                    limitPrice: model.limitPrice
+                    limitPrice: limitPrice
                 )
 
                 return try builder.adding(call: call.runtimeCall())
-            case let .unstake(model):
-                if let limitPrice = model.limitPrice {
+            case let .unstake(model, limitPrice):
+                if let limitPrice {
                     let call = SubtensorStakingPallet.RemoveStakeLimitCall(
                         hotkey: model.hotkey,
                         netuid: model.netuid,

@@ -68,7 +68,7 @@ final class SubtensorStakingDetailsInteractor: AnyProviderAutoCleaning {
 
 private extension SubtensorStakingDetailsInteractor {
     func setupState() {
-        sharedState.setup(for: selectedAccountId)
+        sharedState.setup(for: selectedAccount)
 
         presenter?.didReceiveChainAsset(chainAsset)
         presenter?.didReceiveAccount(selectedAccount)

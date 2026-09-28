@@ -6,10 +6,13 @@ protocol SubtensorClaimRewardsViewProtocol: StakingGenericRewardsViewProtocol {
 }
 
 protocol SubtensorClaimRewardsInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {
+    func estimateClaimFee(for hotkey: AccountId)
     func submitClaims(for hotkeys: [AccountId])
 }
 
-protocol SubtensorClaimRewardsInteractorOutputProtocol: SubtensorStakingSubmitInteractorOutputProtocol {}
+protocol SubtensorClaimRewardsInteractorOutputProtocol: SubtensorStakingBaseInteractorOutputProtocol {
+    func didReceiveSubmissionResult(_ result: Result<SubtensorSubmissionModel, Error>)
+}
 
 protocol SubtensorClaimRewardsWireframeProtocol: AlertPresentable, ErrorPresentable,
     CommonRetryable, FeeRetryable,

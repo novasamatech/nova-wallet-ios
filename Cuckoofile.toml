@@ -178,6 +178,10 @@ sources = [
     "novawallet/Common/Network/Coingecko/CoingeckoOperationFactory.swift",
     "novawallet/Common/GlobalConfig/GlobalConfigProvider.swift",
     "novawallet/Common/Logger/Logger.swift",
+    "novawallet/Modules/Staking/Subtensor/Services/SubtensorSubnetCatalogueServiceProtocol.swift",
+    "novawallet/Modules/Staking/Subtensor/Services/SubtensorRankingViewServiceProtocol.swift",
+    "novawallet/Modules/Staking/CollatorStaking/Confirm/CollatorStakingConfirmProtocol.swift",
+    "novawallet/Modules/Staking/CollatorStaking/UnstakeConfirm/CollatorStkUnstakeConfirmProtocols.swift",
 ]
 
 exclude = [

@@ -30,12 +30,16 @@ protocol SubtensorStakingErrorPresentable: BaseErrorPresentable {
 
     func presentStakeAmountTooLow(_ view: ControllerBackedProtocol, minStake: String, locale: Locale?)
 
-    func presentStakeAllWarning(
+    func presentSubnetTradesUnavailable(_ view: ControllerBackedProtocol, locale: Locale?)
+
+    func presentFeeReserveRequired(
         _ view: ControllerBackedProtocol,
+        maxAmount: String,
         reserve: String,
-        action: @escaping () -> Void,
         locale: Locale?
     )
+
+    func presentBatchedSellFeeNotCovered(_ view: ControllerBackedProtocol, requiredAmount: String, locale: Locale?)
 
     func presentHotkeyNotFound(_ view: ControllerBackedProtocol, locale: Locale?)
 
@@ -65,13 +69,9 @@ protocol SubtensorStakingErrorPresentable: BaseErrorPresentable {
         locale: Locale?
     )
 
-    func presentUnstakeLocked(_ view: ControllerBackedProtocol, eta: String, locale: Locale?)
+    func presentLockedRemainder(_ view: ControllerBackedProtocol, remainder: String, minStake: String, locale: Locale?)
 
-    func presentClaimFirstAdvisory(
-        _ view: ControllerBackedProtocol,
-        action: @escaping () -> Void,
-        locale: Locale?
-    )
+    func presentUnstakeLocked(_ view: ControllerBackedProtocol, eta: String, locale: Locale?)
 
     func presentClaimFeeNotAvailable(_ view: ControllerBackedProtocol, fee: String, locale: Locale?)
 
@@ -180,18 +180,39 @@ extension SubtensorStakingErrorPresentable where Self: AlertPresentable & ErrorP
         present(viewModel: viewModel, style: .alert, from: view)
     }
 
-    func presentStakeAllWarning(
+    func presentSubnetTradesUnavailable(_ view: ControllerBackedProtocol, locale: Locale?) {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        presentError(
+            title: strings.stakingSubtensorTradesUnavailableTitle(),
+            message: strings.stakingSubtensorErrorNovaFeeUnavailable(),
+            view: view,
+            locale: locale
+        )
+    }
+
+    func presentFeeReserveRequired(
         _ view: ControllerBackedProtocol,
+        maxAmount: String,
         reserve: String,
-        action: @escaping () -> Void,
         locale: Locale?
     ) {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
-        presentWarning(
-            for: strings.stakingSubtensorStakeAllWarningTitle(),
-            message: strings.stakingSubtensorStakeAllWarningMessage(reserve),
-            action: action,
+        presentError(
+            title: strings.stakingSubtensorReserveTitle(reserve),
+            message: strings.stakingSubtensorReserveMessage(maxAmount, reserve),
+            view: view,
+            locale: locale
+        )
+    }
+
+    func presentBatchedSellFeeNotCovered(_ view: ControllerBackedProtocol, requiredAmount: String, locale: Locale?) {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        presentError(
+            title: strings.stakingSubtensorBatchedSellFeeTitle(),
+            message: strings.stakingSubtensorBatchedSellFeeMessage(requiredAmount),
             view: view,
             locale: locale
         )
@@ -309,7 +330,7 @@ extension SubtensorStakingErrorPresentable where Self: AlertPresentable & ErrorP
         let proceedAction = AlertPresentableAction(title: strings.commonProceed(), handler: action)
 
         let closeAllAction = AlertPresentableAction(
-            title: strings.stakingSubtensorDustRemainderAction(),
+            title: strings.stakingUnstakeAll(),
             style: .destructive,
             handler: unstakeAllAction
         )
@@ -335,17 +356,17 @@ extension SubtensorStakingErrorPresentable where Self: AlertPresentable & ErrorP
         )
     }
 
-    func presentClaimFirstAdvisory(
+    func presentLockedRemainder(
         _ view: ControllerBackedProtocol,
-        action: @escaping () -> Void,
+        remainder: String,
+        minStake: String,
         locale: Locale?
     ) {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
-        presentWarning(
-            for: strings.stakingSubtensorClaimFirstTitle(),
-            message: strings.stakingSubtensorClaimFirstMessage(),
-            action: action,
+        presentError(
+            title: strings.stakingSubtensorRemainderLockedTitle(),
+            message: strings.stakingSubtensorRemainderLockedMessage(remainder, minStake),
             view: view,
             locale: locale
         )

@@ -2,9 +2,9 @@ import BigInt
 import Foundation
 
 struct SubtensorQuoteValidatingContext {
-    let args: SubtensorQuoteArgs?
-    let quote: SubtensorQuote?
-    let limitPrice: Balance?
+    let latestQuote: SubtensorTradeQuote?
+    let acknowledgedLimit: Balance?
+    let tradesUnavailable: Bool
     let onQuoteRefresh: () -> Void
 }
 
@@ -15,15 +15,17 @@ protocol SubtensorStakingValidationFactoryProtocol: BaseDataValidatingFactoryPro
         onRetry: @escaping () -> Void
     ) -> DataValidating
 
+    func subnetTradesAvailable(
+        tradesUnavailable: Bool,
+        locale: Locale
+    ) -> DataValidating
+
     func hasFreshQuote(
-        _ quote: SubtensorQuote?,
-        for args: SubtensorQuoteArgs?,
+        _ quote: SubtensorTradeQuote?,
         locale: Locale,
         onRetry: @escaping () -> Void
     ) -> DataValidating
 
-    /// spec §3.2 — a failed positions resync blocks the operation instead of letting a stale
-    /// stake amount become the basis of an extrinsic
     func positionsAreFresh(
         syncFailed: Bool,
         locale: Locale,
@@ -31,28 +33,28 @@ protocol SubtensorStakingValidationFactoryProtocol: BaseDataValidatingFactoryPro
     ) -> DataValidating
 
     func orderWithinSlippageTolerance(
-        quote: SubtensorQuote?,
+        quote: SubtensorTradeQuote?,
         limitPrice: Balance?,
         locale: Locale
     ) -> DataValidating
 
     func priceImpactAcceptable(
-        quote: SubtensorQuote?,
+        quote: SubtensorTradeQuote?,
+        locale: Locale
+    ) -> DataValidating
+
+    func respectsFeeReserve(
+        amount: Balance?,
+        transferable: Balance?,
+        networkFee: Balance?,
         locale: Locale
     ) -> DataValidating
 
     func hasMinStakeAmount(
-        amount: Balance?,
+        stakedAmount: Balance?,
         minStake: Balance?,
         quotedSwapFee: Balance?,
-        locale: Locale
-    ) -> DataValidating
-
-    func retainsFeeReserveAfterStake(
-        balance: Balance?,
-        amount: Balance?,
-        fee: Balance?,
-        existentialDeposit: Balance?,
+        includesNovaFee: Bool,
         locale: Locale
     ) -> DataValidating
 
@@ -78,31 +80,22 @@ protocol SubtensorStakingValidationFactoryProtocol: BaseDataValidatingFactoryPro
         locale: Locale
     ) -> DataValidating
 
+    func canPayBatchedNetworkFee(
+        transferable: Balance?,
+        networkFee: Balance?,
+        existentialDeposit: Balance?,
+        locale: Locale
+    ) -> DataValidating
+
     func canPayFeeFromStakeOtherwiseWarns(
         transferable: Balance?,
         fee: Balance?,
         locale: Locale
     ) -> DataValidating
 
-    /// `assetDisplayInfo` overrides the factory's chain asset because the available figure is
-    /// denominated in alpha on the subnet lane
-    func unstakeNotExceedsAvailable(
-        amount: Balance?,
-        available: Balance?,
+    func sellPlanAllows(
+        _ input: SubtensorSellPlanInput?,
         assetDisplayInfo: AssetBalanceDisplayInfo?,
-        locale: Locale
-    ) -> DataValidating
-
-    func unstakeAboveMinTaoOut(
-        taoOut: Balance?,
-        minAmount: Balance?,
-        isFullUnstake: Bool,
-        locale: Locale
-    ) -> DataValidating
-
-    func remainderNotBelowNominatorMin(
-        remainder: Balance?,
-        nominatorMinStake: Balance?,
         onUnstakeAll: (() -> Void)?,
         locale: Locale
     ) -> DataValidating
@@ -112,12 +105,6 @@ protocol SubtensorStakingValidationFactoryProtocol: BaseDataValidatingFactoryPro
         lastStakeBlock: UInt64?,
         unlockInterval: UInt64?,
         blockTime: BlockTime,
-        locale: Locale
-    ) -> DataValidating
-
-    func claimFirstAdvisory(
-        claimable: Balance?,
-        threshold: Balance?,
         locale: Locale
     ) -> DataValidating
 

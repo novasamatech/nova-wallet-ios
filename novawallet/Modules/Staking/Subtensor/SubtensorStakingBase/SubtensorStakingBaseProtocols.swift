@@ -24,9 +24,10 @@ extension BalanceViewModelProtocol {
 
 protocol SubtensorStakingBaseInteractorInputProtocol: AnyObject {
     func setup()
-    func estimateFee(for call: SubtensorStakingCallModel)
+    func estimateFee(for operation: SubtensorStakingOperation)
     func refreshPreflight(for hotkey: AccountId, netuid: UInt16)
-    func refreshQuote(for args: SubtensorQuoteArgs)
+    func refreshQuote(for request: SubtensorTradeQuoteRequest)
+    func refreshPositions()
 }
 
 protocol SubtensorStakingBaseInteractorOutputProtocol: AnyObject {
@@ -34,10 +35,11 @@ protocol SubtensorStakingBaseInteractorOutputProtocol: AnyObject {
     func didReceivePrice(_ priceData: PriceData?)
     func didReceiveFee(_ fee: ExtrinsicFeeProtocol)
     func didReceivePositions(_ state: Multistaking.SubtensorStakingState?)
+    func didReceivePositionsSyncFailed(_ isFailed: Bool)
     func didReceiveClaimable(_ claimable: SubtensorRootClaimable?)
     func didReceiveBlockNumber(_ blockNumber: BlockNumber)
     func didReceivePreflight(_ preflight: SubtensorStakingPreflight)
-    func didReceiveQuote(_ quote: SubtensorQuote)
+    func didReceiveQuote(_ quote: SubtensorTradeQuote)
     func didReceiveExistentialDeposit(_ deposit: Balance)
     func didReceiveBaseError(_ error: SubtensorStakingBaseError)
 }
@@ -46,6 +48,17 @@ enum SubtensorStakingBaseError: Error {
     case feeFailed(Error)
     case preflightFailed(Error)
     case quoteFailed(Error)
+}
+
+extension SubtensorStakingBaseError {
+    var isNovaFeeUnavailable: Bool {
+        switch self {
+        case let .feeFailed(error), let .quoteFailed(error):
+            (error as? SubtensorStakingOperationError) == .novaFeeUnavailable
+        case .preflightFailed:
+            false
+        }
+    }
 }
 
 protocol SubtensorStakingDelegateInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {
@@ -57,9 +70,11 @@ protocol SubtensorStakingDelegateInteractorOutputProtocol: SubtensorStakingBaseI
 }
 
 protocol SubtensorStakingSubmitInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {
-    func submit(call: SubtensorStakingCallModel)
+    func submit(operation: SubtensorStakingOperation)
 }
 
 protocol SubtensorStakingSubmitInteractorOutputProtocol: SubtensorStakingBaseInteractorOutputProtocol {
-    func didReceiveSubmissionResult(_ result: Result<SubtensorSubmissionModel, Error>)
+    func didReceiveSubmissionResult(
+        _ result: Result<SubtensorStakingOperationOutcome, SubtensorStakingSubmissionFailure>
+    )
 }

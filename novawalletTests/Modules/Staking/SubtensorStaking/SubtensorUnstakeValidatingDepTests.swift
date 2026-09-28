@@ -3,211 +3,180 @@ import BigInt
 import XCTest
 
 final class SubtensorUnstakeValidatingDepTests: XCTestCase {
-    private func makePreflight(
-        availability: SubtensorStakingPallet.StakeAvailability?
-    ) -> SubtensorStakingPreflight {
+    private let accountId = Data(repeating: 0x11, count: 32)
+    private let primaryHotkey = Data(repeating: 0x22, count: 32)
+    private let secondHotkey = Data(repeating: 0x33, count: 32)
+
+    private func makePreflight(hotkeyOwner: AccountId? = nil) -> SubtensorStakingPreflight {
         SubtensorStakingPreflight(
             hotkeyExists: true,
             subnetExists: true,
             subtokenEnabled: true,
             hasColdkeySwapAnnouncement: false,
             isSafeModeActive: false,
-            stakeAvailability: availability,
-            rootStakeUnlockInterval: 0,
+            stakeAvailability: nil,
+            rootStakeUnlockInterval: 7200,
             lastStakeBlock: nil,
             minStake: 2_000_000,
             effectiveNominatorMinStake: 20_000_000,
             rootClaimableThreshold: 500_000,
-            delegateTake: 11796
+            delegateTake: 11796,
+            hotkeyOwner: hotkeyOwner
+        )
+    }
+
+    private func makeLatestSellQuote() -> SubtensorTradeQuote {
+        let quote = SubtensorQuote(
+            args: SubtensorQuoteArgs(netuid: 64, direction: .unstake(alphaIn: 56_200_000_000)),
+            sim: SubtensorStakingPallet.SimSwapResult(
+                taoAmount: 4_145_000_000,
+                alphaAmount: 56_171_700_618,
+                taoFee: 0,
+                alphaFee: 28_299_382,
+                taoSlippage: 0,
+                alphaSlippage: 0
+            ),
+            spotPrice: 73_800_000,
+            feeRate: 33
+        )
+
+        return SubtensorTradeQuote(
+            quote: quote,
+            amountIn: 56_200_000_000,
+            novaFee: SubtensorNovaFee(amount: 34_935_547, beneficiary: Data(repeating: 0xBB, count: 32)),
+            expectedOut: 4_110_064_453,
+            swapMinimumOut: 4_124_744_148,
+            minimumOut: 4_089_808_601,
+            limitPrice: 73_431_000
         )
     }
 
     private func makeDep(
-        amount: Balance?,
-        stakedAmount: Balance?,
-        isFullUnstake: Bool,
-        preflight: SubtensorStakingPreflight?,
-        quoteContext: SubtensorQuoteValidatingContext? = nil,
-        netuid: UInt16 = SubtensorStakingPallet.rootNetuid
+        netuid: UInt16 = SubtensorStakingPallet.rootNetuid,
+        amount: Balance = 1_000_000_000,
+        availability: SubtensorStakingPallet.StakeAvailability? = nil,
+        exitHotkeys: [AccountId]? = nil,
+        preflight: SubtensorStakingPreflight? = nil,
+        holds: [AccountId: SubtensorRootHold]? = nil,
+        currentBlock: BlockNumber? = 100_000,
+        quoteContext: SubtensorQuoteValidatingContext? = nil
     ) -> SubtensorUnstakeValidatingDep {
         SubtensorUnstakeValidatingDep(
             netuid: netuid,
+            accountId: accountId,
             amount: amount,
-            stakedAmount: stakedAmount,
-            isFullUnstake: isFullUnstake,
+            positionAlpha: 100_000_000_000,
+            availability: availability,
+            exitHotkeys: exitHotkeys,
             balance: nil,
             fee: nil,
-            preflight: preflight,
-            claimablePayout: nil,
-            currentBlock: nil,
+            existentialDeposit: 500,
+            preflight: preflight ?? makePreflight(),
+            holds: holds,
+            currentBlock: currentBlock,
             blockTime: 12000,
             assetDisplayInfo: AssetBalanceDisplayInfo.units(for: 9),
+            syncFailed: false,
             onFeeRefresh: {},
             onPreflightRefresh: {},
+            onPositionsRefresh: {},
             onUnstakeAll: nil,
             quoteContext: quoteContext
         )
     }
 
-    private func makeQuoteContext(
-        alphaIn: Balance,
-        taoOut: Balance?,
-        spot: Balance
-    ) -> SubtensorQuoteValidatingContext {
-        let args = SubtensorQuoteArgs(netuid: 1, direction: .unstake(alphaIn: alphaIn))
-
-        let quote: SubtensorQuote? = taoOut.map { taoOut in
-            SubtensorQuote(
-                args: args,
-                sim: SubtensorStakingPallet.SimSwapResult(
-                    taoAmount: taoOut,
-                    alphaAmount: alphaIn,
-                    taoFee: 0,
-                    alphaFee: 0,
-                    taoSlippage: 0,
-                    alphaSlippage: 0
-                ),
-                spotPrice: spot,
-                feeRate: 33
+    private func makeSellDep(acknowledgedLimit: Balance?) -> SubtensorUnstakeValidatingDep {
+        makeDep(
+            netuid: 64,
+            amount: 56_200_000_000,
+            quoteContext: SubtensorQuoteValidatingContext(
+                latestQuote: makeLatestSellQuote(),
+                acknowledgedLimit: acknowledgedLimit,
+                tradesUnavailable: false,
+                onQuoteRefresh: {}
             )
-        }
-
-        return SubtensorQuoteValidatingContext(
-            args: args,
-            quote: quote,
-            limitPrice: nil,
-            onQuoteRefresh: {}
         )
     }
 
-    func testAvailableIsUndefinedWithoutPreflight() {
-        let dep = makeDep(amount: 100, stakedAmount: 1000, isFullUnstake: false, preflight: nil)
-
-        XCTAssertNil(dep.availableToUnstake)
+    func testSubnetSellIsBatched() {
+        XCTAssertTrue(makeSellDep(acknowledgedLimit: 73_431_000).isBatched)
     }
 
-    func testAvailableFallsBackToStakedWhenAvailabilityMissing() {
-        let dep = makeDep(
-            amount: 100,
-            stakedAmount: 1000,
-            isFullUnstake: false,
-            preflight: makePreflight(availability: nil)
-        )
-
-        XCTAssertEqual(dep.availableToUnstake, 1000)
+    func testSingleHotkeyRootUnstakeIsNotBatched() {
+        XCTAssertFalse(makeDep(exitHotkeys: [primaryHotkey]).isBatched)
     }
 
-    func testAvailableIsCappedByAvailability() {
+    func testRootGroupExitIsBatched() {
+        XCTAssertTrue(makeDep(exitHotkeys: [primaryHotkey, secondHotkey]).isBatched)
+    }
+
+    func testSubnetSellPlanUsesTheGuaranteedSwapOutputAndTheAcknowledgedLimit() throws {
+        let input = try XCTUnwrap(makeSellDep(acknowledgedLimit: 73_300_000).sellPlanInput)
+
+        XCTAssertEqual(input.requestedAlpha, 56_200_000_000)
+        XCTAssertEqual(input.minimumTaoOut, 4_124_744_148)
+        XCTAssertEqual(input.sellLimitPrice, 73_300_000)
+        XCTAssertEqual(input.minStake, 2_000_000)
+        XCTAssertEqual(input.nominatorMinStake, 20_000_000)
+    }
+
+    func testSubnetSellPlanIsUndefinedWithoutAnAcknowledgedLimit() {
+        XCTAssertNil(makeSellDep(acknowledgedLimit: nil).sellPlanInput)
+    }
+
+    func testRootSellPlanTakesTheAmountAtParity() throws {
+        let input = try XCTUnwrap(makeDep().sellPlanInput)
+
+        XCTAssertEqual(input.minimumTaoOut, 1_000_000_000)
+        XCTAssertEqual(input.sellLimitPrice, SubtensorStakingPallet.alphaPriceScale)
+    }
+
+    func testSellPlanTreatsAMissingAvailabilityAsUnlocked() throws {
+        let input = try XCTUnwrap(makeDep().sellPlanInput)
+
+        XCTAssertEqual(input.availability.available, 100_000_000_000)
+    }
+
+    func testSellPlanKeepsThePinnedAvailability() throws {
         let availability = SubtensorStakingPallet.StakeAvailability(
-            total: 1000,
-            locked: 400,
-            available: 600
+            total: 100_000_000_000,
+            locked: 40_000_000_000,
+            available: 60_000_000_000
         )
 
-        let dep = makeDep(
-            amount: 100,
-            stakedAmount: 1000,
-            isFullUnstake: false,
-            preflight: makePreflight(availability: availability)
-        )
+        let input = try XCTUnwrap(makeDep(availability: availability).sellPlanInput)
 
-        XCTAssertEqual(dep.availableToUnstake, 600)
+        XCTAssertEqual(input.availability, availability)
     }
 
-    func testAvailableIsCappedByPositionStake() {
-        let availability = SubtensorStakingPallet.StakeAvailability(
-            total: 5000,
-            locked: 0,
-            available: 5000
-        )
+    func testSellPlanRecognisesTheOwnHotkeyFromThePreflightOwner() throws {
+        let input = try XCTUnwrap(makeDep(preflight: makePreflight(hotkeyOwner: accountId)).sellPlanInput)
 
-        let dep = makeDep(
-            amount: 100,
-            stakedAmount: 1000,
-            isFullUnstake: false,
-            preflight: makePreflight(availability: availability)
-        )
-
-        XCTAssertEqual(dep.availableToUnstake, 1000)
+        XCTAssertTrue(input.isOwnHotkey)
     }
 
-    func testRemainderIsZeroForFullUnstake() {
+    func testGroupExitHoldsFollowEveryMember() {
+        let primaryHold = SubtensorRootHold(interval: 7200, lastStakeBlock: 90000)
+        let secondHold = SubtensorRootHold(interval: 7200, lastStakeBlock: 95000)
+
         let dep = makeDep(
-            amount: 1000,
-            stakedAmount: 1000,
-            isFullUnstake: true,
-            preflight: makePreflight(availability: nil)
+            exitHotkeys: [primaryHotkey, secondHotkey],
+            holds: [primaryHotkey: primaryHold, secondHotkey: secondHold]
         )
 
-        XCTAssertEqual(dep.remainder, 0)
+        XCTAssertEqual(dep.groupExitHolds, [primaryHold, secondHold])
     }
 
-    func testRemainderIsStakeMinusAmountForPartialUnstake() {
+    func testGroupExitMemberWithoutHoldDataIsHeldFromTheCurrentBlock() {
         let dep = makeDep(
-            amount: 300,
-            stakedAmount: 1000,
-            isFullUnstake: false,
-            preflight: makePreflight(availability: nil)
+            exitHotkeys: [primaryHotkey, secondHotkey],
+            holds: [primaryHotkey: SubtensorRootHold(interval: 7200, lastStakeBlock: 90000)]
         )
 
-        XCTAssertEqual(dep.remainder, 700)
+        XCTAssertEqual(dep.groupExitHolds?.last, SubtensorRootHold(interval: 7200, lastStakeBlock: 100_000))
     }
 
-    func testQuotedTaoOutIsAmountWithoutQuoteContext() {
-        let dep = makeDep(
-            amount: 300,
-            stakedAmount: 1000,
-            isFullUnstake: false,
-            preflight: makePreflight(availability: nil)
-        )
-
-        XCTAssertEqual(dep.quotedTaoOut, 300)
-    }
-
-    func testQuotedTaoOutComesFromSimulationForSubnetPosition() {
-        let dep = makeDep(
-            amount: 300,
-            stakedAmount: 1000,
-            isFullUnstake: false,
-            preflight: makePreflight(availability: nil),
-            quoteContext: makeQuoteContext(alphaIn: 300, taoOut: 150, spot: 500_000_000)
-        )
-
-        XCTAssertEqual(dep.quotedTaoOut, 150)
-    }
-
-    func testQuotedTaoOutMissingWhileSubnetQuotePending() {
-        let dep = makeDep(
-            amount: 300,
-            stakedAmount: 1000,
-            isFullUnstake: false,
-            preflight: makePreflight(availability: nil),
-            quoteContext: makeQuoteContext(alphaIn: 300, taoOut: nil, spot: 500_000_000)
-        )
-
-        XCTAssertNil(dep.quotedTaoOut)
-    }
-
-    func testRemainderTaoValueScalesAlphaBySpotPrice() {
-        let dep = makeDep(
-            amount: 300,
-            stakedAmount: 1000,
-            isFullUnstake: false,
-            preflight: makePreflight(availability: nil),
-            quoteContext: makeQuoteContext(alphaIn: 300, taoOut: 150, spot: 500_000_000)
-        )
-
-        XCTAssertEqual(dep.remainderTaoValue, 350)
-    }
-
-    func testRemainderTaoValueEqualsRemainderOnRoot() {
-        let dep = makeDep(
-            amount: 300,
-            stakedAmount: 1000,
-            isFullUnstake: false,
-            preflight: makePreflight(availability: nil)
-        )
-
-        XCTAssertEqual(dep.remainderTaoValue, 700)
+    func testSingleHotkeyExitChecksThePreflightHoldInstead() {
+        XCTAssertNil(makeDep(exitHotkeys: [primaryHotkey]).groupExitHolds)
     }
 }

@@ -8,13 +8,15 @@ enum SubtensorUnstakeSetupViewFactory {
         for state: SubtensorStakingSharedStateProtocol,
         initialPosition: SubtensorStakingPosition?
     ) -> CollatorStkPartialUnstakeSetupViewProtocol? {
-        guard
-            let currencyManager = CurrencyManager.shared,
-            let interactor = createInteractor(for: state) else {
+        let chainAsset = state.stakingOption.chainAsset
+
+        guard let services = SubtensorFlowServicesFactory.createServices(for: state) else {
             return nil
         }
 
-        let chainAsset = state.stakingOption.chainAsset
+        let interactor = createInteractor(for: state, services: services)
+        let selectedAccount = services.account
+        let currencyManager = services.currencyManager
 
         let wireframe = SubtensorUnstakeSetupWireframe(state: state)
 
@@ -39,11 +41,15 @@ enum SubtensorUnstakeSetupViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             chainAsset: chainAsset,
+            selectedAccount: selectedAccount,
             dataValidationFactory: dataValidationFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             priceAssetInfoFactory: priceAssetInfoFactory,
             accountDetailsViewModelFactory: accountDetailsFactory,
-            quoteViewModelFactory: SubtensorQuoteViewModelFactory(chainAsset: chainAsset),
+            quoteViewModelFactory: SubtensorQuoteViewModelFactory(
+                chainAsset: chainAsset,
+                priceAssetInfoFactory: priceAssetInfoFactory
+            ),
             initialPosition: initialPosition,
             localizationManager: localizationManager,
             logger: Logger.shared
@@ -67,74 +73,36 @@ enum SubtensorUnstakeSetupViewFactory {
     }
 
     private static func createInteractor(
-        for state: SubtensorStakingSharedStateProtocol
-    ) -> SubtensorUnstakeSetupInteractor? {
-        let chain = state.stakingOption.chainAsset.chain
-
-        guard
-            let selectedAccount = SelectedWalletSettings.shared.value.fetch(
-                for: chain.accountRequest()
-            ),
-            let positionsSyncService = state.positionsSyncService,
-            let rootClaimableService = state.rootClaimableService,
-            let connection = state.chainRegistry.getConnection(for: chain.chainId),
-            let runtimeProvider = state.chainRegistry.getRuntimeProvider(for: chain.chainId),
-            let currencyManager = CurrencyManager.shared else {
-            return nil
-        }
-
-        let operationQueue = OperationManagerFacade.sharedDefaultQueue
-
-        let extrinsicService = ExtrinsicServiceFactory(
-            runtimeRegistry: runtimeProvider,
-            engine: connection,
-            operationQueue: operationQueue,
-            userStorageFacade: UserDataStorageFacade.shared,
-            substrateStorageFacade: SubstrateDataStorageFacade.shared
-        ).createService(
-            account: selectedAccount,
-            chain: chain
-        )
-
-        let preflightFactory = SubtensorPreflightFactory(
-            runtimeConnectionStore: ChainRegistryRuntimeConnectionStore(
-                chainId: chain.chainId,
-                chainRegistry: state.chainRegistry
-            ),
-            operationFactory: state.apiOperationFactory,
-            operationQueue: operationQueue
-        )
-
+        for state: SubtensorStakingSharedStateProtocol,
+        services: SubtensorFlowServices
+    ) -> SubtensorUnstakeSetupInteractor {
         let requestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
-            operationManager: OperationManager(operationQueue: operationQueue)
+            operationManager: OperationManager(operationQueue: services.operationQueue)
         )
 
         let identityProxyFactory = IdentityProxyFactory(
-            originChain: chain,
+            originChain: state.stakingOption.chainAsset.chain,
             chainRegistry: state.chainRegistry,
             identityOperationFactory: IdentityOperationFactory(requestFactory: requestFactory)
         )
 
         return SubtensorUnstakeSetupInteractor(
             chainAsset: state.stakingOption.chainAsset,
-            selectedAccount: selectedAccount,
-            positionsSyncService: positionsSyncService,
-            rootClaimableService: rootClaimableService,
-            preflightFactory: preflightFactory,
-            quoteFactory: SubtensorQuoteOperationFactory(
-                operationFactory: state.apiOperationFactory,
-                operationQueue: operationQueue
-            ),
+            selectedAccount: services.account.chainAccount,
+            positionsSyncService: services.positionsSyncService,
+            rootClaimableService: services.rootClaimableService,
+            preflightFactory: services.preflightFactory,
+            tradeQuoteFactory: services.tradeQuoteFactory,
+            operationService: services.operationService,
             subnetsService: state.subnetsService,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
-            extrinsicService: extrinsicService,
-            runtimeProvider: runtimeProvider,
+            runtimeProvider: services.runtimeProvider,
             identityProxyFactory: identityProxyFactory,
-            currencyManager: currencyManager,
-            operationQueue: operationQueue,
+            currencyManager: services.currencyManager,
+            operationQueue: services.operationQueue,
             logger: Logger.shared
         )
     }

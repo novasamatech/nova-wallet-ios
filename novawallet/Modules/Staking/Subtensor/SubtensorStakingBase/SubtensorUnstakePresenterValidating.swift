@@ -2,69 +2,88 @@ import Foundation
 
 struct SubtensorUnstakeValidatingDep {
     let netuid: UInt16
+    let accountId: AccountId
     let amount: Balance?
-    let stakedAmount: Balance?
-    let isFullUnstake: Bool
+    let positionAlpha: Balance?
+    let availability: SubtensorStakingPallet.StakeAvailability?
+    let exitHotkeys: [AccountId]?
     let balance: AssetBalance?
     let fee: ExtrinsicFeeProtocol?
+    let existentialDeposit: Balance?
     let preflight: SubtensorStakingPreflight?
-    let claimablePayout: Balance?
+    let holds: [AccountId: SubtensorRootHold]?
     let currentBlock: BlockNumber?
     let blockTime: BlockTime
     let assetDisplayInfo: AssetBalanceDisplayInfo
+    let syncFailed: Bool
     let onFeeRefresh: () -> Void
     let onPreflightRefresh: () -> Void
-    /// nil where the amount is already committed, which drops the offer to close the position
+    let onPositionsRefresh: () -> Void
     var onUnstakeAll: (() -> Void)?
     var quoteContext: SubtensorQuoteValidatingContext?
-    /// spec §3.2 — the staked amount below is the last value the resync managed to read, so a
-    /// failed resync has to block rather than let it become the basis of an extrinsic
-    var positionsSyncFailed = false
-    var onPositionsRefresh: (() -> Void)?
 
-    var availableToUnstake: Balance? {
-        guard let stakedAmount, let preflight else {
+    var isBatched: Bool {
+        netuid != SubtensorStakingPallet.rootNetuid || (exitHotkeys?.count ?? 0) > 1
+    }
+}
+
+extension SubtensorUnstakeValidatingDep {
+    var isSubnet: Bool {
+        netuid != SubtensorStakingPallet.rootNetuid
+    }
+
+    var sellPlanInput: SubtensorSellPlanInput? {
+        guard
+            let amount,
+            let positionAlpha,
+            let preflight,
+            let bases = sellPlanBases else {
             return nil
         }
 
-        return SubtensorUnstakeBasis.make(
-            staked: stakedAmount,
-            availability: preflight.stakeAvailability
-        ).available
+        return SubtensorSellPlanInput(
+            requestedAlpha: amount,
+            positionAlpha: positionAlpha,
+            availability: availability ?? SubtensorStakingPallet.StakeAvailability(
+                total: positionAlpha,
+                locked: 0,
+                available: positionAlpha
+            ),
+            minimumTaoOut: bases.minimumTaoOut,
+            sellLimitPrice: bases.sellLimitPrice,
+            isOwnHotkey: preflight.hotkeyOwner == accountId,
+            minStake: preflight.minStake,
+            nominatorMinStake: preflight.effectiveNominatorMinStake
+        )
     }
 
-    var remainder: Balance? {
-        guard !isFullUnstake, let stakedAmount, let amount else {
-            return 0
-        }
-
-        return stakedAmount >= amount ? stakedAmount - amount : 0
-    }
-
-    /// the chain's min-out check runs on TAO, so an alpha amount only counts through
-    /// the simulated receive; root amounts are already TAO
-    var quotedTaoOut: Balance? {
-        guard quoteContext != nil else {
-            return amount
-        }
-
-        return quoteContext?.quote?.expectedOut
-    }
-
-    var isRootFlow: Bool {
-        netuid == SubtensorStakingPallet.rootNetuid
-    }
-
-    var remainderTaoValue: Balance? {
-        guard let remainder else {
+    var groupExitHolds: [SubtensorRootHold]? {
+        guard !isSubnet, let exitHotkeys, exitHotkeys.count > 1 else {
             return nil
         }
 
-        guard let spot = quoteContext?.quote?.spotPrice else {
-            return quoteContext == nil ? remainder : nil
+        let unknownHold = SubtensorRootHold(
+            interval: preflight?.rootStakeUnlockInterval ?? 0,
+            lastStakeBlock: currentBlock.map { UInt64($0) } ?? 0
+        )
+
+        return exitHotkeys.map { holds?[$0] ?? unknownHold }
+    }
+}
+
+private extension SubtensorUnstakeValidatingDep {
+    var sellPlanBases: (minimumTaoOut: Balance, sellLimitPrice: Balance)? {
+        guard isSubnet else {
+            return amount.map { ($0, SubtensorStakingPallet.alphaPriceScale) }
         }
 
-        return remainder * spot / SubtensorStakingPallet.alphaPriceScale
+        guard
+            let latestQuote = quoteContext?.latestQuote,
+            let acknowledgedLimit = quoteContext?.acknowledgedLimit else {
+            return nil
+        }
+
+        return (latestQuote.swapMinimumOut, acknowledgedLimit)
     }
 }
 
@@ -74,6 +93,13 @@ protocol SubtensorUnstakePresenterValidating {
         dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
         selectedLocale: Locale
     ) -> [DataValidating]
+
+    func validateUnstake(
+        for dep: SubtensorUnstakeValidatingDep,
+        dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
+        selectedLocale: Locale,
+        onSuccess: @escaping () -> Void
+    )
 }
 
 extension SubtensorUnstakePresenterValidating {
@@ -82,113 +108,51 @@ extension SubtensorUnstakePresenterValidating {
         dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
         selectedLocale: Locale
     ) -> [DataValidating] {
-        var validations: [DataValidating] = [
-            dataValidationFactory.positionsAreFresh(
-                syncFailed: dep.positionsSyncFailed,
-                locale: selectedLocale,
-                onRetry: { dep.onPositionsRefresh?() }
-            ),
+        var validations = createUnstakeInputValidations(
+            for: dep,
+            dataValidationFactory: dataValidationFactory,
+            selectedLocale: selectedLocale
+        )
 
-            dataValidationFactory.has(
-                fee: dep.fee,
-                locale: selectedLocale,
-                onError: { dep.onFeeRefresh() }
-            ),
-
-            dataValidationFactory.hasPreflight(
-                dep.preflight,
-                locale: selectedLocale,
-                onRetry: { dep.onPreflightRefresh() }
+        validations.append(
+            createFeePayerValidation(
+                for: dep,
+                dataValidationFactory: dataValidationFactory,
+                selectedLocale: selectedLocale
             )
-        ]
+        )
 
-        if let quoteContext = dep.quoteContext {
-            validations.append(
-                dataValidationFactory.hasFreshQuote(
-                    quoteContext.quote,
-                    for: quoteContext.args,
-                    locale: selectedLocale,
-                    onRetry: { quoteContext.onQuoteRefresh() }
-                )
-            )
-
-            validations.append(
-                dataValidationFactory.orderWithinSlippageTolerance(
-                    quote: quoteContext.quote,
-                    limitPrice: quoteContext.limitPrice,
-                    locale: selectedLocale
-                )
-            )
-        }
-
-        validations.append(contentsOf: [
-            dataValidationFactory.canPayFeeFromStakeOtherwiseWarns(
-                transferable: dep.balance?.transferable,
-                fee: dep.fee?.amountForCurrentAccount,
-                locale: selectedLocale
-            ),
-
-            dataValidationFactory.unstakeNotExceedsAvailable(
-                amount: dep.isFullUnstake ? dep.stakedAmount : dep.amount,
-                available: dep.availableToUnstake,
+        validations.append(
+            dataValidationFactory.sellPlanAllows(
+                dep.sellPlanInput,
                 assetDisplayInfo: dep.assetDisplayInfo,
-                locale: selectedLocale
-            ),
-
-            dataValidationFactory.unstakeAboveMinTaoOut(
-                taoOut: dep.quotedTaoOut,
-                minAmount: dep.preflight?.minStake,
-                isFullUnstake: dep.isFullUnstake,
-                locale: selectedLocale
-            ),
-
-            dataValidationFactory.remainderNotBelowNominatorMin(
-                remainder: dep.remainderTaoValue,
-                nominatorMinStake: dep.preflight?.effectiveNominatorMinStake,
                 onUnstakeAll: dep.onUnstakeAll,
                 locale: selectedLocale
             )
-        ])
+        )
 
-        // the chain applies the unlock hold only when `netuid.is_root()`, and only root
-        // operations write the age it is measured against, so a subnet unstake must not
-        // inherit a hold left behind by a root stake or claim on the same hotkey
-        if dep.isRootFlow {
+        if !dep.isSubnet {
             validations.append(
-                dataValidationFactory.rootUnlockIntervalElapsed(
-                    currentBlock: dep.currentBlock,
-                    lastStakeBlock: dep.preflight?.lastStakeBlock,
-                    unlockInterval: dep.preflight?.rootStakeUnlockInterval,
-                    blockTime: dep.blockTime,
-                    locale: selectedLocale
+                contentsOf: createRootHoldValidations(
+                    for: dep,
+                    dataValidationFactory: dataValidationFactory,
+                    selectedLocale: selectedLocale
                 )
             )
         }
 
-        validations.append(contentsOf: [
-            dataValidationFactory.claimFirstAdvisory(
-                claimable: dep.claimablePayout,
-                threshold: dep.preflight?.rootClaimableThreshold,
-                locale: selectedLocale
-            ),
-
-            dataValidationFactory.noColdkeySwapInProgress(
-                hasAnnouncement: dep.preflight?.hasColdkeySwapAnnouncement,
-                locale: selectedLocale
-            ),
-
-            dataValidationFactory.safeModeInactive(
-                safeModeActive: dep.preflight?.isSafeModeActive,
+        validations.append(
+            contentsOf: SubtensorCommonValidations.createNetworkStateValidations(
+                for: dep.preflight,
+                dataValidationFactory: dataValidationFactory,
                 locale: selectedLocale
             )
-        ])
+        )
 
-        // the impact warning runs after every hard error rule so a blocked submission
-        // is never preceded by a proceed-anyway prompt
-        if let quoteContext = dep.quoteContext {
+        if dep.isSubnet {
             validations.append(
                 dataValidationFactory.priceImpactAcceptable(
-                    quote: quoteContext.quote,
+                    quote: dep.quoteContext?.latestQuote,
                     locale: selectedLocale
                 )
             )
@@ -210,5 +174,94 @@ extension SubtensorUnstakePresenterValidating {
         )
 
         DataValidationRunner(validators: validations).runValidation(notifyingOnSuccess: onSuccess)
+    }
+}
+
+private extension SubtensorUnstakePresenterValidating {
+    func createUnstakeInputValidations(
+        for dep: SubtensorUnstakeValidatingDep,
+        dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
+        selectedLocale: Locale
+    ) -> [DataValidating] {
+        var validations: [DataValidating] = [
+            dataValidationFactory.positionsAreFresh(
+                syncFailed: dep.syncFailed,
+                locale: selectedLocale,
+                onRetry: { dep.onPositionsRefresh() }
+            ),
+
+            dataValidationFactory.has(
+                fee: dep.fee,
+                locale: selectedLocale,
+                onError: { dep.onFeeRefresh() }
+            ),
+
+            dataValidationFactory.hasPreflight(
+                dep.preflight,
+                locale: selectedLocale,
+                onRetry: { dep.onPreflightRefresh() }
+            )
+        ]
+
+        if dep.isSubnet {
+            validations.append(
+                contentsOf: SubtensorCommonValidations.createQuoteValidations(
+                    for: dep.quoteContext,
+                    dataValidationFactory: dataValidationFactory,
+                    locale: selectedLocale
+                )
+            )
+        }
+
+        return validations
+    }
+
+    func createFeePayerValidation(
+        for dep: SubtensorUnstakeValidatingDep,
+        dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
+        selectedLocale: Locale
+    ) -> DataValidating {
+        guard dep.isBatched else {
+            return dataValidationFactory.canPayFeeFromStakeOtherwiseWarns(
+                transferable: dep.balance?.transferable,
+                fee: dep.fee?.amountForCurrentAccount,
+                locale: selectedLocale
+            )
+        }
+
+        return dataValidationFactory.canPayBatchedNetworkFee(
+            transferable: dep.balance?.transferable,
+            networkFee: dep.fee?.amountForCurrentAccount,
+            existentialDeposit: dep.existentialDeposit,
+            locale: selectedLocale
+        )
+    }
+
+    func createRootHoldValidations(
+        for dep: SubtensorUnstakeValidatingDep,
+        dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
+        selectedLocale: Locale
+    ) -> [DataValidating] {
+        guard let groupExitHolds = dep.groupExitHolds else {
+            return [
+                dataValidationFactory.rootUnlockIntervalElapsed(
+                    currentBlock: dep.currentBlock,
+                    lastStakeBlock: dep.preflight?.lastStakeBlock,
+                    unlockInterval: dep.preflight?.rootStakeUnlockInterval,
+                    blockTime: dep.blockTime,
+                    locale: selectedLocale
+                )
+            ]
+        }
+
+        return groupExitHolds.map { hold in
+            dataValidationFactory.rootUnlockIntervalElapsed(
+                currentBlock: dep.currentBlock,
+                lastStakeBlock: hold.lastStakeBlock,
+                unlockInterval: hold.interval,
+                blockTime: dep.blockTime,
+                locale: selectedLocale
+            )
+        }
     }
 }

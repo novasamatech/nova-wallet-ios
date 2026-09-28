@@ -12,13 +12,11 @@ protocol SubtensorUnstakeSetupPresenterProtocol: CollatorStkPartialUnstakeSetupP
 
 protocol SubtensorUnstakeSetupInteractorInputProtocol: SubtensorStakingDelegateInteractorInputProtocol {
     func retrySubnetsInfo()
-    func refreshPositions()
 }
 
 protocol SubtensorUnstakeSetupInteractorOutputProtocol: SubtensorStakingDelegateInteractorOutputProtocol {
     func didReceiveSubnetsInfo(_ info: SubtensorSubnetsInfo)
     func didReceiveSubnetsInfoError(_ error: Error)
-    func didReceivePositionsSyncFailed(_ isFailed: Bool)
 }
 
 protocol SubtensorUnstakeSetupWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
