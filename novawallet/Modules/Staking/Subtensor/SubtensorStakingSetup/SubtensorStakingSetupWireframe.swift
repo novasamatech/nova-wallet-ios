@@ -24,12 +24,14 @@ final class SubtensorStakingSetupWireframe: SubtensorStakingSetupWireframeProtoc
         view?.controller.navigationController?.pushViewController(confirmView.controller, animated: true)
     }
 
-    func showDelegateSelection(
+    func showValidatorSelection(
         from view: CollatorStakingSetupViewProtocol?,
-        delegate: CollatorStakingSelectDelegate
+        target: SubtensorStakeTarget,
+        delegate: SubtensorSubnetSelectDelegate
     ) {
-        guard let selectView = CollatorStakingSelectViewFactory.createSubtensorStakingView(
-            with: state,
+        guard let selectView = SubtensorValidatorSelectViewFactory.createView(
+            for: state,
+            target: target,
             delegate: delegate
         ) else {
             return

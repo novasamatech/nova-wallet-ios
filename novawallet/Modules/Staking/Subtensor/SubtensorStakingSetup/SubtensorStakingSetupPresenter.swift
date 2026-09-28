@@ -31,6 +31,8 @@ final class SubtensorStakingSetupPresenter {
     private(set) var quoteFlow = SubtensorQuoteFlowModel()
     private(set) var rewardEngine: SubtensorRewardCalculatorEngineProtocol?
     private var hasAcknowledgedSubnetRisk = false
+    private let initialNetuid: UInt16?
+    private var targetReady: Bool
 
     private lazy var aprFormatter = NumberFormatter.positivePercentAPR.localizableResource()
 
@@ -54,6 +56,8 @@ final class SubtensorStakingSetupPresenter {
         self.accountDetailsViewModelFactory = accountDetailsViewModelFactory
         self.quoteViewModelFactory = quoteViewModelFactory
         self.logger = logger
+        initialNetuid = initialPosition?.netuid
+        targetReady = initialPosition?.netuid == nil || initialPosition?.netuid == SubtensorStakingPallet.rootNetuid
 
         if
             let initialPosition,
@@ -66,6 +70,10 @@ final class SubtensorStakingSetupPresenter {
 }
 
 private extension SubtensorStakingSetupPresenter {
+    func showValidatorSelection() {
+        wireframe.showValidatorSelection(from: view, target: selectedTarget, delegate: self)
+    }
+
     func getDelegateAccount() -> AccountId? {
         try? delegateDisplayAddress?.address.toAccountId(using: chainAsset.chain.chainFormat)
     }
@@ -342,11 +350,11 @@ private extension SubtensorStakingSetupPresenter {
     }
 
     func changeDelegate(with accountId: AccountId, name: String?, take: UInt16?) {
-        guard
-            let newAddress = try? accountId.toAddress(using: chainAsset.chain.chainFormat),
-            newAddress != delegateDisplayAddress?.address else {
+        guard let newAddress = try? accountId.toAddress(using: chainAsset.chain.chainFormat) else {
             return
         }
+
+        if newAddress == delegateDisplayAddress?.address, take == delegateTake { return }
 
         delegateDisplayAddress = DisplayAddress(address: newAddress, username: name ?? "")
         delegateTake = take
@@ -361,6 +369,8 @@ private extension SubtensorStakingSetupPresenter {
     }
 
     func applyStakeTarget(_ target: SubtensorStakeTarget) {
+        targetReady = true
+        view?.didReceiveTargetLoading(false)
         guard target.netuid != selectedTarget.netuid else {
             return
         }
@@ -426,6 +436,7 @@ private extension SubtensorStakingSetupPresenter {
 
 extension SubtensorStakingSetupPresenter: SubtensorStakingSetupPresenterProtocol {
     func setup() {
+        view?.didReceiveTargetLoading(!targetReady)
         provideAmountInputViewModel()
         provideDelegateViewModel()
         provideAssetViewModel()
@@ -449,7 +460,7 @@ extension SubtensorStakingSetupPresenter: SubtensorStakingSetupPresenterProtocol
         let positions = targetPositions()
 
         guard !positions.isEmpty else {
-            wireframe.showDelegateSelection(from: view, delegate: self)
+            showValidatorSelection()
             return
         }
 
@@ -533,6 +544,7 @@ extension SubtensorStakingSetupPresenter: SubtensorStakingSetupPresenterProtocol
     }
 
     func proceed() {
+        guard targetReady else { return }
         let dependencies = getValidationDependencies()
 
         validateStake(
@@ -563,21 +575,17 @@ extension SubtensorStakingSetupPresenter: SubtensorStakingSetupPresenterProtocol
     }
 }
 
-extension SubtensorStakingSetupPresenter: CollatorStakingSelectDelegate {
-    func didSelect(collator: CollatorStakingSelectionInfoProtocol) {
-        let take = (collator as? SubtensorDelegateSelectionInfo)?.take
-
-        changeDelegate(
-            with: collator.accountId,
-            name: collator.identity?.displayName,
-            take: take
-        )
-    }
-}
-
 extension SubtensorStakingSetupPresenter: SubtensorSubnetSelectDelegate {
     func didSelectStakeTarget(_ target: SubtensorStakeTarget) {
         applyStakeTarget(target)
+    }
+
+    func didSelectValidator(_ validator: SubtensorValidatorDirectoryItem, for target: SubtensorStakeTarget) {
+        applyStakeTarget(target)
+        let take = validator.take.map {
+            UInt16(clamping: NSDecimalNumber(decimal: $0 * Decimal(SubtensorStakingPallet.perU16Denominator)).intValue)
+        }
+        changeDelegate(with: validator.hotkey, name: validator.name, take: take)
     }
 }
 
@@ -597,13 +605,33 @@ extension SubtensorStakingSetupPresenter: ModalPickerViewControllerDelegate {
     }
 
     func modalPickerDidSelectAction(context _: AnyObject?) {
-        wireframe.showDelegateSelection(from: view, delegate: self)
+        showValidatorSelection()
     }
 }
 
 extension SubtensorStakingSetupPresenter: SubtensorStakePresenterValidating {}
 
 extension SubtensorStakingSetupPresenter: SubtensorStakingSetupInteractorOutputProtocol {
+    func didReceiveInitialSubnets(_ info: SubtensorSubnetsInfo) {
+        guard let initialNetuid,
+              let subnet = info.subnets.first(where: { $0.netuid == initialNetuid }),
+              let price = info.prices[initialNetuid] else {
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryInitialSubnet()
+            }
+            return
+        }
+
+        applyStakeTarget(.subnet(info: subnet, price: price))
+    }
+
+    func didFailInitialSubnets(_ error: Error) {
+        logger.error("Initial subnet load failed: \(error)")
+        wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+            self?.interactor.retryInitialSubnet()
+        }
+    }
+
     func didReceiveAssetBalance(_ balance: AssetBalance?) {
         logger.debug("Balance: \(String(describing: balance))")
 

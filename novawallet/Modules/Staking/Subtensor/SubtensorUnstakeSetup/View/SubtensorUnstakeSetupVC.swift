@@ -8,12 +8,15 @@ final class SubtensorUnstakeSetupVC: CollatorStkBaseUnstakeSetupVC<SubtensorUnst
     }
 
     private var isUnstakeUnavailable: Bool = false
+    private let isRootFlow: Bool
 
     init(
         presenter: SubtensorUnstakeSetupPresenterProtocol,
+        isRootFlow: Bool,
         statics: CollatorStakingDelegateStatics,
         localizationManager: LocalizationManagerProtocol
     ) {
+        self.isRootFlow = isRootFlow
         super.init(
             basePresenter: presenter,
             statics: statics,
@@ -37,6 +40,10 @@ final class SubtensorUnstakeSetupVC: CollatorStkBaseUnstakeSetupVC<SubtensorUnst
         super.onSetupLocalization()
 
         let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
+
+        title = isRootFlow ? strings.stakingSubtensorUiUnstakeFromRoot() : strings.stakingSubtensorUiSellSubnetTokens()
+        rootView.amountView.titleView.text = isRootFlow
+            ? strings.stakingSubtensorUiYouUnstake() : strings.stakingSubtensorUiYouSell()
 
         rootView.receiveCell.titleLabel.text = strings.stakingSubtensorQuoteReceiveTitle()
         rootView.poolFeeCell.titleLabel.text = strings.stakingSubtensorQuotePoolFeeTitle()

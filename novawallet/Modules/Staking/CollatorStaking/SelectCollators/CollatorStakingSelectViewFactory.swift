@@ -12,6 +12,7 @@ enum CollatorStakingSelectViewFactory {
         currencyManager: CurrencyManagerProtocol,
         defaultSorting: CollatorsSortType = .rewards,
         displaysRewards: Bool = true,
+        showsValidatorsCount: Bool = false,
         statics: CollatorStakingDelegateStatics = .collator
     ) -> CollatorStakingSelectViewProtocol? {
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
@@ -31,6 +32,7 @@ enum CollatorStakingSelectViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             defaultSorting: defaultSorting,
             displaysRewards: displaysRewards,
+            showsValidatorsCount: showsValidatorsCount,
             localizationManager: localizationManager,
             logger: Logger.shared
         )

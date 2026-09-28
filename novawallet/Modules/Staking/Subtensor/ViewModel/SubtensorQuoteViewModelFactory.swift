@@ -4,6 +4,7 @@ import Foundation
 struct SubtensorStakeTargetViewModel {
     let title: String
     let subtitle: String?
+    let isRoot: Bool
 }
 
 struct SubtensorQuotePanelViewModel {
@@ -73,7 +74,8 @@ extension SubtensorQuoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
                 title: R.string(
                     preferredLanguages: locale.rLanguages
                 ).localizable.stakingSubtensorRootNetwork(),
-                subtitle: nil
+                subtitle: nil,
+                isRoot: true
             )
         case let .subnet(info, _):
             let symbol = info.displaySymbol
@@ -83,7 +85,8 @@ extension SubtensorQuoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
                 title: name.isEmpty ? "SN\(info.netuid)" : name,
                 subtitle: [symbol, "SN\(info.netuid)"]
                     .filter { !$0.isEmpty }
-                    .joined(separator: " · ")
+                    .joined(separator: " · "),
+                isRoot: false
             )
         }
     }
