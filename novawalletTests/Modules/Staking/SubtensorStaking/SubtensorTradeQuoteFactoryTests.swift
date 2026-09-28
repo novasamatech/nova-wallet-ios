@@ -14,7 +14,7 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
 
     func testBuyQuoteSimulatesTheStakeNetOfNovaFee() throws {
         let quoteFactory = MockSubtensorQuoteOperationFactoryProtocol()
-        let quote = makeQuote(direction: .stake(taoIn: 997_000_000), taoAmount: 997_000_000, alphaAmount: 129_500_000_000)
+        let quote = makeQuote(direction: .stake(taoIn: 991_571_642), taoAmount: 991_571_642, alphaAmount: 128_800_000_000)
 
         stubQuote(quoteFactory, returning: quote)
 
@@ -24,19 +24,19 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
 
         let expected = SubtensorTradeQuote(
             quote: quote,
-            novaFee: SubtensorNovaFee(amount: 3_000_000, beneficiary: beneficiary),
-            expectedOut: 129_500_000_000,
-            minimumOut: 129_052_614_981,
+            novaFee: SubtensorNovaFee(amount: 8_428_358, beneficiary: beneficiary),
+            expectedOut: 128_800_000_000,
+            minimumOut: 128_349_963_304,
             limitPrice: 7_721_641
         )
 
         XCTAssertEqual(tradeQuote, expected)
         verify(quoteFactory).createQuoteWrapper(
-            for: equal(to: SubtensorQuoteArgs(netuid: netuid, direction: .stake(taoIn: 997_000_000)))
+            for: equal(to: SubtensorQuoteArgs(netuid: netuid, direction: .stake(taoIn: 991_571_642)))
         )
     }
 
-    func testSellQuoteChargesNovaFeeOnTheLimitGuaranteedMinimumNotTheExpectedOut() throws {
+    func testSellQuoteChargesNovaFeeOnTheQuotedTaoOut() throws {
         let quoteFactory = MockSubtensorQuoteOperationFactoryProtocol()
         let quote = makeQuote(
             direction: .unstake(alphaIn: 500_000_000_000),
@@ -52,9 +52,9 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
 
         let expected = SubtensorTradeQuote(
             quote: quote,
-            novaFee: SubtensorNovaFee(amount: 11_467_213, beneficiary: beneficiary),
-            expectedOut: 3_827_532_787,
-            minimumOut: 3_809_012_523,
+            novaFee: SubtensorNovaFee(amount: 32_356_470, beneficiary: beneficiary),
+            expectedOut: 3_806_643_530,
+            minimumOut: 3_788_123_266,
             limitPrice: 7_644_809
         )
 
@@ -78,7 +78,8 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
             hotkey: hotkey,
             netuid: netuid,
             alpha: alpha,
-            limitPrice: tradeQuote.limitPrice
+            limitPrice: tradeQuote.limitPrice,
+            quotedTaoOut: tradeQuote.quote.sim.taoAmount
         )
 
         let builder = RecordingExtrinsicBuilder()
@@ -97,7 +98,7 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
 
         stubQuote(
             quoteFactory,
-            returning: makeQuote(direction: .stake(taoIn: 997_000_000), taoAmount: 997_000_000, alphaAmount: 129_500_000_000)
+            returning: makeQuote(direction: .stake(taoIn: 991_571_642), taoAmount: 991_571_642, alphaAmount: 128_800_000_000)
         )
 
         let tradeQuote = try run(
@@ -121,6 +122,20 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
 
         XCTAssertEqual(feeTransfer.value, tradeQuote.novaFee?.amount)
         XCTAssertEqual(stakeCall.amountStaked, tradeQuote.quote.args.direction.taoIn)
+    }
+
+    func testBuyQuoteWithoutBeneficiaryFailsClosed() {
+        let quoteFactory = MockSubtensorQuoteOperationFactoryProtocol()
+        let factory = SubtensorTradeQuoteFactory(
+            quoteFactory: quoteFactory,
+            feeCalculator: SubtensorNovaFeeCalculator(beneficiary: nil)
+        )
+
+        XCTAssertThrowsError(
+            try run(factory.createBuyQuoteWrapper(netuid: netuid, grossTao: 1_000_000_000, tolerance: tolerance))
+        ) { error in
+            XCTAssertEqual(error as? SubtensorStakingOperationError, .novaFeeUnavailable)
+        }
     }
 
     func testSellQuoteWithoutBeneficiaryFailsClosed() {
@@ -154,7 +169,7 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
             sim: SubtensorStakingPallet.SimSwapResult(
                 taoAmount: taoAmount,
                 alphaAmount: alphaAmount,
-                taoFee: 502_067,
+                taoFee: 499_303,
                 alphaFee: 251_774_052,
                 taoSlippage: 0,
                 alphaSlippage: 0

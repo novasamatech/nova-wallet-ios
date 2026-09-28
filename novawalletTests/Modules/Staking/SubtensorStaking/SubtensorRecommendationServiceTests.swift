@@ -325,6 +325,26 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
         XCTAssertEqual(service.lastSeenClientGates(), expectedGates)
     }
 
+    func testExpiredCacheDeliveryMarksTheGenerationStale() throws {
+        let apiFactory = MockBittensorApiOperationFactoryProtocol()
+        let rankings = makeRankings(freshness: .fresh, isFromExpiredCache: true)
+
+        stub(apiFactory) { stub in
+            when(stub.createRankedSubnetsWrapper()).then {
+                CompoundOperationWrapper.createWithResult(rankings)
+            }
+        }
+
+        let service = makeService(
+            apiFactory: apiFactory,
+            chainFactory: MockSubtensorValidatorChainOperationFactoryProtocol()
+        )
+
+        let ranked = try run(service.createRankedSubnetsWrapper())
+
+        XCTAssertEqual(ranked.generation.stamp, SubtensorBackendStamp(asOf: asOf, freshness: .stale))
+    }
+
     func testShownAgeAddsTheTimeElapsedSinceReceiptToTheServerAge() {
         let generation = SubtensorRecommendationGeneration(
             id: "8ebc85abd0bbeb6f282302ac48909c3d",
@@ -456,11 +476,14 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
         return BittensorApiResult(value: collection, requestId: "request-1", receivedAt: receivedAt, isFromExpiredCache: false)
     }
 
-    private func makeRankings() -> RankingsResult {
+    private func makeRankings(
+        freshness: BittensorApi.Freshness = .stale,
+        isFromExpiredCache: Bool = false
+    ) -> RankingsResult {
         let collection = BittensorApi.SubnetRankingCollection(
             meta: BittensorApi.ViewMetadata(
                 completeness: .partial,
-                components: BittensorApi.RecommendationMetadata.Components(recommendations: component(.stale)),
+                components: BittensorApi.RecommendationMetadata.Components(recommendations: component(freshness)),
                 generation: BittensorApi.Generation(
                     id: "8ebc85abd0bbeb6f282302ac48909c3d",
                     sourceBlockNumber: 9_139_880,
@@ -523,7 +546,12 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
             ]
         )
 
-        return BittensorApiResult(value: collection, requestId: "request-2", receivedAt: receivedAt, isFromExpiredCache: false)
+        return BittensorApiResult(
+            value: collection,
+            requestId: "request-2",
+            receivedAt: receivedAt,
+            isFromExpiredCache: isFromExpiredCache
+        )
     }
 
     private func ranking(

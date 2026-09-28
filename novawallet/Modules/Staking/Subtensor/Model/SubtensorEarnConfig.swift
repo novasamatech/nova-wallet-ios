@@ -21,6 +21,10 @@ struct SubtensorEarnConfig: Decodable, Equatable {
     let subnets: [UInt16: SubnetEntry]
     let invalidEntries: [String]
 
+    var isEntryEnabled: Bool {
+        entry?.enabled == true
+    }
+
     func subnetEntry(for subnet: SubtensorSubnetRef) -> SubnetEntry? {
         guard
             let subnetEntry = subnets[subnet.netuid],
@@ -30,7 +34,21 @@ struct SubtensorEarnConfig: Decodable, Equatable {
 
         return subnetEntry
     }
+
+    func replacingEntry(_ entry: EntryFlags?) -> SubtensorEarnConfig {
+        SubtensorEarnConfig(
+            version: version,
+            entry: entry,
+            headlineMaxAnnualRate: headlineMaxAnnualRate,
+            preferredRootValidator: preferredRootValidator,
+            logoBaseUrl: logoBaseUrl,
+            subnets: subnets,
+            invalidEntries: invalidEntries
+        )
+    }
 }
+
+extension SubtensorEarnConfig.EntryFlags: Codable {}
 
 extension SubtensorEarnConfig {
     private enum CodingKeys: String, CodingKey {

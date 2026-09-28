@@ -54,12 +54,8 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
             tolerance: slippage
         ))
 
-        let productionDefaultQuoteError = runError(
-            try world.createProductionWiredTradeQuoteFactory().createBuyQuoteWrapper(
-                netuid: 64,
-                grossTao: SubtensorFlowChainWorld.stakeAmount,
-                tolerance: slippage
-            )
+        let productionBuyFee = try world.createProductionWiredNovaFeeCalculator().buyFee(
+            grossTao: SubtensorFlowChainWorld.stakeAmount
         )
 
         let fee = try run(world.createStakingOperationService(networkFee: networkFee).createFeeWrapper(
@@ -144,15 +140,18 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(slippage, BigRational(numerator: 5, denominator: 1000))
         XCTAssertEqual(buyQuote, SubtensorTradeQuote(
             quote: SubtensorFlowChainWorld.chutesBuyQuote,
-            novaFee: SubtensorNovaFee(amount: 15_000_000, beneficiary: SubtensorFlowChainWorld.novaFeeBeneficiary),
-            expectedOut: 90_650_000_000,
-            minimumOut: 90_203_602_846,
+            novaFee: SubtensorNovaFee(amount: 42_141_794, beneficiary: SubtensorFlowChainWorld.novaFeeBeneficiary),
+            expectedOut: 90_150_000_000,
+            minimumOut: 89_712_471_929,
             limitPrice: 55_236_040
         ))
         verify(world.quoteOperationFactory).createQuoteWrapper(
-            for: equal(to: SubtensorQuoteArgs(netuid: 64, direction: .stake(taoIn: 4_985_000_000)))
+            for: equal(to: SubtensorQuoteArgs(netuid: 64, direction: .stake(taoIn: 4_957_858_206)))
         )
-        XCTAssertEqual(productionDefaultQuoteError as? SubtensorStakingOperationError, .novaFeeUnavailable)
+        XCTAssertEqual(productionBuyFee, SubtensorNovaFee(
+            amount: 42_141_794,
+            beneficiary: try SubtensorFlowChainWorld.placeholderNovaFeeBeneficiary()
+        ))
         XCTAssertEqual(fee.amount, networkFee)
         XCTAssertEqual(maxStake, 48_188_500_000)
 

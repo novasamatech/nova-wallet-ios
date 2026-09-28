@@ -72,6 +72,52 @@ final class SubtensorYieldServiceTests: XCTestCase {
         verify(apiFactory, times(3)).createAlphaYieldWrapper(netuid: equal(to: netuid), page: any())
     }
 
+    func testAlphaYieldsServedFromAnExpiredCacheAreStale() throws {
+        let apiFactory = MockBittensorApiOperationFactoryProtocol()
+
+        try stubPages(apiFactory, [
+            1: makePage(number: 1, nextPage: nil, asOf: olderAsOf, freshness: .fresh, isFromExpiredCache: true, rows: [
+                (netuid, address(of: hotkeyA), "12.5")
+            ])
+        ])
+
+        let yields = try run(makeService(apiFactory: apiFactory).createAlphaYieldsWrapper(for: netuid))
+
+        let expiredStamp = SubtensorBackendStamp(asOf: olderAsOf, freshness: .stale)
+
+        XCTAssertEqual(yields.stamp, expiredStamp)
+        XCTAssertEqual(yields.yields[hotkeyA], SubtensorReportedYield(reportedRate: "12.5", stamp: expiredStamp))
+        XCTAssertNil(yields.yields[hotkeyA]?.annualRate)
+    }
+
+    func testAnnualRateReadsTheReportedRateAsPercentPoints() throws {
+        let annualRate = reportedYield("12.5", freshness: .fresh).annualRate
+
+        XCTAssertEqual(annualRate, try XCTUnwrap(Decimal(string: "0.125")))
+    }
+
+    func testAnnualRateIsNilWhenTheYieldIsStale() {
+        XCTAssertNil(reportedYield("12.5", freshness: .stale).annualRate)
+    }
+
+    func testAnnualRateIsNilWhenTheReportedRateIsNegative() {
+        XCTAssertNil(reportedYield("-3.2", freshness: .fresh).annualRate)
+    }
+
+    func testAnnualRateIsNilWhenANegativeRateRoundsToZeroAtDecimalPrecision() {
+        let belowPrecision = "-0." + String(repeating: "0", count: 200) + "1"
+
+        XCTAssertNil(reportedYield(belowPrecision, freshness: .fresh).annualRate)
+    }
+
+    func testAnnualRateIsNilWhenTheReportedRateIsUnparseable() {
+        XCTAssertNil(reportedYield("12,5", freshness: .fresh).annualRate)
+    }
+
+    func testAnnualRateIsNilWhenTheReportedRateIsMissing() {
+        XCTAssertNil(reportedYield("", freshness: .fresh).annualRate)
+    }
+
     func testRootRateIsNetOfTheGivenTake() throws {
         let engine = MockSubtensorRewardCalculatorEngineProtocol()
         let netRate = try XCTUnwrap(Decimal(string: "0.0421"))
@@ -147,11 +193,22 @@ final class SubtensorYieldServiceTests: XCTestCase {
         try accountId.toAddress(using: .substrate(SubstrateConstants.genericAddressPrefix))
     }
 
+    private func reportedYield(
+        _ reportedRate: String,
+        freshness: SubtensorBackendStamp.Freshness
+    ) -> SubtensorReportedYield {
+        SubtensorReportedYield(
+            reportedRate: reportedRate,
+            stamp: SubtensorBackendStamp(asOf: newerAsOf, freshness: freshness)
+        )
+    }
+
     private func makePage(
         number: Int,
         nextPage: Int?,
         asOf: Date,
         freshness: BittensorApi.Freshness,
+        isFromExpiredCache: Bool = false,
         rows: [YieldRow]
     ) -> YieldPage {
         let items = rows.map { row in
@@ -185,7 +242,12 @@ final class SubtensorYieldServiceTests: XCTestCase {
             pageInfo: BittensorApi.PageInfo(page: number, pageSize: 100, total: 300, nextPage: nextPage)
         )
 
-        return BittensorApiResult(value: collection, requestId: "request-\(number)", receivedAt: 0, isFromExpiredCache: false)
+        return BittensorApiResult(
+            value: collection,
+            requestId: "request-\(number)",
+            receivedAt: 0,
+            isFromExpiredCache: isFromExpiredCache
+        )
     }
 
     private func run<T>(_ wrapper: CompoundOperationWrapper<T>) throws -> T {
