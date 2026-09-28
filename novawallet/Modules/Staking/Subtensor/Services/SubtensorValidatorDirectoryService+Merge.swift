@@ -22,10 +22,22 @@ extension SubtensorValidatorDirectoryService {
         from collection: BittensorApi.ValidatorCollection,
         netuid: UInt16,
         logger: LoggerProtocol
-    ) -> Listing {
+    ) throws -> Listing {
         var rows: [Row] = []
 
-        for item in collection.items where item.netuid == netuid {
+        let candidates: [BittensorApi.Validator]
+
+        if netuid == SubtensorStakingPallet.rootNetuid {
+            guard case .available = collection.meta.components.validatorMetagraph else {
+                throw SubtensorValidatorDirectoryServiceError.rootMetagraphUnavailable
+            }
+
+            candidates = collection.items.filter { $0.metagraphUid != nil }
+        } else {
+            candidates = collection.items
+        }
+
+        for item in candidates where item.netuid == netuid {
             guard let hotkey = try? item.hotkey.toAccountId(
                 using: .substrate(SubstrateConstants.genericAddressPrefix)
             ) else {
@@ -36,8 +48,8 @@ extension SubtensorValidatorDirectoryService {
             rows.append(Row(hotkey: hotkey, name: name))
         }
 
-        if rows.count < collection.items.count {
-            logger.warning("Dropped \(collection.items.count - rows.count) validator rows of netuid \(netuid)")
+        if rows.count < candidates.count {
+            logger.warning("Dropped \(candidates.count - rows.count) validator rows of netuid \(netuid)")
         }
 
         let components = collection.meta.components

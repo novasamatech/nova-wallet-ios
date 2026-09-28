@@ -10,14 +10,24 @@ struct SubtensorSubnetSelectViewModel {
     let price: String?
     let apr: String?
     let aprDetail: String?
+    let subnetRef: SubtensorSubnetRef?
+    let weeklyChange: Decimal?
+    let weeklyChangeText: String?
+    let isFavorite: Bool
+}
+
+struct SubtensorSubnetViewModelContext {
+    let defaultTake: UInt16?
+    let query: String
+    let weeklyChanges: [SubtensorSubnetRef: Decimal]
+    let favorites: Set<SubtensorSubnetRef>
+    let locale: Locale
 }
 
 protocol SubtensorSubnetViewModelFactoryProtocol {
     func createViewModels(
         from info: SubtensorSubnetsInfo,
-        defaultTake: UInt16?,
-        query: String,
-        locale: Locale
+        context: SubtensorSubnetViewModelContext
     ) -> [SubtensorSubnetSelectViewModel]
 }
 
@@ -76,10 +86,14 @@ private extension SubtensorSubnetViewModelFactory {
             target: .root,
             icon: nil,
             title: strings.stakingSubtensorRootNetwork(),
-            subtitle: chainAsset.asset.symbol,
+            subtitle: strings.stakingSubtensorUiPickerRootSubtitle(),
             price: formatPrice(SubtensorStakingPallet.alphaPriceScale, locale: locale),
             apr: nil,
-            aprDetail: nil
+            aprDetail: nil,
+            subnetRef: nil,
+            weeklyChange: nil,
+            weeklyChangeText: nil,
+            isFavorite: false
         )
     }
 
@@ -87,16 +101,16 @@ private extension SubtensorSubnetViewModelFactory {
         info: SubtensorStakingPallet.DynamicInfo,
         price: Balance,
         ownerCut: UInt16,
-        take: UInt16,
-        locale: Locale
+        context: SubtensorSubnetViewModelContext
     ) -> SubtensorSubnetSelectViewModel {
+        let locale = context.locale
         let name = info.displayName
         let symbol = info.displaySymbol
 
         let aprPpm = SubtensorAlphaAprCalculator.aprPpm(
             for: info,
             ownerCut: ownerCut,
-            take: take
+            take: context.defaultTake ?? Self.fallbackDelegateTake
         )
 
         let apr = aprPpm.flatMap { formatApr(ppm: $0, locale: locale) }
@@ -107,6 +121,12 @@ private extension SubtensorSubnetViewModelFactory {
             )
             : nil
 
+        let subnetRef = SubtensorSubnetRef(netuid: info.netuid, registeredAt: info.networkRegisteredAt)
+        let weeklyChange = context.weeklyChanges[subnetRef]
+        let weeklyChangeText = weeklyChange.flatMap {
+            percentFormatter.value(for: locale).stringFromDecimal($0)
+        }
+
         return SubtensorSubnetSelectViewModel(
             target: .subnet(info: info, price: price),
             icon: try? iconGenerator.generateFromAccountId(info.ownerHotkey),
@@ -116,7 +136,11 @@ private extension SubtensorSubnetViewModelFactory {
                 .joined(separator: " · "),
             price: formatPrice(price, locale: locale),
             apr: apr,
-            aprDetail: aprDetail
+            aprDetail: aprDetail,
+            subnetRef: subnetRef,
+            weeklyChange: weeklyChange,
+            weeklyChangeText: weeklyChangeText,
+            isFavorite: context.favorites.contains(subnetRef)
         )
     }
 }
@@ -124,12 +148,10 @@ private extension SubtensorSubnetViewModelFactory {
 extension SubtensorSubnetViewModelFactory: SubtensorSubnetViewModelFactoryProtocol {
     func createViewModels(
         from info: SubtensorSubnetsInfo,
-        defaultTake: UInt16?,
-        query: String,
-        locale: Locale
+        context: SubtensorSubnetViewModelContext
     ) -> [SubtensorSubnetSelectViewModel] {
-        let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        let take = defaultTake ?? Self.fallbackDelegateTake
+        let trimmedQuery = context.query.trimmingCharacters(in: .whitespacesAndNewlines)
+        let locale = context.locale
 
         let rootTitle = R.string(
             preferredLanguages: locale.rLanguages
@@ -163,8 +185,7 @@ extension SubtensorSubnetViewModelFactory: SubtensorSubnetViewModelFactoryProtoc
                     info: subnet,
                     price: price,
                     ownerCut: info.ownerCut,
-                    take: take,
-                    locale: locale
+                    context: context
                 )
             }
 

@@ -18,12 +18,13 @@ enum SubtensorSubnetSelectViewFactory {
 
         let interactor = SubtensorSubnetSelectInteractor(
             subnetsService: state.subnetsService,
+            priceHistoryService: state.earnServices.priceHistoryService,
             runtimeProvider: runtimeProvider,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared
         )
 
-        let wireframe = SubtensorSubnetSelectWireframe()
+        let wireframe = SubtensorSubnetSelectWireframe(state: state)
 
         let localizationManager = LocalizationManager.shared
 
@@ -33,6 +34,7 @@ enum SubtensorSubnetSelectViewFactory {
             viewModelFactory: SubtensorSubnetViewModelFactory(chainAsset: chainAsset),
             delegate: delegate,
             preferredTake: delegateTake,
+            earnSettings: state.earnServices.earnSettings,
             localizationManager: localizationManager,
             logger: Logger.shared
         )

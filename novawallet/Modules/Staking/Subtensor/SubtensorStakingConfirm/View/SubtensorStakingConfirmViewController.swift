@@ -8,16 +8,19 @@ final class SubtensorStakingConfirmViewController: UIViewController, ViewHolder 
 
     let localizableTitle: LocalizableResource<String>
     let statics: CollatorStakingDelegateStatics
+    let isRoot: Bool
 
     init(
         presenter: CollatorStakingConfirmPresenterProtocol,
         localizableTitle: LocalizableResource<String>,
         statics: CollatorStakingDelegateStatics,
+        isRoot: Bool,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
         self.localizableTitle = localizableTitle
         self.statics = statics
+        self.isRoot = isRoot
 
         super.init(nibName: nil, bundle: nil)
 
@@ -36,6 +39,8 @@ final class SubtensorStakingConfirmViewController: UIViewController, ViewHolder 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        rootView.setRootMode(isRoot)
+        rootView.receiveCell.isHidden = !isRoot
         setupHandlers()
         setupLocalization()
 
@@ -47,7 +52,8 @@ private extension SubtensorStakingConfirmViewController {
     func setupLocalization() {
         let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
 
-        title = localizableTitle.value(for: selectedLocale)
+        title = isRoot ? strings.stakingSubtensorUiStakeToRoot() : strings.stakingSubtensorUiReview()
+        rootView.receiveAmountLabel.text = strings.stakingSubtensorUiQuoteLoading()
 
         rootView.actionButton.imageWithTitleView?.title = strings.commonConfirm()
 
@@ -62,6 +68,8 @@ private extension SubtensorStakingConfirmViewController {
         rootView.slippageCell.titleLabel.text = strings.swapsSetupSlippage()
 
         rootView.collatorCell.titleLabel.text = statics.delegateTitle.value(for: selectedLocale)
+        rootView.stakingTypeCell.titleLabel.text = strings.stakingSubtensorUiStakingType()
+        rootView.stakingTypeCell.bind(details: strings.stakingSubtensorUiRootStaking())
     }
 
     func setupHandlers() {
@@ -100,6 +108,8 @@ private extension SubtensorStakingConfirmViewController {
 extension SubtensorStakingConfirmViewController: SubtensorStakingConfirmViewProtocol {
     func didReceiveAmount(viewModel: BalanceViewModelProtocol) {
         rootView.amountView.bind(viewModel: viewModel)
+        rootView.payAmountLabel.text = viewModel.amount
+        rootView.payPriceLabel.text = viewModel.price
     }
 
     func didReceiveWallet(viewModel: DisplayWalletViewModel) {
@@ -131,6 +141,10 @@ extension SubtensorStakingConfirmViewController: SubtensorStakingConfirmViewProt
         }
 
         rootView.receiveCell.bind(details: viewModel.receive)
+        rootView.receiveAmountLabel.text = viewModel.receive
+        rootView.receivePriceLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.stakingSubtensorUiCurrentRate()
         rootView.poolFeeCell.bind(details: viewModel.poolFee)
         rootView.priceImpactCell.bind(details: viewModel.priceImpact)
 

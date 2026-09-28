@@ -24,6 +24,7 @@ final class SubtensorStakingSetupViewLayout: UIView {
     }()
 
     let networkCell = StackTableCell()
+    let targetLoadingView = SubtensorChartLoadingView()
 
     let collatorTitleLabel: UILabel = {
         let label = UILabel()
@@ -67,6 +68,15 @@ final class SubtensorStakingSetupViewLayout: UIView {
     let minStakeView = TitleAmountView.dark()
 
     let networkFeeView = UIFactory.default.createNetworkFeeView()
+
+    let safetyNoteLabel: UILabel = {
+        let label = UILabel()
+        label.font = .caption1
+        label.textColor = R.color.colorTextSecondary()
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        return label
+    }()
 
     let actionButton: TriangularedButton = {
         let button = TriangularedButton()
@@ -155,5 +165,13 @@ final class SubtensorStakingSetupViewLayout: UIView {
         containerView.stackView.addArrangedSubview(minStakeView)
 
         containerView.stackView.addArrangedSubview(networkFeeView)
+        containerView.stackView.addArrangedSubview(safetyNoteLabel)
+
+        containerView.stackView.insertArrangedSubview(amountView, at: 0)
+        containerView.stackView.insertArrangedSubview(amountInputView, at: 1)
+        containerView.stackView.insertArrangedSubview(targetLoadingView, at: 2)
+        targetLoadingView.snp.makeConstraints { make in make.height.equalTo(260) }
+        containerView.stackView.spacing = 8
+        containerView.stackView.setCustomSpacing(20, after: amountInputView)
     }
 }

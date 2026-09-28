@@ -88,9 +88,13 @@ final class SubtensorSubnetViewModelFactoryTests: XCTestCase {
     ) -> [SubtensorSubnetSelectViewModel] {
         makeFactory().createViewModels(
             from: info,
-            defaultTake: 11796,
-            query: query,
-            locale: locale
+            context: SubtensorSubnetViewModelContext(
+                defaultTake: 11796,
+                query: query,
+                weeklyChanges: [:],
+                favorites: [],
+                locale: locale
+            )
         )
     }
 

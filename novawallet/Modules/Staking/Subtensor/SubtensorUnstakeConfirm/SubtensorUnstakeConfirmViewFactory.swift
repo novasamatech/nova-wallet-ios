@@ -47,19 +47,12 @@ enum SubtensorUnstakeConfirmViewFactory {
             logger: Logger.shared
         )
 
-        let view: CollatorStkUnstakeConfirmViewProtocol = if model.target.isRoot {
-            CollatorStkUnstakeConfirmVC(
-                presenter: presenter,
-                statics: .subtensorValidator,
-                localizationManager: localizationManager
-            )
-        } else {
-            SubtensorUnstakeConfirmVC(
-                presenter: presenter,
-                statics: .subtensorValidator,
-                localizationManager: localizationManager
-            )
-        }
+        let view: CollatorStkUnstakeConfirmViewProtocol = SubtensorUnstakeConfirmVC(
+            presenter: presenter,
+            statics: .subtensorValidator,
+            isRoot: model.target.isRoot,
+            localizationManager: localizationManager
+        )
 
         presenter.view = view
         interactor.presenter = presenter

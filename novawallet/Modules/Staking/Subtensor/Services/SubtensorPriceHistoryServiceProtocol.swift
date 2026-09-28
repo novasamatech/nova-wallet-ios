@@ -1,6 +1,11 @@
 import Foundation
 import Operation_iOS
 
+struct SubtensorMonthlyPriceMetrics: Equatable {
+    let changeInTao: Decimal?
+    let meanTaoPerAlpha: Decimal?
+}
+
 protocol SubtensorPriceHistoryServiceProtocol: AnyObject {
     func createHistoryWrapper(
         for subnet: SubtensorSubnetRef,
@@ -11,4 +16,8 @@ protocol SubtensorPriceHistoryServiceProtocol: AnyObject {
     func createWeeklyChangesWrapper(
         for subnets: [SubtensorSubnetRef]
     ) -> CompoundOperationWrapper<[SubtensorSubnetRef: Decimal]>
+
+    func createMonthlyMetricsWrapper(
+        for subnets: [SubtensorSubnetRef]
+    ) -> CompoundOperationWrapper<[SubtensorSubnetRef: SubtensorMonthlyPriceMetrics]>
 }

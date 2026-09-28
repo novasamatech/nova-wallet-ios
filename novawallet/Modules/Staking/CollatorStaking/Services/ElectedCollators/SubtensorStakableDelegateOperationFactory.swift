@@ -38,7 +38,7 @@ extension SubtensorStakableDelegateOperationFactory: CollatorStakingStakableFact
             let delegates = try delegatesOperation.extractNoCancellableResultData()
             let networkInfo = try networkInfoWrapper.targetOperation.extractNoCancellableResultData()
 
-            return delegates.map { delegate in
+            return delegates.filter { $0.info.isRegisteredOnRoot }.map { delegate in
                 SubtensorDelegateSelectionInfo(
                     delegate: delegate,
                     minStake: max(networkInfo.minStake, networkInfo.effectiveNominatorMinStake)

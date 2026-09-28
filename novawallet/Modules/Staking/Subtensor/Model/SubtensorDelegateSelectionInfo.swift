@@ -42,7 +42,7 @@ extension SubtensorDelegateSelectionInfo {
             rootDelegatorsStake: totalRootStake.subtractOrZero(ownRootStake),
             rootDelegatorCount: UInt32(clamping: rootStakes.count),
             minStake: minStake,
-            hasValidatorPermits: !delegate.info.validatorPermitNetuids.isEmpty
+            hasValidatorPermits: delegate.info.validatorPermitNetuids.contains(SubtensorStakingPallet.rootNetuid)
         )
     }
 }

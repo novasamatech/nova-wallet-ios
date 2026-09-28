@@ -9,6 +9,7 @@ final class SubtensorStakingSetupViewController: UIViewController, ViewHolder, I
     let statics: CollatorStakingDelegateStatics
 
     private var collatorViewModel: AccountDetailsSelectionViewModel?
+    private var isTargetLoading = false
 
     init(
         presenter: SubtensorStakingSetupPresenterProtocol,
@@ -62,14 +63,15 @@ private extension SubtensorStakingSetupViewController {
 
         setupAmountInputAccessoryView()
 
-        rootView.networkTitleLabel.text = strings.stakingSubtensorNetworkTitle()
+        rootView.networkTitleLabel.text = strings.stakingSubtensorUiYourSubnet()
         rootView.networkCell.titleLabel.text = strings.stakingSubtensorNetworkTitle()
 
         rootView.collatorTitleLabel.text = statics.delegateTitle.value(for: selectedLocale)
 
         applyCollator(viewModel: collatorViewModel)
 
-        rootView.amountView.titleView.text = strings.walletSendAmountTitle()
+        rootView.amountView.titleView.text = strings.stakingSubtensorUiYouStake()
+        rootView.safetyNoteLabel.text = strings.stakingSubtensorUiSafetyNote()
         rootView.amountView.detailsTitleLabel.text = strings.commonAvailablePrefix()
 
         rootView.receiveCell.titleLabel.text = strings.stakingSubtensorQuoteReceiveTitle()
@@ -87,6 +89,15 @@ private extension SubtensorStakingSetupViewController {
     }
 
     func updateActionButtonState() {
+        if isTargetLoading {
+            rootView.actionButton.applyDisabledStyle()
+            rootView.actionButton.isUserInteractionEnabled = false
+            rootView.actionButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.stakingSubtensorUiLoadingSubnet()
+            rootView.actionButton.invalidateLayout()
+            return
+        }
         if collatorViewModel == nil {
             rootView.actionButton.applyDisabledStyle()
             rootView.actionButton.isUserInteractionEnabled = false
@@ -225,6 +236,16 @@ private extension SubtensorStakingSetupViewController {
 }
 
 extension SubtensorStakingSetupViewController: SubtensorStakingSetupViewProtocol {
+    func didReceiveTargetLoading(_ isLoading: Bool) {
+        isTargetLoading = isLoading
+        rootView.targetLoadingView.setLoading(isLoading)
+        rootView.networkTitleLabel.isHidden = isLoading
+        rootView.networkTableView.isHidden = isLoading
+        rootView.collatorTitleLabel.isHidden = isLoading
+        rootView.collatorTableView.isHidden = isLoading
+        updateActionButtonState()
+    }
+
     func didReceiveCollator(viewModel: AccountDetailsSelectionViewModel?) {
         collatorViewModel = viewModel
 
@@ -260,6 +281,10 @@ extension SubtensorStakingSetupViewController: SubtensorStakingSetupViewProtocol
     }
 
     func didReceiveStakeTarget(viewModel: SubtensorStakeTargetViewModel) {
+        let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
+        title = viewModel.isRoot ? strings.stakingSubtensorUiStakeToRoot() : strings.stakingSubtensorUiEarnWith()
+        rootView.networkTitleLabel.text = viewModel.isRoot
+            ? strings.stakingSubtensorUiStakingMethod() : strings.stakingSubtensorUiYourSubnet()
         rootView.networkCell.bind(details: viewModel.title)
     }
 

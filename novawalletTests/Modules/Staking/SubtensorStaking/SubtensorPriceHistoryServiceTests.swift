@@ -199,6 +199,29 @@ final class SubtensorPriceHistoryServiceTests: XCTestCase {
         XCTAssertLessThanOrEqual(tracker.maxInFlight, 4)
     }
 
+    func testMonthlyMetricsUseTaoPriceAndAverageForListedSubnets() throws {
+        let coingecko = MockCoingeckoOperationFactoryProtocol()
+        stubCharts(coingecko, [
+            taoPriceId: [(0, "400"), (1_296_000, "400"), (2_592_000, "400")],
+            "chutes": [(0, "20"), (1_296_000, "24"), (2_592_000, "28")]
+        ])
+
+        let metrics = try run(makeService(coingecko: coingecko).createMonthlyMetricsWrapper(
+            for: [chutes, unlisted]
+        ))
+
+        XCTAssertEqual(metrics[chutes], try SubtensorMonthlyPriceMetrics(
+            changeInTao: XCTUnwrap(Decimal(string: "0.4")),
+            meanTaoPerAlpha: XCTUnwrap(Decimal(string: "0.06"))
+        ))
+        XCTAssertNil(metrics[unlisted])
+        verify(coingecko, times(2)).fetchPriceHistory(
+            for: any(),
+            currency: equal(to: Currency.usd),
+            period: equal(to: PriceHistoryPeriod.month)
+        )
+    }
+
     func testSubnetMarketsChangeIsTheAlphaChangeRelativeToTheTaoChange() throws {
         let markets = Data("""
         [

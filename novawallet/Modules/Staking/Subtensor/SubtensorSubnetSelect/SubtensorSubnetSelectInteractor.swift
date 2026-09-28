@@ -6,17 +6,20 @@ final class SubtensorSubnetSelectInteractor: RuntimeConstantFetching {
     weak var presenter: SubnetSelectInteractorOutputProtocol?
 
     let subnetsService: SubtensorSubnetsServiceProtocol
+    let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
     let runtimeProvider: RuntimeCodingServiceProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     init(
         subnetsService: SubtensorSubnetsServiceProtocol,
+        priceHistoryService: SubtensorPriceHistoryServiceProtocol?,
         runtimeProvider: RuntimeCodingServiceProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.subnetsService = subnetsService
+        self.priceHistoryService = priceHistoryService
         self.runtimeProvider = runtimeProvider
         self.operationQueue = operationQueue
         self.logger = logger
@@ -29,8 +32,35 @@ private extension SubtensorSubnetSelectInteractor {
             switch result {
             case let .success(info):
                 self?.presenter?.didReceiveSubnetsInfo(info)
+                self?.provideWeeklyChanges(for: info)
             case let .failure(error):
                 self?.presenter?.didReceiveError(error)
+            }
+        }
+    }
+
+    func provideWeeklyChanges(for info: SubtensorSubnetsInfo) {
+        guard let priceHistoryService else {
+            presenter?.didReceiveWeeklyChanges([:])
+            return
+        }
+
+        let subnets = info.subnets
+            .filter { info.subtokenEnabled.contains($0.netuid) }
+            .map { SubtensorSubnetRef(netuid: $0.netuid, registeredAt: $0.networkRegisteredAt) }
+        let wrapper = priceHistoryService.createWeeklyChangesWrapper(for: subnets)
+
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(changes):
+                self?.presenter?.didReceiveWeeklyChanges(changes)
+            case let .failure(error):
+                self?.logger.warning("Subnet weekly changes unavailable: \(error)")
+                self?.presenter?.didReceiveWeeklyChanges([:])
             }
         }
     }
@@ -52,6 +82,29 @@ private extension SubtensorSubnetSelectInteractor {
 }
 
 extension SubtensorSubnetSelectInteractor: SubnetSelectInteractorInputProtocol {
+    func loadMonthlyMetrics(for info: SubtensorSubnetsInfo) {
+        guard let priceHistoryService else {
+            presenter?.didFailMonthlyMetrics()
+            return
+        }
+        let subnets = info.subnets
+            .filter { info.subtokenEnabled.contains($0.netuid) }
+            .map { SubtensorSubnetRef(netuid: $0.netuid, registeredAt: $0.networkRegisteredAt) }
+        let wrapper = priceHistoryService.createMonthlyMetricsWrapper(for: subnets)
+        execute(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(metrics): self?.presenter?.didReceiveMonthlyMetrics(metrics)
+            case let .failure(error):
+                self?.logger.warning("Subnet monthly metrics unavailable: \(error)")
+                self?.presenter?.didFailMonthlyMetrics()
+            }
+        }
+    }
+
     func setup() {
         provideDefaultTake()
         provideSubnetsInfo()

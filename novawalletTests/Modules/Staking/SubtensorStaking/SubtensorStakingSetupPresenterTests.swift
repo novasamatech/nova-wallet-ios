@@ -111,6 +111,7 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
             when(stub.didReceiveMinStake(viewModel: any())).thenDoNothing()
             when(stub.didReceiveFee(viewModel: any())).thenDoNothing()
             when(stub.didReceiveStakeTarget(viewModel: any())).thenDoNothing()
+            when(stub.didReceiveTargetLoading(any())).thenDoNothing()
             when(stub.didReceiveSlippage(viewModel: any())).thenDoNothing()
             when(stub.didReceiveQuote(viewModel: any())).thenDoNothing()
             when(stub.didReceiveReward(viewModel: any())).thenDoNothing()
@@ -300,6 +301,38 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
 
         XCTAssertTrue(subtitle.contains("\u{03B1}"))
         XCTAssertFalse(subtitle.contains("TAO"))
+    }
+
+    func testRootValidatorSelectionUsesBackendDirectory() {
+        let setup = makeSetup()
+
+        stub(setup.wireframe) { stub in
+            when(stub.showValidatorSelection(from: any(), target: any(), delegate: any()))
+                .thenDoNothing()
+        }
+
+        setup.presenter.selectCollator()
+
+        verify(setup.wireframe).showValidatorSelection(from: any(), target: equal(to: .root), delegate: any())
+    }
+
+    func testSubnetValidatorSelectionUsesSubnetDirectory() {
+        let setup = makeSetup()
+        let target = makeSubnetTarget()
+        setup.presenter.didSelectStakeTarget(target)
+
+        stub(setup.wireframe) { stub in
+            when(stub.showValidatorSelection(from: any(), target: any(), delegate: any()))
+                .thenDoNothing()
+        }
+
+        setup.presenter.selectCollator()
+
+        verify(setup.wireframe).showValidatorSelection(
+            from: any(),
+            target: equal(to: target),
+            delegate: any()
+        )
     }
 
     private func makePositions(netuid: UInt16) -> Multistaking.SubtensorStakingState {

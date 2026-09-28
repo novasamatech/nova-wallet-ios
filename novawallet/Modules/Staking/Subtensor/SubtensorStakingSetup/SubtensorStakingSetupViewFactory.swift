@@ -10,7 +10,7 @@ enum SubtensorStakingSetupViewFactory {
     ) -> CollatorStakingSetupViewProtocol? {
         guard
             let currencyManager = CurrencyManager.shared,
-            let interactor = createInteractor(for: state) else {
+            let interactor = createInteractor(for: state, initialPosition: initialPosition) else {
             return nil
         }
 
@@ -68,7 +68,8 @@ enum SubtensorStakingSetupViewFactory {
     }
 
     private static func createInteractor(
-        for state: SubtensorStakingSharedStateProtocol
+        for state: SubtensorStakingSharedStateProtocol,
+        initialPosition: SubtensorStakingPosition?
     ) -> SubtensorStakingSetupInteractor? {
         let chain = state.stakingOption.chainAsset.chain
 
@@ -128,6 +129,8 @@ enum SubtensorStakingSetupViewFactory {
                 operationQueue: operationQueue
             ),
             rewardCalculatorService: state.rewardCalculatorService,
+            subnetsService: state.subnetsService,
+            initialNetuid: initialPosition?.netuid,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,

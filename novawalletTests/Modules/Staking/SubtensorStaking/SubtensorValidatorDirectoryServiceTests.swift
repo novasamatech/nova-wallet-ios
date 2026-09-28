@@ -170,7 +170,7 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
             netuid: 0,
             rows: [
                 row(hotkeyA, identity: "Aster Stake", stake: nil),
-                row(hotkeyB, identity: "BlueHarbor", stake: nil)
+                row(hotkeyB, identity: "BlueHarbor", stake: nil, metagraphUid: nil)
             ],
             stakes: available(olderAsOf, .fresh),
             metagraph: available(olderAsOf, .fresh),
@@ -198,8 +198,29 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
         )
 
         XCTAssertEqual(directory.items.first, expectedRootItem)
-        XCTAssertNil(directory.items.last?.status)
-        XCTAssertFalse(directory.items.last?.isNovaPreferred ?? true)
+        XCTAssertEqual(directory.items.count, 1)
+
+        let query = ArgumentCaptor<SubtensorValidatorChainQuery>()
+        verify(chainFactory).createChainSnapshotWrapper(for: query.capture())
+        XCTAssertEqual(query.value?.pairs, [pair(hotkeyA, 0)])
+    }
+
+    func testRootDirectoryFailsWhenBackendMetagraphIsUnavailable() throws {
+        let apiFactory = MockBittensorApiOperationFactoryProtocol()
+        let chainFactory = MockSubtensorValidatorChainOperationFactoryProtocol()
+
+        try stubValidators(apiFactory, result: makeCollection(
+            netuid: 0,
+            rows: [row(hotkeyA, identity: "Aster Stake", stake: "100", metagraphUid: nil)],
+            stakes: available(olderAsOf, .fresh),
+            metagraph: .unavailable(.temporarilyUnavailable),
+            identities: available(olderAsOf, .fresh)
+        ))
+
+        let service = makeService(apiFactory: apiFactory, chainFactory: chainFactory, config: makeConfig(preferred: nil))
+
+        XCTAssertThrowsError(try run(service.createDirectoryWrapper(for: root)))
+        verify(chainFactory, never()).createChainSnapshotWrapper(for: any())
     }
 
     func testDirectoryFailsWhenTheBackendValidatorsCallFails() {

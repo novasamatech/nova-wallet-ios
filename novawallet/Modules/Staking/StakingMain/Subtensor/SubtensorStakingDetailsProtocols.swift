@@ -22,6 +22,11 @@ protocol SubtensorStakingDetailsInteractorOutputProtocol: AnyObject {
 
 protocol SubtensorStakingDetailsWireframeProtocol: AlertPresentable, ErrorPresentable,
     CommonRetryable, MessageSheetPresentable, SubtensorClaimRewardsPresenting {
+    func showPortfolio(
+        from view: ControllerBackedProtocol?,
+        stakingState: Multistaking.SubtensorStakingState,
+        commonData: SubtensorStakingCommonData
+    ) -> Bool
     func showStakeTokens(
         from view: ControllerBackedProtocol?,
         initialPosition: SubtensorStakingPosition?
