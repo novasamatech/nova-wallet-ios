@@ -6,95 +6,119 @@ import XCTest
 final class SubtensorStakingOperationCallTests: XCTestCase {
     private let hotkey = Data(repeating: 0xAA, count: 32)
     private let hotkeyHex = String(repeating: "aa", count: 32)
-    private let beneficiary = Data(repeating: 0xBB, count: 32)
-    private let beneficiaryHex = String(repeating: "bb", count: 32)
+    private let groupHotkey = Data(repeating: 0xCC, count: 32)
+    private let groupHotkeyHex = String(repeating: "cc", count: 32)
+    private let productionBeneficiaryHex = "a4373d7b6d136b822d25106a993945f40b4cbfcbb2cfd5782888b5d938f82b1a"
 
-    func testSubnetBuyEncodesBatchAllOfAddStakeLimitOnNetOfFeeAndFeeTransfer() throws {
+    func testSubnetBuyOfTenTaoEncodesBatchAllOfNetStakeAndFeeTransferToTheProductionBeneficiary() throws {
         let operation = SubtensorStakingOperation.subnetBuy(
             hotkey: hotkey,
             netuid: 64,
-            grossTao: 1_000_000_000,
-            limitPrice: 7_721_671
+            grossTao: 10_000_000_000,
+            limitPrice: 74_169_000
         )
 
-        let addStakeLimit = "0758" + hotkeyHex + "4000" + "40036d3b00000000" + "c7d2750000000000" + "00"
-        let feeTransfer = "0503" + "00" + beneficiaryHex + "021bb700"
+        let expected = "0b0208" + "0758" + hotkeyHex + "4000" + "3bd3054f02000000" + "a8ba6b0400000000" + "00" +
+            "050300" + productionBeneficiaryHex + "16431814"
 
-        XCTAssertEqual(try encodeCalls(operation, beneficiary: beneficiary), ["0b02" + "08" + addStakeLimit + feeTransfer])
+        XCTAssertEqual(try encodeCalls(operation, feeCalculator: SubtensorNovaFeeCalculator()), [expected])
     }
 
-    func testSubnetSellEncodesBatchAllOfRemoveStakeLimitAndFeeTransfer() throws {
+    func testSubnetSellEncodesBatchAllOfRemoveStakeLimitAndFeeTransferOnTheQuotedTaoOut() throws {
         let operation = SubtensorStakingOperation.subnetSell(
             hotkey: hotkey,
             netuid: 64,
-            alpha: 500_000_000_000,
-            limitPrice: 7_644_839
+            alpha: 56_200_000_000,
+            limitPrice: 73_431_000,
+            quotedTaoOut: 4_145_000_000
         )
 
-        let removeStakeLimit = "0759" + hotkeyHex + "4000" + "0088526a74000000" + "a7a6740000000000" + "00"
-        let feeTransfer = "0503" + "00" + beneficiaryHex + "eae7bb02"
+        let expected = "0b0208" + "0759" + hotkeyHex + "4000" + "00f2c7150d000000" + "d877600400000000" + "00" +
+            "050300" + productionBeneficiaryHex + "ee4b5408"
 
-        XCTAssertEqual(
-            try encodeCalls(operation, beneficiary: beneficiary),
-            ["0b02" + "08" + removeStakeLimit + feeTransfer]
-        )
+        XCTAssertEqual(try encodeCalls(operation, feeCalculator: SubtensorNovaFeeCalculator()), [expected])
     }
 
-    func testSubnetSellAllEncodesBatchAllOfRemoveStakeFullLimitWithSomeLimitAndFeeTransfer() throws {
+    func testSubnetSellAllEncodesBatchAllOfFullExitsInHotkeyOrderAndOneFeeTransfer() throws {
         let operation = SubtensorStakingOperation.subnetSellAll(
-            hotkey: hotkey,
+            hotkeys: [hotkey, groupHotkey],
             netuid: 64,
-            alpha: 500_000_000_000,
-            limitPrice: 7_644_839
+            limitPrice: 73_431_000,
+            quotedTaoOut: 4_145_000_000
         )
 
-        let removeStakeFullLimit = "0767" + hotkeyHex + "4000" + "01" + "a7a6740000000000"
-        let feeTransfer = "0503" + "00" + beneficiaryHex + "eae7bb02"
+        let expected = "0b020c" +
+            "0767" + hotkeyHex + "4000" + "01" + "d877600400000000" +
+            "0767" + groupHotkeyHex + "4000" + "01" + "d877600400000000" +
+            "050300" + productionBeneficiaryHex + "ee4b5408"
 
-        XCTAssertEqual(
-            try encodeCalls(operation, beneficiary: beneficiary),
-            ["0b02" + "08" + removeStakeFullLimit + feeTransfer]
+        XCTAssertEqual(try encodeCalls(operation, feeCalculator: SubtensorNovaFeeCalculator()), [expected])
+    }
+
+    func testSubnetSellAllWithZeroNovaFeeEncodesBatchAllOfTheFullExitsOnly() throws {
+        let operation = SubtensorStakingOperation.subnetSellAll(
+            hotkeys: [hotkey, groupHotkey],
+            netuid: 64,
+            limitPrice: 73_431_000,
+            quotedTaoOut: 118
         )
+
+        let expected = "0b0208" +
+            "0767" + hotkeyHex + "4000" + "01" + "d877600400000000" +
+            "0767" + groupHotkeyHex + "4000" + "01" + "d877600400000000"
+
+        XCTAssertEqual(try encodeCalls(operation, feeCalculator: SubtensorNovaFeeCalculator()), [expected])
     }
 
     func testSubnetBuyWithZeroNovaFeeEncodesPlainAddStakeLimit() throws {
-        let operation = SubtensorStakingOperation.subnetBuy(hotkey: hotkey, netuid: 64, grossTao: 333, limitPrice: 7_721_671)
+        let operation = SubtensorStakingOperation.subnetBuy(hotkey: hotkey, netuid: 64, grossTao: 118, limitPrice: 74_169_000)
 
-        let addStakeLimit = "0758" + hotkeyHex + "4000" + "4d01000000000000" + "c7d2750000000000" + "00"
+        let addStakeLimit = "0758" + hotkeyHex + "4000" + "7600000000000000" + "a8ba6b0400000000" + "00"
 
-        XCTAssertEqual(try encodeCalls(operation, beneficiary: beneficiary), [addStakeLimit])
+        XCTAssertEqual(try encodeCalls(operation, feeCalculator: SubtensorNovaFeeCalculator()), [addStakeLimit])
     }
 
     func testRootStakeEncodesPlainAddStakeWithoutBeneficiary() throws {
         let operation = SubtensorStakingOperation.rootStake(hotkey: hotkey, amount: 2_000_000)
 
-        XCTAssertEqual(try encodeCalls(operation, beneficiary: nil), ["0702" + hotkeyHex + "0000" + "80841e0000000000"])
+        XCTAssertEqual(
+            try encodeCalls(operation, feeCalculator: SubtensorNovaFeeCalculator(beneficiary: nil)),
+            ["0702" + hotkeyHex + "0000" + "80841e0000000000"]
+        )
     }
 
     func testRootUnstakeEncodesPlainRemoveStakeWithoutBeneficiary() throws {
         let operation = SubtensorStakingOperation.rootUnstake(hotkey: hotkey, amount: 1)
 
-        XCTAssertEqual(try encodeCalls(operation, beneficiary: nil), ["0703" + hotkeyHex + "0000" + "0100000000000000"])
+        XCTAssertEqual(
+            try encodeCalls(operation, feeCalculator: SubtensorNovaFeeCalculator(beneficiary: nil)),
+            ["0703" + hotkeyHex + "0000" + "0100000000000000"]
+        )
     }
 
-    func testRootUnstakeAllEncodesRemoveStakeFullLimitWithNoneLimit() throws {
-        let operation = SubtensorStakingOperation.rootUnstakeAll(hotkey: hotkey)
+    func testRootUnstakeAllOfOneHotkeyEncodesPlainRemoveStakeFullLimitWithNoneLimit() throws {
+        let operation = SubtensorStakingOperation.rootUnstakeAll(hotkeys: [hotkey])
 
-        XCTAssertEqual(try encodeCalls(operation, beneficiary: nil), ["0767" + hotkeyHex + "0000" + "00"])
+        XCTAssertEqual(
+            try encodeCalls(operation, feeCalculator: SubtensorNovaFeeCalculator(beneficiary: nil)),
+            ["0767" + hotkeyHex + "0000" + "00"]
+        )
     }
 
-    func testClaimRootEncodesClaimRootWithHotkey() throws {
-        let operation = SubtensorStakingOperation.claimRoot(hotkey: hotkey)
+    func testRootUnstakeAllOfTwoHotkeysEncodesBatchAllWithoutFeeTransfer() throws {
+        let operation = SubtensorStakingOperation.rootUnstakeAll(hotkeys: [hotkey, groupHotkey])
 
-        XCTAssertEqual(try encodeCalls(operation, beneficiary: nil), ["0794" + hotkeyHex])
+        let expected = "0b0208" + "0767" + hotkeyHex + "0000" + "00" + "0767" + groupHotkeyHex + "0000" + "00"
+
+        XCTAssertEqual(try encodeCalls(operation, feeCalculator: SubtensorNovaFeeCalculator()), [expected])
     }
 
     func testNilBeneficiaryFailsSubnetBuyClosed() {
         let operation = SubtensorStakingOperation.subnetBuy(
             hotkey: hotkey,
             netuid: 64,
-            grossTao: 1_000_000_000,
-            limitPrice: 7_721_671
+            grossTao: 10_000_000_000,
+            limitPrice: 74_169_000
         )
 
         assertRejected(operation, beneficiary: nil, with: .novaFeeUnavailable)
@@ -104,8 +128,9 @@ final class SubtensorStakingOperationCallTests: XCTestCase {
         let operation = SubtensorStakingOperation.subnetSell(
             hotkey: hotkey,
             netuid: 64,
-            alpha: 500_000_000_000,
-            limitPrice: 7_644_839
+            alpha: 56_200_000_000,
+            limitPrice: 73_431_000,
+            quotedTaoOut: 4_145_000_000
         )
 
         assertRejected(operation, beneficiary: nil, with: .novaFeeUnavailable)
@@ -113,19 +138,37 @@ final class SubtensorStakingOperationCallTests: XCTestCase {
 
     func testNilBeneficiaryFailsSubnetSellAllClosed() {
         let operation = SubtensorStakingOperation.subnetSellAll(
-            hotkey: hotkey,
+            hotkeys: [hotkey],
             netuid: 64,
-            alpha: 500_000_000_000,
-            limitPrice: 7_644_839
+            limitPrice: 73_431_000,
+            quotedTaoOut: 4_145_000_000
         )
 
         assertRejected(operation, beneficiary: nil, with: .novaFeeUnavailable)
     }
 
     func testSubnetOrderWithoutLimitIsRejected() {
-        let operation = SubtensorStakingOperation.subnetSell(hotkey: hotkey, netuid: 64, alpha: 500_000_000_000, limitPrice: 0)
+        let operation = SubtensorStakingOperation.subnetSell(
+            hotkey: hotkey,
+            netuid: 64,
+            alpha: 56_200_000_000,
+            limitPrice: 0,
+            quotedTaoOut: 4_145_000_000
+        )
 
-        assertRejected(operation, beneficiary: beneficiary, with: .unprotectedSubnetOrder)
+        assertRejected(operation, beneficiary: SubtensorNovaFeeCalculator.defaultBeneficiary, with: .unprotectedSubnetOrder)
+    }
+
+    func testSubnetSellWithoutQuotedTaoOutIsRejected() {
+        let operation = SubtensorStakingOperation.subnetSell(
+            hotkey: hotkey,
+            netuid: 64,
+            alpha: 56_200_000_000,
+            limitPrice: 73_431_000,
+            quotedTaoOut: 0
+        )
+
+        assertRejected(operation, beneficiary: SubtensorNovaFeeCalculator.defaultBeneficiary, with: .unprotectedSubnetOrder)
     }
 
     func testLimitOrderOnRootNetuidIsRejected() {
@@ -136,12 +179,31 @@ final class SubtensorStakingOperationCallTests: XCTestCase {
             limitPrice: 1_000_000_001
         )
 
-        assertRejected(operation, beneficiary: beneficiary, with: .limitOnRootOrder)
+        assertRejected(operation, beneficiary: SubtensorNovaFeeCalculator.defaultBeneficiary, with: .limitOnRootOrder)
     }
 
-    private func encodeCalls(_ operation: SubtensorStakingOperation, beneficiary: AccountId?) throws -> [String] {
+    func testEmptyHotkeyGroupIsRejected() {
+        let operation = SubtensorStakingOperation.rootUnstakeAll(hotkeys: [])
+
+        assertRejected(operation, beneficiary: SubtensorNovaFeeCalculator.defaultBeneficiary, with: .invalidHotkeyGroup)
+    }
+
+    func testDuplicatedHotkeyGroupIsRejected() {
+        let operation = SubtensorStakingOperation.subnetSellAll(
+            hotkeys: [hotkey, groupHotkey, hotkey],
+            netuid: 64,
+            limitPrice: 73_431_000,
+            quotedTaoOut: 4_145_000_000
+        )
+
+        assertRejected(operation, beneficiary: SubtensorNovaFeeCalculator.defaultBeneficiary, with: .invalidHotkeyGroup)
+    }
+
+    private func encodeCalls(
+        _ operation: SubtensorStakingOperation,
+        feeCalculator: SubtensorNovaFeeCalculator
+    ) throws -> [String] {
         let codingFactory = try RuntimeCodingServiceStub.createBittensorCodingFactory()
-        let feeCalculator = SubtensorNovaFeeCalculator(beneficiary: beneficiary)
         let closure = try operation.extrinsicBuilderClosure(feeCalculator: feeCalculator)
 
         let builder = try closure(ExtrinsicBuilder().with(runtimeJsonContext: codingFactory.createRuntimeJsonContext()))

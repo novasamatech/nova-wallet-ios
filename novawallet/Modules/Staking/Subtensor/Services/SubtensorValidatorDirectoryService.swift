@@ -107,7 +107,12 @@ private extension SubtensorValidatorDirectoryService {
         let listingOperation = ClosureOperation<Listing> {
             let response = try validatorsWrapper.targetOperation.extractNoCancellableResultData()
 
-            return try Self.makeListing(from: response.value, netuid: netuid, logger: logger)
+            return try Self.makeListing(
+                from: response.value,
+                isFromExpiredCache: response.isFromExpiredCache,
+                netuid: netuid,
+                logger: logger
+            )
         }
 
         listingOperation.addDependency(validatorsWrapper.targetOperation)

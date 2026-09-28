@@ -20,6 +20,7 @@ extension SubtensorValidatorDirectoryService {
 
     static func makeListing(
         from collection: BittensorApi.ValidatorCollection,
+        isFromExpiredCache: Bool,
         netuid: UInt16,
         logger: LoggerProtocol
     ) throws -> Listing {
@@ -58,7 +59,7 @@ extension SubtensorValidatorDirectoryService {
             components.validatorStakes,
             components.validatorMetagraph,
             components.validatorIdentities
-        ].compactMap { SubtensorBackendStamp(metadata: $0) }
+        ].compactMap { SubtensorBackendStamp(metadata: $0, isFromExpiredCache: isFromExpiredCache) }
 
         return Listing(
             rows: rows,

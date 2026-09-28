@@ -7,11 +7,11 @@ final class SubtensorActiveSubnetFlowTests: SubtensorFlowTestCase {
     private let sellAlpha: Balance = 56_200_000_000
 
     private let chutesBuyQuote = SubtensorQuote(
-        args: SubtensorQuoteArgs(netuid: 64, direction: .stake(taoIn: 4_985_000_000)),
+        args: SubtensorQuoteArgs(netuid: 64, direction: .stake(taoIn: 4_957_858_206)),
         sim: SubtensorStakingPallet.SimSwapResult(
-            taoAmount: 4_985_000_000,
-            alphaAmount: 67_500_000_000,
-            taoFee: 2_510_185,
+            taoAmount: 4_957_858_206,
+            alphaAmount: 67_054_958_000,
+            taoFee: 2_496_518,
             alphaFee: 0,
             taoSlippage: 0,
             alphaSlippage: 0
@@ -44,20 +44,12 @@ final class SubtensorActiveSubnetFlowTests: SubtensorFlowTestCase {
         let screens = try openChutesPosition(in: world)
         let ranked = try XCTUnwrap(screens.ranked)
         let chutesRanking = try XCTUnwrap(ranked.subnet(for: 64))
-        let productionDefaultQuoteFactory = try world.createProductionWiredTradeQuoteFactory()
+        let productionFeeCalculator = try world.createProductionWiredNovaFeeCalculator()
 
-        let productionDefaultQuoteErrors = [
-            runError(productionDefaultQuoteFactory.createBuyQuoteWrapper(
-                netuid: 64,
-                grossTao: SubtensorFlowChainWorld.stakeAmount,
-                tolerance: screens.slippage
-            )),
-            runError(productionDefaultQuoteFactory.createSellQuoteWrapper(
-                netuid: 64,
-                alpha: sellAlpha,
-                tolerance: screens.slippage
-            ))
-        ].map { $0 as? SubtensorStakingOperationError }
+        let productionFees = [
+            try productionFeeCalculator.buyFee(grossTao: SubtensorFlowChainWorld.stakeAmount),
+            try productionFeeCalculator.sellFee(quotedTaoOut: chutesSellQuote.sim.taoAmount)
+        ]
 
         XCTAssertEqual(screens.entryConfig.entry?.enabled, true)
         assertYourBittensor(screens.yourBittensor)
@@ -87,7 +79,12 @@ final class SubtensorActiveSubnetFlowTests: SubtensorFlowTestCase {
 
         try assertChainValues(of: screens)
 
-        XCTAssertEqual(productionDefaultQuoteErrors, [.novaFeeUnavailable, .novaFeeUnavailable])
+        let placeholderBeneficiary = try SubtensorFlowChainWorld.placeholderNovaFeeBeneficiary()
+
+        XCTAssertEqual(productionFees, [
+            SubtensorNovaFee(amount: 42_141_794, beneficiary: placeholderBeneficiary),
+            SubtensorNovaFee(amount: 34_935_547, beneficiary: placeholderBeneficiary)
+        ])
         verify(world.quoteOperationFactory).createQuoteWrapper(for: equal(to: chutesBuyQuote.args))
         verify(world.quoteOperationFactory).createQuoteWrapper(for: equal(to: chutesSellQuote.args))
 
@@ -239,7 +236,8 @@ private extension SubtensorActiveSubnetFlowTests {
             hotkey: soldPosition.hotkey,
             netuid: group.netuid,
             alpha: sellAlpha,
-            limitPrice: sellQuote.limitPrice
+            limitPrice: sellQuote.limitPrice,
+            quotedTaoOut: sellQuote.quote.sim.taoAmount
         )))
 
         let sellPlan = SubtensorAmountPolicy.sellPlan(for: SubtensorSellPlanInput(
@@ -319,9 +317,9 @@ private extension SubtensorActiveSubnetFlowTests {
         XCTAssertEqual(screens.slippage, BigRational(numerator: 5, denominator: 1000))
         XCTAssertEqual(screens.buyQuote, SubtensorTradeQuote(
             quote: chutesBuyQuote,
-            novaFee: SubtensorNovaFee(amount: 15_000_000, beneficiary: beneficiary),
-            expectedOut: 67_500_000_000,
-            minimumOut: 67_177_524_504,
+            novaFee: SubtensorNovaFee(amount: 42_141_794, beneficiary: beneficiary),
+            expectedOut: 67_054_958_000,
+            minimumOut: 66_811_763_513,
             limitPrice: 74_169_000
         ))
         XCTAssertEqual(screens.buyFee.amount, networkFee)
@@ -329,9 +327,9 @@ private extension SubtensorActiveSubnetFlowTests {
 
         XCTAssertEqual(screens.sellQuote, SubtensorTradeQuote(
             quote: chutesSellQuote,
-            novaFee: SubtensorNovaFee(amount: 12_380_466, beneficiary: beneficiary),
-            expectedOut: 4_132_619_534,
-            minimumOut: 4_112_363_682,
+            novaFee: SubtensorNovaFee(amount: 34_935_547, beneficiary: beneficiary),
+            expectedOut: 4_110_064_453,
+            minimumOut: 4_089_808_601,
             limitPrice: 73_431_000
         ))
         XCTAssertEqual(screens.sellFee.amount, networkFee)

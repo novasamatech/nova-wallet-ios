@@ -12,8 +12,9 @@ struct SubtensorNovaFeeCalculator {
 extension SubtensorNovaFeeCalculator {
     static var defaultBeneficiary: AccountId? {
         guard
-            let address = SubtensorNovaFeeConstants.beneficiaryAddress,
-            let accountId = try? address.toAccountId(),
+            let accountId = try? SubtensorNovaFeeConstants.beneficiaryAddress.toAccountId(
+                using: .defaultSubstrateFormat
+            ),
             accountId.count == SubstrateConstants.accountIdLength else {
             return nil
         }
@@ -32,6 +33,20 @@ extension SubtensorNovaFeeCalculator {
         return minimumTaoOut
     }
 
+    static func grossUp(net: Balance) throws -> Balance {
+        try SubtensorStakingPallet.ensureU64Amount(net)
+
+        guard net > 0 else {
+            return 0
+        }
+
+        let gross = net + SubtensorNovaFeeConstants.rate.mul(value: net - 1)
+
+        try SubtensorStakingPallet.ensureU64Amount(gross)
+
+        return gross
+    }
+
     func buyFee(grossTao: Balance) throws -> SubtensorNovaFee? {
         let beneficiary = try resolveBeneficiary()
 
@@ -40,22 +55,22 @@ extension SubtensorNovaFeeCalculator {
         return makeFee(basis: grossTao, beneficiary: beneficiary)
     }
 
-    func sellFee(alpha: Balance, limitPrice: Balance) throws -> SubtensorNovaFee? {
+    func sellFee(quotedTaoOut: Balance) throws -> SubtensorNovaFee? {
         let beneficiary = try resolveBeneficiary()
 
-        let basis = try Self.minimumTaoOut(alpha: alpha, limitPrice: limitPrice)
+        try SubtensorStakingPallet.ensureU64Amount(quotedTaoOut)
 
-        return makeFee(basis: basis, beneficiary: beneficiary)
+        return makeFee(basis: quotedTaoOut, beneficiary: beneficiary)
     }
 
     func novaFee(for operation: SubtensorStakingOperation) throws -> SubtensorNovaFee? {
         switch operation {
-        case .rootStake, .rootUnstake, .rootUnstakeAll, .claimRoot:
+        case .rootStake, .rootUnstake, .rootUnstakeAll:
             return nil
         case let .subnetBuy(_, _, grossTao, _):
             return try buyFee(grossTao: grossTao)
-        case let .subnetSell(_, _, alpha, limitPrice), let .subnetSellAll(_, _, alpha, limitPrice):
-            return try sellFee(alpha: alpha, limitPrice: limitPrice)
+        case let .subnetSell(_, _, _, _, quotedTaoOut), let .subnetSellAll(_, _, _, quotedTaoOut):
+            return try sellFee(quotedTaoOut: quotedTaoOut)
         }
     }
 }
@@ -70,7 +85,7 @@ private extension SubtensorNovaFeeCalculator {
     }
 
     func makeFee(basis: Balance, beneficiary: AccountId) -> SubtensorNovaFee? {
-        let amount = SubtensorNovaFeeConstants.rate.mul(value: basis)
+        let amount = SubtensorNovaFeeConstants.rate.asShareOfGross.mul(value: basis)
 
         guard amount > 0 else {
             return nil

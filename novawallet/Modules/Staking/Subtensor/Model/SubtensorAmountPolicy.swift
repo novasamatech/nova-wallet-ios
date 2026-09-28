@@ -84,7 +84,7 @@ enum SubtensorAmountPolicy {
         guard input.transferable >= input.networkFee else {
             let isPositionFullyAvailable = input.availability.available >= input.positionAlpha
 
-            return isPositionFullyAvailable ? .rootUnstakeAll(hotkey: input.hotkey) : nil
+            return isPositionFullyAvailable ? .rootUnstakeAll(hotkeys: [input.hotkey]) : nil
         }
 
         let amount = maxSell(positionAlpha: input.positionAlpha, availability: input.availability)

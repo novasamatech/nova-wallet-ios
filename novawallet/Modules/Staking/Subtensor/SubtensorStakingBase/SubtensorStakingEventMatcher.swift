@@ -7,6 +7,7 @@ struct SubtensorStakingEventMatcher: ExtrinsicEventsMatching {
         SubtensorStakingPallet.stakeRemovedEventPath,
         SubtensorStakingPallet.rootClaimedEventPath,
         SubtensorStakingPallet.transactionFeePaidWithAlphaEventPath,
+        TransactionPaymentPallet.feePaidPath,
         BalancesPallet.balancesTransfer,
         UtilityPallet.batchInterruptedEventPath,
         UtilityPallet.itemFailedEventPath
@@ -104,7 +105,8 @@ struct SubtensorStakingOutcomeParser {
     func parse(
         events: [Event],
         for operation: SubtensorStakingOperation,
-        extrinsicHash: String?
+        extrinsicHash: ExtrinsicHash,
+        blockHash: BlockHash
     ) throws -> SubtensorStakingOperationOutcome {
         let context = codingFactory.createRuntimeJsonContext().toRawContext()
         let decodedEvents = events.compactMap { decode(event: $0, context: context) }
@@ -118,10 +120,11 @@ struct SubtensorStakingOutcomeParser {
 
         return SubtensorStakingOperationOutcome(
             executed: executedAmounts(in: decodedEvents, target: target, alphaFee: alphaFee),
-            claimedTao: claimedTao(in: decodedEvents, target: target),
             novaFeePaid: novaFeePaid(in: decodedEvents),
             alphaFeePaid: alphaFee?.alphaFee,
-            extrinsicHash: extrinsicHash
+            networkFeePaid: alphaFee?.taoAmount ?? transactionFeePaid(in: decodedEvents),
+            extrinsicHash: extrinsicHash,
+            blockHash: blockHash
         )
     }
 }
@@ -140,15 +143,15 @@ private extension SubtensorStakingOutcomeParser {
                 .map { .stakeRemoved($0) }
         }
 
-        if metadata.eventMatches(event, path: SubtensorStakingPallet.rootClaimedEventPath) {
-            return (try? event.params.map(to: SubtensorStakingPallet.RootClaimedEvent.self, with: context))
-                .map { .rootClaimed($0) }
-        }
-
         if metadata.eventMatches(event, path: SubtensorStakingPallet.transactionFeePaidWithAlphaEventPath) {
             let eventType = SubtensorStakingPallet.TransactionFeePaidWithAlphaEvent.self
 
             return (try? event.params.map(to: eventType, with: context)).map { .alphaFeePaid($0) }
+        }
+
+        if metadata.eventMatches(event, path: TransactionPaymentPallet.feePaidPath) {
+            return (try? event.params.map(to: TransactionPaymentPallet.TransactionFeePaid.self, with: context))
+                .map { .transactionFeePaid($0) }
         }
 
         if metadata.eventMatches(event, path: BalancesPallet.balancesTransfer) {
@@ -192,8 +195,6 @@ private extension SubtensorStakingOutcomeParser {
             changes = decodedEvents.enumerated().compactMap { index, event in
                 index == feeSaleIndex ? nil : event.stakeRemoved(matching: target)
             }
-        case .claim:
-            return nil
         }
 
         guard !changes.isEmpty else {
@@ -207,19 +208,6 @@ private extension SubtensorStakingOutcomeParser {
         )
     }
 
-    func claimedTao(
-        in decodedEvents: [SubtensorDecodedStakingEvent],
-        target: SubtensorOutcomeTarget
-    ) -> Balance? {
-        guard target.kind == .claim else {
-            return nil
-        }
-
-        let claims = decodedEvents.compactMap { $0.claimedTao(by: target.coldkey) }
-
-        return claims.isEmpty ? nil : claims.reduce(Balance(0), +)
-    }
-
     func novaFeePaid(in decodedEvents: [SubtensorDecodedStakingEvent]) -> Balance? {
         guard let novaFeeBeneficiary else {
             return nil
@@ -228,6 +216,10 @@ private extension SubtensorStakingOutcomeParser {
         let fees = decodedEvents.compactMap { $0.transferAmount(from: coldkey, to: novaFeeBeneficiary) }
 
         return fees.isEmpty ? nil : fees.reduce(Balance(0), +)
+    }
+
+    func transactionFeePaid(in decodedEvents: [SubtensorDecodedStakingEvent]) -> Balance? {
+        decodedEvents.lazy.compactMap { $0.transactionFee(paidBy: coldkey) }.first
     }
 }
 
@@ -240,18 +232,17 @@ private struct SubtensorOutcomeTarget {
     enum Kind {
         case stake
         case unstake
-        case claim
     }
 
     let kind: Kind
     let coldkey: AccountId
-    let hotkey: AccountId
+    let hotkeys: Set<AccountId>
     let netuid: UInt16
 
-    init(kind: Kind, coldkey: AccountId, hotkey: AccountId, netuid: UInt16) {
+    init(kind: Kind, coldkey: AccountId, hotkeys: Set<AccountId>, netuid: UInt16) {
         self.kind = kind
         self.coldkey = coldkey
-        self.hotkey = hotkey
+        self.hotkeys = hotkeys
         self.netuid = netuid
     }
 
@@ -260,28 +251,30 @@ private struct SubtensorOutcomeTarget {
 
         switch operation {
         case let .rootStake(hotkey, _):
-            self.init(kind: .stake, coldkey: coldkey, hotkey: hotkey, netuid: rootNetuid)
-        case let .rootUnstake(hotkey, _), let .rootUnstakeAll(hotkey):
-            self.init(kind: .unstake, coldkey: coldkey, hotkey: hotkey, netuid: rootNetuid)
+            self.init(kind: .stake, coldkey: coldkey, hotkeys: [hotkey], netuid: rootNetuid)
+        case let .rootUnstake(hotkey, _):
+            self.init(kind: .unstake, coldkey: coldkey, hotkeys: [hotkey], netuid: rootNetuid)
+        case let .rootUnstakeAll(hotkeys):
+            self.init(kind: .unstake, coldkey: coldkey, hotkeys: Set(hotkeys), netuid: rootNetuid)
         case let .subnetBuy(hotkey, netuid, _, _):
-            self.init(kind: .stake, coldkey: coldkey, hotkey: hotkey, netuid: netuid)
-        case let .subnetSell(hotkey, netuid, _, _), let .subnetSellAll(hotkey, netuid, _, _):
-            self.init(kind: .unstake, coldkey: coldkey, hotkey: hotkey, netuid: netuid)
-        case let .claimRoot(hotkey):
-            self.init(kind: .claim, coldkey: coldkey, hotkey: hotkey, netuid: rootNetuid)
+            self.init(kind: .stake, coldkey: coldkey, hotkeys: [hotkey], netuid: netuid)
+        case let .subnetSell(hotkey, netuid, _, _, _):
+            self.init(kind: .unstake, coldkey: coldkey, hotkeys: [hotkey], netuid: netuid)
+        case let .subnetSellAll(hotkeys, netuid, _, _):
+            self.init(kind: .unstake, coldkey: coldkey, hotkeys: Set(hotkeys), netuid: netuid)
         }
     }
 
     func matches(coldkey eventColdkey: AccountId, hotkey eventHotkey: AccountId, netuid eventNetuid: UInt16) -> Bool {
-        coldkey == eventColdkey && hotkey == eventHotkey && netuid == eventNetuid
+        coldkey == eventColdkey && hotkeys.contains(eventHotkey) && netuid == eventNetuid
     }
 }
 
 private enum SubtensorDecodedStakingEvent {
     case stakeAdded(SubtensorStakingPallet.StakeAddedEvent)
     case stakeRemoved(SubtensorStakingPallet.StakeRemovedEvent)
-    case rootClaimed(SubtensorStakingPallet.RootClaimedEvent)
     case alphaFeePaid(SubtensorStakingPallet.TransactionFeePaidWithAlphaEvent)
+    case transactionFeePaid(TransactionPaymentPallet.TransactionFeePaid)
     case transfer(BalancesPallet.TransferEvent)
     case batchFailed(Error)
 
@@ -291,6 +284,14 @@ private enum SubtensorDecodedStakingEvent {
         }
 
         return fee
+    }
+
+    func transactionFee(paidBy coldkey: AccountId) -> Balance? {
+        guard case let .transactionFeePaid(fee) = self, fee.payee == coldkey else {
+            return nil
+        }
+
+        return fee.amount
     }
 
     func isStakeRemoved(by coldkey: AccountId, netuid: UInt16) -> Bool {
@@ -318,15 +319,7 @@ private enum SubtensorDecodedStakingEvent {
             return nil
         }
 
-        return SubtensorStakeChange(tao: removed.tao, alpha: removed.alpha)
-    }
-
-    func claimedTao(by coldkey: AccountId) -> Balance? {
-        guard case let .rootClaimed(claimed) = self, claimed.coldkey == coldkey else {
-            return nil
-        }
-
-        return claimed.tao
+        return SubtensorStakeChange(tao: removed.tao, alpha: removed.alpha + removed.fee)
     }
 
     func transferAmount(from sender: AccountId, to receiver: AccountId) -> Balance? {

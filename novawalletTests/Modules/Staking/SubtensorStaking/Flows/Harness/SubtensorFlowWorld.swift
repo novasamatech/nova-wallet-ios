@@ -86,6 +86,8 @@ final class SubtensorFlowWorld {
             ),
             earnConfigProvider: SubtensorEarnConfigProvider(
                 configURL: SubtensorFlowHost.earnConfig,
+                bundledConfig: SubtensorEarnConfig.bundled,
+                entryStore: SubtensorEarnConfigEntryStore(settingsManager: InMemorySettingsManager()),
                 operationQueue: OperationQueue(),
                 logger: Logger.shared,
                 timeProvider: { clock.now }
@@ -130,10 +132,12 @@ final class SubtensorFlowWorld {
         sharedState.earnServices
     }
 
-    func createProductionWiredTradeQuoteFactory() throws -> SubtensorTradeQuoteFactoryProtocol {
-        try factory.createSubtensorStaking(for: stakingOption, processServices: processServices)
+    func createProductionWiredNovaFeeCalculator() throws -> SubtensorNovaFeeCalculator {
+        let tradeQuoteFactory = try factory.createSubtensorStaking(for: stakingOption, processServices: processServices)
             .earnServices
             .tradeQuoteFactory
+
+        return try XCTUnwrap(tradeQuoteFactory as? SubtensorTradeQuoteFactory).feeCalculator
     }
 
     func stubSubnets(_ info: SubtensorSubnetsInfo) {

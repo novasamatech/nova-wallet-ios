@@ -2267,3 +2267,4 @@ Do you want to continue?";
 "staking.subtensor.positions.compound.footer" = "Subnet rewards compound automatically";
 "staking.subtensor.rate.per.day.format" = "≈ %@/day";
 "staking.subtensor.apy.declines.note" = "The estimated rate is a network average that declines by design as subnets grow";
+"staking.subtensor.error.nova.fee.unavailable" = "Subnet buys and sells are unavailable in this app version. Staking to root is not affected.";

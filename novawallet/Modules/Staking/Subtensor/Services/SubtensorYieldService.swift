@@ -62,7 +62,12 @@ private extension SubtensorYieldService {
         pages: BittensorApiPages<BittensorApi.AlphaYieldCollection>,
         logger: LoggerProtocol
     ) throws -> SubtensorAlphaYields {
-        let pageStamps = pages.pages.map { SubtensorBackendStamp(component: $0.value.meta.components.alphaYield) }
+        let pageStamps = pages.pages.map { page in
+            SubtensorBackendStamp(
+                component: page.value.meta.components.alphaYield,
+                isFromExpiredCache: page.isFromExpiredCache
+            )
+        }
 
         guard let aggregateStamp = SubtensorBackendStamp.aggregate(pageStamps) else {
             throw SubtensorYieldServiceError.missingYieldPage

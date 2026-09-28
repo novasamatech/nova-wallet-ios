@@ -99,7 +99,8 @@ private extension SubtensorRecommendationService {
                 meta.generation,
                 component: meta.components.recommendations,
                 completeness: meta.completeness,
-                receivedAt: response.receivedAt
+                receivedAt: response.receivedAt,
+                isFromExpiredCache: response.isFromExpiredCache
             ),
             gates: reader.clientGates(meta.clientGates),
             topN: meta.topN,
@@ -241,7 +242,8 @@ extension SubtensorRecommendationService: SubtensorRecommendationServiceProtocol
                     meta.generation,
                     component: meta.components.recommendations,
                     completeness: meta.completeness,
-                    receivedAt: response.receivedAt
+                    receivedAt: response.receivedAt,
+                    isFromExpiredCache: response.isFromExpiredCache
                 ),
                 policy: Self.policy(meta.policy),
                 items: items

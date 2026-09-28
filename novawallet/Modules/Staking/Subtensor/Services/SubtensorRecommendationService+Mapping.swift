@@ -186,7 +186,8 @@ extension SubtensorRecommendationService {
         _ generation: BittensorApi.Generation,
         component: BittensorApi.AvailableComponent,
         completeness: BittensorApi.Completeness,
-        receivedAt: TimeInterval
+        receivedAt: TimeInterval,
+        isFromExpiredCache: Bool
     ) -> SubtensorRecommendationGeneration {
         SubtensorRecommendationGeneration(
             id: generation.id,
@@ -198,7 +199,7 @@ extension SubtensorRecommendationService {
             excludedNetuids: generation.excludedNetuids,
             carriedOverNetuids: generation.carriedOverNetuids,
             inputFlags: generation.inputFlags,
-            stamp: SubtensorBackendStamp(component: component),
+            stamp: SubtensorBackendStamp(component: component, isFromExpiredCache: isFromExpiredCache),
             isPartial: completeness == .partial
         )
     }

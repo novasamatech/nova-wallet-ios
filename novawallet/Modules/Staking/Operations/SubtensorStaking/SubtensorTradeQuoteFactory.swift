@@ -56,7 +56,7 @@ private extension SubtensorTradeQuoteFactory {
         feeCalculator: SubtensorNovaFeeCalculator
     ) throws -> SubtensorTradeQuote {
         let limitPrice = try SubtensorLimitPriceCalculator.sellLimit(spot: quote.spotPrice, tolerance: tolerance)
-        let novaFee = try feeCalculator.sellFee(alpha: alpha, limitPrice: limitPrice)
+        let novaFee = try feeCalculator.sellFee(quotedTaoOut: quote.sim.taoAmount)
         let feeAmount = novaFee?.amount ?? 0
         let swappedAlpha = netOfPoolFee(alpha, feeRate: quote.feeRate)
         let minimumTaoOut = try SubtensorNovaFeeCalculator.minimumTaoOut(alpha: swappedAlpha, limitPrice: limitPrice)

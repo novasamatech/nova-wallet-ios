@@ -209,6 +209,27 @@ final class SubtensorStakingErrorMapperTests: XCTestCase {
         XCTAssertNotNil(mapped as? JSONRPCError)
     }
 
+    func testMapsTokenBalanceErrorsOfTheFeeTransferToNotEnoughBalance() {
+        let reasons = ["FundsUnavailable", "NotExpendable", "Frozen", "BelowMinimum"]
+
+        let mapped = reasons.map { reason in
+            mapper.mapSubmission(
+                error: DispatchCallError.other(.init(module: "Token", reason: reason))
+            ) as? SubtensorStakingSubmissionError
+        }
+
+        XCTAssertEqual(mapped, Array(repeating: .notEnoughBalanceToStake, count: reasons.count))
+    }
+
+    func testOtherTokenErrorPassesThrough() {
+        let original = DispatchCallError.other(.init(module: "Token", reason: "CannotCreate"))
+
+        let mapped = mapper.mapSubmission(error: original)
+
+        XCTAssertNil(mapped as? SubtensorStakingSubmissionError)
+        XCTAssertNotNil(mapped as? DispatchCallError)
+    }
+
     func testSafeModeContentUsesChainWideMessage() {
         let content = SubtensorStakingSubmissionError.safeModeActive.toErrorContent(for: locale())
 
