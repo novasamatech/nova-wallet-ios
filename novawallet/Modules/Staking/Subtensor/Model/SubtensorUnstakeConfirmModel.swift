@@ -1,9 +1,11 @@
 import Foundation
 
 struct SubtensorUnstakeConfirmModel {
-    let delegate: DisplayAddress
+    let origin: SubtensorOperationOrigin
+    let account: MetaChainAccountResponse
+    let target: SubtensorStakeTarget
+    let validator: SubtensorConfirmValidator
     let unstakeModel: SubtensorUnstakeModel
-    var target: SubtensorStakeTarget = .root
-    var slippage: BigRational?
-    var quote: SubtensorQuote?
+    let tolerance: BigRational?
+    let acknowledgedQuote: SubtensorTradeQuote?
 }

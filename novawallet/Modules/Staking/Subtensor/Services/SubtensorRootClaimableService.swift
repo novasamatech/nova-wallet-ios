@@ -5,6 +5,10 @@ import Operation_iOS
 struct SubtensorRootClaimable: Equatable {
     let previews: [SubtensorRootClaimPreview]
 
+    var totalRedeemable: Balance {
+        previews.reduce(Balance.zero) { $0 + $1.redeemable }
+    }
+
     func redeemable(for hotkey: AccountId) -> Balance {
         previews.first { $0.hotkey == hotkey }?.redeemable ?? 0
     }
@@ -19,6 +23,15 @@ protocol SubtensorRootClaimableServiceProtocol: ApplicationServiceProtocol {
     )
 
     func remove(observer: AnyObject)
+
+    func add(
+        failureObserver: AnyObject,
+        sendStateOnSubscription: Bool,
+        queue: DispatchQueue?,
+        closure: @escaping Observable<Bool>.StateChangeClosure
+    )
+
+    func remove(failureObserver: AnyObject)
 }
 
 final class SubtensorRootClaimableService: BaseSyncService {
@@ -31,6 +44,7 @@ final class SubtensorRootClaimableService: BaseSyncService {
     private let callStore = CancellableCallStore()
 
     private var stateObservable: Observable<SubtensorRootClaimable?> = .init(state: nil)
+    private var failureObservable: Observable<Bool> = .init(state: false)
 
     init(
         coldkey: AccountId,
@@ -140,11 +154,15 @@ private extension SubtensorRootClaimableService {
         ) { [weak self] result in
             switch result {
             case let .success(claimable):
+                self?.failureObservable.state = false
+
                 self?.stateObservable.state = claimable
 
                 self?.completeImmediate(nil)
             case let .failure(error):
                 self?.logger.error("Claimable fetch error: \(error)")
+
+                self?.failureObservable.state = true
 
                 self?.completeImmediate(error)
             }
@@ -187,5 +205,35 @@ extension SubtensorRootClaimableService: SubtensorRootClaimableServiceProtocol {
         }
 
         stateObservable.removeObserver(by: observer)
+    }
+
+    func add(
+        failureObserver: AnyObject,
+        sendStateOnSubscription: Bool,
+        queue: DispatchQueue?,
+        closure: @escaping Observable<Bool>.StateChangeClosure
+    ) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        failureObservable.addObserver(
+            with: failureObserver,
+            sendStateOnSubscription: sendStateOnSubscription,
+            queue: queue,
+            closure: closure
+        )
+    }
+
+    func remove(failureObserver: AnyObject) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        failureObservable.removeObserver(by: failureObserver)
     }
 }

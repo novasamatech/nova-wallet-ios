@@ -15,16 +15,16 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
         let aster = try SubtensorFlowChainWorld.hotkey(.aster)
         let feed = SubtensorFlowPositionsFeed(service: world.positionsSyncService)
         let preflightFactory = try stubPreflight(hotkeyOf: .aster, netuid: SubtensorStakingPallet.rootNetuid)
-        let engine = try world.stubRootEngine(grossRate: decimal("0.0854"), netRates: [11796: decimal("0.07")])
 
         world.stubSubnets(try SubtensorFlowActiveStake.subnetsInfo())
         world.stubClaimPreviews(try SubtensorFlowActiveStake.claimPreviews())
         world.stubRootHolds([aster: SubtensorRootHold(interval: 0, lastStakeBlock: 9_139_000)])
         SubtensorFlowURLProtocol.serveEarnConfig()
         SubtensorFlowURLProtocol.serveFixture(.validators(netuid: 0))
+        SubtensorFlowURLProtocol.serveFixture(.rootYield(page: 1, pageSize: 100))
         try SubtensorFlowActiveStake.serveCharts()
 
-        world.sharedState.setup(for: coldkey)
+        world.sharedState.setup(for: SubtensorFlowChainWorld.coldkeyAccount())
         feed.publish(try SubtensorFlowActiveStake.state())
 
         let yourBittensor = try openYourBittensor(in: world)
@@ -36,7 +36,7 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
         let rewards = claimable.previews.reduce(Balance.zero) { $0 + $1.redeemable }
         let holds = try run(services.rootHoldFactory.createHoldsWrapper(coldkey: coldkey, hotkeys: [root.primaryHotkey]))
         let positionDetail = try run(directoryService.createDetailWrapper(for: root.primaryHotkey, subnet: rootRef))
-        let rootRate = try run(services.yieldService.createRootNetworkRateWrapper(take: positionDetail.item.take))
+        let rootYield = try run(services.yieldService.createRootYieldWrapper())
 
         let directory = try run(directoryService.createDirectoryWrapper(for: rootRef))
         let infoDetail = try run(directoryService.createDetailWrapper(for: root.primaryHotkey, subnet: rootRef))
@@ -67,11 +67,12 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
         let maxUnstake = SubtensorAmountPolicy.maxSell(positionAlpha: actedOn.stakeAlpha, availability: rootAvailability)
 
         let maxUnstakeOperation = SubtensorAmountPolicy.rootMaxUnstake(for: SubtensorRootMaxUnstakeInput(
-            hotkey: actedOn.hotkey,
+            hotkeys: [actedOn.hotkey],
             positionAlpha: actedOn.stakeAlpha,
             availability: rootAvailability,
             transferable: SubtensorFlowChainWorld.transferable,
             networkFee: maxCandidateFee.amount,
+            existentialDeposit: SubtensorFlowActiveStake.existentialDeposit,
             isOwnHotkey: preflight.hotkeyOwner == coldkey,
             minStake: preflight.minStake,
             nominatorMinStake: preflight.effectiveNominatorMinStake
@@ -103,9 +104,8 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(holds, [aster: SubtensorRootHold(interval: 0, lastStakeBlock: 9_139_000)])
         XCTAssertEqual(holds[aster]?.isUnlocked(at: BittensorApiFixtureWorld.headBlock), true)
         XCTAssertEqual(positionDetail, SubtensorValidatorDetail(item: try asterRoot(name: nil), identity: identity("Aster Stake")))
-        XCTAssertEqual(rootRate, try netRootRate())
-        verify(engine).rootAnnualReturn(take: equal(to: UInt16(11796)))
-        verify(engine, never()).rootAnnualReturn()
+        XCTAssertEqual(rootYield, try fixtureRootYield())
+        XCTAssertEqual(rootYield?.annualRate, try decimal("0.138421"))
 
         XCTAssertEqual(directory, SubtensorValidatorDirectory(
             subnet: SubtensorSubnetRef(netuid: 0, registeredAt: 0),
@@ -138,6 +138,7 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
 
         XCTAssertEqual(requestLines().sorted(), [
             "GET https://bittensor.test/v1/bittensor/subnets/0/validators",
+            "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
             "GET https://earn-config.test/earn_config.json",
             "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=30",
             "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=30",
@@ -146,7 +147,7 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
             "GET https://tokens-price.novasama-tech.org/api/v3/coins/chutes/market_chart?vs_currency=usd&days=7"
         ])
 
-        assertAttestedRequests(world, paths: ["/v1/bittensor/subnets/0/validators"])
+        assertAttestedRequests(world, paths: ["/v1/bittensor/yields/root", "/v1/bittensor/subnets/0/validators"])
     }
 
     func testRootValidatorInfoKeepsChainValuesWhenTheBackendIsDown() throws {
@@ -155,7 +156,6 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
         let directoryService = services.validatorDirectoryService
         let aster = try SubtensorFlowChainWorld.hotkey(.aster)
         let feed = SubtensorFlowPositionsFeed(service: world.positionsSyncService)
-        let engine = try world.stubRootEngine(grossRate: decimal("0.0854"), netRates: [11796: decimal("0.07")])
 
         world.stubSubnets(try SubtensorFlowActiveStake.subnetsInfo())
         world.stubClaimPreviews(try SubtensorFlowActiveStake.claimPreviews())
@@ -164,8 +164,12 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
             "/subnets/0/validators",
             reply: .apiError(statusCode: 503, code: "dataset_unavailable", requestId: "req-f4-down")
         )
+        SubtensorFlowURLProtocol.serveBittensor(
+            "/yields/root?page=1&pageSize=100",
+            reply: .apiError(statusCode: 503, code: "dataset_unavailable", requestId: "req-f4-root-down")
+        )
 
-        world.sharedState.setup(for: SubtensorFlowChainWorld.coldkey)
+        world.sharedState.setup(for: SubtensorFlowChainWorld.coldkeyAccount())
         feed.publish(try SubtensorFlowActiveStake.state())
 
         let root = try XCTUnwrap(SubtensorPortfolioBuilder.build(state: try awaitPositions(in: world)).root)
@@ -175,7 +179,7 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
 
         let directoryError = runError(directoryService.createDirectoryWrapper(for: rootRef))
         let detail = try run(directoryService.createDetailWrapper(for: root.primaryHotkey, subnet: rootRef))
-        let rootRate = try run(services.yieldService.createRootNetworkRateWrapper(take: detail.item.take))
+        let rootYield = try run(services.yieldService.createRootYieldWrapper())
         let retriedDirectoryError = runError(directoryService.createDirectoryWrapper(for: rootRef))
 
         world.sharedState.throttle()
@@ -184,23 +188,22 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
         XCTAssertTrue(isDatasetUnavailable(directoryError, requestId: "req-f4-down"))
         XCTAssertTrue(isDatasetUnavailable(retriedDirectoryError, requestId: "req-f4-down"))
         XCTAssertEqual(detail, SubtensorValidatorDetail(item: try asterRoot(name: nil), identity: identity("Aster Stake")))
-        XCTAssertEqual(rootRate, try netRootRate())
-        verify(engine).rootAnnualReturn(take: equal(to: UInt16(11796)))
+        XCTAssertNil(rootYield)
 
         XCTAssertEqual(requestLines().sorted(), [
             "GET https://bittensor.test/v1/bittensor/subnets/0/validators",
+            "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
             "GET https://earn-config.test/earn_config.json"
         ])
 
-        assertAttestedRequests(world, paths: ["/v1/bittensor/subnets/0/validators"])
+        assertAttestedRequests(
+            world,
+            paths: ["/v1/bittensor/subnets/0/validators", "/v1/bittensor/yields/root"]
+        )
     }
 }
 
 private extension SubtensorActiveRootFlowTests {
-    func netRootRate() throws -> SubtensorRate {
-        SubtensorRate(annualRate: try decimal("0.07"), source: .chainNetworkAverage(isNetOfTake: true))
-    }
-
     func isDatasetUnavailable(_ error: Error?, requestId: String) -> Bool {
         guard case let .datasetUnavailable(receivedRequestId)? = error as? BittensorApiError else {
             return false

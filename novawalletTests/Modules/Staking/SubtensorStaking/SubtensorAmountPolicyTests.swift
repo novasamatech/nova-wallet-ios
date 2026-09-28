@@ -4,12 +4,14 @@ import XCTest
 
 final class SubtensorAmountPolicyTests: XCTestCase {
     private let hotkey = Data(repeating: 0xAA, count: 32)
+    private let secondHotkey = Data(repeating: 0xBB, count: 32)
     private let minStake: Balance = 2_000_000
     private let spotPrice: Balance = 7_700_000
     private let sellLimitPrice: Balance = 7_644_839
     private let requestedAlpha: Balance = 400_000_000_000
     private let dustRemainder: Balance = 2_600_000_000
     private let rootUnstakeFee: Balance = 629_366
+    private let existentialDeposit: Balance = 500
 
     private var nominatorMinStake: Balance {
         SubtensorStakingPreflight.effectiveNominatorMinStake(minStake: minStake, factor: 10_000_000)
@@ -19,6 +21,15 @@ final class SubtensorAmountPolicyTests: XCTestCase {
         let maxAmount = SubtensorAmountPolicy.maxBuyOrStake(transferable: 1_000_000_000, networkFee: 939_721)
 
         XCTAssertEqual(maxAmount, 989_060_279)
+    }
+
+    func testBuyMaxKeepsTheFeeReserveAndStakesItNetOfTheNovaFee() throws {
+        let maxAmount = SubtensorAmountPolicy.maxBuyOrStake(transferable: 48_200_000_000, networkFee: 1_500_000)
+        let novaFee = try XCTUnwrap(SubtensorNovaFeeCalculator().buyFee(grossTao: maxAmount))
+
+        XCTAssertEqual(maxAmount, 48_188_500_000)
+        XCTAssertEqual(novaFee.amount, 406_149_975)
+        XCTAssertEqual(maxAmount - novaFee.amount, 47_782_350_025)
     }
 
     func testMaxBuyOrStakeFloorsAtZero() {
@@ -166,6 +177,39 @@ final class SubtensorAmountPolicyTests: XCTestCase {
         XCTAssertNil(operation)
     }
 
+    func testRootGroupExitWithoutFreeTaoForTheBatchFeeAndExistentialDepositIsRefused() {
+        let operation = rootMaxUnstake(
+            hotkeys: [hotkey, secondHotkey],
+            positionAlpha: 20_000_000_000,
+            locked: 0,
+            transferable: 629_865
+        )
+
+        XCTAssertNil(operation)
+    }
+
+    func testRootGroupExitWithFreeTaoForTheBatchFeeAndExistentialDepositUnstakesEveryHotkey() {
+        let operation = rootMaxUnstake(
+            hotkeys: [hotkey, secondHotkey],
+            positionAlpha: 20_000_000_000,
+            locked: 0,
+            transferable: 629_866
+        )
+
+        XCTAssertEqual(operation, .rootUnstakeAll(hotkeys: [hotkey, secondHotkey]))
+    }
+
+    func testRootGroupExitWithLockedStakeIsRefused() {
+        let operation = rootMaxUnstake(
+            hotkeys: [hotkey, secondHotkey],
+            positionAlpha: 20_000_000_000,
+            locked: 1,
+            transferable: 10_000_000_000
+        )
+
+        XCTAssertNil(operation)
+    }
+
     private func availability(total: Balance, locked: Balance) -> SubtensorStakingPallet.StakeAvailability {
         SubtensorStakingPallet.StakeAvailability(total: total, locked: locked, available: total - locked)
     }
@@ -192,16 +236,18 @@ final class SubtensorAmountPolicyTests: XCTestCase {
     }
 
     private func rootMaxUnstake(
+        hotkeys: [AccountId]? = nil,
         positionAlpha: Balance,
         locked: Balance,
         transferable: Balance
     ) -> SubtensorStakingOperation? {
         let input = SubtensorRootMaxUnstakeInput(
-            hotkey: hotkey,
+            hotkeys: hotkeys ?? [hotkey],
             positionAlpha: positionAlpha,
             availability: availability(total: positionAlpha, locked: locked),
             transferable: transferable,
             networkFee: rootUnstakeFee,
+            existentialDeposit: existentialDeposit,
             isOwnHotkey: false,
             minStake: minStake,
             nominatorMinStake: nominatorMinStake

@@ -164,7 +164,7 @@ private extension SubtensorClaimRewardsPresenter {
             return
         }
 
-        interactor.estimateFee(for: .claim(hotkey: hotkey))
+        interactor.estimateClaimFee(for: hotkey)
     }
 
     func refreshPreflight() {
@@ -300,6 +300,10 @@ extension SubtensorClaimRewardsPresenter: SubtensorClaimRewardsInteractorOutputP
         logger.debug("Positions: \(String(describing: state))")
     }
 
+    func didReceivePositionsSyncFailed(_ isFailed: Bool) {
+        logger.debug("Positions sync failed: \(isFailed)")
+    }
+
     func didReceiveClaimable(_ claimable: SubtensorRootClaimable?) {
         logger.debug("Claimable: \(String(describing: claimable))")
 
@@ -324,7 +328,7 @@ extension SubtensorClaimRewardsPresenter: SubtensorClaimRewardsInteractorOutputP
         logger.debug("Block number: \(blockNumber)")
     }
 
-    func didReceiveQuote(_ quote: SubtensorQuote) {
+    func didReceiveQuote(_ quote: SubtensorTradeQuote) {
         logger.debug("Quote: \(quote)")
     }
 

@@ -118,6 +118,54 @@ final class SubtensorYieldServiceTests: XCTestCase {
         XCTAssertNil(reportedYield("", freshness: .fresh).annualRate)
     }
 
+    func testRootYieldIsTheFirstRowOfTheFirstPageReadAsPercentPoints() throws {
+        let apiFactory = MockBittensorApiOperationFactoryProtocol()
+        let page = makeRootPage(rates: ["13.8421", "13.9107"], isFromExpiredCache: false)
+        stubRootYield(apiFactory, result: .success(page))
+
+        let rootYield = try run(makeService(apiFactory: apiFactory).createRootYieldWrapper())
+
+        let expected = SubtensorReportedYield(
+            reportedRate: "13.8421",
+            stamp: SubtensorBackendStamp(asOf: olderAsOf, freshness: .fresh)
+        )
+
+        XCTAssertEqual(rootYield, expected)
+        XCTAssertEqual(rootYield?.annualRate, try XCTUnwrap(Decimal(string: "0.138421")))
+        verify(apiFactory).createRootYieldWrapper(page: equal(to: 1))
+    }
+
+    func testRootYieldServedFromAnExpiredCacheIsStaleAndHasNoRate() throws {
+        let apiFactory = MockBittensorApiOperationFactoryProtocol()
+        stubRootYield(apiFactory, result: .success(makeRootPage(rates: ["13.8421"], isFromExpiredCache: true)))
+
+        let rootYield = try run(makeService(apiFactory: apiFactory).createRootYieldWrapper())
+
+        XCTAssertEqual(rootYield?.stamp, SubtensorBackendStamp(asOf: olderAsOf, freshness: .stale))
+        XCTAssertNil(rootYield?.annualRate)
+    }
+
+    func testRootYieldIsAbsentForAnEmptyPage() throws {
+        let apiFactory = MockBittensorApiOperationFactoryProtocol()
+        stubRootYield(apiFactory, result: .success(makeRootPage(rates: [], isFromExpiredCache: false)))
+
+        XCTAssertNil(try run(makeService(apiFactory: apiFactory).createRootYieldWrapper()))
+    }
+
+    func testRootYieldIsAbsentWhenTheRouteIsNotPublished() throws {
+        let apiFactory = MockBittensorApiOperationFactoryProtocol()
+        stubRootYield(apiFactory, result: .failure(BittensorApiError.routeNotPublished))
+
+        XCTAssertNil(try run(makeService(apiFactory: apiFactory).createRootYieldWrapper()))
+    }
+
+    func testRootYieldIsAbsentWhenTheRouteIsDown() throws {
+        let apiFactory = MockBittensorApiOperationFactoryProtocol()
+        stubRootYield(apiFactory, result: .failure(BittensorApiError.datasetUnavailable(requestId: "req-root-down")))
+
+        XCTAssertNil(try run(makeService(apiFactory: apiFactory).createRootYieldWrapper()))
+    }
+
     func testRootRateIsNetOfTheGivenTake() throws {
         let engine = MockSubtensorRewardCalculatorEngineProtocol()
         let netRate = try XCTUnwrap(Decimal(string: "0.0421"))
@@ -187,6 +235,59 @@ final class SubtensorYieldServiceTests: XCTestCase {
                 return CompoundOperationWrapper.createWithResult(result)
             }
         }
+    }
+
+    private func stubRootYield(
+        _ apiFactory: MockBittensorApiOperationFactoryProtocol,
+        result: Result<BittensorApiResult<BittensorApi.RootYieldCollection>, Error>
+    ) {
+        stub(apiFactory) { stub in
+            when(stub.createRootYieldWrapper(page: any())).then { _ in
+                switch result {
+                case let .success(page):
+                    return CompoundOperationWrapper.createWithResult(page)
+                case let .failure(error):
+                    return CompoundOperationWrapper.createWithError(error)
+                }
+            }
+        }
+    }
+
+    private func makeRootPage(
+        rates: [String],
+        isFromExpiredCache: Bool
+    ) -> BittensorApiResult<BittensorApi.RootYieldCollection> {
+        let items = rates.map { rate in
+            BittensorApi.RootYield(
+                metricKind: "ROOT_AGGREGATE_APY",
+                reportedRate: rate,
+                reportedRootEmission: "2952.118",
+                sourceTimestamp: "2026-09-24T00:00:00"
+            )
+        }
+
+        let component = BittensorApi.AvailableComponent(
+            asOf: olderAsOf,
+            freshness: .fresh,
+            valueQuality: .reported,
+            sourceClass: .legacy
+        )
+
+        let collection = BittensorApi.RootYieldCollection(
+            items: items,
+            meta: BittensorApi.RootYieldCollection.Meta(
+                completeness: .complete,
+                components: BittensorApi.RootYieldCollection.Components(rootYield: component)
+            ),
+            pageInfo: BittensorApi.PageInfo(page: 1, pageSize: 100, total: items.count, nextPage: nil)
+        )
+
+        return BittensorApiResult(
+            value: collection,
+            requestId: "request-root",
+            receivedAt: 0,
+            isFromExpiredCache: isFromExpiredCache
+        )
     }
 
     private func address(of accountId: AccountId) throws -> String {

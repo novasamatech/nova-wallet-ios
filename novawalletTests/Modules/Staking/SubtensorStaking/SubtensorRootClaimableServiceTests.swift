@@ -120,6 +120,60 @@ final class SubtensorRootClaimableServiceTests: XCTestCase {
         XCTAssertEqual(received.last??.redeemable(for: firstHotkey), BigUInt(1900))
     }
 
+    func testFailedPreviewFetchSetsTheFailureSignalAndTheNextSuccessClearsIt() {
+        let positionsService = MockSubtensorPositionsSyncServiceProtocol()
+        let apiFactory = MockSubtensorApiOperationFactoryProtocol()
+
+        let state = Multistaking.SubtensorStakingState(positions: [], prices: [:])
+
+        stub(positionsService) { stub in
+            when(
+                stub.add(observer: any(), sendStateOnSubscription: any(), queue: any(), closure: any())
+            ).then { _, _, queue, closure in
+                (queue ?? .global()).async {
+                    closure(nil, state)
+                }
+            }
+            when(stub.remove(observer: any())).thenDoNothing()
+        }
+
+        stub(apiFactory) { stub in
+            when(stub.createBestBlockHashWrapper()).then {
+                CompoundOperationWrapper.createWithResult(self.bestBlockHash)
+            }
+            when(stub.createRootClaimPreviewsWrapper(coldkey: any(), blockHash: any())).then { _, _ in
+                CompoundOperationWrapper.createWithError(CommonError.dataCorruption)
+            }
+        }
+
+        let claimableService = SubtensorRootClaimableService(
+            coldkey: coldkey,
+            positionsSyncService: positionsService,
+            operationFactory: apiFactory,
+            operationQueue: OperationQueue()
+        )
+
+        let signalsExpectation = expectation(description: "failure signal set then cleared")
+        signalsExpectation.expectedFulfillmentCount = 2
+
+        var signals: [Bool] = []
+
+        claimableService.add(failureObserver: self, sendStateOnSubscription: false, queue: .main) { _, isFailed in
+            signals.append(isFailed)
+            signalsExpectation.fulfill()
+
+            if isFailed {
+                self.stubClaimPreviews(apiFactory, previews: [])
+            }
+        }
+
+        claimableService.setup()
+
+        wait(for: [signalsExpectation], timeout: 10)
+
+        XCTAssertEqual(signals, [true, false])
+    }
+
     func testRedeemableForHotkey() {
         let claimable = SubtensorRootClaimable(
             previews: [
@@ -134,6 +188,27 @@ final class SubtensorRootClaimableServiceTests: XCTestCase {
 
         XCTAssertEqual(claimable.redeemable(for: firstHotkey), BigUInt(5260))
         XCTAssertEqual(claimable.redeemable(for: secondHotkey), 0)
+    }
+
+    func testTotalRedeemableSumsEveryColdkeyPreview() {
+        let claimable = SubtensorRootClaimable(
+            previews: [
+                SubtensorRootClaimPreview(
+                    hotkey: firstHotkey,
+                    accrued: 97_053_363,
+                    redeemable: 95_470_988,
+                    forfeitedEstimate: 1_582_363
+                ),
+                SubtensorRootClaimPreview(
+                    hotkey: secondHotkey,
+                    accrued: 820_106,
+                    redeemable: 5260,
+                    forfeitedEstimate: 814_786
+                )
+            ]
+        )
+
+        XCTAssertEqual(claimable.totalRedeemable, BigUInt(95_476_248))
     }
 
     func testThrottleAfterACompletedFetchRemovesThePositionsObserver() {

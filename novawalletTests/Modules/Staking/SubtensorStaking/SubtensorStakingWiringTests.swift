@@ -16,8 +16,10 @@ final class SubtensorStakingWiringTests: XCTestCase {
         let first = try factory.createSubtensorStaking(for: option).earnServices
         let second = try factory.createSubtensorStaking(for: option).earnServices
 
+        let catalogue = try XCTUnwrap(first.catalogueService as? SubtensorSubnetCatalogueService)
         let yields = try XCTUnwrap(first.yieldService as? SubtensorYieldService)
         let recommendations = try XCTUnwrap(first.recommendationService as? SubtensorRecommendationService)
+        let rankingView = try XCTUnwrap(first.rankingViewService as? SubtensorRankingViewService)
         let directory = try XCTUnwrap(first.validatorDirectoryService as? SubtensorValidatorDirectoryService)
         let discovery = try XCTUnwrap(first.discoveryService as? SubtensorDiscoveryService)
         let priceHistory = try XCTUnwrap(first.priceHistoryService as? SubtensorPriceHistoryService)
@@ -28,6 +30,7 @@ final class SubtensorStakingWiringTests: XCTestCase {
         XCTAssertTrue(directory.earnConfigProvider === SubtensorStakingProcessServices.sharedEarnConfigProvider)
         XCTAssertTrue(priceHistory.earnConfigProvider === SubtensorStakingProcessServices.sharedEarnConfigProvider)
         XCTAssertEqual(priceHistory.taoPriceId, chainAsset.asset.priceId)
+        XCTAssertTrue(catalogue.apiOperationFactory === processServices.bittensorApiOperationFactory)
         XCTAssertTrue(yields.apiOperationFactory === processServices.bittensorApiOperationFactory)
         XCTAssertTrue(recommendations.apiOperationFactory === processServices.bittensorApiOperationFactory)
         XCTAssertTrue(directory.apiOperationFactory === processServices.bittensorApiOperationFactory)
@@ -36,11 +39,13 @@ final class SubtensorStakingWiringTests: XCTestCase {
         XCTAssertTrue(recommendations.chainOperationFactory === first.validatorChainOperationFactory)
         XCTAssertTrue(directory.chainOperationFactory === first.validatorChainOperationFactory)
         XCTAssertTrue(directory.recommendationService === first.recommendationService)
+        XCTAssertTrue(rankingView.recommendationService === first.recommendationService)
         XCTAssertTrue(discovery.recommendationService === first.recommendationService)
         XCTAssertTrue(discovery.directoryService === first.validatorDirectoryService)
         XCTAssertTrue(discovery.yieldService === first.yieldService)
         XCTAssertFalse(first.recommendationService === second.recommendationService)
         XCTAssertFalse(first.validatorDirectoryService === second.validatorDirectoryService)
+        XCTAssertFalse(first.catalogueService === second.catalogueService)
     }
 
     func testFixtureModeEnrichesTheDirectoryFromTheFixtureSnapshotAndPinsTheConfigPreference() throws {

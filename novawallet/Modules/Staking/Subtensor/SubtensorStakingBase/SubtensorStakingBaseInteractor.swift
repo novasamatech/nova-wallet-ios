@@ -10,11 +10,11 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
     let positionsSyncService: SubtensorPositionsSyncServiceProtocol
     let rootClaimableService: SubtensorRootClaimableServiceProtocol
     let preflightFactory: SubtensorPreflightFactoryProtocol
-    let quoteFactory: SubtensorQuoteOperationFactoryProtocol
+    let tradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol
+    let operationService: SubtensorStakingOperationServiceProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
-    let extrinsicService: ExtrinsicServiceProtocol
     let runtimeProvider: RuntimeCodingServiceProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
@@ -24,6 +24,7 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
     private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
     private var feeDebouncer = Debouncer(delay: 0.25)
     private var quoteDebouncer = Debouncer(delay: 0.25)
+    private let feeCallStore = CancellableCallStore()
     private let preflightCallStore = CancellableCallStore()
     private let quoteCallStore = CancellableCallStore()
 
@@ -33,11 +34,11 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
         positionsSyncService: SubtensorPositionsSyncServiceProtocol,
         rootClaimableService: SubtensorRootClaimableServiceProtocol,
         preflightFactory: SubtensorPreflightFactoryProtocol,
-        quoteFactory: SubtensorQuoteOperationFactoryProtocol,
+        tradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol,
+        operationService: SubtensorStakingOperationServiceProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
-        extrinsicService: ExtrinsicServiceProtocol,
         runtimeProvider: RuntimeCodingServiceProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue,
@@ -48,11 +49,11 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
         self.positionsSyncService = positionsSyncService
         self.rootClaimableService = rootClaimableService
         self.preflightFactory = preflightFactory
-        self.quoteFactory = quoteFactory
+        self.tradeQuoteFactory = tradeQuoteFactory
+        self.operationService = operationService
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
-        self.extrinsicService = extrinsicService
         self.runtimeProvider = runtimeProvider
         self.operationQueue = operationQueue
         self.logger = logger
@@ -61,10 +62,12 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
     }
 
     deinit {
+        feeCallStore.cancel()
         preflightCallStore.cancel()
         quoteCallStore.cancel()
 
         positionsSyncService.remove(observer: self)
+        positionsSyncService.remove(failureObserver: self)
         rootClaimableService.remove(observer: self)
     }
 
@@ -107,6 +110,27 @@ private extension SubtensorStakingBaseInteractor {
         }
     }
 
+    func makePositionsFailureSubscription() {
+        positionsSyncService.add(
+            failureObserver: self,
+            sendStateOnSubscription: true,
+            queue: .main
+        ) { [weak self] _, isFailed in
+            self?.basePresenter?.didReceivePositionsSyncFailed(isFailed)
+        }
+    }
+
+    func createQuoteWrapper(
+        for request: SubtensorTradeQuoteRequest
+    ) -> CompoundOperationWrapper<SubtensorTradeQuote> {
+        switch request {
+        case let .buy(netuid, grossTao, tolerance):
+            tradeQuoteFactory.createBuyQuoteWrapper(netuid: netuid, grossTao: grossTao, tolerance: tolerance)
+        case let .sell(netuid, alpha, tolerance):
+            tradeQuoteFactory.createSellQuoteWrapper(netuid: netuid, alpha: alpha, tolerance: tolerance)
+        }
+    }
+
     func makeClaimableSubscription() {
         rootClaimableService.add(
             observer: self,
@@ -139,6 +163,7 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
         makePriceSubscription()
         makeBlockNumberSubscription()
         makePositionsSubscription()
+        makePositionsFailureSubscription()
         makeClaimableSubscription()
 
         provideExistentialDeposit()
@@ -146,15 +171,21 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
         onSetup()
     }
 
-    func estimateFee(for call: SubtensorStakingCallModel) {
+    func estimateFee(for operation: SubtensorStakingOperation) {
         feeDebouncer.debounce { [weak self] in
             guard let self else {
                 return
             }
 
-            extrinsicService.estimateFee(
-                call.extrinsicBuilderClosure,
-                runningIn: .main
+            feeCallStore.cancel()
+
+            let wrapper = operationService.createFeeWrapper(for: operation)
+
+            executeCancellable(
+                wrapper: wrapper,
+                inOperationQueue: operationQueue,
+                backingCallIn: feeCallStore,
+                runningCallbackIn: .main
             ) { [weak self] result in
                 switch result {
                 case let .success(fee):
@@ -190,7 +221,7 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
         }
     }
 
-    func refreshQuote(for args: SubtensorQuoteArgs) {
+    func refreshQuote(for request: SubtensorTradeQuoteRequest) {
         quoteDebouncer.debounce { [weak self] in
             guard let self else {
                 return
@@ -198,7 +229,7 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
 
             quoteCallStore.cancel()
 
-            let wrapper = quoteFactory.createQuoteWrapper(for: args)
+            let wrapper = createQuoteWrapper(for: request)
 
             executeCancellable(
                 wrapper: wrapper,
@@ -214,6 +245,10 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
                 }
             }
         }
+    }
+
+    func refreshPositions() {
+        positionsSyncService.refresh()
     }
 }
 

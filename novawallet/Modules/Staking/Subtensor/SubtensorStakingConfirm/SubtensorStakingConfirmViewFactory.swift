@@ -6,17 +6,18 @@ enum SubtensorStakingConfirmViewFactory {
     static func createView(
         for state: SubtensorStakingSharedStateProtocol,
         model: SubtensorStakingConfirmModel
-    ) -> CollatorStakingConfirmViewProtocol? {
+    ) -> SubtensorStakingConfirmViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
-            let interactor = createInteractor(for: state),
-            let currencyManager = CurrencyManager.shared,
-            let selectedAccount = SelectedWalletSettings.shared.value.fetchMetaChainAccount(
-                for: chainAsset.chain.accountRequest()
-            ) else {
+            let services = SubtensorFlowServicesFactory.createServices(for: state),
+            services.isFlowAccount(model.account) else {
             return nil
         }
+
+        let interactor = createInteractor(for: state, services: services)
+        let selectedAccount = services.account
+        let currencyManager = services.currencyManager
 
         let wireframe = SubtensorStakingConfirmWireframe(state: state)
 
@@ -42,14 +43,17 @@ enum SubtensorStakingConfirmViewFactory {
             model: model,
             dataValidationFactory: dataValidationFactory,
             balanceViewModelFactory: balanceViewModelFactory,
-            quoteViewModelFactory: SubtensorQuoteViewModelFactory(chainAsset: chainAsset),
+            quoteViewModelFactory: SubtensorQuoteViewModelFactory(
+                chainAsset: chainAsset,
+                priceAssetInfoFactory: priceAssetInfoFactory
+            ),
             localizationManager: localizationManager,
             logger: Logger.shared
         )
 
-        let screenTitle = CollatorStakingStakeScreenTitle.confirm(hasStake: model.isStakeMore)
+        let screenTitle = CollatorStakingStakeScreenTitle.confirm(hasStake: model.origin != .newPosition)
 
-        let view: CollatorStakingConfirmViewProtocol = SubtensorStakingConfirmViewController(
+        let view: SubtensorStakingConfirmViewProtocol = SubtensorStakingConfirmViewController(
             presenter: presenter,
             localizableTitle: screenTitle(),
             statics: .subtensorValidator,
@@ -65,80 +69,23 @@ enum SubtensorStakingConfirmViewFactory {
     }
 
     private static func createInteractor(
-        for state: SubtensorStakingSharedStateProtocol
-    ) -> SubtensorStakingConfirmInteractor? {
-        let chain = state.stakingOption.chainAsset.chain
-
-        guard
-            let selectedAccount = SelectedWalletSettings.shared.value.fetch(
-                for: chain.accountRequest()
-            ),
-            let positionsSyncService = state.positionsSyncService,
-            let rootClaimableService = state.rootClaimableService,
-            let connection = state.chainRegistry.getConnection(for: chain.chainId),
-            let runtimeProvider = state.chainRegistry.getRuntimeProvider(for: chain.chainId),
-            let currencyManager = CurrencyManager.shared else {
-            return nil
-        }
-
-        let operationQueue = OperationManagerFacade.sharedDefaultQueue
-
-        let extrinsicService = ExtrinsicServiceFactory(
-            runtimeRegistry: runtimeProvider,
-            engine: connection,
-            operationQueue: operationQueue,
-            userStorageFacade: UserDataStorageFacade.shared,
-            substrateStorageFacade: SubstrateDataStorageFacade.shared
-        ).createService(
-            account: selectedAccount,
-            chain: chain
-        )
-
-        let extrinsicSubmitMonitor = ExtrinsicSubmissionMonitorFactory(
-            submissionService: extrinsicService,
-            statusService: ExtrinsicStatusService(
-                connection: connection,
-                runtimeProvider: runtimeProvider,
-                eventsQueryFactory: BlockEventsQueryFactory(operationQueue: operationQueue),
-                logger: Logger.shared
-            ),
-            operationQueue: operationQueue
-        )
-
-        let signer = SigningWrapperFactory().createSigningWrapper(
-            for: selectedAccount.metaId,
-            accountResponse: selectedAccount
-        )
-
-        let preflightFactory = SubtensorPreflightFactory(
-            runtimeConnectionStore: ChainRegistryRuntimeConnectionStore(
-                chainId: chain.chainId,
-                chainRegistry: state.chainRegistry
-            ),
-            operationFactory: state.apiOperationFactory,
-            operationQueue: operationQueue
-        )
-
-        return SubtensorStakingConfirmInteractor(
+        for state: SubtensorStakingSharedStateProtocol,
+        services: SubtensorFlowServices
+    ) -> SubtensorStakingConfirmInteractor {
+        SubtensorStakingConfirmInteractor(
             chainAsset: state.stakingOption.chainAsset,
-            selectedAccount: selectedAccount,
-            positionsSyncService: positionsSyncService,
-            rootClaimableService: rootClaimableService,
-            preflightFactory: preflightFactory,
-            quoteFactory: SubtensorQuoteOperationFactory(
-                operationFactory: state.apiOperationFactory,
-                operationQueue: operationQueue
-            ),
+            selectedAccount: services.account.chainAccount,
+            positionsSyncService: services.positionsSyncService,
+            rootClaimableService: services.rootClaimableService,
+            preflightFactory: services.preflightFactory,
+            tradeQuoteFactory: services.tradeQuoteFactory,
+            operationService: services.operationService,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
-            extrinsicSubmitMonitor: extrinsicSubmitMonitor,
-            signer: signer,
-            sharedOperation: state.sharedOperation,
-            extrinsicService: extrinsicService,
-            runtimeProvider: runtimeProvider,
-            currencyManager: currencyManager,
-            operationQueue: operationQueue,
+            runtimeProvider: services.runtimeProvider,
+            currencyManager: services.currencyManager,
+            operationQueue: services.operationQueue,
             logger: Logger.shared
         )
     }

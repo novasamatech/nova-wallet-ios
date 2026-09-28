@@ -32,7 +32,7 @@ final class SubtensorStakingValidationFactory {
         self.priceAssetInfoFactory = priceAssetInfoFactory
     }
 
-    private func formatAmount(_ value: Balance, locale: Locale) -> String {
+    func formatAmount(_ value: Balance, locale: Locale) -> String {
         let decimal = Decimal.fromSubstrateAmount(
             value,
             precision: assetDisplayInfo.assetPrecision
@@ -41,7 +41,16 @@ final class SubtensorStakingValidationFactory {
         return balanceViewModelFactory.amountFromValue(decimal).value(for: locale)
     }
 
-    private func formatAmount(
+    func formatRequiredAmount(_ value: Balance, locale: Locale) -> String {
+        let decimal = Decimal.fromSubstrateAmount(
+            value,
+            precision: assetDisplayInfo.assetPrecision
+        ) ?? 0
+
+        return balanceViewModelFactory.amountFromValue(decimal, roundingMode: .up).value(for: locale)
+    }
+
+    func formatAmount(
         _ value: Balance,
         assetDisplayInfo: AssetBalanceDisplayInfo?,
         locale: Locale
@@ -67,6 +76,14 @@ final class SubtensorStakingValidationFactory {
 
         return formatter.stringFromDecimal(impact.decimalOrZeroValue) ?? ""
     }
+
+    private func displayedMinimumStake(requiredStake: Balance, includesNovaFee: Bool) -> Balance {
+        guard includesNovaFee, let grossStake = try? SubtensorNovaFeeCalculator.grossUp(net: requiredStake) else {
+            return requiredStake
+        }
+
+        return grossStake
+    }
 }
 
 extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryProtocol {
@@ -86,9 +103,23 @@ extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryPr
         })
     }
 
+    func subnetTradesAvailable(
+        tradesUnavailable: Bool,
+        locale: Locale
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let self, let view else {
+                return
+            }
+
+            presentable.presentSubnetTradesUnavailable(view, locale: locale)
+        }, preservesCondition: {
+            !tradesUnavailable
+        })
+    }
+
     func hasFreshQuote(
-        _ quote: SubtensorQuote?,
-        for args: SubtensorQuoteArgs?,
+        _ quote: SubtensorTradeQuote?,
         locale: Locale,
         onRetry: @escaping () -> Void
     ) -> DataValidating {
@@ -99,33 +130,17 @@ extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryPr
 
             presentable.presentQuoteMissing(view, onRetry: onRetry, locale: locale)
         }, preservesCondition: {
-            guard let args, let quote, quote.args == args else {
+            guard let quote else {
                 return false
             }
 
-            return Date().timeIntervalSince(quote.capturedAt) <=
+            return Date().timeIntervalSince(quote.quote.capturedAt) <=
                 SubtensorStakingFlowConstants.quoteStalenessWindow
         })
     }
 
-    func positionsAreFresh(
-        syncFailed: Bool,
-        locale: Locale,
-        onRetry: @escaping () -> Void
-    ) -> DataValidating {
-        ErrorConditionViolation(onError: { [weak self] in
-            guard let self, let view else {
-                return
-            }
-
-            presentable.presentStalePositions(view, onRetry: onRetry, locale: locale)
-        }, preservesCondition: {
-            !syncFailed
-        })
-    }
-
     func orderWithinSlippageTolerance(
-        quote: SubtensorQuote?,
+        quote: SubtensorTradeQuote?,
         limitPrice: Balance?,
         locale: Locale
     ) -> DataValidating {
@@ -136,26 +151,16 @@ extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryPr
 
             presentable.presentOrderBeyondTolerance(view, locale: locale)
         }, preservesCondition: {
-            guard
-                let quote,
-                let limitPrice,
-                let implied = quote.impliedExecutionPrice else {
-                return true
+            guard let quote, let limitPrice else {
+                return false
             }
 
-            // the chain gates on the marginal pool price; an average execution price at or
-            // beyond the limit means the order's own size already breaks the tolerance
-            switch quote.args.direction {
-            case .stake:
-                return implied < limitPrice
-            case .unstake:
-                return implied > limitPrice
-            }
+            return quote.isFillable(atLimit: limitPrice)
         })
     }
 
     func priceImpactAcceptable(
-        quote: SubtensorQuote?,
+        quote: SubtensorTradeQuote?,
         locale: Locale
     ) -> DataValidating {
         WarningConditionViolation(onWarning: { [weak self] delegate in
@@ -163,7 +168,7 @@ extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryPr
                 return
             }
 
-            let impact = quote?.priceImpact ?? BigRational(numerator: 0, denominator: 1)
+            let impact = quote?.quote.priceImpact ?? BigRational(numerator: 0, denominator: 1)
 
             presentable.presentHighPriceImpact(
                 view,
@@ -174,7 +179,7 @@ extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryPr
                 locale: locale
             )
         }, preservesCondition: {
-            guard let impact = quote?.priceImpact else {
+            guard let impact = quote?.quote.priceImpact else {
                 return true
             }
 
@@ -182,10 +187,10 @@ extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryPr
         })
     }
 
-    func hasMinStakeAmount(
+    func respectsFeeReserve(
         amount: Balance?,
-        minStake: Balance?,
-        quotedSwapFee: Balance?,
+        transferable: Balance?,
+        networkFee: Balance?,
         locale: Locale
     ) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in
@@ -193,52 +198,57 @@ extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryPr
                 return
             }
 
-            let requiredAmount = (minStake ?? 0) + (quotedSwapFee ?? 0)
+            let maxAmount = SubtensorAmountPolicy.maxBuyOrStake(
+                transferable: transferable ?? 0,
+                networkFee: networkFee ?? 0
+            )
 
-            presentable.presentStakeAmountTooLow(
+            presentable.presentFeeReserveRequired(
                 view,
-                minStake: formatAmount(requiredAmount, locale: locale),
+                maxAmount: formatAmount(maxAmount, locale: locale),
+                reserve: formatAmount(SubtensorNovaFeeConstants.feeReserve, locale: locale),
                 locale: locale
             )
         }, preservesCondition: {
-            guard let amount, let minStake else {
+            guard let amount, let transferable else {
                 return false
             }
 
-            return amount >= minStake + (quotedSwapFee ?? 0)
+            return amount <= SubtensorAmountPolicy.maxBuyOrStake(
+                transferable: transferable,
+                networkFee: networkFee ?? 0
+            )
         })
     }
 
-    func retainsFeeReserveAfterStake(
-        balance: Balance?,
-        amount: Balance?,
-        fee: Balance?,
-        existentialDeposit: Balance?,
+    func hasMinStakeAmount(
+        stakedAmount: Balance?,
+        minStake: Balance?,
+        quotedSwapFee: Balance?,
+        includesNovaFee: Bool,
         locale: Locale
     ) -> DataValidating {
-        WarningConditionViolation(onWarning: { [weak self] delegate in
+        ErrorConditionViolation(onError: { [weak self] in
             guard let self, let view else {
                 return
             }
 
-            let reserve = (fee ?? 0) + (existentialDeposit ?? 0)
+            let displayedMinimum = displayedMinimumStake(
+                requiredStake: (minStake ?? 0) + (quotedSwapFee ?? 0),
+                includesNovaFee: includesNovaFee
+            )
 
-            presentable.presentStakeAllWarning(
+            presentable.presentStakeAmountTooLow(
                 view,
-                reserve: formatAmount(reserve, locale: locale),
-                action: {
-                    delegate.didCompleteWarningHandling()
-                },
+                minStake: formatRequiredAmount(displayedMinimum, locale: locale),
                 locale: locale
             )
         }, preservesCondition: {
-            guard let balance, let amount, let fee else {
-                return true
+            guard let stakedAmount, let minStake else {
+                return false
             }
 
-            let reserve = fee + (existentialDeposit ?? 0)
-
-            return balance >= amount + fee + reserve
+            return stakedAmount >= minStake + (quotedSwapFee ?? 0)
         })
     }
 
@@ -302,238 +312,5 @@ extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryPr
         }, preservesCondition: {
             safeModeActive == false
         })
-    }
-
-    func canPayFeeFromStakeOtherwiseWarns(
-        transferable: Balance?,
-        fee: Balance?,
-        locale: Locale
-    ) -> DataValidating {
-        WarningConditionViolation(onWarning: { [weak self] delegate in
-            guard let self, let view else {
-                return
-            }
-
-            presentable.presentFeeFromStakeWarning(
-                view,
-                fee: formatAmount(fee ?? 0, locale: locale),
-                action: {
-                    delegate.didCompleteWarningHandling()
-                },
-                locale: locale
-            )
-        }, preservesCondition: {
-            guard let fee else {
-                return true
-            }
-
-            return (transferable ?? 0) >= fee
-        })
-    }
-
-    func unstakeNotExceedsAvailable(
-        amount: Balance?,
-        available: Balance?,
-        assetDisplayInfo: AssetBalanceDisplayInfo?,
-        locale: Locale
-    ) -> DataValidating {
-        ErrorConditionViolation(onError: { [weak self] in
-            guard let self, let view else {
-                return
-            }
-
-            presentable.presentUnstakeExceedsAvailable(
-                view,
-                available: formatAmount(
-                    available ?? 0,
-                    assetDisplayInfo: assetDisplayInfo,
-                    locale: locale
-                ),
-                locale: locale
-            )
-        }, preservesCondition: {
-            guard let amount, let available else {
-                return false
-            }
-
-            return amount <= available
-        })
-    }
-
-    func unstakeAboveMinTaoOut(
-        taoOut: Balance?,
-        minAmount: Balance?,
-        isFullUnstake: Bool,
-        locale: Locale
-    ) -> DataValidating {
-        ErrorConditionViolation(onError: { [weak self] in
-            guard let self, let view else {
-                return
-            }
-
-            presentable.presentUnstakeAmountTooLow(
-                view,
-                minAmount: formatAmount(minAmount ?? 0, locale: locale),
-                locale: locale
-            )
-        }, preservesCondition: {
-            guard !isFullUnstake else {
-                return true
-            }
-
-            guard let taoOut, let minAmount else {
-                return false
-            }
-
-            return taoOut >= minAmount
-        })
-    }
-
-    func remainderNotBelowNominatorMin(
-        remainder: Balance?,
-        nominatorMinStake: Balance?,
-        onUnstakeAll: (() -> Void)?,
-        locale: Locale
-    ) -> DataValidating {
-        WarningConditionViolation(onWarning: { [weak self] delegate in
-            guard let self, let view else {
-                return
-            }
-
-            presentable.presentDustRemainderWarning(
-                view,
-                remainder: formatAmount(remainder ?? 0, locale: locale),
-                minStake: formatAmount(nominatorMinStake ?? 0, locale: locale),
-                action: {
-                    delegate.didCompleteWarningHandling()
-                },
-                // deliberately does not resume the stopped run: the amount the runner
-                // captured is the dust one, so the form has to be re-entered instead
-                unstakeAllAction: onUnstakeAll,
-                locale: locale
-            )
-        }, preservesCondition: {
-            guard let remainder, let nominatorMinStake, remainder > 0 else {
-                return true
-            }
-
-            return remainder >= nominatorMinStake
-        })
-    }
-
-    func rootUnlockIntervalElapsed(
-        currentBlock: BlockNumber?,
-        lastStakeBlock: UInt64?,
-        unlockInterval: UInt64?,
-        blockTime: BlockTime,
-        locale: Locale
-    ) -> DataValidating {
-        ErrorConditionViolation(onError: { [weak self] in
-            guard let self, let view else {
-                return
-            }
-
-            let elapsed = currentBlock.map { UInt64($0).subtractOrZero(lastStakeBlock ?? 0) } ?? 0
-            let remainingBlocks = (unlockInterval ?? 0).subtractOrZero(elapsed)
-            let remainingTime = (TimeInterval(remainingBlocks) * TimeInterval(blockTime)).seconds
-
-            presentable.presentUnstakeLocked(
-                view,
-                eta: remainingTime.localizedDaysHoursOrFallbackMinutes(for: locale),
-                locale: locale
-            )
-        }, preservesCondition: {
-            guard let unlockInterval, unlockInterval > 0, let lastStakeBlock else {
-                return true
-            }
-
-            guard let currentBlock else {
-                return false
-            }
-
-            return UInt64(currentBlock).subtractOrZero(lastStakeBlock) >= unlockInterval
-        })
-    }
-
-    func claimFirstAdvisory(
-        claimable: Balance?,
-        threshold: Balance?,
-        locale: Locale
-    ) -> DataValidating {
-        WarningConditionViolation(onWarning: { [weak self] delegate in
-            guard let self, let view else {
-                return
-            }
-
-            presentable.presentClaimFirstAdvisory(
-                view,
-                action: {
-                    delegate.didCompleteWarningHandling()
-                },
-                locale: locale
-            )
-        }, preservesCondition: {
-            guard let claimable, claimable > 0 else {
-                return true
-            }
-
-            let effectiveThreshold = threshold ?? SubtensorStakingPallet.defaultRootClaimableThreshold
-
-            return claimable < effectiveThreshold
-        })
-    }
-
-    func claimFeeCoveredByTransferable(
-        transferable: Balance?,
-        fee: Balance?,
-        locale: Locale
-    ) -> DataValidating {
-        ErrorConditionViolation(onError: { [weak self] in
-            guard let self, let view else {
-                return
-            }
-
-            presentable.presentClaimFeeNotAvailable(
-                view,
-                fee: formatAmount(fee ?? 0, locale: locale),
-                locale: locale
-            )
-        }, preservesCondition: {
-            guard let fee else {
-                return true
-            }
-
-            return (transferable ?? 0) >= fee
-        })
-    }
-
-    func claimableAtLeastThreshold(
-        claimable: Balance?,
-        threshold: Balance?,
-        locale: Locale
-    ) -> DataValidating {
-        ErrorConditionViolation(onError: { [weak self] in
-            guard let self, let view else {
-                return
-            }
-
-            presentable.presentClaimBelowThreshold(
-                view,
-                threshold: formatAmount(threshold ?? 0, locale: locale),
-                locale: locale
-            )
-        }, preservesCondition: {
-            guard let claimable, claimable > 0 else {
-                return false
-            }
-
-            return claimable >= (threshold ?? 0)
-        })
-    }
-}
-
-private extension UInt64 {
-    func subtractOrZero(_ other: UInt64) -> UInt64 {
-        self >= other ? self - other : 0
     }
 }

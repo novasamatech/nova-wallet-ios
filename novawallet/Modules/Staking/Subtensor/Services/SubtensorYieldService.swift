@@ -7,6 +7,7 @@ enum SubtensorYieldServiceError: Error {
 
 final class SubtensorYieldService {
     static let alphaYieldPageLimit = 3
+    static let rootYieldPage = 1
 
     let apiOperationFactory: BittensorApiOperationFactoryProtocol
     let rewardCalculatorService: SubtensorRewardCalculatorServiceProtocol
@@ -104,6 +105,22 @@ private extension SubtensorYieldService {
             isTruncated: pages.hasMorePages
         )
     }
+
+    static func makeRootYield(
+        from page: BittensorApiResult<BittensorApi.RootYieldCollection>
+    ) -> SubtensorReportedYield? {
+        guard let item = page.value.items.first else {
+            return nil
+        }
+
+        return SubtensorReportedYield(
+            reportedRate: item.reportedRate,
+            stamp: SubtensorBackendStamp(
+                component: page.value.meta.components.rootYield,
+                isFromExpiredCache: page.isFromExpiredCache
+            )
+        )
+    }
 }
 
 extension SubtensorYieldService: SubtensorYieldServiceProtocol {
@@ -130,6 +147,27 @@ extension SubtensorYieldService: SubtensorYieldServiceProtocol {
         mappingOperation.addDependency(pagesWrapper.targetOperation)
 
         return pagesWrapper.insertingTail(operation: mappingOperation)
+    }
+
+    func createRootYieldWrapper() -> CompoundOperationWrapper<SubtensorReportedYield?> {
+        let pageWrapper = apiOperationFactory.createRootYieldWrapper(page: Self.rootYieldPage)
+        let logger = logger
+
+        let yieldOperation = ClosureOperation<SubtensorReportedYield?> {
+            do {
+                let page = try pageWrapper.targetOperation.extractNoCancellableResultData()
+
+                return Self.makeRootYield(from: page)
+            } catch {
+                logger.warning("Root yield unavailable: \(error)")
+
+                return nil
+            }
+        }
+
+        yieldOperation.addDependency(pageWrapper.targetOperation)
+
+        return pageWrapper.insertingTail(operation: yieldOperation)
     }
 
     func createRootNetworkRateWrapper(take: Decimal?) -> CompoundOperationWrapper<SubtensorRate?> {
