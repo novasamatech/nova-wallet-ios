@@ -26,6 +26,12 @@ final class SubtensorUnstakeSetupLayout: CollatorStkBaseUnstakeSetupLayout {
 
         let stackView = containerView.stackView
 
+        stackView.removeArrangedSubview(amountView)
+        stackView.insertArrangedSubview(amountView, at: 0)
+        stackView.removeArrangedSubview(amountInputView)
+        stackView.insertArrangedSubview(amountInputView, at: 1)
+        stackView.setCustomSpacing(16.0, after: amountInputView)
+
         if let feeIndex = stackView.arrangedSubviews.firstIndex(of: networkFeeView) {
             stackView.insertArrangedSubview(quoteTableView, at: feeIndex)
         } else {

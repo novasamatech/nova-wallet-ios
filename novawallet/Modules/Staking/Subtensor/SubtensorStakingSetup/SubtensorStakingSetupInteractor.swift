@@ -14,6 +14,8 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingDelegateBaseInterac
     }
 
     let rewardCalculatorService: SubtensorRewardCalculatorServiceProtocol
+    let subnetsService: SubtensorSubnetsServiceProtocol
+    let initialNetuid: UInt16?
 
     init(
         chainAsset: ChainAsset,
@@ -23,6 +25,8 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingDelegateBaseInterac
         preflightFactory: SubtensorPreflightFactoryProtocol,
         quoteFactory: SubtensorQuoteOperationFactoryProtocol,
         rewardCalculatorService: SubtensorRewardCalculatorServiceProtocol,
+        subnetsService: SubtensorSubnetsServiceProtocol,
+        initialNetuid: UInt16?,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
@@ -34,6 +38,8 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingDelegateBaseInterac
         logger: LoggerProtocol
     ) {
         self.rewardCalculatorService = rewardCalculatorService
+        self.subnetsService = subnetsService
+        self.initialNetuid = initialNetuid
 
         super.init(
             chainAsset: chainAsset,
@@ -58,6 +64,7 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingDelegateBaseInterac
         super.onSetup()
 
         provideRewardEngine()
+        provideInitialSubnet()
     }
 }
 
@@ -74,6 +81,20 @@ private extension SubtensorStakingSetupInteractor {
             }
         }
     }
+
+    func provideInitialSubnet() {
+        guard let initialNetuid, initialNetuid != SubtensorStakingPallet.rootNetuid else { return }
+        subnetsService.fetchSubnetsInfo(runningCompletionIn: .main) { [weak self] result in
+            switch result {
+            case let .success(info): self?.presenter?.didReceiveInitialSubnets(info)
+            case let .failure(error): self?.presenter?.didFailInitialSubnets(error)
+            }
+        }
+    }
 }
 
-extension SubtensorStakingSetupInteractor: SubtensorStakingSetupInteractorInputProtocol {}
+extension SubtensorStakingSetupInteractor: SubtensorStakingSetupInteractorInputProtocol {
+    func retryInitialSubnet() {
+        provideInitialSubnet()
+    }
+}

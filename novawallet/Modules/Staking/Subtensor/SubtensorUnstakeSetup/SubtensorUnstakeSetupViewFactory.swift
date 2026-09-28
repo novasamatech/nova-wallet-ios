@@ -52,19 +52,12 @@ enum SubtensorUnstakeSetupViewFactory {
         let isRootFlow = (initialPosition?.netuid ?? SubtensorStakingPallet.rootNetuid) ==
             SubtensorStakingPallet.rootNetuid
 
-        let view: CollatorStkPartialUnstakeSetupViewProtocol = if isRootFlow {
-            CollatorStkPartialUnstakeSetupVC(
-                presenter: presenter,
-                statics: .subtensorValidator,
-                localizationManager: localizationManager
-            )
-        } else {
-            SubtensorUnstakeSetupVC(
-                presenter: presenter,
-                statics: .subtensorValidator,
-                localizationManager: localizationManager
-            )
-        }
+        let view: CollatorStkPartialUnstakeSetupViewProtocol = SubtensorUnstakeSetupVC(
+            presenter: presenter,
+            isRootFlow: isRootFlow,
+            statics: .subtensorValidator,
+            localizationManager: localizationManager
+        )
 
         presenter.view = view
         interactor.presenter = presenter

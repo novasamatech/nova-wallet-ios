@@ -26,6 +26,8 @@ extension SubtensorPricePeriod {
             return .month
         case .quarter, .year:
             return .year
+        case .all:
+            return .allTime
         }
     }
 
@@ -35,7 +37,7 @@ extension SubtensorPricePeriod {
             return 5 * 60
         case .week, .month:
             return 60 * 60
-        case .quarter, .year:
+        case .quarter, .year, .all:
             return 24 * 60 * 60
         }
     }
@@ -48,7 +50,7 @@ extension SubtensorPricePeriod {
         switch self {
         case .quarter:
             return true
-        case .day, .week, .month, .year:
+        case .day, .week, .month, .year, .all:
             return false
         }
     }
@@ -68,6 +70,8 @@ extension SubtensorPricePeriod {
             return calendar.date(byAdding: .month, value: -3, to: endDate)
         case .year:
             return calendar.date(byAdding: .day, value: -365, to: endDate)
+        case .all:
+            return nil
         }
     }
 }
@@ -108,9 +112,12 @@ enum SubtensorPriceSeries {
             sortedItems.count > 1,
             let first = sortedItems.first,
             let last = sortedItems.last,
-            let start = period.startDate(endingAt: date(last)),
-            date(first).timeIntervalSince(start) <= period.coverageTolerance,
             value(first) > 0 else {
+            return nil
+        }
+
+        if let start = period.startDate(endingAt: date(last)),
+           date(first).timeIntervalSince(start) > period.coverageTolerance {
             return nil
         }
 

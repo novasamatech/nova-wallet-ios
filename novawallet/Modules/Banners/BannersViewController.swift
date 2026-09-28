@@ -13,6 +13,7 @@ final class BannersViewController: UIViewController, ViewHolder {
 
     private var staticState: StaticState?
     private var dynamicState: DynamicState?
+    private var closeActionAvailable = false
 
     var maxContentHeight = BannersViewLayout.Constants.contentMinHeight
 
@@ -94,11 +95,22 @@ private extension BannersViewController {
     }
 
     func setup(with widgetModel: BannersWidgetViewModel) {
+        closeActionAvailable = widgetModel.showsCloseButton
         setupBannersCollection(with: widgetModel.banners)
         setupPageControl()
 
         rootView.setBackgroundImage(widgetModel.banners.first?.backgroundImage)
-        rootView.setCloseButton(available: widgetModel.showsCloseButton)
+        updateCloseButton()
+    }
+
+    func updateCloseButton() {
+        let currentBannerId = staticState.flatMap {
+            dataSource.getItem(at: $0.itemByActualOffset)?.id
+        }
+
+        rootView.setCloseButton(
+            available: closeActionAvailable && currentBannerId != BittensorLocalBanner.id
+        )
     }
 
     func setupPageControl() {
@@ -154,6 +166,7 @@ private extension BannersViewController {
         }
 
         self.staticState = .init(itemByActualOffset: itemByActualOffset)
+        updateCloseButton()
 
         let itemWidth = rootView.collectionView.bounds.width
 
@@ -287,7 +300,10 @@ private extension BannersViewController {
     }
 
     private func setupAutoScroll() {
-        guard dataSource.multipleBanners else {
+        let firstBannerId = dataSource.firstShowingItemIndex
+            .flatMap { dataSource.getItem(at: $0)?.id }
+
+        guard dataSource.multipleBanners, firstBannerId != BittensorLocalBanner.id else {
             autoScrollManager.stopScrolling()
 
             return
@@ -301,7 +317,8 @@ private extension BannersViewController {
     @objc func actionClose() {
         guard
             let staticState,
-            let banner = dataSource.getItem(at: staticState.itemByActualOffset)
+            let banner = dataSource.getItem(at: staticState.itemByActualOffset),
+            banner.id != BittensorLocalBanner.id
         else { return }
 
         presenter.closeBanner(with: banner.id)
@@ -410,6 +427,7 @@ extension BannersViewController: UIScrollViewDelegate {
             currentItemByOffset: itemByOffsetBeforeChanges
         )
 
+        updateCloseButton()
         dynamicState = nil
     }
 }

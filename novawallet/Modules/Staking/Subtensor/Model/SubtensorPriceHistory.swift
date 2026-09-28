@@ -6,6 +6,7 @@ enum SubtensorPricePeriod: Equatable, CaseIterable {
     case month
     case quarter
     case year
+    case all
 }
 
 struct SubtensorPricePoint: Equatable {

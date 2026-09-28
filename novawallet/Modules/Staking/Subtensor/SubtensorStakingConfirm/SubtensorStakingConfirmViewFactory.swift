@@ -49,21 +49,13 @@ enum SubtensorStakingConfirmViewFactory {
 
         let screenTitle = CollatorStakingStakeScreenTitle.confirm(hasStake: model.isStakeMore)
 
-        let view: CollatorStakingConfirmViewProtocol = if model.target.isRoot {
-            CollatorStakingConfirmViewController(
-                presenter: presenter,
-                localizableTitle: screenTitle(),
-                statics: .subtensorValidator,
-                localizationManager: localizationManager
-            )
-        } else {
-            SubtensorStakingConfirmViewController(
-                presenter: presenter,
-                localizableTitle: screenTitle(),
-                statics: .subtensorValidator,
-                localizationManager: localizationManager
-            )
-        }
+        let view: CollatorStakingConfirmViewProtocol = SubtensorStakingConfirmViewController(
+            presenter: presenter,
+            localizableTitle: screenTitle(),
+            statics: .subtensorValidator,
+            isRoot: model.target.isRoot,
+            localizationManager: localizationManager
+        )
 
         presenter.view = view
         interactor.presenter = presenter

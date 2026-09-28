@@ -8,6 +8,34 @@ final class SubtensorStakingDetailsWireframe: SubtensorStakingDetailsWireframePr
         self.state = state
     }
 
+    func showPortfolio(
+        from view: ControllerBackedProtocol?,
+        stakingState: Multistaking.SubtensorStakingState,
+        commonData: SubtensorStakingCommonData
+    ) -> Bool {
+        guard let controller = view?.controller,
+              let navigation = controller.navigationController,
+              navigation.topViewController === controller else { return false }
+        guard let portfolioView = SubtensorPortfolioViewFactory.createView(
+            for: state,
+            stakingState: stakingState,
+            commonData: commonData
+        ) else { return false }
+
+        let replaceTop = {
+            guard navigation.topViewController === controller else { return }
+            var stack = navigation.viewControllers
+            stack[stack.count - 1] = portfolioView.controller
+            navigation.setViewControllers(stack, animated: true)
+        }
+        if let transition = navigation.transitionCoordinator,
+           transition.animate(alongsideTransition: nil, completion: { _ in replaceTop() }) {
+            return true
+        }
+        replaceTop()
+        return true
+    }
+
     func showStakeTokens(
         from view: ControllerBackedProtocol?,
         initialPosition: SubtensorStakingPosition?

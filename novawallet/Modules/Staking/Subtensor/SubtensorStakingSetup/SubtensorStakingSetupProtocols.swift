@@ -1,6 +1,7 @@
 import Foundation
 
 protocol SubtensorStakingSetupViewProtocol: CollatorStakingSetupViewProtocol {
+    func didReceiveTargetLoading(_ isLoading: Bool)
     func didReceiveStakeTarget(viewModel: SubtensorStakeTargetViewModel)
     func didReceiveQuote(viewModel: SubtensorQuotePanelViewModel?)
     func didReceiveSlippage(viewModel: String?)
@@ -12,12 +13,16 @@ protocol SubtensorStakingSetupPresenterProtocol: CollatorStakingSetupPresenterPr
     func selectSlippage()
 }
 
-protocol SubtensorStakingSetupInteractorInputProtocol: SubtensorStakingDelegateInteractorInputProtocol {}
+protocol SubtensorStakingSetupInteractorInputProtocol: SubtensorStakingDelegateInteractorInputProtocol {
+    func retryInitialSubnet()
+}
 
 protocol SubtensorStakingSetupInteractorOutputProtocol: SubtensorStakingDelegateInteractorOutputProtocol {
     /// the engine rather than a rate: the picked delegate's take is only known in the presenter
     /// and has to be netted at render time (spec §6.2)
     func didReceiveRewardEngine(_ engine: SubtensorRewardCalculatorEngineProtocol?)
+    func didReceiveInitialSubnets(_ info: SubtensorSubnetsInfo)
+    func didFailInitialSubnets(_ error: Error)
 }
 
 protocol SubtensorStakingSetupWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
@@ -29,9 +34,10 @@ protocol SubtensorStakingSetupWireframeProtocol: AlertPresentable, ErrorPresenta
         model: SubtensorStakingConfirmModel
     )
 
-    func showDelegateSelection(
+    func showValidatorSelection(
         from view: CollatorStakingSetupViewProtocol?,
-        delegate: CollatorStakingSelectDelegate
+        target: SubtensorStakeTarget,
+        delegate: SubtensorSubnetSelectDelegate
     )
 
     func showSubnetRiskNote(

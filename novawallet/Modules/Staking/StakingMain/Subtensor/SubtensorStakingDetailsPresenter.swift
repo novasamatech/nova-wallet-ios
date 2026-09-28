@@ -13,6 +13,7 @@ final class SubtensorStakingDetailsPresenter {
     let stateMachine: SubtensorStakingStateMachineProtocol
 
     private var positionsSyncFailed = false
+    private var didOpenPortfolio = false
 
     var stakingState: Multistaking.SubtensorStakingState? {
         stateMachine.viewState { (state: SubtensorStakingStakedState) in
@@ -134,21 +135,10 @@ private extension SubtensorStakingDetailsPresenter {
         guard let stakingState, let commonData else {
             return
         }
-
-        let viewModels = viewModelFactory.createPositionViewModels(
-            for: stakingState,
-            commonData: commonData,
-            selectable: false
-        )
-
-        guard !viewModels.isEmpty else {
-            return
-        }
-
-        wireframe.showPositionList(
+        didOpenPortfolio = wireframe.showPortfolio(
             from: view,
-            viewModels: viewModels,
-            showsCompoundingNote: viewModelFactory.hasAlphaPositions(in: stakingState)
+            stakingState: stakingState,
+            commonData: commonData
         )
     }
 }
@@ -223,6 +213,11 @@ extension SubtensorStakingDetailsPresenter: StakingMainChildPresenterProtocol {
 extension SubtensorStakingDetailsPresenter: SubtensorStakingStateMachineDelegate {
     func stateMachineDidChangeState(_: SubtensorStakingStateMachineProtocol) {
         provideStateViewModel()
+        guard !didOpenPortfolio, stakingState != nil else { return }
+        DispatchQueue.main.async { [weak self] in
+            guard let self, !didOpenPortfolio else { return }
+            handlePositionListAction()
+        }
     }
 }
 

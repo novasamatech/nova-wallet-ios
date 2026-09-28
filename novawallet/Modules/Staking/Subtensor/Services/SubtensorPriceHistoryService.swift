@@ -123,6 +123,11 @@ private extension SubtensorPriceHistoryService {
         let value: Decimal?
     }
 
+    struct MonthlyMetric {
+        let subnet: SubtensorSubnetRef
+        let value: SubtensorMonthlyPriceMetrics?
+    }
+
     struct Fetcher {
         let coingeckoOperationFactory: CoingeckoOperationFactoryProtocol
         let taoPriceId: AssetModel.PriceId
@@ -152,6 +157,78 @@ private extension SubtensorPriceHistoryService {
 }
 
 private extension SubtensorPriceHistoryService.Fetcher {
+    func createMonthlyMetricWrapper(
+        for subnet: SubtensorSubnetRef,
+        alphaPriceId: String,
+        taoItems: [PriceHistoryItem]
+    ) -> CompoundOperationWrapper<SubtensorPriceHistoryService.MonthlyMetric> {
+        let alphaOperation = coingeckoOperationFactory.fetchPriceHistory(
+            for: alphaPriceId,
+            currency: .usd,
+            period: SubtensorPricePeriod.month.coingeckoPeriod
+        )
+        let logger = logger
+        let metricOperation = ClosureOperation<SubtensorPriceHistoryService.MonthlyMetric> {
+            do {
+                let alpha = try alphaOperation.extractNoCancellableResultData()
+                let points = SubtensorPriceSeries.matchedPoints(
+                    alpha: alpha.items,
+                    tao: taoItems,
+                    tolerance: SubtensorPricePeriod.month.samplingInterval
+                )
+                let change = SubtensorPriceSeries.change(
+                    of: points,
+                    over: .month,
+                    date: \.date,
+                    value: \.taoPerAlpha
+                )
+                guard change != nil else { return .init(subnet: subnet, value: nil) }
+                let mean = points.reduce(Decimal.zero) { $0 + $1.taoPerAlpha } / Decimal(points.count)
+                return .init(
+                    subnet: subnet,
+                    value: SubtensorMonthlyPriceMetrics(changeInTao: change, meanTaoPerAlpha: mean)
+                )
+            } catch {
+                logger.warning("Subtensor 30-day metrics of netuid \(subnet.netuid) unavailable: \(error)")
+                return .init(subnet: subnet, value: nil)
+            }
+        }
+        metricOperation.addDependency(alphaOperation)
+        return CompoundOperationWrapper(targetOperation: metricOperation, dependencies: [alphaOperation])
+    }
+
+    func createMonthlyMetricsWrapper(
+        for listed: [SubtensorSubnetRef: String]
+    ) -> CompoundOperationWrapper<[SubtensorSubnetRef: SubtensorMonthlyPriceMetrics]> {
+        let taoOperation = coingeckoOperationFactory.fetchPriceHistory(
+            for: taoPriceId,
+            currency: .usd,
+            period: SubtensorPricePeriod.month.coingeckoPeriod
+        )
+        let subnets = listed.sorted { $0.key.netuid < $1.key.netuid }
+        let fetcher = self
+        let metricsOperation = OperationCombiningService<SubtensorPriceHistoryService.MonthlyMetric>(
+            operationManager: OperationManager(operationQueue: operationQueue),
+            operationsPerBatch: SubtensorPriceHistoryService.weeklyChangeConcurrency
+        ) {
+            let taoItems = try taoOperation.extractNoCancellableResultData().items
+            return subnets.map { subnet, alphaPriceId in
+                fetcher.createMonthlyMetricWrapper(for: subnet, alphaPriceId: alphaPriceId, taoItems: taoItems)
+            }
+        }.longrunOperation()
+        metricsOperation.addDependency(taoOperation)
+        let resultOperation = ClosureOperation<[SubtensorSubnetRef: SubtensorMonthlyPriceMetrics]> {
+            try metricsOperation.extractNoCancellableResultData().reduce(into: [:]) { result, metric in
+                result[metric.subnet] = metric.value
+            }
+        }
+        resultOperation.addDependency(metricsOperation)
+        return CompoundOperationWrapper(
+            targetOperation: resultOperation,
+            dependencies: [taoOperation, metricsOperation]
+        )
+    }
+
     func createPointsWrapper(
         alphaPriceId: String,
         currency: Currency,
@@ -328,6 +405,23 @@ private extension SubtensorPriceHistoryService.Fetcher {
 }
 
 extension SubtensorPriceHistoryService: SubtensorPriceHistoryServiceProtocol {
+    func createMonthlyMetricsWrapper(
+        for subnets: [SubtensorSubnetRef]
+    ) -> CompoundOperationWrapper<[SubtensorSubnetRef: SubtensorMonthlyPriceMetrics]> {
+        let configWrapper = earnConfigProvider.createConfigWrapper()
+        let fetcher = fetcher
+        let metricsWrapper: CompoundOperationWrapper<[SubtensorSubnetRef: SubtensorMonthlyPriceMetrics]> =
+            OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
+                let config = try configWrapper.targetOperation.extractNoCancellableResultData()
+                let listed = Self.listedIds(for: subnets, in: config)
+                return listed.isEmpty
+                    ? .createWithResult([:])
+                    : fetcher.createMonthlyMetricsWrapper(for: listed)
+            }
+        metricsWrapper.addDependency(wrapper: configWrapper)
+        return metricsWrapper.insertingHead(operations: configWrapper.allOperations)
+    }
+
     func createHistoryWrapper(
         for subnet: SubtensorSubnetRef,
         period: SubtensorPricePeriod,

@@ -49,6 +49,7 @@ extension CollatorStakingSelectViewFactory {
             currencyManager: currencyManager,
             defaultSorting: .totalStake,
             displaysRewards: false,
+            showsValidatorsCount: true,
             statics: .subtensorValidator
         )
     }

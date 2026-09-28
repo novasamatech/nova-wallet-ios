@@ -92,4 +92,5 @@ protocol BannersInteractorOutputProtocol: AnyObject {
 
 protocol BannersWireframeProtocol {
     func openActionLink(urlString: String)
+    func showBittensorEarn(from view: BannersViewProtocol?)
 }
