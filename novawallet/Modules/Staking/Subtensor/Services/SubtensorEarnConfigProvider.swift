@@ -4,6 +4,11 @@ import Operation_iOS
 final class SubtensorEarnConfigProvider: BaseFetchOperationFactory {
     typealias Delivery = (Result<SubtensorEarnConfig, Error>) -> Void
 
+    enum RequestKind {
+        case interactive
+        case background
+    }
+
     struct CacheEntry {
         let config: SubtensorEarnConfig
         let fetchedAt: TimeInterval
@@ -14,10 +19,17 @@ final class SubtensorEarnConfigProvider: BaseFetchOperationFactory {
         let failedAt: TimeInterval
     }
 
+    struct PendingDelivery {
+        let kind: RequestKind
+        let completion: Delivery
+    }
+
     static let cacheLifetime: TimeInterval = 30 * 60
     static let failureRetryInterval: TimeInterval = 5 * 60
 
     private let configURL: URL
+    private let bundledConfig: SubtensorEarnConfig?
+    private let entryStore: SubtensorEarnConfigEntryStoring
     private let operationQueue: OperationQueue
     private let logger: LoggerProtocol
     private let timeProvider: () -> TimeInterval
@@ -25,7 +37,7 @@ final class SubtensorEarnConfigProvider: BaseFetchOperationFactory {
 
     private var cacheEntry: CacheEntry?
     private var failureEntry: FailureEntry?
-    private var pendingDeliveries: [UUID: Delivery] = [:]
+    private var pendingDeliveries: [UUID: PendingDelivery] = [:]
     private var isFetching = false
     private var loggedInvalidEntries: Set<String> = []
 
@@ -35,24 +47,30 @@ final class SubtensorEarnConfigProvider: BaseFetchOperationFactory {
 
     init(
         configURL: URL,
+        bundledConfig: SubtensorEarnConfig?,
+        entryStore: SubtensorEarnConfigEntryStoring,
         operationQueue: OperationQueue,
         logger: LoggerProtocol,
         timeProvider: @escaping () -> TimeInterval = BittensorMonotonicClock.now
     ) {
         self.configURL = configURL
+        self.bundledConfig = bundledConfig
+        self.entryStore = entryStore
         self.operationQueue = operationQueue
         self.logger = logger
         self.timeProvider = timeProvider
+
+        bundledConfig?.invalidEntries.forEach { logger.warning("Subtensor bundled Earn config entry ignored: \($0)") }
     }
 }
 
 extension SubtensorEarnConfigProvider: SubtensorEarnConfigProviderProtocol {
     func createConfigWrapper() -> CompoundOperationWrapper<SubtensorEarnConfig> {
-        createConfigWrapper(holdsFailures: false)
+        createConfigWrapper(for: .interactive)
     }
 
     func createBackgroundConfigWrapper() -> CompoundOperationWrapper<SubtensorEarnConfig> {
-        createConfigWrapper(holdsFailures: true)
+        createConfigWrapper(for: .background)
     }
 }
 
@@ -61,8 +79,14 @@ private extension SubtensorEarnConfigProvider {
         static let timeout: TimeInterval = 30
     }
 
-    func createConfigWrapper(holdsFailures: Bool) -> CompoundOperationWrapper<SubtensorEarnConfig> {
-        switch immediateDelivery(holdsFailures: holdsFailures) {
+    func createConfigWrapper(for kind: RequestKind) -> CompoundOperationWrapper<SubtensorEarnConfig> {
+        #if DEBUG
+            if isFixtureMode {
+                return createFixtureWrapper()
+            }
+        #endif
+
+        switch immediateDelivery(for: kind) {
         case let .success(config):
             return .createWithResult(config)
         case let .failure(error):
@@ -81,7 +105,7 @@ private extension SubtensorEarnConfigProvider {
                     return
                 }
 
-                requestConfig(for: requestId, holdsFailures: holdsFailures, completion: completion)
+                requestConfig(for: requestId, kind: kind, completion: completion)
             },
             cancelationClosure: { [weak self] in
                 self?.cancelRequest(for: requestId)
@@ -103,32 +127,32 @@ private extension SubtensorEarnConfigProvider {
         return age >= 0 && age < Self.failureRetryInterval
     }
 
-    func immediateDelivery(holdsFailures: Bool) -> Result<SubtensorEarnConfig, Error>? {
+    func immediateDelivery(for kind: RequestKind) -> Result<SubtensorEarnConfig, Error>? {
         mutex.lock()
 
         defer {
             mutex.unlock()
         }
 
-        return immediateDeliveryLocked(holdsFailures: holdsFailures)
+        return immediateDeliveryLocked(for: kind)
     }
 
-    func immediateDeliveryLocked(holdsFailures: Bool) -> Result<SubtensorEarnConfig, Error>? {
+    func immediateDeliveryLocked(for kind: RequestKind) -> Result<SubtensorEarnConfig, Error>? {
         if let cacheEntry, isFresh(cacheEntry) {
             return .success(cacheEntry.config)
         }
 
-        guard holdsFailures, let failureEntry, isWithinRetryInterval(failureEntry) else {
+        guard kind == .background, let failureEntry, isWithinRetryInterval(failureEntry) else {
             return nil
         }
 
-        return cacheEntry.map { .success($0.config) } ?? .failure(failureEntry.error)
+        return backgroundFallbackLocked(for: failureEntry.error)
     }
 
-    func requestConfig(for requestId: UUID, holdsFailures: Bool, completion: @escaping Delivery) {
+    func requestConfig(for requestId: UUID, kind: RequestKind, completion: @escaping Delivery) {
         mutex.lock()
 
-        if let immediate = immediateDeliveryLocked(holdsFailures: holdsFailures) {
+        if let immediate = immediateDeliveryLocked(for: kind) {
             mutex.unlock()
 
             completion(immediate)
@@ -136,7 +160,7 @@ private extension SubtensorEarnConfigProvider {
             return
         }
 
-        pendingDeliveries[requestId] = completion
+        pendingDeliveries[requestId] = PendingDelivery(kind: kind, completion: completion)
 
         let shouldStartFetch = !isFetching
         isFetching = true
@@ -167,16 +191,6 @@ private extension SubtensorEarnConfigProvider {
     }
 
     func createFetchWrapper() -> CompoundOperationWrapper<SubtensorEarnConfig> {
-        #if DEBUG
-            if isFixtureMode {
-                let fixtureOperation = ClosureOperation<SubtensorEarnConfig> {
-                    try JSONDecoder().decode(SubtensorEarnConfig.self, from: Data(Self.fixtureJSON.utf8))
-                }
-
-                return CompoundOperationWrapper(targetOperation: fixtureOperation)
-            }
-        #endif
-
         let fetchOperation: BaseOperation<SubtensorEarnConfig> = createFetchOperation(
             from: configURL,
             shouldUseCache: false,
@@ -194,22 +208,15 @@ private extension SubtensorEarnConfigProvider {
         let deliveries = Array(pendingDeliveries.values)
         pendingDeliveries = [:]
 
-        var newInvalidEntries: [String] = []
-        let delivery: Result<SubtensorEarnConfig, Error>
+        let newInvalidEntries = recordLocked(result)
 
-        switch result {
-        case let .success(config):
-            cacheEntry = CacheEntry(config: config, fetchedAt: timeProvider())
-            failureEntry = nil
+        var resolvedResults: [RequestKind: Result<SubtensorEarnConfig, Error>] = [:]
 
-            for entry in config.invalidEntries where loggedInvalidEntries.insert(entry).inserted {
-                newInvalidEntries.append(entry)
-            }
+        let completions = deliveries.map { delivery -> (Delivery, Result<SubtensorEarnConfig, Error>) in
+            let resolved = resolvedResults[delivery.kind] ?? resolveLocked(result, for: delivery.kind)
+            resolvedResults[delivery.kind] = resolved
 
-            delivery = .success(config)
-        case let .failure(error):
-            failureEntry = FailureEntry(error: error, failedAt: timeProvider())
-            delivery = cacheEntry.map { .success($0.config) } ?? .failure(error)
+            return (delivery.completion, resolved)
         }
 
         mutex.unlock()
@@ -220,7 +227,79 @@ private extension SubtensorEarnConfigProvider {
             logger.warning("Subtensor Earn config refresh failed: \(error)")
         }
 
-        deliveries.forEach { $0(delivery) }
+        completions.forEach { completion, resolved in
+            completion(resolved)
+        }
+    }
+
+    func recordLocked(_ result: Result<SubtensorEarnConfig, Error>) -> [String] {
+        switch result {
+        case let .success(config):
+            cacheEntry = CacheEntry(config: config, fetchedAt: timeProvider())
+            failureEntry = nil
+
+            entryStore.saveRemoteEntry(SubtensorEarnConfigRemoteEntry(entry: config.entry))
+
+            var newInvalidEntries: [String] = []
+
+            for entry in config.invalidEntries where loggedInvalidEntries.insert(entry).inserted {
+                newInvalidEntries.append(entry)
+            }
+
+            return newInvalidEntries
+        case let .failure(error):
+            failureEntry = FailureEntry(error: error, failedAt: timeProvider())
+
+            if Self.isNotFound(error) {
+                entryStore.saveRemoteEntry(nil)
+            }
+
+            return []
+        }
+    }
+
+    func resolveLocked(
+        _ result: Result<SubtensorEarnConfig, Error>,
+        for kind: RequestKind
+    ) -> Result<SubtensorEarnConfig, Error> {
+        guard case let .failure(error) = result else {
+            return result
+        }
+
+        switch kind {
+        case .interactive:
+            return interactiveFallbackLocked(for: error)
+        case .background:
+            return backgroundFallbackLocked(for: error)
+        }
+    }
+
+    func backgroundFallbackLocked(for error: Error) -> Result<SubtensorEarnConfig, Error> {
+        cacheEntry.map { .success($0.config) } ?? .failure(error)
+    }
+
+    func interactiveFallbackLocked(for error: Error) -> Result<SubtensorEarnConfig, Error> {
+        if Self.isNotFound(error) {
+            return bundledConfig.map { .success($0) } ?? .failure(error)
+        }
+
+        if let cacheEntry {
+            return .success(cacheEntry.config)
+        }
+
+        guard let bundledConfig else {
+            return .failure(error)
+        }
+
+        guard let storedEntry = entryStore.loadRemoteEntry() else {
+            return .success(bundledConfig)
+        }
+
+        return .success(bundledConfig.replacingEntry(storedEntry.entry))
+    }
+
+    static func isNotFound(_ error: Error) -> Bool {
+        (error as? NetworkResponseError) == .resourceNotFound
     }
 }
 
@@ -243,5 +322,13 @@ private extension SubtensorEarnConfigProvider {
           }
         }
         """
+
+        private func createFixtureWrapper() -> CompoundOperationWrapper<SubtensorEarnConfig> {
+            let fixtureOperation = ClosureOperation<SubtensorEarnConfig> {
+                try JSONDecoder().decode(SubtensorEarnConfig.self, from: Data(Self.fixtureJSON.utf8))
+            }
+
+            return CompoundOperationWrapper(targetOperation: fixtureOperation)
+        }
     }
 #endif

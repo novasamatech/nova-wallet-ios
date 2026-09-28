@@ -29,6 +29,13 @@ final class SubtensorStakingErrorMapper {
     private static let poolInvalidTransactionCode = 1010
     private static let poolCustomErrorPrefix = "Custom error: "
     private static let coldkeySwapCustomCodes: Set<UInt8> = [0, 21]
+    private static let tokenErrorModule = "Token"
+    private static let insufficientBalanceTokenErrors: Set<String> = [
+        "FundsUnavailable",
+        "NotExpendable",
+        "Frozen",
+        "BelowMinimum"
+    ]
 
     private static func poolCustomErrorCode(from data: String?) -> UInt8? {
         guard let data, data.hasPrefix(poolCustomErrorPrefix) else {
@@ -42,6 +49,17 @@ final class SubtensorStakingErrorMapper {
         }
 
         return UInt8(code)
+    }
+
+    private func map(otherError: DispatchCallError.Other) -> SubtensorStakingSubmissionError? {
+        guard
+            otherError.module == Self.tokenErrorModule,
+            let reason = otherError.reason,
+            Self.insufficientBalanceTokenErrors.contains(reason) else {
+            return nil
+        }
+
+        return .notEnoughBalanceToStake
     }
 
     private func map(moduleError: DispatchCallError.ModuleDisplayError) -> SubtensorStakingSubmissionError? {
@@ -124,6 +142,13 @@ extension SubtensorStakingErrorMapper: SubtensorStakingErrorMapping {
             let dispatchError = error as? DispatchCallError,
             case let .module(moduleError) = dispatchError,
             let mapped = map(moduleError: moduleError.display) {
+            return mapped
+        }
+
+        if
+            let dispatchError = error as? DispatchCallError,
+            case let .other(otherError) = dispatchError,
+            let mapped = map(otherError: otherError) {
             return mapped
         }
 

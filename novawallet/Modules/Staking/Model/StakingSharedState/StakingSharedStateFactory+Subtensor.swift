@@ -23,6 +23,8 @@ struct SubtensorStakingChainServices {
 extension SubtensorStakingProcessServices {
     static let sharedEarnConfigProvider: SubtensorEarnConfigProviderProtocol = SubtensorEarnConfigProvider(
         configURL: ApplicationConfig.shared.subtensorEarnConfigURL,
+        bundledConfig: SubtensorEarnConfig.bundled,
+        entryStore: SubtensorEarnConfigEntryStore(settingsManager: SettingsManager.shared),
         operationQueue: OperationManagerFacade.sharedDefaultQueue,
         logger: Logger.shared
     )

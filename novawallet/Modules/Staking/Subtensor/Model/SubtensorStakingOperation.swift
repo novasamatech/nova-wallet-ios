@@ -8,17 +8,32 @@ struct SubtensorNovaFee: Equatable {
 enum SubtensorStakingOperation: Equatable {
     case rootStake(hotkey: AccountId, amount: Balance)
     case rootUnstake(hotkey: AccountId, amount: Balance)
-    case rootUnstakeAll(hotkey: AccountId)
+    case rootUnstakeAll(hotkeys: [AccountId])
     case subnetBuy(hotkey: AccountId, netuid: UInt16, grossTao: Balance, limitPrice: Balance)
-    case subnetSell(hotkey: AccountId, netuid: UInt16, alpha: Balance, limitPrice: Balance)
-    case subnetSellAll(hotkey: AccountId, netuid: UInt16, alpha: Balance, limitPrice: Balance)
-    case claimRoot(hotkey: AccountId)
+    case subnetSell(hotkey: AccountId, netuid: UInt16, alpha: Balance, limitPrice: Balance, quotedTaoOut: Balance)
+    case subnetSellAll(hotkeys: [AccountId], netuid: UInt16, limitPrice: Balance, quotedTaoOut: Balance)
 }
 
-enum SubtensorStakingOperationError: Error {
+enum SubtensorStakingOperationError: Error, Equatable {
     case novaFeeUnavailable
     case unprotectedSubnetOrder
     case limitOnRootOrder
+    case invalidHotkeyGroup
+}
+
+extension SubtensorStakingOperationError: ErrorContentConvertible {
+    func toErrorContent(for locale: Locale?) -> ErrorContent {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        let message: String = switch self {
+        case .novaFeeUnavailable:
+            strings.stakingSubtensorErrorNovaFeeUnavailable()
+        case .unprotectedSubnetOrder, .limitOnRootOrder, .invalidHotkeyGroup:
+            strings.commonUndefinedErrorMessage()
+        }
+
+        return ErrorContent(title: strings.operationErrorTitle(), message: message)
+    }
 }
 
 struct SubtensorExecutedAmounts: Equatable {
@@ -29,10 +44,22 @@ struct SubtensorExecutedAmounts: Equatable {
 
 struct SubtensorStakingOperationOutcome: Equatable {
     let executed: SubtensorExecutedAmounts?
-    let claimedTao: Balance?
     let novaFeePaid: Balance?
     let alphaFeePaid: Balance?
-    let extrinsicHash: String?
+    let networkFeePaid: Balance?
+    let extrinsicHash: ExtrinsicHash
+    let blockHash: BlockHash
+}
+
+struct SubtensorStakingSubmissionFailure: Error {
+    enum Stage: Equatable {
+        case notSubmitted
+        case dispatched(blockHash: BlockHash, extrinsicHash: ExtrinsicHash)
+        case unconfirmed(extrinsicHash: ExtrinsicHash?)
+    }
+
+    let stage: Stage
+    let error: Error
 }
 
 enum SubtensorSellPlan: Equatable {

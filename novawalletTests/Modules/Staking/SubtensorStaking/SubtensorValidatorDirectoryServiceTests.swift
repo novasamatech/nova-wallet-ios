@@ -118,6 +118,30 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
         XCTAssertEqual(directory.items.map(\.take), [takeFraction(11796), takeFraction(11796)])
     }
 
+    func testDirectoryServedFromAnExpiredCacheHasAStaleListStamp() throws {
+        let apiFactory = MockBittensorApiOperationFactoryProtocol()
+        let chainFactory = MockSubtensorValidatorChainOperationFactoryProtocol()
+
+        var world = ChainWorld(head: head)
+        world.seat(hotkeyA, netuid: 64, uid: 5, blocksSinceUpdate: 100)
+
+        try stubValidators(apiFactory, result: makeCollection(
+            rows: [row(hotkeyA, identity: "Aster Stake", stake: nil)],
+            stakes: available(olderAsOf, .fresh),
+            metagraph: available(newerAsOf, .fresh),
+            identities: available(newerAsOf, .fresh),
+            isFromExpiredCache: true
+        ))
+
+        stubChain(chainFactory, world: world)
+
+        let service = makeService(apiFactory: apiFactory, chainFactory: chainFactory, config: makeConfig(preferred: nil))
+
+        let directory = try run(service.createDirectoryWrapper(for: subnet))
+
+        XCTAssertEqual(directory.listStamp, SubtensorBackendStamp(asOf: olderAsOf, freshness: .stale))
+    }
+
     func testDirectoryEnrichesTheFirst512RowsAndThePreferredHotkeyBeyondThem() throws {
         let apiFactory = MockBittensorApiOperationFactoryProtocol()
         let chainFactory = MockSubtensorValidatorChainOperationFactoryProtocol()
@@ -303,6 +327,26 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
         verifyNoMoreInteractions(apiFactory)
     }
 
+    func testRootPresetIsTheGatedConfigValidatorWhileTheValidatorsRouteAnswers503() throws {
+        let outcome = try loadRootPreset(take: 9830, whileValidatorsFail: .datasetUnavailable(requestId: "request-1"))
+
+        XCTAssertEqual(outcome.directoryError?.isDeviceBound, false)
+        XCTAssertEqual(outcome.preset, expectedRootPreset(take: 9830))
+    }
+
+    func testRootPresetIsTheGatedConfigValidatorWhileTheValidatorsRouteIsUnpublished() throws {
+        let outcome = try loadRootPreset(take: 9830, whileValidatorsFail: .routeNotPublished)
+
+        XCTAssertEqual(outcome.directoryError?.isDeviceBound, false)
+        XCTAssertEqual(outcome.preset, expectedRootPreset(take: 9830))
+    }
+
+    func testRootPresetIsNoneWhenTheConfigValidatorTakeExceedsTheDefaultGateWhileTheBackendIsDown() throws {
+        let outcome = try loadRootPreset(take: 13107, whileValidatorsFail: .datasetUnavailable(requestId: "request-1"))
+
+        XCTAssertNil(outcome.preset)
+    }
+
     func testDetailReusesTheCachedItemOnlyForTheSameSubnetRegistration() throws {
         let apiFactory = MockBittensorApiOperationFactoryProtocol()
         let chainFactory = MockSubtensorValidatorChainOperationFactoryProtocol()
@@ -370,6 +414,52 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
         )
 
         return try run(service.createDirectoryWrapper(for: subnet))
+    }
+
+    private func loadRootPreset(
+        take: UInt16,
+        whileValidatorsFail routeError: BittensorApiError
+    ) throws -> (directoryError: BittensorApiError?, preset: SubtensorValidatorDirectoryItem?) {
+        let apiFactory = MockBittensorApiOperationFactoryProtocol()
+        let chainFactory = MockSubtensorValidatorChainOperationFactoryProtocol()
+
+        var world = ChainWorld(head: head)
+        world.seat(hotkeyA, netuid: 0, uid: 3)
+        world.takes[hotkeyA] = take
+
+        stub(apiFactory) { stub in
+            when(stub.createValidatorsWrapper(netuid: any())).then { _ in
+                CompoundOperationWrapper.createWithError(routeError)
+            }
+        }
+
+        stubChain(chainFactory, world: world)
+
+        let service = makeService(
+            apiFactory: apiFactory,
+            chainFactory: chainFactory,
+            config: makeConfig(preferred: nil, preferredRoot: hotkeyA)
+        )
+
+        var directoryError: BittensorApiError?
+
+        XCTAssertThrowsError(try run(service.createDirectoryWrapper(for: root))) { error in
+            directoryError = error as? BittensorApiError
+        }
+
+        return (directoryError, try run(service.createPreferredValidatorWrapper(for: root)))
+    }
+
+    private func expectedRootPreset(take: UInt16) -> SubtensorValidatorDirectoryItem {
+        SubtensorValidatorDirectoryItem(
+            hotkey: hotkeyA,
+            netuid: 0,
+            name: nil,
+            take: takeFraction(take),
+            hotkeyAlpha: 0,
+            status: SubtensorValidatorChainStatus(uid: 3, hasPermit: nil, blocksSinceUpdate: nil, isActive: nil),
+            isNovaPreferred: true
+        )
     }
 
     private func makeService(
@@ -448,7 +538,8 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
         completeness: BittensorApi.Completeness = .complete,
         stakes: BittensorApi.ComponentMetadata,
         metagraph: BittensorApi.ComponentMetadata,
-        identities: BittensorApi.ComponentMetadata
+        identities: BittensorApi.ComponentMetadata,
+        isFromExpiredCache: Bool = false
     ) -> ValidatorsResult {
         let items = rows.map { row in
             BittensorApi.Validator(
@@ -488,7 +579,12 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
             )
         )
 
-        return BittensorApiResult(value: collection, requestId: "request-1", receivedAt: 0, isFromExpiredCache: false)
+        return BittensorApiResult(
+            value: collection,
+            requestId: "request-1",
+            receivedAt: 0,
+            isFromExpiredCache: isFromExpiredCache
+        )
     }
 
     private func row(

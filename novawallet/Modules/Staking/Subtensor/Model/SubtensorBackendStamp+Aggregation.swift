@@ -1,19 +1,18 @@
 import Foundation
 
 extension SubtensorBackendStamp {
-    init(component: BittensorApi.AvailableComponent) {
-        self.init(
-            asOf: component.asOf,
-            freshness: component.freshness == .stale ? .stale : .fresh
-        )
+    init(component: BittensorApi.AvailableComponent, isFromExpiredCache: Bool) {
+        let isStale = isFromExpiredCache || component.freshness == .stale
+
+        self.init(asOf: component.asOf, freshness: isStale ? .stale : .fresh)
     }
 
-    init?(metadata: BittensorApi.ComponentMetadata) {
+    init?(metadata: BittensorApi.ComponentMetadata, isFromExpiredCache: Bool) {
         guard case let .available(component) = metadata else {
             return nil
         }
 
-        self.init(component: component)
+        self.init(component: component, isFromExpiredCache: isFromExpiredCache)
     }
 
     static func aggregate(_ stamps: [SubtensorBackendStamp]) -> SubtensorBackendStamp? {

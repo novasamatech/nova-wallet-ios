@@ -1,4 +1,5 @@
 import Foundation
+import NovaCrypto
 import Operation_iOS
 import SubstrateSdk
 
@@ -49,9 +50,23 @@ final class SubtensorStakingOperationService {
 }
 
 private extension SubtensorStakingOperationService {
+    func createFinalizer(signer: SubtensorRecordingSigner) -> SubtensorStakingSubmissionFinalizer {
+        SubtensorStakingSubmissionFinalizer(
+            chainAssetId: chainAsset.chainAssetId,
+            accountId: accountId,
+            novaFeeBeneficiary: feeCalculator.beneficiary,
+            signer: signer,
+            positionsSyncService: positionsSyncService,
+            eventCenter: eventCenter,
+            errorMapper: errorMapper
+        )
+    }
+
     func createSubmissionWrapper(
         for operation: SubtensorStakingOperation,
-        builderClosure: @escaping ExtrinsicBuilderClosure
+        builderClosure: @escaping ExtrinsicBuilderClosure,
+        signer: SubtensorRecordingSigner,
+        finalizer: SubtensorStakingSubmissionFinalizer
     ) -> CompoundOperationWrapper<SubtensorStakingOperationOutcome> {
         let submitWrapper = extrinsicSubmitMonitor.submitAndMonitorWrapper(
             extrinsicBuilderClosure: builderClosure,
@@ -62,43 +77,13 @@ private extension SubtensorStakingOperationService {
 
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let outcomeOperation = createOutcomeOperation(
-            for: operation,
-            submissionOperation: submitWrapper.targetOperation,
-            codingFactoryOperation: codingFactoryOperation
-        )
-
-        outcomeOperation.addDependency(submitWrapper.targetOperation)
-        outcomeOperation.addDependency(codingFactoryOperation)
-
-        return CompoundOperationWrapper(
-            targetOperation: outcomeOperation,
-            dependencies: submitWrapper.allOperations + [codingFactoryOperation]
-        )
-    }
-
-    func createOutcomeOperation(
-        for operation: SubtensorStakingOperation,
-        submissionOperation: BaseOperation<ExtrinsicMonitorSubmission>,
-        codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
-    ) -> ClosureOperation<SubtensorStakingOperationOutcome> {
-        let finalizer = SubtensorStakingSubmissionFinalizer(
-            chainAssetId: chainAsset.chainAssetId,
-            accountId: accountId,
-            novaFeeBeneficiary: feeCalculator.beneficiary,
-            positionsSyncService: positionsSyncService,
-            sharedOperation: sharedOperation,
-            eventCenter: eventCenter,
-            errorMapper: errorMapper
-        )
-
-        return ClosureOperation {
+        let outcomeOperation = ClosureOperation<SubtensorStakingOperationOutcome> {
             let submission: ExtrinsicMonitorSubmission
 
             do {
-                submission = try submissionOperation.extractNoCancellableResultData()
+                submission = try submitWrapper.targetOperation.extractNoCancellableResultData()
             } catch {
-                throw finalizer.fail(with: error)
+                throw finalizer.failure(for: error)
             }
 
             switch submission.status {
@@ -107,9 +92,17 @@ private extension SubtensorStakingOperationService {
 
                 return try finalizer.complete(operation: operation, success: success, codingFactory: codingFactory)
             case let .failure(failure):
-                throw finalizer.fail(with: failure.error)
+                throw finalizer.dispatchFailure(for: failure)
             }
         }
+
+        outcomeOperation.addDependency(submitWrapper.targetOperation)
+        outcomeOperation.addDependency(codingFactoryOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: outcomeOperation,
+            dependencies: submitWrapper.allOperations + [codingFactoryOperation]
+        )
     }
 }
 
@@ -142,24 +135,42 @@ extension SubtensorStakingOperationService: SubtensorStakingOperationServiceProt
         do {
             builderClosure = try operation.extrinsicBuilderClosure(feeCalculator: feeCalculator)
         } catch {
-            return .createWithError(error)
+            return .createWithError(SubtensorStakingSubmissionFailure(stage: .notSubmitted, error: error))
         }
+
+        let recordingSigner = SubtensorRecordingSigner(signer: signer)
+        let finalizer = createFinalizer(signer: recordingSigner)
 
         let submission = SubtensorStakingSubmission(
-            sharedOperation: sharedOperation,
+            statusKeeper: SubtensorSharedOperationStatusKeeper(sharedOperation: sharedOperation),
+            finalizer: finalizer,
             operationQueue: operationQueue
         ) { [self] in
-            createSubmissionWrapper(for: operation, builderClosure: builderClosure)
+            createSubmissionWrapper(
+                for: operation,
+                builderClosure: builderClosure,
+                signer: recordingSigner,
+                finalizer: finalizer
+            )
         }
 
-        return CompoundOperationWrapper(targetOperation: LongrunOperation(longrun: AnyLongrun(longrun: submission)))
+        let submitOperation = SubtensorStakingSubmitOperation(longrun: AnyLongrun(longrun: submission))
+
+        return CompoundOperationWrapper(targetOperation: submitOperation)
+    }
+}
+
+private final class SubtensorStakingSubmitOperation: LongrunOperation<SubtensorStakingOperationOutcome> {
+    override func cancel() {
+        longrun.cancel()
     }
 }
 
 private final class SubtensorStakingSubmission: Longrunable {
     typealias ResultType = SubtensorStakingOperationOutcome
 
-    private let sharedOperation: SharedOperationProtocol?
+    private let statusKeeper: SubtensorSharedOperationStatusKeeper
+    private let finalizer: SubtensorStakingSubmissionFinalizer
     private let operationQueue: OperationQueue
     private let submissionWrapperClosure: () -> CompoundOperationWrapper<ResultType>
     private let mutex = NSLock()
@@ -167,40 +178,53 @@ private final class SubtensorStakingSubmission: Longrunable {
     private var isCancelled = false
 
     init(
-        sharedOperation: SharedOperationProtocol?,
+        statusKeeper: SubtensorSharedOperationStatusKeeper,
+        finalizer: SubtensorStakingSubmissionFinalizer,
         operationQueue: OperationQueue,
         submissionWrapperClosure: @escaping () -> CompoundOperationWrapper<ResultType>
     ) {
-        self.sharedOperation = sharedOperation
+        self.statusKeeper = statusKeeper
+        self.finalizer = finalizer
         self.operationQueue = operationQueue
         self.submissionWrapperClosure = submissionWrapperClosure
     }
 
     func start(with completionClosure: @escaping (Result<ResultType, Error>) -> Void) {
-        let submissionWrapper = submissionWrapperClosure()
-
         mutex.lock()
         let wasCancelled = isCancelled
         mutex.unlock()
 
         guard !wasCancelled else {
-            completionClosure(.failure(BaseOperationError.parentOperationCancelled))
+            let failure = SubtensorStakingSubmissionFailure(
+                stage: .notSubmitted,
+                error: BaseOperationError.parentOperationCancelled
+            )
+
+            completionClosure(.failure(failure))
 
             return
         }
 
-        let sharedOperation = sharedOperation
-
-        DispatchQueue.main.async {
-            sharedOperation?.markSent()
-        }
+        statusKeeper.markSent()
 
         execute(
-            wrapper: submissionWrapper,
+            wrapper: submissionWrapperClosure(),
             inOperationQueue: operationQueue,
-            runningCallbackIn: nil,
-            callbackClosure: completionClosure
-        )
+            runningCallbackIn: nil
+        ) { [statusKeeper, finalizer] result in
+            switch result {
+            case let .success(outcome):
+                completionClosure(.success(outcome))
+            case let .failure(error):
+                let failure = finalizer.failure(for: error)
+
+                if failure.stage.revertsSharedOperation {
+                    statusKeeper.restore()
+                }
+
+                completionClosure(.failure(failure))
+            }
+        }
     }
 
     func cancel() {
@@ -210,23 +234,93 @@ private final class SubtensorStakingSubmission: Longrunable {
     }
 }
 
+private final class SubtensorSharedOperationStatusKeeper {
+    private let sharedOperation: SharedOperationProtocol?
+    private var capturedStatus: SharedOperationStatus?
+
+    init(sharedOperation: SharedOperationProtocol?) {
+        self.sharedOperation = sharedOperation
+    }
+
+    func markSent() {
+        DispatchQueue.main.async { [self] in
+            capturedStatus = sharedOperation?.status
+            sharedOperation?.markSent()
+        }
+    }
+
+    func restore() {
+        DispatchQueue.main.async { [self] in
+            guard let capturedStatus else {
+                return
+            }
+
+            sharedOperation?.status = capturedStatus
+        }
+    }
+}
+
+private final class SubtensorRecordingSigner: SigningWrapperProtocol {
+    private let signer: SigningWrapperProtocol
+    private let mutex = NSLock()
+
+    private var signatureCreated = false
+
+    init(signer: SigningWrapperProtocol) {
+        self.signer = signer
+    }
+
+    var hasSignature: Bool {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return signatureCreated
+    }
+
+    func sign(_ originalData: Data, context: ExtrinsicSigningContext) throws -> IRSignatureProtocol {
+        let signature = try signer.sign(originalData, context: context)
+
+        mutex.lock()
+        signatureCreated = true
+        mutex.unlock()
+
+        return signature
+    }
+}
+
 private struct SubtensorStakingSubmissionFinalizer {
     let chainAssetId: ChainAssetId
     let accountId: AccountId
     let novaFeeBeneficiary: AccountId?
+    let signer: SubtensorRecordingSigner
     let positionsSyncService: SubtensorPositionsSyncServiceProtocol?
-    let sharedOperation: SharedOperationProtocol?
     let eventCenter: EventCenterProtocol
     let errorMapper: SubtensorStakingErrorMapping
 
-    func fail(with error: Error) -> Error {
-        let sharedOperation = sharedOperation
-
-        DispatchQueue.main.async {
-            sharedOperation?.markComposing()
+    func failure(for error: Error) -> SubtensorStakingSubmissionFailure {
+        if let failure = error as? SubtensorStakingSubmissionFailure {
+            return failure
         }
 
-        return errorMapper.mapSubmission(error: error)
+        let mappedError = errorMapper.mapSubmission(error: error)
+
+        guard signer.hasSignature, !Self.isFirstSendRejection(mappedError) else {
+            return SubtensorStakingSubmissionFailure(stage: .notSubmitted, error: mappedError)
+        }
+
+        notifyStakingChanged()
+
+        return SubtensorStakingSubmissionFailure(stage: .unconfirmed(extrinsicHash: nil), error: mappedError)
+    }
+
+    func dispatchFailure(for failure: SubstrateExtrinsicStatus.FailedExtrinsic) -> SubtensorStakingSubmissionFailure {
+        SubtensorStakingSubmissionFailure(
+            stage: .dispatched(blockHash: failure.blockHash, extrinsicHash: failure.extrinsicHash),
+            error: errorMapper.mapSubmission(error: failure.error)
+        )
     }
 
     func complete(
@@ -247,24 +341,55 @@ private struct SubtensorStakingSubmissionFinalizer {
                 outcome = try parser.parse(
                     events: success.interestedEvents,
                     for: operation,
-                    extrinsicHash: success.extrinsicHash
+                    extrinsicHash: success.extrinsicHash,
+                    blockHash: success.blockHash
                 )
             } catch {
-                throw fail(with: error)
+                throw SubtensorStakingSubmissionFailure(
+                    stage: .dispatched(blockHash: success.blockHash, extrinsicHash: success.extrinsicHash),
+                    error: errorMapper.mapSubmission(error: error)
+                )
             }
         } else {
             outcome = SubtensorStakingOperationOutcome(
                 executed: nil,
-                claimedTao: nil,
                 novaFeePaid: nil,
                 alphaFeePaid: nil,
-                extrinsicHash: success.extrinsicHash
+                networkFeePaid: nil,
+                extrinsicHash: success.extrinsicHash,
+                blockHash: success.blockHash
             )
         }
 
-        positionsSyncService?.refresh()
-        eventCenter.notify(with: SubtensorStakingChanged(chainAssetId: chainAssetId, accountId: accountId))
+        notifyStakingChanged()
 
         return outcome
+    }
+}
+
+private extension SubtensorStakingSubmissionFinalizer {
+    static func isFirstSendRejection(_ error: Error) -> Bool {
+        switch error as? SubtensorStakingSubmissionError {
+        case .feeUnpayable, .coldkeySwapInProgress:
+            true
+        default:
+            false
+        }
+    }
+
+    func notifyStakingChanged() {
+        positionsSyncService?.refresh()
+        eventCenter.notify(with: SubtensorStakingChanged(chainAssetId: chainAssetId, accountId: accountId))
+    }
+}
+
+private extension SubtensorStakingSubmissionFailure.Stage {
+    var revertsSharedOperation: Bool {
+        switch self {
+        case .notSubmitted, .dispatched:
+            true
+        case .unconfirmed:
+            false
+        }
     }
 }

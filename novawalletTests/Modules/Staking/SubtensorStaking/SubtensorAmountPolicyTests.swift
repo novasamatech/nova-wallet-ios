@@ -145,7 +145,7 @@ final class SubtensorAmountPolicyTests: XCTestCase {
     func testRootMaxOnAlphaFeePathUnstakesAll() {
         let operation = rootMaxUnstake(positionAlpha: 5_000_000_000, locked: 0, transferable: 629_365)
 
-        XCTAssertEqual(operation, .rootUnstakeAll(hotkey: hotkey))
+        XCTAssertEqual(operation, .rootUnstakeAll(hotkeys: [hotkey]))
     }
 
     func testRootMaxOnAlphaFeePathWithLockedStakeIsRefused() {

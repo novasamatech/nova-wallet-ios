@@ -14,11 +14,11 @@ enum SubtensorFlowChainWorld {
     static let chutesLogo = "https://raw.githubusercontent.com/novasamatech/nova-utils/master/icons/bittensor/sn64-4531295.png"
 
     static let chutesBuyQuote = SubtensorQuote(
-        args: SubtensorQuoteArgs(netuid: 64, direction: .stake(taoIn: 4_985_000_000)),
+        args: SubtensorQuoteArgs(netuid: 64, direction: .stake(taoIn: 4_957_858_206)),
         sim: SubtensorStakingPallet.SimSwapResult(
-            taoAmount: 4_985_000_000,
-            alphaAmount: 90_650_000_000,
-            taoFee: 2_510_185,
+            taoAmount: 4_957_858_206,
+            alphaAmount: 90_150_000_000,
+            taoFee: 2_496_518,
             alphaFee: 0,
             taoSlippage: 0,
             alphaSlippage: 0
@@ -51,6 +51,10 @@ enum SubtensorFlowChainWorld {
         )
 
         return ChainAsset(chain: chain, asset: asset)
+    }
+
+    static func placeholderNovaFeeBeneficiary() throws -> AccountId {
+        try Data(hexString: "0xa4373d7b6d136b822d25106a993945f40b4cbfcbb2cfd5782888b5d938f82b1a")
     }
 
     static func hotkey(_ member: World.Member) throws -> AccountId {
