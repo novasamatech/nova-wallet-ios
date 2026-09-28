@@ -40,13 +40,21 @@ class SubtensorSessionCachingService<Model> {
         runningCompletionIn queue: DispatchQueue,
         completion: @escaping (Result<Model, Error>) -> Void
     ) {
+        fetch(forcingRefresh: false, runningCompletionIn: queue, completion: completion)
+    }
+
+    func fetch(
+        forcingRefresh: Bool,
+        runningCompletionIn queue: DispatchQueue,
+        completion: @escaping (Result<Model, Error>) -> Void
+    ) {
         mutex.lock()
 
-        if let cacheEntry, Date().timeIntervalSince(cacheEntry.updatedAt) < cacheTTL {
-            let model = cacheEntry.model
-
+        defer {
             mutex.unlock()
+        }
 
+        if !forcingRefresh, let model = freshCachedModel() {
             queue.async {
                 completion(.success(model))
             }
@@ -56,21 +64,25 @@ class SubtensorSessionCachingService<Model> {
 
         pendingDeliveries.append((queue, completion))
 
-        let hasRunningFetch = pendingDeliveries.count > 1
-
-        mutex.unlock()
-
-        // requests are serialized at the service level: only the first pending delivery
-        // starts a fetch, later ones attach to it
-        guard !hasRunningFetch else {
+        guard forcingRefresh || !callStore.hasCall else {
             return
         }
+
+        callStore.cancel()
 
         performFetch()
     }
 }
 
 private extension SubtensorSessionCachingService {
+    func freshCachedModel() -> Model? {
+        guard let cacheEntry, Date().timeIntervalSince(cacheEntry.updatedAt) < cacheTTL else {
+            return nil
+        }
+
+        return cacheEntry.model
+    }
+
     func performFetch() {
         let wrapper = createFetchWrapper()
 

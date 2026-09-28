@@ -13,11 +13,12 @@ struct SubtensorSellPlanInput {
 }
 
 struct SubtensorRootMaxUnstakeInput {
-    let hotkey: AccountId
+    let hotkeys: [AccountId]
     let positionAlpha: Balance
     let availability: SubtensorStakingPallet.StakeAvailability
     let transferable: Balance
     let networkFee: Balance
+    let existentialDeposit: Balance
     let isOwnHotkey: Bool
     let minStake: Balance
     let nominatorMinStake: Balance
@@ -77,14 +78,46 @@ enum SubtensorAmountPolicy {
     }
 
     static func rootMaxUnstake(for input: SubtensorRootMaxUnstakeInput) -> SubtensorStakingOperation? {
-        guard input.positionAlpha > 0 else {
+        guard
+            input.positionAlpha > 0,
+            let primaryHotkey = input.hotkeys.first,
+            Set(input.hotkeys).count == input.hotkeys.count else {
             return nil
         }
 
+        guard input.hotkeys.count == 1 else {
+            return rootGroupMaxUnstake(for: input)
+        }
+
+        return rootSingleMaxUnstake(for: input, hotkey: primaryHotkey)
+    }
+}
+
+private extension SubtensorAmountPolicy {
+    static func rootGroupMaxUnstake(for input: SubtensorRootMaxUnstakeInput) -> SubtensorStakingOperation? {
+        let canPayNetworkFee = canPayBatchedSell(
+            transferable: input.transferable,
+            networkFee: input.networkFee,
+            existentialDeposit: input.existentialDeposit
+        )
+
+        let isGroupFullyAvailable = input.availability.available >= input.positionAlpha
+
+        guard canPayNetworkFee, isGroupFullyAvailable else {
+            return nil
+        }
+
+        return .rootUnstakeAll(hotkeys: input.hotkeys)
+    }
+
+    static func rootSingleMaxUnstake(
+        for input: SubtensorRootMaxUnstakeInput,
+        hotkey: AccountId
+    ) -> SubtensorStakingOperation? {
         guard input.transferable >= input.networkFee else {
             let isPositionFullyAvailable = input.availability.available >= input.positionAlpha
 
-            return isPositionFullyAvailable ? .rootUnstakeAll(hotkeys: [input.hotkey]) : nil
+            return isPositionFullyAvailable ? .rootUnstakeAll(hotkeys: [hotkey]) : nil
         }
 
         let amount = maxSell(positionAlpha: input.positionAlpha, availability: input.availability)
@@ -104,7 +137,7 @@ enum SubtensorAmountPolicy {
 
         switch plan {
         case .sellAll, .partial:
-            return .rootUnstake(hotkey: input.hotkey, amount: amount)
+            return .rootUnstake(hotkey: hotkey, amount: amount)
         case .exceedsAvailable, .belowMinimumOut, .remainderWouldBeSwept, .remainderWouldBeErased:
             return nil
         }

@@ -6,8 +6,10 @@ struct SubtensorEarnServices {
     let earnConfigProvider: SubtensorEarnConfigProviderProtocol
     let earnSettings: SubtensorEarnSettingsProtocol
     let validatorChainOperationFactory: SubtensorValidatorChainOperationFactoryProtocol
+    let catalogueService: SubtensorSubnetCatalogueServiceProtocol
     let yieldService: SubtensorYieldServiceProtocol
     let recommendationService: SubtensorRecommendationServiceProtocol
+    let rankingViewService: SubtensorRankingViewServiceProtocol
     let validatorDirectoryService: SubtensorValidatorDirectoryServiceProtocol
     let discoveryService: SubtensorDiscoveryServiceProtocol
     let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
@@ -25,6 +27,7 @@ protocol SubtensorStakingSharedStateProtocol: AnyObject {
     var apiOperationFactory: SubtensorApiOperationFactoryProtocol { get }
     var earnServices: SubtensorEarnServices { get }
 
+    var selectedAccount: MetaChainAccountResponse? { get }
     var positionsSyncService: SubtensorPositionsSyncServiceProtocol? { get }
     var rootClaimableService: SubtensorRootClaimableServiceProtocol? { get }
 
@@ -32,7 +35,7 @@ protocol SubtensorStakingSharedStateProtocol: AnyObject {
 
     var sharedOperation: SharedOperationProtocol? { get }
 
-    func setup(for accountId: AccountId?)
+    func setup(for account: MetaChainAccountResponse?)
     func throttle()
     func startSharedOperation() -> SharedOperationProtocol
 
@@ -61,10 +64,12 @@ final class SubtensorStakingSharedState {
     let novaFeeCalculator: SubtensorNovaFeeCalculator
     let positionsSyncServiceFactory: ((AccountId) -> SubtensorPositionsSyncServiceProtocol)?
 
-    weak var sharedOperation: SharedOperationProtocol?
+    private let mutex = NSLock()
 
-    private(set) var positionsSyncService: SubtensorPositionsSyncServiceProtocol?
-    private(set) var rootClaimableService: SubtensorRootClaimableServiceProtocol?
+    private weak var currentSharedOperation: SharedOperationProtocol?
+    private var currentAccount: MetaChainAccountResponse?
+    private var currentPositionsSyncService: SubtensorPositionsSyncServiceProtocol?
+    private var currentRootClaimableService: SubtensorRootClaimableServiceProtocol?
 
     init(
         stakingOption: Multistaking.ChainAssetOption,
@@ -124,7 +129,7 @@ private extension SubtensorStakingSharedState {
             logger: logger
         )
 
-        positionsSyncService = service
+        currentPositionsSyncService = service
 
         service.setup()
 
@@ -142,17 +147,79 @@ private extension SubtensorStakingSharedState {
             operationQueue: operationQueue
         )
 
-        rootClaimableService = service
+        currentRootClaimableService = service
 
         service.setup()
+    }
+
+    func throttleServices() {
+        currentRootClaimableService?.throttle()
+        currentRootClaimableService = nil
+
+        currentPositionsSyncService?.throttle()
+        currentPositionsSyncService = nil
+
+        currentAccount = nil
     }
 }
 
 extension SubtensorStakingSharedState: SubtensorStakingSharedStateProtocol {
-    func setup(for accountId: AccountId?) {
-        guard let accountId else {
+    var selectedAccount: MetaChainAccountResponse? {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return currentAccount
+    }
+
+    var positionsSyncService: SubtensorPositionsSyncServiceProtocol? {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return currentPositionsSyncService
+    }
+
+    var rootClaimableService: SubtensorRootClaimableServiceProtocol? {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return currentRootClaimableService
+    }
+
+    var sharedOperation: SharedOperationProtocol? {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return currentSharedOperation
+    }
+
+    func setup(for account: MetaChainAccountResponse?) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        throttleServices()
+
+        guard let account else {
             return
         }
+
+        currentAccount = account
+
+        let accountId = account.chainAccount.accountId
 
         if let positionsService = setupPositionsSyncService(for: accountId) {
             setupRootClaimableService(
@@ -163,16 +230,26 @@ extension SubtensorStakingSharedState: SubtensorStakingSharedStateProtocol {
     }
 
     func throttle() {
-        rootClaimableService?.throttle()
-        rootClaimableService = nil
+        mutex.lock()
 
-        positionsSyncService?.throttle()
-        positionsSyncService = nil
+        defer {
+            mutex.unlock()
+        }
+
+        throttleServices()
     }
 
     func startSharedOperation() -> SharedOperationProtocol {
         let operation = SharedOperation()
-        sharedOperation = operation
+
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        currentSharedOperation = operation
+
         return operation
     }
 

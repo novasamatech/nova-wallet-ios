@@ -49,7 +49,10 @@ final class SubtensorQuoteViewModelFactoryTests: XCTestCase {
     }
 
     private func makeFactory() -> SubtensorQuoteViewModelFactory {
-        SubtensorQuoteViewModelFactory(chainAsset: makeChainAsset())
+        SubtensorQuoteViewModelFactory(
+            chainAsset: makeChainAsset(),
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
+        )
     }
 
     private func makeSubnetTarget(netuid: UInt16 = 1) -> SubtensorStakeTarget {
@@ -97,6 +100,76 @@ final class SubtensorQuoteViewModelFactoryTests: XCTestCase {
             spotPrice: 7_683_255,
             feeRate: 33
         )
+    }
+
+    private func makeBuyTradeQuote() -> SubtensorTradeQuote {
+        SubtensorTradeQuote(
+            quote: SubtensorQuote(
+                args: SubtensorQuoteArgs(netuid: 1, direction: .stake(taoIn: 4_957_858_206)),
+                sim: SubtensorStakingPallet.SimSwapResult(
+                    taoAmount: 4_957_858_206,
+                    alphaAmount: 67_500_000_000,
+                    taoFee: 2_496_518,
+                    alphaFee: 0,
+                    taoSlippage: 0,
+                    alphaSlippage: 1_359_000_000
+                ),
+                spotPrice: 72_000_000,
+                feeRate: 33
+            ),
+            amountIn: 5_000_000_000,
+            novaFee: SubtensorNovaFee(amount: 42_141_794, beneficiary: Data(repeating: 0xA4, count: 32)),
+            expectedOut: 67_500_000_000,
+            swapMinimumOut: 65_580_135_000,
+            minimumOut: 65_580_135_000,
+            limitPrice: 75_600_000
+        )
+    }
+
+    private func makeTaoPrice() -> PriceData {
+        PriceData(identifier: "bittensor", price: "25", dayChange: nil, currencyId: nil)
+    }
+
+    func testBuyTradePanelShowsTheQuotedAlphaItsFiatValueTheSwapRateAndTheMonthlyEarnings() throws {
+        let panel = try XCTUnwrap(
+            makeFactory().createTradePanel(
+                for: makeBuyTradeQuote(),
+                amountIn: 5_000_000_000,
+                direction: .buy,
+                target: makeSubnetTarget(),
+                annualRate: Decimal(string: "0.24"),
+                taoPrice: makeTaoPrice(),
+                locale: locale
+            )
+        )
+
+        XCTAssertEqual(panel.receive?.amount, "≈ 67.5 α")
+        XCTAssertEqual(panel.receive?.price, "$121.5")
+        XCTAssertEqual(panel.swapRate, "1 TAO ≈ 13.5 α")
+        XCTAssertEqual(panel.earnPerMonth?.amount, "≈ 1.35 α")
+        XCTAssertEqual(panel.earnPerMonth?.price, "≈ $2.43")
+    }
+
+    func testTradePanelForAnotherAmountShowsOnlyTheSwapRate() throws {
+        let panel = try XCTUnwrap(
+            makeFactory().createTradePanel(
+                for: makeBuyTradeQuote(),
+                amountIn: 4_000_000_000,
+                direction: .buy,
+                target: makeSubnetTarget(),
+                annualRate: Decimal(string: "0.24"),
+                taoPrice: makeTaoPrice(),
+                locale: locale
+            )
+        )
+
+        XCTAssertNil(panel.receive)
+        XCTAssertNil(panel.earnPerMonth)
+        XCTAssertEqual(panel.swapRate, "1 TAO ≈ 13.5 α")
+    }
+
+    func testNovaFeeDisclosureNamesTheFeePercent() {
+        XCTAssertEqual(makeFactory().novaFeeDisclosure(locale: locale), "Includes 0.85% Nova Wallet fee.")
     }
 
     func testStakePanelDenominatesReceiveInAlphaAndFeeInTao() throws {

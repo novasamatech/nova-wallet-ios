@@ -159,7 +159,7 @@ private extension SubtensorActiveSubnetFlowTests {
         SubtensorFlowURLProtocol.serveEarnConfig()
         try SubtensorFlowActiveStake.serveCharts()
 
-        world.sharedState.setup(for: SubtensorFlowChainWorld.coldkey)
+        world.sharedState.setup(for: SubtensorFlowChainWorld.coldkeyAccount())
         feed.publish(try SubtensorFlowActiveStake.state())
 
         return world
@@ -317,8 +317,10 @@ private extension SubtensorActiveSubnetFlowTests {
         XCTAssertEqual(screens.slippage, BigRational(numerator: 5, denominator: 1000))
         XCTAssertEqual(screens.buyQuote, SubtensorTradeQuote(
             quote: chutesBuyQuote,
+            amountIn: 5_000_000_000,
             novaFee: SubtensorNovaFee(amount: 42_141_794, beneficiary: beneficiary),
             expectedOut: 67_054_958_000,
+            swapMinimumOut: 66_811_763_513,
             minimumOut: 66_811_763_513,
             limitPrice: 74_169_000
         ))
@@ -327,8 +329,10 @@ private extension SubtensorActiveSubnetFlowTests {
 
         XCTAssertEqual(screens.sellQuote, SubtensorTradeQuote(
             quote: chutesSellQuote,
+            amountIn: 56_200_000_000,
             novaFee: SubtensorNovaFee(amount: 34_935_547, beneficiary: beneficiary),
             expectedOut: 4_110_064_453,
+            swapMinimumOut: 4_124_744_148,
             minimumOut: 4_089_808_601,
             limitPrice: 73_431_000
         ))

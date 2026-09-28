@@ -54,6 +54,10 @@ extension String {
     func approximately() -> String {
         "~\(self)"
     }
+
+    func approximatelyEqual() -> String {
+        "≈ \(self)"
+    }
 }
 
 extension Optional where Wrapped == String {

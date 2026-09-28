@@ -12,20 +12,29 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
     }
 
     private let locale = Locale(identifier: "en")
+    private let taoDisplayInfo = AssetBalanceDisplayInfo(
+        displayPrecision: 5,
+        assetPrecision: 9,
+        symbol: "TAO",
+        symbolValueSeparator: " ",
+        symbolPosition: .suffix,
+        icon: nil
+    )
+    private let alphaDisplayInfo = AssetBalanceDisplayInfo(
+        displayPrecision: 5,
+        assetPrecision: 9,
+        symbol: "SN64",
+        symbolValueSeparator: " ",
+        symbolPosition: .suffix,
+        icon: nil
+    )
 
     private func makeSetup() -> Setup {
         let presentable = MockSubtensorStakingTestWireframeProtocol()
 
-        let chain = ChainModelGenerator.generateChain(
-            generatingAssets: 1,
-            addressPrefix: 42,
-            assetPresicion: 9,
-            hasStaking: true
-        )
-
         let factory = SubtensorStakingValidationFactory(
             presentable: presentable,
-            assetDisplayInfo: chain.utilityAsset()!.displayInfo,
+            assetDisplayInfo: taoDisplayInfo,
             priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
         )
 
@@ -87,9 +96,10 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
         let setup = makeSetup()
 
         let validator = setup.factory.hasMinStakeAmount(
-            amount: BigUInt(2_000_100),
+            stakedAmount: BigUInt(2_000_100),
             minStake: BigUInt(2_000_000),
             quotedSwapFee: BigUInt(100),
+            includesNovaFee: true,
             locale: locale
         )
 
@@ -104,9 +114,10 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
         }
 
         let validator = setup.factory.hasMinStakeAmount(
-            amount: BigUInt(1_999_999),
+            stakedAmount: BigUInt(1_999_999),
             minStake: BigUInt(2_000_000),
             quotedSwapFee: nil,
+            includesNovaFee: false,
             locale: locale
         )
 
@@ -115,40 +126,116 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
         verify(setup.presentable).presentStakeAmountTooLow(any(), minStake: any(), locale: any())
     }
 
-    func testRetainsFeeReserveAfterStakePassesWithHeadroom() {
+    func testSubnetMinimumStakeMessageShowsTheGrossedUpMinimum() {
+        let setup = makeSetup()
+        let captor = ArgumentCaptor<String>()
+
+        stub(setup.presentable) { stub in
+            when(stub.presentStakeAmountTooLow(any(), minStake: any(), locale: any())).thenDoNothing()
+        }
+
+        let validator = setup.factory.hasMinStakeAmount(
+            stakedAmount: BigUInt(2_001_006),
+            minStake: BigUInt(2_000_000),
+            quotedSwapFee: BigUInt(1007),
+            includesNovaFee: true,
+            locale: locale
+        )
+
+        assertError(run(validator))
+
+        verify(setup.presentable).presentStakeAmountTooLow(any(), minStake: captor.capture(), locale: any())
+
+        XCTAssertEqual(captor.value, "0.00202 TAO")
+    }
+
+    func testRootMinimumStakeMessageShowsTheMinimumWithoutNovaFee() {
+        let setup = makeSetup()
+        let captor = ArgumentCaptor<String>()
+
+        stub(setup.presentable) { stub in
+            when(stub.presentStakeAmountTooLow(any(), minStake: any(), locale: any())).thenDoNothing()
+        }
+
+        let validator = setup.factory.hasMinStakeAmount(
+            stakedAmount: BigUInt(1_999_999),
+            minStake: BigUInt(2_000_000),
+            quotedSwapFee: nil,
+            includesNovaFee: false,
+            locale: locale
+        )
+
+        assertError(run(validator))
+
+        verify(setup.presentable).presentStakeAmountTooLow(any(), minStake: captor.capture(), locale: any())
+
+        XCTAssertEqual(captor.value, setup.factory.formatAmount(2_000_000, locale: locale))
+    }
+
+    func testRespectsFeeReservePassesAtTheMaximum() {
         let setup = makeSetup()
 
-        let validator = setup.factory.retainsFeeReserveAfterStake(
-            balance: BigUInt(1_000_000_000),
-            amount: BigUInt(100_000_000),
-            fee: BigUInt(1_000_000),
-            existentialDeposit: BigUInt(500),
+        let validator = setup.factory.respectsFeeReserve(
+            amount: BigUInt(988_500_000),
+            transferable: BigUInt(1_000_000_000),
+            networkFee: BigUInt(1_500_000),
             locale: locale
         )
 
         assertCompleted(run(validator))
     }
 
-    func testRetainsFeeReserveAfterStakeWarnsWithoutHeadroom() {
+    func testRespectsFeeReserveBlocksAboveTheMaximumAndNamesIt() {
         let setup = makeSetup()
+        let maxAmountCaptor = ArgumentCaptor<String>()
+        let reserveCaptor = ArgumentCaptor<String>()
 
         stub(setup.presentable) { stub in
             when(
-                stub.presentStakeAllWarning(any(), reserve: any(), action: any(), locale: any())
-            ).then { (_, _, action: @escaping () -> Void, _) in
-                action()
-            }
+                stub.presentFeeReserveRequired(any(), maxAmount: any(), reserve: any(), locale: any())
+            ).thenDoNothing()
         }
 
-        let validator = setup.factory.retainsFeeReserveAfterStake(
-            balance: BigUInt(101_000_000),
-            amount: BigUInt(100_000_000),
-            fee: BigUInt(1_000_000),
-            existentialDeposit: BigUInt(500),
+        let validator = setup.factory.respectsFeeReserve(
+            amount: BigUInt(988_500_001),
+            transferable: BigUInt(1_000_000_000),
+            networkFee: BigUInt(1_500_000),
             locale: locale
         )
 
-        assertWarningContinued(run(validator))
+        assertError(run(validator))
+
+        verify(setup.presentable).presentFeeReserveRequired(
+            any(),
+            maxAmount: maxAmountCaptor.capture(),
+            reserve: reserveCaptor.capture(),
+            locale: any()
+        )
+
+        XCTAssertEqual(maxAmountCaptor.value, setup.factory.formatAmount(988_500_000, locale: locale))
+        XCTAssertEqual(reserveCaptor.value, setup.factory.formatAmount(10_000_000, locale: locale))
+    }
+
+    func testSubnetTradesAvailableBlocksWhenTheNovaFeeIsUnavailable() {
+        let setup = makeSetup()
+
+        stub(setup.presentable) { stub in
+            when(stub.presentSubnetTradesUnavailable(any(), locale: any())).thenDoNothing()
+        }
+
+        let validator = setup.factory.subnetTradesAvailable(tradesUnavailable: true, locale: locale)
+
+        assertError(run(validator))
+
+        verify(setup.presentable).presentSubnetTradesUnavailable(any(), locale: any())
+    }
+
+    func testSubnetTradesAvailablePassesWhileTheNovaFeeIsAvailable() {
+        let setup = makeSetup()
+
+        let validator = setup.factory.subnetTradesAvailable(tradesUnavailable: false, locale: locale)
+
+        assertCompleted(run(validator))
     }
 
     func testHotkeyIsRegisteredPasses() {
@@ -287,96 +374,111 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
         assertWarningContinued(run(validator))
     }
 
-    func testUnstakeNotExceedsAvailablePassesAtAvailable() {
+    func testBatchedSellIsRefusedWhenFreeTaoMissesTheFeePlusDeposit() {
         let setup = makeSetup()
-
-        let validator = setup.factory.unstakeNotExceedsAvailable(
-            amount: BigUInt(1_000_000),
-            available: BigUInt(1_000_000),
-            assetDisplayInfo: nil,
-            locale: locale
-        )
-
-        assertCompleted(run(validator))
-    }
-
-    func testUnstakeNotExceedsAvailableBlocksAboveAvailable() {
-        let setup = makeSetup()
-
-        stub(setup.presentable) { stub in
-            when(stub.presentUnstakeExceedsAvailable(any(), available: any(), locale: any())).thenDoNothing()
-        }
-
-        let validator = setup.factory.unstakeNotExceedsAvailable(
-            amount: BigUInt(1_000_001),
-            available: BigUInt(1_000_000),
-            assetDisplayInfo: nil,
-            locale: locale
-        )
-
-        assertError(run(validator))
-
-        verify(setup.presentable).presentUnstakeExceedsAvailable(any(), available: any(), locale: any())
-    }
-
-    func testUnstakeExceedsAvailableMessageUsesTheOverriddenDenomination() {
-        let setup = makeSetup()
-
-        stub(setup.presentable) { stub in
-            when(stub.presentUnstakeExceedsAvailable(any(), available: any(), locale: any())).thenDoNothing()
-        }
-
-        let validator = setup.factory.unstakeNotExceedsAvailable(
-            amount: BigUInt(2_000_000_000),
-            available: BigUInt(1_000_000_000),
-            assetDisplayInfo: AssetBalanceDisplayInfo(
-                displayPrecision: 5,
-                assetPrecision: 9,
-                symbol: "SN64",
-                symbolValueSeparator: " ",
-                symbolPosition: .suffix,
-                icon: nil
-            ),
-            locale: locale
-        )
-
-        assertError(run(validator))
-
         let captor = ArgumentCaptor<String>()
 
-        verify(setup.presentable).presentUnstakeExceedsAvailable(
+        stub(setup.presentable) { stub in
+            when(stub.presentBatchedSellFeeNotCovered(any(), requiredAmount: any(), locale: any())).thenDoNothing()
+        }
+
+        let validator = setup.factory.canPayBatchedNetworkFee(
+            transferable: BigUInt(1_500_499),
+            networkFee: BigUInt(1_500_000),
+            existentialDeposit: BigUInt(500),
+            locale: locale
+        )
+
+        assertError(run(validator))
+
+        verify(setup.presentable).presentBatchedSellFeeNotCovered(
             any(),
-            available: captor.capture(),
+            requiredAmount: captor.capture(),
             locale: any()
         )
 
-        XCTAssertEqual(captor.value?.contains("SN64"), true)
+        XCTAssertEqual(captor.value, "0.00151 TAO")
     }
 
-    func testUnstakeAboveMinTaoOutPassesForFullUnstake() {
+    func testBatchedSellProceedsWhenFreeTaoCoversTheFeePlusDeposit() {
         let setup = makeSetup()
 
-        let validator = setup.factory.unstakeAboveMinTaoOut(
-            taoOut: BigUInt(100),
-            minAmount: BigUInt(2_000_000),
-            isFullUnstake: true,
+        let validator = setup.factory.canPayBatchedNetworkFee(
+            transferable: BigUInt(1_500_500),
+            networkFee: BigUInt(1_500_000),
+            existentialDeposit: BigUInt(500),
             locale: locale
         )
 
         assertCompleted(run(validator))
     }
 
-    func testUnstakeAboveMinTaoOutBlocksBelowMinimum() {
+    func testBatchedSellIsRefusedWhileTheExistentialDepositIsUnknown() {
+        let setup = makeSetup()
+
+        stub(setup.presentable) { stub in
+            when(stub.presentBatchedSellFeeNotCovered(any(), requiredAmount: any(), locale: any())).thenDoNothing()
+        }
+
+        let validator = setup.factory.canPayBatchedNetworkFee(
+            transferable: BigUInt(10_000_000_000),
+            networkFee: BigUInt(1_500_000),
+            existentialDeposit: nil,
+            locale: locale
+        )
+
+        assertError(run(validator))
+    }
+
+    func testSellPlanPassesAPartialSell() {
+        let setup = makeSetup()
+
+        let validator = setup.factory.sellPlanAllows(
+            makeSellPlanInput(requestedAlpha: 5_000_000_000),
+            assetDisplayInfo: alphaDisplayInfo,
+            onUnstakeAll: nil,
+            locale: locale
+        )
+
+        assertCompleted(run(validator))
+    }
+
+    func testSellPlanAboveTheAvailableAlphaNamesTheMaxInAlpha() {
+        let setup = makeSetup()
+        let captor = ArgumentCaptor<String>()
+
+        stub(setup.presentable) { stub in
+            when(stub.presentUnstakeExceedsAvailable(any(), available: any(), locale: any())).thenDoNothing()
+        }
+
+        let validator = setup.factory.sellPlanAllows(
+            makeSellPlanInput(requestedAlpha: 8_000_000_000, available: 6_000_000_000),
+            assetDisplayInfo: alphaDisplayInfo,
+            onUnstakeAll: nil,
+            locale: locale
+        )
+
+        assertError(run(validator))
+
+        verify(setup.presentable).presentUnstakeExceedsAvailable(any(), available: captor.capture(), locale: any())
+
+        XCTAssertEqual(
+            captor.value,
+            setup.factory.formatAmount(6_000_000_000, assetDisplayInfo: alphaDisplayInfo, locale: locale)
+        )
+    }
+
+    func testSellPlanBelowTheGuaranteedMinimumOutIsBlocked() {
         let setup = makeSetup()
 
         stub(setup.presentable) { stub in
             when(stub.presentUnstakeAmountTooLow(any(), minAmount: any(), locale: any())).thenDoNothing()
         }
 
-        let validator = setup.factory.unstakeAboveMinTaoOut(
-            taoOut: BigUInt(1_999_999),
-            minAmount: BigUInt(2_000_000),
-            isFullUnstake: false,
+        let validator = setup.factory.sellPlanAllows(
+            makeSellPlanInput(requestedAlpha: 5_000_000_000, minimumTaoOut: 1_999_999),
+            assetDisplayInfo: alphaDisplayInfo,
+            onUnstakeAll: nil,
             locale: locale
         )
 
@@ -385,21 +487,9 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
         verify(setup.presentable).presentUnstakeAmountTooLow(any(), minAmount: any(), locale: any())
     }
 
-    func testRemainderNotBelowNominatorMinPassesForFullUnstake() {
+    func testSellPlanWarnsAboutASweptRemainderAndProceeds() {
         let setup = makeSetup()
-
-        let validator = setup.factory.remainderNotBelowNominatorMin(
-            remainder: BigUInt(0),
-            nominatorMinStake: BigUInt(20_000_000),
-            onUnstakeAll: nil,
-            locale: locale
-        )
-
-        assertCompleted(run(validator))
-    }
-
-    func testRemainderNotBelowNominatorMinWarnsOnDust() {
-        let setup = makeSetup()
+        let remainderCaptor = ArgumentCaptor<String>()
 
         stub(setup.presentable) { stub in
             when(
@@ -416,56 +506,28 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
             }
         }
 
-        let validator = setup.factory.remainderNotBelowNominatorMin(
-            remainder: BigUInt(1_000_000),
-            nominatorMinStake: BigUInt(20_000_000),
+        let validator = setup.factory.sellPlanAllows(
+            makeSellPlanInput(requestedAlpha: 9_800_000_000),
+            assetDisplayInfo: alphaDisplayInfo,
             onUnstakeAll: nil,
             locale: locale
         )
 
         assertWarningContinued(run(validator))
-    }
-
-    func testDustWarningOffersUnstakeAllWhenTheFormCanStillChange() {
-        let setup = makeSetup()
-
-        let captor = ArgumentCaptor<(() -> Void)?>()
-
-        stub(setup.presentable) { stub in
-            when(
-                stub.presentDustRemainderWarning(
-                    any(),
-                    remainder: any(),
-                    minStake: any(),
-                    action: any(),
-                    unstakeAllAction: any(),
-                    locale: any()
-                )
-            ).thenDoNothing()
-        }
-
-        let validator = setup.factory.remainderNotBelowNominatorMin(
-            remainder: BigUInt(1_000_000),
-            nominatorMinStake: BigUInt(20_000_000),
-            onUnstakeAll: {},
-            locale: locale
-        )
-
-        _ = run(validator)
 
         verify(setup.presentable).presentDustRemainderWarning(
             any(),
-            remainder: any(),
+            remainder: remainderCaptor.capture(),
             minStake: any(),
             action: any(),
-            unstakeAllAction: captor.capture(),
+            unstakeAllAction: any(),
             locale: any()
         )
 
-        XCTAssertNotNil(captor.value ?? nil)
+        XCTAssertEqual(remainderCaptor.value, setup.factory.formatAmount(14_686_200, locale: locale))
     }
 
-    func testUnstakeAllChoiceDoesNotResumeTheStoppedRun() {
+    func testUnstakeAllChoiceOnASweptRemainderDoesNotResumeTheStoppedRun() {
         let setup = makeSetup()
 
         var unstakeAllCalled = false
@@ -485,9 +547,9 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
             }
         }
 
-        let validator = setup.factory.remainderNotBelowNominatorMin(
-            remainder: BigUInt(1_000_000),
-            nominatorMinStake: BigUInt(20_000_000),
+        let validator = setup.factory.sellPlanAllows(
+            makeSellPlanInput(requestedAlpha: 9_800_000_000),
+            assetDisplayInfo: alphaDisplayInfo,
             onUnstakeAll: { unstakeAllCalled = true },
             locale: locale
         )
@@ -496,6 +558,44 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
 
         XCTAssertTrue(unstakeAllCalled)
         XCTAssertFalse(result.completed)
+    }
+
+    func testSellPlanBlocksALockedRemainderTheNetworkWouldErase() {
+        let setup = makeSetup()
+
+        stub(setup.presentable) { stub in
+            when(
+                stub.presentLockedRemainder(any(), remainder: any(), minStake: any(), locale: any())
+            ).thenDoNothing()
+        }
+
+        let validator = setup.factory.sellPlanAllows(
+            makeSellPlanInput(requestedAlpha: 9_800_000_000, available: 9_900_000_000),
+            assetDisplayInfo: alphaDisplayInfo,
+            onUnstakeAll: nil,
+            locale: locale
+        )
+
+        assertError(run(validator))
+
+        verify(setup.presentable).presentLockedRemainder(any(), remainder: any(), minStake: any(), locale: any())
+    }
+
+    func testSellPlanWithoutInputsIsBlocked() {
+        let setup = makeSetup()
+
+        stub(setup.presentable) { stub in
+            when(stub.presentUnstakeExceedsAvailable(any(), available: any(), locale: any())).thenDoNothing()
+        }
+
+        let validator = setup.factory.sellPlanAllows(
+            nil,
+            assetDisplayInfo: alphaDisplayInfo,
+            onUnstakeAll: nil,
+            locale: locale
+        )
+
+        assertError(run(validator))
     }
 
     func testRootUnlockIntervalPassesWhenDisabled() {
@@ -544,38 +644,6 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
         assertError(run(validator))
 
         verify(setup.presentable).presentUnstakeLocked(any(), eta: any(), locale: any())
-    }
-
-    func testClaimFirstAdvisoryPassesBelowThreshold() {
-        let setup = makeSetup()
-
-        let validator = setup.factory.claimFirstAdvisory(
-            claimable: BigUInt(400_000),
-            threshold: BigUInt(500_000),
-            locale: locale
-        )
-
-        assertCompleted(run(validator))
-    }
-
-    func testClaimFirstAdvisoryWarnsAtThreshold() {
-        let setup = makeSetup()
-
-        stub(setup.presentable) { stub in
-            when(
-                stub.presentClaimFirstAdvisory(any(), action: any(), locale: any())
-            ).then { (_, action: @escaping () -> Void, _) in
-                action()
-            }
-        }
-
-        let validator = setup.factory.claimFirstAdvisory(
-            claimable: BigUInt(500_000),
-            threshold: BigUInt(500_000),
-            locale: locale
-        )
-
-        assertWarningContinued(run(validator))
     }
 
     func testClaimFeeCoveredByTransferablePasses() {
@@ -741,40 +809,10 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
         }
 
         let validator = setup.factory.hasMinStakeAmount(
-            amount: BigUInt(5_000_000),
+            stakedAmount: BigUInt(5_000_000),
             minStake: nil,
             quotedSwapFee: nil,
-            locale: locale
-        )
-
-        assertError(run(validator))
-    }
-
-    func testRetainsFeeReserveAfterStakePassesWhenInputsMissing() {
-        let setup = makeSetup()
-
-        let validator = setup.factory.retainsFeeReserveAfterStake(
-            balance: nil,
-            amount: nil,
-            fee: nil,
-            existentialDeposit: nil,
-            locale: locale
-        )
-
-        assertCompleted(run(validator))
-    }
-
-    func testUnstakeNotExceedsAvailableBlocksWhenAvailableMissing() {
-        let setup = makeSetup()
-
-        stub(setup.presentable) { stub in
-            when(stub.presentUnstakeExceedsAvailable(any(), available: any(), locale: any())).thenDoNothing()
-        }
-
-        let validator = setup.factory.unstakeNotExceedsAvailable(
-            amount: BigUInt(1_000_000),
-            available: nil,
-            assetDisplayInfo: nil,
+            includesNovaFee: false,
             locale: locale
         )
 
@@ -813,35 +851,35 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
         assertError(run(validator))
     }
 
-    func testClaimFirstAdvisoryWarnsWithDefaultThresholdWhenUnavailable() {
-        let setup = makeSetup()
-
-        stub(setup.presentable) { stub in
-            when(
-                stub.presentClaimFirstAdvisory(any(), action: any(), locale: any())
-            ).then { (_, action: @escaping () -> Void, _) in
-                action()
-            }
-        }
-
-        let validator = setup.factory.claimFirstAdvisory(
-            claimable: BigUInt(600_000),
-            threshold: nil,
-            locale: locale
+    private func makeSellPlanInput(
+        requestedAlpha: Balance,
+        available: Balance = 10_000_000_000,
+        minimumTaoOut: Balance = 700_000_000
+    ) -> SubtensorSellPlanInput {
+        SubtensorSellPlanInput(
+            requestedAlpha: requestedAlpha,
+            positionAlpha: 10_000_000_000,
+            availability: SubtensorStakingPallet.StakeAvailability(
+                total: 10_000_000_000,
+                locked: 10_000_000_000 - available,
+                available: available
+            ),
+            minimumTaoOut: minimumTaoOut,
+            sellLimitPrice: 73_431_000,
+            isOwnHotkey: false,
+            minStake: 2_000_000,
+            nominatorMinStake: 20_000_000
         )
-
-        assertWarningContinued(run(validator))
     }
 
     private func makeStakeQuote(
-        taoIn: Balance = 1_000_000_000,
         taoAmount: Balance = 999_496_453,
         alphaAmount: Balance = 130_082_405_209,
         spotPrice: Balance = 7_683_255,
         capturedAt: Date = Date()
-    ) -> SubtensorQuote {
-        SubtensorQuote(
-            args: SubtensorQuoteArgs(netuid: 1, direction: .stake(taoIn: taoIn)),
+    ) -> SubtensorTradeQuote {
+        let quote = SubtensorQuote(
+            args: SubtensorQuoteArgs(netuid: 1, direction: .stake(taoIn: 1_000_000_000)),
             sim: SubtensorStakingPallet.SimSwapResult(
                 taoAmount: taoAmount,
                 alphaAmount: alphaAmount,
@@ -854,19 +892,74 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
             feeRate: 33,
             capturedAt: capturedAt
         )
+
+        return SubtensorTradeQuote(
+            quote: quote,
+            amountIn: 1_000_000_000,
+            novaFee: nil,
+            expectedOut: alphaAmount,
+            swapMinimumOut: 129_440_434_978,
+            minimumOut: 129_440_434_978,
+            limitPrice: 7_721_671
+        )
     }
 
-    func testHasFreshQuotePassesWhenQuoteMatchesArgs() {
+    private func makeChutesBuyQuote(alphaOut: Balance) -> SubtensorTradeQuote {
+        let quote = SubtensorQuote(
+            args: SubtensorQuoteArgs(netuid: 64, direction: .stake(taoIn: 4_957_858_206)),
+            sim: SubtensorStakingPallet.SimSwapResult(
+                taoAmount: 4_955_361_688,
+                alphaAmount: alphaOut,
+                taoFee: 2_496_518,
+                alphaFee: 0,
+                taoSlippage: 0,
+                alphaSlippage: 0
+            ),
+            spotPrice: 73_800_000,
+            feeRate: 33
+        )
+
+        return SubtensorTradeQuote(
+            quote: quote,
+            amountIn: 5_000_000_000,
+            novaFee: nil,
+            expectedOut: alphaOut,
+            swapMinimumOut: 66_811_763_513,
+            minimumOut: 66_811_763_513,
+            limitPrice: 74_169_000
+        )
+    }
+
+    private func makeChutesSellQuote(taoOut: Balance) -> SubtensorTradeQuote {
+        let quote = SubtensorQuote(
+            args: SubtensorQuoteArgs(netuid: 64, direction: .unstake(alphaIn: 56_200_000_000)),
+            sim: SubtensorStakingPallet.SimSwapResult(
+                taoAmount: taoOut,
+                alphaAmount: 56_171_700_618,
+                taoFee: 0,
+                alphaFee: 28_299_382,
+                taoSlippage: 0,
+                alphaSlippage: 0
+            ),
+            spotPrice: 73_800_000,
+            feeRate: 33
+        )
+
+        return SubtensorTradeQuote(
+            quote: quote,
+            amountIn: 56_200_000_000,
+            novaFee: nil,
+            expectedOut: taoOut,
+            swapMinimumOut: 4_124_744_148,
+            minimumOut: 4_124_744_148,
+            limitPrice: 73_431_000
+        )
+    }
+
+    func testHasFreshQuotePassesForARecentQuote() {
         let setup = makeSetup()
 
-        let quote = makeStakeQuote()
-
-        let validator = setup.factory.hasFreshQuote(
-            quote,
-            for: quote.args,
-            locale: locale,
-            onRetry: {}
-        )
+        let validator = setup.factory.hasFreshQuote(makeStakeQuote(), locale: locale, onRetry: {})
 
         assertCompleted(run(validator))
     }
@@ -878,33 +971,11 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
             when(stub.presentQuoteMissing(any(), onRetry: any(), locale: any())).thenDoNothing()
         }
 
-        let validator = setup.factory.hasFreshQuote(
-            nil,
-            for: SubtensorQuoteArgs(netuid: 1, direction: .stake(taoIn: 1_000_000_000)),
-            locale: locale,
-            onRetry: {}
-        )
+        let validator = setup.factory.hasFreshQuote(nil, locale: locale, onRetry: {})
 
         assertError(run(validator))
 
         verify(setup.presentable).presentQuoteMissing(any(), onRetry: any(), locale: any())
-    }
-
-    func testHasFreshQuoteBlocksWhenQuoteIsForDifferentAmount() {
-        let setup = makeSetup()
-
-        stub(setup.presentable) { stub in
-            when(stub.presentQuoteMissing(any(), onRetry: any(), locale: any())).thenDoNothing()
-        }
-
-        let validator = setup.factory.hasFreshQuote(
-            makeStakeQuote(),
-            for: SubtensorQuoteArgs(netuid: 1, direction: .stake(taoIn: 2_000_000_000)),
-            locale: locale,
-            onRetry: {}
-        )
-
-        assertError(run(validator))
     }
 
     func testHasFreshQuoteBlocksWhenQuoteOlderThanStalenessWindow() {
@@ -914,11 +985,8 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
             when(stub.presentQuoteMissing(any(), onRetry: any(), locale: any())).thenDoNothing()
         }
 
-        let quote = makeStakeQuote(capturedAt: Date(timeIntervalSinceNow: -60))
-
         let validator = setup.factory.hasFreshQuote(
-            quote,
-            for: quote.args,
+            makeStakeQuote(capturedAt: Date(timeIntervalSinceNow: -60)),
             locale: locale,
             onRetry: {}
         )
@@ -929,11 +997,8 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
     func testHasFreshQuotePassesWithinStalenessWindow() {
         let setup = makeSetup()
 
-        let quote = makeStakeQuote(capturedAt: Date(timeIntervalSinceNow: -5))
-
         let validator = setup.factory.hasFreshQuote(
-            quote,
-            for: quote.args,
+            makeStakeQuote(capturedAt: Date(timeIntervalSinceNow: -5)),
             locale: locale,
             onRetry: {}
         )
@@ -941,19 +1006,7 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
         assertCompleted(run(validator))
     }
 
-    func testOrderWithinToleranceForBuyBelowLimit() {
-        let setup = makeSetup()
-
-        let validator = setup.factory.orderWithinSlippageTolerance(
-            quote: makeStakeQuote(),
-            limitPrice: 7_721_671,
-            locale: locale
-        )
-
-        assertCompleted(run(validator))
-    }
-
-    func testOrderBeyondToleranceForBuyBlocksWhenAverageExecutionReachesLimit() {
+    func testBuyWhosePostTradePriceCrossesTheLimitIsBlockedAlthoughItsAveragePriceIsInside() {
         let setup = makeSetup()
 
         stub(setup.presentable) { stub in
@@ -961,8 +1014,8 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
         }
 
         let validator = setup.factory.orderWithinSlippageTolerance(
-            quote: makeStakeQuote(),
-            limitPrice: 7_683_255,
+            quote: makeChutesBuyQuote(alphaOut: 66_964_347_135),
+            limitPrice: 74_169_000,
             locale: locale
         )
 
@@ -971,46 +1024,50 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
         verify(setup.presentable).presentOrderBeyondTolerance(any(), locale: any())
     }
 
-    func testOrderBeyondToleranceForSellBlocksWhenAverageExecutionReachesLimit() {
+    func testSellWhosePostTradePriceCrossesTheLimitIsBlockedAlthoughItsAveragePriceIsInside() {
         let setup = makeSetup()
 
         stub(setup.presentable) { stub in
             when(stub.presentOrderBeyondTolerance(any(), locale: any())).thenDoNothing()
         }
 
-        let quote = SubtensorQuote(
-            args: SubtensorQuoteArgs(netuid: 1, direction: .unstake(alphaIn: 130_082_405_209)),
-            sim: SubtensorStakingPallet.SimSwapResult(
-                taoAmount: 998_912_946,
-                alphaAmount: 130_016_902_511,
-                taoFee: 0,
-                alphaFee: 65_502_698,
-                taoSlippage: 543_368,
-                alphaSlippage: 0
-            ),
-            spotPrice: 7_683_255,
-            feeRate: 33
-        )
-
         let validator = setup.factory.orderWithinSlippageTolerance(
-            quote: quote,
-            limitPrice: 7_683_255,
+            quote: makeChutesSellQuote(taoOut: 4_133_000_000),
+            limitPrice: 73_431_000,
             locale: locale
         )
 
         assertError(run(validator))
+
+        verify(setup.presentable).presentOrderBeyondTolerance(any(), locale: any())
     }
 
-    func testOrderToleranceSkippedWithoutLimitPrice() {
+    func testOrderFillableAtTheAcknowledgedLimitPasses() {
         let setup = makeSetup()
 
         let validator = setup.factory.orderWithinSlippageTolerance(
-            quote: makeStakeQuote(),
-            limitPrice: nil,
+            quote: makeChutesBuyQuote(alphaOut: 67_054_958_000),
+            limitPrice: 74_169_000,
             locale: locale
         )
 
         assertCompleted(run(validator))
+    }
+
+    func testOrderWithoutAnAcknowledgedLimitIsBlocked() {
+        let setup = makeSetup()
+
+        stub(setup.presentable) { stub in
+            when(stub.presentOrderBeyondTolerance(any(), locale: any())).thenDoNothing()
+        }
+
+        let validator = setup.factory.orderWithinSlippageTolerance(
+            quote: makeChutesBuyQuote(alphaOut: 67_054_958_000),
+            limitPrice: nil,
+            locale: locale
+        )
+
+        assertError(run(validator))
     }
 
     func testPriceImpactBelowThresholdPasses() {

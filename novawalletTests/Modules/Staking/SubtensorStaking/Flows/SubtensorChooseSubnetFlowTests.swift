@@ -9,11 +9,11 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         let services = world.earnServices
         let priceHistoryService = try XCTUnwrap(services.priceHistoryService)
         let directoryService = services.validatorDirectoryService
-        let engine = try world.stubRootEngine(grossRate: decimal("0.07"), netRates: [:])
 
         world.stubSubnets(try SubtensorFlowChainWorld.subnetsInfo())
         world.stubQuotes([SubtensorFlowChainWorld.chutesBuyQuote])
         SubtensorFlowURLProtocol.serveEarnConfig()
+        SubtensorFlowURLProtocol.serveFixture(.rootYield(page: 1, pageSize: 100))
         SubtensorFlowURLProtocol.serveFixture(.rankedSubnets)
         SubtensorFlowURLProtocol.serveFixture(.validators(netuid: 64))
         try serveWeekCharts()
@@ -21,7 +21,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         let headlineConfig = try run(services.earnConfigProvider.createConfigWrapper())
 
         let catalogue = try fetchSubnetsInfo(from: world.sharedState.subnetsService)
-        let rootRowRate = try run(services.yieldService.createRootNetworkRateWrapper(take: nil))
+        let rootRowYield = try run(services.yieldService.createRootYieldWrapper())
         let subnetRefs = listedSubnetRefs(in: catalogue)
         let weeklyChanges = try run(priceHistoryService.createWeeklyChangesWrapper(for: subnetRefs))
         let logos = SubtensorSubnetLogoResolver(config: try run(services.earnConfigProvider.createConfigWrapper()))
@@ -74,9 +74,8 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
 
         XCTAssertEqual(headlineConfig.headlineMaxAnnualRate, try decimal("0.40"))
 
-        XCTAssertEqual(rootRowRate, try grossRootRate())
-        verify(engine).rootAnnualReturn()
-        verify(engine, never()).rootAnnualReturn(take: any())
+        XCTAssertEqual(rootRowYield, try fixtureRootYield())
+        XCTAssertEqual(rootRowYield?.annualRate, try decimal("0.138421"))
 
         XCTAssertEqual(chutesRef, SubtensorSubnetRef(netuid: 64, registeredAt: 4_531_295))
         XCTAssertEqual(subnetRefs.count, 10)
@@ -140,8 +139,10 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(slippage, BigRational(numerator: 5, denominator: 1000))
         XCTAssertEqual(buyQuote, SubtensorTradeQuote(
             quote: SubtensorFlowChainWorld.chutesBuyQuote,
+            amountIn: 5_000_000_000,
             novaFee: SubtensorNovaFee(amount: 42_141_794, beneficiary: SubtensorFlowChainWorld.novaFeeBeneficiary),
             expectedOut: 90_150_000_000,
+            swapMinimumOut: 89_712_471_929,
             minimumOut: 89_712_471_929,
             limitPrice: 55_236_040
         ))
@@ -158,6 +159,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(requestLines().sorted(), [
             "GET https://bittensor.test/v1/bittensor/recommendations/subnets",
             "GET https://bittensor.test/v1/bittensor/subnets/64/validators",
+            "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
             "GET https://earn-config.test/earn_config.json",
             "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=7",
             "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=7",
@@ -167,7 +169,11 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
 
         assertAttestedRequests(
             world,
-            paths: ["/v1/bittensor/recommendations/subnets", "/v1/bittensor/subnets/64/validators"]
+            paths: [
+                "/v1/bittensor/yields/root",
+                "/v1/bittensor/recommendations/subnets",
+                "/v1/bittensor/subnets/64/validators"
+            ]
         )
     }
 
@@ -176,15 +182,15 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         let services = world.earnServices
         let priceHistoryService = try XCTUnwrap(services.priceHistoryService)
         let directoryService = services.validatorDirectoryService
-        _ = try world.stubRootEngine(grossRate: decimal("0.07"), netRates: [:])
 
         world.stubSubnets(try SubtensorFlowChainWorld.subnetsInfo())
         SubtensorFlowURLProtocol.serveEarnConfig()
+        SubtensorFlowURLProtocol.serveFixture(.rootYield(page: 1, pageSize: 100))
         SubtensorFlowURLProtocol.serveBittensor("/recommendations/subnets", reply: .notFoundPlainText())
         try serveWeekCharts()
 
         let catalogue = try fetchSubnetsInfo(from: world.sharedState.subnetsService)
-        let rootRowRate = try run(services.yieldService.createRootNetworkRateWrapper(take: nil))
+        let rootRowYield = try run(services.yieldService.createRootYieldWrapper())
         let subnetRefs = listedSubnetRefs(in: catalogue)
         let weeklyChanges = try run(priceHistoryService.createWeeklyChangesWrapper(for: subnetRefs))
         let logos = SubtensorSubnetLogoResolver(config: try run(services.earnConfigProvider.createConfigWrapper()))
@@ -202,7 +208,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertTrue(isRouteNotPublished(chipsError))
         XCTAssertNil(services.recommendationService.lastSeenClientGates())
 
-        XCTAssertEqual(rootRowRate, try grossRootRate())
+        XCTAssertEqual(rootRowYield, try fixtureRootYield())
         XCTAssertEqual(subnetRefs.filter { logos.url(for: $0) != nil }, [chutesRef])
         XCTAssertEqual(logos.url(for: chutesRef)?.absoluteString, SubtensorFlowChainWorld.chutesLogo)
         XCTAssertEqual(Array(weeklyChanges.keys), [chutesRef])
@@ -215,6 +221,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
 
         XCTAssertEqual(requestLines().sorted(), [
             "GET https://bittensor.test/v1/bittensor/recommendations/subnets",
+            "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
             "GET https://earn-config.test/earn_config.json",
             "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=7",
             "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=7",
@@ -222,15 +229,14 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
             "GET https://tokens-price.novasama-tech.org/api/v3/coins/chutes/market_chart?vs_currency=usd&days=7"
         ])
 
-        assertAttestedRequests(world, paths: ["/v1/bittensor/recommendations/subnets"])
+        assertAttestedRequests(
+            world,
+            paths: ["/v1/bittensor/yields/root", "/v1/bittensor/recommendations/subnets"]
+        )
     }
 }
 
 private extension SubtensorChooseSubnetFlowTests {
-    func grossRootRate() throws -> SubtensorRate {
-        SubtensorRate(annualRate: try decimal("0.07"), source: .chainNetworkAverage(isNetOfTake: false))
-    }
-
     func serveWeekCharts() throws {
         let weekStart = try milliseconds("2026-09-17T09:00:00Z")
         let weekEnd = try milliseconds("2026-09-24T09:00:00Z")

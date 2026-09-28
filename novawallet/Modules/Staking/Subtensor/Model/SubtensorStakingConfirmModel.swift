@@ -1,11 +1,11 @@
 import Foundation
 
 struct SubtensorStakingConfirmModel {
-    let delegate: DisplayAddress
-    let delegateTake: UInt16?
-    let stakeModel: SubtensorStakeModel
-    let isStakeMore: Bool
-    var target: SubtensorStakeTarget = .root
-    var slippage: BigRational?
-    var quote: SubtensorQuote?
+    let origin: SubtensorOperationOrigin
+    let account: MetaChainAccountResponse
+    let target: SubtensorStakeTarget
+    let validator: SubtensorConfirmValidator
+    let amount: Balance
+    let tolerance: BigRational?
+    let acknowledgedQuote: SubtensorTradeQuote?
 }

@@ -53,6 +53,30 @@ enum SubtensorFlowChainWorld {
         return ChainAsset(chain: chain, asset: asset)
     }
 
+    static func coldkeyAccount() -> MetaChainAccountResponse {
+        let chain = chainAsset().chain
+
+        return MetaChainAccountResponse(
+            metaId: "flow-wallet",
+            substrateAccountId: coldkey,
+            ethereumAccountId: nil,
+            walletIdenticonData: nil,
+            delegationId: nil,
+            chainAccount: ChainAccountResponse(
+                metaId: "flow-wallet",
+                chainId: chain.chainId,
+                accountId: coldkey,
+                publicKey: coldkey,
+                name: "Flow",
+                cryptoType: .sr25519,
+                addressPrefix: chain.addressPrefix,
+                isEthereumBased: false,
+                isChainAccount: false,
+                type: .secrets
+            )
+        )
+    }
+
     static func placeholderNovaFeeBeneficiary() throws -> AccountId {
         try Data(hexString: "0xa4373d7b6d136b822d25106a993945f40b4cbfcbb2cfd5782888b5d938f82b1a")
     }
@@ -132,6 +156,13 @@ extension SubtensorFlowTestCase {
 
     func identity(_ name: String) -> SubtensorValidatorIdentity {
         SubtensorValidatorIdentity(name: name, url: nil, githubRepo: nil, image: nil, discord: nil, description: nil)
+    }
+
+    func fixtureRootYield() throws -> SubtensorReportedYield {
+        SubtensorReportedYield(
+            reportedRate: "13.8421",
+            stamp: SubtensorBackendStamp(asOf: try date("2026-09-24T06:00:00Z"), freshness: .fresh)
+        )
     }
 
     func emberItem(name: String?) throws -> SubtensorValidatorDirectoryItem {

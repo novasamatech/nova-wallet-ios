@@ -3,132 +3,109 @@ import BigInt
 import XCTest
 
 final class SubtensorQuoteFlowModelTests: XCTestCase {
-    private let stakeArgs = SubtensorQuoteArgs(netuid: 1, direction: .stake(taoIn: 1_000_000_000))
+    private let tolerance = BigRational(numerator: 5, denominator: 1000)
 
-    private func makeQuote(for args: SubtensorQuoteArgs) -> SubtensorQuote {
-        SubtensorQuote(
-            args: args,
-            sim: SubtensorStakingPallet.SimSwapResult(
-                taoAmount: 999_496_453,
-                alphaAmount: 130_082_405_209,
-                taoFee: 503_547,
-                alphaFee: 0,
-                taoSlippage: 0,
-                alphaSlippage: 70_762_340
+    private var buyRequest: SubtensorTradeQuoteRequest {
+        .buy(netuid: 64, grossTao: 5_000_000_000, tolerance: tolerance)
+    }
+
+    private func makeBuyQuote(
+        netuid: UInt16 = 64,
+        amountIn: Balance = 5_000_000_000,
+        limitPrice: Balance = 74_169_000
+    ) -> SubtensorTradeQuote {
+        SubtensorTradeQuote(
+            quote: SubtensorQuote(
+                args: SubtensorQuoteArgs(netuid: netuid, direction: .stake(taoIn: 4_957_858_206)),
+                sim: SubtensorStakingPallet.SimSwapResult(
+                    taoAmount: 4_955_361_688,
+                    alphaAmount: 67_054_958_000,
+                    taoFee: 2_496_518,
+                    alphaFee: 0,
+                    taoSlippage: 0,
+                    alphaSlippage: 0
+                ),
+                spotPrice: 73_800_000,
+                feeRate: 33,
+                capturedAt: Date(timeIntervalSince1970: 1_790_000_000)
             ),
-            spotPrice: 7_683_255,
-            feeRate: 33
+            amountIn: amountIn,
+            novaFee: nil,
+            expectedOut: 67_054_958_000,
+            swapMinimumOut: 66_811_763_513,
+            minimumOut: 66_811_763_513,
+            limitPrice: limitPrice
         )
     }
 
-    private func makeSubnetTarget(netuid: UInt16 = 1) -> SubtensorStakeTarget {
-        .subnet(
-            info: SubtensorStakingPallet.DynamicInfo(
-                netuid: netuid,
-                ownerHotkey: Data(repeating: 0, count: 32),
-                ownerColdkey: Data(repeating: 0, count: 32),
-                subnetName: Data("Apex".utf8),
-                tokenSymbol: Data("α".utf8),
-                tempo: 99,
-                lastStep: 0,
-                blocksSinceLastStep: 0,
-                emission: 0,
-                alphaIn: 0,
-                alphaOut: 0,
-                taoIn: 0,
-                alphaOutEmission: 0,
-                alphaInEmission: 0,
-                taoInEmission: 0,
-                pendingAlphaEmission: 0,
-                pendingRootEmission: 0,
-                subnetVolume: 0,
-                networkRegisteredAt: 0,
-                subnetIdentity: nil,
-                movingPrice: .null
-            ),
-            price: 7_683_255
-        )
-    }
-
-    func testRootTargetProducesNoStakeArgs() {
-        XCTAssertNil(SubtensorQuoteFlowModel.stakeArgs(for: .root, amount: 1_000_000_000))
-    }
-
-    func testRootTargetProducesNoUnstakeArgs() {
-        XCTAssertNil(SubtensorQuoteFlowModel.unstakeArgs(for: .root, amount: 1_000_000_000))
-    }
-
-    func testZeroAmountProducesNoArgs() {
-        XCTAssertNil(SubtensorQuoteFlowModel.stakeArgs(for: makeSubnetTarget(), amount: 0))
-    }
-
-    func testSubnetStakeArgsCarryNetuidAndTaoDirection() {
-        let args = SubtensorQuoteFlowModel.stakeArgs(for: makeSubnetTarget(netuid: 5), amount: 42)
-
-        XCTAssertEqual(args, SubtensorQuoteArgs(netuid: 5, direction: .stake(taoIn: 42)))
-    }
-
-    func testSubnetUnstakeArgsCarryAlphaDirection() {
-        let args = SubtensorQuoteFlowModel.unstakeArgs(for: makeSubnetTarget(netuid: 5), amount: 42)
-
-        XCTAssertEqual(args, SubtensorQuoteArgs(netuid: 5, direction: .unstake(alphaIn: 42)))
-    }
-
-    func testChangingArgsRequestsRefreshAndClearsQuote() {
+    func testChangingTheRequestRequestsARefreshAndClearsTheQuote() {
         var model = SubtensorQuoteFlowModel()
-        _ = model.updateArgs(stakeArgs)
-        XCTAssertTrue(model.applyQuote(makeQuote(for: stakeArgs)))
+        _ = model.updateRequest(buyRequest)
+        XCTAssertTrue(model.applyQuote(makeBuyQuote()))
 
-        let newArgs = SubtensorQuoteArgs(netuid: 1, direction: .stake(taoIn: 2_000_000_000))
-        let refreshArgs = model.updateArgs(newArgs)
+        let newRequest = SubtensorTradeQuoteRequest.buy(netuid: 64, grossTao: 6_000_000_000, tolerance: tolerance)
 
-        XCTAssertEqual(refreshArgs, newArgs)
+        XCTAssertEqual(model.updateRequest(newRequest), newRequest)
         XCTAssertNil(model.freshQuote)
     }
 
-    func testUnchangedArgsRequestNoRefresh() {
+    func testUnchangedRequestRequestsNoRefresh() {
         var model = SubtensorQuoteFlowModel()
-        _ = model.updateArgs(stakeArgs)
+        _ = model.updateRequest(buyRequest)
 
-        XCTAssertNil(model.updateArgs(stakeArgs))
+        XCTAssertNil(model.updateRequest(buyRequest))
     }
 
-    func testStaleQuoteForDifferentArgsIsRejected() {
+    func testQuoteForAnotherSubnetIsRejected() {
         var model = SubtensorQuoteFlowModel()
-        _ = model.updateArgs(stakeArgs)
+        _ = model.updateRequest(buyRequest)
 
-        let staleArgs = SubtensorQuoteArgs(netuid: 1, direction: .stake(taoIn: 7))
+        XCTAssertFalse(model.applyQuote(makeBuyQuote(netuid: 12)))
+        XCTAssertNil(model.freshQuote)
+    }
 
-        XCTAssertFalse(model.applyQuote(makeQuote(for: staleArgs)))
+    func testQuoteForAnotherAmountIsRejected() {
+        var model = SubtensorQuoteFlowModel()
+        _ = model.updateRequest(buyRequest)
+
+        XCTAssertFalse(model.applyQuote(makeBuyQuote(amountIn: 6_000_000_000)))
+        XCTAssertNil(model.freshQuote)
+    }
+
+    func testQuoteLimitedAtAnotherToleranceIsRejected() {
+        var model = SubtensorQuoteFlowModel()
+        _ = model.updateRequest(buyRequest)
+
+        XCTAssertFalse(model.applyQuote(makeBuyQuote(limitPrice: 74_538_000)))
         XCTAssertNil(model.freshQuote)
     }
 
     func testMatchingQuoteBecomesFresh() {
         var model = SubtensorQuoteFlowModel()
-        _ = model.updateArgs(stakeArgs)
+        _ = model.updateRequest(buyRequest)
 
-        XCTAssertTrue(model.applyQuote(makeQuote(for: stakeArgs)))
-        XCTAssertEqual(model.freshQuote?.args, stakeArgs)
+        XCTAssertTrue(model.applyQuote(makeBuyQuote()))
+        XCTAssertEqual(model.freshQuote, makeBuyQuote())
     }
 
-    func testClearingArgsDropsQuote() {
+    func testClearingTheRequestDropsTheQuote() {
         var model = SubtensorQuoteFlowModel()
-        _ = model.updateArgs(stakeArgs)
-        _ = model.applyQuote(makeQuote(for: stakeArgs))
+        _ = model.updateRequest(buyRequest)
+        _ = model.applyQuote(makeBuyQuote())
 
-        XCTAssertNil(model.updateArgs(nil))
+        XCTAssertNil(model.updateRequest(nil))
         XCTAssertNil(model.freshQuote)
-        XCTAssertNil(model.args)
+        XCTAssertNil(model.request)
     }
 
-    func testClearQuoteDropsQuoteButKeepsArgs() {
+    func testClearQuoteDropsTheQuoteButKeepsTheRequest() {
         var model = SubtensorQuoteFlowModel()
-        _ = model.updateArgs(stakeArgs)
-        _ = model.applyQuote(makeQuote(for: stakeArgs))
+        _ = model.updateRequest(buyRequest)
+        _ = model.applyQuote(makeBuyQuote())
 
         model.clearQuote()
 
         XCTAssertNil(model.freshQuote)
-        XCTAssertEqual(model.args, stakeArgs)
+        XCTAssertEqual(model.request, buyRequest)
     }
 }
