@@ -27,3 +27,28 @@ enum SubtensorPriceHistoryResult: Equatable {
     case available(SubtensorPriceHistory)
     case notListed
 }
+
+enum SubtensorPriceData<Value: Equatable>: Equatable {
+    case notListed
+    case unavailable
+    case available(Value)
+
+    var availableValue: Value? {
+        guard case let .available(value) = self else {
+            return nil
+        }
+
+        return value
+    }
+}
+
+struct SubtensorWeeklyPriceSummary: Equatable {
+    let change: Decimal
+    let sparkline: [Decimal]
+}
+
+struct SubtensorMonthlyPriceMetrics: Equatable {
+    let changeInTao: Decimal?
+    let meanTaoPerAlpha: Decimal?
+    let thirtyDayRange: Decimal?
+}

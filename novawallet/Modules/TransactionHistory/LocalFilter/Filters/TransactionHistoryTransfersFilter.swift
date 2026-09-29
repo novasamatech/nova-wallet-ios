@@ -3,16 +3,19 @@ import Foundation
 final class TransactionHistoryTransfersFilter {
     let ignoredSenders: Set<AccountId>
     let ignoredRecipients: Set<AccountId>
+    let ignoresOnlySuccessful: Bool
 
     let chainAsset: ChainAsset
 
     init(
         ignoredSenders: Set<AccountId>,
         ignoredRecipients: Set<AccountId>,
+        ignoresOnlySuccessful: Bool = false,
         chainAsset: ChainAsset
     ) {
         self.ignoredSenders = ignoredSenders
         self.ignoredRecipients = ignoredRecipients
+        self.ignoresOnlySuccessful = ignoresOnlySuccessful
         self.chainAsset = chainAsset
     }
 
@@ -24,6 +27,10 @@ final class TransactionHistoryTransfersFilter {
 extension TransactionHistoryTransfersFilter: TransactionHistoryLocalFilterProtocol {
     func shouldDisplayOperation(model: TransactionHistoryItem) -> Bool {
         guard model.callPath.isTransfer else {
+            return true
+        }
+
+        if ignoresOnlySuccessful, model.status != .success {
             return true
         }
 

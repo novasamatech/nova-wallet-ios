@@ -208,8 +208,15 @@ enum BittensorLocalBanner {
 
     static func chainAsset() -> ChainAsset? {
         let registry = ChainRegistryFacade.sharedRegistry
-        guard let chain = registry.getChain(for: KnowChainId.bittensor),
-              let asset = chain.utilityAsset() else {
+        guard let chain = registry.getChain(for: KnowChainId.bittensor) else {
+            return nil
+        }
+
+        return chainAsset(for: chain)
+    }
+
+    static func chainAsset(for chain: ChainModel) -> ChainAsset? {
+        guard let asset = chain.utilityAsset(), asset.hasSubtensorStaking else {
             return nil
         }
 

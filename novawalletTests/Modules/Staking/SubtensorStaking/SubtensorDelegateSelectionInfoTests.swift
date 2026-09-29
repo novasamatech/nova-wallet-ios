@@ -31,7 +31,7 @@ final class SubtensorDelegateSelectionInfoTests: XCTestCase {
         return result
     }
 
-    private func makeDelegate(registrations: [UInt64] = [0], permits: [UInt64]) throws -> SubtensorDelegate {
+    private func makeDelegate(permits: [UInt64]) throws -> SubtensorDelegate {
         var payload = Data()
         payload.append(compact(1))
         payload.append(delegateAccount)
@@ -44,8 +44,8 @@ final class SubtensorDelegateSelectionInfoTests: XCTestCase {
 
         payload.append(ownerAccount)
 
-        payload.append(compact(UInt64(registrations.count)))
-        registrations.forEach { payload.append(compact($0)) }
+        payload.append(compact(1))
+        payload.append(compact(0))
 
         payload.append(compact(UInt64(permits.count)))
         permits.forEach { payload.append(compact($0)) }
@@ -70,14 +70,6 @@ final class SubtensorDelegateSelectionInfoTests: XCTestCase {
         XCTAssertEqual(info.ownStake, 100)
         XCTAssertEqual(info.delegatorsStake, 50)
         XCTAssertEqual(info.totalStake, 150)
-    }
-
-    func testRootSelectionExcludesDelegatesRegisteredOnlyOnOtherSubnets() throws {
-        let rootDelegate = try makeDelegate(registrations: [0, 5], permits: [0])
-        let subnetDelegate = try makeDelegate(registrations: [5], permits: [5])
-
-        XCTAssertTrue(rootDelegate.info.isRegisteredOnRoot)
-        XCTAssertFalse(subnetDelegate.info.isRegisteredOnRoot)
     }
 
     func testMappingCountsOnlyRootNominators() throws {

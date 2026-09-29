@@ -41,10 +41,6 @@ extension SubtensorStakingPallet {
             registrations.map(\.value)
         }
 
-        var isRegisteredOnRoot: Bool {
-            registeredNetuids.contains(SubtensorStakingPallet.rootNetuid)
-        }
-
         var validatorPermitNetuids: [UInt16] {
             validatorPermits.map(\.value)
         }
