@@ -134,16 +134,4 @@ extension SubtensorStakingPallet {
             )
         }
     }
-
-    struct ClaimRootWithHotkeyCall: Codable {
-        @BytesCodable var hotkey: AccountId
-
-        func runtimeCall() -> RuntimeCall<Self> {
-            .init(
-                moduleName: SubtensorStakingPallet.name,
-                callName: "claim_root_with_hotkey",
-                args: self
-            )
-        }
-    }
 }

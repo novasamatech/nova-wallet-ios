@@ -32,8 +32,17 @@ final class SubtensorStakingSetupPresenter {
     var isRootRateLoaded = false
     var isRootRateRequested = false
     var catalogue: SubtensorSubnetCatalogue?
+    var isCatalogueLoaded = false
+    var earnConfig: SubtensorEarnConfig?
+    var rankingView: SubtensorRankedSubnets?
+    var yields: SubtensorAlphaYields?
+    var yieldsNetuid: UInt16?
+    var isYieldsLoaded = false
+    var isSubnetDataRequested = false
+    var validatorItem: SubtensorValidatorDirectoryItem?
     var slippage: BigRational
     var quoteFlow = SubtensorQuoteFlowModel()
+    var isQuoteFailed = false
     var tradesUnavailable = false
 
     init(
@@ -96,9 +105,11 @@ extension SubtensorStakingSetupPresenter {
     func startMode() {
         target = mode.initialTarget
         validatorState = .pending
+        validatorItem = nil
         isPresetRequested = false
         preflight = nil
         quoteFlow = SubtensorQuoteFlowModel()
+        isQuoteFailed = false
         tradesUnavailable = false
 
         if mode.isRootLane, !isRootRateRequested {
@@ -108,13 +119,15 @@ extension SubtensorStakingSetupPresenter {
 
         if case let .buyMore(position) = mode {
             interactor.loadSubnet(netuid: position.netuid)
-            interactor.loadCatalogue()
         }
+
+        loadSubnetDataIfNeeded()
 
         if let hotkey = mode.lockedHotkey {
             validatorState = .selected(SubtensorSetupValidator(hotkey: hotkey, name: nil))
         } else if let picked = mode.pickedValidator {
             validatorState = .selected(SubtensorSetupValidator(hotkey: picked.hotkey, name: picked.name))
+            validatorItem = picked
         }
 
         applyTargetIfReady()
@@ -165,8 +178,9 @@ extension SubtensorStakingSetupPresenter {
         return portfolio.subnets.first { $0.netuid == netuid }?.primaryHotkey
     }
 
-    func applyValidator(hotkey: AccountId, name: String?) {
-        validatorState = .selected(SubtensorSetupValidator(hotkey: hotkey, name: name))
+    func applyValidator(_ item: SubtensorValidatorDirectoryItem) {
+        validatorState = .selected(SubtensorSetupValidator(hotkey: item.hotkey, name: item.name))
+        validatorItem = item
         preflight = nil
 
         refreshPreflight()
@@ -223,15 +237,19 @@ extension SubtensorStakingSetupPresenter {
     }
 
     func quoteRequest() -> SubtensorTradeQuoteRequest? {
-        guard case let .subnet(info, _) = target, let amount = inputAmount(), amount > 0 else {
+        guard case let .subnet(info, _) = target else {
             return nil
         }
+
+        let placeholder = Decimal(1).toSubstrateAmount(precision: chainAsset.assetDisplayInfo.assetPrecision) ?? 1
+        let amount = inputAmount().flatMap { $0 > 0 ? $0 : nil } ?? placeholder
 
         return .buy(netuid: info.netuid, grossTao: amount, tolerance: slippage)
     }
 
     func updateQuote() {
         if let request = quoteFlow.updateRequest(quoteRequest()) {
+            isQuoteFailed = false
             interactor.refreshQuote(for: request)
         }
     }
@@ -278,30 +296,6 @@ extension SubtensorStakingSetupPresenter {
 
         view?.didReceiveAmountAsset(viewModel: viewModel)
     }
-
-    func createViewModelInput() -> SubtensorStakingSetupViewModelInput {
-        SubtensorStakingSetupViewModelInput(
-            mode: mode,
-            target: target,
-            catalogue: catalogue,
-            transferable: transferable,
-            maxAmount: maxAmount,
-            amount: inputAmount(),
-            validator: validatorState,
-            rootRate: rootRate,
-            isRootRateLoaded: isRootRateLoaded,
-            fee: fee,
-            price: price,
-            quote: quoteFlow.freshQuote,
-            slippage: slippage
-        )
-    }
-
-    func provideViewModel() {
-        let viewModel = viewModelFactory.createViewModel(for: createViewModelInput(), locale: selectedLocale)
-
-        view?.didReceive(viewModel: viewModel)
-    }
 }
 
 extension SubtensorStakingSetupPresenter: SubtensorStakingSetupPresenterProtocol {
@@ -335,6 +329,11 @@ extension SubtensorStakingSetupPresenter: SubtensorStakingSetupPresenterProtocol
     }
 
     func selectValidator() {
+        if case .addStake = mode {
+            showLockedValidatorInfo()
+            return
+        }
+
         guard !mode.isLocked, let target else {
             return
         }
@@ -347,31 +346,21 @@ extension SubtensorStakingSetupPresenter: SubtensorStakingSetupPresenterProtocol
         )
     }
 
-    func selectSlippage() {
-        guard !mode.isRootLane else {
-            return
-        }
-
-        wireframe.showSlippageEdit(from: view, current: slippage) { [weak self] newValue in
-            guard let self else {
-                return
-            }
-
-            slippage = newValue
-            interactor.saveSlippage(newValue)
-
-            refreshFee(resetting: false)
-            updateQuote()
-            provideViewModel()
-        }
-    }
-
     func getTao() {
         wireframe.showGetTao(from: view, chainAsset: chainAsset, assetListObservable: nil, rampHandler: self)
     }
 
     func proceed() {
-        guard let target, validatorState.validator != nil, let amount = inputAmount(), amount > 0 else {
+        if case .subnetPick = mode, validatorState == .none {
+            selectValidator()
+            return
+        }
+
+        guard
+            let target,
+            validatorState.validator != nil,
+            holdRemaining() == nil,
+            let amount = inputAmount(), amount > 0 else {
             return
         }
 

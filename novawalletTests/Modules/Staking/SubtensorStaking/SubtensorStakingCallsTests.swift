@@ -100,14 +100,6 @@ final class SubtensorStakingCallsTests: XCTestCase {
         XCTAssertEqual(encoded, "0767" + hotkeyHex + "0100" + "01" + "2a00000000000000")
     }
 
-    func testClaimRootWithHotkeyEncodesBareAccountId() throws {
-        let call = SubtensorStakingPallet.ClaimRootWithHotkeyCall(hotkey: hotkey)
-
-        let encoded = try encodeCallHex(call.runtimeCall())
-
-        XCTAssertEqual(encoded, "0794" + hotkeyHex)
-    }
-
     func testAddStakeAmountAboveU64MaxThrows() {
         let call = SubtensorStakingPallet.AddStakeCall(
             hotkey: hotkey,

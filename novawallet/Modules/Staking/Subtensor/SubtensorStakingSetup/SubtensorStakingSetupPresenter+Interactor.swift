@@ -9,6 +9,7 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
         if let lockedHotkey = mode.lockedHotkey {
             if let validator, validator.hotkey == lockedHotkey {
                 validatorState = .selected(SubtensorSetupValidator(hotkey: lockedHotkey, name: validator.name))
+                validatorItem = validator
                 provideViewModel()
             }
 
@@ -20,7 +21,7 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
         }
 
         if let validator {
-            applyValidator(hotkey: validator.hotkey, name: validator.name)
+            applyValidator(validator)
         } else {
             validatorState = .none
             provideViewModel()
@@ -58,6 +59,30 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
 
     func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?) {
         self.catalogue = catalogue
+        isCatalogueLoaded = true
+
+        provideViewModel()
+    }
+
+    func didReceiveYields(_ yields: SubtensorAlphaYields?, netuid: UInt16) {
+        guard netuid == yieldsNetuid else {
+            return
+        }
+
+        self.yields = yields
+        isYieldsLoaded = true
+
+        provideViewModel()
+    }
+
+    func didReceiveRankingView(_ rankingView: SubtensorRankedSubnets?) {
+        self.rankingView = rankingView
+
+        provideViewModel()
+    }
+
+    func didReceiveEarnConfig(_ config: SubtensorEarnConfig?) {
+        earnConfig = config
 
         provideViewModel()
     }
@@ -86,6 +111,10 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
         positionsState = state
 
         requestPresetIfReady()
+
+        if case .addStake = mode {
+            provideViewModel()
+        }
     }
 
     func didReceivePositionsSyncFailed(_ isFailed: Bool) {
@@ -100,10 +129,18 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
         currentBlock = blockNumber
 
         forceQuoteRefresh()
+
+        if case .addStake = mode {
+            provideViewModel()
+        }
     }
 
     func didReceivePreflight(_ preflight: SubtensorStakingPreflight) {
         self.preflight = preflight
+
+        if case .addStake = mode {
+            provideViewModel()
+        }
     }
 
     func didReceiveQuote(_ quote: SubtensorTradeQuote) {
@@ -112,6 +149,7 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
         }
 
         tradesUnavailable = false
+        isQuoteFailed = false
 
         provideViewModel()
     }
@@ -138,6 +176,7 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
             }
         case .quoteFailed:
             quoteFlow.clearQuote()
+            isQuoteFailed = true
             provideViewModel()
         }
     }

@@ -78,12 +78,6 @@ final class SubtensorStakingErrorMapperTests: XCTestCase {
         XCTAssertEqual(mapped as? SubtensorStakingSubmissionError, .temporarilyUnavailable)
     }
 
-    func testMapsRootClaimTooHeavy() {
-        let mapped = mapModuleError("SubtensorModule", "RootClaimTooHeavy")
-
-        XCTAssertEqual(mapped as? SubtensorStakingSubmissionError, .rootClaimTooHeavy)
-    }
-
     func testMapsSubtokenDisabled() {
         let mapped = mapModuleError("SubtensorModule", "SubtokenDisabled")
 

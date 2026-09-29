@@ -1,52 +1,89 @@
 import UIKit
+import UIKit_iOS
 
 final class SubtensorStakingConfirmViewLayout: UIView {
-    let containerView: ScrollableContainerView = {
-        let view = ScrollableContainerView()
-        view.stackView.isLayoutMarginsRelativeArrangement = true
-        view.stackView.layoutMargins = UIEdgeInsets(top: 8.0, left: 16.0, bottom: 0.0, right: 16.0)
-        view.stackView.alignment = .fill
-        return view
-    }()
+    let containerView: ScrollableContainerView = .create {
+        $0.stackView.isLayoutMarginsRelativeArrangement = true
+        $0.stackView.layoutMargins = UIEdgeInsets(top: 12, left: 16, bottom: 16, right: 16)
+        $0.stackView.alignment = .fill
+    }
 
     var stackView: UIStackView { containerView.stackView }
 
+    let priceMovedView: InlineAlertView = {
+        let view = InlineAlertView.info()
+        view.isHidden = true
+        return view
+    }()
+
+    let pairsView: SwapPairView = .create {
+        $0.leftAssetView.hidesHub = true
+        $0.rigthAssetView.hidesHub = true
+    }
+
+    let detailsTableView: StackTableView = .create {
+        $0.cellHeight = 44
+        $0.hasSeparators = true
+        $0.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 4, right: 16)
+    }
+
+    let swapRateCell: SwapInfoViewCell = .create {
+        $0.titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
+        $0.titleButton.imageWithTitleView?.titleFont = .regularFootnote
+    }
+
+    let slippageCell: SwapInfoViewCell = .create {
+        $0.titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
+        $0.titleButton.imageWithTitleView?.titleFont = .regularFootnote
+    }
+
+    let validatorCell = SubtensorValidatorDetailsCell()
+
+    let earnCell = SwapNetworkFeeViewCell()
+
+    let networkFeeCell = SwapNetworkFeeViewCell()
+
     let amountView = MultilineBalanceView()
 
-    let swapPreview = UIStackView()
-    let payCard = UIView()
-    let receiveCard = UIView()
-    let payAmountLabel = UILabel()
-    let payPriceLabel = UILabel()
-    let receiveAmountLabel = UILabel()
-    let receivePriceLabel = UILabel()
-
-    let walletTableView = StackTableView()
+    let walletTableView: StackTableView = .create {
+        $0.cellHeight = 44
+        $0.hasSeparators = true
+        $0.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 8, right: 16)
+    }
 
     let walletCell = StackTableCell()
 
-    let accountCell: StackInfoTableCell = {
-        let cell = StackInfoTableCell()
-        cell.detailsLabel.lineBreakMode = .byTruncatingMiddle
-        return cell
-    }()
+    let accountCell: StackInfoTableCell = .create {
+        $0.detailsLabel.lineBreakMode = .byTruncatingMiddle
+    }
 
-    let networkFeeCell = StackNetworkFeeCell()
+    let rootFeeCell = StackNetworkFeeCell()
 
-    let quoteTableView = StackTableView()
+    let rootTableView: StackTableView = .create {
+        $0.cellHeight = 44
+        $0.hasSeparators = true
+        $0.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 8, right: 16)
+    }
 
-    let receiveCell = StackTableCell()
-
-    let poolFeeCell = StackTableCell()
-
-    let priceImpactCell = StackTableCell()
-
-    let slippageCell = StackTableCell()
-
-    let collatorTableView = StackTableView()
-
-    let collatorCell = StackInfoTableCell()
     let stakingTypeCell = StackTableCell()
+
+    let stakeAfterCell = StackTableCell()
+
+    let rootValidatorCell = StackInfoTableCell()
+
+    let apyCell: StackTableCell = .create {
+        $0.detailsLabel.textColor = R.color.colorTextPositive()
+    }
+
+    let remarkLabel: UILabel = .create {
+        $0.apply(style: .footnoteSecondary)
+        $0.textAlignment = .center
+        $0.numberOfLines = 0
+    }
+
+    let signingHintView: AccountManagementHintView = .create {
+        $0.isHidden = true
+    }
 
     let actionLoadableView = LoadableActionView()
 
@@ -54,14 +91,11 @@ final class SubtensorStakingConfirmViewLayout: UIView {
         actionLoadableView.actionButton
     }
 
-    let hintListView = HintListView()
-
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         backgroundColor = R.color.colorSecondaryScreenBackground()
 
-        setupPreview()
         setupLayout()
     }
 
@@ -70,96 +104,85 @@ final class SubtensorStakingConfirmViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupLayout() {
-        addSubview(actionLoadableView)
-        actionLoadableView.snp.makeConstraints { make in
+    func setupMode(_ mode: Mode) {
+        switch mode {
+        case .swap:
+            setupSwapContent()
+        case .rootStake:
+            setupRootContent(with: [stakingTypeCell, stakeAfterCell, rootValidatorCell, apyCell])
+        case .rootUnstake:
+            setupRootContent(with: [stakingTypeCell, rootValidatorCell, stakeAfterCell])
+        }
+    }
+}
+
+extension SubtensorStakingConfirmViewLayout {
+    enum Mode {
+        case swap
+        case rootStake
+        case rootUnstake
+    }
+}
+
+private extension SubtensorStakingConfirmViewLayout {
+    func setupLayout() {
+        let bottomView = UIView.vStack(spacing: 16, [signingHintView, actionLoadableView])
+
+        addSubview(bottomView)
+        bottomView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
+        }
+
+        actionLoadableView.snp.makeConstraints { make in
             make.height.equalTo(UIConstants.actionHeight)
         }
 
         addSubview(containerView)
         containerView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(actionLoadableView.snp.top).offset(-8.0)
+            make.bottom.equalTo(bottomView.snp.top).offset(-8)
         }
+    }
 
-        stackView.addArrangedSubview(swapPreview)
-        stackView.addArrangedSubview(amountView)
-        stackView.setCustomSpacing(24.0, after: amountView)
+    func setupSwapContent() {
+        stackView.addArrangedSubview(priceMovedView)
+        stackView.setCustomSpacing(8, after: priceMovedView)
+
+        stackView.addArrangedSubview(pairsView)
+        stackView.setCustomSpacing(8, after: pairsView)
+
+        stackView.addArrangedSubview(detailsTableView)
+        stackView.setCustomSpacing(8, after: detailsTableView)
+
+        detailsTableView.addArrangedSubview(swapRateCell)
+        detailsTableView.addArrangedSubview(slippageCell)
+        detailsTableView.addArrangedSubview(validatorCell)
+        detailsTableView.addArrangedSubview(earnCell)
+        detailsTableView.addArrangedSubview(networkFeeCell)
 
         stackView.addArrangedSubview(walletTableView)
+        stackView.setCustomSpacing(8, after: walletTableView)
 
         walletTableView.addArrangedSubview(walletCell)
         walletTableView.addArrangedSubview(accountCell)
-        walletTableView.addArrangedSubview(networkFeeCell)
 
-        stackView.setCustomSpacing(12.0, after: walletTableView)
-
-        stackView.addArrangedSubview(quoteTableView)
-
-        quoteTableView.addArrangedSubview(receiveCell)
-        quoteTableView.addArrangedSubview(poolFeeCell)
-        quoteTableView.addArrangedSubview(priceImpactCell)
-        quoteTableView.addArrangedSubview(slippageCell)
-
-        stackView.setCustomSpacing(12.0, after: quoteTableView)
-
-        stackView.addArrangedSubview(collatorTableView)
-        collatorTableView.addArrangedSubview(stakingTypeCell)
-        collatorTableView.addArrangedSubview(collatorCell)
-        stackView.setCustomSpacing(24.0, after: collatorTableView)
-
-        stackView.addArrangedSubview(hintListView)
+        stackView.addArrangedSubview(remarkLabel)
     }
 
-    func setRootMode(_ isRoot: Bool) {
-        swapPreview.isHidden = isRoot
-        amountView.isHidden = !isRoot
-        stakingTypeCell.isHidden = !isRoot
-        if isRoot {
-            move(walletTableView, after: amountView)
-            move(collatorTableView, after: walletTableView)
-        } else {
-            move(quoteTableView, after: swapPreview)
-            move(collatorTableView, after: quoteTableView)
-            move(walletTableView, after: collatorTableView)
-        }
-    }
+    func setupRootContent(with rows: [StackTableViewCellProtocol]) {
+        stackView.addArrangedSubview(amountView)
+        stackView.setCustomSpacing(24, after: amountView)
 
-    private func move(_ view: UIView, after previous: UIView) {
-        stackView.removeArrangedSubview(view)
-        view.removeFromSuperview()
-        let index = (stackView.arrangedSubviews.firstIndex(of: previous) ?? 0) + 1
-        stackView.insertArrangedSubview(view, at: index)
-    }
+        stackView.addArrangedSubview(walletTableView)
+        stackView.setCustomSpacing(8, after: walletTableView)
 
-    private func setupPreview() {
-        swapPreview.axis = .horizontal
-        swapPreview.distribution = .fillEqually
-        swapPreview.spacing = 8
-        [payCard, receiveCard].forEach { card in
-            card.backgroundColor = R.color.colorBlockBackground()
-            card.layer.cornerRadius = 12
-            swapPreview.addArrangedSubview(card)
-        }
-        swapPreview.snp.makeConstraints { make in make.height.equalTo(134) }
+        walletTableView.addArrangedSubview(walletCell)
+        walletTableView.addArrangedSubview(accountCell)
+        walletTableView.addArrangedSubview(rootFeeCell)
 
-        [payAmountLabel, receiveAmountLabel].forEach { label in
-            label.font = .boldTitle2
-            label.textColor = R.color.colorTextPrimary()
-            label.textAlignment = .center
-        }
-        [payPriceLabel, receivePriceLabel].forEach { label in
-            label.font = .regularFootnote
-            label.textColor = R.color.colorTextSecondary()
-            label.textAlignment = .center
-        }
-        let payStack = UIStackView.vStack(alignment: .center, spacing: 4, [payAmountLabel, payPriceLabel])
-        let receiveStack = UIStackView.vStack(alignment: .center, spacing: 4, [receiveAmountLabel, receivePriceLabel])
-        payCard.addSubview(payStack)
-        receiveCard.addSubview(receiveStack)
-        payStack.snp.makeConstraints { make in make.center.equalToSuperview(); make.leading.trailing.equalToSuperview().inset(8) }
-        receiveStack.snp.makeConstraints { make in make.center.equalToSuperview(); make.leading.trailing.equalToSuperview().inset(8) }
+        stackView.addArrangedSubview(rootTableView)
+
+        rows.forEach { rootTableView.addArrangedSubview($0) }
     }
 }
