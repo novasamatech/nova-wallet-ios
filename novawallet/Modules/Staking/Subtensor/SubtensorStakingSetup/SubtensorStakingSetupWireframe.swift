@@ -51,12 +51,29 @@ final class SubtensorStakingSetupWireframe: SubtensorStakingSetupWireframeProtoc
         view?.controller.presentWithCardLayout(picker, animated: true)
     }
 
-    func showSlippageEdit(
+    func showSubnetDetails(
+        from view: SubtensorStakingSetupViewProtocol?,
+        input: SubtensorSubnetDetailsInput,
+        delegate: SubtensorSubnetSelectDelegate
+    ) {
+        guard let detailsView = SubtensorSubnetDetailsViewFactory.createView(
+            for: state,
+            input: input,
+            host: .pushed,
+            delegate: delegate
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(detailsView.controller, animated: true)
+    }
+
+    func showSlippageSettings(
         from view: SubtensorStakingSetupViewProtocol?,
         current: BigRational,
         completion: @escaping (BigRational) -> Void
     ) {
-        guard let slippageView = SwapSlippageViewFactory.createSubtensorView(
+        guard let settingsView = SwapSlippageViewFactory.createSubtensorSheet(
             percent: current,
             chainAsset: state.stakingOption.chainAsset,
             completionHandler: completion
@@ -64,7 +81,7 @@ final class SubtensorStakingSetupWireframe: SubtensorStakingSetupWireframeProtoc
             return
         }
 
-        view?.controller.navigationController?.pushViewController(slippageView.controller, animated: true)
+        view?.controller.present(settingsView.controller, animated: true)
     }
 
     func popTopControllers(

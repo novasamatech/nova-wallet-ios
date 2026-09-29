@@ -8,6 +8,40 @@ enum SubtensorStakingSetupViewFactory {
         createView(for: state, mode: .rootDetails)
     }
 
+    static func createSubnetView(
+        for state: SubtensorStakingSharedStateProtocol,
+        target: SubtensorStakeTarget,
+        validator: SubtensorValidatorDirectoryItem?
+    ) -> SubtensorStakingSetupViewProtocol? {
+        guard !target.isRoot else {
+            return nil
+        }
+
+        return createView(for: state, mode: .subnetPick(target: target, validator: validator))
+    }
+
+    static func createAddStakeView(
+        for state: SubtensorStakingSharedStateProtocol,
+        position: SubtensorStakingPosition
+    ) -> SubtensorStakingSetupViewProtocol? {
+        guard position.netuid == SubtensorStakingPallet.rootNetuid else {
+            return nil
+        }
+
+        return createView(for: state, mode: .addStake(position: position))
+    }
+
+    static func createBuyMoreView(
+        for state: SubtensorStakingSharedStateProtocol,
+        position: SubtensorStakingPosition
+    ) -> SubtensorStakingSetupViewProtocol? {
+        guard position.netuid != SubtensorStakingPallet.rootNetuid else {
+            return nil
+        }
+
+        return createView(for: state, mode: .buyMore(position: position))
+    }
+
     static func createView(
         for state: SubtensorStakingSharedStateProtocol,
         initialPosition: SubtensorStakingPosition?
@@ -16,7 +50,11 @@ enum SubtensorStakingSetupViewFactory {
             return createRootDetailsView(for: state)
         }
 
-        return createView(for: state, mode: .mode(for: initialPosition))
+        if initialPosition.netuid == SubtensorStakingPallet.rootNetuid {
+            return createAddStakeView(for: state, position: initialPosition)
+        }
+
+        return createBuyMoreView(for: state, position: initialPosition)
     }
 }
 
@@ -100,6 +138,8 @@ private extension SubtensorStakingSetupViewFactory {
             presetFactory: presetFactory,
             yieldService: earnServices.yieldService,
             catalogueService: earnServices.catalogueService,
+            rankingViewService: earnServices.rankingViewService,
+            earnConfigProvider: earnServices.earnConfigProvider,
             subnetsService: state.subnetsService,
             earnSettings: earnServices.earnSettings,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,

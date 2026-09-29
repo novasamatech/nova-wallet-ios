@@ -47,6 +47,14 @@ extension SubtensorStakingSetupMode {
         lockedHotkey != nil
     }
 
+    var hasSettings: Bool {
+        if case .subnetPick = self {
+            return true
+        }
+
+        return false
+    }
+
     var initialTarget: SubtensorStakeTarget? {
         switch self {
         case .rootDetails, .addStake:

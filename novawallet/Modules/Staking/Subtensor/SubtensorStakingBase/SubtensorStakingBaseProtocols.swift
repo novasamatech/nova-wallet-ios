@@ -68,13 +68,3 @@ protocol SubtensorStakingDelegateInteractorInputProtocol: SubtensorStakingBaseIn
 protocol SubtensorStakingDelegateInteractorOutputProtocol: SubtensorStakingBaseInteractorOutputProtocol {
     func didReceiveDelegateIdentities(_ identities: [AccountId: AccountIdentity]?)
 }
-
-protocol SubtensorStakingSubmitInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {
-    func submit(operation: SubtensorStakingOperation)
-}
-
-protocol SubtensorStakingSubmitInteractorOutputProtocol: SubtensorStakingBaseInteractorOutputProtocol {
-    func didReceiveSubmissionResult(
-        _ result: Result<SubtensorStakingOperationOutcome, SubtensorStakingSubmissionFailure>
-    )
-}

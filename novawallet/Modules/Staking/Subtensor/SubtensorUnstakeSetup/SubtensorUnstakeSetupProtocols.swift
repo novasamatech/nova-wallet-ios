@@ -1,36 +1,43 @@
 import Foundation
 
-protocol SubtensorUnstakeSetupViewProtocol: CollatorStkPartialUnstakeSetupViewProtocol {
-    func didReceiveQuote(viewModel: SubtensorQuotePanelViewModel?)
-    func didReceiveSlippage(viewModel: String?)
-    func didReceiveUnstakeUnavailable(_ isUnavailable: Bool)
+protocol SubtensorUnstakeSetupViewProtocol: ControllerBackedProtocol {
+    func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol)
+    func didReceiveAmountAsset(viewModel: AssetViewModel)
+    func didReceive(viewModel: SubtensorUnstakeSetupViewModel)
 }
 
-protocol SubtensorUnstakeSetupPresenterProtocol: CollatorStkPartialUnstakeSetupPresenterProtocol {
-    func selectSlippage()
+protocol SubtensorUnstakeSetupPresenterProtocol: AnyObject {
+    func setup()
+    func updateAmount(_ newValue: Decimal?)
+    func selectMax()
+    func selectAmountPercentage(_ percentage: Float)
+    func showValidatorInfo()
+    func showSwapRateInfo()
+    func proceed()
 }
 
-protocol SubtensorUnstakeSetupInteractorInputProtocol: SubtensorStakingDelegateInteractorInputProtocol {
-    func retrySubnetsInfo()
+protocol SubtensorUnstakeInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {
+    func loadSubnetsInfo(forcingRefresh: Bool)
+    func loadCatalogue(forcingRefresh: Bool)
+    func loadEarnConfig()
+    func loadValidator(_ hotkey: AccountId, on subnet: SubtensorSubnetRef)
+    func loadRootHolds(for hotkeys: [AccountId])
 }
 
-protocol SubtensorUnstakeSetupInteractorOutputProtocol: SubtensorStakingDelegateInteractorOutputProtocol {
+protocol SubtensorUnstakeInteractorOutputProtocol: SubtensorStakingBaseInteractorOutputProtocol {
     func didReceiveSubnetsInfo(_ info: SubtensorSubnetsInfo)
     func didReceiveSubnetsInfoError(_ error: Error)
+    func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?)
+    func didReceiveEarnConfig(_ config: SubtensorEarnConfig?)
+    func didReceiveValidator(_ validator: SubtensorValidatorDirectoryItem?, hotkey: AccountId)
+    func didReceiveRootHolds(_ holds: [AccountId: SubtensorRootHold])
 }
 
 protocol SubtensorUnstakeSetupWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
-    CommonRetryable,
-    CollatorStakingDelegationSelectable,
-    SubtensorStakingErrorPresentable {
+    CommonRetryable, SubtensorStakingErrorPresentable, SubtensorInfoSheetPresentable,
+    SubtensorValidatorInfoPresentable {
     func showConfirm(
-        from view: CollatorStkPartialUnstakeSetupViewProtocol?,
+        from view: SubtensorUnstakeSetupViewProtocol?,
         model: SubtensorUnstakeConfirmModel
-    )
-
-    func showSlippageEdit(
-        from view: CollatorStkPartialUnstakeSetupViewProtocol?,
-        current: BigRational,
-        completion: @escaping (BigRational) -> Void
     )
 }

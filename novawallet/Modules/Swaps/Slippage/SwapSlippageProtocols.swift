@@ -21,3 +21,8 @@ protocol SwapSlippagePresenterProtocol: AnyObject {
 protocol SwapSlippageWireframeProtocol: AnyObject, ShortTextInfoPresentable {
     func close(from view: ControllerBackedProtocol?)
 }
+
+enum SwapSlippagePresentation {
+    case screen
+    case subtensorSheet
+}

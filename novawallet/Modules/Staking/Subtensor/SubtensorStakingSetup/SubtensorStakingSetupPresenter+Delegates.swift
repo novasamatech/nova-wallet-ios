@@ -23,7 +23,7 @@ extension SubtensorStakingSetupPresenter: SubtensorValidatorSelectDelegate {
             return
         }
 
-        applyValidator(hotkey: validator.hotkey, name: validator.name)
+        applyValidator(validator)
     }
 }
 
@@ -96,7 +96,7 @@ extension SubtensorStakingSetupPresenter: SubtensorStakePresenterValidating {
             validator: SubtensorConfirmValidator(
                 hotkey: validator.hotkey,
                 display: DisplayAddress(address: address, username: validator.name ?? ""),
-                annualRate: target.isRoot ? rootRate : nil
+                annualRate: target.isRoot ? rootRate : subnetAnnualRate()
             ),
             amount: amount,
             tolerance: target.isRoot ? nil : slippage,

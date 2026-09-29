@@ -1,174 +1,82 @@
 import BigInt
 import Foundation
 
-struct SubtensorStakingSetupViewModel {
-    let title: String
-    let maxAmount: String?
-    let getTao: SubtensorGetTaoViewModel?
-    let reserveWarning: String?
-    let validator: SubtensorSetupValidatorViewModel
-    let apy: SubtensorSetupRowViewModel
-    let receive: SubtensorSetupRowViewModel
-    let swapRate: SubtensorSetupRowViewModel
-    let slippage: SubtensorSetupRowViewModel
-    let networkFee: BalanceViewModelProtocol?
-    let caption: String?
-    let action: SubtensorSetupActionViewModel
-}
-
-struct SubtensorGetTaoViewModel: Equatable {
-    let title: String
-    let message: String
-    let action: String
-}
-
-struct SubtensorSetupActionViewModel: Equatable {
-    let title: String
-    let isEnabled: Bool
-}
-
-enum SubtensorSetupRowViewModel: Equatable {
-    case hidden
-    case loading
-    case value(String)
-}
-
-enum SubtensorSetupValidatorViewModel {
-    case loading
-    case unselected(title: String, canSelect: Bool)
-    case selected(DisplayAddressViewModel, canSelect: Bool)
-
-    var isLoading: Bool {
-        if case .loading = self {
-            return true
-        }
-
-        return false
-    }
-}
-
-struct SubtensorSetupValidator: Equatable {
-    let hotkey: AccountId
-    let name: String?
-}
-
-enum SubtensorSetupValidatorState: Equatable {
-    case pending
-    case none
-    case selected(SubtensorSetupValidator)
-
-    var validator: SubtensorSetupValidator? {
-        if case let .selected(validator) = self {
-            return validator
-        }
-
-        return nil
-    }
-}
-
-enum SubtensorSetupAmountState: Equatable {
-    case loading
-    case noTao
-    case insufficient
-    case sufficient
-
-    init(maxAmount: Balance?, amount: Balance?) {
-        guard let maxAmount else {
-            self = .loading
-            return
-        }
-
-        if maxAmount == 0 {
-            self = .noTao
-        } else if let amount, amount > maxAmount {
-            self = .insufficient
-        } else {
-            self = .sufficient
-        }
-    }
-}
-
-struct SubtensorStakingSetupViewModelInput {
-    let mode: SubtensorStakingSetupMode
-    let target: SubtensorStakeTarget?
-    let catalogue: SubtensorSubnetCatalogue?
-    let transferable: Balance?
-    let maxAmount: Balance?
-    let amount: Balance?
-    let validator: SubtensorSetupValidatorState
-    let rootRate: Decimal?
-    let isRootRateLoaded: Bool
-    let fee: ExtrinsicFeeProtocol?
-    let price: PriceData?
-    let quote: SubtensorTradeQuote?
-    let slippage: BigRational
-
-    var amountState: SubtensorSetupAmountState {
-        SubtensorSetupAmountState(maxAmount: maxAmount, amount: amount)
-    }
-
-    var canProceed: Bool {
-        guard
-            amountState == .sufficient,
-            let amount, amount > 0,
-            validator.validator != nil,
-            fee != nil,
-            target != nil else {
-            return false
-        }
-
-        return mode.isRootLane || quote != nil
-    }
-}
-
 final class SubtensorStakingSetupViewModelFactory {
     let chainAsset: ChainAsset
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let quoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
     let displayAddressFactory: DisplayAddressViewModelFactoryProtocol
+    let iconFactory: SubtensorSubnetIconFactoryProtocol
 
     init(
         chainAsset: ChainAsset,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         quoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol,
-        displayAddressFactory: DisplayAddressViewModelFactoryProtocol = DisplayAddressViewModelFactory()
+        displayAddressFactory: DisplayAddressViewModelFactoryProtocol = DisplayAddressViewModelFactory(),
+        iconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory()
     ) {
         self.chainAsset = chainAsset
         self.balanceViewModelFactory = balanceViewModelFactory
         self.quoteViewModelFactory = quoteViewModelFactory
         self.displayAddressFactory = displayAddressFactory
+        self.iconFactory = iconFactory
     }
 
     func createViewModel(
         for input: SubtensorStakingSetupViewModelInput,
         locale: Locale
     ) -> SubtensorStakingSetupViewModel {
-        let tradePanel = createTradePanel(for: input, locale: locale)
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        let details: SubtensorSetupDetailsViewModel = input.mode.isRootLane
+            ? .root(createRootDetails(for: input, locale: locale))
+            : .subnet(createSubnetDetails(for: input, locale: locale))
+
+        let amountTitle: String
+
+        if case .buyMore = input.mode {
+            amountTitle = strings.swapsSetupAssetSelectPayTitle()
+        } else {
+            amountTitle = strings.stakingSubtensorUiYouStake()
+        }
 
         return SubtensorStakingSetupViewModel(
             title: createTitle(for: input, locale: locale),
+            amountTitle: amountTitle,
             maxAmount: input.maxAmount.map { formatAmount($0, locale: locale) },
+            hasSettings: input.mode.hasSettings,
             getTao: createGetTao(for: input, locale: locale),
             reserveWarning: createReserveWarning(for: input, locale: locale),
-            validator: createValidator(for: input, locale: locale),
-            apy: createApy(for: input, locale: locale),
-            receive: createTradeRow(for: input, value: tradePanel?.receive?.amount, locale: locale),
-            swapRate: createTradeRow(for: input, value: tradePanel?.swapRate, locale: locale),
-            slippage: createSlippage(for: input, locale: locale),
-            networkFee: createNetworkFee(for: input, locale: locale),
+            details: details,
+            holdWarning: createHoldWarning(for: input, locale: locale),
             caption: createCaption(for: input, locale: locale),
             action: createAction(for: input, locale: locale)
         )
     }
 }
 
-private extension SubtensorStakingSetupViewModelFactory {
+extension SubtensorStakingSetupViewModelFactory {
     func formatAmount(_ amount: Balance, locale: Locale) -> String {
         let decimal = amount.decimal(assetInfo: chainAsset.assetDisplayInfo)
 
         return balanceViewModelFactory.amountFromValue(decimal).value(for: locale)
     }
 
+    func createNetworkFee(
+        for input: SubtensorStakingSetupViewModelInput,
+        locale: Locale
+    ) -> BalanceViewModelProtocol? {
+        guard let fee = input.fee else {
+            return nil
+        }
+
+        let feeDecimal = fee.amount.decimal(assetInfo: chainAsset.assetDisplayInfo)
+
+        return balanceViewModelFactory.balanceFromPrice(feeDecimal, priceData: input.price).value(for: locale)
+    }
+}
+
+private extension SubtensorStakingSetupViewModelFactory {
     func createTitle(for input: SubtensorStakingSetupViewModelInput, locale: Locale) -> String {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
@@ -182,7 +90,7 @@ private extension SubtensorStakingSetupViewModelFactory {
         case let .buyMore(position):
             let subnetTitle = SubtensorSubnetNaming.title(
                 for: position.netuid,
-                in: input.catalogue,
+                in: input.subnetData.catalogue,
                 locale: locale
             )
 
@@ -221,21 +129,32 @@ private extension SubtensorStakingSetupViewModelFactory {
         )
     }
 
+    func createRootDetails(
+        for input: SubtensorStakingSetupViewModelInput,
+        locale: Locale
+    ) -> SubtensorSetupRootViewModel {
+        SubtensorSetupRootViewModel(
+            validator: createValidator(for: input, locale: locale),
+            apy: createRootApy(for: input, locale: locale),
+            networkFee: createNetworkFee(for: input, locale: locale)
+        )
+    }
+
     func createValidator(
         for input: SubtensorStakingSetupViewModelInput,
         locale: Locale
     ) -> SubtensorSetupValidatorViewModel {
-        let canSelect = !input.mode.isLocked
         let selectTitle = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorSelectValidator()
+        let accessory: SubtensorSetupValidatorAccessory = input.mode.isLocked ? .info : .chevron
 
         switch input.validator {
         case .pending:
             return .loading
         case .none:
-            return .unselected(title: selectTitle, canSelect: canSelect)
+            return .unselected(title: selectTitle)
         case let .selected(validator):
             guard let address = try? validator.hotkey.toAddress(using: chainAsset.chain.chainFormat) else {
-                return .unselected(title: selectTitle, canSelect: canSelect)
+                return .unselected(title: selectTitle)
             }
 
             let displayAddress = DisplayAddress(address: address, username: validator.name ?? "")
@@ -247,16 +166,12 @@ private extension SubtensorStakingSetupViewModelFactory {
                     name: validator.name ?? address.mediumTruncated,
                     imageViewModel: viewModel.imageViewModel
                 ),
-                canSelect: canSelect
+                accessory: accessory
             )
         }
     }
 
-    func createApy(for input: SubtensorStakingSetupViewModelInput, locale: Locale) -> SubtensorSetupRowViewModel {
-        guard input.mode.isRootLane else {
-            return .hidden
-        }
-
+    func createRootApy(for input: SubtensorStakingSetupViewModelInput, locale: Locale) -> SubtensorSetupRowViewModel {
         guard input.isRootRateLoaded else {
             return .loading
         }
@@ -268,72 +183,54 @@ private extension SubtensorStakingSetupViewModelFactory {
         return .value(SubtensorApyFormatter.text(for: rootRate, style: .paidInTao, locale: locale))
     }
 
-    func createTradePanel(
-        for input: SubtensorStakingSetupViewModelInput,
-        locale: Locale
-    ) -> SubtensorTradePanelViewModel? {
-        guard let target = input.target else {
+    func createHoldWarning(for input: SubtensorStakingSetupViewModelInput, locale: Locale) -> String? {
+        guard let remaining = input.holdRemaining else {
             return nil
         }
 
-        return quoteViewModelFactory.createTradePanel(
-            for: input.quote,
-            amountIn: input.amount,
-            direction: .buy,
-            target: target,
-            annualRate: nil,
-            taoPrice: input.price,
-            locale: locale
-        )
-    }
+        let duration = remaining.localizedDaysHoursOrFallbackMinutes(for: locale)
 
-    func createTradeRow(
-        for input: SubtensorStakingSetupViewModelInput,
-        value: String?,
-        locale: Locale
-    ) -> SubtensorSetupRowViewModel {
-        guard !input.mode.isRootLane else {
-            return .hidden
-        }
-
-        guard input.target != nil else {
-            return .loading
-        }
-
-        let unknown = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown()
-
-        return .value(value ?? unknown)
-    }
-
-    func createSlippage(for input: SubtensorStakingSetupViewModelInput, locale: Locale) -> SubtensorSetupRowViewModel {
-        guard
-            !input.mode.isRootLane,
-            let slippage = quoteViewModelFactory.createSlippageViewModel(for: input.slippage, locale: locale) else {
-            return .hidden
-        }
-
-        return .value(slippage)
-    }
-
-    func createNetworkFee(
-        for input: SubtensorStakingSetupViewModelInput,
-        locale: Locale
-    ) -> BalanceViewModelProtocol? {
-        guard let fee = input.fee else {
-            return nil
-        }
-
-        let feeDecimal = fee.amount.decimal(assetInfo: chainAsset.assetDisplayInfo)
-
-        return balanceViewModelFactory.balanceFromPrice(feeDecimal, priceData: input.price).value(for: locale)
+        return R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiHoldAddMessage(duration)
     }
 
     func createCaption(for input: SubtensorStakingSetupViewModelInput, locale: Locale) -> String? {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
         if input.amountState == .noTao {
-            return R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiGetTaoCaption()
+            return strings.stakingSubtensorUiGetTaoCaption()
         }
 
-        return input.mode.isRootLane ? nil : quoteViewModelFactory.novaFeeDisclosure(locale: locale)
+        switch input.mode {
+        case .rootDetails:
+            return nil
+        case .addStake:
+            return createAddStakeCaption(for: input, locale: locale)
+        case .subnetPick, .buyMore:
+            return strings.stakingSubtensorUiSafetyNote()
+        }
+    }
+
+    func createAddStakeCaption(for input: SubtensorStakingSetupViewModelInput, locale: Locale) -> String? {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        if let remaining = input.holdRemaining {
+            let unlockDate = Date().addingTimeInterval(remaining)
+            let dateText = DateFormatter.shortDateHoursMinutes.value(for: locale).string(from: unlockDate)
+
+            return strings.stakingSubtensorUiHoldAddAvailableFormat(dateText)
+        }
+
+        guard
+            let positionStake = input.positionStake, positionStake > 0,
+            let validator = input.validator.validator,
+            let address = try? validator.hotkey.toAddress(using: chainAsset.chain.chainFormat) else {
+            return nil
+        }
+
+        return strings.stakingSubtensorUiAddsToFormat(
+            formatAmount(positionStake, locale: locale),
+            validator.name ?? address.mediumTruncated
+        )
     }
 
     func createAction(
@@ -342,8 +239,12 @@ private extension SubtensorStakingSetupViewModelFactory {
     ) -> SubtensorSetupActionViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
+        if input.needsValidatorPick, input.amountState != .noTao {
+            return SubtensorSetupActionViewModel(title: strings.stakingSubtensorSelectValidator(), isEnabled: true)
+        }
+
         let hasAmount = (input.amount ?? 0) > 0
-        let showsEnterAmount = !hasAmount && input.amountState != .noTao
+        let showsEnterAmount = !hasAmount && input.amountState != .noTao && !input.isHoldActive
 
         return SubtensorSetupActionViewModel(
             title: showsEnterAmount ? strings.transferSetupEnterAmount() : strings.commonContinue(),

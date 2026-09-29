@@ -14,7 +14,6 @@ enum SubtensorStakingSubmissionError: Error, Equatable {
     case coldkeySwapInProgress
     case rootStakeLocked
     case temporarilyUnavailable
-    case rootClaimTooHeavy
     case safeModeActive
     case feeUnpayable
     case notEnoughStakeToWithdraw
@@ -104,8 +103,6 @@ final class SubtensorStakingErrorMapper {
             return .rootStakeLocked
         case "BetaBasketSeedInProgress", "BasketDepositPending":
             return .temporarilyUnavailable
-        case "RootClaimTooHeavy":
-            return .rootClaimTooHeavy
         default:
             return nil
         }
@@ -204,8 +201,6 @@ extension SubtensorStakingSubmissionError: ErrorContentConvertible {
             strings.stakingSubtensorErrorRootStakeLocked()
         case .temporarilyUnavailable:
             strings.stakingSubtensorErrorTemporarilyUnavailable()
-        case .rootClaimTooHeavy:
-            strings.stakingSubtensorErrorClaimTooHeavy()
         case .safeModeActive:
             strings.stakingSubtensorSafeModeMessage()
         case .feeUnpayable:

@@ -1,26 +1,34 @@
 import Foundation
 
-protocol SubtensorStakingConfirmViewProtocol: CollatorStakingConfirmViewProtocol {
-    func didReceiveQuote(viewModel: SubtensorQuotePanelViewModel?)
-    func didReceiveSlippage(viewModel: String?)
+protocol SubtensorStakingConfirmViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
+    func didReceiveWallet(viewModel: DisplayWalletViewModel)
+    func didReceiveAccount(viewModel: DisplayAddressViewModel)
+    func didReceiveValidator(viewModel: DisplayAddressViewModel)
+    func didReceiveTileIcons(viewModel: SubtensorConfirmTileIconsViewModel)
+    func didReceive(viewModel: SubtensorConfirmViewModel)
 }
 
-protocol SubtensorStakingConfirmInteractorInputProtocol: SubtensorStakingSubmitInteractorInputProtocol {}
-
-protocol SubtensorStakingConfirmInteractorOutputProtocol: SubtensorStakingSubmitInteractorOutputProtocol {}
-
-protocol SubtensorStakingConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
-    AddressOptionsPresentable,
-    FeeRetryable,
-    CommonRetryable,
-    ModalAlertPresenting,
-    MessageSheetPresentable,
-    SubtensorStakingErrorPresentable,
-    ExtrinsicSigningErrorHandling,
-    ExtrinsicSubmissionPresenting {
-    func complete(
-        on view: CollatorStakingConfirmViewProtocol?,
-        sender: ExtrinsicSenderResolution,
-        title: ExtrinsicSubmissionPresentingParams.Title
-    )
+protocol SubtensorStakingConfirmPresenterProtocol: AnyObject {
+    func setup()
+    func didAppear()
+    func confirm()
+    func selectAccount()
+    func selectValidator()
+    func showSwapRateInfo()
+    func showSlippageInfo()
+    func showEarnPerMonthInfo()
+    func showNetworkFeeInfo()
 }
+
+protocol SubtensorConfirmInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {
+    func loadSubnetData()
+}
+
+protocol SubtensorConfirmInteractorOutputProtocol: SubtensorStakingBaseInteractorOutputProtocol {
+    func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?)
+    func didReceiveEarnConfig(_ config: SubtensorEarnConfig?)
+}
+
+protocol SubtensorStakingConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
+    CommonRetryable, MessageSheetPresentable, SubtensorStakingErrorPresentable, SubtensorInfoSheetPresentable,
+    SubtensorValidatorInfoPresentable, SubtensorOperationResultPresenting {}

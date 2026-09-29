@@ -2,10 +2,10 @@ import Operation_iOS
 import SubstrateSdk
 import UIKit
 
-final class SubtensorUnstakeSetupInteractor: SubtensorStakingDelegateBaseInteractor {
-    var presenter: SubtensorUnstakeSetupInteractorOutputProtocol? {
+final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
+    var presenter: SubtensorUnstakeInteractorOutputProtocol? {
         get {
-            basePresenter as? SubtensorUnstakeSetupInteractorOutputProtocol
+            basePresenter as? SubtensorUnstakeInteractorOutputProtocol
         }
 
         set {
@@ -14,56 +14,65 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingDelegateBaseInterac
     }
 
     let subnetsService: SubtensorSubnetsServiceProtocol
+    let catalogueService: SubtensorSubnetCatalogueServiceProtocol
+    let earnConfigProvider: SubtensorEarnConfigProviderProtocol
+    let validatorFactory: SubtensorValidatorPresetFactoryProtocol
+    let rootHoldFactory: SubtensorRootHoldFactoryProtocol
+
+    private let catalogueCallStore = CancellableCallStore()
+    private let configCallStore = CancellableCallStore()
+    private let validatorCallStore = CancellableCallStore()
+    private let holdsCallStore = CancellableCallStore()
 
     init(
+        flowServices: SubtensorFlowServices,
         chainAsset: ChainAsset,
-        selectedAccount: ChainAccountResponse,
-        positionsSyncService: SubtensorPositionsSyncServiceProtocol,
-        rootClaimableService: SubtensorRootClaimableServiceProtocol,
-        preflightFactory: SubtensorPreflightFactoryProtocol,
-        tradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol,
-        operationService: SubtensorStakingOperationServiceProtocol,
         subnetsService: SubtensorSubnetsServiceProtocol,
-        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
-        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        catalogueService: SubtensorSubnetCatalogueServiceProtocol,
+        earnConfigProvider: SubtensorEarnConfigProviderProtocol,
+        validatorFactory: SubtensorValidatorPresetFactoryProtocol,
+        rootHoldFactory: SubtensorRootHoldFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
-        runtimeProvider: RuntimeCodingServiceProtocol,
-        identityProxyFactory: IdentityProxyFactoryProtocol,
-        currencyManager: CurrencyManagerProtocol,
-        operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.subnetsService = subnetsService
+        self.catalogueService = catalogueService
+        self.earnConfigProvider = earnConfigProvider
+        self.validatorFactory = validatorFactory
+        self.rootHoldFactory = rootHoldFactory
 
         super.init(
             chainAsset: chainAsset,
-            selectedAccount: selectedAccount,
-            positionsSyncService: positionsSyncService,
-            rootClaimableService: rootClaimableService,
-            preflightFactory: preflightFactory,
-            tradeQuoteFactory: tradeQuoteFactory,
-            operationService: operationService,
-            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
-            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            selectedAccount: flowServices.account.chainAccount,
+            positionsSyncService: flowServices.positionsSyncService,
+            rootClaimableService: flowServices.rootClaimableService,
+            preflightFactory: flowServices.preflightFactory,
+            tradeQuoteFactory: flowServices.tradeQuoteFactory,
+            operationService: flowServices.operationService,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
-            runtimeProvider: runtimeProvider,
-            identityProxyFactory: identityProxyFactory,
-            currencyManager: currencyManager,
-            operationQueue: operationQueue,
+            runtimeProvider: flowServices.runtimeProvider,
+            currencyManager: flowServices.currencyManager,
+            operationQueue: flowServices.operationQueue,
             logger: logger
         )
     }
 
-    override func onSetup() {
-        super.onSetup()
-
-        provideSubnetsInfo()
+    deinit {
+        catalogueCallStore.cancel()
+        configCallStore.cancel()
+        validatorCallStore.cancel()
+        holdsCallStore.cancel()
     }
 }
 
-private extension SubtensorUnstakeSetupInteractor {
-    func provideSubnetsInfo() {
-        subnetsService.fetchSubnetsInfo(runningCompletionIn: .main) { [weak self] result in
+extension SubtensorUnstakeSetupInteractor: SubtensorUnstakeInteractorInputProtocol {
+    func loadSubnetsInfo(forcingRefresh: Bool) {
+        subnetsService.fetchSubnetsInfo(
+            forcingRefresh: forcingRefresh,
+            runningCompletionIn: .main
+        ) { [weak self] result in
             switch result {
             case let .success(info):
                 self?.presenter?.didReceiveSubnetsInfo(info)
@@ -72,10 +81,79 @@ private extension SubtensorUnstakeSetupInteractor {
             }
         }
     }
-}
 
-extension SubtensorUnstakeSetupInteractor: SubtensorUnstakeSetupInteractorInputProtocol {
-    func retrySubnetsInfo() {
-        provideSubnetsInfo()
+    func loadCatalogue(forcingRefresh: Bool) {
+        catalogueCallStore.cancel()
+
+        executeCancellable(
+            wrapper: catalogueService.createCatalogueWrapper(forcingRefresh: forcingRefresh),
+            inOperationQueue: operationQueue,
+            backingCallIn: catalogueCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(catalogue):
+                self?.presenter?.didReceiveCatalogue(catalogue)
+            case let .failure(error):
+                self?.logger.warning("Subtensor catalogue unavailable for the unstake: \(error)")
+                self?.presenter?.didReceiveCatalogue(nil)
+            }
+        }
+    }
+
+    func loadEarnConfig() {
+        configCallStore.cancel()
+
+        executeCancellable(
+            wrapper: earnConfigProvider.createConfigWrapper(),
+            inOperationQueue: operationQueue,
+            backingCallIn: configCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(config):
+                self?.presenter?.didReceiveEarnConfig(config)
+            case let .failure(error):
+                self?.logger.warning("Subtensor Earn config unavailable for the unstake mark: \(error)")
+                self?.presenter?.didReceiveEarnConfig(nil)
+            }
+        }
+    }
+
+    func loadValidator(_ hotkey: AccountId, on subnet: SubtensorSubnetRef) {
+        validatorCallStore.cancel()
+
+        executeCancellable(
+            wrapper: validatorFactory.createLockedWrapper(for: hotkey, subnet: subnet),
+            inOperationQueue: operationQueue,
+            backingCallIn: validatorCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(validator):
+                self?.presenter?.didReceiveValidator(validator, hotkey: hotkey)
+            case let .failure(error):
+                self?.logger.warning("Subtensor unstake validator unavailable: \(error)")
+                self?.presenter?.didReceiveValidator(nil, hotkey: hotkey)
+            }
+        }
+    }
+
+    func loadRootHolds(for hotkeys: [AccountId]) {
+        holdsCallStore.cancel()
+
+        executeCancellable(
+            wrapper: rootHoldFactory.createHoldsWrapper(coldkey: selectedAccount.accountId, hotkeys: hotkeys),
+            inOperationQueue: operationQueue,
+            backingCallIn: holdsCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(holds):
+                self?.presenter?.didReceiveRootHolds(holds)
+            case let .failure(error):
+                self?.logger.warning("Subtensor root holds unavailable for the unstake: \(error)")
+            }
+        }
     }
 }

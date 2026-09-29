@@ -16,12 +16,17 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
     let presetFactory: SubtensorValidatorPresetFactoryProtocol
     let yieldService: SubtensorYieldServiceProtocol
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
+    let rankingViewService: SubtensorRankingViewServiceProtocol
+    let earnConfigProvider: SubtensorEarnConfigProviderProtocol
     let subnetsService: SubtensorSubnetsServiceProtocol
     let earnSettings: SubtensorEarnSettingsProtocol
 
     private let validatorCallStore = CancellableCallStore()
     private let rootYieldCallStore = CancellableCallStore()
     private let catalogueCallStore = CancellableCallStore()
+    private let yieldsCallStore = CancellableCallStore()
+    private let rankingCallStore = CancellableCallStore()
+    private let configCallStore = CancellableCallStore()
 
     init(
         flowServices: SubtensorFlowServices,
@@ -29,6 +34,8 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
         presetFactory: SubtensorValidatorPresetFactoryProtocol,
         yieldService: SubtensorYieldServiceProtocol,
         catalogueService: SubtensorSubnetCatalogueServiceProtocol,
+        rankingViewService: SubtensorRankingViewServiceProtocol,
+        earnConfigProvider: SubtensorEarnConfigProviderProtocol,
         subnetsService: SubtensorSubnetsServiceProtocol,
         earnSettings: SubtensorEarnSettingsProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
@@ -37,6 +44,8 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
         self.presetFactory = presetFactory
         self.yieldService = yieldService
         self.catalogueService = catalogueService
+        self.rankingViewService = rankingViewService
+        self.earnConfigProvider = earnConfigProvider
         self.subnetsService = subnetsService
         self.earnSettings = earnSettings
 
@@ -62,6 +71,9 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
         validatorCallStore.cancel()
         rootYieldCallStore.cancel()
         catalogueCallStore.cancel()
+        yieldsCallStore.cancel()
+        rankingCallStore.cancel()
+        configCallStore.cancel()
     }
 }
 
@@ -154,6 +166,63 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
             case let .failure(error):
                 self?.logger.warning("Subtensor catalogue unavailable for the setup: \(error)")
                 self?.presenter?.didReceiveCatalogue(nil)
+            }
+        }
+    }
+
+    func loadYields(netuid: UInt16) {
+        yieldsCallStore.cancel()
+
+        executeCancellable(
+            wrapper: yieldService.createAlphaYieldsWrapper(for: netuid),
+            inOperationQueue: operationQueue,
+            backingCallIn: yieldsCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(yields):
+                self?.presenter?.didReceiveYields(yields, netuid: netuid)
+            case let .failure(error):
+                self?.logger.warning("Subtensor subnet yields unavailable for the setup: \(error)")
+                self?.presenter?.didReceiveYields(nil, netuid: netuid)
+            }
+        }
+    }
+
+    func loadRankingView() {
+        rankingCallStore.cancel()
+
+        executeCancellable(
+            wrapper: rankingViewService.createRankingViewWrapper(),
+            inOperationQueue: operationQueue,
+            backingCallIn: rankingCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(rankingView):
+                self?.presenter?.didReceiveRankingView(rankingView)
+            case let .failure(error):
+                self?.logger.warning("Subtensor ranking view unavailable for the setup: \(error)")
+                self?.presenter?.didReceiveRankingView(nil)
+            }
+        }
+    }
+
+    func loadEarnConfig() {
+        configCallStore.cancel()
+
+        executeCancellable(
+            wrapper: earnConfigProvider.createConfigWrapper(),
+            inOperationQueue: operationQueue,
+            backingCallIn: configCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(config):
+                self?.presenter?.didReceiveEarnConfig(config)
+            case let .failure(error):
+                self?.logger.warning("Subtensor Earn config unavailable for the setup mark: \(error)")
+                self?.presenter?.didReceiveEarnConfig(nil)
             }
         }
     }

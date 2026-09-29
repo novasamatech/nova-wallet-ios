@@ -40,7 +40,10 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
         return ChainAsset(chain: chain, asset: asset)
     }
 
-    private func makePreflight() -> SubtensorStakingPreflight {
+    private func makePreflight(
+        rootStakeUnlockInterval: UInt64 = 0,
+        lastStakeBlock: UInt64? = nil
+    ) -> SubtensorStakingPreflight {
         SubtensorStakingPreflight(
             hotkeyExists: true,
             subnetExists: true,
@@ -48,8 +51,8 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
             hasColdkeySwapAnnouncement: false,
             isSafeModeActive: false,
             stakeAvailability: nil,
-            rootStakeUnlockInterval: 0,
-            lastStakeBlock: nil,
+            rootStakeUnlockInterval: rootStakeUnlockInterval,
+            lastStakeBlock: lastStakeBlock,
             minStake: 2_000_000,
             effectiveNominatorMinStake: 1,
             rootClaimableThreshold: 500_000,
@@ -115,6 +118,37 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
             expectedOut: quote.sim.alphaAmount,
             swapMinimumOut: swapMinimumOut,
             minimumOut: swapMinimumOut,
+            limitPrice: limitPrice
+        )
+    }
+
+    private func makeNetOfFeeQuote() throws -> SubtensorTradeQuote {
+        let quote = SubtensorQuote(
+            args: SubtensorQuoteArgs(netuid: 1, direction: .stake(taoIn: 4_957_858_206)),
+            sim: SubtensorStakingPallet.SimSwapResult(
+                taoAmount: 4_955_362_724,
+                alphaAmount: 67_500_000_000,
+                taoFee: 2_495_482,
+                alphaFee: 0,
+                taoSlippage: 0,
+                alphaSlippage: 0
+            ),
+            spotPrice: 73_450_000,
+            feeRate: 33
+        )
+
+        let limitPrice = try SubtensorLimitPriceCalculator.buyLimit(
+            spot: quote.spotPrice,
+            tolerance: SubtensorSlippageTolerance.defaultTolerance
+        )
+
+        return SubtensorTradeQuote(
+            quote: quote,
+            amountIn: 5_000_000_000,
+            novaFee: SubtensorNovaFee(amount: 42_141_794, beneficiary: Data(repeating: 0xA4, count: 32)),
+            expectedOut: 67_500_000_000,
+            swapMinimumOut: 65_580_135_000,
+            minimumOut: 65_580_135_000,
             limitPrice: limitPrice
         )
     }
@@ -199,6 +233,9 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
             when(stub.loadRootYield()).thenDoNothing()
             when(stub.loadSubnet(netuid: any())).thenDoNothing()
             when(stub.loadCatalogue()).thenDoNothing()
+            when(stub.loadYields(netuid: any())).thenDoNothing()
+            when(stub.loadRankingView()).thenDoNothing()
+            when(stub.loadEarnConfig()).thenDoNothing()
         }
 
         let wireframe = MockSubtensorStakingSetupWireframeProtocol()
@@ -280,6 +317,27 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
         verify(setup.view, atLeastOnce()).didReceive(viewModel: captor.capture())
 
         return try XCTUnwrap(captor.allValues.last)
+    }
+
+    private func lastCardViewModel(_ setup: Setup) throws -> SubtensorPickCardViewModel {
+        var card: SubtensorPickCardViewModel?
+
+        if case let .subnet(details) = try lastViewModel(setup).details {
+            card = details.card
+        }
+
+        return try XCTUnwrap(card)
+    }
+
+    private func stubNavigation(_ setup: Setup) {
+        stub(setup.wireframe) { stub in
+            when(stub.showValidatorSelection(from: any(), target: any(), selectedHotkey: any(), delegate: any()))
+                .thenDoNothing()
+            when(stub.showValidatorInfo(from: any(), target: any(), hotkey: any(), detail: any())).thenDoNothing()
+            when(stub.showSubnetSelection(from: any(), delegate: any())).thenDoNothing()
+            when(stub.showSubnetDetails(from: any(), input: any(), delegate: any())).thenDoNothing()
+            when(stub.showSlippageSettings(from: any(), current: any(), completion: any())).thenDoNothing()
+        }
     }
 
     func testMaxKeepsTheFeeReserve() {
@@ -388,6 +446,36 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
         XCTAssertEqual(model?.acknowledgedQuote, quote)
     }
 
+    func testSubnetProceedHandsOverTheFreshApyOfTheValidator() throws {
+        let setup = makeSetup(mode: .rootDetails)
+        let stamp = SubtensorBackendStamp(asOf: Date(), freshness: .fresh)
+
+        setup.presenter.didSelectStakeTarget(
+            makeSubnetTarget(price: 7_000_000),
+            validator: makeValidator(hotkey: hotkey, netuid: 1)
+        )
+        setup.presenter.didReceiveYields(
+            SubtensorAlphaYields(
+                netuid: 1,
+                yields: [hotkey: SubtensorReportedYield(reportedRate: "12.5", stamp: stamp)],
+                stamp: stamp,
+                isTruncated: false
+            ),
+            netuid: 1
+        )
+        setup.presenter.didReceiveFee(makeFee(1_000_000))
+        setup.presenter.updateAmount(Decimal(string: "1"))
+        setup.presenter.didReceiveQuote(try makeTradeQuote(taoIn: 1_000_000_000, spotPrice: 7_683_255))
+        setup.presenter.didReceivePreflight(makePreflight())
+
+        let model = proceedAndCaptureModel(setup)
+
+        XCTAssertEqual(
+            model?.validator.annualRate,
+            try XCTUnwrap(Decimal(string: "0.125", locale: Locale(identifier: "en_US_POSIX")))
+        )
+    }
+
     func testSubnetProceedWithoutQuoteIsBlockedByValidation() {
         let setup = makeSetup(mode: .rootDetails)
 
@@ -447,5 +535,125 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
             selectedHotkey: any(),
             delegate: any()
         )
+    }
+
+    func testYouWillGetShowsTheNetOfFeeQuoteForTheEnteredGrossAmount() throws {
+        let setup = makeSetup(
+            mode: .subnetPick(target: makeSubnetTarget(), validator: makeValidator(hotkey: hotkey, netuid: 1))
+        )
+
+        setup.presenter.updateAmount(5)
+        setup.presenter.didReceiveQuote(try makeNetOfFeeQuote())
+
+        verify(setup.interactor).refreshQuote(
+            for: equal(
+                to: .buy(netuid: 1, grossTao: 5_000_000_000, tolerance: SubtensorSlippageTolerance.defaultTolerance)
+            )
+        )
+
+        let card = try lastCardViewModel(setup)
+
+        XCTAssertEqual(card.receive, .value("\u{2066}≈ 67.5 SN1\u{2069}"))
+        XCTAssertEqual(card.swapRate, .value("\u{2066}1 TAO ≈ 13.5 SN1\u{2069}"))
+    }
+
+    func testBuyMoreKeepsTheSubnetAndTheValidatorOfThePosition() throws {
+        let position = makePosition(hotkey: hotkey, netuid: 1, stake: 5000)
+        let otherHotkey = Data(repeating: 0x33, count: 32)
+        let subnetTarget = makeSubnetTarget(price: 7_000_000)
+        let setup = makeSetup(mode: .buyMore(position: position))
+
+        stubNavigation(setup)
+
+        setup.presenter.didReceiveSubnet(subnetTarget)
+        setup.presenter.didSelectStakeTarget(makeSubnetTarget(netuid: 2), validator: nil)
+        setup.presenter.didSelectValidator(makeValidator(hotkey: otherHotkey, netuid: 1), for: subnetTarget)
+        setup.presenter.selectValidator()
+        setup.presenter.chooseMyself()
+        setup.presenter.selectCardHeader()
+        setup.presenter.selectSettings()
+
+        setup.presenter.didReceiveFee(makeFee(1_000_000))
+        setup.presenter.updateAmount(1)
+        setup.presenter.didReceiveQuote(try makeTradeQuote(taoIn: 1_000_000_000, spotPrice: 7_683_255))
+        setup.presenter.didReceivePreflight(makePreflight())
+
+        let model = proceedAndCaptureModel(setup)
+
+        XCTAssertEqual(model?.origin, .buyMore)
+        XCTAssertEqual(model?.target, subnetTarget)
+        XCTAssertEqual(model?.validator.hotkey, hotkey)
+        XCTAssertFalse(try lastViewModel(setup).hasSettings)
+        verify(setup.interactor, never()).presetValidator(on: any(), existingHotkey: any())
+        verify(setup.wireframe, never()).showValidatorSelection(
+            from: any(),
+            target: any(),
+            selectedHotkey: any(),
+            delegate: any()
+        )
+        verify(setup.wireframe, never()).showSubnetSelection(from: any(), delegate: any())
+        verify(setup.wireframe, never()).showSubnetDetails(from: any(), input: any(), delegate: any())
+        verify(setup.wireframe, never()).showSlippageSettings(from: any(), current: any(), completion: any())
+    }
+
+    func testAddStakeKeepsTheRootLaneAndTheValidatorOfThePosition() {
+        let position = makePosition(hotkey: hotkey, netuid: SubtensorStakingPallet.rootNetuid, stake: 5000)
+        let otherHotkey = Data(repeating: 0x33, count: 32)
+        let setup = makeSetup(mode: .addStake(position: position))
+
+        stubNavigation(setup)
+
+        setup.presenter.didSelectStakeTarget(makeSubnetTarget(), validator: makeValidator(hotkey: otherHotkey, netuid: 1))
+        setup.presenter.didSelectValidator(
+            makeValidator(hotkey: otherHotkey, netuid: SubtensorStakingPallet.rootNetuid),
+            for: .root
+        )
+        setup.presenter.selectValidator()
+        setup.presenter.chooseMyself()
+        setup.presenter.selectCardHeader()
+        setup.presenter.selectSettings()
+
+        setup.presenter.didReceivePreflight(makePreflight())
+        setup.presenter.updateAmount(1)
+
+        let model = proceedAndCaptureModel(setup)
+
+        XCTAssertEqual(model?.origin, .addStake)
+        XCTAssertEqual(model?.target, .root)
+        XCTAssertEqual(model?.validator.hotkey, hotkey)
+        verify(setup.wireframe).showValidatorInfo(
+            from: any(),
+            target: equal(to: .root),
+            hotkey: equal(to: hotkey),
+            detail: any()
+        )
+        verify(setup.wireframe, never()).showValidatorSelection(
+            from: any(),
+            target: any(),
+            selectedHotkey: any(),
+            delegate: any()
+        )
+        verify(setup.wireframe, never()).showSubnetSelection(from: any(), delegate: any())
+        verify(setup.wireframe, never()).showSubnetDetails(from: any(), input: any(), delegate: any())
+        verify(setup.wireframe, never()).showSlippageSettings(from: any(), current: any(), completion: any())
+    }
+
+    func testAddStakeDuringTheRootHoldShowsTheLockAndDisablesContinue() throws {
+        let position = makePosition(hotkey: hotkey, netuid: SubtensorStakingPallet.rootNetuid, stake: 5000)
+        let setup = makeSetup(mode: .addStake(position: position))
+
+        setup.presenter.didReceivePreflight(makePreflight(rootStakeUnlockInterval: 7200, lastStakeBlock: 1000))
+        setup.presenter.didReceiveBlockNumber(1100)
+        setup.presenter.updateAmount(1)
+
+        let viewModel = try lastViewModel(setup)
+
+        XCTAssertNotNil(viewModel.holdWarning)
+        XCTAssertFalse(viewModel.action.isEnabled)
+
+        setup.presenter.didReceiveBlockNumber(8200)
+
+        XCTAssertNil(try lastViewModel(setup).holdWarning)
+        XCTAssertTrue(try lastViewModel(setup).action.isEnabled)
     }
 }

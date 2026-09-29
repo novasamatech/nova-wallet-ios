@@ -4,23 +4,16 @@ import UIKit
 final class SubtensorStakingConfirmViewController: UIViewController, ViewHolder {
     typealias RootViewType = SubtensorStakingConfirmViewLayout
 
-    let presenter: CollatorStakingConfirmPresenterProtocol
-
-    let localizableTitle: LocalizableResource<String>
-    let statics: CollatorStakingDelegateStatics
-    let isRoot: Bool
+    let presenter: SubtensorStakingConfirmPresenterProtocol
+    let mode: SubtensorStakingConfirmViewLayout.Mode
 
     init(
-        presenter: CollatorStakingConfirmPresenterProtocol,
-        localizableTitle: LocalizableResource<String>,
-        statics: CollatorStakingDelegateStatics,
-        isRoot: Bool,
+        presenter: SubtensorStakingConfirmPresenterProtocol,
+        mode: SubtensorStakingConfirmViewLayout.Mode,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
-        self.localizableTitle = localizableTitle
-        self.statics = statics
-        self.isRoot = isRoot
+        self.mode = mode
 
         super.init(nibName: nil, bundle: nil)
 
@@ -39,12 +32,17 @@ final class SubtensorStakingConfirmViewController: UIViewController, ViewHolder 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        rootView.setRootMode(isRoot)
-        rootView.receiveCell.isHidden = !isRoot
+        rootView.setupMode(mode)
         setupHandlers()
         setupLocalization()
 
         presenter.setup()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        presenter.didAppear()
     }
 }
 
@@ -52,44 +50,123 @@ private extension SubtensorStakingConfirmViewController {
     func setupLocalization() {
         let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
 
-        title = isRoot ? strings.stakingSubtensorUiStakeToRoot() : strings.stakingSubtensorUiReview()
-        rootView.receiveAmountLabel.text = strings.stakingSubtensorUiQuoteLoading()
+        rootView.priceMovedView.contentView.detailsLabel.text = strings.stakingSubtensorConfirmPriceMoved()
 
-        rootView.actionButton.imageWithTitleView?.title = strings.commonConfirm()
+        rootView.swapRateCell.titleButton.setTitle(strings.stakingSubtensorUiSwapRate())
+        rootView.slippageCell.titleButton.setTitle(strings.swapsSetupSlippage())
+        rootView.validatorCell.titleButton.setTitle(strings.stakingCommonValidator())
+        rootView.earnCell.titleButton.setTitle(strings.stakingSubtensorUiEarnTokensMonth())
+        rootView.networkFeeCell.titleButton.setTitle(strings.commonNetworkFee())
 
         rootView.walletCell.titleLabel.text = strings.commonWallet()
         rootView.accountCell.titleLabel.text = strings.commonAccount()
+        rootView.rootFeeCell.rowContentView.locale = selectedLocale
 
-        rootView.networkFeeCell.rowContentView.locale = selectedLocale
-
-        rootView.receiveCell.titleLabel.text = strings.stakingSubtensorQuoteReceiveTitle()
-        rootView.poolFeeCell.titleLabel.text = strings.stakingSubtensorQuotePoolFeeTitle()
-        rootView.priceImpactCell.titleLabel.text = strings.stakingSubtensorQuotePriceImpactTitle()
-        rootView.slippageCell.titleLabel.text = strings.swapsSetupSlippage()
-
-        rootView.collatorCell.titleLabel.text = statics.delegateTitle.value(for: selectedLocale)
         rootView.stakingTypeCell.titleLabel.text = strings.stakingSubtensorUiStakingType()
         rootView.stakingTypeCell.bind(details: strings.stakingSubtensorUiRootStaking())
+        rootView.stakeAfterCell.titleLabel.text = strings.stakingSubtensorUiStakeAfter()
+        rootView.rootValidatorCell.titleLabel.text = strings.stakingCommonValidator()
+        rootView.apyCell.titleLabel.text = strings.stakingSubtensorUiValidatorSortApy()
     }
 
     func setupHandlers() {
-        rootView.actionButton.addTarget(
-            self,
-            action: #selector(actionConfirm),
-            for: .touchUpInside
+        rootView.actionButton.addTarget(self, action: #selector(actionConfirm), for: .touchUpInside)
+        rootView.accountCell.addTarget(self, action: #selector(actionSelectAccount), for: .touchUpInside)
+        rootView.validatorCell.addTarget(self, action: #selector(actionSelectValidator), for: .touchUpInside)
+        rootView.rootValidatorCell.addTarget(self, action: #selector(actionSelectValidator), for: .touchUpInside)
+        rootView.swapRateCell.addTarget(self, action: #selector(actionSwapRateInfo), for: .touchUpInside)
+        rootView.slippageCell.addTarget(self, action: #selector(actionSlippageInfo), for: .touchUpInside)
+        rootView.earnCell.addTarget(self, action: #selector(actionEarnInfo), for: .touchUpInside)
+        rootView.networkFeeCell.addTarget(self, action: #selector(actionNetworkFeeInfo), for: .touchUpInside)
+    }
+
+    func bindTile(_ tileView: SwapElementView, state: LoadableViewModelState<SubtensorConfirmTileViewModel>) {
+        if let viewModel = state.value {
+            tileView.valueLabel.text = viewModel.amount
+            tileView.priceLabel.text = viewModel.price ?? " "
+        }
+
+        switch state {
+        case .loading, .cached:
+            tileView.valueLabel.startShimmeringOpacity()
+            tileView.priceLabel.startShimmeringOpacity()
+        case .loaded:
+            tileView.valueLabel.stopShimmeringOpacity()
+            tileView.priceLabel.stopShimmeringOpacity()
+        }
+    }
+
+    func bindIcon(_ iconViewModel: ImageViewModelProtocol?, on tileView: SwapElementView) {
+        let insets = tileView.assetIconView.contentInsets
+        let diameter = 2 * SwapElementView.assetIconRadius
+
+        let size = CGSize(
+            width: diameter - insets.left - insets.right,
+            height: diameter - insets.top - insets.bottom
         )
 
-        rootView.accountCell.addTarget(
-            self,
-            action: #selector(actionSelectAccount),
-            for: .touchUpInside
-        )
+        tileView.assetIconView.bind(viewModel: iconViewModel, size: size)
+    }
 
-        rootView.collatorCell.addTarget(
-            self,
-            action: #selector(actionSelectCollator),
-            for: .touchUpInside
-        )
+    func bindSwap(_ viewModel: SubtensorConfirmSwapViewModel, networkFee: BalanceViewModelProtocol?) {
+        bindTile(rootView.pairsView.leftAssetView, state: .loaded(value: viewModel.pay))
+        bindTile(rootView.pairsView.rigthAssetView, state: viewModel.receive)
+
+        rootView.swapRateCell.bind(loadableViewModel: viewModel.swapRate)
+
+        rootView.slippageCell.isHidden = viewModel.slippage == nil
+        rootView.slippageCell.bind(loadableViewModel: .loaded(value: viewModel.slippage ?? ""))
+
+        rootView.validatorCell.rowContentView.bind(apy: viewModel.validatorApy)
+
+        rootView.earnCell.isHidden = viewModel.earnPerMonth == nil
+
+        if let earnPerMonth = viewModel.earnPerMonth {
+            rootView.earnCell.bind(
+                loadableViewModel: earnPerMonth.map { NetworkFeeInfoViewModel(isEditable: false, balanceViewModel: $0) }
+            )
+        }
+
+        let feeViewModel: LoadableViewModelState<NetworkFeeInfoViewModel> = networkFee.map {
+            .loaded(value: NetworkFeeInfoViewModel(isEditable: false, balanceViewModel: $0))
+        } ?? .loading
+
+        rootView.networkFeeCell.bind(loadableViewModel: feeViewModel)
+
+        rootView.remarkLabel.text = viewModel.remark
+        rootView.remarkLabel.isHidden = viewModel.remark == nil
+    }
+
+    func bindRoot(_ viewModel: SubtensorConfirmRootViewModel, networkFee: BalanceViewModelProtocol?) {
+        rootView.amountView.bind(viewModel: viewModel.amount)
+        rootView.rootFeeCell.rowContentView.bind(viewModel: networkFee)
+
+        rootView.stakeAfterCell.isHidden = viewModel.stakeAfter == nil
+        rootView.stakeAfterCell.bind(details: viewModel.stakeAfter ?? "")
+
+        rootView.apyCell.isHidden = viewModel.apy == nil
+        rootView.apyCell.bind(details: viewModel.apy ?? "")
+    }
+
+    func bindAction(_ viewModel: SubtensorConfirmActionViewModel) {
+        rootView.actionButton.imageWithTitleView?.title = viewModel.title
+
+        if viewModel.isEnabled {
+            rootView.actionButton.applyEnabledStyle()
+        } else {
+            rootView.actionButton.applyDisabledStyle()
+        }
+
+        rootView.actionButton.isUserInteractionEnabled = viewModel.isEnabled
+        rootView.actionButton.invalidateLayout()
+    }
+
+    func bindSigningHint(_ hint: String?) {
+        rootView.signingHintView.isHidden = hint == nil
+
+        if let hint {
+            rootView.signingHintView.bindHint(text: hint, icon: R.image.iconWatchOnly())
+        }
     }
 
     @objc func actionConfirm() {
@@ -100,18 +177,28 @@ private extension SubtensorStakingConfirmViewController {
         presenter.selectAccount()
     }
 
-    @objc func actionSelectCollator() {
-        presenter.selectCollator()
+    @objc func actionSelectValidator() {
+        presenter.selectValidator()
+    }
+
+    @objc func actionSwapRateInfo() {
+        presenter.showSwapRateInfo()
+    }
+
+    @objc func actionSlippageInfo() {
+        presenter.showSlippageInfo()
+    }
+
+    @objc func actionEarnInfo() {
+        presenter.showEarnPerMonthInfo()
+    }
+
+    @objc func actionNetworkFeeInfo() {
+        presenter.showNetworkFeeInfo()
     }
 }
 
 extension SubtensorStakingConfirmViewController: SubtensorStakingConfirmViewProtocol {
-    func didReceiveAmount(viewModel: BalanceViewModelProtocol) {
-        rootView.amountView.bind(viewModel: viewModel)
-        rootView.payAmountLabel.text = viewModel.amount
-        rootView.payPriceLabel.text = viewModel.price
-    }
-
     func didReceiveWallet(viewModel: DisplayWalletViewModel) {
         rootView.walletCell.bind(viewModel: viewModel.cellViewModel)
     }
@@ -120,42 +207,32 @@ extension SubtensorStakingConfirmViewController: SubtensorStakingConfirmViewProt
         rootView.accountCell.bind(viewModel: viewModel.cellViewModel)
     }
 
-    func didReceiveFee(viewModel: BalanceViewModelProtocol?) {
-        rootView.networkFeeCell.rowContentView.bind(viewModel: viewModel)
+    func didReceiveValidator(viewModel: DisplayAddressViewModel) {
+        rootView.validatorCell.rowContentView.bind(viewModel: viewModel)
+
+        rootView.rootValidatorCell.detailsLabel.lineBreakMode = viewModel.lineBreakMode
+        rootView.rootValidatorCell.bind(viewModel: viewModel.cellViewModel)
     }
 
-    func didReceiveCollator(viewModel: DisplayAddressViewModel) {
-        rootView.collatorCell.titleLabel.lineBreakMode = viewModel.lineBreakMode
-        rootView.collatorCell.bind(viewModel: viewModel.cellViewModel)
+    func didReceiveTileIcons(viewModel: SubtensorConfirmTileIconsViewModel) {
+        bindIcon(viewModel.pay, on: rootView.pairsView.leftAssetView)
+        bindIcon(viewModel.receive, on: rootView.pairsView.rigthAssetView)
     }
 
-    func didReceiveHints(viewModel: [String]) {
-        rootView.hintListView.bind(texts: viewModel)
-    }
+    func didReceive(viewModel: SubtensorConfirmViewModel) {
+        title = viewModel.title
 
-    func didReceiveQuote(viewModel: SubtensorQuotePanelViewModel?) {
-        rootView.quoteTableView.isHidden = viewModel == nil
-
-        guard let viewModel else {
-            return
+        switch viewModel.content {
+        case let .swap(swapViewModel):
+            bindSwap(swapViewModel, networkFee: viewModel.networkFee)
+        case let .root(rootViewModel):
+            bindRoot(rootViewModel, networkFee: viewModel.networkFee)
         }
 
-        rootView.receiveCell.bind(details: viewModel.receive)
-        rootView.receiveAmountLabel.text = viewModel.receive
-        rootView.receivePriceLabel.text = R.string(
-            preferredLanguages: selectedLocale.rLanguages
-        ).localizable.stakingSubtensorUiCurrentRate()
-        rootView.poolFeeCell.bind(details: viewModel.poolFee)
-        rootView.priceImpactCell.bind(details: viewModel.priceImpact)
+        rootView.priceMovedView.isHidden = !viewModel.isPriceMoved
 
-        rootView.priceImpactCell.detailsLabel.textColor = viewModel.isImpactHigh
-            ? R.color.colorTextNegative()
-            : R.color.colorTextPrimary()
-    }
-
-    func didReceiveSlippage(viewModel: String?) {
-        rootView.slippageCell.isHidden = viewModel == nil
-        rootView.slippageCell.bind(details: viewModel ?? "")
+        bindAction(viewModel.action)
+        bindSigningHint(viewModel.signingHint)
     }
 
     func didStartLoading() {

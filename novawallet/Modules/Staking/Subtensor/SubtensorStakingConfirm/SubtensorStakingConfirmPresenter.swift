@@ -1,160 +1,154 @@
-import BigInt
 import Foundation
 import Foundation_iOS
 
 final class SubtensorStakingConfirmPresenter {
-    weak var view: CollatorStakingConfirmViewProtocol?
+    weak var view: SubtensorStakingConfirmViewProtocol?
     let wireframe: SubtensorStakingConfirmWireframeProtocol
-    let interactor: SubtensorStakingConfirmInteractorInputProtocol
+    let interactor: SubtensorConfirmInteractorInputProtocol
 
-    let selectedAccount: MetaChainAccountResponse
     let chainAsset: ChainAsset
     let model: SubtensorStakingConfirmModel
-    let logger: LoggerProtocol
-    let balanceViewModelFactory: BalanceViewModelFactoryProtocol
-    let quoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
+    let signing: SubtensorOperationGate.Verdict
+    let viewModelFactory: SubtensorConfirmViewModelFactoryProtocol
     let dataValidationFactory: SubtensorStakingValidationFactoryProtocol
+    let logger: LoggerProtocol
 
-    private(set) var balance: AssetBalance?
-    private(set) var price: PriceData?
-    private(set) var fee: ExtrinsicFeeProtocol?
-    private(set) var positionsState: Multistaking.SubtensorStakingState?
-    private(set) var preflight: SubtensorStakingPreflight?
-    private(set) var existentialDeposit: Balance?
-    private(set) var currentBlock: BlockNumber?
-    private(set) var quoteFlow = SubtensorQuoteFlowModel()
-    private(set) var acknowledgedQuote: SubtensorTradeQuote?
-    private(set) var tradesUnavailable = false
+    var balance: AssetBalance?
+    var price: PriceData?
+    var fee: ExtrinsicFeeProtocol?
+    var positionsState: Multistaking.SubtensorStakingState?
+    var isPositionsSyncFailed = false
+    var preflight: SubtensorStakingPreflight?
+    var existentialDeposit: Balance?
+    var quoteState: SubtensorConfirmQuoteState?
+    var tradesUnavailable = false
+    var catalogue: SubtensorSubnetCatalogue?
+    var earnConfig: SubtensorEarnConfig?
+    private(set) var isHandingOff = false
+    private var isSignerNotSupportedShown = false
 
     private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
     private lazy var displayAddressViewModelFactory = DisplayAddressViewModelFactory()
-    private lazy var takeFormatter = NumberFormatter.percentSingle.localizableResource()
 
     init(
-        interactor: SubtensorStakingConfirmInteractorInputProtocol,
+        interactor: SubtensorConfirmInteractorInputProtocol,
         wireframe: SubtensorStakingConfirmWireframeProtocol,
-        selectedAccount: MetaChainAccountResponse,
         chainAsset: ChainAsset,
         model: SubtensorStakingConfirmModel,
+        viewModelFactory: SubtensorConfirmViewModelFactoryProtocol,
         dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
-        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        quoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        self.selectedAccount = selectedAccount
         self.chainAsset = chainAsset
         self.model = model
-        acknowledgedQuote = model.acknowledgedQuote
+        signing = SubtensorOperationGate.verdict(for: model.account.chainAccount.type)
+        self.viewModelFactory = viewModelFactory
         self.dataValidationFactory = dataValidationFactory
-        self.balanceViewModelFactory = balanceViewModelFactory
-        self.quoteViewModelFactory = quoteViewModelFactory
         self.logger = logger
+
+        if case let .subnet(info, _) = model.target {
+            let tolerance = model.tolerance ?? SubtensorSlippageTolerance.defaultTolerance
+
+            quoteState = SubtensorConfirmQuoteState(
+                request: .buy(netuid: info.netuid, grossTao: model.amount, tolerance: tolerance),
+                acknowledged: model.acknowledgedQuote
+            )
+        }
+
         self.localizationManager = localizationManager
     }
 }
 
-private extension SubtensorStakingConfirmPresenter {
-    func provideAmountViewModel() {
-        let viewModel = balanceViewModelFactory.balanceFromPrice(
-            model.amount.decimal(assetInfo: chainAsset.assetDisplayInfo),
-            priceData: price
-        ).value(for: selectedLocale)
-
-        view?.didReceiveAmount(viewModel: viewModel)
+extension SubtensorStakingConfirmPresenter {
+    var subnetName: String {
+        SubtensorSubnetNaming.titleWithSymbol(for: model.target.netuid, in: catalogue, locale: selectedLocale)
     }
 
-    func provideWalletViewModel() {
+    func provideAccountViewModels() {
         do {
-            let viewModel = try walletViewModelFactory.createDisplayViewModel(from: selectedAccount)
-            view?.didReceiveWallet(viewModel: viewModel)
+            let walletViewModel = try walletViewModelFactory.createDisplayViewModel(from: model.account)
+            view?.didReceiveWallet(viewModel: walletViewModel)
+
+            let accountViewModel = try walletViewModelFactory.createViewModel(from: model.account)
+            view?.didReceiveAccount(viewModel: accountViewModel.rawDisplayAddress())
         } catch {
-            logger.error("Did receive error: \(error)")
-        }
-    }
-
-    func provideAccountViewModel() {
-        do {
-            let viewModel = try walletViewModelFactory.createViewModel(from: selectedAccount)
-            view?.didReceiveAccount(viewModel: viewModel.rawDisplayAddress())
-        } catch {
-            logger.error("Did receive error: \(error)")
-        }
-    }
-
-    func provideFeeViewModel() {
-        let viewModel: BalanceViewModelProtocol? = fee.map { value in
-            let amountDecimal = value.amount.decimal(assetInfo: chainAsset.assetDisplayInfo)
-
-            return balanceViewModelFactory.balanceFromPrice(
-                amountDecimal,
-                priceData: price
-            ).value(for: selectedLocale).approximatelyForSubtensorFee()
+            logger.error("Wallet view model failed: \(error)")
         }
 
-        view?.didReceiveFee(viewModel: viewModel)
+        let validatorViewModel = displayAddressViewModelFactory.createViewModel(from: model.validator.display)
+        view?.didReceiveValidator(viewModel: validatorViewModel)
     }
 
-    func provideDelegateViewModel() {
-        let viewModel = displayAddressViewModelFactory.createViewModel(from: model.validator.display)
-        view?.didReceiveCollator(viewModel: viewModel)
+    func provideTileIcons() {
+        let viewModel = viewModelFactory.createTileIcons(
+            for: model.target,
+            direction: .buy,
+            catalogue: catalogue,
+            earnConfig: earnConfig
+        )
+
+        view?.didReceiveTileIcons(viewModel: viewModel)
     }
 
-    func provideHintsViewModel() {
-        let languages = selectedLocale.rLanguages
-        let strings = R.string(preferredLanguages: languages).localizable
+    func provideViewModel() {
+        let input = SubtensorConfirmViewModelInput(
+            model: model,
+            catalogue: catalogue,
+            latestQuote: quoteState?.latest,
+            tradesUnavailable: tradesUnavailable,
+            isPriceMoved: quoteState?.isPriceMoved ?? false,
+            price: price,
+            fee: fee,
+            stakeBefore: isPositionsSyncFailed || positionsState == nil ? nil : stakeGroup().total,
+            signing: signing
+        )
 
-        var hints: [String]
+        view?.didReceive(viewModel: viewModelFactory.createViewModel(for: input, locale: selectedLocale))
+    }
 
-        if case let .subnet(info, _) = model.target {
-            let symbol = info.displaySymbol
-
-            hints = [
-                strings.stakingSubtensorHintBuyStakeFormat(
-                    symbol.isEmpty ? "SN\(info.netuid)" : symbol
-                ),
-                strings.stakingSubtensorHintAlphaCompound()
-            ]
-        } else {
-            hints = [strings.stakingSubtensorHintManualClaim()]
+    func stakeGroup() -> (total: Balance, hotkeyCount: Int) {
+        guard let positionsState else {
+            return (0, 0)
         }
 
-        if
-            let take = preflight?.delegateTake,
-            let takeString = takeFormatter.value(for: selectedLocale).stringFromDecimal(
-                Decimal(take) / Decimal(UInt16.max)
-            ) {
-            hints.append(strings.stakingSubtensorHintTakeFormat(takeString))
+        let portfolio = SubtensorPortfolioBuilder.build(state: positionsState)
+        let groups = [portfolio.root].compactMap { $0 } + portfolio.subnets
+
+        guard let group = groups.first(where: { $0.netuid == model.target.netuid }) else {
+            return (0, 0)
         }
 
-        view?.didReceiveHints(viewModel: hints)
+        return (group.totalAlpha, group.positions.count)
     }
 
-    var quoteView: SubtensorStakingConfirmViewProtocol? {
-        view as? SubtensorStakingConfirmViewProtocol
-    }
-
-    var tolerance: BigRational {
-        model.tolerance ?? SubtensorSlippageTolerance.defaultTolerance
-    }
-
-    func quoteRequest() -> SubtensorTradeQuoteRequest? {
-        guard case let .subnet(info, _) = model.target, model.amount > 0 else {
-            return nil
+    func refreshQuote() {
+        guard let request = quoteState?.request else {
+            return
         }
 
-        return .buy(netuid: info.netuid, grossTao: model.amount, tolerance: tolerance)
+        interactor.refreshQuote(for: request)
     }
 
-    func feeOperation() -> SubtensorStakingOperation? {
+    func refreshFee() {
+        guard let operation = createOperation(limitPrice: quoteState?.acknowledged?.limitPrice) else {
+            refreshQuote()
+            return
+        }
+
+        interactor.estimateFee(for: operation)
+    }
+
+    func refreshPreflight() {
+        interactor.refreshPreflight(for: model.validator.hotkey, netuid: model.target.netuid)
+    }
+
+    func createOperation(limitPrice: Balance?) -> SubtensorStakingOperation? {
         guard !model.target.isRoot else {
             return .rootStake(hotkey: model.validator.hotkey, amount: model.amount)
         }
-
-        let limitPrice = acknowledgedQuote?.limitPrice ??
-            model.target.stakeLimitPrice(spot: model.target.listedPrice, tolerance: tolerance)
 
         guard let limitPrice else {
             return nil
@@ -168,163 +162,93 @@ private extension SubtensorStakingConfirmPresenter {
         )
     }
 
-    func createOperationAtTap() -> SubtensorStakingOperation? {
-        guard !model.target.isRoot else {
-            return .rootStake(hotkey: model.validator.hotkey, amount: model.amount)
-        }
-
-        switch SubtensorConfirmTapRule.quoteVerdict(latest: quoteFlow.freshQuote, acknowledged: acknowledgedQuote) {
-        case let .proceed(_, acknowledged):
-            return .subnetBuy(
-                hotkey: model.validator.hotkey,
-                netuid: model.target.netuid,
-                grossTao: model.amount,
-                limitPrice: acknowledged.limitPrice
-            )
-        case .quoteMissing:
-            presentQuoteMissing()
-            return nil
-        case .priceMoved:
-            presentPriceMoved()
-            return nil
-        }
-    }
-
     func presentQuoteMissing() {
         guard let view else {
             return
         }
 
         wireframe.presentQuoteMissing(view, onRetry: { [weak self] in
-            self?.forceQuoteRefresh()
+            self?.refreshQuote()
         }, locale: selectedLocale)
     }
 
-    func presentPriceMoved() {
-        guard let view else {
-            return
+    func applyTapGate() -> Bool {
+        guard var state = quoteState else {
+            return true
         }
 
-        wireframe.presentOrderBeyondTolerance(view, locale: selectedLocale)
-    }
-
-    func submitAtTap() {
-        guard let operation = createOperationAtTap() else {
-            return
-        }
-
-        view?.didStartLoading()
-
-        interactor.submit(operation: operation)
-    }
-
-    func updateQuoteOnEntry() {
-        guard let request = quoteRequest() else {
-            return
-        }
-
-        if quoteFlow.request == nil {
-            _ = quoteFlow.updateRequest(request)
-
-            if let seed = model.acknowledgedQuote {
-                _ = quoteFlow.applyQuote(seed)
+        if state.isPriceMoved {
+            guard state.acknowledgeLatest() else {
+                presentQuoteMissing()
+                return false
             }
+
+            quoteState = state
+
+            refreshFee()
+            provideViewModel()
+
+            return true
         }
 
-        interactor.refreshQuote(for: request)
-
-        provideQuoteViewModel()
-        provideSlippageViewModel()
-    }
-
-    func forceQuoteRefresh() {
-        guard let request = quoteRequest() else {
-            return
+        guard !state.raisePriceMovedIfCrossed() else {
+            quoteState = state
+            provideViewModel()
+            return false
         }
 
-        if quoteFlow.updateRequest(request) != nil {
-            provideQuoteViewModel()
+        return true
+    }
+
+    func createVerifiedOperation() -> (operation: SubtensorStakingOperation, quote: SubtensorTradeQuote?)? {
+        guard let state = quoteState else {
+            return createOperation(limitPrice: nil).map { ($0, nil) }
         }
 
-        interactor.refreshQuote(for: request)
-    }
-
-    func provideQuoteViewModel() {
-        let viewModel = quoteViewModelFactory.createQuotePanel(
-            for: quoteFlow.freshQuote?.quote,
-            target: model.target,
-            locale: selectedLocale
-        )
-
-        quoteView?.didReceiveQuote(viewModel: viewModel)
-    }
-
-    func provideSlippageViewModel() {
-        guard let slippage = model.tolerance else {
-            quoteView?.didReceiveSlippage(viewModel: nil)
-            return
-        }
-
-        let viewModel = quoteViewModelFactory.createSlippageViewModel(
-            for: slippage,
-            locale: selectedLocale
-        )
-
-        quoteView?.didReceiveSlippage(viewModel: viewModel)
-    }
-
-    func getQuoteContext() -> SubtensorQuoteValidatingContext? {
-        guard !model.target.isRoot else {
+        switch SubtensorConfirmTapRule.quoteVerdict(latest: state.latest, acknowledged: state.acknowledged) {
+        case let .proceed(latest, acknowledged) where !state.isPriceMoved:
+            return createOperation(limitPrice: acknowledged.limitPrice).map { ($0, latest) }
+        case .quoteMissing:
+            presentQuoteMissing()
+            return nil
+        case .proceed, .priceMoved:
+            quoteState?.raisePriceMoved()
+            provideViewModel()
             return nil
         }
-
-        return SubtensorQuoteValidatingContext(
-            latestQuote: quoteFlow.freshQuote,
-            acknowledgedLimit: acknowledgedQuote?.limitPrice,
-            tradesUnavailable: tradesUnavailable,
-            onQuoteRefresh: { [weak self] in
-                self?.forceQuoteRefresh()
-            }
-        )
     }
 
-    func refreshFee() {
-        fee = nil
-        provideFeeViewModel()
-
-        guard let operation = feeOperation() else {
+    func handOffAtTap() {
+        guard !isHandingOff, let fee, let verified = createVerifiedOperation() else {
             return
         }
 
-        interactor.estimateFee(for: operation)
-    }
+        let group = stakeGroup()
 
-    func applyCurrentState() {
-        provideAmountViewModel()
-        provideWalletViewModel()
-        provideAccountViewModel()
-        provideFeeViewModel()
-        provideDelegateViewModel()
-        provideHintsViewModel()
-        provideQuoteViewModel()
-        provideSlippageViewModel()
-    }
-
-    func presentOptions(for address: AccountAddress) {
-        guard let view = view else {
-            return
-        }
-
-        wireframe.presentAccountOptions(
-            from: view,
-            address: address,
-            chain: chainAsset.chain,
-            locale: selectedLocale
+        let request = SubtensorOperationResultRequest(
+            operation: verified.operation,
+            origin: model.origin,
+            account: model.account,
+            target: model.target,
+            payAmount: model.amount,
+            quote: verified.quote,
+            slippage: model.tolerance,
+            validator: model.validator,
+            estimatedNetworkFee: fee,
+            stakeBefore: group.total,
+            groupHotkeyCount: group.hotkeyCount,
+            emptiesPosition: false,
+            prices: SubtensorOperationResultPrices(taoPrice: price, alphaSpot: verified.quote?.quote.spotPrice)
         )
+
+        isHandingOff = true
+        view?.didStartLoading()
+
+        wireframe.showOperationResult(from: view, request: request, delegate: self)
     }
 
     func getValidationDependencies() -> SubtensorStakeValidatingDep {
-        SubtensorStakeValidatingDep(
+        var dependencies = SubtensorStakeValidatingDep(
             amount: model.amount,
             balance: balance,
             fee: fee,
@@ -336,230 +260,120 @@ private extension SubtensorStakingConfirmPresenter {
                 self?.refreshFee()
             },
             onPreflightRefresh: { [weak self] in
-                guard let self else {
-                    return
-                }
-
-                interactor.refreshPreflight(for: model.validator.hotkey, netuid: model.target.netuid)
-            },
-            quoteContext: getQuoteContext()
+                self?.refreshPreflight()
+            }
         )
+
+        if let quoteState {
+            dependencies.quoteContext = SubtensorQuoteValidatingContext(
+                latestQuote: quoteState.latest,
+                acknowledgedLimit: quoteState.acknowledged?.limitPrice,
+                tradesUnavailable: tradesUnavailable,
+                onQuoteRefresh: { [weak self] in
+                    self?.refreshQuote()
+                }
+            )
+        }
+
+        return dependencies
     }
 
-    func createSuccessTitle(
-        for outcome: SubtensorStakingOperationOutcome
-    ) -> ExtrinsicSubmissionPresentingParams.Title {
-        guard let executed = outcome.executed, executed.tao > 0 else {
-            return .general(selectedLocale)
-        }
-
-        let tao = executed.tao
-        let alpha = executed.alpha
-        let netuid = executed.netuid
-
-        let amountString: String
-
-        if netuid != SubtensorStakingPallet.rootNetuid {
-            let displayInfo = model.target.assetDisplayInfo(basedOn: chainAsset.assetDisplayInfo)
-            let amountDecimal = alpha.decimal(assetInfo: displayInfo)
-
-            amountString = AssetBalanceFormatterFactory().createTokenFormatter(
-                for: displayInfo
-            ).value(for: selectedLocale).stringFromDecimal(amountDecimal) ?? ""
-        } else {
-            let amountDecimal = tao.decimal(assetInfo: chainAsset.assetDisplayInfo)
-
-            amountString = balanceViewModelFactory.amountFromValue(
-                amountDecimal
-            ).value(for: selectedLocale)
-        }
-
-        let title = R.string(
-            preferredLanguages: selectedLocale.rLanguages
-        ).localizable.stakingSubtensorSuccessStakedFormat(amountString)
-
-        return .preferred(title)
+    func finishHandOff() {
+        isHandingOff = false
+        view?.didStopLoading()
     }
 }
 
-extension SubtensorStakingConfirmPresenter: CollatorStakingConfirmPresenterProtocol {
+extension SubtensorStakingConfirmPresenter: SubtensorStakingConfirmPresenterProtocol {
     func setup() {
-        applyCurrentState()
+        provideAccountViewModels()
+        provideTileIcons()
+        provideViewModel()
 
         interactor.setup()
 
-        interactor.refreshPreflight(for: model.validator.hotkey, netuid: model.target.netuid)
+        refreshPreflight()
 
-        updateQuoteOnEntry()
+        if !model.target.isRoot {
+            interactor.loadSubnetData()
+            refreshQuote()
+        }
 
         refreshFee()
     }
 
-    func selectAccount() {
-        guard let address = selectedAccount.chainAccount.toAddress() else {
+    func didAppear() {
+        guard case let .signerNotSupported(type) = signing, !isSignerNotSupportedShown, let view else {
             return
         }
 
-        presentOptions(for: address)
-    }
+        isSignerNotSupportedShown = true
 
-    func selectCollator() {
-        presentOptions(for: model.validator.display.address)
+        wireframe.presentSignerNotSupportedView(from: view, type: type) {}
     }
 
     func confirm() {
+        guard signing == .allowed, !isHandingOff else {
+            return
+        }
+
+        guard !tradesUnavailable else {
+            if let view {
+                wireframe.presentSubnetTradesUnavailable(view, locale: selectedLocale)
+            }
+
+            return
+        }
+
+        guard applyTapGate() else {
+            return
+        }
+
         validateStake(
             for: getValidationDependencies(),
             dataValidationFactory: dataValidationFactory,
             selectedLocale: selectedLocale
         ) { [weak self] in
-            self?.submitAtTap()
+            self?.handOffAtTap()
         }
+    }
+
+    func selectAccount() {
+        guard let address = model.account.chainAccount.toAddress() else {
+            return
+        }
+
+        wireframe.showSubtensorInfo(.account(address: address, chain: chainAsset.chain), from: view)
+    }
+
+    func selectValidator() {
+        guard model.target.isRoot || model.origin != .newPosition else {
+            wireframe.showSubtensorInfo(.validator, from: view)
+            return
+        }
+
+        wireframe.showValidatorInfo(from: view, target: model.target, hotkey: model.validator.hotkey, detail: nil)
+    }
+
+    func showSwapRateInfo() {
+        wireframe.showSubtensorInfo(.swapRate(.buy, subnetName: subnetName), from: view)
+    }
+
+    func showSlippageInfo() {
+        guard let tolerance = model.tolerance else {
+            return
+        }
+
+        wireframe.showSubtensorInfo(.slippage(tolerance, canEdit: model.origin == .newPosition), from: view)
+    }
+
+    func showEarnPerMonthInfo() {
+        wireframe.showSubtensorInfo(.earnTokensMonth(subnetName: subnetName), from: view)
+    }
+
+    func showNetworkFeeInfo() {
+        wireframe.showSubtensorInfo(.networkFee(.buy), from: view)
     }
 }
 
 extension SubtensorStakingConfirmPresenter: SubtensorStakePresenterValidating {}
-
-extension SubtensorStakingConfirmPresenter: SubtensorStakingConfirmInteractorOutputProtocol {
-    func didReceiveSubmissionResult(
-        _ result: Result<SubtensorStakingOperationOutcome, SubtensorStakingSubmissionFailure>
-    ) {
-        view?.didStopLoading()
-
-        switch result {
-        case let .success(outcome):
-            wireframe.complete(
-                on: view,
-                sender: .current(selectedAccount.chainAccount),
-                title: createSuccessTitle(for: outcome)
-            )
-        case let .failure(failure):
-            logger.error("Submission error: \(failure)")
-
-            let error = failure.error
-
-            applyCurrentState()
-            refreshFee()
-            forceQuoteRefresh()
-
-            wireframe.handleExtrinsicSigningErrorPresentationElseDefault(
-                error,
-                view: view,
-                closeAction: .dismiss,
-                locale: selectedLocale,
-                completionClosure: nil
-            )
-        }
-    }
-
-    func didReceiveAssetBalance(_ balance: AssetBalance?) {
-        logger.debug("Balance: \(String(describing: balance))")
-
-        self.balance = balance
-    }
-
-    func didReceivePrice(_ priceData: PriceData?) {
-        logger.debug("Price: \(String(describing: priceData))")
-
-        price = priceData
-
-        provideAmountViewModel()
-        provideFeeViewModel()
-    }
-
-    func didReceiveFee(_ fee: ExtrinsicFeeProtocol) {
-        logger.debug("Fee: \(fee)")
-
-        self.fee = fee
-
-        provideFeeViewModel()
-    }
-
-    func didReceivePositions(_ state: Multistaking.SubtensorStakingState?) {
-        logger.debug("Positions: \(String(describing: state))")
-
-        positionsState = state
-    }
-
-    func didReceivePositionsSyncFailed(_ isFailed: Bool) {
-        logger.debug("Positions sync failed: \(isFailed)")
-    }
-
-    func didReceiveClaimable(_ claimable: SubtensorRootClaimable?) {
-        logger.debug("Claimable: \(String(describing: claimable))")
-    }
-
-    func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
-        logger.debug("Block number: \(blockNumber)")
-
-        currentBlock = blockNumber
-
-        forceQuoteRefresh()
-    }
-
-    func didReceiveQuote(_ quote: SubtensorTradeQuote) {
-        logger.debug("Quote: \(quote)")
-
-        guard quoteFlow.applyQuote(quote) else {
-            return
-        }
-
-        tradesUnavailable = false
-
-        if acknowledgedQuote == nil {
-            acknowledgedQuote = quote
-        }
-
-        provideQuoteViewModel()
-    }
-
-    func didReceivePreflight(_ preflight: SubtensorStakingPreflight) {
-        logger.debug("Preflight: \(preflight)")
-
-        self.preflight = preflight
-
-        provideHintsViewModel()
-    }
-
-    func didReceiveExistentialDeposit(_ deposit: Balance) {
-        logger.debug("Existential deposit: \(deposit)")
-
-        existentialDeposit = deposit
-    }
-
-    func didReceiveBaseError(_ error: SubtensorStakingBaseError) {
-        logger.error("Error: \(error)")
-
-        if error.isNovaFeeUnavailable {
-            tradesUnavailable = true
-        }
-
-        switch error {
-        case .feeFailed:
-            wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.refreshFee()
-            }
-        case .preflightFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                guard let self else {
-                    return
-                }
-
-                interactor.refreshPreflight(for: model.validator.hotkey, netuid: model.target.netuid)
-            }
-        case .quoteFailed:
-            quoteFlow.clearQuote()
-            provideQuoteViewModel()
-        }
-    }
-}
-
-extension SubtensorStakingConfirmPresenter: Localizable {
-    func applyLocalization() {
-        if let view = view, view.isSetup {
-            provideAmountViewModel()
-            provideFeeViewModel()
-            provideHintsViewModel()
-        }
-    }
-}

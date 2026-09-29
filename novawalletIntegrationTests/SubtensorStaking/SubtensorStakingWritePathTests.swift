@@ -17,15 +17,11 @@ final class SubtensorStakingWritePathTests: XCTestCase {
             let staker = try context.discoverStaker()
             let minStake = try context.fetchMinStake()
 
-            let callModel = SubtensorStakingCallModel.stake(
-                SubtensorStakeModel(
-                    hotkey: staker.hotkey,
-                    netuid: SubtensorStakingPallet.rootNetuid,
-                    amount: minStake
-                )
-            )
+            let operation = SubtensorStakingOperation.rootStake(hotkey: staker.hotkey, amount: minStake)
 
-            let extrinsicData = try context.buildSignedExtrinsic(with: callModel.extrinsicBuilderClosure)
+            let extrinsicData = try context.buildSignedExtrinsic(
+                with: operation.extrinsicBuilderClosure(feeCalculator: SubtensorNovaFeeCalculator())
+            )
 
             Logger.shared.info("Built extrinsic: \(extrinsicData.toHex(includePrefix: true))")
 
@@ -102,15 +98,11 @@ final class SubtensorStakingWritePathTests: XCTestCase {
             let staker = try context.discoverStaker()
             let minStake = try context.fetchMinStake()
 
-            let callModel = SubtensorStakingCallModel.stake(
-                SubtensorStakeModel(
-                    hotkey: staker.hotkey,
-                    netuid: SubtensorStakingPallet.rootNetuid,
-                    amount: minStake
-                )
-            )
+            let operation = SubtensorStakingOperation.rootStake(hotkey: staker.hotkey, amount: minStake)
 
-            let fee = try context.estimateFee(with: callModel.extrinsicBuilderClosure)
+            let fee = try context.estimateFee(
+                with: operation.extrinsicBuilderClosure(feeCalculator: SubtensorNovaFeeCalculator())
+            )
 
             Logger.shared.info("add_stake fee: \(fee.amount)")
 
@@ -124,34 +116,13 @@ final class SubtensorStakingWritePathTests: XCTestCase {
         do {
             let staker = try context.discoverStaker()
 
-            let callModel = SubtensorStakingCallModel.unstake(
-                SubtensorUnstakeModel(
-                    hotkey: staker.hotkey,
-                    netuid: SubtensorStakingPallet.rootNetuid,
-                    amount: 0,
-                    exitHotkeys: [staker.hotkey]
-                )
+            let operation = SubtensorStakingOperation.rootUnstakeAll(hotkeys: [staker.hotkey])
+
+            let fee = try context.estimateFee(
+                with: operation.extrinsicBuilderClosure(feeCalculator: SubtensorNovaFeeCalculator())
             )
 
-            let fee = try context.estimateFee(with: callModel.extrinsicBuilderClosure)
-
             Logger.shared.info("remove_stake_full_limit fee: \(fee.amount)")
-
-            XCTAssertGreaterThan(fee.amount, 0)
-        } catch {
-            XCTFail("Unexpected error: \(error)")
-        }
-    }
-
-    func testClaimRootWithHotkeyFeeEstimationReturnsPositiveFee() {
-        do {
-            let staker = try context.discoverStaker()
-
-            let callModel = SubtensorStakingCallModel.claim(hotkey: staker.hotkey)
-
-            let fee = try context.estimateFee(with: callModel.extrinsicBuilderClosure)
-
-            Logger.shared.info("claim_root_with_hotkey fee: \(fee.amount)")
 
             XCTAssertGreaterThan(fee.amount, 0)
         } catch {

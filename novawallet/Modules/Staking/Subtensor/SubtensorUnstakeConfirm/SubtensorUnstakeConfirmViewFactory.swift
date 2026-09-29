@@ -15,19 +15,21 @@ enum SubtensorUnstakeConfirmViewFactory {
             return nil
         }
 
-        let interactor = createInteractor(for: state, services: services)
-        let selectedAccount = services.account
-        let currencyManager = services.currencyManager
+        let interactor = SubtensorUnstakeConfirmInteractor(
+            baseServices: services,
+            chainAsset: chainAsset,
+            catalogueService: state.earnServices.catalogueService,
+            earnConfigProvider: state.earnServices.earnConfigProvider,
+            rootHoldFactory: state.earnServices.rootHoldFactory,
+            generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
+            logger: Logger.shared
+        )
 
         let wireframe = SubtensorUnstakeConfirmWireframe(state: state)
 
         let localizationManager = LocalizationManager.shared
 
-        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: chainAsset.assetDisplayInfo,
-            priceAssetInfoFactory: priceAssetInfoFactory
-        )
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: services.currencyManager)
 
         let dataValidationFactory = SubtensorStakingValidationFactory(
             presentable: wireframe,
@@ -39,22 +41,19 @@ enum SubtensorUnstakeConfirmViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             chainAsset: chainAsset,
-            selectedAccount: selectedAccount,
             model: model,
-            dataValidationFactory: dataValidationFactory,
-            balanceViewModelFactory: balanceViewModelFactory,
-            quoteViewModelFactory: SubtensorQuoteViewModelFactory(
+            viewModelFactory: SubtensorConfirmViewModelFactory(
                 chainAsset: chainAsset,
                 priceAssetInfoFactory: priceAssetInfoFactory
             ),
+            dataValidationFactory: dataValidationFactory,
             localizationManager: localizationManager,
             logger: Logger.shared
         )
 
-        let view: SubtensorUnstakeConfirmViewProtocol = SubtensorUnstakeConfirmVC(
+        let view = SubtensorStakingConfirmViewController(
             presenter: presenter,
-            statics: .subtensorValidator,
-            isRoot: model.target.isRoot,
+            mode: model.target.isRoot ? .rootUnstake : .swap,
             localizationManager: localizationManager
         )
 
@@ -63,27 +62,5 @@ enum SubtensorUnstakeConfirmViewFactory {
         dataValidationFactory.view = view
 
         return view
-    }
-
-    private static func createInteractor(
-        for state: SubtensorStakingSharedStateProtocol,
-        services: SubtensorFlowServices
-    ) -> SubtensorUnstakeConfirmInteractor {
-        SubtensorUnstakeConfirmInteractor(
-            chainAsset: state.stakingOption.chainAsset,
-            selectedAccount: services.account.chainAccount,
-            positionsSyncService: services.positionsSyncService,
-            rootClaimableService: services.rootClaimableService,
-            preflightFactory: services.preflightFactory,
-            tradeQuoteFactory: services.tradeQuoteFactory,
-            operationService: services.operationService,
-            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
-            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
-            runtimeProvider: services.runtimeProvider,
-            currencyManager: services.currencyManager,
-            operationQueue: services.operationQueue,
-            logger: Logger.shared
-        )
     }
 }
