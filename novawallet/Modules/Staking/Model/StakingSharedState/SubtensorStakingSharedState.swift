@@ -22,8 +22,6 @@ protocol SubtensorStakingSharedStateProtocol: AnyObject {
     var chainRegistry: ChainRegistryProtocol { get }
     var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol { get }
     var subnetsService: SubtensorSubnetsServiceProtocol { get }
-    var delegatesService: SubtensorDelegatesServiceProtocol { get }
-    var rewardCalculatorService: SubtensorRewardCalculatorServiceProtocol { get }
     var apiOperationFactory: SubtensorApiOperationFactoryProtocol { get }
     var earnServices: SubtensorEarnServices { get }
 
@@ -52,8 +50,6 @@ final class SubtensorStakingSharedState {
     let chainRegistry: ChainRegistryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
     let subnetsService: SubtensorSubnetsServiceProtocol
-    let delegatesService: SubtensorDelegatesServiceProtocol
-    let rewardCalculatorService: SubtensorRewardCalculatorServiceProtocol
     let apiOperationFactory: SubtensorApiOperationFactoryProtocol
     let stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol
     let earnServices: SubtensorEarnServices
@@ -76,8 +72,6 @@ final class SubtensorStakingSharedState {
         chainRegistry: ChainRegistryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         subnetsService: SubtensorSubnetsServiceProtocol,
-        delegatesService: SubtensorDelegatesServiceProtocol,
-        rewardCalculatorService: SubtensorRewardCalculatorServiceProtocol,
         apiOperationFactory: SubtensorApiOperationFactoryProtocol,
         stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol,
         earnServices: SubtensorEarnServices,
@@ -92,8 +86,6 @@ final class SubtensorStakingSharedState {
         self.chainRegistry = chainRegistry
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
         self.subnetsService = subnetsService
-        self.delegatesService = delegatesService
-        self.rewardCalculatorService = rewardCalculatorService
         self.apiOperationFactory = apiOperationFactory
         self.stakeStateFetchFactory = stakeStateFetchFactory
         self.earnServices = earnServices

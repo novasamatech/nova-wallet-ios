@@ -8,28 +8,50 @@ enum SubtensorPositionViewFactory {
     ) -> SubtensorPositionViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else { return nil }
 
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+        let earnServices = state.earnServices
+
         let interactor = SubtensorPositionInteractor(
             state: state,
             netuid: group.netuid,
+            catalogueService: earnServices.catalogueService,
+            yieldService: earnServices.yieldService,
+            earnConfigProvider: earnServices.earnConfigProvider,
+            priceHistoryService: earnServices.priceHistoryService,
+            validatorFactory: SubtensorValidatorPresetFactory(
+                directoryService: earnServices.validatorDirectoryService,
+                recommendationService: earnServices.recommendationService,
+                operationQueue: operationQueue,
+                logger: Logger.shared
+            ),
+            rootHoldFactory: earnServices.rootHoldFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            operationQueue: operationQueue,
             logger: Logger.shared
         )
+
         let presenter = SubtensorPositionPresenter(
             group: group,
             account: state.selectedAccount,
             interactor: interactor,
             wireframe: SubtensorPositionWireframe(state: state),
-            precision: Int16(state.stakingOption.chainAsset.asset.precision),
+            viewModelFactory: SubtensorPositionViewModelFactory(
+                chainAsset: state.stakingOption.chainAsset,
+                priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+            ),
             localizationManager: LocalizationManager.shared
         )
+
         let view = SubtensorPositionViewController(
             presenter: presenter,
+            isRoot: group.netuid == SubtensorStakingPallet.rootNetuid,
             localizationManager: LocalizationManager.shared
         )
+
         interactor.presenter = presenter
         presenter.view = view
+
         return view
     }
 }

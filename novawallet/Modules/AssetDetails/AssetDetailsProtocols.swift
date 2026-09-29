@@ -15,6 +15,7 @@ protocol AssetDetailsPresenterProtocol: AnyObject {
     func handleBuySell()
     func handleLocks()
     func handleSwap()
+    func handleEarn()
     func handleAHMAlertClose()
     func handleAHMAlertAction()
     func handleAHMAlertLearnMore()
@@ -35,6 +36,7 @@ protocol AssetDetailsInteractorOutputProtocol: AnyObject {
     func didReceive(availableOperations: AssetDetailsOperation)
     func didReceive(rampActions: [RampAction])
     func didReceive(ahmInfo: AHMFullInfo?)
+    func didReceive(hasBittensorPositions: Bool)
 }
 
 protocol AssetDetailsWireframeProtocol: AnyObject,
@@ -57,6 +59,8 @@ protocol AssetDetailsWireframeProtocol: AnyObject,
     func showLedgerNotSupport(for tokenName: String, from view: AssetDetailsViewProtocol?)
     func showLocks(from view: AssetDetailsViewProtocol?, model: AssetDetailsLocksViewModel)
     func showSwaps(from view: AssetDetailsViewProtocol?, chainAsset: ChainAsset)
+    func showBittensorPortfolio(from view: AssetDetailsViewProtocol?, chainAsset: ChainAsset)
+    func showBittensorEarnInfo(from view: AssetDetailsViewProtocol?, chainAsset: ChainAsset)
     func dropModalFlow(
         from view: AssetDetailsViewProtocol?,
         completion: @escaping () -> Void
@@ -71,4 +75,6 @@ enum AssetDetailsError: Error {
     case swaps(Error)
     case holds(Error)
     case ahmInfo(Error)
+    case earnConfig(Error)
+    case stakingDashboard(Error)
 }

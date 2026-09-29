@@ -30,43 +30,27 @@ final class StartStakingInfoSubtensorViewController: UIViewController, ViewHolde
         super.viewDidLoad()
 
         setupActions()
-        rootView.setLoading(true)
         presenter.setup()
     }
 }
 
 private extension StartStakingInfoSubtensorViewController {
     func setupActions() {
-        rootView.primaryButton.addTarget(
+        rootView.actionButton.addTarget(
             self,
-            action: #selector(actionStartEarning),
-            for: .touchUpInside
-        )
-        rootView.secondaryButton.addTarget(
-            self,
-            action: #selector(actionChooseManually),
+            action: #selector(actionChooseMyself),
             for: .touchUpInside
         )
     }
 
-    @objc func actionStartEarning() {
+    @objc func actionChooseMyself() {
         presenter.startStaking()
-    }
-
-    @objc func actionChooseManually() {
-        presenter.chooseManually()
     }
 }
 
 extension StartStakingInfoSubtensorViewController: StartStakingInfoSubtensorViewProtocol {
-    func didReceive(subtensorViewModel: LoadableViewModelState<StartStakingInfoSubtensorViewModel>) {
-        switch subtensorViewModel {
-        case .loading:
-            rootView.setLoading(true)
-        case let .cached(value), let .loaded(value):
-            rootView.bind(viewModel: value)
-            rootView.setLoading(false)
-        }
+    func didReceive(subtensorViewModel: StartStakingInfoSubtensorViewModel) {
+        rootView.bind(viewModel: subtensorViewModel)
     }
 
     func didReceive(viewModel _: LoadableViewModelState<StartStakingViewModel>) {}
@@ -76,6 +60,12 @@ extension StartStakingInfoSubtensorViewController: StartStakingInfoSubtensorView
     }
 
     func didReceive(announcement _: AnnouncementViewModel?) {}
+}
+
+extension StartStakingInfoSubtensorViewController: SubtensorEarnFlowRoot {
+    func startSubnetDiscovery() {
+        presenter.startStaking()
+    }
 }
 
 extension StartStakingInfoSubtensorViewController: Localizable {

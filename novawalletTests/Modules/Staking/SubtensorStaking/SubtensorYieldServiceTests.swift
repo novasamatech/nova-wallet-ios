@@ -166,63 +166,8 @@ final class SubtensorYieldServiceTests: XCTestCase {
         XCTAssertNil(try run(makeService(apiFactory: apiFactory).createRootYieldWrapper()))
     }
 
-    func testRootRateIsNetOfTheGivenTake() throws {
-        let engine = MockSubtensorRewardCalculatorEngineProtocol()
-        let netRate = try XCTUnwrap(Decimal(string: "0.0421"))
-
-        stub(engine) { stub in
-            when(stub.rootAnnualReturn(take: equal(to: UInt16(11796)))).thenReturn(netRate)
-        }
-
-        let take = Decimal(11796) / Decimal(SubtensorStakingPallet.perU16Denominator)
-        let rate = try run(makeService(engineResult: .success(engine)).createRootNetworkRateWrapper(take: take))
-
-        XCTAssertEqual(rate, SubtensorRate(annualRate: netRate, source: .chainNetworkAverage(isNetOfTake: true)))
-        verify(engine).rootAnnualReturn(take: equal(to: UInt16(11796)))
-    }
-
-    func testRootRateIsGrossWithoutTake() throws {
-        let engine = MockSubtensorRewardCalculatorEngineProtocol()
-        let grossRate = try XCTUnwrap(Decimal(string: "0.0513"))
-
-        stub(engine) { stub in
-            when(stub.rootAnnualReturn()).thenReturn(grossRate)
-        }
-
-        let rate = try run(makeService(engineResult: .success(engine)).createRootNetworkRateWrapper(take: nil))
-
-        XCTAssertEqual(rate, SubtensorRate(annualRate: grossRate, source: .chainNetworkAverage(isNetOfTake: false)))
-    }
-
-    func testRootRateIsNilWhenTheEngineIsUnavailable() throws {
-        let service = makeService(engineResult: .failure(SubtensorRewardCalculatorError.rootSubnetMissing))
-
-        let rate = try run(service.createRootNetworkRateWrapper(take: nil))
-
-        XCTAssertNil(rate)
-    }
-
-    private func makeService(
-        apiFactory: MockBittensorApiOperationFactoryProtocol = MockBittensorApiOperationFactoryProtocol(),
-        engineResult: Result<SubtensorRewardCalculatorEngineProtocol, Error>? = nil
-    ) -> SubtensorYieldService {
-        let rewardCalculatorService = MockSubtensorRewardCalculatorServiceProtocol()
-
-        if let engineResult {
-            stub(rewardCalculatorService) { stub in
-                when(stub.fetchEngine(runningCompletionIn: any(), completion: any())).then { queue, completion in
-                    queue.async {
-                        completion(engineResult)
-                    }
-                }
-            }
-        }
-
-        return SubtensorYieldService(
-            apiOperationFactory: apiFactory,
-            rewardCalculatorService: rewardCalculatorService,
-            operationQueue: OperationQueue()
-        )
+    private func makeService(apiFactory: MockBittensorApiOperationFactoryProtocol) -> SubtensorYieldService {
+        SubtensorYieldService(apiOperationFactory: apiFactory, operationQueue: OperationQueue())
     }
 
     private func stubPages(_ apiFactory: MockBittensorApiOperationFactoryProtocol, _ pages: [Int: YieldPage]) {

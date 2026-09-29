@@ -12,7 +12,6 @@ struct SubtensorStakingProcessServices {
 struct SubtensorStakingChainServices {
     let apiOperationFactory: SubtensorApiOperationFactoryProtocol
     let subnetsService: SubtensorSubnetsServiceProtocol
-    let rewardCalculatorService: SubtensorRewardCalculatorServiceProtocol
     let quoteOperationFactory: SubtensorQuoteOperationFactoryProtocol
     let rootHoldFactory: SubtensorRootHoldFactoryProtocol
     let positionsSyncServiceFactory: ((AccountId) -> SubtensorPositionsSyncServiceProtocol)?
@@ -133,10 +132,6 @@ extension StakingSharedStateFactory {
         return SubtensorStakingChainServices(
             apiOperationFactory: apiOperationFactory,
             subnetsService: subnetsService,
-            rewardCalculatorService: createRewardCalculatorService(
-                subnetsService: subnetsService,
-                runtimeConnectionStore: runtimeConnectionStore
-            ),
             quoteOperationFactory: SubtensorQuoteOperationFactory(
                 operationFactory: apiOperationFactory,
                 operationQueue: syncOperationQueue
@@ -171,11 +166,6 @@ extension StakingSharedStateFactory {
             chainRegistry: chainRegistry,
             generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
             subnetsService: chainServices.subnetsService,
-            delegatesService: createDelegatesService(
-                for: stakingOption,
-                runtimeConnectionStore: runtimeConnectionStore
-            ),
-            rewardCalculatorService: chainServices.rewardCalculatorService,
             apiOperationFactory: chainServices.apiOperationFactory,
             stakeStateFetchFactory: stakeStateFetchFactory,
             earnServices: createEarnServices(
@@ -205,7 +195,6 @@ extension StakingSharedStateFactory {
 
         let yieldService = SubtensorYieldService(
             apiOperationFactory: processServices.bittensorApiOperationFactory,
-            rewardCalculatorService: chainServices.rewardCalculatorService,
             operationQueue: syncOperationQueue,
             logger: logger
         )
@@ -282,52 +271,6 @@ extension StakingSharedStateFactory {
             earnConfigProvider: earnConfigProvider,
             coingeckoOperationFactory: CoingeckoOperationFactory(),
             taoPriceId: taoPriceId,
-            operationQueue: syncOperationQueue,
-            logger: logger
-        )
-    }
-
-    private func createRewardCalculatorService(
-        subnetsService: SubtensorSubnetsServiceProtocol,
-        runtimeConnectionStore: RuntimeConnectionStoring
-    ) -> SubtensorRewardCalculatorService {
-        let inputsService = SubtensorRootAprInputsService(
-            operationFactory: SubtensorRootAprOperationFactory(
-                runtimeConnectionStore: runtimeConnectionStore,
-                operationQueue: syncOperationQueue
-            ),
-            operationQueue: syncOperationQueue,
-            logger: logger
-        )
-
-        return SubtensorRewardCalculatorService(
-            subnetsService: subnetsService,
-            inputsService: inputsService,
-            logger: logger
-        )
-    }
-
-    private func createDelegatesService(
-        for stakingOption: Multistaking.ChainAssetOption,
-        runtimeConnectionStore: RuntimeConnectionStoring
-    ) -> SubtensorDelegatesService {
-        let delegatesOperationFactory = SubtensorApiOperationFactory(
-            runtimeConnectionStore: runtimeConnectionStore,
-            operationQueue: syncOperationQueue,
-            rpcTimeout: JSONRPCTimeout.hour
-        )
-
-        let identityProxyFactory = IdentityProxyFactory(
-            originChain: stakingOption.chainAsset.chain,
-            chainRegistry: chainRegistry,
-            identityOperationFactory: IdentityOperationFactory(
-                requestFactory: StorageRequestFactory.createDefault(with: syncOperationQueue)
-            )
-        )
-
-        return SubtensorDelegatesService(
-            operationFactory: delegatesOperationFactory,
-            identityProxyFactory: identityProxyFactory,
             operationQueue: syncOperationQueue,
             logger: logger
         )

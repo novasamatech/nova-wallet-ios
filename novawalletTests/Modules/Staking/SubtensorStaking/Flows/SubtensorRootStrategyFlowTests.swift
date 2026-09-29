@@ -4,16 +4,17 @@ import Operation_iOS
 import XCTest
 
 final class SubtensorRootStrategyFlowTests: SubtensorFlowTestCase {
-    func testRootStrategyFlowConfirmsTheTopStablePairAtItsNetNetworkRate() throws {
+    func testRootStrategyFlowConfirmsTheTopStablePairAtTheBackendRootYield() throws {
         let world = try SubtensorFlowWorld()
         let services = world.earnServices
-        let engine = try world.stubRootEngine(grossRate: decimal("0.07"), netRates: [0: decimal("0.07")])
 
         SubtensorFlowURLProtocol.serveEarnConfig()
         SubtensorFlowURLProtocol.serveFixture(.recommendations)
+        SubtensorFlowURLProtocol.serveFixture(.rootYield(page: 1, pageSize: 100))
 
         let bannerConfig = try run(services.earnConfigProvider.createConfigWrapper())
 
+        let rootYield = try run(services.yieldService.createRootYieldWrapper())
         let offers = try run(services.discoveryService.createStrategyOffersWrapper())
         world.clock.advance(by: 30)
         let verified = try run(services.recommendationService.createVerifiedRecommendationsWrapper())
@@ -25,7 +26,7 @@ final class SubtensorRootStrategyFlowTests: SubtensorFlowTestCase {
         let operationService = try world.createStakingOperationService(networkFee: networkFee)
         let stake = SubtensorStakingOperation.rootStake(hotkey: pick.hotkey, amount: SubtensorFlowChainWorld.stakeAmount)
 
-        let pickRate = try run(services.yieldService.createRootNetworkRateWrapper(take: pick.verification.take))
+        let pickRate = try run(services.yieldService.createRootYieldWrapper())
         let pickFee = try run(operationService.createFeeWrapper(for: stake))
 
         let maxStake = SubtensorAmountPolicy.maxBuyOrStake(
@@ -35,19 +36,18 @@ final class SubtensorRootStrategyFlowTests: SubtensorFlowTestCase {
 
         let monthlyEarnings = SubtensorEarningsEstimator.monthly(
             amount: SubtensorFlowChainWorld.stakeAmount,
-            annualRate: try XCTUnwrap(pickRate.flatMap { BigRational.fraction(from: $0.annualRate) })
+            annualRate: try XCTUnwrap(pickRate?.annualRate.flatMap { BigRational.fraction(from: $0) })
         )
 
-        let confirmRate = try run(services.yieldService.createRootNetworkRateWrapper(take: pick.verification.take))
+        let confirmRate = try run(services.yieldService.createRootYieldWrapper())
         let confirmFee = try run(operationService.createFeeWrapper(for: stake))
-
-        let netRate = SubtensorRate(annualRate: try decimal("0.07"), source: .chainNetworkAverage(isNetOfTake: true))
 
         XCTAssertEqual(bannerConfig.headlineMaxAnnualRate, try decimal("0.40"))
         XCTAssertEqual(bannerConfig.entry?.enabled, true)
 
+        XCTAssertEqual(rootYield, try fixtureRootYield())
         XCTAssertEqual(offers, [
-            SubtensorStrategyOffer(kind: .steady, rootNetworkRate: netRate, isAvailable: true),
+            SubtensorStrategyOffer(kind: .steady, rootNetworkRate: rootYield, isAvailable: true),
             SubtensorStrategyOffer(kind: .balanced, rootNetworkRate: nil, isAvailable: true),
             SubtensorStrategyOffer(kind: .higherUpside, rootNetworkRate: nil, isAvailable: true)
         ])
@@ -83,34 +83,33 @@ final class SubtensorRootStrategyFlowTests: SubtensorFlowTestCase {
             )
         ])
 
-        XCTAssertEqual(pickRate, netRate)
-        XCTAssertEqual(confirmRate, netRate)
-        verify(engine, times(3)).rootAnnualReturn(take: any())
-        verify(engine, times(3)).rootAnnualReturn(take: equal(to: UInt16(0)))
-        verify(engine, never()).rootAnnualReturn()
+        XCTAssertEqual(pickRate, rootYield)
+        XCTAssertEqual(confirmRate, rootYield)
 
         XCTAssertEqual([pickFee.amount, confirmFee.amount], [networkFee, networkFee])
         XCTAssertEqual(maxStake, 48_188_500_000)
-        XCTAssertEqual(monthlyEarnings, 29_166_666)
+        XCTAssertEqual(monthlyEarnings, 57_675_416)
         verify(world.quoteOperationFactory, never()).createQuoteWrapper(for: any())
 
         XCTAssertEqual(requestLines(), [
             "GET https://earn-config.test/earn_config.json",
+            "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
             "GET https://bittensor.test/v1/bittensor/recommendations"
         ])
 
-        assertAttestedRequests(world, paths: ["/v1/bittensor/recommendations"])
+        assertAttestedRequests(world, paths: ["/v1/bittensor/yields/root", "/v1/bittensor/recommendations"])
     }
 
     func testRootStrategyFlowWithUnpublishedRecommendationsConfirmsTheConfigRootValidator() throws {
         let world = try SubtensorFlowWorld()
         let services = world.earnServices
-        let engine = try world.stubRootEngine(grossRate: decimal("0.07"), netRates: [11796: decimal("0.0574")])
 
         SubtensorFlowURLProtocol.serveEarnConfig()
         SubtensorFlowURLProtocol.serveBittensor("/recommendations", reply: .notFoundPlainText())
+        SubtensorFlowURLProtocol.serveFixture(.rootYield(page: 1, pageSize: 100))
 
         _ = try run(services.earnConfigProvider.createConfigWrapper())
+        let rootYield = try run(services.yieldService.createRootYieldWrapper())
         let offers = try run(services.discoveryService.createStrategyOffersWrapper())
 
         let candidates = try run(services.discoveryService.createPickCandidatesWrapper(for: .steady))
@@ -121,7 +120,7 @@ final class SubtensorRootStrategyFlowTests: SubtensorFlowTestCase {
             subnet: SubtensorDiscoveryService.rootSubnet
         ))
 
-        let fallbackRate = try run(services.yieldService.createRootNetworkRateWrapper(take: fallback.take))
+        let fallbackRate = try run(services.yieldService.createRootYieldWrapper())
 
         let fallbackFee = try run(world.createStakingOperationService(networkFee: networkFee).createFeeWrapper(
             for: .rootStake(hotkey: fallback.hotkey, amount: SubtensorFlowChainWorld.stakeAmount)
@@ -134,13 +133,12 @@ final class SubtensorRootStrategyFlowTests: SubtensorFlowTestCase {
 
         let monthlyEarnings = SubtensorEarningsEstimator.monthly(
             amount: SubtensorFlowChainWorld.stakeAmount,
-            annualRate: try XCTUnwrap(fallbackRate.flatMap { BigRational.fraction(from: $0.annualRate) })
+            annualRate: try XCTUnwrap(fallbackRate?.annualRate.flatMap { BigRational.fraction(from: $0) })
         )
 
-        let netRate = SubtensorRate(annualRate: try decimal("0.0574"), source: .chainNetworkAverage(isNetOfTake: true))
-
+        XCTAssertEqual(rootYield, try fixtureRootYield())
         XCTAssertEqual(offers, [
-            SubtensorStrategyOffer(kind: .steady, rootNetworkRate: netRate, isAvailable: true),
+            SubtensorStrategyOffer(kind: .steady, rootNetworkRate: rootYield, isAvailable: true),
             SubtensorStrategyOffer(kind: .balanced, rootNetworkRate: nil, isAvailable: false),
             SubtensorStrategyOffer(kind: .higherUpside, rootNetworkRate: nil, isAvailable: false)
         ])
@@ -151,21 +149,19 @@ final class SubtensorRootStrategyFlowTests: SubtensorFlowTestCase {
         )
 
         XCTAssertEqual(fallbackDetail, SubtensorValidatorDetail(item: try asterRoot(name: nil), identity: identity("Aster Stake")))
-        XCTAssertEqual(fallbackRate, netRate)
-        verify(engine, times(2)).rootAnnualReturn(take: any())
-        verify(engine, times(2)).rootAnnualReturn(take: equal(to: UInt16(11796)))
-        verify(engine, never()).rootAnnualReturn()
+        XCTAssertEqual(fallbackRate, rootYield)
 
         XCTAssertEqual(fallbackFee.amount, networkFee)
         XCTAssertEqual(maxStake, 48_188_500_000)
-        XCTAssertEqual(monthlyEarnings, 23_916_666)
+        XCTAssertEqual(monthlyEarnings, 57_675_416)
 
         XCTAssertEqual(requestLines(), [
             "GET https://earn-config.test/earn_config.json",
+            "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
             "GET https://bittensor.test/v1/bittensor/recommendations"
         ])
 
-        assertAttestedRequests(world, paths: ["/v1/bittensor/recommendations"])
+        assertAttestedRequests(world, paths: ["/v1/bittensor/yields/root", "/v1/bittensor/recommendations"])
     }
 }
 

@@ -8,7 +8,7 @@ enum SubtensorStrategyKind: String, Equatable, CaseIterable {
 
 struct SubtensorStrategyOffer: Equatable {
     let kind: SubtensorStrategyKind
-    let rootNetworkRate: SubtensorRate?
+    let rootNetworkRate: SubtensorReportedYield?
     let isAvailable: Bool
 }
 

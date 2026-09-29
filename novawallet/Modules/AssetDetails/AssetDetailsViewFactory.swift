@@ -15,22 +15,10 @@ struct AssetDetailsViewFactory {
             return nil
         }
 
-        let ahmInfoFactory = AHMFullInfoFactory(
-            filterSetKeypath: \.ahmAssetDetailsAlertClosedChains
-        )
-
-        let interactor = AssetDetailsInteractor(
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
-            ahmInfoFactory: ahmInfoFactory,
-            settingsManager: SettingsManager.shared,
-            selectedMetaAccount: selectedAccount,
+        let interactor = createInteractor(
             chainAsset: chainAsset,
-            rampProvider: RampAggregator.defaultAggregator(),
-            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
-            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactory.shared,
+            selectedAccount: selectedAccount,
             swapState: swapState,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             currencyManager: currencyManager
         )
 
@@ -79,6 +67,48 @@ struct AssetDetailsViewFactory {
         interactor.presenter = presenter
 
         return view
+    }
+
+    private static func createInteractor(
+        chainAsset: ChainAsset,
+        selectedAccount: MetaAccountModel,
+        swapState: SwapTokensFlowStateProtocol,
+        currencyManager: CurrencyManagerProtocol
+    ) -> AssetDetailsInteractor {
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+
+        let ahmInfoFactory = AHMFullInfoFactory(
+            filterSetKeypath: \.ahmAssetDetailsAlertClosedChains
+        )
+
+        let bittensorEarnSource = AssetDetailsBittensorEarnSource(
+            chainAsset: chainAsset,
+            walletId: selectedAccount.metaId,
+            earnConfigProvider: SubtensorStakingProcessServices.sharedEarnConfigProvider,
+            stakingDashboardProviderFactory: StakingDashboardProviderFactory(
+                chainRegistry: ChainRegistryFacade.sharedRegistry,
+                storageFacade: SubstrateDataStorageFacade.shared,
+                operationManager: OperationManagerFacade.sharedManager,
+                logger: Logger.shared
+            ),
+            operationQueue: operationQueue
+        )
+
+        return AssetDetailsInteractor(
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            ahmInfoFactory: ahmInfoFactory,
+            settingsManager: SettingsManager.shared,
+            selectedMetaAccount: selectedAccount,
+            chainAsset: chainAsset,
+            rampProvider: RampAggregator.defaultAggregator(),
+            bittensorEarnSource: bittensorEarnSource,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactory.shared,
+            swapState: swapState,
+            operationQueue: operationQueue,
+            currencyManager: currencyManager
+        )
     }
 
     private static func createChartView(

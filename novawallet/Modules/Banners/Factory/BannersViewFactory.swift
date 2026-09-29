@@ -8,7 +8,8 @@ struct BannersViewFactory {
         domain: Banners.Domain,
         output: BannersModuleOutputProtocol,
         inputOwner: BannersModuleInputOwnerProtocol,
-        locale: Locale
+        locale: Locale,
+        assetListModelObservable: AssetListModelObservable? = nil
     ) -> BannersViewProtocol? {
         let appConfig = ApplicationConfig.shared
 
@@ -43,11 +44,13 @@ struct BannersViewFactory {
         let interactor = BannersInteractor(
             bannersFactory: bannersFactory,
             localizationFactory: localizationFactory,
+            bittensorSource: createBittensorSource(for: domain, operationQueue: operationQueue),
+            textHeightOperationFactory: textHeightOperationFactory,
             settingsManager: SettingsManager.shared,
             operationQueue: operationQueue,
             logger: Logger.shared
         )
-        let wireframe = BannersWireframe()
+        let wireframe = BannersWireframe(assetListModelObservable: assetListModelObservable)
 
         let viewModelFactory = BannerViewModelFactory()
 
@@ -69,6 +72,27 @@ struct BannersViewFactory {
         inputOwner.bannersModule = presenter
 
         return view
+    }
+
+    private static func createBittensorSource(
+        for domain: Banners.Domain,
+        operationQueue: OperationQueue
+    ) -> BittensorLocalBannerSourceProtocol? {
+        switch domain {
+        case .assets:
+            BittensorLocalBannerSource(
+                chainRegistry: ChainRegistryFacade.sharedRegistry,
+                selectedWalletSettings: SelectedWalletSettings.shared,
+                walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+                earnConfigProvider: SubtensorStakingProcessServices.sharedEarnConfigProvider,
+                settingsManager: SettingsManager.shared,
+                eventCenter: EventCenter.shared,
+                operationQueue: operationQueue,
+                logger: Logger.shared
+            )
+        case .dApps, .ahmKusama, .ahmPolkadot:
+            nil
+        }
     }
 
     private static func closeFeatureAvailability(for domain: Banners.Domain) -> Bool {

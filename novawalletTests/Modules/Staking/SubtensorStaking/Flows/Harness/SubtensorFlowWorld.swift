@@ -32,7 +32,6 @@ final class SubtensorFlowWorld {
     let attestation: SubtensorFlowAttestation
     let chainAsset: ChainAsset
     let subnetsService: MockSubtensorSubnetsServiceProtocol
-    let rewardCalculatorService: MockSubtensorRewardCalculatorServiceProtocol
     let quoteOperationFactory: MockSubtensorQuoteOperationFactoryProtocol
     let rootHoldFactory: MockSubtensorRootHoldFactoryProtocol
     let apiOperationFactory: MockSubtensorApiOperationFactoryProtocol
@@ -56,7 +55,6 @@ final class SubtensorFlowWorld {
         self.chainAsset = chainAsset
         self.positionsSyncService = positionsSyncService
         subnetsService = MockSubtensorSubnetsServiceProtocol()
-        rewardCalculatorService = MockSubtensorRewardCalculatorServiceProtocol()
         quoteOperationFactory = MockSubtensorQuoteOperationFactoryProtocol()
         rootHoldFactory = MockSubtensorRootHoldFactoryProtocol()
         apiOperationFactory = MockSubtensorApiOperationFactoryProtocol()
@@ -98,7 +96,6 @@ final class SubtensorFlowWorld {
         let chainServices = SubtensorStakingChainServices(
             apiOperationFactory: apiOperationFactory,
             subnetsService: subnetsService,
-            rewardCalculatorService: rewardCalculatorService,
             quoteOperationFactory: quoteOperationFactory,
             rootHoldFactory: rootHoldFactory,
             positionsSyncServiceFactory: { _ in positionsSyncService },
@@ -148,31 +145,6 @@ final class SubtensorFlowWorld {
                 }
             }
         }
-    }
-
-    func stubRootEngine(
-        grossRate: Decimal?,
-        netRates: [UInt16: Decimal]
-    ) -> MockSubtensorRewardCalculatorEngineProtocol {
-        let engine = MockSubtensorRewardCalculatorEngineProtocol()
-
-        stub(engine) { stub in
-            when(stub.isRootEmissionPaused.get).thenReturn(false)
-            when(stub.rootAnnualReturn()).thenReturn(grossRate)
-            when(stub.rootAnnualReturn(take: any())).then { take in
-                netRates[take]
-            }
-        }
-
-        stub(rewardCalculatorService) { stub in
-            when(stub.fetchEngine(runningCompletionIn: any(), completion: any())).then { queue, completion in
-                queue.async {
-                    completion(.success(engine))
-                }
-            }
-        }
-
-        return engine
     }
 
     func stubQuotes(_ quotes: [SubtensorQuote]) {

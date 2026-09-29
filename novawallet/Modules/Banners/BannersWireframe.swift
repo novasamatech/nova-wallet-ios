@@ -1,19 +1,23 @@
 import Foundation
 import UIKit
 
-final class BannersWireframe: BannersWireframeProtocol {
-    func showBittensorEarn(from view: BannersViewProtocol?) {
-        guard
-            let chainAsset = BittensorLocalBanner.chainAsset(),
-            let stakingView = StartStakingInfoViewFactory.createSubtensorView(
-                for: .init(chainAsset: chainAsset, type: .subtensor)
-            )
-        else { return }
+final class BannersWireframe: BannersWireframeProtocol, SubtensorEarnInfoPresentable, SubtensorGetTaoRouting {
+    let assetListModelObservable: AssetListModelObservable?
 
-        stakingView.controller.hidesBottomBarWhenPushed = true
-        view?.controller.parent?.navigationController?.pushViewController(
-            stakingView.controller,
-            animated: true
+    init(assetListModelObservable: AssetListModelObservable?) {
+        self.assetListModelObservable = assetListModelObservable
+    }
+
+    func showBittensorEarn(from view: BannersViewProtocol?, chainAsset: ChainAsset) {
+        presentSubtensorEarnInfo(from: view, chainAsset: chainAsset)
+    }
+
+    func showBittensorGetTao(from view: BannersViewProtocol?, chainAsset: ChainAsset) {
+        showGetTao(
+            from: view,
+            chainAsset: chainAsset,
+            assetListObservable: assetListModelObservable,
+            rampHandler: nil
         )
     }
 

@@ -9,16 +9,17 @@ final class SubtensorSubnetStrategyFlowTests: SubtensorFlowTestCase {
     func testSubnetStrategyFlowPicksTheVerifiedChutesPairAndPricesTheBuyNetOfTheNovaFee() throws {
         let world = try SubtensorFlowWorld(novaFeeBeneficiary: SubtensorFlowChainWorld.novaFeeBeneficiary)
         let services = world.earnServices
-        let engine = try world.stubRootEngine(grossRate: decimal("0.07"), netRates: [0: decimal("0.07")])
 
         world.stubSubnets(try SubtensorFlowChainWorld.subnetsInfo())
         world.stubQuotes([SubtensorFlowChainWorld.chutesBuyQuote])
         SubtensorFlowURLProtocol.serveEarnConfig()
         SubtensorFlowURLProtocol.serveFixture(.recommendations)
         SubtensorFlowURLProtocol.serveFixture(.rankedSubnets)
+        SubtensorFlowURLProtocol.serveFixture(.rootYield(page: 1, pageSize: 100))
 
         let bannerConfig = try run(services.earnConfigProvider.createConfigWrapper())
 
+        let rootYield = try run(services.yieldService.createRootYieldWrapper())
         let offers = try run(services.discoveryService.createStrategyOffersWrapper())
         world.clock.advance(by: 30)
         let verified = try run(services.recommendationService.createVerifiedRecommendationsWrapper())
@@ -66,12 +67,9 @@ final class SubtensorSubnetStrategyFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(bannerConfig.headlineMaxAnnualRate, try decimal("0.40"))
         XCTAssertEqual(bannerConfig.entry?.enabled, true)
 
+        XCTAssertEqual(rootYield, try fixtureRootYield())
         XCTAssertEqual(offers, [
-            SubtensorStrategyOffer(
-                kind: .steady,
-                rootNetworkRate: SubtensorRate(annualRate: try decimal("0.07"), source: .chainNetworkAverage(isNetOfTake: true)),
-                isAvailable: true
-            ),
+            SubtensorStrategyOffer(kind: .steady, rootNetworkRate: rootYield, isAvailable: true),
             SubtensorStrategyOffer(kind: .balanced, rootNetworkRate: nil, isAvailable: true),
             SubtensorStrategyOffer(kind: .higherUpside, rootNetworkRate: nil, isAvailable: true)
         ])
@@ -151,46 +149,47 @@ final class SubtensorSubnetStrategyFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(revisitedVerified, verified)
         XCTAssertEqual(revisitedCandidates, candidates)
         XCTAssertEqual(revisitedRanked, ranked)
-        verify(engine, times(2)).rootAnnualReturn(take: equal(to: UInt16(0)))
-        verify(engine, never()).rootAnnualReturn()
 
         XCTAssertEqual(requestLines(), [
             "GET https://earn-config.test/earn_config.json",
+            "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
             "GET https://bittensor.test/v1/bittensor/recommendations",
             "GET https://bittensor.test/v1/bittensor/recommendations/subnets"
         ])
 
-        assertAttestedRequests(world, paths: ["/v1/bittensor/recommendations", "/v1/bittensor/recommendations/subnets"])
+        assertAttestedRequests(
+            world,
+            paths: [
+                "/v1/bittensor/yields/root",
+                "/v1/bittensor/recommendations",
+                "/v1/bittensor/recommendations/subnets"
+            ]
+        )
     }
 
     func testSubnetStrategyFlowWithUnpublishedRecommendationsAndAvailableConfigOffersOnlyTheConfigSteady() throws {
         let world = try SubtensorFlowWorld()
         let services = world.earnServices
-        let engine = try world.stubRootEngine(grossRate: decimal("0.07"), netRates: [11796: decimal("0.0574")])
 
         SubtensorFlowURLProtocol.serveEarnConfig()
         SubtensorFlowURLProtocol.serveBittensor("/recommendations", reply: .notFoundPlainText())
         SubtensorFlowURLProtocol.serveBittensor("/recommendations/subnets", reply: .notFoundPlainText())
+        SubtensorFlowURLProtocol.serveFixture(.rootYield(page: 1, pageSize: 100))
 
         _ = try run(services.earnConfigProvider.createConfigWrapper())
+        let rootYield = try run(services.yieldService.createRootYieldWrapper())
         let offers = try run(services.discoveryService.createStrategyOffersWrapper())
         let candidates = try run(services.discoveryService.createPickCandidatesWrapper(for: .balanced))
         let rankingError = runError(services.recommendationService.createRankedSubnetsWrapper())
         let retriedCandidates = try run(services.discoveryService.createPickCandidatesWrapper(for: .balanced))
         let retriedRankingError = runError(services.recommendationService.createRankedSubnetsWrapper())
 
+        XCTAssertEqual(rootYield, try fixtureRootYield())
         XCTAssertEqual(offers, [
-            SubtensorStrategyOffer(
-                kind: .steady,
-                rootNetworkRate: SubtensorRate(annualRate: try decimal("0.0574"), source: .chainNetworkAverage(isNetOfTake: true)),
-                isAvailable: true
-            ),
+            SubtensorStrategyOffer(kind: .steady, rootNetworkRate: rootYield, isAvailable: true),
             SubtensorStrategyOffer(kind: .balanced, rootNetworkRate: nil, isAvailable: false),
             SubtensorStrategyOffer(kind: .higherUpside, rootNetworkRate: nil, isAvailable: false)
         ])
-
-        verify(engine).rootAnnualReturn(take: equal(to: UInt16(11796)))
-        verify(engine, never()).rootAnnualReturn()
 
         XCTAssertEqual(candidates, SubtensorPickCandidates(kind: .balanced, candidates: [], generationId: nil))
         XCTAssertEqual(retriedCandidates, candidates)
@@ -199,11 +198,19 @@ final class SubtensorSubnetStrategyFlowTests: SubtensorFlowTestCase {
 
         XCTAssertEqual(requestLines(), [
             "GET https://earn-config.test/earn_config.json",
+            "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
             "GET https://bittensor.test/v1/bittensor/recommendations",
             "GET https://bittensor.test/v1/bittensor/recommendations/subnets"
         ])
 
-        assertAttestedRequests(world, paths: ["/v1/bittensor/recommendations", "/v1/bittensor/recommendations/subnets"])
+        assertAttestedRequests(
+            world,
+            paths: [
+                "/v1/bittensor/yields/root",
+                "/v1/bittensor/recommendations",
+                "/v1/bittensor/recommendations/subnets"
+            ]
+        )
     }
 }
 

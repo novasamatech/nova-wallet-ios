@@ -3,38 +3,52 @@ import Foundation
 final class StartStakingInfoSubtensorWireframe: StartStakingInfoWireframe,
     StartStakingInfoSubtensorWireframeProtocol {
     let state: SubtensorStakingSharedStateProtocol
-    let strategiesDataSource: SubtensorStakingStrategiesDataSourceProtocol
 
-    init(
-        state: SubtensorStakingSharedStateProtocol,
-        strategiesDataSource: SubtensorStakingStrategiesDataSourceProtocol
-    ) {
+    weak var subnetSelectDelegate: SubtensorSubnetSelectDelegate?
+
+    init(state: SubtensorStakingSharedStateProtocol) {
         self.state = state
-        self.strategiesDataSource = strategiesDataSource
     }
 
-    func showStrategies(from view: ControllerBackedProtocol?) {
-        let strategiesView = SubtensorStakingStrategiesViewFactory.createView(
-            for: state,
-            dataSource: strategiesDataSource
-        )
+    override func showSetupAmount(from view: ControllerBackedProtocol?) {
+        guard
+            let subnetSelectDelegate,
+            let picker = SubtensorSubnetSelectViewFactory.createPicker(
+                for: state,
+                delegate: subnetSelectDelegate
+            ) else {
+            return
+        }
+
+        view?.controller.presentWithCardLayout(picker, animated: true)
+    }
+
+    func showRootDetails(from view: ControllerBackedProtocol?) {
+        guard let setupView = SubtensorStakingSetupViewFactory.createRootDetailsView(for: state) else {
+            return
+        }
 
         view?.controller.navigationController?.pushViewController(
-            strategiesView.controller,
+            setupView.controller,
             animated: true
         )
     }
 
-    override func showSetupAmount(from view: ControllerBackedProtocol?) {
-        guard let setupAmount = SubtensorStakingSetupViewFactory.createView(
+    func showSubnetSetup(
+        from view: ControllerBackedProtocol?,
+        target: SubtensorStakeTarget,
+        validator: SubtensorValidatorDirectoryItem?
+    ) {
+        guard let setupView = SubtensorStakingSetupViewFactory.createSubnetView(
             for: state,
-            initialPosition: nil
+            target: target,
+            validator: validator
         ) else {
             return
         }
 
         view?.controller.navigationController?.pushViewController(
-            setupAmount.controller,
+            setupView.controller,
             animated: true
         )
     }

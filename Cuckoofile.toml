@@ -144,10 +144,7 @@ sources = [
     "novawalletTests/Modules/Staking/SubtensorStaking/SubtensorStakingTestWireframe.swift",
     "novawallet/Modules/Staking/Subtensor/Services/SubtensorStakingPositionsSyncService.swift",
     "novawallet/Modules/Staking/Subtensor/Services/SubtensorSubnetsService.swift",
-    "novawallet/Modules/Staking/Subtensor/Services/SubtensorDelegatesService.swift",
     "novawallet/Modules/Staking/Subtensor/Services/SubtensorRootClaimableService.swift",
-    "novawallet/Modules/Staking/Services/RewardCalculatorService/Subtensor/SubtensorRewardCalculatorService.swift",
-    "novawallet/Modules/Staking/Services/RewardCalculatorService/Subtensor/SubtensorRewardCalculatorEngine.swift",
     "novawallet/Modules/Staking/Operations/SubtensorStaking/SubtensorPreflightFactory.swift",
     "novawallet/Modules/Staking/Operations/SubtensorStaking/SubtensorNetworkInfoFactory.swift",
     "novawallet/Modules/Staking/Operations/SubtensorStaking/SubtensorQuoteOperationFactory.swift",
@@ -193,6 +190,10 @@ sources = [
     "novawallet/Modules/Staking/Subtensor/Protocols/SubtensorValidatorInfoPresentable.swift",
     "novawallet/Modules/Staking/Subtensor/Protocols/SubtensorYourBittensorPresentable.swift",
     "novawallet/Modules/Staking/Subtensor/SubtensorOperationResult/SubtensorOperationResultProtocols.swift",
+    "novawallet/Modules/Staking/Subtensor/SubtensorPosition/SubtensorPositionProtocols.swift",
+    "novawallet/Modules/Staking/StartStakingInfo/StartStakingInfoProtocols.swift",
+    "novawallet/Modules/Staking/StartStakingInfo/SubtensorStaking/StartStakingInfoSubtensorProtocols.swift",
+    "novawallet/Modules/MessageSheet/Compound/MessageSheetPresentable.swift",
 ]
 
 exclude = [

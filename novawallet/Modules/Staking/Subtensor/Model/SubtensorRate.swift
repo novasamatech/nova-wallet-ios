@@ -2,7 +2,6 @@ import Foundation
 
 struct SubtensorRate: Equatable {
     enum Source: Equatable {
-        case chainNetworkAverage(isNetOfTake: Bool)
         case config
     }
 

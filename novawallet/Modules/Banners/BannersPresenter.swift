@@ -1,6 +1,5 @@
 import Foundation
 import Foundation_iOS
-import UIKit
 
 final class BannersPresenter {
     weak var view: BannersViewProtocol?
@@ -17,25 +16,34 @@ final class BannersPresenter {
     private var banners: [Banner]?
     private var closedBanners: ClosedBanners?
     private var localizedResources: BannersLocalizedResources?
+    private var bittensorContent: BittensorLocalBannerContent?
     private var setUp: Bool = false
 
     private var resolvedContent: (banners: [Banner], closed: ClosedBanners, resources: BannersLocalizedResources)? {
-        guard let banners, let closedBanners, let localizedResources else {
-            guard domain == .assets, BittensorLocalBanner.chainAsset() != nil else { return nil }
-            return ([BittensorLocalBanner.banner()], ClosedBanners(), [
-                BittensorLocalBanner.id: BittensorLocalBanner.resource(for: locale)
-            ])
-        }
+        guard let bittensorContent else {
+            guard let banners, let closedBanners, let localizedResources else {
+                return nil
+            }
 
-        guard domain == .assets, BittensorLocalBanner.chainAsset() != nil else {
             return (banners, closedBanners, localizedResources)
         }
 
-        var resources = localizedResources
-        resources[BittensorLocalBanner.id] = BittensorLocalBanner.resource(for: locale)
-        var visibleClosedBanners = closedBanners
-        visibleClosedBanners.remove(BittensorLocalBanner.id)
-        return ([BittensorLocalBanner.banner()] + banners, visibleClosedBanners, resources)
+        var resources = localizedResources ?? [:]
+        resources[BittensorLocalBanner.id] = bittensorContent.resource
+
+        return (
+            [bittensorContent.banner] + (banners ?? []),
+            closedBanners ?? ClosedBanners(),
+            resources
+        )
+    }
+
+    private var showsBittensorBanner: Bool {
+        guard bittensorContent != nil else {
+            return false
+        }
+
+        return !(closedBanners?.contains(BittensorLocalBanner.id) ?? false)
     }
 
     init(
@@ -65,6 +73,19 @@ final class BannersPresenter {
 
         view?.update(with: viewModel)
     }
+
+    private func openBittensorBanner() {
+        guard let model = bittensorContent?.model else {
+            return
+        }
+
+        switch model.variant {
+        case .earn:
+            wireframe.showBittensorEarn(from: view, chainAsset: model.chainAsset)
+        case .getTao:
+            wireframe.showBittensorGetTao(from: view, chainAsset: model.chainAsset)
+        }
+    }
 }
 
 // MARK: BannersPresenterProtocol
@@ -84,7 +105,7 @@ extension BannersPresenter: BannersPresenterProtocol {
 
     func action(for bannerId: String) {
         if bannerId == BittensorLocalBanner.id {
-            wireframe.showBittensorEarn(from: view)
+            openBittensorBanner()
             return
         }
 
@@ -148,12 +169,20 @@ extension BannersPresenter: BannersInteractorOutputProtocol {
     }
 
     func didReceive(_ error: any Error) {
-        if domain == .assets, BittensorLocalBanner.chainAsset() != nil {
-            provideBanners()
-            moduleOutput?.didReceiveBanners(state: .available)
-        } else {
+        guard showsBittensorBanner else {
             moduleOutput?.didReceive(error)
+            return
         }
+
+        moduleOutput?.didReceiveBanners(state: bannersState)
+    }
+
+    func didReceive(bittensorContent: BittensorLocalBannerContent?) {
+        self.bittensorContent = bittensorContent
+
+        provideBanners()
+
+        moduleOutput?.didReceiveBanners(state: bannersState)
     }
 }
 
@@ -189,53 +218,6 @@ extension BannersPresenter: BannersModuleInputProtocol {
         interactor.updateResources(
             for: newLocale,
             availableTextWidth: availableTextWidth
-        )
-    }
-}
-
-enum BittensorLocalBanner {
-    static let id = "local-bittensor-earn"
-
-    static func resource(for locale: Locale) -> BannersLocalizedResource {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-        return BannersLocalizedResource(
-            bannerId: id,
-            title: strings.stakingSubtensorBannerTitle(),
-            details: strings.stakingSubtensorBannerDetails(),
-            estimatedHeight: 64
-        )
-    }
-
-    static func chainAsset() -> ChainAsset? {
-        let registry = ChainRegistryFacade.sharedRegistry
-        guard let chain = registry.getChain(for: KnowChainId.bittensor) else {
-            return nil
-        }
-
-        return chainAsset(for: chain)
-    }
-
-    static func chainAsset(for chain: ChainModel) -> ChainAsset? {
-        guard let asset = chain.utilityAsset(), asset.hasSubtensorStaking else {
-            return nil
-        }
-
-        return ChainAsset(chain: chain, asset: asset)
-    }
-
-    static func banner() -> Banner {
-        let renderer = UIGraphicsImageRenderer(size: CGSize(width: 1, height: 1))
-        let background = renderer.image { context in
-            UIColor.black.setFill()
-            context.cgContext.fill(CGRect(x: 0, y: 0, width: 1, height: 1))
-        }
-
-        return Banner(
-            id: id,
-            background: background,
-            image: UIImage(named: "bittensorBannerArt"),
-            clipsToBounds: true,
-            actionLink: nil
         )
     }
 }
