@@ -5,21 +5,12 @@ final class SubtensorStakingSetupViewController: UIViewController, ViewHolder, I
     typealias RootViewType = SubtensorStakingSetupViewLayout
 
     let presenter: SubtensorStakingSetupPresenterProtocol
-    let localizableTitle: LocalizableResource<String>
-    let statics: CollatorStakingDelegateStatics
-
-    private var collatorViewModel: AccountDetailsSelectionViewModel?
-    private var isTargetLoading = false
 
     init(
         presenter: SubtensorStakingSetupPresenterProtocol,
-        localizableTitle: LocalizableResource<String>,
-        statics: CollatorStakingDelegateStatics,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
-        self.localizableTitle = localizableTitle
-        self.statics = statics
 
         super.init(nibName: nil, bundle: nil)
 
@@ -38,17 +29,8 @@ final class SubtensorStakingSetupViewController: UIViewController, ViewHolder, I
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        rootView.setQuotePanel(hidden: true)
-        rootView.rewardsView.isHidden = true
-        rootView.receiveCell.isHidden = true
-        rootView.poolFeeCell.isHidden = true
-        rootView.priceImpactCell.isHidden = true
-        rootView.slippageCell.isHidden = true
-
         setupLocalization()
         setupHandlers()
-
-        updateActionButtonState()
 
         presenter.setup()
     }
@@ -56,178 +38,152 @@ final class SubtensorStakingSetupViewController: UIViewController, ViewHolder, I
 
 private extension SubtensorStakingSetupViewController {
     func setupLocalization() {
-        let languages = selectedLocale.rLanguages
-        let strings = R.string(preferredLanguages: languages).localizable
+        let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
 
-        title = localizableTitle.value(for: selectedLocale)
+        rootView.amountTitleView.titleLabel.text = strings.stakingSubtensorUiYouStake()
+        rootView.amountTitleView.buttonTitle.text = strings.swapsSetupAssetMax()
+        rootView.validatorCell.titleLabel.text = strings.stakingCommonValidator()
+        rootView.apyCell.titleLabel.text = strings.stakingSubtensorUiValidatorSortApy()
+        rootView.receiveCell.titleLabel.text = strings.stakingSubtensorUiYouWillGet()
+        rootView.swapRateCell.titleLabel.text = strings.stakingSubtensorUiSwapRate()
+        rootView.slippageCell.titleLabel.text = strings.swapsSetupSlippage()
+        rootView.networkFeeCell.rowContentView.locale = selectedLocale
 
         setupAmountInputAccessoryView()
-
-        rootView.networkTitleLabel.text = strings.stakingSubtensorUiYourSubnet()
-        rootView.networkCell.titleLabel.text = strings.stakingSubtensorNetworkTitle()
-
-        rootView.collatorTitleLabel.text = statics.delegateTitle.value(for: selectedLocale)
-
-        applyCollator(viewModel: collatorViewModel)
-
-        rootView.amountView.titleView.text = strings.stakingSubtensorUiYouStake()
-        rootView.safetyNoteLabel.text = strings.stakingSubtensorUiSafetyNote()
-        rootView.amountView.detailsTitleLabel.text = strings.commonAvailablePrefix()
-
-        rootView.receiveCell.titleLabel.text = strings.stakingSubtensorQuoteReceiveTitle()
-        rootView.poolFeeCell.titleLabel.text = strings.stakingSubtensorQuotePoolFeeTitle()
-        rootView.priceImpactCell.titleLabel.text = strings.stakingSubtensorQuotePriceImpactTitle()
-        rootView.slippageCell.titleLabel.text = strings.swapsSetupSlippage()
-
-        rootView.rewardsView.titleLabel.text = strings.stakingEstimatedEarnings()
-
-        rootView.minStakeView.titleLabel.text = strings.stakingMainMinimumStakeTitle()
-
-        rootView.networkFeeView.locale = selectedLocale
-
-        updateActionButtonState()
-    }
-
-    func updateActionButtonState() {
-        if isTargetLoading {
-            rootView.actionButton.applyDisabledStyle()
-            rootView.actionButton.isUserInteractionEnabled = false
-            rootView.actionButton.imageWithTitleView?.title = R.string(
-                preferredLanguages: selectedLocale.rLanguages
-            ).localizable.stakingSubtensorUiLoadingSubnet()
-            rootView.actionButton.invalidateLayout()
-            return
-        }
-        if collatorViewModel == nil {
-            rootView.actionButton.applyDisabledStyle()
-            rootView.actionButton.isUserInteractionEnabled = false
-
-            rootView.actionButton.imageWithTitleView?.title = statics.selectDelegateHint.value(
-                for: selectedLocale
-            )
-            rootView.actionButton.invalidateLayout()
-
-            return
-        }
-
-        if !rootView.amountInputView.completed {
-            rootView.actionButton.applyDisabledStyle()
-            rootView.actionButton.isUserInteractionEnabled = false
-
-            rootView.actionButton.imageWithTitleView?.title = R.string(
-                preferredLanguages: selectedLocale.rLanguages
-            ).localizable.transferSetupEnterAmount()
-            rootView.actionButton.invalidateLayout()
-
-            return
-        }
-
-        rootView.actionButton.applyEnabledStyle()
-        rootView.actionButton.isUserInteractionEnabled = true
-
-        rootView.actionButton.imageWithTitleView?.title = R.string(
-            preferredLanguages: selectedLocale.rLanguages
-        ).localizable.commonContinue()
-        rootView.actionButton.invalidateLayout()
-    }
-
-    func applyAssetBalance(viewModel: AssetBalanceViewModelProtocol) {
-        let assetViewModel = AssetViewModel(
-            symbol: viewModel.symbol,
-            imageViewModel: viewModel.iconViewModel
-        )
-
-        rootView.amountInputView.bind(assetViewModel: assetViewModel)
-        rootView.amountInputView.bind(priceViewModel: viewModel.price)
-
-        rootView.amountView.detailsValueLabel.text = viewModel.balance
-    }
-
-    func applyRewards(viewModel: StakingRewardInfoViewModel) {
-        rootView.rewardsView.priceLabel.text = viewModel.amountViewModel.price
-        rootView.rewardsView.incomeLabel.text = viewModel.returnPercentage
-        rootView.rewardsView.amountLabel.text = R.string(
-            preferredLanguages: selectedLocale.rLanguages
-        ).localizable.parachainStakingRewardsFormat(viewModel.amountViewModel.amount)
-
-        rootView.rewardsView.setNeedsLayout()
-    }
-
-    func applyCollator(viewModel: AccountDetailsSelectionViewModel?) {
-        if let viewModel {
-            rootView.collatorActionView.bind(viewModel: viewModel)
-        } else {
-            let emptyViewModel = AccountDetailsSelectionViewModel(
-                displayAddress: DisplayAddressViewModel(
-                    address: "",
-                    name: statics.selectDelegateTitle.value(for: selectedLocale),
-                    imageViewModel: nil
-                ),
-                details: nil
-            )
-
-            rootView.collatorActionView.bind(viewModel: emptyViewModel)
-        }
     }
 
     func setupAmountInputAccessoryView() {
-        let accessoryView = UIFactory.default.createAmountAccessoryView(
-            for: self,
-            locale: selectedLocale
-        )
+        let accessoryView = UIFactory.default.createAmountAccessoryView(for: self, locale: selectedLocale)
 
         rootView.amountInputView.textField.inputAccessoryView = accessoryView
     }
 
     func setupHandlers() {
-        rootView.networkCell.addTarget(
-            self,
-            action: #selector(actionSelectNetwork),
-            for: .touchUpInside
-        )
+        rootView.amountTitleView.button.addTarget(self, action: #selector(actionMax), for: .touchUpInside)
+        rootView.amountInputView.addTarget(self, action: #selector(actionAmountChange), for: .editingChanged)
+        rootView.validatorCell.addTarget(self, action: #selector(actionSelectValidator), for: .touchUpInside)
+        rootView.slippageCell.addTarget(self, action: #selector(actionSelectSlippage), for: .touchUpInside)
+        rootView.getTaoCardView.actionButton.addTarget(self, action: #selector(actionGetTao), for: .touchUpInside)
+        rootView.actionButton.addTarget(self, action: #selector(actionProceed), for: .touchUpInside)
+    }
 
-        rootView.collatorActionView.addTarget(
-            self,
-            action: #selector(actionSelectCollator),
-            for: .touchUpInside
-        )
+    func applyMax(_ maxAmount: String?, isAccented: Bool) {
+        let valueLabel = rootView.amountTitleView.buttonValue
 
-        rootView.amountInputView.addTarget(
-            self,
-            action: #selector(actionAmountChange),
-            for: .editingChanged
+        valueLabel.text = maxAmount
+        valueLabel.apply(style: isAccented ? .footnoteAccentText : .footnotePrimary)
+        rootView.amountTitleView.button.invalidateLayout()
+        rootView.setSkeleton(
+            rootView.maxSkeletonView,
+            loading: maxAmount == nil,
+            hiding: rootView.amountTitleView.button
         )
+    }
 
-        rootView.slippageCell.addTarget(
-            self,
-            action: #selector(actionSelectSlippage),
-            for: .touchUpInside
-        )
+    func applyGetTao(_ viewModel: SubtensorGetTaoViewModel?) {
+        rootView.getTaoCardView.isHidden = viewModel == nil
+        rootView.amountInputView.isHidden = viewModel != nil
 
-        rootView.actionButton.addTarget(
-            self,
-            action: #selector(actionProceed),
-            for: .touchUpInside
+        if let viewModel {
+            rootView.getTaoCardView.bind(viewModel: viewModel)
+        }
+    }
+
+    func applyValidator(_ viewModel: SubtensorSetupValidatorViewModel) {
+        let cell = rootView.validatorCell
+
+        switch viewModel {
+        case .loading:
+            cell.canSelect = false
+            cell.bind(viewModel: nil)
+        case let .unselected(title, canSelect):
+            cell.canSelect = canSelect
+            cell.bind(details: title)
+        case let .selected(displayAddress, canSelect):
+            cell.canSelect = canSelect
+            cell.bind(
+                viewModel: StackCellViewModel(
+                    details: displayAddress.name ?? displayAddress.address,
+                    imageViewModel: displayAddress.imageViewModel
+                )
+            )
+        }
+
+        if cell.canSelect {
+            cell.accessoryImageView.image = R.image.iconSmallArrow()?.tinted(with: R.color.colorIconSecondary()!)
+        }
+
+        rootView.setSkeleton(
+            rootView.validatorSkeletonView,
+            loading: viewModel.isLoading,
+            hiding: cell.rowContentView.valueView
         )
+    }
+
+    func applyRow(
+        _ viewModel: SubtensorSetupRowViewModel,
+        cell: StackTableCell,
+        skeletonView: SubtensorChartLoadingView?
+    ) {
+        cell.isHidden = viewModel == .hidden
+
+        if case let .value(details) = viewModel {
+            cell.bind(details: details)
+        }
+
+        if let skeletonView {
+            rootView.setSkeleton(skeletonView, loading: viewModel == .loading, hiding: cell.rowContentView.valueView)
+        }
+    }
+
+    func applySlippage(_ viewModel: SubtensorSetupRowViewModel) {
+        rootView.slippageCell.isHidden = viewModel == .hidden
+
+        if case let .value(details) = viewModel {
+            rootView.slippageCell.bind(details: details)
+            rootView.slippageCell.accessoryImageView.image = R.image.iconSmallArrow()?.tinted(
+                with: R.color.colorIconSecondary()!
+            )
+        }
+    }
+
+    func applyNetworkFee(_ viewModel: BalanceViewModelProtocol?) {
+        let feeView: NetworkFeeView = rootView.networkFeeCell.rowContentView
+
+        feeView.bind(viewModel: viewModel ?? BalanceViewModel(amount: "", price: nil))
+        rootView.setSkeleton(rootView.feeSkeletonView, loading: viewModel == nil, hiding: feeView.tokenLabel)
+    }
+
+    func applyAction(_ viewModel: SubtensorSetupActionViewModel) {
+        if viewModel.isEnabled {
+            rootView.actionButton.applyEnabledStyle()
+        } else {
+            rootView.actionButton.applyDisabledStyle()
+        }
+
+        rootView.actionButton.isUserInteractionEnabled = viewModel.isEnabled
+        rootView.actionButton.imageWithTitleView?.title = viewModel.title
+        rootView.actionButton.invalidateLayout()
+    }
+
+    @objc func actionMax() {
+        presenter.selectMax()
     }
 
     @objc func actionAmountChange() {
-        let amount = rootView.amountInputView.inputViewModel?.decimalAmount
-        presenter.updateAmount(amount)
-
-        updateActionButtonState()
+        presenter.updateAmount(rootView.amountInputView.inputViewModel?.decimalAmount)
     }
 
-    @objc func actionSelectNetwork() {
-        presenter.selectStakeTarget()
-    }
-
-    @objc func actionSelectCollator() {
-        presenter.selectCollator()
+    @objc func actionSelectValidator() {
+        presenter.selectValidator()
     }
 
     @objc func actionSelectSlippage() {
         presenter.selectSlippage()
+    }
+
+    @objc func actionGetTao() {
+        presenter.getTao()
     }
 
     @objc func actionProceed() {
@@ -236,93 +192,39 @@ private extension SubtensorStakingSetupViewController {
 }
 
 extension SubtensorStakingSetupViewController: SubtensorStakingSetupViewProtocol {
-    func didReceiveTargetLoading(_ isLoading: Bool) {
-        isTargetLoading = isLoading
-        rootView.targetLoadingView.setLoading(isLoading)
-        rootView.networkTitleLabel.isHidden = isLoading
-        rootView.networkTableView.isHidden = isLoading
-        rootView.collatorTitleLabel.isHidden = isLoading
-        rootView.collatorTableView.isHidden = isLoading
-        updateActionButtonState()
-    }
-
-    func didReceiveCollator(viewModel: AccountDetailsSelectionViewModel?) {
-        collatorViewModel = viewModel
-
-        applyCollator(viewModel: viewModel)
-
-        updateActionButtonState()
-    }
-
-    func didReceiveAssetBalance(viewModel: AssetBalanceViewModelProtocol) {
-        applyAssetBalance(viewModel: viewModel)
-    }
-
-    func didReceiveFee(viewModel: BalanceViewModelProtocol?) {
-        rootView.networkFeeView.bind(viewModel: viewModel)
-    }
-
     func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol) {
         rootView.amountInputView.bind(inputViewModel: inputViewModel)
-
-        updateActionButtonState()
     }
 
-    func didReceiveMinStake(viewModel: BalanceViewModelProtocol?) {
-        rootView.minStakeView.bind(viewModel: viewModel)
-    }
-
-    func didReceiveReward(viewModel: StakingRewardInfoViewModel) {
-        applyRewards(viewModel: viewModel)
-    }
-
-    func didReceiveRewardHidden(_ isHidden: Bool) {
-        rootView.rewardsView.isHidden = isHidden
-    }
-
-    func didReceiveStakeTarget(viewModel: SubtensorStakeTargetViewModel) {
-        let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
-        title = viewModel.isRoot ? strings.stakingSubtensorUiStakeToRoot() : strings.stakingSubtensorUiEarnWith()
-        rootView.networkTitleLabel.text = viewModel.isRoot
-            ? strings.stakingSubtensorUiStakingMethod() : strings.stakingSubtensorUiYourSubnet()
-        rootView.networkCell.bind(details: viewModel.title)
-    }
-
-    func didReceiveQuote(viewModel: SubtensorQuotePanelViewModel?) {
-        let hasQuote = viewModel != nil
-
-        rootView.receiveCell.isHidden = !hasQuote
-        rootView.poolFeeCell.isHidden = !hasQuote
-        rootView.priceImpactCell.isHidden = !hasQuote
-
-        updateQuotePanelVisibility()
-
-        guard let viewModel else {
-            return
-        }
-
-        rootView.receiveCell.bind(details: viewModel.receive)
-        rootView.poolFeeCell.bind(details: viewModel.poolFee)
-        rootView.priceImpactCell.bind(details: viewModel.priceImpact)
-
-        rootView.priceImpactCell.detailsLabel.textColor = viewModel.isImpactHigh
-            ? R.color.colorTextNegative()
-            : R.color.colorTextPrimary()
-    }
-
-    func didReceiveSlippage(viewModel: String?) {
-        rootView.slippageCell.isHidden = viewModel == nil
-        rootView.slippageCell.bind(details: viewModel ?? "")
-
-        updateQuotePanelVisibility()
-    }
-}
-
-private extension SubtensorStakingSetupViewController {
-    func updateQuotePanelVisibility() {
-        rootView.setQuotePanel(
-            hidden: rootView.receiveCell.isHidden && rootView.slippageCell.isHidden
+    func didReceiveAmountAsset(viewModel: AssetBalanceViewModelProtocol) {
+        rootView.amountInputView.bind(
+            assetViewModel: AssetViewModel(symbol: viewModel.symbol, imageViewModel: viewModel.iconViewModel)
         )
+
+        rootView.amountInputView.bind(priceViewModel: viewModel.price)
+        rootView.getTaoCardView.bind(iconViewModel: viewModel.iconViewModel)
+    }
+
+    func didReceive(viewModel: SubtensorStakingSetupViewModel) {
+        title = viewModel.title
+
+        applyMax(viewModel.maxAmount, isAccented: viewModel.getTao != nil)
+        applyGetTao(viewModel.getTao)
+
+        rootView.reserveAlertView.isHidden = viewModel.reserveWarning == nil
+        rootView.reserveAlertView.contentView.detailsLabel.text = viewModel.reserveWarning
+
+        applyValidator(viewModel.validator)
+        applyRow(viewModel.apy, cell: rootView.apyCell, skeletonView: rootView.apySkeletonView)
+        applyRow(viewModel.receive, cell: rootView.receiveCell, skeletonView: nil)
+        applyRow(viewModel.swapRate, cell: rootView.swapRateCell, skeletonView: nil)
+        applySlippage(viewModel.slippage)
+        applyNetworkFee(viewModel.networkFee)
+
+        rootView.captionLabel.isHidden = viewModel.caption == nil
+        rootView.captionLabel.text = viewModel.caption
+
+        applyAction(viewModel.action)
     }
 }
 

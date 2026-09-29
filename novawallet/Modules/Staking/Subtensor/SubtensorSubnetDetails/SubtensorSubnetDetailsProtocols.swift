@@ -1,36 +1,54 @@
 import Foundation
 
 protocol SubtensorSubnetDetailsViewProtocol: ControllerBackedProtocol {
-    func didReceive(title: String, price: String?, change: String?, subtitle: String)
-    func didReceive(history: SubtensorPriceHistoryResult?)
-    func didReceive(risk: String?)
-    func didReceiveFavorite(_ isFavorite: Bool)
+    func didReceive(title: SubtensorSubnetDetailsTitleViewModel)
+    func didReceive(viewModel: SubtensorSubnetDetailsViewModel)
 }
 
 protocol SubtensorSubnetDetailsPresenterProtocol: AnyObject {
     func setup()
-    func selectPeriod(_ period: SubtensorPricePeriod)
+    func selectCurrency(at index: Int)
+    func selectPeriod(at index: Int)
+    func selectAmount(at index: Int)
     func toggleFavorite()
     func selectValidator()
-    func continueStaking()
+    func useSubnet()
+    func retryHistory()
 }
 
 protocol SubnetDetailsInteractorInputProtocol: AnyObject {
-    func loadHistory(for subnet: SubtensorSubnetRef, period: SubtensorPricePeriod)
-    func loadRisk(for netuid: UInt16)
+    func setup()
+    func loadHistory(for period: SubtensorPricePeriod)
+    func presetValidator(existingHotkey: AccountId?)
 }
 
 protocol SubnetDetailsInteractorOutputProtocol: AnyObject {
-    func didReceive(history: SubtensorPriceHistoryResult)
-    func didReceive(risk: SubtensorRankedSubnet?)
-    func didFailHistory(_ error: Error)
+    func didReceiveHistory(_ result: SubtensorPriceHistoryResult, for period: SubtensorPricePeriod)
+    func didFailHistory(for period: SubtensorPricePeriod)
+    func didReceiveListing(_ result: SubtensorPriceHistoryResult?)
+    func didReceiveRankingView(_ rankingView: SubtensorRankedSubnets?)
+    func didReceivePreset(_ validator: SubtensorValidatorDirectoryItem?)
+    func didReceiveYields(_ yields: SubtensorAlphaYields?)
+    func didReceiveBalance(_ balance: AssetBalance?)
+    func didReceiveTaoPrice(_ price: PriceData?)
+    func didReceivePositions(_ state: Multistaking.SubtensorStakingState?)
+    func didReceivePositionsSyncFailed(_ isFailed: Bool)
+    func didReceiveEarnConfig(_ config: SubtensorEarnConfig?)
 }
 
 protocol SubtensorSubnetDetailsWireframeProtocol: AnyObject {
-    func complete(from view: SubtensorSubnetDetailsViewProtocol?)
     func showValidators(
         from view: SubtensorSubnetDetailsViewProtocol?,
         target: SubtensorStakeTarget,
-        delegate: SubtensorSubnetSelectDelegate
+        selectedHotkey: AccountId?,
+        delegate: SubtensorValidatorSelectDelegate
+    )
+
+    func complete(
+        from view: SubtensorSubnetDetailsViewProtocol?,
+        host: SubtensorSubnetDetailsHost,
+        target: SubtensorStakeTarget,
+        validator: SubtensorValidatorDirectoryItem?,
+        delegate: SubtensorSubnetSelectDelegate?
     )
 }

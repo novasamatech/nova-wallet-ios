@@ -1,49 +1,170 @@
 import Foundation
+import Foundation_iOS
 import Operation_iOS
 
-final class SubtensorPortfolioInteractor: AnyCancellableCleaning {
+final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
     weak var presenter: SubnetPortfolioInteractorOutputProtocol?
 
     let state: SubtensorStakingSharedStateProtocol
+    let account: MetaChainAccountResponse
+    let selectedWalletSettings: SelectedWalletSettings
+    let eventCenter: EventCenterProtocol
+    let applicationHandler: ApplicationHandlerProtocol
+    let catalogueService: SubtensorSubnetCatalogueServiceProtocol
+    let yieldService: SubtensorYieldServiceProtocol
+    let earnConfigProvider: SubtensorEarnConfigProviderProtocol
     let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
-    let coingeckoFactory: CoingeckoOperationFactoryProtocol
-    let currencyManager: CurrencyManagerProtocol
+    let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+    let historyLoader: SubtensorPortfolioHistoryLoader
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
-    private let seriesStore = CancellableCallStore()
+    private var priceProvider: StreamableProvider<PriceData>?
+    private var hasReportedAccountChange = false
+    private var heldNetuids: Set<UInt16> = []
+    private var forcedCatalogueNetuids: Set<UInt16> = []
+    private let catalogueStore = CancellableCallStore()
+    private let rootRateStore = CancellableCallStore()
+    private let earnConfigStore = CancellableCallStore()
+    private let weeklyChangesStore = CancellableCallStore()
+
+    private var chainAsset: ChainAsset {
+        state.stakingOption.chainAsset
+    }
 
     init(
         state: SubtensorStakingSharedStateProtocol,
+        account: MetaChainAccountResponse,
+        selectedWalletSettings: SelectedWalletSettings,
+        eventCenter: EventCenterProtocol,
+        applicationHandler: ApplicationHandlerProtocol,
+        catalogueService: SubtensorSubnetCatalogueServiceProtocol,
+        yieldService: SubtensorYieldServiceProtocol,
+        earnConfigProvider: SubtensorEarnConfigProviderProtocol,
+        priceHistoryService: SubtensorPriceHistoryServiceProtocol?,
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         coingeckoFactory: CoingeckoOperationFactoryProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.state = state
-        priceHistoryService = state.earnServices.priceHistoryService
-        self.currencyManager = currencyManager
-        self.coingeckoFactory = coingeckoFactory
+        self.account = account
+        self.selectedWalletSettings = selectedWalletSettings
+        self.eventCenter = eventCenter
+        self.applicationHandler = applicationHandler
+        self.catalogueService = catalogueService
+        self.yieldService = yieldService
+        self.earnConfigProvider = earnConfigProvider
+        self.priceHistoryService = priceHistoryService
+        self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.operationQueue = operationQueue
         self.logger = logger
+
+        historyLoader = SubtensorPortfolioHistoryLoader(
+            priceHistoryService: priceHistoryService,
+            coingeckoFactory: coingeckoFactory,
+            operationQueue: operationQueue
+        )
+
+        self.currencyManager = currencyManager
     }
 
     deinit {
-        seriesStore.cancel()
+        catalogueStore.cancel()
+        rootRateStore.cancel()
+        earnConfigStore.cancel()
+        weeklyChangesStore.cancel()
         state.positionsSyncService?.remove(observer: self)
         state.positionsSyncService?.remove(failureObserver: self)
+        state.throttle()
     }
 }
 
 extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
     func setup() {
+        state.setup(for: account)
+
+        subscribePositions()
+        subscribePrice()
+        provideRootRate()
+        provideEarnConfig()
+
+        eventCenter.add(observer: self, dispatchIn: .main)
+        applicationHandler.delegate = self
+    }
+
+    func refresh() {
+        state.positionsSyncService?.refresh()
+    }
+
+    func loadHistories(for period: SubtensorPricePeriod, subnets: [SubtensorSubnetRef]) {
+        guard let priceId = chainAsset.asset.priceId else {
+            presenter?.didFailHistories(for: period)
+            return
+        }
+
+        historyLoader.load(
+            for: period,
+            subnets: subnets,
+            taoPriceId: priceId,
+            currency: selectedCurrency
+        ) { [weak self] result in
+            switch result {
+            case let .success(histories):
+                self?.presenter?.didReceive(histories: histories)
+            case let .failure(error):
+                self?.logger.warning("Bittensor portfolio chart unavailable: \(error)")
+                self?.presenter?.didFailHistories(for: period)
+            }
+        }
+    }
+
+    func loadWeeklyChanges(for subnets: [SubtensorSubnetRef]) {
+        weeklyChangesStore.cancel()
+
+        guard let priceHistoryService, !subnets.isEmpty else {
+            presenter?.didReceive(weeklyChanges: [:])
+            return
+        }
+
+        executeCancellable(
+            wrapper: priceHistoryService.createWeeklyChangesWrapper(for: subnets),
+            inOperationQueue: operationQueue,
+            backingCallIn: weeklyChangesStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(changes):
+                self?.presenter?.didReceive(weeklyChanges: changes)
+            case let .failure(error):
+                self?.logger.warning("Bittensor portfolio weekly changes unavailable: \(error)")
+                self?.presenter?.didReceive(weeklyChanges: [:])
+            }
+        }
+    }
+}
+
+private extension SubtensorPortfolioInteractor {
+    func subscribePositions() {
         state.positionsSyncService?.add(
             observer: self,
             sendStateOnSubscription: true,
             queue: .main
         ) { [weak self] _, newState in
-            if let newState { self?.presenter?.didReceive(state: newState) }
+            guard let self, let newState else {
+                return
+            }
+
+            presenter?.didReceive(state: newState)
+
+            heldNetuids = Set(newState.positions.map(\.netuid)).subtracting([SubtensorStakingPallet.rootNetuid])
+
+            if !catalogueStore.hasCall {
+                provideCatalogue(forcingRefresh: false)
+            }
         }
+
         state.positionsSyncService?.add(
             failureObserver: self,
             sendStateOnSubscription: true,
@@ -53,99 +174,159 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
         }
     }
 
-    func refresh() {
-        state.positionsSyncService?.refresh()
-    }
+    func subscribePrice() {
+        clear(streamableProvider: &priceProvider)
 
-    func loadSeries(
-        portfolio: SubtensorPortfolio,
-        subnetsInfo: SubtensorSubnetsInfo?,
-        priceId: String?,
-        precision: Int16,
-        period: SubtensorPricePeriod
-    ) {
-        seriesStore.cancel()
-
-        guard let priceId else {
-            presenter?.didReceive(series: nil)
+        guard let priceId = chainAsset.asset.priceId else {
+            presenter?.didReceive(price: nil)
             return
         }
 
-        let taoOperation = coingeckoFactory.fetchPriceHistory(
-            for: priceId,
-            currency: currencyManager.selectedCurrency,
-            period: period.coingeckoPeriod
-        )
+        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
+    }
 
-        let historyWrappers = createHistoryWrappers(
-            for: portfolio,
-            subnetsInfo: subnetsInfo,
-            period: period
-        )
+    func provideCatalogue(forcingRefresh: Bool) {
+        catalogueStore.cancel()
 
-        let operation = ClosureOperation<SubtensorPortfolioValueSeries> {
-            let taoHistory = try taoOperation.extractNoCancellableResultData()
-            let histories = historyWrappers.compactMap { wrapper -> SubtensorPriceHistory? in
-                guard case let .available(history) = try? wrapper.targetOperation
-                    .extractNoCancellableResultData() else {
-                    return nil
-                }
-                return history
+        executeCancellable(
+            wrapper: catalogueService.createCatalogueWrapper(forcingRefresh: forcingRefresh),
+            inOperationQueue: operationQueue,
+            backingCallIn: catalogueStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            guard let self else {
+                return
             }
 
-            return SubtensorPortfolioValueSeriesCalculator.calculate(
-                portfolio: portfolio,
-                histories: histories,
-                taoFiatHistory: taoHistory,
-                period: period,
-                precision: precision
-            )
+            switch result {
+            case let .success(catalogue):
+                presenter?.didReceive(catalogue: catalogue)
+                refreshCatalogueIfMissing(in: catalogue)
+            case let .failure(error):
+                logger.warning("Bittensor portfolio catalogue unavailable: \(error)")
+                presenter?.didReceive(catalogue: nil)
+            }
+        }
+    }
+
+    func refreshCatalogueIfMissing(in catalogue: SubtensorSubnetCatalogue) {
+        let missingNetuids = heldNetuids
+            .filter { catalogue.subnet(for: $0) == nil }
+            .subtracting(forcedCatalogueNetuids)
+
+        guard !missingNetuids.isEmpty else {
+            return
         }
 
-        operation.addDependency(taoOperation)
-        historyWrappers.forEach { operation.addDependency($0.targetOperation) }
-        let wrapper = CompoundOperationWrapper(
-            targetOperation: operation,
-            dependencies: [taoOperation] + historyWrappers.flatMap(\.allOperations)
-        )
-
-        executeSeries(wrapper)
+        forcedCatalogueNetuids.formUnion(missingNetuids)
+        provideCatalogue(forcingRefresh: true)
     }
-}
 
-private extension SubtensorPortfolioInteractor {
-    func executeSeries(_ wrapper: CompoundOperationWrapper<SubtensorPortfolioValueSeries>) {
+    func provideRootRate() {
         executeCancellable(
-            wrapper: wrapper,
+            wrapper: yieldService.createRootYieldWrapper(),
             inOperationQueue: operationQueue,
-            backingCallIn: seriesStore,
+            backingCallIn: rootRateStore,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(series): self?.presenter?.didReceive(series: series)
+            case let .success(yield):
+                self?.presenter?.didReceive(rootRate: yield?.annualRate)
             case let .failure(error):
-                self?.logger.warning("Bittensor portfolio chart unavailable: \(error)")
-                self?.presenter?.didReceive(series: nil)
+                self?.logger.warning("Bittensor portfolio root rate unavailable: \(error)")
+                self?.presenter?.didReceive(rootRate: nil)
             }
         }
     }
 
-    func createHistoryWrappers(
-        for portfolio: SubtensorPortfolio,
-        subnetsInfo: SubtensorSubnetsInfo?,
-        period: SubtensorPricePeriod
-    ) -> [CompoundOperationWrapper<SubtensorPriceHistoryResult>] {
-        portfolio.subnets.compactMap { group in
-            subnetsInfo?.subnets.first(where: { $0.netuid == group.netuid }).flatMap { subnet in
-                priceHistoryService?.createHistoryWrapper(
-                    for: SubtensorSubnetRef(
-                        netuid: subnet.netuid,
-                        registeredAt: subnet.networkRegisteredAt
-                    ),
-                    period: period,
-                    currency: currencyManager.selectedCurrency
-                )
+    func provideEarnConfig() {
+        executeCancellable(
+            wrapper: earnConfigProvider.createConfigWrapper(),
+            inOperationQueue: operationQueue,
+            backingCallIn: earnConfigStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(config):
+                self?.presenter?.didReceive(earnConfig: config)
+            case let .failure(error):
+                self?.logger.warning("Bittensor portfolio subnet marks unavailable: \(error)")
+                self?.presenter?.didReceive(earnConfig: nil)
             }
         }
+    }
+
+    func verifyBoundAccount() {
+        guard !hasReportedAccountChange, !isBoundAccountSelected() else { return }
+
+        hasReportedAccountChange = true
+        presenter?.didReceiveAccountChange()
+    }
+
+    func isBoundAccountSelected() -> Bool {
+        guard
+            let boundAccount = state.selectedAccount,
+            let selectedAccount = selectedWalletSettings.value?.fetchMetaChainAccount(
+                for: chainAsset.chain.accountRequest()
+            ) else {
+            return false
+        }
+
+        return selectedAccount.metaId == boundAccount.metaId &&
+            selectedAccount.chainAccount.accountId == boundAccount.chainAccount.accountId
+    }
+}
+
+extension SubtensorPortfolioInteractor: EventVisitorProtocol {
+    func processSelectedWalletChanged(event _: SelectedWalletSwitched) {
+        verifyBoundAccount()
+    }
+
+    func processWalletRemoved(event _: WalletRemoved) {
+        verifyBoundAccount()
+    }
+
+    func processChainAccountChanged(event _: ChainAccountChanged) {
+        verifyBoundAccount()
+    }
+
+    func processSubtensorStakingChanged(event: SubtensorStakingChanged) {
+        guard
+            event.chainAssetId == chainAsset.chainAssetId,
+            event.accountId == account.chainAccount.accountId else {
+            return
+        }
+
+        state.positionsSyncService?.refresh()
+    }
+}
+
+extension SubtensorPortfolioInteractor: ApplicationHandlerDelegate {
+    func didReceiveDidBecomeActive(notification _: Notification) {
+        priceProvider?.refresh()
+        state.positionsSyncService?.refresh()
+    }
+}
+
+extension SubtensorPortfolioInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
+    func handlePrice(result: Result<PriceData?, Error>, priceId: AssetModel.PriceId) {
+        guard chainAsset.asset.priceId == priceId else { return }
+
+        switch result {
+        case let .success(priceData):
+            presenter?.didReceive(price: priceData)
+        case let .failure(error):
+            logger.error("Bittensor portfolio price unavailable: \(error)")
+            presenter?.didReceive(price: nil)
+        }
+    }
+}
+
+extension SubtensorPortfolioInteractor: SelectedCurrencyDepending {
+    func applyCurrency() {
+        guard presenter != nil else { return }
+
+        presenter?.didChangeCurrency()
+        subscribePrice()
     }
 }

@@ -1,42 +1,53 @@
 import Foundation
 import Foundation_iOS
+import UIKit
 
 enum SubtensorSubnetSelectViewFactory {
-    static func createView(
+    static func createPicker(
         for state: SubtensorStakingSharedStateProtocol,
-        delegate: SubtensorSubnetSelectDelegate,
-        delegateTake: UInt16?
-    ) -> SubtensorSubnetSelectViewProtocol? {
-        let chainAsset = state.stakingOption.chainAsset
-
-        guard
-            let runtimeProvider = state.chainRegistry.getRuntimeProvider(
-                for: chainAsset.chain.chainId
-            ) else {
+        delegate: SubtensorSubnetSelectDelegate
+    ) -> UIViewController? {
+        guard let view = createView(for: state, delegate: delegate) else {
             return nil
         }
 
+        return NovaNavigationController(rootViewController: view.controller)
+    }
+
+    static func createView(
+        for state: SubtensorStakingSharedStateProtocol,
+        delegate: SubtensorSubnetSelectDelegate,
+        delegateTake _: UInt16?
+    ) -> SubtensorSubnetSelectViewProtocol? {
+        createView(for: state, delegate: delegate)
+    }
+
+    static func createView(
+        for state: SubtensorStakingSharedStateProtocol,
+        delegate: SubtensorSubnetSelectDelegate
+    ) -> SubtensorSubnetSelectViewProtocol? {
+        let earnServices = state.earnServices
+
         let interactor = SubtensorSubnetSelectInteractor(
+            catalogueService: earnServices.catalogueService,
             subnetsService: state.subnetsService,
-            priceHistoryService: state.earnServices.priceHistoryService,
-            runtimeProvider: runtimeProvider,
+            earnConfigProvider: earnServices.earnConfigProvider,
+            yieldService: earnServices.yieldService,
+            rankingViewService: earnServices.rankingViewService,
+            priceHistoryService: earnServices.priceHistoryService,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared
         )
-
-        let wireframe = SubtensorSubnetSelectWireframe(state: state)
 
         let localizationManager = LocalizationManager.shared
 
         let presenter = SubtensorSubnetSelectPresenter(
             interactor: interactor,
-            wireframe: wireframe,
-            viewModelFactory: SubtensorSubnetViewModelFactory(chainAsset: chainAsset),
+            wireframe: SubtensorSubnetSelectWireframe(state: state),
+            viewModelFactory: SubtensorSubnetViewModelFactory(chainAsset: state.stakingOption.chainAsset),
             delegate: delegate,
-            preferredTake: delegateTake,
-            earnSettings: state.earnServices.earnSettings,
-            localizationManager: localizationManager,
-            logger: Logger.shared
+            earnSettings: earnServices.earnSettings,
+            localizationManager: localizationManager
         )
 
         let view = SubtensorSubnetSelectViewController(

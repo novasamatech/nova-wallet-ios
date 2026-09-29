@@ -275,7 +275,7 @@ final class SubtensorDiscoveryServiceTests: XCTestCase {
             netuid: 0,
             name: nil,
             take: take,
-            hotkeyAlpha: 1_000_000_000_000,
+            reportedStake: nil,
             status: SubtensorValidatorChainStatus(uid: 7, hasPermit: nil, blocksSinceUpdate: nil, isActive: nil),
             isNovaPreferred: true
         )

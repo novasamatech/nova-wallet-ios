@@ -5,7 +5,121 @@ import XCTest
 final class SubtensorSubnetViewModelFactoryTests: XCTestCase {
     private let locale = Locale(identifier: "en")
 
-    private func makeChainAsset() -> ChainAsset {
+    func testRowShowsTheCatalogueNameWithSymbolAndASingleTaoPrice() {
+        let viewModel = makeFactory().createRowViewModel(
+            for: makeItem(name: "Apex", symbol: "α", weekly: .notListed),
+            isFavorite: false,
+            config: nil,
+            locale: locale
+        )
+
+        XCTAssertEqual(viewModel.title, "Apex α")
+        XCTAssertEqual(viewModel.price, "0.0738 TAO")
+    }
+
+    func testUnnamedSubnetReadsSubnetNumberWithItsSymbol() {
+        let viewModel = makeFactory().createRowViewModel(
+            for: makeItem(name: "  ", symbol: "α", weekly: .notListed),
+            isFavorite: false,
+            config: nil,
+            locale: locale
+        )
+
+        XCTAssertEqual(viewModel.title, "Subnet 64 α")
+    }
+
+    func testWeeklyChangeReadsTheSignedPercentWithThePeriodAndKeepsTheSparkline() throws {
+        let summary = SubtensorWeeklyPriceSummary(
+            change: try XCTUnwrap(Decimal(string: "0.164")),
+            sparkline: [try XCTUnwrap(Decimal(string: "0.063")), try XCTUnwrap(Decimal(string: "0.0738"))]
+        )
+
+        let viewModel = makeFactory().createRowViewModel(
+            for: makeItem(weekly: .available(summary)),
+            isFavorite: false,
+            config: nil,
+            locale: locale
+        )
+
+        guard case let .value(text, isRising, sparkline) = viewModel.change else {
+            return XCTFail("Expected a weekly change")
+        }
+
+        XCTAssertEqual(text, "+16.4% 7d")
+        XCTAssertTrue(isRising)
+        XCTAssertEqual(sparkline, [0.063, 0.0738])
+        XCTAssertNil(viewModel.subtitle)
+    }
+
+    func testSubnetWithoutPriceHistoryShowsTheNoHistoryCaptions() {
+        let viewModel = makeFactory().createRowViewModel(
+            for: makeItem(weekly: .notListed),
+            isFavorite: false,
+            config: nil,
+            locale: locale
+        )
+
+        guard case let .notListed(text) = viewModel.change else {
+            return XCTFail("Expected the no history state")
+        }
+
+        XCTAssertEqual(text, "no price history yet")
+        XCTAssertEqual(viewModel.subtitle, "on-chain ratio")
+    }
+
+    func testFailedWeeklyFetchShowsADashWithoutTheNoHistoryCaption() {
+        let viewModel = makeFactory().createRowViewModel(
+            for: makeItem(weekly: .unavailable),
+            isFavorite: false,
+            config: nil,
+            locale: locale
+        )
+
+        guard case let .unavailable(text) = viewModel.change else {
+            return XCTFail("Expected the failed fetch state")
+        }
+
+        XCTAssertEqual(text, "—")
+        XCTAssertNil(viewModel.subtitle)
+    }
+
+    func testRootBarShowsTheBackendRateAndFallsBackWithoutIt() throws {
+        let factory = makeFactory()
+
+        let withRate = factory.createRootBarViewModel(annualRate: try XCTUnwrap(Decimal(string: "0.07")), locale: locale)
+        let withoutRate = factory.createRootBarViewModel(annualRate: nil, locale: locale)
+
+        XCTAssertEqual(withRate.title, "Stake to root")
+        XCTAssertEqual(withRate.subtitle, "7% APY · paid in TAO · no swap")
+        XCTAssertEqual(withoutRate.subtitle, "Paid in TAO · no swap")
+    }
+
+    func testFiltersSheetShowsTheCountWithTheCompactThinThresholdAndWaitsWhilePending() {
+        let factory = makeFactory()
+        let filters = SubtensorSubnetFilters(hideThinPools: true, onlyAboveThirtyDayAverage: false)
+
+        let counted = factory.createFiltersViewModel(
+            filters: filters,
+            count: 10,
+            isThirtyDayUnavailable: false,
+            locale: locale
+        )
+
+        let pending = factory.createFiltersViewModel(
+            filters: filters,
+            count: nil,
+            isThirtyDayUnavailable: false,
+            locale: locale
+        )
+
+        XCTAssertEqual(counted.thinPoolsDetails, "below 2K TAO · price moves more")
+        XCTAssertEqual(counted.actionTitle, "Show 10 subnets")
+        XCTAssertFalse(counted.isLoading)
+        XCTAssertEqual(pending.actionTitle, "Show subnets")
+        XCTAssertTrue(pending.isLoading)
+    }
+
+    private func makeFactory() -> SubtensorSubnetViewModelFactory {
         let asset = AssetModel(
             assetId: AssetModel.utilityAssetId,
             icon: nil,
@@ -27,196 +141,46 @@ final class SubtensorSubnetViewModelFactoryTests: XCTestCase {
             addressPrefix: 42
         )
 
-        return ChainAsset(chain: chain, asset: asset)
+        return SubtensorSubnetViewModelFactory(chainAsset: ChainAsset(chain: chain, asset: asset))
     }
 
-    private func makeFactory() -> SubtensorSubnetViewModelFactory {
-        SubtensorSubnetViewModelFactory(chainAsset: makeChainAsset())
-    }
-
-    private func makeDynamicInfo(
-        netuid: UInt16,
-        name: String,
+    private func makeItem(
+        name: String = "Apex",
         symbol: String = "α",
-        alphaOutEmission: Balance = 1_000_000_000,
-        alphaOut: Balance = 2_534_184_037_427_779
-    ) -> SubtensorStakingPallet.DynamicInfo {
-        SubtensorStakingPallet.DynamicInfo(
-            netuid: netuid,
-            ownerHotkey: Data(repeating: UInt8(netuid % 255), count: 32),
-            ownerColdkey: Data(repeating: 0, count: 32),
-            subnetName: Data(name.utf8),
-            tokenSymbol: Data(symbol.utf8),
-            tempo: 99,
-            lastStep: 0,
-            blocksSinceLastStep: 0,
-            emission: 0,
-            alphaIn: 0,
-            alphaOut: alphaOut,
-            taoIn: 0,
-            alphaOutEmission: alphaOutEmission,
-            alphaInEmission: 0,
-            taoInEmission: 0,
-            pendingAlphaEmission: 0,
-            pendingRootEmission: 0,
-            subnetVolume: 0,
-            networkRegisteredAt: 0,
-            subnetIdentity: nil,
-            movingPrice: .null
-        )
-    }
+        weekly: SubtensorPriceData<SubtensorWeeklyPriceSummary>?
+    ) -> SubtensorSubnetListItem {
+        let stamp = SubtensorBackendStamp(asOf: Date(timeIntervalSince1970: 1_790_000_000), freshness: .fresh)
 
-    private func makeInfo(
-        subnets: [SubtensorStakingPallet.DynamicInfo],
-        prices: [UInt16: Balance]? = nil,
-        subtokenEnabled: Set<UInt16>? = nil,
-        ownerCut: UInt16 = SubtensorStakingPallet.defaultSubnetOwnerCut
-    ) -> SubtensorSubnetsInfo {
-        let netuids = subnets.map(\.netuid)
-
-        return SubtensorSubnetsInfo(
-            subnets: subnets,
-            prices: prices ?? Dictionary(uniqueKeysWithValues: netuids.map { ($0, 7_683_255) }),
-            subtokenEnabled: subtokenEnabled ?? Set(netuids),
-            ownerCut: ownerCut
-        )
-    }
-
-    private func createViewModels(
-        info: SubtensorSubnetsInfo,
-        query: String = ""
-    ) -> [SubtensorSubnetSelectViewModel] {
-        makeFactory().createViewModels(
-            from: info,
-            context: SubtensorSubnetViewModelContext(
-                defaultTake: 11796,
-                query: query,
-                weeklyChanges: [:],
-                favorites: [],
-                locale: locale
-            )
-        )
-    }
-
-    func testRootRowIsPinnedFirst() {
-        let info = makeInfo(subnets: [makeDynamicInfo(netuid: 1, name: "Apex")])
-
-        let viewModels = createViewModels(info: info)
-
-        XCTAssertEqual(viewModels.count, 2)
-        XCTAssertEqual(viewModels.first?.target, .root)
-        XCTAssertNil(viewModels.first?.apr)
-    }
-
-    func testSubtokenDisabledSubnetsAreExcluded() {
-        let info = makeInfo(
-            subnets: [
-                makeDynamicInfo(netuid: 1, name: "Apex"),
-                makeDynamicInfo(netuid: 2, name: "omron")
-            ],
-            subtokenEnabled: [1]
+        let subnet = SubtensorCatalogueSubnet(
+            netuid: 64,
+            name: name,
+            symbol: symbol,
+            networkRegisteredAt: 4_531_295,
+            tempo: 360,
+            ownerColdkey: "",
+            ownerHotkey: "",
+            links: SubtensorSubnetLinks(
+                githubRepo: "",
+                subnetContact: "",
+                subnetUrl: "",
+                subnetWebsite: "",
+                discord: "",
+                additional: ""
+            ),
+            taoReserve: 210_000_000_000_000,
+            alphaReserve: 2_845_000_000_000_000,
+            alphaOutstanding: 3_100_000_000_000_000,
+            taoPerAlpha: 73_800_000,
+            metadataStamp: stamp,
+            pricesStamp: stamp
         )
 
-        let viewModels = createViewModels(info: info)
-
-        XCTAssertEqual(viewModels.map(\.target.netuid), [0, 1])
-    }
-
-    func testRootListedInSubnetsInfoIsNotDuplicated() {
-        let info = makeInfo(
-            subnets: [
-                makeDynamicInfo(netuid: 0, name: "root", symbol: "Τ"),
-                makeDynamicInfo(netuid: 1, name: "Apex")
-            ]
+        return SubtensorSubnetListItem(
+            subnet: subnet,
+            target: .root,
+            weekly: weekly,
+            monthly: nil,
+            ageBlocks: nil
         )
-
-        let viewModels = createViewModels(info: info)
-
-        XCTAssertEqual(viewModels.map(\.target.netuid), [0, 1])
-        XCTAssertEqual(viewModels.first?.target, .root)
-    }
-
-    func testSearchByNameFiltersRows() {
-        let info = makeInfo(
-            subnets: [
-                makeDynamicInfo(netuid: 1, name: "Apex"),
-                makeDynamicInfo(netuid: 64, name: "Chutes")
-            ]
-        )
-
-        let viewModels = createViewModels(info: info, query: "apex")
-
-        XCTAssertEqual(viewModels.map(\.target.netuid), [1])
-    }
-
-    func testSearchByNetuidMatchesExactly() {
-        let info = makeInfo(
-            subnets: [
-                makeDynamicInfo(netuid: 6, name: "Alpha"),
-                makeDynamicInfo(netuid: 64, name: "Chutes")
-            ]
-        )
-
-        let viewModels = createViewModels(info: info, query: "64")
-
-        XCTAssertEqual(viewModels.map(\.target.netuid), [64])
-    }
-
-    func testRootRowMatchesRootQuery() {
-        let info = makeInfo(subnets: [makeDynamicInfo(netuid: 1, name: "Apex")])
-
-        let viewModels = createViewModels(info: info, query: "Root")
-
-        XCTAssertEqual(viewModels.map(\.target.netuid), [0])
-    }
-
-    func testAprLabelComposesEstimatePrefixAndSymbolDetail() throws {
-        let info = makeInfo(subnets: [makeDynamicInfo(netuid: 1, name: "Apex")])
-
-        let viewModel = try XCTUnwrap(createViewModels(info: info).last)
-
-        XCTAssertEqual(viewModel.apr, "~34.86%")
-        XCTAssertEqual(viewModel.aprDetail, "estimated, in α")
-    }
-
-    func testAprUsesLiveOwnerCutInsteadOfRuntimeDefault() throws {
-        let info = makeInfo(subnets: [makeDynamicInfo(netuid: 1, name: "Apex")], ownerCut: 0)
-
-        let viewModel = try XCTUnwrap(createViewModels(info: info).last)
-
-        XCTAssertEqual(viewModel.apr, "~42.51%")
-    }
-
-    func testZeroAlphaOutProducesNoApr() throws {
-        let info = makeInfo(
-            subnets: [makeDynamicInfo(netuid: 36, name: "Score", alphaOutEmission: 0, alphaOut: 0)]
-        )
-
-        let viewModel = try XCTUnwrap(createViewModels(info: info).last)
-
-        XCTAssertNil(viewModel.apr)
-        XCTAssertNil(viewModel.aprDetail)
-    }
-
-    func testMissingPriceDropsSubnetRow() {
-        let info = makeInfo(
-            subnets: [
-                makeDynamicInfo(netuid: 1, name: "Apex"),
-                makeDynamicInfo(netuid: 2, name: "omron")
-            ],
-            prices: [1: 7_683_255]
-        )
-
-        let viewModels = createViewModels(info: info)
-
-        XCTAssertEqual(viewModels.map(\.target.netuid), [0, 1])
-    }
-
-    func testSubtitleJoinsSymbolAndNetuidTag() throws {
-        let info = makeInfo(subnets: [makeDynamicInfo(netuid: 1, name: "Apex")])
-
-        let viewModel = try XCTUnwrap(createViewModels(info: info).last)
-
-        XCTAssertEqual(viewModel.subtitle, "α · SN1")
     }
 }

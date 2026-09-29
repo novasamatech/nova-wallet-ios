@@ -6,10 +6,7 @@ final class SubtensorSubnetSelectViewController: UIViewController, ViewHolder {
 
     let presenter: SubtensorSubnetSelectPresenterProtocol
 
-    private var viewModels: [SubtensorSubnetSelectViewModel] = []
-    private var sort: SubtensorSubnetSort = .favorites
-    private var filters = SubtensorSubnetFilters()
-    private var isLoading = true
+    private var viewModel: SubtensorSubnetListViewModel?
 
     init(
         presenter: SubtensorSubnetSelectPresenterProtocol,
@@ -34,31 +31,77 @@ final class SubtensorSubnetSelectViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupSearchField()
         setupTableView()
+        setupHandlers()
         setupLocalization()
 
         presenter.setup()
     }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        presenter.becomeActive()
+    }
 }
 
 private extension SubtensorSubnetSelectViewController {
-    func setupSearchField() {
-        rootView.searchTextField.addTarget(
-            self,
-            action: #selector(actionSearchEditingChanged),
-            for: .editingChanged
-        )
+    enum Section: Int, CaseIterable {
+        case picks
+        case others
+    }
+
+    static let loadingRowsCount = 8
+    static let picksSpacing: CGFloat = 12
+
+    var isLoading: Bool {
+        guard let viewModel else {
+            return true
+        }
+
+        if case .loading = viewModel.content {
+            return true
+        }
+
+        return false
+    }
+
+    func rows(for section: Section) -> [SubtensorSubnetSelectViewModel] {
+        guard case let .rows(picks, others) = viewModel?.content else {
+            return []
+        }
+
+        switch section {
+        case .picks:
+            return picks
+        case .others:
+            return others
+        }
+    }
+
+    func rowModel(at indexPath: IndexPath) -> SubtensorSubnetSelectViewModel? {
+        guard !isLoading, let section = Section(rawValue: indexPath.section) else {
+            return nil
+        }
+
+        let rows = rows(for: section)
+
+        return rows.indices.contains(indexPath.row) ? rows[indexPath.row] : nil
     }
 
     func setupTableView() {
-        rootView.tableView.rowHeight = 60
-        rootView.tableView.sectionHeaderHeight = 36
-        rootView.tableView.estimatedSectionHeaderHeight = 36
         rootView.tableView.registerClassForCell(SubtensorSubnetCell.self)
         rootView.tableView.registerClassForCell(SubtensorSubnetSkeletonCell.self)
+        rootView.tableView.registerHeaderFooterView(withClass: SubtensorSubnetPicksHeaderView.self)
         rootView.tableView.dataSource = self
         rootView.tableView.delegate = self
+    }
+
+    func setupHandlers() {
+        rootView.searchTextField.addTarget(self, action: #selector(actionSearchChanged), for: .editingChanged)
+        rootView.sortView.control.addTarget(self, action: #selector(actionSort), for: .touchUpInside)
+        rootView.filterButton.addTarget(self, action: #selector(actionFilters), for: .touchUpInside)
+        rootView.rootBarView.addTarget(self, action: #selector(actionRoot), for: .touchUpInside)
     }
 
     func setupLocalization() {
@@ -66,74 +109,77 @@ private extension SubtensorSubnetSelectViewController {
 
         title = strings.stakingSubtensorSubnetSelectTitle()
 
-        rootView.emptyLabel.text = strings.stakingSubtensorUiPickerEmpty()
-
         rootView.searchTextField.attributedPlaceholder = NSAttributedString(
             string: strings.stakingSubtensorSubnetSearchPlaceholder(),
-            attributes: [
-                NSAttributedString.Key.foregroundColor: R.color.colorHintText() ?? .secondaryLabel
-            ]
+            attributes: [.foregroundColor: R.color.colorHintText()!]
         )
+
+        rootView.filterButton.accessibilityLabel = strings.walletFiltersTitle()
+
         rootView.tableView.reloadData()
     }
 
-    @objc func actionSearchEditingChanged() {
+    func applyViewModel() {
+        guard let viewModel else {
+            return
+        }
+
+        rootView.bind(controls: viewModel)
+
+        if case let .empty(text) = viewModel.content {
+            rootView.bind(emptyText: text)
+        } else {
+            rootView.bind(emptyText: nil)
+        }
+
+        rootView.tableView.reloadData()
+    }
+
+    @objc func actionSearchChanged() {
         presenter.search(query: rootView.searchTextField.text ?? "")
     }
 
     @objc func actionSort() {
-        let sheet = SubnetOptionsSheetViewController(mode: .sort(sort) { [weak self] selected in
-            self?.sort = selected
-            self?.presenter.selectSort(selected)
-        }, localizationManager: LocalizationManager.shared)
-        present(sheet, animated: true)
+        presenter.showSort()
     }
 
     @objc func actionFilters() {
-        let sheet = SubnetOptionsSheetViewController(mode: .filters(filters) { [weak self] selected in
-            self?.filters = selected
-            self?.presenter.selectFilters(selected)
-        }, localizationManager: LocalizationManager.shared)
-        present(sheet, animated: true)
+        presenter.showFilters()
     }
 
-    func model(at indexPath: IndexPath) -> SubtensorSubnetSelectViewModel? {
-        if indexPath.section == 0 {
-            return viewModels.first(where: { $0.target.isRoot })
-        }
-
-        let subnets = viewModels.filter { !$0.target.isRoot }
-        return subnets.indices.contains(indexPath.row) ? subnets[indexPath.row] : nil
+    @objc func actionRoot() {
+        presenter.selectRoot()
     }
 }
 
 extension SubtensorSubnetSelectViewController: UITableViewDataSource {
-    func numberOfSections(in _: UITableView) -> Int { 2 }
+    func numberOfSections(in _: UITableView) -> Int {
+        Section.allCases.count
+    }
 
     func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if isLoading { return section == 0 ? 1 : 8 }
+        guard let section = Section(rawValue: section) else {
+            return 0
+        }
 
-        return section == 0
-            ? (viewModels.contains(where: { $0.target.isRoot }) ? 1 : 0)
-            : viewModels.filter { !$0.target.isRoot }.count
+        if isLoading {
+            return section == .others ? Self.loadingRowsCount : 0
+        }
+
+        return rows(for: section).count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if isLoading, indexPath.section == 1 {
-            return tableView.dequeueReusableCellWithType(SubtensorSubnetSkeletonCell.self)
-                ?? SubtensorSubnetSkeletonCell(style: .default, reuseIdentifier: nil)
+        guard let model = rowModel(at: indexPath) else {
+            return tableView.dequeueReusableCellWithType(SubtensorSubnetSkeletonCell.self, forIndexPath: indexPath)
         }
 
-        let cell = tableView.dequeueReusableCellWithType(SubtensorSubnetCell.self)
-            ?? SubtensorSubnetCell(style: .default, reuseIdentifier: nil)
+        let cell = tableView.dequeueReusableCellWithType(SubtensorSubnetCell.self, forIndexPath: indexPath)
 
-        if isLoading {
-            cell.bindLoadingRoot(locale: selectedLocale)
-        } else if let model = model(at: indexPath) {
-            cell.bind(viewModel: model, locale: selectedLocale)
-            cell.favoriteAction = { [weak self] in
-                self?.presenter.toggleFavorite(viewModel: model)
-            }
+        cell.bind(viewModel: model)
+
+        cell.favoriteAction = { [weak self] in
+            self?.presenter.toggleFavorite(model.subnetRef)
         }
 
         return cell
@@ -141,67 +187,59 @@ extension SubtensorSubnetSelectViewController: UITableViewDataSource {
 }
 
 extension SubtensorSubnetSelectViewController: UITableViewDelegate {
-    func tableView(_: UITableView, heightForHeaderInSection _: Int) -> CGFloat { 36 }
+    func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        section == Section.picks.rawValue && !rows(for: .picks).isEmpty
+            ? SubtensorSubnetPicksHeaderView.preferredHeight
+            : 0
+    }
 
-    func tableView(_: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let header = SubtensorSubnetSectionHeaderView(reuseIdentifier: nil)
-        let count = viewModels.filter { !$0.target.isRoot }.count
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard section == Section.picks.rawValue, !rows(for: .picks).isEmpty else {
+            return nil
+        }
+
         let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
 
-        header.titleLabel.text = section == 0
-            ? strings.stakingSubtensorUiPickerRootHeader()
-            : (isLoading
-                ? strings.stakingSubtensorUiPickerSubnetsHeader()
-                : strings.stakingSubtensorUiPickerSubnetsCountFormat(count))
-        header.sortButton.isHidden = section == 0
-        header.filterButton.isHidden = section == 0
-        header.filterButton.accessibilityLabel = strings.stakingSubtensorUiPickerFilters()
-        if section == 1 {
-            let title: String
-            switch sort {
-            case .favorites: title = strings.stakingSubtensorUiPickerFavoriteSort()
-            case .sevenDayChange: title = strings.stakingSubtensorUiPickerSevenDay()
-            case .thirtyDayChange: title = strings.stakingSubtensorUiPickerThirtyDay()
-            case .poolDepth: title = strings.stakingSubtensorUiPickerPoolDepth()
-            case .volume: title = strings.stakingSubtensorUiPickerVolume()
-            case .age: title = strings.stakingSubtensorUiPickerAge()
-            case .name: title = strings.stakingSubtensorUiPickerName()
-            case .subnetNumber: title = strings.stakingSubtensorUiPickerNumber()
-            }
-            header.sortButton.setTitle(title, for: .normal)
-            header.sortButton.addTarget(self, action: #selector(actionSort), for: .touchUpInside)
-            header.filterButton.setImage(
-                filters.isApplied ? R.image.iconFilterActive() : R.image.iconFilter(),
-                for: .normal
-            )
-            header.filterButton.addTarget(self, action: #selector(actionFilters), for: .touchUpInside)
-        }
+        let header: SubtensorSubnetPicksHeaderView = tableView.dequeueReusableHeaderFooterView()
+
+        header.bind(
+            title: strings.stakingSubtensorUiPickerPicksHeader(),
+            caption: strings.stakingSubtensorUiPickerPicksCaption()
+        )
+
         return header
+    }
+
+    func tableView(_: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        section == Section.picks.rawValue && !rows(for: .picks).isEmpty && !rows(for: .others).isEmpty
+            ? Self.picksSpacing
+            : 0
+    }
+
+    func tableView(_: UITableView, viewForFooterInSection _: Int) -> UIView? {
+        UIView()
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        guard !isLoading else { return }
-
-        if let model = model(at: indexPath) {
-            presenter.select(viewModel: model)
+        guard let model = rowModel(at: indexPath) else {
+            return
         }
+
+        presenter.selectSubnet(model.subnetRef)
     }
 }
 
 extension SubtensorSubnetSelectViewController: SubtensorSubnetSelectViewProtocol {
-    func didReceive(viewModels: [SubtensorSubnetSelectViewModel]) {
-        self.viewModels = viewModels
+    func didReceive(list: SubtensorSubnetListViewModel) {
+        viewModel = list
 
-        rootView.tableView.reloadData()
-        rootView.emptyLabel.isHidden = isLoading || !viewModels.isEmpty
+        applyViewModel()
     }
 
-    func didReceiveLoading(_ isLoading: Bool) {
-        self.isLoading = isLoading
-        rootView.tableView.reloadData()
-        rootView.emptyLabel.isHidden = isLoading || !viewModels.isEmpty
+    func didReceive(rootBar: SubtensorStakeToRootBarViewModel) {
+        rootView.rootBarView.bind(viewModel: rootBar)
     }
 }
 

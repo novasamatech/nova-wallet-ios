@@ -5,125 +5,350 @@ final class SubtensorSubnetDetailsPresenter {
     weak var view: SubtensorSubnetDetailsViewProtocol?
     weak var selectionDelegate: SubtensorSubnetSelectDelegate?
 
-    let model: SubtensorSubnetSelectViewModel
+    let input: SubtensorSubnetDetailsInput
+    let host: SubtensorSubnetDetailsHost
     let interactor: SubnetDetailsInteractorInputProtocol
     let wireframe: SubtensorSubnetDetailsWireframeProtocol
+    let viewModelFactory: SubnetDetailsViewModelFactoryProtocol
     let earnSettings: SubtensorEarnSettingsProtocol
-    let localizationManager: LocalizationManagerProtocol
     let logger: LoggerProtocol
-    private var cachedRisk: SubtensorRankedSubnet?
+
+    private var isFiat = false
+    private var period = SubtensorSubnetDetailsViewModelFactory.defaultPeriod
+    private var history: SubtensorSubnetHistoryState = .loading
+    private var listing: SubtensorSubnetListingState = .loading
+    private var isRankingLoaded = false
+    private var rankingView: SubtensorRankedSubnets?
+    private var validator: SubtensorSubnetValidatorState
+    private var isYieldsLoaded = false
+    private var yields: SubtensorAlphaYields?
+    private var amount = SubtensorSubnetDetailsViewModelFactory.defaultChip
+    private var transferable: Balance?
+    private var taoPrice: PriceData?
+    private var earnConfig: SubtensorEarnConfig?
+    private var positions: Multistaking.SubtensorStakingState?
+    private var isPositionsSyncFailed = false
+    private var isPresetRequested = false
+    private var isUsePending = false
 
     init(
-        model: SubtensorSubnetSelectViewModel,
+        input: SubtensorSubnetDetailsInput,
+        host: SubtensorSubnetDetailsHost,
         selectionDelegate: SubtensorSubnetSelectDelegate,
         interactor: SubnetDetailsInteractorInputProtocol,
         wireframe: SubtensorSubnetDetailsWireframeProtocol,
+        viewModelFactory: SubnetDetailsViewModelFactoryProtocol,
         earnSettings: SubtensorEarnSettingsProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
-        self.model = model
+        self.input = input
+        self.host = host
         self.selectionDelegate = selectionDelegate
         self.interactor = interactor
         self.wireframe = wireframe
+        self.viewModelFactory = viewModelFactory
         self.earnSettings = earnSettings
-        self.localizationManager = localizationManager
         self.logger = logger
+
+        if let validator = input.validator {
+            self.validator = .selected(validator)
+        } else {
+            validator = host == .picker ? .pending : .unselected
+        }
+
+        self.localizationManager = localizationManager
+    }
+}
+
+private extension SubtensorSubnetDetailsPresenter {
+    var subnetRef: SubtensorSubnetRef {
+        input.subnet.ref
+    }
+
+    var isFavorite: Bool {
+        earnSettings.favouriteSubnets.contains(subnetRef)
+    }
+
+    var isUseEnabled: Bool {
+        validator != .pending
+    }
+
+    func createState() -> SubtensorSubnetDetailsState {
+        SubtensorSubnetDetailsState(
+            isFiat: isFiat,
+            period: period,
+            history: history,
+            listing: listing,
+            isRankingLoaded: isRankingLoaded,
+            rankingView: rankingView,
+            validator: validator,
+            isYieldsLoaded: isYieldsLoaded,
+            yields: yields,
+            amount: amount,
+            transferable: transferable,
+            taoPrice: taoPrice,
+            isFavorite: isFavorite,
+            now: Date()
+        )
+    }
+
+    func provideTitle() {
+        view?.didReceive(title: viewModelFactory.createTitle(config: earnConfig, locale: selectedLocale))
+    }
+
+    func provideViewModel() {
+        let viewModel = viewModelFactory.createViewModel(
+            for: createState(),
+            isUseEnabled: isUseEnabled,
+            locale: selectedLocale
+        )
+
+        view?.didReceive(viewModel: viewModel)
+    }
+
+    func loadHistory() {
+        history = .loading
+        interactor.loadHistory(for: period)
+    }
+
+    func existingPrimaryHotkey() -> AccountId? {
+        guard let positions else {
+            return nil
+        }
+
+        let portfolio = SubtensorPortfolioBuilder.build(state: positions)
+
+        return portfolio.subnets.first { $0.netuid == subnetRef.netuid }?.primaryHotkey
+    }
+
+    func requestPresetIfReady() {
+        guard
+            validator == .pending,
+            !isPresetRequested,
+            positions != nil || isPositionsSyncFailed else {
+            return
+        }
+
+        isPresetRequested = true
+
+        interactor.presetValidator(existingHotkey: existingPrimaryHotkey())
+    }
+
+    func complete(with validator: SubtensorValidatorDirectoryItem) {
+        wireframe.complete(
+            from: view,
+            host: host,
+            target: input.target,
+            validator: validator,
+            delegate: selectionDelegate
+        )
+    }
+
+    func showValidators(completesOnSelection: Bool) {
+        isUsePending = completesOnSelection
+
+        wireframe.showValidators(
+            from: view,
+            target: input.target,
+            selectedHotkey: validator.item?.hotkey,
+            delegate: self
+        )
     }
 }
 
 extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtocol {
     func setup() {
-        let strings = R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages).localizable
-        let subtitle = model.target.isRoot ? strings.stakingSubtensorUiRewardsTao() : model.subtitle
-        view?.didReceive(title: model.title, price: model.price, change: model.weeklyChangeText, subtitle: subtitle)
-        view?.didReceiveFavorite(model.subnetRef.map { Set(earnSettings.favouriteSubnets).contains($0) } ?? false)
+        provideTitle()
+        provideViewModel()
 
-        if let subnetRef = model.subnetRef {
-            view?.didReceive(history: nil)
-            interactor.loadHistory(for: subnetRef, period: .week)
-            interactor.loadRisk(for: subnetRef.netuid)
-        } else {
-            view?.didReceive(history: .notListed)
-            view?.didReceive(risk: nil)
-        }
+        interactor.setup()
+        interactor.loadHistory(for: period)
     }
 
-    func selectPeriod(_ period: SubtensorPricePeriod) {
-        guard let subnetRef = model.subnetRef else { return }
-        view?.didReceive(history: nil)
-        interactor.loadHistory(for: subnetRef, period: period)
+    func selectCurrency(at index: Int) {
+        let newIsFiat = index > 0
+
+        guard newIsFiat != isFiat, !newIsFiat || taoPrice != nil else {
+            provideViewModel()
+            return
+        }
+
+        isFiat = newIsFiat
+        provideViewModel()
+    }
+
+    func selectPeriod(at index: Int) {
+        let periods = SubtensorSubnetDetailsViewModelFactory.periods
+
+        guard periods.indices.contains(index), periods[index] != period, history != .notListed else {
+            provideViewModel()
+            return
+        }
+
+        period = periods[index]
+        loadHistory()
+        provideViewModel()
+    }
+
+    func selectAmount(at index: Int) {
+        let amounts = SubtensorSubnetDetailsViewModelFactory.chipAmounts
+
+        if amounts.indices.contains(index) {
+            amount = .fixed(amounts[index])
+        } else if SubtensorSubnetDetailsViewModelFactory.maxAmount(for: transferable) != nil {
+            amount = .max
+        }
+
+        provideViewModel()
     }
 
     func toggleFavorite() {
-        guard let subnetRef = model.subnetRef else { return }
         var favorites = Set(earnSettings.favouriteSubnets)
-        if !favorites.insert(subnetRef).inserted { favorites.remove(subnetRef) }
+
+        if !favorites.insert(subnetRef).inserted {
+            favorites.remove(subnetRef)
+        }
+
         earnSettings.favouriteSubnets = favorites.sorted { $0.netuid < $1.netuid }
-        view?.didReceiveFavorite(favorites.contains(subnetRef))
+
+        provideViewModel()
     }
 
     func selectValidator() {
-        guard let selectionDelegate else { return }
-        wireframe.showValidators(from: view, target: model.target, delegate: selectionDelegate)
+        showValidators(completesOnSelection: false)
     }
 
-    func continueStaking() {
-        selectValidator()
+    func useSubnet() {
+        switch validator {
+        case .pending:
+            return
+        case let .selected(item):
+            complete(with: item)
+        case .unselected:
+            showValidators(completesOnSelection: true)
+        }
+    }
+
+    func retryHistory() {
+        guard history == .failed else {
+            return
+        }
+
+        loadHistory()
+        provideViewModel()
     }
 }
 
 extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol {
-    func didReceive(history: SubtensorPriceHistoryResult) {
-        view?.didReceive(history: history)
-    }
-
-    func didReceive(risk: SubtensorRankedSubnet?) {
-        cachedRisk = risk
-        guard let risk, risk.isEligible else {
-            view?.didReceive(risk: nil)
+    func didReceiveHistory(_ result: SubtensorPriceHistoryResult, for period: SubtensorPricePeriod) {
+        guard period == self.period else {
             return
         }
 
-        let strings = R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages).localizable
-        let profile: String?
-        switch risk.riskClass {
-        case .stable: profile = strings.stakingSubtensorUiDetailProfileStable()
-        case .balanced: profile = strings.stakingSubtensorUiDetailProfileBalanced()
-        case .higherUpside: profile = strings.stakingSubtensorUiDetailProfileUpside()
-        case .aboveThreshold: profile = strings.stakingSubtensorUiDetailProfileRisky()
-        case .none: profile = nil
+        switch result {
+        case let .available(value):
+            history = .available(value)
+        case .notListed:
+            history = .notListed
         }
 
-        var lines = [profile].compactMap { $0 }
-        if let ageBlocks = risk.ageBlocks {
-            let durationSeconds = Double(ageBlocks) * Double(SubtensorStakingFlowConstants.blockTimeMillis) / 1000
-            let secondsPerMonth = 60.0 * 60.0 * 24.0 * 30.0
-            let months = Int(durationSeconds / secondsPerMonth)
-            lines.append(strings.stakingSubtensorUiDetailAgeFormat(months))
-        }
-        lines.append(strings.stakingSubtensorUiDetailValidatorsFormat(risk.eligibleValidators))
-        if let pool = risk.taoIn {
-            let formatter = NumberFormatter()
-            formatter.numberStyle = .decimal
-            formatter.maximumFractionDigits = 0
-            let amount = formatter.string(from: NSDecimalNumber(decimal: pool)) ?? pool.description
-            lines.append(strings.stakingSubtensorUiDetailPoolFormat(amount))
-        }
-        view?.didReceive(risk: lines.joined(separator: "\n"))
+        provideViewModel()
     }
 
-    func didFailHistory(_: Error) {
-        view?.didReceive(history: .notListed)
+    func didFailHistory(for period: SubtensorPricePeriod) {
+        guard period == self.period else {
+            return
+        }
+
+        history = .failed
+        provideViewModel()
+    }
+
+    func didReceiveListing(_ result: SubtensorPriceHistoryResult?) {
+        switch result {
+        case let .available(value):
+            listing = .listed(since: value.points.first?.date)
+        case .notListed:
+            listing = .notListed
+        case .none:
+            listing = .failed
+        }
+
+        provideViewModel()
+    }
+
+    func didReceiveRankingView(_ rankingView: SubtensorRankedSubnets?) {
+        self.rankingView = rankingView
+        isRankingLoaded = true
+        provideViewModel()
+    }
+
+    func didReceivePreset(_ validator: SubtensorValidatorDirectoryItem?) {
+        guard self.validator == .pending else {
+            return
+        }
+
+        self.validator = validator.map { .selected($0) } ?? .unselected
+        provideViewModel()
+    }
+
+    func didReceiveYields(_ yields: SubtensorAlphaYields?) {
+        self.yields = yields
+        isYieldsLoaded = true
+        provideViewModel()
+    }
+
+    func didReceiveBalance(_ balance: AssetBalance?) {
+        transferable = balance?.transferable
+
+        if amount == .max, SubtensorSubnetDetailsViewModelFactory.maxAmount(for: transferable) == nil {
+            amount = SubtensorSubnetDetailsViewModelFactory.defaultChip
+        }
+
+        provideViewModel()
+    }
+
+    func didReceiveTaoPrice(_ price: PriceData?) {
+        taoPrice = price
+        provideViewModel()
+    }
+
+    func didReceivePositions(_ state: Multistaking.SubtensorStakingState?) {
+        positions = state
+        requestPresetIfReady()
+    }
+
+    func didReceivePositionsSyncFailed(_ isFailed: Bool) {
+        isPositionsSyncFailed = isFailed
+        requestPresetIfReady()
+    }
+
+    func didReceiveEarnConfig(_ config: SubtensorEarnConfig?) {
+        earnConfig = config
+        provideTitle()
+    }
+}
+
+extension SubtensorSubnetDetailsPresenter: SubtensorValidatorSelectDelegate {
+    func didSelectValidator(_ validator: SubtensorValidatorDirectoryItem, for _: SubtensorStakeTarget) {
+        self.validator = .selected(validator)
+        provideViewModel()
+
+        guard isUsePending else {
+            return
+        }
+
+        isUsePending = false
+        complete(with: validator)
     }
 }
 
 extension SubtensorSubnetDetailsPresenter: Localizable {
     func applyLocalization() {
-        guard view?.isSetup == true else { return }
-        let strings = R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages).localizable
-        let subtitle = model.target.isRoot ? strings.stakingSubtensorUiRewardsTao() : model.subtitle
-        view?.didReceive(title: model.title, price: model.price, change: model.weeklyChangeText, subtitle: subtitle)
-        didReceive(risk: cachedRisk)
+        if view?.isSetup == true {
+            provideTitle()
+            provideViewModel()
+        }
     }
 }

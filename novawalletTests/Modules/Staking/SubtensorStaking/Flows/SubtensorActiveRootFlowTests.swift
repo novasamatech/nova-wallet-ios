@@ -110,10 +110,10 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(directory, SubtensorValidatorDirectory(
             subnet: SubtensorSubnetRef(netuid: 0, registeredAt: 0),
             items: [
-                try rootItem(.halcyon, uid: 40, take: 7864, stake: 33_000_000_000_000, name: "Halcyon Pool"),
-                try rootItem(.ember, uid: 27, take: 9830, stake: 61_000_000_000_000, name: "Ember Labs"),
+                try rootItem(.halcyon, uid: 40, take: 7864, name: "Halcyon Pool"),
+                try rootItem(.ember, uid: 27, take: 9830, name: "Ember Labs"),
                 try asterRoot(name: "Aster Stake"),
-                try rootItem(.blueHarbor, uid: 11, take: 0, stake: 145_000_000_000_000, name: "Blue Harbor")
+                try rootItem(.blueHarbor, uid: 11, take: 0, name: "Blue Harbor")
             ],
             listStamp: SubtensorBackendStamp(asOf: try date("2026-09-24T08:00:00Z"), freshness: .fresh),
             isPartial: false,

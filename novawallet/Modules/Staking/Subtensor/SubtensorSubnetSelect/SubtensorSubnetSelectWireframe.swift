@@ -1,4 +1,5 @@
-import Foundation
+import UIKit
+import UIKit_iOS
 
 final class SubtensorSubnetSelectWireframe: SubtensorSubnetSelectWireframeProtocol {
     let state: SubtensorStakingSharedStateProtocol
@@ -7,21 +8,59 @@ final class SubtensorSubnetSelectWireframe: SubtensorSubnetSelectWireframeProtoc
         self.state = state
     }
 
-    func complete(from view: SubtensorSubnetSelectViewProtocol?) {
-        view?.controller.navigationController?.popViewController(animated: true)
-    }
-
     func showDetails(
         from view: SubtensorSubnetSelectViewProtocol?,
-        model: SubtensorSubnetSelectViewModel,
+        item: SubtensorSubnetListItem,
         delegate: SubtensorSubnetSelectDelegate
     ) {
+        let input = SubtensorSubnetDetailsInput(subnet: item.subnet, target: item.target, validator: nil)
+
         guard let detailsView = SubtensorSubnetDetailsViewFactory.createView(
             for: state,
-            model: model,
+            input: input,
+            host: .picker,
             delegate: delegate
-        ) else { return }
+        ) else {
+            return
+        }
 
         view?.controller.navigationController?.pushViewController(detailsView.controller, animated: true)
+    }
+
+    func showFilters(
+        from view: SubtensorSubnetSelectViewProtocol?,
+        viewModel: SubtensorSubnetFiltersViewModel,
+        onChange: @escaping (SubtensorSubnetFilters) -> Void,
+        onApply: @escaping (SubtensorSubnetFilters) -> Void
+    ) -> SubtensorSubnetFiltersViewProtocol? {
+        guard let view else {
+            return nil
+        }
+
+        let filtersView = SubtensorSubnetFiltersSheetController(
+            viewModel: viewModel,
+            onChange: onChange,
+            onApply: onApply
+        )
+
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.novaManual)
+
+        filtersView.modalTransitioningFactory = factory
+        filtersView.modalPresentationStyle = .custom
+
+        view.controller.present(filtersView, animated: true)
+
+        return filtersView
+    }
+
+    func presentThirtyDayUnavailable(from view: SubtensorSubnetSelectViewProtocol?, locale: Locale) {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        present(
+            message: strings.stakingSubtensorUiPickerThirtyDayUnavailable(),
+            title: nil,
+            closeAction: strings.commonClose(),
+            from: view
+        )
     }
 }

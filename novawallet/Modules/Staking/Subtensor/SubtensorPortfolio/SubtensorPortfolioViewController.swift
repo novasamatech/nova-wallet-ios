@@ -5,106 +5,92 @@ final class SubtensorPortfolioViewController: UIViewController, ViewHolder {
     typealias RootViewType = SubtensorPortfolioViewLayout
 
     let presenter: SubtensorPortfolioPresenterProtocol
-    private var selectedPeriodTitle = "30D"
 
     init(
         presenter: SubtensorPortfolioPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
+
         super.init(nibName: nil, bundle: nil)
+
         self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
-    required init?(coder _: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
-    override func loadView() { view = SubtensorPortfolioViewLayout() }
+    override func loadView() {
+        view = SubtensorPortfolioViewLayout()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        setupHandlers()
         setupLocalization()
-        rootView.addButton.addTarget(self, action: #selector(actionAdd), for: .touchUpInside)
-        rootView.syncNoticeButton.addTarget(self, action: #selector(actionRetry), for: .touchUpInside)
-        rootView.periodButtons[2].backgroundColor = R.color.colorContainerBackground()
-        for (index, button) in rootView.periodButtons.enumerated() {
-            button.tag = index
-            button.addTarget(self, action: #selector(actionPeriod(_:)), for: .touchUpInside)
-        }
+
         presenter.setup()
     }
+}
 
-    @objc private func actionAdd() { presenter.addPosition() }
-    @objc private func actionRetry() { presenter.retry() }
+private extension SubtensorPortfolioViewController {
+    func setupHandlers() {
+        rootView.addButton.addTarget(self, action: #selector(actionAdd), for: .touchUpInside)
+        rootView.syncNoticeControl.addTarget(self, action: #selector(actionRetry), for: .touchUpInside)
+        rootView.headerView.periodControl.addTarget(self, action: #selector(actionPeriod), for: .valueChanged)
 
-    @objc private func actionPeriod(_ sender: UIButton) {
-        let periods: [SubtensorPricePeriod] = [.day, .week, .month, .year, .all]
-        rootView.periodButtons.forEach { $0.backgroundColor = .clear }
-        sender.backgroundColor = R.color.colorContainerBackground()
-        selectedPeriodTitle = sender.title(for: .normal) ?? selectedPeriodTitle
-        presenter.selectPeriod(periods[sender.tag])
+        rootView.onSelectPosition = { [weak self] index in
+            self?.presenter.selectPosition(at: index)
+        }
     }
 
-    private func setupLocalization() {
+    func setupLocalization() {
         let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
+
         title = strings.stakingSubtensorUiPortfolioTitle()
-        rootView.totalCaption.text = strings.stakingSubtensorUiPortfolioTotal()
-        rootView.positionsCaption.text = strings.stakingSubtensorUiPortfolioPositions()
-        rootView.emptyLabel.text = strings.stakingSubtensorUiPortfolioEmpty()
-        rootView.syncNoticeButton.setTitle(strings.stakingSubtensorUiPortfolioSyncFailed(), for: .normal)
+
+        rootView.headerView.captionLabel.text = strings.stakingSubtensorUiPortfolioTotal()
+        rootView.positionsCaptionLabel.text = strings.stakingSubtensorUiPortfolioPositions()
+        rootView.syncNoticeLabel.text = strings.stakingSubtensorUiPortfolioSyncFailed()
+
+        let emptyView = rootView.emptyView
+        emptyView.captionLabel.text = strings.stakingSubtensorUiPortfolioEmptyCaption()
+        emptyView.subnetCardView.titleLabel.text = strings.stakingSubtensorUiPortfolioEmptySubnetTitle()
+        emptyView.subnetCardView.subtitleLabel.text = strings.stakingSubtensorUiPortfolioEmptySubnetSubtitle()
+        emptyView.rootCardView.titleLabel.text = strings.stakingSubtensorUiPortfolioEmptyRootTitle()
+        emptyView.unstakeCardView.titleLabel.text = strings.stakingSubtensorUiPortfolioEmptyUnstakeTitle()
+        emptyView.unstakeCardView.subtitleLabel.text = strings.stakingSubtensorUiPortfolioEmptyUnstakeSubtitle()
+
         rootView.addButton.imageWithTitleView?.title = strings.stakingSubtensorUiPortfolioAdd()
         rootView.addButton.invalidateLayout()
+    }
+
+    @objc func actionAdd() {
+        presenter.addPosition()
+    }
+
+    @objc func actionRetry() {
+        presenter.retry()
+    }
+
+    @objc func actionPeriod() {
+        presenter.selectPeriod(at: rootView.headerView.periodControl.selectedSegmentIndex)
     }
 }
 
 extension SubtensorPortfolioViewController: SubtensorPortfolioViewProtocol {
     func didReceive(viewModel: SubtensorPortfolioViewModel) {
-        rootView.totalLabel.text = viewModel.total
-        let currency = CurrencyManager.shared?.selectedCurrency
-        rootView.fiatLabel.text = viewModel.fiat.map {
-            "≈ \(currency?.symbol ?? currency?.code ?? "")\($0)"
-        }
-        rootView.bind(rows: viewModel.rows) { [weak self] index in
-            self?.presenter.selectPosition(at: index)
-        }
-        rootView.syncNoticeButton.isHidden = !viewModel.syncFailed
-    }
-
-    func didReceiveChartLoading() {
-        rootView.chartView.isHidden = true
-        rootView.chartStatusLabel.text = nil
-        rootView.chartLoadingView.setLoading(true)
-    }
-
-    func didReceive(series: SubtensorPortfolioValueSeries?) {
-        rootView.chartLoadingView.setLoading(false)
-        guard let series, series.points.count > 1 else {
-            rootView.chartView.isHidden = true
-            let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
-            rootView.chartStatusLabel.text = strings.stakingSubtensorUiChartUnavailable()
-            rootView.chartNoteLabel.text = strings.stakingSubtensorUiChartHistoryUnavailable()
-            rootView.changeLabel.text = nil
-            return
-        }
-
-        rootView.chartView.bind(values: series.points.map { NSDecimalNumber(decimal: $0.fiatValue).doubleValue })
-        rootView.chartView.isHidden = false
-        rootView.chartStatusLabel.text = nil
-        let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
-        rootView.chartNoteLabel.text = series.netuidsWithoutHistory.isEmpty
-            ? nil : strings.stakingSubtensorUiChartPartial()
-        if let change = series.changeInFiat {
-            let percent = NSDecimalNumber(decimal: change * 100).doubleValue
-            rootView.changeLabel.text = String(format: "%+.1f%% · %@", percent, selectedPeriodTitle)
-            rootView.changeLabel.textColor = change < 0 ? R.color.colorTextNegative() : R.color.colorTextPositive()
-        } else {
-            rootView.changeLabel.text = nil
-        }
+        rootView.bind(viewModel: viewModel)
     }
 }
 
 extension SubtensorPortfolioViewController: Localizable {
     func applyLocalization() {
-        if isViewLoaded { setupLocalization() }
+        if isViewLoaded {
+            setupLocalization()
+        }
     }
 }

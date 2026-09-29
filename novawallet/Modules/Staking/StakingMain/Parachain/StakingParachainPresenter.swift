@@ -220,7 +220,7 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
         case .nominatorChangeValidators:
             wireframe.showYourCollators(from: view)
         case .rebag, .waitingNextEra, .bondedSetValidators, .nominatorAllOversubscribed,
-             .chainMaintenance, .claimRewards:
+             .chainMaintenance:
             break
         }
     }

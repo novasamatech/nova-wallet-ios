@@ -19,7 +19,7 @@ import Foundation
 /// `SubtensorRootAprCalculatorTests` are hand-derived against exactly this sequence.
 enum SubtensorRootAprCalculator {
     /// `alpha_out_emission` is written once per block (`run_coinbase.rs:297`) and blocks are 12 s
-    /// (subtensor: `common/src/lib.rs:183`), matching `SubtensorAlphaAprCalculator`
+    /// (subtensor: `common/src/lib.rs:183`)
     static let blocksPerYear = BigUInt(2_628_000)
 
     static let ppmScale = BigUInt(1_000_000)

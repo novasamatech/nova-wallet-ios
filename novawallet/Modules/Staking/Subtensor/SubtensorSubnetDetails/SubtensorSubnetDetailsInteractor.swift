@@ -1,43 +1,221 @@
 import Foundation
 import Operation_iOS
 
-final class SubtensorSubnetDetailsInteractor: AnyCancellableCleaning {
+final class SubtensorSubnetDetailsInteractor {
     weak var presenter: SubnetDetailsInteractorOutputProtocol?
 
-    private let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
-    private let recommendationService: SubtensorRecommendationServiceProtocol?
-    private let currencyManager: CurrencyManagerProtocol
-    private let operationQueue: OperationQueue
-    private let logger: LoggerProtocol
-    private let historyStore = CancellableCallStore()
-    private let riskStore = CancellableCallStore()
+    let subnet: SubtensorSubnetRef
+    let chainAsset: ChainAsset
+    let accountId: AccountId?
+    let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
+    let rankingViewService: SubtensorRankingViewServiceProtocol
+    let presetFactory: SubtensorValidatorPresetFactoryProtocol
+    let yieldService: SubtensorYieldServiceProtocol
+    let earnConfigProvider: SubtensorEarnConfigProviderProtocol
+    let positionsSyncService: SubtensorPositionsSyncServiceProtocol?
+    let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
+    let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+    let currencyManager: CurrencyManagerProtocol
+    let operationQueue: OperationQueue
+    let logger: LoggerProtocol
+
+    private var balanceProvider: StreamableProvider<AssetBalance>?
+    private var priceProvider: StreamableProvider<PriceData>?
+    private let historyCallStore = CancellableCallStore()
+    private let listingCallStore = CancellableCallStore()
+    private let rankingCallStore = CancellableCallStore()
+    private let presetCallStore = CancellableCallStore()
+    private let yieldsCallStore = CancellableCallStore()
+    private let configCallStore = CancellableCallStore()
 
     init(
+        subnet: SubtensorSubnetRef,
+        chainAsset: ChainAsset,
+        accountId: AccountId?,
         priceHistoryService: SubtensorPriceHistoryServiceProtocol?,
-        recommendationService: SubtensorRecommendationServiceProtocol?,
+        rankingViewService: SubtensorRankingViewServiceProtocol,
+        presetFactory: SubtensorValidatorPresetFactoryProtocol,
+        yieldService: SubtensorYieldServiceProtocol,
+        earnConfigProvider: SubtensorEarnConfigProviderProtocol,
+        positionsSyncService: SubtensorPositionsSyncServiceProtocol?,
+        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
+        self.subnet = subnet
+        self.chainAsset = chainAsset
+        self.accountId = accountId
         self.priceHistoryService = priceHistoryService
-        self.recommendationService = recommendationService
+        self.rankingViewService = rankingViewService
+        self.presetFactory = presetFactory
+        self.yieldService = yieldService
+        self.earnConfigProvider = earnConfigProvider
+        self.positionsSyncService = positionsSyncService
+        self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
+        self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.currencyManager = currencyManager
         self.operationQueue = operationQueue
         self.logger = logger
     }
 
     deinit {
-        historyStore.cancel()
-        riskStore.cancel()
+        historyCallStore.cancel()
+        listingCallStore.cancel()
+        rankingCallStore.cancel()
+        presetCallStore.cancel()
+        yieldsCallStore.cancel()
+        configCallStore.cancel()
+
+        positionsSyncService?.remove(observer: self)
+        positionsSyncService?.remove(failureObserver: self)
+    }
+}
+
+private extension SubtensorSubnetDetailsInteractor {
+    func subscribeBalance() {
+        guard let accountId else {
+            presenter?.didReceiveBalance(nil)
+            return
+        }
+
+        balanceProvider = subscribeToAssetBalanceProvider(
+            for: accountId,
+            chainId: chainAsset.chain.chainId,
+            assetId: chainAsset.asset.assetId
+        )
+    }
+
+    func subscribePrice() {
+        guard let priceId = chainAsset.asset.priceId else {
+            presenter?.didReceiveTaoPrice(nil)
+            return
+        }
+
+        priceProvider = subscribeToPrice(for: priceId, currency: currencyManager.selectedCurrency)
+    }
+
+    func subscribePositions() {
+        guard let positionsSyncService else {
+            presenter?.didReceivePositionsSyncFailed(true)
+            return
+        }
+
+        positionsSyncService.add(
+            observer: self,
+            sendStateOnSubscription: true,
+            queue: .main
+        ) { [weak self] _, state in
+            self?.presenter?.didReceivePositions(state)
+        }
+
+        positionsSyncService.add(
+            failureObserver: self,
+            sendStateOnSubscription: true,
+            queue: .main
+        ) { [weak self] _, isFailed in
+            self?.presenter?.didReceivePositionsSyncFailed(isFailed)
+        }
+    }
+
+    func loadListing() {
+        guard let priceHistoryService else {
+            presenter?.didReceiveListing(.notListed)
+            return
+        }
+
+        let wrapper = priceHistoryService.createHistoryWrapper(
+            for: subnet,
+            period: .all,
+            currency: currencyManager.selectedCurrency
+        )
+
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: listingCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(listing):
+                self?.presenter?.didReceiveListing(listing)
+            case let .failure(error):
+                self?.logger.warning("Subtensor subnet listing history unavailable: \(error)")
+                self?.presenter?.didReceiveListing(nil)
+            }
+        }
+    }
+
+    func loadRankingView() {
+        executeCancellable(
+            wrapper: rankingViewService.createRankingViewWrapper(),
+            inOperationQueue: operationQueue,
+            backingCallIn: rankingCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(rankingView):
+                self?.presenter?.didReceiveRankingView(rankingView)
+            case let .failure(error):
+                self?.logger.warning("Subtensor ranking view unavailable for the subnet: \(error)")
+                self?.presenter?.didReceiveRankingView(nil)
+            }
+        }
+    }
+
+    func loadYields() {
+        executeCancellable(
+            wrapper: yieldService.createAlphaYieldsWrapper(for: subnet.netuid),
+            inOperationQueue: operationQueue,
+            backingCallIn: yieldsCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(yields):
+                self?.presenter?.didReceiveYields(yields)
+            case let .failure(error):
+                self?.logger.warning("Subtensor subnet yields unavailable: \(error)")
+                self?.presenter?.didReceiveYields(nil)
+            }
+        }
+    }
+
+    func loadEarnConfig() {
+        executeCancellable(
+            wrapper: earnConfigProvider.createConfigWrapper(),
+            inOperationQueue: operationQueue,
+            backingCallIn: configCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(config):
+                self?.presenter?.didReceiveEarnConfig(config)
+            case let .failure(error):
+                self?.logger.warning("Subtensor Earn config unavailable for the subnet mark: \(error)")
+                self?.presenter?.didReceiveEarnConfig(nil)
+            }
+        }
     }
 }
 
 extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol {
-    func loadHistory(for subnet: SubtensorSubnetRef, period: SubtensorPricePeriod) {
-        historyStore.cancel()
+    func setup() {
+        subscribeBalance()
+        subscribePrice()
+        subscribePositions()
+
+        loadListing()
+        loadRankingView()
+        loadYields()
+        loadEarnConfig()
+    }
+
+    func loadHistory(for period: SubtensorPricePeriod) {
+        historyCallStore.cancel()
 
         guard let priceHistoryService else {
-            presenter?.didReceive(history: .notListed)
+            presenter?.didReceiveHistory(.notListed, for: period)
             return
         }
 
@@ -50,40 +228,64 @@ extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol
         executeCancellable(
             wrapper: wrapper,
             inOperationQueue: operationQueue,
-            backingCallIn: historyStore,
+            backingCallIn: historyCallStore,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
             case let .success(history):
-                self?.presenter?.didReceive(history: history)
+                self?.presenter?.didReceiveHistory(history, for: period)
             case let .failure(error):
-                self?.logger.warning("Subnet price history unavailable: \(error)")
-                self?.presenter?.didFailHistory(error)
+                self?.logger.warning("Subtensor subnet price history unavailable: \(error)")
+                self?.presenter?.didFailHistory(for: period)
             }
         }
     }
 
-    func loadRisk(for netuid: UInt16) {
-        riskStore.cancel()
-
-        guard let recommendationService else {
-            presenter?.didReceive(risk: nil)
-            return
-        }
+    func presetValidator(existingHotkey: AccountId?) {
+        presetCallStore.cancel()
 
         executeCancellable(
-            wrapper: recommendationService.createRankedSubnetsWrapper(),
+            wrapper: presetFactory.createPresetWrapper(for: subnet, existingHotkey: existingHotkey),
             inOperationQueue: operationQueue,
-            backingCallIn: riskStore,
+            backingCallIn: presetCallStore,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(ranked):
-                self?.presenter?.didReceive(risk: ranked.items.first { $0.netuid == netuid })
+            case let .success(validator):
+                self?.presenter?.didReceivePreset(validator)
             case let .failure(error):
-                self?.logger.warning("Subnet risk information unavailable: \(error)")
-                self?.presenter?.didReceive(risk: nil)
+                self?.logger.warning("Subtensor subnet validator preset failed: \(error)")
+                self?.presenter?.didReceivePreset(nil)
             }
+        }
+    }
+}
+
+extension SubtensorSubnetDetailsInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
+    func handleAssetBalance(
+        result: Result<AssetBalance?, Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id,
+        assetId _: AssetModel.Id
+    ) {
+        switch result {
+        case let .success(balance):
+            presenter?.didReceiveBalance(balance)
+        case let .failure(error):
+            logger.error("Subtensor subnet details balance subscription failed: \(error)")
+            presenter?.didReceiveBalance(nil)
+        }
+    }
+}
+
+extension SubtensorSubnetDetailsInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
+    func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
+        switch result {
+        case let .success(price):
+            presenter?.didReceiveTaoPrice(price)
+        case let .failure(error):
+            logger.error("Subtensor subnet details price subscription failed: \(error)")
+            presenter?.didReceiveTaoPrice(nil)
         }
     }
 }

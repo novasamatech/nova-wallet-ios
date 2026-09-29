@@ -141,6 +141,7 @@ private extension SubtensorValidatorDirectoryService {
         for hotkey: AccountId,
         subnet: SubtensorSubnetRef,
         name: String?,
+        stake: BigRational?,
         preferredHotkey: AccountId?
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem> {
         let pair = SubtensorHotkeySubnet(hotkey: hotkey, netuid: subnet.netuid)
@@ -162,7 +163,13 @@ private extension SubtensorValidatorDirectoryService {
 
             let enrichment = Enrichment(snapshot: snapshot, enrichedPairs: [pair], gatedPreference: gatedPreference)
 
-            return Self.makeItem(hotkey: hotkey, name: name, netuid: subnet.netuid, enrichment: enrichment)
+            return Self.makeItem(
+                hotkey: hotkey,
+                name: name,
+                stake: stake,
+                netuid: subnet.netuid,
+                enrichment: enrichment
+            )
         }
 
         itemOperation.addDependency(snapshotWrapper.targetOperation)
@@ -252,6 +259,7 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
                     for: hotkey,
                     subnet: subnet,
                     name: cached?.item.name,
+                    stake: cached?.item.reportedStake,
                     preferredHotkey: preferenceWrapper.targetOperation.extractNoCancellableResultData()
                 )
             }
@@ -298,7 +306,13 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
                     return nil
                 }
 
-                return createChainItemWrapper(for: hotkey, subnet: subnet, name: nil, preferredHotkey: hotkey)
+                return createChainItemWrapper(
+                    for: hotkey,
+                    subnet: subnet,
+                    name: nil,
+                    stake: nil,
+                    preferredHotkey: hotkey
+                )
             }
 
         itemWrapper.addDependency(wrapper: preferenceWrapper)

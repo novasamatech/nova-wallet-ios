@@ -7,22 +7,27 @@ final class SubtensorPositionPresenter {
 
     let interactor: SubtensorPositionInteractorInputProtocol
     let wireframe: SubtensorPositionWireframeProtocol
-    let commonData: SubtensorStakingCommonData
+    let account: MetaChainAccountResponse?
     let precision: Int16
     let localizationManager: LocalizationManagerProtocol
 
     private var group: SubtensorPortfolioGroup
+    private var subnetsInfo: SubtensorSubnetsInfo?
+    private var price: PriceData?
+    private var claimable: SubtensorRootClaimable?
+    private var delegates: [SubtensorDelegate]?
+    private var period: SubtensorPricePeriod = .week
 
     init(
         group: SubtensorPortfolioGroup,
-        commonData: SubtensorStakingCommonData,
+        account: MetaChainAccountResponse?,
         interactor: SubtensorPositionInteractorInputProtocol,
         wireframe: SubtensorPositionWireframeProtocol,
         precision: Int16,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.group = group
-        self.commonData = commonData
+        self.account = account
         self.interactor = interactor
         self.wireframe = wireframe
         self.precision = precision
@@ -43,7 +48,7 @@ final class SubtensorPositionPresenter {
     private func provideContent() {
         let strings = R.string(preferredLanguages: localizationManager.selectedLocale.rLanguages).localizable
         let isRoot = group.netuid == SubtensorStakingPallet.rootNetuid
-        let subnet = commonData.subnetsInfo?.subnets.first { $0.netuid == group.netuid }
+        let subnet = subnetsInfo?.subnets.first { $0.netuid == group.netuid }
         let name = subnet?.displayName
         let symbol = subnet?.displaySymbol
         let title = isRoot
@@ -53,15 +58,15 @@ final class SubtensorPositionPresenter {
         let alphaAmount = amount(group.totalAlpha)
         let taoWorth = group.taoValue.map(amount)
         let fiat = taoWorth.flatMap { worth in
-            commonData.price?.decimalRate.map { format(worth * $0) }
+            price?.decimalRate.map { format(worth * $0) }
         }
         let rewards = group.positions.reduce(Balance.zero) { total, position in
-            total + (commonData.claimable?.redeemable(for: position.hotkey) ?? 0)
+            total + (claimable?.redeemable(for: position.hotkey) ?? 0)
         }
-        let identity = commonData.delegates?
+        let identity = delegates?
             .first { $0.info.delegateSs58 == group.primaryHotkey }?
             .identity?.displayName
-        let gate = commonData.account.map { SubtensorOperationGate.verdict(for: $0.chainAccount.type) }
+        let gate = account.map { SubtensorOperationGate.verdict(for: $0.chainAccount.type) }
         let canOperate: Bool
         if case .allowed = gate { canOperate = true } else { canOperate = false }
 
@@ -80,39 +85,43 @@ final class SubtensorPositionPresenter {
             hasRootHold: isRoot && (group.availability?.available ?? group.totalAlpha) < group.totalAlpha
         ))
     }
-}
 
-extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
-    func setup() {
-        provideContent()
-        interactor.setup()
-        selectPeriod(.week)
-    }
-
-    func selectPeriod(_ period: SubtensorPricePeriod) {
+    private func provideHistory() {
         guard group.netuid != SubtensorStakingPallet.rootNetuid,
-              let subnet = commonData.subnetsInfo?.subnets.first(where: { $0.netuid == group.netuid }) else { return }
+              let subnet = subnetsInfo?.subnets.first(where: { $0.netuid == group.netuid }) else { return }
         view?.didReceive(history: nil)
         interactor.loadHistory(
             for: SubtensorSubnetRef(netuid: subnet.netuid, registeredAt: subnet.networkRegisteredAt),
             period: period
         )
     }
+}
+
+extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
+    func setup() {
+        provideContent()
+        interactor.setup()
+    }
+
+    func selectPeriod(_ period: SubtensorPricePeriod) {
+        self.period = period
+        provideHistory()
+    }
 
     func stakeMore() {
-        guard let account = commonData.account,
+        guard let account,
               case .allowed = SubtensorOperationGate.verdict(for: account.chainAccount.type) else { return }
         wireframe.showStake(from: view, position: group.positions.first)
     }
 
     func unstake() {
-        guard let account = commonData.account,
+        guard let account,
               case .allowed = SubtensorOperationGate.verdict(for: account.chainAccount.type) else { return }
         wireframe.showUnstake(from: view, position: group.positions.first)
     }
 
     func showValidatorInfo() {
-        guard let delegate = commonData.delegates?.first(where: {
+        guard let delegate = delegates?.first(where: {
             $0.info.delegateSs58 == group.primaryHotkey
         }) else { return }
         wireframe.showValidatorInfo(from: view, delegate: delegate)
@@ -127,6 +136,27 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
 
     func didReceive(history: SubtensorPriceHistoryResult) {
         view?.didReceive(history: history)
+    }
+
+    func didReceive(subnetsInfo: SubtensorSubnetsInfo) {
+        self.subnetsInfo = subnetsInfo
+        provideContent()
+        provideHistory()
+    }
+
+    func didReceive(price: PriceData?) {
+        self.price = price
+        provideContent()
+    }
+
+    func didReceive(claimable: SubtensorRootClaimable?) {
+        self.claimable = claimable
+        provideContent()
+    }
+
+    func didReceive(delegates: [SubtensorDelegate]) {
+        self.delegates = delegates
+        provideContent()
     }
 }
 
