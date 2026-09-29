@@ -56,8 +56,8 @@ private extension SubtensorSubnetSelectInteractor {
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(changes):
-                self?.presenter?.didReceiveWeeklyChanges(changes)
+            case let .success(prices):
+                self?.presenter?.didReceiveWeeklyChanges(prices.compactMapValues { $0.availableValue?.change })
             case let .failure(error):
                 self?.logger.warning("Subnet weekly changes unavailable: \(error)")
                 self?.presenter?.didReceiveWeeklyChanges([:])
@@ -79,6 +79,17 @@ private extension SubtensorSubnetSelectInteractor {
             }
         }
     }
+
+    func handleMonthlyMetrics(_ metrics: [SubtensorSubnetRef: SubtensorPriceData<SubtensorMonthlyPriceMetrics>]) {
+        let values = metrics.values
+
+        guard !values.contains(where: { $0.availableValue != nil }), values.contains(.unavailable) else {
+            presenter?.didReceiveMonthlyMetrics(metrics)
+            return
+        }
+
+        presenter?.didFailMonthlyMetrics()
+    }
 }
 
 extension SubtensorSubnetSelectInteractor: SubnetSelectInteractorInputProtocol {
@@ -97,7 +108,7 @@ extension SubtensorSubnetSelectInteractor: SubnetSelectInteractorInputProtocol {
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(metrics): self?.presenter?.didReceiveMonthlyMetrics(metrics)
+            case let .success(metrics): self?.handleMonthlyMetrics(metrics)
             case let .failure(error):
                 self?.logger.warning("Subnet monthly metrics unavailable: \(error)")
                 self?.presenter?.didFailMonthlyMetrics()

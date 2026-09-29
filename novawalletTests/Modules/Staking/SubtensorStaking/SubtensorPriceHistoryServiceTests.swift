@@ -130,7 +130,7 @@ final class SubtensorPriceHistoryServiceTests: XCTestCase {
         }
     }
 
-    func testWeeklyChangesAreTaoDenominatedForListedSubnetsWithAWeekOfHistory() throws {
+    func testWeeklyPricesAreTaoDenominatedAndAShortSeriesIsUnavailable() throws {
         let coingecko = MockCoingeckoOperationFactoryProtocol()
 
         stubCharts(coingecko, [
@@ -139,17 +139,95 @@ final class SubtensorPriceHistoryServiceTests: XCTestCase {
             "templar": [(518_400, "8.4"), (604_800, "8.8")]
         ])
 
-        let changes = try run(makeService(coingecko: coingecko).createWeeklyChangesWrapper(
+        let prices = try run(makeService(coingecko: coingecko).createWeeklyChangesWrapper(
             for: [chutes, templar, unlisted]
         ))
 
-        XCTAssertEqual(changes, try [chutes: XCTUnwrap(Decimal(string: "0.5"))])
+        XCTAssertEqual(prices, try [
+            chutes: .available(SubtensorWeeklyPriceSummary(
+                change: decimal("0.5"),
+                sparkline: [decimal("0.05"), decimal("0.075")]
+            )),
+            templar: .unavailable,
+            unlisted: .notListed
+        ])
 
         verify(coingecko, times(3)).fetchPriceHistory(
             for: any(),
             currency: equal(to: Currency.usd),
             period: equal(to: PriceHistoryPeriod.week)
         )
+    }
+
+    func testWeeklyPricesMarkOnlyTheSubnetWhoseChartFailedUnavailable() throws {
+        let coingecko = MockCoingeckoOperationFactoryProtocol()
+
+        stubCharts(coingecko, [
+            taoPriceId: [(0, "400"), (604_800, "440")],
+            "chutes": [(0, "20"), (604_800, "33")]
+        ])
+
+        let prices = try run(makeService(coingecko: coingecko).createWeeklyChangesWrapper(
+            for: [chutes, templar, unlisted]
+        ))
+
+        XCTAssertEqual(prices, try [
+            chutes: .available(SubtensorWeeklyPriceSummary(
+                change: decimal("0.5"),
+                sparkline: [decimal("0.05"), decimal("0.075")]
+            )),
+            templar: .unavailable,
+            unlisted: .notListed
+        ])
+    }
+
+    func testWeeklyPricesMarkEveryListedSubnetUnavailableWhenTheTaoChartFails() throws {
+        let coingecko = MockCoingeckoOperationFactoryProtocol()
+
+        stubCharts(coingecko, [
+            "chutes": [(0, "20"), (604_800, "33")],
+            "templar": [(0, "8.4"), (604_800, "8.8")]
+        ])
+
+        let prices = try run(makeService(coingecko: coingecko).createWeeklyChangesWrapper(
+            for: [chutes, templar, unlisted]
+        ))
+
+        XCTAssertEqual(prices, [chutes: .unavailable, templar: .unavailable, unlisted: .notListed])
+        verify(coingecko, never()).fetchPriceHistory(for: equal(to: "chutes"), currency: any(), period: any())
+        verify(coingecko, never()).fetchPriceHistory(for: equal(to: "templar"), currency: any(), period: any())
+    }
+
+    func testWeeklyPricesFailWhenTheConfigReadFails() {
+        let coingecko = MockCoingeckoOperationFactoryProtocol()
+        stubCharts(coingecko, [:])
+
+        let configProvider = MockSubtensorEarnConfigProviderProtocol()
+
+        stub(configProvider) { stub in
+            when(stub.createConfigWrapper()).then {
+                CompoundOperationWrapper.createWithError(CommonError.dataCorruption)
+            }
+        }
+
+        let service = SubtensorPriceHistoryService(
+            earnConfigProvider: configProvider,
+            coingeckoOperationFactory: coingecko,
+            taoPriceId: taoPriceId,
+            operationQueue: OperationQueue()
+        )
+
+        XCTAssertThrowsError(try run(service.createWeeklyChangesWrapper(for: [chutes, unlisted])))
+        verify(coingecko, never()).fetchPriceHistory(for: any(), currency: any(), period: any())
+    }
+
+    func testSparklineKeepsTheLastValueAndAtMostFortyEightValuesAtAnEvenStride() {
+        let values = (0 ..< 170).map { Decimal($0) }
+
+        let sparkline = SubtensorPriceHistoryService.sparkline(of: values)
+
+        XCTAssertEqual(sparkline, stride(from: 1, through: 169, by: 4).map { Decimal($0) })
+        XCTAssertEqual(sparkline.count, 43)
     }
 
     func testWeeklyChangesRunAtMostFourAlphaChartsAtOnce() throws {
@@ -199,22 +277,25 @@ final class SubtensorPriceHistoryServiceTests: XCTestCase {
         XCTAssertLessThanOrEqual(tracker.maxInFlight, 4)
     }
 
-    func testMonthlyMetricsUseTaoPriceAndAverageForListedSubnets() throws {
+    func testMonthlyMetricsCarryTheTaoChangeMeanAndThirtyDayRange() throws {
         let coingecko = MockCoingeckoOperationFactoryProtocol()
         stubCharts(coingecko, [
-            taoPriceId: [(0, "400"), (1_296_000, "400"), (2_592_000, "400")],
-            "chutes": [(0, "20"), (1_296_000, "24"), (2_592_000, "28")]
+            taoPriceId: [(0, "100"), (1_296_000, "125"), (2_592_000, "150")],
+            "chutes": [(0, "92"), (1_296_000, "125"), (2_592_000, "162")]
         ])
 
         let metrics = try run(makeService(coingecko: coingecko).createMonthlyMetricsWrapper(
             for: [chutes, unlisted]
         ))
 
-        XCTAssertEqual(metrics[chutes], try SubtensorMonthlyPriceMetrics(
-            changeInTao: XCTUnwrap(Decimal(string: "0.4")),
-            meanTaoPerAlpha: XCTUnwrap(Decimal(string: "0.06"))
-        ))
-        XCTAssertNil(metrics[unlisted])
+        XCTAssertEqual(metrics, try [
+            chutes: .available(SubtensorMonthlyPriceMetrics(
+                changeInTao: decimal("0.16") / decimal("0.92"),
+                meanTaoPerAlpha: 1,
+                thirtyDayRange: decimal("0.08")
+            )),
+            unlisted: .notListed
+        ])
         verify(coingecko, times(2)).fetchPriceHistory(
             for: any(),
             currency: equal(to: Currency.usd),
@@ -222,24 +303,34 @@ final class SubtensorPriceHistoryServiceTests: XCTestCase {
         )
     }
 
-    func testSubnetMarketsChangeIsTheAlphaChangeRelativeToTheTaoChange() throws {
+    func testSubnetMarketsPricesAreTheAlphaSeriesRelativeToTheTaoWeek() throws {
         let markets = Data("""
         [
-          {"id": "chutes", "symbol": "sn64", "current_price": 26.48, "price_change_percentage_7d_in_currency": 32},
+          {
+            "id": "chutes",
+            "symbol": "sn64",
+            "current_price": 26.48,
+            "price_change_percentage_7d_in_currency": 32,
+            "sparkline_in_7d": {"price": [22, null, 33]}
+          },
           {"id": "templar", "symbol": "sn3", "current_price": 3.1, "price_change_percentage_7d_in_currency": -12},
           {"id": "celium", "symbol": "sn51", "current_price": 1.2, "price_change_percentage_7d_in_currency": null}
         ]
         """.utf8)
 
-        let changes = try SubtensorPriceHistoryService.subnetMarketChanges(
+        let prices = try SubtensorPriceHistoryService.subnetMarketChanges(
             from: markets,
             taoWeekItems: history([(0, "400"), (604_800, "440")]).items,
             listed: [chutes: "chutes", templar: "templar", unlisted: "unknown-subnet"]
         )
 
-        XCTAssertEqual(changes, try [
-            chutes: XCTUnwrap(Decimal(string: "0.2")),
-            templar: XCTUnwrap(Decimal(string: "-0.2"))
+        XCTAssertEqual(prices, try [
+            chutes: .available(SubtensorWeeklyPriceSummary(
+                change: decimal("0.2"),
+                sparkline: [decimal("0.055"), decimal("0.075")]
+            )),
+            templar: .available(SubtensorWeeklyPriceSummary(change: decimal("-0.2"), sparkline: [])),
+            unlisted: .unavailable
         ])
     }
 
@@ -325,6 +416,10 @@ final class SubtensorPriceHistoryServiceTests: XCTestCase {
             currencyId: Currency.usd.id,
             items: chart.map { PriceHistoryItem(startedAt: $0.0, value: Decimal(string: $0.1) ?? 0) }
         )
+    }
+
+    private func decimal(_ text: String) throws -> Decimal {
+        try XCTUnwrap(Decimal(string: text))
     }
 
     private func point(_ time: TimeInterval, taoPerAlpha: String, fiatPerAlpha: String) throws -> SubtensorPricePoint {

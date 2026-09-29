@@ -24,7 +24,6 @@ final class CollatorStakingSelectPresenter {
     let chainAsset: ChainAsset
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let defaultSorting: CollatorsSortType
-    let showsValidatorsCount: Bool
     /// lanes without a per-collator return, such as Subtensor delegates, show min stake in the
     /// secondary column instead
     let displaysRewards: Bool
@@ -38,7 +37,6 @@ final class CollatorStakingSelectPresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         defaultSorting: CollatorsSortType = .rewards,
         displaysRewards: Bool = true,
-        showsValidatorsCount: Bool = false,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -49,7 +47,6 @@ final class CollatorStakingSelectPresenter {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.defaultSorting = defaultSorting
         self.displaysRewards = displaysRewards
-        self.showsValidatorsCount = showsValidatorsCount
         sorting = defaultSorting
         self.logger = logger
         self.localizationManager = localizationManager
@@ -62,9 +59,7 @@ final class CollatorStakingSelectPresenter {
 
         let languages = selectedLocale.rLanguages
 
-        let title = showsValidatorsCount
-            ? R.string(preferredLanguages: languages).localizable.stakingSubtensorUiValidatorCountFormat(collatorsCount)
-            : R.string(preferredLanguages: languages).localizable.commonParastkCollatorsCount(countString ?? "")
+        let title = R.string(preferredLanguages: languages).localizable.commonParastkCollatorsCount(countString ?? "")
 
         let subtitle: String
 
