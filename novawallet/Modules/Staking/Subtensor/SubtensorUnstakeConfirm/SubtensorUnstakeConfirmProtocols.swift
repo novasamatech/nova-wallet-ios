@@ -1,26 +1,15 @@
 import Foundation
 
-protocol SubtensorUnstakeConfirmViewProtocol: CollatorStkUnstakeConfirmViewProtocol {
-    func didReceiveQuote(viewModel: SubtensorQuotePanelViewModel?)
-    func didReceiveSlippage(viewModel: String?)
+typealias SubtensorUnstakeConfirmViewProtocol = SubtensorStakingConfirmViewProtocol
+
+protocol SubtensorUnstakeConfirmInputProtocol: SubtensorConfirmInteractorInputProtocol {
+    func loadRootHolds(for hotkeys: [AccountId])
 }
 
-protocol SubtensorUnstakeConfirmInteractorInputProtocol: SubtensorStakingSubmitInteractorInputProtocol {}
-
-protocol SubtensorUnstakeConfirmInteractorOutputProtocol: SubtensorStakingSubmitInteractorOutputProtocol {}
-
-protocol SubtensorUnstakeConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
-    AddressOptionsPresentable,
-    FeeRetryable,
-    CommonRetryable,
-    ModalAlertPresenting,
-    MessageSheetPresentable,
-    SubtensorStakingErrorPresentable,
-    ExtrinsicSigningErrorHandling,
-    ExtrinsicSubmissionPresenting {
-    func complete(
-        on view: CollatorStkUnstakeConfirmViewProtocol?,
-        sender: ExtrinsicSenderResolution,
-        title: ExtrinsicSubmissionPresentingParams.Title
-    )
+protocol SubtensorUnstakeConfirmOutputProtocol: SubtensorConfirmInteractorOutputProtocol {
+    func didReceiveRootHolds(_ holds: [AccountId: SubtensorRootHold])
 }
+
+protocol SubtensorUnstakeConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
+    CommonRetryable, MessageSheetPresentable, SubtensorStakingErrorPresentable, SubtensorInfoSheetPresentable,
+    SubtensorValidatorInfoPresentable, SubtensorOperationResultPresenting {}

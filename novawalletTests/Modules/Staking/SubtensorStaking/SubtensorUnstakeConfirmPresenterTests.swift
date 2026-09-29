@@ -7,14 +7,17 @@ import XCTest
 final class SubtensorUnstakeConfirmPresenterTests: XCTestCase {
     private let hotkey = Data(repeating: 0x22, count: 32)
     private let unstakeAmount = Balance(1_000_000_000)
+    private let networkFee = Balance(1_000_000)
 
     private let otherHotkey = Data(repeating: 0x33, count: 32)
 
     private struct Setup {
         let presenter: SubtensorUnstakeConfirmPresenter
-        let view: MockCollatorStkUnstakeConfirmViewProtocol
+        let view: MockSubtensorStakingConfirmViewProtocol
         let wireframe: MockSubtensorUnstakeConfirmWireframeProtocol
-        let interactor: MockSubtensorUnstakeConfirmInteractorInputProtocol
+        let interactor: MockSubtensorUnstakeConfirmInputProtocol
+        let validationView: MockControllerBackedProtocol
+        let chainAsset: ChainAsset
     }
 
     private func makeChainAsset() -> ChainAsset {
@@ -108,11 +111,11 @@ final class SubtensorUnstakeConfirmPresenterTests: XCTestCase {
         )
     }
 
-    private func makeSelectedAccount(for chainAsset: ChainAsset) -> MetaChainAccountResponse {
+    private func makeAccount(for chainAsset: ChainAsset) -> MetaChainAccountResponse {
         let accountId = Data(repeating: 0x11, count: 32)
 
         let chainAccount = ChainAccountResponse(
-            metaId: UUID().uuidString,
+            metaId: "unstake-confirm-wallet",
             chainId: chainAsset.chain.chainId,
             accountId: accountId,
             publicKey: accountId,
@@ -125,7 +128,7 @@ final class SubtensorUnstakeConfirmPresenterTests: XCTestCase {
         )
 
         return MetaChainAccountResponse(
-            metaId: UUID().uuidString,
+            metaId: "unstake-confirm-wallet",
             substrateAccountId: accountId,
             ethereumAccountId: nil,
             walletIdenticonData: nil,
@@ -179,17 +182,29 @@ final class SubtensorUnstakeConfirmPresenterTests: XCTestCase {
         )
     }
 
-    private func makeView() -> MockCollatorStkUnstakeConfirmViewProtocol {
-        let view = MockCollatorStkUnstakeConfirmViewProtocol()
+    private func makeBalance(for chainAsset: ChainAsset, free: Balance) -> AssetBalance {
+        AssetBalance(
+            chainAssetId: ChainAssetId(chainId: chainAsset.chain.chainId, assetId: chainAsset.asset.assetId),
+            accountId: Data(repeating: 0x11, count: 32),
+            freeInPlank: free,
+            reservedInPlank: 0,
+            frozenInPlank: 0,
+            edCountMode: .basedOnFree,
+            transferrableMode: .fungibleTrait,
+            blocked: false
+        )
+    }
+
+    private func makeView() -> MockSubtensorStakingConfirmViewProtocol {
+        let view = MockSubtensorStakingConfirmViewProtocol()
 
         stub(view) { stub in
             when(stub.isSetup.get).thenReturn(false)
-            when(stub.didReceiveAmount(viewModel: any())).thenDoNothing()
             when(stub.didReceiveWallet(viewModel: any())).thenDoNothing()
             when(stub.didReceiveAccount(viewModel: any())).thenDoNothing()
-            when(stub.didReceiveFee(viewModel: any())).thenDoNothing()
-            when(stub.didReceiveCollator(viewModel: any())).thenDoNothing()
-            when(stub.didReceiveHints(viewModel: any())).thenDoNothing()
+            when(stub.didReceiveValidator(viewModel: any())).thenDoNothing()
+            when(stub.didReceiveTileIcons(viewModel: any())).thenDoNothing()
+            when(stub.didReceive(viewModel: any())).thenDoNothing()
             when(stub.didStartLoading()).thenDoNothing()
             when(stub.didStopLoading()).thenDoNothing()
         }
@@ -208,7 +223,7 @@ final class SubtensorUnstakeConfirmPresenterTests: XCTestCase {
 
         return SubtensorUnstakeConfirmModel(
             origin: target.isRoot ? .unstake : .sell,
-            account: makeSelectedAccount(for: chainAsset),
+            account: makeAccount(for: chainAsset),
             target: target,
             validator: SubtensorConfirmValidator(
                 hotkey: hotkey,
@@ -226,10 +241,24 @@ final class SubtensorUnstakeConfirmPresenterTests: XCTestCase {
         )
     }
 
+    private func makeSubnetModel(
+        for chainAsset: ChainAsset,
+        acknowledgedQuote: SubtensorTradeQuote,
+        exitHotkeys: [AccountId]? = nil
+    ) -> SubtensorUnstakeConfirmModel {
+        makeModel(
+            for: chainAsset,
+            target: makeSubnetTarget(price: acknowledgedQuote.quote.spotPrice),
+            tolerance: SubtensorSlippageTolerance.defaultTolerance,
+            acknowledgedQuote: acknowledgedQuote,
+            exitHotkeys: exitHotkeys
+        )
+    }
+
     private func makeSetup(model modelBuilder: (ChainAsset) -> SubtensorUnstakeConfirmModel) -> Setup {
         let chainAsset = makeChainAsset()
 
-        let interactor = MockSubtensorUnstakeConfirmInteractorInputProtocol()
+        let interactor = MockSubtensorUnstakeConfirmInputProtocol()
 
         stub(interactor) { stub in
             when(stub.setup()).thenDoNothing()
@@ -237,14 +266,17 @@ final class SubtensorUnstakeConfirmPresenterTests: XCTestCase {
             when(stub.refreshPreflight(for: any(), netuid: any())).thenDoNothing()
             when(stub.refreshQuote(for: any())).thenDoNothing()
             when(stub.refreshPositions()).thenDoNothing()
-            when(stub.submit(operation: any())).thenDoNothing()
+            when(stub.loadSubnetData()).thenDoNothing()
+            when(stub.loadRootHolds(for: any())).thenDoNothing()
         }
 
         let wireframe = MockSubtensorUnstakeConfirmWireframeProtocol()
 
         stub(wireframe) { stub in
+            when(stub.showOperationResult(from: any(), request: any(), delegate: any())).thenDoNothing()
             when(stub.present(message: any(), title: any(), closeAction: any(), from: any())).thenDoNothing()
             when(stub.presentStalePositions(any(), onRetry: any(), locale: any())).thenDoNothing()
+            when(stub.presentBatchedSellFeeNotCovered(any(), requiredAmount: any(), locale: any())).thenDoNothing()
         }
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
@@ -255,21 +287,19 @@ final class SubtensorUnstakeConfirmPresenterTests: XCTestCase {
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
+        let validationView = MockControllerBackedProtocol()
+        dataValidationFactory.view = validationView
+
         let presenter = SubtensorUnstakeConfirmPresenter(
             interactor: interactor,
             wireframe: wireframe,
             chainAsset: chainAsset,
-            selectedAccount: makeSelectedAccount(for: chainAsset),
             model: modelBuilder(chainAsset),
-            dataValidationFactory: dataValidationFactory,
-            balanceViewModelFactory: BalanceViewModelFactory(
-                targetAssetInfo: chainAsset.assetDisplayInfo,
-                priceAssetInfoFactory: priceAssetInfoFactory
-            ),
-            quoteViewModelFactory: SubtensorQuoteViewModelFactory(
+            viewModelFactory: SubtensorConfirmViewModelFactory(
                 chainAsset: chainAsset,
                 priceAssetInfoFactory: priceAssetInfoFactory
             ),
+            dataValidationFactory: dataValidationFactory,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
@@ -279,65 +309,60 @@ final class SubtensorUnstakeConfirmPresenterTests: XCTestCase {
 
         presenter.setup()
 
-        let chainAssetId = ChainAssetId(chainId: chainAsset.chain.chainId, assetId: chainAsset.asset.assetId)
-
-        presenter.didReceiveAssetBalance(
-            AssetBalance(
-                chainAssetId: chainAssetId,
-                accountId: Data(repeating: 0x11, count: 32),
-                freeInPlank: 10_000_000_000,
-                reservedInPlank: 0,
-                frozenInPlank: 0,
-                edCountMode: .basedOnFree,
-                transferrableMode: .fungibleTrait,
-                blocked: false
-            )
-        )
+        presenter.didReceiveAssetBalance(makeBalance(for: chainAsset, free: 10_000_000_000))
 
         presenter.didReceiveFee(
-            ExtrinsicFee(amount: 1_000_000, payer: nil, weight: .init(refTime: 1000, proofSize: 0))
+            ExtrinsicFee(amount: networkFee, payer: nil, weight: .init(refTime: 1000, proofSize: 0))
         )
 
         presenter.didReceivePreflight(makePreflight())
         presenter.didReceiveExistentialDeposit(500)
 
-        return Setup(presenter: presenter, view: view, wireframe: wireframe, interactor: interactor)
+        return Setup(
+            presenter: presenter,
+            view: view,
+            wireframe: wireframe,
+            interactor: interactor,
+            validationView: validationView,
+            chainAsset: chainAsset
+        )
     }
 
-    private func confirmAndCaptureOperation(_ setup: Setup) -> SubtensorStakingOperation? {
-        let captor = ArgumentCaptor<SubtensorStakingOperation>()
+    private func confirmAndCaptureRequest(_ setup: Setup) -> SubtensorOperationResultRequest? {
+        let captor = ArgumentCaptor<SubtensorOperationResultRequest>()
 
         setup.presenter.confirm()
 
-        verify(setup.interactor).submit(operation: captor.capture())
+        verify(setup.wireframe).showOperationResult(from: any(), request: captor.capture(), delegate: any())
 
         return captor.value
     }
 
-    func testRootConfirmSubmitsARootUnstake() {
+    func testRootConfirmHandsOffARootUnstake() {
         let setup = makeSetup { chainAsset in
             makeModel(for: chainAsset, target: .root, tolerance: nil, acknowledgedQuote: nil)
         }
 
-        XCTAssertEqual(confirmAndCaptureOperation(setup), .rootUnstake(hotkey: hotkey, amount: unstakeAmount))
+        setup.presenter.didReceivePositions(makePositions(hotkeys: [hotkey]))
+
+        XCTAssertEqual(
+            confirmAndCaptureRequest(setup)?.operation,
+            .rootUnstake(hotkey: hotkey, amount: unstakeAmount)
+        )
     }
 
     func testSubnetConfirmSellsAtTheAcknowledgedLimitWithTheLatestTaoOut() throws {
         let acknowledged = try makeTradeQuote(spotPrice: 7_683_255)
 
         let setup = makeSetup { chainAsset in
-            makeModel(
-                for: chainAsset,
-                target: makeSubnetTarget(price: 7_683_255),
-                tolerance: SubtensorSlippageTolerance.defaultTolerance,
-                acknowledgedQuote: acknowledged
-            )
+            makeSubnetModel(for: chainAsset, acknowledgedQuote: acknowledged)
         }
 
+        setup.presenter.didReceivePositions(makePositions(hotkeys: [hotkey], netuid: 1))
         setup.presenter.didReceiveQuote(try makeTradeQuote(spotPrice: 7_690_000, taoOut: 7_675_000))
 
         XCTAssertEqual(
-            confirmAndCaptureOperation(setup),
+            confirmAndCaptureRequest(setup)?.operation,
             .subnetSell(
                 hotkey: hotkey,
                 netuid: 1,
@@ -348,7 +373,7 @@ final class SubtensorUnstakeConfirmPresenterTests: XCTestCase {
         )
     }
 
-    func testGroupExitSubmitsTheHotkeysRebuiltFromTheLiveGroup() {
+    func testGroupExitHandsOffTheHotkeysRebuiltFromTheLiveGroupAndEmptiesThePosition() {
         let setup = makeSetup { chainAsset in
             makeModel(
                 for: chainAsset,
@@ -361,27 +386,25 @@ final class SubtensorUnstakeConfirmPresenterTests: XCTestCase {
 
         setup.presenter.didReceivePositions(makePositions(hotkeys: [hotkey, otherHotkey]))
 
-        XCTAssertEqual(confirmAndCaptureOperation(setup), .rootUnstakeAll(hotkeys: [hotkey, otherHotkey]))
+        let request = confirmAndCaptureRequest(setup)
+
+        XCTAssertEqual(request?.operation, .rootUnstakeAll(hotkeys: [hotkey, otherHotkey]))
+        XCTAssertEqual(request?.emptiesPosition, true)
+        XCTAssertEqual(request?.stakeBefore, unstakeAmount * 2)
     }
 
     func testSubnetGroupExitSellsTheRebuiltHotkeysAtTheAcknowledgedLimitWithTheLatestTaoOut() throws {
         let acknowledged = try makeTradeQuote(spotPrice: 7_683_255)
 
         let setup = makeSetup { chainAsset in
-            makeModel(
-                for: chainAsset,
-                target: makeSubnetTarget(price: 7_683_255),
-                tolerance: SubtensorSlippageTolerance.defaultTolerance,
-                acknowledgedQuote: acknowledged,
-                exitHotkeys: [hotkey]
-            )
+            makeSubnetModel(for: chainAsset, acknowledgedQuote: acknowledged, exitHotkeys: [hotkey])
         }
 
         setup.presenter.didReceivePositions(makePositions(hotkeys: [hotkey], netuid: 1))
         setup.presenter.didReceiveQuote(try makeTradeQuote(spotPrice: 7_690_000, taoOut: 7_675_000))
 
         XCTAssertEqual(
-            confirmAndCaptureOperation(setup),
+            confirmAndCaptureRequest(setup)?.operation,
             .subnetSellAll(
                 hotkeys: [hotkey],
                 netuid: 1,
@@ -409,10 +432,10 @@ final class SubtensorUnstakeConfirmPresenterTests: XCTestCase {
 
         verify(setup.wireframe).present(message: any(), title: any(), closeAction: any(), from: any())
         verify(setup.wireframe, never()).presentStalePositions(any(), onRetry: any(), locale: any())
-        verify(setup.interactor, never()).submit(operation: any())
+        verify(setup.wireframe, never()).showOperationResult(from: any(), request: any(), delegate: any())
     }
 
-    func testGroupExitWithAZeroAlphaMemberIsNotSubmitted() {
+    func testGroupExitWithAZeroAlphaMemberIsNotHandedOff() {
         let setup = makeSetup { chainAsset in
             makeModel(
                 for: chainAsset,
@@ -435,7 +458,7 @@ final class SubtensorUnstakeConfirmPresenterTests: XCTestCase {
 
         setup.presenter.confirm()
 
-        verify(setup.interactor, never()).submit(operation: any())
+        verify(setup.wireframe, never()).showOperationResult(from: any(), request: any(), delegate: any())
     }
 
     func testGroupExitBeforePositionsArriveOffersAPositionsRefresh() throws {
@@ -464,6 +487,48 @@ final class SubtensorUnstakeConfirmPresenterTests: XCTestCase {
         try XCTUnwrap(retry)()
 
         verify(setup.interactor).refreshPositions()
-        verify(setup.interactor, never()).submit(operation: any())
+        verify(setup.wireframe, never()).showOperationResult(from: any(), request: any(), delegate: any())
+    }
+
+    func testSellWithFreeTaoBelowTheNetworkFeePlusTheDepositIsRefused() throws {
+        let acknowledged = try makeTradeQuote(spotPrice: 7_683_255)
+
+        let setup = makeSetup { chainAsset in
+            makeSubnetModel(for: chainAsset, acknowledgedQuote: acknowledged)
+        }
+
+        setup.presenter.didReceivePositions(makePositions(hotkeys: [hotkey], netuid: 1))
+        setup.presenter.didReceiveAssetBalance(makeBalance(for: setup.chainAsset, free: networkFee))
+
+        setup.presenter.confirm()
+
+        verify(setup.wireframe).presentBatchedSellFeeNotCovered(any(), requiredAmount: any(), locale: any())
+        verify(setup.wireframe, never()).showOperationResult(from: any(), request: any(), delegate: any())
+    }
+
+    func testRootUnstakeWithTheFeePaidFromStakeShowsTheStakeAfterNetOfTheFeeAsAnEstimate() {
+        let setup = makeSetup { chainAsset in
+            makeModel(for: chainAsset, target: .root, tolerance: nil, acknowledgedQuote: nil)
+        }
+
+        setup.presenter.didReceivePositions(
+            Multistaking.SubtensorStakingState(
+                positions: [
+                    makePosition(
+                        hotkey: hotkey,
+                        netuid: SubtensorStakingPallet.rootNetuid,
+                        stakeAlpha: 2_000_000_000
+                    )
+                ],
+                prices: [:]
+            )
+        )
+
+        setup.presenter.didReceiveAssetBalance(makeBalance(for: setup.chainAsset, free: 500_000))
+
+        XCTAssertEqual(
+            setup.presenter.createStakeChange(),
+            SubtensorConfirmStakeChange(before: 2_000_000_000, after: 999_000_000, isEstimated: true)
+        )
     }
 }

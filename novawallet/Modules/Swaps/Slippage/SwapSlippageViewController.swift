@@ -5,13 +5,19 @@ final class SwapSlippageViewController: UIViewController, ViewHolder {
     typealias RootViewType = SwapSlippageViewLayout
 
     let presenter: SwapSlippagePresenterProtocol
+    let presentation: SwapSlippagePresentation
     private var isApplyAvailable: Bool = false
+    private var hasInputError: Bool = false
+    private var presets: [SlippagePercentViewModel] = []
+    private var sheetInputViewModel: AmountInputViewModelProtocol?
 
     init(
         presenter: SwapSlippagePresenterProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        presentation: SwapSlippagePresentation = .screen
     ) {
         self.presenter = presenter
+        self.presentation = presentation
         super.init(nibName: nil, bundle: nil)
         self.localizationManager = localizationManager
     }
@@ -28,14 +34,24 @@ final class SwapSlippageViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        if presentation == .subtensorSheet {
+            rootView.applySheetLayout()
+        } else {
+            setupNavigationItem()
+        }
+
         setupLocalization()
         setupHandlers()
         setupAccessoryView()
-        setupNavigationItem()
         presenter.setup()
     }
 
     private func setupLocalization() {
+        guard presentation == .screen else {
+            setupSheetLocalization()
+            return
+        }
+
         let languages = selectedLocale.rLanguages
         title = R.string(preferredLanguages: languages).localizable.swapsSetupSettingsTitle()
         rootView.slippageButton.imageWithTitleView?.title = R.string(
@@ -49,11 +65,31 @@ final class SwapSlippageViewController: UIViewController, ViewHolder {
         ).localizable.commonReset()
     }
 
+    private func setupSheetLocalization() {
+        let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
+
+        rootView.titleLabel.text = strings.commonButtonSettings()
+        rootView.slippageButton.imageWithTitleView?.title = strings.stakingSubtensorInfoSlippageTitle()
+        rootView.explanationLabel.text = strings.stakingSubtensorUiSlippageExplanation()
+        rootView.actionButton.imageWithTitleView?.title = strings.commonDone()
+        rootView.amountInput.textField.attributedPlaceholder = NSAttributedString(
+            string: strings.stakingSubtensorUiSlippageCustom(),
+            attributes: [
+                .foregroundColor: R.color.colorHintText()!,
+                .font: UIFont.regularSubheadline
+            ]
+        )
+    }
+
     private func setupHandlers() {
         rootView.amountInput.delegate = self
         rootView.actionButton.addTarget(self, action: #selector(applyButtonAction), for: .touchUpInside)
         rootView.amountInput.addTarget(self, action: #selector(inputEditingAction), for: .editingChanged)
-        rootView.slippageButton.addTarget(self, action: #selector(slippageInfoAction), for: .touchUpInside)
+        if presentation == .screen {
+            rootView.slippageButton.addTarget(self, action: #selector(slippageInfoAction), for: .touchUpInside)
+        } else {
+            rootView.presetsControl.addTarget(self, action: #selector(presetAction), for: .valueChanged)
+        }
     }
 
     private func setupAccessoryView() {
@@ -76,9 +112,11 @@ final class SwapSlippageViewController: UIViewController, ViewHolder {
     }
 
     private func updateActionButton() {
-        let inputValid = rootView.amountInput.inputViewModel?.isValid == true
+        let hasPreset = presentation == .subtensorSheet && rootView.presetsControl.selectedIndex != nil
+        let inputValid = hasPreset || rootView.amountInput.inputViewModel?.isValid == true
+        let canApply = presentation == .screen ? isApplyAvailable : !hasInputError
 
-        let isEnabled = isApplyAvailable && inputValid
+        let isEnabled = canApply && inputValid
         rootView.actionButton.set(enabled: isEnabled, changeStyle: true)
     }
 
@@ -90,10 +128,44 @@ final class SwapSlippageViewController: UIViewController, ViewHolder {
         rootView.amountInput.endEditing(true)
     }
 
+    private func applySheetInput() {
+        let percent = sheetInputViewModel?.decimalAmount
+
+        let presetIndex = percent.flatMap { value in
+            presets.firstIndex { $0.value.fromFractionToPercents() == value }
+        }
+
+        rootView.presetsControl.select(index: presetIndex)
+
+        if presetIndex != nil {
+            let customViewModel = AmountInputViewModel.forAssetConversionSlippage(for: nil, locale: selectedLocale)
+            rootView.amountInput.bind(inputViewModel: customViewModel)
+        } else if let sheetInputViewModel {
+            rootView.amountInput.bind(inputViewModel: sheetInputViewModel)
+        }
+
+        updateActionButton()
+    }
+
     @objc private func inputEditingAction() {
         let amount = rootView.amountInput.inputViewModel?.decimalAmount
         presenter.updateAmount(amount)
+
+        if presentation == .subtensorSheet {
+            sheetInputViewModel = rootView.amountInput.inputViewModel
+            rootView.presetsControl.select(index: nil)
+        }
+
         updateActionButton()
+    }
+
+    @objc private func presetAction() {
+        guard let index = rootView.presetsControl.selectedIndex, let preset = presets[safe: index] else {
+            return
+        }
+
+        rootView.amountInput.endEditing(true)
+        presenter.select(percent: preset)
     }
 
     @objc private func slippageInfoAction() {
@@ -107,12 +179,25 @@ final class SwapSlippageViewController: UIViewController, ViewHolder {
 
 extension SwapSlippageViewController: SwapSlippageViewProtocol {
     func didReceivePreFilledPercents(viewModel: [SlippagePercentViewModel]) {
-        rootView.amountInput.bind(viewModel: viewModel)
+        guard presentation == .subtensorSheet else {
+            rootView.amountInput.bind(viewModel: viewModel)
+            return
+        }
+
+        presets = viewModel
+        rootView.presetsControl.bind(titles: viewModel.map(\.title))
+        applySheetInput()
     }
 
     func didReceiveInput(viewModel: AmountInputViewModelProtocol) {
-        rootView.amountInput.bind(inputViewModel: viewModel)
-        updateActionButton()
+        guard presentation == .subtensorSheet else {
+            rootView.amountInput.bind(inputViewModel: viewModel)
+            updateActionButton()
+            return
+        }
+
+        sheetInputViewModel = viewModel
+        applySheetInput()
     }
 
     func didReceiveResetState(available: Bool) {
@@ -125,6 +210,7 @@ extension SwapSlippageViewController: SwapSlippageViewProtocol {
     }
 
     func didReceiveInput(error: String?) {
+        hasInputError = error != nil
         rootView.set(error: error)
         updateActionButton()
     }

@@ -16,9 +16,9 @@ final class SubtensorPositionWireframe: SubtensorPositionWireframeProtocol {
     }
 
     func showUnstake(from view: SubtensorPositionViewProtocol?, position: SubtensorStakingPosition?) {
-        guard let setup = SubtensorUnstakeSetupViewFactory.createView(
+        guard let position, let setup = SubtensorUnstakeSetupViewFactory.createView(
             for: state,
-            initialPosition: position
+            netuid: position.netuid
         ) else { return }
         let navigation = ImportantFlowViewFactory.createNavigation(from: setup.controller)
         view?.controller.presentWithCardLayout(navigation, animated: true)

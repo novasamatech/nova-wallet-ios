@@ -39,15 +39,31 @@ final class SubtensorStakingSetupViewLayout: UIView {
 
     let apySkeletonView = SubtensorStakingSetupViewLayout.createSkeletonView()
 
-    let receiveCell = StackTableCell()
-
-    let swapRateCell = StackTableCell()
-
-    let slippageCell = StackInfoTableCell()
-
     let networkFeeCell = StackNetworkFeeCell()
 
     let feeSkeletonView = SubtensorStakingSetupViewLayout.createSkeletonView()
+
+    let sectionLabel: UILabel = .create { label in
+        label.apply(style: .semiboldCaps2Secondary)
+        label.isHidden = true
+    }
+
+    let pickCardView: SubtensorPickCardView = .create { view in
+        view.isHidden = true
+    }
+
+    let feeDisclosureLabel: UILabel = .create { label in
+        label.apply(style: .caption1Secondary)
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.isHidden = true
+    }
+
+    let holdAlertView: InlineAlertView = {
+        let view = InlineAlertView.warning()
+        view.isHidden = true
+        return view
+    }()
 
     let captionLabel: UILabel = .create { label in
         label.apply(style: .caption1Secondary)
@@ -87,7 +103,8 @@ private extension SubtensorStakingSetupViewLayout {
     }
 
     func setupLayout() {
-        let bottomStack = UIView.vStack(spacing: 16, [captionLabel, actionButton])
+        let bottomStack = UIView.vStack(spacing: 16, [holdAlertView, captionLabel, actionButton])
+        bottomStack.setCustomSpacing(12, after: holdAlertView)
 
         addSubview(bottomStack)
         bottomStack.snp.makeConstraints { make in
@@ -142,10 +159,13 @@ private extension SubtensorStakingSetupViewLayout {
 
         detailsTableView.addArrangedSubview(validatorCell)
         detailsTableView.addArrangedSubview(apyCell)
-        detailsTableView.addArrangedSubview(receiveCell)
-        detailsTableView.addArrangedSubview(swapRateCell)
-        detailsTableView.addArrangedSubview(slippageCell)
         detailsTableView.addArrangedSubview(networkFeeCell)
+
+        containerView.stackView.addArrangedSubview(sectionLabel)
+        containerView.stackView.setCustomSpacing(8, after: sectionLabel)
+        containerView.stackView.addArrangedSubview(pickCardView)
+        containerView.stackView.setCustomSpacing(16, after: pickCardView)
+        containerView.stackView.addArrangedSubview(feeDisclosureLabel)
 
         let skeletons: [(SubtensorChartLoadingView, UIView, CGFloat)] = [
             (validatorSkeletonView, validatorCell, 100),

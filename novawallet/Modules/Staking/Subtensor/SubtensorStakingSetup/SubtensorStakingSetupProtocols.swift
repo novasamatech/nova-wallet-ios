@@ -12,7 +12,10 @@ protocol SubtensorStakingSetupPresenterProtocol: AnyObject {
     func selectMax()
     func selectAmountPercentage(_ percentage: Float)
     func selectValidator()
-    func selectSlippage()
+    func selectCardHeader()
+    func chooseMyself()
+    func selectSettings()
+    func showSwapRateInfo()
     func getTao()
     func proceed()
 }
@@ -23,6 +26,9 @@ protocol SubtensorSetupInteractorInputProtocol: SubtensorStakingBaseInteractorIn
     func loadRootYield()
     func loadSubnet(netuid: UInt16)
     func loadCatalogue()
+    func loadYields(netuid: UInt16)
+    func loadRankingView()
+    func loadEarnConfig()
     func saveSlippage(_ tolerance: BigRational)
 }
 
@@ -32,10 +38,14 @@ protocol SubtensorSetupInteractorOutputProtocol: SubtensorStakingBaseInteractorO
     func didReceiveSubnet(_ target: SubtensorStakeTarget)
     func didFailSubnet(_ error: Error)
     func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?)
+    func didReceiveYields(_ yields: SubtensorAlphaYields?, netuid: UInt16)
+    func didReceiveRankingView(_ rankingView: SubtensorRankedSubnets?)
+    func didReceiveEarnConfig(_ config: SubtensorEarnConfig?)
 }
 
 protocol SubtensorStakingSetupWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
-    CommonRetryable, SubtensorStakingErrorPresentable, SubtensorGetTaoRouting {
+    CommonRetryable, SubtensorStakingErrorPresentable, SubtensorGetTaoRouting, SubtensorInfoSheetPresentable,
+    SubtensorValidatorInfoPresentable {
     func showConfirmation(
         from view: SubtensorStakingSetupViewProtocol?,
         model: SubtensorStakingConfirmModel
@@ -53,7 +63,13 @@ protocol SubtensorStakingSetupWireframeProtocol: AlertPresentable, ErrorPresenta
         delegate: SubtensorSubnetSelectDelegate
     )
 
-    func showSlippageEdit(
+    func showSubnetDetails(
+        from view: SubtensorStakingSetupViewProtocol?,
+        input: SubtensorSubnetDetailsInput,
+        delegate: SubtensorSubnetSelectDelegate
+    )
+
+    func showSlippageSettings(
         from view: SubtensorStakingSetupViewProtocol?,
         current: BigRational,
         completion: @escaping (BigRational) -> Void

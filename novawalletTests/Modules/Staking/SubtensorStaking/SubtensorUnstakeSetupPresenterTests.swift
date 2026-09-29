@@ -5,13 +5,16 @@ import Foundation_iOS
 import XCTest
 
 final class SubtensorUnstakeSetupPresenterTests: XCTestCase {
-    private let hotkey = Data(repeating: 0x22, count: 32)
-    private let stakedAmount = Balance(5_000_000_000)
+    private let primaryHotkey = Data(repeating: 0x22, count: 32)
+    private let secondHotkey = Data(repeating: 0x33, count: 32)
+    private let subnetNetuid: UInt16 = 1
+    private let spotPrice: Balance = 73_800_000
 
     private struct Setup {
         let presenter: SubtensorUnstakeSetupPresenter
         let wireframe: MockSubtensorUnstakeSetupWireframeProtocol
-        let interactor: MockSubtensorUnstakeSetupInteractorInputProtocol
+        let interactor: MockSubtensorUnstakeInteractorInputProtocol
+        let view: MockSubtensorUnstakeSetupViewProtocol
     }
 
     private func makeChainAsset() -> ChainAsset {
@@ -37,108 +40,6 @@ final class SubtensorUnstakeSetupPresenterTests: XCTestCase {
         )
 
         return ChainAsset(chain: chain, asset: asset)
-    }
-
-    private func makePreflight(
-        availability: SubtensorStakingPallet.StakeAvailability? = nil
-    ) -> SubtensorStakingPreflight {
-        SubtensorStakingPreflight(
-            hotkeyExists: true,
-            subnetExists: true,
-            subtokenEnabled: true,
-            hasColdkeySwapAnnouncement: false,
-            isSafeModeActive: false,
-            stakeAvailability: availability,
-            rootStakeUnlockInterval: 0,
-            lastStakeBlock: nil,
-            minStake: 2_000_000,
-            effectiveNominatorMinStake: 1,
-            rootClaimableThreshold: 500_000,
-            delegateTake: 11796
-        )
-    }
-
-    private func makeAvailability(available: Balance) -> SubtensorStakingPallet.StakeAvailability {
-        SubtensorStakingPallet.StakeAvailability(
-            total: stakedAmount,
-            locked: stakedAmount - available,
-            available: available
-        )
-    }
-
-    private func makeSubnetInfo(netuid: UInt16, tokenSymbol: String) -> SubtensorStakingPallet.DynamicInfo {
-        SubtensorStakingPallet.DynamicInfo(
-            netuid: netuid,
-            ownerHotkey: Data(repeating: 0, count: 32),
-            ownerColdkey: Data(repeating: 0, count: 32),
-            subnetName: Data("Apex".utf8),
-            tokenSymbol: Data(tokenSymbol.utf8),
-            tempo: 99,
-            lastStep: 0,
-            blocksSinceLastStep: 0,
-            emission: 0,
-            alphaIn: 0,
-            alphaOut: 0,
-            taoIn: 0,
-            alphaOutEmission: 0,
-            alphaInEmission: 0,
-            taoInEmission: 0,
-            pendingAlphaEmission: 0,
-            pendingRootEmission: 0,
-            subnetVolume: 0,
-            networkRegisteredAt: 0,
-            subnetIdentity: nil,
-            movingPrice: .null
-        )
-    }
-
-    private func makeSubnetsInfo(
-        netuid: UInt16 = 1,
-        price: Balance = 7_000_000,
-        tokenSymbol: String = "α"
-    ) -> SubtensorSubnetsInfo {
-        SubtensorSubnetsInfo(
-            subnets: [makeSubnetInfo(netuid: netuid, tokenSymbol: tokenSymbol)],
-            prices: [netuid: price],
-            subtokenEnabled: [netuid],
-            ownerCut: 11796
-        )
-    }
-
-    private func makeUnstakeQuote(
-        netuid: UInt16 = 1,
-        alphaIn: Balance,
-        taoOut: Balance,
-        spotPrice: Balance
-    ) throws -> SubtensorTradeQuote {
-        let quote = SubtensorQuote(
-            args: SubtensorQuoteArgs(netuid: netuid, direction: .unstake(alphaIn: alphaIn)),
-            sim: SubtensorStakingPallet.SimSwapResult(
-                taoAmount: taoOut,
-                alphaAmount: alphaIn,
-                taoFee: 0,
-                alphaFee: 3_300_000,
-                taoSlippage: 0,
-                alphaSlippage: 0
-            ),
-            spotPrice: spotPrice,
-            feeRate: 33
-        )
-
-        let limitPrice = try SubtensorLimitPriceCalculator.sellLimit(
-            spot: spotPrice,
-            tolerance: SubtensorSlippageTolerance.defaultTolerance
-        )
-
-        return SubtensorTradeQuote(
-            quote: quote,
-            amountIn: alphaIn,
-            novaFee: nil,
-            expectedOut: taoOut,
-            swapMinimumOut: taoOut,
-            minimumOut: taoOut,
-            limitPrice: limitPrice
-        )
     }
 
     private func makeSelectedAccount(for chainAsset: ChainAsset) -> MetaChainAccountResponse {
@@ -167,20 +68,147 @@ final class SubtensorUnstakeSetupPresenterTests: XCTestCase {
         )
     }
 
-    private func makeSetup(netuid: UInt16 = SubtensorStakingPallet.rootNetuid) -> Setup {
-        let chainAsset = makeChainAsset()
+    private func makePosition(hotkey: AccountId, netuid: UInt16, stake: Balance) -> SubtensorStakingPosition {
+        SubtensorStakingPosition(
+            hotkey: hotkey,
+            netuid: netuid,
+            stakeAlpha: stake,
+            hotkeyEmissionPerTempo: 0,
+            totalHotkeyAlpha: nil,
+            isRegistered: true
+        )
+    }
 
-        let interactor = MockSubtensorUnstakeSetupInteractorInputProtocol()
+    private func makePreflight() -> SubtensorStakingPreflight {
+        SubtensorStakingPreflight(
+            hotkeyExists: true,
+            subnetExists: true,
+            subtokenEnabled: true,
+            hasColdkeySwapAnnouncement: false,
+            isSafeModeActive: false,
+            stakeAvailability: nil,
+            rootStakeUnlockInterval: 0,
+            lastStakeBlock: nil,
+            minStake: 2_000_000,
+            effectiveNominatorMinStake: 1,
+            rootClaimableThreshold: 500_000,
+            delegateTake: 11796
+        )
+    }
+
+    private func makeBalance(for chainAsset: ChainAsset, free: Balance) -> AssetBalance {
+        AssetBalance(
+            chainAssetId: ChainAssetId(chainId: chainAsset.chain.chainId, assetId: chainAsset.asset.assetId),
+            accountId: Data(repeating: 0x11, count: 32),
+            freeInPlank: free,
+            reservedInPlank: 0,
+            frozenInPlank: 0,
+            edCountMode: .basedOnFree,
+            transferrableMode: .fungibleTrait,
+            blocked: false
+        )
+    }
+
+    private func makeFee() -> ExtrinsicFee {
+        ExtrinsicFee(amount: 1_000_000, payer: nil, weight: .init(refTime: 1000, proofSize: 0))
+    }
+
+    private func makeSubnetsInfo(subnets: [UInt16]) -> SubtensorSubnetsInfo {
+        let infos = subnets.map { netuid in
+            SubtensorStakingPallet.DynamicInfo(
+                netuid: netuid,
+                ownerHotkey: Data(repeating: 0, count: 32),
+                ownerColdkey: Data(repeating: 0, count: 32),
+                subnetName: Data("Chutes".utf8),
+                tokenSymbol: Data("ش".utf8),
+                tempo: 99,
+                lastStep: 0,
+                blocksSinceLastStep: 0,
+                emission: 0,
+                alphaIn: 0,
+                alphaOut: 0,
+                taoIn: 0,
+                alphaOutEmission: 0,
+                alphaInEmission: 0,
+                taoInEmission: 0,
+                pendingAlphaEmission: 0,
+                pendingRootEmission: 0,
+                subnetVolume: 0,
+                networkRegisteredAt: 0,
+                subnetIdentity: nil,
+                movingPrice: .null
+            )
+        }
+
+        return SubtensorSubnetsInfo(
+            subnets: infos,
+            prices: Dictionary(uniqueKeysWithValues: subnets.map { ($0, spotPrice) }),
+            subtokenEnabled: Set(subnets),
+            ownerCut: 11796
+        )
+    }
+
+    private func makeSellQuote(alpha: Balance, taoOut: Balance) throws -> SubtensorTradeQuote {
+        let quote = SubtensorQuote(
+            args: SubtensorQuoteArgs(netuid: subnetNetuid, direction: .unstake(alphaIn: alpha)),
+            sim: SubtensorStakingPallet.SimSwapResult(
+                taoAmount: taoOut,
+                alphaAmount: alpha,
+                taoFee: 0,
+                alphaFee: 0,
+                taoSlippage: 0,
+                alphaSlippage: 0
+            ),
+            spotPrice: spotPrice,
+            feeRate: 33
+        )
+
+        let limitPrice = try SubtensorLimitPriceCalculator.sellLimit(
+            spot: spotPrice,
+            tolerance: SubtensorSlippageTolerance.defaultTolerance
+        )
+
+        return SubtensorTradeQuote(
+            quote: quote,
+            amountIn: alpha,
+            novaFee: nil,
+            expectedOut: taoOut,
+            swapMinimumOut: taoOut,
+            minimumOut: taoOut,
+            limitPrice: limitPrice
+        )
+    }
+
+    private func makeSetup(
+        netuid: UInt16,
+        positions: [SubtensorStakingPosition],
+        availability: [UInt16: SubtensorStakingPallet.StakeAvailability] = [:],
+        free: Balance = 10_000_000_000
+    ) -> Setup {
+        let chainAsset = makeChainAsset()
+        let interactor = MockSubtensorUnstakeInteractorInputProtocol()
 
         stub(interactor) { stub in
             when(stub.setup()).thenDoNothing()
             when(stub.estimateFee(for: any())).thenDoNothing()
             when(stub.refreshPreflight(for: any(), netuid: any())).thenDoNothing()
             when(stub.refreshQuote(for: any())).thenDoNothing()
-            when(stub.applyDelegate(with: any(), netuid: any())).thenDoNothing()
+            when(stub.refreshPositions()).thenDoNothing()
+            when(stub.loadSubnetsInfo(forcingRefresh: any())).thenDoNothing()
+            when(stub.loadCatalogue(forcingRefresh: any())).thenDoNothing()
+            when(stub.loadEarnConfig()).thenDoNothing()
+            when(stub.loadValidator(any(), on: any())).thenDoNothing()
+            when(stub.loadRootHolds(for: any())).thenDoNothing()
         }
 
         let wireframe = MockSubtensorUnstakeSetupWireframeProtocol()
+        let view = MockSubtensorUnstakeSetupViewProtocol()
+
+        stub(view) { stub in
+            when(stub.didReceiveAmount(inputViewModel: any())).thenDoNothing()
+            when(stub.didReceiveAmountAsset(viewModel: any())).thenDoNothing()
+            when(stub.didReceive(viewModel: any())).thenDoNothing()
+        }
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
 
@@ -193,70 +221,48 @@ final class SubtensorUnstakeSetupPresenterTests: XCTestCase {
         let presenter = SubtensorUnstakeSetupPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            netuid: netuid,
             chainAsset: chainAsset,
             selectedAccount: makeSelectedAccount(for: chainAsset),
+            slippage: SubtensorSlippageTolerance.defaultTolerance,
             dataValidationFactory: dataValidationFactory,
-            balanceViewModelFactory: BalanceViewModelFactory(
-                targetAssetInfo: chainAsset.assetDisplayInfo,
-                priceAssetInfoFactory: priceAssetInfoFactory
-            ),
-            priceAssetInfoFactory: priceAssetInfoFactory,
-            accountDetailsViewModelFactory: CollatorStakingAccountViewModelFactory(chainAsset: chainAsset),
-            quoteViewModelFactory: SubtensorQuoteViewModelFactory(
+            viewModelFactory: SubtensorUnstakeSetupViewModelFactory(
                 chainAsset: chainAsset,
-                priceAssetInfoFactory: priceAssetInfoFactory
-            ),
-            initialPosition: SubtensorStakingPosition(
-                hotkey: hotkey,
-                netuid: netuid,
-                stakeAlpha: stakedAmount,
-                hotkeyEmissionPerTempo: 0,
-                totalHotkeyAlpha: nil,
-                isRegistered: true
+                balanceViewModelFactory: BalanceViewModelFactory(
+                    targetAssetInfo: chainAsset.assetDisplayInfo,
+                    priceAssetInfoFactory: priceAssetInfoFactory
+                ),
+                quoteViewModelFactory: SubtensorQuoteViewModelFactory(
+                    chainAsset: chainAsset,
+                    priceAssetInfoFactory: priceAssetInfoFactory
+                )
             ),
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
 
-        let chainAssetId = ChainAssetId(chainId: chainAsset.chain.chainId, assetId: chainAsset.asset.assetId)
+        presenter.view = view
+        dataValidationFactory.view = view
 
+        presenter.setup()
         presenter.didReceivePositions(
-            Multistaking.SubtensorStakingState(
-                positions: [
-                    SubtensorStakingPosition(
-                        hotkey: hotkey,
-                        netuid: netuid,
-                        stakeAlpha: stakedAmount,
-                        hotkeyEmissionPerTempo: 0,
-                        totalHotkeyAlpha: nil,
-                        isRegistered: true
-                    )
-                ],
-                prices: [:]
-            )
+            Multistaking.SubtensorStakingState(positions: positions, prices: [:], availability: availability)
         )
-
-        presenter.didReceiveAssetBalance(
-            AssetBalance(
-                chainAssetId: chainAssetId,
-                accountId: Data(repeating: 0x11, count: 32),
-                freeInPlank: 10_000_000_000,
-                reservedInPlank: 0,
-                frozenInPlank: 0,
-                edCountMode: .basedOnFree,
-                transferrableMode: .fungibleTrait,
-                blocked: false
-            )
-        )
-
-        presenter.didReceiveFee(
-            ExtrinsicFee(amount: 1_000_000, payer: nil, weight: .init(refTime: 1000, proofSize: 0))
-        )
-
+        presenter.didReceiveAssetBalance(makeBalance(for: chainAsset, free: free))
         presenter.didReceivePreflight(makePreflight())
         presenter.didReceiveExistentialDeposit(500)
 
-        return Setup(presenter: presenter, wireframe: wireframe, interactor: interactor)
+        return Setup(presenter: presenter, wireframe: wireframe, interactor: interactor, view: view)
+    }
+
+    private func makeRootGroupSetup() -> Setup {
+        makeSetup(
+            netuid: SubtensorStakingPallet.rootNetuid,
+            positions: [
+                makePosition(hotkey: secondHotkey, netuid: SubtensorStakingPallet.rootNetuid, stake: 5_000_000_000),
+                makePosition(hotkey: primaryHotkey, netuid: SubtensorStakingPallet.rootNetuid, stake: 15_000_000_000)
+            ]
+        )
     }
 
     private func proceedAndCaptureModel(_ setup: Setup) -> SubtensorUnstakeConfirmModel? {
@@ -266,10 +272,7 @@ final class SubtensorUnstakeSetupPresenterTests: XCTestCase {
             when(stub.showConfirm(from: any(), model: any())).thenDoNothing()
         }
 
-        setup.presenter.didReceiveFee(
-            ExtrinsicFee(amount: 1_000_000, payer: nil, weight: .init(refTime: 1000, proofSize: 0))
-        )
-
+        setup.presenter.didReceiveFee(makeFee())
         setup.presenter.proceed()
 
         verify(setup.wireframe).showConfirm(from: any(), model: captor.capture())
@@ -277,8 +280,114 @@ final class SubtensorUnstakeSetupPresenterTests: XCTestCase {
         return captor.value
     }
 
-    func testFailedPositionsSyncBlocksTheUnstakeSubmission() {
-        let setup = makeSetup()
+    private func makeAmountText(_ value: Decimal) -> String {
+        BalanceViewModelFactory(
+            targetAssetInfo: makeChainAsset().assetDisplayInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
+        ).amountFromValue(value).value(for: LocalizationManager.shared.selectedLocale)
+    }
+
+    private func lastViewModel(_ setup: Setup) throws -> SubtensorUnstakeSetupViewModel {
+        let captor = ArgumentCaptor<SubtensorUnstakeSetupViewModel>()
+
+        verify(setup.view, atLeastOnce()).didReceive(viewModel: captor.capture())
+
+        return try XCTUnwrap(captor.allValues.last)
+    }
+
+    func testUnstakeAllOverTwoRootValidatorsExitsBothOfThemWithTheGroupTotal() {
+        let setup = makeRootGroupSetup()
+
+        setup.presenter.selectMax()
+
+        let model = proceedAndCaptureModel(setup)
+
+        XCTAssertEqual(model?.origin, .unstake)
+        XCTAssertEqual(model?.unstakeModel.hotkey, primaryHotkey)
+        XCTAssertEqual(model?.unstakeModel.amount, 20_000_000_000)
+        XCTAssertEqual(model?.unstakeModel.exitHotkeys, [primaryHotkey, secondHotkey])
+    }
+
+    func testTypedAmountAboveTheValidatorCapIsNotClampedAndRaisesTheExceedsAvailableAlert() {
+        let setup = makeRootGroupSetup()
+
+        stub(setup.wireframe) { stub in
+            when(stub.showConfirm(from: any(), model: any())).thenDoNothing()
+            when(stub.presentUnstakeExceedsAvailable(any(), available: any(), locale: any())).thenDoNothing()
+        }
+
+        setup.presenter.updateAmount(Decimal(17))
+        setup.presenter.didReceiveFee(makeFee())
+        setup.presenter.proceed()
+
+        let expectedCap = makeAmountText(15)
+
+        verify(setup.wireframe).presentUnstakeExceedsAvailable(any(), available: equal(to: expectedCap), locale: any())
+        verify(setup.wireframe, never()).showConfirm(from: any(), model: any())
+        verify(setup.view, times(1)).didReceiveAmount(inputViewModel: any())
+    }
+
+    func testTypedAmountWithinTheCapIsAPartialOnTheLargestValidator() {
+        let setup = makeRootGroupSetup()
+
+        setup.presenter.updateAmount(Decimal(10))
+
+        let model = proceedAndCaptureModel(setup)
+
+        XCTAssertEqual(model?.unstakeModel.hotkey, primaryHotkey)
+        XCTAssertEqual(model?.unstakeModel.amount, 10_000_000_000)
+        XCTAssertNil(model?.unstakeModel.exitHotkeys)
+    }
+
+    func testUnstakeAllWithAnotherRootValidatorOnHoldFillsOnlyTheLargestValidator() {
+        let setup = makeRootGroupSetup()
+
+        setup.presenter.didReceiveRootHolds([secondHotkey: SubtensorRootHold(interval: 100, lastStakeBlock: 950)])
+        setup.presenter.didReceiveBlockNumber(1000)
+        setup.presenter.selectMax()
+
+        let model = proceedAndCaptureModel(setup)
+
+        XCTAssertEqual(model?.unstakeModel.hotkey, primaryHotkey)
+        XCTAssertEqual(model?.unstakeModel.amount, 15_000_000_000)
+        XCTAssertNil(model?.unstakeModel.exitHotkeys)
+    }
+
+    func testTypedGroupTotalWithAnotherRootValidatorOnHoldIsAPartialThatRaisesTheExceedsAvailableAlert() {
+        let setup = makeRootGroupSetup()
+
+        stub(setup.wireframe) { stub in
+            when(stub.showConfirm(from: any(), model: any())).thenDoNothing()
+            when(stub.presentUnstakeExceedsAvailable(any(), available: any(), locale: any())).thenDoNothing()
+        }
+
+        setup.presenter.didReceiveRootHolds([secondHotkey: SubtensorRootHold(interval: 100, lastStakeBlock: 950)])
+        setup.presenter.didReceiveBlockNumber(1000)
+        setup.presenter.updateAmount(Decimal(20))
+        setup.presenter.didReceiveFee(makeFee())
+        setup.presenter.proceed()
+
+        let expectedCap = makeAmountText(15)
+
+        verify(setup.wireframe).presentUnstakeExceedsAvailable(any(), available: equal(to: expectedCap), locale: any())
+        verify(setup.wireframe, never()).showConfirm(from: any(), model: any())
+    }
+
+    func testActiveHoldOnTheLargestRootValidatorShowsTheBannerAndDisablesContinue() throws {
+        let setup = makeRootGroupSetup()
+
+        setup.presenter.didReceiveRootHolds([primaryHotkey: SubtensorRootHold(interval: 100, lastStakeBlock: 950)])
+        setup.presenter.didReceiveBlockNumber(1000)
+        setup.presenter.updateAmount(Decimal(10))
+
+        let viewModel = try lastViewModel(setup)
+
+        XCTAssertNotNil(viewModel.holdWarning)
+        XCTAssertFalse(viewModel.action.isEnabled)
+    }
+
+    func testFailedPositionsSyncShowsTheStalePositionsAlertAndNeverOpensTheConfirm() {
+        let setup = makeRootGroupSetup()
 
         stub(setup.wireframe) { stub in
             when(stub.showConfirm(from: any(), model: any())).thenDoNothing()
@@ -286,258 +395,103 @@ final class SubtensorUnstakeSetupPresenterTests: XCTestCase {
         }
 
         setup.presenter.didReceivePositionsSyncFailed(true)
-        setup.presenter.selectAmountPercentage(1.0)
+        setup.presenter.updateAmount(Decimal(10))
+        setup.presenter.didReceiveFee(makeFee())
         setup.presenter.proceed()
 
+        verify(setup.wireframe).presentStalePositions(any(), onRetry: any(), locale: any())
         verify(setup.wireframe, never()).showConfirm(from: any(), model: any())
     }
 
-    func testRecoveredPositionsSyncStopsBlockingTheUnstakeSubmission() {
-        let setup = makeSetup()
-
-        setup.presenter.didReceivePositionsSyncFailed(true)
-        setup.presenter.didReceivePositionsSyncFailed(false)
-        setup.presenter.selectAmountPercentage(1.0)
-
-        let model = proceedAndCaptureModel(setup)
-
-        XCTAssertEqual(model?.unstakeModel.amount, stakedAmount)
-    }
-
-    func testHundredPercentRateProducesFullUnstake() {
-        let setup = makeSetup()
-
-        setup.presenter.selectAmountPercentage(1.0)
-
-        let model = proceedAndCaptureModel(setup)
-
-        XCTAssertEqual(model?.unstakeModel.isFullUnstake, true)
-    }
-
-    func testMaxOnOneOfSeveralValidatorsHandsOverAPartialOfItsWholeStake() {
-        let setup = makeSetup()
-
-        setup.presenter.didReceivePositions(
-            Multistaking.SubtensorStakingState(
-                positions: [hotkey, Data(repeating: 0x33, count: 32)].map { positionHotkey in
-                    SubtensorStakingPosition(
-                        hotkey: positionHotkey,
-                        netuid: SubtensorStakingPallet.rootNetuid,
-                        stakeAlpha: stakedAmount,
-                        hotkeyEmissionPerTempo: 0,
-                        totalHotkeyAlpha: nil,
-                        isRegistered: true
-                    )
-                },
-                prices: [:]
-            )
+    func testSellMaxOverALockedPositionIsAPartialOfTheAvailableAmountWithTheFreshQuote() throws {
+        let setup = makeSetup(
+            netuid: subnetNetuid,
+            positions: [makePosition(hotkey: primaryHotkey, netuid: subnetNetuid, stake: 70_200_000_000)],
+            availability: [
+                subnetNetuid: SubtensorStakingPallet.StakeAvailability(
+                    total: 70_200_000_000,
+                    locked: 14_000_000_000,
+                    available: 56_200_000_000
+                )
+            ]
         )
 
-        setup.presenter.selectAmountPercentage(1.0)
+        let quote = try makeSellQuote(alpha: 56_200_000_000, taoOut: 4_145_000_000)
 
-        let model = proceedAndCaptureModel(setup)
-
-        XCTAssertEqual(model?.unstakeModel.amount, stakedAmount)
-        XCTAssertNil(model?.unstakeModel.exitHotkeys)
-    }
-
-    func testExactStakedAbsoluteAmountProducesFullUnstake() {
-        let setup = makeSetup()
-
-        setup.presenter.updateAmount(Decimal(string: "5"))
-
-        let model = proceedAndCaptureModel(setup)
-
-        XCTAssertEqual(model?.unstakeModel.isFullUnstake, true)
-        XCTAssertEqual(model?.unstakeModel.amount, stakedAmount)
-    }
-
-    func testNearMaxAbsoluteAmountKeepsPartialUnstake() {
-        let setup = makeSetup()
-
-        setup.presenter.updateAmount(Decimal(string: "4.999999999"))
-
-        let model = proceedAndCaptureModel(setup)
-
-        XCTAssertEqual(model?.unstakeModel.isFullUnstake, false)
-        XCTAssertEqual(model?.unstakeModel.amount, stakedAmount - 1)
-    }
-
-    func testMaxPercentageUsesAvailabilityRatherThanStakedAmount() {
-        let setup = makeSetup()
-
-        setup.presenter.didReceivePreflight(makePreflight(availability: makeAvailability(available: 3_000_000_000)))
-        setup.presenter.selectAmountPercentage(1.0)
-
-        let model = proceedAndCaptureModel(setup)
-
-        XCTAssertEqual(model?.unstakeModel.amount, 3_000_000_000)
-    }
-
-    func testFullUnstakeIsNotClaimedWhenAvailabilityBelowStakedAmount() {
-        let setup = makeSetup()
-
-        setup.presenter.didReceivePreflight(makePreflight(availability: makeAvailability(available: 3_000_000_000)))
-        setup.presenter.selectAmountPercentage(1.0)
-
-        let model = proceedAndCaptureModel(setup)
-
-        XCTAssertEqual(model?.unstakeModel.isFullUnstake, false)
-    }
-
-    func testRateInputRederivesWhenAvailabilityArrivesLate() {
-        let setup = makeSetup()
-
-        setup.presenter.selectAmountPercentage(0.5)
-        setup.presenter.didReceivePreflight(makePreflight(availability: makeAvailability(available: 2_000_000_000)))
-
-        let model = proceedAndCaptureModel(setup)
-
-        XCTAssertEqual(model?.unstakeModel.amount, 1_000_000_000)
-    }
-
-    func testAbsoluteInputIsPreservedWhenAvailabilityArrivesLate() {
-        let setup = makeSetup()
-
-        setup.presenter.updateAmount(Decimal(string: "1.5"))
-        setup.presenter.didReceivePreflight(makePreflight(availability: makeAvailability(available: 2_000_000_000)))
-
-        let model = proceedAndCaptureModel(setup)
-
-        XCTAssertEqual(model?.unstakeModel.amount, 1_500_000_000)
-    }
-
-    func testZeroAvailabilityLocksTheWholePosition() {
-        let setup = makeSetup()
-
-        setup.presenter.didReceivePreflight(makePreflight(availability: makeAvailability(available: 0)))
-
-        XCTAssertTrue(setup.presenter.unstakeBasis.isFullyLocked)
-        XCTAssertEqual(setup.presenter.unstakeBasis.locked, stakedAmount)
-    }
-
-    func testMissingAvailabilityKeepsTheWholePositionUnstakable() {
-        let setup = makeSetup()
-
-        XCTAssertFalse(setup.presenter.unstakeBasis.isFullyLocked)
-        XCTAssertEqual(setup.presenter.unstakeBasis.available, stakedAmount)
-    }
-
-    func testUnstakeAllOfferSwitchesTheInputToAFullUnstake() throws {
-        let setup = makeSetup()
-
-        setup.presenter.updateAmount(Decimal(string: "4.99"))
-
-        let unstakeAll = try XCTUnwrap(setup.presenter.getValidationDependencies().onUnstakeAll)
-
-        unstakeAll()
-
-        let model = proceedAndCaptureModel(setup)
-
-        XCTAssertEqual(model?.unstakeModel.isFullUnstake, true)
-        XCTAssertEqual(model?.unstakeModel.amount, stakedAmount)
-    }
-
-    func testUnstakeAllIsNotOfferedWhenPartOfThePositionIsLocked() {
-        let setup = makeSetup()
-
-        setup.presenter.didReceivePreflight(makePreflight(availability: makeAvailability(available: 3_000_000_000)))
-        setup.presenter.updateAmount(Decimal(string: "2.99"))
-
-        XCTAssertNil(setup.presenter.getValidationDependencies().onUnstakeAll)
-    }
-
-    func testRootValidationDependenciesCarryTheRootNetuid() {
-        XCTAssertEqual(
-            makeSetup().presenter.getValidationDependencies().netuid,
-            SubtensorStakingPallet.rootNetuid
-        )
-    }
-
-    func testSubnetValidationDependenciesCarryTheSubnetNetuid() {
-        let setup = makeSetup(netuid: 1)
-
-        setup.presenter.didReceiveSubnetsInfo(makeSubnetsInfo())
-
-        XCTAssertEqual(setup.presenter.getValidationDependencies().netuid, 1)
-    }
-
-    func testSubnetProceedHandsOverTheFreshQuoteAndItsSellLimit() throws {
-        let setup = makeSetup(netuid: 1)
-        let quote = try makeUnstakeQuote(alphaIn: 1_000_000_000, taoOut: 7_670_000, spotPrice: 7_683_255)
-
-        setup.presenter.didReceiveSubnetsInfo(makeSubnetsInfo(price: 7_000_000))
-        setup.presenter.updateAmount(Decimal(string: "1"))
+        setup.presenter.didReceiveSubnetsInfo(makeSubnetsInfo(subnets: [subnetNetuid]))
+        setup.presenter.selectMax()
         setup.presenter.didReceiveQuote(quote)
 
         let model = proceedAndCaptureModel(setup)
 
         XCTAssertEqual(model?.origin, .sell)
-        XCTAssertEqual(model?.unstakeModel.netuid, 1)
-        XCTAssertEqual(model?.tolerance, SubtensorSlippageTolerance.defaultTolerance)
+        XCTAssertEqual(model?.unstakeModel.hotkey, primaryHotkey)
+        XCTAssertEqual(model?.unstakeModel.amount, 56_200_000_000)
+        XCTAssertNil(model?.unstakeModel.exitHotkeys)
         XCTAssertEqual(model?.acknowledgedQuote, quote)
-        XCTAssertEqual(setup.presenter.getValidationDependencies().quoteContext?.acknowledgedLimit, 7_644_839)
+        XCTAssertEqual(model?.tolerance, SubtensorSlippageTolerance.defaultTolerance)
     }
 
-    func testSubnetHasNoAcknowledgedLimitWithoutAQuote() {
-        let setup = makeSetup(netuid: 1)
+    func testSellWithoutFreeTaoForTheNetworkFeeIsRefusedBeforeTheConfirm() throws {
+        let setup = makeSetup(
+            netuid: subnetNetuid,
+            positions: [makePosition(hotkey: primaryHotkey, netuid: subnetNetuid, stake: 10_000_000_000)],
+            free: 1_000_000
+        )
 
-        setup.presenter.didReceiveSubnetsInfo(makeSubnetsInfo(price: 7_683_255))
-        setup.presenter.updateAmount(Decimal(string: "1"))
+        stub(setup.wireframe) { stub in
+            when(stub.showConfirm(from: any(), model: any())).thenDoNothing()
+            when(stub.presentBatchedSellFeeNotCovered(any(), requiredAmount: any(), locale: any())).thenDoNothing()
+        }
 
-        XCTAssertNil(setup.presenter.getValidationDependencies().quoteContext?.acknowledgedLimit)
+        setup.presenter.didReceiveSubnetsInfo(makeSubnetsInfo(subnets: [subnetNetuid]))
+        setup.presenter.updateAmount(Decimal(5))
+        setup.presenter.didReceiveQuote(try makeSellQuote(alpha: 5_000_000_000, taoOut: 368_900_000))
+        setup.presenter.didReceiveFee(makeFee())
+        setup.presenter.proceed()
+
+        verify(setup.wireframe).presentBatchedSellFeeNotCovered(any(), requiredAmount: any(), locale: any())
+        verify(setup.wireframe, never()).showConfirm(from: any(), model: any())
     }
 
-    func testSubnetProceedWithoutQuoteIsBlockedByValidation() {
-        let setup = makeSetup(netuid: 1)
-
-        setup.presenter.didReceiveSubnetsInfo(makeSubnetsInfo(price: 7_683_255))
-        setup.presenter.updateAmount(Decimal(string: "1"))
+    func testSellWithoutAQuoteShowsTheQuoteMissingAlertAndNeverOpensTheConfirm() {
+        let setup = makeSetup(
+            netuid: subnetNetuid,
+            positions: [makePosition(hotkey: primaryHotkey, netuid: subnetNetuid, stake: 10_000_000_000)]
+        )
 
         stub(setup.wireframe) { stub in
             when(stub.showConfirm(from: any(), model: any())).thenDoNothing()
             when(stub.presentQuoteMissing(any(), onRetry: any(), locale: any())).thenDoNothing()
         }
 
+        setup.presenter.didReceiveSubnetsInfo(makeSubnetsInfo(subnets: [subnetNetuid]))
+        setup.presenter.updateAmount(Decimal(5))
+        setup.presenter.didReceiveFee(makeFee())
         setup.presenter.proceed()
 
+        verify(setup.wireframe).presentQuoteMissing(any(), onRetry: any(), locale: any())
         verify(setup.wireframe, never()).showConfirm(from: any(), model: any())
     }
 
-    func testRootLaneDenominatesTheDelegateRowInTheChainSymbol() throws {
-        let subtitle = try renderDelegateRowSubtitle(makeSetup())
-
-        XCTAssertTrue(subtitle.contains("TAO"))
-    }
-
-    func testSubnetLaneDenominatesTheDelegateRowInTheSubnetSymbol() throws {
-        let setup = makeSetup(netuid: 1)
-
-        setup.presenter.didReceiveSubnetsInfo(makeSubnetsInfo(tokenSymbol: "\u{03B2}"))
-
-        let subtitle = try renderDelegateRowSubtitle(setup)
-
-        XCTAssertTrue(subtitle.contains("\u{03B2}"))
-        XCTAssertFalse(subtitle.contains("TAO"))
-    }
-
-    func testSubnetLaneFallsBackToTheNetuidSymbolBeforeSubnetsInfoArrives() throws {
-        let subtitle = try renderDelegateRowSubtitle(makeSetup(netuid: 64))
-
-        XCTAssertTrue(subtitle.contains("SN64"))
-        XCTAssertFalse(subtitle.contains("TAO"))
-    }
-
-    private func renderDelegateRowSubtitle(_ setup: Setup) throws -> String {
-        let chainAsset = makeChainAsset()
-
-        let viewModel = CollatorStakingAccountViewModelFactory(chainAsset: chainAsset).createCollator(
-            from: DisplayAddress(address: "", username: ""),
-            stakedAmount: stakedAmount,
-            assetDisplayInfo: setup.presenter.getValidationDependencies().assetDisplayInfo,
-            locale: Locale(identifier: "en")
+    func testSubnetMissingFromTheChainCatalogueRefetchesOnceThenOffersRetry() {
+        let setup = makeSetup(
+            netuid: subnetNetuid,
+            positions: [makePosition(hotkey: primaryHotkey, netuid: subnetNetuid, stake: 10_000_000_000)]
         )
 
-        return try XCTUnwrap(viewModel.details?.subtitle)
+        stub(setup.wireframe) { stub in
+            when(stub.present(viewModel: any(), style: any(), from: any())).thenDoNothing()
+        }
+
+        setup.presenter.didReceiveSubnetsInfo(makeSubnetsInfo(subnets: []))
+
+        verify(setup.interactor, times(1)).loadSubnetsInfo(forcingRefresh: true)
+        verify(setup.wireframe, never()).present(viewModel: any(), style: any(), from: any())
+
+        setup.presenter.didReceiveSubnetsInfo(makeSubnetsInfo(subnets: []))
+
+        verify(setup.interactor, times(1)).loadSubnetsInfo(forcingRefresh: true)
+        verify(setup.wireframe).present(viewModel: any(), style: any(), from: any())
     }
 }
