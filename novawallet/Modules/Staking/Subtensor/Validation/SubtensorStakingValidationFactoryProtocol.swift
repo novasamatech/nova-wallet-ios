@@ -107,16 +107,4 @@ protocol SubtensorStakingValidationFactoryProtocol: BaseDataValidatingFactoryPro
         blockTime: BlockTime,
         locale: Locale
     ) -> DataValidating
-
-    func claimFeeCoveredByTransferable(
-        transferable: Balance?,
-        fee: Balance?,
-        locale: Locale
-    ) -> DataValidating
-
-    func claimableAtLeastThreshold(
-        claimable: Balance?,
-        threshold: Balance?,
-        locale: Locale
-    ) -> DataValidating
 }

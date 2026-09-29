@@ -1,4 +1,4 @@
-import Foundation
+import UIKit
 
 final class StartStakingInfoSubtensorWireframe: StartStakingInfoWireframe,
     StartStakingInfoSubtensorWireframeProtocol {
@@ -51,5 +51,13 @@ final class StartStakingInfoSubtensorWireframe: StartStakingInfoWireframe,
             setupView.controller,
             animated: true
         )
+    }
+
+    func close(from view: ControllerBackedProtocol?) {
+        guard let flowPresenter = view?.controller.navigationController?.presentingViewController else {
+            return
+        }
+
+        SubtensorModalStack.dismiss(above: flowPresenter, animated: false)
     }
 }

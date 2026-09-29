@@ -104,17 +104,16 @@ extension SubtensorOperationResultViewModelFactory {
         }
 
         let fee = paidFee ?? request.estimatedNetworkFee.amount
-        let viewModel = balanceViewModelFacade.balanceFromPrice(
-            targetAssetInfo: taoInfo,
-            amount: fee.decimal(assetInfo: taoInfo),
-            priceData: request.prices.taoPrice
-        ).value(for: locale)
+        let amount = formatterFactory.createFeeTokenFormatter(for: taoInfo)
+            .value(for: locale)
+            .stringFromDecimal(fee.decimal(assetInfo: taoInfo)) ?? ""
+        let price = formatTaoFiat(fee, prices: request.prices, locale: locale)
 
         guard paidFee == nil else {
-            return viewModel
+            return BalanceViewModel(amount: amount, price: price)
         }
 
-        return BalanceViewModel(amount: viewModel.amount.approximatelyEqual(), price: viewModel.price)
+        return BalanceViewModel(amount: amount.approximatelyEqual(), price: price)
     }
 
     func failureReason(

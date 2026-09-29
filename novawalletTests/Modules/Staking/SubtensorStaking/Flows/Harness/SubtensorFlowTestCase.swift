@@ -43,6 +43,7 @@ enum SubtensorFlowLiteral {
 
 class SubtensorFlowTestCase: XCTestCase {
     let networkFee: Balance = 1_500_000
+    let paidNetworkFee: UInt64 = 1_234_567
 
     override func setUp() {
         super.setUp()

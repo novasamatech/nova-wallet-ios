@@ -72,7 +72,11 @@ extension SubtensorStakingSetupViewModelFactory {
 
         let feeDecimal = fee.amount.decimal(assetInfo: chainAsset.assetDisplayInfo)
 
-        return balanceViewModelFactory.balanceFromPrice(feeDecimal, priceData: input.price).value(for: locale)
+        return balanceViewModelFactory.balanceFromPrice(
+            feeDecimal,
+            priceData: input.price,
+            roundingMode: .up
+        ).value(for: locale)
     }
 }
 

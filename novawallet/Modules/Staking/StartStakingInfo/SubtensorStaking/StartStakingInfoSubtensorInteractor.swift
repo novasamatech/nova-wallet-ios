@@ -13,22 +13,31 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
     }
 
     let state: SubtensorStakingSharedStateProtocol
+    let earnConfigProvider: SubtensorEarnConfigProviderProtocol
+    let eventCenter: EventCenterProtocol
     let logger: LoggerProtocol
 
     private let headlineCallStore = CancellableCallStore()
+    private var boundWalletId: MetaAccountModel.Id?
+    private var hasReportedAccountChange = false
 
     init(
         state: SubtensorStakingSharedStateProtocol,
+        earnConfigProvider: SubtensorEarnConfigProviderProtocol,
         selectedWalletSettings: SelectedWalletSettings,
+        eventCenter: EventCenterProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         stakingDashboardProviderFactory: StakingDashboardProviderFactoryProtocol,
+        announcementsRepository: AnnouncementsRepositoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         sharedOperation: SharedOperationProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.state = state
+        self.earnConfigProvider = earnConfigProvider
+        self.eventCenter = eventCenter
         self.logger = logger
 
         super.init(
@@ -40,7 +49,8 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             stakingDashboardProviderFactory: stakingDashboardProviderFactory,
             currencyManager: currencyManager,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            announcementsRepository: announcementsRepository
         )
     }
 
@@ -55,6 +65,9 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
 
         state.setup(for: selectedAccount)
 
+        boundWalletId = selectedWalletSettings.value?.metaId
+        eventCenter.add(observer: self, dispatchIn: .main)
+
         provideHeadline()
     }
 }
@@ -64,7 +77,7 @@ private extension StartStakingInfoSubtensorInteractor {
         headlineCallStore.cancel()
 
         executeCancellable(
-            wrapper: state.earnServices.earnConfigProvider.createConfigWrapper(),
+            wrapper: earnConfigProvider.createConfigWrapper(),
             inOperationQueue: operationQueue,
             backingCallIn: headlineCallStore,
             runningCallbackIn: .main
@@ -78,6 +91,41 @@ private extension StartStakingInfoSubtensorInteractor {
             }
         }
     }
+
+    func verifyBoundAccount() {
+        guard !hasReportedAccountChange, !isBoundAccountSelected() else {
+            return
+        }
+
+        hasReportedAccountChange = true
+        presenter?.didReceiveAccountChange()
+    }
+
+    func isBoundAccountSelected() -> Bool {
+        guard let wallet = selectedWalletSettings.value, wallet.metaId == boundWalletId else {
+            return false
+        }
+
+        let accountId = wallet.fetchMetaChainAccount(
+            for: selectedChainAsset.chain.accountRequest()
+        )?.chainAccount.accountId
+
+        return accountId == selectedAccount?.chainAccount.accountId
+    }
 }
 
 extension StartStakingInfoSubtensorInteractor: StartStakingInfoSubtensorInteractorInputProtocol {}
+
+extension StartStakingInfoSubtensorInteractor: EventVisitorProtocol {
+    func processSelectedWalletChanged(event _: SelectedWalletSwitched) {
+        verifyBoundAccount()
+    }
+
+    func processWalletRemoved(event _: WalletRemoved) {
+        verifyBoundAccount()
+    }
+
+    func processChainAccountChanged(event _: ChainAccountChanged) {
+        verifyBoundAccount()
+    }
+}

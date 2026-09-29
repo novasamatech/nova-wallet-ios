@@ -72,10 +72,6 @@ protocol SubtensorStakingErrorPresentable: BaseErrorPresentable {
     func presentLockedRemainder(_ view: ControllerBackedProtocol, remainder: String, minStake: String, locale: Locale?)
 
     func presentUnstakeLocked(_ view: ControllerBackedProtocol, eta: String, locale: Locale?)
-
-    func presentClaimFeeNotAvailable(_ view: ControllerBackedProtocol, fee: String, locale: Locale?)
-
-    func presentClaimBelowThreshold(_ view: ControllerBackedProtocol, threshold: String, locale: Locale?)
 }
 
 extension SubtensorStakingErrorPresentable where Self: AlertPresentable & CommonRetryable {
@@ -367,28 +363,6 @@ extension SubtensorStakingErrorPresentable where Self: AlertPresentable & ErrorP
         presentError(
             title: strings.stakingSubtensorRemainderLockedTitle(),
             message: strings.stakingSubtensorRemainderLockedMessage(remainder, minStake),
-            view: view,
-            locale: locale
-        )
-    }
-
-    func presentClaimFeeNotAvailable(_ view: ControllerBackedProtocol, fee: String, locale: Locale?) {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
-        presentError(
-            title: strings.stakingSubtensorClaimFeeTitle(),
-            message: strings.stakingSubtensorClaimFeeMessage(fee),
-            view: view,
-            locale: locale
-        )
-    }
-
-    func presentClaimBelowThreshold(_ view: ControllerBackedProtocol, threshold: String, locale: Locale?) {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
-        presentError(
-            title: strings.stakingSubtensorClaimThresholdTitle(),
-            message: strings.stakingSubtensorClaimThresholdMessage(threshold),
             view: view,
             locale: locale
         )

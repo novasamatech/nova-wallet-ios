@@ -108,6 +108,10 @@ extension StartStakingInfoSubtensorPresenter: StartStakingInfoSubtensorInteracto
 
         provideSubtensorViewModel()
     }
+
+    func didReceiveAccountChange() {
+        subtensorWireframe.close(from: view)
+    }
 }
 
 extension StartStakingInfoSubtensorPresenter: SubtensorSubnetSelectDelegate {

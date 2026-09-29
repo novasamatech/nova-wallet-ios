@@ -172,7 +172,7 @@ extension SubtensorValidatorListFactory {
         locale: Locale
     ) -> SubtensorSortSheetViewModel {
         SubtensorSortSheetViewModel(
-            title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiPickerSortTitle(),
+            title: R.string(preferredLanguages: locale.rLanguages).localizable.delegationsSortTitle(),
             options: options.map { .init(title: createSortOptionTitle(for: $0, locale: locale), subtitle: nil) },
             selectedIndex: options.firstIndex(of: selected)
         )
@@ -354,7 +354,7 @@ private extension SubtensorValidatorListFactory {
         case .totalStaked:
             return strings.stakingMainTotalStakedTitle()
         case .name:
-            return strings.stakingSubtensorUiPickerName()
+            return strings.commonName()
         }
     }
 

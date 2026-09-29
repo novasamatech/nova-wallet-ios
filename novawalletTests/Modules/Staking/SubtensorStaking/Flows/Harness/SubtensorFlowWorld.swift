@@ -37,11 +37,13 @@ final class SubtensorFlowWorld {
     let apiOperationFactory: MockSubtensorApiOperationFactoryProtocol
     let positionsSyncService: MockSubtensorPositionsSyncServiceProtocol
     let settingsManager: InMemorySettingsManager
+    let chainRegistry: MockChainRegistryProtocol
     let sharedState: SubtensorStakingSharedStateProtocol
 
     private let factory: StakingSharedStateFactory
     private let stakingOption: Multistaking.ChainAssetOption
     private let processServices: SubtensorStakingProcessServices
+    private var bittensorCodingFactory: RuntimeCoderFactoryProtocol?
 
     init(novaFeeBeneficiary: AccountId? = SubtensorNovaFeeCalculator.defaultBeneficiary) throws {
         let clock = SubtensorFlowClock()
@@ -59,6 +61,7 @@ final class SubtensorFlowWorld {
         rootHoldFactory = MockSubtensorRootHoldFactoryProtocol()
         apiOperationFactory = MockSubtensorApiOperationFactoryProtocol()
         settingsManager = InMemorySettingsManager()
+        chainRegistry = MockChainRegistryProtocol().applyDefault(for: [chainAsset.chain])
 
         let transport = BittensorAttestedTransport(
             holder: attestation.holder,
@@ -105,7 +108,7 @@ final class SubtensorFlowWorld {
 
         let factory = StakingSharedStateFactory(
             storageFacade: SubstrateStorageTestFacade(),
-            chainRegistry: MockChainRegistryProtocol().applyDefault(for: [chainAsset.chain]),
+            chainRegistry: chainRegistry,
             delegatedAccountSyncService: nil,
             eventCenter: EventCenter(),
             syncOperationQueue: OperationQueue(),
@@ -160,7 +163,10 @@ final class SubtensorFlowWorld {
         }
     }
 
-    func createStakingOperationService(networkFee: Balance) throws -> SubtensorStakingOperationServiceProtocol {
+    func createStakingOperationService(
+        networkFee: Balance,
+        submitMonitor: ExtrinsicSubmitMonitorFactoryProtocol = ExtrinsicSubmitMonitorFactoryStub.dummy()
+    ) throws -> SubtensorStakingOperationServiceProtocol {
         try sharedState.createStakingOperationService(
             for: SubtensorFlowChainWorld.coldkey,
             extrinsicService: ExtrinsicServiceStub(
@@ -169,8 +175,40 @@ final class SubtensorFlowWorld {
                 ),
                 submittedModelResult: .failure(BaseOperationError.parentOperationCancelled)
             ),
-            extrinsicSubmitMonitor: ExtrinsicSubmitMonitorFactoryStub.dummy(),
+            extrinsicSubmitMonitor: submitMonitor,
             signer: try DummySigner(cryptoType: .sr25519)
         )
+    }
+
+    func createPresetFactory() -> SubtensorValidatorPresetFactoryProtocol {
+        SubtensorValidatorPresetFactory(
+            directoryService: earnServices.validatorDirectoryService,
+            recommendationService: earnServices.recommendationService,
+            operationQueue: OperationQueue(),
+            logger: Logger.shared
+        )
+    }
+
+    func useBittensorRuntime() throws -> RuntimeCoderFactoryProtocol {
+        if let bittensorCodingFactory {
+            return bittensorCodingFactory
+        }
+
+        let codingFactory = try RuntimeCodingServiceStub.createBittensorCodingFactory()
+        let runtimeProvider = MockRuntimeProviderProtocol().applyDefault(for: chainAsset.chain.chainId)
+
+        stub(runtimeProvider) { stub in
+            when(stub.fetchCoderFactoryOperation()).then {
+                BaseOperation.createWithResult(codingFactory)
+            }
+        }
+
+        stub(chainRegistry) { stub in
+            when(stub.getRuntimeProvider(for: any())).thenReturn(runtimeProvider)
+        }
+
+        bittensorCodingFactory = codingFactory
+
+        return codingFactory
     }
 }

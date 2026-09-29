@@ -45,7 +45,7 @@ private extension SubtensorInfoSheet {
         for direction: SubtensorTradeDirection,
         subnetName: String
     ) -> SubtensorInfoSheetText {
-        let percentFormatter = NumberFormatter.percentSingle.localizableResource()
+        let percentFormatter = NumberFormatter.percentSingleHalfEven.localizableResource()
 
         return SubtensorInfoSheetText(
             title: LocalizableResource { locale in

@@ -7,7 +7,7 @@ import XCTest
 final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
     private let unstakeAmount: Balance = 10_000_000_000
 
-    func testActiveRootAddAndUnstakeReachConfirmFromChainValues() throws {
+    func testEarnTabRootPositionAddsStakeAndUnstakesThroughTheResultWithBareRootCallsAndNoNovaFee() throws {
         let world = try SubtensorFlowWorld()
         let services = world.earnServices
         let directoryService = services.validatorDirectoryService
@@ -20,6 +20,7 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
         world.stubClaimPreviews(try SubtensorFlowActiveStake.claimPreviews())
         world.stubRootHolds([aster: SubtensorRootHold(interval: 0, lastStakeBlock: 9_139_000)])
         SubtensorFlowURLProtocol.serveEarnConfig()
+        SubtensorFlowURLProtocol.serveFixture(.subnets)
         SubtensorFlowURLProtocol.serveFixture(.validators(netuid: 0))
         SubtensorFlowURLProtocol.serveFixture(.rootYield(page: 1, pageSize: 100))
         try SubtensorFlowActiveStake.serveCharts()
@@ -31,7 +32,7 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
 
         let root = try XCTUnwrap(yourBittensor.portfolio.root)
         let actedOn = try XCTUnwrap(root.positions.first)
-        let rootRef = try yourBittensor.subnetRef(netuid: 0)
+        let rootRef = SubtensorSubnetRef(netuid: SubtensorStakingPallet.rootNetuid, registeredAt: 0)
         let claimable = try awaitClaimable(in: world)
         let rewards = claimable.previews.reduce(Balance.zero) { $0 + $1.redeemable }
         let holds = try run(services.rootHoldFactory.createHoldsWrapper(coldkey: coldkey, hotkeys: [root.primaryHotkey]))
@@ -93,6 +94,36 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
             for: .rootUnstake(hotkey: actedOn.hotkey, amount: unstakeAmount)
         ))
 
+        let addStakeResult = try submit(
+            .rootStake(hotkey: actedOn.hotkey, amount: SubtensorFlowChainWorld.stakeAmount),
+            in: world,
+            events: [
+                SubtensorFlowExtrinsic.stakeAdded(
+                    hotkey: aster,
+                    netuid: SubtensorStakingPallet.rootNetuid,
+                    tao: 5_000_000_000,
+                    alpha: 5_000_000_000,
+                    poolFee: 0
+                ),
+                SubtensorFlowExtrinsic.networkFeePaid(paidNetworkFee)
+            ]
+        )
+
+        let unstakeResult = try submit(
+            .rootUnstake(hotkey: actedOn.hotkey, amount: unstakeAmount),
+            in: world,
+            events: [
+                SubtensorFlowExtrinsic.stakeRemoved(
+                    hotkey: aster,
+                    netuid: SubtensorStakingPallet.rootNetuid,
+                    tao: 10_000_000_000,
+                    alpha: 10_000_000_000,
+                    poolFee: 0
+                ),
+                SubtensorFlowExtrinsic.networkFeePaid(paidNetworkFee)
+            ]
+        )
+
         world.sharedState.throttle()
 
         assertYourBittensor(yourBittensor)
@@ -136,7 +167,25 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual([maxCandidateFee.amount, unstakeFee.amount], [networkFee, networkFee])
         XCTAssertEqual(BigInt(actedOn.stakeAlpha) - BigInt(unstakeAmount), 10_000_000_000)
 
+        XCTAssertEqual(addStakeResult.calls, [
+            SubtensorFlowExtrinsic.addStake(hotkey: aster, netuid: SubtensorStakingPallet.rootNetuid, amount: 5_000_000_000)
+        ])
+
+        XCTAssertEqual(addStakeResult.outcome, rootOutcome(tao: SubtensorFlowChainWorld.stakeAmount))
+
+        XCTAssertEqual(unstakeResult.calls, [
+            SubtensorFlowExtrinsic.removeStake(
+                hotkey: aster,
+                netuid: SubtensorStakingPallet.rootNetuid,
+                amount: 10_000_000_000
+            )
+        ])
+
+        XCTAssertEqual(unstakeResult.outcome, rootOutcome(tao: unstakeAmount))
+        verify(world.positionsSyncService, times(2)).refresh()
+
         XCTAssertEqual(requestLines().sorted(), [
+            "GET https://bittensor.test/v1/bittensor/subnets",
             "GET https://bittensor.test/v1/bittensor/subnets/0/validators",
             "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
             "GET https://earn-config.test/earn_config.json",
@@ -147,7 +196,64 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
             "GET https://tokens-price.novasama-tech.org/api/v3/coins/chutes/market_chart?vs_currency=usd&days=7"
         ])
 
-        assertAttestedRequests(world, paths: ["/v1/bittensor/yields/root", "/v1/bittensor/subnets/0/validators"])
+        assertAttestedRequests(
+            world,
+            paths: ["/v1/bittensor/subnets", "/v1/bittensor/yields/root", "/v1/bittensor/subnets/0/validators"]
+        )
+    }
+
+    func testBackendDownStillStakesOnRootOnTheConfigPresetWithoutARate() throws {
+        let world = try SubtensorFlowWorld()
+        let services = world.earnServices
+        let aster = try SubtensorFlowChainWorld.hotkey(.aster)
+        let rootRef = SubtensorSubnetRef(netuid: SubtensorStakingPallet.rootNetuid, registeredAt: 0)
+
+        SubtensorFlowURLProtocol.serveEarnConfig()
+        SubtensorFlowURLProtocol.serveBittensor(
+            "/subnets/0/validators",
+            reply: .apiError(statusCode: 503, code: "dataset_unavailable", requestId: "req-root-down")
+        )
+        SubtensorFlowURLProtocol.serveBittensor(
+            "/yields/root?page=1&pageSize=100",
+            reply: .apiError(statusCode: 503, code: "dataset_unavailable", requestId: "req-root-yield-down")
+        )
+
+        let preset = try XCTUnwrap(
+            try run(world.createPresetFactory().createPresetWrapper(for: rootRef, existingHotkey: nil))
+        )
+
+        let rootYield = try run(services.yieldService.createRootYieldWrapper())
+        let stake = SubtensorStakingOperation.rootStake(hotkey: preset.hotkey, amount: SubtensorFlowChainWorld.stakeAmount)
+        let fee = try run(world.createStakingOperationService(networkFee: networkFee).createFeeWrapper(for: stake))
+
+        let result = try submit(stake, in: world, events: [
+            SubtensorFlowExtrinsic.stakeAdded(
+                hotkey: aster,
+                netuid: SubtensorStakingPallet.rootNetuid,
+                tao: 5_000_000_000,
+                alpha: 5_000_000_000,
+                poolFee: 0
+            ),
+            SubtensorFlowExtrinsic.networkFeePaid(paidNetworkFee)
+        ])
+
+        XCTAssertEqual(preset, try asterRoot(name: nil))
+        XCTAssertNil(rootYield)
+        XCTAssertEqual(fee.amount, networkFee)
+
+        XCTAssertEqual(result.calls, [
+            SubtensorFlowExtrinsic.addStake(hotkey: aster, netuid: SubtensorStakingPallet.rootNetuid, amount: 5_000_000_000)
+        ])
+
+        XCTAssertEqual(result.outcome, rootOutcome(tao: SubtensorFlowChainWorld.stakeAmount))
+
+        XCTAssertEqual(requestLines().sorted(), [
+            "GET https://bittensor.test/v1/bittensor/subnets/0/validators",
+            "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
+            "GET https://earn-config.test/earn_config.json"
+        ])
+
+        assertAttestedRequests(world, paths: ["/v1/bittensor/subnets/0/validators", "/v1/bittensor/yields/root"])
     }
 
     func testRootValidatorInfoKeepsChainValuesWhenTheBackendIsDown() throws {
@@ -173,9 +279,7 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
         feed.publish(try SubtensorFlowActiveStake.state())
 
         let root = try XCTUnwrap(SubtensorPortfolioBuilder.build(state: try awaitPositions(in: world)).root)
-        let catalogue = try fetchSubnetsInfo(from: world.sharedState.subnetsService)
-        let rootInfo = try XCTUnwrap(catalogue.subnets.first { $0.netuid == SubtensorStakingPallet.rootNetuid })
-        let rootRef = SubtensorSubnetRef(netuid: rootInfo.netuid, registeredAt: rootInfo.networkRegisteredAt)
+        let rootRef = SubtensorSubnetRef(netuid: SubtensorStakingPallet.rootNetuid, registeredAt: 0)
 
         let directoryError = runError(directoryService.createDirectoryWrapper(for: rootRef))
         let detail = try run(directoryService.createDetailWrapper(for: root.primaryHotkey, subnet: rootRef))
@@ -187,7 +291,7 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(root.primaryHotkey, aster)
         XCTAssertTrue(isDatasetUnavailable(directoryError, requestId: "req-f4-down"))
         XCTAssertTrue(isDatasetUnavailable(retriedDirectoryError, requestId: "req-f4-down"))
-        XCTAssertEqual(detail, SubtensorValidatorDetail(item: try asterRoot(name: nil), identity: identity("Aster Stake")))
+        XCTAssertEqual(detail.item, try asterRoot(name: nil))
         XCTAssertNil(rootYield)
 
         XCTAssertEqual(requestLines().sorted(), [
@@ -204,6 +308,17 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
 }
 
 private extension SubtensorActiveRootFlowTests {
+    func rootOutcome(tao: Balance) -> SubtensorStakingOperationOutcome {
+        SubtensorStakingOperationOutcome(
+            executed: SubtensorExecutedAmounts(tao: tao, alpha: tao, netuid: SubtensorStakingPallet.rootNetuid),
+            novaFeePaid: nil,
+            alphaFeePaid: nil,
+            networkFeePaid: Balance(paidNetworkFee),
+            extrinsicHash: SubtensorFlowExtrinsic.extrinsicHash,
+            blockHash: SubtensorFlowExtrinsic.blockHash
+        )
+    }
+
     func isDatasetUnavailable(_ error: Error?, requestId: String) -> Bool {
         guard case let .datasetUnavailable(receivedRequestId)? = error as? BittensorApiError else {
             return false

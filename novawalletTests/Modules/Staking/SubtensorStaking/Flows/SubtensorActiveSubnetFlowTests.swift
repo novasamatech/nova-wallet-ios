@@ -36,12 +36,59 @@ final class SubtensorActiveSubnetFlowTests: SubtensorFlowTestCase {
         capturedAt: Date(timeIntervalSince1970: 1_790_208_000)
     )
 
-    func testActiveSubnetBuyAndSellReachConfirmFromChainQuotes() throws {
+    func testTaoAssetEarnOpensTheChutesPositionThatBuysAndSellsThroughTheResultWithTheNovaFeeInEachBatch() throws {
         let world = try startWorld()
+        let ember = try SubtensorFlowChainWorld.hotkey(.ember)
+        let beneficiary = SubtensorFlowChainWorld.novaFeeBeneficiary
 
         SubtensorFlowURLProtocol.serveFixture(.rankedSubnets)
 
         let screens = try openChutesPosition(in: world)
+
+        let buyResult = try submit(
+            .subnetBuy(
+                hotkey: screens.group.primaryHotkey,
+                netuid: screens.group.netuid,
+                grossTao: SubtensorFlowChainWorld.stakeAmount,
+                limitPrice: screens.buyQuote.limitPrice
+            ),
+            in: world,
+            events: [
+                SubtensorFlowExtrinsic.stakeAdded(
+                    hotkey: ember,
+                    netuid: 64,
+                    tao: 4_957_858_206,
+                    alpha: 67_054_958_000,
+                    poolFee: 2_496_518
+                ),
+                SubtensorFlowExtrinsic.transfer(to: beneficiary, amount: 42_141_794),
+                SubtensorFlowExtrinsic.networkFeePaid(paidNetworkFee)
+            ]
+        )
+
+        let sellResult = try submit(
+            .subnetSell(
+                hotkey: screens.soldPosition.hotkey,
+                netuid: screens.group.netuid,
+                alpha: sellAlpha,
+                limitPrice: screens.sellQuote.limitPrice,
+                quotedTaoOut: screens.sellQuote.quote.sim.taoAmount
+            ),
+            in: world,
+            events: [
+                SubtensorFlowExtrinsic.stakeRemoved(
+                    hotkey: ember,
+                    netuid: 64,
+                    tao: 4_145_000_000,
+                    alpha: 56_171_700_618,
+                    poolFee: 28_299_382
+                ),
+                SubtensorFlowExtrinsic.transfer(to: beneficiary, amount: 34_935_547),
+                SubtensorFlowExtrinsic.networkFeePaid(paidNetworkFee)
+            ]
+        )
+
+        world.sharedState.throttle()
         let ranked = try XCTUnwrap(screens.ranked)
         let chutesRanking = try XCTUnwrap(ranked.subnet(for: 64))
         let productionFeeCalculator = try world.createProductionWiredNovaFeeCalculator()
@@ -88,8 +135,47 @@ final class SubtensorActiveSubnetFlowTests: SubtensorFlowTestCase {
         verify(world.quoteOperationFactory).createQuoteWrapper(for: equal(to: chutesBuyQuote.args))
         verify(world.quoteOperationFactory).createQuoteWrapper(for: equal(to: chutesSellQuote.args))
 
+        XCTAssertEqual(buyResult.calls, [
+            SubtensorFlowExtrinsic.batchAll([
+                SubtensorFlowExtrinsic.addStakeLimit(hotkey: ember, netuid: 64, amount: 4_957_858_206, limitPrice: 74_169_000),
+                try SubtensorFlowExtrinsic.transferKeepAlive(to: beneficiary, amount: 42_141_794)
+            ])
+        ])
+
+        XCTAssertEqual(buyResult.outcome, SubtensorStakingOperationOutcome(
+            executed: SubtensorExecutedAmounts(tao: 4_957_858_206, alpha: 67_054_958_000, netuid: 64),
+            novaFeePaid: 42_141_794,
+            alphaFeePaid: nil,
+            networkFeePaid: Balance(paidNetworkFee),
+            extrinsicHash: SubtensorFlowExtrinsic.extrinsicHash,
+            blockHash: SubtensorFlowExtrinsic.blockHash
+        ))
+
+        XCTAssertEqual(sellResult.calls, [
+            SubtensorFlowExtrinsic.batchAll([
+                SubtensorFlowExtrinsic.removeStakeLimit(
+                    hotkey: ember,
+                    netuid: 64,
+                    alpha: 56_200_000_000,
+                    limitPrice: 73_431_000
+                ),
+                try SubtensorFlowExtrinsic.transferKeepAlive(to: beneficiary, amount: 34_935_547)
+            ])
+        ])
+
+        XCTAssertEqual(sellResult.outcome, SubtensorStakingOperationOutcome(
+            executed: SubtensorExecutedAmounts(tao: 4_145_000_000, alpha: 56_200_000_000, netuid: 64),
+            novaFeePaid: 34_935_547,
+            alphaFeePaid: nil,
+            networkFeePaid: Balance(paidNetworkFee),
+            extrinsicHash: SubtensorFlowExtrinsic.extrinsicHash,
+            blockHash: SubtensorFlowExtrinsic.blockHash
+        ))
+
+        verify(world.positionsSyncService, times(2)).refresh()
+
         XCTAssertEqual(requestLines().sorted(), chutesPositionRequestLines)
-        assertAttestedRequests(world, paths: ["/v1/bittensor/recommendations/subnets"])
+        assertAttestedRequests(world, paths: ["/v1/bittensor/subnets", "/v1/bittensor/recommendations/subnets"])
     }
 
     func testActiveSubnetBuyKeepsChainQuotesWhenRecommendationsAreNotPublished() throws {
@@ -100,6 +186,8 @@ final class SubtensorActiveSubnetFlowTests: SubtensorFlowTestCase {
         let screens = try openChutesPosition(in: world)
         let retriedRankingError = runError(world.earnServices.recommendationService.createRankedSubnetsWrapper())
 
+        world.sharedState.throttle()
+
         XCTAssertNil(screens.ranked)
         XCTAssertTrue(isRouteNotPublished(screens.rankingError))
         XCTAssertTrue(isRouteNotPublished(retriedRankingError))
@@ -107,7 +195,66 @@ final class SubtensorActiveSubnetFlowTests: SubtensorFlowTestCase {
         try assertChainValues(of: screens)
 
         XCTAssertEqual(requestLines().sorted(), chutesPositionRequestLines)
-        assertAttestedRequests(world, paths: ["/v1/bittensor/recommendations/subnets"])
+        assertAttestedRequests(world, paths: ["/v1/bittensor/subnets", "/v1/bittensor/recommendations/subnets"])
+    }
+
+    func testSellWithZeroFreeTaoIsRefusedForTheBatchedNetworkFeePlusTheDepositBeforeSubmitting() throws {
+        let world = try startWorld()
+        let services = world.earnServices
+        let ember = try SubtensorFlowChainWorld.hotkey(.ember)
+        let presentable = MockSubtensorStakingTestWireframeProtocol()
+        let view = MockControllerBackedProtocol()
+        let requiredAmount = ArgumentCaptor<String>()
+        var proceeded = false
+
+        let validationFactory = SubtensorStakingValidationFactory(
+            presentable: presentable,
+            assetDisplayInfo: world.chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
+        )
+
+        validationFactory.view = view
+
+        stub(presentable) { stub in
+            when(stub.presentBatchedSellFeeNotCovered(any(), requiredAmount: any(), locale: any())).thenDoNothing()
+        }
+
+        let sellQuote = try run(services.tradeQuoteFactory.createSellQuoteWrapper(
+            netuid: 64,
+            alpha: sellAlpha,
+            tolerance: services.earnSettings.slippageTolerance
+        ))
+
+        let sellFee = try run(world.createStakingOperationService(networkFee: networkFee).createFeeWrapper(for: .subnetSell(
+            hotkey: ember,
+            netuid: 64,
+            alpha: sellAlpha,
+            limitPrice: sellQuote.limitPrice,
+            quotedTaoOut: sellQuote.quote.sim.taoAmount
+        )))
+
+        DataValidationRunner(validators: [
+            validationFactory.canPayBatchedNetworkFee(
+                transferable: 0,
+                networkFee: sellFee.amountForCurrentAccount,
+                existentialDeposit: SubtensorFlowActiveStake.existentialDeposit,
+                locale: Locale(identifier: "en")
+            )
+        ]).runValidation(notifyingOnSuccess: { proceeded = true })
+
+        world.sharedState.throttle()
+
+        XCTAssertEqual(sellFee.amountForCurrentAccount, networkFee)
+        XCTAssertFalse(proceeded)
+
+        verify(presentable).presentBatchedSellFeeNotCovered(
+            any(),
+            requiredAmount: requiredAmount.capture(),
+            locale: any()
+        )
+
+        XCTAssertEqual(requiredAmount.value, "0.00151 TAO")
+        XCTAssertEqual(requestLines(), [])
     }
 }
 
@@ -117,7 +264,7 @@ private extension SubtensorActiveSubnetFlowTests {
         let yourBittensor: SubtensorFlowYourBittensor
         let group: SubtensorPortfolioGroup
         let soldPosition: SubtensorStakingPosition
-        let chutesInfo: SubtensorStakingPallet.DynamicInfo
+        let chutesInfo: SubtensorCatalogueSubnet
         let logo: URL?
         let detail: SubtensorValidatorDetail
         let weekHistory: SubtensorPriceHistoryResult
@@ -138,6 +285,7 @@ private extension SubtensorActiveSubnetFlowTests {
     var chutesPositionRequestLines: [String] {
         [
             "GET https://bittensor.test/v1/bittensor/recommendations/subnets",
+            "GET https://bittensor.test/v1/bittensor/subnets",
             "GET https://earn-config.test/earn_config.json",
             "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=30",
             "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=30",
@@ -157,6 +305,7 @@ private extension SubtensorActiveSubnetFlowTests {
         world.stubClaimPreviews(try SubtensorFlowActiveStake.claimPreviews())
         world.stubQuotes([chutesBuyQuote, chutesSellQuote])
         SubtensorFlowURLProtocol.serveEarnConfig()
+        SubtensorFlowURLProtocol.serveFixture(.subnets)
         try SubtensorFlowActiveStake.serveCharts()
 
         world.sharedState.setup(for: SubtensorFlowChainWorld.coldkeyAccount())
@@ -176,9 +325,8 @@ private extension SubtensorActiveSubnetFlowTests {
 
         let group = try XCTUnwrap(yourBittensor.portfolio.subnets.first { $0.netuid == 64 })
         let soldPosition = try XCTUnwrap(group.positions.first)
-        let catalogue = try fetchSubnetsInfo(from: world.sharedState.subnetsService)
-        let chutesInfo = try XCTUnwrap(catalogue.subnets.first { $0.netuid == group.netuid })
-        let chutesRef = SubtensorSubnetRef(netuid: chutesInfo.netuid, registeredAt: chutesInfo.networkRegisteredAt)
+        let chutesInfo = try yourBittensor.subnet(netuid: group.netuid)
+        let chutesRef = chutesInfo.ref
         let logo = SubtensorSubnetLogoResolver(config: try run(services.earnConfigProvider.createConfigWrapper()))
             .url(for: chutesRef)
         let detail = try run(services.validatorDirectoryService.createDetailWrapper(
@@ -257,8 +405,6 @@ private extension SubtensorActiveSubnetFlowTests {
             existentialDeposit: SubtensorFlowActiveStake.existentialDeposit
         )
 
-        world.sharedState.throttle()
-
         return ChutesPositionScreens(
             entryConfig: entryConfig,
             yourBittensor: yourBittensor,
@@ -287,8 +433,8 @@ private extension SubtensorActiveSubnetFlowTests {
         let ember = try SubtensorFlowChainWorld.hotkey(.ember)
         let beneficiary = SubtensorFlowChainWorld.novaFeeBeneficiary
 
-        XCTAssertEqual(screens.chutesInfo.displayName, "Chutes")
-        XCTAssertEqual(screens.chutesInfo.displaySymbol, "ش")
+        XCTAssertEqual(screens.chutesInfo.name, "Chutes")
+        XCTAssertEqual(screens.chutesInfo.symbol, "ش")
         XCTAssertEqual(screens.logo?.absoluteString, SubtensorFlowChainWorld.chutesLogo)
         XCTAssertEqual(screens.group.totalAlpha, 70_200_000_000)
         XCTAssertEqual(screens.group.taoValue, 5_180_760_000)

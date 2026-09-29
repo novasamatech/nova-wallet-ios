@@ -75,10 +75,13 @@ extension StartStakingInfoViewFactory {
 
         return StartStakingInfoSubtensorInteractor(
             state: state,
+            earnConfigProvider: state.earnServices.earnConfigProvider,
             selectedWalletSettings: SelectedWalletSettings.shared,
+            eventCenter: EventCenter.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             stakingDashboardProviderFactory: stakingDashboardProviderFactory,
+            announcementsRepository: AnnouncementsRepository.shared,
             currencyManager: currencyManager,
             sharedOperation: state.startSharedOperation(),
             operationQueue: OperationManagerFacade.sharedDefaultQueue,

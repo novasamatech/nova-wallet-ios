@@ -194,6 +194,8 @@ sources = [
     "novawallet/Modules/Staking/StartStakingInfo/StartStakingInfoProtocols.swift",
     "novawallet/Modules/Staking/StartStakingInfo/SubtensorStaking/StartStakingInfoSubtensorProtocols.swift",
     "novawallet/Modules/MessageSheet/Compound/MessageSheetPresentable.swift",
+    "novawallet/Common/DataProvider/StakingDashboardProviderFactory.swift",
+    "novawallet/Common/Services/Announcements/AnnouncementsRepository.swift",
 ]
 
 exclude = [

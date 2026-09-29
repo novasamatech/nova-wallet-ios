@@ -158,11 +158,16 @@ final class SubtensorFlowPositionsFeed {
 
     private let lock = NSLock()
     private let observable = Observable<State>(state: nil)
+    private var refreshedStates: [Multistaking.SubtensorStakingState] = []
 
     init(service: MockSubtensorPositionsSyncServiceProtocol) {
         stub(service) { stub in
             when(stub.setup()).thenDoNothing()
             when(stub.throttle()).thenDoNothing()
+
+            when(stub.refresh()).then {
+                self.publishNextRefresh()
+            }
 
             when(
                 stub.add(observer: any(), sendStateOnSubscription: any(), queue: any(), closure: any())
@@ -181,9 +186,25 @@ final class SubtensorFlowPositionsFeed {
         observable.state = state
         lock.unlock()
     }
+
+    func publishOnRefresh(_ state: Multistaking.SubtensorStakingState) {
+        lock.lock()
+        refreshedStates.append(state)
+        lock.unlock()
+    }
 }
 
 private extension SubtensorFlowPositionsFeed {
+    func publishNextRefresh() {
+        lock.lock()
+
+        if !refreshedStates.isEmpty {
+            observable.state = refreshedStates.removeFirst()
+        }
+
+        lock.unlock()
+    }
+
     func add(
         _ observer: AnyObject,
         sendStateOnSubscription: Bool,

@@ -68,59 +68,6 @@ final class SubtensorSubnetPriceChartView: UIView {
         let lineColor = viewModel.isRising ? R.color.colorTextPositive()! : R.color.colorTextNegative()!
         applyLine(values: values, lineColor: lineColor, fill: fill(for: lineColor))
     }
-
-    func bind(points: [SubtensorPricePoint], inFiat: Bool = false) {
-        bind(
-            values: points.map { NSDecimalNumber(decimal: inFiat ? $0.fiatPerAlpha : $0.taoPerAlpha).doubleValue },
-            showsCurrency: inFiat
-        )
-    }
-
-    func bind(values: [Double], showsCurrency: Bool = false) {
-        let finiteValues = values.filter { $0.isFinite }
-        guard !finiteValues.isEmpty, let minimum = finiteValues.min(), let maximum = finiteValues.max() else {
-            chart.clear()
-            return
-        }
-
-        let spread = max(maximum - minimum, abs(maximum) * 0.02, 0.000_001)
-        let padding = spread * 0.12
-        let lower = minimum - padding
-        let upper = maximum + padding
-        chart.rightAxis.axisMinimum = lower
-        chart.rightAxis.axisMaximum = upper
-        chart.rightAxis.drawLabelsEnabled = true
-        chart.rightAxis.setLabelCount(3, force: true)
-        chart.rightAxis.removeAllLimitLines()
-        if style == .price {
-            addMidLine(at: (lower + upper) / 2)
-        }
-
-        let formatter = DefaultAxisValueFormatter()
-        let style = style
-        let currencySymbol = CurrencyManager.shared?.selectedCurrency.symbol ?? "$"
-        let largestMagnitude = max(abs(lower), abs(upper))
-        let decimals = largestMagnitude >= 1 ? 2
-            : largestMagnitude >= 0.1 ? 3
-            : largestMagnitude >= 0.01 ? 4
-            : largestMagnitude >= 0.001 ? 5 : 6
-        formatter.block = { value, _ in
-            if style == .price {
-                if abs(value - (lower + upper) / 2) < spread * 0.01 { return "" }
-                let number = String(format: "%.*f", decimals, value)
-                return showsCurrency ? currencySymbol + number : number
-            }
-            if abs(value) >= 1000 {
-                return String(format: "%@%.1fk", currencySymbol, value / 1000)
-            }
-            return String(format: "%@%.0f", currencySymbol, value)
-        }
-        chart.rightAxis.valueFormatter = formatter
-
-        let lineColor = R.color.colorTextPositive()!
-        let fillColor = style == .portfolio ? R.color.colorButtonBackgroundPrimary()! : lineColor
-        applyLine(values: finiteValues, lineColor: lineColor, fill: gradientFill(of: fillColor))
-    }
 }
 
 private extension SubtensorSubnetPriceChartView {

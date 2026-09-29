@@ -172,10 +172,12 @@ extension SubtensorQuoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
             let name = info.displayName
 
             return SubtensorStakeTargetViewModel(
-                title: name.isEmpty ? "SN\(info.netuid)" : name,
-                subtitle: [symbol, "SN\(info.netuid)"]
-                    .filter { !$0.isEmpty }
-                    .joined(separator: " · "),
+                title: name.isEmpty
+                    ? R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiSubnetFormat(
+                        Int(info.netuid)
+                    )
+                    : name,
+                subtitle: symbol.isEmpty ? nil : symbol,
                 isRoot: false
             )
         }
@@ -226,7 +228,10 @@ extension SubtensorQuoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
 
         return SubtensorQuotePanelViewModel(
             receive: receive.approximately(),
-            poolFee: "\(poolFeeAmount) \(feeRatePercent.inParenthesis())",
+            poolFee: R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiJoinSpaceFormat(
+                poolFeeAmount,
+                feeRatePercent.inParenthesis()
+            ),
             priceImpact: formatPercent(impact, locale: locale),
             isImpactHigh: SubtensorStakingFlowConstants.isHighPriceImpact(impact)
         )
@@ -293,7 +298,7 @@ extension SubtensorQuoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
     func novaFeeDisclosure(locale: Locale) -> String {
         let percent = SwapBaseViewModelFactory.commissionPercent(
             rate: SubtensorNovaFeeConstants.rate,
-            percentFormatter: NumberFormatter.percentSingle.localizableResource(),
+            percentFormatter: NumberFormatter.percentSingleHalfEven.localizableResource(),
             locale: locale
         )
 

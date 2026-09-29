@@ -9,30 +9,17 @@ final class SubtensorOperationResultWireframe: SubtensorResultWireframeProtocol,
     }
 
     func closeForRetry(from view: ControllerBackedProtocol?, completion: @escaping () -> Void) {
-        guard let presenting = view?.controller.presentingViewController else {
-            completion()
-            return
-        }
-
-        presenting.dismiss(animated: true, completion: completion)
+        closeResult(from: view, completion: completion)
     }
 
-    func closeOperation(from view: ControllerBackedProtocol?) {
-        let flowController = view?.controller.presentingViewController
-        let flowNavigation = flowController as? UINavigationController ?? flowController?.navigationController
-
-        if let flowPresenter = flowNavigation?.presentingViewController {
-            flowPresenter.dismiss(animated: true)
-        } else {
-            flowController?.dismiss(animated: true)
-        }
+    func closeOperation(from _: ControllerBackedProtocol?) {
+        SubtensorModalStack.dismiss(animated: true)
     }
 
     func showSubnetDiscovery(from view: ControllerBackedProtocol?) {
-        let flowController = view?.controller.presentingViewController
-        let flowNavigation = flowController as? UINavigationController ?? flowController?.navigationController
+        let flowNavigation = SubtensorModalStack.flowNavigation()
 
-        flowController?.dismiss(animated: true) {
+        closeResult(from: view) {
             flowNavigation?.popToRootViewController(animated: false)
             (flowNavigation?.viewControllers.first as? SubtensorEarnFlowRoot)?.startSubnetDiscovery()
         }
@@ -49,5 +36,16 @@ final class SubtensorOperationResultWireframe: SubtensorResultWireframeProtocol,
             closeAction: closeAction,
             completionClosure: nil
         )
+    }
+}
+
+private extension SubtensorOperationResultWireframe {
+    func closeResult(from view: ControllerBackedProtocol?, completion: @escaping () -> Void) {
+        guard let presenting = view?.controller.presentingViewController else {
+            completion()
+            return
+        }
+
+        presenting.dismiss(animated: true, completion: completion)
     }
 }

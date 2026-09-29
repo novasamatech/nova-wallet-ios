@@ -6,18 +6,14 @@ import XCTest
 struct SubtensorFlowYourBittensor {
     let state: Multistaking.SubtensorStakingState
     let portfolio: SubtensorPortfolio
-    let catalogue: SubtensorSubnetsInfo
+    let catalogue: SubtensorSubnetCatalogue
     let logos: SubtensorSubnetLogoResolver
     let weeklyPrices: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]
     let monthHistories: [SubtensorSubnetRef: SubtensorPriceHistoryResult]
     let valueSeries: SubtensorPortfolioValueSeries
 
-    func subnetInfo(netuid: UInt16) throws -> SubtensorStakingPallet.DynamicInfo {
-        try XCTUnwrap(catalogue.subnets.first { $0.netuid == netuid })
-    }
-
-    func subnetRef(netuid: UInt16) throws -> SubtensorSubnetRef {
-        SubtensorSubnetRef(netuid: netuid, registeredAt: try subnetInfo(netuid: netuid).networkRegisteredAt)
+    func subnet(netuid: UInt16) throws -> SubtensorCatalogueSubnet {
+        try XCTUnwrap(catalogue.subnet(for: netuid))
     }
 }
 
@@ -29,14 +25,11 @@ extension SubtensorFlowTestCase {
 
         let state = try awaitPositions(in: world)
         let portfolio = SubtensorPortfolioBuilder.build(state: state)
-        let catalogue = try fetchSubnetsInfo(from: world.sharedState.subnetsService)
+        let catalogue = try run(services.catalogueService.createCatalogueWrapper(forcingRefresh: false))
         let logos = SubtensorSubnetLogoResolver(config: try run(services.earnConfigProvider.createConfigWrapper()))
 
         let refs = try portfolio.subnets.map { group in
-            SubtensorSubnetRef(
-                netuid: group.netuid,
-                registeredAt: try XCTUnwrap(catalogue.subnets.first { $0.netuid == group.netuid }).networkRegisteredAt
-            )
+            try XCTUnwrap(catalogue.subnet(for: group.netuid)).ref
         }
 
         let weeklyPrices = try run(priceHistoryService.createWeeklyChangesWrapper(for: refs))
@@ -98,12 +91,12 @@ extension SubtensorFlowTestCase {
         XCTAssertEqual(portfolio.subnets.map(\.totalAlpha), [70_200_000_000, 88_000_000_000])
         XCTAssertEqual(portfolio.subnets.map(\.taoValue), [5_180_760_000, 2_599_999_952])
 
-        XCTAssertEqual(try screen.subnetRef(netuid: 64), chutesRef)
-        XCTAssertEqual(try screen.subnetRef(netuid: 4), targonRef)
-        XCTAssertEqual(try screen.subnetInfo(netuid: 64).displayName, "Chutes")
-        XCTAssertEqual(try screen.subnetInfo(netuid: 64).displaySymbol, "ش")
-        XCTAssertEqual(try screen.subnetInfo(netuid: 4).displayName, "Targon")
-        XCTAssertEqual(try screen.subnetInfo(netuid: 4).displaySymbol, "δ")
+        XCTAssertEqual(try screen.subnet(netuid: 64).ref, chutesRef)
+        XCTAssertEqual(try screen.subnet(netuid: 4).ref, targonRef)
+        XCTAssertEqual(try screen.subnet(netuid: 64).name, "Chutes")
+        XCTAssertEqual(try screen.subnet(netuid: 64).symbol, "ش")
+        XCTAssertEqual(try screen.subnet(netuid: 4).name, "Targon")
+        XCTAssertEqual(try screen.subnet(netuid: 4).symbol, "δ")
 
         XCTAssertEqual(screen.logos.url(for: chutesRef)?.absoluteString, SubtensorFlowChainWorld.chutesLogo)
         XCTAssertNil(screen.logos.url(for: targonRef))

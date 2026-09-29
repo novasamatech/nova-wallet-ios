@@ -6,9 +6,10 @@ protocol SubtensorYourBittensorPresentable {
 
 extension SubtensorYourBittensorPresentable {
     func showYourBittensor(from _: ControllerBackedProtocol?, stakingOption: Multistaking.ChainAssetOption) {
-        let hostNavigation = UIApplication.shared.tabBarController?.selectedViewController as? UINavigationController
+        let tabBarController = UIApplication.shared.tabBarController
+        let hostNavigation = tabBarController?.selectedViewController as? UINavigationController
 
-        let landing = {
+        SubtensorModalStack.dismiss(above: tabBarController, animated: true) {
             guard let hostNavigation else {
                 return
             }
@@ -18,12 +19,6 @@ extension SubtensorYourBittensorPresentable {
             } else if let portfolioView = SubtensorPortfolioViewFactory.createView(for: stakingOption) {
                 hostNavigation.pushViewController(portfolioView.controller, animated: true)
             }
-        }
-
-        if let rootContainer = UIApplication.shared.rootContainer, rootContainer.presentedViewController != nil {
-            rootContainer.dismiss(animated: true, completion: landing)
-        } else {
-            landing()
         }
     }
 }
