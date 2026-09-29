@@ -3,86 +3,62 @@ import UIKit
 final class SubtensorStakingSetupViewLayout: UIView {
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
-        view.stackView.layoutMargins = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 16.0, left: 16.0, bottom: 16.0, right: 16.0)
         view.stackView.isLayoutMarginsRelativeArrangement = true
         view.stackView.alignment = .fill
         return view
     }()
 
-    let networkTitleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .regularFootnote
-        label.textColor = R.color.colorTextSecondary()
-        return label
-    }()
+    let amountTitleView = SwapSetupTitleView(frame: .zero)
 
-    let networkTableView: StackTableView = {
-        let view = StackTableView()
-        view.cellHeight = 44.0
-        view.contentInsets = UIEdgeInsets(top: 4.0, left: 16.0, bottom: 4.0, right: 16.0)
-        return view
-    }()
-
-    let networkCell = StackTableCell()
-    let targetLoadingView = SubtensorChartLoadingView()
-
-    let collatorTitleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .regularFootnote
-        label.textColor = R.color.colorTextSecondary()
-        return label
-    }()
-
-    let collatorTableView: StackTableView = {
-        let view = StackTableView()
-        view.cellHeight = 34.0
-        view.contentInsets = UIEdgeInsets(top: 7.0, left: 16.0, bottom: 7.0, right: 16.0)
-        return view
-    }()
-
-    let collatorActionView = StackAccountSelectionCell()
-
-    let amountView = TitleHorizontalMultiValueView()
+    let maxSkeletonView = SubtensorStakingSetupViewLayout.createSkeletonView()
 
     let amountInputView = NewAmountInputView()
 
-    /// only ever populated on the root lane — the subnet lane pays in a floating token and must
-    /// never carry a TAO-denominated earn headline (spec §6.3)
-    let rewardsView = RewardSelectionView()
+    let getTaoCardView: SubtensorGetTaoCardView = .create { view in
+        view.isHidden = true
+    }
 
-    let quoteTableView: StackTableView = {
-        let view = StackTableView()
-        view.cellHeight = 44.0
-        view.contentInsets = UIEdgeInsets(top: 4.0, left: 16.0, bottom: 4.0, right: 16.0)
+    let reserveAlertView: InlineAlertView = {
+        let view = InlineAlertView.warning()
+        view.isHidden = true
         return view
     }()
 
+    let detailsTableView = StackTableView()
+
+    let validatorCell: StackInfoTableCell = .create { cell in
+        cell.detailsLabel.lineBreakMode = .byTruncatingMiddle
+    }
+
+    let validatorSkeletonView = SubtensorStakingSetupViewLayout.createSkeletonView()
+
+    let apyCell: StackTableCell = .create { cell in
+        cell.detailsLabel.textColor = R.color.colorTextPositive()
+    }
+
+    let apySkeletonView = SubtensorStakingSetupViewLayout.createSkeletonView()
+
     let receiveCell = StackTableCell()
 
-    let poolFeeCell = StackTableCell()
+    let swapRateCell = StackTableCell()
 
-    let priceImpactCell = StackTableCell()
+    let slippageCell = StackInfoTableCell()
 
-    let slippageCell = StackTableCell()
+    let networkFeeCell = StackNetworkFeeCell()
 
-    let minStakeView = TitleAmountView.dark()
+    let feeSkeletonView = SubtensorStakingSetupViewLayout.createSkeletonView()
 
-    let networkFeeView = UIFactory.default.createNetworkFeeView()
-
-    let safetyNoteLabel: UILabel = {
-        let label = UILabel()
-        label.font = .caption1
-        label.textColor = R.color.colorTextSecondary()
+    let captionLabel: UILabel = .create { label in
+        label.apply(style: .caption1Secondary)
         label.textAlignment = .center
         label.numberOfLines = 0
-        return label
-    }()
+        label.isHidden = true
+    }
 
-    let actionButton: TriangularedButton = {
-        let button = TriangularedButton()
+    let actionButton: TriangularedButton = .create { button in
         button.applyDefaultStyle()
-        return button
-    }()
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -97,81 +73,93 @@ final class SubtensorStakingSetupViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func setQuotePanel(hidden: Bool) {
-        quoteTableView.isHidden = hidden
+    func setSkeleton(_ skeletonView: SubtensorChartLoadingView, loading: Bool, hiding view: UIView) {
+        skeletonView.setLoading(loading)
+        view.alpha = loading ? 0 : 1
+    }
+}
+
+private extension SubtensorStakingSetupViewLayout {
+    static func createSkeletonView() -> SubtensorChartLoadingView {
+        let view = SubtensorChartLoadingView()
+        view.layer.cornerRadius = 6
+        return view
     }
 
-    private func setupLayout() {
-        addSubview(actionButton)
-        actionButton.snp.makeConstraints { make in
+    func setupLayout() {
+        let bottomStack = UIView.vStack(spacing: 16, [captionLabel, actionButton])
+
+        addSubview(bottomStack)
+        bottomStack.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
+        }
+
+        actionButton.snp.makeConstraints { make in
             make.height.equalTo(UIConstants.actionHeight)
         }
 
         addSubview(containerView)
         containerView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(actionButton.snp.top).offset(-8.0)
+            make.bottom.equalTo(bottomStack.snp.top).offset(-8.0)
         }
 
-        containerView.stackView.addArrangedSubview(networkTitleLabel)
-        networkTitleLabel.snp.makeConstraints { make in
+        setupAmountLayout()
+        setupDetailsLayout()
+    }
+
+    func setupAmountLayout() {
+        containerView.stackView.addArrangedSubview(amountTitleView)
+        amountTitleView.snp.makeConstraints { make in
             make.height.equalTo(34.0)
         }
 
-        containerView.stackView.addArrangedSubview(networkTableView)
-        networkTableView.addArrangedSubview(networkCell)
-
-        containerView.stackView.setCustomSpacing(8.0, after: networkTableView)
-
-        containerView.stackView.addArrangedSubview(collatorTitleLabel)
-        collatorTitleLabel.snp.makeConstraints { make in
-            make.height.equalTo(34.0)
+        amountTitleView.addSubview(maxSkeletonView)
+        maxSkeletonView.snp.makeConstraints { make in
+            make.trailing.centerY.equalToSuperview()
+            make.size.equalTo(CGSize(width: 90, height: 12))
         }
 
-        containerView.stackView.addArrangedSubview(collatorTableView)
-        collatorTableView.addArrangedSubview(collatorActionView)
-
-        containerView.stackView.setCustomSpacing(8.0, after: collatorTableView)
-
-        containerView.stackView.addArrangedSubview(amountView)
-        amountView.snp.makeConstraints { make in
-            make.height.equalTo(34.0)
-        }
+        containerView.stackView.setCustomSpacing(8.0, after: amountTitleView)
 
         containerView.stackView.addArrangedSubview(amountInputView)
         amountInputView.snp.makeConstraints { make in
-            make.height.equalTo(64)
+            make.height.equalTo(64.0)
         }
 
-        containerView.stackView.setCustomSpacing(16.0, after: amountInputView)
+        containerView.stackView.addArrangedSubview(getTaoCardView)
 
-        containerView.stackView.addArrangedSubview(rewardsView)
-        rewardsView.snp.makeConstraints { make in
-            make.height.equalTo(56.0)
+        containerView.stackView.setCustomSpacing(12.0, after: amountInputView)
+        containerView.stackView.setCustomSpacing(12.0, after: getTaoCardView)
+
+        containerView.stackView.addArrangedSubview(reserveAlertView)
+        containerView.stackView.setCustomSpacing(16.0, after: reserveAlertView)
+    }
+
+    func setupDetailsLayout() {
+        containerView.stackView.addArrangedSubview(detailsTableView)
+
+        detailsTableView.addArrangedSubview(validatorCell)
+        detailsTableView.addArrangedSubview(apyCell)
+        detailsTableView.addArrangedSubview(receiveCell)
+        detailsTableView.addArrangedSubview(swapRateCell)
+        detailsTableView.addArrangedSubview(slippageCell)
+        detailsTableView.addArrangedSubview(networkFeeCell)
+
+        let skeletons: [(SubtensorChartLoadingView, UIView, CGFloat)] = [
+            (validatorSkeletonView, validatorCell, 100),
+            (apySkeletonView, apyCell, 80),
+            (feeSkeletonView, networkFeeCell, 70)
+        ]
+
+        skeletons.forEach { skeletonView, cell, width in
+            cell.addSubview(skeletonView)
+            skeletonView.snp.makeConstraints { make in
+                make.trailing.equalToSuperview().inset(16)
+                make.centerY.equalToSuperview()
+                make.size.equalTo(CGSize(width: width, height: 12))
+            }
         }
-
-        containerView.stackView.setCustomSpacing(16.0, after: rewardsView)
-
-        containerView.stackView.addArrangedSubview(quoteTableView)
-        quoteTableView.addArrangedSubview(receiveCell)
-        quoteTableView.addArrangedSubview(poolFeeCell)
-        quoteTableView.addArrangedSubview(priceImpactCell)
-        quoteTableView.addArrangedSubview(slippageCell)
-
-        containerView.stackView.setCustomSpacing(16.0, after: quoteTableView)
-
-        containerView.stackView.addArrangedSubview(minStakeView)
-
-        containerView.stackView.addArrangedSubview(networkFeeView)
-        containerView.stackView.addArrangedSubview(safetyNoteLabel)
-
-        containerView.stackView.insertArrangedSubview(amountView, at: 0)
-        containerView.stackView.insertArrangedSubview(amountInputView, at: 1)
-        containerView.stackView.insertArrangedSubview(targetLoadingView, at: 2)
-        targetLoadingView.snp.makeConstraints { make in make.height.equalTo(260) }
-        containerView.stackView.spacing = 8
-        containerView.stackView.setCustomSpacing(20, after: amountInputView)
     }
 }

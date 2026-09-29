@@ -1,127 +1,215 @@
 import Foundation
 import Operation_iOS
-import SubstrateSdk
 
-final class SubtensorSubnetSelectInteractor: RuntimeConstantFetching {
+final class SubtensorSubnetSelectInteractor {
     weak var presenter: SubnetSelectInteractorOutputProtocol?
 
+    let catalogueService: SubtensorSubnetCatalogueServiceProtocol
     let subnetsService: SubtensorSubnetsServiceProtocol
+    let earnConfigProvider: SubtensorEarnConfigProviderProtocol
+    let yieldService: SubtensorYieldServiceProtocol
+    let rankingViewService: SubtensorRankingViewServiceProtocol
     let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
-    let runtimeProvider: RuntimeCodingServiceProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
+    private let entriesStore = CancellableCallStore()
+    private let configStore = CancellableCallStore()
+    private let rootRateStore = CancellableCallStore()
+    private let rankingStore = CancellableCallStore()
+    private let weeklyStore = CancellableCallStore()
+    private let monthlyStore = CancellableCallStore()
+
     init(
+        catalogueService: SubtensorSubnetCatalogueServiceProtocol,
         subnetsService: SubtensorSubnetsServiceProtocol,
+        earnConfigProvider: SubtensorEarnConfigProviderProtocol,
+        yieldService: SubtensorYieldServiceProtocol,
+        rankingViewService: SubtensorRankingViewServiceProtocol,
         priceHistoryService: SubtensorPriceHistoryServiceProtocol?,
-        runtimeProvider: RuntimeCodingServiceProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
+        self.catalogueService = catalogueService
         self.subnetsService = subnetsService
+        self.earnConfigProvider = earnConfigProvider
+        self.yieldService = yieldService
+        self.rankingViewService = rankingViewService
         self.priceHistoryService = priceHistoryService
-        self.runtimeProvider = runtimeProvider
         self.operationQueue = operationQueue
         self.logger = logger
+    }
+
+    deinit {
+        [entriesStore, configStore, rootRateStore, rankingStore, weeklyStore, monthlyStore].forEach { $0.cancel() }
     }
 }
 
 private extension SubtensorSubnetSelectInteractor {
-    func provideSubnetsInfo() {
-        subnetsService.fetchSubnetsInfo(runningCompletionIn: .main) { [weak self] result in
+    func createEntriesWrapper() -> CompoundOperationWrapper<[SubtensorSubnetListEntry]> {
+        let catalogueWrapper = catalogueService.createCatalogueWrapper(forcingRefresh: false)
+        let subnetsService = subnetsService
+
+        let subnetsInfoOperation = AsyncClosureOperation<SubtensorSubnetsInfo> { completion in
+            subnetsService.fetchSubnetsInfo(runningCompletionIn: .global(), completion: completion)
+        }
+
+        let entriesOperation = ClosureOperation<[SubtensorSubnetListEntry]> {
+            let catalogue = try catalogueWrapper.targetOperation.extractNoCancellableResultData()
+            let subnetsInfo = try subnetsInfoOperation.extractNoCancellableResultData()
+
+            return SubtensorSubnetListBuilder.entries(from: catalogue, subnetsInfo: subnetsInfo)
+        }
+
+        entriesOperation.addDependency(catalogueWrapper.targetOperation)
+        entriesOperation.addDependency(subnetsInfoOperation)
+
+        return catalogueWrapper
+            .insertingHead(operations: [subnetsInfoOperation])
+            .insertingTail(operation: entriesOperation)
+    }
+
+    func provideEntries() {
+        entriesStore.cancel()
+
+        executeCancellable(
+            wrapper: createEntriesWrapper(),
+            inOperationQueue: operationQueue,
+            backingCallIn: entriesStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
             switch result {
-            case let .success(info):
-                self?.presenter?.didReceiveSubnetsInfo(info)
-                self?.provideWeeklyChanges(for: info)
+            case let .success(entries):
+                self?.presenter?.didReceive(entries: entries)
             case let .failure(error):
+                self?.logger.error("Subnet list unavailable: \(error)")
                 self?.presenter?.didReceiveError(error)
             }
         }
     }
 
-    func provideWeeklyChanges(for info: SubtensorSubnetsInfo) {
-        guard let priceHistoryService else {
-            presenter?.didReceiveWeeklyChanges([:])
-            return
-        }
-
-        let subnets = info.subnets
-            .filter { info.subtokenEnabled.contains($0.netuid) }
-            .map { SubtensorSubnetRef(netuid: $0.netuid, registeredAt: $0.networkRegisteredAt) }
-        let wrapper = priceHistoryService.createWeeklyChangesWrapper(for: subnets)
-
-        execute(
-            wrapper: wrapper,
+    func provideEarnConfig() {
+        executeCancellable(
+            wrapper: earnConfigProvider.createConfigWrapper(),
             inOperationQueue: operationQueue,
+            backingCallIn: configStore,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(prices):
-                self?.presenter?.didReceiveWeeklyChanges(prices.compactMapValues { $0.availableValue?.change })
+            case let .success(config):
+                self?.presenter?.didReceive(earnConfig: config)
             case let .failure(error):
-                self?.logger.warning("Subnet weekly changes unavailable: \(error)")
-                self?.presenter?.didReceiveWeeklyChanges([:])
+                self?.logger.warning("Subnet marks unavailable: \(error)")
+                self?.presenter?.didReceive(earnConfig: nil)
             }
         }
     }
 
-    func provideDefaultTake() {
-        fetchConstant(
-            for: SubtensorStakingPallet.initialDefaultDelegateTakePath,
-            runtimeCodingService: runtimeProvider,
-            operationQueue: operationQueue
-        ) { [weak self] (result: Result<UInt16, Error>) in
+    func provideRootRate() {
+        executeCancellable(
+            wrapper: yieldService.createRootYieldWrapper(),
+            inOperationQueue: operationQueue,
+            backingCallIn: rootRateStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
             switch result {
-            case let .success(take):
-                self?.presenter?.didReceiveDefaultTake(take)
+            case let .success(yield):
+                self?.presenter?.didReceive(rootRate: yield?.annualRate)
             case let .failure(error):
-                self?.logger.error("Default take fetch failed: \(error)")
+                self?.logger.warning("Root rate unavailable: \(error)")
+                self?.presenter?.didReceive(rootRate: nil)
             }
         }
     }
 
-    func handleMonthlyMetrics(_ metrics: [SubtensorSubnetRef: SubtensorPriceData<SubtensorMonthlyPriceMetrics>]) {
-        let values = metrics.values
-
-        guard !values.contains(where: { $0.availableValue != nil }), values.contains(.unavailable) else {
-            presenter?.didReceiveMonthlyMetrics(metrics)
-            return
+    func provideRankingView() {
+        executeCancellable(
+            wrapper: rankingViewService.createRankingViewWrapper(),
+            inOperationQueue: operationQueue,
+            backingCallIn: rankingStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(rankedSubnets):
+                self?.presenter?.didReceive(rankedSubnets: rankedSubnets)
+            case let .failure(error):
+                self?.logger.warning("Subnet ages unavailable: \(error)")
+                self?.presenter?.didReceive(rankedSubnets: nil)
+            }
         }
+    }
 
-        presenter?.didFailMonthlyMetrics()
+    func unavailablePrices<Value: Equatable>(
+        for subnets: [SubtensorSubnetRef]
+    ) -> [SubtensorSubnetRef: SubtensorPriceData<Value>] {
+        Dictionary(subnets.map { ($0, .unavailable) }, uniquingKeysWith: { first, _ in first })
     }
 }
 
 extension SubtensorSubnetSelectInteractor: SubnetSelectInteractorInputProtocol {
-    func loadMonthlyMetrics(for info: SubtensorSubnetsInfo) {
+    func setup() {
+        provideEntries()
+        provideEarnConfig()
+        provideRootRate()
+        provideRankingView()
+    }
+
+    func refresh() {
+        provideEntries()
+    }
+
+    func loadWeeklyPrices(for subnets: [SubtensorSubnetRef]) {
+        weeklyStore.cancel()
+
         guard let priceHistoryService else {
-            presenter?.didFailMonthlyMetrics()
+            presenter?.didReceive(weeklyPrices: unavailablePrices(for: subnets))
             return
         }
-        let subnets = info.subnets
-            .filter { info.subtokenEnabled.contains($0.netuid) }
-            .map { SubtensorSubnetRef(netuid: $0.netuid, registeredAt: $0.networkRegisteredAt) }
-        let wrapper = priceHistoryService.createMonthlyMetricsWrapper(for: subnets)
-        execute(
-            wrapper: wrapper,
+
+        executeCancellable(
+            wrapper: priceHistoryService.createWeeklyChangesWrapper(for: subnets),
             inOperationQueue: operationQueue,
+            backingCallIn: weeklyStore,
             runningCallbackIn: .main
         ) { [weak self] result in
+            guard let self else {
+                return
+            }
+
             switch result {
-            case let .success(metrics): self?.handleMonthlyMetrics(metrics)
+            case let .success(prices):
+                presenter?.didReceive(weeklyPrices: prices)
             case let .failure(error):
-                self?.logger.warning("Subnet monthly metrics unavailable: \(error)")
-                self?.presenter?.didFailMonthlyMetrics()
+                logger.warning("Subnet weekly prices unavailable: \(error)")
+                presenter?.didReceive(weeklyPrices: unavailablePrices(for: subnets))
             }
         }
     }
 
-    func setup() {
-        provideDefaultTake()
-        provideSubnetsInfo()
-    }
+    func loadMonthlyMetrics(for subnets: [SubtensorSubnetRef]) {
+        monthlyStore.cancel()
 
-    func refresh() {
-        provideSubnetsInfo()
+        guard let priceHistoryService else {
+            presenter?.didFailMonthlyMetrics()
+            return
+        }
+
+        executeCancellable(
+            wrapper: priceHistoryService.createMonthlyMetricsWrapper(for: subnets),
+            inOperationQueue: operationQueue,
+            backingCallIn: monthlyStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(metrics) where metrics.values.contains(where: { $0.availableValue != nil }):
+                self?.presenter?.didReceive(monthlyMetrics: metrics)
+            case .success:
+                self?.logger.warning("Subnet thirty day prices unavailable for every subnet")
+                self?.presenter?.didFailMonthlyMetrics()
+            case let .failure(error):
+                self?.logger.warning("Subnet thirty day prices unavailable: \(error)")
+                self?.presenter?.didFailMonthlyMetrics()
+            }
+        }
     }
 }

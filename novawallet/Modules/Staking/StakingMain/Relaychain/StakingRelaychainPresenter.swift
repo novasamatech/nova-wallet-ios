@@ -395,7 +395,7 @@ extension StakingRelaychainPresenter: StakingMainChildPresenterProtocol {
             performRedeemAction()
         case .rebag:
             performRebag()
-        case .waitingNextEra, .chainMaintenance, .claimRewards:
+        case .waitingNextEra, .chainMaintenance:
             // no action
             break
         }

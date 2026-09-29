@@ -1,247 +1,371 @@
 import Foundation
 import Foundation_iOS
-import BigInt
 
 final class SubtensorSubnetSelectPresenter {
+    enum MonthlyState {
+        case idle
+        case loading
+        case loaded([SubtensorSubnetRef: SubtensorPriceData<SubtensorMonthlyPriceMetrics>])
+        case unavailable
+    }
+
     weak var view: SubtensorSubnetSelectViewProtocol?
+    weak var delegate: SubtensorSubnetSelectDelegate?
+
     let wireframe: SubtensorSubnetSelectWireframeProtocol
     let interactor: SubnetSelectInteractorInputProtocol
     let viewModelFactory: SubtensorSubnetViewModelFactoryProtocol
-    let logger: LoggerProtocol
     let earnSettings: SubtensorEarnSettingsProtocol
 
-    weak var delegate: SubtensorSubnetSelectDelegate?
+    private var entries: [SubtensorSubnetListEntry]?
+    private var weeklyPrices: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]?
+    private var monthlyState: MonthlyState = .idle
+    private var ageBlocks: [UInt16: UInt64] = [:]
+    private var earnConfig: SubtensorEarnConfig?
+    private var rootRate: Decimal?
+    private var favourites: Set<SubtensorSubnetRef>
+    private var query = ""
+    private var sort: SubtensorSubnetSort = .sevenDayChange
+    private var filters = SubtensorSubnetFilters()
+    private var pendingFilters: SubtensorSubnetFilters?
+    private var list: SubtensorSubnetList?
 
-    /// the take of the hotkey the flow will actually stake with; the chain-wide
-    /// default is only a fallback until it is known
-    let preferredTake: UInt16?
-
-    private(set) var subnetsInfo: SubtensorSubnetsInfo?
-    private(set) var defaultTake: UInt16?
-    private(set) var query: String = ""
-    private(set) var sort: SubtensorSubnetSort = .favorites
-    private(set) var filters = SubtensorSubnetFilters()
-    private var weeklyChanges: [SubtensorSubnetRef: Decimal] = [:]
-    private var monthlyMetrics: [SubtensorSubnetRef: SubtensorPriceData<SubtensorMonthlyPriceMetrics>] = [:]
-    private var monthlyRequested = false
-    private var monthlyLoaded = false
+    private weak var filtersView: SubtensorSubnetFiltersViewProtocol?
+    private var isWeeklyRequested = false
 
     init(
         interactor: SubnetSelectInteractorInputProtocol,
         wireframe: SubtensorSubnetSelectWireframeProtocol,
         viewModelFactory: SubtensorSubnetViewModelFactoryProtocol,
         delegate: SubtensorSubnetSelectDelegate,
-        preferredTake: UInt16?,
         earnSettings: SubtensorEarnSettingsProtocol,
-        localizationManager: LocalizationManagerProtocol,
-        logger: LoggerProtocol
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.delegate = delegate
-        self.preferredTake = preferredTake
         self.earnSettings = earnSettings
-        self.logger = logger
+        favourites = Set(earnSettings.favouriteSubnets)
 
         self.localizationManager = localizationManager
     }
 }
 
 private extension SubtensorSubnetSelectPresenter {
-    func requestMonthlyMetricsIfNeeded() {
-        guard !monthlyRequested,
-              let subnetsInfo,
-              sort == .thirtyDayChange || filters.onlyAboveThirtyDayAverage else { return }
-        monthlyRequested = true
-        interactor.loadMonthlyMetrics(for: subnetsInfo)
-    }
-
-    func provideViewModels() {
-        guard let subnetsInfo else {
-            view?.didReceive(viewModels: [])
-            return
+    var loadedMonthlyMetrics: [SubtensorSubnetRef: SubtensorPriceData<SubtensorMonthlyPriceMetrics>]? {
+        guard case let .loaded(metrics) = monthlyState else {
+            return nil
         }
 
-        let viewModels = viewModelFactory.createViewModels(
-            from: subnetsInfo,
-            context: SubtensorSubnetViewModelContext(
-                defaultTake: preferredTake ?? defaultTake,
-                query: query,
-                weeklyChanges: weeklyChanges,
-                favorites: Set(earnSettings.favouriteSubnets),
-                locale: selectedLocale
-            )
-        )
-
-        let root = viewModels.filter { $0.target.isRoot }
-        let sorted = viewModels.filter(matchesFilters).sorted(by: isOrderedBefore)
-
-        view?.didReceive(viewModels: root + sorted)
+        return metrics
     }
 
-    func matchesFilters(_ model: SubtensorSubnetSelectViewModel) -> Bool {
-        guard let info = model.target.subnetInfo else { return false }
-        if filters.hideThinPools,
-           info.taoIn < BigUInt(20000) * SubtensorStakingPallet.alphaPriceScale {
+    var isMonthlyLoading: Bool {
+        guard case .loading = monthlyState else {
             return false
         }
-        if filters.onlyAboveThirtyDayAverage, monthlyLoaded {
-            guard let subnetRef = model.subnetRef,
-                  let mean = monthlyMetrics[subnetRef]?.availableValue?.meanTaoPerAlpha,
-                  let currentPrice = model.target.listedPrice,
-                  let price = Decimal(string: String(currentPrice)),
-                  let scale = Decimal(string: String(SubtensorStakingPallet.alphaPriceScale)) else { return false }
-            return price / scale > mean
-        }
+
         return true
     }
 
-    func isOrderedBefore(_ lhs: SubtensorSubnetSelectViewModel, _ rhs: SubtensorSubnetSelectViewModel) -> Bool {
-        switch sort {
-        case .favorites:
-            if lhs.isFavorite != rhs.isFavorite { return lhs.isFavorite }
-            return isWeeklyBefore(lhs, rhs)
-        case .sevenDayChange:
-            return isWeeklyBefore(lhs, rhs)
-        case .thirtyDayChange:
-            return isMonthlyBefore(lhs, rhs)
-        case .poolDepth:
-            let left = lhs.target.subnetInfo?.taoIn ?? 0
-            let right = rhs.target.subnetInfo?.taoIn ?? 0
-            return left == right ? lhs.target.netuid < rhs.target.netuid : left > right
-        case .volume:
-            let left = lhs.target.subnetInfo?.subnetVolume ?? 0
-            let right = rhs.target.subnetInfo?.subnetVolume ?? 0
-            return left == right ? lhs.target.netuid < rhs.target.netuid : left > right
-        case .age:
-            let left = lhs.target.subnetInfo?.networkRegisteredAt ?? 0
-            let right = rhs.target.subnetInfo?.networkRegisteredAt ?? 0
-            return left == right ? lhs.target.netuid < rhs.target.netuid : left < right
-        case .name:
-            return lhs.title.localizedStandardCompare(rhs.title) == .orderedAscending
-        case .subnetNumber:
-            return lhs.target.netuid < rhs.target.netuid
+    var isMonthlyUnavailable: Bool {
+        guard case .unavailable = monthlyState else {
+            return false
         }
+
+        return true
     }
 
-    func isWeeklyBefore(_ lhs: SubtensorSubnetSelectViewModel, _ rhs: SubtensorSubnetSelectViewModel) -> Bool {
-        if let left = lhs.weeklyChange, let right = rhs.weeklyChange, left != right {
-            return left > right
+    func makeBuilder() -> SubtensorSubnetListBuilder? {
+        guard let entries else {
+            return nil
         }
-        if (lhs.weeklyChange == nil) != (rhs.weeklyChange == nil) {
-            return lhs.weeklyChange != nil
-        }
-        return lhs.title.localizedStandardCompare(rhs.title) == .orderedAscending
+
+        return SubtensorSubnetListBuilder(
+            entries: entries,
+            weekly: weeklyPrices,
+            monthly: loadedMonthlyMetrics,
+            ageBlocks: ageBlocks,
+            favourites: favourites,
+            locale: selectedLocale
+        )
     }
 
-    func isMonthlyBefore(_ lhs: SubtensorSubnetSelectViewModel, _ rhs: SubtensorSubnetSelectViewModel) -> Bool {
-        let left = lhs.subnetRef.flatMap { monthlyMetrics[$0]?.availableValue?.changeInTao }
-        let right = rhs.subnetRef.flatMap { monthlyMetrics[$0]?.availableValue?.changeInTao }
-        if let left, let right, left != right { return left > right }
-        if (left == nil) != (right == nil) { return left != nil }
-        return lhs.title.localizedStandardCompare(rhs.title) == .orderedAscending
+    func provideList() {
+        list = makeBuilder()?.build(query: query, sort: sort, filters: filters)
+
+        let state = SubtensorSubnetListState(
+            list: list,
+            isRowsLoading: sort == .thirtyDayChange && isMonthlyLoading,
+            sort: sort,
+            filters: filters,
+            config: earnConfig
+        )
+
+        view?.didReceive(list: viewModelFactory.createListViewModel(for: state, locale: selectedLocale))
+    }
+
+    func provideRootBar() {
+        view?.didReceive(rootBar: viewModelFactory.createRootBarViewModel(annualRate: rootRate, locale: selectedLocale))
+    }
+
+    func createFiltersViewModel(for draft: SubtensorSubnetFilters) -> SubtensorSubnetFiltersViewModel {
+        let isPending = draft.onlyAboveThirtyDayAverage && isMonthlyLoading
+        let count = isPending ? nil : makeBuilder()?.build(query: query, sort: sort, filters: draft).count
+
+        return viewModelFactory.createFiltersViewModel(
+            filters: draft,
+            count: count,
+            isThirtyDayUnavailable: isMonthlyUnavailable,
+            locale: selectedLocale
+        )
+    }
+
+    func provideFilters() {
+        guard let pendingFilters, let filtersView else {
+            return
+        }
+
+        filtersView.didReceive(viewModel: createFiltersViewModel(for: pendingFilters))
+    }
+
+    func requestMonthlyMetricsIfNeeded() {
+        guard let entries, !isMonthlyLoading, loadedMonthlyMetrics == nil else {
+            return
+        }
+
+        monthlyState = .loading
+        interactor.loadMonthlyMetrics(for: entries.map(\.subnet.ref))
+    }
+
+    func requestWeeklyPricesIfNeeded() {
+        guard let entries, !isWeeklyRequested else {
+            return
+        }
+
+        isWeeklyRequested = true
+        interactor.loadWeeklyPrices(for: entries.map(\.subnet.ref))
+    }
+
+    func retryEntries() {
+        entries = nil
+        provideList()
+
+        interactor.refresh()
+    }
+
+    func applySort(_ newSort: SubtensorSubnetSort) {
+        sort = newSort
+
+        if newSort == .thirtyDayChange {
+            requestMonthlyMetricsIfNeeded()
+        }
+
+        provideList()
+    }
+
+    func findItem(for subnetRef: SubtensorSubnetRef) -> SubtensorSubnetListItem? {
+        guard let list else {
+            return nil
+        }
+
+        return (list.picks + list.others).first { $0.ref == subnetRef }
+    }
+
+    func storeFavourites() {
+        earnSettings.favouriteSubnets = favourites.sorted { lhs, rhs in
+            lhs.netuid != rhs.netuid ? lhs.netuid < rhs.netuid : lhs.registeredAt < rhs.registeredAt
+        }
     }
 }
 
 extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol {
     func setup() {
-        view?.didReceiveLoading(true)
+        provideList()
+        provideRootBar()
+
         interactor.setup()
+    }
+
+    func becomeActive() {
+        let storedFavourites = Set(earnSettings.favouriteSubnets)
+
+        guard storedFavourites != favourites else {
+            return
+        }
+
+        favourites = storedFavourites
+        provideList()
     }
 
     func search(query: String) {
         self.query = query
 
-        provideViewModels()
+        provideList()
     }
 
-    func select(viewModel: SubtensorSubnetSelectViewModel) {
-        guard let delegate else { return }
-        if viewModel.target.isRoot {
-            delegate.didSelectStakeTarget(.root)
-            wireframe.complete(from: view)
+    func selectSubnet(_ subnetRef: SubtensorSubnetRef) {
+        guard let delegate, let item = findItem(for: subnetRef) else {
             return
         }
-        wireframe.showDetails(from: view, model: viewModel, delegate: delegate)
+
+        wireframe.showDetails(from: view, item: item, delegate: delegate)
     }
 
-    func toggleFavorite(viewModel: SubtensorSubnetSelectViewModel) {
-        guard let subnetRef = viewModel.subnetRef else { return }
-
-        var favorites = Set(earnSettings.favouriteSubnets)
-        if favorites.contains(subnetRef) {
-            favorites.remove(subnetRef)
+    func toggleFavorite(_ subnetRef: SubtensorSubnetRef) {
+        if favourites.contains(subnetRef) {
+            favourites.remove(subnetRef)
         } else {
-            favorites.insert(subnetRef)
+            favourites.insert(subnetRef)
         }
 
-        earnSettings.favouriteSubnets = favorites.sorted { $0.netuid < $1.netuid }
-        provideViewModels()
+        storeFavourites()
+        provideList()
     }
 
-    func selectSort(_ sort: SubtensorSubnetSort) {
-        self.sort = sort
-        requestMonthlyMetricsIfNeeded()
-        provideViewModels()
+    func selectRoot() {
+        wireframe.complete(from: view, target: .root, validator: nil, delegate: delegate)
     }
 
-    func selectFilters(_ filters: SubtensorSubnetFilters) {
-        self.filters = filters
-        requestMonthlyMetricsIfNeeded()
-        provideViewModels()
+    func showSort() {
+        let viewModel = viewModelFactory.createSortSheetViewModel(selected: sort, locale: selectedLocale)
+
+        wireframe.showSortSheet(from: view, viewModel: viewModel) { [weak self] index in
+            let sorts = SubtensorSubnetSort.allCases
+
+            guard sorts.indices.contains(index) else {
+                return
+            }
+
+            self?.applySort(sorts[index])
+        }
+    }
+
+    func showFilters() {
+        pendingFilters = filters
+
+        filtersView = wireframe.showFilters(
+            from: view,
+            viewModel: createFiltersViewModel(for: filters),
+            onChange: { [weak self] draft in
+                self?.draftFilters(draft)
+            },
+            onApply: { [weak self] draft in
+                self?.applyFilters(draft)
+            }
+        )
+    }
+
+    func draftFilters(_ filters: SubtensorSubnetFilters) {
+        pendingFilters = filters
+
+        if filters.onlyAboveThirtyDayAverage {
+            requestMonthlyMetricsIfNeeded()
+        }
+
+        provideFilters()
+    }
+
+    func applyFilters(_ filters: SubtensorSubnetFilters) {
+        var appliedFilters = filters
+
+        if loadedMonthlyMetrics == nil {
+            appliedFilters.onlyAboveThirtyDayAverage = false
+        }
+
+        self.filters = appliedFilters
+        pendingFilters = nil
+
+        provideList()
     }
 }
 
 extension SubtensorSubnetSelectPresenter: SubnetSelectInteractorOutputProtocol {
-    func didReceiveSubnetsInfo(_ info: SubtensorSubnetsInfo) {
-        subnetsInfo = info
-        monthlyMetrics = [:]
-        monthlyRequested = false
-        monthlyLoaded = false
+    func didReceive(entries: [SubtensorSubnetListEntry]) {
+        self.entries = entries
 
-        provideViewModels()
-        view?.didReceiveLoading(false)
-        requestMonthlyMetricsIfNeeded()
+        provideList()
+        provideFilters()
+        requestWeeklyPricesIfNeeded()
     }
 
-    func didReceiveWeeklyChanges(_ changes: [SubtensorSubnetRef: Decimal]) {
-        weeklyChanges = changes
-        provideViewModels()
+    func didReceive(earnConfig: SubtensorEarnConfig?) {
+        self.earnConfig = earnConfig
+
+        provideList()
     }
 
-    func didReceiveMonthlyMetrics(_ metrics: [SubtensorSubnetRef: SubtensorPriceData<SubtensorMonthlyPriceMetrics>]) {
-        monthlyMetrics = metrics
-        monthlyLoaded = true
-        provideViewModels()
+    func didReceive(rootRate: Decimal?) {
+        self.rootRate = rootRate
+
+        provideRootBar()
+    }
+
+    func didReceive(rankedSubnets: SubtensorRankedSubnets?) {
+        ageBlocks = Dictionary(
+            (rankedSubnets?.items ?? []).compactMap { item in item.ageBlocks.map { (item.netuid, $0) } },
+            uniquingKeysWith: { first, _ in first }
+        )
+
+        provideList()
+    }
+
+    func didReceive(weeklyPrices: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]) {
+        self.weeklyPrices = weeklyPrices
+
+        provideList()
+    }
+
+    func didReceive(monthlyMetrics: [SubtensorSubnetRef: SubtensorPriceData<SubtensorMonthlyPriceMetrics>]) {
+        monthlyState = .loaded(monthlyMetrics)
+
+        provideList()
+        provideFilters()
     }
 
     func didFailMonthlyMetrics() {
-        monthlyRequested = false
-        monthlyLoaded = false
-        provideViewModels()
-    }
+        monthlyState = .unavailable
 
-    func didReceiveDefaultTake(_ take: UInt16) {
-        defaultTake = take
+        pendingFilters?.onlyAboveThirtyDayAverage = false
+        filters.onlyAboveThirtyDayAverage = false
 
-        provideViewModels()
+        let revertsSort = sort == .thirtyDayChange
+
+        if revertsSort {
+            sort = .sevenDayChange
+        }
+
+        provideList()
+        provideFilters()
+
+        if revertsSort {
+            wireframe.presentThirtyDayUnavailable(from: view, locale: selectedLocale)
+        }
     }
 
     func didReceiveError(_ error: Error) {
-        logger.error("Subnets fetch failed: \(error)")
-        view?.didReceiveLoading(false)
+        entries = []
+        provideList()
+
+        if let apiError = error as? BittensorApiError, apiError.isDeviceBound {
+            return
+        }
 
         wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-            self?.interactor.refresh()
+            self?.retryEntries()
         }
     }
 }
 
 extension SubtensorSubnetSelectPresenter: Localizable {
     func applyLocalization() {
-        if let view, view.isSetup {
-            provideViewModels()
+        guard let view, view.isSetup else {
+            return
         }
+
+        provideList()
+        provideRootBar()
+        provideFilters()
     }
 }

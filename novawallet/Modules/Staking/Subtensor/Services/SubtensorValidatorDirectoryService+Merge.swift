@@ -4,6 +4,7 @@ extension SubtensorValidatorDirectoryService {
     struct Row {
         let hotkey: AccountId
         let name: String?
+        let stake: BigRational?
     }
 
     struct Listing {
@@ -46,7 +47,8 @@ extension SubtensorValidatorDirectoryService {
             }
 
             let name = nonBlank(item.identitySourceName) ?? nonBlank(item.stakeSourceName)
-            rows.append(Row(hotkey: hotkey, name: name))
+            let stake = reportedStake(item.reportedMeasurements.validatorStake)
+            rows.append(Row(hotkey: hotkey, name: name, stake: stake))
         }
 
         if rows.count < candidates.count {
@@ -74,6 +76,10 @@ extension SubtensorValidatorDirectoryService {
         }
 
         return trimmed
+    }
+
+    static func reportedStake(_ value: String?) -> BigRational? {
+        value.flatMap { try? BittensorApiDecimal.fraction($0) }
     }
 
     static func preferredHotkey(in config: SubtensorEarnConfig, for subnet: SubtensorSubnetRef) -> AccountId? {
@@ -160,6 +166,7 @@ extension SubtensorValidatorDirectoryService {
     static func makeItem(
         hotkey: AccountId,
         name: String?,
+        stake: BigRational?,
         netuid: UInt16,
         enrichment: Enrichment
     ) -> SubtensorValidatorDirectoryItem {
@@ -172,7 +179,7 @@ extension SubtensorValidatorDirectoryService {
             netuid: netuid,
             name: name,
             take: isEnriched ? snapshot.takes[hotkey].map { takeFraction($0) } : nil,
-            hotkeyAlpha: isEnriched ? snapshot.hotkeyAlpha[pair] : nil,
+            reportedStake: stake,
             status: isEnriched ? SubtensorValidatorChainStatus.make(snapshot: snapshot, pair: pair) : nil,
             isNovaPreferred: isEnriched && enrichment.gatedPreference == hotkey
         )
@@ -186,7 +193,13 @@ extension SubtensorValidatorDirectoryService {
         SubtensorValidatorDirectory(
             subnet: subnet,
             items: listing.rows.map { row in
-                makeItem(hotkey: row.hotkey, name: row.name, netuid: subnet.netuid, enrichment: enrichment)
+                makeItem(
+                    hotkey: row.hotkey,
+                    name: row.name,
+                    stake: row.stake,
+                    netuid: subnet.netuid,
+                    enrichment: enrichment
+                )
             },
             listStamp: listing.listStamp,
             isPartial: listing.isPartial,

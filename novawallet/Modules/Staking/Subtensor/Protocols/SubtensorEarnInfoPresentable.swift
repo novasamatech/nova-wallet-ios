@@ -1,0 +1,21 @@
+import Foundation
+
+protocol SubtensorEarnInfoPresentable {
+    func presentSubtensorEarnInfo(from view: ControllerBackedProtocol?, chainAsset: ChainAsset)
+}
+
+extension SubtensorEarnInfoPresentable {
+    func presentSubtensorEarnInfo(from view: ControllerBackedProtocol?, chainAsset: ChainAsset) {
+        guard
+            let view,
+            let earnInfoView = StartStakingInfoViewFactory.createSubtensorView(
+                for: Multistaking.ChainAssetOption(chainAsset: chainAsset, type: .subtensor)
+            ) else {
+            return
+        }
+
+        let navigationController = ImportantFlowViewFactory.createNavigation(from: earnInfoView.controller)
+
+        view.controller.presentWithCardLayout(navigationController, animated: true)
+    }
+}

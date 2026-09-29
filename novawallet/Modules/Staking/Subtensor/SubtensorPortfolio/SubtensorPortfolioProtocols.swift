@@ -1,29 +1,12 @@
 import Foundation
 
-struct SubtensorPortfolioRowViewModel {
-    let group: SubtensorPortfolioGroup
-    let title: String
-    let amount: String
-    let value: String?
-    let subtitle: String
-}
-
-struct SubtensorPortfolioViewModel {
-    let total: String
-    let fiat: String?
-    let rows: [SubtensorPortfolioRowViewModel]
-    let syncFailed: Bool
-}
-
 protocol SubtensorPortfolioViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: SubtensorPortfolioViewModel)
-    func didReceiveChartLoading()
-    func didReceive(series: SubtensorPortfolioValueSeries?)
 }
 
 protocol SubtensorPortfolioPresenterProtocol: AnyObject {
     func setup()
-    func selectPeriod(_ period: SubtensorPricePeriod)
+    func selectPeriod(at index: Int)
     func selectPosition(at index: Int)
     func addPosition()
     func retry()
@@ -32,27 +15,26 @@ protocol SubtensorPortfolioPresenterProtocol: AnyObject {
 protocol SubnetPortfolioInteractorInputProtocol: AnyObject {
     func setup()
     func refresh()
-    func loadSeries(
-        portfolio: SubtensorPortfolio,
-        subnetsInfo: SubtensorSubnetsInfo?,
-        priceId: String?,
-        precision: Int16,
-        period: SubtensorPricePeriod
-    )
+    func loadHistories(for period: SubtensorPricePeriod, subnets: [SubtensorSubnetRef])
+    func loadWeeklyChanges(for subnets: [SubtensorSubnetRef])
 }
 
 protocol SubnetPortfolioInteractorOutputProtocol: AnyObject {
     func didReceive(state: Multistaking.SubtensorStakingState)
-    func didReceive(series: SubtensorPortfolioValueSeries?)
+    func didReceive(catalogue: SubtensorSubnetCatalogue?)
+    func didReceive(earnConfig: SubtensorEarnConfig?)
+    func didReceive(rootRate: Decimal?)
+    func didReceive(price: PriceData?)
+    func didReceive(histories: SubtensorPortfolioPriceHistories)
+    func didFailHistories(for period: SubtensorPricePeriod)
+    func didReceive(weeklyChanges: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>])
     func didReceiveSyncFailure(_ isFailed: Bool)
+    func didChangeCurrency()
+    func didReceiveAccountChange()
 }
 
-protocol SubtensorPortfolioWireframeProtocol: AnyObject {
-    func showPosition(
-        from view: SubtensorPortfolioViewProtocol?,
-        group: SubtensorPortfolioGroup,
-        state: Multistaking.SubtensorStakingState,
-        commonData: SubtensorStakingCommonData
-    )
+protocol SubtensorPortfolioWireframeProtocol: AnyObject, MessageSheetPresentable, SubtensorEarnInfoPresentable {
+    func showPosition(from view: SubtensorPortfolioViewProtocol?, group: SubtensorPortfolioGroup)
     func showAddPosition(from view: SubtensorPortfolioViewProtocol?)
+    func close(from view: SubtensorPortfolioViewProtocol?)
 }

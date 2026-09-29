@@ -1,23 +1,13 @@
-import Foundation
-import Foundation_iOS
+import UIKit
 
 final class SubtensorValidatorSelectWireframe: ValidatorSelectWireframeProtocol {
-    func complete(from view: SubtensorValidatorSelectViewProtocol?) {
-        guard let navigation = view?.controller.navigationController,
-              let setup = navigation.viewControllers.last(where: { $0 is SubtensorStakingSetupViewController }) else {
-            return
-        }
-        navigation.popToViewController(setup, animated: true)
+    let state: SubtensorStakingSharedStateProtocol
+
+    init(state: SubtensorStakingSharedStateProtocol) {
+        self.state = state
     }
 
-    func showInfo(from view: SubtensorValidatorSelectViewProtocol?, context: SubtensorValidatorInfoContext) {
-        let info = SubtensorValidatorInfoViewController(
-            detail: context.detail,
-            apy: context.apy,
-            locale: context.locale,
-            chainAsset: context.chainAsset,
-            price: context.price
-        )
-        view?.controller.navigationController?.pushViewController(info, animated: true)
+    func complete(from view: SubtensorValidatorSelectViewProtocol?) {
+        view?.controller.navigationController?.popViewController(animated: true)
     }
 }

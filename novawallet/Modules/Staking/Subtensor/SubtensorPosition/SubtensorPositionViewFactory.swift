@@ -4,21 +4,21 @@ import Foundation_iOS
 enum SubtensorPositionViewFactory {
     static func createView(
         for state: SubtensorStakingSharedStateProtocol,
-        group: SubtensorPortfolioGroup,
-        commonData: SubtensorStakingCommonData
+        group: SubtensorPortfolioGroup
     ) -> SubtensorPositionViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else { return nil }
 
         let interactor = SubtensorPositionInteractor(
             state: state,
             netuid: group.netuid,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared
         )
         let presenter = SubtensorPositionPresenter(
             group: group,
-            commonData: commonData,
+            account: state.selectedAccount,
             interactor: interactor,
             wireframe: SubtensorPositionWireframe(state: state),
             precision: Int16(state.stakingOption.chainAsset.asset.precision),

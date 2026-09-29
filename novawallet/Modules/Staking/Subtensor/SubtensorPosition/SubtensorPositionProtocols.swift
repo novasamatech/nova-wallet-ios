@@ -34,6 +34,10 @@ protocol SubtensorPositionInteractorInputProtocol: AnyObject {
 protocol SubnetPositionInteractorOutputProtocol: AnyObject {
     func didReceive(group: SubtensorPortfolioGroup)
     func didReceive(history: SubtensorPriceHistoryResult)
+    func didReceive(subnetsInfo: SubtensorSubnetsInfo)
+    func didReceive(price: PriceData?)
+    func didReceive(claimable: SubtensorRootClaimable?)
+    func didReceive(delegates: [SubtensorDelegate])
 }
 
 protocol SubtensorPositionWireframeProtocol: AnyObject {

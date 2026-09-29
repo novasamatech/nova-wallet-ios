@@ -290,5 +290,69 @@
 			<string>%li tokens</string>
 		</dict>
 	</dict>
+	<key>staking.subtensor.ui.picker.count</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@format@</string>
+		<key>format</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>li</string>
+			<key>one</key>
+			<string>%li subnet</string>
+			<key>other</key>
+			<string>%li subnets</string>
+		</dict>
+	</dict>
+	<key>staking.subtensor.ui.picker.show.count</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@format@</string>
+		<key>format</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>li</string>
+			<key>one</key>
+			<string>Show %li subnet</string>
+			<key>other</key>
+			<string>Show %li subnets</string>
+		</dict>
+	</dict>
+	<key>common.months.format</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@format@</string>
+		<key>format</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>li</string>
+			<key>one</key>
+			<string>%li month</string>
+			<key>other</key>
+			<string>%li months</string>
+		</dict>
+	</dict>
+	<key>staking.subtensor.ui.detail.factors.footer.format</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$li of %2$#@total@ on the safer side · this is not a guarantee</string>
+		<key>total</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>li</string>
+			<key>one</key>
+			<string>%li factor</string>
+			<key>other</key>
+			<string>%li factors</string>
+		</dict>
+	</dict>
 </dict>
 </plist>

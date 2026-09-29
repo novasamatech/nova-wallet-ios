@@ -1,29 +1,38 @@
 import Foundation
 import Foundation_iOS
-import Operation_iOS
-import SubstrateSdk
 
 enum SubtensorStakingSetupViewFactory {
+    static func createRootDetailsView(
+        for state: SubtensorStakingSharedStateProtocol
+    ) -> SubtensorStakingSetupViewProtocol? {
+        createView(for: state, mode: .rootDetails)
+    }
+
     static func createView(
         for state: SubtensorStakingSharedStateProtocol,
         initialPosition: SubtensorStakingPosition?
-    ) -> CollatorStakingSetupViewProtocol? {
-        let chainAsset = state.stakingOption.chainAsset
+    ) -> SubtensorStakingSetupViewProtocol? {
+        guard let initialPosition else {
+            return createRootDetailsView(for: state)
+        }
 
+        return createView(for: state, mode: .mode(for: initialPosition))
+    }
+}
+
+private extension SubtensorStakingSetupViewFactory {
+    static func createView(
+        for state: SubtensorStakingSharedStateProtocol,
+        mode: SubtensorStakingSetupMode
+    ) -> SubtensorStakingSetupViewProtocol? {
         guard let services = SubtensorFlowServicesFactory.createServices(for: state) else {
             return nil
         }
 
-        let interactor = createInteractor(for: state, services: services, initialPosition: initialPosition)
-        let selectedAccount = services.account
-        let currencyManager = services.currencyManager
-
+        let chainAsset = state.stakingOption.chainAsset
+        let interactor = createInteractor(for: state, services: services)
         let wireframe = SubtensorStakingSetupWireframe(state: state)
-
-        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
-
-        let accountDetailsFactory = CollatorStakingAccountViewModelFactory(chainAsset: chainAsset)
-
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: services.currencyManager)
         let localizationManager = LocalizationManager.shared
 
         let balanceViewModelFactory = BalanceViewModelFactory(
@@ -37,32 +46,31 @@ enum SubtensorStakingSetupViewFactory {
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
-        let presenter = SubtensorStakingSetupPresenter(
-            interactor: interactor,
-            wireframe: wireframe,
+        let viewModelFactory = SubtensorStakingSetupViewModelFactory(
             chainAsset: chainAsset,
-            selectedAccount: selectedAccount,
-            dataValidationFactory: dataValidationFactory,
             balanceViewModelFactory: balanceViewModelFactory,
-            accountDetailsViewModelFactory: accountDetailsFactory,
             quoteViewModelFactory: SubtensorQuoteViewModelFactory(
                 chainAsset: chainAsset,
                 priceAssetInfoFactory: priceAssetInfoFactory
-            ),
-            initialPosition: initialPosition,
+            )
+        )
+
+        let presenter = SubtensorStakingSetupPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            mode: mode,
+            chainAsset: chainAsset,
+            selectedAccount: services.account,
+            slippage: state.earnServices.earnSettings.slippageTolerance,
+            dataValidationFactory: dataValidationFactory,
+            balanceViewModelFactory: balanceViewModelFactory,
+            viewModelFactory: viewModelFactory,
             localizationManager: localizationManager,
             logger: Logger.shared
         )
 
-        let localizableTitle = CollatorStakingStakeScreenTitle.setup(
-            hasStake: initialPosition != nil,
-            assetSymbol: chainAsset.asset.symbol
-        )
-
         let view = SubtensorStakingSetupViewController(
             presenter: presenter,
-            localizableTitle: localizableTitle(),
-            statics: .subtensorValidator,
             localizationManager: localizationManager
         )
 
@@ -73,40 +81,28 @@ enum SubtensorStakingSetupViewFactory {
         return view
     }
 
-    private static func createInteractor(
+    static func createInteractor(
         for state: SubtensorStakingSharedStateProtocol,
-        services: SubtensorFlowServices,
-        initialPosition: SubtensorStakingPosition?
+        services: SubtensorFlowServices
     ) -> SubtensorStakingSetupInteractor {
-        let requestFactory = StorageRequestFactory(
-            remoteFactory: StorageKeyFactory(),
-            operationManager: OperationManager(operationQueue: services.operationQueue)
-        )
+        let earnServices = state.earnServices
 
-        let identityProxyFactory = IdentityProxyFactory(
-            originChain: state.stakingOption.chainAsset.chain,
-            chainRegistry: state.chainRegistry,
-            identityOperationFactory: IdentityOperationFactory(requestFactory: requestFactory)
+        let presetFactory = SubtensorValidatorPresetFactory(
+            directoryService: earnServices.validatorDirectoryService,
+            recommendationService: earnServices.recommendationService,
+            operationQueue: services.operationQueue,
+            logger: Logger.shared
         )
 
         return SubtensorStakingSetupInteractor(
+            flowServices: services,
             chainAsset: state.stakingOption.chainAsset,
-            selectedAccount: services.account.chainAccount,
-            positionsSyncService: services.positionsSyncService,
-            rootClaimableService: services.rootClaimableService,
-            preflightFactory: services.preflightFactory,
-            tradeQuoteFactory: services.tradeQuoteFactory,
-            operationService: services.operationService,
-            rewardCalculatorService: state.rewardCalculatorService,
+            presetFactory: presetFactory,
+            yieldService: earnServices.yieldService,
+            catalogueService: earnServices.catalogueService,
             subnetsService: state.subnetsService,
-            initialNetuid: initialPosition?.netuid,
-            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
-            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            earnSettings: earnServices.earnSettings,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
-            runtimeProvider: services.runtimeProvider,
-            identityProxyFactory: identityProxyFactory,
-            currencyManager: services.currencyManager,
-            operationQueue: services.operationQueue,
             logger: Logger.shared
         )
     }

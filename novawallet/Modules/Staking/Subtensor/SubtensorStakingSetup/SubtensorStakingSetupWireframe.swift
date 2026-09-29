@@ -1,7 +1,5 @@
 import Foundation
-import Foundation_iOS
 import UIKit
-import UIKit_iOS
 
 final class SubtensorStakingSetupWireframe: SubtensorStakingSetupWireframeProtocol {
     let state: SubtensorStakingSharedStateProtocol
@@ -11,7 +9,7 @@ final class SubtensorStakingSetupWireframe: SubtensorStakingSetupWireframeProtoc
     }
 
     func showConfirmation(
-        from view: CollatorStakingSetupViewProtocol?,
+        from view: SubtensorStakingSetupViewProtocol?,
         model: SubtensorStakingConfirmModel
     ) {
         guard let confirmView = SubtensorStakingConfirmViewFactory.createView(
@@ -25,13 +23,15 @@ final class SubtensorStakingSetupWireframe: SubtensorStakingSetupWireframeProtoc
     }
 
     func showValidatorSelection(
-        from view: CollatorStakingSetupViewProtocol?,
+        from view: SubtensorStakingSetupViewProtocol?,
         target: SubtensorStakeTarget,
-        delegate: SubtensorSubnetSelectDelegate
+        selectedHotkey: AccountId?,
+        delegate: SubtensorValidatorSelectDelegate
     ) {
         guard let selectView = SubtensorValidatorSelectViewFactory.createView(
             for: state,
             target: target,
+            selectedHotkey: selectedHotkey,
             delegate: delegate
         ) else {
             return
@@ -40,71 +40,19 @@ final class SubtensorStakingSetupWireframe: SubtensorStakingSetupWireframeProtoc
         view?.controller.navigationController?.pushViewController(selectView.controller, animated: true)
     }
 
-    func showSubnetRiskNote(
-        from view: CollatorStakingSetupViewProtocol?,
-        onContinue: @escaping () -> Void
-    ) {
-        let continueAction = MessageSheetAction(
-            title: LocalizableResource { locale in
-                R.string(preferredLanguages: locale.rLanguages).localizable.commonContinue()
-            },
-            handler: onContinue
-        )
-
-        let cancelAction = MessageSheetAction(
-            title: LocalizableResource { locale in
-                R.string(preferredLanguages: locale.rLanguages).localizable.commonCancel()
-            },
-            handler: {}
-        )
-
-        let viewModel = TitleDetailsSheetViewModel(
-            title: LocalizableResource { locale in
-                R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorSubnetRiskTitle()
-            },
-            message: LocalizableResource { locale in
-                R.string(
-                    preferredLanguages: locale.rLanguages
-                ).localizable.stakingSubtensorSubnetRiskMessage()
-            },
-            mainAction: continueAction,
-            secondaryAction: cancelAction
-        )
-
-        let bottomSheet = TitleDetailsSheetViewFactory.createView(
-            from: viewModel,
-            allowsSwipeDown: true,
-            preferredContentSize: CGSize(width: 0.0, height: 300.0)
-        )
-
-        let factory = ModalSheetPresentationFactory(
-            configuration: ModalSheetPresentationConfiguration.novaManual
-        )
-
-        bottomSheet.controller.modalTransitioningFactory = factory
-        bottomSheet.controller.modalPresentationStyle = .custom
-
-        view?.controller.present(bottomSheet.controller, animated: true)
-    }
-
     func showSubnetSelection(
-        from view: CollatorStakingSetupViewProtocol?,
-        delegate: SubtensorSubnetSelectDelegate,
-        delegateTake: UInt16?
+        from view: SubtensorStakingSetupViewProtocol?,
+        delegate: SubtensorSubnetSelectDelegate
     ) {
-        guard let selectView = SubtensorSubnetSelectViewFactory.createView(
-            for: state,
-            delegate: delegate,
-            delegateTake: delegateTake
-        ) else {
+        guard let picker = SubtensorSubnetSelectViewFactory.createPicker(for: state, delegate: delegate) else {
             return
         }
 
-        view?.controller.navigationController?.pushViewController(selectView.controller, animated: true)
+        view?.controller.presentWithCardLayout(picker, animated: true)
     }
 
     func showSlippageEdit(
-        from view: CollatorStakingSetupViewProtocol?,
+        from view: SubtensorStakingSetupViewProtocol?,
         current: BigRational,
         completion: @escaping (BigRational) -> Void
     ) {
@@ -116,9 +64,26 @@ final class SubtensorStakingSetupWireframe: SubtensorStakingSetupWireframeProtoc
             return
         }
 
-        view?.controller.navigationController?.pushViewController(
-            slippageView.controller,
-            animated: true
-        )
+        view?.controller.navigationController?.pushViewController(slippageView.controller, animated: true)
+    }
+
+    func popTopControllers(
+        from view: SubtensorStakingSetupViewProtocol?,
+        completion: @escaping () -> Void
+    ) {
+        guard let controller = view?.controller else {
+            return
+        }
+
+        if let presentedViewController = controller.presentedViewController {
+            presentedViewController.dismiss(animated: true, completion: completion)
+        } else {
+            CATransaction.begin()
+            CATransaction.setCompletionBlock(completion)
+
+            controller.navigationController?.popToViewController(controller, animated: true)
+
+            CATransaction.commit()
+        }
     }
 }

@@ -2,10 +2,10 @@ import UIKit
 import SubstrateSdk
 import Operation_iOS
 
-final class SubtensorStakingSetupInteractor: SubtensorStakingDelegateBaseInteractor {
-    var presenter: SubtensorStakingSetupInteractorOutputProtocol? {
+final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
+    var presenter: SubtensorSetupInteractorOutputProtocol? {
         get {
-            basePresenter as? SubtensorStakingSetupInteractorOutputProtocol
+            basePresenter as? SubtensorSetupInteractorOutputProtocol
         }
 
         set {
@@ -13,88 +13,156 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingDelegateBaseInterac
         }
     }
 
-    let rewardCalculatorService: SubtensorRewardCalculatorServiceProtocol
+    let presetFactory: SubtensorValidatorPresetFactoryProtocol
+    let yieldService: SubtensorYieldServiceProtocol
+    let catalogueService: SubtensorSubnetCatalogueServiceProtocol
     let subnetsService: SubtensorSubnetsServiceProtocol
-    let initialNetuid: UInt16?
+    let earnSettings: SubtensorEarnSettingsProtocol
+
+    private let validatorCallStore = CancellableCallStore()
+    private let rootYieldCallStore = CancellableCallStore()
+    private let catalogueCallStore = CancellableCallStore()
 
     init(
+        flowServices: SubtensorFlowServices,
         chainAsset: ChainAsset,
-        selectedAccount: ChainAccountResponse,
-        positionsSyncService: SubtensorPositionsSyncServiceProtocol,
-        rootClaimableService: SubtensorRootClaimableServiceProtocol,
-        preflightFactory: SubtensorPreflightFactoryProtocol,
-        tradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol,
-        operationService: SubtensorStakingOperationServiceProtocol,
-        rewardCalculatorService: SubtensorRewardCalculatorServiceProtocol,
+        presetFactory: SubtensorValidatorPresetFactoryProtocol,
+        yieldService: SubtensorYieldServiceProtocol,
+        catalogueService: SubtensorSubnetCatalogueServiceProtocol,
         subnetsService: SubtensorSubnetsServiceProtocol,
-        initialNetuid: UInt16?,
-        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
-        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        earnSettings: SubtensorEarnSettingsProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
-        runtimeProvider: RuntimeCodingServiceProtocol,
-        identityProxyFactory: IdentityProxyFactoryProtocol,
-        currencyManager: CurrencyManagerProtocol,
-        operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
-        self.rewardCalculatorService = rewardCalculatorService
+        self.presetFactory = presetFactory
+        self.yieldService = yieldService
+        self.catalogueService = catalogueService
         self.subnetsService = subnetsService
-        self.initialNetuid = initialNetuid
+        self.earnSettings = earnSettings
 
         super.init(
             chainAsset: chainAsset,
-            selectedAccount: selectedAccount,
-            positionsSyncService: positionsSyncService,
-            rootClaimableService: rootClaimableService,
-            preflightFactory: preflightFactory,
-            tradeQuoteFactory: tradeQuoteFactory,
-            operationService: operationService,
-            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
-            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            selectedAccount: flowServices.account.chainAccount,
+            positionsSyncService: flowServices.positionsSyncService,
+            rootClaimableService: flowServices.rootClaimableService,
+            preflightFactory: flowServices.preflightFactory,
+            tradeQuoteFactory: flowServices.tradeQuoteFactory,
+            operationService: flowServices.operationService,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
-            runtimeProvider: runtimeProvider,
-            identityProxyFactory: identityProxyFactory,
-            currencyManager: currencyManager,
-            operationQueue: operationQueue,
+            runtimeProvider: flowServices.runtimeProvider,
+            currencyManager: flowServices.currencyManager,
+            operationQueue: flowServices.operationQueue,
             logger: logger
         )
     }
 
-    override func onSetup() {
-        super.onSetup()
-
-        provideRewardEngine()
-        provideInitialSubnet()
+    deinit {
+        validatorCallStore.cancel()
+        rootYieldCallStore.cancel()
+        catalogueCallStore.cancel()
     }
 }
 
 private extension SubtensorStakingSetupInteractor {
-    func provideRewardEngine() {
-        rewardCalculatorService.fetchEngine(runningCompletionIn: .main) { [weak self] result in
-            switch result {
-            case let .success(engine):
-                self?.presenter?.didReceiveRewardEngine(engine)
-            case let .failure(error):
-                // the estimated-earnings row stays hidden rather than showing a guess
-                self?.logger.error("Root APY unavailable: \(error)")
-                self?.presenter?.didReceiveRewardEngine(nil)
-            }
-        }
-    }
+    func provideValidator(
+        using wrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem?>,
+        subnet: SubtensorSubnetRef
+    ) {
+        validatorCallStore.cancel()
 
-    func provideInitialSubnet() {
-        guard let initialNetuid, initialNetuid != SubtensorStakingPallet.rootNetuid else { return }
-        subnetsService.fetchSubnetsInfo(runningCompletionIn: .main) { [weak self] result in
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: validatorCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
             switch result {
-            case let .success(info): self?.presenter?.didReceiveInitialSubnets(info)
-            case let .failure(error): self?.presenter?.didFailInitialSubnets(error)
+            case let .success(validator):
+                self?.presenter?.didReceiveValidator(validator, on: subnet)
+            case let .failure(error):
+                self?.logger.error("Subtensor validator preset failed: \(error)")
+                self?.presenter?.didReceiveValidator(nil, on: subnet)
             }
         }
     }
 }
 
-extension SubtensorStakingSetupInteractor: SubtensorStakingSetupInteractorInputProtocol {
-    func retryInitialSubnet() {
-        provideInitialSubnet()
+extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol {
+    func presetValidator(on subnet: SubtensorSubnetRef, existingHotkey: AccountId?) {
+        let wrapper = presetFactory.createPresetWrapper(for: subnet, existingHotkey: existingHotkey)
+
+        provideValidator(using: wrapper, subnet: subnet)
     }
+
+    func loadLockedValidator(_ hotkey: AccountId, on subnet: SubtensorSubnetRef) {
+        let wrapper = presetFactory.createLockedWrapper(for: hotkey, subnet: subnet)
+
+        provideValidator(using: wrapper, subnet: subnet)
+    }
+
+    func loadRootYield() {
+        rootYieldCallStore.cancel()
+
+        executeCancellable(
+            wrapper: yieldService.createRootYieldWrapper(),
+            inOperationQueue: operationQueue,
+            backingCallIn: rootYieldCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(yield):
+                self?.presenter?.didReceiveRootYield(yield)
+            case let .failure(error):
+                self?.logger.warning("Subtensor root yield unavailable: \(error)")
+                self?.presenter?.didReceiveRootYield(nil)
+            }
+        }
+    }
+
+    func loadSubnet(netuid: UInt16) {
+        subnetsService.fetchSubnetsInfo(runningCompletionIn: .main) { [weak self] result in
+            switch result {
+            case let .success(info):
+                guard
+                    let subnet = info.subnets.first(where: { $0.netuid == netuid }),
+                    let price = info.prices[netuid] else {
+                    self?.presenter?.didFailSubnet(SubtensorStakingSetupError.subnetUnavailable(netuid))
+                    return
+                }
+
+                self?.presenter?.didReceiveSubnet(.subnet(info: subnet, price: price))
+            case let .failure(error):
+                self?.presenter?.didFailSubnet(error)
+            }
+        }
+    }
+
+    func loadCatalogue() {
+        catalogueCallStore.cancel()
+
+        executeCancellable(
+            wrapper: catalogueService.createCatalogueWrapper(forcingRefresh: false),
+            inOperationQueue: operationQueue,
+            backingCallIn: catalogueCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(catalogue):
+                self?.presenter?.didReceiveCatalogue(catalogue)
+            case let .failure(error):
+                self?.logger.warning("Subtensor catalogue unavailable for the setup: \(error)")
+                self?.presenter?.didReceiveCatalogue(nil)
+            }
+        }
+    }
+
+    func saveSlippage(_ tolerance: BigRational) {
+        earnSettings.slippageTolerance = tolerance
+    }
+}
+
+enum SubtensorStakingSetupError: Error {
+    case subnetUnavailable(UInt16)
 }
