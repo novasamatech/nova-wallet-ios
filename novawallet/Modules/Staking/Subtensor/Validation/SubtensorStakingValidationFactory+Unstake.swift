@@ -65,7 +65,7 @@ extension SubtensorStakingValidationFactory {
 
             presentable.presentFeeFromStakeWarning(
                 view,
-                fee: formatAmount(fee ?? 0, locale: locale),
+                fee: formatRequiredAmount(fee ?? 0, locale: locale),
                 action: {
                     delegate.didCompleteWarningHandling()
                 },
@@ -146,54 +146,6 @@ extension SubtensorStakingValidationFactory {
             }
 
             return UInt64(currentBlock).subtractOrZero(lastStakeBlock) >= unlockInterval
-        })
-    }
-
-    func claimFeeCoveredByTransferable(
-        transferable: Balance?,
-        fee: Balance?,
-        locale: Locale
-    ) -> DataValidating {
-        ErrorConditionViolation(onError: { [weak self] in
-            guard let self, let view else {
-                return
-            }
-
-            presentable.presentClaimFeeNotAvailable(
-                view,
-                fee: formatAmount(fee ?? 0, locale: locale),
-                locale: locale
-            )
-        }, preservesCondition: {
-            guard let fee else {
-                return true
-            }
-
-            return (transferable ?? 0) >= fee
-        })
-    }
-
-    func claimableAtLeastThreshold(
-        claimable: Balance?,
-        threshold: Balance?,
-        locale: Locale
-    ) -> DataValidating {
-        ErrorConditionViolation(onError: { [weak self] in
-            guard let self, let view else {
-                return
-            }
-
-            presentable.presentClaimBelowThreshold(
-                view,
-                threshold: formatAmount(threshold ?? 0, locale: locale),
-                locale: locale
-            )
-        }, preservesCondition: {
-            guard let claimable, claimable > 0 else {
-                return false
-            }
-
-            return claimable >= (threshold ?? 0)
         })
     }
 }

@@ -18,10 +18,15 @@ final class SubtensorPortfolioWireframe: SubtensorPortfolioWireframeProtocol {
     func close(from view: SubtensorPortfolioViewProtocol?) {
         guard let navigationController = view?.controller.navigationController else { return }
 
-        if navigationController.viewIfLoaded?.window != nil, navigationController.presentedViewController != nil {
-            navigationController.dismiss(animated: false)
+        let tabBarController = navigationController.tabBarController
+
+        guard tabBarController?.selectedViewController === navigationController else {
+            navigationController.popToRootViewController(animated: false)
+            return
         }
 
-        navigationController.popToRootViewController(animated: true)
+        SubtensorModalStack.dismiss(above: tabBarController, animated: false) {
+            navigationController.popToRootViewController(animated: true)
+        }
     }
 }
