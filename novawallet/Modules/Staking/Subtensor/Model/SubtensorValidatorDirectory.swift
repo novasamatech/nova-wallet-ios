@@ -5,7 +5,7 @@ struct SubtensorValidatorDirectoryItem: Equatable {
     let netuid: UInt16
     let name: String?
     let take: Decimal?
-    let hotkeyAlpha: Balance?
+    let reportedStake: BigRational?
     let status: SubtensorValidatorChainStatus?
     let isNovaPreferred: Bool
 }

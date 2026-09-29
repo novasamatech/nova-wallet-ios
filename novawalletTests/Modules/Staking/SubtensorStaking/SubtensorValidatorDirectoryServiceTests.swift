@@ -53,7 +53,7 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
                     netuid: 64,
                     name: "Aster Stake",
                     take: takeFraction(11796),
-                    hotkeyAlpha: 1_000_000_000,
+                    reportedStake: BigRational(numerator: 1000, denominator: 1),
                     status: SubtensorValidatorChainStatus(uid: 5, hasPermit: true, blocksSinceUpdate: 100, isActive: true),
                     isNovaPreferred: false
                 ),
@@ -62,7 +62,7 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
                     netuid: 64,
                     name: "BlueHarbor",
                     take: takeFraction(6553),
-                    hotkeyAlpha: 2_000_000_000,
+                    reportedStake: BigRational(numerator: 1000, denominator: 1),
                     status: SubtensorValidatorChainStatus(uid: 9, hasPermit: true, blocksSinceUpdate: 10, isActive: true),
                     isNovaPreferred: true
                 ),
@@ -71,7 +71,7 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
                     netuid: 64,
                     name: nil,
                     take: takeFraction(11796),
-                    hotkeyAlpha: 0,
+                    reportedStake: BigRational(numerator: 1000, denominator: 1),
                     status: nil,
                     isNovaPreferred: false
                 )
@@ -216,7 +216,7 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
             netuid: 0,
             name: "Aster Stake",
             take: 0,
-            hotkeyAlpha: 0,
+            reportedStake: BigRational(numerator: 1000, denominator: 1),
             status: SubtensorValidatorChainStatus(uid: 3, hasPermit: nil, blocksSinceUpdate: nil, isActive: nil),
             isNovaPreferred: true
         )
@@ -318,7 +318,7 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
             netuid: 64,
             name: nil,
             take: takeFraction(6553),
-            hotkeyAlpha: 2_000_000_000,
+            reportedStake: nil,
             status: SubtensorValidatorChainStatus(uid: 9, hasPermit: true, blocksSinceUpdate: 10, isActive: true),
             isNovaPreferred: true
         )
@@ -456,7 +456,7 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
             netuid: 0,
             name: nil,
             take: takeFraction(take),
-            hotkeyAlpha: 0,
+            reportedStake: nil,
             status: SubtensorValidatorChainStatus(uid: 3, hasPermit: nil, blocksSinceUpdate: nil, isActive: nil),
             isNovaPreferred: true
         )
