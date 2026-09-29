@@ -23,7 +23,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         let catalogue = try fetchSubnetsInfo(from: world.sharedState.subnetsService)
         let rootRowYield = try run(services.yieldService.createRootYieldWrapper())
         let subnetRefs = listedSubnetRefs(in: catalogue)
-        let weeklyChanges = try run(priceHistoryService.createWeeklyChangesWrapper(for: subnetRefs))
+        let weeklyPrices = try run(priceHistoryService.createWeeklyChangesWrapper(for: subnetRefs))
         let logos = SubtensorSubnetLogoResolver(config: try run(services.earnConfigProvider.createConfigWrapper()))
         let initialFavourites = services.earnSettings.favouriteSubnets
 
@@ -81,8 +81,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(subnetRefs.count, 10)
         XCTAssertEqual(subnetRefs.filter { logos.url(for: $0) != nil }, [chutesRef])
         XCTAssertEqual(logos.url(for: chutesRef)?.absoluteString, SubtensorFlowChainWorld.chutesLogo)
-        XCTAssertEqual(Array(weeklyChanges.keys), [chutesRef])
-        XCTAssertEqual(try flowDouble(weeklyChanges[chutesRef]), 7915.2 / 7000 - 1, accuracy: 1e-9)
+        assertChutesWeekPrices(weeklyPrices, chutes: chutesRef)
         XCTAssertEqual(initialFavourites, [])
         XCTAssertEqual(services.earnSettings.favouriteSubnets, [chutesRef])
 
@@ -192,7 +191,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         let catalogue = try fetchSubnetsInfo(from: world.sharedState.subnetsService)
         let rootRowYield = try run(services.yieldService.createRootYieldWrapper())
         let subnetRefs = listedSubnetRefs(in: catalogue)
-        let weeklyChanges = try run(priceHistoryService.createWeeklyChangesWrapper(for: subnetRefs))
+        let weeklyPrices = try run(priceHistoryService.createWeeklyChangesWrapper(for: subnetRefs))
         let logos = SubtensorSubnetLogoResolver(config: try run(services.earnConfigProvider.createConfigWrapper()))
 
         let chutesRef = try XCTUnwrap(subnetRefs.first { $0.netuid == 64 })
@@ -211,8 +210,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(rootRowYield, try fixtureRootYield())
         XCTAssertEqual(subnetRefs.filter { logos.url(for: $0) != nil }, [chutesRef])
         XCTAssertEqual(logos.url(for: chutesRef)?.absoluteString, SubtensorFlowChainWorld.chutesLogo)
-        XCTAssertEqual(Array(weeklyChanges.keys), [chutesRef])
-        XCTAssertEqual(try flowDouble(weeklyChanges[chutesRef]), 7915.2 / 7000 - 1, accuracy: 1e-9)
+        assertChutesWeekPrices(weeklyPrices, chutes: chutesRef)
 
         assertChutesWeekHistory(history, subnet: chutesRef)
 
@@ -256,6 +254,22 @@ private extension SubtensorChooseSubnetFlowTests {
         catalogue.subnets
             .filter { $0.netuid != SubtensorStakingPallet.rootNetuid }
             .map { SubtensorSubnetRef(netuid: $0.netuid, registeredAt: $0.networkRegisteredAt) }
+    }
+
+    func assertChutesWeekPrices(
+        _ prices: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>],
+        chutes: SubtensorSubnetRef
+    ) {
+        XCTAssertEqual(prices.count, 10)
+        XCTAssertEqual(prices.values.filter { $0 == .notListed }.count, 9)
+
+        guard case let .available(summary)? = prices[chutes] else {
+            XCTFail("Expected the Chutes week prices, got \(String(describing: prices[chutes]))")
+            return
+        }
+
+        XCTAssertEqual(try flowDouble(summary.change), 7915.2 / 7000 - 1, accuracy: 1e-9)
+        assertFlowDoubles(summary.sparkline, [20.0 / 340, 23.28 / 350])
     }
 
     func assertChutesWeekHistory(_ result: SubtensorPriceHistoryResult, subnet: SubtensorSubnetRef) {

@@ -22,7 +22,7 @@ final class SubtensorSubnetSelectPresenter {
     private(set) var sort: SubtensorSubnetSort = .favorites
     private(set) var filters = SubtensorSubnetFilters()
     private var weeklyChanges: [SubtensorSubnetRef: Decimal] = [:]
-    private var monthlyMetrics: [SubtensorSubnetRef: SubtensorMonthlyPriceMetrics] = [:]
+    private var monthlyMetrics: [SubtensorSubnetRef: SubtensorPriceData<SubtensorMonthlyPriceMetrics>] = [:]
     private var monthlyRequested = false
     private var monthlyLoaded = false
 
@@ -88,7 +88,7 @@ private extension SubtensorSubnetSelectPresenter {
         }
         if filters.onlyAboveThirtyDayAverage, monthlyLoaded {
             guard let subnetRef = model.subnetRef,
-                  let mean = monthlyMetrics[subnetRef]?.meanTaoPerAlpha,
+                  let mean = monthlyMetrics[subnetRef]?.availableValue?.meanTaoPerAlpha,
                   let currentPrice = model.target.listedPrice,
                   let price = Decimal(string: String(currentPrice)),
                   let scale = Decimal(string: String(SubtensorStakingPallet.alphaPriceScale)) else { return false }
@@ -136,8 +136,8 @@ private extension SubtensorSubnetSelectPresenter {
     }
 
     func isMonthlyBefore(_ lhs: SubtensorSubnetSelectViewModel, _ rhs: SubtensorSubnetSelectViewModel) -> Bool {
-        let left = lhs.subnetRef.flatMap { monthlyMetrics[$0]?.changeInTao }
-        let right = rhs.subnetRef.flatMap { monthlyMetrics[$0]?.changeInTao }
+        let left = lhs.subnetRef.flatMap { monthlyMetrics[$0]?.availableValue?.changeInTao }
+        let right = rhs.subnetRef.flatMap { monthlyMetrics[$0]?.availableValue?.changeInTao }
         if let left, let right, left != right { return left > right }
         if (left == nil) != (right == nil) { return left != nil }
         return lhs.title.localizedStandardCompare(rhs.title) == .orderedAscending
@@ -210,7 +210,7 @@ extension SubtensorSubnetSelectPresenter: SubnetSelectInteractorOutputProtocol {
         provideViewModels()
     }
 
-    func didReceiveMonthlyMetrics(_ metrics: [SubtensorSubnetRef: SubtensorMonthlyPriceMetrics]) {
+    func didReceiveMonthlyMetrics(_ metrics: [SubtensorSubnetRef: SubtensorPriceData<SubtensorMonthlyPriceMetrics>]) {
         monthlyMetrics = metrics
         monthlyLoaded = true
         provideViewModels()

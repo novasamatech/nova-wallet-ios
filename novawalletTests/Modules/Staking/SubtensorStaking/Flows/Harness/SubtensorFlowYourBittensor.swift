@@ -8,7 +8,7 @@ struct SubtensorFlowYourBittensor {
     let portfolio: SubtensorPortfolio
     let catalogue: SubtensorSubnetsInfo
     let logos: SubtensorSubnetLogoResolver
-    let weeklyChanges: [SubtensorSubnetRef: Decimal]
+    let weeklyPrices: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]
     let monthHistories: [SubtensorSubnetRef: SubtensorPriceHistoryResult]
     let valueSeries: SubtensorPortfolioValueSeries
 
@@ -39,7 +39,7 @@ extension SubtensorFlowTestCase {
             )
         }
 
-        let weeklyChanges = try run(priceHistoryService.createWeeklyChangesWrapper(for: refs))
+        let weeklyPrices = try run(priceHistoryService.createWeeklyChangesWrapper(for: refs))
 
         let monthHistories = try refs.reduce(into: [SubtensorSubnetRef: SubtensorPriceHistoryResult]()) { result, ref in
             result[ref] = try run(priceHistoryService.createHistoryWrapper(for: ref, period: .month, currency: .usd))
@@ -76,7 +76,7 @@ extension SubtensorFlowTestCase {
             portfolio: portfolio,
             catalogue: catalogue,
             logos: logos,
-            weeklyChanges: weeklyChanges,
+            weeklyPrices: weeklyPrices,
             monthHistories: monthHistories,
             valueSeries: valueSeries
         )
@@ -105,8 +105,16 @@ extension SubtensorFlowTestCase {
         XCTAssertEqual(screen.logos.url(for: chutesRef)?.absoluteString, SubtensorFlowChainWorld.chutesLogo)
         XCTAssertNil(screen.logos.url(for: targonRef))
 
-        XCTAssertEqual(Array(screen.weeklyChanges.keys), [chutesRef])
-        XCTAssertEqual(try flowDouble(screen.weeklyChanges[chutesRef]), 0.0738 / 0.0634 - 1, accuracy: 1e-9)
+        XCTAssertEqual(screen.weeklyPrices.count, 2)
+        XCTAssertEqual(screen.weeklyPrices[targonRef], .notListed)
+
+        guard case let .available(chutesWeek)? = screen.weeklyPrices[chutesRef] else {
+            XCTFail("Expected the Chutes week prices, got \(String(describing: screen.weeklyPrices[chutesRef]))")
+            return
+        }
+
+        XCTAssertEqual(try flowDouble(chutesWeek.change), 0.0738 / 0.0634 - 1, accuracy: 1e-9)
+        assertFlowDoubles(chutesWeek.sparkline, [0.0634, 0.0738])
 
         guard case let .available(chutesHistory)? = screen.monthHistories[chutesRef] else {
             XCTFail("Expected the Chutes month history, got \(String(describing: screen.monthHistories[chutesRef]))")

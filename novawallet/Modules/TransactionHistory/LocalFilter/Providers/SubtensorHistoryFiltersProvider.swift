@@ -3,14 +3,26 @@ import Operation_iOS
 
 final class SubtensorHistoryFiltersProvider {
     let chainAsset: ChainAsset
-    let novaFeeBeneficiary: AccountId?
+    let logger: LoggerProtocol
 
-    init(
-        chainAsset: ChainAsset,
-        novaFeeBeneficiary: AccountId? = SubtensorNovaFeeCalculator.defaultBeneficiary
-    ) {
+    init(chainAsset: ChainAsset, logger: LoggerProtocol) {
         self.chainAsset = chainAsset
-        self.novaFeeBeneficiary = novaFeeBeneficiary
+        self.logger = logger
+    }
+}
+
+private extension SubtensorHistoryFiltersProvider {
+    func resolveNovaFeeBeneficiaries() -> Set<AccountId> {
+        let resolved = AssetExchangeCommissionConstants.historyBeneficiaries(
+            current: [SubtensorNovaFeeConstants.beneficiaryAddress],
+            historical: SubtensorNovaFeeConstants.historicalBeneficiaryAddresses
+        )
+
+        resolved.invalid.forEach {
+            logger.error("Invalid Subtensor nova fee history beneficiary: \($0)")
+        }
+
+        return resolved.accountIds
     }
 }
 
@@ -22,24 +34,18 @@ extension SubtensorHistoryFiltersProvider: TransactionHistoryFilterProviderProto
             return .createWithResult([])
         }
 
-        // stake movements transfer TAO between the coldkey and per-netuid subnet
-        // accounts via Balances.Transfer, so those rows are suppressed to avoid
-        // phantom sent/received entries next to the staking extrinsic itself
-        let filter = TransactionHistoryAccountPrefixFilter(
+        let subnetAccountsFilter = TransactionHistoryAccountPrefixFilter(
             accountPrefix: accountPrefix,
             chainAsset: chainAsset
         )
 
-        guard let novaFeeBeneficiary else {
-            return .createWithResult([filter])
-        }
-
         let novaFeeFilter = TransactionHistoryTransfersFilter(
             ignoredSenders: [],
-            ignoredRecipients: [novaFeeBeneficiary],
+            ignoredRecipients: resolveNovaFeeBeneficiaries(),
+            ignoresOnlySuccessful: true,
             chainAsset: chainAsset
         )
 
-        return .createWithResult([filter, novaFeeFilter])
+        return .createWithResult([subnetAccountsFilter, novaFeeFilter])
     }
 }

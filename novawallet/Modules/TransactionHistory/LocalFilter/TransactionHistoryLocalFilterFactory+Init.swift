@@ -18,7 +18,7 @@ extension TransactionHistoryLocalFilterFactory {
                 ),
                 HydrationSwapHistoryFiltersProvider(chainAsset: chainAsset),
                 AssetHubSwapHistoryFiltersProvider(chainAsset: chainAsset, logger: logger),
-                SubtensorHistoryFiltersProvider(chainAsset: chainAsset)
+                SubtensorHistoryFiltersProvider(chainAsset: chainAsset, logger: logger)
             ],
             logger: logger
         )

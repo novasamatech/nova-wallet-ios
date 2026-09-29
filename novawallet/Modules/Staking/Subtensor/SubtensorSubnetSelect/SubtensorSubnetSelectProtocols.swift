@@ -47,7 +47,7 @@ protocol SubnetSelectInteractorOutputProtocol: AnyObject {
     func didReceiveSubnetsInfo(_ info: SubtensorSubnetsInfo)
     func didReceiveDefaultTake(_ take: UInt16)
     func didReceiveWeeklyChanges(_ changes: [SubtensorSubnetRef: Decimal])
-    func didReceiveMonthlyMetrics(_ metrics: [SubtensorSubnetRef: SubtensorMonthlyPriceMetrics])
+    func didReceiveMonthlyMetrics(_ metrics: [SubtensorSubnetRef: SubtensorPriceData<SubtensorMonthlyPriceMetrics>])
     func didFailMonthlyMetrics()
     func didReceiveError(_ error: Error)
 }

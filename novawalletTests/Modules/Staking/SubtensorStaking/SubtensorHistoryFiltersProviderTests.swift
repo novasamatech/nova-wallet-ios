@@ -28,18 +28,23 @@ final class SubtensorHistoryFiltersProviderTests: XCTestCase {
         return ChainAsset(chain: chain, asset: asset)
     }
 
-    private func fetchFilters(
-        for chainAsset: ChainAsset,
-        novaFeeBeneficiary: AccountId? = nil
-    ) throws -> [TransactionHistoryLocalFilterProtocol] {
+    private func fetchFilters(for chainAsset: ChainAsset) throws -> [TransactionHistoryLocalFilterProtocol] {
         let wrapper = SubtensorHistoryFiltersProvider(
             chainAsset: chainAsset,
-            novaFeeBeneficiary: novaFeeBeneficiary
+            logger: Logger.shared
         ).createFiltersWrapper()
 
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
 
         return try wrapper.targetOperation.extractNoCancellableResultData()
+    }
+
+    private func makeHistoryFilter(for chainAsset: ChainAsset) throws -> TransactionHistoryLocalFilterProtocol {
+        try TransactionHistoryAndPredicate(innerFilters: fetchFilters(for: chainAsset))
+    }
+
+    private func placeholderBeneficiary() throws -> AccountId {
+        try Data(hexString: "0xa4373d7b6d136b822d25106a993945f40b4cbfcbb2cfd5782888b5d938f82b1a")
     }
 
     private func subnetAccountId(netuid: UInt16) -> AccountId {
@@ -53,7 +58,8 @@ final class SubtensorHistoryFiltersProviderTests: XCTestCase {
         for chainAsset: ChainAsset,
         sender: AccountId,
         receiver: AccountId,
-        callPath: CallCodingPath = .transfer
+        callPath: CallCodingPath = .transfer,
+        status: TransactionHistoryItem.Status = .success
     ) throws -> TransactionHistoryItem {
         let source = TransactionHistoryItemSource.substrate
         let hash = Data.random(of: 32)!.toHexWithPrefix()
@@ -66,7 +72,7 @@ final class SubtensorHistoryFiltersProviderTests: XCTestCase {
             sender: sender.toAddress(using: chainAsset.chain.chainFormat),
             receiver: receiver.toAddress(using: chainAsset.chain.chainFormat),
             amountInPlank: "1000000000",
-            status: .success,
+            status: status,
             txHash: hash,
             timestamp: 0,
             fee: nil,
@@ -85,16 +91,17 @@ final class SubtensorHistoryFiltersProviderTests: XCTestCase {
         XCTAssertTrue(filters.isEmpty)
     }
 
-    func testProviderProducesSubnetAccountPrefixFilterForSubtensorAsset() throws {
+    func testProviderProducesSubnetAccountAndNovaFeeFiltersForSubtensorAsset() throws {
         let filters = try fetchFilters(for: makeChainAsset(stakings: [.subtensor]))
 
-        XCTAssertEqual(filters.count, 1)
+        XCTAssertEqual(filters.count, 2)
         XCTAssertTrue(filters.first is TransactionHistoryAccountPrefixFilter)
+        XCTAssertTrue(filters.last is TransactionHistoryTransfersFilter)
     }
 
     func testFilterSuppressesTransferToSubnetAccount() throws {
         let chainAsset = makeChainAsset(stakings: [.subtensor])
-        let filter = try XCTUnwrap(fetchFilters(for: chainAsset).first)
+        let filter = try makeHistoryFilter(for: chainAsset)
 
         let stakeTransfer = try makeTransfer(
             for: chainAsset,
@@ -107,7 +114,7 @@ final class SubtensorHistoryFiltersProviderTests: XCTestCase {
 
     func testFilterSuppressesTransferFromSubnetAccount() throws {
         let chainAsset = makeChainAsset(stakings: [.subtensor])
-        let filter = try XCTUnwrap(fetchFilters(for: chainAsset).first)
+        let filter = try makeHistoryFilter(for: chainAsset)
 
         let unstakeTransfer = try makeTransfer(
             for: chainAsset,
@@ -118,24 +125,38 @@ final class SubtensorHistoryFiltersProviderTests: XCTestCase {
         XCTAssertFalse(filter.shouldDisplayOperation(model: unstakeTransfer))
     }
 
-    func testNovaFeeTransferToBeneficiaryIsSuppressed() throws {
+    func testSuccessfulTransferToPlaceholderBeneficiaryIsHidden() throws {
         let chainAsset = makeChainAsset(stakings: [.subtensor])
-        let beneficiary = Data(repeating: 0xBB, count: 32)
-        let filters = try fetchFilters(for: chainAsset, novaFeeBeneficiary: beneficiary)
+        let filter = try makeHistoryFilter(for: chainAsset)
 
         let novaFeeTransfer = try makeTransfer(
             for: chainAsset,
             sender: Data(repeating: 0x11, count: 32),
-            receiver: beneficiary,
+            receiver: placeholderBeneficiary(),
             callPath: .transferKeepAlive
         )
 
-        XCTAssertFalse(TransactionHistoryAndPredicate(innerFilters: filters).shouldDisplayOperation(model: novaFeeTransfer))
+        XCTAssertFalse(filter.shouldDisplayOperation(model: novaFeeTransfer))
+    }
+
+    func testFailedTransferToPlaceholderBeneficiaryIsShown() throws {
+        let chainAsset = makeChainAsset(stakings: [.subtensor])
+        let filter = try makeHistoryFilter(for: chainAsset)
+
+        let failedNovaFeeTransfer = try makeTransfer(
+            for: chainAsset,
+            sender: Data(repeating: 0x11, count: 32),
+            receiver: placeholderBeneficiary(),
+            callPath: .transferKeepAlive,
+            status: .failed
+        )
+
+        XCTAssertTrue(filter.shouldDisplayOperation(model: failedNovaFeeTransfer))
     }
 
     func testFilterKeepsTransfersBetweenUserAccounts() throws {
         let chainAsset = makeChainAsset(stakings: [.subtensor])
-        let filter = try XCTUnwrap(fetchFilters(for: chainAsset).first)
+        let filter = try makeHistoryFilter(for: chainAsset)
 
         let userTransfer = try makeTransfer(
             for: chainAsset,
@@ -148,7 +169,7 @@ final class SubtensorHistoryFiltersProviderTests: XCTestCase {
 
     func testFilterKeepsStakingExtrinsicRows() throws {
         let chainAsset = makeChainAsset(stakings: [.subtensor])
-        let filter = try XCTUnwrap(fetchFilters(for: chainAsset).first)
+        let filter = try makeHistoryFilter(for: chainAsset)
 
         let stakingExtrinsic = try makeTransfer(
             for: chainAsset,
