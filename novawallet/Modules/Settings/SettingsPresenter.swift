@@ -232,10 +232,6 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             wireframe.showBackup(from: view)
         case .networks:
             wireframe.showNetworks(from: view)
-        #if DEBUG
-            case .subtensorStakingPreview:
-                wireframe.showSubtensorStakingPreview(from: view)
-        #endif
         }
     }
 

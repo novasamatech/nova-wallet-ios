@@ -31,11 +31,6 @@ private extension SubtensorDiscoveryService {
         case routeUnavailable
     }
 
-    struct OfferInputs {
-        let steadyTake: Decimal?
-        let availableKinds: Set<SubtensorStrategyKind>
-    }
-
     static func recommendationClass(for kind: SubtensorStrategyKind) -> SubtensorRecommendationClass {
         switch kind {
         case .steady:
@@ -56,15 +51,6 @@ private extension SubtensorDiscoveryService {
         }
     }
 
-    static func take(of candidate: SubtensorPickCandidate) -> Decimal? {
-        switch candidate {
-        case let .pair(pair):
-            return pair.verification.take
-        case let .fallbackRoot(item):
-            return item.take
-        }
-    }
-
     static func candidates(
         for kind: SubtensorStrategyKind,
         in recommendations: SubtensorVerifiedRecommendations
@@ -78,10 +64,10 @@ private extension SubtensorDiscoveryService {
         )
     }
 
-    static func offerInputs(
+    static func availableKinds(
         recommendations: Recommendations,
         steady: SubtensorPickCandidates
-    ) -> OfferInputs {
+    ) -> Set<SubtensorStrategyKind> {
         var availableKinds: Set<SubtensorStrategyKind> = steady.candidates.isEmpty ? [] : [.steady]
 
         if case let .verified(verified) = recommendations {
@@ -91,10 +77,7 @@ private extension SubtensorDiscoveryService {
             }
         }
 
-        return OfferInputs(
-            steadyTake: steady.candidates.first.flatMap { take(of: $0) },
-            availableKinds: availableKinds
-        )
+        return availableKinds
     }
 
     func createRecommendationsWrapper() -> CompoundOperationWrapper<Recommendations> {
@@ -175,51 +158,43 @@ extension SubtensorDiscoveryService: SubtensorDiscoveryServiceProtocol {
 
         let logger = logger
 
-        let inputsOperation = ClosureOperation<OfferInputs> {
+        let kindsOperation = ClosureOperation<Set<SubtensorStrategyKind>> {
             do {
-                return try Self.offerInputs(
+                return try Self.availableKinds(
                     recommendations: recommendationsWrapper.targetOperation.extractNoCancellableResultData(),
                     steady: steadyWrapper.targetOperation.extractNoCancellableResultData()
                 )
             } catch {
-                logger.warning("Subtensor strategy candidates unavailable, offering the gross root rate: \(error)")
+                logger.warning("Subtensor strategy candidates unavailable, offering the root yield only: \(error)")
 
-                return OfferInputs(steadyTake: nil, availableKinds: [])
+                return []
             }
         }
 
-        inputsOperation.addDependency(steadyWrapper.targetOperation)
+        kindsOperation.addDependency(steadyWrapper.targetOperation)
 
-        let yieldService = yieldService
-
-        let rateWrapper: CompoundOperationWrapper<SubtensorRate?> =
-            OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
-                let take = try inputsOperation.extractNoCancellableResultData().steadyTake
-
-                return yieldService.createRootNetworkRateWrapper(take: take)
-            }
-
-        rateWrapper.addDependency(operations: [inputsOperation])
+        let rootYieldWrapper = yieldService.createRootYieldWrapper()
 
         let offersOperation = ClosureOperation<[SubtensorStrategyOffer]> {
-            let inputs = try inputsOperation.extractNoCancellableResultData()
-            let steadyRate = try rateWrapper.targetOperation.extractNoCancellableResultData()
+            let availableKinds = try kindsOperation.extractNoCancellableResultData()
+            let rootYield = try rootYieldWrapper.targetOperation.extractNoCancellableResultData()
 
             return SubtensorStrategyKind.allCases.map { kind in
                 SubtensorStrategyOffer(
                     kind: kind,
-                    rootNetworkRate: kind == .steady ? steadyRate : nil,
-                    isAvailable: inputs.availableKinds.contains(kind)
+                    rootNetworkRate: kind == .steady ? rootYield : nil,
+                    isAvailable: availableKinds.contains(kind)
                 )
             }
         }
 
-        offersOperation.addDependency(rateWrapper.targetOperation)
+        offersOperation.addDependency(kindsOperation)
+        offersOperation.addDependency(rootYieldWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: offersOperation,
-            dependencies: recommendationsWrapper.allOperations + steadyWrapper.allOperations + [inputsOperation] +
-                rateWrapper.allOperations
+            dependencies: recommendationsWrapper.allOperations + steadyWrapper.allOperations + [kindsOperation] +
+                rootYieldWrapper.allOperations
         )
     }
 

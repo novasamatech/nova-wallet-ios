@@ -13,12 +13,9 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
     }
 
     let state: SubtensorStakingSharedStateProtocol
-    let networkInfoFactory: SubtensorNetworkInfoFactoryProtocol
-    let strategiesDataSource: SubtensorStakingStrategiesDataSourceProtocol
     let logger: LoggerProtocol
 
-    private let networkInfoCancellableStore = CancellableCallStore()
-    private let strategiesCancellableStore = CancellableCallStore()
+    private let headlineCallStore = CancellableCallStore()
 
     init(
         state: SubtensorStakingSharedStateProtocol,
@@ -26,16 +23,12 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         stakingDashboardProviderFactory: StakingDashboardProviderFactoryProtocol,
-        networkInfoFactory: SubtensorNetworkInfoFactoryProtocol,
-        strategiesDataSource: SubtensorStakingStrategiesDataSourceProtocol,
         currencyManager: CurrencyManagerProtocol,
         sharedOperation: SharedOperationProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.state = state
-        self.networkInfoFactory = networkInfoFactory
-        self.strategiesDataSource = strategiesDataSource
         self.logger = logger
 
         super.init(
@@ -54,8 +47,7 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
     deinit {
         state.throttle()
 
-        networkInfoCancellableStore.cancel()
-        strategiesCancellableStore.cancel()
+        headlineCallStore.cancel()
     }
 
     override func setup() {
@@ -63,71 +55,29 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
 
         state.setup(for: selectedAccount)
 
-        provideNetworkInfo()
-        provideRootAnnualReturn()
-        provideStrategies()
+        provideHeadline()
     }
 }
-
-// MARK: Private
 
 private extension StartStakingInfoSubtensorInteractor {
-    func provideNetworkInfo() {
-        networkInfoCancellableStore.cancel()
-
-        let wrapper = networkInfoFactory.createNetworkInfoWrapper()
+    func provideHeadline() {
+        headlineCallStore.cancel()
 
         executeCancellable(
-            wrapper: wrapper,
+            wrapper: state.earnServices.earnConfigProvider.createConfigWrapper(),
             inOperationQueue: operationQueue,
-            backingCallIn: networkInfoCancellableStore,
+            backingCallIn: headlineCallStore,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(networkInfo):
-                self?.presenter?.didReceive(networkInfo: networkInfo)
+            case let .success(config):
+                self?.presenter?.didReceive(headlineRate: config.headlineMaxAnnualRate)
             case let .failure(error):
-                self?.logger.error("Network info request failed: \(error)")
-            }
-        }
-    }
-
-    func provideRootAnnualReturn() {
-        state.rewardCalculatorService.fetchEngine(runningCompletionIn: .main) { [weak self] result in
-            switch result {
-            case let .success(engine):
-                // the take is per delegate and unknown before a delegate is picked, so the entry
-                // screen shows the gross network-average rate (spec §6.2)
-                self?.presenter?.didReceive(rootAnnualReturn: engine.rootAnnualReturn())
-            case let .failure(error):
-                // the tile degrades to its APY-less variant rather than showing a guess
-                self?.logger.error("Root APY unavailable: \(error)")
-                self?.presenter?.didReceive(rootAnnualReturn: nil)
-            }
-        }
-    }
-
-    func provideStrategies() {
-        strategiesCancellableStore.cancel()
-
-        executeCancellable(
-            wrapper: strategiesDataSource.fetchStrategies(),
-            inOperationQueue: operationQueue,
-            backingCallIn: strategiesCancellableStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(strategies):
-                self?.presenter?.didReceive(strategies: strategies)
-            case let .failure(error):
-                self?.presenter?.didReceiveStrategies(error: error)
+                self?.logger.error("Earn config request failed: \(error)")
+                self?.presenter?.didReceive(headlineRate: nil)
             }
         }
     }
 }
 
-extension StartStakingInfoSubtensorInteractor: StartStakingInfoSubtensorInteractorInputProtocol {
-    func retryStrategies() {
-        provideStrategies()
-    }
-}
+extension StartStakingInfoSubtensorInteractor: StartStakingInfoSubtensorInteractorInputProtocol {}

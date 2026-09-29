@@ -11,91 +11,86 @@ final class SubtensorDiscoveryServiceTests: XCTestCase {
     private let preferredRootHotkey = Data(repeating: 0x0E, count: 32)
     private let generationId = "8ebc85abd0bbeb6f282302ac48909c3d"
 
-    func testOffersNetTheSteadyRateOfTheFirstStableTakeAndFlagClassesWithoutCandidates() throws {
-        let firstStableTake = takeFraction(9000)
-        let netRate = try rate("0.0421", isNetOfTake: true)
+    private let rootYield = SubtensorReportedYield(
+        reportedRate: "13.8421",
+        stamp: SubtensorBackendStamp(asOf: Date(timeIntervalSince1970: 1_790_000_000), freshness: .fresh)
+    )
 
+    func testOffersCarryTheRootYieldOnSteadyAndFlagClassesWithoutCandidates() throws {
         let mocks = Mocks()
         stubRecommendations(mocks, .success(makeRecommendations(
-            stable: [pair(rootHotkeyA, 0, take: firstStableTake), pair(rootHotkeyB, 0, take: takeFraction(11796))],
+            stable: [pair(rootHotkeyA, 0, take: takeFraction(9000)), pair(rootHotkeyB, 0, take: takeFraction(11796))],
             balanced: [pair(subnetHotkeyC, 64, take: takeFraction(1966))],
             higherUpside: []
         )))
-        stubRootRate(mocks, rate: netRate)
+        stubRootYield(mocks)
 
         let offers = try run(makeService(mocks).createStrategyOffersWrapper())
 
         XCTAssertEqual(offers, [
-            SubtensorStrategyOffer(kind: .steady, rootNetworkRate: netRate, isAvailable: true),
+            SubtensorStrategyOffer(kind: .steady, rootNetworkRate: rootYield, isAvailable: true),
             SubtensorStrategyOffer(kind: .balanced, rootNetworkRate: nil, isAvailable: true),
             SubtensorStrategyOffer(kind: .higherUpside, rootNetworkRate: nil, isAvailable: false)
         ])
 
-        verify(mocks.yieldService).createRootNetworkRateWrapper(take: equal(to: Optional(firstStableTake)))
+        verify(mocks.yieldService).createRootYieldWrapper()
         verify(mocks.yieldService, never()).createAlphaYieldsWrapper(for: any())
         verify(mocks.directoryService, never()).createPreferredValidatorWrapper(for: any())
     }
 
-    func testOffersCarryTheGrossRootRateWhenTheRouteServesNoStablePair() throws {
-        let grossRate = try rate("0.0513", isNetOfTake: false)
-
+    func testOffersCarryTheRootYieldWhenTheRouteServesNoStablePair() throws {
         let mocks = Mocks()
         stubRecommendations(mocks, .success(makeRecommendations(
             stable: [],
             balanced: [pair(subnetHotkeyC, 64, take: takeFraction(1966))],
             higherUpside: [pair(subnetHotkeyD, 19, take: takeFraction(1966))]
         )))
-        stubRootRate(mocks, rate: grossRate)
+        stubRootYield(mocks)
 
         let offers = try run(makeService(mocks).createStrategyOffersWrapper())
 
         XCTAssertEqual(offers, [
-            SubtensorStrategyOffer(kind: .steady, rootNetworkRate: grossRate, isAvailable: false),
+            SubtensorStrategyOffer(kind: .steady, rootNetworkRate: rootYield, isAvailable: false),
             SubtensorStrategyOffer(kind: .balanced, rootNetworkRate: nil, isAvailable: true),
             SubtensorStrategyOffer(kind: .higherUpside, rootNetworkRate: nil, isAvailable: true)
         ])
 
-        verify(mocks.yieldService).createRootNetworkRateWrapper(take: isNil())
         verify(mocks.directoryService, never()).createPreferredValidatorWrapper(for: any())
     }
 
-    func testOffersKeepTheGrossChainRateWhenTheRecommendationsAreRateLimited() throws {
-        let grossRate = try rate("0.0513", isNetOfTake: false)
-
+    func testOffersKeepTheRootYieldWhenTheRecommendationsAreRateLimited() throws {
         let mocks = Mocks()
         stubRecommendations(mocks, .failure(BittensorApiError.rateLimited(requestId: "request-3")))
-        stubRootRate(mocks, rate: grossRate)
+        stubRootYield(mocks)
 
         let offers = try run(makeService(mocks).createStrategyOffersWrapper())
 
         XCTAssertEqual(offers, [
-            SubtensorStrategyOffer(kind: .steady, rootNetworkRate: grossRate, isAvailable: false),
+            SubtensorStrategyOffer(kind: .steady, rootNetworkRate: rootYield, isAvailable: false),
             SubtensorStrategyOffer(kind: .balanced, rootNetworkRate: nil, isAvailable: false),
             SubtensorStrategyOffer(kind: .higherUpside, rootNetworkRate: nil, isAvailable: false)
         ])
 
-        verify(mocks.yieldService).createRootNetworkRateWrapper(take: isNil())
         verify(mocks.directoryService, never()).createPreferredValidatorWrapper(for: any())
     }
 
-    func testOffersUseTheFallbackRootTakeWhenThePairRouteIsNotPublished() throws {
-        let fallbackTake = takeFraction(5000)
-        let netRate = try rate("0.0439", isNetOfTake: true)
-
+    func testOffersMakeSteadyAvailableOnTheFallbackRootWhenThePairRouteIsNotPublished() throws {
         let mocks = Mocks()
         stubRecommendations(mocks, .failure(BittensorApiError.routeNotPublished))
-        stubPreferredRoot(mocks, item: rootItem(preferredRootHotkey, take: fallbackTake))
-        stubRootRate(mocks, rate: netRate)
+        stubPreferredRoot(mocks, item: rootItem(preferredRootHotkey, take: takeFraction(5000)))
+        stubRootYield(mocks)
 
         let offers = try run(makeService(mocks).createStrategyOffersWrapper())
 
         XCTAssertEqual(offers, [
-            SubtensorStrategyOffer(kind: .steady, rootNetworkRate: netRate, isAvailable: true),
+            SubtensorStrategyOffer(kind: .steady, rootNetworkRate: rootYield, isAvailable: true),
             SubtensorStrategyOffer(kind: .balanced, rootNetworkRate: nil, isAvailable: false),
             SubtensorStrategyOffer(kind: .higherUpside, rootNetworkRate: nil, isAvailable: false)
         ])
 
-        verify(mocks.yieldService).createRootNetworkRateWrapper(take: equal(to: Optional(fallbackTake)))
+        verify(mocks.directoryService).createPreferredValidatorWrapper(
+            for: equal(to: SubtensorSubnetRef(netuid: 0, registeredAt: 0))
+        )
     }
 
     func testCandidatesKeepServerOrderAndCarryTheGeneration() throws {
@@ -203,10 +198,12 @@ final class SubtensorDiscoveryServiceTests: XCTestCase {
         }
     }
 
-    private func stubRootRate(_ mocks: Mocks, rate: SubtensorRate?) {
+    private func stubRootYield(_ mocks: Mocks) {
+        let rootYield = rootYield
+
         stub(mocks.yieldService) { stub in
-            when(stub.createRootNetworkRateWrapper(take: any())).then { _ in
-                CompoundOperationWrapper.createWithResult(rate)
+            when(stub.createRootYieldWrapper()).then {
+                CompoundOperationWrapper.createWithResult(rootYield)
             }
         }
     }
@@ -278,13 +275,6 @@ final class SubtensorDiscoveryServiceTests: XCTestCase {
             reportedStake: nil,
             status: SubtensorValidatorChainStatus(uid: 7, hasPermit: nil, blocksSinceUpdate: nil, isActive: nil),
             isNovaPreferred: true
-        )
-    }
-
-    private func rate(_ value: String, isNetOfTake: Bool) throws -> SubtensorRate {
-        try SubtensorRate(
-            annualRate: XCTUnwrap(Decimal(string: value)),
-            source: .chainNetworkAverage(isNetOfTake: isNetOfTake)
         )
     }
 

@@ -2,15 +2,14 @@ import Foundation
 import UIKit
 
 struct StartStakingInfoSubtensorViewModel {
-    let title: AccentTextModel
+    let title: AccentTextModel?
     let paragraphs: [ParagraphView.Model]
-    let primaryActionTitle: String
-    let secondaryActionTitle: String
+    let actionTitle: String
 }
 
 protocol StartStakingInfoSubtensorViewModelFactoryProtocol {
     func createViewModel(
-        from strategies: [SubtensorStakingStrategy],
+        title: AccentTextModel?,
         locale: Locale
     ) -> StartStakingInfoSubtensorViewModel
 }
@@ -18,42 +17,43 @@ protocol StartStakingInfoSubtensorViewModelFactoryProtocol {
 struct StartStakingInfoSubtensorViewModelFactory:
     StartStakingInfoSubtensorViewModelFactoryProtocol {
     func createViewModel(
-        from strategies: [SubtensorStakingStrategy],
+        title: AccentTextModel?,
         locale: Locale
     ) -> StartStakingInfoSubtensorViewModel {
-        let maximumReturn = strategies.map(\.annualReturn).max() ?? 0.40
-        let formattedReturn = formatPercent(maximumReturn, locale: locale)
-        let highlightedTitle = "Earn up to \(formattedReturn)"
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        let rootAccent = strings.stakingSubtensorUiHowRootAccent()
+        let paidInTaoAccent = strings.stakingSubtensorUiHowPaidInTaoAccent()
+        let subnetTokenAccent = strings.stakingSubtensorUiHowSubnetTokenAccent()
+        let marketAccent = strings.stakingSubtensorUiHowMarketAccent()
+        let everyDayAccent = strings.stakingSubtensorUiHowEveryDayAccent()
+        let anyTimeAccent = strings.stakingSubtensorUiHowAnyTimeAccent()
 
         return .init(
-            title: .init(
-                text: "\(highlightedTitle)\non your TAO tokens per year",
-                accents: [highlightedTitle]
-            ),
+            title: title,
             paragraphs: [
                 createParagraph(
                     image: R.image.coin(),
-                    text: "Stake to root and keep your TAO as TAO — rewards are paid in TAO",
-                    accents: ["root", "paid in TAO"]
+                    text: strings.stakingSubtensorUiHowRoot(rootAccent, paidInTaoAccent),
+                    accents: [rootAccent, paidInTaoAccent]
                 ),
                 createParagraph(
                     image: R.image.iconNetworkFallback(),
-                    text: "Or swap TAO for a subnet token: earn daily rewards in that token and gain on its growth. Its value moves with the market",
-                    accents: ["subnet token", "moves with the market"]
+                    text: strings.stakingSubtensorUiHowSubnet(subnetTokenAccent, marketAccent),
+                    accents: [subnetTokenAccent, marketAccent]
                 ),
                 createParagraph(
                     image: R.image.cup(),
-                    text: "Rewards accrue every day and add up automatically",
-                    accents: ["every day"]
+                    text: strings.stakingSubtensorUiHowRewards(everyDayAccent),
+                    accents: [everyDayAccent]
                 ),
                 createParagraph(
                     image: R.image.clock(),
-                    text: "Unstake any time — no waiting period in either lane. Every rate you see is an estimate",
-                    accents: ["any time"]
+                    text: strings.stakingSubtensorUiHowUnstake(anyTimeAccent),
+                    accents: [anyTimeAccent]
                 )
             ],
-            primaryActionTitle: "Start earning",
-            secondaryActionTitle: "I'll choose myself"
+            actionTitle: strings.stakingSubtensorUiHowChooseMyself()
         )
     }
 }
@@ -68,15 +68,5 @@ private extension StartStakingInfoSubtensorViewModelFactory {
             image: image,
             text: .init(text: text, accents: accents)
         )
-    }
-
-    func formatPercent(_ value: Decimal, locale: Locale) -> String {
-        let formatter = NumberFormatter()
-        formatter.locale = locale
-        formatter.numberStyle = .percent
-        formatter.minimumFractionDigits = 0
-        formatter.maximumFractionDigits = 0
-
-        return formatter.string(from: value as NSDecimalNumber) ?? "40%"
     }
 }

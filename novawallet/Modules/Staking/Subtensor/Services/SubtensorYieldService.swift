@@ -10,54 +10,21 @@ final class SubtensorYieldService {
     static let rootYieldPage = 1
 
     let apiOperationFactory: BittensorApiOperationFactoryProtocol
-    let rewardCalculatorService: SubtensorRewardCalculatorServiceProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
-    private let callbackQueue = DispatchQueue(label: "com.novawallet.subtensor.yields.\(UUID().uuidString)")
-
     init(
         apiOperationFactory: BittensorApiOperationFactoryProtocol,
-        rewardCalculatorService: SubtensorRewardCalculatorServiceProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol = Logger.shared
     ) {
         self.apiOperationFactory = apiOperationFactory
-        self.rewardCalculatorService = rewardCalculatorService
         self.operationQueue = operationQueue
         self.logger = logger
     }
 }
 
 private extension SubtensorYieldService {
-    static func perU16Take(fromFraction take: Decimal) -> UInt16? {
-        guard take >= 0, take <= 1 else {
-            return nil
-        }
-
-        var scaled = take * Decimal(SubtensorStakingPallet.perU16Denominator)
-        var rounded = Decimal()
-        NSDecimalRound(&rounded, &scaled, 0, .plain)
-
-        return NSDecimalNumber(decimal: rounded).uint16Value
-    }
-
-    static func rootRate(engine: SubtensorRewardCalculatorEngineProtocol, take: Decimal?) -> SubtensorRate? {
-        guard let take else {
-            return engine.rootAnnualReturn().map {
-                SubtensorRate(annualRate: $0, source: .chainNetworkAverage(isNetOfTake: false))
-            }
-        }
-
-        guard let perU16Take = perU16Take(fromFraction: take) else {
-            return nil
-        }
-
-        return engine.rootAnnualReturn(take: perU16Take).map {
-            SubtensorRate(annualRate: $0, source: .chainNetworkAverage(isNetOfTake: true))
-        }
-    }
-
     static func makeAlphaYields(
         netuid: UInt16,
         pages: BittensorApiPages<BittensorApi.AlphaYieldCollection>,
@@ -168,25 +135,5 @@ extension SubtensorYieldService: SubtensorYieldServiceProtocol {
         yieldOperation.addDependency(pageWrapper.targetOperation)
 
         return pageWrapper.insertingTail(operation: yieldOperation)
-    }
-
-    func createRootNetworkRateWrapper(take: Decimal?) -> CompoundOperationWrapper<SubtensorRate?> {
-        let rewardCalculatorService = rewardCalculatorService
-        let callbackQueue = callbackQueue
-        let logger = logger
-
-        let rateOperation = AsyncClosureOperation<SubtensorRate?> { completion in
-            rewardCalculatorService.fetchEngine(runningCompletionIn: callbackQueue) { result in
-                switch result {
-                case let .success(engine):
-                    completion(.success(Self.rootRate(engine: engine, take: take)))
-                case let .failure(error):
-                    logger.warning("Root network rate unavailable: \(error)")
-                    completion(.success(nil))
-                }
-            }
-        }
-
-        return CompoundOperationWrapper(targetOperation: rateOperation)
     }
 }
