@@ -1,35 +1,54 @@
 import Foundation
-import Foundation_iOS
+import UIKit
 
 final class SubtensorPositionWireframe: SubtensorPositionWireframeProtocol {
     let state: SubtensorStakingSharedStateProtocol
 
-    init(state: SubtensorStakingSharedStateProtocol) { self.state = state }
-
-    func showStake(from view: SubtensorPositionViewProtocol?, position: SubtensorStakingPosition?) {
-        guard let setup = SubtensorStakingSetupViewFactory.createView(
-            for: state,
-            initialPosition: position
-        ) else { return }
-        let navigation = ImportantFlowViewFactory.createNavigation(from: setup.controller)
-        view?.controller.presentWithCardLayout(navigation, animated: true)
+    init(state: SubtensorStakingSharedStateProtocol) {
+        self.state = state
     }
 
-    func showUnstake(from view: SubtensorPositionViewProtocol?, position: SubtensorStakingPosition?) {
-        guard let position, let setup = SubtensorUnstakeSetupViewFactory.createView(
-            for: state,
-            netuid: position.netuid
-        ) else { return }
-        let navigation = ImportantFlowViewFactory.createNavigation(from: setup.controller)
-        view?.controller.presentWithCardLayout(navigation, animated: true)
+    func showAddStake(from view: SubtensorPositionViewProtocol?, position: SubtensorStakingPosition) {
+        guard let setupView = SubtensorStakingSetupViewFactory.createAddStakeView(for: state, position: position) else {
+            return
+        }
+
+        presentFlow(setupView, from: view)
     }
 
-    func showValidatorInfo(from view: SubtensorPositionViewProtocol?, delegate: SubtensorDelegate) {
-        let info = SubtensorDelegateSelectionInfo(delegate: delegate, minStake: 0)
-        guard let infoView = CollatorStakingInfoViewFactory.createSubtensorStakingView(
-            for: state,
-            delegateInfo: info
-        ) else { return }
-        view?.controller.navigationController?.pushViewController(infoView.controller, animated: true)
+    func showBuyMore(from view: SubtensorPositionViewProtocol?, position: SubtensorStakingPosition) {
+        guard let setupView = SubtensorStakingSetupViewFactory.createBuyMoreView(for: state, position: position) else {
+            return
+        }
+
+        presentFlow(setupView, from: view)
+    }
+
+    func showUnstake(from view: SubtensorPositionViewProtocol?, netuid: UInt16) {
+        guard let unstakeView = SubtensorUnstakeSetupViewFactory.createView(for: state, netuid: netuid) else {
+            return
+        }
+
+        presentFlow(unstakeView, from: view)
+    }
+
+    func popToPortfolio(from view: SubtensorPositionViewProtocol?) {
+        guard
+            let controller = view?.controller,
+            let navigationController = controller.navigationController,
+            let index = navigationController.viewControllers.firstIndex(of: controller),
+            index > 0 else {
+            return
+        }
+
+        navigationController.popToViewController(navigationController.viewControllers[index - 1], animated: true)
+    }
+}
+
+private extension SubtensorPositionWireframe {
+    func presentFlow(_ flowView: ControllerBackedProtocol, from view: SubtensorPositionViewProtocol?) {
+        let navigation = ImportantFlowViewFactory.createNavigation(from: flowView.controller)
+
+        view?.controller.presentWithCardLayout(navigation, animated: true)
     }
 }

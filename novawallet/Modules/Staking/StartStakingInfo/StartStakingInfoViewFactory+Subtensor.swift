@@ -25,17 +25,8 @@ extension StartStakingInfoViewFactory {
             return nil
         }
 
-        let strategiesDataSource = SubtensorStakingStrategiesMockDataSource()
-        let interactor = createSubtensorInteractor(
-            state: state,
-            currencyManager: currencyManager,
-            strategiesDataSource: strategiesDataSource
-        )
-
-        let wireframe = StartStakingInfoSubtensorWireframe(
-            state: state,
-            strategiesDataSource: strategiesDataSource
-        )
+        let interactor = createSubtensorInteractor(state: state, currencyManager: currencyManager)
+        let wireframe = StartStakingInfoSubtensorWireframe(state: state)
 
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: stakingOption.chainAsset.assetDisplayInfo,
@@ -44,7 +35,7 @@ extension StartStakingInfoViewFactory {
 
         let startStakingViewModelFactory = StartStakingViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory,
-            estimatedEarningsFormatter: NumberFormatter.percentBase.localizableResource()
+            estimatedEarningsFormatter: NumberFormatter.percentSingle.localizableResource()
         )
 
         let presenter = StartStakingInfoSubtensorPresenter(
@@ -66,14 +57,14 @@ extension StartStakingInfoViewFactory {
 
         presenter.view = view
         interactor.presenter = presenter
+        wireframe.subnetSelectDelegate = presenter
 
         return view
     }
 
     private static func createSubtensorInteractor(
         state: SubtensorStakingSharedStateProtocol,
-        currencyManager: CurrencyManagerProtocol,
-        strategiesDataSource: SubtensorStakingStrategiesDataSourceProtocol
+        currencyManager: CurrencyManagerProtocol
     ) -> StartStakingInfoSubtensorInteractor {
         let stakingDashboardProviderFactory = StakingDashboardProviderFactory(
             chainRegistry: ChainRegistryFacade.sharedRegistry,
@@ -82,22 +73,12 @@ extension StartStakingInfoViewFactory {
             logger: Logger.shared
         )
 
-        let networkInfoFactory = SubtensorNetworkInfoFactory(
-            runtimeConnectionStore: ChainRegistryRuntimeConnectionStore(
-                chainId: state.stakingOption.chainAsset.chain.chainId,
-                chainRegistry: state.chainRegistry
-            ),
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
-        )
-
         return StartStakingInfoSubtensorInteractor(
             state: state,
             selectedWalletSettings: SelectedWalletSettings.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             stakingDashboardProviderFactory: stakingDashboardProviderFactory,
-            networkInfoFactory: networkInfoFactory,
-            strategiesDataSource: strategiesDataSource,
             currencyManager: currencyManager,
             sharedOperation: state.startSharedOperation(),
             operationQueue: OperationManagerFacade.sharedDefaultQueue,

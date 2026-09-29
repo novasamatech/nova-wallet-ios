@@ -2,242 +2,304 @@ import UIKit
 import UIKit_iOS
 
 final class SubtensorPositionViewLayout: UIView {
+    let isRoot: Bool
+
     let backgroundView = MultigradientView.background
-    let containerView: ScrollableContainerView = {
-        let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
-        view.stackView.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 20, right: 16)
+
+    let containerView: ScrollableContainerView = .create { view in
         view.stackView.isLayoutMarginsRelativeArrangement = true
+        view.stackView.layoutMargins = UIEdgeInsets(top: 12, left: 16, bottom: 24, right: 16)
+        view.stackView.alignment = .fill
         view.stackView.spacing = 16
-        return view
-    }()
-
-    let summaryCard = UIView()
-    let captionLabel = UILabel()
-    let amountLabel = UILabel()
-    let fiatLabel = UILabel()
-    let statusLabel = UILabel()
-    let rewardTitleLabel = UILabel()
-    let rewardValueLabel = UILabel()
-    let worthTitleLabel = UILabel()
-    let worthValueLabel = UILabel()
-    let holdNoticeCard = UIView()
-    let holdNoticeLabel = UILabel()
-
-    let rootActionCard = UIView()
-    let addStakeButton = UIButton(type: .system)
-    let unstakeButton = UIButton(type: .system)
-
-    let chartView = SubtensorSubnetPriceChartView()
-    let chartLoadingView = SubtensorChartLoadingView()
-    let chartStatusLabel = UILabel()
-    let periodButtons: [UIButton] = ["1D", "7D", "1M", "3M", "1Y"].map { title in
-        let button = UIButton(type: .system)
-        button.setTitle(title, for: .normal)
-        button.titleLabel?.font = .caption1
-        button.setTitleColor(R.color.colorTextSecondary(), for: .normal)
-        button.layer.cornerRadius = 8
-        return button
     }
 
-    let chartContainer = UIView()
-    let periodStack = UIStackView()
+    let summaryView = SubtensorPositionSummaryView()
 
-    let validatorCard = UIView()
-    let validatorCaption = UILabel()
-    let validatorLabel = UILabel()
-    let sellButton = UIButton(type: .system)
-    let buyButton = TriangularedButton()
-    let bottomBar = UIView()
+    let chartView = SubtensorSubnetPriceChartView(style: .price)
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    let chartLoadingView = SubtensorChartLoadingView()
+
+    let chartUnavailableView: SubtensorChartUnavailableView = .create { view in
+        view.isHidden = true
+    }
+
+    let periodControl: RoundedSegmentedControl = .create { view in
+        view.backgroundView.fillColor = .clear
+        view.selectionColor = R.color.colorSegmentedTabActive()!
+        view.titleFont = .regularFootnote
+        view.selectedTitleColor = R.color.colorTextPrimary()!
+        view.titleColor = R.color.colorTextSecondary()!
+    }
+
+    let actionsTableView: StackTableView = .create { view in
+        view.hasSeparators = false
+        view.contentInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
+    }
+
+    let validatorView = SubtensorPositionValidatorView()
+
+    let noticeView: SubtensorPositionNoticeView = .create { view in
+        view.isHidden = true
+    }
+
+    let syncNoticeControl: UIControl = .create { view in
+        view.backgroundColor = R.color.colorBlockBackground()
+        view.layer.cornerRadius = 12
+        view.isHidden = true
+    }
+
+    let syncNoticeLabel: UILabel = .create { label in
+        label.apply(style: .footnotePrimary)
+        label.textAlignment = .center
+        label.numberOfLines = 0
+    }
+
+    let sellButton: TriangularedButton = .create { button in
+        button.applySecondaryDefaultStyle()
+    }
+
+    let buyButton: TriangularedButton = .create { button in
+        button.applyDefaultStyle()
+    }
+
+    var onSelectAction: ((SubtensorPositionAction) -> Void)?
+
+    private let chartContainer = UIView()
+    private var actionCells: [StackActionCell] = []
+    private var actions: [SubtensorPositionAction] = []
+
+    init(isRoot: Bool) {
+        self.isRoot = isRoot
+
+        super.init(frame: .zero)
+
         backgroundColor = R.color.colorSecondaryScreenBackground()
-        setupStyles()
+
         setupLayout()
     }
 
     @available(*, unavailable)
-    required init?(coder _: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
-    func setRootMode(_ isRoot: Bool) {
-        rootActionCard.isHidden = !isRoot
-        chartContainer.isHidden = isRoot
-        periodStack.isHidden = isRoot
-        bottomBar.isHidden = isRoot
-        worthTitleLabel.isHidden = isRoot
-        worthValueLabel.isHidden = isRoot
-        worthTitleLabel.snp.updateConstraints { make in
-            make.top.equalTo(rewardTitleLabel.snp.bottom).offset(isRoot ? 0 : 22)
+    func bind(viewModel: SubtensorPositionViewModel, locale: Locale) {
+        summaryView.bind(viewModel: viewModel.summary, locale: locale)
+        bind(chart: viewModel.chart)
+        bind(actions: viewModel.actions)
+        validatorView.bind(viewModel: viewModel.validator)
+
+        noticeView.isHidden = viewModel.notice == nil
+
+        if let notice = viewModel.notice {
+            noticeView.bind(viewModel: notice)
+        }
+
+        syncNoticeControl.isHidden = !viewModel.isSyncFailed
+        syncNoticeLabel.text = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingSubtensorUiPortfolioSyncFailed()
+    }
+}
+
+private extension SubtensorPositionViewLayout {
+    enum Constants {
+        static let chartHeight: CGFloat = 208
+        static let controlHeight: CGFloat = 32
+    }
+
+    func bind(chart viewModel: SubtensorPositionChartViewModel?) {
+        guard let viewModel else {
+            chartContainer.isHidden = true
+            periodControl.isHidden = true
+            chartLoadingView.setLoading(false)
+            return
+        }
+
+        chartContainer.isHidden = false
+        periodControl.isHidden = false
+        chartLoadingView.setLoading(viewModel.chart == .loading)
+
+        switch viewModel.chart {
+        case .loading:
+            chartView.isHidden = true
+            chartUnavailableView.isHidden = true
+        case let .chart(chartViewModel):
+            chartView.isHidden = false
+            chartUnavailableView.isHidden = true
+            chartView.bind(viewModel: chartViewModel)
+        case let .unavailable(title, details):
+            chartView.isHidden = true
+            chartUnavailableView.isHidden = false
+            chartUnavailableView.bind(title: title, details: details, isAction: false)
+        case let .failed(title, action):
+            chartView.isHidden = true
+            chartUnavailableView.isHidden = false
+            chartUnavailableView.bind(title: title, details: action, isAction: true)
+        }
+
+        if periodControl.titles != viewModel.periods.titles {
+            periodControl.titles = viewModel.periods.titles
+        }
+
+        periodControl.selectedSegmentIndex = viewModel.periods.selectedIndex
+        periodControl.isEnabled = viewModel.periods.isEnabled
+        periodControl.alpha = viewModel.periods.isEnabled ? 1 : 0.4
+    }
+
+    func bind(actions viewModels: [SubtensorPositionActionViewModel]) {
+        actions = viewModels.map(\.action)
+
+        for viewModel in viewModels {
+            switch viewModel.action {
+            case .addStake, .unstake:
+                bindCell(for: viewModel)
+            case .sell:
+                bind(button: sellButton, viewModel: viewModel, isPrimary: false)
+            case .buy:
+                bind(button: buyButton, viewModel: viewModel, isPrimary: true)
+            }
         }
     }
 
-    private func setupStyles() {
-        [summaryCard, rootActionCard, validatorCard].forEach { card in
-            card.backgroundColor = R.color.colorBlockBackground()
-            card.layer.cornerRadius = 12
+    func bindCell(for viewModel: SubtensorPositionActionViewModel) {
+        guard let index = actions.firstIndex(of: viewModel.action), index < actionCells.count else {
+            return
         }
-        holdNoticeCard.backgroundColor = R.color.colorWarningBlockBackground()
-        holdNoticeCard.layer.cornerRadius = 12
-        holdNoticeCard.isHidden = true
-        holdNoticeLabel.font = .regularFootnote
-        holdNoticeLabel.textColor = R.color.colorTextPrimary()
-        holdNoticeLabel.numberOfLines = 0
-        [captionLabel, rewardTitleLabel, worthTitleLabel, validatorCaption].forEach { label in
-            label.font = .regularFootnote
-            label.textColor = R.color.colorTextSecondary()
-        }
-        amountLabel.font = .boldTitle1
-        amountLabel.textColor = R.color.colorTextPrimary()
-        fiatLabel.font = .regularFootnote
-        fiatLabel.textColor = R.color.colorTextSecondary()
-        rewardValueLabel.font = .semiBoldFootnote
-        rewardValueLabel.textColor = R.color.colorTextPrimary()
-        worthValueLabel.font = .semiBoldFootnote
-        worthValueLabel.textColor = R.color.colorTextPrimary()
-        statusLabel.font = .caption1
-        statusLabel.textColor = R.color.colorTextPositive()
-        validatorLabel.font = .semiBoldSubheadline
-        validatorLabel.textColor = R.color.colorTextPrimary()
 
-        [addStakeButton, unstakeButton].forEach { button in
-            button.contentHorizontalAlignment = .left
-            button.titleLabel?.font = .regularSubheadline
-            button.setTitleColor(R.color.colorTextPrimary(), for: .normal)
-            button.contentEdgeInsets = UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16)
-        }
-        chartStatusLabel.font = .regularFootnote
-        chartStatusLabel.textColor = R.color.colorTextSecondary()
-        chartStatusLabel.textAlignment = .center
-        periodStack.axis = .horizontal
-        periodStack.distribution = .fillEqually
-        periodButtons.forEach(periodStack.addArrangedSubview)
+        let icon = viewModel.action == .addStake ? R.image.iconBondMore() : R.image.iconUnbond()
+        let cell = actionCells[index]
 
-        sellButton.backgroundColor = R.color.colorBlockBackground()
-        sellButton.layer.cornerRadius = 12
-        sellButton.setTitleColor(R.color.colorTextPrimary(), for: .normal)
-        buyButton.applyDefaultStyle()
-        buyButton.invalidateLayout()
-        bottomBar.backgroundColor = R.color.colorSecondaryScreenBackground()
+        cell.bind(title: viewModel.title, icon: icon, details: nil)
+        cell.isUserInteractionEnabled = viewModel.isEnabled
+        cell.rowContentView.alpha = viewModel.isEnabled ? 1 : 0.4
     }
 
-    private func setupLayout() {
-        setupFrame()
-        setupSummaryCard()
-        setupRootActionCard()
-        setupChart()
-        setupValidatorCard()
+    func bind(button: TriangularedButton, viewModel: SubtensorPositionActionViewModel, isPrimary: Bool) {
+        if !viewModel.isEnabled {
+            button.applyDisabledStyle()
+        } else if isPrimary {
+            button.applyDefaultStyle()
+        } else {
+            button.applySecondaryDefaultStyle()
+        }
+
+        button.isUserInteractionEnabled = viewModel.isEnabled
+        button.imageWithTitleView?.title = viewModel.title
+        button.invalidateLayout()
     }
 
-    private func setupFrame() {
+    @objc func actionCell(_ sender: UIControl) {
+        guard
+            let cell = sender as? StackActionCell,
+            let index = actionCells.firstIndex(of: cell),
+            index < actions.count else {
+            return
+        }
+
+        onSelectAction?(actions[index])
+    }
+
+    func setupLayout() {
         addSubview(backgroundView)
-        backgroundView.snp.makeConstraints { make in make.edges.equalToSuperview() }
+        backgroundView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
+        if isRoot {
+            addSubview(containerView)
+            containerView.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+        } else {
+            setupBottomBar()
+        }
+
+        containerView.stackView.addArrangedSubview(summaryView)
+
+        if isRoot {
+            setupActions()
+            containerView.stackView.addArrangedSubview(validatorView)
+            containerView.stackView.addArrangedSubview(noticeView)
+        } else {
+            setupChart()
+            containerView.stackView.addArrangedSubview(noticeView)
+            containerView.stackView.addArrangedSubview(validatorView)
+        }
+
+        setupSyncNotice()
+    }
+
+    func setupBottomBar() {
+        let buttonsView = UIView.hStack(distribution: .fillEqually, spacing: 16, [sellButton, buyButton])
+
+        addSubview(buttonsView)
+        buttonsView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
+            make.height.equalTo(UIConstants.actionHeight)
+        }
+
         addSubview(containerView)
-        addSubview(bottomBar)
-        bottomBar.addSubview(sellButton)
-        bottomBar.addSubview(buyButton)
-        bottomBar.snp.makeConstraints { make in make.leading.trailing.bottom.equalToSuperview() }
-        sellButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(16)
-            make.top.equalToSuperview().offset(16)
-            make.width.equalTo(buyButton)
-            make.height.equalTo(52)
-            make.bottom.equalTo(safeAreaLayoutGuide).inset(12)
-        }
-        buyButton.snp.makeConstraints { make in
-            make.leading.equalTo(sellButton.snp.trailing).offset(16)
-            make.trailing.equalToSuperview().inset(16)
-            make.centerY.equalTo(sellButton)
-            make.height.equalTo(52)
-        }
         containerView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(bottomBar.snp.top)
+            make.bottom.equalTo(buttonsView.snp.top).offset(-16)
         }
     }
 
-    private func setupSummaryCard() {
-        summaryCard.addSubview(captionLabel)
-        summaryCard.addSubview(amountLabel)
-        summaryCard.addSubview(fiatLabel)
-        summaryCard.addSubview(statusLabel)
-        summaryCard.addSubview(rewardTitleLabel)
-        summaryCard.addSubview(rewardValueLabel)
-        summaryCard.addSubview(worthTitleLabel)
-        summaryCard.addSubview(worthValueLabel)
-        captionLabel.snp.makeConstraints { make in make.leading.top.equalToSuperview().inset(16) }
-        amountLabel.snp.makeConstraints { make in
-            make.top.equalTo(captionLabel.snp.bottom).offset(6)
-            make.leading.equalTo(captionLabel)
+    func setupActions() {
+        let backgroundView: UIView = .create { view in
+            view.backgroundColor = R.color.colorBlockBackground()
+            view.layer.cornerRadius = 12
         }
-        fiatLabel.snp.makeConstraints { make in
-            make.top.equalTo(amountLabel.snp.bottom).offset(4)
-            make.leading.equalTo(captionLabel)
+
+        backgroundView.addSubview(actionsTableView)
+        actionsTableView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
-        statusLabel.snp.makeConstraints { make in
-            make.trailing.top.equalToSuperview().inset(16)
+
+        actionCells = (0 ..< 2).map { _ in
+            let cell = StackActionCell()
+            cell.rowContentView.disclosureIndicatorView.image = R.image.iconSmallArrow()?
+                .tinted(with: R.color.colorIconSecondary()!)
+            cell.addTarget(self, action: #selector(actionCell(_:)), for: .touchUpInside)
+            actionsTableView.addArrangedSubview(cell)
+            return cell
         }
-        rewardTitleLabel.snp.makeConstraints { make in
-            make.leading.equalTo(captionLabel)
-            make.top.equalTo(fiatLabel.snp.bottom).offset(22)
-        }
-        rewardValueLabel.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(16)
-            make.centerY.equalTo(rewardTitleLabel)
-        }
-        worthTitleLabel.snp.makeConstraints { make in
-            make.leading.equalTo(captionLabel)
-            make.top.equalTo(rewardTitleLabel.snp.bottom).offset(22)
-            make.bottom.equalToSuperview().inset(16)
-        }
-        worthValueLabel.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(16)
-            make.centerY.equalTo(worthTitleLabel)
-        }
-        containerView.stackView.addArrangedSubview(summaryCard)
+
+        containerView.stackView.addArrangedSubview(backgroundView)
     }
 
-    private func setupRootActionCard() {
-        holdNoticeCard.addSubview(holdNoticeLabel)
-        holdNoticeLabel.snp.makeConstraints { make in make.edges.equalToSuperview().inset(16) }
-        containerView.stackView.addArrangedSubview(holdNoticeCard)
-
-        rootActionCard.addSubview(addStakeButton)
-        rootActionCard.addSubview(unstakeButton)
-        addStakeButton.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
-            make.height.equalTo(48)
+    func setupChart() {
+        [chartView, chartLoadingView, chartUnavailableView].forEach { view in
+            chartContainer.addSubview(view)
+            view.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
         }
-        unstakeButton.snp.makeConstraints { make in
-            make.top.equalTo(addStakeButton.snp.bottom)
-            make.leading.trailing.bottom.equalToSuperview()
-            make.height.equalTo(48)
-        }
-        containerView.stackView.addArrangedSubview(rootActionCard)
-    }
 
-    private func setupChart() {
-        chartContainer.addSubview(chartView)
-        chartContainer.addSubview(chartLoadingView)
-        chartContainer.addSubview(chartStatusLabel)
-        chartView.snp.makeConstraints { make in make.edges.equalToSuperview() }
-        chartLoadingView.snp.makeConstraints { make in make.edges.equalToSuperview() }
-        chartStatusLabel.snp.makeConstraints { make in make.edges.equalToSuperview() }
-        chartContainer.snp.makeConstraints { make in make.height.equalTo(208) }
+        chartContainer.snp.makeConstraints { make in
+            make.height.equalTo(Constants.chartHeight)
+        }
+
+        chartContainer.isHidden = true
+        periodControl.isHidden = true
+
         containerView.stackView.addArrangedSubview(chartContainer)
-        periodStack.snp.makeConstraints { make in make.height.equalTo(32) }
-        containerView.stackView.addArrangedSubview(periodStack)
+        containerView.stackView.addArrangedSubview(periodControl)
+
+        periodControl.snp.makeConstraints { make in
+            make.height.equalTo(Constants.controlHeight)
+        }
     }
 
-    private func setupValidatorCard() {
-        validatorCard.addSubview(validatorCaption)
-        validatorCard.addSubview(validatorLabel)
-        validatorCaption.snp.makeConstraints { make in
-            make.leading.top.bottom.equalToSuperview().inset(16)
+    func setupSyncNotice() {
+        syncNoticeControl.addSubview(syncNoticeLabel)
+        syncNoticeLabel.isUserInteractionEnabled = false
+        syncNoticeLabel.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(16)
         }
-        validatorLabel.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(16)
-            make.centerY.equalTo(validatorCaption)
-        }
-        containerView.stackView.addArrangedSubview(validatorCard)
+
+        containerView.stackView.addArrangedSubview(syncNoticeControl)
     }
 }

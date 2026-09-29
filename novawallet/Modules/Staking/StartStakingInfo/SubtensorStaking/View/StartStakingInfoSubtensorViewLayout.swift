@@ -8,25 +8,25 @@ final class StartStakingInfoSubtensorViewLayout: UIView {
         font: .boldTitle1
     )
 
+    let containerView: ScrollableContainerView = .create { view in
+        view.stackView.isLayoutMarginsRelativeArrangement = true
+        view.stackView.layoutMargins = Constants.contentInsets
+        view.stackView.alignment = .fill
+    }
+
     let titleLabel: UILabel = .create { label in
         label.textAlignment = .center
-        label.numberOfLines = 3
+        label.numberOfLines = 0
     }
 
     let earningRows = [
-        StartStakingInfoSubtensorRowView(iconTopOffset: 2, showsDivider: true),
-        StartStakingInfoSubtensorRowView(iconTopOffset: 24, showsDivider: true),
-        StartStakingInfoSubtensorRowView(iconTopOffset: 2, showsDivider: true),
-        StartStakingInfoSubtensorRowView(iconTopOffset: 13, showsDivider: false)
+        StartStakingInfoSubtensorRowView(showsDivider: true),
+        StartStakingInfoSubtensorRowView(showsDivider: true),
+        StartStakingInfoSubtensorRowView(showsDivider: true),
+        StartStakingInfoSubtensorRowView(showsDivider: false)
     ]
 
-    let primaryButton: RoundedButton = .create { button in
-        button.applyPrimaryStyle()
-        button.roundedBackgroundView?.cornerRadius = Constants.buttonCornerRadius
-        button.imageWithTitleView?.titleFont = .semiBoldSubheadline
-    }
-
-    let secondaryButton: RoundedButton = .create { button in
+    let actionButton: RoundedButton = .create { button in
         button.applySecondaryStyle()
         button.roundedBackgroundView?.cornerRadius = Constants.buttonCornerRadius
         button.imageWithTitleView?.titleFont = .semiBoldSubheadline
@@ -34,11 +34,6 @@ final class StartStakingInfoSubtensorViewLayout: UIView {
     }
 
     let balanceLabel = UILabel(style: .caption1Secondary, textAlignment: .center, numberOfLines: 1)
-
-    let activityIndicator: UIActivityIndicatorView = .create { view in
-        view.color = R.color.colorIconSecondary()
-        view.hidesWhenStopped = true
-    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -53,90 +48,49 @@ final class StartStakingInfoSubtensorViewLayout: UIView {
     }
 
     func bind(viewModel: StartStakingInfoSubtensorViewModel) {
-        titleLabel.bind(model: viewModel.title, with: titleStyle)
+        if let title = viewModel.title {
+            titleLabel.bind(model: title, with: titleStyle)
+        } else {
+            titleLabel.attributedText = nil
+        }
 
         for (row, model) in zip(earningRows, viewModel.paragraphs) {
             row.bind(viewModel: model)
         }
 
-        primaryButton.imageWithTitleView?.title = viewModel.primaryActionTitle
-        secondaryButton.imageWithTitleView?.title = viewModel.secondaryActionTitle
-    }
-
-    func setLoading(_ isLoading: Bool) {
-        titleLabel.isHidden = isLoading
-        earningRows.forEach { $0.isHidden = isLoading }
-        primaryButton.isHidden = isLoading
-        secondaryButton.isHidden = isLoading
-        balanceLabel.isHidden = isLoading
-
-        if isLoading {
-            activityIndicator.startAnimating()
-        } else {
-            activityIndicator.stopAnimating()
-        }
+        actionButton.imageWithTitleView?.title = viewModel.actionTitle
+        actionButton.invalidateLayout()
     }
 }
 
 private extension StartStakingInfoSubtensorViewLayout {
     func setupLayout() {
-        addSubview(titleLabel)
-        earningRows.forEach(addSubview)
-        addSubview(primaryButton)
-        addSubview(secondaryButton)
         addSubview(balanceLabel)
-        addSubview(activityIndicator)
-
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide.snp.top).offset(Constants.titleTopOffset)
-            make.leading.trailing.equalToSuperview().inset(Constants.horizontalInset)
-            make.height.equalTo(Constants.titleHeight)
-        }
-
-        earningRows[0].snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide.snp.top).offset(Constants.firstRowTopOffset)
-            make.leading.trailing.equalToSuperview().inset(Constants.horizontalInset)
-            make.height.equalTo(Constants.firstRowHeight)
-        }
-
-        earningRows[1].snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide.snp.top).offset(Constants.secondRowTopOffset)
-            make.leading.trailing.equalToSuperview().inset(Constants.horizontalInset)
-            make.height.equalTo(Constants.secondRowHeight)
-        }
-
-        earningRows[2].snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide.snp.top).offset(Constants.thirdRowTopOffset)
-            make.leading.trailing.equalToSuperview().inset(Constants.horizontalInset)
-            make.height.equalTo(Constants.thirdRowHeight)
-        }
-
-        earningRows[3].snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide.snp.top).offset(Constants.fourthRowTopOffset)
-            make.leading.trailing.equalToSuperview().inset(Constants.horizontalInset)
-            make.height.equalTo(Constants.fourthRowHeight)
-        }
-
-        primaryButton.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(Constants.horizontalInset)
-            make.height.equalTo(Constants.buttonHeight)
-        }
-
-        secondaryButton.snp.makeConstraints { make in
-            make.top.equalTo(primaryButton.snp.bottom).offset(Constants.actionSpacing)
-            make.leading.trailing.equalToSuperview().inset(Constants.horizontalInset)
-            make.height.equalTo(Constants.buttonHeight)
-        }
-
         balanceLabel.snp.makeConstraints { make in
-            make.top.equalTo(secondaryButton.snp.bottom).offset(Constants.actionSpacing)
             make.leading.trailing.equalToSuperview().inset(Constants.horizontalInset)
             make.height.equalTo(Constants.balanceHeight)
             make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).inset(Constants.balanceBottomInset)
         }
 
-        activityIndicator.snp.makeConstraints { make in
-            make.center.equalToSuperview()
+        addSubview(actionButton)
+        actionButton.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(Constants.horizontalInset)
+            make.height.equalTo(Constants.buttonHeight)
+            make.bottom.equalTo(balanceLabel.snp.top).offset(-Constants.actionSpacing)
+        }
+
+        addSubview(containerView)
+        containerView.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(actionButton.snp.top).offset(-Constants.contentBottomSpacing)
+        }
+
+        containerView.stackView.addArrangedSubview(titleLabel)
+        containerView.stackView.setCustomSpacing(Constants.titleSpacing, after: titleLabel)
+
+        for row in earningRows {
+            containerView.stackView.addArrangedSubview(row)
+            containerView.stackView.setCustomSpacing(Constants.rowSpacing, after: row)
         }
     }
 }
@@ -144,16 +98,10 @@ private extension StartStakingInfoSubtensorViewLayout {
 extension StartStakingInfoSubtensorViewLayout {
     enum Constants {
         static let horizontalInset: CGFloat = 16
-        static let titleTopOffset: CGFloat = 24
-        static let titleHeight: CGFloat = 84
-        static let firstRowTopOffset: CGFloat = 153
-        static let firstRowHeight: CGFloat = 59
-        static let secondRowTopOffset: CGFloat = 225
-        static let secondRowHeight: CGFloat = 103
-        static let thirdRowTopOffset: CGFloat = 341
-        static let thirdRowHeight: CGFloat = 59
-        static let fourthRowTopOffset: CGFloat = 413
-        static let fourthRowHeight: CGFloat = 66
+        static let contentInsets = UIEdgeInsets(top: 24, left: 16, bottom: 16, right: 16)
+        static let titleSpacing: CGFloat = 32
+        static let rowSpacing: CGFloat = 14
+        static let contentBottomSpacing: CGFloat = 16
         static let buttonHeight: CGFloat = 52
         static let buttonCornerRadius: CGFloat = 12
         static let actionSpacing: CGFloat = 8
@@ -177,32 +125,41 @@ final class StartStakingInfoSubtensorRowView: UIView {
         label.numberOfLines = 0
     }
 
-    init(iconTopOffset: CGFloat, showsDivider: Bool) {
+    init(showsDivider: Bool) {
         super.init(frame: .zero)
 
-        addSubview(imageView)
-        addSubview(detailsLabel)
+        let contentView = UIView.hStack(
+            alignment: .center,
+            spacing: Constants.textSpacing,
+            [imageView, detailsLabel]
+        )
+
+        addSubview(contentView)
 
         imageView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(iconTopOffset)
-            make.leading.equalToSuperview()
             make.size.equalTo(Constants.iconSize)
         }
 
-        detailsLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.leading.equalToSuperview().offset(Constants.textLeadingOffset)
-            make.trailing.equalToSuperview()
+        guard showsDivider else {
+            contentView.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+
+            return
         }
 
-        if showsDivider {
-            let divider = UIView()
-            divider.backgroundColor = R.color.colorDivider()
-            addSubview(divider)
-            divider.snp.makeConstraints { make in
-                make.leading.trailing.bottom.equalToSuperview()
-                make.height.equalTo(Constants.dividerHeight)
-            }
+        let divider = UIView()
+        divider.backgroundColor = R.color.colorDivider()
+        addSubview(divider)
+
+        contentView.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+        }
+
+        divider.snp.makeConstraints { make in
+            make.top.equalTo(contentView.snp.bottom).offset(Constants.dividerSpacing)
+            make.leading.trailing.bottom.equalToSuperview()
+            make.height.equalTo(Constants.dividerHeight)
         }
     }
 
@@ -213,14 +170,32 @@ final class StartStakingInfoSubtensorRowView: UIView {
 
     func bind(viewModel: ParagraphView.Model) {
         imageView.image = viewModel.image
-        detailsLabel.bind(model: viewModel.text, with: paragraphStyle)
+
+        let text = NSAttributedString(
+            string: viewModel.text.text,
+            attributes: [
+                .foregroundColor: paragraphStyle.textColor,
+                .font: paragraphStyle.font
+            ]
+        )
+
+        let decorators = viewModel.text.accents.map { accent in
+            HighlightingAttributedStringDecorator(
+                pattern: accent,
+                attributes: [.foregroundColor: paragraphStyle.accentTextColor]
+            )
+        }
+
+        detailsLabel.attributedText = CompoundAttributedStringDecorator(decorators: decorators)
+            .decorate(attributedString: text)
     }
 }
 
 private extension StartStakingInfoSubtensorRowView {
     enum Constants {
         static let iconSize: CGFloat = 40
-        static let textLeadingOffset: CGFloat = 56
+        static let textSpacing: CGFloat = 16
+        static let dividerSpacing: CGFloat = 16
         static let dividerHeight: CGFloat = 0.5
     }
 }

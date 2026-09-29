@@ -243,14 +243,10 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
     ) -> MockSubtensorStakingSharedStateProtocol {
         let state = MockSubtensorStakingSharedStateProtocol()
         let subnetsService = MockSubtensorSubnetsServiceProtocol()
-        let delegatesService = MockSubtensorDelegatesServiceProtocol()
 
         stub(subnetsService) { stub in
-            when(stub.fetchSubnetsInfo(runningCompletionIn: any(), completion: any())).thenDoNothing()
-        }
-
-        stub(delegatesService) { stub in
-            when(stub.fetchDelegates(runningCompletionIn: any(), completion: any())).thenDoNothing()
+            when(stub.fetchSubnetsInfo(forcingRefresh: any(), runningCompletionIn: any(), completion: any()))
+                .thenDoNothing()
         }
 
         stub(state) { stub in
@@ -259,7 +255,6 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
             when(stub.positionsSyncService.get).thenReturn(nil)
             when(stub.rootClaimableService.get).thenReturn(nil)
             when(stub.subnetsService.get).thenReturn(subnetsService)
-            when(stub.delegatesService.get).thenReturn(delegatesService)
             when(stub.setup(for: any())).thenDoNothing()
             when(stub.throttle()).thenDoNothing()
         }
@@ -353,6 +348,9 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
 
         stub(yieldService) { stub in
             when(stub.createRootYieldWrapper()).thenReturn(CompoundOperationWrapper.createWithResult(nil))
+            when(stub.createAlphaYieldsWrapper(for: any())).thenReturn(
+                CompoundOperationWrapper.createWithError(CommonError.dataCorruption)
+            )
         }
 
         return yieldService
@@ -385,6 +383,17 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
             let interactor = SubtensorPositionInteractor(
                 state: state,
                 netuid: 64,
+                catalogueService: makeCatalogueService(),
+                yieldService: makeYieldService(),
+                earnConfigProvider: makeEarnConfigProvider(),
+                priceHistoryService: nil,
+                validatorFactory: SubtensorValidatorPresetFactory(
+                    directoryService: makeDirectoryService(),
+                    recommendationService: MockSubtensorRecommendationServiceProtocol(),
+                    operationQueue: OperationQueue(),
+                    logger: Logger.shared
+                ),
+                rootHoldFactory: MockSubtensorRootHoldFactoryProtocol(),
                 priceLocalSubscriptionFactory: PriceProviderFactoryStub(),
                 currencyManager: CurrencyManagerStub(),
                 operationQueue: OperationQueue(),
@@ -403,7 +412,10 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
                 account: state.selectedAccount,
                 interactor: interactor,
                 wireframe: SubtensorPositionWireframe(state: state),
-                precision: Int16(state.stakingOption.chainAsset.asset.precision),
+                viewModelFactory: SubtensorPositionViewModelFactory(
+                    chainAsset: state.stakingOption.chainAsset,
+                    priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
+                ),
                 localizationManager: LocalizationManager.shared
             )
 
@@ -413,6 +425,33 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
         }
 
         wait(for: [expectation(for: NSPredicate { _, _ in leftPosition == nil }, evaluatedWith: nil)], timeout: 10)
+    }
+
+    private func makeCatalogueService() -> MockSubtensorSubnetCatalogueServiceProtocol {
+        let catalogueService = MockSubtensorSubnetCatalogueServiceProtocol()
+
+        stub(catalogueService) { stub in
+            when(stub.createCatalogueWrapper(forcingRefresh: any())).thenReturn(
+                CompoundOperationWrapper.createWithError(CommonError.dataCorruption)
+            )
+        }
+
+        return catalogueService
+    }
+
+    private func makeDirectoryService() -> MockSubtensorValidatorDirectoryServiceProtocol {
+        let directoryService = MockSubtensorValidatorDirectoryServiceProtocol()
+
+        stub(directoryService) { stub in
+            when(stub.createDirectoryWrapper(for: any())).thenReturn(
+                CompoundOperationWrapper.createWithError(CommonError.dataCorruption)
+            )
+            when(stub.createDetailWrapper(for: any(), subnet: any())).thenReturn(
+                CompoundOperationWrapper.createWithError(CommonError.dataCorruption)
+            )
+        }
+
+        return directoryService
     }
 
     private func registeredObserver(in eventCenter: MockEventCenterProtocol) throws -> EventVisitorProtocol {

@@ -8,22 +8,37 @@ final class BannersInteractor {
 
     private let bannersFactory: BannersFetchOperationFactoryProtocol
     private let localizationFactory: BannersLocalizationFactoryProtocol
+    private let bittensorSource: BittensorLocalBannerSourceProtocol?
+    private let textHeightOperationFactory: TextHeightOperationFactoryProtocol
     private let settingsManager: SettingsManagerProtocol
     private let operationQueue: OperationQueue
     private let logger: LoggerProtocol
 
+    private let bittensorContentCallStore = CancellableCallStore()
+    private var bittensorBanner: BittensorLocalBanner?
+    private var locale: Locale?
+    private var availableTextWidth: CGFloat?
+
     init(
         bannersFactory: BannersFetchOperationFactoryProtocol,
         localizationFactory: BannersLocalizationFactoryProtocol,
+        bittensorSource: BittensorLocalBannerSourceProtocol?,
+        textHeightOperationFactory: TextHeightOperationFactoryProtocol,
         settingsManager: SettingsManagerProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.bannersFactory = bannersFactory
         self.localizationFactory = localizationFactory
+        self.bittensorSource = bittensorSource
+        self.textHeightOperationFactory = textHeightOperationFactory
         self.settingsManager = settingsManager
         self.operationQueue = operationQueue
         self.logger = logger
+    }
+
+    deinit {
+        bittensorContentCallStore.cancel()
     }
 }
 
@@ -100,6 +115,46 @@ private extension BannersInteractor {
             dependencies: dependencies
         )
     }
+
+    func store(locale: Locale, availableTextWidth: CGFloat) {
+        self.locale = locale
+        self.availableTextWidth = availableTextWidth
+    }
+
+    func provideBittensorContent() {
+        bittensorContentCallStore.cancel()
+
+        guard let bittensorBanner, let locale, let availableTextWidth else {
+            presenter?.didReceive(bittensorContent: nil)
+            return
+        }
+
+        let texts = bittensorBanner.createTexts(for: locale)
+
+        let heightOperation = textHeightOperationFactory.createOperation(
+            for: .banner(text: [texts.title, texts.details], availableWidth: availableTextWidth)
+        )
+
+        executeCancellable(
+            wrapper: CompoundOperationWrapper(targetOperation: heightOperation),
+            inOperationQueue: operationQueue,
+            backingCallIn: bittensorContentCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(height):
+                let content = bittensorBanner.createContent(
+                    title: texts.title,
+                    details: texts.details,
+                    estimatedHeight: height
+                )
+
+                self?.presenter?.didReceive(bittensorContent: content)
+            case let .failure(error):
+                self?.logger.error("Bittensor banner height failed with error: \(error)")
+            }
+        }
+    }
 }
 
 // MARK: BannersInteractorInputProtocol
@@ -109,6 +164,8 @@ extension BannersInteractor: BannersInteractorInputProtocol {
         for locale: Locale,
         availableTextWidth: CGFloat
     ) {
+        store(locale: locale, availableTextWidth: availableTextWidth)
+
         let localizationFetchWrapper = localizationFactory.createWrapper(
             for: locale,
             availableWidth: availableTextWidth
@@ -127,26 +184,39 @@ extension BannersInteractor: BannersInteractorInputProtocol {
                 self?.presenter?.didReceive(error)
             }
         }
+
+        if bittensorBanner != nil {
+            provideBittensorContent()
+        }
     }
 
     func setup(
         with locale: Locale,
         availableTextWidth: CGFloat
     ) {
+        store(locale: locale, availableTextWidth: availableTextWidth)
+
         fetchBanners(
             for: locale,
             availableTextWidth: availableTextWidth
         )
+
+        bittensorSource?.delegate = self
+        bittensorSource?.setup()
     }
 
     func refresh(
         for locale: Locale,
         availableTextWidth: CGFloat
     ) {
+        store(locale: locale, availableTextWidth: availableTextWidth)
+
         fetchBanners(
             for: locale,
             availableTextWidth: availableTextWidth
         )
+
+        bittensorSource?.refresh()
     }
 
     func closeBanner(with id: String) {
@@ -155,5 +225,12 @@ extension BannersInteractor: BannersInteractorInputProtocol {
         settingsManager.closedBanners = closedBanners
 
         presenter?.didReceive(closedBanners)
+    }
+}
+
+extension BannersInteractor: BittensorLocalBannerSourceDelegate {
+    func bittensorLocalBannerSource(didResolve banner: BittensorLocalBanner?) {
+        bittensorBanner = banner
+        provideBittensorContent()
     }
 }
