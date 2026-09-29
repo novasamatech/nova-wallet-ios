@@ -13,6 +13,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         world.stubSubnets(try SubtensorFlowChainWorld.subnetsInfo())
         world.stubQuotes([SubtensorFlowChainWorld.chutesBuyQuote])
         SubtensorFlowURLProtocol.serveEarnConfig()
+        SubtensorFlowURLProtocol.serveFixture(.subnets)
         SubtensorFlowURLProtocol.serveFixture(.rootYield(page: 1, pageSize: 100))
         SubtensorFlowURLProtocol.serveFixture(.rankedSubnets)
         SubtensorFlowURLProtocol.serveFixture(.validators(netuid: 64))
@@ -20,9 +21,8 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
 
         let headlineConfig = try run(services.earnConfigProvider.createConfigWrapper())
 
-        let catalogue = try fetchSubnetsInfo(from: world.sharedState.subnetsService)
+        let subnetRefs = try listedSubnetRefs(in: world)
         let rootRowYield = try run(services.yieldService.createRootYieldWrapper())
-        let subnetRefs = listedSubnetRefs(in: catalogue)
         let weeklyPrices = try run(priceHistoryService.createWeeklyChangesWrapper(for: subnetRefs))
         let logos = SubtensorSubnetLogoResolver(config: try run(services.earnConfigProvider.createConfigWrapper()))
         let initialFavourites = services.earnSettings.favouriteSubnets
@@ -157,6 +157,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
 
         XCTAssertEqual(requestLines().sorted(), [
             "GET https://bittensor.test/v1/bittensor/recommendations/subnets",
+            "GET https://bittensor.test/v1/bittensor/subnets",
             "GET https://bittensor.test/v1/bittensor/subnets/64/validators",
             "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
             "GET https://earn-config.test/earn_config.json",
@@ -169,6 +170,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         assertAttestedRequests(
             world,
             paths: [
+                "/v1/bittensor/subnets",
                 "/v1/bittensor/yields/root",
                 "/v1/bittensor/recommendations/subnets",
                 "/v1/bittensor/subnets/64/validators"
@@ -184,13 +186,13 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
 
         world.stubSubnets(try SubtensorFlowChainWorld.subnetsInfo())
         SubtensorFlowURLProtocol.serveEarnConfig()
+        SubtensorFlowURLProtocol.serveFixture(.subnets)
         SubtensorFlowURLProtocol.serveFixture(.rootYield(page: 1, pageSize: 100))
         SubtensorFlowURLProtocol.serveBittensor("/recommendations/subnets", reply: .notFoundPlainText())
         try serveWeekCharts()
 
-        let catalogue = try fetchSubnetsInfo(from: world.sharedState.subnetsService)
+        let subnetRefs = try listedSubnetRefs(in: world)
         let rootRowYield = try run(services.yieldService.createRootYieldWrapper())
-        let subnetRefs = listedSubnetRefs(in: catalogue)
         let weeklyPrices = try run(priceHistoryService.createWeeklyChangesWrapper(for: subnetRefs))
         let logos = SubtensorSubnetLogoResolver(config: try run(services.earnConfigProvider.createConfigWrapper()))
 
@@ -219,6 +221,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
 
         XCTAssertEqual(requestLines().sorted(), [
             "GET https://bittensor.test/v1/bittensor/recommendations/subnets",
+            "GET https://bittensor.test/v1/bittensor/subnets",
             "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
             "GET https://earn-config.test/earn_config.json",
             "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=7",
@@ -229,12 +232,93 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
 
         assertAttestedRequests(
             world,
-            paths: ["/v1/bittensor/yields/root", "/v1/bittensor/recommendations/subnets"]
+            paths: ["/v1/bittensor/subnets", "/v1/bittensor/yields/root", "/v1/bittensor/recommendations/subnets"]
         )
+    }
+
+    func testStaleRootAndValidatorYieldsAreHiddenFromTheSubnetAndValidatorScreens() throws {
+        let world = try SubtensorFlowWorld()
+        let services = world.earnServices
+        let ember = try SubtensorFlowChainWorld.hotkey(.ember)
+
+        SubtensorFlowURLProtocol.serveBittensor(
+            "/yields/root?page=1&pageSize=100",
+            reply: .json(staleDocument(BittensorApiFixtureRouter.document(for: .rootYield(page: 1, pageSize: 100))))
+        )
+
+        SubtensorFlowURLProtocol.serveBittensor(
+            "/subnets/64/yields/alpha?page=1&pageSize=100",
+            reply: .json(staleDocument(BittensorApiFixtureRouter.document(
+                for: .alphaYield(netuid: 64, page: 1, pageSize: 100)
+            )))
+        )
+
+        let rootYield = try XCTUnwrap(try run(services.yieldService.createRootYieldWrapper()))
+        let alphaYields = try run(services.yieldService.createAlphaYieldsWrapper(for: 64))
+
+        XCTAssertEqual(rootYield.reportedRate, "13.8421")
+        XCTAssertEqual(rootYield.stamp.freshness, .stale)
+        XCTAssertNil(rootYield.annualRate)
+
+        XCTAssertNotNil(alphaYields.yields[ember])
+        XCTAssertEqual(alphaYields.stamp.freshness, .stale)
+        XCTAssertNil(SubtensorAlphaApyFormatter.annualRate(for: ember, in: alphaYields))
+
+        XCTAssertEqual(requestLines(), [
+            "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
+            "GET https://bittensor.test/v1/bittensor/subnets/64/yields/alpha?page=1&pageSize=100"
+        ])
+
+        assertAttestedRequests(world, paths: ["/v1/bittensor/yields/root", "/v1/bittensor/subnets/64/yields/alpha"])
+    }
+
+    func testDeviceThatFailsAppAttestGivesTheValidatorListItsOwnStateWithoutTryAgain() throws {
+        let world = try SubtensorFlowWorld()
+        let chutesRef = SubtensorSubnetRef(netuid: 64, registeredAt: 4_531_295)
+        let locale = Locale(identifier: "en")
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        SubtensorFlowURLProtocol.serveEarnConfig()
+
+        stub(world.attestation.holder) { stub in
+            when(stub.createEndpointWrapper()).then {
+                CompoundOperationWrapper<BackendAttestationEndpoint>.createWithError(BittensorApiError.unsupportedDevice)
+            }
+        }
+
+        let error = try XCTUnwrap(runError(world.earnServices.validatorDirectoryService.createDirectoryWrapper(
+            for: chutesRef
+        )))
+
+        let viewModel = SubtensorValidatorListFactory(
+            chainFormat: world.chainAsset.chain.chainFormat,
+            assetDisplayInfo: world.chainAsset.assetDisplayInfo
+        ).createErrorViewModel(for: error, locale: locale)
+
+        XCTAssertEqual((error as? BittensorApiError)?.isDeviceBound, true)
+        XCTAssertEqual(viewModel.title, strings.stakingSubtensorUiValidatorFetchFailed())
+        XCTAssertEqual(viewModel.details, strings.stakingSubtensorUiValidatorFetchDeviceDetail())
+        XCTAssertNil(viewModel.retryTitle)
+        XCTAssertEqual(requestLines(), ["GET https://earn-config.test/earn_config.json"])
+        XCTAssertEqual(world.attestation.signatures, [])
     }
 }
 
 private extension SubtensorChooseSubnetFlowTests {
+    func staleDocument(_ document: Any) -> Any {
+        if let object = document as? [String: Any] {
+            return object.reduce(into: [String: Any]()) { result, entry in
+                result[entry.key] = entry.key == "freshness" ? "STALE" : staleDocument(entry.value)
+            }
+        }
+
+        if let array = document as? [Any] {
+            return array.map(staleDocument)
+        }
+
+        return document
+    }
+
     func serveWeekCharts() throws {
         let weekStart = try milliseconds("2026-09-17T09:00:00Z")
         let weekEnd = try milliseconds("2026-09-24T09:00:00Z")
@@ -250,10 +334,11 @@ private extension SubtensorChooseSubnetFlowTests {
         ])
     }
 
-    func listedSubnetRefs(in catalogue: SubtensorSubnetsInfo) -> [SubtensorSubnetRef] {
-        catalogue.subnets
-            .filter { $0.netuid != SubtensorStakingPallet.rootNetuid }
-            .map { SubtensorSubnetRef(netuid: $0.netuid, registeredAt: $0.networkRegisteredAt) }
+    func listedSubnetRefs(in world: SubtensorFlowWorld) throws -> [SubtensorSubnetRef] {
+        let catalogue = try run(world.earnServices.catalogueService.createCatalogueWrapper(forcingRefresh: false))
+        let subnetsInfo = try fetchSubnetsInfo(from: world.sharedState.subnetsService)
+
+        return SubtensorSubnetListBuilder.entries(from: catalogue, subnetsInfo: subnetsInfo).map(\.subnet.ref)
     }
 
     func assertChutesWeekPrices(

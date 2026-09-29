@@ -223,6 +223,51 @@ final class SubtensorOperationResultPresenterTests: XCTestCase {
         XCTAssertEqual(donePage.receiveTile.amount, "≈ 4.11 TAO")
         verify(setup.wireframe).closeOperation(from: any())
     }
+
+    func testFirstStakeDoneLandsOnYourBittensor() {
+        let setup = makePresenter(interactor: makeMockInteractor(), request: makeRequest(origin: .newPosition))
+
+        stubLanding(on: setup)
+
+        setup.presenter.didReceiveSubmission(result: .success(makeOutcome()))
+        setup.presenter.activate(action: .done)
+
+        verify(setup.wireframe).showYourBittensor(from: any(), stakingOption: any())
+        verify(setup.wireframe, never()).closeOperation(from: any())
+    }
+
+    func testFullSellDoneLandsOnYourBittensor() {
+        let request = makeRequest(
+            operation: .subnetSell(
+                hotkey: hotkey,
+                netuid: 64,
+                alpha: 56_200_000_000,
+                limitPrice: 70_000_000,
+                quotedTaoOut: 4_145_000_000
+            ),
+            origin: .sell,
+            groupHotkeyCount: 1,
+            emptiesPosition: true
+        )
+
+        let setup = makePresenter(interactor: makeMockInteractor(), request: request)
+
+        stubLanding(on: setup)
+
+        setup.presenter.didReceiveSubmission(
+            result: .success(
+                makeOutcome(
+                    executed: SubtensorExecutedAmounts(tao: 4_145_000_000, alpha: 56_200_000_000, netuid: 64),
+                    novaFeePaid: 35_000_000
+                )
+            )
+        )
+
+        setup.presenter.activate(action: .done)
+
+        verify(setup.wireframe).showYourBittensor(from: any(), stakingOption: any())
+        verify(setup.wireframe, never()).closeOperation(from: any())
+    }
 }
 
 private extension SubtensorOperationResultPresenterTests {
@@ -247,7 +292,8 @@ private extension SubtensorOperationResultPresenterTests {
         origin: SubtensorOperationOrigin = .newPosition,
         target: SubtensorStakeTarget? = nil,
         stakeBefore: Balance = 0,
-        groupHotkeyCount: Int = 0
+        groupHotkeyCount: Int = 0,
+        emptiesPosition: Bool = false
     ) -> SubtensorOperationResultRequest {
         SubtensorOperationResultRequest(
             operation: operation ?? .subnetBuy(hotkey: hotkey, netuid: 64, grossTao: 5_000_000_000, limitPrice: 74_169_000),
@@ -265,7 +311,7 @@ private extension SubtensorOperationResultPresenterTests {
             estimatedNetworkFee: ExtrinsicFee(amount: 1_500_000, payer: nil, weight: .init(refTime: 1000, proofSize: 0)),
             stakeBefore: stakeBefore,
             groupHotkeyCount: groupHotkeyCount,
-            emptiesPosition: false,
+            emptiesPosition: emptiesPosition,
             prices: SubtensorOperationResultPrices(taoPrice: nil, alphaSpot: 73_800_000)
         )
     }
@@ -363,6 +409,18 @@ private extension SubtensorOperationResultPresenterTests {
         presenter.delegate = delegate
 
         return Setup(presenter: presenter, view: view, wireframe: wireframe, delegate: delegate)
+    }
+
+    func stubLanding(on setup: Setup) {
+        stub(setup.view) { stub in
+            when(stub.didUpdateCountdown(remainedTime: any())).thenDoNothing()
+            when(stub.didReceive(viewModel: any())).thenDoNothing()
+        }
+
+        stub(setup.wireframe) { stub in
+            when(stub.showYourBittensor(from: any(), stakingOption: any())).thenDoNothing()
+            when(stub.closeOperation(from: any())).thenDoNothing()
+        }
     }
 
     func stubStatusDetails(on view: MockSubtensorResultViewProtocol, closure: @escaping (String) -> Void) {

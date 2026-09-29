@@ -12,6 +12,7 @@ protocol StartStakingInfoSubtensorInteractorInputProtocol: StartStakingInfoInter
 
 protocol StartStakingInfoSubtensorInteractorOutputProtocol: StartStakingInfoInteractorOutputProtocol {
     func didReceive(headlineRate: Decimal?)
+    func didReceiveAccountChange()
 }
 
 protocol StartStakingInfoSubtensorWireframeProtocol: StartStakingInfoWireframeProtocol,
@@ -23,4 +24,6 @@ protocol StartStakingInfoSubtensorWireframeProtocol: StartStakingInfoWireframePr
         target: SubtensorStakeTarget,
         validator: SubtensorValidatorDirectoryItem?
     )
+
+    func close(from view: ControllerBackedProtocol?)
 }
