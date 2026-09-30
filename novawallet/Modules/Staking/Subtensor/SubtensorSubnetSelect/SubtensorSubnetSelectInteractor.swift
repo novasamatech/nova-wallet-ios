@@ -18,7 +18,6 @@ final class SubtensorSubnetSelectInteractor {
     private let rootRateStore = CancellableCallStore()
     private let rankingStore = CancellableCallStore()
     private let weeklyStore = CancellableCallStore()
-    private let monthlyStore = CancellableCallStore()
 
     init(
         catalogueService: SubtensorSubnetCatalogueServiceProtocol,
@@ -41,7 +40,7 @@ final class SubtensorSubnetSelectInteractor {
     }
 
     deinit {
-        [entriesStore, logosStore, rootRateStore, rankingStore, weeklyStore, monthlyStore].forEach { $0.cancel() }
+        [entriesStore, logosStore, rootRateStore, rankingStore, weeklyStore].forEach { $0.cancel() }
     }
 }
 
@@ -182,33 +181,6 @@ extension SubtensorSubnetSelectInteractor: SubnetSelectInteractorInputProtocol {
             case let .failure(error):
                 logger.warning("Subnet weekly prices unavailable: \(error)")
                 presenter?.didReceive(weeklyPrices: unavailablePrices(for: subnets))
-            }
-        }
-    }
-
-    func loadMonthlyMetrics(for subnets: [SubtensorSubnetRef]) {
-        monthlyStore.cancel()
-
-        guard let priceHistoryService else {
-            presenter?.didFailMonthlyMetrics()
-            return
-        }
-
-        executeCancellable(
-            wrapper: priceHistoryService.createMonthlyMetricsWrapper(for: subnets),
-            inOperationQueue: operationQueue,
-            backingCallIn: monthlyStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(metrics) where metrics.values.contains(where: { $0.availableValue != nil }):
-                self?.presenter?.didReceive(monthlyMetrics: metrics)
-            case .success:
-                self?.logger.warning("Subnet thirty day prices unavailable for every subnet")
-                self?.presenter?.didFailMonthlyMetrics()
-            case let .failure(error):
-                self?.logger.warning("Subnet thirty day prices unavailable: \(error)")
-                self?.presenter?.didFailMonthlyMetrics()
             }
         }
     }

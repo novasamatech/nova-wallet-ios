@@ -86,6 +86,11 @@ final class SubtensorFlowWorld {
                 logger: Logger.shared
             ),
             subnetLogosProvider: SubtensorSubnetLogosProvider(url: SubtensorFlowHost.subnetLogos),
+            subnetMarketsService: SubtensorSubnetMarketsService(
+                coingeckoOperationFactory: CoingeckoOperationFactory(),
+                operationQueue: OperationQueue(),
+                logger: Logger.shared
+            ),
             maxApyResolution: SubtensorMaxApyResolution(),
             isFixtureMode: true
         )

@@ -157,8 +157,6 @@ private extension SubtensorSubnetListBuilder {
         switch sort {
         case .sevenDayChange:
             primary = weekly != nil ? compare(weeklyRank(of: lhs), weeklyRank(of: rhs)) : nil
-        case .thirtyDayChange:
-            primary = monthly != nil ? compare(monthlyRank(of: lhs), monthlyRank(of: rhs)) : nil
         case .poolDepth:
             primary = lhs.subnet.taoReserve != rhs.subnet.taoReserve
                 ? lhs.subnet.taoReserve > rhs.subnet.taoReserve

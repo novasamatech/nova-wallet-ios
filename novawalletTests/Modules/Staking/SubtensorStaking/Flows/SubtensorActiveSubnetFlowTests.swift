@@ -286,7 +286,13 @@ private extension SubtensorActiveSubnetFlowTests {
             "GET https://bittensor.test/v1/bittensor/recommendations/subnets",
             "GET https://bittensor.test/v1/bittensor/subnets",
             "GET https://subnet-logos.test/subnets.json",
-            "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=30"
+            "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=30",
+            "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=30",
+            "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=7",
+            "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=7",
+            "GET https://tokens-price.novasama-tech.org/api/v3/coins/chutes/market_chart?vs_currency=usd&days=30",
+            "GET https://tokens-price.novasama-tech.org/api/v3/coins/chutes/market_chart?vs_currency=usd&days=7",
+            "GET https://tokens-price.novasama-tech.org/api/v3/coins/markets?vs_currency=usd&category=bittensor-subnets&per_page=250&page=1&sparkline=true&price_change_percentage=7d"
         ]
     }
 
@@ -299,7 +305,7 @@ private extension SubtensorActiveSubnetFlowTests {
         world.stubQuotes([chutesBuyQuote, chutesSellQuote])
         SubtensorFlowURLProtocol.serveSubnetLogos()
         SubtensorFlowURLProtocol.serveFixture(.subnets)
-        SubtensorFlowActiveStake.serveTaoMonthChart()
+        try SubtensorFlowActiveStake.serveCharts()
 
         world.sharedState.setup(for: SubtensorFlowChainWorld.coldkeyAccount())
         feed.publish(try SubtensorFlowActiveStake.state())
@@ -433,7 +439,21 @@ private extension SubtensorActiveSubnetFlowTests {
         XCTAssertTrue(screens.soldPosition.isRegistered)
         XCTAssertEqual(screens.detail, SubtensorValidatorDetail(item: try emberItem(name: nil), identity: identity("Ember Labs")))
         XCTAssertEqual(screens.maxSell, 56_200_000_000)
-        XCTAssertEqual(screens.weekHistory, .notListed)
+
+        guard case let .available(history) = screens.weekHistory else {
+            XCTFail("Expected the Chutes week history, got \(screens.weekHistory)")
+            return
+        }
+
+        XCTAssertEqual(history.period, .week)
+        XCTAssertEqual(history.points.map(\.date), [
+            SubtensorFlowActiveStake.chartDate(daysBeforeEnd: 7),
+            SubtensorFlowActiveStake.chartDate(daysBeforeEnd: 0)
+        ])
+        assertFlowDoubles(history.points.map(\.taoPerAlpha), [0.0634, 0.0738])
+        assertFlowDoubles(history.points.map(\.fiatPerAlpha), [19.02, 25.2396])
+        XCTAssertEqual(try flowDouble(history.changeInTao), 0.0738 / 0.0634 - 1, accuracy: 1e-9)
+        XCTAssertEqual(try flowDouble(history.changeInFiat), 25.2396 / 19.02 - 1, accuracy: 1e-9)
 
         XCTAssertEqual(screens.slippage, BigRational(numerator: 5, denominator: 1000))
         XCTAssertEqual(screens.buyQuote, SubtensorTradeQuote(

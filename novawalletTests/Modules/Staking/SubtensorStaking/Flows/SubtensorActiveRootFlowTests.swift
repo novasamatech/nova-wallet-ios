@@ -23,7 +23,7 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
         SubtensorFlowURLProtocol.serveFixture(.subnets)
         SubtensorFlowURLProtocol.serveFixture(.validators(netuid: 0))
         SubtensorFlowURLProtocol.serveFixture(.rootYield(page: 1, pageSize: 100))
-        SubtensorFlowActiveStake.serveTaoMonthChart()
+        try SubtensorFlowActiveStake.serveCharts()
 
         world.sharedState.setup(for: SubtensorFlowChainWorld.coldkeyAccount())
         feed.publish(try SubtensorFlowActiveStake.state())
@@ -189,7 +189,11 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
             "GET https://bittensor.test/v1/bittensor/subnets/0/validators",
             "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
             "GET https://subnet-logos.test/subnets.json",
-            "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=30"
+            "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=30",
+            "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=30",
+            "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=7",
+            "GET https://tokens-price.novasama-tech.org/api/v3/coins/chutes/market_chart?vs_currency=usd&days=30",
+            "GET https://tokens-price.novasama-tech.org/api/v3/coins/markets?vs_currency=usd&category=bittensor-subnets&per_page=250&page=1&sparkline=true&price_change_percentage=7d"
         ])
 
         assertAttestedRequests(

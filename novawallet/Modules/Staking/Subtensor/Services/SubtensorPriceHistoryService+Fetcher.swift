@@ -6,6 +6,7 @@ extension SubtensorPriceHistoryService {
         let coingeckoOperationFactory: CoingeckoOperationFactoryProtocol
         let taoPriceId: AssetModel.PriceId
         let operationQueue: OperationQueue
+        let timeProvider: () -> TimeInterval
         let logger: LoggerProtocol
     }
 
@@ -14,13 +15,11 @@ extension SubtensorPriceHistoryService {
         let value: SubtensorPriceData<Value>
     }
 
-    static func subnetMarketChanges(
-        from data: Data,
+    static func marketChanges(
+        of listed: [SubtensorSubnetRef: SubtensorSubnetMarket],
         taoWeekItems: [PriceHistoryItem],
-        listed: [SubtensorSubnetRef: String]
-    ) throws -> [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>] {
-        let markets = try JSONDecoder().decode([SubnetMarket].self, from: data)
-
+        at now: TimeInterval
+    ) -> [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>] {
         let taoItems = taoWeekItems.filter { $0.value > 0 }.sorted { $0.startedAt < $1.startedAt }
         let taoDate: (PriceHistoryItem) -> Date = { Date(timeIntervalSince1970: TimeInterval($0.startedAt)) }
 
@@ -30,24 +29,16 @@ extension SubtensorPriceHistoryService {
             return listed.mapValues { _ in .unavailable }
         }
 
-        let marketsById = markets.reduce(into: [String: SubnetMarket]()) { result, market in
-            guard result[market.id] == nil, market.priceChangePercentage7dInCurrency != nil else {
-                return
-            }
-
-            result[market.id] = market
-        }
-
-        return listed.mapValues { coingeckoId in
+        return listed.mapValues { market in
             guard
-                let market = marketsById[coingeckoId],
-                let percent = market.priceChangePercentage7dInCurrency else {
+                isCurrent(market, at: now),
+                let percent = market.weekChangePercent else {
                 return .unavailable
             }
 
             let summary = SubtensorWeeklyPriceSummary(
                 change: (1 + percent / 100) / (1 + taoChange) - 1,
-                sparkline: marketSparkline(of: market.sparklineIn7d?.price ?? [], taoItems: taoItems)
+                sparkline: marketSparkline(of: market.weekSparkline, taoItems: taoItems)
             )
 
             return .available(summary)
@@ -56,20 +47,12 @@ extension SubtensorPriceHistoryService {
 }
 
 private extension SubtensorPriceHistoryService {
-    struct SubnetMarket: Decodable {
-        enum CodingKeys: String, CodingKey {
-            case id
-            case priceChangePercentage7dInCurrency = "price_change_percentage_7d_in_currency"
-            case sparklineIn7d = "sparkline_in_7d"
+    static func isCurrent(_ market: SubtensorSubnetMarket, at now: TimeInterval) -> Bool {
+        guard let lastUpdated = market.lastUpdated else {
+            return false
         }
 
-        struct Sparkline: Decodable {
-            let price: [Decimal?]?
-        }
-
-        let id: String
-        let priceChangePercentage7dInCurrency: Decimal?
-        let sparklineIn7d: Sparkline?
+        return now - lastUpdated.timeIntervalSince1970 <= marketStalenessLimit
     }
 
     static func marketSparkline(of prices: [Decimal?], taoItems: [PriceHistoryItem]) -> [Decimal] {
@@ -195,42 +178,36 @@ extension SubtensorPriceHistoryService.Fetcher {
         )
     }
 
-    func createSubnetMarketChangesWrapper(
-        for listed: [SubtensorSubnetRef: String]
+    func createMarketChangesWrapper(
+        for listed: [SubtensorSubnetRef: SubtensorSubnetMarket]
     ) -> CompoundOperationWrapper<[SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]> {
-        let marketsOperation = createSubnetMarketsOperation()
-
         let taoOperation = coingeckoOperationFactory.fetchPriceHistory(
             for: taoPriceId,
             currency: .usd,
             period: SubtensorPricePeriod.week.coingeckoPeriod
         )
 
+        let timeProvider = timeProvider
         let logger = logger
 
         let changesOperation = ClosureOperation<[SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]> {
             do {
-                let markets = try marketsOperation.extractNoCancellableResultData()
                 let tao = try taoOperation.extractNoCancellableResultData()
 
-                return try SubtensorPriceHistoryService.subnetMarketChanges(
-                    from: markets,
+                return SubtensorPriceHistoryService.marketChanges(
+                    of: listed,
                     taoWeekItems: tao.items,
-                    listed: listed
+                    at: timeProvider()
                 )
             } catch {
-                logger.warning("Subtensor subnet markets unavailable: \(error)")
+                logger.warning("Subtensor TAO price history unavailable: \(error)")
                 return [:]
             }
         }
 
-        changesOperation.addDependency(marketsOperation)
         changesOperation.addDependency(taoOperation)
 
-        return CompoundOperationWrapper(
-            targetOperation: changesOperation,
-            dependencies: [marketsOperation, taoOperation]
-        )
+        return CompoundOperationWrapper(targetOperation: changesOperation, dependencies: [taoOperation])
     }
 }
 
@@ -275,38 +252,5 @@ private extension SubtensorPriceHistoryService.Fetcher {
         valueOperation.addDependency(alphaOperation)
 
         return CompoundOperationWrapper(targetOperation: valueOperation, dependencies: [alphaOperation])
-    }
-
-    func createSubnetMarketsOperation() -> BaseOperation<Data> {
-        guard var components = URLComponents(
-            url: PriceAPI.baseURL.appendingPathComponent("coins/markets"),
-            resolvingAgainstBaseURL: false
-        ) else {
-            return BaseOperation.createWithError(NetworkBaseError.invalidUrl)
-        }
-
-        components.queryItems = [
-            URLQueryItem(name: "vs_currency", value: Currency.usd.coingeckoId),
-            URLQueryItem(name: "category", value: SubtensorPriceHistoryService.subnetMarketsCategory),
-            URLQueryItem(name: "price_change_percentage", value: "7d"),
-            URLQueryItem(name: "sparkline", value: "true"),
-            URLQueryItem(name: "per_page", value: String(SubtensorPriceHistoryService.subnetMarketsPageSize)),
-            URLQueryItem(name: "page", value: "1")
-        ]
-
-        guard let url = components.url else {
-            return BaseOperation.createWithError(NetworkBaseError.invalidUrl)
-        }
-
-        let requestFactory = BlockNetworkRequestFactory {
-            var request = URLRequest(url: url)
-            request.httpMethod = HttpMethod.get.rawValue
-            return request
-        }
-
-        return NetworkOperation(
-            requestFactory: requestFactory,
-            resultFactory: AnyNetworkResultFactory<Data>(processingBlock: { $0 })
-        )
     }
 }
