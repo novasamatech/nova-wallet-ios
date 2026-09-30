@@ -42,6 +42,7 @@
 		27AE662C82304B93A7DDDA70 /* SubtensorUnstakeConfirmPresenter+Interactor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290403A447444DFA8223CDEC /* SubtensorUnstakeConfirmPresenter+Interactor.swift */; };
 		281142C0685440B8A7E18C1C /* SubtensorTradeDirection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 309F683C0A574ACF81D2781A /* SubtensorTradeDirection.swift */; };
 		29A4EA9C6D8F4EA0B36B42F2 /* SubtensorFlowSubmission.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56DBBBBF9B447FAB9C4FD5 /* SubtensorFlowSubmission.swift */; };
+		2AA92F2543E9487A9563C217 /* SubtensorSubnetLogosProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17B566B8D23D4A77B0E45E66 /* SubtensorSubnetLogosProvider.swift */; };
 		2CACFC81CB694523A08D4E01 /* SubtensorInfoSheetPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A292CA074E494032AD1E6E94 /* SubtensorInfoSheetPresentable.swift */; };
 		302B30431BE049A986EC3F47 /* SubtensorRankingViewServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1DE3EF88E7944EDB2427FF1 /* SubtensorRankingViewServiceTests.swift */; };
 		307FAA6743BB406A9198D654 /* SubtensorSubnetSelectDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD15EEE63DE9490095C8ED0E /* SubtensorSubnetSelectDelegate.swift */; };
@@ -92,8 +93,10 @@
 		89408B4B1289424B97CC35EB /* SubtensorStakingSetupPresenter+Subnet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 460F18BA36F7440780609061 /* SubtensorStakingSetupPresenter+Subnet.swift */; };
 		904762427E444DCABDF82484 /* SubtensorSubnetListBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD514E3D709E463B91BD57C2 /* SubtensorSubnetListBuilderTests.swift */; };
 		92C7D29370144AF683889DA9 /* SubtensorGetTaoCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A7C1E4E3374FBEA80F0C22 /* SubtensorGetTaoCardView.swift */; };
+		93092A28D3C2455B873CD6E7 /* SubtensorSubnetLogos.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1603EC88CB64A02A582EC17 /* SubtensorSubnetLogos.swift */; };
 		93FDC2D6727243FB9A583C25 /* SubtensorSubnetFactorRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885B08360F604C699C39E4D2 /* SubtensorSubnetFactorRowView.swift */; };
 		9AB173E4BCDB4A89B12D371F /* SubtensorOperationResultInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E00BED29F4654CCF816D5EAB /* SubtensorOperationResultInteractor.swift */; };
+		9F0235520557480B9052FE0A /* SubtensorSubnetLogosProviderProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF890CB6AB3A4CFBAFE3EFBC /* SubtensorSubnetLogosProviderProtocol.swift */; };
 		9F75070803DC4C26B4E80E88 /* SubtensorOperationOrigin.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD6C7886A11A4562B94C8EB6 /* SubtensorOperationOrigin.swift */; };
 		A10B00000000000000000012 /* SubtensorValidatorSelectInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10B00000000000000000002 /* SubtensorValidatorSelectInteractor.swift */; };
 		A10B00000000000000000013 /* SubtensorValidatorSelectPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10B00000000000000000003 /* SubtensorValidatorSelectPresenter.swift */; };
@@ -256,7 +259,6 @@
 		54CD8D037F6B4EE696C427F5 /* SubtensorSubnetLogoResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30C7D71FA0304FB08099EB81 /* SubtensorSubnetLogoResolverTests.swift */; };
 		229ACF51FD0845C7AA92D31E /* SubtensorEarnConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515636B02A7D425C979D3630 /* SubtensorEarnConfigProvider.swift */; };
 		12C8C6AD47054E9FB826A2F9 /* SubtensorEarnSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37ADFB0E46CC48A197043C04 /* SubtensorEarnSettings.swift */; };
-		B160742DFEEA45AF8AE2F1FF /* SubtensorSubnetLogoResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2E35C1FC04465D854EDDC0 /* SubtensorSubnetLogoResolver.swift */; };
 		F1FB5E1D76554C9BBBD4ED70 /* BittensorAttestedRequestBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D906ABE2BCC431B890585E3 /* BittensorAttestedRequestBuilder.swift */; };
 		5CCDCED7CFBE4B6087DC2DD7 /* BittensorAttestedTransportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E5499182B449209BAF9C6B /* BittensorAttestedTransportTests.swift */; };
 		CDB1808B6717430297FC16B2 /* BittensorAttestationHolderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0381C749738A4FE8B4E53655 /* BittensorAttestationHolderTests.swift */; };
@@ -7243,6 +7245,7 @@
 		158A6B8594264C05B1F42B32 /* SubtensorApyFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorApyFormatter.swift; sourceTree = "<group>"; };
 		16B4BBEE6CB542FEA6A0FA34 /* SubtensorSubnetFactorsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSubnetFactorsView.swift; sourceTree = "<group>"; };
 		17815D1A557947C085F49A69 /* SubtensorFactChipsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorFactChipsView.swift; sourceTree = "<group>"; };
+		17B566B8D23D4A77B0E45E66 /* SubtensorSubnetLogosProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSubnetLogosProvider.swift; sourceTree = "<group>"; };
 		17DBB3F6C246459E96C1936A /* SubtensorOperationResultRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorOperationResultRequest.swift; sourceTree = "<group>"; };
 		17F09F2179BD47C9B8305F99 /* SubtensorSubnetSelectPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSubnetSelectPresenterTests.swift; sourceTree = "<group>"; };
 		1943F67610514F62A8E067C2 /* SubtensorValidatorListFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorValidatorListFactory.swift; sourceTree = "<group>"; };
@@ -7361,6 +7364,7 @@
 		BD514E3D709E463B91BD57C2 /* SubtensorSubnetListBuilderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSubnetListBuilderTests.swift; sourceTree = "<group>"; };
 		BD74390E9ECB4AA298EAA529 /* SubtensorPortfolioEmptyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorPortfolioEmptyView.swift; sourceTree = "<group>"; };
 		BF0AAB6FC31543B5B799ED30 /* SubtensorPositionNoticeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorPositionNoticeView.swift; sourceTree = "<group>"; };
+		C1603EC88CB64A02A582EC17 /* SubtensorSubnetLogos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSubnetLogos.swift; sourceTree = "<group>"; };
 		C2E1D441E740490FB1340C88 /* SubtensorSubnetDetailsInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSubnetDetailsInput.swift; sourceTree = "<group>"; };
 		C62E83F7DAA34A309A91B745 /* SubtensorUnstakeSetupPresenter+Interactor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorUnstakeSetupPresenter+Interactor.swift"; sourceTree = "<group>"; };
 		C714176CD25F41E0B1DE9423 /* StartStakingInfoSubtensorPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartStakingInfoSubtensorPresenterTests.swift; sourceTree = "<group>"; };
@@ -7378,6 +7382,7 @@
 		D3F83D9538A94D91967127BF /* SubtensorSubnetListBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSubnetListBuilder.swift; sourceTree = "<group>"; };
 		D4EAD80E58BB458FA0A93E0A /* SubtensorValidatorInfoViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorValidatorInfoViewFactory.swift; sourceTree = "<group>"; };
 		DB25C60873BD49718F8F0E6D /* SubtensorYourBittensorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorYourBittensorPresentable.swift; sourceTree = "<group>"; };
+		DF890CB6AB3A4CFBAFE3EFBC /* SubtensorSubnetLogosProviderProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSubnetLogosProviderProtocol.swift; sourceTree = "<group>"; };
 		DFAE427E136242F698AA6692 /* SubtensorSubnetDetailsPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSubnetDetailsPresenterTests.swift; sourceTree = "<group>"; };
 		DFFC05B3D6304D8A91852B10 /* SubtensorStakingSetupMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingSetupMode.swift; sourceTree = "<group>"; };
 		E00BED29F4654CCF816D5EAB /* SubtensorOperationResultInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorOperationResultInteractor.swift; sourceTree = "<group>"; };
@@ -7480,7 +7485,6 @@
 		30C7D71FA0304FB08099EB81 /* SubtensorSubnetLogoResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSubnetLogoResolverTests.swift; sourceTree = "<group>"; };
 		515636B02A7D425C979D3630 /* SubtensorEarnConfigProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorEarnConfigProvider.swift; sourceTree = "<group>"; };
 		37ADFB0E46CC48A197043C04 /* SubtensorEarnSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorEarnSettings.swift; sourceTree = "<group>"; };
-		4C2E35C1FC04465D854EDDC0 /* SubtensorSubnetLogoResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSubnetLogoResolver.swift; sourceTree = "<group>"; };
 		3D906ABE2BCC431B890585E3 /* BittensorAttestedRequestBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorAttestedRequestBuilder.swift; sourceTree = "<group>"; };
 		03E5499182B449209BAF9C6B /* BittensorAttestedTransportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorAttestedTransportTests.swift; sourceTree = "<group>"; };
 		0381C749738A4FE8B4E53655 /* BittensorAttestationHolderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorAttestationHolderTests.swift; sourceTree = "<group>"; };
@@ -19637,6 +19641,8 @@
 				52A54E426FBF4DC9A9970ADE /* SubtensorRankingViewServiceProtocol.swift */,
 				0DB594D96B3A49E1867C70B4 /* SubtensorRankingViewService.swift */,
 				94CCBB0A7F6F46E09665B0DD /* SubtensorPriceHistoryService+Fetcher.swift */,
+				DF890CB6AB3A4CFBAFE3EFBC /* SubtensorSubnetLogosProviderProtocol.swift */,
+				17B566B8D23D4A77B0E45E66 /* SubtensorSubnetLogosProvider.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -21128,7 +21134,6 @@
 				D1A616DDDD564AB0B9FF3E40 /* SubtensorPortfolioBuilder.swift */,
 				3725081F7E3744B4B78FF85C /* SubtensorEarningsEstimator.swift */,
 				8271541E4C1944D3A5B930F2 /* SubtensorPortfolioValueSeriesCalculator.swift */,
-				4C2E35C1FC04465D854EDDC0 /* SubtensorSubnetLogoResolver.swift */,
 				9A6D2E022E60000100000001 /* SubtensorQuoteFlowModel.swift */,
 				6E8B3C012E70000100000001 /* SubtensorStakingPosition+Sorting.swift */,
 				9A6D2E012E60000100000001 /* SubtensorStakeTarget.swift */,
@@ -21165,6 +21170,7 @@
 				C2E1D441E740490FB1340C88 /* SubtensorSubnetDetailsInput.swift */,
 				0C8388C5F3F0412FA9486404 /* SubtensorSubnetEstimate.swift */,
 				EDE04B45634D49C0A8DBA92F /* SubtensorConfirmQuoteState.swift */,
+				C1603EC88CB64A02A582EC17 /* SubtensorSubnetLogos.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -33624,7 +33630,6 @@
 				0774A2F91AA3405E82005FB5 /* BittensorFixtureChainSnapshot.swift in Sources */,
 				229ACF51FD0845C7AA92D31E /* SubtensorEarnConfigProvider.swift in Sources */,
 				12C8C6AD47054E9FB826A2F9 /* SubtensorEarnSettings.swift in Sources */,
-				B160742DFEEA45AF8AE2F1FF /* SubtensorSubnetLogoResolver.swift in Sources */,
 				F1FB5E1D76554C9BBBD4ED70 /* BittensorAttestedRequestBuilder.swift in Sources */,
 				6C034C44C8B84C3196B7C428 /* BittensorAttestationHolder.swift in Sources */,
 				1AEEA0816B0A4A4F8A8BC56D /* BackendAttestationHolder.swift in Sources */,
@@ -39850,6 +39855,9 @@
 				B852B14618A6418DAF996458 /* SubtensorPositionNoticeView.swift in Sources */,
 				18847266A7744C4A85933CEA /* AssetDetailsBittensorEarnSource.swift in Sources */,
 				BF4B9DF0EC51460582BE6B46 /* SubtensorModalStack.swift in Sources */,
+				93092A28D3C2455B873CD6E7 /* SubtensorSubnetLogos.swift in Sources */,
+				9F0235520557480B9052FE0A /* SubtensorSubnetLogosProviderProtocol.swift in Sources */,
+				2AA92F2543E9487A9563C217 /* SubtensorSubnetLogosProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -72,7 +72,7 @@ private extension SubtensorSubnetDetailsViewFactory {
             rankingViewService: earnServices.rankingViewService,
             presetFactory: presetFactory,
             yieldService: earnServices.yieldService,
-            earnConfigProvider: earnServices.earnConfigProvider,
+            subnetLogosProvider: earnServices.subnetLogosProvider,
             positionsSyncService: state.positionsSyncService,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,

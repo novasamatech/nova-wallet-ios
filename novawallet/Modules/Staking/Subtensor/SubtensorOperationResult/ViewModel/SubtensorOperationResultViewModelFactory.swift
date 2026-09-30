@@ -5,7 +5,7 @@ import BigInt
 struct SubtensorResultViewContext {
     let request: SubtensorOperationResultRequest
     let catalogue: SubtensorSubnetCatalogue?
-    let earnConfig: SubtensorEarnConfig?
+    let subnetLogos: SubtensorSubnetLogos?
     let remainedTime: TimeInterval
 }
 

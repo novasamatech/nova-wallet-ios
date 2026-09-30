@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 
 protocol SubtensorSubnetIconFactoryProtocol {
-    func icon(for subnet: SubtensorCatalogueSubnet?, config: SubtensorEarnConfig?) -> ImageViewModelProtocol
+    func icon(for subnet: SubtensorCatalogueSubnet?, logos: SubtensorSubnetLogos?) -> ImageViewModelProtocol
 }
 
 final class SubtensorSubnetIconViewModelFactory {
@@ -14,11 +14,8 @@ final class SubtensorSubnetIconViewModelFactory {
 }
 
 extension SubtensorSubnetIconViewModelFactory: SubtensorSubnetIconFactoryProtocol {
-    func icon(for subnet: SubtensorCatalogueSubnet?, config: SubtensorEarnConfig?) -> ImageViewModelProtocol {
-        guard
-            let subnet,
-            let config,
-            let logoUrl = SubtensorSubnetLogoResolver(config: config).url(for: subnet.ref) else {
+    func icon(for subnet: SubtensorCatalogueSubnet?, logos: SubtensorSubnetLogos?) -> ImageViewModelProtocol {
+        guard let subnet, let logoUrl = logos?.url(for: subnet.netuid) else {
             return StaticImageViewModel(image: genericMark)
         }
 

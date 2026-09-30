@@ -139,7 +139,7 @@ private extension SubtensorStakingSetupViewFactory {
             yieldService: earnServices.yieldService,
             catalogueService: earnServices.catalogueService,
             rankingViewService: earnServices.rankingViewService,
-            earnConfigProvider: earnServices.earnConfigProvider,
+            subnetLogosProvider: earnServices.subnetLogosProvider,
             subnetsService: state.subnetsService,
             earnSettings: earnServices.earnSettings,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,

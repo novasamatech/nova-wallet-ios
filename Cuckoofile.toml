@@ -167,6 +167,7 @@ sources = [
     "novawallet/Modules/Staking/Subtensor/Services/SubtensorDiscoveryServiceProtocol.swift",
     "novawallet/Modules/Staking/Subtensor/Services/SubtensorPriceHistoryServiceProtocol.swift",
     "novawallet/Modules/Staking/Subtensor/Services/SubtensorEarnConfigProviderProtocol.swift",
+    "novawallet/Modules/Staking/Subtensor/Services/SubtensorSubnetLogosProviderProtocol.swift",
     "novawallet/Modules/Staking/Subtensor/Services/SubtensorEarnSettingsProtocol.swift",
     "novawallet/Modules/Staking/Subtensor/Services/SubtensorStakingOperationServiceProtocol.swift",
     "novawallet/Common/Services/ExtrinsicService/Substrate/ExtrinsicStatusService/ExtrinsicSubmissionMonitor.swift",

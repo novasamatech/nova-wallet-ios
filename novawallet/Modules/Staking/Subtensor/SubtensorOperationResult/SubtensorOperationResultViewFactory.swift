@@ -91,7 +91,7 @@ private extension SubtensorOperationResultViewFactory {
             operationService: operationService,
             chainFactory: chainFactory,
             catalogueService: state.earnServices.catalogueService,
-            earnConfigProvider: state.earnServices.earnConfigProvider,
+            subnetLogosProvider: state.earnServices.subnetLogosProvider,
             positionsSyncService: services.positionsSyncService,
             osMediator: OperatingSystemMediator(),
             applicationHandler: ApplicationHandler(),

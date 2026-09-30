@@ -39,7 +39,7 @@ protocol SubtensorConfirmViewModelFactoryProtocol {
         for target: SubtensorStakeTarget,
         direction: SubtensorTradeDirection,
         catalogue: SubtensorSubnetCatalogue?,
-        earnConfig: SubtensorEarnConfig?
+        subnetLogos: SubtensorSubnetLogos?
     ) -> SubtensorConfirmTileIconsViewModel
 
     func amountDisplayInfo(
@@ -339,12 +339,12 @@ extension SubtensorConfirmViewModelFactory: SubtensorConfirmViewModelFactoryProt
         for target: SubtensorStakeTarget,
         direction: SubtensorTradeDirection,
         catalogue: SubtensorSubnetCatalogue?,
-        earnConfig: SubtensorEarnConfig?
+        subnetLogos: SubtensorSubnetLogos?
     ) -> SubtensorConfirmTileIconsViewModel {
         let taoIcon = assetIconViewModelFactory.createAssetIconViewModel(from: taoInfo)
         let alphaIcon = target.isRoot
             ? nil
-            : subnetIconFactory.icon(for: catalogue?.subnet(for: target.netuid), config: earnConfig)
+            : subnetIconFactory.icon(for: catalogue?.subnet(for: target.netuid), logos: subnetLogos)
 
         switch direction {
         case .buy:

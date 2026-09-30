@@ -6,6 +6,7 @@ import Keystore_iOS
 struct SubtensorStakingProcessServices {
     let bittensorApiOperationFactory: BittensorApiOperationFactoryProtocol
     let earnConfigProvider: SubtensorEarnConfigProviderProtocol
+    let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let isFixtureMode: Bool
 }
 
@@ -43,6 +44,7 @@ extension SubtensorStakingProcessServices {
         return SubtensorStakingProcessServices(
             bittensorApiOperationFactory: apiOperationFactory,
             earnConfigProvider: sharedEarnConfigProvider,
+            subnetLogosProvider: SubtensorSubnetLogosProvider(url: ApplicationConfig.shared.bittensorSubnetsURL),
             isFixtureMode: isFixtureMode
         )
     }()
@@ -217,6 +219,7 @@ extension StakingSharedStateFactory {
 
         return SubtensorEarnServices(
             earnConfigProvider: processServices.earnConfigProvider,
+            subnetLogosProvider: processServices.subnetLogosProvider,
             earnSettings: SubtensorEarnSettings(settingsManager: chainServices.settingsManager),
             validatorChainOperationFactory: validatorChainOperationFactory,
             catalogueService: createCatalogueService(using: processServices),

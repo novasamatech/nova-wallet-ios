@@ -80,7 +80,7 @@ private extension SubtensorUnstakeSetupViewFactory {
             chainAsset: state.stakingOption.chainAsset,
             subnetsService: state.subnetsService,
             catalogueService: earnServices.catalogueService,
-            earnConfigProvider: earnServices.earnConfigProvider,
+            subnetLogosProvider: earnServices.subnetLogosProvider,
             validatorFactory: validatorFactory,
             rootHoldFactory: earnServices.rootHoldFactory,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,

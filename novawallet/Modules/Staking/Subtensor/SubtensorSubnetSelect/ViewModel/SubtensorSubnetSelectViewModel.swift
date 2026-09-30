@@ -45,14 +45,14 @@ struct SubtensorSubnetListState {
     let isRowsLoading: Bool
     let sort: SubtensorSubnetSort
     let filters: SubtensorSubnetFilters
-    let config: SubtensorEarnConfig?
+    let subnetLogos: SubtensorSubnetLogos?
 }
 
 protocol SubtensorSubnetViewModelFactoryProtocol {
     func createRowViewModel(
         for item: SubtensorSubnetListItem,
         isFavorite: Bool,
-        config: SubtensorEarnConfig?,
+        subnetLogos: SubtensorSubnetLogos?,
         locale: Locale
     ) -> SubtensorSubnetSelectViewModel
 
@@ -136,10 +136,10 @@ private extension SubtensorSubnetViewModelFactory {
     func createRowViewModels(
         for items: [SubtensorSubnetListItem],
         isFavorite: Bool,
-        config: SubtensorEarnConfig?,
+        subnetLogos: SubtensorSubnetLogos?,
         locale: Locale
     ) -> [SubtensorSubnetSelectViewModel] {
-        items.map { createRowViewModel(for: $0, isFavorite: isFavorite, config: config, locale: locale) }
+        items.map { createRowViewModel(for: $0, isFavorite: isFavorite, subnetLogos: subnetLogos, locale: locale) }
     }
 
     func createContent(
@@ -159,8 +159,18 @@ private extension SubtensorSubnetViewModelFactory {
             return .empty(strings.stakingSubtensorUiPickerEmpty())
         case .none:
             return .rows(
-                picks: createRowViewModels(for: list.picks, isFavorite: true, config: state.config, locale: locale),
-                others: createRowViewModels(for: list.others, isFavorite: false, config: state.config, locale: locale)
+                picks: createRowViewModels(
+                    for: list.picks,
+                    isFavorite: true,
+                    subnetLogos: state.subnetLogos,
+                    locale: locale
+                ),
+                others: createRowViewModels(
+                    for: list.others,
+                    isFavorite: false,
+                    subnetLogos: state.subnetLogos,
+                    locale: locale
+                )
             )
         }
     }
@@ -233,14 +243,14 @@ extension SubtensorSubnetViewModelFactory: SubtensorSubnetViewModelFactoryProtoc
     func createRowViewModel(
         for item: SubtensorSubnetListItem,
         isFavorite: Bool,
-        config: SubtensorEarnConfig?,
+        subnetLogos: SubtensorSubnetLogos?,
         locale: Locale
     ) -> SubtensorSubnetSelectViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         return SubtensorSubnetSelectViewModel(
             subnetRef: item.ref,
-            icon: iconFactory.icon(for: item.subnet, config: config),
+            icon: iconFactory.icon(for: item.subnet, logos: subnetLogos),
             title: SubtensorSubnetNaming.titleWithSymbol(for: item.subnet, locale: locale),
             subtitle: item.weekly == .notListed ? strings.stakingSubtensorUiPickerOnchainRatio() : nil,
             price: formatTokenAmount(item.subnet.taoPerAlpha, formatter: tokenFormatter, locale: locale),

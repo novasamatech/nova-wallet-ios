@@ -17,7 +17,7 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
     let yieldService: SubtensorYieldServiceProtocol
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
     let rankingViewService: SubtensorRankingViewServiceProtocol
-    let earnConfigProvider: SubtensorEarnConfigProviderProtocol
+    let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let subnetsService: SubtensorSubnetsServiceProtocol
     let earnSettings: SubtensorEarnSettingsProtocol
 
@@ -26,7 +26,7 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
     private let catalogueCallStore = CancellableCallStore()
     private let yieldsCallStore = CancellableCallStore()
     private let rankingCallStore = CancellableCallStore()
-    private let configCallStore = CancellableCallStore()
+    private let logosCallStore = CancellableCallStore()
 
     init(
         flowServices: SubtensorFlowServices,
@@ -35,7 +35,7 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
         yieldService: SubtensorYieldServiceProtocol,
         catalogueService: SubtensorSubnetCatalogueServiceProtocol,
         rankingViewService: SubtensorRankingViewServiceProtocol,
-        earnConfigProvider: SubtensorEarnConfigProviderProtocol,
+        subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
         subnetsService: SubtensorSubnetsServiceProtocol,
         earnSettings: SubtensorEarnSettingsProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
@@ -45,7 +45,7 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
         self.yieldService = yieldService
         self.catalogueService = catalogueService
         self.rankingViewService = rankingViewService
-        self.earnConfigProvider = earnConfigProvider
+        self.subnetLogosProvider = subnetLogosProvider
         self.subnetsService = subnetsService
         self.earnSettings = earnSettings
 
@@ -73,7 +73,7 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
         catalogueCallStore.cancel()
         yieldsCallStore.cancel()
         rankingCallStore.cancel()
-        configCallStore.cancel()
+        logosCallStore.cancel()
     }
 }
 
@@ -208,21 +208,21 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
         }
     }
 
-    func loadEarnConfig() {
-        configCallStore.cancel()
+    func loadSubnetLogos() {
+        logosCallStore.cancel()
 
         executeCancellable(
-            wrapper: earnConfigProvider.createConfigWrapper(),
+            wrapper: subnetLogosProvider.createLogosWrapper(),
             inOperationQueue: operationQueue,
-            backingCallIn: configCallStore,
+            backingCallIn: logosCallStore,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(config):
-                self?.presenter?.didReceiveEarnConfig(config)
+            case let .success(logos):
+                self?.presenter?.didReceiveSubnetLogos(logos)
             case let .failure(error):
-                self?.logger.warning("Subtensor Earn config unavailable for the setup mark: \(error)")
-                self?.presenter?.didReceiveEarnConfig(nil)
+                self?.logger.warning("Subtensor subnet logos unavailable for the setup mark: \(error)")
+                self?.presenter?.didReceiveSubnetLogos(nil)
             }
         }
     }

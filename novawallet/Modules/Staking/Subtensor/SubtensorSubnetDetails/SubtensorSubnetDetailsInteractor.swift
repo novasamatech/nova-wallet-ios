@@ -11,7 +11,7 @@ final class SubtensorSubnetDetailsInteractor {
     let rankingViewService: SubtensorRankingViewServiceProtocol
     let presetFactory: SubtensorValidatorPresetFactoryProtocol
     let yieldService: SubtensorYieldServiceProtocol
-    let earnConfigProvider: SubtensorEarnConfigProviderProtocol
+    let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let positionsSyncService: SubtensorPositionsSyncServiceProtocol?
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
@@ -26,7 +26,7 @@ final class SubtensorSubnetDetailsInteractor {
     private let rankingCallStore = CancellableCallStore()
     private let presetCallStore = CancellableCallStore()
     private let yieldsCallStore = CancellableCallStore()
-    private let configCallStore = CancellableCallStore()
+    private let logosCallStore = CancellableCallStore()
 
     init(
         subnet: SubtensorSubnetRef,
@@ -36,7 +36,7 @@ final class SubtensorSubnetDetailsInteractor {
         rankingViewService: SubtensorRankingViewServiceProtocol,
         presetFactory: SubtensorValidatorPresetFactoryProtocol,
         yieldService: SubtensorYieldServiceProtocol,
-        earnConfigProvider: SubtensorEarnConfigProviderProtocol,
+        subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
         positionsSyncService: SubtensorPositionsSyncServiceProtocol?,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
@@ -51,7 +51,7 @@ final class SubtensorSubnetDetailsInteractor {
         self.rankingViewService = rankingViewService
         self.presetFactory = presetFactory
         self.yieldService = yieldService
-        self.earnConfigProvider = earnConfigProvider
+        self.subnetLogosProvider = subnetLogosProvider
         self.positionsSyncService = positionsSyncService
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
@@ -66,7 +66,7 @@ final class SubtensorSubnetDetailsInteractor {
         rankingCallStore.cancel()
         presetCallStore.cancel()
         yieldsCallStore.cancel()
-        configCallStore.cancel()
+        logosCallStore.cancel()
 
         positionsSyncService?.remove(observer: self)
         positionsSyncService?.remove(failureObserver: self)
@@ -181,19 +181,19 @@ private extension SubtensorSubnetDetailsInteractor {
         }
     }
 
-    func loadEarnConfig() {
+    func loadSubnetLogos() {
         executeCancellable(
-            wrapper: earnConfigProvider.createConfigWrapper(),
+            wrapper: subnetLogosProvider.createLogosWrapper(),
             inOperationQueue: operationQueue,
-            backingCallIn: configCallStore,
+            backingCallIn: logosCallStore,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(config):
-                self?.presenter?.didReceiveEarnConfig(config)
+            case let .success(logos):
+                self?.presenter?.didReceiveSubnetLogos(logos)
             case let .failure(error):
-                self?.logger.warning("Subtensor Earn config unavailable for the subnet mark: \(error)")
-                self?.presenter?.didReceiveEarnConfig(nil)
+                self?.logger.warning("Subtensor subnet logos unavailable for the subnet mark: \(error)")
+                self?.presenter?.didReceiveSubnetLogos(nil)
             }
         }
     }
@@ -208,7 +208,7 @@ extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol
         loadListing()
         loadRankingView()
         loadYields()
-        loadEarnConfig()
+        loadSubnetLogos()
     }
 
     func loadHistory(for period: SubtensorPricePeriod) {

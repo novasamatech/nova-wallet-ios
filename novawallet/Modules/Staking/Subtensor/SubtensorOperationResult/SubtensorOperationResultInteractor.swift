@@ -11,7 +11,7 @@ final class SubtensorOperationResultInteractor {
     let operationService: SubtensorStakingOperationServiceProtocol
     let chainFactory: SubtensorResultChainFactoryProtocol
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
-    let earnConfigProvider: SubtensorEarnConfigProviderProtocol
+    let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let positionsSyncService: SubtensorPositionsSyncServiceProtocol?
     let osMediator: OperatingSystemMediating
     let applicationHandler: ApplicationHandlerProtocol
@@ -29,7 +29,7 @@ final class SubtensorOperationResultInteractor {
         operationService: SubtensorStakingOperationServiceProtocol,
         chainFactory: SubtensorResultChainFactoryProtocol,
         catalogueService: SubtensorSubnetCatalogueServiceProtocol,
-        earnConfigProvider: SubtensorEarnConfigProviderProtocol,
+        subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
         positionsSyncService: SubtensorPositionsSyncServiceProtocol?,
         osMediator: OperatingSystemMediating,
         applicationHandler: ApplicationHandlerProtocol,
@@ -43,7 +43,7 @@ final class SubtensorOperationResultInteractor {
         self.operationService = operationService
         self.chainFactory = chainFactory
         self.catalogueService = catalogueService
-        self.earnConfigProvider = earnConfigProvider
+        self.subnetLogosProvider = subnetLogosProvider
         self.positionsSyncService = positionsSyncService
         self.osMediator = osMediator
         self.applicationHandler = applicationHandler
@@ -125,12 +125,12 @@ private extension SubtensorOperationResultInteractor {
         }
 
         execute(
-            wrapper: earnConfigProvider.createConfigWrapper(),
+            wrapper: subnetLogosProvider.createLogosWrapper(),
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
-            if case let .success(config) = result {
-                self?.presenter?.didReceiveEarnConfig(config)
+            if case let .success(logos) = result {
+                self?.presenter?.didReceiveSubnetLogos(logos)
             }
         }
     }

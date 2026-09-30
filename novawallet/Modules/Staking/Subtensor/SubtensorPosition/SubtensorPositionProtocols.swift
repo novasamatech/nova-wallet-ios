@@ -30,7 +30,7 @@ protocol SubnetPositionInteractorOutputProtocol: AnyObject {
     func didChangeCurrency()
     func didReceive(catalogue: SubtensorSubnetCatalogue?)
     func didReceive(subnetsInfo: SubtensorSubnetsInfo?)
-    func didReceive(earnConfig: SubtensorEarnConfig?)
+    func didReceive(subnetLogos: SubtensorSubnetLogos?)
     func didReceive(validator: SubtensorValidatorDirectoryItem?, for hotkey: AccountId)
     func didReceive(rootRate: Decimal?)
     func didReceive(yields: SubtensorAlphaYields?)
