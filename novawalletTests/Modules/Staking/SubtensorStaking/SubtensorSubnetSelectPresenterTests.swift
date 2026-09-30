@@ -40,8 +40,7 @@ final class SubtensorSubnetSelectPresenterTests: XCTestCase {
             name: "Validator",
             take: nil,
             reportedStake: nil,
-            status: nil,
-            isNovaPreferred: false
+            status: nil
         )
 
         stub(delegate) { stub in

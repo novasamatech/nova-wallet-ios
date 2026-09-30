@@ -4,7 +4,7 @@ import Operation_iOS
 import XCTest
 
 final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
-    func testChooseSubnetFlowBuildsChutesFromChainPricesAndTheConfigValidator() throws {
+    func testChooseSubnetFlowBuildsChutesFromChainPricesAndTheRecommendedValidator() throws {
         let world = try SubtensorFlowWorld(novaFeeBeneficiary: SubtensorFlowChainWorld.novaFeeBeneficiary)
         let services = world.earnServices
         let priceHistoryService = try XCTUnwrap(services.priceHistoryService)
@@ -17,6 +17,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         SubtensorFlowURLProtocol.serveFixture(.subnets)
         SubtensorFlowURLProtocol.serveFixture(.rootYield(page: 1, pageSize: 100))
         SubtensorFlowURLProtocol.serveFixture(.rankedSubnets)
+        SubtensorFlowURLProtocol.serveFixture(.recommendations)
         SubtensorFlowURLProtocol.serveFixture(.validators(netuid: 64))
         try serveWeekCharts()
 
@@ -31,7 +32,9 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         let chutesRef = try XCTUnwrap(subnetRefs.first { $0.netuid == 64 })
         let history = try run(priceHistoryService.createHistoryWrapper(for: chutesRef, period: .week, currency: .usd))
         let ranked = try run(services.recommendationService.createRankedSubnetsWrapper())
-        let preset = try XCTUnwrap(try run(directoryService.createPreferredValidatorWrapper(for: chutesRef)))
+        let preset = try XCTUnwrap(
+            try run(world.createPresetFactory().createPresetWrapper(for: chutesRef, existingHotkey: nil))
+        )
         let presetDetail = try run(directoryService.createDetailWrapper(for: preset.hotkey, subnet: chutesRef))
         services.earnSettings.favouriteSubnets = [chutesRef]
 
@@ -42,7 +45,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
             subnet: chutesRef
         ))
 
-        let selected = try XCTUnwrap(directory.items.first(where: \.isNovaPreferred))
+        let selected = try XCTUnwrap(directory.items.first { $0.hotkey == preset.hotkey })
         world.clock.advance(by: 60)
         let revisitedDirectory = try run(directoryService.createDirectoryWrapper(for: chutesRef))
 
@@ -106,8 +109,11 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
             )
         )
 
-        XCTAssertEqual(preset, try emberItem(name: nil))
-        XCTAssertEqual(presetDetail, SubtensorValidatorDetail(item: try emberItem(name: nil), identity: identity("Ember Labs")))
+        XCTAssertEqual(preset, try cinderItem(name: "Cinder Node"))
+        XCTAssertEqual(
+            presetDetail,
+            SubtensorValidatorDetail(item: try cinderItem(name: "Cinder Node"), identity: identity("Cinder Node"))
+        )
 
         XCTAssertEqual(
             directory.items.map(\.hotkey),
@@ -122,7 +128,6 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(try item(.halcyon, in: directory).status?.blocksSinceUpdate, 6200)
         XCTAssertEqual(try item(.halcyon, in: directory).status?.isActive, false)
         XCTAssertEqual(try item(.delta, in: directory).take, takeFraction(11797))
-        XCTAssertEqual(directory.items.filter(\.isNovaPreferred), [try emberItem(name: "Ember Labs")])
         XCTAssertFalse(directory.isPartial)
         XCTAssertFalse(directory.isEnrichmentTruncated)
         XCTAssertEqual(directory.listStamp, SubtensorBackendStamp(asOf: try date("2026-09-24T08:00:00Z"), freshness: .fresh))
@@ -157,6 +162,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(maxStake, 48_188_500_000)
 
         XCTAssertEqual(requestLines().sorted(), [
+            "GET https://bittensor.test/v1/bittensor/recommendations",
             "GET https://bittensor.test/v1/bittensor/recommendations/subnets",
             "GET https://bittensor.test/v1/bittensor/subnets",
             "GET https://bittensor.test/v1/bittensor/subnets/64/validators",
@@ -175,16 +181,16 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
                 "/v1/bittensor/subnets",
                 "/v1/bittensor/yields/root",
                 "/v1/bittensor/recommendations/subnets",
-                "/v1/bittensor/subnets/64/validators"
+                "/v1/bittensor/subnets/64/validators",
+                "/v1/bittensor/recommendations"
             ]
         )
     }
 
-    func testChooseSubnetFlowWithUnpublishedRankingKeepsChainAndPriceValuesWithoutFactors() throws {
+    func testChooseSubnetFlowWithUnpublishedRecommendationsKeepsChainAndPriceValuesWithoutFactorsOrPreset() throws {
         let world = try SubtensorFlowWorld()
         let services = world.earnServices
         let priceHistoryService = try XCTUnwrap(services.priceHistoryService)
-        let directoryService = services.validatorDirectoryService
 
         world.stubSubnets(try SubtensorFlowChainWorld.subnetsInfo())
         SubtensorFlowURLProtocol.serveEarnConfig()
@@ -192,6 +198,8 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         SubtensorFlowURLProtocol.serveFixture(.subnets)
         SubtensorFlowURLProtocol.serveFixture(.rootYield(page: 1, pageSize: 100))
         SubtensorFlowURLProtocol.serveBittensor("/recommendations/subnets", reply: .notFoundPlainText())
+        SubtensorFlowURLProtocol.serveBittensor("/recommendations", reply: .notFoundPlainText())
+        SubtensorFlowURLProtocol.serveFixture(.validators(netuid: 64))
         try serveWeekCharts()
 
         let subnetRefs = try listedSubnetRefs(in: world)
@@ -202,8 +210,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         let chutesRef = try XCTUnwrap(subnetRefs.first { $0.netuid == 64 })
         let history = try run(priceHistoryService.createHistoryWrapper(for: chutesRef, period: .week, currency: .usd))
         let factorsError = runError(services.recommendationService.createRankedSubnetsWrapper())
-        let preset = try XCTUnwrap(try run(directoryService.createPreferredValidatorWrapper(for: chutesRef)))
-        let presetDetail = try run(directoryService.createDetailWrapper(for: preset.hotkey, subnet: chutesRef))
+        let preset = try run(world.createPresetFactory().createPresetWrapper(for: chutesRef, existingHotkey: nil))
 
         world.clock.advance(by: 60)
         let chipsError = runError(services.recommendationService.createRankedSubnetsWrapper())
@@ -219,12 +226,13 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
 
         assertChutesWeekHistory(history, subnet: chutesRef)
 
-        XCTAssertEqual(preset, try emberItem(name: nil))
-        XCTAssertEqual(presetDetail, SubtensorValidatorDetail(item: try emberItem(name: nil), identity: identity("Ember Labs")))
+        XCTAssertNil(preset)
 
         XCTAssertEqual(requestLines().sorted(), [
+            "GET https://bittensor.test/v1/bittensor/recommendations",
             "GET https://bittensor.test/v1/bittensor/recommendations/subnets",
             "GET https://bittensor.test/v1/bittensor/subnets",
+            "GET https://bittensor.test/v1/bittensor/subnets/64/validators",
             "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
             "GET https://earn-config.test/earn_config.json",
             "GET https://subnet-logos.test/subnets.json",
@@ -236,7 +244,13 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
 
         assertAttestedRequests(
             world,
-            paths: ["/v1/bittensor/subnets", "/v1/bittensor/yields/root", "/v1/bittensor/recommendations/subnets"]
+            paths: [
+                "/v1/bittensor/subnets",
+                "/v1/bittensor/yields/root",
+                "/v1/bittensor/recommendations/subnets",
+                "/v1/bittensor/subnets/64/validators",
+                "/v1/bittensor/recommendations"
+            ]
         )
     }
 
@@ -282,8 +296,6 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         let locale = Locale(identifier: "en")
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
-        SubtensorFlowURLProtocol.serveEarnConfig()
-
         stub(world.attestation.holder) { stub in
             when(stub.createEndpointWrapper()).then {
                 CompoundOperationWrapper<BackendAttestationEndpoint>.createWithError(BittensorApiError.unsupportedDevice)
@@ -303,7 +315,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(viewModel.title, strings.stakingSubtensorUiValidatorFetchFailed())
         XCTAssertEqual(viewModel.details, strings.stakingSubtensorUiValidatorFetchDeviceDetail())
         XCTAssertNil(viewModel.retryTitle)
-        XCTAssertEqual(requestLines(), ["GET https://earn-config.test/earn_config.json"])
+        XCTAssertEqual(requestLines(), [])
         XCTAssertEqual(world.attestation.signatures, [])
     }
 }

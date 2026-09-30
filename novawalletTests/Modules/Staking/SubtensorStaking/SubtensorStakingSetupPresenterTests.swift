@@ -160,8 +160,7 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
             name: "Nova",
             take: nil,
             reportedStake: nil,
-            status: nil,
-            isNovaPreferred: true
+            status: nil
         )
     }
 

@@ -10,7 +10,6 @@ final class SubtensorValidatorListFactoryTests: XCTestCase {
 
     private let miner = Data(repeating: 1, count: 32)
     private let inactive = Data(repeating: 2, count: 32)
-    private let preferred = Data(repeating: 3, count: 32)
     private let topRated = Data(repeating: 4, count: 32)
     private let lowRated = Data(repeating: 5, count: 32)
     private let unrated = Data(repeating: 6, count: 32)
@@ -32,10 +31,9 @@ final class SubtensorValidatorListFactoryTests: XCTestCase {
 
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
-        XCTAssertEqual(viewModel.recommended?.hotkey, preferred)
         XCTAssertEqual(viewModel.rows.map(\.hotkey), [topRated, lowRated])
         XCTAssertEqual(viewModel.rows.map(\.trailing), [.rate("49.40%"), .rate("14.88%")])
-        XCTAssertEqual(viewModel.countTitle, strings.stakingSubtensorUiValidatorCountFormat(3))
+        XCTAssertEqual(viewModel.countTitle, strings.stakingSubtensorUiValidatorCountFormat(2))
         XCTAssertEqual(
             viewModel.rows.first?.subtitle,
             strings.stakingSubtensorUiValidatorRowSubtitleFormat("285.6K TAO", "18%")
@@ -86,7 +84,7 @@ final class SubtensorValidatorListFactoryTests: XCTestCase {
         XCTAssertEqual(viewModel.rows.map(\.isSelected), [true, false, false])
     }
 
-    func testCurrentChoiceIsPreselectedBeforeTheNovaPreferred() {
+    func testSelectableCurrentChoiceIsPreselected() {
         let preselected = SubtensorValidatorListFactory.preselectedHotkey(
             lowRated,
             in: makeDirectory(),
@@ -139,7 +137,6 @@ final class SubtensorValidatorListFactoryTests: XCTestCase {
             items: [
                 makeItem(miner, name: "Miner", stake: 5000, hasPermit: false, isActive: true),
                 makeItem(inactive, name: "Idle", stake: 900_000, hasPermit: true, isActive: false),
-                makeItem(preferred, name: "Nova Wallet", stake: 312_000, hasPermit: true, isActive: true, isPreferred: true),
                 makeItem(topRated, name: "tao.bot", stake: 571_200, hasPermit: true, isActive: true),
                 makeItem(lowRated, name: "Arbos", stake: 700_000, hasPermit: true, isActive: true),
                 makeItem(unrated, name: "Rizzo", stake: 800_000, hasPermit: true, isActive: true)
@@ -156,8 +153,7 @@ final class SubtensorValidatorListFactoryTests: XCTestCase {
         name: String,
         stake: BigUInt,
         hasPermit: Bool,
-        isActive: Bool,
-        isPreferred: Bool = false
+        isActive: Bool
     ) -> SubtensorValidatorDirectoryItem {
         SubtensorValidatorDirectoryItem(
             hotkey: hotkey,
@@ -170,8 +166,7 @@ final class SubtensorValidatorListFactoryTests: XCTestCase {
                 hasPermit: hasPermit,
                 blocksSinceUpdate: isActive ? 10 : 9000,
                 isActive: isActive
-            ),
-            isNovaPreferred: isPreferred
+            )
         )
     }
 
@@ -181,7 +176,6 @@ final class SubtensorValidatorListFactoryTests: XCTestCase {
         return SubtensorAlphaYields(
             netuid: 64,
             yields: [
-                preferred: SubtensorReportedYield(reportedRate: "38", stamp: stamp),
                 topRated: SubtensorReportedYield(reportedRate: "49.4", stamp: stamp),
                 lowRated: SubtensorReportedYield(reportedRate: "14.8812", stamp: stamp),
                 inactive: SubtensorReportedYield(reportedRate: "60", stamp: stamp),
