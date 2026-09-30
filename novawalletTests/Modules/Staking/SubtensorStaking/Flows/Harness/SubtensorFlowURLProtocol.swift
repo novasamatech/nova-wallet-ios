@@ -57,6 +57,7 @@ extension SubtensorFlowHTTPReply {
 enum SubtensorFlowHost {
     static let bittensorGateway = URL(string: "https://bittensor.test/")!
     static let earnConfig = URL(string: "https://earn-config.test/earn_config.json")!
+    static let subnetLogos = URL(string: "https://subnet-logos.test/subnets.json")!
 
     static func bittensor(_ path: String) -> String {
         "https://bittensor.test/v1/bittensor" + path
@@ -121,6 +122,14 @@ final class SubtensorFlowURLProtocol: URLProtocol {
 
     static func serveEarnConfig(_ json: String = SubtensorEarnConfigProvider.fixtureJSON) {
         serve("GET", SubtensorFlowHost.earnConfig.absoluteString, reply: .jsonText(json))
+    }
+
+    static func serveSubnetLogos() {
+        serve(
+            "GET",
+            SubtensorFlowHost.subnetLogos.absoluteString,
+            reply: .jsonText(SubtensorFlowChainWorld.subnetLogosJSON)
+        )
     }
 
     static func serveMarketChart(coinId: String, days: String, points: [SubtensorFlowPricePoint]) {

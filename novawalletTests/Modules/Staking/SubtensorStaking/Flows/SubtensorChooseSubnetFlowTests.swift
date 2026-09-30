@@ -13,6 +13,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         world.stubSubnets(try SubtensorFlowChainWorld.subnetsInfo())
         world.stubQuotes([SubtensorFlowChainWorld.chutesBuyQuote])
         SubtensorFlowURLProtocol.serveEarnConfig()
+        SubtensorFlowURLProtocol.serveSubnetLogos()
         SubtensorFlowURLProtocol.serveFixture(.subnets)
         SubtensorFlowURLProtocol.serveFixture(.rootYield(page: 1, pageSize: 100))
         SubtensorFlowURLProtocol.serveFixture(.rankedSubnets)
@@ -24,7 +25,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         let subnetRefs = try listedSubnetRefs(in: world)
         let rootRowYield = try run(services.yieldService.createRootYieldWrapper())
         let weeklyPrices = try run(priceHistoryService.createWeeklyChangesWrapper(for: subnetRefs))
-        let logos = SubtensorSubnetLogoResolver(config: try run(services.earnConfigProvider.createConfigWrapper()))
+        let logos = try run(services.subnetLogosProvider.createLogosWrapper())
         let initialFavourites = services.earnSettings.favouriteSubnets
 
         let chutesRef = try XCTUnwrap(subnetRefs.first { $0.netuid == 64 })
@@ -79,8 +80,8 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
 
         XCTAssertEqual(chutesRef, SubtensorSubnetRef(netuid: 64, registeredAt: 4_531_295))
         XCTAssertEqual(subnetRefs.count, 10)
-        XCTAssertEqual(subnetRefs.filter { logos.url(for: $0) != nil }, [chutesRef])
-        XCTAssertEqual(logos.url(for: chutesRef)?.absoluteString, SubtensorFlowChainWorld.chutesLogo)
+        XCTAssertEqual(subnetRefs.filter { logos.url(for: $0.netuid) != nil }, [chutesRef])
+        XCTAssertEqual(logos.url(for: chutesRef.netuid)?.absoluteString, SubtensorFlowChainWorld.chutesLogo)
         assertChutesWeekPrices(weeklyPrices, chutes: chutesRef)
         XCTAssertEqual(initialFavourites, [])
         XCTAssertEqual(services.earnSettings.favouriteSubnets, [chutesRef])
@@ -161,6 +162,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
             "GET https://bittensor.test/v1/bittensor/subnets/64/validators",
             "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
             "GET https://earn-config.test/earn_config.json",
+            "GET https://subnet-logos.test/subnets.json",
             "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=7",
             "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=7",
             "GET https://tokens-price.novasama-tech.org/api/v3/coins/chutes/market_chart?vs_currency=usd&days=7",
@@ -186,6 +188,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
 
         world.stubSubnets(try SubtensorFlowChainWorld.subnetsInfo())
         SubtensorFlowURLProtocol.serveEarnConfig()
+        SubtensorFlowURLProtocol.serveSubnetLogos()
         SubtensorFlowURLProtocol.serveFixture(.subnets)
         SubtensorFlowURLProtocol.serveFixture(.rootYield(page: 1, pageSize: 100))
         SubtensorFlowURLProtocol.serveBittensor("/recommendations/subnets", reply: .notFoundPlainText())
@@ -194,7 +197,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         let subnetRefs = try listedSubnetRefs(in: world)
         let rootRowYield = try run(services.yieldService.createRootYieldWrapper())
         let weeklyPrices = try run(priceHistoryService.createWeeklyChangesWrapper(for: subnetRefs))
-        let logos = SubtensorSubnetLogoResolver(config: try run(services.earnConfigProvider.createConfigWrapper()))
+        let logos = try run(services.subnetLogosProvider.createLogosWrapper())
 
         let chutesRef = try XCTUnwrap(subnetRefs.first { $0.netuid == 64 })
         let history = try run(priceHistoryService.createHistoryWrapper(for: chutesRef, period: .week, currency: .usd))
@@ -210,8 +213,8 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertNil(services.recommendationService.lastSeenClientGates())
 
         XCTAssertEqual(rootRowYield, try fixtureRootYield())
-        XCTAssertEqual(subnetRefs.filter { logos.url(for: $0) != nil }, [chutesRef])
-        XCTAssertEqual(logos.url(for: chutesRef)?.absoluteString, SubtensorFlowChainWorld.chutesLogo)
+        XCTAssertEqual(subnetRefs.filter { logos.url(for: $0.netuid) != nil }, [chutesRef])
+        XCTAssertEqual(logos.url(for: chutesRef.netuid)?.absoluteString, SubtensorFlowChainWorld.chutesLogo)
         assertChutesWeekPrices(weeklyPrices, chutes: chutesRef)
 
         assertChutesWeekHistory(history, subnet: chutesRef)
@@ -224,6 +227,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
             "GET https://bittensor.test/v1/bittensor/subnets",
             "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
             "GET https://earn-config.test/earn_config.json",
+            "GET https://subnet-logos.test/subnets.json",
             "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=7",
             "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=7",
             "GET https://tokens-price.novasama-tech.org/api/v3/coins/chutes/market_chart?vs_currency=usd&days=7",

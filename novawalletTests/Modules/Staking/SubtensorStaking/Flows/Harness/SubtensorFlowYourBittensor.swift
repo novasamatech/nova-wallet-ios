@@ -7,7 +7,7 @@ struct SubtensorFlowYourBittensor {
     let state: Multistaking.SubtensorStakingState
     let portfolio: SubtensorPortfolio
     let catalogue: SubtensorSubnetCatalogue
-    let logos: SubtensorSubnetLogoResolver
+    let logos: SubtensorSubnetLogos
     let weeklyPrices: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]
     let monthHistories: [SubtensorSubnetRef: SubtensorPriceHistoryResult]
     let valueSeries: SubtensorPortfolioValueSeries
@@ -26,7 +26,7 @@ extension SubtensorFlowTestCase {
         let state = try awaitPositions(in: world)
         let portfolio = SubtensorPortfolioBuilder.build(state: state)
         let catalogue = try run(services.catalogueService.createCatalogueWrapper(forcingRefresh: false))
-        let logos = SubtensorSubnetLogoResolver(config: try run(services.earnConfigProvider.createConfigWrapper()))
+        let logos = try run(services.subnetLogosProvider.createLogosWrapper())
 
         let refs = try portfolio.subnets.map { group in
             try XCTUnwrap(catalogue.subnet(for: group.netuid)).ref
@@ -98,8 +98,8 @@ extension SubtensorFlowTestCase {
         XCTAssertEqual(try screen.subnet(netuid: 4).name, "Targon")
         XCTAssertEqual(try screen.subnet(netuid: 4).symbol, "δ")
 
-        XCTAssertEqual(screen.logos.url(for: chutesRef)?.absoluteString, SubtensorFlowChainWorld.chutesLogo)
-        XCTAssertNil(screen.logos.url(for: targonRef))
+        XCTAssertEqual(screen.logos.url(for: chutesRef.netuid)?.absoluteString, SubtensorFlowChainWorld.chutesLogo)
+        XCTAssertNil(screen.logos.url(for: targonRef.netuid))
 
         XCTAssertEqual(screen.weeklyPrices.count, 2)
         XCTAssertEqual(screen.weeklyPrices[targonRef], .notListed)

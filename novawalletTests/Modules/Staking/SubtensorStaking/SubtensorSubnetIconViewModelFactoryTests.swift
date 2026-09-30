@@ -3,24 +3,23 @@ import XCTest
 
 final class SubtensorSubnetIconViewModelFactoryTests: XCTestCase {
     private let genericMark = UIImage()
-    private let logoBaseUrl = URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/icons/bittensor/")!
 
-    func testConfigLogoOfTheCatalogueRegistrationLoadsOverTheGenericMark() throws {
+    func testNovaUtilsLogoOfTheSubnetLoadsOverTheGenericMark() throws {
         let icon = SubtensorSubnetIconViewModelFactory(genericMark: genericMark).icon(
-            for: makeCatalogueSubnet(registeredAt: 4_531_295),
-            config: makeConfig()
+            for: makeCatalogueSubnet(netuid: 64, name: "Chutes", symbol: "ش"),
+            logos: try makeLogos()
         )
 
         let remoteIcon = try XCTUnwrap(icon as? RemoteImageViewModel)
 
-        XCTAssertEqual(remoteIcon.url, logoBaseUrl.appendingPathComponent("sn64-4531295.png"))
+        XCTAssertEqual(remoteIcon.url.absoluteString, SubtensorFlowChainWorld.chutesLogo)
         XCTAssertTrue(remoteIcon.fallbackImage === genericMark)
     }
 
-    func testReRegisteredSubnetShowsTheGenericMark() throws {
+    func testSubnetWithoutALogoShowsTheGenericMark() throws {
         let icon = SubtensorSubnetIconViewModelFactory(genericMark: genericMark).icon(
-            for: makeCatalogueSubnet(registeredAt: 9_100_000),
-            config: makeConfig()
+            for: makeCatalogueSubnet(netuid: 4, name: "Targon", symbol: "δ"),
+            logos: try makeLogos()
         )
 
         let staticIcon = try XCTUnwrap(icon as? StaticImageViewModel)
@@ -28,28 +27,29 @@ final class SubtensorSubnetIconViewModelFactoryTests: XCTestCase {
         XCTAssertTrue(staticIcon.image === genericMark)
     }
 
-    private func makeConfig() -> SubtensorEarnConfig {
-        SubtensorEarnConfig(
-            version: 1,
-            entry: nil,
-            headlineMaxAnnualRate: nil,
-            preferredRootValidator: nil,
-            logoBaseUrl: logoBaseUrl,
-            subnets: [
-                64: .init(registeredAt: 4_531_295, preferredValidator: nil, coingeckoId: nil, logo: "sn64-4531295.png")
-            ],
-            invalidEntries: []
+    func testUnavailableLogosShowTheGenericMark() throws {
+        let icon = SubtensorSubnetIconViewModelFactory(genericMark: genericMark).icon(
+            for: makeCatalogueSubnet(netuid: 64, name: "Chutes", symbol: "ش"),
+            logos: nil
         )
+
+        let staticIcon = try XCTUnwrap(icon as? StaticImageViewModel)
+
+        XCTAssertTrue(staticIcon.image === genericMark)
     }
 
-    private func makeCatalogueSubnet(registeredAt: UInt64) -> SubtensorCatalogueSubnet {
+    private func makeLogos() throws -> SubtensorSubnetLogos {
+        try JSONDecoder().decode(SubtensorSubnetLogos.self, from: Data(SubtensorFlowChainWorld.subnetLogosJSON.utf8))
+    }
+
+    private func makeCatalogueSubnet(netuid: UInt16, name: String, symbol: String) -> SubtensorCatalogueSubnet {
         let stamp = SubtensorBackendStamp(asOf: Date(timeIntervalSince1970: 1_790_000_000), freshness: .fresh)
 
         return SubtensorCatalogueSubnet(
-            netuid: 64,
-            name: "Chutes",
-            symbol: "ش",
-            networkRegisteredAt: registeredAt,
+            netuid: netuid,
+            name: name,
+            symbol: symbol,
+            networkRegisteredAt: 4_531_295,
             tempo: 360,
             ownerColdkey: "",
             ownerHotkey: "",

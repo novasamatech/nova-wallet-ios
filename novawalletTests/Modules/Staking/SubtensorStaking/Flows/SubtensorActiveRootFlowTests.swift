@@ -20,6 +20,7 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
         world.stubClaimPreviews(try SubtensorFlowActiveStake.claimPreviews())
         world.stubRootHolds([aster: SubtensorRootHold(interval: 0, lastStakeBlock: 9_139_000)])
         SubtensorFlowURLProtocol.serveEarnConfig()
+        SubtensorFlowURLProtocol.serveSubnetLogos()
         SubtensorFlowURLProtocol.serveFixture(.subnets)
         SubtensorFlowURLProtocol.serveFixture(.validators(netuid: 0))
         SubtensorFlowURLProtocol.serveFixture(.rootYield(page: 1, pageSize: 100))
@@ -189,6 +190,7 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
             "GET https://bittensor.test/v1/bittensor/subnets/0/validators",
             "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
             "GET https://earn-config.test/earn_config.json",
+            "GET https://subnet-logos.test/subnets.json",
             "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=30",
             "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=30",
             "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=7",

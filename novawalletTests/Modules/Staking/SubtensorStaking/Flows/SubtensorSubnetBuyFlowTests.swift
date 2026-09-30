@@ -37,6 +37,7 @@ final class SubtensorSubnetBuyFlowTests: SubtensorFlowTestCase {
         world.stubQuotes([chutesQuote])
         world.stubClaimPreviews([])
         SubtensorFlowURLProtocol.serveEarnConfig()
+        SubtensorFlowURLProtocol.serveSubnetLogos()
         SubtensorFlowURLProtocol.serveFixture(.subnets)
         SubtensorFlowURLProtocol.serveFixture(.rootYield(page: 1, pageSize: 100))
         SubtensorFlowURLProtocol.serveFixture(.rankedSubnets)
@@ -202,6 +203,7 @@ final class SubtensorSubnetBuyFlowTests: SubtensorFlowTestCase {
             "GET https://bittensor.test/v1/bittensor/subnets/64/yields/alpha?page=1&pageSize=100",
             "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
             "GET https://earn-config.test/earn_config.json",
+            "GET https://subnet-logos.test/subnets.json",
             "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=30",
             "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=30",
             "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=7",

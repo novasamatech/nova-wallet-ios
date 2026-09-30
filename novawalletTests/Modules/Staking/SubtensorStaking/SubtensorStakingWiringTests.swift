@@ -29,6 +29,12 @@ final class SubtensorStakingWiringTests: XCTestCase {
         XCTAssertTrue(second.earnConfigProvider === SubtensorStakingProcessServices.sharedEarnConfigProvider)
         XCTAssertTrue(directory.earnConfigProvider === SubtensorStakingProcessServices.sharedEarnConfigProvider)
         XCTAssertTrue(priceHistory.earnConfigProvider === SubtensorStakingProcessServices.sharedEarnConfigProvider)
+        XCTAssertTrue(first.subnetLogosProvider === processServices.subnetLogosProvider)
+        XCTAssertTrue(second.subnetLogosProvider === processServices.subnetLogosProvider)
+        XCTAssertEqual(
+            (processServices.subnetLogosProvider as? SubtensorSubnetLogosProvider)?.url,
+            ApplicationConfig.shared.bittensorSubnetsURL
+        )
         XCTAssertEqual(priceHistory.taoPriceId, chainAsset.asset.priceId)
         XCTAssertTrue(catalogue.apiOperationFactory === processServices.bittensorApiOperationFactory)
         XCTAssertTrue(yields.apiOperationFactory === processServices.bittensorApiOperationFactory)
@@ -70,6 +76,7 @@ final class SubtensorStakingWiringTests: XCTestCase {
                 logger: Logger.shared
             ),
             earnConfigProvider: configProvider,
+            subnetLogosProvider: MockSubtensorSubnetLogosProviderProtocol(),
             isFixtureMode: true
         )
 

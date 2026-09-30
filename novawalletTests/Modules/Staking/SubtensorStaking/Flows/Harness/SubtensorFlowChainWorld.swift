@@ -11,7 +11,15 @@ enum SubtensorFlowChainWorld {
     static let novaFeeBeneficiary = Data(repeating: 0xBB, count: 32)
     static let transferable: Balance = 48_200_000_000
     static let stakeAmount: Balance = 5_000_000_000
-    static let chutesLogo = "https://raw.githubusercontent.com/novasamatech/nova-utils/master/icons/bittensor/sn64-4531295.png"
+    static let chutesLogo = "https://raw.githubusercontent.com/novasamatech/nova-utils/master/icons/bittensor/subnets/sn64-d9871395.png"
+
+    static let subnetLogosJSON = """
+    {"subnets":[
+    {"netuid":0,"name":null,"symbol":"Τ","logo":null},
+    {"netuid":4,"name":"Targon","symbol":"δ","logo":null},
+    {"netuid":64,"name":"Chutes","symbol":"ش","logo":"\(chutesLogo)"}
+    ]}
+    """
 
     static let chutesBuyQuote = SubtensorQuote(
         args: SubtensorQuoteArgs(netuid: 64, direction: .stake(taoIn: 4_957_858_206)),

@@ -256,7 +256,6 @@
 		0774A2F91AA3405E82005FB5 /* BittensorFixtureChainSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2998ACA8AB7344E8A5017977 /* BittensorFixtureChainSnapshot.swift */; };
 		1AE8ABE625BC47F0987A5F7D /* SubtensorEarnConfigProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 917D70BFDB344251983EC4B7 /* SubtensorEarnConfigProviderTests.swift */; };
 		1AE4B416830D4DEB8B3AF753 /* SubtensorEarnSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE617E2CE94E448594B90727 /* SubtensorEarnSettingsTests.swift */; };
-		54CD8D037F6B4EE696C427F5 /* SubtensorSubnetLogoResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30C7D71FA0304FB08099EB81 /* SubtensorSubnetLogoResolverTests.swift */; };
 		229ACF51FD0845C7AA92D31E /* SubtensorEarnConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515636B02A7D425C979D3630 /* SubtensorEarnConfigProvider.swift */; };
 		12C8C6AD47054E9FB826A2F9 /* SubtensorEarnSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37ADFB0E46CC48A197043C04 /* SubtensorEarnSettings.swift */; };
 		F1FB5E1D76554C9BBBD4ED70 /* BittensorAttestedRequestBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D906ABE2BCC431B890585E3 /* BittensorAttestedRequestBuilder.swift */; };
@@ -7482,7 +7481,6 @@
 		2998ACA8AB7344E8A5017977 /* BittensorFixtureChainSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorFixtureChainSnapshot.swift; sourceTree = "<group>"; };
 		917D70BFDB344251983EC4B7 /* SubtensorEarnConfigProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorEarnConfigProviderTests.swift; sourceTree = "<group>"; };
 		AE617E2CE94E448594B90727 /* SubtensorEarnSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorEarnSettingsTests.swift; sourceTree = "<group>"; };
-		30C7D71FA0304FB08099EB81 /* SubtensorSubnetLogoResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSubnetLogoResolverTests.swift; sourceTree = "<group>"; };
 		515636B02A7D425C979D3630 /* SubtensorEarnConfigProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorEarnConfigProvider.swift; sourceTree = "<group>"; };
 		37ADFB0E46CC48A197043C04 /* SubtensorEarnSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorEarnSettings.swift; sourceTree = "<group>"; };
 		3D906ABE2BCC431B890585E3 /* BittensorAttestedRequestBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorAttestedRequestBuilder.swift; sourceTree = "<group>"; };
@@ -19499,7 +19497,6 @@
 				FF37EB55647A458F8439E91C /* SubtensorValidatorChainOperationFactoryTests.swift */,
 				917D70BFDB344251983EC4B7 /* SubtensorEarnConfigProviderTests.swift */,
 				AE617E2CE94E448594B90727 /* SubtensorEarnSettingsTests.swift */,
-				30C7D71FA0304FB08099EB81 /* SubtensorSubnetLogoResolverTests.swift */,
 				2D7A55092E5D000100000001 /* SubtensorFixtureDecoding.swift */,
 				2D7A550A2E5D000100000001 /* SubtensorStakeInfoDecodeTests.swift */,
 				2D7A550B2E5D000100000001 /* SubtensorDynamicInfoDecodeTests.swift */,
@@ -39903,7 +39900,6 @@
 				F1B269EC16C347AAAD1D34F0 /* BittensorFixtureChainSnapshotTests.swift in Sources */,
 				1AE8ABE625BC47F0987A5F7D /* SubtensorEarnConfigProviderTests.swift in Sources */,
 				1AE4B416830D4DEB8B3AF753 /* SubtensorEarnSettingsTests.swift in Sources */,
-				54CD8D037F6B4EE696C427F5 /* SubtensorSubnetLogoResolverTests.swift in Sources */,
 				5CCDCED7CFBE4B6087DC2DD7 /* BittensorAttestedTransportTests.swift in Sources */,
 				CDB1808B6717430297FC16B2 /* BittensorAttestationHolderTests.swift in Sources */,
 				90F2222B899A45E4A30A2994 /* BackendAttestationHolderTests.swift in Sources */,

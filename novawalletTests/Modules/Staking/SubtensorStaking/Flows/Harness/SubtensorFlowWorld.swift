@@ -93,6 +93,7 @@ final class SubtensorFlowWorld {
                 logger: Logger.shared,
                 timeProvider: { clock.now }
             ),
+            subnetLogosProvider: SubtensorSubnetLogosProvider(url: SubtensorFlowHost.subnetLogos),
             isFixtureMode: true
         )
 

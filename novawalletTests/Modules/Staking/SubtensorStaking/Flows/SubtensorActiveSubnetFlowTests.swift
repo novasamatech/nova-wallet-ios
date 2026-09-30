@@ -287,6 +287,7 @@ private extension SubtensorActiveSubnetFlowTests {
             "GET https://bittensor.test/v1/bittensor/recommendations/subnets",
             "GET https://bittensor.test/v1/bittensor/subnets",
             "GET https://earn-config.test/earn_config.json",
+            "GET https://subnet-logos.test/subnets.json",
             "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=30",
             "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=30",
             "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=7",
@@ -305,6 +306,7 @@ private extension SubtensorActiveSubnetFlowTests {
         world.stubClaimPreviews(try SubtensorFlowActiveStake.claimPreviews())
         world.stubQuotes([chutesBuyQuote, chutesSellQuote])
         SubtensorFlowURLProtocol.serveEarnConfig()
+        SubtensorFlowURLProtocol.serveSubnetLogos()
         SubtensorFlowURLProtocol.serveFixture(.subnets)
         try SubtensorFlowActiveStake.serveCharts()
 
@@ -327,8 +329,7 @@ private extension SubtensorActiveSubnetFlowTests {
         let soldPosition = try XCTUnwrap(group.positions.first)
         let chutesInfo = try yourBittensor.subnet(netuid: group.netuid)
         let chutesRef = chutesInfo.ref
-        let logo = SubtensorSubnetLogoResolver(config: try run(services.earnConfigProvider.createConfigWrapper()))
-            .url(for: chutesRef)
+        let logo = try run(services.subnetLogosProvider.createLogosWrapper()).url(for: chutesRef.netuid)
         let detail = try run(services.validatorDirectoryService.createDetailWrapper(
             for: group.primaryHotkey,
             subnet: chutesRef
