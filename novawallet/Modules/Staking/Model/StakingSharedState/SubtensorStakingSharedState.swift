@@ -12,7 +12,6 @@ struct SubtensorEarnServices {
     let recommendationService: SubtensorRecommendationServiceProtocol
     let rankingViewService: SubtensorRankingViewServiceProtocol
     let validatorDirectoryService: SubtensorValidatorDirectoryServiceProtocol
-    let discoveryService: SubtensorDiscoveryServiceProtocol
     let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
     let tradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol
     let rootHoldFactory: SubtensorRootHoldFactoryProtocol

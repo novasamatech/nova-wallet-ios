@@ -10,8 +10,6 @@ final class SubtensorValidatorDirectoryService {
 
     let apiOperationFactory: BittensorApiOperationFactoryProtocol
     let chainOperationFactory: SubtensorValidatorChainOperationFactoryProtocol
-    let earnConfigProvider: SubtensorEarnConfigProviderProtocol
-    let recommendationService: SubtensorRecommendationServiceProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
@@ -21,15 +19,11 @@ final class SubtensorValidatorDirectoryService {
     init(
         apiOperationFactory: BittensorApiOperationFactoryProtocol,
         chainOperationFactory: SubtensorValidatorChainOperationFactoryProtocol,
-        earnConfigProvider: SubtensorEarnConfigProviderProtocol,
-        recommendationService: SubtensorRecommendationServiceProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol = Logger.shared
     ) {
         self.apiOperationFactory = apiOperationFactory
         self.chainOperationFactory = chainOperationFactory
-        self.earnConfigProvider = earnConfigProvider
-        self.recommendationService = recommendationService
         self.operationQueue = operationQueue
         self.logger = logger
     }
@@ -79,27 +73,6 @@ private extension SubtensorValidatorDirectoryService {
         return CachedItem(item: item, isEnriched: cached.enrichedHotkeys.contains(hotkey))
     }
 
-    func createPreferenceWrapper(for subnet: SubtensorSubnetRef) -> CompoundOperationWrapper<AccountId?> {
-        let configWrapper = earnConfigProvider.createConfigWrapper()
-        let logger = logger
-
-        let preferenceOperation = ClosureOperation<AccountId?> {
-            do {
-                let config = try configWrapper.targetOperation.extractNoCancellableResultData()
-
-                return Self.preferredHotkey(in: config, for: subnet)
-            } catch {
-                logger.warning("Subtensor Earn config unavailable for the preferred validator: \(error)")
-
-                return nil
-            }
-        }
-
-        preferenceOperation.addDependency(configWrapper.targetOperation)
-
-        return configWrapper.insertingTail(operation: preferenceOperation)
-    }
-
     func createListingWrapper(for netuid: UInt16) -> CompoundOperationWrapper<Listing> {
         let validatorsWrapper = apiOperationFactory.createValidatorsWrapper(netuid: netuid)
         let logger = logger
@@ -141,27 +114,16 @@ private extension SubtensorValidatorDirectoryService {
         for hotkey: AccountId,
         subnet: SubtensorSubnetRef,
         name: String?,
-        stake: BigRational?,
-        preferredHotkey: AccountId?
+        stake: BigRational?
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem> {
         let pair = SubtensorHotkeySubnet(hotkey: hotkey, netuid: subnet.netuid)
         let query = SubtensorValidatorChainQuery(pairs: [pair], includesHotkeyAlpha: true)
         let snapshotWrapper = chainOperationFactory.createChainSnapshotWrapper(for: query)
-        let recommendationService = recommendationService
-        let logger = logger
 
         let itemOperation = ClosureOperation<SubtensorValidatorDirectoryItem> {
             let snapshot = try snapshotWrapper.targetOperation.extractNoCancellableResultData()
 
-            let gatedPreference = Self.gatedPreference(
-                preferredHotkey == hotkey ? hotkey : nil,
-                netuid: subnet.netuid,
-                snapshot: snapshot,
-                recommendationService: recommendationService,
-                logger: logger
-            )
-
-            let enrichment = Enrichment(snapshot: snapshot, enrichedPairs: [pair], gatedPreference: gatedPreference)
+            let enrichment = Enrichment(snapshot: snapshot, enrichedPairs: [pair])
 
             return Self.makeItem(
                 hotkey: hotkey,
@@ -183,41 +145,23 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
         for subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectory> {
         let listingWrapper = createListingWrapper(for: subnet.netuid)
-        let preferenceWrapper = createPreferenceWrapper(for: subnet)
 
         let queryOperation = ClosureOperation<SubtensorValidatorChainQuery> {
             let rows = try listingWrapper.targetOperation.extractNoCancellableResultData().rows
-            let preferredHotkey = try preferenceWrapper.targetOperation.extractNoCancellableResultData()
 
-            return Self.enrichmentQuery(rows: rows, preferredHotkey: preferredHotkey, netuid: subnet.netuid)
+            return Self.enrichmentQuery(rows: rows, netuid: subnet.netuid)
         }
 
         queryOperation.addDependency(listingWrapper.targetOperation)
-        queryOperation.addDependency(preferenceWrapper.targetOperation)
 
         let snapshotWrapper = createSnapshotWrapper(dependingOn: queryOperation)
-        let recommendationService = recommendationService
-        let logger = logger
 
         let directoryOperation = ClosureOperation<SubtensorValidatorDirectory> { [weak self] in
             let listing = try listingWrapper.targetOperation.extractNoCancellableResultData()
             let enrichedPairs = try Set(queryOperation.extractNoCancellableResultData().pairs)
-            let preferredHotkey = try preferenceWrapper.targetOperation.extractNoCancellableResultData()
             let snapshot = try snapshotWrapper.targetOperation.extractNoCancellableResultData()
 
-            let gatedPreference = Self.gatedPreference(
-                preferredHotkey,
-                netuid: subnet.netuid,
-                snapshot: snapshot,
-                recommendationService: recommendationService,
-                logger: logger
-            )
-
-            let enrichment = Enrichment(
-                snapshot: snapshot,
-                enrichedPairs: enrichedPairs,
-                gatedPreference: gatedPreference
-            )
+            let enrichment = Enrichment(snapshot: snapshot, enrichedPairs: enrichedPairs)
 
             let directory = Self.makeDirectory(subnet: subnet, listing: listing, enrichment: enrichment)
 
@@ -230,8 +174,7 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
 
         return CompoundOperationWrapper(
             targetOperation: directoryOperation,
-            dependencies: listingWrapper.allOperations + preferenceWrapper.allOperations + [queryOperation] +
-                snapshotWrapper.allOperations
+            dependencies: listingWrapper.allOperations + [queryOperation] + snapshotWrapper.allOperations
         )
     }
 
@@ -240,7 +183,6 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
         subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorValidatorDetail> {
         let identitiesWrapper = chainOperationFactory.createIdentitiesWrapper(for: [hotkey])
-        let preferenceWrapper = createPreferenceWrapper(for: subnet)
         let logger = logger
 
         let itemWrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem> =
@@ -255,16 +197,13 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
                     return .createWithResult(cached.item)
                 }
 
-                return try createChainItemWrapper(
+                return createChainItemWrapper(
                     for: hotkey,
                     subnet: subnet,
                     name: cached?.item.name,
-                    stake: cached?.item.reportedStake,
-                    preferredHotkey: preferenceWrapper.targetOperation.extractNoCancellableResultData()
+                    stake: cached?.item.reportedStake
                 )
             }
-
-        itemWrapper.addDependency(wrapper: preferenceWrapper)
 
         let detailOperation = ClosureOperation<SubtensorValidatorDetail> {
             let item = try itemWrapper.targetOperation.extractNoCancellableResultData()
@@ -285,49 +224,7 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
 
         return CompoundOperationWrapper(
             targetOperation: detailOperation,
-            dependencies: identitiesWrapper.allOperations + preferenceWrapper.allOperations + itemWrapper.allOperations
-        )
-    }
-
-    func createPreferredValidatorWrapper(
-        for subnet: SubtensorSubnetRef
-    ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> {
-        let preferenceWrapper = createPreferenceWrapper(for: subnet)
-
-        let itemWrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> =
-            OperationCombiningService.compoundWrapper(
-                operationManager: OperationManager(operationQueue: operationQueue)
-            ) { [weak self] in
-                guard let self else {
-                    throw BaseOperationError.parentOperationCancelled
-                }
-
-                guard let hotkey = try preferenceWrapper.targetOperation.extractNoCancellableResultData() else {
-                    return nil
-                }
-
-                return createChainItemWrapper(
-                    for: hotkey,
-                    subnet: subnet,
-                    name: nil,
-                    stake: nil,
-                    preferredHotkey: hotkey
-                )
-            }
-
-        itemWrapper.addDependency(wrapper: preferenceWrapper)
-
-        let gatedOperation = ClosureOperation<SubtensorValidatorDirectoryItem?> {
-            let item = try itemWrapper.targetOperation.extractNoCancellableResultData()
-
-            return item?.isNovaPreferred == true ? item : nil
-        }
-
-        gatedOperation.addDependency(itemWrapper.targetOperation)
-
-        return CompoundOperationWrapper(
-            targetOperation: gatedOperation,
-            dependencies: preferenceWrapper.allOperations + itemWrapper.allOperations
+            dependencies: identitiesWrapper.allOperations + itemWrapper.allOperations
         )
     }
 }

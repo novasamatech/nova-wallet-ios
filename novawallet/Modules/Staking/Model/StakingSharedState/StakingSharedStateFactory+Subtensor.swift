@@ -211,8 +211,6 @@ extension StakingSharedStateFactory {
         let validatorDirectoryService = SubtensorValidatorDirectoryService(
             apiOperationFactory: processServices.bittensorApiOperationFactory,
             chainOperationFactory: validatorChainOperationFactory,
-            earnConfigProvider: processServices.earnConfigProvider,
-            recommendationService: recommendationService,
             operationQueue: syncOperationQueue,
             logger: logger
         )
@@ -227,13 +225,6 @@ extension StakingSharedStateFactory {
             recommendationService: recommendationService,
             rankingViewService: createRankingViewService(for: recommendationService),
             validatorDirectoryService: validatorDirectoryService,
-            discoveryService: SubtensorDiscoveryService(
-                yieldService: yieldService,
-                directoryService: validatorDirectoryService,
-                recommendationService: recommendationService,
-                operationQueue: syncOperationQueue,
-                logger: logger
-            ),
             priceHistoryService: createPriceHistoryService(
                 for: stakingOption,
                 earnConfigProvider: processServices.earnConfigProvider

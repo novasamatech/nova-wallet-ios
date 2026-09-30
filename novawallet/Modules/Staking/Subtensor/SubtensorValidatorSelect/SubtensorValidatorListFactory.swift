@@ -74,15 +74,7 @@ extension SubtensorValidatorListFactory {
         isRoot: Bool,
         maxTake: BigRational
     ) -> AccountId? {
-        let selectable = directory.items.filter {
-            eligibility(of: $0, isRoot: isRoot, maxTake: maxTake) == .selectable
-        }
-
-        if let current, selectable.contains(where: { $0.hotkey == current }) {
-            return current
-        }
-
-        return selectable.first(where: \.isNovaPreferred)?.hotkey
+        selectableItem(for: current, in: directory, isRoot: isRoot, maxTake: maxTake)?.hotkey
     }
 
     static func selectableItem(
@@ -116,7 +108,6 @@ extension SubtensorValidatorListFactory {
             .filter { matches($0, query: input.query) }
             .sorted { Self.isOrderedBefore($0, $1, sort: sort) }
 
-        let pinned = matching.first { $0.item.isNovaPreferred && $0.isSelectable }
         let selected = listed.first { $0.isSelectable && $0.item.hotkey == input.selectedHotkey }
 
         let rowContext = RowContext(
@@ -127,10 +118,8 @@ extension SubtensorValidatorListFactory {
         )
 
         return SubtensorValidatorListViewModel(
-            recommended: pinned.map { createRow(for: $0, isRecommended: true, context: rowContext) },
-            rows: matching
-                .filter { $0.item.hotkey != pinned?.item.hotkey }
-                .map { createRow(for: $0, isRecommended: false, context: rowContext) },
+            recommended: nil,
+            rows: matching.map { createRow(for: $0, isRecommended: false, context: rowContext) },
             countTitle: strings.stakingSubtensorUiValidatorCountFormat(matching.count),
             sortTitle: createSortTitle(
                 for: sort,
