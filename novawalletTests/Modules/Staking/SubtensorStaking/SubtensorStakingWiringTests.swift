@@ -74,7 +74,7 @@ final class SubtensorStakingWiringTests: XCTestCase {
         XCTAssertTrue(directory.items.allSatisfy { $0.status != nil && $0.take != nil })
     }
 
-    func testMultistakingSyncHandsTheProcessWideEarnConfigProviderToTheSubtensorUpdater() throws {
+    func testMultistakingSyncBuildsTheSubtensorMaxApyProviderOnTheProcessWideBackend() throws {
         let chainAsset = Self.subtensorChainAsset()
         let storageFacade = SubstrateStorageTestFacade()
         let repositoryFactory = MultistakingRepositoryFactory(storageFacade: storageFacade)
@@ -98,8 +98,14 @@ final class SubtensorStakingWiringTests: XCTestCase {
 
         let option = Multistaking.ChainAssetOption(chainAsset: chainAsset, type: .subtensor).option
         let updater = try XCTUnwrap(syncService.onchainUpdaters[option] as? SubtensorMultistakingUpdateService)
+        let maxApyProvider = try XCTUnwrap(updater.maxApyProvider as? SubtensorMaxApyProvider)
+        let recommendations = try XCTUnwrap(maxApyProvider.recommendationService as? SubtensorRecommendationService)
+        let yields = try XCTUnwrap(maxApyProvider.yieldService as? SubtensorYieldService)
+        let apiOperationFactory = SubtensorStakingProcessServices.shared.bittensorApiOperationFactory
 
-        XCTAssertTrue(updater.earnConfigProvider === SubtensorStakingProcessServices.sharedEarnConfigProvider)
+        XCTAssertTrue(recommendations.apiOperationFactory === apiOperationFactory)
+        XCTAssertTrue(yields.apiOperationFactory === apiOperationFactory)
+        XCTAssertTrue(recommendations.chainOperationFactory is SubtensorValidatorChainOperationFactory)
     }
 
     private func makeFactory(chain: ChainModel) -> StakingSharedStateFactory {
