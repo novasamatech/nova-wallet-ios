@@ -2,7 +2,6 @@ import Foundation
 
 enum SubtensorSubnetSort: CaseIterable, Equatable {
     case sevenDayChange
-    case thirtyDayChange
     case poolDepth
     case age
     case name
@@ -41,7 +40,6 @@ protocol SubnetSelectInteractorInputProtocol: AnyObject {
     func setup()
     func refresh()
     func loadWeeklyPrices(for subnets: [SubtensorSubnetRef])
-    func loadMonthlyMetrics(for subnets: [SubtensorSubnetRef])
 }
 
 protocol SubnetSelectInteractorOutputProtocol: AnyObject {

@@ -181,8 +181,6 @@ private extension SubtensorSubnetViewModelFactory {
         switch sort {
         case .sevenDayChange:
             return strings.stakingSubtensorUiPickerChipSevenDay()
-        case .thirtyDayChange:
-            return strings.stakingSubtensorUiPickerChipThirtyDay()
         case .poolDepth:
             return strings.stakingSubtensorUiPickerPoolDepth()
         case .age:
@@ -198,8 +196,6 @@ private extension SubtensorSubnetViewModelFactory {
         switch sort {
         case .sevenDayChange:
             return strings.stakingSubtensorUiPickerBySevenDay()
-        case .thirtyDayChange:
-            return strings.stakingSubtensorUiPickerByThirtyDay()
         case .poolDepth:
             return strings.stakingSubtensorUiPickerByPool()
         case .age:
@@ -217,11 +213,6 @@ private extension SubtensorSubnetViewModelFactory {
             return .init(
                 title: strings.stakingSubtensorUiPickerSevenDay(),
                 subtitle: strings.stakingSubtensorUiPickerSevenDayDetail()
-            )
-        case .thirtyDayChange:
-            return .init(
-                title: strings.stakingSubtensorUiPickerThirtyDay(),
-                subtitle: strings.stakingSubtensorUiPickerThirtyDayDetail()
             )
         case .poolDepth:
             return .init(
