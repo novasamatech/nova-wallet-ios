@@ -279,7 +279,7 @@ private extension SubtensorPriceHistoryService.Fetcher {
 
     func createSubnetMarketsOperation() -> BaseOperation<Data> {
         guard var components = URLComponents(
-            url: PriceAPI.proxyBaseURL.appendingPathComponent("coins/markets"),
+            url: PriceAPI.baseURL.appendingPathComponent("coins/markets"),
             resolvingAgainstBaseURL: false
         ) else {
             return BaseOperation.createWithError(NetworkBaseError.invalidUrl)

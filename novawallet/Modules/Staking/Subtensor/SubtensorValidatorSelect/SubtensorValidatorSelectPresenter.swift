@@ -21,6 +21,7 @@ final class SubtensorValidatorSelectPresenter {
     private var sort: SubtensorValidatorSort
     private var query = ""
     private var selectedHotkey: AccountId?
+    private var preselectedHotkey: AccountId?
 
     init(
         target: SubtensorStakeTarget,
@@ -73,7 +74,8 @@ private extension SubtensorValidatorSelectPresenter {
             maxTake: clientGates.maxTake,
             sort: sort,
             query: query,
-            selectedHotkey: selectedHotkey
+            selectedHotkey: selectedHotkey,
+            preselectedHotkey: preselectedHotkey
         )
 
         view?.didReceive(state: .loaded(listFactory.createListViewModel(for: input, locale: selectedLocale)))
@@ -177,6 +179,7 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectInteractorOutputProt
             isRoot: target.isRoot,
             maxTake: clientGates.maxTake
         )
+        preselectedHotkey = selectedHotkey
 
         provideState()
     }
