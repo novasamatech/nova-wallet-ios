@@ -205,7 +205,7 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
             applicationHandler: ApplicationHandler(),
             catalogueService: MockSubtensorSubnetCatalogueServiceProtocol(),
             yieldService: makeYieldService(),
-            earnConfigProvider: makeEarnConfigProvider(),
+            subnetLogosProvider: makeSubnetLogosProvider(),
             priceHistoryService: nil,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             currencyManager: currencyManager,
@@ -356,14 +356,14 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
         return yieldService
     }
 
-    private func makeEarnConfigProvider() -> MockSubtensorEarnConfigProviderProtocol {
-        let earnConfigProvider = MockSubtensorEarnConfigProviderProtocol()
+    private func makeSubnetLogosProvider() -> MockSubtensorSubnetLogosProviderProtocol {
+        let subnetLogosProvider = MockSubtensorSubnetLogosProviderProtocol()
 
-        stub(earnConfigProvider) { stub in
-            when(stub.createConfigWrapper()).thenReturn(CompoundOperationWrapper.createWithError(CommonError.dataCorruption))
+        stub(subnetLogosProvider) { stub in
+            when(stub.createLogosWrapper()).thenReturn(CompoundOperationWrapper.createWithError(CommonError.dataCorruption))
         }
 
-        return earnConfigProvider
+        return subnetLogosProvider
     }
 
     private func makeEventCenter() -> MockEventCenterProtocol {
@@ -385,7 +385,7 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
                 netuid: 64,
                 catalogueService: makeCatalogueService(),
                 yieldService: makeYieldService(),
-                earnConfigProvider: makeEarnConfigProvider(),
+                subnetLogosProvider: makeSubnetLogosProvider(),
                 priceHistoryService: nil,
                 validatorFactory: SubtensorValidatorPresetFactory(
                     directoryService: makeDirectoryService(),

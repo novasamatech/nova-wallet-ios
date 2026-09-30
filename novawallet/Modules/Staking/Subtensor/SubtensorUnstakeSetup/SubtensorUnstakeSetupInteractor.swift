@@ -15,12 +15,12 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
 
     let subnetsService: SubtensorSubnetsServiceProtocol
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
-    let earnConfigProvider: SubtensorEarnConfigProviderProtocol
+    let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let validatorFactory: SubtensorValidatorPresetFactoryProtocol
     let rootHoldFactory: SubtensorRootHoldFactoryProtocol
 
     private let catalogueCallStore = CancellableCallStore()
-    private let configCallStore = CancellableCallStore()
+    private let logosCallStore = CancellableCallStore()
     private let validatorCallStore = CancellableCallStore()
     private let holdsCallStore = CancellableCallStore()
 
@@ -29,7 +29,7 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
         chainAsset: ChainAsset,
         subnetsService: SubtensorSubnetsServiceProtocol,
         catalogueService: SubtensorSubnetCatalogueServiceProtocol,
-        earnConfigProvider: SubtensorEarnConfigProviderProtocol,
+        subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
         validatorFactory: SubtensorValidatorPresetFactoryProtocol,
         rootHoldFactory: SubtensorRootHoldFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
@@ -37,7 +37,7 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
     ) {
         self.subnetsService = subnetsService
         self.catalogueService = catalogueService
-        self.earnConfigProvider = earnConfigProvider
+        self.subnetLogosProvider = subnetLogosProvider
         self.validatorFactory = validatorFactory
         self.rootHoldFactory = rootHoldFactory
 
@@ -61,7 +61,7 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
 
     deinit {
         catalogueCallStore.cancel()
-        configCallStore.cancel()
+        logosCallStore.cancel()
         validatorCallStore.cancel()
         holdsCallStore.cancel()
     }
@@ -101,21 +101,21 @@ extension SubtensorUnstakeSetupInteractor: SubtensorUnstakeInteractorInputProtoc
         }
     }
 
-    func loadEarnConfig() {
-        configCallStore.cancel()
+    func loadSubnetLogos() {
+        logosCallStore.cancel()
 
         executeCancellable(
-            wrapper: earnConfigProvider.createConfigWrapper(),
+            wrapper: subnetLogosProvider.createLogosWrapper(),
             inOperationQueue: operationQueue,
-            backingCallIn: configCallStore,
+            backingCallIn: logosCallStore,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(config):
-                self?.presenter?.didReceiveEarnConfig(config)
+            case let .success(logos):
+                self?.presenter?.didReceiveSubnetLogos(logos)
             case let .failure(error):
-                self?.logger.warning("Subtensor Earn config unavailable for the unstake mark: \(error)")
-                self?.presenter?.didReceiveEarnConfig(nil)
+                self?.logger.warning("Subtensor subnet logos unavailable for the unstake mark: \(error)")
+                self?.presenter?.didReceiveSubnetLogos(nil)
             }
         }
     }

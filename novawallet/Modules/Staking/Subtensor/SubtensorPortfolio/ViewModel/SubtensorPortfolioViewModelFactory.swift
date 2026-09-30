@@ -284,7 +284,7 @@ private extension SubtensorPortfolioViewModelFactory {
             : nil
 
         return SubtensorPortfolioRowViewModel(
-            icon: iconFactory.icon(for: subnet, config: state.earnConfig),
+            icon: iconFactory.icon(for: subnet, logos: state.subnetLogos),
             title: SubtensorSubnetNaming.titleWithSymbol(for: group.netuid, in: state.catalogue, locale: locale),
             subtitle: subtitle,
             value: value,

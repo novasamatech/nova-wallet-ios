@@ -33,7 +33,7 @@ final class SubtensorStakingSetupPresenter {
     var isRootRateRequested = false
     var catalogue: SubtensorSubnetCatalogue?
     var isCatalogueLoaded = false
-    var earnConfig: SubtensorEarnConfig?
+    var subnetLogos: SubtensorSubnetLogos?
     var rankingView: SubtensorRankedSubnets?
     var yields: SubtensorAlphaYields?
     var yieldsNetuid: UInt16?

@@ -19,11 +19,11 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
         world.stubSubnets(try SubtensorFlowActiveStake.subnetsInfo())
         world.stubClaimPreviews(try SubtensorFlowActiveStake.claimPreviews())
         world.stubRootHolds([aster: SubtensorRootHold(interval: 0, lastStakeBlock: 9_139_000)])
-        SubtensorFlowURLProtocol.serveEarnConfig()
+        SubtensorFlowURLProtocol.serveSubnetLogos()
         SubtensorFlowURLProtocol.serveFixture(.subnets)
         SubtensorFlowURLProtocol.serveFixture(.validators(netuid: 0))
         SubtensorFlowURLProtocol.serveFixture(.rootYield(page: 1, pageSize: 100))
-        try SubtensorFlowActiveStake.serveCharts()
+        SubtensorFlowActiveStake.serveTaoMonthChart()
 
         world.sharedState.setup(for: SubtensorFlowChainWorld.coldkeyAccount())
         feed.publish(try SubtensorFlowActiveStake.state())
@@ -188,12 +188,8 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
             "GET https://bittensor.test/v1/bittensor/subnets",
             "GET https://bittensor.test/v1/bittensor/subnets/0/validators",
             "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
-            "GET https://earn-config.test/earn_config.json",
-            "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=30",
-            "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=30",
-            "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=7",
-            "GET https://tokens-price.novasama-tech.org/api/v3/coins/chutes/market_chart?vs_currency=usd&days=30",
-            "GET https://tokens-price.novasama-tech.org/api/v3/coins/chutes/market_chart?vs_currency=usd&days=7"
+            "GET https://subnet-logos.test/subnets.json",
+            "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=30"
         ])
 
         assertAttestedRequests(
@@ -202,58 +198,27 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
         )
     }
 
-    func testBackendDownStillStakesOnRootOnTheConfigPresetWithoutARate() throws {
+    func testBackendDownLeavesRootWithoutAPresetValidator() throws {
         let world = try SubtensorFlowWorld()
-        let services = world.earnServices
-        let aster = try SubtensorFlowChainWorld.hotkey(.aster)
         let rootRef = SubtensorSubnetRef(netuid: SubtensorStakingPallet.rootNetuid, registeredAt: 0)
 
-        SubtensorFlowURLProtocol.serveEarnConfig()
-        SubtensorFlowURLProtocol.serveBittensor(
-            "/subnets/0/validators",
-            reply: .apiError(statusCode: 503, code: "dataset_unavailable", requestId: "req-root-down")
-        )
-        SubtensorFlowURLProtocol.serveBittensor(
-            "/yields/root?page=1&pageSize=100",
-            reply: .apiError(statusCode: 503, code: "dataset_unavailable", requestId: "req-root-yield-down")
-        )
+        for path in ["/subnets/0/validators", "/recommendations"] {
+            SubtensorFlowURLProtocol.serveBittensor(
+                path,
+                reply: .apiError(statusCode: 503, code: "dataset_unavailable", requestId: "req-root-down")
+            )
+        }
 
-        let preset = try XCTUnwrap(
-            try run(world.createPresetFactory().createPresetWrapper(for: rootRef, existingHotkey: nil))
-        )
+        let preset = try run(world.createPresetFactory().createPresetWrapper(for: rootRef, existingHotkey: nil))
 
-        let rootYield = try run(services.yieldService.createRootYieldWrapper())
-        let stake = SubtensorStakingOperation.rootStake(hotkey: preset.hotkey, amount: SubtensorFlowChainWorld.stakeAmount)
-        let fee = try run(world.createStakingOperationService(networkFee: networkFee).createFeeWrapper(for: stake))
-
-        let result = try submit(stake, in: world, events: [
-            SubtensorFlowExtrinsic.stakeAdded(
-                hotkey: aster,
-                netuid: SubtensorStakingPallet.rootNetuid,
-                tao: 5_000_000_000,
-                alpha: 5_000_000_000,
-                poolFee: 0
-            ),
-            SubtensorFlowExtrinsic.networkFeePaid(paidNetworkFee)
-        ])
-
-        XCTAssertEqual(preset, try asterRoot(name: nil))
-        XCTAssertNil(rootYield)
-        XCTAssertEqual(fee.amount, networkFee)
-
-        XCTAssertEqual(result.calls, [
-            SubtensorFlowExtrinsic.addStake(hotkey: aster, netuid: SubtensorStakingPallet.rootNetuid, amount: 5_000_000_000)
-        ])
-
-        XCTAssertEqual(result.outcome, rootOutcome(tao: SubtensorFlowChainWorld.stakeAmount))
+        XCTAssertNil(preset)
 
         XCTAssertEqual(requestLines().sorted(), [
-            "GET https://bittensor.test/v1/bittensor/subnets/0/validators",
-            "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
-            "GET https://earn-config.test/earn_config.json"
+            "GET https://bittensor.test/v1/bittensor/recommendations",
+            "GET https://bittensor.test/v1/bittensor/subnets/0/validators"
         ])
 
-        assertAttestedRequests(world, paths: ["/v1/bittensor/subnets/0/validators", "/v1/bittensor/yields/root"])
+        assertAttestedRequests(world, paths: ["/v1/bittensor/subnets/0/validators", "/v1/bittensor/recommendations"])
     }
 
     func testRootValidatorInfoKeepsChainValuesWhenTheBackendIsDown() throws {
@@ -265,7 +230,6 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
 
         world.stubSubnets(try SubtensorFlowActiveStake.subnetsInfo())
         world.stubClaimPreviews(try SubtensorFlowActiveStake.claimPreviews())
-        SubtensorFlowURLProtocol.serveEarnConfig()
         SubtensorFlowURLProtocol.serveBittensor(
             "/subnets/0/validators",
             reply: .apiError(statusCode: 503, code: "dataset_unavailable", requestId: "req-f4-down")
@@ -296,8 +260,7 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
 
         XCTAssertEqual(requestLines().sorted(), [
             "GET https://bittensor.test/v1/bittensor/subnets/0/validators",
-            "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
-            "GET https://earn-config.test/earn_config.json"
+            "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100"
         ])
 
         assertAttestedRequests(

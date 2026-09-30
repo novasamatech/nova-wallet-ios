@@ -10,8 +10,4 @@ protocol SubtensorValidatorDirectoryServiceProtocol: AnyObject {
         for hotkey: AccountId,
         subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorValidatorDetail>
-
-    func createPreferredValidatorWrapper(
-        for subnet: SubtensorSubnetRef
-    ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?>
 }

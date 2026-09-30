@@ -75,6 +75,5 @@ enum AssetDetailsError: Error {
     case swaps(Error)
     case holds(Error)
     case ahmInfo(Error)
-    case earnConfig(Error)
     case stakingDashboard(Error)
 }

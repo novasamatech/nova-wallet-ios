@@ -16,7 +16,7 @@ enum SubtensorPositionViewFactory {
             netuid: group.netuid,
             catalogueService: earnServices.catalogueService,
             yieldService: earnServices.yieldService,
-            earnConfigProvider: earnServices.earnConfigProvider,
+            subnetLogosProvider: earnServices.subnetLogosProvider,
             priceHistoryService: earnServices.priceHistoryService,
             validatorFactory: SubtensorValidatorPresetFactory(
                 directoryService: earnServices.validatorDirectoryService,

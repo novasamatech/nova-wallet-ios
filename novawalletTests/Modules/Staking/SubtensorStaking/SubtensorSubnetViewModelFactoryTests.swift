@@ -9,7 +9,7 @@ final class SubtensorSubnetViewModelFactoryTests: XCTestCase {
         let viewModel = makeFactory().createRowViewModel(
             for: makeItem(name: "Apex", symbol: "α", weekly: .notListed),
             isFavorite: false,
-            config: nil,
+            subnetLogos: nil,
             locale: locale
         )
 
@@ -21,7 +21,7 @@ final class SubtensorSubnetViewModelFactoryTests: XCTestCase {
         let viewModel = makeFactory().createRowViewModel(
             for: makeItem(name: "  ", symbol: "α", weekly: .notListed),
             isFavorite: false,
-            config: nil,
+            subnetLogos: nil,
             locale: locale
         )
 
@@ -37,7 +37,7 @@ final class SubtensorSubnetViewModelFactoryTests: XCTestCase {
         let viewModel = makeFactory().createRowViewModel(
             for: makeItem(weekly: .available(summary)),
             isFavorite: false,
-            config: nil,
+            subnetLogos: nil,
             locale: locale
         )
 
@@ -55,7 +55,7 @@ final class SubtensorSubnetViewModelFactoryTests: XCTestCase {
         let viewModel = makeFactory().createRowViewModel(
             for: makeItem(weekly: .notListed),
             isFavorite: false,
-            config: nil,
+            subnetLogos: nil,
             locale: locale
         )
 
@@ -71,7 +71,7 @@ final class SubtensorSubnetViewModelFactoryTests: XCTestCase {
         let viewModel = makeFactory().createRowViewModel(
             for: makeItem(weekly: .unavailable),
             isFavorite: false,
-            config: nil,
+            subnetLogos: nil,
             locale: locale
         )
 

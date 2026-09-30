@@ -13,20 +13,20 @@ final class SubtensorPriceHistoryService {
     static let subnetMarketsPageSize = 250
     static let sparklineMaxCount = 48
 
-    let earnConfigProvider: SubtensorEarnConfigProviderProtocol
+    let coingeckoIds: [SubtensorSubnetRef: String]
     let coingeckoOperationFactory: CoingeckoOperationFactoryProtocol
     let taoPriceId: AssetModel.PriceId
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     init(
-        earnConfigProvider: SubtensorEarnConfigProviderProtocol,
+        coingeckoIds: [SubtensorSubnetRef: String],
         coingeckoOperationFactory: CoingeckoOperationFactoryProtocol,
         taoPriceId: AssetModel.PriceId,
         operationQueue: OperationQueue,
         logger: LoggerProtocol = Logger.shared
     ) {
-        self.earnConfigProvider = earnConfigProvider
+        self.coingeckoIds = coingeckoIds
         self.coingeckoOperationFactory = coingeckoOperationFactory
         self.taoPriceId = taoPriceId
         self.operationQueue = operationQueue
@@ -35,11 +35,12 @@ final class SubtensorPriceHistoryService {
 }
 
 extension SubtensorPriceHistoryService {
-    static func coingeckoId(in config: SubtensorEarnConfig, for subnet: SubtensorSubnetRef) -> String? {
-        let rawId = config.subnetEntry(for: subnet)?.coingeckoId
-
+    static func coingeckoId(
+        in coingeckoIds: [SubtensorSubnetRef: String],
+        for subnet: SubtensorSubnetRef
+    ) -> String? {
         guard
-            let coingeckoId = rawId?.trimmingCharacters(in: .whitespacesAndNewlines),
+            let coingeckoId = coingeckoIds[subnet]?.trimmingCharacters(in: .whitespacesAndNewlines),
             !coingeckoId.isEmpty,
             coingeckoId.unicodeScalars.allSatisfy({ coingeckoIdCharacters.contains($0) }) else {
             return nil
@@ -146,10 +147,10 @@ private extension SubtensorPriceHistoryService {
 
     static func listedIds(
         for subnets: [SubtensorSubnetRef],
-        in config: SubtensorEarnConfig
+        in coingeckoIds: [SubtensorSubnetRef: String]
     ) -> [SubtensorSubnetRef: String] {
         subnets.reduce(into: [:]) { result, subnet in
-            result[subnet] = coingeckoId(in: config, for: subnet)
+            result[subnet] = coingeckoId(in: coingeckoIds, for: subnet)
         }
     }
 
@@ -164,33 +165,26 @@ private extension SubtensorPriceHistoryService {
 
     func createPriceDataWrapper<Value: Equatable>(
         for subnets: [SubtensorSubnetRef],
-        listedValuesWrapper: @escaping ([SubtensorSubnetRef: String])
+        listedValuesWrapper: ([SubtensorSubnetRef: String])
             -> CompoundOperationWrapper<[SubtensorSubnetRef: SubtensorPriceData<Value>]>
     ) -> CompoundOperationWrapper<[SubtensorSubnetRef: SubtensorPriceData<Value>]> {
-        let configWrapper = earnConfigProvider.createConfigWrapper()
+        let listed = Self.listedIds(for: subnets, in: coingeckoIds)
 
-        let pricesWrapper: CompoundOperationWrapper<[SubtensorSubnetRef: SubtensorPriceData<Value>]> =
-            OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
-                let config = try configWrapper.targetOperation.extractNoCancellableResultData()
-                let listed = Self.listedIds(for: subnets, in: config)
+        guard !listed.isEmpty else {
+            return .createWithResult(Self.priceData(for: subnets, listed: listed, values: [:]))
+        }
 
-                let valuesWrapper: CompoundOperationWrapper<[SubtensorSubnetRef: SubtensorPriceData<Value>]> =
-                    listed.isEmpty ? .createWithResult([:]) : listedValuesWrapper(listed)
+        let valuesWrapper = listedValuesWrapper(listed)
 
-                let resultOperation = ClosureOperation<[SubtensorSubnetRef: SubtensorPriceData<Value>]> {
-                    let values = try valuesWrapper.targetOperation.extractNoCancellableResultData()
+        let resultOperation = ClosureOperation<[SubtensorSubnetRef: SubtensorPriceData<Value>]> {
+            let values = try valuesWrapper.targetOperation.extractNoCancellableResultData()
 
-                    return Self.priceData(for: subnets, listed: listed, values: values)
-                }
+            return Self.priceData(for: subnets, listed: listed, values: values)
+        }
 
-                resultOperation.addDependency(valuesWrapper.targetOperation)
+        resultOperation.addDependency(valuesWrapper.targetOperation)
 
-                return valuesWrapper.insertingTail(operation: resultOperation)
-            }
-
-        pricesWrapper.addDependency(wrapper: configWrapper)
-
-        return pricesWrapper.insertingHead(operations: configWrapper.allOperations)
+        return valuesWrapper.insertingTail(operation: resultOperation)
     }
 }
 
@@ -200,37 +194,21 @@ extension SubtensorPriceHistoryService: SubtensorPriceHistoryServiceProtocol {
         period: SubtensorPricePeriod,
         currency: Currency
     ) -> CompoundOperationWrapper<SubtensorPriceHistoryResult> {
-        let configWrapper = earnConfigProvider.createConfigWrapper()
-        let fetcher = fetcher
-
-        let pointsWrapper: CompoundOperationWrapper<[SubtensorPricePoint]?> = OperationCombiningService.compoundWrapper(
-            operationManager: OperationManager(operationQueue: operationQueue)
-        ) {
-            let config = try configWrapper.targetOperation.extractNoCancellableResultData()
-
-            guard let alphaPriceId = Self.coingeckoId(in: config, for: subnet) else {
-                return nil
-            }
-
-            return fetcher.createPointsWrapper(alphaPriceId: alphaPriceId, currency: currency, period: period)
+        guard let alphaPriceId = Self.coingeckoId(in: coingeckoIds, for: subnet) else {
+            return .createWithResult(.notListed)
         }
 
-        pointsWrapper.addDependency(wrapper: configWrapper)
+        let pointsWrapper = fetcher.createPointsWrapper(alphaPriceId: alphaPriceId, currency: currency, period: period)
 
         let resultOperation = ClosureOperation<SubtensorPriceHistoryResult> {
-            guard let points = try pointsWrapper.targetOperation.extractNoCancellableResultData() else {
-                return .notListed
-            }
+            let points = try pointsWrapper.targetOperation.extractNoCancellableResultData()
 
             return .available(Self.makeHistory(subnet: subnet, period: period, points: points))
         }
 
         resultOperation.addDependency(pointsWrapper.targetOperation)
 
-        return CompoundOperationWrapper(
-            targetOperation: resultOperation,
-            dependencies: configWrapper.allOperations + pointsWrapper.allOperations
-        )
+        return pointsWrapper.insertingTail(operation: resultOperation)
     }
 
     func createWeeklyChangesWrapper(

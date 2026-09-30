@@ -12,7 +12,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
     let applicationHandler: ApplicationHandlerProtocol
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
     let yieldService: SubtensorYieldServiceProtocol
-    let earnConfigProvider: SubtensorEarnConfigProviderProtocol
+    let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let historyLoader: SubtensorPortfolioHistoryLoader
@@ -25,7 +25,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
     private var forcedCatalogueNetuids: Set<UInt16> = []
     private let catalogueStore = CancellableCallStore()
     private let rootRateStore = CancellableCallStore()
-    private let earnConfigStore = CancellableCallStore()
+    private let logosStore = CancellableCallStore()
     private let weeklyChangesStore = CancellableCallStore()
 
     private var chainAsset: ChainAsset {
@@ -40,7 +40,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
         applicationHandler: ApplicationHandlerProtocol,
         catalogueService: SubtensorSubnetCatalogueServiceProtocol,
         yieldService: SubtensorYieldServiceProtocol,
-        earnConfigProvider: SubtensorEarnConfigProviderProtocol,
+        subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
         priceHistoryService: SubtensorPriceHistoryServiceProtocol?,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
@@ -55,7 +55,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
         self.applicationHandler = applicationHandler
         self.catalogueService = catalogueService
         self.yieldService = yieldService
-        self.earnConfigProvider = earnConfigProvider
+        self.subnetLogosProvider = subnetLogosProvider
         self.priceHistoryService = priceHistoryService
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.operationQueue = operationQueue
@@ -73,7 +73,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
     deinit {
         catalogueStore.cancel()
         rootRateStore.cancel()
-        earnConfigStore.cancel()
+        logosStore.cancel()
         weeklyChangesStore.cancel()
         state.positionsSyncService?.remove(observer: self)
         state.positionsSyncService?.remove(failureObserver: self)
@@ -88,7 +88,7 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
         subscribePositions()
         subscribePrice()
         provideRootRate()
-        provideEarnConfig()
+        provideSubnetLogos()
 
         eventCenter.add(observer: self, dispatchIn: .main)
         applicationHandler.delegate = self
@@ -239,19 +239,19 @@ private extension SubtensorPortfolioInteractor {
         }
     }
 
-    func provideEarnConfig() {
+    func provideSubnetLogos() {
         executeCancellable(
-            wrapper: earnConfigProvider.createConfigWrapper(),
+            wrapper: subnetLogosProvider.createLogosWrapper(),
             inOperationQueue: operationQueue,
-            backingCallIn: earnConfigStore,
+            backingCallIn: logosStore,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(config):
-                self?.presenter?.didReceive(earnConfig: config)
+            case let .success(logos):
+                self?.presenter?.didReceive(subnetLogos: logos)
             case let .failure(error):
                 self?.logger.warning("Bittensor portfolio subnet marks unavailable: \(error)")
-                self?.presenter?.didReceive(earnConfig: nil)
+                self?.presenter?.didReceive(subnetLogos: nil)
             }
         }
     }

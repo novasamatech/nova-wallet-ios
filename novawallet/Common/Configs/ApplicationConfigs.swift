@@ -31,7 +31,7 @@ protocol ApplicationConfigProtocol {
     var globalConfigURL: URL { get }
     var dAppsListURL: URL { get }
     var preferredValidatorsURL: URL { get }
-    var subtensorEarnConfigURL: URL { get }
+    var bittensorSubnetsURL: URL { get }
     var governanceDAppsListURL: URL { get }
     var commonTypesURL: URL { get }
     var learnPayoutURL: URL { get }
@@ -255,12 +255,8 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #endif
     }
 
-    var subtensorEarnConfigURL: URL {
-        #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/staking/bittensor/v1/earn_config.json")!
-        #else
-            URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/staking/bittensor/v1/earn_config_dev.json")!
-        #endif
+    var bittensorSubnetsURL: URL {
+        URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/bittensor/v1/subnets.json")!
     }
 
     var governanceDAppsListURL: URL {

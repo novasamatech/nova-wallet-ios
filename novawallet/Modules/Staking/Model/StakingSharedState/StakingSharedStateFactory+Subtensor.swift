@@ -5,7 +5,8 @@ import Keystore_iOS
 
 struct SubtensorStakingProcessServices {
     let bittensorApiOperationFactory: BittensorApiOperationFactoryProtocol
-    let earnConfigProvider: SubtensorEarnConfigProviderProtocol
+    let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
+    let maxApyResolution: SubtensorMaxApyResolution
     let isFixtureMode: Bool
 }
 
@@ -20,14 +21,6 @@ struct SubtensorStakingChainServices {
 }
 
 extension SubtensorStakingProcessServices {
-    static let sharedEarnConfigProvider: SubtensorEarnConfigProviderProtocol = SubtensorEarnConfigProvider(
-        configURL: ApplicationConfig.shared.subtensorEarnConfigURL,
-        bundledConfig: SubtensorEarnConfig.bundled,
-        entryStore: SubtensorEarnConfigEntryStore(settingsManager: SettingsManager.shared),
-        operationQueue: OperationManagerFacade.sharedDefaultQueue,
-        logger: Logger.shared
-    )
-
     static let shared: SubtensorStakingProcessServices = {
         let isFixtureMode = isFixtureModeEnabled
 
@@ -42,7 +35,8 @@ extension SubtensorStakingProcessServices {
 
         return SubtensorStakingProcessServices(
             bittensorApiOperationFactory: apiOperationFactory,
-            earnConfigProvider: sharedEarnConfigProvider,
+            subnetLogosProvider: SubtensorSubnetLogosProvider(url: ApplicationConfig.shared.bittensorSubnetsURL),
+            maxApyResolution: SubtensorMaxApyResolution(),
             isFixtureMode: isFixtureMode
         )
     }()
@@ -57,6 +51,39 @@ extension SubtensorStakingProcessServices {
         #endif
 
         return SubtensorValidatorChainOperationFactory(runtimeConnectionStore: runtimeConnectionStore)
+    }
+
+    func createMaxApyProvider(
+        runtimeConnectionStore: RuntimeConnectionStoring,
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
+    ) -> SubtensorMaxApyProviderProtocol {
+        let recommendationService = SubtensorRecommendationService(
+            apiOperationFactory: bittensorApiOperationFactory,
+            chainOperationFactory: createValidatorChainOperationFactory(runtimeConnectionStore: runtimeConnectionStore),
+            operationQueue: operationQueue,
+            logger: logger
+        )
+
+        return createMaxApyProvider(
+            recommendationService: recommendationService,
+            operationQueue: operationQueue,
+            logger: logger
+        )
+    }
+
+    func createMaxApyProvider(
+        recommendationService: SubtensorRecommendationServiceProtocol,
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
+    ) -> SubtensorMaxApyProviderProtocol {
+        SubtensorMaxApyProvider(
+            recommendationService: recommendationService,
+            apiOperationFactory: bittensorApiOperationFactory,
+            resolution: maxApyResolution,
+            operationQueue: operationQueue,
+            logger: logger
+        )
     }
 }
 
@@ -209,14 +236,12 @@ extension StakingSharedStateFactory {
         let validatorDirectoryService = SubtensorValidatorDirectoryService(
             apiOperationFactory: processServices.bittensorApiOperationFactory,
             chainOperationFactory: validatorChainOperationFactory,
-            earnConfigProvider: processServices.earnConfigProvider,
-            recommendationService: recommendationService,
             operationQueue: syncOperationQueue,
             logger: logger
         )
 
         return SubtensorEarnServices(
-            earnConfigProvider: processServices.earnConfigProvider,
+            subnetLogosProvider: processServices.subnetLogosProvider,
             earnSettings: SubtensorEarnSettings(settingsManager: chainServices.settingsManager),
             validatorChainOperationFactory: validatorChainOperationFactory,
             catalogueService: createCatalogueService(using: processServices),
@@ -224,17 +249,7 @@ extension StakingSharedStateFactory {
             recommendationService: recommendationService,
             rankingViewService: createRankingViewService(for: recommendationService),
             validatorDirectoryService: validatorDirectoryService,
-            discoveryService: SubtensorDiscoveryService(
-                yieldService: yieldService,
-                directoryService: validatorDirectoryService,
-                recommendationService: recommendationService,
-                operationQueue: syncOperationQueue,
-                logger: logger
-            ),
-            priceHistoryService: createPriceHistoryService(
-                for: stakingOption,
-                earnConfigProvider: processServices.earnConfigProvider
-            ),
+            priceHistoryService: createPriceHistoryService(for: stakingOption),
             tradeQuoteFactory: SubtensorTradeQuoteFactory(
                 quoteFactory: chainServices.quoteOperationFactory,
                 feeCalculator: chainServices.novaFeeCalculator
@@ -260,15 +275,14 @@ extension StakingSharedStateFactory {
     }
 
     private func createPriceHistoryService(
-        for stakingOption: Multistaking.ChainAssetOption,
-        earnConfigProvider: SubtensorEarnConfigProviderProtocol
+        for stakingOption: Multistaking.ChainAssetOption
     ) -> SubtensorPriceHistoryServiceProtocol? {
         guard let taoPriceId = stakingOption.chainAsset.asset.priceId else {
             return nil
         }
 
         return SubtensorPriceHistoryService(
-            earnConfigProvider: earnConfigProvider,
+            coingeckoIds: [:],
             coingeckoOperationFactory: CoingeckoOperationFactory(),
             taoPriceId: taoPriceId,
             operationQueue: syncOperationQueue,

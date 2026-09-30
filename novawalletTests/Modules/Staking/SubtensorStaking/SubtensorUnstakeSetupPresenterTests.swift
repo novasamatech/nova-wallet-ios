@@ -196,7 +196,7 @@ final class SubtensorUnstakeSetupPresenterTests: XCTestCase {
             when(stub.refreshPositions()).thenDoNothing()
             when(stub.loadSubnetsInfo(forcingRefresh: any())).thenDoNothing()
             when(stub.loadCatalogue(forcingRefresh: any())).thenDoNothing()
-            when(stub.loadEarnConfig()).thenDoNothing()
+            when(stub.loadSubnetLogos()).thenDoNothing()
             when(stub.loadValidator(any(), on: any())).thenDoNothing()
             when(stub.loadRootHolds(for: any())).thenDoNothing()
         }

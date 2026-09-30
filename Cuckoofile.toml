@@ -164,9 +164,8 @@ sources = [
     "novawallet/Modules/Staking/Subtensor/Services/SubtensorValidatorDirectoryServiceProtocol.swift",
     "novawallet/Modules/Staking/Subtensor/Services/SubtensorYieldServiceProtocol.swift",
     "novawallet/Modules/Staking/Subtensor/Services/SubtensorRecommendationServiceProtocol.swift",
-    "novawallet/Modules/Staking/Subtensor/Services/SubtensorDiscoveryServiceProtocol.swift",
     "novawallet/Modules/Staking/Subtensor/Services/SubtensorPriceHistoryServiceProtocol.swift",
-    "novawallet/Modules/Staking/Subtensor/Services/SubtensorEarnConfigProviderProtocol.swift",
+    "novawallet/Modules/Staking/Subtensor/Services/SubtensorSubnetLogosProviderProtocol.swift",
     "novawallet/Modules/Staking/Subtensor/Services/SubtensorEarnSettingsProtocol.swift",
     "novawallet/Modules/Staking/Subtensor/Services/SubtensorStakingOperationServiceProtocol.swift",
     "novawallet/Common/Services/ExtrinsicService/Substrate/ExtrinsicStatusService/ExtrinsicSubmissionMonitor.swift",
@@ -196,6 +195,7 @@ sources = [
     "novawallet/Modules/MessageSheet/Compound/MessageSheetPresentable.swift",
     "novawallet/Common/DataProvider/StakingDashboardProviderFactory.swift",
     "novawallet/Common/Services/Announcements/AnnouncementsRepository.swift",
+    "novawallet/Modules/Staking/Subtensor/Services/SubtensorMaxApyProviderProtocol.swift",
 ]
 
 exclude = [

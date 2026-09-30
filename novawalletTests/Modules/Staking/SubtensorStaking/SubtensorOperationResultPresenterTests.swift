@@ -336,7 +336,7 @@ private extension SubtensorOperationResultPresenterTests {
     ) -> SubtensorOperationResultInteractor {
         let chainFactory = MockSubtensorResultChainFactoryProtocol()
         let catalogueService = MockSubtensorSubnetCatalogueServiceProtocol()
-        let earnConfigProvider = MockSubtensorEarnConfigProviderProtocol()
+        let subnetLogosProvider = MockSubtensorSubnetLogosProviderProtocol()
 
         stub(chainFactory) { stub in
             when(stub.createExpectedBlockTimeWrapper()).thenReturn(.createWithResult(12000))
@@ -351,8 +351,8 @@ private extension SubtensorOperationResultPresenterTests {
             )
         }
 
-        stub(earnConfigProvider) { stub in
-            when(stub.createConfigWrapper()).thenReturn(.createWithError(BaseOperationError.unexpectedDependentResult))
+        stub(subnetLogosProvider) { stub in
+            when(stub.createLogosWrapper()).thenReturn(.createWithError(BaseOperationError.unexpectedDependentResult))
         }
 
         return SubtensorOperationResultInteractor(
@@ -362,7 +362,7 @@ private extension SubtensorOperationResultPresenterTests {
             operationService: service,
             chainFactory: chainFactory,
             catalogueService: catalogueService,
-            earnConfigProvider: earnConfigProvider,
+            subnetLogosProvider: subnetLogosProvider,
             positionsSyncService: nil,
             osMediator: OperatingSystemMediator(),
             applicationHandler: ApplicationHandler(),

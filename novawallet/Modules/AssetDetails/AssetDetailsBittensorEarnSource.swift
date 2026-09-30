@@ -18,65 +18,35 @@ final class AssetDetailsBittensorEarnSource {
 
     let chainAsset: ChainAsset
     let walletId: MetaAccountModel.Id
-    let earnConfigProvider: SubtensorEarnConfigProviderProtocol
     let stakingDashboardProviderFactory: StakingDashboardProviderFactoryProtocol
-    let operationQueue: OperationQueue
 
-    private let configCallStore = CancellableCallStore()
     private var dashboardItemsProvider: StreamableProvider<Multistaking.DashboardItem>?
     private var dashboardItems: [Multistaking.DashboardItem] = []
 
     init(
         chainAsset: ChainAsset,
         walletId: MetaAccountModel.Id,
-        earnConfigProvider: SubtensorEarnConfigProviderProtocol,
-        stakingDashboardProviderFactory: StakingDashboardProviderFactoryProtocol,
-        operationQueue: OperationQueue
+        stakingDashboardProviderFactory: StakingDashboardProviderFactoryProtocol
     ) {
         self.chainAsset = chainAsset
         self.walletId = walletId
-        self.earnConfigProvider = earnConfigProvider
         self.stakingDashboardProviderFactory = stakingDashboardProviderFactory
-        self.operationQueue = operationQueue
     }
 
-    deinit {
-        configCallStore.cancel()
-    }
-}
-
-private extension AssetDetailsBittensorEarnSource {
-    func fetchConfig() {
-        executeCancellable(
-            wrapper: earnConfigProvider.createConfigWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: configCallStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            guard let self else {
-                return
-            }
-
-            switch result {
-            case let .success(config):
-                let isEnabled = BittensorLocalBanner.isEarnActionAvailable(on: chainAsset, config: config)
-                delegate?.didReceiveBittensorEarn(isEnabled: isEnabled)
-            case let .failure(error):
-                delegate?.didReceiveBittensorEarn(error: .earnConfig(error))
-            }
-        }
+    static func isEarnAvailable(on chainAsset: ChainAsset) -> Bool {
+        chainAsset.asset.hasSubtensorStaking
     }
 }
 
 extension AssetDetailsBittensorEarnSource: AssetDetailsBittensorEarnSourceProtocol {
     func setup() {
-        guard BittensorLocalBanner.chainAsset(for: chainAsset.chain)?.chainAssetId == chainAsset.chainAssetId else {
+        guard Self.isEarnAvailable(on: chainAsset) else {
             return
         }
 
         dashboardItemsProvider = subscribeDashboardItems(for: walletId, chainAssetId: chainAsset.chainAssetId)
 
-        fetchConfig()
+        delegate?.didReceiveBittensorEarn(isEnabled: true)
     }
 }
 

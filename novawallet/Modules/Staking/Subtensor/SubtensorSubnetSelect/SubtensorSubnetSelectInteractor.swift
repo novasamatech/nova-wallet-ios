@@ -6,7 +6,7 @@ final class SubtensorSubnetSelectInteractor {
 
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
     let subnetsService: SubtensorSubnetsServiceProtocol
-    let earnConfigProvider: SubtensorEarnConfigProviderProtocol
+    let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let yieldService: SubtensorYieldServiceProtocol
     let rankingViewService: SubtensorRankingViewServiceProtocol
     let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
@@ -14,7 +14,7 @@ final class SubtensorSubnetSelectInteractor {
     let logger: LoggerProtocol
 
     private let entriesStore = CancellableCallStore()
-    private let configStore = CancellableCallStore()
+    private let logosStore = CancellableCallStore()
     private let rootRateStore = CancellableCallStore()
     private let rankingStore = CancellableCallStore()
     private let weeklyStore = CancellableCallStore()
@@ -23,7 +23,7 @@ final class SubtensorSubnetSelectInteractor {
     init(
         catalogueService: SubtensorSubnetCatalogueServiceProtocol,
         subnetsService: SubtensorSubnetsServiceProtocol,
-        earnConfigProvider: SubtensorEarnConfigProviderProtocol,
+        subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
         yieldService: SubtensorYieldServiceProtocol,
         rankingViewService: SubtensorRankingViewServiceProtocol,
         priceHistoryService: SubtensorPriceHistoryServiceProtocol?,
@@ -32,7 +32,7 @@ final class SubtensorSubnetSelectInteractor {
     ) {
         self.catalogueService = catalogueService
         self.subnetsService = subnetsService
-        self.earnConfigProvider = earnConfigProvider
+        self.subnetLogosProvider = subnetLogosProvider
         self.yieldService = yieldService
         self.rankingViewService = rankingViewService
         self.priceHistoryService = priceHistoryService
@@ -41,7 +41,7 @@ final class SubtensorSubnetSelectInteractor {
     }
 
     deinit {
-        [entriesStore, configStore, rootRateStore, rankingStore, weeklyStore, monthlyStore].forEach { $0.cancel() }
+        [entriesStore, logosStore, rootRateStore, rankingStore, weeklyStore, monthlyStore].forEach { $0.cancel() }
     }
 }
 
@@ -88,19 +88,19 @@ private extension SubtensorSubnetSelectInteractor {
         }
     }
 
-    func provideEarnConfig() {
+    func provideSubnetLogos() {
         executeCancellable(
-            wrapper: earnConfigProvider.createConfigWrapper(),
+            wrapper: subnetLogosProvider.createLogosWrapper(),
             inOperationQueue: operationQueue,
-            backingCallIn: configStore,
+            backingCallIn: logosStore,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(config):
-                self?.presenter?.didReceive(earnConfig: config)
+            case let .success(logos):
+                self?.presenter?.didReceive(subnetLogos: logos)
             case let .failure(error):
                 self?.logger.warning("Subnet marks unavailable: \(error)")
-                self?.presenter?.didReceive(earnConfig: nil)
+                self?.presenter?.didReceive(subnetLogos: nil)
             }
         }
     }
@@ -149,7 +149,7 @@ private extension SubtensorSubnetSelectInteractor {
 extension SubtensorSubnetSelectInteractor: SubnetSelectInteractorInputProtocol {
     func setup() {
         provideEntries()
-        provideEarnConfig()
+        provideSubnetLogos()
         provideRootRate()
         provideRankingView()
     }

@@ -1,17 +1,11 @@
 import Foundation
 import SubstrateSdk
 import Operation_iOS
-import Keystore_iOS
 
 final class SubtensorMultistakingUpdateService: ObservableSyncService {
     struct PositionKey: Hashable {
         let hotkey: AccountId
         let netuid: UInt16
-    }
-
-    struct FetchResult {
-        let state: Multistaking.SubtensorStakingState
-        let maxApy: Decimal?
     }
 
     let accountId: AccountId
@@ -23,17 +17,19 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     let dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemSubtensorPart>
     let stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol
     let cacheRepository: AnyDataProviderRepository<ChainStorageItem>
-    let earnConfigProvider: SubtensorEarnConfigProviderProtocol?
+    let maxApyProvider: SubtensorMaxApyProviderProtocol?
     let eventCenter: EventCenterProtocol
-    let settingsManager: SettingsManagerProtocol
     let workingQueue: DispatchQueue
     let operationQueue: OperationQueue
 
     private var hotkeysSubscription: CallbackStorageSubscription<[BytesCodable]>?
     private var alphaTriggerSubscription: CallbackBatchRawStorageSubscription?
     private var subscribedPositionKeys: Set<PositionKey>?
+    private var lastState: Multistaking.SubtensorStakingState?
+    private var maxApyUpdate: Multistaking.DashboardItemSubtensorPart.MaxApyUpdate = .keep
 
     private var fetchCallStore = CancellableCallStore()
+    private var maxApyCallStore = CancellableCallStore()
     private var saveCallStore = CancellableCallStore()
 
     init(
@@ -49,9 +45,8 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
         logger: LoggerProtocol,
-        earnConfigProvider: SubtensorEarnConfigProviderProtocol? = nil,
-        eventCenter: EventCenterProtocol = EventCenter.shared,
-        settingsManager: SettingsManagerProtocol = SettingsManager.shared
+        maxApyProvider: SubtensorMaxApyProviderProtocol? = nil,
+        eventCenter: EventCenterProtocol = EventCenter.shared
     ) {
         self.walletId = walletId
         self.accountId = accountId
@@ -62,9 +57,8 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         self.cacheRepository = cacheRepository
         self.connection = connection
         self.runtimeService = runtimeService
-        self.earnConfigProvider = earnConfigProvider
+        self.maxApyProvider = maxApyProvider
         self.eventCenter = eventCenter
-        self.settingsManager = settingsManager
         self.workingQueue = workingQueue
         self.operationQueue = operationQueue
 
@@ -82,6 +76,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
 
     override func stopSyncUp() {
         fetchCallStore.cancel()
+        maxApyCallStore.cancel()
         clearSubscriptions()
     }
 
@@ -91,6 +86,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         eventCenter.remove(observer: self)
 
         fetchCallStore.cancel()
+        maxApyCallStore.cancel()
         clearSubscriptions()
     }
 
@@ -160,51 +156,10 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         }
     }
 
-    private func createFetchWrapper() -> CompoundOperationWrapper<FetchResult> {
-        let stateWrapper = stakeStateFetchFactory.createStateWrapper(for: accountId)
-        let configWrapper = earnConfigProvider?.createBackgroundConfigWrapper()
-
-        let mergeOperation = ClosureOperation<FetchResult> { [settingsManager] in
-            let state = try stateWrapper.targetOperation.extractNoCancellableResultData()
-
-            let maxApy = configWrapper.flatMap {
-                Self.resolveMaxApy(from: $0.targetOperation, settingsManager: settingsManager)
-            }
-
-            return FetchResult(state: state, maxApy: maxApy)
-        }
-
-        mergeOperation.addDependency(stateWrapper.targetOperation)
-
-        if let configWrapper {
-            mergeOperation.addDependency(configWrapper.targetOperation)
-        }
-
-        return CompoundOperationWrapper(
-            targetOperation: mergeOperation,
-            dependencies: stateWrapper.allOperations + (configWrapper?.allOperations ?? [])
-        )
-    }
-
-    private static func resolveMaxApy(
-        from configOperation: BaseOperation<SubtensorEarnConfig>,
-        settingsManager: SettingsManagerProtocol
-    ) -> Decimal? {
-        guard let config = try? configOperation.extractNoCancellableResultData() else {
-            return settingsManager.subtensorLastHeadlineRate
-        }
-
-        if settingsManager.subtensorLastHeadlineRate != config.headlineMaxAnnualRate {
-            settingsManager.subtensorLastHeadlineRate = config.headlineMaxAnnualRate
-        }
-
-        return config.headlineMaxAnnualRate
-    }
-
     private func performStateFetch() {
         fetchCallStore.cancel()
 
-        let wrapper = createFetchWrapper()
+        let wrapper = stakeStateFetchFactory.createStateWrapper(for: accountId)
 
         executeCancellable(
             wrapper: wrapper,
@@ -214,15 +169,56 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
             mutex: mutex
         ) { [weak self] result in
             switch result {
-            case let .success(fetchResult):
-                self?.updateAlphaTriggerSubscription(for: fetchResult.state)
-                self?.persistState(fetchResult.state, maxApy: fetchResult.maxApy)
+            case let .success(state):
+                self?.lastState = state
+                self?.updateAlphaTriggerSubscription(for: state)
+                self?.persistState(state)
+                self?.performMaxApyFetch()
             case let .failure(error):
                 self?.logger.error("State fetch error: \(error)")
 
                 self?.completeImmediate(error)
             }
         }
+    }
+
+    private func performMaxApyFetch() {
+        guard let maxApyProvider, !maxApyCallStore.hasCall else {
+            return
+        }
+
+        executeCancellable(
+            wrapper: maxApyProvider.createMaxApyWrapper(),
+            inOperationQueue: operationQueue,
+            backingCallIn: maxApyCallStore,
+            runningCallbackIn: workingQueue,
+            mutex: mutex
+        ) { [weak self] result in
+            switch result {
+            case let .success(maxApy):
+                self?.updateMaxApy(.replace(maxApy))
+            case let .failure(error):
+                self?.logger.warning("Max APY fetch error: \(error)")
+
+                self?.updateMaxApy(.replace(nil))
+            }
+        }
+    }
+
+    private func updateMaxApy(_ newUpdate: Multistaking.DashboardItemSubtensorPart.MaxApyUpdate) {
+        guard newUpdate != maxApyUpdate else {
+            return
+        }
+
+        maxApyUpdate = newUpdate
+
+        guard let lastState, !fetchCallStore.hasCall else {
+            return
+        }
+
+        markSyncingImmediate()
+
+        persistState(lastState)
     }
 
     private func updateAlphaTriggerSubscription(for state: Multistaking.SubtensorStakingState) {
@@ -277,7 +273,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         alphaTriggerSubscription?.subscribe()
     }
 
-    private func persistState(_ state: Multistaking.SubtensorStakingState, maxApy: Decimal?) {
+    private func persistState(_ state: Multistaking.SubtensorStakingState) {
         logger.debug("Persisting state: \(state)")
 
         let stakingOption = Multistaking.OptionWithWallet(
@@ -288,7 +284,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         let dashboardItem = Multistaking.DashboardItemSubtensorPart(
             stakingOption: stakingOption,
             state: state,
-            maxApy: maxApy
+            maxApy: maxApyUpdate
         )
 
         let saveOperation = dashboardRepository.saveOperation({
@@ -338,25 +334,5 @@ extension SubtensorMultistakingUpdateService: EventVisitorProtocol {
         markSyncingImmediate()
 
         performStateFetch()
-    }
-}
-
-private enum SubtensorDashboardSettingsKey {
-    static let lastHeadlineRate = "subtensorLastHeadlineRate"
-}
-
-private extension SettingsManagerProtocol {
-    var subtensorLastHeadlineRate: Decimal? {
-        get {
-            string(for: SubtensorDashboardSettingsKey.lastHeadlineRate).flatMap { Decimal(string: $0) }
-        }
-
-        set {
-            if let newValue {
-                set(value: newValue.description, for: SubtensorDashboardSettingsKey.lastHeadlineRate)
-            } else {
-                removeValue(for: SubtensorDashboardSettingsKey.lastHeadlineRate)
-            }
-        }
     }
 }

@@ -25,7 +25,7 @@ final class SubtensorSubnetDetailsPresenter {
     private var amount = SubtensorSubnetDetailsViewModelFactory.defaultChip
     private var transferable: Balance?
     private var taoPrice: PriceData?
-    private var earnConfig: SubtensorEarnConfig?
+    private var subnetLogos: SubtensorSubnetLogos?
     private var positions: Multistaking.SubtensorStakingState?
     private var isPositionsSyncFailed = false
     private var isPresetRequested = false
@@ -94,7 +94,7 @@ private extension SubtensorSubnetDetailsPresenter {
     }
 
     func provideTitle() {
-        view?.didReceive(title: viewModelFactory.createTitle(config: earnConfig, locale: selectedLocale))
+        view?.didReceive(title: viewModelFactory.createTitle(subnetLogos: subnetLogos, locale: selectedLocale))
     }
 
     func provideViewModel() {
@@ -324,8 +324,8 @@ extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol
         requestPresetIfReady()
     }
 
-    func didReceiveEarnConfig(_ config: SubtensorEarnConfig?) {
-        earnConfig = config
+    func didReceiveSubnetLogos(_ logos: SubtensorSubnetLogos?) {
+        subnetLogos = logos
         provideTitle()
     }
 }

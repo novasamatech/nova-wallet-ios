@@ -188,7 +188,7 @@ private extension SubtensorPositionViewModelFactory {
 
         return SubtensorPositionSummaryViewModel(
             icon: isResolved
-                ? iconFactory.icon(for: state.catalogue?.subnet(for: state.netuid), config: state.earnConfig)
+                ? iconFactory.icon(for: state.catalogue?.subnet(for: state.netuid), logos: state.subnetLogos)
                 : nil,
             caption: isResolved
                 ? SubtensorSubnetNaming.titleWithSymbol(for: state.netuid, in: state.catalogue, locale: locale)
