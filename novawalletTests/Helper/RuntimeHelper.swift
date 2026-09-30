@@ -22,6 +22,9 @@ extension RuntimeMetadataContainer {
 }
 
 final class RuntimeHelper {
+    /// Test fixtures live in the test bundle; `Bundle.main` is the host app and must not carry them.
+    static let testBundle = Bundle(for: RuntimeHelper.self)
+
     static func createRuntimeMetadata(_ name: String) throws -> RuntimeMetadataContainer {
         guard let metadataUrl = Bundle(for: self).url(
             forResource: name,
@@ -45,7 +48,7 @@ final class RuntimeHelper {
         runtimeMetadataName: String
     ) throws
         -> TypeRegistry {
-        guard let url = Bundle.main.url(forResource: name, withExtension: "json") else {
+        guard let url = testBundle.url(forResource: name, withExtension: "json") else {
             throw RuntimeHelperError.invalidCatalogBaseName
         }
 
@@ -86,11 +89,11 @@ final class RuntimeHelper {
         runtimeMetadataContainer: RuntimeMetadataContainer
     )
         throws -> TypeRegistryCatalog {
-        guard let baseUrl = Bundle.main.url(forResource: baseName, withExtension: "json") else {
+        guard let baseUrl = testBundle.url(forResource: baseName, withExtension: "json") else {
             throw RuntimeHelperError.invalidCatalogBaseName
         }
 
-        guard let networkUrl = Bundle.main.url(
+        guard let networkUrl = testBundle.url(
             forResource: networkName,
             withExtension: "json"
         ) else {

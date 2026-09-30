@@ -8,10 +8,10 @@ class RuntimeProviderTests: XCTestCase {
     func testTypeCatalogSuccessfullCreated() throws {
         // given
 
-        let commonTypesUrl = Bundle.main.url(forResource: "runtime-default", withExtension: "json")!
+        let commonTypesUrl = RuntimeHelper.testBundle.url(forResource: "runtime-default", withExtension: "json")!
         let commonTypes = try Data(contentsOf: commonTypesUrl)
 
-        let chainTypeUrl = Bundle.main.url(forResource: "runtime-westend", withExtension: "json")!
+        let chainTypeUrl = RuntimeHelper.testBundle.url(forResource: "runtime-westend", withExtension: "json")!
         let chainTypes = try Data(contentsOf: chainTypeUrl)
 
         let metadataUrl = Bundle(for: type(of: self)).url(
@@ -58,7 +58,7 @@ class RuntimeProviderTests: XCTestCase {
     func testTypeCatalogCreationFailureIsHandled() throws {
         // given
 
-        let chainTypeUrl = Bundle.main.url(forResource: "runtime-westend", withExtension: "json")!
+        let chainTypeUrl = RuntimeHelper.testBundle.url(forResource: "runtime-westend", withExtension: "json")!
         let chainTypes = try Data(contentsOf: chainTypeUrl)
 
         // when
@@ -93,13 +93,13 @@ class RuntimeProviderTests: XCTestCase {
     func testCommonTypesChangeIsHandled() throws {
         // given
 
-        let commonTypesUrl = Bundle.main.url(forResource: "runtime-default", withExtension: "json")!
+        let commonTypesUrl = RuntimeHelper.testBundle.url(forResource: "runtime-default", withExtension: "json")!
         let commonTypes = try Data(contentsOf: commonTypesUrl)
 
         let emptyCommonTypesJson = JSON.dictionaryValue(["types": JSON.dictionaryValue([:])])
         let emptyCommonTypes = try JSONEncoder().encode(emptyCommonTypesJson)
 
-        let chainTypeUrl = Bundle.main.url(forResource: "runtime-westend", withExtension: "json")!
+        let chainTypeUrl = RuntimeHelper.testBundle.url(forResource: "runtime-westend", withExtension: "json")!
         let chainTypes = try Data(contentsOf: chainTypeUrl)
 
         let metadataUrl = Bundle(for: type(of: self)).url(
@@ -160,10 +160,10 @@ class RuntimeProviderTests: XCTestCase {
     func testRuntimeMetadataSyncCompletionIsHandled() throws {
         // given
 
-        let commonTypesUrl = Bundle.main.url(forResource: "runtime-default", withExtension: "json")!
+        let commonTypesUrl = RuntimeHelper.testBundle.url(forResource: "runtime-default", withExtension: "json")!
         let commonTypes = try Data(contentsOf: commonTypesUrl)
 
-        let chainTypeUrl = Bundle.main.url(forResource: "runtime-westend", withExtension: "json")!
+        let chainTypeUrl = RuntimeHelper.testBundle.url(forResource: "runtime-westend", withExtension: "json")!
         let chainTypes = try Data(contentsOf: chainTypeUrl)
 
         let metadataUrl = Bundle(for: type(of: self)).url(
@@ -221,13 +221,13 @@ class RuntimeProviderTests: XCTestCase {
     func testChainTypesChangeIsHandled() throws {
         // given
 
-        let commonTypesUrl = Bundle.main.url(forResource: "runtime-default", withExtension: "json")!
+        let commonTypesUrl = RuntimeHelper.testBundle.url(forResource: "runtime-default", withExtension: "json")!
         let commonTypes = try Data(contentsOf: commonTypesUrl)
 
-        let otherChainTypeUrl = Bundle.main.url(forResource: "runtime-kusama", withExtension: "json")!
+        let otherChainTypeUrl = RuntimeHelper.testBundle.url(forResource: "runtime-kusama", withExtension: "json")!
         let otherChainTypes = try Data(contentsOf: otherChainTypeUrl)
 
-        let chainTypeUrl = Bundle.main.url(forResource: "runtime-westend", withExtension: "json")!
+        let chainTypeUrl = RuntimeHelper.testBundle.url(forResource: "runtime-westend", withExtension: "json")!
         let chainTypes = try Data(contentsOf: chainTypeUrl)
 
         let metadataUrl = Bundle(for: type(of: self)).url(
@@ -289,10 +289,10 @@ class RuntimeProviderTests: XCTestCase {
     func testCanReceiveSnapshot() throws {
         // given
 
-        let commonTypesUrl = Bundle.main.url(forResource: "runtime-default", withExtension: "json")!
+        let commonTypesUrl = RuntimeHelper.testBundle.url(forResource: "runtime-default", withExtension: "json")!
         let commonTypes = try Data(contentsOf: commonTypesUrl)
 
-        let chainTypeUrl = Bundle.main.url(forResource: "runtime-westend", withExtension: "json")!
+        let chainTypeUrl = RuntimeHelper.testBundle.url(forResource: "runtime-westend", withExtension: "json")!
         let chainTypes = try Data(contentsOf: chainTypeUrl)
 
         let metadataUrl = Bundle(for: type(of: self)).url(
