@@ -21,6 +21,7 @@ final class SubtensorStakingWiringTests: XCTestCase {
         let rankingView = try XCTUnwrap(first.rankingViewService as? SubtensorRankingViewService)
         let directory = try XCTUnwrap(first.validatorDirectoryService as? SubtensorValidatorDirectoryService)
         let priceHistory = try XCTUnwrap(first.priceHistoryService as? SubtensorPriceHistoryService)
+        let secondPriceHistory = try XCTUnwrap(second.priceHistoryService as? SubtensorPriceHistoryService)
         let secondRecommendations = try XCTUnwrap(second.recommendationService as? SubtensorRecommendationService)
 
         XCTAssertTrue(first.subnetLogosProvider === processServices.subnetLogosProvider)
@@ -30,7 +31,8 @@ final class SubtensorStakingWiringTests: XCTestCase {
             ApplicationConfig.shared.bittensorSubnetsURL
         )
         XCTAssertEqual(priceHistory.taoPriceId, chainAsset.asset.priceId)
-        XCTAssertEqual(priceHistory.coingeckoIds, [:])
+        XCTAssertTrue(priceHistory.marketsService === processServices.subnetMarketsService)
+        XCTAssertTrue(secondPriceHistory.marketsService === processServices.subnetMarketsService)
         XCTAssertTrue(catalogue.apiOperationFactory === processServices.bittensorApiOperationFactory)
         XCTAssertTrue(yields.apiOperationFactory === processServices.bittensorApiOperationFactory)
         XCTAssertTrue(recommendations.apiOperationFactory === processServices.bittensorApiOperationFactory)
@@ -56,6 +58,7 @@ final class SubtensorStakingWiringTests: XCTestCase {
                 logger: Logger.shared
             ),
             subnetLogosProvider: MockSubtensorSubnetLogosProviderProtocol(),
+            subnetMarketsService: MockSubtensorSubnetMarketsServiceProtocol(),
             maxApyResolution: SubtensorMaxApyResolution(),
             isFixtureMode: true
         )

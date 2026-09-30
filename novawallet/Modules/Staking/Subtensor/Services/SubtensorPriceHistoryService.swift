@@ -1,54 +1,36 @@
 import Foundation
 import Operation_iOS
 
-enum SubtensorWeeklyChangeSource {
-    case alphaMarketCharts
-    case subnetMarkets
-}
-
 final class SubtensorPriceHistoryService {
-    static let weeklyChangeSource = SubtensorWeeklyChangeSource.alphaMarketCharts
     static let alphaChartConcurrency = 4
-    static let subnetMarketsCategory = "bittensor-subnets"
-    static let subnetMarketsPageSize = 250
     static let sparklineMaxCount = 48
+    static let marketStalenessLimit = TimeInterval(24).secondsFromHours
 
-    let coingeckoIds: [SubtensorSubnetRef: String]
+    let marketsService: SubtensorSubnetMarketsServiceProtocol
     let coingeckoOperationFactory: CoingeckoOperationFactoryProtocol
     let taoPriceId: AssetModel.PriceId
     let operationQueue: OperationQueue
+    let timeProvider: () -> TimeInterval
     let logger: LoggerProtocol
 
     init(
-        coingeckoIds: [SubtensorSubnetRef: String],
+        marketsService: SubtensorSubnetMarketsServiceProtocol,
         coingeckoOperationFactory: CoingeckoOperationFactoryProtocol,
         taoPriceId: AssetModel.PriceId,
         operationQueue: OperationQueue,
+        timeProvider: @escaping () -> TimeInterval = { Date().timeIntervalSince1970 },
         logger: LoggerProtocol = Logger.shared
     ) {
-        self.coingeckoIds = coingeckoIds
+        self.marketsService = marketsService
         self.coingeckoOperationFactory = coingeckoOperationFactory
         self.taoPriceId = taoPriceId
         self.operationQueue = operationQueue
+        self.timeProvider = timeProvider
         self.logger = logger
     }
 }
 
 extension SubtensorPriceHistoryService {
-    static func coingeckoId(
-        in coingeckoIds: [SubtensorSubnetRef: String],
-        for subnet: SubtensorSubnetRef
-    ) -> String? {
-        guard
-            let coingeckoId = coingeckoIds[subnet]?.trimmingCharacters(in: .whitespacesAndNewlines),
-            !coingeckoId.isEmpty,
-            coingeckoId.unicodeScalars.allSatisfy({ coingeckoIdCharacters.contains($0) }) else {
-            return nil
-        }
-
-        return coingeckoId
-    }
-
     static func makeHistory(
         subnet: SubtensorSubnetRef,
         period: SubtensorPricePeriod,
@@ -73,19 +55,6 @@ extension SubtensorPriceHistoryService {
                 value: \.fiatPerAlpha
             )
         )
-    }
-
-    static func weeklySummary(of points: [SubtensorPricePoint]) -> SubtensorWeeklyPriceSummary? {
-        guard let change = SubtensorPriceSeries.change(
-            of: points,
-            over: .week,
-            date: \.date,
-            value: \.taoPerAlpha
-        ) else {
-            return nil
-        }
-
-        return SubtensorWeeklyPriceSummary(change: change, sparkline: sparkline(of: points.map(\.taoPerAlpha)))
     }
 
     static func monthlyMetrics(of points: [SubtensorPricePoint]) -> SubtensorMonthlyPriceMetrics? {
@@ -128,7 +97,7 @@ extension SubtensorPriceHistoryService {
 
     static func priceData<Value: Equatable>(
         for subnets: [SubtensorSubnetRef],
-        listed: [SubtensorSubnetRef: String],
+        listed: [SubtensorSubnetRef: SubtensorSubnetMarket],
         values: [SubtensorSubnetRef: SubtensorPriceData<Value>]
     ) -> [SubtensorSubnetRef: SubtensorPriceData<Value>] {
         subnets.reduce(into: [:]) { result, subnet in
@@ -143,14 +112,12 @@ extension SubtensorPriceHistoryService {
 }
 
 private extension SubtensorPriceHistoryService {
-    static let coingeckoIdCharacters = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyz0123456789-")
-
-    static func listedIds(
+    static func listedMarkets(
         for subnets: [SubtensorSubnetRef],
-        in coingeckoIds: [SubtensorSubnetRef: String]
-    ) -> [SubtensorSubnetRef: String] {
+        in markets: SubtensorSubnetMarkets
+    ) -> [SubtensorSubnetRef: SubtensorSubnetMarket] {
         subnets.reduce(into: [:]) { result, subnet in
-            result[subnet] = coingeckoId(in: coingeckoIds, for: subnet)
+            result[subnet] = markets.market(for: subnet.netuid)
         }
     }
 
@@ -159,32 +126,40 @@ private extension SubtensorPriceHistoryService {
             coingeckoOperationFactory: coingeckoOperationFactory,
             taoPriceId: taoPriceId,
             operationQueue: operationQueue,
+            timeProvider: timeProvider,
             logger: logger
         )
     }
 
     func createPriceDataWrapper<Value: Equatable>(
         for subnets: [SubtensorSubnetRef],
-        listedValuesWrapper: ([SubtensorSubnetRef: String])
+        listedValuesWrapper: @escaping ([SubtensorSubnetRef: SubtensorSubnetMarket])
             -> CompoundOperationWrapper<[SubtensorSubnetRef: SubtensorPriceData<Value>]>
     ) -> CompoundOperationWrapper<[SubtensorSubnetRef: SubtensorPriceData<Value>]> {
-        let listed = Self.listedIds(for: subnets, in: coingeckoIds)
+        let marketsWrapper = marketsService.createMarketsWrapper()
 
-        guard !listed.isEmpty else {
-            return .createWithResult(Self.priceData(for: subnets, listed: listed, values: [:]))
-        }
+        let pricesWrapper: CompoundOperationWrapper<[SubtensorSubnetRef: SubtensorPriceData<Value>]> =
+            OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
+                let markets = try marketsWrapper.targetOperation.extractNoCancellableResultData()
+                let listed = Self.listedMarkets(for: subnets, in: markets)
 
-        let valuesWrapper = listedValuesWrapper(listed)
+                let valuesWrapper: CompoundOperationWrapper<[SubtensorSubnetRef: SubtensorPriceData<Value>]> =
+                    listed.isEmpty ? .createWithResult([:]) : listedValuesWrapper(listed)
 
-        let resultOperation = ClosureOperation<[SubtensorSubnetRef: SubtensorPriceData<Value>]> {
-            let values = try valuesWrapper.targetOperation.extractNoCancellableResultData()
+                let resultOperation = ClosureOperation<[SubtensorSubnetRef: SubtensorPriceData<Value>]> {
+                    let values = try valuesWrapper.targetOperation.extractNoCancellableResultData()
 
-            return Self.priceData(for: subnets, listed: listed, values: values)
-        }
+                    return Self.priceData(for: subnets, listed: listed, values: values)
+                }
 
-        resultOperation.addDependency(valuesWrapper.targetOperation)
+                resultOperation.addDependency(valuesWrapper.targetOperation)
 
-        return valuesWrapper.insertingTail(operation: resultOperation)
+                return valuesWrapper.insertingTail(operation: resultOperation)
+            }
+
+        pricesWrapper.addDependency(wrapper: marketsWrapper)
+
+        return pricesWrapper.insertingHead(operations: marketsWrapper.allOperations)
     }
 }
 
@@ -194,21 +169,37 @@ extension SubtensorPriceHistoryService: SubtensorPriceHistoryServiceProtocol {
         period: SubtensorPricePeriod,
         currency: Currency
     ) -> CompoundOperationWrapper<SubtensorPriceHistoryResult> {
-        guard let alphaPriceId = Self.coingeckoId(in: coingeckoIds, for: subnet) else {
-            return .createWithResult(.notListed)
+        let marketsWrapper = marketsService.createMarketsWrapper()
+        let fetcher = fetcher
+
+        let pointsWrapper: CompoundOperationWrapper<[SubtensorPricePoint]?> = OperationCombiningService.compoundWrapper(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) {
+            let markets = try marketsWrapper.targetOperation.extractNoCancellableResultData()
+
+            guard let alphaPriceId = markets.market(for: subnet.netuid)?.coingeckoId else {
+                return nil
+            }
+
+            return fetcher.createPointsWrapper(alphaPriceId: alphaPriceId, currency: currency, period: period)
         }
 
-        let pointsWrapper = fetcher.createPointsWrapper(alphaPriceId: alphaPriceId, currency: currency, period: period)
+        pointsWrapper.addDependency(wrapper: marketsWrapper)
 
         let resultOperation = ClosureOperation<SubtensorPriceHistoryResult> {
-            let points = try pointsWrapper.targetOperation.extractNoCancellableResultData()
+            guard let points = try pointsWrapper.targetOperation.extractNoCancellableResultData() else {
+                return .notListed
+            }
 
             return .available(Self.makeHistory(subnet: subnet, period: period, points: points))
         }
 
         resultOperation.addDependency(pointsWrapper.targetOperation)
 
-        return pointsWrapper.insertingTail(operation: resultOperation)
+        return CompoundOperationWrapper(
+            targetOperation: resultOperation,
+            dependencies: marketsWrapper.allOperations + pointsWrapper.allOperations
+        )
     }
 
     func createWeeklyChangesWrapper(
@@ -217,30 +208,7 @@ extension SubtensorPriceHistoryService: SubtensorPriceHistoryServiceProtocol {
         let fetcher = fetcher
 
         return createPriceDataWrapper(for: subnets) { listed in
-            switch Self.weeklyChangeSource {
-            case .alphaMarketCharts:
-                return fetcher.createChartValuesWrapper(
-                    for: listed,
-                    period: .week,
-                    evaluate: SubtensorPriceHistoryService.weeklySummary(of:)
-                )
-            case .subnetMarkets:
-                return fetcher.createSubnetMarketChangesWrapper(for: listed)
-            }
-        }
-    }
-
-    func createMonthlyMetricsWrapper(
-        for subnets: [SubtensorSubnetRef]
-    ) -> CompoundOperationWrapper<[SubtensorSubnetRef: SubtensorPriceData<SubtensorMonthlyPriceMetrics>]> {
-        let fetcher = fetcher
-
-        return createPriceDataWrapper(for: subnets) { listed in
-            fetcher.createChartValuesWrapper(
-                for: listed,
-                period: .month,
-                evaluate: SubtensorPriceHistoryService.monthlyMetrics(of:)
-            )
+            fetcher.createMarketChangesWrapper(for: listed)
         }
     }
 }

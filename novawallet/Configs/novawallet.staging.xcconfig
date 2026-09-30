@@ -1,3 +1,4 @@
 OTHER_SWIFT_FLAGS = $(inherited) "-DF_RELEASE"
+EXCLUDED_SOURCE_FILE_NAMES = $(inherited) subtensorSubnetMarketsStub.json SubtensorSubnetMarketsStubFallback.swift
 
 APP_NAME = Nova Early Access
