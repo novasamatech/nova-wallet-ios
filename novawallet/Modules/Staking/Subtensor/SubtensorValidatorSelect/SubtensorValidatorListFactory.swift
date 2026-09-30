@@ -12,6 +12,7 @@ struct SubtensorValidatorListInput {
     let sort: SubtensorValidatorSort
     let query: String
     let selectedHotkey: AccountId?
+    let preselectedHotkey: AccountId?
 }
 
 enum SubtensorValidatorEligibility: Equatable {
@@ -103,8 +104,14 @@ extension SubtensorValidatorListFactory {
     ) -> SubtensorValidatorListViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
         let sort = Self.appliedSort(input.sort, isRoot: input.isRoot, yields: input.yields)
+        let ratesShown = Self.ratesShown(isRoot: input.isRoot, yields: input.yields)
 
-        let listed = createEntries(for: input, unknown: strings.stakingSubtensorUiValueUnknown())
+        let entries = createEntries(for: input, unknown: strings.stakingSubtensorUiValueUnknown())
+        let hidesUnrated = ratesShown && entries.contains { $0.isSelectable && $0.rate != nil }
+        let keptHotkeys = [input.selectedHotkey, input.preselectedHotkey]
+        let listed = entries.filter { entry in
+            keptHotkeys.contains(entry.item.hotkey) || (entry.isSelectable && (entry.rate != nil || !hidesUnrated))
+        }
         let matching = listed
             .filter { matches($0, query: input.query) }
             .sorted { Self.isOrderedBefore($0, $1, sort: sort) }
@@ -127,7 +134,7 @@ extension SubtensorValidatorListFactory {
             countTitle: strings.stakingSubtensorUiValidatorCountFormat(matching.count),
             sortTitle: createSortTitle(
                 for: sort,
-                ratesShown: Self.ratesShown(isRoot: input.isRoot, yields: input.yields),
+                ratesShown: ratesShown,
                 locale: locale
             ),
             emptyText: createEmptyText(

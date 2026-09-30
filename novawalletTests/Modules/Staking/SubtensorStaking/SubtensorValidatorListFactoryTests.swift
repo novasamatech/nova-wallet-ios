@@ -24,7 +24,7 @@ final class SubtensorValidatorListFactoryTests: XCTestCase {
         icon: nil
     )
 
-    func testSubnetListKeepsPermittedValidatorsOrderedByApyWithUnratedAndInactiveLast() throws {
+    func testSubnetListShowsOnlyActivePermittedValidatorsWithApyOrderedByApy() throws {
         let viewModel = makeFactory().createListViewModel(
             for: makeInput(yields: makeYields(freshness: .fresh), sort: .apy, selectedHotkey: nil),
             locale: locale
@@ -33,13 +33,9 @@ final class SubtensorValidatorListFactoryTests: XCTestCase {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         XCTAssertEqual(viewModel.recommended?.hotkey, preferred)
-        XCTAssertEqual(viewModel.rows.map(\.hotkey), [topRated, lowRated, unrated, inactive])
-        XCTAssertEqual(
-            viewModel.rows.map(\.trailing),
-            [.rate("49.40%"), .rate("14.88%"), .none, .inactive(strings.stakingNominatorStatusInactive())]
-        )
-        XCTAssertEqual(viewModel.rows.map(\.isSelectable), [true, true, true, false])
-        XCTAssertEqual(viewModel.countTitle, strings.stakingSubtensorUiValidatorCountFormat(5))
+        XCTAssertEqual(viewModel.rows.map(\.hotkey), [topRated, lowRated])
+        XCTAssertEqual(viewModel.rows.map(\.trailing), [.rate("49.40%"), .rate("14.88%")])
+        XCTAssertEqual(viewModel.countTitle, strings.stakingSubtensorUiValidatorCountFormat(3))
         XCTAssertEqual(
             viewModel.rows.first?.subtitle,
             strings.stakingSubtensorUiValidatorRowSubtitleFormat("285.6K TAO", "18%")
@@ -55,8 +51,39 @@ final class SubtensorValidatorListFactoryTests: XCTestCase {
         )
 
         XCTAssertEqual(SubtensorValidatorListFactory.sortOptions(isRoot: false, yields: yields), [.totalStaked, .name])
-        XCTAssertEqual(viewModel.rows.map(\.hotkey), [unrated, lowRated, topRated, inactive])
-        XCTAssertEqual(viewModel.rows.filter { $0.isSelectable }.map(\.trailing), [.none, .none, .none])
+        XCTAssertEqual(viewModel.rows.map(\.hotkey), [unrated, lowRated, topRated])
+        XCTAssertEqual(viewModel.rows.map(\.trailing), [.none, .none, .none])
+    }
+
+    func testEmptyFreshYieldPageKeepsActiveValidatorsOrderedByStake() {
+        let emptyYields = SubtensorAlphaYields(
+            netuid: 64,
+            yields: [:],
+            stamp: SubtensorBackendStamp(asOf: asOf, freshness: .fresh),
+            isTruncated: false
+        )
+
+        let viewModel = makeFactory().createListViewModel(
+            for: makeInput(yields: emptyYields, sort: .apy, selectedHotkey: nil),
+            locale: locale
+        )
+
+        XCTAssertEqual(viewModel.rows.map(\.hotkey), [unrated, lowRated, topRated])
+    }
+
+    func testPreselectedValidatorWithoutApyStaysListedAfterAnotherPick() {
+        let viewModel = makeFactory().createListViewModel(
+            for: makeInput(
+                yields: makeYields(freshness: .fresh),
+                sort: .apy,
+                selectedHotkey: topRated,
+                preselectedHotkey: unrated
+            ),
+            locale: locale
+        )
+
+        XCTAssertEqual(viewModel.rows.map(\.hotkey), [topRated, lowRated, unrated])
+        XCTAssertEqual(viewModel.rows.map(\.isSelected), [true, false, false])
     }
 
     func testCurrentChoiceIsPreselectedBeforeTheNovaPreferred() {
@@ -90,7 +117,8 @@ final class SubtensorValidatorListFactoryTests: XCTestCase {
     private func makeInput(
         yields: SubtensorAlphaYields,
         sort: SubtensorValidatorSort,
-        selectedHotkey: AccountId?
+        selectedHotkey: AccountId?,
+        preselectedHotkey: AccountId? = nil
     ) -> SubtensorValidatorListInput {
         SubtensorValidatorListInput(
             directory: makeDirectory(),
@@ -100,7 +128,8 @@ final class SubtensorValidatorListFactoryTests: XCTestCase {
             maxTake: SubtensorClientGates.backendDefault.maxTake,
             sort: sort,
             query: "",
-            selectedHotkey: selectedHotkey
+            selectedHotkey: selectedHotkey,
+            preselectedHotkey: preselectedHotkey
         )
     }
 
