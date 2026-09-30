@@ -6,7 +6,7 @@ import XCTest
 final class SubtensorStakingWiringTests: XCTestCase {
     private let fixtureSubnet = SubtensorSubnetRef(netuid: 64, registeredAt: 4_531_295)
 
-    func testFlowsShareTheProcessWideBackendAndConfigButOwnTheirVerifiedServices() throws {
+    func testFlowsShareTheProcessWideBackendAndLogosButOwnTheirVerifiedServices() throws {
         let chainAsset = Self.subtensorChainAsset()
         let factory = makeFactory(chain: chainAsset.chain)
         let option = Multistaking.ChainAssetOption(chainAsset: chainAsset, type: .subtensor)
@@ -23,9 +23,6 @@ final class SubtensorStakingWiringTests: XCTestCase {
         let priceHistory = try XCTUnwrap(first.priceHistoryService as? SubtensorPriceHistoryService)
         let secondRecommendations = try XCTUnwrap(second.recommendationService as? SubtensorRecommendationService)
 
-        XCTAssertTrue(first.earnConfigProvider === SubtensorStakingProcessServices.sharedEarnConfigProvider)
-        XCTAssertTrue(second.earnConfigProvider === SubtensorStakingProcessServices.sharedEarnConfigProvider)
-        XCTAssertTrue(priceHistory.earnConfigProvider === SubtensorStakingProcessServices.sharedEarnConfigProvider)
         XCTAssertTrue(first.subnetLogosProvider === processServices.subnetLogosProvider)
         XCTAssertTrue(second.subnetLogosProvider === processServices.subnetLogosProvider)
         XCTAssertEqual(
@@ -33,6 +30,7 @@ final class SubtensorStakingWiringTests: XCTestCase {
             ApplicationConfig.shared.bittensorSubnetsURL
         )
         XCTAssertEqual(priceHistory.taoPriceId, chainAsset.asset.priceId)
+        XCTAssertEqual(priceHistory.coingeckoIds, [:])
         XCTAssertTrue(catalogue.apiOperationFactory === processServices.bittensorApiOperationFactory)
         XCTAssertTrue(yields.apiOperationFactory === processServices.bittensorApiOperationFactory)
         XCTAssertTrue(recommendations.apiOperationFactory === processServices.bittensorApiOperationFactory)
@@ -57,7 +55,6 @@ final class SubtensorStakingWiringTests: XCTestCase {
                 cache: BittensorApiResponseCache(operationQueue: OperationQueue(), logger: Logger.shared),
                 logger: Logger.shared
             ),
-            earnConfigProvider: MockSubtensorEarnConfigProviderProtocol(),
             subnetLogosProvider: MockSubtensorSubnetLogosProviderProtocol(),
             isFixtureMode: true
         )

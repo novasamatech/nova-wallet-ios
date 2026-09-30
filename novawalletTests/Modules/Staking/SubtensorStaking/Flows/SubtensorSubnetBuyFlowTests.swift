@@ -36,7 +36,6 @@ final class SubtensorSubnetBuyFlowTests: SubtensorFlowTestCase {
         world.stubSubnets(try SubtensorFlowChainWorld.subnetsInfo())
         world.stubQuotes([chutesQuote])
         world.stubClaimPreviews([])
-        SubtensorFlowURLProtocol.serveEarnConfig()
         SubtensorFlowURLProtocol.serveSubnetLogos()
         SubtensorFlowURLProtocol.serveFixture(.subnets)
         SubtensorFlowURLProtocol.serveFixture(.rootYield(page: 1, pageSize: 100))
@@ -44,12 +43,10 @@ final class SubtensorSubnetBuyFlowTests: SubtensorFlowTestCase {
         SubtensorFlowURLProtocol.serveFixture(.recommendations)
         SubtensorFlowURLProtocol.serveFixture(.validators(netuid: 64))
         SubtensorFlowURLProtocol.serveFixture(.alphaYield(netuid: 64, page: 1, pageSize: 100))
-        try SubtensorFlowActiveStake.serveCharts()
+        SubtensorFlowActiveStake.serveTaoMonthChart()
 
         world.sharedState.setup(for: SubtensorFlowChainWorld.coldkeyAccount())
         feed.publish(Multistaking.SubtensorStakingState(positions: [], prices: [:], availability: [:]))
-
-        let howEarningWorks = try run(services.earnConfigProvider.createConfigWrapper())
 
         let catalogue = try run(services.catalogueService.createCatalogueWrapper(forcingRefresh: false))
 
@@ -139,9 +136,6 @@ final class SubtensorSubnetBuyFlowTests: SubtensorFlowTestCase {
 
         world.sharedState.throttle()
 
-        XCTAssertEqual(howEarningWorks.headlineMaxAnnualRate, try decimal("0.40"))
-        XCTAssertEqual(howEarningWorks.entry?.enabled, true)
-
         XCTAssertEqual(listed.count, 10)
         XCTAssertEqual(chutes.ref, SubtensorSubnetRef(netuid: 64, registeredAt: 4_531_295))
         XCTAssertEqual(chutes.name, "Chutes")
@@ -204,13 +198,8 @@ final class SubtensorSubnetBuyFlowTests: SubtensorFlowTestCase {
             "GET https://bittensor.test/v1/bittensor/subnets/64/validators",
             "GET https://bittensor.test/v1/bittensor/subnets/64/yields/alpha?page=1&pageSize=100",
             "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
-            "GET https://earn-config.test/earn_config.json",
             "GET https://subnet-logos.test/subnets.json",
-            "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=30",
-            "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=30",
-            "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=7",
-            "GET https://tokens-price.novasama-tech.org/api/v3/coins/chutes/market_chart?vs_currency=usd&days=30",
-            "GET https://tokens-price.novasama-tech.org/api/v3/coins/chutes/market_chart?vs_currency=usd&days=7"
+            "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=30"
         ])
 
         assertAttestedRequests(

@@ -12,16 +12,12 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
 
         world.stubSubnets(try SubtensorFlowChainWorld.subnetsInfo())
         world.stubQuotes([SubtensorFlowChainWorld.chutesBuyQuote])
-        SubtensorFlowURLProtocol.serveEarnConfig()
         SubtensorFlowURLProtocol.serveSubnetLogos()
         SubtensorFlowURLProtocol.serveFixture(.subnets)
         SubtensorFlowURLProtocol.serveFixture(.rootYield(page: 1, pageSize: 100))
         SubtensorFlowURLProtocol.serveFixture(.rankedSubnets)
         SubtensorFlowURLProtocol.serveFixture(.recommendations)
         SubtensorFlowURLProtocol.serveFixture(.validators(netuid: 64))
-        try serveWeekCharts()
-
-        let headlineConfig = try run(services.earnConfigProvider.createConfigWrapper())
 
         let subnetRefs = try listedSubnetRefs(in: world)
         let rootRowYield = try run(services.yieldService.createRootYieldWrapper())
@@ -76,8 +72,6 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
             networkFee: fee.amount
         )
 
-        XCTAssertEqual(headlineConfig.headlineMaxAnnualRate, try decimal("0.40"))
-
         XCTAssertEqual(rootRowYield, try fixtureRootYield())
         XCTAssertEqual(rootRowYield?.annualRate, try decimal("0.138421"))
 
@@ -85,11 +79,9 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(subnetRefs.count, 10)
         XCTAssertEqual(subnetRefs.filter { logos.url(for: $0.netuid) != nil }, [chutesRef])
         XCTAssertEqual(logos.url(for: chutesRef.netuid)?.absoluteString, SubtensorFlowChainWorld.chutesLogo)
-        assertChutesWeekPrices(weeklyPrices, chutes: chutesRef)
+        assertNoPriceHistory(weeklyPrices, history: history, subnets: subnetRefs)
         XCTAssertEqual(initialFavourites, [])
         XCTAssertEqual(services.earnSettings.favouriteSubnets, [chutesRef])
-
-        assertChutesWeekHistory(history, subnet: chutesRef)
 
         let chutesRanking = try XCTUnwrap(ranked.subnet(for: 64))
         XCTAssertEqual(chutesRanking.riskClass, .balanced)
@@ -167,12 +159,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
             "GET https://bittensor.test/v1/bittensor/subnets",
             "GET https://bittensor.test/v1/bittensor/subnets/64/validators",
             "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
-            "GET https://earn-config.test/earn_config.json",
-            "GET https://subnet-logos.test/subnets.json",
-            "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=7",
-            "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=7",
-            "GET https://tokens-price.novasama-tech.org/api/v3/coins/chutes/market_chart?vs_currency=usd&days=7",
-            "GET https://tokens-price.novasama-tech.org/api/v3/coins/chutes/market_chart?vs_currency=usd&days=7"
+            "GET https://subnet-logos.test/subnets.json"
         ])
 
         assertAttestedRequests(
@@ -187,20 +174,18 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         )
     }
 
-    func testChooseSubnetFlowWithUnpublishedRecommendationsKeepsChainAndPriceValuesWithoutFactorsOrPreset() throws {
+    func testChooseSubnetFlowWithUnpublishedRecommendationsKeepsChainValuesWithoutFactorsOrPreset() throws {
         let world = try SubtensorFlowWorld()
         let services = world.earnServices
         let priceHistoryService = try XCTUnwrap(services.priceHistoryService)
 
         world.stubSubnets(try SubtensorFlowChainWorld.subnetsInfo())
-        SubtensorFlowURLProtocol.serveEarnConfig()
         SubtensorFlowURLProtocol.serveSubnetLogos()
         SubtensorFlowURLProtocol.serveFixture(.subnets)
         SubtensorFlowURLProtocol.serveFixture(.rootYield(page: 1, pageSize: 100))
         SubtensorFlowURLProtocol.serveBittensor("/recommendations/subnets", reply: .notFoundPlainText())
         SubtensorFlowURLProtocol.serveBittensor("/recommendations", reply: .notFoundPlainText())
         SubtensorFlowURLProtocol.serveFixture(.validators(netuid: 64))
-        try serveWeekCharts()
 
         let subnetRefs = try listedSubnetRefs(in: world)
         let rootRowYield = try run(services.yieldService.createRootYieldWrapper())
@@ -222,9 +207,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(rootRowYield, try fixtureRootYield())
         XCTAssertEqual(subnetRefs.filter { logos.url(for: $0.netuid) != nil }, [chutesRef])
         XCTAssertEqual(logos.url(for: chutesRef.netuid)?.absoluteString, SubtensorFlowChainWorld.chutesLogo)
-        assertChutesWeekPrices(weeklyPrices, chutes: chutesRef)
-
-        assertChutesWeekHistory(history, subnet: chutesRef)
+        assertNoPriceHistory(weeklyPrices, history: history, subnets: subnetRefs)
 
         XCTAssertNil(preset)
 
@@ -234,12 +217,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
             "GET https://bittensor.test/v1/bittensor/subnets",
             "GET https://bittensor.test/v1/bittensor/subnets/64/validators",
             "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
-            "GET https://earn-config.test/earn_config.json",
-            "GET https://subnet-logos.test/subnets.json",
-            "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=7",
-            "GET https://tokens-price.novasama-tech.org/api/v3/coins/bittensor/market_chart?vs_currency=usd&days=7",
-            "GET https://tokens-price.novasama-tech.org/api/v3/coins/chutes/market_chart?vs_currency=usd&days=7",
-            "GET https://tokens-price.novasama-tech.org/api/v3/coins/chutes/market_chart?vs_currency=usd&days=7"
+            "GET https://subnet-logos.test/subnets.json"
         ])
 
         assertAttestedRequests(
@@ -335,21 +313,6 @@ private extension SubtensorChooseSubnetFlowTests {
         return document
     }
 
-    func serveWeekCharts() throws {
-        let weekStart = try milliseconds("2026-09-17T09:00:00Z")
-        let weekEnd = try milliseconds("2026-09-24T09:00:00Z")
-
-        SubtensorFlowURLProtocol.serveMarketChart(coinId: "bittensor", days: "7", points: [
-            SubtensorFlowPricePoint(milliseconds: weekStart, value: 340),
-            SubtensorFlowPricePoint(milliseconds: weekEnd, value: 350)
-        ])
-
-        SubtensorFlowURLProtocol.serveMarketChart(coinId: "chutes", days: "7", points: [
-            SubtensorFlowPricePoint(milliseconds: weekStart, value: 20),
-            SubtensorFlowPricePoint(milliseconds: weekEnd, value: try decimal("23.28"))
-        ])
-    }
-
     func listedSubnetRefs(in world: SubtensorFlowWorld) throws -> [SubtensorSubnetRef] {
         let catalogue = try run(world.earnServices.catalogueService.createCatalogueWrapper(forcingRefresh: false))
         let subnetsInfo = try fetchSubnetsInfo(from: world.sharedState.subnetsService)
@@ -357,33 +320,14 @@ private extension SubtensorChooseSubnetFlowTests {
         return SubtensorSubnetListBuilder.entries(from: catalogue, subnetsInfo: subnetsInfo).map(\.subnet.ref)
     }
 
-    func assertChutesWeekPrices(
+    func assertNoPriceHistory(
         _ prices: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>],
-        chutes: SubtensorSubnetRef
+        history: SubtensorPriceHistoryResult,
+        subnets: [SubtensorSubnetRef]
     ) {
-        XCTAssertEqual(prices.count, 10)
-        XCTAssertEqual(prices.values.filter { $0 == .notListed }.count, 9)
-
-        guard case let .available(summary)? = prices[chutes] else {
-            XCTFail("Expected the Chutes week prices, got \(String(describing: prices[chutes]))")
-            return
-        }
-
-        XCTAssertEqual(try flowDouble(summary.change), 7915.2 / 7000 - 1, accuracy: 1e-9)
-        assertFlowDoubles(summary.sparkline, [20.0 / 340, 23.28 / 350])
-    }
-
-    func assertChutesWeekHistory(_ result: SubtensorPriceHistoryResult, subnet: SubtensorSubnetRef) {
-        guard case let .available(history) = result else {
-            XCTFail("Expected the Chutes week history, got \(result)")
-            return
-        }
-
-        XCTAssertEqual(history.subnet, subnet)
-        XCTAssertEqual(history.period, .week)
-        XCTAssertEqual(history.points.count, 2)
-        XCTAssertEqual(try flowDouble(history.changeInTao), 7915.2 / 7000 - 1, accuracy: 1e-9)
-        XCTAssertEqual(try flowDouble(history.changeInFiat), 0.164, accuracy: 1e-9)
+        XCTAssertEqual(Set(prices.keys), Set(subnets))
+        XCTAssertTrue(prices.values.allSatisfy { $0 == .notListed })
+        XCTAssertEqual(history, .notListed)
     }
 
     func item(
@@ -397,9 +341,5 @@ private extension SubtensorChooseSubnetFlowTests {
 
     func hotkeys(_ members: [BittensorApiFixtureWorld.Member]) throws -> [AccountId] {
         try members.map { try SubtensorFlowChainWorld.hotkey($0) }
-    }
-
-    func milliseconds(_ text: String) throws -> UInt64 {
-        UInt64(try date(text).timeIntervalSince1970 * 1000)
     }
 }

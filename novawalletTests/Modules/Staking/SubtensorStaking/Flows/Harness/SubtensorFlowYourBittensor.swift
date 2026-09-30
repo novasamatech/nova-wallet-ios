@@ -101,38 +101,17 @@ extension SubtensorFlowTestCase {
         XCTAssertEqual(screen.logos.url(for: chutesRef.netuid)?.absoluteString, SubtensorFlowChainWorld.chutesLogo)
         XCTAssertNil(screen.logos.url(for: targonRef.netuid))
 
-        XCTAssertEqual(screen.weeklyPrices.count, 2)
-        XCTAssertEqual(screen.weeklyPrices[targonRef], .notListed)
+        XCTAssertEqual(screen.weeklyPrices, [chutesRef: .notListed, targonRef: .notListed])
+        XCTAssertEqual(screen.monthHistories, [chutesRef: .notListed, targonRef: .notListed])
 
-        guard case let .available(chutesWeek)? = screen.weeklyPrices[chutesRef] else {
-            XCTFail("Expected the Chutes week prices, got \(String(describing: screen.weeklyPrices[chutesRef]))")
-            return
-        }
-
-        XCTAssertEqual(try flowDouble(chutesWeek.change), 0.0738 / 0.0634 - 1, accuracy: 1e-9)
-        assertFlowDoubles(chutesWeek.sparkline, [0.0634, 0.0738])
-
-        guard case let .available(chutesHistory)? = screen.monthHistories[chutesRef] else {
-            XCTFail("Expected the Chutes month history, got \(String(describing: screen.monthHistories[chutesRef]))")
-            return
-        }
-
-        XCTAssertEqual(screen.monthHistories[targonRef], .notListed)
-        XCTAssertEqual(chutesHistory.period, .month)
-        XCTAssertEqual(chutesHistory.points.map(\.date), [
+        let series = screen.valueSeries
+        XCTAssertEqual(series.points.map(\.date), [
             SubtensorFlowActiveStake.chartDate(daysBeforeEnd: 30),
             SubtensorFlowActiveStake.chartDate(daysBeforeEnd: 0)
         ])
-        assertFlowDoubles(chutesHistory.points.map(\.taoPerAlpha), [0.0634, 0.0738])
-        assertFlowDoubles(chutesHistory.points.map(\.fiatPerAlpha), [19.02, 25.2396])
-        XCTAssertEqual(try flowDouble(chutesHistory.changeInTao), 0.0738 / 0.0634 - 1, accuracy: 1e-9)
-        XCTAssertEqual(try flowDouble(chutesHistory.changeInFiat), 25.2396 / 19.02 - 1, accuracy: 1e-9)
-
-        let series = screen.valueSeries
-        XCTAssertEqual(series.points.map(\.date), chutesHistory.points.map(\.date))
-        assertFlowDoubles(series.points.map(\.taoValue), [27.050679952, 27.780759952])
-        assertFlowDoubles(series.points.map(\.fiatValue), [8115.2039856, 9501.019903584])
-        XCTAssertEqual(try flowDouble(series.changeInFiat), 9501.019903584 / 8115.2039856 - 1, accuracy: 1e-9)
+        assertFlowDoubles(series.points.map(\.taoValue), [27.780759952, 27.780759952])
+        assertFlowDoubles(series.points.map(\.fiatValue), [8334.2279856, 9501.019903584])
+        XCTAssertEqual(try flowDouble(series.changeInFiat), 342.0 / 300 - 1, accuracy: 1e-9)
     }
 
     func flowDouble(_ value: Decimal?) throws -> Double {

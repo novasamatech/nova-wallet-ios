@@ -52,7 +52,7 @@ final class SubtensorPriceHistoryServiceTests: XCTestCase {
         let coingecko = MockCoingeckoOperationFactoryProtocol()
         stubCharts(coingecko, [:])
 
-        let service = makeService(coingecko: coingecko, config: makeConfig(chutesId: nil))
+        let service = makeService(coingecko: coingecko, coingeckoIds: [templar: "templar"])
         let result = try run(service.createHistoryWrapper(for: chutes, period: .week, currency: .usd))
 
         XCTAssertEqual(result, .notListed)
@@ -198,29 +198,6 @@ final class SubtensorPriceHistoryServiceTests: XCTestCase {
         verify(coingecko, never()).fetchPriceHistory(for: equal(to: "templar"), currency: any(), period: any())
     }
 
-    func testWeeklyPricesFailWhenTheConfigReadFails() {
-        let coingecko = MockCoingeckoOperationFactoryProtocol()
-        stubCharts(coingecko, [:])
-
-        let configProvider = MockSubtensorEarnConfigProviderProtocol()
-
-        stub(configProvider) { stub in
-            when(stub.createConfigWrapper()).then {
-                CompoundOperationWrapper.createWithError(CommonError.dataCorruption)
-            }
-        }
-
-        let service = SubtensorPriceHistoryService(
-            earnConfigProvider: configProvider,
-            coingeckoOperationFactory: coingecko,
-            taoPriceId: taoPriceId,
-            operationQueue: OperationQueue()
-        )
-
-        XCTAssertThrowsError(try run(service.createWeeklyChangesWrapper(for: [chutes, unlisted])))
-        verify(coingecko, never()).fetchPriceHistory(for: any(), currency: any(), period: any())
-    }
-
     func testSparklineKeepsTheLastValueAndAtMostFortyEightValuesAtAnEvenStride() {
         let values = (0 ..< 170).map { Decimal($0) }
 
@@ -252,26 +229,11 @@ final class SubtensorPriceHistoryServiceTests: XCTestCase {
             }
         }
 
-        let config = SubtensorEarnConfig(
-            version: 1,
-            entry: nil,
-            headlineMaxAnnualRate: nil,
-            preferredRootValidator: nil,
-            logoBaseUrl: nil,
-            subnets: Dictionary(uniqueKeysWithValues: subnets.map { subnet -> (UInt16, SubtensorEarnConfig.SubnetEntry) in
-                let entry = SubtensorEarnConfig.SubnetEntry(
-                    registeredAt: 1,
-                    preferredValidator: nil,
-                    coingeckoId: "sn\(subnet.netuid)",
-                    logo: nil
-                )
+        let coingeckoIds = Dictionary(uniqueKeysWithValues: subnets.map { ($0, "sn\($0.netuid)") })
 
-                return (subnet.netuid, entry)
-            }),
-            invalidEntries: []
+        let changes = try run(
+            makeService(coingecko: coingecko, coingeckoIds: coingeckoIds).createWeeklyChangesWrapper(for: subnets)
         )
-
-        let changes = try run(makeService(coingecko: coingecko, config: config).createWeeklyChangesWrapper(for: subnets))
 
         XCTAssertEqual(changes.count, subnets.count)
         XCTAssertLessThanOrEqual(tracker.maxInFlight, 4)
@@ -355,47 +317,13 @@ final class SubtensorPriceHistoryServiceTests: XCTestCase {
 
     private func makeService(
         coingecko: MockCoingeckoOperationFactoryProtocol,
-        config: SubtensorEarnConfig? = nil
+        coingeckoIds: [SubtensorSubnetRef: String]? = nil
     ) -> SubtensorPriceHistoryService {
-        let configProvider = MockSubtensorEarnConfigProviderProtocol()
-        let resolvedConfig = config ?? makeConfig(chutesId: "chutes")
-
-        stub(configProvider) { stub in
-            when(stub.createConfigWrapper()).then {
-                CompoundOperationWrapper.createWithResult(resolvedConfig)
-            }
-        }
-
-        return SubtensorPriceHistoryService(
-            earnConfigProvider: configProvider,
+        SubtensorPriceHistoryService(
+            coingeckoIds: coingeckoIds ?? [chutes: "chutes", templar: "templar"],
             coingeckoOperationFactory: coingecko,
             taoPriceId: taoPriceId,
             operationQueue: OperationQueue()
-        )
-    }
-
-    private func makeConfig(chutesId: String?) -> SubtensorEarnConfig {
-        SubtensorEarnConfig(
-            version: 1,
-            entry: nil,
-            headlineMaxAnnualRate: nil,
-            preferredRootValidator: nil,
-            logoBaseUrl: nil,
-            subnets: [
-                chutes.netuid: .init(
-                    registeredAt: chutes.registeredAt,
-                    preferredValidator: nil,
-                    coingeckoId: chutesId,
-                    logo: nil
-                ),
-                templar.netuid: .init(
-                    registeredAt: templar.registeredAt,
-                    preferredValidator: nil,
-                    coingeckoId: "templar",
-                    logo: nil
-                )
-            ],
-            invalidEntries: []
         )
     }
 
