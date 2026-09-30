@@ -6,6 +6,7 @@ import Keystore_iOS
 struct SubtensorStakingProcessServices {
     let bittensorApiOperationFactory: BittensorApiOperationFactoryProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
+    let maxApyResolution: SubtensorMaxApyResolution
     let isFixtureMode: Bool
 }
 
@@ -35,6 +36,7 @@ extension SubtensorStakingProcessServices {
         return SubtensorStakingProcessServices(
             bittensorApiOperationFactory: apiOperationFactory,
             subnetLogosProvider: SubtensorSubnetLogosProvider(url: ApplicationConfig.shared.bittensorSubnetsURL),
+            maxApyResolution: SubtensorMaxApyResolution(),
             isFixtureMode: isFixtureMode
         )
     }()
@@ -63,15 +65,22 @@ extension SubtensorStakingProcessServices {
             logger: logger
         )
 
-        let yieldService = SubtensorYieldService(
-            apiOperationFactory: bittensorApiOperationFactory,
+        return createMaxApyProvider(
+            recommendationService: recommendationService,
             operationQueue: operationQueue,
             logger: logger
         )
+    }
 
-        return SubtensorMaxApyProvider(
+    func createMaxApyProvider(
+        recommendationService: SubtensorRecommendationServiceProtocol,
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
+    ) -> SubtensorMaxApyProviderProtocol {
+        SubtensorMaxApyProvider(
             recommendationService: recommendationService,
-            yieldService: yieldService,
+            apiOperationFactory: bittensorApiOperationFactory,
+            resolution: maxApyResolution,
             operationQueue: operationQueue,
             logger: logger
         )
