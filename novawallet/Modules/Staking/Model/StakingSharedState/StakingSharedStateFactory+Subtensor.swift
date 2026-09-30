@@ -6,6 +6,7 @@ import Keystore_iOS
 struct SubtensorStakingProcessServices {
     let bittensorApiOperationFactory: BittensorApiOperationFactoryProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
+    let subnetMarketsService: SubtensorSubnetMarketsServiceProtocol
     let maxApyResolution: SubtensorMaxApyResolution
     let isFixtureMode: Bool
 }
@@ -36,6 +37,7 @@ extension SubtensorStakingProcessServices {
         return SubtensorStakingProcessServices(
             bittensorApiOperationFactory: apiOperationFactory,
             subnetLogosProvider: SubtensorSubnetLogosProvider(url: ApplicationConfig.shared.bittensorSubnetsURL),
+            subnetMarketsService: createSubnetMarketsService(),
             maxApyResolution: SubtensorMaxApyResolution(),
             isFixtureMode: isFixtureMode
         )
@@ -104,6 +106,14 @@ private extension SubtensorStakingProcessServices {
         #endif
 
         return BittensorAttestedTransport.shared
+    }
+
+    static func createSubnetMarketsService() -> SubtensorSubnetMarketsServiceProtocol {
+        SubtensorSubnetMarketsService(
+            coingeckoOperationFactory: CoingeckoOperationFactory(),
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: Logger.shared
+        )
     }
 }
 
@@ -249,7 +259,10 @@ extension StakingSharedStateFactory {
             recommendationService: recommendationService,
             rankingViewService: createRankingViewService(for: recommendationService),
             validatorDirectoryService: validatorDirectoryService,
-            priceHistoryService: createPriceHistoryService(for: stakingOption),
+            priceHistoryService: createPriceHistoryService(
+                for: stakingOption,
+                marketsService: processServices.subnetMarketsService
+            ),
             tradeQuoteFactory: SubtensorTradeQuoteFactory(
                 quoteFactory: chainServices.quoteOperationFactory,
                 feeCalculator: chainServices.novaFeeCalculator
@@ -275,14 +288,15 @@ extension StakingSharedStateFactory {
     }
 
     private func createPriceHistoryService(
-        for stakingOption: Multistaking.ChainAssetOption
+        for stakingOption: Multistaking.ChainAssetOption,
+        marketsService: SubtensorSubnetMarketsServiceProtocol
     ) -> SubtensorPriceHistoryServiceProtocol? {
         guard let taoPriceId = stakingOption.chainAsset.asset.priceId else {
             return nil
         }
 
         return SubtensorPriceHistoryService(
-            coingeckoIds: [:],
+            marketsService: marketsService,
             coingeckoOperationFactory: CoingeckoOperationFactory(),
             taoPriceId: taoPriceId,
             operationQueue: syncOperationQueue,
