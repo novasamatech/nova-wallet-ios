@@ -46,6 +46,12 @@ final class AssetDetailsBittensorEarnSource {
 }
 
 private extension AssetDetailsBittensorEarnSource {
+    var isBittensorEarnAsset: Bool {
+        chainAsset.chain.chainId == KnowChainId.bittensor
+            && chainAsset.isUtilityAsset
+            && chainAsset.asset.hasSubtensorStaking
+    }
+
     func fetchConfig() {
         executeCancellable(
             wrapper: earnConfigProvider.createConfigWrapper(),
@@ -59,8 +65,7 @@ private extension AssetDetailsBittensorEarnSource {
 
             switch result {
             case let .success(config):
-                let isEnabled = BittensorLocalBanner.isEarnActionAvailable(on: chainAsset, config: config)
-                delegate?.didReceiveBittensorEarn(isEnabled: isEnabled)
+                delegate?.didReceiveBittensorEarn(isEnabled: config.isEntryEnabled)
             case let .failure(error):
                 delegate?.didReceiveBittensorEarn(error: .earnConfig(error))
             }
@@ -70,7 +75,7 @@ private extension AssetDetailsBittensorEarnSource {
 
 extension AssetDetailsBittensorEarnSource: AssetDetailsBittensorEarnSourceProtocol {
     func setup() {
-        guard BittensorLocalBanner.chainAsset(for: chainAsset.chain)?.chainAssetId == chainAsset.chainAssetId else {
+        guard isBittensorEarnAsset else {
             return
         }
 

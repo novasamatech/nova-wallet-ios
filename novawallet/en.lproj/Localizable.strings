@@ -2330,8 +2330,4 @@ Do you want to continue?";
 "staking.subtensor.ui.how.unstake" = "Unstake %@ — no waiting period in either lane. Every rate you see is an estimate";
 "staking.subtensor.ui.how.any.time.accent" = "any time";
 "staking.subtensor.ui.how.choose.myself" = "I’ll choose myself";
-"staking.subtensor.banner.details.format" = "Earn up to %@ a year on TAO. Unstake any time. Start earning →";
-"staking.subtensor.banner.details.norate" = "Earn rewards on your TAO. Unstake any time. Start earning →";
-"staking.subtensor.banner.notao.title" = "Get TAO to start earning";
-"staking.subtensor.banner.notao.details" = "Swap or buy TAO to start earning. Get TAO →";
 "wallet.asset.earn" = "Earn";
