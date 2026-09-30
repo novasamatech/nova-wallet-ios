@@ -160,8 +160,7 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
             name: "Nova",
             take: nil,
             reportedStake: nil,
-            status: nil,
-            isNovaPreferred: true
+            status: nil
         )
     }
 
@@ -235,7 +234,7 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
             when(stub.loadCatalogue()).thenDoNothing()
             when(stub.loadYields(netuid: any())).thenDoNothing()
             when(stub.loadRankingView()).thenDoNothing()
-            when(stub.loadEarnConfig()).thenDoNothing()
+            when(stub.loadSubnetLogos()).thenDoNothing()
         }
 
         let wireframe = MockSubtensorStakingSetupWireframeProtocol()

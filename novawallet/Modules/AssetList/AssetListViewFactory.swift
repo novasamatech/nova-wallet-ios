@@ -79,8 +79,7 @@ struct AssetListViewFactory {
             domain: .assets,
             output: presenter,
             inputOwner: presenter,
-            locale: localizationManager.selectedLocale,
-            assetListModelObservable: assetListModelObservable
+            locale: localizationManager.selectedLocale
         ) else { return nil }
 
         let view = AssetListViewController(

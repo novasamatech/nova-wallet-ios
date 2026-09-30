@@ -51,7 +51,7 @@ final class SubtensorUnstakeSetupViewModelFactory {
     func createAssetViewModel(
         for netuid: UInt16,
         catalogue: SubtensorSubnetCatalogue?,
-        config: SubtensorEarnConfig?,
+        subnetLogos: SubtensorSubnetLogos?,
         locale: Locale
     ) -> AssetViewModel {
         guard netuid != SubtensorStakingPallet.rootNetuid else {
@@ -68,7 +68,7 @@ final class SubtensorUnstakeSetupViewModelFactory {
 
         return AssetViewModel(
             symbol: SubtensorSubnetNaming.title(for: netuid, in: catalogue, locale: locale),
-            imageViewModel: iconFactory.icon(for: catalogue?.subnet(for: netuid), config: config)
+            imageViewModel: iconFactory.icon(for: catalogue?.subnet(for: netuid), logos: subnetLogos)
         )
     }
 

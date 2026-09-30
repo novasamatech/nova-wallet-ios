@@ -28,7 +28,7 @@ protocol SubtensorSetupInteractorInputProtocol: SubtensorStakingBaseInteractorIn
     func loadCatalogue()
     func loadYields(netuid: UInt16)
     func loadRankingView()
-    func loadEarnConfig()
+    func loadSubnetLogos()
     func saveSlippage(_ tolerance: BigRational)
 }
 
@@ -40,7 +40,7 @@ protocol SubtensorSetupInteractorOutputProtocol: SubtensorStakingBaseInteractorO
     func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?)
     func didReceiveYields(_ yields: SubtensorAlphaYields?, netuid: UInt16)
     func didReceiveRankingView(_ rankingView: SubtensorRankedSubnets?)
-    func didReceiveEarnConfig(_ config: SubtensorEarnConfig?)
+    func didReceiveSubnetLogos(_ logos: SubtensorSubnetLogos?)
 }
 
 protocol SubtensorStakingSetupWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,

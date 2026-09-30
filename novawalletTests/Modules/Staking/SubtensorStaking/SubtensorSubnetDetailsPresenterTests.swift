@@ -116,8 +116,7 @@ final class SubtensorSubnetDetailsPresenterTests: XCTestCase {
             name: "Nova Wallet",
             take: nil,
             reportedStake: nil,
-            status: nil,
-            isNovaPreferred: false
+            status: nil
         )
     }
 

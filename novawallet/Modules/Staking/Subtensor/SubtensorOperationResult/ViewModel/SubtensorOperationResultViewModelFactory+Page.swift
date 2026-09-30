@@ -86,7 +86,7 @@ private extension SubtensorOperationResultViewModelFactory {
 
         let icon = tile.isTao
             ? assetIconViewModelFactory.createAssetIconViewModel(from: taoInfo)
-            : subnetIconFactory.icon(for: subnet, config: context.earnConfig)
+            : subnetIconFactory.icon(for: subnet, logos: context.subnetLogos)
 
         guard let amount = tile.amount else {
             return SwapAssetAmountViewModel(

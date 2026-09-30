@@ -133,8 +133,8 @@ extension SubtensorPortfolioPresenter: SubnetPortfolioInteractorOutputProtocol {
         provideViewModel()
     }
 
-    func didReceive(earnConfig: SubtensorEarnConfig?) {
-        state.earnConfig = earnConfig
+    func didReceive(subnetLogos: SubtensorSubnetLogos?) {
+        state.subnetLogos = subnetLogos
         provideViewModel()
     }
 

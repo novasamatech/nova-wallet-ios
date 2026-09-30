@@ -31,7 +31,7 @@ enum SubtensorSubnetSelectViewFactory {
         let interactor = SubtensorSubnetSelectInteractor(
             catalogueService: earnServices.catalogueService,
             subnetsService: state.subnetsService,
-            earnConfigProvider: earnServices.earnConfigProvider,
+            subnetLogosProvider: earnServices.subnetLogosProvider,
             yieldService: earnServices.yieldService,
             rankingViewService: earnServices.rankingViewService,
             priceHistoryService: earnServices.priceHistoryService,

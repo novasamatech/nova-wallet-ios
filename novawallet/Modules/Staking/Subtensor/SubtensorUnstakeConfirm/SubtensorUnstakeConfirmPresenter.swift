@@ -25,7 +25,7 @@ final class SubtensorUnstakeConfirmPresenter {
     var quoteState: SubtensorConfirmQuoteState?
     var tradesUnavailable = false
     var catalogue: SubtensorSubnetCatalogue?
-    var earnConfig: SubtensorEarnConfig?
+    var subnetLogos: SubtensorSubnetLogos?
     var isHandingOff = false
     private var isSignerNotSupportedShown = false
 
@@ -103,7 +103,7 @@ extension SubtensorUnstakeConfirmPresenter {
             for: model.target,
             direction: .sell,
             catalogue: catalogue,
-            earnConfig: earnConfig
+            subnetLogos: subnetLogos
         )
 
         view?.didReceiveTileIcons(viewModel: viewModel)

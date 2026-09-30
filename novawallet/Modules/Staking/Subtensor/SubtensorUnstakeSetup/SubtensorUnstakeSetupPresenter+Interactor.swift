@@ -93,8 +93,8 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtoc
         provideViewModel()
     }
 
-    func didReceiveEarnConfig(_ config: SubtensorEarnConfig?) {
-        earnConfig = config
+    func didReceiveSubnetLogos(_ logos: SubtensorSubnetLogos?) {
+        subnetLogos = logos
 
         provideAssetViewModel()
     }

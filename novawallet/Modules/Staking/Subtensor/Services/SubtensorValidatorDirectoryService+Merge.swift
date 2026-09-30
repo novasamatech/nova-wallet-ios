@@ -16,7 +16,6 @@ extension SubtensorValidatorDirectoryService {
     struct Enrichment {
         let snapshot: SubtensorValidatorChainSnapshot
         let enrichedPairs: Set<SubtensorHotkeySubnet>
-        let gatedPreference: AccountId?
     }
 
     static func makeListing(
@@ -82,81 +81,10 @@ extension SubtensorValidatorDirectoryService {
         value.flatMap { try? BittensorApiDecimal.fraction($0) }
     }
 
-    static func preferredHotkey(in config: SubtensorEarnConfig, for subnet: SubtensorSubnetRef) -> AccountId? {
-        guard subnet.netuid != SubtensorStakingPallet.rootNetuid else {
-            return config.preferredRootValidator
-        }
-
-        return config.subnetEntry(for: subnet)?.preferredValidator
-    }
-
-    static func enrichmentQuery(
-        rows: [Row],
-        preferredHotkey: AccountId?,
-        netuid: UInt16
-    ) -> SubtensorValidatorChainQuery {
-        var pairs = rows.prefix(enrichmentRowLimit).map { SubtensorHotkeySubnet(hotkey: $0.hotkey, netuid: netuid) }
-
-        if let preferredHotkey {
-            let preferredPair = SubtensorHotkeySubnet(hotkey: preferredHotkey, netuid: netuid)
-
-            if !pairs.contains(preferredPair) {
-                pairs.append(preferredPair)
-            }
-        }
+    static func enrichmentQuery(rows: [Row], netuid: UInt16) -> SubtensorValidatorChainQuery {
+        let pairs = rows.prefix(enrichmentRowLimit).map { SubtensorHotkeySubnet(hotkey: $0.hotkey, netuid: netuid) }
 
         return SubtensorValidatorChainQuery(pairs: pairs, includesHotkeyAlpha: true)
-    }
-
-    static func failingGate(
-        of pair: SubtensorHotkeySubnet,
-        snapshot: SubtensorValidatorChainSnapshot,
-        gates: SubtensorClientGates
-    ) -> SubtensorRecommendationGate? {
-        guard let status = SubtensorValidatorChainStatus.make(snapshot: snapshot, pair: pair) else {
-            return .noCurrentUid
-        }
-
-        let isSubnet = pair.netuid != SubtensorStakingPallet.rootNetuid
-
-        if isSubnet, gates.requirePermit, status.hasPermit != true {
-            return .noPermit
-        }
-
-        guard
-            let take = snapshot.takes[pair.hotkey],
-            !SubtensorTakeGate.exceedsMax(take: take, maxTake: gates.maxTake) else {
-            return .takeAboveMax
-        }
-
-        if isSubnet, gates.requireActiveWithinCutoff, status.isActive != true {
-            return .inactive
-        }
-
-        return nil
-    }
-
-    static func gatedPreference(
-        _ preferredHotkey: AccountId?,
-        netuid: UInt16,
-        snapshot: SubtensorValidatorChainSnapshot,
-        recommendationService: SubtensorRecommendationServiceProtocol,
-        logger: LoggerProtocol
-    ) -> AccountId? {
-        guard let preferredHotkey else {
-            return nil
-        }
-
-        let pair = SubtensorHotkeySubnet(hotkey: preferredHotkey, netuid: netuid)
-        let gates = recommendationService.lastSeenClientGates() ?? .backendDefault
-
-        if let gate = failingGate(of: pair, snapshot: snapshot, gates: gates) {
-            logger.warning("Ignoring the Nova preferred validator of netuid \(netuid): \(gate)")
-
-            return nil
-        }
-
-        return preferredHotkey
     }
 
     static func takeFraction(_ take: UInt16) -> Decimal {
@@ -180,8 +108,7 @@ extension SubtensorValidatorDirectoryService {
             name: name,
             take: isEnriched ? snapshot.takes[hotkey].map { takeFraction($0) } : nil,
             reportedStake: stake,
-            status: isEnriched ? SubtensorValidatorChainStatus.make(snapshot: snapshot, pair: pair) : nil,
-            isNovaPreferred: isEnriched && enrichment.gatedPreference == hotkey
+            status: isEnriched ? SubtensorValidatorChainStatus.make(snapshot: snapshot, pair: pair) : nil
         )
     }
 

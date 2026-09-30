@@ -8,7 +8,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning {
     let netuid: UInt16
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
     let yieldService: SubtensorYieldServiceProtocol
-    let earnConfigProvider: SubtensorEarnConfigProviderProtocol
+    let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
     let validatorFactory: SubtensorValidatorPresetFactoryProtocol
     let rootHoldFactory: SubtensorRootHoldFactoryProtocol
@@ -20,7 +20,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning {
     private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
     private var failedHoldsHotkeys: [AccountId]?
     private let catalogueStore = CancellableCallStore()
-    private let earnConfigStore = CancellableCallStore()
+    private let logosStore = CancellableCallStore()
     private let validatorStore = CancellableCallStore()
     private let rateStore = CancellableCallStore()
     private let holdsStore = CancellableCallStore()
@@ -43,7 +43,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning {
         netuid: UInt16,
         catalogueService: SubtensorSubnetCatalogueServiceProtocol,
         yieldService: SubtensorYieldServiceProtocol,
-        earnConfigProvider: SubtensorEarnConfigProviderProtocol,
+        subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
         priceHistoryService: SubtensorPriceHistoryServiceProtocol?,
         validatorFactory: SubtensorValidatorPresetFactoryProtocol,
         rootHoldFactory: SubtensorRootHoldFactoryProtocol,
@@ -56,7 +56,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning {
         self.netuid = netuid
         self.catalogueService = catalogueService
         self.yieldService = yieldService
-        self.earnConfigProvider = earnConfigProvider
+        self.subnetLogosProvider = subnetLogosProvider
         self.priceHistoryService = priceHistoryService
         self.validatorFactory = validatorFactory
         self.rootHoldFactory = rootHoldFactory
@@ -67,7 +67,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning {
     }
 
     deinit {
-        [catalogueStore, earnConfigStore, validatorStore, rateStore, holdsStore, historyStore].forEach { $0.cancel() }
+        [catalogueStore, logosStore, validatorStore, rateStore, holdsStore, historyStore].forEach { $0.cancel() }
 
         state.positionsSyncService?.remove(observer: self)
         state.positionsSyncService?.remove(failureObserver: self)
@@ -140,19 +140,19 @@ private extension SubtensorPositionInteractor {
         priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 
-    func loadEarnConfig() {
+    func loadSubnetLogos() {
         executeCancellable(
-            wrapper: earnConfigProvider.createConfigWrapper(),
+            wrapper: subnetLogosProvider.createLogosWrapper(),
             inOperationQueue: operationQueue,
-            backingCallIn: earnConfigStore,
+            backingCallIn: logosStore,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(config):
-                self?.presenter?.didReceive(earnConfig: config)
+            case let .success(logos):
+                self?.presenter?.didReceive(subnetLogos: logos)
             case let .failure(error):
                 self?.logger.warning("Subtensor position subnet mark unavailable: \(error)")
-                self?.presenter?.didReceive(earnConfig: nil)
+                self?.presenter?.didReceive(subnetLogos: nil)
             }
         }
     }
@@ -211,7 +211,7 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
             loadRootRate()
         } else {
             loadCatalogue(forcingRefresh: false)
-            loadEarnConfig()
+            loadSubnetLogos()
             loadYields()
             loadSubnetsInfo(forcingRefresh: false)
         }

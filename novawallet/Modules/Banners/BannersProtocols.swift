@@ -88,11 +88,8 @@ protocol BannersInteractorOutputProtocol: AnyObject {
     func didReceive(_ updatedLocalizedResources: BannersLocalizedResources?)
     func didReceive(_ updatedClosedBanners: ClosedBanners)
     func didReceive(_ error: Error)
-    func didReceive(bittensorContent: BittensorLocalBannerContent?)
 }
 
 protocol BannersWireframeProtocol {
     func openActionLink(urlString: String)
-    func showBittensorEarn(from view: BannersViewProtocol?, chainAsset: ChainAsset)
-    func showBittensorGetTao(from view: BannersViewProtocol?, chainAsset: ChainAsset)
 }

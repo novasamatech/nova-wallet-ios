@@ -24,7 +24,7 @@ final class SubtensorYieldService {
     }
 }
 
-private extension SubtensorYieldService {
+extension SubtensorYieldService {
     static func makeAlphaYields(
         netuid: UInt16,
         pages: BittensorApiPages<BittensorApi.AlphaYieldCollection>,

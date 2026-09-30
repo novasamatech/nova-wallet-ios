@@ -25,7 +25,7 @@ struct SubtensorPortfolioState {
     var price = SubtensorPortfolioPriceState.loading
     var isCatalogueResolved = false
     var catalogue: SubtensorSubnetCatalogue?
-    var earnConfig: SubtensorEarnConfig?
+    var subnetLogos: SubtensorSubnetLogos?
     var rootRate: Decimal?
     var weeklyChanges: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>] = [:]
     var histories = SubtensorPortfolioHistoriesState.loading

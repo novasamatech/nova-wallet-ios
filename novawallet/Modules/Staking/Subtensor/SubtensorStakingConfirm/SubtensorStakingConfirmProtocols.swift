@@ -26,7 +26,7 @@ protocol SubtensorConfirmInteractorInputProtocol: SubtensorStakingBaseInteractor
 
 protocol SubtensorConfirmInteractorOutputProtocol: SubtensorStakingBaseInteractorOutputProtocol {
     func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?)
-    func didReceiveEarnConfig(_ config: SubtensorEarnConfig?)
+    func didReceiveSubnetLogos(_ logos: SubtensorSubnetLogos?)
 }
 
 protocol SubtensorStakingConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,

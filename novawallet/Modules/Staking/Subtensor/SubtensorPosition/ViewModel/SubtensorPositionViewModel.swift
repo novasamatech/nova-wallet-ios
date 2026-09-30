@@ -14,7 +14,7 @@ struct SubtensorPositionState {
     var price = SubtensorPortfolioPriceState.loading
     var isCatalogueResolved = false
     var catalogue: SubtensorSubnetCatalogue?
-    var earnConfig: SubtensorEarnConfig?
+    var subnetLogos: SubtensorSubnetLogos?
     var validatorHotkey: AccountId?
     var validator: SubtensorValidatorDirectoryItem?
     var isRateResolved = false

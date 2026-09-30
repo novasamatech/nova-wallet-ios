@@ -41,7 +41,7 @@ final class StakingDashboardSubtensorMapperTests: XCTestCase {
 
         try saveSubtensorPart(
             state: Self.stakingState(stakeAlpha: 57_816_438),
-            maxApy: Decimal(string: "0.40"),
+            maxApy: .replace(Decimal(string: "0.40")),
             walletId: walletId,
             using: repositoryFactory
         )
@@ -51,12 +51,14 @@ final class StakingDashboardSubtensorMapperTests: XCTestCase {
         XCTAssertEqual(item.maxApy, Decimal(string: "0.40"))
     }
 
-    func testPartWithoutMaxApyClearsTheStoredValue() throws {
+    func testPartReplacingMaxApyWithNoneClearsTheStoredValue() throws {
         let repositoryFactory = MultistakingRepositoryFactory(storageFacade: SubstrateStorageTestFacade())
         let state = Self.stakingState(stakeAlpha: 57_816_438)
 
-        try saveSubtensorPart(state: state, maxApy: Decimal(string: "0.40"), walletId: walletId, using: repositoryFactory)
-        try saveSubtensorPart(state: state, maxApy: nil, walletId: walletId, using: repositoryFactory)
+        let stored = Decimal(string: "0.40")
+
+        try saveSubtensorPart(state: state, maxApy: .replace(stored), walletId: walletId, using: repositoryFactory)
+        try saveSubtensorPart(state: state, maxApy: .replace(nil), walletId: walletId, using: repositoryFactory)
 
         let item = try fetchDashboardItem(for: subtensorOption(), walletId: walletId, using: repositoryFactory)
 
@@ -200,7 +202,7 @@ final class StakingDashboardSubtensorMapperTests: XCTestCase {
 
     private func saveSubtensorPart(
         state: Multistaking.SubtensorStakingState,
-        maxApy: Decimal? = nil,
+        maxApy: Multistaking.DashboardItemSubtensorPart.MaxApyUpdate = .keep,
         walletId: MetaAccountModel.Id,
         using repositoryFactory: MultistakingRepositoryFactory
     ) throws {

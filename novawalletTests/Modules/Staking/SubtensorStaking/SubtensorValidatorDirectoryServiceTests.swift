@@ -41,7 +41,7 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
 
         stubChain(chainFactory, world: world)
 
-        let service = makeService(apiFactory: apiFactory, chainFactory: chainFactory, config: makeConfig(preferred: hotkeyB))
+        let service = makeService(apiFactory: apiFactory, chainFactory: chainFactory)
 
         let directory = try run(service.createDirectoryWrapper(for: subnet))
 
@@ -54,8 +54,7 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
                     name: "Aster Stake",
                     take: takeFraction(11796),
                     reportedStake: BigRational(numerator: 1000, denominator: 1),
-                    status: SubtensorValidatorChainStatus(uid: 5, hasPermit: true, blocksSinceUpdate: 100, isActive: true),
-                    isNovaPreferred: false
+                    status: SubtensorValidatorChainStatus(uid: 5, hasPermit: true, blocksSinceUpdate: 100, isActive: true)
                 ),
                 SubtensorValidatorDirectoryItem(
                     hotkey: hotkeyB,
@@ -63,8 +62,7 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
                     name: "BlueHarbor",
                     take: takeFraction(6553),
                     reportedStake: BigRational(numerator: 1000, denominator: 1),
-                    status: SubtensorValidatorChainStatus(uid: 9, hasPermit: true, blocksSinceUpdate: 10, isActive: true),
-                    isNovaPreferred: true
+                    status: SubtensorValidatorChainStatus(uid: 9, hasPermit: true, blocksSinceUpdate: 10, isActive: true)
                 ),
                 SubtensorValidatorDirectoryItem(
                     hotkey: hotkeyC,
@@ -72,8 +70,7 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
                     name: nil,
                     take: takeFraction(11796),
                     reportedStake: BigRational(numerator: 1000, denominator: 1),
-                    status: nil,
-                    isNovaPreferred: false
+                    status: nil
                 )
             ],
             listStamp: SubtensorBackendStamp(asOf: olderAsOf, freshness: .stale),
@@ -108,7 +105,7 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
 
         stubChain(chainFactory, world: world)
 
-        let service = makeService(apiFactory: apiFactory, chainFactory: chainFactory, config: makeConfig(preferred: nil))
+        let service = makeService(apiFactory: apiFactory, chainFactory: chainFactory)
 
         let directory = try run(service.createDirectoryWrapper(for: subnet))
 
@@ -135,14 +132,14 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
 
         stubChain(chainFactory, world: world)
 
-        let service = makeService(apiFactory: apiFactory, chainFactory: chainFactory, config: makeConfig(preferred: nil))
+        let service = makeService(apiFactory: apiFactory, chainFactory: chainFactory)
 
         let directory = try run(service.createDirectoryWrapper(for: subnet))
 
         XCTAssertEqual(directory.listStamp, SubtensorBackendStamp(asOf: olderAsOf, freshness: .stale))
     }
 
-    func testDirectoryEnrichesTheFirst512RowsAndThePreferredHotkeyBeyondThem() throws {
+    func testDirectoryEnrichesOnlyTheFirst512Rows() throws {
         let apiFactory = MockBittensorApiOperationFactoryProtocol()
         let chainFactory = MockSubtensorValidatorChainOperationFactoryProtocol()
 
@@ -150,10 +147,7 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
             Data([UInt8(index >> 8), UInt8(index & 0xFF)] + [UInt8](repeating: 0x5A, count: 30))
         }
 
-        let preferred = hotkeys[550]
-
-        var world = ChainWorld(head: head)
-        world.seat(preferred, netuid: 64, uid: 7, blocksSinceUpdate: 20)
+        let world = ChainWorld(head: head)
 
         try stubValidators(apiFactory, result: makeCollection(
             rows: hotkeys.map { try row($0, identity: nil, stake: nil) },
@@ -164,25 +158,23 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
 
         stubChain(chainFactory, world: world)
 
-        let service = makeService(apiFactory: apiFactory, chainFactory: chainFactory, config: makeConfig(preferred: preferred))
+        let service = makeService(apiFactory: apiFactory, chainFactory: chainFactory)
 
         let directory = try run(service.createDirectoryWrapper(for: subnet))
 
         let captor = ArgumentCaptor<SubtensorValidatorChainQuery>()
         verify(chainFactory).createChainSnapshotWrapper(for: captor.capture())
 
-        let expectedPairs = (Array(hotkeys.prefix(512)) + [preferred]).map { pair($0, 64) }
+        let expectedPairs = hotkeys.prefix(512).map { pair($0, 64) }
 
         XCTAssertEqual(captor.value, SubtensorValidatorChainQuery(pairs: expectedPairs, includesHotkeyAlpha: true))
         XCTAssertTrue(directory.isEnrichmentTruncated)
         XCTAssertEqual(directory.items.count, 600)
         XCTAssertNotNil(directory.items[511].take)
         XCTAssertNil(directory.items[512].take)
-        XCTAssertTrue(directory.items[550].isNovaPreferred)
-        XCTAssertEqual(directory.items[550].status?.uid, 7)
     }
 
-    func testRootDirectoryPinsThePreferenceOnUidAndTakeAlone() throws {
+    func testRootDirectoryListsOnlyMetagraphSeatsWithTheirUidAndTake() throws {
         let apiFactory = MockBittensorApiOperationFactoryProtocol()
         let chainFactory = MockSubtensorValidatorChainOperationFactoryProtocol()
 
@@ -203,11 +195,7 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
 
         stubChain(chainFactory, world: world)
 
-        let service = makeService(
-            apiFactory: apiFactory,
-            chainFactory: chainFactory,
-            config: makeConfig(preferred: nil, preferredRoot: hotkeyA)
-        )
+        let service = makeService(apiFactory: apiFactory, chainFactory: chainFactory)
 
         let directory = try run(service.createDirectoryWrapper(for: root))
 
@@ -217,8 +205,7 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
             name: "Aster Stake",
             take: 0,
             reportedStake: BigRational(numerator: 1000, denominator: 1),
-            status: SubtensorValidatorChainStatus(uid: 3, hasPermit: nil, blocksSinceUpdate: nil, isActive: nil),
-            isNovaPreferred: true
+            status: SubtensorValidatorChainStatus(uid: 3, hasPermit: nil, blocksSinceUpdate: nil, isActive: nil)
         )
 
         XCTAssertEqual(directory.items.first, expectedRootItem)
@@ -241,7 +228,7 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
             identities: available(olderAsOf, .fresh)
         ))
 
-        let service = makeService(apiFactory: apiFactory, chainFactory: chainFactory, config: makeConfig(preferred: nil))
+        let service = makeService(apiFactory: apiFactory, chainFactory: chainFactory)
 
         XCTAssertThrowsError(try run(service.createDirectoryWrapper(for: root)))
         verify(chainFactory, never()).createChainSnapshotWrapper(for: any())
@@ -259,7 +246,7 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
 
         stubChain(chainFactory, world: ChainWorld(head: head))
 
-        let service = makeService(apiFactory: apiFactory, chainFactory: chainFactory, config: makeConfig(preferred: nil))
+        let service = makeService(apiFactory: apiFactory, chainFactory: chainFactory)
 
         XCTAssertThrowsError(try run(service.createDirectoryWrapper(for: subnet))) { error in
             guard case let BittensorApiError.upstreamUnavailable(requestId) = error else {
@@ -270,81 +257,6 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
         }
 
         verify(chainFactory, never()).createChainSnapshotWrapper(for: any())
-    }
-
-    func testPreferenceIsNotPinnedForAnotherRegistrationOfTheNetuid() throws {
-        let directory = try loadDirectoryWithPreferredValidatorA(
-            config: makeConfig(preferred: hotkeyA, registeredAt: 4_000_000),
-            lastSeenGates: nil
-        )
-
-        XCTAssertEqual(directory.items.first?.status?.uid, 5)
-        XCTAssertFalse(directory.items.first?.isNovaPreferred ?? true)
-    }
-
-    func testPreferenceIsNotPinnedWhenItFailsTheLastSeenClientGates() throws {
-        let strictGates = SubtensorClientGates(
-            maxTake: BigRational(numerator: 10, denominator: 100),
-            requirePermit: true,
-            requireActiveWithinCutoff: true
-        )
-
-        let directory = try loadDirectoryWithPreferredValidatorA(
-            config: makeConfig(preferred: hotkeyA),
-            lastSeenGates: strictGates
-        )
-
-        XCTAssertEqual(directory.items.first?.take, takeFraction(9830))
-        XCTAssertFalse(directory.items.first?.isNovaPreferred ?? true)
-    }
-
-    func testPreferredValidatorComesFromConfigAndChainWithoutBackendCalls() throws {
-        let apiFactory = MockBittensorApiOperationFactoryProtocol()
-        let chainFactory = MockSubtensorValidatorChainOperationFactoryProtocol()
-
-        var world = ChainWorld(head: head)
-        world.seat(hotkeyB, netuid: 64, uid: 9, blocksSinceUpdate: 10)
-        world.takes[hotkeyB] = 6553
-        world.alpha[pair(hotkeyB, 64)] = 2_000_000_000
-
-        stubChain(chainFactory, world: world)
-
-        let service = makeService(apiFactory: apiFactory, chainFactory: chainFactory, config: makeConfig(preferred: hotkeyB))
-
-        let item = try run(service.createPreferredValidatorWrapper(for: subnet))
-
-        let expected = SubtensorValidatorDirectoryItem(
-            hotkey: hotkeyB,
-            netuid: 64,
-            name: nil,
-            take: takeFraction(6553),
-            reportedStake: nil,
-            status: SubtensorValidatorChainStatus(uid: 9, hasPermit: true, blocksSinceUpdate: 10, isActive: true),
-            isNovaPreferred: true
-        )
-
-        XCTAssertEqual(item, expected)
-        verifyNoMoreInteractions(apiFactory)
-    }
-
-    func testRootPresetIsTheGatedConfigValidatorWhileTheValidatorsRouteAnswers503() throws {
-        let outcome = try loadRootPreset(take: 9830, whileValidatorsFail: .datasetUnavailable(requestId: "request-1"))
-
-        XCTAssertEqual(outcome.directoryError?.isDeviceBound, false)
-        XCTAssertEqual(outcome.preset, expectedRootPreset(take: 9830))
-    }
-
-    func testRootPresetIsTheGatedConfigValidatorWhileTheValidatorsRouteIsUnpublished() throws {
-        let outcome = try loadRootPreset(take: 9830, whileValidatorsFail: .routeNotPublished)
-
-        XCTAssertEqual(outcome.directoryError?.isDeviceBound, false)
-        XCTAssertEqual(outcome.preset, expectedRootPreset(take: 9830))
-    }
-
-    func testRootPresetIsNoneWhenTheConfigValidatorTakeExceedsTheDefaultGateWhileTheBackendIsDown() throws {
-        let outcome = try loadRootPreset(take: 13107, whileValidatorsFail: .datasetUnavailable(requestId: "request-1"))
-
-        XCTAssertNil(outcome.preset)
     }
 
     func testDetailReusesTheCachedItemOnlyForTheSameSubnetRegistration() throws {
@@ -372,7 +284,7 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
 
         stubChain(chainFactory, world: world, identities: [hotkeyA: identity])
 
-        let service = makeService(apiFactory: apiFactory, chainFactory: chainFactory, config: makeConfig(preferred: nil))
+        let service = makeService(apiFactory: apiFactory, chainFactory: chainFactory)
 
         let directory = try run(service.createDirectoryWrapper(for: subnet))
         let cachedDetail = try run(service.createDetailWrapper(for: hotkeyA, subnet: subnet))
@@ -386,125 +298,14 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
         verify(chainFactory, times(2)).createChainSnapshotWrapper(for: any())
     }
 
-    private func loadDirectoryWithPreferredValidatorA(
-        config: SubtensorEarnConfig,
-        lastSeenGates: SubtensorClientGates?
-    ) throws -> SubtensorValidatorDirectory {
-        let apiFactory = MockBittensorApiOperationFactoryProtocol()
-        let chainFactory = MockSubtensorValidatorChainOperationFactoryProtocol()
-
-        var world = ChainWorld(head: head)
-        world.seat(hotkeyA, netuid: 64, uid: 5, blocksSinceUpdate: 100)
-        world.takes[hotkeyA] = 9830
-
-        try stubValidators(apiFactory, result: makeCollection(
-            rows: [row(hotkeyA, identity: "Aster Stake", stake: nil)],
-            stakes: available(olderAsOf, .fresh),
-            metagraph: available(olderAsOf, .fresh),
-            identities: available(olderAsOf, .fresh)
-        ))
-
-        stubChain(chainFactory, world: world)
-
-        let service = makeService(
-            apiFactory: apiFactory,
-            chainFactory: chainFactory,
-            config: config,
-            lastSeenGates: lastSeenGates
-        )
-
-        return try run(service.createDirectoryWrapper(for: subnet))
-    }
-
-    private func loadRootPreset(
-        take: UInt16,
-        whileValidatorsFail routeError: BittensorApiError
-    ) throws -> (directoryError: BittensorApiError?, preset: SubtensorValidatorDirectoryItem?) {
-        let apiFactory = MockBittensorApiOperationFactoryProtocol()
-        let chainFactory = MockSubtensorValidatorChainOperationFactoryProtocol()
-
-        var world = ChainWorld(head: head)
-        world.seat(hotkeyA, netuid: 0, uid: 3)
-        world.takes[hotkeyA] = take
-
-        stub(apiFactory) { stub in
-            when(stub.createValidatorsWrapper(netuid: any())).then { _ in
-                CompoundOperationWrapper.createWithError(routeError)
-            }
-        }
-
-        stubChain(chainFactory, world: world)
-
-        let service = makeService(
-            apiFactory: apiFactory,
-            chainFactory: chainFactory,
-            config: makeConfig(preferred: nil, preferredRoot: hotkeyA)
-        )
-
-        var directoryError: BittensorApiError?
-
-        XCTAssertThrowsError(try run(service.createDirectoryWrapper(for: root))) { error in
-            directoryError = error as? BittensorApiError
-        }
-
-        return (directoryError, try run(service.createPreferredValidatorWrapper(for: root)))
-    }
-
-    private func expectedRootPreset(take: UInt16) -> SubtensorValidatorDirectoryItem {
-        SubtensorValidatorDirectoryItem(
-            hotkey: hotkeyA,
-            netuid: 0,
-            name: nil,
-            take: takeFraction(take),
-            reportedStake: nil,
-            status: SubtensorValidatorChainStatus(uid: 3, hasPermit: nil, blocksSinceUpdate: nil, isActive: nil),
-            isNovaPreferred: true
-        )
-    }
-
     private func makeService(
         apiFactory: MockBittensorApiOperationFactoryProtocol,
-        chainFactory: MockSubtensorValidatorChainOperationFactoryProtocol,
-        config: SubtensorEarnConfig,
-        lastSeenGates: SubtensorClientGates? = nil
+        chainFactory: MockSubtensorValidatorChainOperationFactoryProtocol
     ) -> SubtensorValidatorDirectoryService {
-        let configProvider = MockSubtensorEarnConfigProviderProtocol()
-        let recommendationService = MockSubtensorRecommendationServiceProtocol()
-
-        stub(configProvider) { stub in
-            when(stub.createConfigWrapper()).then {
-                CompoundOperationWrapper.createWithResult(config)
-            }
-        }
-
-        stub(recommendationService) { stub in
-            when(stub.lastSeenClientGates()).thenReturn(lastSeenGates)
-        }
-
-        return SubtensorValidatorDirectoryService(
+        SubtensorValidatorDirectoryService(
             apiOperationFactory: apiFactory,
             chainOperationFactory: chainFactory,
-            earnConfigProvider: configProvider,
-            recommendationService: recommendationService,
             operationQueue: OperationQueue()
-        )
-    }
-
-    private func makeConfig(
-        preferred: AccountId?,
-        registeredAt: UInt64 = 4_531_295,
-        preferredRoot: AccountId? = nil
-    ) -> SubtensorEarnConfig {
-        SubtensorEarnConfig(
-            version: 1,
-            entry: nil,
-            headlineMaxAnnualRate: nil,
-            preferredRootValidator: preferredRoot,
-            logoBaseUrl: nil,
-            subnets: [
-                64: .init(registeredAt: registeredAt, preferredValidator: preferred, coingeckoId: nil, logo: nil)
-            ],
-            invalidEntries: []
         )
     }
 

@@ -19,7 +19,7 @@ protocol SubtensorUnstakeSetupPresenterProtocol: AnyObject {
 protocol SubtensorUnstakeInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {
     func loadSubnetsInfo(forcingRefresh: Bool)
     func loadCatalogue(forcingRefresh: Bool)
-    func loadEarnConfig()
+    func loadSubnetLogos()
     func loadValidator(_ hotkey: AccountId, on subnet: SubtensorSubnetRef)
     func loadRootHolds(for hotkeys: [AccountId])
 }
@@ -28,7 +28,7 @@ protocol SubtensorUnstakeInteractorOutputProtocol: SubtensorStakingBaseInteracto
     func didReceiveSubnetsInfo(_ info: SubtensorSubnetsInfo)
     func didReceiveSubnetsInfoError(_ error: Error)
     func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?)
-    func didReceiveEarnConfig(_ config: SubtensorEarnConfig?)
+    func didReceiveSubnetLogos(_ logos: SubtensorSubnetLogos?)
     func didReceiveValidator(_ validator: SubtensorValidatorDirectoryItem?, hotkey: AccountId)
     func didReceiveRootHolds(_ holds: [AccountId: SubtensorRootHold])
 }

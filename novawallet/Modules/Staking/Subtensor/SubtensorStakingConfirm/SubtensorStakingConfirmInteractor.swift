@@ -14,21 +14,21 @@ final class SubtensorStakingConfirmInteractor: SubtensorStakingBaseInteractor {
     }
 
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
-    let earnConfigProvider: SubtensorEarnConfigProviderProtocol
+    let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
 
     private let catalogueCallStore = CancellableCallStore()
-    private let configCallStore = CancellableCallStore()
+    private let logosCallStore = CancellableCallStore()
 
     init(
         baseServices: SubtensorFlowServices,
         chainAsset: ChainAsset,
         catalogueService: SubtensorSubnetCatalogueServiceProtocol,
-        earnConfigProvider: SubtensorEarnConfigProviderProtocol,
+        subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         logger: LoggerProtocol
     ) {
         self.catalogueService = catalogueService
-        self.earnConfigProvider = earnConfigProvider
+        self.subnetLogosProvider = subnetLogosProvider
 
         super.init(
             chainAsset: chainAsset,
@@ -50,7 +50,7 @@ final class SubtensorStakingConfirmInteractor: SubtensorStakingBaseInteractor {
 
     deinit {
         catalogueCallStore.cancel()
-        configCallStore.cancel()
+        logosCallStore.cancel()
     }
 }
 
@@ -73,20 +73,20 @@ extension SubtensorStakingConfirmInteractor: SubtensorConfirmInteractorInputProt
             }
         }
 
-        configCallStore.cancel()
+        logosCallStore.cancel()
 
         executeCancellable(
-            wrapper: earnConfigProvider.createConfigWrapper(),
+            wrapper: subnetLogosProvider.createLogosWrapper(),
             inOperationQueue: operationQueue,
-            backingCallIn: configCallStore,
+            backingCallIn: logosCallStore,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(config):
-                self?.presenter?.didReceiveEarnConfig(config)
+            case let .success(logos):
+                self?.presenter?.didReceiveSubnetLogos(logos)
             case let .failure(error):
-                self?.logger.warning("Subtensor Earn config unavailable for the confirm mark: \(error)")
-                self?.presenter?.didReceiveEarnConfig(nil)
+                self?.logger.warning("Subtensor subnet logos unavailable for the confirm mark: \(error)")
+                self?.presenter?.didReceiveSubnetLogos(nil)
             }
         }
     }

@@ -28,7 +28,7 @@ final class SubtensorUnstakeSetupPresenter {
     var currentBlock: BlockNumber?
     var catalogue: SubtensorSubnetCatalogue?
     var isCatalogueRefreshForced = false
-    var earnConfig: SubtensorEarnConfig?
+    var subnetLogos: SubtensorSubnetLogos?
     var isSubnetsRefreshForced = false
     var validatorItem: SubtensorValidatorDirectoryItem?
     var validatorRequest: AccountId?
@@ -313,7 +313,7 @@ extension SubtensorUnstakeSetupPresenter {
         let viewModel = viewModelFactory.createAssetViewModel(
             for: netuid,
             catalogue: catalogue,
-            config: earnConfig,
+            subnetLogos: subnetLogos,
             locale: selectedLocale
         )
 

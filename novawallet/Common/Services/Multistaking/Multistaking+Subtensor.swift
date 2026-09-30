@@ -80,11 +80,16 @@ extension Multistaking {
     }
 
     struct DashboardItemSubtensorPart {
+        enum MaxApyUpdate: Equatable {
+            case keep
+            case replace(Decimal?)
+        }
+
         let stakingOption: OptionWithWallet
         let state: SubtensorStakingState
-        let maxApy: Decimal?
+        let maxApy: MaxApyUpdate
 
-        init(stakingOption: OptionWithWallet, state: SubtensorStakingState, maxApy: Decimal? = nil) {
+        init(stakingOption: OptionWithWallet, state: SubtensorStakingState, maxApy: MaxApyUpdate = .keep) {
             self.stakingOption = stakingOption
             self.state = state
             self.maxApy = maxApy
