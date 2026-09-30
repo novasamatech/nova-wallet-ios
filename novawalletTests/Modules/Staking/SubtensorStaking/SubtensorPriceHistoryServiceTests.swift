@@ -155,6 +155,33 @@ final class SubtensorPriceHistoryServiceTests: XCTestCase {
         verify(coingecko, times(1)).fetchPriceHistory(for: any(), currency: any(), period: any())
     }
 
+    func testCoinsNotUpdatedWithinADayStayListedWithoutWeeklyPrices() throws {
+        let coingecko = MockCoingeckoOperationFactoryProtocol()
+        let celium = SubtensorSubnetRef(netuid: 51, registeredAt: 5_021_873)
+
+        stubCharts(coingecko, [
+            taoPriceId: [(0, "400"), (604_800, "440")],
+            "chutes": [(0, "20"), (604_800, "33")]
+        ])
+
+        let service = makeService(coingecko: coingecko, markets: SubtensorSubnetMarkets(byNetuid: [
+            chutes.netuid: market("chutes", change: 32, sparkline: [22, nil, 33], updatedAgo: 86401),
+            templar.netuid: market("templar", change: -12, updatedAgo: 86400),
+            celium.netuid: market("celium", change: 5, updatedAgo: nil)
+        ]))
+
+        let prices = try run(service.createWeeklyChangesWrapper(for: [chutes, templar, celium]))
+        let chutesHistory = try run(service.createHistoryWrapper(for: chutes, period: .week, currency: .usd))
+
+        XCTAssertEqual(prices, try [
+            chutes: .unavailable,
+            templar: .available(SubtensorWeeklyPriceSummary(change: decimal("-0.2"), sparkline: [])),
+            celium: .unavailable
+        ])
+
+        XCTAssertNotEqual(chutesHistory, .notListed)
+    }
+
     func testWeeklyPricesMarkEveryListedSubnetUnavailableWhenTheTaoChartFails() throws {
         let coingecko = MockCoingeckoOperationFactoryProtocol()
 
@@ -233,13 +260,14 @@ final class SubtensorPriceHistoryServiceTests: XCTestCase {
     private func market(
         _ coingeckoId: String,
         change: Decimal?,
-        sparkline: [Decimal?] = []
+        sparkline: [Decimal?] = [],
+        updatedAgo: TimeInterval? = 0
     ) -> SubtensorSubnetMarket {
         SubtensorSubnetMarket(
             coingeckoId: coingeckoId,
             weekChangePercent: change,
             weekSparkline: sparkline,
-            lastUpdated: Date(timeIntervalSince1970: now)
+            lastUpdated: updatedAgo.map { Date(timeIntervalSince1970: now - $0) }
         )
     }
 
