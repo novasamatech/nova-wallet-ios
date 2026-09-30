@@ -21,7 +21,7 @@ final class SubtensorSubnetSelectPresenter {
     private var weeklyPrices: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]?
     private var monthlyState: MonthlyState = .idle
     private var ageBlocks: [UInt16: UInt64] = [:]
-    private var earnConfig: SubtensorEarnConfig?
+    private var subnetLogos: SubtensorSubnetLogos?
     private var rootRate: Decimal?
     private var favourites: Set<SubtensorSubnetRef>
     private var query = ""
@@ -100,7 +100,7 @@ private extension SubtensorSubnetSelectPresenter {
             isRowsLoading: sort == .thirtyDayChange && isMonthlyLoading,
             sort: sort,
             filters: filters,
-            config: earnConfig
+            subnetLogos: subnetLogos
         )
 
         view?.didReceive(list: viewModelFactory.createListViewModel(for: state, locale: selectedLocale))
@@ -290,8 +290,8 @@ extension SubtensorSubnetSelectPresenter: SubnetSelectInteractorOutputProtocol {
         requestWeeklyPricesIfNeeded()
     }
 
-    func didReceive(earnConfig: SubtensorEarnConfig?) {
-        self.earnConfig = earnConfig
+    func didReceive(subnetLogos: SubtensorSubnetLogos?) {
+        self.subnetLogos = subnetLogos
 
         provideList()
     }

@@ -11,7 +11,7 @@ extension SubtensorStakingSetupPresenter {
 
             interactor.loadCatalogue()
             interactor.loadRankingView()
-            interactor.loadEarnConfig()
+            interactor.loadSubnetLogos()
         }
 
         let netuid = mode.netuid
@@ -70,7 +70,7 @@ extension SubtensorStakingSetupPresenter {
         let subnetData = SubtensorSetupSubnetData(
             catalogue: catalogue,
             isCatalogueLoaded: isCatalogueLoaded,
-            earnConfig: earnConfig,
+            subnetLogos: subnetLogos,
             rankedSubnet: rankingView?.items.first { $0.netuid == mode.netuid },
             annualRate: subnetAnnualRate(),
             isYieldsLoaded: isYieldsLoaded,

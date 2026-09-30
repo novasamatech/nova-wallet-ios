@@ -46,7 +46,7 @@ protocol SubnetSelectInteractorInputProtocol: AnyObject {
 
 protocol SubnetSelectInteractorOutputProtocol: AnyObject {
     func didReceive(entries: [SubtensorSubnetListEntry])
-    func didReceive(earnConfig: SubtensorEarnConfig?)
+    func didReceive(subnetLogos: SubtensorSubnetLogos?)
     func didReceive(rootRate: Decimal?)
     func didReceive(rankedSubnets: SubtensorRankedSubnets?)
     func didReceive(weeklyPrices: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>])

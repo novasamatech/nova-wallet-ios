@@ -2,7 +2,7 @@ import Foundation
 import Foundation_iOS
 
 protocol SubnetDetailsViewModelFactoryProtocol {
-    func createTitle(config: SubtensorEarnConfig?, locale: Locale) -> SubtensorSubnetDetailsTitleViewModel
+    func createTitle(subnetLogos: SubtensorSubnetLogos?, locale: Locale) -> SubtensorSubnetDetailsTitleViewModel
 
     func createViewModel(
         for state: SubtensorSubnetDetailsState,
@@ -289,10 +289,10 @@ private extension SubtensorSubnetDetailsViewModelFactory {
 }
 
 extension SubtensorSubnetDetailsViewModelFactory: SubnetDetailsViewModelFactoryProtocol {
-    func createTitle(config: SubtensorEarnConfig?, locale: Locale) -> SubtensorSubnetDetailsTitleViewModel {
+    func createTitle(subnetLogos: SubtensorSubnetLogos?, locale: Locale) -> SubtensorSubnetDetailsTitleViewModel {
         SubtensorSubnetDetailsTitleViewModel(
             title: SubtensorSubnetNaming.titleWithSymbol(for: subnet, locale: locale),
-            icon: iconFactory.icon(for: subnet, config: config)
+            icon: iconFactory.icon(for: subnet, logos: subnetLogos)
         )
     }
 

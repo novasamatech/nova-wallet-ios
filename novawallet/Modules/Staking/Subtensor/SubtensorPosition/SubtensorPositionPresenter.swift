@@ -260,8 +260,8 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
         target = .subnet(info: subnet, price: price)
     }
 
-    func didReceive(earnConfig: SubtensorEarnConfig?) {
-        state.earnConfig = earnConfig
+    func didReceive(subnetLogos: SubtensorSubnetLogos?) {
+        state.subnetLogos = subnetLogos
         provideViewModel()
     }
 

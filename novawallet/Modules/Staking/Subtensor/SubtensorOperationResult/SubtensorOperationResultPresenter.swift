@@ -13,7 +13,7 @@ final class SubtensorOperationResultPresenter {
 
     private(set) var state: SubtensorOperationResultState = .progress
     private var catalogue: SubtensorSubnetCatalogue?
-    private var earnConfig: SubtensorEarnConfig?
+    private var subnetLogos: SubtensorSubnetLogos?
     private var expectedBlockTime: BlockTime = SubtensorStakingFlowConstants.blockTimeMillis
     private var countdownTimer: CountdownTimer?
     private var progressStartedAt = Date()
@@ -48,7 +48,7 @@ private extension SubtensorOperationResultPresenter {
         let context = SubtensorResultViewContext(
             request: request,
             catalogue: catalogue,
-            earnConfig: earnConfig,
+            subnetLogos: subnetLogos,
             remainedTime: countdownTimer?.remainedInterval ?? 0
         )
 
@@ -260,8 +260,8 @@ extension SubtensorOperationResultPresenter: SubtensorResultInteractorOutputProt
         provideViewModel()
     }
 
-    func didReceiveEarnConfig(_ config: SubtensorEarnConfig) {
-        earnConfig = config
+    func didReceiveSubnetLogos(_ logos: SubtensorSubnetLogos) {
+        subnetLogos = logos
         provideViewModel()
     }
 

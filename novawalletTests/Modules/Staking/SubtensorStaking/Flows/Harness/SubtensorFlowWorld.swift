@@ -85,14 +85,8 @@ final class SubtensorFlowWorld {
                 cache: cache,
                 logger: Logger.shared
             ),
-            earnConfigProvider: SubtensorEarnConfigProvider(
-                configURL: SubtensorFlowHost.earnConfig,
-                bundledConfig: SubtensorEarnConfig.bundled,
-                entryStore: SubtensorEarnConfigEntryStore(settingsManager: InMemorySettingsManager()),
-                operationQueue: OperationQueue(),
-                logger: Logger.shared,
-                timeProvider: { clock.now }
-            ),
+            subnetLogosProvider: SubtensorSubnetLogosProvider(url: SubtensorFlowHost.subnetLogos),
+            maxApyResolution: SubtensorMaxApyResolution(),
             isFixtureMode: true
         )
 

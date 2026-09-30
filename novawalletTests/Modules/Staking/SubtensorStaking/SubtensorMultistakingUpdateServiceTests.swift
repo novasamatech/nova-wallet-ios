@@ -2,7 +2,6 @@ import XCTest
 @testable import novawallet
 import BigInt
 import Cuckoo
-import Keystore_iOS
 import Operation_iOS
 
 final class SubtensorMultistakingUpdateServiceTests: XCTestCase {
@@ -10,38 +9,53 @@ final class SubtensorMultistakingUpdateServiceTests: XCTestCase {
     let accountId = Data(repeating: 1, count: 32)
     let otherAccountId = Data(repeating: 9, count: 32)
 
-    func testOwnStakingChangeResyncsTheDashboardRowWithTheHeadlineRate() throws {
-        let context = try makeContext()
+    func testOwnStakingChangeResyncsTheDashboardRowWithTheBestRecommendedApy() throws {
+        let context = try makeContext { .createWithResult(Decimal(string: "0.2578")) }
 
-        resyncAfterOwnStakingChange(context)
+        resyncAfterOwnStakingChange(context, stake: 2_000_000_000) { $0.maxApy == Decimal(string: "0.2578") }
 
-        let item = try fetchDashboardItem(using: context.repositoryFactory, chainAsset: context.chainAsset)
+        let item = try fetchDashboardItem(of: context)
 
         XCTAssertEqual(item.stake, BigUInt(2_000_000_000))
-        XCTAssertEqual(item.maxApy, Decimal(string: "0.40"))
+        XCTAssertEqual(item.maxApy, Decimal(string: "0.2578"))
     }
 
-    func testFailedConfigFetchAfterARelaunchKeepsTheLastPersistedMaxApy() throws {
+    func testFailedMaxApyFetchAfterARelaunchShowsNoRateAndKeepsTheStake() throws {
         let storageFacade = SubstrateStorageTestFacade()
-        let settingsManager = InMemorySettingsManager()
 
-        let firstLaunch = try makeContext(storageFacade: storageFacade, settingsManager: settingsManager)
+        let firstLaunch = try makeContext(storageFacade: storageFacade) { .createWithResult(Decimal(string: "0.2578")) }
 
-        resyncAfterOwnStakingChange(firstLaunch)
+        resyncAfterOwnStakingChange(firstLaunch, stake: 2_000_000_000) { $0.maxApy == Decimal(string: "0.2578") }
 
-        let relaunch = try makeContext(
-            storageFacade: storageFacade,
-            settingsManager: settingsManager,
-            configResult: .failure(URLError(.notConnectedToInternet))
-        )
+        let relaunch = try makeContext(storageFacade: storageFacade) {
+            .createWithError(BittensorApiError.datasetUnavailable(requestId: nil))
+        }
 
-        resyncAfterOwnStakingChange(relaunch)
+        resyncAfterOwnStakingChange(relaunch, stake: 2_000_000_000) { $0.maxApy == nil }
 
-        let item = try fetchDashboardItem(using: relaunch.repositoryFactory, chainAsset: relaunch.chainAsset)
+        let item = try fetchDashboardItem(of: relaunch)
 
         XCTAssertEqual(item.stake, BigUInt(2_000_000_000))
+        XCTAssertNil(item.maxApy)
+    }
+
+    func testStakeIsPersistedWhileTheMaxApyIsStillResolving() throws {
+        let storageFacade = SubstrateStorageTestFacade()
+
+        let firstLaunch = try makeContext(storageFacade: storageFacade) { .createWithResult(Decimal(string: "0.40")) }
+
+        resyncAfterOwnStakingChange(firstLaunch, stake: 2_000_000_000) { $0.maxApy == Decimal(string: "0.40") }
+
+        let relaunch = try makeContext(storageFacade: storageFacade) {
+            CompoundOperationWrapper(targetOperation: AsyncClosureOperation<Decimal?>(operationClosure: { _ in }))
+        }
+
+        resyncAfterOwnStakingChange(relaunch, stake: 3_000_000_000) { $0.stake == BigUInt(3_000_000_000) }
+
+        let item = try fetchDashboardItem(of: relaunch)
+
+        XCTAssertEqual(item.stake, BigUInt(3_000_000_000))
         XCTAssertEqual(item.maxApy, Decimal(string: "0.40"))
-        verify(relaunch.configProvider, times(1)).createBackgroundConfigWrapper()
     }
 
     func testOnlyTheOwnAccountAndChainAssetChangeResyncs() throws {
@@ -77,10 +91,14 @@ final class SubtensorMultistakingUpdateServiceTests: XCTestCase {
         verify(context.fetchFactory, times(1)).createStateWrapper(for: equal(to: accountId))
     }
 
-    private func resyncAfterOwnStakingChange(_ context: Context) {
+    private func resyncAfterOwnStakingChange(
+        _ context: Context,
+        stake: BigUInt,
+        until isPersisted: @escaping (Multistaking.DashboardItem) -> Bool
+    ) {
         stub(context.fetchFactory) { stub in
             when(stub.createStateWrapper(for: any())).then { _ in
-                CompoundOperationWrapper.createWithResult(Self.stakingState(stake: 2_000_000_000))
+                CompoundOperationWrapper.createWithResult(Self.stakingState(stake: stake))
             }
         }
 
@@ -89,10 +107,18 @@ final class SubtensorMultistakingUpdateServiceTests: XCTestCase {
         let persisted = expectation(description: "dashboard row persisted")
         persisted.assertForOverFulfill = false
 
-        context.service.subscribeSyncState(self, queue: nil) { wasSyncing, isSyncing in
-            if wasSyncing, !isSyncing {
-                persisted.fulfill()
+        let walletId = walletId
+
+        context.service.subscribeSyncState(self, queue: context.observerQueue) { wasSyncing, isSyncing in
+            guard
+                wasSyncing,
+                !isSyncing,
+                let item = Self.findDashboardItem(walletId: walletId, context: context),
+                isPersisted(item) else {
+                return
             }
+
+            persisted.fulfill()
         }
 
         context.eventCenter.notify(
@@ -113,33 +139,27 @@ final class SubtensorMultistakingUpdateServiceTests: XCTestCase {
     private struct Context {
         let service: SubtensorMultistakingUpdateService
         let fetchFactory: MockSubtensorStakeStateFetchFactoryProtocol
-        let configProvider: MockSubtensorEarnConfigProviderProtocol
         let eventCenter: EventCenter
         let eventQueue: DispatchQueue
+        let observerQueue: DispatchQueue
         let repositoryFactory: MultistakingRepositoryFactory
         let chainAsset: ChainAsset
     }
 
     private func makeContext(
         storageFacade: StorageFacadeProtocol = SubstrateStorageTestFacade(),
-        settingsManager: SettingsManagerProtocol = InMemorySettingsManager(),
-        configResult: Result<SubtensorEarnConfig, Error> = .success(SubtensorMultistakingUpdateServiceTests.earnConfig())
+        maxApyWrapper: @escaping () -> CompoundOperationWrapper<Decimal?> = { .createWithResult(nil) }
     ) throws -> Context {
         let repositoryFactory = MultistakingRepositoryFactory(storageFacade: storageFacade)
         let fetchFactory = MockSubtensorStakeStateFetchFactoryProtocol()
-        let configProvider = MockSubtensorEarnConfigProviderProtocol()
+        let maxApyProvider = MockSubtensorMaxApyProviderProtocol()
         let eventQueue = DispatchQueue(label: "test.subtensor.multistaking.events")
         let eventCenter = EventCenter(syncQueue: eventQueue)
         let chainAsset = Self.subtensorChainAsset()
 
-        stub(configProvider) { stub in
-            when(stub.createBackgroundConfigWrapper()).then {
-                switch configResult {
-                case let .success(config):
-                    return CompoundOperationWrapper.createWithResult(config)
-                case let .failure(error):
-                    return CompoundOperationWrapper.createWithError(error)
-                }
+        stub(maxApyProvider) { stub in
+            when(stub.createMaxApyWrapper()).then {
+                maxApyWrapper()
             }
         }
 
@@ -158,34 +178,37 @@ final class SubtensorMultistakingUpdateServiceTests: XCTestCase {
             operationQueue: OperationQueue(),
             workingQueue: DispatchQueue(label: "test.subtensor.multistaking"),
             logger: Logger.shared,
-            earnConfigProvider: configProvider,
-            eventCenter: eventCenter,
-            settingsManager: settingsManager
+            maxApyProvider: maxApyProvider,
+            eventCenter: eventCenter
         )
 
         return Context(
             service: service,
             fetchFactory: fetchFactory,
-            configProvider: configProvider,
             eventCenter: eventCenter,
             eventQueue: eventQueue,
+            observerQueue: DispatchQueue(label: "test.subtensor.multistaking.observer"),
             repositoryFactory: repositoryFactory,
             chainAsset: chainAsset
         )
     }
 
-    private func fetchDashboardItem(
-        using repositoryFactory: MultistakingRepositoryFactory,
-        chainAsset: ChainAsset
-    ) throws -> Multistaking.DashboardItem {
-        let repository = repositoryFactory.createDashboardRepository(for: walletId)
+    private func fetchDashboardItem(of context: Context) throws -> Multistaking.DashboardItem {
+        try XCTUnwrap(Self.findDashboardItem(walletId: walletId, context: context))
+    }
+
+    private static func findDashboardItem(
+        walletId: MetaAccountModel.Id,
+        context: Context
+    ) -> Multistaking.DashboardItem? {
+        let repository = context.repositoryFactory.createDashboardRepository(for: walletId)
         let fetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
 
         OperationQueue().addOperations([fetchOperation], waitUntilFinished: true)
 
-        let items = try fetchOperation.extractNoCancellableResultData()
+        let items = try? fetchOperation.extractNoCancellableResultData()
 
-        return try XCTUnwrap(items.first { $0.stakingOption.option.chainAssetId == chainAsset.chainAssetId })
+        return items?.first { $0.stakingOption.option.chainAssetId == context.chainAsset.chainAssetId }
     }
 
     private static func stakingState(stake: BigUInt) -> Multistaking.SubtensorStakingState {
@@ -201,18 +224,6 @@ final class SubtensorMultistakingUpdateServiceTests: XCTestCase {
                 )
             ],
             prices: [:]
-        )
-    }
-
-    private static func earnConfig() -> SubtensorEarnConfig {
-        SubtensorEarnConfig(
-            version: 1,
-            entry: nil,
-            headlineMaxAnnualRate: Decimal(string: "0.40"),
-            preferredRootValidator: nil,
-            logoBaseUrl: nil,
-            subnets: [:],
-            invalidEntries: []
         )
     }
 

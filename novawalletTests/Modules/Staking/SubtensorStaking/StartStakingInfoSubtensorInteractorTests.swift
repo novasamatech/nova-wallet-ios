@@ -81,7 +81,7 @@ final class StartStakingInfoSubtensorInteractorTests: XCTestCase {
 
         let interactor = StartStakingInfoSubtensorInteractor(
             state: makeState(chainAsset: chainAsset),
-            earnConfigProvider: makeEarnConfigProvider(),
+            maxApyProvider: makeMaxApyProvider(),
             selectedWalletSettings: walletSettings,
             eventCenter: eventCenter,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryStub(),
@@ -145,14 +145,14 @@ final class StartStakingInfoSubtensorInteractorTests: XCTestCase {
         return state
     }
 
-    private func makeEarnConfigProvider() -> MockSubtensorEarnConfigProviderProtocol {
-        let earnConfigProvider = MockSubtensorEarnConfigProviderProtocol()
+    private func makeMaxApyProvider() -> MockSubtensorMaxApyProviderProtocol {
+        let maxApyProvider = MockSubtensorMaxApyProviderProtocol()
 
-        stub(earnConfigProvider) { stub in
-            when(stub.createConfigWrapper()).thenReturn(CompoundOperationWrapper.createWithError(CommonError.dataCorruption))
+        stub(maxApyProvider) { stub in
+            when(stub.createMaxApyWrapper()).thenReturn(CompoundOperationWrapper.createWithError(CommonError.dataCorruption))
         }
 
-        return earnConfigProvider
+        return maxApyProvider
     }
 
     private func makeDashboardProviderFactory() -> MockStakingDashboardProviderFactoryProtocol {

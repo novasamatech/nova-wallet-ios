@@ -13,7 +13,7 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
     }
 
     let state: SubtensorStakingSharedStateProtocol
-    let earnConfigProvider: SubtensorEarnConfigProviderProtocol
+    let maxApyProvider: SubtensorMaxApyProviderProtocol
     let eventCenter: EventCenterProtocol
     let logger: LoggerProtocol
 
@@ -23,7 +23,7 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
 
     init(
         state: SubtensorStakingSharedStateProtocol,
-        earnConfigProvider: SubtensorEarnConfigProviderProtocol,
+        maxApyProvider: SubtensorMaxApyProviderProtocol,
         selectedWalletSettings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
@@ -36,7 +36,7 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
         logger: LoggerProtocol
     ) {
         self.state = state
-        self.earnConfigProvider = earnConfigProvider
+        self.maxApyProvider = maxApyProvider
         self.eventCenter = eventCenter
         self.logger = logger
 
@@ -77,16 +77,16 @@ private extension StartStakingInfoSubtensorInteractor {
         headlineCallStore.cancel()
 
         executeCancellable(
-            wrapper: earnConfigProvider.createConfigWrapper(),
+            wrapper: maxApyProvider.createMaxApyWrapper(),
             inOperationQueue: operationQueue,
             backingCallIn: headlineCallStore,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(config):
-                self?.presenter?.didReceive(headlineRate: config.headlineMaxAnnualRate)
+            case let .success(maxApy):
+                self?.presenter?.didReceive(headlineRate: maxApy)
             case let .failure(error):
-                self?.logger.error("Earn config request failed: \(error)")
+                self?.logger.warning("Max APY fetch error: \(error)")
                 self?.presenter?.didReceive(headlineRate: nil)
             }
         }

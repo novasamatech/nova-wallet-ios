@@ -14,7 +14,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
 
         interactor.loadSubnetsInfo(forcingRefresh: false)
         interactor.loadCatalogue(forcingRefresh: false)
-        interactor.loadEarnConfig()
+        interactor.loadSubnetLogos()
     }
 
     func updateAmount(_ newValue: Decimal?) {

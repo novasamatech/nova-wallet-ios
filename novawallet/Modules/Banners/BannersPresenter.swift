@@ -16,35 +16,7 @@ final class BannersPresenter {
     private var banners: [Banner]?
     private var closedBanners: ClosedBanners?
     private var localizedResources: BannersLocalizedResources?
-    private var bittensorContent: BittensorLocalBannerContent?
     private var setUp: Bool = false
-
-    private var resolvedContent: (banners: [Banner], closed: ClosedBanners, resources: BannersLocalizedResources)? {
-        guard let bittensorContent else {
-            guard let banners, let closedBanners, let localizedResources else {
-                return nil
-            }
-
-            return (banners, closedBanners, localizedResources)
-        }
-
-        var resources = localizedResources ?? [:]
-        resources[BittensorLocalBanner.id] = bittensorContent.resource
-
-        return (
-            [bittensorContent.banner] + (banners ?? []),
-            closedBanners ?? ClosedBanners(),
-            resources
-        )
-    }
-
-    private var showsBittensorBanner: Bool {
-        guard bittensorContent != nil else {
-            return false
-        }
-
-        return !(closedBanners?.contains(BittensorLocalBanner.id) ?? false)
-    }
 
     init(
         interactor: BannersInteractorInputProtocol,
@@ -63,28 +35,14 @@ final class BannersPresenter {
     }
 
     private func provideBanners() {
-        let content = resolvedContent
         let viewModel = viewModelFactory.createLoadableWidgetViewModel(
-            for: content?.banners,
-            closedBanners: content?.closed,
+            for: banners,
+            closedBanners: closedBanners,
             closeAvailable: closeActionAvailable,
-            localizedResources: content?.resources
+            localizedResources: localizedResources
         )
 
         view?.update(with: viewModel)
-    }
-
-    private func openBittensorBanner() {
-        guard let model = bittensorContent?.model else {
-            return
-        }
-
-        switch model.variant {
-        case .earn:
-            wireframe.showBittensorEarn(from: view, chainAsset: model.chainAsset)
-        case .getTao:
-            wireframe.showBittensorGetTao(from: view, chainAsset: model.chainAsset)
-        }
     }
 }
 
@@ -104,11 +62,6 @@ extension BannersPresenter: BannersPresenterProtocol {
     }
 
     func action(for bannerId: String) {
-        if bannerId == BittensorLocalBanner.id {
-            openBittensorBanner()
-            return
-        }
-
         guard
             let banner = banners?.first(where: { $0.id == bannerId }),
             let actionLink = banner.actionLink
@@ -149,13 +102,11 @@ extension BannersPresenter: BannersInteractorOutputProtocol {
     func didReceive(_ updatedClosedBanners: ClosedBanners) {
         closedBanners = updatedClosedBanners
 
-        let content = resolvedContent
-
         guard let viewModel = viewModelFactory.createWidgetViewModel(
-            for: content?.banners,
-            closedBanners: content?.closed,
+            for: banners,
+            closedBanners: closedBanners,
             closeAvailable: closeActionAvailable,
-            localizedResources: content?.resources
+            localizedResources: localizedResources
         ) else {
             return
         }
@@ -169,20 +120,7 @@ extension BannersPresenter: BannersInteractorOutputProtocol {
     }
 
     func didReceive(_ error: any Error) {
-        guard showsBittensorBanner else {
-            moduleOutput?.didReceive(error)
-            return
-        }
-
-        moduleOutput?.didReceiveBanners(state: bannersState)
-    }
-
-    func didReceive(bittensorContent: BittensorLocalBannerContent?) {
-        self.bittensorContent = bittensorContent
-
-        provideBanners()
-
-        moduleOutput?.didReceiveBanners(state: bannersState)
+        moduleOutput?.didReceive(error)
     }
 }
 
@@ -190,12 +128,12 @@ extension BannersPresenter: BannersInteractorOutputProtocol {
 
 extension BannersPresenter: BannersModuleInputProtocol {
     var bannersState: BannersState {
-        guard let content = resolvedContent else {
+        guard let banners, let closedBanners else {
             return .loading
         }
 
-        return content.banners
-            .filter { !content.closed.contains($0.id) }
+        return banners
+            .filter { !closedBanners.contains($0.id) }
             .isEmpty
             ? .unavailable
             : .available

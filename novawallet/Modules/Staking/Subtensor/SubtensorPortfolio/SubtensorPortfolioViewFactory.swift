@@ -75,7 +75,7 @@ private extension SubtensorPortfolioViewFactory {
             applicationHandler: ApplicationHandler(),
             catalogueService: earnServices.catalogueService,
             yieldService: earnServices.yieldService,
-            earnConfigProvider: earnServices.earnConfigProvider,
+            subnetLogosProvider: earnServices.subnetLogosProvider,
             priceHistoryService: earnServices.priceHistoryService,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,

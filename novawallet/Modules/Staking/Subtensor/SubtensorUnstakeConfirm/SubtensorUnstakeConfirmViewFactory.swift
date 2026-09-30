@@ -19,7 +19,7 @@ enum SubtensorUnstakeConfirmViewFactory {
             baseServices: services,
             chainAsset: chainAsset,
             catalogueService: state.earnServices.catalogueService,
-            earnConfigProvider: state.earnServices.earnConfigProvider,
+            subnetLogosProvider: state.earnServices.subnetLogosProvider,
             rootHoldFactory: state.earnServices.rootHoldFactory,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             logger: Logger.shared

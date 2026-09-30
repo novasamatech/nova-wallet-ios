@@ -179,7 +179,7 @@ private extension SubtensorStakingSetupViewModelFactory {
         }
 
         return SubtensorPickCardHeaderViewModel(
-            icon: iconFactory.icon(for: catalogueSubnet, config: subnetData.earnConfig),
+            icon: iconFactory.icon(for: catalogueSubnet, logos: subnetData.subnetLogos),
             title: SubtensorSubnetNaming.titleWithSymbol(for: netuid, in: subnetData.catalogue, locale: locale),
             apy: apy,
             isSelectable: isSelectable

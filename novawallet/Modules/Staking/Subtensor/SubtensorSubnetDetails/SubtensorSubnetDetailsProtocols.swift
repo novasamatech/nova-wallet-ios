@@ -33,7 +33,7 @@ protocol SubnetDetailsInteractorOutputProtocol: AnyObject {
     func didReceiveTaoPrice(_ price: PriceData?)
     func didReceivePositions(_ state: Multistaking.SubtensorStakingState?)
     func didReceivePositionsSyncFailed(_ isFailed: Bool)
-    func didReceiveEarnConfig(_ config: SubtensorEarnConfig?)
+    func didReceiveSubnetLogos(_ logos: SubtensorSubnetLogos?)
 }
 
 protocol SubtensorSubnetDetailsWireframeProtocol: AnyObject {

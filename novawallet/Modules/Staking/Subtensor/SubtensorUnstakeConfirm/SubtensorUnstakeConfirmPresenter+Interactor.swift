@@ -107,8 +107,8 @@ extension SubtensorUnstakeConfirmPresenter: SubtensorUnstakeConfirmOutputProtoco
         provideViewModel()
     }
 
-    func didReceiveEarnConfig(_ config: SubtensorEarnConfig?) {
-        earnConfig = config
+    func didReceiveSubnetLogos(_ logos: SubtensorSubnetLogos?) {
+        subnetLogos = logos
 
         provideTileIcons()
     }
