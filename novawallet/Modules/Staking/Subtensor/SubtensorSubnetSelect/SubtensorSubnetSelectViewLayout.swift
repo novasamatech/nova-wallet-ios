@@ -27,12 +27,7 @@ final class SubtensorSubnetSelectViewLayout: UIView {
         view.rowHeight = SubtensorSubnetCell.preferredHeight
         view.sectionHeaderTopPadding = 0
         view.keyboardDismissMode = .onDrag
-        view.contentInset = UIEdgeInsets(
-            top: 0,
-            left: 0,
-            bottom: SubtensorStakeToRootBarView.preferredHeight + Constants.barBottomInset + Constants.barTopSpacing,
-            right: 0
-        )
+        view.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: Constants.barTopSpacing, right: 0)
     }
 
     let emptyStateView: EmptyStateView = .create { view in
@@ -117,11 +112,12 @@ private extension SubtensorSubnetSelectViewLayout {
         addSubview(tableView)
         tableView.snp.makeConstraints { make in
             make.top.equalTo(controlsView.snp.bottom).offset(Constants.listTopSpacing)
-            make.leading.trailing.bottom.equalToSuperview()
+            make.leading.trailing.equalToSuperview()
         }
 
         addSubview(rootBarView)
         rootBarView.snp.makeConstraints { make in
+            make.top.equalTo(tableView.snp.bottom)
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).offset(-Constants.barBottomInset)
             make.height.equalTo(SubtensorStakeToRootBarView.preferredHeight)

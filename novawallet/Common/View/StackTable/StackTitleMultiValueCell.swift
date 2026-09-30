@@ -85,11 +85,11 @@ extension StackTitleMultiValueCell {
     func bind(loadableViewModel: LoadableViewModelState<String>) {
         switch loadableViewModel {
         case let .cached(value), let .loaded(value):
-            isLoading = false
+            stopLoadingIfNeeded()
             rowContentView.valueView.valueTop.text = value
             invalidateLayout()
         case .loading:
-            isLoading = true
+            startLoadingIfNeeded()
             invalidateLayout()
         }
     }
