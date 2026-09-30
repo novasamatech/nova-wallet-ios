@@ -97,7 +97,7 @@ private extension SubtensorSubnetSelectPresenter {
 
         let state = SubtensorSubnetListState(
             list: list,
-            isRowsLoading: sort == .thirtyDayChange && isMonthlyLoading,
+            isRowsLoading: false,
             sort: sort,
             filters: filters,
             subnetLogos: subnetLogos
@@ -130,15 +130,6 @@ private extension SubtensorSubnetSelectPresenter {
         filtersView.didReceive(viewModel: createFiltersViewModel(for: pendingFilters))
     }
 
-    func requestMonthlyMetricsIfNeeded() {
-        guard let entries, !isMonthlyLoading, loadedMonthlyMetrics == nil else {
-            return
-        }
-
-        monthlyState = .loading
-        interactor.loadMonthlyMetrics(for: entries.map(\.subnet.ref))
-    }
-
     func requestWeeklyPricesIfNeeded() {
         guard let entries, !isWeeklyRequested else {
             return
@@ -157,10 +148,6 @@ private extension SubtensorSubnetSelectPresenter {
 
     func applySort(_ newSort: SubtensorSubnetSort) {
         sort = newSort
-
-        if newSort == .thirtyDayChange {
-            requestMonthlyMetricsIfNeeded()
-        }
 
         provideList()
     }
@@ -260,10 +247,6 @@ extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol
     func draftFilters(_ filters: SubtensorSubnetFilters) {
         pendingFilters = filters
 
-        if filters.onlyAboveThirtyDayAverage {
-            requestMonthlyMetricsIfNeeded()
-        }
-
         provideFilters()
     }
 
@@ -330,18 +313,8 @@ extension SubtensorSubnetSelectPresenter: SubnetSelectInteractorOutputProtocol {
         pendingFilters?.onlyAboveThirtyDayAverage = false
         filters.onlyAboveThirtyDayAverage = false
 
-        let revertsSort = sort == .thirtyDayChange
-
-        if revertsSort {
-            sort = .sevenDayChange
-        }
-
         provideList()
         provideFilters()
-
-        if revertsSort {
-            wireframe.presentThirtyDayUnavailable(from: view, locale: selectedLocale)
-        }
     }
 
     func didReceiveError(_ error: Error) {

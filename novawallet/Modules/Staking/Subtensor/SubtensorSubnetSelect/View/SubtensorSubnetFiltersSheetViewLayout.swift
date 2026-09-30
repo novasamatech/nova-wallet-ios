@@ -3,7 +3,7 @@ import UIKit_iOS
 
 final class SubtensorSubnetFiltersSheetViewLayout: UIView {
     static let contentHeight: CGFloat = Constants.titleTopInset + Constants.titleHeight + Constants.filtersTopSpacing +
-        2 * Constants.rowHeight + Constants.actionTopSpacing + UIConstants.actionHeight + Constants.bottomInset
+        Constants.rowHeight + Constants.actionTopSpacing + UIConstants.actionHeight + Constants.bottomInset
 
     let titleLabel: UILabel = .create { view in
         view.apply(style: .boldTitle3Primary)
@@ -94,9 +94,7 @@ private extension SubtensorSubnetFiltersSheetViewLayout {
         }
 
         filtersView.addArrangedSubview(thinPoolsCell)
-        filtersView.addArrangedSubview(aboveAverageCell)
         filtersView.setCustomHeight(Constants.rowHeight, at: 0)
-        filtersView.setCustomHeight(Constants.rowHeight, at: 1)
 
         addSubview(actionButton)
         actionButton.snp.makeConstraints { make in

@@ -89,11 +89,13 @@ enum SubtensorFlowActiveStake {
         )
     }
 
-    static func serveTaoMonthChart() {
-        SubtensorFlowURLProtocol.serveMarketChart(coinId: "bittensor", days: "30", points: [
-            SubtensorFlowPricePoint(milliseconds: chartEnd - 30 * 86_400_000, value: 300),
-            SubtensorFlowPricePoint(milliseconds: chartEnd, value: 342)
-        ])
+    static func serveCharts() throws {
+        let chutesStart = try SubtensorFlowLiteral.decimal("19.02")
+        let chutesEnd = try SubtensorFlowLiteral.decimal("25.2396")
+
+        serveCharts(coinId: "bittensor", start: 300, end: 342)
+        serveCharts(coinId: "chutes", start: chutesStart, end: chutesEnd)
+        SubtensorFlowURLProtocol.serveSubnetMarkets(chutesWeekStart: chutesStart, end: chutesEnd)
     }
 
     static func chartDate(daysBeforeEnd days: UInt64) -> Date {
@@ -139,6 +141,15 @@ private extension SubtensorFlowActiveStake {
             swept: 0,
             flushedCredits: 3
         )
+    }
+
+    static func serveCharts(coinId: String, start: Decimal, end: Decimal) {
+        for days: UInt64 in [7, 30] {
+            SubtensorFlowURLProtocol.serveMarketChart(coinId: coinId, days: "\(days)", points: [
+                SubtensorFlowPricePoint(milliseconds: chartEnd - days * 86_400_000, value: start),
+                SubtensorFlowPricePoint(milliseconds: chartEnd, value: end)
+            ])
+        }
     }
 }
 

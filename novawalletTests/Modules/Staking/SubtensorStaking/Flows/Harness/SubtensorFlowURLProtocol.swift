@@ -58,6 +58,9 @@ enum SubtensorFlowHost {
     static let bittensorGateway = URL(string: "https://bittensor.test/")!
     static let subnetLogos = URL(string: "https://subnet-logos.test/subnets.json")!
 
+    static let subnetMarkets = "https://tokens-price.novasama-tech.org/api/v3/coins/markets" +
+        "?vs_currency=usd&category=bittensor-subnets&per_page=250&page=1&sparkline=true&price_change_percentage=7d"
+
     static func bittensor(_ path: String) -> String {
         "https://bittensor.test/v1/bittensor" + path
     }
@@ -129,6 +132,16 @@ final class SubtensorFlowURLProtocol: URLProtocol {
 
     static func serveMarketChart(coinId: String, days: String, points: [SubtensorFlowPricePoint]) {
         serve("GET", SubtensorFlowHost.marketChart(coinId: coinId, days: days), reply: .marketChart(points))
+    }
+
+    static func serveSubnetMarkets(chutesWeekStart start: Decimal, end: Decimal) {
+        serve("GET", SubtensorFlowHost.subnetMarkets, reply: .json([[
+            "id": "chutes",
+            "symbol": "sn64",
+            "last_updated": ISO8601DateFormatter().string(from: Date()),
+            "price_change_percentage_7d_in_currency": NSDecimalNumber(decimal: (end / start - 1) * 100),
+            "sparkline_in_7d": ["price": [NSDecimalNumber(decimal: start), NSDecimalNumber(decimal: end)]]
+        ]]))
     }
 
     static var recordedRequests: [SubtensorFlowHTTPRequest] {

@@ -81,7 +81,6 @@ final class SubtensorSubnetSelectPresenterTests: XCTestCase {
 
         stub(setup.interactor) { stub in
             when(stub.loadWeeklyPrices(for: any())).thenDoNothing()
-            when(stub.loadMonthlyMetrics(for: any())).thenDoNothing()
         }
 
         stub(setup.wireframe) { stub in
@@ -100,7 +99,6 @@ final class SubtensorSubnetSelectPresenterTests: XCTestCase {
 
         let captor = ArgumentCaptor<SubtensorSubnetFiltersViewModel>()
 
-        verify(setup.interactor).loadMonthlyMetrics(for: any())
         verify(filtersView, times(2)).didReceive(viewModel: captor.capture())
 
         XCTAssertEqual(captor.value?.filters.onlyAboveThirtyDayAverage, false)
