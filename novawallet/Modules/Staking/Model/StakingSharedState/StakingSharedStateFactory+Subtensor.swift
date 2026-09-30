@@ -5,7 +5,6 @@ import Keystore_iOS
 
 struct SubtensorStakingProcessServices {
     let bittensorApiOperationFactory: BittensorApiOperationFactoryProtocol
-    let earnConfigProvider: SubtensorEarnConfigProviderProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let isFixtureMode: Bool
 }
@@ -21,14 +20,6 @@ struct SubtensorStakingChainServices {
 }
 
 extension SubtensorStakingProcessServices {
-    static let sharedEarnConfigProvider: SubtensorEarnConfigProviderProtocol = SubtensorEarnConfigProvider(
-        configURL: ApplicationConfig.shared.subtensorEarnConfigURL,
-        bundledConfig: SubtensorEarnConfig.bundled,
-        entryStore: SubtensorEarnConfigEntryStore(settingsManager: SettingsManager.shared),
-        operationQueue: OperationManagerFacade.sharedDefaultQueue,
-        logger: Logger.shared
-    )
-
     static let shared: SubtensorStakingProcessServices = {
         let isFixtureMode = isFixtureModeEnabled
 
@@ -43,7 +34,6 @@ extension SubtensorStakingProcessServices {
 
         return SubtensorStakingProcessServices(
             bittensorApiOperationFactory: apiOperationFactory,
-            earnConfigProvider: sharedEarnConfigProvider,
             subnetLogosProvider: SubtensorSubnetLogosProvider(url: ApplicationConfig.shared.bittensorSubnetsURL),
             isFixtureMode: isFixtureMode
         )
@@ -242,7 +232,6 @@ extension StakingSharedStateFactory {
         )
 
         return SubtensorEarnServices(
-            earnConfigProvider: processServices.earnConfigProvider,
             subnetLogosProvider: processServices.subnetLogosProvider,
             earnSettings: SubtensorEarnSettings(settingsManager: chainServices.settingsManager),
             validatorChainOperationFactory: validatorChainOperationFactory,
@@ -251,10 +240,7 @@ extension StakingSharedStateFactory {
             recommendationService: recommendationService,
             rankingViewService: createRankingViewService(for: recommendationService),
             validatorDirectoryService: validatorDirectoryService,
-            priceHistoryService: createPriceHistoryService(
-                for: stakingOption,
-                earnConfigProvider: processServices.earnConfigProvider
-            ),
+            priceHistoryService: createPriceHistoryService(for: stakingOption),
             tradeQuoteFactory: SubtensorTradeQuoteFactory(
                 quoteFactory: chainServices.quoteOperationFactory,
                 feeCalculator: chainServices.novaFeeCalculator
@@ -280,15 +266,14 @@ extension StakingSharedStateFactory {
     }
 
     private func createPriceHistoryService(
-        for stakingOption: Multistaking.ChainAssetOption,
-        earnConfigProvider: SubtensorEarnConfigProviderProtocol
+        for stakingOption: Multistaking.ChainAssetOption
     ) -> SubtensorPriceHistoryServiceProtocol? {
         guard let taoPriceId = stakingOption.chainAsset.asset.priceId else {
             return nil
         }
 
         return SubtensorPriceHistoryService(
-            earnConfigProvider: earnConfigProvider,
+            coingeckoIds: [:],
             coingeckoOperationFactory: CoingeckoOperationFactory(),
             taoPriceId: taoPriceId,
             operationQueue: syncOperationQueue,

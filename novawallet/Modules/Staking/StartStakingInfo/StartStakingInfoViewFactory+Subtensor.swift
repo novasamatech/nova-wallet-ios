@@ -73,9 +73,16 @@ extension StartStakingInfoViewFactory {
             logger: Logger.shared
         )
 
+        let maxApyProvider = SubtensorMaxApyProvider(
+            recommendationService: state.earnServices.recommendationService,
+            yieldService: state.earnServices.yieldService,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: Logger.shared
+        )
+
         return StartStakingInfoSubtensorInteractor(
             state: state,
-            earnConfigProvider: state.earnServices.earnConfigProvider,
+            maxApyProvider: maxApyProvider,
             selectedWalletSettings: SelectedWalletSettings.shared,
             eventCenter: EventCenter.shared,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,

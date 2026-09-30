@@ -84,14 +84,12 @@ struct AssetDetailsViewFactory {
         let bittensorEarnSource = AssetDetailsBittensorEarnSource(
             chainAsset: chainAsset,
             walletId: selectedAccount.metaId,
-            earnConfigProvider: SubtensorStakingProcessServices.sharedEarnConfigProvider,
             stakingDashboardProviderFactory: StakingDashboardProviderFactory(
                 chainRegistry: ChainRegistryFacade.sharedRegistry,
                 storageFacade: SubstrateDataStorageFacade.shared,
                 operationManager: OperationManagerFacade.sharedManager,
                 logger: Logger.shared
-            ),
-            operationQueue: operationQueue
+            )
         )
 
         return AssetDetailsInteractor(

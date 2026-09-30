@@ -3,7 +3,6 @@ import SubstrateSdk
 import Operation_iOS
 
 struct SubtensorEarnServices {
-    let earnConfigProvider: SubtensorEarnConfigProviderProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let earnSettings: SubtensorEarnSettingsProtocol
     let validatorChainOperationFactory: SubtensorValidatorChainOperationFactoryProtocol
