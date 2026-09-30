@@ -86,6 +86,7 @@ final class SubtensorFlowWorld {
                 logger: Logger.shared
             ),
             subnetLogosProvider: SubtensorSubnetLogosProvider(url: SubtensorFlowHost.subnetLogos),
+            maxApyResolution: SubtensorMaxApyResolution(),
             isFixtureMode: true
         )
 

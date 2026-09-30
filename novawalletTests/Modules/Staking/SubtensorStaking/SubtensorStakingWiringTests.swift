@@ -56,6 +56,7 @@ final class SubtensorStakingWiringTests: XCTestCase {
                 logger: Logger.shared
             ),
             subnetLogosProvider: MockSubtensorSubnetLogosProviderProtocol(),
+            maxApyResolution: SubtensorMaxApyResolution(),
             isFixtureMode: true
         )
 
@@ -97,11 +98,11 @@ final class SubtensorStakingWiringTests: XCTestCase {
         let updater = try XCTUnwrap(syncService.onchainUpdaters[option] as? SubtensorMultistakingUpdateService)
         let maxApyProvider = try XCTUnwrap(updater.maxApyProvider as? SubtensorMaxApyProvider)
         let recommendations = try XCTUnwrap(maxApyProvider.recommendationService as? SubtensorRecommendationService)
-        let yields = try XCTUnwrap(maxApyProvider.yieldService as? SubtensorYieldService)
-        let apiOperationFactory = SubtensorStakingProcessServices.shared.bittensorApiOperationFactory
+        let processServices = SubtensorStakingProcessServices.shared
 
-        XCTAssertTrue(recommendations.apiOperationFactory === apiOperationFactory)
-        XCTAssertTrue(yields.apiOperationFactory === apiOperationFactory)
+        XCTAssertTrue(recommendations.apiOperationFactory === processServices.bittensorApiOperationFactory)
+        XCTAssertTrue(maxApyProvider.apiOperationFactory === processServices.bittensorApiOperationFactory)
+        XCTAssertTrue(maxApyProvider.resolution === processServices.maxApyResolution)
         XCTAssertTrue(recommendations.chainOperationFactory is SubtensorValidatorChainOperationFactory)
     }
 
