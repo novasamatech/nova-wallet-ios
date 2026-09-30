@@ -24,7 +24,7 @@ final class MultistakingSyncService {
     let substrateRepositoryFactory: SubstrateRepositoryFactoryProtocol
     let providerFactory: MultistakingProviderFactoryProtocol
     let offchainOperationFactory: MultistakingOffchainOperationFactoryProtocol
-    let earnConfigProvider: SubtensorEarnConfigProviderProtocol
+    let subtensorProcessServices: SubtensorStakingProcessServices
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
     let logger: LoggerProtocol
@@ -48,8 +48,7 @@ final class MultistakingSyncService {
         multistakingRepositoryFactory: MultistakingRepositoryFactoryProtocol,
         substrateRepositoryFactory: SubstrateRepositoryFactoryProtocol,
         offchainOperationFactory: MultistakingOffchainOperationFactoryProtocol,
-        earnConfigProvider: SubtensorEarnConfigProviderProtocol =
-            SubtensorStakingProcessServices.sharedEarnConfigProvider,
+        subtensorProcessServices: SubtensorStakingProcessServices = .shared,
         operationQueue: OperationQueue = OperationManagerFacade.assetsRepositoryQueue,
         workingQueue: DispatchQueue = DispatchQueue(
             label: "com.nova.wallet.staking.sync",
@@ -64,7 +63,7 @@ final class MultistakingSyncService {
         self.multistakingRepositoryFactory = multistakingRepositoryFactory
         self.substrateRepositoryFactory = substrateRepositoryFactory
         self.offchainOperationFactory = offchainOperationFactory
-        self.earnConfigProvider = earnConfigProvider
+        self.subtensorProcessServices = subtensorProcessServices
         self.workingQueue = workingQueue
         self.operationQueue = operationQueue
         self.logger = logger
@@ -427,7 +426,11 @@ final class MultistakingSyncService {
             operationQueue: operationQueue,
             workingQueue: workingQueue,
             logger: logger,
-            earnConfigProvider: earnConfigProvider
+            maxApyProvider: subtensorProcessServices.createMaxApyProvider(
+                runtimeConnectionStore: runtimeConnectionStore,
+                operationQueue: operationQueue,
+                logger: logger
+            )
         )
     }
 

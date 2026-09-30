@@ -60,6 +60,32 @@ extension SubtensorStakingProcessServices {
 
         return SubtensorValidatorChainOperationFactory(runtimeConnectionStore: runtimeConnectionStore)
     }
+
+    func createMaxApyProvider(
+        runtimeConnectionStore: RuntimeConnectionStoring,
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
+    ) -> SubtensorMaxApyProviderProtocol {
+        let recommendationService = SubtensorRecommendationService(
+            apiOperationFactory: bittensorApiOperationFactory,
+            chainOperationFactory: createValidatorChainOperationFactory(runtimeConnectionStore: runtimeConnectionStore),
+            operationQueue: operationQueue,
+            logger: logger
+        )
+
+        let yieldService = SubtensorYieldService(
+            apiOperationFactory: bittensorApiOperationFactory,
+            operationQueue: operationQueue,
+            logger: logger
+        )
+
+        return SubtensorMaxApyProvider(
+            recommendationService: recommendationService,
+            yieldService: yieldService,
+            operationQueue: operationQueue,
+            logger: logger
+        )
+    }
 }
 
 private extension SubtensorStakingProcessServices {
