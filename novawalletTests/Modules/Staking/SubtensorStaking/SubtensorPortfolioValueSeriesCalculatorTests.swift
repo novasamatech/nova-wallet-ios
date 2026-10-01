@@ -49,6 +49,54 @@ final class SubtensorPortfolioValueSeriesCalculatorTests: XCTestCase {
         XCTAssertEqual(series, expected)
     }
 
+    func testSubnetWhoseHistoryStopsBeforeTheGridEndIsValuedAtSpot() throws {
+        let portfolio = SubtensorPortfolio(
+            root: nil,
+            subnets: [
+                group(netuid: 64, alpha: 100_000_000_000, taoValue: 8_000_000_000),
+                group(netuid: 108, alpha: 5_000_000_000, taoValue: 2_000_000_000)
+            ],
+            pricedTaoValue: 10_000_000_000,
+            unpricedNetuids: []
+        )
+
+        let histories = try SubtensorPortfolioPriceHistories(
+            period: .week,
+            taoFiat: PriceHistory(
+                currencyId: Currency.usd.id,
+                items: [
+                    PriceHistoryItem(startedAt: 0, value: 400),
+                    PriceHistoryItem(startedAt: 302_400, value: 410),
+                    PriceHistoryItem(startedAt: 453_600, value: 415),
+                    PriceHistoryItem(startedAt: 604_800, value: 420)
+                ]
+            ),
+            subnets: [
+                history(netuid: 64, [(0, "0.05"), (302_400, "0.06"), (453_600, "0.07"), (604_800, "0.08")]),
+                history(netuid: 108, [(0, "0.5"), (302_400, "0.4")])
+            ]
+        )
+
+        let series = SubtensorPortfolioValueSeriesCalculator.calculate(
+            portfolio: portfolio,
+            histories: histories,
+            currentTaoPrice: 420,
+            precision: 9
+        )
+
+        let expected = try SubtensorPortfolioValueSeries(
+            points: [
+                point(at: 0, taoValue: "7", fiatValue: "2800"),
+                point(at: 302_400, taoValue: "8", fiatValue: "3280"),
+                point(at: 453_600, taoValue: "9", fiatValue: "3735"),
+                point(at: 604_800, taoValue: "10", fiatValue: "4200")
+            ],
+            changeInFiat: XCTUnwrap(Decimal(string: "0.5"))
+        )
+
+        XCTAssertEqual(series, expected)
+    }
+
     private func group(netuid: UInt16, alpha: Balance, taoValue: Balance?) -> SubtensorPortfolioGroup {
         SubtensorPortfolioGroup(
             netuid: netuid,
