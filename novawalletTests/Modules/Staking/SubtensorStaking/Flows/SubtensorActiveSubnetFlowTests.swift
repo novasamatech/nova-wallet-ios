@@ -1,4 +1,5 @@
 import Cuckoo
+import Foundation_iOS
 @testable import novawallet
 import Operation_iOS
 import XCTest
@@ -256,6 +257,111 @@ final class SubtensorActiveSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(requiredAmount.value, "0.00151 TAO")
         XCTAssertEqual(requestLines(), [])
     }
+
+    func testSellingTheWholeTwoValidatorGroupQuotesChargesShowsAndValidatesSeventyAlphaAndExitsBothValidators() throws {
+        let world = try SubtensorFlowWorld(novaFeeBeneficiary: SubtensorFlowChainWorld.novaFeeBeneficiary)
+        let services = world.earnServices
+        let ember = try SubtensorFlowChainWorld.hotkey(.ember)
+        let cinder = try SubtensorFlowChainWorld.hotkey(.cinder)
+        let beneficiary = SubtensorFlowChainWorld.novaFeeBeneficiary
+        let slippage = services.earnSettings.slippageTolerance
+        let groupQuote = chutesGroupSellQuote()
+
+        world.stubQuotes([groupQuote])
+        SubtensorFlowURLProtocol.serveFixture(.subnets)
+
+        let catalogue = try run(services.catalogueService.createCatalogueWrapper(forcingRefresh: false))
+
+        let acknowledgedQuote = try run(services.tradeQuoteFactory.createSellQuoteWrapper(
+            netuid: 64,
+            alpha: 70_000_000_000,
+            tolerance: slippage
+        ))
+
+        let confirm = try openChutesGroupSellConfirm(
+            in: world,
+            unstakeModel: SubtensorUnstakeModel(
+                hotkey: ember,
+                netuid: 64,
+                amount: 70_000_000_000,
+                exitHotkeys: [ember, cinder]
+            ),
+            acknowledgedQuote: acknowledgedQuote,
+            catalogue: catalogue
+        )
+
+        confirm.presenter.confirm()
+
+        let handOff = ArgumentCaptor<SubtensorOperationResultRequest>()
+        verify(confirm.wireframe).showOperationResult(from: any(), request: handOff.capture(), delegate: any())
+
+        let request = try XCTUnwrap(handOff.value)
+        let validation = try XCTUnwrap(confirm.presenter.getValidationDependencies().sellPlanInput)
+
+        let result = try submit(request.operation, in: world, events: [
+            SubtensorFlowExtrinsic.stakeRemoved(
+                hotkey: ember,
+                netuid: 64,
+                tao: 3_688_000_000,
+                alpha: 49_974_822_614,
+                poolFee: 25_177_386
+            ),
+            SubtensorFlowExtrinsic.stakeRemoved(
+                hotkey: cinder,
+                netuid: 64,
+                tao: 1_475_000_000,
+                alpha: 19_989_929_046,
+                poolFee: 10_070_954
+            ),
+            SubtensorFlowExtrinsic.transfer(to: beneficiary, amount: 43_515_617),
+            SubtensorFlowExtrinsic.networkFeePaid(paidNetworkFee)
+        ])
+
+        XCTAssertEqual(confirm.quoteRequest, .sell(netuid: 64, alpha: 70_000_000_000, tolerance: slippage))
+        verify(world.quoteOperationFactory, times(2)).createQuoteWrapper(for: equal(to: groupQuote.args))
+
+        XCTAssertEqual(request.quote, SubtensorTradeQuote(
+            quote: groupQuote,
+            amountIn: 70_000_000_000,
+            novaFee: SubtensorNovaFee(amount: 43_515_617, beneficiary: beneficiary),
+            expectedOut: 5_119_484_383,
+            swapMinimumOut: 5_137_581_679,
+            minimumOut: 5_094_066_062,
+            limitPrice: 73_431_000
+        ))
+
+        XCTAssertEqual(lastPayTile(of: confirm.view)?.amount, "70 ش")
+        XCTAssertEqual(request.payAmount, 70_000_000_000)
+        XCTAssertEqual(validation.requestedAlpha, 70_000_000_000)
+        XCTAssertEqual(validation.positionAlpha, 70_000_000_000)
+
+        XCTAssertEqual(request.operation, .subnetSellAll(
+            hotkeys: [ember, cinder],
+            netuid: 64,
+            limitPrice: 73_431_000,
+            quotedTaoOut: 5_163_000_000
+        ))
+
+        XCTAssertEqual(result.calls, [
+            SubtensorFlowExtrinsic.batchAll([
+                SubtensorFlowExtrinsic.removeStakeFullLimit(hotkey: ember, netuid: 64, limitPrice: 73_431_000),
+                SubtensorFlowExtrinsic.removeStakeFullLimit(hotkey: cinder, netuid: 64, limitPrice: 73_431_000),
+                try SubtensorFlowExtrinsic.transferKeepAlive(to: beneficiary, amount: 43_515_617)
+            ])
+        ])
+
+        XCTAssertEqual(result.outcome, SubtensorStakingOperationOutcome(
+            executed: SubtensorExecutedAmounts(tao: 5_163_000_000, alpha: 70_000_000_000, netuid: 64),
+            novaFeePaid: 43_515_617,
+            alphaFeePaid: nil,
+            networkFeePaid: Balance(paidNetworkFee),
+            extrinsicHash: SubtensorFlowExtrinsic.extrinsicHash,
+            blockHash: SubtensorFlowExtrinsic.blockHash
+        ))
+
+        XCTAssertEqual(requestLines(), ["GET https://bittensor.test/v1/bittensor/subnets"])
+        assertAttestedRequests(world, paths: ["/v1/bittensor/subnets"])
+    }
 }
 
 private extension SubtensorActiveSubnetFlowTests {
@@ -279,6 +385,13 @@ private extension SubtensorActiveSubnetFlowTests {
         let sellFee: ExtrinsicFeeProtocol
         let sellPlan: SubtensorSellPlan
         let canPaySell: Bool
+    }
+
+    struct ChutesGroupSellConfirm {
+        let presenter: SubtensorUnstakeConfirmPresenter
+        let view: MockSubtensorStakingConfirmViewProtocol
+        let wireframe: MockSubtensorUnstakeConfirmWireframeProtocol
+        let quoteRequest: SubtensorTradeQuoteRequest
     }
 
     var chutesPositionRequestLines: [String] {
@@ -480,5 +593,141 @@ private extension SubtensorActiveSubnetFlowTests {
         XCTAssertEqual(screens.sellFee.amount, networkFee)
         XCTAssertEqual(screens.sellPlan, .partial)
         XCTAssertTrue(screens.canPaySell)
+    }
+
+    func chutesGroupSellQuote() -> SubtensorQuote {
+        SubtensorQuote(
+            args: SubtensorQuoteArgs(netuid: 64, direction: .unstake(alphaIn: 70_000_000_000)),
+            sim: SubtensorStakingPallet.SimSwapResult(
+                taoAmount: 5_163_000_000,
+                alphaAmount: 70_000_000_000,
+                taoFee: 0,
+                alphaFee: 35_248_340,
+                taoSlippage: 0,
+                alphaSlippage: 0
+            ),
+            spotPrice: SubtensorFlowActiveStake.chutesSpotPrice,
+            feeRate: 33
+        )
+    }
+
+    func openChutesGroupSellConfirm(
+        in world: SubtensorFlowWorld,
+        unstakeModel: SubtensorUnstakeModel,
+        acknowledgedQuote: SubtensorTradeQuote,
+        catalogue: SubtensorSubnetCatalogue
+    ) throws -> ChutesGroupSellConfirm {
+        let services = world.earnServices
+        let interactor = MockSubtensorUnstakeConfirmInputProtocol()
+        let wireframe = MockSubtensorUnstakeConfirmWireframeProtocol()
+        let view = MockSubtensorStakingConfirmViewProtocol()
+        let quoteRequest = ArgumentCaptor<SubtensorTradeQuoteRequest>()
+        let feeOperation = ArgumentCaptor<SubtensorStakingOperation>()
+        let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
+        let chutes = try XCTUnwrap(SubtensorFlowActiveStake.subnetsInfo().subnets.first { $0.netuid == 64 })
+
+        stub(interactor) { stub in
+            when(stub.setup()).thenDoNothing()
+            when(stub.refreshPreflight(for: any(), netuid: any())).thenDoNothing()
+            when(stub.loadSubnetData()).thenDoNothing()
+            when(stub.refreshQuote(for: any())).thenDoNothing()
+            when(stub.estimateFee(for: any())).thenDoNothing()
+        }
+
+        stub(wireframe) { stub in
+            when(stub.showOperationResult(from: any(), request: any(), delegate: any())).thenDoNothing()
+        }
+
+        stub(view) { stub in
+            when(stub.didReceiveWallet(viewModel: any())).thenDoNothing()
+            when(stub.didReceiveAccount(viewModel: any())).thenDoNothing()
+            when(stub.didReceiveValidator(viewModel: any())).thenDoNothing()
+            when(stub.didReceiveTileIcons(viewModel: any())).thenDoNothing()
+            when(stub.didReceive(viewModel: any())).thenDoNothing()
+            when(stub.didStartLoading()).thenDoNothing()
+        }
+
+        let validationFactory = SubtensorStakingValidationFactory(
+            presentable: wireframe,
+            assetDisplayInfo: world.chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
+
+        let presenter = SubtensorUnstakeConfirmPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            chainAsset: world.chainAsset,
+            model: SubtensorUnstakeConfirmModel(
+                origin: .sell,
+                account: SubtensorFlowChainWorld.coldkeyAccount(),
+                target: .subnet(info: chutes, price: SubtensorFlowActiveStake.chutesSpotPrice),
+                validator: SubtensorConfirmValidator(
+                    hotkey: unstakeModel.hotkey,
+                    display: DisplayAddress(
+                        address: try unstakeModel.hotkey.toAddress(using: world.chainAsset.chain.chainFormat),
+                        username: ""
+                    ),
+                    annualRate: nil
+                ),
+                unstakeModel: unstakeModel,
+                tolerance: services.earnSettings.slippageTolerance,
+                acknowledgedQuote: acknowledgedQuote
+            ),
+            viewModelFactory: SubtensorConfirmViewModelFactory(
+                chainAsset: world.chainAsset,
+                priceAssetInfoFactory: priceAssetInfoFactory
+            ),
+            dataValidationFactory: validationFactory,
+            localizationManager: LocalizationManager.shared,
+            logger: Logger.shared
+        )
+
+        presenter.view = view
+        validationFactory.view = view
+
+        presenter.setup()
+        presenter.didReceiveCatalogue(catalogue)
+        presenter.didReceivePositions(try SubtensorFlowActiveStake.chutesGroupState())
+        presenter.didReceivePreflight(try SubtensorFlowActiveStake.preflight(hotkeyOf: .ember, netuid: 64))
+        presenter.didReceiveExistentialDeposit(SubtensorFlowActiveStake.existentialDeposit)
+
+        presenter.didReceiveAssetBalance(AssetBalance(
+            chainAssetId: world.chainAsset.chainAssetId,
+            accountId: SubtensorFlowChainWorld.coldkey,
+            freeInPlank: SubtensorFlowChainWorld.transferable,
+            reservedInPlank: 0,
+            frozenInPlank: 0,
+            edCountMode: .basedOnFree,
+            transferrableMode: .fungibleTrait,
+            blocked: false
+        ))
+
+        verify(interactor).refreshQuote(for: quoteRequest.capture())
+        verify(interactor).estimateFee(for: feeOperation.capture())
+
+        let request = try XCTUnwrap(quoteRequest.value)
+        let operationService = try world.createStakingOperationService(networkFee: networkFee)
+
+        presenter.didReceiveQuote(try run(services.tradeQuoteFactory.createSellQuoteWrapper(
+            netuid: request.netuid,
+            alpha: request.amountIn,
+            tolerance: request.tolerance
+        )))
+
+        presenter.didReceiveFee(try run(operationService.createFeeWrapper(for: try XCTUnwrap(feeOperation.value))))
+
+        return ChutesGroupSellConfirm(presenter: presenter, view: view, wireframe: wireframe, quoteRequest: request)
+    }
+
+    func lastPayTile(of view: MockSubtensorStakingConfirmViewProtocol) -> SubtensorConfirmTileViewModel? {
+        let viewModel = ArgumentCaptor<SubtensorConfirmViewModel>()
+
+        verify(view, atLeastOnce()).didReceive(viewModel: viewModel.capture())
+
+        guard case let .swap(swap)? = viewModel.allValues.last?.content else {
+            return nil
+        }
+
+        return swap.pay
     }
 }
