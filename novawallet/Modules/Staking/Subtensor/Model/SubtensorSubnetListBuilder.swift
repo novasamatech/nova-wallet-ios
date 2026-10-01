@@ -10,7 +10,6 @@ struct SubtensorSubnetListItem: Equatable {
     let subnet: SubtensorCatalogueSubnet
     let target: SubtensorStakeTarget
     let weekly: SubtensorPriceData<SubtensorWeeklyPriceSummary>?
-    let monthly: SubtensorPriceData<SubtensorMonthlyPriceMetrics>?
     let ageBlocks: UInt64?
 
     var ref: SubtensorSubnetRef {
@@ -38,7 +37,6 @@ struct SubtensorSubnetListBuilder {
 
     let entries: [SubtensorSubnetListEntry]
     let weekly: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]?
-    let monthly: [SubtensorSubnetRef: SubtensorPriceData<SubtensorMonthlyPriceMetrics>]?
     let ageBlocks: [UInt16: UInt64]
     let favourites: Set<SubtensorSubnetRef>
     let locale: Locale
@@ -110,7 +108,6 @@ private extension SubtensorSubnetListBuilder {
             subnet: entry.subnet,
             target: entry.target,
             weekly: weekly.map { $0[ref] ?? .unavailable },
-            monthly: monthly.map { $0[ref] ?? .unavailable },
             ageBlocks: ageBlocks[entry.subnet.netuid]
         )
     }
@@ -131,16 +128,6 @@ private extension SubtensorSubnetListBuilder {
     func passes(_ item: SubtensorSubnetListItem, filters: SubtensorSubnetFilters) -> Bool {
         if filters.hideThinPools, item.subnet.taoReserve < Self.thinPoolThreshold {
             return false
-        }
-
-        if filters.onlyAboveThirtyDayAverage {
-            guard let mean = item.monthly?.availableValue?.meanTaoPerAlpha else {
-                return false
-            }
-
-            let price = item.subnet.taoPerAlpha.decimal(precision: UInt16(SubtensorSubnetCatalogueService.atomicScale))
-
-            return price > mean
         }
 
         return true
@@ -192,17 +179,6 @@ private extension SubtensorSubnetListBuilder {
         switch item.weekly {
         case let .available(summary):
             return .value(summary.change)
-        case .notListed:
-            return .notListed
-        case .unavailable, .none:
-            return .unavailable
-        }
-    }
-
-    func monthlyRank(of item: SubtensorSubnetListItem) -> ChangeRank {
-        switch item.monthly {
-        case let .available(metrics):
-            return metrics.changeInTao.map { .value($0) } ?? .unavailable
         case .notListed:
             return .notListed
         case .unavailable, .none:

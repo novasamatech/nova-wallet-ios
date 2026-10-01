@@ -42,7 +42,6 @@ struct SubtensorStakeToRootBarViewModel {
 
 struct SubtensorSubnetListState {
     let list: SubtensorSubnetList?
-    let isRowsLoading: Bool
     let sort: SubtensorSubnetSort
     let filters: SubtensorSubnetFilters
     let subnetLogos: SubtensorSubnetLogos?
@@ -65,7 +64,6 @@ protocol SubtensorSubnetViewModelFactoryProtocol {
     func createFiltersViewModel(
         filters: SubtensorSubnetFilters,
         count: Int?,
-        isThirtyDayUnavailable: Bool,
         locale: Locale
     ) -> SubtensorSubnetFiltersViewModel
 }
@@ -146,7 +144,7 @@ private extension SubtensorSubnetViewModelFactory {
         for state: SubtensorSubnetListState,
         locale: Locale
     ) -> SubtensorSubnetListViewModel.Content {
-        guard let list = state.list, !state.isRowsLoading else {
+        guard let list = state.list else {
             return .loading
         }
 
@@ -298,7 +296,6 @@ extension SubtensorSubnetViewModelFactory: SubtensorSubnetViewModelFactoryProtoc
     func createFiltersViewModel(
         filters: SubtensorSubnetFilters,
         count: Int?,
-        isThirtyDayUnavailable: Bool,
         locale: Locale
     ) -> SubtensorSubnetFiltersViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
@@ -313,10 +310,7 @@ extension SubtensorSubnetViewModelFactory: SubtensorSubnetViewModelFactoryProtoc
             title: strings.walletFiltersTitle(),
             thinPoolsTitle: strings.stakingSubtensorUiPickerHideThin(),
             thinPoolsDetails: strings.stakingSubtensorUiPickerHideThinFormat(threshold),
-            aboveAverageTitle: strings.stakingSubtensorUiPickerAboveAverage(),
-            aboveAverageDetails: strings.stakingSubtensorUiPickerAboveAverageDetail(),
             filters: filters,
-            unavailableText: isThirtyDayUnavailable ? strings.stakingSubtensorUiPickerThirtyDayUnavailable() : nil,
             actionTitle: count.map { strings.stakingSubtensorUiPickerShowCount(format: $0) } ??
                 strings.stakingSubtensorUiPickerShow(),
             isLoading: count == nil

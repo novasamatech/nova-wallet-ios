@@ -4,10 +4,7 @@ struct SubtensorSubnetFiltersViewModel {
     let title: String
     let thinPoolsTitle: String
     let thinPoolsDetails: String
-    let aboveAverageTitle: String
-    let aboveAverageDetails: String
     let filters: SubtensorSubnetFilters
-    let unavailableText: String?
     let actionTitle: String
     let isLoading: Bool
 }
@@ -58,22 +55,11 @@ private extension SubtensorSubnetFiltersSheetController {
             for: .valueChanged
         )
 
-        rootView.aboveAverageCell.switchControl.addTarget(
-            self,
-            action: #selector(actionFilterChanged),
-            for: .valueChanged
-        )
-
         rootView.actionButton.addTarget(self, action: #selector(actionApply), for: .touchUpInside)
     }
 
     @objc func actionFilterChanged() {
-        onChange(
-            SubtensorSubnetFilters(
-                hideThinPools: rootView.thinPoolsCell.switchControl.isOn,
-                onlyAboveThirtyDayAverage: rootView.aboveAverageCell.switchControl.isOn
-            )
-        )
+        onChange(SubtensorSubnetFilters(hideThinPools: rootView.thinPoolsCell.switchControl.isOn))
     }
 
     @objc func actionApply() {
