@@ -413,6 +413,26 @@ final class SubtensorUnstakeConfirmPresenterTests: XCTestCase {
         XCTAssertEqual(swap.remark, "The rate can change until the order fills.")
     }
 
+    func testSellConfirmShowsADashForWhatTheSaleWillEarnWhileTheQuoteFails() throws {
+        let acknowledged = try makeTradeQuote(spotPrice: 7_683_255)
+
+        let setup = makeSetup { chainAsset in
+            makeSubnetModel(for: chainAsset, acknowledgedQuote: acknowledged)
+        }
+
+        setup.presenter.didReceiveCostBasis(
+            .average(SubtensorPurchaseTotals(paidTao: 9_000_000, receivedAlpha: 1_000_000_000))
+        )
+        setup.presenter.didReceiveBaseError(.quoteFailed(SubtensorQuoteError.quoteUnavailable(netuid: 1)))
+
+        let swap = try XCTUnwrap(lastSwapViewModel(setup))
+
+        XCTAssertEqual(
+            swap.youWillEarn,
+            .value(SubtensorCostBasisValueViewModel(amount: "—", detail: nil, tone: .neutral))
+        )
+    }
+
     func testSubnetConfirmSellsAtTheAcknowledgedLimitWithTheLatestTaoOut() throws {
         let acknowledged = try makeTradeQuote(spotPrice: 7_683_255)
 
