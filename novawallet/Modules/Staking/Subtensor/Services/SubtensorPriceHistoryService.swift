@@ -2,7 +2,6 @@ import Foundation
 import Operation_iOS
 
 final class SubtensorPriceHistoryService {
-    static let alphaChartConcurrency = 4
     static let sparklineMaxCount = 48
     static let marketStalenessLimit = TimeInterval(24).secondsFromHours
 
@@ -57,33 +56,6 @@ extension SubtensorPriceHistoryService {
         )
     }
 
-    static func monthlyMetrics(of points: [SubtensorPricePoint]) -> SubtensorMonthlyPriceMetrics? {
-        guard let change = SubtensorPriceSeries.change(
-            of: points,
-            over: .month,
-            date: \.date,
-            value: \.taoPerAlpha
-        ) else {
-            return nil
-        }
-
-        let values = points.map(\.taoPerAlpha)
-
-        return SubtensorMonthlyPriceMetrics(
-            changeInTao: change,
-            meanTaoPerAlpha: values.reduce(Decimal.zero, +) / Decimal(values.count),
-            thirtyDayRange: range(of: values)
-        )
-    }
-
-    static func range(of values: [Decimal]) -> Decimal? {
-        guard let minimum = values.min(), let maximum = values.max(), maximum + minimum > 0 else {
-            return nil
-        }
-
-        return (maximum - minimum) / (maximum + minimum)
-    }
-
     static func sparkline(of values: [Decimal]) -> [Decimal] {
         guard values.count > sparklineMaxCount else {
             return values
@@ -125,7 +97,6 @@ private extension SubtensorPriceHistoryService {
         Fetcher(
             coingeckoOperationFactory: coingeckoOperationFactory,
             taoPriceId: taoPriceId,
-            operationQueue: operationQueue,
             timeProvider: timeProvider,
             logger: logger
         )
