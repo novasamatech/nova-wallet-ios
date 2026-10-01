@@ -366,13 +366,12 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
         XCTAssertFalse(viewModel.action.isEnabled)
 
         stub(setup.wireframe) { stub in
-            when(stub.showGetTao(from: any(), chainAsset: any(), assetListObservable: any(), rampHandler: any()))
-                .thenDoNothing()
+            when(stub.showGetTao(from: any(), chainAsset: any(), rampHandler: any())).thenDoNothing()
         }
 
         setup.presenter.getTao()
 
-        verify(setup.wireframe).showGetTao(from: any(), chainAsset: any(), assetListObservable: any(), rampHandler: any())
+        verify(setup.wireframe).showGetTao(from: any(), chainAsset: any(), rampHandler: any())
     }
 
     func testAmountAboveMaxShowsTheReserveWarningAndDisablesContinue() throws {
@@ -408,7 +407,7 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
 
     func testRootPositionHandsOverALockedAddStakeWithoutTolerance() {
         let position = makePosition(hotkey: hotkey, netuid: SubtensorStakingPallet.rootNetuid, stake: 5000)
-        let setup = makeSetup(mode: .mode(for: position))
+        let setup = makeSetup(mode: .addStake(position: position))
 
         setup.presenter.didReceivePreflight(makePreflight())
         setup.presenter.updateAmount(Decimal(string: "1"))

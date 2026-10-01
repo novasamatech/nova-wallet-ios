@@ -37,18 +37,8 @@ extension SubtensorStakingPallet {
         let subnetIdentity: SubnetIdentity?
         let movingPrice: JSON
 
-        var displayName: String {
-            String(decoding: subnetName, as: UTF8.self)
-        }
-
         var displaySymbol: String {
             String(decoding: tokenSymbol, as: UTF8.self)
-        }
-
-        /// `moving_price` is an I96F32 composite, so the raw bits carry
-        /// `SubtensorStakingPallet.fixedPointFractionalBits` fractional bits
-        var movingPriceBits: Balance? {
-            movingPrice.bits?.stringValue.flatMap { Balance($0) }
         }
     }
 }

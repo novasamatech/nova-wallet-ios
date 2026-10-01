@@ -15,16 +15,6 @@ final class SubtensorValidatorSelectCell: UITableViewCell {
         label.textColor = R.color.colorTextPrimary()
     }
 
-    let recommendedView: BorderedLabelView = .create { view in
-        view.titleLabel.font = .semiBoldCaps2
-        view.titleLabel.textColor = R.color.colorIndividualChipText()
-        view.backgroundView.fillColor = R.color.colorIndividualChipBackground()!
-        view.backgroundView.highlightedFillColor = R.color.colorIndividualChipBackground()!
-        view.backgroundView.cornerRadius = 6
-        view.contentInsets = UIEdgeInsets(top: 1, left: 6, bottom: 1, right: 6)
-        view.isHidden = true
-    }
-
     let titleStackView: UIStackView = .create { view in
         view.axis = .horizontal
         view.alignment = .center
@@ -74,12 +64,9 @@ final class SubtensorValidatorSelectCell: UITableViewCell {
         infoAction = nil
     }
 
-    func bind(_ model: SubtensorValidatorRowViewModel, icon: DrawableIcon?, recommendedTitle: String) {
+    func bind(_ model: SubtensorValidatorRowViewModel, icon: DrawableIcon?) {
         titleLabel.text = model.title
         subtitleLabel.text = model.subtitle
-
-        recommendedView.titleLabel.text = recommendedTitle
-        recommendedView.isHidden = !model.isRecommended
 
         switch model.trailing {
         case let .rate(text):
@@ -110,7 +97,6 @@ final class SubtensorValidatorSelectCell: UITableViewCell {
 
     private func setupLayout() {
         titleStackView.addArrangedSubview(titleLabel)
-        titleStackView.addArrangedSubview(recommendedView)
 
         [radioView, iconView, titleStackView, subtitleLabel, trailingLabel, infoButton, divider]
             .forEach(contentView.addSubview)
@@ -134,7 +120,6 @@ final class SubtensorValidatorSelectCell: UITableViewCell {
         }
 
         titleLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        recommendedView.setContentCompressionResistancePriority(.required, for: .horizontal)
 
         subtitleLabel.snp.makeConstraints { make in
             make.leading.equalTo(titleStackView)

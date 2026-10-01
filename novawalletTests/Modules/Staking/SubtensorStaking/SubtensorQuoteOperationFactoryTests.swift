@@ -179,18 +179,6 @@ final class SubtensorQuoteOperationFactoryTests: XCTestCase {
         XCTAssertEqual(impact.mul(value: 1_000_000), 40)
     }
 
-    func testBuyImpliedExecutionPriceGolden() throws {
-        let quote = try fetchQuote(using: makeFactory(sim: buySim), args: buyArgs)
-
-        XCTAssertEqual(quote.impliedExecutionPrice, BigUInt(7_683_563))
-    }
-
-    func testSellImpliedExecutionPriceGolden() throws {
-        let quote = try fetchQuote(using: makeFactory(sim: sellSim), args: sellArgs)
-
-        XCTAssertEqual(quote.impliedExecutionPrice, BigUInt(7_682_946))
-    }
-
     func testPriceImpactClampsToZeroWhenOutBeatsSpotValuation() {
         let quote = SubtensorQuote(
             args: buyArgs,
@@ -202,7 +190,7 @@ final class SubtensorQuoteOperationFactoryTests: XCTestCase {
         XCTAssertEqual(quote.priceImpact?.mul(value: 1_000_000), 0)
     }
 
-    func testImpliedExecutionPriceNilWhenSimAlphaIsZero() {
+    func testPriceImpactNilWhenSimAlphaIsZero() {
         let quote = SubtensorQuote(
             args: buyArgs,
             sim: makeSim(taoAmount: 1_000_000_000),
@@ -210,7 +198,6 @@ final class SubtensorQuoteOperationFactoryTests: XCTestCase {
             feeRate: 33
         )
 
-        XCTAssertNil(quote.impliedExecutionPrice)
         XCTAssertNil(quote.priceImpact)
     }
 

@@ -1,8 +1,6 @@
 import Foundation
 
-protocol SubtensorEarnInfoPresentable {
-    func presentSubtensorEarnInfo(from view: ControllerBackedProtocol?, chainAsset: ChainAsset)
-}
+protocol SubtensorEarnInfoPresentable {}
 
 extension SubtensorEarnInfoPresentable {
     func presentSubtensorEarnInfo(from view: ControllerBackedProtocol?, chainAsset: ChainAsset) {

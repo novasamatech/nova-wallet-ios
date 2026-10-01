@@ -2,13 +2,6 @@ import Foundation
 import Foundation_iOS
 
 final class SubtensorSubnetSelectPresenter {
-    enum MonthlyState {
-        case idle
-        case loading
-        case loaded([SubtensorSubnetRef: SubtensorPriceData<SubtensorMonthlyPriceMetrics>])
-        case unavailable
-    }
-
     weak var view: SubtensorSubnetSelectViewProtocol?
     weak var delegate: SubtensorSubnetSelectDelegate?
 
@@ -19,7 +12,6 @@ final class SubtensorSubnetSelectPresenter {
 
     private var entries: [SubtensorSubnetListEntry]?
     private var weeklyPrices: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]?
-    private var monthlyState: MonthlyState = .idle
     private var ageBlocks: [UInt16: UInt64] = [:]
     private var subnetLogos: SubtensorSubnetLogos?
     private var rootRate: Decimal?
@@ -53,30 +45,6 @@ final class SubtensorSubnetSelectPresenter {
 }
 
 private extension SubtensorSubnetSelectPresenter {
-    var loadedMonthlyMetrics: [SubtensorSubnetRef: SubtensorPriceData<SubtensorMonthlyPriceMetrics>]? {
-        guard case let .loaded(metrics) = monthlyState else {
-            return nil
-        }
-
-        return metrics
-    }
-
-    var isMonthlyLoading: Bool {
-        guard case .loading = monthlyState else {
-            return false
-        }
-
-        return true
-    }
-
-    var isMonthlyUnavailable: Bool {
-        guard case .unavailable = monthlyState else {
-            return false
-        }
-
-        return true
-    }
-
     func makeBuilder() -> SubtensorSubnetListBuilder? {
         guard let entries else {
             return nil
@@ -85,7 +53,6 @@ private extension SubtensorSubnetSelectPresenter {
         return SubtensorSubnetListBuilder(
             entries: entries,
             weekly: weeklyPrices,
-            monthly: loadedMonthlyMetrics,
             ageBlocks: ageBlocks,
             favourites: favourites,
             locale: selectedLocale
@@ -97,7 +64,6 @@ private extension SubtensorSubnetSelectPresenter {
 
         let state = SubtensorSubnetListState(
             list: list,
-            isRowsLoading: false,
             sort: sort,
             filters: filters,
             subnetLogos: subnetLogos
@@ -111,13 +77,11 @@ private extension SubtensorSubnetSelectPresenter {
     }
 
     func createFiltersViewModel(for draft: SubtensorSubnetFilters) -> SubtensorSubnetFiltersViewModel {
-        let isPending = draft.onlyAboveThirtyDayAverage && isMonthlyLoading
-        let count = isPending ? nil : makeBuilder()?.build(query: query, sort: sort, filters: draft).count
+        let count = makeBuilder()?.build(query: query, sort: sort, filters: draft).count
 
         return viewModelFactory.createFiltersViewModel(
             filters: draft,
             count: count,
-            isThirtyDayUnavailable: isMonthlyUnavailable,
             locale: selectedLocale
         )
     }
@@ -251,13 +215,7 @@ extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol
     }
 
     func applyFilters(_ filters: SubtensorSubnetFilters) {
-        var appliedFilters = filters
-
-        if loadedMonthlyMetrics == nil {
-            appliedFilters.onlyAboveThirtyDayAverage = false
-        }
-
-        self.filters = appliedFilters
+        self.filters = filters
         pendingFilters = nil
 
         provideList()
@@ -298,23 +256,6 @@ extension SubtensorSubnetSelectPresenter: SubnetSelectInteractorOutputProtocol {
         self.weeklyPrices = weeklyPrices
 
         provideList()
-    }
-
-    func didReceive(monthlyMetrics: [SubtensorSubnetRef: SubtensorPriceData<SubtensorMonthlyPriceMetrics>]) {
-        monthlyState = .loaded(monthlyMetrics)
-
-        provideList()
-        provideFilters()
-    }
-
-    func didFailMonthlyMetrics() {
-        monthlyState = .unavailable
-
-        pendingFilters?.onlyAboveThirtyDayAverage = false
-        filters.onlyAboveThirtyDayAverage = false
-
-        provideList()
-        provideFilters()
     }
 
     func didReceiveError(_ error: Error) {

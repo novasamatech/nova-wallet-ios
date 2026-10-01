@@ -32,11 +32,6 @@ enum SubtensorStakingPallet {
     // SubnetOwnerCut chain-wide default (runtime/src/lib.rs:860); governance-mutable
     static let defaultSubnetOwnerCut: UInt16 = 11796
 
-    // TaoWeight is ValueQuery over DefaultTaoWeight = InitialTaoWeight (runtime/src/lib.rs:871).
-    // The live finney value is far higher than this genesis default, so it is only ever a
-    // null-read fallback — the engine always reads the storage item itself.
-    static let defaultTaoWeight = BigUInt(971_718_665_099_567_868)
-
     // DefaultMinRootClaimAmount applied when RootClaimableThreshold[root] is unset (lib.rs:502-505)
     static let defaultRootClaimableThreshold = BigUInt(500_000)
 

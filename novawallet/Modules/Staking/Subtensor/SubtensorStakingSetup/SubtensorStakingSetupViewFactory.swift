@@ -41,21 +41,6 @@ enum SubtensorStakingSetupViewFactory {
 
         return createView(for: state, mode: .buyMore(position: position))
     }
-
-    static func createView(
-        for state: SubtensorStakingSharedStateProtocol,
-        initialPosition: SubtensorStakingPosition?
-    ) -> SubtensorStakingSetupViewProtocol? {
-        guard let initialPosition else {
-            return createRootDetailsView(for: state)
-        }
-
-        if initialPosition.netuid == SubtensorStakingPallet.rootNetuid {
-            return createAddStakeView(for: state, position: initialPosition)
-        }
-
-        return createBuyMoreView(for: state, position: initialPosition)
-    }
 }
 
 private extension SubtensorStakingSetupViewFactory {

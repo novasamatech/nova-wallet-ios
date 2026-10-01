@@ -82,10 +82,6 @@ struct SubtensorTradeQuote: Equatable {
 }
 
 extension SubtensorTradeQuote {
-    var isFillable: Bool {
-        isFillable(atLimit: limitPrice)
-    }
-
     func isFillable(atLimit limit: Balance) -> Bool {
         let sim = quote.sim
         let spotPrice = quote.spotPrice

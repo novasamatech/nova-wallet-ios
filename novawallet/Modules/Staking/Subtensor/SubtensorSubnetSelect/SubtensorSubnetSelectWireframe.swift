@@ -52,15 +52,4 @@ final class SubtensorSubnetSelectWireframe: SubtensorSubnetSelectWireframeProtoc
 
         return filtersView
     }
-
-    func presentThirtyDayUnavailable(from view: SubtensorSubnetSelectViewProtocol?, locale: Locale) {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
-        present(
-            message: strings.stakingSubtensorUiPickerThirtyDayUnavailable(),
-            title: nil,
-            closeAction: strings.commonClose(),
-            from: view
-        )
-    }
 }

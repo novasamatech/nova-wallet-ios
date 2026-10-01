@@ -9,9 +9,8 @@ enum SubtensorSubnetSort: CaseIterable, Equatable {
 
 struct SubtensorSubnetFilters: Equatable {
     var hideThinPools = false
-    var onlyAboveThirtyDayAverage = false
 
-    var isApplied: Bool { hideThinPools || onlyAboveThirtyDayAverage }
+    var isApplied: Bool { hideThinPools }
 }
 
 protocol SubtensorSubnetSelectViewProtocol: ControllerBackedProtocol {
@@ -32,8 +31,6 @@ protocol SubtensorSubnetSelectPresenterProtocol: AnyObject {
     func selectRoot()
     func showSort()
     func showFilters()
-    func draftFilters(_ filters: SubtensorSubnetFilters)
-    func applyFilters(_ filters: SubtensorSubnetFilters)
 }
 
 protocol SubnetSelectInteractorInputProtocol: AnyObject {
@@ -48,8 +45,6 @@ protocol SubnetSelectInteractorOutputProtocol: AnyObject {
     func didReceive(rootRate: Decimal?)
     func didReceive(rankedSubnets: SubtensorRankedSubnets?)
     func didReceive(weeklyPrices: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>])
-    func didReceive(monthlyMetrics: [SubtensorSubnetRef: SubtensorPriceData<SubtensorMonthlyPriceMetrics>])
-    func didFailMonthlyMetrics()
     func didReceiveError(_ error: Error)
 }
 
@@ -67,6 +62,4 @@ protocol SubtensorSubnetSelectWireframeProtocol: AlertPresentable, ErrorPresenta
         onChange: @escaping (SubtensorSubnetFilters) -> Void,
         onApply: @escaping (SubtensorSubnetFilters) -> Void
     ) -> SubtensorSubnetFiltersViewProtocol?
-
-    func presentThirtyDayUnavailable(from view: SubtensorSubnetSelectViewProtocol?, locale: Locale)
 }

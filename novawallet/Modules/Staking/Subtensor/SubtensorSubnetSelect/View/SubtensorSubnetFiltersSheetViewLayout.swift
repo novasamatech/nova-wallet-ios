@@ -13,12 +13,6 @@ final class SubtensorSubnetFiltersSheetViewLayout: UIView {
 
     let thinPoolsCell = SubtensorSubnetFiltersSheetViewLayout.createFilterCell()
 
-    let aboveAverageCell = SubtensorSubnetFiltersSheetViewLayout.createFilterCell()
-
-    let unavailableLabel: UILabel = .create { view in
-        view.apply(style: .caption1Negative)
-    }
-
     let actionButton: TriangularedButton = .create { button in
         button.applyDefaultStyle()
     }
@@ -47,13 +41,6 @@ final class SubtensorSubnetFiltersSheetViewLayout: UIView {
         thinPoolsCell.titleLabel.text = viewModel.thinPoolsTitle
         thinPoolsCell.subtitleLabel.text = viewModel.thinPoolsDetails
         thinPoolsCell.switchControl.setOn(viewModel.filters.hideThinPools, animated: true)
-
-        aboveAverageCell.titleLabel.text = viewModel.aboveAverageTitle
-        aboveAverageCell.subtitleLabel.text = viewModel.aboveAverageDetails
-        aboveAverageCell.switchControl.setOn(viewModel.filters.onlyAboveThirtyDayAverage, animated: true)
-
-        unavailableLabel.text = viewModel.unavailableText
-        unavailableLabel.isHidden = viewModel.unavailableText == nil
 
         actionButton.imageWithTitleView?.title = viewModel.actionTitle
         actionButton.isEnabled = !viewModel.isLoading
@@ -101,12 +88,6 @@ private extension SubtensorSubnetFiltersSheetViewLayout {
             make.top.equalTo(filtersView.snp.bottom).offset(Constants.actionTopSpacing)
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.height.equalTo(UIConstants.actionHeight)
-        }
-
-        addSubview(unavailableLabel)
-        unavailableLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.centerY.equalTo(filtersView.snp.bottom).offset(Constants.actionTopSpacing / 2)
         }
 
         actionButton.addSubview(activityIndicator)

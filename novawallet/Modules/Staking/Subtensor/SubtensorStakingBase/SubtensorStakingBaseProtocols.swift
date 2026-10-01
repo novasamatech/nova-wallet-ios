@@ -14,14 +14,6 @@ enum SubtensorStakingFlowConstants {
     }
 }
 
-/// the estimator cannot see the fee-in-alpha path and alpha-paid fees are final,
-/// so every TAO-denominated fee estimate is displayed as approximate
-extension BalanceViewModelProtocol {
-    func approximatelyForSubtensorFee() -> BalanceViewModelProtocol {
-        BalanceViewModel(amount: amount.approximately(), price: price)
-    }
-}
-
 protocol SubtensorStakingBaseInteractorInputProtocol: AnyObject {
     func setup()
     func estimateFee(for operation: SubtensorStakingOperation)
@@ -59,12 +51,4 @@ extension SubtensorStakingBaseError {
             false
         }
     }
-}
-
-protocol SubtensorStakingDelegateInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {
-    func applyDelegate(with accountId: AccountId, netuid: UInt16)
-}
-
-protocol SubtensorStakingDelegateInteractorOutputProtocol: SubtensorStakingBaseInteractorOutputProtocol {
-    func didReceiveDelegateIdentities(_ identities: [AccountId: AccountIdentity]?)
 }

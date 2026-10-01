@@ -223,7 +223,7 @@ private extension SubtensorFlowURLProtocol {
             return "/recommendations"
         case .rankedSubnets:
             return "/recommendations/subnets"
-        case .rewards, .operations:
+        case .operations:
             return nil
         }
     }

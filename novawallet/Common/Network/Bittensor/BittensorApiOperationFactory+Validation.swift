@@ -8,7 +8,6 @@ enum BittensorApiWireCheck {
     static let historyScope = "TAO_APP_PARTIAL"
     static let maxScoreHundredths = BigUInt(10000)
     static let maxScaledAtomic = BigUInt(UInt64.max)
-    static let u256Bound = BigUInt(1) << 256
 
     static func decimal(_ value: String?, _ field: @autoclosure () -> String) throws {
         guard let value else {
@@ -32,12 +31,6 @@ enum BittensorApiWireCheck {
         let atomic = try parsed(field) { try BittensorApiDecimal.atomic(value, scale: 9) }
 
         try require(atomic <= maxScaledAtomic, field)
-    }
-
-    static func unsignedInteger(_ value: String, _ field: @autoclosure () -> String) throws {
-        let atomic = try parsed(field) { try BittensorApiDecimal.atomic(value, scale: 0) }
-
-        try require(atomic < u256Bound, field)
     }
 
     static func clientGates(_ gates: BittensorApi.ClientGates, _ field: @autoclosure () -> String) throws {
@@ -144,26 +137,31 @@ extension BittensorApi.AlphaYieldCollection: BittensorApiWireChecked {
     }
 }
 
-extension BittensorApi.RewardCollection: BittensorApiWireChecked {
-    func validateWire() throws {
-        try BittensorApiWireCheck.require(historyScope == BittensorApiWireCheck.historyScope) { "historyScope" }
-
-        for (index, item) in items.enumerated() {
-            try BittensorApiWireCheck.unsignedInteger(item.reportedAmount, "items[\(index)].reportedAmount")
-            try BittensorApiWireCheck.decimal(item.reportedPrice, "items[\(index)].reportedPrice")
-        }
-    }
-}
-
 extension BittensorApi.OperationCollection: BittensorApiWireChecked {
     func validateWire() throws {
         try BittensorApiWireCheck.require(historyScope == BittensorApiWireCheck.historyScope) { "historyScope" }
+        try validatePageInfo()
 
         for (index, item) in items.enumerated() {
             try BittensorApiWireCheck.decimal(item.reportedAmountIn, "items[\(index)].reportedAmountIn")
             try BittensorApiWireCheck.decimal(item.reportedAmountOut, "items[\(index)].reportedAmountOut")
             try BittensorApiWireCheck.decimal(item.reportedPrice, "items[\(index)].reportedPrice")
         }
+    }
+
+    private func validatePageInfo() throws {
+        let pageRange = BittensorApiOperationFactory.pageRange
+
+        try BittensorApiWireCheck.require(pageInfo.pageSize == BittensorApiOperationFactory.pageSize) {
+            "pageInfo.pageSize"
+        }
+
+        try BittensorApiWireCheck.require(pageRange.contains(pageInfo.page)) { "pageInfo.page" }
+        try BittensorApiWireCheck.require(items.count <= pageInfo.pageSize) { "items" }
+
+        let isNextPageValid = pageInfo.nextPage.map { $0 == pageInfo.page + 1 && pageRange.contains($0) } ?? true
+
+        try BittensorApiWireCheck.require(isNextPageValid) { "pageInfo.nextPage" }
     }
 }
 

@@ -121,28 +121,32 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
 
     func testBuyWhosePostTradePriceReachesTheLimitIsNotFillableAlthoughItsAveragePriceIsInside() throws {
         let tradeQuote = try runBuyQuote(alphaOut: 66_964_347_135)
+        let sim = tradeQuote.quote.sim
+        let averagePrice = sim.taoAmount * SubtensorStakingPallet.alphaPriceScale / sim.alphaAmount
 
-        XCTAssertLessThan(try XCTUnwrap(tradeQuote.quote.impliedExecutionPrice), tradeQuote.limitPrice)
-        XCTAssertFalse(tradeQuote.isFillable)
+        XCTAssertLessThan(averagePrice, tradeQuote.limitPrice)
+        XCTAssertFalse(tradeQuote.isFillable(atLimit: tradeQuote.limitPrice))
     }
 
     func testBuyWhosePostTradePriceStaysInsideTheLimitIsFillable() throws {
         let tradeQuote = try runBuyQuote(alphaOut: 67_054_958_000)
 
-        XCTAssertTrue(tradeQuote.isFillable)
+        XCTAssertTrue(tradeQuote.isFillable(atLimit: tradeQuote.limitPrice))
     }
 
     func testSellWhosePostTradePriceReachesTheLimitIsNotFillableAlthoughItsAveragePriceIsInside() throws {
         let tradeQuote = try runSellQuote(taoOut: 4_133_000_000)
+        let sim = tradeQuote.quote.sim
+        let averagePrice = sim.taoAmount * SubtensorStakingPallet.alphaPriceScale / sim.alphaAmount
 
-        XCTAssertGreaterThan(try XCTUnwrap(tradeQuote.quote.impliedExecutionPrice), tradeQuote.limitPrice)
-        XCTAssertFalse(tradeQuote.isFillable)
+        XCTAssertGreaterThan(averagePrice, tradeQuote.limitPrice)
+        XCTAssertFalse(tradeQuote.isFillable(atLimit: tradeQuote.limitPrice))
     }
 
     func testSellWhosePostTradePriceStaysInsideTheLimitIsFillable() throws {
         let tradeQuote = try runSellQuote(taoOut: 4_145_000_000)
 
-        XCTAssertTrue(tradeQuote.isFillable)
+        XCTAssertTrue(tradeQuote.isFillable(atLimit: tradeQuote.limitPrice))
     }
 
     func testBuyWhoseRoundedUpPostTradePriceEqualsTheAcceptedLimitIsNotFillable() throws {
@@ -154,7 +158,7 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
     func testSellWhoseRoundedDownPostTradePriceEqualsTheLimitIsNotFillable() throws {
         let tradeQuote = try runSellQuote(taoOut: 4_135_094_907)
 
-        XCTAssertFalse(tradeQuote.isFillable)
+        XCTAssertFalse(tradeQuote.isFillable(atLimit: tradeQuote.limitPrice))
     }
 
     func testBuyQuoteWithoutBeneficiaryFailsClosed() {

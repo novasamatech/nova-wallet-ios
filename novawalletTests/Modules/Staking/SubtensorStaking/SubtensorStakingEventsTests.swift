@@ -78,41 +78,4 @@ final class SubtensorStakingEventsTests: XCTestCase {
         XCTAssertEqual(stakeRemoved.netuid, 1)
         XCTAssertEqual(stakeRemoved.fee, BigUInt(0))
     }
-
-    func testRootClaimedEventDecodesNamedFields() throws {
-        let eventHex = "0773" + coldkeyHex + "40420f0000000000"
-
-        let (event, codingFactory) = try decodeSingleEvent(
-            from: recordPrefixHex + eventHex + emptyTopicsHex
-        )
-
-        XCTAssertTrue(
-            codingFactory.metadata.eventMatches(event, path: SubtensorStakingPallet.rootClaimedEventPath)
-        )
-
-        let context = codingFactory.createRuntimeJsonContext()
-        let rootClaimed = try event.params.map(
-            to: SubtensorStakingPallet.RootClaimedEvent.self,
-            with: context.toRawContext()
-        )
-
-        XCTAssertEqual(rootClaimed.coldkey, Data(repeating: 0x11, count: 32))
-        XCTAssertEqual(rootClaimed.tao, BigUInt(1_000_000))
-    }
-
-    func testRootClaimedEventDecodesZeroTao() throws {
-        let eventHex = "0773" + coldkeyHex + "0000000000000000"
-
-        let (event, codingFactory) = try decodeSingleEvent(
-            from: recordPrefixHex + eventHex + emptyTopicsHex
-        )
-
-        let context = codingFactory.createRuntimeJsonContext()
-        let rootClaimed = try event.params.map(
-            to: SubtensorStakingPallet.RootClaimedEvent.self,
-            with: context.toRawContext()
-        )
-
-        XCTAssertEqual(rootClaimed.tao, BigUInt(0))
-    }
 }

@@ -47,27 +47,12 @@ extension SubtensorEarnSettings: SubtensorEarnSettingsProtocol {
             settingsManager.set(value: stored, for: Key.favouriteSubnets)
         }
     }
-
-    var lastStrategy: SubtensorStrategyKind? {
-        get {
-            settingsManager.string(for: Key.lastStrategy).flatMap(SubtensorStrategyKind.init(rawValue:))
-        }
-
-        set {
-            if let newValue {
-                settingsManager.set(value: newValue.rawValue, for: Key.lastStrategy)
-            } else {
-                settingsManager.removeValue(for: Key.lastStrategy)
-            }
-        }
-    }
 }
 
 private extension SubtensorEarnSettings {
     enum Key {
         static let slippageTolerance = "subtensorEarnSlippageTolerance"
         static let favouriteSubnets = "subtensorEarnFavouriteSubnets"
-        static let lastStrategy = "subtensorEarnLastStrategy"
     }
 
     struct StoredRational: Codable {

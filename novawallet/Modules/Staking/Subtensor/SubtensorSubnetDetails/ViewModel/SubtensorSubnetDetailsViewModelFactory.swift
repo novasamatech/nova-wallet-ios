@@ -9,8 +9,6 @@ protocol SubnetDetailsViewModelFactoryProtocol {
         isUseEnabled: Bool,
         locale: Locale
     ) -> SubtensorSubnetDetailsViewModel
-
-    func createFactors(for state: SubtensorSubnetDetailsState, locale: Locale) -> SubtensorSubnetFactorsViewModel
 }
 
 final class SubtensorSubnetDetailsViewModelFactory {

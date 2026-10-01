@@ -8,7 +8,6 @@ final class SubtensorEarnSettingsTests: XCTestCase {
 
         XCTAssertEqual(settings.slippageTolerance, BigRational(numerator: 5, denominator: 1000))
         XCTAssertEqual(settings.favouriteSubnets, [])
-        XCTAssertNil(settings.lastStrategy)
     }
 
     func testSettingsRoundTripExactlyThroughTheSettingsManager() {
@@ -21,12 +20,10 @@ final class SubtensorEarnSettingsTests: XCTestCase {
         let writer = SubtensorEarnSettings(settingsManager: settingsManager)
         writer.slippageTolerance = BigRational(numerator: 7, denominator: 3000)
         writer.favouriteSubnets = favourites
-        writer.lastStrategy = .higherUpside
 
         let reader = SubtensorEarnSettings(settingsManager: settingsManager)
 
         XCTAssertEqual(reader.slippageTolerance, BigRational(numerator: 7, denominator: 3000))
         XCTAssertEqual(reader.favouriteSubnets, favourites)
-        XCTAssertEqual(reader.lastStrategy, .higherUpside)
     }
 }
