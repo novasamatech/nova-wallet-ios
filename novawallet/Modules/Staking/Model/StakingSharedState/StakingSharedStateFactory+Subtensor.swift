@@ -8,6 +8,7 @@ struct SubtensorStakingProcessServices {
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let subnetMarketsService: SubtensorSubnetMarketsServiceProtocol
     let maxApyResolution: SubtensorMaxApyResolution
+    let costBasisService: SubtensorCostBasisServiceProtocol
     let isFixtureMode: Bool
 }
 
@@ -39,6 +40,7 @@ extension SubtensorStakingProcessServices {
             subnetLogosProvider: SubtensorSubnetLogosProvider(url: ApplicationConfig.shared.bittensorSubnetsURL),
             subnetMarketsService: createSubnetMarketsService(),
             maxApyResolution: SubtensorMaxApyResolution(),
+            costBasisService: createCostBasisService(apiOperationFactory: apiOperationFactory),
             isFixtureMode: isFixtureMode
         )
     }()
@@ -112,6 +114,17 @@ private extension SubtensorStakingProcessServices {
         SubtensorSubnetMarketsService(
             coingeckoOperationFactory: CoingeckoOperationFactory(),
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: Logger.shared
+        )
+    }
+
+    static func createCostBasisService(
+        apiOperationFactory: BittensorApiOperationFactoryProtocol
+    ) -> SubtensorCostBasisServiceProtocol {
+        SubtensorCostBasisService(
+            apiOperationFactory: apiOperationFactory,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            eventCenter: EventCenter.shared,
             logger: Logger.shared
         )
     }
@@ -267,7 +280,8 @@ extension StakingSharedStateFactory {
                 quoteFactory: chainServices.quoteOperationFactory,
                 feeCalculator: chainServices.novaFeeCalculator
             ),
-            rootHoldFactory: chainServices.rootHoldFactory
+            rootHoldFactory: chainServices.rootHoldFactory,
+            costBasisService: processServices.costBasisService
         )
     }
 

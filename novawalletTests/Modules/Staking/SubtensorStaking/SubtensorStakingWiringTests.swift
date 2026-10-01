@@ -51,15 +51,22 @@ final class SubtensorStakingWiringTests: XCTestCase {
         let chainAsset = Self.subtensorChainAsset()
         let option = Multistaking.ChainAssetOption(chainAsset: chainAsset, type: .subtensor)
 
+        let apiOperationFactory = BittensorApiOperationFactory(
+            transport: BittensorApiFixtureTransport(),
+            cache: BittensorApiResponseCache(operationQueue: OperationQueue(), logger: Logger.shared),
+            logger: Logger.shared
+        )
+
         let processServices = SubtensorStakingProcessServices(
-            bittensorApiOperationFactory: BittensorApiOperationFactory(
-                transport: BittensorApiFixtureTransport(),
-                cache: BittensorApiResponseCache(operationQueue: OperationQueue(), logger: Logger.shared),
-                logger: Logger.shared
-            ),
+            bittensorApiOperationFactory: apiOperationFactory,
             subnetLogosProvider: MockSubtensorSubnetLogosProviderProtocol(),
             subnetMarketsService: MockSubtensorSubnetMarketsServiceProtocol(),
             maxApyResolution: SubtensorMaxApyResolution(),
+            costBasisService: SubtensorCostBasisService(
+                apiOperationFactory: apiOperationFactory,
+                operationQueue: OperationQueue(),
+                eventCenter: EventCenter()
+            ),
             isFixtureMode: true
         )
 
