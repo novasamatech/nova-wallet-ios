@@ -56,7 +56,7 @@ private extension SubtensorConfirmViewModelContext {
         catalogue = input.catalogue
         latestQuote = input.latestQuote
         tradesUnavailable = input.tradesUnavailable
-        isQuoteFailed = false
+        isQuoteFailed = input.isQuoteFailed
         isPriceMoved = input.isPriceMoved
         price = input.price
         fee = input.fee
@@ -186,7 +186,7 @@ private extension SubtensorConfirmViewModelFactory {
         let proceeds = SubtensorSaleProceeds(
             quote: context.tradesUnavailable ? nil : context.latestQuote,
             soldAlpha: context.amount,
-            isQuotePending: !context.tradesUnavailable
+            isQuotePending: !context.tradesUnavailable && !context.isQuoteFailed
         )
 
         return costBasisViewModelFactory.createSale(
