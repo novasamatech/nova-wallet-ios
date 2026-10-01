@@ -109,17 +109,11 @@ private extension SubtensorStakingProcessServices {
     }
 
     static func createSubnetMarketsService() -> SubtensorSubnetMarketsServiceProtocol {
-        let service = SubtensorSubnetMarketsService(
+        SubtensorSubnetMarketsService(
             coingeckoOperationFactory: CoingeckoOperationFactory(),
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared
         )
-
-        #if F_SUBTENSOR_MARKETS_STUB
-            return SubtensorSubnetMarketsStubFallback(service: service, logger: Logger.shared)
-        #else
-            return service
-        #endif
     }
 }
 

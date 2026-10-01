@@ -150,6 +150,115 @@ final class SubtensorMaxApyProviderTests: XCTestCase {
         XCTAssertEqual(try run(provider.createMaxApyWrapper()), Decimal(string: "0.2"))
     }
 
+    func testWalkFailsWithoutMemoisingWhenASubnetStaysRateLimited() throws {
+        let apiOperationFactory = MockBittensorApiOperationFactoryProtocol()
+        let rateLimitedRequests = SubtensorMaxApyWalk.retryLimit + 1
+
+        let apexPage = try makeAlphaPage(netuid: 4, rows: [(apexPairHotkey, "20")], nextPage: nil, receivedAt: cachedAt)
+        let chutesPage = try makeAlphaPage(netuid: 64, rows: [(chutesPairHotkey, "40")], nextPage: nil, receivedAt: cachedAt)
+
+        stub(apiOperationFactory) { stub in
+            when(stub.createAlphaYieldWrapper(netuid: equal(to: 4), page: any())).then { _, _ in
+                CompoundOperationWrapper.createWithResult(apexPage)
+            }
+
+            let chutesStub = when(stub.createAlphaYieldWrapper(netuid: equal(to: 64), page: any()))
+
+            for _ in 0 ..< rateLimitedRequests {
+                chutesStub.then { _, _ in
+                    CompoundOperationWrapper.createWithError(BittensorApiError.rateLimited(requestId: nil))
+                }
+            }
+
+            chutesStub.then { _, _ in
+                CompoundOperationWrapper.createWithResult(chutesPage)
+            }
+        }
+
+        let provider = makeProvider(
+            recommendationService: makeRecommendationService(pairs: [
+                makePair(apexPairHotkey, netuid: 4),
+                makePair(chutesPairHotkey, netuid: 64)
+            ]),
+            apiOperationFactory: apiOperationFactory
+        )
+
+        XCTAssertThrowsError(try run(provider.createMaxApyWrapper()))
+        verify(apiOperationFactory, times(rateLimitedRequests))
+            .createAlphaYieldWrapper(netuid: equal(to: 64), page: equal(to: 1))
+
+        XCTAssertEqual(try run(provider.createMaxApyWrapper()), Decimal(string: "0.4"))
+    }
+
+    func testRateLimitedSubnetIsRetriedOnlyAfterTheRetryDelay() {
+        let apiOperationFactory = MockBittensorApiOperationFactoryProtocol()
+        let subnetRequested = expectation(description: "subnet requested")
+        subnetRequested.assertForOverFulfill = false
+        let subnetRetried = expectation(description: "subnet retried")
+        subnetRetried.expectedFulfillmentCount = 2
+        subnetRetried.assertForOverFulfill = false
+        subnetRetried.isInverted = true
+
+        stub(apiOperationFactory) { stub in
+            when(stub.createAlphaYieldWrapper(netuid: any(), page: any())).then { _, _ in
+                subnetRequested.fulfill()
+                subnetRetried.fulfill()
+
+                return CompoundOperationWrapper.createWithError(BittensorApiError.rateLimited(requestId: nil))
+            }
+        }
+
+        let provider = makeProvider(
+            recommendationService: makeRecommendationService(pairs: [makePair(chutesPairHotkey, netuid: 64)]),
+            apiOperationFactory: apiOperationFactory,
+            retryDelay: 60
+        )
+
+        let wrapper = provider.createMaxApyWrapper()
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: false)
+
+        wait(for: [subnetRequested], timeout: 10)
+        wait(for: [subnetRetried], timeout: 1)
+
+        wrapper.cancel()
+    }
+
+    func testYieldPageServedFromTheExpiredCacheIsRetriedForAFreshRate() throws {
+        let apiOperationFactory = MockBittensorApiOperationFactoryProtocol()
+
+        let expiredPage = try makeAlphaPage(
+            netuid: 64,
+            rows: [(chutesPairHotkey, "40")],
+            nextPage: nil,
+            receivedAt: cachedAt,
+            isFromExpiredCache: true
+        )
+
+        let freshPage = try makeAlphaPage(
+            netuid: 64,
+            rows: [(chutesPairHotkey, "12.5")],
+            nextPage: nil,
+            receivedAt: cachedAt
+        )
+
+        stub(apiOperationFactory) { stub in
+            when(stub.createAlphaYieldWrapper(netuid: any(), page: any()))
+                .then { _, _ in
+                    CompoundOperationWrapper.createWithResult(expiredPage)
+                }
+                .then { _, _ in
+                    CompoundOperationWrapper.createWithResult(freshPage)
+                }
+        }
+
+        let provider = makeProvider(
+            recommendationService: makeRecommendationService(pairs: [makePair(chutesPairHotkey, netuid: 64)]),
+            apiOperationFactory: apiOperationFactory
+        )
+
+        XCTAssertEqual(try run(provider.createMaxApyWrapper()), Decimal(string: "0.125"))
+    }
+
     func testProvidersSharingAResolutionReuseItsMaxApyForAnHour() throws {
         let apiOperationFactory = MockBittensorApiOperationFactoryProtocol()
 
@@ -242,7 +351,8 @@ final class SubtensorMaxApyProviderTests: XCTestCase {
         recommendationService: SubtensorRecommendationServiceProtocol,
         apiOperationFactory: BittensorApiOperationFactoryProtocol,
         resolution: SubtensorMaxApyResolution = SubtensorMaxApyResolution(),
-        requestSpacing: TimeInterval = 0
+        requestSpacing: TimeInterval = 0,
+        retryDelay: TimeInterval = 0
     ) -> SubtensorMaxApyProvider {
         let clock = clock
 
@@ -252,6 +362,7 @@ final class SubtensorMaxApyProviderTests: XCTestCase {
             resolution: resolution,
             operationQueue: OperationQueue(),
             requestSpacing: requestSpacing,
+            retryDelay: retryDelay,
             timeProvider: { clock }
         )
     }
@@ -272,7 +383,7 @@ final class SubtensorMaxApyProviderTests: XCTestCase {
 
             when(stub.createAlphaYieldWrapper(netuid: any(), page: any())).then { netuid, page in
                 guard let alphaPage = alphaPages[netuid]?[page] else {
-                    return CompoundOperationWrapper.createWithError(BittensorApiError.rateLimited(requestId: nil))
+                    return CompoundOperationWrapper.createWithError(BittensorApiError.datasetUnavailable(requestId: nil))
                 }
 
                 return CompoundOperationWrapper.createWithResult(alphaPage)
@@ -354,7 +465,8 @@ final class SubtensorMaxApyProviderTests: XCTestCase {
         netuid: UInt16,
         rows: [(hotkey: AccountId, rate: String)],
         nextPage: Int?,
-        receivedAt: TimeInterval
+        receivedAt: TimeInterval,
+        isFromExpiredCache: Bool = false
     ) throws -> AlphaPage {
         let items = try rows.map { row in
             try BittensorApi.AlphaYield(
@@ -382,7 +494,12 @@ final class SubtensorMaxApyProviderTests: XCTestCase {
             pageInfo: BittensorApi.PageInfo(page: 1, pageSize: 100, total: 300, nextPage: nextPage)
         )
 
-        return AlphaPage(value: collection, requestId: nil, receivedAt: receivedAt, isFromExpiredCache: false)
+        return AlphaPage(
+            value: collection,
+            requestId: nil,
+            receivedAt: receivedAt,
+            isFromExpiredCache: isFromExpiredCache
+        )
     }
 
     private func makeRootPage(rate: String, freshness: BittensorApi.Freshness) -> RootPage {
