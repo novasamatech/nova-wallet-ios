@@ -59,6 +59,10 @@ enum SubtensorFlowExtrinsic {
         "0759" + hotkey.toHex() + le(netuid) + le(alpha) + le(limitPrice) + "00"
     }
 
+    static func removeStakeFullLimit(hotkey: AccountId, netuid: UInt16, limitPrice: UInt64) -> String {
+        "0767" + hotkey.toHex() + le(netuid) + "01" + le(limitPrice)
+    }
+
     static func transferKeepAlive(to receiver: AccountId, amount: Balance) throws -> String {
         let encoder = ScaleEncoder()
         try amount.encode(scaleEncoder: encoder)
