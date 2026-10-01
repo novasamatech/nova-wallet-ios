@@ -10,6 +10,13 @@ final class SubtensorOperationResultDetailsView: CollapsableContainerView {
         $0.roundedBackgroundView.roundingCorners = [.topLeft, .topRight]
     }
 
+    let costBasisCell: StackTitleMultiValueCell = .create {
+        $0.preferredHeight = 44
+        $0.contentInsets = .init(top: 0, left: 16, bottom: 0, right: 16)
+        $0.borderView.borderType = .bottom
+        $0.roundedBackgroundView.cornerRadius = 0
+    }
+
     let slippageCell: SwapInfoViewCell = .create {
         $0.titleButton.imageWithTitleView?.titleColor = R.color.colorTextSecondary()
         $0.titleButton.imageWithTitleView?.titleFont = .regularFootnote
@@ -40,7 +47,7 @@ final class SubtensorOperationResultDetailsView: CollapsableContainerView {
     }
 
     override var rows: [UIView] {
-        [swapRateCell, slippageCell, validatorCell, networkFeeCell]
+        [swapRateCell, costBasisCell, slippageCell, validatorCell, networkFeeCell]
     }
 
     func setup(locale: Locale) {
@@ -57,6 +64,9 @@ final class SubtensorOperationResultDetailsView: CollapsableContainerView {
 
         swapRateCell.bind(loadableViewModel: .loaded(value: viewModel.swapRate))
         validatorCell.bind(loadableViewModel: .loaded(value: viewModel.validator))
+
+        costBasisCell.titleLabel.text = viewModel.costBasis?.title
+        costBasisCell.bind(costBasisRow: viewModel.costBasis?.value ?? .hidden)
 
         slippageCell.isHidden = viewModel.slippage == nil
 

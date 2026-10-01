@@ -23,6 +23,7 @@ final class SubtensorOperationResultViewModelFactory {
     let formatterFactory: AssetBalanceFormatterFactoryProtocol
     let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
     let subnetIconFactory: SubtensorSubnetIconFactoryProtocol
+    let costBasisViewModelFactory: SubtensorCostBasisViewModelFactory
     let dateFormatter: LocalizableResource<DateFormatter>
     let percentFormatter: LocalizableResource<NumberFormatter>
 
@@ -38,6 +39,13 @@ final class SubtensorOperationResultViewModelFactory {
         self.formatterFactory = formatterFactory
         self.assetIconViewModelFactory = assetIconViewModelFactory
         self.subnetIconFactory = subnetIconFactory
+        costBasisViewModelFactory = SubtensorCostBasisViewModelFactory(
+            taoInfo: chainAsset.assetDisplayInfo,
+            balanceViewModelFactory: BalanceViewModelFactory(
+                targetAssetInfo: chainAsset.assetDisplayInfo,
+                priceAssetInfoFactory: priceAssetInfoFactory
+            )
+        )
         dateFormatter = DateFormatter.shortDateAndTime
         percentFormatter = NumberFormatter.percentSingleHalfEven.localizableResource()
     }

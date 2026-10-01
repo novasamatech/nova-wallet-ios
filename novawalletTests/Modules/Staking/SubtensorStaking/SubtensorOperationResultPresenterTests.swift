@@ -312,7 +312,8 @@ private extension SubtensorOperationResultPresenterTests {
             stakeBefore: stakeBefore,
             groupHotkeyCount: groupHotkeyCount,
             emptiesPosition: emptiesPosition,
-            prices: SubtensorOperationResultPrices(taoPrice: nil, alphaSpot: 73_800_000)
+            prices: SubtensorOperationResultPrices(taoPrice: nil, alphaSpot: 73_800_000),
+            costBasis: nil
         )
     }
 

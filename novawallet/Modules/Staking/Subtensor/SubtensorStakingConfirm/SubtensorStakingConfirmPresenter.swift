@@ -68,6 +68,10 @@ extension SubtensorStakingConfirmPresenter {
         SubtensorSubnetNaming.titleWithSymbol(for: model.target.netuid, in: catalogue, locale: selectedLocale)
     }
 
+    var buyMoreCostBasis: SubtensorCostBasisState? {
+        model.origin == .buyMore ? costBasis : nil
+    }
+
     func provideAccountViewModels() {
         do {
             let walletViewModel = try walletViewModelFactory.createDisplayViewModel(from: model.account)
@@ -105,7 +109,7 @@ extension SubtensorStakingConfirmPresenter {
             fee: fee,
             stakeBefore: isPositionsSyncFailed || positionsState == nil ? nil : stakeGroup().total,
             signing: signing,
-            costBasis: model.origin == .buyMore ? costBasis : nil
+            costBasis: buyMoreCostBasis
         )
 
         view?.didReceive(viewModel: viewModelFactory.createViewModel(for: input, locale: selectedLocale))
@@ -240,7 +244,8 @@ extension SubtensorStakingConfirmPresenter {
             stakeBefore: group.total,
             groupHotkeyCount: group.hotkeyCount,
             emptiesPosition: false,
-            prices: SubtensorOperationResultPrices(taoPrice: price, alphaSpot: verified.quote?.quote.spotPrice)
+            prices: SubtensorOperationResultPrices(taoPrice: price, alphaSpot: verified.quote?.quote.spotPrice),
+            costBasis: buyMoreCostBasis
         )
 
         isHandingOff = true
