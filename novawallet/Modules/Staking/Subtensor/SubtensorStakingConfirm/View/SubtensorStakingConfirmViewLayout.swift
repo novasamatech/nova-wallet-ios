@@ -41,9 +41,9 @@ final class SubtensorStakingConfirmViewLayout: UIView {
 
     let earnCell = SwapNetworkFeeViewCell()
 
-    let avgBuyPriceCell = StackTitleMultiValueCell()
+    let avgBuyPriceCell = SubtensorStakingConfirmViewLayout.createCostBasisCell()
 
-    let youWillEarnCell = SwapNetworkFeeViewCell()
+    let youWillEarnCell = SubtensorStakingConfirmViewLayout.createCostBasisCell()
 
     let networkFeeCell = SwapNetworkFeeViewCell()
 
@@ -129,6 +129,13 @@ extension SubtensorStakingConfirmViewLayout {
 }
 
 private extension SubtensorStakingConfirmViewLayout {
+    static func createCostBasisCell() -> SwapNetworkFeeViewCell {
+        .create {
+            $0.rowContentView.valueView.stackView.alignment = .trailing
+            $0.valueTopButton.imageWithTitleView?.spacingBetweenLabelAndIcon = 3
+        }
+    }
+
     func setupLayout() {
         let bottomView = UIView.vStack(spacing: 16, [signingHintView, actionLoadableView])
 

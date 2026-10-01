@@ -3,6 +3,7 @@ import Foundation
 struct SubtensorConfirmQuoteState {
     private(set) var acknowledged: SubtensorTradeQuote?
     private(set) var isPriceMoved = false
+    private(set) var isLatestFailed = false
     private var flow = SubtensorQuoteFlowModel()
 
     init(request: SubtensorTradeQuoteRequest, acknowledged: SubtensorTradeQuote?) {
@@ -33,6 +34,8 @@ struct SubtensorConfirmQuoteState {
         guard flow.applyQuote(quote) else {
             return false
         }
+
+        isLatestFailed = false
 
         if acknowledged == nil {
             acknowledged = quote
@@ -70,5 +73,10 @@ struct SubtensorConfirmQuoteState {
 
     mutating func invalidateLatest() {
         flow.clearQuote()
+    }
+
+    mutating func markLatestFailed() {
+        flow.clearQuote()
+        isLatestFailed = true
     }
 }

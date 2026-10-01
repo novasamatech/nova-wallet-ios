@@ -160,10 +160,10 @@ class CollapsableContainerView: UIView {
                 delegate?.didChangeExpansion(isExpanded: true, sender: self)
             }
         } else {
+            let shownRows = stackView.arrangedSubviews.filter { !$0.isHidden }
+
             contentView.snp.updateConstraints { make in
-                make.top.equalToSuperview().offset(
-                    -CGFloat(stackView.arrangedSubviews.count) * Constants.rowHeight
-                )
+                make.top.equalToSuperview().offset(-CGFloat(shownRows.count) * Constants.rowHeight)
             }
             layoutIfNeeded()
 

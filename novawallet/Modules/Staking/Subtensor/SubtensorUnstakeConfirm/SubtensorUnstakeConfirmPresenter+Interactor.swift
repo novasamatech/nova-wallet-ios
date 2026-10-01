@@ -95,7 +95,7 @@ extension SubtensorUnstakeConfirmPresenter: SubtensorUnstakeConfirmOutputProtoco
                 self?.refreshPreflight()
             }
         case .quoteFailed:
-            quoteState?.invalidateLatest()
+            quoteState?.markLatestFailed()
             provideViewModel()
         }
     }

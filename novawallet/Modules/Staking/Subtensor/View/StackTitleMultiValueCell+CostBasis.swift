@@ -45,7 +45,7 @@ private extension SubtensorCostBasisValueViewModel {
     }
 }
 
-private extension SubtensorAvgBuyPriceTrend {
+extension SubtensorAvgBuyPriceTrend {
     var arrow: (glyph: String, tone: SubtensorValueTone)? {
         switch self {
         case .rising:
