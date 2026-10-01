@@ -6,6 +6,7 @@ import Foundation
         typealias World = BittensorApiFixtureWorld
 
         static let maxPage = 100
+        static let historyPageSize = 100
 
         static func nullable(_ value: Any?) -> Any {
             value ?? NSNull()

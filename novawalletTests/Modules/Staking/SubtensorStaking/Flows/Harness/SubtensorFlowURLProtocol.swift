@@ -116,7 +116,12 @@ final class SubtensorFlowURLProtocol: URLProtocol {
     }
 
     static func serveFixture(_ route: BittensorApiFixtureRoute) {
-        serveBittensor(fixturePath(for: route), reply: .json(BittensorApiFixtureRouter.document(for: route)))
+        guard let path = fixturePath(for: route) else {
+            XCTFail("The flow stub serves GET fixture routes only, not \(route)")
+            return
+        }
+
+        serveBittensor(path, reply: .json(BittensorApiFixtureRouter.document(for: route)))
     }
 
     static func serveSubnetLogos() {
@@ -204,7 +209,7 @@ private extension SubtensorFlowURLProtocol {
         lock.unlock()
     }
 
-    static func fixturePath(for route: BittensorApiFixtureRoute) -> String {
+    static func fixturePath(for route: BittensorApiFixtureRoute) -> String? {
         switch route {
         case .subnets:
             return "/subnets"
@@ -218,6 +223,8 @@ private extension SubtensorFlowURLProtocol {
             return "/recommendations"
         case .rankedSubnets:
             return "/recommendations/subnets"
+        case .operations:
+            return nil
         }
     }
 

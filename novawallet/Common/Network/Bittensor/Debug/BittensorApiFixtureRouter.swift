@@ -6,6 +6,7 @@ import Foundation
         case validators(netuid: UInt16)
         case rootYield(page: Int, pageSize: Int)
         case alphaYield(netuid: UInt16, page: Int, pageSize: Int)
+        case operations(page: Int)
         case recommendations
         case rankedSubnets
     }
@@ -16,12 +17,14 @@ import Foundation
             "/subnets/{netuid}/validators": .get,
             "/yields/root": .get,
             "/subnets/{netuid}/yields/alpha": .get,
+            "/operations/search": .post,
             "/recommendations": .get,
             "/recommendations/subnets": .get
         ]
 
         static let pageRange = 1 ... 100
         static let defaultPageSize = 100
+        static let maxSubjectLength = 128
 
         static func route(for request: BittensorApiRequest, requestId: String) throws -> BittensorApiFixtureRoute {
             let template = normalized(request.pathTemplate)
@@ -50,6 +53,12 @@ import Foundation
                 } else {
                     return .rootYield(page: paging.page, pageSize: paging.pageSize)
                 }
+            case "/operations/search":
+                guard request.queryItems.isEmpty, let body = request.jsonBody else {
+                    throw invalid
+                }
+
+                return .operations(page: try searchPage(of: body, invalid: invalid))
             default:
                 guard request.queryItems.isEmpty, request.jsonBody == nil else {
                     throw invalid
@@ -69,6 +78,8 @@ import Foundation
                 return BittensorApiFixtureDocuments.rootYield(page: page, pageSize: pageSize)
             case let .alphaYield(netuid, page, pageSize):
                 return BittensorApiFixtureDocuments.alphaYield(netuid: netuid, page: page, pageSize: pageSize)
+            case let .operations(page):
+                return BittensorApiFixtureDocuments.operations(page: page)
             case .recommendations:
                 return BittensorApiFixtureDocuments.recommendations()
             case .rankedSubnets:
@@ -136,6 +147,51 @@ import Foundation
             }
 
             return (values["page"] ?? 1, values["pageSize"] ?? defaultPageSize)
+        }
+
+        static func searchPage(of body: Data, invalid: Error) throws -> Int {
+            let object: Any
+
+            do {
+                object = try JSONSerialization.jsonObject(with: body)
+            } catch {
+                throw invalid
+            }
+
+            guard
+                let fields = object as? [String: Any],
+                Set(fields.keys).isSubset(of: ["accountSubject", "page"]),
+                let subject = fields["accountSubject"] as? String,
+                isValidSubject(subject) else {
+                throw invalid
+            }
+
+            guard let rawPage = fields["page"] else {
+                return 1
+            }
+
+            guard let page = strictInteger(rawPage), pageRange.contains(page) else {
+                throw invalid
+            }
+
+            return page
+        }
+
+        static func isValidSubject(_ subject: String) -> Bool {
+            let scalars = subject.unicodeScalars
+
+            return (1 ... maxSubjectLength).contains(scalars.count) && scalars.allSatisfy { ("!" ... "~").contains($0) }
+        }
+
+        static func strictInteger(_ value: Any) -> Int? {
+            guard
+                let number = value as? NSNumber,
+                CFGetTypeID(number) != CFBooleanGetTypeID(),
+                !CFNumberIsFloatType(number) else {
+                return nil
+            }
+
+            return number.intValue
         }
 
         static func canonicalInteger(_ lexeme: String) -> Int? {
