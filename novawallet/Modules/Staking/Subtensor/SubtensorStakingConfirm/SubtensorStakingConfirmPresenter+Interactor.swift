@@ -91,7 +91,7 @@ extension SubtensorStakingConfirmPresenter: SubtensorConfirmInteractorOutputProt
                 self?.refreshPreflight()
             }
         case .quoteFailed:
-            quoteState?.invalidateLatest()
+            quoteState?.markLatestFailed()
             provideViewModel()
         }
     }

@@ -52,6 +52,7 @@ struct SubtensorConfirmViewModelInput {
     let catalogue: SubtensorSubnetCatalogue?
     let latestQuote: SubtensorTradeQuote?
     let tradesUnavailable: Bool
+    let isQuoteFailed: Bool
     let isPriceMoved: Bool
     let price: PriceData?
     let fee: ExtrinsicFeeProtocol?
