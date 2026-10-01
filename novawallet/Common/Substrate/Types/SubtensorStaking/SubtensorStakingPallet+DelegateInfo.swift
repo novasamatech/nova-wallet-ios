@@ -36,13 +36,5 @@ extension SubtensorStakingPallet {
         let validatorPermits: [StringScaleMapper<UInt16>]
         @StringCodable var returnPer1000: Balance
         @StringCodable var totalDailyReturn: Balance
-
-        var registeredNetuids: [UInt16] {
-            registrations.map(\.value)
-        }
-
-        var validatorPermitNetuids: [UInt16] {
-            validatorPermits.map(\.value)
-        }
     }
 }

@@ -30,10 +30,6 @@ extension SubtensorStakingPallet {
         StorageCodingPath(moduleName: name, itemName: "ColdkeySwapAnnouncements")
     }
 
-    static var taoWeightPath: StorageCodingPath {
-        StorageCodingPath(moduleName: name, itemName: "TaoWeight")
-    }
-
     /// chain-wide StorageValue, not a per-subnet map (subtensor: `pallets/subtensor/src/lib.rs:2015`)
     static var subnetOwnerCutPath: StorageCodingPath {
         StorageCodingPath(moduleName: name, itemName: "SubnetOwnerCut")
