@@ -15,10 +15,6 @@ extension SubtensorRootHold {
 
         return elapsed >= interval ? 0 : interval - elapsed
     }
-
-    func isUnlocked(at head: UInt64) -> Bool {
-        remainingBlocks(at: head) == 0
-    }
 }
 
 final class SubtensorRootHoldFactory {

@@ -2328,7 +2328,6 @@
 		2D7A59052E5E000100000002 /* SubtensorRootClaimableService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A59052E5E000100000001 /* SubtensorRootClaimableService.swift */; };
 		2D7A59062E5E000100000002 /* SubtensorSessionCachingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A59062E5E000100000001 /* SubtensorSessionCachingService.swift */; };
 		2D7A59072E5E000100000002 /* SubtensorPreflightFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A59072E5E000100000001 /* SubtensorPreflightFactory.swift */; };
-		2D7A59082E5E000100000002 /* SubtensorNetworkInfoFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A59082E5E000100000001 /* SubtensorNetworkInfoFactory.swift */; };
 		2D7A59092E5E000100000002 /* SubtensorStakingSharedState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A59092E5E000100000001 /* SubtensorStakingSharedState.swift */; };
 		2D7A590A2E5E000100000002 /* SubtensorRootBasketDecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A590A2E5E000100000001 /* SubtensorRootBasketDecodeTests.swift */; };
 		2D7A590B2E5E000100000002 /* SubtensorPreflightValuesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A590B2E5E000100000001 /* SubtensorPreflightValuesTests.swift */; };
@@ -9544,7 +9543,6 @@
 		2D7A59052E5E000100000001 /* SubtensorRootClaimableService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorRootClaimableService.swift; sourceTree = "<group>"; };
 		2D7A59062E5E000100000001 /* SubtensorSessionCachingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSessionCachingService.swift; sourceTree = "<group>"; };
 		2D7A59072E5E000100000001 /* SubtensorPreflightFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorPreflightFactory.swift; sourceTree = "<group>"; };
-		2D7A59082E5E000100000001 /* SubtensorNetworkInfoFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorNetworkInfoFactory.swift; sourceTree = "<group>"; };
 		2D7A59092E5E000100000001 /* SubtensorStakingSharedState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingSharedState.swift; sourceTree = "<group>"; };
 		2D7A590A2E5E000100000001 /* SubtensorRootBasketDecodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorRootBasketDecodeTests.swift; sourceTree = "<group>"; };
 		2D7A590B2E5E000100000001 /* SubtensorPreflightValuesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorPreflightValuesTests.swift; sourceTree = "<group>"; };
@@ -19644,7 +19642,6 @@
 				39FC8B18780C4B728378A731 /* SubtensorValidatorChainOperationFactory.swift */,
 				4C7EE16BC83F43F6BBDBA700 /* SubtensorChunkedStorageQueryFactory.swift */,
 				2D7A59072E5E000100000001 /* SubtensorPreflightFactory.swift */,
-				2D7A59082E5E000100000001 /* SubtensorNetworkInfoFactory.swift */,
 				8F1A31012E5F000100000001 /* SubtensorQuoteOperationFactory.swift */,
 				8F1A31022E5F000100000001 /* SubtensorLimitPriceCalculator.swift */,
 				B18650CB4CE94994914EE795 /* SubtensorValidatorChainOperationFactoryProtocol.swift */,
@@ -37554,7 +37551,6 @@
 				2D7A59052E5E000100000002 /* SubtensorRootClaimableService.swift in Sources */,
 				2D7A59062E5E000100000002 /* SubtensorSessionCachingService.swift in Sources */,
 				2D7A59072E5E000100000002 /* SubtensorPreflightFactory.swift in Sources */,
-				2D7A59082E5E000100000002 /* SubtensorNetworkInfoFactory.swift in Sources */,
 				8F1A31012E5F000100000002 /* SubtensorQuoteOperationFactory.swift in Sources */,
 				8F1A31022E5F000100000002 /* SubtensorLimitPriceCalculator.swift in Sources */,
 				2D7A59092E5E000100000002 /* SubtensorStakingSharedState.swift in Sources */,

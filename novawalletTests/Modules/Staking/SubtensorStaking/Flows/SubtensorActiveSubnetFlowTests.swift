@@ -711,7 +711,7 @@ private extension SubtensorActiveSubnetFlowTests {
         presenter.didReceiveQuote(try run(services.tradeQuoteFactory.createSellQuoteWrapper(
             netuid: request.netuid,
             alpha: request.amountIn,
-            tolerance: request.tolerance
+            tolerance: services.earnSettings.slippageTolerance
         )))
 
         presenter.didReceiveFee(try run(operationService.createFeeWrapper(for: try XCTUnwrap(feeOperation.value))))

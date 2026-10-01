@@ -21,20 +21,4 @@ extension SubtensorTradeQuoteRequest {
             return alpha
         }
     }
-
-    var tolerance: BigRational {
-        switch self {
-        case let .buy(_, _, tolerance), let .sell(_, _, tolerance):
-            return tolerance
-        }
-    }
-
-    var direction: SubtensorTradeDirection {
-        switch self {
-        case .buy:
-            return .buy
-        case .sell:
-            return .sell
-        }
-    }
 }

@@ -407,7 +407,7 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
 
     func testRootPositionHandsOverALockedAddStakeWithoutTolerance() {
         let position = makePosition(hotkey: hotkey, netuid: SubtensorStakingPallet.rootNetuid, stake: 5000)
-        let setup = makeSetup(mode: .mode(for: position))
+        let setup = makeSetup(mode: .addStake(position: position))
 
         setup.presenter.didReceivePreflight(makePreflight())
         setup.presenter.updateAmount(Decimal(string: "1"))

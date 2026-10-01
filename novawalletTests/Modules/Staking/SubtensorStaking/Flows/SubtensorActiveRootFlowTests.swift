@@ -67,18 +67,6 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
 
         let maxUnstake = SubtensorAmountPolicy.maxSell(positionAlpha: actedOn.stakeAlpha, availability: rootAvailability)
 
-        let maxUnstakeOperation = SubtensorAmountPolicy.rootMaxUnstake(for: SubtensorRootMaxUnstakeInput(
-            hotkeys: [actedOn.hotkey],
-            positionAlpha: actedOn.stakeAlpha,
-            availability: rootAvailability,
-            transferable: SubtensorFlowChainWorld.transferable,
-            networkFee: maxCandidateFee.amount,
-            existentialDeposit: SubtensorFlowActiveStake.existentialDeposit,
-            isOwnHotkey: preflight.hotkeyOwner == coldkey,
-            minStake: preflight.minStake,
-            nominatorMinStake: preflight.effectiveNominatorMinStake
-        ))
-
         let unstakePlan = SubtensorAmountPolicy.sellPlan(for: SubtensorSellPlanInput(
             requestedAlpha: unstakeAmount,
             positionAlpha: actedOn.stakeAlpha,
@@ -133,7 +121,6 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(claimable, try SubtensorFlowActiveStake.expectedClaimable())
         XCTAssertEqual(rewards, 420_300_000)
         XCTAssertEqual(holds, [aster: SubtensorRootHold(interval: 0, lastStakeBlock: 9_139_000)])
-        XCTAssertEqual(holds[aster]?.isUnlocked(at: BittensorApiFixtureWorld.headBlock), true)
         XCTAssertEqual(positionDetail, SubtensorValidatorDetail(item: try asterRoot(name: nil), identity: identity("Aster Stake")))
         XCTAssertEqual(rootYield, try fixtureRootYield())
         XCTAssertEqual(rootYield?.annualRate, try decimal("0.138421"))
@@ -162,7 +149,6 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(actedOn.stakeAlpha + SubtensorFlowChainWorld.stakeAmount, 25_000_000_000)
 
         XCTAssertEqual(maxUnstake, 20_000_000_000)
-        XCTAssertEqual(maxUnstakeOperation, .rootUnstake(hotkey: aster, amount: 20_000_000_000))
         XCTAssertEqual(unstakePlan, .partial)
         XCTAssertEqual([maxCandidateFee.amount, unstakeFee.amount], [networkFee, networkFee])
         XCTAssertEqual(BigInt(actedOn.stakeAlpha) - BigInt(unstakeAmount), 10_000_000_000)

@@ -117,7 +117,7 @@ final class SubtensorRootClaimableServiceTests: XCTestCase {
 
         wait(for: [claimablesExpectation], timeout: 10)
 
-        XCTAssertEqual(received.last??.redeemable(for: firstHotkey), BigUInt(1900))
+        XCTAssertEqual(received.last??.previews.first(where: { $0.hotkey == firstHotkey })?.redeemable, BigUInt(1900))
     }
 
     func testFailedPreviewFetchSetsTheFailureSignalAndTheNextSuccessClearsIt() {
@@ -172,22 +172,6 @@ final class SubtensorRootClaimableServiceTests: XCTestCase {
         wait(for: [signalsExpectation], timeout: 10)
 
         XCTAssertEqual(signals, [true, false])
-    }
-
-    func testRedeemableForHotkey() {
-        let claimable = SubtensorRootClaimable(
-            previews: [
-                SubtensorRootClaimPreview(
-                    hotkey: firstHotkey,
-                    accrued: 820_106,
-                    redeemable: 5260,
-                    forfeitedEstimate: 814_786
-                )
-            ]
-        )
-
-        XCTAssertEqual(claimable.redeemable(for: firstHotkey), BigUInt(5260))
-        XCTAssertEqual(claimable.redeemable(for: secondHotkey), 0)
     }
 
     func testTotalRedeemableSumsEveryColdkeyPreview() {

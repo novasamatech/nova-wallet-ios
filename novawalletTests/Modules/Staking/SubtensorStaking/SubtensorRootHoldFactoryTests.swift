@@ -40,20 +40,12 @@ final class SubtensorRootHoldFactoryTests: XCTestCase {
         let hold = SubtensorRootHold(interval: 7200, lastStakeBlock: 9_139_242)
 
         XCTAssertEqual(hold.remainingBlocks(at: 9_142_242), 4200)
-        XCTAssertFalse(hold.isUnlocked(at: 9_142_242))
     }
 
     func testHoldUnlocksOnceTheIntervalHasElapsed() {
         let hold = SubtensorRootHold(interval: 7200, lastStakeBlock: 9_139_242)
 
         XCTAssertEqual(hold.remainingBlocks(at: 9_146_442), 0)
-        XCTAssertTrue(hold.isUnlocked(at: 9_146_442))
-    }
-
-    func testZeroIntervalMeansNoHold() {
-        let hold = SubtensorRootHold(interval: 0, lastStakeBlock: 9_139_242)
-
-        XCTAssertTrue(hold.isUnlocked(at: 9_139_242))
     }
 
     func testStampAheadOfTheHeadKeepsTheWholeInterval() {
