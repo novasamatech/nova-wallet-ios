@@ -2334,3 +2334,6 @@ Do you want to continue?";
 "wallet.asset.earn" = "Earn";
 "staking.subtensor.ui.avg.buy.price.from.format" = "from %1$@ per %2$@";
 "staking.subtensor.ui.you.earned" = "You earned";
+"staking.subtensor.ui.avg.buy.price.rising" = "Rising";
+"staking.subtensor.ui.avg.buy.price.falling" = "Falling";
+"staking.subtensor.ui.join.comma.format" = "%1$@, %2$@";

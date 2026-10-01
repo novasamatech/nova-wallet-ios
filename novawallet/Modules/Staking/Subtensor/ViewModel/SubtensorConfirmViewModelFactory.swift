@@ -11,6 +11,7 @@ private struct SubtensorConfirmViewModelContext {
     let catalogue: SubtensorSubnetCatalogue?
     let latestQuote: SubtensorTradeQuote?
     let tradesUnavailable: Bool
+    let isQuoteFailed: Bool
     let isPriceMoved: Bool
     let price: PriceData?
     let fee: ExtrinsicFeeProtocol?
@@ -34,6 +35,7 @@ private extension SubtensorConfirmViewModelContext {
         catalogue = input.catalogue
         latestQuote = input.latestQuote
         tradesUnavailable = input.tradesUnavailable
+        isQuoteFailed = input.isQuoteFailed
         isPriceMoved = input.isPriceMoved
         price = input.price
         fee = input.fee
@@ -54,6 +56,7 @@ private extension SubtensorConfirmViewModelContext {
         catalogue = input.catalogue
         latestQuote = input.latestQuote
         tradesUnavailable = input.tradesUnavailable
+        isQuoteFailed = input.isQuoteFailed
         isPriceMoved = input.isPriceMoved
         price = input.price
         fee = input.fee
@@ -183,7 +186,7 @@ private extension SubtensorConfirmViewModelFactory {
         let proceeds = SubtensorSaleProceeds(
             quote: context.tradesUnavailable ? nil : context.latestQuote,
             soldAlpha: context.amount,
-            isQuotePending: !context.tradesUnavailable
+            isQuotePending: !context.tradesUnavailable && !context.isQuoteFailed
         )
 
         return costBasisViewModelFactory.createSale(
@@ -206,7 +209,7 @@ private extension SubtensorConfirmViewModelFactory {
         let purchase = SubtensorPurchaseQuote(
             quote: context.tradesUnavailable ? nil : context.latestQuote,
             paidTao: context.amount,
-            isQuotePending: !context.tradesUnavailable
+            isQuotePending: !context.tradesUnavailable && !context.isQuoteFailed
         )
 
         let avgBuyPrice = costBasisViewModelFactory.createAvgBuyPrice(

@@ -61,6 +61,37 @@ final class SubtensorCostBasisServiceTests: XCTestCase {
         XCTAssertEqual(lium, .noPurchases)
     }
 
+    func testOnlyAWholeMoveOrTransferWordInTheLabelSkipsAnOperation() throws {
+        let apiOperationFactory = MockBittensorApiOperationFactoryProtocol()
+
+        stubPages(apiOperationFactory, pages: [
+            makePage(1, nextPage: nil, rows: [
+                makeOperation(
+                    netuid: chutesNetuid,
+                    amountIn: "1.25",
+                    amountOut: "25",
+                    price: "0.05",
+                    label: "RemoveStake"
+                ),
+                makeOperation(netuid: chutesNetuid, amountIn: "5", amountOut: "5", price: "0.05", label: "MoveStake"),
+                makeOperation(
+                    netuid: chutesNetuid,
+                    amountIn: "4",
+                    amountOut: "4",
+                    price: "0.05",
+                    label: "transfer_stake"
+                )
+            ])
+        ])
+
+        let service = makeService(apiOperationFactory)
+
+        XCTAssertEqual(
+            try run(service.createCostBasisWrapper(for: accountId, netuid: chutesNetuid)),
+            .average(SubtensorPurchaseTotals(paidTao: 1_250_000_000, receivedAlpha: 25_000_000_000))
+        )
+    }
+
     func testOperationFittingNeitherTradeDirectionLeavesTheSubnetWithoutAnAverage() {
         let apiOperationFactory = MockBittensorApiOperationFactoryProtocol()
 
