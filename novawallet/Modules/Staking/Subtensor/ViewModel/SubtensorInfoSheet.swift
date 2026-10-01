@@ -10,6 +10,7 @@ enum SubtensorInfoSheet: Equatable {
     case account(address: AccountAddress, chain: ChainModel)
     case totalStaked(isRoot: Bool)
     case validatorTake
+    case avgBuyPrice(symbol: String, subnetName: String)
 }
 
 struct SubtensorInfoSheetText {
@@ -36,6 +37,8 @@ extension SubtensorInfoSheet {
             return Self.totalStakedText(isRoot: isRoot)
         case .validatorTake:
             return Self.validatorTakeText()
+        case let .avgBuyPrice(symbol, subnetName):
+            return Self.avgBuyPriceText(for: symbol, subnetName: subnetName)
         }
     }
 }
@@ -159,6 +162,20 @@ private extension SubtensorInfoSheet {
             },
             details: LocalizableResource { locale in
                 R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorInfoValidatorTake()
+            }
+        )
+    }
+
+    static func avgBuyPriceText(for symbol: String, subnetName: String) -> SubtensorInfoSheetText {
+        SubtensorInfoSheetText(
+            title: LocalizableResource { locale in
+                R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiAvgBuyPrice()
+            },
+            details: LocalizableResource { locale in
+                R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorInfoAvgBuyPrice(
+                    symbol,
+                    subnetName
+                )
             }
         )
     }

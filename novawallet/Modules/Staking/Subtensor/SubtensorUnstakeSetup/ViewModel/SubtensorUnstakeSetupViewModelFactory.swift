@@ -8,6 +8,7 @@ final class SubtensorUnstakeSetupViewModelFactory {
     let displayAddressFactory: DisplayAddressViewModelFactoryProtocol
     let iconFactory: SubtensorSubnetIconFactoryProtocol
     let assetIconFactory: AssetIconViewModelFactoryProtocol
+    let costBasisViewModelFactory: SubtensorCostBasisViewModelFactory
 
     private let formatterFactory = AssetBalanceFormatterFactory()
 
@@ -25,6 +26,10 @@ final class SubtensorUnstakeSetupViewModelFactory {
         self.displayAddressFactory = displayAddressFactory
         self.iconFactory = iconFactory
         self.assetIconFactory = assetIconFactory
+        costBasisViewModelFactory = SubtensorCostBasisViewModelFactory(
+            taoInfo: chainAsset.assetDisplayInfo,
+            balanceViewModelFactory: balanceViewModelFactory
+        )
     }
 
     func createViewModel(
@@ -255,8 +260,47 @@ private extension SubtensorUnstakeSetupViewModelFactory {
         return SubtensorUnstakeDetailsViewModel(
             receive: createReceive(for: input, receive: tradePanel?.receive, locale: locale),
             swapRate: createSwapRate(for: input, swapRate: tradePanel?.swapRate, locale: locale),
+            avgBuyPrice: createAvgBuyPrice(for: input, locale: locale),
+            earned: createEarned(for: input, locale: locale),
             validator: createValidator(for: input),
             networkFee: input.fee.map { formatFee($0, price: input.price, locale: locale) }
+        )
+    }
+
+    func createAvgBuyPrice(
+        for input: SubtensorUnstakeSetupViewModelInput,
+        locale: Locale
+    ) -> SubtensorCostBasisRowViewModel {
+        guard !input.isRoot else {
+            return .hidden
+        }
+
+        return costBasisViewModelFactory.createAvgBuyPrice(
+            for: input.costBasis,
+            alphaSymbol: SubtensorSubnetNaming.symbol(for: input.netuid, in: input.catalogue),
+            locale: locale
+        )
+    }
+
+    func createEarned(
+        for input: SubtensorUnstakeSetupViewModelInput,
+        locale: Locale
+    ) -> SubtensorCostBasisRowViewModel {
+        guard !input.isRoot else {
+            return .hidden
+        }
+
+        let proceeds = SubtensorSaleProceeds(
+            quote: input.quote,
+            soldAlpha: input.amount,
+            isQuotePending: isQuotePending(for: input)
+        )
+
+        return costBasisViewModelFactory.createEarned(
+            for: input.costBasis,
+            proceeds: proceeds,
+            taoPrice: input.price,
+            locale: locale
         )
     }
 

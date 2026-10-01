@@ -199,6 +199,7 @@ final class SubtensorUnstakeSetupPresenterTests: XCTestCase {
             when(stub.loadSubnetLogos()).thenDoNothing()
             when(stub.loadValidator(any(), on: any())).thenDoNothing()
             when(stub.loadRootHolds(for: any())).thenDoNothing()
+            when(stub.loadCostBasis(for: any())).thenDoNothing()
         }
 
         let wireframe = MockSubtensorUnstakeSetupWireframeProtocol()
