@@ -52,7 +52,7 @@ enum SubtensorStakingConfirmViewFactory {
 
         let view = SubtensorStakingConfirmViewController(
             presenter: presenter,
-            mode: model.target.isRoot ? .rootStake : .swap,
+            mode: model.target.isRoot ? .rootStake : .swap(.buy),
             localizationManager: localizationManager
         )
 

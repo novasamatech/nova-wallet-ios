@@ -17,6 +17,8 @@ protocol SubtensorStakingConfirmPresenterProtocol: AnyObject {
     func showSwapRateInfo()
     func showSlippageInfo()
     func showEarnPerMonthInfo()
+    func showAvgBuyPriceInfo()
+    func showYouWillEarnInfo()
     func showNetworkFeeInfo()
 }
 

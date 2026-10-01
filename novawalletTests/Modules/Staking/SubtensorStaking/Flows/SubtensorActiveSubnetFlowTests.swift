@@ -630,6 +630,7 @@ private extension SubtensorActiveSubnetFlowTests {
             when(stub.setup()).thenDoNothing()
             when(stub.refreshPreflight(for: any(), netuid: any())).thenDoNothing()
             when(stub.loadSubnetData()).thenDoNothing()
+            when(stub.loadCostBasis(for: any())).thenDoNothing()
             when(stub.refreshQuote(for: any())).thenDoNothing()
             when(stub.estimateFee(for: any())).thenDoNothing()
         }

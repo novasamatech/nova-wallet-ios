@@ -371,6 +371,10 @@ extension SubtensorStakingConfirmPresenter: SubtensorStakingConfirmPresenterProt
         wireframe.showSubtensorInfo(.earnTokensMonth(subnetName: subnetName), from: view)
     }
 
+    func showAvgBuyPriceInfo() {}
+
+    func showYouWillEarnInfo() {}
+
     func showNetworkFeeInfo() {
         wireframe.showSubtensorInfo(.networkFee(.buy), from: view)
     }

@@ -268,6 +268,7 @@ final class SubtensorUnstakeConfirmPresenterTests: XCTestCase {
             when(stub.refreshPositions()).thenDoNothing()
             when(stub.loadSubnetData()).thenDoNothing()
             when(stub.loadRootHolds(for: any())).thenDoNothing()
+            when(stub.loadCostBasis(for: any())).thenDoNothing()
         }
 
         let wireframe = MockSubtensorUnstakeConfirmWireframeProtocol()

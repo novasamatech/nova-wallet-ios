@@ -1,35 +1,5 @@
 import Foundation
 
-struct SubtensorConfirmViewModelInput {
-    let model: SubtensorStakingConfirmModel
-    let catalogue: SubtensorSubnetCatalogue?
-    let latestQuote: SubtensorTradeQuote?
-    let tradesUnavailable: Bool
-    let isPriceMoved: Bool
-    let price: PriceData?
-    let fee: ExtrinsicFeeProtocol?
-    let stakeBefore: Balance?
-    let signing: SubtensorOperationGate.Verdict
-}
-
-struct SubtensorConfirmStakeChange: Equatable {
-    let before: Balance
-    let after: Balance
-    let isEstimated: Bool
-}
-
-struct SubtensorUnstakeConfirmViewModelInput {
-    let model: SubtensorUnstakeConfirmModel
-    let catalogue: SubtensorSubnetCatalogue?
-    let latestQuote: SubtensorTradeQuote?
-    let tradesUnavailable: Bool
-    let isPriceMoved: Bool
-    let price: PriceData?
-    let fee: ExtrinsicFeeProtocol?
-    let stakeChange: SubtensorConfirmStakeChange?
-    let signing: SubtensorOperationGate.Verdict
-}
-
 protocol SubtensorConfirmViewModelFactoryProtocol {
     func createViewModel(for input: SubtensorConfirmViewModelInput, locale: Locale) -> SubtensorConfirmViewModel
 
@@ -63,6 +33,7 @@ private struct SubtensorConfirmViewModelContext {
     let price: PriceData?
     let fee: ExtrinsicFeeProtocol?
     let signing: SubtensorOperationGate.Verdict
+    let costBasis: SubtensorCostBasisState?
 }
 
 private extension SubtensorConfirmViewModelContext {
@@ -85,6 +56,7 @@ private extension SubtensorConfirmViewModelContext {
         price = input.price
         fee = input.fee
         signing = input.signing
+        costBasis = nil
     }
 
     init(input: SubtensorUnstakeConfirmViewModelInput) {
@@ -104,6 +76,7 @@ private extension SubtensorConfirmViewModelContext {
         price = input.price
         fee = input.fee
         signing = input.signing
+        costBasis = input.costBasis
     }
 }
 
@@ -114,6 +87,7 @@ final class SubtensorConfirmViewModelFactory {
     let formatterFactory: AssetBalanceFormatterFactoryProtocol
     let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
     let subnetIconFactory: SubtensorSubnetIconFactoryProtocol
+    let costBasisViewModelFactory: SubtensorCostBasisViewModelFactory
 
     init(
         chainAsset: ChainAsset,
@@ -122,11 +96,13 @@ final class SubtensorConfirmViewModelFactory {
         assetIconViewModelFactory: AssetIconViewModelFactoryProtocol = AssetIconViewModelFactory(),
         subnetIconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory()
     ) {
-        self.chainAsset = chainAsset
-        balanceViewModelFactory = BalanceViewModelFactory(
+        let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: chainAsset.assetDisplayInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
         )
+
+        self.chainAsset = chainAsset
+        self.balanceViewModelFactory = balanceViewModelFactory
         quoteViewModelFactory = SubtensorQuoteViewModelFactory(
             chainAsset: chainAsset,
             priceAssetInfoFactory: priceAssetInfoFactory
@@ -134,6 +110,10 @@ final class SubtensorConfirmViewModelFactory {
         self.formatterFactory = formatterFactory
         self.assetIconViewModelFactory = assetIconViewModelFactory
         self.subnetIconFactory = subnetIconFactory
+        costBasisViewModelFactory = SubtensorCostBasisViewModelFactory(
+            taoInfo: chainAsset.assetDisplayInfo,
+            balanceViewModelFactory: balanceViewModelFactory
+        )
     }
 }
 
@@ -214,13 +194,49 @@ private extension SubtensorConfirmViewModelFactory {
         }
     }
 
+    func createSaleCostBasis(
+        for context: SubtensorConfirmViewModelContext,
+        locale: Locale
+    ) -> SubtensorSaleCostBasisViewModel {
+        let proceeds = SubtensorSaleProceeds(
+            quote: context.tradesUnavailable ? nil : context.latestQuote,
+            soldAlpha: context.amount,
+            isQuotePending: !context.tradesUnavailable
+        )
+
+        return costBasisViewModelFactory.createSale(
+            for: context.costBasis,
+            proceeds: proceeds,
+            alphaSymbol: SubtensorSubnetNaming.symbol(for: context.target.netuid, in: context.catalogue),
+            taoPrice: context.price,
+            locale: locale
+        )
+    }
+
+    func createRemark(
+        for direction: SubtensorTradeDirection,
+        isProfitEstimated: Bool,
+        locale: Locale
+    ) -> String {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        switch direction {
+        case .buy:
+            return strings.stakingSubtensorConfirmRemarkBuy()
+        case .sell where isProfitEstimated:
+            return strings.stakingSubtensorConfirmRemarkSellProfit()
+        case .sell:
+            return strings.stakingSubtensorConfirmRemarkSell()
+        }
+    }
+
     func createSwapViewModel(
         for context: SubtensorConfirmViewModelContext,
         locale: Locale
     ) -> SubtensorConfirmSwapViewModel {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-        let unknown = strings.stakingSubtensorUiValueUnknown()
+        let unknown = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown()
         let hasRate = context.annualRate != nil
+        let costBasis = createSaleCostBasis(for: context, locale: locale)
 
         let panel = quoteViewModelFactory.createTradePanel(
             for: context.latestQuote,
@@ -259,6 +275,8 @@ private extension SubtensorConfirmViewModelFactory {
             pay: createPayTile(for: context, locale: locale),
             receive: receive,
             swapRate: swapRate,
+            avgBuyPrice: costBasis.avgBuyPrice,
+            youWillEarn: costBasis.earned,
             slippage: context.tolerance.flatMap {
                 quoteViewModelFactory.createSlippageViewModel(for: $0, locale: locale)
             },
@@ -266,9 +284,7 @@ private extension SubtensorConfirmViewModelFactory {
                 SubtensorApyFormatter.text(for: $0, style: .trailing, locale: locale)
             },
             earnPerMonth: earnPerMonth,
-            remark: context.direction == .buy
-                ? strings.stakingSubtensorConfirmRemarkBuy()
-                : strings.stakingSubtensorConfirmRemarkSell()
+            remark: createRemark(for: context.direction, isProfitEstimated: costBasis.isEarnedEstimated, locale: locale)
         )
     }
 

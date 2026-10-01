@@ -19,6 +19,14 @@ enum SubtensorCostBasisRowViewModel: Equatable {
     case value(SubtensorCostBasisValueViewModel)
 }
 
+struct SubtensorSaleCostBasisViewModel: Equatable {
+    static let hidden = SubtensorSaleCostBasisViewModel(avgBuyPrice: .hidden, earned: .hidden, isEarnedEstimated: false)
+
+    let avgBuyPrice: SubtensorCostBasisRowViewModel
+    let earned: SubtensorCostBasisRowViewModel
+    let isEarnedEstimated: Bool
+}
+
 final class SubtensorCostBasisViewModelFactory {
     let taoInfo: AssetBalanceDisplayInfo
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
@@ -141,5 +149,23 @@ extension SubtensorCostBasisViewModelFactory {
         default:
             return createUnknownValue(locale: locale)
         }
+    }
+
+    func createSale(
+        for costBasis: SubtensorCostBasisState?,
+        proceeds: SubtensorSaleProceeds,
+        alphaSymbol: String,
+        taoPrice: PriceData?,
+        locale: Locale
+    ) -> SubtensorSaleCostBasisViewModel {
+        guard let costBasis else {
+            return .hidden
+        }
+
+        return SubtensorSaleCostBasisViewModel(
+            avgBuyPrice: createAvgBuyPrice(for: costBasis, alphaSymbol: alphaSymbol, locale: locale),
+            earned: createEarned(for: costBasis, proceeds: proceeds, taoPrice: taoPrice, locale: locale),
+            isEarnedEstimated: costBasis.earnedTao(from: proceeds) != nil
+        )
     }
 }
