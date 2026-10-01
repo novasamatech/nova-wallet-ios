@@ -121,7 +121,10 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
 
     func testBuyWhosePostTradePriceReachesTheLimitIsNotFillableAlthoughItsAveragePriceIsInside() throws {
         let tradeQuote = try runBuyQuote(alphaOut: 66_964_347_135)
+        let sim = tradeQuote.quote.sim
+        let averagePrice = sim.taoAmount * SubtensorStakingPallet.alphaPriceScale / sim.alphaAmount
 
+        XCTAssertLessThan(averagePrice, tradeQuote.limitPrice)
         XCTAssertFalse(tradeQuote.isFillable(atLimit: tradeQuote.limitPrice))
     }
 
@@ -133,7 +136,10 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
 
     func testSellWhosePostTradePriceReachesTheLimitIsNotFillableAlthoughItsAveragePriceIsInside() throws {
         let tradeQuote = try runSellQuote(taoOut: 4_133_000_000)
+        let sim = tradeQuote.quote.sim
+        let averagePrice = sim.taoAmount * SubtensorStakingPallet.alphaPriceScale / sim.alphaAmount
 
+        XCTAssertGreaterThan(averagePrice, tradeQuote.limitPrice)
         XCTAssertFalse(tradeQuote.isFillable(atLimit: tradeQuote.limitPrice))
     }
 

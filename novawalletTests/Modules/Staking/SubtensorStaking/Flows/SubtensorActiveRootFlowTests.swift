@@ -121,6 +121,7 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(claimable, try SubtensorFlowActiveStake.expectedClaimable())
         XCTAssertEqual(rewards, 420_300_000)
         XCTAssertEqual(holds, [aster: SubtensorRootHold(interval: 0, lastStakeBlock: 9_139_000)])
+        XCTAssertEqual(holds[aster]?.remainingBlocks(at: BittensorApiFixtureWorld.headBlock), 0)
         XCTAssertEqual(positionDetail, SubtensorValidatorDetail(item: try asterRoot(name: nil), identity: identity("Aster Stake")))
         XCTAssertEqual(rootYield, try fixtureRootYield())
         XCTAssertEqual(rootYield?.annualRate, try decimal("0.138421"))
