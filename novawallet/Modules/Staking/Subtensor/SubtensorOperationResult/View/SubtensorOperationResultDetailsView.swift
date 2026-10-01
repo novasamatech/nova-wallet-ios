@@ -60,14 +60,14 @@ final class SubtensorOperationResultDetailsView: CollapsableContainerView {
         networkFeeCell.titleButton.setTitle(strings.commonNetworkFee())
     }
 
-    func bind(viewModel: SubtensorResultDetailsViewModel) {
+    func bind(viewModel: SubtensorResultDetailsViewModel, locale: Locale) {
         titleControl.titleLabel.text = viewModel.title
 
         swapRateCell.bind(loadableViewModel: .loaded(value: viewModel.swapRate))
         validatorCell.bind(loadableViewModel: .loaded(value: viewModel.validator))
 
         costBasisCell.titleButton.setTitle(viewModel.costBasis?.title)
-        costBasisCell.bind(costBasisRow: viewModel.costBasis?.value ?? .hidden)
+        costBasisCell.bind(costBasisRow: viewModel.costBasis?.value ?? .hidden, locale: locale)
 
         slippageCell.isHidden = viewModel.slippage == nil
 

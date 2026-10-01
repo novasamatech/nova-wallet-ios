@@ -237,3 +237,30 @@ extension SubtensorCostBasisViewModelFactory {
         )
     }
 }
+
+extension SubtensorCostBasisValueViewModel {
+    func accessibilityValue(for locale: Locale) -> String {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        let trendAmount = trend?.accessibilityTitle(for: locale).map {
+            strings.stakingSubtensorUiJoinCommaFormat($0, amount)
+        } ?? amount
+
+        return detail.map { strings.stakingSubtensorUiJoinCommaFormat(trendAmount, $0) } ?? trendAmount
+    }
+}
+
+private extension SubtensorAvgBuyPriceTrend {
+    func accessibilityTitle(for locale: Locale) -> String? {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        switch self {
+        case .rising:
+            return strings.stakingSubtensorUiAvgBuyPriceRising()
+        case .falling:
+            return strings.stakingSubtensorUiAvgBuyPriceFalling()
+        case .unchanged:
+            return nil
+        }
+    }
+}

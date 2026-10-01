@@ -118,8 +118,8 @@ private extension SubtensorStakingConfirmViewController {
 
         rootView.swapRateCell.bind(loadableViewModel: viewModel.swapRate)
 
-        rootView.avgBuyPriceCell.bind(costBasisRow: viewModel.avgBuyPrice)
-        rootView.youWillEarnCell.bind(costBasisRow: viewModel.youWillEarn)
+        rootView.avgBuyPriceCell.bind(costBasisRow: viewModel.avgBuyPrice, locale: selectedLocale)
+        rootView.youWillEarnCell.bind(costBasisRow: viewModel.youWillEarn, locale: selectedLocale)
 
         rootView.slippageCell.isHidden = viewModel.slippage == nil
         rootView.slippageCell.bind(loadableViewModel: .loaded(value: viewModel.slippage ?? ""))
