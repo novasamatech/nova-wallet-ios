@@ -366,13 +366,12 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
         XCTAssertFalse(viewModel.action.isEnabled)
 
         stub(setup.wireframe) { stub in
-            when(stub.showGetTao(from: any(), chainAsset: any(), assetListObservable: any(), rampHandler: any()))
-                .thenDoNothing()
+            when(stub.showGetTao(from: any(), chainAsset: any(), rampHandler: any())).thenDoNothing()
         }
 
         setup.presenter.getTao()
 
-        verify(setup.wireframe).showGetTao(from: any(), chainAsset: any(), assetListObservable: any(), rampHandler: any())
+        verify(setup.wireframe).showGetTao(from: any(), chainAsset: any(), rampHandler: any())
     }
 
     func testAmountAboveMaxShowsTheReserveWarningAndDisablesContinue() throws {

@@ -5,8 +5,7 @@ protocol SubtensorGetTaoRouting: RampPresentable, AlertPresentable {
     func showGetTao(
         from view: ControllerBackedProtocol?,
         chainAsset: ChainAsset,
-        assetListObservable: AssetListModelObservable?,
-        rampHandler: (RampFlowManaging & RampDelegate)?
+        rampHandler: RampFlowManaging & RampDelegate
     )
 }
 
@@ -14,10 +13,9 @@ extension SubtensorGetTaoRouting {
     func showGetTao(
         from view: ControllerBackedProtocol?,
         chainAsset: ChainAsset,
-        assetListObservable: AssetListModelObservable?,
-        rampHandler: (RampFlowManaging & RampDelegate)?
+        rampHandler: RampFlowManaging & RampDelegate
     ) {
-        let observable = assetListObservable ?? AssetListModelObservable(state: .init(value: .init()))
+        let observable = AssetListModelObservable(state: .init(value: .init()))
 
         let completion: GetTokenOptionsCompletion = { [weak self, weak view] result in
             guard let self else {
@@ -36,7 +34,7 @@ extension SubtensorGetTaoRouting {
             case let .receive(account):
                 showGetTaoByReceive(from: view, chainAsset: chainAsset, account: account)
             case let .buy(actions):
-                rampHandler?.startRampFlow(
+                rampHandler.startRampFlow(
                     from: view,
                     actions: actions,
                     rampType: .onRamp,
