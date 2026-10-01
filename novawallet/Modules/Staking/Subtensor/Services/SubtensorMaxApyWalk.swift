@@ -1,15 +1,21 @@
 import Foundation
 import Operation_iOS
 
+enum SubtensorMaxApyWalkError: Error {
+    case expiredYieldPage
+}
+
 final class SubtensorMaxApyWalk {
     typealias Completion = (Result<Decimal?, Error>) -> Void
 
     static let recommendedClasses: [SubtensorRecommendationClass] = [.stable, .balanced, .higherUpside]
+    static let retryLimit = 2
 
     let recommendationService: SubtensorRecommendationServiceProtocol
     let apiOperationFactory: BittensorApiOperationFactoryProtocol
     let operationQueue: OperationQueue
     let requestSpacing: TimeInterval
+    let retryDelay: TimeInterval
     let timeProvider: () -> TimeInterval
     let logger: LoggerProtocol
 
@@ -21,6 +27,7 @@ final class SubtensorMaxApyWalk {
     private var targets: [Target] = []
     private var alphaPages: [BittensorApiResult<BittensorApi.AlphaYieldCollection>] = []
     private var nextPage = 1
+    private var retries = 0
     private var nextRequestAt: TimeInterval?
     private var rootYield: SubtensorReportedYield?
     private var alphaYields: [UInt16: SubtensorAlphaYields] = [:]
@@ -30,6 +37,7 @@ final class SubtensorMaxApyWalk {
         apiOperationFactory: BittensorApiOperationFactoryProtocol,
         operationQueue: OperationQueue,
         requestSpacing: TimeInterval,
+        retryDelay: TimeInterval,
         timeProvider: @escaping () -> TimeInterval,
         logger: LoggerProtocol
     ) {
@@ -37,6 +45,7 @@ final class SubtensorMaxApyWalk {
         self.apiOperationFactory = apiOperationFactory
         self.operationQueue = operationQueue
         self.requestSpacing = requestSpacing
+        self.retryDelay = retryDelay
         self.timeProvider = timeProvider
         self.logger = logger
     }
@@ -193,20 +202,24 @@ private extension SubtensorMaxApyWalk {
     ) {
         mutex.lock()
 
-        switch result {
+        var walkError: Error?
+
+        switch Self.unexpired(result) {
         case let .success(page):
             rootYield = SubtensorYieldService.makeRootYield(from: page)
             pace(afterReceivingAt: page.receivedAt, requestedAt: requestedAt)
+            completeTarget()
+        case let .failure(error) where Self.isRetryable(error):
+            walkError = scheduleRetry(after: error) ? nil : error
         case let .failure(error):
             logger.warning("Subtensor root yield unavailable for the max APY: \(error)")
             pace(afterReceivingAt: nil, requestedAt: requestedAt)
+            completeTarget()
         }
-
-        completeTarget()
 
         mutex.unlock()
 
-        advance()
+        proceed(unlessFailedWith: walkError)
     }
 
     func handleAlphaPage(
@@ -218,10 +231,13 @@ private extension SubtensorMaxApyWalk {
     ) {
         mutex.lock()
 
-        switch result {
+        var walkError: Error?
+
+        switch Self.unexpired(result) {
         case let .success(pageResult):
             pace(afterReceivingAt: pageResult.receivedAt, requestedAt: requestedAt)
             alphaPages.append(pageResult)
+            retries = 0
 
             let next = pageResult.value.pageInfo.nextPage
             let pages = BittensorApiPages(pages: alphaPages, hasMorePages: next != nil)
@@ -235,6 +251,8 @@ private extension SubtensorMaxApyWalk {
                 alphaYields[netuid] = yields
                 completeTarget()
             }
+        case let .failure(error) where Self.isRetryable(error):
+            walkError = scheduleRetry(after: error) ? nil : error
         case let .failure(error):
             logger.warning("Subtensor alpha yields of netuid \(netuid) unavailable for the max APY: \(error)")
             pace(afterReceivingAt: nil, requestedAt: requestedAt)
@@ -243,7 +261,56 @@ private extension SubtensorMaxApyWalk {
 
         mutex.unlock()
 
-        advance()
+        proceed(unlessFailedWith: walkError)
+    }
+
+    static func unexpired<T>(_ result: Result<BittensorApiResult<T>, Error>) -> Result<BittensorApiResult<T>, Error> {
+        guard case let .success(page) = result, page.isFromExpiredCache else {
+            return result
+        }
+
+        return .failure(SubtensorMaxApyWalkError.expiredYieldPage)
+    }
+
+    static func isRetryable(_ error: Error) -> Bool {
+        if error is SubtensorMaxApyWalkError {
+            return true
+        }
+
+        guard let apiError = error as? BittensorApiError else {
+            return false
+        }
+
+        switch apiError {
+        case .routeNotPublished, .invalidRequest, .datasetUnavailable, .contractViolation:
+            return false
+        case .unsupportedDevice, .configuration, .attestationRejected, .attestationBackoff, .attestationUnavailable,
+             .attestationFailure, .rateLimited, .upstreamUnavailable, .upstreamInvalidResponse, .server, .transport:
+            return true
+        }
+    }
+
+    func scheduleRetry(after error: Error) -> Bool {
+        guard retries < Self.retryLimit else {
+            return false
+        }
+
+        logger.warning("Subtensor max APY walk retries its current request in \(retryDelay) s after: \(error)")
+
+        retries += 1
+        nextRequestAt = timeProvider() + retryDelay
+
+        return true
+    }
+
+    func proceed(unlessFailedWith error: Error?) {
+        guard let error else {
+            advance()
+
+            return
+        }
+
+        finish(with: .failure(error))
     }
 
     func pace(afterReceivingAt receivedAt: TimeInterval?, requestedAt: TimeInterval) {
@@ -261,6 +328,7 @@ private extension SubtensorMaxApyWalk {
 
         alphaPages = []
         nextPage = 1
+        retries = 0
     }
 
     func bestRate() -> Decimal? {

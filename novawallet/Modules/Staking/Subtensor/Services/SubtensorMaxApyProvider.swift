@@ -3,12 +3,14 @@ import Operation_iOS
 
 final class SubtensorMaxApyProvider {
     static let defaultRequestSpacing: TimeInterval = 20
+    static let defaultRetryDelay: TimeInterval = 60
 
     let recommendationService: SubtensorRecommendationServiceProtocol
     let apiOperationFactory: BittensorApiOperationFactoryProtocol
     let resolution: SubtensorMaxApyResolution
     let operationQueue: OperationQueue
     let requestSpacing: TimeInterval
+    let retryDelay: TimeInterval
     let timeProvider: () -> TimeInterval
     let logger: LoggerProtocol
 
@@ -18,6 +20,7 @@ final class SubtensorMaxApyProvider {
         resolution: SubtensorMaxApyResolution,
         operationQueue: OperationQueue,
         requestSpacing: TimeInterval = SubtensorMaxApyProvider.defaultRequestSpacing,
+        retryDelay: TimeInterval = SubtensorMaxApyProvider.defaultRetryDelay,
         timeProvider: @escaping () -> TimeInterval = BittensorMonotonicClock.now,
         logger: LoggerProtocol = Logger.shared
     ) {
@@ -26,6 +29,7 @@ final class SubtensorMaxApyProvider {
         self.resolution = resolution
         self.operationQueue = operationQueue
         self.requestSpacing = requestSpacing
+        self.retryDelay = retryDelay
         self.timeProvider = timeProvider
         self.logger = logger
     }
@@ -38,6 +42,7 @@ private extension SubtensorMaxApyProvider {
             apiOperationFactory: apiOperationFactory,
             operationQueue: operationQueue,
             requestSpacing: requestSpacing,
+            retryDelay: retryDelay,
             timeProvider: timeProvider,
             logger: logger
         )
