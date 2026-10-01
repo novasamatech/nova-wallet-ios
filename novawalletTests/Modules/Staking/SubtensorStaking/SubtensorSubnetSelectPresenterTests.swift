@@ -75,37 +75,6 @@ final class SubtensorSubnetSelectPresenterTests: XCTestCase {
         )
     }
 
-    func testFailedThirtyDayPricesSwitchTheDraftFilterOffAndShowTheCaption() {
-        let setup = makeSetup()
-        let filtersView = MockSubtensorSubnetFiltersViewProtocol()
-
-        stub(setup.interactor) { stub in
-            when(stub.loadWeeklyPrices(for: any())).thenDoNothing()
-        }
-
-        stub(setup.wireframe) { stub in
-            when(stub.showFilters(from: any(), viewModel: any(), onChange: any(), onApply: any()))
-                .thenReturn(filtersView)
-        }
-
-        stub(filtersView) { stub in
-            when(stub.didReceive(viewModel: any())).thenDoNothing()
-        }
-
-        setup.presenter.didReceive(entries: [makeEntry(netuid: 64, price: 7_683_255)])
-        setup.presenter.showFilters()
-        setup.presenter.draftFilters(SubtensorSubnetFilters(hideThinPools: false, onlyAboveThirtyDayAverage: true))
-        setup.presenter.didFailMonthlyMetrics()
-
-        let captor = ArgumentCaptor<SubtensorSubnetFiltersViewModel>()
-
-        verify(filtersView, times(2)).didReceive(viewModel: captor.capture())
-
-        XCTAssertEqual(captor.value?.filters.onlyAboveThirtyDayAverage, false)
-        XCTAssertEqual(captor.value?.unavailableText, "30-day prices are unavailable right now")
-        XCTAssertEqual(captor.value?.actionTitle, "Show 1 subnet")
-    }
-
     private func makeSetup() -> Setup {
         let interactor = MockSubnetSelectInteractorInputProtocol()
         let wireframe = MockSubtensorSubnetSelectWireframeProtocol()

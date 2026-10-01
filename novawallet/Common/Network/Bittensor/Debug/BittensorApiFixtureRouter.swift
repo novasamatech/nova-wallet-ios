@@ -6,7 +6,6 @@ import Foundation
         case validators(netuid: UInt16)
         case rootYield(page: Int, pageSize: Int)
         case alphaYield(netuid: UInt16, page: Int, pageSize: Int)
-        case rewards(page: Int)
         case operations(page: Int)
         case recommendations
         case rankedSubnets
@@ -18,7 +17,6 @@ import Foundation
             "/subnets/{netuid}/validators": .get,
             "/yields/root": .get,
             "/subnets/{netuid}/yields/alpha": .get,
-            "/rewards/search": .post,
             "/operations/search": .post,
             "/recommendations": .get,
             "/recommendations/subnets": .get
@@ -55,14 +53,12 @@ import Foundation
                 } else {
                     return .rootYield(page: paging.page, pageSize: paging.pageSize)
                 }
-            case "/rewards/search", "/operations/search":
+            case "/operations/search":
                 guard request.queryItems.isEmpty, let body = request.jsonBody else {
                     throw invalid
                 }
 
-                let page = try searchPage(of: body, invalid: invalid)
-
-                return template == "/rewards/search" ? .rewards(page: page) : .operations(page: page)
+                return .operations(page: try searchPage(of: body, invalid: invalid))
             default:
                 guard request.queryItems.isEmpty, request.jsonBody == nil else {
                     throw invalid
@@ -82,8 +78,6 @@ import Foundation
                 return BittensorApiFixtureDocuments.rootYield(page: page, pageSize: pageSize)
             case let .alphaYield(netuid, page, pageSize):
                 return BittensorApiFixtureDocuments.alphaYield(netuid: netuid, page: page, pageSize: pageSize)
-            case let .rewards(page):
-                return BittensorApiFixtureDocuments.rewards(page: page)
             case let .operations(page):
                 return BittensorApiFixtureDocuments.operations(page: page)
             case .recommendations:

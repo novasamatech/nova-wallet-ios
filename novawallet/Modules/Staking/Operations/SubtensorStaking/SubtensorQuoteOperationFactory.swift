@@ -58,16 +58,6 @@ extension SubtensorQuote {
         }
     }
 
-    /// net average execution price in rao-per-alpha ×1e9; the chain enforces the marginal
-    /// pool price, so a limit check passing on this value does not guarantee the order fills
-    var impliedExecutionPrice: Balance? {
-        guard sim.alphaAmount > 0 else {
-            return nil
-        }
-
-        return sim.taoAmount * SubtensorStakingPallet.alphaPriceScale / sim.alphaAmount
-    }
-
     /// pool-move component only: the sim amounts are net of the input-side fee, so the fee
     /// never double-counts into the impact
     var priceImpact: BigRational? {

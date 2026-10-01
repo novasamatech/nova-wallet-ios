@@ -46,9 +46,3 @@ struct SubtensorWeeklyPriceSummary: Equatable {
     let change: Decimal
     let sparkline: [Decimal]
 }
-
-struct SubtensorMonthlyPriceMetrics: Equatable {
-    let changeInTao: Decimal?
-    let meanTaoPerAlpha: Decimal?
-    let thirtyDayRange: Decimal?
-}

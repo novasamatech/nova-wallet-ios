@@ -74,26 +74,11 @@ protocol SubtensorApiOperationFactoryProtocol {
         coldkey: AccountId,
         blockHash: BlockHash?
     ) -> CompoundOperationWrapper<[SubtensorStakingPallet.BasketClaimPreview]>
-
-    /// network-wide basket NAV, the observable the spec §6.2 root APY gate samples across blocks
-    func createRootBasketTotalNavWrapper(
-        at blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<Balance>
 }
 
 extension SubtensorApiOperationFactoryProtocol {
-    func createStakeInfoWrapper(
-        for coldkey: AccountId
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.StakeInfo]> {
-        createStakeInfoWrapper(for: coldkey, blockHash: nil)
-    }
-
     func createAllDynamicInfoWrapper() -> CompoundOperationWrapper<[SubtensorStakingPallet.DynamicInfo?]> {
         createAllDynamicInfoWrapper(at: nil)
-    }
-
-    func createDelegatesWrapper() -> CompoundOperationWrapper<[SubtensorStakingPallet.DelegateInfo]> {
-        createDelegatesWrapper(at: nil)
     }
 
     func createAlphaPricesWrapper() -> CompoundOperationWrapper<[SubtensorStakingPallet.SubnetPrice]> {
@@ -102,18 +87,6 @@ extension SubtensorApiOperationFactoryProtocol {
 
     func createSubnetOwnerCutWrapper() -> CompoundOperationWrapper<UInt16?> {
         createSubnetOwnerCutWrapper(blockHash: nil)
-    }
-
-    func createRootBasketOwedWrapper(
-        for coldkey: AccountId
-    ) -> CompoundOperationWrapper<Balance> {
-        createRootBasketOwedWrapper(for: coldkey, blockHash: nil)
-    }
-
-    func createRootBasketPositionsWrapper(
-        for coldkey: AccountId
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.RootBasketPosition]> {
-        createRootBasketPositionsWrapper(for: coldkey, blockHash: nil)
     }
 }
 
@@ -515,24 +488,6 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
         mappingOperation.addDependency(owedWrapper.targetOperation)
 
         return owedWrapper.insertingTail(operation: mappingOperation)
-    }
-
-    func createRootBasketTotalNavWrapper(
-        at blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<Balance> {
-        let navWrapper: CompoundOperationWrapper<StringScaleMapper<Balance>> = createWrapper(
-            path: SubtensorStakingPallet.rootBasketTotalNavApi,
-            blockHash: blockHash,
-            paramsClosure: nil
-        )
-
-        let mappingOperation = ClosureOperation<Balance> {
-            try navWrapper.targetOperation.extractNoCancellableResultData().value
-        }
-
-        mappingOperation.addDependency(navWrapper.targetOperation)
-
-        return navWrapper.insertingTail(operation: mappingOperation)
     }
 
     func createRootBasketPositionsWrapper(

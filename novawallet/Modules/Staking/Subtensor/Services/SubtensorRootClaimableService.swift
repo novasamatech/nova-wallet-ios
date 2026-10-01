@@ -8,10 +8,6 @@ struct SubtensorRootClaimable: Equatable {
     var totalRedeemable: Balance {
         previews.reduce(Balance.zero) { $0 + $1.redeemable }
     }
-
-    func redeemable(for hotkey: AccountId) -> Balance {
-        previews.first { $0.hotkey == hotkey }?.redeemable ?? 0
-    }
 }
 
 protocol SubtensorRootClaimableServiceProtocol: ApplicationServiceProtocol {

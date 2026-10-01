@@ -73,9 +73,4 @@ extension SubtensorStakingSetupMode {
 
         return nil
     }
-
-    static func mode(for position: SubtensorStakingPosition) -> SubtensorStakingSetupMode {
-        position.netuid == SubtensorStakingPallet.rootNetuid ? .addStake(position: position) :
-            .buyMore(position: position)
-    }
 }

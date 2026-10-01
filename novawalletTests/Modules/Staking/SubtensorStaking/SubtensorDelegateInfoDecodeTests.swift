@@ -22,8 +22,8 @@ final class SubtensorDelegateInfoDecodeTests: XCTestCase {
         XCTAssertEqual(delegate.delegateSs58, try Data(hexString: delegateHex))
         XCTAssertEqual(delegate.take, 11796)
         XCTAssertEqual(delegate.ownerSs58, try Data(hexString: nominatorHex))
-        XCTAssertEqual(delegate.registeredNetuids, [11, 99])
-        XCTAssertEqual(delegate.validatorPermitNetuids, [])
+        XCTAssertEqual(delegate.registrations.map(\.value), [11, 99])
+        XCTAssertEqual(delegate.validatorPermits.map(\.value), [])
         XCTAssertEqual(delegate.returnPer1000, 0)
         XCTAssertEqual(delegate.totalDailyReturn, 0)
 

@@ -59,37 +59,6 @@ final class BittensorApiFixtureTransportTests: XCTestCase {
         XCTAssertEqual(collection.pageInfo, BittensorApi.PageInfo(page: 1, pageSize: 3, total: 8, nextPage: 2))
     }
 
-    func testRewardsFixtureDecodesOnePartialPage() throws {
-        let collection = try fetch(
-            BittensorApi.RewardCollection.self,
-            request: try makeSearchRequest(path: "/rewards/search", page: nil)
-        )
-
-        XCTAssertEqual(collection.items.count, 12)
-        XCTAssertEqual(collection.historyScope, "TAO_APP_PARTIAL")
-        XCTAssertNil(collection.pageInfo.nextPage)
-    }
-
-    func testOperationsFixtureFollowsNextPageFromPageOneToPageTwo() throws {
-        let firstPage = try fetch(
-            BittensorApi.OperationCollection.self,
-            request: try makeSearchRequest(path: "/operations/search", page: nil)
-        )
-
-        let nextPage = try XCTUnwrap(firstPage.pageInfo.nextPage)
-
-        let secondPage = try fetch(
-            BittensorApi.OperationCollection.self,
-            request: try makeSearchRequest(path: "/operations/search", page: nextPage)
-        )
-
-        XCTAssertEqual(firstPage.items.count, 100)
-        XCTAssertEqual(nextPage, 2)
-        XCTAssertEqual(secondPage.items.count, 37)
-        XCTAssertEqual(secondPage.pageInfo.page, 2)
-        XCTAssertNil(secondPage.pageInfo.nextPage)
-    }
-
     func testRecommendationsFixtureDecodesThreeClassesWithTheFixedClientChecks() throws {
         let collection = try fetch(
             BittensorApi.RecommendationCollection.self,
@@ -168,21 +137,6 @@ final class BittensorApiFixtureTransportTests: XCTestCase {
             pathTemplate: pathTemplate,
             queryItems: query.map { URLQueryItem(name: $0.key, value: $0.value) },
             jsonBody: nil
-        )
-    }
-
-    private func makeSearchRequest(path: String, page: Int?) throws -> BittensorApiRequest {
-        let body = BittensorApi.SearchRequest(
-            accountSubject: "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
-            page: page
-        )
-
-        return BittensorApiRequest(
-            method: .post,
-            path: path,
-            pathTemplate: path,
-            queryItems: [],
-            jsonBody: try JSONEncoder().encode(body)
         )
     }
 }

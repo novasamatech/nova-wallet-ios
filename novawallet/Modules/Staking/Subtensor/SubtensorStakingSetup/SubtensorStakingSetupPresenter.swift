@@ -347,7 +347,7 @@ extension SubtensorStakingSetupPresenter: SubtensorStakingSetupPresenterProtocol
     }
 
     func getTao() {
-        wireframe.showGetTao(from: view, chainAsset: chainAsset, assetListObservable: nil, rampHandler: self)
+        wireframe.showGetTao(from: view, chainAsset: chainAsset, rampHandler: self)
     }
 
     func proceed() {

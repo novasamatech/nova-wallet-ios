@@ -1,14 +1,5 @@
 import Foundation
 
-struct SubtensorRate: Equatable {
-    enum Source: Equatable {
-        case config
-    }
-
-    let annualRate: Decimal
-    let source: Source
-}
-
 struct SubtensorReportedYield: Equatable {
     static let reportedRateScale: Decimal = 100
 

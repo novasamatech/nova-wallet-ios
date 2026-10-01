@@ -58,13 +58,6 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
         createPagedWrapper(route: .alphaYield, path: "/subnets/\(netuid)/yields/alpha", page: page)
     }
 
-    func createRewardsWrapper(
-        accountSubject: AccountAddress,
-        page: Int?
-    ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RewardCollection>> {
-        createSearchWrapper(route: .rewards, accountSubject: accountSubject, page: page)
-    }
-
     func createOperationsWrapper(
         accountSubject: AccountAddress,
         page: Int?
@@ -89,14 +82,13 @@ private extension BittensorApiOperationFactory {
         case validators
         case rootYield
         case alphaYield
-        case rewards
         case operations
         case recommendations
         case rankedSubnets
 
         var method: BittensorApiRequest.Method {
             switch self {
-            case .rewards, .operations:
+            case .operations:
                 return .post
             default:
                 return .get
@@ -113,8 +105,6 @@ private extension BittensorApiOperationFactory {
                 return "/yields/root"
             case .alphaYield:
                 return "/subnets/{netuid}/yields/alpha"
-            case .rewards:
-                return "/rewards/search"
             case .operations:
                 return "/operations/search"
             case .recommendations:
@@ -126,7 +116,7 @@ private extension BittensorApiOperationFactory {
 
         func timeToLive(isServedFromMemory: Bool) -> TimeInterval {
             switch self {
-            case .subnets, .validators, .rewards:
+            case .subnets, .validators:
                 return 150
             case .rootYield, .alphaYield:
                 return 900
