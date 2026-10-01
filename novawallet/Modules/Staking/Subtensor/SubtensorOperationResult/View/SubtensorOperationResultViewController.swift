@@ -112,7 +112,7 @@ extension SubtensorOperationResultViewController: SubtensorResultViewProtocol {
         rootView.statusView.bind(viewModel: pageViewModel.status)
         rootView.pairsView.leftAssetView.bind(viewModel: pageViewModel.payTile)
         rootView.pairsView.rigthAssetView.bind(viewModel: pageViewModel.receiveTile)
-        rootView.detailsView.bind(viewModel: pageViewModel.details)
+        rootView.detailsView.bind(viewModel: pageViewModel.details, locale: selectedLocale)
         rootView.backButton.isHidden = !pageViewModel.showsBack
 
         if currentStatus != pageViewModel.status.status {

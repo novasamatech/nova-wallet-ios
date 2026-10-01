@@ -104,6 +104,7 @@ extension SubtensorStakingConfirmPresenter {
             catalogue: catalogue,
             latestQuote: quoteState?.latest,
             tradesUnavailable: tradesUnavailable,
+            isQuoteFailed: quoteState?.isLatestFailed ?? false,
             isPriceMoved: quoteState?.isPriceMoved ?? false,
             price: price,
             fee: fee,

@@ -371,6 +371,24 @@ final class SubtensorStakingConfirmPresenterTests: XCTestCase {
         )
     }
 
+    func testBuyMoreConfirmShowsTheRecordedAverageBuyPriceWhileTheQuoteFails() throws {
+        let acknowledged = try makeTradeQuote(spotPrice: 7_683_255)
+
+        let setup = makeSetup { chainAsset in
+            makeSubnetModel(for: chainAsset, acknowledgedQuote: acknowledged, origin: .buyMore)
+        }
+
+        setup.presenter.didReceiveCostBasis(
+            .average(SubtensorPurchaseTotals(paidTao: 9_000_000, receivedAlpha: 1_000_000_000))
+        )
+        setup.presenter.didReceiveBaseError(.quoteFailed(SubtensorQuoteError.quoteUnavailable(netuid: 1)))
+
+        XCTAssertEqual(
+            lastAvgBuyPrice(of: setup),
+            .value(SubtensorCostBasisValueViewModel(amount: "0.009 TAO", detail: "per SN1", tone: .neutral))
+        )
+    }
+
     func testBuyMoreConfirmHandsOffTheCostBasisItShowsToTheResult() throws {
         let acknowledged = try makeTradeQuote(spotPrice: 7_683_255)
         let costBasis = SubtensorCostBasis.average(
