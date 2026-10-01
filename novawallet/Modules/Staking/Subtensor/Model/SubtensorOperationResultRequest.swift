@@ -19,4 +19,5 @@ struct SubtensorOperationResultRequest {
     let groupHotkeyCount: Int
     let emptiesPosition: Bool
     let prices: SubtensorOperationResultPrices
+    let costBasis: SubtensorCostBasisState?
 }

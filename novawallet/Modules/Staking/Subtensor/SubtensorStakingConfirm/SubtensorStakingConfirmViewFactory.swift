@@ -20,6 +20,7 @@ enum SubtensorStakingConfirmViewFactory {
             chainAsset: chainAsset,
             catalogueService: state.earnServices.catalogueService,
             subnetLogosProvider: state.earnServices.subnetLogosProvider,
+            costBasisService: state.earnServices.costBasisService,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             logger: Logger.shared
         )
@@ -52,7 +53,7 @@ enum SubtensorStakingConfirmViewFactory {
 
         let view = SubtensorStakingConfirmViewController(
             presenter: presenter,
-            mode: model.target.isRoot ? .rootStake : .swap,
+            mode: model.target.isRoot ? .rootStake : .swap(.buy),
             localizationManager: localizationManager
         )
 

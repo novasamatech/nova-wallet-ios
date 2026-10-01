@@ -17,16 +17,20 @@ protocol SubtensorStakingConfirmPresenterProtocol: AnyObject {
     func showSwapRateInfo()
     func showSlippageInfo()
     func showEarnPerMonthInfo()
+    func showAvgBuyPriceInfo()
+    func showYouWillEarnInfo()
     func showNetworkFeeInfo()
 }
 
 protocol SubtensorConfirmInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {
     func loadSubnetData()
+    func loadCostBasis(for netuid: UInt16)
 }
 
 protocol SubtensorConfirmInteractorOutputProtocol: SubtensorStakingBaseInteractorOutputProtocol {
     func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?)
     func didReceiveSubnetLogos(_ logos: SubtensorSubnetLogos?)
+    func didReceiveCostBasis(_ costBasis: SubtensorCostBasis?)
 }
 
 protocol SubtensorStakingConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,

@@ -41,6 +41,10 @@ final class SubtensorStakingConfirmViewLayout: UIView {
 
     let earnCell = SwapNetworkFeeViewCell()
 
+    let avgBuyPriceCell = StackTitleMultiValueCell()
+
+    let youWillEarnCell = SwapNetworkFeeViewCell()
+
     let networkFeeCell = SwapNetworkFeeViewCell()
 
     let amountView = MultilineBalanceView()
@@ -106,8 +110,8 @@ final class SubtensorStakingConfirmViewLayout: UIView {
 
     func setupMode(_ mode: Mode) {
         switch mode {
-        case .swap:
-            setupSwapContent()
+        case let .swap(direction):
+            setupSwapContent(with: swapRows(for: direction))
         case .rootStake:
             setupRootContent(with: [stakingTypeCell, stakeAfterCell, rootValidatorCell, apyCell])
         case .rootUnstake:
@@ -118,7 +122,7 @@ final class SubtensorStakingConfirmViewLayout: UIView {
 
 extension SubtensorStakingConfirmViewLayout {
     enum Mode {
-        case swap
+        case swap(SubtensorTradeDirection)
         case rootStake
         case rootUnstake
     }
@@ -145,7 +149,16 @@ private extension SubtensorStakingConfirmViewLayout {
         }
     }
 
-    func setupSwapContent() {
+    func swapRows(for direction: SubtensorTradeDirection) -> [StackTableViewCellProtocol] {
+        switch direction {
+        case .buy:
+            return [swapRateCell, slippageCell, validatorCell, earnCell, avgBuyPriceCell, networkFeeCell]
+        case .sell:
+            return [swapRateCell, avgBuyPriceCell, youWillEarnCell, slippageCell, validatorCell, networkFeeCell]
+        }
+    }
+
+    func setupSwapContent(with rows: [StackTableViewCellProtocol]) {
         stackView.addArrangedSubview(priceMovedView)
         stackView.setCustomSpacing(8, after: priceMovedView)
 
@@ -155,11 +168,7 @@ private extension SubtensorStakingConfirmViewLayout {
         stackView.addArrangedSubview(detailsTableView)
         stackView.setCustomSpacing(8, after: detailsTableView)
 
-        detailsTableView.addArrangedSubview(swapRateCell)
-        detailsTableView.addArrangedSubview(slippageCell)
-        detailsTableView.addArrangedSubview(validatorCell)
-        detailsTableView.addArrangedSubview(earnCell)
-        detailsTableView.addArrangedSubview(networkFeeCell)
+        rows.forEach { detailsTableView.addArrangedSubview($0) }
 
         stackView.addArrangedSubview(walletTableView)
         stackView.setCustomSpacing(8, after: walletTableView)

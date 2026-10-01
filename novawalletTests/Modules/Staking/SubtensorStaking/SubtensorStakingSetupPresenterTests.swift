@@ -7,6 +7,7 @@ import XCTest
 final class SubtensorStakingSetupPresenterTests: XCTestCase {
     private let hotkey = Data(repeating: 0x22, count: 32)
     private let rootRef = SubtensorSubnetRef(netuid: SubtensorStakingPallet.rootNetuid, registeredAt: 0)
+    private let recordedPurchases = SubtensorPurchaseTotals(paidTao: 4_949_100_000, receivedAlpha: 70_200_000_000)
 
     private struct Setup {
         let presenter: SubtensorStakingSetupPresenter
@@ -89,12 +90,16 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
         )
     }
 
-    private func makeTradeQuote(taoIn: Balance, spotPrice: Balance) throws -> SubtensorTradeQuote {
+    private func makeTradeQuote(
+        taoIn: Balance,
+        spotPrice: Balance,
+        alphaAmount: Balance = 130_082_405_209
+    ) throws -> SubtensorTradeQuote {
         let quote = SubtensorQuote(
             args: SubtensorQuoteArgs(netuid: 1, direction: .stake(taoIn: taoIn)),
             sim: SubtensorStakingPallet.SimSwapResult(
                 taoAmount: 999_496_453,
-                alphaAmount: 130_082_405_209,
+                alphaAmount: alphaAmount,
                 taoFee: 503_547,
                 alphaFee: 0,
                 taoSlippage: 0,
@@ -235,6 +240,7 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
             when(stub.loadYields(netuid: any())).thenDoNothing()
             when(stub.loadRankingView()).thenDoNothing()
             when(stub.loadSubnetLogos()).thenDoNothing()
+            when(stub.loadCostBasis(for: any())).thenDoNothing()
         }
 
         let wireframe = MockSubtensorStakingSetupWireframeProtocol()
@@ -326,6 +332,32 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
         }
 
         return try XCTUnwrap(card)
+    }
+
+    private func makeBuyMoreSetup() -> Setup {
+        let setup = makeSetup(mode: .buyMore(position: makePosition(hotkey: hotkey, netuid: 1, stake: 70_200_000_000)))
+
+        setup.presenter.didReceiveSubnet(makeSubnetTarget())
+
+        return setup
+    }
+
+    private func lastAvgBuyPrice(_ setup: Setup) throws -> SubtensorCostBasisRowViewModel {
+        var avgBuyPrice: SubtensorCostBasisRowViewModel?
+
+        if case let .subnet(details) = try lastViewModel(setup).details {
+            avgBuyPrice = details.avgBuyPrice
+        }
+
+        return try XCTUnwrap(avgBuyPrice)
+    }
+
+    private func makeAvgBuyPrice(
+        _ amount: String,
+        detail: String? = nil,
+        trend: SubtensorAvgBuyPriceTrend? = nil
+    ) -> SubtensorCostBasisRowViewModel {
+        .value(SubtensorCostBasisValueViewModel(amount: amount, detail: detail, tone: .neutral, trend: trend))
     }
 
     private func stubNavigation(_ setup: Setup) {
@@ -592,6 +624,78 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
         verify(setup.wireframe, never()).showSubnetSelection(from: any(), delegate: any())
         verify(setup.wireframe, never()).showSubnetDetails(from: any(), input: any(), delegate: any())
         verify(setup.wireframe, never()).showSlippageSettings(from: any(), current: any(), completion: any())
+    }
+
+    func testBuyMoreShowsTheAverageBuyPriceRisingFromTheRecordedAverageOnceTheAmountIsQuoted() throws {
+        let setup = makeBuyMoreSetup()
+
+        setup.presenter.didReceiveCostBasis(.average(recordedPurchases))
+        setup.presenter.updateAmount(5)
+
+        let quoting = try lastAvgBuyPrice(setup)
+
+        setup.presenter.didReceiveQuote(
+            try makeTradeQuote(taoIn: 5_000_000_000, spotPrice: 7_683_255, alphaAmount: 67_800_000_000)
+        )
+
+        verify(setup.interactor).loadCostBasis(for: equal(to: 1))
+        XCTAssertEqual(quoting, .loading)
+        XCTAssertEqual(
+            try lastAvgBuyPrice(setup),
+            makeAvgBuyPrice("0.07209 TAO", detail: "from 0.0705 per SN1", trend: .rising)
+        )
+    }
+
+    func testBuyMoreBelowTheRecordedAverageShowsTheAverageBuyPriceFalling() throws {
+        let setup = makeBuyMoreSetup()
+
+        setup.presenter.didReceiveCostBasis(.average(recordedPurchases))
+        setup.presenter.updateAmount(5)
+        setup.presenter.didReceiveQuote(
+            try makeTradeQuote(taoIn: 5_000_000_000, spotPrice: 7_683_255, alphaAmount: 80_000_000_000)
+        )
+
+        XCTAssertEqual(
+            try lastAvgBuyPrice(setup),
+            makeAvgBuyPrice("0.06623 TAO", detail: "from 0.0705 per SN1", trend: .falling)
+        )
+    }
+
+    func testBuyMoreWithoutAnAmountShowsTheRecordedAverageBuyPrice() throws {
+        let setup = makeBuyMoreSetup()
+
+        setup.presenter.didReceiveCostBasis(.average(recordedPurchases))
+        setup.presenter.didReceiveQuote(try makeTradeQuote(taoIn: 1_000_000_000, spotPrice: 7_683_255))
+
+        XCTAssertEqual(try lastAvgBuyPrice(setup), makeAvgBuyPrice("0.0705 TAO", detail: "per SN1"))
+    }
+
+    func testBuyMoreKeepsTheAverageBuyPriceLoadingUntilTheHistoryAnswersAndShowsADashWhenItFails() throws {
+        let setup = makeBuyMoreSetup()
+
+        let loading = try lastAvgBuyPrice(setup)
+
+        setup.presenter.didReceiveCostBasis(nil)
+
+        XCTAssertEqual(loading, .loading)
+        XCTAssertEqual(try lastAvgBuyPrice(setup), makeAvgBuyPrice("—"))
+    }
+
+    func testBuyMoreWithoutRecordedPurchasesShowsTheAverageBuyPriceAsNotAvailable() throws {
+        let setup = makeBuyMoreSetup()
+
+        setup.presenter.didReceiveCostBasis(.noPurchases)
+
+        XCTAssertEqual(try lastAvgBuyPrice(setup), makeAvgBuyPrice("Not available", detail: "no purchases"))
+    }
+
+    func testNewSubnetPositionNeverLoadsTheCostBasisAndHidesTheAverageBuyPrice() throws {
+        let setup = makeSetup(
+            mode: .subnetPick(target: makeSubnetTarget(), validator: makeValidator(hotkey: hotkey, netuid: 1))
+        )
+
+        verify(setup.interactor, never()).loadCostBasis(for: any())
+        XCTAssertEqual(try lastAvgBuyPrice(setup), .hidden)
     }
 
     func testAddStakeKeepsTheRootLaneAndTheValidatorOfThePosition() {

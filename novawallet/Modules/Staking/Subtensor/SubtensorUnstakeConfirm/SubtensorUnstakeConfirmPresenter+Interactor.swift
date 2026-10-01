@@ -116,6 +116,12 @@ extension SubtensorUnstakeConfirmPresenter: SubtensorUnstakeConfirmOutputProtoco
     func didReceiveRootHolds(_ holds: [AccountId: SubtensorRootHold]) {
         self.holds = holds
     }
+
+    func didReceiveCostBasis(_ costBasis: SubtensorCostBasis?) {
+        self.costBasis = costBasis.map { .resolved($0) } ?? .unavailable
+
+        provideViewModel()
+    }
 }
 
 extension SubtensorUnstakeConfirmPresenter: SubtensorOperationResultDelegate {

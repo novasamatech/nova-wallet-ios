@@ -15,20 +15,24 @@ final class SubtensorStakingConfirmInteractor: SubtensorStakingBaseInteractor {
 
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
+    let costBasisService: SubtensorCostBasisServiceProtocol
 
     private let catalogueCallStore = CancellableCallStore()
     private let logosCallStore = CancellableCallStore()
+    private let costBasisCallStore = CancellableCallStore()
 
     init(
         baseServices: SubtensorFlowServices,
         chainAsset: ChainAsset,
         catalogueService: SubtensorSubnetCatalogueServiceProtocol,
         subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
+        costBasisService: SubtensorCostBasisServiceProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         logger: LoggerProtocol
     ) {
         self.catalogueService = catalogueService
         self.subnetLogosProvider = subnetLogosProvider
+        self.costBasisService = costBasisService
 
         super.init(
             chainAsset: chainAsset,
@@ -51,6 +55,7 @@ final class SubtensorStakingConfirmInteractor: SubtensorStakingBaseInteractor {
     deinit {
         catalogueCallStore.cancel()
         logosCallStore.cancel()
+        costBasisCallStore.cancel()
     }
 }
 
@@ -87,6 +92,25 @@ extension SubtensorStakingConfirmInteractor: SubtensorConfirmInteractorInputProt
             case let .failure(error):
                 self?.logger.warning("Subtensor subnet logos unavailable for the confirm mark: \(error)")
                 self?.presenter?.didReceiveSubnetLogos(nil)
+            }
+        }
+    }
+
+    func loadCostBasis(for netuid: UInt16) {
+        costBasisCallStore.cancel()
+
+        executeCancellable(
+            wrapper: costBasisService.createCostBasisWrapper(for: selectedAccount.accountId, netuid: netuid),
+            inOperationQueue: operationQueue,
+            backingCallIn: costBasisCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(costBasis):
+                self?.presenter?.didReceiveCostBasis(costBasis)
+            case let .failure(error):
+                self?.logger.warning("Subtensor cost basis unavailable for the buy confirm: \(error)")
+                self?.presenter?.didReceiveCostBasis(nil)
             }
         }
     }

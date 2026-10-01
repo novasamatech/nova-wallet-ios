@@ -161,12 +161,13 @@ final class SubtensorStakingConfirmPresenterTests: XCTestCase {
         target: SubtensorStakeTarget,
         tolerance: BigRational?,
         acknowledgedQuote: SubtensorTradeQuote?,
-        walletType: MetaAccountModelType = .secrets
+        walletType: MetaAccountModelType = .secrets,
+        origin: SubtensorOperationOrigin = .newPosition
     ) -> SubtensorStakingConfirmModel {
         let address = (try? hotkey.toAddress(using: chainAsset.chain.chainFormat)) ?? ""
 
         return SubtensorStakingConfirmModel(
-            origin: .newPosition,
+            origin: origin,
             account: makeAccount(for: chainAsset, type: walletType),
             target: target,
             validator: SubtensorConfirmValidator(
@@ -183,14 +184,16 @@ final class SubtensorStakingConfirmPresenterTests: XCTestCase {
     private func makeSubnetModel(
         for chainAsset: ChainAsset,
         acknowledgedQuote: SubtensorTradeQuote,
-        walletType: MetaAccountModelType = .secrets
+        walletType: MetaAccountModelType = .secrets,
+        origin: SubtensorOperationOrigin = .newPosition
     ) -> SubtensorStakingConfirmModel {
         makeModel(
             for: chainAsset,
             target: makeSubnetTarget(price: acknowledgedQuote.quote.spotPrice),
             tolerance: SubtensorSlippageTolerance.defaultTolerance,
             acknowledgedQuote: acknowledgedQuote,
-            walletType: walletType
+            walletType: walletType,
+            origin: origin
         )
     }
 
@@ -223,6 +226,7 @@ final class SubtensorStakingConfirmPresenterTests: XCTestCase {
             when(stub.refreshQuote(for: any())).thenDoNothing()
             when(stub.refreshPositions()).thenDoNothing()
             when(stub.loadSubnetData()).thenDoNothing()
+            when(stub.loadCostBasis(for: any())).thenDoNothing()
         }
 
         let wireframe = MockSubtensorStakingConfirmWireframeProtocol()
@@ -310,6 +314,14 @@ final class SubtensorStakingConfirmPresenterTests: XCTestCase {
         return captor.allValues.last
     }
 
+    private func lastAvgBuyPrice(of setup: Setup) -> SubtensorCostBasisRowViewModel? {
+        guard case let .swap(swap)? = lastViewModel(of: setup)?.content else {
+            return nil
+        }
+
+        return swap.avgBuyPrice
+    }
+
     private func newRateTitle() -> String {
         R.string(
             preferredLanguages: LocalizationManager.shared.selectedLocale.rLanguages
@@ -331,6 +343,58 @@ final class SubtensorStakingConfirmPresenterTests: XCTestCase {
             confirmAndCaptureRequest(setup)?.operation,
             .rootStake(hotkey: hotkey, amount: stakeAmount)
         )
+    }
+
+    func testBuyMoreConfirmShowsTheAverageBuyPriceAfterTheLatestQuote() throws {
+        let acknowledged = try makeTradeQuote(spotPrice: 7_683_255)
+
+        let setup = makeSetup { chainAsset in
+            makeSubnetModel(for: chainAsset, acknowledgedQuote: acknowledged, origin: .buyMore)
+        }
+
+        setup.presenter.didReceiveCostBasis(
+            .average(SubtensorPurchaseTotals(paidTao: 9_000_000, receivedAlpha: 1_000_000_000))
+        )
+        setup.presenter.didReceiveQuote(try makeTradeQuote(spotPrice: 7_683_255, alphaAmount: 100_000_000_000))
+
+        verify(setup.interactor).loadCostBasis(for: equal(to: 1))
+        XCTAssertEqual(
+            lastAvgBuyPrice(of: setup),
+            .value(
+                SubtensorCostBasisValueViewModel(
+                    amount: "0.00999 TAO",
+                    detail: "from 0.009 per SN1",
+                    tone: .neutral,
+                    trend: .rising
+                )
+            )
+        )
+    }
+
+    func testBuyMoreConfirmHandsOffTheCostBasisItShowsToTheResult() throws {
+        let acknowledged = try makeTradeQuote(spotPrice: 7_683_255)
+        let costBasis = SubtensorCostBasis.average(
+            SubtensorPurchaseTotals(paidTao: 9_000_000, receivedAlpha: 1_000_000_000)
+        )
+
+        let setup = makeSetup { chainAsset in
+            makeSubnetModel(for: chainAsset, acknowledgedQuote: acknowledged, origin: .buyMore)
+        }
+
+        setup.presenter.didReceiveCostBasis(costBasis)
+
+        XCTAssertEqual(confirmAndCaptureRequest(setup)?.costBasis, .resolved(costBasis))
+    }
+
+    func testNewPositionConfirmNeverLoadsTheCostBasisAndHidesTheAverageBuyPrice() throws {
+        let acknowledged = try makeTradeQuote(spotPrice: 7_683_255)
+
+        let setup = makeSetup { chainAsset in
+            makeSubnetModel(for: chainAsset, acknowledgedQuote: acknowledged)
+        }
+
+        verify(setup.interactor, never()).loadCostBasis(for: any())
+        XCTAssertEqual(lastAvgBuyPrice(of: setup), .hidden)
     }
 
     func testSubnetConfirmHandsOffTheAcknowledgedLimitAfterAFillableRequote() throws {

@@ -96,7 +96,8 @@ extension SubtensorUnstakeConfirmPresenter {
             stakeBefore: group?.totalAlpha ?? 0,
             groupHotkeyCount: group?.positions.count ?? 0,
             emptiesPosition: emptiesPosition(verified.operation, group: group),
-            prices: SubtensorOperationResultPrices(taoPrice: price, alphaSpot: verified.quote?.quote.spotPrice)
+            prices: SubtensorOperationResultPrices(taoPrice: price, alphaSpot: verified.quote?.quote.spotPrice),
+            costBasis: model.target.isRoot ? nil : costBasis
         )
 
         isHandingOff = true

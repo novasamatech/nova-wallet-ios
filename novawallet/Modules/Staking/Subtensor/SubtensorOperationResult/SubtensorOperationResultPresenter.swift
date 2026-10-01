@@ -134,6 +134,20 @@ private extension SubtensorOperationResultPresenter {
             wireframe.closeOperation(from: view)
         }
     }
+
+    func costBasisInfo(for direction: SubtensorTradeDirection) -> SubtensorInfoSheet {
+        switch direction {
+        case .sell:
+            return .youWillEarn
+        case .buy:
+            let netuid = request.target.netuid
+
+            return .avgBuyPrice(
+                symbol: SubtensorSubnetNaming.symbol(for: netuid, in: catalogue),
+                subnetName: SubtensorSubnetNaming.titleWithSymbol(for: netuid, in: catalogue, locale: selectedLocale)
+            )
+        }
+    }
 }
 
 extension SubtensorOperationResultPresenter: SubtensorResultPresenterProtocol {
@@ -183,6 +197,8 @@ extension SubtensorOperationResultPresenter: SubtensorResultPresenterProtocol {
             )
 
             wireframe.showSubtensorInfo(.swapRate(direction, subnetName: subnetName), from: view)
+        case .costBasis:
+            wireframe.showSubtensorInfo(costBasisInfo(for: direction), from: view)
         case .slippage:
             let tolerance = request.slippage ?? SubtensorSlippageTolerance.defaultTolerance
             wireframe.showSubtensorInfo(.slippage(tolerance, canEdit: false), from: view)

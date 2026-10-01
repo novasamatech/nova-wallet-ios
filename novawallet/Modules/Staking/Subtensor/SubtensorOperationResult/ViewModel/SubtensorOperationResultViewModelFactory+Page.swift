@@ -225,11 +225,58 @@ private extension SubtensorOperationResultViewModelFactory {
         return SubtensorResultDetailsViewModel(
             title: strings.stakingSubtensorResultPositionDetails(),
             swapRate: swapRate,
+            costBasis: createCostBasis(for: state, context: context, amounts: amounts, locale: locale),
             slippage: slippage,
             validator: validatorName(for: request),
             networkFee: showsNetworkFee(in: state) ? networkFee(for: state, request: request, locale: locale) : nil,
             isExpanded: isDone
         )
+    }
+
+    func createCostBasis(
+        for state: SubtensorOperationResultState,
+        context: SubtensorResultViewContext,
+        amounts: SubtensorResultTradeAmounts,
+        locale: Locale
+    ) -> SubtensorResultCostBasisViewModel? {
+        let request = context.request
+
+        guard
+            case .done = state,
+            let costBasis = request.costBasis,
+            let direction = request.operation.tradeDirection else {
+            return nil
+        }
+
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+        let settledCostBasis: SubtensorCostBasisState = costBasis == .loading ? .unavailable : costBasis
+
+        switch direction {
+        case .sell:
+            let proceeds = amounts.receive.map { SubtensorSaleProceeds.quoted(alpha: amounts.pay, tao: $0) }
+
+            return SubtensorResultCostBasisViewModel(
+                title: strings.stakingSubtensorUiYouEarned(),
+                value: costBasisViewModelFactory.createEarned(
+                    for: settledCostBasis,
+                    proceeds: proceeds ?? .unknown,
+                    taoPrice: request.prices.taoPrice,
+                    locale: locale
+                )
+            )
+        case .buy:
+            let purchase = amounts.receive.map { SubtensorPurchaseQuote.quoted(tao: amounts.pay, alpha: $0) }
+
+            return SubtensorResultCostBasisViewModel(
+                title: strings.stakingSubtensorUiAvgBuyPrice(),
+                value: costBasisViewModelFactory.createAvgBuyPrice(
+                    for: settledCostBasis,
+                    after: purchase ?? .unknown,
+                    alphaSymbol: SubtensorSubnetNaming.symbol(for: request.target.netuid, in: context.catalogue),
+                    locale: locale
+                )
+            )
+        }
     }
 
     func showsNetworkFee(in state: SubtensorOperationResultState) -> Bool {

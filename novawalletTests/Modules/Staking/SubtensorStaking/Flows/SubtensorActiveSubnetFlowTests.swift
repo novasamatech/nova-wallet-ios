@@ -127,6 +127,11 @@ final class SubtensorActiveSubnetFlowTests: SubtensorFlowTestCase {
 
         try assertChainValues(of: screens)
 
+        XCTAssertEqual(
+            screens.costBasis,
+            .average(SubtensorPurchaseTotals(paidTao: 95_697_000_000, receivedAlpha: 1_869_010_901_513))
+        )
+
         let placeholderBeneficiary = try SubtensorFlowChainWorld.placeholderNovaFeeBeneficiary()
 
         XCTAssertEqual(productionFees, [
@@ -176,7 +181,7 @@ final class SubtensorActiveSubnetFlowTests: SubtensorFlowTestCase {
         verify(world.positionsSyncService, times(2)).refresh()
 
         XCTAssertEqual(requestLines().sorted(), chutesPositionRequestLines)
-        assertAttestedRequests(world, paths: ["/v1/bittensor/subnets", "/v1/bittensor/recommendations/subnets"])
+        assertAttestedRequests(world, requests: try chutesPositionAttestedRequests())
     }
 
     func testActiveSubnetBuyKeepsChainQuotesWhenRecommendationsAreNotPublished() throws {
@@ -196,7 +201,7 @@ final class SubtensorActiveSubnetFlowTests: SubtensorFlowTestCase {
         try assertChainValues(of: screens)
 
         XCTAssertEqual(requestLines().sorted(), chutesPositionRequestLines)
-        assertAttestedRequests(world, paths: ["/v1/bittensor/subnets", "/v1/bittensor/recommendations/subnets"])
+        assertAttestedRequests(world, requests: try chutesPositionAttestedRequests())
     }
 
     func testSellWithZeroFreeTaoIsRefusedForTheBatchedNetworkFeePlusTheDepositBeforeSubmitting() throws {
@@ -385,6 +390,7 @@ private extension SubtensorActiveSubnetFlowTests {
         let sellFee: ExtrinsicFeeProtocol
         let sellPlan: SubtensorSellPlan
         let canPaySell: Bool
+        let costBasis: SubtensorCostBasis
     }
 
     struct ChutesGroupSellConfirm {
@@ -405,8 +411,25 @@ private extension SubtensorActiveSubnetFlowTests {
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=7",
             "GET \(SubtensorFlowHost.priceAPI)/coins/chutes/market_chart?vs_currency=usd&days=30",
             "GET \(SubtensorFlowHost.priceAPI)/coins/chutes/market_chart?vs_currency=usd&days=7",
-            "GET \(SubtensorFlowHost.priceAPI)/coins/markets?vs_currency=usd&category=bittensor-subnets&per_page=250&page=1&sparkline=true&price_change_percentage=7d"
+            "GET \(SubtensorFlowHost.priceAPI)/coins/markets?vs_currency=usd&category=bittensor-subnets&per_page=250&page=1&sparkline=true&price_change_percentage=7d",
+            "POST https://bittensor.test/v1/bittensor/operations/search",
+            "POST https://bittensor.test/v1/bittensor/operations/search"
         ]
+    }
+
+    func chutesPositionAttestedRequests() throws -> [SubtensorFlowAttestedRequest] {
+        let accountSubject = try SubtensorFlowChainWorld.coldkey.toAddress(using: .defaultSubstrateFormat)
+
+        return [
+            SubtensorFlowAttestedRequest(method: "GET", path: "/v1/bittensor/subnets"),
+            SubtensorFlowAttestedRequest(method: "GET", path: "/v1/bittensor/recommendations/subnets")
+        ] + (1 ... 2).map { page in
+            SubtensorFlowAttestedRequest(
+                method: "POST",
+                path: "/v1/bittensor/operations/search",
+                body: SubtensorFlowURLProtocol.operationsSearchBody(accountSubject: accountSubject, page: page)
+            )
+        }
     }
 
     func startWorld() throws -> SubtensorFlowWorld {
@@ -418,6 +441,10 @@ private extension SubtensorActiveSubnetFlowTests {
         world.stubQuotes([chutesBuyQuote, chutesSellQuote])
         SubtensorFlowURLProtocol.serveSubnetLogos()
         SubtensorFlowURLProtocol.serveFixture(.subnets)
+        SubtensorFlowURLProtocol.serveOperationsFixture(
+            accountSubject: try SubtensorFlowChainWorld.coldkey.toAddress(using: .defaultSubstrateFormat),
+            pages: 1 ... 2
+        )
         try SubtensorFlowActiveStake.serveCharts()
 
         world.sharedState.setup(for: SubtensorFlowChainWorld.coldkeyAccount())
@@ -514,6 +541,8 @@ private extension SubtensorActiveSubnetFlowTests {
             existentialDeposit: SubtensorFlowActiveStake.existentialDeposit
         )
 
+        let costBasis = try run(services.costBasisService.createCostBasisWrapper(for: coldkey, netuid: group.netuid))
+
         return ChutesPositionScreens(
             yourBittensor: yourBittensor,
             group: group,
@@ -533,7 +562,8 @@ private extension SubtensorActiveSubnetFlowTests {
             sellQuote: sellQuote,
             sellFee: sellFee,
             sellPlan: sellPlan,
-            canPaySell: canPaySell
+            canPaySell: canPaySell,
+            costBasis: costBasis
         )
     }
 
@@ -630,6 +660,7 @@ private extension SubtensorActiveSubnetFlowTests {
             when(stub.setup()).thenDoNothing()
             when(stub.refreshPreflight(for: any(), netuid: any())).thenDoNothing()
             when(stub.loadSubnetData()).thenDoNothing()
+            when(stub.loadCostBasis(for: any())).thenDoNothing()
             when(stub.refreshQuote(for: any())).thenDoNothing()
             when(stub.estimateFee(for: any())).thenDoNothing()
         }

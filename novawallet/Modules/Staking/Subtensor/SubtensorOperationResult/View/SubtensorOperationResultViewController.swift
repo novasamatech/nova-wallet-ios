@@ -48,6 +48,7 @@ private extension SubtensorOperationResultViewController {
 
         rootView.backButton.addTarget(self, action: #selector(actionBack), for: .touchUpInside)
         rootView.detailsView.swapRateCell.addTarget(self, action: #selector(actionSwapRate), for: .touchUpInside)
+        rootView.detailsView.costBasisCell.addTarget(self, action: #selector(actionCostBasis), for: .touchUpInside)
         rootView.detailsView.slippageCell.addTarget(self, action: #selector(actionSlippage), for: .touchUpInside)
         rootView.detailsView.validatorCell.addTarget(self, action: #selector(actionValidator), for: .touchUpInside)
         rootView.detailsView.networkFeeCell.addTarget(self, action: #selector(actionNetworkFee), for: .touchUpInside)
@@ -83,6 +84,10 @@ private extension SubtensorOperationResultViewController {
 
     @objc func actionSwapRate() {
         presenter.showInfo(for: .swapRate)
+    }
+
+    @objc func actionCostBasis() {
+        presenter.showInfo(for: .costBasis)
     }
 
     @objc func actionSlippage() {
