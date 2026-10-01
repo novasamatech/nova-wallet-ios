@@ -3895,7 +3895,6 @@
 		7E8C10658FEAD469F5DFEDFA /* GiftPrepareSharePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 636452DDE0D956DE05A73278 /* GiftPrepareSharePresenter.swift */; };
 		7F09593FCC1F032F7B8DF90F /* DAppBrowserWidgetViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22987F2F731F702564980965 /* DAppBrowserWidgetViewFactory.swift */; };
 		7F5B03517FD0144F7EDE1015 /* YourWalletsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF7A019F89C6CD418AEEE79C /* YourWalletsPresenter.swift */; };
-		7F8DBAFFAF934481B36549F5 /* SubtensorDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB330472AAFF4391B70D070B /* SubtensorDiscovery.swift */; };
 		7FF2D6FEDD352AC51E1DBB3B /* OperationDetailsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D2A26EC9537BD4275A03272 /* OperationDetailsPresenter.swift */; };
 		7FFC31C4522B008864CB0B99 /* CloudBackupSettingsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F8CE3D9F9EFB6852E99B972 /* CloudBackupSettingsProtocols.swift */; };
 		800FCAF66DC8A24020D16A9C /* AccountExportPasswordInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 194C9BFEE9BA8C9E448D79AA /* AccountExportPasswordInteractor.swift */; };
@@ -13817,7 +13816,6 @@
 		DA3918C1B96EB07100C74815 /* CloudBackupRemindProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CloudBackupRemindProtocols.swift; sourceTree = "<group>"; };
 		DA576BBCED647C22E93F0202 /* NominationPoolBondMoreConfirmWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NominationPoolBondMoreConfirmWireframe.swift; sourceTree = "<group>"; };
 		DA9DD724F02DA0A174D875A8 /* CreateWatchOnlyViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CreateWatchOnlyViewLayout.swift; sourceTree = "<group>"; };
-		DB330472AAFF4391B70D070B /* SubtensorDiscovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorDiscovery.swift; sourceTree = "<group>"; };
 		DB7F5F9B54BE4234C5682BDE /* StakingRedeemViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRedeemViewController.swift; sourceTree = "<group>"; };
 		DB8939D2E509D6FF66B7E117 /* InAppUpdatesProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = InAppUpdatesProtocols.swift; sourceTree = "<group>"; };
 		DB9AB4A7C57057ECFA1DA03E /* StartStakingConfirmViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StartStakingConfirmViewLayout.swift; sourceTree = "<group>"; };
@@ -21143,7 +21141,6 @@
 				26D6F43C28A7469E904B5497 /* SubtensorValidatorChain.swift */,
 				896439C94AAC468DAE4A64E7 /* SubtensorValidatorDirectory.swift */,
 				41FD7AD05579407EB8235500 /* SubtensorRecommendations.swift */,
-				DB330472AAFF4391B70D070B /* SubtensorDiscovery.swift */,
 				6C9B82DA208C4BD096892257 /* SubtensorPriceHistory.swift */,
 				762EB8B08E75446A9F9384E6 /* SubtensorPortfolio.swift */,
 				AA42C2FD5C2D4047A147AB46 /* SubtensorNovaFeeConstants.swift */,
@@ -39707,7 +39704,6 @@
 				675DE37BFC8F46BAA37B3389 /* SubtensorValidatorChain.swift in Sources */,
 				898ACE9B06704F8DAA7C28AE /* SubtensorValidatorDirectory.swift in Sources */,
 				872C31A230DE453B978A43FD /* SubtensorRecommendations.swift in Sources */,
-				7F8DBAFFAF934481B36549F5 /* SubtensorDiscovery.swift in Sources */,
 				028EDCBC124047DA9631D902 /* SubtensorPriceHistory.swift in Sources */,
 				B7811E9ED9714AF585BDB2DF /* SubtensorPortfolio.swift in Sources */,
 				973F0A8E05E24079804ECCE2 /* SubtensorNovaFeeConstants.swift in Sources */,
