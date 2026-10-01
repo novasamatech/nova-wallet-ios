@@ -130,6 +130,58 @@ final class SubtensorQuoteViewModelFactoryTests: XCTestCase {
         PriceData(identifier: "bittensor", price: "25", dayChange: nil, currencyId: nil)
     }
 
+    private func makeCatalogue(netuid: UInt16, name: String, symbol: String) -> SubtensorSubnetCatalogue {
+        let stamp = SubtensorBackendStamp(asOf: Date(timeIntervalSince1970: 1_790_000_000), freshness: .fresh)
+
+        let subnet = SubtensorCatalogueSubnet(
+            netuid: netuid,
+            name: name,
+            symbol: symbol,
+            networkRegisteredAt: 0,
+            tempo: 99,
+            ownerColdkey: "",
+            ownerHotkey: "",
+            links: SubtensorSubnetLinks(
+                githubRepo: "",
+                subnetContact: "",
+                subnetUrl: "",
+                subnetWebsite: "",
+                discord: "",
+                additional: ""
+            ),
+            taoReserve: 210_000_000_000_000,
+            alphaReserve: 2_845_000_000_000_000,
+            alphaOutstanding: 3_100_000_000_000_000,
+            taoPerAlpha: 7_683_255,
+            metadataStamp: stamp,
+            pricesStamp: stamp
+        )
+
+        return SubtensorSubnetCatalogue(subnets: [subnet])
+    }
+
+    func testSubnetTargetTakesItsTitleAndSymbolFromTheCatalogue() {
+        let viewModel = makeFactory().createTargetViewModel(
+            for: makeSubnetTarget(),
+            catalogue: makeCatalogue(netuid: 1, name: "Templar", symbol: "γ"),
+            locale: locale
+        )
+
+        XCTAssertEqual(viewModel.title, "Templar")
+        XCTAssertEqual(viewModel.subtitle, "γ")
+    }
+
+    func testSubnetTargetWithoutCatalogueReadsSubnetNumberWithoutSymbol() {
+        let viewModel = makeFactory().createTargetViewModel(
+            for: makeSubnetTarget(netuid: 5),
+            catalogue: nil,
+            locale: locale
+        )
+
+        XCTAssertEqual(viewModel.title, "Subnet 5")
+        XCTAssertNil(viewModel.subtitle)
+    }
+
     func testBuyTradePanelShowsTheQuotedAlphaItsFiatValueTheSwapRateAndTheMonthlyEarnings() throws {
         let panel = try XCTUnwrap(
             makeFactory().createTradePanel(
