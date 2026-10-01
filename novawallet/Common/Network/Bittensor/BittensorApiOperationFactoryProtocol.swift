@@ -17,16 +17,6 @@ protocol BittensorApiOperationFactoryProtocol: AnyObject {
         page: Int
     ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.AlphaYieldCollection>>
 
-    func createRewardsWrapper(
-        accountSubject: AccountAddress,
-        page: Int?
-    ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RewardCollection>>
-
-    func createOperationsWrapper(
-        accountSubject: AccountAddress,
-        page: Int?
-    ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.OperationCollection>>
-
     func createRecommendationsWrapper()
         -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RecommendationCollection>>
 

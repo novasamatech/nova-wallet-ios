@@ -1,6 +1,5 @@
 import Foundation
 import Operation_iOS
-import NovaCrypto
 
 protocol BittensorApiWireChecked {
     func validateWire() throws
@@ -58,20 +57,6 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
         createPagedWrapper(route: .alphaYield, path: "/subnets/\(netuid)/yields/alpha", page: page)
     }
 
-    func createRewardsWrapper(
-        accountSubject: AccountAddress,
-        page: Int?
-    ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RewardCollection>> {
-        createSearchWrapper(route: .rewards, accountSubject: accountSubject, page: page)
-    }
-
-    func createOperationsWrapper(
-        accountSubject: AccountAddress,
-        page: Int?
-    ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.OperationCollection>> {
-        createSearchWrapper(route: .operations, accountSubject: accountSubject, page: page)
-    }
-
     func createRecommendationsWrapper()
         -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RecommendationCollection>> {
         createWrapper(route: .recommendations, path: "/recommendations")
@@ -89,18 +74,11 @@ private extension BittensorApiOperationFactory {
         case validators
         case rootYield
         case alphaYield
-        case rewards
-        case operations
         case recommendations
         case rankedSubnets
 
         var method: BittensorApiRequest.Method {
-            switch self {
-            case .rewards, .operations:
-                return .post
-            default:
-                return .get
-            }
+            .get
         }
 
         var pathTemplate: String {
@@ -113,10 +91,6 @@ private extension BittensorApiOperationFactory {
                 return "/yields/root"
             case .alphaYield:
                 return "/subnets/{netuid}/yields/alpha"
-            case .rewards:
-                return "/rewards/search"
-            case .operations:
-                return "/operations/search"
             case .recommendations:
                 return "/recommendations"
             case .rankedSubnets:
@@ -126,23 +100,15 @@ private extension BittensorApiOperationFactory {
 
         func timeToLive(isServedFromMemory: Bool) -> TimeInterval {
             switch self {
-            case .subnets, .validators, .rewards:
+            case .subnets, .validators:
                 return 150
             case .rootYield, .alphaYield:
                 return 900
-            case .operations:
-                return 30
             case .recommendations, .rankedSubnets:
                 return isServedFromMemory ? 60 : 300
             }
         }
     }
-
-    static let searchEncoder: JSONEncoder = {
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = [.sortedKeys]
-        return encoder
-    }()
 
     func createPagedWrapper<T: Decodable & BittensorApiWireChecked>(
         route: Route,
@@ -161,46 +127,17 @@ private extension BittensorApiOperationFactory {
         return createWrapper(route: route, path: path, queryItems: queryItems)
     }
 
-    func createSearchWrapper<T: Decodable & BittensorApiWireChecked>(
-        route: Route,
-        accountSubject: AccountAddress,
-        page: Int?
-    ) -> CompoundOperationWrapper<BittensorApiResult<T>> {
-        let invalidRequest = BittensorApiError.invalidRequest(code: nil, requestId: nil)
-
-        guard Self.isValidAccountSubject(accountSubject), page.map(Self.pageRange.contains) ?? true else {
-            return .createWithError(invalidRequest)
-        }
-
-        let body: Data
-
-        do {
-            body = try Self.searchEncoder.encode(BittensorApi.SearchRequest(accountSubject: accountSubject, page: page))
-        } catch {
-            return .createWithError(invalidRequest)
-        }
-
-        return createWrapper(
-            route: route,
-            path: route.pathTemplate,
-            jsonBody: body,
-            accountDigest: Data(accountSubject.utf8).sha256()
-        )
-    }
-
     func createWrapper<T: Decodable & BittensorApiWireChecked>(
         route: Route,
         path: String,
-        queryItems: [URLQueryItem] = [],
-        jsonBody: Data? = nil,
-        accountDigest: Data? = nil
+        queryItems: [URLQueryItem] = []
     ) -> CompoundOperationWrapper<BittensorApiResult<T>> {
         let request = BittensorApiRequest(
             method: route.method,
             path: path,
             pathTemplate: route.pathTemplate,
             queryItems: queryItems,
-            jsonBody: jsonBody
+            jsonBody: nil
         )
 
         let job = BittensorApiCacheJob(
@@ -208,12 +145,12 @@ private extension BittensorApiOperationFactory {
                 method: route.method.rawValue,
                 path: path,
                 query: queryItems.map { "\($0.name)=\($0.value ?? "")" }.sorted(),
-                bodyDigest: jsonBody?.sha256()
+                bodyDigest: nil
             ),
             routeKey: BittensorApiRouteKey(
                 method: route.method.rawValue,
                 pathTemplate: route.pathTemplate,
-                accountDigest: accountDigest
+                accountDigest: nil
             ),
             fetch: { [transport, logger] in
                 Self.createFetchWrapper(T.self, request: request, route: route, transport: transport, logger: logger)
@@ -323,23 +260,5 @@ private extension BittensorApiOperationFactory {
         let path = keys.map { key in key.intValue.map { "[\($0)]" } ?? "." + key.stringValue }.joined()
 
         return path.isEmpty ? "body" : path
-    }
-
-    static func isValidAccountSubject(_ subject: AccountAddress) -> Bool {
-        let factory = SS58AddressFactory()
-
-        do {
-            let type = try factory.type(fromAddress: subject).uint16Value
-
-            guard type == SubstrateConstants.genericAddressPrefix else {
-                return false
-            }
-
-            _ = try factory.accountId(fromAddress: subject, type: type)
-
-            return true
-        } catch {
-            return false
-        }
     }
 }

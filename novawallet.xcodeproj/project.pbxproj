@@ -254,7 +254,6 @@
 		9E08C28644E8426CA47AA941 /* BittensorApiFixtureWorld+Recommendations.swift in Sources */ = {isa = PBXBuildFile; fileRef = C461D1CA2E1A4B59BBB22C25 /* BittensorApiFixtureWorld+Recommendations.swift */; };
 		9AC52187BD28400B9A861298 /* BittensorApiFixtureDocuments.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9901FDB41FD4F26887B6521 /* BittensorApiFixtureDocuments.swift */; };
 		AB068B72481F440CAEBA80FF /* BittensorApiFixtureDocuments+Recommendations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B87BEA200C14DF4AF13733A /* BittensorApiFixtureDocuments+Recommendations.swift */; };
-		04131A9F811F493FA5CA95C8 /* BittensorApiFixtureDocuments+History.swift in Sources */ = {isa = PBXBuildFile; fileRef = 181E35C20DB44FD680E328B5 /* BittensorApiFixtureDocuments+History.swift */; };
 		0CD682E00CF347F28944C725 /* BittensorApiFixtureRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10F974BF8624524AB74A854 /* BittensorApiFixtureRouter.swift */; };
 		4FBC1F3BE5B54B73BD7D539E /* BittensorApiFixtureTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1346BC536E124E429748E0CB /* BittensorApiFixtureTransport.swift */; };
 		0774A2F91AA3405E82005FB5 /* BittensorFixtureChainSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2998ACA8AB7344E8A5017977 /* BittensorFixtureChainSnapshot.swift */; };
@@ -7476,7 +7475,6 @@
 		C461D1CA2E1A4B59BBB22C25 /* BittensorApiFixtureWorld+Recommendations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BittensorApiFixtureWorld+Recommendations.swift"; sourceTree = "<group>"; };
 		A9901FDB41FD4F26887B6521 /* BittensorApiFixtureDocuments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorApiFixtureDocuments.swift; sourceTree = "<group>"; };
 		5B87BEA200C14DF4AF13733A /* BittensorApiFixtureDocuments+Recommendations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BittensorApiFixtureDocuments+Recommendations.swift"; sourceTree = "<group>"; };
-		181E35C20DB44FD680E328B5 /* BittensorApiFixtureDocuments+History.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BittensorApiFixtureDocuments+History.swift"; sourceTree = "<group>"; };
 		A10F974BF8624524AB74A854 /* BittensorApiFixtureRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorApiFixtureRouter.swift; sourceTree = "<group>"; };
 		1346BC536E124E429748E0CB /* BittensorApiFixtureTransport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorApiFixtureTransport.swift; sourceTree = "<group>"; };
 		2998ACA8AB7344E8A5017977 /* BittensorFixtureChainSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorFixtureChainSnapshot.swift; sourceTree = "<group>"; };
@@ -14335,7 +14333,6 @@
 				C461D1CA2E1A4B59BBB22C25 /* BittensorApiFixtureWorld+Recommendations.swift */,
 				A9901FDB41FD4F26887B6521 /* BittensorApiFixtureDocuments.swift */,
 				5B87BEA200C14DF4AF13733A /* BittensorApiFixtureDocuments+Recommendations.swift */,
-				181E35C20DB44FD680E328B5 /* BittensorApiFixtureDocuments+History.swift */,
 				A10F974BF8624524AB74A854 /* BittensorApiFixtureRouter.swift */,
 				1346BC536E124E429748E0CB /* BittensorApiFixtureTransport.swift */,
 				2998ACA8AB7344E8A5017977 /* BittensorFixtureChainSnapshot.swift */,
@@ -33610,7 +33607,6 @@
 				9E08C28644E8426CA47AA941 /* BittensorApiFixtureWorld+Recommendations.swift in Sources */,
 				9AC52187BD28400B9A861298 /* BittensorApiFixtureDocuments.swift in Sources */,
 				AB068B72481F440CAEBA80FF /* BittensorApiFixtureDocuments+Recommendations.swift in Sources */,
-				04131A9F811F493FA5CA95C8 /* BittensorApiFixtureDocuments+History.swift in Sources */,
 				0CD682E00CF347F28944C725 /* BittensorApiFixtureRouter.swift in Sources */,
 				4FBC1F3BE5B54B73BD7D539E /* BittensorApiFixtureTransport.swift in Sources */,
 				0774A2F91AA3405E82005FB5 /* BittensorFixtureChainSnapshot.swift in Sources */,
