@@ -58,7 +58,9 @@ enum SubtensorFlowHost {
     static let bittensorGateway = URL(string: "https://bittensor.test/")!
     static let subnetLogos = URL(string: "https://subnet-logos.test/subnets.json")!
 
-    static let subnetMarkets = "https://tokens-price.novasama-tech.org/api/v3/coins/markets" +
+    static let priceAPI = PriceAPI.baseURL.absoluteString
+
+    static let subnetMarkets = priceAPI + "/coins/markets" +
         "?vs_currency=usd&category=bittensor-subnets&per_page=250&page=1&sparkline=true&price_change_percentage=7d"
 
     static func bittensor(_ path: String) -> String {
@@ -66,7 +68,7 @@ enum SubtensorFlowHost {
     }
 
     static func marketChart(coinId: String, days: String) -> String {
-        "https://tokens-price.novasama-tech.org/api/v3/coins/\(coinId)/market_chart?vs_currency=usd&days=\(days)"
+        "\(priceAPI)/coins/\(coinId)/market_chart?vs_currency=usd&days=\(days)"
     }
 }
 
