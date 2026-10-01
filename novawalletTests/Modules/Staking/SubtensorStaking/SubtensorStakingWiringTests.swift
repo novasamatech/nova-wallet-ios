@@ -23,6 +23,7 @@ final class SubtensorStakingWiringTests: XCTestCase {
         let priceHistory = try XCTUnwrap(first.priceHistoryService as? SubtensorPriceHistoryService)
         let secondPriceHistory = try XCTUnwrap(second.priceHistoryService as? SubtensorPriceHistoryService)
         let secondRecommendations = try XCTUnwrap(second.recommendationService as? SubtensorRecommendationService)
+        let costBasis = try XCTUnwrap(processServices.costBasisService as? SubtensorCostBasisService)
 
         XCTAssertTrue(first.subnetLogosProvider === processServices.subnetLogosProvider)
         XCTAssertTrue(second.subnetLogosProvider === processServices.subnetLogosProvider)
@@ -38,6 +39,9 @@ final class SubtensorStakingWiringTests: XCTestCase {
         XCTAssertTrue(recommendations.apiOperationFactory === processServices.bittensorApiOperationFactory)
         XCTAssertTrue(directory.apiOperationFactory === processServices.bittensorApiOperationFactory)
         XCTAssertTrue(secondRecommendations.apiOperationFactory === processServices.bittensorApiOperationFactory)
+        XCTAssertTrue(costBasis.apiOperationFactory === processServices.bittensorApiOperationFactory)
+        XCTAssertTrue(first.costBasisService === processServices.costBasisService)
+        XCTAssertTrue(second.costBasisService === processServices.costBasisService)
         XCTAssertTrue(first.validatorChainOperationFactory is SubtensorValidatorChainOperationFactory)
         XCTAssertTrue(recommendations.chainOperationFactory === first.validatorChainOperationFactory)
         XCTAssertTrue(directory.chainOperationFactory === first.validatorChainOperationFactory)
