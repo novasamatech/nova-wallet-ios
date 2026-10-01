@@ -56,6 +56,8 @@ private extension SubtensorStakingConfirmViewController {
         rootView.slippageCell.titleButton.setTitle(strings.swapsSetupSlippage())
         rootView.validatorCell.titleButton.setTitle(strings.stakingCommonValidator())
         rootView.earnCell.titleButton.setTitle(strings.stakingSubtensorUiEarnTokensMonth())
+        rootView.avgBuyPriceCell.titleLabel.text = strings.stakingSubtensorUiAvgBuyPrice()
+        rootView.youWillEarnCell.titleButton.setTitle(strings.stakingSubtensorUiYouWillEarn())
         rootView.networkFeeCell.titleButton.setTitle(strings.commonNetworkFee())
 
         rootView.walletCell.titleLabel.text = strings.commonWallet()
@@ -77,6 +79,8 @@ private extension SubtensorStakingConfirmViewController {
         rootView.swapRateCell.addTarget(self, action: #selector(actionSwapRateInfo), for: .touchUpInside)
         rootView.slippageCell.addTarget(self, action: #selector(actionSlippageInfo), for: .touchUpInside)
         rootView.earnCell.addTarget(self, action: #selector(actionEarnInfo), for: .touchUpInside)
+        rootView.avgBuyPriceCell.addTarget(self, action: #selector(actionAvgBuyPriceInfo), for: .touchUpInside)
+        rootView.youWillEarnCell.addTarget(self, action: #selector(actionYouWillEarnInfo), for: .touchUpInside)
         rootView.networkFeeCell.addTarget(self, action: #selector(actionNetworkFeeInfo), for: .touchUpInside)
     }
 
@@ -108,11 +112,34 @@ private extension SubtensorStakingConfirmViewController {
         tileView.assetIconView.bind(viewModel: iconViewModel, size: size)
     }
 
+    func bindCostBasisRow(_ viewModel: SubtensorCostBasisRowViewModel, cell: SwapNetworkFeeViewCell) {
+        switch viewModel {
+        case .hidden:
+            cell.isHidden = true
+        case .loading:
+            cell.isHidden = false
+            cell.bind(loadableViewModel: .loading)
+        case let .value(value):
+            cell.isHidden = false
+            cell.valueTopButton.imageWithTitleView?.titleColor = value.tone.textColor
+
+            let info = NetworkFeeInfoViewModel(
+                isEditable: false,
+                balanceViewModel: BalanceViewModel(amount: value.amount, price: value.detail)
+            )
+
+            cell.bind(loadableViewModel: .loaded(value: info))
+        }
+    }
+
     func bindSwap(_ viewModel: SubtensorConfirmSwapViewModel, networkFee: BalanceViewModelProtocol?) {
         bindTile(rootView.pairsView.leftAssetView, state: .loaded(value: viewModel.pay))
         bindTile(rootView.pairsView.rigthAssetView, state: viewModel.receive)
 
         rootView.swapRateCell.bind(loadableViewModel: viewModel.swapRate)
+
+        rootView.avgBuyPriceCell.bind(costBasisRow: viewModel.avgBuyPrice)
+        bindCostBasisRow(viewModel.youWillEarn, cell: rootView.youWillEarnCell)
 
         rootView.slippageCell.isHidden = viewModel.slippage == nil
         rootView.slippageCell.bind(loadableViewModel: .loaded(value: viewModel.slippage ?? ""))
@@ -191,6 +218,14 @@ private extension SubtensorStakingConfirmViewController {
 
     @objc func actionEarnInfo() {
         presenter.showEarnPerMonthInfo()
+    }
+
+    @objc func actionAvgBuyPriceInfo() {
+        presenter.showAvgBuyPriceInfo()
+    }
+
+    @objc func actionYouWillEarnInfo() {
+        presenter.showYouWillEarnInfo()
     }
 
     @objc func actionNetworkFeeInfo() {

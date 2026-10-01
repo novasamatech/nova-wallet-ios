@@ -26,6 +26,7 @@ final class SubtensorUnstakeConfirmPresenter {
     var tradesUnavailable = false
     var catalogue: SubtensorSubnetCatalogue?
     var subnetLogos: SubtensorSubnetLogos?
+    var costBasis: SubtensorCostBasisState = .loading
     var isHandingOff = false
     private var isSignerNotSupportedShown = false
 
@@ -119,7 +120,8 @@ extension SubtensorUnstakeConfirmPresenter {
             price: price,
             fee: fee,
             stakeChange: createStakeChange(),
-            signing: signing
+            signing: signing,
+            costBasis: costBasis
         )
 
         view?.didReceive(viewModel: viewModelFactory.createViewModel(for: input, locale: selectedLocale))
@@ -256,6 +258,7 @@ extension SubtensorUnstakeConfirmPresenter: SubtensorStakingConfirmPresenterProt
 
         if !model.target.isRoot {
             interactor.loadSubnetData()
+            interactor.loadCostBasis(for: unstakeModel.netuid)
             refreshQuote()
         }
 
@@ -323,6 +326,16 @@ extension SubtensorUnstakeConfirmPresenter: SubtensorStakingConfirmPresenterProt
     }
 
     func showEarnPerMonthInfo() {}
+
+    func showAvgBuyPriceInfo() {
+        let symbol = SubtensorSubnetNaming.symbol(for: unstakeModel.netuid, in: catalogue)
+
+        wireframe.showSubtensorInfo(.avgBuyPrice(symbol: symbol, subnetName: subnetName), from: view)
+    }
+
+    func showYouWillEarnInfo() {
+        wireframe.showSubtensorInfo(.youWillEarn, from: view)
+    }
 
     func showNetworkFeeInfo() {
         wireframe.showSubtensorInfo(.networkFee(.sell), from: view)

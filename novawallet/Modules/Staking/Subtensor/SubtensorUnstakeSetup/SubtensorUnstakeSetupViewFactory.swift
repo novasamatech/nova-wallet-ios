@@ -83,6 +83,7 @@ private extension SubtensorUnstakeSetupViewFactory {
             subnetLogosProvider: earnServices.subnetLogosProvider,
             validatorFactory: validatorFactory,
             rootHoldFactory: earnServices.rootHoldFactory,
+            costBasisService: earnServices.costBasisService,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             logger: Logger.shared
         )

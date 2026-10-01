@@ -41,6 +41,22 @@ enum SubtensorFlowLiteral {
     }
 }
 
+struct SubtensorFlowAttestedRequest {
+    let method: String
+    let path: String
+    let body: Data
+
+    init(method: String, path: String, body: Data = Data()) {
+        self.method = method
+        self.path = path
+        self.body = body
+    }
+
+    var contentType: String {
+        body.isEmpty ? "" : "application/json"
+    }
+}
+
 class SubtensorFlowTestCase: XCTestCase {
     let networkFee: Balance = 1_500_000
     let paidNetworkFee: UInt64 = 1_234_567
@@ -106,19 +122,27 @@ class SubtensorFlowTestCase: XCTestCase {
     }
 
     func assertAttestedRequests(_ world: SubtensorFlowWorld, paths: [String]) {
+        assertAttestedRequests(world, requests: paths.map { SubtensorFlowAttestedRequest(method: "GET", path: $0) })
+    }
+
+    func assertAttestedRequests(_ world: SubtensorFlowWorld, requests: [SubtensorFlowAttestedRequest]) {
         let backendRequests = SubtensorFlowURLProtocol.recordedRequests.filter {
             $0.url.hasPrefix(SubtensorFlowHost.bittensor(""))
         }
 
         let signatures = world.attestation.signatures
 
-        XCTAssertEqual(signatures.map(\.target.path), paths)
-        XCTAssertEqual(signatures.map(\.target.method), paths.map { _ in "GET" })
-        XCTAssertEqual(signatures.map(\.target.contentType), paths.map { _ in "" })
-        XCTAssertEqual(signatures.map(\.body), paths.map { _ in Data() })
+        XCTAssertEqual(signatures.map(\.target.path), requests.map(\.path))
+        XCTAssertEqual(signatures.map(\.target.method), requests.map(\.method))
+        XCTAssertEqual(signatures.map(\.target.contentType), requests.map(\.contentType))
+        XCTAssertEqual(signatures.map(\.body), requests.map(\.body))
         XCTAssertEqual(signatures.map(\.target.url.absoluteString), backendRequests.map(\.url))
-        XCTAssertEqual(backendRequests.map(\.headers), signatures.map(\.headers))
-        XCTAssertEqual(backendRequests.map(\.body), paths.map { _ in Data() })
+        XCTAssertEqual(
+            backendRequests.map { $0.headers.filter { !["Content-Type", "Content-Length"].contains($0.key) } },
+            signatures.map(\.headers)
+        )
+        XCTAssertEqual(backendRequests.map { $0.headers["Content-Type"] ?? "" }, requests.map(\.contentType))
+        XCTAssertEqual(backendRequests.map(\.body), requests.map(\.body))
         XCTAssertEqual(backendRequests.first?.headers, [
             "X-Attestation-Profile": "2",
             "X-Client-Id": SubtensorFlowAttestation.clientId,

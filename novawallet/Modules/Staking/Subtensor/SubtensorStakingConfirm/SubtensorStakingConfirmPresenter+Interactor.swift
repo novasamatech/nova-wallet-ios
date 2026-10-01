@@ -108,6 +108,12 @@ extension SubtensorStakingConfirmPresenter: SubtensorConfirmInteractorOutputProt
 
         provideTileIcons()
     }
+
+    func didReceiveCostBasis(_ costBasis: SubtensorCostBasis?) {
+        self.costBasis = costBasis.map { .resolved($0) } ?? .unavailable
+
+        provideViewModel()
+    }
 }
 
 extension SubtensorStakingConfirmPresenter: SubtensorOperationResultDelegate {

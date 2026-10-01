@@ -23,6 +23,12 @@ final class SubtensorUnstakeSetupLayout: UIView {
 
     let swapRateCell = StackTitleMultiValueCell()
 
+    let avgBuyPriceCell = StackTitleMultiValueCell()
+
+    let earnedCell: StackTitleMultiValueCell = .create { cell in
+        cell.canSelect = false
+    }
+
     let validatorCell: StackInfoTableCell = .create { cell in
         cell.detailsLabel.lineBreakMode = .byTruncatingMiddle
         cell.accessoryImageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
@@ -165,6 +171,8 @@ private extension SubtensorUnstakeSetupLayout {
 
         detailsTableView.addArrangedSubview(receiveCell)
         detailsTableView.addArrangedSubview(swapRateCell)
+        detailsTableView.addArrangedSubview(avgBuyPriceCell)
+        detailsTableView.addArrangedSubview(earnedCell)
         detailsTableView.addArrangedSubview(subnetValidatorCell)
         detailsTableView.addArrangedSubview(validatorCell)
         detailsTableView.addArrangedSubview(networkFeeCell)

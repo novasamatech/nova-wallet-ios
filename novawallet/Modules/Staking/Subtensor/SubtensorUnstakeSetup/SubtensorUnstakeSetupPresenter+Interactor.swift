@@ -118,6 +118,12 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtoc
         provideViewModel()
     }
 
+    func didReceiveCostBasis(_ costBasis: SubtensorCostBasis?) {
+        self.costBasis = costBasis.map { .resolved($0) } ?? .unavailable
+
+        provideViewModel()
+    }
+
     func didReceiveAssetBalance(_ balance: AssetBalance?) {
         self.balance = balance
     }

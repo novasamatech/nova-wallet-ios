@@ -25,9 +25,15 @@ struct SubtensorResultStatusViewModel {
     let details: String
 }
 
+struct SubtensorResultCostBasisViewModel: Equatable {
+    let title: String
+    let value: SubtensorCostBasisRowViewModel
+}
+
 struct SubtensorResultDetailsViewModel {
     let title: String
     let swapRate: String
+    let costBasis: SubtensorResultCostBasisViewModel?
     let slippage: String?
     let validator: String
     let networkFee: BalanceViewModelProtocol?

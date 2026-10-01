@@ -79,12 +79,16 @@ final class SubtensorFlowWorld {
             jitterProvider: { 0 }
         )
 
+        let eventCenter = EventCenter()
+
+        let bittensorApiOperationFactory = BittensorApiOperationFactory(
+            transport: transport,
+            cache: cache,
+            logger: Logger.shared
+        )
+
         let processServices = SubtensorStakingProcessServices(
-            bittensorApiOperationFactory: BittensorApiOperationFactory(
-                transport: transport,
-                cache: cache,
-                logger: Logger.shared
-            ),
+            bittensorApiOperationFactory: bittensorApiOperationFactory,
             subnetLogosProvider: SubtensorSubnetLogosProvider(url: SubtensorFlowHost.subnetLogos),
             subnetMarketsService: SubtensorSubnetMarketsService(
                 coingeckoOperationFactory: CoingeckoOperationFactory(),
@@ -92,6 +96,13 @@ final class SubtensorFlowWorld {
                 logger: Logger.shared
             ),
             maxApyResolution: SubtensorMaxApyResolution(),
+            costBasisService: SubtensorCostBasisService(
+                apiOperationFactory: bittensorApiOperationFactory,
+                operationQueue: OperationQueue(),
+                eventCenter: eventCenter,
+                walkSettings: SubtensorCostBasisWalk.Settings(requestSpacing: 0, retryDelay: 0, maxPages: 10),
+                timeProvider: { clock.now }
+            ),
             isFixtureMode: true
         )
 
@@ -109,7 +120,7 @@ final class SubtensorFlowWorld {
             storageFacade: SubstrateStorageTestFacade(),
             chainRegistry: chainRegistry,
             delegatedAccountSyncService: nil,
-            eventCenter: EventCenter(),
+            eventCenter: eventCenter,
             syncOperationQueue: OperationQueue(),
             repositoryOperationQueue: OperationQueue(),
             applicationConfig: ApplicationConfig.shared,

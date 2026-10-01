@@ -46,6 +46,8 @@ private extension SubtensorUnstakeSetupVC {
 
         rootView.receiveCell.titleLabel.text = strings.stakingSubtensorUiYouWillGet()
         rootView.swapRateCell.titleLabel.text = strings.stakingSubtensorUiSwapRate()
+        rootView.avgBuyPriceCell.titleLabel.text = strings.stakingSubtensorUiAvgBuyPrice()
+        rootView.earnedCell.titleLabel.text = strings.stakingSubtensorUiEarned()
         rootView.validatorCell.titleLabel.text = strings.stakingCommonValidator()
         rootView.subnetValidatorCell.titleButton.setTitle(strings.stakingCommonValidator())
         rootView.networkFeeCell.rowContentView.locale = selectedLocale
@@ -63,6 +65,7 @@ private extension SubtensorUnstakeSetupVC {
         rootView.amountTitleView.button.addTarget(self, action: #selector(actionMax), for: .touchUpInside)
         rootView.amountInputView.addTarget(self, action: #selector(actionAmountChange), for: .editingChanged)
         rootView.swapRateCell.addTarget(self, action: #selector(actionSwapRateInfo), for: .touchUpInside)
+        rootView.avgBuyPriceCell.addTarget(self, action: #selector(actionAvgBuyPriceInfo), for: .touchUpInside)
         rootView.validatorCell.addTarget(self, action: #selector(actionValidatorInfo), for: .touchUpInside)
         rootView.subnetValidatorCell.addTarget(self, action: #selector(actionValidatorInfo), for: .touchUpInside)
         rootView.actionButton.addTarget(self, action: #selector(actionProceed), for: .touchUpInside)
@@ -138,6 +141,22 @@ private extension SubtensorUnstakeSetupVC {
         }
     }
 
+    func applyCostBasisRow(_ viewModel: SubtensorCostBasisRowViewModel, cell: StackTitleMultiValueCell) {
+        switch viewModel {
+        case .hidden:
+            cell.isHidden = true
+            cell.stopLoadingIfNeeded()
+        case .loading:
+            cell.isHidden = false
+            cell.startLoadingIfNeeded()
+        case let .value(value):
+            cell.isHidden = false
+            cell.stopLoadingIfNeeded()
+            cell.topValueLabel.textColor = value.tone.textColor
+            cell.rowContentView.valueView.bind(topValue: value.amount, bottomValue: value.detail)
+        }
+    }
+
     func applyValidator(_ viewModel: SubtensorSetupValidatorViewModel) {
         guard isRoot else {
             applySubnetValidator(viewModel)
@@ -186,6 +205,8 @@ private extension SubtensorUnstakeSetupVC {
     func applyDetails(_ details: SubtensorUnstakeDetailsViewModel) {
         applyBalanceRow(details.receive, cell: rootView.receiveCell)
         applyRow(details.swapRate, cell: rootView.swapRateCell)
+        applyCostBasisRow(details.avgBuyPrice, cell: rootView.avgBuyPriceCell)
+        applyCostBasisRow(details.earned, cell: rootView.earnedCell)
         applyValidator(details.validator)
         applyNetworkFee(details.networkFee)
 
@@ -233,6 +254,10 @@ private extension SubtensorUnstakeSetupVC {
 
     @objc func actionSwapRateInfo() {
         presenter.showSwapRateInfo()
+    }
+
+    @objc func actionAvgBuyPriceInfo() {
+        presenter.showAvgBuyPriceInfo()
     }
 
     @objc func actionValidatorInfo() {

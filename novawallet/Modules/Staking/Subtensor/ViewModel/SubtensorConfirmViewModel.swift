@@ -14,6 +14,8 @@ struct SubtensorConfirmSwapViewModel {
     let pay: SubtensorConfirmTileViewModel
     let receive: LoadableViewModelState<SubtensorConfirmTileViewModel>
     let swapRate: LoadableViewModelState<String>
+    let avgBuyPrice: SubtensorCostBasisRowViewModel
+    let youWillEarn: SubtensorCostBasisRowViewModel
     let slippage: String?
     let validatorApy: String?
     let earnPerMonth: LoadableViewModelState<BalanceViewModelProtocol>?
@@ -43,4 +45,36 @@ struct SubtensorConfirmViewModel {
     let isPriceMoved: Bool
     let action: SubtensorConfirmActionViewModel
     let signingHint: String?
+}
+
+struct SubtensorConfirmViewModelInput {
+    let model: SubtensorStakingConfirmModel
+    let catalogue: SubtensorSubnetCatalogue?
+    let latestQuote: SubtensorTradeQuote?
+    let tradesUnavailable: Bool
+    let isPriceMoved: Bool
+    let price: PriceData?
+    let fee: ExtrinsicFeeProtocol?
+    let stakeBefore: Balance?
+    let signing: SubtensorOperationGate.Verdict
+    let costBasis: SubtensorCostBasisState?
+}
+
+struct SubtensorConfirmStakeChange: Equatable {
+    let before: Balance
+    let after: Balance
+    let isEstimated: Bool
+}
+
+struct SubtensorUnstakeConfirmViewModelInput {
+    let model: SubtensorUnstakeConfirmModel
+    let catalogue: SubtensorSubnetCatalogue?
+    let latestQuote: SubtensorTradeQuote?
+    let tradesUnavailable: Bool
+    let isPriceMoved: Bool
+    let price: PriceData?
+    let fee: ExtrinsicFeeProtocol?
+    let stakeChange: SubtensorConfirmStakeChange?
+    let signing: SubtensorOperationGate.Verdict
+    let costBasis: SubtensorCostBasisState
 }

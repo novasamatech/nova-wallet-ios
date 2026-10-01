@@ -15,6 +15,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
         interactor.loadSubnetsInfo(forcingRefresh: false)
         interactor.loadCatalogue(forcingRefresh: false)
         interactor.loadSubnetLogos()
+        interactor.loadCostBasis(for: netuid)
     }
 
     func updateAmount(_ newValue: Decimal?) {
@@ -58,6 +59,19 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
         let subnetName = SubtensorSubnetNaming.titleWithSymbol(for: netuid, in: catalogue, locale: selectedLocale)
 
         wireframe.showSubtensorInfo(.swapRate(.sell, subnetName: subnetName), from: view)
+    }
+
+    func showAvgBuyPriceInfo() {
+        guard !isRoot else {
+            return
+        }
+
+        let sheet = SubtensorInfoSheet.avgBuyPrice(
+            symbol: SubtensorSubnetNaming.symbol(for: netuid, in: catalogue),
+            subnetName: SubtensorSubnetNaming.titleWithSymbol(for: netuid, in: catalogue, locale: selectedLocale)
+        )
+
+        wireframe.showSubtensorInfo(sheet, from: view)
     }
 
     func proceed() {

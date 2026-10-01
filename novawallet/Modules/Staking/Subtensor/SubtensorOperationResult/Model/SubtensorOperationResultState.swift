@@ -32,6 +32,7 @@ enum SubtensorResultAction: Equatable {
 
 enum SubtensorResultInfoRow: Equatable {
     case swapRate
+    case costBasis
     case slippage
     case validator
     case networkFee

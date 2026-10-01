@@ -44,6 +44,7 @@ final class SubtensorStakingSetupPresenter {
     var quoteFlow = SubtensorQuoteFlowModel()
     var isQuoteFailed = false
     var tradesUnavailable = false
+    var costBasis: SubtensorCostBasisState = .loading
 
     init(
         interactor: SubtensorSetupInteractorInputProtocol,
@@ -119,6 +120,7 @@ extension SubtensorStakingSetupPresenter {
 
         if case let .buyMore(position) = mode {
             interactor.loadSubnet(netuid: position.netuid)
+            interactor.loadCostBasis(for: position.netuid)
         }
 
         loadSubnetDataIfNeeded()
