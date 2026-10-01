@@ -497,7 +497,7 @@ private extension SubtensorStakingSimSwapTests {
                 return delegates
             }
 
-            let fetched = try run(apiFactory.createDelegatesWrapper())
+            let fetched = try run(apiFactory.createDelegatesWrapper(at: nil))
             delegates = fetched
 
             return fetched

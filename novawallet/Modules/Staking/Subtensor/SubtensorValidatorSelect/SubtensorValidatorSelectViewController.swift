@@ -40,11 +40,6 @@ final class SubtensorValidatorSelectViewController: UIViewController, ViewHolder
 }
 
 private extension SubtensorValidatorSelectViewController {
-    enum Section: Int, CaseIterable {
-        case recommended
-        case validators
-    }
-
     static let loadingRowsCount = 6
 
     var loadedViewModel: SubtensorValidatorListViewModel? {
@@ -61,6 +56,10 @@ private extension SubtensorValidatorSelectViewController {
         }
 
         return false
+    }
+
+    var hasHeader: Bool {
+        isLoading || (loadedViewModel.map { !$0.rows.isEmpty } ?? false)
     }
 
     func setupTableView() {
@@ -133,25 +132,11 @@ private extension SubtensorValidatorSelectViewController {
     }
 
     func rowModel(at indexPath: IndexPath) -> SubtensorValidatorRowViewModel? {
-        guard let viewModel = loadedViewModel, let section = Section(rawValue: indexPath.section) else {
+        guard let viewModel = loadedViewModel, viewModel.rows.indices.contains(indexPath.row) else {
             return nil
         }
 
-        switch section {
-        case .recommended:
-            return viewModel.recommended
-        case .validators:
-            return viewModel.rows.indices.contains(indexPath.row) ? viewModel.rows[indexPath.row] : nil
-        }
-    }
-
-    func hasHeader(for section: Section) -> Bool {
-        switch section {
-        case .recommended:
-            return isLoading || loadedViewModel?.recommended != nil
-        case .validators:
-            return isLoading || (loadedViewModel.map { !$0.rows.isEmpty || $0.recommended != nil } ?? false)
-        }
+        return viewModel.rows[indexPath.row]
     }
 
     @objc func actionSearchChanged() {
@@ -182,29 +167,12 @@ private extension SubtensorValidatorSelectViewController {
 }
 
 extension SubtensorValidatorSelectViewController: UITableViewDataSource {
-    func numberOfSections(in _: UITableView) -> Int {
-        Section.allCases.count
-    }
-
-    func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let section = Section(rawValue: section) else {
-            return 0
-        }
-
+    func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
         if isLoading {
-            return section == .recommended ? 1 : Self.loadingRowsCount
+            return Self.loadingRowsCount
         }
 
-        guard let viewModel = loadedViewModel else {
-            return 0
-        }
-
-        switch section {
-        case .recommended:
-            return viewModel.recommended != nil ? 1 : 0
-        case .validators:
-            return viewModel.rows.count
-        }
+        return loadedViewModel?.rows.count ?? 0
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -214,13 +182,7 @@ extension SubtensorValidatorSelectViewController: UITableViewDataSource {
 
         let cell = tableView.dequeueReusableCellWithType(SubtensorValidatorSelectCell.self, forIndexPath: indexPath)
 
-        cell.bind(
-            model,
-            icon: try? iconGenerator.generateFromAccountId(model.hotkey),
-            recommendedTitle: R.string(
-                preferredLanguages: selectedLocale.rLanguages
-            ).localizable.stakingSubtensorUiValidatorRecommended()
-        )
+        cell.bind(model, icon: try? iconGenerator.generateFromAccountId(model.hotkey))
 
         cell.infoAction = { [weak self] in
             self?.presenter.showInfo(hotkey: model.hotkey)
@@ -231,30 +193,24 @@ extension SubtensorValidatorSelectViewController: UITableViewDataSource {
 }
 
 extension SubtensorValidatorSelectViewController: UITableViewDelegate {
-    func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        guard let section = Section(rawValue: section), hasHeader(for: section) else {
-            return 0
-        }
-
-        return rootView.tableView.sectionHeaderHeight
+    func tableView(_: UITableView, heightForHeaderInSection _: Int) -> CGFloat {
+        hasHeader ? rootView.tableView.sectionHeaderHeight : 0
     }
 
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard let section = Section(rawValue: section), hasHeader(for: section) else {
+    func tableView(_ tableView: UITableView, viewForHeaderInSection _: Int) -> UIView? {
+        guard hasHeader else {
             return nil
         }
 
         let header: SubtensorValidatorSectionHeaderView = tableView.dequeueReusableHeaderFooterView()
         let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
 
-        switch (section, state) {
-        case (.recommended, _):
-            header.bind(title: strings.stakingSubtensorUiValidatorRecommended(), details: nil)
-        case let (.validators, .loading(viewModel)):
+        switch state {
+        case let .loading(viewModel):
             header.bind(title: viewModel.countTitle, details: viewModel.sortTitle)
-        case let (.validators, .loaded(viewModel)):
+        case let .loaded(viewModel):
             header.bind(title: viewModel.countTitle, details: viewModel.sortTitle)
-        case (.validators, _):
+        case .failed, .none:
             header.bind(title: strings.stakingSubtensorUiValidatorLoadingCount(), details: nil)
         }
 

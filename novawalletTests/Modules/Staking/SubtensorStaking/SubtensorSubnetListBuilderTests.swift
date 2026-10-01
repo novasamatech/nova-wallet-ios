@@ -56,40 +56,10 @@ final class SubtensorSubnetListBuilderTests: XCTestCase {
         let list = makeBuilder(entries: [atThreshold, belowThreshold]).build(
             query: "",
             sort: .name,
-            filters: SubtensorSubnetFilters(hideThinPools: true, onlyAboveThirtyDayAverage: false)
+            filters: SubtensorSubnetFilters(hideThinPools: true)
         )
 
         XCTAssertEqual(list.others.map(\.subnet.netuid), [1])
-    }
-
-    func testAboveAverageFilterHidesRowsWithoutThirtyDayDataAndCountsTheShownRows() throws {
-        let apex = makeEntry(netuid: 1, name: "Apex", taoPerAlpha: 80_000_000)
-        let chutes = makeEntry(netuid: 64, name: "Chutes", taoPerAlpha: 50_000_000)
-        let score = makeEntry(netuid: 36, name: "Score", taoPerAlpha: 30_000_000)
-        let taoshi = makeEntry(netuid: 8, name: "Taoshi", taoPerAlpha: 90_000_000)
-        let hone = makeEntry(netuid: 5, name: "Hone", taoPerAlpha: 90_000_000)
-
-        let builder = makeBuilder(
-            entries: [apex, chutes, score, taoshi, hone],
-            monthly: [
-                apex.subnet.ref: try monthlyMean("0.07"),
-                chutes.subnet.ref: try monthlyMean("0.04"),
-                score.subnet.ref: try monthlyMean("0.04"),
-                taoshi.subnet.ref: .unavailable,
-                hone.subnet.ref: .notListed
-            ],
-            favourites: [apex.subnet.ref]
-        )
-
-        let list = builder.build(
-            query: "",
-            sort: .name,
-            filters: SubtensorSubnetFilters(hideThinPools: false, onlyAboveThirtyDayAverage: true)
-        )
-
-        XCTAssertEqual(list.picks.map(\.subnet.netuid), [1])
-        XCTAssertEqual(list.others.map(\.subnet.netuid), [64])
-        XCTAssertEqual(list.count, 2)
     }
 
     func testSearchByNumberMatchesOnlyThatNetuid() {
@@ -137,13 +107,11 @@ final class SubtensorSubnetListBuilderTests: XCTestCase {
     private func makeBuilder(
         entries: [SubtensorSubnetListEntry],
         weekly: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]? = nil,
-        monthly: [SubtensorSubnetRef: SubtensorPriceData<SubtensorMonthlyPriceMetrics>]? = nil,
         favourites: Set<SubtensorSubnetRef> = []
     ) -> SubtensorSubnetListBuilder {
         SubtensorSubnetListBuilder(
             entries: entries,
             weekly: weekly,
-            monthly: monthly,
             ageBlocks: [:],
             favourites: favourites,
             locale: locale
@@ -154,33 +122,21 @@ final class SubtensorSubnetListBuilderTests: XCTestCase {
         .available(SubtensorWeeklyPriceSummary(change: try XCTUnwrap(Decimal(string: change)), sparkline: []))
     }
 
-    private func monthlyMean(_ mean: String) throws -> SubtensorPriceData<SubtensorMonthlyPriceMetrics> {
-        .available(
-            SubtensorMonthlyPriceMetrics(
-                changeInTao: 0,
-                meanTaoPerAlpha: try XCTUnwrap(Decimal(string: mean)),
-                thirtyDayRange: 0
-            )
-        )
-    }
-
     private func makeEntry(
         netuid: UInt16,
         name: String,
-        taoReserve: Balance = 210_000_000_000_000,
-        taoPerAlpha: Balance = 73_800_000
+        taoReserve: Balance = 210_000_000_000_000
     ) -> SubtensorSubnetListEntry {
         let subnet = makeCatalogueSubnet(
             netuid: netuid,
             name: name,
             registeredAt: 4_531_295,
-            taoReserve: taoReserve,
-            taoPerAlpha: taoPerAlpha
+            taoReserve: taoReserve
         )
 
         return SubtensorSubnetListEntry(
             subnet: subnet,
-            target: .subnet(info: makeDynamicInfo(netuid: netuid, registeredAt: 4_531_295), price: taoPerAlpha)
+            target: .subnet(info: makeDynamicInfo(netuid: netuid, registeredAt: 4_531_295), price: subnet.taoPerAlpha)
         )
     }
 
@@ -188,8 +144,7 @@ final class SubtensorSubnetListBuilderTests: XCTestCase {
         netuid: UInt16,
         name: String,
         registeredAt: UInt64,
-        taoReserve: Balance = 210_000_000_000_000,
-        taoPerAlpha: Balance = 73_800_000
+        taoReserve: Balance = 210_000_000_000_000
     ) -> SubtensorCatalogueSubnet {
         let stamp = SubtensorBackendStamp(asOf: Date(timeIntervalSince1970: 1_790_000_000), freshness: .fresh)
 
@@ -212,7 +167,7 @@ final class SubtensorSubnetListBuilderTests: XCTestCase {
             taoReserve: taoReserve,
             alphaReserve: 2_845_000_000_000_000,
             alphaOutstanding: 3_100_000_000_000_000,
-            taoPerAlpha: taoPerAlpha,
+            taoPerAlpha: 73_800_000,
             metadataStamp: stamp,
             pricesStamp: stamp
         )

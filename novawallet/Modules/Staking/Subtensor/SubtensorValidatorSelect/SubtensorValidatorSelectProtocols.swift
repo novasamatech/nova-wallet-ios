@@ -17,13 +17,11 @@ struct SubtensorValidatorRowViewModel: Equatable {
     let title: String
     let subtitle: String
     let trailing: Trailing
-    let isRecommended: Bool
     let isSelected: Bool
     let isSelectable: Bool
 }
 
 struct SubtensorValidatorListViewModel: Equatable {
-    let recommended: SubtensorValidatorRowViewModel?
     let rows: [SubtensorValidatorRowViewModel]
     let countTitle: String
     let sortTitle: String

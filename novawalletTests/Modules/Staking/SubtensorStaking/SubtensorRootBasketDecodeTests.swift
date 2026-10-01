@@ -51,20 +51,11 @@ final class SubtensorRootBasketDecodeTests: XCTestCase {
         )
 
         XCTAssertEqual(
-            positions,
-            [
-                SubtensorStakingPallet.RootBasketPosition(
-                    hotkey: try Data(hexString: firstHotkeyHex),
-                    owedShares: 182_062_291,
-                    payout: BigUInt(128_709_394)
-                ),
-                SubtensorStakingPallet.RootBasketPosition(
-                    hotkey: try Data(hexString: secondHotkeyHex),
-                    owedShares: 5549,
-                    payout: BigUInt(6168)
-                )
-            ]
+            positions.map(\.hotkey),
+            [try Data(hexString: firstHotkeyHex), try Data(hexString: secondHotkeyHex)]
         )
+        XCTAssertEqual(positions.map(\.owedShares), [182_062_291, 5549])
+        XCTAssertEqual(positions.map(\.payout), [BigUInt(128_709_394), BigUInt(6168)])
     }
 
     func testPositionPayoutsSumToOwed() throws {

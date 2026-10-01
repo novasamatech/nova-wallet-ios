@@ -50,8 +50,6 @@ private final class ManualClock {
 }
 
 final class BittensorApiOperationFactoryTests: XCTestCase {
-    private let accountSubject = BittensorApiFixtureWorld.validator(.aster).coldkey
-
     func testSubnetsDecodeFromTheFixture() throws {
         let result = try fetch(makeFactory().createSubnetsWrapper())
 
@@ -82,22 +80,6 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
         XCTAssertEqual(result.value.items.count, 8)
         XCTAssertEqual(Set(result.value.items.map(\.metricKind)), ["ALPHA_VALIDATOR_APY"])
         XCTAssertEqual(result.value.pageInfo.pageSize, 100)
-    }
-
-    func testRewardsDecodeTheFirstPageForTheAccountSubject() throws {
-        let result = try fetch(makeFactory().createRewardsWrapper(accountSubject: accountSubject, page: nil))
-
-        XCTAssertEqual(result.value.items.count, 12)
-        XCTAssertEqual(result.value.items.first?.reportedAmount, "18400000")
-        XCTAssertNil(result.value.pageInfo.nextPage)
-    }
-
-    func testOperationsDecodeTheRequestedPage() throws {
-        let result = try fetch(makeFactory().createOperationsWrapper(accountSubject: accountSubject, page: 2))
-
-        XCTAssertEqual(result.value.items.count, 37)
-        XCTAssertEqual(result.value.pageInfo.page, 2)
-        XCTAssertNil(result.value.pageInfo.nextPage)
     }
 
     func testRecommendationsDecodeWithTheirGeneration() throws {
@@ -303,18 +285,6 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
         verify(transport, times(2)).createResponseWrapper(for: any())
     }
 
-    func testPaginationFollowsNextPageWithinTheCallerBound() throws {
-        let factory = makeFactory()
-
-        let allPages = try fetch(makePagesWrapper(factory: factory, maxPages: 3))
-        let boundedPages = try fetch(makePagesWrapper(factory: factory, maxPages: 1))
-
-        XCTAssertEqual(allPages.pages.map(\.value.pageInfo.page), [1, 2])
-        XCTAssertFalse(allPages.hasMorePages)
-        XCTAssertEqual(boundedPages.pages.map(\.value.pageInfo.page), [1])
-        XCTAssertTrue(boundedPages.hasMorePages)
-    }
-
     private var olderGeneration: [(String, String)] {
         [
             (#""asOf":"2026-09-24T09:23:00Z""#, #""asOf":"2026-09-24T08:23:00Z""#),
@@ -324,20 +294,6 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
 
     private func olderRecommendationsBody() throws -> Data {
         try mutatedBody(BittensorApiFixtureDocuments.recommendations(), replacing: olderGeneration)
-    }
-
-    private func makePagesWrapper(
-        factory: BittensorApiOperationFactory,
-        maxPages: Int
-    ) -> CompoundOperationWrapper<BittensorApiPages<BittensorApi.OperationCollection>> {
-        BittensorApiPagination.createPagesWrapper(
-            maxPages: maxPages,
-            operationQueue: OperationQueue(),
-            nextPage: { $0.pageInfo.nextPage },
-            pageWrapper: { [accountSubject] page in
-                factory.createOperationsWrapper(accountSubject: accountSubject, page: page)
-            }
-        )
     }
 
     private func makeFactory(

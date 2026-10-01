@@ -93,13 +93,6 @@ protocol SubtensorUnstakePresenterValidating {
         dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
         selectedLocale: Locale
     ) -> [DataValidating]
-
-    func validateUnstake(
-        for dep: SubtensorUnstakeValidatingDep,
-        dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
-        selectedLocale: Locale,
-        onSuccess: @escaping () -> Void
-    )
 }
 
 extension SubtensorUnstakePresenterValidating {

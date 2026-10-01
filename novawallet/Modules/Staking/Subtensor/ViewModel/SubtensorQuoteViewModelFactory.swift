@@ -1,38 +1,13 @@
 import BigInt
 import Foundation
 
-struct SubtensorStakeTargetViewModel {
-    let title: String
-    let subtitle: String?
-    let isRoot: Bool
-}
-
 struct SubtensorTradePanelViewModel {
     let receive: BalanceViewModelProtocol?
     let swapRate: String
     let earnPerMonth: BalanceViewModelProtocol?
 }
 
-struct SubtensorQuotePanelViewModel {
-    let receive: String
-    let poolFee: String
-    let priceImpact: String
-    let isImpactHigh: Bool
-}
-
 protocol SubtensorQuoteViewModelFactoryProtocol {
-    func createTargetViewModel(
-        for target: SubtensorStakeTarget,
-        catalogue: SubtensorSubnetCatalogue?,
-        locale: Locale
-    ) -> SubtensorStakeTargetViewModel
-
-    func createQuotePanel(
-        for quote: SubtensorQuote?,
-        target: SubtensorStakeTarget,
-        locale: Locale
-    ) -> SubtensorQuotePanelViewModel?
-
     func createTradePanel(
         for quote: SubtensorTradeQuote?,
         amountIn: Balance?,
@@ -145,93 +120,9 @@ private extension SubtensorQuoteViewModelFactory {
 
         return (receive, earnPerMonth)
     }
-
-    func formatPercent(_ value: BigRational, locale: Locale) -> String {
-        let formatter = NumberFormatter.percentSingle
-        formatter.locale = locale
-
-        return formatter.stringFromDecimal(value.decimalOrZeroValue) ?? ""
-    }
 }
 
 extension SubtensorQuoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol {
-    func createTargetViewModel(
-        for target: SubtensorStakeTarget,
-        catalogue: SubtensorSubnetCatalogue?,
-        locale: Locale
-    ) -> SubtensorStakeTargetViewModel {
-        switch target {
-        case .root:
-            return SubtensorStakeTargetViewModel(
-                title: R.string(
-                    preferredLanguages: locale.rLanguages
-                ).localizable.stakingSubtensorUiRootStaking(),
-                subtitle: nil,
-                isRoot: true
-            )
-        case .subnet:
-            return SubtensorStakeTargetViewModel(
-                title: SubtensorSubnetNaming.title(for: target.netuid, in: catalogue, locale: locale),
-                subtitle: SubtensorSubnetNaming.catalogueSymbol(for: target.netuid, in: catalogue),
-                isRoot: false
-            )
-        }
-    }
-
-    func createQuotePanel(
-        for quote: SubtensorQuote?,
-        target: SubtensorStakeTarget,
-        locale: Locale
-    ) -> SubtensorQuotePanelViewModel? {
-        guard case .subnet = target, let quote else {
-            return nil
-        }
-
-        let receiveDisplayInfo: AssetBalanceDisplayInfo
-        let feeDisplayInfo: AssetBalanceDisplayInfo
-
-        switch quote.args.direction {
-        case .stake:
-            receiveDisplayInfo = target.assetDisplayInfo(basedOn: chainAsset.assetDisplayInfo)
-            feeDisplayInfo = chainAsset.assetDisplayInfo
-        case .unstake:
-            receiveDisplayInfo = chainAsset.assetDisplayInfo
-            feeDisplayInfo = target.assetDisplayInfo(basedOn: chainAsset.assetDisplayInfo)
-        }
-
-        let receive = formatAmount(
-            quote.expectedOut,
-            displayInfo: receiveDisplayInfo,
-            locale: locale
-        )
-
-        let poolFeeAmount = formatAmount(
-            quote.poolFee,
-            displayInfo: feeDisplayInfo,
-            locale: locale
-        )
-
-        let feeRatePercent = formatPercent(
-            BigRational(
-                numerator: BigUInt(quote.feeRate),
-                denominator: BigUInt(SubtensorStakingPallet.perU16Denominator)
-            ),
-            locale: locale
-        )
-
-        let impact = quote.priceImpact ?? BigRational(numerator: 0, denominator: 1)
-
-        return SubtensorQuotePanelViewModel(
-            receive: receive.approximately(),
-            poolFee: R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiJoinSpaceFormat(
-                poolFeeAmount,
-                feeRatePercent.inParenthesis()
-            ),
-            priceImpact: formatPercent(impact, locale: locale),
-            isImpactHigh: SubtensorStakingFlowConstants.isHighPriceImpact(impact)
-        )
-    }
-
     func createTradePanel(
         for quote: SubtensorTradeQuote?,
         amountIn: Balance?,

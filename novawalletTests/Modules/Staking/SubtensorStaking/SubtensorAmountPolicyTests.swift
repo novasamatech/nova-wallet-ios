@@ -3,15 +3,11 @@ import BigInt
 import XCTest
 
 final class SubtensorAmountPolicyTests: XCTestCase {
-    private let hotkey = Data(repeating: 0xAA, count: 32)
-    private let secondHotkey = Data(repeating: 0xBB, count: 32)
     private let minStake: Balance = 2_000_000
     private let spotPrice: Balance = 7_700_000
     private let sellLimitPrice: Balance = 7_644_839
     private let requestedAlpha: Balance = 400_000_000_000
     private let dustRemainder: Balance = 2_600_000_000
-    private let rootUnstakeFee: Balance = 629_366
-    private let existentialDeposit: Balance = 500
 
     private var nominatorMinStake: Balance {
         SubtensorStakingPreflight.effectiveNominatorMinStake(minStake: minStake, factor: 10_000_000)
@@ -153,63 +149,6 @@ final class SubtensorAmountPolicyTests: XCTestCase {
         XCTAssertEqual(plan, .partial)
     }
 
-    func testRootMaxOnAlphaFeePathUnstakesAll() {
-        let operation = rootMaxUnstake(positionAlpha: 5_000_000_000, locked: 0, transferable: 629_365)
-
-        XCTAssertEqual(operation, .rootUnstakeAll(hotkeys: [hotkey]))
-    }
-
-    func testRootMaxOnAlphaFeePathWithLockedStakeIsRefused() {
-        let operation = rootMaxUnstake(positionAlpha: 5_000_000_000, locked: 1_000_000_000, transferable: 629_365)
-
-        XCTAssertNil(operation)
-    }
-
-    func testRootMaxWithTaoForTheFeeUnstakesTheAvailablePosition() {
-        let operation = rootMaxUnstake(positionAlpha: 5_000_000_000, locked: 1_000_000_000, transferable: 629_366)
-
-        XCTAssertEqual(operation, .rootUnstake(hotkey: hotkey, amount: 4_000_000_000))
-    }
-
-    func testRootMaxLeavingLockedDustBelowNominatorMinimumIsRefused() {
-        let operation = rootMaxUnstake(positionAlpha: 1_010_000_000, locked: 10_000_000, transferable: 629_366)
-
-        XCTAssertNil(operation)
-    }
-
-    func testRootGroupExitWithoutFreeTaoForTheBatchFeeAndExistentialDepositIsRefused() {
-        let operation = rootMaxUnstake(
-            hotkeys: [hotkey, secondHotkey],
-            positionAlpha: 20_000_000_000,
-            locked: 0,
-            transferable: 629_865
-        )
-
-        XCTAssertNil(operation)
-    }
-
-    func testRootGroupExitWithFreeTaoForTheBatchFeeAndExistentialDepositUnstakesEveryHotkey() {
-        let operation = rootMaxUnstake(
-            hotkeys: [hotkey, secondHotkey],
-            positionAlpha: 20_000_000_000,
-            locked: 0,
-            transferable: 629_866
-        )
-
-        XCTAssertEqual(operation, .rootUnstakeAll(hotkeys: [hotkey, secondHotkey]))
-    }
-
-    func testRootGroupExitWithLockedStakeIsRefused() {
-        let operation = rootMaxUnstake(
-            hotkeys: [hotkey, secondHotkey],
-            positionAlpha: 20_000_000_000,
-            locked: 1,
-            transferable: 10_000_000_000
-        )
-
-        XCTAssertNil(operation)
-    }
-
     private func availability(total: Balance, locked: Balance) -> SubtensorStakingPallet.StakeAvailability {
         SubtensorStakingPallet.StakeAvailability(total: total, locked: locked, available: total - locked)
     }
@@ -233,26 +172,5 @@ final class SubtensorAmountPolicyTests: XCTestCase {
         )
 
         return SubtensorAmountPolicy.sellPlan(for: input)
-    }
-
-    private func rootMaxUnstake(
-        hotkeys: [AccountId]? = nil,
-        positionAlpha: Balance,
-        locked: Balance,
-        transferable: Balance
-    ) -> SubtensorStakingOperation? {
-        let input = SubtensorRootMaxUnstakeInput(
-            hotkeys: hotkeys ?? [hotkey],
-            positionAlpha: positionAlpha,
-            availability: availability(total: positionAlpha, locked: locked),
-            transferable: transferable,
-            networkFee: rootUnstakeFee,
-            existentialDeposit: existentialDeposit,
-            isOwnHotkey: false,
-            minStake: minStake,
-            nominatorMinStake: nominatorMinStake
-        )
-
-        return SubtensorAmountPolicy.rootMaxUnstake(for: input)
     }
 }

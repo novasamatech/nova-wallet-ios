@@ -12,7 +12,7 @@ final class SubtensorDynamicInfoDecodeTests: XCTestCase {
         let rootInfo = try XCTUnwrap(infos.first ?? nil)
 
         XCTAssertEqual(rootInfo.netuid, SubtensorStakingPallet.rootNetuid)
-        XCTAssertEqual(rootInfo.displayName, "root")
+        XCTAssertEqual(rootInfo.subnetName, Data("root".utf8))
         XCTAssertEqual(rootInfo.displaySymbol, "Τ")
         XCTAssertEqual(rootInfo.ownerHotkey, Data(repeating: 0, count: 32))
         XCTAssertEqual(rootInfo.tempo, 100)
@@ -33,7 +33,7 @@ final class SubtensorDynamicInfoDecodeTests: XCTestCase {
         let apexInfo = try XCTUnwrap(infos.last ?? nil)
 
         XCTAssertEqual(apexInfo.netuid, 1)
-        XCTAssertEqual(apexInfo.displayName, "Apex")
+        XCTAssertEqual(apexInfo.subnetName, Data("Apex".utf8))
         XCTAssertEqual(apexInfo.displaySymbol, "α")
         XCTAssertEqual(apexInfo.tempo, 99)
         XCTAssertEqual(apexInfo.lastStep, 8_922_296)

@@ -5,24 +5,6 @@ import XCTest
 final class SubtensorQuoteViewModelFactoryTests: XCTestCase {
     private let locale = Locale(identifier: "en")
 
-    private let buySim = SubtensorStakingPallet.SimSwapResult(
-        taoAmount: 999_496_453,
-        alphaAmount: 130_082_405_209,
-        taoFee: 503_547,
-        alphaFee: 0,
-        taoSlippage: 0,
-        alphaSlippage: 70_762_340
-    )
-
-    private let sellSim = SubtensorStakingPallet.SimSwapResult(
-        taoAmount: 998_912_946,
-        alphaAmount: 130_016_902_511,
-        taoFee: 0,
-        alphaFee: 65_502_698,
-        taoSlippage: 543_368,
-        alphaSlippage: 0
-    )
-
     private func makeChainAsset() -> ChainAsset {
         let asset = AssetModel(
             assetId: AssetModel.utilityAssetId,
@@ -84,24 +66,6 @@ final class SubtensorQuoteViewModelFactoryTests: XCTestCase {
         )
     }
 
-    private func makeStakeQuote() -> SubtensorQuote {
-        SubtensorQuote(
-            args: SubtensorQuoteArgs(netuid: 1, direction: .stake(taoIn: 1_000_000_000)),
-            sim: buySim,
-            spotPrice: 7_683_255,
-            feeRate: 33
-        )
-    }
-
-    private func makeUnstakeQuote() -> SubtensorQuote {
-        SubtensorQuote(
-            args: SubtensorQuoteArgs(netuid: 1, direction: .unstake(alphaIn: 130_082_405_209)),
-            sim: sellSim,
-            spotPrice: 7_683_255,
-            feeRate: 33
-        )
-    }
-
     private func makeBuyTradeQuote() -> SubtensorTradeQuote {
         SubtensorTradeQuote(
             quote: SubtensorQuote(
@@ -128,58 +92,6 @@ final class SubtensorQuoteViewModelFactoryTests: XCTestCase {
 
     private func makeTaoPrice() -> PriceData {
         PriceData(identifier: "bittensor", price: "25", dayChange: nil, currencyId: nil)
-    }
-
-    private func makeCatalogue(netuid: UInt16, name: String, symbol: String) -> SubtensorSubnetCatalogue {
-        let stamp = SubtensorBackendStamp(asOf: Date(timeIntervalSince1970: 1_790_000_000), freshness: .fresh)
-
-        let subnet = SubtensorCatalogueSubnet(
-            netuid: netuid,
-            name: name,
-            symbol: symbol,
-            networkRegisteredAt: 0,
-            tempo: 99,
-            ownerColdkey: "",
-            ownerHotkey: "",
-            links: SubtensorSubnetLinks(
-                githubRepo: "",
-                subnetContact: "",
-                subnetUrl: "",
-                subnetWebsite: "",
-                discord: "",
-                additional: ""
-            ),
-            taoReserve: 210_000_000_000_000,
-            alphaReserve: 2_845_000_000_000_000,
-            alphaOutstanding: 3_100_000_000_000_000,
-            taoPerAlpha: 7_683_255,
-            metadataStamp: stamp,
-            pricesStamp: stamp
-        )
-
-        return SubtensorSubnetCatalogue(subnets: [subnet])
-    }
-
-    func testSubnetTargetTakesItsTitleAndSymbolFromTheCatalogue() {
-        let viewModel = makeFactory().createTargetViewModel(
-            for: makeSubnetTarget(),
-            catalogue: makeCatalogue(netuid: 1, name: "Templar", symbol: "γ"),
-            locale: locale
-        )
-
-        XCTAssertEqual(viewModel.title, "Templar")
-        XCTAssertEqual(viewModel.subtitle, "γ")
-    }
-
-    func testSubnetTargetWithoutCatalogueReadsSubnetNumberWithoutSymbol() {
-        let viewModel = makeFactory().createTargetViewModel(
-            for: makeSubnetTarget(netuid: 5),
-            catalogue: nil,
-            locale: locale
-        )
-
-        XCTAssertEqual(viewModel.title, "Subnet 5")
-        XCTAssertNil(viewModel.subtitle)
     }
 
     func testBuyTradePanelShowsTheQuotedAlphaItsFiatValueTheSwapRateAndTheMonthlyEarnings() throws {
@@ -222,80 +134,5 @@ final class SubtensorQuoteViewModelFactoryTests: XCTestCase {
 
     func testNovaFeeDisclosureNamesTheFeePercent() {
         XCTAssertEqual(makeFactory().novaFeeDisclosure(locale: locale), "Includes 0.85% Nova Wallet fee.")
-    }
-
-    func testStakePanelDenominatesReceiveInAlphaAndFeeInTao() throws {
-        let panel = try XCTUnwrap(
-            makeFactory().createQuotePanel(
-                for: makeStakeQuote(),
-                target: makeSubnetTarget(),
-                locale: locale
-            )
-        )
-
-        XCTAssertTrue(panel.receive.hasPrefix("~"))
-        XCTAssertTrue(panel.receive.hasSuffix("α"))
-        XCTAssertFalse(panel.receive.contains("TAO"))
-        XCTAssertTrue(panel.poolFee.contains("TAO"))
-        XCTAssertFalse(panel.poolFee.contains("α"))
-    }
-
-    func testUnstakePanelDenominatesReceiveInTaoAndFeeInAlpha() throws {
-        let panel = try XCTUnwrap(
-            makeFactory().createQuotePanel(
-                for: makeUnstakeQuote(),
-                target: makeSubnetTarget(),
-                locale: locale
-            )
-        )
-
-        XCTAssertTrue(panel.receive.hasPrefix("~"))
-        XCTAssertTrue(panel.receive.hasSuffix("TAO"))
-        XCTAssertTrue(panel.poolFee.contains("α"))
-        XCTAssertFalse(panel.poolFee.contains("TAO"))
-    }
-
-    func testPoolFeeCarriesLiveFeeRatePercent() throws {
-        let panel = try XCTUnwrap(
-            makeFactory().createQuotePanel(
-                for: makeStakeQuote(),
-                target: makeSubnetTarget(),
-                locale: locale
-            )
-        )
-
-        XCTAssertTrue(panel.poolFee.hasSuffix("(0.05%)"))
-    }
-
-    func testRootTargetProducesNoQuotePanel() {
-        XCTAssertNil(
-            makeFactory().createQuotePanel(
-                for: makeStakeQuote(),
-                target: .root,
-                locale: locale
-            )
-        )
-    }
-
-    func testMissingQuoteProducesNoQuotePanel() {
-        XCTAssertNil(
-            makeFactory().createQuotePanel(
-                for: nil,
-                target: makeSubnetTarget(),
-                locale: locale
-            )
-        )
-    }
-
-    func testPinnedCaptureImpactRendersBelowWarningThreshold() throws {
-        let panel = try XCTUnwrap(
-            makeFactory().createQuotePanel(
-                for: makeStakeQuote(),
-                target: makeSubnetTarget(),
-                locale: locale
-            )
-        )
-
-        XCTAssertFalse(panel.isImpactHigh)
     }
 }

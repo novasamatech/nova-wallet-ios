@@ -30,10 +30,6 @@ enum SubtensorSubnetNaming {
     static func symbol(for netuid: UInt16, in catalogue: SubtensorSubnetCatalogue?) -> String {
         symbol(catalogue?.subnet(for: netuid)?.symbol, netuid: netuid)
     }
-
-    static func catalogueSymbol(for netuid: UInt16, in catalogue: SubtensorSubnetCatalogue?) -> String? {
-        trimmed(catalogue?.subnet(for: netuid)?.symbol)
-    }
 }
 
 private extension SubtensorSubnetNaming {

@@ -26,16 +26,6 @@ enum SubtensorConfirmTapRule {
         return .proceed(latest: latest, acknowledged: acknowledged)
     }
 
-    static func groupExitHotkeys(
-        for amount: Balance,
-        netuid: UInt16,
-        in state: Multistaking.SubtensorStakingState
-    ) -> [AccountId]? {
-        liveGroup(for: netuid, in: state).flatMap { group in
-            SubtensorGroupUnstakeBasis.make(from: group).exitHotkeys(for: amount)
-        }
-    }
-
     static func verifiedExitHotkeys(
         for unstakeModel: SubtensorUnstakeModel,
         in state: Multistaking.SubtensorStakingState?

@@ -23,7 +23,7 @@ final class SubtensorStakingApiTests: XCTestCase {
             XCTAssertEqual(Set(netuids).count, netuids.count)
 
             let root = dynamicInfoList.first { $0.netuid == SubtensorStakingPallet.rootNetuid }
-            XCTAssertFalse(try XCTUnwrap(root).displayName.isEmpty)
+            XCTAssertFalse(try XCTUnwrap(root).subnetName.isEmpty)
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
@@ -125,7 +125,7 @@ final class SubtensorStakingApiTests: XCTestCase {
 
             Logger.shared.info("Discovered staker: \(coldkey.toHex())")
 
-            let stakeInfoList = try context.run(context.apiFactory.createStakeInfoWrapper(for: coldkey))
+            let stakeInfoList = try context.run(context.apiFactory.createStakeInfoWrapper(for: coldkey, blockHash: nil))
 
             XCTAssertFalse(stakeInfoList.isEmpty)
 
@@ -329,7 +329,7 @@ private extension SubtensorStakingApiTests {
                 return delegates
             }
 
-            let fetched = try run(apiFactory.createDelegatesWrapper())
+            let fetched = try run(apiFactory.createDelegatesWrapper(at: nil))
             delegates = fetched
 
             return fetched

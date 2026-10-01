@@ -96,19 +96,17 @@ final class SubtensorSubnetViewModelFactoryTests: XCTestCase {
 
     func testFiltersSheetShowsTheCountWithTheCompactThinThresholdAndWaitsWhilePending() {
         let factory = makeFactory()
-        let filters = SubtensorSubnetFilters(hideThinPools: true, onlyAboveThirtyDayAverage: false)
+        let filters = SubtensorSubnetFilters(hideThinPools: true)
 
         let counted = factory.createFiltersViewModel(
             filters: filters,
             count: 10,
-            isThirtyDayUnavailable: false,
             locale: locale
         )
 
         let pending = factory.createFiltersViewModel(
             filters: filters,
             count: nil,
-            isThirtyDayUnavailable: false,
             locale: locale
         )
 
@@ -179,7 +177,6 @@ final class SubtensorSubnetViewModelFactoryTests: XCTestCase {
             subnet: subnet,
             target: .root,
             weekly: weekly,
-            monthly: nil,
             ageBlocks: nil
         )
     }
