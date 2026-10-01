@@ -10,11 +10,12 @@ final class SubtensorOperationResultDetailsView: CollapsableContainerView {
         $0.roundedBackgroundView.roundingCorners = [.topLeft, .topRight]
     }
 
-    let costBasisCell: StackTitleMultiValueCell = .create {
-        $0.preferredHeight = 44
-        $0.contentInsets = .init(top: 0, left: 16, bottom: 0, right: 16)
+    let costBasisCell: SwapNetworkFeeViewCell = .create {
+        $0.contentInsets = .init(top: 8, left: 16, bottom: 8, right: 16)
         $0.borderView.borderType = .bottom
         $0.roundedBackgroundView.cornerRadius = 0
+        $0.rowContentView.valueView.stackView.alignment = .trailing
+        $0.valueTopButton.imageWithTitleView?.spacingBetweenLabelAndIcon = 3
     }
 
     let slippageCell: SwapInfoViewCell = .create {
@@ -65,7 +66,7 @@ final class SubtensorOperationResultDetailsView: CollapsableContainerView {
         swapRateCell.bind(loadableViewModel: .loaded(value: viewModel.swapRate))
         validatorCell.bind(loadableViewModel: .loaded(value: viewModel.validator))
 
-        costBasisCell.titleLabel.text = viewModel.costBasis?.title
+        costBasisCell.titleButton.setTitle(viewModel.costBasis?.title)
         costBasisCell.bind(costBasisRow: viewModel.costBasis?.value ?? .hidden)
 
         slippageCell.isHidden = viewModel.slippage == nil
