@@ -55,3 +55,55 @@ extension SubtensorCostBasisState {
         return BigInt(tao) - BigInt(totals.averagePrice.mul(value: alpha))
     }
 }
+
+enum SubtensorAvgBuyPriceTrend: Equatable {
+    case rising
+    case falling
+    case unchanged
+}
+
+enum SubtensorPurchaseQuote: Equatable {
+    case empty
+    case pending
+    case unknown
+    case quoted(tao: Balance, alpha: Balance)
+}
+
+extension SubtensorPurchaseQuote {
+    init(quote: SubtensorTradeQuote?, paidTao: Balance?, isQuotePending: Bool) {
+        guard let paidTao, paidTao > 0 else {
+            self = .empty
+            return
+        }
+
+        if let quote, quote.amountIn == paidTao {
+            self = .quoted(tao: quote.amountIn, alpha: quote.expectedOut)
+        } else {
+            self = isQuotePending ? .pending : .unknown
+        }
+    }
+}
+
+extension SubtensorPurchaseTotals {
+    func adding(paidTao: Balance, receivedAlpha: Balance) -> SubtensorPurchaseTotals {
+        SubtensorPurchaseTotals(
+            paidTao: self.paidTao + paidTao,
+            receivedAlpha: self.receivedAlpha + receivedAlpha
+        )
+    }
+
+    func averageTrend(to other: SubtensorPurchaseTotals) -> SubtensorAvgBuyPriceTrend {
+        let currentAverage = paidTao * other.receivedAlpha
+        let otherAverage = other.paidTao * receivedAlpha
+
+        if otherAverage > currentAverage {
+            return .rising
+        }
+
+        if otherAverage < currentAverage {
+            return .falling
+        }
+
+        return .unchanged
+    }
+}

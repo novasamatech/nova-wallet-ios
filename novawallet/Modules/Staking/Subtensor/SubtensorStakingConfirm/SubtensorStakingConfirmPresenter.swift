@@ -24,6 +24,7 @@ final class SubtensorStakingConfirmPresenter {
     var tradesUnavailable = false
     var catalogue: SubtensorSubnetCatalogue?
     var subnetLogos: SubtensorSubnetLogos?
+    var costBasis: SubtensorCostBasisState = .loading
     private(set) var isHandingOff = false
     private var isSignerNotSupportedShown = false
 
@@ -103,7 +104,8 @@ extension SubtensorStakingConfirmPresenter {
             price: price,
             fee: fee,
             stakeBefore: isPositionsSyncFailed || positionsState == nil ? nil : stakeGroup().total,
-            signing: signing
+            signing: signing,
+            costBasis: model.origin == .buyMore ? costBasis : nil
         )
 
         view?.didReceive(viewModel: viewModelFactory.createViewModel(for: input, locale: selectedLocale))
@@ -296,6 +298,11 @@ extension SubtensorStakingConfirmPresenter: SubtensorStakingConfirmPresenterProt
 
         if !model.target.isRoot {
             interactor.loadSubnetData()
+
+            if model.origin == .buyMore {
+                interactor.loadCostBasis(for: model.target.netuid)
+            }
+
             refreshQuote()
         }
 
@@ -371,7 +378,11 @@ extension SubtensorStakingConfirmPresenter: SubtensorStakingConfirmPresenterProt
         wireframe.showSubtensorInfo(.earnTokensMonth(subnetName: subnetName), from: view)
     }
 
-    func showAvgBuyPriceInfo() {}
+    func showAvgBuyPriceInfo() {
+        let symbol = SubtensorSubnetNaming.symbol(for: model.target.netuid, in: catalogue)
+
+        wireframe.showSubtensorInfo(.avgBuyPrice(symbol: symbol, subnetName: subnetName), from: view)
+    }
 
     func showYouWillEarnInfo() {}
 

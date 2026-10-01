@@ -2332,3 +2332,4 @@ Do you want to continue?";
 "staking.subtensor.ui.how.any.time.accent" = "any time";
 "staking.subtensor.ui.how.choose.myself" = "I’ll choose myself";
 "wallet.asset.earn" = "Earn";
+"staking.subtensor.ui.avg.buy.price.from.format" = "from %1$@ per %2$@";

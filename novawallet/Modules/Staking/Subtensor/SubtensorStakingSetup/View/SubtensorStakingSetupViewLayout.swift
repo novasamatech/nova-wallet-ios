@@ -52,6 +52,12 @@ final class SubtensorStakingSetupViewLayout: UIView {
         view.isHidden = true
     }
 
+    let avgBuyPriceTableView: StackTableView = .create { view in
+        view.isHidden = true
+    }
+
+    let avgBuyPriceCell = StackTitleMultiValueCell()
+
     let feeDisclosureLabel: UILabel = .create { label in
         label.apply(style: .caption1Secondary)
         label.textAlignment = .center
@@ -93,9 +99,24 @@ final class SubtensorStakingSetupViewLayout: UIView {
         skeletonView.setLoading(loading)
         view.alpha = loading ? 0 : 1
     }
+
+    func setAvgBuyPriceVisible(_ isVisible: Bool) {
+        avgBuyPriceTableView.isHidden = !isVisible
+
+        containerView.stackView.setCustomSpacing(
+            isVisible ? Constants.avgBuyPriceSpacing : Constants.feeDisclosureSpacing,
+            after: pickCardView
+        )
+    }
 }
 
 private extension SubtensorStakingSetupViewLayout {
+    enum Constants {
+        static let avgBuyPriceSpacing: CGFloat = 8
+        static let feeDisclosureSpacing: CGFloat = 16
+        static let afterAvgBuyPriceSpacing: CGFloat = 12
+    }
+
     static func createSkeletonView() -> SubtensorChartLoadingView {
         let view = SubtensorChartLoadingView()
         view.layer.cornerRadius = 6
@@ -164,8 +185,12 @@ private extension SubtensorStakingSetupViewLayout {
         containerView.stackView.addArrangedSubview(sectionLabel)
         containerView.stackView.setCustomSpacing(8, after: sectionLabel)
         containerView.stackView.addArrangedSubview(pickCardView)
-        containerView.stackView.setCustomSpacing(16, after: pickCardView)
+        containerView.stackView.setCustomSpacing(Constants.feeDisclosureSpacing, after: pickCardView)
+        containerView.stackView.addArrangedSubview(avgBuyPriceTableView)
+        containerView.stackView.setCustomSpacing(Constants.afterAvgBuyPriceSpacing, after: avgBuyPriceTableView)
         containerView.stackView.addArrangedSubview(feeDisclosureLabel)
+
+        avgBuyPriceTableView.addArrangedSubview(avgBuyPriceCell)
 
         let skeletons: [(SubtensorChartLoadingView, UIView, CGFloat)] = [
             (validatorSkeletonView, validatorCell, 100),

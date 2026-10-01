@@ -41,7 +41,7 @@ final class SubtensorStakingConfirmViewLayout: UIView {
 
     let earnCell = SwapNetworkFeeViewCell()
 
-    let avgBuyPriceCell = SwapNetworkFeeViewCell()
+    let avgBuyPriceCell = StackTitleMultiValueCell()
 
     let youWillEarnCell = SwapNetworkFeeViewCell()
 
@@ -152,7 +152,7 @@ private extension SubtensorStakingConfirmViewLayout {
     func swapRows(for direction: SubtensorTradeDirection) -> [StackTableViewCellProtocol] {
         switch direction {
         case .buy:
-            return [swapRateCell, slippageCell, validatorCell, earnCell, networkFeeCell]
+            return [swapRateCell, slippageCell, validatorCell, earnCell, avgBuyPriceCell, networkFeeCell]
         case .sell:
             return [swapRateCell, avgBuyPriceCell, youWillEarnCell, slippageCell, validatorCell, networkFeeCell]
         }

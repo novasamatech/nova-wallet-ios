@@ -56,7 +56,7 @@ private extension SubtensorStakingConfirmViewController {
         rootView.slippageCell.titleButton.setTitle(strings.swapsSetupSlippage())
         rootView.validatorCell.titleButton.setTitle(strings.stakingCommonValidator())
         rootView.earnCell.titleButton.setTitle(strings.stakingSubtensorUiEarnTokensMonth())
-        rootView.avgBuyPriceCell.titleButton.setTitle(strings.stakingSubtensorUiAvgBuyPrice())
+        rootView.avgBuyPriceCell.titleLabel.text = strings.stakingSubtensorUiAvgBuyPrice()
         rootView.youWillEarnCell.titleButton.setTitle(strings.stakingSubtensorUiYouWillEarn())
         rootView.networkFeeCell.titleButton.setTitle(strings.commonNetworkFee())
 
@@ -138,7 +138,7 @@ private extension SubtensorStakingConfirmViewController {
 
         rootView.swapRateCell.bind(loadableViewModel: viewModel.swapRate)
 
-        bindCostBasisRow(viewModel.avgBuyPrice, cell: rootView.avgBuyPriceCell)
+        rootView.avgBuyPriceCell.bind(costBasisRow: viewModel.avgBuyPrice)
         bindCostBasisRow(viewModel.youWillEarn, cell: rootView.youWillEarnCell)
 
         rootView.slippageCell.isHidden = viewModel.slippage == nil

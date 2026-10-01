@@ -28,6 +28,7 @@ struct SubtensorSetupRootViewModel {
 struct SubtensorSetupSubnetViewModel {
     let sectionTitle: String
     let card: SubtensorPickCardViewModel
+    let avgBuyPrice: SubtensorCostBasisRowViewModel
     let feeDisclosure: String
 }
 
@@ -139,6 +140,7 @@ struct SubtensorSetupSubnetData {
     let annualRate: Decimal?
     let isYieldsLoaded: Bool
     let isQuoteFailed: Bool
+    let costBasis: SubtensorCostBasisState
 }
 
 struct SubtensorStakingSetupViewModelInput {

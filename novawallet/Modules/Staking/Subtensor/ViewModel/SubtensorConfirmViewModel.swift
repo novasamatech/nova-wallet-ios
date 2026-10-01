@@ -57,6 +57,7 @@ struct SubtensorConfirmViewModelInput {
     let fee: ExtrinsicFeeProtocol?
     let stakeBefore: Balance?
     let signing: SubtensorOperationGate.Verdict
+    let costBasis: SubtensorCostBasisState?
 }
 
 struct SubtensorConfirmStakeChange: Equatable {

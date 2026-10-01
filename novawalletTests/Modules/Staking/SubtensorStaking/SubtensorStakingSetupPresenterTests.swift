@@ -235,6 +235,7 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
             when(stub.loadYields(netuid: any())).thenDoNothing()
             when(stub.loadRankingView()).thenDoNothing()
             when(stub.loadSubnetLogos()).thenDoNothing()
+            when(stub.loadCostBasis(for: any())).thenDoNothing()
         }
 
         let wireframe = MockSubtensorStakingSetupWireframeProtocol()

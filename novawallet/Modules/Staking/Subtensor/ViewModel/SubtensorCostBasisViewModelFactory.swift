@@ -11,6 +11,14 @@ struct SubtensorCostBasisValueViewModel: Equatable {
     let amount: String
     let detail: String?
     let tone: SubtensorValueTone
+    let trend: SubtensorAvgBuyPriceTrend?
+
+    init(amount: String, detail: String?, tone: SubtensorValueTone, trend: SubtensorAvgBuyPriceTrend? = nil) {
+        self.amount = amount
+        self.detail = detail
+        self.tone = tone
+        self.trend = trend
+    }
 }
 
 enum SubtensorCostBasisRowViewModel: Equatable {
@@ -81,6 +89,37 @@ private extension SubtensorCostBasisViewModelFactory {
         return .value(SubtensorCostBasisValueViewModel(amount: price, detail: perAlpha, tone: .neutral))
     }
 
+    func createProjectedAverageValue(
+        from current: SubtensorPurchaseTotals,
+        to projected: SubtensorPurchaseTotals,
+        alphaSymbol: String,
+        locale: Locale
+    ) -> SubtensorCostBasisRowViewModel {
+        let priceFormatter = formatterFactory.createTokenFormatter(for: taoInfo).value(for: locale)
+        let numberFormatter = formatterFactory.createDisplayFormatter(for: taoInfo).value(for: locale)
+
+        guard
+            let currentAverage = current.averagePrice.decimalValue,
+            let projectedAverage = projected.averagePrice.decimalValue,
+            let price = priceFormatter.stringFromDecimal(projectedAverage),
+            let currentPrice = numberFormatter.stringFromDecimal(currentAverage) else {
+            return createUnknownValue(locale: locale)
+        }
+
+        let fromCurrent = R.string(
+            preferredLanguages: locale.rLanguages
+        ).localizable.stakingSubtensorUiAvgBuyPriceFromFormat(currentPrice, alphaSymbol)
+
+        return .value(
+            SubtensorCostBasisValueViewModel(
+                amount: price,
+                detail: fromCurrent,
+                tone: .neutral,
+                trend: current.averageTrend(to: projected)
+            )
+        )
+    }
+
     func createEarnedValue(
         _ earned: BigInt,
         taoPrice: PriceData?,
@@ -130,6 +169,35 @@ extension SubtensorCostBasisViewModelFactory {
             return createNoPurchasesValue(locale: locale)
         case let .resolved(.average(totals)):
             return createAverageValue(for: totals, alphaSymbol: alphaSymbol, locale: locale)
+        }
+    }
+
+    func createAvgBuyPrice(
+        for costBasis: SubtensorCostBasisState?,
+        after purchase: SubtensorPurchaseQuote,
+        alphaSymbol: String,
+        locale: Locale
+    ) -> SubtensorCostBasisRowViewModel {
+        guard let costBasis else {
+            return .hidden
+        }
+
+        guard case let .resolved(.average(totals)) = costBasis else {
+            return createAvgBuyPrice(for: costBasis, alphaSymbol: alphaSymbol, locale: locale)
+        }
+
+        switch purchase {
+        case .empty, .unknown:
+            return createAverageValue(for: totals, alphaSymbol: alphaSymbol, locale: locale)
+        case .pending:
+            return .loading
+        case let .quoted(tao, alpha):
+            return createProjectedAverageValue(
+                from: totals,
+                to: totals.adding(paidTao: tao, receivedAlpha: alpha),
+                alphaSymbol: alphaSymbol,
+                locale: locale
+            )
         }
     }
 

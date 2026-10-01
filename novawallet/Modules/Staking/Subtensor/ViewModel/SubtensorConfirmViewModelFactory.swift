@@ -38,7 +38,7 @@ private extension SubtensorConfirmViewModelContext {
         price = input.price
         fee = input.fee
         signing = input.signing
-        costBasis = nil
+        costBasis = input.costBasis
     }
 
     init(input: SubtensorUnstakeConfirmViewModelInput) {
@@ -195,6 +195,30 @@ private extension SubtensorConfirmViewModelFactory {
         )
     }
 
+    func createCostBasis(
+        for context: SubtensorConfirmViewModelContext,
+        locale: Locale
+    ) -> SubtensorSaleCostBasisViewModel {
+        guard context.direction == .buy else {
+            return createSaleCostBasis(for: context, locale: locale)
+        }
+
+        let purchase = SubtensorPurchaseQuote(
+            quote: context.tradesUnavailable ? nil : context.latestQuote,
+            paidTao: context.amount,
+            isQuotePending: !context.tradesUnavailable
+        )
+
+        let avgBuyPrice = costBasisViewModelFactory.createAvgBuyPrice(
+            for: context.costBasis,
+            after: purchase,
+            alphaSymbol: SubtensorSubnetNaming.symbol(for: context.target.netuid, in: context.catalogue),
+            locale: locale
+        )
+
+        return SubtensorSaleCostBasisViewModel(avgBuyPrice: avgBuyPrice, earned: .hidden, isEarnedEstimated: false)
+    }
+
     func createRemark(
         for direction: SubtensorTradeDirection,
         isProfitEstimated: Bool,
@@ -218,7 +242,7 @@ private extension SubtensorConfirmViewModelFactory {
     ) -> SubtensorConfirmSwapViewModel {
         let unknown = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown()
         let hasRate = context.annualRate != nil
-        let costBasis = createSaleCostBasis(for: context, locale: locale)
+        let costBasis = createCostBasis(for: context, locale: locale)
 
         let panel = quoteViewModelFactory.createTradePanel(
             for: context.latestQuote,
