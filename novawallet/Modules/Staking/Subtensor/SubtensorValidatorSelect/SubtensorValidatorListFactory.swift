@@ -118,8 +118,7 @@ extension SubtensorValidatorListFactory {
         )
 
         return SubtensorValidatorListViewModel(
-            recommended: nil,
-            rows: matching.map { createRow(for: $0, isRecommended: false, context: rowContext) },
+            rows: matching.map { createRow(for: $0, context: rowContext) },
             countTitle: strings.stakingSubtensorUiValidatorCountFormat(matching.count),
             sortTitle: createSortTitle(
                 for: sort,
@@ -308,7 +307,6 @@ private extension SubtensorValidatorListFactory {
 
     func createRow(
         for entry: Entry,
-        isRecommended: Bool,
         context: RowContext
     ) -> SubtensorValidatorRowViewModel {
         let strings = R.string(preferredLanguages: context.locale.rLanguages).localizable
@@ -335,7 +333,6 @@ private extension SubtensorValidatorListFactory {
             title: entry.title,
             subtitle: strings.stakingSubtensorUiValidatorRowSubtitleFormat(stakeText, takeText),
             trailing: trailing,
-            isRecommended: isRecommended,
             isSelected: entry.item.hotkey == context.input.selectedHotkey,
             isSelectable: entry.isSelectable
         )

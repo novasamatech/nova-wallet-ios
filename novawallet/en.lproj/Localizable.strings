@@ -2148,7 +2148,6 @@ Do you want to continue?";
 "staking.subtensor.ui.validator.info.staking" = "Staking";
 "staking.subtensor.ui.validator.info.take" = "Validator take";
 "staking.subtensor.ui.validator.sort.apy" = "APY";
-"staking.subtensor.ui.validator.recommended" = "RECOMMENDED";
 "staking.subtensor.ui.validator.count.format" = "VALIDATORS: %d";
 "staking.subtensor.ui.validator.loading.count" = "VALIDATORS";
 "staking.subtensor.ui.validator.fetch.failed" = "Unable to fetch validators";
