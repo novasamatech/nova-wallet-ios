@@ -31,8 +31,6 @@ protocol SubtensorSubnetSelectPresenterProtocol: AnyObject {
     func selectRoot()
     func showSort()
     func showFilters()
-    func draftFilters(_ filters: SubtensorSubnetFilters)
-    func applyFilters(_ filters: SubtensorSubnetFilters)
 }
 
 protocol SubnetSelectInteractorInputProtocol: AnyObject {

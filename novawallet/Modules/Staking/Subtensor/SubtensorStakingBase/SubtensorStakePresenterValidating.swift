@@ -43,13 +43,6 @@ protocol SubtensorStakePresenterValidating {
         dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
         selectedLocale: Locale
     ) -> [DataValidating]
-
-    func validateStake(
-        for dep: SubtensorStakeValidatingDep,
-        dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
-        selectedLocale: Locale,
-        onSuccess: @escaping () -> Void
-    )
 }
 
 extension SubtensorStakePresenterValidating {

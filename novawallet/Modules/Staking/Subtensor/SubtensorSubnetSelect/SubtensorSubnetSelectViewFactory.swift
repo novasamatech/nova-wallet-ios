@@ -16,14 +16,6 @@ enum SubtensorSubnetSelectViewFactory {
 
     static func createView(
         for state: SubtensorStakingSharedStateProtocol,
-        delegate: SubtensorSubnetSelectDelegate,
-        delegateTake _: UInt16?
-    ) -> SubtensorSubnetSelectViewProtocol? {
-        createView(for: state, delegate: delegate)
-    }
-
-    static func createView(
-        for state: SubtensorStakingSharedStateProtocol,
         delegate: SubtensorSubnetSelectDelegate
     ) -> SubtensorSubnetSelectViewProtocol? {
         let earnServices = state.earnServices

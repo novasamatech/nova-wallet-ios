@@ -48,13 +48,6 @@ struct SubtensorSubnetListState {
 }
 
 protocol SubtensorSubnetViewModelFactoryProtocol {
-    func createRowViewModel(
-        for item: SubtensorSubnetListItem,
-        isFavorite: Bool,
-        subnetLogos: SubtensorSubnetLogos?,
-        locale: Locale
-    ) -> SubtensorSubnetSelectViewModel
-
     func createListViewModel(for state: SubtensorSubnetListState, locale: Locale) -> SubtensorSubnetListViewModel
 
     func createRootBarViewModel(annualRate: Decimal?, locale: Locale) -> SubtensorStakeToRootBarViewModel
