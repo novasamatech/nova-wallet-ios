@@ -45,6 +45,17 @@ enum SubtensorFlowActiveStake {
         )
     }
 
+    static func chutesGroupState() throws -> Multistaking.SubtensorStakingState {
+        Multistaking.SubtensorStakingState(
+            positions: [
+                try position(.ember, netuid: 64, stake: 50_000_000_000),
+                try position(.cinder, netuid: 64, stake: 20_000_000_000)
+            ],
+            prices: [64: chutesSpotPrice],
+            availability: [64: availability(total: 70_000_000_000, locked: 0)]
+        )
+    }
+
     static func claimPreviews() throws -> [SubtensorStakingPallet.BasketClaimPreview] {
         [
             try claimPreview(.aster, accrued: 431_000_000, redeemable: 420_000_000, forfeited: 11_000_000),

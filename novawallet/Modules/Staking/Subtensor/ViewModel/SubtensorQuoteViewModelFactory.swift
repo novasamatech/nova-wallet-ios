@@ -23,6 +23,7 @@ struct SubtensorQuotePanelViewModel {
 protocol SubtensorQuoteViewModelFactoryProtocol {
     func createTargetViewModel(
         for target: SubtensorStakeTarget,
+        catalogue: SubtensorSubnetCatalogue?,
         locale: Locale
     ) -> SubtensorStakeTargetViewModel
 
@@ -156,6 +157,7 @@ private extension SubtensorQuoteViewModelFactory {
 extension SubtensorQuoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol {
     func createTargetViewModel(
         for target: SubtensorStakeTarget,
+        catalogue: SubtensorSubnetCatalogue?,
         locale: Locale
     ) -> SubtensorStakeTargetViewModel {
         switch target {
@@ -167,17 +169,10 @@ extension SubtensorQuoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
                 subtitle: nil,
                 isRoot: true
             )
-        case let .subnet(info, _):
-            let symbol = info.displaySymbol
-            let name = info.displayName
-
+        case .subnet:
             return SubtensorStakeTargetViewModel(
-                title: name.isEmpty
-                    ? R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiSubnetFormat(
-                        Int(info.netuid)
-                    )
-                    : name,
-                subtitle: symbol.isEmpty ? nil : symbol,
+                title: SubtensorSubnetNaming.title(for: target.netuid, in: catalogue, locale: locale),
+                subtitle: SubtensorSubnetNaming.catalogueSymbol(for: target.netuid, in: catalogue),
                 isRoot: false
             )
         }

@@ -182,10 +182,13 @@ enum SubtensorPortfolioValueSeriesCalculator {
             return SubtensorPortfolioValueSeries(points: [], changeInFiat: nil)
         }
 
+        let newestDate = Date(timeIntervalSince1970: TimeInterval(newest.startedAt))
+
         let holdings = createHoldings(
             of: portfolio,
             histories: histories.subnets,
             period: period,
+            gridEnd: newestDate,
             precision: precision
         )
 
@@ -199,7 +202,7 @@ enum SubtensorPortfolioValueSeriesCalculator {
         }
 
         let newestPoint = SubtensorPortfolioValuePoint(
-            date: Date(timeIntervalSince1970: TimeInterval(newest.startedAt)),
+            date: newestDate,
             taoValue: totalTao,
             fiatValue: totalTao * currentTaoPrice
         )
@@ -230,6 +233,7 @@ private extension SubtensorPortfolioValueSeriesCalculator {
         of portfolio: SubtensorPortfolio,
         histories: [SubtensorPriceHistory],
         period: SubtensorPricePeriod,
+        gridEnd: Date,
         precision: Int16
     ) -> Holdings {
         let pointsByNetuid = histories.reduce(into: [UInt16: [SubtensorPricePoint]]()) { result, history in
@@ -254,7 +258,8 @@ private extension SubtensorPortfolioValueSeriesCalculator {
 
             guard
                 let points = pointsByNetuid[group.netuid],
-                let newestPoint = points.last else {
+                let newestPoint = points.last,
+                gridEnd.timeIntervalSince(newestPoint.date) <= period.coverageTolerance else {
                 flatTao += value
                 continue
             }
