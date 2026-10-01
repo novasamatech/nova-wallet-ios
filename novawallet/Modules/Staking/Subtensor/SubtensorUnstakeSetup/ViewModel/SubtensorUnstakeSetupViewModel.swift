@@ -26,6 +26,8 @@ struct SubtensorUnstakeHeaderViewModel {
 struct SubtensorUnstakeDetailsViewModel {
     let receive: SubtensorSetupBalanceRowViewModel
     let swapRate: SubtensorSetupRowViewModel
+    let avgBuyPrice: SubtensorCostBasisRowViewModel
+    let earned: SubtensorCostBasisRowViewModel
     let validator: SubtensorSetupValidatorViewModel
     let networkFee: BalanceViewModelProtocol?
 }
@@ -44,6 +46,7 @@ struct SubtensorUnstakeSetupViewModelInput {
     let quote: SubtensorTradeQuote?
     let isQuoteFailed: Bool
     let holdRemaining: TimeInterval?
+    let costBasis: SubtensorCostBasisState
 
     var isRoot: Bool {
         netuid == SubtensorStakingPallet.rootNetuid

@@ -23,6 +23,7 @@ final class SubtensorStakingWiringTests: XCTestCase {
         let priceHistory = try XCTUnwrap(first.priceHistoryService as? SubtensorPriceHistoryService)
         let secondPriceHistory = try XCTUnwrap(second.priceHistoryService as? SubtensorPriceHistoryService)
         let secondRecommendations = try XCTUnwrap(second.recommendationService as? SubtensorRecommendationService)
+        let costBasis = try XCTUnwrap(processServices.costBasisService as? SubtensorCostBasisService)
 
         XCTAssertTrue(first.subnetLogosProvider === processServices.subnetLogosProvider)
         XCTAssertTrue(second.subnetLogosProvider === processServices.subnetLogosProvider)
@@ -38,6 +39,9 @@ final class SubtensorStakingWiringTests: XCTestCase {
         XCTAssertTrue(recommendations.apiOperationFactory === processServices.bittensorApiOperationFactory)
         XCTAssertTrue(directory.apiOperationFactory === processServices.bittensorApiOperationFactory)
         XCTAssertTrue(secondRecommendations.apiOperationFactory === processServices.bittensorApiOperationFactory)
+        XCTAssertTrue(costBasis.apiOperationFactory === processServices.bittensorApiOperationFactory)
+        XCTAssertTrue(first.costBasisService === processServices.costBasisService)
+        XCTAssertTrue(second.costBasisService === processServices.costBasisService)
         XCTAssertTrue(first.validatorChainOperationFactory is SubtensorValidatorChainOperationFactory)
         XCTAssertTrue(recommendations.chainOperationFactory === first.validatorChainOperationFactory)
         XCTAssertTrue(directory.chainOperationFactory === first.validatorChainOperationFactory)
@@ -51,15 +55,22 @@ final class SubtensorStakingWiringTests: XCTestCase {
         let chainAsset = Self.subtensorChainAsset()
         let option = Multistaking.ChainAssetOption(chainAsset: chainAsset, type: .subtensor)
 
+        let apiOperationFactory = BittensorApiOperationFactory(
+            transport: BittensorApiFixtureTransport(),
+            cache: BittensorApiResponseCache(operationQueue: OperationQueue(), logger: Logger.shared),
+            logger: Logger.shared
+        )
+
         let processServices = SubtensorStakingProcessServices(
-            bittensorApiOperationFactory: BittensorApiOperationFactory(
-                transport: BittensorApiFixtureTransport(),
-                cache: BittensorApiResponseCache(operationQueue: OperationQueue(), logger: Logger.shared),
-                logger: Logger.shared
-            ),
+            bittensorApiOperationFactory: apiOperationFactory,
             subnetLogosProvider: MockSubtensorSubnetLogosProviderProtocol(),
             subnetMarketsService: MockSubtensorSubnetMarketsServiceProtocol(),
             maxApyResolution: SubtensorMaxApyResolution(),
+            costBasisService: SubtensorCostBasisService(
+                apiOperationFactory: apiOperationFactory,
+                operationQueue: OperationQueue(),
+                eventCenter: EventCenter()
+            ),
             isFixtureMode: true
         )
 

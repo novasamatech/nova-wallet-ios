@@ -21,6 +21,7 @@ enum SubtensorUnstakeConfirmViewFactory {
             catalogueService: state.earnServices.catalogueService,
             subnetLogosProvider: state.earnServices.subnetLogosProvider,
             rootHoldFactory: state.earnServices.rootHoldFactory,
+            costBasisService: state.earnServices.costBasisService,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             logger: Logger.shared
         )
@@ -53,7 +54,7 @@ enum SubtensorUnstakeConfirmViewFactory {
 
         let view = SubtensorStakingConfirmViewController(
             presenter: presenter,
-            mode: model.target.isRoot ? .rootUnstake : .swap,
+            mode: model.target.isRoot ? .rootUnstake : .swap(.sell),
             localizationManager: localizationManager
         )
 

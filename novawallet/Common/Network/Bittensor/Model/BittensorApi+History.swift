@@ -42,7 +42,7 @@ extension BittensorApi {
         let meta: Meta
     }
 
-    struct Operation: Decodable, Equatable {
+    struct Operation: Decodable, Hashable {
         let sourceEventId: String
         let sourceTimestamp: String
         let netuid: UInt16

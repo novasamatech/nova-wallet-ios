@@ -124,6 +124,21 @@ final class SubtensorFlowURLProtocol: URLProtocol {
         serveBittensor(path, reply: .json(BittensorApiFixtureRouter.document(for: route)))
     }
 
+    static func serveOperationsFixture(accountSubject: AccountAddress, pages: ClosedRange<Int>) {
+        for page in pages {
+            serve(
+                "POST",
+                SubtensorFlowHost.bittensor("/operations/search"),
+                body: operationsSearchBody(accountSubject: accountSubject, page: page),
+                reply: .json(BittensorApiFixtureRouter.document(for: .operations(page: page)))
+            )
+        }
+    }
+
+    static func operationsSearchBody(accountSubject: AccountAddress, page: Int) -> Data {
+        Data(#"{"accountSubject":"\#(accountSubject)","page":\#(page)}"#.utf8)
+    }
+
     static func serveSubnetLogos() {
         serve(
             "GET",

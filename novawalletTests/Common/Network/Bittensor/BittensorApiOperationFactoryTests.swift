@@ -82,6 +82,29 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
         XCTAssertEqual(result.value.pageInfo.pageSize, 100)
     }
 
+    func testOperationsSearchPostsTheAccountSubjectAndPageAsSortedJson() throws {
+        let accountSubject = BittensorApiFixtureWorld.validator(.aster).coldkey
+
+        let transport = makeTransport(replies: [
+            makeResponse(try makeBody(BittensorApiFixtureDocuments.operations(page: 2)), requestId: "req-operations")
+        ])
+
+        let result = try fetch(
+            makeFactory(transport: transport).createOperationsWrapper(accountSubject: accountSubject, page: 2)
+        )
+
+        let expectedRequest = BittensorApiRequest(
+            method: .post,
+            path: "/operations/search",
+            pathTemplate: "/operations/search",
+            queryItems: [],
+            jsonBody: Data(#"{"accountSubject":"\#(accountSubject)","page":2}"#.utf8)
+        )
+
+        verify(transport, times(1)).createResponseWrapper(for: equal(to: expectedRequest))
+        XCTAssertEqual(result.value.pageInfo, BittensorApi.PageInfo(page: 2, pageSize: 100, total: 137, nextPage: nil))
+    }
+
     func testRecommendationsDecodeWithTheirGeneration() throws {
         let result = try fetch(makeFactory().createRecommendationsWrapper())
 

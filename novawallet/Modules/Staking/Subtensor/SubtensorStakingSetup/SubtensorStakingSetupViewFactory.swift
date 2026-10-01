@@ -127,6 +127,7 @@ private extension SubtensorStakingSetupViewFactory {
             subnetLogosProvider: earnServices.subnetLogosProvider,
             subnetsService: state.subnetsService,
             earnSettings: earnServices.earnSettings,
+            costBasisService: earnServices.costBasisService,
             generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             logger: Logger.shared
         )

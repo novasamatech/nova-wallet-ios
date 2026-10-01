@@ -52,6 +52,8 @@ private extension SubtensorStakingSetupViewController {
         cardView.earnCell.titleLabel.text = strings.stakingSubtensorUiEarnTokensMonth()
         cardView.networkFeeCell.titleLabel.text = strings.commonNetworkFee()
 
+        rootView.avgBuyPriceCell.titleLabel.text = strings.stakingSubtensorUiAvgBuyPrice()
+
         setupAmountInputAccessoryView()
     }
 
@@ -68,6 +70,7 @@ private extension SubtensorStakingSetupViewController {
         rootView.pickCardView.headerView.addTarget(self, action: #selector(actionCardHeader), for: .touchUpInside)
         rootView.pickCardView.swapRateCell.addTarget(self, action: #selector(actionSwapRateInfo), for: .touchUpInside)
         rootView.pickCardView.footerButton.addTarget(self, action: #selector(actionChooseMyself), for: .touchUpInside)
+        rootView.avgBuyPriceCell.addTarget(self, action: #selector(actionAvgBuyPriceInfo), for: .touchUpInside)
         rootView.getTaoCardView.actionButton.addTarget(self, action: #selector(actionGetTao), for: .touchUpInside)
         rootView.actionButton.addTarget(self, action: #selector(actionProceed), for: .touchUpInside)
     }
@@ -153,6 +156,7 @@ private extension SubtensorStakingSetupViewController {
             rootView.pickCardView.isHidden = true
             rootView.feeDisclosureLabel.isHidden = true
 
+            applyAvgBuyPrice(.hidden)
             applyValidator(viewModel.validator)
             applyRow(viewModel.apy, cell: rootView.apyCell, skeletonView: rootView.apySkeletonView)
             applyNetworkFee(viewModel.networkFee)
@@ -165,7 +169,14 @@ private extension SubtensorStakingSetupViewController {
             rootView.sectionLabel.text = viewModel.sectionTitle
             rootView.pickCardView.bind(viewModel: viewModel.card)
             rootView.feeDisclosureLabel.text = viewModel.feeDisclosure
+
+            applyAvgBuyPrice(viewModel.avgBuyPrice)
         }
+    }
+
+    func applyAvgBuyPrice(_ viewModel: SubtensorCostBasisRowViewModel) {
+        rootView.setAvgBuyPriceVisible(viewModel != .hidden)
+        rootView.avgBuyPriceCell.bind(costBasisRow: viewModel)
     }
 
     func applySettings(_ hasSettings: Bool) {
@@ -223,6 +234,10 @@ private extension SubtensorStakingSetupViewController {
 
     @objc func actionSwapRateInfo() {
         presenter.showSwapRateInfo()
+    }
+
+    @objc func actionAvgBuyPriceInfo() {
+        presenter.showAvgBuyPriceInfo()
     }
 
     @objc func actionChooseMyself() {

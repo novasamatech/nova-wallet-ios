@@ -37,6 +37,7 @@ final class SubtensorUnstakeSetupPresenter {
     var quoteFlow = SubtensorQuoteFlowModel()
     var isQuoteFailed = false
     var tradesUnavailable = false
+    var costBasis: SubtensorCostBasisState = .loading
 
     private var feeShape: FeeShape?
 
@@ -336,7 +337,8 @@ extension SubtensorUnstakeSetupPresenter {
             price: price,
             quote: quoteFlow.freshQuote,
             isQuoteFailed: isQuoteFailed,
-            holdRemaining: holdRemaining(for: amount)
+            holdRemaining: holdRemaining(for: amount),
+            costBasis: costBasis
         )
 
         view?.didReceive(viewModel: viewModelFactory.createViewModel(for: input, locale: selectedLocale))

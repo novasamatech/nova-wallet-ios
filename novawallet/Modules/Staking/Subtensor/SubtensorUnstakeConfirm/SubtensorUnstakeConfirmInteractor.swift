@@ -16,10 +16,12 @@ final class SubtensorUnstakeConfirmInteractor: SubtensorStakingBaseInteractor {
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let rootHoldFactory: SubtensorRootHoldFactoryProtocol
+    let costBasisService: SubtensorCostBasisServiceProtocol
 
     private let catalogueCallStore = CancellableCallStore()
     private let logosCallStore = CancellableCallStore()
     private let holdsCallStore = CancellableCallStore()
+    private let costBasisCallStore = CancellableCallStore()
 
     init(
         baseServices: SubtensorFlowServices,
@@ -27,12 +29,14 @@ final class SubtensorUnstakeConfirmInteractor: SubtensorStakingBaseInteractor {
         catalogueService: SubtensorSubnetCatalogueServiceProtocol,
         subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
         rootHoldFactory: SubtensorRootHoldFactoryProtocol,
+        costBasisService: SubtensorCostBasisServiceProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         logger: LoggerProtocol
     ) {
         self.catalogueService = catalogueService
         self.subnetLogosProvider = subnetLogosProvider
         self.rootHoldFactory = rootHoldFactory
+        self.costBasisService = costBasisService
 
         super.init(
             chainAsset: chainAsset,
@@ -56,6 +60,7 @@ final class SubtensorUnstakeConfirmInteractor: SubtensorStakingBaseInteractor {
         catalogueCallStore.cancel()
         logosCallStore.cancel()
         holdsCallStore.cancel()
+        costBasisCallStore.cancel()
     }
 }
 
@@ -110,6 +115,25 @@ extension SubtensorUnstakeConfirmInteractor: SubtensorUnstakeConfirmInputProtoco
                 self?.presenter?.didReceiveRootHolds(holds)
             case let .failure(error):
                 self?.logger.warning("Subtensor root holds unavailable for the unstake confirm: \(error)")
+            }
+        }
+    }
+
+    func loadCostBasis(for netuid: UInt16) {
+        costBasisCallStore.cancel()
+
+        executeCancellable(
+            wrapper: costBasisService.createCostBasisWrapper(for: selectedAccount.accountId, netuid: netuid),
+            inOperationQueue: operationQueue,
+            backingCallIn: costBasisCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(costBasis):
+                self?.presenter?.didReceiveCostBasis(costBasis)
+            case let .failure(error):
+                self?.logger.warning("Subtensor cost basis unavailable for the sale confirm: \(error)")
+                self?.presenter?.didReceiveCostBasis(nil)
             }
         }
     }

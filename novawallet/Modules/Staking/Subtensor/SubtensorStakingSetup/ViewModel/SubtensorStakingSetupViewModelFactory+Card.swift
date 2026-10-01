@@ -36,6 +36,7 @@ extension SubtensorStakingSetupViewModelFactory {
         return SubtensorSetupSubnetViewModel(
             sectionTitle: sectionTitle,
             card: card,
+            avgBuyPrice: createAvgBuyPrice(for: input, locale: locale),
             feeDisclosure: quoteViewModelFactory.novaFeeDisclosure(locale: locale)
         )
     }
@@ -108,6 +109,28 @@ private extension SubtensorStakingSetupViewModelFactory {
 
     func isAnnualRatePending(for input: SubtensorStakingSetupViewModelInput) -> Bool {
         !input.subnetData.isYieldsLoaded || input.validator == .pending
+    }
+
+    func createAvgBuyPrice(
+        for input: SubtensorStakingSetupViewModelInput,
+        locale: Locale
+    ) -> SubtensorCostBasisRowViewModel {
+        guard case .buyMore = input.mode else {
+            return .hidden
+        }
+
+        let purchase = SubtensorPurchaseQuote(
+            quote: input.quote,
+            paidTao: input.amount,
+            isQuotePending: isQuotePending(for: input)
+        )
+
+        return costBasisViewModelFactory.createAvgBuyPrice(
+            for: input.subnetData.costBasis,
+            after: purchase,
+            alphaSymbol: SubtensorSubnetNaming.symbol(for: input.mode.netuid, in: input.subnetData.catalogue),
+            locale: locale
+        )
     }
 
     func createTradeRow(

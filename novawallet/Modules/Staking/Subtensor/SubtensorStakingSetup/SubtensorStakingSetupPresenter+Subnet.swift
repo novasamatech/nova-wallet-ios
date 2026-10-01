@@ -74,7 +74,8 @@ extension SubtensorStakingSetupPresenter {
             rankedSubnet: rankingView?.items.first { $0.netuid == mode.netuid },
             annualRate: subnetAnnualRate(),
             isYieldsLoaded: isYieldsLoaded,
-            isQuoteFailed: isQuoteFailed
+            isQuoteFailed: isQuoteFailed,
+            costBasis: costBasis
         )
 
         return SubtensorStakingSetupViewModelInput(
@@ -169,5 +170,18 @@ extension SubtensorStakingSetupPresenter {
         )
 
         wireframe.showSubtensorInfo(.swapRate(.buy, subnetName: subnetName), from: view)
+    }
+
+    func showAvgBuyPriceInfo() {
+        guard case .buyMore = mode else {
+            return
+        }
+
+        let sheet = SubtensorInfoSheet.avgBuyPrice(
+            symbol: SubtensorSubnetNaming.symbol(for: mode.netuid, in: catalogue),
+            subnetName: SubtensorSubnetNaming.titleWithSymbol(for: mode.netuid, in: catalogue, locale: selectedLocale)
+        )
+
+        wireframe.showSubtensorInfo(sheet, from: view)
     }
 }

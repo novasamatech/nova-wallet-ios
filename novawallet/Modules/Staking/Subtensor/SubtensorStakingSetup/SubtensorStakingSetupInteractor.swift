@@ -20,6 +20,7 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let subnetsService: SubtensorSubnetsServiceProtocol
     let earnSettings: SubtensorEarnSettingsProtocol
+    let costBasisService: SubtensorCostBasisServiceProtocol
 
     private let validatorCallStore = CancellableCallStore()
     private let rootYieldCallStore = CancellableCallStore()
@@ -27,6 +28,7 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
     private let yieldsCallStore = CancellableCallStore()
     private let rankingCallStore = CancellableCallStore()
     private let logosCallStore = CancellableCallStore()
+    private let costBasisCallStore = CancellableCallStore()
 
     init(
         flowServices: SubtensorFlowServices,
@@ -38,6 +40,7 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
         subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
         subnetsService: SubtensorSubnetsServiceProtocol,
         earnSettings: SubtensorEarnSettingsProtocol,
+        costBasisService: SubtensorCostBasisServiceProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         logger: LoggerProtocol
     ) {
@@ -48,6 +51,7 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
         self.subnetLogosProvider = subnetLogosProvider
         self.subnetsService = subnetsService
         self.earnSettings = earnSettings
+        self.costBasisService = costBasisService
 
         super.init(
             chainAsset: chainAsset,
@@ -74,6 +78,7 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
         yieldsCallStore.cancel()
         rankingCallStore.cancel()
         logosCallStore.cancel()
+        costBasisCallStore.cancel()
     }
 }
 
@@ -223,6 +228,25 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
             case let .failure(error):
                 self?.logger.warning("Subtensor subnet logos unavailable for the setup mark: \(error)")
                 self?.presenter?.didReceiveSubnetLogos(nil)
+            }
+        }
+    }
+
+    func loadCostBasis(for netuid: UInt16) {
+        costBasisCallStore.cancel()
+
+        executeCancellable(
+            wrapper: costBasisService.createCostBasisWrapper(for: selectedAccount.accountId, netuid: netuid),
+            inOperationQueue: operationQueue,
+            backingCallIn: costBasisCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(costBasis):
+                self?.presenter?.didReceiveCostBasis(costBasis)
+            case let .failure(error):
+                self?.logger.warning("Subtensor cost basis unavailable for the buy on netuid \(netuid): \(error)")
+                self?.presenter?.didReceiveCostBasis(nil)
             }
         }
     }

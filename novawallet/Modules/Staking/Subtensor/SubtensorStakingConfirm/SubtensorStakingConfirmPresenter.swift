@@ -24,6 +24,7 @@ final class SubtensorStakingConfirmPresenter {
     var tradesUnavailable = false
     var catalogue: SubtensorSubnetCatalogue?
     var subnetLogos: SubtensorSubnetLogos?
+    var costBasis: SubtensorCostBasisState = .loading
     private(set) var isHandingOff = false
     private var isSignerNotSupportedShown = false
 
@@ -67,6 +68,10 @@ extension SubtensorStakingConfirmPresenter {
         SubtensorSubnetNaming.titleWithSymbol(for: model.target.netuid, in: catalogue, locale: selectedLocale)
     }
 
+    var buyMoreCostBasis: SubtensorCostBasisState? {
+        model.origin == .buyMore ? costBasis : nil
+    }
+
     func provideAccountViewModels() {
         do {
             let walletViewModel = try walletViewModelFactory.createDisplayViewModel(from: model.account)
@@ -103,7 +108,8 @@ extension SubtensorStakingConfirmPresenter {
             price: price,
             fee: fee,
             stakeBefore: isPositionsSyncFailed || positionsState == nil ? nil : stakeGroup().total,
-            signing: signing
+            signing: signing,
+            costBasis: buyMoreCostBasis
         )
 
         view?.didReceive(viewModel: viewModelFactory.createViewModel(for: input, locale: selectedLocale))
@@ -238,7 +244,8 @@ extension SubtensorStakingConfirmPresenter {
             stakeBefore: group.total,
             groupHotkeyCount: group.hotkeyCount,
             emptiesPosition: false,
-            prices: SubtensorOperationResultPrices(taoPrice: price, alphaSpot: verified.quote?.quote.spotPrice)
+            prices: SubtensorOperationResultPrices(taoPrice: price, alphaSpot: verified.quote?.quote.spotPrice),
+            costBasis: buyMoreCostBasis
         )
 
         isHandingOff = true
@@ -296,6 +303,11 @@ extension SubtensorStakingConfirmPresenter: SubtensorStakingConfirmPresenterProt
 
         if !model.target.isRoot {
             interactor.loadSubnetData()
+
+            if model.origin == .buyMore {
+                interactor.loadCostBasis(for: model.target.netuid)
+            }
+
             refreshQuote()
         }
 
@@ -370,6 +382,14 @@ extension SubtensorStakingConfirmPresenter: SubtensorStakingConfirmPresenterProt
     func showEarnPerMonthInfo() {
         wireframe.showSubtensorInfo(.earnTokensMonth(subnetName: subnetName), from: view)
     }
+
+    func showAvgBuyPriceInfo() {
+        let symbol = SubtensorSubnetNaming.symbol(for: model.target.netuid, in: catalogue)
+
+        wireframe.showSubtensorInfo(.avgBuyPrice(symbol: symbol, subnetName: subnetName), from: view)
+    }
+
+    func showYouWillEarnInfo() {}
 
     func showNetworkFeeInfo() {
         wireframe.showSubtensorInfo(.networkFee(.buy), from: view)

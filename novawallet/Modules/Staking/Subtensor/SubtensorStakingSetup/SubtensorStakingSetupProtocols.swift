@@ -16,6 +16,7 @@ protocol SubtensorStakingSetupPresenterProtocol: AnyObject {
     func chooseMyself()
     func selectSettings()
     func showSwapRateInfo()
+    func showAvgBuyPriceInfo()
     func getTao()
     func proceed()
 }
@@ -29,6 +30,7 @@ protocol SubtensorSetupInteractorInputProtocol: SubtensorStakingBaseInteractorIn
     func loadYields(netuid: UInt16)
     func loadRankingView()
     func loadSubnetLogos()
+    func loadCostBasis(for netuid: UInt16)
     func saveSlippage(_ tolerance: BigRational)
 }
 
@@ -41,6 +43,7 @@ protocol SubtensorSetupInteractorOutputProtocol: SubtensorStakingBaseInteractorO
     func didReceiveYields(_ yields: SubtensorAlphaYields?, netuid: UInt16)
     func didReceiveRankingView(_ rankingView: SubtensorRankedSubnets?)
     func didReceiveSubnetLogos(_ logos: SubtensorSubnetLogos?)
+    func didReceiveCostBasis(_ costBasis: SubtensorCostBasis?)
 }
 
 protocol SubtensorStakingSetupWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
