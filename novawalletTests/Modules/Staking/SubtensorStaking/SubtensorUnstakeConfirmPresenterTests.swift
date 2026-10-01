@@ -435,6 +435,22 @@ final class SubtensorUnstakeConfirmPresenterTests: XCTestCase {
         )
     }
 
+    func testSellConfirmHandsOffTheCostBasisItShowsToTheResult() throws {
+        let acknowledged = try makeTradeQuote(spotPrice: 7_683_255)
+        let costBasis = SubtensorCostBasis.average(
+            SubtensorPurchaseTotals(paidTao: 9_000_000, receivedAlpha: 1_000_000_000)
+        )
+
+        let setup = makeSetup { chainAsset in
+            makeSubnetModel(for: chainAsset, acknowledgedQuote: acknowledged)
+        }
+
+        setup.presenter.didReceivePositions(makePositions(hotkeys: [hotkey], netuid: 1))
+        setup.presenter.didReceiveCostBasis(costBasis)
+
+        XCTAssertEqual(confirmAndCaptureRequest(setup)?.costBasis, .resolved(costBasis))
+    }
+
     func testGroupExitHandsOffTheHotkeysRebuiltFromTheLiveGroupAndEmptiesThePosition() {
         let setup = makeSetup { chainAsset in
             makeModel(

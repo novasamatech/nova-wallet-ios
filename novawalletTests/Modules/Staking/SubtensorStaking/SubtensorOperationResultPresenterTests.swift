@@ -268,6 +268,122 @@ final class SubtensorOperationResultPresenterTests: XCTestCase {
         verify(setup.wireframe).showYourBittensor(from: any(), stakingOption: any())
         verify(setup.wireframe, never()).closeOperation(from: any())
     }
+
+    func testSellShowsWhatTheTaoReceivedEarnedOverTheCarriedAverageBuyPriceOnceItIsDone() {
+        let strings = R.string(preferredLanguages: LocalizationManager.shared.selectedLocale.rLanguages).localizable
+        let request = makeRequest(
+            operation: .subnetSell(
+                hotkey: hotkey,
+                netuid: 64,
+                alpha: 56_200_000_000,
+                limitPrice: 70_000_000,
+                quotedTaoOut: 4_145_000_000
+            ),
+            origin: .sell,
+            groupHotkeyCount: 1,
+            taoPrice: PriceData(identifier: "bittensor", price: "21", dayChange: nil, currencyId: nil),
+            costBasis: .resolved(
+                .average(SubtensorPurchaseTotals(paidTao: 3_470_000_000, receivedAlpha: 56_200_000_000))
+            )
+        )
+
+        let setup = makePresenter(interactor: makeMockInteractor(), request: request)
+        var pages: [SubtensorResultPageViewModel] = []
+
+        stubPages(on: setup.view) { pages.append($0) }
+
+        setup.presenter.setup()
+        setup.presenter.didReceiveSubmission(
+            result: .success(
+                makeOutcome(
+                    executed: SubtensorExecutedAmounts(tao: 4_145_000_000, alpha: 56_200_000_000, netuid: 64),
+                    novaFeePaid: 35_000_000
+                )
+            )
+        )
+
+        XCTAssertNil(pages.first?.details.costBasis)
+        XCTAssertEqual(
+            pages.last?.details.costBasis,
+            SubtensorResultCostBasisViewModel(
+                title: strings.stakingSubtensorUiYouEarned(),
+                value: .value(
+                    SubtensorCostBasisValueViewModel(amount: "+0.64 TAO", detail: "≈ $13.44", tone: .positive)
+                )
+            )
+        )
+    }
+
+    func testBuyMoreDoneShowsTheAverageBuyPriceAfterTheGrossTaoPaidRisingFromTheCarriedAverage() {
+        let strings = R.string(preferredLanguages: LocalizationManager.shared.selectedLocale.rLanguages).localizable
+        let request = makeRequest(
+            origin: .buyMore,
+            groupHotkeyCount: 1,
+            costBasis: .resolved(
+                .average(SubtensorPurchaseTotals(paidTao: 7_000_000_000, receivedAlpha: 100_000_000_000))
+            )
+        )
+
+        let setup = makePresenter(interactor: makeMockInteractor(), request: request)
+        var page: SubtensorResultPageViewModel?
+
+        stubPages(on: setup.view) { page = $0 }
+
+        setup.presenter.didReceiveSubmission(
+            result: .success(
+                makeOutcome(executed: SubtensorExecutedAmounts(tao: 4_957_861_000, alpha: 50_000_000_000, netuid: 64))
+            )
+        )
+
+        XCTAssertEqual(
+            page?.details.costBasis,
+            SubtensorResultCostBasisViewModel(
+                title: strings.stakingSubtensorUiAvgBuyPrice(),
+                value: .value(
+                    SubtensorCostBasisValueViewModel(
+                        amount: "0.08 TAO",
+                        detail: "from 0.07 per SN64",
+                        tone: .neutral,
+                        trend: .rising
+                    )
+                )
+            )
+        )
+    }
+
+    func testSellDoneShowsADashWhenTheCostBasisWasStillLoadingAtTheTap() {
+        let request = makeRequest(
+            operation: .subnetSell(
+                hotkey: hotkey,
+                netuid: 64,
+                alpha: 56_200_000_000,
+                limitPrice: 70_000_000,
+                quotedTaoOut: 4_145_000_000
+            ),
+            origin: .sell,
+            groupHotkeyCount: 1,
+            costBasis: .loading
+        )
+
+        let setup = makePresenter(interactor: makeMockInteractor(), request: request)
+        var page: SubtensorResultPageViewModel?
+
+        stubPages(on: setup.view) { page = $0 }
+
+        setup.presenter.didReceiveSubmission(
+            result: .success(
+                makeOutcome(
+                    executed: SubtensorExecutedAmounts(tao: 4_145_000_000, alpha: 56_200_000_000, netuid: 64),
+                    novaFeePaid: 35_000_000
+                )
+            )
+        )
+
+        XCTAssertEqual(
+            page?.details.costBasis?.value,
+            .value(SubtensorCostBasisValueViewModel(amount: "—", detail: nil, tone: .neutral))
+        )
+    }
 }
 
 private extension SubtensorOperationResultPresenterTests {
@@ -293,7 +409,9 @@ private extension SubtensorOperationResultPresenterTests {
         target: SubtensorStakeTarget? = nil,
         stakeBefore: Balance = 0,
         groupHotkeyCount: Int = 0,
-        emptiesPosition: Bool = false
+        emptiesPosition: Bool = false,
+        taoPrice: PriceData? = nil,
+        costBasis: SubtensorCostBasisState? = nil
     ) -> SubtensorOperationResultRequest {
         SubtensorOperationResultRequest(
             operation: operation ?? .subnetBuy(hotkey: hotkey, netuid: 64, grossTao: 5_000_000_000, limitPrice: 74_169_000),
@@ -312,8 +430,8 @@ private extension SubtensorOperationResultPresenterTests {
             stakeBefore: stakeBefore,
             groupHotkeyCount: groupHotkeyCount,
             emptiesPosition: emptiesPosition,
-            prices: SubtensorOperationResultPrices(taoPrice: nil, alphaSpot: 73_800_000),
-            costBasis: nil
+            prices: SubtensorOperationResultPrices(taoPrice: taoPrice, alphaSpot: 73_800_000),
+            costBasis: costBasis
         )
     }
 
@@ -425,11 +543,18 @@ private extension SubtensorOperationResultPresenterTests {
     }
 
     func stubStatusDetails(on view: MockSubtensorResultViewProtocol, closure: @escaping (String) -> Void) {
+        stubPages(on: view) { closure($0.status.details) }
+    }
+
+    func stubPages(
+        on view: MockSubtensorResultViewProtocol,
+        closure: @escaping (SubtensorResultPageViewModel) -> Void
+    ) {
         stub(view) { stub in
             when(stub.didUpdateCountdown(remainedTime: any())).thenDoNothing()
             when(stub.didReceive(viewModel: any())).then { viewModel in
                 if case let .page(page) = viewModel {
-                    closure(page.status.details)
+                    closure(page)
                 }
             }
         }

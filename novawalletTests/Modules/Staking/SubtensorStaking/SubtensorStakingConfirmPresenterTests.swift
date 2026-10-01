@@ -371,6 +371,21 @@ final class SubtensorStakingConfirmPresenterTests: XCTestCase {
         )
     }
 
+    func testBuyMoreConfirmHandsOffTheCostBasisItShowsToTheResult() throws {
+        let acknowledged = try makeTradeQuote(spotPrice: 7_683_255)
+        let costBasis = SubtensorCostBasis.average(
+            SubtensorPurchaseTotals(paidTao: 9_000_000, receivedAlpha: 1_000_000_000)
+        )
+
+        let setup = makeSetup { chainAsset in
+            makeSubnetModel(for: chainAsset, acknowledgedQuote: acknowledged, origin: .buyMore)
+        }
+
+        setup.presenter.didReceiveCostBasis(costBasis)
+
+        XCTAssertEqual(confirmAndCaptureRequest(setup)?.costBasis, .resolved(costBasis))
+    }
+
     func testNewPositionConfirmNeverLoadsTheCostBasisAndHidesTheAverageBuyPrice() throws {
         let acknowledged = try makeTradeQuote(spotPrice: 7_683_255)
 
