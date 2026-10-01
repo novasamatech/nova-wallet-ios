@@ -100,6 +100,7 @@ final class SubtensorFlowWorld {
                 apiOperationFactory: bittensorApiOperationFactory,
                 operationQueue: OperationQueue(),
                 eventCenter: eventCenter,
+                walkSettings: SubtensorCostBasisWalk.Settings(requestSpacing: 0, retryDelay: 0, maxPages: 10),
                 timeProvider: { clock.now }
             ),
             isFixtureMode: true

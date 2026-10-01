@@ -296,6 +296,27 @@ final class SubtensorUnstakeSetupPresenterTests: XCTestCase {
         return try XCTUnwrap(captor.allValues.last)
     }
 
+    private func makeQuotedSaleSetup() throws -> Setup {
+        let setup = makeSetup(
+            netuid: subnetNetuid,
+            positions: [makePosition(hotkey: primaryHotkey, netuid: subnetNetuid, stake: 70_200_000_000)]
+        )
+
+        setup.presenter.didReceiveSubnetsInfo(makeSubnetsInfo(subnets: [subnetNetuid]))
+        setup.presenter.updateAmount(Decimal(string: "56.2"))
+        setup.presenter.didReceiveQuote(try makeSellQuote(alpha: 56_200_000_000, taoOut: 4_150_000_000))
+
+        return setup
+    }
+
+    private func makeValue(
+        _ amount: String,
+        detail: String? = nil,
+        tone: SubtensorValueTone = .neutral
+    ) -> SubtensorCostBasisRowViewModel {
+        .value(SubtensorCostBasisValueViewModel(amount: amount, detail: detail, tone: tone))
+    }
+
     func testUnstakeAllOverTwoRootValidatorsExitsBothOfThemWithTheGroupTotal() {
         let setup = makeRootGroupSetup()
 
@@ -473,6 +494,57 @@ final class SubtensorUnstakeSetupPresenterTests: XCTestCase {
 
         verify(setup.wireframe).presentQuoteMissing(any(), onRetry: any(), locale: any())
         verify(setup.wireframe, never()).showConfirm(from: any(), model: any())
+    }
+
+    func testSellShowsTheAverageBuyPriceAndWhatTheQuotedSaleEarnsOverIt() throws {
+        let setup = try makeQuotedSaleSetup()
+
+        setup.presenter.didReceivePrice(PriceData(identifier: "bittensor", price: "20", dayChange: nil, currencyId: nil))
+        setup.presenter.didReceiveCostBasis(
+            .average(SubtensorPurchaseTotals(paidTao: 5_000_000_000, receivedAlpha: 80_000_000_000))
+        )
+
+        let details = try lastViewModel(setup).details
+
+        verify(setup.interactor).loadCostBasis(for: equal(to: subnetNetuid))
+        XCTAssertEqual(details.avgBuyPrice, makeValue("0.0625 TAO", detail: "per SN1"))
+        XCTAssertEqual(details.earned, makeValue("+0.6375 TAO", detail: "≈ $12.75", tone: .positive))
+    }
+
+    func testSellWithoutPurchasesShowsTheAverageAsNotAvailableAndNothingEarned() throws {
+        let setup = try makeQuotedSaleSetup()
+
+        setup.presenter.didReceiveCostBasis(.noPurchases)
+
+        let details = try lastViewModel(setup).details
+
+        XCTAssertEqual(details.avgBuyPrice, makeValue("Not available", detail: "no purchases"))
+        XCTAssertEqual(details.earned, makeValue("—"))
+    }
+
+    func testSellKeepsTheCostBasisLoadingUntilTheHistoryAnswersAndShowsDashesWhenItFails() throws {
+        let setup = try makeQuotedSaleSetup()
+
+        let loading = try lastViewModel(setup).details
+
+        setup.presenter.didReceiveCostBasis(nil)
+
+        let failed = try lastViewModel(setup).details
+
+        XCTAssertEqual(loading.avgBuyPrice, .loading)
+        XCTAssertEqual(loading.earned, .loading)
+        XCTAssertEqual(failed.avgBuyPrice, makeValue("—"))
+        XCTAssertEqual(failed.earned, makeValue("—"))
+    }
+
+    func testRootUnstakeNeverLoadsTheCostBasisAndHidesItsRows() throws {
+        let setup = makeRootGroupSetup()
+
+        let details = try lastViewModel(setup).details
+
+        verify(setup.interactor, never()).loadCostBasis(for: any())
+        XCTAssertEqual(details.avgBuyPrice, .hidden)
+        XCTAssertEqual(details.earned, .hidden)
     }
 
     func testSubnetMissingFromTheChainCatalogueRefetchesOnceThenOffersRetry() {

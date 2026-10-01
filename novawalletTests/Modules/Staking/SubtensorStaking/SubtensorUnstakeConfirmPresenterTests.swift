@@ -339,6 +339,18 @@ final class SubtensorUnstakeConfirmPresenterTests: XCTestCase {
         return captor.value
     }
 
+    private func lastSwapViewModel(_ setup: Setup) -> SubtensorConfirmSwapViewModel? {
+        let captor = ArgumentCaptor<SubtensorConfirmViewModel>()
+
+        verify(setup.view, atLeastOnce()).didReceive(viewModel: captor.capture())
+
+        guard case let .swap(swap)? = captor.allValues.last?.content else {
+            return nil
+        }
+
+        return swap
+    }
+
     func testRootConfirmHandsOffARootUnstake() {
         let setup = makeSetup { chainAsset in
             makeModel(for: chainAsset, target: .root, tolerance: nil, acknowledgedQuote: nil)
@@ -350,6 +362,55 @@ final class SubtensorUnstakeConfirmPresenterTests: XCTestCase {
             confirmAndCaptureRequest(setup)?.operation,
             .rootUnstake(hotkey: hotkey, amount: unstakeAmount)
         )
+        verify(setup.interactor, never()).loadCostBasis(for: any())
+    }
+
+    func testSellConfirmShowsTheLossAgainstTheAverageBuyPriceWithTheProfitRemark() throws {
+        let acknowledged = try makeTradeQuote(spotPrice: 7_683_255)
+
+        let setup = makeSetup { chainAsset in
+            makeSubnetModel(for: chainAsset, acknowledgedQuote: acknowledged)
+        }
+
+        setup.presenter.didReceiveCostBasis(
+            .average(SubtensorPurchaseTotals(paidTao: 9_000_000, receivedAlpha: 1_000_000_000))
+        )
+
+        let swap = try XCTUnwrap(lastSwapViewModel(setup))
+
+        verify(setup.interactor).loadCostBasis(for: equal(to: 1))
+        XCTAssertEqual(
+            swap.avgBuyPrice,
+            .value(SubtensorCostBasisValueViewModel(amount: "0.009 TAO", detail: "per SN1", tone: .neutral))
+        )
+        XCTAssertEqual(
+            swap.youWillEarn,
+            .value(SubtensorCostBasisValueViewModel(amount: "\u{2212}0.00133 TAO", detail: nil, tone: .negative))
+        )
+        XCTAssertEqual(
+            swap.remark,
+            "Profit is estimated from the average price you paid, before the network fee. " +
+                "The rate can change until the order fills."
+        )
+    }
+
+    func testSellConfirmWithTheHistoryUnavailableShowsDashesAndOnlyTheRateRemark() throws {
+        let acknowledged = try makeTradeQuote(spotPrice: 7_683_255)
+
+        let setup = makeSetup { chainAsset in
+            makeSubnetModel(for: chainAsset, acknowledgedQuote: acknowledged)
+        }
+
+        setup.presenter.didReceiveCostBasis(nil)
+
+        let swap = try XCTUnwrap(lastSwapViewModel(setup))
+        let unknown = SubtensorCostBasisRowViewModel.value(
+            SubtensorCostBasisValueViewModel(amount: "—", detail: nil, tone: .neutral)
+        )
+
+        XCTAssertEqual(swap.avgBuyPrice, unknown)
+        XCTAssertEqual(swap.youWillEarn, unknown)
+        XCTAssertEqual(swap.remark, "The rate can change until the order fills.")
     }
 
     func testSubnetConfirmSellsAtTheAcknowledgedLimitWithTheLatestTaoOut() throws {
