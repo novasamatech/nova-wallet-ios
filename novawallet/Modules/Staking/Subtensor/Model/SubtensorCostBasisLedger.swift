@@ -4,7 +4,7 @@ import BigInt
 struct SubtensorCostBasisLedger {
     static let atomicScale = 9
     static let priceTolerance = BigRational(numerator: 3, denominator: 2)
-    static let nonTradeLabelMarkers = ["move", "transfer"]
+    static let nonTradeLabelWords: Set<String> = ["move", "transfer"]
 
     private let purchases: [UInt16: SubtensorPurchaseTotals]
     private let unclassifiedNetuids: Set<UInt16>
@@ -91,11 +91,35 @@ private extension SubtensorCostBasisLedger {
     }
 
     static func isNonTrade(label: String?) -> Bool {
-        guard let label = label?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() else {
+        guard let label else {
             return false
         }
 
-        return nonTradeLabelMarkers.contains { label.contains($0) }
+        return label
+            .split { !$0.isLetter }
+            .flatMap { camelCaseWords(in: Array($0)) }
+            .contains { nonTradeLabelWords.contains($0.lowercased()) }
+    }
+
+    static func camelCaseWords(in letters: [Character]) -> [String] {
+        var words: [String] = []
+        var wordStart = 0
+
+        for index in letters.indices.dropFirst() where startsCamelCaseWord(at: index, in: letters) {
+            words.append(String(letters[wordStart ..< index]))
+            wordStart = index
+        }
+
+        words.append(String(letters[wordStart...]))
+
+        return words
+    }
+
+    static func startsCamelCaseWord(at index: Int, in letters: [Character]) -> Bool {
+        let previous = letters[index - 1]
+        let precedesLowercase = letters.indices.contains(index + 1) && letters[index + 1].isLowercase
+
+        return letters[index].isUppercase && (previous.isLowercase || (previous.isUppercase && precedesLowercase))
     }
 
     static func fits(tao: BigUInt, alpha: BigUInt, price: BigRational) -> Bool {
