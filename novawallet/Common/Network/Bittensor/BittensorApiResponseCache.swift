@@ -35,6 +35,7 @@ struct BittensorApiCacheEntry {
     let requestId: String?
     let receivedAt: TimeInterval
     let generation: BittensorApiGenerationOrder?
+    let newestGenerationWhenAccepted: BittensorApiGenerationOrder?
 }
 
 struct BittensorApiCacheDelivery {
@@ -73,6 +74,12 @@ final class BittensorApiResponseCache {
         let receivedAt: TimeInterval
     }
 
+    struct GenerationAcceptance {
+        let isOlderThanNewest: Bool
+        let newestGeneration: BittensorApiGenerationOrder?
+        let purgesStoredGenerations: Bool
+    }
+
     static let routeNotPublishedLifetime: TimeInterval = 600
     static let datasetUnavailableLifetime: TimeInterval = 60
     static let initialBackoff: TimeInterval = 15
@@ -104,7 +111,13 @@ final class BittensorApiResponseCache {
     }
 
     func peek(_ key: BittensorApiCacheKey) -> HTTPCachePeek<BittensorApiCacheEntry> {
-        store.peek(key)
+        let peeked = store.peek(key)
+
+        guard let entry = peeked.value, Self.isSuperseded(entry, newest: currentNewestGeneration()) else {
+            return peeked
+        }
+
+        return .miss
     }
 
     func createWrapper(for job: BittensorApiCacheJob) -> CompoundOperationWrapper<BittensorApiCacheDelivery> {
@@ -125,7 +138,13 @@ final class BittensorApiResponseCache {
 
 private extension BittensorApiResponseCache {
     func request(_ job: BittensorApiCacheJob, waiterId: UUID, completion: @escaping Delivery) {
-        if let immediate = immediateDelivery(for: job, cached: store.peek(job.key)) {
+        let cached = peek(job.key)
+
+        if case .miss = cached {
+            removeSupersededEntries()
+        }
+
+        if let immediate = immediateDelivery(for: job, cached: cached) {
             completion(immediate)
 
             return
@@ -205,16 +224,22 @@ private extension BittensorApiResponseCache {
     ) -> CompoundOperationWrapper<FetchOutcome> {
         clearFailures(for: job)
 
-        guard previous == nil, isOlderThanNewestGeneration(receipt.fetched.generation) else {
-            return .createWithResult(resolve(receipt, for: job))
+        let acceptance = acceptGeneration(receipt.fetched.generation)
+
+        guard previous == nil, acceptance.isOlderThanNewest else {
+            return .createWithResult(resolve(receipt, for: job, acceptance: acceptance))
         }
 
         return createPolicyWrapper(for: job, reloading: receipt)
     }
 
-    func resolve(_ receipt: Receipt, for job: BittensorApiCacheJob) -> FetchOutcome {
+    func resolve(
+        _ receipt: Receipt,
+        for job: BittensorApiCacheJob,
+        acceptance: GenerationAcceptance
+    ) -> FetchOutcome {
         let fetched = receipt.fetched
-        let cached = store.peek(job.key)
+        let cached = peek(job.key)
 
         if
             let generation = fetched.generation,
@@ -224,19 +249,16 @@ private extension BittensorApiResponseCache {
             return .cached(cachedEntry, isExpired: !cached.isFresh)
         }
 
-        if let generation = fetched.generation {
-            let previousNewest = raiseNewestGeneration(to: generation)
-
-            if let previousNewest, previousNewest < generation {
-                store.removeAll { $0.generation != nil }
-            }
+        if acceptance.purgesStoredGenerations {
+            store.removeAll { $0.generation != nil }
         }
 
         let entry = BittensorApiCacheEntry(
             value: fetched.value,
             requestId: fetched.requestId,
             receivedAt: receipt.receivedAt,
-            generation: fetched.generation
+            generation: fetched.generation,
+            newestGenerationWhenAccepted: acceptance.newestGeneration
         )
 
         return .response(entry, fetched.cacheDirectives)
@@ -262,10 +284,10 @@ private extension BittensorApiResponseCache {
         }
 
         if let previous {
-            return resolve(previous, for: job)
+            return resolve(previous, for: job, acceptance: acceptGeneration(previous.fetched.generation))
         }
 
-        guard failure.fallsBackToCache, let cachedEntry = store.peek(job.key).value else {
+        guard failure.fallsBackToCache, let cachedEntry = peek(job.key).value else {
             throw error
         }
 
@@ -315,21 +337,11 @@ private extension BittensorApiResponseCache {
         return (true, interval)
     }
 
-    func isOlderThanNewestGeneration(_ generation: BittensorApiGenerationOrder?) -> Bool {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
+    func acceptGeneration(_ generation: BittensorApiGenerationOrder?) -> GenerationAcceptance {
+        guard let generation else {
+            return GenerationAcceptance(isOlderThanNewest: false, newestGeneration: nil, purgesStoredGenerations: false)
         }
 
-        guard let generation, let newestGeneration else {
-            return false
-        }
-
-        return generation < newestGeneration
-    }
-
-    func raiseNewestGeneration(to generation: BittensorApiGenerationOrder) -> BittensorApiGenerationOrder? {
         mutex.lock()
 
         defer {
@@ -338,53 +350,41 @@ private extension BittensorApiResponseCache {
 
         let previousNewest = newestGeneration
 
-        if previousNewest.map({ $0 < generation }) ?? true {
-            newestGeneration = generation
+        if let previousNewest, generation < previousNewest {
+            return GenerationAcceptance(
+                isOlderThanNewest: true,
+                newestGeneration: previousNewest,
+                purgesStoredGenerations: false
+            )
         }
 
-        return previousNewest
+        newestGeneration = generation
+
+        return GenerationAcceptance(
+            isOlderThanNewest: false,
+            newestGeneration: generation,
+            purgesStoredGenerations: previousNewest.map { $0 < generation } ?? false
+        )
     }
 
-    func routeNegativeKey(for job: BittensorApiCacheJob) -> NegativeKey {
-        .route(method: job.routeKey.method, pathTemplate: job.routeKey.pathTemplate)
+    func currentNewestGeneration() -> BittensorApiGenerationOrder? {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return newestGeneration
     }
 
-    func negativeKeys(for job: BittensorApiCacheJob) -> [NegativeKey] {
-        [routeNegativeKey(for: job), .request(job.key)]
+    func removeSupersededEntries() {
+        let newest = currentNewestGeneration()
+
+        store.removeAll { Self.isSuperseded($0, newest: newest) }
     }
 
     func activeNegativeEntry(for job: BittensorApiCacheJob, now: TimeInterval) -> NegativeEntry? {
         negativeKeys(for: job).compactMap { negativeEntries[$0] }.first { now < $0.expiresAt }
-    }
-
-    func negativeKey(for error: BittensorApiError, job: BittensorApiCacheJob) -> NegativeKey {
-        guard case .routeNotPublished = error else {
-            return .request(job.key)
-        }
-
-        return routeNegativeKey(for: job)
-    }
-
-    func negativeLifetime(for error: BittensorApiError) -> TimeInterval? {
-        switch error {
-        case .routeNotPublished:
-            return Self.routeNotPublishedLifetime
-        case .datasetUnavailable:
-            return Self.datasetUnavailableLifetime
-        default:
-            return nil
-        }
-    }
-
-    func isBackoffTrigger(_ error: BittensorApiError) -> Bool {
-        switch error {
-        case .rateLimited, .upstreamUnavailable, .upstreamInvalidResponse, .attestationUnavailable:
-            return true
-        case let .server(statusCode, _, _):
-            return (500 ... 599).contains(statusCode)
-        default:
-            return false
-        }
     }
 
     func backoffInterval(forAttempt attempt: Int) -> TimeInterval {
