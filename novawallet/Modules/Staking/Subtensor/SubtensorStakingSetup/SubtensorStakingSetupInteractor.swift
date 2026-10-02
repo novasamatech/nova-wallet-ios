@@ -107,6 +107,26 @@ private extension SubtensorStakingSetupInteractor {
 }
 
 extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol {
+    func cachedCatalogue() -> HTTPCachePeek<SubtensorSubnetCatalogue> {
+        catalogueService.cachedCatalogue()
+    }
+
+    func cachedRankingView() -> HTTPCachePeek<SubtensorRankedSubnets> {
+        rankingViewService.cachedRankingView()
+    }
+
+    func cachedYields(netuid: UInt16) -> HTTPCachePeek<SubtensorAlphaYields> {
+        yieldService.cachedAlphaYields(for: netuid)
+    }
+
+    func cachedRootYield() -> HTTPCachePeek<SubtensorReportedYield?> {
+        yieldService.cachedRootYield()
+    }
+
+    func cachedCostBasis(netuid: UInt16) -> HTTPCachePeek<SubtensorCostBasis> {
+        costBasisService.cachedCostBasis(for: selectedAccount.accountId, netuid: netuid)
+    }
+
     func presetValidator(on subnet: SubtensorSubnetRef, existingHotkey: AccountId?) {
         let wrapper = presetFactory.createPresetWrapper(for: subnet, existingHotkey: existingHotkey)
 
