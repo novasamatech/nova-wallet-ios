@@ -13,6 +13,7 @@ final class SubtensorSubnetSelectInteractor {
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
+    private var seed = SubtensorSubnetSelectSnapshot(entries: .miss, rootRate: .miss, rankedSubnets: .miss)
     private let entriesStore = CancellableCallStore()
     private let logosStore = CancellableCallStore()
     private let rootRateStore = CancellableCallStore()
@@ -143,14 +144,47 @@ private extension SubtensorSubnetSelectInteractor {
     ) -> [SubtensorSubnetRef: SubtensorPriceData<Value>] {
         Dictionary(subnets.map { ($0, .unavailable) }, uniquingKeysWith: { first, _ in first })
     }
+
+    func makeCachedEntries() -> HTTPCachePeek<[SubtensorSubnetListEntry]> {
+        guard let subnetsInfo = subnetsService.cachedSubnetsInfo() else {
+            return .miss
+        }
+
+        return catalogueService.cachedCatalogue().map { catalogue in
+            SubtensorSubnetListBuilder.entries(from: catalogue, subnetsInfo: subnetsInfo)
+        }
+    }
+
+    func makeSnapshot() -> SubtensorSubnetSelectSnapshot {
+        SubtensorSubnetSelectSnapshot(
+            entries: makeCachedEntries(),
+            rootRate: yieldService.cachedRootYield().map { $0?.annualRate },
+            rankedSubnets: rankingViewService.cachedRankingView()
+        )
+    }
 }
 
 extension SubtensorSubnetSelectInteractor: SubnetSelectInteractorInputProtocol {
+    func cachedSnapshot() -> SubtensorSubnetSelectSnapshot {
+        seed = makeSnapshot()
+
+        return seed
+    }
+
     func setup() {
-        provideEntries()
+        if !seed.entries.isFresh {
+            provideEntries()
+        }
+
         provideSubnetLogos()
-        provideRootRate()
-        provideRankingView()
+
+        if !seed.rootRate.isFresh {
+            provideRootRate()
+        }
+
+        if !seed.rankedSubnets.isFresh {
+            provideRankingView()
+        }
     }
 
     func refresh() {

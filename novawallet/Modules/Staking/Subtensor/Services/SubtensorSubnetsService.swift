@@ -21,6 +21,8 @@ protocol SubtensorSubnetsServiceProtocol: AnyObject {
         runningCompletionIn queue: DispatchQueue,
         completion: @escaping (Result<SubtensorSubnetsInfo, Error>) -> Void
     )
+
+    func cachedSubnetsInfo() -> SubtensorSubnetsInfo?
 }
 
 final class SubtensorSubnetsService: SubtensorSessionCachingService<SubtensorSubnetsInfo> {
@@ -105,5 +107,9 @@ extension SubtensorSubnetsService: SubtensorSubnetsServiceProtocol {
         completion: @escaping (Result<SubtensorSubnetsInfo, Error>) -> Void
     ) {
         fetch(forcingRefresh: forcingRefresh, runningCompletionIn: queue, completion: completion)
+    }
+
+    func cachedSubnetsInfo() -> SubtensorSubnetsInfo? {
+        cachedModel()
     }
 }
