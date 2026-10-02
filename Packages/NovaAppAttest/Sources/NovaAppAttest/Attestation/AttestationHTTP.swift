@@ -3,8 +3,11 @@ import Foundation
 public enum AttestationHTTP {
     /// Refuses redirects because they can change the signed request or expose its proof to another host.
     public static let session: URLSession = {
-        URLSession(
-            configuration: .default,
+        let configuration = URLSessionConfiguration.default
+        configuration.urlCache = nil
+
+        return URLSession(
+            configuration: configuration,
             delegate: RedirectRefusingDelegate(),
             delegateQueue: nil
         )

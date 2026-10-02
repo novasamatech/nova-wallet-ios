@@ -30,7 +30,12 @@ import Operation_iOS
                 let document = BittensorApiFixtureRouter.document(for: route)
                 let body = try JSONSerialization.data(withJSONObject: document, options: [.sortedKeys])
 
-                return BittensorApiRawResponse(statusCode: 200, requestId: requestId, body: body)
+                return BittensorApiRawResponse(
+                    statusCode: 200,
+                    requestId: requestId,
+                    body: body,
+                    cacheDirectives: .notStorable
+                )
             }
 
             return CompoundOperationWrapper(targetOperation: operation)

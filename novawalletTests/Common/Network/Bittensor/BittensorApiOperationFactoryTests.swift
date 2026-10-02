@@ -381,7 +381,9 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
     }
 
     private func makeResponse(_ body: Data, requestId: String) -> Result<BittensorApiRawResponse, Error> {
-        .success(BittensorApiRawResponse(statusCode: 200, requestId: requestId, body: body))
+        .success(
+            BittensorApiRawResponse(statusCode: 200, requestId: requestId, body: body, cacheDirectives: .notStorable)
+        )
     }
 
     private func completionExpectation<T>(for wrappers: [CompoundOperationWrapper<T>]) -> XCTestExpectation {

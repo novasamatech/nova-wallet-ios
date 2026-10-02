@@ -92,7 +92,8 @@ enum BittensorAttestedRequestBuilder {
                     statusCode: httpResponse.statusCode,
                     contentType: httpResponse.value(forHTTPHeaderField: HttpHeaderKey.contentType.rawValue),
                     requestId: httpResponse.value(forHTTPHeaderField: Constants.requestIdHeader),
-                    body: data ?? Data()
+                    body: data ?? Data(),
+                    cacheDirectives: HTTPCacheDirectives(response: httpResponse)
                 )
             )
         }
