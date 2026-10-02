@@ -86,9 +86,47 @@ import Foundation
                 return BittensorApiFixtureDocuments.rankedSubnets()
             }
         }
+
+        static func cacheControl(for route: BittensorApiFixtureRoute, document: [String: Any]) -> String {
+            guard let maxAge = maxAge(for: route), allowsReuse(document) else {
+                return "no-store"
+            }
+
+            return "private, max-age=\(maxAge), must-revalidate"
+        }
     }
 
     private extension BittensorApiFixtureRouter {
+        static func maxAge(for route: BittensorApiFixtureRoute) -> Int? {
+            switch route {
+            case .subnets, .validators:
+                return 300
+            case .rootYield, .alphaYield:
+                return 1800
+            case .recommendations, .rankedSubnets:
+                return 21180
+            case .operations:
+                return nil
+            }
+        }
+
+        static func allowsReuse(_ document: [String: Any]) -> Bool {
+            let meta = document["meta"] as? [String: Any] ?? [:]
+            let components = meta["components"] as? [String: [String: Any]] ?? [:]
+            let generation = meta["generation"] as? [String: Any] ?? [:]
+            let servedFrom = generation["servedFrom"] as? String
+
+            return servedFrom != "MEMORY" && !components.values.contains(where: blocksReuse)
+        }
+
+        static func blocksReuse(_ component: [String: Any]) -> Bool {
+            let isStale = component["freshness"] as? String == "STALE"
+            let isUnavailable = component["availability"] as? String == "UNAVAILABLE"
+            let isTemporary = component["availabilityReason"] as? String == "temporarily_unavailable"
+
+            return isStale || (isUnavailable && isTemporary)
+        }
+
         static func normalized(_ path: String) -> String {
             path.hasPrefix("/") ? path : "/" + path
         }

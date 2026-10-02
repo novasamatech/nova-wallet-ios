@@ -29,12 +29,13 @@ import Operation_iOS
                 let route = try BittensorApiFixtureRouter.route(for: request, requestId: requestId)
                 let document = BittensorApiFixtureRouter.document(for: route)
                 let body = try JSONSerialization.data(withJSONObject: document, options: [.sortedKeys])
+                let cacheControl = BittensorApiFixtureRouter.cacheControl(for: route, document: document)
 
                 return BittensorApiRawResponse(
                     statusCode: 200,
                     requestId: requestId,
                     body: body,
-                    cacheDirectives: .notStorable
+                    cacheDirectives: HTTPCacheDirectives(cacheControl: cacheControl, age: nil)
                 )
             }
 
