@@ -38,10 +38,18 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
         createWrapper(route: .subnets, path: "/subnets")
     }
 
+    func peekSubnets() -> HTTPCachePeek<BittensorApiResult<BittensorApi.SubnetCollection>> {
+        peek(route: .subnets, path: "/subnets")
+    }
+
     func createValidatorsWrapper(
         netuid: UInt16
     ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.ValidatorCollection>> {
         createWrapper(route: .validators, path: "/subnets/\(netuid)/validators")
+    }
+
+    func peekValidators(netuid: UInt16) -> HTTPCachePeek<BittensorApiResult<BittensorApi.ValidatorCollection>> {
+        peek(route: .validators, path: "/subnets/\(netuid)/validators")
     }
 
     func createRootYieldWrapper(
@@ -50,11 +58,22 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
         createPagedWrapper(route: .rootYield, path: "/yields/root", page: page)
     }
 
+    func peekRootYield(page: Int) -> HTTPCachePeek<BittensorApiResult<BittensorApi.RootYieldCollection>> {
+        peekPage(route: .rootYield, path: "/yields/root", page: page)
+    }
+
     func createAlphaYieldWrapper(
         netuid: UInt16,
         page: Int
     ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.AlphaYieldCollection>> {
         createPagedWrapper(route: .alphaYield, path: "/subnets/\(netuid)/yields/alpha", page: page)
+    }
+
+    func peekAlphaYield(
+        netuid: UInt16,
+        page: Int
+    ) -> HTTPCachePeek<BittensorApiResult<BittensorApi.AlphaYieldCollection>> {
+        peekPage(route: .alphaYield, path: "/subnets/\(netuid)/yields/alpha", page: page)
     }
 
     func createOperationsWrapper(
@@ -72,6 +91,10 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
     func createRankedSubnetsWrapper()
         -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.SubnetRankingCollection>> {
         createWrapper(route: .rankedSubnets, path: "/recommendations/subnets")
+    }
+
+    func peekRankedSubnets() -> HTTPCachePeek<BittensorApiResult<BittensorApi.SubnetRankingCollection>> {
+        peek(route: .rankedSubnets, path: "/recommendations/subnets")
     }
 }
 
@@ -129,12 +152,22 @@ private extension BittensorApiOperationFactory {
             return .createWithError(BittensorApiError.invalidRequest(code: nil, requestId: nil))
         }
 
-        let queryItems = [
-            URLQueryItem(name: "page", value: String(page)),
-            URLQueryItem(name: "pageSize", value: String(Self.pageSize))
-        ]
+        return createWrapper(route: route, path: path, queryItems: Self.pagedQueryItems(page: page))
+    }
 
-        return createWrapper(route: route, path: path, queryItems: queryItems)
+    func peekPage<T>(route: Route, path: String, page: Int) -> HTTPCachePeek<BittensorApiResult<T>> {
+        guard Self.pageRange.contains(page) else {
+            return .miss
+        }
+
+        return peek(route: route, path: path, queryItems: Self.pagedQueryItems(page: page))
+    }
+
+    func peek<T>(route: Route, path: String, queryItems: [URLQueryItem] = []) -> HTTPCachePeek<BittensorApiResult<T>> {
+        let cached = cache.peek(Self.cacheKey(route: route, path: path, queryItems: queryItems, jsonBody: nil))
+        let isFromExpiredCache = !cached.isFresh
+
+        return cached.map { try Self.makeResult(from: $0, isFromExpiredCache: isFromExpiredCache) }
     }
 
     func createSearchWrapper<T: Decodable & BittensorApiWireChecked>(
@@ -180,12 +213,7 @@ private extension BittensorApiOperationFactory {
         )
 
         let job = BittensorApiCacheJob(
-            key: BittensorApiCacheKey(
-                method: route.method.rawValue,
-                path: path,
-                query: queryItems.map { "\($0.name)=\($0.value ?? "")" }.sorted(),
-                bodyDigest: jsonBody?.sha256()
-            ),
+            key: Self.cacheKey(route: route, path: path, queryItems: queryItems, jsonBody: jsonBody),
             routeKey: BittensorApiRouteKey(
                 method: route.method.rawValue,
                 pathTemplate: route.pathTemplate,
@@ -201,21 +229,49 @@ private extension BittensorApiOperationFactory {
         let resultOperation = ClosureOperation<BittensorApiResult<T>> {
             let delivery = try deliveryWrapper.targetOperation.extractNoCancellableResultData()
 
-            guard let value = delivery.entry.value as? T else {
-                throw BaseOperationError.unexpectedDependentResult
-            }
-
-            return BittensorApiResult(
-                value: value,
-                requestId: delivery.entry.requestId,
-                receivedAt: delivery.entry.receivedAt,
-                isFromExpiredCache: delivery.isFromExpiredCache
-            )
+            return try Self.makeResult(from: delivery.entry, isFromExpiredCache: delivery.isFromExpiredCache)
         }
 
         resultOperation.addDependency(deliveryWrapper.targetOperation)
 
         return deliveryWrapper.insertingTail(operation: resultOperation)
+    }
+
+    static func pagedQueryItems(page: Int) -> [URLQueryItem] {
+        [
+            URLQueryItem(name: "page", value: String(page)),
+            URLQueryItem(name: "pageSize", value: String(Self.pageSize))
+        ]
+    }
+
+    static func cacheKey(
+        route: Route,
+        path: String,
+        queryItems: [URLQueryItem],
+        jsonBody: Data?
+    ) -> BittensorApiCacheKey {
+        BittensorApiCacheKey(
+            method: route.method.rawValue,
+            path: path,
+            query: queryItems.map { "\($0.name)=\($0.value ?? "")" }.sorted(),
+            bodyDigest: jsonBody?.sha256()
+        )
+    }
+
+    static func makeResult<T>(
+        from entry: BittensorApiCacheEntry,
+        isFromExpiredCache: Bool
+    ) throws -> BittensorApiResult<T> {
+        guard let value = entry.value as? T else {
+            throw BaseOperationError.unexpectedDependentResult
+        }
+
+        return BittensorApiResult(
+            value: value,
+            requestId: entry.requestId,
+            receivedAt: entry.receivedAt,
+            isFromExpiredCache: isFromExpiredCache
+        )
     }
 
     static func createFetchWrapper<T: Decodable & BittensorApiWireChecked>(

@@ -103,6 +103,10 @@ final class BittensorApiResponseCache {
         self.jitterProvider = jitterProvider
     }
 
+    func peek(_ key: BittensorApiCacheKey) -> HTTPCachePeek<BittensorApiCacheEntry> {
+        store.peek(key)
+    }
+
     func createWrapper(for job: BittensorApiCacheJob) -> CompoundOperationWrapper<BittensorApiCacheDelivery> {
         let waiterId = UUID()
 
