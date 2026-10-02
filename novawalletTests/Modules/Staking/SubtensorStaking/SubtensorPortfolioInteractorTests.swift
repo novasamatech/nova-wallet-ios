@@ -296,6 +296,7 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
         let interactor = MockSubnetPortfolioInteractorInputProtocol()
 
         stub(interactor) { stub in
+            when(stub.cachedSnapshot()).thenReturn(SubtensorPortfolioSnapshot(catalogue: .miss, rootRate: .miss))
             when(stub.loadWeeklyChanges(for: any())).thenDoNothing()
             when(stub.loadHistories(for: any(), subnets: any())).thenDoNothing()
         }
