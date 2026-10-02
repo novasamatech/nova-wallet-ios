@@ -2,6 +2,7 @@ import Foundation
 import Foundation_iOS
 
 final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
+    let subtensorInteractor: StartStakingInfoSubtensorInteractorInputProtocol
     let subtensorWireframe: StartStakingInfoSubtensorWireframeProtocol
     let subtensorViewModelFactory: StartStakingInfoSubtensorViewModelFactoryProtocol
 
@@ -20,6 +21,7 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
         applicationConfig: ApplicationConfigProtocol,
         logger: LoggerProtocol
     ) {
+        subtensorInteractor = interactor
         subtensorWireframe = wireframe
         self.subtensorViewModelFactory = subtensorViewModelFactory
 
@@ -36,6 +38,8 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
     }
 
     override func setup() {
+        seedHeadline(from: subtensorInteractor.cachedHeadlineRate())
+
         super.setup()
         provideSubtensorViewModel()
     }
@@ -72,6 +76,15 @@ extension StartStakingInfoSubtensorPresenter: StartStakingInfoSubtensorPresenter
 }
 
 private extension StartStakingInfoSubtensorPresenter {
+    func seedHeadline(from snapshot: HTTPCachePeek<Decimal?>) {
+        guard let headlineRate = snapshot.value else {
+            return
+        }
+
+        self.headlineRate = headlineRate
+        isHeadlineResolved = true
+    }
+
     func provideSubtensorViewModel() {
         let title = isHeadlineResolved ? createTitle(locale: selectedLocale) : nil
 

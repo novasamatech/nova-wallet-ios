@@ -51,6 +51,16 @@ private extension SubtensorValidatorInfoPresenter {
         view?.didReceive(viewModel: viewModelFactory.createViewModel(for: input, locale: selectedLocale))
     }
 
+    func seed(from snapshot: SubtensorValidatorInfoSnapshot) {
+        if let annualRate = snapshot.annualRate.value {
+            self.annualRate = .loaded(value: annualRate)
+        }
+
+        if let alphaPrice = snapshot.alphaPrice.value {
+            self.alphaPrice = .loaded(value: alphaPrice)
+        }
+    }
+
     func loadDetail() {
         view?.didStartLoading()
         interactor.loadDetail()
@@ -59,6 +69,7 @@ private extension SubtensorValidatorInfoPresenter {
 
 extension SubtensorValidatorInfoPresenter: SubtensorValidatorInfoPresenterProtocol {
     func setup() {
+        seed(from: interactor.cachedSnapshot())
         provideViewModel()
 
         interactor.setup()

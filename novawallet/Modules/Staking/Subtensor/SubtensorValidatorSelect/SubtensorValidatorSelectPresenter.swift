@@ -22,6 +22,8 @@ final class SubtensorValidatorSelectPresenter {
     private var query = ""
     private var selectedHotkey: AccountId?
     private var preselectedHotkey: AccountId?
+    private var hasExpiredDirectorySeed = false
+    private var hasExpiredAlphaPriceSeed = false
 
     init(
         target: SubtensorStakeTarget,
@@ -89,10 +91,43 @@ private extension SubtensorValidatorSelectPresenter {
             maxTake: clientGates.maxTake
         )
     }
+
+    func apply(directory: SubtensorValidatorDirectory, clientGates: SubtensorClientGates) {
+        self.directory = directory
+        self.clientGates = clientGates
+        directoryError = nil
+
+        selectedHotkey = SubtensorValidatorListFactory.preselectedHotkey(
+            selectedHotkey,
+            in: directory,
+            isRoot: target.isRoot,
+            maxTake: clientGates.maxTake
+        )
+        preselectedHotkey = selectedHotkey
+    }
+
+    func seed(from snapshot: SubtensorValidatorSelectSnapshot) {
+        if let directory = snapshot.directory.value {
+            apply(directory: directory, clientGates: snapshot.clientGates)
+            hasExpiredDirectorySeed = !snapshot.directory.isFresh
+        }
+
+        if let yields = snapshot.yields.value {
+            self.yields = yields
+            hasYieldsAnswer = true
+        }
+
+        if let alphaPrice = snapshot.alphaPrice.value {
+            self.alphaPrice = alphaPrice
+            hasAlphaPriceAnswer = true
+            hasExpiredAlphaPriceSeed = !snapshot.alphaPrice.isFresh
+        }
+    }
 }
 
 extension SubtensorValidatorSelectPresenter: ValidatorSelectPresenterProtocol {
     func setup() {
+        seed(from: interactor.cachedSnapshot())
         provideState()
         interactor.setup()
     }
@@ -100,12 +135,14 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectPresenterProtocol {
     func retry() {
         directory = nil
         directoryError = nil
+        hasExpiredDirectorySeed = false
 
         if !target.isRoot {
             yields = nil
             hasYieldsAnswer = false
             alphaPrice = nil
             hasAlphaPriceAnswer = false
+            hasExpiredAlphaPriceSeed = false
         }
 
         provideState()
@@ -169,22 +206,15 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectPresenterProtocol {
 
 extension SubtensorValidatorSelectPresenter: ValidatorSelectInteractorOutputProtocol {
     func didReceive(directory: SubtensorValidatorDirectory, clientGates: SubtensorClientGates) {
-        self.directory = directory
-        self.clientGates = clientGates
-        directoryError = nil
-
-        selectedHotkey = SubtensorValidatorListFactory.preselectedHotkey(
-            selectedHotkey,
-            in: directory,
-            isRoot: target.isRoot,
-            maxTake: clientGates.maxTake
-        )
-        preselectedHotkey = selectedHotkey
-
+        apply(directory: directory, clientGates: clientGates)
         provideState()
     }
 
     func didFailDirectory(_ error: Error) {
+        guard !hasExpiredDirectorySeed else {
+            return
+        }
+
         directory = nil
         directoryError = error
         provideState()
@@ -197,6 +227,10 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectInteractorOutputProt
     }
 
     func didReceive(alphaPrice: Balance?) {
+        guard alphaPrice != nil || !hasExpiredAlphaPriceSeed else {
+            return
+        }
+
         self.alphaPrice = alphaPrice
         hasAlphaPriceAnswer = true
         provideState()

@@ -23,6 +23,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
     private var hasReportedAccountChange = false
     private var heldNetuids: Set<UInt16> = []
     private var forcedCatalogueNetuids: Set<UInt16> = []
+    private var seed = SubtensorPortfolioSnapshot(catalogue: .miss, rootRate: .miss)
     private let catalogueStore = CancellableCallStore()
     private let rootRateStore = CancellableCallStore()
     private let logosStore = CancellableCallStore()
@@ -82,12 +83,25 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
 }
 
 extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
+    func cachedSnapshot() -> SubtensorPortfolioSnapshot {
+        seed = SubtensorPortfolioSnapshot(
+            catalogue: catalogueService.cachedCatalogue(),
+            rootRate: yieldService.cachedRootYield().map { $0?.annualRate }
+        )
+
+        return seed
+    }
+
     func setup() {
         state.setup(for: account)
 
         subscribePositions()
         subscribePrice()
-        provideRootRate()
+
+        if !seed.rootRate.isFresh {
+            provideRootRate()
+        }
+
         provideSubnetLogos()
 
         eventCenter.add(observer: self, dispatchIn: .main)

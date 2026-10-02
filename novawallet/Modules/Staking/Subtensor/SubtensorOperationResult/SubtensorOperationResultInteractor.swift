@@ -19,6 +19,7 @@ final class SubtensorOperationResultInteractor {
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
+    private var seed: HTTPCachePeek<SubtensorSubnetCatalogue> = .miss
     private var confirmationScheduler: SchedulerProtocol?
     private var isSubmissionFinished = false
 
@@ -114,13 +115,15 @@ private extension SubtensorOperationResultInteractor {
             return
         }
 
-        execute(
-            wrapper: catalogueService.createCatalogueWrapper(),
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            if case let .success(catalogue) = result {
-                self?.presenter?.didReceiveCatalogue(catalogue)
+        if !seed.isFresh {
+            execute(
+                wrapper: catalogueService.createCatalogueWrapper(),
+                inOperationQueue: operationQueue,
+                runningCallbackIn: .main
+            ) { [weak self] result in
+                if case let .success(catalogue) = result {
+                    self?.presenter?.didReceiveCatalogue(catalogue)
+                }
             }
         }
 
@@ -137,6 +140,12 @@ private extension SubtensorOperationResultInteractor {
 }
 
 extension SubtensorOperationResultInteractor: SubtensorResultInteractorInputProtocol {
+    func cachedCatalogue() -> HTTPCachePeek<SubtensorSubnetCatalogue> {
+        seed = loadsSubnetData ? catalogueService.cachedCatalogue() : .miss
+
+        return seed
+    }
+
     func setup() {
         applicationHandler.delegate = self
 

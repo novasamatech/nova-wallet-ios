@@ -17,6 +17,7 @@ protocol SubtensorSubnetDetailsPresenterProtocol: AnyObject {
 }
 
 protocol SubnetDetailsInteractorInputProtocol: AnyObject {
+    func cachedSnapshot() -> SubtensorSubnetDetailsSnapshot
     func setup()
     func loadHistory(for period: SubtensorPricePeriod)
     func presetValidator(existingHotkey: AccountId?)
@@ -51,4 +52,9 @@ protocol SubtensorSubnetDetailsWireframeProtocol: AnyObject {
         validator: SubtensorValidatorDirectoryItem?,
         delegate: SubtensorSubnetSelectDelegate?
     )
+}
+
+struct SubtensorSubnetDetailsSnapshot {
+    let rankingView: HTTPCachePeek<SubtensorRankedSubnets>
+    let yields: HTTPCachePeek<SubtensorAlphaYields>
 }

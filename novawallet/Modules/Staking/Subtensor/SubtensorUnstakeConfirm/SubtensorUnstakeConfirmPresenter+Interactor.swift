@@ -1,6 +1,30 @@
 import Foundation
 import Foundation_iOS
 
+extension SubtensorUnstakeConfirmPresenter {
+    func seedSubnetData() {
+        guard !model.target.isRoot else {
+            return
+        }
+
+        if let catalogue = interactor.cachedCatalogue().value, catalogue.subnet(for: unstakeModel.netuid) != nil {
+            self.catalogue = catalogue
+        }
+
+        if case let .fresh(costBasis, _) = interactor.cachedCostBasis(netuid: unstakeModel.netuid) {
+            self.costBasis = .resolved(costBasis)
+        }
+    }
+
+    func loadCostBasisIfNeeded() {
+        guard costBasis == .loading else {
+            return
+        }
+
+        interactor.loadCostBasis(for: unstakeModel.netuid)
+    }
+}
+
 extension SubtensorUnstakeConfirmPresenter: SubtensorUnstakeConfirmOutputProtocol {
     func didReceiveAssetBalance(_ balance: AssetBalance?) {
         self.balance = balance
@@ -101,6 +125,10 @@ extension SubtensorUnstakeConfirmPresenter: SubtensorUnstakeConfirmOutputProtoco
     }
 
     func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?) {
+        guard catalogue != nil || self.catalogue?.subnet(for: unstakeModel.netuid) == nil else {
+            return
+        }
+
         self.catalogue = catalogue
 
         provideTileIcons()

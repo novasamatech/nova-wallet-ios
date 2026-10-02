@@ -1,7 +1,42 @@
 import Foundation
 
+private extension SubtensorUnstakeSetupPresenter {
+    func seedCatalogue() -> HTTPCachePeek<SubtensorSubnetCatalogue> {
+        guard !isRoot else {
+            return .miss
+        }
+
+        let cachedCatalogue = interactor.cachedCatalogue()
+
+        guard let catalogue = cachedCatalogue.value, catalogue.subnet(for: netuid) != nil else {
+            return .miss
+        }
+
+        self.catalogue = catalogue
+
+        return cachedCatalogue
+    }
+
+    func seedCostBasis() -> HTTPCachePeek<SubtensorCostBasis> {
+        guard !isRoot else {
+            return .miss
+        }
+
+        let cachedCostBasis = interactor.cachedCostBasis(netuid: netuid)
+
+        if case let .fresh(costBasis, _) = cachedCostBasis {
+            self.costBasis = .resolved(costBasis)
+        }
+
+        return cachedCostBasis
+    }
+}
+
 extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol {
     func setup() {
+        let cachedCatalogue = seedCatalogue()
+        let cachedCostBasis = seedCostBasis()
+
         provideAmountInputViewModel()
         provideAssetViewModel()
         provideViewModel()
@@ -13,9 +48,16 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
         }
 
         interactor.loadSubnetsInfo(forcingRefresh: false)
-        interactor.loadCatalogue()
+
+        if !cachedCatalogue.isFresh {
+            interactor.loadCatalogue()
+        }
+
         interactor.loadSubnetLogos()
-        interactor.loadCostBasis(for: netuid)
+
+        if !cachedCostBasis.isFresh {
+            interactor.loadCostBasis(for: netuid)
+        }
     }
 
     func updateAmount(_ newValue: Decimal?) {

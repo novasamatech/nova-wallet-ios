@@ -14,6 +14,7 @@ protocol SubtensorPositionPresenterProtocol: AnyObject {
 }
 
 protocol SubtensorPositionInteractorInputProtocol: AnyObject {
+    func cachedSnapshot() -> SubtensorPositionSnapshot
     func setup()
     func refreshPositions()
     func loadCatalogue()
@@ -47,4 +48,10 @@ protocol SubtensorPositionWireframeProtocol: AnyObject, MessageSheetPresentable,
     func showBuyMore(from view: SubtensorPositionViewProtocol?, position: SubtensorStakingPosition)
     func showUnstake(from view: SubtensorPositionViewProtocol?, netuid: UInt16)
     func popToPortfolio(from view: SubtensorPositionViewProtocol?)
+}
+
+struct SubtensorPositionSnapshot {
+    let catalogue: HTTPCachePeek<SubtensorSubnetCatalogue>
+    let rootRate: HTTPCachePeek<Decimal?>
+    let yields: HTTPCachePeek<SubtensorAlphaYields>
 }

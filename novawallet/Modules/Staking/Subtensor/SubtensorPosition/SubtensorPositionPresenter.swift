@@ -60,6 +60,23 @@ private extension SubtensorPositionPresenter {
         view?.didReceive(viewModel: viewModelFactory.createViewModel(for: state, locale: selectedLocale))
     }
 
+    func seed(from snapshot: SubtensorPositionSnapshot) {
+        if let catalogue = snapshot.catalogue.value {
+            state.catalogue = catalogue
+            state.isCatalogueResolved = true
+        }
+
+        if let rootRate = snapshot.rootRate.value {
+            state.isRateResolved = true
+            state.rootRate = rootRate
+        }
+
+        if let yields = snapshot.yields.value {
+            state.isRateResolved = true
+            state.yields = yields
+        }
+    }
+
     func loadValidatorIfNeeded() {
         guard let hotkey = state.group?.primaryHotkey else {
             return
@@ -130,11 +147,18 @@ private extension SubtensorPositionPresenter {
 
 extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
     func setup() {
+        let snapshot = interactor.cachedSnapshot()
+
+        seed(from: snapshot)
         provideViewModel()
         interactor.setup()
 
         if let group = state.group {
             apply(group: group)
+        }
+
+        if snapshot.catalogue.value != nil {
+            requestHistoryIfNeeded()
         }
     }
 

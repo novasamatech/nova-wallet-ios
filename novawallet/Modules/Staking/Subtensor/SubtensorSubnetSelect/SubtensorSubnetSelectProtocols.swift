@@ -13,6 +13,12 @@ struct SubtensorSubnetFilters: Equatable {
     var isApplied: Bool { hideThinPools }
 }
 
+struct SubtensorSubnetSelectSnapshot {
+    let entries: HTTPCachePeek<[SubtensorSubnetListEntry]>
+    let rootRate: HTTPCachePeek<Decimal?>
+    let rankedSubnets: HTTPCachePeek<SubtensorRankedSubnets>
+}
+
 protocol SubtensorSubnetSelectViewProtocol: ControllerBackedProtocol {
     func didReceive(list: SubtensorSubnetListViewModel)
     func didReceive(rootBar: SubtensorStakeToRootBarViewModel)
@@ -34,6 +40,7 @@ protocol SubtensorSubnetSelectPresenterProtocol: AnyObject {
 }
 
 protocol SubnetSelectInteractorInputProtocol: AnyObject {
+    func cachedSnapshot() -> SubtensorSubnetSelectSnapshot
     func setup()
     func refresh()
     func loadWeeklyPrices(for subnets: [SubtensorSubnetRef])
