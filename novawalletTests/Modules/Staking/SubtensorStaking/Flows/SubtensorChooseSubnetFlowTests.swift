@@ -310,6 +310,28 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(requestLines(), [])
         XCTAssertEqual(world.attestation.signatures, [])
     }
+
+    func testSecondCatalogueReadWithinTheServerLifetimeSendsNoRequest() throws {
+        let world = try SubtensorFlowWorld()
+        let catalogueService = world.earnServices.catalogueService
+        let subnetsRequestLine = "GET https://bittensor.test/v1/bittensor/subnets"
+
+        SubtensorFlowURLProtocol.serveFixture(.subnets)
+
+        let catalogue = try run(catalogueService.createCatalogueWrapper())
+
+        world.clock.advance(by: 299)
+        let revisitedCatalogue = try run(catalogueService.createCatalogueWrapper())
+        let revisitRequestLines = requestLines()
+
+        world.clock.advance(by: 1)
+        _ = try run(catalogueService.createCatalogueWrapper())
+
+        XCTAssertEqual(revisitedCatalogue, catalogue)
+        XCTAssertEqual(revisitRequestLines, [subnetsRequestLine])
+        XCTAssertEqual(requestLines(), [subnetsRequestLine, subnetsRequestLine])
+        assertAttestedRequests(world, paths: ["/v1/bittensor/subnets", "/v1/bittensor/subnets"])
+    }
 }
 
 private extension SubtensorChooseSubnetFlowTests {
