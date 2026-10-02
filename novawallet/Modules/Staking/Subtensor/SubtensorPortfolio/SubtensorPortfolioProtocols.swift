@@ -13,6 +13,7 @@ protocol SubtensorPortfolioPresenterProtocol: AnyObject {
 }
 
 protocol SubnetPortfolioInteractorInputProtocol: AnyObject {
+    func cachedSnapshot() -> SubtensorPortfolioSnapshot
     func setup()
     func refresh()
     func loadHistories(for period: SubtensorPricePeriod, subnets: [SubtensorSubnetRef])
@@ -37,4 +38,9 @@ protocol SubtensorPortfolioWireframeProtocol: AnyObject, MessageSheetPresentable
     func showPosition(from view: SubtensorPortfolioViewProtocol?, group: SubtensorPortfolioGroup)
     func showAddPosition(from view: SubtensorPortfolioViewProtocol?)
     func close(from view: SubtensorPortfolioViewProtocol?)
+}
+
+struct SubtensorPortfolioSnapshot {
+    let catalogue: HTTPCachePeek<SubtensorSubnetCatalogue>
+    let rootRate: HTTPCachePeek<Decimal?>
 }

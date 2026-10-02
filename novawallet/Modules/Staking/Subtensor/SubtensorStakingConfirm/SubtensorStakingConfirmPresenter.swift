@@ -294,6 +294,7 @@ extension SubtensorStakingConfirmPresenter {
 
 extension SubtensorStakingConfirmPresenter: SubtensorStakingConfirmPresenterProtocol {
     func setup() {
+        seedSubnetData()
         provideAccountViewModels()
         provideTileIcons()
         provideViewModel()
@@ -304,11 +305,7 @@ extension SubtensorStakingConfirmPresenter: SubtensorStakingConfirmPresenterProt
 
         if !model.target.isRoot {
             interactor.loadSubnetData()
-
-            if model.origin == .buyMore {
-                interactor.loadCostBasis(for: model.target.netuid)
-            }
-
+            loadCostBasisIfNeeded()
             refreshQuote()
         }
 

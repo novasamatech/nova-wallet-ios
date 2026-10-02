@@ -229,6 +229,11 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
 
         stub(interactor) { stub in
             when(stub.setup()).thenDoNothing()
+            when(stub.cachedCatalogue()).thenReturn(.miss)
+            when(stub.cachedRankingView()).thenReturn(.miss)
+            when(stub.cachedYields(netuid: any())).thenReturn(.miss)
+            when(stub.cachedRootYield()).thenReturn(.miss)
+            when(stub.cachedCostBasis(netuid: any())).thenReturn(.miss)
             when(stub.estimateFee(for: any())).thenDoNothing()
             when(stub.refreshPreflight(for: any(), netuid: any())).thenDoNothing()
             when(stub.refreshQuote(for: any())).thenDoNothing()

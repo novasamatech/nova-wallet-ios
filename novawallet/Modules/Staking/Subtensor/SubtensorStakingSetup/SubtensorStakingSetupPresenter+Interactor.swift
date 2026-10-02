@@ -58,6 +58,10 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
     }
 
     func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?) {
+        guard catalogue != nil || !hasExpiredCatalogueSeed else {
+            return
+        }
+
         self.catalogue = catalogue
         isCatalogueLoaded = true
 
@@ -76,6 +80,10 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
     }
 
     func didReceiveRankingView(_ rankingView: SubtensorRankedSubnets?) {
+        guard rankingView != nil || !hasExpiredRankingSeed else {
+            return
+        }
+
         self.rankingView = rankingView
 
         provideViewModel()

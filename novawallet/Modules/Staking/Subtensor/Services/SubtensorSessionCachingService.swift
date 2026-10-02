@@ -72,6 +72,16 @@ class SubtensorSessionCachingService<Model> {
 
         performFetch()
     }
+
+    func cachedModel() -> Model? {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return freshCachedModel()
+    }
 }
 
 private extension SubtensorSessionCachingService {

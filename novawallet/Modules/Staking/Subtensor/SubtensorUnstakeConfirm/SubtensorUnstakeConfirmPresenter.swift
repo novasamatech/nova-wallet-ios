@@ -248,6 +248,7 @@ extension SubtensorUnstakeConfirmPresenter {
 
 extension SubtensorUnstakeConfirmPresenter: SubtensorStakingConfirmPresenterProtocol {
     func setup() {
+        seedSubnetData()
         provideAccountViewModels()
         provideTileIcons()
         provideViewModel()
@@ -259,7 +260,7 @@ extension SubtensorUnstakeConfirmPresenter: SubtensorStakingConfirmPresenterProt
 
         if !model.target.isRoot {
             interactor.loadSubnetData()
-            interactor.loadCostBasis(for: unstakeModel.netuid)
+            loadCostBasisIfNeeded()
             refreshQuote()
         }
 

@@ -49,6 +49,13 @@ enum SubtensorValidatorListState: Equatable {
     case failed(SubtensorValidatorErrorViewModel)
 }
 
+struct SubtensorValidatorSelectSnapshot {
+    let directory: HTTPCachePeek<SubtensorValidatorDirectory>
+    let clientGates: SubtensorClientGates
+    let yields: HTTPCachePeek<SubtensorAlphaYields>
+    let alphaPrice: HTTPCachePeek<Balance?>
+}
+
 protocol SubtensorValidatorSelectViewProtocol: ControllerBackedProtocol {
     func didReceive(state: SubtensorValidatorListState)
 }
@@ -64,6 +71,7 @@ protocol ValidatorSelectPresenterProtocol: AnyObject {
 }
 
 protocol ValidatorSelectInteractorInputProtocol: AnyObject {
+    func cachedSnapshot() -> SubtensorValidatorSelectSnapshot
     func setup()
     func retry()
 }

@@ -24,6 +24,8 @@ final class SubtensorSubnetSelectPresenter {
 
     private weak var filtersView: SubtensorSubnetFiltersViewProtocol?
     private var isWeeklyRequested = false
+    private var hasExpiredEntriesSeed = false
+    private var hasExpiredAgesSeed = false
 
     init(
         interactor: SubnetSelectInteractorInputProtocol,
@@ -74,6 +76,29 @@ private extension SubtensorSubnetSelectPresenter {
 
     func provideRootBar() {
         view?.didReceive(rootBar: viewModelFactory.createRootBarViewModel(annualRate: rootRate, locale: selectedLocale))
+    }
+
+    func makeAgeBlocks(from rankedSubnets: SubtensorRankedSubnets?) -> [UInt16: UInt64] {
+        Dictionary(
+            (rankedSubnets?.items ?? []).compactMap { item in item.ageBlocks.map { (item.netuid, $0) } },
+            uniquingKeysWith: { first, _ in first }
+        )
+    }
+
+    func seed(from snapshot: SubtensorSubnetSelectSnapshot) {
+        if let entries = snapshot.entries.value {
+            self.entries = entries
+            hasExpiredEntriesSeed = !snapshot.entries.isFresh
+        }
+
+        if let rootRate = snapshot.rootRate.value {
+            self.rootRate = rootRate
+        }
+
+        if let rankedSubnets = snapshot.rankedSubnets.value {
+            ageBlocks = makeAgeBlocks(from: rankedSubnets)
+            hasExpiredAgesSeed = !snapshot.rankedSubnets.isFresh
+        }
     }
 
     func createFiltersViewModel(for draft: SubtensorSubnetFilters) -> SubtensorSubnetFiltersViewModel {
@@ -133,10 +158,14 @@ private extension SubtensorSubnetSelectPresenter {
 
 extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol {
     func setup() {
+        seed(from: interactor.cachedSnapshot())
+
         provideList()
         provideRootBar()
 
         interactor.setup()
+
+        requestWeeklyPricesIfNeeded()
     }
 
     func becomeActive() {
@@ -244,10 +273,11 @@ extension SubtensorSubnetSelectPresenter: SubnetSelectInteractorOutputProtocol {
     }
 
     func didReceive(rankedSubnets: SubtensorRankedSubnets?) {
-        ageBlocks = Dictionary(
-            (rankedSubnets?.items ?? []).compactMap { item in item.ageBlocks.map { (item.netuid, $0) } },
-            uniquingKeysWith: { first, _ in first }
-        )
+        guard rankedSubnets != nil || !hasExpiredAgesSeed else {
+            return
+        }
+
+        ageBlocks = makeAgeBlocks(from: rankedSubnets)
 
         provideList()
     }
@@ -259,6 +289,10 @@ extension SubtensorSubnetSelectPresenter: SubnetSelectInteractorOutputProtocol {
     }
 
     func didReceiveError(_ error: Error) {
+        guard !hasExpiredEntriesSeed else {
+            return
+        }
+
         entries = []
         provideList()
 

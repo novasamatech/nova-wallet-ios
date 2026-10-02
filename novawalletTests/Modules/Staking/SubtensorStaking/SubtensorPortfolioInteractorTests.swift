@@ -296,6 +296,7 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
         let interactor = MockSubnetPortfolioInteractorInputProtocol()
 
         stub(interactor) { stub in
+            when(stub.cachedSnapshot()).thenReturn(SubtensorPortfolioSnapshot(catalogue: .miss, rootRate: .miss))
             when(stub.loadWeeklyChanges(for: any())).thenDoNothing()
             when(stub.loadHistories(for: any(), subnets: any())).thenDoNothing()
         }
@@ -351,6 +352,7 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
             when(stub.createAlphaYieldsWrapper(for: any())).thenReturn(
                 CompoundOperationWrapper.createWithError(CommonError.dataCorruption)
             )
+            when(stub.cachedAlphaYields(for: any())).thenReturn(.miss)
         }
 
         return yieldService
@@ -434,6 +436,7 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
             when(stub.createCatalogueWrapper()).thenReturn(
                 CompoundOperationWrapper.createWithError(CommonError.dataCorruption)
             )
+            when(stub.cachedCatalogue()).thenReturn(.miss)
         }
 
         return catalogueService

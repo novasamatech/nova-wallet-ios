@@ -32,6 +32,7 @@ final class SubtensorValidatorDirectoryService {
 private extension SubtensorValidatorDirectoryService {
     struct CachedDirectory {
         let directory: SubtensorValidatorDirectory
+        let listingReceipt: ListingReceipt
         let items: [AccountId: SubtensorValidatorDirectoryItem]
         let enrichedHotkeys: Set<AccountId>
     }
@@ -41,7 +42,11 @@ private extension SubtensorValidatorDirectoryService {
         let isEnriched: Bool
     }
 
-    func store(_ directory: SubtensorValidatorDirectory, enrichedPairs: Set<SubtensorHotkeySubnet>) {
+    func store(
+        _ directory: SubtensorValidatorDirectory,
+        listingReceipt: ListingReceipt,
+        enrichedPairs: Set<SubtensorHotkeySubnet>
+    ) {
         mutex.lock()
 
         defer {
@@ -54,6 +59,7 @@ private extension SubtensorValidatorDirectoryService {
 
         directories[directory.subnet] = CachedDirectory(
             directory: directory,
+            listingReceipt: listingReceipt,
             items: Dictionary(directory.items.map { ($0.hotkey, $0) }, uniquingKeysWith: { first, _ in first }),
             enrichedHotkeys: Set(enrichedPairs.map(\.hotkey))
         )
@@ -80,12 +86,7 @@ private extension SubtensorValidatorDirectoryService {
         let listingOperation = ClosureOperation<Listing> {
             let response = try validatorsWrapper.targetOperation.extractNoCancellableResultData()
 
-            return try Self.makeListing(
-                from: response.value,
-                isFromExpiredCache: response.isFromExpiredCache,
-                netuid: netuid,
-                logger: logger
-            )
+            return try Self.makeListing(from: response, netuid: netuid, logger: logger)
         }
 
         listingOperation.addDependency(validatorsWrapper.targetOperation)
@@ -165,7 +166,7 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
 
             let directory = Self.makeDirectory(subnet: subnet, listing: listing, enrichment: enrichment)
 
-            self?.store(directory, enrichedPairs: enrichedPairs)
+            self?.store(directory, listingReceipt: listing.receipt, enrichedPairs: enrichedPairs)
 
             return directory
         }
@@ -181,19 +182,21 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
     func cachedDirectory(for subnet: SubtensorSubnetRef) -> HTTPCachePeek<SubtensorValidatorDirectory> {
         mutex.lock()
 
-        let directory = directories[subnet]?.directory
+        let cached = directories[subnet]
 
         mutex.unlock()
 
-        guard let directory else {
+        guard let cached else {
             return .miss
         }
 
-        guard case let .fresh(_, freshUntil) = apiOperationFactory.peekValidators(netuid: subnet.netuid) else {
-            return .expired(directory)
+        guard
+            case let .fresh(response, freshUntil) = apiOperationFactory.peekValidators(netuid: subnet.netuid),
+            ListingReceipt(response: response) == cached.listingReceipt else {
+            return .expired(cached.directory)
         }
 
-        return .fresh(directory, freshUntil: freshUntil)
+        return .fresh(cached.directory, freshUntil: freshUntil)
     }
 
     func createDetailWrapper(

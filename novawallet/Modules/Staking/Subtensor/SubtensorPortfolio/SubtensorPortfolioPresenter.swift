@@ -43,6 +43,17 @@ private extension SubtensorPortfolioPresenter {
         view?.didReceive(viewModel: viewModel)
     }
 
+    func seed(from snapshot: SubtensorPortfolioSnapshot) {
+        if let catalogue = snapshot.catalogue.value {
+            state.catalogue = catalogue
+            state.isCatalogueResolved = true
+        }
+
+        if let rootRate = snapshot.rootRate.value {
+            state.rootRate = rootRate
+        }
+    }
+
     func requestPriceDataIfNeeded() {
         guard state.positions != nil, state.isCatalogueResolved else {
             return
@@ -73,6 +84,7 @@ private extension SubtensorPortfolioPresenter {
 
 extension SubtensorPortfolioPresenter: SubtensorPortfolioPresenterProtocol {
     func setup() {
+        seed(from: interactor.cachedSnapshot())
         provideViewModel()
         interactor.setup()
     }
