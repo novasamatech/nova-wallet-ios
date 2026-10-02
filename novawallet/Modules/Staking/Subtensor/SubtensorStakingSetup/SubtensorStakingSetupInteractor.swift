@@ -15,12 +15,10 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
 
     let presetFactory: SubtensorValidatorPresetFactoryProtocol
     let yieldService: SubtensorYieldServiceProtocol
-    let catalogueService: SubtensorSubnetCatalogueServiceProtocol
     let rankingViewService: SubtensorRankingViewServiceProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let subnetsService: SubtensorSubnetsServiceProtocol
     let earnSettings: SubtensorEarnSettingsProtocol
-    let costBasisService: SubtensorCostBasisServiceProtocol
 
     private let validatorCallStore = CancellableCallStore()
     private let rootYieldCallStore = CancellableCallStore()
@@ -46,12 +44,10 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
     ) {
         self.presetFactory = presetFactory
         self.yieldService = yieldService
-        self.catalogueService = catalogueService
         self.rankingViewService = rankingViewService
         self.subnetLogosProvider = subnetLogosProvider
         self.subnetsService = subnetsService
         self.earnSettings = earnSettings
-        self.costBasisService = costBasisService
 
         super.init(
             chainAsset: chainAsset,
@@ -61,6 +57,8 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
             preflightFactory: flowServices.preflightFactory,
             tradeQuoteFactory: flowServices.tradeQuoteFactory,
             operationService: flowServices.operationService,
+            catalogueService: catalogueService,
+            costBasisService: costBasisService,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
@@ -107,10 +105,6 @@ private extension SubtensorStakingSetupInteractor {
 }
 
 extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol {
-    func cachedCatalogue() -> HTTPCachePeek<SubtensorSubnetCatalogue> {
-        catalogueService.cachedCatalogue()
-    }
-
     func cachedRankingView() -> HTTPCachePeek<SubtensorRankedSubnets> {
         rankingViewService.cachedRankingView()
     }
@@ -121,10 +115,6 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
 
     func cachedRootYield() -> HTTPCachePeek<SubtensorReportedYield?> {
         yieldService.cachedRootYield()
-    }
-
-    func cachedCostBasis(netuid: UInt16) -> HTTPCachePeek<SubtensorCostBasis> {
-        costBasisService.cachedCostBasis(for: selectedAccount.accountId, netuid: netuid)
     }
 
     func presetValidator(on subnet: SubtensorSubnetRef, existingHotkey: AccountId?) {

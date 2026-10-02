@@ -1,6 +1,34 @@
 import Foundation
 import Foundation_iOS
 
+extension SubtensorStakingConfirmPresenter {
+    func seedSubnetData() {
+        guard !model.target.isRoot else {
+            return
+        }
+
+        if let catalogue = interactor.cachedCatalogue().value, catalogue.subnet(for: model.target.netuid) != nil {
+            self.catalogue = catalogue
+        }
+
+        guard
+            model.origin == .buyMore,
+            case let .fresh(costBasis, _) = interactor.cachedCostBasis(netuid: model.target.netuid) else {
+            return
+        }
+
+        self.costBasis = .resolved(costBasis)
+    }
+
+    func loadCostBasisIfNeeded() {
+        guard model.origin == .buyMore, costBasis == .loading else {
+            return
+        }
+
+        interactor.loadCostBasis(for: model.target.netuid)
+    }
+}
+
 extension SubtensorStakingConfirmPresenter: SubtensorConfirmInteractorOutputProtocol {
     func didReceiveAssetBalance(_ balance: AssetBalance?) {
         self.balance = balance
@@ -97,6 +125,10 @@ extension SubtensorStakingConfirmPresenter: SubtensorConfirmInteractorOutputProt
     }
 
     func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?) {
+        guard catalogue != nil || self.catalogue?.subnet(for: model.target.netuid) == nil else {
+            return
+        }
+
         self.catalogue = catalogue
 
         provideTileIcons()

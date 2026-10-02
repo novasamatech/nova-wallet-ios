@@ -12,6 +12,8 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
     let preflightFactory: SubtensorPreflightFactoryProtocol
     let tradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol
     let operationService: SubtensorStakingOperationServiceProtocol
+    let catalogueService: SubtensorSubnetCatalogueServiceProtocol
+    let costBasisService: SubtensorCostBasisServiceProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
@@ -36,6 +38,8 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
         preflightFactory: SubtensorPreflightFactoryProtocol,
         tradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol,
         operationService: SubtensorStakingOperationServiceProtocol,
+        catalogueService: SubtensorSubnetCatalogueServiceProtocol,
+        costBasisService: SubtensorCostBasisServiceProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
@@ -51,6 +55,8 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
         self.preflightFactory = preflightFactory
         self.tradeQuoteFactory = tradeQuoteFactory
         self.operationService = operationService
+        self.catalogueService = catalogueService
+        self.costBasisService = costBasisService
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
@@ -169,6 +175,14 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
         provideExistentialDeposit()
 
         onSetup()
+    }
+
+    func cachedCatalogue() -> HTTPCachePeek<SubtensorSubnetCatalogue> {
+        catalogueService.cachedCatalogue()
+    }
+
+    func cachedCostBasis(netuid: UInt16) -> HTTPCachePeek<SubtensorCostBasis> {
+        costBasisService.cachedCostBasis(for: selectedAccount.accountId, netuid: netuid)
     }
 
     func estimateFee(for operation: SubtensorStakingOperation) {
