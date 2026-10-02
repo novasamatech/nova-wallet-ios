@@ -17,4 +17,5 @@ struct BittensorApiRawResponse: Equatable {
     let statusCode: Int
     let requestId: String?
     let body: Data
+    let cacheDirectives: HTTPCacheDirectives
 }

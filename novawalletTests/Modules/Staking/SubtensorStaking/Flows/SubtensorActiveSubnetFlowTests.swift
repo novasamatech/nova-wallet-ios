@@ -275,7 +275,7 @@ final class SubtensorActiveSubnetFlowTests: SubtensorFlowTestCase {
         world.stubQuotes([groupQuote])
         SubtensorFlowURLProtocol.serveFixture(.subnets)
 
-        let catalogue = try run(services.catalogueService.createCatalogueWrapper(forcingRefresh: false))
+        let catalogue = try run(services.catalogueService.createCatalogueWrapper())
 
         let acknowledgedQuote = try run(services.tradeQuoteFactory.createSellQuoteWrapper(
             netuid: 64,

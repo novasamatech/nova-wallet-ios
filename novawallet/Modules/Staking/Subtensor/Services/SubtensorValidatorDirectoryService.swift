@@ -31,7 +31,7 @@ final class SubtensorValidatorDirectoryService {
 
 private extension SubtensorValidatorDirectoryService {
     struct CachedDirectory {
-        let chainBlock: BlockNumber
+        let directory: SubtensorValidatorDirectory
         let items: [AccountId: SubtensorValidatorDirectoryItem]
         let enrichedHotkeys: Set<AccountId>
     }
@@ -48,12 +48,12 @@ private extension SubtensorValidatorDirectoryService {
             mutex.unlock()
         }
 
-        guard (directories[directory.subnet]?.chainBlock ?? 0) <= directory.chainBlock else {
+        guard (directories[directory.subnet]?.directory.chainBlock ?? 0) <= directory.chainBlock else {
             return
         }
 
         directories[directory.subnet] = CachedDirectory(
-            chainBlock: directory.chainBlock,
+            directory: directory,
             items: Dictionary(directory.items.map { ($0.hotkey, $0) }, uniquingKeysWith: { first, _ in first }),
             enrichedHotkeys: Set(enrichedPairs.map(\.hotkey))
         )
@@ -176,6 +176,24 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
             targetOperation: directoryOperation,
             dependencies: listingWrapper.allOperations + [queryOperation] + snapshotWrapper.allOperations
         )
+    }
+
+    func cachedDirectory(for subnet: SubtensorSubnetRef) -> HTTPCachePeek<SubtensorValidatorDirectory> {
+        mutex.lock()
+
+        let directory = directories[subnet]?.directory
+
+        mutex.unlock()
+
+        guard let directory else {
+            return .miss
+        }
+
+        guard case let .fresh(_, freshUntil) = apiOperationFactory.peekValidators(netuid: subnet.netuid) else {
+            return .expired(directory)
+        }
+
+        return .fresh(directory, freshUntil: freshUntil)
     }
 
     func createDetailWrapper(

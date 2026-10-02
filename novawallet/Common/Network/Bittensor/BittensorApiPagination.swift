@@ -31,6 +31,45 @@ enum BittensorApiPagination {
 
         return CompoundOperationWrapper(targetOperation: operation)
     }
+
+    static func peekPages<T>(
+        maxPages: Int,
+        nextPage: (T) -> Int?,
+        peekPage: (Int) -> HTTPCachePeek<BittensorApiResult<T>>
+    ) -> HTTPCachePeek<BittensorApiPages<T>> {
+        let pageLimit = max(1, maxPages)
+        var pages: [BittensorApiResult<T>] = []
+        var earliestFreshUntil = TimeInterval.infinity
+        var hasExpiredPage = false
+        var page = 1
+
+        while true {
+            let pagePeek = peekPage(page)
+
+            guard let pageResult = pagePeek.value else {
+                return .miss
+            }
+
+            pages.append(pageResult)
+
+            if case let .fresh(_, freshUntil) = pagePeek {
+                earliestFreshUntil = min(earliestFreshUntil, freshUntil)
+            } else {
+                hasExpiredPage = true
+            }
+
+            let next = nextPage(pageResult.value)
+
+            if let next, next > page, pages.count < pageLimit {
+                page = next
+                continue
+            }
+
+            let outcome = BittensorApiPages(pages: pages, hasMorePages: next != nil)
+
+            return hasExpiredPage ? .expired(outcome) : .fresh(outcome, freshUntil: earliestFreshUntil)
+        }
+    }
 }
 
 private final class BittensorApiPageFetch<T> {

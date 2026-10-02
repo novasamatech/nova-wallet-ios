@@ -147,6 +147,33 @@ private extension SubtensorRecommendationService {
         )
     }
 
+    static func makeRankedSubnets(
+        from response: BittensorApiResult<BittensorApi.SubnetRankingCollection>
+    ) throws -> (subnets: SubtensorRankedSubnets, gates: SubtensorClientGates) {
+        let meta = response.value.meta
+        let reader = DecimalReader(route: "/recommendations/subnets", requestId: response.requestId)
+
+        let gates = try reader.clientGates(meta.clientGates)
+
+        let items = try response.value.items.enumerated().map { index, item in
+            try reader.rankedSubnet(item, "items[\(index)]")
+        }
+
+        let subnets = SubtensorRankedSubnets(
+            generation: makeGeneration(
+                meta.generation,
+                component: meta.components.recommendations,
+                completeness: meta.completeness,
+                receivedAt: response.receivedAt,
+                isFromExpiredCache: response.isFromExpiredCache
+            ),
+            policy: policy(meta.policy),
+            items: items
+        )
+
+        return (subnets, gates)
+    }
+
     static func logDrops(of recommendations: SubtensorVerifiedRecommendations, total: Int, logger: LoggerProtocol) {
         let dropped = recommendations.droppedByGate
         let generation = recommendations.generation.id
@@ -226,33 +253,20 @@ extension SubtensorRecommendationService: SubtensorRecommendationServiceProtocol
 
         let mappingOperation = ClosureOperation<SubtensorRankedSubnets> { [weak self] in
             let response = try responseWrapper.targetOperation.extractNoCancellableResultData()
-            let meta = response.value.meta
-            let reader = DecimalReader(route: "/recommendations/subnets", requestId: response.requestId)
+            let ranked = try Self.makeRankedSubnets(from: response)
 
-            let gates = try reader.clientGates(meta.clientGates)
+            self?.remember(ranked.gates, order: response.value.generationOrder)
 
-            let items = try response.value.items.enumerated().map { index, item in
-                try reader.rankedSubnet(item, "items[\(index)]")
-            }
-
-            self?.remember(gates, order: response.value.generationOrder)
-
-            return SubtensorRankedSubnets(
-                generation: Self.makeGeneration(
-                    meta.generation,
-                    component: meta.components.recommendations,
-                    completeness: meta.completeness,
-                    receivedAt: response.receivedAt,
-                    isFromExpiredCache: response.isFromExpiredCache
-                ),
-                policy: Self.policy(meta.policy),
-                items: items
-            )
+            return ranked.subnets
         }
 
         mappingOperation.addDependency(responseWrapper.targetOperation)
 
         return responseWrapper.insertingTail(operation: mappingOperation)
+    }
+
+    func cachedRankedSubnets() -> HTTPCachePeek<SubtensorRankedSubnets> {
+        apiOperationFactory.peekRankedSubnets().map { try Self.makeRankedSubnets(from: $0).subnets }
     }
 
     func lastSeenClientGates() -> SubtensorClientGates? {

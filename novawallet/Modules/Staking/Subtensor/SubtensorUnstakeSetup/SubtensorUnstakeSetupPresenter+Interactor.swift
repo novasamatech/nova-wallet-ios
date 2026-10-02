@@ -86,7 +86,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtoc
 
         if !isRoot, let catalogue, catalogue.subnet(for: netuid) == nil, !isCatalogueRefreshForced {
             isCatalogueRefreshForced = true
-            interactor.loadCatalogue(forcingRefresh: true)
+            interactor.loadCatalogue()
         }
 
         provideAssetViewModel()

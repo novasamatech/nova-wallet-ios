@@ -48,7 +48,7 @@ final class SubtensorSubnetBuyFlowTests: SubtensorFlowTestCase {
         world.sharedState.setup(for: SubtensorFlowChainWorld.coldkeyAccount())
         feed.publish(Multistaking.SubtensorStakingState(positions: [], prices: [:], availability: [:]))
 
-        let catalogue = try run(services.catalogueService.createCatalogueWrapper(forcingRefresh: false))
+        let catalogue = try run(services.catalogueService.createCatalogueWrapper())
 
         let listed = SubtensorSubnetListBuilder.entries(
             from: catalogue,

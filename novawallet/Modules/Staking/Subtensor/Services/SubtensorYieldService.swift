@@ -116,6 +116,18 @@ extension SubtensorYieldService: SubtensorYieldServiceProtocol {
         return pagesWrapper.insertingTail(operation: mappingOperation)
     }
 
+    func cachedAlphaYields(for netuid: UInt16) -> HTTPCachePeek<SubtensorAlphaYields> {
+        let pagesPeek = BittensorApiPagination.peekPages(
+            maxPages: Self.alphaYieldPageLimit,
+            nextPage: { $0.pageInfo.nextPage },
+            peekPage: { page in
+                apiOperationFactory.peekAlphaYield(netuid: netuid, page: page)
+            }
+        )
+
+        return pagesPeek.map { try Self.makeAlphaYields(netuid: netuid, pages: $0, logger: logger) }
+    }
+
     func createRootYieldWrapper() -> CompoundOperationWrapper<SubtensorReportedYield?> {
         let pageWrapper = apiOperationFactory.createRootYieldWrapper(page: Self.rootYieldPage)
         let logger = logger
@@ -135,5 +147,9 @@ extension SubtensorYieldService: SubtensorYieldServiceProtocol {
         yieldOperation.addDependency(pageWrapper.targetOperation)
 
         return pageWrapper.insertingTail(operation: yieldOperation)
+    }
+
+    func cachedRootYield() -> HTTPCachePeek<SubtensorReportedYield?> {
+        apiOperationFactory.peekRootYield(page: Self.rootYieldPage).map(Self.makeRootYield(from:))
     }
 }

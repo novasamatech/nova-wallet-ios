@@ -90,6 +90,20 @@ final class SubtensorMaxApyResolution {
 
         abandonedWalk?.cancel()
     }
+
+    func peek() -> HTTPCachePeek<Decimal?> {
+        mutex.lock()
+
+        let memo = memo
+
+        mutex.unlock()
+
+        guard let memo, timeProvider() - memo.resolvedAt < memoLifetime else {
+            return .miss
+        }
+
+        return .fresh(memo.maxApy, freshUntil: memo.resolvedAt + memoLifetime)
+    }
 }
 
 private extension SubtensorMaxApyResolution {
