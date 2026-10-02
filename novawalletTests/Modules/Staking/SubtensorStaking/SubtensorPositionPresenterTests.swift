@@ -79,6 +79,26 @@ final class SubtensorPositionPresenterTests: XCTestCase {
         XCTAssertEqual(viewModels.last?.actions.map(\.title), ["Add stake", "Unstake"])
     }
 
+    func testCachedCatalogueOpensTheSubnetPositionWithoutTheSummarySkeleton() {
+        let view = MockSubtensorPositionViewProtocol()
+        let viewModels = capture(view)
+        let group = makeSubnetGroup()
+        let presenter = makePresenter(
+            group: group,
+            view: view,
+            snapshot: SubtensorPositionSnapshot(
+                catalogue: .fresh(makeCatalogue(netuid: group.netuid), freshUntil: 300),
+                rootRate: .miss,
+                yields: .miss
+            )
+        )
+
+        presenter.setup()
+
+        XCTAssertNotNil(viewModels.last?.summary.caption)
+        XCTAssertNotNil(viewModels.last?.summary.amount)
+    }
+
     private final class CapturedViewModels {
         var last: SubtensorPositionViewModel?
     }
@@ -95,17 +115,17 @@ final class SubtensorPositionPresenterTests: XCTestCase {
 
     private func makePresenter(
         group: SubtensorPortfolioGroup,
-        view: MockSubtensorPositionViewProtocol
+        view: MockSubtensorPositionViewProtocol,
+        snapshot: SubtensorPositionSnapshot = SubtensorPositionSnapshot(catalogue: .miss, rootRate: .miss, yields: .miss)
     ) -> SubtensorPositionPresenter {
         let interactor = MockSubtensorPositionInteractorInputProtocol()
 
         stub(interactor) { stub in
-            when(stub.cachedSnapshot()).thenReturn(
-                SubtensorPositionSnapshot(catalogue: .miss, rootRate: .miss, yields: .miss)
-            )
+            when(stub.cachedSnapshot()).thenReturn(snapshot)
             when(stub.setup()).thenDoNothing()
             when(stub.loadValidator(any(), on: any())).thenDoNothing()
             when(stub.loadRootHolds(for: any())).thenDoNothing()
+            when(stub.loadHistory(for: any(), period: any())).thenDoNothing()
         }
 
         let presenter = SubtensorPositionPresenter(
@@ -145,5 +165,57 @@ final class SubtensorPositionPresenterTests: XCTestCase {
             availability: nil,
             primaryHotkey: hotkey
         )
+    }
+
+    private func makeSubnetGroup() -> SubtensorPortfolioGroup {
+        let hotkey = Data(repeating: 7, count: 32)
+
+        return SubtensorPortfolioGroup(
+            netuid: 64,
+            positions: [
+                SubtensorStakingPosition(
+                    hotkey: hotkey,
+                    netuid: 64,
+                    stakeAlpha: 20_000_000_000,
+                    hotkeyEmissionPerTempo: 0,
+                    totalHotkeyAlpha: nil,
+                    isRegistered: true
+                )
+            ],
+            totalAlpha: 20_000_000_000,
+            taoValue: 1_476_000_000,
+            availability: nil,
+            primaryHotkey: hotkey
+        )
+    }
+
+    private func makeCatalogue(netuid: UInt16) -> SubtensorSubnetCatalogue {
+        let stamp = SubtensorBackendStamp(asOf: Date(timeIntervalSince1970: 1_790_000_000), freshness: .fresh)
+
+        return SubtensorSubnetCatalogue(subnets: [
+            SubtensorCatalogueSubnet(
+                netuid: netuid,
+                name: "Chutes",
+                symbol: "ش",
+                networkRegisteredAt: 4_531_295,
+                tempo: 360,
+                ownerColdkey: "",
+                ownerHotkey: "",
+                links: SubtensorSubnetLinks(
+                    githubRepo: "",
+                    subnetContact: "",
+                    subnetUrl: "",
+                    subnetWebsite: "",
+                    discord: "",
+                    additional: ""
+                ),
+                taoReserve: 210_000_000_000_000,
+                alphaReserve: 2_845_000_000_000_000,
+                alphaOutstanding: 3_100_000_000_000_000,
+                taoPerAlpha: 73_800_000,
+                metadataStamp: stamp,
+                pricesStamp: stamp
+            )
+        ])
     }
 }
