@@ -100,6 +100,9 @@ final class SubtensorPositionPresenterTests: XCTestCase {
         let interactor = MockSubtensorPositionInteractorInputProtocol()
 
         stub(interactor) { stub in
+            when(stub.cachedSnapshot()).thenReturn(
+                SubtensorPositionSnapshot(catalogue: .miss, rootRate: .miss, yields: .miss)
+            )
             when(stub.setup()).thenDoNothing()
             when(stub.loadValidator(any(), on: any())).thenDoNothing()
             when(stub.loadRootHolds(for: any())).thenDoNothing()
