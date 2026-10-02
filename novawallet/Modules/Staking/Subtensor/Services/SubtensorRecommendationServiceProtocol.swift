@@ -6,5 +6,7 @@ protocol SubtensorRecommendationServiceProtocol: AnyObject {
 
     func createRankedSubnetsWrapper() -> CompoundOperationWrapper<SubtensorRankedSubnets>
 
+    func cachedRankedSubnets() -> HTTPCachePeek<SubtensorRankedSubnets>
+
     func lastSeenClientGates() -> SubtensorClientGates?
 }

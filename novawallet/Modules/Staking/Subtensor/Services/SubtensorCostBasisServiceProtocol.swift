@@ -6,4 +6,6 @@ protocol SubtensorCostBasisServiceProtocol: AnyObject {
         for accountId: AccountId,
         netuid: UInt16
     ) -> CompoundOperationWrapper<SubtensorCostBasis>
+
+    func cachedCostBasis(for accountId: AccountId, netuid: UInt16) -> HTTPCachePeek<SubtensorCostBasis>
 }

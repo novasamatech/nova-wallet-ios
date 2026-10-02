@@ -6,6 +6,8 @@ protocol SubtensorValidatorDirectoryServiceProtocol: AnyObject {
         for subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectory>
 
+    func cachedDirectory(for subnet: SubtensorSubnetRef) -> HTTPCachePeek<SubtensorValidatorDirectory>
+
     func createDetailWrapper(
         for hotkey: AccountId,
         subnet: SubtensorSubnetRef

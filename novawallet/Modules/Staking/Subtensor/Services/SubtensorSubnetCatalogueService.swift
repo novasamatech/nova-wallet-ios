@@ -112,4 +112,8 @@ extension SubtensorSubnetCatalogueService: SubtensorSubnetCatalogueServiceProtoc
 
         return responseWrapper.insertingTail(operation: catalogueOperation)
     }
+
+    func cachedCatalogue() -> HTTPCachePeek<SubtensorSubnetCatalogue> {
+        apiOperationFactory.peekSubnets().map { try Self.makeCatalogue(from: $0, logger: logger) }
+    }
 }
