@@ -19,6 +19,7 @@ final class SubtensorSubnetDetailsPresenter {
     private var listing: SubtensorSubnetListingState = .loading
     private var isRankingLoaded = false
     private var rankingView: SubtensorRankedSubnets?
+    private var hasExpiredRankingSeed = false
     private var validator: SubtensorSubnetValidatorState
     private var isYieldsLoaded = false
     private var yields: SubtensorAlphaYields?
@@ -107,6 +108,19 @@ private extension SubtensorSubnetDetailsPresenter {
         view?.didReceive(viewModel: viewModel)
     }
 
+    func seed(from snapshot: SubtensorSubnetDetailsSnapshot) {
+        if let rankingView = snapshot.rankingView.value {
+            self.rankingView = rankingView
+            isRankingLoaded = true
+            hasExpiredRankingSeed = !snapshot.rankingView.isFresh
+        }
+
+        if let yields = snapshot.yields.value {
+            self.yields = yields
+            isYieldsLoaded = true
+        }
+    }
+
     func loadHistory() {
         history = .loading
         interactor.loadHistory(for: period)
@@ -159,6 +173,8 @@ private extension SubtensorSubnetDetailsPresenter {
 
 extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtocol {
     func setup() {
+        seed(from: interactor.cachedSnapshot())
+
         provideTitle()
         provideViewModel()
 
@@ -279,6 +295,10 @@ extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol
     }
 
     func didReceiveRankingView(_ rankingView: SubtensorRankedSubnets?) {
+        guard rankingView != nil || !hasExpiredRankingSeed else {
+            return
+        }
+
         self.rankingView = rankingView
         isRankingLoaded = true
         provideViewModel()

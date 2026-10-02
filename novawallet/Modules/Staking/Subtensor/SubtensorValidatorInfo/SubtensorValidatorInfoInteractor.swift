@@ -14,6 +14,7 @@ final class SubtensorValidatorInfoInteractor: AnyCancellableCleaning {
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
+    private var seed = SubtensorValidatorInfoSnapshot(annualRate: .miss, alphaPrice: .miss)
     private let detailStore = CancellableCallStore()
     private let rateStore = CancellableCallStore()
     private let catalogueStore = CancellableCallStore()
@@ -137,12 +138,43 @@ private extension SubtensorValidatorInfoInteractor {
 
         priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
+
+    func makeSnapshot() -> SubtensorValidatorInfoSnapshot {
+        guard !target.isRoot else {
+            return SubtensorValidatorInfoSnapshot(
+                annualRate: yieldService.cachedRootYield().map(SubtensorAlphaApyFormatter.annualRate(from:)),
+                alphaPrice: .miss
+            )
+        }
+
+        let hotkey = hotkey
+        let subnet = subnet
+
+        return SubtensorValidatorInfoSnapshot(
+            annualRate: yieldService.cachedAlphaYields(for: subnet.netuid).map { yields in
+                SubtensorAlphaApyFormatter.annualRate(for: hotkey, in: yields)
+            },
+            alphaPrice: catalogueService.cachedCatalogue().map { $0.subnet(for: subnet)?.taoPerAlpha }
+        )
+    }
 }
 
 extension SubtensorValidatorInfoInteractor: SubtensorValInfoInteractorInputProtocol {
+    func cachedSnapshot() -> SubtensorValidatorInfoSnapshot {
+        seed = makeSnapshot()
+
+        return seed
+    }
+
     func setup() {
-        loadRate()
-        loadAlphaPrice()
+        if !seed.annualRate.isFresh {
+            loadRate()
+        }
+
+        if !seed.alphaPrice.isFresh {
+            loadAlphaPrice()
+        }
+
         subscribePrice()
     }
 

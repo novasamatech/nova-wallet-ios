@@ -21,6 +21,7 @@ final class SubtensorSubnetDetailsInteractor {
 
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: StreamableProvider<PriceData>?
+    private var seed = SubtensorSubnetDetailsSnapshot(rankingView: .miss, yields: .miss)
     private let historyCallStore = CancellableCallStore()
     private let listingCallStore = CancellableCallStore()
     private let rankingCallStore = CancellableCallStore()
@@ -200,14 +201,30 @@ private extension SubtensorSubnetDetailsInteractor {
 }
 
 extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol {
+    func cachedSnapshot() -> SubtensorSubnetDetailsSnapshot {
+        seed = SubtensorSubnetDetailsSnapshot(
+            rankingView: rankingViewService.cachedRankingView(),
+            yields: yieldService.cachedAlphaYields(for: subnet.netuid)
+        )
+
+        return seed
+    }
+
     func setup() {
         subscribeBalance()
         subscribePrice()
         subscribePositions()
 
         loadListing()
-        loadRankingView()
-        loadYields()
+
+        if !seed.rankingView.isFresh {
+            loadRankingView()
+        }
+
+        if !seed.yields.isFresh {
+            loadYields()
+        }
+
         loadSubnetLogos()
     }
 

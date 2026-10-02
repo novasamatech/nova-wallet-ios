@@ -16,6 +16,8 @@ enum SubtensorStakingFlowConstants {
 
 protocol SubtensorStakingBaseInteractorInputProtocol: AnyObject {
     func setup()
+    func cachedCatalogue() -> HTTPCachePeek<SubtensorSubnetCatalogue>
+    func cachedCostBasis(netuid: UInt16) -> HTTPCachePeek<SubtensorCostBasis>
     func estimateFee(for operation: SubtensorStakingOperation)
     func refreshPreflight(for hotkey: AccountId, netuid: UInt16)
     func refreshQuote(for request: SubtensorTradeQuoteRequest)

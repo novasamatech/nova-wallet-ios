@@ -7,10 +7,21 @@ extension SubtensorValidatorDirectoryService {
         let stake: BigRational?
     }
 
+    struct ListingReceipt: Equatable {
+        let requestId: String?
+        let receivedAt: TimeInterval
+
+        init(response: BittensorApiResult<BittensorApi.ValidatorCollection>) {
+            requestId = response.requestId
+            receivedAt = response.receivedAt
+        }
+    }
+
     struct Listing {
         let rows: [Row]
         let listStamp: SubtensorBackendStamp?
         let isPartial: Bool
+        let receipt: ListingReceipt
     }
 
     struct Enrichment {
@@ -19,11 +30,11 @@ extension SubtensorValidatorDirectoryService {
     }
 
     static func makeListing(
-        from collection: BittensorApi.ValidatorCollection,
-        isFromExpiredCache: Bool,
+        from response: BittensorApiResult<BittensorApi.ValidatorCollection>,
         netuid: UInt16,
         logger: LoggerProtocol
     ) throws -> Listing {
+        let collection = response.value
         var rows: [Row] = []
 
         let candidates: [BittensorApi.Validator]
@@ -60,12 +71,13 @@ extension SubtensorValidatorDirectoryService {
             components.validatorStakes,
             components.validatorMetagraph,
             components.validatorIdentities
-        ].compactMap { SubtensorBackendStamp(metadata: $0, isFromExpiredCache: isFromExpiredCache) }
+        ].compactMap { SubtensorBackendStamp(metadata: $0, isFromExpiredCache: response.isFromExpiredCache) }
 
         return Listing(
             rows: rows,
             listStamp: SubtensorBackendStamp.aggregate(stamps),
-            isPartial: collection.meta.completeness == .partial
+            isPartial: collection.meta.completeness == .partial,
+            receipt: ListingReceipt(response: response)
         )
     }
 

@@ -12,6 +12,12 @@ final class SubtensorValidatorSelectInteractor: AnyCancellableCleaning {
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
+    private var seed = SubtensorValidatorSelectSnapshot(
+        directory: .miss,
+        clientGates: .backendDefault,
+        yields: .miss,
+        alphaPrice: .miss
+    )
     private let directoryStore = CancellableCallStore()
     private let yieldStore = CancellableCallStore()
     private let catalogueStore = CancellableCallStore()
@@ -120,11 +126,53 @@ private extension SubtensorValidatorSelectInteractor {
         loadYields()
         loadAlphaPrice()
     }
+
+    func makeSnapshot() -> SubtensorValidatorSelectSnapshot {
+        let subnet = subnet
+        let directory = directoryService.cachedDirectory(for: subnet)
+        let clientGates = recommendationService.lastSeenClientGates() ?? .backendDefault
+
+        guard !target.isRoot else {
+            return SubtensorValidatorSelectSnapshot(
+                directory: directory,
+                clientGates: clientGates,
+                yields: .miss,
+                alphaPrice: .miss
+            )
+        }
+
+        return SubtensorValidatorSelectSnapshot(
+            directory: directory,
+            clientGates: clientGates,
+            yields: yieldService.cachedAlphaYields(for: subnet.netuid),
+            alphaPrice: catalogueService.cachedCatalogue().map { $0.subnet(for: subnet)?.taoPerAlpha }
+        )
+    }
 }
 
 extension SubtensorValidatorSelectInteractor: ValidatorSelectInteractorInputProtocol {
+    func cachedSnapshot() -> SubtensorValidatorSelectSnapshot {
+        seed = makeSnapshot()
+
+        return seed
+    }
+
     func setup() {
-        loadAll()
+        if !seed.directory.isFresh {
+            loadDirectory()
+        }
+
+        guard !target.isRoot else {
+            return
+        }
+
+        if !seed.yields.isFresh {
+            loadYields()
+        }
+
+        if !seed.alphaPrice.isFresh {
+            loadAlphaPrice()
+        }
     }
 
     func retry() {

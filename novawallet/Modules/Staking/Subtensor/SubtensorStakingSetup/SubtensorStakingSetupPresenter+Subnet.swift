@@ -9,19 +9,81 @@ extension SubtensorStakingSetupPresenter {
         if !isSubnetDataRequested {
             isSubnetDataRequested = true
 
-            interactor.loadCatalogue()
-            interactor.loadRankingView()
+            loadCatalogueIfNeeded()
+            loadRankingViewIfNeeded()
             interactor.loadSubnetLogos()
         }
 
-        let netuid = mode.netuid
+        loadYieldsIfNeeded(for: mode.netuid)
+    }
 
-        if yieldsNetuid != netuid {
-            yieldsNetuid = netuid
-            yields = nil
-            isYieldsLoaded = false
+    func loadCatalogueIfNeeded() {
+        let cachedCatalogue = interactor.cachedCatalogue()
 
+        if let catalogue = cachedCatalogue.value {
+            self.catalogue = catalogue
+            isCatalogueLoaded = true
+            hasExpiredCatalogueSeed = !cachedCatalogue.isFresh
+        }
+
+        if !cachedCatalogue.isFresh {
+            interactor.loadCatalogue()
+        }
+    }
+
+    func loadRankingViewIfNeeded() {
+        let cachedRankingView = interactor.cachedRankingView()
+
+        if let rankingView = cachedRankingView.value {
+            self.rankingView = rankingView
+            hasExpiredRankingSeed = !cachedRankingView.isFresh
+        }
+
+        if !cachedRankingView.isFresh {
+            interactor.loadRankingView()
+        }
+    }
+
+    func loadYieldsIfNeeded(for netuid: UInt16) {
+        guard yieldsNetuid != netuid else {
+            return
+        }
+
+        let cachedYields = interactor.cachedYields(netuid: netuid)
+
+        yieldsNetuid = netuid
+        yields = cachedYields.value
+        isYieldsLoaded = cachedYields.value != nil
+
+        if !cachedYields.isFresh {
             interactor.loadYields(netuid: netuid)
+        }
+    }
+
+    func loadRootYieldIfNeeded() {
+        guard mode.isRootLane, !isRootRateRequested else {
+            return
+        }
+
+        isRootRateRequested = true
+
+        let cachedRootYield = interactor.cachedRootYield()
+
+        if let yield = cachedRootYield.value {
+            rootRate = SubtensorAlphaApyFormatter.annualRate(from: yield)
+            isRootRateLoaded = true
+        }
+
+        if !cachedRootYield.isFresh {
+            interactor.loadRootYield()
+        }
+    }
+
+    func loadCostBasisIfNeeded(for netuid: UInt16) {
+        if case let .fresh(cachedCostBasis, _) = interactor.cachedCostBasis(netuid: netuid) {
+            costBasis = .resolved(cachedCostBasis)
+        } else {
+            interactor.loadCostBasis(for: netuid)
         }
     }
 

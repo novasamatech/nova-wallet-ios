@@ -33,8 +33,10 @@ final class SubtensorStakingSetupPresenter {
     var isRootRateRequested = false
     var catalogue: SubtensorSubnetCatalogue?
     var isCatalogueLoaded = false
+    var hasExpiredCatalogueSeed = false
     var subnetLogos: SubtensorSubnetLogos?
     var rankingView: SubtensorRankedSubnets?
+    var hasExpiredRankingSeed = false
     var yields: SubtensorAlphaYields?
     var yieldsNetuid: UInt16?
     var isYieldsLoaded = false
@@ -113,14 +115,11 @@ extension SubtensorStakingSetupPresenter {
         isQuoteFailed = false
         tradesUnavailable = false
 
-        if mode.isRootLane, !isRootRateRequested {
-            isRootRateRequested = true
-            interactor.loadRootYield()
-        }
+        loadRootYieldIfNeeded()
 
         if case let .buyMore(position) = mode {
             interactor.loadSubnet(netuid: position.netuid)
-            interactor.loadCostBasis(for: position.netuid)
+            loadCostBasisIfNeeded(for: position.netuid)
         }
 
         loadSubnetDataIfNeeded()

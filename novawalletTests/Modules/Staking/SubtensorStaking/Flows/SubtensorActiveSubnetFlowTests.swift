@@ -658,6 +658,8 @@ private extension SubtensorActiveSubnetFlowTests {
 
         stub(interactor) { stub in
             when(stub.setup()).thenDoNothing()
+            when(stub.cachedCatalogue()).thenReturn(.miss)
+            when(stub.cachedCostBasis(netuid: any())).thenReturn(.miss)
             when(stub.refreshPreflight(for: any(), netuid: any())).thenDoNothing()
             when(stub.loadSubnetData()).thenDoNothing()
             when(stub.loadCostBasis(for: any())).thenDoNothing()

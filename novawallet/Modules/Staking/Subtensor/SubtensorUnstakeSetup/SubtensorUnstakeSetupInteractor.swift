@@ -14,11 +14,9 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
     }
 
     let subnetsService: SubtensorSubnetsServiceProtocol
-    let catalogueService: SubtensorSubnetCatalogueServiceProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let validatorFactory: SubtensorValidatorPresetFactoryProtocol
     let rootHoldFactory: SubtensorRootHoldFactoryProtocol
-    let costBasisService: SubtensorCostBasisServiceProtocol
 
     private let catalogueCallStore = CancellableCallStore()
     private let logosCallStore = CancellableCallStore()
@@ -39,11 +37,9 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
         logger: LoggerProtocol
     ) {
         self.subnetsService = subnetsService
-        self.catalogueService = catalogueService
         self.subnetLogosProvider = subnetLogosProvider
         self.validatorFactory = validatorFactory
         self.rootHoldFactory = rootHoldFactory
-        self.costBasisService = costBasisService
 
         super.init(
             chainAsset: chainAsset,
@@ -53,6 +49,8 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
             preflightFactory: flowServices.preflightFactory,
             tradeQuoteFactory: flowServices.tradeQuoteFactory,
             operationService: flowServices.operationService,
+            catalogueService: catalogueService,
+            costBasisService: costBasisService,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,

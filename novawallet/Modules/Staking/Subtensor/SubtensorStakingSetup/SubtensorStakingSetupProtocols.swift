@@ -22,6 +22,9 @@ protocol SubtensorStakingSetupPresenterProtocol: AnyObject {
 }
 
 protocol SubtensorSetupInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {
+    func cachedRankingView() -> HTTPCachePeek<SubtensorRankedSubnets>
+    func cachedYields(netuid: UInt16) -> HTTPCachePeek<SubtensorAlphaYields>
+    func cachedRootYield() -> HTTPCachePeek<SubtensorReportedYield?>
     func presetValidator(on subnet: SubtensorSubnetRef, existingHotkey: AccountId?)
     func loadLockedValidator(_ hotkey: AccountId, on subnet: SubtensorSubnetRef)
     func loadRootYield()
