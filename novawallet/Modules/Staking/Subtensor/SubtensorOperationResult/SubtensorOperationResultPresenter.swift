@@ -152,6 +152,10 @@ private extension SubtensorOperationResultPresenter {
 
 extension SubtensorOperationResultPresenter: SubtensorResultPresenterProtocol {
     func setup() {
+        if let catalogue = interactor.cachedCatalogue().value {
+            self.catalogue = catalogue
+        }
+
         progressStartedAt = Date()
         startCountdown()
         provideViewModel()

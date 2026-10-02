@@ -465,6 +465,7 @@ private extension SubtensorOperationResultPresenterTests {
         }
 
         stub(catalogueService) { stub in
+            when(stub.cachedCatalogue()).thenReturn(.miss)
             when(stub.createCatalogueWrapper()).thenReturn(
                 .createWithError(BaseOperationError.unexpectedDependentResult)
             )
@@ -495,6 +496,7 @@ private extension SubtensorOperationResultPresenterTests {
         let interactor = MockSubtensorResultInteractorInputProtocol()
 
         stub(interactor) { stub in
+            when(stub.cachedCatalogue()).thenReturn(.miss)
             when(stub.setup()).thenDoNothing()
             when(stub.fetchBlockTimestamp(at: any())).thenDoNothing()
             when(stub.fetchRootHoldRemainingBlocks(for: any())).thenDoNothing()
