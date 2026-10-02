@@ -27,6 +27,14 @@ extension SubtensorFlowHTTPReply {
         return SubtensorFlowHTTPReply(statusCode: 200, headers: ["Content-Type": "application/json"], body: body)
     }
 
+    static func bittensor(_ document: [String: Any], route: BittensorApiFixtureRoute) -> SubtensorFlowHTTPReply {
+        let reply = json(document)
+        var headers = reply.headers
+        headers[Constants.cacheControlHeader] = BittensorApiFixtureRouter.cacheControl(for: route, document: document)
+
+        return SubtensorFlowHTTPReply(statusCode: reply.statusCode, headers: headers, body: reply.body)
+    }
+
     static func jsonText(_ text: String) -> SubtensorFlowHTTPReply {
         SubtensorFlowHTTPReply(statusCode: 200, headers: ["Content-Type": "application/json"], body: Data(text.utf8))
     }
@@ -48,9 +56,19 @@ extension SubtensorFlowHTTPReply {
     static func apiError(statusCode: Int, code: String, requestId: String) -> SubtensorFlowHTTPReply {
         SubtensorFlowHTTPReply(
             statusCode: statusCode,
-            headers: ["Content-Type": "application/json", "X-Request-ID": requestId],
+            headers: [
+                "Content-Type": "application/json",
+                "X-Request-ID": requestId,
+                Constants.cacheControlHeader: "no-store"
+            ],
             body: Data(#"{"error":{"code":"\#(code)","message":"disabled"}}"#.utf8)
         )
+    }
+}
+
+private extension SubtensorFlowHTTPReply {
+    enum Constants {
+        static let cacheControlHeader = "Cache-Control"
     }
 }
 
@@ -121,16 +139,18 @@ final class SubtensorFlowURLProtocol: URLProtocol {
             return
         }
 
-        serveBittensor(path, reply: .json(BittensorApiFixtureRouter.document(for: route)))
+        serveBittensor(path, reply: .bittensor(BittensorApiFixtureRouter.document(for: route), route: route))
     }
 
     static func serveOperationsFixture(accountSubject: AccountAddress, pages: ClosedRange<Int>) {
         for page in pages {
+            let route = BittensorApiFixtureRoute.operations(page: page)
+
             serve(
                 "POST",
                 SubtensorFlowHost.bittensor("/operations/search"),
                 body: operationsSearchBody(accountSubject: accountSubject, page: page),
-                reply: .json(BittensorApiFixtureRouter.document(for: .operations(page: page)))
+                reply: .bittensor(BittensorApiFixtureRouter.document(for: route), route: route)
             )
         }
     }

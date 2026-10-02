@@ -69,4 +69,8 @@ extension SubtensorMaxApyProvider: SubtensorMaxApyProviderProtocol {
 
         return CompoundOperationWrapper(targetOperation: operation)
     }
+
+    func cachedMaxApy() -> HTTPCachePeek<Decimal?> {
+        resolution.peek()
+    }
 }

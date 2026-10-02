@@ -13,7 +13,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
         }
 
         interactor.loadSubnetsInfo(forcingRefresh: false)
-        interactor.loadCatalogue(forcingRefresh: false)
+        interactor.loadCatalogue()
         interactor.loadSubnetLogos()
         interactor.loadCostBasis(for: netuid)
     }

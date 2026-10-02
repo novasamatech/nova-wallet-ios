@@ -115,7 +115,7 @@ private extension SubtensorOperationResultInteractor {
         }
 
         execute(
-            wrapper: catalogueService.createCatalogueWrapper(forcingRefresh: false),
+            wrapper: catalogueService.createCatalogueWrapper(),
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in

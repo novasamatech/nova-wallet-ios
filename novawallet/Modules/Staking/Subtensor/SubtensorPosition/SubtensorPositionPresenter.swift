@@ -233,7 +233,7 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
 
         if catalogue != nil, state.catalogue?.subnet(for: state.netuid) == nil, !isCatalogueRefreshForced {
             isCatalogueRefreshForced = true
-            interactor.loadCatalogue(forcingRefresh: true)
+            interactor.loadCatalogue()
             return
         }
 

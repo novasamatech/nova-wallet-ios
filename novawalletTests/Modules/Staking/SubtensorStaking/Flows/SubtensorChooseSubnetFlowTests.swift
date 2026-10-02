@@ -250,17 +250,17 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         let world = try SubtensorFlowWorld()
         let services = world.earnServices
         let ember = try SubtensorFlowChainWorld.hotkey(.ember)
+        let rootRoute = BittensorApiFixtureRoute.rootYield(page: 1, pageSize: 100)
+        let alphaRoute = BittensorApiFixtureRoute.alphaYield(netuid: 64, page: 1, pageSize: 100)
 
         SubtensorFlowURLProtocol.serveBittensor(
             "/yields/root?page=1&pageSize=100",
-            reply: .json(staleDocument(BittensorApiFixtureRouter.document(for: .rootYield(page: 1, pageSize: 100))))
+            reply: .bittensor(staleDocument(BittensorApiFixtureRouter.document(for: rootRoute)), route: rootRoute)
         )
 
         SubtensorFlowURLProtocol.serveBittensor(
             "/subnets/64/yields/alpha?page=1&pageSize=100",
-            reply: .json(staleDocument(BittensorApiFixtureRouter.document(
-                for: .alphaYield(netuid: 64, page: 1, pageSize: 100)
-            )))
+            reply: .bittensor(staleDocument(BittensorApiFixtureRouter.document(for: alphaRoute)), route: alphaRoute)
         )
 
         let rootYield = try XCTUnwrap(try run(services.yieldService.createRootYieldWrapper()))
@@ -310,21 +310,48 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(requestLines(), [])
         XCTAssertEqual(world.attestation.signatures, [])
     }
+
+    func testSecondCatalogueReadWithinTheServerLifetimeSendsNoRequest() throws {
+        let world = try SubtensorFlowWorld()
+        let catalogueService = world.earnServices.catalogueService
+        let subnetsRequestLine = "GET https://bittensor.test/v1/bittensor/subnets"
+
+        SubtensorFlowURLProtocol.serveFixture(.subnets)
+
+        let catalogue = try run(catalogueService.createCatalogueWrapper())
+
+        world.clock.advance(by: 299)
+        let revisitPeek = catalogueService.cachedCatalogue()
+        let revisitedCatalogue = try run(catalogueService.createCatalogueWrapper())
+        let revisitRequestLines = requestLines()
+
+        world.clock.advance(by: 1)
+        let expiryPeek = catalogueService.cachedCatalogue()
+        _ = try run(catalogueService.createCatalogueWrapper())
+
+        XCTAssertTrue(revisitPeek.isFresh)
+        XCTAssertEqual(revisitedCatalogue, catalogue)
+        XCTAssertEqual(revisitRequestLines, [subnetsRequestLine])
+        XCTAssertNotNil(expiryPeek.value)
+        XCTAssertFalse(expiryPeek.isFresh)
+        XCTAssertEqual(requestLines(), [subnetsRequestLine, subnetsRequestLine])
+        assertAttestedRequests(world, paths: ["/v1/bittensor/subnets", "/v1/bittensor/subnets"])
+    }
 }
 
 private extension SubtensorChooseSubnetFlowTests {
-    func staleDocument(_ document: Any) -> Any {
-        if let object = document as? [String: Any] {
-            return object.reduce(into: [String: Any]()) { result, entry in
-                result[entry.key] = entry.key == "freshness" ? "STALE" : staleDocument(entry.value)
-            }
+    func staleDocument(_ document: [String: Any]) -> [String: Any] {
+        document.reduce(into: [String: Any]()) { result, entry in
+            result[entry.key] = entry.key == "freshness" ? "STALE" : staleValue(entry.value)
+        }
+    }
+
+    func staleValue(_ value: Any) -> Any {
+        if let object = value as? [String: Any] {
+            return staleDocument(object)
         }
 
-        if let array = document as? [Any] {
-            return array.map(staleDocument)
-        }
-
-        return document
+        return (value as? [Any])?.map(staleValue) ?? value
     }
 
     func serveWeekCharts() throws {
@@ -346,7 +373,7 @@ private extension SubtensorChooseSubnetFlowTests {
     }
 
     func listedSubnetRefs(in world: SubtensorFlowWorld) throws -> [SubtensorSubnetRef] {
-        let catalogue = try run(world.earnServices.catalogueService.createCatalogueWrapper(forcingRefresh: false))
+        let catalogue = try run(world.earnServices.catalogueService.createCatalogueWrapper())
         let subnetsInfo = try fetchSubnetsInfo(from: world.sharedState.subnetsService)
 
         return SubtensorSubnetListBuilder.entries(from: catalogue, subnetsInfo: subnetsInfo).map(\.subnet.ref)

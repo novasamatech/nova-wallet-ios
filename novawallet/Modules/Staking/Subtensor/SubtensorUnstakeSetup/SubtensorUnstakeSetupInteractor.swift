@@ -87,11 +87,11 @@ extension SubtensorUnstakeSetupInteractor: SubtensorUnstakeInteractorInputProtoc
         }
     }
 
-    func loadCatalogue(forcingRefresh: Bool) {
+    func loadCatalogue() {
         catalogueCallStore.cancel()
 
         executeCancellable(
-            wrapper: catalogueService.createCatalogueWrapper(forcingRefresh: forcingRefresh),
+            wrapper: catalogueService.createCatalogueWrapper(),
             inOperationQueue: operationQueue,
             backingCallIn: catalogueCallStore,
             runningCallbackIn: .main

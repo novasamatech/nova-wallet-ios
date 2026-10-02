@@ -25,7 +25,7 @@ extension SubtensorFlowTestCase {
 
         let state = try awaitPositions(in: world)
         let portfolio = SubtensorPortfolioBuilder.build(state: state)
-        let catalogue = try run(services.catalogueService.createCatalogueWrapper(forcingRefresh: false))
+        let catalogue = try run(services.catalogueService.createCatalogueWrapper())
         let logos = try run(services.subnetLogosProvider.createLogosWrapper())
 
         let refs = try portfolio.subnets.map { group in

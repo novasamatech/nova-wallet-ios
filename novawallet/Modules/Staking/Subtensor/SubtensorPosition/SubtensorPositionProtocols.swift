@@ -16,7 +16,7 @@ protocol SubtensorPositionPresenterProtocol: AnyObject {
 protocol SubtensorPositionInteractorInputProtocol: AnyObject {
     func setup()
     func refreshPositions()
-    func loadCatalogue(forcingRefresh: Bool)
+    func loadCatalogue()
     func loadSubnetsInfo(forcingRefresh: Bool)
     func loadValidator(_ hotkey: AccountId, on subnet: SubtensorSubnetRef)
     func loadRootHolds(for hotkeys: [AccountId])

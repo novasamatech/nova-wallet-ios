@@ -6,6 +6,7 @@ struct BittensorAttestedResponse {
     let contentType: String?
     let requestId: String?
     let body: Data
+    let cacheDirectives: HTTPCacheDirectives
 }
 
 enum BittensorAttestedGrade {
@@ -24,7 +25,12 @@ enum BittensorAttestedResponseGrader {
 
         guard !(200 ..< 300).contains(response.statusCode) else {
             return .success(
-                BittensorApiRawResponse(statusCode: response.statusCode, requestId: requestId, body: response.body)
+                BittensorApiRawResponse(
+                    statusCode: response.statusCode,
+                    requestId: requestId,
+                    body: response.body,
+                    cacheDirectives: response.cacheDirectives
+                )
             )
         }
 

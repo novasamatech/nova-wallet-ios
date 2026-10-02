@@ -161,7 +161,7 @@ private extension SubtensorPortfolioInteractor {
             heldNetuids = Set(newState.positions.map(\.netuid)).subtracting([SubtensorStakingPallet.rootNetuid])
 
             if !catalogueStore.hasCall {
-                provideCatalogue(forcingRefresh: false)
+                provideCatalogue()
             }
         }
 
@@ -185,11 +185,11 @@ private extension SubtensorPortfolioInteractor {
         priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 
-    func provideCatalogue(forcingRefresh: Bool) {
+    func provideCatalogue() {
         catalogueStore.cancel()
 
         executeCancellable(
-            wrapper: catalogueService.createCatalogueWrapper(forcingRefresh: forcingRefresh),
+            wrapper: catalogueService.createCatalogueWrapper(),
             inOperationQueue: operationQueue,
             backingCallIn: catalogueStore,
             runningCallbackIn: .main
@@ -219,7 +219,7 @@ private extension SubtensorPortfolioInteractor {
         }
 
         forcedCatalogueNetuids.formUnion(missingNetuids)
-        provideCatalogue(forcingRefresh: true)
+        provideCatalogue()
     }
 
     func provideRootRate() {
