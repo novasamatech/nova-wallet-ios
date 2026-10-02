@@ -55,6 +55,23 @@ extension SubtensorCostBasisService: SubtensorCostBasisServiceProtocol {
 
         return CompoundOperationWrapper(targetOperation: operation)
     }
+
+    func cachedCostBasis(for accountId: AccountId, netuid: UInt16) -> HTTPCachePeek<SubtensorCostBasis> {
+        mutex.lock()
+
+        let memo = histories[accountId]?.memo
+
+        mutex.unlock()
+
+        guard
+            let memo,
+            timeProvider() - memo.resolvedAt < memoLifetime,
+            let costBasis = try? memo.ledger.costBasis(for: netuid) else {
+            return .miss
+        }
+
+        return .fresh(costBasis, freshUntil: memo.resolvedAt + memoLifetime)
+    }
 }
 
 extension SubtensorCostBasisService: EventVisitorProtocol {

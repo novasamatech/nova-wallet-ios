@@ -431,7 +431,7 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
         let catalogueService = MockSubtensorSubnetCatalogueServiceProtocol()
 
         stub(catalogueService) { stub in
-            when(stub.createCatalogueWrapper(forcingRefresh: any())).thenReturn(
+            when(stub.createCatalogueWrapper()).thenReturn(
                 CompoundOperationWrapper.createWithError(CommonError.dataCorruption)
             )
         }

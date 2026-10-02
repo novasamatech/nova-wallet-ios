@@ -33,4 +33,8 @@ extension SubtensorRankingViewService: SubtensorRankingViewServiceProtocol {
 
         return rankedWrapper.insertingTail(operation: viewOperation)
     }
+
+    func cachedRankingView() -> HTTPCachePeek<SubtensorRankedSubnets> {
+        recommendationService.cachedRankedSubnets()
+    }
 }

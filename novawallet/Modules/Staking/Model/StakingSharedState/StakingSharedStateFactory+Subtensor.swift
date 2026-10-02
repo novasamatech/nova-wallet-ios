@@ -290,7 +290,6 @@ extension StakingSharedStateFactory {
     ) -> SubtensorSubnetCatalogueServiceProtocol {
         SubtensorSubnetCatalogueService(
             apiOperationFactory: processServices.bittensorApiOperationFactory,
-            operationQueue: syncOperationQueue,
             logger: logger
         )
     }

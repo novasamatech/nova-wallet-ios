@@ -173,10 +173,6 @@ extension BittensorApi.RecommendationCollection: BittensorApiWireChecked, Bitten
         )
     }
 
-    var isServedFromMemory: Bool {
-        meta.generation.servedFrom == .memory
-    }
-
     func validateWire() throws {
         try BittensorApiWireCheck.clientGates(meta.clientGates, "meta.clientGates.maxTake")
 
@@ -232,10 +228,6 @@ extension BittensorApi.SubnetRankingCollection: BittensorApiWireChecked, Bittens
             asOf: meta.components.recommendations.asOf,
             sourceBlockNumber: meta.generation.sourceBlockNumber
         )
-    }
-
-    var isServedFromMemory: Bool {
-        meta.generation.servedFrom == .memory
     }
 
     func validateWire() throws {

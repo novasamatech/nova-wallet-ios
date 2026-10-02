@@ -122,6 +122,7 @@ final class BittensorApiFixtureTransportTests: XCTestCase {
 
         XCTAssertEqual(response.statusCode, 200)
         XCTAssertNotNil(response.requestId)
+        XCTAssertNotEqual(response.cacheDirectives, .notStorable)
 
         return try JSONDecoder().decode(type, from: response.body)
     }

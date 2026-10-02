@@ -95,7 +95,7 @@ private extension SubtensorValidatorSelectInteractor {
         let subnet = subnet
 
         executeCancellable(
-            wrapper: catalogueService.createCatalogueWrapper(forcingRefresh: false),
+            wrapper: catalogueService.createCatalogueWrapper(),
             inOperationQueue: operationQueue,
             backingCallIn: catalogueStore,
             runningCallbackIn: .main
