@@ -12,7 +12,7 @@ final class SubtensorSubnetCatalogueServiceTests: XCTestCase {
         let apiFactory = MockBittensorApiOperationFactoryProtocol()
         stubSubnets(apiFactory, results: [.success(try fixtureSubnets(isFromExpiredCache: false))])
 
-        let catalogue = try run(makeService(apiFactory).createCatalogueWrapper(forcingRefresh: false))
+        let catalogue = try run(makeService(apiFactory).createCatalogueWrapper())
 
         XCTAssertEqual(catalogue.subnets.map(\.netuid), [1, 3, 4, 8, 9, 19, 51, 56, 64, 120])
         XCTAssertEqual(catalogue.subnet(for: 64), SubtensorCatalogueSubnet(
@@ -44,7 +44,7 @@ final class SubtensorSubnetCatalogueServiceTests: XCTestCase {
         let apiFactory = MockBittensorApiOperationFactoryProtocol()
         stubSubnets(apiFactory, results: [.success(try fixtureSubnets(isFromExpiredCache: false))])
 
-        let catalogue = try run(makeService(apiFactory).createCatalogueWrapper(forcingRefresh: false))
+        let catalogue = try run(makeService(apiFactory).createCatalogueWrapper())
         let reregistered = SubtensorSubnetRef(netuid: chutesRef.netuid, registeredAt: chutesRef.registeredAt + 1)
 
         XCTAssertEqual(catalogue.subnet(for: chutesRef)?.ref, chutesRef)
@@ -55,7 +55,7 @@ final class SubtensorSubnetCatalogueServiceTests: XCTestCase {
         let apiFactory = MockBittensorApiOperationFactoryProtocol()
         stubSubnets(apiFactory, results: [.success(try fixtureSubnets(isFromExpiredCache: true))])
 
-        let catalogue = try run(makeService(apiFactory).createCatalogueWrapper(forcingRefresh: false))
+        let catalogue = try run(makeService(apiFactory).createCatalogueWrapper())
         let chutes = try XCTUnwrap(catalogue.subnet(for: chutesRef))
 
         let staleMetadata = SubtensorBackendStamp(asOf: try date("2026-09-24T09:25:00Z"), freshness: .stale)
@@ -69,7 +69,7 @@ final class SubtensorSubnetCatalogueServiceTests: XCTestCase {
         let apiFactory = MockBittensorApiOperationFactoryProtocol()
         stubSubnets(apiFactory, results: [.failure(BittensorApiError.routeNotPublished)])
 
-        XCTAssertThrowsError(try run(makeService(apiFactory).createCatalogueWrapper(forcingRefresh: false))) { error in
+        XCTAssertThrowsError(try run(makeService(apiFactory).createCatalogueWrapper())) { error in
             guard case .routeNotPublished = error as? BittensorApiError else {
                 return XCTFail("Unexpected error \(error)")
             }
@@ -86,8 +86,8 @@ final class SubtensorSubnetCatalogueServiceTests: XCTestCase {
 
         let service = makeService(apiFactory)
 
-        let downError = runError(service.createCatalogueWrapper(forcingRefresh: false))
-        let catalogue = try run(service.createCatalogueWrapper(forcingRefresh: false))
+        let downError = runError(service.createCatalogueWrapper())
+        let catalogue = try run(service.createCatalogueWrapper())
 
         guard case let .datasetUnavailable(requestId)? = downError as? BittensorApiError else {
             return XCTFail("Unexpected error \(String(describing: downError))")
@@ -98,29 +98,10 @@ final class SubtensorSubnetCatalogueServiceTests: XCTestCase {
         verify(apiFactory, times(2)).createSubnetsWrapper()
     }
 
-    func testSessionCacheServesOneBackendReadUntilARefreshIsForced() throws {
-        let apiFactory = MockBittensorApiOperationFactoryProtocol()
-        let fixture = try fixtureSubnets(isFromExpiredCache: false)
-        stubSubnets(apiFactory, results: [.success(fixture), .success(fixture)])
-
-        let service = makeService(apiFactory)
-
-        let first = try run(service.createCatalogueWrapper(forcingRefresh: false))
-        let cached = try run(service.createCatalogueWrapper(forcingRefresh: false))
-
-        verify(apiFactory, times(1)).createSubnetsWrapper()
-
-        let refreshed = try run(service.createCatalogueWrapper(forcingRefresh: true))
-
-        XCTAssertEqual(cached, first)
-        XCTAssertEqual(refreshed, first)
-        verify(apiFactory, times(2)).createSubnetsWrapper()
-    }
-
     private func makeService(
         _ apiFactory: MockBittensorApiOperationFactoryProtocol
     ) -> SubtensorSubnetCatalogueService {
-        SubtensorSubnetCatalogueService(apiOperationFactory: apiFactory, operationQueue: OperationQueue())
+        SubtensorSubnetCatalogueService(apiOperationFactory: apiFactory)
     }
 
     private func stubSubnets(

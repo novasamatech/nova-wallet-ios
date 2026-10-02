@@ -465,7 +465,7 @@ private extension SubtensorOperationResultPresenterTests {
         }
 
         stub(catalogueService) { stub in
-            when(stub.createCatalogueWrapper(forcingRefresh: any())).thenReturn(
+            when(stub.createCatalogueWrapper()).thenReturn(
                 .createWithError(BaseOperationError.unexpectedDependentResult)
             )
         }

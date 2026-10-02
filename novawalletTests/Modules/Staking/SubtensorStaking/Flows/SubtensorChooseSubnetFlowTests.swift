@@ -346,7 +346,7 @@ private extension SubtensorChooseSubnetFlowTests {
     }
 
     func listedSubnetRefs(in world: SubtensorFlowWorld) throws -> [SubtensorSubnetRef] {
-        let catalogue = try run(world.earnServices.catalogueService.createCatalogueWrapper(forcingRefresh: false))
+        let catalogue = try run(world.earnServices.catalogueService.createCatalogueWrapper())
         let subnetsInfo = try fetchSubnetsInfo(from: world.sharedState.subnetsService)
 
         return SubtensorSubnetListBuilder.entries(from: catalogue, subnetsInfo: subnetsInfo).map(\.subnet.ref)

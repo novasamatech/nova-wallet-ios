@@ -1,37 +1,18 @@
 import Foundation
 import Operation_iOS
 
-final class SubtensorSubnetCatalogueService: SubtensorSessionCachingService<SubtensorSubnetCatalogue> {
+final class SubtensorSubnetCatalogueService {
     static let atomicScale = 9
-    static let sessionCacheTTL: TimeInterval = 150
 
     let apiOperationFactory: BittensorApiOperationFactoryProtocol
-
-    private let callbackQueue = DispatchQueue(label: "com.novawallet.subtensor.catalogue.\(UUID().uuidString)")
+    let logger: LoggerProtocol
 
     init(
         apiOperationFactory: BittensorApiOperationFactoryProtocol,
-        operationQueue: OperationQueue,
         logger: LoggerProtocol = Logger.shared
     ) {
         self.apiOperationFactory = apiOperationFactory
-
-        super.init(operationQueue: operationQueue, cacheTTL: Self.sessionCacheTTL, logger: logger)
-    }
-
-    override func createFetchWrapper() -> CompoundOperationWrapper<SubtensorSubnetCatalogue> {
-        let responseWrapper = apiOperationFactory.createSubnetsWrapper()
-        let logger = logger
-
-        let catalogueOperation = ClosureOperation<SubtensorSubnetCatalogue> {
-            let response = try responseWrapper.targetOperation.extractNoCancellableResultData()
-
-            return try Self.makeCatalogue(from: response, logger: logger)
-        }
-
-        catalogueOperation.addDependency(responseWrapper.targetOperation)
-
-        return responseWrapper.insertingTail(operation: catalogueOperation)
+        self.logger = logger
     }
 }
 
@@ -117,13 +98,18 @@ private extension SubtensorSubnetCatalogueService {
 }
 
 extension SubtensorSubnetCatalogueService: SubtensorSubnetCatalogueServiceProtocol {
-    func createCatalogueWrapper(forcingRefresh: Bool) -> CompoundOperationWrapper<SubtensorSubnetCatalogue> {
-        let callbackQueue = callbackQueue
+    func createCatalogueWrapper() -> CompoundOperationWrapper<SubtensorSubnetCatalogue> {
+        let responseWrapper = apiOperationFactory.createSubnetsWrapper()
+        let logger = logger
 
-        let catalogueOperation = AsyncClosureOperation<SubtensorSubnetCatalogue> { completion in
-            self.fetch(forcingRefresh: forcingRefresh, runningCompletionIn: callbackQueue, completion: completion)
+        let catalogueOperation = ClosureOperation<SubtensorSubnetCatalogue> {
+            let response = try responseWrapper.targetOperation.extractNoCancellableResultData()
+
+            return try Self.makeCatalogue(from: response, logger: logger)
         }
 
-        return CompoundOperationWrapper(targetOperation: catalogueOperation)
+        catalogueOperation.addDependency(responseWrapper.targetOperation)
+
+        return responseWrapper.insertingTail(operation: catalogueOperation)
     }
 }

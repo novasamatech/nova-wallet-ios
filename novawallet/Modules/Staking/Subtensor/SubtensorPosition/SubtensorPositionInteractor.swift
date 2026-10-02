@@ -210,7 +210,7 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
             blockNumberProvider = subscribeToBlockNumber(for: chainAsset.chain.chainId)
             loadRootRate()
         } else {
-            loadCatalogue(forcingRefresh: false)
+            loadCatalogue()
             loadSubnetLogos()
             loadYields()
             loadSubnetsInfo(forcingRefresh: false)
@@ -221,11 +221,11 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
         state.positionsSyncService?.refresh()
     }
 
-    func loadCatalogue(forcingRefresh: Bool) {
+    func loadCatalogue() {
         catalogueStore.cancel()
 
         executeCancellable(
-            wrapper: catalogueService.createCatalogueWrapper(forcingRefresh: forcingRefresh),
+            wrapper: catalogueService.createCatalogueWrapper(),
             inOperationQueue: operationQueue,
             backingCallIn: catalogueStore,
             runningCallbackIn: .main
