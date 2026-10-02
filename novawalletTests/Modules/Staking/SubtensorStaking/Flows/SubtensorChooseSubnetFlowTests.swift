@@ -321,14 +321,19 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         let catalogue = try run(catalogueService.createCatalogueWrapper())
 
         world.clock.advance(by: 299)
+        let revisitPeek = catalogueService.cachedCatalogue()
         let revisitedCatalogue = try run(catalogueService.createCatalogueWrapper())
         let revisitRequestLines = requestLines()
 
         world.clock.advance(by: 1)
+        let expiryPeek = catalogueService.cachedCatalogue()
         _ = try run(catalogueService.createCatalogueWrapper())
 
+        XCTAssertTrue(revisitPeek.isFresh)
         XCTAssertEqual(revisitedCatalogue, catalogue)
         XCTAssertEqual(revisitRequestLines, [subnetsRequestLine])
+        XCTAssertNotNil(expiryPeek.value)
+        XCTAssertFalse(expiryPeek.isFresh)
         XCTAssertEqual(requestLines(), [subnetsRequestLine, subnetsRequestLine])
         assertAttestedRequests(world, paths: ["/v1/bittensor/subnets", "/v1/bittensor/subnets"])
     }
