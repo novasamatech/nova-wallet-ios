@@ -174,7 +174,7 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
         XCTAssertTrue(detail.contains("maxTake"))
     }
 
-    func testFreshCacheIsServedWithoutTheTransportUntilItsTtlExpires() throws {
+    func testFreshCacheIsServedWithoutTheTransportUntilItsMaxAgeExpires() throws {
         let clock = ManualClock()
         let body = try makeBody(BittensorApiFixtureDocuments.subnets())
 
@@ -380,9 +380,18 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
         return Data(json.utf8)
     }
 
-    private func makeResponse(_ body: Data, requestId: String) -> Result<BittensorApiRawResponse, Error> {
+    private func makeResponse(
+        _ body: Data,
+        requestId: String,
+        cacheControl: String = "private, max-age=150, must-revalidate"
+    ) -> Result<BittensorApiRawResponse, Error> {
         .success(
-            BittensorApiRawResponse(statusCode: 200, requestId: requestId, body: body, cacheDirectives: .notStorable)
+            BittensorApiRawResponse(
+                statusCode: 200,
+                requestId: requestId,
+                body: body,
+                cacheDirectives: HTTPCacheDirectives(cacheControl: cacheControl, age: nil)
+            )
         )
     }
 

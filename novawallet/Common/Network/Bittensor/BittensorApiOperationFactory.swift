@@ -8,7 +8,6 @@ protocol BittensorApiWireChecked {
 
 protocol BittensorApiGenerationalResponse {
     var generationOrder: BittensorApiGenerationOrder { get }
-    var isServedFromMemory: Bool { get }
 }
 
 struct BittensorApiWireViolation: Error {
@@ -111,19 +110,6 @@ private extension BittensorApiOperationFactory {
                 return "/recommendations"
             case .rankedSubnets:
                 return "/recommendations/subnets"
-            }
-        }
-
-        func timeToLive(isServedFromMemory: Bool) -> TimeInterval {
-            switch self {
-            case .subnets, .validators:
-                return 150
-            case .rootYield, .alphaYield:
-                return 900
-            case .operations:
-                return 30
-            case .recommendations, .rankedSubnets:
-                return isServedFromMemory ? 60 : 300
             }
         }
     }
@@ -285,7 +271,7 @@ private extension BittensorApiOperationFactory {
         return BittensorApiFetchedValue(
             value: value,
             requestId: response.requestId,
-            timeToLive: route.timeToLive(isServedFromMemory: generational?.isServedFromMemory ?? false),
+            cacheDirectives: response.cacheDirectives,
             generation: generational?.generationOrder
         )
     }
