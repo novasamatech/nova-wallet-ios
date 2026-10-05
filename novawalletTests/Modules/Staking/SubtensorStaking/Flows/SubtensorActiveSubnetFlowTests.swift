@@ -132,11 +132,11 @@ final class SubtensorActiveSubnetFlowTests: SubtensorFlowTestCase {
             .average(SubtensorPurchaseTotals(paidTao: 95_697_000_000, receivedAlpha: 1_869_010_901_513))
         )
 
-        let placeholderBeneficiary = try SubtensorFlowChainWorld.placeholderNovaFeeBeneficiary()
+        let productionBeneficiary = try SubtensorFlowChainWorld.productionNovaFeeBeneficiary()
 
         XCTAssertEqual(productionFees, [
-            SubtensorNovaFee(amount: 42_141_794, beneficiary: placeholderBeneficiary),
-            SubtensorNovaFee(amount: 34_935_547, beneficiary: placeholderBeneficiary)
+            SubtensorNovaFee(amount: 42_141_794, beneficiary: productionBeneficiary),
+            SubtensorNovaFee(amount: 34_935_547, beneficiary: productionBeneficiary)
         ])
         verify(world.quoteOperationFactory).createQuoteWrapper(for: equal(to: chutesBuyQuote.args))
         verify(world.quoteOperationFactory).createQuoteWrapper(for: equal(to: chutesSellQuote.args))

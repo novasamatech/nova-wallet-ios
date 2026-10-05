@@ -31,7 +31,7 @@ final class SubtensorSubnetBuyFlowTests: SubtensorFlowTestCase {
         let services = world.earnServices
         let feed = SubtensorFlowPositionsFeed(service: world.positionsSyncService)
         let cinder = try SubtensorFlowChainWorld.hotkey(.cinder)
-        let beneficiary = try SubtensorFlowChainWorld.placeholderNovaFeeBeneficiary()
+        let beneficiary = try SubtensorFlowChainWorld.productionNovaFeeBeneficiary()
 
         world.stubSubnets(try SubtensorFlowChainWorld.subnetsInfo())
         world.stubQuotes([chutesQuote])

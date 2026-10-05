@@ -151,7 +151,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         )
         XCTAssertEqual(productionBuyFee, SubtensorNovaFee(
             amount: 42_141_794,
-            beneficiary: try SubtensorFlowChainWorld.placeholderNovaFeeBeneficiary()
+            beneficiary: try SubtensorFlowChainWorld.productionNovaFeeBeneficiary()
         ))
         XCTAssertEqual(fee.amount, networkFee)
         XCTAssertEqual(maxStake, 48_188_500_000)
