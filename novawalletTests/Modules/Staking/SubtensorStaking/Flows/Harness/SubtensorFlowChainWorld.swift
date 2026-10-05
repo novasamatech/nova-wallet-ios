@@ -85,8 +85,8 @@ enum SubtensorFlowChainWorld {
         )
     }
 
-    static func placeholderNovaFeeBeneficiary() throws -> AccountId {
-        try Data(hexString: "0xa4373d7b6d136b822d25106a993945f40b4cbfcbb2cfd5782888b5d938f82b1a")
+    static func productionNovaFeeBeneficiary() throws -> AccountId {
+        try Data(hexString: "0x5d11a510a9bef3fae089b0500483f53498b6c5e616ff0027e37c1f1e84bb1565")
     }
 
     static func hotkey(_ member: World.Member) throws -> AccountId {

@@ -43,8 +43,8 @@ final class SubtensorHistoryFiltersProviderTests: XCTestCase {
         try TransactionHistoryAndPredicate(innerFilters: fetchFilters(for: chainAsset))
     }
 
-    private func placeholderBeneficiary() throws -> AccountId {
-        try Data(hexString: "0xa4373d7b6d136b822d25106a993945f40b4cbfcbb2cfd5782888b5d938f82b1a")
+    private func productionBeneficiary() throws -> AccountId {
+        try Data(hexString: "0x5d11a510a9bef3fae089b0500483f53498b6c5e616ff0027e37c1f1e84bb1565")
     }
 
     private func subnetAccountId(netuid: UInt16) -> AccountId {
@@ -132,7 +132,7 @@ final class SubtensorHistoryFiltersProviderTests: XCTestCase {
         let novaFeeTransfer = try makeTransfer(
             for: chainAsset,
             sender: Data(repeating: 0x11, count: 32),
-            receiver: placeholderBeneficiary(),
+            receiver: productionBeneficiary(),
             callPath: .transferKeepAlive
         )
 
@@ -146,7 +146,7 @@ final class SubtensorHistoryFiltersProviderTests: XCTestCase {
         let failedNovaFeeTransfer = try makeTransfer(
             for: chainAsset,
             sender: Data(repeating: 0x11, count: 32),
-            receiver: placeholderBeneficiary(),
+            receiver: productionBeneficiary(),
             callPath: .transferKeepAlive,
             status: .failed
         )
