@@ -6,7 +6,6 @@ struct BittensorAttestedPreparedRequest {
     let provider: BackendAttestationProviderProtocol
     let target: AttestationRequestTarget
     let body: Data?
-    let isRecommendationsRoute: Bool
     let route: String
 }
 
@@ -42,7 +41,6 @@ enum BittensorAttestedRequestBuilder {
             provider: endpoint.provider,
             target: target,
             body: request.jsonBody,
-            isRecommendationsRoute: isRecommendationsRoute(request.pathTemplate),
             route: "Bittensor \(request.method.rawValue) \(request.pathTemplate)"
         )
     }
@@ -108,18 +106,11 @@ enum BittensorAttestedRequestBuilder {
 private extension BittensorAttestedRequestBuilder {
     enum Constants {
         static let apiRootPath = "/v1/bittensor"
-        static let recommendationsPath = "/recommendations"
         static let requestIdHeader = "X-Request-ID"
     }
 
     static func normalizedRoute(_ path: String) -> String {
         path.hasPrefix("/") ? path : "/" + path
-    }
-
-    static func isRecommendationsRoute(_ pathTemplate: String) -> Bool {
-        let route = normalizedRoute(pathTemplate)
-
-        return route == Constants.recommendationsPath || route.hasPrefix(Constants.recommendationsPath + "/")
     }
 
     static func createURL(for request: BittensorApiRequest, baseURL: URL) throws -> URL {
