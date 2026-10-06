@@ -128,7 +128,8 @@ extension SubtensorStakingOperationService: SubtensorStakingOperationServiceProt
     }
 
     func createSubmitWrapper(
-        for operation: SubtensorStakingOperation
+        for operation: SubtensorStakingOperation,
+        signedClosure: @escaping () -> Void
     ) -> CompoundOperationWrapper<SubtensorStakingOperationOutcome> {
         let builderClosure: ExtrinsicBuilderClosure
 
@@ -138,7 +139,7 @@ extension SubtensorStakingOperationService: SubtensorStakingOperationServiceProt
             return .createWithError(SubtensorStakingSubmissionFailure(stage: .notSubmitted, error: error))
         }
 
-        let recordingSigner = SubtensorRecordingSigner(signer: signer)
+        let recordingSigner = SubtensorRecordingSigner(signer: signer, signedClosure: signedClosure)
         let finalizer = createFinalizer(signer: recordingSigner)
 
         let submission = SubtensorStakingSubmission(
@@ -262,12 +263,14 @@ private final class SubtensorSharedOperationStatusKeeper {
 
 private final class SubtensorRecordingSigner: SigningWrapperProtocol {
     private let signer: SigningWrapperProtocol
+    private let signedClosure: () -> Void
     private let mutex = NSLock()
 
     private var signatureCreated = false
 
-    init(signer: SigningWrapperProtocol) {
+    init(signer: SigningWrapperProtocol, signedClosure: @escaping () -> Void) {
         self.signer = signer
+        self.signedClosure = signedClosure
     }
 
     var hasSignature: Bool {
@@ -286,6 +289,8 @@ private final class SubtensorRecordingSigner: SigningWrapperProtocol {
         mutex.lock()
         signatureCreated = true
         mutex.unlock()
+
+        signedClosure()
 
         return signature
     }

@@ -7,6 +7,7 @@ protocol SubtensorStakingOperationServiceProtocol: AnyObject {
     ) -> CompoundOperationWrapper<ExtrinsicFeeProtocol>
 
     func createSubmitWrapper(
-        for operation: SubtensorStakingOperation
+        for operation: SubtensorStakingOperation,
+        signedClosure: @escaping () -> Void
     ) -> CompoundOperationWrapper<SubtensorStakingOperationOutcome>
 }

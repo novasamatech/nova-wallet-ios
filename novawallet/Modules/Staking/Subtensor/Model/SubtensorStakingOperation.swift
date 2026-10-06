@@ -83,32 +83,15 @@ struct SubtensorTradeQuote: Equatable {
 
 extension SubtensorTradeQuote {
     func isFillable(atLimit limit: Balance) -> Bool {
-        let sim = quote.sim
-        let spotPrice = quote.spotPrice
-
-        guard sim.alphaAmount > 0, spotPrice > 0 else {
+        guard let postTradePrice = quote.postTradePrice else {
             return false
         }
 
-        let scaledTao = sim.taoAmount * SubtensorStakingPallet.alphaPriceScale
-
         switch quote.args.direction {
         case .stake:
-            let averagePrice = Self.divideRoundingUp(scaledTao, by: sim.alphaAmount)
-            let postTradePrice = Self.divideRoundingUp(averagePrice * averagePrice, by: spotPrice)
-
             return postTradePrice < limit
         case .unstake:
-            let averagePrice = scaledTao / sim.alphaAmount
-            let postTradePrice = averagePrice * averagePrice / spotPrice
-
             return postTradePrice > limit
         }
-    }
-}
-
-private extension SubtensorTradeQuote {
-    static func divideRoundingUp(_ dividend: Balance, by divisor: Balance) -> Balance {
-        (dividend + divisor - 1) / divisor
     }
 }

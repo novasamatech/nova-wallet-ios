@@ -42,8 +42,14 @@ final class SubtensorUnstakePresenterValidatingTests: XCTestCase {
             when(stub.hasFreshQuote(any(), locale: any(), onRetry: any())).thenReturn(recorder.rule("freshQuote"))
             when(stub.orderWithinSlippageTolerance(quote: any(), limitPrice: any(), locale: any()))
                 .thenReturn(recorder.rule("tolerance"))
-            when(stub.canPayFeeFromStakeOtherwiseWarns(transferable: any(), fee: any(), locale: any()))
-                .thenReturn(recorder.rule("feeFromStake"))
+            when(
+                stub.canPayFeeFromStakeOtherwiseWarns(
+                    transferable: any(),
+                    fee: any(),
+                    existentialDeposit: any(),
+                    locale: any()
+                )
+            ).thenReturn(recorder.rule("feeFromStake"))
             when(
                 stub.canPayBatchedNetworkFee(
                     transferable: any(),

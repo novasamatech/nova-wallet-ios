@@ -97,6 +97,8 @@ extension SubtensorUnstakeConfirmPresenter: SubtensorUnstakeConfirmOutputProtoco
 
     func didReceiveExistentialDeposit(_ deposit: Balance) {
         existentialDeposit = deposit
+
+        provideViewModel()
     }
 
     func didReceiveBaseError(_ error: SubtensorStakingBaseError) {

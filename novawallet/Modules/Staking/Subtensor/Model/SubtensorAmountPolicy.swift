@@ -27,6 +27,14 @@ enum SubtensorAmountPolicy {
         transferable >= networkFee + existentialDeposit
     }
 
+    static func paysFeeFromStake(
+        transferable: Balance,
+        networkFee: Balance,
+        existentialDeposit: Balance
+    ) -> Bool {
+        transferable < networkFee + existentialDeposit
+    }
+
     static func maxSell(
         positionAlpha: Balance,
         availability: SubtensorStakingPallet.StakeAvailability

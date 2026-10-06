@@ -56,6 +56,7 @@ extension SubtensorStakingValidationFactory {
     func canPayFeeFromStakeOtherwiseWarns(
         transferable: Balance?,
         fee: Balance?,
+        existentialDeposit: Balance?,
         locale: Locale
     ) -> DataValidating {
         WarningConditionViolation(onWarning: { [weak self] delegate in
@@ -76,7 +77,15 @@ extension SubtensorStakingValidationFactory {
                 return true
             }
 
-            return (transferable ?? 0) >= fee
+            guard let transferable, let existentialDeposit else {
+                return false
+            }
+
+            return !SubtensorAmountPolicy.paysFeeFromStake(
+                transferable: transferable,
+                networkFee: fee,
+                existentialDeposit: existentialDeposit
+            )
         })
     }
 
