@@ -142,7 +142,12 @@ extension SubtensorUnstakeConfirmPresenter {
         guard
             let feeAmount = fee?.amountForCurrentAccount,
             let transferable = balance?.transferable,
-            transferable < feeAmount else {
+            let existentialDeposit,
+            SubtensorAmountPolicy.paysFeeFromStake(
+                transferable: transferable,
+                networkFee: feeAmount,
+                existentialDeposit: existentialDeposit
+            ) else {
             return SubtensorConfirmStakeChange(before: group.totalAlpha, after: remaining, isEstimated: false)
         }
 

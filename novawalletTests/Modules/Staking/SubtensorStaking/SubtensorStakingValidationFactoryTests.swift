@@ -348,6 +348,7 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
         let validator = setup.factory.canPayFeeFromStakeOtherwiseWarns(
             transferable: BigUInt(100),
             fee: BigUInt(50),
+            existentialDeposit: BigUInt(50),
             locale: locale
         )
 
@@ -368,6 +369,28 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
         let validator = setup.factory.canPayFeeFromStakeOtherwiseWarns(
             transferable: BigUInt(10),
             fee: BigUInt(50),
+            existentialDeposit: BigUInt(50),
+            locale: locale
+        )
+
+        assertWarningContinued(run(validator))
+    }
+
+    func testCanPayFeeFromStakeWarnsWhenFreeTaoMissesTheFeePlusDeposit() {
+        let setup = makeSetup()
+
+        stub(setup.presentable) { stub in
+            when(
+                stub.presentFeeFromStakeWarning(any(), fee: any(), action: any(), locale: any())
+            ).then { (_, _, action: @escaping () -> Void, _) in
+                action()
+            }
+        }
+
+        let validator = setup.factory.canPayFeeFromStakeOtherwiseWarns(
+            transferable: BigUInt(1_500_499),
+            fee: BigUInt(1_500_000),
+            existentialDeposit: BigUInt(500),
             locale: locale
         )
 
@@ -1017,8 +1040,8 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
         }
 
         let quote = makeStakeQuote(
-            taoAmount: 1000,
-            alphaAmount: 900,
+            taoAmount: 1_048_808_848,
+            alphaAmount: 1_000_000_000,
             spotPrice: 1_000_000_000
         )
 
@@ -1036,8 +1059,8 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
         let setup = makeSetup()
 
         let quote = makeStakeQuote(
-            taoAmount: 1000,
-            alphaAmount: 990,
+            taoAmount: 1_004_987_562,
+            alphaAmount: 1_000_000_000,
             spotPrice: 1_000_000_000
         )
 
@@ -1061,8 +1084,8 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
         }
 
         let quote = makeStakeQuote(
-            taoAmount: 1000,
-            alphaAmount: 989,
+            taoAmount: 1_004_987_563,
+            alphaAmount: 1_000_000_000,
             spotPrice: 1_000_000_000
         )
 

@@ -32,6 +32,10 @@ extension SubtensorUnstakeValidatingDep {
         netuid != SubtensorStakingPallet.rootNetuid
     }
 
+    var isRootHoldEnabled: Bool {
+        (preflight?.rootStakeUnlockInterval ?? 0) > 0
+    }
+
     var sellPlanInput: SubtensorSellPlanInput? {
         guard
             let amount,
@@ -79,11 +83,16 @@ private extension SubtensorUnstakeValidatingDep {
 
         guard
             let latestQuote = quoteContext?.latestQuote,
-            let acknowledgedLimit = quoteContext?.acknowledgedLimit else {
+            let acknowledgedLimit = quoteContext?.acknowledgedLimit,
+            let minimumTaoOut = try? SubtensorTradeQuoteFactory.sellSwapMinimumOut(
+                alpha: latestQuote.amountIn,
+                feeRate: latestQuote.quote.feeRate,
+                limitPrice: acknowledgedLimit
+            ) else {
             return nil
         }
 
-        return (latestQuote.swapMinimumOut, acknowledgedLimit)
+        return (minimumTaoOut, acknowledgedLimit)
     }
 }
 
@@ -214,10 +223,11 @@ private extension SubtensorUnstakePresenterValidating {
         dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
         selectedLocale: Locale
     ) -> DataValidating {
-        guard dep.isBatched else {
+        guard dep.isBatched || dep.isRootHoldEnabled else {
             return dataValidationFactory.canPayFeeFromStakeOtherwiseWarns(
                 transferable: dep.balance?.transferable,
                 fee: dep.fee?.amountForCurrentAccount,
+                existentialDeposit: dep.existentialDeposit,
                 locale: selectedLocale
             )
         }

@@ -47,7 +47,7 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
 
         stubRefreshAndNotify(context)
 
-        let outcome = try run(context.service.createSubmitWrapper(for: sellOperation)).get()
+        let outcome = try run(context.service.createSubmitWrapper(for: sellOperation) {}).get()
 
         let expected = SubtensorStakingOperationOutcome(
             executed: SubtensorExecutedAmounts(tao: 4_145_000_000, alpha: 56_200_000_000, netuid: netuid),
@@ -82,7 +82,7 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
 
         context.sharedOperation.markSent()
 
-        let failure = try submissionFailure(of: context.service.createSubmitWrapper(for: sellOperation))
+        let failure = try submissionFailure(of: context.service.createSubmitWrapper(for: sellOperation) {})
 
         XCTAssertEqual(failure.stage, .dispatched(blockHash: blockHash, extrinsicHash: extrinsicHash))
         XCTAssertEqual(failure.error as? SubtensorStakingSubmissionError, .slippageTooHigh)
@@ -100,7 +100,7 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
 
         stubRefreshAndNotify(context)
 
-        let failure = try submissionFailure(of: context.service.createSubmitWrapper(for: sellOperation))
+        let failure = try submissionFailure(of: context.service.createSubmitWrapper(for: sellOperation) {})
 
         XCTAssertEqual(failure.stage, .notSubmitted)
         XCTAssertEqual(failure.error as? HardwareSigningError, .signingCancelled)
@@ -118,7 +118,7 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
 
         stubRefreshAndNotify(context)
 
-        let failure = try submissionFailure(of: context.service.createSubmitWrapper(for: sellOperation))
+        let failure = try submissionFailure(of: context.service.createSubmitWrapper(for: sellOperation) {})
 
         XCTAssertEqual(failure.stage, .unconfirmed(extrinsicHash: nil))
         XCTAssertEqual(context.sharedOperation.status, .sent)
@@ -140,7 +140,7 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
 
         stubRefreshAndNotify(context)
 
-        let failure = try submissionFailure(of: context.service.createSubmitWrapper(for: sellOperation))
+        let failure = try submissionFailure(of: context.service.createSubmitWrapper(for: sellOperation) {})
 
         XCTAssertEqual(failure.stage, .notSubmitted)
         XCTAssertEqual(failure.error as? SubtensorStakingSubmissionError, .feeUnpayable)
@@ -158,7 +158,7 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
 
         stubRefreshAndNotify(context)
 
-        let wrapper = context.service.createSubmitWrapper(for: sellOperation)
+        let wrapper = context.service.createSubmitWrapper(for: sellOperation) {}
         let operationQueue = OperationQueue()
 
         operationQueue.isSuspended = true
@@ -209,7 +209,7 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
 
         stubRefreshAndNotify(context)
 
-        let wrapper = context.service.createSubmitWrapper(for: sellOperation)
+        let wrapper = context.service.createSubmitWrapper(for: sellOperation) {}
         let completed = enqueue(wrapper)
 
         wait(for: [submissionStarted], timeout: 10)
@@ -252,7 +252,7 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
 
         stubRefreshAndNotify(context)
 
-        let failure = try submissionFailure(of: context.service.createSubmitWrapper(for: sellOperation))
+        let failure = try submissionFailure(of: context.service.createSubmitWrapper(for: sellOperation) {})
 
         XCTAssertEqual(failure.stage, .notSubmitted)
         XCTAssertEqual(failure.error as? SubtensorStakingOperationError, .novaFeeUnavailable)

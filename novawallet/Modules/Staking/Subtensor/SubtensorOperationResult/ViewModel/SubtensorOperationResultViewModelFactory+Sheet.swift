@@ -134,8 +134,9 @@ private extension SubtensorOperationResultViewModelFactory {
         }
 
         let isUnstake = request.origin == .unstake
+        let stakeRemoved = executed + (outcome.alphaFeePaid ?? 0)
         let stakeAfter = isUnstake
-            ? (request.emptiesPosition ? 0 : request.stakeBefore.subtractOrZero(executed))
+            ? (request.emptiesPosition ? 0 : request.stakeBefore.subtractOrZero(stakeRemoved))
             : request.stakeBefore + executed
         let stakeAfterString = formatAmount(stakeAfter, info: taoInfo, locale: locale)
 

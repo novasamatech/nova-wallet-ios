@@ -64,6 +64,16 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
         XCTAssertEqual(tradeQuote, expected)
     }
 
+    func testSellSwapMinimumIsTheAlphaNetOfPoolFeeAtTheGivenLimitRoundedDown() throws {
+        let minimumTaoOut = try SubtensorTradeQuoteFactory.sellSwapMinimumOut(
+            alpha: 28_614_410,
+            feeRate: 33,
+            limitPrice: 69_650_000
+        )
+
+        XCTAssertEqual(minimumTaoOut, 1_991_990)
+    }
+
     func testSellQuoteAndSellExtrinsicChargeTheSameNovaFee() throws {
         let quoteFactory = MockSubtensorQuoteOperationFactoryProtocol()
 
