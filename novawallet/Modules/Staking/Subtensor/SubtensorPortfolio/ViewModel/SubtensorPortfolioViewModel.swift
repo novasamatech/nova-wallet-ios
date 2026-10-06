@@ -32,7 +32,7 @@ struct SubtensorPortfolioState {
     var period = SubtensorPortfolioViewModelFactory.defaultPeriod
 
     var portfolio: SubtensorPortfolio? {
-        positions.map { SubtensorPortfolioBuilder.build(state: $0) }
+        positions.map { SubtensorPortfolioBuilder.build(state: $0, catalogue: catalogue) }
     }
 
     var groups: [SubtensorPortfolioGroup] {
@@ -41,6 +41,10 @@ struct SubtensorPortfolioState {
         }
 
         return ([portfolio.root].compactMap { $0 } + portfolio.subnets).filter { $0.totalAlpha > 0 }
+    }
+
+    var isValuationPending: Bool {
+        !isCatalogueResolved && groups.contains { $0.netuid != SubtensorStakingPallet.rootNetuid }
     }
 
     var subnetRefs: [SubtensorSubnetRef] {

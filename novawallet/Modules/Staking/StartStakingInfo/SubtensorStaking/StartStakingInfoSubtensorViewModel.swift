@@ -2,14 +2,14 @@ import Foundation
 import UIKit
 
 struct StartStakingInfoSubtensorViewModel {
-    let title: AccentTextModel?
+    let title: AccentTextModel
     let paragraphs: [ParagraphView.Model]
     let actionTitle: String
 }
 
 protocol StartStakingInfoSubtensorViewModelFactoryProtocol {
     func createViewModel(
-        title: AccentTextModel?,
+        title: AccentTextModel,
         locale: Locale
     ) -> StartStakingInfoSubtensorViewModel
 }
@@ -17,7 +17,7 @@ protocol StartStakingInfoSubtensorViewModelFactoryProtocol {
 struct StartStakingInfoSubtensorViewModelFactory:
     StartStakingInfoSubtensorViewModelFactoryProtocol {
     func createViewModel(
-        title: AccentTextModel?,
+        title: AccentTextModel,
         locale: Locale
     ) -> StartStakingInfoSubtensorViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable

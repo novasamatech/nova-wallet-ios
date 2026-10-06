@@ -59,6 +59,10 @@ struct SubtensorPositionState {
         group.map { SubtensorGroupUnstakeBasis.make(from: $0) }
     }
 
+    var taoValue: Balance? {
+        group.flatMap { catalogue?.taoValue(of: $0.totalAlpha, netuid: netuid) }
+    }
+
     var primaryHold: SubtensorRootHold? {
         group.flatMap { holds[$0.primaryHotkey] }
     }

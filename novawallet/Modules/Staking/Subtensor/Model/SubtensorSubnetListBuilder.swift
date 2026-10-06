@@ -107,7 +107,7 @@ private extension SubtensorSubnetListBuilder {
         return SubtensorSubnetListItem(
             subnet: entry.subnet,
             target: entry.target,
-            weekly: weekly.map { $0[ref] ?? .unavailable },
+            weekly: weekly?[ref],
             ageBlocks: ageBlocks[entry.subnet.netuid]
         )
     }

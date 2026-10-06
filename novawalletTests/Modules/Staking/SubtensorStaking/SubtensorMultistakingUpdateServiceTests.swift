@@ -20,7 +20,7 @@ final class SubtensorMultistakingUpdateServiceTests: XCTestCase {
         XCTAssertEqual(item.maxApy, Decimal(string: "0.2578"))
     }
 
-    func testFailedMaxApyFetchAfterARelaunchShowsNoRateAndKeepsTheStake() throws {
+    func testFailedMaxApyFetchAfterARelaunchKeepsTheLastRateAndTheStake() throws {
         let storageFacade = SubstrateStorageTestFacade()
 
         let firstLaunch = try makeContext(storageFacade: storageFacade) { .createWithResult(Decimal(string: "0.2578")) }
@@ -31,12 +31,12 @@ final class SubtensorMultistakingUpdateServiceTests: XCTestCase {
             .createWithError(BittensorApiError.datasetUnavailable(requestId: nil))
         }
 
-        resyncAfterOwnStakingChange(relaunch, stake: 2_000_000_000) { $0.maxApy == nil }
+        resyncAfterOwnStakingChange(relaunch, stake: 2_000_000_000) { $0.stake == BigUInt(2_000_000_000) }
 
         let item = try fetchDashboardItem(of: relaunch)
 
         XCTAssertEqual(item.stake, BigUInt(2_000_000_000))
-        XCTAssertNil(item.maxApy)
+        XCTAssertEqual(item.maxApy, Decimal(string: "0.2578"))
     }
 
     func testStakeIsPersistedWhileTheMaxApyIsStillResolving() throws {

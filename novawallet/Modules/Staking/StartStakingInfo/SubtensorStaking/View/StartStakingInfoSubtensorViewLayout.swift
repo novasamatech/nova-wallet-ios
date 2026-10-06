@@ -48,11 +48,7 @@ final class StartStakingInfoSubtensorViewLayout: UIView {
     }
 
     func bind(viewModel: StartStakingInfoSubtensorViewModel) {
-        if let title = viewModel.title {
-            titleLabel.bind(model: title, with: titleStyle)
-        } else {
-            titleLabel.attributedText = nil
-        }
+        titleLabel.bind(model: viewModel.title, with: titleStyle)
 
         for (row, model) in zip(earningRows, viewModel.paragraphs) {
             row.bind(viewModel: model)
