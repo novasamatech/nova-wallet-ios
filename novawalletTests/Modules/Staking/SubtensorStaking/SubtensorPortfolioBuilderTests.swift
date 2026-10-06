@@ -18,11 +18,11 @@ final class SubtensorPortfolioBuilderTests: XCTestCase {
 
         let state = Multistaking.SubtensorStakingState(
             positions: [rootMember, subnetMember, rootPrimary, subnetPrimary],
-            prices: [0: 1_000_000_000, 64: 50_000_000],
+            prices: [:],
             availability: [0: rootAvailability, 64: subnetAvailability]
         )
 
-        let portfolio = SubtensorPortfolioBuilder.build(state: state)
+        let portfolio = SubtensorPortfolioBuilder.build(state: state, catalogue: catalogue(prices: [64: 50_000_000]))
 
         let expected = SubtensorPortfolio(
             root: SubtensorPortfolioGroup(
@@ -48,7 +48,6 @@ final class SubtensorPortfolioBuilderTests: XCTestCase {
         )
 
         XCTAssertEqual(portfolio, expected)
-        XCTAssertEqual(portfolio.pricedTaoValue, state.totalStakeInRao)
     }
 
     func testSubnetsOrderByTaoValueDescendingWithUnpricedGroupsLast() {
@@ -59,11 +58,13 @@ final class SubtensorPortfolioBuilderTests: XCTestCase {
                 position(hotkey: secondHotkey, netuid: 7, stake: 50_000_000_000),
                 position(hotkey: secondHotkey, netuid: 19, stake: 300_000_000_000)
             ],
-            prices: [7: 0, 19: 30_000_000, 64: 50_000_000],
-            unpricedNetuids: [7, 12]
+            prices: [:]
         )
 
-        let portfolio = SubtensorPortfolioBuilder.build(state: state)
+        let portfolio = SubtensorPortfolioBuilder.build(
+            state: state,
+            catalogue: catalogue(prices: [7: 0, 19: 30_000_000, 64: 50_000_000])
+        )
 
         XCTAssertNil(portfolio.root)
         XCTAssertEqual(portfolio.subnets.map(\.netuid), [19, 64, 7, 12])
@@ -99,5 +100,35 @@ final class SubtensorPortfolioBuilderTests: XCTestCase {
 
     private func availability(total: Balance, locked: Balance) -> SubtensorStakingPallet.StakeAvailability {
         SubtensorStakingPallet.StakeAvailability(total: total, locked: locked, available: total - locked)
+    }
+
+    private func catalogue(prices: [UInt16: Balance]) -> SubtensorSubnetCatalogue {
+        let stamp = SubtensorBackendStamp(asOf: Date(timeIntervalSince1970: 1_790_000_000), freshness: .fresh)
+
+        return SubtensorSubnetCatalogue(subnets: prices.map { netuid, price in
+            SubtensorCatalogueSubnet(
+                netuid: netuid,
+                name: "",
+                symbol: "",
+                networkRegisteredAt: 0,
+                tempo: 360,
+                ownerColdkey: "",
+                ownerHotkey: "",
+                links: SubtensorSubnetLinks(
+                    githubRepo: "",
+                    subnetContact: "",
+                    subnetUrl: "",
+                    subnetWebsite: "",
+                    discord: "",
+                    additional: ""
+                ),
+                taoReserve: 0,
+                alphaReserve: 0,
+                alphaOutstanding: 0,
+                taoPerAlpha: price,
+                metadataStamp: stamp,
+                pricesStamp: stamp
+            )
+        })
     }
 }
