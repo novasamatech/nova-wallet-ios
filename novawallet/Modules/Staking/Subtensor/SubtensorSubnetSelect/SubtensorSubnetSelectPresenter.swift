@@ -23,7 +23,8 @@ final class SubtensorSubnetSelectPresenter {
     private var list: SubtensorSubnetList?
 
     private weak var filtersView: SubtensorSubnetFiltersViewProtocol?
-    private var isWeeklyRequested = false
+    private var requestedWeeklySubnets: Set<SubtensorSubnetRef> = []
+    private var isWeeklyPending = false
     private var hasExpiredEntriesSeed = false
     private var hasExpiredAgesSeed = false
 
@@ -120,12 +121,20 @@ private extension SubtensorSubnetSelectPresenter {
     }
 
     func requestWeeklyPricesIfNeeded() {
-        guard let entries, !isWeeklyRequested else {
+        guard let entries, !isWeeklyPending else {
             return
         }
 
-        isWeeklyRequested = true
-        interactor.loadWeeklyPrices(for: entries.map(\.subnet.ref))
+        let subnets = entries.map(\.subnet.ref).filter { !requestedWeeklySubnets.contains($0) }
+
+        guard !subnets.isEmpty else {
+            return
+        }
+
+        requestedWeeklySubnets.formUnion(subnets)
+        isWeeklyPending = true
+
+        interactor.loadWeeklyPrices(for: subnets)
     }
 
     func retryEntries() {
@@ -283,9 +292,11 @@ extension SubtensorSubnetSelectPresenter: SubnetSelectInteractorOutputProtocol {
     }
 
     func didReceive(weeklyPrices: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]) {
-        self.weeklyPrices = weeklyPrices
+        self.weeklyPrices = (self.weeklyPrices ?? [:]).merging(weeklyPrices) { _, new in new }
+        isWeeklyPending = false
 
         provideList()
+        requestWeeklyPricesIfNeeded()
     }
 
     func didReceiveError(_ error: Error) {
