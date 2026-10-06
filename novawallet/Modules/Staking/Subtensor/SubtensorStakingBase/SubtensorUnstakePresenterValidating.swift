@@ -83,11 +83,16 @@ private extension SubtensorUnstakeValidatingDep {
 
         guard
             let latestQuote = quoteContext?.latestQuote,
-            let acknowledgedLimit = quoteContext?.acknowledgedLimit else {
+            let acknowledgedLimit = quoteContext?.acknowledgedLimit,
+            let minimumTaoOut = try? SubtensorTradeQuoteFactory.sellSwapMinimumOut(
+                alpha: latestQuote.amountIn,
+                feeRate: latestQuote.quote.feeRate,
+                limitPrice: acknowledgedLimit
+            ) else {
             return nil
         }
 
-        return (latestQuote.swapMinimumOut, acknowledgedLimit)
+        return (minimumTaoOut, acknowledgedLimit)
     }
 }
 

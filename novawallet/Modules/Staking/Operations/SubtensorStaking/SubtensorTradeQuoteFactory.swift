@@ -15,6 +15,15 @@ final class SubtensorTradeQuoteFactory {
     }
 }
 
+extension SubtensorTradeQuoteFactory {
+    static func sellSwapMinimumOut(alpha: Balance, feeRate: UInt16, limitPrice: Balance) throws -> Balance {
+        try SubtensorNovaFeeCalculator.minimumTaoOut(
+            alpha: netOfPoolFee(alpha, feeRate: feeRate),
+            limitPrice: limitPrice
+        )
+    }
+}
+
 private extension SubtensorTradeQuoteFactory {
     static func ensureSubnet(_ netuid: UInt16) throws {
         guard netuid != SubtensorStakingPallet.rootNetuid else {
@@ -61,8 +70,7 @@ private extension SubtensorTradeQuoteFactory {
         let limitPrice = try SubtensorLimitPriceCalculator.sellLimit(spot: quote.spotPrice, tolerance: tolerance)
         let novaFee = try feeCalculator.sellFee(quotedTaoOut: quote.sim.taoAmount)
         let feeAmount = novaFee?.amount ?? 0
-        let swappedAlpha = netOfPoolFee(alpha, feeRate: quote.feeRate)
-        let minimumTaoOut = try SubtensorNovaFeeCalculator.minimumTaoOut(alpha: swappedAlpha, limitPrice: limitPrice)
+        let minimumTaoOut = try sellSwapMinimumOut(alpha: alpha, feeRate: quote.feeRate, limitPrice: limitPrice)
 
         return SubtensorTradeQuote(
             quote: quote,
