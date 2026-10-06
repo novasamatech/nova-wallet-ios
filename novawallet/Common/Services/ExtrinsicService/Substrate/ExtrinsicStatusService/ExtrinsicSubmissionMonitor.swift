@@ -26,6 +26,20 @@ extension ExtrinsicSubmitMonitorFactoryProtocol {
     }
 }
 
+enum ExtrinsicSubmissionMonitorError: Error, Equatable {
+    case invalid
+    case dropped
+    case usurped(ExtrinsicHash)
+}
+
+extension ExtrinsicSubmissionMonitorError: ErrorContentConvertible {
+    func toErrorContent(for locale: Locale?) -> ErrorContent {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        return ErrorContent(title: strings.commonErrorGeneralTitle(), message: strings.commonTransactionFailed())
+    }
+}
+
 final class ExtrinsicSubmissionMonitorFactory {
     struct SubmissionResult {
         let blockHash: BlockHash
@@ -73,53 +87,11 @@ extension ExtrinsicSubmissionMonitorFactory: ExtrinsicSubmitMonitorFactoryProtoc
         signer: SigningWrapperProtocol,
         matchingEvents: ExtrinsicEventsMatching?
     ) -> CompoundOperationWrapper<ExtrinsicMonitorSubmission> {
-        var subscriptionId: UInt16?
-
-        let submissionOperation = AsyncClosureOperation<SubmissionResult>(operationClosure: { completionClosure in
-            self.submissionService.submitAndWatch(
-                extrinsicBuilderClosure,
-                payingIn: feeAssetId,
-                signer: signer,
-                runningIn: self.processingQueue,
-                subscriptionIdClosure: { identifier in
-                    subscriptionId = identifier
-
-                    return true
-                },
-                notificationClosure: { result in
-                    switch result {
-                    case let .success(model):
-                        if let blockHash = model.statusUpdate.getInBlockOrFinalizedHash() {
-                            if let subscriptionId {
-                                self.submissionService.cancelExtrinsicWatch(for: subscriptionId)
-                            }
-
-                            let response = SubmissionResult(
-                                blockHash: blockHash,
-                                extrinsicHash: model.statusUpdate.extrinsicHash,
-                                sender: model.sender
-                            )
-
-                            completionClosure(.success(response))
-                        }
-                    case let .failure(error):
-                        if let subscriptionId {
-                            self.submissionService.cancelExtrinsicWatch(for: subscriptionId)
-                        }
-
-                        completionClosure(.failure(error))
-                    }
-                }
-            )
-        }, cancelationClosure: {
-            self.processingQueue.async {
-                guard let subscriptionId else {
-                    return
-                }
-
-                self.submissionService.cancelExtrinsicWatch(for: subscriptionId)
-            }
-        })
+        let submissionOperation = createSubmissionOperation(
+            extrinsicBuilderClosure: extrinsicBuilderClosure,
+            payingIn: feeAssetId,
+            signer: signer
+        )
 
         let statusWrapper: CompoundOperationWrapper<SubstrateExtrinsicStatus> = OperationCombiningService
             .compoundNonOptionalWrapper(
@@ -154,5 +126,86 @@ extension ExtrinsicSubmissionMonitorFactory: ExtrinsicSubmitMonitorFactoryProtoc
         return statusWrapper
             .insertingHead(operations: [submissionOperation])
             .insertingTail(operation: mappingOperation)
+    }
+}
+
+private extension ExtrinsicSubmissionMonitorFactory {
+    func createSubmissionOperation(
+        extrinsicBuilderClosure: @escaping ExtrinsicBuilderClosure,
+        payingIn feeAssetId: ChainAssetId?,
+        signer: SigningWrapperProtocol
+    ) -> AsyncClosureOperation<SubmissionResult> {
+        var subscriptionId: UInt16?
+
+        return AsyncClosureOperation<SubmissionResult>(operationClosure: { completionClosure in
+            self.submissionService.submitAndWatch(
+                extrinsicBuilderClosure,
+                payingIn: feeAssetId,
+                signer: signer,
+                runningIn: self.processingQueue,
+                subscriptionIdClosure: { identifier in
+                    subscriptionId = identifier
+
+                    return true
+                },
+                notificationClosure: { result in
+                    guard let submissionResult = self.submissionResult(from: result) else {
+                        return
+                    }
+
+                    if let subscriptionId {
+                        self.submissionService.cancelExtrinsicWatch(for: subscriptionId)
+                    }
+
+                    completionClosure(submissionResult)
+                }
+            )
+        }, cancelationClosure: {
+            self.processingQueue.async {
+                guard let subscriptionId else {
+                    return
+                }
+
+                self.submissionService.cancelExtrinsicWatch(for: subscriptionId)
+            }
+        })
+    }
+
+    func submissionResult(
+        from result: Result<ExtrinsicSubscribedStatusModel, Error>
+    ) -> Result<SubmissionResult, Error>? {
+        switch result {
+        case let .success(model):
+            if let blockHash = model.statusUpdate.getInBlockOrFinalizedHash() {
+                let response = SubmissionResult(
+                    blockHash: blockHash,
+                    extrinsicHash: model.statusUpdate.extrinsicHash,
+                    sender: model.sender
+                )
+
+                return .success(response)
+            } else if let error = model.statusUpdate.extrinsicStatus.notIncludedError {
+                return .failure(error)
+            } else {
+                return nil
+            }
+        case let .failure(error):
+            return .failure(error)
+        }
+    }
+}
+
+private extension ExtrinsicStatus {
+    var notIncludedError: ExtrinsicSubmissionMonitorError? {
+        switch self {
+        case .invalid:
+            .invalid
+        case .dropped:
+            .dropped
+        case let .usurped(extrinsicHash):
+            .usurped(extrinsicHash)
+        default:
+            nil
+        }
     }
 }
