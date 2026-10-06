@@ -24,6 +24,18 @@ final class MetadataHashGenerationTests: XCTestCase {
         }
     }
 
+    func testBittensorHashGeneration() {
+        do {
+            if let hash = try performHashGeneration(for: KnowChainId.bittensor) {
+                Logger.shared.info("Bittensor hash: \(hash.toHex(includePrefix: true))")
+            } else {
+                XCTFail("Unexpected empty bittensor hash")
+            }
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+
     private func performHashGeneration(for chainId: ChainModel.Id) throws -> Data? {
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
