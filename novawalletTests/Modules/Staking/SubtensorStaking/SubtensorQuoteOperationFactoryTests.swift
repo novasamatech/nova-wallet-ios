@@ -179,6 +179,17 @@ final class SubtensorQuoteOperationFactoryTests: XCTestCase {
         XCTAssertEqual(impact.mul(value: 1_000_000), 80)
     }
 
+    func testLargeBuyPriceImpactIsThePoolPriceMoveNotTheAverageShortfall() throws {
+        let args = SubtensorQuoteArgs(netuid: netuid, direction: .stake(taoIn: 1_200_000_000_000))
+        let sim = makeSim(taoAmount: 1_199_395_742_733, alphaAmount: 16_156_594_429_601, taoFee: 604_257_267)
+
+        let quote = try fetchQuote(using: makeFactory(sim: sim, spot: 73_800_000), args: args)
+
+        let impact = try XCTUnwrap(quote.priceImpact)
+
+        XCTAssertEqual(impact.mul(value: 1_000_000), 11841)
+    }
+
     func testPriceImpactIsTheSizeOfTheMoveWhenOutBeatsSpotValuation() {
         let quote = SubtensorQuote(
             args: buyArgs,
