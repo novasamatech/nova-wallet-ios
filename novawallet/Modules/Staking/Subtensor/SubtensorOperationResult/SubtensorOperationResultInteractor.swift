@@ -130,8 +130,11 @@ private extension SubtensorOperationResultInteractor {
                 inOperationQueue: operationQueue,
                 runningCallbackIn: .main
             ) { [weak self] result in
-                if case let .success(catalogue) = result {
+                switch result {
+                case let .success(catalogue):
                     self?.presenter?.didReceiveCatalogue(catalogue)
+                case let .failure(error):
+                    self?.logger.error("Subtensor catalogue unavailable for the result: \(error)")
                 }
             }
         }

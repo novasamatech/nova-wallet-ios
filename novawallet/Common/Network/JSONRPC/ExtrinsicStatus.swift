@@ -16,28 +16,75 @@ struct ExtrinsicStatusUpdate {
     }
 }
 
-enum ExtrinsicStatus: Decodable {
+enum ExtrinsicStatus: Decodable, Equatable {
+    case future
+    case ready
+    case broadcast([String])
     case inBlock(String)
-    case finalized(String)
+    case retracted(String)
     case finalityTimeout(String)
+    case finalized(String)
+    case usurped(String)
+    case dropped
+    case invalid
     case other
+
+    private enum PlainStatus: String {
+        case future
+        case ready
+        case dropped
+        case invalid
+    }
 
     private enum CodingKeys: String, CodingKey {
         case broadcast
         case inBlock
-        case finalized
+        case retracted
         case finalityTimeout
+        case finalized
+        case usurped
     }
 
     init(from decoder: Decoder) throws {
-        let values = try decoder.container(keyedBy: CodingKeys.self)
-        if let value = try? values.decode(String.self, forKey: .inBlock) {
-            self = .inBlock(value)
-        } else if let value = try? values.decode(String.self, forKey: .finalized) {
-            self = .finalized(value)
-        } else if let value = try? values.decode(String.self, forKey: .finalityTimeout) {
-            self = .finalityTimeout(value)
+        if let plainStatus = try? decoder.singleValueContainer().decode(String.self) {
+            self.init(plainStatus: plainStatus)
         } else {
+            try self.init(keyedStatusFrom: decoder)
+        }
+    }
+
+    private init(plainStatus: String) {
+        self = switch PlainStatus(rawValue: plainStatus) {
+        case .future:
+            .future
+        case .ready:
+            .ready
+        case .dropped:
+            .dropped
+        case .invalid:
+            .invalid
+        case nil:
+            .other
+        }
+    }
+
+    private init(keyedStatusFrom decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+
+        switch values.allKeys.first {
+        case .broadcast:
+            self = try .broadcast(values.decode([String].self, forKey: .broadcast))
+        case .inBlock:
+            self = try .inBlock(values.decode(String.self, forKey: .inBlock))
+        case .retracted:
+            self = try .retracted(values.decode(String.self, forKey: .retracted))
+        case .finalityTimeout:
+            self = try .finalityTimeout(values.decode(String.self, forKey: .finalityTimeout))
+        case .finalized:
+            self = try .finalized(values.decode(String.self, forKey: .finalized))
+        case .usurped:
+            self = try .usurped(values.decode(String.self, forKey: .usurped))
+        case nil:
             self = .other
         }
     }
