@@ -61,6 +61,10 @@ final class SubtensorOperationResultInteractor {
 
 private extension SubtensorOperationResultInteractor {
     func startConfirmationCap() {
+        guard confirmationScheduler == nil, !isSubmissionFinished else {
+            return
+        }
+
         let scheduler = schedulerFactory(self)
         confirmationScheduler = scheduler
         scheduler.notifyAfter(SubtensorOperationResultConstants.confirmationCap)
@@ -68,10 +72,15 @@ private extension SubtensorOperationResultInteractor {
 
     func submit() {
         osMediator.disableScreenSleep()
-        startConfirmationCap()
+
+        let wrapper = operationService.createSubmitWrapper(for: operation) { [weak self] in
+            DispatchQueue.main.async {
+                self?.startConfirmationCap()
+            }
+        }
 
         execute(
-            wrapper: operationService.createSubmitWrapper(for: operation),
+            wrapper: wrapper,
             inOperationQueue: operationQueue,
             runningCallbackIn: .main
         ) { [weak self] result in
