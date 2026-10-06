@@ -4,16 +4,13 @@ import Foundation
 final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
     let feeResult: Result<ExtrinsicFeeProtocol, Error>
     let submittedModelResult: Result<ExtrinsicSubmittedModel, Error>
-    let watchStatus: ExtrinsicStatus?
 
     init(
         feeResult: Result<ExtrinsicFeeProtocol, Error>,
-        submittedModelResult: Result<ExtrinsicSubmittedModel, Error>,
-        watchStatus: ExtrinsicStatus? = nil
+        submittedModelResult: Result<ExtrinsicSubmittedModel, Error>
     ) {
         self.feeResult = feeResult
         self.submittedModelResult = submittedModelResult
-        self.watchStatus = watchStatus
     }
 
     func estimateFee(
@@ -125,7 +122,7 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
             let model = ExtrinsicSubscribedStatusModel(
                 statusUpdate: ExtrinsicStatusUpdate(
                     extrinsicHash: value.txHash,
-                    extrinsicStatus: watchStatus ?? .inBlock(value.txHash)
+                    extrinsicStatus: .inBlock(value.txHash)
                 ),
                 sender: value.sender
             )
@@ -139,7 +136,7 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
 }
 
 extension ExtrinsicServiceStub {
-    static func dummy(watchStatus: ExtrinsicStatus? = nil) -> ExtrinsicServiceStub {
+    static func dummy() -> ExtrinsicServiceStub {
         let fee = ExtrinsicFee(amount: 10_000_000_000, payer: nil, weight: .init(refTime: 10_005_000, proofSize: 0))
 
         let txHash = Data(repeating: 7, count: 32).toHex(includePrefix: true)
@@ -153,10 +150,6 @@ extension ExtrinsicServiceStub {
             sender: .current(chainAccount)
         )
 
-        return ExtrinsicServiceStub(
-            feeResult: .success(fee),
-            submittedModelResult: .success(submittedModel),
-            watchStatus: watchStatus
-        )
+        return ExtrinsicServiceStub(feeResult: .success(fee), submittedModelResult: .success(submittedModel))
     }
 }
