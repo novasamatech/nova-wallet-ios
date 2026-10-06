@@ -168,7 +168,7 @@ final class SubtensorQuoteOperationFactoryTests: XCTestCase {
 
         let impact = try XCTUnwrap(quote.priceImpact)
 
-        XCTAssertEqual(impact.mul(value: 1_000_000), 40)
+        XCTAssertEqual(impact.mul(value: 1_000_000), 80)
     }
 
     func testSellPriceImpactGoldenFromPinnedCapture() throws {
@@ -176,10 +176,10 @@ final class SubtensorQuoteOperationFactoryTests: XCTestCase {
 
         let impact = try XCTUnwrap(quote.priceImpact)
 
-        XCTAssertEqual(impact.mul(value: 1_000_000), 40)
+        XCTAssertEqual(impact.mul(value: 1_000_000), 80)
     }
 
-    func testPriceImpactClampsToZeroWhenOutBeatsSpotValuation() {
+    func testPriceImpactIsTheSizeOfTheMoveWhenOutBeatsSpotValuation() {
         let quote = SubtensorQuote(
             args: buyArgs,
             sim: makeSim(taoAmount: 1_000_000_000, alphaAmount: 200_000_000_000),
@@ -187,7 +187,7 @@ final class SubtensorQuoteOperationFactoryTests: XCTestCase {
             feeRate: 33
         )
 
-        XCTAssertEqual(quote.priceImpact?.mul(value: 1_000_000), 0)
+        XCTAssertEqual(quote.priceImpact?.mul(value: 1_000_000), 576_503)
     }
 
     func testPriceImpactNilWhenSimAlphaIsZero() {

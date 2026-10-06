@@ -1040,8 +1040,8 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
         }
 
         let quote = makeStakeQuote(
-            taoAmount: 1000,
-            alphaAmount: 900,
+            taoAmount: 1_048_808_848,
+            alphaAmount: 1_000_000_000,
             spotPrice: 1_000_000_000
         )
 
@@ -1059,8 +1059,8 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
         let setup = makeSetup()
 
         let quote = makeStakeQuote(
-            taoAmount: 1000,
-            alphaAmount: 990,
+            taoAmount: 1_004_987_562,
+            alphaAmount: 1_000_000_000,
             spotPrice: 1_000_000_000
         )
 
@@ -1084,8 +1084,8 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
         }
 
         let quote = makeStakeQuote(
-            taoAmount: 1000,
-            alphaAmount: 989,
+            taoAmount: 1_004_987_563,
+            alphaAmount: 1_000_000_000,
             spotPrice: 1_000_000_000
         )
 
