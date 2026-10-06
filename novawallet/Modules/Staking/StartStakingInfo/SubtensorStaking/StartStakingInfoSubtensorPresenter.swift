@@ -7,7 +7,6 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
     let subtensorViewModelFactory: StartStakingInfoSubtensorViewModelFactoryProtocol
 
     private var walletType: MetaAccountModelType?
-    private var isHeadlineResolved = false
     private var headlineRate: Decimal?
 
     init(
@@ -82,14 +81,11 @@ private extension StartStakingInfoSubtensorPresenter {
         }
 
         self.headlineRate = headlineRate
-        isHeadlineResolved = true
     }
 
     func provideSubtensorViewModel() {
-        let title = isHeadlineResolved ? createTitle(locale: selectedLocale) : nil
-
         let viewModel = subtensorViewModelFactory.createViewModel(
-            title: title,
+            title: createTitle(locale: selectedLocale),
             locale: selectedLocale
         )
 
@@ -117,7 +113,6 @@ private extension StartStakingInfoSubtensorPresenter {
 extension StartStakingInfoSubtensorPresenter: StartStakingInfoSubtensorInteractorOutputProtocol {
     func didReceive(headlineRate: Decimal?) {
         self.headlineRate = headlineRate
-        isHeadlineResolved = true
 
         provideSubtensorViewModel()
     }
