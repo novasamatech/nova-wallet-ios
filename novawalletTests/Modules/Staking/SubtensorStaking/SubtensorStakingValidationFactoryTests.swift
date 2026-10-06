@@ -348,6 +348,7 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
         let validator = setup.factory.canPayFeeFromStakeOtherwiseWarns(
             transferable: BigUInt(100),
             fee: BigUInt(50),
+            existentialDeposit: BigUInt(50),
             locale: locale
         )
 
@@ -368,6 +369,7 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
         let validator = setup.factory.canPayFeeFromStakeOtherwiseWarns(
             transferable: BigUInt(10),
             fee: BigUInt(50),
+            existentialDeposit: BigUInt(50),
             locale: locale
         )
 

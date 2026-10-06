@@ -90,6 +90,7 @@ protocol SubtensorStakingValidationFactoryProtocol: BaseDataValidatingFactoryPro
     func canPayFeeFromStakeOtherwiseWarns(
         transferable: Balance?,
         fee: Balance?,
+        existentialDeposit: Balance?,
         locale: Locale
     ) -> DataValidating
 

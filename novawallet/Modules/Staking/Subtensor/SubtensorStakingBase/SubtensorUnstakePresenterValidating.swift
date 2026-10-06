@@ -32,6 +32,10 @@ extension SubtensorUnstakeValidatingDep {
         netuid != SubtensorStakingPallet.rootNetuid
     }
 
+    var isRootHoldEnabled: Bool {
+        (preflight?.rootStakeUnlockInterval ?? 0) > 0
+    }
+
     var sellPlanInput: SubtensorSellPlanInput? {
         guard
             let amount,
@@ -214,10 +218,11 @@ private extension SubtensorUnstakePresenterValidating {
         dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
         selectedLocale: Locale
     ) -> DataValidating {
-        guard dep.isBatched else {
+        guard dep.isBatched || dep.isRootHoldEnabled else {
             return dataValidationFactory.canPayFeeFromStakeOtherwiseWarns(
                 transferable: dep.balance?.transferable,
                 fee: dep.fee?.amountForCurrentAccount,
+                existentialDeposit: dep.existentialDeposit,
                 locale: selectedLocale
             )
         }
