@@ -245,10 +245,7 @@ private extension BittensorAttestedTransport {
         prepared: BittensorAttestedPreparedRequest,
         signedClientId: String?
     ) throws -> AttemptOutcome {
-        let grade = BittensorAttestedResponseGrader.grade(
-            response,
-            isRecommendationsRoute: prepared.isRecommendationsRoute
-        )
+        let grade = BittensorAttestedResponseGrader.grade(response)
 
         log(response, grade: grade, route: prepared.route)
 

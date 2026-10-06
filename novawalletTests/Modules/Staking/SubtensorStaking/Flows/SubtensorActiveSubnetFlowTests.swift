@@ -575,7 +575,7 @@ private extension SubtensorActiveSubnetFlowTests {
         XCTAssertEqual(screens.chutesInfo.symbol, "ش")
         XCTAssertEqual(screens.logo?.absoluteString, SubtensorFlowChainWorld.chutesLogo)
         XCTAssertEqual(screens.group.totalAlpha, 70_200_000_000)
-        XCTAssertEqual(screens.group.taoValue, 5_180_760_000)
+        XCTAssertEqual(screens.group.taoValue, 3_858_278_626)
         XCTAssertEqual(screens.group.primaryHotkey, ember)
         XCTAssertEqual(screens.group.availability?.locked, 14_000_000_000)
         XCTAssertEqual(screens.soldPosition.hotkey, ember)

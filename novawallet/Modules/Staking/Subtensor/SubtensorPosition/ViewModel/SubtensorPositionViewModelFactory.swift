@@ -149,9 +149,9 @@ private extension SubtensorPositionViewModelFactory {
 
         let worthValue: SubtensorPositionValueViewModel
 
-        if state.price == .loading {
+        if state.price == .loading || !state.isCatalogueResolved {
             worthValue = .loading
-        } else if let taoValue = state.group?.taoValue {
+        } else if let taoValue = state.taoValue {
             worthValue = .loaded(
                 value: formatTao(taoValue, locale: locale).approximatelyEqual(),
                 detail: formatFiat(taoValue, price: state.price.value, locale: locale),

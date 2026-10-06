@@ -17,10 +17,7 @@ enum BittensorAttestedGrade {
 }
 
 enum BittensorAttestedResponseGrader {
-    static func grade(
-        _ response: BittensorAttestedResponse,
-        isRecommendationsRoute: Bool
-    ) -> BittensorAttestedGrade {
+    static func grade(_ response: BittensorAttestedResponse) -> BittensorAttestedGrade {
         let requestId = response.requestId
 
         guard !(200 ..< 300).contains(response.statusCode) else {
@@ -44,8 +41,6 @@ enum BittensorAttestedResponseGrader {
             return .failure(.attestationRejected(requestId: requestId))
         case 404:
             return .failure(gradeNotFound(response, code: code))
-        case 400 where isRecommendationsRoute && attestationCode == .invalidTarget:
-            return .failure(.routeNotPublished)
         case 400, 405, 413, 415:
             return .failure(.invalidRequest(code: code, requestId: requestId))
         case 500 ... 599:

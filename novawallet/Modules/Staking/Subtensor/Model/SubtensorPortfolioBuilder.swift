@@ -2,16 +2,24 @@ import BigInt
 import Foundation
 
 enum SubtensorPortfolioBuilder {
-    static func build(state: Multistaking.SubtensorStakingState) -> SubtensorPortfolio {
+    static func build(
+        state: Multistaking.SubtensorStakingState,
+        catalogue: SubtensorSubnetCatalogue? = nil
+    ) -> SubtensorPortfolio {
         let positionsByNetuid = Dictionary(grouping: state.positions, by: \.netuid)
 
         let root = positionsByNetuid[SubtensorStakingPallet.rootNetuid].flatMap { positions in
-            buildGroup(netuid: SubtensorStakingPallet.rootNetuid, positions: positions, state: state)
+            buildGroup(
+                netuid: SubtensorStakingPallet.rootNetuid,
+                positions: positions,
+                state: state,
+                catalogue: catalogue
+            )
         }
 
         let subnets = positionsByNetuid
             .filter { $0.key != SubtensorStakingPallet.rootNetuid }
-            .compactMap { buildGroup(netuid: $0.key, positions: $0.value, state: state) }
+            .compactMap { buildGroup(netuid: $0.key, positions: $0.value, state: state, catalogue: catalogue) }
             .sorted(by: isOrderedBefore)
 
         let pricedTaoValue = ([root].compactMap { $0 } + subnets).reduce(Balance.zero) { total, group in
@@ -33,7 +41,8 @@ private extension SubtensorPortfolioBuilder {
     static func buildGroup(
         netuid: UInt16,
         positions: [SubtensorStakingPosition],
-        state: Multistaking.SubtensorStakingState
+        state: Multistaking.SubtensorStakingState,
+        catalogue: SubtensorSubnetCatalogue?
     ) -> SubtensorPortfolioGroup? {
         let members = positions.sorted(by: isMemberOrderedBefore)
 
@@ -43,13 +52,9 @@ private extension SubtensorPortfolioBuilder {
 
         let totalAlpha = members.reduce(Balance.zero) { $0 + $1.stakeAlpha }
 
-        let taoValue = members.reduce(Balance?.some(.zero)) { total, position in
-            guard let total, let value = state.taoValue(of: position) else {
-                return nil
-            }
-
-            return total + value
-        }
+        let taoValue = netuid == SubtensorStakingPallet.rootNetuid
+            ? totalAlpha
+            : catalogue?.taoValue(of: totalAlpha, netuid: netuid)
 
         return SubtensorPortfolioGroup(
             netuid: netuid,
