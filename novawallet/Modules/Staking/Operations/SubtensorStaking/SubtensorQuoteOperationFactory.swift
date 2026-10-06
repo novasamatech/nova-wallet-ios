@@ -61,31 +61,38 @@ extension SubtensorQuote {
     /// pool-move component only: the sim amounts are net of the input-side fee, so the fee
     /// never double-counts into the impact
     var priceImpact: BigRational? {
-        guard spotPrice > 0 else {
+        guard let postTradePrice else {
             return nil
         }
 
-        let outAtSpot: BigUInt
-        let out: BigUInt
+        let move = postTradePrice > spotPrice ? postTradePrice - spotPrice : spotPrice - postTradePrice
+
+        return BigRational(numerator: move, denominator: spotPrice)
+    }
+
+    var postTradePrice: Balance? {
+        guard sim.alphaAmount > 0, spotPrice > 0 else {
+            return nil
+        }
+
+        let scaledTao = sim.taoAmount * SubtensorStakingPallet.alphaPriceScale
 
         switch args.direction {
         case .stake:
-            outAtSpot = sim.taoAmount * SubtensorStakingPallet.alphaPriceScale / spotPrice
-            out = sim.alphaAmount
+            let averagePrice = Self.divideRoundingUp(scaledTao, by: sim.alphaAmount)
+
+            return Self.divideRoundingUp(averagePrice * averagePrice, by: spotPrice)
         case .unstake:
-            outAtSpot = sim.alphaAmount * spotPrice / SubtensorStakingPallet.alphaPriceScale
-            out = sim.taoAmount
-        }
+            let averagePrice = scaledTao / sim.alphaAmount
 
-        guard outAtSpot > 0, out > 0 else {
-            return nil
+            return averagePrice * averagePrice / spotPrice
         }
+    }
+}
 
-        guard outAtSpot > out else {
-            return BigRational(numerator: 0, denominator: 1)
-        }
-
-        return BigRational(numerator: outAtSpot - out, denominator: outAtSpot)
+private extension SubtensorQuote {
+    static func divideRoundingUp(_ dividend: Balance, by divisor: Balance) -> Balance {
+        (dividend + divisor - 1) / divisor
     }
 }
 

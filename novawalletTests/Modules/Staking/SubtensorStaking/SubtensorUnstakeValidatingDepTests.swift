@@ -114,7 +114,7 @@ final class SubtensorUnstakeValidatingDepTests: XCTestCase {
         let input = try XCTUnwrap(makeSellDep(acknowledgedLimit: 73_300_000).sellPlanInput)
 
         XCTAssertEqual(input.requestedAlpha, 56_200_000_000)
-        XCTAssertEqual(input.minimumTaoOut, 4_124_744_148)
+        XCTAssertEqual(input.minimumTaoOut, 4_117_385_655)
         XCTAssertEqual(input.sellLimitPrice, 73_300_000)
         XCTAssertEqual(input.minStake, 2_000_000)
         XCTAssertEqual(input.nominatorMinStake, 20_000_000)

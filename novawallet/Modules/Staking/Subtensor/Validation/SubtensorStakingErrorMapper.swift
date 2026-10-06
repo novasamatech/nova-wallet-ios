@@ -112,7 +112,11 @@ final class SubtensorStakingErrorMapper {
         switch errorName {
         case "PriceLimitExceeded":
             return .priceLimitExceeded
-        case "InsufficientLiquidity":
+        case "InsufficientLiquidity",
+             "InsufficientInputAmount",
+             "ReservesTooLow",
+             "ReservesOutOfBalance",
+             "SwapInputTooLarge":
             return .insufficientLiquidity
         case "InsufficientBalance":
             return .notEnoughBalanceToStake

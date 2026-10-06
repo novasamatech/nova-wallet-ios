@@ -27,7 +27,11 @@ final class SubtensorOperationResultPresenterTests: XCTestCase {
         }
 
         stub(service) { stub in
-            when(stub.createSubmitWrapper(for: any())).thenReturn(CompoundOperationWrapper(targetOperation: submitOperation))
+            when(stub.createSubmitWrapper(for: any(), signedClosure: any())).then { _, signedClosure in
+                signedClosure()
+
+                return CompoundOperationWrapper(targetOperation: submitOperation)
+            }
         }
 
         stub(scheduler) { stub in

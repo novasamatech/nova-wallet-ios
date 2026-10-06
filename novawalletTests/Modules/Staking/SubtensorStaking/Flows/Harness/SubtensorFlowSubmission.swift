@@ -116,7 +116,7 @@ extension SubtensorFlowTestCase {
         }
 
         let service = try world.createStakingOperationService(networkFee: networkFee, submitMonitor: submitMonitor)
-        let outcome = try run(service.createSubmitWrapper(for: operation))
+        let outcome = try run(service.createSubmitWrapper(for: operation) {})
 
         return SubtensorFlowSubmission(
             outcome: outcome,
