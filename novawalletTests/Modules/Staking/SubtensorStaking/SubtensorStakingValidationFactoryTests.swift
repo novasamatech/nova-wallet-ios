@@ -376,6 +376,27 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
         assertWarningContinued(run(validator))
     }
 
+    func testCanPayFeeFromStakeWarnsWhenFreeTaoMissesTheFeePlusDeposit() {
+        let setup = makeSetup()
+
+        stub(setup.presentable) { stub in
+            when(
+                stub.presentFeeFromStakeWarning(any(), fee: any(), action: any(), locale: any())
+            ).then { (_, _, action: @escaping () -> Void, _) in
+                action()
+            }
+        }
+
+        let validator = setup.factory.canPayFeeFromStakeOtherwiseWarns(
+            transferable: BigUInt(1_500_499),
+            fee: BigUInt(1_500_000),
+            existentialDeposit: BigUInt(500),
+            locale: locale
+        )
+
+        assertWarningContinued(run(validator))
+    }
+
     func testBatchedSellIsRefusedWhenFreeTaoMissesTheFeePlusDeposit() {
         let setup = makeSetup()
         let captor = ArgumentCaptor<String>()
