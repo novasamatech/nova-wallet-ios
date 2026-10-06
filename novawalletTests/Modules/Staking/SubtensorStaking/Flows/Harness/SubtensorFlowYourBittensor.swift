@@ -24,8 +24,8 @@ extension SubtensorFlowTestCase {
         let taoPriceId = try XCTUnwrap(world.chainAsset.asset.priceId)
 
         let state = try awaitPositions(in: world)
-        let portfolio = SubtensorPortfolioBuilder.build(state: state)
         let catalogue = try run(services.catalogueService.createCatalogueWrapper())
+        let portfolio = SubtensorPortfolioBuilder.build(state: state, catalogue: catalogue)
         let logos = try run(services.subnetLogosProvider.createLogosWrapper())
 
         let refs = try portfolio.subnets.map { group in
@@ -83,13 +83,13 @@ extension SubtensorFlowTestCase {
         let targonRef = SubtensorSubnetRef(netuid: 4, registeredAt: 1_411_451)
         let portfolio = screen.portfolio
 
-        XCTAssertEqual(portfolio.pricedTaoValue, 27_780_759_952)
+        XCTAssertEqual(portfolio.pricedTaoValue, 26_006_407_290)
         XCTAssertEqual(portfolio.unpricedNetuids, [])
         XCTAssertEqual(portfolio.root?.totalAlpha, 20_000_000_000)
         XCTAssertEqual(portfolio.root?.taoValue, 20_000_000_000)
         XCTAssertEqual(portfolio.subnets.map(\.netuid), [64, 4])
         XCTAssertEqual(portfolio.subnets.map(\.totalAlpha), [70_200_000_000, 88_000_000_000])
-        XCTAssertEqual(portfolio.subnets.map(\.taoValue), [5_180_760_000, 2_599_999_952])
+        XCTAssertEqual(portfolio.subnets.map(\.taoValue), [3_858_278_626, 2_148_128_664])
 
         XCTAssertEqual(try screen.subnet(netuid: 64).ref, chutesRef)
         XCTAssertEqual(try screen.subnet(netuid: 4).ref, targonRef)
@@ -130,9 +130,9 @@ extension SubtensorFlowTestCase {
 
         let series = screen.valueSeries
         XCTAssertEqual(series.points.map(\.date), chutesHistory.points.map(\.date))
-        assertFlowDoubles(series.points.map(\.taoValue), [27.050679952, 27.780759952])
-        assertFlowDoubles(series.points.map(\.fiatValue), [8115.2039856, 9501.019903584])
-        XCTAssertEqual(try flowDouble(series.changeInFiat), 9501.019903584 / 8115.2039856 - 1, accuracy: 1e-9)
+        assertFlowDoubles(series.points.map(\.taoValue), [25.4626932289, 26.00640729])
+        assertFlowDoubles(series.points.map(\.fiatValue), [7638.807968665, 8894.19129318])
+        XCTAssertEqual(try flowDouble(series.changeInFiat), 8894.19129318 / 7638.807968665 - 1, accuracy: 1e-9)
     }
 
     func flowDouble(_ value: Decimal?) throws -> Double {

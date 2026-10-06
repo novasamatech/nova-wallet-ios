@@ -334,7 +334,7 @@ private extension SubtensorPortfolioViewModelFactory {
 
 extension SubtensorPortfolioViewModelFactory: SubnetPortfolioViewModelFactoryProtocol {
     func createViewModel(for state: SubtensorPortfolioState, locale: Locale) -> SubtensorPortfolioViewModel {
-        guard let portfolio = state.portfolio else {
+        guard let portfolio = state.portfolio, !state.isValuationPending else {
             return SubtensorPortfolioViewModel(
                 content: .positions(header: createLoadingHeader(for: state, locale: locale), rows: nil),
                 isSyncFailed: state.isSyncFailed
