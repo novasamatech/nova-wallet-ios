@@ -5,14 +5,14 @@ import XCTest
 
 final class SubtensorSubnetBuyFlowTests: SubtensorFlowTestCase {
     private let grossTao: Balance = 10_000_000_000
-    private let novaFee: UInt64 = 84_283_589
-    private let stakedTao: UInt64 = 9_915_716_411
+    private let novaFee: UInt64 = 29_910_269
+    private let stakedTao: UInt64 = 9_970_089_731
     private let boughtAlpha: UInt64 = 180_322_068_005
     private let poolFee: UInt64 = 4_993_036
     private let limitPrice: UInt64 = 55_236_040
 
     private let chutesQuote = SubtensorQuote(
-        args: SubtensorQuoteArgs(netuid: 64, direction: .stake(taoIn: 9_915_716_411)),
+        args: SubtensorQuoteArgs(netuid: 64, direction: .stake(taoIn: 9_970_089_731)),
         sim: SubtensorStakingPallet.SimSwapResult(
             taoAmount: 9_915_716_411,
             alphaAmount: 180_322_068_005,
@@ -152,8 +152,8 @@ final class SubtensorSubnetBuyFlowTests: SubtensorFlowTestCase {
             amountIn: grossTao,
             novaFee: SubtensorNovaFee(amount: Balance(novaFee), beneficiary: beneficiary),
             expectedOut: Balance(boughtAlpha),
-            swapMinimumOut: 179_424_943_841,
-            minimumOut: 179_424_943_841,
+            swapMinimumOut: 180_408_829_380,
+            minimumOut: 180_408_829_380,
             limitPrice: Balance(limitPrice)
         ))
 

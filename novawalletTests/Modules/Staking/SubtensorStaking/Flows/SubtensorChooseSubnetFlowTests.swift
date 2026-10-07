@@ -140,17 +140,17 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(buyQuote, SubtensorTradeQuote(
             quote: SubtensorFlowChainWorld.chutesBuyQuote,
             amountIn: 5_000_000_000,
-            novaFee: SubtensorNovaFee(amount: 42_141_794, beneficiary: SubtensorFlowChainWorld.novaFeeBeneficiary),
+            novaFee: SubtensorNovaFee(amount: 14_955_134, beneficiary: SubtensorFlowChainWorld.novaFeeBeneficiary),
             expectedOut: 90_150_000_000,
-            swapMinimumOut: 89_712_471_929,
-            minimumOut: 89_712_471_929,
+            swapMinimumOut: 90_204_414_708,
+            minimumOut: 90_204_414_708,
             limitPrice: 55_236_040
         ))
         verify(world.quoteOperationFactory).createQuoteWrapper(
-            for: equal(to: SubtensorQuoteArgs(netuid: 64, direction: .stake(taoIn: 4_957_858_206)))
+            for: equal(to: SubtensorQuoteArgs(netuid: 64, direction: .stake(taoIn: 4_985_044_866)))
         )
         XCTAssertEqual(productionBuyFee, SubtensorNovaFee(
-            amount: 42_141_794,
+            amount: 14_955_134,
             beneficiary: try SubtensorFlowChainWorld.productionNovaFeeBeneficiary()
         ))
         XCTAssertEqual(fee.amount, networkFee)

@@ -8,7 +8,7 @@ final class SubtensorActiveSubnetFlowTests: SubtensorFlowTestCase {
     private let sellAlpha: Balance = 56_200_000_000
 
     private let chutesBuyQuote = SubtensorQuote(
-        args: SubtensorQuoteArgs(netuid: 64, direction: .stake(taoIn: 4_957_858_206)),
+        args: SubtensorQuoteArgs(netuid: 64, direction: .stake(taoIn: 4_985_044_866)),
         sim: SubtensorStakingPallet.SimSwapResult(
             taoAmount: 4_957_858_206,
             alphaAmount: 67_054_958_000,
@@ -58,11 +58,11 @@ final class SubtensorActiveSubnetFlowTests: SubtensorFlowTestCase {
                 SubtensorFlowExtrinsic.stakeAdded(
                     hotkey: ember,
                     netuid: 64,
-                    tao: 4_957_858_206,
+                    tao: 4_985_044_866,
                     alpha: 67_054_958_000,
                     poolFee: 2_496_518
                 ),
-                SubtensorFlowExtrinsic.transfer(to: beneficiary, amount: 42_141_794),
+                SubtensorFlowExtrinsic.transfer(to: beneficiary, amount: 14_955_134),
                 SubtensorFlowExtrinsic.networkFeePaid(paidNetworkFee)
             ]
         )
@@ -84,7 +84,7 @@ final class SubtensorActiveSubnetFlowTests: SubtensorFlowTestCase {
                     alpha: 56_171_700_618,
                     poolFee: 28_299_382
                 ),
-                SubtensorFlowExtrinsic.transfer(to: beneficiary, amount: 34_935_547),
+                SubtensorFlowExtrinsic.transfer(to: beneficiary, amount: 12_397_806),
                 SubtensorFlowExtrinsic.networkFeePaid(paidNetworkFee)
             ]
         )
@@ -135,22 +135,22 @@ final class SubtensorActiveSubnetFlowTests: SubtensorFlowTestCase {
         let productionBeneficiary = try SubtensorFlowChainWorld.productionNovaFeeBeneficiary()
 
         XCTAssertEqual(productionFees, [
-            SubtensorNovaFee(amount: 42_141_794, beneficiary: productionBeneficiary),
-            SubtensorNovaFee(amount: 34_935_547, beneficiary: productionBeneficiary)
+            SubtensorNovaFee(amount: 14_955_134, beneficiary: productionBeneficiary),
+            SubtensorNovaFee(amount: 12_397_806, beneficiary: productionBeneficiary)
         ])
         verify(world.quoteOperationFactory).createQuoteWrapper(for: equal(to: chutesBuyQuote.args))
         verify(world.quoteOperationFactory).createQuoteWrapper(for: equal(to: chutesSellQuote.args))
 
         XCTAssertEqual(buyResult.calls, [
             SubtensorFlowExtrinsic.batchAll([
-                SubtensorFlowExtrinsic.addStakeLimit(hotkey: ember, netuid: 64, amount: 4_957_858_206, limitPrice: 74_169_000),
-                try SubtensorFlowExtrinsic.transferKeepAlive(to: beneficiary, amount: 42_141_794)
+                SubtensorFlowExtrinsic.addStakeLimit(hotkey: ember, netuid: 64, amount: 4_985_044_866, limitPrice: 74_169_000),
+                try SubtensorFlowExtrinsic.transferKeepAlive(to: beneficiary, amount: 14_955_134)
             ])
         ])
 
         XCTAssertEqual(buyResult.outcome, SubtensorStakingOperationOutcome(
-            executed: SubtensorExecutedAmounts(tao: 4_957_858_206, alpha: 67_054_958_000, netuid: 64),
-            novaFeePaid: 42_141_794,
+            executed: SubtensorExecutedAmounts(tao: 4_985_044_866, alpha: 67_054_958_000, netuid: 64),
+            novaFeePaid: 14_955_134,
             alphaFeePaid: nil,
             networkFeePaid: Balance(paidNetworkFee),
             extrinsicHash: SubtensorFlowExtrinsic.extrinsicHash,
@@ -165,13 +165,13 @@ final class SubtensorActiveSubnetFlowTests: SubtensorFlowTestCase {
                     alpha: 56_200_000_000,
                     limitPrice: 73_431_000
                 ),
-                try SubtensorFlowExtrinsic.transferKeepAlive(to: beneficiary, amount: 34_935_547)
+                try SubtensorFlowExtrinsic.transferKeepAlive(to: beneficiary, amount: 12_397_806)
             ])
         ])
 
         XCTAssertEqual(sellResult.outcome, SubtensorStakingOperationOutcome(
             executed: SubtensorExecutedAmounts(tao: 4_145_000_000, alpha: 56_200_000_000, netuid: 64),
-            novaFeePaid: 34_935_547,
+            novaFeePaid: 12_397_806,
             alphaFeePaid: nil,
             networkFeePaid: Balance(paidNetworkFee),
             extrinsicHash: SubtensorFlowExtrinsic.extrinsicHash,
@@ -318,7 +318,7 @@ final class SubtensorActiveSubnetFlowTests: SubtensorFlowTestCase {
                 alpha: 19_989_929_046,
                 poolFee: 10_070_954
             ),
-            SubtensorFlowExtrinsic.transfer(to: beneficiary, amount: 43_515_617),
+            SubtensorFlowExtrinsic.transfer(to: beneficiary, amount: 15_442_671),
             SubtensorFlowExtrinsic.networkFeePaid(paidNetworkFee)
         ])
 
@@ -328,10 +328,10 @@ final class SubtensorActiveSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(request.quote, SubtensorTradeQuote(
             quote: groupQuote,
             amountIn: 70_000_000_000,
-            novaFee: SubtensorNovaFee(amount: 43_515_617, beneficiary: beneficiary),
-            expectedOut: 5_119_484_383,
+            novaFee: SubtensorNovaFee(amount: 15_442_671, beneficiary: beneficiary),
+            expectedOut: 5_147_557_329,
             swapMinimumOut: 5_137_581_679,
-            minimumOut: 5_094_066_062,
+            minimumOut: 5_122_139_008,
             limitPrice: 73_431_000
         ))
 
@@ -351,13 +351,13 @@ final class SubtensorActiveSubnetFlowTests: SubtensorFlowTestCase {
             SubtensorFlowExtrinsic.batchAll([
                 SubtensorFlowExtrinsic.removeStakeFullLimit(hotkey: ember, netuid: 64, limitPrice: 73_431_000),
                 SubtensorFlowExtrinsic.removeStakeFullLimit(hotkey: cinder, netuid: 64, limitPrice: 73_431_000),
-                try SubtensorFlowExtrinsic.transferKeepAlive(to: beneficiary, amount: 43_515_617)
+                try SubtensorFlowExtrinsic.transferKeepAlive(to: beneficiary, amount: 15_442_671)
             ])
         ])
 
         XCTAssertEqual(result.outcome, SubtensorStakingOperationOutcome(
             executed: SubtensorExecutedAmounts(tao: 5_163_000_000, alpha: 70_000_000_000, netuid: 64),
-            novaFeePaid: 43_515_617,
+            novaFeePaid: 15_442_671,
             alphaFeePaid: nil,
             networkFeePaid: Balance(paidNetworkFee),
             extrinsicHash: SubtensorFlowExtrinsic.extrinsicHash,
@@ -602,10 +602,10 @@ private extension SubtensorActiveSubnetFlowTests {
         XCTAssertEqual(screens.buyQuote, SubtensorTradeQuote(
             quote: chutesBuyQuote,
             amountIn: 5_000_000_000,
-            novaFee: SubtensorNovaFee(amount: 42_141_794, beneficiary: beneficiary),
+            novaFee: SubtensorNovaFee(amount: 14_955_134, beneficiary: beneficiary),
             expectedOut: 67_054_958_000,
-            swapMinimumOut: 66_811_763_513,
-            minimumOut: 66_811_763_513,
+            swapMinimumOut: 67_178_129_124,
+            minimumOut: 67_178_129_124,
             limitPrice: 74_169_000
         ))
         XCTAssertEqual(screens.buyFee.amount, networkFee)
@@ -614,10 +614,10 @@ private extension SubtensorActiveSubnetFlowTests {
         XCTAssertEqual(screens.sellQuote, SubtensorTradeQuote(
             quote: chutesSellQuote,
             amountIn: 56_200_000_000,
-            novaFee: SubtensorNovaFee(amount: 34_935_547, beneficiary: beneficiary),
-            expectedOut: 4_110_064_453,
+            novaFee: SubtensorNovaFee(amount: 12_397_806, beneficiary: beneficiary),
+            expectedOut: 4_132_602_194,
             swapMinimumOut: 4_124_744_148,
-            minimumOut: 4_089_808_601,
+            minimumOut: 4_112_346_342,
             limitPrice: 73_431_000
         ))
         XCTAssertEqual(screens.sellFee.amount, networkFee)

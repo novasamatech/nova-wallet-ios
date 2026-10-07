@@ -24,8 +24,8 @@ final class SubtensorAmountPolicyTests: XCTestCase {
         let novaFee = try XCTUnwrap(SubtensorNovaFeeCalculator().buyFee(grossTao: maxAmount))
 
         XCTAssertEqual(maxAmount, 48_188_500_000)
-        XCTAssertEqual(novaFee.amount, 406_149_975)
-        XCTAssertEqual(maxAmount - novaFee.amount, 47_782_350_025)
+        XCTAssertEqual(novaFee.amount, 144_133_100)
+        XCTAssertEqual(maxAmount - novaFee.amount, 48_044_366_900)
     }
 
     func testMaxBuyOrStakeFloorsAtZero() {
