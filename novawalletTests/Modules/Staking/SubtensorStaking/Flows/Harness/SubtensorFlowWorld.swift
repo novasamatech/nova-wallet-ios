@@ -3,6 +3,7 @@ import Cuckoo
 import Keystore_iOS
 import NovaAppAttest
 import Operation_iOS
+import SubstrateSdk
 import XCTest
 @testable import novawallet
 
@@ -136,6 +137,8 @@ final class SubtensorFlowWorld {
             processServices: processServices,
             chainServices: chainServices
         )
+
+        try stubHeadBlock(BlockNumber.max)
     }
 
     var earnServices: SubtensorEarnServices {
@@ -197,6 +200,46 @@ final class SubtensorFlowWorld {
             operationQueue: OperationQueue(),
             logger: Logger.shared
         )
+    }
+
+    private func stubHeadBlock(_ headBlock: BlockNumber) throws {
+        let headKey = try StorageKeyFactory().createStorageKey(
+            moduleName: SystemPallet.blockNumberPath.moduleName,
+            storageName: SystemPallet.blockNumberPath.itemName
+        )
+
+        let encoder = ScaleEncoder()
+        try headBlock.encode(scaleEncoder: encoder)
+        let headValue = encoder.encode().toHex(includePrefix: true)
+
+        let connection = MockConnection()
+
+        stub(connection.internalConnection) { stub in
+            when(
+                stub.callMethod(any(), params: any(StorageQuery.self), options: any(), completion: any())
+            ).then { (
+                _: String,
+                params: StorageQuery?,
+                _: JSONRPCOptions,
+                completion: ((Result<[StorageUpdate], Error>) -> Void)?
+            ) in
+                let changes = (params?.keys ?? []).map { key in
+                    [key.toHex(includePrefix: true), key == headKey ? headValue : nil]
+                }
+
+                DispatchQueue.global().async {
+                    completion?(.success([StorageUpdate(blockHash: nil, changes: changes)]))
+                }
+
+                return 0
+            }
+
+            when(stub.cancelForIdentifiers(any())).thenDoNothing()
+        }
+
+        stub(chainRegistry) { stub in
+            when(stub.getConnection(for: equal(to: chainAsset.chain.chainId))).thenReturn(connection)
+        }
     }
 
     func useBittensorRuntime() throws -> RuntimeCoderFactoryProtocol {

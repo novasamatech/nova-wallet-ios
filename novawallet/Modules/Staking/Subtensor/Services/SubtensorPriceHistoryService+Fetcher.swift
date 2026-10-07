@@ -4,6 +4,8 @@ import Operation_iOS
 extension SubtensorPriceHistoryService {
     struct Fetcher {
         let coingeckoOperationFactory: CoingeckoOperationFactoryProtocol
+        let blockNumberOperationFactory: BlockNumberOperationFactoryProtocol
+        let chainId: ChainModel.Id
         let taoPriceId: AssetModel.PriceId
         let timeProvider: () -> TimeInterval
         let logger: LoggerProtocol
@@ -12,6 +14,7 @@ extension SubtensorPriceHistoryService {
     static func marketChanges(
         of listed: [SubtensorSubnetRef: SubtensorSubnetMarket],
         taoWeekItems: [PriceHistoryItem],
+        headBlock: BlockNumber,
         at now: TimeInterval
     ) -> [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>] {
         let taoItems = taoWeekItems.filter { $0.value > 0 }.sorted { $0.startedAt < $1.startedAt }
@@ -23,11 +26,15 @@ extension SubtensorPriceHistoryService {
             return listed.mapValues { _ in .unavailable }
         }
 
-        return listed.mapValues { market in
+        return listed.reduce(into: [:]) { result, item in
+            let (subnet, market) = item
+
             guard
                 isCurrent(market, at: now),
+                coversWeek(market, since: registrationDate(of: subnet, headBlock: headBlock, at: now)),
                 let percent = market.weekChangePercent else {
-                return .unavailable
+                result[subnet] = .unavailable
+                return
             }
 
             let summary = SubtensorWeeklyPriceSummary(
@@ -35,7 +42,7 @@ extension SubtensorPriceHistoryService {
                 sparkline: marketSparkline(of: market.weekSparkline, taoItems: taoItems)
             )
 
-            return .available(summary)
+            result[subnet] = .available(summary)
         }
     }
 }
@@ -47,6 +54,16 @@ private extension SubtensorPriceHistoryService {
         }
 
         return now - lastUpdated.timeIntervalSince1970 <= marketStalenessLimit
+    }
+
+    static func coversWeek(_ market: SubtensorSubnetMarket, since registrationDate: Date) -> Bool {
+        guard
+            let lastUpdated = market.lastUpdated,
+            let weekStart = SubtensorPricePeriod.week.startDate(endingAt: lastUpdated) else {
+            return false
+        }
+
+        return registrationDate.addingTimeInterval(SubtensorPricePeriod.week.coverageTolerance) <= weekStart
     }
 
     static func marketSparkline(of prices: [Decimal?], taoItems: [PriceHistoryItem]) -> [Decimal] {
@@ -83,6 +100,10 @@ private extension SubtensorPriceHistoryService {
 }
 
 extension SubtensorPriceHistoryService.Fetcher {
+    func createHeadBlockWrapper() -> CompoundOperationWrapper<BlockNumber> {
+        blockNumberOperationFactory.createWrapper(for: chainId)
+    }
+
     func createPointsWrapper(
         alphaPriceId: String,
         currency: Currency,
@@ -126,16 +147,20 @@ extension SubtensorPriceHistoryService.Fetcher {
             period: SubtensorPricePeriod.week.coingeckoPeriod
         )
 
+        let headBlockWrapper = createHeadBlockWrapper()
+
         let timeProvider = timeProvider
         let logger = logger
 
         let changesOperation = ClosureOperation<[SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]> {
             do {
                 let tao = try taoOperation.extractNoCancellableResultData()
+                let headBlock = try headBlockWrapper.targetOperation.extractNoCancellableResultData()
 
                 return SubtensorPriceHistoryService.marketChanges(
                     of: listed,
                     taoWeekItems: tao.items,
+                    headBlock: headBlock,
                     at: timeProvider()
                 )
             } catch {
@@ -145,7 +170,11 @@ extension SubtensorPriceHistoryService.Fetcher {
         }
 
         changesOperation.addDependency(taoOperation)
+        changesOperation.addDependency(headBlockWrapper.targetOperation)
 
-        return CompoundOperationWrapper(targetOperation: changesOperation, dependencies: [taoOperation])
+        return CompoundOperationWrapper(
+            targetOperation: changesOperation,
+            dependencies: [taoOperation] + headBlockWrapper.allOperations
+        )
     }
 }

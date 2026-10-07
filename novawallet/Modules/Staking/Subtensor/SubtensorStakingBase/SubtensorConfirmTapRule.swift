@@ -59,6 +59,6 @@ private extension SubtensorConfirmTapRule {
     ) -> SubtensorPortfolioGroup? {
         let portfolio = SubtensorPortfolioBuilder.build(state: state)
 
-        return ([portfolio.root].compactMap { $0 } + portfolio.subnets).first { $0.netuid == netuid }
+        return ([portfolio.stakedRoot].compactMap { $0 } + portfolio.subnets).first { $0.netuid == netuid }
     }
 }

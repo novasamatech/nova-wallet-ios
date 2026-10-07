@@ -102,6 +102,7 @@ final class SubtensorPortfolioValueSeriesCalculatorTests: XCTestCase {
             netuid: netuid,
             positions: [],
             totalAlpha: alpha,
+            redeemable: 0,
             taoValue: taoValue,
             availability: nil,
             primaryHotkey: Data(repeating: 0x0A, count: 32)

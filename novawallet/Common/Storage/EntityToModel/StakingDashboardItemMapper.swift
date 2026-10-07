@@ -44,13 +44,22 @@ extension StakingDashboardItemMapper: CoreDataMapperProtocol {
 
         let onchainState = entity.onchainState.flatMap { Multistaking.DashboardItemOnchainState(rawValue: $0) }
 
+        let subtensorDetails = entity.subtensorSubnetCount.map { subnetCount in
+            Multistaking.DashboardItemSubtensorDetails(
+                rootStake: entity.subtensorRootStake.flatMap { BigUInt($0) },
+                subnetCount: subnetCount.intValue,
+                rootRate: entity.subtensorRootRate as Decimal?
+            )
+        }
+
         return .init(
             stakingOption: stakingOption,
             onchainState: onchainState,
             hasAssignedStake: entity.hasAssignedStake,
             stake: stake,
             totalRewards: totalRewards,
-            maxApy: maxApy
+            maxApy: maxApy,
+            subtensorDetails: subtensorDetails
         )
     }
 }

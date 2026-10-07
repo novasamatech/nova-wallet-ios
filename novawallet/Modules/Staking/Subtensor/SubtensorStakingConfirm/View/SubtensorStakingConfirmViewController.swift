@@ -55,7 +55,6 @@ private extension SubtensorStakingConfirmViewController {
         rootView.swapRateCell.titleButton.setTitle(strings.stakingSubtensorUiSwapRate())
         rootView.slippageCell.titleButton.setTitle(strings.swapsSetupSlippage())
         rootView.validatorCell.titleButton.setTitle(strings.stakingCommonValidator())
-        rootView.earnCell.titleButton.setTitle(strings.stakingSubtensorUiEarnTokensMonth())
         rootView.avgBuyPriceCell.titleButton.setTitle(strings.stakingSubtensorUiAvgBuyPrice())
         rootView.youWillEarnCell.titleButton.setTitle(strings.stakingSubtensorUiYouWillEarn())
         rootView.networkFeeCell.titleButton.setTitle(strings.commonNetworkFee())
@@ -78,7 +77,6 @@ private extension SubtensorStakingConfirmViewController {
         rootView.rootValidatorCell.addTarget(self, action: #selector(actionSelectValidator), for: .touchUpInside)
         rootView.swapRateCell.addTarget(self, action: #selector(actionSwapRateInfo), for: .touchUpInside)
         rootView.slippageCell.addTarget(self, action: #selector(actionSlippageInfo), for: .touchUpInside)
-        rootView.earnCell.addTarget(self, action: #selector(actionEarnInfo), for: .touchUpInside)
         rootView.avgBuyPriceCell.addTarget(self, action: #selector(actionAvgBuyPriceInfo), for: .touchUpInside)
         rootView.youWillEarnCell.addTarget(self, action: #selector(actionYouWillEarnInfo), for: .touchUpInside)
         rootView.networkFeeCell.addTarget(self, action: #selector(actionNetworkFeeInfo), for: .touchUpInside)
@@ -125,14 +123,6 @@ private extension SubtensorStakingConfirmViewController {
         rootView.slippageCell.bind(loadableViewModel: .loaded(value: viewModel.slippage ?? ""))
 
         rootView.validatorCell.rowContentView.bind(apy: viewModel.validatorApy)
-
-        rootView.earnCell.isHidden = viewModel.earnPerMonth == nil
-
-        if let earnPerMonth = viewModel.earnPerMonth {
-            rootView.earnCell.bind(
-                loadableViewModel: earnPerMonth.map { NetworkFeeInfoViewModel(isEditable: false, balanceViewModel: $0) }
-            )
-        }
 
         let feeViewModel: LoadableViewModelState<NetworkFeeInfoViewModel> = networkFee.map {
             .loaded(value: NetworkFeeInfoViewModel(isEditable: false, balanceViewModel: $0))
@@ -194,10 +184,6 @@ private extension SubtensorStakingConfirmViewController {
 
     @objc func actionSlippageInfo() {
         presenter.showSlippageInfo()
-    }
-
-    @objc func actionEarnInfo() {
-        presenter.showEarnPerMonthInfo()
     }
 
     @objc func actionAvgBuyPriceInfo() {

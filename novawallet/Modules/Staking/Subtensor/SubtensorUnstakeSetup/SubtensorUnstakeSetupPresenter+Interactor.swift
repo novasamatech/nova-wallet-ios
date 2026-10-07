@@ -8,7 +8,7 @@ private extension SubtensorUnstakeSetupPresenter {
 
         let portfolio = SubtensorPortfolioBuilder.build(state: state)
 
-        return isRoot ? portfolio.root : portfolio.subnets.first { $0.netuid == netuid }
+        return isRoot ? portfolio.stakedRoot : portfolio.subnets.first { $0.netuid == netuid }
     }
 
     func applyMaxChange(from previousMax: Balance?) {
@@ -82,10 +82,6 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtoc
     }
 
     func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?) {
-        guard catalogue != nil || self.catalogue?.subnet(for: netuid) == nil else {
-            return
-        }
-
         self.catalogue = catalogue
 
         if !isRoot, let catalogue, catalogue.subnet(for: netuid) == nil, !isCatalogueRefreshForced {

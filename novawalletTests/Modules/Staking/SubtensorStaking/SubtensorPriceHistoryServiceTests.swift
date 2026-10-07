@@ -240,6 +240,7 @@ final class SubtensorPriceHistoryServiceTests: XCTestCase {
         marketsWrapper: @escaping () -> CompoundOperationWrapper<SubtensorSubnetMarkets>
     ) -> SubtensorPriceHistoryService {
         let marketsService = MockSubtensorSubnetMarketsServiceProtocol()
+        let blockNumberFactory = MockBlockNumberOperationFactoryProtocol()
         let now = now
 
         stub(marketsService) { stub in
@@ -248,9 +249,17 @@ final class SubtensorPriceHistoryServiceTests: XCTestCase {
             }
         }
 
+        stub(blockNumberFactory) { stub in
+            when(stub.createWrapper(for: any(), blockHash: any())).then { _, _ in
+                CompoundOperationWrapper.createWithResult(BlockNumber.max)
+            }
+        }
+
         return SubtensorPriceHistoryService(
             marketsService: marketsService,
             coingeckoOperationFactory: coingecko,
+            blockNumberOperationFactory: blockNumberFactory,
+            chainId: KnowChainId.bittensor,
             taoPriceId: taoPriceId,
             operationQueue: OperationQueue(),
             timeProvider: { now }

@@ -9,6 +9,19 @@ struct SubtensorValidatorDirectoryItem: Equatable {
     let status: SubtensorValidatorChainStatus?
 }
 
+extension SubtensorValidatorDirectoryItem {
+    func withoutReportedStake() -> SubtensorValidatorDirectoryItem {
+        SubtensorValidatorDirectoryItem(
+            hotkey: hotkey,
+            netuid: netuid,
+            name: name,
+            take: take,
+            reportedStake: nil,
+            status: status
+        )
+    }
+}
+
 struct SubtensorValidatorDirectory: Equatable {
     let subnet: SubtensorSubnetRef
     let items: [SubtensorValidatorDirectoryItem]
@@ -16,6 +29,19 @@ struct SubtensorValidatorDirectory: Equatable {
     let isPartial: Bool
     let isEnrichmentTruncated: Bool
     let chainBlock: BlockNumber
+}
+
+extension SubtensorValidatorDirectory {
+    func markingStale() -> SubtensorValidatorDirectory {
+        SubtensorValidatorDirectory(
+            subnet: subnet,
+            items: items,
+            listStamp: listStamp.map { SubtensorBackendStamp(asOf: $0.asOf, freshness: .stale) },
+            isPartial: isPartial,
+            isEnrichmentTruncated: isEnrichmentTruncated,
+            chainBlock: chainBlock
+        )
+    }
 }
 
 struct SubtensorValidatorDetail: Equatable {

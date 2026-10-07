@@ -275,7 +275,7 @@ extension SubtensorOperationResultPresenter: SubtensorResultInteractorOutputProt
         provideViewModel()
     }
 
-    func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue) {
+    func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?) {
         self.catalogue = catalogue
         provideViewModel()
     }

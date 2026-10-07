@@ -37,7 +37,6 @@ struct SubtensorPickCardViewModel {
     let chips: [String]
     let receive: SubtensorSetupRowViewModel
     let swapRate: SubtensorSetupRowViewModel
-    let earnPerMonth: SubtensorSetupBalanceRowViewModel
     let networkFee: BalanceViewModelProtocol?
     let footer: String?
 }
@@ -138,7 +137,6 @@ struct SubtensorSetupSubnetData {
     let subnetLogos: SubtensorSubnetLogos?
     let rankedSubnet: SubtensorRankedSubnet?
     let annualRate: Decimal?
-    let isYieldsLoaded: Bool
     let isQuoteFailed: Bool
     let costBasis: SubtensorCostBasisState
 }

@@ -182,8 +182,7 @@ private extension BittensorApiResponseCache {
         }
 
         if let backoff {
-            return cached.value.map { .success(BittensorApiCacheDelivery(entry: $0, isFromExpiredCache: true)) }
-                ?? .failure(backoff.error)
+            return .failure(backoff.error)
         }
 
         return nil
@@ -273,11 +272,11 @@ private extension BittensorApiResponseCache {
 
         mutex.lock()
 
-        let failure = registerFailure(error, for: job, now: now)
+        let backoffDelay = registerFailure(error, for: job, now: now)
 
         mutex.unlock()
 
-        if let backoffDelay = failure.backoffInterval {
+        if let backoffDelay {
             logger.warning(
                 "Bittensor API \(job.routeKey.method) \(job.routeKey.pathTemplate) backs off \(Int(backoffDelay)) s"
             )
@@ -287,11 +286,7 @@ private extension BittensorApiResponseCache {
             return resolve(previous, for: job, acceptance: acceptGeneration(previous.fetched.generation))
         }
 
-        guard failure.fallsBackToCache, let cachedEntry = peek(job.key).value else {
-            throw error
-        }
-
-        return .cached(cachedEntry, isExpired: true)
+        throw error
     }
 
     func clearFailures(for job: BittensorApiCacheJob) {
@@ -307,9 +302,9 @@ private extension BittensorApiResponseCache {
         _ error: Error,
         for job: BittensorApiCacheJob,
         now: TimeInterval
-    ) -> (fallsBackToCache: Bool, backoffInterval: TimeInterval?) {
+    ) -> TimeInterval? {
         guard let apiError = error as? BittensorApiError else {
-            return (false, nil)
+            return nil
         }
 
         if let lifetime = negativeLifetime(for: apiError) {
@@ -318,15 +313,15 @@ private extension BittensorApiResponseCache {
                 expiresAt: now + lifetime
             )
 
-            return (false, nil)
+            return nil
         }
 
         guard isBackoffTrigger(apiError) else {
-            return (false, nil)
+            return nil
         }
 
         if let current = backoffs[job.routeKey], now < current.until {
-            return (true, nil)
+            return nil
         }
 
         let attempt = (backoffs[job.routeKey]?.attempt ?? 0) + 1
@@ -334,7 +329,7 @@ private extension BittensorApiResponseCache {
 
         backoffs[job.routeKey] = Backoff(attempt: attempt, until: now + interval, error: apiError)
 
-        return (true, interval)
+        return interval
     }
 
     func acceptGeneration(_ generation: BittensorApiGenerationOrder?) -> GenerationAcceptance {

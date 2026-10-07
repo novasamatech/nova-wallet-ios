@@ -52,12 +52,16 @@ private extension SubtensorPortfolioViewController {
 
         title = strings.stakingSubtensorUiPortfolioTitle()
 
+        let ratesUnavailable = strings.stakingSubtensorUiPortfolioRatesUnavailable()
+
         rootView.headerView.captionLabel.text = strings.stakingSubtensorUiPortfolioTotal()
+        rootView.headerView.ratesAlertView.contentView.detailsLabel.text = ratesUnavailable
         rootView.positionsCaptionLabel.text = strings.stakingSubtensorUiPortfolioPositions()
         rootView.syncNoticeLabel.text = strings.stakingSubtensorUiPortfolioSyncFailed()
 
         let emptyView = rootView.emptyView
         emptyView.captionLabel.text = strings.stakingSubtensorUiPortfolioEmptyCaption()
+        emptyView.ratesAlertView.contentView.detailsLabel.text = ratesUnavailable
         emptyView.subnetCardView.titleLabel.text = strings.stakingSubtensorUiPortfolioEmptySubnetTitle()
         emptyView.subnetCardView.subtitleLabel.text = strings.stakingSubtensorUiPortfolioEmptySubnetSubtitle()
         emptyView.rootCardView.titleLabel.text = strings.stakingSubtensorUiPortfolioEmptyRootTitle()

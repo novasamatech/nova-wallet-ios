@@ -8,5 +8,7 @@ protocol SubtensorRecommendationServiceProtocol: AnyObject {
 
     func cachedRankedSubnets() -> HTTPCachePeek<SubtensorRankedSubnets>
 
-    func lastSeenClientGates() -> SubtensorClientGates?
+    func createClientGatesWrapper() -> CompoundOperationWrapper<SubtensorClientGates>
+
+    func cachedClientGates() -> HTTPCachePeek<SubtensorClientGates>
 }

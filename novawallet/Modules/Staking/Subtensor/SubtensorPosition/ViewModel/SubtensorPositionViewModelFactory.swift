@@ -179,7 +179,7 @@ private extension SubtensorPositionViewModelFactory {
                     .stakingSubtensorUiPositionStakedRoot(),
                 amount: state.group.map { formatTao($0.totalAlpha, locale: locale) },
                 fiat: createFiat(for: state, locale: locale),
-                isActive: isActive,
+                isActive: state.primaryPosition.map(\.isRegistered),
                 rows: [createRewardsRow(for: state, locale: locale)]
             )
         }

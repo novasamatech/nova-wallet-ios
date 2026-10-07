@@ -240,7 +240,7 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
         verify(transport, times(3)).createResponseWrapper(for: any())
     }
 
-    func testBackoffServesTheExpiredCachedValueWithoutCallingTheTransport() throws {
+    func testBackoffFailsWithTheBackoffErrorWithoutCallingTheTransport() throws {
         let clock = ManualClock()
 
         let transport = makeTransport(replies: [
@@ -250,15 +250,19 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
 
         let factory = makeFactory(transport: transport, clock: clock)
 
-        let fresh = try fetch(factory.createSubnetsWrapper())
+        _ = try fetch(factory.createSubnetsWrapper())
         clock.advance(by: 150)
-        let limited = try fetch(factory.createSubnetsWrapper())
-        let backingOff = try fetch(factory.createSubnetsWrapper())
+        let limited = fetchError(factory.createSubnetsWrapper())
+        let backingOff = fetchError(factory.createSubnetsWrapper())
 
-        XCTAssertTrue(limited.isFromExpiredCache)
-        XCTAssertTrue(backingOff.isFromExpiredCache)
-        XCTAssertEqual(backingOff.requestId, "req-cached")
-        XCTAssertEqual(backingOff.receivedAt, fresh.receivedAt)
+        guard
+            case let .rateLimited(limitedRequestId) = limited,
+            case let .rateLimited(backingOffRequestId) = backingOff else {
+            return XCTFail("Unexpected errors: \(String(describing: limited)), \(String(describing: backingOff))")
+        }
+
+        XCTAssertEqual(limitedRequestId, "req-limited")
+        XCTAssertEqual(backingOffRequestId, "req-limited")
         verify(transport, times(2)).createResponseWrapper(for: any())
     }
 
