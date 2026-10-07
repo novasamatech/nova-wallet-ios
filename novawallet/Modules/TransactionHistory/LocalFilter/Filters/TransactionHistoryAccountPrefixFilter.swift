@@ -1,11 +1,18 @@
 import Foundation
+import SubstrateSdk
 
 final class TransactionHistoryAccountPrefixFilter {
     let accountPrefix: Data
+    let ignoresOnlyWithinExtrinsic: Bool
     let chainAsset: ChainAsset
 
-    init(accountPrefix: Data, chainAsset: ChainAsset) {
+    init(
+        accountPrefix: Data,
+        ignoresOnlyWithinExtrinsic: Bool = false,
+        chainAsset: ChainAsset
+    ) {
         self.accountPrefix = accountPrefix
+        self.ignoresOnlyWithinExtrinsic = ignoresOnlyWithinExtrinsic
         self.chainAsset = chainAsset
     }
 
@@ -14,9 +21,23 @@ final class TransactionHistoryAccountPrefixFilter {
     }
 }
 
+private extension TransactionHistoryAccountPrefixFilter {
+    func hasExtrinsicHash(_ model: TransactionHistoryItem) -> Bool {
+        guard let hash = try? Data(hexString: model.txHash) else {
+            return false
+        }
+
+        return !hash.isEmpty
+    }
+}
+
 extension TransactionHistoryAccountPrefixFilter: TransactionHistoryLocalFilterProtocol {
     func shouldDisplayOperation(model: TransactionHistoryItem) -> Bool {
         guard model.callPath.isBalancesTransfer else {
+            return true
+        }
+
+        if ignoresOnlyWithinExtrinsic, !hasExtrinsicHash(model) {
             return true
         }
 
