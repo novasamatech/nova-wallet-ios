@@ -178,7 +178,11 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
                 stamp: SubtensorBackendStamp(asOf: Date(timeIntervalSince1970: 1_790_000_000), freshness: freshness),
                 isPartial: false
             ),
-            clientGates: .backendDefault,
+            clientGates: SubtensorClientGates(
+                maxTake: BigRational(numerator: 18, denominator: 100),
+                requirePermit: true,
+                requireActiveWithinCutoff: true
+            ),
             topN: 3,
             classes: [
                 .stable: [makePair(rootPairHotkey, netuid: 0)],
@@ -196,7 +200,15 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
         let recommendationService = MockSubtensorRecommendationServiceProtocol()
 
         stub(recommendationService) { stub in
-            when(stub.lastSeenClientGates()).thenReturn(nil)
+            when(stub.createClientGatesWrapper()).then {
+                CompoundOperationWrapper.createWithResult(
+                    SubtensorClientGates(
+                        maxTake: BigRational(numerator: 18, denominator: 100),
+                        requirePermit: true,
+                        requireActiveWithinCutoff: true
+                    )
+                )
+            }
 
             when(stub.createVerifiedRecommendationsWrapper()).then {
                 switch result {
