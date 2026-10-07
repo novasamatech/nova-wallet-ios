@@ -3,7 +3,6 @@ import UIKit
 
 enum TextHeightCalculationContext {
     case banner(text: [String], availableWidth: CGFloat)
-    case featuredBanner(text: [String], availableWidth: CGFloat)
     case custom(text: [HeightCalculatableText])
 
     var calculatableText: [HeightCalculatableText] {
@@ -12,11 +11,6 @@ enum TextHeightCalculationContext {
             createCalculatableText(
                 rawText: rawText,
                 params: TextHeightCalculationParams.createForBanners(availableWidth: availableWidth)
-            )
-        case let .featuredBanner(rawText, availableWidth):
-            createCalculatableText(
-                rawText: rawText,
-                params: TextHeightCalculationParams.createForFeaturedBanners(availableWidth: availableWidth)
             )
         case let .custom(text): text
         }
@@ -32,23 +26,5 @@ enum TextHeightCalculationContext {
                 params: $0.1
             )
         }
-    }
-}
-
-extension TextHeightCalculationContext {
-    var estimatedHeight: Float {
-        var height: Float = 0.0
-
-        calculatableText.forEach { string in
-            height
-                += Float(string.text.estimateHeight(
-                    for: string.params.font,
-                    width: string.params.availableWidth
-                ))
-                + Float(string.params.topInset)
-                + Float(string.params.bottomInset)
-        }
-
-        return height
     }
 }

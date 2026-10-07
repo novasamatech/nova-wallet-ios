@@ -16,8 +16,6 @@ final class BannersPresenter {
     private var banners: [Banner]?
     private var closedBanners: ClosedBanners?
     private var localizedResources: BannersLocalizedResources?
-    private var localBanners: [Banners.LocalBanner] = []
-    private var availableTextWidth: CGFloat = .zero
     private var setUp: Bool = false
 
     init(
@@ -38,45 +36,13 @@ final class BannersPresenter {
 
     private func provideBanners() {
         let viewModel = viewModelFactory.createLoadableWidgetViewModel(
-            for: allBanners,
+            for: banners,
             closedBanners: closedBanners,
             closeAvailable: closeActionAvailable,
-            localizedResources: allLocalizedResources
+            localizedResources: localizedResources
         )
 
         view?.update(with: viewModel)
-    }
-}
-
-// MARK: Private
-
-private extension BannersPresenter {
-    var visibleLocalBanners: [Banners.LocalBanner] {
-        localBanners.filter { closedBanners?.contains($0.banner.id) != true }
-    }
-
-    var allBanners: [Banner]? {
-        let localIds = Set(localBanners.map(\.banner.id))
-        let remoteBanners = banners?.filter { !localIds.contains($0.id) }
-
-        guard remoteBanners != nil || !visibleLocalBanners.isEmpty else {
-            return nil
-        }
-
-        return visibleLocalBanners.map(\.banner) + (remoteBanners ?? [])
-    }
-
-    var allLocalizedResources: BannersLocalizedResources? {
-        guard localizedResources != nil || !visibleLocalBanners.isEmpty else {
-            return nil
-        }
-
-        let localResources = viewModelFactory.createLocalizedResources(
-            for: visibleLocalBanners,
-            availableTextWidth: availableTextWidth
-        )
-
-        return (localizedResources ?? [:]).merging(localResources) { _, local in local }
     }
 }
 
@@ -85,8 +51,6 @@ private extension BannersPresenter {
 extension BannersPresenter: BannersPresenterProtocol {
     func setup(with availableTextWidth: CGFloat) {
         guard !setUp, availableTextWidth > 0 else { return }
-
-        self.availableTextWidth = availableTextWidth
 
         provideBanners()
 
@@ -98,12 +62,6 @@ extension BannersPresenter: BannersPresenterProtocol {
     }
 
     func action(for bannerId: String) {
-        if localBanners.contains(where: { $0.banner.id == bannerId }) {
-            trackBannerClicked(with: bannerId)
-            moduleOutput?.didSelectLocalBanner(with: bannerId)
-            return
-        }
-
         guard
             let banner = banners?.first(where: { $0.id == bannerId }),
             let actionLink = banner.actionLink
@@ -142,18 +100,14 @@ extension BannersPresenter: BannersInteractorOutputProtocol {
     }
 
     func didReceive(_ updatedClosedBanners: ClosedBanners) {
-        let oldMaxTextHeight = allLocalizedResources.map { viewModelFactory.maxTextHeight(for: $0) }
-
         closedBanners = updatedClosedBanners
 
         guard let viewModel = viewModelFactory.createWidgetViewModel(
-            for: allBanners,
+            for: banners,
             closedBanners: closedBanners,
             closeAvailable: closeActionAvailable,
-            localizedResources: allLocalizedResources
+            localizedResources: localizedResources
         ) else {
-            provideBanners()
-            moduleOutput?.didReceiveBanners(state: bannersState)
             return
         }
 
@@ -163,20 +117,6 @@ extension BannersPresenter: BannersInteractorOutputProtocol {
         }
 
         view?.didCloseBanner(updatedViewModel: viewModel)
-
-        if oldMaxTextHeight != viewModel.maxTextHeight {
-            moduleOutput?.didUpdateContent(state: bannersState)
-        }
-    }
-
-    func didLoad(closedBanners: ClosedBanners) {
-        self.closedBanners = closedBanners
-
-        guard !localBanners.isEmpty else { return }
-
-        provideBanners()
-
-        moduleOutput?.didReceiveBanners(state: bannersState)
     }
 
     func didReceive(_ error: any Error) {
@@ -188,23 +128,19 @@ extension BannersPresenter: BannersInteractorOutputProtocol {
 
 extension BannersPresenter: BannersModuleInputProtocol {
     var bannersState: BannersState {
-        guard let closedBanners else {
+        guard let banners, let closedBanners else {
             return .loading
         }
 
-        let hasVisibleBanners = (allBanners ?? []).contains { !closedBanners.contains($0.id) }
-
-        if hasVisibleBanners {
-            return .available
-        }
-
-        return banners == nil ? .loading : .unavailable
+        return banners
+            .filter { !closedBanners.contains($0.id) }
+            .isEmpty
+            ? .unavailable
+            : .available
     }
 
     func refresh() {
         guard let availableTextWidth = view?.getAvailableTextWidth() else { return }
-
-        self.availableTextWidth = availableTextWidth
 
         interactor.refresh(
             for: locale,
@@ -216,19 +152,10 @@ extension BannersPresenter: BannersModuleInputProtocol {
         guard let availableTextWidth = view?.getAvailableTextWidth() else { return }
 
         locale = newLocale
-        self.availableTextWidth = availableTextWidth
 
         interactor.updateResources(
             for: newLocale,
             availableTextWidth: availableTextWidth
         )
-    }
-
-    func updateLocalBanners(_ banners: [Banners.LocalBanner]) {
-        localBanners = banners
-
-        provideBanners()
-
-        moduleOutput?.didReceiveBanners(state: bannersState)
     }
 }

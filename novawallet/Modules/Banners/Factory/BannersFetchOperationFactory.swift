@@ -144,8 +144,7 @@ extension BannersFetchOperationFactory: BannersFetchOperationFactoryProtocol {
                         background: images.0,
                         image: images.1,
                         clipsToBounds: remoteBanner.clipsToBounds,
-                        actionLink: remoteBanner.action,
-                        layout: .regular
+                        actionLink: remoteBanner.action
                     )
                 }
         }

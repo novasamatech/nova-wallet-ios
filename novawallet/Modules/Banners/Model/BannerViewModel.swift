@@ -13,5 +13,4 @@ struct BannerViewModel {
     let backgroundImage: UIImage?
     let contentImage: UIImage?
     let clipsToBounds: Bool
-    let layout: Banners.Layout
 }

@@ -16,11 +16,6 @@ protocol BannerViewModelFactoryProtocol {
     ) -> LoadableViewModelState<BannersWidgetViewModel>?
 
     func maxTextHeight(for localizedResources: BannersLocalizedResources) -> CGFloat
-
-    func createLocalizedResources(
-        for localBanners: [Banners.LocalBanner],
-        availableTextWidth: CGFloat
-    ) -> BannersLocalizedResources
 }
 
 class BannerViewModelFactory {
@@ -42,8 +37,7 @@ class BannerViewModelFactory {
                     details: localizedContent.details,
                     backgroundImage: banner.background,
                     contentImage: banner.image,
-                    clipsToBounds: banner.clipsToBounds,
-                    layout: banner.layout
+                    clipsToBounds: banner.clipsToBounds
                 )
             }
     }
@@ -116,33 +110,5 @@ extension BannerViewModelFactory: BannerViewModelFactoryProtocol {
 
     func maxTextHeight(for localizedResources: BannersLocalizedResources) -> CGFloat {
         CGFloat(localizedResources.map(\.value.estimatedHeight).max() ?? 0)
-    }
-
-    func createLocalizedResources(
-        for localBanners: [Banners.LocalBanner],
-        availableTextWidth: CGFloat
-    ) -> BannersLocalizedResources {
-        localBanners.reduce(into: BannersLocalizedResources()) { resources, localBanner in
-            let text = [localBanner.title, localBanner.details]
-
-            let context: TextHeightCalculationContext = switch localBanner.banner.layout {
-            case .regular:
-                .banner(text: text, availableWidth: availableTextWidth)
-            case .featured:
-                .featuredBanner(text: text, availableWidth: availableTextWidth)
-            }
-
-            let estimatedHeight = max(
-                context.estimatedHeight,
-                Float(localBanner.banner.layout.minTextHeight)
-            )
-
-            resources[localBanner.banner.id] = BannersLocalizedResource(
-                bannerId: localBanner.banner.id,
-                title: localBanner.title,
-                details: localBanner.details,
-                estimatedHeight: estimatedHeight
-            )
-        }
     }
 }

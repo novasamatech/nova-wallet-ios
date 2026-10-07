@@ -44,8 +44,6 @@ final class AssetListPresenter: RampFlowManaging, BannersModuleInputOwnerProtoco
 
     private(set) var model: AssetListBuilderResult.Model = .init()
 
-    private var subtensorBanner: AssetListSubtensorBanner?
-
     init(
         interactor: AssetListInteractorInputProtocol,
         wireframe: AssetListWireframeProtocol,
@@ -71,28 +69,6 @@ private extension AssetListPresenter {
     func provideBanners(state: BannersState) {
         let available = state == .available || state == .loading
         view?.didReceiveBanners(available: available)
-    }
-
-    func resolveSubtensorChainAsset() -> ChainAsset? {
-        AssetListSubtensorBanner.resolveChainAsset(
-            from: interactor.getFullChain(for: KnowChainId.bittensor),
-            wallet: wallet
-        )
-    }
-
-    func provideSubtensorBanner(forced: Bool = false) {
-        let newBanner = resolveSubtensorChainAsset().flatMap {
-            AssetListSubtensorBanner.resolve(for: $0.chainAssetId, model: model)
-        }
-
-        guard newBanner != subtensorBanner || (forced && newBanner != nil) else {
-            return
-        }
-
-        subtensorBanner = newBanner
-
-        let localBanners = newBanner.map { [$0.createLocalBanner(for: selectedLocale)] } ?? []
-        bannersModule?.updateLocalBanners(localBanners)
     }
 
     func createHeaderViewModel() -> AssetListHeaderViewModel? {
@@ -711,8 +687,6 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
         case .nfts, .pendingOperations:
             updateOrganizerView()
         }
-
-        provideSubtensorBanner()
     }
 
     func didReceive(wallet: MetaAccountModel) {
@@ -727,7 +701,6 @@ extension AssetListPresenter: AssetListInteractorOutputProtocol {
         updateAssetsView()
         updateOrganizerView()
         updateAlertView()
-        provideSubtensorBanner()
     }
 
     func didChange(name: String) {
@@ -791,22 +764,6 @@ extension AssetListPresenter: BannersModuleOutputProtocol {
 
     func didUpdateContent(state: BannersState) {
         provideBanners(state: state)
-    }
-
-    func didSelectLocalBanner(with id: String) {
-        guard
-            id == AssetListSubtensorBanner.bannerId,
-            let subtensorBanner,
-            let chainAsset = resolveSubtensorChainAsset() else {
-            return
-        }
-
-        switch subtensorBanner {
-        case .earn:
-            wireframe.presentSubtensorEarnInfo(from: view, chainAsset: chainAsset)
-        case .getTao:
-            wireframe.showGetTao(from: view, chainAsset: chainAsset, rampHandler: self)
-        }
     }
 }
 
@@ -877,7 +834,6 @@ extension AssetListPresenter: Localizable {
             updateOrganizerView()
             updateAlertView()
             bannersModule?.updateLocale(selectedLocale)
-            provideSubtensorBanner(forced: true)
         }
     }
 }

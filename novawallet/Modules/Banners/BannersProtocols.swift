@@ -20,18 +20,12 @@ protocol BannersModuleInputProtocol: AnyObject {
     func setup(with availableTextWidth: CGFloat)
     func refresh()
     func updateLocale(_ newLocale: Locale)
-    func updateLocalBanners(_ banners: [Banners.LocalBanner])
 }
 
 protocol BannersModuleOutputProtocol: AnyObject {
     func didUpdateContent(state: BannersState)
     func didReceiveBanners(state: BannersState)
     func didReceive(_ error: Error)
-    func didSelectLocalBanner(with id: String)
-}
-
-extension BannersModuleOutputProtocol {
-    func didSelectLocalBanner(with _: String) {}
 }
 
 protocol BannersViewProviderProtocol: ControllerBackedProtocol {
@@ -93,7 +87,6 @@ protocol BannersInteractorOutputProtocol: AnyObject {
     func didReceive(_ bannersFetchResult: BannersFetchResult)
     func didReceive(_ updatedLocalizedResources: BannersLocalizedResources?)
     func didReceive(_ updatedClosedBanners: ClosedBanners)
-    func didLoad(closedBanners: ClosedBanners)
     func didReceive(_ error: Error)
 }
 

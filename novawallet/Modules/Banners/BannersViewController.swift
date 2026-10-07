@@ -120,8 +120,6 @@ private extension BannersViewController {
         let itemIndex = dataSource.firstShowingItemIndex ?? 0
 
         staticState = .init(itemByActualOffset: itemIndex)
-        updateCloseButtonLayout()
-
         rootView.collectionView.reloadData { [weak self] in
             guard let self else { return }
 
@@ -156,7 +154,6 @@ private extension BannersViewController {
         }
 
         self.staticState = .init(itemByActualOffset: itemByActualOffset)
-        updateCloseButtonLayout()
 
         let itemWidth = rootView.collectionView.bounds.width
 
@@ -287,15 +284,6 @@ private extension BannersViewController {
         )
 
         staticState = StaticState(itemByActualOffset: itemByOffsetChanges)
-        updateCloseButtonLayout()
-    }
-
-    func updateCloseButtonLayout() {
-        guard let staticState else { return }
-
-        let layout = dataSource.getItem(at: staticState.itemByActualOffset)?.layout ?? .regular
-
-        rootView.setCloseButton(layout: layout)
     }
 
     private func setupAutoScroll() {
