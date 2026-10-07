@@ -63,11 +63,9 @@ extension Multistaking {
         }
 
         var totalStakeInRao: BigUInt {
-            let positionsStake = positions.reduce(BigUInt.zero) { total, position in
+            positions.reduce(BigUInt.zero) { total, position in
                 total + (taoValue(of: position) ?? .zero)
             }
-
-            return positionsStake + totalRootRedeemable
         }
 
         var hasActiveStaking: Bool {
@@ -81,7 +79,7 @@ extension Multistaking {
                 return nil
             }
 
-            return rootPositions.reduce(totalRootRedeemable) { total, position in
+            return rootPositions.reduce(BigUInt.zero) { total, position in
                 total + position.stakeAlpha
             }
         }
