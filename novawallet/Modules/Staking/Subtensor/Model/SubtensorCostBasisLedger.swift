@@ -6,55 +6,65 @@ struct SubtensorCostBasisLedger {
     static let priceTolerance = BigRational(numerator: 3, denominator: 2)
     static let nonTradeLabelWords: Set<String> = ["move", "transfer"]
 
-    private let purchases: [UInt16: SubtensorPurchaseTotals]
+    private let openPositions: [UInt16: SubtensorPurchaseTotals]
     private let unclassifiedNetuids: Set<UInt16>
+    private let isHistoryComplete: Bool
 
-    init(operations: [BittensorApi.Operation]) {
-        var purchases: [UInt16: SubtensorPurchaseTotals] = [:]
+    init(operations: [BittensorApi.Operation], isHistoryComplete: Bool) {
+        var openPositions: [UInt16: SubtensorPurchaseTotals] = [:]
         var unclassifiedNetuids: Set<UInt16> = []
         var countedOperations: Set<BittensorApi.Operation> = []
 
-        for operation in operations {
+        for operation in operations.reversed() {
             guard operation.sourceEventId.isEmpty || countedOperations.insert(operation).inserted else {
                 continue
             }
 
+            let openPosition = openPositions[operation.netuid]
+
             switch Self.classify(operation) {
             case let .purchase(paidTao, receivedAlpha):
-                let counted = purchases[operation.netuid]
+                let purchase = SubtensorPurchaseTotals(paidTao: paidTao, receivedAlpha: receivedAlpha)
 
-                purchases[operation.netuid] = SubtensorPurchaseTotals(
-                    paidTao: (counted?.paidTao ?? 0) + paidTao,
-                    receivedAlpha: (counted?.receivedAlpha ?? 0) + receivedAlpha
-                )
+                openPositions[operation.netuid] = openPosition?.adding(
+                    paidTao: paidTao,
+                    receivedAlpha: receivedAlpha
+                ) ?? purchase
+            case let .sale(soldAlpha):
+                openPositions[operation.netuid] = openPosition?.reducing(soldAlpha: soldAlpha)
             case .unclassified:
                 unclassifiedNetuids.insert(operation.netuid)
-            case .sale, .ignored:
+            case .ignored:
                 break
             }
         }
 
-        self.purchases = purchases
+        self.openPositions = openPositions
         self.unclassifiedNetuids = unclassifiedNetuids
+        self.isHistoryComplete = isHistoryComplete
     }
 
     func costBasis(for netuid: UInt16) throws -> SubtensorCostBasis {
+        guard isHistoryComplete else {
+            return .noPurchases
+        }
+
         guard !unclassifiedNetuids.contains(netuid) else {
             throw SubtensorCostBasisError.unclassifiedOperations(netuid: netuid)
         }
 
-        guard let totals = purchases[netuid] else {
+        guard let openPosition = openPositions[netuid] else {
             return .noPurchases
         }
 
-        return .average(totals)
+        return .average(openPosition)
     }
 }
 
 private extension SubtensorCostBasisLedger {
     enum Classification {
         case purchase(paidTao: BigUInt, receivedAlpha: BigUInt)
-        case sale
+        case sale(soldAlpha: BigUInt)
         case ignored
         case unclassified
     }
@@ -84,7 +94,7 @@ private extension SubtensorCostBasisLedger {
         case (true, false):
             return .purchase(paidTao: amountIn, receivedAlpha: amountOut)
         case (false, true):
-            return .sale
+            return .sale(soldAlpha: amountIn)
         default:
             return .unclassified
         }
