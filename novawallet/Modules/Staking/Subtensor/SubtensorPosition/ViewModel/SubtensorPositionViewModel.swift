@@ -1,6 +1,7 @@
 import Foundation
 
 enum SubtensorPositionAction: Equatable {
+    case claim
     case addStake
     case unstake
     case buy
@@ -22,6 +23,7 @@ struct SubtensorPositionState {
     var yields: SubtensorAlphaYields?
     var claimable: SubtensorRootClaimable?
     var isClaimableFailed = false
+    var pendingClaimHotkeys: Set<AccountId> = []
     var holds: [AccountId: SubtensorRootHold] = [:]
     var blockNumber: BlockNumber?
     var period = SubtensorPositionViewModelFactory.defaultPeriod
@@ -77,8 +79,14 @@ struct SubtensorPositionState {
         return remaining > 0 ? remaining : nil
     }
 
+    var claimTarget: SubtensorRootClaimPreview? {
+        claimable.flatMap { SubtensorRootClaimRule.target(in: $0, excluding: pendingClaimHotkeys) }
+    }
+
     func isEnabled(_ action: SubtensorPositionAction) -> Bool {
         switch action {
+        case .claim:
+            return isRoot && !isClaimableFailed && claimTarget != nil
         case .addStake, .unstake:
             return primaryPosition != nil && holdRemainingBlocks == nil
         case .buy:
@@ -86,6 +94,33 @@ struct SubtensorPositionState {
         case .sell:
             return (unstakeBasis?.available ?? 0) > 0
         }
+    }
+}
+
+extension SubtensorPositionState {
+    func claimRewardsModel(
+        for account: MetaChainAccountResponse,
+        chainFormat: ChainFormat
+    ) -> SubtensorClaimRewardsModel? {
+        guard
+            let minimumClaim = claimable?.minimumClaim,
+            let target = claimTarget,
+            let address = try? target.hotkey.toAddress(using: chainFormat) else {
+            return nil
+        }
+
+        let name = target.hotkey == validatorHotkey ? validator?.name : nil
+
+        return SubtensorClaimRewardsModel(
+            account: account,
+            validator: SubtensorConfirmValidator(
+                hotkey: target.hotkey,
+                display: DisplayAddress(address: address, username: name ?? ""),
+                annualRate: nil
+            ),
+            shownPreview: target,
+            minimumClaim: minimumClaim
+        )
     }
 }
 
@@ -112,6 +147,7 @@ struct SubtensorPositionActionViewModel: Equatable {
     let action: SubtensorPositionAction
     let title: String
     let isEnabled: Bool
+    let details: String?
 }
 
 struct SubtensorPositionValidatorViewModel {

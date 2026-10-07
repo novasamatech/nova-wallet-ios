@@ -34,6 +34,8 @@ enum SubtensorPositionViewFactory {
         let presenter = SubtensorPositionPresenter(
             group: group,
             account: state.selectedAccount,
+            chainAsset: state.stakingOption.chainAsset,
+            pendingRootClaims: state.pendingRootClaims,
             interactor: interactor,
             wireframe: SubtensorPositionWireframe(state: state),
             viewModelFactory: SubtensorPositionViewModelFactory(

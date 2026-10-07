@@ -152,7 +152,7 @@ private extension SubtensorPositionViewLayout {
 
         for viewModel in viewModels {
             switch viewModel.action {
-            case .addStake, .unstake:
+            case .claim, .addStake, .unstake:
                 bindCell(for: viewModel)
             case .sell:
                 bind(button: sellButton, viewModel: viewModel, isPrimary: false)
@@ -167,10 +167,18 @@ private extension SubtensorPositionViewLayout {
             return
         }
 
-        let icon = viewModel.action == .addStake ? R.image.iconBondMore() : R.image.iconUnbond()
+        let icon = switch viewModel.action {
+        case .claim:
+            R.image.iconPendingRewards()
+        case .addStake:
+            R.image.iconBondMore()
+        case .unstake, .buy, .sell:
+            R.image.iconUnbond()
+        }
+
         let cell = actionCells[index]
 
-        cell.bind(title: viewModel.title, icon: icon, details: nil)
+        cell.bind(title: viewModel.title, icon: icon, details: viewModel.details)
         cell.isUserInteractionEnabled = viewModel.isEnabled
         cell.rowContentView.alpha = viewModel.isEnabled ? 1 : 0.4
     }
@@ -258,7 +266,7 @@ private extension SubtensorPositionViewLayout {
             make.edges.equalToSuperview()
         }
 
-        actionCells = (0 ..< 2).map { _ in
+        actionCells = (0 ..< 3).map { _ in
             let cell = StackActionCell()
             cell.rowContentView.disclosureIndicatorView.image = R.image.iconSmallArrow()?
                 .tinted(with: R.color.colorIconSecondary()!)

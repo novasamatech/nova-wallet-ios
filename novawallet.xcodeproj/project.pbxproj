@@ -3106,6 +3106,19 @@
 		3E5C11142E5E000300000002 /* SubtensorStakingConfirmProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11142E5E000300000001 /* SubtensorStakingConfirmProtocols.swift */; };
 		3E5C11152E5E000300000002 /* SubtensorStakingConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11152E5E000300000001 /* SubtensorStakingConfirmInteractor.swift */; };
 		3E5C11162E5E000300000002 /* SubtensorStakingConfirmPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11162E5E000300000001 /* SubtensorStakingConfirmPresenter.swift */; };
+		D7BF22D83AC356B43B2CA256 /* SubtensorClaimRewardsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 390FFFACBD54871FABB52BA4 /* SubtensorClaimRewardsProtocols.swift */; };
+		5D50C40D449B1FFF204ED6B8 /* SubtensorClaimRewardsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59A18C25AC57E27106EBAC21 /* SubtensorClaimRewardsInteractor.swift */; };
+		28892A834DBBDCE420EA6B98 /* SubtensorClaimRewardsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49F707EC15C2D5A24C5C4FD4 /* SubtensorClaimRewardsPresenter.swift */; };
+		F47FD9F26B2E0047567F8987 /* SubtensorClaimRewardsPresenter+Interactor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC2A8C22CB52927414E89EDB /* SubtensorClaimRewardsPresenter+Interactor.swift */; };
+		43F3C342C8DE0B98CECB2BF5 /* SubtensorClaimRewardsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA576D80D5E961CD8457F49 /* SubtensorClaimRewardsWireframe.swift */; };
+		B5E362282B71E268A7B81F27 /* SubtensorClaimRewardsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BA5B4EF875F2CD8A5377B4F /* SubtensorClaimRewardsViewFactory.swift */; };
+		BEB4D775BF2CE0F00F241FB1 /* SubtensorClaimRewardsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4120C11F6DA024A96B2484C9 /* SubtensorClaimRewardsModel.swift */; };
+		052392FCEE7F383923B3B7CD /* SubtensorClaimTapRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 619929A4E5378A64E8A5A23E /* SubtensorClaimTapRule.swift */; };
+		69860698A43A4AD2E45463F9 /* SubtensorClaimValidations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EC18CD453DB8787C7EA345B /* SubtensorClaimValidations.swift */; };
+		06CBD8FAF7ECFFE103285E5E /* SubtensorClaimRewardsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C1408B90C7A74656D064CA /* SubtensorClaimRewardsViewController.swift */; };
+		42C5B52057267D8CEBC5F5D7 /* SubtensorClaimRewardsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F92E2348D797F53CCACF07B /* SubtensorClaimRewardsViewLayout.swift */; };
+		BCD39C1581FB0EA79C882177 /* SubtensorClaimRewardsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 928693589A226E3811F7689F /* SubtensorClaimRewardsViewModel.swift */; };
+		2967B6AE700AF9CE4E222370 /* SubtensorClaimRewardsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9051E3EB1A1E7591736118D4 /* SubtensorClaimRewardsViewModelFactory.swift */; };
 		3E5C11172E5E000300000002 /* SubtensorStakingConfirmWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11172E5E000300000001 /* SubtensorStakingConfirmWireframe.swift */; };
 		3E5C11182E5E000300000002 /* SubtensorStakingConfirmViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11182E5E000300000001 /* SubtensorStakingConfirmViewFactory.swift */; };
 		3E5C11192E5E000300000002 /* SubtensorUnstakeSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11192E5E000300000001 /* SubtensorUnstakeSetupProtocols.swift */; };
@@ -10102,6 +10115,19 @@
 		3E5C11142E5E000300000001 /* SubtensorStakingConfirmProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingConfirmProtocols.swift; sourceTree = "<group>"; };
 		3E5C11152E5E000300000001 /* SubtensorStakingConfirmInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingConfirmInteractor.swift; sourceTree = "<group>"; };
 		3E5C11162E5E000300000001 /* SubtensorStakingConfirmPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingConfirmPresenter.swift; sourceTree = "<group>"; };
+		390FFFACBD54871FABB52BA4 /* SubtensorClaimRewardsProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimRewardsProtocols.swift; sourceTree = "<group>"; };
+		59A18C25AC57E27106EBAC21 /* SubtensorClaimRewardsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimRewardsInteractor.swift; sourceTree = "<group>"; };
+		49F707EC15C2D5A24C5C4FD4 /* SubtensorClaimRewardsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimRewardsPresenter.swift; sourceTree = "<group>"; };
+		BC2A8C22CB52927414E89EDB /* SubtensorClaimRewardsPresenter+Interactor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorClaimRewardsPresenter+Interactor.swift"; sourceTree = "<group>"; };
+		BAA576D80D5E961CD8457F49 /* SubtensorClaimRewardsWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimRewardsWireframe.swift; sourceTree = "<group>"; };
+		1BA5B4EF875F2CD8A5377B4F /* SubtensorClaimRewardsViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimRewardsViewFactory.swift; sourceTree = "<group>"; };
+		4120C11F6DA024A96B2484C9 /* SubtensorClaimRewardsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimRewardsModel.swift; sourceTree = "<group>"; };
+		619929A4E5378A64E8A5A23E /* SubtensorClaimTapRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimTapRule.swift; sourceTree = "<group>"; };
+		1EC18CD453DB8787C7EA345B /* SubtensorClaimValidations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimValidations.swift; sourceTree = "<group>"; };
+		A5C1408B90C7A74656D064CA /* SubtensorClaimRewardsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimRewardsViewController.swift; sourceTree = "<group>"; };
+		5F92E2348D797F53CCACF07B /* SubtensorClaimRewardsViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimRewardsViewLayout.swift; sourceTree = "<group>"; };
+		928693589A226E3811F7689F /* SubtensorClaimRewardsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimRewardsViewModel.swift; sourceTree = "<group>"; };
+		9051E3EB1A1E7591736118D4 /* SubtensorClaimRewardsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimRewardsViewModelFactory.swift; sourceTree = "<group>"; };
 		3E5C11172E5E000300000001 /* SubtensorStakingConfirmWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingConfirmWireframe.swift; sourceTree = "<group>"; };
 		3E5C11182E5E000300000001 /* SubtensorStakingConfirmViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingConfirmViewFactory.swift; sourceTree = "<group>"; };
 		3E5C11192E5E000300000001 /* SubtensorUnstakeSetupProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorUnstakeSetupProtocols.swift; sourceTree = "<group>"; };
@@ -19681,6 +19707,7 @@
 				3E5C12A42E5E000300000001 /* SubtensorStakingConfirm */,
 				3E5C12A52E5E000300000001 /* SubtensorUnstakeSetup */,
 				3E5C12A62E5E000300000001 /* SubtensorUnstakeConfirm */,
+				5A63C786B7ED251F6D1EE38A /* SubtensorClaimRewards */,
 				3DDBAEAF726D4732856F2089 /* View */,
 				E8EAA8AC7CE244388F4E8EFF /* SubtensorValidatorInfo */,
 				C20671672BE647C99C514715 /* SubtensorOperationResult */,
@@ -21335,6 +21362,50 @@
 				B350DAA33D2C4DE8ADF6D627 /* SubtensorUnstakeConfirmPresenter+HandOff.swift */,
 			);
 			path = SubtensorUnstakeConfirm;
+			sourceTree = "<group>";
+		};
+		5A63C786B7ED251F6D1EE38A /* SubtensorClaimRewards */ = {
+			isa = PBXGroup;
+			children = (
+				3880B18A449F7B5207F77E1B /* Model */,
+				5B343D6479D29E0E31085C63 /* View */,
+				4807EF398004DEF7672CB8EB /* ViewModel */,
+				390FFFACBD54871FABB52BA4 /* SubtensorClaimRewardsProtocols.swift */,
+				59A18C25AC57E27106EBAC21 /* SubtensorClaimRewardsInteractor.swift */,
+				49F707EC15C2D5A24C5C4FD4 /* SubtensorClaimRewardsPresenter.swift */,
+				BC2A8C22CB52927414E89EDB /* SubtensorClaimRewardsPresenter+Interactor.swift */,
+				BAA576D80D5E961CD8457F49 /* SubtensorClaimRewardsWireframe.swift */,
+				1BA5B4EF875F2CD8A5377B4F /* SubtensorClaimRewardsViewFactory.swift */,
+			);
+			path = SubtensorClaimRewards;
+			sourceTree = "<group>";
+		};
+		3880B18A449F7B5207F77E1B /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				4120C11F6DA024A96B2484C9 /* SubtensorClaimRewardsModel.swift */,
+				619929A4E5378A64E8A5A23E /* SubtensorClaimTapRule.swift */,
+				1EC18CD453DB8787C7EA345B /* SubtensorClaimValidations.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		5B343D6479D29E0E31085C63 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				A5C1408B90C7A74656D064CA /* SubtensorClaimRewardsViewController.swift */,
+				5F92E2348D797F53CCACF07B /* SubtensorClaimRewardsViewLayout.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		4807EF398004DEF7672CB8EB /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				928693589A226E3811F7689F /* SubtensorClaimRewardsViewModel.swift */,
+				9051E3EB1A1E7591736118D4 /* SubtensorClaimRewardsViewModelFactory.swift */,
+			);
+			path = ViewModel;
 			sourceTree = "<group>";
 		};
 		3E5C12A92E5E000300000001 /* Protocols */ = {
@@ -37633,6 +37704,19 @@
 				3E5C11142E5E000300000002 /* SubtensorStakingConfirmProtocols.swift in Sources */,
 				3E5C11152E5E000300000002 /* SubtensorStakingConfirmInteractor.swift in Sources */,
 				3E5C11162E5E000300000002 /* SubtensorStakingConfirmPresenter.swift in Sources */,
+				D7BF22D83AC356B43B2CA256 /* SubtensorClaimRewardsProtocols.swift in Sources */,
+				5D50C40D449B1FFF204ED6B8 /* SubtensorClaimRewardsInteractor.swift in Sources */,
+				28892A834DBBDCE420EA6B98 /* SubtensorClaimRewardsPresenter.swift in Sources */,
+				F47FD9F26B2E0047567F8987 /* SubtensorClaimRewardsPresenter+Interactor.swift in Sources */,
+				43F3C342C8DE0B98CECB2BF5 /* SubtensorClaimRewardsWireframe.swift in Sources */,
+				B5E362282B71E268A7B81F27 /* SubtensorClaimRewardsViewFactory.swift in Sources */,
+				BEB4D775BF2CE0F00F241FB1 /* SubtensorClaimRewardsModel.swift in Sources */,
+				052392FCEE7F383923B3B7CD /* SubtensorClaimTapRule.swift in Sources */,
+				69860698A43A4AD2E45463F9 /* SubtensorClaimValidations.swift in Sources */,
+				06CBD8FAF7ECFFE103285E5E /* SubtensorClaimRewardsViewController.swift in Sources */,
+				42C5B52057267D8CEBC5F5D7 /* SubtensorClaimRewardsViewLayout.swift in Sources */,
+				BCD39C1581FB0EA79C882177 /* SubtensorClaimRewardsViewModel.swift in Sources */,
+				2967B6AE700AF9CE4E222370 /* SubtensorClaimRewardsViewModelFactory.swift in Sources */,
 				3E5C11172E5E000300000002 /* SubtensorStakingConfirmWireframe.swift in Sources */,
 				3E5C11182E5E000300000002 /* SubtensorStakingConfirmViewFactory.swift in Sources */,
 				3E5C11192E5E000300000002 /* SubtensorUnstakeSetupProtocols.swift in Sources */,
