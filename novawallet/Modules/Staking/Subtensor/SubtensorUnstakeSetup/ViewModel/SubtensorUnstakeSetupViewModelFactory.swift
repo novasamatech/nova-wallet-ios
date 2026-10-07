@@ -190,7 +190,7 @@ private extension SubtensorUnstakeSetupViewModelFactory {
 
         let ref = SubtensorSubnetRef(netuid: subnetInfo.netuid, registeredAt: subnetInfo.networkRegisteredAt)
 
-        return input.catalogue?.subnet(for: ref)?.taoPerAlpha
+        return input.catalogue?.subnet(for: ref)?.freshTaoPerAlpha
     }
 
     func createRootNote(for input: SubtensorUnstakeSetupViewModelInput, locale: Locale) -> String? {
