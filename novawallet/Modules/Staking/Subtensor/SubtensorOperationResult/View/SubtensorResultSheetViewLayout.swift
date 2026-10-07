@@ -5,7 +5,7 @@ final class SubtensorResultSheetViewLayout: UIView {
     let contentStack: UIStackView = .create { stack in
         stack.axis = .vertical
         stack.alignment = .fill
-        stack.spacing = 8
+        stack.spacing = Constants.contentSpacing
     }
 
     let spinnerView: UIActivityIndicatorView = .create { view in
@@ -16,6 +16,10 @@ final class SubtensorResultSheetViewLayout: UIView {
     let tileView: RoundedView = .create { view in
         view.cornerRadius = 24
         view.shadowOpacity = 0
+    }
+
+    let tileImageView: UIImageView = .create { view in
+        view.contentMode = .scaleAspectFit
     }
 
     let tileIconView: UIImageView = .create { view in
@@ -33,7 +37,7 @@ final class SubtensorResultSheetViewLayout: UIView {
         view.cornerRadius = 12
     }
 
-    let reasonLabel = UILabel(style: .footnotePrimary, textAlignment: .left, numberOfLines: 0)
+    let reasonLabel = UILabel(style: .caption1Primary, textAlignment: .left, numberOfLines: 0)
 
     let buttonsStack: UIStackView = .create { stack in
         stack.axis = .horizontal
@@ -41,8 +45,8 @@ final class SubtensorResultSheetViewLayout: UIView {
         stack.spacing = 12
     }
 
-    private lazy var spinnerContainer = UIView.hStack(alignment: .center, [UIView(), spinnerView, UIView()])
-    private lazy var tileContainer = UIView.hStack(alignment: .center, [UIView(), tileView, UIView()])
+    private let spinnerContainer = UIView()
+    private let tileContainer = UIView()
     private lazy var reasonIconView: UIImageView = .create { view in
         view.image = R.image.iconErrorFilled()
         view.contentMode = .scaleAspectFit
@@ -75,7 +79,7 @@ final class SubtensorResultSheetViewLayout: UIView {
 
     func preferredHeight(for width: CGFloat) -> CGFloat {
         let fittingSize = CGSize(
-            width: width - 2 * Constants.sideInset,
+            width: width - 2 * UIConstants.horizontalInset,
             height: UIView.layoutFittingCompressedSize.height
         )
 
@@ -85,21 +89,25 @@ final class SubtensorResultSheetViewLayout: UIView {
             verticalFittingPriority: .fittingSizeLevel
         ).height
 
-        let buttonsHeight = buttonsStack.arrangedSubviews.isEmpty ? 0 : Constants.buttonsSpacing +
-            UIConstants.actionHeight
+        let bottomHeight = buttonsStack.arrangedSubviews.isEmpty
+            ? Constants.progressBottomInset
+            : Constants.contentSpacing + UIConstants.actionHeight + UIConstants.actionBottomInset
 
-        return Constants.topInset + contentHeight + buttonsHeight + Constants.bottomInset
+        return Constants.topInset + contentHeight + bottomHeight
     }
 }
 
 private extension SubtensorResultSheetViewLayout {
     enum Constants {
-        static let sideInset: CGFloat = 16
-        static let topInset: CGFloat = 16
-        static let bottomInset: CGFloat = 16
-        static let buttonsSpacing: CGFloat = 24
-        static let tileSize: CGFloat = 88
-        static let tileIconSize: CGFloat = 48
+        static let topInset: CGFloat = 8
+        static let contentSpacing: CGFloat = 16
+        static let progressBottomInset: CGFloat = 26
+        static let tileSize: CGFloat = 96
+        static let tileIconSize: CGFloat = 44
+        static let spinnerBoxSize: CGFloat = 28
+        static let reasonInsets = UIEdgeInsets(top: 10, left: 12, bottom: 10, right: 12)
+        static let reasonSpacing: CGFloat = 12
+        static let reasonIconSize: CGFloat = 16
     }
 
     func bindGraphics(for status: SubtensorResultStatus) {
@@ -108,14 +116,17 @@ private extension SubtensorResultSheetViewLayout {
             spinnerView.startAnimating()
         case .done:
             spinnerView.stopAnimating()
-            tileIconView.image = R.image.iconSwapExecutionComplete()
-            tileView.fillColor = R.color.colorIconPositive()!.withAlphaComponent(0.16)
+            tileImageView.image = R.image.imageSubtensorResultSuccess()
+            tileIconView.image = nil
+            tileView.fillColor = .clear
         case .failed:
             spinnerView.stopAnimating()
-            tileIconView.image = R.image.iconSwapExecutionFailed()
-            tileView.fillColor = R.color.colorIconNegative()!.withAlphaComponent(0.16)
+            tileImageView.image = R.image.imageSubtensorResultFailed()
+            tileIconView.image = nil
+            tileView.fillColor = .clear
         case .pending:
             spinnerView.stopAnimating()
+            tileImageView.image = nil
             tileIconView.image = R.image.iconPending()
             tileView.fillColor = R.color.colorBlockBackground()!
         }
@@ -146,31 +157,21 @@ private extension SubtensorResultSheetViewLayout {
     func arrangeContent(for viewModel: SubtensorResultSheetViewModel) {
         contentStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
 
-        let views: [UIView] = if viewModel.status == .progress {
+        var views: [UIView] = if viewModel.status == .progress {
             [titleLabel, spinnerContainer, messageLabel]
         } else {
             [tileContainer, titleLabel, messageLabel]
         }
 
-        views.forEach { contentStack.addArrangedSubview($0) }
-
-        if viewModel.status == .progress {
-            contentStack.setCustomSpacing(16, after: titleLabel)
-            contentStack.setCustomSpacing(16, after: spinnerContainer)
-        } else {
-            contentStack.setCustomSpacing(24, after: tileContainer)
-            contentStack.setCustomSpacing(8, after: titleLabel)
-        }
-
         if !viewModel.rows.isEmpty {
-            contentStack.setCustomSpacing(16, after: messageLabel)
-            contentStack.addArrangedSubview(rowsView)
+            views.append(rowsView)
         }
 
         if viewModel.reason != nil {
-            contentStack.setCustomSpacing(16, after: messageLabel)
-            contentStack.addArrangedSubview(reasonView)
+            views.append(reasonView)
         }
+
+        views.forEach { contentStack.addArrangedSubview($0) }
     }
 
     func bindButtons(_ actions: [SubtensorResultActionViewModel]) -> [TriangularedButton] {
@@ -194,36 +195,57 @@ private extension SubtensorResultSheetViewLayout {
     }
 
     func setupLayout() {
+        tileView.addSubview(tileImageView)
+        tileImageView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
         tileView.addSubview(tileIconView)
         tileIconView.snp.makeConstraints { make in
             make.center.equalToSuperview()
             make.size.equalTo(Constants.tileIconSize)
         }
 
+        tileContainer.addSubview(tileView)
         tileView.snp.makeConstraints { make in
+            make.top.bottom.centerX.equalToSuperview()
             make.size.equalTo(Constants.tileSize)
         }
 
-        let reasonContent = UIView.hStack(alignment: .top, spacing: 8, [reasonIconView, reasonLabel])
+        spinnerContainer.addSubview(spinnerView)
+        spinnerView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+
+        spinnerContainer.snp.makeConstraints { make in
+            make.height.equalTo(Constants.spinnerBoxSize)
+        }
+
+        let reasonContent = UIView.hStack(
+            alignment: .top,
+            spacing: Constants.reasonSpacing,
+            [reasonIconView, reasonLabel]
+        )
+
         reasonIconView.snp.makeConstraints { make in
-            make.size.equalTo(16)
+            make.size.equalTo(Constants.reasonIconSize)
         }
 
         reasonView.addSubview(reasonContent)
         reasonContent.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16))
+            make.edges.equalToSuperview().inset(Constants.reasonInsets)
         }
 
         addSubview(contentStack)
         contentStack.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(Constants.topInset)
-            make.leading.trailing.equalToSuperview().inset(Constants.sideInset)
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
         }
 
         addSubview(buttonsStack)
         buttonsStack.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(Constants.sideInset)
-            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).offset(-Constants.bottomInset)
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).offset(-UIConstants.actionBottomInset)
             make.height.equalTo(UIConstants.actionHeight)
         }
     }
