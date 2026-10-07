@@ -2333,3 +2333,5 @@ Do you want to continue?";
 "staking.subtensor.ui.avg.buy.price.rising" = "Rising";
 "staking.subtensor.ui.avg.buy.price.falling" = "Falling";
 "staking.subtensor.ui.join.comma.format" = "%1$@, %2$@";
+"staking.subtensor.ui.dashboard.root" = "Root";
+"staking.subtensor.ui.dashboard.estimated.format" = "%@ · estimated";

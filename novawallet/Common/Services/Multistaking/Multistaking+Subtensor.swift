@@ -63,6 +63,22 @@ extension Multistaking {
             !positions.isEmpty || totalRootRedeemable > 0
         }
 
+        var rootStakeInRao: BigUInt? {
+            let rootPositions = positions.filter { $0.netuid == SubtensorStakingPallet.rootNetuid }
+
+            guard !rootPositions.isEmpty || totalRootRedeemable > 0 else {
+                return nil
+            }
+
+            return rootPositions.reduce(totalRootRedeemable) { total, position in
+                total + position.stakeAlpha
+            }
+        }
+
+        var subnetCount: Int {
+            Set(positions.map(\.netuid).filter { $0 != SubtensorStakingPallet.rootNetuid }).count
+        }
+
         func taoValue(of position: SubtensorStakingPosition) -> BigUInt? {
             guard position.netuid != SubtensorStakingPallet.rootNetuid else {
                 return position.stakeAlpha
@@ -89,6 +105,12 @@ extension Multistaking {
         }
     }
 
+    struct DashboardItemSubtensorDetails: Equatable {
+        let rootStake: BigUInt?
+        let subnetCount: Int
+        let rootRate: Decimal?
+    }
+
     struct DashboardItemSubtensorPart {
         enum MaxApyUpdate: Equatable {
             case keep
@@ -98,11 +120,18 @@ extension Multistaking {
         let stakingOption: OptionWithWallet
         let state: SubtensorStakingState
         let maxApy: MaxApyUpdate
+        let rootRate: Decimal?
 
-        init(stakingOption: OptionWithWallet, state: SubtensorStakingState, maxApy: MaxApyUpdate = .keep) {
+        init(
+            stakingOption: OptionWithWallet,
+            state: SubtensorStakingState,
+            maxApy: MaxApyUpdate = .keep,
+            rootRate: Decimal? = nil
+        ) {
             self.stakingOption = stakingOption
             self.state = state
             self.maxApy = maxApy
+            self.rootRate = rootRate
         }
     }
 }

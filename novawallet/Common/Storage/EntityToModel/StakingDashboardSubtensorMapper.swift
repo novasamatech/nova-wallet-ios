@@ -34,11 +34,16 @@ extension StakingDashboardSubtensorMapper: CoreDataMapperProtocol {
         switch state {
         case .bonded, .active, .waiting, .activeIndependent:
             entity.stake = String(model.state.totalStakeInRao)
+            entity.subtensorRootStake = model.state.rootStakeInRao.map { String($0) }
+            entity.subtensorSubnetCount = NSNumber(value: model.state.subnetCount)
         case nil:
             entity.stake = nil
+            entity.subtensorRootStake = nil
+            entity.subtensorSubnetCount = nil
         }
 
         entity.onchainState = state?.rawValue
+        entity.subtensorRootRate = model.rootRate.map { $0 as NSDecimalNumber }
 
         if case let .replace(maxApy) = model.maxApy {
             entity.maxApy = maxApy.map { $0 as NSDecimalNumber }
