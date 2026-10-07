@@ -36,6 +36,7 @@ extension SubtensorHistoryFiltersProvider: TransactionHistoryFilterProviderProto
 
         let subnetAccountsFilter = TransactionHistoryAccountPrefixFilter(
             accountPrefix: accountPrefix,
+            ignoresOnlyWithinExtrinsic: true,
             chainAsset: chainAsset
         )
 
