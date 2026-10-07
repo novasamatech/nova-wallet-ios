@@ -435,15 +435,16 @@ final class SubtensorUnstakeConfirmPresenterTests: XCTestCase {
         )
     }
 
-    func testSubnetConfirmSellsAtTheAcknowledgedLimitWithTheLatestTaoOut() throws {
+    func testSubnetConfirmSellsAtTheTighterLatestLimitWithTheLatestTaoOut() throws {
         let acknowledged = try makeTradeQuote(spotPrice: 7_683_255)
+        let latest = try makeTradeQuote(spotPrice: 7_690_000, taoOut: 7_675_000)
 
         let setup = makeSetup { chainAsset in
             makeSubnetModel(for: chainAsset, acknowledgedQuote: acknowledged)
         }
 
         setup.presenter.didReceivePositions(makePositions(hotkeys: [hotkey], netuid: 1))
-        setup.presenter.didReceiveQuote(try makeTradeQuote(spotPrice: 7_690_000, taoOut: 7_675_000))
+        setup.presenter.didReceiveQuote(latest)
 
         XCTAssertEqual(
             confirmAndCaptureRequest(setup)?.operation,
@@ -451,7 +452,7 @@ final class SubtensorUnstakeConfirmPresenterTests: XCTestCase {
                 hotkey: hotkey,
                 netuid: 1,
                 alpha: unstakeAmount,
-                limitPrice: acknowledged.limitPrice,
+                limitPrice: latest.limitPrice,
                 quotedTaoOut: 7_675_000
             )
         )
@@ -493,22 +494,23 @@ final class SubtensorUnstakeConfirmPresenterTests: XCTestCase {
         XCTAssertEqual(request?.stakeBefore, unstakeAmount * 2)
     }
 
-    func testSubnetGroupExitSellsTheRebuiltHotkeysAtTheAcknowledgedLimitWithTheLatestTaoOut() throws {
+    func testSubnetGroupExitSellsTheRebuiltHotkeysAtTheTighterLatestLimitWithTheLatestTaoOut() throws {
         let acknowledged = try makeTradeQuote(spotPrice: 7_683_255)
+        let latest = try makeTradeQuote(spotPrice: 7_690_000, taoOut: 7_675_000)
 
         let setup = makeSetup { chainAsset in
             makeSubnetModel(for: chainAsset, acknowledgedQuote: acknowledged, exitHotkeys: [hotkey])
         }
 
         setup.presenter.didReceivePositions(makePositions(hotkeys: [hotkey], netuid: 1))
-        setup.presenter.didReceiveQuote(try makeTradeQuote(spotPrice: 7_690_000, taoOut: 7_675_000))
+        setup.presenter.didReceiveQuote(latest)
 
         XCTAssertEqual(
             confirmAndCaptureRequest(setup)?.operation,
             .subnetSellAll(
                 hotkeys: [hotkey],
                 netuid: 1,
-                limitPrice: acknowledged.limitPrice,
+                limitPrice: latest.limitPrice,
                 quotedTaoOut: 7_675_000
             )
         )

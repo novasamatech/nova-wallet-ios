@@ -76,7 +76,7 @@ private extension SubtensorCostBasisWalk {
 
     enum Step {
         case request
-        case collected([BittensorApi.Operation])
+        case collected([BittensorApi.Operation], isHistoryComplete: Bool)
         case failed(Error)
     }
 
@@ -142,8 +142,10 @@ private extension SubtensorCostBasisWalk {
         switch step {
         case .request:
             advance()
-        case let .collected(operations):
-            finish(with: .success(SubtensorCostBasisLedger(operations: operations)))
+        case let .collected(operations, isHistoryComplete):
+            let ledger = SubtensorCostBasisLedger(operations: operations, isHistoryComplete: isHistoryComplete)
+
+            finish(with: .success(ledger))
         case let .failed(error):
             finish(with: .failure(error))
         }
@@ -182,11 +184,11 @@ private extension SubtensorCostBasisWalk {
         pace(afterReceivingAt: response.receivedAt, requestedAt: requestedAt)
 
         guard let followingPage = pageInfo.nextPage else {
-            return .collected(operations)
+            return .collected(operations, isHistoryComplete: true)
         }
 
         guard page < settings.maxPages else {
-            return .failed(SubtensorCostBasisError.historyTooLong(pageLimit: settings.maxPages))
+            return .collected(operations, isHistoryComplete: false)
         }
 
         nextPage = followingPage

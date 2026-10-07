@@ -213,8 +213,8 @@ extension SubtensorStakingConfirmPresenter {
         }
 
         switch SubtensorConfirmTapRule.quoteVerdict(latest: state.latest, acknowledged: state.acknowledged) {
-        case let .proceed(latest, acknowledged) where !state.isPriceMoved:
-            return createOperation(limitPrice: acknowledged.limitPrice).map { ($0, latest) }
+        case let .proceed(latest, limitPrice) where !state.isPriceMoved:
+            return createOperation(limitPrice: limitPrice).map { ($0, latest) }
         case .quoteMissing:
             presentQuoteMissing()
             return nil
@@ -275,7 +275,7 @@ extension SubtensorStakingConfirmPresenter {
         if let quoteState {
             dependencies.quoteContext = SubtensorQuoteValidatingContext(
                 latestQuote: quoteState.latest,
-                acknowledgedLimit: quoteState.acknowledged?.limitPrice,
+                acknowledgedLimit: quoteState.signingLimit,
                 tradesUnavailable: tradesUnavailable,
                 onQuoteRefresh: { [weak self] in
                     self?.refreshQuote()
