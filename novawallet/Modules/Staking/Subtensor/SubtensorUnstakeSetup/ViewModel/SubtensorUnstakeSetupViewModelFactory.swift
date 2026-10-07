@@ -320,7 +320,6 @@ private extension SubtensorUnstakeSetupViewModelFactory {
             amountIn: input.amount,
             direction: .sell,
             target: .subnet(info: displayInfo, price: price),
-            annualRate: nil,
             taoPrice: input.price,
             locale: locale
         )

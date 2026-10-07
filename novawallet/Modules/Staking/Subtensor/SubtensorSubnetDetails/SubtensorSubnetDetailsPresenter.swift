@@ -21,7 +21,6 @@ final class SubtensorSubnetDetailsPresenter {
     private var rankingView: SubtensorRankedSubnets?
     private var hasExpiredRankingSeed = false
     private var validator: SubtensorSubnetValidatorState
-    private var isYieldsLoaded = false
     private var yields: SubtensorAlphaYields?
     private var amount = SubtensorSubnetDetailsViewModelFactory.defaultChip
     private var transferable: Balance?
@@ -84,7 +83,6 @@ private extension SubtensorSubnetDetailsPresenter {
             isRankingLoaded: isRankingLoaded,
             rankingView: rankingView,
             validator: validator,
-            isYieldsLoaded: isYieldsLoaded,
             yields: yields,
             amount: amount,
             transferable: transferable,
@@ -117,7 +115,6 @@ private extension SubtensorSubnetDetailsPresenter {
 
         if let yields = snapshot.yields.value {
             self.yields = yields
-            isYieldsLoaded = true
         }
     }
 
@@ -315,7 +312,6 @@ extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol
 
     func didReceiveYields(_ yields: SubtensorAlphaYields?) {
         self.yields = yields
-        isYieldsLoaded = true
         provideViewModel()
     }
 

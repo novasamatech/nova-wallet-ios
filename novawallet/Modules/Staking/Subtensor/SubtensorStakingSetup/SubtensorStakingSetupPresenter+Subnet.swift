@@ -52,7 +52,6 @@ extension SubtensorStakingSetupPresenter {
 
         yieldsNetuid = netuid
         yields = cachedYields.value
-        isYieldsLoaded = cachedYields.value != nil
 
         if !cachedYields.isFresh {
             interactor.loadYields(netuid: netuid)
@@ -134,7 +133,6 @@ extension SubtensorStakingSetupPresenter {
             subnetLogos: subnetLogos,
             rankedSubnet: rankingView?.items.first { $0.netuid == mode.netuid },
             annualRate: subnetAnnualRate(),
-            isYieldsLoaded: isYieldsLoaded,
             isQuoteFailed: isQuoteFailed,
             costBasis: costBasis
         )

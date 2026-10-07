@@ -332,8 +332,6 @@ extension SubtensorUnstakeConfirmPresenter: SubtensorStakingConfirmPresenterProt
         wireframe.showSubtensorInfo(.slippage(tolerance, canEdit: false), from: view)
     }
 
-    func showEarnPerMonthInfo() {}
-
     func showAvgBuyPriceInfo() {
         let symbol = SubtensorSubnetNaming.symbol(for: unstakeModel.netuid, in: catalogue)
 

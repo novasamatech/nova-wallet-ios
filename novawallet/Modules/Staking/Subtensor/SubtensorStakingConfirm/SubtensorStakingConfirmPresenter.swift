@@ -377,10 +377,6 @@ extension SubtensorStakingConfirmPresenter: SubtensorStakingConfirmPresenterProt
         wireframe.showSubtensorInfo(.slippage(tolerance, canEdit: model.origin == .newPosition), from: view)
     }
 
-    func showEarnPerMonthInfo() {
-        wireframe.showSubtensorInfo(.earnTokensMonth(subnetName: subnetName), from: view)
-    }
-
     func showAvgBuyPriceInfo() {
         let symbol = SubtensorSubnetNaming.symbol(for: model.target.netuid, in: catalogue)
 
