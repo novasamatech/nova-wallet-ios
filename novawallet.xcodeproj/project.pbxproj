@@ -248,7 +248,6 @@
 		739651BA678B4BEB96A5161B /* SubtensorYieldServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA865E087D746A89B112521 /* SubtensorYieldServiceTests.swift */; };
 		399223AE0E6540B0A578E2BE /* SubtensorValidatorDirectoryServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C53C9CE832944998940398C /* SubtensorValidatorDirectoryServiceTests.swift */; };
 		FE03B612AEB641FCA98A4485 /* SubtensorRecommendationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C61F737CC56F45269B27FE5D /* SubtensorRecommendationServiceTests.swift */; };
-		49DD107494694ACBA50CDB2C /* SubtensorEarningsEstimatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01619322DA63421B8DD7B35D /* SubtensorEarningsEstimatorTests.swift */; };
 		F72CCC83880B405F80EC4C59 /* SubtensorPriceHistoryServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2583DA012A44FADA37C5D1A /* SubtensorPriceHistoryServiceTests.swift */; };
 		4B8B625A5F3F4019AFE190D9 /* SubtensorPortfolioValueSeriesCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8286AAF7B2124D17B4FA8B4F /* SubtensorPortfolioValueSeriesCalculatorTests.swift */; };
 		0E63A45827EC4F0DB0548797 /* SubtensorYieldService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67F57CD29174D67BD43C49E /* SubtensorYieldService.swift */; };
@@ -7485,7 +7484,6 @@
 		4CA865E087D746A89B112521 /* SubtensorYieldServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorYieldServiceTests.swift; sourceTree = "<group>"; };
 		5C53C9CE832944998940398C /* SubtensorValidatorDirectoryServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorValidatorDirectoryServiceTests.swift; sourceTree = "<group>"; };
 		C61F737CC56F45269B27FE5D /* SubtensorRecommendationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorRecommendationServiceTests.swift; sourceTree = "<group>"; };
-		01619322DA63421B8DD7B35D /* SubtensorEarningsEstimatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorEarningsEstimatorTests.swift; sourceTree = "<group>"; };
 		D2583DA012A44FADA37C5D1A /* SubtensorPriceHistoryServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorPriceHistoryServiceTests.swift; sourceTree = "<group>"; };
 		8286AAF7B2124D17B4FA8B4F /* SubtensorPortfolioValueSeriesCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorPortfolioValueSeriesCalculatorTests.swift; sourceTree = "<group>"; };
 		A67F57CD29174D67BD43C49E /* SubtensorYieldService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorYieldService.swift; sourceTree = "<group>"; };
@@ -19559,7 +19557,6 @@
 				8286AAF7B2124D17B4FA8B4F /* SubtensorPortfolioValueSeriesCalculatorTests.swift */,
 				5C53C9CE832944998940398C /* SubtensorValidatorDirectoryServiceTests.swift */,
 				C61F737CC56F45269B27FE5D /* SubtensorRecommendationServiceTests.swift */,
-				01619322DA63421B8DD7B35D /* SubtensorEarningsEstimatorTests.swift */,
 				879C6A92A65C4979B37C753F /* SubtensorPreflightFactoryTests.swift */,
 				BD43F64BF12B4F7F83126B6D /* SubtensorStorageWorld.swift */,
 				FF37EB55647A458F8439E91C /* SubtensorValidatorChainOperationFactoryTests.swift */,
@@ -39980,7 +39977,6 @@
 				739651BA678B4BEB96A5161B /* SubtensorYieldServiceTests.swift in Sources */,
 				399223AE0E6540B0A578E2BE /* SubtensorValidatorDirectoryServiceTests.swift in Sources */,
 				FE03B612AEB641FCA98A4485 /* SubtensorRecommendationServiceTests.swift in Sources */,
-				49DD107494694ACBA50CDB2C /* SubtensorEarningsEstimatorTests.swift in Sources */,
 				F72CCC83880B405F80EC4C59 /* SubtensorPriceHistoryServiceTests.swift in Sources */,
 				4B8B625A5F3F4019AFE190D9 /* SubtensorPortfolioValueSeriesCalculatorTests.swift in Sources */,
 				F86B78647E014745B48286D7 /* SubtensorPreflightFactoryTests.swift in Sources */,
