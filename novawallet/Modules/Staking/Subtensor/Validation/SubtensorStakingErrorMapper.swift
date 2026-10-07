@@ -18,6 +18,7 @@ enum SubtensorStakingSubmissionError: Error, Equatable {
     case feeUnpayable
     case notEnoughStakeToWithdraw
     case tooManyStakingHotkeys
+    case rootClaimTooHeavy
 }
 
 protocol SubtensorStakingErrorMapping {
@@ -103,6 +104,8 @@ final class SubtensorStakingErrorMapper {
             return .rootStakeLocked
         case "BetaBasketSeedInProgress", "BasketDepositPending":
             return .temporarilyUnavailable
+        case "RootClaimTooHeavy":
+            return .rootClaimTooHeavy
         default:
             return nil
         }
@@ -213,6 +216,8 @@ extension SubtensorStakingSubmissionError: ErrorContentConvertible {
             strings.commonNotEnoughBalanceMessage()
         case .tooManyStakingHotkeys:
             strings.parachainStakingFullMessage(String(Self.maxStakingHotkeys))
+        case .rootClaimTooHeavy:
+            strings.stakingSubtensorErrorRootClaimTooHeavy()
         }
 
         return ErrorContent(title: title, message: message)

@@ -4,7 +4,7 @@ import SubstrateSdk
 extension SubtensorStakingOperation {
     func ensureLimitPolicy() throws {
         switch self {
-        case .rootStake, .rootUnstake:
+        case .rootStake, .rootUnstake, .rootClaim:
             return
         case let .rootUnstakeAll(hotkeys):
             try Self.ensureHotkeyGroup(hotkeys)
@@ -127,6 +127,10 @@ private extension SubtensorStakingOperation {
             ]
         case let .subnetSellAll(hotkeys, netuid, limitPrice, _):
             return try Self.createFullExitClosures(hotkeys: hotkeys, netuid: netuid, limitPrice: limitPrice)
+        case let .rootClaim(hotkey):
+            return [
+                Self.addingClosure(SubtensorStakingPallet.ClaimRootWithHotkeyCall(hotkey: hotkey).runtimeCall())
+            ]
         }
     }
 

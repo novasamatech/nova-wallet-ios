@@ -4,6 +4,12 @@ import Operation_iOS
 
 struct SubtensorRootClaimable: Equatable {
     let previews: [SubtensorRootClaimPreview]
+    let minimumClaim: Balance?
+
+    init(previews: [SubtensorRootClaimPreview], minimumClaim: Balance? = nil) {
+        self.previews = previews
+        self.minimumClaim = minimumClaim
+    }
 
     var totalRedeemable: Balance {
         previews.reduce(Balance.zero) { $0 + $1.redeemable }
@@ -33,9 +39,9 @@ protocol SubtensorRootClaimableServiceProtocol: ApplicationServiceProtocol {
 final class SubtensorRootClaimableService: BaseSyncService {
     let coldkey: AccountId
     let positionsSyncService: SubtensorPositionsSyncServiceProtocol
-    let operationFactory: SubtensorApiOperationFactoryProtocol
     let operationQueue: OperationQueue
 
+    private let claimableFetchFactory: SubtensorRootClaimableFetching
     private let syncQueue: DispatchQueue
     private let callStore = CancellableCallStore()
 
@@ -50,8 +56,12 @@ final class SubtensorRootClaimableService: BaseSyncService {
     ) {
         self.coldkey = coldkey
         self.positionsSyncService = positionsSyncService
-        self.operationFactory = operationFactory
         self.operationQueue = operationQueue
+
+        claimableFetchFactory = SubtensorRootClaimableFetchFactory(
+            operationFactory: operationFactory,
+            operationQueue: operationQueue
+        )
 
         syncQueue = DispatchQueue(label: "io.novawallet.subtensor.claimable.sync.\(UUID().uuidString)")
     }
@@ -92,54 +102,10 @@ final class SubtensorRootClaimableService: BaseSyncService {
 }
 
 private extension SubtensorRootClaimableService {
-    func createPinnedClaimableWrapper(
-        at blockHash: BlockHash
-    ) -> CompoundOperationWrapper<SubtensorRootClaimable> {
-        let previewsWrapper = operationFactory.createRootClaimPreviewsWrapper(
-            coldkey: coldkey,
-            blockHash: blockHash
-        )
-
-        let mappingOperation = ClosureOperation<SubtensorRootClaimable> {
-            let previews = try previewsWrapper.targetOperation.extractNoCancellableResultData()
-
-            return SubtensorRootClaimable(
-                previews: previews.map { preview in
-                    SubtensorRootClaimPreview(
-                        hotkey: preview.hotkey,
-                        accrued: preview.accruedTao,
-                        redeemable: preview.redeemableTao,
-                        forfeitedEstimate: preview.forfeitedTaoEst
-                    )
-                }
-            )
-        }
-
-        mappingOperation.addDependency(previewsWrapper.targetOperation)
-
-        return previewsWrapper.insertingTail(operation: mappingOperation)
-    }
-
     func updateClaimable() {
         callStore.cancel()
 
-        let blockHashWrapper = operationFactory.createBestBlockHashWrapper()
-
-        let claimableWrapper = OperationCombiningService.compoundNonOptionalWrapper(
-            operationQueue: operationQueue
-        ) { [weak self] in
-            guard let self else {
-                throw BaseOperationError.parentOperationCancelled
-            }
-
-            let blockHash = try blockHashWrapper.targetOperation.extractNoCancellableResultData()
-
-            return createPinnedClaimableWrapper(at: blockHash)
-        }
-
-        claimableWrapper.addDependency(wrapper: blockHashWrapper)
-
-        let resultWrapper = claimableWrapper.insertingHead(operations: blockHashWrapper.allOperations)
+        let resultWrapper = claimableFetchFactory.createLatestClaimableWrapper(for: coldkey)
 
         executeCancellable(
             wrapper: resultWrapper,

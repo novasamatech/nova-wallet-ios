@@ -74,6 +74,10 @@ protocol SubtensorApiOperationFactoryProtocol {
         coldkey: AccountId,
         blockHash: BlockHash?
     ) -> CompoundOperationWrapper<[SubtensorStakingPallet.BasketClaimPreview]>
+
+    func createRootClaimableThresholdWrapper(
+        blockHash: BlockHash?
+    ) -> CompoundOperationWrapper<SubtensorStakingPallet.FixedPoint96F32?>
 }
 
 extension SubtensorApiOperationFactoryProtocol {
@@ -510,5 +514,40 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
             blockHash: blockHash,
             paramsClosure: createAccountParamsClosure(for: coldkey)
         )
+    }
+
+    func createRootClaimableThresholdWrapper(
+        blockHash: BlockHash?
+    ) -> CompoundOperationWrapper<SubtensorStakingPallet.FixedPoint96F32?> {
+        do {
+            let runtimeProvider = try runtimeConnectionStore.getRuntimeProvider()
+            let engine = try runtimeConnectionStore.getConnection()
+            let atBlock = try blockHash.map { try Data(hexString: $0) }
+
+            let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+            let queryWrapper: CompoundOperationWrapper<[StorageResponse<SubtensorStakingPallet.FixedPoint96F32>]> =
+                requestFactory.queryItems(
+                    engine: engine,
+                    keyParams: { [StringScaleMapper(value: SubtensorStakingPallet.rootNetuid)] },
+                    factory: { try codingFactoryOperation.extractNoCancellableResultData() },
+                    storagePath: SubtensorStakingPallet.rootClaimableThresholdPath,
+                    options: StorageQueryListOptions(atBlock: atBlock)
+                )
+
+            queryWrapper.addDependency(operations: [codingFactoryOperation])
+
+            let mappingOperation = ClosureOperation<SubtensorStakingPallet.FixedPoint96F32?> {
+                try queryWrapper.targetOperation.extractNoCancellableResultData().first?.value
+            }
+
+            mappingOperation.addDependency(queryWrapper.targetOperation)
+
+            return queryWrapper
+                .insertingHead(operations: [codingFactoryOperation])
+                .insertingTail(operation: mappingOperation)
+        } catch {
+            return CompoundOperationWrapper.createWithError(error)
+        }
     }
 }
