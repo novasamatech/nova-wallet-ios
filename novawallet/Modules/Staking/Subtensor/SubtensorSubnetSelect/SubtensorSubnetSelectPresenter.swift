@@ -68,7 +68,8 @@ private extension SubtensorSubnetSelectPresenter {
             list: list,
             sort: sort,
             filters: filters,
-            subnetLogos: subnetLogos
+            subnetLogos: subnetLogos,
+            stamp: entries.flatMap { SubtensorBackendStamp.aggregate($0.flatMap(\.subnet.stamps)) }
         )
 
         view?.didReceive(list: viewModelFactory.createListViewModel(for: state, locale: selectedLocale))
