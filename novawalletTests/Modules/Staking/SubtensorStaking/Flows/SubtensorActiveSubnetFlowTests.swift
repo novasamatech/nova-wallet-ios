@@ -129,7 +129,7 @@ final class SubtensorActiveSubnetFlowTests: SubtensorFlowTestCase {
 
         XCTAssertEqual(
             screens.costBasis,
-            .average(SubtensorPurchaseTotals(paidTao: 95_697_000_000, receivedAlpha: 1_869_010_901_513))
+            .average(SubtensorPurchaseTotals(paidTao: 64_547_000_785, receivedAlpha: 1_237_510_901_513))
         )
 
         let productionBeneficiary = try SubtensorFlowChainWorld.productionNovaFeeBeneficiary()

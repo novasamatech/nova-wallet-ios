@@ -34,8 +34,8 @@ final class SubtensorCostBasisServiceTests: XCTestCase {
             return XCTFail("Unexpected cost basis: \(costBasis)")
         }
 
-        XCTAssertEqual(totals, SubtensorPurchaseTotals(paidTao: 4_250_000_001, receivedAlpha: 75_000_000_000))
-        XCTAssertEqual(totals.averagePrice.decimalValue, Decimal(string: "0.05666666668"))
+        XCTAssertEqual(totals, SubtensorPurchaseTotals(paidTao: 3_650_000_000, receivedAlpha: 65_000_000_000))
+        XCTAssertEqual(totals.averagePrice.decimalValue, Decimal(string: "0.056153846153846153846153846153846153846"))
         verify(apiOperationFactory, times(1)).createOperationsWrapper(
             accountSubject: equal(to: accountSubject),
             page: equal(to: 2)
@@ -56,7 +56,7 @@ final class SubtensorCostBasisServiceTests: XCTestCase {
 
         XCTAssertEqual(
             chutes,
-            .average(SubtensorPurchaseTotals(paidTao: 95_697_000_000, receivedAlpha: 1_869_010_901_513))
+            .average(SubtensorPurchaseTotals(paidTao: 64_547_000_785, receivedAlpha: 1_237_510_901_513))
         )
         XCTAssertEqual(lium, .noPurchases)
     }

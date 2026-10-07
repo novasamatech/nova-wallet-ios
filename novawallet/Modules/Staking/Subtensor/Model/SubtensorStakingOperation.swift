@@ -94,4 +94,13 @@ extension SubtensorTradeQuote {
             return postTradePrice > limit
         }
     }
+
+    func tighterLimit(than limit: Balance) -> Balance {
+        switch quote.args.direction {
+        case .stake:
+            return min(limitPrice, limit)
+        case .unstake:
+            return max(limitPrice, limit)
+        }
+    }
 }
