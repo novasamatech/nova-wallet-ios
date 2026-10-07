@@ -51,7 +51,8 @@ final class SubtensorRootClaimableServiceTests: XCTestCase {
                         redeemable: 5260,
                         forfeitedEstimate: 814_786
                     )
-                ]
+                ],
+                minimumClaim: SubtensorStakingPallet.defaultRootClaimableThreshold
             )
         )
     }
@@ -143,6 +144,9 @@ final class SubtensorRootClaimableServiceTests: XCTestCase {
             }
             when(stub.createRootClaimPreviewsWrapper(coldkey: any(), blockHash: any())).then { _, _ in
                 CompoundOperationWrapper.createWithError(CommonError.dataCorruption)
+            }
+            when(stub.createRootClaimableThresholdWrapper(blockHash: any())).then { _ in
+                CompoundOperationWrapper.createWithResult(nil)
             }
         }
 
@@ -316,6 +320,9 @@ final class SubtensorRootClaimableServiceTests: XCTestCase {
             }
             when(stub.createRootClaimPreviewsWrapper(coldkey: any(), blockHash: any())).then { _, _ in
                 CompoundOperationWrapper.createWithResult(previews)
+            }
+            when(stub.createRootClaimableThresholdWrapper(blockHash: any())).then { _ in
+                CompoundOperationWrapper.createWithResult(nil)
             }
         }
     }

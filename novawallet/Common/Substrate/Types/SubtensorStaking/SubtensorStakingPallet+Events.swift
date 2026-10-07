@@ -11,6 +11,14 @@ extension SubtensorStakingPallet {
         EventCodingPath(moduleName: Self.name, eventName: "StakeRemoved")
     }
 
+    static var rootClaimedEventPath: EventCodingPath {
+        EventCodingPath(moduleName: Self.name, eventName: "RootClaimed")
+    }
+
+    static var basketClaimedEventPath: EventCodingPath {
+        EventCodingPath(moduleName: Self.name, eventName: "BasketClaimed")
+    }
+
     struct StakeAddedEvent: Decodable {
         let coldkey: AccountId
         let hotkey: AccountId
@@ -48,6 +56,32 @@ extension SubtensorStakingPallet {
             alpha = try container.decode(StringScaleMapper<Balance>.self).value
             netuid = try container.decode(StringScaleMapper<UInt16>.self).value
             fee = try container.decode(StringScaleMapper<Balance>.self).value
+        }
+    }
+
+    struct RootClaimedEvent: Decodable {
+        let coldkey: AccountId
+        let tao: Balance
+
+        init(from decoder: Decoder) throws {
+            var container = try decoder.unkeyedContainer()
+
+            coldkey = try container.decode(BytesCodable.self).wrappedValue
+            tao = try container.decode(StringScaleMapper<Balance>.self).value
+        }
+    }
+
+    struct BasketClaimedEvent: Decodable {
+        let hotkey: AccountId
+        let coldkey: AccountId
+        let tao: Balance
+
+        init(from decoder: Decoder) throws {
+            var container = try decoder.unkeyedContainer()
+
+            hotkey = try container.decode(BytesCodable.self).wrappedValue
+            coldkey = try container.decode(BytesCodable.self).wrappedValue
+            tao = try container.decode(StringScaleMapper<Balance>.self).value
         }
     }
 }

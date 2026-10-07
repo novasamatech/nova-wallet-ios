@@ -119,7 +119,7 @@ private extension SubtensorConfirmViewModelFactory {
             return strings.stakingSubtensorUiAddStakeRootTitle()
         case .unstake:
             return strings.stakingSubtensorUiUnstakeFromRoot()
-        case .newPosition, .buyMore, .sell:
+        case .newPosition, .buyMore, .sell, .claim:
             return strings.stakingSubtensorUiStakeToRoot()
         }
     }

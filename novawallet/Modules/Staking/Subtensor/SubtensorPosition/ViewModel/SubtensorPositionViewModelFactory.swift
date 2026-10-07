@@ -200,15 +200,55 @@ private extension SubtensorPositionViewModelFactory {
         )
     }
 
+    func createClaimDetails(for state: SubtensorPositionState, locale: Locale) -> String? {
+        guard
+            !state.isClaimableFailed,
+            let claimable = state.claimable,
+            let minimumClaim = claimable.minimumClaim else {
+            return nil
+        }
+
+        if let target = state.claimTarget {
+            return formatTao(target.redeemable, locale: locale)
+        }
+
+        let isOwed = claimable.previews.contains { $0.redeemable > 0 }
+        let reachesMinimum = claimable.previews.contains { preview in
+            SubtensorRootClaimRule.isClaimable(preview, minimumClaim: minimumClaim)
+        }
+
+        guard isOwed, !reachesMinimum else {
+            return nil
+        }
+
+        let minimum = balanceViewModelFactory.amountFromValue(
+            decimal(minimumClaim),
+            roundingMode: .up
+        ).value(for: locale)
+
+        return R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorClaimMinimumDetailsFormat(
+            minimum
+        )
+    }
+
     func createActions(for state: SubtensorPositionState, locale: Locale) -> [SubtensorPositionActionViewModel] {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         let actions: [(SubtensorPositionAction, String)] = state.isRoot
-            ? [(.addStake, strings.stakingSubtensorUiPositionAddStake()), (.unstake, strings.stakingUnbond_v190())]
+            ? [
+                (.claim, strings.stakingClaimRewards()),
+                (.addStake, strings.stakingSubtensorUiPositionAddStake()),
+                (.unstake, strings.stakingUnbond_v190())
+            ]
             : [(.sell, strings.walletAssetSell()), (.buy, strings.walletAssetBuy())]
 
         return actions.map { action, title in
-            SubtensorPositionActionViewModel(action: action, title: title, isEnabled: state.isEnabled(action))
+            SubtensorPositionActionViewModel(
+                action: action,
+                title: title,
+                isEnabled: state.isEnabled(action),
+                details: action == .claim ? createClaimDetails(for: state, locale: locale) : nil
+            )
         }
     }
 

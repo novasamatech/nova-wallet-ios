@@ -44,6 +44,7 @@ protocol SubnetPositionInteractorOutputProtocol: AnyObject {
 }
 
 protocol SubtensorPositionWireframeProtocol: AnyObject, MessageSheetPresentable, SubtensorValidatorInfoPresentable {
+    func showClaimRewards(from view: SubtensorPositionViewProtocol?, model: SubtensorClaimRewardsModel)
     func showAddStake(from view: SubtensorPositionViewProtocol?, position: SubtensorStakingPosition)
     func showBuyMore(from view: SubtensorPositionViewProtocol?, position: SubtensorStakingPosition)
     func showUnstake(from view: SubtensorPositionViewProtocol?, netuid: UInt16)

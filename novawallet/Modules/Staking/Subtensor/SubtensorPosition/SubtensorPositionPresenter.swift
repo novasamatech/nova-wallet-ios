@@ -8,6 +8,8 @@ final class SubtensorPositionPresenter {
     let wireframe: SubtensorPositionWireframeProtocol
     let viewModelFactory: SubnetPositionViewModelFactoryProtocol
     let account: MetaChainAccountResponse?
+    let chainAsset: ChainAsset
+    let pendingRootClaims: SubtensorPendingRootClaimsProtocol
 
     private var state: SubtensorPositionState
     private var target: SubtensorStakeTarget?
@@ -21,6 +23,8 @@ final class SubtensorPositionPresenter {
     init(
         group: SubtensorPortfolioGroup,
         account: MetaChainAccountResponse?,
+        chainAsset: ChainAsset,
+        pendingRootClaims: SubtensorPendingRootClaimsProtocol,
         interactor: SubtensorPositionInteractorInputProtocol,
         wireframe: SubtensorPositionWireframeProtocol,
         viewModelFactory: SubnetPositionViewModelFactoryProtocol,
@@ -28,6 +32,8 @@ final class SubtensorPositionPresenter {
     ) {
         state = SubtensorPositionState(netuid: group.netuid, group: group)
         self.account = account
+        self.chainAsset = chainAsset
+        self.pendingRootClaims = pendingRootClaims
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
@@ -57,6 +63,14 @@ private extension SubtensorPositionPresenter {
     }
 
     func provideViewModel() {
+        state.pendingClaimHotkeys = account.map { account in
+            pendingRootClaims.pendingHotkeys(
+                for: account.chainAccount.accountId,
+                at: Date(),
+                claimable: state.claimable
+            )
+        } ?? []
+
         view?.didReceive(viewModel: viewModelFactory.createViewModel(for: state, locale: selectedLocale))
     }
 
@@ -124,12 +138,20 @@ private extension SubtensorPositionPresenter {
         interactor.loadHistory(for: subnet, period: request.period)
     }
 
-    func perform(_ action: SubtensorPositionAction, primary: SubtensorStakingPosition) {
+    func perform(_ action: SubtensorPositionAction, account: MetaChainAccountResponse) {
         switch action {
+        case .claim:
+            if let model = state.claimRewardsModel(for: account, chainFormat: chainAsset.chain.chainFormat) {
+                wireframe.showClaimRewards(from: view, model: model)
+            }
         case .addStake:
-            wireframe.showAddStake(from: view, position: primary)
+            if let primary = state.primaryPosition {
+                wireframe.showAddStake(from: view, position: primary)
+            }
         case .buy:
-            wireframe.showBuyMore(from: view, position: primary)
+            if let primary = state.primaryPosition {
+                wireframe.showBuyMore(from: view, position: primary)
+            }
         case .unstake, .sell:
             wireframe.showUnstake(from: view, netuid: state.netuid)
         }
@@ -175,13 +197,17 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
     }
 
     func selectAction(_ action: SubtensorPositionAction) {
-        guard let account, let primary = state.primaryPosition, state.isEnabled(action) else {
+        if action == .claim {
+            provideViewModel()
+        }
+
+        guard let account, action == .claim || state.primaryPosition != nil, state.isEnabled(action) else {
             return
         }
 
         switch SubtensorOperationGate.verdict(for: account.chainAccount.type) {
         case .allowed, .noSigning:
-            perform(action, primary: primary)
+            perform(action, account: account)
         case let .signerNotSupported(type):
             guard let view else {
                 return

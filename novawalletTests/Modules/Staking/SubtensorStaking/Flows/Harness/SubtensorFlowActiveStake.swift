@@ -77,7 +77,7 @@ enum SubtensorFlowActiveStake {
                 redeemable: 300_000,
                 forfeitedEstimate: 0
             )
-        ])
+        ], minimumClaim: SubtensorStakingPallet.defaultRootClaimableThreshold)
     }
 
     static func preflight(hotkeyOf member: World.Member, netuid: UInt16) throws -> SubtensorStakingPreflight {
@@ -250,6 +250,10 @@ extension SubtensorFlowWorld {
 
             when(stub.createRootClaimPreviewsWrapper(coldkey: any(), blockHash: any())).then { _, _ in
                 CompoundOperationWrapper.createWithResult(previews)
+            }
+
+            when(stub.createRootClaimableThresholdWrapper(blockHash: any())).then { _ in
+                CompoundOperationWrapper.createWithResult(nil)
             }
         }
     }

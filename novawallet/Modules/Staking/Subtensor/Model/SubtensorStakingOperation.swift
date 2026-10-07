@@ -12,6 +12,17 @@ enum SubtensorStakingOperation: Equatable {
     case subnetBuy(hotkey: AccountId, netuid: UInt16, grossTao: Balance, limitPrice: Balance)
     case subnetSell(hotkey: AccountId, netuid: UInt16, alpha: Balance, limitPrice: Balance, quotedTaoOut: Balance)
     case subnetSellAll(hotkeys: [AccountId], netuid: UInt16, limitPrice: Balance, quotedTaoOut: Balance)
+    case rootClaim(hotkey: AccountId)
+}
+
+extension SubtensorStakingOperation {
+    var claimHotkey: AccountId? {
+        guard case let .rootClaim(hotkey) = self else {
+            return nil
+        }
+
+        return hotkey
+    }
 }
 
 enum SubtensorStakingOperationError: Error, Equatable {

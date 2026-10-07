@@ -132,6 +132,10 @@ extension SubtensorOperationResultViewModelFactory {
     ) -> String {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
+        if request.origin == .claim, isClaimRedeemFailure(failure) {
+            return strings.stakingSubtensorResultClaimFailedReason()
+        }
+
         switch failure.error as? SubtensorStakingSubmissionError {
         case .slippageTooHigh, .priceLimitExceeded:
             if
@@ -158,6 +162,17 @@ extension SubtensorOperationResultViewModelFactory {
         }
 
         return strings.commonUndefinedErrorMessage()
+    }
+
+    func isClaimRedeemFailure(_ failure: SubtensorStakingSubmissionFailure) -> Bool {
+        switch failure.error as? SubtensorStakingSubmissionError {
+        case .amountTooLow, .insufficientLiquidity, .slippageTooHigh, .priceLimitExceeded:
+            true
+        case .some:
+            false
+        case .none:
+            failure.error is DispatchCallError
+        }
     }
 
     func failureAction(

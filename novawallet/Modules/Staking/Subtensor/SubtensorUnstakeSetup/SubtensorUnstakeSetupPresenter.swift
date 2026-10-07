@@ -83,7 +83,7 @@ private extension SubtensorUnstakeSetupPresenter {
             return .partial(hotkey)
         case let .rootUnstakeAll(hotkeys), let .subnetSellAll(hotkeys, _, _, _):
             return .exitAll(hotkeys)
-        case .rootStake, .subnetBuy:
+        case .rootStake, .rootClaim, .subnetBuy:
             return nil
         }
     }
