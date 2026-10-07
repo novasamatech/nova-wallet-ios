@@ -7,6 +7,8 @@ final class SubtensorPriceHistoryService {
 
     let marketsService: SubtensorSubnetMarketsServiceProtocol
     let coingeckoOperationFactory: CoingeckoOperationFactoryProtocol
+    let blockNumberOperationFactory: BlockNumberOperationFactoryProtocol
+    let chainId: ChainModel.Id
     let taoPriceId: AssetModel.PriceId
     let operationQueue: OperationQueue
     let timeProvider: () -> TimeInterval
@@ -15,6 +17,8 @@ final class SubtensorPriceHistoryService {
     init(
         marketsService: SubtensorSubnetMarketsServiceProtocol,
         coingeckoOperationFactory: CoingeckoOperationFactoryProtocol,
+        blockNumberOperationFactory: BlockNumberOperationFactoryProtocol,
+        chainId: ChainModel.Id,
         taoPriceId: AssetModel.PriceId,
         operationQueue: OperationQueue,
         timeProvider: @escaping () -> TimeInterval = { Date().timeIntervalSince1970 },
@@ -22,6 +26,8 @@ final class SubtensorPriceHistoryService {
     ) {
         self.marketsService = marketsService
         self.coingeckoOperationFactory = coingeckoOperationFactory
+        self.blockNumberOperationFactory = blockNumberOperationFactory
+        self.chainId = chainId
         self.taoPriceId = taoPriceId
         self.operationQueue = operationQueue
         self.timeProvider = timeProvider
@@ -30,12 +36,41 @@ final class SubtensorPriceHistoryService {
 }
 
 extension SubtensorPriceHistoryService {
+    static func registrationDate(
+        of subnet: SubtensorSubnetRef,
+        headBlock: BlockNumber,
+        at now: TimeInterval
+    ) -> Date {
+        let head = UInt64(headBlock)
+        let elapsedBlocks = head - min(subnet.registeredAt, head)
+        let blockTimeMillis = TimeInterval(SubtensorStakingFlowConstants.blockTimeMillis)
+        let elapsed = (TimeInterval(elapsedBlocks) * blockTimeMillis).seconds
+
+        return Date(timeIntervalSince1970: now - elapsed)
+    }
+
     static func makeHistory(
         subnet: SubtensorSubnetRef,
         period: SubtensorPricePeriod,
-        points: [SubtensorPricePoint]
+        points: [SubtensorPricePoint],
+        registrationDate: Date
     ) -> SubtensorPriceHistory {
-        let periodPoints = SubtensorPriceSeries.sliced(points, for: period, date: \.date)
+        let registeredPoints = points.filter { $0.date >= registrationDate }
+        let periodPoints = SubtensorPriceSeries.sliced(registeredPoints, for: period, date: \.date)
+
+        let coversPeriod = periodPoints.last
+            .flatMap { period.startDate(endingAt: $0.date) }
+            .map { registrationDate <= $0 } ?? true
+
+        guard coversPeriod else {
+            return SubtensorPriceHistory(
+                subnet: subnet,
+                period: period,
+                points: periodPoints,
+                changeInTao: nil,
+                changeInFiat: nil
+            )
+        }
 
         return SubtensorPriceHistory(
             subnet: subnet,
@@ -96,6 +131,8 @@ private extension SubtensorPriceHistoryService {
     var fetcher: Fetcher {
         Fetcher(
             coingeckoOperationFactory: coingeckoOperationFactory,
+            blockNumberOperationFactory: blockNumberOperationFactory,
+            chainId: chainId,
             taoPriceId: taoPriceId,
             timeProvider: timeProvider,
             logger: logger
@@ -142,6 +179,8 @@ extension SubtensorPriceHistoryService: SubtensorPriceHistoryServiceProtocol {
     ) -> CompoundOperationWrapper<SubtensorPriceHistoryResult> {
         let marketsWrapper = marketsService.createMarketsWrapper()
         let fetcher = fetcher
+        let headBlockWrapper = fetcher.createHeadBlockWrapper()
+        let timeProvider = timeProvider
 
         let pointsWrapper: CompoundOperationWrapper<[SubtensorPricePoint]?> = OperationCombiningService.compoundWrapper(
             operationManager: OperationManager(operationQueue: operationQueue)
@@ -162,14 +201,20 @@ extension SubtensorPriceHistoryService: SubtensorPriceHistoryServiceProtocol {
                 return .notListed
             }
 
-            return .available(Self.makeHistory(subnet: subnet, period: period, points: points))
+            let headBlock = try headBlockWrapper.targetOperation.extractNoCancellableResultData()
+            let registrationDate = Self.registrationDate(of: subnet, headBlock: headBlock, at: timeProvider())
+
+            return .available(
+                Self.makeHistory(subnet: subnet, period: period, points: points, registrationDate: registrationDate)
+            )
         }
 
         resultOperation.addDependency(pointsWrapper.targetOperation)
+        resultOperation.addDependency(headBlockWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: resultOperation,
-            dependencies: marketsWrapper.allOperations + pointsWrapper.allOperations
+            dependencies: marketsWrapper.allOperations + headBlockWrapper.allOperations + pointsWrapper.allOperations
         )
     }
 

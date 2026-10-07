@@ -311,6 +311,11 @@ extension StakingSharedStateFactory {
         return SubtensorPriceHistoryService(
             marketsService: marketsService,
             coingeckoOperationFactory: CoingeckoOperationFactory(),
+            blockNumberOperationFactory: BlockNumberOperationFactory(
+                chainRegistry: chainRegistry,
+                operationQueue: syncOperationQueue
+            ),
+            chainId: stakingOption.chainAsset.chain.chainId,
             taoPriceId: taoPriceId,
             operationQueue: syncOperationQueue,
             logger: logger
