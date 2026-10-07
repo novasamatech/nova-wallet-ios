@@ -17,7 +17,6 @@ enum SubtensorCostBasis: Equatable {
 
 enum SubtensorCostBasisError: Error, Equatable {
     case unclassifiedOperations(netuid: UInt16)
-    case historyTooLong(pageLimit: Int)
     case expiredHistoryPage
 }
 
@@ -90,6 +89,21 @@ extension SubtensorPurchaseTotals {
             paidTao: self.paidTao + paidTao,
             receivedAlpha: self.receivedAlpha + receivedAlpha
         )
+    }
+
+    func reducing(soldAlpha: Balance) -> SubtensorPurchaseTotals? {
+        guard soldAlpha < receivedAlpha else {
+            return nil
+        }
+
+        let remainingAlpha = receivedAlpha - soldAlpha
+        let remainingTao = BigRational(numerator: remainingAlpha, denominator: receivedAlpha).mul(value: paidTao)
+
+        guard remainingTao > 0 else {
+            return nil
+        }
+
+        return SubtensorPurchaseTotals(paidTao: remainingTao, receivedAlpha: remainingAlpha)
     }
 
     func averageTrend(to other: SubtensorPurchaseTotals) -> SubtensorAvgBuyPriceTrend {

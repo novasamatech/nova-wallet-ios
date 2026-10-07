@@ -30,6 +30,14 @@ struct SubtensorConfirmQuoteState {
         return !latest.isFillable(atLimit: acknowledged.limitPrice)
     }
 
+    var signingLimit: Balance? {
+        guard let latest, let acknowledged else {
+            return nil
+        }
+
+        return latest.tighterLimit(than: acknowledged.limitPrice)
+    }
+
     mutating func apply(latest quote: SubtensorTradeQuote) -> Bool {
         guard flow.applyQuote(quote) else {
             return false
