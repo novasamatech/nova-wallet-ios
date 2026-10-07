@@ -65,18 +65,37 @@ private extension SubtensorValidatorDirectoryService {
         )
     }
 
-    func cachedItem(for hotkey: AccountId, subnet: SubtensorSubnetRef) -> CachedItem? {
+    func cachedEntry(for subnet: SubtensorSubnetRef) -> CachedDirectory? {
         mutex.lock()
 
         defer {
             mutex.unlock()
         }
 
-        guard let cached = directories[subnet], let item = cached.items[hotkey] else {
+        return directories[subnet]
+    }
+
+    func peek(_ cached: CachedDirectory, netuid: UInt16) -> HTTPCachePeek<SubtensorValidatorDirectory> {
+        guard
+            case let .fresh(response, freshUntil) = apiOperationFactory.peekValidators(netuid: netuid),
+            ListingReceipt(response: response) == cached.listingReceipt else {
+            return .expired(cached.directory.markingStale())
+        }
+
+        return .fresh(cached.directory, freshUntil: freshUntil)
+    }
+
+    func cachedItem(for hotkey: AccountId, subnet: SubtensorSubnetRef) -> CachedItem? {
+        guard let cached = cachedEntry(for: subnet), let item = cached.items[hotkey] else {
             return nil
         }
 
-        return CachedItem(item: item, isEnriched: cached.enrichedHotkeys.contains(hotkey))
+        let hasFreshStakes = peek(cached, netuid: subnet.netuid).value?.listStamp?.freshness == .fresh
+
+        return CachedItem(
+            item: hasFreshStakes ? item : item.withoutReportedStake(),
+            isEnriched: cached.enrichedHotkeys.contains(hotkey)
+        )
     }
 
     func createListingWrapper(for netuid: UInt16) -> CompoundOperationWrapper<Listing> {
@@ -180,23 +199,11 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
     }
 
     func cachedDirectory(for subnet: SubtensorSubnetRef) -> HTTPCachePeek<SubtensorValidatorDirectory> {
-        mutex.lock()
-
-        let cached = directories[subnet]
-
-        mutex.unlock()
-
-        guard let cached else {
+        guard let cached = cachedEntry(for: subnet) else {
             return .miss
         }
 
-        guard
-            case let .fresh(response, freshUntil) = apiOperationFactory.peekValidators(netuid: subnet.netuid),
-            ListingReceipt(response: response) == cached.listingReceipt else {
-            return .expired(cached.directory.markingStale())
-        }
-
-        return .fresh(cached.directory, freshUntil: freshUntil)
+        return peek(cached, netuid: subnet.netuid)
     }
 
     func createDetailWrapper(

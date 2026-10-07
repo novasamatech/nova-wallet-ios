@@ -95,6 +95,10 @@ private extension SubtensorValidatorSelectPresenter {
         )
     }
 
+    func handedOut(_ item: SubtensorValidatorDirectoryItem) -> SubtensorValidatorDirectoryItem {
+        directory?.listStamp?.freshness == .fresh ? item : item.withoutReportedStake()
+    }
+
     func applyPreselection() {
         guard let directory, let clientGates else {
             return
@@ -209,7 +213,7 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectPresenterProtocol {
             from: view,
             target: target,
             hotkey: hotkey,
-            detail: item.map { SubtensorValidatorDetail(item: $0, identity: nil) }
+            detail: item.map { SubtensorValidatorDetail(item: handedOut($0), identity: nil) }
         )
     }
 
@@ -218,7 +222,7 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectPresenterProtocol {
             return
         }
 
-        delegate?.didSelectValidator(item, for: target)
+        delegate?.didSelectValidator(handedOut(item), for: target)
         wireframe.complete(from: view)
     }
 }

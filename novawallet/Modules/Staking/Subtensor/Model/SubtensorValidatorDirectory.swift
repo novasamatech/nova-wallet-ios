@@ -9,6 +9,19 @@ struct SubtensorValidatorDirectoryItem: Equatable {
     let status: SubtensorValidatorChainStatus?
 }
 
+extension SubtensorValidatorDirectoryItem {
+    func withoutReportedStake() -> SubtensorValidatorDirectoryItem {
+        SubtensorValidatorDirectoryItem(
+            hotkey: hotkey,
+            netuid: netuid,
+            name: name,
+            take: take,
+            reportedStake: nil,
+            status: status
+        )
+    }
+}
+
 struct SubtensorValidatorDirectory: Equatable {
     let subnet: SubtensorSubnetRef
     let items: [SubtensorValidatorDirectoryItem]
