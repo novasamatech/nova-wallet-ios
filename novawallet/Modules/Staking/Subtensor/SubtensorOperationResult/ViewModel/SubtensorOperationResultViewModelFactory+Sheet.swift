@@ -9,6 +9,8 @@ extension SubtensorOperationResultViewModelFactory {
         switch state {
         case .progress:
             createProgressSheet(for: context.request, locale: locale)
+        case let .done(outcome, _) where context.request.origin == .claim:
+            createClaimDoneSheet(for: outcome, state: state, request: context.request, locale: locale)
         case let .done(outcome, _):
             createDoneSheet(for: outcome, state: state, request: context.request, locale: locale)
         case let .failed(failure, _, holdRemaining):
@@ -89,15 +91,24 @@ private extension SubtensorOperationResultViewModelFactory {
             strings.stakingSubtensorResultRootStakingMoreProgressFormat(amount)
         case .unstake:
             strings.stakingSubtensorResultRootUnstakingProgressFormat(amount)
+        case .claim:
+            strings.stakingSubtensorResultRootClaimingProgressFormat(amount.approximatelyEqual())
         case .newPosition, .buyMore, .sell:
             strings.stakingSubtensorResultRootStakingProgressFormat(amount)
         }
 
+        let title = switch request.origin {
+        case .newPosition:
+            strings.stakingSubtensorResultStakingTitle()
+        case .claim:
+            strings.stakingSubtensorResultClaimingTitle()
+        case .addStake, .buyMore, .unstake, .sell:
+            strings.stakingSubtensorResultUpdatingTitle()
+        }
+
         return SubtensorResultSheetViewModel(
             status: .progress,
-            title: request.origin == .newPosition
-                ? strings.stakingSubtensorResultStakingTitle()
-                : strings.stakingSubtensorResultUpdatingTitle(),
+            title: title,
             message: message,
             rows: [],
             reason: nil,
@@ -191,15 +202,69 @@ private extension SubtensorOperationResultViewModelFactory {
             ? [action(.close, locale: locale), action(.tryAgain, locale: locale)]
             : [action(.close, locale: locale)]
 
+        let title = switch request.origin {
+        case .unstake:
+            strings.stakingSubtensorResultUnstakingFailed()
+        case .claim:
+            strings.stakingSubtensorResultClaimFailed()
+        case .newPosition, .addStake, .buyMore, .sell:
+            strings.stakingSubtensorResultStakingFailed()
+        }
+
         return SubtensorResultSheetViewModel(
             status: .failed,
-            title: request.origin == .unstake
-                ? strings.stakingSubtensorResultUnstakingFailed()
-                : strings.stakingSubtensorResultStakingFailed(),
+            title: title,
             message: message,
             rows: [],
             reason: failureReason(for: failure, holdRemaining: holdRemaining, request: request, locale: locale),
             actions: actions
+        )
+    }
+
+    func createClaimDoneSheet(
+        for outcome: SubtensorStakingOperationOutcome,
+        state: SubtensorOperationResultState,
+        request: SubtensorOperationResultRequest,
+        locale: Locale
+    ) -> SubtensorResultSheetViewModel {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+        let feeRow = networkFeeRow(for: state, request: request, locale: locale)
+        let claimed = outcome.executed?.tao
+
+        if let claimed, claimed == 0 {
+            return SubtensorResultSheetViewModel(
+                status: .failed,
+                title: strings.stakingSubtensorResultNothingClaimed(),
+                message: strings.stakingSubtensorResultFeeCharged(),
+                rows: [feeRow],
+                reason: strings.stakingSubtensorResultClaimBelowMinimumReason(),
+                actions: [action(.close, locale: locale)]
+            )
+        }
+
+        let amount = claimed ?? request.payAmount
+        let amountString = formatAmount(amount, info: taoInfo, locale: locale)
+        let stakeAfterString = formatAmount(request.stakeBefore + amount, info: taoInfo, locale: locale)
+        let shownAmount = claimed == nil ? amountString.approximatelyEqual() : amountString
+        let shownStakeAfter = claimed == nil ? stakeAfterString.approximatelyEqual() : stakeAfterString
+
+        let message = request.groupHotkeyCount == 1
+            ? strings.stakingSubtensorResultRootStakeNowWithFormat(shownStakeAfter, validatorName(for: request))
+            : strings.stakingSubtensorResultRootStakeNowFormat(shownStakeAfter)
+
+        let stakeAfterRow = SubtensorResultSheetRowViewModel(
+            title: strings.stakingSubtensorUiStakeAfter(),
+            value: shownStakeAfter,
+            fiat: nil
+        )
+
+        return SubtensorResultSheetViewModel(
+            status: .done,
+            title: strings.stakingSubtensorResultRootClaimedFormat(shownAmount),
+            message: message,
+            rows: [stakeAfterRow, feeRow],
+            reason: nil,
+            actions: landingActions(for: request, locale: locale)
         )
     }
 

@@ -5,6 +5,8 @@ struct SubtensorStakingEventMatcher: ExtrinsicEventsMatching {
     static let matchedEvents: Set<EventCodingPath> = [
         SubtensorStakingPallet.stakeAddedEventPath,
         SubtensorStakingPallet.stakeRemovedEventPath,
+        SubtensorStakingPallet.basketClaimedEventPath,
+        SubtensorStakingPallet.rootClaimedEventPath,
         SubtensorStakingPallet.transactionFeePaidWithAlphaEventPath,
         TransactionPaymentPallet.feePaidPath,
         BalancesPallet.balancesTransfer,
@@ -99,6 +101,16 @@ private extension SubtensorStakingOutcomeParser {
                 .map { .stakeRemoved($0) }
         }
 
+        if metadata.eventMatches(event, path: SubtensorStakingPallet.basketClaimedEventPath) {
+            return (try? event.params.map(to: SubtensorStakingPallet.BasketClaimedEvent.self, with: context))
+                .map { .basketClaimed($0) }
+        }
+
+        if metadata.eventMatches(event, path: SubtensorStakingPallet.rootClaimedEventPath) {
+            return (try? event.params.map(to: SubtensorStakingPallet.RootClaimedEvent.self, with: context))
+                .map { .rootClaimed($0) }
+        }
+
         if metadata.eventMatches(event, path: SubtensorStakingPallet.transactionFeePaidWithAlphaEventPath) {
             let eventType = SubtensorStakingPallet.TransactionFeePaidWithAlphaEvent.self
 
@@ -151,6 +163,8 @@ private extension SubtensorStakingOutcomeParser {
             changes = decodedEvents.enumerated().compactMap { index, event in
                 index == feeSaleIndex ? nil : event.stakeRemoved(matching: target)
             }
+        case .claim:
+            return claimedAmounts(in: decodedEvents, target: target)
         }
 
         guard !changes.isEmpty else {
@@ -162,6 +176,19 @@ private extension SubtensorStakingOutcomeParser {
             alpha: changes.reduce(Balance(0)) { $0 + $1.alpha },
             netuid: target.netuid
         )
+    }
+
+    func claimedAmounts(
+        in decodedEvents: [SubtensorDecodedStakingEvent],
+        target: SubtensorOutcomeTarget
+    ) -> SubtensorExecutedAmounts? {
+        let claims = decodedEvents.compactMap { $0.basketClaimedTao(matching: target) }
+
+        let tao: Balance? = claims.isEmpty
+            ? decodedEvents.lazy.compactMap { $0.rootClaimedTao(by: target.coldkey) }.first
+            : claims.reduce(Balance(0), +)
+
+        return tao.map { SubtensorExecutedAmounts(tao: $0, alpha: $0, netuid: target.netuid) }
     }
 
     func novaFeePaid(in decodedEvents: [SubtensorDecodedStakingEvent]) -> Balance? {
@@ -188,6 +215,7 @@ private struct SubtensorOutcomeTarget {
     enum Kind {
         case stake
         case unstake
+        case claim
     }
 
     let kind: Kind
@@ -218,6 +246,8 @@ private struct SubtensorOutcomeTarget {
             self.init(kind: .unstake, coldkey: coldkey, hotkeys: [hotkey], netuid: netuid)
         case let .subnetSellAll(hotkeys, netuid, _, _):
             self.init(kind: .unstake, coldkey: coldkey, hotkeys: Set(hotkeys), netuid: netuid)
+        case let .rootClaim(hotkey):
+            self.init(kind: .claim, coldkey: coldkey, hotkeys: [hotkey], netuid: rootNetuid)
         }
     }
 
@@ -229,6 +259,8 @@ private struct SubtensorOutcomeTarget {
 private enum SubtensorDecodedStakingEvent {
     case stakeAdded(SubtensorStakingPallet.StakeAddedEvent)
     case stakeRemoved(SubtensorStakingPallet.StakeRemovedEvent)
+    case basketClaimed(SubtensorStakingPallet.BasketClaimedEvent)
+    case rootClaimed(SubtensorStakingPallet.RootClaimedEvent)
     case alphaFeePaid(SubtensorStakingPallet.TransactionFeePaidWithAlphaEvent)
     case transactionFeePaid(TransactionPaymentPallet.TransactionFeePaid)
     case transfer(BalancesPallet.TransferEvent)
@@ -276,6 +308,25 @@ private enum SubtensorDecodedStakingEvent {
         }
 
         return SubtensorStakeChange(tao: removed.tao, alpha: removed.alpha + removed.fee)
+    }
+
+    func basketClaimedTao(matching target: SubtensorOutcomeTarget) -> Balance? {
+        guard
+            case let .basketClaimed(claimed) = self,
+            claimed.coldkey == target.coldkey,
+            target.hotkeys.contains(claimed.hotkey) else {
+            return nil
+        }
+
+        return claimed.tao
+    }
+
+    func rootClaimedTao(by coldkey: AccountId) -> Balance? {
+        guard case let .rootClaimed(claimed) = self, claimed.coldkey == coldkey else {
+            return nil
+        }
+
+        return claimed.tao
     }
 
     func transferAmount(from sender: AccountId, to receiver: AccountId) -> Balance? {

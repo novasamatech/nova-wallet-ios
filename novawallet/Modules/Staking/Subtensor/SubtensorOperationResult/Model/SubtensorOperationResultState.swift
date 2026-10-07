@@ -66,7 +66,8 @@ extension SubtensorStakingSubmissionFailure {
              .hotkeyNotRegistered,
              .coldkeySwapInProgress,
              .safeModeActive,
-             .tooManyStakingHotkeys:
+             .tooManyStakingHotkeys,
+             .rootClaimTooHeavy:
             return false
         default:
             return true
@@ -81,14 +82,14 @@ extension SubtensorStakingOperation {
             .buy
         case .subnetSell, .subnetSellAll:
             .sell
-        case .rootStake, .rootUnstake, .rootUnstakeAll:
+        case .rootStake, .rootUnstake, .rootUnstakeAll, .rootClaim:
             nil
         }
     }
 
     var rootHotkeys: [AccountId] {
         switch self {
-        case let .rootStake(hotkey, _), let .rootUnstake(hotkey, _):
+        case let .rootStake(hotkey, _), let .rootUnstake(hotkey, _), let .rootClaim(hotkey):
             [hotkey]
         case let .rootUnstakeAll(hotkeys):
             hotkeys

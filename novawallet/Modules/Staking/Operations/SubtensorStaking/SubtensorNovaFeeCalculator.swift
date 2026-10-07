@@ -65,7 +65,7 @@ extension SubtensorNovaFeeCalculator {
 
     func novaFee(for operation: SubtensorStakingOperation) throws -> SubtensorNovaFee? {
         switch operation {
-        case .rootStake, .rootUnstake, .rootUnstakeAll:
+        case .rootStake, .rootUnstake, .rootUnstakeAll, .rootClaim:
             return nil
         case let .subnetBuy(_, _, grossTao, _):
             return try buyFee(grossTao: grossTao)
