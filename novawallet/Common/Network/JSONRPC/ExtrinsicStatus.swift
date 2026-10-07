@@ -14,6 +14,33 @@ struct ExtrinsicStatusUpdate {
             nil
         }
     }
+
+    func getTerminalBlockHash(trackingTill: ExtrinsicTrackingTill) -> BlockHash? {
+        switch (trackingTill, extrinsicStatus) {
+        case let (.finalized, .finalized(blockHash)):
+            blockHash
+        case let (.inBlock, .inBlock(blockHash)),
+             let (.inBlock, .finalized(blockHash)):
+            blockHash
+        default:
+            nil
+        }
+    }
+
+    func getFinalExtrinsicFailure() -> FinalExtrinsicStatusError? {
+        switch extrinsicStatus {
+        case .invalid:
+            .invalid
+        case .dropped:
+            .dropped
+        case .usurped:
+            .usurped
+        case .finalityTimeout:
+            .finalityTimeout
+        default:
+            nil
+        }
+    }
 }
 
 enum ExtrinsicStatus: Decodable, Equatable {
@@ -88,4 +115,11 @@ enum ExtrinsicStatus: Decodable, Equatable {
             self = .other
         }
     }
+}
+
+enum FinalExtrinsicStatusError: Error {
+    case finalityTimeout
+    case invalid
+    case dropped
+    case usurped
 }

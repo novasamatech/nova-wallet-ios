@@ -6,4 +6,5 @@ enum SubtensorOperationOrigin: Equatable {
     case buyMore
     case unstake
     case sell
+    case claim
 }

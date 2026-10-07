@@ -71,7 +71,7 @@ extension SubtensorUnstakeConfirmPresenter {
         case let .rootUnstakeAll(hotkeys), let .subnetSellAll(hotkeys, _, _, _):
             let groupHotkeys = Set(group?.positions.map(\.hotkey) ?? [])
             return groupHotkeys.isSubset(of: Set(hotkeys))
-        case .rootStake, .rootUnstake, .subnetBuy, .subnetSell:
+        case .rootStake, .rootUnstake, .rootClaim, .subnetBuy, .subnetSell:
             return false
         }
     }

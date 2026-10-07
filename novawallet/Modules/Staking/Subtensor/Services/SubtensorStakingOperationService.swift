@@ -1,5 +1,4 @@
 import Foundation
-import NovaCrypto
 import Operation_iOS
 import SubstrateSdk
 
@@ -13,6 +12,7 @@ final class SubtensorStakingOperationService {
     let positionsSyncService: SubtensorPositionsSyncServiceProtocol?
     let sharedOperation: SharedOperationProtocol?
     let eventCenter: EventCenterProtocol
+    let pendingRootClaims: SubtensorPendingRootClaimsProtocol?
     let errorMapper: SubtensorStakingErrorMapping
     let feeCalculator: SubtensorNovaFeeCalculator
     let operationQueue: OperationQueue
@@ -28,6 +28,7 @@ final class SubtensorStakingOperationService {
         positionsSyncService: SubtensorPositionsSyncServiceProtocol?,
         sharedOperation: SharedOperationProtocol?,
         eventCenter: EventCenterProtocol,
+        pendingRootClaims: SubtensorPendingRootClaimsProtocol? = nil,
         errorMapper: SubtensorStakingErrorMapping = SubtensorStakingErrorMapper(),
         feeCalculator: SubtensorNovaFeeCalculator = SubtensorNovaFeeCalculator(),
         operationQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue,
@@ -42,6 +43,7 @@ final class SubtensorStakingOperationService {
         self.positionsSyncService = positionsSyncService
         self.sharedOperation = sharedOperation
         self.eventCenter = eventCenter
+        self.pendingRootClaims = pendingRootClaims
         self.errorMapper = errorMapper
         self.feeCalculator = feeCalculator
         self.operationQueue = operationQueue
@@ -139,11 +141,18 @@ extension SubtensorStakingOperationService: SubtensorStakingOperationServiceProt
             return .createWithError(SubtensorStakingSubmissionFailure(stage: .notSubmitted, error: error))
         }
 
-        let recordingSigner = SubtensorRecordingSigner(signer: signer, signedClosure: signedClosure)
+        let claimMarker = pendingRootClaims?.marker(for: operation, coldkey: accountId)
+
+        let recordingSigner = SubtensorRecordingSigner(signer: signer) {
+            claimMarker?.markSigned()
+            signedClosure()
+        }
+
         let finalizer = createFinalizer(signer: recordingSigner)
 
         let submission = SubtensorStakingSubmission(
             statusKeeper: SubtensorSharedOperationStatusKeeper(sharedOperation: sharedOperation),
+            claimMarker: claimMarker,
             finalizer: finalizer,
             operationQueue: operationQueue
         ) { [self] in
@@ -171,6 +180,7 @@ private final class SubtensorStakingSubmission: Longrunable {
     typealias ResultType = SubtensorStakingOperationOutcome
 
     private let statusKeeper: SubtensorSharedOperationStatusKeeper
+    private let claimMarker: SubtensorPendingRootClaimMarker?
     private let finalizer: SubtensorStakingSubmissionFinalizer
     private let operationQueue: OperationQueue
     private let submissionWrapperClosure: () -> CompoundOperationWrapper<ResultType>
@@ -180,11 +190,13 @@ private final class SubtensorStakingSubmission: Longrunable {
 
     init(
         statusKeeper: SubtensorSharedOperationStatusKeeper,
+        claimMarker: SubtensorPendingRootClaimMarker?,
         finalizer: SubtensorStakingSubmissionFinalizer,
         operationQueue: OperationQueue,
         submissionWrapperClosure: @escaping () -> CompoundOperationWrapper<ResultType>
     ) {
         self.statusKeeper = statusKeeper
+        self.claimMarker = claimMarker
         self.finalizer = finalizer
         self.operationQueue = operationQueue
         self.submissionWrapperClosure = submissionWrapperClosure
@@ -212,12 +224,15 @@ private final class SubtensorStakingSubmission: Longrunable {
             wrapper: submissionWrapperClosure(),
             inOperationQueue: operationQueue,
             runningCallbackIn: nil
-        ) { [statusKeeper, finalizer] result in
+        ) { [statusKeeper, claimMarker, finalizer] result in
             switch result {
             case let .success(outcome):
+                claimMarker?.finish()
                 completionClosure(.success(outcome))
             case let .failure(error):
                 let failure = finalizer.failure(for: error)
+
+                claimMarker?.finish(failedAt: failure.stage)
 
                 if failure.stage.revertsSharedOperation {
                     statusKeeper.restore()
@@ -258,41 +273,6 @@ private final class SubtensorSharedOperationStatusKeeper {
 
             sharedOperation?.status = capturedStatus
         }
-    }
-}
-
-private final class SubtensorRecordingSigner: SigningWrapperProtocol {
-    private let signer: SigningWrapperProtocol
-    private let signedClosure: () -> Void
-    private let mutex = NSLock()
-
-    private var signatureCreated = false
-
-    init(signer: SigningWrapperProtocol, signedClosure: @escaping () -> Void) {
-        self.signer = signer
-        self.signedClosure = signedClosure
-    }
-
-    var hasSignature: Bool {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        return signatureCreated
-    }
-
-    func sign(_ originalData: Data, context: ExtrinsicSigningContext) throws -> IRSignatureProtocol {
-        let signature = try signer.sign(originalData, context: context)
-
-        mutex.lock()
-        signatureCreated = true
-        mutex.unlock()
-
-        signedClosure()
-
-        return signature
     }
 }
 

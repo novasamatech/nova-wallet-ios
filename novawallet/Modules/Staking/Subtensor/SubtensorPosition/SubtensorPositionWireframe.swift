@@ -8,6 +8,14 @@ final class SubtensorPositionWireframe: SubtensorPositionWireframeProtocol {
         self.state = state
     }
 
+    func showClaimRewards(from view: SubtensorPositionViewProtocol?, model: SubtensorClaimRewardsModel) {
+        guard let claimView = SubtensorClaimRewardsViewFactory.createView(for: state, model: model) else {
+            return
+        }
+
+        presentFlow(claimView, from: view)
+    }
+
     func showAddStake(from view: SubtensorPositionViewProtocol?, position: SubtensorStakingPosition) {
         guard let setupView = SubtensorStakingSetupViewFactory.createAddStakeView(for: state, position: position) else {
             return

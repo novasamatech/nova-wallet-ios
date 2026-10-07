@@ -28,6 +28,7 @@ protocol SubtensorStakingSharedStateProtocol: AnyObject {
     var selectedAccount: MetaChainAccountResponse? { get }
     var positionsSyncService: SubtensorPositionsSyncServiceProtocol? { get }
     var rootClaimableService: SubtensorRootClaimableServiceProtocol? { get }
+    var pendingRootClaims: SubtensorPendingRootClaimsProtocol { get }
 
     var logger: LoggerProtocol { get }
 
@@ -59,6 +60,7 @@ final class SubtensorStakingSharedState {
     let logger: LoggerProtocol
     let novaFeeCalculator: SubtensorNovaFeeCalculator
     let positionsSyncServiceFactory: ((AccountId) -> SubtensorPositionsSyncServiceProtocol)?
+    let pendingRootClaims: SubtensorPendingRootClaimsProtocol = SubtensorPendingRootClaims()
 
     private let mutex = NSLock()
 
@@ -267,6 +269,7 @@ extension SubtensorStakingSharedState: SubtensorStakingSharedStateProtocol {
             positionsSyncService: positionsSyncService,
             sharedOperation: sharedOperation,
             eventCenter: eventCenter,
+            pendingRootClaims: pendingRootClaims,
             feeCalculator: novaFeeCalculator
         )
     }

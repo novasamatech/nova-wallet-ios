@@ -413,6 +413,8 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
                     primaryHotkey: Data(repeating: 7, count: 32)
                 ),
                 account: state.selectedAccount,
+                chainAsset: state.stakingOption.chainAsset,
+                pendingRootClaims: SubtensorPendingRootClaims(),
                 interactor: interactor,
                 wireframe: SubtensorPositionWireframe(state: state),
                 viewModelFactory: SubtensorPositionViewModelFactory(
