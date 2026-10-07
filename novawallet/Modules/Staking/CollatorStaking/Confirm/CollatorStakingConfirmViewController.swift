@@ -1,5 +1,5 @@
-import Foundation_iOS
 import UIKit
+import Foundation_iOS
 
 final class CollatorStakingConfirmViewController: UIViewController, ViewHolder {
     typealias RootViewType = CollatorStakingConfirmViewLayout
@@ -7,17 +7,14 @@ final class CollatorStakingConfirmViewController: UIViewController, ViewHolder {
     let presenter: CollatorStakingConfirmPresenterProtocol
 
     let localizableTitle: LocalizableResource<String>
-    let statics: CollatorStakingDelegateStatics
 
     init(
         presenter: CollatorStakingConfirmPresenterProtocol,
         localizableTitle: LocalizableResource<String>,
-        statics: CollatorStakingDelegateStatics = .collator,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
         self.localizableTitle = localizableTitle
-        self.statics = statics
 
         super.init(nibName: nil, bundle: nil)
 
@@ -59,7 +56,9 @@ final class CollatorStakingConfirmViewController: UIViewController, ViewHolder {
 
         rootView.networkFeeCell.rowContentView.locale = selectedLocale
 
-        rootView.collatorCell.titleLabel.text = statics.delegateTitle.value(for: selectedLocale)
+        rootView.collatorCell.titleLabel.text = R.string(
+            preferredLanguages: selectedLocale.rLanguages
+        ).localizable.parachainStakingCollator()
     }
 
     private func setupHandlers() {

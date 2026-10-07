@@ -32,14 +32,6 @@ enum ExtrinsicSubmissionMonitorError: Error, Equatable {
     case usurped(ExtrinsicHash)
 }
 
-extension ExtrinsicSubmissionMonitorError: ErrorContentConvertible {
-    func toErrorContent(for locale: Locale?) -> ErrorContent {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
-        return ErrorContent(title: strings.commonErrorGeneralTitle(), message: strings.commonTransactionFailed())
-    }
-}
-
 final class ExtrinsicSubmissionMonitorFactory {
     struct SubmissionResult {
         let blockHash: BlockHash
@@ -50,16 +42,19 @@ final class ExtrinsicSubmissionMonitorFactory {
     let submissionService: ExtrinsicServiceProtocol
     let statusService: ExtrinsicStatusServiceProtocol
     let operationQueue: OperationQueue
+    let failsWhenNotIncluded: Bool
     let processingQueue = DispatchQueue(label: "io.novawallet.extrinsic.monitor.\(UUID().uuidString)")
 
     init(
         submissionService: ExtrinsicServiceProtocol,
         statusService: ExtrinsicStatusServiceProtocol,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        failsWhenNotIncluded: Bool = false
     ) {
         self.submissionService = submissionService
         self.statusService = statusService
         self.operationQueue = operationQueue
+        self.failsWhenNotIncluded = failsWhenNotIncluded
     }
 
     convenience init(
@@ -184,7 +179,7 @@ private extension ExtrinsicSubmissionMonitorFactory {
                 )
 
                 return .success(response)
-            } else if let error = model.statusUpdate.extrinsicStatus.notIncludedError {
+            } else if failsWhenNotIncluded, let error = model.statusUpdate.extrinsicStatus.notIncludedError {
                 return .failure(error)
             } else {
                 return nil

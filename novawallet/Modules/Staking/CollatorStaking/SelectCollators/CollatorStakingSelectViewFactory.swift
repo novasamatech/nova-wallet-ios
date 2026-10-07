@@ -1,18 +1,15 @@
 import Foundation
-import Foundation_iOS
 import Operation_iOS
 import SubstrateSdk
+import Foundation_iOS
 
-enum CollatorStakingSelectViewFactory {
+struct CollatorStakingSelectViewFactory {
     static func createView(
         for chainAsset: ChainAsset,
         delegate: CollatorStakingSelectDelegate,
         interactor: CollatorStakingSelectInteractor,
         wireframe: CollatorStakingSelectWireframeProtocol,
-        currencyManager: CurrencyManagerProtocol,
-        defaultSorting: CollatorsSortType = .rewards,
-        displaysRewards: Bool = true,
-        statics: CollatorStakingDelegateStatics = .collator
+        currencyManager: CurrencyManagerProtocol
     ) -> CollatorStakingSelectViewProtocol? {
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)
 
@@ -29,15 +26,12 @@ enum CollatorStakingSelectViewFactory {
             delegate: delegate,
             chainAsset: chainAsset,
             balanceViewModelFactory: balanceViewModelFactory,
-            defaultSorting: defaultSorting,
-            displaysRewards: displaysRewards,
             localizationManager: localizationManager,
             logger: Logger.shared
         )
 
         let view = CollatorStakingSelectViewController(
             presenter: presenter,
-            statics: statics,
             localizationManager: localizationManager
         )
 

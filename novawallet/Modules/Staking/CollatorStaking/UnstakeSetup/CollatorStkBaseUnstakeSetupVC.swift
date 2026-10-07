@@ -1,22 +1,19 @@
-import Foundation_iOS
 import UIKit
+import Foundation_iOS
 
 class CollatorStkBaseUnstakeSetupVC<V: CollatorStkBaseUnstakeSetupLayout>: UIViewController,
     ViewHolder, ImportantViewProtocol {
     typealias RootViewType = V
 
     let basePresenter: CollatorStkBaseUnstakeSetupPresenterProtocol
-    let statics: CollatorStakingDelegateStatics
 
     private var collatorViewModel: AccountDetailsSelectionViewModel?
 
     init(
         basePresenter: CollatorStkBaseUnstakeSetupPresenterProtocol,
-        statics: CollatorStakingDelegateStatics = .collator,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.basePresenter = basePresenter
-        self.statics = statics
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -52,9 +49,9 @@ class CollatorStkBaseUnstakeSetupVC<V: CollatorStkBaseUnstakeSetupLayout>: UIVie
             rootView.actionButton.applyDisabledStyle()
             rootView.actionButton.isUserInteractionEnabled = false
 
-            rootView.actionButton.imageWithTitleView?.title = statics.selectDelegateHint.value(
-                for: selectedLocale
-            )
+            rootView.actionButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.parachainStakingHintSelectCollator()
             rootView.actionButton.invalidateLayout()
 
             return
@@ -88,7 +85,9 @@ private extension CollatorStkBaseUnstakeSetupVC {
 
         title = R.string(preferredLanguages: languages).localizable.stakingUnbond_v190()
 
-        rootView.collatorTitleLabel.text = statics.delegateTitle.value(for: selectedLocale)
+        rootView.collatorTitleLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.parachainStakingCollator()
 
         applyCollator(viewModel: collatorViewModel)
 
@@ -134,7 +133,9 @@ private extension CollatorStkBaseUnstakeSetupVC {
             let emptyViewModel = AccountDetailsSelectionViewModel(
                 displayAddress: DisplayAddressViewModel(
                     address: "",
-                    name: statics.selectDelegateTitle.value(for: selectedLocale),
+                    name: R.string(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ).localizable.parachainStakingSelectCollator(),
                     imageViewModel: nil
                 ),
                 details: nil

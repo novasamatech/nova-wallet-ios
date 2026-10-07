@@ -1,7 +1,7 @@
-import BigInt
 import Foundation
 import Foundation_iOS
 import SubstrateSdk
+import BigInt
 
 final class CollatorStakingSelectPresenter {
     weak var view: CollatorStakingSelectViewProtocol?
@@ -15,7 +15,7 @@ final class CollatorStakingSelectPresenter {
     private var collatorsPref: PreferredValidatorsProviderModel?
     private var price: PriceData?
 
-    private var sorting: CollatorsSortType
+    private var sorting: CollatorsSortType = .rewards
 
     private lazy var iconGenerator = PolkadotIconGenerator()
     private lazy var percentFormatter = NumberFormatter.percentSingle.localizableResource()
@@ -23,10 +23,6 @@ final class CollatorStakingSelectPresenter {
 
     let chainAsset: ChainAsset
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
-    let defaultSorting: CollatorsSortType
-    /// lanes without a per-collator return, such as Subtensor delegates, show min stake in the
-    /// secondary column instead
-    let displaysRewards: Bool
     let logger: LoggerProtocol
 
     init(
@@ -35,8 +31,6 @@ final class CollatorStakingSelectPresenter {
         delegate: CollatorStakingSelectDelegate,
         chainAsset: ChainAsset,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        defaultSorting: CollatorsSortType = .rewards,
-        displaysRewards: Bool = true,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -45,9 +39,6 @@ final class CollatorStakingSelectPresenter {
         self.delegate = delegate
         self.chainAsset = chainAsset
         self.balanceViewModelFactory = balanceViewModelFactory
-        self.defaultSorting = defaultSorting
-        self.displaysRewards = displaysRewards
-        sorting = defaultSorting
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -125,13 +116,6 @@ final class CollatorStakingSelectPresenter {
                 subtitle: amount
             )
         case .minStake, .ownStake, .totalStake:
-            guard displaysRewards else {
-                let title = R.string(preferredLanguages: languages).localizable.commonMinStakeColumn()
-                let amount = createBalanceViewModel(for: collatorInfo.minRewardableStake).amount
-
-                return TitleWithSubtitleViewModel(title: title, subtitle: amount)
-            }
-
             let title = R.string(preferredLanguages: languages).localizable.commonRewardsColumn()
 
             let rewards = collatorInfo.apr.flatMap {
@@ -198,7 +182,7 @@ final class CollatorStakingSelectPresenter {
 
             let headerViewModel = createHeaderViewModel(for: collatorsViewModels.count)
 
-            let filtersApplied = sorting != defaultSorting
+            let filtersApplied = sorting != CollatorsSortType.defaultType
 
             let viewModel = CollatorSelectionScreenViewModel(
                 collators: collatorsViewModels,
@@ -274,7 +258,7 @@ extension CollatorStakingSelectPresenter: CollatorStakingSelectPresenterProtocol
     }
 
     func clearFilters() {
-        sorting = defaultSorting
+        sorting = CollatorsSortType.defaultType
 
         if let allCollators {
             applySortingAndSaveResult(allCollators)
