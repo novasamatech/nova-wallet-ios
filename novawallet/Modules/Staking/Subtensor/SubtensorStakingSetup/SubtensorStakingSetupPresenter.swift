@@ -171,7 +171,7 @@ extension SubtensorStakingSetupPresenter {
         let portfolio = SubtensorPortfolioBuilder.build(state: positionsState)
 
         guard netuid != SubtensorStakingPallet.rootNetuid else {
-            return portfolio.root?.primaryHotkey
+            return portfolio.stakedRoot?.primaryHotkey
         }
 
         return portfolio.subnets.first { $0.netuid == netuid }?.primaryHotkey

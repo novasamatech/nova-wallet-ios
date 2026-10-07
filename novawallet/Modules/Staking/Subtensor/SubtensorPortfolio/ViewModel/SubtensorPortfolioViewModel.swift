@@ -40,7 +40,9 @@ struct SubtensorPortfolioState {
             return []
         }
 
-        return ([portfolio.root].compactMap { $0 } + portfolio.subnets).filter { $0.totalAlpha > 0 }
+        return ([portfolio.root].compactMap { $0 } + portfolio.subnets).filter { group in
+            group.totalAlpha > 0 || group.redeemable > 0
+        }
     }
 
     var isValuationPending: Bool {

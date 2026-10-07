@@ -81,7 +81,7 @@ extension SubtensorUnstakeConfirmPresenter {
 
         let portfolio = SubtensorPortfolioBuilder.build(state: positionsState)
 
-        return ([portfolio.root].compactMap { $0 } + portfolio.subnets).first { $0.netuid == unstakeModel.netuid }
+        return ([portfolio.stakedRoot].compactMap { $0 } + portfolio.subnets).first { $0.netuid == unstakeModel.netuid }
     }
 
     func provideAccountViewModels() {

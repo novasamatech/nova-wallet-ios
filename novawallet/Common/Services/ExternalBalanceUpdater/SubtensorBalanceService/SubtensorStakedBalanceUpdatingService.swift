@@ -153,7 +153,8 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
 
     private func updateAlphaTriggerSubscription(for state: Multistaking.SubtensorStakingState) {
         let newKeys = Set(
-            state.positions.map { PositionKey(hotkey: $0.hotkey, netuid: $0.netuid) }
+            state.positions.map { PositionKey(hotkey: $0.hotkey, netuid: $0.netuid) } +
+                state.rootRedeemable.keys.map { PositionKey(hotkey: $0, netuid: SubtensorStakingPallet.rootNetuid) }
         )
 
         guard newKeys != subscribedPositionKeys else {

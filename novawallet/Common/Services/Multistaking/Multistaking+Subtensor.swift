@@ -31,27 +31,36 @@ extension Multistaking {
         let prices: [UInt16: BigUInt]
         let availability: [UInt16: SubtensorStakingPallet.StakeAvailability]
         let unpricedNetuids: Set<UInt16>
+        let rootRedeemable: [AccountId: BigUInt]
 
         init(
             positions: [SubtensorStakingPosition],
             prices: [UInt16: BigUInt],
             availability: [UInt16: SubtensorStakingPallet.StakeAvailability] = [:],
-            unpricedNetuids: Set<UInt16> = []
+            unpricedNetuids: Set<UInt16> = [],
+            rootRedeemable: [AccountId: BigUInt] = [:]
         ) {
             self.positions = positions
             self.prices = prices
             self.availability = availability
             self.unpricedNetuids = unpricedNetuids
+            self.rootRedeemable = rootRedeemable
+        }
+
+        var totalRootRedeemable: BigUInt {
+            rootRedeemable.values.reduce(BigUInt.zero, +)
         }
 
         var totalStakeInRao: BigUInt {
-            positions.reduce(BigUInt.zero) { total, position in
+            let positionsStake = positions.reduce(BigUInt.zero) { total, position in
                 total + (taoValue(of: position) ?? .zero)
             }
+
+            return positionsStake + totalRootRedeemable
         }
 
         var hasActiveStaking: Bool {
-            !positions.isEmpty
+            !positions.isEmpty || totalRootRedeemable > 0
         }
 
         func taoValue(of position: SubtensorStakingPosition) -> BigUInt? {
@@ -74,7 +83,8 @@ extension Multistaking {
                 positions: positions,
                 prices: prices,
                 availability: availability,
-                unpricedNetuids: unpricedNetuids
+                unpricedNetuids: unpricedNetuids,
+                rootRedeemable: rootRedeemable
             )
         }
     }

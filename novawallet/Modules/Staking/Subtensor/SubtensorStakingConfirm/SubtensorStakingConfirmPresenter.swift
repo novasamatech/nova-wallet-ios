@@ -122,7 +122,7 @@ extension SubtensorStakingConfirmPresenter {
         }
 
         let portfolio = SubtensorPortfolioBuilder.build(state: positionsState)
-        let groups = [portfolio.root].compactMap { $0 } + portfolio.subnets
+        let groups = [portfolio.stakedRoot].compactMap { $0 } + portfolio.subnets
 
         guard let group = groups.first(where: { $0.netuid == model.target.netuid }) else {
             return (0, 0)

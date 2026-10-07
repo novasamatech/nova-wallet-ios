@@ -25,7 +25,8 @@ final class SubtensorStakeStateFetchFactory {
         coldkey: AccountId,
         stakeInfoList: [SubtensorStakingPallet.StakeInfo],
         subnetPrices: [SubtensorStakingPallet.SubnetPrice],
-        availabilityList: [SubtensorStakingPallet.ColdkeyStakeAvailability]
+        availabilityList: [SubtensorStakingPallet.ColdkeyStakeAvailability],
+        claimPreviews: [SubtensorStakingPallet.BasketClaimPreview]
     ) -> Multistaking.SubtensorStakingState {
         let positions = stakeInfoList.map { stakeInfo in
             SubtensorStakingPosition(
@@ -58,11 +59,20 @@ final class SubtensorStakeStateFetchFactory {
             accum[subnet.netuid] = subnet.availability
         }
 
+        let rootRedeemable = claimPreviews.reduce(into: [AccountId: BigUInt]()) { accum, preview in
+            guard preview.redeemableTao > 0 else {
+                return
+            }
+
+            accum[preview.hotkey, default: .zero] += preview.redeemableTao
+        }
+
         return Multistaking.SubtensorStakingState(
             positions: positions,
             prices: prices,
             availability: availability,
-            unpricedNetuids: unpricedNetuids
+            unpricedNetuids: unpricedNetuids,
+            rootRedeemable: rootRedeemable
         )
     }
 
@@ -112,23 +122,30 @@ final class SubtensorStakeStateFetchFactory {
             stakeInfoWrapper: stakeInfoWrapper
         )
 
+        let claimPreviewsWrapper = operationFactory.createRootClaimPreviewsWrapper(
+            coldkey: coldkey,
+            blockHash: blockHash
+        )
+
         let mergeOperation = ClosureOperation<Multistaking.SubtensorStakingState> {
             try Self.createState(
                 coldkey: coldkey,
                 stakeInfoList: stakeInfoWrapper.targetOperation.extractNoCancellableResultData(),
                 subnetPrices: pricesWrapper.targetOperation.extractNoCancellableResultData(),
-                availabilityList: availabilityWrapper.targetOperation.extractNoCancellableResultData()
+                availabilityList: availabilityWrapper.targetOperation.extractNoCancellableResultData(),
+                claimPreviews: (try? claimPreviewsWrapper.targetOperation.extractNoCancellableResultData()) ?? []
             )
         }
 
         mergeOperation.addDependency(stakeInfoWrapper.targetOperation)
         mergeOperation.addDependency(pricesWrapper.targetOperation)
         mergeOperation.addDependency(availabilityWrapper.targetOperation)
+        mergeOperation.addDependency(claimPreviewsWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: mergeOperation,
             dependencies: stakeInfoWrapper.allOperations + pricesWrapper.allOperations +
-                availabilityWrapper.allOperations
+                availabilityWrapper.allOperations + claimPreviewsWrapper.allOperations
         )
     }
 }

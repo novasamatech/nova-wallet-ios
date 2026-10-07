@@ -8,7 +8,7 @@ private extension SubtensorUnstakeSetupPresenter {
 
         let portfolio = SubtensorPortfolioBuilder.build(state: state)
 
-        return isRoot ? portfolio.root : portfolio.subnets.first { $0.netuid == netuid }
+        return isRoot ? portfolio.stakedRoot : portfolio.subnets.first { $0.netuid == netuid }
     }
 
     func applyMaxChange(from previousMax: Balance?) {
