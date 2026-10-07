@@ -116,8 +116,7 @@ private extension SubtensorFlowServicesFactory {
                 eventsQueryFactory: BlockEventsQueryFactory(operationQueue: operationQueue),
                 logger: Logger.shared
             ),
-            operationQueue: operationQueue,
-            failsWhenNotIncluded: true
+            operationQueue: operationQueue
         )
     }
 

@@ -26,10 +26,17 @@ extension ExtrinsicSubmitMonitorFactoryProtocol {
     }
 }
 
-enum ExtrinsicSubmissionMonitorError: Error, Equatable {
-    case invalid
-    case dropped
-    case usurped(ExtrinsicHash)
+enum ExtrinsicTrackingTill: Equatable {
+    case inBlock
+    case finalized
+}
+
+extension FinalExtrinsicStatusError: ErrorContentConvertible {
+    func toErrorContent(for locale: Locale?) -> ErrorContent {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        return ErrorContent(title: strings.commonErrorGeneralTitle(), message: strings.commonTransactionFailed())
+    }
 }
 
 final class ExtrinsicSubmissionMonitorFactory {
@@ -42,19 +49,19 @@ final class ExtrinsicSubmissionMonitorFactory {
     let submissionService: ExtrinsicServiceProtocol
     let statusService: ExtrinsicStatusServiceProtocol
     let operationQueue: OperationQueue
-    let failsWhenNotIncluded: Bool
+    let trackingTill: ExtrinsicTrackingTill
     let processingQueue = DispatchQueue(label: "io.novawallet.extrinsic.monitor.\(UUID().uuidString)")
 
     init(
         submissionService: ExtrinsicServiceProtocol,
         statusService: ExtrinsicStatusServiceProtocol,
         operationQueue: OperationQueue,
-        failsWhenNotIncluded: Bool = false
+        trackingTill: ExtrinsicTrackingTill = .inBlock
     ) {
         self.submissionService = submissionService
         self.statusService = statusService
         self.operationQueue = operationQueue
-        self.failsWhenNotIncluded = failsWhenNotIncluded
+        self.trackingTill = trackingTill
     }
 
     convenience init(
@@ -171,7 +178,7 @@ private extension ExtrinsicSubmissionMonitorFactory {
     ) -> Result<SubmissionResult, Error>? {
         switch result {
         case let .success(model):
-            if let blockHash = model.statusUpdate.getInBlockOrFinalizedHash() {
+            if let blockHash = model.statusUpdate.getTerminalBlockHash(trackingTill: trackingTill) {
                 let response = SubmissionResult(
                     blockHash: blockHash,
                     extrinsicHash: model.statusUpdate.extrinsicHash,
@@ -179,28 +186,13 @@ private extension ExtrinsicSubmissionMonitorFactory {
                 )
 
                 return .success(response)
-            } else if failsWhenNotIncluded, let error = model.statusUpdate.extrinsicStatus.notIncludedError {
-                return .failure(error)
+            } else if let failure = model.statusUpdate.getFinalExtrinsicFailure() {
+                return .failure(failure)
             } else {
                 return nil
             }
         case let .failure(error):
             return .failure(error)
-        }
-    }
-}
-
-private extension ExtrinsicStatus {
-    var notIncludedError: ExtrinsicSubmissionMonitorError? {
-        switch self {
-        case .invalid:
-            .invalid
-        case .dropped:
-            .dropped
-        case let .usurped(extrinsicHash):
-            .usurped(extrinsicHash)
-        default:
-            nil
         }
     }
 }
