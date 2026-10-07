@@ -61,7 +61,7 @@ private extension SubtensorPortfolioBuilder {
         let totalAlpha = members.reduce(Balance.zero) { $0 + $1.stakeAlpha }
 
         let taoValue = netuid == SubtensorStakingPallet.rootNetuid
-            ? totalAlpha + redeemable
+            ? totalAlpha
             : catalogue?.taoValue(of: totalAlpha, netuid: netuid)
 
         return SubtensorPortfolioGroup(
@@ -87,7 +87,7 @@ private extension SubtensorPortfolioBuilder {
             positions: [],
             totalAlpha: .zero,
             redeemable: redeemable,
-            taoValue: redeemable,
+            taoValue: .zero,
             availability: state.availability[SubtensorStakingPallet.rootNetuid],
             primaryHotkey: primary.key
         )

@@ -19,6 +19,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     let cacheRepository: AnyDataProviderRepository<ChainStorageItem>
     let maxApyProvider: SubtensorMaxApyProviderProtocol?
     let rootYieldService: SubtensorYieldServiceProtocol?
+    let cataloguePricing: SubtensorCataloguePricingTracker?
     let eventCenter: EventCenterProtocol
     let workingQueue: DispatchQueue
     let operationQueue: OperationQueue
@@ -50,6 +51,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         logger: LoggerProtocol,
         maxApyProvider: SubtensorMaxApyProviderProtocol? = nil,
         rootYieldService: SubtensorYieldServiceProtocol? = nil,
+        cataloguePricing: SubtensorCataloguePricingTracker? = nil,
         eventCenter: EventCenterProtocol = EventCenter.shared
     ) {
         self.walletId = walletId
@@ -63,6 +65,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         self.runtimeService = runtimeService
         self.maxApyProvider = maxApyProvider
         self.rootYieldService = rootYieldService
+        self.cataloguePricing = cataloguePricing
         self.eventCenter = eventCenter
         self.workingQueue = workingQueue
         self.operationQueue = operationQueue
@@ -75,6 +78,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         fetchCallStore.cancel()
 
         seedRootRate()
+        cataloguePricing?.seed()
 
         eventCenter.add(observer: self, dispatchIn: workingQueue)
 
@@ -85,6 +89,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         fetchCallStore.cancel()
         maxApyCallStore.cancel()
         rootRateCallStore.cancel()
+        cataloguePricing?.cancel()
         clearSubscriptions()
     }
 
@@ -96,6 +101,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         fetchCallStore.cancel()
         maxApyCallStore.cancel()
         rootRateCallStore.cancel()
+        cataloguePricing?.cancel()
         clearSubscriptions()
     }
 
@@ -185,6 +191,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
                 self?.persistState(state)
                 self?.performMaxApyFetch()
                 self?.performRootRateFetch()
+                self?.performCataloguePricingRefresh()
             case let .failure(error):
                 self?.logger.error("State fetch error: \(error)")
 
@@ -281,6 +288,23 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         persistState(lastState)
     }
 
+    private func performCataloguePricingRefresh() {
+        cataloguePricing?.refresh(
+            latestState: { [weak self] in self?.lastState },
+            runningCallbackIn: workingQueue,
+            mutex: mutex,
+            onChange: { [weak self] in
+                guard let self, let lastState, !fetchCallStore.hasCall else {
+                    return
+                }
+
+                markSyncingImmediate()
+
+                persistState(lastState)
+            }
+        )
+    }
+
     private func updateAlphaTriggerSubscription(for state: Multistaking.SubtensorStakingState) {
         let newKeys = Set(
             state.positions.map { PositionKey(hotkey: $0.hotkey, netuid: $0.netuid) } +
@@ -346,7 +370,8 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
             stakingOption: stakingOption,
             state: state,
             maxApy: maxApyUpdate,
-            rootRate: rootRate
+            rootRate: rootRate,
+            isFullyPriced: cataloguePricing?.isFullyPriced(state)
         )
 
         let saveOperation = dashboardRepository.saveOperation({

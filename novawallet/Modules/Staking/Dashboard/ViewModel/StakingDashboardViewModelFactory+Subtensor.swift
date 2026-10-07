@@ -19,11 +19,7 @@ extension StakingDashboardViewModelFactory {
             strings.stakingSubtensorUiJoinDotFormat(chainAssetViewModel.assetName, $0)
         } ?? chainAssetViewModel.assetName
 
-        let amount = createSubtensorTotalStake(
-            for: model,
-            isEstimated: (details?.subnetCount ?? 0) > 0,
-            locale: locale
-        )
+        let amount = createSubtensorTotalStake(for: model, details: details, locale: locale)
 
         let rootStake = createAmount(
             for: details.map { $0.rootStake ?? 0 },
@@ -64,9 +60,21 @@ extension StakingDashboardViewModelFactory {
 private extension StakingDashboardViewModelFactory {
     func createSubtensorTotalStake(
         for model: StakingDashboardItemModel.Concrete,
-        isEstimated: Bool,
+        details: Multistaking.DashboardItemSubtensorDetails?,
         locale: Locale
     ) -> LoadableViewModelState<BalanceViewModelProtocol> {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        if details?.isFullyPriced == false {
+            let unknownTotal = BalanceViewModel(amount: strings.stakingSubtensorUiValueUnknown(), price: nil)
+
+            return model.isOnchainSync ? .cached(value: unknownTotal) : .loaded(value: unknownTotal)
+        }
+
+        if let details, details.isFullyPriced == nil {
+            return .loading
+        }
+
         let totalStake = createAmount(
             for: model.dashboardItem?.stake,
             priceData: model.price,
@@ -75,11 +83,9 @@ private extension StakingDashboardViewModelFactory {
             locale: locale
         )
 
-        guard isEstimated else {
+        guard (details?.subnetCount ?? 0) > 0 else {
             return totalStake
         }
-
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         return totalStake.map { viewModel -> BalanceViewModelProtocol in
             BalanceViewModel(

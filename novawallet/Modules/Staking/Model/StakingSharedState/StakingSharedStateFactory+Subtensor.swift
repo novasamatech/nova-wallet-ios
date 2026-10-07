@@ -89,6 +89,20 @@ extension SubtensorStakingProcessServices {
             logger: logger
         )
     }
+
+    func createCataloguePricingTracker(
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
+    ) -> SubtensorCataloguePricingTracker {
+        SubtensorCataloguePricingTracker(
+            catalogueService: SubtensorSubnetCatalogueService(
+                apiOperationFactory: bittensorApiOperationFactory,
+                logger: logger
+            ),
+            operationQueue: operationQueue,
+            logger: logger
+        )
+    }
 }
 
 private extension SubtensorStakingProcessServices {
