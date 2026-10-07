@@ -63,11 +63,9 @@ extension Multistaking {
         }
 
         var totalStakeInRao: BigUInt {
-            let positionsStake = positions.reduce(BigUInt.zero) { total, position in
+            positions.reduce(BigUInt.zero) { total, position in
                 total + (taoValue(of: position) ?? .zero)
             }
-
-            return positionsStake + totalRootRedeemable
         }
 
         var hasActiveStaking: Bool {
@@ -81,7 +79,7 @@ extension Multistaking {
                 return nil
             }
 
-            return rootPositions.reduce(totalRootRedeemable) { total, position in
+            return rootPositions.reduce(BigUInt.zero) { total, position in
                 total + position.stakeAlpha
             }
         }
@@ -136,6 +134,7 @@ extension Multistaking {
         let rootStake: BigUInt?
         let subnetCount: Int
         let rootRate: Decimal?
+        let isFullyPriced: Bool?
     }
 
     struct DashboardItemSubtensorPart {
@@ -148,17 +147,20 @@ extension Multistaking {
         let state: SubtensorStakingState
         let maxApy: MaxApyUpdate
         let rootRate: Decimal?
+        let isFullyPriced: Bool?
 
         init(
             stakingOption: OptionWithWallet,
             state: SubtensorStakingState,
             maxApy: MaxApyUpdate = .keep,
-            rootRate: Decimal? = nil
+            rootRate: Decimal? = nil,
+            isFullyPriced: Bool? = nil
         ) {
             self.stakingOption = stakingOption
             self.state = state
             self.maxApy = maxApy
             self.rootRate = rootRate
+            self.isFullyPriced = isFullyPriced
         }
     }
 }

@@ -36,10 +36,12 @@ extension StakingDashboardSubtensorMapper: CoreDataMapperProtocol {
             entity.stake = String(model.state.totalStakeInRao)
             entity.subtensorRootStake = model.state.rootStakeInRao.map { String($0) }
             entity.subtensorSubnetCount = NSNumber(value: model.state.subnetCount)
+            entity.subtensorIsFullyPriced = model.isFullyPriced.map { NSNumber(value: $0) }
         case nil:
             entity.stake = nil
             entity.subtensorRootStake = nil
             entity.subtensorSubnetCount = nil
+            entity.subtensorIsFullyPriced = nil
         }
 
         entity.onchainState = state?.rawValue
