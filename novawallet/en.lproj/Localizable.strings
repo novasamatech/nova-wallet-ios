@@ -2117,6 +2117,7 @@ Do you want to continue?";
 "staking.subtensor.ui.portfolio.positions" = "POSITIONS";
 "staking.subtensor.ui.portfolio.add" = "Add position";
 "staking.subtensor.ui.portfolio.sync.failed" = "Positions could not update. Tap to retry.";
+"staking.subtensor.ui.portfolio.rates.unavailable" = "Rates are temporarily unavailable — balances are live.";
 "staking.subtensor.ui.chart.unavailable" = "Chart unavailable";
 "staking.subtensor.ui.price.unavailable" = "Price unavailable";
 "staking.subtensor.ui.position.staked.root" = "Staked to root";

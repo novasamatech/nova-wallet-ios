@@ -134,7 +134,9 @@ private extension SubtensorPortfolioViewModelFactory {
         state: SubtensorPortfolioState,
         locale: Locale
     ) -> SubtensorPortfolioHeaderViewModel {
-        let chart = createChart(for: portfolio, state: state, locale: locale)
+        let chart = state.isCatalogueUnavailable
+            ? ChartContent(chart: .hidden, change: .hidden)
+            : createChart(for: portfolio, state: state, locale: locale)
 
         guard portfolio.isFullyPriced else {
             return SubtensorPortfolioHeaderViewModel(
@@ -297,12 +299,16 @@ private extension SubtensorPortfolioViewModelFactory {
             ? formatAlpha(group.totalAlpha, netuid: group.netuid, catalogue: state.catalogue, locale: locale)
             : nil
 
+        let detail = state.isCatalogueUnavailable
+            ? nil
+            : subnet.flatMap { createWeeklyChange(for: $0.ref, state: state, locale: locale) }
+
         return SubtensorPortfolioRowViewModel(
             icon: iconFactory.icon(for: subnet, logos: state.subnetLogos),
             title: SubtensorSubnetNaming.titleWithSymbol(for: group.netuid, in: state.catalogue, locale: locale),
             subtitle: subtitle,
             value: value,
-            detail: subnet.flatMap { createWeeklyChange(for: $0.ref, state: state, locale: locale) }
+            detail: detail
         )
     }
 
@@ -351,7 +357,8 @@ extension SubtensorPortfolioViewModelFactory: SubnetPortfolioViewModelFactoryPro
         guard let portfolio = state.portfolio, !state.isValuationPending else {
             return SubtensorPortfolioViewModel(
                 content: .positions(header: createLoadingHeader(for: state, locale: locale), rows: nil),
-                isSyncFailed: state.isSyncFailed
+                isSyncFailed: state.isSyncFailed,
+                isRatesUnavailable: false
             )
         }
 
@@ -360,7 +367,8 @@ extension SubtensorPortfolioViewModelFactory: SubnetPortfolioViewModelFactoryPro
         guard !groups.isEmpty else {
             return SubtensorPortfolioViewModel(
                 content: .empty(createEmpty(for: state, locale: locale)),
-                isSyncFailed: state.isSyncFailed
+                isSyncFailed: state.isSyncFailed,
+                isRatesUnavailable: state.isRootRateUnavailable
             )
         }
 
@@ -370,9 +378,13 @@ extension SubtensorPortfolioViewModelFactory: SubnetPortfolioViewModelFactoryPro
                 : createSubnetRow(for: group, state: state, locale: locale)
         }
 
+        let isRootRateUnavailable = state.isRootRateUnavailable &&
+            groups.contains { $0.netuid == SubtensorStakingPallet.rootNetuid }
+
         return SubtensorPortfolioViewModel(
             content: .positions(header: createHeader(for: portfolio, state: state, locale: locale), rows: rows),
-            isSyncFailed: state.isSyncFailed
+            isSyncFailed: state.isSyncFailed,
+            isRatesUnavailable: state.isCatalogueUnavailable || isRootRateUnavailable
         )
     }
 }

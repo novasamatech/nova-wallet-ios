@@ -27,6 +27,7 @@ struct SubtensorPortfolioState {
     var catalogue: SubtensorSubnetCatalogue?
     var subnetLogos: SubtensorSubnetLogos?
     var rootRate: Decimal?
+    var isRootRateResolved = false
     var weeklyChanges: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>] = [:]
     var histories = SubtensorPortfolioHistoriesState.loading
     var period = SubtensorPortfolioViewModelFactory.defaultPeriod
@@ -58,6 +59,24 @@ struct SubtensorPortfolioState {
             .compactMap { catalogue?.subnet(for: $0.netuid)?.ref }
             .sorted { $0.netuid < $1.netuid }
     }
+
+    var isRootRateUnavailable: Bool {
+        isRootRateResolved && rootRate == nil
+    }
+
+    var isCatalogueUnavailable: Bool {
+        let heldNetuids = groups.map(\.netuid).filter { $0 != SubtensorStakingPallet.rootNetuid }
+
+        guard isCatalogueResolved, !heldNetuids.isEmpty else {
+            return false
+        }
+
+        guard let catalogue else {
+            return true
+        }
+
+        return heldNetuids.contains { catalogue.subnet(for: $0)?.pricesStamp.freshness == .stale }
+    }
 }
 
 enum SubtensorPortfolioLoadable<Value: Equatable>: Equatable {
@@ -75,6 +94,7 @@ enum SubtensorPortfolioChartViewModel: Equatable {
     case loading
     case chart(SubtensorPriceChartViewModel)
     case unavailable(String)
+    case hidden
 }
 
 struct SubtensorPortfolioPeriodsViewModel: Equatable {
@@ -117,4 +137,5 @@ enum SubtensorPortfolioContentViewModel {
 struct SubtensorPortfolioViewModel {
     let content: SubtensorPortfolioContentViewModel
     let isSyncFailed: Bool
+    let isRatesUnavailable: Bool
 }
