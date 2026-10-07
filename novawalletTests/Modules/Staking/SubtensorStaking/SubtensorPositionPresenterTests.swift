@@ -161,6 +161,7 @@ final class SubtensorPositionPresenterTests: XCTestCase {
                 )
             ],
             totalAlpha: 20_000_000_000,
+            redeemable: 0,
             taoValue: 20_000_000_000,
             availability: nil,
             primaryHotkey: hotkey
@@ -183,6 +184,7 @@ final class SubtensorPositionPresenterTests: XCTestCase {
                 )
             ],
             totalAlpha: 20_000_000_000,
+            redeemable: 0,
             taoValue: 1_476_000_000,
             availability: nil,
             primaryHotkey: hotkey

@@ -4,7 +4,6 @@ import Foundation
 struct SubtensorTradePanelViewModel {
     let receive: BalanceViewModelProtocol?
     let swapRate: String
-    let earnPerMonth: BalanceViewModelProtocol?
 }
 
 protocol SubtensorQuoteViewModelFactoryProtocol {
@@ -13,7 +12,6 @@ protocol SubtensorQuoteViewModelFactoryProtocol {
         amountIn: Balance?,
         direction: SubtensorTradeDirection,
         target: SubtensorStakeTarget,
-        annualRate: Decimal?,
         taoPrice: PriceData?,
         locale: Locale
     ) -> SubtensorTradePanelViewModel?
@@ -91,34 +89,19 @@ private extension SubtensorQuoteViewModelFactory {
         return oneIn.estimatedEqual(to: rateOut)
     }
 
-    func createBuyValues(
+    func createBuyReceive(
         for quote: SubtensorTradeQuote,
         alphaInfo: AssetBalanceDisplayInfo,
-        annualRate: Decimal?,
         taoPrice: PriceData?,
         locale: Locale
-    ) -> (receive: BalanceViewModelProtocol, earnPerMonth: BalanceViewModelProtocol?) {
+    ) -> BalanceViewModelProtocol {
         let spotPrice = quote.quote.spotPrice
         let scale = SubtensorStakingPallet.alphaPriceScale
 
-        let receive = BalanceViewModel(
+        return BalanceViewModel(
             amount: formatAmount(quote.expectedOut, displayInfo: alphaInfo, locale: locale).approximatelyEqual(),
             price: formatFiat(taoAmount: quote.expectedOut * spotPrice / scale, taoPrice: taoPrice, locale: locale)
         )
-
-        guard let annualRate, let rate = BigRational.fraction(from: annualRate) else {
-            return (receive, nil)
-        }
-
-        let monthly = SubtensorEarningsEstimator.monthly(amount: quote.expectedOut, annualRate: rate)
-
-        let earnPerMonth = BalanceViewModel(
-            amount: formatAmount(monthly, displayInfo: alphaInfo, locale: locale).approximatelyEqual(),
-            price: formatFiat(taoAmount: monthly * spotPrice / scale, taoPrice: taoPrice, locale: locale)?
-                .approximatelyEqual()
-        )
-
-        return (receive, earnPerMonth)
     }
 }
 
@@ -128,7 +111,6 @@ extension SubtensorQuoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
         amountIn: Balance?,
         direction: SubtensorTradeDirection,
         target: SubtensorStakeTarget,
-        annualRate: Decimal?,
         taoPrice: PriceData?,
         locale: Locale
     ) -> SubtensorTradePanelViewModel? {
@@ -142,18 +124,16 @@ extension SubtensorQuoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
 
         switch (direction, quote.quote.args.direction) {
         case (.buy, .stake):
-            let values = createBuyValues(
+            let receive = createBuyReceive(
                 for: quote,
                 alphaInfo: alphaInfo,
-                annualRate: annualRate,
                 taoPrice: taoPrice,
                 locale: locale
             )
 
             return SubtensorTradePanelViewModel(
-                receive: hasReceive ? values.receive : nil,
-                swapRate: formatSwapRate(for: quote, inInfo: taoInfo, outInfo: alphaInfo, locale: locale),
-                earnPerMonth: hasReceive ? values.earnPerMonth : nil
+                receive: hasReceive ? receive : nil,
+                swapRate: formatSwapRate(for: quote, inInfo: taoInfo, outInfo: alphaInfo, locale: locale)
             )
         case (.sell, .unstake):
             let receive = BalanceViewModel(
@@ -163,8 +143,7 @@ extension SubtensorQuoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
 
             return SubtensorTradePanelViewModel(
                 receive: hasReceive ? receive : nil,
-                swapRate: formatSwapRate(for: quote, inInfo: alphaInfo, outInfo: taoInfo, locale: locale),
-                earnPerMonth: nil
+                swapRate: formatSwapRate(for: quote, inInfo: alphaInfo, outInfo: taoInfo, locale: locale)
             )
         case (.buy, .unstake), (.sell, .stake):
             return nil

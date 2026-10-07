@@ -73,6 +73,7 @@ final class SubtensorPortfolioViewLayout: UIView {
             positionsCaptionLabel.isHidden = false
             positionsStackView.isHidden = false
             headerView.bind(viewModel: header)
+            headerView.ratesAlertView.isHidden = !viewModel.isRatesUnavailable
             bind(rows: rows)
             addButton.applySecondaryDefaultStyle()
         case let .empty(emptyViewModel):
@@ -81,6 +82,7 @@ final class SubtensorPortfolioViewLayout: UIView {
             positionsCaptionLabel.isHidden = true
             positionsStackView.isHidden = true
             emptyView.bind(viewModel: emptyViewModel)
+            emptyView.ratesAlertView.isHidden = !viewModel.isRatesUnavailable
             addButton.applyDefaultStyle()
         }
 

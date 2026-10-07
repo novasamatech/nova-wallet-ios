@@ -96,7 +96,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(chipsRanked, ranked)
 
         XCTAssertEqual(
-            services.recommendationService.lastSeenClientGates(),
+            services.recommendationService.cachedClientGates().value,
             SubtensorClientGates(
                 maxTake: BigRational(numerator: 18, denominator: 100),
                 requirePermit: true,
@@ -210,7 +210,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
 
         XCTAssertTrue(isRouteNotPublished(factorsError))
         XCTAssertTrue(isRouteNotPublished(chipsError))
-        XCTAssertNil(services.recommendationService.lastSeenClientGates())
+        XCTAssertNil(services.recommendationService.cachedClientGates().value)
 
         XCTAssertEqual(rootRowYield, try fixtureRootYield())
         XCTAssertEqual(subnetRefs.filter { logos.url(for: $0.netuid) != nil }, [chutesRef])

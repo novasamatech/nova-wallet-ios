@@ -41,7 +41,6 @@ struct SubtensorSubnetDetailsState {
     let isRankingLoaded: Bool
     let rankingView: SubtensorRankedSubnets?
     let validator: SubtensorSubnetValidatorState
-    let isYieldsLoaded: Bool
     let yields: SubtensorAlphaYields?
     let amount: SubtensorSubnetAmountChip
     let transferable: Balance?
@@ -90,17 +89,10 @@ enum SubtensorSubnetValidatorRowViewModel {
 }
 
 struct SubtensorSubnetEstimateViewModel: Equatable {
-    enum Earnings: Equatable {
-        case loading
-        case hidden
-        case value(String)
-    }
-
     let chips: [String]
     let selectedChipIndex: Int
     let isMaxEnabled: Bool
     let hold: String?
-    let earnings: Earnings
 }
 
 struct SubtensorSubnetFactorRowViewModel: Equatable {

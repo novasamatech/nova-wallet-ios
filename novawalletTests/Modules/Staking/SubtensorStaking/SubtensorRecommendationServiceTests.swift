@@ -99,7 +99,7 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
         XCTAssertEqual(verified.verifiedAtBlock, head)
     }
 
-    func testVerificationAppliesTheClientGatesOfTheResponseAndRemembersThem() throws {
+    func testVerificationAppliesTheClientGatesOfTheResponse() throws {
         let apiFactory = MockBittensorApiOperationFactoryProtocol()
         let chainFactory = MockSubtensorValidatorChainOperationFactoryProtocol()
 
@@ -122,8 +122,6 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
         stubSnapshot(chainFactory, snapshot: makeSnapshot())
 
         let service = makeService(apiFactory: apiFactory, chainFactory: chainFactory)
-
-        XCTAssertNil(service.lastSeenClientGates())
 
         let verified = try run(service.createVerifiedRecommendationsWrapper())
 
@@ -163,7 +161,6 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
         XCTAssertEqual(verified.clientGates, expectedGates)
         XCTAssertEqual(verified.classes[.balanced], [expectedPair])
         XCTAssertEqual(verified.droppedByGate, [.takeAboveMax: 1])
-        XCTAssertEqual(service.lastSeenClientGates(), expectedGates)
     }
 
     func testVerifiedRecommendationsFailWhenThePairRouteFails() {
@@ -186,7 +183,6 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
             }
         }
 
-        XCTAssertNil(service.lastSeenClientGates())
         verify(chainFactory, never()).createChainSnapshotWrapper(for: any())
     }
 
@@ -322,7 +318,7 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
         XCTAssertEqual(ranked, expected)
         XCTAssertEqual(ranked.subnet(for: 64)?.riskClass, .balanced)
         XCTAssertNil(ranked.subnet(for: 99))
-        XCTAssertEqual(service.lastSeenClientGates(), expectedGates)
+        XCTAssertEqual(try run(service.createClientGatesWrapper()), expectedGates)
     }
 
     func testExpiredCacheDeliveryMarksTheGenerationStale() throws {

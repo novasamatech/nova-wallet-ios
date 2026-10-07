@@ -251,9 +251,7 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
     }
 
     func didReceive(catalogue: SubtensorSubnetCatalogue?) {
-        if let catalogue {
-            state.catalogue = catalogue
-        }
+        state.catalogue = catalogue
 
         if catalogue != nil, state.catalogue?.subnet(for: state.netuid) == nil, !isCatalogueRefreshForced {
             isCatalogueRefreshForced = true

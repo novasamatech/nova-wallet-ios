@@ -27,7 +27,7 @@ protocol SubtensorResultInteractorOutputProtocol: AnyObject {
     func didReceiveExpectedBlockTime(_ blockTime: BlockTime)
     func didReceiveBlockTimestamp(_ date: Date, at blockHash: BlockHash)
     func didReceiveRootHoldRemainingBlocks(_ blocks: UInt64)
-    func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue)
+    func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?)
     func didReceiveSubnetLogos(_ logos: SubtensorSubnetLogos)
     func didBecomeActive()
 }

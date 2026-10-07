@@ -25,7 +25,6 @@ final class SubtensorSubnetSelectPresenter {
     private weak var filtersView: SubtensorSubnetFiltersViewProtocol?
     private var requestedWeeklySubnets: Set<SubtensorSubnetRef> = []
     private var isWeeklyPending = false
-    private var hasExpiredEntriesSeed = false
     private var hasExpiredAgesSeed = false
 
     init(
@@ -69,7 +68,8 @@ private extension SubtensorSubnetSelectPresenter {
             list: list,
             sort: sort,
             filters: filters,
-            subnetLogos: subnetLogos
+            subnetLogos: subnetLogos,
+            stamp: entries.flatMap { SubtensorBackendStamp.aggregate($0.flatMap(\.subnet.stamps)) }
         )
 
         view?.didReceive(list: viewModelFactory.createListViewModel(for: state, locale: selectedLocale))
@@ -89,7 +89,6 @@ private extension SubtensorSubnetSelectPresenter {
     func seed(from snapshot: SubtensorSubnetSelectSnapshot) {
         if let entries = snapshot.entries.value {
             self.entries = entries
-            hasExpiredEntriesSeed = !snapshot.entries.isFresh
         }
 
         if let rootRate = snapshot.rootRate.value {
@@ -300,10 +299,6 @@ extension SubtensorSubnetSelectPresenter: SubnetSelectInteractorOutputProtocol {
     }
 
     func didReceiveError(_ error: Error) {
-        guard !hasExpiredEntriesSeed else {
-            return
-        }
-
         entries = []
         provideList()
 

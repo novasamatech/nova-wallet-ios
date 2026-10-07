@@ -58,6 +58,9 @@ final class SubtensorStakeStateFetchFactoryTests: XCTestCase {
             when(stub.createAlphaPricesWrapper(at: any())).thenReturn(
                 CompoundOperationWrapper.createWithResult([])
             )
+            when(stub.createRootClaimPreviewsWrapper(coldkey: any(), blockHash: any())).thenReturn(
+                CompoundOperationWrapper.createWithResult([])
+            )
         }
 
         let factory = SubtensorStakeStateFetchFactory(
@@ -116,6 +119,9 @@ final class SubtensorStakeStateFetchFactoryTests: XCTestCase {
             )
             when(stub.createStakeAvailabilityWrapper(for: any(), netuids: any(), blockHash: any())).thenReturn(
                 CompoundOperationWrapper.createWithResult(availabilities)
+            )
+            when(stub.createRootClaimPreviewsWrapper(coldkey: any(), blockHash: any())).thenReturn(
+                CompoundOperationWrapper.createWithResult([])
             )
         }
 
@@ -258,6 +264,9 @@ final class SubtensorStakeStateFetchFactoryTests: XCTestCase {
             when(stub.createStakeInfoWrapper(for: any(), blockHash: any())).thenReturn(stakeInfoResult)
             when(stub.createAlphaPricesWrapper(at: any())).thenReturn(pricesResult)
             when(stub.createStakeAvailabilityWrapper(for: any(), netuids: any(), blockHash: any())).thenReturn(
+                CompoundOperationWrapper.createWithResult([])
+            )
+            when(stub.createRootClaimPreviewsWrapper(coldkey: any(), blockHash: any())).thenReturn(
                 CompoundOperationWrapper.createWithResult([])
             )
         }

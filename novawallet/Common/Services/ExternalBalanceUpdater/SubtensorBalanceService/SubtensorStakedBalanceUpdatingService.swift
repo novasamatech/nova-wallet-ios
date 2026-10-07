@@ -21,6 +21,7 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
     private var hotkeysSubscription: CallbackStorageSubscription<[BytesCodable]>?
     private var alphaTriggerSubscription: CallbackBatchRawStorageSubscription?
     private var subscribedPositionKeys: Set<PositionKey>?
+    private var lastState: Multistaking.SubtensorStakingState?
 
     private var fetchCallStore = CancellableCallStore()
     private var saveCallStore = CancellableCallStore()
@@ -140,7 +141,9 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
             mutex: mutex
         ) { [weak self] result in
             switch result {
-            case let .success(state):
+            case let .success(fetchedState):
+                let state = fetchedState.byKeepingRootRedeemable(of: self?.lastState)
+                self?.lastState = state
                 self?.updateAlphaTriggerSubscription(for: state)
                 self?.persistState(state)
             case let .failure(error):
@@ -153,7 +156,8 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
 
     private func updateAlphaTriggerSubscription(for state: Multistaking.SubtensorStakingState) {
         let newKeys = Set(
-            state.positions.map { PositionKey(hotkey: $0.hotkey, netuid: $0.netuid) }
+            state.positions.map { PositionKey(hotkey: $0.hotkey, netuid: $0.netuid) } +
+                state.rootRedeemable.keys.map { PositionKey(hotkey: $0, netuid: SubtensorStakingPallet.rootNetuid) }
         )
 
         guard newKeys != subscribedPositionKeys else {
@@ -245,7 +249,7 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
         ) { [weak self] result in
             switch result {
             case .success:
-                self?.completeImmediate(nil)
+                self?.completeImmediate(state.rootRedeemableError)
             case let .failure(error):
                 self?.completeImmediate(error)
             }

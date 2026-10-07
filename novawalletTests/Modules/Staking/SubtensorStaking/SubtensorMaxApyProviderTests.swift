@@ -411,7 +411,11 @@ final class SubtensorMaxApyProviderTests: XCTestCase {
                 stamp: SubtensorBackendStamp(asOf: asOf, freshness: .fresh),
                 isPartial: false
             ),
-            clientGates: .backendDefault,
+            clientGates: SubtensorClientGates(
+                maxTake: BigRational(numerator: 18, denominator: 100),
+                requirePermit: true,
+                requireActiveWithinCutoff: true
+            ),
             topN: 3,
             classes: [
                 .stable: pairs.filter { $0.netuid == SubtensorStakingPallet.rootNetuid },

@@ -122,7 +122,7 @@ extension SubtensorStakingConfirmPresenter {
         }
 
         let portfolio = SubtensorPortfolioBuilder.build(state: positionsState)
-        let groups = [portfolio.root].compactMap { $0 } + portfolio.subnets
+        let groups = [portfolio.stakedRoot].compactMap { $0 } + portfolio.subnets
 
         guard let group = groups.first(where: { $0.netuid == model.target.netuid }) else {
             return (0, 0)
@@ -375,10 +375,6 @@ extension SubtensorStakingConfirmPresenter: SubtensorStakingConfirmPresenterProt
         }
 
         wireframe.showSubtensorInfo(.slippage(tolerance, canEdit: model.origin == .newPosition), from: view)
-    }
-
-    func showEarnPerMonthInfo() {
-        wireframe.showSubtensorInfo(.earnTokensMonth(subnetName: subnetName), from: view)
     }
 
     func showAvgBuyPriceInfo() {
