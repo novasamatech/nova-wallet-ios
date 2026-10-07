@@ -72,6 +72,25 @@ private extension SubtensorValidatorPresetFactory {
         return directoryWrapper.insertingTail(operation: namesOperation)
     }
 
+    func createGatesWrapper() -> CompoundOperationWrapper<SubtensorClientGates?> {
+        let gatesWrapper = recommendationService.createClientGatesWrapper()
+        let logger = logger
+
+        let gatesOperation = ClosureOperation<SubtensorClientGates?> {
+            do {
+                return try gatesWrapper.targetOperation.extractNoCancellableResultData()
+            } catch {
+                logger.warning("Subtensor client gates unavailable for the preset: \(error)")
+
+                return nil
+            }
+        }
+
+        gatesOperation.addDependency(gatesWrapper.targetOperation)
+
+        return gatesWrapper.insertingTail(operation: gatesOperation)
+    }
+
     func createDetailWrapper(
         for hotkey: AccountId?,
         subnet: SubtensorSubnetRef,
@@ -161,10 +180,12 @@ private extension SubtensorValidatorPresetFactory {
 
         let selectableOperation = ClosureOperation<SubtensorValidatorDirectoryItem?> {
             let item = try itemWrapper.targetOperation.extractNoCancellableResultData()
+            let gates = try? recommendationsWrapper.targetOperation.extractNoCancellableResultData().clientGates
 
-            return Self.isSelectable(item, on: subnet, recommendationService: recommendationService) ? item : nil
+            return Self.isSelectable(item, on: subnet, gates: gates) ? item : nil
         }
 
+        selectableOperation.addDependency(recommendationsWrapper.targetOperation)
         selectableOperation.addDependency(itemWrapper.targetOperation)
 
         return CompoundOperationWrapper(
@@ -196,18 +217,16 @@ private extension SubtensorValidatorPresetFactory {
     static func isSelectable(
         _ item: SubtensorValidatorDirectoryItem?,
         on subnet: SubtensorSubnetRef,
-        recommendationService: SubtensorRecommendationServiceProtocol
+        gates: SubtensorClientGates?
     ) -> Bool {
-        guard let item else {
+        guard let item, let gates else {
             return false
         }
-
-        let gates = recommendationService.lastSeenClientGates() ?? .backendDefault
 
         return SubtensorValidatorListFactory.eligibility(
             of: item,
             isRoot: subnet.netuid == SubtensorStakingPallet.rootNetuid,
-            maxTake: gates.maxTake
+            gates: gates
         ) == .selectable
     }
 }
@@ -219,6 +238,9 @@ extension SubtensorValidatorPresetFactory: SubtensorValidatorPresetFactoryProtoc
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> {
         let namesWrapper = createNamesWrapper(for: subnet)
         let existingWrapper = createDetailWrapper(for: existingHotkey, subnet: subnet, dependingOn: namesWrapper)
+        let gatesWrapper: CompoundOperationWrapper<SubtensorClientGates?> = existingHotkey != nil
+            ? createGatesWrapper()
+            : .createWithResult(nil)
 
         let directoryService = directoryService
         let recommendationService = recommendationService
@@ -228,8 +250,9 @@ extension SubtensorValidatorPresetFactory: SubtensorValidatorPresetFactoryProtoc
         let presetWrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> =
             OperationCombiningService.compoundOptionalWrapper(operationManager: operationManager) {
                 let existing = try existingWrapper.targetOperation.extractNoCancellableResultData()
+                let gates = try gatesWrapper.targetOperation.extractNoCancellableResultData()
 
-                if Self.isSelectable(existing, on: subnet, recommendationService: recommendationService) {
+                if Self.isSelectable(existing, on: subnet, gates: gates) {
                     return CompoundOperationWrapper<SubtensorValidatorDirectoryItem?>.createWithResult(existing)
                 }
 
@@ -243,12 +266,14 @@ extension SubtensorValidatorPresetFactory: SubtensorValidatorPresetFactoryProtoc
             }
 
         presetWrapper.addDependency(wrapper: existingWrapper)
+        presetWrapper.addDependency(wrapper: gatesWrapper)
 
         let namingOperation = createNamingOperation(namesWrapper: namesWrapper, itemWrapper: presetWrapper)
 
         return CompoundOperationWrapper(
             targetOperation: namingOperation,
-            dependencies: namesWrapper.allOperations + existingWrapper.allOperations + presetWrapper.allOperations
+            dependencies: namesWrapper.allOperations + existingWrapper.allOperations + gatesWrapper.allOperations +
+                presetWrapper.allOperations
         )
     }
 

@@ -30,6 +30,7 @@ final class SubtensorUnstakeBasisTests: XCTestCase {
             netuid: 64,
             positions: [makePosition(hotkey: primaryHotkey, netuid: 64, stakeAlpha: 70_200_000_000)],
             totalAlpha: 70_200_000_000,
+            redeemable: 0,
             taoValue: nil,
             availability: makeAvailability(total: 70_200_000_000, locked: 14_000_000_000, available: 56_200_000_000),
             primaryHotkey: primaryHotkey
@@ -71,6 +72,7 @@ final class SubtensorUnstakeBasisTests: XCTestCase {
                 makePosition(hotkey: secondHotkey, netuid: rootNetuid, stakeAlpha: 5_000_000_000)
             ],
             totalAlpha: 20_000_000_000,
+            redeemable: 0,
             taoValue: 20_000_000_000,
             availability: nil,
             primaryHotkey: primaryHotkey

@@ -89,7 +89,11 @@ final class SubtensorValidatorListFactoryTests: XCTestCase {
             lowRated,
             in: makeDirectory(),
             isRoot: false,
-            maxTake: SubtensorClientGates.backendDefault.maxTake
+            gates: SubtensorClientGates(
+                maxTake: BigRational(numerator: 18, denominator: 100),
+                requirePermit: true,
+                requireActiveWithinCutoff: true
+            )
         )
 
         XCTAssertEqual(preselected, lowRated)
@@ -123,7 +127,11 @@ final class SubtensorValidatorListFactoryTests: XCTestCase {
             yields: yields,
             alphaPrice: alphaPrice,
             isRoot: false,
-            maxTake: SubtensorClientGates.backendDefault.maxTake,
+            clientGates: SubtensorClientGates(
+                maxTake: BigRational(numerator: 18, denominator: 100),
+                requirePermit: true,
+                requireActiveWithinCutoff: true
+            ),
             sort: sort,
             query: "",
             selectedHotkey: selectedHotkey,

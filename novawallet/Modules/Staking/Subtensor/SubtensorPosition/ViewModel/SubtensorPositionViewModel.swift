@@ -80,7 +80,7 @@ struct SubtensorPositionState {
     func isEnabled(_ action: SubtensorPositionAction) -> Bool {
         switch action {
         case .addStake, .unstake:
-            return holdRemainingBlocks == nil
+            return primaryPosition != nil && holdRemainingBlocks == nil
         case .buy:
             return true
         case .sell:

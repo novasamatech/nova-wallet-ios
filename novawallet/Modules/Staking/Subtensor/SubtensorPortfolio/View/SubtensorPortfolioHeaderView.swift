@@ -33,6 +33,15 @@ final class SubtensorPortfolioHeaderView: UIView {
         view.layer.cornerRadius = 6
     }
 
+    let ratesAlertView: InlineAlertView = .create { view in
+        view.apply(style: .info)
+        view.backgroundView.cornerRadius = 12
+        view.contentView.detailsLabel.apply(style: .caption1Secondary)
+        view.isHidden = true
+    }
+
+    let chartContainerView = UIView()
+
     let chartView = SubtensorSubnetPriceChartView(style: .portfolio)
 
     let chartLoadingView = SubtensorChartLoadingView()
@@ -120,6 +129,9 @@ private extension SubtensorPortfolioHeaderView {
     }
 
     func bind(chart: SubtensorPortfolioChartViewModel) {
+        chartContainerView.isHidden = chart == .hidden
+        periodControl.isHidden = chart == .hidden
+
         switch chart {
         case .loading:
             chartLoadingView.setLoading(true)
@@ -139,6 +151,10 @@ private extension SubtensorPortfolioHeaderView {
             chartView.isHidden = true
             chartUnavailableLabel.isHidden = false
             chartUnavailableLabel.text = text
+        case .hidden:
+            chartLoadingView.setLoading(false)
+            chartView.isHidden = true
+            chartUnavailableLabel.isHidden = true
         }
     }
 
@@ -146,24 +162,28 @@ private extension SubtensorPortfolioHeaderView {
         let topView = UIView.hStack(alignment: .center, spacing: 8, [captionLabel, UIView(), changeLabel])
         let totalView = UIView.hStack(alignment: .lastBaseline, spacing: 8, [totalLabel, fiatLabel, UIView()])
 
-        let chartContainer = UIView()
         [chartView, chartLoadingView, chartUnavailableLabel].forEach { view in
-            chartContainer.addSubview(view)
+            chartContainerView.addSubview(view)
             view.snp.makeConstraints { make in
                 make.edges.equalToSuperview()
             }
         }
 
-        let contentView = UIView.vStack(spacing: 4, [topView, totalView, chartContainer, periodControl])
+        let contentView = UIView.vStack(
+            spacing: 4,
+            [topView, totalView, ratesAlertView, chartContainerView, periodControl]
+        )
+
         contentView.setCustomSpacing(12, after: totalView)
-        contentView.setCustomSpacing(12, after: chartContainer)
+        contentView.setCustomSpacing(12, after: ratesAlertView)
+        contentView.setCustomSpacing(12, after: chartContainerView)
 
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(UIEdgeInsets(top: 16, left: 16, bottom: 12, right: 16))
         }
 
-        chartContainer.snp.makeConstraints { make in
+        chartContainerView.snp.makeConstraints { make in
             make.height.equalTo(Constants.chartHeight)
         }
 

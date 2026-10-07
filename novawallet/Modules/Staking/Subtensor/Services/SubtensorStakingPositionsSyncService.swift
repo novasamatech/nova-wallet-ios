@@ -244,14 +244,16 @@ private extension SubtensorStakingPositionsSyncService {
             mutex: mutex
         ) { [weak self] result in
             switch result {
-            case let .success(state):
+            case let .success(fetchedState):
+                let state = fetchedState.byKeepingRootRedeemable(of: self?.stateObservable.state)
+
                 self?.updateAlphaTriggerSubscription(for: state)
 
                 self?.failureObservable.state = false
 
                 self?.stateObservable.state = self?.decorate(state)
 
-                self?.completeImmediate(nil)
+                self?.completeImmediate(state.rootRedeemableError)
             case let .failure(error):
                 self?.logger.error("State fetch error: \(error)")
 
@@ -260,12 +262,10 @@ private extension SubtensorStakingPositionsSyncService {
         }
     }
 
-    // Keys cover only current positions: a stake to a tracked hotkey on a new subnet moves neither
-    // StakingHotkeys nor a subscribed key, so the post-extrinsic refresh() hook is required to
-    // surface such a position before the next tracked-key epoch movement
     func updateAlphaTriggerSubscription(for state: Multistaking.SubtensorStakingState) {
         let newKeys = Set(
-            state.positions.map { PositionKey(hotkey: $0.hotkey, netuid: $0.netuid) }
+            state.positions.map { PositionKey(hotkey: $0.hotkey, netuid: $0.netuid) } +
+                state.rootRedeemable.keys.map { PositionKey(hotkey: $0, netuid: SubtensorStakingPallet.rootNetuid) }
         )
 
         guard newKeys != subscribedPositionKeys else {

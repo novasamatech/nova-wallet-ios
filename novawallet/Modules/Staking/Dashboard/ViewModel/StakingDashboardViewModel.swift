@@ -24,8 +24,10 @@ struct StakingDashboardEnabledViewModel {
     }
 
     let chainAssetViewModel: ChainAssetViewModel
-    let totalRewards: SecuredViewModel<LoadableViewModelState<BalanceViewModelProtocol>>
+    let title: String
+    let amount: SecuredViewModel<LoadableViewModelState<BalanceViewModelProtocol>>
     let status: LoadableViewModelState<Status>
+    let stakeTitle: String
     let yourStake: SecuredViewModel<LoadableViewModelState<BalanceViewModelProtocol>>
     let estimatedEarnings: LoadableViewModelState<String?>
     let stakingType: TitleIconViewModel?

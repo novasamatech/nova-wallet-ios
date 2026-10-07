@@ -37,7 +37,6 @@ final class SubtensorSubnetDetailsViewModelFactoryTests: XCTestCase {
             isRankingLoaded: true,
             rankingView: makeRankingView(poolTao: poolTao),
             validator: .unselected,
-            isYieldsLoaded: true,
             yields: nil,
             amount: .fixed(5),
             transferable: nil,

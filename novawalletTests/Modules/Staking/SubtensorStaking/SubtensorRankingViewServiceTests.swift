@@ -33,7 +33,6 @@ final class SubtensorRankingViewServiceTests: XCTestCase {
         XCTAssertEqual(chutes.scoredValidators, 16)
         XCTAssertEqual(chutes.eligibleValidators, 14)
         XCTAssertEqual(chutes.breakdown?.volatility.normalized, try XCTUnwrap(Decimal(string: "24.92")))
-        XCTAssertEqual(recommendationService.lastSeenClientGates(), .backendDefault)
     }
 
     func testRankingViewIsAbsentWhenTheRouteIsNotPublished() throws {
@@ -50,7 +49,6 @@ final class SubtensorRankingViewServiceTests: XCTestCase {
         let view = try run(makeService(recommendationService).createRankingViewWrapper())
 
         XCTAssertNil(view)
-        XCTAssertNil(recommendationService.lastSeenClientGates())
     }
 
     func testRankingViewIsAbsentWhenTheRouteIsDown() throws {

@@ -430,6 +430,11 @@ final class MultistakingSyncService {
                 runtimeConnectionStore: runtimeConnectionStore,
                 operationQueue: operationQueue,
                 logger: logger
+            ),
+            rootYieldService: SubtensorYieldService(
+                apiOperationFactory: subtensorProcessServices.bittensorApiOperationFactory,
+                operationQueue: operationQueue,
+                logger: logger
             )
         )
     }

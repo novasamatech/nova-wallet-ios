@@ -275,12 +275,18 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
             description: nil
         )
 
-        try stubValidators(apiFactory, result: makeCollection(
+        let validators = try makeCollection(
             rows: [row(hotkeyA, identity: "Aster Stake", stake: nil)],
             stakes: available(olderAsOf, .fresh),
             metagraph: available(olderAsOf, .fresh),
             identities: available(olderAsOf, .fresh)
-        ))
+        )
+
+        stubValidators(apiFactory, result: validators)
+
+        stub(apiFactory) { stub in
+            when(stub.peekValidators(netuid: any())).thenReturn(.fresh(validators, freshUntil: 300))
+        }
 
         stubChain(chainFactory, world: world, identities: [hotkeyA: identity])
 
