@@ -287,7 +287,7 @@ private extension SubtensorValidatorListFactory {
     }
 
     func taoStake(for item: SubtensorValidatorDirectoryItem, input: SubtensorValidatorListInput) -> Decimal? {
-        guard let stake = item.reportedStake else {
+        guard let stake = item.reportedStake, input.directory.listStamp?.freshness == .fresh else {
             return nil
         }
 

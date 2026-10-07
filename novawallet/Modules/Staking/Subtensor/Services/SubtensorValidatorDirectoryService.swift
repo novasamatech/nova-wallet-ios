@@ -193,7 +193,7 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
         guard
             case let .fresh(response, freshUntil) = apiOperationFactory.peekValidators(netuid: subnet.netuid),
             ListingReceipt(response: response) == cached.listingReceipt else {
-            return .expired(cached.directory)
+            return .expired(cached.directory.markingStale())
         }
 
         return .fresh(cached.directory, freshUntil: freshUntil)
