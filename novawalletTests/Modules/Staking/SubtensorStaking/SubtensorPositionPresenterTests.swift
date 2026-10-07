@@ -61,7 +61,7 @@ final class SubtensorPositionPresenterTests: XCTestCase {
         XCTAssertEqual(viewModels.last?.summary.isActive, true)
     }
 
-    func testRootPositionOffersNoClaimEntry() {
+    func testRootPositionOffersTheClaimEntryFirst() {
         let view = MockSubtensorPositionViewProtocol()
         let viewModels = capture(view)
         let presenter = makePresenter(group: makeRootGroup(isRegistered: true), view: view)
@@ -75,8 +75,8 @@ final class SubtensorPositionPresenterTests: XCTestCase {
             )
         ]))
 
-        XCTAssertEqual(viewModels.last?.actions.map(\.action), [.addStake, .unstake])
-        XCTAssertEqual(viewModels.last?.actions.map(\.title), ["Add stake", "Unstake"])
+        XCTAssertEqual(viewModels.last?.actions.map(\.action), [.claim, .addStake, .unstake])
+        XCTAssertEqual(viewModels.last?.actions.map(\.title), ["Claim rewards", "Add stake", "Unstake"])
     }
 
     func testCachedCatalogueOpensTheSubnetPositionWithoutTheSummarySkeleton() {
@@ -131,6 +131,8 @@ final class SubtensorPositionPresenterTests: XCTestCase {
         let presenter = SubtensorPositionPresenter(
             group: group,
             account: SubtensorFlowChainWorld.coldkeyAccount(),
+            chainAsset: SubtensorFlowChainWorld.chainAsset(),
+            pendingRootClaims: SubtensorPendingRootClaims(),
             interactor: interactor,
             wireframe: MockSubtensorPositionWireframeProtocol(),
             viewModelFactory: SubtensorPositionViewModelFactory(
