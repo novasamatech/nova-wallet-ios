@@ -2314,7 +2314,7 @@ Do you want to continue?";
 "staking.subtensor.confirm.remark.sell" = "The rate can change until the order fills.";
 "staking.subtensor.confirm.remark.sell.profit" = "Profit is estimated from the average price you paid, before the network fee. The rate can change until the order fills.";
 "staking.subtensor.ui.position.hold.title" = "Root stake locked";
-"staking.subtensor.ui.position.hold.message.format" = "Root stake is locked for %@ after staking. Add stake and unstake become available when the hold ends.";
+"staking.subtensor.ui.position.hold.message.format" = "Root stake is locked for %@ after staking or claiming. Add stake and unstake become available when the hold ends.";
 "staking.subtensor.ui.position.locked.format" = "%@ locked";
 "staking.subtensor.ui.how.root" = "Stake to %1$@ and keep your TAO as TAO — rewards are %2$@";
 "staking.subtensor.ui.how.root.accent" = "root";
