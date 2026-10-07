@@ -128,6 +128,6 @@ final class SubtensorQuoteViewModelFactoryTests: XCTestCase {
     }
 
     func testNovaFeeDisclosureNamesTheFeePercent() {
-        XCTAssertEqual(makeFactory().novaFeeDisclosure(locale: locale), "Includes 0.85% Nova Wallet fee.")
+        XCTAssertEqual(makeFactory().novaFeeDisclosure(locale: locale), "Includes 0.3% Nova Wallet fee.")
     }
 }

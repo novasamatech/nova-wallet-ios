@@ -22,7 +22,7 @@ enum SubtensorFlowChainWorld {
     """
 
     static let chutesBuyQuote = SubtensorQuote(
-        args: SubtensorQuoteArgs(netuid: 64, direction: .stake(taoIn: 4_957_858_206)),
+        args: SubtensorQuoteArgs(netuid: 64, direction: .stake(taoIn: 4_985_044_866)),
         sim: SubtensorStakingPallet.SimSwapResult(
             taoAmount: 4_957_858_206,
             alphaAmount: 90_150_000_000,
