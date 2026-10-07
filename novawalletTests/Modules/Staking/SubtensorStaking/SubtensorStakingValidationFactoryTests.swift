@@ -146,7 +146,7 @@ final class SubtensorStakingValidationFactoryTests: XCTestCase {
 
         verify(setup.presentable).presentStakeAmountTooLow(any(), minStake: captor.capture(), locale: any())
 
-        XCTAssertEqual(captor.value, "0.00202 TAO")
+        XCTAssertEqual(captor.value, "0.00201 TAO")
     }
 
     func testRootMinimumStakeMessageShowsTheMinimumWithoutNovaFee() {

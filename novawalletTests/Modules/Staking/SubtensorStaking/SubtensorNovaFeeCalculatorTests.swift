@@ -13,13 +13,13 @@ final class SubtensorNovaFeeCalculatorTests: XCTestCase {
     func testBuyFeeOnTenTaoIsTheFlooredShareOfGross() throws {
         let fee = try calculator.buyFee(grossTao: 10_000_000_000)
 
-        XCTAssertEqual(fee, SubtensorNovaFee(amount: 84_283_589, beneficiary: beneficiary))
+        XCTAssertEqual(fee, SubtensorNovaFee(amount: 29_910_269, beneficiary: beneficiary))
     }
 
     func testSellFeeOnTheQuotedTaoOutIsTheFlooredShareOfGross() throws {
         let fee = try calculator.sellFee(quotedTaoOut: 4_145_000_000)
 
-        XCTAssertEqual(fee, SubtensorNovaFee(amount: 34_935_547, beneficiary: beneficiary))
+        XCTAssertEqual(fee, SubtensorNovaFee(amount: 12_397_806, beneficiary: beneficiary))
     }
 
     func testZeroBasisChargesNoFee() throws {
@@ -27,15 +27,15 @@ final class SubtensorNovaFeeCalculatorTests: XCTestCase {
         XCTAssertNil(try calculator.sellFee(quotedTaoOut: 0))
     }
 
-    func testFeeFloorsToNothingAt118RaoAndChargesOneRaoAt119() throws {
-        XCTAssertNil(try calculator.buyFee(grossTao: 118))
-        XCTAssertEqual(try calculator.buyFee(grossTao: 119), SubtensorNovaFee(amount: 1, beneficiary: beneficiary))
+    func testFeeFloorsToNothingAt334RaoAndChargesOneRaoAt335() throws {
+        XCTAssertNil(try calculator.buyFee(grossTao: 334))
+        XCTAssertEqual(try calculator.buyFee(grossTao: 335), SubtensorNovaFee(amount: 1, beneficiary: beneficiary))
     }
 
     func testBuyFeeAtU64MaxGross() throws {
         let fee = try calculator.buyFee(grossTao: u64Max)
 
-        XCTAssertEqual(fee, SubtensorNovaFee(amount: 155_475_780_492_346_245, beneficiary: beneficiary))
+        XCTAssertEqual(fee, SubtensorNovaFee(amount: 55_174_708_096_838_140, beneficiary: beneficiary))
     }
 
     func testBuyAboveU64MaxThrows() {
@@ -61,8 +61,8 @@ final class SubtensorNovaFeeCalculatorTests: XCTestCase {
         let entryFee = try XCTUnwrap(try calculator.buyFee(grossTao: entry))
         let smallerEntryFee = try XCTUnwrap(try calculator.buyFee(grossTao: entry - 1))
 
-        XCTAssertEqual(entry, 2_018_015)
-        XCTAssertEqual(entryFee.amount, 17008)
+        XCTAssertEqual(entry, 2_007_010)
+        XCTAssertEqual(entryFee.amount, 6003)
         XCTAssertEqual(entry - entryFee.amount, minimumStake)
         XCTAssertEqual(entry - 1 - smallerEntryFee.amount, minimumStake - 1)
     }
@@ -72,7 +72,7 @@ final class SubtensorNovaFeeCalculatorTests: XCTestCase {
         let entryFee = try XCTUnwrap(try calculator.buyFee(grossTao: entry))
         let smallerEntryFee = try XCTUnwrap(try calculator.buyFee(grossTao: entry - 1))
 
-        XCTAssertEqual(entry, 2016)
+        XCTAssertEqual(entry, 2005)
         XCTAssertEqual(entry - entryFee.amount, 2000)
         XCTAssertEqual(entry - 1 - smallerEntryFee.amount, 1999)
     }

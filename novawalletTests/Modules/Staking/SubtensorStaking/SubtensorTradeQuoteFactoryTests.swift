@@ -12,7 +12,7 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
     private let spotPrice: Balance = 73_800_000
     private let tolerance = BigRational(numerator: 5, denominator: 1000)
     private let grossTao: Balance = 5_000_000_000
-    private let stakedTao: Balance = 4_957_858_206
+    private let stakedTao: Balance = 4_985_044_866
     private let soldAlpha: Balance = 56_200_000_000
 
     func testBuyQuoteSimulatesTheStakeNetOfNovaFee() throws {
@@ -28,16 +28,16 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
         let expected = SubtensorTradeQuote(
             quote: quote,
             amountIn: 5_000_000_000,
-            novaFee: SubtensorNovaFee(amount: 42_141_794, beneficiary: beneficiary),
+            novaFee: SubtensorNovaFee(amount: 14_955_134, beneficiary: beneficiary),
             expectedOut: 67_054_958_000,
-            swapMinimumOut: 66_811_763_513,
-            minimumOut: 66_811_763_513,
+            swapMinimumOut: 67_178_129_124,
+            minimumOut: 67_178_129_124,
             limitPrice: 74_169_000
         )
 
         XCTAssertEqual(tradeQuote, expected)
         verify(quoteFactory).createQuoteWrapper(
-            for: equal(to: SubtensorQuoteArgs(netuid: netuid, direction: .stake(taoIn: 4_957_858_206)))
+            for: equal(to: SubtensorQuoteArgs(netuid: netuid, direction: .stake(taoIn: 4_985_044_866)))
         )
     }
 
@@ -54,10 +54,10 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
         let expected = SubtensorTradeQuote(
             quote: quote,
             amountIn: 56_200_000_000,
-            novaFee: SubtensorNovaFee(amount: 34_935_547, beneficiary: beneficiary),
-            expectedOut: 4_110_064_453,
+            novaFee: SubtensorNovaFee(amount: 12_397_806, beneficiary: beneficiary),
+            expectedOut: 4_132_602_194,
             swapMinimumOut: 4_124_744_148,
-            minimumOut: 4_089_808_601,
+            minimumOut: 4_112_346_342,
             limitPrice: 73_431_000
         )
 
