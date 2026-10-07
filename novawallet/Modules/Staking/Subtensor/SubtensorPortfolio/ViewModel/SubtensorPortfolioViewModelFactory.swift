@@ -134,6 +134,18 @@ private extension SubtensorPortfolioViewModelFactory {
         state: SubtensorPortfolioState,
         locale: Locale
     ) -> SubtensorPortfolioHeaderViewModel {
+        let chart = createChart(for: portfolio, state: state, locale: locale)
+
+        guard portfolio.isFullyPriced else {
+            return SubtensorPortfolioHeaderViewModel(
+                total: unknownValue(for: locale),
+                fiat: .hidden,
+                change: chart.change,
+                chart: chart.chart,
+                periods: createPeriods(for: state, locale: locale)
+            )
+        }
+
         let total = decimal(portfolio.pricedTaoValue)
 
         let fiat: SubtensorPortfolioLoadable<String>
@@ -146,8 +158,6 @@ private extension SubtensorPortfolioViewModelFactory {
         case let .loaded(.some(price)):
             fiat = .loaded(formatFiat(total, price: price, locale: locale))
         }
-
-        let chart = createChart(for: portfolio, state: state, locale: locale)
 
         return SubtensorPortfolioHeaderViewModel(
             total: formatTao(total, locale: locale),
@@ -169,6 +179,10 @@ private extension SubtensorPortfolioViewModelFactory {
             ),
             change: .hidden
         )
+
+        guard portfolio.isFullyPriced else {
+            return unavailable
+        }
 
         switch (state.price, state.histories) {
         case (.loaded(.none), _), (_, .failed):

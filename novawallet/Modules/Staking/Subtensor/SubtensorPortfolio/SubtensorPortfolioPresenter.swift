@@ -44,7 +44,7 @@ private extension SubtensorPortfolioPresenter {
     }
 
     func seed(from snapshot: SubtensorPortfolioSnapshot) {
-        if let catalogue = snapshot.catalogue.value {
+        if case let .fresh(catalogue, _) = snapshot.catalogue {
             state.catalogue = catalogue
             state.isCatalogueResolved = true
         }

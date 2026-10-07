@@ -14,6 +14,10 @@ struct SubtensorPortfolio: Equatable {
     let subnets: [SubtensorPortfolioGroup]
     let pricedTaoValue: Balance
     let unpricedNetuids: Set<UInt16>
+
+    var isFullyPriced: Bool {
+        !subnets.contains { $0.totalAlpha > 0 && $0.taoValue == nil }
+    }
 }
 
 struct SubtensorRootHold: Equatable {
