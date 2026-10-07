@@ -22,8 +22,6 @@ final class SubtensorValidatorSelectPresenter {
     private var query = ""
     private var selectedHotkey: AccountId?
     private var preselectedHotkey: AccountId?
-    private var hasExpiredDirectorySeed = false
-    private var hasExpiredAlphaPriceSeed = false
 
     init(
         target: SubtensorStakeTarget,
@@ -109,7 +107,6 @@ private extension SubtensorValidatorSelectPresenter {
     func seed(from snapshot: SubtensorValidatorSelectSnapshot) {
         if let directory = snapshot.directory.value {
             apply(directory: directory, clientGates: snapshot.clientGates)
-            hasExpiredDirectorySeed = !snapshot.directory.isFresh
         }
 
         if let yields = snapshot.yields.value {
@@ -120,7 +117,6 @@ private extension SubtensorValidatorSelectPresenter {
         if let alphaPrice = snapshot.alphaPrice.value {
             self.alphaPrice = alphaPrice
             hasAlphaPriceAnswer = true
-            hasExpiredAlphaPriceSeed = !snapshot.alphaPrice.isFresh
         }
     }
 }
@@ -135,14 +131,12 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectPresenterProtocol {
     func retry() {
         directory = nil
         directoryError = nil
-        hasExpiredDirectorySeed = false
 
         if !target.isRoot {
             yields = nil
             hasYieldsAnswer = false
             alphaPrice = nil
             hasAlphaPriceAnswer = false
-            hasExpiredAlphaPriceSeed = false
         }
 
         provideState()
@@ -211,10 +205,6 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectInteractorOutputProt
     }
 
     func didFailDirectory(_ error: Error) {
-        guard !hasExpiredDirectorySeed else {
-            return
-        }
-
         directory = nil
         directoryError = error
         provideState()
@@ -227,10 +217,6 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectInteractorOutputProt
     }
 
     func didReceive(alphaPrice: Balance?) {
-        guard alphaPrice != nil || !hasExpiredAlphaPriceSeed else {
-            return
-        }
-
         self.alphaPrice = alphaPrice
         hasAlphaPriceAnswer = true
         provideState()

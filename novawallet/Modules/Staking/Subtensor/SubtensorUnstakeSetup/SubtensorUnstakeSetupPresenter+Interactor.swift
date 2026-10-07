@@ -82,10 +82,6 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtoc
     }
 
     func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?) {
-        guard catalogue != nil || self.catalogue?.subnet(for: netuid) == nil else {
-            return
-        }
-
         self.catalogue = catalogue
 
         if !isRoot, let catalogue, catalogue.subnet(for: netuid) == nil, !isCatalogueRefreshForced {

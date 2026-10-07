@@ -23,7 +23,6 @@ extension SubtensorStakingSetupPresenter {
         if let catalogue = cachedCatalogue.value {
             self.catalogue = catalogue
             isCatalogueLoaded = true
-            hasExpiredCatalogueSeed = !cachedCatalogue.isFresh
         }
 
         if !cachedCatalogue.isFresh {

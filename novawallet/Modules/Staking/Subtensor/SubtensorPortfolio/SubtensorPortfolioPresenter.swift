@@ -136,10 +136,7 @@ extension SubtensorPortfolioPresenter: SubnetPortfolioInteractorOutputProtocol {
 
     func didReceive(catalogue: SubtensorSubnetCatalogue?) {
         state.isCatalogueResolved = true
-
-        if let catalogue {
-            state.catalogue = catalogue
-        }
+        state.catalogue = catalogue
 
         requestPriceDataIfNeeded()
         provideViewModel()

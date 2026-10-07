@@ -33,7 +33,6 @@ final class SubtensorStakingSetupPresenter {
     var isRootRateRequested = false
     var catalogue: SubtensorSubnetCatalogue?
     var isCatalogueLoaded = false
-    var hasExpiredCatalogueSeed = false
     var subnetLogos: SubtensorSubnetLogos?
     var rankingView: SubtensorRankedSubnets?
     var hasExpiredRankingSeed = false

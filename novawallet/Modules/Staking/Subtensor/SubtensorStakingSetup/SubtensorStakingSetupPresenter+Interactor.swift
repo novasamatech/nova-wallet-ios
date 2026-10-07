@@ -58,10 +58,6 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
     }
 
     func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?) {
-        guard catalogue != nil || !hasExpiredCatalogueSeed else {
-            return
-        }
-
         self.catalogue = catalogue
         isCatalogueLoaded = true
 
