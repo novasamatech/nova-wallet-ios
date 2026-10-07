@@ -178,7 +178,8 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
             mutex: mutex
         ) { [weak self] result in
             switch result {
-            case let .success(state):
+            case let .success(fetchedState):
+                let state = fetchedState.byKeepingRootRedeemable(of: self?.lastState)
                 self?.lastState = state
                 self?.updateAlphaTriggerSubscription(for: state)
                 self?.persistState(state)
@@ -369,7 +370,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         ) { [weak self] result in
             switch result {
             case .success:
-                self?.completeImmediate(nil)
+                self?.completeImmediate(state.rootRedeemableError)
             case let .failure(error):
                 self?.completeImmediate(error)
             }

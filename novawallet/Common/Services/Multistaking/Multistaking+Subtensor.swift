@@ -25,6 +25,10 @@ struct SubtensorStakingPosition: Equatable {
     }
 }
 
+enum SubtensorStakingStateError: Error {
+    case staleRootRedeemable
+}
+
 extension Multistaking {
     struct SubtensorStakingState: Equatable {
         let positions: [SubtensorStakingPosition]
@@ -32,19 +36,26 @@ extension Multistaking {
         let availability: [UInt16: SubtensorStakingPallet.StakeAvailability]
         let unpricedNetuids: Set<UInt16>
         let rootRedeemable: [AccountId: BigUInt]
+        let isRootRedeemableStale: Bool
 
         init(
             positions: [SubtensorStakingPosition],
             prices: [UInt16: BigUInt],
             availability: [UInt16: SubtensorStakingPallet.StakeAvailability] = [:],
             unpricedNetuids: Set<UInt16> = [],
-            rootRedeemable: [AccountId: BigUInt] = [:]
+            rootRedeemable: [AccountId: BigUInt] = [:],
+            isRootRedeemableStale: Bool = false
         ) {
             self.positions = positions
             self.prices = prices
             self.availability = availability
             self.unpricedNetuids = unpricedNetuids
             self.rootRedeemable = rootRedeemable
+            self.isRootRedeemableStale = isRootRedeemableStale
+        }
+
+        var rootRedeemableError: SubtensorStakingStateError? {
+            isRootRedeemableStale ? .staleRootRedeemable : nil
         }
 
         var totalRootRedeemable: BigUInt {
@@ -100,7 +111,23 @@ extension Multistaking {
                 prices: prices,
                 availability: availability,
                 unpricedNetuids: unpricedNetuids,
-                rootRedeemable: rootRedeemable
+                rootRedeemable: rootRedeemable,
+                isRootRedeemableStale: isRootRedeemableStale
+            )
+        }
+
+        func byKeepingRootRedeemable(of previousState: SubtensorStakingState?) -> SubtensorStakingState {
+            guard isRootRedeemableStale, let previousState else {
+                return self
+            }
+
+            return SubtensorStakingState(
+                positions: positions,
+                prices: prices,
+                availability: availability,
+                unpricedNetuids: unpricedNetuids,
+                rootRedeemable: previousState.rootRedeemable,
+                isRootRedeemableStale: true
             )
         }
     }

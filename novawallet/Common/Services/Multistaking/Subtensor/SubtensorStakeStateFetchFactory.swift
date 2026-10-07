@@ -26,7 +26,7 @@ final class SubtensorStakeStateFetchFactory {
         stakeInfoList: [SubtensorStakingPallet.StakeInfo],
         subnetPrices: [SubtensorStakingPallet.SubnetPrice],
         availabilityList: [SubtensorStakingPallet.ColdkeyStakeAvailability],
-        claimPreviews: [SubtensorStakingPallet.BasketClaimPreview]
+        claimPreviews: [SubtensorStakingPallet.BasketClaimPreview]?
     ) -> Multistaking.SubtensorStakingState {
         let positions = stakeInfoList.map { stakeInfo in
             SubtensorStakingPosition(
@@ -59,7 +59,7 @@ final class SubtensorStakeStateFetchFactory {
             accum[subnet.netuid] = subnet.availability
         }
 
-        let rootRedeemable = claimPreviews.reduce(into: [AccountId: BigUInt]()) { accum, preview in
+        let rootRedeemable = (claimPreviews ?? []).reduce(into: [AccountId: BigUInt]()) { accum, preview in
             guard preview.redeemableTao > 0 else {
                 return
             }
@@ -72,7 +72,8 @@ final class SubtensorStakeStateFetchFactory {
             prices: prices,
             availability: availability,
             unpricedNetuids: unpricedNetuids,
-            rootRedeemable: rootRedeemable
+            rootRedeemable: rootRedeemable,
+            isRootRedeemableStale: claimPreviews == nil
         )
     }
 
@@ -133,7 +134,7 @@ final class SubtensorStakeStateFetchFactory {
                 stakeInfoList: stakeInfoWrapper.targetOperation.extractNoCancellableResultData(),
                 subnetPrices: pricesWrapper.targetOperation.extractNoCancellableResultData(),
                 availabilityList: availabilityWrapper.targetOperation.extractNoCancellableResultData(),
-                claimPreviews: (try? claimPreviewsWrapper.targetOperation.extractNoCancellableResultData()) ?? []
+                claimPreviews: try? claimPreviewsWrapper.targetOperation.extractNoCancellableResultData()
             )
         }
 
