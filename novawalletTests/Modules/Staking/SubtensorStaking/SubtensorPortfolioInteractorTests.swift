@@ -407,6 +407,7 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
                     netuid: 64,
                     positions: [],
                     totalAlpha: 0,
+                    redeemable: 0,
                     taoValue: nil,
                     availability: nil,
                     primaryHotkey: Data(repeating: 7, count: 32)

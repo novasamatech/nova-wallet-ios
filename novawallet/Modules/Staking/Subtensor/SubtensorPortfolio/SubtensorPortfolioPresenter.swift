@@ -44,7 +44,7 @@ private extension SubtensorPortfolioPresenter {
     }
 
     func seed(from snapshot: SubtensorPortfolioSnapshot) {
-        if let catalogue = snapshot.catalogue.value {
+        if case let .fresh(catalogue, _) = snapshot.catalogue {
             state.catalogue = catalogue
             state.isCatalogueResolved = true
         }
@@ -52,6 +52,8 @@ private extension SubtensorPortfolioPresenter {
         if let rootRate = snapshot.rootRate.value {
             state.rootRate = rootRate
         }
+
+        state.isRootRateResolved = snapshot.rootRate.isFresh
     }
 
     func requestPriceDataIfNeeded() {
@@ -136,10 +138,7 @@ extension SubtensorPortfolioPresenter: SubnetPortfolioInteractorOutputProtocol {
 
     func didReceive(catalogue: SubtensorSubnetCatalogue?) {
         state.isCatalogueResolved = true
-
-        if let catalogue {
-            state.catalogue = catalogue
-        }
+        state.catalogue = catalogue
 
         requestPriceDataIfNeeded()
         provideViewModel()
@@ -152,6 +151,7 @@ extension SubtensorPortfolioPresenter: SubnetPortfolioInteractorOutputProtocol {
 
     func didReceive(rootRate: Decimal?) {
         state.rootRate = rootRate
+        state.isRootRateResolved = true
         provideViewModel()
     }
 

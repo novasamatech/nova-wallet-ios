@@ -28,7 +28,6 @@ extension SubtensorStakingSetupViewModelFactory {
             chips: createChips(for: input.subnetData.rankedSubnet, locale: locale),
             receive: createTradeRow(for: input, value: tradePanel?.receive?.amount, locale: locale),
             swapRate: createTradeRow(for: input, value: tradePanel?.swapRate, locale: locale),
-            earnPerMonth: createEarnRow(for: input, earnPerMonth: tradePanel?.earnPerMonth, locale: locale),
             networkFee: createNetworkFee(for: input, locale: locale),
             footer: footer
         )
@@ -97,7 +96,6 @@ private extension SubtensorStakingSetupViewModelFactory {
             amountIn: input.amount,
             direction: .buy,
             target: target,
-            annualRate: input.subnetData.annualRate,
             taoPrice: input.price,
             locale: locale
         )
@@ -105,10 +103,6 @@ private extension SubtensorStakingSetupViewModelFactory {
 
     func isQuotePending(for input: SubtensorStakingSetupViewModelInput) -> Bool {
         input.target == nil || (input.quote == nil && !input.subnetData.isQuoteFailed)
-    }
-
-    func isAnnualRatePending(for input: SubtensorStakingSetupViewModelInput) -> Bool {
-        !input.subnetData.isYieldsLoaded || input.validator == .pending
     }
 
     func createAvgBuyPrice(
@@ -147,30 +141,6 @@ private extension SubtensorStakingSetupViewModelFactory {
         }
 
         return .value(R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown())
-    }
-
-    func createEarnRow(
-        for input: SubtensorStakingSetupViewModelInput,
-        earnPerMonth: BalanceViewModelProtocol?,
-        locale: Locale
-    ) -> SubtensorSetupBalanceRowViewModel {
-        guard input.subnetData.annualRate != nil else {
-            return isAnnualRatePending(for: input) ? .loading : .hidden
-        }
-
-        if let earnPerMonth {
-            let amount = earnPerMonth.amount.isolatedLeftToRight()
-
-            return .value(BalanceViewModel(amount: amount, price: earnPerMonth.price))
-        }
-
-        if isQuotePending(for: input) {
-            return .loading
-        }
-
-        let unknown = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown()
-
-        return .value(BalanceViewModel(amount: unknown, price: nil))
     }
 
     func createHeader(

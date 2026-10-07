@@ -29,6 +29,7 @@ final class SubtensorPortfolioBuilderTests: XCTestCase {
                 netuid: 0,
                 positions: [rootPrimary, rootMember],
                 totalAlpha: 7_000_000_000,
+                redeemable: 0,
                 taoValue: 7_000_000_000,
                 availability: rootAvailability,
                 primaryHotkey: firstHotkey
@@ -38,6 +39,7 @@ final class SubtensorPortfolioBuilderTests: XCTestCase {
                     netuid: 64,
                     positions: [subnetPrimary, subnetMember],
                     totalAlpha: 120_000_000_000,
+                    redeemable: 0,
                     taoValue: 6_000_000_000,
                     availability: subnetAvailability,
                     primaryHotkey: firstHotkey

@@ -151,10 +151,18 @@ private extension SubtensorSubnetDetailsViewModelFactory {
             price = formatTao(spot, locale: locale)
         }
 
+        let priceCaption = strings.stakingSubtensorUiDetailPriceFormat(
+            SubtensorSubnetNaming.titleWithSymbol(for: subnet, locale: locale)
+        )
+
+        let agedHint = SubtensorFreshnessFormatter.agedHint(
+            for: SubtensorBackendStamp.aggregate(subnet.stamps),
+            now: state.now,
+            locale: locale
+        )
+
         return SubtensorSubnetPriceHeaderViewModel(
-            caption: strings.stakingSubtensorUiDetailPriceFormat(
-                SubtensorSubnetNaming.titleWithSymbol(for: subnet, locale: locale)
-            ),
+            caption: agedHint.map { strings.stakingSubtensorUiJoinDotFormat(priceCaption, $0) } ?? priceCaption,
             price: price,
             change: createChange(for: state, locale: locale),
             currencies: [chainAsset.assetDisplayInfo.symbol, currency.code],

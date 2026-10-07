@@ -45,6 +45,7 @@ struct SubtensorSubnetListState {
     let sort: SubtensorSubnetSort
     let filters: SubtensorSubnetFilters
     let subnetLogos: SubtensorSubnetLogos?
+    let stamp: SubtensorBackendStamp?
 }
 
 protocol SubtensorSubnetViewModelFactoryProtocol {
@@ -249,7 +250,8 @@ extension SubtensorSubnetViewModelFactory: SubtensorSubnetViewModelFactoryProtoc
         let caption = state.list.map { list in
             strings.stakingSubtensorUiJoinDotFormat(
                 strings.stakingSubtensorUiPickerCount(format: list.count),
-                sortPhrase(for: state.sort, locale: locale)
+                SubtensorFreshnessFormatter.agedHint(for: state.stamp, locale: locale)
+                    ?? sortPhrase(for: state.sort, locale: locale)
             )
         }
 

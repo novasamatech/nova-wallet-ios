@@ -67,7 +67,6 @@ private extension SubtensorSubnetDetailsViewController {
         rootView.validatorCaptionLabel.text = strings.stakingSubtensorUiDetailValidator()
         rootView.validatorView.titleLabel.text = strings.stakingCommonValidator()
         rootView.estimateCaptionLabel.text = strings.stakingSubtensorUiDetailEstimate()
-        rootView.estimateView.earningsTitleLabel.text = strings.stakingSubtensorUiDetailEarningsTitle()
         rootView.estimateView.noteLabel.text = strings.stakingSubtensorUiDetailEstimateNote()
 
         rootView.moreDetailsView.titleControl.titleLabel.text = strings.stakingSubtensorUiDetailMore()

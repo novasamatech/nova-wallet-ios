@@ -8,18 +8,25 @@ enum SubtensorPortfolioBuilder {
     ) -> SubtensorPortfolio {
         let positionsByNetuid = Dictionary(grouping: state.positions, by: \.netuid)
 
-        let root = positionsByNetuid[SubtensorStakingPallet.rootNetuid].flatMap { positions in
-            buildGroup(
-                netuid: SubtensorStakingPallet.rootNetuid,
-                positions: positions,
-                state: state,
-                catalogue: catalogue
-            )
-        }
+        let root = buildGroup(
+            netuid: SubtensorStakingPallet.rootNetuid,
+            positions: positionsByNetuid[SubtensorStakingPallet.rootNetuid] ?? [],
+            redeemable: state.totalRootRedeemable,
+            state: state,
+            catalogue: catalogue
+        ) ?? buildRedeemableRootGroup(state: state)
 
         let subnets = positionsByNetuid
             .filter { $0.key != SubtensorStakingPallet.rootNetuid }
-            .compactMap { buildGroup(netuid: $0.key, positions: $0.value, state: state, catalogue: catalogue) }
+            .compactMap { item in
+                buildGroup(
+                    netuid: item.key,
+                    positions: item.value,
+                    redeemable: .zero,
+                    state: state,
+                    catalogue: catalogue
+                )
+            }
             .sorted(by: isOrderedBefore)
 
         let pricedTaoValue = ([root].compactMap { $0 } + subnets).reduce(Balance.zero) { total, group in
@@ -41,6 +48,7 @@ private extension SubtensorPortfolioBuilder {
     static func buildGroup(
         netuid: UInt16,
         positions: [SubtensorStakingPosition],
+        redeemable: Balance,
         state: Multistaking.SubtensorStakingState,
         catalogue: SubtensorSubnetCatalogue?
     ) -> SubtensorPortfolioGroup? {
@@ -53,16 +61,35 @@ private extension SubtensorPortfolioBuilder {
         let totalAlpha = members.reduce(Balance.zero) { $0 + $1.stakeAlpha }
 
         let taoValue = netuid == SubtensorStakingPallet.rootNetuid
-            ? totalAlpha
+            ? totalAlpha + redeemable
             : catalogue?.taoValue(of: totalAlpha, netuid: netuid)
 
         return SubtensorPortfolioGroup(
             netuid: netuid,
             positions: members,
             totalAlpha: totalAlpha,
+            redeemable: redeemable,
             taoValue: taoValue,
             availability: state.availability[netuid],
             primaryHotkey: primary.hotkey
+        )
+    }
+
+    static func buildRedeemableRootGroup(state: Multistaking.SubtensorStakingState) -> SubtensorPortfolioGroup? {
+        let redeemable = state.totalRootRedeemable
+
+        guard redeemable > 0, let primary = state.rootRedeemable.min(by: isRedeemableOrderedBefore) else {
+            return nil
+        }
+
+        return SubtensorPortfolioGroup(
+            netuid: SubtensorStakingPallet.rootNetuid,
+            positions: [],
+            totalAlpha: .zero,
+            redeemable: redeemable,
+            taoValue: redeemable,
+            availability: state.availability[SubtensorStakingPallet.rootNetuid],
+            primaryHotkey: primary.key
         )
     }
 
@@ -72,6 +99,17 @@ private extension SubtensorPortfolioBuilder {
         }
 
         return lhs.hotkey.lexicographicallyPrecedes(rhs.hotkey)
+    }
+
+    static func isRedeemableOrderedBefore(
+        _ lhs: (key: AccountId, value: Balance),
+        _ rhs: (key: AccountId, value: Balance)
+    ) -> Bool {
+        guard lhs.value == rhs.value else {
+            return lhs.value > rhs.value
+        }
+
+        return lhs.key.lexicographicallyPrecedes(rhs.key)
     }
 
     static func isOrderedBefore(_ lhs: SubtensorPortfolioGroup, _ rhs: SubtensorPortfolioGroup) -> Bool {

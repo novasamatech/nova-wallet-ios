@@ -54,7 +54,7 @@ final class StakingDashboardViewModelFactory {
         self.announcementViewModelFactory = announcementViewModelFactory
     }
 
-    private func createEstimatedEarnings(
+    func createEstimatedEarnings(
         from value: Decimal?,
         isSyncing: Bool,
         locale: Locale
@@ -70,7 +70,7 @@ final class StakingDashboardViewModelFactory {
         return isSyncing ? .cached(value: valueString) : .loaded(value: valueString)
     }
 
-    private func createAmount(
+    func createAmount(
         for value: BigUInt?,
         priceData: PriceData?,
         assetDisplayInfo: AssetBalanceDisplayInfo,
@@ -97,7 +97,7 @@ final class StakingDashboardViewModelFactory {
         return isSyncing ? .cached(value: viewModel) : .loaded(value: viewModel)
     }
 
-    private func createStakingStatus(
+    func createStakingStatus(
         for model: StakingDashboardItemModel.Concrete
     ) -> LoadableViewModelState<StakingDashboardEnabledViewModel.Status> {
         guard let dashboardItem = model.dashboardItem else {
@@ -124,7 +124,7 @@ final class StakingDashboardViewModelFactory {
         }
     }
 
-    private func createStakingType(
+    func createStakingType(
         for stakingOption: Multistaking.ChainAssetOption,
         singleActive: Bool,
         locale: Locale
@@ -165,10 +165,23 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
         singleActive: Bool,
         locale: Locale
     ) -> StakingDashboardEnabledViewModel {
+        if model.stakingOption.type == .subtensor {
+            return createSubtensorActiveStakingViewModel(
+                for: model,
+                announcement: announcement,
+                privacyModeEnabled: privacyModeEnabled,
+                singleActive: singleActive,
+                locale: locale
+            )
+        }
+
         let chainAsset = model.chainAsset
         let assetDisplayInfo = chainAsset.assetDisplayInfo
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         let chainAssetViewModel = chainAssetViewModelFactory.createViewModel(from: chainAsset)
+
+        let title = [chainAssetViewModel.assetName, strings.commonRewards().lowercased()].joined(with: .space)
 
         let estimatedEarnings = createEstimatedEarnings(
             from: model.dashboardItem?.maxApy,
@@ -202,8 +215,10 @@ extension StakingDashboardViewModelFactory: StakingDashboardViewModelFactoryProt
 
         return .init(
             chainAssetViewModel: chainAssetViewModel,
-            totalRewards: .wrapped(totalRewards, with: privacyModeEnabled),
+            title: title,
+            amount: .wrapped(totalRewards, with: privacyModeEnabled),
             status: status,
+            stakeTitle: strings.stakingYourStake(),
             yourStake: .wrapped(yourStake, with: privacyModeEnabled),
             estimatedEarnings: estimatedEarnings,
             stakingType: stakingType,

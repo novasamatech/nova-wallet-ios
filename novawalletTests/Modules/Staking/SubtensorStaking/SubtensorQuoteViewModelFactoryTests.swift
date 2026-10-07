@@ -94,14 +94,13 @@ final class SubtensorQuoteViewModelFactoryTests: XCTestCase {
         PriceData(identifier: "bittensor", price: "25", dayChange: nil, currencyId: nil)
     }
 
-    func testBuyTradePanelShowsTheQuotedAlphaItsFiatValueTheSwapRateAndTheMonthlyEarnings() throws {
+    func testBuyTradePanelShowsTheQuotedAlphaItsFiatValueAndTheSwapRate() throws {
         let panel = try XCTUnwrap(
             makeFactory().createTradePanel(
                 for: makeBuyTradeQuote(),
                 amountIn: 5_000_000_000,
                 direction: .buy,
                 target: makeSubnetTarget(),
-                annualRate: Decimal(string: "0.24"),
                 taoPrice: makeTaoPrice(),
                 locale: locale
             )
@@ -110,8 +109,6 @@ final class SubtensorQuoteViewModelFactoryTests: XCTestCase {
         XCTAssertEqual(panel.receive?.amount, "≈ 67.5 α")
         XCTAssertEqual(panel.receive?.price, "$121.5")
         XCTAssertEqual(panel.swapRate, "1 TAO ≈ 13.5 α")
-        XCTAssertEqual(panel.earnPerMonth?.amount, "≈ 1.35 α")
-        XCTAssertEqual(panel.earnPerMonth?.price, "≈ $2.43")
     }
 
     func testTradePanelForAnotherAmountShowsOnlyTheSwapRate() throws {
@@ -121,14 +118,12 @@ final class SubtensorQuoteViewModelFactoryTests: XCTestCase {
                 amountIn: 4_000_000_000,
                 direction: .buy,
                 target: makeSubnetTarget(),
-                annualRate: Decimal(string: "0.24"),
                 taoPrice: makeTaoPrice(),
                 locale: locale
             )
         )
 
         XCTAssertNil(panel.receive)
-        XCTAssertNil(panel.earnPerMonth)
         XCTAssertEqual(panel.swapRate, "1 TAO ≈ 13.5 α")
     }
 

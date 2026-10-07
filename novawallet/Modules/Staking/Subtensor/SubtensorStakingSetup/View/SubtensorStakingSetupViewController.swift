@@ -49,7 +49,6 @@ private extension SubtensorStakingSetupViewController {
         let cardView = rootView.pickCardView
         cardView.receiveCell.titleLabel.text = strings.stakingSubtensorUiYouWillGet()
         cardView.swapRateCell.titleLabel.text = strings.stakingSubtensorUiSwapRate()
-        cardView.earnCell.titleLabel.text = strings.stakingSubtensorUiEarnTokensMonth()
         cardView.networkFeeCell.titleLabel.text = strings.commonNetworkFee()
 
         rootView.avgBuyPriceCell.titleLabel.text = strings.stakingSubtensorUiAvgBuyPrice()

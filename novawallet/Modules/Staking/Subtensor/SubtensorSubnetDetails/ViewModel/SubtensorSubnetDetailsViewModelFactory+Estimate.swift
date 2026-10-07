@@ -47,39 +47,7 @@ extension SubtensorSubnetDetailsViewModelFactory {
             chips: chips,
             selectedChipIndex: selectedChipIndex,
             isMaxEnabled: Self.maxAmount(for: state.transferable) != nil,
-            hold: holdText,
-            earnings: createEarnings(for: state, hold: hold, locale: locale)
+            hold: holdText
         )
-    }
-}
-
-private extension SubtensorSubnetDetailsViewModelFactory {
-    func createEarnings(
-        for state: SubtensorSubnetDetailsState,
-        hold: Balance?,
-        locale: Locale
-    ) -> SubtensorSubnetEstimateViewModel.Earnings {
-        switch state.validator {
-        case .pending:
-            return .loading
-        case .unselected:
-            return .hidden
-        case let .selected(item):
-            guard state.isYieldsLoaded else {
-                return .loading
-            }
-
-            guard
-                let hold,
-                let annualRate = SubtensorSubnetEstimate.annualRate(for: item.hotkey, in: state.yields) else {
-                return .hidden
-            }
-
-            let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-            let monthly = SubtensorSubnetEstimate.monthly(hold: hold, annualRate: annualRate)
-            let amount = formatAlpha(monthly, locale: locale).approximatelyEqual()
-
-            return .value(strings.stakingSubtensorUiDetailEarningsFormat(amount))
-        }
     }
 }

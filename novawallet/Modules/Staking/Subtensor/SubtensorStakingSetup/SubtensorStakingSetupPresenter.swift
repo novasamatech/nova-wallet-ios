@@ -33,13 +33,11 @@ final class SubtensorStakingSetupPresenter {
     var isRootRateRequested = false
     var catalogue: SubtensorSubnetCatalogue?
     var isCatalogueLoaded = false
-    var hasExpiredCatalogueSeed = false
     var subnetLogos: SubtensorSubnetLogos?
     var rankingView: SubtensorRankedSubnets?
     var hasExpiredRankingSeed = false
     var yields: SubtensorAlphaYields?
     var yieldsNetuid: UInt16?
-    var isYieldsLoaded = false
     var isSubnetDataRequested = false
     var validatorItem: SubtensorValidatorDirectoryItem?
     var slippage: BigRational
@@ -173,7 +171,7 @@ extension SubtensorStakingSetupPresenter {
         let portfolio = SubtensorPortfolioBuilder.build(state: positionsState)
 
         guard netuid != SubtensorStakingPallet.rootNetuid else {
-            return portfolio.root?.primaryHotkey
+            return portfolio.stakedRoot?.primaryHotkey
         }
 
         return portfolio.subnets.first { $0.netuid == netuid }?.primaryHotkey

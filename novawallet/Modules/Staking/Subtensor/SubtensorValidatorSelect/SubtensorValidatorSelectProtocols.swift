@@ -51,7 +51,7 @@ enum SubtensorValidatorListState: Equatable {
 
 struct SubtensorValidatorSelectSnapshot {
     let directory: HTTPCachePeek<SubtensorValidatorDirectory>
-    let clientGates: SubtensorClientGates
+    let clientGates: HTTPCachePeek<SubtensorClientGates>
     let yields: HTTPCachePeek<SubtensorAlphaYields>
     let alphaPrice: HTTPCachePeek<Balance?>
 }
@@ -77,8 +77,10 @@ protocol ValidatorSelectInteractorInputProtocol: AnyObject {
 }
 
 protocol ValidatorSelectInteractorOutputProtocol: AnyObject {
-    func didReceive(directory: SubtensorValidatorDirectory, clientGates: SubtensorClientGates)
+    func didReceive(directory: SubtensorValidatorDirectory)
     func didFailDirectory(_ error: Error)
+    func didReceive(clientGates: SubtensorClientGates)
+    func didFailClientGates(_ error: Error)
     func didReceive(yields: SubtensorAlphaYields?)
     func didReceive(alphaPrice: Balance?)
 }

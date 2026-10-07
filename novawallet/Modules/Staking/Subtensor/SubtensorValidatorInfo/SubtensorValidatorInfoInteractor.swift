@@ -122,7 +122,7 @@ private extension SubtensorValidatorInfoInteractor {
         ) { [weak self] result in
             switch result {
             case let .success(catalogue):
-                self?.presenter?.didReceive(alphaPrice: catalogue.subnet(for: subnet)?.taoPerAlpha)
+                self?.presenter?.didReceive(alphaPrice: catalogue.subnet(for: subnet)?.freshTaoPerAlpha)
             case let .failure(error):
                 self?.logger.warning("Subnet catalogue unavailable for the validator stake: \(error)")
                 self?.presenter?.didReceive(alphaPrice: nil)
@@ -154,7 +154,7 @@ private extension SubtensorValidatorInfoInteractor {
             annualRate: yieldService.cachedAlphaYields(for: subnet.netuid).map { yields in
                 SubtensorAlphaApyFormatter.annualRate(for: hotkey, in: yields)
             },
-            alphaPrice: catalogueService.cachedCatalogue().map { $0.subnet(for: subnet)?.taoPerAlpha }
+            alphaPrice: catalogueService.cachedCatalogue().map { $0.subnet(for: subnet)?.freshTaoPerAlpha }
         )
     }
 }

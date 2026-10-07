@@ -5,7 +5,6 @@ enum SubtensorInfoSheet: Equatable {
     case swapRate(SubtensorTradeDirection, subnetName: String)
     case slippage(BigRational, canEdit: Bool)
     case validator
-    case earnTokensMonth(subnetName: String)
     case networkFee(SubtensorTradeDirection)
     case account(address: AccountAddress, chain: ChainModel)
     case totalStaked(isRoot: Bool)
@@ -28,8 +27,6 @@ extension SubtensorInfoSheet {
             return Self.slippageText(for: tolerance, canEdit: canEdit)
         case .validator:
             return Self.validatorText()
-        case let .earnTokensMonth(subnetName):
-            return Self.earnTokensMonthText(for: subnetName)
         case let .networkFee(direction):
             return Self.networkFeeText(for: direction)
         case .account:
@@ -104,19 +101,6 @@ private extension SubtensorInfoSheet {
             },
             details: LocalizableResource { locale in
                 R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorInfoValidator()
-            }
-        )
-    }
-
-    static func earnTokensMonthText(for subnetName: String) -> SubtensorInfoSheetText {
-        SubtensorInfoSheetText(
-            title: LocalizableResource { locale in
-                R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiEarnTokensMonth()
-            },
-            details: LocalizableResource { locale in
-                R.string(
-                    preferredLanguages: locale.rLanguages
-                ).localizable.stakingSubtensorInfoEarnTokensMonth(subnetName)
             }
         )
     }

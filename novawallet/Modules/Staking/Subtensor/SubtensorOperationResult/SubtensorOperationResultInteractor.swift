@@ -135,6 +135,7 @@ private extension SubtensorOperationResultInteractor {
                     self?.presenter?.didReceiveCatalogue(catalogue)
                 case let .failure(error):
                     self?.logger.error("Subtensor catalogue unavailable for the result: \(error)")
+                    self?.presenter?.didReceiveCatalogue(nil)
                 }
             }
         }

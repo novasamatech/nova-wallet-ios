@@ -15,29 +15,10 @@ final class SubtensorSubnetEstimateView: UIView {
         label.numberOfLines = 0
     }
 
-    let earningsTitleLabel: UILabel = .create { label in
-        label.apply(style: .footnoteSecondary)
-    }
-
-    let earningsValueLabel: UILabel = .create { label in
-        label.apply(style: .footnotePositive)
-        label.numberOfLines = 0
-    }
-
-    let earningsSkeletonView: SubtensorChartLoadingView = .create { view in
-        view.layer.cornerRadius = 6
-    }
-
     let noteLabel: UILabel = .create { label in
         label.apply(style: .footnoteSecondary)
         label.numberOfLines = 0
     }
-
-    private lazy var earningsView = UIView.hStack(
-        alignment: .firstBaseline,
-        spacing: 4,
-        [earningsTitleLabel, earningsValueLabel, UIView()]
-    )
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -74,20 +55,6 @@ final class SubtensorSubnetEstimateView: UIView {
 
         holdLabel.text = viewModel.hold
         holdLabel.isHidden = viewModel.hold == nil
-
-        switch viewModel.earnings {
-        case .loading:
-            earningsView.isHidden = false
-            earningsValueLabel.text = nil
-            earningsSkeletonView.setLoading(true)
-        case .hidden:
-            earningsView.isHidden = true
-            earningsSkeletonView.setLoading(false)
-        case let .value(text):
-            earningsView.isHidden = false
-            earningsValueLabel.text = text
-            earningsSkeletonView.setLoading(false)
-        }
     }
 }
 
@@ -99,22 +66,12 @@ private extension SubtensorSubnetEstimateView {
             make.height.equalTo(36)
         }
 
-        let contentView = UIView.vStack(spacing: 8, [chipsView, holdLabel, earningsView, noteLabel])
+        let contentView = UIView.vStack(spacing: 8, [chipsView, holdLabel, noteLabel])
         contentView.setCustomSpacing(16, after: chipsView)
 
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(UIEdgeInsets(top: 12, left: 16, bottom: 16, right: 16))
-        }
-
-        earningsTitleLabel.setContentHuggingPriority(.required, for: .horizontal)
-        earningsTitleLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
-
-        earningsView.addSubview(earningsSkeletonView)
-        earningsSkeletonView.snp.makeConstraints { make in
-            make.leading.equalTo(earningsTitleLabel.snp.trailing).offset(8)
-            make.centerY.equalTo(earningsTitleLabel)
-            make.size.equalTo(CGSize(width: 100, height: 12))
         }
     }
 }

@@ -86,14 +86,6 @@ struct SubtensorClientGates: Equatable {
     let requireActiveWithinCutoff: Bool
 }
 
-extension SubtensorClientGates {
-    static let backendDefault = SubtensorClientGates(
-        maxTake: BigRational(numerator: 18, denominator: 100),
-        requirePermit: true,
-        requireActiveWithinCutoff: true
-    )
-}
-
 struct SubtensorVerifiedRecommendations: Equatable {
     let generation: SubtensorRecommendationGeneration
     let clientGates: SubtensorClientGates

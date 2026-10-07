@@ -244,7 +244,6 @@ private extension SubtensorConfirmViewModelFactory {
         locale: Locale
     ) -> SubtensorConfirmSwapViewModel {
         let unknown = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown()
-        let hasRate = context.annualRate != nil
         let costBasis = createCostBasis(for: context, locale: locale)
 
         let panel = quoteViewModelFactory.createTradePanel(
@@ -252,19 +251,16 @@ private extension SubtensorConfirmViewModelFactory {
             amountIn: context.amount,
             direction: context.direction,
             target: displayTarget(for: context.target, catalogue: context.catalogue),
-            annualRate: context.annualRate,
             taoPrice: context.price,
             locale: locale
         )
 
         let receive: LoadableViewModelState<SubtensorConfirmTileViewModel>
         let swapRate: LoadableViewModelState<String>
-        let earnPerMonth: LoadableViewModelState<BalanceViewModelProtocol>?
 
         if context.tradesUnavailable {
             receive = .loaded(value: SubtensorConfirmTileViewModel(amount: unknown, price: nil))
             swapRate = .loaded(value: unknown)
-            earnPerMonth = hasRate ? .loaded(value: BalanceViewModel(amount: unknown, price: nil)) : nil
         } else if let panel, let panelReceive = panel.receive {
             receive = .loaded(
                 value: SubtensorConfirmTileViewModel(
@@ -273,11 +269,9 @@ private extension SubtensorConfirmViewModelFactory {
                 )
             )
             swapRate = .loaded(value: panel.swapRate)
-            earnPerMonth = panel.earnPerMonth.map { .loaded(value: $0) }
         } else {
             receive = .loading
             swapRate = .loading
-            earnPerMonth = hasRate ? .loading : nil
         }
 
         return SubtensorConfirmSwapViewModel(
@@ -292,7 +286,6 @@ private extension SubtensorConfirmViewModelFactory {
             validatorApy: context.annualRate.map {
                 SubtensorApyFormatter.text(for: $0, style: .trailing, locale: locale)
             },
-            earnPerMonth: earnPerMonth,
             remark: createRemark(for: context.direction, isProfitEstimated: costBasis.isEarnedEstimated, locale: locale)
         )
     }

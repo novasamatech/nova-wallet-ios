@@ -7,9 +7,6 @@ final class SubtensorRecommendationService {
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
-    private let mutex = NSLock()
-    private var seenGates: SeenGates?
-
     init(
         apiOperationFactory: BittensorApiOperationFactoryProtocol,
         chainOperationFactory: SubtensorValidatorChainOperationFactoryProtocol,
@@ -36,11 +33,6 @@ extension SubtensorRankedSubnets {
 }
 
 private extension SubtensorRecommendationService {
-    struct SeenGates {
-        let order: BittensorApiGenerationOrder
-        let gates: SubtensorClientGates
-    }
-
     struct Candidate {
         let recommendationClass: SubtensorRecommendationClass
         let path: String
@@ -185,20 +177,6 @@ private extension SubtensorRecommendationService {
                 "takeAboveMax \(dropped[.takeAboveMax] ?? 0), inactive \(dropped[.inactive] ?? 0)"
         )
     }
-
-    func remember(_ gates: SubtensorClientGates, order: BittensorApiGenerationOrder) {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        if let seenGates, order < seenGates.order {
-            return
-        }
-
-        seenGates = SeenGates(order: order, gates: gates)
-    }
 }
 
 extension SubtensorRecommendationService: SubtensorRecommendationServiceProtocol {
@@ -207,13 +185,10 @@ extension SubtensorRecommendationService: SubtensorRecommendationServiceProtocol
         let chainOperationFactory = chainOperationFactory
         let logger = logger
 
-        let parseOperation = ClosureOperation<ParsedGeneration> { [weak self] in
+        let parseOperation = ClosureOperation<ParsedGeneration> {
             let response = try responseWrapper.targetOperation.extractNoCancellableResultData()
-            let parsed = try Self.parse(response, logger: logger)
 
-            self?.remember(parsed.gates, order: response.value.generationOrder)
-
-            return parsed
+            return try Self.parse(response, logger: logger)
         }
 
         parseOperation.addDependency(responseWrapper.targetOperation)
@@ -251,13 +226,10 @@ extension SubtensorRecommendationService: SubtensorRecommendationServiceProtocol
     func createRankedSubnetsWrapper() -> CompoundOperationWrapper<SubtensorRankedSubnets> {
         let responseWrapper = apiOperationFactory.createRankedSubnetsWrapper()
 
-        let mappingOperation = ClosureOperation<SubtensorRankedSubnets> { [weak self] in
+        let mappingOperation = ClosureOperation<SubtensorRankedSubnets> {
             let response = try responseWrapper.targetOperation.extractNoCancellableResultData()
-            let ranked = try Self.makeRankedSubnets(from: response)
 
-            self?.remember(ranked.gates, order: response.value.generationOrder)
-
-            return ranked.subnets
+            return try Self.makeRankedSubnets(from: response).subnets
         }
 
         mappingOperation.addDependency(responseWrapper.targetOperation)
@@ -269,13 +241,21 @@ extension SubtensorRecommendationService: SubtensorRecommendationServiceProtocol
         apiOperationFactory.peekRankedSubnets().map { try Self.makeRankedSubnets(from: $0).subnets }
     }
 
-    func lastSeenClientGates() -> SubtensorClientGates? {
-        mutex.lock()
+    func createClientGatesWrapper() -> CompoundOperationWrapper<SubtensorClientGates> {
+        let responseWrapper = apiOperationFactory.createRankedSubnetsWrapper()
 
-        defer {
-            mutex.unlock()
+        let gatesOperation = ClosureOperation<SubtensorClientGates> {
+            let response = try responseWrapper.targetOperation.extractNoCancellableResultData()
+
+            return try Self.makeRankedSubnets(from: response).gates
         }
 
-        return seenGates?.gates
+        gatesOperation.addDependency(responseWrapper.targetOperation)
+
+        return responseWrapper.insertingTail(operation: gatesOperation)
+    }
+
+    func cachedClientGates() -> HTTPCachePeek<SubtensorClientGates> {
+        apiOperationFactory.peekRankedSubnets().map { try Self.makeRankedSubnets(from: $0).gates }
     }
 }

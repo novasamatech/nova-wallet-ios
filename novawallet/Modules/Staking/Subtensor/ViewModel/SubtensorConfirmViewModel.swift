@@ -18,7 +18,6 @@ struct SubtensorConfirmSwapViewModel {
     let youWillEarn: SubtensorCostBasisRowViewModel
     let slippage: String?
     let validatorApy: String?
-    let earnPerMonth: LoadableViewModelState<BalanceViewModelProtocol>?
     let remark: String?
 }
 

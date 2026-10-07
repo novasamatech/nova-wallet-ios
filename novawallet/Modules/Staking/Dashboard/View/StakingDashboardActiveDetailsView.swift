@@ -72,6 +72,7 @@ final class StakingDashboardActiveDetailsView: UIView {
     func bind(
         stakingStatus: LoadableViewModelState<StakingDashboardEnabledViewModel.Status>,
         stake: SecuredViewModel<LoadableViewModelState<BalanceViewModelProtocol>>,
+        stakeTitle: String,
         estimatedEarnings: LoadableViewModelState<String?>,
         locale: Locale
     ) {
@@ -91,6 +92,7 @@ final class StakingDashboardActiveDetailsView: UIView {
             statusView.bind(status: value, locale: locale)
         }
 
+        internalStakeView.valueTop.text = stakeTitle
         internalStakeView.valueBottom.bind(viewModel: stake)
 
         if stake.originalContent.isLoading {
@@ -134,10 +136,6 @@ final class StakingDashboardActiveDetailsView: UIView {
     }
 
     private func setupStaticLocalization(for locale: Locale, hasEstimatedRewards: Bool) {
-        internalStakeView.valueTop.text = R.string(
-            preferredLanguages: locale.rLanguages
-        ).localizable.stakingYourStake()
-
         if hasEstimatedRewards {
             estimatedEarningsView.valueTop.text = R.string(
                 preferredLanguages: locale.rLanguages

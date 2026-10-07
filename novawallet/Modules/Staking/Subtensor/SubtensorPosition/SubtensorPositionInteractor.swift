@@ -82,7 +82,7 @@ private extension SubtensorPositionInteractor {
         let portfolio = SubtensorPortfolioBuilder.build(state: positionsState)
         let group = isRoot ? portfolio.root : portfolio.subnets.first { $0.netuid == netuid }
 
-        return group.flatMap { $0.totalAlpha > 0 ? $0 : nil }
+        return group.flatMap { $0.totalAlpha > 0 || $0.redeemable > 0 ? $0 : nil }
     }
 
     func subscribePositions() {

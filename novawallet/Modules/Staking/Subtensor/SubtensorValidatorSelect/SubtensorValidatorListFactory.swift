@@ -8,7 +8,7 @@ struct SubtensorValidatorListInput {
     let yields: SubtensorAlphaYields?
     let alphaPrice: Balance?
     let isRoot: Bool
-    let maxTake: BigRational
+    let clientGates: SubtensorClientGates
     let sort: SubtensorValidatorSort
     let query: String
     let selectedHotkey: AccountId?
@@ -42,18 +42,18 @@ extension SubtensorValidatorListFactory {
     static func eligibility(
         of item: SubtensorValidatorDirectoryItem,
         isRoot: Bool,
-        maxTake: BigRational
+        gates: SubtensorClientGates
     ) -> SubtensorValidatorEligibility {
         guard
             let status = item.status,
-            isRoot || status.hasPermit == true,
+            isRoot || !gates.requirePermit || status.hasPermit == true,
             let take = item.take,
-            let maxTakeValue = maxTake.decimalValue,
-            take <= maxTakeValue else {
+            let maxTake = gates.maxTake.decimalValue,
+            take <= maxTake else {
             return .unlisted
         }
 
-        return isRoot || status.isActive == true ? .selectable : .inactive
+        return isRoot || !gates.requireActiveWithinCutoff || status.isActive == true ? .selectable : .inactive
     }
 
     static func sortOptions(isRoot: Bool, yields: SubtensorAlphaYields?) -> [SubtensorValidatorSort] {
@@ -72,19 +72,19 @@ extension SubtensorValidatorListFactory {
         _ current: AccountId?,
         in directory: SubtensorValidatorDirectory,
         isRoot: Bool,
-        maxTake: BigRational
+        gates: SubtensorClientGates
     ) -> AccountId? {
-        selectableItem(for: current, in: directory, isRoot: isRoot, maxTake: maxTake)?.hotkey
+        selectableItem(for: current, in: directory, isRoot: isRoot, gates: gates)?.hotkey
     }
 
     static func selectableItem(
         for hotkey: AccountId?,
         in directory: SubtensorValidatorDirectory?,
         isRoot: Bool,
-        maxTake: BigRational
+        gates: SubtensorClientGates
     ) -> SubtensorValidatorDirectoryItem? {
         directory?.items.first { item in
-            item.hotkey == hotkey && eligibility(of: item, isRoot: isRoot, maxTake: maxTake) == .selectable
+            item.hotkey == hotkey && eligibility(of: item, isRoot: isRoot, gates: gates) == .selectable
         }
     }
 }
@@ -254,7 +254,7 @@ private extension SubtensorValidatorListFactory {
 
     func createEntries(for input: SubtensorValidatorListInput, unknown: String) -> [Entry] {
         input.directory.items.compactMap { item in
-            let eligibility = Self.eligibility(of: item, isRoot: input.isRoot, maxTake: input.maxTake)
+            let eligibility = Self.eligibility(of: item, isRoot: input.isRoot, gates: input.clientGates)
 
             guard eligibility != .unlisted else {
                 return nil
@@ -287,7 +287,7 @@ private extension SubtensorValidatorListFactory {
     }
 
     func taoStake(for item: SubtensorValidatorDirectoryItem, input: SubtensorValidatorListInput) -> Decimal? {
-        guard let stake = item.reportedStake else {
+        guard let stake = item.reportedStake, input.directory.listStamp?.freshness == .fresh else {
             return nil
         }
 

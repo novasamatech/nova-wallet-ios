@@ -16,11 +16,6 @@ final class SubtensorPickCardView: UIView {
 
     let swapRateCell = SubtensorPickCardView.createCell()
 
-    let earnCell: StackTitleMultiValueCell = .create { cell in
-        cell.canSelect = false
-        cell.topValueLabel.textColor = R.color.colorTextPositive()
-    }
-
     let networkFeeCell = SubtensorPickCardView.createCell()
 
     let footerButton: RoundedButton = .create { button in
@@ -50,7 +45,6 @@ final class SubtensorPickCardView: UIView {
 
         bind(row: viewModel.receive, cell: receiveCell)
         bind(row: viewModel.swapRate, cell: swapRateCell)
-        bind(earnRow: viewModel.earnPerMonth)
         bind(networkFee: viewModel.networkFee)
 
         footerView.isHidden = viewModel.footer == nil
@@ -78,7 +72,6 @@ private extension SubtensorPickCardView {
 
         rowsView.addArrangedSubview(receiveCell)
         rowsView.addArrangedSubview(swapRateCell)
-        rowsView.addArrangedSubview(earnCell)
         rowsView.addArrangedSubview(networkFeeCell)
 
         footerView.snp.makeConstraints { make in
@@ -108,21 +101,6 @@ private extension SubtensorPickCardView {
         case let .value(value):
             cell.stopLoadingIfNeeded()
             cell.rowContentView.valueView.bind(topValue: value, bottomValue: nil)
-        }
-    }
-
-    func bind(earnRow: SubtensorSetupBalanceRowViewModel) {
-        switch earnRow {
-        case .hidden:
-            earnCell.isHidden = true
-            earnCell.stopLoadingIfNeeded()
-        case .loading:
-            earnCell.isHidden = false
-            earnCell.startLoadingIfNeeded()
-        case let .value(viewModel):
-            earnCell.isHidden = false
-            earnCell.stopLoadingIfNeeded()
-            earnCell.bind(viewModel: viewModel)
         }
     }
 
