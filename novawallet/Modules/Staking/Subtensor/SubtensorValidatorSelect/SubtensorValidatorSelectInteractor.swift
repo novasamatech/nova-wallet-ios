@@ -14,11 +14,12 @@ final class SubtensorValidatorSelectInteractor: AnyCancellableCleaning {
 
     private var seed = SubtensorValidatorSelectSnapshot(
         directory: .miss,
-        clientGates: .backendDefault,
+        clientGates: .miss,
         yields: .miss,
         alphaPrice: .miss
     )
     private let directoryStore = CancellableCallStore()
+    private let clientGatesStore = CancellableCallStore()
     private let yieldStore = CancellableCallStore()
     private let catalogueStore = CancellableCallStore()
 
@@ -42,6 +43,7 @@ final class SubtensorValidatorSelectInteractor: AnyCancellableCleaning {
 
     deinit {
         directoryStore.cancel()
+        clientGatesStore.cancel()
         yieldStore.cancel()
         catalogueStore.cancel()
     }
@@ -67,11 +69,29 @@ private extension SubtensorValidatorSelectInteractor {
 
             switch result {
             case let .success(directory):
-                let clientGates = recommendationService.lastSeenClientGates() ?? .backendDefault
-                presenter?.didReceive(directory: directory, clientGates: clientGates)
+                presenter?.didReceive(directory: directory)
             case let .failure(error):
                 logger.warning("Subnet validators unavailable: \(error)")
                 presenter?.didFailDirectory(error)
+            }
+        }
+    }
+
+    func loadClientGates() {
+        clientGatesStore.cancel()
+
+        executeCancellable(
+            wrapper: recommendationService.createClientGatesWrapper(),
+            inOperationQueue: operationQueue,
+            backingCallIn: clientGatesStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(clientGates):
+                self?.presenter?.didReceive(clientGates: clientGates)
+            case let .failure(error):
+                self?.logger.warning("Subtensor client gates unavailable for the validator list: \(error)")
+                self?.presenter?.didFailClientGates(error)
             }
         }
     }
@@ -118,6 +138,7 @@ private extension SubtensorValidatorSelectInteractor {
 
     func loadAll() {
         loadDirectory()
+        loadClientGates()
 
         guard !target.isRoot else {
             return
@@ -130,7 +151,7 @@ private extension SubtensorValidatorSelectInteractor {
     func makeSnapshot() -> SubtensorValidatorSelectSnapshot {
         let subnet = subnet
         let directory = directoryService.cachedDirectory(for: subnet)
-        let clientGates = recommendationService.lastSeenClientGates() ?? .backendDefault
+        let clientGates = recommendationService.cachedClientGates()
 
         guard !target.isRoot else {
             return SubtensorValidatorSelectSnapshot(
@@ -160,6 +181,10 @@ extension SubtensorValidatorSelectInteractor: ValidatorSelectInteractorInputProt
     func setup() {
         if !seed.directory.isFresh {
             loadDirectory()
+        }
+
+        if !seed.clientGates.isFresh {
+            loadClientGates()
         }
 
         guard !target.isRoot else {
