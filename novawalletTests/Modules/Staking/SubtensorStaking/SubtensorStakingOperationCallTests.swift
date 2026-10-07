@@ -18,8 +18,8 @@ final class SubtensorStakingOperationCallTests: XCTestCase {
             limitPrice: 74_169_000
         )
 
-        let expected = "0b0208" + "0758" + hotkeyHex + "4000" + "3bd3054f02000000" + "a8ba6b0400000000" + "00" +
-            "050300" + productionBeneficiaryHex + "16431814"
+        let expected = "0b0208" + "0758" + hotkeyHex + "4000" + "037f435202000000" + "a8ba6b0400000000" + "00" +
+            "050300" + productionBeneficiaryHex + "f6932107"
 
         XCTAssertEqual(try encodeCalls(operation, feeCalculator: SubtensorNovaFeeCalculator()), [expected])
     }
@@ -34,7 +34,7 @@ final class SubtensorStakingOperationCallTests: XCTestCase {
         )
 
         let expected = "0b0208" + "0759" + hotkeyHex + "4000" + "00f2c7150d000000" + "d877600400000000" + "00" +
-            "050300" + productionBeneficiaryHex + "ee4b5408"
+            "050300" + productionBeneficiaryHex + "bab3f402"
 
         XCTAssertEqual(try encodeCalls(operation, feeCalculator: SubtensorNovaFeeCalculator()), [expected])
     }
@@ -50,7 +50,7 @@ final class SubtensorStakingOperationCallTests: XCTestCase {
         let expected = "0b020c" +
             "0767" + hotkeyHex + "4000" + "01" + "d877600400000000" +
             "0767" + groupHotkeyHex + "4000" + "01" + "d877600400000000" +
-            "050300" + productionBeneficiaryHex + "ee4b5408"
+            "050300" + productionBeneficiaryHex + "bab3f402"
 
         XCTAssertEqual(try encodeCalls(operation, feeCalculator: SubtensorNovaFeeCalculator()), [expected])
     }
