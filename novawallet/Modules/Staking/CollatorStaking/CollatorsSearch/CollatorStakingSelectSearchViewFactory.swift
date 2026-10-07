@@ -32,8 +32,7 @@ struct CollatorStakingSelectSearchViewFactory {
         for wireframe: CollatorStakingSelectSearchWireframeProtocol,
         chainAsset: ChainAsset,
         collators: [CollatorStakingSelectionInfoProtocol],
-        delegate: CollatorStakingSelectDelegate,
-        displaysRewards: Bool = true
+        delegate: CollatorStakingSelectDelegate
     ) -> CollatorStakingSelectSearchViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
@@ -56,7 +55,6 @@ struct CollatorStakingSelectSearchViewFactory {
             collatorsInfo: collators,
             delegate: delegate,
             balanceViewModelFactory: balanceViewModelFactory,
-            displaysRewards: displaysRewards,
             localizationManager: localizationManager,
             logger: Logger.shared
         )

@@ -27,43 +27,8 @@ extension CollatorStakingDelegationSelectable {
         delegate: ModalPickerViewControllerDelegate,
         context: AnyObject?
     ) {
-        showDelegationSelection(
-            from: view,
-            viewModels: viewModels,
-            selectedIndex: selectedIndex,
-            delegate: delegate,
-            context: context,
-            statics: .collator
-        )
-    }
-
-    func showUndelegationSelection(
-        from view: ControllerBackedProtocol?,
-        viewModels: [AccountDetailsPickerViewModel],
-        selectedIndex: Int,
-        delegate: ModalPickerViewControllerDelegate,
-        context: AnyObject?
-    ) {
-        showUndelegationSelection(
-            from: view,
-            viewModels: viewModels,
-            selectedIndex: selectedIndex,
-            delegate: delegate,
-            context: context,
-            statics: .collator
-        )
-    }
-
-    func showDelegationSelection(
-        from view: ControllerBackedProtocol?,
-        viewModels: [AccountDetailsPickerViewModel],
-        selectedIndex: Int,
-        delegate: ModalPickerViewControllerDelegate,
-        context: AnyObject?,
-        statics: CollatorStakingDelegateStatics
-    ) {
         let actionViewModel: LocalizableResource<IconWithTitleViewModel> = LocalizableResource { locale in
-            let title = statics.newDelegateTitle.value(for: locale)
+            let title = R.string(preferredLanguages: locale.rLanguages).localizable.commonNewCollator()
             let icon = R.image.iconBlueAdd()
 
             return IconWithTitleViewModel(icon: icon, title: title)
@@ -72,7 +37,6 @@ extension CollatorStakingDelegationSelectable {
         guard let infoVew = ModalPickerFactory.createCollatorsPickingList(
             viewModels,
             actionViewModel: actionViewModel,
-            title: statics.delegateTitle,
             selectedIndex: selectedIndex,
             delegate: delegate,
             context: context
@@ -88,13 +52,11 @@ extension CollatorStakingDelegationSelectable {
         viewModels: [AccountDetailsPickerViewModel],
         selectedIndex: Int,
         delegate: ModalPickerViewControllerDelegate,
-        context: AnyObject?,
-        statics: CollatorStakingDelegateStatics
+        context: AnyObject?
     ) {
         guard let infoVew = ModalPickerFactory.createCollatorsPickingList(
             viewModels,
             actionViewModel: nil,
-            title: statics.delegateTitle,
             selectedIndex: selectedIndex,
             delegate: delegate,
             context: context

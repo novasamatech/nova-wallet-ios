@@ -101,15 +101,9 @@ private extension GiftSubmissionFactory {
                 guard
                     case let GiftTransferConfirmError.giftSubmissionFailed(
                         giftAccountId,
-                        underlyingError
+                        _
                     ) = error
                 else { throw error }
-
-                let transferMayStillLand = underlyingError is ExtrinsicSubmissionMonitorError
-
-                guard !transferMayStillLand else {
-                    return .createWithResult(())
-                }
 
                 return self.createCleanGiftWrapper(
                     for: giftAccountId,

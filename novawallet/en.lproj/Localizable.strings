@@ -2097,8 +2097,6 @@ Do you want to continue?";
 "staking.subtensor.error.temporarily.unavailable" = "Staking is temporarily unavailable while the network completes an internal migration. Try again later.";
 "staking.subtensor.error.fee.unpayable" = "The network rejected the transaction because the account can\'t pay the fee. Top up your transferable TAO.";
 "staking.subtensor.select.validator" = "Select validator";
-"staking.subtensor.select.validator.hint" = "Select validator…";
-"staking.subtensor.new.validator" = "New validator";
 "staking.subtensor.subnet.select.title" = "Choose a subnet";
 "staking.subtensor.subnet.search.placeholder" = "Search by name or number";
 "staking.subtensor.banner.title" = "Earn with Bittensor";
