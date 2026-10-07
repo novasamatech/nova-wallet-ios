@@ -1,7 +1,7 @@
 import Foundation
 
 enum SubtensorConfirmQuoteVerdict: Equatable {
-    case proceed(latest: SubtensorTradeQuote, acknowledged: SubtensorTradeQuote)
+    case proceed(latest: SubtensorTradeQuote, limitPrice: Balance)
     case quoteMissing
     case priceMoved
 }
@@ -19,11 +19,13 @@ enum SubtensorConfirmTapRule {
             return .quoteMissing
         }
 
-        guard latest.isFillable(atLimit: acknowledged.limitPrice) else {
+        let limitPrice = latest.tighterLimit(than: acknowledged.limitPrice)
+
+        guard latest.isFillable(atLimit: limitPrice) else {
             return .priceMoved
         }
 
-        return .proceed(latest: latest, acknowledged: acknowledged)
+        return .proceed(latest: latest, limitPrice: limitPrice)
     }
 
     static func verifiedExitHotkeys(
