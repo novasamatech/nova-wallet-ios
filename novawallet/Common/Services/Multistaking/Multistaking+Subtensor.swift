@@ -134,6 +134,7 @@ extension Multistaking {
         let rootStake: BigUInt?
         let subnetCount: Int
         let rootRate: Decimal?
+        let isFullyPriced: Bool?
     }
 
     struct DashboardItemSubtensorPart {
@@ -146,17 +147,20 @@ extension Multistaking {
         let state: SubtensorStakingState
         let maxApy: MaxApyUpdate
         let rootRate: Decimal?
+        let isFullyPriced: Bool?
 
         init(
             stakingOption: OptionWithWallet,
             state: SubtensorStakingState,
             maxApy: MaxApyUpdate = .keep,
-            rootRate: Decimal? = nil
+            rootRate: Decimal? = nil,
+            isFullyPriced: Bool? = nil
         ) {
             self.stakingOption = stakingOption
             self.state = state
             self.maxApy = maxApy
             self.rootRate = rootRate
+            self.isFullyPriced = isFullyPriced
         }
     }
 }

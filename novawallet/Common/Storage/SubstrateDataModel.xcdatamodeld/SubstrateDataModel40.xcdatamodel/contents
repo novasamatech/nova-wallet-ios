@@ -209,6 +209,7 @@
         <attribute name="onchainState" optional="YES" attributeType="String"/>
         <attribute name="stake" optional="YES" attributeType="String"/>
         <attribute name="stakingType" attributeType="String"/>
+        <attribute name="subtensorIsFullyPriced" optional="YES" attributeType="Boolean" usesScalarValueType="NO"/>
         <attribute name="subtensorRootRate" optional="YES" attributeType="Decimal"/>
         <attribute name="subtensorRootStake" optional="YES" attributeType="String"/>
         <attribute name="subtensorSubnetCount" optional="YES" attributeType="Integer 32" usesScalarValueType="NO"/>
