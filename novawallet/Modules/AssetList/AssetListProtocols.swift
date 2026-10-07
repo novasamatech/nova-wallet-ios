@@ -140,7 +140,9 @@ protocol AssetListWireframeProtocol: AnyObject,
     RampPresentable,
     MessageSheetPresentable,
     FeatureSupportChecking,
-    WebPresentable
+    WebPresentable,
+    SubtensorEarnInfoPresentable,
+    SubtensorGetTaoRouting
 {
     func showAssetDetails(from view: AssetListViewProtocol?, chainAsset: ChainAsset)
     func showTokensManage(from view: AssetListViewProtocol?)

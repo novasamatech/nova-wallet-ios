@@ -29,6 +29,12 @@ class BannerView: UIView {
         view.numberOfLines = 0
     }
 
+    private lazy var textContainer = UIStackView.vStack(
+        alignment: .leading,
+        spacing: Constants.textSpacing,
+        [titleLabel, detailsLabel]
+    )
+
     var viewModel: BannerViewModel?
 
     override init(frame: CGRect) {
@@ -48,12 +54,6 @@ class BannerView: UIView {
 
 private extension BannerView {
     func setupLayout() {
-        let textContainer = UIStackView.vStack(
-            alignment: .leading,
-            spacing: Constants.textSpacing,
-            [titleLabel, detailsLabel]
-        )
-
         addSubview(imageClippingContainer)
         imageClippingContainer.addSubview(contentImageView)
         addSubview(textContainer)
@@ -70,10 +70,32 @@ private extension BannerView {
             make.height.equalTo(Constants.contentImageViewHeight)
         }
 
-        textContainer.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
+        applyLayout(.regular)
+    }
+
+    func applyLayout(_ layout: Banners.Layout) {
+        switch layout {
+        case .regular:
+            titleLabel.apply(style: .semiboldBodyPrimary)
+            textContainer.spacing = Constants.textSpacing
+        case .featured:
+            titleLabel.apply(style: .title3Primary)
+            textContainer.spacing = Constants.featuredTextSpacing
+        }
+
+        textContainer.snp.remakeConstraints { make in
             make.leading.equalToSuperview().inset(Constants.textContainerLeadingInset)
-            make.trailing.equalTo(imageClippingContainer.snp.leading)
+
+            switch layout {
+            case .regular:
+                make.centerY.equalToSuperview()
+                make.trailing.equalTo(imageClippingContainer.snp.leading)
+            case .featured:
+                make.top.equalToSuperview().inset(
+                    Constants.contentImageViewVerticalInset + Constants.featuredTextTopInset
+                )
+                make.trailing.equalToSuperview().inset(Constants.featuredTextTrailingInset)
+            }
         }
     }
 
@@ -90,6 +112,8 @@ extension BannerView {
         detailsLabel.text = viewModel.details
         contentImageView.image = viewModel.contentImage
         imageClippingContainer.clipsToBounds = viewModel.clipsToBounds
+
+        applyLayout(viewModel.layout)
     }
 }
 
@@ -106,5 +130,20 @@ extension BannerView {
         static let contentImageViewHeight: CGFloat = 96.0
         static let contentImageViewVerticalInset: CGFloat = 8.0
         static let cornerRadius: CGFloat = 12.0
+        static let featuredTextTopInset: CGFloat = 22.0
+        static let featuredTextTrailingInset: CGFloat = 97.0
+        static let featuredTextSpacing: CGFloat = 8.0
+        static let featuredCardHeight: CGFloat = 112.0
+    }
+}
+
+extension Banners.Layout {
+    var minTextHeight: CGFloat {
+        switch self {
+        case .regular:
+            .zero
+        case .featured:
+            BannerView.Constants.featuredCardHeight - BannerView.Constants.textContainerVerticalInset * 2
+        }
     }
 }

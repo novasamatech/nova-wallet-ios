@@ -133,6 +133,12 @@ extension BannersInteractor: BannersInteractorInputProtocol {
         with locale: Locale,
         availableTextWidth: CGFloat
     ) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+
+            presenter?.didLoad(closedBanners: settingsManager.closedBanners)
+        }
+
         fetchBanners(
             for: locale,
             availableTextWidth: availableTextWidth

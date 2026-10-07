@@ -30,4 +30,25 @@ extension TextHeightCalculationParams {
 
         return [title, description]
     }
+
+    static func createForFeaturedBanners(availableWidth: CGFloat) -> [TextHeightCalculationParams] {
+        let featuredWidth = availableWidth
+            + BannerView.Constants.contentImageViewWidth
+            - BannerView.Constants.featuredTextTrailingInset
+
+        let title = TextHeightCalculationParams(
+            availableWidth: featuredWidth,
+            font: .semiBoldTitle3,
+            bottomInset: BannerView.Constants.featuredTextSpacing,
+            topInset: BannerView.Constants.featuredTextTopInset - BannerView.Constants.textContainerVerticalInset
+        )
+        let description = TextHeightCalculationParams(
+            availableWidth: featuredWidth,
+            font: .caption1,
+            bottomInset: .zero,
+            topInset: .zero
+        )
+
+        return [title, description]
+    }
 }

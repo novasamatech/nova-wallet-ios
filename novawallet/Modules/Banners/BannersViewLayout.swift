@@ -84,7 +84,6 @@ private extension BannersViewLayout {
         backgroundView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.top.bottom.equalTo(collectionView).inset(Constants.containerVerticalInset)
-            make.height.equalTo(Constants.containerViewMinHeight)
         }
         collectionView.snp.makeConstraints { make in
             make.leading.trailing.top.equalToSuperview()
@@ -95,7 +94,7 @@ private extension BannersViewLayout {
             make.height.equalTo(Constants.pageControlHeight)
         }
         closeButton.snp.makeConstraints { make in
-            make.size.equalTo(CGSize(width: 32, height: 28))
+            make.size.equalTo(Constants.closeButtonRegularSize)
             make.trailing.equalToSuperview()
             make.top.equalToSuperview().inset(Constants.containerVerticalInset)
         }
@@ -191,6 +190,29 @@ extension BannersViewLayout {
         closeButton.isHidden = !available
     }
 
+    func setCloseButton(layout: Banners.Layout) {
+        switch layout {
+        case .regular:
+            closeButton.imageWithTitleView?.iconImage = R.image.iconBannerClose()
+
+            closeButton.snp.updateConstraints { make in
+                make.size.equalTo(Constants.closeButtonRegularSize)
+                make.trailing.equalToSuperview()
+                make.top.equalToSuperview().inset(Constants.containerVerticalInset)
+            }
+        case .featured:
+            closeButton.imageWithTitleView?.iconImage = R.image.iconBannerCloseWithBg()
+
+            closeButton.snp.updateConstraints { make in
+                make.size.equalTo(Constants.closeButtonFeaturedSize)
+                make.trailing.equalToSuperview().inset(Constants.closeButtonFeaturedInset)
+                make.top.equalToSuperview().inset(
+                    Constants.containerVerticalInset + Constants.closeButtonFeaturedInset
+                )
+            }
+        }
+    }
+
     func setLoading() {
         loadingState.formUnion(.content)
     }
@@ -234,6 +256,9 @@ extension BannersViewLayout {
 
         static let closeButtonSize: CGFloat = 24
         static let closeButtontopOffset: CGFloat = 10
+        static let closeButtonRegularSize = CGSize(width: 32, height: 28)
+        static let closeButtonFeaturedSize = CGSize(width: 24, height: 24)
+        static let closeButtonFeaturedInset: CGFloat = 8
 
         static let backgroundCornerRaius: CGFloat = 12
         static let borderWidth: CGFloat = 1.0
