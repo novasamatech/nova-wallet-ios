@@ -1,6 +1,6 @@
 import Foundation
-import Foundation_iOS
 import UIKit
+import Foundation_iOS
 
 final class CollatorStkPartialUnstakeSetupVC: CollatorStkBaseUnstakeSetupVC<CollatorStkPartialUnstakeSetupLayout> {
     var presenter: CollatorStkPartialUnstakeSetupPresenterProtocol? {
@@ -9,14 +9,9 @@ final class CollatorStkPartialUnstakeSetupVC: CollatorStkBaseUnstakeSetupVC<Coll
 
     init(
         presenter: CollatorStkPartialUnstakeSetupPresenterProtocol,
-        statics: CollatorStakingDelegateStatics = .collator,
         localizationManager: LocalizationManagerProtocol
     ) {
-        super.init(
-            basePresenter: presenter,
-            statics: statics,
-            localizationManager: localizationManager
-        )
+        super.init(basePresenter: presenter, localizationManager: localizationManager)
     }
 
     override func onViewDidLoad() {

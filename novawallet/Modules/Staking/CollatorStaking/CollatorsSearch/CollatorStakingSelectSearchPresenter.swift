@@ -1,7 +1,7 @@
-import BigInt
 import Foundation
-import Foundation_iOS
+import BigInt
 import SubstrateSdk
+import Foundation_iOS
 
 final class CollatorStakingSelectSearchPresenter {
     weak var view: CollatorStakingSelectSearchViewProtocol?
@@ -14,9 +14,6 @@ final class CollatorStakingSelectSearchPresenter {
     let chainAsset: ChainAsset
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let collatorsInfo: [CollatorStakingSelectionInfoProtocol]
-    /// lanes without a per-collator return, such as Subtensor delegates, rank and label the
-    /// screen by total stake instead
-    let displaysRewards: Bool
     let logger: LoggerProtocol
 
     private var filteredCollatorsInfo: [CollatorStakingSelectionInfoProtocol]?
@@ -30,7 +27,6 @@ final class CollatorStakingSelectSearchPresenter {
         collatorsInfo: [CollatorStakingSelectionInfoProtocol],
         delegate: CollatorStakingSelectDelegate,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        displaysRewards: Bool = true,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -40,7 +36,6 @@ final class CollatorStakingSelectSearchPresenter {
         self.delegate = delegate
         self.balanceViewModelFactory = balanceViewModelFactory
         self.collatorsInfo = collatorsInfo
-        self.displaysRewards = displaysRewards
 
         self.logger = logger
 
@@ -52,9 +47,7 @@ final class CollatorStakingSelectSearchPresenter {
 
         let title = R.string(preferredLanguages: languages).localizable.commonSearchResultsNumber(collatorsCount)
 
-        let subtitle = displaysRewards
-            ? R.string(preferredLanguages: languages).localizable.stakingRewardsTitle()
-            : R.string(preferredLanguages: languages).localizable.stakingValidatorTotalStake()
+        let subtitle = R.string(preferredLanguages: languages).localizable.stakingRewardsTitle()
 
         return TitleWithSubtitleViewModel(title: title, subtitle: subtitle)
     }
@@ -79,17 +72,6 @@ final class CollatorStakingSelectSearchPresenter {
     private func createSortedByViewModel(
         for collatorInfo: CollatorStakingSelectionInfoProtocol
     ) -> TitleWithSubtitleViewModel {
-        guard displaysRewards else {
-            let decimalAmount = Decimal.fromSubstrateAmount(
-                collatorInfo.totalStake,
-                precision: chainAsset.assetDisplayInfo.assetPrecision
-            ) ?? 0
-
-            let amount = balanceViewModelFactory.amountFromValue(decimalAmount).value(for: selectedLocale)
-
-            return TitleWithSubtitleViewModel(title: amount)
-        }
-
         let rewards = collatorInfo.apr.flatMap {
             percentFormatter.value(for: selectedLocale).stringFromDecimal($0)
         } ?? ""
@@ -182,13 +164,7 @@ extension CollatorStakingSelectSearchPresenter: CollatorStakingSelectSearchPrese
                     return false
                 }
             }
-            .sorted { first, second in
-                if displaysRewards {
-                    (first.apr ?? 0) > (second.apr ?? 0)
-                } else {
-                    first.totalStake > second.totalStake
-                }
-            }
+            .sorted { ($0.apr ?? 0) > ($1.apr ?? 0) }
 
             filteredCollatorsInfo = Array(filteredInfoList)
         } else {

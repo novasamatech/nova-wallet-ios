@@ -1,24 +1,21 @@
-import Foundation_iOS
 import UIKit
+import Foundation_iOS
 
 final class CollatorStakingSetupViewController: UIViewController, ViewHolder, ImportantViewProtocol {
     typealias RootViewType = CollatorStakingSetupViewLayout
 
     let presenter: CollatorStakingSetupPresenterProtocol
     let localizableTitle: LocalizableResource<String>
-    let statics: CollatorStakingDelegateStatics
 
     private var collatorViewModel: AccountDetailsSelectionViewModel?
 
     init(
         presenter: CollatorStakingSetupPresenterProtocol,
         localizableTitle: LocalizableResource<String>,
-        statics: CollatorStakingDelegateStatics = .collator,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
         self.localizableTitle = localizableTitle
-        self.statics = statics
 
         super.init(nibName: nil, bundle: nil)
 
@@ -52,7 +49,9 @@ final class CollatorStakingSetupViewController: UIViewController, ViewHolder, Im
 
         setupAmountInputAccessoryView()
 
-        rootView.collatorTitleLabel.text = statics.delegateTitle.value(for: selectedLocale)
+        rootView.collatorTitleLabel.text = R.string(
+            preferredLanguages: languages
+        ).localizable.parachainStakingCollator()
 
         applyCollator(viewModel: collatorViewModel)
 
@@ -82,9 +81,9 @@ final class CollatorStakingSetupViewController: UIViewController, ViewHolder, Im
             rootView.actionButton.applyDisabledStyle()
             rootView.actionButton.isUserInteractionEnabled = false
 
-            rootView.actionButton.imageWithTitleView?.title = statics.selectDelegateHint.value(
-                for: selectedLocale
-            )
+            rootView.actionButton.imageWithTitleView?.title = R.string(
+                preferredLanguages: selectedLocale.rLanguages
+            ).localizable.parachainStakingHintSelectCollator()
             rootView.actionButton.invalidateLayout()
 
             return
@@ -130,7 +129,9 @@ final class CollatorStakingSetupViewController: UIViewController, ViewHolder, Im
             let emptyViewModel = AccountDetailsSelectionViewModel(
                 displayAddress: DisplayAddressViewModel(
                     address: "",
-                    name: statics.selectDelegateTitle.value(for: selectedLocale),
+                    name: R.string(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ).localizable.parachainStakingSelectCollator(),
                     imageViewModel: nil
                 ),
                 details: nil
