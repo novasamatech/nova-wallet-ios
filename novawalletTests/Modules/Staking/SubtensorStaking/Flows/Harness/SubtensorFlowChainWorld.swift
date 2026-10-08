@@ -14,7 +14,7 @@ enum SubtensorFlowChainWorld {
     static let chutesLogo = "https://raw.githubusercontent.com/novasamatech/nova-utils/master/icons/bittensor/subnets/sn64-d9871395.png"
 
     static let subnetLogosJSON = """
-    {"subnets":[
+    {"swapFee":0.003,"subnets":[
     {"netuid":0,"name":null,"symbol":"Τ","logo":null},
     {"netuid":4,"name":"Targon","symbol":"δ","logo":null},
     {"netuid":64,"name":"Chutes","symbol":"ش","logo":"\(chutesLogo)"}

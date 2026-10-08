@@ -40,7 +40,7 @@ extension SubtensorNovaFeeCalculator {
             return 0
         }
 
-        let gross = net + SubtensorNovaFeeConstants.rate.mul(value: net - 1)
+        let gross = net + SubtensorNovaFeeRateStore.shared.rate.mul(value: net - 1)
 
         try SubtensorStakingPallet.ensureU64Amount(gross)
 
@@ -85,7 +85,7 @@ private extension SubtensorNovaFeeCalculator {
     }
 
     func makeFee(basis: Balance, beneficiary: AccountId) -> SubtensorNovaFee? {
-        let amount = SubtensorNovaFeeConstants.rate.asShareOfGross.mul(value: basis)
+        let amount = SubtensorNovaFeeRateStore.shared.rate.asShareOfGross.mul(value: basis)
 
         guard amount > 0 else {
             return nil

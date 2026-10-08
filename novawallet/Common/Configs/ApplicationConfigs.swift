@@ -30,7 +30,7 @@ protocol ApplicationConfigProtocol {
     var globalConfigURL: URL { get }
     var dAppsListURL: URL { get }
     var preferredValidatorsURL: URL { get }
-    var bittensorSubnetsURL: URL { get }
+    var bittensorConfigURL: URL { get }
     var governanceDAppsListURL: URL { get }
     var commonTypesURL: URL { get }
     var learnPayoutURL: URL { get }
@@ -235,8 +235,8 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #endif
     }
 
-    var bittensorSubnetsURL: URL {
-        URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/bittensor/v1/subnets.json")!
+    var bittensorConfigURL: URL {
+        URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/bittensor/v1/config.json")!
     }
 
     var governanceDAppsListURL: URL {
