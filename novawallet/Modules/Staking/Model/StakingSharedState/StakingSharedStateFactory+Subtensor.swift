@@ -37,7 +37,7 @@ extension SubtensorStakingProcessServices {
 
         return SubtensorStakingProcessServices(
             bittensorApiOperationFactory: apiOperationFactory,
-            subnetLogosProvider: SubtensorSubnetLogosProvider(url: ApplicationConfig.shared.bittensorSubnetsURL),
+            subnetLogosProvider: SubtensorConfigProvider(url: ApplicationConfig.shared.bittensorConfigURL),
             subnetMarketsService: createSubnetMarketsService(),
             maxApyResolution: SubtensorMaxApyResolution(),
             costBasisService: createCostBasisService(apiOperationFactory: apiOperationFactory),

@@ -28,8 +28,8 @@ final class SubtensorStakingWiringTests: XCTestCase {
         XCTAssertTrue(first.subnetLogosProvider === processServices.subnetLogosProvider)
         XCTAssertTrue(second.subnetLogosProvider === processServices.subnetLogosProvider)
         XCTAssertEqual(
-            (processServices.subnetLogosProvider as? SubtensorSubnetLogosProvider)?.url,
-            ApplicationConfig.shared.bittensorSubnetsURL
+            (processServices.subnetLogosProvider as? SubtensorConfigProvider)?.url,
+            ApplicationConfig.shared.bittensorConfigURL
         )
         XCTAssertEqual(priceHistory.taoPriceId, chainAsset.asset.priceId)
         XCTAssertTrue(priceHistory.marketsService === processServices.subnetMarketsService)
