@@ -162,7 +162,7 @@ extension SubtensorQuoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
 
     func novaFeeDisclosure(locale: Locale) -> String {
         let percent = SwapBaseViewModelFactory.commissionPercent(
-            rate: SubtensorNovaFeeConstants.rate,
+            rate: SubtensorNovaFeeRateStore.shared.rate,
             percentFormatter: NumberFormatter.percentSingleHalfEven.localizableResource(),
             locale: locale
         )

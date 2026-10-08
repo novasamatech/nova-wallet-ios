@@ -90,7 +90,7 @@ final class SubtensorFlowWorld {
 
         let processServices = SubtensorStakingProcessServices(
             bittensorApiOperationFactory: bittensorApiOperationFactory,
-            subnetLogosProvider: SubtensorSubnetLogosProvider(url: SubtensorFlowHost.subnetLogos),
+            subnetLogosProvider: SubtensorConfigProvider(url: SubtensorFlowHost.subnetLogos),
             subnetMarketsService: SubtensorSubnetMarketsService(
                 coingeckoOperationFactory: CoingeckoOperationFactory(),
                 operationQueue: OperationQueue(),

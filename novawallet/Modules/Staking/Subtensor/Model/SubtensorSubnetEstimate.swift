@@ -7,7 +7,7 @@ enum SubtensorSubnetEstimate {
             return nil
         }
 
-        let novaFee = SubtensorNovaFeeConstants.rate.asShareOfGross.mul(value: amountTao)
+        let novaFee = SubtensorNovaFeeRateStore.shared.rate.asShareOfGross.mul(value: amountTao)
 
         return (amountTao - novaFee) * SubtensorStakingPallet.alphaPriceScale / spot
     }
