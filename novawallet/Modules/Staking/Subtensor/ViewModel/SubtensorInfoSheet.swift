@@ -56,7 +56,7 @@ private extension SubtensorInfoSheet {
             },
             details: LocalizableResource { locale in
                 let feeRate = SwapBaseViewModelFactory.commissionPercent(
-                    rate: SubtensorNovaFeeConstants.rate,
+                    rate: SubtensorNovaFeeRateStore.shared.rate,
                     percentFormatter: percentFormatter,
                     locale: locale
                 )
