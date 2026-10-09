@@ -36,13 +36,13 @@ final class SubtensorPriceHistoryServiceTests: XCTestCase {
         )
 
         XCTAssertEqual(result, .available(expected))
-        verify(coingecko).fetchPriceHistory(
+        verify(coingecko).fetchCacheablePriceHistory(
             for: equal(to: "chutes"),
             currency: equal(to: Currency.usd),
             period: equal(to: PriceHistoryPeriod.month)
         )
 
-        verify(coingecko).fetchPriceHistory(
+        verify(coingecko).fetchCacheablePriceHistory(
             for: equal(to: taoPriceId),
             currency: equal(to: Currency.usd),
             period: equal(to: PriceHistoryPeriod.month)
@@ -61,7 +61,7 @@ final class SubtensorPriceHistoryServiceTests: XCTestCase {
         let result = try run(service.createHistoryWrapper(for: chutes, period: .week, currency: .usd))
 
         XCTAssertEqual(result, .notListed)
-        verify(coingecko, never()).fetchPriceHistory(for: any(), currency: any(), period: any())
+        verify(coingecko, never()).fetchCacheablePriceHistory(for: any(), currency: any(), period: any())
     }
 
     func testQuarterHistorySlicesTheAllTimeSeriesToItsLastThreeMonths() throws {
@@ -97,7 +97,7 @@ final class SubtensorPriceHistoryServiceTests: XCTestCase {
         )
 
         XCTAssertEqual(result, .available(expected))
-        verify(coingecko, times(2)).fetchPriceHistory(
+        verify(coingecko, times(2)).fetchCacheablePriceHistory(
             for: any(),
             currency: any(),
             period: equal(to: PriceHistoryPeriod.allTime)
@@ -146,13 +146,13 @@ final class SubtensorPriceHistoryServiceTests: XCTestCase {
             unlisted: .notListed
         ])
 
-        verify(coingecko).fetchPriceHistory(
+        verify(coingecko).fetchCacheablePriceHistory(
             for: equal(to: taoPriceId),
             currency: equal(to: Currency.usd),
             period: equal(to: PriceHistoryPeriod.week)
         )
 
-        verify(coingecko, times(1)).fetchPriceHistory(for: any(), currency: any(), period: any())
+        verify(coingecko, times(1)).fetchCacheablePriceHistory(for: any(), currency: any(), period: any())
     }
 
     func testCoinsNotUpdatedWithinADayStayListedWithoutWeeklyPrices() throws {
@@ -195,8 +195,8 @@ final class SubtensorPriceHistoryServiceTests: XCTestCase {
         ))
 
         XCTAssertEqual(prices, [chutes: .unavailable, templar: .unavailable, unlisted: .notListed])
-        verify(coingecko, never()).fetchPriceHistory(for: equal(to: "chutes"), currency: any(), period: any())
-        verify(coingecko, never()).fetchPriceHistory(for: equal(to: "templar"), currency: any(), period: any())
+        verify(coingecko, never()).fetchCacheablePriceHistory(for: equal(to: "chutes"), currency: any(), period: any())
+        verify(coingecko, never()).fetchCacheablePriceHistory(for: equal(to: "templar"), currency: any(), period: any())
     }
 
     func testPricesFailWhenTheMarketsRequestFails() {
@@ -209,7 +209,7 @@ final class SubtensorPriceHistoryServiceTests: XCTestCase {
 
         XCTAssertThrowsError(try run(service.createWeeklyChangesWrapper(for: [chutes, unlisted])))
         XCTAssertThrowsError(try run(service.createHistoryWrapper(for: chutes, period: .week, currency: .usd)))
-        verify(coingecko, never()).fetchPriceHistory(for: any(), currency: any(), period: any())
+        verify(coingecko, never()).fetchCacheablePriceHistory(for: any(), currency: any(), period: any())
     }
 
     func testSparklineKeepsTheLastValueAndAtMostFortyEightValuesAtAnEvenStride() {
@@ -282,12 +282,12 @@ final class SubtensorPriceHistoryServiceTests: XCTestCase {
 
     private func stubCharts(_ coingecko: MockCoingeckoOperationFactoryProtocol, _ charts: [String: [(UInt64, String)]]) {
         stub(coingecko) { stub in
-            when(stub.fetchPriceHistory(for: any(), currency: any(), period: any())).then { tokenId, _, _ in
+            when(stub.fetchCacheablePriceHistory(for: any(), currency: any(), period: any())).then { tokenId, _, _ in
                 guard let chart = charts[tokenId] else {
                     return BaseOperation.createWithError(CommonError.dataCorruption)
                 }
 
-                return BaseOperation.createWithResult(self.history(chart))
+                return BaseOperation.createWithResult(.response(self.history(chart), .reusable(lifetime: 3600)))
             }
         }
     }

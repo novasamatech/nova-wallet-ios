@@ -4,7 +4,6 @@ struct SubtensorValidatorDirectoryCacheEntry {
     let directory: SubtensorValidatorDirectory
     let listingReceipt: SubtensorValidatorDirectoryService.ListingReceipt
     let items: [AccountId: SubtensorValidatorDirectoryItem]
-    let enrichedHotkeys: Set<AccountId>
 }
 
 protocol SubtensorValidatorDirectoryCaching: AnyObject {

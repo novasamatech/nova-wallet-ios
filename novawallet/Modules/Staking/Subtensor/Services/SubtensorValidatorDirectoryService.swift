@@ -30,23 +30,12 @@ final class SubtensorValidatorDirectoryService {
 }
 
 private extension SubtensorValidatorDirectoryService {
-    struct CachedItem {
-        let item: SubtensorValidatorDirectoryItem
-        let isEnriched: Bool
-        let isFresh: Bool
-    }
-
-    func store(
-        _ directory: SubtensorValidatorDirectory,
-        listingReceipt: ListingReceipt,
-        enrichedPairs: Set<SubtensorHotkeySubnet>
-    ) {
+    func store(_ directory: SubtensorValidatorDirectory, listingReceipt: ListingReceipt) {
         cache.store(
             SubtensorValidatorDirectoryCacheEntry(
                 directory: directory,
                 listingReceipt: listingReceipt,
-                items: Dictionary(directory.items.map { ($0.hotkey, $0) }, uniquingKeysWith: { first, _ in first }),
-                enrichedHotkeys: Set(enrichedPairs.map(\.hotkey))
+                items: Dictionary(directory.items.map { ($0.hotkey, $0) }, uniquingKeysWith: { first, _ in first })
             )
         )
     }
@@ -64,19 +53,15 @@ private extension SubtensorValidatorDirectoryService {
         return .fresh(cached.directory, freshUntil: freshUntil)
     }
 
-    func cachedItem(for hotkey: AccountId, subnet: SubtensorSubnetRef) -> CachedItem? {
-        guard let cached = cache.entry(for: subnet), let item = cached.items[hotkey] else {
+    func listedItem(for hotkey: AccountId, subnet: SubtensorSubnetRef) -> SubtensorValidatorDirectoryItem? {
+        guard
+            let cached = cache.entry(for: subnet),
+            let item = cached.items[hotkey],
+            case let .fresh(directory, _) = peek(cached, netuid: subnet.netuid) else {
             return nil
         }
 
-        let directory = peek(cached, netuid: subnet.netuid)
-        let hasFreshStakes = directory.value?.listStamp?.freshness == .fresh
-
-        return CachedItem(
-            item: hasFreshStakes ? item : item.withoutReportedStake(),
-            isEnriched: cached.enrichedHotkeys.contains(hotkey),
-            isFresh: directory.isFresh
-        )
+        return directory.listStamp?.freshness == .fresh ? item : item.withoutReportedStake()
     }
 
     func createListingWrapper(for netuid: UInt16) -> CompoundOperationWrapper<Listing> {
@@ -166,7 +151,7 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
 
             let directory = Self.makeDirectory(subnet: subnet, listing: listing, enrichment: enrichment)
 
-            self?.store(directory, listingReceipt: listing.receipt, enrichedPairs: enrichedPairs)
+            self?.store(directory, listingReceipt: listing.receipt)
 
             return directory
         }
@@ -200,17 +185,13 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
                     throw BaseOperationError.parentOperationCancelled
                 }
 
-                let cached = cachedItem(for: hotkey, subnet: subnet)
-
-                if let cached, cached.isEnriched, cached.isFresh {
-                    return .createWithResult(cached.item)
-                }
+                let listed = listedItem(for: hotkey, subnet: subnet)
 
                 return createChainItemWrapper(
                     for: hotkey,
                     subnet: subnet,
-                    name: cached?.item.name,
-                    stake: cached?.item.reportedStake
+                    name: listed?.name,
+                    stake: listed?.reportedStake
                 )
             }
 

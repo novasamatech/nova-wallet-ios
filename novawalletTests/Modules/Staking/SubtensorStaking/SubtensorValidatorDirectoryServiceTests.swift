@@ -259,7 +259,7 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
         verify(chainFactory, never()).createChainSnapshotWrapper(for: any())
     }
 
-    func testDetailReusesTheCachedItemOnlyForTheSameSubnetRegistration() throws {
+    func testDetailReadsTheChainAndTakesTheListedNameOnlyForTheSameSubnetRegistration() throws {
         let apiFactory = MockBittensorApiOperationFactoryProtocol()
         let chainFactory = MockSubtensorValidatorChainOperationFactoryProtocol()
 
@@ -301,7 +301,7 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
         XCTAssertEqual(cachedDetail, SubtensorValidatorDetail(item: directory.items[0], identity: identity))
         XCTAssertNil(chainDetail.item.name)
         XCTAssertEqual(chainDetail.item.status?.uid, 5)
-        verify(chainFactory, times(2)).createChainSnapshotWrapper(for: any())
+        verify(chainFactory, times(3)).createChainSnapshotWrapper(for: any())
     }
 
     private func makeService(

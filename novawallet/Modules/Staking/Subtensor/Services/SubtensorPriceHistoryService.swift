@@ -215,13 +215,15 @@ extension SubtensorPriceHistoryService: SubtensorPriceHistoryServiceProtocol {
             let headBlock = try headBlockWrapper.targetOperation.extractNoCancellableResultData()
             let registrationDate = Self.registrationDate(of: subnet, headBlock: headBlock, at: timeProvider())
 
-            let expiresAt = [alphaPriceId, taoPriceId].compactMap { priceId in
+            let seriesExpirations = [alphaPriceId, taoPriceId].map { priceId in
                 seriesProvider.expirationDate(
                     for: priceId,
                     currency: currency,
                     period: period.sourcePeriod.coingeckoPeriod
                 )
-            }.min() ?? now
+            }
+
+            let expiresAt = seriesExpirations.contains(nil) ? now : seriesExpirations.compactMap { $0 }.min() ?? now
 
             return SubtensorPriceHistoryEntry(
                 result: .available(

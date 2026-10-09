@@ -193,23 +193,18 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
         let world = try SubtensorFlowWorld()
         let rootRef = SubtensorSubnetRef(netuid: SubtensorStakingPallet.rootNetuid, registeredAt: 0)
 
-        for path in ["/subnets/0/validators", "/recommendations"] {
-            SubtensorFlowURLProtocol.serveBittensor(
-                path,
-                reply: .apiError(statusCode: 503, code: "dataset_unavailable", requestId: "req-root-down")
-            )
-        }
+        SubtensorFlowURLProtocol.serveBittensor(
+            "/recommendations",
+            reply: .apiError(statusCode: 503, code: "dataset_unavailable", requestId: "req-root-down")
+        )
 
         let preset = try run(world.createPresetFactory().createPresetWrapper(for: rootRef, existingHotkey: nil))
 
         XCTAssertNil(preset)
 
-        XCTAssertEqual(requestLines().sorted(), [
-            "GET https://bittensor.test/v1/bittensor/recommendations",
-            "GET https://bittensor.test/v1/bittensor/subnets/0/validators"
-        ])
+        XCTAssertEqual(requestLines(), ["GET https://bittensor.test/v1/bittensor/recommendations"])
 
-        assertAttestedRequests(world, paths: ["/v1/bittensor/subnets/0/validators", "/v1/bittensor/recommendations"])
+        assertAttestedRequests(world, paths: ["/v1/bittensor/recommendations"])
     }
 
     func testRootValidatorInfoKeepsChainValuesWhenTheBackendIsDown() throws {
