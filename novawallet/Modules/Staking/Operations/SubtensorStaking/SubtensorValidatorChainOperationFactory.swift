@@ -61,9 +61,11 @@ private extension SubtensorValidatorChainOperationFactory {
         let hotkeyAlpha: QueryWrapper<StringScaleMapper<Balance>>?
 
         var allOperations: [Operation] {
-            blockNumber.allOperations + uids.allOperations + permits.allOperations +
+            let hotkeyAlphaOperations = hotkeyAlpha?.allOperations ?? []
+
+            return blockNumber.allOperations + uids.allOperations + permits.allOperations +
                 lastUpdates.allOperations + tempos.allOperations + factors.allOperations +
-                takes.allOperations + (hotkeyAlpha?.allOperations ?? [])
+                takes.allOperations + hotkeyAlphaOperations
         }
 
         var targetOperations: [Operation] {
