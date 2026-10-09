@@ -146,15 +146,17 @@ private extension SubtensorStakingProcessServices {
 
 extension StakingSharedStateFactory {
     func createSubtensorStaking(
-        for stakingOption: Multistaking.ChainAssetOption
+        for stakingOption: Multistaking.ChainAssetOption,
+        flowState: SubtensorStakingFlowStateProtocol
     ) throws -> SubtensorStakingSharedStateProtocol {
-        try createSubtensorStaking(for: stakingOption, processServices: .shared)
+        try createSubtensorStaking(for: stakingOption, processServices: .shared, flowState: flowState)
     }
 
     func createSubtensorStaking(
         for stakingOption: Multistaking.ChainAssetOption,
         processServices: SubtensorStakingProcessServices,
-        chainServices: SubtensorStakingChainServices? = nil
+        chainServices: SubtensorStakingChainServices? = nil,
+        flowState: SubtensorStakingFlowStateProtocol
     ) throws -> SubtensorStakingSharedStateProtocol {
         let chainId = stakingOption.chainAsset.chain.chainId
 
@@ -175,12 +177,17 @@ extension StakingSharedStateFactory {
             for: stakingOption,
             runtimeConnectionStore: runtimeConnectionStore,
             processServices: processServices,
-            chainServices: chainServices ?? createChainServices(runtimeConnectionStore: runtimeConnectionStore)
+            chainServices: chainServices ?? createChainServices(
+                runtimeConnectionStore: runtimeConnectionStore,
+                flowState: flowState
+            ),
+            flowState: flowState
         )
     }
 
     private func createChainServices(
-        runtimeConnectionStore: RuntimeConnectionStoring
+        runtimeConnectionStore: RuntimeConnectionStoring,
+        flowState: SubtensorStakingFlowStateProtocol
     ) -> SubtensorStakingChainServices {
         let apiOperationFactory = SubtensorApiOperationFactory(
             runtimeConnectionStore: runtimeConnectionStore,
@@ -189,6 +196,7 @@ extension StakingSharedStateFactory {
 
         let subnetsService = SubtensorSubnetsService(
             operationFactory: apiOperationFactory,
+            cache: flowState.subnetsInfoCache,
             operationQueue: syncOperationQueue,
             logger: logger
         )
@@ -211,7 +219,8 @@ extension StakingSharedStateFactory {
         for stakingOption: Multistaking.ChainAssetOption,
         runtimeConnectionStore: RuntimeConnectionStoring,
         processServices: SubtensorStakingProcessServices,
-        chainServices: SubtensorStakingChainServices
+        chainServices: SubtensorStakingChainServices,
+        flowState: SubtensorStakingFlowStateProtocol
     ) -> SubtensorStakingSharedState {
         let stakeStateFetchFactory = SubtensorStakeStateFetchFactory(
             operationFactory: chainServices.apiOperationFactory,
@@ -236,8 +245,10 @@ extension StakingSharedStateFactory {
                 for: stakingOption,
                 runtimeConnectionStore: runtimeConnectionStore,
                 processServices: processServices,
-                chainServices: chainServices
+                chainServices: chainServices,
+                flowState: flowState
             ),
+            flowState: flowState,
             eventCenter: eventCenter,
             operationQueue: syncOperationQueue,
             workingQueue: .global(),
@@ -251,7 +262,8 @@ extension StakingSharedStateFactory {
         for stakingOption: Multistaking.ChainAssetOption,
         runtimeConnectionStore: RuntimeConnectionStoring,
         processServices: SubtensorStakingProcessServices,
-        chainServices: SubtensorStakingChainServices
+        chainServices: SubtensorStakingChainServices,
+        flowState: SubtensorStakingFlowStateProtocol
     ) -> SubtensorEarnServices {
         let validatorChainOperationFactory = processServices.createValidatorChainOperationFactory(
             runtimeConnectionStore: runtimeConnectionStore
@@ -273,6 +285,7 @@ extension StakingSharedStateFactory {
         let validatorDirectoryService = SubtensorValidatorDirectoryService(
             apiOperationFactory: processServices.bittensorApiOperationFactory,
             chainOperationFactory: validatorChainOperationFactory,
+            cache: flowState.validatorDirectoryCache,
             operationQueue: syncOperationQueue,
             logger: logger
         )
@@ -288,7 +301,8 @@ extension StakingSharedStateFactory {
             validatorDirectoryService: validatorDirectoryService,
             priceHistoryService: createPriceHistoryService(
                 for: stakingOption,
-                marketsService: processServices.subnetMarketsService
+                marketsService: processServices.subnetMarketsService,
+                seriesProvider: flowState.priceSeriesCache
             ),
             tradeQuoteFactory: SubtensorTradeQuoteFactory(
                 quoteFactory: chainServices.quoteOperationFactory,
@@ -316,7 +330,8 @@ extension StakingSharedStateFactory {
 
     private func createPriceHistoryService(
         for stakingOption: Multistaking.ChainAssetOption,
-        marketsService: SubtensorSubnetMarketsServiceProtocol
+        marketsService: SubtensorSubnetMarketsServiceProtocol,
+        seriesProvider: SubtensorPriceSeriesProviding
     ) -> SubtensorPriceHistoryServiceProtocol? {
         guard let taoPriceId = stakingOption.chainAsset.asset.priceId else {
             return nil
@@ -324,7 +339,7 @@ extension StakingSharedStateFactory {
 
         return SubtensorPriceHistoryService(
             marketsService: marketsService,
-            coingeckoOperationFactory: CoingeckoOperationFactory(),
+            seriesProvider: seriesProvider,
             blockNumberOperationFactory: BlockNumberOperationFactory(
                 chainRegistry: chainRegistry,
                 operationQueue: syncOperationQueue

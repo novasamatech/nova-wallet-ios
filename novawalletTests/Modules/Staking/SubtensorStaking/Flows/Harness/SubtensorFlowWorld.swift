@@ -44,6 +44,7 @@ final class SubtensorFlowWorld {
     private let factory: StakingSharedStateFactory
     private let stakingOption: Multistaking.ChainAssetOption
     private let processServices: SubtensorStakingProcessServices
+    private let flowState: SubtensorStakingFlowStateProtocol
     private var bittensorCodingFactory: RuntimeCoderFactoryProtocol?
 
     init(novaFeeBeneficiary: AccountId? = SubtensorNovaFeeCalculator.defaultBeneficiary) throws {
@@ -132,10 +133,18 @@ final class SubtensorFlowWorld {
         self.stakingOption = stakingOption
         self.processServices = processServices
 
+        let flowState = SubtensorStakingFlowState(
+            coingeckoOperationFactory: CoingeckoOperationFactory(),
+            operationQueue: OperationQueue()
+        )
+
+        self.flowState = flowState
+
         sharedState = try factory.createSubtensorStaking(
             for: stakingOption,
             processServices: processServices,
-            chainServices: chainServices
+            chainServices: chainServices,
+            flowState: flowState
         )
 
         try stubHeadBlock(BlockNumber.max)
@@ -146,9 +155,13 @@ final class SubtensorFlowWorld {
     }
 
     func createProductionWiredNovaFeeCalculator() throws -> SubtensorNovaFeeCalculator {
-        let tradeQuoteFactory = try factory.createSubtensorStaking(for: stakingOption, processServices: processServices)
-            .earnServices
-            .tradeQuoteFactory
+        let tradeQuoteFactory = try factory.createSubtensorStaking(
+            for: stakingOption,
+            processServices: processServices,
+            flowState: flowState
+        )
+        .earnServices
+        .tradeQuoteFactory
 
         return try XCTUnwrap(tradeQuoteFactory as? SubtensorTradeQuoteFactory).feeCalculator
     }

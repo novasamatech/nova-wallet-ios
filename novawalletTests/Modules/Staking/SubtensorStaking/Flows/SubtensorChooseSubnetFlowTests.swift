@@ -163,9 +163,9 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
             "GET https://bittensor.test/v1/bittensor/subnets/64/validators",
             "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
             "GET https://subnet-logos.test/subnets.json",
+            "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=30",
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=7",
-            "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=7",
-            "GET \(SubtensorFlowHost.priceAPI)/coins/chutes/market_chart?vs_currency=usd&days=7",
+            "GET \(SubtensorFlowHost.priceAPI)/coins/chutes/market_chart?vs_currency=usd&days=30",
             "GET \(SubtensorFlowHost.priceAPI)/coins/markets?vs_currency=usd&category=bittensor-subnets&per_page=250&page=1&sparkline=true&price_change_percentage=7d"
         ])
 
@@ -228,9 +228,9 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
             "GET https://bittensor.test/v1/bittensor/subnets/64/validators",
             "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
             "GET https://subnet-logos.test/subnets.json",
+            "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=30",
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=7",
-            "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=7",
-            "GET \(SubtensorFlowHost.priceAPI)/coins/chutes/market_chart?vs_currency=usd&days=7",
+            "GET \(SubtensorFlowHost.priceAPI)/coins/chutes/market_chart?vs_currency=usd&days=30",
             "GET \(SubtensorFlowHost.priceAPI)/coins/markets?vs_currency=usd&category=bittensor-subnets&per_page=250&page=1&sparkline=true&price_change_percentage=7d"
         ])
 

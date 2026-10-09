@@ -16,6 +16,10 @@ final class SubtensorOperationResultWireframe: SubtensorResultWireframeProtocol,
         SubtensorModalStack.dismiss(animated: true)
     }
 
+    func showYourBittensor(from _: ControllerBackedProtocol?, stakingOption: Multistaking.ChainAssetOption) {
+        presentYourBittensor(stakingOption: stakingOption, flowState: state.flowState)
+    }
+
     func showSubnetDiscovery(from view: ControllerBackedProtocol?) {
         let flowNavigation = SubtensorModalStack.flowNavigation()
 

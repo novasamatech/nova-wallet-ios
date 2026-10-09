@@ -2,7 +2,10 @@ import Foundation
 import Foundation_iOS
 
 enum SubtensorPortfolioViewFactory {
-    static func createView(for stakingOption: Multistaking.ChainAssetOption) -> SubtensorPortfolioViewProtocol? {
+    static func createView(
+        for stakingOption: Multistaking.ChainAssetOption,
+        flowState: SubtensorStakingFlowStateProtocol
+    ) -> SubtensorPortfolioViewProtocol? {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         let stateFactory = StakingSharedStateFactory(
@@ -17,7 +20,7 @@ enum SubtensorPortfolioViewFactory {
         )
 
         guard
-            let state = try? stateFactory.createSubtensorStaking(for: stakingOption),
+            let state = try? stateFactory.createSubtensorStaking(for: stakingOption, flowState: flowState),
             let account = SelectedWalletSettings.shared.value?.fetchMetaChainAccount(
                 for: stakingOption.chainAsset.chain.accountRequest()
             ),
@@ -44,8 +47,13 @@ enum SubtensorPortfolioViewFactory {
             localizationManager: LocalizationManager.shared
         )
 
+        let singleTapHapticPlayer = HapticPlayerFactory.createHapticPlayer(patternConfiguration: .singleTap)
+
         let view = SubtensorPortfolioViewController(
             presenter: presenter,
+            seekHapticPlayer: HapticPlayerFactory.createProgressivePlayer(patternConfiguration: .chartSeek),
+            chartLongPressHapticPlayer: singleTapHapticPlayer,
+            periodControlHapticPlayer: singleTapHapticPlayer,
             localizationManager: LocalizationManager.shared
         )
 
@@ -79,7 +87,7 @@ private extension SubtensorPortfolioViewFactory {
             priceHistoryService: earnServices.priceHistoryService,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
-            coingeckoFactory: CoingeckoOperationFactory(),
+            flowState: state.flowState,
             operationQueue: operationQueue,
             logger: Logger.shared
         )

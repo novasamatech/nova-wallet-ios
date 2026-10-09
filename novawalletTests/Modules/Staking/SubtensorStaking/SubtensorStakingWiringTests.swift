@@ -11,15 +11,24 @@ final class SubtensorStakingWiringTests: XCTestCase {
         let factory = makeFactory(chain: chainAsset.chain)
         let option = Multistaking.ChainAssetOption(chainAsset: chainAsset, type: .subtensor)
         let processServices = SubtensorStakingProcessServices.shared
+        let flowState = SubtensorStakingFlowState(
+            coingeckoOperationFactory: CoingeckoOperationFactory(),
+            operationQueue: OperationQueue()
+        )
 
-        let first = try factory.createSubtensorStaking(for: option).earnServices
-        let second = try factory.createSubtensorStaking(for: option).earnServices
+        let firstState = try factory.createSubtensorStaking(for: option, flowState: flowState)
+        let secondState = try factory.createSubtensorStaking(for: option, flowState: flowState)
+        let first = firstState.earnServices
+        let second = secondState.earnServices
 
         let catalogue = try XCTUnwrap(first.catalogueService as? SubtensorSubnetCatalogueService)
         let yields = try XCTUnwrap(first.yieldService as? SubtensorYieldService)
         let recommendations = try XCTUnwrap(first.recommendationService as? SubtensorRecommendationService)
         let rankingView = try XCTUnwrap(first.rankingViewService as? SubtensorRankingViewService)
         let directory = try XCTUnwrap(first.validatorDirectoryService as? SubtensorValidatorDirectoryService)
+        let secondDirectory = try XCTUnwrap(second.validatorDirectoryService as? SubtensorValidatorDirectoryService)
+        let subnets = try XCTUnwrap(firstState.subnetsService as? SubtensorSubnetsService)
+        let secondSubnets = try XCTUnwrap(secondState.subnetsService as? SubtensorSubnetsService)
         let priceHistory = try XCTUnwrap(first.priceHistoryService as? SubtensorPriceHistoryService)
         let secondPriceHistory = try XCTUnwrap(second.priceHistoryService as? SubtensorPriceHistoryService)
         let secondRecommendations = try XCTUnwrap(second.recommendationService as? SubtensorRecommendationService)
@@ -34,6 +43,13 @@ final class SubtensorStakingWiringTests: XCTestCase {
         XCTAssertEqual(priceHistory.taoPriceId, chainAsset.asset.priceId)
         XCTAssertTrue(priceHistory.marketsService === processServices.subnetMarketsService)
         XCTAssertTrue(secondPriceHistory.marketsService === processServices.subnetMarketsService)
+        XCTAssertTrue(priceHistory.seriesProvider === flowState.priceSeriesCache)
+        XCTAssertTrue(secondPriceHistory.seriesProvider === flowState.priceSeriesCache)
+        XCTAssertTrue(directory.cache === flowState.validatorDirectoryCache)
+        XCTAssertTrue(secondDirectory.cache === flowState.validatorDirectoryCache)
+        XCTAssertTrue(subnets.cache === flowState.subnetsInfoCache)
+        XCTAssertTrue(secondSubnets.cache === flowState.subnetsInfoCache)
+        XCTAssertFalse(firstState.subnetsService === secondState.subnetsService)
         XCTAssertTrue(catalogue.apiOperationFactory === processServices.bittensorApiOperationFactory)
         XCTAssertTrue(yields.apiOperationFactory === processServices.bittensorApiOperationFactory)
         XCTAssertTrue(recommendations.apiOperationFactory === processServices.bittensorApiOperationFactory)
@@ -75,7 +91,14 @@ final class SubtensorStakingWiringTests: XCTestCase {
         )
 
         let services = try makeFactory(chain: chainAsset.chain)
-            .createSubtensorStaking(for: option, processServices: processServices)
+            .createSubtensorStaking(
+                for: option,
+                processServices: processServices,
+                flowState: SubtensorStakingFlowState(
+                    coingeckoOperationFactory: CoingeckoOperationFactory(),
+                    operationQueue: OperationQueue()
+                )
+            )
             .earnServices
 
         let directory = try run(services.validatorDirectoryService.createDirectoryWrapper(for: fixtureSubnet))

@@ -45,7 +45,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
         priceHistoryService: SubtensorPriceHistoryServiceProtocol?,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
-        coingeckoFactory: CoingeckoOperationFactoryProtocol,
+        flowState: SubtensorStakingFlowStateProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
@@ -64,7 +64,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
 
         historyLoader = SubtensorPortfolioHistoryLoader(
             priceHistoryService: priceHistoryService,
-            coingeckoFactory: coingeckoFactory,
+            flowState: flowState,
             operationQueue: operationQueue
         )
 

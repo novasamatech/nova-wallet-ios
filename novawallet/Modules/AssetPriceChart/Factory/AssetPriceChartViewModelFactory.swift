@@ -182,21 +182,7 @@ private extension AssetPriceChartViewModelFactory {
         from entries: [PriceHistoryItem]?,
         availablePoints: Int
     ) -> [PriceHistoryItem] {
-        guard let entries else { return [] }
-
-        if entries.count > availablePoints {
-            var mutableEntries = entries
-            let firstEntry = mutableEntries.removeFirst()
-            let lastEntry = mutableEntries.removeLast()
-
-            let filteredEntries = mutableEntries
-                .distributed(intoChunks: availablePoints - 2)
-                .compactMap(\.first)
-
-            return [firstEntry] + filteredEntries + [lastEntry]
-        } else {
-            return entries
-        }
+        entries?.optimizedForChart(availablePoints: availablePoints) ?? []
     }
 }
 

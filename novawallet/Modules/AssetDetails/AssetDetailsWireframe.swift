@@ -4,7 +4,7 @@ import UIKit_iOS
 import Foundation_iOS
 import NovaAnalytics
 
-final class AssetDetailsWireframe: SubtensorEarnInfoPresentable {
+final class AssetDetailsWireframe {
     let operationState: AssetOperationState
     let swapState: SwapTokensFlowStateProtocol
 
@@ -110,20 +110,6 @@ extension AssetDetailsWireframe: AssetDetailsWireframeProtocol {
         let navigationController = ImportantFlowViewFactory.createNavigation(from: swapsView.controller)
 
         view?.controller.presentWithCardLayout(navigationController, animated: true)
-    }
-
-    func showBittensorPortfolio(from view: AssetDetailsViewProtocol?, chainAsset: ChainAsset) {
-        guard let portfolioView = SubtensorPortfolioViewFactory.createView(
-            for: Multistaking.ChainAssetOption(chainAsset: chainAsset, type: .subtensor)
-        ) else {
-            return
-        }
-
-        view?.controller.navigationController?.pushViewController(portfolioView.controller, animated: true)
-    }
-
-    func showBittensorEarnInfo(from view: AssetDetailsViewProtocol?, chainAsset: ChainAsset) {
-        presentSubtensorEarnInfo(from: view, chainAsset: chainAsset)
     }
 
     func showAssetDetails(

@@ -99,7 +99,6 @@ final class SubtensorActiveSubnetFlowTests: SubtensorFlowTestCase {
             try productionFeeCalculator.sellFee(quotedTaoOut: chutesSellQuote.sim.taoAmount)
         ]
 
-        XCTAssertTrue(AssetDetailsBittensorEarnSource.isEarnAvailable(on: world.chainAsset))
         assertYourBittensor(screens.yourBittensor)
 
         XCTAssertNil(screens.rankingError)
@@ -408,9 +407,7 @@ private extension SubtensorActiveSubnetFlowTests {
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=30",
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=30",
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=7",
-            "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=7",
             "GET \(SubtensorFlowHost.priceAPI)/coins/chutes/market_chart?vs_currency=usd&days=30",
-            "GET \(SubtensorFlowHost.priceAPI)/coins/chutes/market_chart?vs_currency=usd&days=7",
             "GET \(SubtensorFlowHost.priceAPI)/coins/markets?vs_currency=usd&category=bittensor-subnets&per_page=250&page=1&sparkline=true&price_change_percentage=7d",
             "POST https://bittensor.test/v1/bittensor/operations/search",
             "POST https://bittensor.test/v1/bittensor/operations/search"

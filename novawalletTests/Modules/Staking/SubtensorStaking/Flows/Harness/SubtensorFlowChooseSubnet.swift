@@ -23,15 +23,17 @@ extension SubtensorFlowTestCase {
         let weekEnd = try milliseconds("2026-09-24T09:00:00Z")
         let chutesEnd = try decimal("23.28")
 
-        SubtensorFlowURLProtocol.serveMarketChart(coinId: "bittensor", days: "7", points: [
-            SubtensorFlowPricePoint(milliseconds: weekStart, value: 340),
-            SubtensorFlowPricePoint(milliseconds: weekEnd, value: 350)
-        ])
+        for days in ["7", "30"] {
+            SubtensorFlowURLProtocol.serveMarketChart(coinId: "bittensor", days: days, points: [
+                SubtensorFlowPricePoint(milliseconds: weekStart, value: 340),
+                SubtensorFlowPricePoint(milliseconds: weekEnd, value: 350)
+            ])
 
-        SubtensorFlowURLProtocol.serveMarketChart(coinId: "chutes", days: "7", points: [
-            SubtensorFlowPricePoint(milliseconds: weekStart, value: 20),
-            SubtensorFlowPricePoint(milliseconds: weekEnd, value: chutesEnd)
-        ])
+            SubtensorFlowURLProtocol.serveMarketChart(coinId: "chutes", days: days, points: [
+                SubtensorFlowPricePoint(milliseconds: weekStart, value: 20),
+                SubtensorFlowPricePoint(milliseconds: weekEnd, value: chutesEnd)
+            ])
+        }
 
         SubtensorFlowURLProtocol.serveSubnetMarkets(chutesWeekStart: 20, end: chutesEnd)
     }

@@ -75,21 +75,8 @@ struct AssetDetailsViewFactory {
         swapState: SwapTokensFlowStateProtocol,
         currencyManager: CurrencyManagerProtocol
     ) -> AssetDetailsInteractor {
-        let operationQueue = OperationManagerFacade.sharedDefaultQueue
-
         let ahmInfoFactory = AHMFullInfoFactory(
             filterSetKeypath: \.ahmAssetDetailsAlertClosedChains
-        )
-
-        let bittensorEarnSource = AssetDetailsBittensorEarnSource(
-            chainAsset: chainAsset,
-            walletId: selectedAccount.metaId,
-            stakingDashboardProviderFactory: StakingDashboardProviderFactory(
-                chainRegistry: ChainRegistryFacade.sharedRegistry,
-                storageFacade: SubstrateDataStorageFacade.shared,
-                operationManager: OperationManagerFacade.sharedManager,
-                logger: Logger.shared
-            )
         )
 
         return AssetDetailsInteractor(
@@ -99,12 +86,11 @@ struct AssetDetailsViewFactory {
             selectedMetaAccount: selectedAccount,
             chainAsset: chainAsset,
             rampProvider: RampAggregator.defaultAggregator(),
-            bittensorEarnSource: bittensorEarnSource,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactory.shared,
             swapState: swapState,
-            operationQueue: operationQueue,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             currencyManager: currencyManager
         )
     }
