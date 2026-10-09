@@ -18,12 +18,6 @@ final class SubtensorPickCardView: UIView {
 
     let networkFeeCell = SubtensorPickCardView.createCell()
 
-    let footerButton: RoundedButton = .create { button in
-        button.applyLinkStyle()
-    }
-
-    private lazy var footerView = UIView.hStack([FlexibleSpaceView(), footerButton])
-
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -47,10 +41,6 @@ final class SubtensorPickCardView: UIView {
         bind(row: viewModel.swapRate, cell: swapRateCell)
         bind(networkFee: viewModel.networkFee)
 
-        footerView.isHidden = viewModel.footer == nil
-        footerButton.imageWithTitleView?.title = viewModel.footer
-        footerButton.invalidateLayout()
-
         rowsView.updateLayout()
     }
 }
@@ -58,7 +48,6 @@ final class SubtensorPickCardView: UIView {
 private extension SubtensorPickCardView {
     enum Constants {
         static let cornerRadius: CGFloat = 12
-        static let footerHeight: CGFloat = 44
     }
 
     static func createCell() -> StackTitleMultiValueCell {
@@ -74,11 +63,7 @@ private extension SubtensorPickCardView {
         rowsView.addArrangedSubview(swapRateCell)
         rowsView.addArrangedSubview(networkFeeCell)
 
-        footerView.snp.makeConstraints { make in
-            make.height.equalTo(Constants.footerHeight)
-        }
-
-        let contentView = UIView.vStack(spacing: 0, [headerView, chipsView, rowsView, footerView])
+        let contentView = UIView.vStack(spacing: 0, [headerView, chipsView, rowsView])
         contentView.setCustomSpacing(12, after: headerView)
         contentView.setCustomSpacing(4, after: chipsView)
         contentView.layoutMargins = UIEdgeInsets(top: 12, left: 16, bottom: 4, right: 16)

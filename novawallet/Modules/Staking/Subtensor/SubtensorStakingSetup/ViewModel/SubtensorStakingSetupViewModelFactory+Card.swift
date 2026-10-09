@@ -10,15 +10,10 @@ extension SubtensorStakingSetupViewModelFactory {
     ) -> SubtensorSetupSubnetViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
-        let sectionTitle: String
-        let footer: String?
-
-        if case .subnetPick = input.mode {
-            sectionTitle = strings.stakingSubtensorUiPickSubnetSection()
-            footer = strings.stakingSubtensorUiChooseMyself()
+        let sectionTitle = if case .subnetPick = input.mode {
+            strings.stakingSubtensorUiPickSubnetSection()
         } else {
-            sectionTitle = strings.stakingSubtensorUiYourSubnet()
-            footer = nil
+            strings.stakingSubtensorUiYourSubnet()
         }
 
         let tradePanel = createTradePanel(for: input, locale: locale)
@@ -28,8 +23,7 @@ extension SubtensorStakingSetupViewModelFactory {
             chips: createChips(for: input.subnetData.rankedSubnet, locale: locale),
             receive: createTradeRow(for: input, value: tradePanel?.receive?.amount, locale: locale),
             swapRate: createTradeRow(for: input, value: tradePanel?.swapRate, locale: locale),
-            networkFee: createNetworkFee(for: input, locale: locale),
-            footer: footer
+            networkFee: createNetworkFee(for: input, locale: locale)
         )
 
         return SubtensorSetupSubnetViewModel(

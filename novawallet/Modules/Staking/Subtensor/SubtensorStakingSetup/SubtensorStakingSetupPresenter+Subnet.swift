@@ -190,14 +190,6 @@ extension SubtensorStakingSetupPresenter {
         )
     }
 
-    func chooseMyself() {
-        guard case .subnetPick = mode else {
-            return
-        }
-
-        wireframe.showSubnetSelection(from: view, delegate: self)
-    }
-
     func selectSettings() {
         guard mode.hasSettings else {
             return

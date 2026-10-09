@@ -14,6 +14,7 @@ final class SubtensorPortfolioPresenter {
     private var state = SubtensorPortfolioState()
     private var weeklyChangesRequest: [SubtensorSubnetRef]?
     private var historiesRequest: HistoriesRequest?
+    private var chartSelection: SubtensorPortfolioChartSelection?
 
     init(
         interactor: SubnetPortfolioInteractorInputProtocol,
@@ -39,6 +40,8 @@ private extension SubtensorPortfolioPresenter {
     }
 
     func provideViewModel() {
+        chartSelection = nil
+
         let viewModel = viewModelFactory.createViewModel(for: state, locale: localizationManager.selectedLocale)
         view?.didReceive(viewModel: viewModel)
     }
@@ -131,9 +134,17 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioPresenterProtocol {
     func selectChartPoint(at index: Int?) {
         state.chartPoint = index
 
-        if let header = viewModelFactory.createHeader(for: state, locale: selectedLocale) {
-            view?.didReceive(header: header)
+        if chartSelection == nil {
+            chartSelection = viewModelFactory.createChartSelection(for: state, locale: selectedLocale)
         }
+
+        guard let chartSelection else {
+            return
+        }
+
+        let header = viewModelFactory.createHeader(for: chartSelection, state: state, locale: selectedLocale)
+
+        view?.didReceive(header: header)
     }
 }
 

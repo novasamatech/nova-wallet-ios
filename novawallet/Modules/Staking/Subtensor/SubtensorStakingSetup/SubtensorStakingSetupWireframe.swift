@@ -40,17 +40,6 @@ final class SubtensorStakingSetupWireframe: SubtensorStakingSetupWireframeProtoc
         view?.controller.navigationController?.pushViewController(selectView.controller, animated: true)
     }
 
-    func showSubnetSelection(
-        from view: SubtensorStakingSetupViewProtocol?,
-        delegate: SubtensorSubnetSelectDelegate
-    ) {
-        guard let picker = SubtensorSubnetSelectViewFactory.createPicker(for: state, delegate: delegate) else {
-            return
-        }
-
-        view?.controller.presentWithCardLayout(picker, animated: true)
-    }
-
     func showSubnetDetails(
         from view: SubtensorStakingSetupViewProtocol?,
         input: SubtensorSubnetDetailsInput,

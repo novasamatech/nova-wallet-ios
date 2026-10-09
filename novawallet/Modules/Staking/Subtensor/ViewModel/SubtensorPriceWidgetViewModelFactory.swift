@@ -4,7 +4,7 @@ import Foundation_iOS
 struct SubtensorPriceWidgetParams {
     let caption: String
     let spotPrice: Decimal?
-    let history: SubtensorSubnetHistoryState
+    var history: SubtensorSubnetHistoryState
     let period: SubtensorPricePeriod
     let isFiat: Bool
     let taoPrice: PriceData?
@@ -217,13 +217,10 @@ private extension SubtensorPriceWidgetViewModelFactory {
 
         let point = points[index]
         let pointChange = first.value > 0 ? (point.value - first.value) / first.value : nil
+        let wholePeriodChange = index == points.count - 1 ? periodChange(of: history, isFiat: params.isFiat) : nil
 
-        let change = if index == points.count - 1 {
-            createChange(
-                periodChange(of: history, isFiat: params.isFiat) ?? pointChange,
-                suffix: periodTitle(for: params.period, locale: locale),
-                locale: locale
-            )
+        let change = if let wholePeriodChange {
+            createChange(wholePeriodChange, suffix: periodTitle(for: params.period, locale: locale), locale: locale)
         } else {
             createChange(pointChange, suffix: formatPointDate(point.date, locale: locale), locale: locale)
         }
@@ -234,6 +231,38 @@ private extension SubtensorPriceWidgetViewModelFactory {
             change: change,
             currency: params.currency
         )
+    }
+
+    func applyingSpotPrice(to params: SubtensorPriceWidgetParams) -> SubtensorPriceWidgetParams {
+        guard
+            case let .available(history) = params.history,
+            let spotPrice = params.spotPrice,
+            spotPrice > 0,
+            let latest = history.points.last else {
+            return params
+        }
+
+        let fiatRate = params.taoPrice?.decimalRate
+
+        var updatedParams = params
+        updatedParams.history = .available(
+            history.replacingLatest(
+                with: SubtensorPricePoint(
+                    date: Date(),
+                    taoPerAlpha: spotPrice,
+                    fiatPerAlpha: fiatRate.map { spotPrice * $0 } ?? latest.fiatPerAlpha
+                )
+            )
+        )
+
+        return updatedParams
+    }
+
+    func createAnyHeader(
+        for params: SubtensorPriceWidgetParams,
+        locale: Locale
+    ) -> SubtensorSubnetPriceHeaderViewModel {
+        createPointHeader(for: params, locale: locale) ?? createSpotHeader(for: params, locale: locale)
     }
 
     func createUnavailableChart(locale: Locale) -> SubtensorSubnetChartViewModel {
@@ -315,8 +344,10 @@ extension SubtensorPriceWidgetViewModelFactory: SubtensorPriceWidgetFactoryProto
         for params: SubtensorPriceWidgetParams,
         locale: Locale
     ) -> SubtensorPriceWidgetViewModel {
-        SubtensorPriceWidgetViewModel(
-            header: createHeader(for: params, locale: locale),
+        let params = applyingSpotPrice(to: params)
+
+        return SubtensorPriceWidgetViewModel(
+            header: createAnyHeader(for: params, locale: locale),
             chart: createChart(for: params, locale: locale),
             periods: createPeriods(for: params, locale: locale)
         )
@@ -326,6 +357,6 @@ extension SubtensorPriceWidgetViewModelFactory: SubtensorPriceWidgetFactoryProto
         for params: SubtensorPriceWidgetParams,
         locale: Locale
     ) -> SubtensorSubnetPriceHeaderViewModel {
-        createPointHeader(for: params, locale: locale) ?? createSpotHeader(for: params, locale: locale)
+        createAnyHeader(for: applyingSpotPrice(to: params), locale: locale)
     }
 }
