@@ -53,7 +53,7 @@ struct StartStakingInfoSubtensorViewModelFactory:
                     accents: [anyTimeAccent]
                 )
             ],
-            actionTitle: strings.stakingSubtensorUiHowChooseMyself()
+            actionTitle: strings.stakingStartTitle()
         )
     }
 }

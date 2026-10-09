@@ -102,8 +102,16 @@ private extension SubtensorSubnetPriceChartView {
     }
 
     func plot(viewModel: SubtensorPriceChartViewModel) {
+        let hadSelection = selectedIndex != nil
+
         clearSelection()
         plottedWidth = bounds.width
+
+        defer {
+            if hadSelection {
+                delegate?.priceChartViewDidEndSelection(self)
+            }
+        }
 
         let points = viewModel.values.enumerated().filter(\.element.isFinite)
         let values = points.map(\.element)

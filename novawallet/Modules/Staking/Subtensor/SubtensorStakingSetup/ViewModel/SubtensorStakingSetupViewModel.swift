@@ -38,7 +38,6 @@ struct SubtensorPickCardViewModel {
     let receive: SubtensorSetupRowViewModel
     let swapRate: SubtensorSetupRowViewModel
     let networkFee: BalanceViewModelProtocol?
-    let footer: String?
 }
 
 struct SubtensorPickCardHeaderViewModel {
