@@ -175,8 +175,8 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
                 "/v1/bittensor/subnets",
                 "/v1/bittensor/yields/root",
                 "/v1/bittensor/recommendations/subnets",
-                "/v1/bittensor/subnets/64/validators",
-                "/v1/bittensor/recommendations"
+                "/v1/bittensor/recommendations",
+                "/v1/bittensor/subnets/64/validators"
             ]
         )
     }
@@ -192,7 +192,6 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         SubtensorFlowURLProtocol.serveFixture(.rootYield(page: 1, pageSize: 100))
         SubtensorFlowURLProtocol.serveBittensor("/recommendations/subnets", reply: .notFoundPlainText())
         SubtensorFlowURLProtocol.serveBittensor("/recommendations", reply: .notFoundPlainText())
-        SubtensorFlowURLProtocol.serveFixture(.validators(netuid: 64))
         try serveWeekCharts()
 
         let subnetRefs = try listedSubnetRefs(in: world)
@@ -225,7 +224,6 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
             "GET https://bittensor.test/v1/bittensor/recommendations",
             "GET https://bittensor.test/v1/bittensor/recommendations/subnets",
             "GET https://bittensor.test/v1/bittensor/subnets",
-            "GET https://bittensor.test/v1/bittensor/subnets/64/validators",
             "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
             "GET https://subnet-logos.test/subnets.json",
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=30",
@@ -240,7 +238,6 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
                 "/v1/bittensor/subnets",
                 "/v1/bittensor/yields/root",
                 "/v1/bittensor/recommendations/subnets",
-                "/v1/bittensor/subnets/64/validators",
                 "/v1/bittensor/recommendations"
             ]
         )

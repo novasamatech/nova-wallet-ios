@@ -42,7 +42,12 @@ extension SubtensorFlowHTTPReply {
     static func marketChart(_ points: [SubtensorFlowPricePoint]) -> SubtensorFlowHTTPReply {
         let prices = points.map { "[\($0.milliseconds),\($0.value)]" }.joined(separator: ",")
 
-        return jsonText(#"{"prices":[\#(prices)]}"#)
+        let reply = jsonText(#"{"prices":[\#(prices)]}"#)
+
+        var headers = reply.headers
+        headers[Constants.cacheControlHeader] = "public, max-age=3600"
+
+        return SubtensorFlowHTTPReply(statusCode: reply.statusCode, headers: headers, body: reply.body)
     }
 
     static func notFoundPlainText() -> SubtensorFlowHTTPReply {
