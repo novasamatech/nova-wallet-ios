@@ -212,8 +212,8 @@ final class SubtensorSubnetBuyFlowTests: SubtensorFlowTestCase {
                 "/v1/bittensor/subnets",
                 "/v1/bittensor/yields/root",
                 "/v1/bittensor/recommendations/subnets",
-                "/v1/bittensor/subnets/64/validators",
                 "/v1/bittensor/recommendations",
+                "/v1/bittensor/subnets/64/validators",
                 "/v1/bittensor/subnets/64/yields/alpha"
             ]
         )
