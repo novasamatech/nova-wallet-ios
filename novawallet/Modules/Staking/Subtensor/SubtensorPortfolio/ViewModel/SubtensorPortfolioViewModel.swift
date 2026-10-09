@@ -29,8 +29,14 @@ struct SubtensorPortfolioState {
     var rootRate: Decimal?
     var isRootRateResolved = false
     var weeklyChanges: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>] = [:]
-    var histories = SubtensorPortfolioHistoriesState.loading
+    var histories = SubtensorPortfolioHistoriesState.loading {
+        didSet {
+            chartPoint = nil
+        }
+    }
+
     var period = SubtensorPortfolioViewModelFactory.defaultPeriod
+    var chartPoint: Int?
 
     var portfolio: SubtensorPortfolio? {
         positions.map { SubtensorPortfolioBuilder.build(state: $0, catalogue: catalogue) }

@@ -12,7 +12,7 @@ final class SubtensorPortfolioWireframe: SubtensorPortfolioWireframeProtocol {
     }
 
     func showAddPosition(from view: SubtensorPortfolioViewProtocol?) {
-        presentSubtensorEarnInfo(from: view, chainAsset: state.stakingOption.chainAsset)
+        presentSubtensorEarnInfo(from: view, chainAsset: state.stakingOption.chainAsset, flowState: state.flowState)
     }
 
     func close(from view: SubtensorPortfolioViewProtocol?) {

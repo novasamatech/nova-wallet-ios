@@ -44,7 +44,7 @@ enum SubtensorClaimRewardsViewFactory {
             wireframe: wireframe,
             chainAsset: chainAsset,
             model: model,
-            pendingRootClaims: state.pendingRootClaims,
+            pendingRootClaims: state.flowState.pendingRootClaims,
             viewModelFactory: SubtensorClaimRewardsViewModelFactory(
                 chainAsset: chainAsset,
                 priceAssetInfoFactory: priceAssetInfoFactory

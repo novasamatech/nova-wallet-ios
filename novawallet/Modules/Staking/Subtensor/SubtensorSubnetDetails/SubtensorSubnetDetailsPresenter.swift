@@ -14,8 +14,14 @@ final class SubtensorSubnetDetailsPresenter {
     let logger: LoggerProtocol
 
     private var isFiat = false
-    private var period = SubtensorSubnetDetailsViewModelFactory.defaultPeriod
-    private var history: SubtensorSubnetHistoryState = .loading
+    private var period = SubtensorPriceWidgetViewModelFactory.defaultPeriod
+    private var chartPoint: Int?
+    private var history: SubtensorSubnetHistoryState = .loading {
+        didSet {
+            chartPoint = nil
+        }
+    }
+
     private var listing: SubtensorSubnetListingState = .loading
     private var isRankingLoaded = false
     private var rankingView: SubtensorRankedSubnets?
@@ -88,7 +94,8 @@ private extension SubtensorSubnetDetailsPresenter {
             transferable: transferable,
             taoPrice: taoPrice,
             isFavorite: isFavorite,
-            now: Date()
+            now: Date(),
+            chartPoint: chartPoint
         )
     }
 
@@ -192,7 +199,7 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
     }
 
     func selectPeriod(at index: Int) {
-        let periods = SubtensorSubnetDetailsViewModelFactory.periods
+        let periods = SubtensorPriceWidgetViewModelFactory.periods
 
         guard periods.indices.contains(index), periods[index] != period, history != .notListed else {
             provideViewModel()
@@ -250,6 +257,13 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
 
         loadHistory()
         provideViewModel()
+    }
+
+    func selectChartPoint(at index: Int?) {
+        chartPoint = index
+
+        let header = viewModelFactory.createPriceHeader(for: createState(), locale: selectedLocale)
+        view?.didReceive(priceHeader: header)
     }
 }
 

@@ -3,7 +3,7 @@ import Operation_iOS
 
 extension SubtensorPriceHistoryService {
     struct Fetcher {
-        let coingeckoOperationFactory: CoingeckoOperationFactoryProtocol
+        let seriesProvider: SubtensorPriceSeriesProviding
         let blockNumberOperationFactory: BlockNumberOperationFactoryProtocol
         let chainId: ChainModel.Id
         let taoPriceId: AssetModel.PriceId
@@ -109,39 +109,44 @@ extension SubtensorPriceHistoryService.Fetcher {
         currency: Currency,
         period: SubtensorPricePeriod
     ) -> CompoundOperationWrapper<[SubtensorPricePoint]> {
-        let alphaOperation = coingeckoOperationFactory.fetchPriceHistory(
+        let source = period.sourcePeriod
+
+        let alphaWrapper = seriesProvider.createSeriesWrapper(
             for: alphaPriceId,
             currency: currency,
-            period: period.coingeckoPeriod
+            period: source.coingeckoPeriod
         )
 
-        let taoOperation = coingeckoOperationFactory.fetchPriceHistory(
+        let taoWrapper = seriesProvider.createSeriesWrapper(
             for: taoPriceId,
             currency: currency,
-            period: period.coingeckoPeriod
+            period: source.coingeckoPeriod
         )
 
         let pointsOperation = ClosureOperation<[SubtensorPricePoint]> {
-            let alpha = try alphaOperation.extractNoCancellableResultData()
-            let tao = try taoOperation.extractNoCancellableResultData()
+            let alpha = try alphaWrapper.targetOperation.extractNoCancellableResultData()
+            let tao = try taoWrapper.targetOperation.extractNoCancellableResultData()
 
             return SubtensorPriceSeries.matchedPoints(
                 alpha: alpha.items,
                 tao: tao.items,
-                tolerance: period.samplingInterval
+                tolerance: source.samplingInterval
             )
         }
 
-        pointsOperation.addDependency(alphaOperation)
-        pointsOperation.addDependency(taoOperation)
+        pointsOperation.addDependency(alphaWrapper.targetOperation)
+        pointsOperation.addDependency(taoWrapper.targetOperation)
 
-        return CompoundOperationWrapper(targetOperation: pointsOperation, dependencies: [alphaOperation, taoOperation])
+        return CompoundOperationWrapper(
+            targetOperation: pointsOperation,
+            dependencies: alphaWrapper.allOperations + taoWrapper.allOperations
+        )
     }
 
     func createMarketChangesWrapper(
         for listed: [SubtensorSubnetRef: SubtensorSubnetMarket]
     ) -> CompoundOperationWrapper<[SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]> {
-        let taoOperation = coingeckoOperationFactory.fetchPriceHistory(
+        let taoWrapper = seriesProvider.createSeriesWrapper(
             for: taoPriceId,
             currency: .usd,
             period: SubtensorPricePeriod.week.coingeckoPeriod
@@ -154,7 +159,7 @@ extension SubtensorPriceHistoryService.Fetcher {
 
         let changesOperation = ClosureOperation<[SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]> {
             do {
-                let tao = try taoOperation.extractNoCancellableResultData()
+                let tao = try taoWrapper.targetOperation.extractNoCancellableResultData()
                 let headBlock = try headBlockWrapper.targetOperation.extractNoCancellableResultData()
 
                 return SubtensorPriceHistoryService.marketChanges(
@@ -169,12 +174,12 @@ extension SubtensorPriceHistoryService.Fetcher {
             }
         }
 
-        changesOperation.addDependency(taoOperation)
+        changesOperation.addDependency(taoWrapper.targetOperation)
         changesOperation.addDependency(headBlockWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: changesOperation,
-            dependencies: [taoOperation] + headBlockWrapper.allOperations
+            dependencies: taoWrapper.allOperations + headBlockWrapper.allOperations
         )
     }
 }

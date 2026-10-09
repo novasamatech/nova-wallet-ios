@@ -155,12 +155,16 @@ private extension SubtensorFlowActiveStake {
     }
 
     static func serveCharts(coinId: String, start: Decimal, end: Decimal) {
-        for days: UInt64 in [7, 30] {
-            SubtensorFlowURLProtocol.serveMarketChart(coinId: coinId, days: "\(days)", points: [
-                SubtensorFlowPricePoint(milliseconds: chartEnd - days * 86_400_000, value: start),
-                SubtensorFlowPricePoint(milliseconds: chartEnd, value: end)
-            ])
-        }
+        let weekStartPoint = SubtensorFlowPricePoint(milliseconds: chartEnd - 7 * 86_400_000, value: start)
+        let endPoint = SubtensorFlowPricePoint(milliseconds: chartEnd, value: end)
+
+        SubtensorFlowURLProtocol.serveMarketChart(coinId: coinId, days: "7", points: [weekStartPoint, endPoint])
+
+        SubtensorFlowURLProtocol.serveMarketChart(coinId: coinId, days: "30", points: [
+            SubtensorFlowPricePoint(milliseconds: chartEnd - 30 * 86_400_000, value: start),
+            weekStartPoint,
+            endPoint
+        ])
     }
 }
 

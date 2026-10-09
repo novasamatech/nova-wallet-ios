@@ -2,93 +2,47 @@ import Foundation
 import Foundation_iOS
 
 extension SubtensorPositionViewModelFactory {
-    func createChart(for state: SubtensorPositionState, locale: Locale) -> SubtensorPositionChartViewModel? {
-        guard !state.isRoot, state.hasResolvedHistory else {
-            return nil
+    func createPriceWidget(for state: SubtensorPositionState, locale: Locale) -> SubtensorPriceWidgetViewModel? {
+        createPriceWidgetParams(for: state, locale: locale).map { params in
+            priceWidgetFactory.createWidget(for: params, locale: locale)
         }
+    }
 
-        let periods = SubtensorSubnetPeriodsViewModel(
-            titles: Self.periods.map { periodTitle(for: $0, locale: locale) },
-            selectedIndex: Self.periods.firstIndex(of: state.period) ?? 0,
-            isEnabled: state.history != .notListed
-        )
-
-        let chart = createChartContent(for: state.history, locale: locale)
-
-        return SubtensorPositionChartViewModel(chart: chart, periods: periods)
+    func createPriceHeader(for state: SubtensorPositionState, locale: Locale) -> SubtensorSubnetPriceHeaderViewModel? {
+        createPriceWidgetParams(for: state, locale: locale).map { params in
+            priceWidgetFactory.createHeader(for: params, locale: locale)
+        }
     }
 }
 
 private extension SubtensorPositionViewModelFactory {
-    func periodTitle(for period: SubtensorPricePeriod, locale: Locale) -> String {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
-        let title: String
-
-        switch period {
-        case .day:
-            title = strings.commonPeriod1d()
-        case .week:
-            title = strings.commonPeriod7d()
-        case .month:
-            title = strings.commonPeriod1m()
-        case .quarter:
-            title = strings.commonPeriod3m()
-        case .year:
-            title = strings.commonPeriod1y()
-        case .all:
-            title = strings.commonPeriodAll()
+    func createPriceWidgetParams(
+        for state: SubtensorPositionState,
+        locale: Locale
+    ) -> SubtensorPriceWidgetParams? {
+        guard !state.isRoot, state.hasResolvedHistory else {
+            return nil
         }
 
-        return title.uppercased(with: locale)
-    }
+        let subnet = state.catalogue?.subnet(for: state.netuid)
 
-    func formatAxis(_ value: Double, locale: Locale) -> String {
-        formatterFactory.createDisplayFormatter(for: chainAsset.assetDisplayInfo)
-            .value(for: locale)
-            .stringFromDecimal(Decimal(value)) ?? unknownValue(for: locale)
-    }
-
-    func createUnavailableChart(locale: Locale) -> SubtensorSubnetChartViewModel {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
-        return .unavailable(
-            title: strings.stakingSubtensorUiDetailHistoryUnavailable(),
-            details: strings.stakingSubtensorUiDetailHistorySource()
+        let caption = priceWidgetFactory.createCaption(
+            subnetTitle: SubtensorSubnetNaming.titleWithSymbol(for: state.netuid, in: state.catalogue, locale: locale),
+            stamps: subnet?.stamps ?? [],
+            now: Date(),
+            locale: locale
         )
-    }
 
-    func createChartContent(for history: SubtensorSubnetHistoryState, locale: Locale) -> SubtensorSubnetChartViewModel {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
-        switch history {
-        case .loading:
-            return .loading
-        case .notListed:
-            return createUnavailableChart(locale: locale)
-        case .failed:
-            return .failed(title: strings.stakingSubtensorUiDetailHistoryFailed(), action: strings.commonTryAgain())
-        case let .available(priceHistory):
-            let values = priceHistory.points
-                .map { NSDecimalNumber(decimal: $0.taoPerAlpha).doubleValue }
-                .filter(\.isFinite)
-
-            guard
-                values.count > 1,
-                let first = values.first,
-                let last = values.last,
-                let minimum = values.min(),
-                let maximum = values.max() else {
-                return createUnavailableChart(locale: locale)
-            }
-
-            return .chart(
-                SubtensorPriceChartViewModel(
-                    values: values,
-                    axisLabels: [formatAxis(maximum, locale: locale), formatAxis(minimum, locale: locale)],
-                    isRising: priceHistory.changeInTao.map { $0 >= 0 } ?? (last >= first)
-                )
-            )
-        }
+        return SubtensorPriceWidgetParams(
+            caption: caption,
+            spotPrice: subnet?.taoPerAlpha.decimal(assetInfo: chainAsset.assetDisplayInfo),
+            history: state.history,
+            period: state.period,
+            isFiat: false,
+            taoPrice: nil,
+            currencyId: nil,
+            currency: nil,
+            selectedPoint: state.chartPoint
+        )
     }
 }

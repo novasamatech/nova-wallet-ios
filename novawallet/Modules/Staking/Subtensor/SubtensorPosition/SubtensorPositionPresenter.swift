@@ -185,7 +185,7 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
     }
 
     func selectPeriod(at index: Int) {
-        let periods = SubtensorPositionViewModelFactory.periods
+        let periods = SubtensorPriceWidgetViewModelFactory.periods
 
         guard periods.indices.contains(index), periods[index] != state.period else {
             return
@@ -242,6 +242,14 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
         historyRequest = nil
         requestHistoryIfNeeded()
         provideViewModel()
+    }
+
+    func selectChartPoint(at index: Int?) {
+        state.chartPoint = index
+
+        if let header = viewModelFactory.createPriceHeader(for: state, locale: selectedLocale) {
+            view?.didReceive(priceHeader: header)
+        }
     }
 }
 

@@ -4,7 +4,8 @@ import Operation_iOS
 
 extension StartStakingInfoViewFactory {
     static func createSubtensorView(
-        for stakingOption: Multistaking.ChainAssetOption
+        for stakingOption: Multistaking.ChainAssetOption,
+        flowState: SubtensorStakingFlowStateProtocol
     ) -> StartStakingInfoViewProtocol? {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
@@ -20,7 +21,7 @@ extension StartStakingInfoViewFactory {
         )
 
         guard
-            let state = try? stateFactory.createSubtensorStaking(for: stakingOption),
+            let state = try? stateFactory.createSubtensorStaking(for: stakingOption, flowState: flowState),
             let currencyManager = CurrencyManager.shared else {
             return nil
         }

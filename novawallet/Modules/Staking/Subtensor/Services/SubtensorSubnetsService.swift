@@ -30,12 +30,13 @@ final class SubtensorSubnetsService: SubtensorSessionCachingService<SubtensorSub
 
     init(
         operationFactory: SubtensorApiOperationFactoryProtocol,
+        cache: SubtensorSessionCache<SubtensorSubnetsInfo>,
         operationQueue: OperationQueue,
         logger: LoggerProtocol = Logger.shared
     ) {
         self.operationFactory = operationFactory
 
-        super.init(operationQueue: operationQueue, logger: logger)
+        super.init(operationQueue: operationQueue, cache: cache, logger: logger)
     }
 
     override func createFetchWrapper() -> CompoundOperationWrapper<SubtensorSubnetsInfo> {

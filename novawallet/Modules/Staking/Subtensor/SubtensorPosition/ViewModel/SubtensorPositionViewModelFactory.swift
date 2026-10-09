@@ -3,18 +3,17 @@ import Foundation_iOS
 
 protocol SubnetPositionViewModelFactoryProtocol {
     func createViewModel(for state: SubtensorPositionState, locale: Locale) -> SubtensorPositionViewModel
+    func createPriceHeader(for state: SubtensorPositionState, locale: Locale) -> SubtensorSubnetPriceHeaderViewModel?
 }
 
 final class SubtensorPositionViewModelFactory {
-    static let periods: [SubtensorPricePeriod] = [.day, .week, .month, .quarter, .year]
-    static let defaultPeriod = SubtensorPricePeriod.week
-
     let chainAsset: ChainAsset
     let iconFactory: SubtensorSubnetIconFactoryProtocol
     let assetIconFactory: AssetIconViewModelFactoryProtocol
     let displayAddressFactory: DisplayAddressViewModelFactoryProtocol
     let formatterFactory: AssetBalanceFormatterFactoryProtocol
     let balanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
+    let priceWidgetFactory: SubtensorPriceWidgetFactoryProtocol
 
     init(
         chainAsset: ChainAsset,
@@ -33,6 +32,12 @@ final class SubtensorPositionViewModelFactory {
         balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: chainAsset.assetDisplayInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
+        )
+
+        priceWidgetFactory = SubtensorPriceWidgetViewModelFactory(
+            chainAsset: chainAsset,
+            priceAssetInfoFactory: priceAssetInfoFactory,
+            formatterFactory: formatterFactory
         )
     }
 }
@@ -323,7 +328,7 @@ extension SubtensorPositionViewModelFactory: SubnetPositionViewModelFactoryProto
         SubtensorPositionViewModel(
             title: createTitle(for: state, locale: locale),
             summary: createSummary(for: state, locale: locale),
-            chart: createChart(for: state, locale: locale),
+            priceWidget: createPriceWidget(for: state, locale: locale),
             actions: createActions(for: state, locale: locale),
             validator: createValidator(for: state, locale: locale),
             notice: createNotice(for: state, locale: locale),

@@ -27,7 +27,8 @@ protocol StakingSharedStateFactoryProtocol {
     ) throws -> MythosStakingSharedStateProtocol
 
     func createSubtensorStaking(
-        for stakingOption: Multistaking.ChainAssetOption
+        for stakingOption: Multistaking.ChainAssetOption,
+        flowState: SubtensorStakingFlowStateProtocol
     ) throws -> SubtensorStakingSharedStateProtocol
 }
 

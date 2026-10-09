@@ -10,33 +10,26 @@ final class SubtensorValidatorDirectoryService {
 
     let apiOperationFactory: BittensorApiOperationFactoryProtocol
     let chainOperationFactory: SubtensorValidatorChainOperationFactoryProtocol
+    let cache: SubtensorValidatorDirectoryCaching
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
-
-    private let mutex = NSLock()
-    private var directories: [SubtensorSubnetRef: CachedDirectory] = [:]
 
     init(
         apiOperationFactory: BittensorApiOperationFactoryProtocol,
         chainOperationFactory: SubtensorValidatorChainOperationFactoryProtocol,
+        cache: SubtensorValidatorDirectoryCaching,
         operationQueue: OperationQueue,
         logger: LoggerProtocol = Logger.shared
     ) {
         self.apiOperationFactory = apiOperationFactory
         self.chainOperationFactory = chainOperationFactory
+        self.cache = cache
         self.operationQueue = operationQueue
         self.logger = logger
     }
 }
 
 private extension SubtensorValidatorDirectoryService {
-    struct CachedDirectory {
-        let directory: SubtensorValidatorDirectory
-        let listingReceipt: ListingReceipt
-        let items: [AccountId: SubtensorValidatorDirectoryItem]
-        let enrichedHotkeys: Set<AccountId>
-    }
-
     struct CachedItem {
         let item: SubtensorValidatorDirectoryItem
         let isEnriched: Bool
@@ -47,35 +40,20 @@ private extension SubtensorValidatorDirectoryService {
         listingReceipt: ListingReceipt,
         enrichedPairs: Set<SubtensorHotkeySubnet>
     ) {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        guard (directories[directory.subnet]?.directory.chainBlock ?? 0) <= directory.chainBlock else {
-            return
-        }
-
-        directories[directory.subnet] = CachedDirectory(
-            directory: directory,
-            listingReceipt: listingReceipt,
-            items: Dictionary(directory.items.map { ($0.hotkey, $0) }, uniquingKeysWith: { first, _ in first }),
-            enrichedHotkeys: Set(enrichedPairs.map(\.hotkey))
+        cache.store(
+            SubtensorValidatorDirectoryCacheEntry(
+                directory: directory,
+                listingReceipt: listingReceipt,
+                items: Dictionary(directory.items.map { ($0.hotkey, $0) }, uniquingKeysWith: { first, _ in first }),
+                enrichedHotkeys: Set(enrichedPairs.map(\.hotkey))
+            )
         )
     }
 
-    func cachedEntry(for subnet: SubtensorSubnetRef) -> CachedDirectory? {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        return directories[subnet]
-    }
-
-    func peek(_ cached: CachedDirectory, netuid: UInt16) -> HTTPCachePeek<SubtensorValidatorDirectory> {
+    func peek(
+        _ cached: SubtensorValidatorDirectoryCacheEntry,
+        netuid: UInt16
+    ) -> HTTPCachePeek<SubtensorValidatorDirectory> {
         guard
             case let .fresh(response, freshUntil) = apiOperationFactory.peekValidators(netuid: netuid),
             ListingReceipt(response: response) == cached.listingReceipt else {
@@ -86,7 +64,7 @@ private extension SubtensorValidatorDirectoryService {
     }
 
     func cachedItem(for hotkey: AccountId, subnet: SubtensorSubnetRef) -> CachedItem? {
-        guard let cached = cachedEntry(for: subnet), let item = cached.items[hotkey] else {
+        guard let cached = cache.entry(for: subnet), let item = cached.items[hotkey] else {
             return nil
         }
 
@@ -199,7 +177,7 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
     }
 
     func cachedDirectory(for subnet: SubtensorSubnetRef) -> HTTPCachePeek<SubtensorValidatorDirectory> {
-        guard let cached = cachedEntry(for: subnet) else {
+        guard let cached = cache.entry(for: subnet) else {
             return .miss
         }
 

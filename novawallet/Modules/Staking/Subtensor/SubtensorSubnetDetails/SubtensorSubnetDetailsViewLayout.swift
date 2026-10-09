@@ -15,47 +15,7 @@ final class SubtensorSubnetDetailsViewLayout: UIView {
         view.spacing = 8
     }
 
-    let priceCaptionLabel: UILabel = .create { label in
-        label.apply(style: .footnoteSecondary)
-    }
-
-    let priceLabel: UILabel = .create { label in
-        label.apply(style: .boldTitle1Primary)
-        label.adjustsFontSizeToFitWidth = true
-        label.minimumScaleFactor = 0.5
-    }
-
-    let changeLabel: UILabel = .create { label in
-        label.apply(style: .footnotePositive)
-    }
-
-    let changeSkeletonView: SubtensorChartLoadingView = .create { view in
-        view.layer.cornerRadius = 6
-    }
-
-    let currencyControl: RoundedSegmentedControl = .create { view in
-        view.backgroundView.fillColor = .clear
-        view.selectionColor = R.color.colorSegmentedTabActive()!
-        view.titleFont = .regularFootnote
-        view.selectedTitleColor = R.color.colorTextPrimary()!
-        view.titleColor = R.color.colorTextSecondary()!
-    }
-
-    let chartView = SubtensorSubnetPriceChartView(style: .price)
-
-    let chartLoadingView = SubtensorChartLoadingView()
-
-    let chartUnavailableView: SubtensorChartUnavailableView = .create { view in
-        view.isHidden = true
-    }
-
-    let periodControl: RoundedSegmentedControl = .create { view in
-        view.backgroundView.fillColor = .clear
-        view.selectionColor = R.color.colorSegmentedTabActive()!
-        view.titleFont = .regularFootnote
-        view.selectedTitleColor = R.color.colorTextPrimary()!
-        view.titleColor = R.color.colorTextSecondary()!
-    }
+    let priceWidget = SubtensorPriceWidgetView()
 
     let validatorCaptionLabel = SubtensorSubnetDetailsViewLayout.createSectionLabel()
 
@@ -96,62 +56,13 @@ final class SubtensorSubnetDetailsViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func bind(chart viewModel: SubtensorSubnetChartViewModel) {
-        chartLoadingView.setLoading(viewModel == .loading)
+    var currencyControl: RoundedSegmentedControl { priceWidget.currencyControl }
 
-        switch viewModel {
-        case .loading:
-            chartView.isHidden = true
-            chartUnavailableView.isHidden = true
-        case let .chart(chartViewModel):
-            chartView.isHidden = false
-            chartUnavailableView.isHidden = true
-            chartView.bind(viewModel: chartViewModel)
-        case let .unavailable(title, details):
-            chartView.isHidden = true
-            chartUnavailableView.isHidden = false
-            chartUnavailableView.bind(title: title, details: details, isAction: false)
-        case let .failed(title, action):
-            chartView.isHidden = true
-            chartUnavailableView.isHidden = false
-            chartUnavailableView.bind(title: title, details: action, isAction: true)
-        }
-    }
+    var periodControl: RoundedSegmentedControl { priceWidget.periodControl }
 
-    func bind(periods viewModel: SubtensorSubnetPeriodsViewModel) {
-        if periodControl.titles != viewModel.titles {
-            periodControl.titles = viewModel.titles
-        }
+    var chartView: SubtensorSubnetPriceChartView { priceWidget.chartView }
 
-        periodControl.selectedSegmentIndex = viewModel.selectedIndex
-        periodControl.isEnabled = viewModel.isEnabled
-        periodControl.alpha = viewModel.isEnabled ? 1 : 0.4
-    }
-
-    func bind(header viewModel: SubtensorSubnetPriceHeaderViewModel) {
-        priceCaptionLabel.text = viewModel.caption
-        priceLabel.text = viewModel.price
-
-        switch viewModel.change {
-        case .loading:
-            changeLabel.text = nil
-            changeSkeletonView.setLoading(true)
-        case .hidden:
-            changeLabel.text = nil
-            changeSkeletonView.setLoading(false)
-        case let .value(text, isRising):
-            changeLabel.text = text
-            changeLabel.textColor = isRising ? R.color.colorTextPositive() : R.color.colorTextNegative()
-            changeSkeletonView.setLoading(false)
-        }
-
-        if currencyControl.titles != viewModel.currencies {
-            currencyControl.titles = viewModel.currencies
-        }
-
-        currencyControl.selectedSegmentIndex = viewModel.selectedCurrencyIndex
-        currencyControl.isEnabled = viewModel.isCurrencyEnabled
-    }
+    var chartUnavailableView: SubtensorChartUnavailableView { priceWidget.chartUnavailableView }
 
     func bind(factorsHeading heading: String?) {
         factorsHeadingLabel.text = heading
@@ -162,9 +73,6 @@ final class SubtensorSubnetDetailsViewLayout: UIView {
 
 private extension SubtensorSubnetDetailsViewLayout {
     enum Constants {
-        static let chartHeight: CGFloat = 208
-        static let controlHeight: CGFloat = 32
-        static let currencyControlWidth: CGFloat = 110
         static let buttonSize: CGFloat = 52
     }
 
@@ -180,8 +88,7 @@ private extension SubtensorSubnetDetailsViewLayout {
         }
 
         setupBottomBar()
-        setupHeader()
-        setupChart()
+        setupPriceWidget()
         setupSections()
     }
 
@@ -209,54 +116,9 @@ private extension SubtensorSubnetDetailsViewLayout {
         }
     }
 
-    func setupHeader() {
-        let priceView = UIView.vStack(alignment: .leading, spacing: 4, [priceCaptionLabel, priceLabel, changeLabel])
-        let headerView = UIView.hStack(alignment: .top, spacing: 16, [priceView, currencyControl])
-
-        currencyControl.snp.makeConstraints { make in
-            make.width.equalTo(Constants.currencyControlWidth)
-            make.height.equalTo(Constants.controlHeight)
-        }
-
-        changeLabel.snp.makeConstraints { make in
-            make.height.greaterThanOrEqualTo(18)
-        }
-
-        headerView.addSubview(changeSkeletonView)
-        changeSkeletonView.snp.makeConstraints { make in
-            make.leading.centerY.equalTo(changeLabel)
-            make.size.equalTo(CGSize(width: 90, height: 12))
-        }
-
-        containerView.stackView.addArrangedSubview(headerView)
-        containerView.stackView.setCustomSpacing(16, after: headerView)
-    }
-
-    func setupChart() {
-        let chartContainer = UIView()
-        chartContainer.addSubview(chartView)
-        chartContainer.addSubview(chartLoadingView)
-        chartContainer.addSubview(chartUnavailableView)
-
-        [chartView, chartLoadingView, chartUnavailableView].forEach { view in
-            view.snp.makeConstraints { make in
-                make.edges.equalToSuperview()
-            }
-        }
-
-        chartContainer.snp.makeConstraints { make in
-            make.height.equalTo(Constants.chartHeight)
-        }
-
-        containerView.stackView.addArrangedSubview(chartContainer)
-        containerView.stackView.setCustomSpacing(16, after: chartContainer)
-
-        containerView.stackView.addArrangedSubview(periodControl)
-        periodControl.snp.makeConstraints { make in
-            make.height.equalTo(Constants.controlHeight)
-        }
-
-        containerView.stackView.setCustomSpacing(24, after: periodControl)
+    func setupPriceWidget() {
+        containerView.stackView.addArrangedSubview(priceWidget)
+        containerView.stackView.setCustomSpacing(24, after: priceWidget)
     }
 
     func setupSections() {

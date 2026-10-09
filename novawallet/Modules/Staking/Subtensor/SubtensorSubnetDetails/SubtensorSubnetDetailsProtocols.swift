@@ -3,6 +3,7 @@ import Foundation
 protocol SubtensorSubnetDetailsViewProtocol: ControllerBackedProtocol {
     func didReceive(title: SubtensorSubnetDetailsTitleViewModel)
     func didReceive(viewModel: SubtensorSubnetDetailsViewModel)
+    func didReceive(priceHeader: SubtensorSubnetPriceHeaderViewModel)
 }
 
 protocol SubtensorSubnetDetailsPresenterProtocol: AnyObject {
@@ -14,6 +15,7 @@ protocol SubtensorSubnetDetailsPresenterProtocol: AnyObject {
     func selectValidator()
     func useSubnet()
     func retryHistory()
+    func selectChartPoint(at index: Int?)
 }
 
 protocol SubnetDetailsInteractorInputProtocol: AnyObject {

@@ -4,7 +4,11 @@ import Foundation_iOS
 import Operation_iOS
 
 struct StartStakingInfoViewFactory {
-    static func createView(chainAsset: ChainAsset, selectedStakingType: StakingType?) -> StartStakingInfoViewProtocol? {
+    static func createView(
+        chainAsset: ChainAsset,
+        selectedStakingType: StakingType?,
+        subtensorFlowState: SubtensorStakingFlowStateProtocol
+    ) -> StartStakingInfoViewProtocol? {
         let optMainStakingType = chainAsset.asset.stakings?.sorted { type1, type2 in
             type1.isMorePreferred(than: type2)
         }.first
@@ -51,7 +55,8 @@ struct StartStakingInfoViewFactory {
                 for: .init(
                     chainAsset: chainAsset,
                     type: selectedStakingType ?? mainStakingType
-                )
+                ),
+                flowState: subtensorFlowState
             )
         case .unsupported, .nominationPools:
             return nil
