@@ -2,6 +2,7 @@ import Foundation
 
 protocol SubtensorPortfolioViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: SubtensorPortfolioViewModel)
+    func didReceive(header: SubtensorPortfolioHeaderViewModel)
 }
 
 protocol SubtensorPortfolioPresenterProtocol: AnyObject {
@@ -10,6 +11,7 @@ protocol SubtensorPortfolioPresenterProtocol: AnyObject {
     func selectPosition(at index: Int)
     func addPosition()
     func retry()
+    func selectChartPoint(at index: Int?)
 }
 
 protocol SubnetPortfolioInteractorInputProtocol: AnyObject {

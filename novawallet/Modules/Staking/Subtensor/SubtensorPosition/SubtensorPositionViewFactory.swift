@@ -17,7 +17,7 @@ enum SubtensorPositionViewFactory {
             catalogueService: earnServices.catalogueService,
             yieldService: earnServices.yieldService,
             subnetLogosProvider: earnServices.subnetLogosProvider,
-            priceHistoryService: earnServices.priceHistoryService,
+            priceHistoryStore: SubtensorPriceHistoryStore(state: state, operationQueue: operationQueue),
             validatorFactory: SubtensorValidatorPresetFactory(
                 directoryService: earnServices.validatorDirectoryService,
                 recommendationService: earnServices.recommendationService,
@@ -35,7 +35,7 @@ enum SubtensorPositionViewFactory {
             group: group,
             account: state.selectedAccount,
             chainAsset: state.stakingOption.chainAsset,
-            pendingRootClaims: state.pendingRootClaims,
+            pendingRootClaims: state.flowState.pendingRootClaims,
             interactor: interactor,
             wireframe: SubtensorPositionWireframe(state: state),
             viewModelFactory: SubtensorPositionViewModelFactory(
@@ -45,9 +45,14 @@ enum SubtensorPositionViewFactory {
             localizationManager: LocalizationManager.shared
         )
 
+        let singleTapHapticPlayer = HapticPlayerFactory.createHapticPlayer(patternConfiguration: .singleTap)
+
         let view = SubtensorPositionViewController(
             presenter: presenter,
             isRoot: group.netuid == SubtensorStakingPallet.rootNetuid,
+            seekHapticPlayer: HapticPlayerFactory.createProgressivePlayer(patternConfiguration: .chartSeek),
+            chartLongPressHapticPlayer: singleTapHapticPlayer,
+            periodControlHapticPlayer: singleTapHapticPlayer,
             localizationManager: LocalizationManager.shared
         )
 

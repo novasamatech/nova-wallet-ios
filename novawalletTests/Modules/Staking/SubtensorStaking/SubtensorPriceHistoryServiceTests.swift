@@ -14,8 +14,8 @@ final class SubtensorPriceHistoryServiceTests: XCTestCase {
         let coingecko = MockCoingeckoOperationFactoryProtocol()
 
         stubCharts(coingecko, [
-            taoPriceId: [(1000, "400"), (4600, "0"), (606_000, "500"), (609_600, "520")],
-            "chutes": [(1120, "20"), (4600, "30"), (608_000, "26"), (617_800, "25")]
+            taoPriceId: [(3200, "400"), (4600, "0"), (606_000, "500"), (609_600, "520")],
+            "chutes": [(3320, "20"), (4600, "30"), (608_000, "26"), (617_800, "25")]
         ])
 
         let result = try run(makeService(coingecko: coingecko).createHistoryWrapper(
@@ -28,7 +28,7 @@ final class SubtensorPriceHistoryServiceTests: XCTestCase {
             subnet: chutes,
             period: .week,
             points: [
-                point(1120, taoPerAlpha: "0.05", fiatPerAlpha: "20"),
+                point(3320, taoPerAlpha: "0.05", fiatPerAlpha: "20"),
                 point(608_000, taoPerAlpha: "0.05", fiatPerAlpha: "26")
             ],
             changeInTao: 0,
@@ -39,13 +39,13 @@ final class SubtensorPriceHistoryServiceTests: XCTestCase {
         verify(coingecko).fetchPriceHistory(
             for: equal(to: "chutes"),
             currency: equal(to: Currency.usd),
-            period: equal(to: PriceHistoryPeriod.week)
+            period: equal(to: PriceHistoryPeriod.month)
         )
 
         verify(coingecko).fetchPriceHistory(
             for: equal(to: taoPriceId),
             currency: equal(to: Currency.usd),
-            period: equal(to: PriceHistoryPeriod.week)
+            period: equal(to: PriceHistoryPeriod.month)
         )
     }
 
@@ -64,7 +64,7 @@ final class SubtensorPriceHistoryServiceTests: XCTestCase {
         verify(coingecko, never()).fetchPriceHistory(for: any(), currency: any(), period: any())
     }
 
-    func testQuarterHistorySlicesTheYearSeriesToItsLastThreeMonths() throws {
+    func testQuarterHistorySlicesTheAllTimeSeriesToItsLastThreeMonths() throws {
         let coingecko = MockCoingeckoOperationFactoryProtocol()
 
         stubCharts(coingecko, [
@@ -100,7 +100,7 @@ final class SubtensorPriceHistoryServiceTests: XCTestCase {
         verify(coingecko, times(2)).fetchPriceHistory(
             for: any(),
             currency: any(),
-            period: equal(to: PriceHistoryPeriod.year)
+            period: equal(to: PriceHistoryPeriod.allTime)
         )
     }
 
@@ -257,7 +257,7 @@ final class SubtensorPriceHistoryServiceTests: XCTestCase {
 
         return SubtensorPriceHistoryService(
             marketsService: marketsService,
-            coingeckoOperationFactory: coingecko,
+            seriesProvider: SubtensorPriceSeriesCache(coingeckoOperationFactory: coingecko, operationQueue: OperationQueue()),
             blockNumberOperationFactory: blockNumberFactory,
             chainId: KnowChainId.bittensor,
             taoPriceId: taoPriceId,

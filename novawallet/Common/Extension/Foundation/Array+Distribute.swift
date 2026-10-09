@@ -19,4 +19,16 @@ extension Array {
             return Array(self[offset ..< (offset + chunkLen)])
         }
     }
+
+    func optimizedForChart(availablePoints: Int) -> [Element] {
+        guard count > availablePoints, let first, let last, count > 1 else {
+            return self
+        }
+
+        let middleElements = Array(self[1 ..< count - 1])
+            .distributed(intoChunks: availablePoints - 2)
+            .compactMap(\.first)
+
+        return [first] + middleElements + [last]
+    }
 }

@@ -15,20 +15,8 @@ final class SubtensorPositionViewLayout: UIView {
 
     let summaryView = SubtensorPositionSummaryView()
 
-    let chartView = SubtensorSubnetPriceChartView(style: .price)
-
-    let chartLoadingView = SubtensorChartLoadingView()
-
-    let chartUnavailableView: SubtensorChartUnavailableView = .create { view in
+    let priceWidget: SubtensorPriceWidgetView = .create { view in
         view.isHidden = true
-    }
-
-    let periodControl: RoundedSegmentedControl = .create { view in
-        view.backgroundView.fillColor = .clear
-        view.selectionColor = R.color.colorSegmentedTabActive()!
-        view.titleFont = .regularFootnote
-        view.selectedTitleColor = R.color.colorTextPrimary()!
-        view.titleColor = R.color.colorTextSecondary()!
     }
 
     let actionsTableView: StackTableView = .create { view in
@@ -64,7 +52,6 @@ final class SubtensorPositionViewLayout: UIView {
 
     var onSelectAction: ((SubtensorPositionAction) -> Void)?
 
-    private let chartContainer = UIView()
     private var actionCells: [StackActionCell] = []
     private var actions: [SubtensorPositionAction] = []
 
@@ -83,9 +70,15 @@ final class SubtensorPositionViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    var periodControl: RoundedSegmentedControl { priceWidget.periodControl }
+
+    var chartView: SubtensorSubnetPriceChartView { priceWidget.chartView }
+
+    var chartUnavailableView: SubtensorChartUnavailableView { priceWidget.chartUnavailableView }
+
     func bind(viewModel: SubtensorPositionViewModel, locale: Locale) {
         summaryView.bind(viewModel: viewModel.summary, locale: locale)
-        bind(chart: viewModel.chart)
+        bind(priceWidget: viewModel.priceWidget)
         bind(actions: viewModel.actions)
         validatorView.bind(viewModel: viewModel.validator)
 
@@ -103,48 +96,12 @@ final class SubtensorPositionViewLayout: UIView {
 }
 
 private extension SubtensorPositionViewLayout {
-    enum Constants {
-        static let chartHeight: CGFloat = 208
-        static let controlHeight: CGFloat = 32
-    }
+    func bind(priceWidget viewModel: SubtensorPriceWidgetViewModel?) {
+        priceWidget.isHidden = viewModel == nil
 
-    func bind(chart viewModel: SubtensorPositionChartViewModel?) {
-        guard let viewModel else {
-            chartContainer.isHidden = true
-            periodControl.isHidden = true
-            chartLoadingView.setLoading(false)
-            return
+        if let viewModel {
+            priceWidget.bind(viewModel: viewModel)
         }
-
-        chartContainer.isHidden = false
-        periodControl.isHidden = false
-        chartLoadingView.setLoading(viewModel.chart == .loading)
-
-        switch viewModel.chart {
-        case .loading:
-            chartView.isHidden = true
-            chartUnavailableView.isHidden = true
-        case let .chart(chartViewModel):
-            chartView.isHidden = false
-            chartUnavailableView.isHidden = true
-            chartView.bind(viewModel: chartViewModel)
-        case let .unavailable(title, details):
-            chartView.isHidden = true
-            chartUnavailableView.isHidden = false
-            chartUnavailableView.bind(title: title, details: details, isAction: false)
-        case let .failed(title, action):
-            chartView.isHidden = true
-            chartUnavailableView.isHidden = false
-            chartUnavailableView.bind(title: title, details: action, isAction: true)
-        }
-
-        if periodControl.titles != viewModel.periods.titles {
-            periodControl.titles = viewModel.periods.titles
-        }
-
-        periodControl.selectedSegmentIndex = viewModel.periods.selectedIndex
-        periodControl.isEnabled = viewModel.periods.isEnabled
-        periodControl.alpha = viewModel.periods.isEnabled ? 1 : 0.4
     }
 
     func bind(actions viewModels: [SubtensorPositionActionViewModel]) {
@@ -230,7 +187,7 @@ private extension SubtensorPositionViewLayout {
             containerView.stackView.addArrangedSubview(validatorView)
             containerView.stackView.addArrangedSubview(noticeView)
         } else {
-            setupChart()
+            containerView.stackView.addArrangedSubview(priceWidget)
             containerView.stackView.addArrangedSubview(noticeView)
             containerView.stackView.addArrangedSubview(validatorView)
         }
@@ -276,29 +233,6 @@ private extension SubtensorPositionViewLayout {
         }
 
         containerView.stackView.addArrangedSubview(backgroundView)
-    }
-
-    func setupChart() {
-        [chartView, chartLoadingView, chartUnavailableView].forEach { view in
-            chartContainer.addSubview(view)
-            view.snp.makeConstraints { make in
-                make.edges.equalToSuperview()
-            }
-        }
-
-        chartContainer.snp.makeConstraints { make in
-            make.height.equalTo(Constants.chartHeight)
-        }
-
-        chartContainer.isHidden = true
-        periodControl.isHidden = true
-
-        containerView.stackView.addArrangedSubview(chartContainer)
-        containerView.stackView.addArrangedSubview(periodControl)
-
-        periodControl.snp.makeConstraints { make in
-            make.height.equalTo(Constants.controlHeight)
-        }
     }
 
     func setupSyncNotice() {

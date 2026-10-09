@@ -7,7 +7,7 @@ final class SubtensorSubnetDetailsInteractor {
     let subnet: SubtensorSubnetRef
     let chainAsset: ChainAsset
     let accountId: AccountId?
-    let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
+    let priceHistoryStore: SubtensorPriceHistoryStore
     let rankingViewService: SubtensorRankingViewServiceProtocol
     let presetFactory: SubtensorValidatorPresetFactoryProtocol
     let yieldService: SubtensorYieldServiceProtocol
@@ -33,7 +33,7 @@ final class SubtensorSubnetDetailsInteractor {
         subnet: SubtensorSubnetRef,
         chainAsset: ChainAsset,
         accountId: AccountId?,
-        priceHistoryService: SubtensorPriceHistoryServiceProtocol?,
+        priceHistoryStore: SubtensorPriceHistoryStore,
         rankingViewService: SubtensorRankingViewServiceProtocol,
         presetFactory: SubtensorValidatorPresetFactoryProtocol,
         yieldService: SubtensorYieldServiceProtocol,
@@ -48,7 +48,7 @@ final class SubtensorSubnetDetailsInteractor {
         self.subnet = subnet
         self.chainAsset = chainAsset
         self.accountId = accountId
-        self.priceHistoryService = priceHistoryService
+        self.priceHistoryStore = priceHistoryStore
         self.rankingViewService = rankingViewService
         self.presetFactory = presetFactory
         self.yieldService = yieldService
@@ -121,22 +121,11 @@ private extension SubtensorSubnetDetailsInteractor {
     }
 
     func loadListing() {
-        guard let priceHistoryService else {
-            presenter?.didReceiveListing(.notListed)
-            return
-        }
-
-        let wrapper = priceHistoryService.createHistoryWrapper(
+        priceHistoryStore.loadHistory(
             for: subnet,
             period: .all,
-            currency: currencyManager.selectedCurrency
-        )
-
-        executeCancellable(
-            wrapper: wrapper,
-            inOperationQueue: operationQueue,
-            backingCallIn: listingCallStore,
-            runningCallbackIn: .main
+            currency: currencyManager.selectedCurrency,
+            backingCallIn: listingCallStore
         ) { [weak self] result in
             switch result {
             case let .success(listing):
@@ -229,24 +218,11 @@ extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol
     }
 
     func loadHistory(for period: SubtensorPricePeriod) {
-        historyCallStore.cancel()
-
-        guard let priceHistoryService else {
-            presenter?.didReceiveHistory(.notListed, for: period)
-            return
-        }
-
-        let wrapper = priceHistoryService.createHistoryWrapper(
+        priceHistoryStore.loadHistory(
             for: subnet,
             period: period,
-            currency: currencyManager.selectedCurrency
-        )
-
-        executeCancellable(
-            wrapper: wrapper,
-            inOperationQueue: operationQueue,
-            backingCallIn: historyCallStore,
-            runningCallbackIn: .main
+            currency: currencyManager.selectedCurrency,
+            backingCallIn: historyCallStore
         ) { [weak self] result in
             switch result {
             case let .success(history):

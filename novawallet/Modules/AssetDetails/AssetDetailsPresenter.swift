@@ -23,7 +23,6 @@ final class AssetDetailsPresenter: RampFlowManaging, AssetPriceChartInputOwnerPr
     private var externalAssetBalances: [ExternalAssetBalance] = []
     private var rampActions: [RampAction] = []
     private var availableOperations: AssetDetailsOperation = []
-    private var hasBittensorPositions = false
 
     init(
         interactor: AssetDetailsInteractorInputProtocol,
@@ -222,14 +221,6 @@ extension AssetDetailsPresenter: AssetDetailsPresenterProtocol {
         wireframe.showSwaps(from: view, chainAsset: chainAsset)
     }
 
-    func handleEarn() {
-        if hasBittensorPositions {
-            wireframe.showBittensorPortfolio(from: view, chainAsset: chainAsset)
-        } else {
-            wireframe.showBittensorEarnInfo(from: view, chainAsset: chainAsset)
-        }
-    }
-
     func handleAHMAlertClose() {
         interactor.closeAHMAlert()
     }
@@ -308,10 +299,6 @@ extension AssetDetailsPresenter: AssetDetailsInteractorOutputProtocol {
     func didReceive(externalBalanceChanges: [DataProviderChange<ExternalAssetBalance>]) {
         externalAssetBalances = externalAssetBalances.applying(changes: externalBalanceChanges)
         updateView()
-    }
-
-    func didReceive(hasBittensorPositions: Bool) {
-        self.hasBittensorPositions = hasBittensorPositions
     }
 
     func didReceive(error: AssetDetailsError) {

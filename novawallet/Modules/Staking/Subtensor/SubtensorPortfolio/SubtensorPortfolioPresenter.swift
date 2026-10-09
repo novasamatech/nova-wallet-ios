@@ -127,6 +127,14 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioPresenterProtocol {
     func retry() {
         interactor.refresh()
     }
+
+    func selectChartPoint(at index: Int?) {
+        state.chartPoint = index
+
+        if let header = viewModelFactory.createHeader(for: state, locale: selectedLocale) {
+            view?.didReceive(header: header)
+        }
+    }
 }
 
 extension SubtensorPortfolioPresenter: SubnetPortfolioInteractorOutputProtocol {

@@ -3,6 +3,7 @@ import Foundation_iOS
 
 protocol SubnetPortfolioViewModelFactoryProtocol {
     func createViewModel(for state: SubtensorPortfolioState, locale: Locale) -> SubtensorPortfolioViewModel
+    func createHeader(for state: SubtensorPortfolioState, locale: Locale) -> SubtensorPortfolioHeaderViewModel?
 }
 
 final class SubtensorPortfolioViewModelFactory {
@@ -40,6 +41,7 @@ private extension SubtensorPortfolioViewModelFactory {
     struct ChartContent {
         let chart: SubtensorPortfolioChartViewModel
         let change: SubtensorPortfolioLoadable<SubtensorPortfolioChangeViewModel>
+        var points: [SubtensorPortfolioValuePoint] = []
     }
 
     var precision: Int16 {
@@ -161,13 +163,15 @@ private extension SubtensorPortfolioViewModelFactory {
             fiat = .loaded(formatFiat(total, price: price, locale: locale))
         }
 
-        return SubtensorPortfolioHeaderViewModel(
+        let header = SubtensorPortfolioHeaderViewModel(
             total: formatTao(total, locale: locale),
             fiat: fiat,
             change: chart.change,
             chart: chart.chart,
             periods: createPeriods(for: state, locale: locale)
         )
+
+        return applyChartPoint(of: state, points: chart.points, to: header, locale: locale)
     }
 
     func createChart(
@@ -203,7 +207,9 @@ private extension SubtensorPortfolioViewModelFactory {
                 precision: precision
             )
 
-            guard let chart = createChartViewModel(for: series, price: price, locale: locale) else {
+            let points = series.points.filter { NSDecimalNumber(decimal: $0.fiatValue).doubleValue.isFinite }
+
+            guard let chart = createChartViewModel(for: points, series: series, price: price, locale: locale) else {
                 return unavailable
             }
 
@@ -211,7 +217,11 @@ private extension SubtensorPortfolioViewModelFactory {
                 createChange(changeInFiat, period: histories.period, locale: locale)
             }
 
-            return ChartContent(chart: .chart(chart), change: change.map { .loaded($0) } ?? .hidden)
+            return ChartContent(
+                chart: .chart(chart),
+                change: change.map { .loaded($0) } ?? .hidden,
+                points: points
+            )
         }
     }
 
@@ -233,13 +243,12 @@ private extension SubtensorPortfolioViewModelFactory {
     }
 
     func createChartViewModel(
-        for series: SubtensorPortfolioValueSeries,
+        for points: [SubtensorPortfolioValuePoint],
+        series: SubtensorPortfolioValueSeries,
         price: PriceData,
         locale: Locale
     ) -> SubtensorPriceChartViewModel? {
-        let values = series.points
-            .map { NSDecimalNumber(decimal: $0.fiatValue).doubleValue }
-            .filter(\.isFinite)
+        let values = points.map { NSDecimalNumber(decimal: $0.fiatValue).doubleValue }
 
         guard
             values.count > 1,

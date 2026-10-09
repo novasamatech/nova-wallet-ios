@@ -245,6 +245,7 @@ final class SubtensorSubnetsServiceTests: XCTestCase {
     ) -> SubtensorSubnetsService {
         SubtensorSubnetsService(
             operationFactory: apiFactory,
+            cache: SubtensorSessionCache(),
             operationQueue: OperationQueue(),
             logger: Logger.shared
         )

@@ -38,7 +38,12 @@ final class SubtensorStakingSharedStateFactoryTests: XCTestCase {
 
         let option = Multistaking.ChainAssetOption(chainAsset: ChainAsset(chain: chain, asset: asset), type: .subtensor)
 
-        XCTAssertThrowsError(try factory.createSubtensorStaking(for: option)) { error in
+        let flowState = SubtensorStakingFlowState(
+            coingeckoOperationFactory: CoingeckoOperationFactory(),
+            operationQueue: OperationQueue()
+        )
+
+        XCTAssertThrowsError(try factory.createSubtensorStaking(for: option, flowState: flowState)) { error in
             guard case ChainRegistryError.connectionUnavailable = error else {
                 return XCTFail("Unexpected error: \(error)")
             }

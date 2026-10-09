@@ -50,13 +50,19 @@ extension SubtensorPricePeriod {
         2 * samplingInterval
     }
 
-    var isSlicedFromLongerSeries: Bool {
+    var sourcePeriod: SubtensorPricePeriod {
         switch self {
-        case .quarter:
-            return true
-        case .day, .week, .month, .year, .all:
-            return false
+        case .day:
+            return .day
+        case .week, .month:
+            return .month
+        case .quarter, .year, .all:
+            return .all
         }
+    }
+
+    var isSlicedFromLongerSeries: Bool {
+        self != sourcePeriod
     }
 
     func startDate(endingAt endDate: Date) -> Date? {

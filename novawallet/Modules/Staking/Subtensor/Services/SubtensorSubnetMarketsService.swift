@@ -15,7 +15,7 @@ final class SubtensorSubnetMarketsService: SubtensorSessionCachingService<Subten
     ) {
         self.coingeckoOperationFactory = coingeckoOperationFactory
 
-        super.init(operationQueue: operationQueue, logger: logger)
+        super.init(operationQueue: operationQueue, cache: SubtensorSessionCache(), logger: logger)
     }
 
     override func createFetchWrapper() -> CompoundOperationWrapper<SubtensorSubnetMarkets> {

@@ -311,6 +311,7 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
         SubtensorValidatorDirectoryService(
             apiOperationFactory: apiFactory,
             chainOperationFactory: chainFactory,
+            cache: SubtensorValidatorDirectoryCache(),
             operationQueue: OperationQueue()
         )
     }
