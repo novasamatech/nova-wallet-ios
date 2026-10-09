@@ -33,6 +33,7 @@ private extension SubtensorValidatorDirectoryService {
     struct CachedItem {
         let item: SubtensorValidatorDirectoryItem
         let isEnriched: Bool
+        let isFresh: Bool
     }
 
     func store(
@@ -68,11 +69,13 @@ private extension SubtensorValidatorDirectoryService {
             return nil
         }
 
-        let hasFreshStakes = peek(cached, netuid: subnet.netuid).value?.listStamp?.freshness == .fresh
+        let directory = peek(cached, netuid: subnet.netuid)
+        let hasFreshStakes = directory.value?.listStamp?.freshness == .fresh
 
         return CachedItem(
             item: hasFreshStakes ? item : item.withoutReportedStake(),
-            isEnriched: cached.enrichedHotkeys.contains(hotkey)
+            isEnriched: cached.enrichedHotkeys.contains(hotkey),
+            isFresh: directory.isFresh
         )
     }
 
@@ -199,7 +202,7 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
 
                 let cached = cachedItem(for: hotkey, subnet: subnet)
 
-                if let cached, cached.isEnriched {
+                if let cached, cached.isEnriched, cached.isFresh {
                     return .createWithResult(cached.item)
                 }
 

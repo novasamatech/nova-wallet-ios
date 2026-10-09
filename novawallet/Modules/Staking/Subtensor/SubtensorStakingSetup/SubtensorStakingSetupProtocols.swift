@@ -13,7 +13,6 @@ protocol SubtensorStakingSetupPresenterProtocol: AnyObject {
     func selectAmountPercentage(_ percentage: Float)
     func selectValidator()
     func selectCardHeader()
-    func chooseMyself()
     func selectSettings()
     func showSwapRateInfo()
     func showAvgBuyPriceInfo()
@@ -62,11 +61,6 @@ protocol SubtensorStakingSetupWireframeProtocol: AlertPresentable, ErrorPresenta
         target: SubtensorStakeTarget,
         selectedHotkey: AccountId?,
         delegate: SubtensorValidatorSelectDelegate
-    )
-
-    func showSubnetSelection(
-        from view: SubtensorStakingSetupViewProtocol?,
-        delegate: SubtensorSubnetSelectDelegate
     )
 
     func showSubnetDetails(

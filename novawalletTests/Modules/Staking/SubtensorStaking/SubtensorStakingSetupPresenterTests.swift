@@ -370,7 +370,6 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
             when(stub.showValidatorSelection(from: any(), target: any(), selectedHotkey: any(), delegate: any()))
                 .thenDoNothing()
             when(stub.showValidatorInfo(from: any(), target: any(), hotkey: any(), detail: any())).thenDoNothing()
-            when(stub.showSubnetSelection(from: any(), delegate: any())).thenDoNothing()
             when(stub.showSubnetDetails(from: any(), input: any(), delegate: any())).thenDoNothing()
             when(stub.showSlippageSettings(from: any(), current: any(), completion: any())).thenDoNothing()
         }
@@ -604,7 +603,6 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
         setup.presenter.didSelectStakeTarget(makeSubnetTarget(netuid: 2), validator: nil)
         setup.presenter.didSelectValidator(makeValidator(hotkey: otherHotkey, netuid: 1), for: subnetTarget)
         setup.presenter.selectValidator()
-        setup.presenter.chooseMyself()
         setup.presenter.selectCardHeader()
         setup.presenter.selectSettings()
 
@@ -626,7 +624,6 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
             selectedHotkey: any(),
             delegate: any()
         )
-        verify(setup.wireframe, never()).showSubnetSelection(from: any(), delegate: any())
         verify(setup.wireframe, never()).showSubnetDetails(from: any(), input: any(), delegate: any())
         verify(setup.wireframe, never()).showSlippageSettings(from: any(), current: any(), completion: any())
     }
@@ -716,7 +713,6 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
             for: .root
         )
         setup.presenter.selectValidator()
-        setup.presenter.chooseMyself()
         setup.presenter.selectCardHeader()
         setup.presenter.selectSettings()
 
@@ -740,7 +736,6 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
             selectedHotkey: any(),
             delegate: any()
         )
-        verify(setup.wireframe, never()).showSubnetSelection(from: any(), delegate: any())
         verify(setup.wireframe, never()).showSubnetDetails(from: any(), input: any(), delegate: any())
         verify(setup.wireframe, never()).showSlippageSettings(from: any(), current: any(), completion: any())
     }

@@ -53,6 +53,7 @@ extension StartStakingInfoViewFactory {
 
         let view = StartStakingInfoSubtensorViewController(
             presenter: presenter,
+            themeColor: stakingOption.chainAsset.chain.themeColor ?? R.color.colorPolkadotBrand()!,
             localizationManager: LocalizationManager.shared
         )
 

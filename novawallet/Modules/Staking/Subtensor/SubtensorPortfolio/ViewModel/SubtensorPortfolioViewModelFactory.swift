@@ -1,9 +1,8 @@
 import Foundation
 import Foundation_iOS
 
-protocol SubnetPortfolioViewModelFactoryProtocol {
+protocol SubnetPortfolioViewModelFactoryProtocol: SubnetPortfolioChartFactoryProtocol {
     func createViewModel(for state: SubtensorPortfolioState, locale: Locale) -> SubtensorPortfolioViewModel
-    func createHeader(for state: SubtensorPortfolioState, locale: Locale) -> SubtensorPortfolioHeaderViewModel?
 }
 
 final class SubtensorPortfolioViewModelFactory {
@@ -129,49 +128,6 @@ private extension SubtensorPortfolioViewModelFactory {
             chart: .loading,
             periods: createPeriods(for: state, locale: locale)
         )
-    }
-
-    func createHeader(
-        for portfolio: SubtensorPortfolio,
-        state: SubtensorPortfolioState,
-        locale: Locale
-    ) -> SubtensorPortfolioHeaderViewModel {
-        let chart = state.isCatalogueUnavailable
-            ? ChartContent(chart: .hidden, change: .hidden)
-            : createChart(for: portfolio, state: state, locale: locale)
-
-        guard portfolio.isFullyPriced else {
-            return SubtensorPortfolioHeaderViewModel(
-                total: unknownValue(for: locale),
-                fiat: .hidden,
-                change: chart.change,
-                chart: chart.chart,
-                periods: createPeriods(for: state, locale: locale)
-            )
-        }
-
-        let total = decimal(portfolio.pricedTaoValue)
-
-        let fiat: SubtensorPortfolioLoadable<String>
-
-        switch state.price {
-        case .loading:
-            fiat = .loading
-        case .loaded(.none):
-            fiat = .hidden
-        case let .loaded(.some(price)):
-            fiat = .loaded(formatFiat(total, price: price, locale: locale))
-        }
-
-        let header = SubtensorPortfolioHeaderViewModel(
-            total: formatTao(total, locale: locale),
-            fiat: fiat,
-            change: chart.change,
-            chart: chart.chart,
-            periods: createPeriods(for: state, locale: locale)
-        )
-
-        return applyChartPoint(of: state, points: chart.points, to: header, locale: locale)
     }
 
     func createChart(
@@ -390,10 +346,45 @@ extension SubtensorPortfolioViewModelFactory: SubnetPortfolioViewModelFactoryPro
         let isRootRateUnavailable = state.isRootRateUnavailable &&
             groups.contains { $0.netuid == SubtensorStakingPallet.rootNetuid }
 
+        let selection = createSelection(for: portfolio, state: state, locale: locale)
+
         return SubtensorPortfolioViewModel(
-            content: .positions(header: createHeader(for: portfolio, state: state, locale: locale), rows: rows),
+            content: .positions(header: createHeader(for: selection, state: state, locale: locale), rows: rows),
             isSyncFailed: state.isSyncFailed,
             isRatesUnavailable: state.isCatalogueUnavailable || isRootRateUnavailable
         )
+    }
+
+    func createSelection(
+        for portfolio: SubtensorPortfolio,
+        state: SubtensorPortfolioState,
+        locale: Locale
+    ) -> SubtensorPortfolioChartSelection {
+        let chart = state.isCatalogueUnavailable
+            ? ChartContent(chart: .hidden, change: .hidden)
+            : createChart(for: portfolio, state: state, locale: locale)
+
+        let total = decimal(portfolio.pricedTaoValue)
+
+        let fiat: SubtensorPortfolioLoadable<String>
+
+        switch state.price {
+        case .loading:
+            fiat = .loading
+        case .loaded(.none):
+            fiat = .hidden
+        case let .loaded(.some(price)):
+            fiat = .loaded(formatFiat(total, price: price, locale: locale))
+        }
+
+        let header = SubtensorPortfolioHeaderViewModel(
+            total: portfolio.isFullyPriced ? formatTao(total, locale: locale) : unknownValue(for: locale),
+            fiat: portfolio.isFullyPriced ? fiat : .hidden,
+            change: chart.change,
+            chart: chart.chart,
+            periods: createPeriods(for: state, locale: locale)
+        )
+
+        return SubtensorPortfolioChartSelection(header: header, points: chart.points)
     }
 }

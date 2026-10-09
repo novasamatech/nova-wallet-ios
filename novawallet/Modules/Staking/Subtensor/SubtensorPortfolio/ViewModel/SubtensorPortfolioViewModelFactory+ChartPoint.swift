@@ -1,21 +1,38 @@
 import Foundation
 import Foundation_iOS
 
-extension SubtensorPortfolioViewModelFactory {
-    func createHeader(for state: SubtensorPortfolioState, locale: Locale) -> SubtensorPortfolioHeaderViewModel? {
-        guard case let .positions(header, _) = createViewModel(for: state, locale: locale).content else {
+struct SubtensorPortfolioChartSelection {
+    let header: SubtensorPortfolioHeaderViewModel
+    let points: [SubtensorPortfolioValuePoint]
+}
+
+protocol SubnetPortfolioChartFactoryProtocol {
+    func createChartSelection(for state: SubtensorPortfolioState, locale: Locale) -> SubtensorPortfolioChartSelection?
+
+    func createHeader(
+        for selection: SubtensorPortfolioChartSelection,
+        state: SubtensorPortfolioState,
+        locale: Locale
+    ) -> SubtensorPortfolioHeaderViewModel
+}
+
+extension SubtensorPortfolioViewModelFactory: SubnetPortfolioChartFactoryProtocol {
+    func createChartSelection(for state: SubtensorPortfolioState, locale: Locale) -> SubtensorPortfolioChartSelection? {
+        guard let portfolio = state.portfolio, !state.isValuationPending, !state.groups.isEmpty else {
             return nil
         }
 
-        return header
+        return createSelection(for: portfolio, state: state, locale: locale)
     }
 
-    func applyChartPoint(
-        of state: SubtensorPortfolioState,
-        points: [SubtensorPortfolioValuePoint],
-        to header: SubtensorPortfolioHeaderViewModel,
+    func createHeader(
+        for selection: SubtensorPortfolioChartSelection,
+        state: SubtensorPortfolioState,
         locale: Locale
     ) -> SubtensorPortfolioHeaderViewModel {
+        let header = selection.header
+        let points = selection.points
+
         guard
             let index = state.chartPoint,
             let price = state.price.value,

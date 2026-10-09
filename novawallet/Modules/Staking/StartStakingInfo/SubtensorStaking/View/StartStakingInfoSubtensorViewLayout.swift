@@ -26,19 +26,17 @@ final class StartStakingInfoSubtensorViewLayout: UIView {
         StartStakingInfoSubtensorRowView(showsDivider: false)
     ]
 
-    let actionButton: RoundedButton = .create { button in
-        button.applySecondaryStyle()
-        button.roundedBackgroundView?.cornerRadius = Constants.buttonCornerRadius
-        button.imageWithTitleView?.titleFont = .semiBoldSubheadline
-        button.imageWithTitleView?.titleColor = R.color.colorButtonText()
+    let actionButton: TriangularedButton = .create { button in
+        button.applyDefaultStyle()
     }
 
     let balanceLabel = UILabel(style: .caption1Secondary, textAlignment: .center, numberOfLines: 1)
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(themeColor: UIColor) {
+        super.init(frame: .zero)
 
         backgroundColor = R.color.colorSecondaryScreenBackground()
+        actionButton.applyEnabledStyle(colored: themeColor)
         setupLayout()
     }
 
@@ -98,8 +96,7 @@ extension StartStakingInfoSubtensorViewLayout {
         static let titleSpacing: CGFloat = 32
         static let rowSpacing: CGFloat = 14
         static let contentBottomSpacing: CGFloat = 16
-        static let buttonHeight: CGFloat = 52
-        static let buttonCornerRadius: CGFloat = 12
+        static let buttonHeight: CGFloat = UIConstants.actionHeight
         static let actionSpacing: CGFloat = 8
         static let balanceHeight: CGFloat = 18
         static let balanceBottomInset: CGFloat = 4
