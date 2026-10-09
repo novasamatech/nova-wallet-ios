@@ -85,11 +85,6 @@ private extension AssetDetailsViewController {
             action: #selector(didTapSwapButton),
             for: .touchUpInside
         )
-        rootView.earnButton.addTarget(
-            self,
-            action: #selector(didTapEarnButton),
-            for: .touchUpInside
-        )
         rootView.balanceWidget.lockCell.addTarget(
             self,
             action: #selector(didTapLocks),
@@ -148,10 +143,6 @@ private extension AssetDetailsViewController {
         presenter.handleSwap()
     }
 
-    @objc func didTapEarnButton() {
-        presenter.handleEarn()
-    }
-
     @objc func didTapLocks() {
         presenter.handleLocks()
     }
@@ -166,8 +157,6 @@ extension AssetDetailsViewController: AssetDetailsViewProtocol {
         rootView.sendButton.isEnabled = availableOperations.contains(.send)
         rootView.receiveButton.isEnabled = availableOperations.contains(.receive)
         rootView.swapButton.isEnabled = availableOperations.contains(.swap)
-        rootView.earnButton.isHidden = !availableOperations.contains(.earn)
-        rootView.buySellButton.isHidden = availableOperations.contains(.earn) && !availableOperations.rampAvailable()
 
         configureBuySellAction(for: availableOperations)
     }

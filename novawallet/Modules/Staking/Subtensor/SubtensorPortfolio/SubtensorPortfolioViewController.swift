@@ -6,11 +6,21 @@ final class SubtensorPortfolioViewController: UIViewController, ViewHolder {
 
     let presenter: SubtensorPortfolioPresenterProtocol
 
+    private let seekHapticPlayer: ProgressiveHapticPlayer
+    private let chartLongPressHapticPlayer: HapticPlayer
+    private let periodControlHapticPlayer: HapticPlayer
+
     init(
         presenter: SubtensorPortfolioPresenterProtocol,
+        seekHapticPlayer: ProgressiveHapticPlayer,
+        chartLongPressHapticPlayer: HapticPlayer,
+        periodControlHapticPlayer: HapticPlayer,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
+        self.seekHapticPlayer = seekHapticPlayer
+        self.chartLongPressHapticPlayer = chartLongPressHapticPlayer
+        self.periodControlHapticPlayer = periodControlHapticPlayer
 
         super.init(nibName: nil, bundle: nil)
 
@@ -41,6 +51,7 @@ private extension SubtensorPortfolioViewController {
         rootView.addButton.addTarget(self, action: #selector(actionAdd), for: .touchUpInside)
         rootView.syncNoticeControl.addTarget(self, action: #selector(actionRetry), for: .touchUpInside)
         rootView.headerView.periodControl.addTarget(self, action: #selector(actionPeriod), for: .valueChanged)
+        rootView.headerView.chartView.delegate = self
 
         rootView.onSelectPosition = { [weak self] index in
             self?.presenter.selectPosition(at: index)
@@ -81,6 +92,7 @@ private extension SubtensorPortfolioViewController {
     }
 
     @objc func actionPeriod() {
+        periodControlHapticPlayer.play()
         presenter.selectPeriod(at: rootView.headerView.periodControl.selectedSegmentIndex)
     }
 }
@@ -88,6 +100,26 @@ private extension SubtensorPortfolioViewController {
 extension SubtensorPortfolioViewController: SubtensorPortfolioViewProtocol {
     func didReceive(viewModel: SubtensorPortfolioViewModel) {
         rootView.bind(viewModel: viewModel)
+    }
+
+    func didReceive(header: SubtensorPortfolioHeaderViewModel) {
+        rootView.headerView.bind(viewModel: header)
+    }
+}
+
+extension SubtensorPortfolioViewController: SubtensorPriceChartViewDelegate {
+    func priceChartViewDidBeginSelection(_: SubtensorSubnetPriceChartView) {
+        chartLongPressHapticPlayer.play()
+    }
+
+    func priceChartView(_: SubtensorSubnetPriceChartView, didSelectPointAt index: Int) {
+        seekHapticPlayer.play()
+        presenter.selectChartPoint(at: index)
+    }
+
+    func priceChartViewDidEndSelection(_: SubtensorSubnetPriceChartView) {
+        seekHapticPlayer.reset()
+        presenter.selectChartPoint(at: nil)
     }
 }
 

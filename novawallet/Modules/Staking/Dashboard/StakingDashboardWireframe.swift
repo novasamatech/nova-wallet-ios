@@ -3,17 +3,23 @@ import Foundation
 final class StakingDashboardWireframe: StakingDashboardWireframeProtocol {
     let stateObserver: Observable<StakingDashboardModel>
     let delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
+    let subtensorFlowState: SubtensorStakingFlowStateProtocol
 
     init(
         stateObserver: Observable<StakingDashboardModel>,
-        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol,
+        subtensorFlowState: SubtensorStakingFlowStateProtocol
     ) {
         self.stateObserver = stateObserver
         self.delegatedAccountSyncService = delegatedAccountSyncService
+        self.subtensorFlowState = subtensorFlowState
     }
 
     func showMoreOptions(from view: ControllerBackedProtocol?) {
-        guard let stakingMoreOptionsView = StakingMoreOptionsViewFactory.createView(stateObserver: stateObserver) else {
+        guard let stakingMoreOptionsView = StakingMoreOptionsViewFactory.createView(
+            stateObserver: stateObserver,
+            subtensorFlowState: subtensorFlowState
+        ) else {
             return
         }
 
@@ -31,7 +37,8 @@ final class StakingDashboardWireframe: StakingDashboardWireframeProtocol {
     ) {
         guard let detailsView = StakingMainViewFactory.createView(
             for: option,
-            delegatedAccountSyncService: delegatedAccountSyncService
+            delegatedAccountSyncService: delegatedAccountSyncService,
+            subtensorFlowState: subtensorFlowState
         ) else {
             return
         }
@@ -47,7 +54,8 @@ final class StakingDashboardWireframe: StakingDashboardWireframeProtocol {
     func showStartStaking(from view: StakingDashboardViewProtocol?, chainAsset: ChainAsset) {
         guard let startStakingView = StartStakingInfoViewFactory.createView(
             chainAsset: chainAsset,
-            selectedStakingType: nil
+            selectedStakingType: nil,
+            subtensorFlowState: subtensorFlowState
         ) else {
             return
         }

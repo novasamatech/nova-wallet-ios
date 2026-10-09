@@ -8,7 +8,6 @@ struct AssetDetailsOperation: OptionSet {
     static let buy = AssetDetailsOperation(rawValue: 1 << 2)
     static let sell = AssetDetailsOperation(rawValue: 1 << 3)
     static let swap = AssetDetailsOperation(rawValue: 1 << 4)
-    static let earn = AssetDetailsOperation(rawValue: 1 << 5)
 
     func rampAvailable() -> Bool {
         buyAvailable() || sellAvailable()

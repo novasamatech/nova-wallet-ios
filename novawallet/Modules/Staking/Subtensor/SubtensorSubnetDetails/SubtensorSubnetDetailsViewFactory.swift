@@ -36,8 +36,13 @@ enum SubtensorSubnetDetailsViewFactory {
             logger: Logger.shared
         )
 
+        let singleTapHapticPlayer = HapticPlayerFactory.createHapticPlayer(patternConfiguration: .singleTap)
+
         let view = SubtensorSubnetDetailsViewController(
             presenter: presenter,
+            seekHapticPlayer: HapticPlayerFactory.createProgressivePlayer(patternConfiguration: .chartSeek),
+            chartLongPressHapticPlayer: singleTapHapticPlayer,
+            periodControlHapticPlayer: singleTapHapticPlayer,
             localizationManager: LocalizationManager.shared
         )
 
@@ -68,7 +73,7 @@ private extension SubtensorSubnetDetailsViewFactory {
             subnet: input.subnet.ref,
             chainAsset: state.stakingOption.chainAsset,
             accountId: state.selectedAccount?.chainAccount.accountId,
-            priceHistoryService: earnServices.priceHistoryService,
+            priceHistoryStore: SubtensorPriceHistoryStore(state: state, operationQueue: operationQueue),
             rankingViewService: earnServices.rankingViewService,
             presetFactory: presetFactory,
             yieldService: earnServices.yieldService,

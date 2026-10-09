@@ -63,17 +63,13 @@ final class AssetDetailsViewLayout: ScrollableContainerLayoutView {
     let receiveButton: RoundedButton = createOperationButton(icon: R.image.iconReceive())
     let buySellButton: RoundedButton = createOperationButton(icon: R.image.iconBuy(), enabled: true)
     let swapButton = createOperationButton(icon: R.image.iconActionChange())
-    let earnButton: RoundedButton = createOperationButton(
-        icon: R.image.iconTabStaking()?.tinted(with: R.color.colorIconPrimary()!),
-        enabled: true
-    )
 
     private var currentBalanceHeight: CGFloat = AssetDetailsBalanceWidget.Constants.collapsedStateHeight
     private var currentAHMAlertHeight: CGFloat = .zero
 
     private lazy var buttonsRow = PayButtonsRow(
         frame: .zero,
-        views: [sendButton, receiveButton, swapButton, buySellButton, earnButton]
+        views: [sendButton, receiveButton, swapButton, buySellButton]
     )
 
     private var chartViewHeight: CGFloat = .zero
@@ -109,8 +105,6 @@ final class AssetDetailsViewLayout: ScrollableContainerLayoutView {
         }
 
         containerView.stackView.spacing = Constants.sectionSpace
-
-        earnButton.isHidden = true
 
         addArrangedSubview(balanceWidget)
         addArrangedSubview(buttonsRow)
@@ -245,9 +239,6 @@ extension AssetDetailsViewLayout {
 
         swapButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.commonSwapAction()
         swapButton.invalidateLayout()
-
-        earnButton.imageWithTitleView?.title = R.string(preferredLanguages: languages).localizable.walletAssetEarn()
-        earnButton.invalidateLayout()
     }
 
     func set(assetDetailsModel: AssetDetailsModel) {

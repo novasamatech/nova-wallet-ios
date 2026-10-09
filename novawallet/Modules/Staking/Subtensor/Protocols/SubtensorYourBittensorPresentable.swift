@@ -5,7 +5,10 @@ protocol SubtensorYourBittensorPresentable {
 }
 
 extension SubtensorYourBittensorPresentable {
-    func showYourBittensor(from _: ControllerBackedProtocol?, stakingOption: Multistaking.ChainAssetOption) {
+    func presentYourBittensor(
+        stakingOption: Multistaking.ChainAssetOption,
+        flowState: SubtensorStakingFlowStateProtocol
+    ) {
         let tabBarController = UIApplication.shared.tabBarController
         let hostNavigation = tabBarController?.selectedViewController as? UINavigationController
 
@@ -16,7 +19,10 @@ extension SubtensorYourBittensorPresentable {
 
             if let portfolio = hostNavigation.viewControllers.last(where: { $0 is SubtensorPortfolioViewController }) {
                 hostNavigation.popToViewController(portfolio, animated: true)
-            } else if let portfolioView = SubtensorPortfolioViewFactory.createView(for: stakingOption) {
+            } else if let portfolioView = SubtensorPortfolioViewFactory.createView(
+                for: stakingOption,
+                flowState: flowState
+            ) {
                 hostNavigation.pushViewController(portfolioView.controller, animated: true)
             }
         }

@@ -209,7 +209,10 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
             priceHistoryService: nil,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             currencyManager: currencyManager,
-            coingeckoFactory: CoingeckoOperationFactory(),
+            flowState: SubtensorStakingFlowState(
+                coingeckoOperationFactory: CoingeckoOperationFactory(),
+                operationQueue: OperationQueue()
+            ),
             operationQueue: OperationQueue(),
             logger: Logger.shared
         )
@@ -388,7 +391,11 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
                 catalogueService: makeCatalogueService(),
                 yieldService: makeYieldService(),
                 subnetLogosProvider: makeSubnetLogosProvider(),
-                priceHistoryService: nil,
+                priceHistoryStore: .init(
+                    priceHistoryService: nil,
+                    historyCache: SubtensorPriceHistoryCache(),
+                    operationQueue: OperationQueue()
+                ),
                 validatorFactory: SubtensorValidatorPresetFactory(
                     directoryService: makeDirectoryService(),
                     recommendationService: MockSubtensorRecommendationServiceProtocol(),

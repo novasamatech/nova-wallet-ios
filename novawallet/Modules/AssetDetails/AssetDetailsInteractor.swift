@@ -15,7 +15,6 @@ final class AssetDetailsInteractor: AnyCancellableCleaning {
     let externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactoryProtocol
     let swapState: SwapTokensFlowStateProtocol
     let rampProvider: RampProviderProtocol
-    let bittensorEarnSource: AssetDetailsBittensorEarnSourceProtocol
     let assetMapper: CustomAssetMapper
     let operationQueue: OperationQueue
 
@@ -25,8 +24,6 @@ final class AssetDetailsInteractor: AnyCancellableCleaning {
     private var externalBalanceSubscription: StreamableProvider<ExternalAssetBalance>?
     private var assetHoldsSubscription: StreamableProvider<AssetHold>?
     private var swapsCall = CancellableCallStore()
-    private var hasSwaps = false
-    private var isEarnEnabled = false
 
     private var assetExchangeService: AssetsExchangeServiceProtocol?
 
@@ -41,7 +38,6 @@ final class AssetDetailsInteractor: AnyCancellableCleaning {
         selectedMetaAccount: MetaAccountModel,
         chainAsset: ChainAsset,
         rampProvider: RampProviderProtocol,
-        bittensorEarnSource: AssetDetailsBittensorEarnSourceProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactoryProtocol,
@@ -58,7 +54,6 @@ final class AssetDetailsInteractor: AnyCancellableCleaning {
         self.selectedMetaAccount = selectedMetaAccount
         self.chainAsset = chainAsset
         self.rampProvider = rampProvider
-        self.bittensorEarnSource = bittensorEarnSource
         self.swapState = swapState
         self.operationQueue = operationQueue
         assetMapper = CustomAssetMapper(
@@ -138,8 +133,6 @@ private extension AssetDetailsInteractor {
     }
 
     func setAvailableOperations(hasSwaps: Bool) {
-        self.hasSwaps = hasSwaps
-
         guard let accountId = accountId else {
             return
         }
@@ -165,10 +158,6 @@ private extension AssetDetailsInteractor {
 
         if hasSwaps {
             operations.insert(.swap)
-        }
-
-        if isEarnEnabled {
-            operations.insert(.earn)
         }
 
         presenter?.didReceive(rampActions: rampActions)
@@ -255,9 +244,6 @@ extension AssetDetailsInteractor: AssetDetailsInteractorInputProtocol {
         setAvailableOperations(hasSwaps: false)
 
         setupSwapService()
-
-        bittensorEarnSource.delegate = self
-        bittensorEarnSource.setup()
     }
 
     func closeAHMAlert() {
@@ -353,21 +339,6 @@ extension AssetDetailsInteractor: SelectedCurrencyDepending {
         if presenter != nil, let priceId = chainAsset.asset.priceId {
             priceSubscription = subscribeToPrice(for: priceId, currency: selectedCurrency)
         }
-    }
-}
-
-extension AssetDetailsInteractor: AssetDetailsBittensorEarnDelegate {
-    func didReceiveBittensorEarn(isEnabled: Bool) {
-        isEarnEnabled = isEnabled
-        setAvailableOperations(hasSwaps: hasSwaps)
-    }
-
-    func didReceiveBittensorEarn(hasPositions: Bool) {
-        presenter?.didReceive(hasBittensorPositions: hasPositions)
-    }
-
-    func didReceiveBittensorEarn(error: AssetDetailsError) {
-        presenter?.didReceive(error: error)
     }
 }
 

@@ -26,9 +26,15 @@ struct SubtensorPositionState {
     var pendingClaimHotkeys: Set<AccountId> = []
     var holds: [AccountId: SubtensorRootHold] = [:]
     var blockNumber: BlockNumber?
-    var period = SubtensorPositionViewModelFactory.defaultPeriod
-    var history = SubtensorSubnetHistoryState.loading
+    var period = SubtensorPriceWidgetViewModelFactory.defaultPeriod
+    var history = SubtensorSubnetHistoryState.loading {
+        didSet {
+            chartPoint = nil
+        }
+    }
+
     var hasResolvedHistory = false
+    var chartPoint: Int?
 
     init(netuid: UInt16, group: SubtensorPortfolioGroup?) {
         self.netuid = netuid
@@ -164,15 +170,10 @@ struct SubtensorPositionNoticeViewModel: Equatable {
     let message: String
 }
 
-struct SubtensorPositionChartViewModel: Equatable {
-    let chart: SubtensorSubnetChartViewModel
-    let periods: SubtensorSubnetPeriodsViewModel
-}
-
 struct SubtensorPositionViewModel {
     let title: String?
     let summary: SubtensorPositionSummaryViewModel
-    let chart: SubtensorPositionChartViewModel?
+    let priceWidget: SubtensorPriceWidgetViewModel?
     let actions: [SubtensorPositionActionViewModel]
     let validator: SubtensorPositionValidatorViewModel
     let notice: SubtensorPositionNoticeViewModel?

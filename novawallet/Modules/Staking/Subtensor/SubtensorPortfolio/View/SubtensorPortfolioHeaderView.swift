@@ -42,7 +42,7 @@ final class SubtensorPortfolioHeaderView: UIView {
 
     let chartContainerView = UIView()
 
-    let chartView = SubtensorSubnetPriceChartView(style: .portfolio)
+    let chartView = SubtensorSubnetPriceChartView(style: .portfolio, isSelectable: true)
 
     let chartLoadingView = SubtensorChartLoadingView()
 

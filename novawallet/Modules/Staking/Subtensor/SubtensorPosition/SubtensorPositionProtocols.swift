@@ -2,6 +2,7 @@ import Foundation
 
 protocol SubtensorPositionViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: SubtensorPositionViewModel)
+    func didReceive(priceHeader: SubtensorSubnetPriceHeaderViewModel)
 }
 
 protocol SubtensorPositionPresenterProtocol: AnyObject {
@@ -11,6 +12,7 @@ protocol SubtensorPositionPresenterProtocol: AnyObject {
     func selectValidator()
     func retrySync()
     func retryHistory()
+    func selectChartPoint(at index: Int?)
 }
 
 protocol SubtensorPositionInteractorInputProtocol: AnyObject {

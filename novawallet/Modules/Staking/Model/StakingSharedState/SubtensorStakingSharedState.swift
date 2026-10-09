@@ -24,11 +24,11 @@ protocol SubtensorStakingSharedStateProtocol: AnyObject {
     var subnetsService: SubtensorSubnetsServiceProtocol { get }
     var apiOperationFactory: SubtensorApiOperationFactoryProtocol { get }
     var earnServices: SubtensorEarnServices { get }
+    var flowState: SubtensorStakingFlowStateProtocol { get }
 
     var selectedAccount: MetaChainAccountResponse? { get }
     var positionsSyncService: SubtensorPositionsSyncServiceProtocol? { get }
     var rootClaimableService: SubtensorRootClaimableServiceProtocol? { get }
-    var pendingRootClaims: SubtensorPendingRootClaimsProtocol { get }
 
     var logger: LoggerProtocol { get }
 
@@ -54,13 +54,13 @@ final class SubtensorStakingSharedState {
     let apiOperationFactory: SubtensorApiOperationFactoryProtocol
     let stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol
     let earnServices: SubtensorEarnServices
+    let flowState: SubtensorStakingFlowStateProtocol
     let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
     let logger: LoggerProtocol
     let novaFeeCalculator: SubtensorNovaFeeCalculator
     let positionsSyncServiceFactory: ((AccountId) -> SubtensorPositionsSyncServiceProtocol)?
-    let pendingRootClaims: SubtensorPendingRootClaimsProtocol = SubtensorPendingRootClaims()
 
     private let mutex = NSLock()
 
@@ -77,6 +77,7 @@ final class SubtensorStakingSharedState {
         apiOperationFactory: SubtensorApiOperationFactoryProtocol,
         stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol,
         earnServices: SubtensorEarnServices,
+        flowState: SubtensorStakingFlowStateProtocol,
         eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
@@ -91,6 +92,7 @@ final class SubtensorStakingSharedState {
         self.apiOperationFactory = apiOperationFactory
         self.stakeStateFetchFactory = stakeStateFetchFactory
         self.earnServices = earnServices
+        self.flowState = flowState
         self.eventCenter = eventCenter
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
@@ -269,7 +271,7 @@ extension SubtensorStakingSharedState: SubtensorStakingSharedStateProtocol {
             positionsSyncService: positionsSyncService,
             sharedOperation: sharedOperation,
             eventCenter: eventCenter,
-            pendingRootClaims: pendingRootClaims,
+            pendingRootClaims: flowState.pendingRootClaims,
             feeCalculator: novaFeeCalculator
         )
     }

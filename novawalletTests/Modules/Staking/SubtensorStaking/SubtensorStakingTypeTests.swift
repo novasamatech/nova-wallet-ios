@@ -57,21 +57,6 @@ final class SubtensorStakingTypeTests: XCTestCase {
         XCTAssertTrue(chain.chainAssetIdsWithExternalBalances().isEmpty)
     }
 
-    func testAssetWithoutSubtensorStakingHidesTheEarnAction() {
-        XCTAssertFalse(AssetDetailsBittensorEarnSource.isEarnAvailable(on: createChainAsset(stakings: nil)))
-    }
-
-    func testAssetWithSubtensorStakingShowsTheEarnAction() {
-        XCTAssertTrue(AssetDetailsBittensorEarnSource.isEarnAvailable(on: createChainAsset(stakings: [.subtensor])))
-    }
-
-    private func createChainAsset(stakings: [StakingType]?) -> ChainAsset {
-        let asset = createAsset(stakings: stakings)
-        let chain = ChainModelGenerator.generateChain(assets: [asset], addressPrefix: 42)
-
-        return ChainAsset(chain: chain, asset: asset)
-    }
-
     private func createAsset(stakings: [StakingType]?) -> AssetModel {
         AssetModel(
             assetId: 0,

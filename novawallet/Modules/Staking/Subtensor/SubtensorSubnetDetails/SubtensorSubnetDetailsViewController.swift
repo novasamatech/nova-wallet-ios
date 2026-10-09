@@ -6,14 +6,23 @@ final class SubtensorSubnetDetailsViewController: UIViewController, ViewHolder {
 
     let presenter: SubtensorSubnetDetailsPresenterProtocol
 
-    private var chartViewModel: SubtensorSubnetChartViewModel?
+    private let seekHapticPlayer: ProgressiveHapticPlayer
+    private let chartLongPressHapticPlayer: HapticPlayer
+    private let periodControlHapticPlayer: HapticPlayer
+
     private var titleImageViewModel: ImageViewModelProtocol?
 
     init(
         presenter: SubtensorSubnetDetailsPresenterProtocol,
+        seekHapticPlayer: ProgressiveHapticPlayer,
+        chartLongPressHapticPlayer: HapticPlayer,
+        periodControlHapticPlayer: HapticPlayer,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
+        self.seekHapticPlayer = seekHapticPlayer
+        self.chartLongPressHapticPlayer = chartLongPressHapticPlayer
+        self.periodControlHapticPlayer = periodControlHapticPlayer
 
         super.init(nibName: nil, bundle: nil)
 
@@ -50,6 +59,7 @@ private extension SubtensorSubnetDetailsViewController {
         rootView.currencyControl.addTarget(self, action: #selector(actionCurrency), for: .valueChanged)
         rootView.periodControl.addTarget(self, action: #selector(actionPeriod), for: .valueChanged)
         rootView.chartUnavailableView.addTarget(self, action: #selector(actionRetryHistory), for: .touchUpInside)
+        rootView.chartView.delegate = self
         rootView.validatorView.addTarget(self, action: #selector(actionValidator), for: .touchUpInside)
         rootView.favoriteButton.addTarget(self, action: #selector(actionFavorite), for: .touchUpInside)
         rootView.actionButton.addTarget(self, action: #selector(actionUseSubnet), for: .touchUpInside)
@@ -77,20 +87,12 @@ private extension SubtensorSubnetDetailsViewController {
         rootView.actionButton.invalidateLayout()
     }
 
-    func bindChartIfNeeded(_ viewModel: SubtensorSubnetChartViewModel) {
-        guard viewModel != chartViewModel else {
-            return
-        }
-
-        chartViewModel = viewModel
-        rootView.bind(chart: viewModel)
-    }
-
     @objc func actionCurrency() {
         presenter.selectCurrency(at: rootView.currencyControl.selectedSegmentIndex)
     }
 
     @objc func actionPeriod() {
+        periodControlHapticPlayer.play()
         presenter.selectPeriod(at: rootView.periodControl.selectedSegmentIndex)
     }
 
@@ -127,9 +129,7 @@ extension SubtensorSubnetDetailsViewController: SubtensorSubnetDetailsViewProtoc
     }
 
     func didReceive(viewModel: SubtensorSubnetDetailsViewModel) {
-        rootView.bind(header: viewModel.header)
-        bindChartIfNeeded(viewModel.chart)
-        rootView.bind(periods: viewModel.periods)
+        rootView.priceWidget.bind(viewModel: viewModel.priceWidget)
         rootView.validatorView.bind(viewModel: viewModel.validator)
         rootView.estimateView.bind(viewModel: viewModel.estimate)
         rootView.bind(factorsHeading: viewModel.factors.heading)
@@ -149,6 +149,26 @@ extension SubtensorSubnetDetailsViewController: SubtensorSubnetDetailsViewProtoc
         } else {
             rootView.actionButton.applyDisabledStyle()
         }
+    }
+
+    func didReceive(priceHeader: SubtensorSubnetPriceHeaderViewModel) {
+        rootView.priceWidget.bind(header: priceHeader)
+    }
+}
+
+extension SubtensorSubnetDetailsViewController: SubtensorPriceChartViewDelegate {
+    func priceChartViewDidBeginSelection(_: SubtensorSubnetPriceChartView) {
+        chartLongPressHapticPlayer.play()
+    }
+
+    func priceChartView(_: SubtensorSubnetPriceChartView, didSelectPointAt index: Int) {
+        seekHapticPlayer.play()
+        presenter.selectChartPoint(at: index)
+    }
+
+    func priceChartViewDidEndSelection(_: SubtensorSubnetPriceChartView) {
+        seekHapticPlayer.reset()
+        presenter.selectChartPoint(at: nil)
     }
 }
 

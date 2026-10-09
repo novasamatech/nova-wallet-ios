@@ -9,7 +9,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning {
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
     let yieldService: SubtensorYieldServiceProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
-    let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
+    let priceHistoryStore: SubtensorPriceHistoryStore
     let validatorFactory: SubtensorValidatorPresetFactoryProtocol
     let rootHoldFactory: SubtensorRootHoldFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
@@ -45,7 +45,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning {
         catalogueService: SubtensorSubnetCatalogueServiceProtocol,
         yieldService: SubtensorYieldServiceProtocol,
         subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
-        priceHistoryService: SubtensorPriceHistoryServiceProtocol?,
+        priceHistoryStore: SubtensorPriceHistoryStore,
         validatorFactory: SubtensorValidatorPresetFactoryProtocol,
         rootHoldFactory: SubtensorRootHoldFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
@@ -58,7 +58,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning {
         self.catalogueService = catalogueService
         self.yieldService = yieldService
         self.subnetLogosProvider = subnetLogosProvider
-        self.priceHistoryService = priceHistoryService
+        self.priceHistoryStore = priceHistoryStore
         self.validatorFactory = validatorFactory
         self.rootHoldFactory = rootHoldFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
@@ -332,18 +332,11 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
     }
 
     func loadHistory(for subnet: SubtensorSubnetRef, period: SubtensorPricePeriod) {
-        historyStore.cancel()
-
-        guard let priceHistoryService else {
-            presenter?.didReceive(history: .notListed, for: period)
-            return
-        }
-
-        executeCancellable(
-            wrapper: priceHistoryService.createHistoryWrapper(for: subnet, period: period, currency: selectedCurrency),
-            inOperationQueue: operationQueue,
-            backingCallIn: historyStore,
-            runningCallbackIn: .main
+        priceHistoryStore.loadHistory(
+            for: subnet,
+            period: period,
+            currency: selectedCurrency,
+            backingCallIn: historyStore
         ) { [weak self] result in
             switch result {
             case let .success(history):

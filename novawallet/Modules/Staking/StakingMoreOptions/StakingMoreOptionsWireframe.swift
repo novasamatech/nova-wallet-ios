@@ -1,6 +1,12 @@
 import Foundation
 
 final class StakingMoreOptionsWireframe: StakingMoreOptionsWireframeProtocol {
+    let subtensorFlowState: SubtensorStakingFlowStateProtocol
+
+    init(subtensorFlowState: SubtensorStakingFlowStateProtocol) {
+        self.subtensorFlowState = subtensorFlowState
+    }
+
     func showStartStaking(
         from view: StakingMoreOptionsViewProtocol?,
         chainAsset: ChainAsset,
@@ -8,7 +14,8 @@ final class StakingMoreOptionsWireframe: StakingMoreOptionsWireframeProtocol {
     ) {
         guard let startStakingView = StartStakingInfoViewFactory.createView(
             chainAsset: chainAsset,
-            selectedStakingType: stakingType
+            selectedStakingType: stakingType,
+            subtensorFlowState: subtensorFlowState
         ) else {
             return
         }

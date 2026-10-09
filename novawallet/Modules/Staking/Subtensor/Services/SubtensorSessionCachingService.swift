@@ -2,29 +2,23 @@ import Foundation
 import Operation_iOS
 
 class SubtensorSessionCachingService<Model> {
-    private struct CacheEntry {
-        let model: Model
-        let updatedAt: Date
-    }
-
     let operationQueue: OperationQueue
-    let cacheTTL: TimeInterval
+    let cache: SubtensorSessionCache<Model>
     let logger: LoggerProtocol
 
     let mutex = NSLock()
 
     private let callStore = CancellableCallStore()
 
-    private var cacheEntry: CacheEntry?
     private var pendingDeliveries: [(queue: DispatchQueue, closure: (Result<Model, Error>) -> Void)] = []
 
     init(
         operationQueue: OperationQueue,
-        cacheTTL: TimeInterval = TimeInterval(15).secondsFromMinutes,
+        cache: SubtensorSessionCache<Model>,
         logger: LoggerProtocol = Logger.shared
     ) {
         self.operationQueue = operationQueue
-        self.cacheTTL = cacheTTL
+        self.cache = cache
         self.logger = logger
     }
 
@@ -54,7 +48,7 @@ class SubtensorSessionCachingService<Model> {
             mutex.unlock()
         }
 
-        if !forcingRefresh, let model = freshCachedModel() {
+        if !forcingRefresh, let model = cache.freshModel() {
             queue.async {
                 completion(.success(model))
             }
@@ -74,25 +68,11 @@ class SubtensorSessionCachingService<Model> {
     }
 
     func cachedModel() -> Model? {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        return freshCachedModel()
+        cache.freshModel()
     }
 }
 
 private extension SubtensorSessionCachingService {
-    func freshCachedModel() -> Model? {
-        guard let cacheEntry, Date().timeIntervalSince(cacheEntry.updatedAt) < cacheTTL else {
-            return nil
-        }
-
-        return cacheEntry.model
-    }
-
     func performFetch() {
         let wrapper = createFetchWrapper()
 
@@ -109,7 +89,7 @@ private extension SubtensorSessionCachingService {
 
     func handleFetchResult(_ result: Result<Model, Error>) {
         if case let .success(model) = result {
-            cacheEntry = CacheEntry(model: model, updatedAt: Date())
+            cache.store(model)
         }
 
         if case let .failure(error) = result {

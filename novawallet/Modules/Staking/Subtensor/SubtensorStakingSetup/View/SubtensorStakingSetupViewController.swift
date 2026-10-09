@@ -68,7 +68,6 @@ private extension SubtensorStakingSetupViewController {
         rootView.validatorCell.addTarget(self, action: #selector(actionSelectValidator), for: .touchUpInside)
         rootView.pickCardView.headerView.addTarget(self, action: #selector(actionCardHeader), for: .touchUpInside)
         rootView.pickCardView.swapRateCell.addTarget(self, action: #selector(actionSwapRateInfo), for: .touchUpInside)
-        rootView.pickCardView.footerButton.addTarget(self, action: #selector(actionChooseMyself), for: .touchUpInside)
         rootView.avgBuyPriceCell.addTarget(self, action: #selector(actionAvgBuyPriceInfo), for: .touchUpInside)
         rootView.getTaoCardView.actionButton.addTarget(self, action: #selector(actionGetTao), for: .touchUpInside)
         rootView.actionButton.addTarget(self, action: #selector(actionProceed), for: .touchUpInside)
@@ -237,10 +236,6 @@ private extension SubtensorStakingSetupViewController {
 
     @objc func actionAvgBuyPriceInfo() {
         presenter.showAvgBuyPriceInfo()
-    }
-
-    @objc func actionChooseMyself() {
-        presenter.chooseMyself()
     }
 
     @objc func actionSettings() {

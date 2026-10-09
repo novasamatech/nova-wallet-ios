@@ -121,17 +121,18 @@ extension SubtensorFlowTestCase {
         XCTAssertEqual(chutesHistory.period, .month)
         XCTAssertEqual(chutesHistory.points.map(\.date), [
             SubtensorFlowActiveStake.chartDate(daysBeforeEnd: 30),
+            SubtensorFlowActiveStake.chartDate(daysBeforeEnd: 7),
             SubtensorFlowActiveStake.chartDate(daysBeforeEnd: 0)
         ])
-        assertFlowDoubles(chutesHistory.points.map(\.taoPerAlpha), [0.0634, 0.0738])
-        assertFlowDoubles(chutesHistory.points.map(\.fiatPerAlpha), [19.02, 25.2396])
+        assertFlowDoubles(chutesHistory.points.map(\.taoPerAlpha), [0.0634, 0.0634, 0.0738])
+        assertFlowDoubles(chutesHistory.points.map(\.fiatPerAlpha), [19.02, 19.02, 25.2396])
         XCTAssertEqual(try flowDouble(chutesHistory.changeInTao), 0.0738 / 0.0634 - 1, accuracy: 1e-9)
         XCTAssertEqual(try flowDouble(chutesHistory.changeInFiat), 25.2396 / 19.02 - 1, accuracy: 1e-9)
 
         let series = screen.valueSeries
         XCTAssertEqual(series.points.map(\.date), chutesHistory.points.map(\.date))
-        assertFlowDoubles(series.points.map(\.taoValue), [25.4626932289, 26.00640729])
-        assertFlowDoubles(series.points.map(\.fiatValue), [7638.807968665, 8894.19129318])
+        assertFlowDoubles(series.points.map(\.taoValue), [25.4626932289, 25.4626932289, 26.00640729])
+        assertFlowDoubles(series.points.map(\.fiatValue), [7638.807968665, 7638.807968665, 8894.19129318])
         XCTAssertEqual(try flowDouble(series.changeInFiat), 8894.19129318 / 7638.807968665 - 1, accuracy: 1e-9)
     }
 
