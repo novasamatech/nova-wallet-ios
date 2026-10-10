@@ -10,6 +10,7 @@ struct SubtensorFlowYourBittensor {
     let logos: SubtensorSubnetLogos
     let weeklyPrices: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]
     let monthHistories: [SubtensorSubnetRef: SubtensorPriceHistoryResult]
+    let stakeHistory: SubtensorPortfolioStakeHistory
     let valueSeries: SubtensorPortfolioValueSeries
 
     func subnet(netuid: UInt16) throws -> SubtensorCatalogueSubnet {
@@ -22,6 +23,9 @@ extension SubtensorFlowTestCase {
         let services = world.earnServices
         let priceHistoryService = try XCTUnwrap(services.priceHistoryService)
         let taoPriceId = try XCTUnwrap(world.chainAsset.asset.priceId)
+        let accountSubject = try SubtensorFlowChainWorld.coldkey.toAddress(using: .defaultSubstrateFormat)
+
+        SubtensorFlowURLProtocol.servePortfolioHistoryFixture(accountSubject: accountSubject, period: "THIRTY_DAYS")
 
         let state = try awaitPositions(in: world)
         let catalogue = try run(services.catalogueService.createCatalogueWrapper())
@@ -37,6 +41,10 @@ extension SubtensorFlowTestCase {
         let monthHistories = try refs.reduce(into: [SubtensorSubnetRef: SubtensorPriceHistoryResult]()) { result, ref in
             result[ref] = try run(priceHistoryService.createHistoryWrapper(for: ref, period: .month, currency: .usd))
         }
+
+        let stakeHistory = try run(
+            services.portfolioHistoryService.createHistoryWrapper(for: accountSubject, period: .month)
+        )
 
         let coingeckoOperationFactory = CoingeckoOperationFactory()
 
@@ -55,16 +63,11 @@ extension SubtensorFlowTestCase {
             histories: SubtensorPortfolioPriceHistories(
                 period: .month,
                 taoFiat: taoFiatHistory,
-                subnets: monthHistories.values.compactMap { result in
-                    guard case let .available(history) = result else {
-                        return nil
-                    }
-
-                    return history
-                }
+                stake: stakeHistory
             ),
             currentTaoPrice: 342,
-            precision: world.chainAsset.asset.decimalPrecision
+            precision: world.chainAsset.asset.decimalPrecision,
+            now: SubtensorFlowActiveStake.chartDate(daysBeforeEnd: 0)
         )
 
         return SubtensorFlowYourBittensor(
@@ -74,6 +77,7 @@ extension SubtensorFlowTestCase {
             logos: logos,
             weeklyPrices: weeklyPrices,
             monthHistories: monthHistories,
+            stakeHistory: stakeHistory,
             valueSeries: valueSeries
         )
     }
@@ -129,11 +133,31 @@ extension SubtensorFlowTestCase {
         XCTAssertEqual(try flowDouble(chutesHistory.changeInTao), 0.0738 / 0.0634 - 1, accuracy: 1e-9)
         XCTAssertEqual(try flowDouble(chutesHistory.changeInFiat), 25.2396 / 19.02 - 1, accuracy: 1e-9)
 
+        let stakeHistory = screen.stakeHistory
+        XCTAssertEqual(stakeHistory.period, .month)
+        XCTAssertEqual(stakeHistory.windowStart, SubtensorFlowActiveStake.chartDate(daysBeforeEnd: 30))
+        XCTAssertEqual(stakeHistory.windowEnd, SubtensorFlowActiveStake.chartDate(daysBeforeEnd: 0))
+        XCTAssertEqual(stakeHistory.points.count, 181)
+        XCTAssertEqual(stakeHistory.points.last?.isCompleted, false)
+
+        guard let weekStartStake = stakeHistory.points.first(where: {
+            $0.date == SubtensorFlowActiveStake.chartDate(daysBeforeEnd: 7)
+        }) else {
+            XCTFail("Expected a stake sample at the week start")
+            return
+        }
+
+        // Settled samples are priced by the TAO chart, and the open bucket is replaced by the live total.
         let series = screen.valueSeries
-        XCTAssertEqual(series.points.map(\.date), chutesHistory.points.map(\.date))
-        assertFlowDoubles(series.points.map(\.taoValue), [25.4626932289, 25.4626932289, 26.00640729])
-        assertFlowDoubles(series.points.map(\.fiatValue), [7638.807968665, 7638.807968665, 8894.19129318])
-        XCTAssertEqual(try flowDouble(series.changeInFiat), 8894.19129318 / 7638.807968665 - 1, accuracy: 1e-9)
+        let weekStartTao = NSDecimalNumber(decimal: weekStartStake.taoValue).doubleValue
+        XCTAssertEqual(series.points.map(\.date), [
+            SubtensorFlowActiveStake.chartDate(daysBeforeEnd: 30),
+            SubtensorFlowActiveStake.chartDate(daysBeforeEnd: 7),
+            SubtensorFlowActiveStake.chartDate(daysBeforeEnd: 0)
+        ])
+        assertFlowDoubles(series.points.map(\.taoValue), [20, weekStartTao, 26.00640729])
+        assertFlowDoubles(series.points.map(\.fiatValue), [6000, weekStartTao * 300, 8894.19129318])
+        XCTAssertEqual(try flowDouble(series.changeInFiat), 8894.19129318 / 6000 - 1, accuracy: 1e-9)
     }
 
     func flowDouble(_ value: Decimal?) throws -> Double {

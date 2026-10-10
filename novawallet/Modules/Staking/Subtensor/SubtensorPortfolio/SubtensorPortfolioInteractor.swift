@@ -43,6 +43,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
         yieldService: SubtensorYieldServiceProtocol,
         subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
         priceHistoryService: SubtensorPriceHistoryServiceProtocol?,
+        portfolioHistoryService: SubtensorPortfolioHistoryServiceProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         flowState: SubtensorStakingFlowStateProtocol,
@@ -63,7 +64,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
         self.logger = logger
 
         historyLoader = SubtensorPortfolioHistoryLoader(
-            priceHistoryService: priceHistoryService,
+            historyService: portfolioHistoryService,
             flowState: flowState,
             operationQueue: operationQueue
         )
@@ -112,15 +113,25 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
         state.positionsSyncService?.refresh()
     }
 
-    func loadHistories(for period: SubtensorPricePeriod, subnets: [SubtensorSubnetRef]) {
+    func loadHistories(for period: SubtensorPricePeriod) {
         guard let priceId = chainAsset.asset.priceId else {
+            presenter?.didFailHistories(for: period)
+            return
+        }
+
+        let accountSubject: AccountAddress
+
+        do {
+            accountSubject = try account.chainAccount.accountId.toAddress(using: .defaultSubstrateFormat)
+        } catch {
+            logger.warning("Bittensor portfolio chart subject unavailable: \(error)")
             presenter?.didFailHistories(for: period)
             return
         }
 
         historyLoader.load(
             for: period,
-            subnets: subnets,
+            accountSubject: accountSubject,
             taoPriceId: priceId,
             currency: selectedCurrency
         ) { [weak self] result in

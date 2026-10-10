@@ -101,17 +101,6 @@ enum BittensorAttestedRequestBuilder {
 
         return operation
     }
-}
-
-private extension BittensorAttestedRequestBuilder {
-    enum Constants {
-        static let apiRootPath = "/v1/bittensor"
-        static let requestIdHeader = "X-Request-ID"
-    }
-
-    static func normalizedRoute(_ path: String) -> String {
-        path.hasPrefix("/") ? path : "/" + path
-    }
 
     static func createURL(for request: BittensorApiRequest, baseURL: URL) throws -> URL {
         guard var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false) else {
@@ -130,5 +119,16 @@ private extension BittensorAttestedRequestBuilder {
         }
 
         return url
+    }
+}
+
+private extension BittensorAttestedRequestBuilder {
+    enum Constants {
+        static let apiRootPath = "/v1/bittensor"
+        static let requestIdHeader = "X-Request-ID"
+    }
+
+    static func normalizedRoute(_ path: String) -> String {
+        path.hasPrefix("/") ? path : "/" + path
     }
 }

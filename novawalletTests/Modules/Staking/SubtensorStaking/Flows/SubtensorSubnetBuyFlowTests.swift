@@ -203,19 +203,20 @@ final class SubtensorSubnetBuyFlowTests: SubtensorFlowTestCase {
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=30",
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=7",
             "GET \(SubtensorFlowHost.priceAPI)/coins/chutes/market_chart?vs_currency=usd&days=30",
-            "GET \(SubtensorFlowHost.priceAPI)/coins/markets?vs_currency=usd&category=bittensor-subnets&per_page=250&page=1&sparkline=true&price_change_percentage=7d"
+            "GET \(SubtensorFlowHost.priceAPI)/coins/markets?vs_currency=usd&category=bittensor-subnets&per_page=250&page=1&sparkline=true&price_change_percentage=7d",
+            "POST https://bittensor.test/v1/bittensor/portfolio/history/search"
         ])
 
         assertAttestedRequests(
             world,
-            paths: [
+            requests: [
                 "/v1/bittensor/subnets",
                 "/v1/bittensor/yields/root",
                 "/v1/bittensor/recommendations/subnets",
                 "/v1/bittensor/recommendations",
                 "/v1/bittensor/subnets/64/validators",
                 "/v1/bittensor/subnets/64/yields/alpha"
-            ]
+            ].map { SubtensorFlowAttestedRequest(method: "GET", path: $0) } + [try portfolioHistoryAttestedRequest()]
         )
     }
 }

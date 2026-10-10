@@ -100,4 +100,80 @@ import Foundation
             NSDecimalNumber(decimal: value).stringValue
         }
     }
+
+    extension BittensorApiFixtureDocuments {
+        struct FixturePortfolioPeriod {
+            let stepHours: Int
+            let spanHours: Int
+        }
+
+        static let portfolioHistoryPeriods: [String: FixturePortfolioPeriod] = [
+            "ONE_DAY": FixturePortfolioPeriod(stepHours: 1, spanHours: 24),
+            "SEVEN_DAYS": FixturePortfolioPeriod(stepHours: 1, spanHours: 168),
+            "THIRTY_DAYS": FixturePortfolioPeriod(stepHours: 4, spanHours: 720),
+            "NINETY_DAYS": FixturePortfolioPeriod(stepHours: 8, spanHours: 2160)
+        ]
+
+        static let portfolioHistoryWindowEnd = Date(timeIntervalSince1970: 1_790_208_000) // 2026-09-24T00:00:00Z
+        static let portfolioBaseTao = Decimal(20)
+        static let portfolioBuyTao = Decimal(5)
+        static let portfolioTaoUsd = Decimal(412)
+
+        static func portfolioHistory(period: String) -> Document {
+            let preset = portfolioHistoryPeriods[period] ?? FixturePortfolioPeriod(stepHours: 1, spanHours: 24)
+            let end = portfolioHistoryWindowEnd
+            let start = end.addingTimeInterval(-TimeInterval(preset.spanHours * 3600))
+            let sampleCount = preset.spanHours / preset.stepHours
+
+            var points = (1 ... sampleCount).reversed().map { index -> Document in
+                let date = end.addingTimeInterval(-TimeInterval(index * preset.stepHours * 3600))
+
+                return portfolioHistoryPoint(at: date, start: start, end: end, completed: true)
+            }
+
+            let openBucket = end.addingTimeInterval(-3600)
+
+            let openPoint = portfolioHistoryPoint(at: openBucket, start: start, end: end, completed: false)
+
+            if preset.stepHours > 1 {
+                points.append(openPoint)
+            } else {
+                points[points.count - 1] = openPoint
+            }
+
+            return [
+                "period": period,
+                "window": ["start": instantText(start), "end": instantText(end)],
+                "points": points,
+                "historyScope": "TAO_APP_PARTIAL",
+                "meta": [
+                    "completeness": "COMPLETE",
+                    "components": [
+                        "portfolioHistory": availableComponent(asOf: "2026-09-23T23:29:30Z", valueQuality: "DERIVED")
+                    ]
+                ]
+            ]
+        }
+
+        static func portfolioHistoryPoint(at date: Date, start: Date, end: Date, completed: Bool) -> Document {
+            let progress = date.timeIntervalSince(start) / end.timeIntervalSince(start)
+            let drift = Decimal(sin(progress * 9) * 0.6 + progress * 1.5)
+            let bought = progress >= 0.6 ? portfolioBuyTao : 0
+            let taoValue = rounded(portfolioBaseTao + drift + bought)
+
+            return [
+                "timestamp": instantText(date),
+                "reportedValueTao": decimalText(taoValue),
+                "reportedValueUsd": decimalText(rounded(taoValue * portfolioTaoUsd)),
+                "completed": completed
+            ]
+        }
+
+        static func instantText(_ date: Date) -> String {
+            let formatter = ISO8601DateFormatter()
+            formatter.formatOptions = [.withInternetDateTime]
+
+            return formatter.string(from: date)
+        }
+    }
 #endif

@@ -164,6 +164,21 @@ final class SubtensorFlowURLProtocol: URLProtocol {
         Data(#"{"accountSubject":"\#(accountSubject)","page":\#(page)}"#.utf8)
     }
 
+    static func servePortfolioHistoryFixture(accountSubject: AccountAddress, period: String) {
+        let route = BittensorApiFixtureRoute.portfolioHistory(period: period)
+
+        serve(
+            "POST",
+            SubtensorFlowHost.bittensor("/portfolio/history/search"),
+            body: portfolioHistoryBody(accountSubject: accountSubject, period: period),
+            reply: .bittensor(BittensorApiFixtureRouter.document(for: route), route: route)
+        )
+    }
+
+    static func portfolioHistoryBody(accountSubject: AccountAddress, period: String) -> Data {
+        Data(#"{"accountSubject":"\#(accountSubject)","period":"\#(period)"}"#.utf8)
+    }
+
     static func serveSubnetLogos() {
         serve(
             "GET",
@@ -263,7 +278,7 @@ private extension SubtensorFlowURLProtocol {
             return "/recommendations"
         case .rankedSubnets:
             return "/recommendations/subnets"
-        case .operations:
+        case .operations, .portfolioHistory:
             return nil
         }
     }

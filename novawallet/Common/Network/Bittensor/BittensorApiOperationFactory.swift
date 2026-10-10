@@ -83,6 +83,17 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
         createSearchWrapper(route: .operations, accountSubject: accountSubject, page: page)
     }
 
+    func createPortfolioHistoryWrapper(
+        accountSubject: AccountAddress,
+        period: BittensorApi.PortfolioHistoryPeriod
+    ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.PortfolioHistoryCollection>> {
+        createAccountWrapper(
+            route: .portfolioHistory,
+            accountSubject: accountSubject,
+            body: BittensorApi.PortfolioHistoryRequest(accountSubject: accountSubject, period: period)
+        )
+    }
+
     func createRecommendationsWrapper()
         -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RecommendationCollection>> {
         createWrapper(route: .recommendations, path: "/recommendations")
@@ -105,12 +116,13 @@ private extension BittensorApiOperationFactory {
         case rootYield
         case alphaYield
         case operations
+        case portfolioHistory
         case recommendations
         case rankedSubnets
 
         var method: BittensorApiRequest.Method {
             switch self {
-            case .operations:
+            case .operations, .portfolioHistory:
                 return .post
             default:
                 return .get
@@ -129,6 +141,8 @@ private extension BittensorApiOperationFactory {
                 return "/subnets/{netuid}/yields/alpha"
             case .operations:
                 return "/operations/search"
+            case .portfolioHistory:
+                return "/portfolio/history/search"
             case .recommendations:
                 return "/recommendations"
             case .rankedSubnets:
@@ -175,16 +189,32 @@ private extension BittensorApiOperationFactory {
         accountSubject: AccountAddress,
         page: Int?
     ) -> CompoundOperationWrapper<BittensorApiResult<T>> {
+        guard page.map(Self.pageRange.contains) ?? true else {
+            return .createWithError(BittensorApiError.invalidRequest(code: nil, requestId: nil))
+        }
+
+        return createAccountWrapper(
+            route: route,
+            accountSubject: accountSubject,
+            body: BittensorApi.SearchRequest(accountSubject: accountSubject, page: page)
+        )
+    }
+
+    func createAccountWrapper<Body: Encodable, T: Decodable & BittensorApiWireChecked>(
+        route: Route,
+        accountSubject: AccountAddress,
+        body: Body
+    ) -> CompoundOperationWrapper<BittensorApiResult<T>> {
         let invalidRequest = BittensorApiError.invalidRequest(code: nil, requestId: nil)
 
-        guard Self.isValidAccountSubject(accountSubject), page.map(Self.pageRange.contains) ?? true else {
+        guard Self.isValidAccountSubject(accountSubject) else {
             return .createWithError(invalidRequest)
         }
 
-        let body: Data
+        let jsonBody: Data
 
         do {
-            body = try Self.searchEncoder.encode(BittensorApi.SearchRequest(accountSubject: accountSubject, page: page))
+            jsonBody = try Self.searchEncoder.encode(body)
         } catch {
             return .createWithError(invalidRequest)
         }
@@ -192,7 +222,7 @@ private extension BittensorApiOperationFactory {
         return createWrapper(
             route: route,
             path: route.pathTemplate,
-            jsonBody: body,
+            jsonBody: jsonBody,
             accountDigest: Data(accountSubject.utf8).sha256()
         )
     }
@@ -355,23 +385,5 @@ private extension BittensorApiOperationFactory {
         let path = keys.map { key in key.intValue.map { "[\($0)]" } ?? "." + key.stringValue }.joined()
 
         return path.isEmpty ? "body" : path
-    }
-
-    static func isValidAccountSubject(_ subject: AccountAddress) -> Bool {
-        let factory = SS58AddressFactory()
-
-        do {
-            let type = try factory.type(fromAddress: subject).uint16Value
-
-            guard type == SubstrateConstants.genericAddressPrefix else {
-                return false
-            }
-
-            _ = try factory.accountId(fromAddress: subject, type: type)
-
-            return true
-        } catch {
-            return false
-        }
     }
 }

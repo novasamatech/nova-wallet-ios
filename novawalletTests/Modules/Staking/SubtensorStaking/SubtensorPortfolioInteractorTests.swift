@@ -124,7 +124,7 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
         presenter.didReceive(price: PriceData(identifier: "bittensor", price: "300", dayChange: nil, currencyId: euro.id))
 
         XCTAssertEqual(viewModels.lastHeader?.fiat, .loaded("€6,000"))
-        verify(interactor, times(2)).loadHistories(for: equal(to: .month), subnets: equal(to: [SubtensorSubnetRef]()))
+        verify(interactor, times(2)).loadHistories(for: equal(to: .month))
     }
 
     func testCurrencyChangeResubscribesThePriceInTheNewCurrency() throws {
@@ -207,6 +207,7 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
             yieldService: makeYieldService(),
             subnetLogosProvider: makeSubnetLogosProvider(),
             priceHistoryService: nil,
+            portfolioHistoryService: MockSubtensorPortfolioHistoryServiceProtocol(),
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             currencyManager: currencyManager,
             flowState: SubtensorStakingFlowState(
@@ -301,7 +302,7 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
         stub(interactor) { stub in
             when(stub.cachedSnapshot()).thenReturn(SubtensorPortfolioSnapshot(catalogue: .miss, rootRate: .miss))
             when(stub.loadWeeklyChanges(for: any())).thenDoNothing()
-            when(stub.loadHistories(for: any(), subnets: any())).thenDoNothing()
+            when(stub.loadHistories(for: any())).thenDoNothing()
         }
 
         return interactor

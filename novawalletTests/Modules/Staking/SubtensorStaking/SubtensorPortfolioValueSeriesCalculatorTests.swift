@@ -2,61 +2,11 @@
 import XCTest
 
 final class SubtensorPortfolioValueSeriesCalculatorTests: XCTestCase {
-    func testSeriesAnchorsSubnetsToTheirChainSpotAndEndsAtTheHeaderTotal() throws {
+    func testSettledPointsArePricedByTheTaoGridAndTheOpenBucketIsReplacedByLiveState() throws {
         let portfolio = SubtensorPortfolio(
             root: group(netuid: 0, alpha: 10_000_000_000, taoValue: 10_000_000_000),
-            subnets: [
-                group(netuid: 64, alpha: 100_000_000_000, taoValue: 7_000_000_000),
-                group(netuid: 19, alpha: 60_000_000_000, taoValue: 3_000_000_000),
-                group(netuid: 7, alpha: 30_000_000_000, taoValue: nil)
-            ],
-            pricedTaoValue: 20_000_000_000,
-            unpricedNetuids: [7]
-        )
-
-        let histories = try SubtensorPortfolioPriceHistories(
-            period: .week,
-            taoFiat: PriceHistory(
-                currencyId: Currency.usd.id,
-                items: [
-                    PriceHistoryItem(startedAt: 0, value: 400),
-                    PriceHistoryItem(startedAt: 302_400, value: 410),
-                    PriceHistoryItem(startedAt: 604_800, value: 420)
-                ]
-            ),
-            subnets: [
-                history(netuid: 64, [(0, "0.05"), (302_400, "0.06"), (604_800, "0.08")]),
-                history(netuid: 7, [(0, "0.5"), (302_400, "0.5"), (604_800, "0.5")])
-            ]
-        )
-
-        let series = SubtensorPortfolioValueSeriesCalculator.calculate(
-            portfolio: portfolio,
-            histories: histories,
-            currentTaoPrice: 417,
-            precision: 9
-        )
-
-        let expected = try SubtensorPortfolioValueSeries(
-            points: [
-                point(at: 0, taoValue: "17.375", fiatValue: "6950"),
-                point(at: 302_400, taoValue: "18.25", fiatValue: "7482.5"),
-                point(at: 604_800, taoValue: "20", fiatValue: "8340")
-            ],
-            changeInFiat: XCTUnwrap(Decimal(string: "0.2"))
-        )
-
-        XCTAssertEqual(series, expected)
-    }
-
-    func testSubnetWhoseHistoryStopsBeforeTheGridEndIsValuedAtSpot() throws {
-        let portfolio = SubtensorPortfolio(
-            root: nil,
-            subnets: [
-                group(netuid: 64, alpha: 100_000_000_000, taoValue: 8_000_000_000),
-                group(netuid: 108, alpha: 5_000_000_000, taoValue: 2_000_000_000)
-            ],
-            pricedTaoValue: 10_000_000_000,
+            subnets: [group(netuid: 64, alpha: 100_000_000_000, taoValue: 12_000_000_000)],
+            pricedTaoValue: 22_000_000_000,
             unpricedNetuids: []
         )
 
@@ -67,34 +17,119 @@ final class SubtensorPortfolioValueSeriesCalculatorTests: XCTestCase {
                 items: [
                     PriceHistoryItem(startedAt: 0, value: 400),
                     PriceHistoryItem(startedAt: 302_400, value: 410),
-                    PriceHistoryItem(startedAt: 453_600, value: 415),
                     PriceHistoryItem(startedAt: 604_800, value: 420)
                 ]
             ),
+            stake: stakeHistory(
+                period: .week,
+                start: 0,
+                end: 608_400,
+                points: [(0, "17.5", true), (302_400, "18.25", true), (604_800, "21", false)]
+            )
+        )
+
+        let series = SubtensorPortfolioValueSeriesCalculator.calculate(
+            portfolio: portfolio,
+            histories: histories,
+            currentTaoPrice: 417,
+            precision: 9,
+            now: Date(timeIntervalSince1970: 606_000)
+        )
+
+        let expected = try SubtensorPortfolioValueSeries(
+            points: [
+                point(at: 0, taoValue: "17.5", fiatValue: "7000"),
+                point(at: 302_400, taoValue: "18.25", fiatValue: "7482.5"),
+                point(at: 606_000, taoValue: "22", fiatValue: "9174")
+            ],
+            changeInFiat: Decimal(2174) / Decimal(7000)
+        )
+
+        XCTAssertEqual(series, expected)
+    }
+
+    func testPartiallyPricedPortfolioKeepsTheOpenBucketAndSkipsPointsWithoutTaoPrice() throws {
+        let portfolio = SubtensorPortfolio(
+            root: nil,
             subnets: [
-                history(netuid: 64, [(0, "0.05"), (302_400, "0.06"), (453_600, "0.07"), (604_800, "0.08")]),
-                history(netuid: 108, [(0, "0.5"), (302_400, "0.4")])
-            ]
+                group(netuid: 64, alpha: 100_000_000_000, taoValue: 8_000_000_000),
+                group(netuid: 7, alpha: 30_000_000_000, taoValue: nil)
+            ],
+            pricedTaoValue: 8_000_000_000,
+            unpricedNetuids: [7]
+        )
+
+        let histories = try SubtensorPortfolioPriceHistories(
+            period: .week,
+            taoFiat: PriceHistory(
+                currencyId: Currency.usd.id,
+                items: [
+                    PriceHistoryItem(startedAt: 0, value: 400),
+                    PriceHistoryItem(startedAt: 302_400, value: 410)
+                ]
+            ),
+            stake: stakeHistory(
+                period: .week,
+                start: 0,
+                end: 306_000,
+                points: [(0, "10", true), (151_200, "11", true), (302_400, "12", false)]
+            )
         )
 
         let series = SubtensorPortfolioValueSeriesCalculator.calculate(
             portfolio: portfolio,
             histories: histories,
             currentTaoPrice: 420,
-            precision: 9
+            precision: 9,
+            now: Date(timeIntervalSince1970: 303_000)
         )
 
         let expected = try SubtensorPortfolioValueSeries(
             points: [
-                point(at: 0, taoValue: "7", fiatValue: "2800"),
-                point(at: 302_400, taoValue: "8", fiatValue: "3280"),
-                point(at: 453_600, taoValue: "9", fiatValue: "3735"),
-                point(at: 604_800, taoValue: "10", fiatValue: "4200")
+                point(at: 0, taoValue: "10", fiatValue: "4000"),
+                point(at: 302_400, taoValue: "12", fiatValue: "4920")
             ],
-            changeInFiat: XCTUnwrap(Decimal(string: "0.5"))
+            changeInFiat: XCTUnwrap(Decimal(string: "0.23"))
         )
 
         XCTAssertEqual(series, expected)
+    }
+
+    func testChangeIsHiddenWhenTheHistoryStartsAfterTheWindow() throws {
+        let portfolio = SubtensorPortfolio(
+            root: group(netuid: 0, alpha: 5_000_000_000, taoValue: 5_000_000_000),
+            subnets: [],
+            pricedTaoValue: 5_000_000_000,
+            unpricedNetuids: []
+        )
+
+        let histories = try SubtensorPortfolioPriceHistories(
+            period: .week,
+            taoFiat: PriceHistory(
+                currencyId: Currency.usd.id,
+                items: [
+                    PriceHistoryItem(startedAt: 100_800, value: 400),
+                    PriceHistoryItem(startedAt: 604_800, value: 420)
+                ]
+            ),
+            stake: stakeHistory(
+                period: .week,
+                start: 0,
+                end: 608_400,
+                points: [(100_800, "4", true), (604_800, "5", false)]
+            )
+        )
+
+        let series = SubtensorPortfolioValueSeriesCalculator.calculate(
+            portfolio: portfolio,
+            histories: histories,
+            currentTaoPrice: 420,
+            precision: 9,
+            now: Date(timeIntervalSince1970: 606_000)
+        )
+
+        XCTAssertEqual(series.points.map(\.taoValue), [4, 5])
+        XCTAssertNil(series.changeInFiat)
     }
 
     private func group(netuid: UInt16, alpha: Balance, taoValue: Balance?) -> SubtensorPortfolioGroup {
@@ -117,19 +152,24 @@ final class SubtensorPortfolioValueSeriesCalculatorTests: XCTestCase {
         )
     }
 
-    private func history(netuid: UInt16, _ points: [(TimeInterval, String)]) throws -> SubtensorPriceHistory {
-        try SubtensorPriceHistory(
-            subnet: SubtensorSubnetRef(netuid: netuid, registeredAt: 1),
-            period: .week,
-            points: points.map { time, taoPerAlpha in
-                try SubtensorPricePoint(
+    private func stakeHistory(
+        period: SubtensorPricePeriod,
+        start: TimeInterval,
+        end: TimeInterval,
+        points: [(TimeInterval, String, Bool)]
+    ) throws -> SubtensorPortfolioStakeHistory {
+        try SubtensorPortfolioStakeHistory(
+            period: period,
+            windowStart: Date(timeIntervalSince1970: start),
+            windowEnd: Date(timeIntervalSince1970: end),
+            points: points.map { time, taoValue, isCompleted in
+                try SubtensorPortfolioStakePoint(
                     date: Date(timeIntervalSince1970: time),
-                    taoPerAlpha: XCTUnwrap(Decimal(string: taoPerAlpha)),
-                    fiatPerAlpha: 0
+                    taoValue: XCTUnwrap(Decimal(string: taoValue)),
+                    usdValue: 0,
+                    isCompleted: isCompleted
                 )
-            },
-            changeInTao: nil,
-            changeInFiat: nil
+            }
         )
     }
 }

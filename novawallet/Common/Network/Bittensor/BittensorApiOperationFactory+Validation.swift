@@ -1,5 +1,6 @@
 import Foundation
 import BigInt
+import NovaCrypto
 
 enum BittensorApiWireCheck {
     static let clientChecks: [BittensorApi.ClientCheck] = [.uid, .validatorPermit, .take, .lastUpdate]
@@ -60,6 +61,26 @@ enum BittensorApiWireCheck {
             return try parse()
         } catch {
             throw BittensorApiWireViolation(field: field())
+        }
+    }
+}
+
+extension BittensorApiOperationFactory {
+    static func isValidAccountSubject(_ subject: AccountAddress) -> Bool {
+        let factory = SS58AddressFactory()
+
+        do {
+            let type = try factory.type(fromAddress: subject).uint16Value
+
+            guard type == SubstrateConstants.genericAddressPrefix else {
+                return false
+            }
+
+            _ = try factory.accountId(fromAddress: subject, type: type)
+
+            return true
+        } catch {
+            return false
         }
     }
 }
@@ -256,6 +277,42 @@ extension BittensorApi.SubnetRankingCollection: BittensorApiWireChecked, Bittens
             for (name, metric) in metrics {
                 try BittensorApiWireCheck.metric(metric, "\(path).breakdown.\(name)")
             }
+        }
+    }
+}
+
+extension BittensorApi.PortfolioHistoryCollection: BittensorApiWireChecked {
+    static let maxPoints = 512
+
+    func validateWire() throws {
+        try BittensorApiWireCheck.require(historyScope == BittensorApiWireCheck.historyScope) { "historyScope" }
+        try BittensorApiWireCheck.require(meta.completeness == .complete) { "meta.completeness" }
+        try BittensorApiWireCheck.require(points.count <= Self.maxPoints) { "points" }
+
+        guard
+            let start = BittensorApi.instant(from: window.start),
+            let end = BittensorApi.instant(from: window.end),
+            start <= end else {
+            throw BittensorApiWireViolation(field: "window")
+        }
+
+        var previous: Date?
+
+        for (index, point) in points.enumerated() {
+            let field = "points[\(index)]"
+
+            guard let timestamp = BittensorApi.instant(from: point.timestamp) else {
+                throw BittensorApiWireViolation(field: "\(field).timestamp")
+            }
+
+            let isInsideWindow = timestamp >= start && timestamp <= end
+            let isAscending = previous.map { $0 < timestamp } ?? true
+
+            try BittensorApiWireCheck.require(isInsideWindow && isAscending) { "\(field).timestamp" }
+            try BittensorApiWireCheck.decimal(point.reportedValueTao, "\(field).reportedValueTao")
+            try BittensorApiWireCheck.decimal(point.reportedValueUsd, "\(field).reportedValueUsd")
+
+            previous = timestamp
         }
     }
 }

@@ -271,6 +271,7 @@
 		3D2465CF4E394857AAA933BB /* SubtensorSessionCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663D04F9CD0247BD9C6BB3C6 /* SubtensorSessionCache.swift */; };
 		C62045136E5B46CF971C4A92 /* SubtensorPriceSeriesCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20B0FB345E1469C889580CE /* SubtensorPriceSeriesCache.swift */; };
 		F1F6821B897D4C2E85A46DE5 /* SubtensorPortfolioValueSeriesCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8271541E4C1944D3A5B930F2 /* SubtensorPortfolioValueSeriesCalculator.swift */; };
+		1734E23B7717B931DAC7ACA4 /* SubtensorPortfolioStakeHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE5AC6D2C48FBD47FD38529A /* SubtensorPortfolioStakeHistory.swift */; };
 		F86B78647E014745B48286D7 /* SubtensorPreflightFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 879C6A92A65C4979B37C753F /* SubtensorPreflightFactoryTests.swift */; };
 		BDD8B76B88494547BFFED725 /* SubtensorStorageWorld.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD43F64BF12B4F7F83126B6D /* SubtensorStorageWorld.swift */; };
 		50B58EDB2A8F4C83B837DAA3 /* SubtensorValidatorChainOperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF37EB55647A458F8439E91C /* SubtensorValidatorChainOperationFactoryTests.swift */; };
@@ -293,6 +294,7 @@
 		AB068B72481F440CAEBA80FF /* BittensorApiFixtureDocuments+Recommendations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B87BEA200C14DF4AF13733A /* BittensorApiFixtureDocuments+Recommendations.swift */; };
 		0CD682E00CF347F28944C725 /* BittensorApiFixtureRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10F974BF8624524AB74A854 /* BittensorApiFixtureRouter.swift */; };
 		4FBC1F3BE5B54B73BD7D539E /* BittensorApiFixtureTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1346BC536E124E429748E0CB /* BittensorApiFixtureTransport.swift */; };
+		CD213E6A501559B94CBA8D52 /* BittensorApiDirectTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D44BBC4947D29597A04FB1 /* BittensorApiDirectTransport.swift */; };
 		0774A2F91AA3405E82005FB5 /* BittensorFixtureChainSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2998ACA8AB7344E8A5017977 /* BittensorFixtureChainSnapshot.swift */; };
 		1AE4B416830D4DEB8B3AF753 /* SubtensorEarnSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE617E2CE94E448594B90727 /* SubtensorEarnSettingsTests.swift */; };
 		12C8C6AD47054E9FB826A2F9 /* SubtensorEarnSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37ADFB0E46CC48A197043C04 /* SubtensorEarnSettings.swift */; };
@@ -3425,6 +3427,8 @@
 		66531C7E2E0E99C89A89A35A /* SwapSetupViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A6BCE8F8DB7576E1E5B5974 /* SwapSetupViewFactory.swift */; };
 		6688EC06E774363AA868498F /* NotificationsSetupViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93BDB7F068ED7E988FD99215 /* NotificationsSetupViewFactory.swift */; };
 		66A790C403D14B1E84CC4ECC /* SubtensorYieldServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22E04834FBD4B5A84F0DD30 /* SubtensorYieldServiceProtocol.swift */; };
+		DA68BB1C46FABBCDBA4BEB11 /* SubtensorPortfolioHistoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4624338429F57C6A279EC2E /* SubtensorPortfolioHistoryService.swift */; };
+		2FCA8DB9A37CE560E09447DA /* SubtensorPortfolioHistoryServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 055C43D2D3B27A307A44A54B /* SubtensorPortfolioHistoryServiceProtocol.swift */; };
 		66EAD6A35BCE591AA36989C3 /* OnboardingMainPresenter+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72C35DDCA95A0DA36DDE9DB9 /* OnboardingMainPresenter+Analytics.swift */; };
 		671C5788468FE8445A46C09F /* AdvancedWalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 597A3C3F2937333D0EC7ABD5 /* AdvancedWalletViewController.swift */; };
 		675DE37BFC8F46BAA37B3389 /* SubtensorValidatorChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D6F43C28A7469E904B5497 /* SubtensorValidatorChain.swift */; };
@@ -7538,6 +7542,7 @@
 		663D04F9CD0247BD9C6BB3C6 /* SubtensorSessionCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSessionCache.swift; sourceTree = "<group>"; };
 		C20B0FB345E1469C889580CE /* SubtensorPriceSeriesCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorPriceSeriesCache.swift; sourceTree = "<group>"; };
 		8271541E4C1944D3A5B930F2 /* SubtensorPortfolioValueSeriesCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorPortfolioValueSeriesCalculator.swift; sourceTree = "<group>"; };
+		EE5AC6D2C48FBD47FD38529A /* SubtensorPortfolioStakeHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorPortfolioStakeHistory.swift; sourceTree = "<group>"; };
 		879C6A92A65C4979B37C753F /* SubtensorPreflightFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorPreflightFactoryTests.swift; sourceTree = "<group>"; };
 		BD43F64BF12B4F7F83126B6D /* SubtensorStorageWorld.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStorageWorld.swift; sourceTree = "<group>"; };
 		F5CC29E285AC4912BFCDE896 /* SubtensorSubnetFiltersSheetController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSubnetFiltersSheetController.swift; sourceTree = "<group>"; };
@@ -7567,6 +7572,7 @@
 		5B87BEA200C14DF4AF13733A /* BittensorApiFixtureDocuments+Recommendations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BittensorApiFixtureDocuments+Recommendations.swift"; sourceTree = "<group>"; };
 		A10F974BF8624524AB74A854 /* BittensorApiFixtureRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorApiFixtureRouter.swift; sourceTree = "<group>"; };
 		1346BC536E124E429748E0CB /* BittensorApiFixtureTransport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorApiFixtureTransport.swift; sourceTree = "<group>"; };
+		55D44BBC4947D29597A04FB1 /* BittensorApiDirectTransport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorApiDirectTransport.swift; sourceTree = "<group>"; };
 		2998ACA8AB7344E8A5017977 /* BittensorFixtureChainSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorFixtureChainSnapshot.swift; sourceTree = "<group>"; };
 		AE617E2CE94E448594B90727 /* SubtensorEarnSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorEarnSettingsTests.swift; sourceTree = "<group>"; };
 		37ADFB0E46CC48A197043C04 /* SubtensorEarnSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorEarnSettings.swift; sourceTree = "<group>"; };
@@ -13435,6 +13441,8 @@
 		A208D923EBE165FA8882C26C /* AnalyticsAbandonTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsAbandonTracker.swift; sourceTree = "<group>"; };
 		A222B1B1D92646EB913341F9 /* TransferSelfReceiveRevealer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferSelfReceiveRevealer.swift; sourceTree = "<group>"; };
 		A22E04834FBD4B5A84F0DD30 /* SubtensorYieldServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorYieldServiceProtocol.swift; sourceTree = "<group>"; };
+		A4624338429F57C6A279EC2E /* SubtensorPortfolioHistoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorPortfolioHistoryService.swift; sourceTree = "<group>"; };
+		055C43D2D3B27A307A44A54B /* SubtensorPortfolioHistoryServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorPortfolioHistoryServiceProtocol.swift; sourceTree = "<group>"; };
 		A27FB20961F2F221A96624A6 /* GovernanceDelegateConfirmInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GovernanceDelegateConfirmInteractor.swift; sourceTree = "<group>"; };
 		A281AC1766B928972DD7B559 /* FeatureNavigationTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureNavigationTracker.swift; sourceTree = "<group>"; };
 		A28FAB72B50D8C736AF67A39 /* StartStakingConfirmProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StartStakingConfirmProtocols.swift; sourceTree = "<group>"; };
@@ -14475,6 +14483,7 @@
 				5B87BEA200C14DF4AF13733A /* BittensorApiFixtureDocuments+Recommendations.swift */,
 				A10F974BF8624524AB74A854 /* BittensorApiFixtureRouter.swift */,
 				1346BC536E124E429748E0CB /* BittensorApiFixtureTransport.swift */,
+				55D44BBC4947D29597A04FB1 /* BittensorApiDirectTransport.swift */,
 				2998ACA8AB7344E8A5017977 /* BittensorFixtureChainSnapshot.swift */,
 				43ACC787A8F0451BA5E568ED /* BittensorApiFixtureMode+Staking.swift */,
 				A7090B3CD8E14CE79CE61896 /* BittensorApiFixtureDocuments+History.swift */,
@@ -19767,6 +19776,8 @@
 				2D7A59062E5E000100000001 /* SubtensorSessionCachingService.swift */,
 				1F029626E2FD4E88BC416544 /* SubtensorValidatorDirectoryServiceProtocol.swift */,
 				A22E04834FBD4B5A84F0DD30 /* SubtensorYieldServiceProtocol.swift */,
+				A4624338429F57C6A279EC2E /* SubtensorPortfolioHistoryService.swift */,
+				055C43D2D3B27A307A44A54B /* SubtensorPortfolioHistoryServiceProtocol.swift */,
 				89FDA01AE07845FF9BC17302 /* SubtensorRecommendationServiceProtocol.swift */,
 				50E399AD22C44879B7660643 /* SubtensorPriceHistoryServiceProtocol.swift */,
 				579B1F27F43544CC8F5F8044 /* SubtensorEarnSettingsProtocol.swift */,
@@ -21280,6 +21291,7 @@
 				D1A616DDDD564AB0B9FF3E40 /* SubtensorPortfolioBuilder.swift */,
 				3F6D431F10A41CF80514B5B1 /* SubtensorRootClaimRule.swift */,
 				8271541E4C1944D3A5B930F2 /* SubtensorPortfolioValueSeriesCalculator.swift */,
+				EE5AC6D2C48FBD47FD38529A /* SubtensorPortfolioStakeHistory.swift */,
 				9A6D2E022E60000100000001 /* SubtensorQuoteFlowModel.swift */,
 				6E8B3C012E70000100000001 /* SubtensorStakingPosition+Sorting.swift */,
 				9A6D2E012E60000100000001 /* SubtensorStakeTarget.swift */,
@@ -33817,6 +33829,7 @@
 				3D2465CF4E394857AAA933BB /* SubtensorSessionCache.swift in Sources */,
 				C62045136E5B46CF971C4A92 /* SubtensorPriceSeriesCache.swift in Sources */,
 				F1F6821B897D4C2E85A46DE5 /* SubtensorPortfolioValueSeriesCalculator.swift in Sources */,
+				1734E23B7717B931DAC7ACA4 /* SubtensorPortfolioStakeHistory.swift in Sources */,
 				C132EA49B4584D1E8B2AF9AC /* SubtensorStakingPallet+Identity.swift in Sources */,
 				A2681C66291C47AE9AE3C77B /* SubtensorValidatorChainOperationFactory.swift in Sources */,
 				836E2D72B2B34270B90FD142 /* SubtensorChunkedStorageQueryFactory.swift in Sources */,
@@ -33832,6 +33845,7 @@
 				AB068B72481F440CAEBA80FF /* BittensorApiFixtureDocuments+Recommendations.swift in Sources */,
 				0CD682E00CF347F28944C725 /* BittensorApiFixtureRouter.swift in Sources */,
 				4FBC1F3BE5B54B73BD7D539E /* BittensorApiFixtureTransport.swift in Sources */,
+				CD213E6A501559B94CBA8D52 /* BittensorApiDirectTransport.swift in Sources */,
 				0774A2F91AA3405E82005FB5 /* BittensorFixtureChainSnapshot.swift in Sources */,
 				12C8C6AD47054E9FB826A2F9 /* SubtensorEarnSettings.swift in Sources */,
 				F1FB5E1D76554C9BBBD4ED70 /* BittensorAttestedRequestBuilder.swift in Sources */,
@@ -39945,6 +39959,8 @@
 				450F60ADD21543679FE71C90 /* SubtensorStakingOperation.swift in Sources */,
 				9C3CFFB608A44887A2628CC1 /* SubtensorValidatorDirectoryServiceProtocol.swift in Sources */,
 				66A790C403D14B1E84CC4ECC /* SubtensorYieldServiceProtocol.swift in Sources */,
+				DA68BB1C46FABBCDBA4BEB11 /* SubtensorPortfolioHistoryService.swift in Sources */,
+				2FCA8DB9A37CE560E09447DA /* SubtensorPortfolioHistoryServiceProtocol.swift in Sources */,
 				482FDB6711154AB4BF63E8CF /* SubtensorRecommendationServiceProtocol.swift in Sources */,
 				6400486AF93B4CECAD7A2CB6 /* SubtensorPriceHistoryServiceProtocol.swift in Sources */,
 				537225342CF9442E8036FACA /* SubtensorEarnSettingsProtocol.swift in Sources */,
