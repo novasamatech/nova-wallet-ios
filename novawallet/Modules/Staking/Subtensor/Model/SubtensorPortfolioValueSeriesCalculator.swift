@@ -16,7 +16,7 @@ struct SubtensorPortfolioValueSeries: Equatable {
 struct SubtensorPortfolioPriceHistories: Equatable {
     let period: SubtensorPricePeriod
     let taoFiat: PriceHistory
-    let subnets: [SubtensorPriceHistory]
+    let stake: SubtensorPortfolioStakeHistory
 }
 
 extension SubtensorPricePeriod {
@@ -176,143 +176,91 @@ enum SubtensorPortfolioValueSeriesCalculator {
         portfolio: SubtensorPortfolio,
         histories: SubtensorPortfolioPriceHistories,
         currentTaoPrice: Decimal,
-        precision: Int16
+        precision: Int16,
+        now: Date = Date()
     ) -> SubtensorPortfolioValueSeries {
-        let period = histories.period
-        let grid = taoFiatGrid(of: histories.taoFiat, period: period)
+        let grid = taoFiatGrid(of: histories.taoFiat)
+        let times = grid.map { TimeInterval($0.startedAt) }
+        let tolerance = histories.period.coverageTolerance
 
-        guard
-            portfolio.pricedTaoValue > 0,
-            let totalTao = Decimal.fromSubstrateAmount(portfolio.pricedTaoValue, precision: precision),
-            let newest = grid.last else {
-            return SubtensorPortfolioValueSeries(points: [], changeInFiat: nil)
-        }
-
-        let newestDate = Date(timeIntervalSince1970: TimeInterval(newest.startedAt))
-
-        let holdings = createHoldings(
+        let livePoint = createLivePoint(
             of: portfolio,
-            histories: histories.subnets,
-            period: period,
-            gridEnd: newestDate,
-            precision: precision
+            currentTaoPrice: currentTaoPrice,
+            precision: precision,
+            at: now
         )
 
-        let pastPoints = grid.dropLast().compactMap { item in
-            valuePoint(
-                at: TimeInterval(item.startedAt),
-                taoFiatPrice: item.value,
-                holdings: holdings,
-                tolerance: period.samplingInterval
-            )
+        var points = histories.stake.points.compactMap { point -> SubtensorPortfolioValuePoint? in
+            guard point.isCompleted || livePoint == nil else {
+                return nil
+            }
+
+            return valuePoint(for: point, grid: grid, times: times, tolerance: tolerance)
         }
 
-        let newestPoint = SubtensorPortfolioValuePoint(
-            date: newestDate,
-            taoValue: totalTao,
-            fiatValue: totalTao * currentTaoPrice
-        )
-
-        let points = pastPoints + [newestPoint]
+        if let livePoint, points.last.map({ $0.date < livePoint.date }) ?? true {
+            points.append(livePoint)
+        }
 
         return SubtensorPortfolioValueSeries(
             points: points,
-            changeInFiat: SubtensorPriceSeries.change(of: points, over: period, date: \.date, value: \.fiatValue)
+            changeInFiat: change(of: points, stake: histories.stake)
         )
     }
 }
 
 private extension SubtensorPortfolioValueSeriesCalculator {
-    struct AnchoredHolding {
-        let value: Decimal
-        let newestTaoPerAlpha: Decimal
-        let points: [SubtensorPricePoint]
-        let times: [TimeInterval]
-    }
-
-    struct Holdings {
-        let flatTao: Decimal
-        let anchored: [AnchoredHolding]
-    }
-
-    static func createHoldings(
+    static func createLivePoint(
         of portfolio: SubtensorPortfolio,
-        histories: [SubtensorPriceHistory],
-        period: SubtensorPricePeriod,
-        gridEnd: Date,
-        precision: Int16
-    ) -> Holdings {
-        let pointsByNetuid = histories.reduce(into: [UInt16: [SubtensorPricePoint]]()) { result, history in
-            guard history.period == period, result[history.subnet.netuid] == nil else {
-                return
-            }
-
-            result[history.subnet.netuid] = history.points
-                .filter { $0.taoPerAlpha > 0 }
-                .sorted { $0.date < $1.date }
+        currentTaoPrice: Decimal,
+        precision: Int16,
+        at date: Date
+    ) -> SubtensorPortfolioValuePoint? {
+        guard
+            portfolio.isFullyPriced,
+            let totalTao = Decimal.fromSubstrateAmount(portfolio.pricedTaoValue, precision: precision) else {
+            return nil
         }
 
-        var flatTao = portfolio.root?.taoValue.flatMap { Decimal.fromSubstrateAmount($0, precision: precision) } ?? 0
-        var anchored: [AnchoredHolding] = []
-
-        for group in portfolio.subnets {
-            guard
-                let taoValue = group.taoValue,
-                let value = Decimal.fromSubstrateAmount(taoValue, precision: precision) else {
-                continue
-            }
-
-            guard
-                let points = pointsByNetuid[group.netuid],
-                let newestPoint = points.last,
-                gridEnd.timeIntervalSince(newestPoint.date) <= period.coverageTolerance else {
-                flatTao += value
-                continue
-            }
-
-            anchored.append(
-                AnchoredHolding(
-                    value: value,
-                    newestTaoPerAlpha: newestPoint.taoPerAlpha,
-                    points: points,
-                    times: points.map(\.date.timeIntervalSince1970)
-                )
-            )
-        }
-
-        return Holdings(flatTao: flatTao, anchored: anchored)
+        return SubtensorPortfolioValuePoint(date: date, taoValue: totalTao, fiatValue: totalTao * currentTaoPrice)
     }
 
-    static func taoFiatGrid(of history: PriceHistory, period: SubtensorPricePeriod) -> [PriceHistoryItem] {
-        let items = history.items.filter { $0.value > 0 }.sorted { $0.startedAt < $1.startedAt }
-
-        return SubtensorPriceSeries.sliced(items, for: period) { item in
-            Date(timeIntervalSince1970: TimeInterval(item.startedAt))
-        }
+    static func taoFiatGrid(of history: PriceHistory) -> [PriceHistoryItem] {
+        history.items.filter { $0.value > 0 }.sorted { $0.startedAt < $1.startedAt }
     }
 
     static func valuePoint(
-        at time: TimeInterval,
-        taoFiatPrice: Decimal,
-        holdings: Holdings,
+        for point: SubtensorPortfolioStakePoint,
+        grid: [PriceHistoryItem],
+        times: [TimeInterval],
         tolerance: TimeInterval
     ) -> SubtensorPortfolioValuePoint? {
-        var taoValue = holdings.flatTao
+        let time = point.date.timeIntervalSince1970
 
-        for holding in holdings.anchored {
-            let index = SubtensorPriceSeries.nearestIndex(to: time, in: holding.times, tolerance: tolerance)
-
-            guard let index else {
-                return nil
-            }
-
-            taoValue += holding.value * holding.points[index].taoPerAlpha / holding.newestTaoPerAlpha
+        guard let index = SubtensorPriceSeries.nearestIndex(to: time, in: times, tolerance: tolerance) else {
+            return nil
         }
 
         return SubtensorPortfolioValuePoint(
-            date: Date(timeIntervalSince1970: time),
-            taoValue: taoValue,
-            fiatValue: taoValue * taoFiatPrice
+            date: point.date,
+            taoValue: point.taoValue,
+            fiatValue: point.taoValue * grid[index].value
         )
+    }
+
+    static func change(
+        of points: [SubtensorPortfolioValuePoint],
+        stake: SubtensorPortfolioStakeHistory
+    ) -> Decimal? {
+        guard
+            points.count > 1,
+            let first = points.first,
+            let last = points.last,
+            first.fiatValue > 0,
+            first.date.timeIntervalSince(stake.windowStart) <= stake.coverageTolerance else {
+            return nil
+        }
+
+        return (last.fiatValue - first.fiatValue) / first.fiatValue
     }
 }

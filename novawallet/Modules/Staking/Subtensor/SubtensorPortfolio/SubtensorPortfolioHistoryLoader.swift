@@ -2,25 +2,20 @@ import Foundation
 import Operation_iOS
 
 final class SubtensorPortfolioHistoryLoader {
-    let historyStore: SubtensorPriceHistoryStore
+    let historyService: SubtensorPortfolioHistoryServiceProtocol
     let priceSeriesCache: SubtensorPriceSeriesProviding
     let operationQueue: OperationQueue
 
     private let callStore = CancellableCallStore()
 
     init(
-        priceHistoryService: SubtensorPriceHistoryServiceProtocol?,
+        historyService: SubtensorPortfolioHistoryServiceProtocol,
         flowState: SubtensorStakingFlowStateProtocol,
         operationQueue: OperationQueue
     ) {
+        self.historyService = historyService
         priceSeriesCache = flowState.priceSeriesCache
         self.operationQueue = operationQueue
-
-        historyStore = SubtensorPriceHistoryStore(
-            priceHistoryService: priceHistoryService,
-            historyCache: flowState.priceHistoryCache,
-            operationQueue: operationQueue
-        )
     }
 
     deinit {
@@ -29,7 +24,7 @@ final class SubtensorPortfolioHistoryLoader {
 
     func load(
         for period: SubtensorPricePeriod,
-        subnets: [SubtensorSubnetRef],
+        accountSubject: AccountAddress,
         taoPriceId: AssetModel.PriceId,
         currency: Currency,
         completion: @escaping (Result<SubtensorPortfolioPriceHistories, Error>) -> Void
@@ -42,32 +37,21 @@ final class SubtensorPortfolioHistoryLoader {
             period: period.sourcePeriod.coingeckoPeriod
         )
 
-        let subnetWrappers = subnets.map { subnet in
-            historyStore.createHistoryWrapper(for: subnet, period: period, currency: currency)
-        }
+        let stakeWrapper = historyService.createHistoryWrapper(for: accountSubject, period: period)
 
         let historiesOperation = ClosureOperation<SubtensorPortfolioPriceHistories> {
             let taoHistory = try taoWrapper.targetOperation.extractNoCancellableResultData()
+            let stakeHistory = try stakeWrapper.targetOperation.extractNoCancellableResultData()
 
-            let histories = subnetWrappers.compactMap { wrapper -> SubtensorPriceHistory? in
-                let result = try? wrapper.targetOperation.extractNoCancellableResultData()
-
-                guard case let .available(history) = result else {
-                    return nil
-                }
-
-                return history
-            }
-
-            return SubtensorPortfolioPriceHistories(period: period, taoFiat: taoHistory, subnets: histories)
+            return SubtensorPortfolioPriceHistories(period: period, taoFiat: taoHistory, stake: stakeHistory)
         }
 
         historiesOperation.addDependency(taoWrapper.targetOperation)
-        subnetWrappers.forEach { historiesOperation.addDependency($0.targetOperation) }
+        historiesOperation.addDependency(stakeWrapper.targetOperation)
 
         let wrapper = CompoundOperationWrapper(
             targetOperation: historiesOperation,
-            dependencies: taoWrapper.allOperations + subnetWrappers.flatMap(\.allOperations)
+            dependencies: taoWrapper.allOperations + stakeWrapper.allOperations
         )
 
         executeCancellable(

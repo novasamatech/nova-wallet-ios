@@ -54,3 +54,46 @@ extension BittensorApi {
         let sourceOperationType: String?
     }
 }
+
+extension BittensorApi {
+    enum PortfolioHistoryPeriod: String, Codable, Equatable, CaseIterable {
+        case oneDay = "ONE_DAY"
+        case sevenDays = "SEVEN_DAYS"
+        case thirtyDays = "THIRTY_DAYS"
+        case ninetyDays = "NINETY_DAYS"
+    }
+
+    struct PortfolioHistoryRequest: Codable, Equatable {
+        let accountSubject: AccountAddress
+        let period: PortfolioHistoryPeriod
+    }
+
+    struct PortfolioHistoryCollection: Decodable, Equatable {
+        struct Components: Decodable, Equatable {
+            let portfolioHistory: AvailableComponent
+        }
+
+        struct Meta: Decodable, Equatable {
+            let completeness: Completeness
+            let components: Components
+        }
+
+        struct Window: Decodable, Equatable {
+            let start: String
+            let end: String
+        }
+
+        let period: PortfolioHistoryPeriod
+        let window: Window
+        let points: [PortfolioHistoryPoint]
+        let historyScope: String
+        let meta: Meta
+    }
+
+    struct PortfolioHistoryPoint: Decodable, Equatable {
+        let timestamp: String
+        let reportedValueTao: String
+        let reportedValueUsd: String
+        let completed: Bool
+    }
+}

@@ -119,6 +119,10 @@ private extension SubtensorStakingProcessServices {
             if isFixtureMode {
                 return BittensorApiFixtureTransport()
             }
+
+            if let baseURL = BittensorApiDirectMode.baseURL {
+                return BittensorApiDirectTransport(baseURL: baseURL, logger: Logger.shared)
+            }
         #endif
 
         return BittensorAttestedTransport.shared
@@ -303,6 +307,9 @@ extension StakingSharedStateFactory {
                 for: stakingOption,
                 marketsService: processServices.subnetMarketsService,
                 seriesProvider: flowState.priceSeriesCache
+            ),
+            portfolioHistoryService: SubtensorPortfolioHistoryService(
+                apiOperationFactory: processServices.bittensorApiOperationFactory
             ),
             tradeQuoteFactory: SubtensorTradeQuoteFactory(
                 quoteFactory: chainServices.quoteOperationFactory,

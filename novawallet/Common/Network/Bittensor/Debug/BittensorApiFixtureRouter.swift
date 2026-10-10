@@ -7,6 +7,7 @@ import Foundation
         case rootYield(page: Int, pageSize: Int)
         case alphaYield(netuid: UInt16, page: Int, pageSize: Int)
         case operations(page: Int)
+        case portfolioHistory(period: String)
         case recommendations
         case rankedSubnets
     }
@@ -18,6 +19,7 @@ import Foundation
             "/yields/root": .get,
             "/subnets/{netuid}/yields/alpha": .get,
             "/operations/search": .post,
+            "/portfolio/history/search": .post,
             "/recommendations": .get,
             "/recommendations/subnets": .get
         ]
@@ -53,12 +55,8 @@ import Foundation
                 } else {
                     return .rootYield(page: paging.page, pageSize: paging.pageSize)
                 }
-            case "/operations/search":
-                guard request.queryItems.isEmpty, let body = request.jsonBody else {
-                    throw invalid
-                }
-
-                return .operations(page: try searchPage(of: body, invalid: invalid))
+            case "/operations/search", "/portfolio/history/search":
+                return try searchRoute(template: template, request: request, invalid: invalid)
             default:
                 guard request.queryItems.isEmpty, request.jsonBody == nil else {
                     throw invalid
@@ -80,6 +78,8 @@ import Foundation
                 return BittensorApiFixtureDocuments.alphaYield(netuid: netuid, page: page, pageSize: pageSize)
             case let .operations(page):
                 return BittensorApiFixtureDocuments.operations(page: page)
+            case let .portfolioHistory(period):
+                return BittensorApiFixtureDocuments.portfolioHistory(period: period)
             case .recommendations:
                 return BittensorApiFixtureDocuments.recommendations()
             case .rankedSubnets:
@@ -105,7 +105,7 @@ import Foundation
                 return 1800
             case .recommendations, .rankedSubnets:
                 return 21180
-            case .operations:
+            case .operations, .portfolioHistory:
                 return nil
             }
         }
@@ -213,6 +213,44 @@ import Foundation
             }
 
             return page
+        }
+
+        static func searchRoute(
+            template: String,
+            request: BittensorApiRequest,
+            invalid: Error
+        ) throws -> BittensorApiFixtureRoute {
+            guard request.queryItems.isEmpty, let body = request.jsonBody else {
+                throw invalid
+            }
+
+            if template == "/operations/search" {
+                return .operations(page: try searchPage(of: body, invalid: invalid))
+            }
+
+            return .portfolioHistory(period: try portfolioHistoryPeriod(of: body, invalid: invalid))
+        }
+
+        static func portfolioHistoryPeriod(of body: Data, invalid: Error) throws -> String {
+            let object: Any
+
+            do {
+                object = try JSONSerialization.jsonObject(with: body)
+            } catch {
+                throw invalid
+            }
+
+            guard
+                let fields = object as? [String: Any],
+                Set(fields.keys) == ["accountSubject", "period"],
+                let subject = fields["accountSubject"] as? String,
+                isValidSubject(subject),
+                let period = fields["period"] as? String,
+                BittensorApiFixtureDocuments.portfolioHistoryPeriods[period] != nil else {
+                throw invalid
+            }
+
+            return period
         }
 
         static func isValidSubject(_ subject: String) -> Bool {

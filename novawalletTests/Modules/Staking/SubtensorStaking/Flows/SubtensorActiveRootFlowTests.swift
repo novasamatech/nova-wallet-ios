@@ -180,12 +180,18 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=30",
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=7",
             "GET \(SubtensorFlowHost.priceAPI)/coins/chutes/market_chart?vs_currency=usd&days=30",
-            "GET \(SubtensorFlowHost.priceAPI)/coins/markets?vs_currency=usd&category=bittensor-subnets&per_page=250&page=1&sparkline=true&price_change_percentage=7d"
+            "GET \(SubtensorFlowHost.priceAPI)/coins/markets?vs_currency=usd&category=bittensor-subnets&per_page=250&page=1&sparkline=true&price_change_percentage=7d",
+            "POST https://bittensor.test/v1/bittensor/portfolio/history/search"
         ])
 
         assertAttestedRequests(
             world,
-            paths: ["/v1/bittensor/subnets", "/v1/bittensor/yields/root", "/v1/bittensor/subnets/0/validators"]
+            requests: [
+                SubtensorFlowAttestedRequest(method: "GET", path: "/v1/bittensor/subnets"),
+                try portfolioHistoryAttestedRequest(),
+                SubtensorFlowAttestedRequest(method: "GET", path: "/v1/bittensor/yields/root"),
+                SubtensorFlowAttestedRequest(method: "GET", path: "/v1/bittensor/subnets/0/validators")
+            ]
         )
     }
 

@@ -125,6 +125,16 @@ class SubtensorFlowTestCase: XCTestCase {
         assertAttestedRequests(world, requests: paths.map { SubtensorFlowAttestedRequest(method: "GET", path: $0) })
     }
 
+    func portfolioHistoryAttestedRequest(period: String = "THIRTY_DAYS") throws -> SubtensorFlowAttestedRequest {
+        let accountSubject = try SubtensorFlowChainWorld.coldkey.toAddress(using: .defaultSubstrateFormat)
+
+        return SubtensorFlowAttestedRequest(
+            method: "POST",
+            path: "/v1/bittensor/portfolio/history/search",
+            body: SubtensorFlowURLProtocol.portfolioHistoryBody(accountSubject: accountSubject, period: period)
+        )
+    }
+
     func assertAttestedRequests(_ world: SubtensorFlowWorld, requests: [SubtensorFlowAttestedRequest]) {
         let backendRequests = SubtensorFlowURLProtocol.recordedRequests.filter {
             $0.url.hasPrefix(SubtensorFlowHost.bittensor(""))

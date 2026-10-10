@@ -13,7 +13,7 @@ final class SubtensorPortfolioPresenter {
 
     private var state = SubtensorPortfolioState()
     private var weeklyChangesRequest: [SubtensorSubnetRef]?
-    private var historiesRequest: HistoriesRequest?
+    private var historiesRequest: SubtensorPricePeriod?
     private var chartSelection: SubtensorPortfolioChartSelection?
 
     init(
@@ -34,11 +34,6 @@ final class SubtensorPortfolioPresenter {
 }
 
 private extension SubtensorPortfolioPresenter {
-    struct HistoriesRequest: Equatable {
-        let period: SubtensorPricePeriod
-        let subnets: [SubtensorSubnetRef]
-    }
-
     func provideViewModel() {
         chartSelection = nil
 
@@ -60,30 +55,26 @@ private extension SubtensorPortfolioPresenter {
     }
 
     func requestPriceDataIfNeeded() {
-        guard state.positions != nil, state.isCatalogueResolved else {
+        guard state.positions != nil else {
             return
         }
 
-        let subnets = state.subnetRefs
+        if state.isCatalogueResolved {
+            let subnets = state.subnetRefs
 
-        if weeklyChangesRequest != subnets {
-            weeklyChangesRequest = subnets
-            interactor.loadWeeklyChanges(for: subnets)
+            if weeklyChangesRequest != subnets {
+                weeklyChangesRequest = subnets
+                interactor.loadWeeklyChanges(for: subnets)
+            }
         }
 
-        guard chainAsset.asset.priceId != nil else {
+        guard chainAsset.asset.priceId != nil, historiesRequest != state.period else {
             return
         }
 
-        let request = HistoriesRequest(period: state.period, subnets: subnets)
-
-        guard historiesRequest != request else {
-            return
-        }
-
-        historiesRequest = request
+        historiesRequest = state.period
         state.histories = .loading
-        interactor.loadHistories(for: request.period, subnets: request.subnets)
+        interactor.loadHistories(for: state.period)
     }
 }
 

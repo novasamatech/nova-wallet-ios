@@ -59,6 +59,39 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
         XCTAssertEqual(result.value.pageInfo, BittensorApi.PageInfo(page: 2, pageSize: 100, total: 137, nextPage: nil))
     }
 
+    func testPortfolioHistorySearchPostsTheAccountSubjectAndPeriodAsSortedJson() throws {
+        let accountSubject = BittensorApiFixtureWorld.validator(.aster).coldkey
+
+        let transport = makeTransport(replies: [
+            makeResponse(
+                try makeBody(BittensorApiFixtureDocuments.portfolioHistory(period: "THIRTY_DAYS")),
+                requestId: "req-portfolio-history",
+                cacheControl: "no-store"
+            )
+        ])
+
+        let result = try fetch(
+            makeFactory(transport: transport).createPortfolioHistoryWrapper(
+                accountSubject: accountSubject,
+                period: .thirtyDays
+            )
+        )
+
+        let expectedRequest = BittensorApiRequest(
+            method: .post,
+            path: "/portfolio/history/search",
+            pathTemplate: "/portfolio/history/search",
+            queryItems: [],
+            jsonBody: Data(#"{"accountSubject":"\#(accountSubject)","period":"THIRTY_DAYS"}"#.utf8)
+        )
+
+        verify(transport, times(1)).createResponseWrapper(for: equal(to: expectedRequest))
+        XCTAssertEqual(result.value.period, .thirtyDays)
+        XCTAssertEqual(result.value.points.count, 181)
+        XCTAssertEqual(result.value.points.last?.completed, false)
+        XCTAssertEqual(result.value.meta.components.portfolioHistory.valueQuality, .derived)
+    }
+
     func testRecommendationsDecodeWithTheirGeneration() throws {
         let result = try fetch(makeFactory().createRecommendationsWrapper())
 

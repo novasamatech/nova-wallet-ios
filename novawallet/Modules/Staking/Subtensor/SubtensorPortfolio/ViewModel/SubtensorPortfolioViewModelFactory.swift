@@ -6,7 +6,7 @@ protocol SubnetPortfolioViewModelFactoryProtocol: SubnetPortfolioChartFactoryPro
 }
 
 final class SubtensorPortfolioViewModelFactory {
-    static let periods: [SubtensorPricePeriod] = [.day, .week, .month, .year, .all]
+    static let periods: [SubtensorPricePeriod] = [.day, .week, .month, .quarter]
     static let defaultPeriod = SubtensorPricePeriod.month
 
     let chainAsset: ChainAsset
@@ -141,10 +141,6 @@ private extension SubtensorPortfolioViewModelFactory {
             ),
             change: .hidden
         )
-
-        guard portfolio.isFullyPriced else {
-            return unavailable
-        }
 
         switch (state.price, state.histories) {
         case (.loaded(.none), _), (_, .failed):
