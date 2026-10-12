@@ -32,6 +32,7 @@ final class SubtensorMaxApyProvider {
         self.retryDelay = retryDelay
         self.timeProvider = timeProvider
         self.logger = logger
+        apiOperationFactory.addContextObserver(resolution) { [weak resolution] in resolution?.invalidate() }
     }
 }
 
@@ -57,10 +58,13 @@ extension SubtensorMaxApyProvider: SubtensorMaxApyProviderProtocol {
     func createMaxApyWrapper() -> CompoundOperationWrapper<Decimal?> {
         let waiterId = UUID()
         let resolution = resolution
+        let generation = resolution.generation
 
         let operation = AsyncClosureOperation<Decimal?>(
             operationClosure: { [self] completion in
-                resolution.resolve(for: waiterId, startingWalkWith: startWalk, completion: completion)
+                resolution.resolve(
+                    for: waiterId, generation: generation, startingWalkWith: startWalk, completion: completion
+                )
             },
             cancelationClosure: {
                 resolution.leave(waiterId)

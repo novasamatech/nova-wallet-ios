@@ -180,7 +180,7 @@ final class SubtensorActiveSubnetFlowTests: SubtensorFlowTestCase {
         verify(world.positionsSyncService, times(2)).refresh()
 
         XCTAssertEqual(requestLines().sorted(), chutesPositionRequestLines)
-        assertAttestedRequests(world, requests: try chutesPositionAttestedRequests())
+        assertAuthorizedRequests(world, requests: try chutesPositionAttestedRequests())
     }
 
     func testActiveSubnetBuyKeepsChainQuotesWhenRecommendationsAreNotPublished() throws {
@@ -200,7 +200,7 @@ final class SubtensorActiveSubnetFlowTests: SubtensorFlowTestCase {
         try assertChainValues(of: screens)
 
         XCTAssertEqual(requestLines().sorted(), chutesPositionRequestLines)
-        assertAttestedRequests(world, requests: try chutesPositionAttestedRequests())
+        assertAuthorizedRequests(world, requests: try chutesPositionAttestedRequests())
     }
 
     func testSellWithZeroFreeTaoIsRefusedForTheBatchedNetworkFeePlusTheDepositBeforeSubmitting() throws {
@@ -363,8 +363,8 @@ final class SubtensorActiveSubnetFlowTests: SubtensorFlowTestCase {
             blockHash: SubtensorFlowExtrinsic.blockHash
         ))
 
-        XCTAssertEqual(requestLines(), ["GET https://bittensor.test/v1/bittensor/subnets"])
-        assertAttestedRequests(world, paths: ["/v1/bittensor/subnets"])
+        XCTAssertEqual(requestLines(), ["GET https://bittensor.test/v1/bittensor/profile-3/subnets"])
+        assertAuthorizedRequests(world, paths: ["/v1/bittensor/profile-3/subnets"])
     }
 }
 
@@ -401,8 +401,8 @@ private extension SubtensorActiveSubnetFlowTests {
 
     var chutesPositionRequestLines: [String] {
         [
-            "GET https://bittensor.test/v1/bittensor/recommendations/subnets",
-            "GET https://bittensor.test/v1/bittensor/subnets",
+            "GET https://bittensor.test/v1/bittensor/profile-3/recommendations/subnets",
+            "GET https://bittensor.test/v1/bittensor/profile-3/subnets",
             "GET https://subnet-logos.test/subnets.json",
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=30",
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=30",
@@ -414,14 +414,14 @@ private extension SubtensorActiveSubnetFlowTests {
         ]
     }
 
-    func chutesPositionAttestedRequests() throws -> [SubtensorFlowAttestedRequest] {
+    func chutesPositionAttestedRequests() throws -> [SubtensorFlowAuthorizedRequest] {
         let accountSubject = try SubtensorFlowChainWorld.coldkey.toAddress(using: .defaultSubstrateFormat)
 
         return [
-            SubtensorFlowAttestedRequest(method: "GET", path: "/v1/bittensor/subnets"),
-            SubtensorFlowAttestedRequest(method: "GET", path: "/v1/bittensor/recommendations/subnets")
+            SubtensorFlowAuthorizedRequest(method: "GET", path: "/v1/bittensor/profile-3/subnets"),
+            SubtensorFlowAuthorizedRequest(method: "GET", path: "/v1/bittensor/profile-3/recommendations/subnets")
         ] + (1 ... 2).map { page in
-            SubtensorFlowAttestedRequest(
+            SubtensorFlowAuthorizedRequest(
                 method: "POST",
                 path: "/v1/bittensor/operations/search",
                 body: SubtensorFlowURLProtocol.operationsSearchBody(accountSubject: accountSubject, page: page)

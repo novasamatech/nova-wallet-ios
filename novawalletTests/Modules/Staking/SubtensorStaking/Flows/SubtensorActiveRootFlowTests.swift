@@ -172,9 +172,10 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
         verify(world.positionsSyncService, times(2)).refresh()
 
         XCTAssertEqual(requestLines().sorted(), [
-            "GET https://bittensor.test/v1/bittensor/subnets",
-            "GET https://bittensor.test/v1/bittensor/subnets/0/validators",
-            "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
+            "GET https://bittensor.test/v1/bittensor/profile-3/subnets",
+            "GET https://bittensor.test/v1/bittensor/profile-3/subnets/0/validators",
+            "GET https://bittensor.test/v1/bittensor/profile-3/subnets/0/validators",
+            "GET https://bittensor.test/v1/bittensor/profile-3/yields/root?page=1&pageSize=100",
             "GET https://subnet-logos.test/subnets.json",
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=30",
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=30",
@@ -183,9 +184,14 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
             "GET \(SubtensorFlowHost.priceAPI)/coins/markets?vs_currency=usd&category=bittensor-subnets&per_page=250&page=1&sparkline=true&price_change_percentage=7d"
         ])
 
-        assertAttestedRequests(
+        assertAuthorizedRequests(
             world,
-            paths: ["/v1/bittensor/subnets", "/v1/bittensor/yields/root", "/v1/bittensor/subnets/0/validators"]
+            paths: [
+                "/v1/bittensor/profile-3/subnets",
+                "/v1/bittensor/profile-3/yields/root",
+                "/v1/bittensor/profile-3/subnets/0/validators",
+                "/v1/bittensor/profile-3/subnets/0/validators"
+            ]
         )
     }
 
@@ -202,9 +208,9 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
 
         XCTAssertNil(preset)
 
-        XCTAssertEqual(requestLines(), ["GET https://bittensor.test/v1/bittensor/recommendations"])
+        XCTAssertEqual(requestLines(), ["GET https://bittensor.test/v1/bittensor/profile-3/recommendations"])
 
-        assertAttestedRequests(world, paths: ["/v1/bittensor/recommendations"])
+        assertAuthorizedRequests(world, paths: ["/v1/bittensor/profile-3/recommendations"])
     }
 
     func testRootValidatorInfoKeepsChainValuesWhenTheBackendIsDown() throws {
@@ -240,18 +246,20 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
 
         XCTAssertEqual(root.primaryHotkey, aster)
         XCTAssertTrue(isDatasetUnavailable(directoryError, requestId: "req-f4-down"))
-        XCTAssertTrue(isDatasetUnavailable(retriedDirectoryError, requestId: "req-f4-down"))
+        guard case .rateLimited? = retriedDirectoryError as? BittensorApiError else {
+            return XCTFail("The shared origin cooldown must block the retry before sending")
+        }
         XCTAssertEqual(detail.item, try asterRoot(name: nil))
         XCTAssertNil(rootYield)
 
-        XCTAssertEqual(requestLines().sorted(), [
-            "GET https://bittensor.test/v1/bittensor/subnets/0/validators",
-            "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100"
+        // The first 503 starts the shared origin cooldown, including for other routes.
+        XCTAssertEqual(requestLines(), [
+            "GET https://bittensor.test/v1/bittensor/profile-3/subnets/0/validators"
         ])
 
-        assertAttestedRequests(
+        assertAuthorizedRequests(
             world,
-            paths: ["/v1/bittensor/subnets/0/validators", "/v1/bittensor/yields/root"]
+            paths: ["/v1/bittensor/profile-3/subnets/0/validators"]
         )
     }
 }

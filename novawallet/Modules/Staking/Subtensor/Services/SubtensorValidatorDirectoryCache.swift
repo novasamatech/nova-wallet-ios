@@ -7,17 +7,35 @@ struct SubtensorValidatorDirectoryCacheEntry {
 }
 
 protocol SubtensorValidatorDirectoryCaching: AnyObject {
+    var generation: UUID { get }
+
     func entry(for subnet: SubtensorSubnetRef) -> SubtensorValidatorDirectoryCacheEntry?
 
-    func store(_ entry: SubtensorValidatorDirectoryCacheEntry)
+    func store(_ entry: SubtensorValidatorDirectoryCacheEntry, generation: UUID) throws
+
+    func invalidate()
 }
 
 final class SubtensorValidatorDirectoryCache {
     private let mutex = NSLock()
+    private var contextGeneration = UUID()
     private var entries: [SubtensorSubnetRef: SubtensorValidatorDirectoryCacheEntry] = [:]
 }
 
 extension SubtensorValidatorDirectoryCache: SubtensorValidatorDirectoryCaching {
+    var generation: UUID {
+        mutex.lock()
+        defer { mutex.unlock() }
+        return contextGeneration
+    }
+
+    func invalidate() {
+        mutex.lock()
+        contextGeneration = UUID()
+        entries = [:]
+        mutex.unlock()
+    }
+
     func entry(for subnet: SubtensorSubnetRef) -> SubtensorValidatorDirectoryCacheEntry? {
         mutex.lock()
 
@@ -28,11 +46,15 @@ extension SubtensorValidatorDirectoryCache: SubtensorValidatorDirectoryCaching {
         return entries[subnet]
     }
 
-    func store(_ entry: SubtensorValidatorDirectoryCacheEntry) {
+    func store(_ entry: SubtensorValidatorDirectoryCacheEntry, generation: UUID) throws {
         mutex.lock()
 
         defer {
             mutex.unlock()
+        }
+
+        guard generation == contextGeneration else {
+            throw BittensorApiError.attestationUnavailable(requestId: nil)
         }
 
         let subnet = entry.directory.subnet

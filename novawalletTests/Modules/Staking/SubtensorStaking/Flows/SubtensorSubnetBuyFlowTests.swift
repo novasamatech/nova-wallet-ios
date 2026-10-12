@@ -192,12 +192,15 @@ final class SubtensorSubnetBuyFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(try yourBittensor.subnet(netuid: 64).name, "Chutes")
 
         XCTAssertEqual(requestLines().sorted(), [
-            "GET https://bittensor.test/v1/bittensor/recommendations",
-            "GET https://bittensor.test/v1/bittensor/recommendations/subnets",
-            "GET https://bittensor.test/v1/bittensor/subnets",
-            "GET https://bittensor.test/v1/bittensor/subnets/64/validators",
-            "GET https://bittensor.test/v1/bittensor/subnets/64/yields/alpha?page=1&pageSize=100",
-            "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
+            "GET https://bittensor.test/v1/bittensor/profile-3/recommendations",
+            "GET https://bittensor.test/v1/bittensor/profile-3/recommendations/subnets",
+            "GET https://bittensor.test/v1/bittensor/profile-3/subnets",
+            "GET https://bittensor.test/v1/bittensor/profile-3/subnets",
+            "GET https://bittensor.test/v1/bittensor/profile-3/subnets/64/validators",
+            "GET https://bittensor.test/v1/bittensor/profile-3/subnets/64/validators",
+            "GET https://bittensor.test/v1/bittensor/profile-3/subnets/64/validators",
+            "GET https://bittensor.test/v1/bittensor/profile-3/subnets/64/yields/alpha?page=1&pageSize=100",
+            "GET https://bittensor.test/v1/bittensor/profile-3/yields/root?page=1&pageSize=100",
             "GET https://subnet-logos.test/subnets.json",
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=30",
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=30",
@@ -206,15 +209,18 @@ final class SubtensorSubnetBuyFlowTests: SubtensorFlowTestCase {
             "GET \(SubtensorFlowHost.priceAPI)/coins/markets?vs_currency=usd&category=bittensor-subnets&per_page=250&page=1&sparkline=true&price_change_percentage=7d"
         ])
 
-        assertAttestedRequests(
+        assertAuthorizedRequests(
             world,
             paths: [
-                "/v1/bittensor/subnets",
-                "/v1/bittensor/yields/root",
-                "/v1/bittensor/recommendations/subnets",
-                "/v1/bittensor/recommendations",
-                "/v1/bittensor/subnets/64/validators",
-                "/v1/bittensor/subnets/64/yields/alpha"
+                "/v1/bittensor/profile-3/subnets",
+                "/v1/bittensor/profile-3/yields/root",
+                "/v1/bittensor/profile-3/recommendations/subnets",
+                "/v1/bittensor/profile-3/recommendations",
+                "/v1/bittensor/profile-3/subnets/64/validators",
+                "/v1/bittensor/profile-3/subnets/64/validators",
+                "/v1/bittensor/profile-3/subnets/64/yields/alpha",
+                "/v1/bittensor/profile-3/subnets/64/validators",
+                "/v1/bittensor/profile-3/subnets"
             ]
         )
     }

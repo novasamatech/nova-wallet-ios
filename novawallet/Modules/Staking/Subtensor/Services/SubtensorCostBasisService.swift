@@ -15,6 +15,7 @@ final class SubtensorCostBasisService {
     let logger: LoggerProtocol
 
     private let mutex = NSLock()
+    private var contextGeneration = UUID()
     private var histories: [AccountId: AccountHistory] = [:]
 
     init(
@@ -34,6 +35,7 @@ final class SubtensorCostBasisService {
         self.logger = logger
 
         eventCenter.add(observer: self, dispatchIn: nil)
+        apiOperationFactory.addContextObserver(self) { [weak self] in self?.invalidate() }
     }
 }
 
@@ -43,10 +45,16 @@ extension SubtensorCostBasisService: SubtensorCostBasisServiceProtocol {
         netuid: UInt16
     ) -> CompoundOperationWrapper<SubtensorCostBasis> {
         let waiterId = UUID()
+        mutex.lock()
+        let generation = contextGeneration
+        mutex.unlock()
 
         let operation = AsyncClosureOperation<SubtensorCostBasis>(
             operationClosure: { [self] completion in
-                resolve(accountId: accountId, netuid: netuid, waiterId: waiterId, completion: completion)
+                resolve(
+                    accountId: accountId, netuid: netuid, waiterId: waiterId,
+                    generation: generation, completion: completion
+                )
             },
             cancelationClosure: { [weak self] in
                 self?.leave(accountId: accountId, waiterId: waiterId)
@@ -92,6 +100,29 @@ extension SubtensorCostBasisService: EventVisitorProtocol {
 }
 
 private extension SubtensorCostBasisService {
+    func delivery(_ result: Result<SubtensorCostBasis, Error>, generation: UUID) -> Result<SubtensorCostBasis, Error> {
+        mutex.lock()
+        defer { mutex.unlock() }
+        return generation == contextGeneration
+            ? result
+            : .failure(BittensorApiError.attestationUnavailable(requestId: nil))
+    }
+
+    func invalidate() {
+        mutex.lock()
+        contextGeneration = UUID()
+        let abandoned = Array(histories.values)
+        histories = [:]
+        mutex.unlock()
+
+        for history in abandoned {
+            history.walk?.cancel()
+            history.waiters.values.forEach {
+                $0.completion(.failure(BittensorApiError.attestationUnavailable(requestId: nil)))
+            }
+        }
+    }
+
     struct Waiter {
         let netuid: UInt16
         let completion: Completion
@@ -110,7 +141,13 @@ private extension SubtensorCostBasisService {
         var waiters: [UUID: Waiter] = [:]
     }
 
-    func resolve(accountId: AccountId, netuid: UInt16, waiterId: UUID, completion: @escaping Completion) {
+    func resolve(
+        accountId: AccountId,
+        netuid: UInt16,
+        waiterId: UUID,
+        generation: UUID,
+        completion: @escaping Completion
+    ) {
         let accountSubject: AccountAddress
 
         do {
@@ -123,12 +160,18 @@ private extension SubtensorCostBasisService {
 
         mutex.lock()
 
+        guard generation == contextGeneration else {
+            mutex.unlock()
+            completion(.failure(BittensorApiError.attestationUnavailable(requestId: nil)))
+            return
+        }
+
         var history = histories[accountId] ?? AccountHistory()
 
         if let memo = history.memo, timeProvider() - memo.resolvedAt < memoLifetime {
             mutex.unlock()
 
-            completion(Result { try memo.ledger.costBasis(for: netuid) })
+            completion(delivery(Result { try memo.ledger.costBasis(for: netuid) }, generation: generation))
 
             return
         }
@@ -199,6 +242,7 @@ private extension SubtensorCostBasisService {
         }
 
         let waiters = Array(history.waiters.values)
+        let generation = contextGeneration
         history.waiters = [:]
 
         histories[accountId] = history
@@ -210,7 +254,8 @@ private extension SubtensorCostBasisService {
         }
 
         for waiter in waiters {
-            waiter.completion(result.flatMap { ledger in Result { try ledger.costBasis(for: waiter.netuid) } })
+            let costBasis = result.flatMap { ledger in Result { try ledger.costBasis(for: waiter.netuid) } }
+            waiter.completion(delivery(costBasis, generation: generation))
         }
     }
 

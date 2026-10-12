@@ -87,7 +87,7 @@ enum SubtensorFlowHost {
         "?vs_currency=usd&category=bittensor-subnets&per_page=250&page=1&sparkline=true&price_change_percentage=7d"
 
     static func bittensor(_ path: String) -> String {
-        "https://bittensor.test/v1/bittensor" + path
+        "https://bittensor.test/v1/bittensor" + (path.hasPrefix("/operations/") ? "" : "/profile-3") + path
     }
 
     static func marketChart(coinId: String, days: String) -> String {
@@ -213,6 +213,7 @@ final class SubtensorFlowURLProtocol: URLProtocol {
         Self.lock.lock()
         Self.requests.append(recorded)
         let reply = Self.routes[Route(method: recorded.method, url: recorded.url, body: recorded.body)]
+            ?? Self.bootstrapReply(for: request)
 
         if reply == nil {
             Self.unexpected.append(recorded)
@@ -241,6 +242,19 @@ final class SubtensorFlowURLProtocol: URLProtocol {
 }
 
 private extension SubtensorFlowURLProtocol {
+    static func bootstrapReply(for request: URLRequest) -> SubtensorFlowHTTPReply? {
+        guard request.httpMethod == "POST" else { return nil }
+        switch request.url?.path {
+        case "/v1/attestation/profile-3/challenges", "/v1/attestation/profile-3/token-challenges":
+            return .json(["challenge": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8", "issued_at": 1000, "expires_at": 1060])
+        case "/v1/attestation/profile-3/register":
+            return SubtensorFlowHTTPReply(statusCode: 204, headers: [:], body: Data())
+        case "/v1/attestation/profile-3/tokens":
+            return .json(["access_token": "flow-shared-bearer", "token_type": "Bearer", "issued_at": 1000, "expires_at": 1900])
+        default: return nil
+        }
+    }
+
     static func reset() {
         lock.lock()
         routes = [:]
