@@ -135,7 +135,7 @@ private extension NovaAuth {
 
     func attest(attempt: NovaAuthRegistrationAttempt, flight: NovaAuthIssuanceFlight) throws {
         guard let identity = state?.identity, let keyID = identity.keyID else { throw NovaAuthError.keyUnavailable }
-        try validateAttemptAge(attempt, flight: flight)
+        try validateAttemptBeforeApple(attempt, flight: flight)
         try setRegistration(.appleInFlight(attempt), flight: flight)
         NovaAuthDiagnostics.log(.registrationStarted, logger: dependencies.logger)
         flight.irreversible = true
@@ -154,7 +154,7 @@ private extension NovaAuth {
                 try retire(.registrationAbandoned, flight: flight)
                 throw error
             }
-            try validateAttemptAge(attempt, flight: flight)
+            try validateAttemptAfterApple(attempt, flight: flight)
             let now = try dependencies.clock.now()
             try validateAttestationObject(object, flight: flight)
             try setRegistration(.registrationPending(NovaAuthPendingRegistration(startedAt: now)), flight: flight)
@@ -193,7 +193,16 @@ private extension NovaAuth {
         }
     }
 
-    func validateAttemptAge(_ attempt: NovaAuthRegistrationAttempt, flight: NovaAuthIssuanceFlight) throws {
+    func validateAttemptBeforeApple(_ attempt: NovaAuthRegistrationAttempt, flight: NovaAuthIssuanceFlight) throws {
+        let now = try dependencies.clock.now()
+        let age = now.continuousSeconds - attempt.startedAt.continuousSeconds
+        guard now.bootID == attempt.startedAt.bootID, age >= 0, age <= 40 else {
+            try retire(.registrationAbandoned, flight: flight)
+            throw NovaAuthError.userActionRequired
+        }
+    }
+
+    func validateAttemptAfterApple(_ attempt: NovaAuthRegistrationAttempt, flight: NovaAuthIssuanceFlight) throws {
         let now = try dependencies.clock.now()
         let age = now.continuousSeconds - attempt.startedAt.continuousSeconds
         guard now.bootID == attempt.startedAt.bootID, age >= 0, age < 60 else {
