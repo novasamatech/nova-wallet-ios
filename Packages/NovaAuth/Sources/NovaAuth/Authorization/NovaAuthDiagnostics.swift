@@ -4,9 +4,18 @@ import SDKLogger
 enum NovaAuthDiagnostics {
     private static let queue = DispatchQueue(label: "io.novawallet.novaauth.diagnostics")
     enum Event: String {
-        case registrationStarted, registrationPending, identityRetired, identityRecovered
-        case policyRefused, cooldown, tokenInstalled, contextReplaced, storageRecovery
+        case registrationStarted, registrationPending, identityRecovered
+        case policyRefused, tokenInstalled, contextReplaced, storageFailed, storageRecovery
         case bearerRejected, bearerDeniedRepeated, bearerRecovered
+    }
+
+    enum CooldownScope: String {
+        case shared, family, recreation, policy, proof
+    }
+
+    enum CooldownDelay {
+        case bounded(TimeInterval)
+        case localRecovery(TimeInterval)
     }
 
     enum Phase: String {
@@ -56,12 +65,34 @@ enum NovaAuthDiagnostics {
         let message = "NovaAuth transition=\(event.rawValue)" + metadata(requestID: requestID, retryAfter: retryAfter)
         queue.async {
             switch event {
-            case .policyRefused, .storageRecovery, .identityRetired, .bearerDeniedRepeated:
+            case .policyRefused, .storageFailed, .storageRecovery, .bearerDeniedRepeated:
                 logger?.warning(message)
             default:
                 logger?.info(message)
             }
         }
+    }
+
+    static func retired(_ reason: NovaAuthRetirementReason, logger: SDKLoggerProtocol?) {
+        let message = "NovaAuth transition=identityRetired reason=\(reason.rawValue)"
+        queue.async { logger?.warning(message) }
+    }
+
+    static func cooldown(scope: CooldownScope, delay: CooldownDelay?, logger: SDKLoggerProtocol?) {
+        var message = "NovaAuth transition=cooldown scope=\(scope.rawValue)"
+        switch delay {
+        case let .bounded(seconds):
+            message += metadata(requestID: nil, retryAfter: seconds)
+        case let .localRecovery(seconds):
+            let maximum: TimeInterval = 95040
+            let roundingTolerance: TimeInterval = 0.000001
+            if seconds.isFinite, seconds >= 0, seconds <= maximum + roundingTolerance {
+                message += " retryAfter=\(Int(min(seconds, maximum).rounded(.up)))"
+            }
+        case nil: break
+        }
+        let safeMessage = message
+        queue.async { logger?.info(safeMessage) }
     }
 
     private static func metadata(requestID: String?, retryAfter: TimeInterval?) -> String {

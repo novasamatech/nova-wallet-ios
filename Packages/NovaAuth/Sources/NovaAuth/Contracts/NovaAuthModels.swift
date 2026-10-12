@@ -159,6 +159,7 @@ enum NovaAuthRetirementReason: String, Codable {
         }
     }
 }
+
 struct NovaAuthTokenRecord: Codable, Equatable {
     let version: Int
     let context: NovaAuthContext
