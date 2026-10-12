@@ -9,7 +9,7 @@ let package = Package(
         .library(name: "NovaAnalytics", targets: ["NovaAnalytics"])
     ],
     dependencies: [
-        .package(path: "../NovaAppAttest"),
+        .package(path: "../NovaAuth"),
         .package(path: "../NovaOperationSupport"),
         .package(url: "https://github.com/novasamatech/Operation-iOS", exact: "2.1.2"),
         .package(url: "https://github.com/novasamatech/Keystore-iOS", exact: "1.0.1"),
@@ -20,7 +20,7 @@ let package = Package(
         .target(
             name: "NovaAnalytics",
             dependencies: [
-                "NovaAppAttest",
+                "NovaAuth",
                 "NovaOperationSupport",
                 .product(name: "Operation-iOS", package: "Operation-iOS"),
                 .product(name: "Keystore-iOS", package: "Keystore-iOS"),

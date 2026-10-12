@@ -4,6 +4,8 @@
 <dict>
 	<key>AppIdentifierPrefix</key>
 	<string>$(AppIdentifierPrefix)</string>
+	<key>NovaAuthHostAppNamespace</key>
+	<string>$(NOVA_AUTH_HOST_APP_NAMESPACE)</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

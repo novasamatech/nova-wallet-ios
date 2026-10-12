@@ -1,4 +1,5 @@
 import Foundation
+import NovaAuth
 
 enum SharedContainerGroup {
     static var name: String {
@@ -7,5 +8,19 @@ enum SharedContainerGroup {
         #else
             return "group.novafoundation.novawallet.dev"
         #endif
+    }
+}
+
+extension SharedContainerGroup {
+    static var novaAuthStore: NovaAuthSharedStoreConfiguration? {
+        guard let hostAppNamespace = Bundle.main.object(forInfoDictionaryKey: "NovaAuthHostAppNamespace") as? String,
+              let directory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: name) else {
+            return nil
+        }
+        return try? NovaAuthSharedStoreConfiguration(
+            accessGroup: name,
+            containerURL: directory,
+            hostAppNamespace: hostAppNamespace
+        )
     }
 }

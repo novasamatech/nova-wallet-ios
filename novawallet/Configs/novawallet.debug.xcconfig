@@ -2,3 +2,4 @@ OTHER_SWIFT_FLAGS = $(inherited) "-DENABLE_UITUNNEL" "-DF_DEV" "-DF_APPCHECK_DEB
 
 APP_NAME = Nova Dev
 ICON_SUFFIX = Dev
+NOVA_AUTH_HOST_APP_NAMESPACE = io.novafoundation.novawallet.dev

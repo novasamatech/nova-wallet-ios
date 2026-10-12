@@ -1,3 +1,4 @@
 OTHER_SWIFT_FLAGS = $(inherited) "-DF_RELEASE"
 
 APP_NAME = Nova
+NOVA_AUTH_HOST_APP_NAMESPACE = io.novafoundation.novawallet

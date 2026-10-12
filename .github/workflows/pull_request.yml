@@ -93,8 +93,8 @@ jobs:
         include:
           - package: NovaAnalytics
             test-target: NovaAnalyticsTests
-          - package: NovaAppAttest
-            test-target: NovaAppAttestTests
+          - package: NovaAuth
+            test-target: NovaAuthTests
 
     steps:
       - name: Checkout

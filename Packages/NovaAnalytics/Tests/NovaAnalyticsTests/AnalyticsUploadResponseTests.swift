@@ -28,7 +28,7 @@ final class AnalyticsUploadResponseTests: XCTestCase {
     }
 
     func testErrorCodeDeterminesRejection() throws {
-        XCTAssertEqual(try deliveryError(401, code: "unknown_client"), .rejected(statusCode: 401))
+        XCTAssertEqual(try deliveryError(401, code: "unknown_client"), .proofRefused(statusCode: 401))
         XCTAssertEqual(try deliveryError(401, code: "invalid_challenge"), .proofRefused(statusCode: 401))
         XCTAssertEqual(try deliveryError(400, code: "invalid_target"), .proofRefused(statusCode: 400))
         XCTAssertEqual(try deliveryError(400), .clientError(statusCode: 400))
@@ -36,5 +36,11 @@ final class AnalyticsUploadResponseTests: XCTestCase {
 
     func testRetryAfterDelay() throws {
         XCTAssertEqual(try deliveryError(429, retryAfter: "120"), .retryLater(statusCode: 429, retryAfter: 120))
+    }
+
+    func testStructuredPayloadRejectionsArePermanent() throws {
+        for code in ["invalid_envelope", "unsupported_schema_version", "batch_too_large", "unknown_error"] {
+            XCTAssertEqual(try deliveryError(400, code: code), .clientError(statusCode: 400))
+        }
     }
 }

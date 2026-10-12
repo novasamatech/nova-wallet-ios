@@ -29,7 +29,6 @@ public final class AnalyticsService {
         queue: AnalyticsEventQueueProtocol,
         identity: AnalyticsIdentityProtocol,
         uploader: AnalyticsUploading,
-        gatewayResolver: AnalyticsGatewayResolving? = nil,
         operationQueue: OperationQueue,
         uploadOperationQueue: OperationQueue,
         completionQueue: DispatchQueue = DispatchQueue(label: "io.novawallet.analytics.completions"),
@@ -61,14 +60,13 @@ public final class AnalyticsService {
 
             if newValue {
                 self?.identity.allowCreation()
-                gatewayResolver?.allowClient()
             } else {
-                self?.handleConsentDisabled(gatewayResolver: gatewayResolver)
+                self?.handleConsentDisabled()
             }
         }
 
         if !consent.isEnabled {
-            repairWithdrawnConsent(gatewayResolver: gatewayResolver)
+            repairWithdrawnConsent()
         } else {
             erasure.drainOwed()
         }
@@ -174,7 +172,7 @@ private extension AnalyticsService {
             case .success:
                 schedule.recordSuccess()
             case let .failure(error):
-                logger.debug("Analytics flush failed: \(error)")
+                logger.debug("Analytics flush failed")
                 schedule.recordFailure(error, now: timeProvider())
             }
 
@@ -185,12 +183,10 @@ private extension AnalyticsService {
     }
 
     // A previous withdrawal may have been interrupted before clearing local state.
-    func repairWithdrawnConsent(gatewayResolver: AnalyticsGatewayResolving?) {
+    func repairWithdrawnConsent() {
         if identity.existingInstallId() != nil {
             identity.forgetInstallId()
         }
-
-        gatewayResolver?.forgetClient()
 
         erasure.request()
     }
@@ -261,7 +257,7 @@ private extension AnalyticsService {
             payload = try AnalyticsCoding.encoder.encode(event.wireProperties)
         } catch {
             mutex.unlock()
-            logger.error("Analytics event dropped, unencodable: \(error)")
+            logger.error("Analytics event dropped, unencodable")
             completion?()
 
             return
@@ -284,7 +280,7 @@ private extension AnalyticsService {
             runningCallbackIn: nil
         ) { [weak self] result in
             if case let .failure(error) = result {
-                self?.logger.error("Analytics enqueue failed: \(error)")
+                self?.logger.error("Analytics enqueue failed")
             }
 
             completion?()
@@ -352,7 +348,7 @@ public extension AnalyticsService {
         cancelFlushLocked()
     }
 
-    internal func handleConsentDisabled(gatewayResolver: AnalyticsGatewayResolving?) {
+    internal func handleConsentDisabled() {
         mutex.lock()
 
         defer {
@@ -366,7 +362,5 @@ public extension AnalyticsService {
 
         schedule.forget()
         currentFeature = nil
-
-        gatewayResolver?.forgetClient()
     }
 }
