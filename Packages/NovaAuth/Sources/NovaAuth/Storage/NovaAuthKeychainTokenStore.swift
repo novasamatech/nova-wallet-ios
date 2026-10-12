@@ -1,0 +1,115 @@
+import Foundation
+import Security
+
+protocol NovaAuthSecurityProtocol {
+    func copy(_ query: [String: Any]) -> (OSStatus, Data?)
+    func add(_ query: [String: Any]) -> OSStatus
+    func update(_ query: [String: Any], attributes: [String: Any]) -> OSStatus
+    func delete(_ query: [String: Any]) -> OSStatus
+}
+
+struct NovaAuthSecurity: NovaAuthSecurityProtocol {
+    func copy(_ query: [String: Any]) -> (OSStatus, Data?) {
+        var result: CFTypeRef?
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
+        return (status, result as? Data)
+    }
+
+    func add(_ query: [String: Any]) -> OSStatus { SecItemAdd(query as CFDictionary, nil) }
+    func update(_ query: [String: Any], attributes: [String: Any]) -> OSStatus {
+        SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
+    }
+
+    func delete(_ query: [String: Any]) -> OSStatus { SecItemDelete(query as CFDictionary) }
+}
+
+final class NovaAuthKeychainTokenStore: NovaAuthTokenStoreProtocol {
+    private let accessGroup: String
+    private let hostAppNamespace: String
+    private let security: NovaAuthSecurityProtocol
+    private let fileLock: NovaAuthFileLockProtocol
+
+    convenience init(configuration: NovaAuthSharedStoreConfiguration) {
+        self.init(
+            configuration: configuration,
+            security: NovaAuthSecurity(),
+            fileLock: NovaAuthFileLock(containerURL: configuration.containerURL)
+        )
+    }
+
+    init(
+        configuration: NovaAuthSharedStoreConfiguration,
+        security: NovaAuthSecurityProtocol,
+        fileLock: NovaAuthFileLockProtocol
+    ) {
+        accessGroup = configuration.accessGroup
+        hostAppNamespace = configuration.hostAppNamespace
+        self.security = security
+        self.fileLock = fileLock
+    }
+
+    func load() throws -> NovaAuthTokenRecord? { try fileLock.withLock { try loadLocked() } }
+
+    func replace(_ record: NovaAuthTokenRecord) throws {
+        try fileLock.withLock {
+            let data: Data
+            do {
+                try NovaAuthStoredValidation.token(record)
+                data = try JSONEncoder().encode(record)
+            } catch { throw NovaAuthError.storageUnavailable }
+            let query = try scopedQuery()
+            let attributes: [String: Any] = [
+                kSecValueData as String: data,
+                kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+            ]
+            var status = security.update(query, attributes: attributes)
+            if status == errSecItemNotFound {
+                status = security.add(query.merging(attributes) { _, new in new })
+            }
+            guard status == errSecSuccess else { throw NovaAuthError.storageUnavailable }
+        }
+    }
+
+    @discardableResult func remove(ifMatching record: NovaAuthTokenRecord) throws -> Bool {
+        try fileLock.withLock {
+            guard let current = try loadLocked(), current == record else { return false }
+            try deleteLocked()
+            return true
+        }
+    }
+
+    func removeAll() throws { try fileLock.withLock { try deleteLocked() } }
+}
+
+private extension NovaAuthKeychainTokenStore {
+    func scopedQuery() throws -> [String: Any] {
+        guard !accessGroup.isEmpty, accessGroup.utf8.count <= 255,
+              accessGroup.utf8.allSatisfy({ (33 ... 126).contains($0) }) else { throw NovaAuthError.storageUnavailable }
+        return [kSecClass as String: kSecClassGenericPassword,
+                kSecAttrService as String: "io.novawallet.novaauth.profile3.\(hostAppNamespace)",
+                kSecAttrAccount as String: "current", kSecAttrAccessGroup as String: accessGroup]
+    }
+
+    func loadLocked() throws -> NovaAuthTokenRecord? {
+        var query = try scopedQuery()
+        query[kSecReturnData as String] = true
+        query[kSecMatchLimit as String] = kSecMatchLimitOne
+        let (status, data) = security.copy(query)
+        if status == errSecItemNotFound { return nil }
+        guard status == errSecSuccess else { throw NovaAuthError.storageUnavailable }
+        do {
+            guard let data, data.count <= 16384 else { throw NovaAuthError.storageUnavailable }
+            let record = try JSONDecoder().decode(NovaAuthTokenRecord.self, from: data)
+            try NovaAuthStoredValidation.token(record)
+            return record
+        } catch {
+            try deleteLocked()
+            return nil
+        }
+    }
+
+    func deleteLocked() throws {
+        let status = security.delete(try scopedQuery())
+        guard status == errSecSuccess || status == errSecItemNotFound else { throw NovaAuthError.storageUnavailable }
+    }
+}
