@@ -51,14 +51,14 @@ back to whatever is available.
 
 ### Local Package Suites
 
-`NovaAnalytics` and `NovaAppAttest` sources import UIKit/CoreData/DeviceCheck and every SDK
+`NovaAnalytics` and `NovaAuth` sources import UIKit/CoreData/DeviceCheck and every SDK
 dependency is iOS-only, so `swift test` builds for macOS and fails — test them through
 `xcodebuild` against a simulator destination instead. `NovaOperationSupport` has no test target
 (it mirrors app-only helper code — see project-layout.md); build it rather than testing it.
 
 ```bash
-(cd Packages/NovaAppAttest && RUN_IN_CI=true xcodebuild test -scheme NovaAppAttest \
-  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -derivedDataPath /tmp/dd-NovaAppAttest)
+(cd Packages/NovaAuth && RUN_IN_CI=true xcodebuild test -scheme NovaAuth \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -derivedDataPath /tmp/dd-NovaAuth)
 (cd Packages/NovaAnalytics && RUN_IN_CI=true xcodebuild test -scheme NovaAnalytics \
   -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -derivedDataPath /tmp/dd-NovaAnalytics)
 (cd Packages/NovaOperationSupport && RUN_IN_CI=true xcodebuild build -scheme NovaOperationSupport \
@@ -77,6 +77,13 @@ Four configurations, each with an xcconfig in `novawallet/Configs/`:
 | `Dev`         | `F_DEV`                                          | Nova Dev           | `io.novafoundation.novawallet.dev`   |
 | `Staging`     | `F_RELEASE`                                      | Nova Early Access  | `io.novafoundation.novawallet.staging` |
 | `Release`     | `F_RELEASE`                                      | Nova               | `io.novafoundation.novawallet`       |
+
+Each app and notification-extension xcconfig explicitly sets `NOVA_AUTH_HOST_APP_NAMESPACE`
+to the host app's bundle id from this table. Both Info.plists expose it as
+`NovaAuthHostAppNamespace`; missing, unresolved or invalid values disable auth composition.
+Each pair must match. Debug/Dev share the development App Group; Staging/Release share the
+production App Group, but their different host namespaces isolate their current bearer records.
+Keep this namespace stable for an installed host and never derive it from the extension's bundle suffix.
 
 Flag semantics in code:
 
@@ -129,7 +136,7 @@ Both run pinned versions through Mint, so results match CI and the build phases.
 ## Dependencies
 
 Mostly SPM, remote — plus three local packages under `Packages/`: `NovaAnalytics`,
-`NovaAppAttest`, and `NovaOperationSupport` (see project-layout.md). Versions are pinned in
+`NovaAuth`, and `NovaOperationSupport` (see project-layout.md). Versions are pinned in
 one place, `novawallet.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`,
 which also carries `logger-ios`, added when the local packages arrived. Testing a package on
 its own makes it write a `Packages/<Name>/Package.resolved`; those are git-ignored

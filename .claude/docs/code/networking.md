@@ -128,3 +128,10 @@ module should call `EvmTransactionService`, not the RPC layer.
 - architecture/chain-registry.md — connections, runtime providers, sync modes
 - code/concurrency.md — wrapping and executing these operations
 - architecture/transactions.md — the extrinsic-specific network path
+
+## Nova backend bearer authentication
+
+`Packages/NovaAuth` owns profile-3 bootstrap, the single persisted bearer, bounded renewal and
+native URLCache. App consumers inject `NovaAuthFacade.shared`; never build a per-feature auth
+provider. Their pending completions cannot restore a prior context's memo or
+return a directory enriched after that context was invalidated. See `Packages/NovaAuth/README.md` for the two existing POST backend rollout prerequisites.
