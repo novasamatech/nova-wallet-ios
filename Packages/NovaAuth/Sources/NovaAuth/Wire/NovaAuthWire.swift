@@ -96,7 +96,7 @@ enum NovaAuthWire {
         guard let value = response.value(forHTTPHeaderField: "Retry-After"), !value.isEmpty,
               value.utf8.count <= 10, value.utf8.allSatisfy({ (48 ... 57).contains($0) }),
               let seconds = UInt64(value) else { return nil }
-        return min(TimeInterval(seconds), 900)
+        return min(TimeInterval(seconds), 905)
     }
 }
 

@@ -1,5 +1,6 @@
 import Foundation
 import Security
+import CryptoKit
 
 protocol NovaAuthSecurityProtocol {
     func copy(_ query: [String: Any]) -> (OSStatus, Data?)
@@ -27,39 +28,33 @@ final class NovaAuthKeychainTokenStore: NovaAuthTokenStoreProtocol {
     private let accessGroup: String
     private let hostAppNamespace: String
     private let security: NovaAuthSecurityProtocol
-    private let fileLock: NovaAuthFileLockProtocol
+    private let mutationLock = NSLock()
 
     convenience init(configuration: NovaAuthSharedStoreConfiguration) {
         self.init(
             configuration: configuration,
-            security: NovaAuthSecurity(),
-            fileLock: NovaAuthFileLock(containerURL: configuration.containerURL)
+            security: NovaAuthSecurity()
         )
     }
 
     init(
         configuration: NovaAuthSharedStoreConfiguration,
-        security: NovaAuthSecurityProtocol,
-        fileLock: NovaAuthFileLockProtocol
+        security: NovaAuthSecurityProtocol
     ) {
         accessGroup = configuration.accessGroup
         hostAppNamespace = configuration.hostAppNamespace
         self.security = security
-        self.fileLock = fileLock
     }
 
-    func load() throws -> NovaAuthTokenRecord? { try fileLock.withLock { try loadLocked() } }
+    func load() throws -> NovaAuthTokenRecord? { try loadRecord() }
 
     func replace(_ record: NovaAuthTokenRecord) throws {
-        try fileLock.withLock {
-            let data: Data
-            do {
-                try NovaAuthStoredValidation.token(record)
-                data = try JSONEncoder().encode(record)
-            } catch { throw NovaAuthError.storageUnavailable }
+        try mutationLock.novaAuthLocked {
+            let data = try encoded(record)
             let query = try scopedQuery()
             let attributes: [String: Any] = [
                 kSecValueData as String: data,
+                kSecAttrGeneric as String: Data(SHA256.hash(data: data)),
                 kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
             ]
             var status = security.update(query, attributes: attributes)
@@ -71,14 +66,15 @@ final class NovaAuthKeychainTokenStore: NovaAuthTokenStoreProtocol {
     }
 
     @discardableResult func remove(ifMatching record: NovaAuthTokenRecord) throws -> Bool {
-        try fileLock.withLock {
-            guard let current = try loadLocked(), current == record else { return false }
-            try deleteLocked()
-            return true
-        }
+        var query = try scopedQuery()
+        query[kSecAttrGeneric as String] = Data(SHA256.hash(data: try encoded(record)))
+        let status = security.delete(query)
+        if status == errSecItemNotFound { return false }
+        guard status == errSecSuccess else { throw NovaAuthError.storageUnavailable }
+        return true
     }
 
-    func removeAll() throws { try fileLock.withLock { try deleteLocked() } }
+    func removeAll() throws { try mutationLock.novaAuthLocked { try deleteAll() } }
 }
 
 private extension NovaAuthKeychainTokenStore {
@@ -90,7 +86,16 @@ private extension NovaAuthKeychainTokenStore {
                 kSecAttrAccount as String: "current", kSecAttrAccessGroup as String: accessGroup]
     }
 
-    func loadLocked() throws -> NovaAuthTokenRecord? {
+    func encoded(_ record: NovaAuthTokenRecord) throws -> Data {
+        do {
+            try NovaAuthStoredValidation.token(record)
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.sortedKeys]
+            return try encoder.encode(record)
+        } catch { throw NovaAuthError.storageUnavailable }
+    }
+
+    func loadRecord() throws -> NovaAuthTokenRecord? {
         var query = try scopedQuery()
         query[kSecReturnData as String] = true
         query[kSecMatchLimit as String] = kSecMatchLimitOne
@@ -103,12 +108,12 @@ private extension NovaAuthKeychainTokenStore {
             try NovaAuthStoredValidation.token(record)
             return record
         } catch {
-            try deleteLocked()
+            // A newer record may already exist; the sole writer replaces unusable data on issuance.
             return nil
         }
     }
 
-    func deleteLocked() throws {
+    func deleteAll() throws {
         let status = security.delete(try scopedQuery())
         guard status == errSecSuccess || status == errSecItemNotFound else { throw NovaAuthError.storageUnavailable }
     }

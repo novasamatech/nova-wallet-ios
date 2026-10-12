@@ -32,20 +32,21 @@ extension NovaAuth {
                         }
                         immediate = .success(record)
                     } else {
-                        try issuanceCooldown.check(now: now)
-                        if flight == nil, case let .registrationPending(pending) = state?.identity?.registration {
-                            try pending.cooldown.check(now: now)
-                        }
-                        try prepareIdentity(context: context, intent: intent)
                         if let flight {
                             guard flight.context == context else { throw NovaAuthError.generationChanged }
                             flight.waiters[waiterID] = completion
-                        } else {
-                            let next = NovaAuthIssuanceFlight(context: context, sponsored: false)
-                            next.waiters[waiterID] = completion
-                            flight = next
-                            start(flight: next)
+                            return
                         }
+                        try issuanceCooldown.check(now: now)
+                        try state?.recoveryCooldown?.check(now: now)
+                        if case let .registrationPending(pending) = state?.identity?.registration {
+                            try pending.cooldown.check(now: now)
+                        }
+                        try prepareIdentity(context: context, intent: intent)
+                        let next = NovaAuthIssuanceFlight(context: context, sponsored: false)
+                        next.waiters[waiterID] = completion
+                        flight = next
+                        start(flight: next)
                     }
                 } catch { immediate = .failure(Self.safeError(error)) }
             }
@@ -59,6 +60,7 @@ extension NovaAuth {
             record = try dependencies.tokenStore.load()
         } catch { throw NovaAuthError.storageUnavailable }
         guard let record else { return nil }
+        do { try rejectedCredentials.check(record, now: now) } catch { return nil }
         do {
             guard let clientID = state?.identity?.clientID else { throw NovaAuthError.credentialUnavailable }
             _ = try NovaAuthTokenValidation.remaining(record, context: context, clientID: clientID, now: now)
@@ -73,6 +75,7 @@ extension NovaAuth {
 
     func issue(flight: NovaAuthIssuanceFlight) throws {
         guard let identity = state?.identity, let keyID = identity.keyID else { throw NovaAuthError.keyUnavailable }
+        flight.diagnosticPhase = .tokenChallenge
         let wrapper = dependencies.bootstrap.createTokenChallengeWrapper(
             origin: flight.context.origin,
             clientID: identity.clientID,
@@ -82,6 +85,7 @@ extension NovaAuth {
             let challenge: NovaAuthChallenge
             do {
                 challenge = try result.get()
+                try confirmPendingBinding(flight: flight)
             } catch {
                 try handleChallengeFailure(error, flight: flight)
                 throw error
@@ -97,9 +101,10 @@ extension NovaAuth {
                 bodyDigest: digest
             )
             flight.irreversible = true
+            flight.diagnosticPhase = .assertion
             let assertionWrapper = dependencies.appAttest.createAssertionWrapper(keyID: keyID, clientDataHash: hash)
             run(assertionWrapper, flight: flight) { [self] result in
-                let assertion = try result.get()
+                let assertion = try assertion(from: result, flight: flight)
                 let request = NovaAuthTokenRequest(
                     origin: flight.context.origin,
                     clientID: identity.clientID,
@@ -111,9 +116,11 @@ extension NovaAuth {
                     request,
                     beforeSend: { [self] in try beforeBootstrapSend(flight: flight, issuance: true) }
                 )
+                flight.diagnosticPhase = .token
                 run(tokenWrapper, flight: flight) { [self] result in
+                    let response = try result.get()
                     guard let started = flight.issuanceStart else { throw NovaAuthError.clockUnavailable }
-                    try install(try result.get(), started: started, clientID: identity.clientID, flight: flight)
+                    try install(response, started: started, clientID: identity.clientID, flight: flight)
                 }
             }
         }
@@ -151,7 +158,12 @@ extension NovaAuth {
         do {
             try dependencies.tokenStore.replace(record)
         } catch { throw NovaAuthError.storageUnavailable }
+        if var replacement = state, replacement.recoveryCooldown != nil {
+            replacement.recoveryCooldown = nil
+            try persist(replacement)
+        }
         issuanceCooldown.clear()
+        NovaAuthDiagnostics.log(.tokenInstalled, logger: dependencies.logger)
         finish(.success(record), flight: flight)
     }
 
@@ -160,16 +172,14 @@ extension NovaAuth {
         var safe = Self.safeError(error)
         if state?.context == flight.context {
             do {
-                if let appleError = error as? NovaAuthAppAttestError {
-                    switch appleError {
-                    case .invalidKey, .timedOut:
-                        try setRegistration(.retired(.lostKey), flight: flight)
-                    case .serverUnavailable, .unsupported, .failure: break
-                    }
-                }
                 if case let NovaAuthError.bootstrap(server) = error,
                    server.code == "app_not_allowed" || server.code == "binding_not_allowed" {
-                    try setRegistration(.retired(.policyRefused), flight: flight)
+                    try reserveRecoveryDelay()
+                    if server.code == "app_not_allowed", var replacement = state {
+                        replacement.requiresUserAction = true
+                        try persist(replacement)
+                    }
+                    NovaAuthDiagnostics.log(.policyRefused, logger: dependencies.logger, requestID: server.requestID)
                 }
                 if shouldApplyCooldown(safe) {
                     let retryAfter: TimeInterval?
@@ -180,6 +190,7 @@ extension NovaAuth {
                 }
             } catch { safe = Self.safeError(error) }
         } else { safe = .generationChanged }
+        NovaAuthDiagnostics.failure(safe, phase: flight.diagnosticPhase, logger: dependencies.logger)
         finish(.failure(safe), flight: flight)
     }
 
@@ -198,6 +209,13 @@ extension NovaAuth {
 }
 
 private extension NovaAuth {
+    func assertion(from result: Result<Data, Error>, flight: NovaAuthIssuanceFlight) throws -> Data {
+        do { return try result.get() } catch NovaAuthAppAttestError.invalidKey {
+            try retire(.lostKey, flight: flight)
+            throw NovaAuthAppAttestError.invalidKey
+        }
+    }
+
     func shouldApplyCooldown(_ error: NovaAuthError) -> Bool {
         switch error {
         case .cancelled, .generationChanged, .cooldown: return false
@@ -209,6 +227,7 @@ private extension NovaAuth {
         do {
             guard case .registered = state?.identity?.registration else { return }
             try issuanceCooldown.check(now: now)
+            try state?.recoveryCooldown?.check(now: now)
             try prepareIdentity(context: context, intent: intent)
             let next = NovaAuthIssuanceFlight(context: context, sponsored: true)
             flight = next

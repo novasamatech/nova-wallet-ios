@@ -22,6 +22,13 @@ protocol NovaAuthAppAttestProtocol: AnyObject {
 protocol NovaAuthIdentityStoreProtocol: AnyObject {
     func load() throws -> NovaAuthInstallationState?
     func save(_ state: NovaAuthInstallationState) throws
+    func markResetPending() throws
+}
+
+enum NovaAuthIdentityStoreError: Error, Equatable { case corrupt, resetPending }
+
+extension NovaAuthIdentityStoreProtocol {
+    func markResetPending() throws { throw NovaAuthError.storageUnavailable }
 }
 
 protocol NovaAuthTokenStoreProtocol: AnyObject {
@@ -56,7 +63,3 @@ protocol NovaAuthHTTPProtocol: AnyObject {
 }
 
 enum NovaAuthAppAttestError: Error { case serverUnavailable, invalidKey, unsupported, failure, timedOut }
-
-protocol NovaAuthFileLockProtocol: AnyObject {
-    func withLock<T>(_ body: () throws -> T) throws -> T
-}

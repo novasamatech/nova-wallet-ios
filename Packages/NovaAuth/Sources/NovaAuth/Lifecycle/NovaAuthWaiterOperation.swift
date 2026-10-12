@@ -20,6 +20,15 @@ final class NovaAuthCancellation {
         if shouldCancel { action() }
     }
 
+    func enqueue<Value>(_ wrapper: CompoundOperationWrapper<Value>, on queue: OperationQueue) throws {
+        lock.lock()
+        defer { lock.unlock() }
+        guard !cancelled else { throw NovaAuthError.cancelled }
+        // Never cancel a pending child before OperationQueue has accepted it.
+        action = { wrapper.cancel() }
+        queue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+    }
+
     func cancel() {
         lock.lock()
         cancelled = true

@@ -2,6 +2,18 @@ import XCTest
 @testable import NovaAuth
 
 final class NovaAuthReaderTests: LifecycleTestCase {
+    func testReaderExcludesRejectedBearerAtAdmissionEvenWhenRemovalFails() throws {
+        let harness = try LifecycleHarness()
+        let (_, context) = try harness.registered(withToken: true)
+        let reader = harness.makeReader()
+        harness.tokens.failRemove = true
+        let record = try XCTUnwrap(harness.tokens.load())
+        XCTAssertThrowsError(try reader.reject(record: record, repeated: false, requestID: nil))
+        assertError(.credentialUnavailable, reader.createAdmissionWrapper(in: context, intent: .background), on: harness.callers)
+        XCTAssertTrue(harness.http.requests.isEmpty)
+        XCTAssertTrue(harness.bootstrap.tokens.isEmpty)
+    }
+
     func testReaderUsesSharedPersistedBearerIncludingEarlyWindowWithoutIssuing() throws {
         let harness = try LifecycleHarness()
         let (_, context) = try harness.registered(withToken: true)

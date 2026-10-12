@@ -33,8 +33,10 @@ struct NovaAuthTokenRequest {
 struct NovaAuthInstallationState: Codable, Equatable {
     let version: Int
     let context: NovaAuthContext
-    let requiresUserAction: Bool
+    var requiresUserAction: Bool
     let identity: NovaAuthInstallationIdentity?
+    var recoveryCooldown: NovaAuthCooldown?
+    var tokenRemovalOwed: Bool?
 }
 
 struct NovaAuthInstallationIdentity: Codable, Equatable {
@@ -52,13 +54,36 @@ struct NovaAuthRegistrationAttempt: Codable, Equatable {
 
 struct NovaAuthPendingRegistration: Codable, Equatable {
     let startedAt: NovaAuthTime
-    let probeCount: Int
+    let unknownResponseCount: Int
     let cooldown: NovaAuthCooldown
 
-    init(startedAt: NovaAuthTime, probeCount: Int = 0, cooldown: NovaAuthCooldown = NovaAuthCooldown()) {
+    init(startedAt: NovaAuthTime, unknownResponseCount: Int = 0, cooldown: NovaAuthCooldown = NovaAuthCooldown()) {
         self.startedAt = startedAt
-        self.probeCount = probeCount
+        self.unknownResponseCount = unknownResponseCount
         self.cooldown = cooldown
+    }
+
+    private enum CodingKeys: String, CodingKey { case startedAt, unknownResponseCount, probeCount, cooldown }
+
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        startedAt = try values.decode(NovaAuthTime.self, forKey: .startedAt)
+        cooldown = try values.decode(NovaAuthCooldown.self, forKey: .cooldown)
+        if values.contains(.unknownResponseCount) {
+            unknownResponseCount = try values.decode(Int.self, forKey: .unknownResponseCount)
+        } else {
+            let reservedCount = try values.decode(Int.self, forKey: .probeCount)
+            guard (0 ... 8).contains(reservedCount) else { throw NovaAuthIdentityStoreError.corrupt }
+            // Earlier versions counted sent attempts, which are not evidence of an absent binding.
+            unknownResponseCount = 0
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var values = encoder.container(keyedBy: CodingKeys.self)
+        try values.encode(startedAt, forKey: .startedAt)
+        try values.encode(unknownResponseCount, forKey: .unknownResponseCount)
+        try values.encode(cooldown, forKey: .cooldown)
     }
 }
 

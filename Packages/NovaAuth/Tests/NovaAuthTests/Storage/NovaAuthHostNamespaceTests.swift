@@ -23,10 +23,9 @@ final class NovaAuthHostNamespaceTests: XCTestCase {
     }
 
     func testStoresInSameGroupIsolateLoadReplaceConditionalRemoveAndCleanup() throws {
-        let lock = FoundationTestFileLock()
-        let security = FoundationTestSecurity(lock: lock)
-        let release = try store(releaseNamespace, security: security, lock: lock)
-        let staging = try store(stagingNamespace, security: security, lock: lock)
+        let security = FoundationTestSecurity()
+        let release = try store(releaseNamespace, security: security)
+        let staging = try store(stagingNamespace, security: security)
         let original = try FoundationFixture.record()
         let replacement = try FoundationFixture.record(token: "replacement")
 
@@ -54,22 +53,20 @@ final class NovaAuthHostNamespaceTests: XCTestCase {
         try release.removeAll()
         XCTAssertNil(try release.load())
         XCTAssertTrue(try staging.load() == replacement)
-        XCTAssertFalse(security.sawUnlockedCall)
     }
 
     func testMainAndOwnReaderShareBearerWhileSiblingResetCannotRemoveIt() throws {
-        let lock = FoundationTestFileLock()
-        let security = FoundationTestSecurity(lock: lock)
-        let releaseStore = try store(releaseNamespace, security: security, lock: lock)
-        let stagingStore = try store(stagingNamespace, security: security, lock: lock)
+        let security = FoundationTestSecurity()
+        let releaseStore = try store(releaseNamespace, security: security)
+        let stagingStore = try store(stagingNamespace, security: security)
         let releaseRecord = try FoundationFixture.record()
         let stagingRecord = try record(clientID: "6f2c1e4a-0000-4000-8000-000000000002")
         try releaseStore.replace(releaseRecord)
         try stagingStore.replace(stagingRecord)
         let release = try main(store: releaseStore, namespace: releaseNamespace, record: releaseRecord)
         let staging = try main(store: stagingStore, namespace: stagingNamespace, record: stagingRecord)
-        let releaseReader = try reader(store: store(releaseNamespace, security: security, lock: lock))
-        let stagingReader = try reader(store: store(stagingNamespace, security: security, lock: lock))
+        let releaseReader = try reader(store: store(releaseNamespace, security: security))
+        let stagingReader = try reader(store: store(stagingNamespace, security: security))
 
         try executeFoundation(release.createAdmissionWrapper(in: releaseRecord.context, intent: .background))
         try executeFoundation(staging.createAdmissionWrapper(in: stagingRecord.context, intent: .background))
@@ -84,19 +81,17 @@ final class NovaAuthHostNamespaceTests: XCTestCase {
         }
         try executeFoundation(staging.createAdmissionWrapper(in: stagingRecord.context, intent: .background))
         try executeFoundation(stagingReader.createAdmissionWrapper(in: stagingRecord.context, intent: .background))
-        XCTAssertFalse(security.sawUnlockedCall)
     }
 
     func testReaderWithWrongNamespaceCannotSendSiblingBearer() throws {
-        let lock = FoundationTestFileLock()
-        let security = FoundationTestSecurity(lock: lock)
-        let releaseStore = try store(releaseNamespace, security: security, lock: lock)
+        let security = FoundationTestSecurity()
+        let releaseStore = try store(releaseNamespace, security: security)
         let record = try FoundationFixture.record()
         try releaseStore.replace(record)
         let http = FoundationTestHTTP()
         http.response = try FoundationFixture.response("{}")
-        let ownReader = try reader(store: store(releaseNamespace, security: security, lock: lock), http: http)
-        let wrongReader = try reader(store: store(stagingNamespace, security: security, lock: lock), http: http)
+        let ownReader = try reader(store: store(releaseNamespace, security: security), http: http)
+        let wrongReader = try reader(store: store(stagingNamespace, security: security), http: http)
         let request = try NovaAuthRequest(
             context: record.context, method: .get, path: "/v1/bittensor/profile-3/subnets",
             queryItems: [], body: nil, contentType: nil, intent: .background
@@ -124,10 +119,9 @@ private extension NovaAuthHostNamespaceTests {
 
     func store(
         _ namespace: String,
-        security: FoundationTestSecurity,
-        lock: FoundationTestFileLock
+        security: FoundationTestSecurity
     ) throws -> NovaAuthKeychainTokenStore {
-        NovaAuthKeychainTokenStore(configuration: try configuration(namespace), security: security, fileLock: lock)
+        NovaAuthKeychainTokenStore(configuration: try configuration(namespace), security: security)
     }
 
     func record(clientID: String) throws -> NovaAuthTokenRecord {

@@ -37,7 +37,8 @@ final class NovaAuthResetTests: LifecycleTestCase {
         XCTAssertEqual(harness.identity.state?.context, original)
         XCTAssertNotNil(try harness.tokens.load())
         harness.identity.failLoad = false
-        XCTAssertThrowsError(try restarted.activate(origin: harness.origin)) { XCTAssertEqual($0 as? NovaAuthError, .storageUnavailable) }
+        XCTAssertEqual(try restarted.activate(origin: harness.origin), original)
+        XCTAssertNotNil(try harness.tokens.load())
         try restarted.reset()
         XCTAssertNil(try harness.tokens.load())
     }
@@ -72,11 +73,18 @@ final class NovaAuthResetTests: LifecycleTestCase {
         XCTAssertThrowsError(try restarted.reset()) { XCTAssertEqual($0 as? NovaAuthError, .storageUnavailable) }
         XCTAssertNotNil(try harness.tokens.load())
         XCTAssertThrowsError(try restarted.activate(origin: harness.origin)) { XCTAssertEqual($0 as? NovaAuthError, .storageUnavailable) }
+        let fenced = try XCTUnwrap(restarted.currentContext)
+        XCTAssertEqual(harness.identity.state?.tokenRemovalOwed, true)
         harness.tokens.failRemove = false
         try restarted.reset()
         XCTAssertNil(try harness.tokens.load())
-        XCTAssertNil(harness.identity.state)
-        XCTAssertNil(restarted.currentContext)
+        XCTAssertNil(harness.identity.state?.identity)
+        XCTAssertEqual(harness.identity.state?.requiresUserAction, true)
+        XCTAssertNil(harness.identity.state?.tokenRemovalOwed)
+        XCTAssertEqual(restarted.currentContext, fenced)
+        let context = try restarted.activate(origin: harness.origin)
+        XCTAssertEqual(context, fenced)
+        assertError(.userActionRequired, restarted.createAdmissionWrapper(in: context, intent: .background), on: harness.callers)
         XCTAssertEqual(harness.apple.keys, 0)
         XCTAssertEqual(harness.bootstrap.tokenChallenges, 0)
     }

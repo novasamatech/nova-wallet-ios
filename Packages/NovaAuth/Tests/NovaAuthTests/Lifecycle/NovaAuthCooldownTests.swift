@@ -58,7 +58,7 @@ final class NovaAuthCooldownTests: LifecycleTestCase {
         }
         cooldown.fail(now: NovaAuthTime(bootID: "a", continuousSeconds: seconds), random: 0, retryAfter: 10000)
         XCTAssertThrowsError(try cooldown.check(now: NovaAuthTime(bootID: "a", continuousSeconds: seconds))) {
-            XCTAssertEqual($0 as? NovaAuthError, .cooldown(retryAfter: 900))
+            XCTAssertEqual($0 as? NovaAuthError, .cooldown(retryAfter: 905))
         }
         XCTAssertNoThrow(try cooldown.check(now: NovaAuthTime(bootID: "b", continuousSeconds: 0)))
     }
@@ -89,9 +89,64 @@ final class NovaAuthCooldownTests: LifecycleTestCase {
             if transport {
                 assertError(.transport(.timedOut), auth.createResponseWrapper(for: request, beforeSend: {}), on: harness.callers)
             } else { try execute(auth.createResponseWrapper(for: request, beforeSend: {}), on: harness.callers) }
-            assertError(.cooldown(retryAfter: 1.5), auth.createAdmissionWrapper(in: context, intent: .userInitiated), on: harness.callers)
+            if transport {
+                try execute(auth.createAdmissionWrapper(in: context, intent: .userInitiated), on: harness.callers)
+            } else {
+                assertError(.cooldown(retryAfter: 1.5), auth.createAdmissionWrapper(in: context, intent: .userInitiated), on: harness.callers)
+            }
+            assertError(.cooldown(retryAfter: 1.5), auth.createResponseWrapper(for: request, beforeSend: {}), on: harness.callers)
             XCTAssertNotNil(try harness.tokens.load())
             XCTAssertEqual(harness.bootstrap.tokens.count, 0)
         }
+    }
+
+    func testServiceFailuresHoldOffOnlyTheirOwnFamilyForIssuerAndReader() throws {
+        for useReader in [false, true] {
+            for analyticsFails in [false, true] {
+                for transport in [false, true] {
+                    let harness = try LifecycleHarness()
+                    let (auth, context) = try harness.registered(withToken: true)
+                    let client: NovaAuthClientProtocol = useReader ? harness.makeReader() : auth
+                    let analytics = try harness.request(context: context, method: .post, body: Data("{}".utf8))
+                    let bittensor = try harness.request(context: context)
+                    let failing = analyticsFails ? analytics : bittensor
+                    let healthy = analyticsFails ? bittensor : analytics
+                    harness.http.handler = { request, completion in
+                        if request.url?.path != failing.path {
+                            completion(Result { try LifecycleHTTP.response(request: request) })
+                        } else if transport {
+                            completion(.failure(NovaAuthError.transport(.timedOut)))
+                        } else {
+                            let code = analyticsFails ? "queue_over_capacity" : "dataset_unavailable"
+                            let body = Data("{\"error\":{\"code\":\"\(code)\",\"message\":\"retry\"}}".utf8)
+                            completion(Result { try LifecycleHTTP.response(request: request, status: 503, body: body) })
+                        }
+                    }
+                    if transport {
+                        assertError(.transport(.timedOut), client.createResponseWrapper(for: failing, beforeSend: {}), on: harness.callers)
+                    } else { try execute(client.createResponseWrapper(for: failing, beforeSend: {}), on: harness.callers) }
+                    try execute(client.createResponseWrapper(for: healthy, beforeSend: {}), on: harness.callers)
+                    assertError(.cooldown(retryAfter: 1.5), client.createResponseWrapper(for: failing, beforeSend: {}), on: harness.callers)
+                    XCTAssertEqual(harness.http.requests.count, 2)
+                    XCTAssertEqual(Set(harness.http.requests.compactMap { $0.value(forHTTPHeaderField: "Authorization") }).count, 1)
+                    XCTAssertTrue(harness.bootstrap.tokens.isEmpty)
+                }
+            }
+        }
+    }
+
+    func testExplicitAuthServiceFailureStillBlocksBothFamilies() throws {
+        let harness = try LifecycleHarness()
+        let (auth, context) = try harness.registered(withToken: true)
+        harness.http.handler = { request, completion in
+            completion(Result { try LifecycleHTTP.response(
+                request: request, status: 503, headers: ["Retry-After": "905"],
+                body: Data(#"{"error":{"code":"attestation_unavailable","message":"retry"}}"#.utf8)
+            ) })
+        }
+        try execute(auth.createResponseWrapper(for: harness.request(context: context), beforeSend: {}), on: harness.callers)
+        let analytics = try harness.request(context: context, method: .post, body: Data("{}".utf8))
+        assertError(.cooldown(retryAfter: 905), auth.createResponseWrapper(for: analytics, beforeSend: {}), on: harness.callers)
+        XCTAssertEqual(harness.http.requests.count, 1)
     }
 }

@@ -27,10 +27,10 @@ final class LifecycleHarness {
         callers.maxConcurrentOperationCount = 8
     }
 
-    func makeAuth(http: NovaAuthHTTPProtocol? = nil) -> NovaAuth {
+    func makeAuth(http: NovaAuthHTTPProtocol? = nil, identityStore: NovaAuthIdentityStoreProtocol? = nil) -> NovaAuth {
         NovaAuth(dependencies: NovaAuthDependencies(
             appAttest: apple,
-            identityStore: identity,
+            identityStore: identityStore ?? identity,
             tokenStore: tokens,
             clock: clock,
             random: random,
@@ -151,6 +151,16 @@ class LifecycleTestCase: XCTestCase {
     func observeFlight(_ auth: NovaAuth) -> XCTestExpectation {
         let done = expectation(description: "issuance flight completed")
         auth.gate.novaAuthLocked { auth.flight?.waiters[UUID()] = { _ in done.fulfill() } }
+        return done
+    }
+
+    func observeCompletion(of operation: Operation) -> XCTestExpectation {
+        let done = expectation(description: "retired child completed")
+        let completion = operation.completionBlock
+        operation.completionBlock = {
+            completion?()
+            done.fulfill()
+        }
         return done
     }
 }

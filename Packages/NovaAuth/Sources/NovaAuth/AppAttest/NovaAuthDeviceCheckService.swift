@@ -15,6 +15,7 @@ extension DCAppAttestService: NovaAuthDeviceCheckProtocol {}
 final class NovaAuthDeviceCheckService: NovaAuthAppAttestProtocol {
     private let service: NovaAuthDeviceCheckProtocol
     private let timeout: TimeInterval
+    private let proofCalls = NovaAuthProofCalls()
     var isSupported: Bool { service.isSupported }
 
     init(service: NovaAuthDeviceCheckProtocol = DCAppAttestService.shared, timeout: TimeInterval = 100) {
@@ -47,8 +48,14 @@ private extension NovaAuthDeviceCheckService {
             guard clientDataHash.count == 32 else { throw NovaAuthError.invalidRequest }
         } catch { return .createWithError(error) }
         let service = service
+        let proofCalls = proofCalls
         return createWrapper { completion in
+            guard let lease = proofCalls.acquire(keyID: keyID) else {
+                completion(.failure(NovaAuthAppAttestError.serverUnavailable))
+                return
+            }
             let callback: (Data?, Error?) -> Void = { data, error in
+                guard proofCalls.release(keyID: keyID, lease: lease) else { return }
                 completion(Self.result(value: data, error: error) {
                     guard !$0.isEmpty,
                           $0.count <= (attestation ? 49152 : 6144) else { throw NovaAuthError.invalidResponse }
@@ -90,6 +97,29 @@ private extension NovaAuthDeviceCheckService {
             try validate(value)
             return .success(value)
         } catch { return .failure(NovaAuthAppAttestError.failure) }
+    }
+}
+
+private final class NovaAuthProofCalls {
+    private let mutex = NSLock()
+    private var leases: [String: UUID] = [:]
+
+    func acquire(keyID: String) -> UUID? {
+        mutex.novaAuthLocked {
+            guard leases[keyID] == nil else { return nil }
+            let lease = UUID()
+            leases[keyID] = lease
+            return lease
+        }
+    }
+
+    // A local timeout cannot cancel DeviceCheck. Only the SDK callback releases its key.
+    func release(keyID: String, lease: UUID) -> Bool {
+        mutex.novaAuthLocked {
+            guard leases[keyID] == lease else { return false }
+            leases.removeValue(forKey: keyID)
+            return true
+        }
     }
 }
 
