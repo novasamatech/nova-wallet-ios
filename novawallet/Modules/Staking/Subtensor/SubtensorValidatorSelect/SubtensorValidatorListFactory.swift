@@ -149,14 +149,16 @@ extension SubtensorValidatorListFactory {
 
     func createErrorViewModel(for error: Error, locale: Locale) -> SubtensorValidatorErrorViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-        let isDeviceBound = (error as? BittensorApiError)?.isDeviceBound ?? false
+        let apiError = error as? BittensorApiError
+        let isDeviceBound = apiError?.isDeviceBound ?? false
+        let allowsUserRetry = apiError?.allowsUserRetry ?? true
 
         return SubtensorValidatorErrorViewModel(
             title: strings.stakingSubtensorUiValidatorFetchFailed(),
             details: isDeviceBound
                 ? strings.stakingSubtensorUiValidatorFetchDeviceDetail()
                 : strings.stakingSubtensorUiValidatorFetchFailedDetail(),
-            retryTitle: isDeviceBound ? nil : strings.commonTryAgain(),
+            retryTitle: allowsUserRetry ? strings.commonTryAgain() : nil,
             selectTitle: strings.stakingSubtensorSelectValidator()
         )
     }

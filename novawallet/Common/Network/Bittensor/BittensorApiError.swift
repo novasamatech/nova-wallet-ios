@@ -4,6 +4,7 @@ enum BittensorApiError: Error {
     case unsupportedDevice
     case configuration
     case attestationRejected(requestId: String?)
+    case bindingConflict(requestId: String?)
     case attestationBackoff(until: Date?)
     case attestationUnavailable(requestId: String?)
     case attestationFailure(requestId: String?)
