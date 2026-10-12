@@ -1,6 +1,16 @@
 import Foundation
 
 extension NovaAuth {
+    func failProofRetryDelay() throws {
+        guard var replacement = state else { throw NovaAuthError.generationChanged }
+        var recovery = replacement.recovery ?? NovaAuthRecoveryState()
+        var cooldown = recovery.proofRetryDelay ?? NovaAuthCooldown()
+        cooldown.failLadder(now: try dependencies.clock.now(), random: dependencies.random.unitInterval(), caps: 3_600)
+        recovery.proofRetryDelay = cooldown
+        replacement.recovery = recovery
+        try persist(replacement)
+    }
+
     func failPolicyRetryDelay() throws {
         guard var replacement = state else { throw NovaAuthError.generationChanged }
         var recovery = replacement.recovery ?? NovaAuthRecoveryState()

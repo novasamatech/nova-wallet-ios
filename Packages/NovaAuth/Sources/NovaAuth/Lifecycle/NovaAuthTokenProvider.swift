@@ -178,6 +178,10 @@ extension NovaAuth {
                     try failPolicyRetryDelay()
                     NovaAuthDiagnostics.log(.policyRefused, logger: dependencies.logger, requestID: server.requestID)
                 }
+                if case let NovaAuthError.bootstrap(server) = error,
+                   server.code == "invalid_proof", flight.diagnosticPhase == .token {
+                    try failProofRetryDelay()
+                }
                 if shouldApplyCooldown(safe) {
                     let retryAfter: TimeInterval?
                     if case let NovaAuthError.bootstrap(server) = error, server.statusCode == 429 {
