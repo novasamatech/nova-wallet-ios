@@ -1,5 +1,6 @@
 import Foundation
 import Operation_iOS
+import NovaAuth
 
 final class SubtensorSubnetCatalogueService {
     static let atomicScale = 9
@@ -98,8 +99,8 @@ private extension SubtensorSubnetCatalogueService {
 }
 
 extension SubtensorSubnetCatalogueService: SubtensorSubnetCatalogueServiceProtocol {
-    func createCatalogueWrapper() -> CompoundOperationWrapper<SubtensorSubnetCatalogue> {
-        let responseWrapper = apiOperationFactory.createSubnetsWrapper()
+    func createCatalogueWrapper(intent: NovaAuthRequestIntent) -> CompoundOperationWrapper<SubtensorSubnetCatalogue> {
+        let responseWrapper = apiOperationFactory.withIntent(intent).createSubnetsWrapper()
         let logger = logger
 
         let catalogueOperation = ClosureOperation<SubtensorSubnetCatalogue> {

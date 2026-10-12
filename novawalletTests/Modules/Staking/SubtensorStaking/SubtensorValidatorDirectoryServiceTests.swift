@@ -285,7 +285,7 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
         stubValidators(apiFactory, result: validators)
 
         stub(apiFactory) { stub in
-            when(stub.peekValidators(netuid: any())).thenReturn(.fresh(validators, freshUntil: 300))
+            when(stub.peekValidators(netuid: any())).thenReturn(.expired(validators))
         }
 
         stubChain(chainFactory, world: world, identities: [hotkeyA: identity])
@@ -301,7 +301,39 @@ final class SubtensorValidatorDirectoryServiceTests: XCTestCase {
         XCTAssertEqual(cachedDetail, SubtensorValidatorDetail(item: directory.items[0], identity: identity))
         XCTAssertNil(chainDetail.item.name)
         XCTAssertEqual(chainDetail.item.status?.uid, 5)
+        verify(apiFactory, times(2)).createValidatorsWrapper(netuid: equal(to: subnet.netuid))
         verify(chainFactory, times(3)).createChainSnapshotWrapper(for: any())
+    }
+
+    func testDetailKeepsChainValuesWhenRefreshingItsListingSeedFailsAdmission() throws {
+        let apiFactory = MockBittensorApiOperationFactoryProtocol()
+        let chainFactory = MockSubtensorValidatorChainOperationFactoryProtocol()
+        var world = ChainWorld(head: head)
+        world.seat(hotkeyA, netuid: 64, uid: 5, blocksSinceUpdate: 100)
+        stubChain(chainFactory, world: world)
+        let validators = try makeCollection(
+            rows: [row(hotkeyA, identity: "Aster Stake", stake: nil)],
+            stakes: available(olderAsOf, .fresh),
+            metagraph: available(olderAsOf, .fresh),
+            identities: available(olderAsOf, .fresh)
+        )
+        stubValidators(apiFactory, result: validators)
+        let service = makeService(apiFactory: apiFactory, chainFactory: chainFactory)
+        let directory = try run(service.createDirectoryWrapper(for: subnet))
+
+        stub(apiFactory) { stub in
+            when(stub.createValidatorsWrapper(netuid: any())).then { _ in
+                CompoundOperationWrapper.createWithError(BittensorApiError.rateLimited(requestId: nil))
+            }
+        }
+
+        let detail = try run(service.createDetailWrapper(for: hotkeyA, subnet: subnet))
+
+        XCTAssertNil(detail.item.name)
+        XCTAssertNil(detail.item.reportedStake)
+        XCTAssertEqual(detail.item.status, directory.items[0].status)
+        XCTAssertEqual(detail.item.take, directory.items[0].take)
+        verify(apiFactory, times(2)).createValidatorsWrapper(netuid: equal(to: subnet.netuid))
     }
 
     private func makeService(

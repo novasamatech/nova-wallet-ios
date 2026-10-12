@@ -1,27 +1,22 @@
 import XCTest
 @testable import NovaAnalytics
-import NovaAppAttest
+import NovaAuth
 import Operation_iOS
 
 final class AnalyticsUploaderTests: XCTestCase {
     private let queue = AnalyticsEventQueueStub()
-    private let attestation = BackendAttestationProviderSpy()
     private let uploadFactory = AnalyticsUploadOperationFactorySpy()
 
-    private func flush(maxBatches: Int = 10, grantsExchanges: Bool = true) throws {
-        let attestationSource = AnalyticsAttestationSourceStub(
-            attestation: AnalyticsAttestation(gatewayURL: URL(string: "https://gateway.example/")!, provider: attestation),
-            grantsExchanges: grantsExchanges
-        )
-
+    private func flush(
+        maxBatches: Int = 10,
+        factory: AnalyticsUploadOperationFactoryProtocol? = nil,
+        isConsentEnabled: @escaping () -> Bool = { true }
+    ) throws {
         let uploader = AnalyticsUploader(
             queue: queue,
             identity: AnalyticsIdentityStub(),
-            gatewayResolver: AnalyticsGatewayResolverStub(
-                attestation: attestation,
-                uploadFactory: uploadFactory,
-                attestationSource: attestationSource
-            ),
+            isConsentEnabled: isConsentEnabled,
+            gatewayResolver: AnalyticsGatewayResolverStub(uploadFactory: factory ?? uploadFactory),
             operationQueue: OperationQueue(),
             appVersion: "10.9.0",
             logger: SilentLogger()
@@ -46,13 +41,13 @@ final class AnalyticsUploaderTests: XCTestCase {
         }
     }
 
-    func testSendsSignedBody() throws {
+    func testSendsOneImmutableBody() throws {
         seed(count: 1)
 
         try flush()
 
-        XCTAssertEqual(attestation.signedBodies.count, 1)
-        XCTAssertEqual(attestation.signedBodies, uploadFactory.sentBodies)
+        XCTAssertEqual(uploadFactory.sentBodies.count, 1)
+        XCTAssertFalse(uploadFactory.sentBodies[0].isEmpty)
     }
 
     func testSuccessfulUploadDropsBatch() throws {
@@ -84,19 +79,48 @@ final class AnalyticsUploaderTests: XCTestCase {
         }
 
         XCTAssertEqual(queue.events, events)
-        XCTAssertEqual(attestation.markedUnattestedClientIds, ["cid"])
     }
 
-    func testBatchIsNeitherSignedNorSentWithoutTheExclusiveExchange() {
+    func testConsentWithdrawalBeforeSendRetainsBatchWithoutSending() throws {
         seed(count: 1)
         let events = queue.events
-
-        XCTAssertThrowsError(try flush(grantsExchanges: false)) { error in
-            XCTAssertEqual(error as? AnalyticsAttestationSourceError, .exchangeWithheld)
-        }
-
-        XCTAssertTrue(attestation.signedBodies.isEmpty)
+        let enabled = Locked(true)
+        uploadFactory.onBeforeSend = { enabled.update { $0 = false } }
+        try flush(isConsentEnabled: { enabled.value })
         XCTAssertTrue(uploadFactory.sentBodies.isEmpty)
         XCTAssertEqual(queue.events, events)
+    }
+
+    func testStructuredPayloadRejectionDropsBadBatchAndDrainsFollowingBatch() throws {
+        for code in ["invalid_envelope", "unsupported_schema_version", "batch_too_large"] {
+            seed(count: 51)
+            let client = AnalyticsAuthClientSpy()
+            client.onBeforeSend = {
+                client.responseStatus = client.requests.isEmpty ? 400 : 204
+                client.responseBody = Data(#"{"error":{"code":"\#(code)","message":"rejected"}}"#.utf8)
+            }
+            let factory = AnalyticsUploadOperationFactory(auth: analyticsTestAuth(client))
+
+            try flush(factory: factory)
+
+            XCTAssertEqual(client.requests.count, 2)
+            XCTAssertTrue(queue.events.isEmpty)
+        }
+    }
+
+    func testStructuredAuthAndTransientRejectionsRetainBatch() throws {
+        for (status, code) in [(400, "invalid_target"), (401, "invalid_token"), (429, "rate_limited")] {
+            seed(count: 51)
+            let events = queue.events
+            let client = AnalyticsAuthClientSpy()
+            client.responseStatus = status
+            client.responseBody = Data(#"{"error":{"code":"\#(code)"}}"#.utf8)
+            let factory = AnalyticsUploadOperationFactory(auth: analyticsTestAuth(client))
+
+            XCTAssertThrowsError(try flush(factory: factory))
+
+            XCTAssertEqual(client.requests.count, 1)
+            XCTAssertEqual(queue.events, events)
+        }
     }
 }

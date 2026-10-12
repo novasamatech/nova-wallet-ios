@@ -1,6 +1,6 @@
 import Foundation
 import Operation_iOS
-import NovaAppAttest
+import NovaAuth
 @testable import NovaAnalytics
 
 final class AnalyticsTrackingSpy: AnalyticsTrackingProtocol {
@@ -38,67 +38,62 @@ final class AnalyticsUploadingSpy: AnalyticsUploading {
 
 final class AnalyticsUploadOperationFactorySpy: AnalyticsUploadOperationFactoryProtocol {
     var uploadResult: Result<Void, Error> = .success(())
-
+    var onBeforeSend: (() -> Void)?
     private let recordedBodies = Locked<[Data]>([])
-
     var sentBodies: [Data] { recordedBodies.value }
 
-    func eventsTarget() throws -> AttestationRequestTarget {
-        try AttestationRequestTarget(
-            url: URL(string: "https://gateway.example/v1/analytics/events")!,
-            method: "post",
-            contentType: "application/json"
-        )
-    }
-
-    func createUploadOperation(
-        target _: AttestationRequestTarget,
-        bodyClosure: @escaping () throws -> Data,
-        headersClosure _: @escaping () throws -> [AttestationHeaderKey: String]?
-    ) -> BaseOperation<Void> {
-        let result = uploadResult
-        let bodies = recordedBodies
-
-        return ClosureOperation {
-            let body = try bodyClosure()
-            bodies.update { $0.append(body) }
-
-            try result.get()
-        }
+    func createUploadWrapper(body: Data, beforeSend: @escaping () throws -> Void) -> CompoundOperationWrapper<Void> {
+        CompoundOperationWrapper(targetOperation: ClosureOperation { [self] in
+            onBeforeSend?()
+            try beforeSend()
+            recordedBodies.update { $0.append(body) }
+            try uploadResult.get()
+        })
     }
 }
 
-final class BackendAttestationProviderSpy: BackendAttestationProviderProtocol {
-    private let recordedBodies = Locked<[Data]>([])
-    private let recordedMarkUnattested = Locked<[String]>([])
+final class AnalyticsAuthClientSpy: NovaAuthClientProtocol {
+    let isSupported = true
+    var responseStatus = 204
+    var responseBody = Data()
+    var failure: Error?
+    var onBeforeSend: (() -> Void)?
+    var simulateRecovery = false
+    private let recordedRequests = Locked<[NovaAuthRequest]>([])
+    var requests: [NovaAuthRequest] { recordedRequests.value }
+    let identitySentinel = UUID()
 
-    var signedBodies: [Data] { recordedBodies.value }
+    func createAdmissionWrapper(in _: NovaAuthContext, intent _: NovaAuthRequestIntent) -> CompoundOperationWrapper<Void> {
+        .createWithResult(())
+    }
 
-    var markedUnattestedClientIds: [String] { recordedMarkUnattested.value }
-
-    func createSignedHeadersWrapper(
-        target _: AttestationRequestTarget,
-        bodyClosure: @escaping () throws -> Data
-    ) -> CompoundOperationWrapper<[AttestationHeaderKey: String]?> {
-        let bodies = recordedBodies
-
-        return CompoundOperationWrapper(
-            targetOperation: ClosureOperation<[AttestationHeaderKey: String]?> {
-                let body = try bodyClosure()
-                bodies.update { $0.append(body) }
-
-                return [.profile: "2", .clientId: "cid", .challenge: "chal", .appAttestAssertion: "assertion"]
+    func createResponseWrapper(
+        for request: NovaAuthRequest,
+        beforeSend: @escaping () throws -> Void
+    ) -> CompoundOperationWrapper<NovaAuthResponse> {
+        CompoundOperationWrapper(targetOperation: ClosureOperation { [self] in
+            if let failure { throw failure }
+            onBeforeSend?()
+            try beforeSend()
+            recordedRequests.update { $0.append(request) }
+            if simulateRecovery {
+                onBeforeSend?()
+                try beforeSend()
+                recordedRequests.update { $0.append(request) }
             }
-        )
+            let url = request.context.origin.url.appendingPathComponent(request.path)
+            let response = HTTPURLResponse(url: url, statusCode: responseStatus, httpVersion: nil, headerFields: nil)!
+            return NovaAuthResponse(response: response, body: responseBody)
+        })
     }
+}
 
-    func markUnattested(ifCurrentClientId clientId: String) {
-        recordedMarkUnattested.update { $0.append(clientId) }
-    }
-
-    func forgetClient() {}
-
-    func allowClient() {}
+func analyticsTestAuth(_ client: NovaAuthClientProtocol) -> AnalyticsAuth {
+    let context = try! JSONDecoder().decode(
+        NovaAuthContext.self,
+        from: Data(#"{"origin":"https://gateway.example","generation":1}"#.utf8)
+    )
+    return AnalyticsAuth(context: context, client: client)
 }
 
 final class AnalyticsAvailabilityStub: AnalyticsAvailabilityProviderProtocol {
@@ -138,75 +133,15 @@ final class AnalyticsIdentityStub: AnalyticsIdentityProtocol {
 }
 
 final class AnalyticsGatewayResolverStub: AnalyticsGatewayResolving {
-    private let gateway: AnalyticsGateway
-
-    init(
-        attestation: BackendAttestationProviderProtocol,
-        uploadFactory: AnalyticsUploadOperationFactoryProtocol,
-        attestationSource: AnalyticsAttestationProviding
-    ) {
-        gateway = AnalyticsGateway(
-            attestation: attestation,
-            uploadFactory: uploadFactory,
-            attestationSource: attestationSource
-        )
-    }
-
+    private let factory: AnalyticsUploadOperationFactoryProtocol
+    init(uploadFactory: AnalyticsUploadOperationFactoryProtocol) { factory = uploadFactory }
     func createGatewayWrapper() -> CompoundOperationWrapper<AnalyticsGateway> {
-        .createWithResult(gateway)
+        .createWithResult(AnalyticsGateway(uploadFactory: factory))
     }
 }
 
-enum AnalyticsAttestationSourceError: Error {
-    case exchangeWithheld
-}
-
-final class AnalyticsAttestationSourceStub: AnalyticsAttestationProviding {
-    private let attestation: AnalyticsAttestation
-    private let grantsExchanges: Bool
-
-    init(attestation: AnalyticsAttestation, grantsExchanges: Bool = true) {
-        self.attestation = attestation
-        self.grantsExchanges = grantsExchanges
-    }
-
-    func createAttestationWrapper() -> CompoundOperationWrapper<AnalyticsAttestation> {
-        .createWithResult(attestation)
-    }
-
-    func createExclusiveWrapper<T>(
-        _ exchangeClosure: @escaping () throws -> CompoundOperationWrapper<T>
-    ) -> CompoundOperationWrapper<T> {
-        guard grantsExchanges else {
-            return .createWithError(AnalyticsAttestationSourceError.exchangeWithheld)
-        }
-
-        do {
-            return try exchangeClosure()
-        } catch {
-            return .createWithError(error)
-        }
-    }
-}
-
-final class AppAttestServiceStub: AppAttestServiceProtocol {
-    let isSupported = true
-
-    func createKeyGenerationOperation() -> BaseOperation<AppAttestKeyId> {
-        .createWithError(AppAttestServiceError.keyIdGeneration(nil))
-    }
-
-    func createAttestationWrapper(
-        using _: AppAttestKeyId,
-        clientData _: @escaping (AppAttestKeyId) throws -> Data
-    ) -> CompoundOperationWrapper<AppAttestAttestation> {
-        .createWithError(AppAttestServiceError.attestationGeneric(nil))
-    }
-
-    func createAssertionWrapper(
-        keyId _: AppAttestKeyId,
-        clientData _: @escaping () throws -> Data
-    ) -> CompoundOperationWrapper<AppAttestAssertion> {
-        .createWithError(AppAttestServiceError.assertionGeneric(nil))
-    }
+final class AnalyticsAuthSourceStub: AnalyticsAuthProvidingProtocol {
+    let auth: AnalyticsAuth
+    init(auth: AnalyticsAuth) { self.auth = auth }
+    func createAuthWrapper() -> CompoundOperationWrapper<AnalyticsAuth> { .createWithResult(auth) }
 }

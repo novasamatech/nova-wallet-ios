@@ -1,7 +1,7 @@
 import Foundation
 import Keystore_iOS
 import NovaAnalytics
-import NovaAppAttest
+import NovaAuth
 
 enum AnalyticsFacadeFactory {
     /// An accessor, not a builder. The only place in the app that touches the singleton, so
@@ -29,14 +29,14 @@ enum AnalyticsFacadeFactory {
     private static let sharedFacade: AnalyticsServiceFacadeProtocol? = {
         let settingsManager = SettingsManager.shared
 
-        guard ApplicationConfig.shared.appAttestAppIdentity != nil else {
+        guard NovaAuthFacade.shared.isSupported else {
             return nil
         }
 
         return AnalyticsServiceFacade(
             configuration: AnalyticsConfiguration(
-                attestationProvider: AnalyticsAttestationAdapter(holder: BackendAttestationHolder.shared),
-                appAttestService: AppAttestService(),
+                authProvider: AnalyticsAuthAdapter(provider: NovaAuthFacade.shared),
+                isAuthSupported: NovaAuthFacade.shared.isSupported,
                 // `ApplicationConfig.version` appends the build number, which the
                 // gateway does not expect.
                 appVersion: Bundle.main

@@ -470,7 +470,7 @@ private extension SubtensorOperationResultPresenterTests {
 
         stub(catalogueService) { stub in
             when(stub.cachedCatalogue()).thenReturn(.miss)
-            when(stub.createCatalogueWrapper()).thenReturn(
+            when(stub.createCatalogueWrapper(intent: any())).thenReturn(
                 .createWithError(BaseOperationError.unexpectedDependentResult)
             )
         }

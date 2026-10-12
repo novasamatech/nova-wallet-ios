@@ -1,64 +1,53 @@
 import XCTest
 @testable import NovaAnalytics
-import NovaAppAttest
+import NovaAuth
+import Operation_iOS
 
 final class AnalyticsUploadRequestTests: XCTestCase {
-    private func makeFactory() -> AnalyticsUploadOperationFactory {
-        AnalyticsUploadOperationFactory(baseURL: URL(string: "https://gateway.example/")!)
+    private func run(_ wrapper: CompoundOperationWrapper<Void>) throws {
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+        try wrapper.targetOperation.extractNoCancellableResultData()
     }
 
-    func testUsesAttestationTarget() throws {
-        let target = try AttestationRequestTarget(
-            url: URL(string: "https://elsewhere.example:8443/v1/other/path")!,
-            method: "put",
-            contentType: "text/plain"
-        )
-
-        let request = AnalyticsUploadOperationFactory.buildRequest(
-            target: target,
-            body: Data(),
-            headers: nil
-        )
-
-        XCTAssertEqual(request.url?.absoluteString, "https://elsewhere.example:8443/v1/other/path")
-        XCTAssertEqual(request.httpMethod, "PUT")
-        XCTAssertEqual(request.value(forHTTPHeaderField: "Content-Type"), "text/plain")
+    func testUsesExistingEventsPathAndBackgroundIntent() throws {
+        let client = AnalyticsAuthClientSpy()
+        let factory = AnalyticsUploadOperationFactory(auth: analyticsTestAuth(client))
+        try run(factory.createUploadWrapper(body: Data("{}".utf8), beforeSend: {}))
+        let request = try XCTUnwrap(client.requests.first)
+        XCTAssertEqual(request.path, "/v1/analytics/events")
+        XCTAssertEqual(request.method, .post)
+        XCTAssertEqual(request.intent, .background)
+        XCTAssertEqual(request.contentType, "application/json")
     }
 
-    func testIncludesBodyAndAttestationHeaders() throws {
-        let factory = makeFactory()
-
+    func testIncludesExactImmutableBodyAcrossPermittedRecovery() throws {
+        let client = AnalyticsAuthClientSpy()
+        client.simulateRecovery = true
+        let factory = AnalyticsUploadOperationFactory(auth: analyticsTestAuth(client))
         let body = Data(#"{"v":1,"events":[]}"#.utf8)
-        let request = AnalyticsUploadOperationFactory.buildRequest(
-            target: try factory.eventsTarget(),
-            body: body,
-            headers: [.profile: "2", .clientId: "cid", .challenge: "chal", .appAttestAssertion: "assertion"]
-        )
-
-        XCTAssertEqual(request.httpBody, body)
-        XCTAssertEqual(request.httpMethod, "POST")
-        XCTAssertEqual(request.url?.absoluteString, "https://gateway.example/v1/analytics/events")
-        XCTAssertEqual(request.value(forHTTPHeaderField: "Content-Type"), "application/json")
-        XCTAssertEqual(request.value(forHTTPHeaderField: "X-Client-Id"), "cid")
-        XCTAssertEqual(request.value(forHTTPHeaderField: "X-Challenge"), "chal")
-        XCTAssertEqual(request.value(forHTTPHeaderField: "X-Attestation-Profile"), "2")
-        XCTAssertEqual(request.value(forHTTPHeaderField: "X-App-Attest-Assertion"), "assertion")
-        XCTAssertNil(request.value(forHTTPHeaderField: "X-Signature"))
-        XCTAssertEqual(request.timeoutInterval, 15)
+        try run(factory.createUploadWrapper(body: body, beforeSend: {}))
+        XCTAssertEqual(client.requests.map(\.body), [body, body])
     }
 
-    func testOmitsUnsignedHeaders() throws {
-        let factory = makeFactory()
+    func testConsentIsRecheckedBeforeRecoverySend() {
+        let client = AnalyticsAuthClientSpy()
+        client.simulateRecovery = true
+        let factory = AnalyticsUploadOperationFactory(auth: analyticsTestAuth(client))
+        var checks = 0
+        XCTAssertThrowsError(try run(factory.createUploadWrapper(body: Data("{}".utf8), beforeSend: {
+            checks += 1
+            if checks == 2 { throw AnalyticsUploadAbort.consentWithdrawn }
+        })))
+        XCTAssertEqual(checks, 2)
+        XCTAssertEqual(client.requests.count, 1)
+    }
 
-        let request = AnalyticsUploadOperationFactory.buildRequest(
-            target: try factory.eventsTarget(),
-            body: Data("{}".utf8),
-            headers: nil
-        )
-
-        XCTAssertNil(request.value(forHTTPHeaderField: "X-App-Attest-Assertion"))
-        XCTAssertNil(request.value(forHTTPHeaderField: "X-Client-Id"))
-        XCTAssertNil(request.value(forHTTPHeaderField: "X-Challenge"))
-        XCTAssertEqual(request.value(forHTTPHeaderField: "Content-Type"), "application/json")
+    func testConsentRevokedDuringInitialAdmissionStopsFirstSend() {
+        let client = AnalyticsAuthClientSpy()
+        let factory = AnalyticsUploadOperationFactory(auth: analyticsTestAuth(client))
+        XCTAssertThrowsError(try run(factory.createUploadWrapper(body: Data("{}".utf8), beforeSend: {
+            throw AnalyticsUploadAbort.consentWithdrawn
+        })))
+        XCTAssertTrue(client.requests.isEmpty)
     }
 }

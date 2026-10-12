@@ -1,12 +1,12 @@
 import Foundation
 import Keystore_iOS
 import SDKLogger
-import NovaAppAttest
+import NovaAuth
 
 public struct AnalyticsConfiguration {
-    public let attestationProvider: AnalyticsAttestationProviding
+    public let authProvider: AnalyticsAuthProvidingProtocol
 
-    public let appAttestService: AppAttestServiceProtocol
+    public let isAuthSupported: Bool
 
     public let appVersion: String
 
@@ -22,8 +22,8 @@ public struct AnalyticsConfiguration {
     public let analyticsOperationQueue: OperationQueue
 
     public init(
-        attestationProvider: AnalyticsAttestationProviding,
-        appAttestService: AppAttestServiceProtocol,
+        authProvider: AnalyticsAuthProvidingProtocol,
+        isAuthSupported: Bool,
         appVersion: String,
         storeDirectory: URL,
         isFirstLaunch: @escaping () -> Bool,
@@ -32,8 +32,8 @@ public struct AnalyticsConfiguration {
         operationQueue: OperationQueue,
         analyticsOperationQueue: OperationQueue
     ) {
-        self.attestationProvider = attestationProvider
-        self.appAttestService = appAttestService
+        self.authProvider = authProvider
+        self.isAuthSupported = isAuthSupported
         self.appVersion = appVersion
         self.storeDirectory = storeDirectory
         self.isFirstLaunch = isFirstLaunch

@@ -10,6 +10,7 @@ final class SubtensorMaxApyResolution {
     let timeProvider: () -> TimeInterval
 
     private let mutex = NSLock()
+    private var contextGeneration = UUID()
     private var memo: Memo?
     private var walkId: UUID?
     private var walk: CancellableCall?
@@ -25,15 +26,22 @@ final class SubtensorMaxApyResolution {
 
     func resolve(
         for waiterId: UUID,
+        generation: UUID,
         startingWalkWith startWalk: (@escaping Completion) -> CancellableCall,
         completion: @escaping Completion
     ) {
         mutex.lock()
 
+        guard generation == contextGeneration else {
+            mutex.unlock()
+            completion(.failure(BittensorApiError.attestationUnavailable(requestId: nil)))
+            return
+        }
+
         if let memo, timeProvider() - memo.resolvedAt < memoLifetime {
             mutex.unlock()
 
-            completion(.success(memo.maxApy))
+            completion(delivery(.success(memo.maxApy), generation: generation))
 
             return
         }
@@ -104,12 +112,41 @@ final class SubtensorMaxApyResolution {
 
         return .fresh(memo.maxApy, freshUntil: memo.resolvedAt + memoLifetime)
     }
+
+    var generation: UUID {
+        mutex.lock()
+        defer { mutex.unlock() }
+        return contextGeneration
+    }
+
+    func invalidate() {
+        mutex.lock()
+        contextGeneration = UUID()
+        memo = nil
+        walkId = nil
+        let abandonedWalk = walk
+        let completions = Array(waiters.values)
+        walk = nil
+        waiters = [:]
+        mutex.unlock()
+
+        abandonedWalk?.cancel()
+        completions.forEach { $0(.failure(BittensorApiError.attestationUnavailable(requestId: nil))) }
+    }
 }
 
 private extension SubtensorMaxApyResolution {
     struct Memo {
         let maxApy: Decimal?
         let resolvedAt: TimeInterval
+    }
+
+    func delivery(_ result: Result<Decimal?, Error>, generation: UUID) -> Result<Decimal?, Error> {
+        mutex.lock()
+        defer { mutex.unlock() }
+        return generation == contextGeneration
+            ? result
+            : .failure(BittensorApiError.attestationUnavailable(requestId: nil))
     }
 
     func complete(walkId completedWalkId: UUID, with result: Result<Decimal?, Error>) {
@@ -129,10 +166,11 @@ private extension SubtensorMaxApyResolution {
         }
 
         let completions = Array(waiters.values)
+        let generation = contextGeneration
         waiters = [:]
 
         mutex.unlock()
 
-        completions.forEach { $0(result) }
+        completions.forEach { $0(delivery(result, generation: generation)) }
     }
 }

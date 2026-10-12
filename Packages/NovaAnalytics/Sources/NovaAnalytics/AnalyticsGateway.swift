@@ -1,13 +1,11 @@
 import Foundation
 import Operation_iOS
 import SDKLogger
-import NovaAppAttest
+import NovaAuth
 import NovaOperationSupport
 
 struct AnalyticsGateway {
-    let attestation: BackendAttestationProviderProtocol
     let uploadFactory: AnalyticsUploadOperationFactoryProtocol
-    let attestationSource: AnalyticsAttestationProviding
 }
 
 protocol AnalyticsGatewayResolving: AnyObject {
@@ -15,72 +13,21 @@ protocol AnalyticsGatewayResolving: AnyObject {
 }
 
 final class AnalyticsGatewayResolver: AnalyticsGatewayResolving {
-    private let attestationSource: AnalyticsAttestationProviding
+    private let authSource: AnalyticsAuthProvidingProtocol
     private let logger: SDKLoggerProtocol
 
-    private let mutex = NSLock()
-    private var gateway: AnalyticsGateway?
-
-    init(attestationSource: AnalyticsAttestationProviding, logger: SDKLoggerProtocol) {
-        self.attestationSource = attestationSource
+    init(authSource: AnalyticsAuthProvidingProtocol, logger: SDKLoggerProtocol) {
+        self.authSource = authSource
         self.logger = logger
     }
 
-    var resolved: AnalyticsGateway? {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        return gateway
-    }
-
     func createGatewayWrapper() -> CompoundOperationWrapper<AnalyticsGateway> {
-        if let resolved {
-            return .createWithResult(resolved)
+        let authWrapper = authSource.createAuthWrapper()
+        let mapOperation = ClosureOperation<AnalyticsGateway> { [logger] in
+            let auth = try authWrapper.targetOperation.extractNoCancellableResultData()
+            return AnalyticsGateway(uploadFactory: AnalyticsUploadOperationFactory(auth: auth, logger: logger))
         }
-
-        let attestationWrapper = attestationSource.createAttestationWrapper()
-
-        let mapOperation = ClosureOperation<AnalyticsGateway> { [weak self] in
-            let attestation = try attestationWrapper.targetOperation.extractNoCancellableResultData()
-
-            guard let self else {
-                throw BackendAttestationError.unsupported
-            }
-
-            return build(attestation: attestation)
-        }
-
-        mapOperation.addDependency(attestationWrapper.targetOperation)
-
-        return attestationWrapper.insertingTail(operation: mapOperation)
-    }
-}
-
-// MARK: - Private
-
-private extension AnalyticsGatewayResolver {
-    func build(attestation: AnalyticsAttestation) -> AnalyticsGateway {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        if let gateway {
-            return gateway
-        }
-
-        let built = AnalyticsGateway(
-            attestation: attestation.provider,
-            uploadFactory: AnalyticsUploadOperationFactory(baseURL: attestation.gatewayURL, logger: logger),
-            attestationSource: attestationSource
-        )
-
-        gateway = built
-
-        return built
+        mapOperation.addDependency(authWrapper.targetOperation)
+        return authWrapper.insertingTail(operation: mapOperation)
     }
 }

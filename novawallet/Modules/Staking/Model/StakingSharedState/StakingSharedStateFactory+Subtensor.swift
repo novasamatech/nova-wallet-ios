@@ -121,7 +121,7 @@ private extension SubtensorStakingProcessServices {
             }
         #endif
 
-        return BittensorAttestedTransport.shared
+        return BittensorAuthorizedTransport.shared
     }
 
     static func createSubnetMarketsService() -> SubtensorSubnetMarketsServiceProtocol {
@@ -270,20 +270,20 @@ extension StakingSharedStateFactory {
         )
 
         let yieldService = SubtensorYieldService(
-            apiOperationFactory: processServices.bittensorApiOperationFactory,
+            apiOperationFactory: processServices.bittensorApiOperationFactory.withIntent(.userInitiated),
             operationQueue: syncOperationQueue,
             logger: logger
         )
 
         let recommendationService = SubtensorRecommendationService(
-            apiOperationFactory: processServices.bittensorApiOperationFactory,
+            apiOperationFactory: processServices.bittensorApiOperationFactory.withIntent(.userInitiated),
             chainOperationFactory: validatorChainOperationFactory,
             operationQueue: syncOperationQueue,
             logger: logger
         )
 
         let validatorDirectoryService = SubtensorValidatorDirectoryService(
-            apiOperationFactory: processServices.bittensorApiOperationFactory,
+            apiOperationFactory: processServices.bittensorApiOperationFactory.withIntent(.userInitiated),
             chainOperationFactory: validatorChainOperationFactory,
             cache: flowState.validatorDirectoryCache,
             operationQueue: syncOperationQueue,

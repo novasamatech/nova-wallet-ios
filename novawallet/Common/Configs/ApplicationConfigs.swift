@@ -1,6 +1,6 @@
 import Foundation
 import os
-import NovaAppAttest
+import NovaAuth
 
 protocol ApplicationConfigProtocol {
     var termsURL: URL { get }
@@ -220,7 +220,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #endif
     }
 
-    var appAttestAppIdentity: AppAttestAppIdentity? {
+    var novaAuthAppIdentity: NovaAuthAppIdentity? {
         let rawPrefix = Bundle.main.object(forInfoDictionaryKey: "AppIdentifierPrefix") as? String
         let prefix = rawPrefix?.trimmingCharacters(in: CharacterSet(charactersIn: ". ")) ?? ""
 
@@ -228,14 +228,14 @@ extension ApplicationConfig: ApplicationConfigProtocol {
             return nil
         }
 
-        return AppAttestAppIdentity(appId: prefix + "." + bundleId, environment: appAttestEnvironment)
+        return try? NovaAuthAppIdentity(appID: prefix + "." + bundleId, environment: novaAuthEnvironment)
     }
 
-    private var appAttestEnvironment: String {
+    private var novaAuthEnvironment: NovaAuthEnvironment {
         #if F_DEV
-            "development"
+            .development
         #else
-            "production"
+                .production
         #endif
     }
 

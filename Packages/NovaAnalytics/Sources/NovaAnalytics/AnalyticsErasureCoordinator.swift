@@ -117,7 +117,7 @@ private extension AnalyticsErasureCoordinator {
             runningCallbackIn: nil
         ) { [weak self] result in
             if case let .failure(error) = result {
-                self?.logger.error("Analytics queue wipe failed, retrying on the next flush: \(error)")
+                self?.logger.error("Analytics queue wipe failed, retrying on the next flush")
             }
         }
     }

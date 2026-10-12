@@ -1,7 +1,7 @@
 import Foundation
 import Cuckoo
 import Keystore_iOS
-import NovaAppAttest
+import NovaAuth
 import Operation_iOS
 import SubstrateSdk
 import XCTest
@@ -30,7 +30,7 @@ final class SubtensorFlowClock {
 
 final class SubtensorFlowWorld {
     let clock: SubtensorFlowClock
-    let attestation: SubtensorFlowAttestation
+    let auth: SubtensorFlowAuth
     let chainAsset: ChainAsset
     let subnetsService: MockSubtensorSubnetsServiceProtocol
     let quoteOperationFactory: MockSubtensorQuoteOperationFactoryProtocol
@@ -49,13 +49,13 @@ final class SubtensorFlowWorld {
 
     init(novaFeeBeneficiary: AccountId? = SubtensorNovaFeeCalculator.defaultBeneficiary) throws {
         let clock = SubtensorFlowClock()
-        let attestation = SubtensorFlowAttestation()
+        let auth = try SubtensorFlowAuth(clock: clock)
         let chainAsset = SubtensorFlowChainWorld.chainAsset()
         let stakingOption = Multistaking.ChainAssetOption(chainAsset: chainAsset, type: .subtensor)
         let positionsSyncService = MockSubtensorPositionsSyncServiceProtocol()
 
         self.clock = clock
-        self.attestation = attestation
+        self.auth = auth
         self.chainAsset = chainAsset
         self.positionsSyncService = positionsSyncService
         subnetsService = MockSubtensorSubnetsServiceProtocol()
@@ -65,14 +65,7 @@ final class SubtensorFlowWorld {
         settingsManager = InMemorySettingsManager()
         chainRegistry = MockChainRegistryProtocol().applyDefault(for: [chainAsset.chain])
 
-        let transport = BittensorAttestedTransport(
-            holder: attestation.holder,
-            exchangeGate: BackendAttestationExchangeGate(operationQueue: OperationQueue()),
-            session: SubtensorFlowURLProtocol.makeSession(),
-            operationQueue: OperationQueue(),
-            timeProvider: { clock.now },
-            logger: Logger.shared
-        )
+        let transport = BittensorAuthorizedTransport(provider: auth.provider, operationQueue: OperationQueue())
 
         let cache = BittensorApiResponseCache(
             operationQueue: OperationQueue(),

@@ -172,7 +172,7 @@ private extension AnalyticsService {
             case .success:
                 schedule.recordSuccess()
             case let .failure(error):
-                logger.debug("Analytics flush failed: \(error)")
+                logger.debug("Analytics flush failed")
                 schedule.recordFailure(error, now: timeProvider())
             }
 
@@ -257,7 +257,7 @@ private extension AnalyticsService {
             payload = try AnalyticsCoding.encoder.encode(event.wireProperties)
         } catch {
             mutex.unlock()
-            logger.error("Analytics event dropped, unencodable: \(error)")
+            logger.error("Analytics event dropped, unencodable")
             completion?()
 
             return
@@ -280,7 +280,7 @@ private extension AnalyticsService {
             runningCallbackIn: nil
         ) { [weak self] result in
             if case let .failure(error) = result {
-                self?.logger.error("Analytics enqueue failed: \(error)")
+                self?.logger.error("Analytics enqueue failed")
             }
 
             completion?()

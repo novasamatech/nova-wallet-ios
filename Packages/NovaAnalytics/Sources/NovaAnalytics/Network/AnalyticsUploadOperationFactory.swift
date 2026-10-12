@@ -1,35 +1,16 @@
 import Foundation
 import Operation_iOS
-import NovaAppAttest
+import NovaAuth
 import SDKLogger
+import NovaOperationSupport
 
-// Preserve the exact body bytes covered by the assertion.
 public final class AnalyticsUploadOperationFactory {
-    private let baseURL: URL
+    private let auth: AnalyticsAuth
     private let logger: SDKLoggerProtocol?
 
-    public init(baseURL: URL, logger: SDKLoggerProtocol? = nil) {
-        self.baseURL = baseURL
+    public init(auth: AnalyticsAuth, logger: SDKLoggerProtocol? = nil) {
+        self.auth = auth
         self.logger = logger
-    }
-
-    static func buildRequest(
-        target: AttestationRequestTarget,
-        body: Data,
-        headers: [AttestationHeaderKey: String]?
-    ) -> URLRequest {
-        var request = URLRequest(url: target.url)
-
-        request.httpMethod = target.method
-        request.httpBody = body
-        request.timeoutInterval = Constants.timeout
-        request.setValue(target.contentType, forHTTPHeaderField: HttpHeaderKey.contentType.rawValue)
-
-        headers?.forEach { key, value in
-            request.setValue(value, forHTTPHeaderField: key.rawValue)
-        }
-
-        return request
     }
 }
 
@@ -37,7 +18,7 @@ public final class AnalyticsUploadOperationFactory {
 
 extension AnalyticsUploadOperationFactory {
     enum Constants {
-        static let eventsPath = "v1/analytics/events"
+        static let eventsPath = "/v1/analytics/events"
         static let timeout: TimeInterval = 15
         static let retryAfterHeader = "Retry-After"
         static let maxRetryAfter: TimeInterval = 86400
@@ -54,20 +35,13 @@ extension AnalyticsUploadOperationFactory {
             return .serverError(statusCode: Constants.ungradableStatusCode)
         }
 
-        let code = AttestationHTTP.errorCode(from: data)
+        let code = errorCode(from: data)
 
         switch response.statusCode {
         case 200 ..< 300:
             return nil
         case 401, 403, 409:
-            guard let code else {
-                // An unstructured response cannot establish that the identity was rejected.
-                return .proofRefused(statusCode: response.statusCode)
-            }
-
-            return code.requiresFreshInstallation
-                ? .rejected(statusCode: response.statusCode)
-                : .proofRefused(statusCode: response.statusCode)
+            return .proofRefused(statusCode: response.statusCode)
         case 408, 425, 429, 503:
             return .retryLater(
                 statusCode: response.statusCode,
@@ -75,9 +49,14 @@ extension AnalyticsUploadOperationFactory {
             )
         case 400:
             // Retry recognized attestation errors; other 400 responses reject the payload.
-            return code == nil
-                ? .clientError(statusCode: response.statusCode)
-                : .proofRefused(statusCode: response.statusCode)
+            let authCodes: Set<String> = [
+                "invalid_request", "unsupported_profile", "invalid_target", "unsupported_platform",
+                "unsupported_attestation_type", "unknown_client", "invalid_challenge", "invalid_proof",
+                "invalid_token", "insufficient_scope"
+            ]
+            return code.map(authCodes.contains) == true
+                ? .proofRefused(statusCode: response.statusCode)
+                : .clientError(statusCode: response.statusCode)
         case 413, 415, 422:
             return .clientError(statusCode: response.statusCode)
         default:
@@ -118,49 +97,43 @@ extension AnalyticsUploadOperationFactory {
 // MARK: - AnalyticsUploadOperationFactoryProtocol
 
 extension AnalyticsUploadOperationFactory: AnalyticsUploadOperationFactoryProtocol {
-    public func eventsTarget() throws -> AttestationRequestTarget {
-        try AttestationRequestTarget(
-            url: baseURL.appending(path: Constants.eventsPath),
-            method: HttpMethod.post.rawValue,
-            contentType: HttpContentType.json.rawValue
-        )
+    public func createUploadWrapper(
+        body: Data,
+        beforeSend: @escaping () throws -> Void
+    ) -> CompoundOperationWrapper<Void> {
+        do {
+            let request = try NovaAuthRequest(
+                context: auth.context,
+                method: .post,
+                path: Constants.eventsPath,
+                queryItems: [],
+                body: body,
+                contentType: "application/json",
+                intent: .background
+            )
+            let responseWrapper = auth.client.createResponseWrapper(for: request, beforeSend: beforeSend)
+            let grade = ClosureOperation<Void> { [logger] in
+                let result = try responseWrapper.targetOperation.extractNoCancellableResultData()
+                if let error = Self.deliveryError(for: result.response, data: result.body, now: Date()) {
+                    logger?.warning("Analytics delivery refused: HTTP \(result.response.statusCode)")
+                    throw error
+                }
+            }
+            grade.addDependency(responseWrapper.targetOperation)
+            return responseWrapper.insertingTail(operation: grade)
+        } catch {
+            return .createWithError(error)
+        }
     }
+}
 
-    public func createUploadOperation(
-        target: AttestationRequestTarget,
-        bodyClosure: @escaping () throws -> Data,
-        headersClosure: @escaping () throws -> [AttestationHeaderKey: String]?
-    ) -> BaseOperation<Void> {
-        let requestFactory = BlockNetworkRequestFactory {
-            let body = try bodyClosure()
-            let headers = try headersClosure()
-
-            return Self.buildRequest(target: target, body: body, headers: headers)
-        }
-
-        let logger = logger
-
-        let resultFactory = AnyNetworkResultFactory<Void> { data, response, error in
-            if let error {
-                return .failure(error)
-            }
-
-            if let deliveryError = Self.deliveryError(for: response, data: data, now: Date()) {
-                // Preserve unknown error codes for diagnostics without logging response bodies or headers.
-                let status = (response as? HTTPURLResponse)?.statusCode ?? Constants.ungradableStatusCode
-                let code = AttestationHTTP.rawErrorCode(from: data) ?? "<no envelope>"
-
-                logger?.warning("Analytics delivery refused: HTTP \(status) \(code) -> \(deliveryError)")
-
-                return .failure(deliveryError)
-            }
-
-            return .success(())
-        }
-
-        let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
-        operation.networkSession = AttestationHTTP.session
-
-        return operation
+private extension AnalyticsUploadOperationFactory {
+    static func errorCode(from data: Data?) -> String? {
+        guard let data, data.count <= 8192,
+              let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let error = root["error"] as? [String: Any],
+              let code = error["code"] as? String, code.utf8.count <= 64,
+              code.utf8.allSatisfy({ (97 ... 122).contains($0) || $0 == 95 }) else { return nil }
+        return code
     }
 }

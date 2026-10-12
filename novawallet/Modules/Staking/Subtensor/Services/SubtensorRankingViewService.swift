@@ -18,10 +18,13 @@ extension SubtensorRankingViewService: SubtensorRankingViewServiceProtocol {
     func createRankingViewWrapper() -> CompoundOperationWrapper<SubtensorRankedSubnets?> {
         let rankedWrapper = recommendationService.createRankedSubnetsWrapper()
         let logger = logger
+        let recommendationService = recommendationService
 
         let viewOperation = ClosureOperation<SubtensorRankedSubnets?> {
             do {
                 return try rankedWrapper.targetOperation.extractNoCancellableResultData()
+            } catch BittensorApiError.generationStale {
+                return recommendationService.cachedRankedSubnets().value
             } catch {
                 logger.warning("Subtensor ranking view unavailable: \(error)")
 

@@ -1,9 +1,11 @@
 import Cuckoo
 import Foundation_iOS
 import Keystore_iOS
+import NovaAuth
 @testable import novawallet
 import Operation_iOS
 import XCTest
+import UIKit
 
 final class SubtensorPortfolioInteractorTests: XCTestCase {
     private struct Setup {
@@ -179,15 +181,93 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
         )
     }
 
+    func testResetBlocksAutomaticCatalogueDemandUntilExplicitPortfolioRetry() throws {
+        HostAuthURLProtocol.reset()
+        let harness = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self)
+        let config = AuthConfigProvider()
+        let auth = NovaAuthFacade(
+            configProvider: config,
+            client: harness.client,
+            activate: { try harness.client.activate(origin: $0) },
+            reset: { try harness.client.reset() }
+        )
+        let body = try JSONSerialization.data(withJSONObject: BittensorApiFixtureRouter.document(for: .subnets))
+        HostAuthURLProtocol.business = { _ in HostAuthURLProtocol.Reply(status: 200, body: body) }
+        defer { HostAuthURLProtocol.reset() }
+        let queue = OperationQueue()
+        let catalogue = SubtensorSubnetCatalogueService(apiOperationFactory: BittensorApiOperationFactory(
+            transport: BittensorAuthorizedTransport(provider: auth, operationQueue: OperationQueue()),
+            cache: BittensorApiResponseCache(operationQueue: OperationQueue(), logger: Logger.shared),
+            logger: Logger.shared
+        ))
+        let positions = MockSubtensorPositionsSyncServiceProtocol()
+        var update: Observable<Multistaking.SubtensorStakingState?>.StateChangeClosure?
+        let empty = Multistaking.SubtensorStakingState(positions: [], prices: [:])
+        stub(positions) { stub in
+            when(stub.add(observer: any(), sendStateOnSubscription: any(), queue: any(), closure: any()))
+                .then { _, _, _, closure in update = closure }
+            when(stub.add(failureObserver: any(), sendStateOnSubscription: any(), queue: any(), closure: any()))
+                .thenDoNothing()
+            when(stub.refresh()).then { update?(nil, empty) }
+            when(stub.remove(observer: any())).thenDoNothing()
+            when(stub.remove(failureObserver: any())).thenDoNothing()
+        }
+        let setup = try makeSetup(
+            selecting: AccountGenerator.generateMetaAccount(),
+            catalogueService: catalogue,
+            positionsService: positions,
+            operationQueue: queue
+        )
+        let output = MockSubnetPortfolioInteractorOutputProtocol()
+        var received = expectation(description: "initial catalogue")
+        stub(output) { stub in
+            when(stub.didReceive(catalogue: any())).then { _ in received.fulfill() }
+            when(stub.didReceive(state: any())).thenDoNothing()
+            when(stub.didReceive(rootRate: any())).thenDoNothing()
+            when(stub.didReceive(subnetLogos: any())).thenDoNothing()
+            when(stub.didReceive(price: any())).thenDoNothing()
+        }
+        setup.interactor.presenter = output
+        setup.interactor.setup()
+        wait(for: [received], timeout: 10)
+        XCTAssertEqual(harness.apple.attestations, 1)
+        XCTAssertEqual(HostAuthURLProtocol.businessRequests.count, 1)
+
+        try auth.reset()
+        let sentBeforeAutomaticUpdates = HostAuthURLProtocol.requests.count
+        received = expectation(description: "automatic chain update rejected")
+        update?(nil, empty)
+        wait(for: [received], timeout: 10)
+        received = expectation(description: "foreground catalogue rejected")
+        setup.interactor.didReceiveDidBecomeActive(notification: Notification(name: UIApplication.didBecomeActiveNotification))
+        wait(for: [received], timeout: 10)
+        XCTAssertEqual(HostAuthURLProtocol.requests.count, sentBeforeAutomaticUpdates)
+        XCTAssertEqual(harness.apple.attestations, 1)
+        XCTAssertEqual(harness.apple.assertions, 1)
+
+        received = expectation(description: "explicit retry recovers")
+        setup.interactor.refresh()
+        wait(for: [received], timeout: 10)
+        XCTAssertEqual(harness.apple.attestations, 2)
+        XCTAssertEqual(harness.apple.assertions, 2)
+        XCTAssertEqual(HostAuthURLProtocol.businessRequests.count, 2)
+    }
+
     private func makeSetup(
         selecting wallet: MetaAccountModel,
         eventCenter: EventCenterProtocol = EventCenter(),
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol = PriceProviderFactoryStub(),
-        currencyManager: CurrencyManagerProtocol = CurrencyManagerStub()
+        currencyManager: CurrencyManagerProtocol = CurrencyManagerStub(),
+        catalogueService: SubtensorSubnetCatalogueServiceProtocol? = nil,
+        positionsService: SubtensorPositionsSyncServiceProtocol? = nil,
+        operationQueue: OperationQueue = OperationQueue()
     ) throws -> Setup {
         let chainAsset = SubtensorFlowChainWorld.chainAsset()
         let account = try XCTUnwrap(wallet.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()))
         let state = makeState(chainAsset: chainAsset, account: account)
+        stub(state) { stub in
+            when(stub.positionsSyncService.get).thenReturn(positionsService)
+        }
         let wireframe = MockSubtensorPortfolioWireframeProtocol()
 
         let walletSettings = SelectedWalletSettings(
@@ -203,7 +283,7 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
             selectedWalletSettings: walletSettings,
             eventCenter: eventCenter,
             applicationHandler: ApplicationHandler(),
-            catalogueService: MockSubtensorSubnetCatalogueServiceProtocol(),
+            catalogueService: catalogueService ?? makeCatalogueService(),
             yieldService: makeYieldService(),
             subnetLogosProvider: makeSubnetLogosProvider(),
             priceHistoryService: nil,
@@ -213,7 +293,7 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
                 coingeckoOperationFactory: CoingeckoOperationFactory(),
                 operationQueue: OperationQueue()
             ),
-            operationQueue: OperationQueue(),
+            operationQueue: operationQueue,
             logger: Logger.shared
         )
 
@@ -443,7 +523,7 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
         let catalogueService = MockSubtensorSubnetCatalogueServiceProtocol()
 
         stub(catalogueService) { stub in
-            when(stub.createCatalogueWrapper()).thenReturn(
+            when(stub.createCatalogueWrapper(intent: any())).thenReturn(
                 CompoundOperationWrapper.createWithError(CommonError.dataCorruption)
             )
             when(stub.cachedCatalogue()).thenReturn(.miss)

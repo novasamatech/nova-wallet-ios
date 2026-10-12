@@ -26,17 +26,19 @@ final class SubtensorValidatorDirectoryService {
         self.cache = cache
         self.operationQueue = operationQueue
         self.logger = logger
+        apiOperationFactory.addContextObserver(cache) { [weak cache] in cache?.invalidate() }
     }
 }
 
 private extension SubtensorValidatorDirectoryService {
-    func store(_ directory: SubtensorValidatorDirectory, listingReceipt: ListingReceipt) {
-        cache.store(
+    func store(_ directory: SubtensorValidatorDirectory, listingReceipt: ListingReceipt, generation: UUID) throws {
+        try cache.store(
             SubtensorValidatorDirectoryCacheEntry(
                 directory: directory,
                 listingReceipt: listingReceipt,
                 items: Dictionary(directory.items.map { ($0.hotkey, $0) }, uniquingKeysWith: { first, _ in first })
-            )
+            ),
+            generation: generation
         )
     }
 
@@ -53,15 +55,38 @@ private extension SubtensorValidatorDirectoryService {
         return .fresh(cached.directory, freshUntil: freshUntil)
     }
 
-    func listedItem(for hotkey: AccountId, subnet: SubtensorSubnetRef) -> SubtensorValidatorDirectoryItem? {
-        guard
-            let cached = cache.entry(for: subnet),
-            let item = cached.items[hotkey],
-            case let .fresh(directory, _) = peek(cached, netuid: subnet.netuid) else {
-            return nil
-        }
+    func createListedRowWrapper(
+        for hotkey: AccountId,
+        subnet: SubtensorSubnetRef
+    ) -> CompoundOperationWrapper<Row?> {
+        OperationCombiningService.compoundOptionalWrapper(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) { [weak self] in
+            guard let self, cache.entry(for: subnet)?.items[hotkey] != nil else {
+                return nil
+            }
 
-        return directory.listStamp?.freshness == .fresh ? item : item.withoutReportedStake()
+            // A decoded directory is only a display seed. Refresh through admission and
+            // native HTTP caching before using backend metadata in a new detail result.
+            let listingWrapper = createListingWrapper(for: subnet.netuid)
+            let rowOperation = ClosureOperation<Row?> {
+                guard
+                    let listing = try? listingWrapper.targetOperation.extractNoCancellableResultData(),
+                    let row = listing.rows.first(where: { $0.hotkey == hotkey }) else {
+                    return nil
+                }
+
+                return Row(
+                    hotkey: row.hotkey,
+                    name: row.name,
+                    stake: listing.listStamp?.freshness == .fresh ? row.stake : nil
+                )
+            }
+
+            rowOperation.addDependency(listingWrapper.targetOperation)
+
+            return listingWrapper.insertingTail(operation: rowOperation)
+        }
     }
 
     func createListingWrapper(for netuid: UInt16) -> CompoundOperationWrapper<Listing> {
@@ -130,6 +155,7 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
     func createDirectoryWrapper(
         for subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectory> {
+        let generation = cache.generation
         let listingWrapper = createListingWrapper(for: subnet.netuid)
 
         let queryOperation = ClosureOperation<SubtensorValidatorChainQuery> {
@@ -151,7 +177,8 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
 
             let directory = Self.makeDirectory(subnet: subnet, listing: listing, enrichment: enrichment)
 
-            self?.store(directory, listingReceipt: listing.receipt)
+            guard let self else { throw BaseOperationError.parentOperationCancelled }
+            try store(directory, listingReceipt: listing.receipt, generation: generation)
 
             return directory
         }
@@ -176,7 +203,10 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
         for hotkey: AccountId,
         subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorValidatorDetail> {
+        let cache = cache
+        let generation = cache.generation
         let identitiesWrapper = chainOperationFactory.createIdentitiesWrapper(for: [hotkey])
+        let listedWrapper = createListedRowWrapper(for: hotkey, subnet: subnet)
         let logger = logger
 
         let itemWrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem> =
@@ -185,18 +215,24 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
                     throw BaseOperationError.parentOperationCancelled
                 }
 
-                let listed = listedItem(for: hotkey, subnet: subnet)
+                let listed = try listedWrapper.targetOperation.extractNoCancellableResultData()
 
                 return createChainItemWrapper(
                     for: hotkey,
                     subnet: subnet,
                     name: listed?.name,
-                    stake: listed?.reportedStake
+                    stake: listed?.stake
                 )
             }
 
+        itemWrapper.addDependency(wrapper: listedWrapper)
+
         let detailOperation = ClosureOperation<SubtensorValidatorDetail> {
             let item = try itemWrapper.targetOperation.extractNoCancellableResultData()
+
+            guard generation == cache.generation else {
+                throw BittensorApiError.attestationUnavailable(requestId: nil)
+            }
 
             do {
                 let identities = try identitiesWrapper.targetOperation.extractNoCancellableResultData()
@@ -214,7 +250,7 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
 
         return CompoundOperationWrapper(
             targetOperation: detailOperation,
-            dependencies: identitiesWrapper.allOperations + itemWrapper.allOperations
+            dependencies: identitiesWrapper.allOperations + listedWrapper.allOperations + itemWrapper.allOperations
         )
     }
 }

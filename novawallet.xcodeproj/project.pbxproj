@@ -50,7 +50,6 @@
 		302B30431BE049A986EC3F47 /* SubtensorRankingViewServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1DE3EF88E7944EDB2427FF1 /* SubtensorRankingViewServiceTests.swift */; };
 		307FAA6743BB406A9198D654 /* SubtensorSubnetSelectDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD15EEE63DE9490095C8ED0E /* SubtensorSubnetSelectDelegate.swift */; };
 		32881CC7600C4A61B5B3A3F1 /* SubtensorModalStackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8CE014929141B3BE622A90 /* SubtensorModalStackTests.swift */; };
-		349A0213207A4F25A6C6F40C /* BittensorApiResponseCache+Policy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4591025DABF948C996E36436 /* BittensorApiResponseCache+Policy.swift */; };
 		370C652D1C2E448BAC5A3942 /* SubtensorGetTaoRouting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C170BB3E7854B17886F539D /* SubtensorGetTaoRouting.swift */; };
 		3895C4A693764784A099DA7C /* SubtensorPortfolioPositionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C7DE8F8AF0F444CA721D391 /* SubtensorPortfolioPositionView.swift */; };
 		3AA28593DF4B481F9ECF82BC /* SubtensorTradeQuoteRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB24FE7616134AED90BDE88A /* SubtensorTradeQuoteRequest.swift */; };
@@ -145,6 +144,7 @@
 		ADC735A337784F7A8D794273 /* SubtensorValidatorInfoProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEB1DA9BCDA46CF8B6BE2A8 /* SubtensorValidatorInfoProtocols.swift */; };
 		AE16148A04CF42559242273F /* SubtensorOperationResultRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17DBB3F6C246459E96C1936A /* SubtensorOperationResultRequest.swift */; };
 		AFB39B6BF75041EABDF56DC7 /* SubtensorCostBasisServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE61ADBEDEF427C882F0A45 /* SubtensorCostBasisServiceTests.swift */; };
+		24FD2BAB74DD450DBE84836E /* SubtensorDerivedContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F868B61152DC4C7DB165E910 /* SubtensorDerivedContextTests.swift */; };
 		B209ADAB994D4E5096B5B01A /* SubtensorOperationResultWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2519C3E92843AA8856EEA7 /* SubtensorOperationResultWireframe.swift */; };
 		B27886360D654BFD89D988AE /* SubtensorRankingViewService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DB594D96B3A49E1867C70B4 /* SubtensorRankingViewService.swift */; };
 		B2BFA6E332384B758CE080D5 /* BittensorApiOperationFactoryTests+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C579B1787F343BBAD292350 /* BittensorApiOperationFactoryTests+Helpers.swift */; };
@@ -226,7 +226,6 @@
 		9F2154F342B641AD9D83CD75 /* SubtensorFlowActiveStake.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03200A48636A4626B4E5A84D /* SubtensorFlowActiveStake.swift */; };
 		ABA54DA096EE4CA5BE939216 /* SubtensorChooseSubnetFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A4F653625BD45F7BE3AC9FD /* SubtensorChooseSubnetFlowTests.swift */; };
 		6DB97807C7584D6C8BCDA41A /* SubtensorFlowURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5DE9B03ED8142C699D29BE3 /* SubtensorFlowURLProtocol.swift */; };
-		1554953BC92B4CFA8A522D6B /* SubtensorFlowAttestation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49554C7E421341C5A4E5159A /* SubtensorFlowAttestation.swift */; };
 		2FF36D246EC24135B9377E03 /* SubtensorFlowWorld.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91AC11660874405A9DD17615 /* SubtensorFlowWorld.swift */; };
 		B4D559B07F654E60BBDEBAA9 /* SubtensorFlowChainWorld.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071308650DB14C15945D8C01 /* SubtensorFlowChainWorld.swift */; };
 		125C83A2692143F794C43CE4 /* SubtensorFlowTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5857643E49840BB82C75A46 /* SubtensorFlowTestCase.swift */; };
@@ -296,16 +295,7 @@
 		0774A2F91AA3405E82005FB5 /* BittensorFixtureChainSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2998ACA8AB7344E8A5017977 /* BittensorFixtureChainSnapshot.swift */; };
 		1AE4B416830D4DEB8B3AF753 /* SubtensorEarnSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE617E2CE94E448594B90727 /* SubtensorEarnSettingsTests.swift */; };
 		12C8C6AD47054E9FB826A2F9 /* SubtensorEarnSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37ADFB0E46CC48A197043C04 /* SubtensorEarnSettings.swift */; };
-		F1FB5E1D76554C9BBBD4ED70 /* BittensorAttestedRequestBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D906ABE2BCC431B890585E3 /* BittensorAttestedRequestBuilder.swift */; };
-		5CCDCED7CFBE4B6087DC2DD7 /* BittensorAttestedTransportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E5499182B449209BAF9C6B /* BittensorAttestedTransportTests.swift */; };
-		CDB1808B6717430297FC16B2 /* BittensorAttestationHolderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0381C749738A4FE8B4E53655 /* BittensorAttestationHolderTests.swift */; };
-		90F2222B899A45E4A30A2994 /* BackendAttestationHolderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A6C80996C324F03979377D2 /* BackendAttestationHolderTests.swift */; };
-		6C034C44C8B84C3196B7C428 /* BittensorAttestationHolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EDE71C971D447F1ACA76BF7 /* BittensorAttestationHolder.swift */; };
-		1AEEA0816B0A4A4F8A8BC56D /* BackendAttestationHolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 544FE22ECABD49B3AE67BCAE /* BackendAttestationHolder.swift */; };
 		57C16BD667B64BECB5D1A8BB /* BittensorMonotonicClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C13C5528C294F52B1801418 /* BittensorMonotonicClock.swift */; };
-		7A386842D45B44E99D427591 /* BittensorAttestedResponseGrader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54C7697BD1FA40C08C516C8B /* BittensorAttestedResponseGrader.swift */; };
-		1E890F4D07B44FABB7275D48 /* BittensorAttestedTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF46FF7650594CF580AF56D0 /* BittensorAttestedTransport.swift */; };
-		0000000021CDF4E8A8B04343 /* AnalyticsAttestationAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000005A7B94BE697EFEBE /* AnalyticsAttestationAdapter.swift */; };
 		000000002384221D1527B8A1 /* SwapPoolTradeLimitCheck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000004024BA48453ACABB /* SwapPoolTradeLimitCheck.swift */; };
 		000000004958CD20ECC518C7 /* ValidatorSelectionComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000002039A870BA4A216E /* ValidatorSelectionComposer.swift */; };
 		000000005144D6E9BF145F04 /* ValidatorSelectionCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000007995CD8C7205FF32 /* ValidatorSelectionCounter.swift */; };
@@ -7227,7 +7217,7 @@
 		FEED30000000000000000101 /* PrivacyManifestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED30000000000000000001 /* PrivacyManifestTests.swift */; };
 		FEEDAA0000000000000000B2 /* AnalyticsAppWiringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDAA0000000000000000B1 /* AnalyticsAppWiringTests.swift */; };
 		FEEDAA0000000000000000D2 /* GlobalConfigProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDAA0000000000000000D1 /* GlobalConfigProviderTests.swift */; };
-		FEEDAB0000000000000000A3 /* NovaAppAttest in Frameworks */ = {isa = PBXBuildFile; productRef = FEEDAB0000000000000000A2 /* NovaAppAttest */; };
+		FEEDAB0000000000000000A3 /* NovaAuth in Frameworks */ = {isa = PBXBuildFile; productRef = FEEDAB0000000000000000A2 /* NovaAuth */; };
 		FEEDAB0000000000000000C3 /* NovaAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = FEEDAB0000000000000000C2 /* NovaAnalytics */; };
 		FEEDD0000000000000000110 /* AnalyticsFacadeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000010 /* AnalyticsFacadeFactory.swift */; };
 		FEEDD0000000000000000111 /* AnalyticsFacadeFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEDD0000000000000000011 /* AnalyticsFacadeFactoryTests.swift */; };
@@ -7240,6 +7230,19 @@
 		FFE19A19E5B4ED67A2C61951 /* DAppSearchProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F96182151D003DF6789CB4B /* DAppSearchProtocols.swift */; };
 		FFF7CC228C1EB14B8677BD17 /* WalletConnectSessionDetailsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA4D4C049E3B32A529DDFEB5 /* WalletConnectSessionDetailsViewLayout.swift */; };
 		FFFA51179A4E22E457BF6F78 /* AddDelegationWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = D779CD7E426E469760290DBC /* AddDelegationWireframe.swift */; };
+		00DE06D7CA33F0853A249CEA /* NovaAuth in Frameworks */ = {isa = PBXBuildFile; productRef = FEEDAB0000000000000000A2 /* NovaAuth */; };
+		19CCA2DE5C153D1AFD408673 /* BittensorAuthorizedTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DA6874C55FE4ADBAE446703 /* BittensorAuthorizedTransport.swift */; };
+		240F177FD5B9417EE710F552 /* NovaAuthFacadeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6DB261EF36599CD7A1DA10C /* NovaAuthFacadeTests.swift */; };
+		349FBA17F387938F27C42B03 /* BittensorApiResponseCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5155E9916E10C1FDD73F6C /* BittensorApiResponseCacheTests.swift */; };
+		3AD5A119F1CA93343355A926 /* BittensorAuthorizedResponseGrader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 543808AD672E9DE85287E126 /* BittensorAuthorizedResponseGrader.swift */; };
+		46CA7E4AA88178227C6086E8 /* HostAuthURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F371C2DE3D497BCA43B765 /* HostAuthURLProtocol.swift */; };
+		4D3B91531D67CCABA550F38D /* AnalyticsAuthAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0CA8E2A464410CA5415DFB3 /* AnalyticsAuthAdapter.swift */; };
+		6245EBE259914292B384D187 /* SubtensorFlowAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBDB45841BD540170309EC3 /* SubtensorFlowAuth.swift */; };
+		7A30595DA36199404435F95F /* NovaAuthTestHarness.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C5CD1846AD88F4E68A9A11A /* NovaAuthTestHarness.swift */; };
+		7CB728AA0421DD4A2FCD6ADF /* BittensorAuthorizedTransportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCC5EF36F180AA73BBFAAB96 /* BittensorAuthorizedTransportTests.swift */; };
+		94CBC15CE9D7FDA320F30F7F /* NovaAuthReaderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = E961ACCA020ACE47A18B936B /* NovaAuthReaderFactory.swift */; };
+		AF854E22A78F3754D6267F78 /* BittensorAuthorizedRequestBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F84BC176354EDC8F75B5A3E1 /* BittensorAuthorizedRequestBuilder.swift */; };
+		F6704CC56E7994100638E1A7 /* NovaAuthFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D8C30BE40CE427750D254F9 /* NovaAuthFacade.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -7327,7 +7330,6 @@
 		3F66F8E2D2DE479BA3F23CAC /* SubtensorOperationResultState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorOperationResultState.swift; sourceTree = "<group>"; };
 		3F833FAF53584897AC517999 /* SubtensorStakeToRootBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakeToRootBarView.swift; sourceTree = "<group>"; };
 		43ACC787A8F0451BA5E568ED /* BittensorApiFixtureMode+Staking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BittensorApiFixtureMode+Staking.swift"; sourceTree = "<group>"; };
-		4591025DABF948C996E36436 /* BittensorApiResponseCache+Policy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BittensorApiResponseCache+Policy.swift"; sourceTree = "<group>"; };
 		460F18BA36F7440780609061 /* SubtensorStakingSetupPresenter+Subnet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorStakingSetupPresenter+Subnet.swift"; sourceTree = "<group>"; };
 		46A614A032BD4517AEAC84B0 /* SubtensorConfirmViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorConfirmViewModel.swift; sourceTree = "<group>"; };
 		490C33A809634C9A9B5F80CD /* SubtensorPositionValidatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorPositionValidatorView.swift; sourceTree = "<group>"; };
@@ -7390,6 +7392,7 @@
 		9602BFD3AD4141758F9A6A14 /* SubtensorOperationResultViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorOperationResultViewLayout.swift; sourceTree = "<group>"; };
 		98AA56CC6D93450AAAD9D507 /* SubtensorEarnInfoPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorEarnInfoPresentable.swift; sourceTree = "<group>"; };
 		9AE61ADBEDEF427C882F0A45 /* SubtensorCostBasisServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorCostBasisServiceTests.swift; sourceTree = "<group>"; };
+		F868B61152DC4C7DB165E910 /* SubtensorDerivedContextTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorDerivedContextTests.swift; sourceTree = "<group>"; };
 		9AF2E9322C3F47E0A673AC69 /* HTTPResponseCacheStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPResponseCacheStore.swift; sourceTree = "<group>"; };
 		9B28A74535034A56BC32782B /* SubtensorPortfolioViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorPortfolioViewModel.swift; sourceTree = "<group>"; };
 		9BD0BC31FC8F49F6912B079F /* SubtensorFlowChooseSubnet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorFlowChooseSubnet.swift; sourceTree = "<group>"; };
@@ -7493,7 +7496,6 @@
 		03200A48636A4626B4E5A84D /* SubtensorFlowActiveStake.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorFlowActiveStake.swift; sourceTree = "<group>"; };
 		5A4F653625BD45F7BE3AC9FD /* SubtensorChooseSubnetFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorChooseSubnetFlowTests.swift; sourceTree = "<group>"; };
 		A5DE9B03ED8142C699D29BE3 /* SubtensorFlowURLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorFlowURLProtocol.swift; sourceTree = "<group>"; };
-		49554C7E421341C5A4E5159A /* SubtensorFlowAttestation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorFlowAttestation.swift; sourceTree = "<group>"; };
 		91AC11660874405A9DD17615 /* SubtensorFlowWorld.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorFlowWorld.swift; sourceTree = "<group>"; };
 		071308650DB14C15945D8C01 /* SubtensorFlowChainWorld.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorFlowChainWorld.swift; sourceTree = "<group>"; };
 		E5857643E49840BB82C75A46 /* SubtensorFlowTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorFlowTestCase.swift; sourceTree = "<group>"; };
@@ -7570,19 +7572,10 @@
 		2998ACA8AB7344E8A5017977 /* BittensorFixtureChainSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorFixtureChainSnapshot.swift; sourceTree = "<group>"; };
 		AE617E2CE94E448594B90727 /* SubtensorEarnSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorEarnSettingsTests.swift; sourceTree = "<group>"; };
 		37ADFB0E46CC48A197043C04 /* SubtensorEarnSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorEarnSettings.swift; sourceTree = "<group>"; };
-		3D906ABE2BCC431B890585E3 /* BittensorAttestedRequestBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorAttestedRequestBuilder.swift; sourceTree = "<group>"; };
-		03E5499182B449209BAF9C6B /* BittensorAttestedTransportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorAttestedTransportTests.swift; sourceTree = "<group>"; };
-		0381C749738A4FE8B4E53655 /* BittensorAttestationHolderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorAttestationHolderTests.swift; sourceTree = "<group>"; };
-		5A6C80996C324F03979377D2 /* BackendAttestationHolderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendAttestationHolderTests.swift; sourceTree = "<group>"; };
-		7EDE71C971D447F1ACA76BF7 /* BittensorAttestationHolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorAttestationHolder.swift; sourceTree = "<group>"; };
-		544FE22ECABD49B3AE67BCAE /* BackendAttestationHolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendAttestationHolder.swift; sourceTree = "<group>"; };
 		1C13C5528C294F52B1801418 /* BittensorMonotonicClock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorMonotonicClock.swift; sourceTree = "<group>"; };
-		54C7697BD1FA40C08C516C8B /* BittensorAttestedResponseGrader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorAttestedResponseGrader.swift; sourceTree = "<group>"; };
-		BF46FF7650594CF580AF56D0 /* BittensorAttestedTransport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BittensorAttestedTransport.swift; sourceTree = "<group>"; };
 		000000002039A870BA4A216E /* ValidatorSelectionComposer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidatorSelectionComposer.swift; sourceTree = "<group>"; };
 		000000004024BA48453ACABB /* SwapPoolTradeLimitCheck.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwapPoolTradeLimitCheck.swift; sourceTree = "<group>"; };
 		0000000044697AEF01295519 /* SwapDataValidatorFactory+PoolTradeLimit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SwapDataValidatorFactory+PoolTradeLimit.swift"; sourceTree = "<group>"; };
-		000000005A7B94BE697EFEBE /* AnalyticsAttestationAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnalyticsAttestationAdapter.swift; sourceTree = "<group>"; };
 		000000005DD4620A939B6F76 /* AssetExchangeCommissionNetFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeCommissionNetFlow.swift; sourceTree = "<group>"; };
 		0000000066609881CB682044 /* AssetExchangeCommissionNetFlowTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeCommissionNetFlowTests.swift; sourceTree = "<group>"; };
 		000000007995CD8C7205FF32 /* ValidatorSelectionCounter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidatorSelectionCounter.swift; sourceTree = "<group>"; };
@@ -13538,14 +13531,14 @@
 		AA42C2FD5C2D4047A147AB46 /* SubtensorNovaFeeConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorNovaFeeConstants.swift; sourceTree = "<group>"; };
 		AA4EA7B2404E5B1970B3498D /* DAppBrowserWidgetProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppBrowserWidgetProtocols.swift; sourceTree = "<group>"; };
 		AAC5294102607A80F62F9848 /* NPoolsUnstakeConfirmViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NPoolsUnstakeConfirmViewFactory.swift; sourceTree = "<group>"; };
-		AB0000001074426061925CF1 /* AssetExchangeMetaOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetExchangeMetaOperationFactory.swift"; sourceTree = "<group>"; };
+		AB0000001074426061925CF1 /* AssetExchangeMetaOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetExchangeMetaOperationFactory.swift; sourceTree = "<group>"; };
 		AB000000249561C3D217B0F1 /* PalletAssets+Transferred.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PalletAssets+Transferred.swift"; sourceTree = "<group>"; };
-		AB0000002E3D050FCDCC1CF1 /* AssetHubCommissionTopology.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetHubCommissionTopology.swift"; sourceTree = "<group>"; };
-		AB00000054D486A9A3DBEAF1 /* AssetHubExchangeExtrinsicConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetHubExchangeExtrinsicConverter.swift"; sourceTree = "<group>"; };
-		AB00000062CCA0800C67BDF1 /* AssetHubCommissionHistoryParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetHubCommissionHistoryParser.swift"; sourceTree = "<group>"; };
-		AB0000006EB67DE9CEBD16F1 /* AssetHubExchangeExtrinsicParamsFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetHubExchangeExtrinsicParamsFactory.swift"; sourceTree = "<group>"; };
-		AB0000006FC8B060F37C3FF1 /* AssetHubExchangeCommissionRecipientFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetHubExchangeCommissionRecipientFactory.swift"; sourceTree = "<group>"; };
-		AB0000007514D8215BFD0BF1 /* AssetHubExchangeDelegationPermission.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AssetHubExchangeDelegationPermission.swift"; sourceTree = "<group>"; };
+		AB0000002E3D050FCDCC1CF1 /* AssetHubCommissionTopology.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubCommissionTopology.swift; sourceTree = "<group>"; };
+		AB00000054D486A9A3DBEAF1 /* AssetHubExchangeExtrinsicConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubExchangeExtrinsicConverter.swift; sourceTree = "<group>"; };
+		AB00000062CCA0800C67BDF1 /* AssetHubCommissionHistoryParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubCommissionHistoryParser.swift; sourceTree = "<group>"; };
+		AB0000006EB67DE9CEBD16F1 /* AssetHubExchangeExtrinsicParamsFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubExchangeExtrinsicParamsFactory.swift; sourceTree = "<group>"; };
+		AB0000006FC8B060F37C3FF1 /* AssetHubExchangeCommissionRecipientFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubExchangeCommissionRecipientFactory.swift; sourceTree = "<group>"; };
+		AB0000007514D8215BFD0BF1 /* AssetHubExchangeDelegationPermission.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetHubExchangeDelegationPermission.swift; sourceTree = "<group>"; };
 		AB570692CA844621AD3131A8 /* AssetVisibilitySeedMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetVisibilitySeedMigrator.swift; sourceTree = "<group>"; };
 		AB59FC3B4502CE9AD63D6FD6 /* StakingRewardsNotificationsViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRewardsNotificationsViewFactory.swift; sourceTree = "<group>"; };
 		ABA5068F5423120E26213B28 /* MythosStakingDetailsProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MythosStakingDetailsProtocols.swift; sourceTree = "<group>"; };
@@ -14212,6 +14205,20 @@
 		FF755EE09598254BB5E59CC2 /* ReferendumVoteSetupViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReferendumVoteSetupViewFactory.swift; sourceTree = "<group>"; };
 		FFB4A14C99D151B41F61F474 /* DAppTxDetailsInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppTxDetailsInteractor.swift; sourceTree = "<group>"; };
 		FFEBC03AB1841681427D38AF /* StakingRewardPayoutsViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRewardPayoutsViewController.swift; sourceTree = "<group>"; };
+		1DA6874C55FE4ADBAE446703 /* BittensorAuthorizedTransport.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BittensorAuthorizedTransport.swift; path = novawallet/Common/Network/Bittensor/Transport/BittensorAuthorizedTransport.swift; sourceTree = "<group>"; };
+		543808AD672E9DE85287E126 /* BittensorAuthorizedResponseGrader.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BittensorAuthorizedResponseGrader.swift; path = novawallet/Common/Network/Bittensor/Transport/BittensorAuthorizedResponseGrader.swift; sourceTree = "<group>"; };
+		5C5CD1846AD88F4E68A9A11A /* NovaAuthTestHarness.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NovaAuthTestHarness.swift; path = novawalletTests/Common/Network/Auth/NovaAuthTestHarness.swift; sourceTree = "<group>"; };
+		5CBDB45841BD540170309EC3 /* SubtensorFlowAuth.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SubtensorFlowAuth.swift; path = novawalletTests/Modules/Staking/SubtensorStaking/Flows/Harness/SubtensorFlowAuth.swift; sourceTree = "<group>"; };
+		6B5155E9916E10C1FDD73F6C /* BittensorApiResponseCacheTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BittensorApiResponseCacheTests.swift; path = novawalletTests/Common/Network/Bittensor/BittensorApiResponseCacheTests.swift; sourceTree = "<group>"; };
+		6D8C30BE40CE427750D254F9 /* NovaAuthFacade.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NovaAuthFacade.swift; path = novawallet/Common/Network/Auth/NovaAuthFacade.swift; sourceTree = "<group>"; };
+		C780CA64A504AC84162BA62F /* notification-ext.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "notification-ext.staging.xcconfig"; path = "NovaPushNotificationServiceExtension/Config/notification-ext.staging.xcconfig"; sourceTree = "<group>"; };
+		CCC5EF36F180AA73BBFAAB96 /* BittensorAuthorizedTransportTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BittensorAuthorizedTransportTests.swift; path = novawalletTests/Common/Network/Bittensor/Transport/BittensorAuthorizedTransportTests.swift; sourceTree = "<group>"; };
+		D0FF227FCFB653F17D612C39 /* NovaPushNotificationServiceExtensionStaging.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; name = NovaPushNotificationServiceExtensionStaging.entitlements; path = NovaPushNotificationServiceExtension/NovaPushNotificationServiceExtensionStaging.entitlements; sourceTree = "<group>"; };
+		E2F371C2DE3D497BCA43B765 /* HostAuthURLProtocol.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HostAuthURLProtocol.swift; path = novawalletTests/Common/Network/Auth/HostAuthURLProtocol.swift; sourceTree = "<group>"; };
+		E6DB261EF36599CD7A1DA10C /* NovaAuthFacadeTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NovaAuthFacadeTests.swift; path = novawalletTests/Common/Network/Auth/NovaAuthFacadeTests.swift; sourceTree = "<group>"; };
+		E961ACCA020ACE47A18B936B /* NovaAuthReaderFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NovaAuthReaderFactory.swift; path = NovaPushNotificationServiceExtension/NovaAuthReaderFactory.swift; sourceTree = "<group>"; };
+		F0CA8E2A464410CA5415DFB3 /* AnalyticsAuthAdapter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AnalyticsAuthAdapter.swift; path = novawallet/Common/Services/Analytics/AnalyticsAuthAdapter.swift; sourceTree = "<group>"; };
+		F84BC176354EDC8F75B5A3E1 /* BittensorAuthorizedRequestBuilder.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BittensorAuthorizedRequestBuilder.swift; path = novawallet/Common/Network/Bittensor/Transport/BittensorAuthorizedRequestBuilder.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -14228,6 +14235,7 @@
 				2D16736F2EE9BD53004ADA7F /* NovaCrypto in Frameworks */,
 				0C2BAA582E687BE3008157E7 /* HydraMathApi in Frameworks */,
 				0C2BAA342E67841C008157E7 /* RswiftLibrary in Frameworks */,
+				00DE06D7CA33F0853A249CEA /* NovaAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -14260,7 +14268,7 @@
 				0C8FCEC92E6734E900034ED3 /* ZMarkupParser in Frameworks */,
 				2D1673512EE9BCC0004ADA7F /* SubstrateSdk in Frameworks */,
 				0CAA10032E7A0003007E41C4 /* SDKLogger in Frameworks */,
-				FEEDAB0000000000000000A3 /* NovaAppAttest in Frameworks */,
+				FEEDAB0000000000000000A3 /* NovaAuth in Frameworks */,
 				FEEDAB0000000000000000C3 /* NovaAnalytics in Frameworks */,
 				2DB5869A2EB8753800950F7D /* Lottie in Frameworks */,
 				0C8FCED02E6735F300034ED3 /* FirebaseFirestore in Frameworks */,
@@ -14444,7 +14452,6 @@
 				65483592D9DC4C2EB440C7DC /* SubtensorFlowYourBittensor.swift */,
 				03200A48636A4626B4E5A84D /* SubtensorFlowActiveStake.swift */,
 				A5DE9B03ED8142C699D29BE3 /* SubtensorFlowURLProtocol.swift */,
-				49554C7E421341C5A4E5159A /* SubtensorFlowAttestation.swift */,
 				91AC11660874405A9DD17615 /* SubtensorFlowWorld.swift */,
 				071308650DB14C15945D8C01 /* SubtensorFlowChainWorld.swift */,
 				E5857643E49840BB82C75A46 /* SubtensorFlowTestCase.swift */,
@@ -14485,7 +14492,6 @@
 		307D6F6257E44BEC9ACF9B23 /* Attestation */ = {
 			isa = PBXGroup;
 			children = (
-				5A6C80996C324F03979377D2 /* BackendAttestationHolderTests.swift */,
 			);
 			path = Attestation;
 			sourceTree = "<group>";
@@ -14493,8 +14499,6 @@
 		2CECAEABAAF746238FA8206E /* Transport */ = {
 			isa = PBXGroup;
 			children = (
-				03E5499182B449209BAF9C6B /* BittensorAttestedTransportTests.swift */,
-				0381C749738A4FE8B4E53655 /* BittensorAttestationHolderTests.swift */,
 			);
 			path = Transport;
 			sourceTree = "<group>";
@@ -14502,11 +14506,7 @@
 		035DCA5B9B0C4DE2B5DC8F0A /* Transport */ = {
 			isa = PBXGroup;
 			children = (
-				3D906ABE2BCC431B890585E3 /* BittensorAttestedRequestBuilder.swift */,
-				7EDE71C971D447F1ACA76BF7 /* BittensorAttestationHolder.swift */,
 				1C13C5528C294F52B1801418 /* BittensorMonotonicClock.swift */,
-				54C7697BD1FA40C08C516C8B /* BittensorAttestedResponseGrader.swift */,
-				BF46FF7650594CF580AF56D0 /* BittensorAttestedTransport.swift */,
 			);
 			path = Transport;
 			sourceTree = "<group>";
@@ -19692,6 +19692,7 @@
 				06C0EF5A8E044577984E4D01 /* SubtensorMaxApyProviderTests.swift */,
 				10FFE2189B6B456BAA2622E5 /* SubtensorSubnetMarketsServiceTests.swift */,
 				9AE61ADBEDEF427C882F0A45 /* SubtensorCostBasisServiceTests.swift */,
+				F868B61152DC4C7DB165E910 /* SubtensorDerivedContextTests.swift */,
 				CECC217442204F629463966F /* SubtensorOperationResultDetailsViewTests.swift */,
 				4DDA4C24E777426C8607134F /* SubtensorOperationResultViewModelFactoryTests.swift */,
 				A11FD49E43F847B8819DDD44 /* SubtensorPortfolioViewModelFactoryTests.swift */,
@@ -21168,7 +21169,6 @@
 		3DB3C0C3D87A4A24AC1B6244 /* Attestation */ = {
 			isa = PBXGroup;
 			children = (
-				544FE22ECABD49B3AE67BCAE /* BackendAttestationHolder.swift */,
 			);
 			path = Attestation;
 			sourceTree = "<group>";
@@ -21189,7 +21189,6 @@
 				F769F0FEC711460F8A960243 /* BittensorApiOperationFactoryProtocol.swift */,
 				787EB78300A2447EB2617C85 /* BittensorApiDecimal.swift */,
 				B16CB23173A24C008E990D1F /* BittensorApiError+Recovery.swift */,
-				4591025DABF948C996E36436 /* BittensorApiResponseCache+Policy.swift */,
 			);
 			path = Bittensor;
 			sourceTree = "<group>";
@@ -26066,6 +26065,20 @@
 				8438E1D024BFAAD2001BDB13 /* novawalletIntegrationTests */,
 				77CAF4302B8E96A400E4297C /* NovaPushNotificationServiceExtension */,
 				2D4FF13E2EE2F1C4005EC078 /* Frameworks */,
+				6D8C30BE40CE427750D254F9 /* NovaAuthFacade.swift */,
+				F84BC176354EDC8F75B5A3E1 /* BittensorAuthorizedRequestBuilder.swift */,
+				543808AD672E9DE85287E126 /* BittensorAuthorizedResponseGrader.swift */,
+				1DA6874C55FE4ADBAE446703 /* BittensorAuthorizedTransport.swift */,
+				F0CA8E2A464410CA5415DFB3 /* AnalyticsAuthAdapter.swift */,
+				E961ACCA020ACE47A18B936B /* NovaAuthReaderFactory.swift */,
+				C780CA64A504AC84162BA62F /* notification-ext.staging.xcconfig */,
+				D0FF227FCFB653F17D612C39 /* NovaPushNotificationServiceExtensionStaging.entitlements */,
+				E2F371C2DE3D497BCA43B765 /* HostAuthURLProtocol.swift */,
+				E6DB261EF36599CD7A1DA10C /* NovaAuthFacadeTests.swift */,
+				5C5CD1846AD88F4E68A9A11A /* NovaAuthTestHarness.swift */,
+				CCC5EF36F180AA73BBFAAB96 /* BittensorAuthorizedTransportTests.swift */,
+				5CBDB45841BD540170309EC3 /* SubtensorFlowAuth.swift */,
+				6B5155E9916E10C1FDD73F6C /* BittensorApiResponseCacheTests.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -32922,7 +32935,6 @@
 				A281AC1766B928972DD7B559 /* FeatureNavigationTracker.swift */,
 				93205EB2FA7D81BBF4C023E3 /* Error+AnalyticsFailureReason.swift */,
 				573304BB5E90CCC2045A572F /* ChainModel+Analytics.swift */,
-				000000005A7B94BE697EFEBE /* AnalyticsAttestationAdapter.swift */,
 			);
 			path = Analytics;
 			sourceTree = "<group>";
@@ -32962,6 +32974,9 @@
 				0C1995CB2E6B2DE600E0B909 /* PBXTargetDependency */,
 			);
 			name = NovaPushNotificationServiceExtension;
+			packageProductDependencies = (
+				FEEDAB0000000000000000A2 /* NovaAuth */,
+			);
 			productName = NovaPushNotificationServiceExtension;
 			productReference = 77CAF42F2B8E96A400E4297C /* NovaPushNotificationServiceExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -33076,9 +33091,9 @@
 			);
 			mainGroup = 8490139F24A80984008F705E;
 			packageReferences = (
-				FEEDAB0000000000000000A1 /* XCLocalSwiftPackageReference "Packages/NovaAppAttest" */,
-				FEEDAB0000000000000000B1 /* XCLocalSwiftPackageReference "Packages/NovaOperationSupport" */,
-				FEEDAB0000000000000000C1 /* XCLocalSwiftPackageReference "Packages/NovaAnalytics" */,
+				FEEDAB0000000000000000A1 /* XCLocalSwiftPackageReference "NovaAuth" */,
+				FEEDAB0000000000000000B1 /* XCLocalSwiftPackageReference "NovaOperationSupport" */,
+				FEEDAB0000000000000000C1 /* XCLocalSwiftPackageReference "NovaAnalytics" */,
 				0C8FCE9D2E672B2200034ED3 /* XCRemoteSwiftPackageReference "Keystore-iOS" */,
 				0C8FCEA02E672BB000034ED3 /* XCRemoteSwiftPackageReference "UIKit-iOS" */,
 				0C8FCEA62E672BFB00034ED3 /* XCRemoteSwiftPackageReference "Foundation-iOS" */,
@@ -33709,6 +33724,7 @@
 				778215BD2B9140CD006C7D13 /* CurrencyRepositoryProtocol.swift in Sources */,
 				77AE4F952B905B0C00426519 /* SubstrateAlias.swift in Sources */,
 				2DC08BE62DCCF9B300C690D4 /* DisplayAddress.swift in Sources */,
+				94CBC15CE9D7FDA320F30F7F /* NovaAuthReaderFactory.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -33834,12 +33850,7 @@
 				4FBC1F3BE5B54B73BD7D539E /* BittensorApiFixtureTransport.swift in Sources */,
 				0774A2F91AA3405E82005FB5 /* BittensorFixtureChainSnapshot.swift in Sources */,
 				12C8C6AD47054E9FB826A2F9 /* SubtensorEarnSettings.swift in Sources */,
-				F1FB5E1D76554C9BBBD4ED70 /* BittensorAttestedRequestBuilder.swift in Sources */,
-				6C034C44C8B84C3196B7C428 /* BittensorAttestationHolder.swift in Sources */,
-				1AEEA0816B0A4A4F8A8BC56D /* BackendAttestationHolder.swift in Sources */,
 				57C16BD667B64BECB5D1A8BB /* BittensorMonotonicClock.swift in Sources */,
-				7A386842D45B44E99D427591 /* BittensorAttestedResponseGrader.swift in Sources */,
-				1E890F4D07B44FABB7275D48 /* BittensorAttestedTransport.swift in Sources */,
 				A5C100000000000000000101 /* AnalyticsConsentScreenProtocols.swift in Sources */,
 				A5C100000000000000000102 /* AnalyticsConsentScreenWireframe.swift in Sources */,
 				A5C100000000000000000103 /* AnalyticsConsentScreenPresenter.swift in Sources */,
@@ -39918,7 +39929,6 @@
 				5AAED49B9EE1A6E39813FCD3 /* FeatureNavigationTracker.swift in Sources */,
 				CEED6E5159E7F239637B15A1 /* Error+AnalyticsFailureReason.swift in Sources */,
 				908AB79BBFBC19B1DEDC708D /* ChainModel+Analytics.swift in Sources */,
-				0000000021CDF4E8A8B04343 /* AnalyticsAttestationAdapter.swift in Sources */,
 				EE2A8970048845C7B8CF9DFF /* BittensorApiRequest.swift in Sources */,
 				DB8929D986954FA6840968DF /* BittensorApiTransportProtocol.swift in Sources */,
 				4ABD9D7620AF4C54AEC62F1B /* BittensorApiError.swift in Sources */,
@@ -40099,7 +40109,11 @@
 				E757D026E94F42058FCDAEE7 /* HTTPCacheDirectives.swift in Sources */,
 				C6EEF021846E4044A49C6B8A /* HTTPCachePeek.swift in Sources */,
 				A148E96DC8F440B49E5E3578 /* HTTPResponseCacheStore.swift in Sources */,
-				349A0213207A4F25A6C6F40C /* BittensorApiResponseCache+Policy.swift in Sources */,
+				F6704CC56E7994100638E1A7 /* NovaAuthFacade.swift in Sources */,
+				AF854E22A78F3754D6267F78 /* BittensorAuthorizedRequestBuilder.swift in Sources */,
+				3AD5A119F1CA93343355A926 /* BittensorAuthorizedResponseGrader.swift in Sources */,
+				19CCA2DE5C153D1AFD408673 /* BittensorAuthorizedTransport.swift in Sources */,
+				4D3B91531D67CCABA550F38D /* AnalyticsAuthAdapter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -40113,7 +40127,6 @@
 				9F2154F342B641AD9D83CD75 /* SubtensorFlowActiveStake.swift in Sources */,
 				ABA54DA096EE4CA5BE939216 /* SubtensorChooseSubnetFlowTests.swift in Sources */,
 				6DB97807C7584D6C8BCDA41A /* SubtensorFlowURLProtocol.swift in Sources */,
-				1554953BC92B4CFA8A522D6B /* SubtensorFlowAttestation.swift in Sources */,
 				2FF36D246EC24135B9377E03 /* SubtensorFlowWorld.swift in Sources */,
 				B4D559B07F654E60BBDEBAA9 /* SubtensorFlowChainWorld.swift in Sources */,
 				125C83A2692143F794C43CE4 /* SubtensorFlowTestCase.swift in Sources */,
@@ -40143,9 +40156,6 @@
 				07CC42741B1C4C7E98FEE529 /* BittensorApiFixtureTransportTests.swift in Sources */,
 				F1B269EC16C347AAAD1D34F0 /* BittensorFixtureChainSnapshotTests.swift in Sources */,
 				1AE4B416830D4DEB8B3AF753 /* SubtensorEarnSettingsTests.swift in Sources */,
-				5CCDCED7CFBE4B6087DC2DD7 /* BittensorAttestedTransportTests.swift in Sources */,
-				CDB1808B6717430297FC16B2 /* BittensorAttestationHolderTests.swift in Sources */,
-				90F2222B899A45E4A30A2994 /* BackendAttestationHolderTests.swift in Sources */,
 				A5C100000000000000000108 /* AnalyticsConsentScreenTests.swift in Sources */,
 				A5C200000000000000000108 /* AnalyticsPrivacyTests.swift in Sources */,
 				0CAA10082E7A0008007E41C4 /* LoggerSDKConformanceTests.swift in Sources */,
@@ -40434,6 +40444,7 @@
 				4A3B8A4E3973426F9B6ED739 /* SubtensorMaxApyProviderTests.swift in Sources */,
 				D3524DAE63BD422093D364EA /* SubtensorSubnetMarketsServiceTests.swift in Sources */,
 				AFB39B6BF75041EABDF56DC7 /* SubtensorCostBasisServiceTests.swift in Sources */,
+				24FD2BAB74DD450DBE84836E /* SubtensorDerivedContextTests.swift in Sources */,
 				C2CB0B1244E54CF98E06CC56 /* SubtensorOperationResultDetailsViewTests.swift in Sources */,
 				805F4184A6094D5EBC8239AB /* HTTPCacheDirectivesTests.swift in Sources */,
 				469B178C4D13458497929ED4 /* HTTPResponseCacheStoreTests.swift in Sources */,
@@ -40442,6 +40453,12 @@
 				451969BC695D4F62BF1199BF /* SubtensorPortfolioViewModelFactoryTests.swift in Sources */,
 				B2BFA6E332384B758CE080D5 /* BittensorApiOperationFactoryTests+Helpers.swift in Sources */,
 				E14DCB22B99540B4B1857C61 /* SubtensorFlowChooseSubnet.swift in Sources */,
+				46CA7E4AA88178227C6086E8 /* HostAuthURLProtocol.swift in Sources */,
+				240F177FD5B9417EE710F552 /* NovaAuthFacadeTests.swift in Sources */,
+				7A30595DA36199404435F95F /* NovaAuthTestHarness.swift in Sources */,
+				7CB728AA0421DD4A2FCD6ADF /* BittensorAuthorizedTransportTests.swift in Sources */,
+				6245EBE259914292B384D187 /* SubtensorFlowAuth.swift in Sources */,
+				349FBA17F387938F27C42B03 /* BittensorApiResponseCacheTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -40700,10 +40717,12 @@
 		};
 		77CAF43B2B8E96A400E4297C /* Staging */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C780CA64A504AC84162BA62F /* notification-ext.staging.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = "$(inherited)";
+				CODE_SIGN_ENTITLEMENTS = NovaPushNotificationServiceExtension/NovaPushNotificationServiceExtensionStaging.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
@@ -41348,15 +41367,15 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		FEEDAB0000000000000000A1 /* XCLocalSwiftPackageReference "Packages/NovaAppAttest" */ = {
+		FEEDAB0000000000000000A1 /* XCLocalSwiftPackageReference "NovaAuth" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = Packages/NovaAppAttest;
+			relativePath = Packages/NovaAuth;
 		};
-		FEEDAB0000000000000000B1 /* XCLocalSwiftPackageReference "Packages/NovaOperationSupport" */ = {
+		FEEDAB0000000000000000B1 /* XCLocalSwiftPackageReference "NovaOperationSupport" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/NovaOperationSupport;
 		};
-		FEEDAB0000000000000000C1 /* XCLocalSwiftPackageReference "Packages/NovaAnalytics" */ = {
+		FEEDAB0000000000000000C1 /* XCLocalSwiftPackageReference "NovaAnalytics" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Packages/NovaAnalytics;
 		};
@@ -41865,9 +41884,9 @@
 			package = 2DB586982EB8753800950F7D /* XCRemoteSwiftPackageReference "lottie-spm" */;
 			productName = Lottie;
 		};
-		FEEDAB0000000000000000A2 /* NovaAppAttest */ = {
+		FEEDAB0000000000000000A2 /* NovaAuth */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = NovaAppAttest;
+			productName = NovaAuth;
 		};
 		FEEDAB0000000000000000C2 /* NovaAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;

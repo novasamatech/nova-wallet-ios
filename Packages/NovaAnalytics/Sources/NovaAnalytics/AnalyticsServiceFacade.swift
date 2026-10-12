@@ -3,7 +3,7 @@ import Foundation_iOS
 import Keystore_iOS
 import Operation_iOS
 import SDKLogger
-import NovaAppAttest
+import NovaAuth
 
 public final class AnalyticsServiceFacade {
     public let consent: AnalyticsConsentManagerProtocol
@@ -45,13 +45,7 @@ public final class AnalyticsServiceFacade {
             repository: storageFacade.createEventRepository()
         )
 
-        let appAttest = configuration.appAttestService
-
-        let attestationMode = BackendAttestationModeResolver.resolve(
-            isAppAttestSupported: appAttest.isSupported
-        )
-
-        let availability = AnalyticsAvailabilityProvider(attestationMode: attestationMode)
+        let availability = AnalyticsAvailabilityProvider(isAuthSupported: configuration.isAuthSupported)
 
         let consent = AnalyticsConsentManager(
             settingsManager: settingsManager,
@@ -59,7 +53,7 @@ public final class AnalyticsServiceFacade {
         )
 
         let gatewayResolver = AnalyticsGatewayResolver(
-            attestationSource: configuration.attestationProvider,
+            authSource: configuration.authProvider,
             logger: configuration.logger
         )
 
@@ -68,6 +62,7 @@ public final class AnalyticsServiceFacade {
         let uploader = AnalyticsUploader(
             queue: eventQueue,
             identity: identity,
+            isConsentEnabled: { consent.isEnabled },
             gatewayResolver: gatewayResolver,
             operationQueue: configuration.operationQueue,
             appVersion: configuration.appVersion,

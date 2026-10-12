@@ -1,6 +1,7 @@
 import Foundation
 import Operation_iOS
 import NovaCrypto
+import NovaAuth
 
 protocol BittensorApiWireChecked {
     func validateWire() throws
@@ -8,6 +9,10 @@ protocol BittensorApiWireChecked {
 
 protocol BittensorApiGenerationalResponse {
     var generationOrder: BittensorApiGenerationOrder { get }
+}
+
+protocol BittensorApiContextObserving: AnyObject {
+    func addContextObserver(_ owner: AnyObject, closure: @escaping () -> Void)
 }
 
 struct BittensorApiWireViolation: Error {
@@ -18,18 +23,34 @@ final class BittensorApiOperationFactory {
     static let pageSize = 100
     static let pageRange = 1 ... 100
 
-    private let transport: BittensorApiTransportProtocol
-    private let cache: BittensorApiResponseCache
+    let transport: BittensorApiTransportProtocol
+    let cache: BittensorApiResponseCache
     private let logger: LoggerProtocol
+    private let intent: NovaAuthRequestIntent
 
     init(
         transport: BittensorApiTransportProtocol,
         cache: BittensorApiResponseCache,
-        logger: LoggerProtocol
+        logger: LoggerProtocol,
+        intent: NovaAuthRequestIntent = .background
     ) {
         self.transport = transport
         self.cache = cache
         self.logger = logger
+        self.intent = intent
+        transport.addContextObserver(cache) { [weak cache] in cache?.invalidate() }
+    }
+}
+
+extension BittensorApiOperationFactory {
+    func withIntent(_ intent: NovaAuthRequestIntent) -> BittensorApiOperationFactory {
+        BittensorApiOperationFactory(transport: transport, cache: cache, logger: logger, intent: intent)
+    }
+}
+
+extension BittensorApiOperationFactory: BittensorApiContextObserving {
+    func addContextObserver(_ owner: AnyObject, closure: @escaping () -> Void) {
+        transport.addContextObserver(owner, closure: closure)
     }
 }
 
@@ -209,7 +230,8 @@ private extension BittensorApiOperationFactory {
             path: path,
             pathTemplate: route.pathTemplate,
             queryItems: queryItems,
-            jsonBody: jsonBody
+            jsonBody: jsonBody,
+            intent: intent
         )
 
         let job = BittensorApiCacheJob(
@@ -219,8 +241,12 @@ private extension BittensorApiOperationFactory {
                 pathTemplate: route.pathTemplate,
                 accountDigest: accountDigest
             ),
-            fetch: { [transport, logger] in
-                Self.createFetchWrapper(T.self, request: request, route: route, transport: transport, logger: logger)
+            admit: { [transport] in transport.createAdmissionWrapper(intent: request.intent) },
+            fetch: { [transport, logger] admission in
+                Self.createFetchWrapper(
+                    T.self, responseWrapper: transport.createResponseWrapper(for: request, admission: admission),
+                    route: route, logger: logger
+                )
             }
         )
 
@@ -276,13 +302,10 @@ private extension BittensorApiOperationFactory {
 
     static func createFetchWrapper<T: Decodable & BittensorApiWireChecked>(
         _ type: T.Type,
-        request: BittensorApiRequest,
+        responseWrapper: CompoundOperationWrapper<BittensorApiRawResponse>,
         route: Route,
-        transport: BittensorApiTransportProtocol,
         logger: LoggerProtocol
     ) -> CompoundOperationWrapper<BittensorApiFetchedValue> {
-        let responseWrapper = transport.createResponseWrapper(for: request)
-
         let parseOperation = ClosureOperation<BittensorApiFetchedValue> {
             let response = try responseWrapper.targetOperation.extractNoCancellableResultData()
 

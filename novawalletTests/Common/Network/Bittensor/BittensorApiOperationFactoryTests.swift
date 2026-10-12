@@ -128,28 +128,25 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
         XCTAssertTrue(detail.contains("maxTake"))
     }
 
-    func testFreshCacheIsServedWithoutTheTransportUntilItsMaxAgeExpires() throws {
+    func testEachFetchReachesTransportAndPeeksAreOnlyStalePresentationSeeds() throws {
         let clock = ManualClock()
         let body = try makeBody(BittensorApiFixtureDocuments.subnets())
-
         let transport = makeTransport(replies: [
             makeResponse(body, requestId: "req-first"),
-            makeResponse(body, requestId: "req-second")
+            makeResponse(body, requestId: "req-second"),
+            makeResponse(body, requestId: "req-third")
         ])
-
         let factory = makeFactory(transport: transport, clock: clock)
-
-        let first = try fetch(factory.createSubnetsWrapper())
-        clock.advance(by: 149)
-        let cached = try fetch(factory.createSubnetsWrapper())
-        clock.advance(by: 1)
-        let refreshed = try fetch(factory.createSubnetsWrapper())
-
-        XCTAssertEqual(cached.requestId, "req-first")
-        XCTAssertEqual(cached.receivedAt, first.receivedAt)
-        XCTAssertFalse(cached.isFromExpiredCache)
-        XCTAssertEqual(refreshed.requestId, "req-second")
-        verify(transport, times(2)).createResponseWrapper(for: any())
+        _ = try fetch(factory.createSubnetsWrapper())
+        let seed = factory.peekSubnets()
+        XCTAssertFalse(seed.isFresh)
+        XCTAssertTrue(seed.value?.isFromExpiredCache == true)
+        let second = try fetch(factory.createSubnetsWrapper())
+        clock.advance(by: 150)
+        let third = try fetch(factory.createSubnetsWrapper())
+        XCTAssertEqual(second.requestId, "req-second")
+        XCTAssertEqual(third.requestId, "req-third")
+        verify(transport, times(3)).createResponseWrapper(for: any())
     }
 
     func testResponsesAreStampedOnTheCacheClock() throws {
@@ -198,71 +195,52 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
         verify(transport, times(1)).createResponseWrapper(for: any())
     }
 
-    func testAnOlderGenerationDoesNotReplaceTheNewerCachedOne() throws {
-        let clock = ManualClock()
-
+    func testAnOlderGenerationPreservesNewerSeedAndReturnsTypedFailureWithoutRetry() throws {
+        let newer = try makeBody(BittensorApiFixtureDocuments.rankedSubnets())
+        let older = try mutatedBody(BittensorApiFixtureDocuments.rankedSubnets(), replacing: olderGeneration)
         let transport = makeTransport(replies: [
-            makeResponse(try makeBody(BittensorApiFixtureDocuments.recommendations()), requestId: "req-newer"),
-            makeResponse(try olderRecommendationsBody(), requestId: "req-older"),
-            makeResponse(try olderRecommendationsBody(), requestId: "req-older-reload")
+            makeResponse(newer, requestId: "req-newer"), makeResponse(older, requestId: "req-older")
         ])
-
-        let factory = makeFactory(transport: transport, clock: clock)
-
-        let newer = try fetch(factory.createRecommendationsWrapper())
-        clock.advance(by: 300)
-        let afterExpiry = try fetch(factory.createRecommendationsWrapper())
-
-        XCTAssertEqual(afterExpiry.requestId, "req-newer")
-        XCTAssertEqual(afterExpiry.receivedAt, newer.receivedAt)
-        XCTAssertTrue(afterExpiry.isFromExpiredCache)
-        verify(transport, times(3)).createResponseWrapper(for: any())
-    }
-
-    func testAnOlderRankingGenerationDoesNotEvictTheNewerRecommendations() throws {
-        let olderRanking = try mutatedBody(BittensorApiFixtureDocuments.rankedSubnets(), replacing: olderGeneration)
-
-        let transport = makeTransport(replies: [
-            makeResponse(try makeBody(BittensorApiFixtureDocuments.recommendations()), requestId: "req-newer"),
-            makeResponse(olderRanking, requestId: "req-older"),
-            makeResponse(olderRanking, requestId: "req-older-reload")
-        ])
-
         let factory = makeFactory(transport: transport)
-
-        _ = try fetch(factory.createRecommendationsWrapper())
-        let ranking = try fetch(factory.createRankedSubnetsWrapper())
-        let recommendations = try fetch(factory.createRecommendationsWrapper())
-
-        XCTAssertEqual(ranking.requestId, "req-older-reload")
-        XCTAssertEqual(recommendations.requestId, "req-newer")
-        XCTAssertFalse(recommendations.isFromExpiredCache)
-        verify(transport, times(3)).createResponseWrapper(for: any())
+        let accepted = try fetch(factory.createRankedSubnetsWrapper())
+        guard case .generationStale? = fetchError(factory.createRankedSubnetsWrapper()) else {
+            return XCTFail("Expected stale generation failure")
+        }
+        let seed = try XCTUnwrap(factory.peekRankedSubnets().value)
+        XCTAssertEqual(seed.requestId, accepted.requestId)
+        XCTAssertEqual(seed.receivedAt, accepted.receivedAt)
+        XCTAssertTrue(seed.isFromExpiredCache)
+        verify(transport, times(2)).createResponseWrapper(for: any())
     }
 
-    func testBackoffFailsWithTheBackoffErrorWithoutCallingTheTransport() throws {
-        let clock = ManualClock()
-
+    func testAnOlderRankingGenerationCannotEvictNewerAcceptedRecommendations() throws {
+        let cache = BittensorApiResponseCache(operationQueue: OperationQueue(), logger: Logger.shared)
+        let olderRanking = try mutatedBody(BittensorApiFixtureDocuments.rankedSubnets(), replacing: olderGeneration)
         let transport = makeTransport(replies: [
-            makeResponse(try makeBody(BittensorApiFixtureDocuments.subnets()), requestId: "req-cached"),
-            .failure(BittensorApiError.rateLimited(requestId: "req-limited"))
+            makeResponse(try makeBody(BittensorApiFixtureDocuments.recommendations()), requestId: "req-newer"),
+            makeResponse(olderRanking, requestId: "req-older")
         ])
-
-        let factory = makeFactory(transport: transport, clock: clock)
-
-        _ = try fetch(factory.createSubnetsWrapper())
-        clock.advance(by: 150)
-        let limited = fetchError(factory.createSubnetsWrapper())
-        let backingOff = fetchError(factory.createSubnetsWrapper())
-
-        guard
-            case let .rateLimited(limitedRequestId) = limited,
-            case let .rateLimited(backingOffRequestId) = backingOff else {
-            return XCTFail("Unexpected errors: \(String(describing: limited)), \(String(describing: backingOff))")
+        let factory = BittensorApiOperationFactory(transport: transport, cache: cache, logger: Logger.shared)
+        _ = try fetch(factory.createRecommendationsWrapper())
+        guard case .generationStale? = fetchError(factory.createRankedSubnetsWrapper()) else {
+            return XCTFail("Expected stale generation failure")
         }
+        let key = BittensorApiCacheKey(method: "GET", path: "/recommendations", query: [], bodyDigest: nil)
+        XCTAssertEqual(cache.peek(key).value?.requestId, "req-newer")
+        XCTAssertFalse(cache.peek(key).isFresh)
+        verify(transport, times(2)).createResponseWrapper(for: any())
+    }
 
-        XCTAssertEqual(limitedRequestId, "req-limited")
-        XCTAssertEqual(backingOffRequestId, "req-limited")
+    func testDomainCacheDoesNotOwnOriginRateLimitBackoff() throws {
+        let transport = makeTransport(replies: [
+            .failure(BittensorApiError.rateLimited(requestId: "req-limited")),
+            makeResponse(try makeBody(BittensorApiFixtureDocuments.subnets()), requestId: "req-recovered")
+        ])
+        let factory = makeFactory(transport: transport)
+        guard case .rateLimited? = fetchError(factory.createSubnetsWrapper()) else {
+            return XCTFail("Expected rate limit")
+        }
+        XCTAssertEqual(try fetch(factory.createSubnetsWrapper()).requestId, "req-recovered")
         verify(transport, times(2)).createResponseWrapper(for: any())
     }
 
