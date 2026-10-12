@@ -4,7 +4,8 @@ These diagrams describe the Swift client. “Backend” is only the HTTPS peer t
 
 **Reading order:** ownership → first authentication → proof construction → registration recovery → token reuse/concurrency → protected requests → storage/replacement → analytics.
 
-The central invariant is **one main-app NovaAuth owner, one installation identity, and one current persisted bearer for the active backend context**. Analytics receives the same client. Requests already in flight can still hold the preceding valid bearer during refresh. Wallet accounts do not supply authentication keys.
+**Reading order:** ownership → first authentication → proof construction → registration recovery → token reuse/concurrency → protected requests → storage/reset → Bittensor → analytics.
+The central invariant is **one main-app NovaAuth owner, one installation identity, and one current persisted bearer for the active backend context**. Bittensor and analytics receive the same client. Requests already in flight can still hold the preceding valid bearer during refresh. Wallet accounts do not supply authentication keys.
 
 ## 1. Ownership and app composition
 
@@ -14,19 +15,26 @@ The facade is the app’s composition boundary. It creates the package owner onc
 flowchart TB
   subgraph APP["Main iOS app"]
     ROOT["RootInteractor.setup()"] --> AF["AnalyticsServiceFacade<br/>injected via factory createDefault()"]
-    AF -- "authProvider" --> F["NovaAuthFacade.shared<br/>one endpoint: client + context"]
-    CONFIG["GlobalConfigProvider<br/>infraUrl, fetched once"] --> F
-    HOST["App identity + version<br/>SettingsManager set/read-back + three queues"] --> F
+    AF --> AA["AnalyticsAuthAdapter"]
+    BT["BittensorApiOperationFactory"] --> TR["BittensorAuthorizedTransport.shared"]
+    AA --> F["NovaAuthFacade.shared<br/>one endpoint: client + context"]
+    TR --> F
+    CONFIG["GlobalConfigProvider<br/>revision + infraUrl"] --> F
+    HOST["App identity + shared container<br/>SettingsManager + three queues"] --> F
   end
   subgraph PACKAGE["Packages / NovaAuth"]
     F --> OWNER["ONE NovaAuth owner<br/>installation + issuance coordination"]
     OWNER --> APPLE["DeviceCheck adapter"]
     OWNER --> STATE["Settings identity store"]
-    OWNER --> TOKEN["Keychain token store + gated record cache"]
+    OWNER --> TOKEN["Shared Keychain token store"]
     OWNER --> HTTP["HTTP transport<br/>bootstrap / reads / POSTs"]
   end
   HTTP --> BACKEND["Configured HTTPS backend"]
   APPLE --> OS["DCAppAttestService"]
+  subgraph EXT["Extension capability"]
+    FACT["NovaAuthReaderFactory<br/>no production call site"] -.-> READER["NovaAuthReader<br/>cannot issue tokens"]
+  end
+  READER -. "loads same record" .-> TOKEN
 ```
 
 - Root starts analytics before wallet setup. There is no `ServiceCoordinator → NovaAuth.setup` path; authentication is driven by consumer requests.
@@ -46,12 +54,12 @@ This is the successful path for a new installation. All four backend calls are P
 ```mermaid
 sequenceDiagram
   autonumber
-  participant C as Analytics
+  participant C as Bittensor or analytics
   participant N as NovaAuth owner
   participant S as Persistent stores
   participant A as Apple DeviceCheck
   participant H as HTTPS backend
-  C->>N: Demand credential for context
+  C->>N: Demand credential for context + intent
   N->>S: Save client UUID, unregistered identity
   N->>A: generateKey()
   A-->>N: keyID
@@ -96,12 +104,12 @@ Sources: [registration service](../../../Packages/NovaAuth/Sources/NovaAuth/Life
 
 ## 3. What the App Attest proof binds
 
-Registration and issuance use different semantic commitments. Each commitment is hashed and included in an outer frame that binds the challenge to the exact bootstrap request. Ordinary analytics requests carry the bearer; they do not get an App Attest assertion for each business payload.
+Registration and issuance use different semantic commitments. Each commitment is hashed and included in an outer frame that binds the challenge to the exact bootstrap request. Ordinary Bittensor and analytics requests carry the bearer; they do not get an App Attest assertion for each business payload.
 
 ```mermaid
 flowchart TB
   R["Registration commitment<br/>NOVA-REGISTRATION + version 3<br/>ios, appID, app_attest, keyID, environment"] --> RH["SHA-256 → bodyDigest"]
-  T["Fresh challenge / assertion per issuance attempt<br/>NOVA-TOKEN-ISSUANCE + version 3 / marker 1<br/>canonical origin + API major 1"] --> TH["SHA-256 → bodyDigest"]
+  T["Issuance commitment<br/>NOVA-TOKEN-ISSUANCE + version 3 / marker 1<br/>canonical origin + bittensor-read"] --> TH["SHA-256 → bodyDigest"]
   RH --> FRAME["Outer NOVA-ATTESTATION frame<br/>version + purpose<br/>challenge + clientID<br/>POST + https + authority + effective port<br/>register or tokens path + content type<br/>bodyDigest"]
   TH --> FRAME
   FRAME --> HASH["SHA-256 → 32-byte clientDataHash"]
@@ -115,6 +123,7 @@ flowchart TB
 - `clientID` is a random installation UUID. `keyID` identifies the DeviceCheck-managed key. `appID` identifies the signed app. The context’s `generation` is a local invalidation fence; it is not included in these wire commitments.
 - Issuance binds the canonical origin and API major 1. The bearer has no flow/scope; ordinary protected reads and POSTs share it. Renewal always obtains a fresh challenge/assertion; no refresh credential exists.
 - `invalid_proof` at `/tokens` retains the key and assertion-counter continuity, fails the operation and retains short auth backoff before a later fresh challenge/assertion. An Apple-deferred registration instead retries the exact saved key/hash within the original age window.
+- The source literally uses **`bittensor-read`** in issuance framing and token-record validation, even though the same bearer is attached to analytics and operations-search POSTs. This describes the client implementation; it does not establish which routes a deployed server accepts.
 
 Sources: [exact binary framing](../../../Packages/NovaAuth/Sources/NovaAuth/Wire/NovaAuthFraming.swift) · [JSON fields](../../../Packages/NovaAuth/Sources/NovaAuth/Wire/NovaAuthWire.swift) · [identity types](../../../Packages/NovaAuth/Sources/NovaAuth/API/NovaAuthIdentity.swift) · [credential validation](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthTokenValidation.swift) · [fresh proof retry classification](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthTokenProvider.swift)
 
@@ -279,8 +288,18 @@ Failure-only logs are asynchronous: fixed step/category, numeric status, allowli
 sanitized correlation ID. Tokens, IDs, proofs, bodies and arbitrary Error/state are never logged.
 
 Sources: [owner and repair](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuth.swift) · [settings](../../../Packages/NovaAuth/Sources/NovaAuth/Storage/NovaAuthSettingsIdentityStore.swift) · [Keychain](../../../Packages/NovaAuth/Sources/NovaAuth/Storage/NovaAuthKeychainTokenStore.swift) · [redacted failures](../../../Packages/NovaAuth/Sources/NovaAuth/Authorization/NovaAuthDiagnostics.swift)
+Business 429 starts shared-origin cooldown using numeric `Retry-After` or 30 seconds. A 503 carrying `attestation_unavailable`, or an uncoded edge 503, also affects the shared origin. Coded service failures and business transport errors back off only their analytics or Bittensor family, checked at business send rather than token admission. Default backoff is 1, 2, 4, 8, 16, 30 seconds plus up to one second of jitter; explicit delay is clamped to 1–905 seconds. Expiry does not schedule an automatic retry. A concurrent success does not shorten an active cooldown or clear the other service's failure.
 
 ## 8. Analytics: shared authentication, separate consent and data
+| GET / HEAD | `/v1/bittensor/profile-3/subnets` |
+| GET / HEAD | `/v1/bittensor/profile-3/subnets/{netuid}/validators` |
+| GET / HEAD | `/v1/bittensor/profile-3/yields/root` |
+| GET / HEAD | `/v1/bittensor/profile-3/subnets/{netuid}/yields/alpha` |
+| GET / HEAD | `/v1/bittensor/profile-3/recommendations` |
+| GET / HEAD | `/v1/bittensor/profile-3/recommendations/subnets` |
+| GET / HEAD | `/v1/bittensor/profile-3/recommendations/subnets/{netuid}/validators` |
+| POST · JSON | `/v1/bittensor/operations/search` |
+`netuid` must be canonical UInt16 text. GET/HEAD are package capabilities; the current Bittensor factory calls GET. Its current factory also does not expose the per-subnet recommendation-validators route. The table shows the package allowlist, not a claim that every route has an active caller.
 
 ```mermaid
 flowchart TB
@@ -308,3 +327,67 @@ policy. No auth prompt, dialog or analytics notification is produced. Background
 one batch; other flushes at most ten, with fifty-event batches and existing payload rejection rules.
 
 Sources: [facade](../../../Packages/NovaAnalytics/Sources/NovaAnalytics/AnalyticsServiceFacade.swift) · [uploader](../../../Packages/NovaAnalytics/Sources/NovaAnalytics/AnalyticsUploader.swift) · [upload operation](../../../Packages/NovaAnalytics/Sources/NovaAnalytics/Network/AnalyticsUploadOperationFactory.swift)
+5. After a successful reset/adoption, facade context observers invalidate Bittensor display seeds and derived caches. A failed reset does not notify these observers. A later user-initiated demand can establish the next identity.
+## 8. Bittensor: admission, two cache layers and presentation
+Bittensor adds domain request sharing, decoded display seeds and typed error handling around NovaAuth. Its decoded cache never substitutes for native HTTP freshness. On-chain balances and chain enrichment use the chain connection separately from NovaAuth.
+```mermaid
+sequenceDiagram
+  participant UI as Interactor /<br/>domain service
+  participant F as Bittensor<br/>operation factory
+  participant C as Decoded<br/>response cache
+  participant T as Authorized<br/>transport
+  participant N as Shared<br/>NovaAuth
+  participant H as HTTP cache /<br/>backend
+  UI->>F: Optional synchronous peek
+  F->>C: Read decoded presentation seed
+  C-->>UI: Expired seed only, via factory
+  UI->>F: Request with user/background intent
+  F->>C: Create job: admit + fetch
+  C->>T: Admit first
+  T->>N: Resolve context,<br/>demand credential
+  N-->>T: Admission succeeds
+  T-->>C: Auth scope + shared endpoint
+  C->>C: Check negative cache /<br/>join existing flight
+  opt No negative result and no existing flight
+    C->>T: Fetch with<br/>admitted endpoint
+    T->>N: createResponseWrapper(request)
+    N->>N: Demand again +<br/>pre-send fences
+    N->>H: Authorized GET or<br/>operations-search POST
+    H-->>N: Response, possibly native<br/>cache / revalidation
+    N-->>T: Response or<br/>typed auth error
+    T-->>C: HTTP grading + factory<br/>decode / wire validation
+    C->>C: Check auth scope and<br/>dataset generation
+  end
+  C-->>UI: Result/error via factory and domain service
+  UI->>UI: Combine chain data,<br/>update Presenter on main
+```
+- Auth admission precedes negative-cache lookup and joining a request flight. Synchronous `peek` is only a stale display seed and makes no authentication request.
+- Decoded cache keys include auth scope plus method/path/query/body digest. Route-unpublished negatives last 600 seconds; dataset-unavailable negatives last 60 seconds. There is no successful-response TTL shortcut here.
+- Recommendation dataset ordering uses `(asOf, sourceBlockNumber)`. It is distinct from the authentication generation. An older dataset response returns `generationStale` without overwriting the newer seed.
+- Context observers invalidate decoded seeds, max-APY resolution, cost-basis histories and validator directories. Old work cannot repopulate results for a replaced auth context.
+- Cost basis/P&L reads **`POST /v1/bittensor/operations/search`** and computes the ledger locally. It is a history read, not transaction submission.
+- Screen entry and explicit catalogue refresh carry user intent; automatic portfolio changes, pricing, cost-basis and max-APY work carry background intent. `withIntent` shares the same transport and cache.
+- Errors are graded into Bittensor types. Raw network and malformed-protocol failures retain retryable availability meaning; generic business 401/403 are server errors. Actual unsupported-device and explicit policy failures remain distinct. Presentation depends on the consumer: portfolio catalogue failure supplies no catalogue and can show rates unavailable; validator flows have device-specific errors/retry behavior. Live chain balances do not prove successful backend authentication.
+Sources: [shared domain composition](/Users/svojs/Documents/workspace/nova-wallet-ios/novawallet/Modules/Staking/Model/StakingSharedState/StakingSharedStateFactory+Subtensor.swift:25) · [transport admission and send](/Users/svojs/Documents/workspace/nova-wallet-ios/novawallet/Common/Network/Bittensor/Transport/BittensorAuthorizedTransport.swift:18) · [factory and decoding](/Users/svojs/Documents/workspace/nova-wallet-ios/novawallet/Common/Network/Bittensor/BittensorApiOperationFactory.swift:221) · [decoded cache](/Users/svojs/Documents/workspace/nova-wallet-ios/novawallet/Common/Network/Bittensor/BittensorApiResponseCache.swift:117) · [HTTP/auth error grading](/Users/svojs/Documents/workspace/nova-wallet-ios/novawallet/Common/Network/Bittensor/Transport/BittensorAuthorizedResponseGrader.swift:5) · [portfolio refresh/failure](/Users/svojs/Documents/workspace/nova-wallet-ios/novawallet/Modules/Staking/Subtensor/SubtensorPortfolio/SubtensorPortfolioInteractor.swift:96)
+Analytics owns event collection, its own installation/session identifiers, consent epochs, persistence and upload scheduling. None of those create a second authentication identity or bearer. The adapter resolves the same NovaAuth endpoint used by Bittensor.
+```mermaid
+flowchart TB
+  ROOT["Root setup / app lifecycle / consent enable"] --> FACADE["AnalyticsServiceFacade<br/>session + schedule"]
+  ENABLE["Actual consent false → true"] --> RECOVER["Consent-auth recovery<br/>capture event, resolve shared endpoint<br/>cancel if withdrawn / throttled"]
+  RECOVER --> ADMIT["One user-initiated admission<br/>same NovaAuth owner"]
+  EVENT["Event producer"] --> GATE{"Consent enabled + available?"}
+  GATE -- yes --> QUEUE["CoreData event queue<br/>serial enqueue / erasure<br/>consent epoch on events"]
+  GATE -- no --> IGNORE["Do not enqueue"]
+  FACADE --> FLUSH["Flush gate<br/>owed erasure, consent, availability, schedule"]
+  FLUSH --> ADAPTER["Gateway → AnalyticsAuthAdapter<br/>NovaAuthFacade.shared endpoint"]
+  ADAPTER --> BATCH["Peek up to 50 events<br/>check epoch; serialize JSON envelope"]
+  QUEUE --> BATCH
+  BATCH --> SEND["Same NovaAuth client<br/>POST /v1/analytics/events<br/>background intent"]
+  SEND --> CHECK{"Immediately before send<br/>consent enabled + same epoch?"}
+  CHECK -- no --> CANCEL["Stop this upload"]
+  CHECK -- yes --> RESULT{"Upload result"}
+  RESULT -- "delivered / permanent payload failure" --> DROP["Drop batch rows"]
+  RESULT -- "auth / transport / server failure" --> RETAIN["Keep rows for later flush"]
+  OPT["Consent withdrawal"] --> ERASE["Persist erasure obligation first<br/>cancel analytics flush waiter<br/>forget analytics install ID; erase event queue"]
+  ERASE -. "Shared auth and Bittensor remain independent" .-> SHARED["Same NovaAuth identity + bearer"]
+```

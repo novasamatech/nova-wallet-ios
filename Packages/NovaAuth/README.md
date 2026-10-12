@@ -10,14 +10,13 @@ GET and HEAD reads and analytics POSTs. Auth validates transport syntax
 and the selected HTTPS origin; each consumer and the server own business route/payload validation.
 exact `WWW-Authenticate: Bearer error="invalid_token"`, plus a valid `invalid_token` envelope
 for GET/POST. HEAD uses the status and header without a response body. A credential rejected by
-another request before sending permits one separate, bounded re-admission. Neither path
-changes the POST body or allows more than two actual sends. Caller `beforeSend` runs before
-each send, including an authorized retry; its errors are returned unchanged.
 usable bearer before domain caches, while `createResponseWrapper` checks again before native
 URLCache or network access. GET/HEAD use the seven allowed `/v1/bittensor/profile-3` routes.
 Analytics and operations search retain their existing POST paths and immutable request bodies.
-Only conclusive pre-backend `invalid_token` allows a single replay. Other errors never replay
-POSTs automatically. Caller `beforeSend` runs before each send, including an authorized retry.
+Only conclusive pre-backend `invalid_token` allows a single replay. A credential rejected by
+another request before sending permits one separate, bounded re-admission. Neither path
+changes the POST body or allows more than two actual sends. Caller `beforeSend` runs before
+each send, including an authorized retry; its errors are returned unchanged.
 
 The main host supplies AppIdentifierPrefix + bundle identifier, the app version, settings and
 separate owner/bootstrap/business queues. Keychain holds one atomic bearer record per installed
@@ -39,6 +38,9 @@ The package has no explicit reset API. Analytics consent/erasure and wallet chan
 reset the shared identity. Requests carry a demand intent that only gates re-registration after a refusal.
 Explicit reset or an origin change fences old work and requires a new user-initiated demand.
 Analytics withdrawal/erasure only affects analytics state and never resets shared auth.
+Ordinary key-loss/registration recovery works on later background demand, with a persisted
+minimum of 60 seconds between identity-recreation attempts. An existing binding refused by
+policy is retained for a later retry. App registration policy refusal requires user action.
 Native URLCache owns HTTP freshness. Domain caches retain decoded, explicitly stale display
 seeds and coalesce admitted in-flight work; they never return a seed as a protected fetch result.
 
@@ -49,6 +51,9 @@ Issuance commits to the canonical origin and API major 1 without a flow or scope
 obtains a fresh challenge and App Attest assertion; the server issues no refresh credential.
 
 The host maps `infraUrl` to one endpoint per process and memoises it.
+Authentication/edge refusal can back off all consumers. Business transport and service failures
+back off only analytics or Bittensor, using the same shared bearer. Retry-After is capped at 905
+seconds; token lifetime remains capped at 900 seconds.
 
 ## Recovery and admission
 
@@ -163,11 +168,11 @@ therefore permits one replay preserving the original method, path, query and bod
 Consumers grade business responses through `NovaAuthResponse.serverError` and `requestID`, the
 package's own envelope parser: status, lowercase code up to 64 characters, sanitized
 `X-Request-ID` and numeric Retry-After clamped to 905 seconds.
-The pinned backend contract supports the seven Bittensor GET/HEAD routes. Release also requires
-profile-3 ingress/token authorization for **POST /v1/analytics/events** and
-**POST /v1/bittensor/operations/search**, both with the same existing `bittensor-read` issuance
-flow and bearer. This iOS change does not modify or deploy the backend. There is no legacy
-profile fallback or auth bypass.
+The server migration is owned separately. The client uses profile 3 exclusively for the seven
+Bittensor GET/HEAD routes, **POST /v1/analytics/events** and
+**POST /v1/bittensor/operations/search**, with the same existing `bittensor-read` issuance flow
+and bearer. Release coordination must confirm server authorization for both existing POST
+paths. This iOS change does not modify or deploy the backend; there is no legacy fallback.
 
 ## Validation
 
