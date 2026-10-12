@@ -48,7 +48,10 @@ final class NovaAuthFacadeTests: XCTestCase {
     }
 
     private func run<T>(_ wrapper: CompoundOperationWrapper<T>) throws -> T {
-        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+        let completed = expectation(description: "facade operation completed")
+        wrapper.targetOperation.completionBlock = { completed.fulfill() }
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: false)
+        wait(for: [completed], timeout: 10)
         return try wrapper.targetOperation.extractNoCancellableResultData()
     }
 
@@ -60,6 +63,43 @@ final class NovaAuthFacadeTests: XCTestCase {
             activate: { try harness.client.activate(origin: $0) },
             reset: { try harness.client.reset() }
         )
+    }
+
+    func testInvalidBaseURLsFailBeforeActivationOrBootstrap() throws {
+        let invalidBaseURLs = [
+            "https://example.test/path", "https://example.test//", "https://example.test/%2F",
+            "https://example.test/./", "https://example.test/../",
+            "https://example.test/?query=value", "https://example.test/?",
+            "https://example.test/#fragment", "https://example.test/#",
+            "https://user@example.test/", "https://user:password@example.test/",
+            "https://@example.test/", "https://:password@example.test/",
+            "http://example.test/", "HTTPS://example.test/", "https://EXAMPLE.test/",
+            "https://example.test:443/", "https://example.test:08443/",
+            "https://127.0.0.1/", "https://example.test./"
+        ]
+
+        for baseURL in invalidBaseURLs {
+            let config = AuthConfigProvider(origin: baseURL)
+            XCTAssertEqual(config.snapshot.config.infraUrl.absoluteString, baseURL)
+            let harness = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self)
+            let provider = facade(config, harness: harness)
+            XCTAssertThrowsError(try run(provider.createEndpointWrapper()), baseURL) { error in
+                XCTAssertEqual(error as? NovaAuthError, .invalidConfiguration, baseURL)
+            }
+            XCTAssertNil(harness.client.currentContext, baseURL)
+            XCTAssertNil(harness.identity.state, baseURL)
+            XCTAssertNil(try harness.tokens.load(), baseURL)
+            XCTAssertEqual(harness.apple.attestations, 0, baseURL)
+            XCTAssertEqual(harness.apple.assertions, 0, baseURL)
+            XCTAssertTrue(HostAuthURLProtocol.requests.isEmpty, baseURL)
+        }
+    }
+
+    func testNondefaultPortRootURLPreservesPort() throws {
+        let config = AuthConfigProvider(origin: "https://example.test:8443/")
+        let harness = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self)
+        let endpoint = try run(facade(config, harness: harness).createEndpointWrapper())
+        XCTAssertEqual(endpoint.context.origin.value, "https://example.test:8443")
     }
 
     func testUnitTestingGateNeverResolvesConfigOrBootstraps() throws {
