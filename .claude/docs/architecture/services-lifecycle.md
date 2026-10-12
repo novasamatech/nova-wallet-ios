@@ -111,7 +111,7 @@ never reach for `.shared` inside a Presenter/Interactor method body.
 | `WalletServiceFacade.*`                       | Shared remote subscription services          |
 | `AppearanceFacade.shared`                     | Icon/appearance preferences                  |
 | `PushNotificationsServiceFacade.shared`       | Push registration and sync                   |
-| `NovaAuthFacade.shared`                       | One installation/current bearer shared by analytics |
+| `NovaAuthFacade.shared`                       | One installation/current bearer shared by analytics and Bittensor |
 | `ApplicationConfig.shared`                    | Static URLs, emails, deep-link scheme        |
 | `URLHandlingServiceFacade.shared`             | Deep link / universal link dispatch          |
 | `AnalyticsFacadeFactory.createDefault()`      | Consent-gated analytics; owned by Root       |
@@ -164,16 +164,24 @@ from an individual screen's Interactor without a matching `throttle()`.
 
 ## Shared backend authentication
 
-`NovaAuthFacade.shared` owns the one `NovaAuth` client. Analytics receives it through the
 facade's own `AnalyticsAuthProvidingProtocol` conformance. Config is fetched once per process and the
-facade memoises the first adopted endpoint, so a later fetch cannot reactivate a previous origin.
 Origin adoption fences prior work.
-Analytics consent/erasure and wallet changes never reset this authentication owner. Host activation
 authorizes ordinary later demand to bootstrap after accepted origin changes and legacy-reset repair;
 activation itself creates no key and sends no auth request. This explicitly replaces the
 profile-3 protocol's user-driven re-creation wording. Requests carry a demand intent that only gates re-registration after a refusal.
 Failed auth completes the caller operation; Analytics
 retains batches silently for its normal later flushes, checking consent before each send/replay.
+`NovaAuthFacade.shared` owns the one `NovaAuth` client. Both `AnalyticsAuthAdapter` and
+`BittensorAuthorizedTransport` receive this same owner. Global config snapshots have monotonically
+increasing revisions; late old fetches cannot reactivate a previous origin. Origin publication
+fences prior work and clears Bittensor presentation seeds before synchronous peeks.
+Analytics consent/erasure and wallet changes never reset this authentication owner. Only an
+explicit facade reset or accepted origin change requires new user-initiated demand. Automatic
+analytics, cost-basis work, catalogue-price tracking and max-APY reads carry background intent.
+Catalogue requests carry intent per demand: screen entry and explicit retry are user initiated;
+portfolio subscription updates, foreground refreshes and missing-subnet follow-ups are background.
+The other flow services are used only by screen loads and explicit actions, and share the same
+auth owner and response cache.
 
 `activate(origin:)` itself replaces the context, with a new generation and owed bearer deletion,
 when the stored origin differs or the stored state is corrupt, so the facade's first endpoint
@@ -197,3 +205,7 @@ bearer sits in the app's default Keychain group. A refused registration keeps th
 drops only the key; background demands wait out a persisted refusal delay while user-driven
 demands re-register at once. The host uses `SettingsManager.shared` set/read-back. Its cached read-back cannot establish
 durable persistence or detect every refused disk write. There is no extra commit API.
+The same context observer invalidates max-APY and cost-basis memos and the validator directory
+cache. Invalidation detaches pending walks and fences suspended wrappers and late chain
+enrichment. Their memo lifetimes remain unchanged within one auth context; local calculations
+do not require a separate auth request. First activation has no old state to invalidate.

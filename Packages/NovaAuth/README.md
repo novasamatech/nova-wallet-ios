@@ -1,20 +1,23 @@
 # NovaAuth
 
 Operation-based, app-wide profile-3 authentication for iOS 16+. The host owns one `NovaAuth`
-instance and injects its `NovaAuthClientProtocol` into analytics. One installation
-and one persisted current bearer serve every protected consumer; renewal replaces that bearer.
+instance and injects its `NovaAuthClientProtocol` into analytics and Bittensor. One installation
+and one persisted current bearer serve every approved consumer; renewal replaces that bearer.
 
 `activate(origin:)` selects the exact HTTPS backend origin. `createAdmissionWrapper` checks a
-usable bearer before a store miss is fetched, while `createResponseWrapper` checks again before
 network access. One origin/API-major bearer authorizes ordinary protected paths:
 GET and HEAD reads and analytics POSTs. Auth validates transport syntax
 and the selected HTTPS origin; each consumer and the server own business route/payload validation.
-Only conclusive pre-backend `invalid_token` allows a single replay: expected-origin 401 and
 exact `WWW-Authenticate: Bearer error="invalid_token"`, plus a valid `invalid_token` envelope
 for GET/POST. HEAD uses the status and header without a response body. A credential rejected by
 another request before sending permits one separate, bounded re-admission. Neither path
 changes the POST body or allows more than two actual sends. Caller `beforeSend` runs before
 each send, including an authorized retry; its errors are returned unchanged.
+usable bearer before domain caches, while `createResponseWrapper` checks again before native
+URLCache or network access. GET/HEAD use the seven allowed `/v1/bittensor/profile-3` routes.
+Analytics and operations search retain their existing POST paths and immutable request bodies.
+Only conclusive pre-backend `invalid_token` allows a single replay. Other errors never replay
+POSTs automatically. Caller `beforeSend` runs before each send, including an authorized retry.
 
 The main host supplies AppIdentifierPrefix + bundle identifier, the app version, settings and
 separate owner/bootstrap/business queues. Keychain holds one atomic bearer record per installed
@@ -34,6 +37,10 @@ This local product policy replaces the profile-3 protocol's user-driven re-creat
 wording; it is an explicit eligibility change, not behavioral equivalence.
 The package has no explicit reset API. Analytics consent/erasure and wallet changes do not
 reset the shared identity. Requests carry a demand intent that only gates re-registration after a refusal.
+Explicit reset or an origin change fences old work and requires a new user-initiated demand.
+Analytics withdrawal/erasure only affects analytics state and never resets shared auth.
+Native URLCache owns HTTP freshness. Domain caches retain decoded, explicitly stale display
+seeds and coalesce admitted in-flight work; they never return a seed as a protected fetch result.
 
 NovaAuth has no HTTP cache: its single ephemeral session stores nothing, refuses redirects and
 sends each authorized request to the network as one Operation-iOS `NetworkOperation`. Fresh, complete 200 reads carry `public, max-age=N,
@@ -156,11 +163,19 @@ therefore permits one replay preserving the original method, path, query and bod
 Consumers grade business responses through `NovaAuthResponse.serverError` and `requestID`, the
 package's own envelope parser: status, lowercase code up to 64 characters, sanitized
 `X-Request-ID` and numeric Retry-After clamped to 905 seconds.
+The pinned backend contract supports the seven Bittensor GET/HEAD routes. Release also requires
+profile-3 ingress/token authorization for **POST /v1/analytics/events** and
+**POST /v1/bittensor/operations/search**, both with the same existing `bittensor-read` issuance
+flow and bearer. This iOS change does not modify or deploy the backend. There is no legacy
+profile fallback or auth bypass.
 
 ## Validation
 
-Run retained XCTest suites using `xcodebuild test -scheme NovaAuth` on an iOS simulator;
-`swift test` targets macOS and is inappropriate for these iOS dependencies. Existing checks
 exercise framing, operation recovery, same-binding refusal, pending registration, origin fencing,
 bounded token replay, shared throttling and exchange release. Real App Attest,
-Keychain behavior, protected data and physical reboot behavior need device validation.
+Run the package XCTest suite with `xcodebuild test -scheme NovaAuth` on an iOS simulator;
+`swift test` targets macOS and is inappropriate for these iOS dependencies. The app test suites
+cover shared composition, revisioned origin changes, analytics consent, Bittensor routing and
+presentation/coalescing behavior. App/extension App Groups are development for Debug/Dev and
+production for Staging/Release. Real App Attest, signed extension Keychain sharing, protected
+data and physical reboot behavior still require device validation.
