@@ -104,9 +104,37 @@ final class BittensorAuthorizedTransportTests: XCTestCase {
     func testGeneric401DoesNotRenewOrReplay() throws {
         let (transport, harness, _) = try makeTransport()
         HostAuthURLProtocol.business = { _ in .init(status: 401) }
-        XCTAssertThrowsError(try run(transport.createResponseWrapper(for: request())))
+        XCTAssertThrowsError(try run(transport.createResponseWrapper(for: request()))) { error in
+            guard case let BittensorApiError.server(status, _, _) = error else { return XCTFail("Expected server authorization failure") }
+            XCTAssertEqual(status, 401)
+        }
         XCTAssertEqual(HostAuthURLProtocol.businessRequests.count, 1)
         XCTAssertEqual(harness.apple.assertions, 1)
+    }
+
+    func testGraderPreservesTransportAndRecoverableProtocolFailures() {
+        if case let .transport(error) = BittensorAuthorizedResponseGrader.map(URLError(.notConnectedToInternet)) {
+            XCTAssertEqual((error as? URLError)?.code, .notConnectedToInternet)
+        } else { XCTFail("Expected original transport classification") }
+        if case .attestationUnavailable = BittensorAuthorizedResponseGrader.map(NovaAuthError.invalidResponse) {}
+        else { XCTFail("Malformed protocol response must remain retryable") }
+        if case .generationStale = BittensorAuthorizedResponseGrader.map(NovaAuthError.generationChanged) {}
+        else { XCTFail("Expected stale generation") }
+        if case let .transport(error) = BittensorAuthorizedResponseGrader.map(NovaAuthError.cancelled) {
+            XCTAssertEqual((error as? URLError)?.code, .cancelled)
+        } else { XCTFail("Expected cancellation") }
+    }
+
+    func testOnlyExplicitBootstrapPolicyRefusalBlamesAttestationPolicy() {
+        for code in [nil, "unknown_error", "binding_not_allowed"] as [String?] {
+            let error = NovaAuthError.bootstrap(NovaAuthServerError(statusCode: 403, code: code, requestID: "request", retryAfter: nil))
+            let mapped = BittensorAuthorizedResponseGrader.map(error)
+            if code == "binding_not_allowed" {
+                if case .attestationRejected = mapped {} else { XCTFail("Expected conclusive policy rejection") }
+            } else {
+                if case .attestationUnavailable = mapped {} else { XCTFail("An uncoded edge error is not device rejection") }
+            }
+        }
     }
 
     func testPostUnknownTransportOutcomeDoesNotReplay() throws {

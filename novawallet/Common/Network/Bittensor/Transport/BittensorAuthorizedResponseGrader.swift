@@ -17,7 +17,7 @@ enum BittensorAuthorizedResponseGrader {
         let code = errorCode(result.body)
         switch status {
         case 401, 403:
-            throw BittensorApiError.attestationFailure(requestId: requestId)
+            throw BittensorApiError.server(statusCode: status, code: code, requestId: requestId)
         case 404 where response.value(forHTTPHeaderField: "Content-Type")?.lowercased().hasPrefix("text/plain") == true:
             throw BittensorApiError.routeNotPublished
         case 400, 405, 413, 415, 422:
@@ -43,7 +43,8 @@ enum BittensorAuthorizedResponseGrader {
 
     static func map(_ error: Error) -> BittensorApiError {
         if let error = error as? BittensorApiError { return error }
-        guard let error = error as? NovaAuthError else { return .attestationFailure(requestId: nil) }
+        if let error = error as? URLError { return .transport(error) }
+        guard let error = error as? NovaAuthError else { return .attestationUnavailable(requestId: nil) }
         switch error {
         case .unsupported: return .unsupportedDevice
         case .invalidConfiguration: return .configuration
@@ -51,14 +52,18 @@ enum BittensorAuthorizedResponseGrader {
         case .cooldown: return .rateLimited(requestId: nil)
         case let .bootstrap(server):
             if server.statusCode == 429 { return .rateLimited(requestId: server.requestID) }
-            if server.statusCode == 403 { return .attestationRejected(requestId: server.requestID) }
+            if server.statusCode == 403, server.code == "app_not_allowed" || server.code == "binding_not_allowed" {
+                return .attestationRejected(requestId: server.requestID)
+            }
             return .attestationUnavailable(requestId: server.requestID)
         case let .transport(code): return .transport(URLError(code))
-        case .generationChanged, .userActionRequired, .credentialUnavailable, .storageUnavailable,
+        case .generationChanged: return .generationStale
+        case .userActionRequired, .credentialUnavailable, .storageUnavailable,
              .clockUnavailable, .keyUnavailable, .platformUnavailable:
             return .attestationUnavailable(requestId: nil)
         case .invalidRequest: return .invalidRequest(code: nil, requestId: nil)
-        case .invalidResponse, .cancelled: return .attestationFailure(requestId: nil)
+        case .invalidResponse: return .attestationUnavailable(requestId: nil)
+        case .cancelled: return .transport(URLError(.cancelled))
         }
     }
 
