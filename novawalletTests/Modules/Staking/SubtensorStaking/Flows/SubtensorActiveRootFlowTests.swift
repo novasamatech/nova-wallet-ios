@@ -246,13 +246,11 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
 
         XCTAssertEqual(root.primaryHotkey, aster)
         XCTAssertTrue(isDatasetUnavailable(directoryError, requestId: "req-f4-down"))
-        guard case .rateLimited? = retriedDirectoryError as? BittensorApiError else {
-            return XCTFail("The shared origin cooldown must block the retry before sending")
-        }
+        XCTAssertTrue(isDatasetUnavailable(retriedDirectoryError, requestId: "req-f4-down"))
         XCTAssertEqual(detail.item, try asterRoot(name: nil))
         XCTAssertNil(rootYield)
 
-        // The first 503 starts the shared origin cooldown, including for other routes.
+        // The directory retry uses its negative cache; the Bittensor cooldown blocks other uncached routes.
         XCTAssertEqual(requestLines(), [
             "GET https://bittensor.test/v1/bittensor/profile-3/subnets/0/validators"
         ])
