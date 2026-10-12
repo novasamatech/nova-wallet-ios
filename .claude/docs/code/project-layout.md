@@ -9,14 +9,14 @@ boundary outside it. Placing code correctly is the most common review question.
 | The code knows about…                                                    | It belongs in    |
 |----------------------------------------------------------------------------|-------------------|
 | Analytics events, the queue, consent, the uploader                         | `Packages/NovaAnalytics` |
-| App Attest, DeviceCheck, gateway register/sign                             | `Packages/NovaAppAttest` |
+| Shared authentication, DeviceCheck, bearer issuance                             | `Packages/NovaAuth` |
 | Operation combining, longrun primitives, `CompoundOperationWrapper` helpers | `Packages/NovaOperationSupport` |
 
 `Packages/NovaOperationSupport` is not a domain boundary like the other two — it mirrors app
 code that Operation-iOS 2.1.2 does not provide (`OperationCombiningService`, the `Longrun`
 primitives, `insertingHead`/`insertingTail`, `addDependency(wrapper:)`, and the
 `CompoundOperationWrapper` result conveniences). Every member in it is byte-identical to its
-app original; it exists only because both `NovaAppAttest` and `NovaAnalytics` need these
+app original; it exists only because both `NovaAuth` and `NovaAnalytics` need these
 helpers, so without a shared package the repository would carry three copies of the same code.
 These helpers already ship in Operation-iOS 2.5.0 — nothing needs upstreaming — but the app
 can't take that version yet: `substrate-sdk-ios` 4.5.2 pins Operation-iOS with `exact: "2.1.2"`,
@@ -30,9 +30,9 @@ CompoundOperationWrapper` declares the same six members the app declares in
 `novawallet/Common/Extension/Operation/`, so a single such import makes every one of those
 call sites ambiguous app-wide — the same collision class that forced the concrete-type
 shadowing in `Common/Extension/SDKLogger/Logger+SDKLogger.swift`. The app target does not
-link it; `NovaAnalytics` and `NovaAppAttest` pull it in transitively for their own use.
+link it; `NovaAnalytics` and `NovaAuth` pull it in transitively for their own use.
 
-**Publishing these packages is not a pure lift.** `NovaAnalytics` and `NovaAppAttest` both
+**Publishing these packages is not a pure lift.** `NovaAnalytics` and `NovaAuth` both
 declare `.package(path: "../NovaOperationSupport")`, so moving either into its own
 `novasamatech/*` repository means either waiting for the substrate-sdk v5 migration to unblock
 Operation-iOS 2.5.0 and deleting `NovaOperationSupport` first (the preferred order — it is what

@@ -111,6 +111,7 @@ never reach for `.shared` inside a Presenter/Interactor method body.
 | `WalletServiceFacade.*`                       | Shared remote subscription services          |
 | `AppearanceFacade.shared`                     | Icon/appearance preferences                  |
 | `PushNotificationsServiceFacade.shared`       | Push registration and sync                   |
+| `NovaAuthFacade.shared`                       | One installation/current bearer shared by analytics and Bittensor |
 | `ApplicationConfig.shared`                    | Static URLs, emails, deep-link scheme        |
 | `URLHandlingServiceFacade.shared`             | Deep link / universal link dispatch          |
 | `AnalyticsFacadeFactory.createDefault()`      | Consent-gated analytics; owned by Root       |
@@ -160,3 +161,22 @@ from an individual screen's Interactor without a matching `throttle()`.
 5. **Feature flags gate behaviour at the factory level.** Use `#if F_RELEASE` / `#if F_DEV` where the
    service is *created* (as `DelegatedAccountSyncService`'s wallet filter does), not with early
    returns inside the service's methods.
+
+## Shared backend authentication
+
+`NovaAuthFacade.shared` owns the one `NovaAuth` client. Both `AnalyticsAuthAdapter` and
+`BittensorAuthorizedTransport` receive this same owner. Global config snapshots have monotonically
+increasing revisions; late old fetches cannot reactivate a previous origin. Origin publication
+fences prior work and clears Bittensor presentation seeds before synchronous peeks.
+Analytics consent/erasure and wallet changes never reset this authentication owner. Only an
+explicit facade reset or accepted origin change requires new user-initiated demand. Automatic
+analytics, cost-basis work, catalogue-price tracking and max-APY reads carry background intent.
+Catalogue requests carry intent per demand: screen entry and explicit retry are user initiated;
+portfolio subscription updates, foreground refreshes and missing-subnet follow-ups are background.
+The other flow services are used only by screen loads and explicit actions, and share the same
+auth owner and response cache.
+
+The same context observer invalidates max-APY and cost-basis memos and the validator directory
+cache. Invalidation detaches pending walks and fences suspended wrappers and late chain
+enrichment. Their memo lifetimes remain unchanged within one auth context; local calculations
+do not require a separate auth request. First activation has no old state to invalidate.

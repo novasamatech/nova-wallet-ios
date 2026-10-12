@@ -128,3 +128,17 @@ module should call `EvmTransactionService`, not the RPC layer.
 - architecture/chain-registry.md — connections, runtime providers, sync modes
 - code/concurrency.md — wrapping and executing these operations
 - architecture/transactions.md — the extrinsic-specific network path
+
+## Nova backend bearer authentication
+
+`Packages/NovaAuth` owns profile-3 bootstrap, the single persisted bearer, bounded renewal and
+native URLCache. App consumers inject `NovaAuthFacade.shared`; never build a per-feature auth
+provider. Bittensor completes auth admission before domain coalescing or negative availability
+lookups, then authorizes again before the native request. `BittensorApiResponseCache` stores only
+decoded stale presentation seeds and in-flight waiters, never successful HTTP freshness. Older
+recommendation generations return `generationStale`, preserving a newer seed without refetch.
+Auth origin/generation changes and explicit reset also clear derived max-APY, cost-basis and
+validator-directory state. Their pending completions cannot restore a prior context's memo or
+return a directory enriched after that context was invalidated. Catalogue intent is supplied
+per request so automatic portfolio refreshes cannot recreate authentication after reset.
+See `Packages/NovaAuth/README.md` for the two existing POST backend rollout prerequisites.
