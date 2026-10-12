@@ -130,6 +130,7 @@ private final class NovaAuthBusinessExchange {
     }
 
     func finish(_ result: Result<NovaAuthResponse, Error>) {
+        cancellation.release()
         if !cancellation.isCancelled { completion(result) }
     }
 }

@@ -14,4 +14,9 @@ public struct AnalyticsAuth {
 
 public protocol AnalyticsAuthProvidingProtocol: AnyObject {
     func createAuthWrapper() -> CompoundOperationWrapper<AnalyticsAuth>
+    func addContextObserver(_ owner: AnyObject, closure: @escaping () -> Void)
+}
+
+public extension AnalyticsAuthProvidingProtocol {
+    func addContextObserver(_: AnyObject, closure _: @escaping () -> Void) {}
 }

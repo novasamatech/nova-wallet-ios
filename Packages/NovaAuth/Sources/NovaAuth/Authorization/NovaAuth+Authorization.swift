@@ -45,12 +45,12 @@ extension NovaAuth: NovaAuthCredentialAuthority {
                 repeated ? .bearerDeniedRepeated : .bearerRejected,
                 logger: dependencies.logger, requestID: requestID
             )
-            do {
-                try dependencies.tokenStore.remove(ifMatching: record)
-            } catch { throw NovaAuthError.storageUnavailable }
             if repeated {
                 issuanceCooldown.fail(now: try dependencies.clock.now(), random: dependencies.random.unitInterval())
             }
+            do {
+                try dependencies.tokenStore.remove(ifMatching: record)
+            } catch { throw NovaAuthError.storageUnavailable }
         }
     }
 

@@ -2,9 +2,11 @@ import Foundation
 import Operation_iOS
 
 final class NovaAuthCancellation {
-    private let lock = NSLock()
+    private let lock: NSLock
     private var action: (() -> Void)?
     private var cancelled = false
+
+    init(lock: NSLock = NSLock()) { self.lock = lock }
 
     var isCancelled: Bool {
         lock.lock()
@@ -36,6 +38,12 @@ final class NovaAuthCancellation {
         action = nil
         lock.unlock()
         callback?()
+    }
+
+    func release() {
+        lock.lock()
+        action = nil
+        lock.unlock()
     }
 
     func check() throws {

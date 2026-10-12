@@ -114,10 +114,10 @@ extension NovaAuthReader: NovaAuthCredentialAuthority {
     func reject(record: NovaAuthTokenRecord, repeated: Bool, requestID _: String?) throws {
         try gate.novaAuthLocked {
             rejectedCredentials.reject(record)
+            if repeated { originCooldown.fail(now: try dependencies.clock.now(), random: 0.5) }
             do {
                 try dependencies.tokenStore.remove(ifMatching: record)
             } catch { throw NovaAuthError.storageUnavailable }
-            if repeated { originCooldown.fail(now: try dependencies.clock.now(), random: 0.5) }
         }
     }
 
