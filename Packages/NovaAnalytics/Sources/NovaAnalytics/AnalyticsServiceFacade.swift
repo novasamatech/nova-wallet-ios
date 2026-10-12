@@ -14,6 +14,7 @@ public final class AnalyticsServiceFacade {
     private let availability: AnalyticsAvailabilityProvider
     private let applicationHandler: ApplicationHandlerProtocol
     private let logger: SDKLoggerProtocol
+    private let consentAuthRecovery: AnalyticsConsentAuthRecovery
 
     private let mutex = NSLock()
     private var isSetUp: Bool = false
@@ -88,6 +89,11 @@ public final class AnalyticsServiceFacade {
 
         isFirstLaunch = configuration.isFirstLaunch
         self.consent = consent
+        consentAuthRecovery = AnalyticsConsentAuthRecovery(
+            provider: configuration.authProvider,
+            operationQueue: configuration.operationQueue,
+            isConsentEnabled: { consent.isEnabled }
+        )
         self.service = service
         self.sessionTracker = sessionTracker
         self.availability = availability
@@ -95,11 +101,7 @@ public final class AnalyticsServiceFacade {
         logger = configuration.logger
 
         consent.addObserver(with: self, queue: nil) { [weak self] oldValue, newValue in
-            guard !oldValue, newValue else {
-                return
-            }
-
-            self?.startSessionIfActive()
+            self?.consentChanged(from: oldValue, to: newValue)
         }
 
         applicationHandler.delegate = self
@@ -136,6 +138,8 @@ extension AnalyticsServiceFacade: AnalyticsServiceFacadeProtocol {
 
         isSetUp = false
         mutex.unlock()
+
+        consentAuthRecovery.setActive(false)
 
         reconcile()
     }
@@ -184,6 +188,19 @@ extension AnalyticsServiceFacade: ApplicationHandlerDelegate {
 // MARK: - Private
 
 private extension AnalyticsServiceFacade {
+    func consentChanged(from oldValue: Bool, to newValue: Bool) {
+        if !newValue {
+            consentAuthRecovery.cancel()
+            return
+        }
+        guard !oldValue else { return }
+        mutex.lock()
+        let isActive = self.isActive
+        mutex.unlock()
+        if isActive { consentAuthRecovery.enableConsent() }
+        startSessionIfActive()
+    }
+
     func reconcile() {
         mutex.lock()
 
@@ -207,6 +224,7 @@ private extension AnalyticsServiceFacade {
     }
 
     func activateLocked() {
+        consentAuthRecovery.setActive(true)
         sessionTracker.setup()
 
         let appOpened = AnalyticsEvent.appOpened(isFirstLaunch: isFirstLaunchAtSetup)
