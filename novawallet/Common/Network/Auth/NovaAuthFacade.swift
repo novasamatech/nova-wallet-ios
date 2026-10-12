@@ -27,6 +27,7 @@ final class NovaAuthFacade: NovaAuthProvidingProtocol {
     private let client: NovaAuthClientProtocol?
     private let activate: (NovaAuthOrigin) throws -> NovaAuthContext
     private let resetAuth: () throws -> Void
+    private let contextInvalidationID: () -> UUID?
     private let isUnitTesting: Bool
     private let mutex = NSRecursiveLock()
     private var endpoint: NovaAuthEndpoint?
@@ -37,12 +38,14 @@ final class NovaAuthFacade: NovaAuthProvidingProtocol {
         configProvider: GlobalConfigProviding,
         client: NovaAuthClientProtocol?,
         isUnitTesting: Bool = false,
+        contextInvalidationID: @escaping () -> UUID? = { nil },
         activate: @escaping (NovaAuthOrigin) throws -> NovaAuthContext,
         reset: @escaping () throws -> Void
     ) {
         self.configProvider = configProvider
         self.client = client
         self.isUnitTesting = isUnitTesting
+        self.contextInvalidationID = contextInvalidationID
         self.activate = activate
         resetAuth = reset
         configProvider.addSnapshotObserver(self) { [weak self] snapshot in
@@ -71,10 +74,12 @@ final class NovaAuthFacade: NovaAuthProvidingProtocol {
 
     func reset() throws {
         mutex.lock()
-        defer { mutex.unlock() }
+        defer {
+            endpoint = nil
+            notifyContextInvalidation()
+            mutex.unlock()
+        }
         try resetAuth()
-        endpoint = nil
-        observers.filter { $0.owner != nil }.forEach { $0.closure() }
     }
 
     private func adopt(_ snapshot: GlobalConfigSnapshot) throws -> NovaAuthEndpoint {
@@ -86,14 +91,23 @@ final class NovaAuthFacade: NovaAuthProvidingProtocol {
             acceptedSnapshot = latestSnapshot
         } else { acceptedSnapshot = snapshot }
         let origin = try createOrigin(from: acceptedSnapshot.config.infraUrl)
-        let context = try activate(origin)
-        // First activation has no prior derived state to invalidate. Reset already
-        // notifies observers before clearing the endpoint.
-        let changed = endpoint != nil && endpoint?.context != context
+        latestSnapshot = acceptedSnapshot
+        let previousInvalidationID = contextInvalidationID()
+        let context: NovaAuthContext
+        do {
+            context = try activate(origin)
+        } catch {
+            if previousInvalidationID != contextInvalidationID() {
+                endpoint = nil
+                notifyContextInvalidation()
+            }
+            throw error
+        }
+        let changed = previousInvalidationID != contextInvalidationID()
+            || (endpoint != nil && endpoint?.context != context)
         let accepted = NovaAuthEndpoint(context: context, client: client)
         endpoint = accepted
-        latestSnapshot = acceptedSnapshot
-        if changed { observers.filter { $0.owner != nil }.forEach { $0.closure() } }
+        if changed { notifyContextInvalidation() }
         return accepted
     }
 }
@@ -101,6 +115,11 @@ final class NovaAuthFacade: NovaAuthProvidingProtocol {
 // MARK: Private
 
 private extension NovaAuthFacade {
+    func notifyContextInvalidation() {
+        observers = observers.filter { $0.owner != nil }
+        observers.forEach { $0.closure() }
+    }
+
     func createOrigin(from baseURL: URL) throws -> NovaAuthOrigin {
         guard let components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false),
               components.user == nil, components.password == nil,
@@ -136,6 +155,7 @@ extension NovaAuthFacade {
         return NovaAuthFacade(
             configProvider: GlobalConfigProvider.shared,
             client: client,
+            contextInvalidationID: { client?.contextInvalidationID },
             activate: { origin in
                 guard let client else { throw NovaAuthError.unsupported }
                 return try client.activate(origin: origin)

@@ -7,6 +7,10 @@ final class AnalyticsAuthAdapter: AnalyticsAuthProvidingProtocol {
 
     init(provider: NovaAuthProvidingProtocol) { self.provider = provider }
 
+    func addContextObserver(_ owner: AnyObject, closure: @escaping () -> Void) {
+        provider.addContextObserver(owner, closure: closure)
+    }
+
     func createAuthWrapper() -> CompoundOperationWrapper<AnalyticsAuth> {
         let endpoint = provider.createEndpointWrapper()
         let map = ClosureOperation<AnalyticsAuth> {

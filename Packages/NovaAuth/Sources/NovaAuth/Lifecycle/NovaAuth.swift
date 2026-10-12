@@ -7,6 +7,7 @@ public final class NovaAuth: NovaAuthClientProtocol {
     var state: NovaAuthInstallationState?
     var storageFailed = false
     private var pendingStateWrite: NovaAuthInstallationState?
+    private var invalidationID = UUID()
     var flight: NovaAuthIssuanceFlight?
     var issuanceCooldown = NovaAuthCooldown()
     var originCooldown = NovaAuthCooldown()
@@ -38,6 +39,10 @@ public final class NovaAuth: NovaAuthClientProtocol {
         gate.novaAuthLocked { state?.context }
     }
 
+    public var contextInvalidationID: UUID {
+        gate.novaAuthLocked { invalidationID }
+    }
+
     public func activate(origin: NovaAuthOrigin) throws -> NovaAuthContext {
         try gate.novaAuthLocked {
             do {
@@ -63,6 +68,7 @@ public final class NovaAuth: NovaAuthClientProtocol {
 
     public func reset() throws {
         try gate.novaAuthLocked {
+            invalidationID = UUID()
             do {
                 try loadStateIfNeeded()
             } catch is NovaAuthIdentityStoreError {
@@ -253,6 +259,7 @@ private extension NovaAuth {
     }
 
     func repairCorruptState(origin: NovaAuthOrigin, requiresUserAction: Bool) throws {
+        invalidationID = UUID()
         let record: NovaAuthTokenRecord?
         do { record = try dependencies.tokenStore.load() } catch { throw NovaAuthError.storageUnavailable }
         let previous = record.flatMap { record -> UInt64? in
@@ -284,6 +291,7 @@ private extension NovaAuth {
         )
         // The memory fence must survive even a failed persistent reset.
         state = replacement
+        invalidationID = UUID()
         storageFailed = false
         if let flight {
             let callbacks = Array(flight.waiters.values)
