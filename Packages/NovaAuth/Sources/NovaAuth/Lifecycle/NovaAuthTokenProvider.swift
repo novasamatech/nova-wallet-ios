@@ -173,12 +173,9 @@ extension NovaAuth {
         if state?.context == flight.context {
             do {
                 if case let NovaAuthError.bootstrap(server) = error,
-                   server.code == "app_not_allowed" || server.code == "binding_not_allowed" {
-                    try reserveRecoveryDelay()
-                    if server.code == "app_not_allowed", var replacement = state {
-                        replacement.requiresUserAction = true
-                        try persist(replacement)
-                    }
+                   server.code == "binding_not_allowed",
+                   flight.diagnosticPhase == .tokenChallenge || flight.diagnosticPhase == .token {
+                    try failPolicyRetryDelay()
                     NovaAuthDiagnostics.log(.policyRefused, logger: dependencies.logger, requestID: server.requestID)
                 }
                 if shouldApplyCooldown(safe) {

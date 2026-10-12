@@ -147,16 +147,6 @@ public final class NovaAuth: NovaAuthClientProtocol {
         ), context: flight.context)
     }
 
-    func reserveRecoveryDelay() throws {
-        guard var replacement = state else { throw NovaAuthError.generationChanged }
-        var recovery = replacement.recovery ?? NovaAuthRecoveryState()
-        var cooldown = recovery.recreationDelay ?? NovaAuthCooldown()
-        cooldown.failLadder(now: try dependencies.clock.now(), random: dependencies.random.unitInterval(), caps: 86_400)
-        recovery.recreationDelay = cooldown
-        replacement.recovery = recovery
-        try persist(replacement)
-    }
-
     func enqueue(_ action: @escaping () -> Void) {
         dependencies.ownerQueue.addOperation(action)
     }

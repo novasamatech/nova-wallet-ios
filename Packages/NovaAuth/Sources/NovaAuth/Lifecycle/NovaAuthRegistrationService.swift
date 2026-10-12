@@ -58,9 +58,6 @@ extension NovaAuth {
     func handleChallengeFailure(_ error: Error, flight: NovaAuthIssuanceFlight) throws {
         guard case let NovaAuthError.bootstrap(server) = error else { return }
         guard let identity = state?.identity else { return }
-        if server.code == "app_not_allowed" || server.code == "binding_not_allowed" {
-            return
-        }
         guard server.statusCode == 401, server.code == "unknown_client" else { return }
         if case let .registrationPending(pending) = identity.registration {
             let now = try dependencies.clock.now()
