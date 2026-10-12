@@ -85,7 +85,7 @@ final class NovaAuthFacade: NovaAuthProvidingProtocol {
         if let latestSnapshot, snapshot.revision < latestSnapshot.revision {
             acceptedSnapshot = latestSnapshot
         } else { acceptedSnapshot = snapshot }
-        let origin = try NovaAuthOrigin(acceptedSnapshot.config.infraUrl.absoluteString)
+        let origin = try createOrigin(from: acceptedSnapshot.config.infraUrl)
         let context = try activate(origin)
         // First activation has no prior derived state to invalidate. Reset already
         // notifies observers before clearing the endpoint.
@@ -95,6 +95,25 @@ final class NovaAuthFacade: NovaAuthProvidingProtocol {
         latestSnapshot = acceptedSnapshot
         if changed { observers.filter { $0.owner != nil }.forEach { $0.closure() } }
         return accepted
+    }
+}
+
+// MARK: Private
+
+private extension NovaAuthFacade {
+    func createOrigin(from baseURL: URL) throws -> NovaAuthOrigin {
+        guard let components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false),
+              components.user == nil, components.password == nil,
+              components.query == nil, components.fragment == nil,
+              components.percentEncodedPath.isEmpty || components.percentEncodedPath == "/" else {
+            throw NovaAuthError.invalidConfiguration
+        }
+
+        // Config base URLs may end at the root, but signed and stored origins must remain strict.
+        let value = components.percentEncodedPath == "/"
+            ? String(baseURL.absoluteString.dropLast())
+            : baseURL.absoluteString
+        return try NovaAuthOrigin(value)
     }
 }
 

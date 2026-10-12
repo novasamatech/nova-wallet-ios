@@ -48,7 +48,10 @@ final class NovaAuthFacadeTests: XCTestCase {
     }
 
     private func run<T>(_ wrapper: CompoundOperationWrapper<T>) throws -> T {
-        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
+        let completed = expectation(description: "facade operation completed")
+        wrapper.targetOperation.completionBlock = { completed.fulfill() }
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: false)
+        wait(for: [completed], timeout: 10)
         return try wrapper.targetOperation.extractNoCancellableResultData()
     }
 
@@ -70,6 +73,135 @@ final class NovaAuthFacadeTests: XCTestCase {
         let admission = try run(bittensor.createAdmissionWrapper(intent: .userInitiated))
         XCTAssertTrue(analytics.client === admission.endpoint?.client)
         XCTAssertTrue(analytics.client === harness.client)
+    }
+
+    func testDecodedDebugConfigBootstrapsBittensorAndSharesBearerWithAnalytics() throws {
+        let configData = Data("""
+        {
+            "multiStakingApiUrl": "https://staking.test/",
+            "multisigsApiUrl": "https://multisigs.test/",
+            "proxyApiUrl": "https://proxy.test/",
+            "infraUrl": "https://nova-infra-dev.novasama-tech.org/"
+        }
+        """.utf8)
+        let config = AuthConfigProvider()
+        config.snapshot = GlobalConfigSnapshot(
+            config: try JSONDecoder().decode(GlobalConfig.self, from: configData),
+            revision: 1
+        )
+        let harness = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self)
+        let provider = facade(config, harness: harness)
+        let bittensor = BittensorAuthorizedTransport(provider: provider, operationQueue: OperationQueue())
+        let admission = try run(bittensor.createAdmissionWrapper(intent: .userInitiated))
+        _ = try run(bittensor.createResponseWrapper(for: subnetsRequest(), admission: admission))
+
+        let canonicalOrigin = "https://nova-infra-dev.novasama-tech.org"
+        XCTAssertEqual(harness.client.currentContext?.origin.value, canonicalOrigin)
+        XCTAssertEqual(admission.scope.origin, canonicalOrigin)
+        XCTAssertEqual(HostAuthURLProtocol.requests.map { $0.url?.path }, [
+            "/v1/attestation/profile-3/challenges", "/v1/attestation/profile-3/register",
+            "/v1/attestation/profile-3/token-challenges", "/v1/attestation/profile-3/tokens",
+            "/v1/bittensor/profile-3/subnets"
+        ])
+
+        let analyticsAuth = try run(AnalyticsAuthAdapter(provider: provider).createAuthWrapper())
+        XCTAssertTrue(analyticsAuth.client === admission.endpoint?.client)
+        XCTAssertTrue(analyticsAuth.client === harness.client)
+        let analytics = AnalyticsUploadOperationFactory(auth: analyticsAuth)
+        try run(analytics.createUploadWrapper(body: Data("{}".utf8), beforeSend: {}))
+
+        let requests = HostAuthURLProtocol.requests
+        XCTAssertEqual(requests.count, 6)
+        XCTAssertTrue(requests.allSatisfy { $0.url?.host == "nova-infra-dev.novasama-tech.org" })
+        XCTAssertTrue(requests.allSatisfy { $0.url?.scheme == "https" })
+        XCTAssertEqual(HostAuthURLProtocol.businessRequests.map { $0.url?.path }, [
+            "/v1/bittensor/profile-3/subnets", "/v1/analytics/events"
+        ])
+        XCTAssertEqual(HostAuthURLProtocol.businessRequests.map(\.httpMethod), ["GET", "POST"])
+        XCTAssertEqual(HostAuthURLProtocol.businessRequests.map { $0.value(forHTTPHeaderField: "Authorization") }, [
+            "Bearer host-bearer-1", "Bearer host-bearer-1"
+        ])
+        XCTAssertEqual(harness.apple.attestations, 1)
+        XCTAssertEqual(harness.apple.assertions, 1)
+    }
+
+    func testRootSlashConfigRevisionsPreserveContextAndBearer() throws {
+        let origin = "https://nova-infra-dev.novasama-tech.org"
+        let config = AuthConfigProvider(origin: origin + "/")
+        let harness = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self)
+        let provider = facade(config, harness: harness)
+        let bittensor = BittensorAuthorizedTransport(provider: provider, operationQueue: OperationQueue())
+        let admission = try run(bittensor.createAdmissionWrapper(intent: .userInitiated))
+        let endpoint = try XCTUnwrap(admission.endpoint)
+        let token = try XCTUnwrap(harness.tokens.load())
+        var invalidations = 0
+        provider.addContextObserver(self) { invalidations += 1 }
+
+        for (index, baseURL) in [origin, origin + "/"].enumerated() {
+            config.publish(origin: baseURL, revision: UInt64(index + 2))
+            let currentEndpoint = try run(provider.createEndpointWrapper())
+            XCTAssertEqual(currentEndpoint.context, endpoint.context)
+            XCTAssertEqual(currentEndpoint.context.generation, endpoint.context.generation)
+            XCTAssertTrue(currentEndpoint.client === endpoint.client)
+            XCTAssertEqual(try harness.tokens.load(), token)
+        }
+
+        _ = try run(bittensor.createResponseWrapper(for: subnetsRequest()))
+        XCTAssertEqual(invalidations, 0)
+        XCTAssertEqual(harness.client.currentContext, endpoint.context)
+        XCTAssertEqual(try harness.tokens.load(), token)
+        XCTAssertEqual(HostAuthURLProtocol.requests.count, 5)
+        XCTAssertEqual(HostAuthURLProtocol.businessRequests.first?.value(forHTTPHeaderField: "Authorization"), "Bearer host-bearer-1")
+        XCTAssertEqual(harness.apple.attestations, 1)
+        XCTAssertEqual(harness.apple.assertions, 1)
+    }
+
+    func testInvalidBaseURLsFailBeforeActivationOrBootstrap() throws {
+        let invalidBaseURLs = [
+            "https://example.test/path", "https://example.test//", "https://example.test/%2F",
+            "https://example.test/./", "https://example.test/../",
+            "https://example.test/?query=value", "https://example.test/?",
+            "https://example.test/#fragment", "https://example.test/#",
+            "https://user@example.test/", "https://user:password@example.test/",
+            "https://@example.test/", "https://:password@example.test/",
+            "http://example.test/", "HTTPS://example.test/", "https://EXAMPLE.test/",
+            "https://example.test:443/", "https://example.test:08443/",
+            "https://127.0.0.1/", "https://example.test./"
+        ]
+
+        for baseURL in invalidBaseURLs {
+            let config = AuthConfigProvider(origin: baseURL)
+            XCTAssertEqual(config.snapshot.config.infraUrl.absoluteString, baseURL)
+            let harness = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self)
+            let provider = facade(config, harness: harness)
+            XCTAssertThrowsError(try run(provider.createEndpointWrapper()), baseURL) { error in
+                XCTAssertEqual(error as? NovaAuthError, .invalidConfiguration, baseURL)
+            }
+            XCTAssertNil(harness.client.currentContext, baseURL)
+            XCTAssertNil(harness.identity.state, baseURL)
+            XCTAssertNil(try harness.tokens.load(), baseURL)
+            XCTAssertEqual(harness.apple.attestations, 0, baseURL)
+            XCTAssertEqual(harness.apple.assertions, 0, baseURL)
+            XCTAssertTrue(HostAuthURLProtocol.requests.isEmpty, baseURL)
+        }
+    }
+
+    func testNondefaultPortRootURLPreservesPort() throws {
+        let config = AuthConfigProvider(origin: "https://example.test:8443/")
+        let harness = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self)
+        let endpoint = try run(facade(config, harness: harness).createEndpointWrapper())
+        XCTAssertEqual(endpoint.context.origin.value, "https://example.test:8443")
+    }
+
+    private func subnetsRequest() -> BittensorApiRequest {
+        BittensorApiRequest(
+            method: .get,
+            path: "/subnets",
+            pathTemplate: "/subnets",
+            queryItems: [],
+            jsonBody: nil,
+            intent: .userInitiated
+        )
     }
 
     func testUnitTestingGateNeverResolvesConfigOrBootstraps() throws {
