@@ -133,7 +133,7 @@ public final class NovaAuth: NovaAuthClientProtocol {
         try validate(context: context)
         let replacement = NovaAuthInstallationState(
             version: 1, context: context, requiresUserAction: state?.requiresUserAction ?? false, identity: identity,
-            recoveryCooldown: state?.recoveryCooldown, tokenRemovalOwed: state?.tokenRemovalOwed
+            recovery: state?.recovery, tokenRemovalOwed: state?.tokenRemovalOwed
         )
         try persist(replacement)
     }
@@ -149,16 +149,12 @@ public final class NovaAuth: NovaAuthClientProtocol {
 
     func reserveRecoveryDelay() throws {
         guard var replacement = state else { throw NovaAuthError.generationChanged }
-        var cooldown = replacement.recoveryCooldown ?? NovaAuthCooldown()
-        cooldown.fail(now: try dependencies.clock.now(), random: dependencies.random.unitInterval(), retryAfter: 60)
-        replacement.recoveryCooldown = cooldown
+        var recovery = replacement.recovery ?? NovaAuthRecoveryState()
+        var cooldown = recovery.recreationDelay ?? NovaAuthCooldown()
+        cooldown.failLadder(now: try dependencies.clock.now(), random: dependencies.random.unitInterval(), caps: 86_400)
+        recovery.recreationDelay = cooldown
+        replacement.recovery = recovery
         try persist(replacement)
-    }
-
-    func retire(_ reason: NovaAuthRetirementReason, flight: NovaAuthIssuanceFlight) throws {
-        try reserveRecoveryDelay()
-        try setRegistration(.retired(reason), flight: flight)
-        NovaAuthDiagnostics.log(.identityRetired, logger: dependencies.logger)
     }
 
     func enqueue(_ action: @escaping () -> Void) {
@@ -325,6 +321,7 @@ private extension NovaAuth {
 
 final class NovaAuthIssuanceFlight {
     let context: NovaAuthContext
+    let intent: NovaAuthRequestIntent
     var waiters: [UUID: (Result<NovaAuthTokenRecord, Error>) -> Void] = [:]
     var cancelChild: (() -> Void)?
     var irreversible = false
@@ -333,8 +330,9 @@ final class NovaAuthIssuanceFlight {
     var diagnosticPhase: NovaAuthDiagnostics.Phase = .registrationChallenge
     let sponsored: Bool
 
-    init(context: NovaAuthContext, sponsored: Bool) {
+    init(context: NovaAuthContext, sponsored: Bool, intent: NovaAuthRequestIntent = .background) {
         self.context = context
         self.sponsored = sponsored
+        self.intent = intent
     }
 }

@@ -19,7 +19,6 @@ extension NovaAuth {
                     try validate(context: context)
                     guard isSupported else { throw NovaAuthError.unsupported }
                     let now = try dependencies.clock.now()
-                    try originCooldown.check(now: now)
                     if let record = try usableToken(context: context, now: now) {
                         let remaining = try NovaAuthTokenValidation.remaining(
                             record,
@@ -37,13 +36,14 @@ extension NovaAuth {
                             flight.waiters[waiterID] = completion
                             return
                         }
+                        try originCooldown.check(now: now)
                         try issuanceCooldown.check(now: now)
-                        try state?.recoveryCooldown?.check(now: now)
+                        try checkRecoveryDelays(now: now)
                         if case let .registrationPending(pending) = state?.identity?.registration {
                             try pending.cooldown.check(now: now)
                         }
                         try prepareIdentity(context: context, intent: intent)
-                        let next = NovaAuthIssuanceFlight(context: context, sponsored: false)
+                        let next = NovaAuthIssuanceFlight(context: context, sponsored: false, intent: intent)
                         next.waiters[waiterID] = completion
                         flight = next
                         start(flight: next)
@@ -158,8 +158,8 @@ extension NovaAuth {
         do {
             try dependencies.tokenStore.replace(record)
         } catch { throw NovaAuthError.storageUnavailable }
-        if var replacement = state, replacement.recoveryCooldown != nil {
-            replacement.recoveryCooldown = nil
+        if var replacement = state, replacement.recovery != nil {
+            replacement.recovery = nil
             try persist(replacement)
         }
         issuanceCooldown.clear()
@@ -226,10 +226,11 @@ private extension NovaAuth {
     func beginEarlyRefresh(context: NovaAuthContext, intent: NovaAuthRequestIntent, now: NovaAuthTime) {
         do {
             guard case .registered = state?.identity?.registration else { return }
+            try originCooldown.check(now: now)
             try issuanceCooldown.check(now: now)
-            try state?.recoveryCooldown?.check(now: now)
+            try checkRecoveryDelays(now: now)
             try prepareIdentity(context: context, intent: intent)
-            let next = NovaAuthIssuanceFlight(context: context, sponsored: true)
+            let next = NovaAuthIssuanceFlight(context: context, sponsored: true, intent: intent)
             flight = next
             start(flight: next)
         } catch { /* A still-usable bearer remains available during issuance refusal. */ }

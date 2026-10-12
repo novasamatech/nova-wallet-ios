@@ -11,7 +11,7 @@ extension NovaAuth {
         }
         if let identity = state.identity {
             if case let .retired(reason) = identity.registration {
-                if reason.requiresUserAction, intent != .userInitiated { throw NovaAuthError.userActionRequired }
+                try checkRecreationPermission(reason: reason, intent: intent)
                 if reason == .policyRefused {
                     guard intent == .userInitiated else { throw NovaAuthError.userActionRequired }
                     if identity.keyID != nil {
@@ -84,6 +84,7 @@ private extension NovaAuth {
         if case .retired = identity.registration {
             clientID = dependencies.random.makeClientID()
             try NovaAuthValidation.clientID(clientID)
+            try reserveReplacement(flight: flight)
         } else { clientID = identity.clientID }
         flight.diagnosticPhase = .keyGeneration
         run(dependencies.appAttest.createKeyWrapper(), flight: flight) { [self] result in
