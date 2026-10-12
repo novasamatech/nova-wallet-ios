@@ -6,7 +6,7 @@ extension NovaAuth {
         var recovery = replacement.recovery ?? NovaAuthRecoveryState()
         var cooldown = recovery.proofRetryDelay ?? NovaAuthCooldown()
         let now = try dependencies.clock.now()
-        cooldown.failLadder(now: now, random: dependencies.random.unitInterval(), caps: 3_600)
+        cooldown.failLadder(now: now, random: dependencies.random.unitInterval(), caps: 3600)
         recovery.proofRetryDelay = cooldown
         replacement.recovery = recovery
         try persist(replacement)
@@ -62,7 +62,7 @@ extension NovaAuth {
         var recovery = state.recovery ?? NovaAuthRecoveryState()
         var cooldown = recovery.recreationDelay ?? NovaAuthCooldown()
         let now = try dependencies.clock.now()
-        cooldown.failLadder(now: now, random: dependencies.random.unitInterval(), caps: 86_400)
+        cooldown.failLadder(now: now, random: dependencies.random.unitInterval(), caps: 86400)
         recovery.recreationDelay = cooldown
         try persist(NovaAuthInstallationState(
             version: state.version,

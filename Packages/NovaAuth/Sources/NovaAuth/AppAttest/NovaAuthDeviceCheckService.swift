@@ -36,8 +36,12 @@ final class NovaAuthDeviceCheckService: NovaAuthAppAttestProtocol {
         }
     }
 
-    func createAttestationWrapper(keyID: String, clientDataHash: Data) -> CompoundOperationWrapper<Data> {
-        createProofWrapper(keyID: keyID, clientDataHash: clientDataHash, attestation: true)
+    func createAttestationWrapper(
+        keyID: String,
+        clientDataHash: Data,
+        beforeAttest: @escaping () throws -> Void = {}
+    ) -> CompoundOperationWrapper<Data> {
+        createProofWrapper(keyID: keyID, clientDataHash: clientDataHash, attestation: true, beforeAttest: beforeAttest)
     }
 
     func createAssertionWrapper(keyID: String, clientDataHash: Data) -> CompoundOperationWrapper<Data> {
@@ -46,7 +50,12 @@ final class NovaAuthDeviceCheckService: NovaAuthAppAttestProtocol {
 }
 
 private extension NovaAuthDeviceCheckService {
-    func createProofWrapper(keyID: String, clientDataHash: Data, attestation: Bool) -> CompoundOperationWrapper<Data> {
+    func createProofWrapper(
+        keyID: String,
+        clientDataHash: Data,
+        attestation: Bool,
+        beforeAttest: @escaping () throws -> Void = {}
+    ) -> CompoundOperationWrapper<Data> {
         do {
             try NovaAuthValidation.keyID(keyID)
             guard clientDataHash.count == 32 else { throw NovaAuthError.invalidRequest }
@@ -67,6 +76,13 @@ private extension NovaAuthDeviceCheckService {
             }
             // The framing layer already produced SHA256(P3). Apple receives these exact bytes.
             if attestation {
+                do {
+                    try beforeAttest()
+                } catch {
+                    _ = proofCalls.release(keyID: keyID, lease: lease)
+                    completion(.failure(error))
+                    return
+                }
                 service.attestKey(keyID, clientDataHash: clientDataHash, completionHandler: callback)
             } else {
                 service.generateAssertion(keyID, clientDataHash: clientDataHash, completionHandler: callback)
@@ -121,7 +137,7 @@ private final class NovaAuthProofCalls {
         }
     }
 
-    // A local timeout cannot cancel DeviceCheck. Only the SDK callback releases its key.
+    // After native invocation, only the SDK callback can release the key, never a local timeout.
     func release(keyID: String, lease: UUID) -> Bool {
         mutex.novaAuthLocked {
             guard leases[keyID] == lease else { return false }

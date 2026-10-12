@@ -84,7 +84,7 @@ enum NovaAuthDiagnostics {
         case let .bounded(seconds):
             message += metadata(requestID: nil, retryAfter: seconds)
         case let .localRecovery(seconds):
-            let maximum: TimeInterval = 95_040
+            let maximum: TimeInterval = 95040
             if seconds.isFinite, seconds >= 0, seconds <= maximum.nextUp {
                 message += " retryAfter=\(Int(min(seconds, maximum).rounded(.up)))"
             }
