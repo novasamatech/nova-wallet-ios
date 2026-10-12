@@ -47,7 +47,7 @@ final class SubtensorSubnetSelectInteractor {
 
 private extension SubtensorSubnetSelectInteractor {
     func createEntriesWrapper() -> CompoundOperationWrapper<[SubtensorSubnetListEntry]> {
-        let catalogueWrapper = catalogueService.createCatalogueWrapper()
+        let catalogueWrapper = catalogueService.createCatalogueWrapper(intent: .userInitiated)
         let subnetsService = subnetsService
 
         let subnetsInfoOperation = AsyncClosureOperation<SubtensorSubnetsInfo> { completion in

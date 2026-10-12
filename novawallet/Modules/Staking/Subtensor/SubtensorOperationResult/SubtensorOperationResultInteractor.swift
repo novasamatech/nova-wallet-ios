@@ -126,7 +126,7 @@ private extension SubtensorOperationResultInteractor {
 
         if !seed.isFresh {
             execute(
-                wrapper: catalogueService.createCatalogueWrapper(),
+                wrapper: catalogueService.createCatalogueWrapper(intent: .userInitiated),
                 inOperationQueue: operationQueue,
                 runningCallbackIn: .main
             ) { [weak self] result in

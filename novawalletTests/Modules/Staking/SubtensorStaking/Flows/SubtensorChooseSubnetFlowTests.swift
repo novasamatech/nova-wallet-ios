@@ -93,7 +93,24 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(chutesRanking.eligibleValidators, 14)
         XCTAssertEqual(chutesRanking.scoredValidators, 16)
         XCTAssertEqual(chutesRanking.flags, [])
-        XCTAssertEqual(chipsRanked, ranked)
+        // Each read passes through authorization and native HTTP caching, with a new receipt.
+        XCTAssertEqual(chipsRanked, SubtensorRankedSubnets(
+            generation: SubtensorRecommendationGeneration(
+                id: ranked.generation.id,
+                sourceBlockNumber: ranked.generation.sourceBlockNumber,
+                modelVersion: ranked.generation.modelVersion,
+                ageSeconds: ranked.generation.ageSeconds,
+                receivedAt: ranked.generation.receivedAt + 60,
+                isServedFromMemory: false,
+                excludedNetuids: ranked.generation.excludedNetuids,
+                carriedOverNetuids: ranked.generation.carriedOverNetuids,
+                inputFlags: ranked.generation.inputFlags,
+                stamp: ranked.generation.stamp,
+                isPartial: ranked.generation.isPartial
+            ),
+            policy: ranked.policy,
+            items: ranked.items
+        ))
 
         XCTAssertEqual(
             services.recommendationService.cachedClientGates().value,
@@ -157,11 +174,17 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(maxStake, 48_188_500_000)
 
         XCTAssertEqual(requestLines().sorted(), [
-            "GET https://bittensor.test/v1/bittensor/recommendations",
-            "GET https://bittensor.test/v1/bittensor/recommendations/subnets",
-            "GET https://bittensor.test/v1/bittensor/subnets",
-            "GET https://bittensor.test/v1/bittensor/subnets/64/validators",
-            "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
+            "GET https://bittensor.test/v1/bittensor/profile-3/recommendations",
+            "GET https://bittensor.test/v1/bittensor/profile-3/recommendations/subnets",
+            "GET https://bittensor.test/v1/bittensor/profile-3/recommendations/subnets",
+            "GET https://bittensor.test/v1/bittensor/profile-3/subnets",
+            "GET https://bittensor.test/v1/bittensor/profile-3/subnets/64/validators",
+            "GET https://bittensor.test/v1/bittensor/profile-3/subnets/64/validators",
+            "GET https://bittensor.test/v1/bittensor/profile-3/subnets/64/validators",
+            "GET https://bittensor.test/v1/bittensor/profile-3/subnets/64/validators",
+            "GET https://bittensor.test/v1/bittensor/profile-3/subnets/64/validators",
+            "GET https://bittensor.test/v1/bittensor/profile-3/subnets/64/validators",
+            "GET https://bittensor.test/v1/bittensor/profile-3/yields/root?page=1&pageSize=100",
             "GET https://subnet-logos.test/subnets.json",
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=30",
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=7",
@@ -169,14 +192,20 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
             "GET \(SubtensorFlowHost.priceAPI)/coins/markets?vs_currency=usd&category=bittensor-subnets&per_page=250&page=1&sparkline=true&price_change_percentage=7d"
         ])
 
-        assertAttestedRequests(
+        assertAuthorizedRequests(
             world,
             paths: [
-                "/v1/bittensor/subnets",
-                "/v1/bittensor/yields/root",
-                "/v1/bittensor/recommendations/subnets",
-                "/v1/bittensor/recommendations",
-                "/v1/bittensor/subnets/64/validators"
+                "/v1/bittensor/profile-3/subnets",
+                "/v1/bittensor/profile-3/yields/root",
+                "/v1/bittensor/profile-3/recommendations/subnets",
+                "/v1/bittensor/profile-3/recommendations",
+                "/v1/bittensor/profile-3/subnets/64/validators",
+                "/v1/bittensor/profile-3/subnets/64/validators",
+                "/v1/bittensor/profile-3/subnets/64/validators",
+                "/v1/bittensor/profile-3/subnets/64/validators",
+                "/v1/bittensor/profile-3/subnets/64/validators",
+                "/v1/bittensor/profile-3/subnets/64/validators",
+                "/v1/bittensor/profile-3/recommendations/subnets"
             ]
         )
     }
@@ -221,10 +250,10 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertNil(preset)
 
         XCTAssertEqual(requestLines().sorted(), [
-            "GET https://bittensor.test/v1/bittensor/recommendations",
-            "GET https://bittensor.test/v1/bittensor/recommendations/subnets",
-            "GET https://bittensor.test/v1/bittensor/subnets",
-            "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
+            "GET https://bittensor.test/v1/bittensor/profile-3/recommendations",
+            "GET https://bittensor.test/v1/bittensor/profile-3/recommendations/subnets",
+            "GET https://bittensor.test/v1/bittensor/profile-3/subnets",
+            "GET https://bittensor.test/v1/bittensor/profile-3/yields/root?page=1&pageSize=100",
             "GET https://subnet-logos.test/subnets.json",
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=30",
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=7",
@@ -232,13 +261,13 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
             "GET \(SubtensorFlowHost.priceAPI)/coins/markets?vs_currency=usd&category=bittensor-subnets&per_page=250&page=1&sparkline=true&price_change_percentage=7d"
         ])
 
-        assertAttestedRequests(
+        assertAuthorizedRequests(
             world,
             paths: [
-                "/v1/bittensor/subnets",
-                "/v1/bittensor/yields/root",
-                "/v1/bittensor/recommendations/subnets",
-                "/v1/bittensor/recommendations"
+                "/v1/bittensor/profile-3/subnets",
+                "/v1/bittensor/profile-3/yields/root",
+                "/v1/bittensor/profile-3/recommendations/subnets",
+                "/v1/bittensor/profile-3/recommendations"
             ]
         )
     }
@@ -272,11 +301,41 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertNil(SubtensorAlphaApyFormatter.annualRate(for: ember, in: alphaYields))
 
         XCTAssertEqual(requestLines(), [
-            "GET https://bittensor.test/v1/bittensor/yields/root?page=1&pageSize=100",
-            "GET https://bittensor.test/v1/bittensor/subnets/64/yields/alpha?page=1&pageSize=100"
+            "GET https://bittensor.test/v1/bittensor/profile-3/yields/root?page=1&pageSize=100",
+            "GET https://bittensor.test/v1/bittensor/profile-3/subnets/64/yields/alpha?page=1&pageSize=100"
         ])
 
-        assertAttestedRequests(world, paths: ["/v1/bittensor/yields/root", "/v1/bittensor/subnets/64/yields/alpha"])
+        assertAuthorizedRequests(world, paths: ["/v1/bittensor/profile-3/yields/root", "/v1/bittensor/profile-3/subnets/64/yields/alpha"])
+    }
+
+    func testOlderRankingFailureKeepsNewestPresentationSeedMarkedStaleWithoutRetry() throws {
+        let world = try SubtensorFlowWorld()
+        let service = world.earnServices.rankingViewService
+        let document = BittensorApiFixtureDocuments.rankedSubnets()
+        SubtensorFlowURLProtocol.serveBittensor("/recommendations/subnets", reply: .json(document))
+        let first = try XCTUnwrap(run(service.createRankingViewWrapper()))
+        var older = document
+        var meta = try XCTUnwrap(older["meta"] as? [String: Any])
+        var generation = try XCTUnwrap(meta["generation"] as? [String: Any])
+        var components = try XCTUnwrap(meta["components"] as? [String: Any])
+        var recommendations = try XCTUnwrap(components["recommendations"] as? [String: Any])
+        recommendations["asOf"] = "2026-09-24T08:23:00Z"
+        components["recommendations"] = recommendations
+        meta["components"] = components
+        generation["id"] = "0123456789abcdef0123456789abcdef"
+        meta["generation"] = generation
+        older["meta"] = meta
+        SubtensorFlowURLProtocol.serveBittensor("/recommendations/subnets", reply: .json(older))
+        let retained = try XCTUnwrap(run(service.createRankingViewWrapper()))
+        XCTAssertEqual(retained.generation.id, first.generation.id)
+        XCTAssertEqual(retained.generation.receivedAt, first.generation.receivedAt)
+        XCTAssertEqual(retained.generation.stamp.freshness, .stale)
+        XCTAssertEqual(retained.policy, first.policy)
+        XCTAssertEqual(retained.items, first.items)
+        assertAuthorizedRequests(world, paths: [
+            "/v1/bittensor/profile-3/recommendations/subnets",
+            "/v1/bittensor/profile-3/recommendations/subnets"
+        ])
     }
 
     func testDeviceThatFailsAppAttestGivesTheValidatorListItsOwnStateWithoutTryAgain() throws {
@@ -285,11 +344,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         let locale = Locale(identifier: "en")
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
-        stub(world.attestation.holder) { stub in
-            when(stub.createEndpointWrapper()).then {
-                CompoundOperationWrapper<BackendAttestationEndpoint>.createWithError(BittensorApiError.unsupportedDevice)
-            }
-        }
+        world.auth.provider.failure = BittensorApiError.unsupportedDevice
 
         let error = try XCTUnwrap(runError(world.earnServices.validatorDirectoryService.createDirectoryWrapper(
             for: chutesRef
@@ -305,13 +360,13 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(viewModel.details, strings.stakingSubtensorUiValidatorFetchDeviceDetail())
         XCTAssertNil(viewModel.retryTitle)
         XCTAssertEqual(requestLines(), [])
-        XCTAssertEqual(world.attestation.signatures, [])
+        XCTAssertEqual(world.auth.harness.apple.assertions, 0)
     }
 
-    func testSecondCatalogueReadWithinTheServerLifetimeSendsNoRequest() throws {
+    func testEveryCatalogueReadUsesAuthorizedTransportAndPeekRemainsAStaleSeed() throws {
         let world = try SubtensorFlowWorld()
         let catalogueService = world.earnServices.catalogueService
-        let subnetsRequestLine = "GET https://bittensor.test/v1/bittensor/subnets"
+        let subnetsRequestLine = "GET https://bittensor.test/v1/bittensor/profile-3/subnets"
 
         SubtensorFlowURLProtocol.serveFixture(.subnets)
 
@@ -326,12 +381,12 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         let expiryPeek = catalogueService.cachedCatalogue()
         _ = try run(catalogueService.createCatalogueWrapper())
 
-        XCTAssertTrue(revisitPeek.isFresh)
-        XCTAssertEqual(revisitedCatalogue, catalogue)
-        XCTAssertEqual(revisitRequestLines, [subnetsRequestLine])
+        XCTAssertFalse(revisitPeek.isFresh)
+        XCTAssertEqual(revisitedCatalogue.subnets.map(\.netuid), catalogue.subnets.map(\.netuid))
+        XCTAssertEqual(revisitRequestLines, [subnetsRequestLine, subnetsRequestLine])
         XCTAssertNotNil(expiryPeek.value)
         XCTAssertFalse(expiryPeek.isFresh)
-        XCTAssertEqual(requestLines(), [subnetsRequestLine, subnetsRequestLine])
-        assertAttestedRequests(world, paths: ["/v1/bittensor/subnets", "/v1/bittensor/subnets"])
+        XCTAssertEqual(requestLines(), [subnetsRequestLine, subnetsRequestLine, subnetsRequestLine])
+        assertAuthorizedRequests(world, paths: ["/v1/bittensor/profile-3/subnets", "/v1/bittensor/profile-3/subnets", "/v1/bittensor/profile-3/subnets"])
     }
 }

@@ -7,6 +7,7 @@ enum BittensorApiError: Error {
     case attestationBackoff(until: Date?)
     case attestationUnavailable(requestId: String?)
     case attestationFailure(requestId: String?)
+    case generationStale
     case routeNotPublished
     case invalidRequest(code: String?, requestId: String?)
     case datasetUnavailable(requestId: String?)

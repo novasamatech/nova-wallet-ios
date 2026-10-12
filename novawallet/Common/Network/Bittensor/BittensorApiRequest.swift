@@ -1,8 +1,10 @@
 import Foundation
+import NovaAuth
 
 struct BittensorApiRequest: Equatable {
     enum Method: String {
         case get = "GET"
+        case head = "HEAD"
         case post = "POST"
     }
 
@@ -11,6 +13,7 @@ struct BittensorApiRequest: Equatable {
     let pathTemplate: String
     let queryItems: [URLQueryItem]
     let jsonBody: Data?
+    var intent: NovaAuthRequestIntent = .background
 }
 
 struct BittensorApiRawResponse: Equatable {

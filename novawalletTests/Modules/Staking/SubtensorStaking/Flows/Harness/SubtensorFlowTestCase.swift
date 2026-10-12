@@ -41,7 +41,7 @@ enum SubtensorFlowLiteral {
     }
 }
 
-struct SubtensorFlowAttestedRequest {
+struct SubtensorFlowAuthorizedRequest {
     let method: String
     let path: String
     let body: Data
@@ -118,37 +118,27 @@ class SubtensorFlowTestCase: XCTestCase {
     }
 
     func requestLines() -> [String] {
-        SubtensorFlowURLProtocol.recordedRequests.map { "\($0.method) \($0.url)" }
+        SubtensorFlowURLProtocol.recordedRequests.filter { !$0.url.contains("/v1/attestation/") }.map { "\($0.method) \($0.url)" }
     }
 
-    func assertAttestedRequests(_ world: SubtensorFlowWorld, paths: [String]) {
-        assertAttestedRequests(world, requests: paths.map { SubtensorFlowAttestedRequest(method: "GET", path: $0) })
+    func assertAuthorizedRequests(_ world: SubtensorFlowWorld, paths: [String]) {
+        assertAuthorizedRequests(world, requests: paths.map { SubtensorFlowAuthorizedRequest(method: "GET", path: $0) })
     }
 
-    func assertAttestedRequests(_ world: SubtensorFlowWorld, requests: [SubtensorFlowAttestedRequest]) {
+    func assertAuthorizedRequests(_ world: SubtensorFlowWorld, requests: [SubtensorFlowAuthorizedRequest]) {
         let backendRequests = SubtensorFlowURLProtocol.recordedRequests.filter {
-            $0.url.hasPrefix(SubtensorFlowHost.bittensor(""))
+            $0.url.hasPrefix("https://bittensor.test/v1/bittensor/")
         }
 
-        let signatures = world.attestation.signatures
-
-        XCTAssertEqual(signatures.map(\.target.path), requests.map(\.path))
-        XCTAssertEqual(signatures.map(\.target.method), requests.map(\.method))
-        XCTAssertEqual(signatures.map(\.target.contentType), requests.map(\.contentType))
-        XCTAssertEqual(signatures.map(\.body), requests.map(\.body))
-        XCTAssertEqual(signatures.map(\.target.url.absoluteString), backendRequests.map(\.url))
-        XCTAssertEqual(
-            backendRequests.map { $0.headers.filter { !["Content-Type", "Content-Length"].contains($0.key) } },
-            signatures.map(\.headers)
-        )
-        XCTAssertEqual(backendRequests.map { $0.headers["Content-Type"] ?? "" }, requests.map(\.contentType))
+        XCTAssertEqual(backendRequests.compactMap { URL(string: $0.url)?.path }, requests.map(\.path))
+        XCTAssertEqual(backendRequests.map(\.method), requests.map(\.method))
         XCTAssertEqual(backendRequests.map(\.body), requests.map(\.body))
-        XCTAssertEqual(backendRequests.first?.headers, [
-            "X-Attestation-Profile": "2",
-            "X-Client-Id": SubtensorFlowAttestation.clientId,
-            "X-Challenge": "challenge-1",
-            "X-App-Attest-Assertion": "assertion-1"
-        ])
+        XCTAssertTrue(backendRequests.allSatisfy { $0.headers["Authorization"] == "Bearer flow-shared-bearer" })
+        XCTAssertEqual(backendRequests.map { $0.headers["Content-Type"] ?? "" }, requests.map(\.contentType))
+        XCTAssertEqual(world.auth.harness.apple.attestations, 1)
+        XCTAssertEqual(world.auth.harness.apple.assertions, 1)
+        let bootstrap = SubtensorFlowURLProtocol.recordedRequests.filter { $0.url.contains("/v1/attestation/") }
+        XCTAssertEqual(bootstrap.compactMap { URL(string: $0.url)?.lastPathComponent }, ["challenges", "register", "token-challenges", "tokens"])
     }
 
     func isRouteNotPublished(_ error: Error?) -> Bool {
