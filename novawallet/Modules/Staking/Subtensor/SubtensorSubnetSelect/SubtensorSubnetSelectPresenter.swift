@@ -302,7 +302,7 @@ extension SubtensorSubnetSelectPresenter: SubnetSelectInteractorOutputProtocol {
         entries = []
         provideList()
 
-        if let apiError = error as? BittensorApiError, apiError.isDeviceBound {
+        if let apiError = error as? BittensorApiError, !apiError.allowsUserRetry {
             return
         }
 

@@ -239,7 +239,7 @@ private extension SubtensorCostBasisWalk {
             return true
         case let .server(statusCode, _, _):
             return (500 ... 599).contains(statusCode)
-        case .generationStale, .unsupportedDevice, .configuration, .attestationRejected,
+        case .generationStale, .unsupportedDevice, .configuration, .attestationRejected, .bindingConflict,
              .attestationBackoff, .attestationFailure,
              .routeNotPublished, .invalidRequest, .datasetUnavailable, .rateLimited, .contractViolation:
             return false
