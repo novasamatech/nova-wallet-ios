@@ -5,7 +5,14 @@ public final class NovaAuth: NovaAuthClientProtocol {
     let dependencies: NovaAuthDependencies
     let gate = NSLock()
     var state: NovaAuthInstallationState?
-    var storageFailed = false
+    var storageFailed = false {
+        didSet {
+            if storageFailed, !oldValue {
+                NovaAuthDiagnostics.log(.storageFailed, logger: dependencies.logger)
+            }
+        }
+    }
+
     private var pendingStateWrite: NovaAuthInstallationState?
     private var invalidationID = UUID()
     var flight: NovaAuthIssuanceFlight?
@@ -19,7 +26,9 @@ public final class NovaAuth: NovaAuthClientProtocol {
         let http = NovaAuthHTTPTransport()
         self.init(dependencies: NovaAuthDependencies(
             appAttest: NovaAuthDeviceCheckService(),
-            identityStore: NovaAuthSettingsIdentityStore(settingsManager: configuration.settingsManager),
+            identityStore: NovaAuthSettingsIdentityStore(
+                settingsManager: configuration.settingsManager, commit: configuration.settingsCommit
+            ),
             tokenStore: NovaAuthKeychainTokenStore(configuration: configuration.sharedStore),
             clock: clock, random: NovaAuthSystemRandom(),
             bootstrap: NovaAuthBootstrapOperationFactory(http: http, clock: clock), http: http,

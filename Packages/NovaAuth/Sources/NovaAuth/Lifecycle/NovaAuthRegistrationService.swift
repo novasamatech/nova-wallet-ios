@@ -141,7 +141,14 @@ private extension NovaAuth {
         flight.irreversible = true
         flight.diagnosticPhase = .attestation
         let wrapper = dependencies.appAttest.createAttestationWrapper(
-            keyID: keyID, clientDataHash: attempt.clientDataHash
+            keyID: keyID, clientDataHash: attempt.clientDataHash,
+            beforeAttest: { [self] in
+                try gate.novaAuthLocked {
+                    guard self.flight === flight else { throw NovaAuthError.cancelled }
+                    try validate(context: flight.context)
+                    guard try hasAttestationBudget(attempt) else { throw NovaAuthError.userActionRequired }
+                }
+            }
         )
         run(wrapper, flight: flight) { [self] result in
             let object: Data
@@ -194,12 +201,16 @@ private extension NovaAuth {
     }
 
     func validateAttemptBeforeApple(_ attempt: NovaAuthRegistrationAttempt, flight: NovaAuthIssuanceFlight) throws {
-        let now = try dependencies.clock.now()
-        let age = now.continuousSeconds - attempt.startedAt.continuousSeconds
-        guard now.bootID == attempt.startedAt.bootID, age >= 0, age <= 40 else {
+        guard try hasAttestationBudget(attempt) else {
             try retire(.registrationAbandoned, flight: flight)
             throw NovaAuthError.userActionRequired
         }
+    }
+
+    func hasAttestationBudget(_ attempt: NovaAuthRegistrationAttempt) throws -> Bool {
+        let now = try dependencies.clock.now()
+        let age = now.continuousSeconds - attempt.startedAt.continuousSeconds
+        return now.bootID == attempt.startedAt.bootID && age >= 0 && age <= 40
     }
 
     func validateAttemptAfterApple(_ attempt: NovaAuthRegistrationAttempt, flight: NovaAuthIssuanceFlight) throws {

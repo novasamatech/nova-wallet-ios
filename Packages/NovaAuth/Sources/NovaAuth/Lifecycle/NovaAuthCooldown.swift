@@ -39,7 +39,7 @@ struct NovaAuthCooldown: Codable, Equatable {
     }
 
     mutating func failLadder(now: NovaAuthTime, random: Double, caps: TimeInterval) {
-        let steps: [TimeInterval] = [60, 600, 3_600, 86_400]
+        let steps: [TimeInterval] = [60, 600, 3600, 86400]
         let jitter = random.isFinite ? min(1, max(0, random)) : 1
         let index = min(max(0, failures), steps.count - 1)
         let delay = min(steps[index], caps) * (1 + 0.1 * jitter)

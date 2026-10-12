@@ -4,18 +4,16 @@ import SDKLogger
 
 public struct NovaAuthSharedStoreConfiguration {
     public let accessGroup: String
-    public let containerURL: URL
     /// Stable host-app bundle identifier, shared by that app and its extensions.
     public let hostAppNamespace: String
 
-    public init(accessGroup: String, containerURL: URL, hostAppNamespace: String) throws {
+    public init(accessGroup: String, hostAppNamespace: String) throws {
         let parts = hostAppNamespace.split(separator: ".", omittingEmptySubsequences: false)
         guard (3 ... 255).contains(hostAppNamespace.utf8.count), parts.count >= 2,
               parts.allSatisfy({ !$0.isEmpty && $0.utf8.allSatisfy {
                   (65 ... 90).contains($0) || (97 ... 122).contains($0) || (48 ... 57).contains($0) || $0 == 45
               } }) else { throw NovaAuthError.invalidConfiguration }
         self.accessGroup = accessGroup
-        self.containerURL = containerURL
         self.hostAppNamespace = hostAppNamespace
     }
 }
@@ -23,6 +21,8 @@ public struct NovaAuthSharedStoreConfiguration {
 public struct NovaAuthConfiguration {
     public let appIdentity: NovaAuthAppIdentity
     public let settingsManager: SettingsManagerProtocol
+    /// Must acknowledge persistence for the injected manager; defaults only support SettingsManager.shared.
+    public let settingsCommit: () throws -> Void
     public let sharedStore: NovaAuthSharedStoreConfiguration
     public let ownerQueue: OperationQueue
     public let bootstrapQueue: OperationQueue
@@ -32,6 +32,7 @@ public struct NovaAuthConfiguration {
     public init(
         appIdentity: NovaAuthAppIdentity,
         settingsManager: SettingsManagerProtocol,
+        settingsCommit: (() throws -> Void)? = nil,
         sharedStore: NovaAuthSharedStoreConfiguration,
         ownerQueue: OperationQueue,
         bootstrapQueue: OperationQueue,
@@ -40,6 +41,9 @@ public struct NovaAuthConfiguration {
     ) {
         self.appIdentity = appIdentity
         self.settingsManager = settingsManager
+        self.settingsCommit = settingsCommit ?? {
+            try NovaAuthSettingsIdentityStore.commitStandardSettings(settingsManager)
+        }
         self.sharedStore = sharedStore
         self.ownerQueue = ownerQueue
         self.bootstrapQueue = bootstrapQueue

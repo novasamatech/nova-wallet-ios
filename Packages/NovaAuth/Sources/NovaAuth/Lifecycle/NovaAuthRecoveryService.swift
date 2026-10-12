@@ -5,20 +5,24 @@ extension NovaAuth {
         guard var replacement = state else { throw NovaAuthError.generationChanged }
         var recovery = replacement.recovery ?? NovaAuthRecoveryState()
         var cooldown = recovery.proofRetryDelay ?? NovaAuthCooldown()
-        cooldown.failLadder(now: try dependencies.clock.now(), random: dependencies.random.unitInterval(), caps: 3_600)
+        let now = try dependencies.clock.now()
+        cooldown.failLadder(now: now, random: dependencies.random.unitInterval(), caps: 3600)
         recovery.proofRetryDelay = cooldown
         replacement.recovery = recovery
         try persist(replacement)
+        logRecoveryCooldown(cooldown, scope: .proof, now: now)
     }
 
     func failPolicyRetryDelay() throws {
         guard var replacement = state else { throw NovaAuthError.generationChanged }
         var recovery = replacement.recovery ?? NovaAuthRecoveryState()
         var cooldown = recovery.policyRetryDelay ?? NovaAuthCooldown()
-        cooldown.failLadder(now: try dependencies.clock.now(), random: dependencies.random.unitInterval(), caps: 600)
+        let now = try dependencies.clock.now()
+        cooldown.failLadder(now: now, random: dependencies.random.unitInterval(), caps: 600)
         recovery.policyRetryDelay = cooldown
         replacement.recovery = recovery
         try persist(replacement)
+        logRecoveryCooldown(cooldown, scope: .policy, now: now)
     }
 
     func checkRecoveryDelays(now: NovaAuthTime) throws {
@@ -57,7 +61,8 @@ extension NovaAuth {
         guard let state, let identity = state.identity else { throw NovaAuthError.keyUnavailable }
         var recovery = state.recovery ?? NovaAuthRecoveryState()
         var cooldown = recovery.recreationDelay ?? NovaAuthCooldown()
-        cooldown.failLadder(now: try dependencies.clock.now(), random: dependencies.random.unitInterval(), caps: 86_400)
+        let now = try dependencies.clock.now()
+        cooldown.failLadder(now: now, random: dependencies.random.unitInterval(), caps: 86400)
         recovery.recreationDelay = cooldown
         try persist(NovaAuthInstallationState(
             version: state.version,
@@ -69,6 +74,17 @@ extension NovaAuth {
             recovery: recovery,
             tokenRemovalOwed: state.tokenRemovalOwed
         ))
-        NovaAuthDiagnostics.log(.identityRetired, logger: dependencies.logger)
+        NovaAuthDiagnostics.retired(reason, logger: dependencies.logger)
+        logRecoveryCooldown(cooldown, scope: .recreation, now: now)
+    }
+}
+
+private extension NovaAuth {
+    func logRecoveryCooldown(_ cooldown: NovaAuthCooldown, scope: NovaAuthDiagnostics.CooldownScope, now: NovaAuthTime) {
+        NovaAuthDiagnostics.cooldown(
+            scope: scope,
+            delay: cooldown.deadline.map { .localRecovery(max(0, $0.continuousSeconds - now.continuousSeconds)) },
+            logger: dependencies.logger
+        )
     }
 }
