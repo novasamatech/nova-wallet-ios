@@ -240,6 +240,7 @@ private extension AnalyticsServiceFacade {
     }
 
     func deactivateLocked() {
+        consentAuthRecovery.setActive(false)
         isLaunchFlushPending = false
         sessionTracker.throttle()
         service.cancelFlush()

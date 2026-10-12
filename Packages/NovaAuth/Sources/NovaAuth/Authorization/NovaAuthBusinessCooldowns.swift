@@ -26,7 +26,8 @@ struct NovaAuthBusinessCooldowns {
         case let .success(response):
             let status = response.response.statusCode
             let code = NovaAuthWire.errorCode(from: response.body)
-            if status == 429 || (status == 503 && (code == nil || code == "attestation_unavailable")) {
+            if status == 429 || (status == 500 && code == nil) ||
+                (status == 503 && code == "attestation_unavailable") {
                 origin.fail(
                     now: now, random: random,
                     retryAfter: NovaAuthWire.retryAfter(response.response) ?? (status == 429 ? 30 : nil)
