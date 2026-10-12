@@ -16,6 +16,10 @@ enum BittensorAuthorizedResponseGrader {
         }
         let code = errorCode(result.body)
         switch status {
+        case 409 where code == "client_already_registered":
+            throw BittensorApiError.bindingConflict(requestId: requestId)
+        case 403 where code == "insufficient_scope":
+            throw BittensorApiError.invalidRequest(code: code, requestId: requestId)
         case 401, 403:
             throw BittensorApiError.server(statusCode: status, code: code, requestId: requestId)
         case 404 where response.value(forHTTPHeaderField: "Content-Type")?.lowercased().hasPrefix("text/plain") == true:
@@ -52,6 +56,15 @@ enum BittensorAuthorizedResponseGrader {
         case .cooldown: return .rateLimited(requestId: nil)
         case let .bootstrap(server):
             if server.statusCode == 429 { return .rateLimited(requestId: server.requestID) }
+            if server.statusCode == 409, server.code == "client_already_registered" {
+                return .bindingConflict(requestId: server.requestID)
+            }
+            if server.statusCode == 401, server.code == "attestation_failed" {
+                return .attestationRejected(requestId: server.requestID)
+            }
+            if server.statusCode == 403, server.code == "insufficient_scope" {
+                return .invalidRequest(code: server.code, requestId: server.requestID)
+            }
             if server.statusCode == 403, server.code == "app_not_allowed" || server.code == "binding_not_allowed" {
                 return .attestationRejected(requestId: server.requestID)
             }

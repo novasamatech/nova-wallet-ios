@@ -282,9 +282,10 @@ private extension SubtensorMaxApyWalk {
         }
 
         switch apiError {
-        case .generationStale, .routeNotPublished, .invalidRequest, .datasetUnavailable, .contractViolation:
+        case .generationStale, .routeNotPublished, .invalidRequest, .datasetUnavailable, .contractViolation,
+             .bindingConflict, .attestationRejected:
             return false
-        case .unsupportedDevice, .configuration, .attestationRejected, .attestationBackoff, .attestationUnavailable,
+        case .unsupportedDevice, .configuration, .attestationBackoff, .attestationUnavailable,
              .attestationFailure, .rateLimited, .upstreamUnavailable, .upstreamInvalidResponse, .server, .transport:
             return true
         }
