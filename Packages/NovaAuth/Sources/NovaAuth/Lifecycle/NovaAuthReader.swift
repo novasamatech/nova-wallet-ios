@@ -5,6 +5,7 @@ public final class NovaAuthReader: NovaAuthClientProtocol {
     private let dependencies: NovaAuthReaderDependencies
     private let gate = NSLock()
     private var originCooldown = NovaAuthCooldown()
+    private var businessCooldowns = NovaAuthBusinessCooldowns()
     private var rejectedCredentials = NovaAuthRejectedCredentials()
 
     public convenience init(configuration: NovaAuthReaderConfiguration) {
@@ -57,6 +58,7 @@ public final class NovaAuthReader: NovaAuthClientProtocol {
         if let context, record.context != context { throw NovaAuthError.generationChanged }
         let now = try dependencies.clock.now()
         try originCooldown.check(now: now)
+        try rejectedCredentials.check(record, now: now)
         do {
             _ = try NovaAuthTokenValidation.remaining(record, context: record.context, clientID: nil, now: now)
             return record
@@ -92,29 +94,20 @@ extension NovaAuthReader: NovaAuthCredentialAuthority {
         try gate.novaAuthLocked {
             _ = try currentRecord(context: request.context)
             let now = try dependencies.clock.now()
+            try businessCooldowns.check(request: request, now: now)
             _ = try NovaAuthTokenValidation.remaining(record, context: request.context, clientID: nil, now: now)
             try rejectedCredentials.check(record, now: now)
         }
     }
 
-    func receive(_ result: Result<NovaAuthResponse, Error>, context: NovaAuthContext) throws {
+    func receive(_ result: Result<NovaAuthResponse, Error>, request: NovaAuthRequest) throws {
         try gate.novaAuthLocked {
             // Do not require the sent record to remain current: another process may already replace it.
-            guard let current = try dependencies.tokenStore.load(), current.context == context else {
+            guard let current = try dependencies.tokenStore.load(), current.context == request.context else {
                 throw NovaAuthError.generationChanged
             }
             let now = try dependencies.clock.now()
-            switch result {
-            case let .success(response) where response.response.statusCode == 429:
-                originCooldown.fail(now: now, random: 0.5, retryAfter: NovaAuthWire.retryAfter(response.response) ?? 30)
-            case let .success(response) where response.response.statusCode == 503:
-                originCooldown.fail(now: now, random: 0.5)
-            case let .failure(error):
-                if case .transport = NovaAuth.safeError(error) { originCooldown.fail(now: now, random: 0.5) }
-            case let .success(response) where (200 ..< 400).contains(response.response.statusCode):
-                originCooldown.succeed(now: now)
-            default: break
-            }
+            businessCooldowns.receive(result, request: request, now: now, random: 0.5, origin: &originCooldown)
         }
     }
 
@@ -127,4 +120,6 @@ extension NovaAuthReader: NovaAuthCredentialAuthority {
             if repeated { originCooldown.fail(now: try dependencies.clock.now(), random: 0.5) }
         }
     }
+
+    func recovered(requestID _: String?) {}
 }

@@ -60,11 +60,16 @@ final class AnalyticsAuthClientSpy: NovaAuthClientProtocol {
     var onBeforeSend: (() -> Void)?
     var simulateRecovery = false
     private let recordedRequests = Locked<[NovaAuthRequest]>([])
+    private let recordedAdmissions = Locked<[NovaAuthRequestIntent]>([])
+    var admissions: [NovaAuthRequestIntent] { recordedAdmissions.value }
+    var onAdmission: (() -> Void)?
     var requests: [NovaAuthRequest] { recordedRequests.value }
     let identitySentinel = UUID()
 
-    func createAdmissionWrapper(in _: NovaAuthContext, intent _: NovaAuthRequestIntent) -> CompoundOperationWrapper<Void> {
-        .createWithResult(())
+    func createAdmissionWrapper(in _: NovaAuthContext, intent: NovaAuthRequestIntent) -> CompoundOperationWrapper<Void> {
+        recordedAdmissions.update { $0.append(intent) }
+        onAdmission?()
+        return .createWithResult(())
     }
 
     func createResponseWrapper(

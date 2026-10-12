@@ -10,9 +10,14 @@ enum NovaAuthStoredValidation {
     static func identity(_ state: NovaAuthInstallationState) throws {
         guard state.version == 1 else { throw NovaAuthError.storageUnavailable }
         _ = try NovaAuthOrigin(state.context.origin.value)
+        if let cooldown = state.recoveryCooldown { try validateCooldown(cooldown) }
         guard let identity = state.identity else { return }
         try NovaAuthValidation.clientID(identity.clientID)
         if let keyID = identity.keyID { try NovaAuthValidation.keyID(keyID) }
+        try registration(identity)
+    }
+
+    private static func registration(_ identity: NovaAuthInstallationIdentity) throws {
         switch identity.registration {
         case .unregistered, .retired: break
         case let .appleInFlight(attempt), let .appleDeferred(attempt):
@@ -31,20 +36,25 @@ enum NovaAuthStoredValidation {
 
     static func pendingRegistration(_ pending: NovaAuthPendingRegistration) throws {
         try time(pending.startedAt)
-        guard (0 ... 8).contains(pending.probeCount),
-              (0 ... 6).contains(pending.cooldown.failures),
-              (pending.startedAt.continuousSeconds + 120).isFinite,
-              pending.probeCount == 0 || pending.cooldown.failures > 0
+        guard (0 ... 8).contains(pending.unknownResponseCount),
+              (pending.startedAt.continuousSeconds + 120).isFinite
         else { throw NovaAuthError.storageUnavailable }
+        try validateCooldown(pending.cooldown)
         if let deadline = pending.cooldown.deadline {
-            try time(deadline)
-            guard pending.cooldown.failures > 0 else { throw NovaAuthError.storageUnavailable }
             if deadline.bootID == pending.startedAt.bootID {
                 guard deadline.continuousSeconds >= pending.startedAt.continuousSeconds else {
                     throw NovaAuthError.storageUnavailable
                 }
             }
-        } else if pending.cooldown.failures != 0 { throw NovaAuthError.storageUnavailable }
+        }
+    }
+
+    static func validateCooldown(_ cooldown: NovaAuthCooldown) throws {
+        guard (0 ... 6).contains(cooldown.failures) else { throw NovaAuthError.storageUnavailable }
+        if let deadline = cooldown.deadline {
+            try time(deadline)
+            guard cooldown.failures > 0 else { throw NovaAuthError.storageUnavailable }
+        } else if cooldown.failures != 0 { throw NovaAuthError.storageUnavailable }
     }
 
     static func token(_ record: NovaAuthTokenRecord) throws {

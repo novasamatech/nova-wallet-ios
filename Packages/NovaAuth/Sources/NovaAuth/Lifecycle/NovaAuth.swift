@@ -6,9 +6,11 @@ public final class NovaAuth: NovaAuthClientProtocol {
     let gate = NSLock()
     var state: NovaAuthInstallationState?
     var storageFailed = false
+    private var pendingStateWrite: NovaAuthInstallationState?
     var flight: NovaAuthIssuanceFlight?
     var issuanceCooldown = NovaAuthCooldown()
     var originCooldown = NovaAuthCooldown()
+    var businessCooldowns = NovaAuthBusinessCooldowns()
     var rejectedCredentials = NovaAuthRejectedCredentials()
 
     public convenience init(configuration: NovaAuthConfiguration) {
@@ -38,8 +40,12 @@ public final class NovaAuth: NovaAuthClientProtocol {
 
     public func activate(origin: NovaAuthOrigin) throws -> NovaAuthContext {
         try gate.novaAuthLocked {
-            try loadStateIfNeeded()
-            guard !storageFailed else { throw NovaAuthError.storageUnavailable }
+            do {
+                try loadStateIfNeeded()
+            } catch let error as NovaAuthIdentityStoreError {
+                try repairCorruptState(origin: origin, requiresUserAction: error == .resetPending)
+            }
+            try retryStorageWork()
             if let state, state.context.origin == origin {
                 return state.context
             }
@@ -57,11 +63,25 @@ public final class NovaAuth: NovaAuthClientProtocol {
 
     public func reset() throws {
         try gate.novaAuthLocked {
-            try loadStateIfNeeded()
+            do {
+                try loadStateIfNeeded()
+            } catch is NovaAuthIdentityStoreError {
+                do {
+                    try dependencies.identityStore.markResetPending()
+                    try dependencies.tokenStore.removeAll()
+                    dependencies.http.clearReadCache()
+                    storageFailed = false
+                    return
+                } catch { storageFailed = true; throw NovaAuthError.storageUnavailable }
+            }
+            let completingReset = storageFailed && state?.requiresUserAction == true && state?.identity == nil
+            try retryStorageWork()
+            if completingReset { return }
             if let origin = state?.context.origin {
                 _ = try replaceContext(origin: origin)
             } else {
                 do {
+                    try dependencies.identityStore.markResetPending()
                     try dependencies.tokenStore.removeAll()
                     dependencies.http.clearReadCache()
                     storageFailed = false
@@ -98,9 +118,11 @@ public final class NovaAuth: NovaAuthClientProtocol {
     }
 
     func persist(_ newState: NovaAuthInstallationState) throws {
+        state = newState
+        pendingStateWrite = newState
         do {
             try dependencies.identityStore.save(newState)
-            state = newState
+            pendingStateWrite = nil
         } catch {
             storageFailed = true
             throw NovaAuthError.storageUnavailable
@@ -110,7 +132,8 @@ public final class NovaAuth: NovaAuthClientProtocol {
     func setIdentity(_ identity: NovaAuthInstallationIdentity, context: NovaAuthContext) throws {
         try validate(context: context)
         let replacement = NovaAuthInstallationState(
-            version: 1, context: context, requiresUserAction: false, identity: identity
+            version: 1, context: context, requiresUserAction: state?.requiresUserAction ?? false, identity: identity,
+            recoveryCooldown: state?.recoveryCooldown, tokenRemovalOwed: state?.tokenRemovalOwed
         )
         try persist(replacement)
     }
@@ -122,6 +145,20 @@ public final class NovaAuth: NovaAuthClientProtocol {
             keyID: identity.keyID,
             registration: registration
         ), context: flight.context)
+    }
+
+    func reserveRecoveryDelay() throws {
+        guard var replacement = state else { throw NovaAuthError.generationChanged }
+        var cooldown = replacement.recoveryCooldown ?? NovaAuthCooldown()
+        cooldown.fail(now: try dependencies.clock.now(), random: dependencies.random.unitInterval(), retryAfter: 60)
+        replacement.recoveryCooldown = cooldown
+        try persist(replacement)
+    }
+
+    func retire(_ reason: NovaAuthRetirementReason, flight: NovaAuthIssuanceFlight) throws {
+        try reserveRecoveryDelay()
+        try setRegistration(.retired(reason), flight: flight)
+        NovaAuthDiagnostics.log(.identityRetired, logger: dependencies.logger)
     }
 
     func enqueue(_ action: @escaping () -> Void) {
@@ -202,10 +239,51 @@ private extension NovaAuth {
         guard state == nil else { return }
         do {
             state = try dependencies.identityStore.load()
+        } catch let error as NovaAuthIdentityStoreError {
+            throw error
         } catch {
             storageFailed = true
             throw NovaAuthError.storageUnavailable
         }
+    }
+
+    func retryStorageWork() throws {
+        do {
+            if let pendingStateWrite {
+                try dependencies.identityStore.save(pendingStateWrite)
+                self.pendingStateWrite = nil
+            }
+            if var replacement = state, replacement.tokenRemovalOwed == true {
+                try dependencies.tokenStore.removeAll()
+                replacement.tokenRemovalOwed = nil
+                try persist(replacement)
+            }
+            if storageFailed { NovaAuthDiagnostics.log(.storageRecovery, logger: dependencies.logger) }
+            storageFailed = false
+        } catch {
+            storageFailed = true
+            throw NovaAuthError.storageUnavailable
+        }
+    }
+
+    func repairCorruptState(origin: NovaAuthOrigin, requiresUserAction: Bool) throws {
+        let record: NovaAuthTokenRecord?
+        do { record = try dependencies.tokenStore.load() } catch { throw NovaAuthError.storageUnavailable }
+        let previous = record.flatMap { record -> UInt64? in
+            guard (try? NovaAuthStoredValidation.token(record)) != nil else { return nil }
+            return record.context.generation
+        } ?? 0
+        guard previous < UInt64.max else { throw NovaAuthError.invalidConfiguration }
+        dependencies.http.clearReadCache()
+        try persist(NovaAuthInstallationState(
+            version: 1,
+            context: NovaAuthContext(origin: origin, generation: previous + 1),
+            requiresUserAction: requiresUserAction,
+            identity: nil,
+            tokenRemovalOwed: true
+        ))
+        try retryStorageWork()
+        NovaAuthDiagnostics.log(.storageRecovery, logger: dependencies.logger)
     }
 
     func replaceContext(origin: NovaAuthOrigin) throws -> NovaAuthContext {
@@ -215,7 +293,8 @@ private extension NovaAuth {
             version: 1,
             context: NovaAuthContext(origin: origin, generation: previous + 1),
             requiresUserAction: true,
-            identity: nil
+            identity: nil,
+            tokenRemovalOwed: true
         )
         // The memory fence must survive even a failed persistent reset.
         state = replacement
@@ -223,23 +302,23 @@ private extension NovaAuth {
         if let flight {
             let callbacks = Array(flight.waiters.values)
             flight.waiters.removeAll()
-            if !flight.irreversible {
-                flight.cancelChild?()
-                self.flight = nil
-            }
+            self.flight = nil
+            if !flight.irreversible { flight.cancelChild?() }
             enqueue { callbacks.forEach { $0(.failure(NovaAuthError.generationChanged)) } }
         }
         issuanceCooldown.clear()
         originCooldown.clear()
+        businessCooldowns.clear()
         rejectedCredentials = NovaAuthRejectedCredentials()
         dependencies.http.clearReadCache()
         do {
             try persist(replacement)
-            try dependencies.tokenStore.removeAll()
+            try retryStorageWork()
         } catch {
             storageFailed = true
             throw NovaAuthError.storageUnavailable
         }
+        NovaAuthDiagnostics.log(.contextReplaced, logger: dependencies.logger)
         return replacement.context
     }
 }
@@ -251,6 +330,7 @@ final class NovaAuthIssuanceFlight {
     var irreversible = false
     var issuanceStart: NovaAuthTime?
     var pendingProbeReserved = false
+    var diagnosticPhase: NovaAuthDiagnostics.Phase = .registrationChallenge
     let sponsored: Bool
 
     init(context: NovaAuthContext, sponsored: Bool) {

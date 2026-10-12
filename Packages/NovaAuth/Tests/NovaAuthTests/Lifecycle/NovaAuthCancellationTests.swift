@@ -114,11 +114,13 @@ final class NovaAuthCancellationTests: LifecycleTestCase {
         wrapper.targetOperation.completionBlock = { done.fulfill() }
         harness.callers.addOperations(wrapper.allOperations, waitUntilFinished: false)
         wait(for: [began], timeout: 5)
+        let finished = observeCompletion(of: try XCTUnwrap(pending.operation))
         try auth.reset()
         wait(for: [done], timeout: 5)
-        let finished = observeFlight(auth)
+        XCTAssertNil(auth.gate.novaAuthLocked { auth.flight })
         pending.resolve(.success(Data([1])))
         wait(for: [finished], timeout: 5)
+        drain(harness.ownerQueue)
         XCTAssertNil(harness.identity.state?.identity)
         XCTAssertNil(try harness.tokens.load())
         XCTAssertEqual(harness.bootstrap.registrations.count, 0)
@@ -135,21 +137,54 @@ final class NovaAuthCancellationTests: LifecycleTestCase {
         let wrapper = auth.createAdmissionWrapper(in: context, intent: .userInitiated)
         harness.callers.addOperations(wrapper.allOperations, waitUntilFinished: false)
         wait(for: [began], timeout: 5)
+        let finished = observeCompletion(of: try XCTUnwrap(harness.bootstrap.lastOperation))
         try auth.reset()
-        let finished = observeFlight(auth)
         pending.resolve(.success(harness.bootstrap.tokenResult))
         wait(for: [finished], timeout: 5)
+        drain(harness.ownerQueue)
         XCTAssertNil(try harness.tokens.load())
         XCTAssertNil(harness.identity.state?.identity)
     }
 
-    func testAmbiguousAppleTimeoutRetiresKeyAndNeverSendsToken() throws {
+    func testNewOriginCanIssueBeforeOldUncancellableAssertionCompletes() throws {
+        let harness = try LifecycleHarness()
+        let (auth, original) = try harness.registered()
+        let pending = LifecyclePending<Data>()
+        let began = expectation(description: "old assertion running")
+        pending.onStart = { began.fulfill() }
+        harness.apple.assert = pending.wrapper
+        let wrapper = auth.createAdmissionWrapper(in: original, intent: .userInitiated)
+        harness.callers.addOperations(wrapper.allOperations, waitUntilFinished: false)
+        wait(for: [began], timeout: 5)
+        let completed = observeCompletion(of: try XCTUnwrap(pending.operation))
+
+        let next = try auth.activate(origin: NovaAuthOrigin("https://next.example.com"))
+        XCTAssertNil(auth.gate.novaAuthLocked { auth.flight })
+        harness.apple.assert = nil
+        try execute(auth.createAdmissionWrapper(in: next, intent: .userInitiated), on: harness.callers)
+        let currentIdentity = harness.identity.state?.identity
+        let currentToken = try XCTUnwrap(harness.tokens.load())
+        XCTAssertEqual(currentToken.context, next)
+        pending.resolve(.success(Data([1])))
+        wait(for: [completed], timeout: 5)
+        drain(harness.ownerQueue)
+        XCTAssertEqual(harness.identity.state?.identity, currentIdentity)
+        XCTAssertEqual(try harness.tokens.load(), currentToken)
+        XCTAssertEqual(harness.bootstrap.tokens.count, 1)
+    }
+
+    func testAssertionTimeoutPreservesKeyAndNeverSendsTimedOutProof() throws {
         let harness = try LifecycleHarness()
         let (auth, context) = try harness.registered()
         harness.apple.assert = { .createWithError(NovaAuthAppAttestError.timedOut) }
         assertError(.platformUnavailable, auth.createAdmissionWrapper(in: context, intent: .userInitiated), on: harness.callers)
-        XCTAssertEqual(harness.identity.state?.identity?.registration, .retired(.lostKey))
+        XCTAssertEqual(harness.identity.state?.identity?.registration, .registered)
         XCTAssertEqual(harness.bootstrap.tokens.count, 0)
+        harness.clock.advance(2)
+        harness.apple.assert = nil
+        try execute(auth.createAdmissionWrapper(in: context, intent: .background), on: harness.callers)
+        XCTAssertEqual(harness.apple.keys, 0)
+        XCTAssertEqual(harness.apple.attestations.count, 0)
     }
 
     func testResetAfterProofButBeforeQueuedTokenResumePreventsSend() throws {
@@ -167,10 +202,11 @@ final class NovaAuthCancellationTests: LifecycleTestCase {
         harness.bootstrapQueue.isSuspended = true
         pending.resolve(.success(Data([1])))
         wait(for: [queued], timeout: 5)
+        let finished = observeCompletion(of: try XCTUnwrap(harness.bootstrap.lastOperation))
         try auth.reset()
-        let finished = observeFlight(auth)
         harness.bootstrapQueue.isSuspended = false
         wait(for: [finished], timeout: 5)
+        drain(harness.ownerQueue)
         XCTAssertEqual(harness.bootstrap.tokens.count, 0)
         XCTAssertNil(try harness.tokens.load())
     }
@@ -186,10 +222,11 @@ final class NovaAuthCancellationTests: LifecycleTestCase {
         let wrapper = auth.createAdmissionWrapper(in: context, intent: .userInitiated)
         harness.callers.addOperations(wrapper.allOperations, waitUntilFinished: false)
         wait(for: [registering], timeout: 5)
+        let finished = observeCompletion(of: try XCTUnwrap(harness.bootstrap.lastOperation))
         try auth.reset()
-        let finished = observeFlight(auth)
         pending.resolve(.success(()))
         wait(for: [finished], timeout: 5)
+        drain(harness.ownerQueue)
         XCTAssertEqual(harness.bootstrap.tokenChallenges, 0)
         XCTAssertNil(harness.identity.state?.identity)
     }

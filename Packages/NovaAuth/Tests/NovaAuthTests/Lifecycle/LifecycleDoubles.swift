@@ -30,9 +30,14 @@ final class LifecycleIdentityStore: NovaAuthIdentityStoreProtocol {
     var state: NovaAuthInstallationState?
     var failSave = false
     var failLoad = false
+    var loadError: NovaAuthIdentityStoreError?
     var saves = 0
     func load() throws -> NovaAuthInstallationState? {
-        try lock.novaAuthLocked { if failLoad { throw NovaAuthError.storageUnavailable }; return state }
+        try lock.novaAuthLocked {
+            if failLoad { throw NovaAuthError.storageUnavailable }
+            if let loadError { throw loadError }
+            return state
+        }
     }
 
     func save(_ state: NovaAuthInstallationState) throws {
@@ -40,7 +45,14 @@ final class LifecycleIdentityStore: NovaAuthIdentityStoreProtocol {
             if failSave { throw NovaAuthError.storageUnavailable }
             saves += 1
             self.state = state
+            loadError = nil
         }
+    }
+
+    func markResetPending() throws {
+        if failSave { throw NovaAuthError.storageUnavailable }
+        state = nil
+        loadError = .resetPending
     }
 }
 
@@ -84,6 +96,7 @@ final class LifecyclePending<Value> {
     private var completion: ((Result<Value, Error>) -> Void)?
     var onStart: (() -> Void)?
     var cancelled = false
+    private(set) var operation: Operation?
     func start(_ completion: @escaping (Result<Value, Error>) -> Void) {
         lock.novaAuthLocked { self.completion = completion }
         onStart?()
@@ -103,6 +116,7 @@ final class LifecyclePending<Value> {
             operationClosure: { [self] in start($0) },
             cancelationClosure: { [self] in cancelled = true }
         )
+        self.operation = operation
         return CompoundOperationWrapper(targetOperation: operation)
     }
 }
@@ -146,6 +160,8 @@ final class LifecycleBootstrap: NovaAuthBootstrapProtocol {
     var onToken: ((@escaping (Result<NovaAuthTokenResponse, Error>) -> Void) -> Void)?
     var onTokenCreated: (() -> Void)?
     var onTokenChallengeCreated: (() -> Void)?
+    var tokenBeforeSendFailure: Error?
+    private(set) var lastOperation: Operation?
 
     func createRegistrationChallengeWrapper(
         origin _: NovaAuthOrigin,
@@ -186,6 +202,7 @@ final class LifecycleBootstrap: NovaAuthBootstrapProtocol {
         beforeSend: @escaping () throws -> Void
     ) -> CompoundOperationWrapper<NovaAuthTokenResponse> {
         onTokenCreated?()
+        if let tokenBeforeSendFailure { return .createWithError(tokenBeforeSendFailure) }
         return wrapper(beforeSend: beforeSend) { [self] completion in
             tokens.append(request)
             if let onToken { onToken(completion) } else { completion(.success(tokenResult)) }
@@ -199,6 +216,7 @@ final class LifecycleBootstrap: NovaAuthBootstrapProtocol {
         let operation = AsyncClosureOperation<Value>(operationClosure: { completion in
             do { try beforeSend(); call(completion) } catch { completion(.failure(error)) }
         }, cancelationClosure: {})
+        lastOperation = operation
         return CompoundOperationWrapper(targetOperation: operation)
     }
 }

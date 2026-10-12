@@ -9,6 +9,7 @@ extension NovaAuth: NovaAuthCredentialAuthority {
             try validate(context: request.context)
             let now = try dependencies.clock.now()
             try originCooldown.check(now: now)
+            try businessCooldowns.check(request: request, now: now)
             guard try usableToken(context: request.context, now: now) != nil else {
                 throw NovaAuthError.credentialUnavailable
             }
@@ -22,38 +23,28 @@ extension NovaAuth: NovaAuthCredentialAuthority {
         }
     }
 
-    func receive(_ result: Result<NovaAuthResponse, Error>, context: NovaAuthContext) throws {
+    func receive(_ result: Result<NovaAuthResponse, Error>, request: NovaAuthRequest) throws {
         try gate.novaAuthLocked {
-            try validate(context: context)
+            try validate(context: request.context)
             let now = try dependencies.clock.now()
-            switch result {
-            case let .success(response):
-                switch response.response.statusCode {
-                case 429:
-                    originCooldown.fail(
-                        now: now,
-                        random: dependencies.random.unitInterval(),
-                        retryAfter: NovaAuthWire.retryAfter(response.response) ?? 30
-                    )
-                case 503:
-                    originCooldown.fail(now: now, random: dependencies.random.unitInterval())
-                case 200 ..< 400:
-                    originCooldown.succeed(now: now)
-                default: break
-                }
-            case let .failure(error):
-                let safe = Self.safeError(error)
-                if case .transport = safe {
-                    originCooldown.fail(now: now, random: dependencies.random.unitInterval())
-                }
+            let retryAfter = businessCooldowns.receive(
+                result, request: request, now: now,
+                random: dependencies.random.unitInterval(), origin: &originCooldown
+            )
+            if let retryAfter {
+                NovaAuthDiagnostics.log(.cooldown, logger: dependencies.logger, retryAfter: retryAfter)
             }
         }
     }
 
-    func reject(record: NovaAuthTokenRecord, repeated: Bool, requestID _: String?) throws {
+    func reject(record: NovaAuthTokenRecord, repeated: Bool, requestID: String?) throws {
         try gate.novaAuthLocked {
             try validate(context: record.context)
             rejectedCredentials.reject(record)
+            NovaAuthDiagnostics.log(
+                repeated ? .bearerDeniedRepeated : .bearerRejected,
+                logger: dependencies.logger, requestID: requestID
+            )
             do {
                 try dependencies.tokenStore.remove(ifMatching: record)
             } catch { throw NovaAuthError.storageUnavailable }
@@ -61,5 +52,9 @@ extension NovaAuth: NovaAuthCredentialAuthority {
                 issuanceCooldown.fail(now: try dependencies.clock.now(), random: dependencies.random.unitInterval())
             }
         }
+    }
+
+    func recovered(requestID: String?) {
+        NovaAuthDiagnostics.log(.bearerRecovered, logger: dependencies.logger, requestID: requestID)
     }
 }

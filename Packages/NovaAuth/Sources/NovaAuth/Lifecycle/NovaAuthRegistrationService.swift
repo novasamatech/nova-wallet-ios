@@ -3,11 +3,28 @@ import CryptoKit
 
 extension NovaAuth {
     func prepareIdentity(context: NovaAuthContext, intent: NovaAuthRequestIntent) throws {
-        guard let state else { throw NovaAuthError.generationChanged }
+        guard var state else { throw NovaAuthError.generationChanged }
         if state.requiresUserAction, intent != .userInitiated { throw NovaAuthError.userActionRequired }
+        if state.requiresUserAction {
+            state.requiresUserAction = false
+            try persist(state)
+        }
         if let identity = state.identity {
             if case let .retired(reason) = identity.registration {
-                guard reason != .policyRefused, intent == .userInitiated else { throw NovaAuthError.userActionRequired }
+                if reason == .policyRefused {
+                    guard intent == .userInitiated else { throw NovaAuthError.userActionRequired }
+                    if identity.keyID != nil {
+                        try setIdentity(NovaAuthInstallationIdentity(
+                            clientID: identity.clientID, keyID: identity.keyID,
+                            registration: .registrationPending(NovaAuthPendingRegistration(
+                                startedAt: try dependencies.clock.now()
+                            ))
+                        ), context: context)
+                        return
+                    }
+                }
+                try reserveRecoveryDelay()
+                NovaAuthDiagnostics.log(.identityRecovered, logger: dependencies.logger)
             } else { return }
         }
         let clientID = dependencies.random.makeClientID()
@@ -28,7 +45,7 @@ extension NovaAuth {
             case let .appleDeferred(attempt):
                 try attest(attempt: attempt, flight: flight)
             case .appleInFlight:
-                try setRegistration(.retired(.unrecoverableRegistration), flight: flight)
+                try retire(.unrecoverableRegistration, flight: flight)
                 throw NovaAuthError.userActionRequired
             case .registrationPending, .registered:
                 try issue(flight: flight)
@@ -42,29 +59,27 @@ extension NovaAuth {
         guard case let NovaAuthError.bootstrap(server) = error else { return }
         guard let identity = state?.identity else { return }
         if server.code == "app_not_allowed" || server.code == "binding_not_allowed" {
-            try setRegistration(.retired(.policyRefused), flight: flight)
-            throw NovaAuthError.userActionRequired
+            return
         }
+        guard server.statusCode == 401, server.code == "unknown_client" else { return }
         if case let .registrationPending(pending) = identity.registration {
             let now = try dependencies.clock.now()
             let start = pending.startedAt
             let elapsed = now.continuousSeconds - start.continuousSeconds
-            let unknown = server.code == "unknown_client"
-            if unknown, start.bootID == now.bootID, elapsed >= 0, elapsed < 120, pending.probeCount < 8 { return }
-            let final = unknown || (400 ... 499).contains(server.statusCode) && server.statusCode != 429
-            if final {
-                try setRegistration(.retired(.unrecoverableRegistration), flight: flight)
-                throw NovaAuthError.userActionRequired
-            }
-        } else if server.code == "unknown_client" {
-            try setRegistration(.retired(.unrecoverableRegistration), flight: flight)
-            throw NovaAuthError.userActionRequired
+            let count = min(8, pending.unknownResponseCount + 1)
+            try setRegistration(.registrationPending(NovaAuthPendingRegistration(
+                startedAt: pending.startedAt, unknownResponseCount: count, cooldown: pending.cooldown
+            )), flight: flight)
+            if start.bootID == now.bootID, elapsed >= 0, elapsed < 120, count < 8 { return }
         }
+        try retire(.unrecoverableRegistration, flight: flight)
+        throw NovaAuthError.userActionRequired
     }
 }
 
 private extension NovaAuth {
     func createKey(flight: NovaAuthIssuanceFlight) {
+        flight.diagnosticPhase = .keyGeneration
         run(dependencies.appAttest.createKeyWrapper(), flight: flight) { [self] result in
             let keyID = try result.get()
             try NovaAuthValidation.keyID(keyID)
@@ -81,6 +96,7 @@ private extension NovaAuth {
     func challenge(flight: NovaAuthIssuanceFlight) throws {
         guard let identity = state?.identity, let keyID = identity.keyID else { throw NovaAuthError.keyUnavailable }
         let start = try dependencies.clock.now()
+        flight.diagnosticPhase = .registrationChallenge
         run(
             dependencies.bootstrap.createRegistrationChallengeWrapper(
                 origin: flight.context.origin,
@@ -113,8 +129,11 @@ private extension NovaAuth {
 
     func attest(attempt: NovaAuthRegistrationAttempt, flight: NovaAuthIssuanceFlight) throws {
         guard let identity = state?.identity, let keyID = identity.keyID else { throw NovaAuthError.keyUnavailable }
+        try validateAttemptAge(attempt, flight: flight)
         try setRegistration(.appleInFlight(attempt), flight: flight)
+        NovaAuthDiagnostics.log(.registrationStarted, logger: dependencies.logger)
         flight.irreversible = true
+        flight.diagnosticPhase = .attestation
         let wrapper = dependencies.appAttest.createAttestationWrapper(
             keyID: keyID, clientDataHash: attempt.clientDataHash
         )
@@ -126,17 +145,14 @@ private extension NovaAuth {
                 try setRegistration(.appleDeferred(attempt), flight: flight)
                 throw NovaAuthAppAttestError.serverUnavailable
             } catch {
-                try setRegistration(.retired(.unrecoverableRegistration), flight: flight)
+                try retire(.unrecoverableRegistration, flight: flight)
                 throw error
             }
+            try validateAttemptAge(attempt, flight: flight)
             let now = try dependencies.clock.now()
-            let age = now.continuousSeconds - attempt.startedAt.continuousSeconds
-            guard now.bootID == attempt.startedAt.bootID, age >= 0, age < 60 else {
-                try setRegistration(.retired(.unrecoverableRegistration), flight: flight)
-                throw NovaAuthError.userActionRequired
-            }
             try validateAttestationObject(object, flight: flight)
             try setRegistration(.registrationPending(NovaAuthPendingRegistration(startedAt: now)), flight: flight)
+            NovaAuthDiagnostics.log(.registrationPending, logger: dependencies.logger)
             let request = NovaAuthRegistrationRequest(
                 origin: flight.context.origin,
                 clientID: identity.clientID,
@@ -150,6 +166,7 @@ private extension NovaAuth {
                 request,
                 beforeSend: { [self] in try beforeBootstrapSend(flight: flight, registration: true) }
             )
+            flight.diagnosticPhase = .registration
             run(registerWrapper, flight: flight) { [self] result in
                 do {
                     try result.get()
@@ -165,16 +182,25 @@ private extension NovaAuth {
 
     func validateAttestationObject(_ object: Data, flight: NovaAuthIssuanceFlight) throws {
         guard !object.isEmpty, object.count <= 49152 else {
-            try setRegistration(.retired(.unrecoverableRegistration), flight: flight)
+            try retire(.unrecoverableRegistration, flight: flight)
             throw NovaAuthError.invalidResponse
+        }
+    }
+
+    func validateAttemptAge(_ attempt: NovaAuthRegistrationAttempt, flight: NovaAuthIssuanceFlight) throws {
+        let now = try dependencies.clock.now()
+        let age = now.continuousSeconds - attempt.startedAt.continuousSeconds
+        guard now.bootID == attempt.startedAt.bootID, age >= 0, age < 60 else {
+            try retire(.unrecoverableRegistration, flight: flight)
+            throw NovaAuthError.userActionRequired
         }
     }
 
     func handleRegistrationFailure(_ error: Error, flight: NovaAuthIssuanceFlight) throws {
         guard case let NovaAuthError.bootstrap(server) = error else { return }
-        if (400 ... 499).contains(server.statusCode), server.statusCode != 429, server.code != "invalid_proof" {
-            let policy = server.code == "app_not_allowed" || server.code == "binding_not_allowed"
-            try setRegistration(.retired(policy ? .policyRefused : .unrecoverableRegistration), flight: flight)
+        if (400 ... 499).contains(server.statusCode), server.statusCode != 429,
+           server.code != "invalid_proof", server.code != "app_not_allowed", server.code != "binding_not_allowed" {
+            try retire(.unrecoverableRegistration, flight: flight)
         }
     }
 }

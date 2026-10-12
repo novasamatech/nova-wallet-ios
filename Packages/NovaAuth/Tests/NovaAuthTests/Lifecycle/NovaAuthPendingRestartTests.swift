@@ -4,7 +4,7 @@ import NovaOperationSupport
 
 final class NovaAuthPendingRestartTests: LifecycleTestCase {
     private let unknownClient = NovaAuthError.bootstrap(NovaAuthServerError(
-        statusCode: 404, code: "unknown_client", requestID: nil, retryAfter: nil
+        statusCode: 401, code: "unknown_client", requestID: nil, retryAfter: nil
     ))
 
     func testSameBootRestartPreservesSevenProbesAndRemainingCooldown() throws {
@@ -16,7 +16,7 @@ final class NovaAuthPendingRestartTests: LifecycleTestCase {
             assertError(unknownClient, auth.createAdmissionWrapper(in: context, intent: .userInitiated), on: harness.callers)
         }
         let original = try pendingState(harness)
-        XCTAssertEqual(original.probeCount, 7)
+        XCTAssertEqual(original.unknownResponseCount, 7)
         harness.clock.advance(1)
         let restarted = harness.makeAuth()
         _ = try restarted.activate(origin: harness.origin)
@@ -28,7 +28,7 @@ final class NovaAuthPendingRestartTests: LifecycleTestCase {
         XCTAssertEqual(harness.bootstrap.tokenChallenges, 8)
         XCTAssertEqual(harness.identity.state?.identity?.registration, .retired(.unrecoverableRegistration))
         harness.clock.advance(31)
-        assertError(.userActionRequired, restarted.createAdmissionWrapper(in: context, intent: .background), on: harness.callers)
+        assertError(.cooldown(retryAfter: 29), restarted.createAdmissionWrapper(in: context, intent: .background), on: harness.callers)
         XCTAssertEqual(harness.apple.keys, 0)
     }
 
@@ -49,7 +49,7 @@ final class NovaAuthPendingRestartTests: LifecycleTestCase {
         XCTAssertEqual(harness.apple.attestations.count, 0)
     }
 
-    func testSentProbePersistsBudgetAndBackoffBeforeItsResultArrives() throws {
+    func testSentProbePersistsBackoffButOnlyObservedUnknownReplySpendsBudget() throws {
         let harness = try LifecycleHarness()
         let (auth, context) = try pending(harness)
         let response = LifecyclePending<NovaAuthChallenge>()
@@ -59,7 +59,7 @@ final class NovaAuthPendingRestartTests: LifecycleTestCase {
         let first = auth.createAdmissionWrapper(in: context, intent: .userInitiated)
         harness.callers.addOperations(first.allOperations, waitUntilFinished: false)
         wait(for: [sent], timeout: 5)
-        XCTAssertEqual(try pendingState(harness).probeCount, 1)
+        XCTAssertEqual(try pendingState(harness).unknownResponseCount, 0)
         XCTAssertEqual(try pendingState(harness).cooldown.deadline?.continuousSeconds, 101)
         first.cancel()
         response.resolve(.failure(unknownClient))
@@ -70,7 +70,7 @@ final class NovaAuthPendingRestartTests: LifecycleTestCase {
         harness.bootstrap.tokenChallengeResult = .failure(unknownClient)
         harness.clock.advance(1)
         assertError(unknownClient, restarted.createAdmissionWrapper(in: context, intent: .userInitiated), on: harness.callers)
-        XCTAssertEqual(try pendingState(harness).probeCount, 2)
+        XCTAssertEqual(try pendingState(harness).unknownResponseCount, 1)
         XCTAssertEqual(try pendingState(harness).cooldown.deadline?.continuousSeconds, 103)
         XCTAssertEqual(harness.bootstrap.tokenChallenges, 2)
     }
@@ -86,7 +86,7 @@ final class NovaAuthPendingRestartTests: LifecycleTestCase {
         harness.callers.addOperations(wrapper.allOperations, waitUntilFinished: false)
         wait(for: [queued], timeout: 5)
         wrapper.cancel()
-        XCTAssertEqual(try pendingState(harness).probeCount, 0)
+        XCTAssertEqual(try pendingState(harness).unknownResponseCount, 0)
         XCTAssertEqual(harness.bootstrap.tokenChallenges, 0)
     }
 
@@ -95,11 +95,11 @@ final class NovaAuthPendingRestartTests: LifecycleTestCase {
         let (auth, context) = try pending(harness)
         harness.identity.failSave = true
         assertError(.storageUnavailable, auth.createAdmissionWrapper(in: context, intent: .userInitiated), on: harness.callers)
-        XCTAssertEqual(try pendingState(harness).probeCount, 0)
+        XCTAssertEqual(try pendingState(harness).unknownResponseCount, 0)
         XCTAssertEqual(harness.bootstrap.tokenChallenges, 0)
     }
 
-    func testRestartWithEightReservedProbesCannotSendNinthEvenWithoutLastResult() throws {
+    func testPendingCountCannotBlockARecoveredBindingBeforeReceivingItsResponse() throws {
         let harness = try LifecycleHarness()
         let (auth, context) = try pending(harness)
         var cooldown = NovaAuthCooldown()
@@ -109,14 +109,15 @@ final class NovaAuthPendingRestartTests: LifecycleTestCase {
         try auth.gate.novaAuthLocked {
             try auth.setIdentity(NovaAuthInstallationIdentity(
                 clientID: identity.clientID, keyID: identity.keyID,
-                registration: .registrationPending(NovaAuthPendingRegistration(startedAt: now, probeCount: 8, cooldown: cooldown))
+                registration: .registrationPending(NovaAuthPendingRegistration(startedAt: now, unknownResponseCount: 8, cooldown: cooldown))
             ), context: context)
         }
         harness.clock.advance(31)
         let restarted = harness.makeAuth()
         _ = try restarted.activate(origin: harness.origin)
-        assertError(.userActionRequired, restarted.createAdmissionWrapper(in: context, intent: .userInitiated), on: harness.callers)
-        XCTAssertEqual(harness.bootstrap.tokenChallenges, 0)
+        try execute(restarted.createAdmissionWrapper(in: context, intent: .userInitiated), on: harness.callers)
+        XCTAssertEqual(harness.bootstrap.tokenChallenges, 1)
+        XCTAssertEqual(harness.identity.state?.identity?.registration, .registered)
         XCTAssertEqual(harness.apple.keys, 0)
     }
 
@@ -132,7 +133,7 @@ final class NovaAuthPendingRestartTests: LifecycleTestCase {
         harness.clock.advance(60)
         harness.bootstrap.tokenChallengeResult = .failure(unknownClient)
         assertError(unknownClient, restarted.createAdmissionWrapper(in: context, intent: .userInitiated), on: harness.callers)
-        XCTAssertEqual(try pendingState(harness).probeCount, 2)
+        XCTAssertEqual(try pendingState(harness).unknownResponseCount, 1)
         XCTAssertEqual(try pendingState(harness).cooldown.deadline?.continuousSeconds, 162)
     }
 

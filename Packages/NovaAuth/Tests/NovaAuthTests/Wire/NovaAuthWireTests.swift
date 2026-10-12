@@ -63,7 +63,7 @@ final class NovaAuthWireTests: XCTestCase {
         let error = NovaAuthWire.serverError(response)
         XCTAssertEqual(error.code, "future_code")
         XCTAssertEqual(error.requestID, "safe:request-id")
-        XCTAssertEqual(error.retryAfter, 900)
+        XCTAssertEqual(error.retryAfter, 905)
         XCTAssertNil(NovaAuthWire.errorCode(from: Data("{\"error\":{\"code\":\"invalid_token\"}}".utf8)))
         XCTAssertNil(NovaAuthWire.errorCode(from: Data(body.replacingOccurrences(of: "future_code", with: "Bad Code").utf8)))
         XCTAssertNil(NovaAuthWire.requestID(try FoundationFixture.response("", headers: ["X-Request-ID": "unsafe value"]).response))

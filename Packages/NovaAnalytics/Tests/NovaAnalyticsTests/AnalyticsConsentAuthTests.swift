@@ -107,4 +107,57 @@ final class AnalyticsConsentAuthTests: XCTestCase {
         analyticsQueue.waitUntilAllOperationsAreFinished()
         operationQueue.waitUntilAllOperationsAreFinished()
     }
+
+    func testOnlyActualConsentEnableRequestsUserInitiatedAdmissionAndUploadsStayBackground() {
+        let settings = makeSettings(isConsentEnabled: false)
+        let facade = makeFacade(settings: settings)
+        facade.setup()
+        drainQueues()
+        XCTAssertTrue(authClient.admissions.isEmpty)
+
+        let admitted = expectation(description: "consent action admits shared auth")
+        authClient.onAdmission = { admitted.fulfill() }
+        facade.consent.setEnabled(true)
+        wait(for: [admitted], timeout: 5)
+        drainQueues()
+        authClient.onAdmission = nil
+        XCTAssertEqual(authClient.admissions, [.userInitiated])
+
+        facade.consent.setEnabled(true)
+        facade.didReceiveWillEnterForeground(notification: Notification(name: Notification.Name("test")))
+        facade.flush(reason: .manual)
+        drainQueues()
+        XCTAssertEqual(authClient.admissions, [.userInitiated])
+        XCTAssertTrue(authClient.requests.allSatisfy { $0.intent == .background })
+        facade.throttle()
+    }
+
+    func testAlreadyEnabledConsentAtSetupDoesNotAuthorizeRecovery() {
+        let facade = makeFacade(settings: makeSettings(isConsentEnabled: true))
+        facade.setup()
+        drainQueues()
+        XCTAssertTrue(authClient.admissions.isEmpty)
+        facade.throttle()
+    }
+
+    func testWithdrawalAndThrottleCancelUnresolvedConsentRecovery() {
+        for throttle in [false, true] {
+            let queue = OperationQueue()
+            queue.isSuspended = true
+            var enabled = true
+            let client = AnalyticsAuthClientSpy()
+            let recovery = AnalyticsConsentAuthRecovery(
+                provider: AnalyticsAuthSourceStub(auth: analyticsTestAuth(client)),
+                operationQueue: queue,
+                isConsentEnabled: { enabled }
+            )
+            recovery.setActive(true)
+            recovery.enableConsent()
+            if throttle { recovery.setActive(false) }
+            else { enabled = false; recovery.cancel() }
+            queue.isSuspended = false
+            queue.waitUntilAllOperationsAreFinished()
+            XCTAssertTrue(client.admissions.isEmpty)
+        }
+    }
 }

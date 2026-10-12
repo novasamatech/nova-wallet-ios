@@ -20,7 +20,7 @@ struct NovaAuthCooldown: Codable, Equatable {
         let jitter = random.isFinite ? min(1, max(0, random)) : 1
         let previousFailures = repeatingLastFailure ? max(0, failures - 1) : failures
         let fallback = sequence[min(previousFailures, sequence.count - 1)] + jitter
-        let delay = retryAfter.flatMap { $0.isFinite && $0 >= 0 ? min(900, max(1, $0)) : nil } ?? fallback
+        let delay = retryAfter.flatMap { $0.isFinite && $0 >= 0 ? min(905, max(1, $0)) : nil } ?? fallback
         failures = min(previousFailures + 1, sequence.count)
         let next = now.continuousSeconds + delay
         if deadline?.bootID != now.bootID || (deadline?.continuousSeconds ?? 0) < next {

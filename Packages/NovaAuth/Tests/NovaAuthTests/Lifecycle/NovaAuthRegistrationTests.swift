@@ -65,4 +65,23 @@ final class NovaAuthRegistrationTests: LifecycleTestCase {
         assertError(.storageUnavailable, auth.createAdmissionWrapper(in: context, intent: .userInitiated), on: harness.callers)
         XCTAssertEqual(harness.apple.keys, 0)
     }
+
+    func testTokenFailureBeforeSendPreservesOriginalErrorWithoutIssuanceClockSample() throws {
+        let harness = try LifecycleHarness()
+        let (auth, context) = try harness.registered()
+        harness.bootstrap.tokenBeforeSendFailure = NovaAuthError.cancelled
+        assertError(.cancelled, auth.createAdmissionWrapper(in: context, intent: .background), on: harness.callers)
+        XCTAssertEqual(harness.bootstrap.tokens.count, 0)
+    }
+
+    func testAdmissionReplacesRejectedBearerEvenWhenDeletingItFailed() throws {
+        let harness = try LifecycleHarness()
+        let (auth, context) = try harness.registered(withToken: true)
+        let rejected = try XCTUnwrap(harness.tokens.load())
+        harness.tokens.failRemove = true
+        auth.gate.novaAuthLocked { auth.rejectedCredentials.reject(rejected) }
+        try execute(auth.createAdmissionWrapper(in: context, intent: .background), on: harness.callers)
+        XCTAssertEqual(harness.bootstrap.tokens.count, 1)
+        XCTAssertNotEqual(try harness.tokens.load()?.accessToken, rejected.accessToken)
+    }
 }

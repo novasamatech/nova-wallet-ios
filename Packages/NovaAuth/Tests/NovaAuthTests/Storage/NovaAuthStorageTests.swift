@@ -44,20 +44,17 @@ final class NovaAuthStorageTests: XCTestCase {
         XCTAssertThrowsError(try failing.save(state)) { XCTAssertEqual($0 as? NovaAuthError, .storageUnavailable) }
     }
 
-    func testKeychainEveryQueryIsScopedAndAllAccessIsLocked() throws {
-        let lock = FoundationTestFileLock()
-        let security = FoundationTestSecurity(lock: lock)
-        let store = try makeStore(security: security, lock: lock)
+    func testKeychainEveryQueryIsScopedAndRecordAndFingerprintAreWrittenTogether() throws {
+        let security = FoundationTestSecurity()
+        let store = try makeStore(security: security)
         let record = try FoundationFixture.record()
         XCTAssertNil(try store.load())
         try store.replace(record)
-        XCTAssertTrue(try store.load() == record)
+        XCTAssertEqual(try store.load(), record)
         try store.replace(FoundationFixture.record(token: "replacement"))
         XCTAssertFalse(try store.remove(ifMatching: record))
         try store.removeAll()
         XCTAssertEqual(security.events.filter { $0.0 == "add" }.count, 1)
-        XCTAssertEqual(security.events.filter { $0.0 == "update" }.count, 2)
-        XCTAssertEqual(security.events.filter { $0.0 == "delete" }.count, 1)
         for (_, query) in security.events {
             XCTAssertEqual(query[kSecClass as String] as? String, kSecClassGenericPassword as String)
             XCTAssertEqual(query[kSecAttrService as String] as? String, "io.novawallet.novaauth.profile3.io.nova.wallet")
@@ -67,75 +64,86 @@ final class NovaAuthStorageTests: XCTestCase {
         }
         for attributes in security.attributes {
             XCTAssertEqual(attributes[kSecAttrAccessible as String] as? String, kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly as String)
+            XCTAssertNotNil(attributes[kSecValueData as String] as? Data)
+            XCTAssertEqual((attributes[kSecAttrGeneric as String] as? Data)?.count, 32)
         }
-        XCTAssertFalse(security.sawUnlockedCall)
-        XCTAssertEqual(lock.depth, 0)
     }
 
-    func testOldExtensionRejectionCannotRemoveMainReplacement() throws {
-        let lock = FoundationTestFileLock()
-        let security = FoundationTestSecurity(lock: lock)
-        let main = try makeStore(security: security, lock: lock)
-        let reader = try makeStore(security: security, lock: lock)
+    func testReplacementAtDeleteBoundarySurvivesOldExtensionRejection() throws {
+        let security = FoundationTestSecurity()
+        let main = try makeStore(security: security)
+        let reader = try makeStore(security: security)
         let old = try FoundationFixture.record()
         let new = try FoundationFixture.record(token: "new-synthetic-token")
         try main.replace(old)
         let sent = try XCTUnwrap(reader.load())
-        try main.replace(new)
+        security.beforeDelete = { try main.replace(new) }
         XCTAssertFalse(try reader.remove(ifMatching: sent))
-        XCTAssertTrue(try main.load() == new)
+        XCTAssertEqual(try main.load(), new)
         XCTAssertTrue(try reader.remove(ifMatching: new))
         XCTAssertNil(try main.load())
     }
 
-    func testCorruptRecordCleanupUsesLockButDeniedReadNeverDeletes() throws {
-        let lock = FoundationTestFileLock()
-        let security = FoundationTestSecurity(lock: lock)
-        let store = try makeStore(security: security, lock: lock)
+    func testCorruptSnapshotNeverDeletesReplacementAndDeniedReadNeverDeletes() throws {
+        let security = FoundationTestSecurity()
+        let store = try makeStore(security: security)
+        let new = try FoundationFixture.record(token: "new-synthetic-token")
         try store.replace(FoundationFixture.record())
         security.setData(Data("malformed".utf8), matching: try XCTUnwrap(security.events.last?.1))
+        security.afterCopy = { try store.replace(new) }
         XCTAssertNil(try store.load())
-        XCTAssertEqual(security.events.last?.0, "delete")
-        XCTAssertFalse(security.sawUnlockedCall)
+        XCTAssertEqual(try store.load(), new)
+        XCTAssertFalse(security.events.contains { $0.0 == "delete" })
         security.events.removeAll()
         security.readStatus = errSecInteractionNotAllowed
         XCTAssertThrowsError(try store.load())
         XCTAssertEqual(security.events.map(\.0), ["copy"])
-        security.readStatus = nil
+    }
+
+    func testLegacyRecordRemainsReadableButOldRemovalCannotEraseTaggedRenewal() throws {
+        let security = FoundationTestSecurity()
+        let store = try makeStore(security: security)
+        let record = try FoundationFixture.record()
+        try store.replace(record)
+        let query = try XCTUnwrap(security.events.last?.1)
+        security.clearFingerprint(matching: query)
+        XCTAssertEqual(try store.load(), record)
+        XCTAssertFalse(try store.remove(ifMatching: record))
+        try store.replace(record)
+        XCTAssertTrue(try store.remove(ifMatching: record))
+    }
+
+    func testSameRecordHasStableFingerprintAndDifferentMetadataCannotRemoveIt() throws {
+        let security = FoundationTestSecurity()
+        let store = try makeStore(security: security)
+        let record = try FoundationFixture.record()
+        try store.replace(record)
+        let first = try XCTUnwrap(security.attributes.last?[kSecAttrGeneric as String] as? Data)
+        try store.replace(record)
+        XCTAssertEqual(security.attributes.last?[kSecAttrGeneric as String] as? Data, first)
+        let next = NovaAuthTokenRecord(
+            version: record.version,
+            context: NovaAuthContext(origin: record.context.origin, generation: record.context.generation + 1),
+            flow: record.flow, clientID: record.clientID, accessToken: record.accessToken,
+            issuedAt: record.issuedAt, expiresAt: record.expiresAt, issuanceStart: record.issuanceStart,
+            earlyRefreshSeconds: record.earlyRefreshSeconds
+        )
+        try store.replace(next)
+        XCTAssertFalse(try store.remove(ifMatching: record))
+        XCTAssertEqual(try store.load(), next)
+    }
+
+    func testUnavailableUpdateAndDuplicateAddFailWithoutBlindRetry() throws {
+        let security = FoundationTestSecurity()
+        let store = try makeStore(security: security)
         security.updateStatus = errSecInteractionNotAllowed
         XCTAssertThrowsError(try store.replace(FoundationFixture.record()))
-        XCTAssertTrue(security.records.isEmpty)
-    }
-
-    func testLockFailureNeverTouchesKeychainAndAlwaysUnlocksAfterThrow() throws {
-        let lock = FoundationTestFileLock()
-        let security = FoundationTestSecurity(lock: lock)
-        let store = try makeStore(security: security, lock: lock)
-        lock.fail = true
-        XCTAssertThrowsError(try store.load())
+        XCTAssertEqual(security.events.map(\.0), ["update"])
+        security.events.removeAll()
+        security.updateStatus = errSecItemNotFound
+        security.addStatus = errSecDuplicateItem
         XCTAssertThrowsError(try store.replace(FoundationFixture.record()))
-        XCTAssertThrowsError(try store.removeAll())
-        XCTAssertTrue(security.events.isEmpty)
-        lock.fail = false
-        security.readStatus = errSecMissingEntitlement
-        XCTAssertThrowsError(try store.load())
-        XCTAssertEqual(lock.depth, 0)
-    }
-
-    func testIndependentFileHandlesContendWithBoundedFailureAndRelease() throws {
-        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-        defer { try? FileManager.default.removeItem(at: directory) }
-        let first = NovaAuthFileLock(containerURL: directory)
-        let second = NovaAuthFileLock(containerURL: directory, timeout: 0.01)
-        try first.withLock {
-            XCTAssertThrowsError(try second.withLock { XCTFail("must not enter contended lock") })
-        }
-        XCTAssertNoThrow(try second.withLock {})
-        XCTAssertThrowsError(try first.withLock { throw NovaAuthError.invalidResponse })
-        XCTAssertNoThrow(try second.withLock {})
-        let path = directory.appendingPathComponent("NovaAuth/profile3.lock").path
-        let permissions = try FileManager.default.attributesOfItem(atPath: path)[.posixPermissions] as? Int
-        XCTAssertEqual(permissions, 0o600)
+        XCTAssertEqual(security.events.map(\.0), ["update", "add"])
     }
 
     func testSensitiveRecordReflectionIsRedacted() throws {
@@ -145,79 +153,82 @@ final class NovaAuthStorageTests: XCTestCase {
         XCTAssertTrue(Mirror(reflecting: record).children.isEmpty)
     }
 
-    private func makeStore(security: FoundationTestSecurity, lock: FoundationTestFileLock) throws -> NovaAuthKeychainTokenStore {
+    private func makeStore(security: FoundationTestSecurity) throws -> NovaAuthKeychainTokenStore {
         NovaAuthKeychainTokenStore(
             configuration: try NovaAuthSharedStoreConfiguration(
                 accessGroup: "group.test.novaauth",
                 containerURL: FileManager.default.temporaryDirectory,
                 hostAppNamespace: "io.nova.wallet"
             ),
-            security: security,
-            fileLock: lock
+            security: security
         )
     }
 }
 
-final class FoundationTestFileLock: NovaAuthFileLockProtocol {
-    var depth = 0
-    var fail = false
-    func withLock<T>(_ body: () throws -> T) throws -> T {
-        if fail { throw NovaAuthError.storageUnavailable }
-        depth += 1
-        defer { depth -= 1 }
-        return try body()
-    }
-}
-
 final class FoundationTestSecurity: NovaAuthSecurityProtocol {
-    let lock: FoundationTestFileLock
     private(set) var records: [[String]: Data] = [:]
+    private var fingerprints: [[String]: Data] = [:]
     var readStatus: OSStatus?
     var updateStatus: OSStatus?
-    var sawUnlockedCall = false
+    var addStatus: OSStatus?
+    var beforeDelete: (() throws -> Void)?
+    var afterCopy: (() throws -> Void)?
     var events: [(String, [String: Any])] = []
     var attributes: [[String: Any]] = []
-    init(lock: FoundationTestFileLock) { self.lock = lock }
-    func record(_ action: String, _ query: [String: Any]) {
-        sawUnlockedCall = sawUnlockedCall || lock.depth != 1
-        events.append((action, query))
-    }
 
     func copy(_ query: [String: Any]) -> (OSStatus, Data?) {
-        record("copy", query)
+        events.append(("copy", query))
         guard let key = itemKey(query) else { return (errSecParam, nil) }
         let data = records[key]
+        let callback = afterCopy
+        afterCopy = nil
+        do { try callback?() } catch { XCTFail("copy boundary mutation failed: \(error)") }
         return (readStatus ?? (data == nil ? errSecItemNotFound : errSecSuccess), data)
     }
 
     func add(_ query: [String: Any]) -> OSStatus {
-        record("add", query)
+        events.append(("add", query))
         attributes.append(query)
+        if let addStatus { return addStatus }
         guard let key = itemKey(query), let data = query[kSecValueData as String] as? Data else { return errSecParam }
         guard records[key] == nil else { return errSecDuplicateItem }
         records[key] = data
+        fingerprints[key] = query[kSecAttrGeneric as String] as? Data
         return errSecSuccess
     }
 
     func update(_ query: [String: Any], attributes: [String: Any]) -> OSStatus {
-        record("update", query)
+        events.append(("update", query))
         self.attributes.append(attributes)
         if let updateStatus { return updateStatus }
         guard let key = itemKey(query), let data = attributes[kSecValueData as String] as? Data else { return errSecParam }
         guard records[key] != nil else { return errSecItemNotFound }
         records[key] = data
+        fingerprints[key] = attributes[kSecAttrGeneric as String] as? Data
         return errSecSuccess
     }
 
     func delete(_ query: [String: Any]) -> OSStatus {
-        record("delete", query)
+        events.append(("delete", query))
+        let callback = beforeDelete
+        beforeDelete = nil
+        do { try callback?() } catch { XCTFail("delete boundary mutation failed: \(error)") }
         guard let key = itemKey(query) else { return errSecParam }
+        if let expected = query[kSecAttrGeneric as String] as? Data, fingerprints[key] != expected {
+            return errSecItemNotFound
+        }
+        fingerprints.removeValue(forKey: key)
         return records.removeValue(forKey: key) == nil ? errSecItemNotFound : errSecSuccess
     }
 
     func setData(_ data: Data, matching query: [String: Any]) {
         guard let key = itemKey(query) else { return XCTFail("Incomplete Keychain query") }
         records[key] = data
+    }
+
+    func clearFingerprint(matching query: [String: Any]) {
+        guard let key = itemKey(query) else { return XCTFail("Incomplete Keychain query") }
+        fingerprints.removeValue(forKey: key)
     }
 
     private func itemKey(_ query: [String: Any]) -> [String]? {

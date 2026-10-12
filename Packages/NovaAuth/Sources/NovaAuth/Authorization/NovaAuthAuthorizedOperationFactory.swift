@@ -11,8 +11,9 @@ protocol NovaAuthCredentialAuthority: AnyObject {
         completion: @escaping (Result<NovaAuthTokenRecord, Error>) -> Void
     )
     func checkSend(request: NovaAuthRequest, record: NovaAuthTokenRecord) throws
-    func receive(_ result: Result<NovaAuthResponse, Error>, context: NovaAuthContext) throws
+    func receive(_ result: Result<NovaAuthResponse, Error>, request: NovaAuthRequest) throws
     func reject(record: NovaAuthTokenRecord, repeated: Bool, requestID: String?) throws
+    func recovered(requestID: String?)
 }
 
 final class NovaAuthAuthorizedOperationFactory {
@@ -44,6 +45,8 @@ private final class NovaAuthBusinessExchange {
     let cancellation: NovaAuthCancellation
     let beforeSend: () throws -> Void
     let completion: (Result<NovaAuthResponse, Error>) -> Void
+    private var readmitted = false
+    private var recoveryRequestID: String?
 
     init(
         owner: NovaAuthCredentialAuthority,
@@ -78,32 +81,61 @@ private final class NovaAuthBusinessExchange {
         let kind: NovaAuthHTTPKind = request.method == .post ? .businessPost : .businessRead
         let wrapper = owner.http.createResponseWrapper(for: urlRequest, kind: kind) { [self] in
             try cancellation.check()
-            try owner.checkSend(request: request, record: record)
-            try beforeSend()
+            try checkCredential(record)
+            do { try beforeSend() }
+            catch { throw NovaAuthCallerAbort(underlying: error) }
             try cancellation.check()
-            try owner.checkSend(request: request, record: record)
+            try checkCredential(record)
         }
-        cancellation.install { wrapper.cancel() }
         let target = wrapper.targetOperation
         target.completionBlock = { [self, weak target] in
             let result = target?.result ?? .failure(NovaAuthError.cancelled)
             target?.completionBlock = nil
             do {
                 try cancellation.check()
-                try owner.receive(result, context: request.context)
+                if case let .failure(error) = result {
+                    if let abort = error as? NovaAuthCallerAbort {
+                        finish(.failure(abort.underlying))
+                        return
+                    }
+                    if error is NovaAuthUnsentCredential {
+                        guard !readmitted else { throw NovaAuthError.credentialUnavailable }
+                        readmitted = true
+                        admit(repeated: repeated)
+                        return
+                    }
+                }
+                try owner.receive(result, request: request)
                 let response = try result.get()
                 if NovaAuthBearerDenial.isInvalidToken(response, request: request) {
                     let requestID = NovaAuthWire.requestID(response.response)
                     try owner.reject(record: record, repeated: repeated, requestID: requestID)
                     if repeated { throw NovaAuthError.authorizationDenied(requestID: requestID) }
+                    recoveryRequestID = requestID
                     admit(repeated: true)
-                } else { finish(.success(response)) }
+                } else {
+                    if repeated, (200 ..< 400).contains(response.response.statusCode) {
+                        owner.recovered(requestID: recoveryRequestID)
+                    }
+                    finish(.success(response))
+                }
             } catch { finish(.failure(NovaAuth.safeError(error))) }
         }
-        owner.requestQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+        try cancellation.enqueue(wrapper, on: owner.requestQueue)
+    }
+
+    private func checkCredential(_ record: NovaAuthTokenRecord) throws {
+        do { try owner.checkSend(request: request, record: record) }
+        catch NovaAuthError.credentialUnavailable { throw NovaAuthUnsentCredential() }
     }
 
     func finish(_ result: Result<NovaAuthResponse, Error>) {
         if !cancellation.isCancelled { completion(result) }
     }
 }
+
+private struct NovaAuthCallerAbort: Error {
+    let underlying: Error
+}
+
+private struct NovaAuthUnsentCredential: Error {}
