@@ -69,22 +69,68 @@ final class NovaAuthBusinessExchangeTests: LifecycleTestCase {
     }
 
     func testFastCompletionCannotReplaceNewChildCancellationWithOldAction() throws {
-        let cancellation = NovaAuthCancellation()
-        let queue = OperationQueue()
+        let ownershipLock = NSLock()
+        let cancellation = NovaAuthCancellation(lock: ownershipLock)
+        let secondEnqueueAttempted = DispatchSemaphore(value: 0)
+        let secondEnqueued = DispatchSemaphore(value: 0)
+        let queue = CancellationOwnershipQueue(
+            ownershipLock: ownershipLock,
+            secondEnqueueAttempted: secondEnqueueAttempted,
+            secondEnqueued: secondEnqueued
+        )
         let secondStarted = expectation(description: "second child starts")
-        let secondCancelled = expectation(description: "second child owns cancellation")
+        let secondOwned = expectation(description: "second enqueue returns")
         let second = AsyncClosureOperation<Void>(operationClosure: { _ in
             secondStarted.fulfill()
-        }, cancelationClosure: { secondCancelled.fulfill() })
+        })
+        defer { second.cancel() }
         let first = ClosureOperation<Void> {}
         first.completionBlock = {
+            secondEnqueueAttempted.signal()
             do { try cancellation.enqueue(CompoundOperationWrapper(targetOperation: second), on: queue) }
             catch { XCTFail("unexpected cancellation") }
+            secondEnqueued.signal()
+            secondOwned.fulfill()
         }
         try cancellation.enqueue(CompoundOperationWrapper(targetOperation: first), on: queue)
-        wait(for: [secondStarted], timeout: 5)
+        wait(for: [secondStarted, secondOwned], timeout: 5)
         cancellation.cancel()
-        wait(for: [secondCancelled], timeout: 5)
+        XCTAssertTrue(second.isCancelled)
+    }
+}
+
+private final class CancellationOwnershipQueue: OperationQueue, @unchecked Sendable {
+    private let ownershipLock: NSLock
+    private let secondEnqueueAttempted: DispatchSemaphore
+    private let secondEnqueued: DispatchSemaphore
+    private let submissionLock = NSLock()
+    private var submissions = 0
+
+    init(
+        ownershipLock: NSLock,
+        secondEnqueueAttempted: DispatchSemaphore,
+        secondEnqueued: DispatchSemaphore
+    ) {
+        self.ownershipLock = ownershipLock
+        self.secondEnqueueAttempted = secondEnqueueAttempted
+        self.secondEnqueued = secondEnqueued
+        super.init()
+    }
+
+    override func addOperations(_ operations: [Operation], waitUntilFinished wait: Bool) {
+        let first = submissionLock.novaAuthLocked {
+            submissions += 1
+            return submissions == 1
+        }
+        guard first else {
+            super.addOperations(operations, waitUntilFinished: wait)
+            return
+        }
+        let canOverlap = ownershipLock.try()
+        if canOverlap { ownershipLock.unlock() }
+        super.addOperations(operations, waitUntilFinished: wait)
+        let checkpoint = canOverlap ? secondEnqueued : secondEnqueueAttempted
+        XCTAssertEqual(checkpoint.wait(timeout: .now() + 5), .success)
     }
 }
 
