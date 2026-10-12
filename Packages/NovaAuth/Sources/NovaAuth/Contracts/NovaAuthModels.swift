@@ -96,7 +96,17 @@ enum NovaAuthRegistrationState: Codable, Equatable {
     case retired(NovaAuthRetirementReason)
 }
 
-enum NovaAuthRetirementReason: String, Codable { case lostKey, unrecoverableRegistration, policyRefused }
+enum NovaAuthRetirementReason: String, Codable {
+    case lostKey, interrupted, registrationRefused, registrationAbandoned
+    case unrecoverableRegistration, policyRefused
+
+    var requiresUserAction: Bool {
+        switch self {
+        case .lostKey, .interrupted: return false
+        case .registrationRefused, .registrationAbandoned, .unrecoverableRegistration, .policyRefused: return true
+        }
+    }
+}
 struct NovaAuthTokenRecord: Codable, Equatable {
     let version: Int
     let context: NovaAuthContext
