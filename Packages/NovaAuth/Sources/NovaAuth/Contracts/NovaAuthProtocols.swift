@@ -14,6 +14,7 @@ protocol NovaAuthRandomProtocol {
 
 protocol NovaAuthAppAttestProtocol: AnyObject {
     var isSupported: Bool { get }
+    func isBusy(keyID: String) -> Bool
     func createKeyWrapper() -> CompoundOperationWrapper<String>
     func createAttestationWrapper(keyID: String, clientDataHash: Data) -> CompoundOperationWrapper<Data>
     func createAssertionWrapper(keyID: String, clientDataHash: Data) -> CompoundOperationWrapper<Data>

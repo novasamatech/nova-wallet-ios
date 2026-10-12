@@ -43,10 +43,10 @@ extension NovaAuth {
         } else {
             issuanceCooldown.fail(now: now, random: random, retryAfter: retryAfter)
         }
-        NovaAuthDiagnostics.log(
-            .cooldown,
-            logger: dependencies.logger,
-            retryAfter: issuanceCooldown.deadline.map { max(0, $0.continuousSeconds - now.continuousSeconds) }
+        NovaAuthDiagnostics.cooldown(
+            scope: .shared,
+            delay: issuanceCooldown.deadline.map { .bounded(max(0, $0.continuousSeconds - now.continuousSeconds)) },
+            logger: dependencies.logger
         )
     }
 }

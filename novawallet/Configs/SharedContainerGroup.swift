@@ -13,13 +13,11 @@ enum SharedContainerGroup {
 
 extension SharedContainerGroup {
     static var novaAuthStore: NovaAuthSharedStoreConfiguration? {
-        guard let hostAppNamespace = Bundle.main.object(forInfoDictionaryKey: "NovaAuthHostAppNamespace") as? String,
-              let directory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: name) else {
+        guard let hostAppNamespace = Bundle.main.object(forInfoDictionaryKey: "NovaAuthHostAppNamespace") as? String else {
             return nil
         }
         return try? NovaAuthSharedStoreConfiguration(
             accessGroup: name,
-            containerURL: directory,
             hostAppNamespace: hostAppNamespace
         )
     }

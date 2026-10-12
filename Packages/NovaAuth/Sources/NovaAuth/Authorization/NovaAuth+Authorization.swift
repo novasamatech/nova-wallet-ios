@@ -27,12 +27,14 @@ extension NovaAuth: NovaAuthCredentialAuthority {
         try gate.novaAuthLocked {
             try validate(context: request.context)
             let now = try dependencies.clock.now()
-            let retryAfter = businessCooldowns.receive(
+            let applied = businessCooldowns.receive(
                 result, request: request, now: now,
                 random: dependencies.random.unitInterval(), origin: &originCooldown
             )
-            if let retryAfter {
-                NovaAuthDiagnostics.log(.cooldown, logger: dependencies.logger, retryAfter: retryAfter)
+            if let applied {
+                NovaAuthDiagnostics.cooldown(
+                    scope: applied.scope, delay: .bounded(applied.retryAfter), logger: dependencies.logger
+                )
             }
         }
     }
@@ -46,12 +48,26 @@ extension NovaAuth: NovaAuthCredentialAuthority {
                 logger: dependencies.logger, requestID: requestID
             )
             if repeated {
-                issuanceCooldown.fail(now: try dependencies.clock.now(), random: dependencies.random.unitInterval())
+                let now = try dependencies.clock.now()
+                issuanceCooldown.fail(now: now, random: dependencies.random.unitInterval())
+                NovaAuthDiagnostics.cooldown(
+                    scope: .shared,
+                    delay: issuanceCooldown.deadline.map { .bounded(max(0, $0.continuousSeconds - now.continuousSeconds)) },
+                    logger: dependencies.logger
+                )
             }
-            do {
-                try dependencies.tokenStore.remove(ifMatching: record)
-            } catch { throw NovaAuthError.storageUnavailable }
+            try removeRejectedOrInvalidToken(record)
         }
+    }
+
+    // The sole writer holds its gate across this fallback for an untagged legacy record.
+    func removeRejectedOrInvalidToken(_ record: NovaAuthTokenRecord) throws {
+        do {
+            let removed = try dependencies.tokenStore.remove(ifMatching: record)
+            if !removed, try dependencies.tokenStore.load() == record {
+                try dependencies.tokenStore.removeAll()
+            }
+        } catch { throw NovaAuthError.storageUnavailable }
     }
 
     func recovered(requestID: String?) {

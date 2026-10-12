@@ -66,9 +66,7 @@ extension NovaAuth {
             _ = try NovaAuthTokenValidation.remaining(record, context: context, clientID: clientID, now: now)
             return record
         } catch {
-            do {
-                try dependencies.tokenStore.remove(ifMatching: record)
-            } catch { throw NovaAuthError.storageUnavailable }
+            try removeRejectedOrInvalidToken(record)
             return nil
         }
     }
@@ -76,6 +74,7 @@ extension NovaAuth {
     func issue(flight: NovaAuthIssuanceFlight) throws {
         guard let identity = state?.identity, let keyID = identity.keyID else { throw NovaAuthError.keyUnavailable }
         flight.diagnosticPhase = .tokenChallenge
+        guard !dependencies.appAttest.isBusy(keyID: keyID) else { throw NovaAuthAppAttestError.serverUnavailable }
         let wrapper = dependencies.bootstrap.createTokenChallengeWrapper(
             origin: flight.context.origin,
             clientID: identity.clientID,

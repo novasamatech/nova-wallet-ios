@@ -5,7 +5,13 @@ public final class NovaAuth: NovaAuthClientProtocol {
     let dependencies: NovaAuthDependencies
     let gate = NSLock()
     var state: NovaAuthInstallationState?
-    var storageFailed = false
+    var storageFailed = false {
+        didSet {
+            if storageFailed, !oldValue {
+                NovaAuthDiagnostics.log(.storageFailed, logger: dependencies.logger)
+            }
+        }
+    }
     private var pendingStateWrite: NovaAuthInstallationState?
     private var invalidationID = UUID()
     var flight: NovaAuthIssuanceFlight?

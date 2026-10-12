@@ -23,6 +23,10 @@ final class NovaAuthDeviceCheckService: NovaAuthAppAttestProtocol {
         self.timeout = timeout
     }
 
+    func isBusy(keyID: String) -> Bool {
+        proofCalls.isBusy(keyID: keyID)
+    }
+
     func createKeyWrapper() -> CompoundOperationWrapper<String> {
         let service = service
         return createWrapper { completion in
@@ -103,6 +107,10 @@ private extension NovaAuthDeviceCheckService {
 private final class NovaAuthProofCalls {
     private let mutex = NSLock()
     private var leases: [String: UUID] = [:]
+
+    func isBusy(keyID: String) -> Bool {
+        mutex.novaAuthLocked { leases[keyID] != nil }
+    }
 
     func acquire(keyID: String) -> UUID? {
         mutex.novaAuthLocked {
