@@ -78,6 +78,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
         weeklyChangesStore.cancel()
         state.positionsSyncService?.remove(observer: self)
         state.positionsSyncService?.remove(failureObserver: self)
+        state.positionsSyncService?.remove(fetchObserver: self)
         state.throttle()
     }
 }
@@ -175,10 +176,18 @@ private extension SubtensorPortfolioInteractor {
             presenter?.didReceive(state: newState)
 
             heldNetuids = Set(newState.positions.map(\.netuid)).subtracting([SubtensorStakingPallet.rootNetuid])
+        }
 
-            if !catalogueStore.hasCall {
-                provideCatalogue()
+        state.positionsSyncService?.add(
+            fetchObserver: self,
+            sendStateOnSubscription: false,
+            queue: .main
+        ) { [weak self] _, _ in
+            guard let self, !catalogueStore.hasCall else {
+                return
             }
+
+            provideCatalogue()
         }
 
         state.positionsSyncService?.add(
