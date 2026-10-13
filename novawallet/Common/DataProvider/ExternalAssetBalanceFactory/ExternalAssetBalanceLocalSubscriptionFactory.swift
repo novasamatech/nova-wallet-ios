@@ -82,7 +82,8 @@ enum ExternalBalanceLocalSubscriptionFacade {
             chainRegistry: chainRegistry,
             operationQueue: operationQueue,
             workingQueue: workingQueue,
-            logger: logger
+            logger: logger,
+            processServices: .shared
         )
 
         return ExternalBalanceLocalSubscriptionFactory(

@@ -296,8 +296,8 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
             latestState: { [weak self] in self?.lastState },
             runningCallbackIn: workingQueue,
             mutex: mutex,
-            onChange: { [weak self] in
-                guard let self, let lastState, !fetchCallStore.hasCall else {
+            onUpdate: { [weak self] didChange in
+                guard didChange, let self, let lastState, !fetchCallStore.hasCall else {
                     return
                 }
 
@@ -369,12 +369,15 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
             option: .init(chainAssetId: chainAsset.chainAssetId, type: stakingType)
         )
 
+        let valuation = cataloguePricing?.valuation(of: state)
+
         let dashboardItem = Multistaking.DashboardItemSubtensorPart(
             stakingOption: stakingOption,
             state: state,
+            stake: valuation?.stake ?? state.rootStakeInRao ?? .zero,
             maxApy: maxApyUpdate,
             rootRate: rootRate,
-            isFullyPriced: cataloguePricing?.isFullyPriced(state)
+            isFullyPriced: valuation?.isFullyPriced
         )
 
         let saveOperation = dashboardRepository.saveOperation({
