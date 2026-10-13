@@ -24,7 +24,6 @@ final class SubtensorStakeStateFetchFactory {
     private static func createState(
         coldkey: AccountId,
         stakeInfoList: [SubtensorStakingPallet.StakeInfo],
-        subnetPrices: [SubtensorStakingPallet.SubnetPrice],
         availabilityList: [SubtensorStakingPallet.ColdkeyStakeAvailability],
         claimPreviews: [SubtensorStakingPallet.BasketClaimPreview]?
     ) -> Multistaking.SubtensorStakingState {
@@ -37,20 +36,6 @@ final class SubtensorStakeStateFetchFactory {
                 totalHotkeyAlpha: nil,
                 isRegistered: stakeInfo.isRegistered
             )
-        }
-
-        let prices = subnetPrices.reduce(into: [UInt16: BigUInt]()) { accum, subnetPrice in
-            accum[subnetPrice.netuid] = subnetPrice.price
-        }
-
-        let unpricedNetuids = positions.reduce(into: Set<UInt16>()) { accum, position in
-            guard position.netuid != SubtensorStakingPallet.rootNetuid else {
-                return
-            }
-
-            if (prices[position.netuid] ?? .zero) == .zero {
-                accum.insert(position.netuid)
-            }
         }
 
         let availability = (availabilityList.first { $0.coldkey == coldkey }?.subnets ?? []).reduce(
@@ -69,9 +54,7 @@ final class SubtensorStakeStateFetchFactory {
 
         return Multistaking.SubtensorStakingState(
             positions: positions,
-            prices: prices,
             availability: availability,
-            unpricedNetuids: unpricedNetuids,
             rootRedeemable: rootRedeemable,
             isRootRedeemableStale: claimPreviews == nil
         )
@@ -115,7 +98,6 @@ final class SubtensorStakeStateFetchFactory {
         blockHash: BlockHash
     ) -> CompoundOperationWrapper<Multistaking.SubtensorStakingState> {
         let stakeInfoWrapper = operationFactory.createStakeInfoWrapper(for: coldkey, blockHash: blockHash)
-        let pricesWrapper = operationFactory.createAlphaPricesWrapper(at: blockHash)
 
         let availabilityWrapper = createAvailabilityWrapper(
             for: coldkey,
@@ -132,20 +114,18 @@ final class SubtensorStakeStateFetchFactory {
             try Self.createState(
                 coldkey: coldkey,
                 stakeInfoList: stakeInfoWrapper.targetOperation.extractNoCancellableResultData(),
-                subnetPrices: pricesWrapper.targetOperation.extractNoCancellableResultData(),
                 availabilityList: availabilityWrapper.targetOperation.extractNoCancellableResultData(),
                 claimPreviews: try? claimPreviewsWrapper.targetOperation.extractNoCancellableResultData()
             )
         }
 
         mergeOperation.addDependency(stakeInfoWrapper.targetOperation)
-        mergeOperation.addDependency(pricesWrapper.targetOperation)
         mergeOperation.addDependency(availabilityWrapper.targetOperation)
         mergeOperation.addDependency(claimPreviewsWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: mergeOperation,
-            dependencies: stakeInfoWrapper.allOperations + pricesWrapper.allOperations +
+            dependencies: stakeInfoWrapper.allOperations +
                 availabilityWrapper.allOperations + claimPreviewsWrapper.allOperations
         )
     }

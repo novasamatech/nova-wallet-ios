@@ -177,8 +177,7 @@ final class SubtensorUnstakeConfirmPresenterTests: XCTestCase {
         netuid: UInt16 = SubtensorStakingPallet.rootNetuid
     ) -> Multistaking.SubtensorStakingState {
         Multistaking.SubtensorStakingState(
-            positions: hotkeys.map { makePosition(hotkey: $0, netuid: netuid, stakeAlpha: unstakeAmount) },
-            prices: [:]
+            positions: hotkeys.map { makePosition(hotkey: $0, netuid: netuid, stakeAlpha: unstakeAmount) }
         )
     }
 
@@ -553,8 +552,7 @@ final class SubtensorUnstakeConfirmPresenterTests: XCTestCase {
                 positions: [
                     makePosition(hotkey: hotkey, netuid: SubtensorStakingPallet.rootNetuid, stakeAlpha: unstakeAmount),
                     makePosition(hotkey: otherHotkey, netuid: SubtensorStakingPallet.rootNetuid, stakeAlpha: 0)
-                ],
-                prices: [:]
+                ]
             )
         )
 
@@ -621,8 +619,7 @@ final class SubtensorUnstakeConfirmPresenterTests: XCTestCase {
                         netuid: SubtensorStakingPallet.rootNetuid,
                         stakeAlpha: 2_000_000_000
                     )
-                ],
-                prices: [:]
+                ]
             )
         )
 

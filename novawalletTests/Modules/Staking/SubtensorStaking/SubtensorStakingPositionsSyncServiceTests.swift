@@ -36,7 +36,7 @@ final class SubtensorStakingPositionsSyncServiceTests: XCTestCase {
         XCTAssertEqual(received, state)
     }
 
-    func testPublishedStateKeepsAvailabilityAndUnpricedNetuids() throws {
+    func testPublishedStateKeepsAvailability() throws {
         let state = Multistaking.SubtensorStakingState(
             positions: [
                 SubtensorStakingPosition(
@@ -48,15 +48,13 @@ final class SubtensorStakingPositionsSyncServiceTests: XCTestCase {
                     isRegistered: true
                 )
             ],
-            prices: [7: 0],
             availability: [
                 7: SubtensorStakingPallet.StakeAvailability(
                     total: 3_000_000_000,
                     locked: 1_000_000_000,
                     available: 2_000_000_000
                 )
-            ],
-            unpricedNetuids: [7]
+            ]
         )
 
         let (service, fetchFactory) = try makeService()
@@ -78,7 +76,6 @@ final class SubtensorStakingPositionsSyncServiceTests: XCTestCase {
         wait(for: [stateExpectation], timeout: 10)
 
         XCTAssertEqual(received?.availability, state.availability)
-        XCTAssertEqual(received?.unpricedNetuids, [7])
     }
 
     func testRefreshReplacesPreviousState() throws {
@@ -303,8 +300,7 @@ final class SubtensorStakingPositionsSyncServiceTests: XCTestCase {
                     totalHotkeyAlpha: nil,
                     isRegistered: false
                 )
-            ],
-            prices: [:]
+            ]
         )
     }
 

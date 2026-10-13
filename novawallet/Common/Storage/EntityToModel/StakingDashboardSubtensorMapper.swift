@@ -33,7 +33,7 @@ extension StakingDashboardSubtensorMapper: CoreDataMapperProtocol {
 
         switch state {
         case .bonded, .active, .waiting, .activeIndependent:
-            entity.stake = String(model.state.totalStakeInRao)
+            entity.stake = String(model.stake)
             entity.subtensorRootStake = model.state.rootStakeInRao.map { String($0) }
             entity.subtensorSubnetCount = NSNumber(value: model.state.subnetCount)
             entity.subtensorIsFullyPriced = model.isFullyPriced.map { NSNumber(value: $0) }

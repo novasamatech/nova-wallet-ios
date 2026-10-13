@@ -25,7 +25,7 @@ final class StakingDashboardSubtensorMapperTests: XCTestCase {
     func testPartWithoutPositionsWritesNilStakeAndState() throws {
         let repositoryFactory = MultistakingRepositoryFactory(storageFacade: SubstrateStorageTestFacade())
 
-        let state = Multistaking.SubtensorStakingState(positions: [], prices: [0: 1_000_000_000])
+        let state = Multistaking.SubtensorStakingState(positions: [])
 
         try saveSubtensorPart(state: state, walletId: walletId, using: repositoryFactory)
 
@@ -163,8 +163,7 @@ final class StakingDashboardSubtensorMapperTests: XCTestCase {
                     totalHotkeyAlpha: nil,
                     isRegistered: true
                 )
-            ],
-            prices: [0: 1_000_000_000]
+            ]
         )
     }
 
@@ -209,6 +208,7 @@ final class StakingDashboardSubtensorMapperTests: XCTestCase {
         let part = Multistaking.DashboardItemSubtensorPart(
             stakingOption: Multistaking.OptionWithWallet(walletId: walletId, option: subtensorOption()),
             state: state,
+            stake: state.rootStakeInRao ?? .zero,
             maxApy: maxApy
         )
 

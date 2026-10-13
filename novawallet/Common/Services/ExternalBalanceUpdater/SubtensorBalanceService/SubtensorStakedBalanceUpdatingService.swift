@@ -14,6 +14,7 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
     let runtimeService: RuntimeCodingServiceProtocol
     let repository: AnyDataProviderRepository<SubtensorStakedBalance>
     let stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol
+    let cataloguePricing: SubtensorCataloguePricingTracker
     let eventCenter: EventCenterProtocol
     let workingQueue: DispatchQueue
     let operationQueue: OperationQueue
@@ -31,6 +32,7 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
         chainAsset: ChainAsset,
         repository: AnyDataProviderRepository<SubtensorStakedBalance>,
         stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol,
+        cataloguePricing: SubtensorCataloguePricingTracker,
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
         operationQueue: OperationQueue,
@@ -42,6 +44,7 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
         self.chainAsset = chainAsset
         self.repository = repository
         self.stakeStateFetchFactory = stakeStateFetchFactory
+        self.cataloguePricing = cataloguePricing
         self.connection = connection
         self.runtimeService = runtimeService
         self.eventCenter = eventCenter
@@ -62,6 +65,7 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
 
     override func stopSyncUp() {
         fetchCallStore.cancel()
+        cataloguePricing.cancel()
         clearSubscriptions()
     }
 
@@ -71,6 +75,7 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
         eventCenter.remove(observer: self)
 
         fetchCallStore.cancel()
+        cataloguePricing.cancel()
         clearSubscriptions()
     }
 
@@ -145,7 +150,7 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
                 let state = fetchedState.byKeepingRootRedeemable(of: self?.lastState)
                 self?.lastState = state
                 self?.updateAlphaTriggerSubscription(for: state)
-                self?.persistState(state)
+                self?.persistPricedState(state)
             case let .failure(error):
                 self?.logger.error("State fetch error: \(error)")
 
@@ -207,34 +212,28 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
         alphaTriggerSubscription?.subscribe()
     }
 
-    private func persistState(_ state: Multistaking.SubtensorStakingState) {
-        let optItem: SubtensorStakedBalance?
-        let removeIdentifier: String?
-
-        if state.hasActiveStaking {
-            optItem = SubtensorStakedBalance(
-                chainAssetId: chainAsset.chainAssetId,
-                accountId: accountId,
-                amount: state.totalStakeInRao
-            )
-
-            removeIdentifier = nil
-        } else {
-            optItem = nil
-
-            removeIdentifier = SubtensorStakedBalance.createIdentifier(
-                from: chainAsset.chainAssetId,
-                accountId: accountId
-            )
+    private func persistPricedState(_ state: Multistaking.SubtensorStakingState) {
+        guard state.subnetCount > 0 else {
+            persistState(state)
+            return
         }
 
-        let saveOperation = repository.saveOperation({
-            optItem.map { [$0] } ?? []
-        }, {
-            removeIdentifier.map { [$0] } ?? []
-        })
+        cataloguePricing.refresh(
+            latestState: { [weak self] in self?.lastState },
+            runningCallbackIn: workingQueue,
+            mutex: mutex,
+            onUpdate: { [weak self] _ in
+                guard let self, let lastState else {
+                    return
+                }
 
-        let wrapper = CompoundOperationWrapper(targetOperation: saveOperation)
+                persistState(lastState)
+            }
+        )
+    }
+
+    private func persistState(_ state: Multistaking.SubtensorStakingState) {
+        let wrapper = createSaveWrapper(for: state)
 
         if let pendingOperations = saveCallStore.operatingCall?.allOperations {
             wrapper.addDependency(operations: pendingOperations)
@@ -254,6 +253,46 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
                 self?.completeImmediate(error)
             }
         }
+    }
+}
+
+private extension SubtensorStakedBalanceUpdatingService {
+    func createSaveWrapper(for state: Multistaking.SubtensorStakingState) -> CompoundOperationWrapper<Void> {
+        let identifier = SubtensorStakedBalance.createIdentifier(from: chainAsset.chainAssetId, accountId: accountId)
+
+        guard state.hasActiveStaking else {
+            return CompoundOperationWrapper(targetOperation: repository.saveOperation({ [] }, { [identifier] }))
+        }
+
+        let valuation = cataloguePricing.valuation(of: state)
+
+        let item = SubtensorStakedBalance(
+            chainAssetId: chainAsset.chainAssetId,
+            accountId: accountId,
+            amount: valuation.stake,
+            isComplete: valuation.isFullyPriced == true
+        )
+
+        guard !item.isComplete else {
+            return CompoundOperationWrapper(targetOperation: repository.saveOperation({ [item] }, { [] }))
+        }
+
+        // a partial total never replaces a complete one; it only fills in or updates an earlier partial
+        let fetchOperation = repository.fetchOperation(by: { identifier }, options: .init())
+
+        let saveOperation = repository.saveOperation({
+            let stored = try fetchOperation.extractNoCancellableResultData()
+
+            guard stored?.isComplete != true else {
+                return []
+            }
+
+            return [item]
+        }, { [] })
+
+        saveOperation.addDependency(fetchOperation)
+
+        return CompoundOperationWrapper(targetOperation: saveOperation, dependencies: [fetchOperation])
     }
 }
 
