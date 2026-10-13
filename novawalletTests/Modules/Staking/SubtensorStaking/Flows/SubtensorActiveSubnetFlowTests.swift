@@ -363,8 +363,8 @@ final class SubtensorActiveSubnetFlowTests: SubtensorFlowTestCase {
             blockHash: SubtensorFlowExtrinsic.blockHash
         ))
 
-        XCTAssertEqual(requestLines(), ["GET https://bittensor.test/v1/bittensor/profile-3/subnets"])
-        assertAuthorizedRequests(world, paths: ["/v1/bittensor/profile-3/subnets"])
+        XCTAssertEqual(requestLines(), ["GET https://bittensor.test/v1/bittensor/subnets"])
+        assertAuthorizedRequests(world, paths: ["/v1/bittensor/subnets"])
     }
 }
 
@@ -401,8 +401,8 @@ private extension SubtensorActiveSubnetFlowTests {
 
     var chutesPositionRequestLines: [String] {
         [
-            "GET https://bittensor.test/v1/bittensor/profile-3/recommendations/subnets",
-            "GET https://bittensor.test/v1/bittensor/profile-3/subnets",
+            "GET https://bittensor.test/v1/bittensor/recommendations/subnets",
+            "GET https://bittensor.test/v1/bittensor/subnets",
             "GET https://subnet-logos.test/subnets.json",
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=30",
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=30",
@@ -418,8 +418,8 @@ private extension SubtensorActiveSubnetFlowTests {
         let accountSubject = try SubtensorFlowChainWorld.coldkey.toAddress(using: .defaultSubstrateFormat)
 
         return [
-            SubtensorFlowAuthorizedRequest(method: "GET", path: "/v1/bittensor/profile-3/subnets"),
-            SubtensorFlowAuthorizedRequest(method: "GET", path: "/v1/bittensor/profile-3/recommendations/subnets")
+            SubtensorFlowAuthorizedRequest(method: "GET", path: "/v1/bittensor/subnets"),
+            SubtensorFlowAuthorizedRequest(method: "GET", path: "/v1/bittensor/recommendations/subnets")
         ] + (1 ... 2).map { page in
             SubtensorFlowAuthorizedRequest(
                 method: "POST",

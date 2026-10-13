@@ -52,7 +52,7 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
 
         setup.interactor.setup()
         setup.walletSettings.internalValue = AccountGenerator.generateMetaAccount()
-        SelectedWalletSwitched().accept(visitor: try registeredObserver(in: eventCenter))
+        try SelectedWalletSwitched().accept(visitor: registeredObserver(in: eventCenter))
 
         verify(setup.wireframe).close(from: any())
     }
@@ -62,7 +62,7 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
         let setup = try makeSetup(selecting: AccountGenerator.generateMetaAccount(), eventCenter: eventCenter)
 
         setup.interactor.setup()
-        WalletRemoved().accept(visitor: try registeredObserver(in: eventCenter))
+        try WalletRemoved().accept(visitor: registeredObserver(in: eventCenter))
 
         verify(setup.wireframe, never()).close(from: any())
     }
@@ -91,7 +91,7 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
         verify(setup.wireframe, never()).showAddPosition(from: any())
     }
 
-    func testCurrencyChangeRerendersTheFiatInTheNewCurrency() throws {
+    func testCurrencyChangeRerendersTheFiatInTheNewCurrency() {
         let interactor = makeInteractor()
         let view = MockSubtensorPortfolioViewProtocol()
         let currencyManager = CurrencyManagerStub()
@@ -443,7 +443,7 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
         let catalogueService = MockSubtensorSubnetCatalogueServiceProtocol()
 
         stub(catalogueService) { stub in
-            when(stub.createCatalogueWrapper(intent: any())).thenReturn(
+            when(stub.createCatalogueWrapper()).thenReturn(
                 CompoundOperationWrapper.createWithError(CommonError.dataCorruption)
             )
             when(stub.cachedCatalogue()).thenReturn(.miss)

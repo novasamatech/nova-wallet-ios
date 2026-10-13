@@ -71,7 +71,7 @@ enum BittensorAuthorizedResponseGrader {
             return .attestationUnavailable(requestId: server.requestID)
         case let .transport(code): return .transport(URLError(code))
         case .generationChanged: return .generationStale
-        case .userActionRequired, .credentialUnavailable, .storageUnavailable,
+        case .credentialUnavailable, .storageUnavailable,
              .clockUnavailable, .keyUnavailable, .platformUnavailable:
             return .attestationUnavailable(requestId: nil)
         case .invalidRequest: return .invalidRequest(code: nil, requestId: nil)

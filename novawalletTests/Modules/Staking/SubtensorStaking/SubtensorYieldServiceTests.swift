@@ -118,30 +118,27 @@ final class SubtensorYieldServiceTests: XCTestCase {
         XCTAssertNil(reportedYield("", freshness: .fresh).annualRate)
     }
 
-    func testRootYieldIsTheFirstRowOfTheFirstPageReadAsPercentPoints() throws {
+    func testRemovedRootYieldIsAbsentWithoutCallingTheApi() throws {
         let apiFactory = MockBittensorApiOperationFactoryProtocol()
         let page = makeRootPage(rates: ["13.8421", "13.9107"], isFromExpiredCache: false)
         stubRootYield(apiFactory, result: .success(page))
 
         let rootYield = try run(makeService(apiFactory: apiFactory).createRootYieldWrapper())
 
-        let expected = SubtensorReportedYield(
-            reportedRate: "13.8421",
-            stamp: SubtensorBackendStamp(asOf: olderAsOf, freshness: .fresh)
-        )
-
-        XCTAssertEqual(rootYield, expected)
-        XCTAssertEqual(rootYield?.annualRate, try XCTUnwrap(Decimal(string: "0.138421")))
-        verify(apiFactory).createRootYieldWrapper(page: equal(to: 1))
+        XCTAssertNil(rootYield)
+        verify(apiFactory, never()).createRootYieldWrapper(page: any())
+        guard case .miss = makeService(apiFactory: apiFactory).cachedRootYield() else {
+            return XCTFail("Expected no root yield cache")
+        }
     }
 
-    func testRootYieldServedFromAnExpiredCacheIsStaleAndHasNoRate() throws {
+    func testRemovedRootYieldIgnoresAnExpiredSeed() throws {
         let apiFactory = MockBittensorApiOperationFactoryProtocol()
         stubRootYield(apiFactory, result: .success(makeRootPage(rates: ["13.8421"], isFromExpiredCache: true)))
 
         let rootYield = try run(makeService(apiFactory: apiFactory).createRootYieldWrapper())
 
-        XCTAssertEqual(rootYield?.stamp, SubtensorBackendStamp(asOf: olderAsOf, freshness: .stale))
+        XCTAssertNil(rootYield)
         XCTAssertNil(rootYield?.annualRate)
     }
 

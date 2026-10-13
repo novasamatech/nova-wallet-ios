@@ -258,7 +258,7 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
         catalogueStore.cancel()
 
         executeCancellable(
-            wrapper: catalogueService.createCatalogueWrapper(intent: .userInitiated),
+            wrapper: catalogueService.createCatalogueWrapper(),
             inOperationQueue: operationQueue,
             backingCallIn: catalogueStore,
             runningCallbackIn: .main

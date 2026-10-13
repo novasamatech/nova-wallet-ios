@@ -22,7 +22,6 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
         SubtensorFlowURLProtocol.serveSubnetLogos()
         SubtensorFlowURLProtocol.serveFixture(.subnets)
         SubtensorFlowURLProtocol.serveFixture(.validators(netuid: 0))
-        SubtensorFlowURLProtocol.serveFixture(.rootYield(page: 1, pageSize: 100))
         try SubtensorFlowActiveStake.serveCharts()
 
         world.sharedState.setup(for: SubtensorFlowChainWorld.coldkeyAccount())
@@ -123,8 +122,7 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(holds, [aster: SubtensorRootHold(interval: 0, lastStakeBlock: 9_139_000)])
         XCTAssertEqual(holds[aster]?.remainingBlocks(at: BittensorApiFixtureWorld.headBlock), 0)
         XCTAssertEqual(positionDetail, SubtensorValidatorDetail(item: try asterRoot(name: nil), identity: identity("Aster Stake")))
-        XCTAssertEqual(rootYield, try fixtureRootYield())
-        XCTAssertEqual(rootYield?.annualRate, try decimal("0.138421"))
+        XCTAssertNil(rootYield)
 
         XCTAssertEqual(directory, SubtensorValidatorDirectory(
             subnet: SubtensorSubnetRef(netuid: 0, registeredAt: 0),
@@ -172,10 +170,9 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
         verify(world.positionsSyncService, times(2)).refresh()
 
         XCTAssertEqual(requestLines().sorted(), [
-            "GET https://bittensor.test/v1/bittensor/profile-3/subnets",
-            "GET https://bittensor.test/v1/bittensor/profile-3/subnets/0/validators",
-            "GET https://bittensor.test/v1/bittensor/profile-3/subnets/0/validators",
-            "GET https://bittensor.test/v1/bittensor/profile-3/yields/root?page=1&pageSize=100",
+            "GET https://bittensor.test/v1/bittensor/subnets",
+            "GET https://bittensor.test/v1/bittensor/subnets/0/validators",
+            "GET https://bittensor.test/v1/bittensor/subnets/0/validators",
             "GET https://subnet-logos.test/subnets.json",
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=30",
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=30",
@@ -187,10 +184,9 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
         assertAuthorizedRequests(
             world,
             paths: [
-                "/v1/bittensor/profile-3/subnets",
-                "/v1/bittensor/profile-3/yields/root",
-                "/v1/bittensor/profile-3/subnets/0/validators",
-                "/v1/bittensor/profile-3/subnets/0/validators"
+                "/v1/bittensor/subnets",
+                "/v1/bittensor/subnets/0/validators",
+                "/v1/bittensor/subnets/0/validators"
             ]
         )
     }
@@ -208,9 +204,9 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
 
         XCTAssertNil(preset)
 
-        XCTAssertEqual(requestLines(), ["GET https://bittensor.test/v1/bittensor/profile-3/recommendations"])
+        XCTAssertEqual(requestLines(), ["GET https://bittensor.test/v1/bittensor/recommendations"])
 
-        assertAuthorizedRequests(world, paths: ["/v1/bittensor/profile-3/recommendations"])
+        assertAuthorizedRequests(world, paths: ["/v1/bittensor/recommendations"])
     }
 
     func testRootValidatorInfoKeepsChainValuesWhenTheBackendIsDown() throws {
@@ -226,10 +222,7 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
             "/subnets/0/validators",
             reply: .apiError(statusCode: 503, code: "dataset_unavailable", requestId: "req-f4-down")
         )
-        SubtensorFlowURLProtocol.serveBittensor(
-            "/yields/root?page=1&pageSize=100",
-            reply: .apiError(statusCode: 503, code: "dataset_unavailable", requestId: "req-f4-root-down")
-        )
+
 
         world.sharedState.setup(for: SubtensorFlowChainWorld.coldkeyAccount())
         feed.publish(try SubtensorFlowActiveStake.state())
@@ -251,12 +244,12 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
         XCTAssertNil(rootYield)
 
         XCTAssertEqual(requestLines(), [
-            "GET https://bittensor.test/v1/bittensor/profile-3/subnets/0/validators"
+            "GET https://bittensor.test/v1/bittensor/subnets/0/validators"
         ])
 
         assertAuthorizedRequests(
             world,
-            paths: ["/v1/bittensor/profile-3/subnets/0/validators"]
+            paths: ["/v1/bittensor/subnets/0/validators"]
         )
     }
 }

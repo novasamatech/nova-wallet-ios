@@ -87,7 +87,7 @@ enum SubtensorFlowHost {
         "?vs_currency=usd&category=bittensor-subnets&per_page=250&page=1&sparkline=true&price_change_percentage=7d"
 
     static func bittensor(_ path: String) -> String {
-        "https://bittensor.test/v1/bittensor" + (path.hasPrefix("/operations/") ? "" : "/profile-3") + path
+        "https://bittensor.test/v1/bittensor" + path
     }
 
     static func marketChart(coinId: String, days: String) -> String {

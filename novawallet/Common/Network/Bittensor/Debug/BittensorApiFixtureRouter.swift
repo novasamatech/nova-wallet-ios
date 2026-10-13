@@ -15,7 +15,6 @@ import Foundation
         static let methods: [String: BittensorApiRequest.Method] = [
             "/subnets": .get,
             "/subnets/{netuid}/validators": .get,
-            "/yields/root": .get,
             "/subnets/{netuid}/yields/alpha": .get,
             "/operations/search": .post,
             "/recommendations": .get,
@@ -41,18 +40,15 @@ import Foundation
             let netuid = try pathNetuid(path: normalized(request.path), template: template, invalid: invalid)
 
             switch template {
-            case "/yields/root", "/subnets/{netuid}/yields/alpha":
+            case "/subnets/{netuid}/yields/alpha":
                 guard request.jsonBody == nil else {
                     throw invalid
                 }
 
                 let paging = try pagination(of: request.queryItems, invalid: invalid)
 
-                if let netuid {
-                    return .alphaYield(netuid: netuid, page: paging.page, pageSize: paging.pageSize)
-                } else {
-                    return .rootYield(page: paging.page, pageSize: paging.pageSize)
-                }
+                guard let netuid, netuid != 0 else { throw invalid }
+                return .alphaYield(netuid: netuid, page: paging.page, pageSize: paging.pageSize)
             case "/operations/search":
                 guard request.queryItems.isEmpty, let body = request.jsonBody else {
                     throw invalid
@@ -92,7 +88,7 @@ import Foundation
                 return "no-store"
             }
 
-            return "private, max-age=\(maxAge), must-revalidate"
+            return "public, max-age=\(maxAge), must-revalidate"
         }
     }
 

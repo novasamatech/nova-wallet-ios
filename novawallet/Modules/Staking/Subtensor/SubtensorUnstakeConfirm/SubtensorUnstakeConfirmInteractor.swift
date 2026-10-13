@@ -1,6 +1,6 @@
-import UIKit
-import SubstrateSdk
 import Operation_iOS
+import SubstrateSdk
+import UIKit
 
 final class SubtensorUnstakeConfirmInteractor: SubtensorStakingBaseInteractor {
     var presenter: SubtensorUnstakeConfirmOutputProtocol? {
@@ -67,7 +67,7 @@ extension SubtensorUnstakeConfirmInteractor: SubtensorUnstakeConfirmInputProtoco
         catalogueCallStore.cancel()
 
         executeCancellable(
-            wrapper: catalogueService.createCatalogueWrapper(intent: .userInitiated),
+            wrapper: catalogueService.createCatalogueWrapper(),
             inOperationQueue: operationQueue,
             backingCallIn: catalogueCallStore,
             runningCallbackIn: .main

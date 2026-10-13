@@ -1,7 +1,7 @@
 import Foundation
-import SubstrateSdk
-import Operation_iOS
 import Keystore_iOS
+import Operation_iOS
+import SubstrateSdk
 
 struct SubtensorStakingProcessServices {
     let bittensorApiOperationFactory: BittensorApiOperationFactoryProtocol
@@ -267,20 +267,20 @@ extension StakingSharedStateFactory {
         )
 
         let yieldService = SubtensorYieldService(
-            apiOperationFactory: processServices.bittensorApiOperationFactory.withIntent(.userInitiated),
+            apiOperationFactory: processServices.bittensorApiOperationFactory,
             operationQueue: syncOperationQueue,
             logger: logger
         )
 
         let recommendationService = SubtensorRecommendationService(
-            apiOperationFactory: processServices.bittensorApiOperationFactory.withIntent(.userInitiated),
+            apiOperationFactory: processServices.bittensorApiOperationFactory,
             chainOperationFactory: validatorChainOperationFactory,
             operationQueue: syncOperationQueue,
             logger: logger
         )
 
         let validatorDirectoryService = SubtensorValidatorDirectoryService(
-            apiOperationFactory: processServices.bittensorApiOperationFactory.withIntent(.userInitiated),
+            apiOperationFactory: processServices.bittensorApiOperationFactory,
             chainOperationFactory: validatorChainOperationFactory,
             cache: flowState.validatorDirectoryCache,
             operationQueue: syncOperationQueue,
