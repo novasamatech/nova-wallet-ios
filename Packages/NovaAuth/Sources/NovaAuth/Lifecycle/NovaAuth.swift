@@ -26,9 +26,7 @@ public final class NovaAuth: NovaAuthClientProtocol {
         let http = NovaAuthHTTPTransport()
         self.init(dependencies: NovaAuthDependencies(
             appAttest: NovaAuthDeviceCheckService(),
-            identityStore: NovaAuthSettingsIdentityStore(
-                settingsManager: configuration.settingsManager, commit: configuration.settingsCommit
-            ),
+            identityStore: NovaAuthSettingsIdentityStore(settingsManager: configuration.settingsManager),
             tokenStore: NovaAuthKeychainTokenStore(configuration: configuration.sharedStore),
             clock: clock, random: NovaAuthSystemRandom(),
             bootstrap: NovaAuthBootstrapOperationFactory(http: http, clock: clock), http: http,
