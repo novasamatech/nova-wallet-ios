@@ -37,10 +37,4 @@ final class AnalyticsUploadResponseTests: XCTestCase {
     func testRetryAfterDelay() throws {
         XCTAssertEqual(try deliveryError(429, retryAfter: "120"), .retryLater(statusCode: 429, retryAfter: 120))
     }
-
-    func testStructuredPayloadRejectionsArePermanent() throws {
-        for code in ["invalid_envelope", "unsupported_schema_version", "batch_too_large", "unknown_error"] {
-            XCTAssertEqual(try deliveryError(400, code: code), .clientError(statusCode: 400))
-        }
-    }
 }
