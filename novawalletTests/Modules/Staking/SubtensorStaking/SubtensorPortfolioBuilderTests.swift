@@ -18,7 +18,6 @@ final class SubtensorPortfolioBuilderTests: XCTestCase {
 
         let state = Multistaking.SubtensorStakingState(
             positions: [rootMember, subnetMember, rootPrimary, subnetPrimary],
-            prices: [:],
             availability: [0: rootAvailability, 64: subnetAvailability]
         )
 
@@ -59,8 +58,7 @@ final class SubtensorPortfolioBuilderTests: XCTestCase {
                 position(hotkey: firstHotkey, netuid: 64, stake: 120_000_000_000),
                 position(hotkey: secondHotkey, netuid: 7, stake: 50_000_000_000),
                 position(hotkey: secondHotkey, netuid: 19, stake: 300_000_000_000)
-            ],
-            prices: [:]
+            ]
         )
 
         let portfolio = SubtensorPortfolioBuilder.build(
@@ -80,8 +78,7 @@ final class SubtensorPortfolioBuilderTests: XCTestCase {
             positions: [
                 position(hotkey: secondHotkey, netuid: 64, stake: 40_000_000_000),
                 position(hotkey: firstHotkey, netuid: 64, stake: 40_000_000_000)
-            ],
-            prices: [64: 50_000_000]
+            ]
         )
 
         let portfolio = SubtensorPortfolioBuilder.build(state: state)

@@ -24,7 +24,6 @@ enum SubtensorFlowActiveStake {
                 try position(.ember, netuid: 64, stake: chutesAlpha),
                 try position(.cinder, netuid: 4, stake: targonAlpha)
             ],
-            prices: [64: chutesSpotPrice, 4: 29_545_454],
             availability: [
                 World.rootNetuid: availability(total: rootStake, locked: 0),
                 64: availability(total: chutesAlpha, locked: chutesLockedAlpha),
@@ -40,7 +39,6 @@ enum SubtensorFlowActiveStake {
     static func rootOnlyState() throws -> Multistaking.SubtensorStakingState {
         Multistaking.SubtensorStakingState(
             positions: [try position(.aster, netuid: World.rootNetuid, stake: rootStake)],
-            prices: [:],
             availability: [World.rootNetuid: availability(total: rootStake, locked: 0)]
         )
     }
@@ -51,7 +49,6 @@ enum SubtensorFlowActiveStake {
                 try position(.ember, netuid: 64, stake: 50_000_000_000),
                 try position(.cinder, netuid: 64, stake: 20_000_000_000)
             ],
-            prices: [64: chutesSpotPrice],
             availability: [64: availability(total: 70_000_000_000, locked: 0)]
         )
     }

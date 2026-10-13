@@ -299,7 +299,7 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
     }
 
     private func presetRootValidator(_ setup: Setup) {
-        setup.presenter.didReceivePositions(Multistaking.SubtensorStakingState(positions: [], prices: [:]))
+        setup.presenter.didReceivePositions(Multistaking.SubtensorStakingState(positions: []))
         setup.presenter.didReceiveValidator(
             makeValidator(hotkey: hotkey, netuid: SubtensorStakingPallet.rootNetuid),
             on: rootRef
@@ -433,8 +433,7 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
                     makePosition(hotkey: smallerHotkey, netuid: SubtensorStakingPallet.rootNetuid, stake: 1000),
                     makePosition(hotkey: hotkey, netuid: SubtensorStakingPallet.rootNetuid, stake: 5000),
                     makePosition(hotkey: smallerHotkey, netuid: 1, stake: 9000)
-                ],
-                prices: [:]
+                ]
             )
         )
 

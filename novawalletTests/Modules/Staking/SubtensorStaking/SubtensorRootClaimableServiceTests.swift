@@ -125,7 +125,7 @@ final class SubtensorRootClaimableServiceTests: XCTestCase {
         let positionsService = MockSubtensorPositionsSyncServiceProtocol()
         let apiFactory = MockSubtensorApiOperationFactoryProtocol()
 
-        let state = Multistaking.SubtensorStakingState(positions: [], prices: [:])
+        let state = Multistaking.SubtensorStakingState(positions: [])
 
         stub(positionsService) { stub in
             when(
@@ -205,7 +205,7 @@ final class SubtensorRootClaimableServiceTests: XCTestCase {
 
         stubClaimPreviews(apiFactory, previews: [])
 
-        let state = Multistaking.SubtensorStakingState(positions: [], prices: [:])
+        let state = Multistaking.SubtensorStakingState(positions: [])
 
         stub(positionsService) { stub in
             when(
@@ -299,8 +299,7 @@ final class SubtensorRootClaimableServiceTests: XCTestCase {
                     totalHotkeyAlpha: nil,
                     isRegistered: false
                 )
-            ],
-            prices: [:]
+            ]
         )
 
         stub(fetchFactory) { stub in
