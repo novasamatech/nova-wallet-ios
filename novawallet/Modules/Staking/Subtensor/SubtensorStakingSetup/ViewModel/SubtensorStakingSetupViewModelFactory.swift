@@ -53,7 +53,6 @@ final class SubtensorStakingSetupViewModelFactory {
             getTao: createGetTao(for: input, locale: locale),
             reserveWarning: createReserveWarning(for: input, locale: locale),
             details: details,
-            holdWarning: createHoldWarning(for: input, locale: locale),
             caption: createCaption(for: input, locale: locale),
             action: createAction(for: input, locale: locale)
         )
@@ -192,16 +191,6 @@ private extension SubtensorStakingSetupViewModelFactory {
         return .value(SubtensorApyFormatter.text(for: rootRate, style: .paidInTao, locale: locale))
     }
 
-    func createHoldWarning(for input: SubtensorStakingSetupViewModelInput, locale: Locale) -> String? {
-        guard let remaining = input.holdRemaining else {
-            return nil
-        }
-
-        let duration = remaining.localizedDaysHoursOrFallbackMinutes(for: locale)
-
-        return R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiHoldAddMessage(duration)
-    }
-
     func createCaption(for input: SubtensorStakingSetupViewModelInput, locale: Locale) -> String? {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
@@ -221,13 +210,6 @@ private extension SubtensorStakingSetupViewModelFactory {
 
     func createAddStakeCaption(for input: SubtensorStakingSetupViewModelInput, locale: Locale) -> String? {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
-        if let remaining = input.holdRemaining {
-            let unlockDate = Date().addingTimeInterval(remaining)
-            let dateText = DateFormatter.shortDateHoursMinutes.value(for: locale).string(from: unlockDate)
-
-            return strings.stakingSubtensorUiHoldAddAvailableFormat(dateText)
-        }
 
         guard
             let positionStake = input.positionStake, positionStake > 0,
@@ -253,7 +235,7 @@ private extension SubtensorStakingSetupViewModelFactory {
         }
 
         let hasAmount = (input.amount ?? 0) > 0
-        let showsEnterAmount = !hasAmount && input.amountState != .noTao && !input.isHoldActive
+        let showsEnterAmount = !hasAmount && input.amountState != .noTao
 
         return SubtensorSetupActionViewModel(
             title: showsEnterAmount ? strings.transferSetupEnterAmount() : strings.commonContinue(),

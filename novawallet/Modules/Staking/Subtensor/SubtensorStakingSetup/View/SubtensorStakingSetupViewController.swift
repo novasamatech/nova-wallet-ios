@@ -279,9 +279,6 @@ extension SubtensorStakingSetupViewController: SubtensorStakingSetupViewProtocol
 
         applyDetails(viewModel.details)
 
-        rootView.holdAlertView.isHidden = viewModel.holdWarning == nil
-        rootView.holdAlertView.contentView.detailsLabel.text = viewModel.holdWarning
-
         rootView.captionLabel.isHidden = viewModel.caption == nil
         rootView.captionLabel.text = viewModel.caption
 

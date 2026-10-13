@@ -44,7 +44,9 @@ enum SubtensorConfirmTapRule {
 
         let basis = SubtensorGroupUnstakeBasis.make(from: group)
 
-        guard let rebuilt = basis.exitHotkeys(for: basis.total), rebuilt == expected else {
+        guard
+            !SubtensorStakingFlowConstants.exceedsFullExitDrift(live: basis.total, reviewed: unstakeModel.amount),
+            let rebuilt = basis.exitHotkeys(for: basis.total), rebuilt == expected else {
             return nil
         }
 

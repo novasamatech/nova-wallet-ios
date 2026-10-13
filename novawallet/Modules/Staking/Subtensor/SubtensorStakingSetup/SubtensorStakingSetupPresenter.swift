@@ -27,7 +27,6 @@ final class SubtensorStakingSetupPresenter {
     var isPositionsSyncFailed = false
     var preflight: SubtensorStakingPreflight?
     var existentialDeposit: Balance?
-    var currentBlock: BlockNumber?
     var rootRate: Decimal?
     var isRootRateLoaded = false
     var isRootRateRequested = false
@@ -358,7 +357,6 @@ extension SubtensorStakingSetupPresenter: SubtensorStakingSetupPresenterProtocol
         guard
             let target,
             validatorState.validator != nil,
-            holdRemaining() == nil,
             let amount = inputAmount(), amount > 0 else {
             return
         }

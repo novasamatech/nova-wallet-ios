@@ -12,6 +12,15 @@ enum SubtensorStakingFlowConstants {
 
         return impact.numerator * threshold.denominator > threshold.numerator * impact.denominator
     }
+
+    static let fullExitDriftThreshold = BigRational.percent(of: 1)
+
+    static func exceedsFullExitDrift(live: Balance, reviewed: Balance) -> Bool {
+        let drift = live > reviewed ? live - reviewed : reviewed - live
+        let threshold = fullExitDriftThreshold
+
+        return drift * threshold.denominator > reviewed * threshold.numerator
+    }
 }
 
 protocol SubtensorStakingBaseInteractorInputProtocol: AnyObject {
