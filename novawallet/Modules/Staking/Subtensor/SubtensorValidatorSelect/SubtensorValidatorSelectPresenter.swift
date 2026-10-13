@@ -87,7 +87,7 @@ private extension SubtensorValidatorSelectPresenter {
             return nil
         }
 
-        return SubtensorValidatorListFactory.selectableItem(
+        return SubtensorValidatorEligibility.selectableItem(
             for: hotkey,
             in: directory,
             isRoot: target.isRoot,
@@ -104,7 +104,7 @@ private extension SubtensorValidatorSelectPresenter {
             return
         }
 
-        selectedHotkey = SubtensorValidatorListFactory.preselectedHotkey(
+        selectedHotkey = SubtensorValidatorEligibility.preselectedHotkey(
             selectedHotkey,
             in: directory,
             isRoot: target.isRoot,

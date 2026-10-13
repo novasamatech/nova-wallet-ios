@@ -1,5 +1,4 @@
 import Foundation_iOS
-import SubstrateSdk
 import UIKit
 
 final class SubtensorValidatorSelectViewController: UIViewController, ViewHolder {
@@ -7,7 +6,6 @@ final class SubtensorValidatorSelectViewController: UIViewController, ViewHolder
 
     let presenter: ValidatorSelectPresenterProtocol
 
-    private let iconGenerator = PolkadotIconGenerator()
     private var state: SubtensorValidatorListState?
 
     init(presenter: ValidatorSelectPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
@@ -182,7 +180,7 @@ extension SubtensorValidatorSelectViewController: UITableViewDataSource {
 
         let cell = tableView.dequeueReusableCellWithType(SubtensorValidatorSelectCell.self, forIndexPath: indexPath)
 
-        cell.bind(model, icon: try? iconGenerator.generateFromAccountId(model.hotkey))
+        cell.bind(model)
 
         cell.infoAction = { [weak self] in
             self?.presenter.showInfo(hotkey: model.hotkey)

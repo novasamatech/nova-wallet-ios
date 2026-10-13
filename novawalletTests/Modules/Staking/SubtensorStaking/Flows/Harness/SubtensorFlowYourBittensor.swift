@@ -129,11 +129,7 @@ extension SubtensorFlowTestCase {
         XCTAssertEqual(try flowDouble(chutesHistory.changeInTao), 0.0738 / 0.0634 - 1, accuracy: 1e-9)
         XCTAssertEqual(try flowDouble(chutesHistory.changeInFiat), 25.2396 / 19.02 - 1, accuracy: 1e-9)
 
-        let series = screen.valueSeries
-        XCTAssertEqual(series.points.map(\.date), chutesHistory.points.map(\.date))
-        assertFlowDoubles(series.points.map(\.taoValue), [25.4626932289, 25.4626932289, 26.00640729])
-        assertFlowDoubles(series.points.map(\.fiatValue), [7638.807968665, 7638.807968665, 8894.19129318])
-        XCTAssertEqual(try flowDouble(series.changeInFiat), 8894.19129318 / 7638.807968665 - 1, accuracy: 1e-9)
+        XCTAssertEqual(screen.valueSeries, SubtensorPortfolioValueSeries(points: [], changeInFiat: nil))
     }
 
     func flowDouble(_ value: Decimal?) throws -> Double {

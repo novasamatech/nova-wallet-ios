@@ -64,7 +64,7 @@ final class SubtensorValidatorSelectCell: UITableViewCell {
         infoAction = nil
     }
 
-    func bind(_ model: SubtensorValidatorRowViewModel, icon: DrawableIcon?) {
+    func bind(_ model: SubtensorValidatorRowViewModel) {
         titleLabel.text = model.title
         subtitleLabel.text = model.subtitle
 
@@ -86,9 +86,11 @@ final class SubtensorValidatorSelectCell: UITableViewCell {
         radioView.alpha = model.isSelectable ? 1 : 0.5
         selectionStyle = model.isSelectable ? .default : .none
 
-        if let icon {
+        if let icon = model.icon {
             iconView.bind(icon: icon)
         }
+
+        iconView.isHidden = model.icon == nil
     }
 
     @objc private func actionInfo() {
