@@ -1,36 +1,15 @@
-import Foundation
 import CryptoKit
+import Foundation
 
 extension NovaAuth {
-    func prepareIdentity(context: NovaAuthContext, intent: NovaAuthRequestIntent) throws {
-        guard var state else { throw NovaAuthError.generationChanged }
-        if state.requiresUserAction, intent != .userInitiated { throw NovaAuthError.userActionRequired }
-        if state.requiresUserAction {
-            state.requiresUserAction = false
-            try persist(state)
-        }
-        if let identity = state.identity {
-            if case let .retired(reason) = identity.registration {
-                try checkRecreationPermission(reason: reason, intent: intent)
-                if reason == .policyRefused {
-                    guard intent == .userInitiated else { throw NovaAuthError.userActionRequired }
-                    if identity.keyID != nil {
-                        try setIdentity(NovaAuthInstallationIdentity(
-                            clientID: identity.clientID, keyID: identity.keyID,
-                            registration: .registrationPending(NovaAuthPendingRegistration(
-                                startedAt: try dependencies.clock.now()
-                            ))
-                        ), context: context)
-                        return
-                    }
-                }
-                return
-            } else { return }
-        }
+    func prepareIdentity(context: NovaAuthContext) throws {
+        guard let state else { throw NovaAuthError.generationChanged }
+        guard state.identity == nil else { return }
         let clientID = dependencies.random.makeClientID()
         try NovaAuthValidation.clientID(clientID)
-        let identity = NovaAuthInstallationIdentity(clientID: clientID, keyID: nil, registration: .unregistered)
-        try setIdentity(identity, context: context)
+        try setIdentity(NovaAuthInstallationIdentity(
+            clientID: clientID, keyID: nil, registration: .unregistered
+        ), context: context)
     }
 
     func start(flight: NovaAuthIssuanceFlight) {
@@ -46,7 +25,7 @@ extension NovaAuth {
                 try attest(attempt: attempt, flight: flight)
             case .appleInFlight:
                 try retire(.interrupted, flight: flight)
-                throw NovaAuthError.userActionRequired
+                throw NovaAuthError.keyUnavailable
             case .registrationPending, .registered:
                 try issue(flight: flight)
             case .retired:
@@ -55,7 +34,7 @@ extension NovaAuth {
         } catch { fail(error, flight: flight) }
     }
 
-    func handleChallengeFailure(_ error: Error, flight: NovaAuthIssuanceFlight) throws {
+    func handleBindingFailure(_ error: Error, flight: NovaAuthIssuanceFlight) throws {
         guard case let NovaAuthError.bootstrap(server) = error else { return }
         guard let identity = state?.identity else { return }
         guard server.statusCode == 401, server.code == "unknown_client" else { return }
@@ -63,27 +42,23 @@ extension NovaAuth {
             let now = try dependencies.clock.now()
             let start = pending.startedAt
             let elapsed = now.continuousSeconds - start.continuousSeconds
-            let count = min(8, pending.unknownResponseCount + 1)
-            try setRegistration(.registrationPending(NovaAuthPendingRegistration(
-                startedAt: pending.startedAt, unknownResponseCount: count, cooldown: pending.cooldown
-            )), flight: flight)
-            if start.bootID == now.bootID, elapsed >= 0, elapsed < 120, count < 8 { return }
+            if start.bootID == now.bootID, elapsed >= 0, elapsed < 120 { return }
         }
         try retire(.registrationAbandoned, flight: flight)
-        throw NovaAuthError.userActionRequired
     }
 }
 
 private extension NovaAuth {
     func createKey(flight: NovaAuthIssuanceFlight) throws {
+        guard !flight.generatedKey else { throw NovaAuthError.keyUnavailable }
+        flight.generatedKey = true
         guard let identity = state?.identity else { throw NovaAuthError.keyUnavailable }
         let clientID: String
         if case .retired = identity.registration {
             clientID = dependencies.random.makeClientID()
             try NovaAuthValidation.clientID(clientID)
-            try reserveReplacement(flight: flight)
         } else { clientID = identity.clientID }
-        flight.diagnosticPhase = .keyGeneration
+        flight.step = .keyGeneration
         run(dependencies.appAttest.createKeyWrapper(), flight: flight) { [self] result in
             let keyID = try result.get()
             try NovaAuthValidation.keyID(keyID)
@@ -92,9 +67,6 @@ private extension NovaAuth {
                 keyID: keyID,
                 registration: .unregistered
             ), context: flight.context)
-            if case .retired = identity.registration {
-                NovaAuthDiagnostics.log(.identityRecovered, logger: dependencies.logger)
-            }
             try challenge(flight: flight)
         }
     }
@@ -102,17 +74,17 @@ private extension NovaAuth {
     func challenge(flight: NovaAuthIssuanceFlight) throws {
         guard let identity = state?.identity, let keyID = identity.keyID else { throw NovaAuthError.keyUnavailable }
         let start = try dependencies.clock.now()
-        flight.diagnosticPhase = .registrationChallenge
+        flight.step = .registrationChallenge
         run(
-            dependencies.bootstrap.createRegistrationChallengeWrapper(
+            bootstrap.createRegistrationChallengeWrapper(
                 origin: flight.context.origin,
                 clientID: identity.clientID,
-                beforeSend: { [self] in try beforeBootstrapSend(flight: flight) }
+                beforeSend: { [self] in try beforeBootstrapSend(flight: flight, step: .registrationChallenge) }
             ),
             flight: flight
         ) { [self] result in
             let challenge = try result.get()
-            let bodyDigest = Data(SHA256.hash(data: try NovaAuthFraming.registrationPreimage(
+            let bodyDigest = try Data(SHA256.hash(data: NovaAuthFraming.registrationPreimage(
                 appIdentity: dependencies.appIdentity, keyID: keyID
             )))
             let hash = try NovaAuthFraming.clientDataHash(
@@ -137,16 +109,15 @@ private extension NovaAuth {
         guard let identity = state?.identity, let keyID = identity.keyID else { throw NovaAuthError.keyUnavailable }
         try validateAttemptBeforeApple(attempt, flight: flight)
         try setRegistration(.appleInFlight(attempt), flight: flight)
-        NovaAuthDiagnostics.log(.registrationStarted, logger: dependencies.logger)
         flight.irreversible = true
-        flight.diagnosticPhase = .attestation
+        flight.step = .attestation
         let wrapper = dependencies.appAttest.createAttestationWrapper(
             keyID: keyID, clientDataHash: attempt.clientDataHash,
             beforeAttest: { [self] in
                 try gate.novaAuthLocked {
                     guard self.flight === flight else { throw NovaAuthError.cancelled }
                     try validate(context: flight.context)
-                    guard try hasAttestationBudget(attempt) else { throw NovaAuthError.userActionRequired }
+                    guard try hasAttestationBudget(attempt) else { throw NovaAuthError.keyUnavailable }
                 }
             }
         )
@@ -165,7 +136,6 @@ private extension NovaAuth {
             let now = try dependencies.clock.now()
             try validateAttestationObject(object, flight: flight)
             try setRegistration(.registrationPending(NovaAuthPendingRegistration(startedAt: now)), flight: flight)
-            NovaAuthDiagnostics.log(.registrationPending, logger: dependencies.logger)
             let request = NovaAuthRegistrationRequest(
                 origin: flight.context.origin,
                 clientID: identity.clientID,
@@ -175,11 +145,11 @@ private extension NovaAuth {
                 attestation: object,
                 contentType: attempt.contentType
             )
-            let registerWrapper = dependencies.bootstrap.createRegistrationWrapper(
+            let registerWrapper = bootstrap.createRegistrationWrapper(
                 request,
-                beforeSend: { [self] in try beforeBootstrapSend(flight: flight, registration: true) }
+                beforeSend: { [self] in try beforeBootstrapSend(flight: flight, step: .registration) }
             )
-            flight.diagnosticPhase = .registration
+            flight.step = .registration
             run(registerWrapper, flight: flight) { [self] result in
                 do {
                     try result.get()
@@ -203,7 +173,7 @@ private extension NovaAuth {
     func validateAttemptBeforeApple(_ attempt: NovaAuthRegistrationAttempt, flight: NovaAuthIssuanceFlight) throws {
         guard try hasAttestationBudget(attempt) else {
             try retire(.registrationAbandoned, flight: flight)
-            throw NovaAuthError.userActionRequired
+            throw NovaAuthError.keyUnavailable
         }
     }
 
@@ -218,7 +188,7 @@ private extension NovaAuth {
         let age = now.continuousSeconds - attempt.startedAt.continuousSeconds
         guard now.bootID == attempt.startedAt.bootID, age >= 0, age < 60 else {
             try retire(.registrationAbandoned, flight: flight)
-            throw NovaAuthError.userActionRequired
+            throw NovaAuthError.keyUnavailable
         }
     }
 

@@ -115,7 +115,7 @@ private extension NovaAuthHTTPTransport {
             try NovaAuthValidation.token(String(authorization.dropFirst(7)))
             try NovaAuthRoute.validate(
                 method: method,
-                path: components.percentEncodedPath,
+                path: components.path,
                 body: request.httpBody,
                 contentType: request.value(forHTTPHeaderField: "Content-Type")
             )

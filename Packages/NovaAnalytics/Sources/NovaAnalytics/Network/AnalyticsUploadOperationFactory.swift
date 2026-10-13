@@ -1,8 +1,8 @@
 import Foundation
-import Operation_iOS
 import NovaAuth
-import SDKLogger
 import NovaOperationSupport
+import Operation_iOS
+import SDKLogger
 
 public final class AnalyticsUploadOperationFactory {
     private let auth: AnalyticsAuth
@@ -25,7 +25,7 @@ extension AnalyticsUploadOperationFactory {
         static let ungradableStatusCode = 0
     }
 
-    // Error codes distinguish identity, proof and payload failures, which require different retries.
+    /// Error codes distinguish identity, proof and payload failures, which require different retries.
     static func deliveryError(
         for response: URLResponse?,
         data: Data?,
@@ -49,7 +49,7 @@ extension AnalyticsUploadOperationFactory {
             )
         case 400:
             // Retry recognized attestation errors; other 400 responses reject the payload.
-            let authCodes: Set<String> = [
+            let authCodes: Set = [
                 "invalid_request", "unsupported_profile", "invalid_target", "unsupported_platform",
                 "unsupported_attestation_type", "unknown_client", "invalid_challenge", "invalid_proof",
                 "invalid_token", "insufficient_scope"
@@ -84,7 +84,7 @@ extension AnalyticsUploadOperationFactory {
         return sanitised(date.timeIntervalSince(now))
     }
 
-    // An elapsed delay must not constrain the next attempt.
+    /// An elapsed delay must not constrain the next attempt.
     static func sanitised(_ retryAfter: TimeInterval) -> TimeInterval? {
         guard retryAfter > 0 else {
             return nil
@@ -108,8 +108,7 @@ extension AnalyticsUploadOperationFactory: AnalyticsUploadOperationFactoryProtoc
                 path: Constants.eventsPath,
                 queryItems: [],
                 body: body,
-                contentType: "application/json",
-                intent: .background
+                contentType: "application/json"
             )
             let responseWrapper = auth.client.createResponseWrapper(for: request, beforeSend: beforeSend)
             let grade = ClosureOperation<Void> { [logger] in

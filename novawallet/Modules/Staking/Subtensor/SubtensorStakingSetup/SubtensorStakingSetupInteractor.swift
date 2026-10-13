@@ -1,6 +1,6 @@
-import UIKit
-import SubstrateSdk
 import Operation_iOS
+import SubstrateSdk
+import UIKit
 
 final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
     var presenter: SubtensorSetupInteractorOutputProtocol? {
@@ -170,7 +170,7 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
         catalogueCallStore.cancel()
 
         executeCancellable(
-            wrapper: catalogueService.createCatalogueWrapper(intent: .userInitiated),
+            wrapper: catalogueService.createCatalogueWrapper(),
             inOperationQueue: operationQueue,
             backingCallIn: catalogueCallStore,
             runningCallbackIn: .main

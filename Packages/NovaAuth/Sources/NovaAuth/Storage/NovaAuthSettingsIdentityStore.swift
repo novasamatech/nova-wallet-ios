@@ -3,7 +3,7 @@ import Keystore_iOS
 
 final class NovaAuthSettingsIdentityStore: NovaAuthIdentityStoreProtocol {
     static let storageKey = "novaAuth.profile3.state.v1"
-    // Written only by the removed reset API; activation still repairs it into a user-action-required context.
+    // Written only by the removed reset API; host activation repairs it into a fresh eligible context.
     private static let legacyResetMarker = Data(#"{"version":1,"resetPending":true}"#.utf8)
     private let settingsManager: SettingsManagerProtocol
     private let mutex = NSLock()

@@ -1,6 +1,5 @@
 import Foundation
 import Operation_iOS
-import NovaAuth
 
 protocol BittensorApiOperationFactoryProtocol: AnyObject {
     func createSubnetsWrapper() -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.SubnetCollection>>
@@ -55,9 +54,5 @@ extension BittensorApiResult: Equatable where T: Equatable {}
 extension BittensorApiOperationFactoryProtocol {
     func addContextObserver(_ owner: AnyObject, closure: @escaping () -> Void) {
         (self as? BittensorApiContextObserving)?.addContextObserver(owner, closure: closure)
-    }
-
-    func withIntent(_ intent: NovaAuthRequestIntent) -> BittensorApiOperationFactoryProtocol {
-        (self as? BittensorApiOperationFactory)?.withIntent(intent) ?? self
     }
 }

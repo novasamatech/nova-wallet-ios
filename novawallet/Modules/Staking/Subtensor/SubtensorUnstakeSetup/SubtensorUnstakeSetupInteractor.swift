@@ -89,7 +89,7 @@ extension SubtensorUnstakeSetupInteractor: SubtensorUnstakeInteractorInputProtoc
         catalogueCallStore.cancel()
 
         executeCancellable(
-            wrapper: catalogueService.createCatalogueWrapper(intent: .userInitiated),
+            wrapper: catalogueService.createCatalogueWrapper(),
             inOperationQueue: operationQueue,
             backingCallIn: catalogueCallStore,
             runningCallbackIn: .main

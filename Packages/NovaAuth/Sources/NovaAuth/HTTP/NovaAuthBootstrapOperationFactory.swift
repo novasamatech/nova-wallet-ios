@@ -1,8 +1,8 @@
 import Foundation
-import Operation_iOS
 import NovaOperationSupport
+import Operation_iOS
 
-final class NovaAuthBootstrapOperationFactory: NovaAuthBootstrapProtocol {
+final class NovaAuthBootstrapOperationFactory {
     private let http: NovaAuthHTTPProtocol
     private let clock: NovaAuthClockProtocol
 

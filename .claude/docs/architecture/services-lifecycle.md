@@ -168,13 +168,12 @@ from an individual screen's Interactor without a matching `throttle()`.
 `BittensorAuthorizedTransport` receive this same owner. Global config snapshots have monotonically
 increasing revisions; late old fetches cannot reactivate a previous origin. Origin publication
 fences prior work and clears Bittensor presentation seeds before synchronous peeks.
-Analytics consent/erasure and wallet changes never reset this authentication owner. An
-accepted origin change requires new user-initiated demand. Automatic
-analytics, cost-basis work, catalogue-price tracking and max-APY reads carry background intent.
-Catalogue requests carry intent per demand: screen entry and explicit retry are user initiated;
-portfolio subscription updates, foreground refreshes and missing-subnet follow-ups are background.
-The other flow services are used only by screen loads and explicit actions, and share the same
-auth owner and response cache.
+Analytics consent/erasure and wallet changes never reset this authentication owner. Host activation
+authorizes ordinary later demand to bootstrap after accepted origin changes and legacy-reset repair;
+activation itself creates no key and sends no auth request. This explicitly replaces the supplied
+profile-3 protocol's user-driven re-creation wording at lines 511–514. Requests carry no intent.
+Failed auth completes the caller operation; Bittensor owns its retry/presentation and Analytics
+retains batches silently for its normal later flushes, checking consent before each send/replay.
 
 The same context observer invalidates max-APY and cost-basis memos and the validator directory
 cache. Invalidation detaches pending walks and fences suspended wrappers and late chain
@@ -184,19 +183,15 @@ facade also detects a cold origin replacement/repair before publishing its first
 Failed adoption notifies when its memory fence changed.
 First activation with no prior installation does not itself invalidate a context.
 
-An actual analytics opt-in keeps one in-memory pending user-initiated admission. Retryable
-endpoint-resolution failures park it until successful endpoint adoption, with readiness distinct
-from invalidation. Each genuine opt-in receives an initial attempt; only automatic admission-
-cooldown re-arms consume the launch-wide budget of two retries. They respect the full remaining
-cooldown. Other admission failures finish the event. Withdrawal, deactivation and context
-invalidation discard it; it never follows a new generation. Uploads remain background requests.
+Each issuance flight attempts at most one new key generation. An unusable identity is retired
+and that flight fails; a later independent demand may replace it after short auth backoff.
+Ordinary proof/policy refusal preserves an existing binding. Pending unknown-client probes keep
+the same UUID/key within the same-boot 120-second uncertainty window and persist send backoff.
+Only 429 and explicit 503 attestation_unavailable apply shared auth-origin protection; ordinary
+business errors are returned to their domain. Legacy optional quotas/long-delay fields are ignored.
 
-After an origin change, an install with analytics consent on and no Bittensor
-use uploads nothing until a real Bittensor user action or consent off/on cycle allows admission.
-Restoring saved consent is insufficient. Ordinary lost-key/interrupted recovery can run on
-background demand only within the persisted two-recreation budget; registration refusal or
-abandonment requires user action. A usable bearer still wins before the owner's recovery waits;
-business sends separately enforce shared-origin and family cooldowns.
+The memory context fence advances before persistence; a failed save cannot roll it back.
+Staged writes and owed token deletion retry on activation and block admission until repaired.
 
 Auth composition retains the Keychain access group and host namespace but no longer needs an
 App Group filesystem container. The host uses `SettingsManager.shared` set/read-back. Its cached read-back cannot establish

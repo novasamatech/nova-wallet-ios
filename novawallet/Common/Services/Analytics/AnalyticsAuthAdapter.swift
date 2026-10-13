@@ -1,31 +1,12 @@
 import Foundation
-import Operation_iOS
 import NovaAnalytics
+import Operation_iOS
 
 final class AnalyticsAuthAdapter: AnalyticsAuthProvidingProtocol {
     private let provider: NovaAuthProvidingProtocol
 
-    init(provider: NovaAuthProvidingProtocol) { self.provider = provider }
-
-    var authAvailability: AnalyticsAuthAvailability { map(provider.endpointAvailability) }
-
-    func addAvailabilityObserver(
-        _ owner: AnyObject,
-        closure: @escaping (AnalyticsAuthAvailability) -> Void
-    ) -> AnalyticsAuthAvailability {
-        let current = provider.addAvailabilityObserver(owner) { [weak self] in
-            guard let self else { return }
-            closure(self.map($0))
-        }
-        return map(current)
-    }
-
-    private func map(_ availability: NovaAuthEndpointAvailability) -> AnalyticsAuthAvailability {
-        AnalyticsAuthAvailability(
-            revision: availability.revision,
-            invalidationRevision: availability.invalidationRevision,
-            auth: availability.endpoint.map { AnalyticsAuth(context: $0.context, client: $0.client) }
-        )
+    init(provider: NovaAuthProvidingProtocol) {
+        self.provider = provider
     }
 
     func createAuthWrapper() -> CompoundOperationWrapper<AnalyticsAuth> {

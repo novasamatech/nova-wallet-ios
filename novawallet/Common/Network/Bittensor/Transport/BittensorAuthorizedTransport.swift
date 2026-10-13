@@ -1,6 +1,6 @@
 import Foundation
-import Operation_iOS
 import NovaAuth
+import Operation_iOS
 
 final class BittensorAuthorizedTransport: BittensorApiAdmittingTransportProtocol {
     private let provider: NovaAuthProvidingProtocol
@@ -11,7 +11,9 @@ final class BittensorAuthorizedTransport: BittensorApiAdmittingTransportProtocol
         self.operationQueue = operationQueue
     }
 
-    var invalidationRevision: UInt64 { provider.endpointAvailability.invalidationRevision }
+    var invalidationRevision: UInt64 {
+        provider.endpointAvailability.invalidationRevision
+    }
 
     func addInvalidationObserver(_ owner: AnyObject, closure: @escaping (UInt64) -> Void) -> UInt64 {
         provider.addAvailabilityObserver(owner) { availability in
@@ -23,7 +25,7 @@ final class BittensorAuthorizedTransport: BittensorApiAdmittingTransportProtocol
         provider.addContextObserver(owner, closure: closure)
     }
 
-    func createAdmissionWrapper(intent: NovaAuthRequestIntent) -> CompoundOperationWrapper<BittensorApiAdmission> {
+    func createAdmissionWrapper() -> CompoundOperationWrapper<BittensorApiAdmission> {
         let endpointWrapper = provider.createEndpointWrapper()
         let admission = OperationCombiningService<BittensorApiAdmission>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
@@ -32,7 +34,7 @@ final class BittensorAuthorizedTransport: BittensorApiAdmittingTransportProtocol
             do {
                 endpoint = try endpointWrapper.targetOperation.extractNoCancellableResultData()
             } catch { throw BittensorAuthorizedResponseGrader.map(error) }
-            let check = endpoint.client.createAdmissionWrapper(in: endpoint.context, intent: intent)
+            let check = endpoint.client.createAdmissionWrapper(in: endpoint.context)
             let map = ClosureOperation<BittensorApiAdmission> {
                 do {
                     try check.targetOperation.extractNoCancellableResultData()
@@ -55,12 +57,12 @@ final class BittensorAuthorizedTransport: BittensorApiAdmittingTransportProtocol
     }
 
     func createResponseWrapper(for request: BittensorApiRequest) -> CompoundOperationWrapper<BittensorApiRawResponse> {
-        let admission = createAdmissionWrapper(intent: request.intent)
+        let admission = createAdmissionWrapper()
         let response = OperationCombiningService<BittensorApiRawResponse>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) { [self] in
-            createResponseWrapper(
-                for: request, admission: try admission.targetOperation.extractNoCancellableResultData()
+            try createResponseWrapper(
+                for: request, admission: admission.targetOperation.extractNoCancellableResultData()
             )
         }
         response.addDependency(wrapper: admission)
