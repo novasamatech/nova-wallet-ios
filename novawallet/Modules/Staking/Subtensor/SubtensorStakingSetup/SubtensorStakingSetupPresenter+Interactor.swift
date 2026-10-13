@@ -134,22 +134,12 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
 
     func didReceiveClaimable(_: SubtensorRootClaimable?) {}
 
-    func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
-        currentBlock = blockNumber
-
+    func didReceiveBlockNumber(_: BlockNumber) {
         forceQuoteRefresh()
-
-        if case .addStake = mode {
-            provideViewModel()
-        }
     }
 
     func didReceivePreflight(_ preflight: SubtensorStakingPreflight) {
         self.preflight = preflight
-
-        if case .addStake = mode {
-            provideViewModel()
-        }
     }
 
     func didReceiveQuote(_ quote: SubtensorTradeQuote) {

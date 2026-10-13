@@ -1,10 +1,5 @@
 import Foundation
 
-struct SubtensorRootHoldCheck {
-    let currentBlock: BlockNumber?
-    let blockTime: BlockTime
-}
-
 struct SubtensorStakeValidatingDep {
     let amount: Balance?
     let balance: AssetBalance?
@@ -16,7 +11,6 @@ struct SubtensorStakeValidatingDep {
     let onFeeRefresh: () -> Void
     let onPreflightRefresh: () -> Void
     var quoteContext: SubtensorQuoteValidatingContext?
-    var rootHoldCheck: SubtensorRootHoldCheck?
 
     var isSubnet: Bool {
         netuid != SubtensorStakingPallet.rootNetuid
@@ -163,7 +157,7 @@ private extension SubtensorStakePresenterValidating {
         dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
         selectedLocale: Locale
     ) -> [DataValidating] {
-        var validations: [DataValidating] = [
+        [
             dataValidationFactory.hotkeyIsRegistered(
                 hotkeyExists: dep.preflight?.hotkeyExists,
                 locale: selectedLocale
@@ -175,29 +169,11 @@ private extension SubtensorStakePresenterValidating {
                 subtokenEnabled: dep.preflight?.subtokenEnabled,
                 locale: selectedLocale
             )
-        ]
-
-        if let rootHoldCheck = dep.rootHoldCheck {
-            validations.append(
-                dataValidationFactory.rootUnlockIntervalElapsed(
-                    currentBlock: rootHoldCheck.currentBlock,
-                    lastStakeBlock: dep.preflight?.lastStakeBlock,
-                    unlockInterval: dep.preflight?.rootStakeUnlockInterval,
-                    blockTime: rootHoldCheck.blockTime,
-                    locale: selectedLocale
-                )
-            )
-        }
-
-        validations.append(
-            contentsOf: SubtensorCommonValidations.createNetworkStateValidations(
-                for: dep.preflight,
-                dataValidationFactory: dataValidationFactory,
-                locale: selectedLocale
-            )
+        ] + SubtensorCommonValidations.createNetworkStateValidations(
+            for: dep.preflight,
+            dataValidationFactory: dataValidationFactory,
+            locale: selectedLocale
         )
-
-        return validations
     }
 }
 

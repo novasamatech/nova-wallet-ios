@@ -62,15 +62,6 @@ final class SubtensorStakePresenterValidatingTests: XCTestCase {
                     locale: any()
                 )
             ).thenReturn(recorder.rule("subnetEnabled"))
-            when(
-                stub.rootUnlockIntervalElapsed(
-                    currentBlock: any(),
-                    lastStakeBlock: any(),
-                    unlockInterval: any(),
-                    blockTime: any(),
-                    locale: any()
-                )
-            ).thenReturn(recorder.rule("rootHold"))
             when(stub.noColdkeySwapInProgress(hasAnnouncement: any(), locale: any()))
                 .thenReturn(recorder.rule("coldkeySwap"))
             when(stub.safeModeInactive(safeModeActive: any(), locale: any())).thenReturn(recorder.rule("safeMode"))
@@ -134,8 +125,7 @@ final class SubtensorStakePresenterValidatingTests: XCTestCase {
 
     private func makeDep(
         netuid: UInt16 = SubtensorStakingPallet.rootNetuid,
-        quoteContext: SubtensorQuoteValidatingContext? = nil,
-        rootHoldCheck: SubtensorRootHoldCheck? = nil
+        quoteContext: SubtensorQuoteValidatingContext? = nil
     ) -> SubtensorStakeValidatingDep {
         SubtensorStakeValidatingDep(
             amount: 5_000_000_000,
@@ -147,8 +137,7 @@ final class SubtensorStakePresenterValidatingTests: XCTestCase {
             assetDisplayInfo: AssetBalanceDisplayInfo.units(for: 9),
             onFeeRefresh: {},
             onPreflightRefresh: {},
-            quoteContext: quoteContext,
-            rootHoldCheck: rootHoldCheck
+            quoteContext: quoteContext
         )
     }
 
@@ -201,25 +190,6 @@ final class SubtensorStakePresenterValidatingTests: XCTestCase {
                 "coldkeySwap",
                 "safeMode",
                 "priceImpact"
-            ]
-        )
-    }
-
-    func testAddStakeHoldCheckRunsTheRootUnlockRuleBeforeTheNetworkStateRules() {
-        XCTAssertEqual(
-            runRules(for: makeDep(rootHoldCheck: SubtensorRootHoldCheck(currentBlock: 5000, blockTime: 12000))),
-            [
-                "fee",
-                "preflight",
-                "spend",
-                "feeSpend",
-                "reserve",
-                "minStake",
-                "hotkey",
-                "subnetEnabled",
-                "rootHold",
-                "coldkeySwap",
-                "safeMode"
             ]
         )
     }
