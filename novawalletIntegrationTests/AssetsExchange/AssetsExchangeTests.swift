@@ -393,6 +393,42 @@ final class AssetsExchangeTests: XCTestCase {
         }
     }
 
+    func testRouteETHSnowbridgeTRACHydration() throws {
+        let params = buildCommonParams()
+
+        let assetHub = try params.chainRegistry.getChainOrError(for: KnowChainId.polkadotAssetHub)
+        let hydration = try params.chainRegistry.getChainOrError(for: KnowChainId.hydra)
+
+        let ethAssetHub = try assetHub.chainAssetForSymbolOrError("ETH-Snowbridge").chainAssetId
+        let ethHydration = try hydration.chainAssetForSymbolOrError("ETH-Snowbridge").chainAssetId
+        let tracHydration = try hydration.chainAssetForSymbolOrError("TRAC").chainAssetId
+
+        guard let graph = createGraph(for: params) else {
+            XCTFail("No graph")
+            return
+        }
+
+        let paths = graph.fetchPaths(from: ethAssetHub, to: tracHydration, maxTopPaths: 10)
+
+        for path in paths {
+            let pathDescription = AssetsExchangeGraphDescription.getDescriptionForPath(
+                edges: path,
+                chainRegistry: params.chainRegistry
+            )
+
+            Logger.shared.info("Route: \(pathDescription)")
+        }
+
+        // the cheapest candidate must bridge ETH to Hydration first instead of selling it on Asset Hub
+        let bridgesEthFirst = paths.contains { path in
+            guard let first = path.first else { return false }
+
+            return first.type == .crossChain && first.origin == ethAssetHub && first.destination == ethHydration
+        }
+
+        XCTAssertTrue(bridgesEthFirst, "No candidate route starts with ETH-Snowbridge XCM to Hydration: \(paths.count) paths")
+    }
+
     func testBestRouteDOTHOLLARPolkadot() throws {
         let params = buildCommonParams()
 
