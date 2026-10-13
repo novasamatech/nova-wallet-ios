@@ -100,7 +100,8 @@ private extension AnalyticsConsentAuthRecovery {
         if invalidated { epoch = UUID() }
         let cancellations = invalidated ? clearLocked() : []
         let waiting = pending.flatMap { event -> EventID? in
-            event.phase == .parked && current.auth != nil && current.revision > event.resolutionRevision ? event.id : nil
+            event.phase == .parked && current.auth != nil && current.revision > event.resolutionRevision
+                ? event.id : nil
         }
         if waiting != nil { pending?.phase = .admitting }
         mutex.unlock()

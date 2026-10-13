@@ -6,6 +6,8 @@ import Operation_iOS
 struct NovaAuthEndpoint {
     let context: NovaAuthContext
     let client: NovaAuthClientProtocol
+    // Captured with the accepted context, before observer delivery.
+    let invalidationRevision: UInt64
 }
 
 struct NovaAuthEndpointAvailability {
@@ -158,7 +160,11 @@ final class NovaAuthFacade: NovaAuthProvidingProtocol {
         }
         let changed = previousInvalidationID != contextInvalidationID()
             || (availability.endpoint != nil && availability.endpoint?.context != context)
-        let accepted = NovaAuthEndpoint(context: context, client: client)
+        let accepted = NovaAuthEndpoint(
+            context: context,
+            client: client,
+            invalidationRevision: availability.invalidationRevision + (changed ? 1 : 0)
+        )
         publishLocked(accepted, invalidated: changed)
         return accepted
     }
