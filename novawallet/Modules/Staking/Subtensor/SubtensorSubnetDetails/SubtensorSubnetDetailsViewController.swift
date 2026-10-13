@@ -161,14 +161,14 @@ extension SubtensorSubnetDetailsViewController: SubtensorPriceChartViewDelegate 
         chartLongPressHapticPlayer.play()
     }
 
-    func priceChartView(_: SubtensorSubnetPriceChartView, didSelectPointAt index: Int) {
+    func priceChartView(_: SubtensorSubnetPriceChartView, didSelect selection: SubtensorPriceChartSelection) {
         seekHapticPlayer.play()
-        presenter.selectChartPoint(at: index)
+        presenter.selectChart(selection)
     }
 
     func priceChartViewDidEndSelection(_: SubtensorSubnetPriceChartView) {
         seekHapticPlayer.reset()
-        presenter.selectChartPoint(at: nil)
+        presenter.selectChart(nil)
     }
 }
 
