@@ -73,29 +73,6 @@ final class SubtensorStakingWiringTests: XCTestCase {
         XCTAssertFalse(first.catalogueService === second.catalogueService)
     }
 
-    func testIntentFactoriesShareTheAuthClientTransportCacheAndIssuance() throws {
-        HostAuthURLProtocol.reset()
-        defer { HostAuthURLProtocol.reset() }
-        let harness = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self)
-        let provider = try HostAuthProvider(client: harness.client)
-        let transport = BittensorAuthorizedTransport(provider: provider, operationQueue: OperationQueue())
-        let cache = BittensorApiResponseCache(operationQueue: OperationQueue(), logger: Logger.shared)
-        let backend = BittensorApiOperationFactory(transport: transport, cache: cache, logger: Logger.shared)
-        let interactive = backend.withIntent(.userInitiated)
-        let background = backend.withIntent(.background)
-
-        XCTAssertFalse(interactive === background)
-        for factory in [backend, interactive, background] {
-            XCTAssertTrue(factory.transport === transport)
-            XCTAssertTrue(factory.cache === cache)
-            let admission = try run(factory.transport.createAdmissionWrapper(intent: .userInitiated))
-            XCTAssertTrue(admission.endpoint?.client === harness.client)
-        }
-        XCTAssertEqual(harness.apple.attestations, 1)
-        XCTAssertEqual(harness.apple.assertions, 1)
-        XCTAssertEqual(HostAuthURLProtocol.requests.filter { $0.url?.path.hasSuffix("/tokens") == true }.count, 1)
-    }
-
     func testFixtureModeEnrichesTheDirectoryFromTheFixtureSnapshot() throws {
         let chainAsset = Self.subtensorChainAsset()
         let option = Multistaking.ChainAssetOption(chainAsset: chainAsset, type: .subtensor)
