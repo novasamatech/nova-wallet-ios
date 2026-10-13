@@ -38,13 +38,11 @@ final class AnalyticsUploadingSpy: AnalyticsUploading {
 
 final class AnalyticsUploadOperationFactorySpy: AnalyticsUploadOperationFactoryProtocol {
     var uploadResult: Result<Void, Error> = .success(())
-    var onBeforeSend: (() -> Void)?
     private let recordedBodies = Locked<[Data]>([])
     var sentBodies: [Data] { recordedBodies.value }
 
     func createUploadWrapper(body: Data, beforeSend: @escaping () throws -> Void) -> CompoundOperationWrapper<Void> {
         CompoundOperationWrapper(targetOperation: ClosureOperation { [self] in
-            onBeforeSend?()
             try beforeSend()
             recordedBodies.update { $0.append(body) }
             try uploadResult.get()
@@ -54,21 +52,13 @@ final class AnalyticsUploadOperationFactorySpy: AnalyticsUploadOperationFactoryP
 
 final class AnalyticsAuthClientSpy: NovaAuthClientProtocol {
     let isSupported = true
-    var responseStatus = 204
-    var responseBody = Data()
-    var failure: Error?
-    var onBeforeSend: (() -> Void)?
-    var simulateRecovery = false
     private let recordedRequests = Locked<[NovaAuthRequest]>([])
     private let recordedAdmissions = Locked<[NovaAuthRequestIntent]>([])
     var admissions: [NovaAuthRequestIntent] { recordedAdmissions.value }
-    var onAdmission: (() -> Void)?
     var requests: [NovaAuthRequest] { recordedRequests.value }
-    let identitySentinel = UUID()
 
     func createAdmissionWrapper(in _: NovaAuthContext, intent: NovaAuthRequestIntent) -> CompoundOperationWrapper<Void> {
         recordedAdmissions.update { $0.append(intent) }
-        onAdmission?()
         return .createWithResult(())
     }
 
@@ -77,18 +67,11 @@ final class AnalyticsAuthClientSpy: NovaAuthClientProtocol {
         beforeSend: @escaping () throws -> Void
     ) -> CompoundOperationWrapper<NovaAuthResponse> {
         CompoundOperationWrapper(targetOperation: ClosureOperation { [self] in
-            if let failure { throw failure }
-            onBeforeSend?()
             try beforeSend()
             recordedRequests.update { $0.append(request) }
-            if simulateRecovery {
-                onBeforeSend?()
-                try beforeSend()
-                recordedRequests.update { $0.append(request) }
-            }
             let url = request.context.origin.url.appendingPathComponent(request.path)
-            let response = HTTPURLResponse(url: url, statusCode: responseStatus, httpVersion: nil, headerFields: nil)!
-            return NovaAuthResponse(response: response, body: responseBody)
+            let response = HTTPURLResponse(url: url, statusCode: 204, httpVersion: nil, headerFields: nil)!
+            return NovaAuthResponse(response: response, body: Data())
         })
     }
 }
