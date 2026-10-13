@@ -17,17 +17,20 @@ struct SubtensorPortfolioPriceHistories: Equatable {
     let period: SubtensorPricePeriod
     let taoFiat: PriceHistory
     let subnets: [SubtensorPriceHistory]
+    let notListedNetuids: Set<UInt16>
     let failedNetuids: Set<UInt16>
 
     init(
         period: SubtensorPricePeriod,
         taoFiat: PriceHistory,
         subnets: [SubtensorPriceHistory],
+        notListedNetuids: Set<UInt16> = [],
         failedNetuids: Set<UInt16> = []
     ) {
         self.period = period
         self.taoFiat = taoFiat
         self.subnets = subnets
+        self.notListedNetuids = notListedNetuids
         self.failedNetuids = failedNetuids
     }
 }
@@ -195,9 +198,17 @@ enum SubtensorPortfolioValueSeriesCalculator {
         let grid = taoFiatGrid(of: histories.taoFiat, period: period)
 
         guard
+            currentTaoPrice.isFinite,
+            currentTaoPrice > 0,
             portfolio.pricedTaoValue > 0,
             let totalTao = Decimal.fromSubstrateAmount(portfolio.pricedTaoValue, precision: precision),
             let newest = grid.last else {
+            return SubtensorPortfolioValueSeries(points: [], changeInFiat: nil)
+        }
+
+        let totalFiat = totalTao * currentTaoPrice
+
+        guard totalFiat.isFinite else {
             return SubtensorPortfolioValueSeries(points: [], changeInFiat: nil)
         }
 
@@ -224,7 +235,7 @@ enum SubtensorPortfolioValueSeriesCalculator {
         let newestPoint = SubtensorPortfolioValuePoint(
             date: newestDate,
             taoValue: totalTao,
-            fiatValue: totalTao * currentTaoPrice
+            fiatValue: totalFiat
         )
 
         let points = pastPoints + [newestPoint]
@@ -263,7 +274,7 @@ private extension SubtensorPortfolioValueSeriesCalculator {
             }
 
             result[history.subnet.netuid] = history.points
-                .filter { $0.taoPerAlpha > 0 }
+                .filter { $0.taoPerAlpha.isFinite && $0.taoPerAlpha > 0 }
                 .sorted { $0.date < $1.date }
         }
 
@@ -278,7 +289,7 @@ private extension SubtensorPortfolioValueSeriesCalculator {
                 continue
             }
 
-            if histories.failedNetuids.contains(group.netuid) {
+            if histories.notListedNetuids.contains(group.netuid) || histories.failedNetuids.contains(group.netuid) {
                 flatTao += value
                 continue
             }
@@ -304,7 +315,7 @@ private extension SubtensorPortfolioValueSeriesCalculator {
     }
 
     static func taoFiatGrid(of history: PriceHistory, period: SubtensorPricePeriod) -> [PriceHistoryItem] {
-        let items = history.items.filter { $0.value > 0 }.sorted { $0.startedAt < $1.startedAt }
+        let items = history.items.filter { $0.value.isFinite && $0.value > 0 }.sorted { $0.startedAt < $1.startedAt }
 
         return SubtensorPriceSeries.sliced(items, for: period) { item in
             Date(timeIntervalSince1970: TimeInterval(item.startedAt))
