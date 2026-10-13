@@ -38,11 +38,10 @@ The package has no explicit reset API. Analytics consent/erasure and wallet chan
 reset the shared identity. Requests carry a demand intent that only gates re-registration after a refusal.
 Explicit reset or an origin change fences old work and requires a new user-initiated demand.
 Analytics withdrawal/erasure only affects analytics state and never resets shared auth.
-Ordinary key-loss/registration recovery works on later background demand, with a persisted
-minimum of 60 seconds between identity-recreation attempts. An existing binding refused by
-policy is retained for a later retry. App registration policy refusal requires user action.
-Native URLCache owns HTTP freshness. Domain caches retain decoded, explicitly stale display
-seeds and coalesce admitted in-flight work; they never return a seed as a protected fetch result.
+After an origin change or explicit reset, an install with analytics consent on and no Bittensor
+use uploads nothing. Uploads can resume after a real Bittensor user action or a consent off/on
+cycle, subject to normal admission and retry limits. Saved consent and automatic uploads do
+not provide user intent.
 
 NovaAuth has no HTTP cache: its single ephemeral session stores nothing, refuses redirects and
 sends each authorized request to the network as one Operation-iOS `NetworkOperation`. Fresh, complete 200 reads carry `public, max-age=N,
@@ -51,9 +50,11 @@ Issuance commits to the canonical origin and API major 1 without a flow or scope
 obtains a fresh challenge and App Attest assertion; the server issues no refresh credential.
 
 The host maps `infraUrl` to one endpoint per process and memoises it.
-Authentication/edge refusal can back off all consumers. Business transport and service failures
-back off only analytics or Bittensor, using the same shared bearer. Retry-After is capped at 905
-seconds; token lifetime remains capped at 900 seconds.
+Native URLCache owns HTTP freshness. Domain caches retain decoded, explicitly stale display
+seeds and coalesce admitted in-flight work; they never return a seed as a protected fetch result.
+The host stamps each accepted endpoint with an invalidation revision. Bittensor carries it
+through admission and checks the latest revision before cache participation, completion and
+peek. Delayed invalidations cannot retire newer state; old work cannot restore retired seeds.
 
 ## Recovery and admission
 
@@ -116,6 +117,7 @@ Ordinary business 5xx and transport failures pass to the caller's retry policy. 
 explicit `503 attestation_unavailable` protect the shared auth origin; generic business success
 does not clear an active deadline. Usable bearer delivery precedes issuance waits, while each
 actual business send checks origin protection. No timer automatically retries a refusal.
+| Uncoded 502/503/504 and other 5xx, including coded domain 5xx except the explicit shared case above | Only the analytics or Bittensor family. |
 
 Installation storage keeps its current key/version and validates surviving security fields.
 Removed optional legacy policy fields are ignored, even if malformed; the next existing write
@@ -133,9 +135,17 @@ fall back to removeAll after conditional removal fails and reload still equals t
 record. Corrupt token reads do not delete unrelated data. Version-1 bearer records require fresh
 issuance while preserving valid installation identity. Repeated denial suppresses rejected
 credentials and applies issuance backoff before attempting deletion.
+Bittensor maps bootstrap `401 attestation_failed` to device-bound `attestationRejected`, with
+no user retry. `409 client_already_registered` is non-device-bound `bindingConflict`, also
+without retry. `403 insufficient_scope` is generic `invalidRequest`, without retry, before the
+generic 401/403 mapping. Invalid challenge, 503 and transport failures remain retryable.
 
 Analytics retains batches silently for its normal later-flush policy; consent is checked before
 every send and replay.
+The max-APY walk ends on authentication-wide refusal, final token denial, unsupported device
+or invalid auth configuration, preserving the error without caching nil or a partial maximum.
+It does not start another outer retry for those errors. Route/data gaps retain their existing
+per-target skip policy; transient failures retain bounded retries.
 
 Failure diagnostics are asynchronous and redacted: a fixed step/category, numeric status,
 allowlisted code and sanitized correlation ID. They never interpolate arbitrary Error,
@@ -172,7 +182,11 @@ The server migration is owned separately. The client uses profile 3 exclusively 
 Bittensor GET/HEAD routes, **POST /v1/analytics/events** and
 **POST /v1/bittensor/operations/search**, with the same existing `bittensor-read` issuance flow
 and bearer. Release coordination must confirm server authorization for both existing POST
-paths. This iOS change does not modify or deploy the backend; there is no legacy fallback.
+paths **and rejection of `invalid_token` before either POST reaches its business handler**.
+That pre-handler contract is what permits the client's single replay of identical POST bytes;
+the client denial predicate alone cannot establish the server's execution order. Both items
+belong beside the separately owned server migration. This iOS change does not modify or deploy
+the backend; there is no legacy fallback.
 
 ## Validation
 

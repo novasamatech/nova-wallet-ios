@@ -175,7 +175,7 @@ retains batches silently for its normal later flushes, checking consent before e
 `BittensorAuthorizedTransport` receive this same owner. Global config snapshots have monotonically
 increasing revisions; late old fetches cannot reactivate a previous origin. Origin publication
 fences prior work and clears Bittensor presentation seeds before synchronous peeks.
-Analytics consent/erasure and wallet changes never reset this authentication owner. Only an
+Analytics consent/erasure and wallet changes never reset this authentication owner. An
 explicit facade reset or accepted origin change requires new user-initiated demand. Automatic
 analytics, cost-basis work, catalogue-price tracking and max-APY reads carry background intent.
 Catalogue requests carry intent per demand: screen entry and explicit retry are user initiated;
@@ -187,6 +187,12 @@ auth owner and response cache.
 when the stored origin differs or the stored state is corrupt, so the facade's first endpoint
 already carries the current context. Failed adoption leaves no endpoint, and the next demand
 adopts again.
+The same context observer invalidates max-APY and cost-basis memos and the validator directory
+cache. Invalidation detaches pending walks and fences suspended wrappers and late chain
+enrichment. Their memo lifetimes remain unchanged within one auth context; local calculations
+do not require a separate auth request. The package exposes a context invalidation ID so the
+facade also detects a cold origin replacement/repair before publishing its first endpoint.
+Explicit reset notifies even on failure; failed adoption notifies when its memory fence changed.
 First activation with no prior installation does not itself invalidate a context.
 
 Each issuance flight attempts at most one new key generation. An unusable identity is retired
@@ -199,13 +205,15 @@ business errors are returned to their domain. Legacy optional quotas/long-delay 
 The memory context fence advances before persistence; a failed save cannot roll it back.
 Staged writes and owed token deletion retry on activation and on the next demand, and block
 admission until repaired.
+After an origin change or explicit reset, an install with analytics consent on and no Bittensor
+use uploads nothing until a real Bittensor user action or consent off/on cycle allows admission.
+Restoring saved consent is insufficient. Ordinary lost-key/interrupted recovery can run on
+background demand only within the persisted two-recreation budget; registration refusal or
+abandonment requires user action. A usable bearer still wins before the owner's recovery waits;
+business sends separately enforce shared-origin and family cooldowns.
 
 Auth composition needs neither an App Group container nor a shared Keychain access group: the
 bearer sits in the app's default Keychain group. A refused registration keeps the client ID and
 drops only the key; background demands wait out a persisted refusal delay while user-driven
 demands re-register at once. The host uses `SettingsManager.shared` set/read-back. Its cached read-back cannot establish
 durable persistence or detect every refused disk write. There is no extra commit API.
-The same context observer invalidates max-APY and cost-basis memos and the validator directory
-cache. Invalidation detaches pending walks and fences suspended wrappers and late chain
-enrichment. Their memo lifetimes remain unchanged within one auth context; local calculations
-do not require a separate auth request. First activation has no old state to invalidate.

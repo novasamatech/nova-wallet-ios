@@ -135,37 +135,56 @@ provider. Config is
 fetched once per process, so `NovaAuthFacade` maps `infraUrl` to one memoised endpoint and nothing
 observes config or context changes. Host
 activation authorizes later demand-driven bootstrap.
-
-Main-owner admission returns a usable bearer before issuance cooldown checks. Every actual
-business send checks shared-origin protection before network access. Only business
-429 and explicit 503 `attestation_unavailable` constrain that origin; ordinary business 5xx and
-transport failures pass to domain retry handling. Success does not clear an active shared deadline.
-Issuance Retry-After is memory-only; pending-probe cooldown persists. Failed authentication fails
-the operation. A later independently created operation can retry after short auth backoff; proof
-or policy denial preserves an existing binding rather than rotating its key. A refused registration
-keeps the client ID and drops only its key. `NovaAuthRequest.intent` separates user-driven demands
-(the default), which re-register at once, from `.background` ones (analytics), which wait
-for a persisted 1 h / 6 h / 24 h refusal delay that resets on an app version or context change.
-
-One origin/API-major bearer serves ordinary protected GET/HEAD and POST routes. Auth has no
-business allowlist or flow/scope. Consumers own method/path/body validation and ordinary business retry policy.
-
-Only conclusive `invalid_token` permits one replay preserving method/path/query/body: same
-expected HTTPS origin, 401 and the exact Bearer error header, plus a valid envelope for GET/POST.
-HEAD uses status/header without a body. Ingress rejects before business execution; arbitrary
-POST transport/5xx failures never replay. The NovaAuth session has no URL cache; any response
-reuse belongs to the consumer and never extends credential lifetime. No refresh token
-exists; renewal obtains a fresh token challenge and App Attest assertion. See
-[NovaAuth](../../../Packages/NovaAuth/README.md) and the
-[client diagrams](../architecture/novaauth-client-diagrams.md).
 `Packages/NovaAuth` owns profile-3 bootstrap, the single persisted bearer, bounded renewal and
 native URLCache. App consumers inject `NovaAuthFacade.shared`; never build a per-feature auth
 provider. Bittensor completes auth admission before domain coalescing or negative availability
 lookups, then authorizes again before the native request. `BittensorApiResponseCache` stores only
 decoded stale presentation seeds and in-flight waiters, never successful HTTP freshness. Older
 recommendation generations return `generationStale`, preserving a newer seed without refetch.
+Endpoint admissions carry an immutable facade invalidation revision. The decoded cache advances
+its revision floor monotonically and reconciles the latest revision before participation,
+completion and peek. Delayed or duplicate notifications preserve current-revision state;
+old admissions/completions remain fenced. Same-origin readiness does not invalidate the cache.
 Auth origin/generation changes and explicit reset also clear derived max-APY, cost-basis and
 validator-directory state. Their pending completions cannot restore a prior context's memo or
 return a directory enriched after that context was invalidated. Catalogue intent is supplied
 per request so automatic portfolio refreshes cannot recreate authentication after reset.
-See `Packages/NovaAuth/README.md` for the two existing POST backend rollout prerequisites.
+
+business send checks shared-origin protection before network access. Only business
+transport failures pass to domain retry handling. Success does not clear an active shared deadline.
+the operation. A later independently created operation can retry after short auth backoff; proof
+or policy denial preserves an existing binding rather than rotating its key. A refused registration
+keeps the client ID and drops only its key. `NovaAuthRequest.intent` separates user-driven demands
+(the default), which re-register at once, from `.background` ones (analytics), which wait
+for a persisted 1 h / 6 h / 24 h refusal delay that resets on an app version or context change.
+Main-owner admission returns a usable bearer before cooldown checks. Each business send still
+checks shared-origin and consumer-family cooldowns, including before native cache access.
+Business 429, uncoded 500 and explicit 503 `attestation_unavailable` back off the shared origin;
+uncoded 502/503/504, coded domain 5xx (except that shared 503), other 5xx and transport failures
+back off only the analytics or Bittensor family. An uncoded response is one without a valid
+parsed code; this client classification does not identify the server component that failed.
+Ordinary issuance Retry-After is in memory and lost on restart; pending/recovery waits persist.
+
+One origin/API-major bearer serves ordinary protected GET/HEAD and POST routes. Auth has no
+business allowlist or flow/scope. Consumers own method/path/body validation and ordinary business retry policy.
+Bittensor bootstrap `401 attestation_failed` maps to device-bound `attestationRejected` with
+no user retry. `409 client_already_registered` maps to non-device-bound `bindingConflict`, also
+without retry. `403 insufficient_scope` maps to generic `invalidRequest` without retry before
+the generic 401/403 branch. Invalid challenge, 503 and transport errors remain retryable.
+
+expected HTTPS origin, 401 and the exact Bearer error header, plus a valid envelope for GET/POST.
+HEAD uses status/header without a body. Ingress rejects before business execution; arbitrary
+POST transport/5xx failures never replay. The NovaAuth session has no URL cache; any response
+reuse belongs to the consumer and never extends credential lifetime. No refresh token
+exists; renewal obtains a fresh token challenge and App Attest assertion. See
+The max-APY walk propagates authentication-wide refusals and final token denial immediately,
+without another outer retry or a cached nil/partial result. Local unsupported/configuration
+failures also terminate it. Route/data gaps retain per-target skipping, and transient failures
+retain bounded retries. Authentication recovery in the same context therefore cannot be masked
+by a one-hour memo created from an auth failure.
+Only the conclusive `invalid_token` predicate permits a single replay with identical POST bytes.
+Track both POST authorizations **and pre-handler `invalid_token` rejection** beside the separately
+owned server migration: the existing `/v1/analytics/events` and `/v1/bittensor/operations/search`
+paths use the same profile-3 `bittensor-read` bearer, with no legacy fallback. The client cannot
+establish deployed handler ordering. See [NovaAuth](../../../Packages/NovaAuth/README.md) and
+the [client diagrams](../architecture/novaauth-client-diagrams.md).
