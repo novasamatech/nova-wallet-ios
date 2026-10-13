@@ -37,6 +37,7 @@ protocol SubtensorSubnetSelectPresenterProtocol: AnyObject {
     func selectRoot()
     func showSort()
     func showFilters()
+    func retry()
 }
 
 protocol SubnetSelectInteractorInputProtocol: AnyObject {
@@ -55,7 +56,7 @@ protocol SubnetSelectInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: Error)
 }
 
-protocol SubtensorSubnetSelectWireframeProtocol: AlertPresentable, ErrorPresentable, CommonRetryable,
+protocol SubtensorSubnetSelectWireframeProtocol: AlertPresentable, ErrorPresentable,
     SubtensorSortSheetPresentable, SubtensorSubnetPickerCompleting {
     func showDetails(
         from view: SubtensorSubnetSelectViewProtocol?,

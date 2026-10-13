@@ -85,7 +85,7 @@ final class SubtensorValidatorListFactoryTests: XCTestCase {
     }
 
     func testSelectableCurrentChoiceIsPreselected() {
-        let preselected = SubtensorValidatorListFactory.preselectedHotkey(
+        let preselected = SubtensorValidatorEligibility.preselectedHotkey(
             lowRated,
             in: makeDirectory(),
             isRoot: false,
