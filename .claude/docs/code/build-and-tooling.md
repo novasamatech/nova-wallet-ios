@@ -84,6 +84,10 @@ to the host app's bundle id from this table. Both Info.plists expose it as
 Each pair must match. Debug/Dev share the development App Group; Staging/Release share the
 production App Group, but their different host namespaces isolate their current bearer records.
 Keep this namespace stable for an installed host and never derive it from the extension's bundle suffix.
+NovaAuth retains that group's Keychain access group; its store configuration no longer takes
+`containerURL` or requires resolving the App Group filesystem container. Existing App Group
+entitlements remain for other host features. The NovaAuth privacy manifest no longer declares
+FileTimestamp/C617.1.
 
 Flag semantics in code:
 
