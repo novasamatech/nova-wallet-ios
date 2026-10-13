@@ -16,14 +16,14 @@ private final class AuthConfigProvider: GlobalConfigProviding {
 }
 
 final class NovaAuthFacadeTests: XCTestCase {
-    func testInvalidationRevisionIsReadableWhileAdoptionIsActivating() throws {
+    func testRevisionReadAndObserverRegistrationDoNotWaitForAnActivatingAdoption() throws {
         let harness = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self)
         let activating = DispatchSemaphore(value: 0)
         let releaseActivation = DispatchSemaphore(value: 0)
         let provider = NovaAuthFacade(
             configProvider: AuthConfigProvider(),
             client: harness.client,
-            contextInvalidationID: { nil },
+            contextInvalidationID: { UUID() },
             activate: { _ in
                 activating.signal()
                 _ = releaseActivation.wait(timeout: .now() + 5)
@@ -36,8 +36,12 @@ final class NovaAuthFacadeTests: XCTestCase {
         XCTAssertEqual(activating.wait(timeout: .now() + 5), .success)
 
         let revisionRead = DispatchSemaphore(value: 0)
+        let notified = expectation(description: "observers registered during the adoption notified")
+        notified.expectedFulfillmentCount = 2
         DispatchQueue.global().async {
             _ = transport.invalidationRevision
+            _ = transport.addInvalidationObserver(self) { _ in notified.fulfill() }
+            transport.addContextObserver(self) { notified.fulfill() }
             revisionRead.signal()
         }
 
@@ -45,6 +49,6 @@ final class NovaAuthFacadeTests: XCTestCase {
         releaseActivation.signal()
         let adopted = expectation(description: "adoption finished")
         adoptionQueue.addBarrierBlock { adopted.fulfill() }
-        wait(for: [adopted], timeout: 5)
+        wait(for: [notified, adopted], timeout: 5)
     }
 }
