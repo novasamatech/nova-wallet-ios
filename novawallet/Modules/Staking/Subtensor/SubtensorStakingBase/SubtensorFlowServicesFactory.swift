@@ -12,6 +12,8 @@ struct SubtensorFlowServices {
     let operationService: SubtensorStakingOperationServiceProtocol
     let preflightFactory: SubtensorPreflightFactoryProtocol
     let tradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol
+    let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
+    let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let currencyManager: CurrencyManagerProtocol
     let operationQueue: OperationQueue
 
@@ -51,10 +53,7 @@ enum SubtensorFlowServicesFactory {
             operationQueue: operationQueue
         )
 
-        let signer = SigningWrapperFactory().createSigningWrapper(
-            for: account.metaId,
-            accountResponse: account.chainAccount
-        )
+        let signer = createSigner(for: account)
 
         guard let operationService = try? state.createStakingOperationService(
             for: account.chainAccount.accountId,
@@ -76,6 +75,8 @@ enum SubtensorFlowServicesFactory {
             operationService: operationService,
             preflightFactory: createPreflightFactory(for: state, operationQueue: operationQueue),
             tradeQuoteFactory: state.earnServices.tradeQuoteFactory,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
             operationQueue: operationQueue
         )
@@ -83,6 +84,13 @@ enum SubtensorFlowServicesFactory {
 }
 
 private extension SubtensorFlowServicesFactory {
+    static func createSigner(for account: MetaChainAccountResponse) -> SigningWrapperProtocol {
+        SigningWrapperFactory().createSigningWrapper(
+            for: account.metaId,
+            accountResponse: account.chainAccount
+        )
+    }
+
     static func createExtrinsicService(
         for account: MetaChainAccountResponse,
         chain: ChainModel,
