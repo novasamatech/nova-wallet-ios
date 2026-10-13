@@ -171,10 +171,9 @@ activation itself creates no key and sends no auth request. This explicitly repl
 profile-3 protocol's user-driven re-creation wording at lines 511–514. Requests carry no intent.
 Failed auth completes the caller operation;
 
-Invalidation detaches pending walks and fences suspended wrappers
-and late chain enrichment. Local
-calculations do not require a separate auth request. The package exposes a context invalidation ID so the
-facade also detects a cold origin replacement/repair before publishing its first endpoint.
+Local calculations do not require a separate auth request. The package exposes a
+context invalidation ID so the facade also detects a cold origin replacement/repair before
+publishing its first endpoint.
 Failed adoption notifies when its memory fence changed.
 First activation with no prior installation does not itself invalidate a context.
 
