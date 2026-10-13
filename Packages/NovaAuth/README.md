@@ -2,18 +2,17 @@
 
 Operation-based, app-wide profile-3 authentication for iOS 16+. The host owns one `NovaAuth`
 instance and injects its `NovaAuthClientProtocol` into analytics and Bittensor. One installation
-and one persisted current bearer serve every approved consumer; renewal replaces that bearer.
+and one persisted current bearer serve every protected consumer; renewal replaces that bearer.
 
 `activate(origin:)` selects the exact HTTPS backend origin. `createAdmissionWrapper` checks a
-network access. One origin/API-major bearer authorizes ordinary protected paths:
-GET and HEAD reads and analytics POSTs. Auth validates transport syntax
+usable bearer before domain caches, while `createResponseWrapper` checks again before native
+URLCache or network access. One origin/API-major bearer authorizes ordinary protected paths:
+GET and HEAD reads, account-search POSTs, and analytics POSTs. Auth validates transport syntax
 and the selected HTTPS origin; each consumer and the server own business route/payload validation.
+Bittensor uses `/v1/bittensor/...` for reads and searches, with immutable request bodies.
+Only conclusive pre-backend `invalid_token` allows a single replay: expected-origin 401 and
 exact `WWW-Authenticate: Bearer error="invalid_token"`, plus a valid `invalid_token` envelope
 for GET/POST. HEAD uses the status and header without a response body. A credential rejected by
-usable bearer before domain caches, while `createResponseWrapper` checks again before native
-URLCache or network access. GET uses the seven allowed `/v1/bittensor/profile-3` routes.
-Analytics and operations search retain their existing POST paths and immutable request bodies.
-Only conclusive pre-backend `invalid_token` allows a single replay. A credential rejected by
 another request before sending permits one separate, bounded re-admission. Neither path
 changes the POST body or allows more than two actual sends. Caller `beforeSend` runs before
 each send, including an authorized retry; its errors are returned unchanged.
@@ -36,12 +35,6 @@ This local product policy replaces the profile-3 protocol's user-driven re-creat
 wording; it is an explicit eligibility change, not behavioral equivalence.
 The package has no explicit reset API. Analytics consent/erasure and wallet changes do not
 reset the shared identity. Requests carry a demand intent that only gates re-registration after a refusal.
-An origin change fences old work and requires a new user-initiated demand. There is no
-explicit reset API. Analytics withdrawal/erasure only affects analytics state and never resets
-shared auth. After an origin change, an install with analytics consent on and no Bittensor
-use uploads nothing. Uploads can resume after a real Bittensor user action or a consent off/on
-cycle, subject to normal admission and retry limits. Saved consent and automatic uploads do
-not provide user intent.
 
 NovaAuth has no HTTP cache: its single ephemeral session stores nothing, refuses redirects and
 sends each authorized request to the network as one Operation-iOS `NetworkOperation`. Fresh, complete 200 reads carry `public, max-age=N,
@@ -117,7 +110,6 @@ Ordinary business 5xx and transport failures pass to the caller's retry policy. 
 explicit `503 attestation_unavailable` protect the shared auth origin; generic business success
 does not clear an active deadline. Usable bearer delivery precedes issuance waits, while each
 actual business send checks origin protection. No timer automatically retries a refusal.
-| Uncoded 502/503/504 and other 5xx, including coded domain 5xx except the explicit shared case above | Only the analytics or Bittensor family. |
 
 Installation storage keeps its current key/version and validates surviving security fields.
 Removed optional legacy policy fields are ignored, even if malformed; the next existing write
@@ -135,17 +127,12 @@ fall back to removeAll after conditional removal fails and reload still equals t
 record. Corrupt token reads do not delete unrelated data. Version-1 bearer records require fresh
 issuance while preserving valid installation identity. Repeated denial suppresses rejected
 credentials and applies issuance backoff before attempting deletion.
-Bittensor maps bootstrap `401 attestation_failed` to device-bound `attestationRejected`, with
-no user retry. `409 client_already_registered` is non-device-bound `bindingConflict`, also
-without retry. `403 insufficient_scope` is generic `invalidRequest`, without retry, before the
-generic 401/403 mapping. Invalid challenge, 503 and transport failures remain retryable.
 
-Analytics retains batches silently for its normal later-flush policy; consent is checked before
 every send and replay.
-The max-APY walk ends on authentication-wide refusal, final token denial, unsupported device
-or invalid auth configuration, preserving the error without caching nil or a partial maximum.
-It does not start another outer retry for those errors. Route/data gaps retain their existing
-per-target skip policy; transient failures retain bounded retries.
+Bittensor retains typed error grading and its own retry/presentation decisions, including
+nonretryable configuration, unsupported-device, registration-refusal and final-denial errors.
+Max-APY auth refusal terminates without caching a partial result. Analytics retains batches
+silently for its normal later-flush policy; consent is checked before every send and replay.
 
 Failure diagnostics are asynchronous and redacted: a fixed step/category, numeric status,
 allowlisted code and sanitized correlation ID. They never interpolate arbitrary Error,
@@ -178,26 +165,15 @@ therefore permits one replay preserving the original method, path, query and bod
 Consumers grade business responses through `NovaAuthResponse.serverError` and `requestID`, the
 package's own envelope parser: status, lowercase code up to 64 characters, sanitized
 `X-Request-ID` and numeric Retry-After clamped to 905 seconds.
-The server migration is owned separately. The client uses profile 3 exclusively for the seven
-Bittensor GET routes, **POST /v1/analytics/events** and
-**POST /v1/bittensor/operations/search**, with the same existing `bittensor-read` issuance flow
-and bearer. Release coordination must confirm server authorization for both existing POST
-paths **and rejection of `invalid_token` before either POST reaches its business handler**.
-That pre-handler contract is what permits the client's single replay of identical POST bytes;
-the client denial predicate alone cannot establish the server's execution order. Both items
-belong beside the separately owned server migration. This iOS change does not modify or deploy
-the backend; there is no legacy fallback.
+The removed root-yield read returns unavailable/cache miss locally. Its optional presentation
+service returns nil without a request, keeping root staking screens usable without a rate.
+Alpha yields reject netuid 0 locally. New root staking APIs belong to their domain feature.
 
 ## Validation
 
+Run retained XCTest suites using `xcodebuild test -scheme NovaAuth` on an iOS simulator;
+`swift test` targets macOS and is inappropriate for these iOS dependencies. Existing checks
 exercise framing, operation recovery, same-binding refusal, pending registration, origin fencing,
-bounded token replay, shared throttling and exchange release. Real App Attest,
-Run the package XCTest suite with `xcodebuild test -scheme NovaAuth` on an iOS simulator;
-`swift test` targets macOS and is inappropriate for these iOS dependencies. Its 14 tests run the
-real client, bootstrap factory and settings identity store against one fake server: the profile-3
-vectors, registration and recovery limits, the escalating recreation delay, the deferred
-attestation window, origin-change fencing, token replay, cooldown scopes and exchange release.
-The app tests cover the non-blocking availability read and observer registration, delayed and
-stale cache invalidation, Bittensor flows through real NovaAuth and Max-APY termination. App/extension App Groups are development
-for Debug/Dev and production for Staging/Release. Real App Attest, signed Keychain access-group
-sharing, protected data and physical reboot behavior still require device validation.
+bounded token replay, shared throttling and exchange release. App tests cover facade publication,
+Bittensor cache invalidation, domain recovery/presentation and Subtensor flows. Real App Attest,
+signed Keychain access-group sharing, protected data and physical reboot behavior need device validation.
