@@ -133,5 +133,31 @@ module should call `EvmTransactionService`, not the RPC layer.
 
 `Packages/NovaAuth` owns profile-3 bootstrap, the single persisted bearer, bounded renewal and
 native URLCache. App consumers inject `NovaAuthFacade.shared`; never build a per-feature auth
-provider. Their pending completions cannot restore a prior context's memo or
-return a directory enriched after that context was invalidated. See `Packages/NovaAuth/README.md` for the two existing POST backend rollout prerequisites.
+provider. Endpoint admissions carry an immutable facade invalidation revision. The decoded cache advances
+its revision floor monotonically and reconciles the latest revision before participation,
+completion and peek. Delayed or duplicate notifications preserve current-revision state;
+old admissions/completions remain fenced. Same-origin readiness does not invalidate the cache.
+Their pending completions cannot restore a prior context's memo or
+return a directory enriched after that context was invalidated.
+
+Main-owner admission returns a usable bearer before cooldown checks. Each business send still
+checks shared-origin and consumer-family cooldowns, including before native cache access.
+Business 429, uncoded 500 and explicit 503 `attestation_unavailable` back off the shared origin;
+uncoded 502/503/504, coded domain 5xx (except that shared 503), other 5xx and transport failures
+back off only the analytics family. An uncoded response is one without a valid
+parsed code; this client classification does not identify the server component that failed.
+Ordinary issuance Retry-After is in memory and lost on restart; pending/recovery waits persist.
+
+`409 client_already_registered` maps to non-device-bound `bindingConflict`, also
+without retry. `403 insufficient_scope` maps to generic `invalidRequest` without retry before
+the generic 401/403 branch. Invalid challenge, 503 and transport errors remain retryable.
+
+Local unsupported/configuration
+failures also terminate it. Route/data gaps retain per-target skipping, and transient failures
+retain bounded retries. Authentication recovery in the same context therefore cannot be masked
+by a one-hour memo created from an auth failure.
+
+Only the conclusive `invalid_token` predicate permits a single replay with identical POST bytes.
+The client cannot
+establish deployed handler ordering. See [NovaAuth](../../../Packages/NovaAuth/README.md) and
+the [client diagrams](../architecture/novaauth-client-diagrams.md).

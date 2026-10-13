@@ -44,7 +44,13 @@ Until one of those happens, the three packages travel together.
 
 Nothing in a package may reference an app type — no `ApplicationConfig`, `GlobalConfig`,
 `Logger`, `UserDataStorageFacade`, `OperationManagerFacade`, `R.string` or
-`ApplicationServiceProtocol`. Host dependencies arrive through `AnalyticsConfiguration`.
+`ApplicationServiceProtocol`. Host dependencies arrive through `AnalyticsConfiguration` or
+`NovaAuthConfiguration`. The host's `NovaAuthFacade.shared` injects the same auth owner into
+analytics; the package owns recovery, storage and DeviceCheck. The app owns
+configuration/context publication error presentation; `NovaAnalytics` owns the
+bounded consent re-arm. Auth store configuration needs a Keychain access group and host
+namespace, with no App Group filesystem-container dependency. Settings managers are injected
+through `NovaAuthConfiguration`; set/read-back provides no durable commit acknowledgement.
 Package test targets take no external test dependencies: XCTest and hand-written doubles,
 never Cuckoo.
 
