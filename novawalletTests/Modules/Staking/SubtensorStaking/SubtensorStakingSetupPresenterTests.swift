@@ -740,7 +740,7 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
         verify(setup.wireframe, never()).showSlippageSettings(from: any(), current: any(), completion: any())
     }
 
-    func testAddStakeDuringTheRootHoldShowsTheLockAndDisablesContinue() throws {
+    func testAddStakeDuringTheRootHoldKeepsContinueEnabledAndHandsOverToConfirmation() throws {
         let position = makePosition(hotkey: hotkey, netuid: SubtensorStakingPallet.rootNetuid, stake: 5000)
         let setup = makeSetup(mode: .addStake(position: position))
 
@@ -748,14 +748,10 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
         setup.presenter.didReceiveBlockNumber(1100)
         setup.presenter.updateAmount(1)
 
-        let viewModel = try lastViewModel(setup)
-
-        XCTAssertNotNil(viewModel.holdWarning)
-        XCTAssertFalse(viewModel.action.isEnabled)
-
-        setup.presenter.didReceiveBlockNumber(8200)
-
-        XCTAssertNil(try lastViewModel(setup).holdWarning)
         XCTAssertTrue(try lastViewModel(setup).action.isEnabled)
+
+        let model = proceedAndCaptureModel(setup)
+
+        XCTAssertEqual(model?.origin, .addStake)
     }
 }
