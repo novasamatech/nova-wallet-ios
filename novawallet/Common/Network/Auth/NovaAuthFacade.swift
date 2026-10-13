@@ -32,15 +32,6 @@ protocol NovaAuthProvidingProtocol: AnyObject {
     ) -> NovaAuthEndpointAvailability
 }
 
-extension NovaAuthProvidingProtocol {
-    var endpointAvailability: NovaAuthEndpointAvailability { NovaAuthEndpointAvailability() }
-    func addAvailabilityObserver(
-        _: AnyObject,
-        closure _: @escaping (NovaAuthEndpointAvailability) -> Void
-    ) -> NovaAuthEndpointAvailability { endpointAvailability }
-    func addContextObserver(_: AnyObject, closure _: @escaping () -> Void) {}
-}
-
 final class NovaAuthFacade: NovaAuthProvidingProtocol {
     private struct Observer {
         weak var owner: AnyObject?
@@ -55,9 +46,7 @@ final class NovaAuthFacade: NovaAuthProvidingProtocol {
     private let configProvider: GlobalConfigProviding
     private let client: NovaAuthClientProtocol?
     private let activate: (NovaAuthOrigin) throws -> NovaAuthContext
-    private let resetAuth: () throws -> Void
     private let contextInvalidationID: () -> UUID?
-    private let isUnitTesting: Bool
     private let mutex = NSRecursiveLock()
     private let availabilityLock = NSLock()
     private var publishedAvailability = NovaAuthEndpointAvailability()
@@ -68,23 +57,19 @@ final class NovaAuthFacade: NovaAuthProvidingProtocol {
     init(
         configProvider: GlobalConfigProviding,
         client: NovaAuthClientProtocol?,
-        isUnitTesting: Bool = false,
-        contextInvalidationID: @escaping () -> UUID? = { nil },
-        activate: @escaping (NovaAuthOrigin) throws -> NovaAuthContext,
-        reset: @escaping () throws -> Void
+        contextInvalidationID: @escaping () -> UUID?,
+        activate: @escaping (NovaAuthOrigin) throws -> NovaAuthContext
     ) {
         self.configProvider = configProvider
         self.client = client
-        self.isUnitTesting = isUnitTesting
         self.contextInvalidationID = contextInvalidationID
         self.activate = activate
-        resetAuth = reset
         configProvider.addSnapshotObserver(self) { [weak self] snapshot in
             _ = try? self?.adopt(snapshot)
         }
     }
 
-    var isSupported: Bool { !isUnitTesting && client?.isSupported == true }
+    var isSupported: Bool { client?.isSupported == true }
 
     var endpointAvailability: NovaAuthEndpointAvailability { availability }
 
@@ -114,16 +99,6 @@ final class NovaAuthFacade: NovaAuthProvidingProtocol {
         availabilityObservers = availabilityObservers.filter { $0.owner != nil && $0.owner !== owner }
         availabilityObservers.append(AvailabilityObserver(owner: owner, closure: closure))
         return availability
-    }
-
-    func reset() throws {
-        mutex.lock()
-        let result = Result { try resetAuth() }
-        publishLocked(nil, invalidated: true)
-        let callbacks = callbacksLocked(invalidated: true)
-        mutex.unlock()
-        callbacks.forEach { $0() }
-        try result.get()
     }
 
     private func adopt(_ snapshot: GlobalConfigSnapshot) throws -> NovaAuthEndpoint {
@@ -240,8 +215,7 @@ extension NovaAuthFacade {
             activate: { origin in
                 guard let client else { throw NovaAuthError.unsupported }
                 return try client.activate(origin: origin)
-            },
-            reset: { try client?.reset() }
+            }
         )
     }()
 }

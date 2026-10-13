@@ -39,7 +39,7 @@ final class NovaAuthDeviceCheckService: NovaAuthAppAttestProtocol {
     func createAttestationWrapper(
         keyID: String,
         clientDataHash: Data,
-        beforeAttest: @escaping () throws -> Void = {}
+        beforeAttest: @escaping () throws -> Void
     ) -> CompoundOperationWrapper<Data> {
         createProofWrapper(keyID: keyID, clientDataHash: clientDataHash, attestation: true, beforeAttest: beforeAttest)
     }

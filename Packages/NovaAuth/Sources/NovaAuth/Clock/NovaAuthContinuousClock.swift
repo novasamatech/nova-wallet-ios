@@ -7,13 +7,6 @@ struct NovaAuthContinuousClock: NovaAuthClockProtocol {
 
     init() { read = Self.readSystem }
 
-    init(
-        read: @escaping () throws
-            -> (ticks: UInt64, numerator: UInt32, denominator: UInt32, seconds: Int64, microseconds: Int32)
-    ) {
-        self.read = read
-    }
-
     func now() throws -> NovaAuthTime {
         do {
             let sample = try read()

@@ -3,7 +3,7 @@ import Foundation
 extension BittensorApiError {
     var isDeviceBound: Bool {
         switch self {
-        case .unsupportedDevice, .attestationRejected, .attestationBackoff, .attestationFailure, .configuration:
+        case .unsupportedDevice, .attestationRejected, .attestationFailure, .configuration:
             return true
         case .bindingConflict, .invalidRequest, .generationStale, .routeNotPublished, .datasetUnavailable, .rateLimited,
              .upstreamUnavailable, .upstreamInvalidResponse,
@@ -15,7 +15,7 @@ extension BittensorApiError {
     var allowsUserRetry: Bool {
         switch self {
         case .unsupportedDevice, .configuration, .attestationRejected, .bindingConflict,
-             .attestationBackoff, .attestationFailure, .invalidRequest:
+             .attestationFailure, .invalidRequest:
             return false
         case .generationStale, .routeNotPublished, .datasetUnavailable, .rateLimited,
              .upstreamUnavailable, .upstreamInvalidResponse,

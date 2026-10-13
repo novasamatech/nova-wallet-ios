@@ -1,6 +1,5 @@
 import Foundation
 import Operation_iOS
-import NovaAuth
 
 public protocol AnalyticsEventQueueProtocol {
     func enqueueWrapper(
@@ -73,8 +72,6 @@ public protocol AnalyticsUploading: AnyObject {
 }
 
 public enum AnalyticsTransportError: Error, Equatable {
-    /// Retain an authorization-refused batch.
-    case rejected(statusCode: Int)
     /// Retain a batch refused by the gateway.
     case proofRefused(statusCode: Int)
     case clientError(statusCode: Int)

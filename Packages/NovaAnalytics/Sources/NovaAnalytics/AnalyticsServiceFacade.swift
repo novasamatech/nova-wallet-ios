@@ -3,7 +3,6 @@ import Foundation_iOS
 import Keystore_iOS
 import Operation_iOS
 import SDKLogger
-import NovaAuth
 
 public final class AnalyticsServiceFacade {
     public let consent: AnalyticsConsentManagerProtocol

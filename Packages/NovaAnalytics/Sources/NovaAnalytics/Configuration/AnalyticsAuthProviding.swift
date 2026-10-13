@@ -27,18 +27,8 @@ public struct AnalyticsAuthAvailability {
 public protocol AnalyticsAuthProvidingProtocol: AnyObject {
     var authAvailability: AnalyticsAuthAvailability { get }
     func createAuthWrapper() -> CompoundOperationWrapper<AnalyticsAuth>
-    func addContextObserver(_ owner: AnyObject, closure: @escaping () -> Void)
     func addAvailabilityObserver(
         _ owner: AnyObject,
         closure: @escaping (AnalyticsAuthAvailability) -> Void
     ) -> AnalyticsAuthAvailability
-}
-
-public extension AnalyticsAuthProvidingProtocol {
-    var authAvailability: AnalyticsAuthAvailability { AnalyticsAuthAvailability() }
-    func addContextObserver(_: AnyObject, closure _: @escaping () -> Void) {}
-    func addAvailabilityObserver(
-        _: AnyObject,
-        closure _: @escaping (AnalyticsAuthAvailability) -> Void
-    ) -> AnalyticsAuthAvailability { authAvailability }
 }

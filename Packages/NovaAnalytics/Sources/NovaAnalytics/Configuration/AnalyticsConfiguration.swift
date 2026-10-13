@@ -1,7 +1,6 @@
 import Foundation
 import Keystore_iOS
 import SDKLogger
-import NovaAuth
 
 public struct AnalyticsConfiguration {
     public let authProvider: AnalyticsAuthProvidingProtocol

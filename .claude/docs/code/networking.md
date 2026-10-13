@@ -141,7 +141,7 @@ Endpoint admissions carry an immutable facade invalidation revision. The decoded
 its revision floor monotonically and reconciles the latest revision before participation,
 completion and peek. Delayed or duplicate notifications preserve current-revision state;
 old admissions/completions remain fenced. Same-origin readiness does not invalidate the cache.
-Auth origin/generation changes and explicit reset also clear derived max-APY, cost-basis and
+Auth origin/generation changes also clear derived max-APY, cost-basis and
 validator-directory state. Their pending completions cannot restore a prior context's memo or
 return a directory enriched after that context was invalidated. Catalogue intent is supplied
 per request so automatic portfolio refreshes cannot recreate authentication after reset.

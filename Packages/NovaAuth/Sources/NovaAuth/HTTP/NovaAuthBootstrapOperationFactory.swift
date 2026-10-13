@@ -14,7 +14,7 @@ final class NovaAuthBootstrapOperationFactory: NovaAuthBootstrapProtocol {
     func createRegistrationChallengeWrapper(
         origin: NovaAuthOrigin,
         clientID: String,
-        beforeSend: @escaping () throws -> Void = {}
+        beforeSend: @escaping () throws -> Void
     ) -> CompoundOperationWrapper<NovaAuthChallenge> {
         createWrapper(
             origin: origin,
@@ -29,7 +29,7 @@ final class NovaAuthBootstrapOperationFactory: NovaAuthBootstrapProtocol {
     func createTokenChallengeWrapper(
         origin: NovaAuthOrigin,
         clientID: String,
-        beforeSend: @escaping () throws -> Void = {}
+        beforeSend: @escaping () throws -> Void
     ) -> CompoundOperationWrapper<NovaAuthChallenge> {
         createWrapper(
             origin: origin,
@@ -43,7 +43,7 @@ final class NovaAuthBootstrapOperationFactory: NovaAuthBootstrapProtocol {
 
     func createRegistrationWrapper(
         _ request: NovaAuthRegistrationRequest,
-        beforeSend: @escaping () throws -> Void = {}
+        beforeSend: @escaping () throws -> Void
     ) -> CompoundOperationWrapper<Void> {
         createWrapper(
             origin: request.origin,
@@ -57,7 +57,7 @@ final class NovaAuthBootstrapOperationFactory: NovaAuthBootstrapProtocol {
 
     func createTokenWrapper(
         _ request: NovaAuthTokenRequest,
-        beforeSend: @escaping () throws -> Void = {}
+        beforeSend: @escaping () throws -> Void
     ) -> CompoundOperationWrapper<NovaAuthTokenResponse> {
         createWrapper(
             origin: request.origin,
