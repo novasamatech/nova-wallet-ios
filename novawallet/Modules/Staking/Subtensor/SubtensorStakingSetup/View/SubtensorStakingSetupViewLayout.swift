@@ -65,12 +65,6 @@ final class SubtensorStakingSetupViewLayout: UIView {
         label.isHidden = true
     }
 
-    let holdAlertView: InlineAlertView = {
-        let view = InlineAlertView.warning()
-        view.isHidden = true
-        return view
-    }()
-
     let captionLabel: UILabel = .create { label in
         label.apply(style: .caption1Secondary)
         label.textAlignment = .center
@@ -124,8 +118,7 @@ private extension SubtensorStakingSetupViewLayout {
     }
 
     func setupLayout() {
-        let bottomStack = UIView.vStack(spacing: 16, [holdAlertView, captionLabel, actionButton])
-        bottomStack.setCustomSpacing(12, after: holdAlertView)
+        let bottomStack = UIView.vStack(spacing: 16, [captionLabel, actionButton])
 
         addSubview(bottomStack)
         bottomStack.snp.makeConstraints { make in
