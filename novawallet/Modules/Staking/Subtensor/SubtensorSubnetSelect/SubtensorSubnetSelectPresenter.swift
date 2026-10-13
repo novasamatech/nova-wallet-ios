@@ -11,6 +11,7 @@ final class SubtensorSubnetSelectPresenter {
     let earnSettings: SubtensorEarnSettingsProtocol
 
     private var entries: [SubtensorSubnetListEntry]?
+    private var entriesError: Error?
     private var weeklyPrices: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]?
     private var ageBlocks: [UInt16: UInt64] = [:]
     private var subnetLogos: SubtensorSubnetLogos?
@@ -69,7 +70,8 @@ private extension SubtensorSubnetSelectPresenter {
             sort: sort,
             filters: filters,
             subnetLogos: subnetLogos,
-            stamp: entries.flatMap { SubtensorBackendStamp.aggregate($0.flatMap(\.subnet.stamps)) }
+            stamp: entries.flatMap { SubtensorBackendStamp.aggregate($0.flatMap(\.subnet.stamps)) },
+            entriesError: entriesError
         )
 
         view?.didReceive(list: viewModelFactory.createListViewModel(for: state, locale: selectedLocale))
@@ -134,13 +136,6 @@ private extension SubtensorSubnetSelectPresenter {
         isWeeklyPending = true
 
         interactor.loadWeeklyPrices(for: subnets)
-    }
-
-    func retryEntries() {
-        entries = nil
-        provideList()
-
-        interactor.refresh()
     }
 
     func applySort(_ newSort: SubtensorSubnetSort) {
@@ -257,11 +252,20 @@ extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol
 
         provideList()
     }
+
+    func retry() {
+        entries = nil
+        entriesError = nil
+        provideList()
+
+        interactor.refresh()
+    }
 }
 
 extension SubtensorSubnetSelectPresenter: SubnetSelectInteractorOutputProtocol {
     func didReceive(entries: [SubtensorSubnetListEntry]) {
         self.entries = entries
+        entriesError = nil
 
         provideList()
         provideFilters()
@@ -299,16 +303,9 @@ extension SubtensorSubnetSelectPresenter: SubnetSelectInteractorOutputProtocol {
     }
 
     func didReceiveError(_ error: Error) {
-        entries = []
+        entries = nil
+        entriesError = error
         provideList()
-
-        if let apiError = error as? BittensorApiError, !apiError.allowsUserRetry {
-            return
-        }
-
-        wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-            self?.retryEntries()
-        }
     }
 }
 

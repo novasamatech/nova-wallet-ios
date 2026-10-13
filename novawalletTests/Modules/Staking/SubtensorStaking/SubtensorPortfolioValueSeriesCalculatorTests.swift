@@ -26,6 +26,7 @@ final class SubtensorPortfolioValueSeriesCalculatorTests: XCTestCase {
             ),
             subnets: [
                 history(netuid: 64, [(0, "0.05"), (302_400, "0.06"), (604_800, "0.08")]),
+                history(netuid: 19, [(0, "0.05"), (302_400, "0.05"), (604_800, "0.05")]),
                 history(netuid: 7, [(0, "0.5"), (302_400, "0.5"), (604_800, "0.5")])
             ]
         )
@@ -49,7 +50,7 @@ final class SubtensorPortfolioValueSeriesCalculatorTests: XCTestCase {
         XCTAssertEqual(series, expected)
     }
 
-    func testSubnetWhoseHistoryStopsBeforeTheGridEndIsValuedAtSpot() throws {
+    func testSubnetWhoseHistoryStopsBeforeTheGridEndLeavesTheSeriesEmpty() throws {
         let portfolio = SubtensorPortfolio(
             root: nil,
             subnets: [
@@ -84,17 +85,7 @@ final class SubtensorPortfolioValueSeriesCalculatorTests: XCTestCase {
             precision: 9
         )
 
-        let expected = try SubtensorPortfolioValueSeries(
-            points: [
-                point(at: 0, taoValue: "7", fiatValue: "2800"),
-                point(at: 302_400, taoValue: "8", fiatValue: "3280"),
-                point(at: 453_600, taoValue: "9", fiatValue: "3735"),
-                point(at: 604_800, taoValue: "10", fiatValue: "4200")
-            ],
-            changeInFiat: XCTUnwrap(Decimal(string: "0.5"))
-        )
-
-        XCTAssertEqual(series, expected)
+        XCTAssertEqual(series, SubtensorPortfolioValueSeries(points: [], changeInFiat: nil))
     }
 
     private func group(netuid: UInt16, alpha: Balance, taoValue: Balance?) -> SubtensorPortfolioGroup {

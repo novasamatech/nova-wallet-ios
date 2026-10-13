@@ -102,6 +102,9 @@ private extension SubtensorSubnetSelectViewController {
         rootView.sortView.control.addTarget(self, action: #selector(actionSort), for: .touchUpInside)
         rootView.filterButton.addTarget(self, action: #selector(actionFilters), for: .touchUpInside)
         rootView.rootBarView.addTarget(self, action: #selector(actionRoot), for: .touchUpInside)
+        rootView.errorView.onLinkTap = { [weak self] in
+            self?.presenter.retry()
+        }
     }
 
     func setupLocalization() {
@@ -130,6 +133,12 @@ private extension SubtensorSubnetSelectViewController {
             rootView.bind(emptyText: text)
         } else {
             rootView.bind(emptyText: nil)
+        }
+
+        if case let .failed(failure) = viewModel.content {
+            rootView.bind(failure: failure)
+        } else {
+            rootView.bind(failure: nil)
         }
 
         rootView.tableView.reloadData()
