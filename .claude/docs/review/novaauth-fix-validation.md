@@ -9,17 +9,27 @@ pre-handler token rejection belong to the separately owned backend migration.
 ## Lean test suite
 
 After the main-thread stall fix and the dead-code removal, the feature's tests were reduced to
-the key scenarios. They now add 629 test lines instead of about 8,200. NovaAuth keeps 12 tests
+the key scenarios. They now add 671 test lines instead of about 8,200. NovaAuth keeps 14 tests
 that run the real client, bootstrap factory and settings identity store against one fake server.
 NovaAnalytics passes 45 tests, two of them for offline opt-in parking and withdrawal. The 24
-feature-related app classes pass 142 tests, including the stall test, a delayed-invalidation cache
-test, refused-registration and offline flow tests and a Max-APY termination test. Each kept key
-test failed with its fix reverted and passed after restoration: invalid-token replay, user-only
-refused registration, the two-recreation budget, the attestation age guard, both cooldown scopes,
-exchange release, offline consent parking and withdrawal, the non-blocking availability read,
-the cache revision guard, the refused-attestation and offline error mappings and Max-APY
-termination. Test counts and test-specific claims in the sections below describe the earlier,
-larger suite.
+feature-related app classes pass 143 tests, including the stall test, delayed-invalidation and
+stale-admission cache tests, refused-registration and offline flow tests and a Max-APY
+termination test. Each kept key test failed with its fix reverted and passed after restoration:
+invalid-token replay, user-only refused registration, the two-recreation budget, the escalating
+recreation delay, the attestation age guard, the deferred-attestation retry inside its window,
+both cooldown scopes, exchange release, offline consent parking and withdrawal, the non-blocking
+availability read and observer registration, the cache revision guard, stale-admission rejection,
+the refused-attestation and offline error mappings and Max-APY termination. Test counts and
+test-specific claims in the sections below describe the earlier, larger suite.
+
+The explicit `NovaAuth.reset()` API had no caller and was removed; a legacy reset marker is still
+repaired on activation. The late-token generation fence is now tested through an origin change.
+It only fails when the flight detach, context validation and identity discard are all disabled.
+
+Two approved behaviours are deliberately no longer pinned by any test under the lean mandate:
+the D4 cap of two automatic consent re-arms per launch, and the Max-APY termination
+classification for the alpha-yield branch and for final token denial. Only the root-yield refusal
+path is tested. Do not assume a regression in either would fail the suite.
 
 ## Round 3 corrections
 
