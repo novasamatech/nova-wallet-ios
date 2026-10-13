@@ -1,8 +1,7 @@
 import Foundation
 import Operation_iOS
 
-public enum NovaAuthRequestIntent: Equatable { case userInitiated, background }
-public enum NovaAuthMethod: String { case get = "GET", post = "POST" }
+public enum NovaAuthMethod: String { case get = "GET", head = "HEAD", post = "POST" }
 
 public struct NovaAuthRequest {
     public let context: NovaAuthContext
@@ -11,7 +10,6 @@ public struct NovaAuthRequest {
     public let queryItems: [URLQueryItem]
     public let body: Data?
     public let contentType: String?
-    public let intent: NovaAuthRequestIntent
 
     public init(
         context: NovaAuthContext,
@@ -19,8 +17,7 @@ public struct NovaAuthRequest {
         path: String,
         queryItems: [URLQueryItem],
         body: Data?,
-        contentType: String?,
-        intent: NovaAuthRequestIntent
+        contentType: String?
     ) throws {
         try NovaAuthRoute.validate(method: method, path: path, body: body, contentType: contentType)
         self.context = context
@@ -29,7 +26,6 @@ public struct NovaAuthRequest {
         self.queryItems = queryItems
         self.body = body
         self.contentType = contentType
-        self.intent = intent
         _ = try makeURL()
     }
 
@@ -58,8 +54,7 @@ public struct NovaAuthResponse {
 public protocol NovaAuthClientProtocol: AnyObject {
     var isSupported: Bool { get }
     func createAdmissionWrapper(
-        in context: NovaAuthContext,
-        intent: NovaAuthRequestIntent
+        in context: NovaAuthContext
     ) -> CompoundOperationWrapper<Void>
     func createResponseWrapper(
         for request: NovaAuthRequest,

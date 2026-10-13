@@ -6,20 +6,21 @@ protocol NovaAuthCredentialAuthority: AnyObject {
     var requestQueue: OperationQueue { get }
     func demand(
         context: NovaAuthContext,
-        intent: NovaAuthRequestIntent,
+        expectedClientID: String?,
         cancellation: NovaAuthCancellation,
         completion: @escaping (Result<NovaAuthTokenRecord, Error>) -> Void
     )
     func checkSend(request: NovaAuthRequest, record: NovaAuthTokenRecord) throws
     func receive(_ result: Result<NovaAuthResponse, Error>, request: NovaAuthRequest) throws
     func reject(record: NovaAuthTokenRecord, repeated: Bool, requestID: String?) throws
-    func recovered(requestID: String?)
 }
 
 final class NovaAuthAuthorizedOperationFactory {
     private let owner: NovaAuthCredentialAuthority
 
-    init(owner: NovaAuthCredentialAuthority) { self.owner = owner }
+    init(owner: NovaAuthCredentialAuthority) {
+        self.owner = owner
+    }
 
     func createWrapper(
         request: NovaAuthRequest,
@@ -46,7 +47,7 @@ private final class NovaAuthBusinessExchange {
     let beforeSend: () throws -> Void
     let completion: (Result<NovaAuthResponse, Error>) -> Void
     private var readmitted = false
-    private var recoveryRequestID: String?
+    private var clientID: String?
 
     init(
         owner: NovaAuthCredentialAuthority,
@@ -63,16 +64,20 @@ private final class NovaAuthBusinessExchange {
     }
 
     func admit(repeated: Bool) {
-        owner.demand(context: request.context, intent: request.intent, cancellation: cancellation) { [self] result in
+        owner.demand(
+            context: request.context, expectedClientID: clientID, cancellation: cancellation
+        ) { [self] result in
             do {
                 try cancellation.check()
-                try send(record: result.get(), repeated: repeated)
+                let record = try result.get()
+                clientID = record.clientID
+                try send(record: record, repeated: repeated)
             } catch { finish(.failure(NovaAuth.safeError(error))) }
         }
     }
 
     func send(record: NovaAuthTokenRecord, repeated: Bool) throws {
-        var urlRequest = URLRequest(url: try request.makeURL())
+        var urlRequest = try URLRequest(url: request.makeURL())
         urlRequest.httpMethod = request.method.rawValue
         urlRequest.httpBody = request.body
         urlRequest.setValue("Bearer " + record.accessToken, forHTTPHeaderField: "Authorization")
@@ -111,12 +116,8 @@ private final class NovaAuthBusinessExchange {
                     let requestID = NovaAuthWire.requestID(response.response)
                     try owner.reject(record: record, repeated: repeated, requestID: requestID)
                     if repeated { throw NovaAuthError.authorizationDenied(requestID: requestID) }
-                    recoveryRequestID = requestID
                     admit(repeated: true)
                 } else {
-                    if repeated, (200 ..< 400).contains(response.response.statusCode) {
-                        owner.recovered(requestID: recoveryRequestID)
-                    }
                     finish(.success(response))
                 }
             } catch { finish(.failure(NovaAuth.safeError(error))) }

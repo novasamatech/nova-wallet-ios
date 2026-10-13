@@ -1,8 +1,8 @@
 import Foundation
-import Operation_iOS
 import NovaOperationSupport
+import Operation_iOS
 
-final class NovaAuthBootstrapOperationFactory: NovaAuthBootstrapProtocol {
+final class NovaAuthBootstrapOperationFactory {
     private let http: NovaAuthHTTPProtocol
     private let clock: NovaAuthClockProtocol
 
@@ -71,7 +71,6 @@ final class NovaAuthBootstrapOperationFactory: NovaAuthBootstrapProtocol {
 }
 
 private extension NovaAuthBootstrapOperationFactory {
-    // The send fence remains explicit alongside the immutable wire inputs.
     // swiftlint:disable:next function_parameter_count
     func createWrapper<T>(
         origin: NovaAuthOrigin,

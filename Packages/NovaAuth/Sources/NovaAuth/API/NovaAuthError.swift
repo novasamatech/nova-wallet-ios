@@ -21,7 +21,6 @@ public enum NovaAuthError: Error, Equatable {
     case invalidResponse
     case credentialUnavailable
     case generationChanged
-    case userActionRequired
     case storageUnavailable
     case clockUnavailable
     case keyUnavailable

@@ -1,13 +1,15 @@
 import Foundation
-import Operation_iOS
-import NovaAuth
 @testable import NovaAnalytics
+import NovaAuth
+import Operation_iOS
 
 final class AnalyticsTrackingSpy: AnalyticsTrackingProtocol {
     private(set) var events: [AnalyticsEvent] = []
     private(set) var flushReasons: [AnalyticsFlushReason] = []
 
-    var eventNames: [String] { events.map(\.name.rawValue) }
+    var eventNames: [String] {
+        events.map(\.name.rawValue)
+    }
 
     func track(_ event: AnalyticsEvent) {
         events.append(event)
@@ -27,7 +29,9 @@ final class AnalyticsTrackingSpy: AnalyticsTrackingProtocol {
 final class AnalyticsUploadingSpy: AnalyticsUploading {
     private let recordedMaxBatches = Locked<[Int]>([])
 
-    var maxBatchesCalls: [Int] { recordedMaxBatches.value }
+    var maxBatchesCalls: [Int] {
+        recordedMaxBatches.value
+    }
 
     func flushWrapper(maxBatches: Int) -> CompoundOperationWrapper<Void> {
         recordedMaxBatches.update { $0.append(maxBatches) }
@@ -39,7 +43,9 @@ final class AnalyticsUploadingSpy: AnalyticsUploading {
 final class AnalyticsUploadOperationFactorySpy: AnalyticsUploadOperationFactoryProtocol {
     var uploadResult: Result<Void, Error> = .success(())
     private let recordedBodies = Locked<[Data]>([])
-    var sentBodies: [Data] { recordedBodies.value }
+    var sentBodies: [Data] {
+        recordedBodies.value
+    }
 
     func createUploadWrapper(body: Data, beforeSend: @escaping () throws -> Void) -> CompoundOperationWrapper<Void> {
         CompoundOperationWrapper(targetOperation: ClosureOperation { [self] in
@@ -53,13 +59,12 @@ final class AnalyticsUploadOperationFactorySpy: AnalyticsUploadOperationFactoryP
 final class AnalyticsAuthClientSpy: NovaAuthClientProtocol {
     let isSupported = true
     private let recordedRequests = Locked<[NovaAuthRequest]>([])
-    private let recordedAdmissions = Locked<[NovaAuthRequestIntent]>([])
-    var admissions: [NovaAuthRequestIntent] { recordedAdmissions.value }
-    var requests: [NovaAuthRequest] { recordedRequests.value }
+    var requests: [NovaAuthRequest] {
+        recordedRequests.value
+    }
 
-    func createAdmissionWrapper(in _: NovaAuthContext, intent: NovaAuthRequestIntent) -> CompoundOperationWrapper<Void> {
-        recordedAdmissions.update { $0.append(intent) }
-        return .createWithResult(())
+    func createAdmissionWrapper(in _: NovaAuthContext) -> CompoundOperationWrapper<Void> {
+        .createWithResult(())
     }
 
     func createResponseWrapper(
@@ -101,8 +106,14 @@ final class AnalyticsConsentStub: AnalyticsConsentManagerProtocol {
         self.isEnabled = isEnabled
     }
 
-    func setEnabled(_ enabled: Bool) { isEnabled = enabled }
-    func setErasureOwed(_ owed: Bool) { isErasureOwed = owed }
+    func setEnabled(_ enabled: Bool) {
+        isEnabled = enabled
+    }
+
+    func setErasureOwed(_ owed: Bool) {
+        isErasureOwed = owed
+    }
+
     func markPromptSeen() {}
     func addObserver(with _: AnyObject, queue _: DispatchQueue?, closure _: @escaping (Bool, Bool) -> Void) {}
     func removeObserver(by _: AnyObject) {}
@@ -114,15 +125,24 @@ final class AnalyticsIdentityStub: AnalyticsIdentityProtocol {
     let sessionId = "66666666-7777-8888-9999-000000000000"
     let consentEpoch = 0
 
-    func installId() -> String? { "11111111-2222-3333-4444-555555555555" }
-    func existingInstallId() -> String? { nil }
+    func installId() -> String? {
+        "11111111-2222-3333-4444-555555555555"
+    }
+
+    func existingInstallId() -> String? {
+        nil
+    }
+
     func forgetInstallId() {}
     func allowCreation() {}
 }
 
 final class AnalyticsGatewayResolverStub: AnalyticsGatewayResolving {
     private let factory: AnalyticsUploadOperationFactoryProtocol
-    init(uploadFactory: AnalyticsUploadOperationFactoryProtocol) { factory = uploadFactory }
+    init(uploadFactory: AnalyticsUploadOperationFactoryProtocol) {
+        factory = uploadFactory
+    }
+
     func createGatewayWrapper() -> CompoundOperationWrapper<AnalyticsGateway> {
         .createWithResult(AnalyticsGateway(uploadFactory: factory))
     }
@@ -130,11 +150,11 @@ final class AnalyticsGatewayResolverStub: AnalyticsGatewayResolving {
 
 final class AnalyticsAuthSourceStub: AnalyticsAuthProvidingProtocol {
     let auth: AnalyticsAuth
-    init(auth: AnalyticsAuth) { self.auth = auth }
-    var authAvailability: AnalyticsAuthAvailability { AnalyticsAuthAvailability() }
-    func createAuthWrapper() -> CompoundOperationWrapper<AnalyticsAuth> { .createWithResult(auth) }
-    func addAvailabilityObserver(
-        _: AnyObject,
-        closure _: @escaping (AnalyticsAuthAvailability) -> Void
-    ) -> AnalyticsAuthAvailability { authAvailability }
+    init(auth: AnalyticsAuth) {
+        self.auth = auth
+    }
+
+    func createAuthWrapper() -> CompoundOperationWrapper<AnalyticsAuth> {
+        .createWithResult(auth)
+    }
 }

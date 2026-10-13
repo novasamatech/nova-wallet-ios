@@ -1,11 +1,11 @@
-import Foundation
 import CryptoKit
+import Foundation
 import Operation_iOS
 
 extension NovaAuth {
     func demand(
         context: NovaAuthContext,
-        intent: NovaAuthRequestIntent,
+        expectedClientID: String? = nil,
         cancellation: NovaAuthCancellation,
         completion: @escaping (Result<NovaAuthTokenRecord, Error>) -> Void
     ) {
@@ -17,6 +17,7 @@ extension NovaAuth {
                 do {
                     try cancellation.check()
                     try validate(context: context)
+                    try validateReadmission(clientID: expectedClientID)
                     guard isSupported else { throw NovaAuthError.unsupported }
                     let now = try dependencies.clock.now()
                     if let record = try usableToken(context: context, now: now) {
@@ -27,7 +28,7 @@ extension NovaAuth {
                             now: now
                         )
                         if remaining <= Double(record.earlyRefreshSeconds), flight == nil {
-                            beginEarlyRefresh(context: context, intent: intent, now: now)
+                            beginEarlyRefresh(context: context, now: now)
                         }
                         immediate = .success(record)
                     } else {
@@ -38,12 +39,11 @@ extension NovaAuth {
                         }
                         try originCooldown.check(now: now)
                         try issuanceCooldown.check(now: now)
-                        try checkRecoveryDelays(now: now)
                         if case let .registrationPending(pending) = state?.identity?.registration {
                             try pending.cooldown.check(now: now)
                         }
-                        try prepareIdentity(context: context, intent: intent)
-                        let next = NovaAuthIssuanceFlight(context: context, sponsored: false, intent: intent)
+                        try prepareIdentity(context: context)
+                        let next = NovaAuthIssuanceFlight(context: context, sponsored: false)
                         next.waiters[waiterID] = completion
                         flight = next
                         start(flight: next)
@@ -73,20 +73,19 @@ extension NovaAuth {
 
     func issue(flight: NovaAuthIssuanceFlight) throws {
         guard let identity = state?.identity, let keyID = identity.keyID else { throw NovaAuthError.keyUnavailable }
-        flight.diagnosticPhase = .tokenChallenge
+        flight.step = .tokenChallenge
         guard !dependencies.appAttest.isBusy(keyID: keyID) else { throw NovaAuthAppAttestError.serverUnavailable }
-        let wrapper = dependencies.bootstrap.createTokenChallengeWrapper(
+        let wrapper = bootstrap.createTokenChallengeWrapper(
             origin: flight.context.origin,
             clientID: identity.clientID,
-            beforeSend: { [self] in try beforeBootstrapSend(flight: flight, probe: true) }
+            beforeSend: { [self] in try beforeBootstrapSend(flight: flight, step: .tokenChallenge) }
         )
         run(wrapper, flight: flight) { [self] result in
             let challenge: NovaAuthChallenge
             do {
                 challenge = try result.get()
-                try confirmPendingBinding(flight: flight)
             } catch {
-                try handleChallengeFailure(error, flight: flight)
+                try handleBindingFailure(error, flight: flight)
                 throw error
             }
             let preimage = try NovaAuthFraming.issuancePreimage(origin: flight.context.origin)
@@ -100,7 +99,7 @@ extension NovaAuth {
                 bodyDigest: digest
             )
             flight.irreversible = true
-            flight.diagnosticPhase = .assertion
+            flight.step = .assertion
             let assertionWrapper = dependencies.appAttest.createAssertionWrapper(keyID: keyID, clientDataHash: hash)
             run(assertionWrapper, flight: flight) { [self] result in
                 let assertion = try assertion(from: result, flight: flight)
@@ -111,13 +110,19 @@ extension NovaAuth {
                     assertion: assertion,
                     contentType: "application/json"
                 )
-                let tokenWrapper = dependencies.bootstrap.createTokenWrapper(
+                let tokenWrapper = bootstrap.createTokenWrapper(
                     request,
-                    beforeSend: { [self] in try beforeBootstrapSend(flight: flight, issuance: true) }
+                    beforeSend: { [self] in try beforeBootstrapSend(flight: flight, step: .token) }
                 )
-                flight.diagnosticPhase = .token
+                flight.step = .token
                 run(tokenWrapper, flight: flight) { [self] result in
-                    let response = try result.get()
+                    let response: NovaAuthTokenResponse
+                    do {
+                        response = try result.get()
+                    } catch {
+                        try handleBindingFailure(error, flight: flight)
+                        throw error
+                    }
                     guard let started = flight.issuanceStart else { throw NovaAuthError.clockUnavailable }
                     try install(response, started: started, clientID: identity.clientID, flight: flight)
                 }
@@ -139,9 +144,8 @@ extension NovaAuth {
         guard random.isFinite, (0 ... 1).contains(random) else { throw NovaAuthError.invalidResponse }
         let threshold = Int((Double(lifetime) * 0.20 + random * Double(lifetime) / 15).rounded())
         let record = NovaAuthTokenRecord(
-            version: 1,
+            version: 2,
             context: flight.context,
-            flow: "bittensor-read",
             clientID: clientID,
             accessToken: response.accessToken,
             issuedAt: response.issuedAt,
@@ -152,17 +156,11 @@ extension NovaAuth {
         _ = try NovaAuthTokenValidation.remaining(
             record, context: flight.context, clientID: clientID, now: dependencies.clock.now()
         )
-        // Identity and token writes share the owner gate. Never deliver a memory-only bearer.
         try setRegistration(.registered, flight: flight)
         do {
             try dependencies.tokenStore.replace(record)
         } catch { throw NovaAuthError.storageUnavailable }
-        if var replacement = state, replacement.recovery != nil {
-            replacement.recovery = nil
-            try persist(replacement)
-        }
         issuanceCooldown.clear()
-        NovaAuthDiagnostics.log(.tokenInstalled, logger: dependencies.logger)
         finish(.success(record), flight: flight)
     }
 
@@ -171,16 +169,6 @@ extension NovaAuth {
         var safe = Self.safeError(error)
         if state?.context == flight.context {
             do {
-                if case let NovaAuthError.bootstrap(server) = error,
-                   server.code == "binding_not_allowed",
-                   flight.diagnosticPhase == .tokenChallenge || flight.diagnosticPhase == .token {
-                    try failPolicyRetryDelay()
-                    NovaAuthDiagnostics.log(.policyRefused, logger: dependencies.logger, requestID: server.requestID)
-                }
-                if case let NovaAuthError.bootstrap(server) = error,
-                   server.code == "invalid_proof", flight.diagnosticPhase == .token {
-                    try failProofRetryDelay()
-                }
                 if shouldApplyCooldown(safe) {
                     let retryAfter: TimeInterval?
                     if case let NovaAuthError.bootstrap(server) = error, server.statusCode == 429 {
@@ -190,7 +178,7 @@ extension NovaAuth {
                 }
             } catch { safe = Self.safeError(error) }
         } else { safe = .generationChanged }
-        NovaAuthDiagnostics.failure(safe, phase: flight.diagnosticPhase, logger: dependencies.logger)
+        NovaAuthDiagnostics.failure(safe, step: flight.step, logger: dependencies.logger)
         finish(.failure(safe), flight: flight)
     }
 
@@ -209,6 +197,14 @@ extension NovaAuth {
 }
 
 private extension NovaAuth {
+    func validateReadmission(clientID: String?) throws {
+        guard let clientID else { return }
+        guard let identity = state?.identity, identity.clientID == clientID else {
+            throw NovaAuthError.credentialUnavailable
+        }
+        if case .retired = identity.registration { throw NovaAuthError.keyUnavailable }
+    }
+
     func assertion(from result: Result<Data, Error>, flight: NovaAuthIssuanceFlight) throws -> Data {
         do { return try result.get() } catch NovaAuthAppAttestError.invalidKey {
             try retire(.lostKey, flight: flight)
@@ -223,17 +219,16 @@ private extension NovaAuth {
         }
     }
 
-    func beginEarlyRefresh(context: NovaAuthContext, intent: NovaAuthRequestIntent, now: NovaAuthTime) {
+    func beginEarlyRefresh(context: NovaAuthContext, now: NovaAuthTime) {
         do {
             guard case .registered = state?.identity?.registration else { return }
             try originCooldown.check(now: now)
             try issuanceCooldown.check(now: now)
-            try checkRecoveryDelays(now: now)
-            try prepareIdentity(context: context, intent: intent)
-            let next = NovaAuthIssuanceFlight(context: context, sponsored: true, intent: intent)
+            try prepareIdentity(context: context)
+            let next = NovaAuthIssuanceFlight(context: context, sponsored: true)
             flight = next
             start(flight: next)
-        } catch { /* A still-usable bearer remains available during issuance refusal. */ }
+        } catch {}
     }
 
     func detach(waiterID: UUID) {
