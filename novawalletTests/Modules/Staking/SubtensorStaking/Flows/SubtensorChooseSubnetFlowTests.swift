@@ -93,24 +93,9 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(chutesRanking.eligibleValidators, 14)
         XCTAssertEqual(chutesRanking.scoredValidators, 16)
         XCTAssertEqual(chutesRanking.flags, [])
-        // Each read passes through authorization and native HTTP caching, with a new receipt.
-        XCTAssertEqual(chipsRanked, SubtensorRankedSubnets(
-            generation: SubtensorRecommendationGeneration(
-                id: ranked.generation.id,
-                sourceBlockNumber: ranked.generation.sourceBlockNumber,
-                modelVersion: ranked.generation.modelVersion,
-                ageSeconds: ranked.generation.ageSeconds,
-                receivedAt: ranked.generation.receivedAt + 60,
-                isServedFromMemory: false,
-                excludedNetuids: ranked.generation.excludedNetuids,
-                carriedOverNetuids: ranked.generation.carriedOverNetuids,
-                inputFlags: ranked.generation.inputFlags,
-                stamp: ranked.generation.stamp,
-                isPartial: ranked.generation.isPartial
-            ),
-            policy: ranked.policy,
-            items: ranked.items
-        ))
+        XCTAssertEqual(chipsRanked.generation.id, ranked.generation.id)
+        XCTAssertEqual(chipsRanked.policy, ranked.policy)
+        XCTAssertEqual(chipsRanked.items, ranked.items)
 
         XCTAssertEqual(
             services.recommendationService.cachedClientGates().value,

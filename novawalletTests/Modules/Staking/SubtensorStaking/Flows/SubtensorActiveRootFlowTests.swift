@@ -250,7 +250,6 @@ final class SubtensorActiveRootFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(detail.item, try asterRoot(name: nil))
         XCTAssertNil(rootYield)
 
-        // The directory retry uses its negative cache; the Bittensor cooldown blocks other uncached routes.
         XCTAssertEqual(requestLines(), [
             "GET https://bittensor.test/v1/bittensor/profile-3/subnets/0/validators"
         ])
