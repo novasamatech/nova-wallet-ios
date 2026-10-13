@@ -65,6 +65,11 @@ final class SubtensorStakedBalanceUpdatingServiceTests: XCTestCase {
             chainAsset: chainAsset,
             repository: repository,
             stakeStateFetchFactory: fetchFactory,
+            cataloguePricing: SubtensorCataloguePricingTracker(
+                catalogueService: MockSubtensorSubnetCatalogueServiceProtocol(),
+                operationQueue: OperationQueue(),
+                logger: Logger.shared
+            ),
             connection: TestJSONRPCEngine(),
             runtimeService: RuntimeCodingServiceStub(
                 factory: try RuntimeCodingServiceStub.createBittensorCodingFactory()
@@ -100,8 +105,7 @@ final class SubtensorStakedBalanceUpdatingServiceTests: XCTestCase {
                     totalHotkeyAlpha: nil,
                     isRegistered: true
                 )
-            ],
-            prices: [:]
+            ]
         )
     }
 

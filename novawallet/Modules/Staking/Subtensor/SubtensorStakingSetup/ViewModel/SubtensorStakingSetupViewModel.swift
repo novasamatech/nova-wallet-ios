@@ -9,7 +9,6 @@ struct SubtensorStakingSetupViewModel {
     let getTao: SubtensorGetTaoViewModel?
     let reserveWarning: String?
     let details: SubtensorSetupDetailsViewModel
-    let holdWarning: String?
     let caption: String?
     let action: SubtensorSetupActionViewModel
 }
@@ -154,7 +153,6 @@ struct SubtensorStakingSetupViewModelInput {
     let price: PriceData?
     let quote: SubtensorTradeQuote?
     let positionStake: Balance?
-    let holdRemaining: TimeInterval?
 
     var amountState: SubtensorSetupAmountState {
         let state = SubtensorSetupAmountState(maxAmount: maxAmount, amount: amount)
@@ -164,10 +162,6 @@ struct SubtensorStakingSetupViewModelInput {
         }
 
         return (amount ?? 0) > 0 ? .insufficient : .sufficient
-    }
-
-    var isHoldActive: Bool {
-        holdRemaining != nil
     }
 
     var needsValidatorPick: Bool {
@@ -181,7 +175,6 @@ struct SubtensorStakingSetupViewModelInput {
     var canProceed: Bool {
         guard
             amountState == .sufficient,
-            !isHoldActive,
             let amount, amount > 0,
             validator.validator != nil,
             fee != nil,

@@ -299,7 +299,7 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
     }
 
     private func presetRootValidator(_ setup: Setup) {
-        setup.presenter.didReceivePositions(Multistaking.SubtensorStakingState(positions: [], prices: [:]))
+        setup.presenter.didReceivePositions(Multistaking.SubtensorStakingState(positions: []))
         setup.presenter.didReceiveValidator(
             makeValidator(hotkey: hotkey, netuid: SubtensorStakingPallet.rootNetuid),
             on: rootRef
@@ -433,8 +433,7 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
                     makePosition(hotkey: smallerHotkey, netuid: SubtensorStakingPallet.rootNetuid, stake: 1000),
                     makePosition(hotkey: hotkey, netuid: SubtensorStakingPallet.rootNetuid, stake: 5000),
                     makePosition(hotkey: smallerHotkey, netuid: 1, stake: 9000)
-                ],
-                prices: [:]
+                ]
             )
         )
 
@@ -740,7 +739,7 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
         verify(setup.wireframe, never()).showSlippageSettings(from: any(), current: any(), completion: any())
     }
 
-    func testAddStakeDuringTheRootHoldShowsTheLockAndDisablesContinue() throws {
+    func testAddStakeDuringTheRootHoldKeepsContinueEnabledAndHandsOverToConfirmation() throws {
         let position = makePosition(hotkey: hotkey, netuid: SubtensorStakingPallet.rootNetuid, stake: 5000)
         let setup = makeSetup(mode: .addStake(position: position))
 
@@ -748,14 +747,10 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
         setup.presenter.didReceiveBlockNumber(1100)
         setup.presenter.updateAmount(1)
 
-        let viewModel = try lastViewModel(setup)
-
-        XCTAssertNotNil(viewModel.holdWarning)
-        XCTAssertFalse(viewModel.action.isEnabled)
-
-        setup.presenter.didReceiveBlockNumber(8200)
-
-        XCTAssertNil(try lastViewModel(setup).holdWarning)
         XCTAssertTrue(try lastViewModel(setup).action.isEnabled)
+
+        let model = proceedAndCaptureModel(setup)
+
+        XCTAssertEqual(model?.origin, .addStake)
     }
 }

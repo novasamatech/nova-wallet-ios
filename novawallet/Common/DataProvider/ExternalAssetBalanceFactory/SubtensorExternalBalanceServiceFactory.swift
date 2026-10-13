@@ -7,19 +7,22 @@ final class SubtensorExternalBalanceServiceFactory {
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
     let logger: LoggerProtocol
+    let processServices: SubtensorStakingProcessServices
 
     init(
         storageFacade: StorageFacadeProtocol,
         chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
-        logger: LoggerProtocol
+        logger: LoggerProtocol,
+        processServices: SubtensorStakingProcessServices = .shared
     ) {
         self.storageFacade = storageFacade
         self.chainRegistry = chainRegistry
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
         self.logger = logger
+        self.processServices = processServices
     }
 }
 
@@ -73,6 +76,10 @@ extension SubtensorExternalBalanceServiceFactory: ExternalAssetBalanceServiceFac
             chainAsset: chainAsset,
             repository: AnyDataProviderRepository(repository),
             stakeStateFetchFactory: stakeStateFetchFactory,
+            cataloguePricing: processServices.createCataloguePricingTracker(
+                operationQueue: operationQueue,
+                logger: logger
+            ),
             connection: connection,
             runtimeService: runtimeService,
             operationQueue: operationQueue,

@@ -45,7 +45,7 @@ final class SubtensorSubnetBuyFlowTests: SubtensorFlowTestCase {
         try SubtensorFlowActiveStake.serveCharts()
 
         world.sharedState.setup(for: SubtensorFlowChainWorld.coldkeyAccount())
-        feed.publish(Multistaking.SubtensorStakingState(positions: [], prices: [:], availability: [:]))
+        feed.publish(Multistaking.SubtensorStakingState(positions: [], availability: [:]))
 
         let catalogue = try run(services.catalogueService.createCatalogueWrapper())
 
@@ -115,7 +115,6 @@ final class SubtensorSubnetBuyFlowTests: SubtensorFlowTestCase {
                     isRegistered: true
                 )
             ],
-            prices: [64: 54_961_234],
             availability: [
                 64: SubtensorStakingPallet.StakeAvailability(
                     total: Balance(boughtAlpha),

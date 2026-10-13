@@ -70,13 +70,6 @@ extension SubtensorStakingSetupPresenter: SubtensorStakePresenterValidating {
             )
         }
 
-        if case .addStake = mode {
-            dependencies.rootHoldCheck = SubtensorRootHoldCheck(
-                currentBlock: currentBlock,
-                blockTime: SubtensorStakingFlowConstants.blockTimeMillis
-            )
-        }
-
         return dependencies
     }
 

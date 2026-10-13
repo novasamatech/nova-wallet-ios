@@ -93,7 +93,9 @@ struct SubtensorPositionState {
         switch action {
         case .claim:
             return isRoot && !isClaimableFailed && claimTarget != nil
-        case .addStake, .unstake:
+        case .addStake:
+            return primaryPosition != nil
+        case .unstake:
             return primaryPosition != nil && holdRemainingBlocks == nil
         case .buy:
             return true

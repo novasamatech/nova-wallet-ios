@@ -74,17 +74,17 @@ final class SubtensorRootClaimableService: BaseSyncService {
         clearSubscriptionAndRequest()
 
         positionsSyncService.add(
-            observer: self,
+            fetchObserver: self,
             sendStateOnSubscription: true,
             queue: syncQueue
-        ) { [weak self] _, newState in
+        ) { [weak self] _, fetchCount in
             self?.mutex.lock()
 
             defer {
                 self?.mutex.unlock()
             }
 
-            guard newState != nil, self?.isActive == true else {
+            guard fetchCount > 0, self?.isActive == true else {
                 return
             }
 
@@ -132,7 +132,7 @@ private extension SubtensorRootClaimableService {
     }
 
     func clearSubscriptionAndRequest() {
-        positionsSyncService.remove(observer: self)
+        positionsSyncService.remove(fetchObserver: self)
 
         callStore.cancel()
     }

@@ -222,8 +222,7 @@ final class SubtensorMultistakingUpdateServiceTests: XCTestCase {
                     totalHotkeyAlpha: nil,
                     isRegistered: true
                 )
-            ],
-            prices: [:]
+            ]
         )
     }
 

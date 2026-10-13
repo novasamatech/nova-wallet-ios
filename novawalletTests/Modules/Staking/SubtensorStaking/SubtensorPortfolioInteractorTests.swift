@@ -171,7 +171,7 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
         XCTAssertNotNil(viewModels.lastHeader)
         XCTAssertNil(viewModels.lastEmpty)
 
-        presenter.didReceive(state: Multistaking.SubtensorStakingState(positions: [], prices: [:]))
+        presenter.didReceive(state: Multistaking.SubtensorStakingState(positions: []))
 
         XCTAssertEqual(
             viewModels.lastEmpty,
@@ -342,8 +342,7 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
                     totalHotkeyAlpha: nil,
                     isRegistered: true
                 )
-            ],
-            prices: [:]
+            ]
         )
     }
 
