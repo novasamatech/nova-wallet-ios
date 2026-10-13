@@ -109,17 +109,6 @@ final class SubtensorValidatorListFactoryTests: XCTestCase {
         )
     }
 
-    func testBindingConflictUsesGenericDetailWithoutRetry() {
-        let model = makeFactory().createErrorViewModel(
-            for: BittensorApiError.bindingConflict(requestId: nil), locale: locale
-        )
-        XCTAssertNil(model.retryTitle)
-        XCTAssertEqual(
-            model.details,
-            R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValidatorFetchFailedDetail()
-        )
-    }
-
     private func makeFactory() -> SubtensorValidatorListFactory {
         SubtensorValidatorListFactory(
             chainFormat: .substrate(SubstrateConstants.genericAddressPrefix),

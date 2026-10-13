@@ -4,7 +4,6 @@ import Keystore_iOS
 @testable import novawallet
 import Operation_iOS
 import XCTest
-import UIKit
 
 final class SubtensorPortfolioInteractorTests: XCTestCase {
     private struct Setup {
@@ -184,17 +183,11 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
         selecting wallet: MetaAccountModel,
         eventCenter: EventCenterProtocol = EventCenter(),
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol = PriceProviderFactoryStub(),
-        currencyManager: CurrencyManagerProtocol = CurrencyManagerStub(),
-        catalogueService: SubtensorSubnetCatalogueServiceProtocol? = nil,
-        positionsService: SubtensorPositionsSyncServiceProtocol? = nil,
-        operationQueue: OperationQueue = OperationQueue()
+        currencyManager: CurrencyManagerProtocol = CurrencyManagerStub()
     ) throws -> Setup {
         let chainAsset = SubtensorFlowChainWorld.chainAsset()
         let account = try XCTUnwrap(wallet.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()))
         let state = makeState(chainAsset: chainAsset, account: account)
-        stub(state) { stub in
-            when(stub.positionsSyncService.get).thenReturn(positionsService)
-        }
         let wireframe = MockSubtensorPortfolioWireframeProtocol()
 
         let walletSettings = SelectedWalletSettings(
@@ -210,7 +203,7 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
             selectedWalletSettings: walletSettings,
             eventCenter: eventCenter,
             applicationHandler: ApplicationHandler(),
-            catalogueService: catalogueService ?? makeCatalogueService(),
+            catalogueService: makeCatalogueService(),
             yieldService: makeYieldService(),
             subnetLogosProvider: makeSubnetLogosProvider(),
             priceHistoryService: nil,
@@ -220,7 +213,7 @@ final class SubtensorPortfolioInteractorTests: XCTestCase {
                 coingeckoOperationFactory: CoingeckoOperationFactory(),
                 operationQueue: OperationQueue()
             ),
-            operationQueue: operationQueue,
+            operationQueue: OperationQueue(),
             logger: Logger.shared
         )
 

@@ -251,6 +251,27 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
         ]
     }
 
+    func testDelayedInvalidationOfTheAdmittedRevisionKeepsItsCacheAndAdmission() throws {
+        let cache = BittensorApiResponseCache(operationQueue: OperationQueue(), logger: Logger.shared)
+        let key = BittensorApiCacheKey(method: "GET", path: "/subnets", query: [], bodyDigest: nil)
+        let scope = BittensorApiCacheScope(origin: "https://second.test", profile: 3, generation: 2, invalidationRevision: 2)
+        let job = BittensorApiCacheJob(
+            key: key,
+            routeKey: BittensorApiRouteKey(method: "GET", pathTemplate: "/subnets", accountDigest: nil),
+            currentInvalidationRevision: { 2 },
+            admit: { .createWithResult(BittensorApiAdmission(scope: scope, endpoint: nil)) },
+            fetch: { _ in
+                .createWithResult(BittensorApiFetchedValue(
+                    value: "current", requestId: nil, cacheDirectives: .reusable(lifetime: 300), generation: nil
+                ))
+            }
+        )
+        _ = try fetch(cache.createWrapper(for: job))
+        cache.invalidate(before: 2)
+        XCTAssertEqual(cache.peek(key, invalidationRevision: 2).value?.value as? String, "current")
+        XCTAssertNoThrow(try fetch(cache.createWrapper(for: job)))
+    }
+
     private func olderRecommendationsBody() throws -> Data {
         try mutatedBody(BittensorApiFixtureDocuments.recommendations(), replacing: olderGeneration)
     }

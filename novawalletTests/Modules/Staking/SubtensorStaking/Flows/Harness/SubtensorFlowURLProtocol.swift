@@ -106,6 +106,7 @@ final class SubtensorFlowURLProtocol: URLProtocol {
     private static var routes: [Route: SubtensorFlowHTTPReply] = [:]
     private static var requests: [SubtensorFlowHTTPRequest] = []
     private static var unexpected: [SubtensorFlowHTTPRequest] = []
+    static var registrationReply: SubtensorFlowHTTPReply?
 
     static func install() {
         reset()
@@ -248,7 +249,7 @@ private extension SubtensorFlowURLProtocol {
         case "/v1/attestation/profile-3/challenges", "/v1/attestation/profile-3/token-challenges":
             return .json(["challenge": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8", "issued_at": 1000, "expires_at": 1060])
         case "/v1/attestation/profile-3/register":
-            return SubtensorFlowHTTPReply(statusCode: 204, headers: [:], body: Data())
+            return registrationReply ?? SubtensorFlowHTTPReply(statusCode: 204, headers: [:], body: Data())
         case "/v1/attestation/profile-3/tokens":
             return .json(["access_token": "flow-shared-bearer", "token_type": "Bearer", "issued_at": 1000, "expires_at": 1900])
         default: return nil
@@ -260,6 +261,7 @@ private extension SubtensorFlowURLProtocol {
         routes = [:]
         requests = []
         unexpected = []
+        registrationReply = nil
         lock.unlock()
     }
 

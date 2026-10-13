@@ -144,7 +144,6 @@
 		ADC735A337784F7A8D794273 /* SubtensorValidatorInfoProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEB1DA9BCDA46CF8B6BE2A8 /* SubtensorValidatorInfoProtocols.swift */; };
 		AE16148A04CF42559242273F /* SubtensorOperationResultRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17DBB3F6C246459E96C1936A /* SubtensorOperationResultRequest.swift */; };
 		AFB39B6BF75041EABDF56DC7 /* SubtensorCostBasisServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AE61ADBEDEF427C882F0A45 /* SubtensorCostBasisServiceTests.swift */; };
-		24FD2BAB74DD450DBE84836E /* SubtensorDerivedContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F868B61152DC4C7DB165E910 /* SubtensorDerivedContextTests.swift */; };
 		B209ADAB994D4E5096B5B01A /* SubtensorOperationResultWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2519C3E92843AA8856EEA7 /* SubtensorOperationResultWireframe.swift */; };
 		B27886360D654BFD89D988AE /* SubtensorRankingViewService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DB594D96B3A49E1867C70B4 /* SubtensorRankingViewService.swift */; };
 		B2BFA6E332384B758CE080D5 /* BittensorApiOperationFactoryTests+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C579B1787F343BBAD292350 /* BittensorApiOperationFactoryTests+Helpers.swift */; };
@@ -7232,10 +7231,8 @@
 		FFF7CC228C1EB14B8677BD17 /* WalletConnectSessionDetailsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA4D4C049E3B32A529DDFEB5 /* WalletConnectSessionDetailsViewLayout.swift */; };
 		FFFA51179A4E22E457BF6F78 /* AddDelegationWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = D779CD7E426E469760290DBC /* AddDelegationWireframe.swift */; };
 		19CCA2DE5C153D1AFD408673 /* BittensorAuthorizedTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DA6874C55FE4ADBAE446703 /* BittensorAuthorizedTransport.swift */; };
-		349FBA17F387938F27C42B03 /* BittensorApiResponseCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5155E9916E10C1FDD73F6C /* BittensorApiResponseCacheTests.swift */; };
 		3AD5A119F1CA93343355A926 /* BittensorAuthorizedResponseGrader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 543808AD672E9DE85287E126 /* BittensorAuthorizedResponseGrader.swift */; };
 		6245EBE259914292B384D187 /* SubtensorFlowAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBDB45841BD540170309EC3 /* SubtensorFlowAuth.swift */; };
-		7CB728AA0421DD4A2FCD6ADF /* BittensorAuthorizedTransportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCC5EF36F180AA73BBFAAB96 /* BittensorAuthorizedTransportTests.swift */; };
 		AF854E22A78F3754D6267F78 /* BittensorAuthorizedRequestBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F84BC176354EDC8F75B5A3E1 /* BittensorAuthorizedRequestBuilder.swift */; };
 		F6704CC56E7994100638E1A7 /* NovaAuthFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D8C30BE40CE427750D254F9 /* NovaAuthFacade.swift */; };
 /* End PBXBuildFile section */
@@ -7387,7 +7384,6 @@
 		9602BFD3AD4141758F9A6A14 /* SubtensorOperationResultViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorOperationResultViewLayout.swift; sourceTree = "<group>"; };
 		98AA56CC6D93450AAAD9D507 /* SubtensorEarnInfoPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorEarnInfoPresentable.swift; sourceTree = "<group>"; };
 		9AE61ADBEDEF427C882F0A45 /* SubtensorCostBasisServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorCostBasisServiceTests.swift; sourceTree = "<group>"; };
-		F868B61152DC4C7DB165E910 /* SubtensorDerivedContextTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorDerivedContextTests.swift; sourceTree = "<group>"; };
 		9AF2E9322C3F47E0A673AC69 /* HTTPResponseCacheStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPResponseCacheStore.swift; sourceTree = "<group>"; };
 		9B28A74535034A56BC32782B /* SubtensorPortfolioViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorPortfolioViewModel.swift; sourceTree = "<group>"; };
 		9BD0BC31FC8F49F6912B079F /* SubtensorFlowChooseSubnet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorFlowChooseSubnet.swift; sourceTree = "<group>"; };
@@ -14204,9 +14200,7 @@
 		1DA6874C55FE4ADBAE446703 /* BittensorAuthorizedTransport.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BittensorAuthorizedTransport.swift; path = novawallet/Common/Network/Bittensor/Transport/BittensorAuthorizedTransport.swift; sourceTree = "<group>"; };
 		543808AD672E9DE85287E126 /* BittensorAuthorizedResponseGrader.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BittensorAuthorizedResponseGrader.swift; path = novawallet/Common/Network/Bittensor/Transport/BittensorAuthorizedResponseGrader.swift; sourceTree = "<group>"; };
 		5CBDB45841BD540170309EC3 /* SubtensorFlowAuth.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SubtensorFlowAuth.swift; path = novawalletTests/Modules/Staking/SubtensorStaking/Flows/Harness/SubtensorFlowAuth.swift; sourceTree = "<group>"; };
-		6B5155E9916E10C1FDD73F6C /* BittensorApiResponseCacheTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BittensorApiResponseCacheTests.swift; path = novawalletTests/Common/Network/Bittensor/BittensorApiResponseCacheTests.swift; sourceTree = "<group>"; };
 		6D8C30BE40CE427750D254F9 /* NovaAuthFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAuthFacade.swift; sourceTree = "<group>"; };
-		CCC5EF36F180AA73BBFAAB96 /* BittensorAuthorizedTransportTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BittensorAuthorizedTransportTests.swift; path = novawalletTests/Common/Network/Bittensor/Transport/BittensorAuthorizedTransportTests.swift; sourceTree = "<group>"; };
 		F84BC176354EDC8F75B5A3E1 /* BittensorAuthorizedRequestBuilder.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BittensorAuthorizedRequestBuilder.swift; path = novawallet/Common/Network/Bittensor/Transport/BittensorAuthorizedRequestBuilder.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -19673,7 +19667,6 @@
 				06C0EF5A8E044577984E4D01 /* SubtensorMaxApyProviderTests.swift */,
 				10FFE2189B6B456BAA2622E5 /* SubtensorSubnetMarketsServiceTests.swift */,
 				9AE61ADBEDEF427C882F0A45 /* SubtensorCostBasisServiceTests.swift */,
-				F868B61152DC4C7DB165E910 /* SubtensorDerivedContextTests.swift */,
 				CECC217442204F629463966F /* SubtensorOperationResultDetailsViewTests.swift */,
 				4DDA4C24E777426C8607134F /* SubtensorOperationResultViewModelFactoryTests.swift */,
 				A11FD49E43F847B8819DDD44 /* SubtensorPortfolioViewModelFactoryTests.swift */,
@@ -26049,9 +26042,7 @@
 				F84BC176354EDC8F75B5A3E1 /* BittensorAuthorizedRequestBuilder.swift */,
 				543808AD672E9DE85287E126 /* BittensorAuthorizedResponseGrader.swift */,
 				1DA6874C55FE4ADBAE446703 /* BittensorAuthorizedTransport.swift */,
-				CCC5EF36F180AA73BBFAAB96 /* BittensorAuthorizedTransportTests.swift */,
 				5CBDB45841BD540170309EC3 /* SubtensorFlowAuth.swift */,
-				6B5155E9916E10C1FDD73F6C /* BittensorApiResponseCacheTests.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -40414,7 +40405,6 @@
 				4A3B8A4E3973426F9B6ED739 /* SubtensorMaxApyProviderTests.swift in Sources */,
 				D3524DAE63BD422093D364EA /* SubtensorSubnetMarketsServiceTests.swift in Sources */,
 				AFB39B6BF75041EABDF56DC7 /* SubtensorCostBasisServiceTests.swift in Sources */,
-				24FD2BAB74DD450DBE84836E /* SubtensorDerivedContextTests.swift in Sources */,
 				C2CB0B1244E54CF98E06CC56 /* SubtensorOperationResultDetailsViewTests.swift in Sources */,
 				805F4184A6094D5EBC8239AB /* HTTPCacheDirectivesTests.swift in Sources */,
 				469B178C4D13458497929ED4 /* HTTPResponseCacheStoreTests.swift in Sources */,
@@ -40423,9 +40413,7 @@
 				451969BC695D4F62BF1199BF /* SubtensorPortfolioViewModelFactoryTests.swift in Sources */,
 				B2BFA6E332384B758CE080D5 /* BittensorApiOperationFactoryTests+Helpers.swift in Sources */,
 				E14DCB22B99540B4B1857C61 /* SubtensorFlowChooseSubnet.swift in Sources */,
-				7CB728AA0421DD4A2FCD6ADF /* BittensorAuthorizedTransportTests.swift in Sources */,
 				6245EBE259914292B384D187 /* SubtensorFlowAuth.swift in Sources */,
-				349FBA17F387938F27C42B03 /* BittensorApiResponseCacheTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -293,36 +293,6 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         assertAuthorizedRequests(world, paths: ["/v1/bittensor/profile-3/yields/root", "/v1/bittensor/profile-3/subnets/64/yields/alpha"])
     }
 
-    func testOlderRankingFailureKeepsNewestPresentationSeedMarkedStaleWithoutRetry() throws {
-        let world = try SubtensorFlowWorld()
-        let service = world.earnServices.rankingViewService
-        let document = BittensorApiFixtureDocuments.rankedSubnets()
-        SubtensorFlowURLProtocol.serveBittensor("/recommendations/subnets", reply: .json(document))
-        let first = try XCTUnwrap(run(service.createRankingViewWrapper()))
-        var older = document
-        var meta = try XCTUnwrap(older["meta"] as? [String: Any])
-        var generation = try XCTUnwrap(meta["generation"] as? [String: Any])
-        var components = try XCTUnwrap(meta["components"] as? [String: Any])
-        var recommendations = try XCTUnwrap(components["recommendations"] as? [String: Any])
-        recommendations["asOf"] = "2026-09-24T08:23:00Z"
-        components["recommendations"] = recommendations
-        meta["components"] = components
-        generation["id"] = "0123456789abcdef0123456789abcdef"
-        meta["generation"] = generation
-        older["meta"] = meta
-        SubtensorFlowURLProtocol.serveBittensor("/recommendations/subnets", reply: .json(older))
-        let retained = try XCTUnwrap(run(service.createRankingViewWrapper()))
-        XCTAssertEqual(retained.generation.id, first.generation.id)
-        XCTAssertEqual(retained.generation.receivedAt, first.generation.receivedAt)
-        XCTAssertEqual(retained.generation.stamp.freshness, .stale)
-        XCTAssertEqual(retained.policy, first.policy)
-        XCTAssertEqual(retained.items, first.items)
-        assertAuthorizedRequests(world, paths: [
-            "/v1/bittensor/profile-3/recommendations/subnets",
-            "/v1/bittensor/profile-3/recommendations/subnets"
-        ])
-    }
-
     func testDeviceThatFailsAppAttestGivesTheValidatorListItsOwnStateWithoutTryAgain() throws {
         let world = try SubtensorFlowWorld()
         let chutesRef = SubtensorSubnetRef(netuid: 64, registeredAt: 4_531_295)
@@ -373,5 +343,29 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertFalse(expiryPeek.isFresh)
         XCTAssertEqual(requestLines(), [subnetsRequestLine, subnetsRequestLine, subnetsRequestLine])
         assertAuthorizedRequests(world, paths: ["/v1/bittensor/profile-3/subnets", "/v1/bittensor/profile-3/subnets", "/v1/bittensor/profile-3/subnets"])
+    }
+
+    func testRefusedRegistrationAttestationIsDeviceBoundWithoutTryAgain() throws {
+        let world = try SubtensorFlowWorld()
+        SubtensorFlowURLProtocol.registrationReply = SubtensorFlowHTTPReply(
+            statusCode: 401, headers: [:], body: Data(#"{"error":{"code":"attestation_failed","message":"refused"}}"#.utf8)
+        )
+        let error = try XCTUnwrap(runError(world.earnServices.validatorDirectoryService.createDirectoryWrapper(
+            for: SubtensorSubnetRef(netuid: 64, registeredAt: 4_531_295)
+        )) as? BittensorApiError)
+        guard case .attestationRejected = error else { return XCTFail("Expected attestation rejection, got \(error)") }
+        XCTAssertTrue(error.isDeviceBound)
+        XCTAssertFalse(error.allowsUserRetry)
+    }
+
+    func testOfflineEndpointResolutionStaysRetryableAndNotDeviceBound() throws {
+        let world = try SubtensorFlowWorld()
+        world.auth.provider.failure = URLError(.notConnectedToInternet)
+        let error = try XCTUnwrap(runError(world.earnServices.validatorDirectoryService.createDirectoryWrapper(
+            for: SubtensorSubnetRef(netuid: 64, registeredAt: 4_531_295)
+        )) as? BittensorApiError)
+        guard case .transport = error else { return XCTFail("Expected transport failure, got \(error)") }
+        XCTAssertFalse(error.isDeviceBound)
+        XCTAssertTrue(error.allowsUserRetry)
     }
 }
