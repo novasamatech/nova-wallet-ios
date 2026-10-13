@@ -15,8 +15,7 @@ final class SubtensorPortfolioViewModelFactoryTests: XCTestCase {
                     totalHotkeyAlpha: nil,
                     isRegistered: true
                 )
-            ],
-            prices: [64: 75_100_000]
+            ]
         )
         state.isCatalogueResolved = true
         state.catalogue = makeCatalogue(taoPerAlpha: 73_800_000)

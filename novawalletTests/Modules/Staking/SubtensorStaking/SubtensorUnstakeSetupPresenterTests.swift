@@ -249,7 +249,7 @@ final class SubtensorUnstakeSetupPresenterTests: XCTestCase {
 
         presenter.setup()
         presenter.didReceivePositions(
-            Multistaking.SubtensorStakingState(positions: positions, prices: [:], availability: availability)
+            Multistaking.SubtensorStakingState(positions: positions, availability: availability)
         )
         presenter.didReceiveAssetBalance(makeBalance(for: chainAsset, free: free))
         presenter.didReceivePreflight(makePreflight())

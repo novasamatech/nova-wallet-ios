@@ -27,8 +27,7 @@ final class SubtensorSubnetDetailsPresenterTests: XCTestCase {
                 makePosition(hotkey: otherSubnetHotkey, netuid: 1, stakeAlpha: 90_000_000_000),
                 makePosition(hotkey: secondaryHotkey, netuid: 64, stakeAlpha: 3_000_000_000),
                 makePosition(hotkey: primaryHotkey, netuid: 64, stakeAlpha: 12_000_000_000)
-            ],
-            prices: [1: 4_120_000, 64: 73_800_000]
+            ]
         )
 
         setup.presenter.didReceivePositions(positions)
