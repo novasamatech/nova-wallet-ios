@@ -107,6 +107,20 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         clearSubscriptions()
     }
 
+    func refreshCataloguePricing() {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        guard isActive else {
+            return
+        }
+
+        performCataloguePricingRefresh()
+    }
+
     private func clearSubscriptions() {
         hotkeysSubscription = nil
 
