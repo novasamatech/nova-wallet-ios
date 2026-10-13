@@ -46,18 +46,27 @@ final class SubtensorPortfolioHistoryLoader {
             historyStore.createHistoryWrapper(for: subnet, period: period, currency: currency)
         }
 
+        let hasPriceHistoryService = historyStore.priceHistoryService != nil
+
         let historiesOperation = ClosureOperation<SubtensorPortfolioPriceHistories> {
             let taoHistory = try taoWrapper.targetOperation.extractNoCancellableResultData()
 
             var histories: [SubtensorPriceHistory] = []
+            var notListedNetuids: Set<UInt16> = []
             var failedNetuids: Set<UInt16> = []
 
             for (subnet, wrapper) in zip(subnets, subnetWrappers) {
                 do {
                     let result = try wrapper.targetOperation.extractNoCancellableResultData()
 
-                    if case let .available(history) = result {
+                    switch result {
+                    case let .available(history):
                         histories.append(history)
+                    case .notListed:
+                        // The store also returns notListed when no service is configured.
+                        if hasPriceHistoryService {
+                            notListedNetuids.insert(subnet.netuid)
+                        }
                     }
                 } catch {
                     failedNetuids.insert(subnet.netuid)
@@ -68,6 +77,7 @@ final class SubtensorPortfolioHistoryLoader {
                 period: period,
                 taoFiat: taoHistory,
                 subnets: histories,
+                notListedNetuids: notListedNetuids,
                 failedNetuids: failedNetuids
             )
         }
@@ -75,10 +85,8 @@ final class SubtensorPortfolioHistoryLoader {
         historiesOperation.addDependency(taoWrapper.targetOperation)
         subnetWrappers.forEach { historiesOperation.addDependency($0.targetOperation) }
 
-        let wrapper = CompoundOperationWrapper(
-            targetOperation: historiesOperation,
-            dependencies: taoWrapper.allOperations + subnetWrappers.flatMap(\.allOperations)
-        )
+        let dependencies = taoWrapper.allOperations + subnetWrappers.flatMap(\.allOperations)
+        let wrapper = CompoundOperationWrapper(targetOperation: historiesOperation, dependencies: dependencies)
 
         executeCancellable(
             wrapper: wrapper,
