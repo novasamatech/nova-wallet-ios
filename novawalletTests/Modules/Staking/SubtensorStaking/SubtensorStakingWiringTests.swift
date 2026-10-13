@@ -79,7 +79,7 @@ final class SubtensorStakingWiringTests: XCTestCase {
 
         let apiOperationFactory = BittensorApiOperationFactory(
             transport: BittensorApiFixtureTransport(),
-            cache: BittensorApiResponseCache(operationQueue: OperationQueue(), logger: Logger.shared),
+            cache: BittensorApiResponseCache(operationQueue: OperationQueue()),
             logger: Logger.shared
         )
 

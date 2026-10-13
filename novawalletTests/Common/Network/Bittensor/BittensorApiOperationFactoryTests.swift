@@ -214,7 +214,7 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
     }
 
     func testAnOlderRankingGenerationCannotEvictNewerAcceptedRecommendations() throws {
-        let cache = BittensorApiResponseCache(operationQueue: OperationQueue(), logger: Logger.shared)
+        let cache = BittensorApiResponseCache(operationQueue: OperationQueue())
         let olderRanking = try mutatedBody(BittensorApiFixtureDocuments.rankedSubnets(), replacing: olderGeneration)
         let transport = makeTransport(replies: [
             makeResponse(try makeBody(BittensorApiFixtureDocuments.recommendations()), requestId: "req-newer"),
@@ -252,7 +252,7 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
     }
 
     func testDelayedInvalidationOfTheAdmittedRevisionKeepsItsCacheAndAdmission() throws {
-        let cache = BittensorApiResponseCache(operationQueue: OperationQueue(), logger: Logger.shared)
+        let cache = BittensorApiResponseCache(operationQueue: OperationQueue())
         let job = makeCacheJob(revision: 2)
         _ = try fetch(cache.createWrapper(for: job))
         cache.invalidate(before: 2)
@@ -261,7 +261,7 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
     }
 
     func testAStaleAdmissionNeverPopulatesTheInvalidatedGeneration() throws {
-        let cache = BittensorApiResponseCache(operationQueue: OperationQueue(), logger: Logger.shared)
+        let cache = BittensorApiResponseCache(operationQueue: OperationQueue())
         let job = makeCacheJob(revision: 1)
         cache.invalidate(before: 2)
         guard case .attestationUnavailable? = fetchError(cache.createWrapper(for: job)) else {
@@ -297,9 +297,7 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
     ) -> BittensorApiOperationFactory {
         let cache = BittensorApiResponseCache(
             operationQueue: OperationQueue(),
-            logger: Logger.shared,
-            timeProvider: { clock.now },
-            jitterProvider: { 0 }
+            timeProvider: { clock.now }
         )
 
         return BittensorApiOperationFactory(transport: transport, cache: cache, logger: Logger.shared)
