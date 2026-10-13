@@ -11,6 +11,14 @@ final class BittensorAuthorizedTransport: BittensorApiAdmittingTransportProtocol
         self.operationQueue = operationQueue
     }
 
+    var invalidationRevision: UInt64 { provider.endpointAvailability.invalidationRevision }
+
+    func addInvalidationObserver(_ owner: AnyObject, closure: @escaping (UInt64) -> Void) -> UInt64 {
+        provider.addAvailabilityObserver(owner) { availability in
+            closure(availability.invalidationRevision)
+        }.invalidationRevision
+    }
+
     func addContextObserver(_ owner: AnyObject, closure: @escaping () -> Void) {
         provider.addContextObserver(owner, closure: closure)
     }
@@ -33,7 +41,8 @@ final class BittensorAuthorizedTransport: BittensorApiAdmittingTransportProtocol
                     scope: BittensorApiCacheScope(
                         origin: endpoint.context.origin.value,
                         profile: 3,
-                        generation: endpoint.context.generation
+                        generation: endpoint.context.generation,
+                        invalidationRevision: endpoint.invalidationRevision
                     ),
                     endpoint: endpoint
                 )

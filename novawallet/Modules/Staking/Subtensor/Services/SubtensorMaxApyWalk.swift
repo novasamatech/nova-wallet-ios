@@ -209,6 +209,8 @@ private extension SubtensorMaxApyWalk {
             rootYield = SubtensorYieldService.makeRootYield(from: page)
             pace(afterReceivingAt: page.receivedAt, requestedAt: requestedAt)
             completeTarget()
+        case let .failure(error) where Self.isTerminalAuthError(error):
+            walkError = error
         case let .failure(error) where Self.isRetryable(error):
             walkError = scheduleRetry(after: error) ? nil : error
         case let .failure(error):
@@ -251,6 +253,8 @@ private extension SubtensorMaxApyWalk {
                 alphaYields[netuid] = yields
                 completeTarget()
             }
+        case let .failure(error) where Self.isTerminalAuthError(error):
+            walkError = error
         case let .failure(error) where Self.isRetryable(error):
             walkError = scheduleRetry(after: error) ? nil : error
         case let .failure(error):
@@ -272,6 +276,20 @@ private extension SubtensorMaxApyWalk {
         return .failure(SubtensorMaxApyWalkError.expiredYieldPage)
     }
 
+    static func isTerminalAuthError(_ error: Error) -> Bool {
+        guard let apiError = error as? BittensorApiError else {
+            return false
+        }
+
+        switch apiError {
+        case .attestationRejected, .bindingConflict, .attestationFailure,
+             .unsupportedDevice, .configuration, .attestationBackoff:
+            return true
+        default:
+            return false
+        }
+    }
+
     static func isRetryable(_ error: Error) -> Bool {
         if error is SubtensorMaxApyWalkError {
             return true
@@ -283,10 +301,10 @@ private extension SubtensorMaxApyWalk {
 
         switch apiError {
         case .generationStale, .routeNotPublished, .invalidRequest, .datasetUnavailable, .contractViolation,
-             .bindingConflict, .attestationRejected:
+             .bindingConflict, .attestationRejected, .attestationFailure,
+             .unsupportedDevice, .configuration, .attestationBackoff:
             return false
-        case .unsupportedDevice, .configuration, .attestationBackoff, .attestationUnavailable,
-             .attestationFailure, .rateLimited, .upstreamUnavailable, .upstreamInvalidResponse, .server, .transport:
+        case .attestationUnavailable, .rateLimited, .upstreamUnavailable, .upstreamInvalidResponse, .server, .transport:
             return true
         }
     }
