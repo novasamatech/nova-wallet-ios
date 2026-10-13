@@ -11,7 +11,7 @@ and the selected HTTPS origin; each consumer and the server own business route/p
 exact `WWW-Authenticate: Bearer error="invalid_token"`, plus a valid `invalid_token` envelope
 for GET/POST. HEAD uses the status and header without a response body. A credential rejected by
 usable bearer before domain caches, while `createResponseWrapper` checks again before native
-URLCache or network access. GET/HEAD use the seven allowed `/v1/bittensor/profile-3` routes.
+URLCache or network access. GET uses the seven allowed `/v1/bittensor/profile-3` routes.
 Analytics and operations search retain their existing POST paths and immutable request bodies.
 Only conclusive pre-backend `invalid_token` allows a single replay. A credential rejected by
 another request before sending permits one separate, bounded re-admission. Neither path
@@ -36,9 +36,9 @@ This local product policy replaces the profile-3 protocol's user-driven re-creat
 wording; it is an explicit eligibility change, not behavioral equivalence.
 The package has no explicit reset API. Analytics consent/erasure and wallet changes do not
 reset the shared identity. Requests carry a demand intent that only gates re-registration after a refusal.
-Explicit reset or an origin change fences old work and requires a new user-initiated demand.
-Analytics withdrawal/erasure only affects analytics state and never resets shared auth.
-After an origin change or explicit reset, an install with analytics consent on and no Bittensor
+An origin change fences old work and requires a new user-initiated demand. There is no
+explicit reset API. Analytics withdrawal/erasure only affects analytics state and never resets
+shared auth. After an origin change, an install with analytics consent on and no Bittensor
 use uploads nothing. Uploads can resume after a real Bittensor user action or a consent off/on
 cycle, subject to normal admission and retry limits. Saved consent and automatic uploads do
 not provide user intent.
@@ -179,7 +179,7 @@ Consumers grade business responses through `NovaAuthResponse.serverError` and `r
 package's own envelope parser: status, lowercase code up to 64 characters, sanitized
 `X-Request-ID` and numeric Retry-After clamped to 905 seconds.
 The server migration is owned separately. The client uses profile 3 exclusively for the seven
-Bittensor GET/HEAD routes, **POST /v1/analytics/events** and
+Bittensor GET routes, **POST /v1/analytics/events** and
 **POST /v1/bittensor/operations/search**, with the same existing `bittensor-read` issuance flow
 and bearer. Release coordination must confirm server authorization for both existing POST
 paths **and rejection of `invalid_token` before either POST reaches its business handler**.

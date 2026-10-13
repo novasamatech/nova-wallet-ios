@@ -4,7 +4,7 @@ These diagrams describe the Swift client. “Backend” is only the HTTPS peer t
 
 **Reading order:** ownership → first authentication → proof construction → registration recovery → token reuse/concurrency → protected requests → storage/replacement → analytics.
 
-**Reading order:** ownership → first authentication → proof construction → registration recovery → token reuse/concurrency → protected requests → storage/reset → Bittensor → analytics.
+**Reading order:** ownership → first authentication → proof construction → registration recovery → token reuse/concurrency → protected requests → storage/replacement → Bittensor → analytics.
 The central invariant is **one main-app NovaAuth owner, one installation identity, and one current persisted bearer for the active backend context**. Bittensor and analytics receive the same client. Requests already in flight can still hold the preceding valid bearer during refresh. Wallet accounts do not supply authentication keys.
 
 ## 1. Ownership and app composition
@@ -249,6 +249,17 @@ business success does not clear a shared deadline. Short auth backoff is 1/2/4/8
 up to one second of jitter; Retry-After is clamped to 1–905 seconds. Nothing schedules an auth retry.
 
 Sources: [exchange](../../../Packages/NovaAuth/Sources/NovaAuth/Authorization/NovaAuthAuthorizedOperationFactory.swift) · [send fences and protection](../../../Packages/NovaAuth/Sources/NovaAuth/Authorization/NovaAuth+Authorization.swift) · [denial](../../../Packages/NovaAuth/Sources/NovaAuth/Authorization/NovaAuthBearerDenial.swift)
+| Uncoded 502/503/504, other 5xx, and coded domain 5xx except the explicit shared case | Analytics or Bittensor family only. |
+| GET | `/v1/bittensor/profile-3/subnets` |
+| GET | `/v1/bittensor/profile-3/subnets/{netuid}/validators` |
+| GET | `/v1/bittensor/profile-3/yields/root` |
+| GET | `/v1/bittensor/profile-3/subnets/{netuid}/yields/alpha` |
+| GET | `/v1/bittensor/profile-3/recommendations` |
+| GET | `/v1/bittensor/profile-3/recommendations/subnets` |
+| GET | `/v1/bittensor/profile-3/recommendations/subnets/{netuid}/validators` |
+| POST · JSON | `/v1/bittensor/operations/search` |
+`netuid` must be canonical UInt16 text. The current Bittensor factory does not expose the per-subnet recommendation-validators route. The table shows the package allowlist, not a claim that every route has an active caller.
+**Separately owned server migration:** release coordination must confirm that both existing POST paths accept this same profile-3 `bittensor-read` bearer and that `invalid_token` is rejected **before either POST reaches its business handler**. This pre-handler contract permits the single replay of identical bytes. The client predicate cannot establish deployed server ordering. There is no legacy fallback or client backend migration here.
 
 ## 7. Persistence and origin replacement
 
@@ -287,17 +298,6 @@ sanitized correlation ID. Tokens, IDs, proofs, bodies and arbitrary Error/state 
 Sources: [owner and repair](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuth.swift) · [settings](../../../Packages/NovaAuth/Sources/NovaAuth/Storage/NovaAuthSettingsIdentityStore.swift) · [Keychain](../../../Packages/NovaAuth/Sources/NovaAuth/Storage/NovaAuthKeychainTokenStore.swift) · [redacted failures](../../../Packages/NovaAuth/Sources/NovaAuth/Authorization/NovaAuthDiagnostics.swift)
 
 ## 8. Analytics: shared authentication, separate consent and data
-| Uncoded 502/503/504, other 5xx, and coded domain 5xx except the explicit shared case | Analytics or Bittensor family only. |
-| GET / HEAD | `/v1/bittensor/profile-3/subnets` |
-| GET / HEAD | `/v1/bittensor/profile-3/subnets/{netuid}/validators` |
-| GET / HEAD | `/v1/bittensor/profile-3/yields/root` |
-| GET / HEAD | `/v1/bittensor/profile-3/subnets/{netuid}/yields/alpha` |
-| GET / HEAD | `/v1/bittensor/profile-3/recommendations` |
-| GET / HEAD | `/v1/bittensor/profile-3/recommendations/subnets` |
-| GET / HEAD | `/v1/bittensor/profile-3/recommendations/subnets/{netuid}/validators` |
-| POST · JSON | `/v1/bittensor/operations/search` |
-`netuid` must be canonical UInt16 text. GET/HEAD are package capabilities; the current Bittensor factory calls GET. Its current factory also does not expose the per-subnet recommendation-validators route. The table shows the package allowlist, not a claim that every route has an active caller.
-**Separately owned server migration:** release coordination must confirm that both existing POST paths accept this same profile-3 `bittensor-read` bearer and that `invalid_token` is rejected **before either POST reaches its business handler**. This pre-handler contract permits the single replay of identical bytes. The client predicate cannot establish deployed server ordering. There is no legacy fallback or client backend migration here.
 
 ```mermaid
 flowchart TB
@@ -363,7 +363,7 @@ sequenceDiagram
 - Auth admission precedes negative-cache lookup and joining a request flight. Synchronous `peek` is only a stale display seed and makes no authentication request.
 - Decoded cache keys include auth scope plus method/path/query/body digest. Route-unpublished negatives last 600 seconds; dataset-unavailable negatives last 60 seconds. There is no successful-response TTL shortcut here.
 - Recommendation dataset ordering uses `(asOf, sourceBlockNumber)`. It is distinct from the authentication generation. An older dataset response returns `generationStale` without overwriting the newer seed.
-- The facade stamps accepted endpoints with an invalidation revision; transport preserves it in each admission. The decoded cache reconciles the latest revision before admission, completion and peek. Delayed or duplicate notifications cannot retire current-revision state; old admissions and completions cannot restore retired results. Same-origin readiness does not advance this invalidation revision. Separate context observers invalidate max-APY resolution, cost-basis histories and validator directories, including cold replacement or failed reset/replacement after the memory fence changes.
+- The facade stamps accepted endpoints with an invalidation revision; transport preserves it in each admission. The decoded cache reconciles the latest revision before admission, completion and peek. Delayed or duplicate notifications cannot retire current-revision state; old admissions and completions cannot restore retired results. Same-origin readiness does not advance this invalidation revision. Separate context observers invalidate max-APY resolution, cost-basis histories and validator directories, including cold replacement or a failed replacement after the memory fence changes.
 - Cost basis/P&L reads **`POST /v1/bittensor/operations/search`** and computes the ledger locally. It is a history read, not transaction submission.
 - Screen entry and explicit catalogue refresh carry user intent; automatic portfolio changes, pricing, cost-basis and max-APY work carry background intent. `withIntent` shares the same transport and cache.
 - Errors are graded into Bittensor types. Raw network and malformed-protocol failures retain retryable availability meaning; generic business 401/403 are server errors after the scope-specific case below. Presentation depends on the consumer: portfolio catalogue failure supplies no catalogue and can show rates unavailable; validator flows use the typed device/retry properties. Live chain balances do not prove successful backend authentication.
@@ -405,4 +405,4 @@ flowchart TB
   OPT["Consent withdrawal"] --> ERASE["Persist erasure obligation first<br/>cancel analytics flush waiter<br/>forget analytics install ID; erase event queue"]
   ERASE -. "Shared auth and Bittensor remain independent" .-> SHARED["Same NovaAuth identity + bearer"]
 ```
-**Accepted D3 limitation:** after an origin change or explicit reset, an install with analytics consent on and no Bittensor use uploads nothing. Uploads can resume after a real Bittensor user action or a consent off/on cycle, subject to admission and the bounded re-arm. An opt-in whose own initial resolution performs a cold origin replacement is discarded too; a later real action is required. Automatic uploads and restored consent do not re-authorize that context. Ordinary lost-key/interrupted recovery can run on background demand only within the persisted budget of two; registration refusal/abandonment and the legacy user-only states require user intent.
+**Accepted D3 limitation:** after an origin change, an install with analytics consent on and no Bittensor use uploads nothing. Uploads can resume after a real Bittensor user action or a consent off/on cycle, subject to admission and the bounded re-arm. An opt-in whose own initial resolution performs a cold origin replacement is discarded too; a later real action is required. Automatic uploads and restored consent do not re-authorize that context. Ordinary lost-key/interrupted recovery can run on background demand only within the persisted budget of two; registration refusal/abandonment and the legacy user-only states require user intent.
