@@ -26,7 +26,7 @@ final class NovaAuthPendingRestartTests: LifecycleTestCase {
         harness.clock.advance(29)
         assertError(.userActionRequired, restarted.createAdmissionWrapper(in: context, intent: .userInitiated), on: harness.callers)
         XCTAssertEqual(harness.bootstrap.tokenChallenges, 8)
-        XCTAssertEqual(harness.identity.state?.identity?.registration, .retired(.unrecoverableRegistration))
+        XCTAssertEqual(harness.identity.state?.identity?.registration, .retired(.registrationAbandoned))
         harness.clock.advance(31)
         assertError(.cooldown(retryAfter: 29), restarted.createAdmissionWrapper(in: context, intent: .background), on: harness.callers)
         XCTAssertEqual(harness.apple.keys, 0)
