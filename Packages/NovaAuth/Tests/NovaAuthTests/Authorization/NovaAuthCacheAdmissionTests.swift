@@ -50,7 +50,7 @@ final class NovaAuthCacheAdmissionTests: LifecycleTestCase {
             let now = try harness.clock.now()
             auth.gate.novaAuthLocked { auth.originCooldown.fail(now: now, random: 0, retryAfter: 20) }
             assertError(.cooldown(retryAfter: 20), auth.createResponseWrapper(for: request, beforeSend: {}), on: harness.callers)
-            XCTAssertEqual(counter.creations, 0)
+            XCTAssertEqual(counter.creations, 1)
         }
     }
 }

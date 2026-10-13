@@ -33,19 +33,20 @@ final class NovaAuthPendingEvidenceTests: LifecycleTestCase {
 
     func testKnownBindingClearsUnknownCountButStaysPendingAcrossTokenFailures() throws {
         let harness = try LifecycleHarness()
+        harness.random.value = 0
         let context = try preparePending(harness, unknownCount: 7)
         let original = try XCTUnwrap(harness.identity.state?.identity)
         let failure = NovaAuthError.bootstrap(NovaAuthServerError(
             statusCode: 401, code: "invalid_proof", requestID: nil, retryAfter: nil
         ))
         harness.bootstrap.onToken = { $0(.failure(failure)) }
-        for _ in 0 ..< 8 {
+        for delay in [60.0, 600, 3600, 3600, 3600, 3600, 3600, 3600] {
             let auth = harness.makeAuth()
             _ = try auth.activate(origin: harness.origin)
             assertError(failure, auth.createAdmissionWrapper(in: context, intent: .background), on: harness.callers)
             XCTAssertEqual(try pendingState(harness).unknownResponseCount, 0)
             XCTAssertEqual(harness.identity.state?.identity?.clientID, original.clientID)
-            harness.clock.advance(31)
+            harness.clock.advance(delay)
         }
         XCTAssertEqual(harness.apple.keys, 0)
         XCTAssertEqual(harness.apple.attestations.count, 0)

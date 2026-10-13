@@ -157,7 +157,6 @@ final class NovaAuthStorageTests: XCTestCase {
         NovaAuthKeychainTokenStore(
             configuration: try NovaAuthSharedStoreConfiguration(
                 accessGroup: "group.test.novaauth",
-                containerURL: FileManager.default.temporaryDirectory,
                 hostAppNamespace: "io.nova.wallet"
             ),
             security: security

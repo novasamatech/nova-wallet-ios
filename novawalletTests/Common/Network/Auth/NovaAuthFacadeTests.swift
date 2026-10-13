@@ -41,7 +41,6 @@ final class NovaAuthFacadeTests: XCTestCase {
         XCTAssertEqual(namespace, Bundle.main.bundleIdentifier)
         let configuration = try NovaAuthSharedStoreConfiguration(
             accessGroup: SharedContainerGroup.name,
-            containerURL: FileManager.default.temporaryDirectory,
             hostAppNamespace: namespace
         )
         XCTAssertEqual(configuration.hostAppNamespace, namespace)

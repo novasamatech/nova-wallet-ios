@@ -28,10 +28,18 @@ final class HostAuthApple: NovaAuthAppAttestProtocol {
     var isSupported = true
     private(set) var attestations = 0
     private(set) var assertions = 0
+    func isBusy(keyID _: String) -> Bool { false }
     func createKeyWrapper() -> CompoundOperationWrapper<String> { .createWithResult(Data(repeating: 1, count: 32).base64EncodedString()) }
-    func createAttestationWrapper(keyID _: String, clientDataHash _: Data) -> CompoundOperationWrapper<Data> {
-        attestations += 1
-        return .createWithResult(Data([1, 2, 3]))
+    func createAttestationWrapper(
+        keyID _: String,
+        clientDataHash _: Data,
+        beforeAttest: @escaping () throws -> Void
+    ) -> CompoundOperationWrapper<Data> {
+        CompoundOperationWrapper(targetOperation: ClosureOperation { [self] in
+            try beforeAttest()
+            attestations += 1
+            return Data([1, 2, 3])
+        })
     }
 
     func createAssertionWrapper(keyID _: String, clientDataHash _: Data) -> CompoundOperationWrapper<Data> {
@@ -62,7 +70,7 @@ final class HostAuthProvider: NovaAuthProvidingProtocol {
 
     func createEndpointWrapper() -> CompoundOperationWrapper<NovaAuthEndpoint> {
         if let failure { return .createWithError(failure) }
-        return .createWithResult(NovaAuthEndpoint(context: context, client: client))
+        return .createWithResult(NovaAuthEndpoint(context: context, client: client, invalidationRevision: 0))
     }
 }
 

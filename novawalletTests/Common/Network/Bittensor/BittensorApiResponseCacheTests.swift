@@ -24,11 +24,11 @@ final class BittensorApiResponseCacheTests: XCTestCase {
         admissionError: Error? = nil,
         result: Result<BittensorApiFetchedValue, Error>
     ) -> BittensorApiCacheJob {
-        BittensorApiCacheJob(key: key, routeKey: route, admit: { [self] in
+        BittensorApiCacheJob(key: key, routeKey: route, currentInvalidationRevision: { 0 }, admit: { [self] in
             admissions += 1
             if let admissionError { return .createWithError(admissionError) }
             return .createWithResult(BittensorApiAdmission(
-                scope: BittensorApiCacheScope(origin: origin, profile: 3, generation: generation), endpoint: nil
+                scope: BittensorApiCacheScope(origin: origin, profile: 3, generation: generation, invalidationRevision: generation), endpoint: nil
             ))
         }, fetch: { [self] _ in
             fetches += 1
@@ -46,8 +46,8 @@ final class BittensorApiResponseCacheTests: XCTestCase {
         _ = try run(cache.createWrapper(for: job(result: .success(value))))
         XCTAssertEqual(admissions, 2)
         XCTAssertEqual(fetches, 2)
-        XCTAssertEqual(cache.peek(key).value?.value as? String, "seed")
-        XCTAssertFalse(cache.peek(key).isFresh)
+        XCTAssertEqual(cache.peek(key, invalidationRevision: 0).value?.value as? String, "seed")
+        XCTAssertFalse(cache.peek(key, invalidationRevision: 0).isFresh)
     }
 
     func testAdmissionFailureBlocksEvenWithAnExistingPresentationSeed() throws {
@@ -58,7 +58,7 @@ final class BittensorApiResponseCacheTests: XCTestCase {
         ))))
         XCTAssertEqual(admissions, 2)
         XCTAssertEqual(fetches, 1)
-        XCTAssertNotNil(cache.peek(key).value)
+        XCTAssertNotNil(cache.peek(key, invalidationRevision: 0).value)
     }
 
     func testNegativeRouteStillRequiresAdmissionEveryTime() {
@@ -73,20 +73,20 @@ final class BittensorApiResponseCacheTests: XCTestCase {
     func testOriginChangeImmediatelyClearsSynchronousSeedsAndRejectsOlderScope() throws {
         let cache = BittensorApiResponseCache(operationQueue: queue, logger: Logger.shared)
         _ = try run(cache.createWrapper(for: job(result: .success(value))))
-        cache.invalidate()
-        XCTAssertNil(cache.peek(key).value)
+        cache.invalidate(before: 2)
+        XCTAssertNil(cache.peek(key, invalidationRevision: 0).value)
         _ = try run(cache.createWrapper(for: job(origin: "https://second.test", generation: 2, result: .success(value))))
         XCTAssertThrowsError(try run(cache.createWrapper(for: job(result: .success(value)))))
         XCTAssertEqual(fetches, 2)
-        XCTAssertNotNil(cache.peek(key).value)
+        XCTAssertNotNil(cache.peek(key, invalidationRevision: 0).value)
     }
 
     func testOldInFlightCompletionCannotRepopulateAfterInvalidation() throws {
         let cache = BittensorApiResponseCache(operationQueue: queue, logger: Logger.shared)
         let started = expectation(description: "old fetch started")
         var finish: ((Result<BittensorApiFetchedValue, Error>) -> Void)?
-        let held = BittensorApiCacheJob(key: key, routeKey: route, admit: {
-            .createWithResult(BittensorApiAdmission(scope: BittensorApiCacheScope(origin: "https://first.test", profile: 3, generation: 1), endpoint: nil))
+        let held = BittensorApiCacheJob(key: key, routeKey: route, currentInvalidationRevision: { 0 }, admit: {
+            .createWithResult(BittensorApiAdmission(scope: BittensorApiCacheScope(origin: "https://first.test", profile: 3, generation: 1, invalidationRevision: 1), endpoint: nil))
         }, fetch: { _ in
             CompoundOperationWrapper(targetOperation: AsyncClosureOperation { completion in
                 finish = completion
@@ -98,10 +98,10 @@ final class BittensorApiResponseCacheTests: XCTestCase {
         old.targetOperation.completionBlock = { completed.fulfill() }
         queue.addOperations(old.allOperations, waitUntilFinished: false)
         wait(for: [started], timeout: 10)
-        cache.invalidate()
+        cache.invalidate(before: 2)
         finish?(.success(value))
         wait(for: [completed], timeout: 10)
         XCTAssertThrowsError(try old.targetOperation.extractNoCancellableResultData())
-        XCTAssertNil(cache.peek(key).value)
+        XCTAssertNil(cache.peek(key, invalidationRevision: 0).value)
     }
 }

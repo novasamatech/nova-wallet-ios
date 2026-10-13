@@ -5,6 +5,7 @@ import NovaOperationSupport
 final class NovaAuthRecoveryPolicyTests: LifecycleTestCase {
     func testLostKeyRecoversOnBackgroundDemandAfterPersistedDelay() throws {
         let harness = try LifecycleHarness()
+        harness.random.value = 0
         let (auth, context) = try harness.registered()
         let original = try XCTUnwrap(harness.identity.state?.identity)
         harness.apple.assert = { .createWithError(NovaAuthAppAttestError.invalidKey) }
@@ -21,11 +22,12 @@ final class NovaAuthRecoveryPolicyTests: LifecycleTestCase {
         XCTAssertEqual(harness.apple.keys, 1)
         XCTAssertEqual(harness.apple.attestations.count, 1)
         XCTAssertNotNil(try harness.tokens.load())
-        XCTAssertNil(harness.identity.state?.recoveryCooldown)
+        XCTAssertNil(harness.identity.state?.recovery)
     }
 
     func testFailedReplacementCannotCreateMoreKeysBeforeDelayAcrossRestart() throws {
         let harness = try LifecycleHarness()
+        harness.random.value = 0
         let (auth, context) = try harness.registered()
         harness.apple.assert = { .createWithError(NovaAuthAppAttestError.invalidKey) }
         assertError(.keyUnavailable, auth.createAdmissionWrapper(in: context, intent: .background), on: harness.callers)
@@ -35,13 +37,14 @@ final class NovaAuthRecoveryPolicyTests: LifecycleTestCase {
         XCTAssertEqual(harness.apple.keys, 1)
         let restarted = harness.makeAuth()
         _ = try restarted.activate(origin: harness.origin)
-        harness.clock.advance(59)
+        harness.clock.advance(599)
         assertError(.cooldown(retryAfter: 1), restarted.createAdmissionWrapper(in: context, intent: .background), on: harness.callers)
         XCTAssertEqual(harness.apple.keys, 1)
     }
 
     func testRestoredBindingPolicyReusesIdentityAfterPersistedRefusalDelay() throws {
         let harness = try LifecycleHarness()
+        harness.random.value = 0
         let (auth, context) = try harness.registered()
         let original = harness.identity.state?.identity
         let refusal = policyError("binding_not_allowed")
@@ -60,7 +63,7 @@ final class NovaAuthRecoveryPolicyTests: LifecycleTestCase {
         XCTAssertEqual(harness.apple.attestations.count, 0)
     }
 
-    func testAppPolicyRefusalRequiresActualUserAndThenReusesBinding() throws {
+    func testAppCodeAtTokenChallengeDoesNotCreateRegistrationRetirementPolicy() throws {
         let harness = try LifecycleHarness()
         let (auth, context) = try harness.registered()
         let original = harness.identity.state?.identity
@@ -69,8 +72,9 @@ final class NovaAuthRecoveryPolicyTests: LifecycleTestCase {
         assertError(refusal, auth.createAdmissionWrapper(in: context, intent: .background), on: harness.callers)
         harness.clock.advance(60)
         harness.bootstrap.tokenChallengeResult = .success(LifecycleBootstrap.challenge)
-        assertError(.userActionRequired, auth.createAdmissionWrapper(in: context, intent: .background), on: harness.callers)
-        try execute(auth.createAdmissionWrapper(in: context, intent: .userInitiated), on: harness.callers)
+        XCTAssertEqual(harness.identity.state?.requiresUserAction, false)
+        XCTAssertNil(harness.identity.state?.recovery)
+        try execute(auth.createAdmissionWrapper(in: context, intent: .background), on: harness.callers)
         XCTAssertEqual(harness.identity.state?.identity, original)
         XCTAssertEqual(harness.apple.keys, 0)
     }

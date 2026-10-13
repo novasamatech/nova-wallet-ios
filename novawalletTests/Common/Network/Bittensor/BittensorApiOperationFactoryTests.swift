@@ -226,8 +226,8 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
             return XCTFail("Expected stale generation failure")
         }
         let key = BittensorApiCacheKey(method: "GET", path: "/recommendations", query: [], bodyDigest: nil)
-        XCTAssertEqual(cache.peek(key).value?.requestId, "req-newer")
-        XCTAssertFalse(cache.peek(key).isFresh)
+        XCTAssertEqual(cache.peek(key, invalidationRevision: 0).value?.requestId, "req-newer")
+        XCTAssertFalse(cache.peek(key, invalidationRevision: 0).isFresh)
         verify(transport, times(2)).createResponseWrapper(for: any())
     }
 
