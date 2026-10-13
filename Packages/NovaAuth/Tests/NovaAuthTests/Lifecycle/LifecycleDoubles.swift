@@ -123,16 +123,20 @@ final class LifecyclePending<Value> {
 
 final class LifecycleApple: NovaAuthAppAttestProtocol {
     var isSupported = true
+    var busyKeys: Set<String> = []
     var keys = 0
     var attestations: [(String, Data)] = []
     var assertions: [(String, Data)] = []
     var keyResult: Result<String, Error> = .success(Data(repeating: 1, count: 32).base64EncodedString())
+    var key: (() -> CompoundOperationWrapper<String>)?
     var attest: (() -> CompoundOperationWrapper<Data>)?
     var assert: (() -> CompoundOperationWrapper<Data>)?
-    func isBusy(keyID _: String) -> Bool { false }
+
+    func isBusy(keyID: String) -> Bool { busyKeys.contains(keyID) }
 
     func createKeyWrapper() -> CompoundOperationWrapper<String> {
         keys += 1
+        if let key { return key() }
         return CompoundOperationWrapper(targetOperation: ClosureOperation { [self] in try keyResult.get() })
     }
 

@@ -65,6 +65,7 @@ final class NovaAuthRecoveryPolicyTests: LifecycleTestCase {
 
     func testAppCodeAtTokenChallengeDoesNotCreateRegistrationRetirementPolicy() throws {
         let harness = try LifecycleHarness()
+        harness.random.value = 0
         let (auth, context) = try harness.registered()
         let original = harness.identity.state?.identity
         let refusal = policyError("app_not_allowed")
@@ -81,6 +82,7 @@ final class NovaAuthRecoveryPolicyTests: LifecycleTestCase {
 
     func testLegacyPolicyRefusalRequiresUserProbeBeforeReplacingKnownBinding() throws {
         let harness = try LifecycleHarness()
+        harness.random.value = 0
         let (_, context) = try harness.registered()
         let original = try XCTUnwrap(harness.identity.state?.identity)
         harness.identity.state = NovaAuthInstallationState(
@@ -100,6 +102,7 @@ final class NovaAuthRecoveryPolicyTests: LifecycleTestCase {
 
     func testUserGateSurvivesFailedIdentitySaveAndRetry() throws {
         let harness = try LifecycleHarness()
+        harness.random.value = 0
         let (auth, _) = try harness.registered()
         try auth.reset()
         let context = try XCTUnwrap(auth.currentContext)

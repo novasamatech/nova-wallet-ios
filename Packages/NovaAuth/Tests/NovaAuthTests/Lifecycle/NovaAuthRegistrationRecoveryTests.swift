@@ -64,6 +64,7 @@ final class NovaAuthRegistrationRecoveryTests: LifecycleTestCase {
         assertError(.userActionRequired, auth.createAdmissionWrapper(in: context, intent: .userInitiated), on: harness.callers)
         XCTAssertEqual(harness.apple.attestations.count, 0)
         XCTAssertEqual(harness.bootstrap.tokenChallenges, 0)
+        XCTAssertEqual(harness.identity.state?.identity?.registration, .retired(.interrupted))
     }
 
     func testPendingUnknownClientRequiresUserActionAfterWindowExpires() throws {
