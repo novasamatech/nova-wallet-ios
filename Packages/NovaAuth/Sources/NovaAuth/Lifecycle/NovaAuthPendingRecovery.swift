@@ -6,7 +6,6 @@ extension NovaAuth {
         try pending.cooldown.check(now: now)
         var cooldown = pending.cooldown
         cooldown.fail(now: now, random: dependencies.random.unitInterval())
-        // Reserve the request and its backoff before sending, including when its response is lost.
         try setRegistration(.registrationPending(NovaAuthPendingRegistration(
             startedAt: pending.startedAt,
             cooldown: cooldown

@@ -55,7 +55,6 @@ extension NovaAuth: NovaAuthCredentialAuthority {
         }
     }
 
-    /// The sole writer holds its gate across this fallback for an untagged legacy record.
     func removeRejectedOrInvalidToken(_ record: NovaAuthTokenRecord) throws {
         do {
             let removed = try dependencies.tokenStore.remove(ifMatching: record)

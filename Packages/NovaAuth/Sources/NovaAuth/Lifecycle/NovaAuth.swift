@@ -89,7 +89,6 @@ public final class NovaAuth: NovaAuthClientProtocol {
     }
 
     func persist(_ newState: NovaAuthInstallationState) throws {
-        // Adopt the memory fence before I/O; a failed save never rolls it back.
         state = newState
         pendingStateWrite = newState
         do {
@@ -196,7 +195,6 @@ private extension NovaAuth {
             state = try dependencies.identityStore.load()
             if let current = state, let identity = current.identity,
                case .retired(.policyRefused) = identity.registration, identity.keyID != nil {
-                // Legacy policy denial never authorizes rotating a registered key.
                 state = NovaAuthInstallationState(
                     version: current.version, context: current.context,
                     identity: NovaAuthInstallationIdentity(
@@ -258,7 +256,6 @@ private extension NovaAuth {
             identity: nil,
             tokenRemovalOwed: true
         )
-        // The memory fence must survive even a failed persistent replacement.
         state = replacement
         invalidationID = UUID()
         storageFailed = false

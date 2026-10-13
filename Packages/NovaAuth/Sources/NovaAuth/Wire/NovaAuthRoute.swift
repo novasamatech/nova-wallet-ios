@@ -1,6 +1,5 @@
 import Foundation
 
-// Transport syntax only. Protected routes and their payloads belong to the server and consumer.
 enum NovaAuthRoute {
     static func validate(method: NovaAuthMethod, path: String, body: Data?, contentType: String?) throws {
         guard path.hasPrefix("/"), !path.hasPrefix("//"),

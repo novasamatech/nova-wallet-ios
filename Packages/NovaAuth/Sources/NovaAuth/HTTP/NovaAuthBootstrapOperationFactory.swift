@@ -71,7 +71,6 @@ final class NovaAuthBootstrapOperationFactory {
 }
 
 private extension NovaAuthBootstrapOperationFactory {
-    // The send fence remains explicit alongside the immutable wire inputs.
     // swiftlint:disable:next function_parameter_count
     func createWrapper<T>(
         origin: NovaAuthOrigin,

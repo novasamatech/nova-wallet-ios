@@ -19,7 +19,6 @@ enum NovaAuthFraming {
         return result
     }
 
-    // The protocol fixes these six independently framed inputs.
     // swiftlint:disable:next function_parameter_count
     static func clientDataHash(
         challenge: String,

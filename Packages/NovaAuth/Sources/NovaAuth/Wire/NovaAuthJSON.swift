@@ -1,6 +1,5 @@
 import Foundation
 
-/// Keeps number spelling and decoded member names intact before typed wire validation.
 indirect enum NovaAuthJSON {
     case object([String: NovaAuthJSON])
     case array([NovaAuthJSON])

@@ -156,7 +156,6 @@ extension NovaAuth {
         _ = try NovaAuthTokenValidation.remaining(
             record, context: flight.context, clientID: clientID, now: dependencies.clock.now()
         )
-        // Identity and token writes share the owner gate. Never deliver a memory-only bearer.
         try setRegistration(.registered, flight: flight)
         do {
             try dependencies.tokenStore.replace(record)
@@ -229,7 +228,7 @@ private extension NovaAuth {
             let next = NovaAuthIssuanceFlight(context: context, sponsored: true)
             flight = next
             start(flight: next)
-        } catch { /* A still-usable bearer remains available during issuance refusal. */ }
+        } catch {}
     }
 
     func detach(waiterID: UUID) {

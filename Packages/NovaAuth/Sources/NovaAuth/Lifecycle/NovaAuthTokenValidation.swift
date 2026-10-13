@@ -1,7 +1,6 @@
 import Foundation
 
 enum NovaAuthTokenValidation {
-    // Both persisted reads and live admission use the same credential structure and deadline.
     static func deadline(_ record: NovaAuthTokenRecord) throws -> TimeInterval {
         guard record.version == 2 else { throw NovaAuthError.credentialUnavailable }
         _ = try NovaAuthOrigin(record.context.origin.value)
