@@ -8,8 +8,7 @@ final class BittensorApiErrorRecoveryTests: XCTestCase {
             .configuration,
             .attestationRejected(requestId: "request-1"),
             .attestationBackoff(until: Date(timeIntervalSince1970: 1_790_086_400)),
-            .attestationFailure(requestId: "request-2"),
-            .invalidRequest(code: "invalid_request", requestId: "request-3")
+            .attestationFailure(requestId: "request-2")
         ]
 
         XCTAssertEqual(errors.map(\.isDeviceBound), Array(repeating: true, count: errors.count))
@@ -17,6 +16,7 @@ final class BittensorApiErrorRecoveryTests: XCTestCase {
 
     func testUnpublishedUnavailableAndTemporaryCallsAreNotDeviceBound() {
         let errors: [BittensorApiError] = [
+            .invalidRequest(code: "invalid_request", requestId: "request-3"),
             .routeNotPublished,
             .datasetUnavailable(requestId: "request-1"),
             .rateLimited(requestId: nil),
