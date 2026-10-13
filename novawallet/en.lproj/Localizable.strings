@@ -2294,8 +2294,6 @@ Do you want to continue?";
 "staking.subtensor.ui.chip.deep.pool" = "deep pool";
 "staking.subtensor.ui.chip.steady" = "steady 30 days";
 "staking.subtensor.ui.adds.to.format" = "Adds to your %1$@ staked with %2$@";
-"staking.subtensor.ui.hold.add.message" = "Root stake is locked for %@ after staking. You can add stake when the lock ends.";
-"staking.subtensor.ui.hold.add.available.format" = "Add stake available from %@";
 "staking.subtensor.ui.slippage.explanation" = "If the price moves more than this while your order fills, the network cancels the order and only the network fee is charged.";
 "staking.subtensor.ui.slippage.custom" = "Custom, %%";
 "staking.subtensor.ui.unstake.root.note" = "The network fee is paid from your free TAO balance. Instant — no waiting period. TAO returns to your free balance.";

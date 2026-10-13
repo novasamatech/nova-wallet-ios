@@ -106,26 +106,6 @@ extension SubtensorStakingSetupPresenter {
         }?.stakeAlpha
     }
 
-    func holdRemaining() -> TimeInterval? {
-        guard
-            case .addStake = mode,
-            let preflight,
-            preflight.rootStakeUnlockInterval > 0,
-            let lastStakeBlock = preflight.lastStakeBlock,
-            let currentBlock else {
-            return nil
-        }
-
-        let hold = SubtensorRootHold(interval: preflight.rootStakeUnlockInterval, lastStakeBlock: lastStakeBlock)
-        let remainingBlocks = hold.remainingBlocks(at: UInt64(currentBlock))
-
-        guard remainingBlocks > 0 else {
-            return nil
-        }
-
-        return (TimeInterval(remainingBlocks) * TimeInterval(SubtensorStakingFlowConstants.blockTimeMillis)).seconds
-    }
-
     func createViewModelInput() -> SubtensorStakingSetupViewModelInput {
         let subnetData = SubtensorSetupSubnetData(
             catalogue: catalogue,
@@ -150,8 +130,7 @@ extension SubtensorStakingSetupPresenter {
             fee: fee,
             price: price,
             quote: quoteFlow.freshQuote,
-            positionStake: positionStake(),
-            holdRemaining: holdRemaining()
+            positionStake: positionStake()
         )
     }
 
