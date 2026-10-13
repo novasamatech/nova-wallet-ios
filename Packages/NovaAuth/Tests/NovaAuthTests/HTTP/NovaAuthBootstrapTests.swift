@@ -11,7 +11,7 @@ final class NovaAuthBootstrapTests: XCTestCase {
         http.response = try FoundationFixture.response(challenge, path: "/v1/attestation/profile-3/challenges")
         _ = try executeFoundation(
             factory
-                .createRegistrationChallengeWrapper(origin: origin, clientID: FoundationFixture.clientID)
+                .createRegistrationChallengeWrapper(origin: origin, clientID: FoundationFixture.clientID, beforeSend: {})
         )
         try check(
             http.requests[0],
@@ -30,7 +30,7 @@ final class NovaAuthBootstrapTests: XCTestCase {
             attestation: Data([1, 2, 3]),
             contentType: "application/json; charset=utf-8"
         )
-        try executeFoundation(factory.createRegistrationWrapper(register))
+        try executeFoundation(factory.createRegistrationWrapper(register, beforeSend: {}))
         try check(
             http.requests[1],
             path: "/v1/attestation/profile-3/register",
@@ -47,7 +47,7 @@ final class NovaAuthBootstrapTests: XCTestCase {
         http.response = try FoundationFixture.response(challenge, path: "/v1/attestation/profile-3/token-challenges")
         _ = try executeFoundation(
             factory
-                .createTokenChallengeWrapper(origin: origin, clientID: FoundationFixture.clientID)
+                .createTokenChallengeWrapper(origin: origin, clientID: FoundationFixture.clientID, beforeSend: {})
         )
         try check(
             http.requests[2],
@@ -65,7 +65,7 @@ final class NovaAuthBootstrapTests: XCTestCase {
             assertion: Data([4, 5]),
             contentType: "application/json"
         )
-        _ = try executeFoundation(factory.createTokenWrapper(token))
+        _ = try executeFoundation(factory.createTokenWrapper(token, beforeSend: {}))
         try check(
             http.requests[3],
             path: "/v1/attestation/profile-3/tokens",

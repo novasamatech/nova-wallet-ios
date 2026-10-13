@@ -16,7 +16,7 @@ final class NovaAuthAttestationGuardTests: XCTestCase {
         XCTAssertEqual(service.attestationCalls, 0)
         XCTAssertFalse(adapter.isBusy(keyID: FoundationFixture.keyID))
         _ = try executeFoundation(adapter.createAttestationWrapper(
-            keyID: FoundationFixture.keyID, clientDataHash: Data(repeating: 2, count: 32)
+            keyID: FoundationFixture.keyID, clientDataHash: Data(repeating: 2, count: 32), beforeAttest: {}
         ))
         XCTAssertEqual(service.attestationCalls, 1)
     }

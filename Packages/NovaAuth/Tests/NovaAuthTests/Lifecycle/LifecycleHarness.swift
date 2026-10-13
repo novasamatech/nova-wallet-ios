@@ -50,16 +50,6 @@ final class LifecycleHarness {
         ))
     }
 
-    func makeReader(http: NovaAuthHTTPProtocol? = nil) -> NovaAuthReader {
-        NovaAuthReader(dependencies: NovaAuthReaderDependencies(
-            origin: origin,
-            tokenStore: tokens,
-            clock: clock,
-            http: http ?? self.http,
-            requestQueue: requestQueue
-        ))
-    }
-
     func registered(withToken: Bool = false) throws -> (NovaAuth, NovaAuthContext) {
         let context = NovaAuthContext(origin: origin, generation: 1)
         identity.state = NovaAuthInstallationState(

@@ -34,7 +34,7 @@ final class GlobalConfigProviderTests: XCTestCase {
         super.tearDown()
     }
 
-    func testOnlyAFreshFetchObservesAChangedPayload() throws {
+    func testCachedReadKeepsTheFirstPayload() throws {
         GlobalConfigStubURLProtocol.payload = makePayload(infraUrl: "https://first.example")
 
         let provider = GlobalConfigProvider(configUrl: configUrl)
@@ -44,10 +44,6 @@ final class GlobalConfigProviderTests: XCTestCase {
         GlobalConfigStubURLProtocol.payload = makePayload(infraUrl: "https://second.example")
 
         XCTAssertEqual(try fetch(provider.createConfigWrapper()).infraUrl.absoluteString, "https://first.example")
-        XCTAssertEqual(
-            try fetch(provider.createFreshConfigWrapper()).infraUrl.absoluteString,
-            "https://second.example"
-        )
     }
 
     private func makePayload(infraUrl: String) -> Data {

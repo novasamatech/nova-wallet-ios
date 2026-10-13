@@ -152,65 +152,6 @@ extension BittensorApiResponseCacheTests {
             XCTAssertEqual(HostAuthURLProtocol.businessRequests.count, 3)
         }
     }
-
-    func testDelayedResetInvalidationRejectsOldFlightAndQueuedAdmission() {
-        runBoundedRace { [self] in
-            let config = AuthConfigProvider()
-            let invalidating = XCTestExpectation(description: "reset invalidation paused")
-            let invalidated = XCTestExpectation(description: "reset invalidation delivered")
-            let release = DispatchSemaphore(value: 0)
-            defer { release.signal() }
-            let (provider, factory) = try makeAuthorizedFactory(config: config) {
-                invalidating.fulfill()
-                XCTAssertEqual(release.wait(timeout: .now() + 20), .success)
-            }
-            _ = try raceResult(factory.createSubnetsWrapper())
-            let old = try raceResult(factory.transport.createAdmissionWrapper(intent: .userInitiated))
-            let latch = BittensorApiOperationFactoryTests.ReplyLatch()
-            defer { latch.release() }
-            let started = XCTestExpectation(description: "old response held before cache delivery")
-            let completed = XCTestExpectation(description: "old cache flight completed")
-            let oldFlight = factory.cache.createWrapper(for: heldResponseJob(
-                admission: old, transport: factory.transport, latch: latch, started: started
-            ))
-            oldFlight.targetOperation.completionBlock = { completed.fulfill() }
-            queue.addOperations(oldFlight.allOperations, waitUntilFinished: false)
-            try awaitRace(started)
-            DispatchQueue.global().async {
-                defer { invalidated.fulfill() }
-                do { try provider.reset() } catch { XCTFail("Reset failed: \(error)") }
-            }
-            try awaitRace(invalidating)
-            latch.release()
-            try awaitRace(completed)
-            XCTAssertThrowsError(try oldFlight.targetOperation.extractNoCancellableResultData()) { error in
-                guard case BittensorApiError.attestationUnavailable = error else {
-                    return XCTFail("Expected stale admission rejection, received \(error)")
-                }
-            }
-            XCTAssertNil(factory.peekSubnets().value)
-            let queued = BittensorApiCacheJob(
-                key: key, routeKey: route,
-                currentInvalidationRevision: { factory.transport.invalidationRevision },
-                admit: { .createWithResult(old) },
-                fetch: { _ in
-                    XCTFail("An old queued admission must not start a fetch")
-                    return .createWithResult(self.value)
-                }
-            )
-            XCTAssertThrowsError(try raceResult(factory.cache.createWrapper(for: queued))) { error in
-                guard case BittensorApiError.attestationUnavailable = error else {
-                    return XCTFail("Expected stale admission rejection, received \(error)")
-                }
-            }
-            _ = try raceResult(factory.createSubnetsWrapper())
-            release.signal()
-            try awaitRace(invalidated)
-            XCTAssertNotNil(factory.peekSubnets().value)
-            _ = try raceResult(factory.createSubnetsWrapper())
-            XCTAssertEqual(HostAuthURLProtocol.businessRequests.count, 4)
-        }
-    }
 }
 
 private extension BittensorApiResponseCacheTests {
@@ -252,8 +193,7 @@ private extension BittensorApiResponseCacheTests {
             configProvider: config,
             client: auth.client,
             contextInvalidationID: { auth.client.contextInvalidationID },
-            activate: { try auth.client.activate(origin: $0) },
-            reset: { try auth.client.reset() }
+            activate: { try auth.client.activate(origin: $0) }
         )
         provider.addContextObserver(self, closure: willInvalidate)
         let transport = BittensorAuthorizedTransport(provider: provider, operationQueue: queue)

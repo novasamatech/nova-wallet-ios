@@ -55,7 +55,7 @@ final class NovaAuthHostNamespaceTests: XCTestCase {
         XCTAssertTrue(try staging.load() == replacement)
     }
 
-    func testMainAndOwnReaderShareBearerWhileSiblingResetCannotRemoveIt() throws {
+    func testSiblingResetCannotRemoveBearer() throws {
         let security = FoundationTestSecurity()
         let releaseStore = try store(releaseNamespace, security: security)
         let stagingStore = try store(stagingNamespace, security: security)
@@ -65,46 +65,14 @@ final class NovaAuthHostNamespaceTests: XCTestCase {
         try stagingStore.replace(stagingRecord)
         let release = try main(store: releaseStore, namespace: releaseNamespace, record: releaseRecord)
         let staging = try main(store: stagingStore, namespace: stagingNamespace, record: stagingRecord)
-        let releaseReader = try reader(store: store(releaseNamespace, security: security))
-        let stagingReader = try reader(store: store(stagingNamespace, security: security))
 
         try executeFoundation(release.createAdmissionWrapper(in: releaseRecord.context, intent: .background))
         try executeFoundation(staging.createAdmissionWrapper(in: stagingRecord.context, intent: .background))
-        XCTAssertEqual(try executeFoundation(releaseReader.createContextWrapper()), releaseRecord.context)
-        XCTAssertEqual(try executeFoundation(stagingReader.createContextWrapper()), stagingRecord.context)
 
         try release.reset()
         XCTAssertNil(try releaseStore.load())
         XCTAssertTrue(try stagingStore.load() == stagingRecord)
-        XCTAssertThrowsError(try executeFoundation(releaseReader.createContextWrapper())) {
-            XCTAssertEqual($0 as? NovaAuthError, .credentialUnavailable)
-        }
         try executeFoundation(staging.createAdmissionWrapper(in: stagingRecord.context, intent: .background))
-        try executeFoundation(stagingReader.createAdmissionWrapper(in: stagingRecord.context, intent: .background))
-    }
-
-    func testReaderWithWrongNamespaceCannotSendSiblingBearer() throws {
-        let security = FoundationTestSecurity()
-        let releaseStore = try store(releaseNamespace, security: security)
-        let record = try FoundationFixture.record()
-        try releaseStore.replace(record)
-        let http = FoundationTestHTTP()
-        http.response = try FoundationFixture.response("{}")
-        let ownReader = try reader(store: store(releaseNamespace, security: security), http: http)
-        let wrongReader = try reader(store: store(stagingNamespace, security: security), http: http)
-        let request = try NovaAuthRequest(
-            context: record.context, method: .get, path: "/v1/bittensor/profile-3/subnets",
-            queryItems: [], body: nil, contentType: nil, intent: .background
-        )
-
-        XCTAssertThrowsError(try executeFoundation(wrongReader.createResponseWrapper(for: request, beforeSend: {}))) {
-            XCTAssertEqual($0 as? NovaAuthError, .credentialUnavailable)
-        }
-        XCTAssertTrue(http.requests.isEmpty)
-        _ = try executeFoundation(ownReader.createResponseWrapper(for: request, beforeSend: {}))
-        XCTAssertEqual(http.requests.count, 1)
-        XCTAssertTrue(http.requests.first?.value(forHTTPHeaderField: "Authorization") == "Bearer \(record.accessToken)")
-        XCTAssertTrue(try releaseStore.load() == record)
     }
 }
 
@@ -150,12 +118,5 @@ private extension NovaAuthHostNamespaceTests {
         ))
         _ = try auth.activate(origin: record.context.origin)
         return auth
-    }
-
-    func reader(store: NovaAuthKeychainTokenStore, http: FoundationTestHTTP = FoundationTestHTTP()) throws -> NovaAuthReader {
-        NovaAuthReader(dependencies: NovaAuthReaderDependencies(
-            origin: try FoundationFixture.origin(), tokenStore: store, clock: FoundationTestClock(),
-            http: http, requestQueue: OperationQueue()
-        ))
     }
 }

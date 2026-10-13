@@ -4,60 +4,34 @@ import Operation_iOS
 
 final class NovaAuthBusinessExchangeLifetimeTests: LifecycleTestCase {
     func testIssuerReleasesCompletedGetOperations() throws {
-        try assertReleased(authority: .issuer, scenario: .get)
-    }
-
-    func testReaderReleasesCompletedGetOperations() throws {
-        try assertReleased(authority: .reader, scenario: .get)
+        try assertReleased(scenario: .get)
     }
 
     func testIssuerReleasesCompletedPostOperations() throws {
-        try assertReleased(authority: .issuer, scenario: .post)
-    }
-
-    func testReaderReleasesCompletedPostOperations() throws {
-        try assertReleased(authority: .reader, scenario: .post)
+        try assertReleased(scenario: .post)
     }
 
     func testIssuerReleasesFailedOperations() throws {
-        try assertReleased(authority: .issuer, scenario: .failure)
-    }
-
-    func testReaderReleasesFailedOperations() throws {
-        try assertReleased(authority: .reader, scenario: .failure)
+        try assertReleased(scenario: .failure)
     }
 
     func testIssuerReleasesBothChildrenAfterInvalidTokenReplay() throws {
-        try assertReleased(authority: .issuer, scenario: .replay)
-    }
-
-    func testReaderReleasesBothChildrenAfterInvalidTokenReplay() throws {
-        try assertReleased(authority: .reader, scenario: .replay)
+        try assertReleased(scenario: .replay)
     }
 
     func testIssuerReleasesBothChildrenAfterFinalDenial() throws {
-        try assertReleased(authority: .issuer, scenario: .denied)
-    }
-
-    func testReaderReleasesBothChildrenAfterFinalDenial() throws {
-        try assertReleased(authority: .reader, scenario: .denied)
+        try assertReleased(scenario: .denied)
     }
 
     func testIssuerReleasesOperationsAfterCancellationSuppressesResult() throws {
-        try assertReleased(authority: .issuer, scenario: .cancelled)
-    }
-
-    func testReaderReleasesOperationsAfterCancellationSuppressesResult() throws {
-        try assertReleased(authority: .reader, scenario: .cancelled)
+        try assertReleased(scenario: .cancelled)
     }
 }
 
 private extension NovaAuthBusinessExchangeLifetimeTests {
-    enum Authority { case issuer, reader }
     enum Scenario { case get, post, failure, replay, denied, cancelled }
 
     func assertReleased(
-        authority: Authority,
         scenario: Scenario,
         file: StaticString = #filePath,
         line: UInt = #line
@@ -65,15 +39,8 @@ private extension NovaAuthBusinessExchangeLifetimeTests {
         let harness = try LifecycleHarness()
         let (_, context) = try harness.registered(withToken: true)
         let http = ExchangeLifetimeHTTP(base: harness.http)
-        let client: NovaAuthClientProtocol
-        switch authority {
-        case .issuer:
-            let issuer = harness.makeAuth(http: http)
-            _ = try issuer.activate(origin: harness.origin)
-            client = issuer
-        case .reader:
-            client = harness.makeReader(http: http)
-        }
+        let client = harness.makeAuth(http: http)
+        _ = try client.activate(origin: harness.origin)
         let pending = LifecyclePending<NovaAuthResponse>()
         let started = XCTestExpectation(description: "business HTTP started")
         harness.http.handler = { request, completion in
@@ -86,9 +53,6 @@ private extension NovaAuthBusinessExchangeLifetimeTests {
                 if scenario == .failure { throw URLError(.notConnectedToInternet) }
                 let first = harness.http.requests.count == 1
                 if (scenario == .replay && first) || scenario == .denied {
-                    if first, authority == .reader {
-                        try harness.tokens.replace(harness.record(context: context, bearer: "replacement-bearer"))
-                    }
                     return try LifecycleHTTP.response(
                         request: request,
                         status: 401,
@@ -128,7 +92,7 @@ private extension NovaAuthBusinessExchangeLifetimeTests {
         let replayed = scenario == .replay || scenario == .denied
         XCTAssertEqual(children.count, replayed ? 2 : 1, file: file, line: line)
         XCTAssertEqual(harness.http.requests.count, children.count, file: file, line: line)
-        XCTAssertEqual(harness.bootstrap.tokens.count, replayed && authority == .issuer ? 1 : 0, file: file, line: line)
+        XCTAssertEqual(harness.bootstrap.tokens.count, replayed ? 1 : 0, file: file, line: line)
         XCTAssertEqual(harness.http.requests.first?.httpBody, body, file: file, line: line)
         XCTAssertNil(outer, file: file, line: line)
         for child in children {

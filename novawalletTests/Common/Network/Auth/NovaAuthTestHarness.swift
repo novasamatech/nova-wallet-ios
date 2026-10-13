@@ -19,6 +19,8 @@ final class HostAuthIdentityStore: NovaAuthIdentityStoreProtocol {
         self.state = state
         loadError = nil
     }
+
+    func markResetPending() throws { throw NovaAuthError.storageUnavailable }
 }
 
 final class HostAuthTokenStore: NovaAuthTokenStoreProtocol {
@@ -80,10 +82,19 @@ final class HostAuthProvider: NovaAuthProvidingProtocol {
         context = try client.activate(origin: NovaAuthOrigin(origin))
     }
 
+    var endpointAvailability: NovaAuthEndpointAvailability { NovaAuthEndpointAvailability() }
+
     func createEndpointWrapper() -> CompoundOperationWrapper<NovaAuthEndpoint> {
         if let failure { return .createWithError(failure) }
         return .createWithResult(NovaAuthEndpoint(context: context, client: client, invalidationRevision: 0))
     }
+
+    func addContextObserver(_: AnyObject, closure _: @escaping () -> Void) {}
+
+    func addAvailabilityObserver(
+        _: AnyObject,
+        closure _: @escaping (NovaAuthEndpointAvailability) -> Void
+    ) -> NovaAuthEndpointAvailability { endpointAvailability }
 }
 
 final class HostAuthHarness {
@@ -197,8 +208,7 @@ final class HostConsentRecoveryHarness {
             configProvider: config,
             client: client,
             contextInvalidationID: { auth.client.contextInvalidationID },
-            activate: { try auth.client.activate(origin: $0) },
-            reset: { try auth.client.reset() }
+            activate: { try auth.client.activate(origin: $0) }
         )
         recovery = AnalyticsConsentAuthRecovery(
             provider: AnalyticsAuthAdapter(provider: facade),

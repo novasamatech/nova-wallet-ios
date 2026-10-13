@@ -88,7 +88,7 @@ final class NovaAuthAttestationWindowTests: LifecycleTestCase {
             startedAt: try harness.clock.now()
         )
         try auth.gate.novaAuthLocked {
-            try auth.setRegistration(.appleDeferred(attempt), flight: NovaAuthIssuanceFlight(context: context, sponsored: false))
+            try auth.setRegistration(.appleDeferred(attempt), flight: NovaAuthIssuanceFlight(context: context, sponsored: false, intent: .background))
         }
         return (auth, context)
     }

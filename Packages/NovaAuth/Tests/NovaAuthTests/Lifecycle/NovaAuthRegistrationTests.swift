@@ -37,7 +37,7 @@ final class NovaAuthRegistrationTests: LifecycleTestCase {
         let (auth, oldContext) = try harness.registered(withToken: true)
         let stale = auth.createAdmissionWrapper(in: oldContext, intent: .userInitiated)
         try auth.reset()
-        let context = try XCTUnwrap(auth.currentContext)
+        let context = try XCTUnwrap(auth.state?.context)
         XCTAssertGreaterThan(context.generation, oldContext.generation)
         assertError(.generationChanged, stale, on: harness.callers)
         assertError(.userActionRequired, auth.createAdmissionWrapper(in: context, intent: .background), on: harness.callers)
