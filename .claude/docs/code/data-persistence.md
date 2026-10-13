@@ -119,7 +119,7 @@ retired reason until the new client UUID/key are saved together. The count survi
 deadlines are boot-scoped. Successful bearer installation clears recovery only after the
 Keychain write. Legacy recovery cooldown keeps its deadline but starts at recreation tier zero.
 
-State and reset-marker writes use SettingsManager set/read-back. The production manager
+State writes use SettingsManager set/read-back. The production manager
 internally calls `UserDefaults.synchronize()`. Matching cached read-back does not acknowledge
 durable persistence: refused disk writes may remain undetected, and no extra commit callback
 changes that. Detected validation/read-back failures close admission and retain the intended

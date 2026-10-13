@@ -56,7 +56,7 @@ ladders, same-key eligible Apple deferral, native invocation age guard, and deni
 throwing token deletion. Boot change ends delays but does not reset the stored recreation count.
 A usable bearer is served before recovery waits; business send gates still enforce cooldowns.
 
-After origin change or explicit reset, consent-on analytics-only installations remain stopped
+After an origin change, consent-on analytics-only installations remain stopped
 until a real Bittensor action or a later consent off/on cycle. An opt-in whose own first endpoint
 resolution performs a cold replacement is discarded too. This preserves the approved D3 boundary.
 

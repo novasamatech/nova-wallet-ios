@@ -191,7 +191,7 @@ cooldown re-arms consume the launch-wide budget of two retries. They respect the
 cooldown. Other admission failures finish the event. Withdrawal, deactivation and context
 invalidation discard it; it never follows a new generation. Uploads remain background requests.
 
-After an origin change or explicit reset, an install with analytics consent on and no Bittensor
+After an origin change, an install with analytics consent on and no Bittensor
 use uploads nothing until a real Bittensor user action or consent off/on cycle allows admission.
 Restoring saved consent is insufficient. Ordinary lost-key/interrupted recovery can run on
 background demand only within the persisted two-recreation budget; registration refusal or

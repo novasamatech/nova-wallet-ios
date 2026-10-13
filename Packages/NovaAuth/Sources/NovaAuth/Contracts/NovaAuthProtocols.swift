@@ -27,7 +27,6 @@ protocol NovaAuthAppAttestProtocol: AnyObject {
 protocol NovaAuthIdentityStoreProtocol: AnyObject {
     func load() throws -> NovaAuthInstallationState?
     func save(_ state: NovaAuthInstallationState) throws
-    func markResetPending() throws
 }
 
 enum NovaAuthIdentityStoreError: Error, Equatable { case corrupt, resetPending }

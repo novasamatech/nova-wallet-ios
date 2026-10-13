@@ -69,39 +69,6 @@ public final class NovaAuth: NovaAuthClientProtocol {
         }
     }
 
-    public func reset() throws {
-        try gate.novaAuthLocked {
-            invalidationID = UUID()
-            do {
-                try loadStateIfNeeded()
-            } catch is NovaAuthIdentityStoreError {
-                do {
-                    try dependencies.identityStore.markResetPending()
-                    try dependencies.tokenStore.removeAll()
-                    dependencies.http.clearReadCache()
-                    storageFailed = false
-                    return
-                } catch { storageFailed = true; throw NovaAuthError.storageUnavailable }
-            }
-            let completingReset = storageFailed && state?.requiresUserAction == true && state?.identity == nil
-            try retryStorageWork()
-            if completingReset { return }
-            if let origin = state?.context.origin {
-                _ = try replaceContext(origin: origin)
-            } else {
-                do {
-                    try dependencies.identityStore.markResetPending()
-                    try dependencies.tokenStore.removeAll()
-                    dependencies.http.clearReadCache()
-                    storageFailed = false
-                } catch {
-                    storageFailed = true
-                    throw NovaAuthError.storageUnavailable
-                }
-            }
-        }
-    }
-
     public func createAdmissionWrapper(
         in context: NovaAuthContext,
         intent: NovaAuthRequestIntent
@@ -292,7 +259,7 @@ private extension NovaAuth {
             identity: nil,
             tokenRemovalOwed: true
         )
-        // The memory fence must survive even a failed persistent reset.
+        // The memory fence must survive even a failed persistent replacement.
         state = replacement
         invalidationID = UUID()
         storageFailed = false
