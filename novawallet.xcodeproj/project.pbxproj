@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F2307001A2026101400000001 /* SubtensorPortfolioHistoryLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2307001A2026101400000002 /* SubtensorPortfolioHistoryLoaderTests.swift */; };
 		00212BAB97F249C39932A058 /* SubtensorSubnetFactorsEvaluator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B73CD142A7442B8BF58F5DA /* SubtensorSubnetFactorsEvaluator.swift */; };
 		00DAD1B398104EA384DB7BEB /* SubtensorSubnetFiltersSheetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5CC29E285AC4912BFCDE896 /* SubtensorSubnetFiltersSheetController.swift */; };
 		01883BD3C0CF4FA7BB7203F6 /* SubtensorValidatorInfoPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 231389F398BB41A685F5B32D /* SubtensorValidatorInfoPresentable.swift */; };
@@ -7284,6 +7285,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		F2307001A2026101400000002 /* SubtensorPortfolioHistoryLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorPortfolioHistoryLoaderTests.swift; sourceTree = "<group>"; };
 		0225B6AA593C4A7A81ADF07E /* SubtensorValidatorInfoInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorValidatorInfoInteractor.swift; sourceTree = "<group>"; };
 		0313951BDB6341C58C7B4DF5 /* SubtensorOperationResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorOperationResultViewController.swift; sourceTree = "<group>"; };
 		048BE1D822BB440C963C0D3D /* SubtensorSortSheetViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSortSheetViewLayout.swift; sourceTree = "<group>"; };
@@ -19614,6 +19616,7 @@
 				641B120F55044C24831D8D9E /* SubtensorPriceChartDataFactoryTests.swift */,
 				4C121C1352C345FC9ED15F2A /* SubtensorPriceWidgetViewModelFactoryTests.swift */,
 				7B6D16B47BA5446FA0F3A35F /* SubtensorPriceChartTestHelper.swift */,
+				F2307001A2026101400000002 /* SubtensorPortfolioHistoryLoaderTests.swift */,
 				8286AAF7B2124D17B4FA8B4F /* SubtensorPortfolioValueSeriesCalculatorTests.swift */,
 				5C53C9CE832944998940398C /* SubtensorValidatorDirectoryServiceTests.swift */,
 				C61F737CC56F45269B27FE5D /* SubtensorRecommendationServiceTests.swift */,
@@ -40141,6 +40144,7 @@
 				02A01C9327A14D7287E1F77D /* SubtensorPriceChartDataFactoryTests.swift in Sources */,
 				C4690BBD33ED4B1ABFD9C570 /* SubtensorPriceWidgetViewModelFactoryTests.swift in Sources */,
 				86492390FAC14EC2839D0554 /* SubtensorPriceChartTestHelper.swift in Sources */,
+				F2307001A2026101400000001 /* SubtensorPortfolioHistoryLoaderTests.swift in Sources */,
 				4B8B625A5F3F4019AFE190D9 /* SubtensorPortfolioValueSeriesCalculatorTests.swift in Sources */,
 				F86B78647E014745B48286D7 /* SubtensorPreflightFactoryTests.swift in Sources */,
 				BDD8B76B88494547BFFED725 /* SubtensorStorageWorld.swift in Sources */,
