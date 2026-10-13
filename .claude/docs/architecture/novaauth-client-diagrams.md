@@ -1,6 +1,6 @@
 # NovaAuth — client architecture
 
-Implementation snapshot: **`feature/nova-auth` · `db2cfe255` · 13 October 2026**.
+Implementation snapshot: **`feature/nova-auth` · 13 October 2026**.
 
 These diagrams describe the Swift client on this branch. Architecture claims come from implementation and call-site searches, not the infrastructure PR or a planned design. “Backend” is only the HTTPS peer that the client calls; its internal behavior and deployed permissions are outside this document.
 
