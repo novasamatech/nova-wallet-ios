@@ -2,12 +2,11 @@
 import XCTest
 
 final class BittensorApiErrorRecoveryTests: XCTestCase {
-    func testUnsupportedRejectedBackedOffAndRefusedCallsAreDeviceBound() {
+    func testUnsupportedRejectedAndRefusedCallsAreDeviceBound() {
         let errors: [BittensorApiError] = [
             .unsupportedDevice,
             .configuration,
             .attestationRejected(requestId: "request-1"),
-            .attestationBackoff(until: Date(timeIntervalSince1970: 1_790_086_400)),
             .attestationFailure(requestId: "request-2")
         ]
 

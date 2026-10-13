@@ -6,7 +6,6 @@ enum BittensorAuthorizedRequestBuilder {
         let method: NovaAuthMethod
         switch request.method {
         case .get: method = .get
-        case .head: method = .head
         case .post: method = .post
         }
         let root = request.method == .post ? "/v1/bittensor" : "/v1/bittensor/profile-3"

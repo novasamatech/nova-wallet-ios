@@ -4,7 +4,6 @@ import NovaAuth
 struct BittensorApiRequest: Equatable {
     enum Method: String {
         case get = "GET"
-        case head = "HEAD"
         case post = "POST"
     }
 
