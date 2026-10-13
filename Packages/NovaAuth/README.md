@@ -23,9 +23,9 @@ Release and Staging share an App Group but use distinct Keychain services, so ne
 read, overwrite or delete the other's bearer. All features within one host still share its
 single current record; origin, consumer and client UUID never select separate token pools.
 
-Explicit reset or an origin change fences old work and requires a new user-initiated demand.
-Analytics withdrawal/erasure only affects analytics state and never resets shared auth.
-Saved consent and automatic uploads do
+An origin change fences old work and requires a new user-initiated demand. There is no
+explicit reset API. Analytics withdrawal/erasure only affects analytics state and never resets
+shared auth. Saved consent and automatic uploads do
 not provide user intent.
 
 An actual consent false-to-true event keeps one in-memory pending admission. A retryable
@@ -34,7 +34,7 @@ polling deadline that loses an offline action. Each genuine opt-in gets its init
 Only automatic admission-cooldown re-arms spend the launch-wide budget of two retries, with
 the full remaining cooldown respected. Other admission failures finish the event. Withdrawal,
 deactivation or context invalidation discards it. Endpoint readiness is separate from
-invalidation and cannot revive an event discarded by a cold origin replacement or reset.
+invalidation and cannot revive an event discarded by a cold origin replacement or storage repair.
 Uploads always retain background intent.
 
 Native URLCache owns HTTP freshness. The host stamps each accepted endpoint with an invalidation revision.
@@ -68,7 +68,8 @@ of two background slots before key generation; cancellation or failed generation
 the reservation. User actions consume no slots and do not bypass active delays. The old retired
 reason stays stored until the replacement key and new client UUID can be saved together.
 
-Settings writes, including reset markers, use `SettingsManager.set` and verify read-back.
+Settings writes use `SettingsManager.set` and verify read-back. A legacy reset marker written by
+an earlier build is still recognized on load and repaired into a context that requires user action.
 The production manager internally calls `UserDefaults.synchronize()`, but neither that call
 nor matching in-process read-back proves durable persistence or detects every refused disk
 write. There is no extra commit acknowledgement API. Validation/read-back errors block admission
