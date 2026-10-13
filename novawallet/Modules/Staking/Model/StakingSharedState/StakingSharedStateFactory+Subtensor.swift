@@ -28,10 +28,7 @@ extension SubtensorStakingProcessServices {
 
         let apiOperationFactory = BittensorApiOperationFactory(
             transport: createTransport(isFixtureMode: isFixtureMode),
-            cache: BittensorApiResponseCache(
-                operationQueue: OperationManagerFacade.sharedDefaultQueue,
-                logger: Logger.shared
-            ),
+            cache: BittensorApiResponseCache(operationQueue: OperationManagerFacade.sharedDefaultQueue),
             logger: Logger.shared
         )
 

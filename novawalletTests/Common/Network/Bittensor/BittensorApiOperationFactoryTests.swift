@@ -214,7 +214,7 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
     }
 
     func testAnOlderRankingGenerationCannotEvictNewerAcceptedRecommendations() throws {
-        let cache = BittensorApiResponseCache(operationQueue: OperationQueue(), logger: Logger.shared)
+        let cache = BittensorApiResponseCache(operationQueue: OperationQueue())
         let olderRanking = try mutatedBody(BittensorApiFixtureDocuments.rankedSubnets(), replacing: olderGeneration)
         let transport = makeTransport(replies: [
             makeResponse(try makeBody(BittensorApiFixtureDocuments.recommendations()), requestId: "req-newer"),
@@ -252,13 +252,32 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
     }
 
     func testDelayedInvalidationOfTheAdmittedRevisionKeepsItsCacheAndAdmission() throws {
-        let cache = BittensorApiResponseCache(operationQueue: OperationQueue(), logger: Logger.shared)
-        let key = BittensorApiCacheKey(method: "GET", path: "/subnets", query: [], bodyDigest: nil)
-        let scope = BittensorApiCacheScope(origin: "https://second.test", profile: 3, generation: 2, invalidationRevision: 2)
-        let job = BittensorApiCacheJob(
-            key: key,
+        let cache = BittensorApiResponseCache(operationQueue: OperationQueue())
+        let job = makeCacheJob(revision: 2)
+        _ = try fetch(cache.createWrapper(for: job))
+        cache.invalidate(before: 2)
+        XCTAssertEqual(cache.peek(job.key, invalidationRevision: 2).value?.value as? String, "current")
+        XCTAssertNoThrow(try fetch(cache.createWrapper(for: job)))
+    }
+
+    func testAStaleAdmissionNeverPopulatesTheInvalidatedGeneration() throws {
+        let cache = BittensorApiResponseCache(operationQueue: OperationQueue())
+        let job = makeCacheJob(revision: 1)
+        cache.invalidate(before: 2)
+        guard case .attestationUnavailable? = fetchError(cache.createWrapper(for: job)) else {
+            return XCTFail("Expected the stale admission to be rejected")
+        }
+        XCTAssertNil(cache.peek(job.key, invalidationRevision: 2).value)
+    }
+
+    private func makeCacheJob(revision: UInt64) -> BittensorApiCacheJob {
+        let scope = BittensorApiCacheScope(
+            origin: "https://second.test", profile: 3, generation: revision, invalidationRevision: revision
+        )
+        return BittensorApiCacheJob(
+            key: BittensorApiCacheKey(method: "GET", path: "/subnets", query: [], bodyDigest: nil),
             routeKey: BittensorApiRouteKey(method: "GET", pathTemplate: "/subnets", accountDigest: nil),
-            currentInvalidationRevision: { 2 },
+            currentInvalidationRevision: { revision },
             admit: { .createWithResult(BittensorApiAdmission(scope: scope, endpoint: nil)) },
             fetch: { _ in
                 .createWithResult(BittensorApiFetchedValue(
@@ -266,10 +285,6 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
                 ))
             }
         )
-        _ = try fetch(cache.createWrapper(for: job))
-        cache.invalidate(before: 2)
-        XCTAssertEqual(cache.peek(key, invalidationRevision: 2).value?.value as? String, "current")
-        XCTAssertNoThrow(try fetch(cache.createWrapper(for: job)))
     }
 
     private func olderRecommendationsBody() throws -> Data {
@@ -282,9 +297,7 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
     ) -> BittensorApiOperationFactory {
         let cache = BittensorApiResponseCache(
             operationQueue: OperationQueue(),
-            logger: Logger.shared,
-            timeProvider: { clock.now },
-            jitterProvider: { 0 }
+            timeProvider: { clock.now }
         )
 
         return BittensorApiOperationFactory(transport: transport, cache: cache, logger: Logger.shared)
