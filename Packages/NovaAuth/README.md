@@ -2,12 +2,16 @@
 
 Operation-based, app-wide profile-3 authentication for iOS 16+. The host owns one `NovaAuth`
 instance and injects its `NovaAuthClientProtocol` into analytics. One installation
-and one persisted current bearer serve every approved consumer; renewal replaces that bearer.
+and one persisted current bearer serve every protected consumer; renewal replaces that bearer.
 
 `activate(origin:)` selects the exact HTTPS backend origin. `createAdmissionWrapper` checks a
 usable bearer before domain caches, while `createResponseWrapper` checks again before native
-URLCache or network access. Analytics and operations search retain their existing POST paths and immutable request bodies.
-Only conclusive pre-backend `invalid_token` allows a single replay. A credential rejected by
+URLCache or network access. One origin/API-major bearer authorizes ordinary protected paths:
+GET and HEAD reads, account-search POSTs, and analytics POSTs. Auth validates transport syntax
+and the selected HTTPS origin; each consumer and the server own business route/payload validation.
+Only conclusive pre-backend `invalid_token` allows a single replay: expected-origin 401 and
+exact `WWW-Authenticate: Bearer error="invalid_token"`, plus a valid `invalid_token` envelope
+for GET/POST. HEAD uses the status and header without a response body. A credential rejected by
 another request before sending permits one separate, bounded re-admission. Neither path
 changes the POST body or allows more than two actual sends. Caller `beforeSend` runs before
 each send, including an authorized retry; its errors are returned unchanged.
@@ -23,144 +27,94 @@ Release and Staging share an App Group but use distinct Keychain services, so ne
 read, overwrite or delete the other's bearer. All features within one host still share its
 single current record; origin, consumer and client UUID never select separate token pools.
 
-An origin change fences old work and requires a new user-initiated demand. There is no
-explicit reset API. Analytics withdrawal/erasure only affects analytics state and never resets
-shared auth. Saved consent and automatic uploads do
-not provide user intent.
+Host `activate(origin:)` is the lifecycle authority. Accepted origin adoption or legacy reset
+repair establishes an eligible context without creating a key or sending authentication.
+A later ordinary demand, including consented Analytics, may initialize the installation.
+This local product policy replaces the profile-3 protocol's user-driven re-creation
+wording; it is an explicit eligibility change, not behavioral equivalence.
+The package has no explicit reset API. Analytics consent/erasure and wallet changes do not
+reset the shared identity. Requests carry no human/background privilege.
 
-An actual consent false-to-true event keeps one in-memory pending admission. A retryable
-endpoint-resolution failure parks it until successful endpoint adoption; there is no short
-polling deadline that loses an offline action. Each genuine opt-in gets its initial attempt.
-Only automatic admission-cooldown re-arms spend the launch-wide budget of two retries, with
-the full remaining cooldown respected. Other admission failures finish the event. Withdrawal,
-deactivation or context invalidation discards it. Endpoint readiness is separate from
-invalidation and cannot revive an event discarded by a cold origin replacement or storage repair.
-Uploads always retain background intent.
+Native URLCache owns GET/HEAD HTTP freshness, driven by server Date/Age/Cache-Control.
+Fresh, complete 200 reads use `public, max-age=N, must-revalidate`; POSTs and bootstrap use
+`no-store`. A public cache success neither confirms nor extends the credential deadline.
+Issuance commits to the canonical origin and API major 1 without a flow or scope. Renewal
+obtains a fresh challenge and App Attest assertion; the server issues no refresh credential.
 
 Native URLCache owns HTTP freshness. The host stamps each accepted endpoint with an invalidation revision.
 
 ## Recovery and admission
 
-A first installation can authenticate on background demand. Replacement policy depends on the
-persisted retirement reason:
+A failed authentication attempt fails the caller's operation. NovaAuth schedules no retry and
+owns no interaction or presentation policy. Every independently created later operation has
+the same permission to try again after the short protocol cooldown. Concurrent demands join
+one issuance flight, which attempts at most one new key generation. Retirement fails that
+flight; it never recursively creates another identity. Bearer replay preserves its original
+client binding and cannot turn the same business operation into identity replacement.
 
-| Retirement reason | Recreation policy after the applicable delay |
+| Situation | State retained or retired |
 | --- | --- |
-| `lostKey` (invalid assertion key), `interrupted` (relaunch finds `appleInFlight`) | Any intent while the persisted background recreation count is below two; thereafter user action only. |
-| `registrationRefused` (any non-429 registration 4xx, including `app_not_allowed` and `invalid_proof`) | User action only; no probe or background replacement of that refused registration. |
-| `registrationAbandoned` (uncertain/failed attestation except `serverUnavailable`, expired attempt, oversized object, exhausted pending `unknown_client` evidence, or `401 unknown_client` for a registered identity) | User action only. |
-| Legacy `unrecoverableRegistration` | Decode-compatible; same user-only policy as abandonment. |
-| Legacy `policyRefused` | User action only; with a saved key, first probe the existing binding through pending registration. Without a key, recreate. |
+| Lost registration response, transport error or 5xx | Keep pending UUID/key/start; probe token challenge on a later demand. Never resend registration proof. |
+| Pending token-challenge/issuance `401 unknown_client` before 120 seconds on the same boot | Keep pending state and its persisted probe backoff; fail this operation. |
+| Confirmed absence outside that window or after boot discontinuity | Retire and fail; the next independent demand may replace. Transport/503 alone never prove absence. |
+| Successful pending token challenge | Prove the same key; preserve the original pending window until a bearer is installed. |
+| Ordinary token `401 invalid_proof` or token challenge/issuance `403 binding_not_allowed` | Keep registered UUID/key/counter and fail. Later demand obtains a fresh challenge on the same binding. A contradictory `503 invalid_proof` is availability failure. |
+| Platform invalid key, interrupted/unrecoverable/expired attestation, conclusive registration refusal | Retire and fail. Later demand may generate one fresh UUID/key. |
+| Legacy `policyRefused` with a key | Normalize to registered and probe the same binding; policy denial does not authorize key rotation. |
 
-Recovery keeps three independent persisted ladders. Each uses the base steps 60, 600, 3,600,
-86,400 seconds, capped **before** multiplying by `1 + 0.1 × random` (0–10% jitter):
+Apple `serverUnavailable` saves `appleDeferred` for the same key/hash. Before saving
+`appleInFlight`, and again after acquiring the native lease immediately before `attestKey`,
+the current flight/context must match and the saved attempt must be on the same boot with
+age in `0...40` seconds. After Apple's result, age must remain below 60 seconds. Expiry
+retires and fails the current operation. The 20-second margin cannot guarantee native completion.
 
-| Delay | Charged once for | Base cap |
-| --- | --- | --- |
-| `recreationDelay` | Each retirement; checked only while retired | 86,400 s |
-| `policyRetryDelay` | `binding_not_allowed` at token challenge or issuance | 600 s |
-| `proofRetryDelay` | `invalid_proof` at `/tokens` | 3,600 s |
-
-Policy/proof failures keep the key and registration, consume no recreation budget, and permit
-any intent after the delay. A proof retry obtains a fresh challenge/assertion. Starting a
-replacement does not charge another retirement delay. Each non-user replacement reserves one
-of two background slots before key generation; cancellation or failed generation can consume
-the reservation. User actions consume no slots and do not bypass active delays. The old retired
-reason stays stored until the replacement key and new client UUID can be saved together.
-
-Settings writes use `SettingsManager.set` and verify read-back. A legacy reset marker written by
-an earlier build is still recognized on load and repaired into a context that requires user action.
-The production manager internally calls `UserDefaults.synchronize()`, but neither that call
-nor matching in-process read-back proves durable persistence or detects every refused disk
-write. There is no extra commit acknowledgement API. Validation/read-back errors block admission
-and retain the intended state for repair on activation. The reservation is written before key
-generation; the cross-launch budget relies on ordinary settings persistence. Undetected failed
-persistence can lose that reservation on relaunch, so this is not a fail-closed durability or
-power-loss guarantee.
-
-All waits are boot-scoped: a `kern.boottime` mismatch ends the wait without advancing a tier or
-resetting the persisted budget. Repeated key creation is bounded by the budget, not wall time.
-A successful bearer install clears all recovery delays and the count **after** the bearer write;
-context replacement starts fresh. Legacy `recoveryCooldown` preserves its deadline but starts
-the recreation ladder at tier zero.
-
-Main-owner admission returns a usable bearer first. Without one, it joins an existing flight
-or checks origin, issuance, applicable recovery, then pending-registration cooldowns before
-starting a flight. Business sends still check shared-origin and family cooldowns even with a
-usable bearer. During an origin cooldown the owner can still construct a request wrapper,
-but its send gate blocks cache/network access.
-An early refresh also respects origin, issuance and recovery delays.
-
-Pending registration recovery persists its original uncertainty window and continuous-clock
-backoff before each probe leaves the process. Only observed `unknown_client` responses spend
-the eight-response absence budget; offline, overloaded and interrupted probes do not. A valid
-token challenge resets that count, while registration stays pending until bearer installation.
-Legacy attempt counts migrate to zero conclusive responses while preserving their cooldown.
-Conclusive absence is specifically `401 unknown_client`: pending recovery continues only on
-the same boot, below 120 seconds, and below eight such responses. The 120-second window is not
-a deadline for every inconclusive pending failure.
-
-Apple `serverUnavailable` saves `appleDeferred` for the same key/hash. The early pre-call check
-requires the same boot and age in `0...40` seconds before saving `appleInFlight`. After acquiring
-the key lease, `beforeAttest` checks the current flight/context and the same age budget immediately
-before native `attestKey`, covering time spent queued. Exactly 40 seconds passes; 40.001 does
-not. This chooses a minimum 20-second margin on the 60-second challenge. The authoritative
-post-call check requires `0 <= age < 60`; Apple's local timeout is 100 seconds, so the chosen
-margin cannot guarantee completion in time. Expiry retires as `registrationAbandoned` once
-and requires user action for replacement. A native-guard age failure takes that retirement
-through the current flight's fenced completion; a stale flight cannot retire an identity in
-the new context.
-
-If the execution guard fails, no native call has begun, so the adapter releases the unused lease.
-Once a native call has begun, only its actual DeviceCheck callback releases the lease, even
-after local timeout/cancellation. An assertion timeout keeps the registered key. Issuance checks
-`isBusy(keyID:)` before requesting a token challenge and fails locally while busy. If Apple never
-calls back, that key remains busy until process restart; no timer releases a called lease.
+Both watchdogs remain: bootstrap HTTP has total 20-second issuance / 100-second registration
+bounds; native calls have their existing local timeout. Before invocation, a failed guard
+releases the unused lease. Once called, only the actual DeviceCheck callback releases its
+per-key lease, even after local timeout/cancellation. An assertion timeout preserves the
+registered key. Busy keys fail before fetching a token challenge. If Apple never calls back,
+that key stays busy until process restart. Irreversible commitment remains sticky across steps.
 
 ## Cooldowns, errors and storage
 
-| Business result | Cooldown scope |
-| --- | --- |
-| 429; uncoded 500; explicit 503 `attestation_unavailable` | Shared origin, affecting both consumers. |
-| Uncoded 502/503/504 and other 5xx, including coded domain 5xx except the explicit shared case above | Only the analytics family. |
-| Business transport failure | Only that family. |
+Short auth issuance and persisted pending-probe backoff use 1/2/4/8/16/30 seconds plus up to
+one second of jitter. Numeric Retry-After is clamped to 1–905 seconds; 429 defaults to 30.
+The pending probe reservation is saved before send, and a failed send does not charge it twice.
+Ordinary business 5xx and transport failures pass to the caller's retry policy. Only 429 and
+explicit `503 attestation_unavailable` protect the shared auth origin; generic business success
+does not clear an active deadline. Usable bearer delivery precedes issuance waits, while each
+actual business send checks origin protection. No timer automatically retries a refusal.
 
-“Uncoded” means the client could not parse a valid error code. This is client classification,
-not proof of which server component failed. Default short backoff is 1, 2, 4, 8, 16, 30 seconds
-plus up to one second of jitter; numeric Retry-After is clamped to 1–905 seconds (429 defaults
-to 30). Token lifetime remains capped at 900 seconds. Expiry does not itself schedule a retry.
+Installation storage keeps its current key/version and validates surviving security fields.
+Removed optional legacy policy fields are ignored, even if malformed; the next existing write
+encodes only context, identity/registration and token-removal debt. Pending start/cooldown and
+saved attestation inputs remain exact. Corrupt/reset repair replaces the context and cannot
+adopt an old bearer. The active memory fence advances before I/O and survives a failed save;
+staged writes and owed bearer deletion retry at host activation, blocking admission until repaired.
+Settings set/read-back checks the manager cache and cannot prove disk durability.
 
-`409 client_already_registered` is non-device-bound `bindingConflict`, also
-without retry. `403 insufficient_scope` is generic `invalidRequest`, without retry, before the
-generic 401/403 mapping. Invalid challenge, 503 and transport failures remain retryable.
+Keychain contains one atomic version-2 bearer record with origin, client, generation and
+boot/continuous-clock metadata. Token persistence completes before delivery. Conditional
+fingerprint deletion cannot remove a newer bearer. Only the sole writer under its gate may
+fall back to removeAll after conditional removal fails and reload still equals the same legacy
+record. Corrupt token reads do not delete unrelated data. Version-1 bearer records require fresh
+issuance while preserving valid installation identity. Repeated denial suppresses rejected
+credentials and applies issuance backoff before attempting deletion.
 
-It does not start another outer retry for those errors. Route/data gaps retain their existing
-per-target skip policy; transient failures retain bounded retries.
+Analytics retains batches
+silently for its normal later-flush policy; consent is checked before every send and replay.
 
-Keychain writes atomically include a SHA-256 record fingerprint. Conditional deletion matches
-that fingerprint in the Security query, so a late denial cannot remove a replacement record.
-There is no cross-process file lock. Legacy untagged records remain readable and are replaced
-on renewal. When rejection or invalidity needs deletion, only the main writer, under its gate,
-can fall back to `removeAll()` after conditional removal returns false and a reload still equals
-the same record. Corrupt records are not deleted during a read. Repeated-denial cooldown is
-applied before throwing deletion; a failed delete cannot skip it. The owner uses issuance
-cooldown. Identity-storage repair distinguishes corruption from transient failure and completes
-owed bearer deletion before admitting work.
-
-Diagnostics use fixed retirement reasons, typed cooldown scopes (`shared`, `family`,
-`recreation`, `policy`, `proof`), and a `storageFailed` transition on entering failed/dirty
-storage state. They omit bearer values, client/key IDs, proofs and response bodies.
-
-**Accepted restart limitation:** ordinary issuance Retry-After is in memory and is lost when
-the owner restarts. Pending-registration cooldown and the three recovery ladders are persisted;
-the non-pending issuance delay is not. Origin/family business cooldowns are also in memory.
+Failure diagnostics are asynchronous and redacted: a fixed step/category, numeric status,
+allowlisted code and sanitized correlation ID. They never interpolate arbitrary Error,
+requests, state, tokens, UUID/key, proof or body. Successful transitions are not narrated.
+Ordinary issuance and shared-origin cooldowns remain memory-only; pending-probe cooldown is
+persisted. A restart can lose the memory-only delay. Boot-marker discontinuity ends boot-scoped waits.
 
 Source walkthrough: [nine client views](../../.claude/docs/architecture/novaauth-client-diagrams.md),
-[recovery policy](Sources/NovaAuth/Lifecycle/NovaAuthRecoveryService.swift),
-[business cooldown classification](Sources/NovaAuth/Authorization/NovaAuthBusinessCooldowns.swift),
-[bounded consent recovery](../NovaAnalytics/Sources/NovaAnalytics/AnalyticsConsentAuthRecovery.swift),
-[settings storage](Sources/NovaAuth/API/NovaAuthConfiguration.swift), and
-[native attestation guard](Sources/NovaAuth/AppAttest/NovaAuthDeviceCheckService.swift).
+[retirement](Sources/NovaAuth/Lifecycle/NovaAuthRecoveryService.swift),
+[shared origin protection](Sources/NovaAuth/Authorization/NovaAuth+Authorization.swift),
+[settings storage](Sources/NovaAuth/Storage/NovaAuthSettingsIdentityStore.swift), and
+[native guard](Sources/NovaAuth/AppAttest/NovaAuthDeviceCheckService.swift).
 
 ## Clock limitation
 
@@ -173,22 +127,16 @@ substitute. This implementation retains the mandated reboot detection and existi
 See [Apple's calendar-clock implementation](https://github.com/apple-oss-distributions/xnu/blob/main/osfmk/kern/clock.c)
 and [iOS 18 release notes](https://developer.apple.com/documentation/ios-ipados-release-notes/ios-ipados-18-release-notes).
 
-## Backend rollout coordination
+## Protected requests and optional yields
 
-The server migration is owned separately. Release coordination must confirm server authorization for both existing POST
-paths **and rejection of `invalid_token` before either POST reaches its business handler**.
-That pre-handler contract is what permits the client's single replay of identical POST bytes;
-the client denial predicate alone cannot establish the server's execution order. Both items
-belong beside the separately owned server migration. This iOS change does not modify or deploy
-the backend; there is no legacy fallback.
+Ingress authenticates before protected business handlers execute. A conclusive token denial
+therefore permits one replay preserving the original method, path, query and body. Other
+401/403, 429, 5xx and uncertain transport outcomes do not authorize replay or reset identity.
 
 ## Validation
 
-Run the package XCTest suite with `xcodebuild test -scheme NovaAuth` on an iOS simulator;
-`swift test` targets macOS and is inappropriate for these iOS dependencies. Its 14 tests run the
-real client, bootstrap factory and settings identity store against one fake server: the profile-3
-vectors, registration and recovery limits, the escalating recreation delay, the deferred
-attestation window, origin-change fencing, token replay, cooldown scopes and exchange release.
-App/extension App Groups are development
-for Debug/Dev and production for Staging/Release. Real App Attest, signed Keychain access-group
-sharing, protected data and physical reboot behavior still require device validation.
+Run retained XCTest suites using `xcodebuild test -scheme NovaAuth` on an iOS simulator;
+`swift test` targets macOS and is inappropriate for these iOS dependencies. Existing checks
+exercise framing, operation recovery, same-binding refusal, pending registration, origin fencing,
+bounded token replay, shared throttling and exchange release. Real App Attest,
+signed Keychain access-group sharing, protected data and physical reboot behavior need device validation.
