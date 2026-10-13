@@ -37,8 +37,6 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
     }
 
     override func setup() {
-        seedHeadline(from: subtensorInteractor.cachedHeadlineRate())
-
         super.setup()
         provideSubtensorViewModel()
     }
@@ -75,14 +73,6 @@ extension StartStakingInfoSubtensorPresenter: StartStakingInfoSubtensorPresenter
 }
 
 private extension StartStakingInfoSubtensorPresenter {
-    func seedHeadline(from snapshot: HTTPCachePeek<Decimal?>) {
-        guard let headlineRate = snapshot.value else {
-            return
-        }
-
-        self.headlineRate = headlineRate
-    }
-
     func provideSubtensorViewModel() {
         let viewModel = subtensorViewModelFactory.createViewModel(
             title: createTitle(locale: selectedLocale),

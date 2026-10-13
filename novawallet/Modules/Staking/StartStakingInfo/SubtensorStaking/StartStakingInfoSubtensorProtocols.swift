@@ -8,9 +8,7 @@ protocol StartStakingInfoSubtensorPresenterProtocol: StartStakingInfoPresenterPr
     func refreshContent()
 }
 
-protocol StartStakingInfoSubtensorInteractorInputProtocol: StartStakingInfoInteractorInputProtocol {
-    func cachedHeadlineRate() -> HTTPCachePeek<Decimal?>
-}
+protocol StartStakingInfoSubtensorInteractorInputProtocol: StartStakingInfoInteractorInputProtocol {}
 
 protocol StartStakingInfoSubtensorInteractorOutputProtocol: StartStakingInfoInteractorOutputProtocol {
     func didReceive(headlineRate: Decimal?)
