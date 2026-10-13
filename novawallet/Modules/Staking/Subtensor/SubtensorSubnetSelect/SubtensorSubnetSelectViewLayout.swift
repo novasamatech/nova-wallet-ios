@@ -37,6 +37,11 @@ final class SubtensorSubnetSelectViewLayout: UIView {
         view.isHidden = true
     }
 
+    let errorView: InlineAlertView = .create { view in
+        view.apply(style: .warning)
+        view.isHidden = true
+    }
+
     let rootBarView = SubtensorStakeToRootBarView()
 
     override init(frame: CGRect) {
@@ -72,6 +77,29 @@ final class SubtensorSubnetSelectViewLayout: UIView {
     func bind(emptyText: String?) {
         emptyStateView.title = emptyText
         emptyStateView.isHidden = emptyText == nil
+    }
+
+    func bind(failure: SubtensorSubnetListViewModel.Failure?) {
+        guard let failure else {
+            errorView.isHidden = true
+            return
+        }
+
+        let text = NSMutableAttributedString(
+            string: failure.title,
+            attributes: [.font: UIFont.semiBoldCaption1, .foregroundColor: R.color.colorTextPrimary()!]
+        )
+
+        text.append(NSAttributedString(string: "\n"))
+
+        text.append(NSAttributedString(
+            string: failure.details,
+            attributes: [.font: UIFont.caption1, .foregroundColor: R.color.colorTextSecondary()!]
+        ))
+
+        errorView.contentView.detailsLabel.attributedText = text
+        errorView.setLink(title: failure.retryTitle)
+        errorView.isHidden = false
     }
 }
 
@@ -130,6 +158,12 @@ private extension SubtensorSubnetSelectViewLayout {
             make.bottom.equalTo(rootBarView.snp.top)
         }
 
+        addSubview(errorView)
+        errorView.snp.makeConstraints { make in
+            make.top.equalTo(tableView.snp.top).offset(Constants.errorTopSpacing)
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+        }
+
         captionLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
     }
 
@@ -144,6 +178,7 @@ private extension SubtensorSubnetSelectViewLayout {
         static let barBottomInset: CGFloat = 8
         static let barTopSpacing: CGFloat = 8
         static let inactiveAlpha: CGFloat = 0.5
+        static let errorTopSpacing: CGFloat = 16
     }
 }
 

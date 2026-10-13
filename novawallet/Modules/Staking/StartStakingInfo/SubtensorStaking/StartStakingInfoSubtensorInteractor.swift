@@ -20,7 +20,6 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
     private let headlineCallStore = CancellableCallStore()
     private var boundWalletId: MetaAccountModel.Id?
     private var hasReportedAccountChange = false
-    private var seed: HTTPCachePeek<Decimal?> = .miss
 
     init(
         state: SubtensorStakingSharedStateProtocol,
@@ -69,9 +68,7 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
         boundWalletId = selectedWalletSettings.value?.metaId
         eventCenter.add(observer: self, dispatchIn: .main)
 
-        if !seed.isFresh {
-            provideHeadline()
-        }
+        provideHeadline()
     }
 }
 
@@ -117,13 +114,7 @@ private extension StartStakingInfoSubtensorInteractor {
     }
 }
 
-extension StartStakingInfoSubtensorInteractor: StartStakingInfoSubtensorInteractorInputProtocol {
-    func cachedHeadlineRate() -> HTTPCachePeek<Decimal?> {
-        seed = maxApyProvider.cachedMaxApy()
-
-        return seed
-    }
-}
+extension StartStakingInfoSubtensorInteractor: StartStakingInfoSubtensorInteractorInputProtocol {}
 
 extension StartStakingInfoSubtensorInteractor: EventVisitorProtocol {
     func processSelectedWalletChanged(event _: SelectedWalletSwitched) {

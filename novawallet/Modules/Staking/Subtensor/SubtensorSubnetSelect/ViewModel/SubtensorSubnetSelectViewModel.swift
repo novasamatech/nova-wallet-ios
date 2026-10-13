@@ -21,10 +21,17 @@ struct SubtensorSubnetSelectViewModel {
 }
 
 struct SubtensorSubnetListViewModel {
+    struct Failure {
+        let title: String
+        let details: String
+        let retryTitle: String?
+    }
+
     enum Content {
         case loading
         case rows(picks: [SubtensorSubnetSelectViewModel], others: [SubtensorSubnetSelectViewModel])
         case empty(String)
+        case failed(Failure)
     }
 
     let chipTitle: String
@@ -46,6 +53,7 @@ struct SubtensorSubnetListState {
     let filters: SubtensorSubnetFilters
     let subnetLogos: SubtensorSubnetLogos?
     let stamp: SubtensorBackendStamp?
+    let entriesError: Error?
 }
 
 protocol SubtensorSubnetViewModelFactoryProtocol {
@@ -138,6 +146,10 @@ private extension SubtensorSubnetViewModelFactory {
         for state: SubtensorSubnetListState,
         locale: Locale
     ) -> SubtensorSubnetListViewModel.Content {
+        if let error = state.entriesError {
+            return .failed(createFailure(for: error, locale: locale))
+        }
+
         guard let list = state.list else {
             return .loading
         }
@@ -165,6 +177,21 @@ private extension SubtensorSubnetViewModelFactory {
                 )
             )
         }
+    }
+
+    func createFailure(for error: Error, locale: Locale) -> SubtensorSubnetListViewModel.Failure {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+        let apiError = error as? BittensorApiError
+        let isDeviceBound = apiError?.isDeviceBound ?? false
+        let allowsUserRetry = apiError?.allowsUserRetry ?? true
+
+        return SubtensorSubnetListViewModel.Failure(
+            title: strings.stakingSubtensorUiPickerFetchFailed(),
+            details: isDeviceBound
+                ? strings.stakingSubtensorUiPickerFetchDeviceDetail()
+                : strings.stakingSubtensorUiPickerFetchFailedDetail(),
+            retryTitle: allowsUserRetry ? strings.commonTryAgain() : nil
+        )
     }
 
     func chipTitle(for sort: SubtensorSubnetSort, locale: Locale) -> String {
