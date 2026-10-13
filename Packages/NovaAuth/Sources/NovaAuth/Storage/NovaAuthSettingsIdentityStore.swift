@@ -5,18 +5,10 @@ final class NovaAuthSettingsIdentityStore: NovaAuthIdentityStoreProtocol {
     static let storageKey = "novaAuth.profile3.state.v1"
     private static let resetMarker = Data(#"{"version":1,"resetPending":true}"#.utf8)
     private let settingsManager: SettingsManagerProtocol
-    private let commit: () throws -> Void
     private let mutex = NSLock()
 
-    init(settingsManager: SettingsManagerProtocol, commit: @escaping () throws -> Void) {
+    init(settingsManager: SettingsManagerProtocol) {
         self.settingsManager = settingsManager
-        self.commit = commit
-    }
-
-    static func commitStandardSettings(_ settingsManager: SettingsManagerProtocol) throws {
-        // Only this singleton is known to write the standard defaults database.
-        guard settingsManager === SettingsManager.shared,
-              UserDefaults.standard.synchronize() else { throw NovaAuthError.storageUnavailable }
     }
 
     func load() throws -> NovaAuthInstallationState? {
@@ -53,7 +45,6 @@ final class NovaAuthSettingsIdentityStore: NovaAuthIdentityStoreProtocol {
 private extension NovaAuthSettingsIdentityStore {
     func write(_ data: Data) throws {
         settingsManager.set(value: data, for: Self.storageKey)
-        do { try commit() } catch { throw NovaAuthError.storageUnavailable }
         guard settingsManager.data(for: Self.storageKey) == data else { throw NovaAuthError.storageUnavailable }
     }
 }

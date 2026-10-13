@@ -21,8 +21,6 @@ public struct NovaAuthSharedStoreConfiguration {
 public struct NovaAuthConfiguration {
     public let appIdentity: NovaAuthAppIdentity
     public let settingsManager: SettingsManagerProtocol
-    /// Must acknowledge persistence for the injected manager; defaults only support SettingsManager.shared.
-    public let settingsCommit: () throws -> Void
     public let sharedStore: NovaAuthSharedStoreConfiguration
     public let ownerQueue: OperationQueue
     public let bootstrapQueue: OperationQueue
@@ -32,7 +30,6 @@ public struct NovaAuthConfiguration {
     public init(
         appIdentity: NovaAuthAppIdentity,
         settingsManager: SettingsManagerProtocol,
-        settingsCommit: (() throws -> Void)? = nil,
         sharedStore: NovaAuthSharedStoreConfiguration,
         ownerQueue: OperationQueue,
         bootstrapQueue: OperationQueue,
@@ -41,9 +38,6 @@ public struct NovaAuthConfiguration {
     ) {
         self.appIdentity = appIdentity
         self.settingsManager = settingsManager
-        self.settingsCommit = settingsCommit ?? {
-            try NovaAuthSettingsIdentityStore.commitStandardSettings(settingsManager)
-        }
         self.sharedStore = sharedStore
         self.ownerQueue = ownerQueue
         self.bootstrapQueue = bootstrapQueue
