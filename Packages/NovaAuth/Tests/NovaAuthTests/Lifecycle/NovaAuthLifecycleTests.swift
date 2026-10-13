@@ -51,6 +51,19 @@ final class NovaAuthLifecycleTests: XCTestCase {
         XCTAssertEqual(harness.apple.keys, 4)
     }
 
+    func testLostKeyRecreationDelayEscalatesAfterEachFailedRecreation() throws {
+        let harness = try AuthHarness()
+        harness.apple.assertionError = NovaAuthAppAttestError.invalidKey
+        let auth = harness.makeAuth()
+        let context = try auth.activate(origin: harness.origin)
+        assertError(.keyUnavailable, auth.createAdmissionWrapper(in: context, intent: .background))
+        assertError(.cooldown(retryAfter: 60), try harness.relaunch().createAdmissionWrapper(in: context, intent: .background))
+        harness.clock.advance(60)
+        assertError(.keyUnavailable, try harness.relaunch().createAdmissionWrapper(in: context, intent: .background))
+        assertError(.cooldown(retryAfter: 600), try harness.relaunch().createAdmissionWrapper(in: context, intent: .background))
+        XCTAssertEqual(harness.apple.keys, 2)
+    }
+
     func testLostRegistrationResponseRecoversThroughTokenChallengeWithoutSecondAttestation() throws {
         let harness = try AuthHarness()
         harness.server.registration = .failure(URLError(.networkConnectionLost))
@@ -79,7 +92,21 @@ final class NovaAuthLifecycleTests: XCTestCase {
         XCTAssertEqual(harness.apple.keys, 1)
     }
 
-    func testResetDiscardsTheLateTokenOfTheOldGeneration() throws {
+    func testDeferredAttestationInsideTheWindowRetriesTheSavedKeyAndAttempt() throws {
+        let harness = try AuthHarness()
+        harness.apple.attestationError = NovaAuthAppAttestError.serverUnavailable
+        let auth = harness.makeAuth()
+        let context = try auth.activate(origin: harness.origin)
+        assertError(.platformUnavailable, auth.createAdmissionWrapper(in: context, intent: .background))
+        harness.apple.attestationError = nil
+        harness.clock.advance(39)
+        try execute(auth.createAdmissionWrapper(in: context, intent: .background))
+        XCTAssertEqual(harness.apple.keys, 1)
+        XCTAssertEqual(harness.apple.attestations, 2)
+        XCTAssertEqual(harness.server.count("/challenges"), 1)
+    }
+
+    func testOriginChangeDiscardsTheLateTokenOfTheOldGeneration() throws {
         let harness = try AuthHarness()
         let auth = harness.makeAuth()
         let context = try auth.activate(origin: harness.origin)
@@ -92,7 +119,7 @@ final class NovaAuthLifecycleTests: XCTestCase {
         let admission = auth.createAdmissionWrapper(in: context, intent: .userInitiated)
         OperationQueue().addOperations(admission.allOperations, waitUntilFinished: false)
         wait(for: [sent], timeout: 5)
-        try auth.reset()
+        _ = try auth.activate(origin: NovaAuthOrigin("https://other.example.com"))
         let installed = expectation(description: "late bearer installed")
         installed.isInverted = true
         harness.tokens.onReplace = { installed.fulfill() }

@@ -2,7 +2,7 @@ import Foundation
 import Operation_iOS
 
 public enum NovaAuthRequestIntent: Equatable { case userInitiated, background }
-public enum NovaAuthMethod: String { case get = "GET", head = "HEAD", post = "POST" }
+public enum NovaAuthMethod: String { case get = "GET", post = "POST" }
 
 public struct NovaAuthRequest {
     public let context: NovaAuthContext
