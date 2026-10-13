@@ -49,8 +49,8 @@ final class SubtensorPortfolioHistoryLoader {
         let historiesOperation = ClosureOperation<SubtensorPortfolioPriceHistories> {
             let taoHistory = try taoWrapper.targetOperation.extractNoCancellableResultData()
 
-            let histories = subnetWrappers.compactMap { wrapper -> SubtensorPriceHistory? in
-                let result = try? wrapper.targetOperation.extractNoCancellableResultData()
+            let histories = try subnetWrappers.compactMap { wrapper -> SubtensorPriceHistory? in
+                let result = try wrapper.targetOperation.extractNoCancellableResultData()
 
                 guard case let .available(history) = result else {
                     return nil
