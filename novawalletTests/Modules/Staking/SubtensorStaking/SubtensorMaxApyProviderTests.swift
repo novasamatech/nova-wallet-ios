@@ -21,7 +21,7 @@ final class SubtensorMaxApyProviderTests: XCTestCase {
     func testFixtureWorldMaxApyIsTheBestFreshRateAmongTheVerifiedRecommendedPairs() throws {
         let apiOperationFactory = BittensorApiOperationFactory(
             transport: BittensorApiFixtureTransport(),
-            cache: BittensorApiResponseCache(operationQueue: OperationQueue(), logger: Logger.shared),
+            cache: BittensorApiResponseCache(operationQueue: OperationQueue()),
             logger: Logger.shared
         )
 

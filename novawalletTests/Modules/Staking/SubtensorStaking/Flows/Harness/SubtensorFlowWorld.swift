@@ -69,9 +69,7 @@ final class SubtensorFlowWorld {
 
         let cache = BittensorApiResponseCache(
             operationQueue: OperationQueue(),
-            logger: Logger.shared,
-            timeProvider: { clock.now },
-            jitterProvider: { 0 }
+            timeProvider: { clock.now }
         )
 
         let eventCenter = EventCenter()

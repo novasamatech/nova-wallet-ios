@@ -90,9 +90,7 @@ final class BittensorApiResponseCache {
 
     init(
         operationQueue: OperationQueue,
-        logger _: LoggerProtocol,
-        timeProvider: @escaping () -> TimeInterval = BittensorMonotonicClock.now,
-        jitterProvider _: @escaping () -> Double = { Double.random(in: 0 ... 1) }
+        timeProvider: @escaping () -> TimeInterval = BittensorMonotonicClock.now
     ) {
         self.operationQueue = operationQueue
         self.timeProvider = timeProvider
