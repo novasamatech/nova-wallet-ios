@@ -56,13 +56,8 @@ enum NovaAuthDiagnostics {
         queue.async { logger?.warning(safeMessage) }
     }
 
-    static func log(
-        _ event: Event,
-        logger: SDKLoggerProtocol?,
-        requestID: String? = nil,
-        retryAfter: TimeInterval? = nil
-    ) {
-        let message = "NovaAuth transition=\(event.rawValue)" + metadata(requestID: requestID, retryAfter: retryAfter)
+    static func log(_ event: Event, logger: SDKLoggerProtocol?, requestID: String? = nil) {
+        let message = "NovaAuth transition=\(event.rawValue)" + metadata(requestID: requestID, retryAfter: nil)
         queue.async {
             switch event {
             case .policyRefused, .storageFailed, .storageRecovery, .bearerDeniedRepeated:

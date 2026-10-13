@@ -14,7 +14,7 @@ final class NovaAuthRecreationBudgetTests: LifecycleTestCase {
             startedAt: try harness.clock.now()
         )
         try auth.gate.novaAuthLocked {
-            try auth.setRegistration(.appleInFlight(attempt), flight: NovaAuthIssuanceFlight(context: context, sponsored: false))
+            try auth.setRegistration(.appleInFlight(attempt), flight: NovaAuthIssuanceFlight(context: context, sponsored: false, intent: .background))
         }
         let restarted = harness.makeAuth()
         _ = try restarted.activate(origin: harness.origin)
@@ -140,7 +140,7 @@ final class NovaAuthRecreationBudgetTests: LifecycleTestCase {
         let harness = try LifecycleHarness()
         let (auth, context) = try retired(harness, count: 2)
         try auth.gate.novaAuthLocked {
-            try auth.retire(.lostKey, flight: NovaAuthIssuanceFlight(context: context, sponsored: false))
+            try auth.retire(.lostKey, flight: NovaAuthIssuanceFlight(context: context, sponsored: false, intent: .background))
         }
         let recovery = harness.identity.state?.recovery
         harness.clock.reboot()
@@ -190,7 +190,7 @@ final class NovaAuthRecreationBudgetTests: LifecycleTestCase {
             var state = try XCTUnwrap(auth.state)
             state.recovery = NovaAuthRecoveryState(backgroundRecreations: count)
             try auth.persist(state)
-            try auth.setRegistration(.retired(.lostKey), flight: NovaAuthIssuanceFlight(context: context, sponsored: false))
+            try auth.setRegistration(.retired(.lostKey), flight: NovaAuthIssuanceFlight(context: context, sponsored: false, intent: .background))
         }
         return (auth, context)
     }

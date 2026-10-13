@@ -8,13 +8,8 @@ struct GlobalConfigSnapshot {
 
 protocol GlobalConfigProviding {
     func createConfigWrapper() -> CompoundOperationWrapper<GlobalConfig>
-    func createFreshConfigWrapper() -> CompoundOperationWrapper<GlobalConfig>
     func createConfigSnapshotWrapper() -> CompoundOperationWrapper<GlobalConfigSnapshot>
     func addSnapshotObserver(_ observer: AnyObject, closure: @escaping (GlobalConfigSnapshot) -> Void)
-}
-
-extension GlobalConfigProviding {
-    func addSnapshotObserver(_: AnyObject, closure _: @escaping (GlobalConfigSnapshot) -> Void) {}
 }
 
 final class GlobalConfigProvider: BaseFetchOperationFactory {
@@ -53,10 +48,6 @@ extension GlobalConfigProvider: GlobalConfigProviding {
 
     func createConfigWrapper() -> CompoundOperationWrapper<GlobalConfig> {
         mapConfig(createConfigSnapshotWrapper())
-    }
-
-    func createFreshConfigWrapper() -> CompoundOperationWrapper<GlobalConfig> {
-        mapConfig(createFreshSnapshotWrapper())
     }
 }
 

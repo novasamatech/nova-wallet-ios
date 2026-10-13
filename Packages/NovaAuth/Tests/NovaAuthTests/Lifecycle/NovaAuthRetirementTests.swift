@@ -78,7 +78,7 @@ final class NovaAuthRetirementTests: LifecycleTestCase {
     func testLegacyAbandonedRegistrationStillRequiresUserAction() throws {
         let harness = try LifecycleHarness()
         let (auth, context) = try harness.registered()
-        let flight = NovaAuthIssuanceFlight(context: context, sponsored: false)
+        let flight = NovaAuthIssuanceFlight(context: context, sponsored: false, intent: .background)
         try auth.gate.novaAuthLocked {
             try auth.setRegistration(.retired(.unrecoverableRegistration), flight: flight)
         }

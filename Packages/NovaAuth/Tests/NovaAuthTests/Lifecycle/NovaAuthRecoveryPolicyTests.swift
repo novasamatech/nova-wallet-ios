@@ -105,7 +105,7 @@ final class NovaAuthRecoveryPolicyTests: LifecycleTestCase {
         harness.random.value = 0
         let (auth, _) = try harness.registered()
         try auth.reset()
-        let context = try XCTUnwrap(auth.currentContext)
+        let context = try XCTUnwrap(auth.state?.context)
         harness.identity.failSave = true
         assertError(.storageUnavailable, auth.createAdmissionWrapper(in: context, intent: .userInitiated), on: harness.callers)
         XCTAssertEqual(harness.apple.keys, 0)

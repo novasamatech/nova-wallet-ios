@@ -1,7 +1,6 @@
 import Foundation
 import Operation_iOS
 import SDKLogger
-import NovaAuth
 import NovaOperationSupport
 
 struct AnalyticsGateway {

@@ -1,7 +1,6 @@
 import Foundation
 import Operation_iOS
 import SDKLogger
-import NovaAuth
 import NovaOperationSupport
 
 public enum AnalyticsUploadAbort: Error {
@@ -22,7 +21,7 @@ public final class AnalyticsUploader {
     init(
         queue: AnalyticsEventQueueProtocol,
         identity: AnalyticsIdentityProtocol,
-        isConsentEnabled: @escaping () -> Bool = { true },
+        isConsentEnabled: @escaping () -> Bool,
         gatewayResolver: AnalyticsGatewayResolving,
         operationQueue: OperationQueue,
         appVersion: String,
@@ -184,10 +183,6 @@ private extension AnalyticsUploader {
     func createFailureWrapper(_ error: Error, batch: Batch) -> CompoundOperationWrapper<BatchOutcome> {
         if let transportError = error as? AnalyticsTransportError {
             switch transportError {
-            case .rejected:
-                logger.warning("Analytics upload rejected, retaining the batch: \(transportError)")
-
-                return .createWithResult(.failed(transportError))
             case .clientError:
                 logger.warning("Analytics batch refused, dropping it: \(transportError)")
 

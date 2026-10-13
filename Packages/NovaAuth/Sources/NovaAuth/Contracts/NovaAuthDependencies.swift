@@ -15,11 +15,3 @@ struct NovaAuthDependencies {
     let appIdentity: NovaAuthAppIdentity
     let logger: SDKLoggerProtocol?
 }
-
-struct NovaAuthReaderDependencies {
-    let origin: NovaAuthOrigin
-    let tokenStore: NovaAuthTokenStoreProtocol
-    let clock: NovaAuthClockProtocol
-    let http: NovaAuthHTTPProtocol
-    let requestQueue: OperationQueue
-}

@@ -3,31 +3,6 @@ import Operation_iOS
 @testable import NovaAuth
 
 final class NovaAuthCacheAdmissionTests: LifecycleTestCase {
-    func testFreshAndStaleNativeCacheCannotBypassReaderExpiryOrReboot() throws {
-        for fresh in [true, false] {
-            for reboot in [true, false] {
-                let harness = try LifecycleHarness()
-                let (_, context) = try harness.registered(withToken: true)
-                let request = try harness.request(context: context)
-                let cache = URLCache(memoryCapacity: 1024 * 1024, diskCapacity: 0)
-                let urlRequest = URLRequest(url: try request.makeURL())
-                let response = try XCTUnwrap(HTTPURLResponse(
-                    url: request.makeURL(),
-                    statusCode: 200,
-                    httpVersion: nil,
-                    headerFields: ["Cache-Control": fresh ? "public, max-age=3600" : "public, max-age=0"]
-                ))
-                cache.storeCachedResponse(CachedURLResponse(response: response, data: Data("cached-protected-body".utf8)), for: urlRequest)
-                XCTAssertNotNil(cache.cachedResponse(for: urlRequest))
-                let counter = LifecycleHTTPAdmissionCounter(transport: NovaAuthHTTPTransport(cache: cache))
-                if reboot { harness.clock.reboot() } else { harness.clock.advance(595) }
-                assertError(.credentialUnavailable, harness.makeReader(http: counter).createResponseWrapper(for: request, beforeSend: {}), on: harness.callers)
-                XCTAssertEqual(counter.creations, 0)
-                XCTAssertEqual(harness.bootstrap.tokens.count, 0)
-            }
-        }
-    }
-
     func testFreshAndStaleNativeCacheCannotBypassOriginCooldown() throws {
         for fresh in [true, false] {
             let harness = try LifecycleHarness()

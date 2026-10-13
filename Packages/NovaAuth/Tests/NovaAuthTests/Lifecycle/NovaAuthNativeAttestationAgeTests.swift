@@ -9,7 +9,7 @@ final class NovaAuthNativeAttestationAgeTests: LifecycleTestCase {
         let service = CountingDeviceCheck()
         let adapter = NovaAuthDeviceCheckService(service: service)
         let auth = try deferred(harness, appAttest: adapter)
-        let context = try XCTUnwrap(auth.currentContext)
+        let context = try XCTUnwrap(auth.state?.context)
         harness.clock.advance(39)
         harness.bootstrapQueue.isSuspended = true
         defer { harness.bootstrapQueue.isSuspended = false }
@@ -39,7 +39,7 @@ final class NovaAuthNativeAttestationAgeTests: LifecycleTestCase {
         let harness = try LifecycleHarness()
         let service = CountingDeviceCheck()
         let auth = try deferred(harness, appAttest: NovaAuthDeviceCheckService(service: service))
-        let context = try XCTUnwrap(auth.currentContext)
+        let context = try XCTUnwrap(auth.state?.context)
         harness.clock.advance(39)
         harness.bootstrapQueue.isSuspended = true
         defer { harness.bootstrapQueue.isSuspended = false }
@@ -60,7 +60,7 @@ final class NovaAuthNativeAttestationAgeTests: LifecycleTestCase {
         let adapter = NovaAuthDeviceCheckService(service: service)
         let boundary = AttestationBoundaryAdapter(base: adapter)
         let auth = try deferred(harness, appAttest: boundary)
-        let context = try XCTUnwrap(auth.currentContext)
+        let context = try XCTUnwrap(auth.state?.context)
         boundary.beforeGuard = {
             _ = try auth.activate(origin: NovaAuthOrigin("https://next.example.com"))
             harness.clock.advance(61)
@@ -74,8 +74,8 @@ final class NovaAuthNativeAttestationAgeTests: LifecycleTestCase {
         wait(for: [completed, childCompleted], timeout: 5)
         drain(harness.ownerQueue)
         XCTAssertEqual(service.attestationCalls, 0)
-        XCTAssertEqual(auth.currentContext?.generation, context.generation + 1)
-        XCTAssertEqual(auth.currentContext?.origin, try NovaAuthOrigin("https://next.example.com"))
+        XCTAssertEqual(auth.state?.context.generation, context.generation + 1)
+        XCTAssertEqual(auth.state?.context.origin, try NovaAuthOrigin("https://next.example.com"))
         XCTAssertNil(harness.identity.state?.identity)
         XCTAssertNil(harness.identity.state?.recovery)
         XCTAssertTrue(harness.identity.state?.requiresUserAction == true)
@@ -87,7 +87,7 @@ final class NovaAuthNativeAttestationAgeTests: LifecycleTestCase {
         let harness = try LifecycleHarness()
         let service = CountingDeviceCheck()
         let auth = try deferred(harness, appAttest: NovaAuthDeviceCheckService(service: service))
-        let context = try XCTUnwrap(auth.currentContext)
+        let context = try XCTUnwrap(auth.state?.context)
         harness.clock.advance(40)
         service.onAttestation = { harness.clock.advance(20) }
         assertError(.userActionRequired, auth.createAdmissionWrapper(in: context, intent: .background), on: harness.callers)

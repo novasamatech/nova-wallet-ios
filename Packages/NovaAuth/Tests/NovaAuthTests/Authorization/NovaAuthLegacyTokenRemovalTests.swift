@@ -53,31 +53,6 @@ final class NovaAuthLegacyTokenRemovalTests: LifecycleTestCase {
         fixture.security.readStatus = nil
         XCTAssertEqual(try fixture.store.load(), fixture.record)
     }
-
-    func testReaderRejectionDoesNotUnconditionallyRemoveLegacyRecord() throws {
-        let fixture = try LegacyTokenFixture()
-        let reader = fixture.reader()
-        try reader.reject(record: fixture.record, repeated: false, requestID: nil)
-        assertError(
-            .credentialUnavailable,
-            reader.createAdmissionWrapper(in: fixture.record.context, intent: .background),
-            on: fixture.harness.callers
-        )
-        XCTAssertEqual(fixture.unconditionalDeletes, 0)
-        XCTAssertEqual(try fixture.store.load(), fixture.record)
-    }
-
-    func testReaderExpiryDoesNotUnconditionallyRemoveLegacyRecord() throws {
-        let fixture = try LegacyTokenFixture()
-        fixture.harness.clock.advance(600)
-        assertError(
-            .credentialUnavailable,
-            fixture.reader().createAdmissionWrapper(in: fixture.record.context, intent: .background),
-            on: fixture.harness.callers
-        )
-        XCTAssertEqual(fixture.unconditionalDeletes, 0)
-        XCTAssertEqual(try fixture.store.load(), fixture.record)
-    }
 }
 
 private final class LegacyTokenFixture {
@@ -117,12 +92,5 @@ private final class LegacyTokenFixture {
         self.store = store
         self.record = record
         self.owner = owner
-    }
-
-    func reader() -> NovaAuthReader {
-        NovaAuthReader(dependencies: NovaAuthReaderDependencies(
-            origin: harness.origin, tokenStore: store, clock: harness.clock,
-            http: harness.http, requestQueue: harness.requestQueue
-        ))
     }
 }

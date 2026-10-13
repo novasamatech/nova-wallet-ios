@@ -45,14 +45,3 @@ public struct NovaAuthConfiguration {
         self.logger = logger
     }
 }
-
-public struct NovaAuthReaderConfiguration {
-    public let origin: NovaAuthOrigin
-    public let sharedStore: NovaAuthSharedStoreConfiguration
-    public let requestQueue: OperationQueue
-    public init(origin: NovaAuthOrigin, sharedStore: NovaAuthSharedStoreConfiguration, requestQueue: OperationQueue) {
-        self.origin = origin
-        self.sharedStore = sharedStore
-        self.requestQueue = requestQueue
-    }
-}
