@@ -46,6 +46,7 @@ struct BittensorApiCacheDelivery {
 struct BittensorApiCacheJob {
     let key: BittensorApiCacheKey
     let routeKey: BittensorApiRouteKey
+    let currentInvalidationRevision: () -> UInt64
     let admit: () -> CompoundOperationWrapper<BittensorApiAdmission>
     let fetch: (BittensorApiAdmission) -> CompoundOperationWrapper<BittensorApiFetchedValue>
 }
@@ -84,7 +85,7 @@ final class BittensorApiResponseCache {
     private var flights: [ScopedKey: Flight] = [:]
     private var negatives: [NegativeKey: NegativeEntry] = [:]
     private var activeScope: BittensorApiCacheScope?
-    private var minimumGeneration: UInt64 = 0
+    private var minimumInvalidationRevision: UInt64 = 0
     private var newestGeneration: BittensorApiGenerationOrder?
 
     init(
@@ -97,19 +98,16 @@ final class BittensorApiResponseCache {
         self.timeProvider = timeProvider
     }
 
-    func invalidate() {
+    func invalidate(before revision: UInt64) {
         mutex.lock()
-        if let activeScope { minimumGeneration = activeScope.generation + 1 }
-        activeScope = nil
-        entries.removeAll()
-        negatives.removeAll()
-        newestGeneration = nil
+        invalidateLocked(before: revision)
         mutex.unlock()
     }
 
-    func peek(_ key: BittensorApiCacheKey) -> HTTPCachePeek<BittensorApiCacheEntry> {
+    func peek(_ key: BittensorApiCacheKey, invalidationRevision: UInt64) -> HTTPCachePeek<BittensorApiCacheEntry> {
         mutex.lock()
         defer { mutex.unlock() }
+        invalidateLocked(before: invalidationRevision)
         guard let scope = activeScope, let entry = entries[ScopedKey(scope: scope, request: key)] else { return .miss }
         return .expired(entry)
     }
@@ -133,6 +131,15 @@ final class BittensorApiResponseCache {
 }
 
 private extension BittensorApiResponseCache {
+    func invalidateLocked(before revision: UInt64) {
+        guard revision > minimumInvalidationRevision else { return }
+        minimumInvalidationRevision = revision
+        activeScope = nil
+        entries.removeAll()
+        negatives.removeAll()
+        newestGeneration = nil
+    }
+
     final class WaiterState {
         private let lock = NSLock()
         private var cancelled = false
@@ -149,16 +156,17 @@ private extension BittensorApiResponseCache {
     ) {
         let scope = admission.scope
         let key = ScopedKey(scope: scope, request: job.key)
+        let currentRevision = job.currentInvalidationRevision()
         mutex.lock()
         guard !state.isCancelled else { mutex.unlock(); return }
-        guard scope.generation >= minimumGeneration else {
+        invalidateLocked(before: max(currentRevision, scope.invalidationRevision))
+        guard scope.invalidationRevision >= minimumInvalidationRevision else {
             mutex.unlock()
             completion(.failure(BittensorApiError.attestationUnavailable(requestId: nil)))
             return
         }
         if activeScope != scope {
             activeScope = scope
-            minimumGeneration = scope.generation
             entries.removeAll()
             negatives.removeAll()
             newestGeneration = nil
@@ -194,7 +202,9 @@ private extension BittensorApiResponseCache {
         flightID: UUID,
         result: Result<BittensorApiFetchedValue, Error>
     ) {
+        let currentRevision = job.currentInvalidationRevision()
         mutex.lock()
+        invalidateLocked(before: currentRevision)
         guard let flight = flights[key], flight.id == flightID else { mutex.unlock(); return }
         flights[key] = nil
         let delivery: Result<BittensorApiCacheDelivery, Error>
