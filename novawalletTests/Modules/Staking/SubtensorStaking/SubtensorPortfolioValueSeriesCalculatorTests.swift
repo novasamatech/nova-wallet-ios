@@ -26,6 +26,7 @@ final class SubtensorPortfolioValueSeriesCalculatorTests: XCTestCase {
             ),
             subnets: [
                 history(netuid: 64, [(0, "0.05"), (302_400, "0.06"), (604_800, "0.08")]),
+                history(netuid: 19, [(0, "0.05"), (302_400, "0.05"), (604_800, "0.05")]),
                 history(netuid: 7, [(0, "0.5"), (302_400, "0.5"), (604_800, "0.5")])
             ]
         )
