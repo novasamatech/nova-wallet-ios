@@ -71,7 +71,58 @@ final class SubtensorSubnetDetailsPresenterTests: XCTestCase {
         )
     }
 
-    private func makeSetup() -> Setup {
+    func testChartSnapshotIsStableAcrossScrubsUpdatesAndCurrencyUntilNewHistoryArrives() throws {
+        typealias Helper = SubtensorPriceChartTestHelper
+        var now = Helper.end
+        let setup = makeSetup(now: { now })
+        let view = MockSubtensorSubnetDetailsViewProtocol()
+        var latest: SubtensorSubnetDetailsViewModel?
+        var header: SubtensorSubnetPriceHeaderViewModel?
+        stub(view) { stub in
+            when(stub.didReceive(viewModel: any())).then { latest = $0 }
+            when(stub.didReceive(priceHeader: any())).then { header = $0 }
+            when(stub.didReceive(title: any())).thenDoNothing()
+            when(stub.isSetup.get).thenReturn(true)
+        }
+        stub(setup.interactor) { stub in
+            when(stub.loadHistory(for: any())).thenDoNothing()
+        }
+        setup.presenter.view = view
+        setup.presenter.didReceiveHistory(.available(Helper.history()), for: .week)
+        let original = try Helper.series(Helper.chart(XCTUnwrap(latest).priceWidget))
+        now = now.addingTimeInterval(Helper.day)
+        setup.presenter.selectChart(.noData(date: Helper.end.addingTimeInterval(-5 * Helper.day)))
+        XCTAssertEqual(header?.price, "—")
+        setup.presenter.selectChart(.point(sourceIndex: 2))
+        XCTAssertEqual(header?.price, "1 TAO")
+        setup.presenter.didReceiveBalance(nil)
+        setup.presenter.didReceiveYields(nil)
+        setup.presenter.applyLocalization()
+        let afterUpdates = try Helper.series(Helper.chart(XCTUnwrap(latest).priceWidget))
+        XCTAssertEqual(afterUpdates, original)
+        setup.presenter.didReceiveTaoPrice(PriceData(identifier: "tao", price: "10", dayChange: nil, currencyId: Currency.usd.id))
+        setup.presenter.selectCurrency(at: 1)
+        let fiat = try Helper.series(Helper.chart(XCTUnwrap(latest).priceWidget))
+        XCTAssertEqual(fiat.range, original.range)
+        XCTAssertEqual(fiat.points.map(\.date), original.points.map(\.date))
+        XCTAssertEqual(latest?.priceWidget.header.change, .hidden)
+        let spotHeader = latest?.priceWidget.header
+        setup.presenter.selectChart(.point(sourceIndex: 2))
+        setup.presenter.selectChart(nil)
+        XCTAssertEqual(header, spotHeader)
+        setup.presenter.selectPeriod(at: 2)
+        verify(setup.interactor).loadHistory(for: equal(to: .month))
+        let switched = Helper.history(points: [Helper.point(daysBefore: 3, value: 2, end: now), Helper.point(daysBefore: 0, value: 3, end: now)], period: .month)
+        setup.presenter.didReceiveHistory(.available(switched), for: .month)
+        let month = try Helper.series(Helper.chart(XCTUnwrap(latest).priceWidget))
+        XCTAssertEqual(month.range, now.addingTimeInterval(-30 * Helper.day) ... now)
+        XCTAssertEqual(latest?.priceWidget.header.change, .hidden)
+        now = now.addingTimeInterval(Helper.day)
+        setup.presenter.didReceiveHistory(.available(Helper.history()), for: .week)
+        XCTAssertEqual(try Helper.series(Helper.chart(XCTUnwrap(latest).priceWidget)), month)
+    }
+
+    private func makeSetup(now: @escaping () -> Date = Date.init) -> Setup {
         let interactor = MockSubnetDetailsInteractorInputProtocol()
         let wireframe = MockSubtensorSubnetDetailsWireframeProtocol()
         let subnet = makeSubnet()
@@ -91,7 +142,8 @@ final class SubtensorSubnetDetailsPresenterTests: XCTestCase {
             ),
             earnSettings: SubtensorEarnSettings(settingsManager: InMemorySettingsManager()),
             localizationManager: LocalizationManager.shared,
-            logger: Logger.shared
+            logger: Logger.shared,
+            now: now
         )
 
         return Setup(presenter: presenter, interactor: interactor, wireframe: wireframe, target: target)

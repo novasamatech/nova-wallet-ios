@@ -13,12 +13,14 @@ final class SubtensorSubnetDetailsPresenter {
     let earnSettings: SubtensorEarnSettingsProtocol
     let logger: LoggerProtocol
 
+    private let now: () -> Date
+    private var chartEndDate: Date
     private var isFiat = false
     private var period = SubtensorPriceWidgetViewModelFactory.defaultPeriod
-    private var chartPoint: Int?
+    private var chartSelection: SubtensorPriceChartSelection?
     private var history: SubtensorSubnetHistoryState = .loading {
         didSet {
-            chartPoint = nil
+            chartSelection = nil
         }
     }
 
@@ -46,8 +48,11 @@ final class SubtensorSubnetDetailsPresenter {
         viewModelFactory: SubnetDetailsViewModelFactoryProtocol,
         earnSettings: SubtensorEarnSettingsProtocol,
         localizationManager: LocalizationManagerProtocol,
-        logger: LoggerProtocol
+        logger: LoggerProtocol,
+        now: @escaping () -> Date = Date.init
     ) {
+        self.now = now
+        chartEndDate = now()
         self.input = input
         self.host = host
         self.selectionDelegate = selectionDelegate
@@ -94,8 +99,9 @@ private extension SubtensorSubnetDetailsPresenter {
             transferable: transferable,
             taoPrice: taoPrice,
             isFavorite: isFavorite,
-            now: Date(),
-            chartPoint: chartPoint
+            now: now(),
+            chartEndDate: chartEndDate,
+            chartSelection: chartSelection
         )
     }
 
@@ -194,6 +200,7 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
             return
         }
 
+        chartSelection = nil
         isFiat = newIsFiat
         provideViewModel()
     }
@@ -259,8 +266,8 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
         provideViewModel()
     }
 
-    func selectChartPoint(at index: Int?) {
-        chartPoint = index
+    func selectChart(_ selection: SubtensorPriceChartSelection?) {
+        chartSelection = selection
 
         let header = viewModelFactory.createPriceHeader(for: createState(), locale: selectedLocale)
         view?.didReceive(priceHeader: header)
@@ -272,6 +279,8 @@ extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol
         guard period == self.period else {
             return
         }
+
+        chartEndDate = now()
 
         switch result {
         case let .available(value):

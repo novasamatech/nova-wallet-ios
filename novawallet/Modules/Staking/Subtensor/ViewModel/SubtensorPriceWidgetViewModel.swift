@@ -10,6 +10,7 @@ struct SubtensorSubnetPriceHeaderViewModel: Equatable {
     enum Change: Equatable {
         case loading
         case hidden
+        case date(String)
         case value(text: String, isRising: Bool)
     }
 

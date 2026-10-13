@@ -112,9 +112,14 @@ extension SubtensorPortfolioViewController: SubtensorPriceChartViewDelegate {
         chartLongPressHapticPlayer.play()
     }
 
-    func priceChartView(_: SubtensorSubnetPriceChartView, didSelectPointAt index: Int) {
+    func priceChartView(_: SubtensorSubnetPriceChartView, didSelect selection: SubtensorPriceChartSelection) {
         seekHapticPlayer.play()
-        presenter.selectChartPoint(at: index)
+        switch selection {
+        case let .point(sourceIndex):
+            presenter.selectChartPoint(at: sourceIndex)
+        case .noData:
+            presenter.selectChartPoint(at: nil)
+        }
     }
 
     func priceChartViewDidEndSelection(_: SubtensorSubnetPriceChartView) {

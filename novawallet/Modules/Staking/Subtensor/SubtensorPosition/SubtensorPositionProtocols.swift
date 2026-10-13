@@ -12,7 +12,7 @@ protocol SubtensorPositionPresenterProtocol: AnyObject {
     func selectValidator()
     func retrySync()
     func retryHistory()
-    func selectChartPoint(at index: Int?)
+    func selectChart(_ selection: SubtensorPriceChartSelection?)
 }
 
 protocol SubtensorPositionInteractorInputProtocol: AnyObject {
