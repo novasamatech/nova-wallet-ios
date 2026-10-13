@@ -238,8 +238,8 @@ flowchart TB
   BUILD --> FENCE["Pre-send fence<br/>cancellation + context / bearer / business cooldown checks<br/>consumer beforeSend<br/>cancellation + auth check again"]
   FENCE -- "Auth-owned missing/rejected credential<br/>once, no network send yet" --> DEMAND
   FENCE -- "Caller gate error" --> ABORT["Return original caller error<br/>no auth backoff or replay"]
-  FENCE --> TYPE{"GET / HEAD or POST?"}
-  TYPE -- "GET / HEAD" --> READ["Read URLSession<br/>native memory URLCache<br/>freshness / revalidation"]
+  FENCE --> TYPE{"GET or POST?"}
+  TYPE -- GET --> READ["Read URLSession<br/>native memory URLCache<br/>freshness / revalidation"]
   TYPE -- POST --> POST["POST URLSession<br/>ephemeral, no cache"]
   READ --> RECEIVE["Response context check<br/>classify shared versus service cooldown"]
   POST --> RECEIVE
@@ -251,7 +251,7 @@ flowchart TB
   RETRY -- yes --> STOP["authorizationDenied<br/>or storageUnavailable if deletion failed"]
 ```
 
-**The renewal trigger is narrow:** same HTTPS origin and port, status 401, exactly one `WWW-Authenticate` header equal to `Bearer error="invalid_token"`, plus a parsed `invalid_token` error for GET/POST or an empty body for HEAD. An unrelated 401/403 does not trigger this recovery. The same request may be replayed once after re-admission; there is no general business-request retry loop here.
+**The renewal trigger is narrow:** same HTTPS origin and port, status 401, exactly one `WWW-Authenticate` header equal to `Bearer error="invalid_token"`, plus a parsed `invalid_token` error. An unrelated 401/403 does not trigger this recovery. The same request may be replayed once after re-admission; there is no general business-request retry loop here.
 
 A separate one-time re-admission handles NovaAuth discovering an unusable credential before any send. It does not consume or enlarge the sent-response replay budget: at most two actual business sends are possible, with identical POST bytes and repeated caller gates. Cancellation ownership is installed atomically with enqueue, so a pending child cannot be cancelled into a finished state before being submitted to its queue.
 
@@ -260,7 +260,7 @@ Repeated denial applies the owner's issuance cooldown **before** throwing token 
 | Transport | Configuration and cache behavior |
 | --- | --- |
 | Bootstrap | Ephemeral session, no bearer, no URLCache; only four allowlisted POST paths. |
-| GET/HEAD business reads | Default session with a private 16 MiB **memory-only** URLCache. Native HTTP policy decides freshness and revalidation. |
+| GET business reads | Default session with a private 16 MiB **memory-only** URLCache. Native HTTP policy decides freshness and revalidation. |
 | Business POST | Ephemeral session, no cache. Both analytics and operations search use this lane. |
 | All three | No cookie or URL credential storage; redirects rejected; default server-trust handling; other URL authentication challenges rejected. |
 
@@ -280,17 +280,17 @@ Read-cache writes require 2xx and `Cache-Control: public`, without `private`/`no
 
 | Method | Path |
 | --- | --- |
-| GET / HEAD | `/v1/bittensor/profile-3/subnets` |
-| GET / HEAD | `/v1/bittensor/profile-3/subnets/{netuid}/validators` |
-| GET / HEAD | `/v1/bittensor/profile-3/yields/root` |
-| GET / HEAD | `/v1/bittensor/profile-3/subnets/{netuid}/yields/alpha` |
-| GET / HEAD | `/v1/bittensor/profile-3/recommendations` |
-| GET / HEAD | `/v1/bittensor/profile-3/recommendations/subnets` |
-| GET / HEAD | `/v1/bittensor/profile-3/recommendations/subnets/{netuid}/validators` |
+| GET | `/v1/bittensor/profile-3/subnets` |
+| GET | `/v1/bittensor/profile-3/subnets/{netuid}/validators` |
+| GET | `/v1/bittensor/profile-3/yields/root` |
+| GET | `/v1/bittensor/profile-3/subnets/{netuid}/yields/alpha` |
+| GET | `/v1/bittensor/profile-3/recommendations` |
+| GET | `/v1/bittensor/profile-3/recommendations/subnets` |
+| GET | `/v1/bittensor/profile-3/recommendations/subnets/{netuid}/validators` |
 | POST · JSON | `/v1/bittensor/operations/search` |
 | POST · JSON | `/v1/analytics/events` |
 
-`netuid` must be canonical UInt16 text. GET/HEAD are package capabilities; the current Bittensor factory calls GET. Its current factory also does not expose the per-subnet recommendation-validators route. The table shows the package allowlist, not a claim that every route has an active caller.
+`netuid` must be canonical UInt16 text. The current Bittensor factory does not expose the per-subnet recommendation-validators route. The table shows the package allowlist, not a claim that every route has an active caller.
 
 **Separately owned server migration:** release coordination must confirm that both existing POST paths accept this same profile-3 `bittensor-read` bearer and that `invalid_token` is rejected **before either POST reaches its business handler**. This pre-handler contract permits the single replay of identical bytes. The client predicate cannot establish deployed server ordering. There is no legacy fallback or client backend migration here.
 

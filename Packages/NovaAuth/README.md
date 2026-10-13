@@ -6,7 +6,7 @@ and one persisted current bearer serve every approved consumer; renewal replaces
 
 `activate(origin:)` selects the exact HTTPS backend origin. `createAdmissionWrapper` checks a
 usable bearer before domain caches, while `createResponseWrapper` checks again before native
-URLCache or network access. GET/HEAD use the seven allowed `/v1/bittensor/profile-3` routes.
+URLCache or network access. GET uses the seven allowed `/v1/bittensor/profile-3` routes.
 Analytics and operations search retain their existing POST paths and immutable request bodies.
 Only conclusive pre-backend `invalid_token` allows a single replay. A credential rejected by
 another request before sending permits one separate, bounded re-admission. Neither path
@@ -185,7 +185,7 @@ and [iOS 18 release notes](https://developer.apple.com/documentation/ios-ipados-
 ## Backend rollout coordination
 
 The server migration is owned separately. The client uses profile 3 exclusively for the seven
-Bittensor GET/HEAD routes, **POST /v1/analytics/events** and
+Bittensor GET routes, **POST /v1/analytics/events** and
 **POST /v1/bittensor/operations/search**, with the same existing `bittensor-read` issuance flow
 and bearer. Release coordination must confirm server authorization for both existing POST
 paths **and rejection of `invalid_token` before either POST reaches its business handler**.
