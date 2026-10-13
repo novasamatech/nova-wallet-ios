@@ -6,6 +6,7 @@ struct SubtensorStakedBalance: Equatable {
     let chainAssetId: ChainAssetId
     let accountId: AccountId
     let amount: BigUInt
+    let isComplete: Bool
 }
 
 extension SubtensorStakedBalance: Identifiable {
