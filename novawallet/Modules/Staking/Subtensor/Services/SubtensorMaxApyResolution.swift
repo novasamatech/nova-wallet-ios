@@ -4,25 +4,11 @@ import Operation_iOS
 final class SubtensorMaxApyResolution {
     typealias Completion = (Result<Decimal?, Error>) -> Void
 
-    static let defaultMemoLifetime: TimeInterval = 3600
-
-    let memoLifetime: TimeInterval
-    let timeProvider: () -> TimeInterval
-
     private let mutex = NSLock()
     private var contextGeneration = UUID()
-    private var memo: Memo?
     private var walkId: UUID?
     private var walk: CancellableCall?
     private var waiters: [UUID: Completion] = [:]
-
-    init(
-        memoLifetime: TimeInterval = SubtensorMaxApyResolution.defaultMemoLifetime,
-        timeProvider: @escaping () -> TimeInterval = BittensorMonotonicClock.now
-    ) {
-        self.memoLifetime = memoLifetime
-        self.timeProvider = timeProvider
-    }
 
     func resolve(
         for waiterId: UUID,
@@ -35,14 +21,6 @@ final class SubtensorMaxApyResolution {
         guard generation == contextGeneration else {
             mutex.unlock()
             completion(.failure(BittensorApiError.attestationUnavailable(requestId: nil)))
-            return
-        }
-
-        if let memo, timeProvider() - memo.resolvedAt < memoLifetime {
-            mutex.unlock()
-
-            completion(delivery(.success(memo.maxApy), generation: generation))
-
             return
         }
 
@@ -99,20 +77,6 @@ final class SubtensorMaxApyResolution {
         abandonedWalk?.cancel()
     }
 
-    func peek() -> HTTPCachePeek<Decimal?> {
-        mutex.lock()
-
-        let memo = memo
-
-        mutex.unlock()
-
-        guard let memo, timeProvider() - memo.resolvedAt < memoLifetime else {
-            return .miss
-        }
-
-        return .fresh(memo.maxApy, freshUntil: memo.resolvedAt + memoLifetime)
-    }
-
     var generation: UUID {
         mutex.lock()
         defer { mutex.unlock() }
@@ -122,7 +86,6 @@ final class SubtensorMaxApyResolution {
     func invalidate() {
         mutex.lock()
         contextGeneration = UUID()
-        memo = nil
         walkId = nil
         let abandonedWalk = walk
         let completions = Array(waiters.values)
@@ -136,11 +99,6 @@ final class SubtensorMaxApyResolution {
 }
 
 private extension SubtensorMaxApyResolution {
-    struct Memo {
-        let maxApy: Decimal?
-        let resolvedAt: TimeInterval
-    }
-
     func delivery(_ result: Result<Decimal?, Error>, generation: UUID) -> Result<Decimal?, Error> {
         mutex.lock()
         defer { mutex.unlock() }
@@ -160,10 +118,6 @@ private extension SubtensorMaxApyResolution {
 
         walkId = nil
         walk = nil
-
-        if case let .success(maxApy) = result {
-            memo = Memo(maxApy: maxApy, resolvedAt: timeProvider())
-        }
 
         let completions = Array(waiters.values)
         let generation = contextGeneration
