@@ -47,8 +47,9 @@ Nothing in a package may reference an app type — no `ApplicationConfig`, `Glob
 `ApplicationServiceProtocol`. Host dependencies arrive through `AnalyticsConfiguration` or
 `NovaAuthConfiguration`. The host's `NovaAuthFacade.shared` injects the same auth owner into
 analytics and Bittensor; the package owns recovery, storage and DeviceCheck. The app owns
-configuration/context publication and Bittensor error presentation; `NovaAnalytics` owns the
-bounded consent re-arm. Auth store configuration needs a Keychain access group and host
+configuration/context publication and Bittensor error presentation; `NovaAnalytics` owns
+consent and normal flush scheduling, retaining auth-failed batches silently for later flushes.
+Auth store configuration needs a Keychain access group and host
 namespace, with no App Group filesystem-container dependency. Settings managers are injected
 through `NovaAuthConfiguration`; set/read-back provides no durable commit acknowledgement.
 Package test targets take no external test dependencies: XCTest and hand-written doubles,

@@ -4,6 +4,8 @@ Operation-based, app-wide profile-3 authentication for iOS 16+. The host owns on
 instance and injects its `NovaAuthClientProtocol` into analytics and Bittensor. One installation
 and one persisted current bearer serve every protected consumer; renewal replaces that bearer.
 
+See the [reviewer guide](REVIEW.md) for the protocol corrections, ownership boundaries and validation limits.
+
 `activate(origin:)` selects the exact HTTPS backend origin. `createAdmissionWrapper` checks a
 usable bearer before domain caches, while `createResponseWrapper` checks again before native
 URLCache or network access. One origin/API-major bearer authorizes ordinary protected paths:
