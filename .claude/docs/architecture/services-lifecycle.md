@@ -166,14 +166,14 @@ from an individual screen's Interactor without a matching `throttle()`.
 
 `NovaAuthFacade.shared` owns the one `NovaAuth` client. Global config snapshots have monotonically
 increasing revisions; late old fetches cannot reactivate a previous origin. Analytics consent/erasure and wallet changes never reset this authentication owner. An
-explicit facade reset or accepted origin change requires new user-initiated demand. The other flow services are used only by screen loads and explicit actions, and share the same
+accepted origin change requires new user-initiated demand. The other flow services are used only by screen loads and explicit actions, and share the same
 auth owner and response cache.
 
 Invalidation detaches pending walks and fences suspended wrappers and late chain
 enrichment. Their memo lifetimes remain unchanged within one auth context; local calculations
 do not require a separate auth request. The package exposes a context invalidation ID so the
 facade also detects a cold origin replacement/repair before publishing its first endpoint.
-Explicit reset notifies even on failure; failed adoption notifies when its memory fence changed.
+Failed adoption notifies when its memory fence changed.
 First activation with no prior installation does not itself invalidate a context.
 
 An actual analytics opt-in keeps one in-memory pending user-initiated admission. Retryable

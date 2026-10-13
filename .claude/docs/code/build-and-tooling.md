@@ -78,12 +78,11 @@ Four configurations, each with an xcconfig in `novawallet/Configs/`:
 | `Staging`     | `F_RELEASE`                                      | Nova Early Access  | `io.novafoundation.novawallet.staging` |
 | `Release`     | `F_RELEASE`                                      | Nova               | `io.novafoundation.novawallet`       |
 
-Each app and notification-extension xcconfig explicitly sets `NOVA_AUTH_HOST_APP_NAMESPACE`
-to the host app's bundle id from this table. Both Info.plists expose it as
-`NovaAuthHostAppNamespace`; missing, unresolved or invalid values disable auth composition.
-Each pair must match. Debug/Dev share the development App Group; Staging/Release share the
-production App Group, but their different host namespaces isolate their current bearer records.
-Keep this namespace stable for an installed host and never derive it from the extension's bundle suffix.
+Each app xcconfig explicitly sets `NOVA_AUTH_HOST_APP_NAMESPACE` to the host app's bundle id
+from this table. The app Info.plist exposes it as `NovaAuthHostAppNamespace`; missing,
+unresolved or invalid values disable auth composition. Debug/Dev share the development App
+Group; Staging/Release share the production App Group, but their different host namespaces
+isolate their current bearer records. Keep this namespace stable for an installed host.
 NovaAuth retains that group's Keychain access group; its store configuration no longer takes
 `containerURL` or requires resolving the App Group filesystem container. Existing App Group
 entitlements remain for other host features. The NovaAuth privacy manifest no longer declares

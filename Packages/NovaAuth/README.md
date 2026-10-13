@@ -16,12 +16,9 @@ The main host supplies AppIdentifierPrefix + bundle identifier, settings, the sh
 access group, a required stable host-app namespace, and separate
 owner/bootstrap/business queues. Keychain holds one atomic bearer record per installed host
 app with continuous-clock/boot metadata; preferences hold no bearer. The namespace is the
-host app's bundle identifier, explicitly injected into both app and extension build metadata.
+host app's bundle identifier, explicitly injected into the app's build metadata.
 Auth no longer resolves or requires an App Group filesystem container; the Keychain access
 group is retained. Other host features still use the App Group container.
-The notification extension includes a `NovaAuthReader` factory with that same namespace,
-group and configured origin, but no current notification handler calls it. A reader can only
-use an already persisted current bearer; it has no issuer or reset API.
 Release and Staging share an App Group but use distinct Keychain services, so neither can
 read, overwrite or delete the other's bearer. All features within one host still share its
 single current record; origin, consumer and client UUID never select separate token pools.
@@ -89,8 +86,8 @@ the recreation ladder at tier zero.
 Main-owner admission returns a usable bearer first. Without one, it joins an existing flight
 or checks origin, issuance, applicable recovery, then pending-registration cooldowns before
 starting a flight. Business sends still check shared-origin and family cooldowns even with a
-usable bearer. The reader instead rejects admission during its origin cooldown; the main
-owner can construct a request wrapper, but its send gate still blocks cache/network access.
+usable bearer. During an origin cooldown the owner can still construct a request wrapper,
+but its send gate blocks cache/network access.
 An early refresh also respects origin, issuance and recovery delays.
 
 Pending registration recovery persists its original uncertainty window and continuous-clock
@@ -144,9 +141,8 @@ that fingerprint in the Security query, so a late denial cannot remove a replace
 There is no cross-process file lock. Legacy untagged records remain readable and are replaced
 on renewal. When rejection or invalidity needs deletion, only the main writer, under its gate,
 can fall back to `removeAll()` after conditional removal returns false and a reload still equals
-the same record. The reader never uses that fallback. Corrupt records are not deleted during
-a read. Repeated-denial cooldown is applied before throwing deletion in both owner and reader;
-a failed delete cannot skip it. The owner uses issuance cooldown; the reader uses local origin
+the same record. Corrupt records are not deleted during a read. Repeated-denial cooldown is
+applied before throwing deletion; a failed delete cannot skip it. The owner uses issuance
 cooldown. Identity-storage repair distinguishes corruption from transient failure and completes
 owed bearer deletion before admitting work.
 
@@ -169,7 +165,7 @@ Source walkthrough: [nine client views](../../.claude/docs/architecture/novaauth
 
 The protocol mandates `kern.boottime` as the persisted boot marker. Apple adjusts that value
 when correcting calendar time, so a clock correction can conservatively discard a usable
-bearer, refuse a reader, cause extra issuance, or reset boot-scoped cooldown checks. Token
+bearer, cause extra issuance, or reset boot-scoped cooldown checks. Token
 deadlines still use continuous elapsed time; a correction cannot extend or revive a token.
 `kern.bootsessionuuid` is unavailable to apps on iOS 18 and later and is not a supported
 substitute. This implementation retains the mandated reboot detection and existing entitlements.
@@ -191,5 +187,5 @@ Run the package XCTest suite with `xcodebuild test -scheme NovaAuth` on an iOS s
 `swift test` targets macOS and is inappropriate for these iOS dependencies. The app test suites
 cover shared composition, revisioned origin changes, analytics consent routing and
 presentation/coalescing behavior. App/extension App Groups are development for Debug/Dev and
-production for Staging/Release. Real App Attest, signed extension Keychain sharing, protected
+production for Staging/Release. Real App Attest, signed Keychain access-group sharing, protected
 data and physical reboot behavior still require device validation.

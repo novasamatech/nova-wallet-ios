@@ -27,10 +27,6 @@ flowchart TB
   end
   HTTP --> BACKEND["Configured HTTPS backend"]
   APPLE --> OS["DCAppAttestService"]
-  subgraph EXT["Extension capability"]
-    FACT["NovaAuthReaderFactory<br/>no production call site"] -.-> READER["NovaAuthReader<br/>cannot issue tokens"]
-  end
-  READER -. "loads same record" .-> TOKEN
 ```
 
 - Root starts analytics before wallet setup. There is no `ServiceCoordinator → NovaAuth.setup` path; authentication is driven by consumer requests.
@@ -40,9 +36,9 @@ flowchart TB
 - `infraUrl` may have an empty path or a single root `/`; the facade converts it into a strict HTTPS origin. Credentials, query, fragment and non-root paths are rejected. Older configuration revisions cannot replace a newer accepted snapshot.
 - `appID` is App Identifier Prefix + bundle ID. `F_DEV` selects the development App Attest environment; other builds select production. This is distinct from wallet identity.
 - Package code depends on Operation-iOS, NovaOperationSupport, Keystore-iOS and SDKLogger, with Apple platform adapters. It does not depend on app types.
-- The facade compares a package invalidation ID around activation. Cold origin replacement/repair can invalidate observers before an endpoint was ever published; a failed replacement still notifies if its memory fence changed. Explicit reset also notifies on failure, discarding old consent re-arms and display state.
+- The facade compares a package invalidation ID around activation. Cold origin replacement/repair can invalidate observers before an endpoint was ever published; a failed replacement still notifies if its memory fence changed.
 
-Sources: [facade and composition](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [configuration conversion](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [Root startup](../../../novawallet/Modules/Root/RootInteractor.swift) · [app identity](../../../novawallet/Common/Configs/ApplicationConfigs.swift) · [owner construction](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuth.swift) · [package dependencies](../../../Packages/NovaAuth/Package.swift) · [extension factory](../../../NovaPushNotificationServiceExtension/NovaAuthReaderFactory.swift) · [host Keychain configuration](../../../novawallet/Configs/SharedContainerGroup.swift) · [cold context invalidation](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [settings storage](../../../Packages/NovaAuth/Sources/NovaAuth/API/NovaAuthConfiguration.swift)
+Sources: [facade and composition](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [configuration conversion](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [Root startup](../../../novawallet/Modules/Root/RootInteractor.swift) · [app identity](../../../novawallet/Common/Configs/ApplicationConfigs.swift) · [owner construction](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuth.swift) · [package dependencies](../../../Packages/NovaAuth/Package.swift) · [host Keychain configuration](../../../novawallet/Configs/SharedContainerGroup.swift) · [cold context invalidation](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [settings storage](../../../Packages/NovaAuth/Sources/NovaAuth/API/NovaAuthConfiguration.swift)
 
 ## 2. First authentication and subsequent issuance
 
@@ -176,7 +172,7 @@ Every deadline is boot-scoped; a `kern.boottime` mismatch ends its wait without 
 
 The reservation is written through SettingsManager and read back before Apple key generation, and carried through state rebuilds. Detected storage errors close admission and retain the intended state for repair. Cancellation or interruption after a reservation can consume a slot without returning a key. A failed replacement retains its prior retired reason until the new client UUID/key are saved together. Undetected preference persistence failure can still lose the reservation on relaunch; view 7 describes this limit.
 
-A first installation can be driven by background demand. Ordinary `lostKey`/`interrupted` recovery permits background replacement only within the two-reservation budget; refusal/abandonment requires user intent. Reset of an existing installation or an origin change sets `requiresUserAction = true`. An actual analytics opt-in can supply user intent through the bounded re-arm in view 9; restoring saved consent or merely uploading events cannot. The public reset has no current production caller.
+A first installation can be driven by background demand. Ordinary `lostKey`/`interrupted` recovery permits background replacement only within the two-reservation budget; refusal/abandonment requires user intent. Reset of an existing installation or an origin change sets `requiresUserAction = true`. An actual analytics opt-in can supply user intent through the bounded re-arm in view 9; restoring saved consent or merely uploading events cannot. The package's public `NovaAuth.reset()` has no current production caller.
 
 Sources: [persisted state enum](../../../Packages/NovaAuth/Sources/NovaAuth/Contracts/NovaAuthModels.swift) · [identity gates and state dispatch](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthRegistrationService.swift) · [registration error handling](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthRegistrationService.swift) · [persisted probe reservation](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthPendingRecovery.swift) · [common failure handling](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthTokenProvider.swift) · [retirement reason policy](../../../Packages/NovaAuth/Sources/NovaAuth/Contracts/NovaAuthModels.swift) · [recovery ladders and reservations](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthRecoveryService.swift) · [retirement charge](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthRecoveryService.swift) · [ladder calculation](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthCooldown.swift) · [legacy migration](../../../Packages/NovaAuth/Sources/NovaAuth/Contracts/NovaAuthModels.swift) · [replacement reservation](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthRecoveryService.swift)
 
@@ -206,7 +202,7 @@ flowchart TB
 
 `local token-POST send time + (expires_at − issued_at) − 5 seconds`
 
-Early refresh begins on demand when effective remaining time reaches a stored, randomized threshold of approximately **20–26.67% of the original lifetime**. There is no scheduled refresh timer. Main-owner admission returns a valid bearer before origin, issuance, recovery or pending waits; refresh respects its applicable waits. Without a valid bearer, an existing flight is joined before starting a new one. Business sending separately checks shared-origin and family cooldowns, even when admission already returned a bearer. The extension reader has its own narrower behavior: its local origin cooldown also blocks reading/admission.
+Early refresh begins on demand when effective remaining time reaches a stored, randomized threshold of approximately **20–26.67% of the original lifetime**. There is no scheduled refresh timer. Main-owner admission returns a valid bearer before origin, issuance, recovery or pending waits; refresh respects its applicable waits. Without a valid bearer, an existing flight is joined before starting a new one. Business sending separately checks shared-origin and family cooldowns, even when admission already returned a bearer.
 
 Ordinary issuance Retry-After is in memory and restarting the owner loses that delay: this is an accepted limitation. Pending-registration cooldown and the three recovery ladders are persisted. Reboot ends their current waits, but never resets the persisted background recreation count or advances a tier.
 
@@ -252,7 +248,7 @@ flowchart TB
 
 A separate one-time re-admission handles NovaAuth discovering an unusable credential before any send. It does not consume or enlarge the sent-response replay budget: at most two actual business sends are possible, with identical POST bytes and repeated caller gates. Cancellation ownership is installed atomically with enqueue, so a pending child cannot be cancelled into a finished state before being submitted to its queue.
 
-Repeated denial applies the owner's issuance cooldown **before** throwing token deletion, so storage failure cannot skip it; the reader applies its local origin cooldown in the same order. The rejection fingerprint also prevents reuse. Terminal business-exchange completion releases the cancellation action before delivering or suppressing the result, breaking its retained child/exchange chain.
+Repeated denial applies the owner's issuance cooldown **before** throwing token deletion, so storage failure cannot skip it. The rejection fingerprint also prevents reuse. Terminal business-exchange completion releases the cancellation action before delivering or suppressing the result, breaking its retained child/exchange chain.
 
 | Transport | Configuration and cache behavior |
 | --- | --- |
@@ -283,9 +279,9 @@ This pre-handler contract permits the single replay of identical bytes. The clie
 
 Sources: [authorized exchange](../../../Packages/NovaAuth/Sources/NovaAuth/Authorization/NovaAuthAuthorizedOperationFactory.swift) · [denial predicate](../../../Packages/NovaAuth/Sources/NovaAuth/Authorization/NovaAuthBearerDenial.swift) · [owner send/response gates](../../../Packages/NovaAuth/Sources/NovaAuth/Authorization/NovaAuth+Authorization.swift) · [HTTP sessions](../../../Packages/NovaAuth/Sources/NovaAuth/HTTP/NovaAuthHTTPTransport.swift) · [cache acceptance](../../../Packages/NovaAuth/Sources/NovaAuth/HTTP/NovaAuthHTTPDelegate.swift) · [route allowlist](../../../Packages/NovaAuth/Sources/NovaAuth/Wire/NovaAuthRoute.swift) · [service cooldown classification](../../../Packages/NovaAuth/Sources/NovaAuth/Authorization/NovaAuthBusinessCooldowns.swift) · [cooldown](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthCooldown.swift) · [denial ordering and writer cleanup](../../../Packages/NovaAuth/Sources/NovaAuth/Authorization/NovaAuth+Authorization.swift) · [terminal cancellation release](../../../Packages/NovaAuth/Sources/NovaAuth/Authorization/NovaAuthAuthorizedOperationFactory.swift)
 
-## 7. Persistence, reset and the extension reader
+## 7. Persistence and reset
 
-Identity state and bearer state share the main-app owner but have different storage boundaries and policies. The extension reader uses the shared bearer store; it does not load the app’s installation settings, create keys, register, or refresh.
+Identity state and bearer state share the main-app owner but have different storage boundaries and policies.
 
 ```mermaid
 flowchart TB
@@ -295,10 +291,8 @@ flowchart TB
   OWNER --> MEM["Memory only<br/>flight, normal cooldowns, rejection fingerprints<br/>HTTP read cache"]
   OWNER --> KC["Shared Keychain<br/>one current bearer + SHA-256 fingerprint<br/>host app namespace + clock metadata"]
   KC --> DELETE["Atomic conditional deletion<br/>Security query matches expected fingerprint"]
-  DELETE -. "Only sole writer under owner gate<br/>false + reload still equals old record" .-> LEGACY["Remove untagged legacy record<br/>reader never takes this fallback"]
-  READER["Extension NovaAuthReader<br/>no active caller<br/>can read, cannot issue or renew"] -. "same store" .-> KC
+  DELETE -. "Only sole writer under owner gate<br/>false + reload still equals old record" .-> LEGACY["Remove untagged legacy record"]
   style OWNER fill:#e7f4ee,stroke:#70a28b
-  style READER fill:#f5f7fa,stroke:#98a8ba,stroke-dasharray:5 5
 ```
 
 | Store | Contents and behavior |
@@ -315,7 +309,7 @@ flowchart TB
 2. Detach the old flight and fail its waiters with `generationChanged`. Cancel a reversible child; irreversible work can finish independently, but cannot install into the replaced context.
 3. Clear in-memory cooldowns, rejected fingerprints and native read cache; replacement settings omit old recovery ladders/count.
 4. Persist replacement settings with an owed-deletion marker, remove the shared bearer, then clear the marker. Failure leaves the memory fence and retryable storage work in place; a persisted deletion obligation survives restart. Admission remains closed until repair completes.
-5. Facade reset always notifies context observers, including on failure. Adoption compares the package invalidation ID around activation and also notifies on a failed replacement/repair if the memory fence changed. A later user-initiated demand can establish the next identity.
+5. Adoption compares the package invalidation ID around activation and also notifies on a failed replacement/repair if the memory fence changed. A later user-initiated demand can establish the next identity.
 
 With no saved installation, or with corrupt identity storage, reset persists a reset marker, removes any orphan bearer and clears the read cache. The next activation establishes a context that still requires user action. A temporary storage read failure is not treated as corruption.
 
@@ -323,11 +317,9 @@ The implementation does not delete an App Attest key through DeviceCheck or glob
 
 **Settings persistence boundary:** state and reset markers use SettingsManager set/read-back. The production manager invokes `UserDefaults.synchronize()` internally; cached read-back and that return value do not prove a durable write. There is no extra commit callback. Detected validation/read-back failure retains the pending state and blocks admission until activation repairs it. Reservation-before-key ordering remains, but a refused preference write can be undetected and the budget lost on relaunch. Bearer and recovery writes are not one atomic transaction; interruption after the bearer write can conservatively retain the old recovery budget.
 
-**Reader limits:** its context comes from the stored bearer, not owner settings. Reset becomes visible to it through successful token deletion/replacement. It cannot independently observe a failed app-side deletion. On denial it can only reload a bearer written by the app; it cannot mint one or perform the main writer's untagged fallback deletion. Repeated denial applies its local origin cooldown before deletion, whereas the owner applies issuance cooldown. `NovaAuthReaderFactory` is compiled in the notification extension, but current notification handlers never call it. Likewise, `NovaAuthFacade.reset()` is exposed but has no current production caller; wallet changes and analytics opt-out do not invoke it.
-
 Auth needs the Keychain access group, not an App Group filesystem container. The privacy manifest no longer declares FileTimestamp/C617.1. Diagnostics emit fixed retirement reasons, typed `shared`/`family`/`recreation`/`policy`/`proof` cooldown scopes, and `storageFailed` on entering failed/dirty storage state; local-recovery delay metadata accommodates the ladder's 95,040-second maximum including jitter.
 
-Sources: [state and reset](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuth.swift) · [context replacement](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuth.swift) · [settings store](../../../Packages/NovaAuth/Sources/NovaAuth/Storage/NovaAuthSettingsIdentityStore.swift) · [Keychain store](../../../Packages/NovaAuth/Sources/NovaAuth/Storage/NovaAuthKeychainTokenStore.swift) · [clock](../../../Packages/NovaAuth/Sources/NovaAuth/Clock/NovaAuthContinuousClock.swift) · [reader](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthReader.swift) · [actual notification entry](../../../NovaPushNotificationServiceExtension/NotificationService.swift) · [typed retirement/cooldown diagnostics](../../../Packages/NovaAuth/Sources/NovaAuth/Authorization/NovaAuthDiagnostics.swift) · [storage failure transition](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuth.swift) · [reader denial ordering](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthReader.swift) · [auth shared-store fields](../../../Packages/NovaAuth/Sources/NovaAuth/API/NovaAuthConfiguration.swift) · [state write/read-back](../../../Packages/NovaAuth/Sources/NovaAuth/Storage/NovaAuthSettingsIdentityStore.swift) · [settings persistence boundary](../../../Packages/NovaAuth/Sources/NovaAuth/Storage/NovaAuthSettingsIdentityStore.swift) · [exact pending-state repair](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuth.swift)
+Sources: [state and reset](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuth.swift) · [context replacement](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuth.swift) · [settings store](../../../Packages/NovaAuth/Sources/NovaAuth/Storage/NovaAuthSettingsIdentityStore.swift) · [Keychain store](../../../Packages/NovaAuth/Sources/NovaAuth/Storage/NovaAuthKeychainTokenStore.swift) · [clock](../../../Packages/NovaAuth/Sources/NovaAuth/Clock/NovaAuthContinuousClock.swift) · [typed retirement/cooldown diagnostics](../../../Packages/NovaAuth/Sources/NovaAuth/Authorization/NovaAuthDiagnostics.swift) · [storage failure transition](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuth.swift) · [auth shared-store fields](../../../Packages/NovaAuth/Sources/NovaAuth/API/NovaAuthConfiguration.swift) · [state write/read-back](../../../Packages/NovaAuth/Sources/NovaAuth/Storage/NovaAuthSettingsIdentityStore.swift) · [settings persistence boundary](../../../Packages/NovaAuth/Sources/NovaAuth/Storage/NovaAuthSettingsIdentityStore.swift) · [exact pending-state repair](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuth.swift)
 
 ## 9. Analytics: shared authentication, separate consent and data
 
