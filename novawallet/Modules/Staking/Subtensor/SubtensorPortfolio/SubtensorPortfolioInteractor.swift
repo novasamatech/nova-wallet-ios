@@ -320,6 +320,7 @@ extension SubtensorPortfolioInteractor: EventVisitorProtocol {
 extension SubtensorPortfolioInteractor: ApplicationHandlerDelegate {
     func didReceiveDidBecomeActive(notification _: Notification) {
         priceProvider?.refresh()
+        provideCatalogue()
         state.positionsSyncService?.refresh()
     }
 }
