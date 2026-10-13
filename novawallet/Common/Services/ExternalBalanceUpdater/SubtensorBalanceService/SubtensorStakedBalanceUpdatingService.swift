@@ -223,7 +223,7 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
             runningCallbackIn: workingQueue,
             mutex: mutex,
             onUpdate: { [weak self] _ in
-                guard let self, let lastState, !fetchCallStore.hasCall else {
+                guard let self, let lastState else {
                     return
                 }
 
