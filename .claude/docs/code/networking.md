@@ -154,8 +154,8 @@ the generic 401/403 branch. Invalid challenge, 503 and transport errors remain r
 
 Local unsupported/configuration
 failures also terminate it. Route/data gaps retain per-target skipping, and transient failures
-retain bounded retries. Authentication recovery in the same context therefore cannot be masked
-by a one-hour memo created from an auth failure.
+retain bounded retries. No walk result is kept between requests, so nothing can mask
+authentication recovery in the same context.
 
 One origin/API-major bearer serves ordinary protected GET/HEAD and POST routes. Auth has no
 business allowlist or flow/scope. Consumers own method/path/body validation and ordinary business retry policy.
