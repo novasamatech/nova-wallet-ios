@@ -64,7 +64,7 @@ final class SubtensorStakeStateFetchFactoryTests: XCTestCase {
         XCTAssertEqual(stakeInfoHashCaptor.value, bestBlockHash)
     }
 
-    func testRootPositionWithoutPricesSucceeds() throws {
+    func testRootPositionStakeReportedAsRootStake() throws {
         let stakeInfo = Self.stakeInfo(hotkey: hotkey, coldkey: coldkey, netuid: 0, stake: 57_816_438)
 
         let factory = createFactory(stakeInfoResult: CompoundOperationWrapper.createWithResult([stakeInfo]))
