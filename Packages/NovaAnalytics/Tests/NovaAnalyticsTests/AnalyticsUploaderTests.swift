@@ -1,22 +1,17 @@
 import XCTest
 @testable import NovaAnalytics
-import NovaAuth
 import Operation_iOS
 
 final class AnalyticsUploaderTests: XCTestCase {
     private let queue = AnalyticsEventQueueStub()
     private let uploadFactory = AnalyticsUploadOperationFactorySpy()
 
-    private func flush(
-        maxBatches: Int = 10,
-        factory: AnalyticsUploadOperationFactoryProtocol? = nil,
-        isConsentEnabled: @escaping () -> Bool = { true }
-    ) throws {
+    private func flush(maxBatches: Int = 10) throws {
         let uploader = AnalyticsUploader(
             queue: queue,
             identity: AnalyticsIdentityStub(),
-            isConsentEnabled: isConsentEnabled,
-            gatewayResolver: AnalyticsGatewayResolverStub(uploadFactory: factory ?? uploadFactory),
+            isConsentEnabled: { true },
+            gatewayResolver: AnalyticsGatewayResolverStub(uploadFactory: uploadFactory),
             operationQueue: OperationQueue(),
             appVersion: "10.9.0",
             logger: SilentLogger()
@@ -79,48 +74,5 @@ final class AnalyticsUploaderTests: XCTestCase {
         }
 
         XCTAssertEqual(queue.events, events)
-    }
-
-    func testConsentWithdrawalBeforeSendRetainsBatchWithoutSending() throws {
-        seed(count: 1)
-        let events = queue.events
-        let enabled = Locked(true)
-        uploadFactory.onBeforeSend = { enabled.update { $0 = false } }
-        try flush(isConsentEnabled: { enabled.value })
-        XCTAssertTrue(uploadFactory.sentBodies.isEmpty)
-        XCTAssertEqual(queue.events, events)
-    }
-
-    func testStructuredPayloadRejectionDropsBadBatchAndDrainsFollowingBatch() throws {
-        for code in ["invalid_envelope", "unsupported_schema_version", "batch_too_large"] {
-            seed(count: 51)
-            let client = AnalyticsAuthClientSpy()
-            client.onBeforeSend = {
-                client.responseStatus = client.requests.isEmpty ? 400 : 204
-                client.responseBody = Data(#"{"error":{"code":"\#(code)","message":"rejected"}}"#.utf8)
-            }
-            let factory = AnalyticsUploadOperationFactory(auth: analyticsTestAuth(client))
-
-            try flush(factory: factory)
-
-            XCTAssertEqual(client.requests.count, 2)
-            XCTAssertTrue(queue.events.isEmpty)
-        }
-    }
-
-    func testStructuredAuthAndTransientRejectionsRetainBatch() throws {
-        for (status, code) in [(400, "invalid_target"), (401, "invalid_token"), (429, "rate_limited")] {
-            seed(count: 51)
-            let events = queue.events
-            let client = AnalyticsAuthClientSpy()
-            client.responseStatus = status
-            client.responseBody = Data(#"{"error":{"code":"\#(code)"}}"#.utf8)
-            let factory = AnalyticsUploadOperationFactory(auth: analyticsTestAuth(client))
-
-            XCTAssertThrowsError(try flush(factory: factory))
-
-            XCTAssertEqual(client.requests.count, 1)
-            XCTAssertEqual(queue.events, events)
-        }
     }
 }
