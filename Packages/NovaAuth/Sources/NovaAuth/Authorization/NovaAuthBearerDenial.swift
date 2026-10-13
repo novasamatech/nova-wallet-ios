@@ -11,7 +11,6 @@ enum NovaAuthBearerDenial {
         }
         guard headers.count == 1, let header = headers.first?.value as? String,
               header == "Bearer error=\"invalid_token\"" else { return false }
-        if request.method == .head { return response.body.isEmpty }
         return NovaAuthWire.errorCode(from: response.body) == "invalid_token"
     }
 }

@@ -152,7 +152,7 @@ extension NovaAuth {
         _ = try NovaAuthTokenValidation.remaining(
             record, context: flight.context, clientID: clientID, now: dependencies.clock.now()
         )
-        // Identity and token writes share the reset gate. Never deliver a memory-only bearer.
+        // Identity and token writes share the owner gate. Never deliver a memory-only bearer.
         try setRegistration(.registered, flight: flight)
         do {
             try dependencies.tokenStore.replace(record)
