@@ -259,15 +259,14 @@ final class SubtensorMaxApyProviderTests: XCTestCase {
         XCTAssertEqual(try run(provider.createMaxApyWrapper()), Decimal(string: "0.125"))
     }
 
-    func testProvidersSharingAResolutionReuseItsMaxApyForAnHour() throws {
+    func testProvidersSharingAResolutionWalkAgainForEachRequest() throws {
         let apiOperationFactory = MockBittensorApiOperationFactoryProtocol()
 
         try stubYields(apiOperationFactory, alphaPages: [
             64: [1: makeAlphaPage(netuid: 64, rows: [(chutesPairHotkey, "12.5")], nextPage: nil, receivedAt: cachedAt)]
         ])
 
-        var memoClock: TimeInterval = 1000
-        let resolution = SubtensorMaxApyResolution(timeProvider: { memoClock })
+        let resolution = SubtensorMaxApyResolution()
         let pairs = [makePair(chutesPairHotkey, netuid: 64)]
         let secondRecommendationService = makeRecommendationService(pairs: pairs)
 
@@ -284,15 +283,7 @@ final class SubtensorMaxApyProviderTests: XCTestCase {
         )
 
         XCTAssertEqual(try run(first.createMaxApyWrapper()), Decimal(string: "0.125"))
-
-        memoClock = 4599
-
         XCTAssertEqual(try run(second.createMaxApyWrapper()), Decimal(string: "0.125"))
-        verify(secondRecommendationService, never()).createVerifiedRecommendationsWrapper()
-
-        memoClock = 4600
-
-        _ = try run(second.createMaxApyWrapper())
 
         verify(secondRecommendationService, times(1)).createVerifiedRecommendationsWrapper()
     }
@@ -347,7 +338,7 @@ final class SubtensorMaxApyProviderTests: XCTestCase {
         secondWrapper.cancel()
     }
 
-    func testAttestationRejectionEndsTheWalkWithoutMemoising() throws {
+    func testAttestationRejectionEndsTheWalkWithTheOriginalError() throws {
         let api = MockBittensorApiOperationFactoryProtocol()
         stub(api) { stub in
             when(stub.createRootYieldWrapper(page: any())).then { _ in
@@ -368,7 +359,6 @@ final class SubtensorMaxApyProviderTests: XCTestCase {
             guard case BittensorApiError.attestationRejected = error else { return XCTFail("Expected the original rejection") }
         }
         verify(api, never()).createAlphaYieldWrapper(netuid: any(), page: any())
-        guard case .miss = provider.cachedMaxApy() else { return XCTFail("A refused walk must not memoise") }
     }
 
     private func makeProvider(
