@@ -31,10 +31,6 @@ flowchart TB
   end
   HTTP --> BACKEND["Configured HTTPS backend"]
   APPLE --> OS["DCAppAttestService"]
-  subgraph EXT["Extension capability"]
-    FACT["NovaAuthReaderFactory<br/>no production call site"] -.-> READER["NovaAuthReader<br/>cannot issue tokens"]
-  end
-  READER -. "loads same record" .-> TOKEN
 ```
 
 - Root starts analytics before wallet setup. There is no `ServiceCoordinator → NovaAuth.setup` path; authentication is driven by consumer requests.
@@ -329,7 +325,7 @@ policy. No auth prompt, dialog or analytics notification is produced. Background
 one batch; other flushes at most ten, with fifty-event batches and existing payload rejection rules.
 
 Sources: [facade](../../../Packages/NovaAnalytics/Sources/NovaAnalytics/AnalyticsServiceFacade.swift) · [uploader](../../../Packages/NovaAnalytics/Sources/NovaAnalytics/AnalyticsUploader.swift) · [upload operation](../../../Packages/NovaAnalytics/Sources/NovaAnalytics/Network/AnalyticsUploadOperationFactory.swift)
-5. Facade reset always notifies context observers, including on failure. Adoption compares the package invalidation ID around activation and also notifies on a failed replacement/repair if the memory fence changed. This works before the facade has published its first endpoint: cold origin replacement discards pending consent events and old Bittensor state. A later user-initiated demand can establish the next identity.
+5. Adoption compares the package invalidation ID around activation and also notifies on a failed replacement/repair if the memory fence changed. This works before the facade has published its first endpoint: cold origin replacement discards pending consent events and old Bittensor state. A later user-initiated demand can establish the next identity.
 ## 8. Bittensor: admission, two cache layers and presentation
 Bittensor adds domain request sharing, decoded display seeds and typed error handling around NovaAuth. Its decoded cache never substitutes for native HTTP freshness. On-chain balances and chain enrichment use the chain connection separately from NovaAuth.
 ```mermaid

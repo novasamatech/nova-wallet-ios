@@ -176,7 +176,7 @@ retains batches silently for its normal later flushes, checking consent before e
 increasing revisions; late old fetches cannot reactivate a previous origin. Origin publication
 fences prior work and clears Bittensor presentation seeds before synchronous peeks.
 Analytics consent/erasure and wallet changes never reset this authentication owner. An
-explicit facade reset or accepted origin change requires new user-initiated demand. Automatic
+accepted origin change requires new user-initiated demand. Automatic
 analytics, cost-basis work, catalogue-price tracking and max-APY reads carry background intent.
 Catalogue requests carry intent per demand: screen entry and explicit retry are user initiated;
 portfolio subscription updates, foreground refreshes and missing-subnet follow-ups are background.
@@ -192,7 +192,7 @@ cache. Invalidation detaches pending walks and fences suspended wrappers and lat
 enrichment. Their memo lifetimes remain unchanged within one auth context; local calculations
 do not require a separate auth request. The package exposes a context invalidation ID so the
 facade also detects a cold origin replacement/repair before publishing its first endpoint.
-Explicit reset notifies even on failure; failed adoption notifies when its memory fence changed.
+Failed adoption notifies when its memory fence changed.
 First activation with no prior installation does not itself invalidate a context.
 
 Each issuance flight attempts at most one new key generation. An unusable identity is retired

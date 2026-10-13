@@ -196,5 +196,5 @@ Run the package XCTest suite with `xcodebuild test -scheme NovaAuth` on an iOS s
 `swift test` targets macOS and is inappropriate for these iOS dependencies. The app test suites
 cover shared composition, revisioned origin changes, analytics consent, Bittensor routing and
 presentation/coalescing behavior. App/extension App Groups are development for Debug/Dev and
-production for Staging/Release. Real App Attest, signed extension Keychain sharing, protected
+production for Staging/Release. Real App Attest, signed Keychain access-group sharing, protected
 data and physical reboot behavior still require device validation.
