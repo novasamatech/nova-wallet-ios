@@ -137,7 +137,6 @@ The server must reject `invalid_token` before either POST reaches its business h
 the client's one replay without duplicate effects. There is no profile-2 fallback.
 
 Ordinary issuance Retry-After remains in memory. If Apple never delivers a callback, the native
-key lease remains busy until restart. The unused extension reader cannot independently detect
-failed app-side bearer deletion. Exact `kern.boottime` comparison retains its calendar-correction
-limitation. A cooldown may defer the original opt-in's user intent for its full remaining duration;
+key lease remains busy until restart. Exact `kern.boottime` comparison retains its
+calendar-correction limitation. A cooldown may defer the original opt-in's user intent for its full remaining duration;
 this round does not introduce an intent expiry or shorten a cooldown to issue early.

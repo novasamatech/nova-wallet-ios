@@ -131,8 +131,8 @@ restrictions if interruption occurs after the bearer write but before recovery c
 The shared Keychain holds one fingerprint-tagged `current` record per host namespace. Auth
 requires the Keychain access group, not an App Group filesystem container. Conditional removal
 matches the fingerprint atomically. Only the main writer under its gate may remove an untagged
-legacy record after conditional removal returns false and reload still equals that record;
-the extension reader never falls back to `removeAll()`. Corrupt reads remain nondestructive.
+legacy record after conditional removal returns false and reload still equals that record.
+Corrupt reads remain nondestructive.
 See [NovaAuth recovery and storage](../../../Packages/NovaAuth/README.md) for the detailed policy.
 
 ## Caches & Files

@@ -245,3 +245,15 @@ extension NovaAuthFacade {
         )
     }()
 }
+
+private extension SharedContainerGroup {
+    static var novaAuthStore: NovaAuthSharedStoreConfiguration? {
+        guard let hostAppNamespace = Bundle.main.object(forInfoDictionaryKey: "NovaAuthHostAppNamespace") as? String else {
+            return nil
+        }
+        return try? NovaAuthSharedStoreConfiguration(
+            accessGroup: name,
+            hostAppNamespace: hostAppNamespace
+        )
+    }
+}

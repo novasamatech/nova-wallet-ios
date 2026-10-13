@@ -7230,7 +7230,6 @@
 		FFE19A19E5B4ED67A2C61951 /* DAppSearchProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F96182151D003DF6789CB4B /* DAppSearchProtocols.swift */; };
 		FFF7CC228C1EB14B8677BD17 /* WalletConnectSessionDetailsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA4D4C049E3B32A529DDFEB5 /* WalletConnectSessionDetailsViewLayout.swift */; };
 		FFFA51179A4E22E457BF6F78 /* AddDelegationWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = D779CD7E426E469760290DBC /* AddDelegationWireframe.swift */; };
-		00DE06D7CA33F0853A249CEA /* NovaAuth in Frameworks */ = {isa = PBXBuildFile; productRef = FEEDAB0000000000000000A2 /* NovaAuth */; };
 		19CCA2DE5C153D1AFD408673 /* BittensorAuthorizedTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DA6874C55FE4ADBAE446703 /* BittensorAuthorizedTransport.swift */; };
 		240F177FD5B9417EE710F552 /* NovaAuthFacadeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6DB261EF36599CD7A1DA10C /* NovaAuthFacadeTests.swift */; };
 		349FBA17F387938F27C42B03 /* BittensorApiResponseCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5155E9916E10C1FDD73F6C /* BittensorApiResponseCacheTests.swift */; };
@@ -7240,7 +7239,6 @@
 		6245EBE259914292B384D187 /* SubtensorFlowAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CBDB45841BD540170309EC3 /* SubtensorFlowAuth.swift */; };
 		7A30595DA36199404435F95F /* NovaAuthTestHarness.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C5CD1846AD88F4E68A9A11A /* NovaAuthTestHarness.swift */; };
 		7CB728AA0421DD4A2FCD6ADF /* BittensorAuthorizedTransportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCC5EF36F180AA73BBFAAB96 /* BittensorAuthorizedTransportTests.swift */; };
-		94CBC15CE9D7FDA320F30F7F /* NovaAuthReaderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = E961ACCA020ACE47A18B936B /* NovaAuthReaderFactory.swift */; };
 		AF854E22A78F3754D6267F78 /* BittensorAuthorizedRequestBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F84BC176354EDC8F75B5A3E1 /* BittensorAuthorizedRequestBuilder.swift */; };
 		F6704CC56E7994100638E1A7 /* NovaAuthFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D8C30BE40CE427750D254F9 /* NovaAuthFacade.swift */; };
 /* End PBXBuildFile section */
@@ -14216,7 +14214,6 @@
 		D0FF227FCFB653F17D612C39 /* NovaPushNotificationServiceExtensionStaging.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; name = NovaPushNotificationServiceExtensionStaging.entitlements; path = NovaPushNotificationServiceExtension/NovaPushNotificationServiceExtensionStaging.entitlements; sourceTree = "<group>"; };
 		E2F371C2DE3D497BCA43B765 /* HostAuthURLProtocol.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HostAuthURLProtocol.swift; path = novawalletTests/Common/Network/Auth/HostAuthURLProtocol.swift; sourceTree = "<group>"; };
 		E6DB261EF36599CD7A1DA10C /* NovaAuthFacadeTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NovaAuthFacadeTests.swift; path = novawalletTests/Common/Network/Auth/NovaAuthFacadeTests.swift; sourceTree = "<group>"; };
-		E961ACCA020ACE47A18B936B /* NovaAuthReaderFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NovaAuthReaderFactory.swift; path = NovaPushNotificationServiceExtension/NovaAuthReaderFactory.swift; sourceTree = "<group>"; };
 		F0CA8E2A464410CA5415DFB3 /* AnalyticsAuthAdapter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AnalyticsAuthAdapter.swift; path = novawallet/Common/Services/Analytics/AnalyticsAuthAdapter.swift; sourceTree = "<group>"; };
 		F84BC176354EDC8F75B5A3E1 /* BittensorAuthorizedRequestBuilder.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BittensorAuthorizedRequestBuilder.swift; path = novawallet/Common/Network/Bittensor/Transport/BittensorAuthorizedRequestBuilder.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -14235,7 +14232,6 @@
 				2D16736F2EE9BD53004ADA7F /* NovaCrypto in Frameworks */,
 				0C2BAA582E687BE3008157E7 /* HydraMathApi in Frameworks */,
 				0C2BAA342E67841C008157E7 /* RswiftLibrary in Frameworks */,
-				00DE06D7CA33F0853A249CEA /* NovaAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -26070,7 +26066,6 @@
 				543808AD672E9DE85287E126 /* BittensorAuthorizedResponseGrader.swift */,
 				1DA6874C55FE4ADBAE446703 /* BittensorAuthorizedTransport.swift */,
 				F0CA8E2A464410CA5415DFB3 /* AnalyticsAuthAdapter.swift */,
-				E961ACCA020ACE47A18B936B /* NovaAuthReaderFactory.swift */,
 				C780CA64A504AC84162BA62F /* notification-ext.staging.xcconfig */,
 				D0FF227FCFB653F17D612C39 /* NovaPushNotificationServiceExtensionStaging.entitlements */,
 				E2F371C2DE3D497BCA43B765 /* HostAuthURLProtocol.swift */,
@@ -32974,9 +32969,6 @@
 				0C1995CB2E6B2DE600E0B909 /* PBXTargetDependency */,
 			);
 			name = NovaPushNotificationServiceExtension;
-			packageProductDependencies = (
-				FEEDAB0000000000000000A2 /* NovaAuth */,
-			);
 			productName = NovaPushNotificationServiceExtension;
 			productReference = 77CAF42F2B8E96A400E4297C /* NovaPushNotificationServiceExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -33724,7 +33716,6 @@
 				778215BD2B9140CD006C7D13 /* CurrencyRepositoryProtocol.swift in Sources */,
 				77AE4F952B905B0C00426519 /* SubstrateAlias.swift in Sources */,
 				2DC08BE62DCCF9B300C690D4 /* DisplayAddress.swift in Sources */,
-				94CBC15CE9D7FDA320F30F7F /* NovaAuthReaderFactory.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
