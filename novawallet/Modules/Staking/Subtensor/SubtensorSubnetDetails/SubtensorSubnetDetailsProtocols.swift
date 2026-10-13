@@ -15,7 +15,7 @@ protocol SubtensorSubnetDetailsPresenterProtocol: AnyObject {
     func selectValidator()
     func useSubnet()
     func retryHistory()
-    func selectChartPoint(at index: Int?)
+    func selectChart(_ selection: SubtensorPriceChartSelection?)
 }
 
 protocol SubnetDetailsInteractorInputProtocol: AnyObject {

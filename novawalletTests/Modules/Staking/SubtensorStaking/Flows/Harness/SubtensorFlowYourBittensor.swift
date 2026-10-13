@@ -61,7 +61,10 @@ extension SubtensorFlowTestCase {
                     }
 
                     return history
-                }
+                },
+                notListedNetuids: Set(monthHistories.compactMap { ref, result in
+                    result == .notListed ? ref.netuid : nil
+                })
             ),
             currentTaoPrice: 342,
             precision: world.chainAsset.asset.decimalPrecision
@@ -129,7 +132,16 @@ extension SubtensorFlowTestCase {
         XCTAssertEqual(try flowDouble(chutesHistory.changeInTao), 0.0738 / 0.0634 - 1, accuracy: 1e-9)
         XCTAssertEqual(try flowDouble(chutesHistory.changeInFiat), 25.2396 / 19.02 - 1, accuracy: 1e-9)
 
-        XCTAssertEqual(screen.valueSeries, SubtensorPortfolioValueSeries(points: [], changeInFiat: nil))
+        let pastTao = 20 + 2.148128664 + 3.858278626 * 0.0634 / 0.0738
+        let newestTao = 26.006407290
+        XCTAssertEqual(screen.valueSeries.points.map(\.date), [
+            SubtensorFlowActiveStake.chartDate(daysBeforeEnd: 30),
+            SubtensorFlowActiveStake.chartDate(daysBeforeEnd: 7),
+            SubtensorFlowActiveStake.chartDate(daysBeforeEnd: 0)
+        ])
+        assertFlowDoubles(screen.valueSeries.points.map(\.taoValue), [pastTao, pastTao, newestTao])
+        assertFlowDoubles(screen.valueSeries.points.map(\.fiatValue), [pastTao * 300, pastTao * 300, newestTao * 342])
+        XCTAssertEqual(try flowDouble(screen.valueSeries.changeInFiat), newestTao * 342 / (pastTao * 300) - 1, accuracy: 1e-9)
     }
 
     func flowDouble(_ value: Decimal?) throws -> Double {

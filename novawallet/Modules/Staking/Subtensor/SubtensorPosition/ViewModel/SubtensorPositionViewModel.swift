@@ -29,12 +29,13 @@ struct SubtensorPositionState {
     var period = SubtensorPriceWidgetViewModelFactory.defaultPeriod
     var history = SubtensorSubnetHistoryState.loading {
         didSet {
-            chartPoint = nil
+            chartSelection = nil
         }
     }
 
     var hasResolvedHistory = false
-    var chartPoint: Int?
+    var chartEndDate = Date.distantPast
+    var chartSelection: SubtensorPriceChartSelection?
 
     init(netuid: UInt16, group: SubtensorPortfolioGroup?) {
         self.netuid = netuid

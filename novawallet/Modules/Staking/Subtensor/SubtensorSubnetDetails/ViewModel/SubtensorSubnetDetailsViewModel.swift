@@ -47,7 +47,8 @@ struct SubtensorSubnetDetailsState {
     let taoPrice: PriceData?
     let isFavorite: Bool
     let now: Date
-    let chartPoint: Int?
+    let chartEndDate: Date
+    let chartSelection: SubtensorPriceChartSelection?
 }
 
 struct SubtensorSubnetDetailsTitleViewModel {

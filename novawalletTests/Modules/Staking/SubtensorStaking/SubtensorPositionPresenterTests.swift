@@ -99,6 +99,51 @@ final class SubtensorPositionPresenterTests: XCTestCase {
         XCTAssertNotNil(viewModels.last?.summary.amount)
     }
 
+    func testPositionCapturesHistoryTimeAndRejectsAnOldPeriodAfterSwitching() throws {
+        typealias Helper = SubtensorPriceChartTestHelper
+        var now = Helper.end
+        let view = MockSubtensorPositionViewProtocol()
+        let models = capture(view)
+        var header: SubtensorSubnetPriceHeaderViewModel?
+        stub(view) { stub in
+            when(stub.didReceive(priceHeader: any())).then { header = $0 }
+            when(stub.isSetup.get).thenReturn(true)
+        }
+        let interactor = MockSubtensorPositionInteractorInputProtocol()
+        let presenter = makePresenter(
+            group: makeSubnetGroup(), view: view,
+            snapshot: SubtensorPositionSnapshot(catalogue: .fresh(makeCatalogue(netuid: 64), freshUntil: 300), rootRate: .miss, yields: .miss),
+            now: { now }, interactor: interactor
+        )
+        presenter.setup()
+        presenter.didReceive(history: .available(Helper.history()), for: .week)
+        let original = try Helper.series(Helper.chart(XCTUnwrap(models.last?.priceWidget)))
+        now = now.addingTimeInterval(Helper.day)
+        presenter.selectChart(.point(sourceIndex: 2))
+        XCTAssertEqual(header?.price, "1 TAO")
+        presenter.selectChart(.noData(date: Helper.end.addingTimeInterval(-5 * Helper.day)))
+        XCTAssertEqual(header?.price, "—")
+        presenter.didReceiveSyncFailure(false)
+        presenter.didReceive(yields: nil)
+        presenter.applyLocalization()
+        XCTAssertEqual(try Helper.series(Helper.chart(XCTUnwrap(models.last?.priceWidget))), original)
+        presenter.didChangeCurrency()
+        XCTAssertEqual(models.last?.priceWidget?.header.change, .hidden)
+        XCTAssertEqual(try Helper.series(Helper.chart(XCTUnwrap(models.last?.priceWidget))).range, original.range)
+        presenter.selectPeriod(at: 2)
+        verify(interactor).loadHistory(for: any(), period: equal(to: .month))
+        let history = Helper.history(points: [Helper.point(daysBefore: 3, value: 2, end: now), Helper.point(daysBefore: 0, value: 3, end: now)], period: .month)
+        presenter.didReceive(history: .available(history), for: .month)
+        let month = try Helper.series(Helper.chart(XCTUnwrap(models.last?.priceWidget)))
+        XCTAssertEqual(month.range, now.addingTimeInterval(-30 * Helper.day) ... now)
+        XCTAssertEqual(models.last?.priceWidget?.header.change, .hidden)
+        now = now.addingTimeInterval(Helper.day)
+        presenter.didReceive(history: .available(Helper.history()), for: .week)
+        XCTAssertEqual(try Helper.series(Helper.chart(XCTUnwrap(models.last?.priceWidget))), month)
+        presenter.selectChart(nil)
+        XCTAssertEqual(header?.price, "0.0738 TAO")
+    }
+
     private final class CapturedViewModels {
         var last: SubtensorPositionViewModel?
     }
@@ -116,10 +161,10 @@ final class SubtensorPositionPresenterTests: XCTestCase {
     private func makePresenter(
         group: SubtensorPortfolioGroup,
         view: MockSubtensorPositionViewProtocol,
-        snapshot: SubtensorPositionSnapshot = SubtensorPositionSnapshot(catalogue: .miss, rootRate: .miss, yields: .miss)
+        snapshot: SubtensorPositionSnapshot = SubtensorPositionSnapshot(catalogue: .miss, rootRate: .miss, yields: .miss),
+        now: @escaping () -> Date = Date.init,
+        interactor: MockSubtensorPositionInteractorInputProtocol = MockSubtensorPositionInteractorInputProtocol()
     ) -> SubtensorPositionPresenter {
-        let interactor = MockSubtensorPositionInteractorInputProtocol()
-
         stub(interactor) { stub in
             when(stub.cachedSnapshot()).thenReturn(snapshot)
             when(stub.setup()).thenDoNothing()
@@ -139,7 +184,8 @@ final class SubtensorPositionPresenterTests: XCTestCase {
                 chainAsset: SubtensorFlowChainWorld.chainAsset(),
                 priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())
             ),
-            localizationManager: LocalizationManager.shared
+            localizationManager: LocalizationManager.shared,
+            now: now
         )
 
         presenter.view = view
