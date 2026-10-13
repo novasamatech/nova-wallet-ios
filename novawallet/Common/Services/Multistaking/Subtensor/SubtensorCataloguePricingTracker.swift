@@ -2,6 +2,11 @@ import Foundation
 import Operation_iOS
 
 final class SubtensorCataloguePricingTracker {
+    struct Valuation: Equatable {
+        let stake: Balance
+        let isFullyPriced: Bool?
+    }
+
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
@@ -32,21 +37,19 @@ final class SubtensorCataloguePricingTracker {
         callStore.cancel()
     }
 
-    func isFullyPriced(_ state: Multistaking.SubtensorStakingState) -> Bool? {
+    func valuation(of state: Multistaking.SubtensorStakingState) -> Valuation {
         let portfolio = SubtensorPortfolioBuilder.build(state: state, catalogue: try? catalogue?.get())
 
-        guard portfolio.isFullyPriced || catalogue != nil else {
-            return nil
-        }
+        let isFullyPriced = portfolio.isFullyPriced || catalogue != nil ? portfolio.isFullyPriced : nil
 
-        return portfolio.isFullyPriced
+        return Valuation(stake: portfolio.pricedTaoValue, isFullyPriced: isFullyPriced)
     }
 
     func refresh(
         latestState: @escaping () -> Multistaking.SubtensorStakingState?,
         runningCallbackIn callbackQueue: DispatchQueue,
         mutex: NSLock,
-        onChange: @escaping () -> Void
+        onUpdate: @escaping (Bool) -> Void
     ) {
         guard !callStore.hasCall, (latestState()?.subnetCount ?? 0) > 0 else {
             return
@@ -59,7 +62,7 @@ final class SubtensorCataloguePricingTracker {
             runningCallbackIn: callbackQueue,
             mutex: mutex
         ) { [weak self] result in
-            self?.apply(result, to: latestState(), onChange: onChange)
+            self?.apply(result, to: latestState(), onUpdate: onUpdate)
         }
     }
 }
@@ -68,7 +71,7 @@ private extension SubtensorCataloguePricingTracker {
     func apply(
         _ result: Result<SubtensorSubnetCatalogue, Error>,
         to state: Multistaking.SubtensorStakingState?,
-        onChange: () -> Void
+        onUpdate: (Bool) -> Void
     ) {
         if case let .failure(error) = result {
             logger.warning("Subnet catalogue fetch error: \(error)")
@@ -79,12 +82,10 @@ private extension SubtensorCataloguePricingTracker {
             return
         }
 
-        let wasFullyPriced = isFullyPriced(state)
+        let previous = valuation(of: state)
 
         catalogue = result
 
-        if isFullyPriced(state) != wasFullyPriced {
-            onChange()
-        }
+        onUpdate(valuation(of: state) != previous)
     }
 }
