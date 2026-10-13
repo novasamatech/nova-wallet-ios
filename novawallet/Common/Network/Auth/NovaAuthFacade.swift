@@ -48,9 +48,9 @@ final class NovaAuthFacade: NovaAuthProvidingProtocol {
     private let activate: (NovaAuthOrigin) throws -> NovaAuthContext
     private let contextInvalidationID: () -> UUID?
     private let mutex = NSRecursiveLock()
+    private var latestSnapshot: GlobalConfigSnapshot?
     private let availabilityLock = NSLock()
     private var publishedAvailability = NovaAuthEndpointAvailability()
-    private var latestSnapshot: GlobalConfigSnapshot?
     private var observers: [Observer] = []
     private var availabilityObservers: [AvailabilityObserver] = []
 
@@ -84,35 +84,36 @@ final class NovaAuthFacade: NovaAuthProvidingProtocol {
     }
 
     func addContextObserver(_ owner: AnyObject, closure: @escaping () -> Void) {
-        mutex.lock()
+        availabilityLock.lock()
         observers = observers.filter { $0.owner != nil && $0.owner !== owner }
         observers.append(Observer(owner: owner, closure: closure))
-        mutex.unlock()
+        availabilityLock.unlock()
     }
 
     func addAvailabilityObserver(
         _ owner: AnyObject,
         closure: @escaping (NovaAuthEndpointAvailability) -> Void
     ) -> NovaAuthEndpointAvailability {
-        mutex.lock()
-        defer { mutex.unlock() }
+        availabilityLock.lock()
+        defer { availabilityLock.unlock() }
         availabilityObservers = availabilityObservers.filter { $0.owner != nil && $0.owner !== owner }
         availabilityObservers.append(AvailabilityObserver(owner: owner, closure: closure))
-        return availability
+        return publishedAvailability
     }
 
     private func adopt(_ snapshot: GlobalConfigSnapshot) throws -> NovaAuthEndpoint {
+        var callbacks: [() -> Void] = []
         mutex.lock()
-        let previous = availability
-        let result = Result { try adoptLocked(snapshot) }
-        let callbacks = previous.revision != availability.revision
-            ? callbacksLocked(invalidated: previous.invalidationRevision != availability.invalidationRevision) : []
+        let result = Result { try adoptLocked(snapshot, callbacks: &callbacks) }
         mutex.unlock()
         callbacks.forEach { $0() }
         return try result.get()
     }
 
-    private func adoptLocked(_ snapshot: GlobalConfigSnapshot) throws -> NovaAuthEndpoint {
+    private func adoptLocked(
+        _ snapshot: GlobalConfigSnapshot,
+        callbacks: inout [() -> Void]
+    ) throws -> NovaAuthEndpoint {
         guard isSupported, let client else { throw NovaAuthError.unsupported }
         let acceptedSnapshot: GlobalConfigSnapshot
         if let latestSnapshot, snapshot.revision < latestSnapshot.revision {
@@ -126,7 +127,7 @@ final class NovaAuthFacade: NovaAuthProvidingProtocol {
             context = try activate(origin)
         } catch {
             if previousInvalidationID != contextInvalidationID() {
-                publishLocked(nil, invalidated: true)
+                callbacks = publishLocked(nil, invalidated: true)
             }
             throw error
         }
@@ -137,7 +138,7 @@ final class NovaAuthFacade: NovaAuthProvidingProtocol {
             client: client,
             invalidationRevision: availability.invalidationRevision + (changed ? 1 : 0)
         )
-        publishLocked(accepted, invalidated: changed)
+        callbacks = publishLocked(accepted, invalidated: changed)
         return accepted
     }
 }
@@ -145,32 +146,25 @@ final class NovaAuthFacade: NovaAuthProvidingProtocol {
 // MARK: Private
 
 private extension NovaAuthFacade {
-    // Main-thread cache peeks read this, so it must never wait on the adoption mutex held across auth I/O.
+    // Main-thread peeks and registrations take only this lock, never the adoption mutex held across auth I/O.
     var availability: NovaAuthEndpointAvailability {
-        get {
-            availabilityLock.lock()
-            defer { availabilityLock.unlock() }
-            return publishedAvailability
-        }
-        set {
-            availabilityLock.lock()
-            publishedAvailability = newValue
-            availabilityLock.unlock()
-        }
+        availabilityLock.lock()
+        defer { availabilityLock.unlock() }
+        return publishedAvailability
     }
 
-    func publishLocked(_ endpoint: NovaAuthEndpoint?, invalidated: Bool) {
-        availability = NovaAuthEndpointAvailability(
-            revision: availability.revision + 1,
-            invalidationRevision: availability.invalidationRevision + (invalidated ? 1 : 0),
+    // Publishing and snapshotting observers is atomic: a registration either gets this delivery or sees its result.
+    func publishLocked(_ endpoint: NovaAuthEndpoint?, invalidated: Bool) -> [() -> Void] {
+        availabilityLock.lock()
+        defer { availabilityLock.unlock() }
+        let current = NovaAuthEndpointAvailability(
+            revision: publishedAvailability.revision + 1,
+            invalidationRevision: publishedAvailability.invalidationRevision + (invalidated ? 1 : 0),
             endpoint: endpoint
         )
-    }
-
-    func callbacksLocked(invalidated: Bool) -> [() -> Void] {
+        publishedAvailability = current
         observers = observers.filter { $0.owner != nil }
         availabilityObservers = availabilityObservers.filter { $0.owner != nil }
-        let current = availability
         let invalidations = invalidated ? observers.map(\.closure) : []
         let readiness = availabilityObservers.map { observer in { observer.closure(current) } }
         return invalidations + readiness
