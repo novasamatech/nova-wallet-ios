@@ -17,6 +17,19 @@ struct SubtensorPortfolioPriceHistories: Equatable {
     let period: SubtensorPricePeriod
     let taoFiat: PriceHistory
     let subnets: [SubtensorPriceHistory]
+    let failedNetuids: Set<UInt16>
+
+    init(
+        period: SubtensorPricePeriod,
+        taoFiat: PriceHistory,
+        subnets: [SubtensorPriceHistory],
+        failedNetuids: Set<UInt16> = []
+    ) {
+        self.period = period
+        self.taoFiat = taoFiat
+        self.subnets = subnets
+        self.failedNetuids = failedNetuids
+    }
 }
 
 extension SubtensorPricePeriod {
@@ -192,8 +205,7 @@ enum SubtensorPortfolioValueSeriesCalculator {
 
         guard let holdings = createHoldings(
             of: portfolio,
-            histories: histories.subnets,
-            period: period,
+            histories: histories,
             gridEnd: newestDate,
             precision: precision
         ) else {
@@ -239,12 +251,13 @@ private extension SubtensorPortfolioValueSeriesCalculator {
 
     static func createHoldings(
         of portfolio: SubtensorPortfolio,
-        histories: [SubtensorPriceHistory],
-        period: SubtensorPricePeriod,
+        histories: SubtensorPortfolioPriceHistories,
         gridEnd: Date,
         precision: Int16
     ) -> Holdings? {
-        let pointsByNetuid = histories.reduce(into: [UInt16: [SubtensorPricePoint]]()) { result, history in
+        let period = histories.period
+
+        let pointsByNetuid = histories.subnets.reduce(into: [UInt16: [SubtensorPricePoint]]()) { result, history in
             guard history.period == period, result[history.subnet.netuid] == nil else {
                 return
             }
@@ -254,7 +267,7 @@ private extension SubtensorPortfolioValueSeriesCalculator {
                 .sorted { $0.date < $1.date }
         }
 
-        let flatTao = portfolio.root?.taoValue.flatMap { Decimal.fromSubstrateAmount($0, precision: precision) } ?? 0
+        var flatTao = portfolio.root?.taoValue.flatMap { Decimal.fromSubstrateAmount($0, precision: precision) } ?? 0
         var anchored: [AnchoredHolding] = []
 
         for group in portfolio.subnets {
@@ -262,6 +275,11 @@ private extension SubtensorPortfolioValueSeriesCalculator {
                 let taoValue = group.taoValue,
                 taoValue > 0,
                 let value = Decimal.fromSubstrateAmount(taoValue, precision: precision) else {
+                continue
+            }
+
+            if histories.failedNetuids.contains(group.netuid) {
+                flatTao += value
                 continue
             }
 

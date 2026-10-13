@@ -2,7 +2,6 @@ import Foundation
 import Foundation_iOS
 
 final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
-    let subtensorInteractor: StartStakingInfoSubtensorInteractorInputProtocol
     let subtensorWireframe: StartStakingInfoSubtensorWireframeProtocol
     let subtensorViewModelFactory: StartStakingInfoSubtensorViewModelFactoryProtocol
 
@@ -20,7 +19,6 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
         applicationConfig: ApplicationConfigProtocol,
         logger: LoggerProtocol
     ) {
-        subtensorInteractor = interactor
         subtensorWireframe = wireframe
         self.subtensorViewModelFactory = subtensorViewModelFactory
 
