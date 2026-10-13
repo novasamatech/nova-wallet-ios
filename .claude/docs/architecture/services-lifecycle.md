@@ -175,12 +175,14 @@ profile-3 protocol's user-driven re-creation wording at lines 511–514. Request
 Failed auth completes the caller operation; Bittensor owns its retry/presentation and Analytics
 retains batches silently for its normal later flushes, checking consent before each send/replay.
 
-The same context observer invalidates the cost-basis memo and the validator directory cache and
-detaches in-flight max-APY walks. Invalidation detaches pending walks and fences suspended wrappers
-and late chain enrichment. The cost-basis memo lifetime remains unchanged within one auth context;
-max APY keeps no result between walks and relies on the response cache's max-age. Local
-calculations do not require a separate auth request. The package exposes a context invalidation ID so the
-facade also detects a cold origin replacement/repair before publishing its first endpoint.
+The same context observer invalidates the cost-basis memo and the validator directory cache.
+Invalidation detaches pending cost-basis and max-APY walks and fences suspended wrappers and late
+chain enrichment. The cost-basis memo lifetime remains unchanged within one auth context. Max APY
+keeps no result between walks and relies on the response cache's max-age. The dashboard walks
+once per `performSyncUp()` and, if that walk fails, again after later state fetches until one
+succeeds. Local calculations do not require a separate auth request. The package exposes a
+context invalidation ID so the facade also detects a cold origin replacement/repair before
+publishing its first endpoint.
 Failed adoption notifies when its memory fence changed.
 First activation with no prior installation does not itself invalidate a context.
 
