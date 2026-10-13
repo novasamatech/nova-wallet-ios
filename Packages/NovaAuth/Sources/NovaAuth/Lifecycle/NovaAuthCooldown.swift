@@ -37,23 +37,4 @@ struct NovaAuthCooldown: Codable, Equatable {
         deadline = nil
         failures = 0
     }
-
-    mutating func failLadder(now: NovaAuthTime, random: Double, caps: TimeInterval) {
-        let steps: [TimeInterval] = [60, 600, 3600, 86400]
-        let jitter = random.isFinite ? min(1, max(0, random)) : 1
-        let index = min(max(0, failures), steps.count - 1)
-        let delay = min(steps[index], caps) * (1 + 0.1 * jitter)
-        failures = min(index + 1, steps.count)
-        let next = now.continuousSeconds + delay
-        if deadline?.bootID != now.bootID || (deadline?.continuousSeconds ?? 0) < next {
-            deadline = NovaAuthTime(bootID: now.bootID, continuousSeconds: next)
-        }
-    }
-
-    mutating func succeed(now: NovaAuthTime) {
-        failures = 0
-        if deadline?.bootID != now.bootID || (deadline?.continuousSeconds ?? 0) <= now.continuousSeconds {
-            deadline = nil
-        }
-    }
 }

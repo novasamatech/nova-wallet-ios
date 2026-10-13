@@ -74,7 +74,6 @@ private extension NovaAuthDeviceCheckService {
                           $0.count <= (attestation ? 49152 : 6144) else { throw NovaAuthError.invalidResponse }
                 })
             }
-            // The framing layer already produced SHA256(P3). Apple receives these exact bytes.
             if attestation {
                 do {
                     try beforeAttest()
@@ -137,7 +136,6 @@ private final class NovaAuthProofCalls {
         }
     }
 
-    // After native invocation, only the SDK callback can release the key, never a local timeout.
     func release(keyID: String, lease: UUID) -> Bool {
         mutex.novaAuthLocked {
             guard leases[keyID] == lease else { return false }

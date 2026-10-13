@@ -1,6 +1,5 @@
 import Foundation
 
-/// Avoids accidental credential disclosure through generic logging or debugger reflection.
 protocol NovaAuthRedacted: CustomStringConvertible, CustomDebugStringConvertible, CustomReflectable {}
 
 extension NovaAuthRedacted {

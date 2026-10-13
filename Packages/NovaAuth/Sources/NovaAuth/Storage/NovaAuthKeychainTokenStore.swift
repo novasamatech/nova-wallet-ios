@@ -108,7 +108,6 @@ private extension NovaAuthKeychainTokenStore {
             try NovaAuthStoredValidation.token(record)
             return record
         } catch {
-            // A newer record may already exist; the sole writer replaces unusable data on issuance.
             return nil
         }
     }

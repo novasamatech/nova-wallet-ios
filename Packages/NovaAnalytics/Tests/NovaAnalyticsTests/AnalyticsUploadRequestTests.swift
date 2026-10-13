@@ -1,7 +1,7 @@
-import XCTest
 @testable import NovaAnalytics
 import NovaAuth
 import Operation_iOS
+import XCTest
 
 final class AnalyticsUploadRequestTests: XCTestCase {
     func testUploadUsesEventsPathBackgroundIntentAndExactBody() throws {
@@ -16,7 +16,6 @@ final class AnalyticsUploadRequestTests: XCTestCase {
         let request = try XCTUnwrap(client.requests.first)
         XCTAssertEqual(request.path, "/v1/analytics/events")
         XCTAssertEqual(request.method, .post)
-        XCTAssertEqual(request.intent, .background)
         XCTAssertEqual(request.contentType, "application/json")
         XCTAssertEqual(request.body, body)
     }

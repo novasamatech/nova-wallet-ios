@@ -1,8 +1,8 @@
-import XCTest
 @testable import NovaAuth
+import XCTest
 
 final class NovaAuthLifecycleTests: XCTestCase {
-    func testFirstUserDemandRegistersOnceAndLaterDemandReusesTheBearer() throws {
+    func testFirstDemandRegistersOnceAndLaterDemandReusesTheBearer() throws {
         let harness = try AuthHarness()
         let auth = harness.makeAuth()
         let context = try auth.activate(origin: harness.origin)
@@ -17,7 +17,7 @@ final class NovaAuthLifecycleTests: XCTestCase {
         )
     }
 
-    func testRefusedRegistrationMintsNoBackgroundKeyAndOneKeyPerUserAction() throws {
+    func testRefusedRegistrationFailsThenLaterIndependentDemandCreatesOneKey() throws {
         let harness = try AuthHarness()
         harness.server.registration = .success(.init(status: 401, body: FakeAuthServer.error("attestation_failed")))
         let refusal = NovaAuthError.bootstrap(NovaAuthServerError(
@@ -25,43 +25,42 @@ final class NovaAuthLifecycleTests: XCTestCase {
         ))
         let auth = harness.makeAuth()
         let context = try auth.activate(origin: harness.origin)
-        assertError(refusal, auth.createAdmissionWrapper(in: context, intent: .background))
-        harness.clock.advance(100_000)
-        assertError(.userActionRequired, auth.createAdmissionWrapper(in: context, intent: .background))
-        let relaunched = try harness.relaunch()
-        assertError(.userActionRequired, relaunched.createAdmissionWrapper(in: context, intent: .background))
+        assertError(refusal, auth.createAdmissionWrapper(in: context))
         XCTAssertEqual(harness.apple.keys, 1)
-        assertError(refusal, relaunched.createAdmissionWrapper(in: context, intent: .userInitiated))
+        harness.clock.advance(2)
+        try assertError(refusal, harness.relaunch().createAdmissionWrapper(in: context))
         XCTAssertEqual(harness.apple.keys, 2)
     }
 
-    func testLostKeyAllowsTwoBackgroundRecreationsThenOnlyUserAction() throws {
+    func testLostKeyFailsWithoutReplacingUntilLaterIndependentDemand() throws {
         let harness = try AuthHarness()
-        let (_, context) = try registered(harness)
+        let (auth, context) = try registered(harness)
         harness.apple.assertionError = NovaAuthAppAttestError.invalidKey
-        for _ in 0 ..< 3 {
-            harness.clock.advance(100_000)
-            assertError(.keyUnavailable, try harness.relaunch().createAdmissionWrapper(in: context, intent: .background))
-        }
-        harness.clock.advance(100_000)
-        let auth = try harness.relaunch()
-        assertError(.userActionRequired, auth.createAdmissionWrapper(in: context, intent: .background))
-        XCTAssertEqual(harness.apple.keys, 3)
-        assertError(.keyUnavailable, auth.createAdmissionWrapper(in: context, intent: .userInitiated))
-        XCTAssertEqual(harness.apple.keys, 4)
+        harness.clock.advance(1000)
+        assertError(.keyUnavailable, auth.createAdmissionWrapper(in: context))
+        XCTAssertEqual(harness.apple.keys, 1)
+        harness.apple.assertionError = nil
+        harness.clock.advance(2)
+        try execute(auth.createAdmissionWrapper(in: context))
+        XCTAssertEqual(harness.apple.keys, 2)
     }
 
-    func testLostKeyRecreationDelayEscalatesAfterEachFailedRecreation() throws {
+    func testTokenRefusalPreservesRegisteredBindingForLaterDemand() throws {
         let harness = try AuthHarness()
-        harness.apple.assertionError = NovaAuthAppAttestError.invalidKey
-        let auth = harness.makeAuth()
-        let context = try auth.activate(origin: harness.origin)
-        assertError(.keyUnavailable, auth.createAdmissionWrapper(in: context, intent: .background))
-        assertError(.cooldown(retryAfter: 60), try harness.relaunch().createAdmissionWrapper(in: context, intent: .background))
-        harness.clock.advance(60)
-        assertError(.keyUnavailable, try harness.relaunch().createAdmissionWrapper(in: context, intent: .background))
-        assertError(.cooldown(retryAfter: 600), try harness.relaunch().createAdmissionWrapper(in: context, intent: .background))
-        XCTAssertEqual(harness.apple.keys, 2)
+        let (auth, context) = try registered(harness)
+        let identity = auth.state?.identity
+        harness.clock.advance(1000)
+        harness.server.token = .init(status: 401, body: FakeAuthServer.error("invalid_proof"))
+        assertError(.bootstrap(NovaAuthServerError(
+            statusCode: 401, code: "invalid_proof", requestID: nil, retryAfter: nil
+        )), auth.createAdmissionWrapper(in: context))
+        XCTAssertEqual(auth.state?.identity, identity)
+        harness.server.token = nil
+        harness.clock.advance(2)
+        try execute(auth.createAdmissionWrapper(in: context))
+        XCTAssertEqual(harness.apple.keys, 1)
+        XCTAssertEqual(harness.apple.attestations, 1)
+        XCTAssertEqual(harness.server.count("/token-challenges"), 3)
     }
 
     func testLostRegistrationResponseRecoversThroughTokenChallengeWithoutSecondAttestation() throws {
@@ -69,27 +68,38 @@ final class NovaAuthLifecycleTests: XCTestCase {
         harness.server.registration = .failure(URLError(.networkConnectionLost))
         let auth = harness.makeAuth()
         let context = try auth.activate(origin: harness.origin)
-        assertError(.transport(.networkConnectionLost), auth.createAdmissionWrapper(in: context, intent: .userInitiated))
+        assertError(.transport(.networkConnectionLost), auth.createAdmissionWrapper(in: context))
+        let pendingIdentity = auth.state?.identity
+        harness.server.token = .init(status: 401, body: FakeAuthServer.error("unknown_client"))
         harness.clock.advance(2)
-        try execute(harness.relaunch().createAdmissionWrapper(in: context, intent: .userInitiated))
+        let relaunched = try harness.relaunch()
+        assertError(.bootstrap(NovaAuthServerError(
+            statusCode: 401, code: "unknown_client", requestID: nil, retryAfter: nil
+        )), relaunched.createAdmissionWrapper(in: context))
+        XCTAssertEqual(relaunched.state?.identity?.clientID, pendingIdentity?.clientID)
+        XCTAssertEqual(relaunched.state?.identity?.keyID, pendingIdentity?.keyID)
+        harness.server.token = nil
+        harness.clock.advance(2)
+        try execute(relaunched.createAdmissionWrapper(in: context))
         XCTAssertNotNil(try harness.tokens.load())
         XCTAssertEqual(harness.apple.attestations, 1)
         XCTAssertEqual(harness.server.count("/register"), 1)
     }
 
-    func testExpiredDeferredAttestationIsRetiredWithoutAppleAndNotRecreatedInBackground() throws {
+    func testExpiredDeferredAttestationFailsThenLaterDemandReplacesIt() throws {
         let harness = try AuthHarness()
         harness.apple.attestationError = NovaAuthAppAttestError.serverUnavailable
         let auth = harness.makeAuth()
         let context = try auth.activate(origin: harness.origin)
-        assertError(.platformUnavailable, auth.createAdmissionWrapper(in: context, intent: .background))
+        assertError(.platformUnavailable, auth.createAdmissionWrapper(in: context))
         harness.apple.attestationError = nil
         harness.clock.advance(41)
-        assertError(.userActionRequired, auth.createAdmissionWrapper(in: context, intent: .background))
-        harness.clock.advance(100_000)
-        assertError(.userActionRequired, try harness.relaunch().createAdmissionWrapper(in: context, intent: .background))
+        assertError(.keyUnavailable, auth.createAdmissionWrapper(in: context))
         XCTAssertEqual(harness.apple.attestations, 1)
         XCTAssertEqual(harness.apple.keys, 1)
+        harness.clock.advance(2)
+        try execute(harness.relaunch().createAdmissionWrapper(in: context))
+        XCTAssertEqual(harness.apple.keys, 2)
     }
 
     func testDeferredAttestationInsideTheWindowRetriesTheSavedKeyAndAttempt() throws {
@@ -97,10 +107,10 @@ final class NovaAuthLifecycleTests: XCTestCase {
         harness.apple.attestationError = NovaAuthAppAttestError.serverUnavailable
         let auth = harness.makeAuth()
         let context = try auth.activate(origin: harness.origin)
-        assertError(.platformUnavailable, auth.createAdmissionWrapper(in: context, intent: .background))
+        assertError(.platformUnavailable, auth.createAdmissionWrapper(in: context))
         harness.apple.attestationError = nil
         harness.clock.advance(39)
-        try execute(auth.createAdmissionWrapper(in: context, intent: .background))
+        try execute(auth.createAdmissionWrapper(in: context))
         XCTAssertEqual(harness.apple.keys, 1)
         XCTAssertEqual(harness.apple.attestations, 2)
         XCTAssertEqual(harness.server.count("/challenges"), 1)
@@ -116,7 +126,7 @@ final class NovaAuthLifecycleTests: XCTestCase {
             sent.fulfill()
             _ = release.wait(timeout: .now() + 5)
         }
-        let admission = auth.createAdmissionWrapper(in: context, intent: .userInitiated)
+        let admission = auth.createAdmissionWrapper(in: context)
         OperationQueue().addOperations(admission.allOperations, waitUntilFinished: false)
         wait(for: [sent], timeout: 5)
         _ = try auth.activate(origin: NovaAuthOrigin("https://other.example.com"))
@@ -136,7 +146,7 @@ final class NovaAuthLifecycleTests: XCTestCase {
         let context = try auth.activate(origin: harness.origin)
         XCTAssertGreaterThan(context.generation, previous.generation)
         XCTAssertNil(try harness.tokens.load())
-        try execute(auth.createAdmissionWrapper(in: context, intent: .background))
+        try execute(auth.createAdmissionWrapper(in: context))
         XCTAssertEqual(harness.apple.keys, 2)
     }
 }

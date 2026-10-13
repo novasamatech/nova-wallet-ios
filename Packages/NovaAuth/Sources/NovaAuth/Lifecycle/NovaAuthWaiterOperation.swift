@@ -24,7 +24,6 @@ final class NovaAuthCancellation {
         lock.lock()
         defer { lock.unlock() }
         guard !cancelled else { throw NovaAuthError.cancelled }
-        // Never cancel a pending child before OperationQueue has accepted it.
         action = { wrapper.cancel() }
         queue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }

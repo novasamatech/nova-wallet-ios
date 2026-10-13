@@ -7,7 +7,6 @@ struct NovaAuthDependencies {
     let tokenStore: NovaAuthTokenStoreProtocol
     let clock: NovaAuthClockProtocol
     let random: NovaAuthRandomProtocol
-    let bootstrap: NovaAuthBootstrapProtocol
     let http: NovaAuthHTTPProtocol
     let ownerQueue: OperationQueue
     let bootstrapQueue: OperationQueue

@@ -38,20 +38,6 @@ protocol NovaAuthTokenStoreProtocol: AnyObject {
     func removeAll() throws
 }
 
-protocol NovaAuthBootstrapProtocol: AnyObject {
-    func createRegistrationChallengeWrapper(
-        origin: NovaAuthOrigin,
-        clientID: String,
-        beforeSend: @escaping () throws -> Void
-    ) -> CompoundOperationWrapper<NovaAuthChallenge>
-    func createRegistrationWrapper(_ request: NovaAuthRegistrationRequest, beforeSend: @escaping () throws -> Void)
-        -> CompoundOperationWrapper<Void>
-    func createTokenChallengeWrapper(origin: NovaAuthOrigin, clientID: String, beforeSend: @escaping () throws -> Void)
-        -> CompoundOperationWrapper<NovaAuthChallenge>
-    func createTokenWrapper(_ request: NovaAuthTokenRequest, beforeSend: @escaping () throws -> Void)
-        -> CompoundOperationWrapper<NovaAuthTokenResponse>
-}
-
 enum NovaAuthHTTPKind { case bootstrap, businessRead, businessPost }
 protocol NovaAuthHTTPProtocol: AnyObject {
     func createResponseWrapper(

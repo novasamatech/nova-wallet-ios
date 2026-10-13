@@ -16,11 +16,9 @@ enum NovaAuthFraming {
         var result = Data("NOVA-TOKEN-ISSUANCE\0".utf8)
         result.append(contentsOf: [0, 3, 0, 1])
         result.append(try lengthPrefixed(origin.value))
-        result.append(try lengthPrefixed("bittensor-read"))
         return result
     }
 
-    // The protocol fixes these six independently framed inputs.
     // swiftlint:disable:next function_parameter_count
     static func clientDataHash(
         challenge: String,

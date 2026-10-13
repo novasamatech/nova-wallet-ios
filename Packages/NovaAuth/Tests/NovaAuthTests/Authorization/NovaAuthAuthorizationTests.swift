@@ -1,14 +1,17 @@
-import XCTest
 @testable import NovaAuth
+import XCTest
 
 final class NovaAuthAuthorizationTests: XCTestCase {
-    func testInvalidTokenReplaysOnceWithAFreshBearerThenEndsDenied() throws {
+    func testHeadInvalidTokenReplaysOnceWithAFreshBearerThenEndsDenied() throws {
         let harness = try AuthHarness()
         let (auth, context) = try registered(harness)
         harness.server.business = { _ in
-            .init(status: 401, headers: ["WWW-Authenticate": "Bearer error=\"invalid_token\""], body: FakeAuthServer.error("invalid_token"))
+            .init(status: 401, headers: ["WWW-Authenticate": "Bearer error=\"invalid_token\""])
         }
-        let request = try harness.request(context)
+        let request = try NovaAuthRequest(
+            context: context, method: .head, path: "/v1/bittensor/subnets", queryItems: [],
+            body: nil, contentType: nil
+        )
         assertError(.authorizationDenied(requestID: nil), auth.createResponseWrapper(for: request, beforeSend: {}))
         XCTAssertEqual(
             harness.server.businessRequests.map { $0.value(forHTTPHeaderField: "Authorization") },
@@ -16,7 +19,7 @@ final class NovaAuthAuthorizationTests: XCTestCase {
         )
     }
 
-    func testBittensorDatasetOutageLeavesAnalyticsAvailable() throws {
+    func testBusinessDatasetOutageDoesNotThrottleLaterDemand() throws {
         let harness = try AuthHarness()
         let (auth, context) = try registered(harness)
         harness.server.business = { request in
@@ -27,8 +30,8 @@ final class NovaAuthAuthorizationTests: XCTestCase {
         try execute(auth.createResponseWrapper(for: harness.request(context), beforeSend: {}))
         try execute(auth.createResponseWrapper(for: harness.request(context, analytics: true), beforeSend: {}))
         let retry = try harness.request(context)
-        assertError(.cooldown(retryAfter: 20), auth.createResponseWrapper(for: retry, beforeSend: {}))
-        XCTAssertEqual(harness.server.businessRequests.count, 2)
+        try execute(auth.createResponseWrapper(for: retry, beforeSend: {}))
+        XCTAssertEqual(harness.server.businessRequests.count, 3)
     }
 
     func testOriginThrottleBlocksAnalyticsAndBittensor() throws {
@@ -47,7 +50,7 @@ final class NovaAuthAuthorizationTests: XCTestCase {
         let released = expectation(description: "caller closure released")
         try autoreleasepool {
             let witness = ReleaseWitness { released.fulfill() }
-            let wrapper = auth.createResponseWrapper(for: try harness.request(context), beforeSend: {
+            let wrapper = try auth.createResponseWrapper(for: harness.request(context), beforeSend: {
                 withExtendedLifetime(witness) {}
             })
             try execute(wrapper)
@@ -58,6 +61,9 @@ final class NovaAuthAuthorizationTests: XCTestCase {
 
 private final class ReleaseWitness {
     let onRelease: () -> Void
-    init(onRelease: @escaping () -> Void) { self.onRelease = onRelease }
+    init(onRelease: @escaping () -> Void) {
+        self.onRelease = onRelease
+    }
+
     deinit { onRelease() }
 }
