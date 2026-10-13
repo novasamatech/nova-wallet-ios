@@ -30,6 +30,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     private var lastState: Multistaking.SubtensorStakingState?
     private var maxApyUpdate: Multistaking.DashboardItemSubtensorPart.MaxApyUpdate = .keep
     private var rootRate: Decimal?
+    private var isMaxApyResolved = false
 
     private var fetchCallStore = CancellableCallStore()
     private var maxApyCallStore = CancellableCallStore()
@@ -76,6 +77,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     override func performSyncUp() {
         clearSubscriptions()
         fetchCallStore.cancel()
+        isMaxApyResolved = false
 
         seedRootRate()
         cataloguePricing?.seed()
@@ -201,7 +203,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     }
 
     private func performMaxApyFetch() {
-        guard let maxApyProvider, !maxApyCallStore.hasCall else {
+        guard let maxApyProvider, !isMaxApyResolved, !maxApyCallStore.hasCall else {
             return
         }
 
@@ -214,6 +216,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         ) { [weak self] result in
             switch result {
             case let .success(maxApy):
+                self?.isMaxApyResolved = true
                 self?.updateMaxApy(.replace(maxApy))
             case let .failure(error):
                 self?.logger.warning("Max APY fetch error: \(error)")
