@@ -125,17 +125,15 @@ final class SubtensorRootClaimableServiceTests: XCTestCase {
         let positionsService = MockSubtensorPositionsSyncServiceProtocol()
         let apiFactory = MockSubtensorApiOperationFactoryProtocol()
 
-        let state = Multistaking.SubtensorStakingState(positions: [])
-
         stub(positionsService) { stub in
             when(
-                stub.add(observer: any(), sendStateOnSubscription: any(), queue: any(), closure: any())
+                stub.add(fetchObserver: any(), sendStateOnSubscription: any(), queue: any(), closure: any())
             ).then { _, _, queue, closure in
                 (queue ?? .global()).async {
-                    closure(nil, state)
+                    closure(0, 1)
                 }
             }
-            when(stub.remove(observer: any())).thenDoNothing()
+            when(stub.remove(fetchObserver: any())).thenDoNothing()
         }
 
         stub(apiFactory) { stub in
@@ -205,17 +203,15 @@ final class SubtensorRootClaimableServiceTests: XCTestCase {
 
         stubClaimPreviews(apiFactory, previews: [])
 
-        let state = Multistaking.SubtensorStakingState(positions: [])
-
         stub(positionsService) { stub in
             when(
-                stub.add(observer: any(), sendStateOnSubscription: any(), queue: any(), closure: any())
+                stub.add(fetchObserver: any(), sendStateOnSubscription: any(), queue: any(), closure: any())
             ).then { _, _, queue, closure in
                 (queue ?? .global()).async {
-                    closure(nil, state)
+                    closure(0, 1)
                 }
             }
-            when(stub.remove(observer: any())).thenDoNothing()
+            when(stub.remove(fetchObserver: any())).thenDoNothing()
         }
 
         let claimableService = SubtensorRootClaimableService(
@@ -239,7 +235,7 @@ final class SubtensorRootClaimableServiceTests: XCTestCase {
 
         claimableService.throttle()
 
-        verify(positionsService, times(1)).remove(observer: any())
+        verify(positionsService, times(1)).remove(fetchObserver: any())
     }
 
     private struct Context {
