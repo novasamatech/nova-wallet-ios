@@ -6,6 +6,21 @@ The client remains profile 3 only, with one NovaAuth owner and one current beare
 analytics and Bittensor. Both existing POST routes are unchanged. Server authorization and
 pre-handler token rejection belong to the separately owned backend migration.
 
+## Lean test suite
+
+After the main-thread stall fix and the dead-code removal, the feature's tests were reduced to
+the key scenarios. They now add 629 test lines instead of about 8,200. NovaAuth keeps 12 tests
+that run the real client, bootstrap factory and settings identity store against one fake server.
+NovaAnalytics passes 45 tests, two of them for offline opt-in parking and withdrawal. The 24
+feature-related app classes pass 142 tests, including the stall test, a delayed-invalidation cache
+test, refused-registration and offline flow tests and a Max-APY termination test. Each kept key
+test failed with its fix reverted and passed after restoration: invalid-token replay, user-only
+refused registration, the two-recreation budget, the attestation age guard, both cooldown scopes,
+exchange release, offline consent parking and withdrawal, the non-blocking availability read,
+the cache revision guard, the refused-attestation and offline error mappings and Max-APY
+termination. Test counts and test-specific claims in the sections below describe the earlier,
+larger suite.
+
 ## Round 3 corrections
 
 - Max-APY authentication-wide refusals, final token denial and local auth configuration/support

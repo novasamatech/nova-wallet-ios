@@ -197,8 +197,10 @@ the backend; there is no legacy fallback.
 ## Validation
 
 Run the package XCTest suite with `xcodebuild test -scheme NovaAuth` on an iOS simulator;
-`swift test` targets macOS and is inappropriate for these iOS dependencies. The app test suites
-cover shared composition, revisioned origin changes, analytics consent, Bittensor routing and
-presentation/coalescing behavior. App/extension App Groups are development for Debug/Dev and
-production for Staging/Release. Real App Attest, signed Keychain access-group sharing, protected
-data and physical reboot behavior still require device validation.
+`swift test` targets macOS and is inappropriate for these iOS dependencies. Its 12 tests run the
+real client, bootstrap factory and settings identity store against one fake server: the profile-3
+vectors, registration and recovery limits, token replay, cooldown scopes and exchange release.
+The app tests cover the non-blocking availability read, delayed cache invalidation, Bittensor
+flows through real NovaAuth and Max-APY termination. App/extension App Groups are development
+for Debug/Dev and production for Staging/Release. Real App Attest, signed Keychain access-group
+sharing, protected data and physical reboot behavior still require device validation.
