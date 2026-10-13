@@ -9,6 +9,8 @@ extension XcmUni {
     }
 
     struct AccountId20: Equatable {
+        static let keySize = 20
+
         let network: NetworkId
         let accountId: AccountId
     }
@@ -213,7 +215,11 @@ extension XcmUni.Junction: XcmUniCodable {
         case let .globalConsensus(network):
             switch configuration {
             case .V0, .V1, .V2:
-                throw XcmUni.NetworkId.unsupportedVersionError(configuration, codingPath: encoder.codingPath)
+                throw XcmUni.NetworkId.unsupportedVersionError(
+                    configuration,
+                    entity: "GlobalConsensus",
+                    codingPath: encoder.codingPath
+                )
             case .V3, .V4, .V5:
                 try container.encode(Self.globalConsensusField)
                 try container.encode(network, configuration: configuration)

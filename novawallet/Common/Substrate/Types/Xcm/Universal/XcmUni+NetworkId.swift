@@ -13,18 +13,48 @@ extension XcmUni.NetworkId {
     static let anyField = "Any"
     static let ethereumField = "Ethereum"
 
-    struct EthereumValue: Codable {
-        enum CodingKeys: String, CodingKey {
-            case chainId = "chain_id"
+    /// Keys of a `globalConsensus` config object: `{"ethereum": {"chainId": 1}}`
+    enum RawPathKey: String {
+        case ethereum
+        case chainId
+    }
+
+    /// Only Ethereum is supported.
+    static func createWithRawPath(_ path: JSON) throws -> XcmUni.NetworkId {
+        guard
+            let fields = path.dictValue,
+            fields.count == 1,
+            let ethereum = fields[RawPathKey.ethereum.rawValue]?.dictValue else {
+            throw XcmUni.AbsoluteLocation.RawPathError.unsupportedConsensus(path)
         }
 
+        let chainIdValue = ethereum[RawPathKey.chainId.rawValue]
+
+        if let chainId = chainIdValue?.unsignedIntValue {
+            return .ethereum(chainId: chainId)
+        }
+
+        if let chainIdString = chainIdValue?.stringValue, let chainId = UInt64(chainIdString) {
+            return .ethereum(chainId: chainId)
+        }
+
+        throw XcmUni.AbsoluteLocation.RawPathError.unsupportedConsensus(path)
+    }
+
+    /// Runtime `NetworkId::Ethereum { chain_id }`. Field names are camel-cased by the SDK's scale-info mapping,
+    /// so the JSON key is `chainId`.
+    struct EthereumValue: Codable {
         let chainId: StringScaleMapper<UInt64>
     }
 
-    static func unsupportedVersionError(_ version: Xcm.Version, codingPath: [CodingKey]) -> EncodingError {
+    static func unsupportedVersionError(
+        _ version: Xcm.Version,
+        entity: String,
+        codingPath: [CodingKey]
+    ) -> EncodingError {
         EncodingError.invalidValue(
             version,
-            .init(codingPath: codingPath, debugDescription: "GlobalConsensus is available from XCM V3")
+            .init(codingPath: codingPath, debugDescription: "\(entity) is available from XCM V3")
         )
     }
 }
@@ -61,7 +91,11 @@ extension XcmUni.NetworkId: XcmUniCodable {
         case let .ethereum(chainId):
             switch configuration {
             case .V0, .V1, .V2:
-                throw Self.unsupportedVersionError(configuration, codingPath: encoder.codingPath)
+                throw Self.unsupportedVersionError(
+                    configuration,
+                    entity: "NetworkId.Ethereum",
+                    codingPath: encoder.codingPath
+                )
             case .V3, .V4, .V5:
                 var unkeyedContainer = encoder.unkeyedContainer()
                 try unkeyedContainer.encode(Self.ethereumField)
@@ -78,7 +112,7 @@ extension XcmUni.NetworkId: XcmUniCodable {
         switch configuration {
         case .V0, .V1, .V2:
             var container = encoder.unkeyedContainer()
-            try container.encode("Any")
+            try container.encode(Self.anyField)
             try container.encode(JSON.null)
         case .V3, .V4, .V5:
             var container = encoder.singleValueContainer()

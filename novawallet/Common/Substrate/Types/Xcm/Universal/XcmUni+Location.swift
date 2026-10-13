@@ -28,6 +28,7 @@ extension XcmUni.RelativeLocation {
 }
 
 extension XcmUni.AbsoluteLocation {
+    /// Keys of a `multiLocation` object in the dynamic XCM config (nova-utils `assetsLocation`).
     enum RawPathKey: String, CaseIterable {
         case globalConsensus
         case parachainId
@@ -35,6 +36,14 @@ extension XcmUni.AbsoluteLocation {
         case generalKey
         case generalIndex
         case accountKey20
+    }
+
+    enum RawPathError: Error {
+        case unsupportedKeys(Set<String>)
+        case invalidValue(key: RawPathKey, value: JSON)
+        case conflictingKeys(RawPathKey, RawPathKey)
+        case unsupportedConsensus(JSON)
+        case invalidAccountKey20Length(Int)
     }
 
     init(paraId: ParaId?) {
@@ -56,52 +65,18 @@ extension XcmUni.AbsoluteLocation {
         return false
     }
 
+    /// Parses a `multiLocation` config object. Every present key must parse, and unknown keys are an error:
+    /// a silently dropped junction would turn the asset into a different one (e.g. the chain's native token).
     static func createWithRawPath(_ path: JSON) throws -> XcmUni.AbsoluteLocation {
-        guard let fields = path.dictValue else {
-            throw CommonError.dataCorruption
-        }
+        let fields = try RawPathFields(path)
 
-        let supportedKeys = Set(RawPathKey.allCases.map(\.rawValue))
-
-        guard supportedKeys.isSuperset(of: fields.keys) else {
-            throw CommonError.dataCorruption
-        }
-
-        var junctions: [XcmUni.Junction] = []
-
-        if let globalConsensus = fields[RawPathKey.globalConsensus.rawValue] {
-            junctions.append(.globalConsensus(try XcmUni.NetworkId.createWithRawPath(globalConsensus)))
-        }
-
-        if let parachainId = fields[RawPathKey.parachainId.rawValue]?.unsignedIntValue {
-            junctions.append(.parachain(ParaId(parachainId)))
-        }
-
-        if let palletInstance = fields[RawPathKey.palletInstance.rawValue]?.unsignedIntValue {
-            junctions.append(.palletInstance(UInt8(palletInstance)))
-        }
-
-        if let generalKeyString = fields[RawPathKey.generalKey.rawValue]?.stringValue {
-            let generalKey = try Data(hexString: generalKeyString)
-
-            junctions.append(.generalKey(XcmUni.GeneralKeyValue(data: generalKey)))
-        } else if let generalIndexString = fields[RawPathKey.generalIndex.rawValue]?.stringValue {
-            guard let generalIndex = BigUInt(generalIndexString) else {
-                throw CommonError.dataCorruption
-            }
-
-            junctions.append(.generalIndex(generalIndex))
-        }
-
-        if let accountKeyString = fields[RawPathKey.accountKey20.rawValue]?.stringValue {
-            let accountKey = try Data(hexString: accountKeyString)
-
-            guard accountKey.count == 20 else {
-                throw CommonError.dataCorruption
-            }
-
-            junctions.append(.accountKey20(XcmUni.AccountId20(network: .any, accountId: accountKey)))
-        }
+        let junctions = try [
+            fields.globalConsensus(),
+            fields.parachain(),
+            fields.palletInstance(),
+            fields.generalKeyOrIndex(),
+            fields.accountKey20()
+        ].compactMap { $0 }
 
         return XcmUni.AbsoluteLocation(items: junctions)
     }
@@ -144,28 +119,6 @@ extension XcmUni.AbsoluteLocation {
         let location = XcmUni.AbsoluteLocation(paraId: paraId)
 
         return fromPointOfView(location: location)
-    }
-}
-
-extension XcmUni.NetworkId {
-    /// Config shape: {"ethereum": {"chainId": 1}}. Only Ethereum is supported.
-    static func createWithRawPath(_ path: JSON) throws -> XcmUni.NetworkId {
-        guard
-            let fields = path.dictValue,
-            fields.count == 1,
-            let ethereum = fields["ethereum"]?.dictValue else {
-            throw CommonError.dataCorruption
-        }
-
-        if let chainId = ethereum["chainId"]?.unsignedIntValue {
-            return .ethereum(chainId: chainId)
-        }
-
-        if let chainIdString = ethereum["chainId"]?.stringValue, let chainId = UInt64(chainIdString) {
-            return .ethereum(chainId: chainId)
-        }
-
-        throw CommonError.dataCorruption
     }
 }
 
@@ -212,5 +165,101 @@ extension XcmUni.RelativeLocation: XcmUniCodable {
 
         parents = try container.decode(StringScaleMapper<UInt8>.self, forKey: .parents).value
         interior = try container.decode(XcmUni.Junctions.self, forKey: .interior, configuration: configuration)
+    }
+}
+
+private extension XcmUni.AbsoluteLocation {
+    /// Validated view over a `multiLocation` config object: one parser per supported key.
+    struct RawPathFields {
+        let fields: [String: JSON]
+
+        init(_ path: JSON) throws {
+            guard let fields = path.dictValue else {
+                throw RawPathError.invalidValue(key: .parachainId, value: path)
+            }
+
+            let unsupportedKeys = Set(fields.keys).subtracting(RawPathKey.allCases.map(\.rawValue))
+
+            guard unsupportedKeys.isEmpty else {
+                throw RawPathError.unsupportedKeys(unsupportedKeys)
+            }
+
+            self.fields = fields
+        }
+
+        func globalConsensus() throws -> XcmUni.Junction? {
+            guard let value = fields[RawPathKey.globalConsensus.rawValue] else {
+                return nil
+            }
+
+            return .globalConsensus(try XcmUni.NetworkId.createWithRawPath(value))
+        }
+
+        func parachain() throws -> XcmUni.Junction? {
+            guard let value = fields[RawPathKey.parachainId.rawValue] else {
+                return nil
+            }
+
+            guard let rawId = value.unsignedIntValue, let paraId = ParaId(exactly: rawId) else {
+                throw RawPathError.invalidValue(key: .parachainId, value: value)
+            }
+
+            return .parachain(paraId)
+        }
+
+        func palletInstance() throws -> XcmUni.Junction? {
+            guard let value = fields[RawPathKey.palletInstance.rawValue] else {
+                return nil
+            }
+
+            guard let rawIndex = value.unsignedIntValue, let index = UInt8(exactly: rawIndex) else {
+                throw RawPathError.invalidValue(key: .palletInstance, value: value)
+            }
+
+            return .palletInstance(index)
+        }
+
+        func generalKeyOrIndex() throws -> XcmUni.Junction? {
+            let keyValue = fields[RawPathKey.generalKey.rawValue]
+            let indexValue = fields[RawPathKey.generalIndex.rawValue]
+
+            if keyValue != nil, indexValue != nil {
+                throw RawPathError.conflictingKeys(.generalKey, .generalIndex)
+            }
+
+            if let keyValue {
+                guard let keyString = keyValue.stringValue, let generalKey = try? Data(hexString: keyString) else {
+                    throw RawPathError.invalidValue(key: .generalKey, value: keyValue)
+                }
+
+                return .generalKey(XcmUni.GeneralKeyValue(data: generalKey))
+            }
+
+            if let indexValue {
+                guard let indexString = indexValue.stringValue, let generalIndex = BigUInt(indexString) else {
+                    throw RawPathError.invalidValue(key: .generalIndex, value: indexValue)
+                }
+
+                return .generalIndex(generalIndex)
+            }
+
+            return nil
+        }
+
+        func accountKey20() throws -> XcmUni.Junction? {
+            guard let value = fields[RawPathKey.accountKey20.rawValue] else {
+                return nil
+            }
+
+            guard let keyString = value.stringValue, let accountKey = try? Data(hexString: keyString) else {
+                throw RawPathError.invalidValue(key: .accountKey20, value: value)
+            }
+
+            guard accountKey.count == XcmUni.AccountId20.keySize else {
+                throw RawPathError.invalidAccountKey20Length(accountKey.count)
+            }
+
+            return .accountKey20(XcmUni.AccountId20(network: .any, accountId: accountKey))
+        }
     }
 }

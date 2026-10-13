@@ -260,7 +260,7 @@ final class XcmUniCodingTests: XCTestCase {
         let junction = interior?.arrayValue?[1].arrayValue?[0]
         XCTAssertEqual(junction?.arrayValue?[0].stringValue, "GlobalConsensus")
         XCTAssertEqual(junction?.arrayValue?[1].arrayValue?[0].stringValue, "Ethereum")
-        XCTAssertEqual(junction?.arrayValue?[1].arrayValue?[1].dictValue?["chain_id"]?.stringValue, "1")
+        XCTAssertEqual(junction?.arrayValue?[1].arrayValue?[1].dictValue?["chainId"]?.stringValue, "1")
     }
 
     func testEthereumConsensusLocationRejectsPreV3() {
