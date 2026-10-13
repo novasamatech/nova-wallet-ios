@@ -140,13 +140,13 @@ old admissions/completions remain fenced. Same-origin readiness does not invalid
 Their pending completions cannot restore a prior context's memo or
 return a directory enriched after that context was invalidated.
 
-Main-owner admission returns a usable bearer before cooldown checks. Each business send still
-checks shared-origin and consumer-family cooldowns, including before native cache access.
-Business 429, uncoded 500 and explicit 503 `attestation_unavailable` back off the shared origin;
-uncoded 502/503/504, coded domain 5xx (except that shared 503), other 5xx and transport failures
-back off only the analytics family. An uncoded response is one without a valid
-parsed code; this client classification does not identify the server component that failed.
-Ordinary issuance Retry-After is in memory and lost on restart; pending/recovery waits persist.
+Main-owner admission returns a usable bearer before issuance cooldown checks. Every actual
+business send checks shared-origin protection before native cache/network access. Only business
+429 and explicit 503 `attestation_unavailable` constrain that origin; ordinary business 5xx and
+transport failures pass to domain retry handling. Success does not clear an active shared deadline.
+Issuance Retry-After is memory-only; pending-probe cooldown persists. Failed authentication fails
+the operation. A later independently created operation can retry after short auth backoff; proof
+or policy denial preserves an existing binding rather than rotating its key.
 
 `409 client_already_registered` maps to non-device-bound `bindingConflict`, also
 without retry. `403 insufficient_scope` maps to generic `invalidRequest` without retry before
@@ -157,7 +157,14 @@ failures also terminate it. Route/data gaps retain per-target skipping, and tran
 retain bounded retries. Authentication recovery in the same context therefore cannot be masked
 by a one-hour memo created from an auth failure.
 
-Only the conclusive `invalid_token` predicate permits a single replay with identical POST bytes.
-The client cannot
-establish deployed handler ordering. See [NovaAuth](../../../Packages/NovaAuth/README.md) and
-the [client diagrams](../architecture/novaauth-client-diagrams.md).
+One origin/API-major bearer serves ordinary protected GET/HEAD and POST routes. Auth has no
+business allowlist or flow/scope. Consumers own method/path/body validation and ordinary business retry policy.
+
+Only conclusive `invalid_token` permits one replay preserving method/path/query/body: same
+expected HTTPS origin, 401 and the exact Bearer error header, plus a valid envelope for GET/POST.
+HEAD uses status/header without a body. Ingress rejects before business execution; arbitrary
+POST transport/5xx failures never replay. Native GET/HEAD caching follows server-owned public,
+max-age and must-revalidate headers, without extending credential lifetime. No refresh token
+exists; renewal obtains a fresh token challenge and App Attest assertion. See
+[NovaAuth](../../../Packages/NovaAuth/README.md) and the
+[client diagrams](../architecture/novaauth-client-diagrams.md).
