@@ -11,6 +11,7 @@ final class SubtensorPositionPresenter {
     let chainAsset: ChainAsset
     let pendingRootClaims: SubtensorPendingRootClaimsProtocol
 
+    private let now: () -> Date
     private var state: SubtensorPositionState
     private var target: SubtensorStakeTarget?
     private var validatorRequest: ValidatorRequest?
@@ -28,8 +29,10 @@ final class SubtensorPositionPresenter {
         interactor: SubtensorPositionInteractorInputProtocol,
         wireframe: SubtensorPositionWireframeProtocol,
         viewModelFactory: SubnetPositionViewModelFactoryProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        now: @escaping () -> Date = Date.init
     ) {
+        self.now = now
         state = SubtensorPositionState(netuid: group.netuid, group: group)
         self.account = account
         self.chainAsset = chainAsset
@@ -191,6 +194,7 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
             return
         }
 
+        state.chartSelection = nil
         state.period = periods[index]
         requestHistoryIfNeeded()
         provideViewModel()
@@ -244,8 +248,8 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
         provideViewModel()
     }
 
-    func selectChartPoint(at index: Int?) {
-        state.chartPoint = index
+    func selectChart(_ selection: SubtensorPriceChartSelection?) {
+        state.chartSelection = selection
 
         if let header = viewModelFactory.createPriceHeader(for: state, locale: selectedLocale) {
             view?.didReceive(priceHeader: header)
@@ -280,6 +284,7 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
     }
 
     func didChangeCurrency() {
+        state.chartSelection = nil
         state.price = .loading
         provideViewModel()
     }
@@ -367,6 +372,8 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
         guard period == state.period else {
             return
         }
+
+        state.chartEndDate = now()
 
         switch history {
         case let .available(priceHistory):

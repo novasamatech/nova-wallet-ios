@@ -131,7 +131,8 @@ private extension SubtensorSubnetDetailsViewModelFactory {
             taoPrice: state.taoPrice,
             currencyId: currency.id,
             currency: currencyViewModel,
-            selectedPoint: state.chartPoint
+            chartEndDate: state.chartEndDate,
+            selection: state.chartSelection
         )
     }
 

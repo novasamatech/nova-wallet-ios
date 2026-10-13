@@ -43,7 +43,8 @@ final class SubtensorSubnetDetailsViewModelFactoryTests: XCTestCase {
             taoPrice: nil,
             isFavorite: false,
             now: Date(timeIntervalSince1970: 1_790_000_000),
-            chartPoint: nil
+            chartEndDate: Date(timeIntervalSince1970: 1_790_000_000),
+            chartSelection: nil
         )
     }
 

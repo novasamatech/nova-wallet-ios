@@ -42,7 +42,8 @@ private extension SubtensorPositionViewModelFactory {
             taoPrice: nil,
             currencyId: nil,
             currency: nil,
-            selectedPoint: state.chartPoint
+            chartEndDate: state.chartEndDate,
+            selection: state.chartSelection
         )
     }
 }
