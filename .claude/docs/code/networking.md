@@ -131,13 +131,24 @@ module should call `EvmTransactionService`, not the RPC layer.
 
 ## Nova backend bearer authentication
 
-`Packages/NovaAuth` owns profile-3 bootstrap, the single persisted bearer and bounded renewal; it
-has no HTTP cache. App consumers inject `NovaAuthFacade.shared`; never build a per-feature auth
 provider. Config is
 fetched once per process, so `NovaAuthFacade` maps `infraUrl` to one memoised endpoint and nothing
 observes config or context changes. Host
-activation authorizes later demand-driven bootstrap; Bittensor requests use the default
-user-driven intent.
+activation authorizes later demand-driven bootstrap.
+`Packages/NovaAuth` owns profile-3 bootstrap, the single persisted bearer, bounded renewal and
+native URLCache. App consumers inject `NovaAuthFacade.shared`; never build a per-feature auth
+provider. Bittensor completes auth admission before domain coalescing or negative availability
+lookups, then authorizes again before the native request. `BittensorApiResponseCache` stores only
+decoded stale presentation seeds and in-flight waiters, never successful HTTP freshness. Older
+recommendation generations return `generationStale`, preserving a newer seed without refetch.
+Endpoint admissions carry an immutable facade invalidation revision. The decoded cache advances
+its revision floor monotonically and reconciles the latest revision before participation,
+completion and peek. Delayed or duplicate notifications preserve current-revision state;
+old admissions/completions remain fenced. Same-origin readiness does not invalidate the cache.
+Auth origin/generation changes also clear derived max-APY, cost-basis and
+validator-directory state. Their pending completions cannot restore a prior context's memo or
+return a directory enriched after that context was invalidated. Host activation authorizes
+later demand-driven bootstrap; catalogue requests carry no authentication intent.
 
 Main-owner admission returns a usable bearer before issuance cooldown checks. Every actual
 business send checks shared-origin protection before network access. Only business
@@ -147,11 +158,22 @@ Issuance Retry-After is memory-only; pending-probe cooldown persists. Failed aut
 the operation. A later independently created operation can retry after short auth backoff; proof
 or policy denial preserves an existing binding rather than rotating its key. A refused registration
 keeps the client ID and drops only its key. `NovaAuthRequest.intent` separates user-driven demands
-(Bittensor, the default), which re-register at once, from `.background` ones (analytics), which wait
+(the default), which re-register at once, from `.background` ones (analytics), which wait
 for a persisted 1 h / 6 h / 24 h refusal delay that resets on an app version or context change.
+Bittensor bootstrap `401 attestation_failed` maps to device-bound `attestationRejected` with
+no user retry. `409 client_already_registered` maps to non-device-bound `bindingConflict`, also
+without retry. `403 insufficient_scope` maps to generic `invalidRequest` without retry before
+the generic 401/403 branch. Invalid challenge, 503 and transport errors remain retryable.
+The max-APY walk propagates authentication-wide refusals and final token denial immediately,
+without another outer retry or a cached nil/partial result. Local unsupported/configuration
+failures also terminate it. Route/data gaps retain per-target skipping, and transient failures
+retain bounded retries. No walk result is kept between requests, so nothing can mask
+authentication recovery in the same context.
 
 One origin/API-major bearer serves ordinary protected GET/HEAD and POST routes. Auth has no
 business allowlist or flow/scope. Consumers own method/path/body validation and ordinary business retry policy. Bittensor uses `/v1/bittensor/...`.
+The removed root-yield route returns unavailable/cache miss locally, its optional service returns
+nil without networking, and alpha netuid 0 is rejected locally.
 
 Only conclusive `invalid_token` permits one replay preserving method/path/query/body: same
 expected HTTPS origin, 401 and the exact Bearer error header, plus a valid envelope for GET/POST.

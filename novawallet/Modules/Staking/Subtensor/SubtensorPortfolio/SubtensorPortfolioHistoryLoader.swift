@@ -49,17 +49,27 @@ final class SubtensorPortfolioHistoryLoader {
         let historiesOperation = ClosureOperation<SubtensorPortfolioPriceHistories> {
             let taoHistory = try taoWrapper.targetOperation.extractNoCancellableResultData()
 
-            let histories = subnetWrappers.compactMap { wrapper -> SubtensorPriceHistory? in
-                let result = try? wrapper.targetOperation.extractNoCancellableResultData()
+            var histories: [SubtensorPriceHistory] = []
+            var failedNetuids: Set<UInt16> = []
 
-                guard case let .available(history) = result else {
-                    return nil
+            for (subnet, wrapper) in zip(subnets, subnetWrappers) {
+                do {
+                    let result = try wrapper.targetOperation.extractNoCancellableResultData()
+
+                    if case let .available(history) = result {
+                        histories.append(history)
+                    }
+                } catch {
+                    failedNetuids.insert(subnet.netuid)
                 }
-
-                return history
             }
 
-            return SubtensorPortfolioPriceHistories(period: period, taoFiat: taoHistory, subnets: histories)
+            return SubtensorPortfolioPriceHistories(
+                period: period,
+                taoFiat: taoHistory,
+                subnets: histories,
+                failedNetuids: failedNetuids
+            )
         }
 
         historiesOperation.addDependency(taoWrapper.targetOperation)
