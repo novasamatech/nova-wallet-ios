@@ -12,18 +12,10 @@ final class SubtensorStakeStateFetchFactoryTests: XCTestCase {
     let rootAndSubnetAvailabilityHex = "0x04" + String(repeating: "01", count: 32) +
         "080000dad5c80d00dad5c80d070003005ed0b202286bee0300943577"
 
-    func testWrapperMergesPositionsAndPrices() throws {
+    func testWrapperMapsStakeInfoToPositions() throws {
         let stakeInfo = Self.stakeInfo(hotkey: hotkey, coldkey: coldkey, netuid: 5, stake: 2_000_000_000)
 
-        let prices = [
-            SubtensorStakingPallet.SubnetPrice(netuid: 0, price: 1_000_000_000),
-            SubtensorStakingPallet.SubnetPrice(netuid: 5, price: 500_000_000)
-        ]
-
-        let factory = createFactory(
-            stakeInfoResult: CompoundOperationWrapper.createWithResult([stakeInfo]),
-            pricesResult: CompoundOperationWrapper.createWithResult(prices)
-        )
+        let factory = createFactory(stakeInfoResult: CompoundOperationWrapper.createWithResult([stakeInfo]))
 
         let state = try fetchState(using: factory)
 
@@ -40,12 +32,9 @@ final class SubtensorStakeStateFetchFactoryTests: XCTestCase {
                 )
             ]
         )
-
-        XCTAssertEqual(state.prices, [0: 1_000_000_000, 5: 500_000_000])
-        XCTAssertEqual(state.totalStakeInRao, BigUInt(1_000_000_000))
     }
 
-    func testBothRuntimeCallsPinnedToFetchedBlockHash() throws {
+    func testStakeInfoPinnedToFetchedBlockHash() throws {
         let apiFactory = MockSubtensorApiOperationFactoryProtocol()
 
         stub(apiFactory) { stub in
@@ -53,9 +42,6 @@ final class SubtensorStakeStateFetchFactoryTests: XCTestCase {
                 CompoundOperationWrapper.createWithResult(bestBlockHash)
             )
             when(stub.createStakeInfoWrapper(for: any(), blockHash: any())).thenReturn(
-                CompoundOperationWrapper.createWithResult([])
-            )
-            when(stub.createAlphaPricesWrapper(at: any())).thenReturn(
                 CompoundOperationWrapper.createWithResult([])
             )
             when(stub.createRootClaimPreviewsWrapper(coldkey: any(), blockHash: any())).thenReturn(
@@ -71,26 +57,21 @@ final class SubtensorStakeStateFetchFactoryTests: XCTestCase {
         _ = try fetchState(using: factory)
 
         let stakeInfoHashCaptor = ArgumentCaptor<BlockHash?>()
-        let pricesHashCaptor = ArgumentCaptor<BlockHash?>()
 
         verify(apiFactory, times(1)).createStakeInfoWrapper(for: any(), blockHash: stakeInfoHashCaptor.capture())
-        verify(apiFactory, times(1)).createAlphaPricesWrapper(at: pricesHashCaptor.capture())
+        verify(apiFactory, never()).createAlphaPricesWrapper(at: any())
 
         XCTAssertEqual(stakeInfoHashCaptor.value, bestBlockHash)
-        XCTAssertEqual(pricesHashCaptor.value, bestBlockHash)
     }
 
-    func testRootPositionWithoutPricesSucceeds() throws {
+    func testRootPositionStakeReportedAsRootStake() throws {
         let stakeInfo = Self.stakeInfo(hotkey: hotkey, coldkey: coldkey, netuid: 0, stake: 57_816_438)
 
-        let factory = createFactory(
-            stakeInfoResult: CompoundOperationWrapper.createWithResult([stakeInfo]),
-            pricesResult: CompoundOperationWrapper.createWithResult([])
-        )
+        let factory = createFactory(stakeInfoResult: CompoundOperationWrapper.createWithResult([stakeInfo]))
 
         let state = try fetchState(using: factory)
 
-        XCTAssertEqual(state.totalStakeInRao, BigUInt(57_816_438))
+        XCTAssertEqual(state.rootStakeInRao, BigUInt(57_816_438))
     }
 
     func testAvailabilityReadAtThePinnedBlockForTheHeldNetuids() throws {
@@ -110,11 +91,6 @@ final class SubtensorStakeStateFetchFactoryTests: XCTestCase {
                 CompoundOperationWrapper.createWithResult([
                     Self.stakeInfo(hotkey: hotkey, coldkey: coldkey, netuid: 7, stake: 3_000_000_000),
                     Self.stakeInfo(hotkey: hotkey, coldkey: coldkey, netuid: 0, stake: 57_816_438)
-                ])
-            )
-            when(stub.createAlphaPricesWrapper(at: any())).thenReturn(
-                CompoundOperationWrapper.createWithResult([
-                    SubtensorStakingPallet.SubnetPrice(netuid: 7, price: 500_000_000)
                 ])
             )
             when(stub.createStakeAvailabilityWrapper(for: any(), netuids: any(), blockHash: any())).thenReturn(
@@ -156,41 +132,6 @@ final class SubtensorStakeStateFetchFactoryTests: XCTestCase {
         )
     }
 
-    func testZeroAlphaPriceKeepsThePositionUnpriced() throws {
-        let subnetInfo = Self.stakeInfo(hotkey: hotkey, coldkey: coldkey, netuid: 7, stake: 1_000_000_000)
-        let rootInfo = Self.stakeInfo(hotkey: hotkey, coldkey: coldkey, netuid: 0, stake: 57_816_438)
-
-        let factory = createFactory(
-            stakeInfoResult: CompoundOperationWrapper.createWithResult([subnetInfo, rootInfo]),
-            pricesResult: CompoundOperationWrapper.createWithResult(
-                [SubtensorStakingPallet.SubnetPrice(netuid: 7, price: 0)]
-            )
-        )
-
-        let state = try fetchState(using: factory)
-
-        XCTAssertEqual(state.positions.map(\.netuid), [7, 0])
-        XCTAssertEqual(state.unpricedNetuids, [7])
-        XCTAssertEqual(state.totalStakeInRao, BigUInt(57_816_438))
-    }
-
-    func testMissingAlphaPriceKeepsThePositionUnpriced() throws {
-        let stakeInfo = Self.stakeInfo(hotkey: hotkey, coldkey: coldkey, netuid: 7, stake: 1_000_000_000)
-
-        let factory = createFactory(
-            stakeInfoResult: CompoundOperationWrapper.createWithResult([stakeInfo]),
-            pricesResult: CompoundOperationWrapper.createWithResult(
-                [SubtensorStakingPallet.SubnetPrice(netuid: 3, price: 500_000_000)]
-            )
-        )
-
-        let state = try fetchState(using: factory)
-
-        XCTAssertEqual(state.positions.map(\.netuid), [7])
-        XCTAssertEqual(state.unpricedNetuids, [7])
-        XCTAssertEqual(state.totalStakeInRao, BigUInt.zero)
-    }
-
     func testBlockHashFailurePropagates() {
         let apiFactory = MockSubtensorApiOperationFactoryProtocol()
 
@@ -199,9 +140,6 @@ final class SubtensorStakeStateFetchFactoryTests: XCTestCase {
                 CompoundOperationWrapper.createWithError(CommonError.dataCorruption)
             )
             when(stub.createStakeInfoWrapper(for: any(), blockHash: any())).thenReturn(
-                CompoundOperationWrapper.createWithResult([])
-            )
-            when(stub.createAlphaPricesWrapper(at: any())).thenReturn(
                 CompoundOperationWrapper.createWithResult([])
             )
         }
@@ -216,17 +154,7 @@ final class SubtensorStakeStateFetchFactoryTests: XCTestCase {
 
     func testStakeInfoFailurePropagates() {
         let factory = createFactory(
-            stakeInfoResult: CompoundOperationWrapper.createWithError(CommonError.dataCorruption),
-            pricesResult: CompoundOperationWrapper.createWithResult([])
-        )
-
-        XCTAssertThrowsError(try fetchState(using: factory))
-    }
-
-    func testPricesFailurePropagates() {
-        let factory = createFactory(
-            stakeInfoResult: CompoundOperationWrapper.createWithResult([]),
-            pricesResult: CompoundOperationWrapper.createWithError(CommonError.dataCorruption)
+            stakeInfoResult: CompoundOperationWrapper.createWithError(CommonError.dataCorruption)
         )
 
         XCTAssertThrowsError(try fetchState(using: factory))
@@ -252,8 +180,7 @@ final class SubtensorStakeStateFetchFactoryTests: XCTestCase {
     }
 
     private func createFactory(
-        stakeInfoResult: CompoundOperationWrapper<[SubtensorStakingPallet.StakeInfo]>,
-        pricesResult: CompoundOperationWrapper<[SubtensorStakingPallet.SubnetPrice]>
+        stakeInfoResult: CompoundOperationWrapper<[SubtensorStakingPallet.StakeInfo]>
     ) -> SubtensorStakeStateFetchFactory {
         let apiFactory = MockSubtensorApiOperationFactoryProtocol()
 
@@ -262,7 +189,6 @@ final class SubtensorStakeStateFetchFactoryTests: XCTestCase {
                 CompoundOperationWrapper.createWithResult(bestBlockHash)
             )
             when(stub.createStakeInfoWrapper(for: any(), blockHash: any())).thenReturn(stakeInfoResult)
-            when(stub.createAlphaPricesWrapper(at: any())).thenReturn(pricesResult)
             when(stub.createStakeAvailabilityWrapper(for: any(), netuids: any(), blockHash: any())).thenReturn(
                 CompoundOperationWrapper.createWithResult([])
             )

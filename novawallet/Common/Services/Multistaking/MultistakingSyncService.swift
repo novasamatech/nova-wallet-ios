@@ -581,6 +581,14 @@ extension MultistakingSyncService: MultistakingSyncServiceProtocol {
     }
 
     func refreshOffchain() {
+        mutex.lock()
+
+        let subtensorUpdaters = onchainUpdaters.values.compactMap { $0 as? SubtensorMultistakingUpdateService }
+
+        mutex.unlock()
+
         offchainUpdater?.syncUp()
+
+        subtensorUpdaters.forEach { $0.refreshCataloguePricing() }
     }
 }

@@ -28,7 +28,8 @@ final class SubtensorExternalBalanceTests: XCTestCase {
         let balance = SubtensorStakedBalance(
             chainAssetId: ChainAssetId(chainId: subtensorChainId, assetId: 0),
             accountId: Data(repeating: 1, count: 32),
-            amount: 57_816_438
+            amount: 57_816_438,
+            isComplete: true
         )
 
         let writeRepository = storageFacade.createRepository(
@@ -62,7 +63,8 @@ final class SubtensorExternalBalanceTests: XCTestCase {
         let balance = SubtensorStakedBalance(
             chainAssetId: ChainAssetId(chainId: subtensorChainId, assetId: 0),
             accountId: Data(repeating: 1, count: 32),
-            amount: 57_816_438
+            amount: 57_816_438,
+            isComplete: false
         )
 
         let repository = storageFacade.createRepository(

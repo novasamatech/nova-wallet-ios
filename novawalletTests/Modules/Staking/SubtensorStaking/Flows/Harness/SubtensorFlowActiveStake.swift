@@ -24,7 +24,6 @@ enum SubtensorFlowActiveStake {
                 try position(.ember, netuid: 64, stake: chutesAlpha),
                 try position(.cinder, netuid: 4, stake: targonAlpha)
             ],
-            prices: [64: chutesSpotPrice, 4: 29_545_454],
             availability: [
                 World.rootNetuid: availability(total: rootStake, locked: 0),
                 64: availability(total: chutesAlpha, locked: chutesLockedAlpha),
@@ -40,7 +39,6 @@ enum SubtensorFlowActiveStake {
     static func rootOnlyState() throws -> Multistaking.SubtensorStakingState {
         Multistaking.SubtensorStakingState(
             positions: [try position(.aster, netuid: World.rootNetuid, stake: rootStake)],
-            prices: [:],
             availability: [World.rootNetuid: availability(total: rootStake, locked: 0)]
         )
     }
@@ -51,7 +49,6 @@ enum SubtensorFlowActiveStake {
                 try position(.ember, netuid: 64, stake: 50_000_000_000),
                 try position(.cinder, netuid: 64, stake: 20_000_000_000)
             ],
-            prices: [64: chutesSpotPrice],
             availability: [64: availability(total: 70_000_000_000, locked: 0)]
         )
     }
@@ -173,6 +170,7 @@ final class SubtensorFlowPositionsFeed {
 
     private let lock = NSLock()
     private let observable = Observable<State>(state: nil)
+    private let fetchCountObservable = Observable<UInt>(state: 0)
     private var refreshedStates: [Multistaking.SubtensorStakingState] = []
 
     init(service: MockSubtensorPositionsSyncServiceProtocol) {
@@ -193,12 +191,23 @@ final class SubtensorFlowPositionsFeed {
             when(stub.remove(observer: any())).then { observer in
                 self.remove(observer)
             }
+
+            when(
+                stub.add(fetchObserver: any(), sendStateOnSubscription: any(), queue: any(), closure: any())
+            ).then { observer, sendStateOnSubscription, queue, closure in
+                self.add(fetchObserver: observer, sendStateOnSubscription: sendStateOnSubscription, queue: queue, closure: closure)
+            }
+
+            when(stub.remove(fetchObserver: any())).then { observer in
+                self.remove(fetchObserver: observer)
+            }
         }
     }
 
     func publish(_ state: Multistaking.SubtensorStakingState) {
         lock.lock()
         observable.state = state
+        fetchCountObservable.state += 1
         lock.unlock()
     }
 
@@ -215,6 +224,7 @@ private extension SubtensorFlowPositionsFeed {
 
         if !refreshedStates.isEmpty {
             observable.state = refreshedStates.removeFirst()
+            fetchCountObservable.state += 1
         }
 
         lock.unlock()
@@ -241,6 +251,30 @@ private extension SubtensorFlowPositionsFeed {
     func remove(_ observer: AnyObject) {
         lock.lock()
         observable.removeObserver(by: observer)
+        lock.unlock()
+    }
+
+    func add(
+        fetchObserver observer: AnyObject,
+        sendStateOnSubscription: Bool,
+        queue: DispatchQueue?,
+        closure: @escaping Observable<UInt>.StateChangeClosure
+    ) {
+        lock.lock()
+
+        fetchCountObservable.addObserver(
+            with: observer,
+            sendStateOnSubscription: sendStateOnSubscription,
+            queue: queue ?? .global(),
+            closure: closure
+        )
+
+        lock.unlock()
+    }
+
+    func remove(fetchObserver observer: AnyObject) {
+        lock.lock()
+        fetchCountObservable.removeObserver(by: observer)
         lock.unlock()
     }
 }

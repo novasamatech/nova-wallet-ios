@@ -4,6 +4,8 @@ import CoreData
 import BigInt
 
 final class SubtensorStakedBalanceMapper {
+    static let partialMarker = "partial"
+
     var entityIdentifierFieldName: String { #keyPath(CDExternalBalance.identifier) }
 
     typealias DataProviderModel = SubtensorStakedBalance
@@ -22,6 +24,7 @@ extension SubtensorStakedBalanceMapper: CoreDataMapperProtocol {
         entity.type = ExternalAssetBalance.BalanceType.subtensorStaking.rawValue
         entity.subtype = nil
         entity.param = nil
+        entity.param2 = model.isComplete ? nil : Self.partialMarker
         entity.chainAccountId = model.accountId.toHex()
         entity.amount = String(model.amount)
     }
@@ -33,7 +36,8 @@ extension SubtensorStakedBalanceMapper: CoreDataMapperProtocol {
         return .init(
             chainAssetId: .init(chainId: entity.chainId!, assetId: .init(bitPattern: entity.assetId)),
             accountId: accountId,
-            amount: amount
+            amount: amount,
+            isComplete: entity.param2 != Self.partialMarker
         )
     }
 }
