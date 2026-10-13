@@ -59,7 +59,8 @@ final class NovaAuthFacade: NovaAuthProvidingProtocol {
     private let contextInvalidationID: () -> UUID?
     private let isUnitTesting: Bool
     private let mutex = NSRecursiveLock()
-    private var availability = NovaAuthEndpointAvailability()
+    private let availabilityLock = NSLock()
+    private var publishedAvailability = NovaAuthEndpointAvailability()
     private var latestSnapshot: GlobalConfigSnapshot?
     private var observers: [Observer] = []
     private var availabilityObservers: [AvailabilityObserver] = []
@@ -85,11 +86,7 @@ final class NovaAuthFacade: NovaAuthProvidingProtocol {
 
     var isSupported: Bool { !isUnitTesting && client?.isSupported == true }
 
-    var endpointAvailability: NovaAuthEndpointAvailability {
-        mutex.lock()
-        defer { mutex.unlock() }
-        return availability
-    }
+    var endpointAvailability: NovaAuthEndpointAvailability { availability }
 
     func createEndpointWrapper() -> CompoundOperationWrapper<NovaAuthEndpoint> {
         guard isSupported else { return .createWithError(NovaAuthError.unsupported) }
@@ -173,6 +170,20 @@ final class NovaAuthFacade: NovaAuthProvidingProtocol {
 // MARK: Private
 
 private extension NovaAuthFacade {
+    // Main-thread cache peeks read this, so it must never wait on the adoption mutex held across auth I/O.
+    var availability: NovaAuthEndpointAvailability {
+        get {
+            availabilityLock.lock()
+            defer { availabilityLock.unlock() }
+            return publishedAvailability
+        }
+        set {
+            availabilityLock.lock()
+            publishedAvailability = newValue
+            availabilityLock.unlock()
+        }
+    }
+
     func publishLocked(_ endpoint: NovaAuthEndpoint?, invalidated: Bool) {
         availability = NovaAuthEndpointAvailability(
             revision: availability.revision + 1,
