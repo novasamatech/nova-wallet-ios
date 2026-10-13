@@ -384,6 +384,36 @@ final class NovaAuthFacadeTests: XCTestCase {
         XCTAssertEqual(harness.facade.endpointAvailability.revision, 2)
     }
 
+    func testInvalidationRevisionIsReadableWhileAdoptionIsActivating() throws {
+        let harness = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self)
+        let activating = DispatchSemaphore(value: 0)
+        let releaseActivation = DispatchSemaphore(value: 0)
+        let provider = NovaAuthFacade(
+            configProvider: AuthConfigProvider(),
+            client: harness.client,
+            activate: { _ in
+                activating.signal()
+                releaseActivation.wait()
+                throw NovaAuthError.unsupported
+            },
+            reset: {}
+        )
+        let transport = BittensorAuthorizedTransport(provider: provider, operationQueue: OperationQueue())
+        let adoptionQueue = OperationQueue()
+        adoptionQueue.addOperations(provider.createEndpointWrapper().allOperations, waitUntilFinished: false)
+        XCTAssertEqual(activating.wait(timeout: .now() + 5), .success)
+
+        let revisionRead = DispatchSemaphore(value: 0)
+        DispatchQueue.global().async {
+            _ = transport.invalidationRevision
+            revisionRead.signal()
+        }
+
+        XCTAssertEqual(revisionRead.wait(timeout: .now() + 2), .success)
+        releaseActivation.signal()
+        adoptionQueue.waitUntilAllOperationsAreFinished()
+    }
+
     func testColdReplacementPersistenceFailureDiscardsPendingConsentThroughAdapter() throws {
         let previous = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self)
         let context = try previous.client.activate(origin: NovaAuthOrigin("https://old.test"))
