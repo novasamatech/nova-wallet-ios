@@ -294,7 +294,7 @@ private extension SubtensorValidatorPresetFactory {
             return false
         }
 
-        return SubtensorValidatorListFactory.eligibility(
+        return SubtensorValidatorEligibility.eligibility(
             of: item,
             isRoot: subnet.netuid == SubtensorStakingPallet.rootNetuid,
             gates: gates

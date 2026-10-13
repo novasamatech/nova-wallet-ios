@@ -15,12 +15,6 @@ struct SubtensorValidatorListInput {
     let preselectedHotkey: AccountId?
 }
 
-enum SubtensorValidatorEligibility: Equatable {
-    case unlisted
-    case inactive
-    case selectable
-}
-
 final class SubtensorValidatorListFactory {
     let chainFormat: ChainFormat
 
@@ -39,23 +33,6 @@ final class SubtensorValidatorListFactory {
 }
 
 extension SubtensorValidatorListFactory {
-    static func eligibility(
-        of item: SubtensorValidatorDirectoryItem,
-        isRoot: Bool,
-        gates: SubtensorClientGates
-    ) -> SubtensorValidatorEligibility {
-        guard
-            let status = item.status,
-            isRoot || !gates.requirePermit || status.hasPermit == true,
-            let take = item.take,
-            let maxTake = gates.maxTake.decimalValue,
-            take <= maxTake else {
-            return .unlisted
-        }
-
-        return isRoot || !gates.requireActiveWithinCutoff || status.isActive == true ? .selectable : .inactive
-    }
-
     static func sortOptions(isRoot: Bool, yields: SubtensorAlphaYields?) -> [SubtensorValidatorSort] {
         ratesShown(isRoot: isRoot, yields: yields) ? [.apy, .totalStaked, .name] : [.totalStaked, .name]
     }
@@ -66,26 +43,6 @@ extension SubtensorValidatorListFactory {
         yields: SubtensorAlphaYields?
     ) -> SubtensorValidatorSort {
         sortOptions(isRoot: isRoot, yields: yields).contains(requested) ? requested : .totalStaked
-    }
-
-    static func preselectedHotkey(
-        _ current: AccountId?,
-        in directory: SubtensorValidatorDirectory,
-        isRoot: Bool,
-        gates: SubtensorClientGates
-    ) -> AccountId? {
-        selectableItem(for: current, in: directory, isRoot: isRoot, gates: gates)?.hotkey
-    }
-
-    static func selectableItem(
-        for hotkey: AccountId?,
-        in directory: SubtensorValidatorDirectory?,
-        isRoot: Bool,
-        gates: SubtensorClientGates
-    ) -> SubtensorValidatorDirectoryItem? {
-        directory?.items.first { item in
-            item.hotkey == hotkey && eligibility(of: item, isRoot: isRoot, gates: gates) == .selectable
-        }
     }
 }
 
@@ -256,7 +213,11 @@ private extension SubtensorValidatorListFactory {
 
     func createEntries(for input: SubtensorValidatorListInput, unknown: String) -> [Entry] {
         input.directory.items.compactMap { item in
-            let eligibility = Self.eligibility(of: item, isRoot: input.isRoot, gates: input.clientGates)
+            let eligibility = SubtensorValidatorEligibility.eligibility(
+                of: item,
+                isRoot: input.isRoot,
+                gates: input.clientGates
+            )
 
             guard eligibility != .unlisted else {
                 return nil
