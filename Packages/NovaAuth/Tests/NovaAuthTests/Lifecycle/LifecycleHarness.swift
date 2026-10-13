@@ -1,6 +1,7 @@
 import Foundation
 import XCTest
 import Operation_iOS
+import SDKLogger
 @testable import NovaAuth
 
 final class LifecycleHarness {
@@ -27,9 +28,14 @@ final class LifecycleHarness {
         callers.maxConcurrentOperationCount = 8
     }
 
-    func makeAuth(http: NovaAuthHTTPProtocol? = nil, identityStore: NovaAuthIdentityStoreProtocol? = nil) -> NovaAuth {
+    func makeAuth(
+        http: NovaAuthHTTPProtocol? = nil,
+        identityStore: NovaAuthIdentityStoreProtocol? = nil,
+        appAttest: NovaAuthAppAttestProtocol? = nil,
+        logger: SDKLoggerProtocol? = nil
+    ) -> NovaAuth {
         NovaAuth(dependencies: NovaAuthDependencies(
-            appAttest: apple,
+            appAttest: appAttest ?? apple,
             identityStore: identityStore ?? identity,
             tokenStore: tokens,
             clock: clock,
@@ -40,7 +46,7 @@ final class LifecycleHarness {
             bootstrapQueue: bootstrapQueue,
             requestQueue: requestQueue,
             appIdentity: appIdentity,
-            logger: nil
+            logger: logger
         ))
     }
 

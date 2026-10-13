@@ -55,8 +55,10 @@ final class NovaAuthDeviceCheckTests: XCTestCase {
         let service = DelayedDeviceCheck()
         let adapter = NovaAuthDeviceCheckService(service: service, timeout: 0.02)
         let digest = Data(repeating: 1, count: 32)
+        XCTAssertFalse(adapter.isBusy(keyID: FoundationFixture.keyID))
         var first = adapter.createAssertionWrapper(keyID: FoundationFixture.keyID, clientDataHash: digest)
         XCTAssertThrowsError(try executeFoundation(first)) { XCTAssertEqual(String(describing: $0), "timedOut") }
+        XCTAssertTrue(adapter.isBusy(keyID: FoundationFixture.keyID))
         let lateCallback = try service.callback(at: 0)
 
         XCTAssertThrowsError(try executeFoundation(
@@ -67,9 +69,9 @@ final class NovaAuthDeviceCheckTests: XCTestCase {
             XCTAssertEqual(String(describing: $0), "timedOut")
         }
 
-        // The SDK callback owns the lease even when the timed-out wrapper is no longer retained.
         first = .createWithResult(Data())
         lateCallback(Data([4, 5, 6]), nil)
+        XCTAssertFalse(adapter.isBusy(keyID: FoundationFixture.keyID))
         service.automaticResponse = Data([7, 8, 9])
         XCTAssertEqual(try executeFoundation(
             adapter.createAssertionWrapper(keyID: FoundationFixture.keyID, clientDataHash: digest)
@@ -93,6 +95,7 @@ final class NovaAuthDeviceCheckTests: XCTestCase {
         service.onProof = nil
         first.cancel()
         wait(for: [finished], timeout: 3)
+        XCTAssertTrue(adapter.isBusy(keyID: FoundationFixture.keyID))
 
         XCTAssertThrowsError(try executeFoundation(adapter.createAssertionWrapper(
             keyID: FoundationFixture.keyID, clientDataHash: Data(repeating: 2, count: 32)
@@ -100,6 +103,7 @@ final class NovaAuthDeviceCheckTests: XCTestCase {
         XCTAssertEqual(service.proofCount, 1)
 
         try service.callback(at: 0)(nil, NSError(domain: DCError.errorDomain, code: DCError.Code.serverUnavailable.rawValue))
+        XCTAssertFalse(adapter.isBusy(keyID: FoundationFixture.keyID))
         service.automaticResponse = Data([4, 5, 6])
         XCTAssertEqual(try executeFoundation(adapter.createAssertionWrapper(
             keyID: FoundationFixture.keyID, clientDataHash: Data(repeating: 2, count: 32)
@@ -117,6 +121,8 @@ final class NovaAuthDeviceCheckTests: XCTestCase {
 
         service.automaticResponse = Data([4, 5, 6])
         let otherKey = Data(repeating: 99, count: 32).base64EncodedString()
+        XCTAssertTrue(adapter.isBusy(keyID: FoundationFixture.keyID))
+        XCTAssertFalse(adapter.isBusy(keyID: otherKey))
         XCTAssertEqual(try executeFoundation(adapter.createAttestationWrapper(
             keyID: otherKey, clientDataHash: digest
         )), Data([4, 5, 6]))
@@ -173,7 +179,7 @@ private final class FoundationDeviceCheck: NovaAuthDeviceCheckProtocol {
     }
 }
 
-private final class DelayedDeviceCheck: NovaAuthDeviceCheckProtocol {
+final class DelayedDeviceCheck: NovaAuthDeviceCheckProtocol {
     private let lock = NSLock()
     private var callbacks: [(Data?, Error?) -> Void] = []
     private var response: Data?

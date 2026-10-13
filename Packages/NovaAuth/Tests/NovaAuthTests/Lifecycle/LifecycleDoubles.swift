@@ -123,20 +123,37 @@ final class LifecyclePending<Value> {
 
 final class LifecycleApple: NovaAuthAppAttestProtocol {
     var isSupported = true
+    var busyKeys: Set<String> = []
     var keys = 0
     var attestations: [(String, Data)] = []
     var assertions: [(String, Data)] = []
     var keyResult: Result<String, Error> = .success(Data(repeating: 1, count: 32).base64EncodedString())
+    var key: (() -> CompoundOperationWrapper<String>)?
     var attest: (() -> CompoundOperationWrapper<Data>)?
     var assert: (() -> CompoundOperationWrapper<Data>)?
+
+    func isBusy(keyID: String) -> Bool { busyKeys.contains(keyID) }
+
     func createKeyWrapper() -> CompoundOperationWrapper<String> {
         keys += 1
+        if let key { return key() }
         return CompoundOperationWrapper(targetOperation: ClosureOperation { [self] in try keyResult.get() })
     }
 
-    func createAttestationWrapper(keyID: String, clientDataHash: Data) -> CompoundOperationWrapper<Data> {
+    func createAttestationWrapper(
+        keyID: String,
+        clientDataHash: Data,
+        beforeAttest: @escaping () throws -> Void
+    ) -> CompoundOperationWrapper<Data> {
         attestations.append((keyID, clientDataHash))
-        return attest?() ?? .createWithResult(Data([1, 2, 3]))
+        let wrapper = attest?() ?? .createWithResult(Data([1, 2, 3]))
+        let target = wrapper.targetOperation
+        let configuration = target.configurationBlock
+        target.configurationBlock = { [weak target] in
+            configuration?()
+            do { try beforeAttest() } catch { target?.result = .failure(error) }
+        }
+        return wrapper
     }
 
     func createAssertionWrapper(keyID: String, clientDataHash: Data) -> CompoundOperationWrapper<Data> {

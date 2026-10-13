@@ -63,7 +63,7 @@ final class NovaAuthCooldownTests: LifecycleTestCase {
         XCTAssertNoThrow(try cooldown.check(now: NovaAuthTime(bootID: "b", continuousSeconds: 0)))
     }
 
-    func testProtected429BlocksAllAdmissionEvenWithUsableCachedCredential() throws {
+    func testProtected429BlocksBusinessSendEvenWithUsableCachedCredential() throws {
         let harness = try LifecycleHarness()
         let (auth, context) = try harness.registered(withToken: true)
         harness.http.handler = { request, completion in
@@ -77,27 +77,34 @@ final class NovaAuthCooldownTests: LifecycleTestCase {
         XCTAssertEqual(harness.bootstrap.tokenChallenges, 0)
     }
 
-    func testBusiness503AndTransportBackoffDoNotEraseBearerOrTriggerRenewal() throws {
-        for transport in [false, true] {
-            let harness = try LifecycleHarness()
-            let (auth, context) = try harness.registered(withToken: true)
-            harness.http.handler = { request, completion in
-                if transport { completion(.failure(NovaAuthError.transport(.timedOut))) }
-                else { completion(Result { try LifecycleHTTP.response(request: request, status: 503) }) }
-            }
-            let request = try harness.request(context: context)
-            if transport {
-                assertError(.transport(.timedOut), auth.createResponseWrapper(for: request, beforeSend: {}), on: harness.callers)
-            } else { try execute(auth.createResponseWrapper(for: request, beforeSend: {}), on: harness.callers) }
-            if transport {
-                try execute(auth.createAdmissionWrapper(in: context, intent: .userInitiated), on: harness.callers)
-            } else {
-                assertError(.cooldown(retryAfter: 1.5), auth.createAdmissionWrapper(in: context, intent: .userInitiated), on: harness.callers)
-            }
-            assertError(.cooldown(retryAfter: 1.5), auth.createResponseWrapper(for: request, beforeSend: {}), on: harness.callers)
-            XCTAssertNotNil(try harness.tokens.load())
-            XCTAssertEqual(harness.bootstrap.tokens.count, 0)
+    func testBusiness503BackoffPreservesAdmissionAndBlocksAnotherPhysicalSend() throws {
+        let harness = try LifecycleHarness()
+        let (auth, context) = try harness.registered(withToken: true)
+        harness.http.handler = { request, completion in
+            completion(Result { try LifecycleHTTP.response(request: request, status: 503) })
         }
+        let request = try harness.request(context: context)
+        try execute(auth.createResponseWrapper(for: request, beforeSend: {}), on: harness.callers)
+        try execute(auth.createAdmissionWrapper(in: context, intent: .userInitiated), on: harness.callers)
+        assertError(.cooldown(retryAfter: 1.5), auth.createResponseWrapper(for: request, beforeSend: {}), on: harness.callers)
+        XCTAssertEqual(harness.http.requests.count, 1)
+        XCTAssertNotNil(try harness.tokens.load())
+        XCTAssertEqual(harness.bootstrap.tokens.count, 0)
+    }
+
+    func testBusinessTransportBackoffPreservesAdmissionAndBlocksAnotherPhysicalSend() throws {
+        let harness = try LifecycleHarness()
+        let (auth, context) = try harness.registered(withToken: true)
+        harness.http.handler = { _, completion in
+            completion(.failure(NovaAuthError.transport(.timedOut)))
+        }
+        let request = try harness.request(context: context)
+        assertError(.transport(.timedOut), auth.createResponseWrapper(for: request, beforeSend: {}), on: harness.callers)
+        try execute(auth.createAdmissionWrapper(in: context, intent: .userInitiated), on: harness.callers)
+        assertError(.cooldown(retryAfter: 1.5), auth.createResponseWrapper(for: request, beforeSend: {}), on: harness.callers)
+        XCTAssertEqual(harness.http.requests.count, 1)
+        XCTAssertNotNil(try harness.tokens.load())
+        XCTAssertEqual(harness.bootstrap.tokens.count, 0)
     }
 
     func testServiceFailuresHoldOffOnlyTheirOwnFamilyForIssuerAndReader() throws {

@@ -74,17 +74,17 @@ final class NovaAuthPendingStorageTests: XCTestCase {
         var state = try pendingState()
         var cooldown = NovaAuthCooldown()
         cooldown.fail(now: NovaAuthTime(bootID: "boot-a", continuousSeconds: 50), random: 0, retryAfter: 60)
-        state.recoveryCooldown = cooldown
+        state.recovery = NovaAuthRecoveryState(recreationDelay: cooldown)
         state.tokenRemovalOwed = true
         var json = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(state)) as? [String: Any])
-        json.removeValue(forKey: "recoveryCooldown")
+        json.removeValue(forKey: "recovery")
         json.removeValue(forKey: "tokenRemovalOwed")
         let settings = InMemorySettingsManager()
         settings.set(value: try JSONSerialization.data(withJSONObject: json), for: NovaAuthSettingsIdentityStore.storageKey)
         let decoded = try XCTUnwrap(NovaAuthSettingsIdentityStore(settingsManager: settings).load())
         XCTAssertEqual(decoded.context, state.context)
         XCTAssertEqual(decoded.identity, state.identity)
-        XCTAssertNil(decoded.recoveryCooldown)
+        XCTAssertNil(decoded.recovery)
         XCTAssertNil(decoded.tokenRemovalOwed)
     }
 

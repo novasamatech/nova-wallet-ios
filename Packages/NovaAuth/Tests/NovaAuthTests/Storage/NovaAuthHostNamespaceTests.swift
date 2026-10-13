@@ -112,7 +112,6 @@ private extension NovaAuthHostNamespaceTests {
     func configuration(_ namespace: String) throws -> NovaAuthSharedStoreConfiguration {
         try NovaAuthSharedStoreConfiguration(
             accessGroup: "group.novafoundation.novawallet",
-            containerURL: FileManager.default.temporaryDirectory,
             hostAppNamespace: namespace
         )
     }

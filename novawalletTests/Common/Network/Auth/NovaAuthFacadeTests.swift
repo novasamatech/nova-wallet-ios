@@ -1,12 +1,13 @@
 import XCTest
 import Operation_iOS
-import NovaAnalytics
+@testable import NovaAnalytics
 @testable import NovaAuth
 @testable import novawallet
 
 final class AuthConfigProvider: GlobalConfigProviding {
     var snapshot: GlobalConfigSnapshot
     var requests = 0
+    var resolve: (() throws -> GlobalConfigSnapshot)?
     private var callback: ((GlobalConfigSnapshot) -> Void)?
 
     init(origin: String = "https://first.test", revision: UInt64 = 1) {
@@ -26,6 +27,7 @@ final class AuthConfigProvider: GlobalConfigProviding {
     func addSnapshotObserver(_: AnyObject, closure: @escaping (GlobalConfigSnapshot) -> Void) { callback = closure }
     func createConfigSnapshotWrapper() -> CompoundOperationWrapper<GlobalConfigSnapshot> {
         requests += 1
+        if let resolve { return CompoundOperationWrapper(targetOperation: ClosureOperation(closure: resolve)) }
         return .createWithResult(snapshot)
     }
 
@@ -41,7 +43,6 @@ final class NovaAuthFacadeTests: XCTestCase {
         XCTAssertEqual(namespace, Bundle.main.bundleIdentifier)
         let configuration = try NovaAuthSharedStoreConfiguration(
             accessGroup: SharedContainerGroup.name,
-            containerURL: FileManager.default.temporaryDirectory,
             hostAppNamespace: namespace
         )
         XCTAssertEqual(configuration.hostAppNamespace, namespace)
@@ -60,6 +61,7 @@ final class NovaAuthFacadeTests: XCTestCase {
             configProvider: config,
             client: harness.client,
             isUnitTesting: unitTesting,
+            contextInvalidationID: { harness.client.contextInvalidationID },
             activate: { try harness.client.activate(origin: $0) },
             reset: { try harness.client.reset() }
         )
@@ -166,5 +168,171 @@ final class NovaAuthFacadeTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(OperationManagerFacade.novaAuthBootstrapQueue.maxConcurrentOperationCount, 2)
         XCTAssertFalse(OperationManagerFacade.novaAuthOwnerQueue === OperationManagerFacade.novaAuthRequestQueue)
         XCTAssertFalse(OperationManagerFacade.novaAuthBootstrapQueue === OperationManagerFacade.novaAuthRequestQueue)
+    }
+
+    func testUnresolvedConsentParksUntilAdoptionAndWithdrawalDiscardsIt() throws {
+        let auth = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self)
+        let config = AuthConfigProvider()
+        config.resolve = { throw URLError(.notConnectedToInternet) }
+        var enabled = true
+        let harness = HostConsentRecoveryHarness(config: config, auth: auth, isConsentEnabled: { enabled })
+
+        harness.recovery.enableConsent()
+        harness.queue.drain()
+        XCTAssertEqual(config.requests, 1)
+        XCTAssertTrue(harness.client.contexts.isEmpty)
+        XCTAssertTrue(harness.scheduler.delays.isEmpty)
+
+        config.publish(origin: "https://first.test", revision: 2)
+        harness.queue.drain()
+        XCTAssertEqual(config.requests, 1)
+        XCTAssertEqual(harness.client.intents, [.userInitiated])
+        XCTAssertNotNil(try auth.tokens.load())
+
+        harness.recovery.cancel()
+        harness.recovery.enableConsent()
+        harness.queue.drain()
+        XCTAssertEqual(harness.client.contexts.count, 1)
+        enabled = false
+        harness.recovery.cancel()
+        config.publish(origin: "https://first.test", revision: 3)
+        harness.queue.drain()
+        XCTAssertEqual(harness.client.contexts.count, 1)
+
+        config.resolve = nil
+        enabled = true
+        harness.recovery.enableConsent()
+        harness.queue.drain()
+        config.publish(origin: "https://first.test", revision: 4)
+        harness.queue.drain()
+        XCTAssertEqual(config.requests, 3)
+        XCTAssertEqual(harness.client.intents, [.userInitiated, .userInitiated])
+        XCTAssertTrue(harness.scheduler.delays.isEmpty)
+        XCTAssertEqual(auth.apple.attestations, 1)
+    }
+
+    func testAvailabilityBeforeResolutionFailureWakesOnceButOlderReadinessCannot() throws {
+        let auth = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self)
+        let config = AuthConfigProvider()
+        let harness = HostConsentRecoveryHarness(config: config, auth: auth)
+        config.publish(origin: "https://first.test", revision: 1)
+        config.resolve = { throw URLError(.notConnectedToInternet) }
+
+        harness.recovery.enableConsent()
+        harness.queue.drain()
+        XCTAssertTrue(harness.client.contexts.isEmpty)
+        XCTAssertTrue(harness.scheduler.delays.isEmpty)
+
+        harness.recovery.cancel()
+        config.resolve = { [weak config] in
+            config?.publish(origin: "https://first.test", revision: 2)
+            throw URLError(.notConnectedToInternet)
+        }
+        harness.recovery.enableConsent()
+        harness.queue.drain()
+        XCTAssertEqual(config.requests, 2)
+        XCTAssertEqual(harness.client.intents, [.userInitiated])
+        XCTAssertTrue(harness.scheduler.delays.isEmpty)
+
+        config.publish(origin: "https://first.test", revision: 3)
+        harness.queue.drain()
+        XCTAssertEqual(config.requests, 2)
+        XCTAssertEqual(harness.client.contexts.count, 1)
+        XCTAssertEqual(auth.apple.attestations, 1)
+    }
+
+    func testColdOriginReplacementInvalidatesBeforeReadinessWithoutHoldingFacadeLock() throws {
+        let previous = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self)
+        let context = try previous.client.activate(origin: NovaAuthOrigin("https://old.test"))
+        let auth = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self, identity: previous.identity)
+        XCTAssertNil(auth.client.currentContext)
+        let config = AuthConfigProvider()
+        let harness = HostConsentRecoveryHarness(config: config, auth: auth)
+        let readFromCallback = expectation(description: "facade state can be read during invalidation")
+        let delivered = expectation(description: "newer readiness and delayed original readiness delivered")
+        delivered.expectedFulfillmentCount = 2
+        var invalidated = false
+        harness.facade.addContextObserver(self) { [weak facade = harness.facade] in
+            invalidated = true
+            DispatchQueue.global().async {
+                XCTAssertEqual(facade?.endpointAvailability.invalidationRevision, 1)
+                config.publish(origin: "https://first.test", revision: 2)
+                readFromCallback.fulfill()
+            }
+            XCTAssertEqual(XCTWaiter.wait(for: [readFromCallback], timeout: 2), .completed)
+        }
+        _ = harness.facade.addAvailabilityObserver(self) { availability in
+            XCTAssertTrue(invalidated)
+            XCTAssertEqual(availability.invalidationRevision, 1)
+            delivered.fulfill()
+        }
+
+        harness.recovery.enableConsent()
+        wait(for: [delivered], timeout: 5)
+        harness.queue.drain()
+
+        XCTAssertTrue(invalidated)
+        XCTAssertEqual(auth.client.currentContext?.origin.value, "https://first.test")
+        XCTAssertEqual(auth.client.currentContext?.generation, context.generation + 1)
+        XCTAssertEqual(auth.identity.state?.context, auth.client.currentContext)
+        XCTAssertEqual(config.requests, 1)
+        XCTAssertTrue(harness.client.contexts.isEmpty)
+        XCTAssertTrue(harness.scheduler.delays.isEmpty)
+        XCTAssertTrue(HostAuthURLProtocol.requests.isEmpty)
+        XCTAssertEqual(harness.facade.endpointAvailability.revision, 2)
+    }
+
+    func testColdReplacementPersistenceFailureDiscardsPendingConsentThroughAdapter() throws {
+        let previous = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self)
+        let context = try previous.client.activate(origin: NovaAuthOrigin("https://old.test"))
+        previous.identity.saveError = NovaAuthError.storageUnavailable
+        let auth = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self, identity: previous.identity)
+        XCTAssertNil(auth.client.currentContext)
+        let config = AuthConfigProvider()
+        let harness = HostConsentRecoveryHarness(config: config, auth: auth)
+
+        harness.recovery.enableConsent()
+        harness.queue.drain()
+
+        XCTAssertEqual(auth.client.currentContext?.origin.value, "https://first.test")
+        XCTAssertEqual(auth.client.currentContext?.generation, context.generation + 1)
+        XCTAssertEqual(auth.identity.state?.context, context)
+        XCTAssertTrue(auth.client.storageFailed)
+        XCTAssertEqual(harness.facade.endpointAvailability.invalidationRevision, 1)
+        XCTAssertNil(harness.facade.endpointAvailability.endpoint)
+        XCTAssertEqual(config.requests, 1)
+        XCTAssertTrue(harness.client.contexts.isEmpty)
+        XCTAssertTrue(harness.scheduler.delays.isEmpty)
+        XCTAssertTrue(HostAuthURLProtocol.requests.isEmpty)
+
+        auth.identity.saveError = nil
+        config.publish(origin: "https://first.test", revision: 2)
+        harness.queue.drain()
+        XCTAssertNotNil(harness.facade.endpointAvailability.endpoint)
+        XCTAssertTrue(harness.client.contexts.isEmpty)
+        XCTAssertTrue(HostAuthURLProtocol.requests.isEmpty)
+    }
+
+    func testColdUnchangedOriginAdmitsPendingConsentThroughAdapterOnce() throws {
+        let previous = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self)
+        let context = try previous.client.activate(origin: NovaAuthOrigin("https://first.test"))
+        let auth = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self, identity: previous.identity)
+        XCTAssertNil(auth.client.currentContext)
+        let config = AuthConfigProvider()
+        let harness = HostConsentRecoveryHarness(config: config, auth: auth)
+
+        harness.recovery.enableConsent()
+        harness.queue.drain()
+        config.publish(origin: "https://first.test", revision: 2)
+        harness.queue.drain()
+
+        XCTAssertEqual(auth.client.currentContext, context)
+        XCTAssertEqual(config.requests, 1)
+        XCTAssertEqual(harness.client.contexts, [context])
+        XCTAssertEqual(harness.client.intents, [.userInitiated])
+        XCTAssertTrue(harness.scheduler.delays.isEmpty)
+        XCTAssertNotNil(try auth.tokens.load())
+        XCTAssertEqual(auth.apple.attestations, 1)
+        XCTAssertEqual(auth.apple.assertions, 1)
     }
 }
