@@ -34,14 +34,13 @@ final class BittensorApiFixtureTransportTests: XCTestCase {
         XCTAssertEqual(collection.meta.completeness, .complete)
     }
 
-    func testRootYieldFixtureDecodesOnePage() throws {
-        let collection = try fetch(
-            BittensorApi.RootYieldCollection.self,
-            request: makeGetRequest(path: "/yields/root", pathTemplate: "/yields/root", query: ["page": "1"])
-        )
-
-        XCTAssertEqual(collection.items.map(\.metricKind), Array(repeating: "ROOT_AGGREGATE_APY", count: 3))
-        XCTAssertEqual(collection.pageInfo, BittensorApi.PageInfo(page: 1, pageSize: 100, total: 3, nextPage: nil))
+    func testRemovedRootYieldIsNotPublishedByTheFixture() {
+        let request = makeGetRequest(path: "/yields/root", pathTemplate: "/yields/root", query: ["page": "1"])
+        XCTAssertThrowsError(try BittensorApiFixtureRouter.route(for: request, requestId: "root-removed")) { error in
+            guard case BittensorApiError.routeNotPublished = error else {
+                return XCTFail("Unexpected error: \(error)")
+            }
+        }
     }
 
     func testAlphaYieldFixturePagesTheRequestedNetuid() throws {

@@ -21,11 +21,16 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
         XCTAssertEqual(result.value.meta.completeness, .complete)
     }
 
-    func testRootYieldDecodesTheRequestedPage() throws {
-        let result = try fetch(makeFactory().createRootYieldWrapper(page: 1))
-
-        XCTAssertEqual(result.value.items.first?.reportedRate, "13.8421")
-        XCTAssertEqual(result.value.pageInfo, BittensorApi.PageInfo(page: 1, pageSize: 100, total: 3, nextPage: nil))
+    func testRemovedRootYieldIsUnavailableWithoutARequest() {
+        let transport = makeTransport(replies: [])
+        let factory = makeFactory(transport: transport)
+        guard case .routeNotPublished = fetchError(factory.createRootYieldWrapper(page: 1)) else {
+            return XCTFail("Expected removed root yield route")
+        }
+        guard case .miss = factory.peekRootYield(page: 1) else {
+            return XCTFail("Expected no root yield cache")
+        }
+        verify(transport, never()).createResponseWrapper(for: any())
     }
 
     func testAlphaYieldDecodesTheRequestedNetuidAndPage() throws {
@@ -353,7 +358,7 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
     private func makeResponse(
         _ body: Data,
         requestId: String,
-        cacheControl: String = "private, max-age=150, must-revalidate"
+        cacheControl: String = "public, max-age=150, must-revalidate"
     ) -> Result<BittensorApiRawResponse, Error> {
         .success(
             BittensorApiRawResponse(

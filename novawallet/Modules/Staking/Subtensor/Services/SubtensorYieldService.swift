@@ -129,27 +129,10 @@ extension SubtensorYieldService: SubtensorYieldServiceProtocol {
     }
 
     func createRootYieldWrapper() -> CompoundOperationWrapper<SubtensorReportedYield?> {
-        let pageWrapper = apiOperationFactory.createRootYieldWrapper(page: Self.rootYieldPage)
-        let logger = logger
-
-        let yieldOperation = ClosureOperation<SubtensorReportedYield?> {
-            do {
-                let page = try pageWrapper.targetOperation.extractNoCancellableResultData()
-
-                return Self.makeRootYield(from: page)
-            } catch {
-                logger.warning("Root yield unavailable: \(error)")
-
-                return nil
-            }
-        }
-
-        yieldOperation.addDependency(pageWrapper.targetOperation)
-
-        return pageWrapper.insertingTail(operation: yieldOperation)
+        .createWithResult(nil)
     }
 
     func cachedRootYield() -> HTTPCachePeek<SubtensorReportedYield?> {
-        apiOperationFactory.peekRootYield(page: Self.rootYieldPage).map(Self.makeRootYield(from:))
+        .miss
     }
 }

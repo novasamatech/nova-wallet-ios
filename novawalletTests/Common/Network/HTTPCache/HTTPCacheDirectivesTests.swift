@@ -4,7 +4,7 @@ import XCTest
 final class HTTPCacheDirectivesTests: XCTestCase {
     func testContractValueWithAgeIsReusableForMaxAgeMinusAge() throws {
         let response = try makeResponse(
-            headerFields: ["Cache-Control": "private, max-age=300, must-revalidate", "Age": "20"]
+            headerFields: ["Cache-Control": "public, max-age=300, must-revalidate", "Age": "20"]
         )
 
         XCTAssertEqual(HTTPCacheDirectives(response: response), .reusable(lifetime: 280))
@@ -41,7 +41,7 @@ final class HTTPCacheDirectivesTests: XCTestCase {
 
     func testAgeEqualToMaxAgeIsNotStorable() {
         XCTAssertEqual(
-            HTTPCacheDirectives(cacheControl: "private, max-age=300, must-revalidate", age: "300"),
+            HTTPCacheDirectives(cacheControl: "public, max-age=300, must-revalidate", age: "300"),
             .notStorable
         )
     }

@@ -1,7 +1,6 @@
 import Foundation
 import Foundation_iOS
 import Operation_iOS
-import NovaAuth
 
 final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
     weak var presenter: SubnetPortfolioInteractorOutputProtocol?
@@ -96,7 +95,7 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
     func setup() {
         state.setup(for: account)
 
-        provideCatalogue(intent: .userInitiated)
+        provideCatalogue()
         subscribePositions()
         subscribePrice()
 
@@ -111,7 +110,7 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
     }
 
     func refresh() {
-        provideCatalogue(intent: .userInitiated)
+        provideCatalogue()
         state.positionsSyncService?.refresh()
     }
 
@@ -178,7 +177,7 @@ private extension SubtensorPortfolioInteractor {
             heldNetuids = Set(newState.positions.map(\.netuid)).subtracting([SubtensorStakingPallet.rootNetuid])
 
             if !catalogueStore.hasCall {
-                provideCatalogue(intent: .background)
+                provideCatalogue()
             }
         }
 
@@ -202,11 +201,11 @@ private extension SubtensorPortfolioInteractor {
         priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 
-    func provideCatalogue(intent: NovaAuthRequestIntent) {
+    func provideCatalogue() {
         catalogueStore.cancel()
 
         executeCancellable(
-            wrapper: catalogueService.createCatalogueWrapper(intent: intent),
+            wrapper: catalogueService.createCatalogueWrapper(),
             inOperationQueue: operationQueue,
             backingCallIn: catalogueStore,
             runningCallbackIn: .main
@@ -236,7 +235,7 @@ private extension SubtensorPortfolioInteractor {
         }
 
         forcedCatalogueNetuids.formUnion(missingNetuids)
-        provideCatalogue(intent: .background)
+        provideCatalogue()
     }
 
     func provideRootRate() {

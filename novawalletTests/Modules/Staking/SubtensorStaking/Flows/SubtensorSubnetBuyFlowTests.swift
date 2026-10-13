@@ -38,7 +38,6 @@ final class SubtensorSubnetBuyFlowTests: SubtensorFlowTestCase {
         world.stubClaimPreviews([])
         SubtensorFlowURLProtocol.serveSubnetLogos()
         SubtensorFlowURLProtocol.serveFixture(.subnets)
-        SubtensorFlowURLProtocol.serveFixture(.rootYield(page: 1, pageSize: 100))
         SubtensorFlowURLProtocol.serveFixture(.rankedSubnets)
         SubtensorFlowURLProtocol.serveFixture(.recommendations)
         SubtensorFlowURLProtocol.serveFixture(.validators(netuid: 64))
@@ -140,7 +139,7 @@ final class SubtensorSubnetBuyFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(chutes.ref, SubtensorSubnetRef(netuid: 64, registeredAt: 4_531_295))
         XCTAssertEqual(chutes.name, "Chutes")
         XCTAssertEqual(chutes.symbol, "ش")
-        XCTAssertEqual(rootBar?.annualRate, try decimal("0.138421"))
+        XCTAssertNil(rootBar)
         XCTAssertEqual(ranking.subnet(for: 64)?.riskClass, .balanced)
 
         XCTAssertEqual(detailsPreset, try cinderItem(name: "Cinder Node"))
@@ -192,15 +191,14 @@ final class SubtensorSubnetBuyFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(try yourBittensor.subnet(netuid: 64).name, "Chutes")
 
         XCTAssertEqual(requestLines().sorted(), [
-            "GET https://bittensor.test/v1/bittensor/profile-3/recommendations",
-            "GET https://bittensor.test/v1/bittensor/profile-3/recommendations/subnets",
-            "GET https://bittensor.test/v1/bittensor/profile-3/subnets",
-            "GET https://bittensor.test/v1/bittensor/profile-3/subnets",
-            "GET https://bittensor.test/v1/bittensor/profile-3/subnets/64/validators",
-            "GET https://bittensor.test/v1/bittensor/profile-3/subnets/64/validators",
-            "GET https://bittensor.test/v1/bittensor/profile-3/subnets/64/validators",
-            "GET https://bittensor.test/v1/bittensor/profile-3/subnets/64/yields/alpha?page=1&pageSize=100",
-            "GET https://bittensor.test/v1/bittensor/profile-3/yields/root?page=1&pageSize=100",
+            "GET https://bittensor.test/v1/bittensor/recommendations",
+            "GET https://bittensor.test/v1/bittensor/recommendations/subnets",
+            "GET https://bittensor.test/v1/bittensor/subnets",
+            "GET https://bittensor.test/v1/bittensor/subnets",
+            "GET https://bittensor.test/v1/bittensor/subnets/64/validators",
+            "GET https://bittensor.test/v1/bittensor/subnets/64/validators",
+            "GET https://bittensor.test/v1/bittensor/subnets/64/validators",
+            "GET https://bittensor.test/v1/bittensor/subnets/64/yields/alpha?page=1&pageSize=100",
             "GET https://subnet-logos.test/subnets.json",
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=30",
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=30",
@@ -212,15 +210,14 @@ final class SubtensorSubnetBuyFlowTests: SubtensorFlowTestCase {
         assertAuthorizedRequests(
             world,
             paths: [
-                "/v1/bittensor/profile-3/subnets",
-                "/v1/bittensor/profile-3/yields/root",
-                "/v1/bittensor/profile-3/recommendations/subnets",
-                "/v1/bittensor/profile-3/recommendations",
-                "/v1/bittensor/profile-3/subnets/64/validators",
-                "/v1/bittensor/profile-3/subnets/64/validators",
-                "/v1/bittensor/profile-3/subnets/64/yields/alpha",
-                "/v1/bittensor/profile-3/subnets/64/validators",
-                "/v1/bittensor/profile-3/subnets"
+                "/v1/bittensor/subnets",
+                "/v1/bittensor/recommendations/subnets",
+                "/v1/bittensor/recommendations",
+                "/v1/bittensor/subnets/64/validators",
+                "/v1/bittensor/subnets/64/validators",
+                "/v1/bittensor/subnets/64/yields/alpha",
+                "/v1/bittensor/subnets/64/validators",
+                "/v1/bittensor/subnets"
             ]
         )
     }

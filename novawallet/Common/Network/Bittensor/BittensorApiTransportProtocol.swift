@@ -1,6 +1,5 @@
 import Foundation
 import Operation_iOS
-import NovaAuth
 
 struct BittensorApiCacheScope: Hashable {
     let origin: String
@@ -24,7 +23,7 @@ protocol BittensorApiTransportProtocol: AnyObject {
 
 protocol BittensorApiAdmittingTransportProtocol: BittensorApiTransportProtocol {
     var invalidationRevision: UInt64 { get }
-    func createAdmissionWrapper(intent: NovaAuthRequestIntent) -> CompoundOperationWrapper<BittensorApiAdmission>
+    func createAdmissionWrapper() -> CompoundOperationWrapper<BittensorApiAdmission>
     func createResponseWrapper(
         for request: BittensorApiRequest,
         admission: BittensorApiAdmission
@@ -46,8 +45,8 @@ extension BittensorApiTransportProtocol {
         (self as? BittensorApiAdmittingTransportProtocol)?.addContextObserver(owner, closure: closure)
     }
 
-    func createAdmissionWrapper(intent: NovaAuthRequestIntent) -> CompoundOperationWrapper<BittensorApiAdmission> {
-        (self as? BittensorApiAdmittingTransportProtocol)?.createAdmissionWrapper(intent: intent)
+    func createAdmissionWrapper() -> CompoundOperationWrapper<BittensorApiAdmission> {
+        (self as? BittensorApiAdmittingTransportProtocol)?.createAdmissionWrapper()
             ?? .createWithResult(BittensorApiAdmission(scope: .fixture, endpoint: nil))
     }
 

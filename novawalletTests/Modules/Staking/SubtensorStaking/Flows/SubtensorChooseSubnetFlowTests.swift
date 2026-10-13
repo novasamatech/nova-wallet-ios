@@ -14,7 +14,6 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         world.stubQuotes([SubtensorFlowChainWorld.chutesBuyQuote])
         SubtensorFlowURLProtocol.serveSubnetLogos()
         SubtensorFlowURLProtocol.serveFixture(.subnets)
-        SubtensorFlowURLProtocol.serveFixture(.rootYield(page: 1, pageSize: 100))
         SubtensorFlowURLProtocol.serveFixture(.rankedSubnets)
         SubtensorFlowURLProtocol.serveFixture(.recommendations)
         SubtensorFlowURLProtocol.serveFixture(.validators(netuid: 64))
@@ -73,8 +72,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
             networkFee: fee.amount
         )
 
-        XCTAssertEqual(rootRowYield, try fixtureRootYield())
-        XCTAssertEqual(rootRowYield?.annualRate, try decimal("0.138421"))
+        XCTAssertNil(rootRowYield)
 
         XCTAssertEqual(chutesRef, SubtensorSubnetRef(netuid: 64, registeredAt: 4_531_295))
         XCTAssertEqual(subnetRefs.count, 10)
@@ -159,17 +157,16 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertEqual(maxStake, 48_188_500_000)
 
         XCTAssertEqual(requestLines().sorted(), [
-            "GET https://bittensor.test/v1/bittensor/profile-3/recommendations",
-            "GET https://bittensor.test/v1/bittensor/profile-3/recommendations/subnets",
-            "GET https://bittensor.test/v1/bittensor/profile-3/recommendations/subnets",
-            "GET https://bittensor.test/v1/bittensor/profile-3/subnets",
-            "GET https://bittensor.test/v1/bittensor/profile-3/subnets/64/validators",
-            "GET https://bittensor.test/v1/bittensor/profile-3/subnets/64/validators",
-            "GET https://bittensor.test/v1/bittensor/profile-3/subnets/64/validators",
-            "GET https://bittensor.test/v1/bittensor/profile-3/subnets/64/validators",
-            "GET https://bittensor.test/v1/bittensor/profile-3/subnets/64/validators",
-            "GET https://bittensor.test/v1/bittensor/profile-3/subnets/64/validators",
-            "GET https://bittensor.test/v1/bittensor/profile-3/yields/root?page=1&pageSize=100",
+            "GET https://bittensor.test/v1/bittensor/recommendations",
+            "GET https://bittensor.test/v1/bittensor/recommendations/subnets",
+            "GET https://bittensor.test/v1/bittensor/recommendations/subnets",
+            "GET https://bittensor.test/v1/bittensor/subnets",
+            "GET https://bittensor.test/v1/bittensor/subnets/64/validators",
+            "GET https://bittensor.test/v1/bittensor/subnets/64/validators",
+            "GET https://bittensor.test/v1/bittensor/subnets/64/validators",
+            "GET https://bittensor.test/v1/bittensor/subnets/64/validators",
+            "GET https://bittensor.test/v1/bittensor/subnets/64/validators",
+            "GET https://bittensor.test/v1/bittensor/subnets/64/validators",
             "GET https://subnet-logos.test/subnets.json",
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=30",
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=7",
@@ -180,17 +177,16 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         assertAuthorizedRequests(
             world,
             paths: [
-                "/v1/bittensor/profile-3/subnets",
-                "/v1/bittensor/profile-3/yields/root",
-                "/v1/bittensor/profile-3/recommendations/subnets",
-                "/v1/bittensor/profile-3/recommendations",
-                "/v1/bittensor/profile-3/subnets/64/validators",
-                "/v1/bittensor/profile-3/subnets/64/validators",
-                "/v1/bittensor/profile-3/subnets/64/validators",
-                "/v1/bittensor/profile-3/subnets/64/validators",
-                "/v1/bittensor/profile-3/subnets/64/validators",
-                "/v1/bittensor/profile-3/subnets/64/validators",
-                "/v1/bittensor/profile-3/recommendations/subnets"
+                "/v1/bittensor/subnets",
+                "/v1/bittensor/recommendations/subnets",
+                "/v1/bittensor/recommendations",
+                "/v1/bittensor/subnets/64/validators",
+                "/v1/bittensor/subnets/64/validators",
+                "/v1/bittensor/subnets/64/validators",
+                "/v1/bittensor/subnets/64/validators",
+                "/v1/bittensor/subnets/64/validators",
+                "/v1/bittensor/subnets/64/validators",
+                "/v1/bittensor/recommendations/subnets"
             ]
         )
     }
@@ -203,7 +199,6 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         world.stubSubnets(try SubtensorFlowChainWorld.subnetsInfo())
         SubtensorFlowURLProtocol.serveSubnetLogos()
         SubtensorFlowURLProtocol.serveFixture(.subnets)
-        SubtensorFlowURLProtocol.serveFixture(.rootYield(page: 1, pageSize: 100))
         SubtensorFlowURLProtocol.serveBittensor("/recommendations/subnets", reply: .notFoundPlainText())
         SubtensorFlowURLProtocol.serveBittensor("/recommendations", reply: .notFoundPlainText())
         try serveWeekCharts()
@@ -225,7 +220,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertTrue(isRouteNotPublished(chipsError))
         XCTAssertNil(services.recommendationService.cachedClientGates().value)
 
-        XCTAssertEqual(rootRowYield, try fixtureRootYield())
+        XCTAssertNil(rootRowYield)
         XCTAssertEqual(subnetRefs.filter { logos.url(for: $0.netuid) != nil }, [chutesRef])
         XCTAssertEqual(logos.url(for: chutesRef.netuid)?.absoluteString, SubtensorFlowChainWorld.chutesLogo)
         assertChutesWeekPrices(weeklyPrices, chutes: chutesRef)
@@ -235,10 +230,9 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertNil(preset)
 
         XCTAssertEqual(requestLines().sorted(), [
-            "GET https://bittensor.test/v1/bittensor/profile-3/recommendations",
-            "GET https://bittensor.test/v1/bittensor/profile-3/recommendations/subnets",
-            "GET https://bittensor.test/v1/bittensor/profile-3/subnets",
-            "GET https://bittensor.test/v1/bittensor/profile-3/yields/root?page=1&pageSize=100",
+            "GET https://bittensor.test/v1/bittensor/recommendations",
+            "GET https://bittensor.test/v1/bittensor/recommendations/subnets",
+            "GET https://bittensor.test/v1/bittensor/subnets",
             "GET https://subnet-logos.test/subnets.json",
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=30",
             "GET \(SubtensorFlowHost.priceAPI)/coins/bittensor/market_chart?vs_currency=usd&days=7",
@@ -249,48 +243,38 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         assertAuthorizedRequests(
             world,
             paths: [
-                "/v1/bittensor/profile-3/subnets",
-                "/v1/bittensor/profile-3/yields/root",
-                "/v1/bittensor/profile-3/recommendations/subnets",
-                "/v1/bittensor/profile-3/recommendations"
+                "/v1/bittensor/subnets",
+                "/v1/bittensor/recommendations/subnets",
+                "/v1/bittensor/recommendations"
             ]
         )
     }
 
-    func testStaleRootAndValidatorYieldsAreHiddenFromTheSubnetAndValidatorScreens() throws {
+    func testUnavailableRootAndStaleValidatorYieldsAreHiddenFromTheSubnetAndValidatorScreens() throws {
         let world = try SubtensorFlowWorld()
         let services = world.earnServices
         let ember = try SubtensorFlowChainWorld.hotkey(.ember)
-        let rootRoute = BittensorApiFixtureRoute.rootYield(page: 1, pageSize: 100)
         let alphaRoute = BittensorApiFixtureRoute.alphaYield(netuid: 64, page: 1, pageSize: 100)
-
-        SubtensorFlowURLProtocol.serveBittensor(
-            "/yields/root?page=1&pageSize=100",
-            reply: .bittensor(staleDocument(BittensorApiFixtureRouter.document(for: rootRoute)), route: rootRoute)
-        )
 
         SubtensorFlowURLProtocol.serveBittensor(
             "/subnets/64/yields/alpha?page=1&pageSize=100",
             reply: .bittensor(staleDocument(BittensorApiFixtureRouter.document(for: alphaRoute)), route: alphaRoute)
         )
 
-        let rootYield = try XCTUnwrap(try run(services.yieldService.createRootYieldWrapper()))
+        let rootYield = try run(services.yieldService.createRootYieldWrapper())
         let alphaYields = try run(services.yieldService.createAlphaYieldsWrapper(for: 64))
 
-        XCTAssertEqual(rootYield.reportedRate, "13.8421")
-        XCTAssertEqual(rootYield.stamp.freshness, .stale)
-        XCTAssertNil(rootYield.annualRate)
+        XCTAssertNil(rootYield)
 
         XCTAssertNotNil(alphaYields.yields[ember])
         XCTAssertEqual(alphaYields.stamp.freshness, .stale)
         XCTAssertNil(SubtensorAlphaApyFormatter.annualRate(for: ember, in: alphaYields))
 
         XCTAssertEqual(requestLines(), [
-            "GET https://bittensor.test/v1/bittensor/profile-3/yields/root?page=1&pageSize=100",
-            "GET https://bittensor.test/v1/bittensor/profile-3/subnets/64/yields/alpha?page=1&pageSize=100"
+            "GET https://bittensor.test/v1/bittensor/subnets/64/yields/alpha?page=1&pageSize=100"
         ])
 
-        assertAuthorizedRequests(world, paths: ["/v1/bittensor/profile-3/yields/root", "/v1/bittensor/profile-3/subnets/64/yields/alpha"])
+        assertAuthorizedRequests(world, paths: ["/v1/bittensor/subnets/64/yields/alpha"])
     }
 
     func testDeviceThatFailsAppAttestGivesTheValidatorListItsOwnStateWithoutTryAgain() throws {
@@ -321,7 +305,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
     func testEveryCatalogueReadUsesAuthorizedTransportAndPeekRemainsAStaleSeed() throws {
         let world = try SubtensorFlowWorld()
         let catalogueService = world.earnServices.catalogueService
-        let subnetsRequestLine = "GET https://bittensor.test/v1/bittensor/profile-3/subnets"
+        let subnetsRequestLine = "GET https://bittensor.test/v1/bittensor/subnets"
 
         SubtensorFlowURLProtocol.serveFixture(.subnets)
 
@@ -342,7 +326,7 @@ final class SubtensorChooseSubnetFlowTests: SubtensorFlowTestCase {
         XCTAssertNotNil(expiryPeek.value)
         XCTAssertFalse(expiryPeek.isFresh)
         XCTAssertEqual(requestLines(), [subnetsRequestLine, subnetsRequestLine, subnetsRequestLine])
-        assertAuthorizedRequests(world, paths: ["/v1/bittensor/profile-3/subnets", "/v1/bittensor/profile-3/subnets", "/v1/bittensor/profile-3/subnets"])
+        assertAuthorizedRequests(world, paths: ["/v1/bittensor/subnets", "/v1/bittensor/subnets", "/v1/bittensor/subnets"])
     }
 
     func testRefusedRegistrationAttestationIsDeviceBoundWithoutTryAgain() throws {

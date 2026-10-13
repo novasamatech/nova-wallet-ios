@@ -12,7 +12,7 @@ final class SubtensorOperationResultPresenterTests: XCTestCase {
         let delegate: MockSubtensorOperationResultDelegate
     }
 
-    func testNinetySecondsWithoutAResultShowsUnconfirmedAndALateSuccessShowsDone() throws {
+    func testNinetySecondsWithoutAResultShowsUnconfirmedAndALateSuccessShowsDone() {
         let service = MockSubtensorStakingOperationServiceProtocol()
         let scheduler = MockSchedulerProtocol()
         let submissionStarted = expectation(description: "Submission started")
@@ -470,7 +470,7 @@ private extension SubtensorOperationResultPresenterTests {
 
         stub(catalogueService) { stub in
             when(stub.cachedCatalogue()).thenReturn(.miss)
-            when(stub.createCatalogueWrapper(intent: any())).thenReturn(
+            when(stub.createCatalogueWrapper()).thenReturn(
                 .createWithError(BaseOperationError.unexpectedDependentResult)
             )
         }

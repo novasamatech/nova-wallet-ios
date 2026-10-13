@@ -1,7 +1,6 @@
 import Foundation
-import Operation_iOS
 import NovaCrypto
-import NovaAuth
+import Operation_iOS
 
 protocol BittensorApiWireChecked {
     func validateWire() throws
@@ -26,26 +25,17 @@ final class BittensorApiOperationFactory {
     let transport: BittensorApiTransportProtocol
     let cache: BittensorApiResponseCache
     private let logger: LoggerProtocol
-    private let intent: NovaAuthRequestIntent
 
     init(
         transport: BittensorApiTransportProtocol,
         cache: BittensorApiResponseCache,
-        logger: LoggerProtocol,
-        intent: NovaAuthRequestIntent = .background
+        logger: LoggerProtocol
     ) {
         self.transport = transport
         self.cache = cache
         self.logger = logger
-        self.intent = intent
         let revision = transport.addInvalidationObserver(cache) { [weak cache] in cache?.invalidate(before: $0) }
         cache.invalidate(before: revision)
-    }
-}
-
-extension BittensorApiOperationFactory {
-    func withIntent(_ intent: NovaAuthRequestIntent) -> BittensorApiOperationFactory {
-        BittensorApiOperationFactory(transport: transport, cache: cache, logger: logger, intent: intent)
     }
 }
 
@@ -75,27 +65,31 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
     }
 
     func createRootYieldWrapper(
-        page: Int
+        page _: Int
     ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RootYieldCollection>> {
-        createPagedWrapper(route: .rootYield, path: "/yields/root", page: page)
+        .createWithError(BittensorApiError.routeNotPublished)
     }
 
-    func peekRootYield(page: Int) -> HTTPCachePeek<BittensorApiResult<BittensorApi.RootYieldCollection>> {
-        peekPage(route: .rootYield, path: "/yields/root", page: page)
+    func peekRootYield(page _: Int) -> HTTPCachePeek<BittensorApiResult<BittensorApi.RootYieldCollection>> {
+        .miss
     }
 
     func createAlphaYieldWrapper(
         netuid: UInt16,
         page: Int
     ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.AlphaYieldCollection>> {
-        createPagedWrapper(route: .alphaYield, path: "/subnets/\(netuid)/yields/alpha", page: page)
+        guard netuid != 0 else {
+            return .createWithError(BittensorApiError.invalidRequest(code: nil, requestId: nil))
+        }
+        return createPagedWrapper(route: .alphaYield, path: "/subnets/\(netuid)/yields/alpha", page: page)
     }
 
     func peekAlphaYield(
         netuid: UInt16,
         page: Int
     ) -> HTTPCachePeek<BittensorApiResult<BittensorApi.AlphaYieldCollection>> {
-        peekPage(route: .alphaYield, path: "/subnets/\(netuid)/yields/alpha", page: page)
+        guard netuid != 0 else { return .miss }
+        return peekPage(route: .alphaYield, path: "/subnets/\(netuid)/yields/alpha", page: page)
     }
 
     func createOperationsWrapper(
@@ -124,7 +118,6 @@ private extension BittensorApiOperationFactory {
     enum Route {
         case subnets
         case validators
-        case rootYield
         case alphaYield
         case operations
         case recommendations
@@ -145,8 +138,6 @@ private extension BittensorApiOperationFactory {
                 return "/subnets"
             case .validators:
                 return "/subnets/{netuid}/validators"
-            case .rootYield:
-                return "/yields/root"
             case .alphaYield:
                 return "/subnets/{netuid}/yields/alpha"
             case .operations:
@@ -234,8 +225,7 @@ private extension BittensorApiOperationFactory {
             path: path,
             pathTemplate: route.pathTemplate,
             queryItems: queryItems,
-            jsonBody: jsonBody,
-            intent: intent
+            jsonBody: jsonBody
         )
 
         let job = BittensorApiCacheJob(
@@ -246,7 +236,7 @@ private extension BittensorApiOperationFactory {
                 accountDigest: accountDigest
             ),
             currentInvalidationRevision: { [transport] in transport.invalidationRevision },
-            admit: { [transport] in transport.createAdmissionWrapper(intent: request.intent) },
+            admit: { [transport] in transport.createAdmissionWrapper() },
             fetch: { [transport, logger] admission in
                 Self.createFetchWrapper(
                     T.self, responseWrapper: transport.createResponseWrapper(for: request, admission: admission),
@@ -271,7 +261,7 @@ private extension BittensorApiOperationFactory {
     static func pagedQueryItems(page: Int) -> [URLQueryItem] {
         [
             URLQueryItem(name: "page", value: String(page)),
-            URLQueryItem(name: "pageSize", value: String(Self.pageSize))
+            URLQueryItem(name: "pageSize", value: String(pageSize))
         ]
     }
 
