@@ -13,6 +13,7 @@ final class HostAuthURLProtocol: URLProtocol {
     private static var tokenCount = 0
     static var business: ((URLRequest) -> Reply)?
     static var bootstrapFailure: Reply?
+    static var registrationFailure: Reply?
 
     static var requests: [URLRequest] { lock.lock(); defer { lock.unlock() }; return recorded }
     static var businessRequests: [URLRequest] { requests.filter { !$0.url!.path.contains("/attestation/") } }
@@ -23,6 +24,7 @@ final class HostAuthURLProtocol: URLProtocol {
         tokenCount = 0
         business = nil
         bootstrapFailure = nil
+        registrationFailure = nil
         lock.unlock()
     }
 
@@ -51,11 +53,13 @@ final class HostAuthURLProtocol: URLProtocol {
         if path.hasSuffix("/tokens") { Self.tokenCount += 1 }
         let token = Self.tokenCount
         let bootstrapFailure = Self.bootstrapFailure
+        let registrationFailure = Self.registrationFailure
         let handler = Self.business
         Self.lock.unlock()
 
         let reply: Reply
         if isBootstrap, let bootstrapFailure { reply = bootstrapFailure }
+        else if path == "/v1/attestation/profile-3/register", let registrationFailure { reply = registrationFailure }
         else if path.hasSuffix("/challenges") || path.hasSuffix("/token-challenges") {
             reply = Reply(status: 200, body: Data(#"{"challenge":"AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8","issued_at":1000,"expires_at":1060}"#.utf8))
         } else if path.hasSuffix("/register") { reply = Reply(status: 204) }

@@ -1,4 +1,5 @@
 import Cuckoo
+import NovaAuth
 @testable import novawallet
 import Operation_iOS
 import SubstrateSdk
@@ -347,6 +348,151 @@ final class SubtensorMaxApyProviderTests: XCTestCase {
         secondWrapper.cancel()
     }
 
+    func testRootAttestationRejectionStopsBeforeAlphaWithoutMemoisingAndRecoveryFetchesAgain() throws {
+        let api = MockBittensorApiOperationFactoryProtocol()
+        let rootPage = makeRootPage(rate: "20", freshness: .fresh)
+        let alphaPage = try makeAlphaPage(
+            netuid: 64, rows: [(chutesPairHotkey, "40")], nextPage: nil, receivedAt: cachedAt
+        )
+
+        stub(api) { stub in
+            when(stub.createRootYieldWrapper(page: any()))
+                .then { _ in
+                    CompoundOperationWrapper.createWithError(BittensorApiError.attestationRejected(requestId: "root-rejected"))
+                }
+                .then { _ in CompoundOperationWrapper.createWithResult(rootPage) }
+            when(stub.createAlphaYieldWrapper(netuid: any(), page: any())).then { _, _ in
+                CompoundOperationWrapper.createWithResult(alphaPage)
+            }
+        }
+
+        let provider = makeProvider(
+            recommendationService: makeRecommendationService(pairs: [
+                makePair(rootPairHotkey, netuid: SubtensorStakingPallet.rootNetuid),
+                makePair(chutesPairHotkey, netuid: 64)
+            ]),
+            apiOperationFactory: api,
+            retryDelay: 60
+        )
+
+        XCTAssertThrowsError(try run(provider.createMaxApyWrapper())) { error in
+            guard case let BittensorApiError.attestationRejected(requestId) = error else {
+                return XCTFail("Expected the original root rejection")
+            }
+            XCTAssertEqual(requestId, "root-rejected")
+        }
+        verify(api, times(1)).createRootYieldWrapper(page: equal(to: SubtensorYieldService.rootYieldPage))
+        verify(api, never()).createAlphaYieldWrapper(netuid: any(), page: any())
+        guard case .miss = provider.cachedMaxApy() else { return XCTFail("A failed walk must not memoise nil") }
+
+        XCTAssertEqual(try run(provider.createMaxApyWrapper()), Decimal(string: "0.4"))
+        verify(api, times(2)).createRootYieldWrapper(page: equal(to: SubtensorYieldService.rootYieldPage))
+        verify(api, times(1)).createAlphaYieldWrapper(netuid: equal(to: 64), page: equal(to: 1))
+    }
+
+    func testAlphaBindingConflictStopsBeforeNextSubnetWithoutMemoisingTheRootRate() throws {
+        let api = MockBittensorApiOperationFactoryProtocol()
+        let rootPage = makeRootPage(rate: "20", freshness: .fresh)
+        let apexPage = try makeAlphaPage(
+            netuid: 4, rows: [(apexPairHotkey, "30")], nextPage: nil, receivedAt: cachedAt
+        )
+        let chutesPage = try makeAlphaPage(
+            netuid: 64, rows: [(chutesPairHotkey, "40")], nextPage: nil, receivedAt: cachedAt
+        )
+
+        stub(api) { stub in
+            when(stub.createRootYieldWrapper(page: any())).then { _ in
+                CompoundOperationWrapper.createWithResult(rootPage)
+            }
+            when(stub.createAlphaYieldWrapper(netuid: equal(to: 4), page: any()))
+                .then { _, _ in
+                    CompoundOperationWrapper.createWithError(BittensorApiError.bindingConflict(requestId: "alpha-conflict"))
+                }
+                .then { _, _ in CompoundOperationWrapper.createWithResult(apexPage) }
+            when(stub.createAlphaYieldWrapper(netuid: equal(to: 64), page: any())).then { _, _ in
+                CompoundOperationWrapper.createWithResult(chutesPage)
+            }
+        }
+
+        let provider = makeProvider(
+            recommendationService: makeRecommendationService(pairs: [
+                makePair(rootPairHotkey, netuid: SubtensorStakingPallet.rootNetuid),
+                makePair(apexPairHotkey, netuid: 4),
+                makePair(chutesPairHotkey, netuid: 64)
+            ]),
+            apiOperationFactory: api,
+            retryDelay: 60
+        )
+
+        XCTAssertThrowsError(try run(provider.createMaxApyWrapper())) { error in
+            guard case let BittensorApiError.bindingConflict(requestId) = error else {
+                return XCTFail("Expected the original alpha conflict")
+            }
+            XCTAssertEqual(requestId, "alpha-conflict")
+        }
+        verify(api, times(1)).createRootYieldWrapper(page: equal(to: SubtensorYieldService.rootYieldPage))
+        verify(api, times(1)).createAlphaYieldWrapper(netuid: equal(to: 4), page: equal(to: 1))
+        verify(api, never()).createAlphaYieldWrapper(netuid: equal(to: 64), page: any())
+        guard case .miss = provider.cachedMaxApy() else { return XCTFail("A failed walk must not memoise the partial rate") }
+
+        XCTAssertEqual(try run(provider.createMaxApyWrapper()), Decimal(string: "0.4"))
+        verify(api, times(2)).createRootYieldWrapper(page: equal(to: SubtensorYieldService.rootYieldPage))
+        verify(api, times(2)).createAlphaYieldWrapper(netuid: equal(to: 4), page: equal(to: 1))
+        verify(api, times(1)).createAlphaYieldWrapper(netuid: equal(to: 64), page: equal(to: 1))
+    }
+
+    func testFinalAuthorizationDenialEndsTheWalkWithoutAnotherIssuanceCycle() throws {
+        HostAuthURLProtocol.reset()
+        defer { HostAuthURLProtocol.reset() }
+
+        let harness = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self)
+        let authProvider = try HostAuthProvider(client: harness.client)
+        let api = BittensorApiOperationFactory(
+            transport: BittensorAuthorizedTransport(provider: authProvider, operationQueue: OperationQueue()),
+            cache: BittensorApiResponseCache(operationQueue: OperationQueue(), logger: Logger.shared),
+            logger: Logger.shared,
+            intent: .userInitiated
+        )
+        HostAuthURLProtocol.business = { _ in
+            .init(
+                status: 401,
+                headers: [
+                    "WWW-Authenticate": "Bearer error=\"invalid_token\"",
+                    "Content-Type": "application/json",
+                    "X-Request-ID": "yield-denied"
+                ],
+                body: Data(#"{"error":{"code":"invalid_token","message":"expired"}}"#.utf8)
+            )
+        }
+        let provider = makeProvider(
+            recommendationService: makeRecommendationService(pairs: [
+                makePair(apexPairHotkey, netuid: 4),
+                makePair(chutesPairHotkey, netuid: 64)
+            ]),
+            apiOperationFactory: api
+        )
+
+        XCTAssertThrowsError(try run(provider.createMaxApyWrapper())) { error in
+            guard case let BittensorApiError.attestationFailure(requestId) = error else {
+                return XCTFail("Expected the final authorization denial")
+            }
+            XCTAssertEqual(requestId, "yield-denied")
+        }
+        XCTAssertEqual(HostAuthURLProtocol.businessRequests.map { $0.url?.path }, [
+            "/v1/bittensor/profile-3/subnets/4/yields/alpha",
+            "/v1/bittensor/profile-3/subnets/4/yields/alpha"
+        ])
+        XCTAssertEqual(
+            HostAuthURLProtocol.businessRequests.map { $0.value(forHTTPHeaderField: "Authorization") },
+            ["Bearer host-bearer-1", "Bearer host-bearer-2"]
+        )
+        XCTAssertEqual(harness.apple.attestations, 1)
+        XCTAssertEqual(harness.apple.assertions, 2)
+        XCTAssertEqual(HostAuthURLProtocol.requests.filter { $0.url?.path.hasSuffix("/tokens") == true }.count, 2)
+        XCTAssertNil(try harness.tokens.load())
+        guard case .miss = provider.cachedMaxApy() else { return XCTFail("A denied walk must not memoise nil") }
+    }
+
     private func makeProvider(
         recommendationService: SubtensorRecommendationServiceProtocol,
         apiOperationFactory: BittensorApiOperationFactoryProtocol,
@@ -541,6 +687,8 @@ final class SubtensorMaxApyProviderTests: XCTestCase {
     }
 
     private func run<T>(_ wrapper: CompoundOperationWrapper<T>) throws -> T {
+        defer { wrapper.cancel() }
+
         let completed = expectation(description: "wrapper completed")
 
         wrapper.targetOperation.completionBlock = {

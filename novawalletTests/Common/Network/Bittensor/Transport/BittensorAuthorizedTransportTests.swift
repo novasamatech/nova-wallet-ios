@@ -168,6 +168,78 @@ final class BittensorAuthorizedTransportTests: XCTestCase {
         XCTAssertTrue(HostAuthURLProtocol.requests.isEmpty)
     }
 
+    func testBusinessScopeMismatchIsGenericAndNonretryable() throws {
+        let (transport, _, _) = try makeTransport()
+        let reply = codedReply(status: 403, code: "insufficient_scope")
+        HostAuthURLProtocol.business = { _ in reply }
+
+        XCTAssertThrowsError(try run(transport.createResponseWrapper(for: request()))) { error in
+            guard case let BittensorApiError.invalidRequest(code, requestId) = error else {
+                return XCTFail("Expected scope mismatch")
+            }
+            XCTAssertEqual(code, "insufficient_scope")
+            XCTAssertEqual(requestId, "host-request")
+            XCTAssertFalse(BittensorAuthorizedResponseGrader.map(error).isDeviceBound)
+            XCTAssertFalse(BittensorAuthorizedResponseGrader.map(error).allowsUserRetry)
+        }
+        XCTAssertEqual(HostAuthURLProtocol.businessRequests.count, 1)
+    }
+
+    func testRegistrationAttestationFailureRetiresIdentityAndMapsToDeviceRejection() throws {
+        let (transport, harness, _) = try makeTransport()
+        HostAuthURLProtocol.registrationFailure = codedReply(status: 401, code: "attestation_failed")
+
+        XCTAssertThrowsError(try run(transport.createResponseWrapper(for: request()))) { error in
+            guard case let BittensorApiError.attestationRejected(requestId) = error else {
+                return XCTFail("Expected attestation rejection")
+            }
+            XCTAssertEqual(requestId, "host-request")
+            XCTAssertTrue(BittensorAuthorizedResponseGrader.map(error).isDeviceBound)
+            XCTAssertFalse(BittensorAuthorizedResponseGrader.map(error).allowsUserRetry)
+        }
+
+        assertRegistrationRefused(harness)
+    }
+
+    func testRegistrationBindingConflictRetiresIdentityAndMapsToNonretryableConflict() throws {
+        let (transport, harness, _) = try makeTransport()
+        HostAuthURLProtocol.registrationFailure = codedReply(status: 409, code: "client_already_registered")
+
+        XCTAssertThrowsError(try run(transport.createResponseWrapper(for: request()))) { error in
+            guard case let BittensorApiError.bindingConflict(requestId) = error else {
+                return XCTFail("Expected binding conflict")
+            }
+            XCTAssertEqual(requestId, "host-request")
+            XCTAssertFalse(BittensorAuthorizedResponseGrader.map(error).isDeviceBound)
+            XCTAssertFalse(BittensorAuthorizedResponseGrader.map(error).allowsUserRetry)
+        }
+
+        assertRegistrationRefused(harness)
+    }
+
+    private func assertRegistrationRefused(
+        _ harness: HostAuthHarness,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        XCTAssertEqual(HostAuthURLProtocol.requests.map { $0.url?.path }, [
+            "/v1/attestation/profile-3/challenges", "/v1/attestation/profile-3/register"
+        ], file: file, line: line)
+        XCTAssertEqual(harness.apple.attestations, 1, file: file, line: line)
+        XCTAssertEqual(harness.apple.assertions, 0, file: file, line: line)
+        XCTAssertTrue(HostAuthURLProtocol.businessRequests.isEmpty, file: file, line: line)
+        XCTAssertEqual(harness.identity.state?.identity?.registration, .retired(.registrationRefused), file: file, line: line)
+        XCTAssertNil(try harness.tokens.load(), file: file, line: line)
+    }
+
+    private func codedReply(status: Int, code: String) -> HostAuthURLProtocol.Reply {
+        .init(
+            status: status,
+            headers: ["Content-Type": "application/json", "X-Request-ID": "host-request"],
+            body: Data("{\"error\":{\"code\":\"\(code)\",\"message\":\"Request refused\"}}".utf8)
+        )
+    }
+
     func testMixedAnalyticsAndBittensorDemandUsesSameClientAndSingleIssuance() throws {
         let (transport, harness, provider) = try makeTransport()
         let auth = try run(AnalyticsAuthAdapter(provider: provider).createAuthWrapper())
