@@ -32948,8 +32948,6 @@
 				0C1995CB2E6B2DE600E0B909 /* PBXTargetDependency */,
 			);
 			name = NovaPushNotificationServiceExtension;
-			packageProductDependencies = (
-			);
 			productName = NovaPushNotificationServiceExtension;
 			productReference = 77CAF42F2B8E96A400E4297C /* NovaPushNotificationServiceExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
