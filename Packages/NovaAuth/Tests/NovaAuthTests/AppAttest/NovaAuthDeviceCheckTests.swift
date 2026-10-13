@@ -8,7 +8,9 @@ final class NovaAuthDeviceCheckTests: XCTestCase {
         let service = FoundationDeviceCheck()
         let adapter = NovaAuthDeviceCheckService(service: service)
         let digest = try XCTUnwrap(Data(base64Encoded: "WYm06t980FQu63RyLu0EFoaykR8M+b8bgidQ4UZcKTY="))
-        _ = try executeFoundation(adapter.createAttestationWrapper(keyID: FoundationFixture.keyID, clientDataHash: digest))
+        _ = try executeFoundation(adapter.createAttestationWrapper(
+            keyID: FoundationFixture.keyID, clientDataHash: digest, beforeAttest: {}
+        ))
         XCTAssertEqual(service.hashes, [digest])
         _ = try executeFoundation(adapter.createAssertionWrapper(keyID: FoundationFixture.keyID, clientDataHash: digest))
         XCTAssertEqual(service.hashes, [digest, digest])
@@ -85,7 +87,7 @@ final class NovaAuthDeviceCheckTests: XCTestCase {
         let started = expectation(description: "Apple call started")
         service.onProof = { started.fulfill() }
         let first = adapter.createAttestationWrapper(
-            keyID: FoundationFixture.keyID, clientDataHash: Data(repeating: 1, count: 32)
+            keyID: FoundationFixture.keyID, clientDataHash: Data(repeating: 1, count: 32), beforeAttest: {}
         )
         let finished = expectation(description: "cancelled operation finished")
         first.targetOperation.completionBlock = { finished.fulfill() }
@@ -124,7 +126,7 @@ final class NovaAuthDeviceCheckTests: XCTestCase {
         XCTAssertTrue(adapter.isBusy(keyID: FoundationFixture.keyID))
         XCTAssertFalse(adapter.isBusy(keyID: otherKey))
         XCTAssertEqual(try executeFoundation(adapter.createAttestationWrapper(
-            keyID: otherKey, clientDataHash: digest
+            keyID: otherKey, clientDataHash: digest, beforeAttest: {}
         )), Data([4, 5, 6]))
         XCTAssertThrowsError(try executeFoundation(adapter.createAssertionWrapper(
             keyID: FoundationFixture.keyID, clientDataHash: digest

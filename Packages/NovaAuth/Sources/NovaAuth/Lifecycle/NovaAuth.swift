@@ -42,10 +42,6 @@ public final class NovaAuth: NovaAuthClientProtocol {
 
     public var isSupported: Bool { dependencies.appAttest.isSupported }
 
-    public var currentContext: NovaAuthContext? {
-        gate.novaAuthLocked { state?.context }
-    }
-
     public var contextInvalidationID: UUID {
         gate.novaAuthLocked { invalidationID }
     }
@@ -335,7 +331,7 @@ final class NovaAuthIssuanceFlight {
     var diagnosticPhase: NovaAuthDiagnostics.Phase = .registrationChallenge
     let sponsored: Bool
 
-    init(context: NovaAuthContext, sponsored: Bool, intent: NovaAuthRequestIntent = .background) {
+    init(context: NovaAuthContext, sponsored: Bool, intent: NovaAuthRequestIntent) {
         self.context = context
         self.sponsored = sponsored
         self.intent = intent

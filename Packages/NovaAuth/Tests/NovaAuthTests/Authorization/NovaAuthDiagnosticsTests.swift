@@ -82,7 +82,7 @@ final class NovaAuthDiagnosticsTests: LifecycleTestCase {
             logged.fulfill()
         }
         lock.lock()
-        NovaAuthDiagnostics.log(.storageRecovery, logger: logger, requestID: "SECRET\nHEADER", retryAfter: .infinity)
+        NovaAuthDiagnostics.log(.storageRecovery, logger: logger, requestID: "SECRET\nHEADER")
         lock.unlock()
         wait(for: [logged], timeout: 5)
         XCTAssertEqual(logger.messages, ["NovaAuth transition=storageRecovery"])

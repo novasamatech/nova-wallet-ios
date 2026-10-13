@@ -1,6 +1,5 @@
 import Foundation
 import Operation_iOS
-import NovaAuth
 
 public final class AnalyticsAvailabilityProvider {
     private struct ObserverWrapper {

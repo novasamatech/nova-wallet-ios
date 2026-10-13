@@ -18,7 +18,7 @@ struct NovaAuthBusinessCooldowns {
         bittensor.clear()
     }
 
-    @discardableResult mutating func receive(
+    mutating func receive(
         _ result: Result<NovaAuthResponse, Error>,
         request: NovaAuthRequest,
         now: NovaAuthTime,

@@ -32,7 +32,6 @@ final class AuthConfigProvider: GlobalConfigProviding {
     }
 
     func createConfigWrapper() -> CompoundOperationWrapper<GlobalConfig> { .createWithResult(snapshot.config) }
-    func createFreshConfigWrapper() -> CompoundOperationWrapper<GlobalConfig> { createConfigWrapper() }
 }
 
 final class NovaAuthFacadeTests: XCTestCase {
@@ -56,14 +55,12 @@ final class NovaAuthFacadeTests: XCTestCase {
         return try wrapper.targetOperation.extractNoCancellableResultData()
     }
 
-    private func facade(_ config: AuthConfigProvider, harness: HostAuthHarness, unitTesting: Bool = false) -> NovaAuthFacade {
+    private func facade(_ config: AuthConfigProvider, harness: HostAuthHarness) -> NovaAuthFacade {
         NovaAuthFacade(
             configProvider: config,
             client: harness.client,
-            isUnitTesting: unitTesting,
             contextInvalidationID: { harness.client.contextInvalidationID },
-            activate: { try harness.client.activate(origin: $0) },
-            reset: { try harness.client.reset() }
+            activate: { try harness.client.activate(origin: $0) }
         )
     }
 
@@ -88,7 +85,7 @@ final class NovaAuthFacadeTests: XCTestCase {
             XCTAssertThrowsError(try run(provider.createEndpointWrapper()), baseURL) { error in
                 XCTAssertEqual(error as? NovaAuthError, .invalidConfiguration, baseURL)
             }
-            XCTAssertNil(harness.client.currentContext, baseURL)
+            XCTAssertNil(harness.client.state?.context, baseURL)
             XCTAssertNil(harness.identity.state, baseURL)
             XCTAssertNil(try harness.tokens.load(), baseURL)
             XCTAssertEqual(harness.apple.attestations, 0, baseURL)
@@ -102,15 +99,6 @@ final class NovaAuthFacadeTests: XCTestCase {
         let harness = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self)
         let endpoint = try run(facade(config, harness: harness).createEndpointWrapper())
         XCTAssertEqual(endpoint.context.origin.value, "https://example.test:8443")
-    }
-
-    func testUnitTestingGateNeverResolvesConfigOrBootstraps() throws {
-        let config = AuthConfigProvider()
-        let harness = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self)
-        let provider = facade(config, harness: harness, unitTesting: true)
-        XCTAssertThrowsError(try run(provider.createEndpointWrapper()))
-        XCTAssertEqual(config.requests, 0)
-        XCTAssertTrue(HostAuthURLProtocol.requests.isEmpty)
     }
 
     func testUnsupportedGateNeverResolvesConfig() throws {
@@ -140,27 +128,11 @@ final class NovaAuthFacadeTests: XCTestCase {
         var invalidations = 0
         provider.addContextObserver(self) { invalidations += 1 }
         config.publish(origin: "https://second.test", revision: 2)
-        XCTAssertEqual(harness.client.currentContext?.origin.value, "https://second.test")
+        XCTAssertEqual(harness.client.state?.context.origin.value, "https://second.test")
         XCTAssertEqual(try run(delayedOld).context.origin.value, "https://second.test")
         XCTAssertThrowsError(try run(waiting))
         XCTAssertTrue(HostAuthURLProtocol.requests.isEmpty)
         XCTAssertEqual(invalidations, 1)
-    }
-
-    func testExplicitResetRequiresUserDemandAndNeverAcceptsAnOlderOrigin() throws {
-        let config = AuthConfigProvider()
-        let harness = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self)
-        let provider = facade(config, harness: harness)
-        _ = try run(provider.createEndpointWrapper())
-        let old = provider.createEndpointWrapper()
-        config.publish(origin: "https://second.test", revision: 2)
-        try provider.reset()
-        let endpoint = try run(old)
-        XCTAssertEqual(endpoint.context.origin.value, "https://second.test")
-        XCTAssertThrowsError(try run(endpoint.client.createAdmissionWrapper(in: endpoint.context, intent: .background)))
-        XCTAssertTrue(HostAuthURLProtocol.requests.isEmpty)
-        try run(endpoint.client.createAdmissionWrapper(in: endpoint.context, intent: .userInitiated))
-        XCTAssertEqual(harness.apple.assertions, 1)
     }
 
     func testAuthQueuesDoNotShareTheBusinessQueue() {
@@ -245,7 +217,7 @@ final class NovaAuthFacadeTests: XCTestCase {
         let previous = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self)
         let context = try previous.client.activate(origin: NovaAuthOrigin("https://old.test"))
         let auth = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self, identity: previous.identity)
-        XCTAssertNil(auth.client.currentContext)
+        XCTAssertNil(auth.client.state?.context)
         let config = AuthConfigProvider()
         let harness = HostConsentRecoveryHarness(config: config, auth: auth)
         let readFromCallback = expectation(description: "facade state can be read during invalidation")
@@ -272,9 +244,9 @@ final class NovaAuthFacadeTests: XCTestCase {
         harness.queue.drain()
 
         XCTAssertTrue(invalidated)
-        XCTAssertEqual(auth.client.currentContext?.origin.value, "https://first.test")
-        XCTAssertEqual(auth.client.currentContext?.generation, context.generation + 1)
-        XCTAssertEqual(auth.identity.state?.context, auth.client.currentContext)
+        XCTAssertEqual(auth.client.state?.context.origin.value, "https://first.test")
+        XCTAssertEqual(auth.client.state?.context.generation, context.generation + 1)
+        XCTAssertEqual(auth.identity.state?.context, auth.client.state?.context)
         XCTAssertEqual(config.requests, 1)
         XCTAssertTrue(harness.client.contexts.isEmpty)
         XCTAssertTrue(harness.scheduler.delays.isEmpty)
@@ -287,15 +259,15 @@ final class NovaAuthFacadeTests: XCTestCase {
         let context = try previous.client.activate(origin: NovaAuthOrigin("https://old.test"))
         previous.identity.saveError = NovaAuthError.storageUnavailable
         let auth = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self, identity: previous.identity)
-        XCTAssertNil(auth.client.currentContext)
+        XCTAssertNil(auth.client.state?.context)
         let config = AuthConfigProvider()
         let harness = HostConsentRecoveryHarness(config: config, auth: auth)
 
         harness.recovery.enableConsent()
         harness.queue.drain()
 
-        XCTAssertEqual(auth.client.currentContext?.origin.value, "https://first.test")
-        XCTAssertEqual(auth.client.currentContext?.generation, context.generation + 1)
+        XCTAssertEqual(auth.client.state?.context.origin.value, "https://first.test")
+        XCTAssertEqual(auth.client.state?.context.generation, context.generation + 1)
         XCTAssertEqual(auth.identity.state?.context, context)
         XCTAssertTrue(auth.client.storageFailed)
         XCTAssertEqual(harness.facade.endpointAvailability.invalidationRevision, 1)
@@ -317,7 +289,7 @@ final class NovaAuthFacadeTests: XCTestCase {
         let previous = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self)
         let context = try previous.client.activate(origin: NovaAuthOrigin("https://first.test"))
         let auth = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self, identity: previous.identity)
-        XCTAssertNil(auth.client.currentContext)
+        XCTAssertNil(auth.client.state?.context)
         let config = AuthConfigProvider()
         let harness = HostConsentRecoveryHarness(config: config, auth: auth)
 
@@ -326,7 +298,7 @@ final class NovaAuthFacadeTests: XCTestCase {
         config.publish(origin: "https://first.test", revision: 2)
         harness.queue.drain()
 
-        XCTAssertEqual(auth.client.currentContext, context)
+        XCTAssertEqual(auth.client.state?.context, context)
         XCTAssertEqual(config.requests, 1)
         XCTAssertEqual(harness.client.contexts, [context])
         XCTAssertEqual(harness.client.intents, [.userInitiated])

@@ -32,10 +32,6 @@ protocol NovaAuthIdentityStoreProtocol: AnyObject {
 
 enum NovaAuthIdentityStoreError: Error, Equatable { case corrupt, resetPending }
 
-extension NovaAuthIdentityStoreProtocol {
-    func markResetPending() throws { throw NovaAuthError.storageUnavailable }
-}
-
 protocol NovaAuthTokenStoreProtocol: AnyObject {
     func load() throws -> NovaAuthTokenRecord?
     func replace(_ record: NovaAuthTokenRecord) throws

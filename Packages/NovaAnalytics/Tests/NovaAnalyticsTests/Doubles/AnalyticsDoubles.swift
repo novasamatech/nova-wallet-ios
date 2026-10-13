@@ -148,5 +148,10 @@ final class AnalyticsGatewayResolverStub: AnalyticsGatewayResolving {
 final class AnalyticsAuthSourceStub: AnalyticsAuthProvidingProtocol {
     let auth: AnalyticsAuth
     init(auth: AnalyticsAuth) { self.auth = auth }
+    var authAvailability: AnalyticsAuthAvailability { AnalyticsAuthAvailability() }
     func createAuthWrapper() -> CompoundOperationWrapper<AnalyticsAuth> { .createWithResult(auth) }
+    func addAvailabilityObserver(
+        _: AnyObject,
+        closure _: @escaping (AnalyticsAuthAvailability) -> Void
+    ) -> AnalyticsAuthAvailability { authAvailability }
 }

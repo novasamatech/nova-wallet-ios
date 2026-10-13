@@ -6,7 +6,7 @@ final class NovaAuthRecoveryAdmissionTests: LifecycleTestCase {
         let harness = try LifecycleHarness()
         let (auth, context) = try harness.registered(withToken: true)
         try auth.gate.novaAuthLocked {
-            try auth.retire(.lostKey, flight: NovaAuthIssuanceFlight(context: context, sponsored: false))
+            try auth.retire(.lostKey, flight: NovaAuthIssuanceFlight(context: context, sponsored: false, intent: .background))
         }
         try execute(auth.createAdmissionWrapper(in: context, intent: .background), on: harness.callers)
         XCTAssertEqual(harness.bootstrap.tokenChallenges, 0)

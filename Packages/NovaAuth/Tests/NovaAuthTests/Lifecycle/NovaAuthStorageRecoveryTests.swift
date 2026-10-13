@@ -15,7 +15,7 @@ final class NovaAuthStorageRecoveryTests: LifecycleTestCase {
             XCTAssertThrowsError(try auth.activate(origin: harness.origin)) {
                 XCTAssertEqual($0 as? NovaAuthError, .storageUnavailable)
             }
-            let fenced = try XCTUnwrap(auth.currentContext)
+            let fenced = try XCTUnwrap(auth.state?.context)
             XCTAssertGreaterThan(fenced.generation, previous.generation)
             XCTAssertEqual(try store.load()?.tokenRemovalOwed, true)
             assertError(.storageUnavailable, auth.createAdmissionWrapper(in: fenced, intent: .background), on: harness.callers)
@@ -71,7 +71,7 @@ final class NovaAuthStorageRecoveryTests: LifecycleTestCase {
         let (auth, original) = try harness.registered(withToken: true)
         harness.tokens.failRemove = true
         XCTAssertThrowsError(try auth.reset())
-        let fenced = try XCTUnwrap(auth.currentContext)
+        let fenced = try XCTUnwrap(auth.state?.context)
         XCTAssertEqual(fenced.generation, original.generation + 1)
         XCTAssertEqual(harness.identity.state?.tokenRemovalOwed, true)
         XCTAssertThrowsError(try auth.activate(origin: harness.origin))

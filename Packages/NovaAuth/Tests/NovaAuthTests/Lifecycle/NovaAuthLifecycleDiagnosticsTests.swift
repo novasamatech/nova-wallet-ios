@@ -104,7 +104,7 @@ final class NovaAuthLifecycleDiagnosticsTests: LifecycleTestCase {
         try auth.gate.novaAuthLocked {
             try auth.setRegistration(
                 .registrationPending(NovaAuthPendingRegistration(startedAt: try harness.clock.now())),
-                flight: NovaAuthIssuanceFlight(context: context, sponsored: false)
+                flight: NovaAuthIssuanceFlight(context: context, sponsored: false, intent: .background)
             )
         }
         harness.bootstrap.tokenChallengeResult = .failure(NovaAuthError.transport(.timedOut))
