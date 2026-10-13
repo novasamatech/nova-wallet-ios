@@ -1,4 +1,5 @@
 import Foundation
+import SubstrateSdk
 
 enum SubtensorValidatorSort: Equatable {
     case apy
@@ -14,11 +15,17 @@ struct SubtensorValidatorRowViewModel: Equatable {
     }
 
     let hotkey: AccountId
+    let icon: DrawableIcon?
     let title: String
     let subtitle: String
     let trailing: Trailing
     let isSelected: Bool
     let isSelectable: Bool
+
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.hotkey == rhs.hotkey && lhs.title == rhs.title && lhs.subtitle == rhs.subtitle &&
+            lhs.trailing == rhs.trailing && lhs.isSelected == rhs.isSelected && lhs.isSelectable == rhs.isSelectable
+    }
 }
 
 struct SubtensorValidatorListViewModel: Equatable {

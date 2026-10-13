@@ -20,6 +20,7 @@ final class SubtensorValidatorListFactory {
 
     private let stakeFormatter: LocalizableResource<TokenFormatter>
     private let takeFormatter: LocalizableResource<NumberFormatter>
+    private let iconGenerator = PolkadotIconGenerator()
 
     init(
         chainFormat: ChainFormat,
@@ -293,6 +294,7 @@ private extension SubtensorValidatorListFactory {
 
         return SubtensorValidatorRowViewModel(
             hotkey: entry.item.hotkey,
+            icon: try? iconGenerator.generateFromAccountId(entry.item.hotkey),
             title: entry.title,
             subtitle: strings.stakingSubtensorUiValidatorRowSubtitleFormat(stakeText, takeText),
             trailing: trailing,
