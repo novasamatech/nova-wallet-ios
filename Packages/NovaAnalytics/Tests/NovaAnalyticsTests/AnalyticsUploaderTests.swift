@@ -69,6 +69,18 @@ final class AnalyticsUploaderTests: XCTestCase {
         XCTAssertEqual(uploadFactory.sentBodies.count, 1)
     }
 
+    func testRejectedUploadRetainsBatch() {
+        seed(count: 1)
+        let events = queue.events
+        uploadFactory.uploadResult = .failure(AnalyticsTransportError.proofRefused(statusCode: 403))
+
+        XCTAssertThrowsError(try flush()) { error in
+            XCTAssertEqual(error as? AnalyticsTransportError, .proofRefused(statusCode: 403))
+        }
+
+        XCTAssertEqual(queue.events, events)
+    }
+
     func testConsentWithdrawalBeforeSendRetainsBatchWithoutSending() throws {
         seed(count: 1)
         let events = queue.events
