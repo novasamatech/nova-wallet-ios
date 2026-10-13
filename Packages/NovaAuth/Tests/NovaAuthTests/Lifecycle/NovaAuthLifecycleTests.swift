@@ -106,7 +106,7 @@ final class NovaAuthLifecycleTests: XCTestCase {
         XCTAssertEqual(harness.server.count("/challenges"), 1)
     }
 
-    func testResetDiscardsTheLateTokenOfTheOldGeneration() throws {
+    func testOriginChangeDiscardsTheLateTokenOfTheOldGeneration() throws {
         let harness = try AuthHarness()
         let auth = harness.makeAuth()
         let context = try auth.activate(origin: harness.origin)
@@ -119,7 +119,7 @@ final class NovaAuthLifecycleTests: XCTestCase {
         let admission = auth.createAdmissionWrapper(in: context, intent: .userInitiated)
         OperationQueue().addOperations(admission.allOperations, waitUntilFinished: false)
         wait(for: [sent], timeout: 5)
-        try auth.reset()
+        _ = try auth.activate(origin: NovaAuthOrigin("https://other.example.com"))
         let installed = expectation(description: "late bearer installed")
         installed.isInverted = true
         harness.tokens.onReplace = { installed.fulfill() }
