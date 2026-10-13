@@ -254,7 +254,7 @@ private extension SubtensorPortfolioValueSeriesCalculator {
                 .sorted { $0.date < $1.date }
         }
 
-        var flatTao = portfolio.root?.taoValue.flatMap { Decimal.fromSubstrateAmount($0, precision: precision) } ?? 0
+        let flatTao = portfolio.root?.taoValue.flatMap { Decimal.fromSubstrateAmount($0, precision: precision) } ?? 0
         var anchored: [AnchoredHolding] = []
 
         for group in portfolio.subnets {
@@ -265,13 +265,11 @@ private extension SubtensorPortfolioValueSeriesCalculator {
                 continue
             }
 
-            guard let points = pointsByNetuid[group.netuid], let newestPoint = points.last else {
+            guard
+                let points = pointsByNetuid[group.netuid],
+                let newestPoint = points.last,
+                gridEnd.timeIntervalSince(newestPoint.date) <= period.coverageTolerance else {
                 return nil
-            }
-
-            guard gridEnd.timeIntervalSince(newestPoint.date) <= period.coverageTolerance else {
-                flatTao += value
-                continue
             }
 
             anchored.append(
