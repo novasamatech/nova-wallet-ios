@@ -28,7 +28,7 @@ final class SubtensorSubnetListBuilderTests: XCTestCase {
         }
     }
 
-    func testSevenDaySortPutsRowsWithDataFirstThenFailedFetchesThenNotListedRows() throws {
+    func testSevenDaySortPutsKnownSignedValuesBeforeAllMissingValues() throws {
         let apex = makeEntry(netuid: 1, name: "Apex")
         let chutes = makeEntry(netuid: 64, name: "Chutes")
         let taoshi = makeEntry(netuid: 8, name: "Taoshi")
@@ -46,7 +46,7 @@ final class SubtensorSubnetListBuilderTests: XCTestCase {
 
         let list = builder.build(query: "", sort: .sevenDayChange, filters: SubtensorSubnetFilters())
 
-        XCTAssertEqual(list.others.map(\.subnet.netuid), [64, 1, 8, 5])
+        XCTAssertEqual(list.others.map(\.subnet.netuid), [64, 1, 5, 8])
     }
 
     func testThinPoolFilterKeepsExactlyTwoThousandTaoAndHidesJustBelow() {
@@ -91,6 +91,7 @@ final class SubtensorSubnetListBuilderTests: XCTestCase {
 
         let subnetsInfo = SubtensorSubnetsInfo(
             subnets: [makeDynamicInfo(netuid: 1, registeredAt: 100), makeDynamicInfo(netuid: 2, registeredAt: 999)],
+            isComplete: true,
             prices: [1: 7_683_255, 2: 7_683_255],
             subtokenEnabled: [1, 2],
             ownerCut: SubtensorStakingPallet.defaultSubnetOwnerCut
@@ -104,6 +105,56 @@ final class SubtensorSubnetListBuilderTests: XCTestCase {
         XCTAssertEqual(entries.map(\.subnet.netuid), [1])
     }
 
+    func testLikedThinPoolsRemainVisibleButDoNotAffectQuickPickEligibility() throws {
+        let liked = makeEntry(netuid: 1, name: "Liked", taoReserve: 1)
+        let hidden = makeEntry(netuid: 2, name: "Hidden", taoReserve: 1)
+        let eligible = makeEntry(netuid: 3, name: "Eligible", taoReserve: 2_000_000_000_000)
+        let builder = makeBuilder(entries: [liked, hidden, eligible], favourites: [liked.subnet.ref])
+        let list = builder.build(query: "", sort: .poolDepth, filters: .init(hideThinPools: true))
+        XCTAssertEqual(list.picks.map(\.ref), [liked.subnet.ref])
+        XCTAssertEqual(list.others.map(\.ref), [eligible.subnet.ref])
+        let snapshot = SubtensorQuickPickFixtures.snapshot([.init(1, pool: 1), .init(2, pool: 1), .init(3)])
+        XCTAssertEqual(try SubtensorQuickPickSelector().candidates(from: snapshot, order: .poolSize).map(\.netuid), [3])
+    }
+
+    func testStableTiesSurviveIncomingReorderSortChangesSearchAndFavoriteChanges() {
+        let entries = [makeEntry(netuid: 1, name: "C"), makeEntry(netuid: 2, name: "A"), makeEntry(netuid: 3, name: "B")]
+        let first = makeBuilder(entries: entries)
+        var next = SubtensorSubnetListBuilder(
+            entries: entries.reversed(),
+            weekly: nil,
+            previousOrder: first.orderedRefs(sort: .name),
+            favourites: [],
+            locale: locale
+        )
+        XCTAssertEqual(next.orderedRefs(sort: .poolDepth).map(\.netuid), [2, 3, 1])
+        XCTAssertEqual(next.build(query: "C", sort: .poolDepth, filters: .init()).others.map(\.ref), [entries[0].subnet.ref])
+        next.previousOrder = next.orderedRefs(sort: .poolDepth)
+        let liked = SubtensorSubnetListBuilder(
+            entries: entries,
+            weekly: nil,
+            previousOrder: next.previousOrder,
+            favourites: [entries[0].subnet.ref],
+            locale: locale
+        )
+        XCTAssertEqual(liked.orderedRefs(sort: .age).map(\.netuid), [2, 3, 1])
+        XCTAssertEqual(liked.build(query: "", sort: .age, filters: .init()).others.map(\.ref), [entries[1].subnet.ref, entries[2].subnet.ref])
+    }
+
+    func testAgeUsesChainRegistrationWithoutRecommendations() {
+        let entries = [UInt16(1), 2, 3].map { netuid -> SubtensorSubnetListEntry in
+            let subnet = makeCatalogueSubnet(netuid: netuid, name: "Subnet", registeredAt: UInt64(4 - netuid))
+            return SubtensorSubnetListEntry(subnet: subnet, target: .subnet(info: makeDynamicInfo(netuid: netuid, registeredAt: subnet.networkRegisteredAt), price: 1))
+        }
+        XCTAssertEqual(makeBuilder(entries: entries).orderedRefs(sort: .age).map(\.netuid), [3, 2, 1])
+    }
+
+    func testThinFilterUsesChainReserveInsteadOfCatalogueReserve() {
+        let catalogue = makeCatalogueSubnet(netuid: 1, name: "A", registeredAt: 1, taoReserve: 999_000_000_000_000)
+        let entry = SubtensorSubnetListEntry(subnet: catalogue, target: .subnet(info: makeDynamicInfo(netuid: 1, registeredAt: 1, taoReserve: 1), price: 1))
+        XCTAssertEqual(makeBuilder(entries: [entry]).build(query: "", sort: .poolDepth, filters: .init(hideThinPools: true)).count, 0)
+    }
+
     private func makeBuilder(
         entries: [SubtensorSubnetListEntry],
         weekly: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]? = nil,
@@ -112,7 +163,6 @@ final class SubtensorSubnetListBuilderTests: XCTestCase {
         SubtensorSubnetListBuilder(
             entries: entries,
             weekly: weekly,
-            ageBlocks: [:],
             favourites: favourites,
             locale: locale
         )
@@ -136,7 +186,7 @@ final class SubtensorSubnetListBuilderTests: XCTestCase {
 
         return SubtensorSubnetListEntry(
             subnet: subnet,
-            target: .subnet(info: makeDynamicInfo(netuid: netuid, registeredAt: 4_531_295), price: subnet.taoPerAlpha)
+            target: .subnet(info: makeDynamicInfo(netuid: netuid, registeredAt: 4_531_295, taoReserve: taoReserve), price: subnet.taoPerAlpha)
         )
     }
 
@@ -173,7 +223,7 @@ final class SubtensorSubnetListBuilderTests: XCTestCase {
         )
     }
 
-    private func makeDynamicInfo(netuid: UInt16, registeredAt: UInt64) -> SubtensorStakingPallet.DynamicInfo {
+    private func makeDynamicInfo(netuid: UInt16, registeredAt: UInt64, taoReserve: Balance = 0) -> SubtensorStakingPallet.DynamicInfo {
         SubtensorStakingPallet.DynamicInfo(
             netuid: netuid,
             ownerHotkey: Data(repeating: UInt8(netuid % 255), count: 32),
@@ -186,7 +236,7 @@ final class SubtensorSubnetListBuilderTests: XCTestCase {
             emission: 0,
             alphaIn: 0,
             alphaOut: 0,
-            taoIn: 0,
+            taoIn: taoReserve,
             alphaOutEmission: 0,
             alphaInEmission: 0,
             taoInEmission: 0,

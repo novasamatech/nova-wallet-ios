@@ -7,6 +7,8 @@ protocol SubtensorStakingSetupViewProtocol: ControllerBackedProtocol {
 }
 
 protocol SubtensorStakingSetupPresenterProtocol: AnyObject {
+    func showAllSubnets()
+    func retryQuickPick()
     func setup()
     func updateAmount(_ newValue: Decimal?)
     func selectMax()
@@ -21,6 +23,8 @@ protocol SubtensorStakingSetupPresenterProtocol: AnyObject {
 }
 
 protocol SubtensorSetupInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {
+    func loadQuickPickSnapshot(generation: Int, forcingRefresh: Bool)
+    func cancelQuickPickSnapshot()
     func cachedRankingView() -> HTTPCachePeek<SubtensorRankedSubnets>
     func cachedYields(netuid: UInt16) -> HTTPCachePeek<SubtensorAlphaYields>
     func cachedRootYield() -> HTTPCachePeek<SubtensorReportedYield?>
@@ -37,6 +41,7 @@ protocol SubtensorSetupInteractorInputProtocol: SubtensorStakingBaseInteractorIn
 }
 
 protocol SubtensorSetupInteractorOutputProtocol: SubtensorStakingBaseInteractorOutputProtocol {
+    func didReceiveQuickPickSnapshot(_ result: Result<SubtensorSubnetsInfo, Error>, generation: Int)
     func didReceiveValidator(_ validator: SubtensorValidatorDirectoryItem?, on subnet: SubtensorSubnetRef)
     func didReceiveRootYield(_ yield: SubtensorReportedYield?)
     func didReceiveSubnet(_ target: SubtensorStakeTarget)
@@ -51,6 +56,12 @@ protocol SubtensorSetupInteractorOutputProtocol: SubtensorStakingBaseInteractorO
 protocol SubtensorStakingSetupWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
     CommonRetryable, SubtensorStakingErrorPresentable, SubtensorGetTaoRouting, SubtensorInfoSheetPresentable,
     SubtensorValidatorInfoPresentable {
+    func showAllSubnets(
+        from view: SubtensorStakingSetupViewProtocol?,
+        browseState: SubtensorSubnetBrowseState,
+        delegate: SubtensorSubnetSelectDelegate
+    )
+
     func showConfirmation(
         from view: SubtensorStakingSetupViewProtocol?,
         model: SubtensorStakingConfirmModel

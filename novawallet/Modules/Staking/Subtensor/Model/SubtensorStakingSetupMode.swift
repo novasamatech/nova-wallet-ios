@@ -1,6 +1,7 @@
 import Foundation
 
 enum SubtensorStakingSetupMode: Equatable {
+    case quickPick(SubtensorQuickPickOrder)
     case rootDetails
     case subnetPick(target: SubtensorStakeTarget, validator: SubtensorValidatorDirectoryItem?)
     case addStake(position: SubtensorStakingPosition)
@@ -10,7 +11,7 @@ enum SubtensorStakingSetupMode: Equatable {
 extension SubtensorStakingSetupMode {
     var origin: SubtensorOperationOrigin {
         switch self {
-        case .rootDetails, .subnetPick:
+        case .quickPick, .rootDetails, .subnetPick:
             return .newPosition
         case .addStake:
             return .addStake
@@ -19,8 +20,9 @@ extension SubtensorStakingSetupMode {
         }
     }
 
-    var netuid: UInt16 {
+    var netuid: UInt16? {
         switch self {
+        case .quickPick: return nil
         case .rootDetails:
             return SubtensorStakingPallet.rootNetuid
         case let .subnetPick(target, _):
@@ -36,7 +38,7 @@ extension SubtensorStakingSetupMode {
 
     var lockedHotkey: AccountId? {
         switch self {
-        case .rootDetails, .subnetPick:
+        case .quickPick, .rootDetails, .subnetPick:
             return nil
         case let .addStake(position), let .buyMore(position):
             return position.hotkey
@@ -61,7 +63,7 @@ extension SubtensorStakingSetupMode {
             return .root
         case let .subnetPick(target, _):
             return target
-        case .buyMore:
+        case .quickPick, .buyMore:
             return nil
         }
     }

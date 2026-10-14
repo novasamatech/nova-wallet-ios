@@ -6,6 +6,9 @@ extension SubtensorStakingSetupPresenter: SubtensorSubnetSelectDelegate {
             return
         }
 
+        quickPickVisit?.replaceManually()
+        interactor.cancelQuickPickSnapshot()
+
         switch target {
         case .root:
             mode = .rootDetails
@@ -19,7 +22,8 @@ extension SubtensorStakingSetupPresenter: SubtensorSubnetSelectDelegate {
 
 extension SubtensorStakingSetupPresenter: SubtensorValidatorSelectDelegate {
     func didSelectValidator(_ validator: SubtensorValidatorDirectoryItem, for target: SubtensorStakeTarget) {
-        guard !mode.isLocked, target.netuid == self.target?.netuid else {
+        guard !mode.isLocked, target.netuid == self.target?.netuid,
+              target.subnetInfo?.networkRegisteredAt == self.target?.subnetInfo?.networkRegisteredAt else {
             return
         }
 

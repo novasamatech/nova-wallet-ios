@@ -14,6 +14,9 @@ final class SubtensorStakingSetupPresenter {
     let viewModelFactory: SubtensorStakingSetupViewModelFactory
     let dataValidationFactory: SubtensorStakingValidationFactoryProtocol
 
+    let quickPickVisit: SubtensorQuickPickVisit?
+    let browseState: SubtensorSubnetBrowseState
+
     var mode: SubtensorStakingSetupMode
     var target: SubtensorStakeTarget?
     var validatorState: SubtensorSetupValidatorState = .pending
@@ -56,8 +59,12 @@ final class SubtensorStakingSetupPresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         viewModelFactory: SubtensorStakingSetupViewModelFactory,
         localizationManager: LocalizationManagerProtocol,
-        logger: LoggerProtocol
+        logger: LoggerProtocol,
+        browseState: SubtensorSubnetBrowseState = .init(),
+        quickPickVisit: SubtensorQuickPickVisit? = nil
     ) {
+        self.browseState = browseState
+        self.quickPickVisit = quickPickVisit
         self.interactor = interactor
         self.wireframe = wireframe
         self.mode = mode
@@ -112,6 +119,11 @@ extension SubtensorStakingSetupPresenter {
         isQuoteFailed = false
         tradesUnavailable = false
 
+        if case .quickPick = mode {
+            loadQuickPick(forcingRefresh: false)
+            return
+        }
+
         loadRootYieldIfNeeded()
 
         if case let .buyMore(position) = mode {
@@ -126,6 +138,10 @@ extension SubtensorStakingSetupPresenter {
         } else if let picked = mode.pickedValidator {
             validatorState = .selected(SubtensorSetupValidator(hotkey: picked.hotkey, name: picked.name))
             validatorItem = picked
+        }
+
+        if quickPickVisit != nil, !mode.isRootLane, validatorState == .pending {
+            validatorState = .none
         }
 
         applyTargetIfReady()
@@ -371,16 +387,6 @@ extension SubtensorStakingSetupPresenter: SubtensorStakingSetupPresenterProtocol
             }
 
             wireframe.showConfirmation(from: view, model: model)
-        }
-    }
-}
-
-extension SubtensorStakingSetupPresenter: Localizable {
-    func applyLocalization() {
-        if let view, view.isSetup {
-            provideAmountInputViewModel()
-            provideAssetViewModel()
-            provideViewModel()
         }
     }
 }

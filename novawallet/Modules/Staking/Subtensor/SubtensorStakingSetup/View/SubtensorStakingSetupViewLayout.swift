@@ -25,6 +25,9 @@ final class SubtensorStakingSetupViewLayout: UIView {
         return view
     }()
 
+    let selectionAlert: InlineAlertView = .create { $0.isHidden = true }
+    let browseButton = UIButton(type: .system)
+
     let detailsTableView = StackTableView()
 
     let validatorCell: StackInfoTableCell = .create { cell in
@@ -162,23 +165,29 @@ private extension SubtensorStakingSetupViewLayout {
         containerView.stackView.addArrangedSubview(getTaoCardView)
 
         containerView.stackView.setCustomSpacing(12.0, after: amountInputView)
-        containerView.stackView.setCustomSpacing(12.0, after: getTaoCardView)
+        containerView.stackView.setCustomSpacing(16.0, after: getTaoCardView)
 
         containerView.stackView.addArrangedSubview(reserveAlertView)
         containerView.stackView.setCustomSpacing(16.0, after: reserveAlertView)
     }
 
     func setupDetailsLayout() {
+        containerView.stackView.addArrangedSubview(sectionLabel)
+        containerView.stackView.setCustomSpacing(8, after: sectionLabel)
+        containerView.stackView.addArrangedSubview(selectionAlert)
+        containerView.stackView.setCustomSpacing(16, after: selectionAlert)
         containerView.stackView.addArrangedSubview(detailsTableView)
 
         detailsTableView.addArrangedSubview(validatorCell)
         detailsTableView.addArrangedSubview(apyCell)
         detailsTableView.addArrangedSubview(networkFeeCell)
 
-        containerView.stackView.addArrangedSubview(sectionLabel)
-        containerView.stackView.setCustomSpacing(8, after: sectionLabel)
         containerView.stackView.addArrangedSubview(pickCardView)
         containerView.stackView.setCustomSpacing(Constants.feeDisclosureSpacing, after: pickCardView)
+        containerView.stackView.addArrangedSubview(browseButton)
+        browseButton.contentHorizontalAlignment = .right
+        browseButton.titleLabel?.font = .semiBoldFootnote
+        browseButton.snp.makeConstraints { $0.height.equalTo(44) }
         containerView.stackView.addArrangedSubview(avgBuyPriceTableView)
         containerView.stackView.setCustomSpacing(Constants.afterAvgBuyPriceSpacing, after: avgBuyPriceTableView)
         containerView.stackView.addArrangedSubview(feeDisclosureLabel)

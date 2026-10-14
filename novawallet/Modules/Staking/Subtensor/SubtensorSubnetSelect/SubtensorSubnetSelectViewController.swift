@@ -47,6 +47,7 @@ final class SubtensorSubnetSelectViewController: UIViewController, ViewHolder {
 
 private extension SubtensorSubnetSelectViewController {
     enum Section: Int, CaseIterable {
+        case root
         case picks
         case others
     }
@@ -72,6 +73,7 @@ private extension SubtensorSubnetSelectViewController {
         }
 
         switch section {
+        case .root: return []
         case .picks:
             return picks
         case .others:
@@ -92,7 +94,7 @@ private extension SubtensorSubnetSelectViewController {
     func setupTableView() {
         rootView.tableView.registerClassForCell(SubtensorSubnetCell.self)
         rootView.tableView.registerClassForCell(SubtensorSubnetSkeletonCell.self)
-        rootView.tableView.registerHeaderFooterView(withClass: SubtensorSubnetPicksHeaderView.self)
+        rootView.tableView.register(UITableViewCell.self, forCellReuseIdentifier: "root")
         rootView.tableView.dataSource = self
         rootView.tableView.delegate = self
     }
@@ -101,7 +103,6 @@ private extension SubtensorSubnetSelectViewController {
         rootView.searchTextField.addTarget(self, action: #selector(actionSearchChanged), for: .editingChanged)
         rootView.sortView.control.addTarget(self, action: #selector(actionSort), for: .touchUpInside)
         rootView.filterButton.addTarget(self, action: #selector(actionFilters), for: .touchUpInside)
-        rootView.rootBarView.addTarget(self, action: #selector(actionRoot), for: .touchUpInside)
         rootView.errorView.onLinkTap = { [weak self] in
             self?.presenter.retry()
         }
@@ -171,6 +172,8 @@ extension SubtensorSubnetSelectViewController: UITableViewDataSource {
             return 0
         }
 
+        if section == .root { return 1 }
+
         if isLoading {
             return section == .others ? Self.loadingRowsCount : 0
         }
@@ -179,6 +182,16 @@ extension SubtensorSubnetSelectViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if indexPath.section == Section.root.rawValue {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "root", for: indexPath)
+            cell.backgroundColor = .clear
+            cell.textLabel?.apply(style: .regularBodyPrimary)
+            let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
+            cell.textLabel?.text = strings.stakingSubtensorUiStakeToRoot()
+            cell.accessoryType = .disclosureIndicator
+            return cell
+        }
+
         guard let model = rowModel(at: indexPath) else {
             return tableView.dequeueReusableCellWithType(SubtensorSubnetSkeletonCell.self, forIndexPath: indexPath)
         }
@@ -196,28 +209,7 @@ extension SubtensorSubnetSelectViewController: UITableViewDataSource {
 }
 
 extension SubtensorSubnetSelectViewController: UITableViewDelegate {
-    func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        section == Section.picks.rawValue && !rows(for: .picks).isEmpty
-            ? SubtensorSubnetPicksHeaderView.preferredHeight
-            : 0
-    }
-
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard section == Section.picks.rawValue, !rows(for: .picks).isEmpty else {
-            return nil
-        }
-
-        let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
-
-        let header: SubtensorSubnetPicksHeaderView = tableView.dequeueReusableHeaderFooterView()
-
-        header.bind(
-            title: strings.stakingSubtensorUiPickerPicksHeader(),
-            caption: strings.stakingSubtensorUiPickerPicksCaption()
-        )
-
-        return header
-    }
+    func tableView(_: UITableView, heightForHeaderInSection _: Int) -> CGFloat { .leastNormalMagnitude }
 
     func tableView(_: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         section == Section.picks.rawValue && !rows(for: .picks).isEmpty && !rows(for: .others).isEmpty
@@ -232,9 +224,11 @@ extension SubtensorSubnetSelectViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        guard let model = rowModel(at: indexPath) else {
+        if indexPath.section == Section.root.rawValue {
+            presenter.selectRoot()
             return
         }
+        guard let model = rowModel(at: indexPath) else { return }
 
         presenter.selectSubnet(model.subnetRef)
     }
@@ -245,10 +239,6 @@ extension SubtensorSubnetSelectViewController: SubtensorSubnetSelectViewProtocol
         viewModel = list
 
         applyViewModel()
-    }
-
-    func didReceive(rootBar: SubtensorStakeToRootBarViewModel) {
-        rootView.rootBarView.bind(viewModel: rootBar)
     }
 }
 
