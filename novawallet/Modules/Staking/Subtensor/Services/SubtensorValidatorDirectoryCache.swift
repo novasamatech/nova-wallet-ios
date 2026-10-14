@@ -53,7 +53,7 @@ extension SubtensorValidatorDirectoryCache: SubtensorValidatorDirectoryCaching {
         }
 
         guard generation == contextGeneration else {
-            throw BittensorApiError.attestationUnavailable(requestId: nil)
+            throw BittensorApiError.unavailable(code: nil, requestId: nil)
         }
 
         let subnet = entry.directory.subnet

@@ -87,8 +87,7 @@ extension StakingSharedStateFactory {
         let runtimeConnectionStore = ChainRegistryRuntimeConnectionStore(chainId: chainId, chainRegistry: chainRegistry)
 
         let apiOperationFactory = SubtensorApiOperationFactory(
-            runtimeConnectionStore: runtimeConnectionStore,
-            operationQueue: syncOperationQueue
+            runtimeConnectionStore: runtimeConnectionStore, operationQueue: syncOperationQueue
         )
 
         let novaFeeCalculator = SubtensorNovaFeeCalculator()
@@ -137,7 +136,7 @@ extension StakingSharedStateFactory {
         let processServices = SubtensorStakingProcessServices.shared
 
         let validatorChainOperationFactory = SubtensorValidatorChainOperationFactory(
-            runtimeConnectionStore: runtimeConnectionStore
+            runtimeConnectionStore: runtimeConnectionStore, operationQueue: syncOperationQueue
         )
 
         let yieldService = SubtensorYieldService(
@@ -177,13 +176,13 @@ extension StakingSharedStateFactory {
                 seriesProvider: flowState.priceSeriesCache
             ),
             tradeQuoteFactory: SubtensorTradeQuoteFactory(
-                quoteFactory: SubtensorQuoteOperationFactory(
-                    operationFactory: apiOperationFactory,
-                    operationQueue: syncOperationQueue
-                ),
+                operationFactory: apiOperationFactory,
+                operationQueue: syncOperationQueue,
                 feeCalculator: novaFeeCalculator
             ),
-            rootHoldFactory: SubtensorRootHoldFactory(runtimeConnectionStore: runtimeConnectionStore),
+            rootHoldFactory: SubtensorRootHoldFactory(
+                runtimeConnectionStore: runtimeConnectionStore, operationQueue: syncOperationQueue
+            ),
             costBasisService: processServices.costBasisService
         )
     }

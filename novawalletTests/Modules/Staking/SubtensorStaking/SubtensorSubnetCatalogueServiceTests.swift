@@ -60,10 +60,10 @@ final class SubtensorSubnetCatalogueServiceTests: XCTestCase {
 
     func testUnpublishedCatalogueFailsWithTheRouteError() {
         let apiFactory = MockBittensorApiOperationFactoryProtocol()
-        stubSubnets(apiFactory, result: .failure(BittensorApiError.routeNotPublished))
+        stubSubnets(apiFactory, result: .failure(BittensorApiError.unavailable(code: nil, requestId: nil)))
 
         XCTAssertThrowsError(try run(createService(apiFactory).createCatalogueWrapper())) { error in
-            guard case .routeNotPublished = error as? BittensorApiError else {
+            guard case .unavailable(code: nil, requestId: nil) = error as? BittensorApiError else {
                 return XCTFail("Unexpected error \(error)")
             }
         }

@@ -30,14 +30,14 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
         let apiFactory = MockBittensorApiOperationFactoryProtocol()
         stub(apiFactory) { stub in
             when(stub.createRankedValidatorsWrapper(netuid: any())).then { _ in
-                CompoundOperationWrapper.createWithError(BittensorApiError.routeNotPublished)
+                CompoundOperationWrapper.createWithError(BittensorApiError.unavailable(code: nil, requestId: nil))
             }
         }
         let chainFactory = createChainFactory()
         let service = createService(apiFactory, chainFactory)
 
         XCTAssertThrowsError(try run(service.createRecommendedValidatorsWrapper(for: subnet))) {
-            guard case BittensorApiError.routeNotPublished = $0 else {
+            guard case BittensorApiError.unavailable(code: nil, requestId: nil) = $0 else {
                 return XCTFail("Unexpected error \($0)")
             }
         }

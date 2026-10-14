@@ -1,3 +1,4 @@
+import BigInt
 import Foundation
 
 struct SubtensorNovaFee: Equatable {
@@ -80,6 +81,100 @@ enum SubtensorSellPlan: Equatable {
     case remainderWouldBeSwept
     case remainderWouldBeErased
     case exceedsAvailable
+}
+
+struct SubtensorQuoteArgs: Equatable {
+    enum Direction: Equatable {
+        case stake(taoIn: Balance)
+        case unstake(alphaIn: Balance)
+    }
+
+    let netuid: UInt16
+    let direction: Direction
+}
+
+enum SubtensorQuoteError: Error, Equatable {
+    case missingSpotPrice(netuid: UInt16)
+    case quoteUnavailable(netuid: UInt16)
+}
+
+struct SubtensorQuote: Equatable {
+    let args: SubtensorQuoteArgs
+    let sim: SubtensorStakingPallet.SimSwapResult
+    let spotPrice: Balance
+    let feeRate: UInt16
+    let capturedAt: Date
+
+    init(
+        args: SubtensorQuoteArgs,
+        sim: SubtensorStakingPallet.SimSwapResult,
+        spotPrice: Balance,
+        feeRate: UInt16,
+        capturedAt: Date = Date()
+    ) {
+        self.args = args
+        self.sim = sim
+        self.spotPrice = spotPrice
+        self.feeRate = feeRate
+        self.capturedAt = capturedAt
+    }
+}
+
+extension SubtensorQuote {
+    var expectedOut: Balance {
+        switch args.direction {
+        case .stake:
+            return sim.alphaAmount
+        case .unstake:
+            return sim.taoAmount
+        }
+    }
+
+    var poolFee: Balance {
+        switch args.direction {
+        case .stake:
+            return sim.taoFee
+        case .unstake:
+            return sim.alphaFee
+        }
+    }
+
+    /// pool-move component only: the sim amounts are net of the input-side fee, so the fee
+    /// never double-counts into the impact
+    var priceImpact: BigRational? {
+        guard let postTradePrice else {
+            return nil
+        }
+
+        let move = postTradePrice > spotPrice ? postTradePrice - spotPrice : spotPrice - postTradePrice
+
+        return BigRational(numerator: move, denominator: spotPrice)
+    }
+
+    var postTradePrice: Balance? {
+        guard sim.alphaAmount > 0, spotPrice > 0 else {
+            return nil
+        }
+
+        let scaledTao = sim.taoAmount * SubtensorStakingPallet.alphaPriceScale
+
+        switch args.direction {
+        case .stake:
+            let averagePrice = Self.divideRoundingUp(scaledTao, by: sim.alphaAmount)
+
+            return Self.divideRoundingUp(averagePrice * averagePrice, by: spotPrice)
+        case .unstake:
+            let averagePrice = scaledTao / sim.alphaAmount
+
+            return averagePrice * averagePrice / spotPrice
+        }
+    }
+}
+
+private extension SubtensorQuote {
+    static func divideRoundingUp(_ dividend: Balance, by divisor: Balance) -> Balance {
+        (dividend + divisor - 1) / divisor
+    }
 }
 
 struct SubtensorTradeQuote: Equatable {
