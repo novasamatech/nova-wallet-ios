@@ -100,7 +100,6 @@ extension Multistaking {
     struct DashboardItemSubtensorDetails: Equatable {
         let rootStake: BigUInt?
         let subnetCount: Int
-        let rootRate: Decimal?
         let isFullyPriced: Bool?
     }
 
@@ -114,7 +113,6 @@ extension Multistaking {
         let state: SubtensorStakingState
         let stake: BigUInt
         let maxApy: MaxApyUpdate
-        let rootRate: Decimal?
         let isFullyPriced: Bool?
 
         init(
@@ -122,14 +120,12 @@ extension Multistaking {
             state: SubtensorStakingState,
             stake: BigUInt,
             maxApy: MaxApyUpdate = .keep,
-            rootRate: Decimal? = nil,
             isFullyPriced: Bool? = nil
         ) {
             self.stakingOption = stakingOption
             self.state = state
             self.stake = stake
             self.maxApy = maxApy
-            self.rootRate = rootRate
             self.isFullyPriced = isFullyPriced
         }
     }

@@ -26,7 +26,6 @@ protocol SubnetPortfolioInteractorOutputProtocol: AnyObject {
     func didReceive(state: Multistaking.SubtensorStakingState)
     func didReceive(catalogue: SubtensorSubnetCatalogue?)
     func didReceive(subnetLogos: SubtensorSubnetLogos?)
-    func didReceive(rootRate: Decimal?)
     func didReceive(price: PriceData?)
     func didReceive(histories: SubtensorPortfolioPriceHistories)
     func didFailHistories(for period: SubtensorPricePeriod)
@@ -44,5 +43,4 @@ protocol SubtensorPortfolioWireframeProtocol: AnyObject, MessageSheetPresentable
 
 struct SubtensorPortfolioSnapshot {
     let catalogue: HTTPCachePeek<SubtensorSubnetCatalogue>
-    let rootRate: HTTPCachePeek<Decimal?>
 }

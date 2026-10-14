@@ -83,11 +83,6 @@ private extension SubtensorPositionPresenter {
             state.isCatalogueResolved = true
         }
 
-        if let rootRate = snapshot.rootRate.value {
-            state.isRateResolved = true
-            state.rootRate = rootRate
-        }
-
         if let yields = snapshot.yields.value {
             state.isRateResolved = true
             state.yields = yields
@@ -333,12 +328,6 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
 
         state.validatorHotkey = hotkey
         state.validator = validator
-        provideViewModel()
-    }
-
-    func didReceive(rootRate: Decimal?) {
-        state.isRateResolved = true
-        state.rootRate = rootRate
         provideViewModel()
     }
 

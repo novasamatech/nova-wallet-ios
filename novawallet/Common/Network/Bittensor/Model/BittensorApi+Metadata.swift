@@ -52,11 +52,6 @@ extension BittensorApi {
         let nextPage: Int?
     }
 
-    struct SearchRequest: Codable, Equatable {
-        let accountSubject: AccountAddress
-        let page: Int?
-    }
-
     struct ErrorEnvelope: Decodable, Equatable {
         struct Detail: Decodable, Equatable {
             let code: String

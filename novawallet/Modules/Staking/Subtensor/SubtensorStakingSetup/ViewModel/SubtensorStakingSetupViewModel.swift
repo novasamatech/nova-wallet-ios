@@ -29,7 +29,6 @@ struct SubtensorSetupRootViewModel {
     let icon: ImageViewModelProtocol
     let validator: SubtensorValidatorCardViewModel
     let compactValidator: SubtensorSetupValidatorViewModel
-    let compactRate: String?
     let isQuickPick: Bool
     let networkFee: BalanceViewModelProtocol?
 }
@@ -160,8 +159,6 @@ struct SubtensorStakingSetupViewModelInput {
     let maxAmount: Balance?
     let amount: Balance?
     let validator: SubtensorSetupValidatorState
-    let rootRate: Decimal?
-    let isRootRateLoaded: Bool
     let fee: ExtrinsicFeeProtocol?
     let price: PriceData?
     let quote: SubtensorTradeQuote?

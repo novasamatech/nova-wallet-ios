@@ -28,13 +28,6 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
         }
     }
 
-    func didReceiveRootYield(_ yield: SubtensorReportedYield?) {
-        rootRate = SubtensorAlphaApyFormatter.annualRate(from: yield)
-        isRootRateLoaded = true
-
-        provideViewModel()
-    }
-
     func didReceiveSubnet(_ target: SubtensorStakeTarget) {
         guard case let .buyMore(position) = mode, self.target == nil, target.netuid == position.netuid else {
             return

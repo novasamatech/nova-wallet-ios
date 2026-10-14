@@ -244,7 +244,7 @@ private extension SubtensorPortfolioViewModelFactory {
         return SubtensorPortfolioRowViewModel(
             icon: assetIconFactory.createAssetIconViewModel(from: chainAsset.assetDisplayInfo),
             title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiRootStaking(),
-            subtitle: state.rootRate.map { SubtensorApyFormatter.text(for: $0, style: .leading, locale: locale) },
+            subtitle: nil,
             value: formatTao(amount, locale: locale),
             detail: detail
         )
@@ -303,16 +303,10 @@ private extension SubtensorPortfolioViewModelFactory {
             formatFiat(0, price: price, locale: locale)
         }
 
-        let rootSubtitle = state.rootRate.map { rate in
-            strings.stakingSubtensorUiPortfolioEmptyRootSubtitleFormat(
-                SubtensorApyFormatter.text(for: rate, style: .bare, locale: locale)
-            )
-        } ?? strings.stakingSubtensorUiPickerRootSubtitle()
-
         return SubtensorPortfolioEmptyViewModel(
             total: formatTao(0, locale: locale),
             fiat: fiat,
-            rootSubtitle: rootSubtitle
+            rootSubtitle: strings.stakingSubtensorUiPickerRootSubtitle()
         )
     }
 }
@@ -333,7 +327,7 @@ extension SubtensorPortfolioViewModelFactory: SubnetPortfolioViewModelFactoryPro
             return SubtensorPortfolioViewModel(
                 content: .empty(createEmpty(for: state, locale: locale)),
                 isSyncFailed: state.isSyncFailed,
-                isRatesUnavailable: state.isRootRateUnavailable
+                isRatesUnavailable: true
             )
         }
 
@@ -343,8 +337,7 @@ extension SubtensorPortfolioViewModelFactory: SubnetPortfolioViewModelFactoryPro
                 : createSubnetRow(for: group, state: state, locale: locale)
         }
 
-        let isRootRateUnavailable = state.isRootRateUnavailable &&
-            groups.contains { $0.netuid == SubtensorStakingPallet.rootNetuid }
+        let isRootRateUnavailable = groups.contains { $0.netuid == SubtensorStakingPallet.rootNetuid }
 
         let selection = createSelection(for: portfolio, state: state, locale: locale)
 
