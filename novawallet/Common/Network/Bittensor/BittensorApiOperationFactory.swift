@@ -91,10 +91,6 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
         createWrapper(route: .rootOverview, path: "/root/overview")
     }
 
-    func peekRootOverview() -> HTTPCachePeek<BittensorApiResult<BittensorApi.RootOverview>> {
-        peek(path: "/root/overview")
-    }
-
     func createOperationsWrapper(
         accountSubject: AccountAddress,
         page: Int?

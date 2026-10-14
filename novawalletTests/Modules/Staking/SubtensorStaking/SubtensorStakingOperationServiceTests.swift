@@ -145,8 +145,7 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
             positionsSyncService: positionsSyncService,
             sharedOperation: sharedOperation,
             eventCenter: eventCenter,
-            feeCalculator: SubtensorNovaFeeCalculator(beneficiary: beneficiary),
-            operationQueue: OperationQueue()
+            feeCalculator: SubtensorNovaFeeCalculator(beneficiary: beneficiary)
         )
 
         return Context(

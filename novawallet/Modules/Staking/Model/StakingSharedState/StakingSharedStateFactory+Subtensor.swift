@@ -155,7 +155,6 @@ extension StakingSharedStateFactory {
         let validatorDirectoryService = SubtensorValidatorDirectoryService(
             apiOperationFactory: processServices.bittensorApiOperationFactory,
             chainOperationFactory: validatorChainOperationFactory,
-            cache: flowState.validatorDirectoryCache,
             operationQueue: syncOperationQueue,
             logger: logger
         )

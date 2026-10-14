@@ -55,7 +55,6 @@ enum SubtensorValidatorListState: Equatable {
 }
 
 struct SubtensorValidatorSelectSnapshot {
-    let directory: HTTPCachePeek<SubtensorValidatorDirectory>
     let yields: HTTPCachePeek<SubtensorAlphaYields>
     let alphaPrice: HTTPCachePeek<Balance?>
 }

@@ -196,7 +196,6 @@
 		F09439A2331948A69A3E7F9F /* SubtensorRecommendationService+Mapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C2B5B4B187D4853882DAAEB /* SubtensorRecommendationService+Mapping.swift */; };
 		472D593378C440BD990E0FBF /* SubtensorRecommendationVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58B839518DF4D1D82C55505 /* SubtensorRecommendationVerifier.swift */; };
 		D7EE6C59E314470B838EB42C /* SubtensorPriceHistoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 090900CA298F4CD0BBDD89CC /* SubtensorPriceHistoryService.swift */; };
-		A9D9ED8F7310463D9B0CF4A0 /* SubtensorValidatorDirectoryCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFE34AF600C24771A44696ED /* SubtensorValidatorDirectoryCache.swift */; };
 		C62045136E5B46CF971C4A92 /* SubtensorPriceSeriesCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20B0FB345E1469C889580CE /* SubtensorPriceSeriesCache.swift */; };
 		F1F6821B897D4C2E85A46DE5 /* SubtensorPortfolioValueSeriesCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8271541E4C1944D3A5B930F2 /* SubtensorPortfolioValueSeriesCalculator.swift */; };
 		A2681C66291C47AE9AE3C77B /* SubtensorValidatorChainOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39FC8B18780C4B728378A731 /* SubtensorValidatorChainOperationFactory.swift */; };
@@ -7353,7 +7352,6 @@
 		0C2B5B4B187D4853882DAAEB /* SubtensorRecommendationService+Mapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorRecommendationService+Mapping.swift"; sourceTree = "<group>"; };
 		F58B839518DF4D1D82C55505 /* SubtensorRecommendationVerifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorRecommendationVerifier.swift; sourceTree = "<group>"; };
 		090900CA298F4CD0BBDD89CC /* SubtensorPriceHistoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorPriceHistoryService.swift; sourceTree = "<group>"; };
-		DFE34AF600C24771A44696ED /* SubtensorValidatorDirectoryCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorValidatorDirectoryCache.swift; sourceTree = "<group>"; };
 		C20B0FB345E1469C889580CE /* SubtensorPriceSeriesCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorPriceSeriesCache.swift; sourceTree = "<group>"; };
 		8271541E4C1944D3A5B930F2 /* SubtensorPortfolioValueSeriesCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorPortfolioValueSeriesCalculator.swift; sourceTree = "<group>"; };
 		F5CC29E285AC4912BFCDE896 /* SubtensorSubnetFiltersSheetController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSubnetFiltersSheetController.swift; sourceTree = "<group>"; };
@@ -19377,7 +19375,6 @@
 				0C2B5B4B187D4853882DAAEB /* SubtensorRecommendationService+Mapping.swift */,
 				F58B839518DF4D1D82C55505 /* SubtensorRecommendationVerifier.swift */,
 				090900CA298F4CD0BBDD89CC /* SubtensorPriceHistoryService.swift */,
-				DFE34AF600C24771A44696ED /* SubtensorValidatorDirectoryCache.swift */,
 				C20B0FB345E1469C889580CE /* SubtensorPriceSeriesCache.swift */,
 				37ADFB0E46CC48A197043C04 /* SubtensorEarnSettings.swift */,
 				2D7A59022E5E000100000001 /* SubtensorStakingPositionsSyncService.swift */,
@@ -33433,7 +33430,6 @@
 				F09439A2331948A69A3E7F9F /* SubtensorRecommendationService+Mapping.swift in Sources */,
 				472D593378C440BD990E0FBF /* SubtensorRecommendationVerifier.swift in Sources */,
 				D7EE6C59E314470B838EB42C /* SubtensorPriceHistoryService.swift in Sources */,
-				A9D9ED8F7310463D9B0CF4A0 /* SubtensorValidatorDirectoryCache.swift in Sources */,
 				C62045136E5B46CF971C4A92 /* SubtensorPriceSeriesCache.swift in Sources */,
 				F1F6821B897D4C2E85A46DE5 /* SubtensorPortfolioValueSeriesCalculator.swift in Sources */,
 				A2681C66291C47AE9AE3C77B /* SubtensorValidatorChainOperationFactory.swift in Sources */,

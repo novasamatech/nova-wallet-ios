@@ -148,7 +148,6 @@ extension SubtensorValidatorSelectInteractor: ValidatorSelectInteractorInputProt
         let subnet = subnet
 
         return SubtensorValidatorSelectSnapshot(
-            directory: directoryService.cachedDirectory(for: subnet),
             yields: yieldService.cachedAlphaYields(for: subnet.netuid),
             alphaPrice: target.isRoot
                 ? .miss

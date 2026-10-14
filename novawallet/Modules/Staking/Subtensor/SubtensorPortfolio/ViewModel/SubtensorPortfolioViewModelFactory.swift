@@ -236,11 +236,12 @@ private extension SubtensorPortfolioViewModelFactory {
 
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
-        let subtitle = SubtensorAlphaApyFormatter.stakeWeightedRate(of: group.positions, in: state.rootYields).map {
-            strings.stakingSubtensorUiPortfolioRootApyFormat(
-                SubtensorApyFormatter.text(for: $0, style: .bare, locale: locale)
+        let rate = SubtensorAlphaApyFormatter.stakeWeightedRate(of: group.positions, in: state.rootYields)
+        let subtitle = state.isRootRateResolved
+            ? strings.stakingSubtensorUiPortfolioRootApyFormat(
+                SubtensorApyFormatter.text(for: rate, style: .bare, locale: locale)
             )
-        }
+            : nil
 
         return SubtensorPortfolioRowViewModel(
             icon: assetIconFactory.createAssetIconViewModel(from: chainAsset.assetDisplayInfo),
