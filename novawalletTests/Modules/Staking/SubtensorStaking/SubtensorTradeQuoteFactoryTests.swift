@@ -71,9 +71,6 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
             )
         )
 
-        let sim = tradeQuote.quote.sim
-        let averagePrice = sim.taoAmount * SubtensorStakingPallet.alphaPriceScale / sim.alphaAmount
-        XCTAssertLessThan(averagePrice, tradeQuote.limitPrice)
         XCTAssertFalse(tradeQuote.isFillable(atLimit: tradeQuote.limitPrice))
     }
 

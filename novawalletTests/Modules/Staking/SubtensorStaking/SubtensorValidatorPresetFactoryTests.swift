@@ -13,7 +13,7 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
     private let chutesRiskierPairHotkey = Data(repeating: 0x66, count: 32)
 
     func testExistingStakeValidatorIsPresetBeforeRecommendation() throws {
-        let recommendationService = makeRecommendationService()
+        let recommendationService = createRecommendationService()
 
         let preset = try run(
             createFactory(existingTake: Decimal(string: "0.09"), recommendationService: recommendationService)
@@ -27,7 +27,7 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
 
     func testSubnetPresetIsFirstRecommendedPairOfThatNetuid() throws {
         let preset = try run(
-            createFactory(existingTake: nil, recommendationService: makeRecommendationService())
+            createFactory(existingTake: nil, recommendationService: createRecommendationService())
                 .createPresetWrapper(for: chutesRef, existingHotkey: nil)
         )
 
@@ -37,14 +37,14 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
 
     func testNoPresetWhenRecommendationsAreStale() throws {
         let preset = try run(
-            createFactory(existingTake: nil, recommendationService: makeRecommendationService(freshness: .stale))
+            createFactory(existingTake: nil, recommendationService: createRecommendationService(freshness: .stale))
                 .createPresetWrapper(for: chutesRef, existingHotkey: nil)
         )
 
         XCTAssertNil(preset)
     }
 
-    private func makeItem(
+    private func generateItem(
         hotkey: AccountId,
         netuid: UInt16,
         name: String?,
@@ -60,7 +60,7 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
         )
     }
 
-    private func makeDirectoryService(existingTake: Decimal?) -> MockSubtensorValidatorDirectoryServiceProtocol {
+    private func createDirectoryService(existingTake: Decimal?) -> MockSubtensorValidatorDirectoryServiceProtocol {
         let directoryService = MockSubtensorValidatorDirectoryServiceProtocol()
 
         let names = [existingHotkey: "Existing", rootPairHotkey: "Blue Harbor", chutesPairHotkey: "Cinder Node"]
@@ -70,7 +70,7 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
                 CompoundOperationWrapper.createWithResult(SubtensorValidatorDirectory(
                     subnet: subnet,
                     items: names.map { hotkey, name in
-                        self.makeItem(hotkey: hotkey, netuid: subnet.netuid, name: name, take: Decimal(string: "0.09"))
+                        self.generateItem(hotkey: hotkey, netuid: subnet.netuid, name: name, take: Decimal(string: "0.09"))
                     },
                     listStamp: nil,
                     isPartial: false,
@@ -83,7 +83,7 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
                 let take = hotkey == self.existingHotkey ? existingTake : Decimal(string: "0.09")
 
                 return CompoundOperationWrapper.createWithResult(SubtensorValidatorDetail(
-                    item: self.makeItem(hotkey: hotkey, netuid: subnet.netuid, name: nil, take: take),
+                    item: self.generateItem(hotkey: hotkey, netuid: subnet.netuid, name: nil, take: take),
                     identity: nil
                 ))
             }
@@ -92,7 +92,7 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
         return directoryService
     }
 
-    private func makePair(_ hotkey: AccountId, netuid: UInt16) -> SubtensorRecommendedPair {
+    private func generatePair(_ hotkey: AccountId, netuid: UInt16) -> SubtensorRecommendedPair {
         SubtensorRecommendedPair(
             netuid: netuid,
             hotkey: hotkey,
@@ -121,7 +121,7 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
         )
     }
 
-    private func makeRecommendations(freshness: SubtensorBackendStamp.Freshness) -> SubtensorVerifiedRecommendations {
+    private func generateRecommendations(freshness: SubtensorBackendStamp.Freshness) -> SubtensorVerifiedRecommendations {
         SubtensorVerifiedRecommendations(
             generation: SubtensorRecommendationGeneration(
                 id: "8ebc85abd0bbeb6f282302ac48909c3d",
@@ -143,20 +143,20 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
             ),
             topN: 3,
             classes: [
-                .stable: [makePair(rootPairHotkey, netuid: 0)],
-                .balanced: [makePair(targonPairHotkey, netuid: 4), makePair(chutesPairHotkey, netuid: 64)],
-                .higherUpside: [makePair(chutesRiskierPairHotkey, netuid: 64)]
+                .stable: [generatePair(rootPairHotkey, netuid: 0)],
+                .balanced: [generatePair(targonPairHotkey, netuid: 4), generatePair(chutesPairHotkey, netuid: 64)],
+                .higherUpside: [generatePair(chutesRiskierPairHotkey, netuid: 64)]
             ],
             droppedByGate: [:],
             verifiedAtBlock: 9_140_000
         )
     }
 
-    private func makeRecommendationService(
+    private func createRecommendationService(
         freshness: SubtensorBackendStamp.Freshness = .fresh
     ) -> MockSubtensorRecommendationServiceProtocol {
         let recommendationService = MockSubtensorRecommendationServiceProtocol()
-        let recommendations = makeRecommendations(freshness: freshness)
+        let recommendations = generateRecommendations(freshness: freshness)
 
         stub(recommendationService) { stub in
             when(stub.createClientGatesWrapper()).then {
@@ -176,7 +176,7 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
         recommendationService: MockSubtensorRecommendationServiceProtocol
     ) -> SubtensorValidatorPresetFactory {
         SubtensorValidatorPresetFactory(
-            directoryService: makeDirectoryService(existingTake: existingTake),
+            directoryService: createDirectoryService(existingTake: existingTake),
             recommendationService: recommendationService,
             operationQueue: OperationQueue(),
             logger: Logger.shared

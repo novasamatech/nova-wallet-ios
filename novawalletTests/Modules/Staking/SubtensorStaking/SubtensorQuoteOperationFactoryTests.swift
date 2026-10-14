@@ -51,12 +51,18 @@ final class SubtensorQuoteOperationFactoryTests: XCTestCase {
             taoSlippage: 543_368
         )
         let args = SubtensorQuoteArgs(netuid: netuid, direction: .unstake(alphaIn: 130_082_405_209))
+        let apiFactory = createApiFactory(sim: sim)
 
-        let quote = try performQuote(using: createApiFactory(sim: sim), args: args)
+        let quote = try performQuote(using: apiFactory, args: args)
 
         XCTAssertEqual(quote.expectedOut, BigUInt(998_912_946))
         XCTAssertEqual(quote.poolFee, BigUInt(65_502_698))
         XCTAssertEqual(quote.priceImpact?.mul(value: 1_000_000), 80)
+        verify(apiFactory, times(1)).createSimSwapAlphaForTaoWrapper(
+            netuid: equal(to: netuid),
+            alphaAmount: equal(to: BigUInt(130_082_405_209)),
+            blockHash: any()
+        )
     }
 
     func testZeroOutSimFailsAsQuoteUnavailable() {
