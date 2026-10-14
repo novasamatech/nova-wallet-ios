@@ -1,31 +1,35 @@
 import Foundation
 import Foundation_iOS
 
-extension SubtensorUnstakeConfirmPresenter {
+extension SubtensorConfirmPresenter {
     func seedSubnetData() {
         guard !model.target.isRoot else {
             return
         }
 
-        if let catalogue = interactor.cachedCatalogue().value, catalogue.subnet(for: unstakeModel.netuid) != nil {
+        if let catalogue = interactor.cachedCatalogue().value, catalogue.subnet(for: model.target.netuid) != nil {
             self.catalogue = catalogue
         }
 
-        if case let .fresh(costBasis, _) = interactor.cachedCostBasis(netuid: unstakeModel.netuid) {
-            self.costBasis = .resolved(costBasis)
-        }
-    }
-
-    func loadCostBasisIfNeeded() {
-        guard costBasis == .loading else {
+        guard
+            tracksCostBasis,
+            case let .fresh(costBasis, _) = interactor.cachedCostBasis(netuid: model.target.netuid) else {
             return
         }
 
-        interactor.loadCostBasis(for: unstakeModel.netuid)
+        self.costBasis = .resolved(costBasis)
+    }
+
+    func loadCostBasisIfNeeded() {
+        guard tracksCostBasis, costBasis == .loading else {
+            return
+        }
+
+        interactor.loadCostBasis(for: model.target.netuid)
     }
 }
 
-extension SubtensorUnstakeConfirmPresenter: SubtensorUnstakeConfirmOutputProtocol {
+extension SubtensorConfirmPresenter: SubtensorConfirmInteractorOutputProtocol {
     func didReceiveAssetBalance(_ balance: AssetBalance?) {
         self.balance = balance
 
@@ -109,23 +113,17 @@ extension SubtensorUnstakeConfirmPresenter: SubtensorUnstakeConfirmOutputProtoco
             return
         }
 
-        switch error {
-        case .feeFailed:
-            wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.refreshFee()
-            }
-        case .preflightFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.refreshPreflight()
-            }
-        case .quoteFailed:
-            quoteState?.markLatestFailed()
-            provideViewModel()
+        guard case .quoteFailed = error else {
+            presentBaseRetry(for: error)
+            return
         }
+
+        quoteState?.markLatestFailed()
+        provideViewModel()
     }
 
     func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?) {
-        guard catalogue != nil || self.catalogue?.subnet(for: unstakeModel.netuid) == nil else {
+        guard catalogue != nil || self.catalogue?.subnet(for: model.target.netuid) == nil else {
             return
         }
 
@@ -141,10 +139,6 @@ extension SubtensorUnstakeConfirmPresenter: SubtensorUnstakeConfirmOutputProtoco
         provideTileIcons()
     }
 
-    func didReceiveRootHolds(_ holds: [AccountId: SubtensorRootHold]) {
-        self.holds = holds
-    }
-
     func didReceiveCostBasis(_ costBasis: SubtensorCostBasis?) {
         self.costBasis = costBasis.map { .resolved($0) } ?? .unavailable
 
@@ -152,7 +146,7 @@ extension SubtensorUnstakeConfirmPresenter: SubtensorUnstakeConfirmOutputProtoco
     }
 }
 
-extension SubtensorUnstakeConfirmPresenter: SubtensorOperationResultDelegate {
+extension SubtensorConfirmPresenter: SubtensorOperationResultDelegate {
     func didRequestRetry() {
         finishHandOff()
 
@@ -166,7 +160,12 @@ extension SubtensorUnstakeConfirmPresenter: SubtensorOperationResultDelegate {
     }
 }
 
-extension SubtensorUnstakeConfirmPresenter: Localizable {
+extension SubtensorConfirmPresenter: SubtensorBaseRetrying {
+    var retryView: ControllerBackedProtocol? { view }
+    var retryWireframe: AlertPresentable & FeeRetryable & CommonRetryable { wireframe }
+}
+
+extension SubtensorConfirmPresenter: Localizable {
     func applyLocalization() {
         guard let view, view.isSetup else {
             return

@@ -27,7 +27,7 @@ struct SubtensorResultStatusViewModel {
 
 struct SubtensorResultCostBasisViewModel: Equatable {
     let title: String
-    let value: SubtensorCostBasisRowViewModel
+    let value: SubtensorRowState<SubtensorCostBasisValueViewModel>
 }
 
 struct SubtensorResultDetailsViewModel {

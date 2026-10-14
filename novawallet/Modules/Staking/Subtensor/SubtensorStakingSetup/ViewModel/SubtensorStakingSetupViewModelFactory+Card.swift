@@ -96,6 +96,7 @@ private extension SubtensorStakingSetupViewModelFactory {
             target: target,
             catalogue: input.matchingCatalogue,
             taoPrice: input.price,
+            networkFee: nil,
             locale: locale
         )
     }
@@ -107,7 +108,7 @@ private extension SubtensorStakingSetupViewModelFactory {
     func createAvgBuyPrice(
         for input: SubtensorStakingSetupViewModelInput,
         locale: Locale
-    ) -> SubtensorCostBasisRowViewModel {
+    ) -> SubtensorRowState<SubtensorCostBasisValueViewModel> {
         guard case let .buyMore(position) = input.mode else {
             return .hidden
         }
@@ -130,7 +131,7 @@ private extension SubtensorStakingSetupViewModelFactory {
         for input: SubtensorStakingSetupViewModelInput,
         value: String?,
         locale: Locale
-    ) -> SubtensorSetupRowViewModel {
+    ) -> SubtensorRowState<String> {
         if let value {
             return .value(SubtensorSubnetNaming.isolatedLeftToRight(value))
         }

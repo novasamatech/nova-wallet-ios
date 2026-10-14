@@ -166,7 +166,7 @@ extension SubtensorStakingSetupPresenter {
             slippage = newValue
             interactor.saveSlippage(newValue)
 
-            refreshFee(resetting: false)
+            refreshFee()
             updateQuote()
             provideViewModel()
         }

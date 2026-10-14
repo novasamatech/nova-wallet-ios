@@ -1,6 +1,6 @@
 import Foundation
 
-protocol SubtensorStakingConfirmViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
+protocol SubtensorConfirmViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
     func didReceiveWallet(viewModel: DisplayWalletViewModel)
     func didReceiveAccount(viewModel: DisplayAddressViewModel)
     func didReceiveValidator(viewModel: DisplayAddressViewModel)
@@ -8,7 +8,7 @@ protocol SubtensorStakingConfirmViewProtocol: ControllerBackedProtocol, Loadable
     func didReceive(viewModel: SubtensorConfirmViewModel)
 }
 
-protocol SubtensorStakingConfirmPresenterProtocol: AnyObject {
+protocol SubtensorConfirmPresenterProtocol: AnyObject {
     func setup()
     func didAppear()
     func confirm()
@@ -21,10 +21,14 @@ protocol SubtensorStakingConfirmPresenterProtocol: AnyObject {
     func showNetworkFeeInfo()
 }
 
-protocol SubtensorConfirmInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {}
+protocol SubtensorConfirmInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {
+    func loadRootHolds(for hotkeys: [AccountId])
+}
 
-protocol SubtensorConfirmInteractorOutputProtocol: SubtensorStakingBaseInteractorOutputProtocol {}
+protocol SubtensorConfirmInteractorOutputProtocol: SubtensorStakingBaseInteractorOutputProtocol {
+    func didReceiveRootHolds(_ holds: [AccountId: SubtensorRootHold])
+}
 
-protocol SubtensorStakingConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
+protocol SubtensorConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
     CommonRetryable, MessageSheetPresentable, SubtensorStakingErrorPresentable, SubtensorInfoSheetPresentable,
     SubtensorValidatorInfoPresentable, SubtensorOperationResultPresenting {}

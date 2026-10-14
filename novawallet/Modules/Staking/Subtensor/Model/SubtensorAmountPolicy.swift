@@ -19,7 +19,7 @@ enum SubtensorAmountPolicy {
         return transferable > retained ? transferable - retained : 0
     }
 
-    static func canPayBatchedSell(
+    static func paysFeeFromFreeBalance(
         transferable: Balance,
         networkFee: Balance,
         existentialDeposit: Balance
@@ -27,12 +27,25 @@ enum SubtensorAmountPolicy {
         transferable >= networkFee + existentialDeposit
     }
 
-    static func paysFeeFromStake(
-        transferable: Balance,
-        networkFee: Balance,
-        existentialDeposit: Balance
-    ) -> Bool {
-        transferable < networkFee + existentialDeposit
+    static func rootUnstakeAmount(
+        requested: Balance,
+        transferable: Balance?,
+        networkFee: Balance?,
+        existentialDeposit: Balance?
+    ) -> Balance {
+        guard
+            let transferable,
+            let networkFee,
+            let existentialDeposit,
+            !paysFeeFromFreeBalance(
+                transferable: transferable,
+                networkFee: networkFee,
+                existentialDeposit: existentialDeposit
+            ) else {
+            return requested
+        }
+
+        return requested.subtractOrZero(networkFee)
     }
 
     static func maxSell(

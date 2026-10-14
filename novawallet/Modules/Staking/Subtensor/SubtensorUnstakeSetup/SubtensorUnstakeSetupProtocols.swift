@@ -35,6 +35,6 @@ protocol SubtensorUnstakeSetupWireframeProtocol: AlertPresentable, ErrorPresenta
     SubtensorValidatorInfoPresentable {
     func showConfirm(
         from view: SubtensorUnstakeSetupViewProtocol?,
-        model: SubtensorUnstakeConfirmModel
+        model: SubtensorConfirmModel
     )
 }

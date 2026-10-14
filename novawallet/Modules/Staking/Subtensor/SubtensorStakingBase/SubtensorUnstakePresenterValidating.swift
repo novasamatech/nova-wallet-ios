@@ -36,6 +36,10 @@ extension SubtensorUnstakeValidatingDep {
         (preflight?.rootStakeUnlockInterval ?? 0) > 0
     }
 
+    var feeNeedsFreeBalance: Bool {
+        isBatched || isRootHoldEnabled
+    }
+
     var sellPlanInput: SubtensorSellPlanInput? {
         guard
             let amount,
@@ -78,7 +82,16 @@ extension SubtensorUnstakeValidatingDep {
 private extension SubtensorUnstakeValidatingDep {
     var sellPlanBases: (minimumTaoOut: Balance, sellLimitPrice: Balance)? {
         guard isSubnet else {
-            return amount.map { ($0, SubtensorStakingPallet.alphaPriceScale) }
+            return amount.map { amount in
+                let minimumTaoOut = SubtensorAmountPolicy.rootUnstakeAmount(
+                    requested: amount,
+                    transferable: balance?.transferable,
+                    networkFee: fee?.amountForCurrentAccount,
+                    existentialDeposit: existentialDeposit
+                )
+
+                return (minimumTaoOut, SubtensorStakingPallet.alphaPriceScale)
+            }
         }
 
         guard
@@ -116,13 +129,13 @@ extension SubtensorUnstakePresenterValidating {
             selectedLocale: selectedLocale
         )
 
-        validations.append(
-            createFeePayerValidation(
-                for: dep,
-                dataValidationFactory: dataValidationFactory,
-                selectedLocale: selectedLocale
-            )
-        )
+        if let feePayerValidation = createFeePayerValidation(
+            for: dep,
+            dataValidationFactory: dataValidationFactory,
+            selectedLocale: selectedLocale
+        ) {
+            validations.append(feePayerValidation)
+        }
 
         validations.append(
             dataValidationFactory.sellPlanAllows(
@@ -222,14 +235,9 @@ private extension SubtensorUnstakePresenterValidating {
         for dep: SubtensorUnstakeValidatingDep,
         dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
         selectedLocale: Locale
-    ) -> DataValidating {
-        guard dep.isBatched || dep.isRootHoldEnabled else {
-            return dataValidationFactory.canPayFeeFromStakeOtherwiseWarns(
-                transferable: dep.balance?.transferable,
-                fee: dep.fee?.amountForCurrentAccount,
-                existentialDeposit: dep.existentialDeposit,
-                locale: selectedLocale
-            )
+    ) -> DataValidating? {
+        guard dep.feeNeedsFreeBalance else {
+            return nil
         }
 
         return dataValidationFactory.canPayBatchedNetworkFee(
