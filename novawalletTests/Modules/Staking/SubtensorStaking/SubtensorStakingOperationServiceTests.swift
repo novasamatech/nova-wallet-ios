@@ -15,10 +15,16 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
     func testSuccessfulSellReturnsOutcomeRefreshesPositionsAndPostsStakingChanged() throws {
         let events = try SubtensorFixtureDecoding.decodeEvents(
             [
-                "0703" + coldkey.toHex() + hotkey.toHex() + le(UInt64(4_145_000_000)) +
-                    le(UInt64(56_171_700_618)) + le(UInt16(64)) + le(UInt64(28_299_382)),
-                "0502" + coldkey.toHex() + beneficiary.toHex() + le(UInt64(34_935_547)),
-                "0600" + coldkey.toHex() + le(UInt64(1_500_000)) + le(UInt64(0))
+                SubtensorFixtureDecoding.stakeRemovedEvent(
+                    coldkey: coldkey,
+                    hotkey: hotkey,
+                    netuid: 64,
+                    tao: 4_145_000_000,
+                    alpha: 56_171_700_618,
+                    poolFee: 28_299_382
+                ),
+                SubtensorFixtureDecoding.transferEvent(from: coldkey, to: beneficiary, amount: 34_935_547),
+                SubtensorFixtureDecoding.transactionFeePaidEvent(who: coldkey, actualFee: 1_500_000)
             ],
             codingFactory: RuntimeCodingServiceStub.createBittensorCodingFactory()
         )
@@ -187,9 +193,5 @@ final class SubtensorStakingOperationServiceTests: XCTestCase {
         }
 
         return try XCTUnwrap(failure)
-    }
-
-    private func le<T: FixedWidthInteger>(_ value: T) -> String {
-        SubtensorFixtureDecoding.littleEndianHex(value)
     }
 }
