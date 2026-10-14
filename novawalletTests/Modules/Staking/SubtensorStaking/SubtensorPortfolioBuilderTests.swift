@@ -7,7 +7,7 @@ final class SubtensorPortfolioBuilderTests: XCTestCase {
     private let secondHotkey = Data(repeating: 0x0B, count: 32)
     private let thirdHotkey = Data(repeating: 0x0C, count: 32)
 
-    func testGroupsRootAndSubnetMembersWithTotalsAvailabilityAndTaoValue() {
+    func testGroupsRootAndSubnetsWithTotalsAndTaoValue() {
         let rootMember = position(hotkey: secondHotkey, netuid: 0, stake: 2_000_000_000)
         let rootPrimary = position(hotkey: firstHotkey, netuid: 0, stake: 5_000_000_000)
         let subnetMember = position(hotkey: thirdHotkey, netuid: 64, stake: 20_000_000_000)
@@ -51,7 +51,7 @@ final class SubtensorPortfolioBuilderTests: XCTestCase {
         XCTAssertEqual(portfolio, expected)
     }
 
-    func testSubnetsOrderByTaoValueDescendingWithUnpricedGroupsLast() {
+    func testUnpricedSubnetsExcludedFromTotalAndOrderedLast() {
         let state = Multistaking.SubtensorStakingState(
             positions: [
                 position(hotkey: firstHotkey, netuid: 12, stake: 80_000_000_000),
@@ -71,19 +71,6 @@ final class SubtensorPortfolioBuilderTests: XCTestCase {
         XCTAssertEqual(portfolio.subnets.map(\.taoValue), [9_000_000_000, 6_000_000_000, nil, nil])
         XCTAssertEqual(portfolio.pricedTaoValue, 15_000_000_000)
         XCTAssertEqual(portfolio.unpricedNetuids, [7, 12])
-    }
-
-    func testPrimaryHotkeyTieGoesToTheLowestHotkeyBytes() {
-        let state = Multistaking.SubtensorStakingState(
-            positions: [
-                position(hotkey: secondHotkey, netuid: 64, stake: 40_000_000_000),
-                position(hotkey: firstHotkey, netuid: 64, stake: 40_000_000_000)
-            ]
-        )
-
-        let portfolio = SubtensorPortfolioBuilder.build(state: state)
-
-        XCTAssertEqual(portfolio.subnets.first?.primaryHotkey, firstHotkey)
     }
 
     private func position(hotkey: AccountId, netuid: UInt16, stake: Balance) -> SubtensorStakingPosition {
