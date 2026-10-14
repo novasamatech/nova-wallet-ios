@@ -14,8 +14,6 @@ final class SubtensorStakingPositionsSyncServiceTests: XCTestCase {
                     hotkey: hotkey,
                     netuid: 7,
                     stakeAlpha: 3_000_000_000,
-                    hotkeyEmissionPerTempo: 0,
-                    totalHotkeyAlpha: nil,
                     isRegistered: true
                 )
             ],
@@ -43,8 +41,6 @@ final class SubtensorStakingPositionsSyncServiceTests: XCTestCase {
                     hotkey: hotkey,
                     netuid: SubtensorStakingPallet.rootNetuid,
                     stakeAlpha: 1_000_000_000,
-                    hotkeyEmissionPerTempo: 0,
-                    totalHotkeyAlpha: nil,
                     isRegistered: false
                 )
             ]

@@ -71,6 +71,7 @@ private extension SubtensorUnstakeSetupViewFactory {
         let validatorFactory = SubtensorValidatorPresetFactory(
             directoryService: earnServices.validatorDirectoryService,
             recommendationService: earnServices.recommendationService,
+            yieldService: earnServices.yieldService,
             operationQueue: services.operationQueue,
             logger: Logger.shared
         )

@@ -88,6 +88,24 @@ extension BittensorApi.AlphaYieldCollection: BittensorApiWireChecked {
     }
 }
 
+extension BittensorApi.RootValidatorCollection: BittensorApiWireChecked {
+    func validateWire() throws {
+        for (index, item) in items.enumerated() {
+            try BittensorApiWireCheck.decimal(item.rootStakeTao, "items[\(index)].rootStakeTao")
+            try BittensorApiWireCheck.decimal(item.stakeYield.d30?.apy, "items[\(index)].stakeYield.d30.apy")
+        }
+    }
+}
+
+extension BittensorApi.RootOverview: BittensorApiWireChecked {
+    func validateWire() throws {
+        try BittensorApiWireCheck.decimal(
+            validatorYield?.stakeWeightedApy24h,
+            "validatorYield.stakeWeightedApy24h"
+        )
+    }
+}
+
 extension BittensorApi.OperationCollection: BittensorApiWireChecked {
     func validateWire() throws {
         try BittensorApiWireCheck.require(historyScope == BittensorApiWireCheck.historyScope) { "historyScope" }
@@ -148,6 +166,52 @@ extension BittensorApi.SubnetRankingCollection: BittensorApiWireChecked {
             if let breakdown = item.breakdown {
                 try BittensorApiWireCheck.metric(breakdown.volatility, "\(path).breakdown.volatility")
             }
+        }
+    }
+}
+
+extension BittensorApi.RankedValidatorCollection: BittensorApiWireChecked {
+    func validateWire() throws {
+        try BittensorApiWireCheck.clientGates(meta.clientGates, "meta.clientGates.maxTake")
+
+        for (index, item) in items.enumerated() {
+            try BittensorApiWireCheck.require(item.clientChecks == BittensorApiWireCheck.clientChecks) {
+                "items[\(index)].clientChecks"
+            }
+        }
+    }
+}
+
+extension BittensorApi.PortfolioHistoryCollection: BittensorApiWireChecked {
+    static let maxPoints = 512
+
+    func validateWire() throws {
+        try BittensorApiWireCheck.require(historyScope == BittensorApiWireCheck.historyScope) { "historyScope" }
+        try BittensorApiWireCheck.require(points.count <= Self.maxPoints) { "points" }
+
+        guard
+            let start = BittensorApi.instant(from: window.start),
+            let end = BittensorApi.instant(from: window.end),
+            start <= end else {
+            throw BittensorApiWireViolation(field: "window")
+        }
+
+        var previous: Date?
+
+        for (index, point) in points.enumerated() {
+            let field = "points[\(index)]"
+
+            guard
+                let timestamp = BittensorApi.instant(from: point.timestamp),
+                (start ... end).contains(timestamp),
+                previous.map({ $0 < timestamp }) ?? true else {
+                throw BittensorApiWireViolation(field: "\(field).timestamp")
+            }
+
+            try BittensorApiWireCheck.decimal(point.reportedValueTao, "\(field).reportedValueTao")
+            try BittensorApiWireCheck.decimal(point.reportedValueUsd, "\(field).reportedValueUsd")
+
+            previous = timestamp
         }
     }
 }

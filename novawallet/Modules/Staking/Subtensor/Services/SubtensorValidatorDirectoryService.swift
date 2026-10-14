@@ -45,32 +45,25 @@ private extension SubtensorValidatorDirectoryService {
         for hotkey: AccountId,
         subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<Row?> {
-        OperationCombiningService.compoundOptionalWrapper(
-            operationManager: OperationManager(operationQueue: operationQueue)
-        ) { [weak self] in
-            guard let self, cache.entry(for: subnet)?.items[hotkey] != nil else {
+        let listingWrapper = createListingWrapper(for: subnet.netuid)
+
+        let rowOperation = ClosureOperation<Row?> {
+            guard
+                let listing = try? listingWrapper.targetOperation.extractNoCancellableResultData(),
+                let row = listing.rows.first(where: { $0.hotkey == hotkey }) else {
                 return nil
             }
 
-            let listingWrapper = createListingWrapper(for: subnet.netuid)
-            let rowOperation = ClosureOperation<Row?> {
-                guard
-                    let listing = try? listingWrapper.targetOperation.extractNoCancellableResultData(),
-                    let row = listing.rows.first(where: { $0.hotkey == hotkey }) else {
-                    return nil
-                }
-
-                return Row(
-                    hotkey: row.hotkey,
-                    name: row.name,
-                    stake: listing.listStamp?.freshness == .fresh ? row.stake : nil
-                )
-            }
-
-            rowOperation.addDependency(listingWrapper.targetOperation)
-
-            return listingWrapper.insertingTail(operation: rowOperation)
+            return Row(
+                hotkey: row.hotkey,
+                name: row.name,
+                stake: listing.listStamp?.freshness == .fresh ? row.stake : nil
+            )
         }
+
+        rowOperation.addDependency(listingWrapper.targetOperation)
+
+        return listingWrapper.insertingTail(operation: rowOperation)
     }
 
     func createListingWrapper(for netuid: UInt16) -> CompoundOperationWrapper<Listing> {
@@ -112,7 +105,7 @@ private extension SubtensorValidatorDirectoryService {
         stake: BigRational?
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem> {
         let pair = SubtensorHotkeySubnet(hotkey: hotkey, netuid: subnet.netuid)
-        let query = SubtensorValidatorChainQuery(pairs: [pair], includesHotkeyAlpha: true)
+        let query = SubtensorValidatorChainQuery(pairs: [pair])
         let snapshotWrapper = chainOperationFactory.createChainSnapshotWrapper(for: query)
 
         let itemOperation = ClosureOperation<SubtensorValidatorDirectoryItem> {
@@ -186,12 +179,10 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
     func createDetailWrapper(
         for hotkey: AccountId,
         subnet: SubtensorSubnetRef
-    ) -> CompoundOperationWrapper<SubtensorValidatorDetail> {
+    ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem> {
         let cache = cache
         let generation = cache.generation
-        let identitiesWrapper = chainOperationFactory.createIdentitiesWrapper(for: [hotkey])
         let listedWrapper = createListedRowWrapper(for: hotkey, subnet: subnet)
-        let logger = logger
 
         let itemWrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem> =
             OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) { [weak self] in
@@ -211,30 +202,21 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
 
         itemWrapper.addDependency(wrapper: listedWrapper)
 
-        let detailOperation = ClosureOperation<SubtensorValidatorDetail> {
+        let detailOperation = ClosureOperation<SubtensorValidatorDirectoryItem> {
             let item = try itemWrapper.targetOperation.extractNoCancellableResultData()
 
             guard generation == cache.generation else {
                 throw BittensorApiError.attestationUnavailable(requestId: nil)
             }
 
-            do {
-                let identities = try identitiesWrapper.targetOperation.extractNoCancellableResultData()
-
-                return SubtensorValidatorDetail(item: item, identity: identities[hotkey])
-            } catch {
-                logger.warning("Subtensor validator identity unavailable: \(error)")
-
-                return SubtensorValidatorDetail(item: item, identity: nil)
-            }
+            return item
         }
 
         detailOperation.addDependency(itemWrapper.targetOperation)
-        detailOperation.addDependency(identitiesWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: detailOperation,
-            dependencies: identitiesWrapper.allOperations + listedWrapper.allOperations + itemWrapper.allOperations
+            dependencies: listedWrapper.allOperations + itemWrapper.allOperations
         )
     }
 }

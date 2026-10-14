@@ -9,13 +9,10 @@ struct SubtensorStakingPreflight: Equatable {
     let subtokenEnabled: Bool
     let hasColdkeySwapAnnouncement: Bool
     let isSafeModeActive: Bool
-    let stakeAvailability: SubtensorStakingPallet.StakeAvailability?
     let rootStakeUnlockInterval: UInt64
     let lastStakeBlock: UInt64?
     let minStake: Balance
     let effectiveNominatorMinStake: Balance
-    let rootClaimableThreshold: Balance
-    let delegateTake: UInt16
     var hotkeyOwner: AccountId?
 }
 
@@ -23,14 +20,6 @@ extension SubtensorStakingPreflight {
     /// NominatorMinRequiredStake stores a per-million factor of the min stake constant, not raos
     static func effectiveNominatorMinStake(minStake: Balance, factor: Balance) -> Balance {
         minStake * factor / BigUInt(1_000_000)
-    }
-
-    static func rootClaimableThreshold(fromBits bits: Balance?) -> Balance {
-        guard let bits else {
-            return SubtensorStakingPallet.defaultRootClaimableThreshold
-        }
-
-        return bits >> SubtensorStakingPallet.fixedPointFractionalBits
     }
 }
 
@@ -44,18 +33,15 @@ protocol SubtensorPreflightFactoryProtocol {
 
 final class SubtensorPreflightFactory {
     let runtimeConnectionStore: RuntimeConnectionStoring
-    let operationFactory: SubtensorApiOperationFactoryProtocol
     let operationQueue: OperationQueue
 
     private let requestFactory: StorageRequestFactoryProtocol
 
     init(
         runtimeConnectionStore: RuntimeConnectionStoring,
-        operationFactory: SubtensorApiOperationFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.runtimeConnectionStore = runtimeConnectionStore
-        self.operationFactory = operationFactory
         self.operationQueue = operationQueue
 
         requestFactory = StorageRequestFactory.createDefault(with: operationQueue)
@@ -72,14 +58,11 @@ private extension SubtensorPreflightFactory {
         let unlockInterval: CompoundOperationWrapper<StorageResponse<StringScaleMapper<UInt64>>>
         let lastStakeBlock: CompoundOperationWrapper<[StorageResponse<StringScaleMapper<UInt64>>]>
         let minNominatorFactor: CompoundOperationWrapper<StorageResponse<StringScaleMapper<Balance>>>
-        let claimableThresholdBits: CompoundOperationWrapper<[StorageResponse<SubtensorStakingPallet.FixedPoint96F32>]>
-        let delegateTake: CompoundOperationWrapper<[StorageResponse<StringScaleMapper<UInt16>>]>
 
         var allOperations: [Operation] {
             owner.allOperations + networksAdded.allOperations + subtokenEnabled.allOperations +
                 swapAnnouncement.allOperations + safeMode.allOperations + unlockInterval.allOperations +
-                lastStakeBlock.allOperations + minNominatorFactor.allOperations +
-                claimableThresholdBits.allOperations + delegateTake.allOperations
+                lastStakeBlock.allOperations + minNominatorFactor.allOperations
         }
 
         var targetOperations: [Operation] {
@@ -91,9 +74,7 @@ private extension SubtensorPreflightFactory {
                 safeMode.targetOperation,
                 unlockInterval.targetOperation,
                 lastStakeBlock.targetOperation,
-                minNominatorFactor.targetOperation,
-                claimableThresholdBits.targetOperation,
-                delegateTake.targetOperation
+                minNominatorFactor.targetOperation
             ]
         }
     }
@@ -157,31 +138,13 @@ private extension SubtensorPreflightFactory {
                 engine: engine,
                 factory: codingFactoryClosure,
                 storagePath: SubtensorStakingPallet.nominatorMinRequiredStakePath
-            ),
-            claimableThresholdBits: requestFactory.queryItems(
-                engine: engine,
-                keyParams: { [StringScaleMapper(value: SubtensorStakingPallet.rootNetuid)] },
-                factory: codingFactoryClosure,
-                storagePath: SubtensorStakingPallet.rootClaimableThresholdPath,
-                options: StorageQueryListOptions()
-            ),
-            delegateTake: requestFactory.queryItems(
-                engine: engine,
-                keyParams: { [BytesCodable(wrappedValue: hotkey)] },
-                factory: codingFactoryClosure,
-                storagePath: SubtensorStakingPallet.delegatesTakePath,
-                options: StorageQueryListOptions()
             )
         )
     }
 
     func createMergeOperation(
-        for coldkey: AccountId,
-        netuid: UInt16,
         reads: StorageReads,
-        minStakeOperation: BaseOperation<Balance>,
-        defaultTakeOperation: BaseOperation<UInt16>,
-        availabilityWrapper: CompoundOperationWrapper<[SubtensorStakingPallet.ColdkeyStakeAvailability]>
+        minStakeOperation: BaseOperation<Balance>
     ) -> ClosureOperation<SubtensorStakingPreflight> {
         ClosureOperation<SubtensorStakingPreflight> {
             let ownerResponse = try reads.owner.targetOperation.extractNoCancellableResultData().first
@@ -208,22 +171,7 @@ private extension SubtensorPreflightFactory {
             let factor = try reads.minNominatorFactor.targetOperation
                 .extractNoCancellableResultData().value?.value ?? 0
 
-            let thresholdBits = try reads.claimableThresholdBits.targetOperation
-                .extractNoCancellableResultData().first?.value?.bits
-
             let minStake = try minStakeOperation.extractNoCancellableResultData()
-
-            let storedTake = try reads.delegateTake.targetOperation
-                .extractNoCancellableResultData().first?.value?.value
-
-            let delegateTake = try storedTake ?? defaultTakeOperation.extractNoCancellableResultData()
-
-            let availability = try availabilityWrapper.targetOperation
-                .extractNoCancellableResultData()
-                .first { $0.coldkey == coldkey }?
-                .subnets
-                .first { $0.netuid == netuid }?
-                .availability
 
             return SubtensorStakingPreflight(
                 hotkeyExists: hotkeyExists,
@@ -231,7 +179,6 @@ private extension SubtensorPreflightFactory {
                 subtokenEnabled: subtokenValue,
                 hasColdkeySwapAnnouncement: hasAnnouncement,
                 isSafeModeActive: isSafeModeActive,
-                stakeAvailability: availability,
                 rootStakeUnlockInterval: unlockInterval,
                 lastStakeBlock: lastStakeBlock,
                 minStake: minStake,
@@ -239,10 +186,6 @@ private extension SubtensorPreflightFactory {
                     minStake: minStake,
                     factor: factor
                 ),
-                rootClaimableThreshold: SubtensorStakingPreflight.rootClaimableThreshold(
-                    fromBits: thresholdBits
-                ),
-                delegateTake: delegateTake,
                 hotkeyOwner: hotkeyExists ? ownerResponse?.value?.wrappedValue : nil
             )
         }
@@ -250,7 +193,6 @@ private extension SubtensorPreflightFactory {
 }
 
 extension SubtensorPreflightFactory: SubtensorPreflightFactoryProtocol {
-    // swiftlint:disable:next function_body_length
     func createPreflightWrapper(
         for coldkey: AccountId,
         hotkey: AccountId,
@@ -290,42 +232,12 @@ extension SubtensorPreflightFactory: SubtensorPreflightFactoryProtocol {
 
             minStakeOperation.addDependency(codingFactoryOperation)
 
-            let defaultTakeOperation = PrimitiveConstantOperation<UInt16>(
-                path: SubtensorStakingPallet.initialDefaultDelegateTakePath
-            )
-
-            defaultTakeOperation.configurationBlock = {
-                do {
-                    defaultTakeOperation.codingFactory = try codingFactoryClosure()
-                } catch {
-                    defaultTakeOperation.result = .failure(error)
-                }
-            }
-
-            defaultTakeOperation.addDependency(codingFactoryOperation)
-
-            let availabilityWrapper = operationFactory.createStakeAvailabilityWrapper(
-                for: [coldkey],
-                netuids: [netuid],
-                blockHash: nil
-            )
-
-            let mergeOperation = createMergeOperation(
-                for: coldkey,
-                netuid: netuid,
-                reads: reads,
-                minStakeOperation: minStakeOperation,
-                defaultTakeOperation: defaultTakeOperation,
-                availabilityWrapper: availabilityWrapper
-            )
+            let mergeOperation = createMergeOperation(reads: reads, minStakeOperation: minStakeOperation)
 
             reads.targetOperations.forEach { mergeOperation.addDependency($0) }
             mergeOperation.addDependency(minStakeOperation)
-            mergeOperation.addDependency(defaultTakeOperation)
-            mergeOperation.addDependency(availabilityWrapper.targetOperation)
 
-            let dependencies = [codingFactoryOperation] + reads.allOperations +
-                [minStakeOperation, defaultTakeOperation] + availabilityWrapper.allOperations
+            let dependencies = [codingFactoryOperation] + reads.allOperations + [minStakeOperation]
 
             return CompoundOperationWrapper(
                 targetOperation: mergeOperation,

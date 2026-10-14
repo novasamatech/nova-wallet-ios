@@ -2,75 +2,89 @@ import Foundation
 import Operation_iOS
 
 final class SubtensorMaxApyProvider {
-    static let defaultRequestSpacing: TimeInterval = 20
-    static let defaultRetryDelay: TimeInterval = 60
-
-    let recommendationService: SubtensorRecommendationServiceProtocol
     let apiOperationFactory: BittensorApiOperationFactoryProtocol
-    let resolution: SubtensorMaxApyResolution
+    let yieldService: SubtensorYieldServiceProtocol
     let operationQueue: OperationQueue
-    let requestSpacing: TimeInterval
-    let retryDelay: TimeInterval
-    let timeProvider: () -> TimeInterval
     let logger: LoggerProtocol
 
     init(
-        recommendationService: SubtensorRecommendationServiceProtocol,
         apiOperationFactory: BittensorApiOperationFactoryProtocol,
-        resolution: SubtensorMaxApyResolution,
+        yieldService: SubtensorYieldServiceProtocol,
         operationQueue: OperationQueue,
-        requestSpacing: TimeInterval = SubtensorMaxApyProvider.defaultRequestSpacing,
-        retryDelay: TimeInterval = SubtensorMaxApyProvider.defaultRetryDelay,
-        timeProvider: @escaping () -> TimeInterval = BittensorMonotonicClock.now,
-        logger: LoggerProtocol = Logger.shared
+        logger: LoggerProtocol
     ) {
-        self.recommendationService = recommendationService
         self.apiOperationFactory = apiOperationFactory
-        self.resolution = resolution
+        self.yieldService = yieldService
         self.operationQueue = operationQueue
-        self.requestSpacing = requestSpacing
-        self.retryDelay = retryDelay
-        self.timeProvider = timeProvider
         self.logger = logger
-        apiOperationFactory.addContextObserver(resolution) { [weak resolution] in resolution?.invalidate() }
     }
 }
 
 private extension SubtensorMaxApyProvider {
-    func startWalk(completion: @escaping SubtensorMaxApyResolution.Completion) -> CancellableCall {
-        let walk = SubtensorMaxApyWalk(
-            recommendationService: recommendationService,
-            apiOperationFactory: apiOperationFactory,
-            operationQueue: operationQueue,
-            requestSpacing: requestSpacing,
-            retryDelay: retryDelay,
-            timeProvider: timeProvider,
-            logger: logger
-        )
+    static func makePairs(
+        from response: BittensorApiResult<BittensorApi.RecommendationCollection>,
+        logger: LoggerProtocol
+    ) -> [SubtensorHotkeySubnet] {
+        let classes = response.value.classes
 
-        walk.start(completion: completion)
+        return (classes.stable + classes.balanced + classes.higherUpside).compactMap { recommendation in
+            guard let hotkey = try? recommendation.hotkey.toAccountId(
+                using: .substrate(SubstrateConstants.genericAddressPrefix)
+            ) else {
+                logger.warning("Skipped a recommendation of netuid \(recommendation.netuid) with an undecodable hotkey")
+                return nil
+            }
 
-        return walk
+            return SubtensorHotkeySubnet(hotkey: hotkey, netuid: recommendation.netuid)
+        }
     }
 }
 
 extension SubtensorMaxApyProvider: SubtensorMaxApyProviderProtocol {
     func createMaxApyWrapper() -> CompoundOperationWrapper<Decimal?> {
-        let waiterId = UUID()
-        let resolution = resolution
-        let generation = resolution.generation
+        let responseWrapper = apiOperationFactory.createRecommendationsWrapper()
+        let yieldService = yieldService
+        let logger = logger
 
-        let operation = AsyncClosureOperation<Decimal?>(
-            operationClosure: { [self] completion in
-                resolution.resolve(
-                    for: waiterId, generation: generation, startingWalkWith: startWalk, completion: completion
+        let maxApyWrapper: CompoundOperationWrapper<Decimal?> =
+            OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
+                let response = try responseWrapper.targetOperation.extractNoCancellableResultData()
+                let pairs = Self.makePairs(from: response, logger: logger)
+                let yieldWrappers = Set(pairs.map(\.netuid)).map { yieldService.createAlphaYieldsWrapper(for: $0) }
+
+                let maxOperation = ClosureOperation<Decimal?> {
+                    var rates: [Decimal] = []
+                    var firstError: Error?
+
+                    for wrapper in yieldWrappers {
+                        do {
+                            let alphaYields = try wrapper.targetOperation.extractNoCancellableResultData()
+
+                            rates += pairs
+                                .filter { $0.netuid == alphaYields.netuid }
+                                .compactMap { alphaYields.yields[$0.hotkey]?.annualRate }
+                        } catch {
+                            firstError = firstError ?? error
+                        }
+                    }
+
+                    if rates.isEmpty, let firstError {
+                        throw firstError
+                    }
+
+                    return rates.max()
+                }
+
+                yieldWrappers.forEach { maxOperation.addDependency($0.targetOperation) }
+
+                return CompoundOperationWrapper(
+                    targetOperation: maxOperation,
+                    dependencies: yieldWrappers.flatMap(\.allOperations)
                 )
-            },
-            cancelationClosure: {
-                resolution.leave(waiterId)
             }
-        )
 
-        return CompoundOperationWrapper(targetOperation: operation)
+        maxApyWrapper.addDependency(wrapper: responseWrapper)
+
+        return maxApyWrapper.insertingHead(operations: responseWrapper.allOperations)
     }
 }

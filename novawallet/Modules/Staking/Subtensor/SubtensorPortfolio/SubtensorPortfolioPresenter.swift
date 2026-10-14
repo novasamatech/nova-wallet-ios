@@ -13,7 +13,7 @@ final class SubtensorPortfolioPresenter {
 
     private var state = SubtensorPortfolioState()
     private var weeklyChangesRequest: [SubtensorSubnetRef]?
-    private var historiesRequest: HistoriesRequest?
+    private var historiesPeriod: SubtensorPricePeriod?
     private var chartSelection: SubtensorPortfolioChartSelection?
 
     init(
@@ -34,11 +34,6 @@ final class SubtensorPortfolioPresenter {
 }
 
 private extension SubtensorPortfolioPresenter {
-    struct HistoriesRequest: Equatable {
-        let period: SubtensorPricePeriod
-        let subnets: [SubtensorSubnetRef]
-    }
-
     func provideViewModel() {
         chartSelection = nil
 
@@ -58,19 +53,13 @@ private extension SubtensorPortfolioPresenter {
             interactor.loadWeeklyChanges(for: subnets)
         }
 
-        guard chainAsset.asset.priceId != nil else {
+        guard chainAsset.asset.priceId != nil, historiesPeriod != state.period else {
             return
         }
 
-        let request = HistoriesRequest(period: state.period, subnets: subnets)
-
-        guard historiesRequest != request else {
-            return
-        }
-
-        historiesRequest = request
+        historiesPeriod = state.period
         state.histories = .loading
-        interactor.loadHistories(for: request.period, subnets: request.subnets)
+        interactor.loadHistories(for: state.period)
     }
 }
 
@@ -190,7 +179,7 @@ extension SubtensorPortfolioPresenter: SubnetPortfolioInteractorOutputProtocol {
     func didChangeCurrency() {
         state.price = .loading
         state.histories = .loading
-        historiesRequest = nil
+        historiesPeriod = nil
         requestPriceDataIfNeeded()
         provideViewModel()
     }

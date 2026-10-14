@@ -29,18 +29,20 @@ final class SubtensorQuickPickVisit {
         error = nil
     }
 
-    func resolve(_ result: Result<SubtensorSubnetsInfo, Error>, generation: Int) -> SubtensorStakeTarget? {
+    func resolve(
+        _ result: Result<(SubtensorSubnetCatalogue, SubtensorSubnetsInfo), Error>,
+        generation: Int
+    ) -> SubtensorStakeTarget? {
         guard self.generation == generation, isLoading, !isManuallyReplaced else { return nil }
         isLoading = false
 
         do {
-            let info = try result.get()
-            guard info.isComplete else { throw SubtensorQuickPickSelector.SelectionError.incompleteSnapshot }
+            let (catalogue, info) = try result.get()
             let ref: SubtensorSubnetRef
             if let selectedRef {
                 ref = selectedRef
             } else {
-                ref = try selector.select(from: info, order: order)
+                ref = try selector.select(from: catalogue, order: order)
                 selectedRef = ref
             }
 

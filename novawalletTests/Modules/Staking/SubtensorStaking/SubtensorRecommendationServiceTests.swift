@@ -6,42 +6,37 @@ import XCTest
 
 final class SubtensorRecommendationServiceTests: XCTestCase {
     private let head: BlockNumber = 9_140_000
-    private let rootKept = Data(repeating: 0x01, count: 32)
-    private let rootUnseated = Data(repeating: 0x02, count: 32)
+    private let subnet = SubtensorSubnetRef(netuid: 64, registeredAt: 4_531_295)
     private let subnetKept = Data(repeating: 0x11, count: 32)
     private let subnetUnpermitted = Data(repeating: 0x12, count: 32)
     private let subnetSecondKept = Data(repeating: 0x13, count: 32)
     private let subnetTakeAboveMax = Data(repeating: 0x14, count: 32)
     private let subnetInactive = Data(repeating: 0x21, count: 32)
 
-    func testVerificationKeepsPairsPassingChainGatesAndDropsTheRest() throws {
-        let stable = [pair(rootKept, 0), pair(rootUnseated, 0)]
-        let balanced = [pair(subnetSecondKept, 64), pair(subnetUnpermitted, 64), pair(subnetKept, 64)]
-        let higherUpside = [pair(subnetInactive, 64), pair(subnetTakeAboveMax, 64)]
-        let apiFactory = try createApiFactory(stable: stable, balanced: balanced, higherUpside: higherUpside)
+    func testVerificationKeepsValidatorsPassingChainGatesAndDropsTheRest() throws {
+        let hotkeys = [subnetSecondKept, subnetUnpermitted, subnetKept, subnetInactive, subnetTakeAboveMax]
+        let apiFactory = try createApiFactory(hotkeys: hotkeys)
         let chainFactory = createChainFactory()
 
-        let verified = try run(createService(apiFactory, chainFactory).createVerifiedRecommendationsWrapper())
+        let verified = try run(createService(apiFactory, chainFactory).createRecommendedValidatorsWrapper(for: subnet))
 
         let captor = ArgumentCaptor<SubtensorValidatorChainQuery>()
         verify(chainFactory).createChainSnapshotWrapper(for: captor.capture())
-        XCTAssertEqual(captor.value?.pairs, stable + balanced + higherUpside)
-        XCTAssertEqual(
-            verified.classes.mapValues { $0.map(\.hotkey) },
-            [.stable: [rootKept], .balanced: [subnetSecondKept, subnetKept], .higherUpside: []]
-        )
+        XCTAssertEqual(captor.value?.pairs, hotkeys.map { pair($0, 64) })
+        XCTAssertEqual(verified.validators.map(\.hotkey), [subnetSecondKept, subnetKept])
     }
 
     func testVerificationFailsWithoutReadingChainWhenRecommendationsRouteFails() {
         let apiFactory = MockBittensorApiOperationFactoryProtocol()
         stub(apiFactory) { stub in
-            when(stub.createRecommendationsWrapper()).then {
+            when(stub.createRankedValidatorsWrapper(netuid: any())).then { _ in
                 CompoundOperationWrapper.createWithError(BittensorApiError.routeNotPublished)
             }
         }
         let chainFactory = createChainFactory()
+        let service = createService(apiFactory, chainFactory)
 
-        XCTAssertThrowsError(try run(createService(apiFactory, chainFactory).createVerifiedRecommendationsWrapper())) {
+        XCTAssertThrowsError(try run(service.createRecommendedValidatorsWrapper(for: subnet))) {
             guard case BittensorApiError.routeNotPublished = $0 else {
                 return XCTFail("Unexpected error \($0)")
             }
@@ -50,14 +45,14 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
     }
 
     func testMalformedMaxTakeFailsAsContractViolation() throws {
-        let apiFactory = try createApiFactory(balanced: [pair(subnetKept, 64)], maxTake: "1e2")
+        let apiFactory = try createApiFactory(hotkeys: [subnetKept], maxTake: "1e2")
         let service = createService(apiFactory, createChainFactory())
 
-        XCTAssertThrowsError(try run(service.createVerifiedRecommendationsWrapper())) { error in
+        XCTAssertThrowsError(try run(service.createRecommendedValidatorsWrapper(for: subnet))) { error in
             guard case let BittensorApiError.contractViolation(detail, requestId) = error else {
                 return XCTFail("Unexpected error \(error)")
             }
-            XCTAssertEqual(detail, "GET /recommendations: invalid meta.clientGates.maxTake")
+            XCTAssertEqual(detail, "GET /recommendations/subnets/64/validators: invalid meta.clientGates.maxTake")
             XCTAssertEqual(requestId, "request-1")
         }
     }
@@ -74,9 +69,7 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
     }
 
     private func createApiFactory(
-        stable: [SubtensorHotkeySubnet] = [],
-        balanced: [SubtensorHotkeySubnet] = [],
-        higherUpside: [SubtensorHotkeySubnet] = [],
+        hotkeys: [AccountId],
         maxTake: String = "0.18"
     ) throws -> MockBittensorApiOperationFactoryProtocol {
         let component = BittensorApi.AvailableComponent(
@@ -88,17 +81,13 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
 
         let gates = BittensorApi.ClientGates(maxTake: maxTake, requirePermit: true, requireActiveWithinCutoff: true)
 
-        let collection = try BittensorApi.RecommendationCollection(
+        let collection = try BittensorApi.RankedValidatorCollection(
             meta: BittensorApi.RecommendationMetadata(
                 components: BittensorApi.RecommendationMetadata.Components(recommendations: component),
                 generation: generation,
                 clientGates: gates
             ),
-            classes: BittensorApi.RecommendationClasses(
-                stable: stable.map(recommendation),
-                balanced: balanced.map(recommendation),
-                higherUpside: higherUpside.map(recommendation)
-            )
+            items: hotkeys.map(rankedValidator)
         )
 
         let result = BittensorApiResult(
@@ -106,7 +95,9 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
         )
         let apiFactory = MockBittensorApiOperationFactoryProtocol()
         stub(apiFactory) { stub in
-            when(stub.createRecommendationsWrapper()).then { CompoundOperationWrapper.createWithResult(result) }
+            when(stub.createRankedValidatorsWrapper(netuid: any())).then { _ in
+                CompoundOperationWrapper.createWithResult(result)
+            }
         }
 
         return apiFactory
@@ -122,14 +113,13 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
         let snapshot = SubtensorValidatorChainSnapshot(
             blockHash: "0x01",
             blockNumber: head,
-            uids: [pair(rootKept, 0): 3, pair(subnetKept, 64): 10, pair(subnetUnpermitted, 64): 11,
-                   pair(subnetSecondKept, 64): 12, pair(subnetTakeAboveMax, 64): 13, pair(subnetInactive, 64): 20],
+            uids: [pair(subnetKept, 64): 10, pair(subnetUnpermitted, 64): 11, pair(subnetSecondKept, 64): 12,
+                   pair(subnetTakeAboveMax, 64): 13, pair(subnetInactive, 64): 20],
             permits: [64: permits],
             lastUpdates: [64: lastUpdates],
             effectiveActivityCutoffs: [64: 5000],
-            takes: [rootKept: 11796, subnetKept: 6553, subnetUnpermitted: 0, subnetSecondKept: 11796,
-                    subnetTakeAboveMax: 11797, subnetInactive: 0],
-            hotkeyAlpha: [:]
+            takes: [subnetKept: 6553, subnetUnpermitted: 0, subnetSecondKept: 11796,
+                    subnetTakeAboveMax: 11797, subnetInactive: 0]
         )
 
         let chainFactory = MockSubtensorValidatorChainOperationFactoryProtocol()
@@ -142,10 +132,13 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
         return chainFactory
     }
 
-    private func recommendation(_ pair: SubtensorHotkeySubnet) throws -> BittensorApi.Recommendation {
-        try BittensorApi.Recommendation(
-            netuid: pair.netuid,
-            hotkey: pair.hotkey.toAddress(using: .substrate(SubstrateConstants.genericAddressPrefix)),
+    private func rankedValidator(_ hotkey: AccountId) throws -> BittensorApi.RankedValidator {
+        try BittensorApi.RankedValidator(
+            netuid: 64,
+            hotkey: hotkey.toAddress(using: .substrate(SubstrateConstants.genericAddressPrefix)),
+            validatorName: nil,
+            recommendationClass: .balanced,
+            eligible: true,
             clientChecks: [.uid, .validatorPermit, .take, .lastUpdate]
         )
     }

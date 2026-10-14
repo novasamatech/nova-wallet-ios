@@ -82,7 +82,6 @@ final class SubtensorPortfolioViewLayout: UIView {
             positionsCaptionLabel.isHidden = true
             positionsStackView.isHidden = true
             emptyView.bind(viewModel: emptyViewModel)
-            emptyView.ratesAlertView.isHidden = !viewModel.isRatesUnavailable
             addButton.applyDefaultStyle()
         }
 

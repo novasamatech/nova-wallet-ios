@@ -67,6 +67,7 @@ private extension SubtensorSubnetDetailsViewFactory {
         let presetFactory = SubtensorValidatorPresetFactory(
             directoryService: earnServices.validatorDirectoryService,
             recommendationService: earnServices.recommendationService,
+            yieldService: earnServices.yieldService,
             operationQueue: operationQueue,
             logger: Logger.shared
         )

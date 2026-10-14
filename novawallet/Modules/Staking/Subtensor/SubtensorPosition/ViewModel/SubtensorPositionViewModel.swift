@@ -111,7 +111,6 @@ extension SubtensorPositionState {
         chainFormat: ChainFormat
     ) -> SubtensorClaimRewardsModel? {
         guard
-            let minimumClaim = claimable?.minimumClaim,
             let target = claimTarget,
             let address = try? target.hotkey.toAddress(using: chainFormat) else {
             return nil
@@ -126,8 +125,7 @@ extension SubtensorPositionState {
                 display: DisplayAddress(address: address, username: name ?? ""),
                 annualRate: nil
             ),
-            shownPreview: target,
-            minimumClaim: minimumClaim
+            shownPreview: target
         )
     }
 }

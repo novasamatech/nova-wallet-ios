@@ -7,7 +7,7 @@ protocol SubtensorValidatorInfoPresentable {
         from view: ControllerBackedProtocol?,
         target: SubtensorStakeTarget,
         hotkey: AccountId,
-        detail: SubtensorValidatorDetail?
+        detail: SubtensorValidatorDirectoryItem?
     )
 }
 
@@ -16,7 +16,7 @@ extension SubtensorValidatorInfoPresentable {
         from view: ControllerBackedProtocol?,
         target: SubtensorStakeTarget,
         hotkey: AccountId,
-        detail: SubtensorValidatorDetail?
+        detail: SubtensorValidatorDirectoryItem?
     ) {
         guard
             let view,

@@ -36,7 +36,10 @@ protocol SubtensorSetupInteractorInputProtocol: SubtensorStakingBaseInteractorIn
 }
 
 protocol SubtensorSetupInteractorOutputProtocol: SubtensorStakingBaseInteractorOutputProtocol {
-    func didReceiveQuickPickSnapshot(_ result: Result<SubtensorSubnetsInfo, Error>, generation: Int)
+    func didReceiveQuickPickSnapshot(
+        _ result: Result<(SubtensorSubnetCatalogue, SubtensorSubnetsInfo), Error>,
+        generation: Int
+    )
     func didReceiveValidator(_ validator: SubtensorValidatorDirectoryItem?, on subnet: SubtensorSubnetRef)
     func didReceiveSubnet(_ target: SubtensorStakeTarget)
     func didFailSubnet(_ error: Error)

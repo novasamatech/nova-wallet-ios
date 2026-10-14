@@ -84,7 +84,7 @@ extension SubtensorValidatorDirectoryService {
     static func enrichmentQuery(rows: [Row], netuid: UInt16) -> SubtensorValidatorChainQuery {
         let pairs = rows.prefix(enrichmentRowLimit).map { SubtensorHotkeySubnet(hotkey: $0.hotkey, netuid: netuid) }
 
-        return SubtensorValidatorChainQuery(pairs: pairs, includesHotkeyAlpha: true)
+        return SubtensorValidatorChainQuery(pairs: pairs)
     }
 
     static func takeFraction(_ take: UInt16) -> Decimal {

@@ -78,11 +78,40 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
         return peekPage(path: "/subnets/\(netuid)/yields/alpha", page: page)
     }
 
+    func createRootValidatorsWrapper()
+        -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RootValidatorCollection>> {
+        createWrapper(route: .rootValidators, path: "/root/validators")
+    }
+
+    func peekRootValidators() -> HTTPCachePeek<BittensorApiResult<BittensorApi.RootValidatorCollection>> {
+        peek(path: "/root/validators")
+    }
+
+    func createRootOverviewWrapper() -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RootOverview>> {
+        createWrapper(route: .rootOverview, path: "/root/overview")
+    }
+
+    func peekRootOverview() -> HTTPCachePeek<BittensorApiResult<BittensorApi.RootOverview>> {
+        peek(path: "/root/overview")
+    }
+
     func createOperationsWrapper(
         accountSubject: AccountAddress,
         page: Int?
     ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.OperationCollection>> {
         createSearchWrapper(route: .operations, accountSubject: accountSubject, page: page)
+    }
+
+    func createPortfolioHistoryWrapper(
+        accountSubject: AccountAddress,
+        period: BittensorApi.PortfolioHistoryPeriod
+    ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.PortfolioHistoryCollection>> {
+        createSearchWrapper(
+            route: .portfolioHistory,
+            accountSubject: accountSubject,
+            page: nil,
+            queryItems: [URLQueryItem(name: "period", value: period.rawValue)]
+        )
     }
 
     func createRecommendationsWrapper()
@@ -98,6 +127,12 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
     func peekRankedSubnets() -> HTTPCachePeek<BittensorApiResult<BittensorApi.SubnetRankingCollection>> {
         peek(path: "/recommendations/subnets")
     }
+
+    func createRankedValidatorsWrapper(
+        netuid: UInt16
+    ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RankedValidatorCollection>> {
+        createWrapper(route: .rankedValidators, path: "/recommendations/subnets/\(netuid)/validators")
+    }
 }
 
 private extension BittensorApiOperationFactory {
@@ -105,9 +140,13 @@ private extension BittensorApiOperationFactory {
         case subnets
         case validators
         case alphaYield
+        case rootValidators
+        case rootOverview
         case operations
+        case portfolioHistory
         case recommendations
         case rankedSubnets
+        case rankedValidators
 
         var pathTemplate: String {
             switch self {
@@ -117,12 +156,20 @@ private extension BittensorApiOperationFactory {
                 return "/subnets/{netuid}/validators"
             case .alphaYield:
                 return "/subnets/{netuid}/yields/alpha"
+            case .rootValidators:
+                return "/root/validators"
+            case .rootOverview:
+                return "/root/overview"
             case .operations:
                 return "/operations/search"
+            case .portfolioHistory:
+                return "/portfolio/history/search"
             case .recommendations:
                 return "/recommendations"
             case .rankedSubnets:
                 return "/recommendations/subnets"
+            case .rankedValidators:
+                return "/recommendations/subnets/{netuid}/validators"
             }
         }
     }
@@ -157,7 +204,8 @@ private extension BittensorApiOperationFactory {
     func createSearchWrapper<T: Decodable & BittensorApiWireChecked>(
         route: Route,
         accountSubject: AccountAddress,
-        page: Int?
+        page: Int?,
+        queryItems: [URLQueryItem] = []
     ) -> CompoundOperationWrapper<BittensorApiResult<T>> {
         guard Self.isValidAccountSubject(accountSubject), page.map(Self.pageRange.contains) ?? true else {
             return .createWithError(BittensorApiError.invalidRequest(code: nil, requestId: nil))
@@ -169,16 +217,14 @@ private extension BittensorApiOperationFactory {
         return createWrapper(
             route: route,
             path: route.pathTemplate,
-            queryItems: [subjectItem] + pageItems,
-            accountDigest: Data(accountSubject.utf8).sha256()
+            queryItems: [subjectItem] + pageItems + queryItems
         )
     }
 
     func createWrapper<T: Decodable & BittensorApiWireChecked>(
         route: Route,
         path: String,
-        queryItems: [URLQueryItem] = [],
-        accountDigest: Data? = nil
+        queryItems: [URLQueryItem] = []
     ) -> CompoundOperationWrapper<BittensorApiResult<T>> {
         let request = BittensorApiRequest(
             path: path,
@@ -188,7 +234,6 @@ private extension BittensorApiOperationFactory {
 
         let job = BittensorApiCacheJob(
             key: Self.cacheKey(path: path, queryItems: queryItems),
-            routeKey: BittensorApiRouteKey(pathTemplate: route.pathTemplate, accountDigest: accountDigest),
             currentInvalidationRevision: { [transport] in transport.invalidationRevision },
             admit: { [transport] in transport.createAdmissionWrapper() },
             fetch: { [transport, logger] admission in
@@ -199,17 +244,17 @@ private extension BittensorApiOperationFactory {
             }
         )
 
-        let deliveryWrapper = cache.createWrapper(for: job)
+        let entryWrapper = cache.createWrapper(for: job)
 
         let resultOperation = ClosureOperation<BittensorApiResult<T>> {
-            let delivery = try deliveryWrapper.targetOperation.extractNoCancellableResultData()
+            let entry = try entryWrapper.targetOperation.extractNoCancellableResultData()
 
-            return try Self.makeResult(from: delivery.entry, isFromExpiredCache: delivery.isFromExpiredCache)
+            return try Self.makeResult(from: entry, isFromExpiredCache: false)
         }
 
-        resultOperation.addDependency(deliveryWrapper.targetOperation)
+        resultOperation.addDependency(entryWrapper.targetOperation)
 
-        return deliveryWrapper.insertingTail(operation: resultOperation)
+        return entryWrapper.insertingTail(operation: resultOperation)
     }
 
     static func pagedQueryItems(page: Int) -> [URLQueryItem] {
@@ -292,7 +337,6 @@ private extension BittensorApiOperationFactory {
         return BittensorApiFetchedValue(
             value: value,
             requestId: response.requestId,
-            cacheDirectives: response.cacheDirectives,
             generation: generational?.generationOrder
         )
     }
