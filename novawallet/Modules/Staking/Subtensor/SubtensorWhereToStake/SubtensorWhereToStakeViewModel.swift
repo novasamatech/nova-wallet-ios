@@ -36,21 +36,21 @@ struct SubtensorWhereToStakeViewModelFactory {
             subtitle = strings.stakingSubtensorQuickAgeOrder()
             pros = [strings.stakingSubtensorQuickAgePro()]
             cons = [strings.stakingSubtensorQuickAgeConOne(), strings.stakingSubtensorQuickAgeConTwo()]
-            artwork = R.image.clock()
+            artwork = R.image.subtensorQuickAge()
             tint = R.color.colorQuickPickAge()!
         case .apy:
             title = strings.stakingSubtensorUiValidatorSortApy()
             subtitle = strings.stakingSubtensorQuickApyOrder()
             pros = [strings.stakingSubtensorQuickApyPro()]
             cons = [strings.stakingSubtensorQuickApyConOne(), strings.stakingSubtensorQuickApyConTwo()]
-            artwork = R.image.cup()
+            artwork = R.image.subtensorQuickApy()
             tint = R.color.colorQuickPickApy()!
         case .root:
             title = strings.stakingSubtensorQuickRootTitle()
             subtitle = strings.stakingSubtensorQuickRootOrder()
             pros = [strings.stakingSubtensorQuickRootProOne(), strings.stakingSubtensorQuickRootProTwo()]
             cons = []
-            artwork = R.image.coin()
+            artwork = R.image.subtensorQuickRoot()
             tint = R.color.colorQuickPickRoot()!
         }
         return SubtensorWhereToStakeCardModel(

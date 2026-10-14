@@ -130,6 +130,8 @@ private extension SubtensorStakingConfirmViewController {
 
         rootView.networkFeeCell.bind(loadableViewModel: feeViewModel)
 
+        rootView.feeDisclosureLabel.text = viewModel.feeDisclosure
+        rootView.feeDisclosureLabel.isHidden = viewModel.feeDisclosure == nil
         rootView.remarkLabel.text = viewModel.remark
         rootView.remarkLabel.isHidden = viewModel.remark == nil
     }
@@ -230,6 +232,9 @@ extension SubtensorStakingConfirmViewController: SubtensorStakingConfirmViewProt
             bindRoot(rootViewModel, networkFee: viewModel.networkFee)
         }
 
+        [rootView.detailsTableView, rootView.walletTableView, rootView.rootTableView].forEach {
+            SubtensorDividerStyle.apply(to: $0)
+        }
         rootView.priceMovedView.isHidden = !viewModel.isPriceMoved
 
         bindAction(viewModel.action)

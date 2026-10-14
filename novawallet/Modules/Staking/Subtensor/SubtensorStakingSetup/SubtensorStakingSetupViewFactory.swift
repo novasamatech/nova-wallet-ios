@@ -4,9 +4,10 @@ import Foundation_iOS
 enum SubtensorStakingSetupViewFactory {
     static func createRootDetailsView(
         for state: SubtensorStakingSharedStateProtocol,
-        browseState: SubtensorSubnetBrowseState = .init()
+        browseState: SubtensorSubnetBrowseState = .init(),
+        presentation: SubtensorRootEntryPresentation = .standard
     ) -> SubtensorStakingSetupViewProtocol? {
-        createView(for: state, mode: .rootDetails, browseState: browseState)
+        createView(for: state, mode: .rootDetails, browseState: browseState, rootEntryPresentation: presentation)
     }
 
     static func createSubnetView(
@@ -63,7 +64,8 @@ private extension SubtensorStakingSetupViewFactory {
         for state: SubtensorStakingSharedStateProtocol,
         mode: SubtensorStakingSetupMode,
         browseState: SubtensorSubnetBrowseState = .init(),
-        quickPickVisit: SubtensorQuickPickVisit? = nil
+        quickPickVisit: SubtensorQuickPickVisit? = nil,
+        rootEntryPresentation: SubtensorRootEntryPresentation = .standard
     ) -> SubtensorStakingSetupViewProtocol? {
         guard let services = SubtensorFlowServicesFactory.createServices(for: state) else {
             return nil
@@ -108,7 +110,8 @@ private extension SubtensorStakingSetupViewFactory {
             localizationManager: localizationManager,
             logger: Logger.shared,
             browseState: browseState,
-            quickPickVisit: quickPickVisit
+            quickPickVisit: quickPickVisit,
+            rootEntryPresentation: rootEntryPresentation
         )
 
         let view = SubtensorStakingSetupViewController(

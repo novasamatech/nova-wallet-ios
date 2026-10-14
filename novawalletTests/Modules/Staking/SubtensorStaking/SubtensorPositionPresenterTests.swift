@@ -97,6 +97,7 @@ final class SubtensorPositionPresenterTests: XCTestCase {
 
         XCTAssertNotNil(viewModels.last?.summary.caption)
         XCTAssertNotNil(viewModels.last?.summary.amount)
+        XCTAssertEqual(viewModels.last?.summary.rows.map(\.title), ["Worth now"])
     }
 
     func testPositionCapturesHistoryTimeAndRejectsAnOldPeriodAfterSwitching() throws {

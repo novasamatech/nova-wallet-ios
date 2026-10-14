@@ -210,7 +210,7 @@ private extension SubtensorUnstakeSetupVC {
         applyValidator(details.validator)
         applyNetworkFee(details.networkFee)
 
-        rootView.detailsTableView.updateLayout()
+        SubtensorDividerStyle.apply(to: rootView.detailsTableView)
     }
 
     func applyNotes(_ viewModel: SubtensorUnstakeSetupViewModel) {
@@ -219,9 +219,6 @@ private extension SubtensorUnstakeSetupVC {
 
         rootView.feeAlertView.isHidden = viewModel.feeWarning == nil
         rootView.feeAlertView.contentView.detailsLabel.text = viewModel.feeWarning
-
-        rootView.feeDisclosureLabel.isHidden = viewModel.feeDisclosure == nil
-        rootView.feeDisclosureLabel.text = viewModel.feeDisclosure
 
         rootView.holdAlertView.isHidden = viewModel.holdWarning == nil
         rootView.holdAlertView.contentView.detailsLabel.text = viewModel.holdWarning

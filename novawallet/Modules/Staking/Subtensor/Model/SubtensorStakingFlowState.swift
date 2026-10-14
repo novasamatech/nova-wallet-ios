@@ -5,6 +5,7 @@ protocol SubtensorStakingFlowStateProtocol: AnyObject {
     var priceHistoryCache: SubtensorPriceHistoryCaching { get }
     var subnetsInfoCache: SubtensorSessionCache<SubtensorSubnetsInfo> { get }
     var validatorDirectoryCache: SubtensorValidatorDirectoryCaching { get }
+    var validatorFilterSession: SubtensorValidatorFilterSession { get }
     var pendingRootClaims: SubtensorPendingRootClaimsProtocol { get }
 }
 
@@ -13,6 +14,7 @@ final class SubtensorStakingFlowState: SubtensorStakingFlowStateProtocol {
     let priceHistoryCache: SubtensorPriceHistoryCaching = SubtensorPriceHistoryCache()
     let subnetsInfoCache = SubtensorSessionCache<SubtensorSubnetsInfo>()
     let validatorDirectoryCache: SubtensorValidatorDirectoryCaching = SubtensorValidatorDirectoryCache()
+    let validatorFilterSession = SubtensorValidatorFilterSession()
     let pendingRootClaims: SubtensorPendingRootClaimsProtocol = SubtensorPendingRootClaims()
 
     init(coingeckoOperationFactory: CoingeckoOperationFactoryProtocol, operationQueue: OperationQueue) {

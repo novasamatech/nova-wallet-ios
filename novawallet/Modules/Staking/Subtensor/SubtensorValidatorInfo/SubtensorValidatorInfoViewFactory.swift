@@ -19,6 +19,9 @@ enum SubtensorValidatorInfoViewFactory {
             target: target,
             hotkey: hotkey,
             chainAsset: chainAsset,
+            coverageFactory: SubtensorValidatorCoverageFactory(
+                apiFactory: state.apiOperationFactory, operationQueue: OperationManagerFacade.sharedDefaultQueue
+            ),
             directoryService: earnServices.validatorDirectoryService,
             yieldService: earnServices.yieldService,
             catalogueService: earnServices.catalogueService,

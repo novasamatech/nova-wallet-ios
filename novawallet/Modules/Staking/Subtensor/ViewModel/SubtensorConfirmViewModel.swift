@@ -19,6 +19,7 @@ struct SubtensorConfirmSwapViewModel {
     let slippage: String?
     let validatorApy: String?
     let remark: String?
+    let feeDisclosure: String?
 }
 
 struct SubtensorConfirmRootViewModel {

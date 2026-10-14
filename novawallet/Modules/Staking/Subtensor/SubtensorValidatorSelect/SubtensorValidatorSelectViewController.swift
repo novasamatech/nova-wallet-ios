@@ -56,10 +56,6 @@ private extension SubtensorValidatorSelectViewController {
         return false
     }
 
-    var hasHeader: Bool {
-        isLoading || (loadedViewModel.map { !$0.rows.isEmpty } ?? false)
-    }
-
     func setupTableView() {
         rootView.tableView.registerClassForCell(SubtensorValidatorSelectCell.self)
         rootView.tableView.registerClassForCell(SubtensorValidatorSkeletonCell.self)
@@ -113,6 +109,7 @@ private extension SubtensorValidatorSelectViewController {
             rootView.errorView.isHidden = true
             rootView.tableView.isHidden = false
         case let .loaded(viewModel):
+            rootView.headerView.bind(title: viewModel.countTitle, details: viewModel.sortTitle)
             rootView.bindAction(title: viewModel.selectTitle, isEnabled: viewModel.canSelect)
             rootView.emptyLabel.text = viewModel.emptyText
             rootView.emptyLabel.isHidden = viewModel.emptyText == nil
@@ -191,29 +188,7 @@ extension SubtensorValidatorSelectViewController: UITableViewDataSource {
 }
 
 extension SubtensorValidatorSelectViewController: UITableViewDelegate {
-    func tableView(_: UITableView, heightForHeaderInSection _: Int) -> CGFloat {
-        hasHeader ? rootView.tableView.sectionHeaderHeight : 0
-    }
-
-    func tableView(_ tableView: UITableView, viewForHeaderInSection _: Int) -> UIView? {
-        guard hasHeader else {
-            return nil
-        }
-
-        let header: SubtensorValidatorSectionHeaderView = tableView.dequeueReusableHeaderFooterView()
-        let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
-
-        switch state {
-        case let .loading(viewModel):
-            header.bind(title: viewModel.countTitle, details: viewModel.sortTitle)
-        case let .loaded(viewModel):
-            header.bind(title: viewModel.countTitle, details: viewModel.sortTitle)
-        case .failed, .none:
-            header.bind(title: strings.stakingSubtensorUiValidatorLoadingCount(), details: nil)
-        }
-
-        return header
-    }
+    func tableView(_: UITableView, heightForHeaderInSection _: Int) -> CGFloat { 0 }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
@@ -227,6 +202,12 @@ extension SubtensorValidatorSelectViewController: UITableViewDelegate {
 }
 
 extension SubtensorValidatorSelectViewController: SubtensorValidatorSelectViewProtocol {
+    func didReceive(header: SubtensorValidatorListHeaderViewModel, isFilterActive: Bool) {
+        rootView.headerView.bind(title: header.countTitle, details: header.sortTitle)
+        navigationItem.rightBarButtonItems?.first?.tintColor = isFilterActive
+            ? R.color.colorButtonBackgroundPrimary() : R.color.colorIconPrimary()
+    }
+
     func didReceive(state: SubtensorValidatorListState) {
         self.state = state
 

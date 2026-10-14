@@ -180,6 +180,8 @@ sources = [
     "novawallet/Modules/Staking/Subtensor/SubtensorPortfolio/SubtensorPortfolioProtocols.swift",
     "novawallet/Modules/Staking/Subtensor/Protocols/SubtensorGetTaoRouting.swift",
     "novawallet/Modules/Staking/Subtensor/SubtensorSubnetDetails/SubtensorSubnetDetailsProtocols.swift",
+    "novawallet/Modules/Staking/Subtensor/SubtensorValidatorSelect/SubtensorValidatorSelectProtocols.swift",
+    "novawallet/Modules/Staking/Subtensor/SubtensorValidatorInfo/SubtensorValidatorInfoProtocols.swift",
     "novawallet/Common/PriceProvider/PriceProviderFactory.swift",
     "novawallet/Modules/Staking/Subtensor/Protocols/SubtensorOperationResultPresenting.swift",
     "novawallet/Modules/Staking/Subtensor/Protocols/SubtensorValidatorInfoPresentable.swift",

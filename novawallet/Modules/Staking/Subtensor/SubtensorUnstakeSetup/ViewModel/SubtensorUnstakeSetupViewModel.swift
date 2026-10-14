@@ -9,7 +9,6 @@ struct SubtensorUnstakeSetupViewModel {
     let details: SubtensorUnstakeDetailsViewModel
     let note: String?
     let feeWarning: String?
-    let feeDisclosure: String?
     let holdWarning: String?
     let caption: String?
     let action: SubtensorSetupActionViewModel
