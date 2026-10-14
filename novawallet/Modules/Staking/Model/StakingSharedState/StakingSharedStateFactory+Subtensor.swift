@@ -176,10 +176,8 @@ extension StakingSharedStateFactory {
                 seriesProvider: flowState.priceSeriesCache
             ),
             tradeQuoteFactory: SubtensorTradeQuoteFactory(
-                quoteFactory: SubtensorQuoteOperationFactory(
-                    operationFactory: apiOperationFactory,
-                    operationQueue: syncOperationQueue
-                ),
+                operationFactory: apiOperationFactory,
+                operationQueue: syncOperationQueue,
                 feeCalculator: novaFeeCalculator
             ),
             rootHoldFactory: SubtensorRootHoldFactory(
