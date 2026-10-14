@@ -217,7 +217,7 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
             let item = try itemWrapper.targetOperation.extractNoCancellableResultData()
 
             guard generation == cache.generation else {
-                throw BittensorApiError.attestationUnavailable(requestId: nil)
+                throw BittensorApiError.unavailable(code: nil, requestId: nil)
             }
 
             return item

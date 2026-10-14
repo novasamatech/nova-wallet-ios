@@ -120,7 +120,7 @@ final class SubtensorCostBasisServiceTests: XCTestCase {
         stub(apiOperationFactory) { stub in
             when(stub.createOperationsWrapper(accountSubject: any(), page: any())).then { _, page in
                 guard let operationsPage = pages.first(where: { $0.value.pageInfo.page == page ?? 1 }) else {
-                    return CompoundOperationWrapper.createWithError(BittensorApiError.datasetUnavailable(requestId: nil))
+                    return CompoundOperationWrapper.createWithError(BittensorApiError.unavailable(code: "dataset_unavailable", requestId: nil))
                 }
 
                 return CompoundOperationWrapper.createWithResult(operationsPage)

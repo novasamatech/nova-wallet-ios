@@ -93,7 +93,7 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
 
         stub(yieldService) { stub in
             when(stub.createAlphaYieldsWrapper(for: any())).then { _ in
-                CompoundOperationWrapper.createWithError(BittensorApiError.routeNotPublished)
+                CompoundOperationWrapper.createWithError(BittensorApiError.unavailable(code: nil, requestId: nil))
             }
         }
 
