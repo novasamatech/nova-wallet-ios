@@ -86,7 +86,6 @@ private extension SubtensorPortfolioViewFactory {
             priceHistoryService: earnServices.priceHistoryService,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
-            flowState: state.flowState,
             operationQueue: operationQueue,
             logger: Logger.shared
         )

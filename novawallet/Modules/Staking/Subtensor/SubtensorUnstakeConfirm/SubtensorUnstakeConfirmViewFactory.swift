@@ -15,16 +15,7 @@ enum SubtensorUnstakeConfirmViewFactory {
             return nil
         }
 
-        let interactor = SubtensorUnstakeConfirmInteractor(
-            baseServices: services,
-            chainAsset: chainAsset,
-            catalogueService: state.earnServices.catalogueService,
-            subnetLogosProvider: state.earnServices.subnetLogosProvider,
-            rootHoldFactory: state.earnServices.rootHoldFactory,
-            costBasisService: state.earnServices.costBasisService,
-            generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
-            logger: Logger.shared
-        )
+        let interactor = SubtensorUnstakeConfirmInteractor(flowServices: services, state: state, logger: Logger.shared)
 
         let wireframe = SubtensorUnstakeConfirmWireframe(state: state)
 

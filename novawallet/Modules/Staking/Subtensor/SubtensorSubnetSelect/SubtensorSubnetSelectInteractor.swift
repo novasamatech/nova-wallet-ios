@@ -11,7 +11,6 @@ final class SubtensorSubnetSelectInteractor {
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
-    private var seed = SubtensorSubnetSelectSnapshot(entries: .miss)
     private let entriesStore = CancellableCallStore()
     private let logosStore = CancellableCallStore()
     private let weeklyStore = CancellableCallStore()
@@ -114,26 +113,17 @@ private extension SubtensorSubnetSelectInteractor {
             SubtensorSubnetListBuilder.entries(from: catalogue, subnetsInfo: subnetsInfo)
         }
     }
-
-    func makeSnapshot() -> SubtensorSubnetSelectSnapshot {
-        SubtensorSubnetSelectSnapshot(
-            entries: makeCachedEntries()
-        )
-    }
 }
 
 extension SubtensorSubnetSelectInteractor: SubnetSelectInteractorInputProtocol {
     func cachedSnapshot() -> SubtensorSubnetSelectSnapshot {
-        seed = makeSnapshot()
-
-        return seed
+        SubtensorSubnetSelectSnapshot(
+            entries: makeCachedEntries()
+        )
     }
 
     func setup() {
-        if !seed.entries.isFresh {
-            provideEntries()
-        }
-
+        provideEntries()
         provideSubnetLogos()
     }
 

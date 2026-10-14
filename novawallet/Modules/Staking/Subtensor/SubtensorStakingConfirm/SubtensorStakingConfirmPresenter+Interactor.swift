@@ -60,8 +60,6 @@ extension SubtensorStakingConfirmPresenter: SubtensorConfirmInteractorOutputProt
         provideViewModel()
     }
 
-    func didReceiveClaimable(_: SubtensorRootClaimable?) {}
-
     func didReceiveBlockNumber(_: BlockNumber) {
         guard !isHandingOff else {
             return

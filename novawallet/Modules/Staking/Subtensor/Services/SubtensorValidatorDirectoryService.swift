@@ -31,28 +31,14 @@ final class SubtensorValidatorDirectoryService {
 }
 
 private extension SubtensorValidatorDirectoryService {
-    func store(_ directory: SubtensorValidatorDirectory, listingReceipt: ListingReceipt, generation: UUID) throws {
+    func store(_ directory: SubtensorValidatorDirectory, generation: UUID) throws {
         try cache.store(
             SubtensorValidatorDirectoryCacheEntry(
                 directory: directory,
-                listingReceipt: listingReceipt,
                 items: Dictionary(directory.items.map { ($0.hotkey, $0) }, uniquingKeysWith: { first, _ in first })
             ),
             generation: generation
         )
-    }
-
-    func peek(
-        _ cached: SubtensorValidatorDirectoryCacheEntry,
-        netuid: UInt16
-    ) -> HTTPCachePeek<SubtensorValidatorDirectory> {
-        guard
-            case let .fresh(response, freshUntil) = apiOperationFactory.peekValidators(netuid: netuid),
-            ListingReceipt(response: response) == cached.listingReceipt else {
-            return .expired(cached.directory.markingStale())
-        }
-
-        return .fresh(cached.directory, freshUntil: freshUntil)
     }
 
     func createListedRowWrapper(
@@ -178,7 +164,7 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
             let directory = Self.makeDirectory(subnet: subnet, listing: listing, enrichment: enrichment)
 
             guard let self else { throw BaseOperationError.parentOperationCancelled }
-            try store(directory, listingReceipt: listing.receipt, generation: generation)
+            try store(directory, generation: generation)
 
             return directory
         }
@@ -196,7 +182,7 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
             return .miss
         }
 
-        return peek(cached, netuid: subnet.netuid)
+        return .expired(cached.directory.markingStale())
     }
 
     func createDetailWrapper(

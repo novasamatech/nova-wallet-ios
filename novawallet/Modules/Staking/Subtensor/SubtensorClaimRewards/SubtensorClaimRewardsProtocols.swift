@@ -14,6 +14,7 @@ protocol SubtensorClaimInteractorInputProtocol: SubtensorStakingBaseInteractorIn
 }
 
 protocol SubtensorClaimInteractorOutputProtocol: SubtensorStakingBaseInteractorOutputProtocol {
+    func didReceiveClaimable(_ claimable: SubtensorRootClaimable?)
     func didReceiveClaimSnapshot(_ claimable: SubtensorRootClaimable)
     func didFailClaimSnapshot(_ error: Error)
 }

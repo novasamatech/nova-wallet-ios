@@ -304,7 +304,8 @@ extension SubtensorStakingConfirmPresenter: SubtensorStakingConfirmPresenterProt
         refreshPreflight()
 
         if !model.target.isRoot {
-            interactor.loadSubnetData()
+            interactor.loadCatalogue()
+            interactor.loadSubnetLogos()
             loadCostBasisIfNeeded()
             refreshQuote()
         }

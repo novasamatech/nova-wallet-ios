@@ -74,7 +74,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         fetchCallStore.cancel()
         isMaxApyResolved = false
 
-        cataloguePricing?.seed()
+        cataloguePricing?.reset()
 
         eventCenter.add(observer: self, dispatchIn: workingQueue)
 

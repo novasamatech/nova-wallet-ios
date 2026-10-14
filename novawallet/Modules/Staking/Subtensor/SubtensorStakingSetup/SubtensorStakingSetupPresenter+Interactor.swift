@@ -125,8 +125,6 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
         requestPresetIfReady()
     }
 
-    func didReceiveClaimable(_: SubtensorRootClaimable?) {}
-
     func didReceiveBlockNumber(_: BlockNumber) {
         forceQuoteRefresh()
     }

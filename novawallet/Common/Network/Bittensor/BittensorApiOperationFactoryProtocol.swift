@@ -10,8 +10,6 @@ protocol BittensorApiOperationFactoryProtocol: AnyObject {
         netuid: UInt16
     ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.ValidatorCollection>>
 
-    func peekValidators(netuid: UInt16) -> HTTPCachePeek<BittensorApiResult<BittensorApi.ValidatorCollection>>
-
     func createAlphaYieldWrapper(
         netuid: UInt16,
         page: Int
