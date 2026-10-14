@@ -2,7 +2,7 @@ import Foundation
 import NovaAuth
 import Operation_iOS
 
-final class BittensorAuthorizedTransport: BittensorApiAdmittingTransportProtocol {
+final class BittensorAuthorizedTransport: BittensorApiTransportProtocol {
     private let provider: NovaAuthProvidingProtocol
     private let operationQueue: OperationQueue
 
@@ -46,19 +46,6 @@ final class BittensorAuthorizedTransport: BittensorApiAdmittingTransportProtocol
         }
         admission.addDependency(wrapper: endpointWrapper)
         return admission.insertingHead(operations: endpointWrapper.allOperations)
-    }
-
-    func createResponseWrapper(for request: BittensorApiRequest) -> CompoundOperationWrapper<BittensorApiRawResponse> {
-        let admission = createAdmissionWrapper()
-        let response = OperationCombiningService<BittensorApiRawResponse>.compoundNonOptionalWrapper(
-            operationQueue: operationQueue
-        ) { [self] in
-            try createResponseWrapper(
-                for: request, admission: admission.targetOperation.extractNoCancellableResultData()
-            )
-        }
-        response.addDependency(wrapper: admission)
-        return response.insertingHead(operations: admission.allOperations)
     }
 
     func createResponseWrapper(

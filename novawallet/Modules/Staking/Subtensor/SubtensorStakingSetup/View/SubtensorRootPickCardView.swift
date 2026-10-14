@@ -36,7 +36,7 @@ final class SubtensorRootPickCardView: UIView {
             apy: nil, isSelectable: false
         ))
         validatorCell.titleLabel.text = strings.stakingCommonValidator()
-        validatorCell.bind(validator: model.compactValidator, rate: model.compactRate, isEditable: true)
+        validatorCell.bind(validator: model.compactValidator, rate: nil, isEditable: true)
         feeCell.rowContentView.locale = locale
         feeCell.rowContentView.bind(viewModel: model.networkFee)
         browseButton.setTitle(strings.stakingSubtensorQuickSeeAll(), for: .normal)

@@ -7,7 +7,6 @@ enum SubtensorYieldServiceError: Error {
 
 final class SubtensorYieldService {
     static let alphaYieldPageLimit = 3
-    static let rootYieldPage = 1
 
     let apiOperationFactory: BittensorApiOperationFactoryProtocol
     let operationQueue: OperationQueue
@@ -72,22 +71,6 @@ extension SubtensorYieldService {
             isTruncated: pages.hasMorePages
         )
     }
-
-    static func makeRootYield(
-        from page: BittensorApiResult<BittensorApi.RootYieldCollection>
-    ) -> SubtensorReportedYield? {
-        guard let item = page.value.items.first else {
-            return nil
-        }
-
-        return SubtensorReportedYield(
-            reportedRate: item.reportedRate,
-            stamp: SubtensorBackendStamp(
-                component: page.value.meta.components.rootYield,
-                isFromExpiredCache: page.isFromExpiredCache
-            )
-        )
-    }
 }
 
 extension SubtensorYieldService: SubtensorYieldServiceProtocol {
@@ -126,13 +109,5 @@ extension SubtensorYieldService: SubtensorYieldServiceProtocol {
         )
 
         return pagesPeek.map { try Self.makeAlphaYields(netuid: netuid, pages: $0, logger: logger) }
-    }
-
-    func createRootYieldWrapper() -> CompoundOperationWrapper<SubtensorReportedYield?> {
-        .createWithResult(nil)
-    }
-
-    func cachedRootYield() -> HTTPCachePeek<SubtensorReportedYield?> {
-        .miss
     }
 }

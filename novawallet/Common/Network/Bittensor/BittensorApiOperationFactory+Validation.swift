@@ -3,7 +3,6 @@ import BigInt
 
 enum BittensorApiWireCheck {
     static let clientChecks: [BittensorApi.ClientCheck] = [.uid, .validatorPermit, .take, .lastUpdate]
-    static let rootYieldKind = "ROOT_AGGREGATE_APY"
     static let alphaYieldKind = "ALPHA_VALIDATOR_APY"
     static let historyScope = "TAO_APP_PARTIAL"
     static let maxScoreHundredths = BigUInt(10000)
@@ -99,18 +98,6 @@ extension BittensorApi.ValidatorCollection: BittensorApiWireChecked {
             for (name, value) in fields {
                 try BittensorApiWireCheck.decimal(value, "items[\(index)].reportedMeasurements.\(name)")
             }
-        }
-    }
-}
-
-extension BittensorApi.RootYieldCollection: BittensorApiWireChecked {
-    func validateWire() throws {
-        for (index, item) in items.enumerated() {
-            try BittensorApiWireCheck.require(item.metricKind == BittensorApiWireCheck.rootYieldKind) {
-                "items[\(index)].metricKind"
-            }
-            try BittensorApiWireCheck.decimal(item.reportedRate, "items[\(index)].reportedRate")
-            try BittensorApiWireCheck.decimal(item.reportedRootEmission, "items[\(index)].reportedRootEmission")
         }
     }
 }

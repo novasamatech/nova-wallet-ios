@@ -35,7 +35,6 @@ protocol SubnetPositionInteractorOutputProtocol: AnyObject {
     func didReceive(subnetsInfo: SubtensorSubnetsInfo?)
     func didReceive(subnetLogos: SubtensorSubnetLogos?)
     func didReceive(validator: SubtensorValidatorDirectoryItem?, for hotkey: AccountId)
-    func didReceive(rootRate: Decimal?)
     func didReceive(yields: SubtensorAlphaYields?)
     func didReceive(claimable: SubtensorRootClaimable?)
     func didReceiveClaimableFailure(_ isFailed: Bool)
@@ -55,6 +54,5 @@ protocol SubtensorPositionWireframeProtocol: AnyObject, MessageSheetPresentable,
 
 struct SubtensorPositionSnapshot {
     let catalogue: HTTPCachePeek<SubtensorSubnetCatalogue>
-    let rootRate: HTTPCachePeek<Decimal?>
     let yields: HTTPCachePeek<SubtensorAlphaYields>
 }

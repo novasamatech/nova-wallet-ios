@@ -22,7 +22,6 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
 
     private let quickPickCallStore = CancellableCallStore()
     private let validatorCallStore = CancellableCallStore()
-    private let rootYieldCallStore = CancellableCallStore()
     private let catalogueCallStore = CancellableCallStore()
     private let yieldsCallStore = CancellableCallStore()
     private let rankingCallStore = CancellableCallStore()
@@ -73,7 +72,6 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
     deinit {
         quickPickCallStore.cancel()
         validatorCallStore.cancel()
-        rootYieldCallStore.cancel()
         catalogueCallStore.cancel()
         yieldsCallStore.cancel()
         rankingCallStore.cancel()
@@ -135,10 +133,6 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
         yieldService.cachedAlphaYields(for: netuid)
     }
 
-    func cachedRootYield() -> HTTPCachePeek<SubtensorReportedYield?> {
-        yieldService.cachedRootYield()
-    }
-
     func presetValidator(on subnet: SubtensorSubnetRef, existingHotkey: AccountId?) {
         let wrapper = presetFactory.createPresetWrapper(for: subnet, existingHotkey: existingHotkey)
 
@@ -149,25 +143,6 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
         let wrapper = presetFactory.createLockedWrapper(for: hotkey, subnet: subnet)
 
         provideValidator(using: wrapper, subnet: subnet)
-    }
-
-    func loadRootYield() {
-        rootYieldCallStore.cancel()
-
-        executeCancellable(
-            wrapper: yieldService.createRootYieldWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: rootYieldCallStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(yield):
-                self?.presenter?.didReceiveRootYield(yield)
-            case let .failure(error):
-                self?.logger.warning("Subtensor root yield unavailable: \(error)")
-                self?.presenter?.didReceiveRootYield(nil)
-            }
-        }
     }
 
     func loadSubnet(netuid: UInt16) {

@@ -11,7 +11,6 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
     let eventCenter: EventCenterProtocol
     let applicationHandler: ApplicationHandlerProtocol
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
-    let yieldService: SubtensorYieldServiceProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
@@ -23,9 +22,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
     private var hasReportedAccountChange = false
     private var heldNetuids: Set<UInt16> = []
     private var forcedCatalogueNetuids: Set<UInt16> = []
-    private var seed = SubtensorPortfolioSnapshot(catalogue: .miss, rootRate: .miss)
     private let catalogueStore = CancellableCallStore()
-    private let rootRateStore = CancellableCallStore()
     private let logosStore = CancellableCallStore()
     private let weeklyChangesStore = CancellableCallStore()
 
@@ -40,7 +37,6 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
         eventCenter: EventCenterProtocol,
         applicationHandler: ApplicationHandlerProtocol,
         catalogueService: SubtensorSubnetCatalogueServiceProtocol,
-        yieldService: SubtensorYieldServiceProtocol,
         subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
         priceHistoryService: SubtensorPriceHistoryServiceProtocol?,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
@@ -55,7 +51,6 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
         self.eventCenter = eventCenter
         self.applicationHandler = applicationHandler
         self.catalogueService = catalogueService
-        self.yieldService = yieldService
         self.subnetLogosProvider = subnetLogosProvider
         self.priceHistoryService = priceHistoryService
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
@@ -73,7 +68,6 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
 
     deinit {
         catalogueStore.cancel()
-        rootRateStore.cancel()
         logosStore.cancel()
         weeklyChangesStore.cancel()
         state.positionsSyncService?.remove(observer: self)
@@ -85,12 +79,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
 
 extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
     func cachedSnapshot() -> SubtensorPortfolioSnapshot {
-        seed = SubtensorPortfolioSnapshot(
-            catalogue: catalogueService.cachedCatalogue(),
-            rootRate: yieldService.cachedRootYield().map { $0?.annualRate }
-        )
-
-        return seed
+        SubtensorPortfolioSnapshot(catalogue: catalogueService.cachedCatalogue())
     }
 
     func setup() {
@@ -99,11 +88,6 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
         provideCatalogue()
         subscribePositions()
         subscribePrice()
-
-        if !seed.rootRate.isFresh {
-            provideRootRate()
-        }
-
         provideSubnetLogos()
 
         eventCenter.add(observer: self, dispatchIn: .main)
@@ -245,23 +229,6 @@ private extension SubtensorPortfolioInteractor {
 
         forcedCatalogueNetuids.formUnion(missingNetuids)
         provideCatalogue()
-    }
-
-    func provideRootRate() {
-        executeCancellable(
-            wrapper: yieldService.createRootYieldWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: rootRateStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(yield):
-                self?.presenter?.didReceive(rootRate: yield?.annualRate)
-            case let .failure(error):
-                self?.logger.warning("Bittensor portfolio root rate unavailable: \(error)")
-                self?.presenter?.didReceive(rootRate: nil)
-            }
-        }
     }
 
     func provideSubnetLogos() {
