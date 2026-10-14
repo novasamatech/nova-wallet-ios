@@ -4,13 +4,12 @@ import Operation_iOS
 final class SubtensorCostBasisService {
     typealias Completion = (Result<SubtensorCostBasis, Error>) -> Void
 
-    static let defaultMemoLifetime: TimeInterval = 900
+    static let memoLifetime: TimeInterval = 900
     static let ownTradeSettleTime: TimeInterval = 300
 
     let apiOperationFactory: BittensorApiOperationFactoryProtocol
     let operationQueue: OperationQueue
     let walkSettings: SubtensorCostBasisWalk.Settings
-    let memoLifetime: TimeInterval
     let timeProvider: () -> TimeInterval
     let logger: LoggerProtocol
 
@@ -23,14 +22,12 @@ final class SubtensorCostBasisService {
         operationQueue: OperationQueue,
         eventCenter: EventCenterProtocol,
         walkSettings: SubtensorCostBasisWalk.Settings = .standard,
-        memoLifetime: TimeInterval = SubtensorCostBasisService.defaultMemoLifetime,
         timeProvider: @escaping () -> TimeInterval = BittensorMonotonicClock.now,
         logger: LoggerProtocol = Logger.shared
     ) {
         self.apiOperationFactory = apiOperationFactory
         self.operationQueue = operationQueue
         self.walkSettings = walkSettings
-        self.memoLifetime = memoLifetime
         self.timeProvider = timeProvider
         self.logger = logger
 
@@ -73,12 +70,12 @@ extension SubtensorCostBasisService: SubtensorCostBasisServiceProtocol {
 
         guard
             let memo,
-            timeProvider() - memo.resolvedAt < memoLifetime,
+            timeProvider() - memo.resolvedAt < Self.memoLifetime,
             let costBasis = try? memo.ledger.costBasis(for: netuid) else {
             return .miss
         }
 
-        return .fresh(costBasis, freshUntil: memo.resolvedAt + memoLifetime)
+        return .fresh(costBasis, freshUntil: memo.resolvedAt + Self.memoLifetime)
     }
 }
 
@@ -168,7 +165,7 @@ private extension SubtensorCostBasisService {
 
         var history = histories[accountId] ?? AccountHistory()
 
-        if let memo = history.memo, timeProvider() - memo.resolvedAt < memoLifetime {
+        if let memo = history.memo, timeProvider() - memo.resolvedAt < Self.memoLifetime {
             mutex.unlock()
 
             completion(delivery(Result { try memo.ledger.costBasis(for: netuid) }, generation: generation))

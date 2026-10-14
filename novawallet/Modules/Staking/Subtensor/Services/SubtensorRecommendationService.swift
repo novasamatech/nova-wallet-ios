@@ -20,12 +20,6 @@ final class SubtensorRecommendationService {
     }
 }
 
-extension SubtensorRecommendationGeneration {
-    func shownAge(at now: TimeInterval = BittensorMonotonicClock.now()) -> TimeInterval {
-        TimeInterval(ageSeconds) + max(0, now - receivedAt)
-    }
-}
-
 extension SubtensorRankedSubnets {
     func subnet(for netuid: UInt16) -> SubtensorRankedSubnet? {
         items.first { $0.netuid == netuid }

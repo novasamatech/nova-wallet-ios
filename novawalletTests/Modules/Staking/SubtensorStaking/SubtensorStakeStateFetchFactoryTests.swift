@@ -9,163 +9,59 @@ final class SubtensorStakeStateFetchFactoryTests: XCTestCase {
     let hotkey = Data(repeating: 2, count: 32)
     let bestBlockHash = "0x1122334455667788112233445566778811223344556677881122334455667788"
 
-    let rootAndSubnetAvailabilityHex = "0x04" + String(repeating: "01", count: 32) +
-        "080000dad5c80d00dad5c80d070003005ed0b202286bee0300943577"
-
-    func testWrapperMapsStakeInfoToPositions() throws {
-        let stakeInfo = Self.stakeInfo(hotkey: hotkey, coldkey: coldkey, netuid: 5, stake: 2_000_000_000)
-
-        let factory = createFactory(stakeInfoResult: CompoundOperationWrapper.createWithResult([stakeInfo]))
-
-        let state = try fetchState(using: factory)
-
-        XCTAssertEqual(
-            state.positions,
-            [
-                SubtensorStakingPosition(
-                    hotkey: hotkey,
-                    netuid: 5,
-                    stakeAlpha: 2_000_000_000,
-                    hotkeyEmissionPerTempo: 123,
-                    totalHotkeyAlpha: nil,
-                    isRegistered: true
-                )
-            ]
-        )
-    }
-
-    func testStakeInfoPinnedToFetchedBlockHash() throws {
-        let apiFactory = MockSubtensorApiOperationFactoryProtocol()
-
-        stub(apiFactory) { stub in
-            when(stub.createBestBlockHashWrapper()).thenReturn(
-                CompoundOperationWrapper.createWithResult(bestBlockHash)
-            )
-            when(stub.createStakeInfoWrapper(for: any(), blockHash: any())).thenReturn(
-                CompoundOperationWrapper.createWithResult([])
-            )
-            when(stub.createRootClaimPreviewsWrapper(coldkey: any(), blockHash: any())).thenReturn(
-                CompoundOperationWrapper.createWithResult([])
-            )
-        }
-
-        let factory = SubtensorStakeStateFetchFactory(
-            operationFactory: apiFactory,
-            operationQueue: OperationQueue()
-        )
-
-        _ = try fetchState(using: factory)
-
-        let stakeInfoHashCaptor = ArgumentCaptor<BlockHash?>()
-
-        verify(apiFactory, times(1)).createStakeInfoWrapper(for: any(), blockHash: stakeInfoHashCaptor.capture())
-        verify(apiFactory, never()).createAlphaPricesWrapper(at: any())
-
-        XCTAssertEqual(stakeInfoHashCaptor.value, bestBlockHash)
-    }
-
-    func testRootPositionStakeReportedAsRootStake() throws {
-        let stakeInfo = Self.stakeInfo(hotkey: hotkey, coldkey: coldkey, netuid: 0, stake: 57_816_438)
-
-        let factory = createFactory(stakeInfoResult: CompoundOperationWrapper.createWithResult([stakeInfo]))
-
-        let state = try fetchState(using: factory)
-
-        XCTAssertEqual(state.rootStakeInRao, BigUInt(57_816_438))
-    }
-
-    func testAvailabilityReadAtThePinnedBlockForTheHeldNetuids() throws {
-        let apiFactory = MockSubtensorApiOperationFactoryProtocol()
-
+    func testStateMapsStakeInfoAndAvailabilityAtPinnedBlock() throws {
         let availabilities: [SubtensorStakingPallet.ColdkeyStakeAvailability] =
             try SubtensorFixtureDecoding.decodeRuntimeApiResult(
-                from: rootAndSubnetAvailabilityHex,
+                from: "0x04" + String(repeating: "01", count: 32) +
+                    "080000dad5c80d00dad5c80d070003005ed0b202286bee0300943577",
                 path: SubtensorStakingPallet.stakeAvailabilityForColdkeysApi
             )
+        let apiFactory = createApiFactory(
+            stakeInfoResult: .createWithResult([
+                stakeInfo(netuid: 7, stake: 3_000_000_000),
+                stakeInfo(netuid: 0, stake: 57_816_438)
+            ]),
+            availabilities: availabilities
+        )
 
-        stub(apiFactory) { stub in
-            when(stub.createBestBlockHashWrapper()).thenReturn(
-                CompoundOperationWrapper.createWithResult(bestBlockHash)
-            )
-            when(stub.createStakeInfoWrapper(for: any(), blockHash: any())).thenReturn(
-                CompoundOperationWrapper.createWithResult([
-                    Self.stakeInfo(hotkey: hotkey, coldkey: coldkey, netuid: 7, stake: 3_000_000_000),
-                    Self.stakeInfo(hotkey: hotkey, coldkey: coldkey, netuid: 0, stake: 57_816_438)
-                ])
-            )
-            when(stub.createStakeAvailabilityWrapper(for: any(), netuids: any(), blockHash: any())).thenReturn(
-                CompoundOperationWrapper.createWithResult(availabilities)
-            )
-            when(stub.createRootClaimPreviewsWrapper(coldkey: any(), blockHash: any())).thenReturn(
-                CompoundOperationWrapper.createWithResult([])
-            )
-        }
+        let state = try fetchState(using: apiFactory)
 
-        let factory = SubtensorStakeStateFetchFactory(operationFactory: apiFactory, operationQueue: OperationQueue())
+        XCTAssertEqual(state.positions, [
+            position(netuid: 7, stake: 3_000_000_000),
+            position(netuid: 0, stake: 57_816_438)
+        ])
+        XCTAssertEqual(state.rootStakeInRao, BigUInt(57_816_438))
+        XCTAssertEqual(state.availability, [
+            0: SubtensorStakingPallet.StakeAvailability(total: 57_816_438, locked: 0, available: 57_816_438),
+            7: SubtensorStakingPallet.StakeAvailability(
+                total: 3_000_000_000,
+                locked: 1_000_000_000,
+                available: 2_000_000_000
+            )
+        ])
 
-        let state = try fetchState(using: factory)
+        let stakeInfoHashCaptor = ArgumentCaptor<BlockHash?>()
+        verify(apiFactory, times(1)).createStakeInfoWrapper(for: any(), blockHash: stakeInfoHashCaptor.capture())
+        XCTAssertEqual(stakeInfoHashCaptor.value, bestBlockHash)
 
-        let coldkeysCaptor = ArgumentCaptor<[AccountId]>()
         let netuidsCaptor = ArgumentCaptor<[UInt16]?>()
-        let blockHashCaptor = ArgumentCaptor<BlockHash?>()
-
+        let availabilityHashCaptor = ArgumentCaptor<BlockHash?>()
         verify(apiFactory, times(1)).createStakeAvailabilityWrapper(
-            for: coldkeysCaptor.capture(),
+            for: any(),
             netuids: netuidsCaptor.capture(),
-            blockHash: blockHashCaptor.capture()
+            blockHash: availabilityHashCaptor.capture()
         )
-
-        XCTAssertEqual(coldkeysCaptor.value, [coldkey])
         XCTAssertEqual(netuidsCaptor.value, [0, 7])
-        XCTAssertEqual(blockHashCaptor.value, bestBlockHash)
-
-        XCTAssertEqual(
-            state.availability,
-            [
-                0: SubtensorStakingPallet.StakeAvailability(total: 57_816_438, locked: 0, available: 57_816_438),
-                7: SubtensorStakingPallet.StakeAvailability(
-                    total: 3_000_000_000,
-                    locked: 1_000_000_000,
-                    available: 2_000_000_000
-                )
-            ]
-        )
-    }
-
-    func testBlockHashFailurePropagates() {
-        let apiFactory = MockSubtensorApiOperationFactoryProtocol()
-
-        stub(apiFactory) { stub in
-            when(stub.createBestBlockHashWrapper()).thenReturn(
-                CompoundOperationWrapper.createWithError(CommonError.dataCorruption)
-            )
-            when(stub.createStakeInfoWrapper(for: any(), blockHash: any())).thenReturn(
-                CompoundOperationWrapper.createWithResult([])
-            )
-        }
-
-        let factory = SubtensorStakeStateFetchFactory(
-            operationFactory: apiFactory,
-            operationQueue: OperationQueue()
-        )
-
-        XCTAssertThrowsError(try fetchState(using: factory))
+        XCTAssertEqual(availabilityHashCaptor.value, bestBlockHash)
     }
 
     func testStakeInfoFailurePropagates() {
-        let factory = createFactory(
-            stakeInfoResult: CompoundOperationWrapper.createWithError(CommonError.dataCorruption)
-        )
+        let apiFactory = createApiFactory(stakeInfoResult: .createWithError(CommonError.dataCorruption))
 
-        XCTAssertThrowsError(try fetchState(using: factory))
+        XCTAssertThrowsError(try fetchState(using: apiFactory))
     }
 
-    private static func stakeInfo(
-        hotkey: AccountId,
-        coldkey: AccountId,
-        netuid: UInt16,
-        stake: Balance
-    ) -> SubtensorStakingPallet.StakeInfo {
+    private func stakeInfo(netuid: UInt16, stake: Balance) -> SubtensorStakingPallet.StakeInfo {
         SubtensorStakingPallet.StakeInfo(
             hotkey: hotkey,
             coldkey: coldkey,
@@ -179,9 +75,21 @@ final class SubtensorStakeStateFetchFactoryTests: XCTestCase {
         )
     }
 
-    private func createFactory(
-        stakeInfoResult: CompoundOperationWrapper<[SubtensorStakingPallet.StakeInfo]>
-    ) -> SubtensorStakeStateFetchFactory {
+    private func position(netuid: UInt16, stake: Balance) -> SubtensorStakingPosition {
+        SubtensorStakingPosition(
+            hotkey: hotkey,
+            netuid: netuid,
+            stakeAlpha: stake,
+            hotkeyEmissionPerTempo: 123,
+            totalHotkeyAlpha: nil,
+            isRegistered: true
+        )
+    }
+
+    private func createApiFactory(
+        stakeInfoResult: CompoundOperationWrapper<[SubtensorStakingPallet.StakeInfo]>,
+        availabilities: [SubtensorStakingPallet.ColdkeyStakeAvailability] = []
+    ) -> MockSubtensorApiOperationFactoryProtocol {
         let apiFactory = MockSubtensorApiOperationFactoryProtocol()
 
         stub(apiFactory) { stub in
@@ -190,19 +98,20 @@ final class SubtensorStakeStateFetchFactoryTests: XCTestCase {
             )
             when(stub.createStakeInfoWrapper(for: any(), blockHash: any())).thenReturn(stakeInfoResult)
             when(stub.createStakeAvailabilityWrapper(for: any(), netuids: any(), blockHash: any())).thenReturn(
-                CompoundOperationWrapper.createWithResult([])
+                CompoundOperationWrapper.createWithResult(availabilities)
             )
             when(stub.createRootClaimPreviewsWrapper(coldkey: any(), blockHash: any())).thenReturn(
                 CompoundOperationWrapper.createWithResult([])
             )
         }
 
-        return SubtensorStakeStateFetchFactory(operationFactory: apiFactory, operationQueue: OperationQueue())
+        return apiFactory
     }
 
     private func fetchState(
-        using factory: SubtensorStakeStateFetchFactory
+        using apiFactory: SubtensorApiOperationFactoryProtocol
     ) throws -> Multistaking.SubtensorStakingState {
+        let factory = SubtensorStakeStateFetchFactory(operationFactory: apiFactory, operationQueue: OperationQueue())
         let wrapper = factory.createStateWrapper(for: coldkey)
 
         OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)

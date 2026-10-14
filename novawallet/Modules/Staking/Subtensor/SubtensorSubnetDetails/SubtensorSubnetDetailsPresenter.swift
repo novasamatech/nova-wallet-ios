@@ -13,7 +13,6 @@ final class SubtensorSubnetDetailsPresenter {
     let earnSettings: SubtensorEarnSettingsProtocol
     let logger: LoggerProtocol
 
-    private let now: () -> Date
     private var chartEndDate: Date
     private var isFiat = false
     private var period = SubtensorPriceWidgetViewModelFactory.defaultPeriod
@@ -44,11 +43,9 @@ final class SubtensorSubnetDetailsPresenter {
         viewModelFactory: SubnetDetailsViewModelFactoryProtocol,
         earnSettings: SubtensorEarnSettingsProtocol,
         localizationManager: LocalizationManagerProtocol,
-        logger: LoggerProtocol,
-        now: @escaping () -> Date = Date.init
+        logger: LoggerProtocol
     ) {
-        self.now = now
-        chartEndDate = now()
+        chartEndDate = Date()
         self.input = input
         self.host = host
         self.selectionDelegate = selectionDelegate
@@ -92,7 +89,7 @@ private extension SubtensorSubnetDetailsPresenter {
             yields: yields,
             taoPrice: taoPrice,
             isFavorite: isFavorite,
-            now: now(),
+            now: Date(),
             chartEndDate: chartEndDate,
             chartSelection: chartSelection
         )
@@ -255,7 +252,7 @@ extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol
             return
         }
 
-        chartEndDate = now()
+        chartEndDate = Date()
 
         switch result {
         case let .available(value):

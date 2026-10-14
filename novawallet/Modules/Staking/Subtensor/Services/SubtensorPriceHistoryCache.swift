@@ -16,14 +16,8 @@ protocol SubtensorPriceHistoryCaching: AnyObject {
 }
 
 final class SubtensorPriceHistoryCache {
-    let timeProvider: () -> Date
-
     private let mutex = NSLock()
     private var entries: [Key: SubtensorPriceHistoryEntry] = [:]
-
-    init(timeProvider: @escaping () -> Date = { Date() }) {
-        self.timeProvider = timeProvider
-    }
 }
 
 private extension SubtensorPriceHistoryCache {
@@ -48,7 +42,7 @@ extension SubtensorPriceHistoryCache: SubtensorPriceHistoryCaching {
 
         let key = Key(subnet: subnet, period: period, currencyId: currency.id)
 
-        guard let entry = entries[key], timeProvider() < entry.expiresAt else {
+        guard let entry = entries[key], Date() < entry.expiresAt else {
             entries[key] = nil
             return nil
         }
@@ -68,7 +62,7 @@ extension SubtensorPriceHistoryCache: SubtensorPriceHistoryCaching {
             mutex.unlock()
         }
 
-        let now = timeProvider()
+        let now = Date()
 
         entries = entries.filter { now < $0.value.expiresAt }
         entries[Key(subnet: subnet, period: period, currencyId: currency.id)] = entry

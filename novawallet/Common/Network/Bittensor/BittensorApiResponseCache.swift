@@ -78,7 +78,6 @@ final class BittensorApiResponseCache {
     static let datasetUnavailableLifetime: TimeInterval = 60
 
     private let operationQueue: OperationQueue
-    private let timeProvider: () -> TimeInterval
     private let mutex = NSLock()
     private var entries: [ScopedKey: BittensorApiCacheEntry] = [:]
     private var flights: [ScopedKey: Flight] = [:]
@@ -87,12 +86,8 @@ final class BittensorApiResponseCache {
     private var minimumInvalidationRevision: UInt64 = 0
     private var newestGeneration: BittensorApiGenerationOrder?
 
-    init(
-        operationQueue: OperationQueue,
-        timeProvider: @escaping () -> TimeInterval = BittensorMonotonicClock.now
-    ) {
+    init(operationQueue: OperationQueue) {
         self.operationQueue = operationQueue
-        self.timeProvider = timeProvider
     }
 
     func invalidate(before revision: UInt64) {
@@ -169,7 +164,9 @@ private extension BittensorApiResponseCache {
             newestGeneration = nil
         }
         let negativeKeys: [NegativeKey] = [.route(scope, job.routeKey.method, job.routeKey.pathTemplate), .request(key)]
-        if let negative = negativeKeys.compactMap({ negatives[$0] }).first(where: { timeProvider() < $0.expiresAt }) {
+        if let negative = negativeKeys.compactMap({ negatives[$0] }).first(where: {
+            BittensorMonotonicClock.now() < $0.expiresAt
+        }) {
             mutex.unlock()
             completion(.failure(negative.error))
             return
@@ -219,7 +216,7 @@ private extension BittensorApiResponseCache {
                     newestGeneration = generation
                 }
                 let entry = BittensorApiCacheEntry(
-                    value: fetched.value, requestId: fetched.requestId, receivedAt: timeProvider(),
+                    value: fetched.value, requestId: fetched.requestId, receivedAt: BittensorMonotonicClock.now(),
                     generation: fetched.generation, newestGenerationWhenAccepted: newestGeneration
                 )
                 entries[key] = entry
@@ -229,11 +226,11 @@ private extension BittensorApiResponseCache {
                 switch error {
                 case .routeNotPublished:
                     negatives[.route(key.scope, job.routeKey.method, job.routeKey.pathTemplate)] = NegativeEntry(
-                        error: error, expiresAt: timeProvider() + Self.routeNotPublishedLifetime
+                        error: error, expiresAt: BittensorMonotonicClock.now() + Self.routeNotPublishedLifetime
                     )
                 case .datasetUnavailable:
                     negatives[.request(key)] = NegativeEntry(
-                        error: error, expiresAt: timeProvider() + Self.datasetUnavailableLifetime
+                        error: error, expiresAt: BittensorMonotonicClock.now() + Self.datasetUnavailableLifetime
                     )
                 default: break
                 }
