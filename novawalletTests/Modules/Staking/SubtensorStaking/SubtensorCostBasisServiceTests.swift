@@ -171,14 +171,7 @@ final class SubtensorCostBasisServiceTests: XCTestCase {
     }
 
     private func run<T>(_ wrapper: CompoundOperationWrapper<T>) throws -> T {
-        let completed = expectation(description: "wrapper completed")
-        wrapper.targetOperation.completionBlock = {
-            completed.fulfill()
-        }
-
-        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: false)
-        wait(for: [completed], timeout: 10)
-
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
         return try wrapper.targetOperation.extractNoCancellableResultData()
     }
 }

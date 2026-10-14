@@ -7,9 +7,9 @@ import Cuckoo
 final class SubtensorSubnetsServiceTests: XCTestCase {
     func testFetchMergesSubnetsPricesAndSubtokenEnabled() throws {
         let subnets = [
-            makeDynamicInfo(netuid: 0, name: "root"),
-            makeDynamicInfo(netuid: 1, name: "Apex"),
-            makeDynamicInfo(netuid: 5, name: "OpenKaito")
+            generateDynamicInfo(netuid: 0, name: "root"),
+            generateDynamicInfo(netuid: 1, name: "Apex"),
+            generateDynamicInfo(netuid: 5, name: "OpenKaito")
         ]
 
         let prices = [
@@ -19,7 +19,7 @@ final class SubtensorSubnetsServiceTests: XCTestCase {
         ]
 
         let service = createService(
-            apiFactory: makeApiFactory(subnets: subnets, prices: prices, subtokenEnabled: [1, 5])
+            apiFactory: createApiFactory(subnets: subnets, prices: prices, subtokenEnabled: [1, 5])
         )
 
         let info = try fetchInfo(using: service)
@@ -30,8 +30,8 @@ final class SubtensorSubnetsServiceTests: XCTestCase {
     }
 
     func testSubtokenEnabledFailureFailsFetch() {
-        let apiFactory = makeApiFactory(
-            subnets: [makeDynamicInfo(netuid: 1, name: "Apex")],
+        let apiFactory = createApiFactory(
+            subnets: [generateDynamicInfo(netuid: 1, name: "Apex")],
             prices: [],
             subtokenEnabled: [1]
         )
@@ -46,9 +46,9 @@ final class SubtensorSubnetsServiceTests: XCTestCase {
     }
 
     func testSecondFetchWithinSessionServesCacheUntilForcedRefresh() throws {
-        let apex = makeDynamicInfo(netuid: 1, name: "Apex")
-        let chutes = makeDynamicInfo(netuid: 64, name: "Chutes")
-        let apiFactory = makeApiFactory(subnets: [apex], prices: [], subtokenEnabled: [1])
+        let apex = generateDynamicInfo(netuid: 1, name: "Apex")
+        let chutes = generateDynamicInfo(netuid: 64, name: "Chutes")
+        let apiFactory = createApiFactory(subnets: [apex], prices: [], subtokenEnabled: [1])
         let service = createService(apiFactory: apiFactory)
 
         let firstInfo = try fetchInfo(using: service)
@@ -67,7 +67,7 @@ final class SubtensorSubnetsServiceTests: XCTestCase {
         verify(apiFactory, times(2)).createAllDynamicInfoWrapper(at: any())
     }
 
-    private func makeDynamicInfo(netuid: UInt16, name: String) -> SubtensorStakingPallet.DynamicInfo {
+    private func generateDynamicInfo(netuid: UInt16, name: String) -> SubtensorStakingPallet.DynamicInfo {
         SubtensorStakingPallet.DynamicInfo(
             netuid: netuid,
             ownerHotkey: Data(repeating: 0, count: 32),
@@ -93,7 +93,7 @@ final class SubtensorSubnetsServiceTests: XCTestCase {
         )
     }
 
-    private func makeApiFactory(
+    private func createApiFactory(
         subnets: [SubtensorStakingPallet.DynamicInfo?],
         prices: [SubtensorStakingPallet.SubnetPrice],
         subtokenEnabled: Set<UInt16>
