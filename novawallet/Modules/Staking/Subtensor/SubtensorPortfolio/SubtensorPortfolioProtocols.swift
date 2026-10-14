@@ -17,7 +17,7 @@ protocol SubtensorPortfolioPresenterProtocol: AnyObject {
 protocol SubnetPortfolioInteractorInputProtocol: AnyObject {
     func setup()
     func refresh()
-    func loadHistories(for period: SubtensorPricePeriod, subnets: [SubtensorSubnetRef])
+    func loadHistories(for period: SubtensorPricePeriod)
     func loadWeeklyChanges(for subnets: [SubtensorSubnetRef])
 }
 

@@ -6,7 +6,7 @@ protocol SubnetPortfolioViewModelFactoryProtocol: SubnetPortfolioChartFactoryPro
 }
 
 final class SubtensorPortfolioViewModelFactory {
-    static let periods: [SubtensorPricePeriod] = [.day, .week, .month, .year, .all]
+    static let periods: [SubtensorPricePeriod] = [.day, .week, .month, .quarter]
     static let defaultPeriod = SubtensorPricePeriod.month
 
     let chainAsset: ChainAsset
@@ -98,7 +98,7 @@ private extension SubtensorPortfolioViewModelFactory {
         case .month:
             return strings.commonPeriod30d().uppercased(with: locale)
         case .quarter:
-            return strings.commonPeriod3m().uppercased(with: locale)
+            return strings.commonPeriod90d().uppercased(with: locale)
         case .year:
             return strings.commonPeriod1y().uppercased(with: locale)
         case .all:
@@ -320,7 +320,7 @@ extension SubtensorPortfolioViewModelFactory: SubnetPortfolioViewModelFactoryPro
             return SubtensorPortfolioViewModel(
                 content: .empty(createEmpty(for: state, locale: locale)),
                 isSyncFailed: state.isSyncFailed,
-                isRatesUnavailable: true
+                isRatesUnavailable: false
             )
         }
 
@@ -330,14 +330,12 @@ extension SubtensorPortfolioViewModelFactory: SubnetPortfolioViewModelFactoryPro
                 : createSubnetRow(for: group, state: state, locale: locale)
         }
 
-        let isRootRateUnavailable = groups.contains { $0.netuid == SubtensorStakingPallet.rootNetuid }
-
         let selection = createSelection(for: portfolio, state: state, locale: locale)
 
         return SubtensorPortfolioViewModel(
             content: .positions(header: createHeader(for: selection, state: state, locale: locale), rows: rows),
             isSyncFailed: state.isSyncFailed,
-            isRatesUnavailable: state.isCatalogueUnavailable || isRootRateUnavailable
+            isRatesUnavailable: state.isCatalogueUnavailable
         )
     }
 

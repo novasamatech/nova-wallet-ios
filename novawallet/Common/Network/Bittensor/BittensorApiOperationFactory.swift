@@ -85,6 +85,18 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
         createSearchWrapper(route: .operations, accountSubject: accountSubject, page: page)
     }
 
+    func createPortfolioHistoryWrapper(
+        accountSubject: AccountAddress,
+        period: BittensorApi.PortfolioHistoryPeriod
+    ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.PortfolioHistoryCollection>> {
+        createSearchWrapper(
+            route: .portfolioHistory,
+            accountSubject: accountSubject,
+            page: nil,
+            queryItems: [URLQueryItem(name: "period", value: period.rawValue)]
+        )
+    }
+
     func createRecommendationsWrapper()
         -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RecommendationCollection>> {
         createWrapper(route: .recommendations, path: "/recommendations")
@@ -106,6 +118,7 @@ private extension BittensorApiOperationFactory {
         case validators
         case alphaYield
         case operations
+        case portfolioHistory
         case recommendations
         case rankedSubnets
 
@@ -119,6 +132,8 @@ private extension BittensorApiOperationFactory {
                 return "/subnets/{netuid}/yields/alpha"
             case .operations:
                 return "/operations/search"
+            case .portfolioHistory:
+                return "/portfolio/history/search"
             case .recommendations:
                 return "/recommendations"
             case .rankedSubnets:
@@ -157,7 +172,8 @@ private extension BittensorApiOperationFactory {
     func createSearchWrapper<T: Decodable & BittensorApiWireChecked>(
         route: Route,
         accountSubject: AccountAddress,
-        page: Int?
+        page: Int?,
+        queryItems: [URLQueryItem] = []
     ) -> CompoundOperationWrapper<BittensorApiResult<T>> {
         guard Self.isValidAccountSubject(accountSubject), page.map(Self.pageRange.contains) ?? true else {
             return .createWithError(BittensorApiError.invalidRequest(code: nil, requestId: nil))
@@ -169,7 +185,7 @@ private extension BittensorApiOperationFactory {
         return createWrapper(
             route: route,
             path: route.pathTemplate,
-            queryItems: [subjectItem] + pageItems,
+            queryItems: [subjectItem] + pageItems + queryItems,
             accountDigest: Data(accountSubject.utf8).sha256()
         )
     }
