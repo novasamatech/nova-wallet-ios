@@ -139,9 +139,7 @@ final class SubtensorCostBasisServiceTests: XCTestCase {
                 components: BittensorApi.OperationCollection.Components(
                     operationHistory: BittensorApi.AvailableComponent(
                         asOf: Date(timeIntervalSince1970: 1_790_000_000),
-                        freshness: .fresh,
-                        valueQuality: .reported,
-                        sourceClass: .primary
+                        freshness: .fresh
                     )
                 )
             )

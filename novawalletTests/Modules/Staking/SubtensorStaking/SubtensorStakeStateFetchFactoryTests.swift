@@ -67,10 +67,7 @@ final class SubtensorStakeStateFetchFactoryTests: XCTestCase {
             coldkey: coldkey,
             netuid: netuid,
             stake: stake,
-            locked: 0,
             emission: 123,
-            taoEmission: 0,
-            drain: 0,
             isRegistered: true
         )
     }

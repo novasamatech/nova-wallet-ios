@@ -23,7 +23,7 @@ final class SubtensorMaxApyWalk {
     private var completion: Completion?
     private var currentCall: CancellableCall?
     private var isCancelled = false
-    private var pairs: [SubtensorRecommendedPair] = []
+    private var pairs: [SubtensorHotkeySubnet] = []
     private var targets: [Target] = []
     private var alphaPages: [BittensorApiResult<BittensorApi.AlphaYieldCollection>] = []
     private var nextPage = 1
@@ -84,7 +84,7 @@ private extension SubtensorMaxApyWalk {
         let hotkeys: Set<AccountId>
     }
 
-    static func targets(for pairs: [SubtensorRecommendedPair]) -> [Target] {
+    static func targets(for pairs: [SubtensorHotkeySubnet]) -> [Target] {
         let rootNetuid = SubtensorStakingPallet.rootNetuid
 
         let hotkeysByNetuid = Dictionary(grouping: pairs.filter { $0.netuid != rootNetuid }, by: \.netuid)
@@ -196,7 +196,7 @@ private extension SubtensorMaxApyWalk {
 
         var walkError: Error?
 
-        switch Self.unexpired(result) {
+        switch Self.unexpired(result.flatMap(SubtensorYieldService.validated)) {
         case let .success(pageResult):
             pace(afterReceivingAt: pageResult.receivedAt, requestedAt: requestedAt)
             alphaPages.append(pageResult)

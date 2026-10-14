@@ -47,8 +47,7 @@ final class SubtensorQuoteOperationFactoryTests: XCTestCase {
         let sim = generateSim(
             taoAmount: 998_912_946,
             alphaAmount: 130_016_902_511,
-            alphaFee: 65_502_698,
-            taoSlippage: 543_368
+            alphaFee: 65_502_698
         )
         let args = SubtensorQuoteArgs(netuid: netuid, direction: .unstake(alphaIn: 130_082_405_209))
         let apiFactory = createApiFactory(sim: sim)
@@ -87,16 +86,13 @@ final class SubtensorQuoteOperationFactoryTests: XCTestCase {
         taoAmount: Balance = 0,
         alphaAmount: Balance = 0,
         taoFee: Balance = 0,
-        alphaFee: Balance = 0,
-        taoSlippage: Balance = 0
+        alphaFee: Balance = 0
     ) -> SubtensorStakingPallet.SimSwapResult {
         SubtensorStakingPallet.SimSwapResult(
             taoAmount: taoAmount,
             alphaAmount: alphaAmount,
             taoFee: taoFee,
-            alphaFee: alphaFee,
-            taoSlippage: taoSlippage,
-            alphaSlippage: 0
+            alphaFee: alphaFee
         )
     }
 

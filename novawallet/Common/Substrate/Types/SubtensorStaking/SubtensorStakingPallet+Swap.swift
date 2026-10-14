@@ -13,7 +13,5 @@ extension SubtensorStakingPallet {
         @StringCodable var alphaAmount: Balance
         @StringCodable var taoFee: Balance
         @StringCodable var alphaFee: Balance
-        @StringCodable var taoSlippage: Balance
-        @StringCodable var alphaSlippage: Balance
     }
 }

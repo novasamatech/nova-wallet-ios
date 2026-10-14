@@ -34,14 +34,6 @@ extension SubtensorStakingPallet {
         StateCallPath(module: swapApiName, method: "sim_swap_alpha_for_tao")
     }
 
-    static var rootBasketOwedApi: StateCallPath {
-        StateCallPath(module: betaBasketApiName, method: "get_root_basket_owed")
-    }
-
-    static var rootBasketPositionsApi: StateCallPath {
-        StateCallPath(module: betaBasketApiName, method: "get_root_basket_positions")
-    }
-
     static var rootBasketClaimPreviewsApi: StateCallPath {
         StateCallPath(module: betaBasketApiName, method: "get_root_basket_claim_previews")
     }
