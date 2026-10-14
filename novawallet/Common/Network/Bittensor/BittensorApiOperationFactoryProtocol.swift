@@ -46,6 +46,10 @@ protocol BittensorApiOperationFactoryProtocol: AnyObject {
         -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.SubnetRankingCollection>>
 
     func peekRankedSubnets() -> HTTPCachePeek<BittensorApiResult<BittensorApi.SubnetRankingCollection>>
+
+    func createRankedValidatorsWrapper(
+        netuid: UInt16
+    ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RankedValidatorCollection>>
 }
 
 struct BittensorApiResult<T> {

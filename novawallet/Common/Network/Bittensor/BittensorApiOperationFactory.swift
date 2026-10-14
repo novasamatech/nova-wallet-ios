@@ -127,6 +127,12 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
     func peekRankedSubnets() -> HTTPCachePeek<BittensorApiResult<BittensorApi.SubnetRankingCollection>> {
         peek(path: "/recommendations/subnets")
     }
+
+    func createRankedValidatorsWrapper(
+        netuid: UInt16
+    ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RankedValidatorCollection>> {
+        createWrapper(route: .rankedValidators, path: "/recommendations/subnets/\(netuid)/validators")
+    }
 }
 
 private extension BittensorApiOperationFactory {
@@ -140,6 +146,7 @@ private extension BittensorApiOperationFactory {
         case portfolioHistory
         case recommendations
         case rankedSubnets
+        case rankedValidators
 
         var pathTemplate: String {
             switch self {
@@ -161,6 +168,8 @@ private extension BittensorApiOperationFactory {
                 return "/recommendations"
             case .rankedSubnets:
                 return "/recommendations/subnets"
+            case .rankedValidators:
+                return "/recommendations/subnets/{netuid}/validators"
             }
         }
     }

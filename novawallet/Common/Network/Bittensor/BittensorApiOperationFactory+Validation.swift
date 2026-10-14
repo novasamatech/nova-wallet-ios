@@ -170,6 +170,18 @@ extension BittensorApi.SubnetRankingCollection: BittensorApiWireChecked {
     }
 }
 
+extension BittensorApi.RankedValidatorCollection: BittensorApiWireChecked {
+    func validateWire() throws {
+        try BittensorApiWireCheck.clientGates(meta.clientGates, "meta.clientGates.maxTake")
+
+        for (index, item) in items.enumerated() {
+            try BittensorApiWireCheck.require(item.clientChecks == BittensorApiWireCheck.clientChecks) {
+                "items[\(index)].clientChecks"
+            }
+        }
+    }
+}
+
 extension BittensorApi.PortfolioHistoryCollection: BittensorApiWireChecked {
     static let maxPoints = 512
 

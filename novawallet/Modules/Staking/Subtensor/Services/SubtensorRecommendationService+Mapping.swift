@@ -69,12 +69,10 @@ extension SubtensorRecommendationService {
 
     static func makeGeneration(
         _ meta: BittensorApi.RecommendationMetadata,
-        receivedAt: TimeInterval,
         isFromExpiredCache: Bool
     ) -> SubtensorRecommendationGeneration {
         SubtensorRecommendationGeneration(
             sourceBlockNumber: meta.generation.sourceBlockNumber,
-            receivedAt: receivedAt,
             carriedOverNetuids: meta.generation.carriedOverNetuids,
             stamp: SubtensorBackendStamp(
                 component: meta.components.recommendations,
