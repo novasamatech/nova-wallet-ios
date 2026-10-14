@@ -60,7 +60,6 @@ final class SubtensorStakingSharedState {
     let workingQueue: DispatchQueue
     let logger: LoggerProtocol
     let novaFeeCalculator: SubtensorNovaFeeCalculator
-    let positionsSyncServiceFactory: ((AccountId) -> SubtensorPositionsSyncServiceProtocol)?
 
     private let mutex = NSLock()
 
@@ -82,8 +81,7 @@ final class SubtensorStakingSharedState {
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
         logger: LoggerProtocol,
-        novaFeeCalculator: SubtensorNovaFeeCalculator,
-        positionsSyncServiceFactory: ((AccountId) -> SubtensorPositionsSyncServiceProtocol)?
+        novaFeeCalculator: SubtensorNovaFeeCalculator
     ) {
         self.stakingOption = stakingOption
         self.chainRegistry = chainRegistry
@@ -98,7 +96,6 @@ final class SubtensorStakingSharedState {
         self.workingQueue = workingQueue
         self.logger = logger
         self.novaFeeCalculator = novaFeeCalculator
-        self.positionsSyncServiceFactory = positionsSyncServiceFactory
     }
 }
 
@@ -115,7 +112,7 @@ private extension SubtensorStakingSharedState {
             return nil
         }
 
-        let service = positionsSyncServiceFactory?(accountId) ?? SubtensorStakingPositionsSyncService(
+        let service = SubtensorStakingPositionsSyncService(
             accountId: accountId,
             stakeStateFetchFactory: stakeStateFetchFactory,
             connection: connection,

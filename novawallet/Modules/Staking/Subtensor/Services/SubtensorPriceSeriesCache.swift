@@ -18,12 +18,14 @@ final class SubtensorPriceSeriesCache {
 
     init(
         coingeckoOperationFactory: CoingeckoOperationFactoryProtocol,
-        operationQueue: OperationQueue,
-        timeProvider: @escaping () -> TimeInterval = { Date().timeIntervalSince1970 }
+        operationQueue: OperationQueue
     ) {
         self.coingeckoOperationFactory = coingeckoOperationFactory
 
-        store = HTTPResponseCacheStore(operationQueue: operationQueue, timeProvider: timeProvider)
+        store = HTTPResponseCacheStore(
+            operationQueue: operationQueue,
+            timeProvider: { Date().timeIntervalSince1970 }
+        )
     }
 }
 

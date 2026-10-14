@@ -4,8 +4,7 @@ import Foundation
     extension BittensorApiFixtureMode {
         static func applyingSubtensorStaking(
             to assets: [AssetModel],
-            chainId: ChainModel.Id,
-            isEnabled: Bool = BittensorApiFixtureMode.isEnabled
+            chainId: ChainModel.Id
         ) -> [AssetModel] {
             guard isEnabled, chainId == KnowChainId.bittensor else {
                 return assets

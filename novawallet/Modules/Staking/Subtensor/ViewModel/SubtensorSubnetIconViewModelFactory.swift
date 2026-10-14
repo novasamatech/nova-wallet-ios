@@ -6,11 +6,7 @@ protocol SubtensorSubnetIconFactoryProtocol {
 }
 
 final class SubtensorSubnetIconViewModelFactory {
-    private let genericMark: UIImage
-
-    init(genericMark: UIImage = R.image.iconDefaultToken()!) {
-        self.genericMark = genericMark
-    }
+    private let genericMark: UIImage = R.image.iconDefaultToken()!
 }
 
 extension SubtensorSubnetIconViewModelFactory: SubtensorSubnetIconFactoryProtocol {
