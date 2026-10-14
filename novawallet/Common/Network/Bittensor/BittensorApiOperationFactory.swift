@@ -78,6 +78,23 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
         return peekPage(path: "/subnets/\(netuid)/yields/alpha", page: page)
     }
 
+    func createRootValidatorsWrapper()
+        -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RootValidatorCollection>> {
+        createWrapper(route: .rootValidators, path: "/root/validators")
+    }
+
+    func peekRootValidators() -> HTTPCachePeek<BittensorApiResult<BittensorApi.RootValidatorCollection>> {
+        peek(path: "/root/validators")
+    }
+
+    func createRootOverviewWrapper() -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RootOverview>> {
+        createWrapper(route: .rootOverview, path: "/root/overview")
+    }
+
+    func peekRootOverview() -> HTTPCachePeek<BittensorApiResult<BittensorApi.RootOverview>> {
+        peek(path: "/root/overview")
+    }
+
     func createOperationsWrapper(
         accountSubject: AccountAddress,
         page: Int?
@@ -117,6 +134,8 @@ private extension BittensorApiOperationFactory {
         case subnets
         case validators
         case alphaYield
+        case rootValidators
+        case rootOverview
         case operations
         case portfolioHistory
         case recommendations
@@ -130,6 +149,10 @@ private extension BittensorApiOperationFactory {
                 return "/subnets/{netuid}/validators"
             case .alphaYield:
                 return "/subnets/{netuid}/yields/alpha"
+            case .rootValidators:
+                return "/root/validators"
+            case .rootOverview:
+                return "/root/overview"
             case .operations:
                 return "/operations/search"
             case .portfolioHistory:
