@@ -73,11 +73,6 @@ protocol SwapSetupWireframeProtocol: SwapBaseWireframeProtocol,
         chainAsset: ChainAsset,
         completionHandler: @escaping (BigRational) -> Void
     )
-    func showInfo(
-        from view: ControllerBackedProtocol?,
-        title: LocalizableResource<String>,
-        details: LocalizableResource<String>
-    )
     func showConfirmation(
         from view: ControllerBackedProtocol?,
         initState: SwapConfirmInitState

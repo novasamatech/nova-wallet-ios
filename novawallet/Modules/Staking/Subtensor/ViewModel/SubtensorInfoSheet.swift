@@ -13,55 +13,48 @@ enum SubtensorInfoSheet: Equatable {
     case youWillEarn
 }
 
-struct SubtensorInfoSheetText {
-    let title: LocalizableResource<String>
-    let details: LocalizableResource<String>
-}
-
 extension SubtensorInfoSheet {
-    var text: SubtensorInfoSheetText? {
-        switch self {
-        case let .swapRate(direction, subnetName):
-            return Self.swapRateText(for: direction, subnetName: subnetName)
-        case let .slippage(tolerance, canEdit):
-            return Self.slippageText(for: tolerance, canEdit: canEdit)
-        case .validator:
-            return Self.validatorText()
-        case let .networkFee(direction):
-            return Self.networkFeeText(for: direction)
-        case .account:
-            return nil
-        case let .totalStaked(isRoot):
-            return Self.totalStakedText(isRoot: isRoot)
-        case .validatorTake:
-            return Self.validatorTakeText()
-        case let .avgBuyPrice(symbol, subnetName):
-            return Self.avgBuyPriceText(for: symbol, subnetName: subnetName)
-        case .youWillEarn:
-            return Self.youWillEarnText()
+    var title: LocalizableResource<String> {
+        LocalizableResource { locale in
+            let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+            switch self {
+            case .swapRate:
+                return strings.stakingSubtensorUiSwapRate()
+            case .slippage:
+                return strings.stakingSubtensorInfoSlippageTitle()
+            case .validator:
+                return strings.stakingCommonValidator()
+            case .networkFee:
+                return strings.commonNetworkFee()
+            case .account:
+                return ""
+            case let .totalStaked(isRoot):
+                return isRoot
+                    ? strings.stakingSubtensorUiValidatorInfoStakedRoot()
+                    : strings.stakingSubtensorUiValidatorInfoStakedSubnet()
+            case .validatorTake:
+                return strings.stakingSubtensorUiValidatorInfoTake()
+            case .avgBuyPrice:
+                return strings.stakingSubtensorUiAvgBuyPrice()
+            case .youWillEarn:
+                return strings.stakingSubtensorUiYouWillEarn()
+            }
         }
     }
-}
 
-private extension SubtensorInfoSheet {
-    static func swapRateText(
-        for direction: SubtensorTradeDirection,
-        subnetName: String
-    ) -> SubtensorInfoSheetText {
-        let percentFormatter = NumberFormatter.percentSingleHalfEven.localizableResource()
+    var details: LocalizableResource<String> {
+        LocalizableResource { locale in
+            let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+            let percentFormatter = NumberFormatter.percentSingleHalfEven.localizableResource()
 
-        return SubtensorInfoSheetText(
-            title: LocalizableResource { locale in
-                R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiSwapRate()
-            },
-            details: LocalizableResource { locale in
+            switch self {
+            case let .swapRate(direction, subnetName):
                 let feeRate = SwapBaseViewModelFactory.commissionPercent(
                     rate: SubtensorNovaFeeRateStore.shared.rate,
                     percentFormatter: percentFormatter,
                     locale: locale
                 )
-
-                let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
                 switch direction {
                 case .buy:
@@ -69,20 +62,7 @@ private extension SubtensorInfoSheet {
                 case .sell:
                     return strings.stakingSubtensorInfoSwapRateSell(subnetName, feeRate)
                 }
-            }
-        )
-    }
-
-    static func slippageText(for tolerance: BigRational, canEdit: Bool) -> SubtensorInfoSheetText {
-        let percentFormatter = NumberFormatter.percentSingleHalfEven.localizableResource()
-
-        return SubtensorInfoSheetText(
-            title: LocalizableResource { locale in
-                R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorInfoSlippageTitle()
-            },
-            details: LocalizableResource { locale in
-                let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
+            case let .slippage(tolerance, canEdit):
                 let toleranceString = tolerance.decimalValue.flatMap {
                     percentFormatter.value(for: locale).stringFromDecimal($0)
                 } ?? strings.stakingSubtensorUiValueUnknown()
@@ -90,91 +70,28 @@ private extension SubtensorInfoSheet {
                 return canEdit
                     ? strings.stakingSubtensorInfoSlippage(toleranceString)
                     : strings.stakingSubtensorInfoSlippageFixed(toleranceString)
-            }
-        )
-    }
-
-    static func validatorText() -> SubtensorInfoSheetText {
-        SubtensorInfoSheetText(
-            title: LocalizableResource { locale in
-                R.string(preferredLanguages: locale.rLanguages).localizable.stakingCommonValidator()
-            },
-            details: LocalizableResource { locale in
-                R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorInfoValidator()
-            }
-        )
-    }
-
-    static func networkFeeText(for direction: SubtensorTradeDirection) -> SubtensorInfoSheetText {
-        SubtensorInfoSheetText(
-            title: LocalizableResource { locale in
-                R.string(preferredLanguages: locale.rLanguages).localizable.commonNetworkFee()
-            },
-            details: LocalizableResource { locale in
-                let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
+            case .validator:
+                return strings.stakingSubtensorInfoValidator()
+            case let .networkFee(direction):
                 switch direction {
                 case .buy:
                     return strings.stakingSubtensorInfoNetworkFeeBuy()
                 case .sell:
                     return strings.stakingSubtensorInfoNetworkFeeSell()
                 }
-            }
-        )
-    }
-
-    static func totalStakedText(isRoot: Bool) -> SubtensorInfoSheetText {
-        SubtensorInfoSheetText(
-            title: LocalizableResource { locale in
-                let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
-                return isRoot
-                    ? strings.stakingSubtensorUiValidatorInfoStakedRoot()
-                    : strings.stakingSubtensorUiValidatorInfoStakedSubnet()
-            },
-            details: LocalizableResource { locale in
-                let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
+            case .account:
+                return ""
+            case let .totalStaked(isRoot):
                 return isRoot
                     ? strings.stakingSubtensorInfoStakedRoot()
                     : strings.stakingSubtensorInfoStakedSubnet()
+            case .validatorTake:
+                return strings.stakingSubtensorInfoValidatorTake()
+            case let .avgBuyPrice(symbol, subnetName):
+                return strings.stakingSubtensorInfoAvgBuyPrice(symbol, subnetName)
+            case .youWillEarn:
+                return strings.stakingSubtensorInfoYouWillEarn()
             }
-        )
-    }
-
-    static func validatorTakeText() -> SubtensorInfoSheetText {
-        SubtensorInfoSheetText(
-            title: LocalizableResource { locale in
-                R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValidatorInfoTake()
-            },
-            details: LocalizableResource { locale in
-                R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorInfoValidatorTake()
-            }
-        )
-    }
-
-    static func avgBuyPriceText(for symbol: String, subnetName: String) -> SubtensorInfoSheetText {
-        SubtensorInfoSheetText(
-            title: LocalizableResource { locale in
-                R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiAvgBuyPrice()
-            },
-            details: LocalizableResource { locale in
-                R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorInfoAvgBuyPrice(
-                    symbol,
-                    subnetName
-                )
-            }
-        )
-    }
-
-    static func youWillEarnText() -> SubtensorInfoSheetText {
-        SubtensorInfoSheetText(
-            title: LocalizableResource { locale in
-                R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiYouWillEarn()
-            },
-            details: LocalizableResource { locale in
-                R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorInfoYouWillEarn()
-            }
-        )
+        }
     }
 }
