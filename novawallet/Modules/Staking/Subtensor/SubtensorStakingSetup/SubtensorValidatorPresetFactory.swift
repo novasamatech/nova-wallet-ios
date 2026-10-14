@@ -16,124 +16,92 @@ protocol SubtensorValidatorPresetFactoryProtocol {
 final class SubtensorValidatorPresetFactory {
     let directoryService: SubtensorValidatorDirectoryServiceProtocol
     let recommendationService: SubtensorRecommendationServiceProtocol
+    let yieldService: SubtensorYieldServiceProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     init(
         directoryService: SubtensorValidatorDirectoryServiceProtocol,
         recommendationService: SubtensorRecommendationServiceProtocol,
+        yieldService: SubtensorYieldServiceProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.directoryService = directoryService
         self.recommendationService = recommendationService
+        self.yieldService = yieldService
         self.operationQueue = operationQueue
         self.logger = logger
     }
 }
 
-private extension SubtensorVerifiedRecommendations {
-    func presetHotkey(for subnet: SubtensorSubnetRef) -> AccountId? {
-        guard
-            generation.stamp.freshness == .fresh,
-            subnet.registeredAt <= generation.sourceBlockNumber else {
-            return nil
-        }
-
-        let pairs = [SubtensorRecommendationClass.stable, .balanced, .higherUpside].flatMap { classes[$0] ?? [] }
-
-        return pairs.first { $0.netuid == subnet.netuid }?.hotkey
-    }
-}
-
 private extension SubtensorValidatorPresetFactory {
-    func createNamesWrapper(for subnet: SubtensorSubnetRef) -> CompoundOperationWrapper<[AccountId: String]> {
-        Self.createNamesWrapper(for: subnet, directoryService: directoryService, logger: logger)
+    static func highestYield(
+        among validators: [SubtensorRecommendedValidator],
+        yields: SubtensorAlphaYields?
+    ) -> SubtensorRecommendedValidator? {
+        let rate: (SubtensorRecommendedValidator) -> Decimal? = { yields?.yields[$0.hotkey]?.annualRate }
+        let maxRate = validators.compactMap(rate).max()
+
+        return validators.first { rate($0) == maxRate }
     }
 
-    static func createNamesWrapper(
-        for subnet: SubtensorSubnetRef,
-        directoryService: SubtensorValidatorDirectoryServiceProtocol,
-        logger: LoggerProtocol
-    ) -> CompoundOperationWrapper<[AccountId: String]> {
-        let directoryWrapper = directoryService.createDirectoryWrapper(for: subnet)
-
-        let namesOperation = ClosureOperation<[AccountId: String]> {
-            do {
-                let directory = try directoryWrapper.targetOperation.extractNoCancellableResultData()
-
-                return directory.items.reduce(into: [AccountId: String]()) { names, item in
-                    if let name = item.name {
-                        names[item.hotkey] = name
-                    }
-                }
-            } catch {
-                logger.warning("Subtensor validator names unavailable for the preset: \(error)")
-
-                return [:]
-            }
-        }
-
-        namesOperation.addDependency(directoryWrapper.targetOperation)
-
-        return directoryWrapper.insertingTail(operation: namesOperation)
-    }
-
-    func createGatesWrapper() -> CompoundOperationWrapper<SubtensorClientGates?> {
-        let gatesWrapper = recommendationService.createClientGatesWrapper()
-        let logger = logger
-
-        let gatesOperation = ClosureOperation<SubtensorClientGates?> {
-            do {
-                return try gatesWrapper.targetOperation.extractNoCancellableResultData()
-            } catch {
-                logger.warning("Subtensor client gates unavailable for the preset: \(error)")
-
-                return nil
-            }
-        }
-
-        gatesOperation.addDependency(gatesWrapper.targetOperation)
-
-        return gatesWrapper.insertingTail(operation: gatesOperation)
-    }
-
-    func createDetailWrapper(
-        for hotkey: AccountId?,
-        subnet: SubtensorSubnetRef,
-        dependingOn namesWrapper: CompoundOperationWrapper<[AccountId: String]>
+    func createRecommendedWrapper(
+        for subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> {
-        let directoryService = directoryService
+        let recommendedWrapper = recommendationService.createRecommendedValidatorsWrapper(for: subnet)
+        let yieldsWrapper = yieldService.createAlphaYieldsWrapper(for: subnet.netuid)
         let logger = logger
 
-        let wrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> =
+        let presetWrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> =
             OperationCombiningService.compoundOptionalWrapper(
                 operationManager: OperationManager(operationQueue: operationQueue)
-            ) {
-                guard let hotkey else {
+            ) { [weak self] in
+                let recommended: SubtensorRecommendedValidators
+
+                do {
+                    recommended = try recommendedWrapper.targetOperation.extractNoCancellableResultData()
+                } catch {
+                    logger.warning("Subtensor recommended validators unavailable for the preset: \(error)")
+
                     return nil
                 }
 
-                return Self.createItemWrapper(
-                    for: hotkey,
-                    subnet: subnet,
-                    directoryService: directoryService,
-                    logger: logger
-                )
+                guard
+                    let self,
+                    recommended.generation.stamp.freshness == .fresh,
+                    let winner = Self.highestYield(
+                        among: recommended.validators,
+                        yields: try? yieldsWrapper.targetOperation.extractNoCancellableResultData()
+                    ) else {
+                    return nil
+                }
+
+                let itemWrapper = createItemWrapper(for: winner.hotkey, subnet: subnet)
+
+                let namingOperation = ClosureOperation<SubtensorValidatorDirectoryItem?> {
+                    try itemWrapper.targetOperation.extractNoCancellableResultData().map {
+                        $0.named($0.name ?? winner.name)
+                    }
+                }
+
+                namingOperation.addDependency(itemWrapper.targetOperation)
+
+                return itemWrapper.insertingTail(operation: namingOperation)
             }
 
-        wrapper.addDependency(wrapper: namesWrapper)
+        presetWrapper.addDependency(wrapper: recommendedWrapper)
+        presetWrapper.addDependency(wrapper: yieldsWrapper)
 
-        return wrapper
+        return presetWrapper.insertingHead(operations: recommendedWrapper.allOperations + yieldsWrapper.allOperations)
     }
 
-    static func createItemWrapper(
+    func createItemWrapper(
         for hotkey: AccountId,
-        subnet: SubtensorSubnetRef,
-        directoryService: SubtensorValidatorDirectoryServiceProtocol,
-        logger: LoggerProtocol
+        subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> {
         let detailWrapper = directoryService.createDetailWrapper(for: hotkey, subnet: subnet)
+        let logger = logger
 
         let itemOperation = ClosureOperation<SubtensorValidatorDirectoryItem?> {
             do {
@@ -149,157 +117,6 @@ private extension SubtensorValidatorPresetFactory {
 
         return detailWrapper.insertingTail(operation: itemOperation)
     }
-
-    static func createRecommendedWrapper(
-        for subnet: SubtensorSubnetRef,
-        recommendationService: SubtensorRecommendationServiceProtocol,
-        directoryService: SubtensorValidatorDirectoryServiceProtocol,
-        operationManager: OperationManagerProtocol,
-        logger: LoggerProtocol
-    ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> {
-        let recommendationsWrapper = recommendationService.createVerifiedRecommendationsWrapper()
-
-        let itemWrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> =
-            OperationCombiningService.compoundOptionalWrapper(operationManager: operationManager) {
-                let recommendations: SubtensorVerifiedRecommendations
-
-                do {
-                    recommendations = try recommendationsWrapper.targetOperation.extractNoCancellableResultData()
-                } catch {
-                    logger.warning("Subtensor recommended validator unavailable for the preset: \(error)")
-
-                    return nil
-                }
-
-                guard let hotkey = recommendations.presetHotkey(for: subnet) else {
-                    return nil
-                }
-
-                return Self.createItemWrapper(
-                    for: hotkey,
-                    subnet: subnet,
-                    directoryService: directoryService,
-                    logger: logger
-                )
-            }
-
-        itemWrapper.addDependency(wrapper: recommendationsWrapper)
-
-        let selectableOperation = ClosureOperation<SubtensorValidatorDirectoryItem?> {
-            let item = try itemWrapper.targetOperation.extractNoCancellableResultData()
-            let gates = try? recommendationsWrapper.targetOperation.extractNoCancellableResultData().clientGates
-
-            return Self.isSelectable(item, on: subnet, gates: gates) ? item : nil
-        }
-
-        selectableOperation.addDependency(recommendationsWrapper.targetOperation)
-        selectableOperation.addDependency(itemWrapper.targetOperation)
-
-        return CompoundOperationWrapper(
-            targetOperation: selectableOperation,
-            dependencies: recommendationsWrapper.allOperations + itemWrapper.allOperations
-        )
-    }
-
-    func createNamingOperation(
-        namesWrapper: CompoundOperationWrapper<[AccountId: String]>,
-        itemWrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem?>
-    ) -> BaseOperation<SubtensorValidatorDirectoryItem?> {
-        let operation = ClosureOperation<SubtensorValidatorDirectoryItem?> {
-            let names = try namesWrapper.targetOperation.extractNoCancellableResultData()
-
-            guard let item = try itemWrapper.targetOperation.extractNoCancellableResultData() else {
-                return nil
-            }
-
-            return item.named(item.name ?? names[item.hotkey])
-        }
-
-        operation.addDependency(namesWrapper.targetOperation)
-        operation.addDependency(itemWrapper.targetOperation)
-
-        return operation
-    }
-
-    func createRecommendedPresetWrapper(
-        for subnet: SubtensorSubnetRef
-    ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> {
-        let recommendationsWrapper = recommendationService.createVerifiedRecommendationsWrapper()
-        let directoryService = directoryService
-        let logger = logger
-
-        let presetWrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> =
-            OperationCombiningService.compoundOptionalWrapper(
-                operationManager: OperationManager(operationQueue: operationQueue)
-            ) {
-                let recommendations: SubtensorVerifiedRecommendations
-
-                do {
-                    recommendations = try recommendationsWrapper.targetOperation.extractNoCancellableResultData()
-                } catch {
-                    logger.warning("Subtensor recommended validator unavailable for the preset: \(error)")
-
-                    return nil
-                }
-
-                guard let hotkey = recommendations.presetHotkey(for: subnet) else {
-                    return nil
-                }
-
-                let namesWrapper = Self.createNamesWrapper(
-                    for: subnet,
-                    directoryService: directoryService,
-                    logger: logger
-                )
-
-                let itemWrapper = Self.createItemWrapper(
-                    for: hotkey,
-                    subnet: subnet,
-                    directoryService: directoryService,
-                    logger: logger
-                )
-
-                itemWrapper.addDependency(wrapper: namesWrapper)
-
-                let selectedOperation = ClosureOperation<SubtensorValidatorDirectoryItem?> {
-                    let names = try namesWrapper.targetOperation.extractNoCancellableResultData()
-                    let item = try itemWrapper.targetOperation.extractNoCancellableResultData()
-
-                    guard Self.isSelectable(item, on: subnet, gates: recommendations.clientGates) else {
-                        return nil
-                    }
-
-                    return item.map { $0.named($0.name ?? names[$0.hotkey]) }
-                }
-
-                selectedOperation.addDependency(itemWrapper.targetOperation)
-
-                return CompoundOperationWrapper(
-                    targetOperation: selectedOperation,
-                    dependencies: namesWrapper.allOperations + itemWrapper.allOperations
-                )
-            }
-
-        presetWrapper.addDependency(wrapper: recommendationsWrapper)
-
-        return presetWrapper.insertingHead(operations: recommendationsWrapper.allOperations)
-    }
-
-    static func isSelectable(
-        _ item: SubtensorValidatorDirectoryItem?,
-        on subnet: SubtensorSubnetRef,
-        gates: SubtensorClientGates?
-    ) -> Bool {
-        guard let item, let gates else {
-            return false
-        }
-
-        return SubtensorValidatorEligibility.eligibility(
-            of: item,
-            isRoot: subnet.netuid == SubtensorStakingPallet.rootNetuid,
-            gates: gates
-        ) == .selectable
-    }
 }
 
 extension SubtensorValidatorPresetFactory: SubtensorValidatorPresetFactoryProtocol {
@@ -308,60 +125,32 @@ extension SubtensorValidatorPresetFactory: SubtensorValidatorPresetFactoryProtoc
         existingHotkey: AccountId?
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> {
         guard let existingHotkey else {
-            return createRecommendedPresetWrapper(for: subnet)
+            return createRecommendedWrapper(for: subnet)
         }
 
-        let namesWrapper = createNamesWrapper(for: subnet)
-        let existingWrapper = createDetailWrapper(for: existingHotkey, subnet: subnet, dependingOn: namesWrapper)
-        let gatesWrapper = createGatesWrapper()
-
-        let directoryService = directoryService
-        let recommendationService = recommendationService
-        let operationManager = OperationManager(operationQueue: operationQueue)
-        let logger = logger
+        let existingWrapper = createItemWrapper(for: existingHotkey, subnet: subnet)
 
         let presetWrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> =
-            OperationCombiningService.compoundOptionalWrapper(operationManager: operationManager) {
-                let existing = try existingWrapper.targetOperation.extractNoCancellableResultData()
-                let gates = try gatesWrapper.targetOperation.extractNoCancellableResultData()
-
-                if Self.isSelectable(existing, on: subnet, gates: gates) {
-                    return CompoundOperationWrapper<SubtensorValidatorDirectoryItem?>.createWithResult(existing)
+            OperationCombiningService.compoundOptionalWrapper(
+                operationManager: OperationManager(operationQueue: operationQueue)
+            ) { [weak self] in
+                if let existing = try existingWrapper.targetOperation.extractNoCancellableResultData() {
+                    return .createWithResult(existing)
                 }
 
-                return Self.createRecommendedWrapper(
-                    for: subnet,
-                    recommendationService: recommendationService,
-                    directoryService: directoryService,
-                    operationManager: operationManager,
-                    logger: logger
-                )
+                return self?.createRecommendedWrapper(for: subnet)
             }
 
         presetWrapper.addDependency(wrapper: existingWrapper)
-        presetWrapper.addDependency(wrapper: gatesWrapper)
 
-        let namingOperation = createNamingOperation(namesWrapper: namesWrapper, itemWrapper: presetWrapper)
-
-        return CompoundOperationWrapper(
-            targetOperation: namingOperation,
-            dependencies: namesWrapper.allOperations + existingWrapper.allOperations + gatesWrapper.allOperations +
-                presetWrapper.allOperations
-        )
+        return presetWrapper.insertingHead(operations: existingWrapper.allOperations)
     }
 
     func createLockedWrapper(
         for hotkey: AccountId,
         subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> {
-        let namesWrapper = createNamesWrapper(for: subnet)
-        let detailWrapper = createDetailWrapper(for: hotkey, subnet: subnet, dependingOn: namesWrapper)
-        let namingOperation = createNamingOperation(namesWrapper: namesWrapper, itemWrapper: detailWrapper)
-
-        return CompoundOperationWrapper(
-            targetOperation: namingOperation,
-            dependencies: namesWrapper.allOperations + detailWrapper.allOperations
-        )
+        createItemWrapper(for: hotkey, subnet: subnet)
     }
 }
 

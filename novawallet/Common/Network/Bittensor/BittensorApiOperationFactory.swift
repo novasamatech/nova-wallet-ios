@@ -78,6 +78,23 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
         return peekPage(path: "/subnets/\(netuid)/yields/alpha", page: page)
     }
 
+    func createRootValidatorsWrapper()
+        -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RootValidatorCollection>> {
+        createWrapper(route: .rootValidators, path: "/root/validators")
+    }
+
+    func peekRootValidators() -> HTTPCachePeek<BittensorApiResult<BittensorApi.RootValidatorCollection>> {
+        peek(path: "/root/validators")
+    }
+
+    func createRootOverviewWrapper() -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RootOverview>> {
+        createWrapper(route: .rootOverview, path: "/root/overview")
+    }
+
+    func peekRootOverview() -> HTTPCachePeek<BittensorApiResult<BittensorApi.RootOverview>> {
+        peek(path: "/root/overview")
+    }
+
     func createOperationsWrapper(
         accountSubject: AccountAddress,
         page: Int?
@@ -110,6 +127,12 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
     func peekRankedSubnets() -> HTTPCachePeek<BittensorApiResult<BittensorApi.SubnetRankingCollection>> {
         peek(path: "/recommendations/subnets")
     }
+
+    func createRankedValidatorsWrapper(
+        netuid: UInt16
+    ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RankedValidatorCollection>> {
+        createWrapper(route: .rankedValidators, path: "/recommendations/subnets/\(netuid)/validators")
+    }
 }
 
 private extension BittensorApiOperationFactory {
@@ -117,10 +140,13 @@ private extension BittensorApiOperationFactory {
         case subnets
         case validators
         case alphaYield
+        case rootValidators
+        case rootOverview
         case operations
         case portfolioHistory
         case recommendations
         case rankedSubnets
+        case rankedValidators
 
         var pathTemplate: String {
             switch self {
@@ -130,6 +156,10 @@ private extension BittensorApiOperationFactory {
                 return "/subnets/{netuid}/validators"
             case .alphaYield:
                 return "/subnets/{netuid}/yields/alpha"
+            case .rootValidators:
+                return "/root/validators"
+            case .rootOverview:
+                return "/root/overview"
             case .operations:
                 return "/operations/search"
             case .portfolioHistory:
@@ -138,6 +168,8 @@ private extension BittensorApiOperationFactory {
                 return "/recommendations"
             case .rankedSubnets:
                 return "/recommendations/subnets"
+            case .rankedValidators:
+                return "/recommendations/subnets/{netuid}/validators"
             }
         }
     }

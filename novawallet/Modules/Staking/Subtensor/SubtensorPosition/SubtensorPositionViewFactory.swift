@@ -21,6 +21,7 @@ enum SubtensorPositionViewFactory {
             validatorFactory: SubtensorValidatorPresetFactory(
                 directoryService: earnServices.validatorDirectoryService,
                 recommendationService: earnServices.recommendationService,
+                yieldService: earnServices.yieldService,
                 operationQueue: operationQueue,
                 logger: Logger.shared
             ),

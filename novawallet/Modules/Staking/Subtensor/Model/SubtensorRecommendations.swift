@@ -1,11 +1,5 @@
 import Foundation
 
-enum SubtensorRecommendationClass: String, Equatable {
-    case stable
-    case balanced
-    case higherUpside
-}
-
 struct SubtensorMetricScore: Equatable {
     let raw: Decimal?
     let normalized: Decimal
@@ -13,7 +7,6 @@ struct SubtensorMetricScore: Equatable {
 
 struct SubtensorRecommendationGeneration: Equatable {
     let sourceBlockNumber: UInt64
-    let receivedAt: TimeInterval
     let carriedOverNetuids: [UInt16]
     let stamp: SubtensorBackendStamp
 }
@@ -24,10 +17,14 @@ struct SubtensorClientGates: Equatable {
     let requireActiveWithinCutoff: Bool
 }
 
-struct SubtensorVerifiedRecommendations: Equatable {
+struct SubtensorRecommendedValidator: Equatable {
+    let hotkey: AccountId
+    let name: String?
+}
+
+struct SubtensorRecommendedValidators: Equatable {
     let generation: SubtensorRecommendationGeneration
-    let clientGates: SubtensorClientGates
-    let classes: [SubtensorRecommendationClass: [SubtensorHotkeySubnet]]
+    let validators: [SubtensorRecommendedValidator]
 }
 
 struct SubtensorRankedSubnet: Equatable {

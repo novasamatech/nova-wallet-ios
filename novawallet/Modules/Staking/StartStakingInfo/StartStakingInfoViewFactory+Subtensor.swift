@@ -76,7 +76,6 @@ extension StartStakingInfoViewFactory {
         )
 
         let maxApyProvider = SubtensorStakingProcessServices.shared.createMaxApyProvider(
-            recommendationService: state.earnServices.recommendationService,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared
         )

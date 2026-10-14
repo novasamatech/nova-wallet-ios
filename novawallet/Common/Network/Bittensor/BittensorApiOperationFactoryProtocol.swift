@@ -20,6 +20,15 @@ protocol BittensorApiOperationFactoryProtocol: AnyObject {
         page: Int
     ) -> HTTPCachePeek<BittensorApiResult<BittensorApi.AlphaYieldCollection>>
 
+    func createRootValidatorsWrapper()
+        -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RootValidatorCollection>>
+
+    func peekRootValidators() -> HTTPCachePeek<BittensorApiResult<BittensorApi.RootValidatorCollection>>
+
+    func createRootOverviewWrapper() -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RootOverview>>
+
+    func peekRootOverview() -> HTTPCachePeek<BittensorApiResult<BittensorApi.RootOverview>>
+
     func createOperationsWrapper(
         accountSubject: AccountAddress,
         page: Int?
@@ -37,6 +46,10 @@ protocol BittensorApiOperationFactoryProtocol: AnyObject {
         -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.SubnetRankingCollection>>
 
     func peekRankedSubnets() -> HTTPCachePeek<BittensorApiResult<BittensorApi.SubnetRankingCollection>>
+
+    func createRankedValidatorsWrapper(
+        netuid: UInt16
+    ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RankedValidatorCollection>>
 }
 
 struct BittensorApiResult<T> {
