@@ -104,6 +104,8 @@ final class SubtensorSortSheetOptionView: RowView<GenericTitleValueView<GenericM
     }
 
     func bind(option: SubtensorSortSheetViewModel.Option, isSelected: Bool) {
+        isUserInteractionEnabled = option.isEnabled
+        alpha = option.isEnabled ? 1 : 0.5
         titleLabel.text = option.title
         subtitleLabel.text = option.subtitle
         subtitleLabel.isHidden = option.subtitle == nil

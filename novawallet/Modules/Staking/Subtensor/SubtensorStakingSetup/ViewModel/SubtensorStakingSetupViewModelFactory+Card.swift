@@ -10,7 +10,9 @@ extension SubtensorStakingSetupViewModelFactory {
     ) -> SubtensorSetupSubnetViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
-        let sectionTitle = if case .subnetPick = input.mode {
+        let sectionTitle = if let order = input.quickPickOrder {
+            sectionTitle(order: order, locale: locale)
+        } else if case .subnetPick = input.mode {
             strings.stakingSubtensorUiPickSubnetSection()
         } else {
             strings.stakingSubtensorUiYourSubnet()
@@ -19,8 +21,14 @@ extension SubtensorStakingSetupViewModelFactory {
         let tradePanel = createTradePanel(for: input, locale: locale)
 
         let card = SubtensorPickCardViewModel(
+            validator: createValidator(for: input, locale: locale),
+            validatorRate: input.subnetData.annualRate.map {
+                SubtensorApyFormatter.text(for: $0, style: .leading, locale: locale)
+            },
+            isValidatorEditable: !input.mode.isLocked,
+            browseTitle: input.mode.isLocked ? nil : strings.stakingSubtensorQuickSeeAll(),
             header: createHeader(for: input, locale: locale),
-            chips: createChips(for: input.subnetData.rankedSubnet, locale: locale),
+            chips: input.amountState == .noTao ? [] : createChips(for: input.subnetData.rankedSubnet, locale: locale),
             receive: createTradeRow(for: input, value: tradePanel?.receive?.amount, locale: locale),
             swapRate: createTradeRow(for: input, value: tradePanel?.swapRate, locale: locale),
             networkFee: createNetworkFee(for: input, locale: locale)
@@ -32,6 +40,16 @@ extension SubtensorStakingSetupViewModelFactory {
             avgBuyPrice: createAvgBuyPrice(for: input, locale: locale),
             feeDisclosure: quoteViewModelFactory.novaFeeDisclosure(locale: locale)
         )
+    }
+
+    func sectionTitle(order: SubtensorQuickPickOrder, locale: Locale) -> String {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+        switch order {
+        case .poolSize: return strings.stakingSubtensorQuickFirstPool()
+        case .age: return strings.stakingSubtensorQuickFirstAge()
+        case .apy: return strings.stakingSubtensorQuickApyUnavailable()
+        case .root: return strings.stakingSubtensorQuickRootSection()
+        }
     }
 
     func createChips(for rankedSubnet: SubtensorRankedSubnet?, locale: Locale) -> [String] {
@@ -71,7 +89,7 @@ private extension SubtensorStakingSetupViewModelFactory {
 
         var displayInfo = info
         displayInfo.tokenSymbol = Data(
-            SubtensorSubnetNaming.symbol(for: info.netuid, in: input.subnetData.catalogue).utf8
+            SubtensorSubnetNaming.symbol(for: info.netuid, in: input.matchingCatalogue).utf8
         )
 
         return .subnet(info: displayInfo, price: price)
@@ -103,7 +121,7 @@ private extension SubtensorStakingSetupViewModelFactory {
         for input: SubtensorStakingSetupViewModelInput,
         locale: Locale
     ) -> SubtensorCostBasisRowViewModel {
-        guard case .buyMore = input.mode else {
+        guard case let .buyMore(position) = input.mode else {
             return .hidden
         }
 
@@ -116,7 +134,7 @@ private extension SubtensorStakingSetupViewModelFactory {
         return costBasisViewModelFactory.createAvgBuyPrice(
             for: input.subnetData.costBasis,
             after: purchase,
-            alphaSymbol: SubtensorSubnetNaming.symbol(for: input.mode.netuid, in: input.subnetData.catalogue),
+            alphaSymbol: SubtensorSubnetNaming.symbol(for: position.netuid, in: input.matchingCatalogue),
             locale: locale
         )
     }
@@ -142,17 +160,13 @@ private extension SubtensorStakingSetupViewModelFactory {
         locale: Locale
     ) -> SubtensorPickCardHeaderViewModel? {
         let subnetData = input.subnetData
+        let catalogue = input.matchingCatalogue
 
-        guard subnetData.isCatalogueLoaded else {
+        guard let netuid = input.mode.netuid, input.target != nil else {
             return nil
         }
 
-        let netuid = input.mode.netuid
-        let catalogueSubnet = subnetData.catalogue?.subnet(for: netuid)
-
-        let apy = subnetData.annualRate.map {
-            SubtensorApyFormatter.text(for: $0, style: .leading, locale: locale)
-        }
+        let catalogueSubnet = catalogue?.subnet(for: netuid)
 
         var isSelectable = false
 
@@ -162,13 +176,13 @@ private extension SubtensorStakingSetupViewModelFactory {
                 registeredAt: target.subnetInfo?.networkRegisteredAt ?? 0
             )
 
-            isSelectable = subnetData.catalogue?.subnet(for: ref) != nil
+            isSelectable = catalogue?.subnet(for: ref) != nil
         }
 
         return SubtensorPickCardHeaderViewModel(
             icon: iconFactory.icon(for: catalogueSubnet, logos: subnetData.subnetLogos),
-            title: SubtensorSubnetNaming.titleWithSymbol(for: netuid, in: subnetData.catalogue, locale: locale),
-            apy: apy,
+            title: SubtensorSubnetNaming.titleWithSymbol(for: netuid, in: catalogue, locale: locale),
+            apy: nil,
             isSelectable: isSelectable
         )
     }

@@ -75,7 +75,53 @@ final class SubtensorSubnetSelectPresenterTests: XCTestCase {
         )
     }
 
-    private func makeSetup() -> Setup {
+    func testOrdinaryAndCardDefaultsAndRecreationRetainCommittedState() {
+        let ordinary = SubtensorSubnetBrowseState()
+        XCTAssertEqual(ordinary.sort, .sevenDayChange)
+        XCTAssertFalse(ordinary.filters.hideThinPools)
+        let context = SubtensorSubnetBrowseState(order: .age)
+        XCTAssertEqual(context.sort, .age)
+        XCTAssertTrue(context.filters.hideThinPools)
+        let first = makeSetup(browseState: context)
+        first.presenter.applyFilters(.init(hideThinPools: false))
+        let second = makeSetup(browseState: context)
+        XCTAssertFalse(second.presenter.browseState.filters.hideThinPools)
+        XCTAssertEqual(second.presenter.browseState.sort, .age)
+        XCTAssertTrue(SubtensorSubnetBrowseState(order: .age).filters.hideThinPools)
+        XCTAssertFalse(SubtensorSubnetBrowseState(order: .root).filters.hideThinPools)
+    }
+
+    func testDismissedDraftDoesNotCommitAndUnavailableApyCannotBeSelected() {
+        let context = SubtensorSubnetBrowseState(order: .poolSize)
+        let setup = makeSetup(browseState: context)
+        setup.presenter.draftFilters(.init(hideThinPools: false))
+        XCTAssertTrue(context.filters.hideThinPools)
+        stub(setup.wireframe) { stub in
+            when(stub.showSortSheet(from: any(), viewModel: any(), onSelect: any())).then { _, _, onSelect in
+                onSelect(2)
+            }
+        }
+        setup.presenter.showSort()
+        XCTAssertEqual(context.sort, .poolDepth)
+    }
+
+    func testSortChangesPersistAndRetainHiddenTiePositions() {
+        let context = SubtensorSubnetBrowseState()
+        let setup = makeSetup(browseState: context)
+        stub(setup.interactor) { when($0.loadWeeklyPrices(for: any())).thenDoNothing() }
+        stub(setup.wireframe) { stub in
+            when(stub.showSortSheet(from: any(), viewModel: any(), onSelect: any())).then { _, _, onSelect in onSelect(0) }
+        }
+        setup.presenter.didReceive(entries: [makeEntry(netuid: 3, price: 1), makeEntry(netuid: 1, price: 1)])
+        setup.presenter.search(query: "1")
+        setup.presenter.showSort()
+        XCTAssertEqual(context.sort, .poolDepth)
+        XCTAssertEqual(context.orderedRefs.map(\.netuid), [1, 3])
+        let reopened = makeSetup(browseState: context)
+        XCTAssertEqual(reopened.presenter.browseState.orderedRefs.map(\.netuid), [1, 3])
+    }
+
+    private func makeSetup(browseState: SubtensorSubnetBrowseState = .init()) -> Setup {
         let interactor = MockSubnetSelectInteractorInputProtocol()
         let wireframe = MockSubtensorSubnetSelectWireframeProtocol()
         let delegate = MockSubtensorSubnetSelectDelegate()
@@ -86,7 +132,8 @@ final class SubtensorSubnetSelectPresenterTests: XCTestCase {
             viewModelFactory: SubtensorSubnetViewModelFactory(chainAsset: makeChainAsset()),
             delegate: delegate,
             earnSettings: SubtensorEarnSettings(settingsManager: InMemorySettingsManager()),
-            localizationManager: LocalizationManager.shared
+            localizationManager: LocalizationManager.shared,
+            browseState: browseState
         )
 
         return Setup(presenter: presenter, interactor: interactor, wireframe: wireframe, delegate: delegate)

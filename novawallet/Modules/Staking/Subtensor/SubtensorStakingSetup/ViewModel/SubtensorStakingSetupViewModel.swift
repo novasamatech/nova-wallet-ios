@@ -10,10 +10,12 @@ struct SubtensorStakingSetupViewModel {
     let reserveWarning: String?
     let details: SubtensorSetupDetailsViewModel
     let caption: String?
+    let browseTitle: String?
     let action: SubtensorSetupActionViewModel
 }
 
 enum SubtensorSetupDetailsViewModel {
+    case selection(section: String, message: String, retryTitle: String?)
     case root(SubtensorSetupRootViewModel)
     case subnet(SubtensorSetupSubnetViewModel)
 }
@@ -32,6 +34,10 @@ struct SubtensorSetupSubnetViewModel {
 }
 
 struct SubtensorPickCardViewModel {
+    let validator: SubtensorSetupValidatorViewModel
+    let validatorRate: String?
+    let isValidatorEditable: Bool
+    let browseTitle: String?
     let header: SubtensorPickCardHeaderViewModel?
     let chips: [String]
     let receive: SubtensorSetupRowViewModel
@@ -153,9 +159,21 @@ struct SubtensorStakingSetupViewModelInput {
     let price: PriceData?
     let quote: SubtensorTradeQuote?
     let positionStake: Balance?
+    var quickPickOrder: SubtensorQuickPickOrder?
+    var selectionFailed = false
+    var selectedRef: SubtensorSubnetRef?
+
+    // A reused netuid can still have metadata cached for its previous registration.
+    var matchingCatalogue: SubtensorSubnetCatalogue? {
+        guard let info = target?.subnetInfo else { return nil }
+        let ref = SubtensorSubnetRef(netuid: info.netuid, registeredAt: info.networkRegisteredAt)
+        guard let subnet = subnetData.catalogue?.subnet(for: ref) else { return nil }
+        return SubtensorSubnetCatalogue(subnets: [subnet])
+    }
 
     var amountState: SubtensorSetupAmountState {
-        let state = SubtensorSetupAmountState(maxAmount: maxAmount, amount: amount)
+        let state: SubtensorSetupAmountState = transferable == 0
+            ? .noTao : SubtensorSetupAmountState(maxAmount: maxAmount, amount: amount)
 
         guard state == .noTao, mode.isLocked else {
             return state

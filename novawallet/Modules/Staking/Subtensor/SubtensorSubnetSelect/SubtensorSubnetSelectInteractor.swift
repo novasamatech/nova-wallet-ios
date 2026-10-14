@@ -7,25 +7,19 @@ final class SubtensorSubnetSelectInteractor {
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
     let subnetsService: SubtensorSubnetsServiceProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
-    let yieldService: SubtensorYieldServiceProtocol
-    let rankingViewService: SubtensorRankingViewServiceProtocol
     let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
-    private var seed = SubtensorSubnetSelectSnapshot(entries: .miss, rootRate: .miss, rankedSubnets: .miss)
+    private var seed = SubtensorSubnetSelectSnapshot(entries: .miss)
     private let entriesStore = CancellableCallStore()
     private let logosStore = CancellableCallStore()
-    private let rootRateStore = CancellableCallStore()
-    private let rankingStore = CancellableCallStore()
     private let weeklyStore = CancellableCallStore()
 
     init(
         catalogueService: SubtensorSubnetCatalogueServiceProtocol,
         subnetsService: SubtensorSubnetsServiceProtocol,
         subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
-        yieldService: SubtensorYieldServiceProtocol,
-        rankingViewService: SubtensorRankingViewServiceProtocol,
         priceHistoryService: SubtensorPriceHistoryServiceProtocol?,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
@@ -33,25 +27,25 @@ final class SubtensorSubnetSelectInteractor {
         self.catalogueService = catalogueService
         self.subnetsService = subnetsService
         self.subnetLogosProvider = subnetLogosProvider
-        self.yieldService = yieldService
-        self.rankingViewService = rankingViewService
         self.priceHistoryService = priceHistoryService
         self.operationQueue = operationQueue
         self.logger = logger
     }
 
     deinit {
-        [entriesStore, logosStore, rootRateStore, rankingStore, weeklyStore].forEach { $0.cancel() }
+        [entriesStore, logosStore, weeklyStore].forEach { $0.cancel() }
     }
 }
 
 private extension SubtensorSubnetSelectInteractor {
-    func createEntriesWrapper() -> CompoundOperationWrapper<[SubtensorSubnetListEntry]> {
+    func createEntriesWrapper(forcingRefresh: Bool) -> CompoundOperationWrapper<[SubtensorSubnetListEntry]> {
         let catalogueWrapper = catalogueService.createCatalogueWrapper()
         let subnetsService = subnetsService
 
         let subnetsInfoOperation = AsyncClosureOperation<SubtensorSubnetsInfo> { completion in
-            subnetsService.fetchSubnetsInfo(runningCompletionIn: .global(), completion: completion)
+            subnetsService.fetchSubnetsInfo(
+                forcingRefresh: forcingRefresh, runningCompletionIn: .global(), completion: completion
+            )
         }
 
         let entriesOperation = ClosureOperation<[SubtensorSubnetListEntry]> {
@@ -69,11 +63,11 @@ private extension SubtensorSubnetSelectInteractor {
             .insertingTail(operation: entriesOperation)
     }
 
-    func provideEntries() {
+    func provideEntries(forcingRefresh: Bool = false) {
         entriesStore.cancel()
 
         executeCancellable(
-            wrapper: createEntriesWrapper(),
+            wrapper: createEntriesWrapper(forcingRefresh: forcingRefresh),
             inOperationQueue: operationQueue,
             backingCallIn: entriesStore,
             runningCallbackIn: .main
@@ -105,40 +99,6 @@ private extension SubtensorSubnetSelectInteractor {
         }
     }
 
-    func provideRootRate() {
-        executeCancellable(
-            wrapper: yieldService.createRootYieldWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: rootRateStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(yield):
-                self?.presenter?.didReceive(rootRate: yield?.annualRate)
-            case let .failure(error):
-                self?.logger.warning("Root rate unavailable: \(error)")
-                self?.presenter?.didReceive(rootRate: nil)
-            }
-        }
-    }
-
-    func provideRankingView() {
-        executeCancellable(
-            wrapper: rankingViewService.createRankingViewWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: rankingStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(rankedSubnets):
-                self?.presenter?.didReceive(rankedSubnets: rankedSubnets)
-            case let .failure(error):
-                self?.logger.warning("Subnet ages unavailable: \(error)")
-                self?.presenter?.didReceive(rankedSubnets: nil)
-            }
-        }
-    }
-
     func unavailablePrices<Value: Equatable>(
         for subnets: [SubtensorSubnetRef]
     ) -> [SubtensorSubnetRef: SubtensorPriceData<Value>] {
@@ -157,9 +117,7 @@ private extension SubtensorSubnetSelectInteractor {
 
     func makeSnapshot() -> SubtensorSubnetSelectSnapshot {
         SubtensorSubnetSelectSnapshot(
-            entries: makeCachedEntries(),
-            rootRate: yieldService.cachedRootYield().map { $0?.annualRate },
-            rankedSubnets: rankingViewService.cachedRankingView()
+            entries: makeCachedEntries()
         )
     }
 }
@@ -177,18 +135,10 @@ extension SubtensorSubnetSelectInteractor: SubnetSelectInteractorInputProtocol {
         }
 
         provideSubnetLogos()
-
-        if !seed.rootRate.isFresh {
-            provideRootRate()
-        }
-
-        if !seed.rankedSubnets.isFresh {
-            provideRankingView()
-        }
     }
 
     func refresh() {
-        provideEntries()
+        provideEntries(forcingRefresh: true)
     }
 
     func loadWeeklyPrices(for subnets: [SubtensorSubnetRef]) {

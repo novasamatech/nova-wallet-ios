@@ -2,7 +2,7 @@ import Foundation
 
 extension SubtensorStakingSetupPresenter {
     func loadSubnetDataIfNeeded() {
-        guard !mode.isRootLane else {
+        guard !mode.isRootLane, let netuid = mode.netuid else {
             return
         }
 
@@ -14,7 +14,7 @@ extension SubtensorStakingSetupPresenter {
             interactor.loadSubnetLogos()
         }
 
-        loadYieldsIfNeeded(for: mode.netuid)
+        loadYieldsIfNeeded(for: netuid)
     }
 
     func loadCatalogueIfNeeded() {
@@ -106,12 +106,26 @@ extension SubtensorStakingSetupPresenter {
         }?.stakeAlpha
     }
 
+    func matchingRankedSubnet() -> SubtensorRankedSubnet? {
+        // Only positive, non-carried ages can be inverted: backend clamps negative ages to zero.
+        guard let subnetRef, let rankingView,
+              !rankingView.generation.carriedOverNetuids.contains(subnetRef.netuid),
+              let subnet = rankingView.items.first(where: { $0.netuid == subnetRef.netuid }),
+              let age = subnet.ageBlocks, age > 0,
+              age <= rankingView.generation.sourceBlockNumber,
+              rankingView.generation.sourceBlockNumber - age == subnetRef.registeredAt else {
+            return nil
+        }
+
+        return subnet
+    }
+
     func createViewModelInput() -> SubtensorStakingSetupViewModelInput {
         let subnetData = SubtensorSetupSubnetData(
             catalogue: catalogue,
             isCatalogueLoaded: isCatalogueLoaded,
             subnetLogos: subnetLogos,
-            rankedSubnet: rankingView?.items.first { $0.netuid == mode.netuid },
+            rankedSubnet: matchingRankedSubnet(),
             annualRate: subnetAnnualRate(),
             isQuoteFailed: isQuoteFailed,
             costBasis: costBasis
@@ -130,7 +144,10 @@ extension SubtensorStakingSetupPresenter {
             fee: fee,
             price: price,
             quote: quoteFlow.freshQuote,
-            positionStake: positionStake()
+            positionStake: positionStake(),
+            quickPickOrder: quickPickVisit?.order,
+            selectionFailed: quickPickVisit?.error != nil,
+            selectedRef: quickPickVisit?.selectedRef
         )
     }
 
@@ -189,13 +206,13 @@ extension SubtensorStakingSetupPresenter {
     }
 
     func showSwapRateInfo() {
-        guard !mode.isRootLane else {
+        guard !mode.isRootLane, let netuid = mode.netuid else {
             return
         }
 
         let subnetName = SubtensorSubnetNaming.titleWithSymbol(
-            for: mode.netuid,
-            in: catalogue,
+            for: netuid,
+            in: createViewModelInput().matchingCatalogue,
             locale: selectedLocale
         )
 
@@ -203,13 +220,16 @@ extension SubtensorStakingSetupPresenter {
     }
 
     func showAvgBuyPriceInfo() {
-        guard case .buyMore = mode else {
+        guard case let .buyMore(position) = mode else {
             return
         }
 
+        let matchingCatalogue = createViewModelInput().matchingCatalogue
         let sheet = SubtensorInfoSheet.avgBuyPrice(
-            symbol: SubtensorSubnetNaming.symbol(for: mode.netuid, in: catalogue),
-            subnetName: SubtensorSubnetNaming.titleWithSymbol(for: mode.netuid, in: catalogue, locale: selectedLocale)
+            symbol: SubtensorSubnetNaming.symbol(for: position.netuid, in: matchingCatalogue),
+            subnetName: SubtensorSubnetNaming.titleWithSymbol(
+                for: position.netuid, in: matchingCatalogue, locale: selectedLocale
+            )
         )
 
         wireframe.showSubtensorInfo(sheet, from: view)

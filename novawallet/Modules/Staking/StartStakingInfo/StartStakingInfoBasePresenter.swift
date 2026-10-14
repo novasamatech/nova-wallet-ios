@@ -259,7 +259,11 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     }
 
     func startStaking() {
-        guard let view = view,
+        startStaking { wireframe.showSetupAmount(from: view) }
+    }
+
+    func startStaking(continuation: () -> Void) {
+        guard view != nil,
               let accountExistense = accountExistense else {
             return
         }
@@ -270,7 +274,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         case .assetBalance:
             abandonTracker.markProceeded()
 
-            wireframe.showSetupAmount(from: view)
+            continuation()
         }
     }
 }

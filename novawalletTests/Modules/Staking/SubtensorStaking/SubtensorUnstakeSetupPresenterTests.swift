@@ -142,6 +142,7 @@ final class SubtensorUnstakeSetupPresenterTests: XCTestCase {
 
         return SubtensorSubnetsInfo(
             subnets: infos,
+            isComplete: true,
             prices: Dictionary(uniqueKeysWithValues: subnets.map { ($0, spotPrice) }),
             subtokenEnabled: Set(subnets),
             ownerCut: 11796

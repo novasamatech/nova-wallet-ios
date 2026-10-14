@@ -223,12 +223,219 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
         ExtrinsicFee(amount: amount, payer: nil, weight: .init(refTime: 1000, proofSize: 0))
     }
 
-    private func makeSetup(mode: SubtensorStakingSetupMode, free: Balance = 10_000_000_000) -> Setup {
+    func testQuickPickFreezesTargetSkipsUnsupportedPresetAndPreservesAmountThroughManualChoice() {
+        var draws = 0
+        let visit = SubtensorQuickPickVisit(order: .poolSize, selector: .init { _ in draws += 1; return 0 })
+        let setup = makeSetup(mode: .quickPick(.poolSize), visit: visit)
+        setup.presenter.updateAmount(2)
+        setup.presenter.didReceiveQuickPickSnapshot(.success(SubtensorQuickPickFixtures.snapshot([.init(1)])), generation: visit.generation)
+        setup.presenter.didReceivePositions(Multistaking.SubtensorStakingState(positions: []))
+        setup.presenter.didReceivePositionsSyncFailed(false)
+        setup.presenter.applyLocalization()
+        verify(setup.interactor, never()).presetValidator(on: any(), existingHotkey: any())
+        XCTAssertEqual(setup.presenter.validatorState, .none)
+        XCTAssertEqual(setup.presenter.inputDecimal(), 2)
+        let manual = makeSubnetTarget()
+        let validator = makeValidator(hotkey: hotkey, netuid: manual.netuid)
+        setup.presenter.didSelectStakeTarget(manual, validator: validator)
+        setup.presenter.didReceiveQuickPickSnapshot(.success(SubtensorQuickPickFixtures.snapshot([.init(9)])), generation: visit.generation - 1)
+        XCTAssertEqual(setup.presenter.target, manual)
+        XCTAssertEqual(setup.presenter.validatorState.validator?.hotkey, hotkey)
+        XCTAssertEqual(setup.presenter.inputDecimal(), 2)
+        XCTAssertEqual(draws, 1)
+    }
+
+    func testQuickPickRetryForcesRefreshAndRootNeverRequestsASnapshot() {
+        let visit = SubtensorQuickPickVisit(order: .age, selector: .init { _ in 0 })
+        let setup = makeSetup(mode: .quickPick(.age), visit: visit)
+        setup.presenter.didReceiveQuickPickSnapshot(.success(SubtensorQuickPickFixtures.snapshot([])), generation: visit.generation)
+        setup.presenter.retryQuickPick()
+        verify(setup.interactor).loadQuickPickSnapshot(generation: equal(to: 2), forcingRefresh: equal(to: true))
+        let root = makeSetup(mode: .rootDetails)
+        verify(root.interactor, never()).loadQuickPickSnapshot(generation: any(), forcingRefresh: any())
+    }
+
+    func testManualReplacementDuringPendingQuickPickWinsAndKeepsBrowseOrigin() {
+        let visit = SubtensorQuickPickVisit(order: .age, selector: .init { _ in XCTFail("Late draw"); return 0 })
+        let setup = makeSetup(mode: .quickPick(.age), visit: visit)
+        let generation = visit.generation
+        setup.presenter.didSelectStakeTarget(makeSubnetTarget(), validator: nil)
+        setup.presenter.didReceiveQuickPickSnapshot(.success(SubtensorQuickPickFixtures.snapshot([.init(9)])), generation: generation)
+        XCTAssertEqual(setup.presenter.target, makeSubnetTarget())
+        XCTAssertEqual(setup.presenter.browseState.sort, .age)
+        XCTAssertTrue(setup.presenter.browseState.filters.hideThinPools)
+        XCTAssertTrue(visit.isManuallyReplaced)
+    }
+
+    func testNoTaoKeepsSelectedSubnetAndValidatorAndDisablesContinue() throws {
+        let validator = makeValidator(hotkey: hotkey, netuid: 1)
+        let setup = makeSetup(mode: .subnetPick(target: makeSubnetTarget(), validator: validator), free: 0)
+        let model = try lastViewModel(setup)
+        XCTAssertNotNil(model.getTao)
+        XCTAssertFalse(model.action.isEnabled)
+        XCTAssertEqual(setup.presenter.validatorState.validator?.hotkey, hotkey)
+        XCTAssertEqual(setup.presenter.target, makeSubnetTarget())
+        guard case let .subnet(details) = model.details else { return XCTFail("Expected selected subnet") }
+        XCTAssertTrue(details.card.chips.isEmpty)
+    }
+
+    func testQuickPickRejectsOtherRegistrationMetadataAndDecoratesTheSameDrawWhenMatchingDataArrives() throws {
+        var draws = 0
+        let visit = SubtensorQuickPickVisit(order: .age, selector: .init { _ in draws += 1; return 0 })
+        let setup = makeSetup(mode: .quickPick(.age), visit: visit)
+        let snapshot = SubtensorQuickPickFixtures.snapshot([.init(1, registered: 200)])
+        let oldCatalogue = makeSetupCatalogue(registered: 100, name: "Retired subnet", symbol: "OLD")
+        stub(setup.interactor) { stub in
+            when(stub.cachedCatalogue()).thenReturn(.fresh(oldCatalogue, freshUntil: 300))
+            when(stub.cachedRankingView()).thenReturn(.fresh(makeSetupRanking(registered: 100), freshUntil: 300))
+        }
+        setup.presenter.didReceiveQuickPickSnapshot(.success(snapshot), generation: visit.generation)
+        let target = try XCTUnwrap(setup.presenter.target)
+        let logo = try XCTUnwrap(URL(string: "https://example.test/subnet.png"))
+        setup.presenter.didReceiveSubnetLogos(SubtensorSubnetLogos(urls: [1: logo]))
+        setup.presenter.didSelectValidator(makeValidator(hotkey: hotkey, netuid: 1), for: target)
+        setup.presenter.updateAmount(1)
+        setup.presenter.didReceiveQuote(try makeTradeQuote(taoIn: 1_000_000_000, spotPrice: 1_000_000))
+
+        let oldCard = try lastCardViewModel(setup)
+        XCTAssertEqual(oldCard.header?.title, "Subnet 1")
+        XCTAssertFalse(try XCTUnwrap(oldCard.header).isSelectable)
+        XCTAssertTrue(oldCard.header?.icon is StaticImageViewModel)
+        XCTAssertTrue(oldCard.chips.isEmpty)
+        assertTradeSymbol(oldCard, symbol: "SN1")
+
+        setup.presenter.didReceiveCatalogue(makeSetupCatalogue(registered: 200, name: "Current subnet", symbol: "NEW"))
+        setup.presenter.didReceiveRankingView(makeSetupRanking(registered: 200))
+        let currentCard = try lastCardViewModel(setup)
+        XCTAssertEqual(currentCard.header?.title, "Current subnet NEW")
+        XCTAssertTrue(try XCTUnwrap(currentCard.header).isSelectable)
+        XCTAssertEqual((currentCard.header?.icon as? RemoteImageViewModel)?.url, logo)
+        XCTAssertEqual(currentCard.chips.count, 3)
+        assertTradeSymbol(currentCard, symbol: "NEW")
+
+        setup.presenter.didReceiveCatalogue(makeSetupCatalogue(registered: 300, name: "Future subnet", symbol: "NEXT"))
+        setup.presenter.didReceiveRankingView(makeSetupRanking(registered: 300))
+        let futureCard = try lastCardViewModel(setup)
+        XCTAssertEqual(futureCard.header?.title, "Subnet 1")
+        XCTAssertTrue(futureCard.header?.icon is StaticImageViewModel)
+        XCTAssertTrue(futureCard.chips.isEmpty)
+        assertTradeSymbol(futureCard, symbol: "SN1")
+        XCTAssertEqual(setup.presenter.target, target)
+        XCTAssertEqual(visit.selectedRef, SubtensorSubnetRef(netuid: 1, registeredAt: 200))
+        XCTAssertEqual(setup.presenter.validatorState.validator?.hotkey, hotkey)
+        XCTAssertEqual(setup.presenter.inputDecimal(), 1)
+        XCTAssertEqual(draws, 1)
+    }
+
+    func testSetupHidesRankingChipsWithoutVerifiableRegistration() throws {
+        let visit = SubtensorQuickPickVisit(order: .poolSize, selector: .init { _ in 0 })
+        let setup = makeSetup(mode: .quickPick(.poolSize), visit: visit)
+        setup.presenter.didReceiveQuickPickSnapshot(
+            .success(SubtensorQuickPickFixtures.snapshot([.init(1, registered: 200)])), generation: visit.generation
+        )
+        let cases: [(UInt64, UInt64?, [UInt16])] = [
+            (2_000_200, nil, []), // Missing age cannot identify a registration.
+            (100, 101, []), // Invalid subtraction must not underflow.
+            (100, 0, []), // The generation predates the selected registration.
+            (200, 0, []), // Equality is still ambiguous because backend clamps negative ages to zero.
+            (2_000_200, 2_000_000, [1]), // Carry-over may belong to an older generation.
+            (2_000_200, 2_000_100, []), // Older registration.
+            (2_000_200, 1_999_900, []) // Newer registration.
+        ]
+        for (block, age, carried) in cases {
+            setup.presenter.didReceiveRankingView(makeSetupRanking(sourceBlock: block, age: age, carried: carried))
+            XCTAssertTrue(try lastCardViewModel(setup).chips.isEmpty)
+        }
+        setup.presenter.didReceiveRankingView(makeSetupRanking(registered: 200))
+        XCTAssertEqual(try lastCardViewModel(setup).chips.count, 3)
+    }
+
+    func testGatedZeroAgeCannotDecorateSelectedRegistrationButPositiveAgeCan() throws {
+        var draws = 0
+        let visit = SubtensorQuickPickVisit(order: .age, selector: .init { _ in draws += 1; return 0 })
+        let setup = makeSetup(mode: .quickPick(.age), visit: visit)
+        setup.presenter.didReceiveQuickPickSnapshot(
+            .success(SubtensorQuickPickFixtures.snapshot([.init(1, registered: 200)])), generation: visit.generation
+        )
+        let target = setup.presenter.target
+
+        // A newer catalogue registration can produce this same zero after backend clamping.
+        setup.presenter.didReceiveRankingView(makeSetupRanking(sourceBlock: 200, age: 0, carried: [], status: .gated))
+        XCTAssertTrue(try lastCardViewModel(setup).chips.isEmpty)
+
+        // Positive non-carried age remains an exact registration match, even for a gated row.
+        setup.presenter.didReceiveRankingView(makeSetupRanking(sourceBlock: 201, age: 1, carried: [], status: .gated))
+        XCTAssertEqual(try lastCardViewModel(setup).chips, ["deep pool"])
+        XCTAssertEqual(setup.presenter.target, target)
+        XCTAssertEqual(visit.selectedRef, SubtensorSubnetRef(netuid: 1, registeredAt: 200))
+        XCTAssertEqual(draws, 1)
+    }
+
+    private func assertTradeSymbol(_ card: SubtensorPickCardViewModel, symbol: String, file: StaticString = #filePath, line: UInt = #line) {
+        for row in [card.receive, card.swapRate] {
+            guard case let .value(value) = row else { return XCTFail("Expected quoted row", file: file, line: line) }
+            XCTAssertTrue(value.contains(" \(symbol)"), value, file: file, line: line)
+            XCTAssertFalse(value.contains("OLD") || value.contains("NEXT"), file: file, line: line)
+        }
+    }
+
+    private func makeSetupCatalogue(registered: UInt64, name: String, symbol: String) -> SubtensorSubnetCatalogue {
+        let stamp = SubtensorBackendStamp(asOf: Date(timeIntervalSince1970: 100), freshness: .fresh)
+        let subnet = SubtensorCatalogueSubnet(
+            netuid: 1, name: name, symbol: symbol, networkRegisteredAt: registered, tempo: 360,
+            ownerColdkey: "", ownerHotkey: "",
+            links: SubtensorSubnetLinks(githubRepo: "", subnetContact: "", subnetUrl: "", subnetWebsite: "", discord: "", additional: ""),
+            taoReserve: 2_000_000_000_000, alphaReserve: 0, alphaOutstanding: 0, taoPerAlpha: 1_000_000,
+            metadataStamp: stamp, pricesStamp: stamp
+        )
+        return SubtensorSubnetCatalogue(subnets: [subnet])
+    }
+
+    private func makeSetupRanking(registered: UInt64) -> SubtensorRankedSubnets {
+        makeSetupRanking(sourceBlock: 2_000_200, age: 2_000_200 - registered, carried: [])
+    }
+
+    private func makeSetupRanking(sourceBlock: UInt64, age: UInt64?, carried: [UInt16], status: SubtensorRankedSubnet.Status = .scored) -> SubtensorRankedSubnets {
+        let score = SubtensorMetricScore(raw: 0.01, normalized: 0, weight: 1, isDerived: false, flags: [])
+        let subnet = SubtensorRankedSubnet(
+            netuid: 1, subnetName: "Ranked subnet", symbol: "RANK", status: status, isEligible: status == .scored,
+            reasons: [], riskClass: status == .scored ? .stable : nil, subnetRisk: status == .scored ? 0 : nil,
+            breakdown: status == .scored ? SubtensorSubnetBreakdown(
+                volatility: score,
+                maxDrawdown: score,
+                poolDepth: score,
+                age: score,
+                emissionStability: score,
+                stakeConcentration: score
+            ) : nil,
+            taoIn: 30000, priceTao: 0.001, ageBlocks: age,
+            scoredValidators: status == .scored ? 20 : 0, eligibleValidators: status == .scored ? 20 : 0, flags: []
+        )
+        let generation = SubtensorRecommendationGeneration(
+            id: "identity-test", sourceBlockNumber: sourceBlock, modelVersion: "5.0", ageSeconds: 0,
+            receivedAt: 100, isServedFromMemory: false, excludedNetuids: [], carriedOverNetuids: carried, inputFlags: [],
+            stamp: SubtensorBackendStamp(asOf: Date(timeIntervalSince1970: 100), freshness: .fresh), isPartial: !carried.isEmpty
+        )
+        return SubtensorRankedSubnets(
+            generation: generation,
+            policy: SubtensorRecommendationPolicy(
+                classification: .pair,
+                requiresIdentity: true,
+                requiresPositiveSignal: false,
+                insufficientHistory: .neutral
+            ),
+            items: [subnet]
+        )
+    }
+
+    private func makeSetup(mode: SubtensorStakingSetupMode, free: Balance = 10_000_000_000, visit: SubtensorQuickPickVisit? = nil) -> Setup {
         let chainAsset = makeChainAsset()
         let interactor = MockSubtensorSetupInteractorInputProtocol()
 
         stub(interactor) { stub in
             when(stub.setup()).thenDoNothing()
+            when(stub.loadQuickPickSnapshot(generation: any(), forcingRefresh: any())).thenDoNothing()
+            when(stub.cancelQuickPickSnapshot()).thenDoNothing()
             when(stub.cachedCatalogue()).thenReturn(.miss)
             when(stub.cachedRankingView()).thenReturn(.miss)
             when(stub.cachedYields(netuid: any())).thenReturn(.miss)
@@ -252,6 +459,7 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
         let view = MockSubtensorStakingSetupViewProtocol()
 
         stub(view) { stub in
+            when(stub.isSetup.get).thenReturn(true)
             when(stub.didReceiveAmount(inputViewModel: any())).thenDoNothing()
             when(stub.didReceiveAmountAsset(viewModel: any())).thenDoNothing()
             when(stub.didReceive(viewModel: any())).thenDoNothing()
@@ -286,7 +494,9 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
                 )
             ),
             localizationManager: LocalizationManager.shared,
-            logger: Logger.shared
+            logger: Logger.shared,
+            browseState: SubtensorSubnetBrowseState(order: visit?.order),
+            quickPickVisit: visit
         )
 
         presenter.view = view

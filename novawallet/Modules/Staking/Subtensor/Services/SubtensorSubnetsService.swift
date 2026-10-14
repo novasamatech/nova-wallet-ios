@@ -4,6 +4,7 @@ import Operation_iOS
 
 struct SubtensorSubnetsInfo: Equatable {
     let subnets: [SubtensorStakingPallet.DynamicInfo]
+    let isComplete: Bool
     let prices: [UInt16: Balance]
     let subtokenEnabled: Set<UInt16>
     /// chain-wide, governance-mutable; falls back to the runtime default while unset
@@ -37,6 +38,11 @@ final class SubtensorSubnetsService: SubtensorSessionCachingService<SubtensorSub
         self.operationFactory = operationFactory
 
         super.init(operationQueue: operationQueue, cache: cache, logger: logger)
+    }
+
+    static func isCompleteSnapshot(_ rows: [SubtensorStakingPallet.DynamicInfo?]) -> Bool {
+        let netuids = rows.compactMap { $0?.netuid }
+        return netuids.count == rows.count && Set(netuids).count == netuids.count
     }
 
     override func createFetchWrapper() -> CompoundOperationWrapper<SubtensorSubnetsInfo> {
@@ -75,6 +81,7 @@ final class SubtensorSubnetsService: SubtensorSessionCachingService<SubtensorSub
 
             return SubtensorSubnetsInfo(
                 subnets: dynamicInfos.compactMap { $0 },
+                isComplete: Self.isCompleteSnapshot(dynamicInfos),
                 prices: prices,
                 subtokenEnabled: subtokenEnabled,
                 ownerCut: ownerCut

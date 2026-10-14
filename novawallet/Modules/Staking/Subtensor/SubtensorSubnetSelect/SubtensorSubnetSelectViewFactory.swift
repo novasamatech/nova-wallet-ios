@@ -5,9 +5,10 @@ import UIKit
 enum SubtensorSubnetSelectViewFactory {
     static func createPicker(
         for state: SubtensorStakingSharedStateProtocol,
-        delegate: SubtensorSubnetSelectDelegate
+        delegate: SubtensorSubnetSelectDelegate,
+        browseState: SubtensorSubnetBrowseState = .init()
     ) -> UIViewController? {
-        guard let view = createView(for: state, delegate: delegate) else {
+        guard let view = createView(for: state, delegate: delegate, browseState: browseState) else {
             return nil
         }
 
@@ -16,7 +17,8 @@ enum SubtensorSubnetSelectViewFactory {
 
     static func createView(
         for state: SubtensorStakingSharedStateProtocol,
-        delegate: SubtensorSubnetSelectDelegate
+        delegate: SubtensorSubnetSelectDelegate,
+        browseState: SubtensorSubnetBrowseState = .init()
     ) -> SubtensorSubnetSelectViewProtocol? {
         let earnServices = state.earnServices
 
@@ -24,8 +26,6 @@ enum SubtensorSubnetSelectViewFactory {
             catalogueService: earnServices.catalogueService,
             subnetsService: state.subnetsService,
             subnetLogosProvider: earnServices.subnetLogosProvider,
-            yieldService: earnServices.yieldService,
-            rankingViewService: earnServices.rankingViewService,
             priceHistoryService: earnServices.priceHistoryService,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared
@@ -39,7 +39,8 @@ enum SubtensorSubnetSelectViewFactory {
             viewModelFactory: SubtensorSubnetViewModelFactory(chainAsset: state.stakingOption.chainAsset),
             delegate: delegate,
             earnSettings: earnServices.earnSettings,
-            localizationManager: localizationManager
+            localizationManager: localizationManager,
+            browseState: browseState
         )
 
         let view = SubtensorSubnetSelectViewController(

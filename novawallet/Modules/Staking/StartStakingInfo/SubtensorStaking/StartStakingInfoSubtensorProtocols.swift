@@ -5,6 +5,7 @@ protocol StartStakingInfoSubtensorViewProtocol: StartStakingInfoViewProtocol {
 }
 
 protocol StartStakingInfoSubtensorPresenterProtocol: StartStakingInfoPresenterProtocol {
+    func seeAllOptions()
     func refreshContent()
 }
 
@@ -17,6 +18,8 @@ protocol StartStakingInfoSubtensorInteractorOutputProtocol: StartStakingInfoInte
 
 protocol StartStakingInfoSubtensorWireframeProtocol: StartStakingInfoWireframeProtocol,
     MessageSheetPresentable {
+    func showAllOptions(from view: ControllerBackedProtocol?)
+
     func showRootDetails(from view: ControllerBackedProtocol?)
 
     func showSubnetSetup(
