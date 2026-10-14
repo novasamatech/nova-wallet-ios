@@ -222,7 +222,7 @@ flowchart TB
 
 GET/HEAD freshness belongs to native URLCache, driven by Date/Age/Cache-Control. Complete reads
 use public max-age/must-revalidate; POST/bootstrap use no-store. Cache success cannot extend bearer
-validity. Admission still precedes domain cache/coalescing; endpoint availability is insufficient.
+validity. Endpoint availability is insufficient.
 
 Conclusive replay requires the exact expected HTTPS origin, status 401 and exact
 `WWW-Authenticate: Bearer error="invalid_token"`; GET/POST also need a valid invalid-token body,
