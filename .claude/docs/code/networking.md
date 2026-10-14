@@ -133,12 +133,12 @@ module should call `EvmTransactionService`, not the RPC layer.
 
 `Packages/NovaAuth` owns profile-3 bootstrap, the single persisted bearer, bounded renewal and
 native URLCache. App consumers inject `NovaAuthFacade.shared`; never build a per-feature auth
-provider. Endpoint admissions carry an immutable facade invalidation revision. The decoded cache advances
-its revision floor monotonically and reconciles the latest revision before participation,
-completion and peek. Delayed or duplicate notifications preserve current-revision state;
+provider. HTTP freshness is URLCache max-age only: there is no request coalescing, negative availability
+TTL or client TTL. Endpoint admissions carry an immutable facade invalidation revision.
+The decoded cache advances its revision floor monotonically and reconciles the latest revision
+before completion and peek. Delayed or duplicate notifications preserve current-revision state;
 old admissions/completions remain fenced. Same-origin readiness does not invalidate the cache.
-Their pending completions cannot restore a prior context's memo or
-return a directory enriched after that context was invalidated.
+Chain data is never cached client-side.
 
 Main-owner admission returns a usable bearer before issuance cooldown checks. Every actual
 business send checks shared-origin protection before native cache/network access. Only business
@@ -152,10 +152,8 @@ or policy denial preserves an existing binding rather than rotating its key.
 without retry. `403 insufficient_scope` maps to generic `invalidRequest` without retry before
 the generic 401/403 branch. Invalid challenge, 503 and transport errors remain retryable.
 
-Local unsupported/configuration
-failures also terminate it. Route/data gaps retain per-target skipping, and transient failures
-retain bounded retries. No walk result is kept between requests, so nothing can mask
-authentication recovery in the same context.
+No result is kept
+between requests, so nothing can mask authentication recovery in the same context.
 
 One origin/API-major bearer serves ordinary protected GET/HEAD and POST routes. Auth has no
 business allowlist or flow/scope. Consumers own method/path/body validation and ordinary business retry policy.
