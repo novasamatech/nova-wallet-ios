@@ -52,10 +52,6 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
         createWrapper(route: .validators, path: "/subnets/\(netuid)/validators")
     }
 
-    func peekValidators(netuid: UInt16) -> HTTPCachePeek<BittensorApiResult<BittensorApi.ValidatorCollection>> {
-        peek(path: "/subnets/\(netuid)/validators")
-    }
-
     func createAlphaYieldWrapper(
         netuid: UInt16,
         page: Int
@@ -144,13 +140,10 @@ private extension BittensorApiOperationFactory {
     }
 
     func peek<T>(path: String, queryItems: [URLQueryItem] = []) -> HTTPCachePeek<BittensorApiResult<T>> {
-        let cached = cache.peek(
+        cache.peek(
             Self.cacheKey(path: path, queryItems: queryItems),
             invalidationRevision: transport.invalidationRevision
-        )
-        let isFromExpiredCache = !cached.isFresh
-
-        return cached.map { try Self.makeResult(from: $0, isFromExpiredCache: isFromExpiredCache) }
+        ).map { try Self.makeResult(from: $0, isFromExpiredCache: true) }
     }
 
     func createSearchWrapper<T: Decodable>(

@@ -21,16 +21,9 @@ protocol SubtensorStakingConfirmPresenterProtocol: AnyObject {
     func showNetworkFeeInfo()
 }
 
-protocol SubtensorConfirmInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {
-    func loadSubnetData()
-    func loadCostBasis(for netuid: UInt16)
-}
+protocol SubtensorConfirmInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {}
 
-protocol SubtensorConfirmInteractorOutputProtocol: SubtensorStakingBaseInteractorOutputProtocol {
-    func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?)
-    func didReceiveSubnetLogos(_ logos: SubtensorSubnetLogos?)
-    func didReceiveCostBasis(_ costBasis: SubtensorCostBasis?)
-}
+protocol SubtensorConfirmInteractorOutputProtocol: SubtensorStakingBaseInteractorOutputProtocol {}
 
 protocol SubtensorStakingConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
     CommonRetryable, MessageSheetPresentable, SubtensorStakingErrorPresentable, SubtensorInfoSheetPresentable,

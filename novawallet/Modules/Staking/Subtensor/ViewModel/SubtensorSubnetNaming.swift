@@ -63,3 +63,22 @@ private extension SubtensorSubnetNaming {
         trimmed(symbol) ?? "SN\(netuid)"
     }
 }
+
+extension AssetBalanceDisplayInfo {
+    func subtensorAlpha(symbol: String) -> AssetBalanceDisplayInfo {
+        AssetBalanceDisplayInfo(
+            displayPrecision: displayPrecision,
+            assetPrecision: assetPrecision,
+            symbol: symbol,
+            symbolValueSeparator: symbolValueSeparator,
+            symbolPosition: symbolPosition,
+            icon: nil
+        )
+    }
+}
+
+extension String {
+    func isolatedLeftToRight() -> String {
+        "\u{2066}\(self)\u{2069}"
+    }
+}

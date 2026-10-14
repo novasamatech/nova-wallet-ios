@@ -30,11 +30,8 @@ protocol SubtensorSetupInteractorInputProtocol: SubtensorStakingBaseInteractorIn
     func presetValidator(on subnet: SubtensorSubnetRef, existingHotkey: AccountId?)
     func loadLockedValidator(_ hotkey: AccountId, on subnet: SubtensorSubnetRef)
     func loadSubnet(netuid: UInt16)
-    func loadCatalogue()
     func loadYields(netuid: UInt16)
     func loadRankingView()
-    func loadSubnetLogos()
-    func loadCostBasis(for netuid: UInt16)
     func saveSlippage(_ tolerance: BigRational)
 }
 
@@ -43,11 +40,8 @@ protocol SubtensorSetupInteractorOutputProtocol: SubtensorStakingBaseInteractorO
     func didReceiveValidator(_ validator: SubtensorValidatorDirectoryItem?, on subnet: SubtensorSubnetRef)
     func didReceiveSubnet(_ target: SubtensorStakeTarget)
     func didFailSubnet(_ error: Error)
-    func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?)
     func didReceiveYields(_ yields: SubtensorAlphaYields?, netuid: UInt16)
     func didReceiveRankingView(_ rankingView: SubtensorRankedSubnets?)
-    func didReceiveSubnetLogos(_ logos: SubtensorSubnetLogos?)
-    func didReceiveCostBasis(_ costBasis: SubtensorCostBasis?)
 }
 
 protocol SubtensorStakingSetupWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,

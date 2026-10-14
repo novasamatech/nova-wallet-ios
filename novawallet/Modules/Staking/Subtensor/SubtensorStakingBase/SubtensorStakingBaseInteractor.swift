@@ -8,12 +8,12 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
     let chainAsset: ChainAsset
     let selectedAccount: ChainAccountResponse
     let positionsSyncService: SubtensorPositionsSyncServiceProtocol
-    let rootClaimableService: SubtensorRootClaimableServiceProtocol
     let preflightFactory: SubtensorPreflightFactoryProtocol
     let tradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol
     let operationService: SubtensorStakingOperationServiceProtocol
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
     let costBasisService: SubtensorCostBasisServiceProtocol
+    let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
@@ -29,52 +29,44 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
     private let feeCallStore = CancellableCallStore()
     private let preflightCallStore = CancellableCallStore()
     private let quoteCallStore = CancellableCallStore()
+    private let catalogueCallStore = CancellableCallStore()
+    private let logosCallStore = CancellableCallStore()
+    private let costBasisCallStore = CancellableCallStore()
 
     init(
-        chainAsset: ChainAsset,
-        selectedAccount: ChainAccountResponse,
-        positionsSyncService: SubtensorPositionsSyncServiceProtocol,
-        rootClaimableService: SubtensorRootClaimableServiceProtocol,
-        preflightFactory: SubtensorPreflightFactoryProtocol,
-        tradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol,
-        operationService: SubtensorStakingOperationServiceProtocol,
-        catalogueService: SubtensorSubnetCatalogueServiceProtocol,
-        costBasisService: SubtensorCostBasisServiceProtocol,
-        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
-        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
-        runtimeProvider: RuntimeCodingServiceProtocol,
-        currencyManager: CurrencyManagerProtocol,
-        operationQueue: OperationQueue,
+        flowServices: SubtensorFlowServices,
+        state: SubtensorStakingSharedStateProtocol,
         logger: LoggerProtocol
     ) {
-        self.chainAsset = chainAsset
-        self.selectedAccount = selectedAccount
-        self.positionsSyncService = positionsSyncService
-        self.rootClaimableService = rootClaimableService
-        self.preflightFactory = preflightFactory
-        self.tradeQuoteFactory = tradeQuoteFactory
-        self.operationService = operationService
-        self.catalogueService = catalogueService
-        self.costBasisService = costBasisService
-        self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
-        self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
-        self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
-        self.runtimeProvider = runtimeProvider
-        self.operationQueue = operationQueue
+        chainAsset = state.stakingOption.chainAsset
+        selectedAccount = flowServices.account.chainAccount
+        positionsSyncService = flowServices.positionsSyncService
+        preflightFactory = flowServices.preflightFactory
+        tradeQuoteFactory = flowServices.tradeQuoteFactory
+        operationService = flowServices.operationService
+        catalogueService = state.earnServices.catalogueService
+        costBasisService = state.earnServices.costBasisService
+        subnetLogosProvider = state.earnServices.subnetLogosProvider
+        walletLocalSubscriptionFactory = flowServices.walletLocalSubscriptionFactory
+        priceLocalSubscriptionFactory = flowServices.priceLocalSubscriptionFactory
+        generalLocalSubscriptionFactory = state.generalLocalSubscriptionFactory
+        runtimeProvider = flowServices.runtimeProvider
+        operationQueue = flowServices.operationQueue
         self.logger = logger
 
-        self.currencyManager = currencyManager
+        currencyManager = flowServices.currencyManager
     }
 
     deinit {
         feeCallStore.cancel()
         preflightCallStore.cancel()
         quoteCallStore.cancel()
+        catalogueCallStore.cancel()
+        logosCallStore.cancel()
+        costBasisCallStore.cancel()
 
         positionsSyncService.remove(observer: self)
         positionsSyncService.remove(failureObserver: self)
-        rootClaimableService.remove(observer: self)
     }
 
     func onSetup() {}
@@ -137,16 +129,6 @@ private extension SubtensorStakingBaseInteractor {
         }
     }
 
-    func makeClaimableSubscription() {
-        rootClaimableService.add(
-            observer: self,
-            sendStateOnSubscription: true,
-            queue: .main
-        ) { [weak self] _, newState in
-            self?.basePresenter?.didReceiveClaimable(newState)
-        }
-    }
-
     func provideExistentialDeposit() {
         fetchConstant(
             for: .existentialDeposit,
@@ -170,7 +152,6 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
         makeBlockNumberSubscription()
         makePositionsSubscription()
         makePositionsFailureSubscription()
-        makeClaimableSubscription()
 
         provideExistentialDeposit()
 
@@ -263,6 +244,63 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
 
     func refreshPositions() {
         positionsSyncService.refresh()
+    }
+
+    func loadCatalogue() {
+        catalogueCallStore.cancel()
+
+        executeCancellable(
+            wrapper: catalogueService.createCatalogueWrapper(),
+            inOperationQueue: operationQueue,
+            backingCallIn: catalogueCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(catalogue):
+                self?.basePresenter?.didReceiveCatalogue(catalogue)
+            case let .failure(error):
+                self?.logger.warning("Subtensor catalogue unavailable: \(error)")
+                self?.basePresenter?.didReceiveCatalogue(nil)
+            }
+        }
+    }
+
+    func loadSubnetLogos() {
+        logosCallStore.cancel()
+
+        executeCancellable(
+            wrapper: subnetLogosProvider.createLogosWrapper(),
+            inOperationQueue: operationQueue,
+            backingCallIn: logosCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(logos):
+                self?.basePresenter?.didReceiveSubnetLogos(logos)
+            case let .failure(error):
+                self?.logger.warning("Subtensor subnet logos unavailable: \(error)")
+                self?.basePresenter?.didReceiveSubnetLogos(nil)
+            }
+        }
+    }
+
+    func loadCostBasis(for netuid: UInt16) {
+        costBasisCallStore.cancel()
+
+        executeCancellable(
+            wrapper: costBasisService.createCostBasisWrapper(for: selectedAccount.accountId, netuid: netuid),
+            inOperationQueue: operationQueue,
+            backingCallIn: costBasisCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(costBasis):
+                self?.basePresenter?.didReceiveCostBasis(costBasis)
+            case let .failure(error):
+                self?.logger.warning("Subtensor cost basis unavailable on netuid \(netuid): \(error)")
+                self?.basePresenter?.didReceiveCostBasis(nil)
+            }
+        }
     }
 }
 

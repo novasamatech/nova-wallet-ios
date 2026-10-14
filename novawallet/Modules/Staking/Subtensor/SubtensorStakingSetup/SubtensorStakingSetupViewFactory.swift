@@ -141,16 +141,8 @@ private extension SubtensorStakingSetupViewFactory {
 
         return SubtensorStakingSetupInteractor(
             flowServices: services,
-            chainAsset: state.stakingOption.chainAsset,
+            state: state,
             presetFactory: presetFactory,
-            yieldService: earnServices.yieldService,
-            catalogueService: earnServices.catalogueService,
-            recommendationService: earnServices.recommendationService,
-            subnetLogosProvider: earnServices.subnetLogosProvider,
-            subnetsService: state.subnetsService,
-            earnSettings: earnServices.earnSettings,
-            costBasisService: earnServices.costBasisService,
-            generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             logger: Logger.shared
         )
     }

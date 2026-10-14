@@ -14,7 +14,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
-    let historyLoader: SubtensorPortfolioHistoryLoader
+    let priceHistoryStore: SubtensorPriceHistoryStore
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
@@ -25,6 +25,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
     private let catalogueStore = CancellableCallStore()
     private let logosStore = CancellableCallStore()
     private let weeklyChangesStore = CancellableCallStore()
+    private let historiesStore = CancellableCallStore()
 
     private var chainAsset: ChainAsset {
         state.stakingOption.chainAsset
@@ -41,7 +42,6 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
         priceHistoryService: SubtensorPriceHistoryServiceProtocol?,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
-        flowState: SubtensorStakingFlowStateProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
@@ -57,11 +57,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
         self.operationQueue = operationQueue
         self.logger = logger
 
-        historyLoader = SubtensorPortfolioHistoryLoader(
-            priceHistoryService: priceHistoryService,
-            flowState: flowState,
-            operationQueue: operationQueue
-        )
+        priceHistoryStore = SubtensorPriceHistoryStore(state: state, operationQueue: operationQueue)
 
         self.currencyManager = currencyManager
     }
@@ -70,6 +66,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
         catalogueStore.cancel()
         logosStore.cancel()
         weeklyChangesStore.cancel()
+        historiesStore.cancel()
         state.positionsSyncService?.remove(observer: self)
         state.positionsSyncService?.remove(failureObserver: self)
         state.positionsSyncService?.remove(fetchObserver: self)
@@ -78,10 +75,6 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
 }
 
 extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
-    func cachedSnapshot() -> SubtensorPortfolioSnapshot {
-        SubtensorPortfolioSnapshot(catalogue: catalogueService.cachedCatalogue())
-    }
-
     func setup() {
         state.setup(for: account)
 
@@ -105,11 +98,13 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
             return
         }
 
-        historyLoader.load(
-            for: period,
-            subnets: subnets,
-            taoPriceId: priceId,
-            currency: selectedCurrency
+        historiesStore.cancel()
+
+        executeCancellable(
+            wrapper: createHistoriesWrapper(for: period, subnets: subnets, taoPriceId: priceId),
+            inOperationQueue: operationQueue,
+            backingCallIn: historiesStore,
+            runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
             case let .success(histories):
@@ -147,6 +142,66 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
 }
 
 private extension SubtensorPortfolioInteractor {
+    func createHistoriesWrapper(
+        for period: SubtensorPricePeriod,
+        subnets: [SubtensorSubnetRef],
+        taoPriceId: AssetModel.PriceId
+    ) -> CompoundOperationWrapper<SubtensorPortfolioPriceHistories> {
+        let currency = selectedCurrency
+
+        let taoWrapper = state.flowState.priceSeriesCache.createSeriesWrapper(
+            for: taoPriceId,
+            currency: currency,
+            period: period.sourcePeriod.coingeckoPeriod
+        )
+
+        let subnetWrappers = subnets.map { subnet in
+            priceHistoryStore.createHistoryWrapper(for: subnet, period: period, currency: currency)
+        }
+
+        let hasPriceHistoryService = priceHistoryService != nil
+
+        let historiesOperation = ClosureOperation<SubtensorPortfolioPriceHistories> {
+            let taoHistory = try taoWrapper.targetOperation.extractNoCancellableResultData()
+
+            var histories: [SubtensorPriceHistory] = []
+            var notListedNetuids: Set<UInt16> = []
+            var failedNetuids: Set<UInt16> = []
+
+            for (subnet, wrapper) in zip(subnets, subnetWrappers) {
+                do {
+                    let result = try wrapper.targetOperation.extractNoCancellableResultData()
+
+                    switch result {
+                    case let .available(history):
+                        histories.append(history)
+                    case .notListed:
+                        if hasPriceHistoryService {
+                            notListedNetuids.insert(subnet.netuid)
+                        }
+                    }
+                } catch {
+                    failedNetuids.insert(subnet.netuid)
+                }
+            }
+
+            return SubtensorPortfolioPriceHistories(
+                period: period,
+                taoFiat: taoHistory,
+                subnets: histories,
+                notListedNetuids: notListedNetuids,
+                failedNetuids: failedNetuids
+            )
+        }
+
+        historiesOperation.addDependency(taoWrapper.targetOperation)
+        subnetWrappers.forEach { historiesOperation.addDependency($0.targetOperation) }
+
+        let dependencies = taoWrapper.allOperations + subnetWrappers.flatMap(\.allOperations)
+
+        return CompoundOperationWrapper(targetOperation: historiesOperation, dependencies: dependencies)
+    }
+
     func subscribePositions() {
         state.positionsSyncService?.add(
             observer: self,

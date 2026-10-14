@@ -109,12 +109,6 @@ private extension SubtensorSubnetDetailsPresenter {
         view?.didReceive(viewModel: viewModel)
     }
 
-    func seed(from snapshot: SubtensorSubnetDetailsSnapshot) {
-        if let yields = snapshot.yields.value, yields.netuid == subnetRef.netuid {
-            self.yields = yields
-        }
-    }
-
     func loadHistory() {
         history = .loading
         interactor.loadHistory(for: period)
@@ -167,7 +161,9 @@ private extension SubtensorSubnetDetailsPresenter {
 
 extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtocol {
     func setup() {
-        seed(from: interactor.cachedSnapshot())
+        if let yields = interactor.cachedYields(), yields.netuid == subnetRef.netuid {
+            self.yields = yields
+        }
 
         provideTitle()
         provideViewModel()

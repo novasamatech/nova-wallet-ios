@@ -24,17 +24,13 @@ extension SubtensorStakingValidationFactory {
         existentialDeposit: Balance?,
         locale: Locale
     ) -> DataValidating {
-        ErrorConditionViolation(onError: { [weak self] in
-            guard let self, let view else {
-                return
-            }
-
+        errorCondition(locale: locale, alert: { factory, strings in
             let requiredAmount = (networkFee ?? 0) + (existentialDeposit ?? 0)
+            let required = factory.formatRequiredAmount(requiredAmount, locale: locale)
 
-            presentable.presentBatchedSellFeeNotCovered(
-                view,
-                requiredAmount: formatRequiredAmount(requiredAmount, locale: locale),
-                locale: locale
+            return (
+                strings.stakingSubtensorBatchedSellFeeTitle(),
+                strings.stakingSubtensorBatchedSellFeeMessage(required)
             )
         }, preservesCondition: {
             guard let networkFee else {
@@ -131,20 +127,13 @@ extension SubtensorStakingValidationFactory {
         blockTime: BlockTime,
         locale: Locale
     ) -> DataValidating {
-        ErrorConditionViolation(onError: { [weak self] in
-            guard let self, let view else {
-                return
-            }
-
+        errorCondition(locale: locale, alert: { _, strings in
             let elapsed = currentBlock.map { UInt64($0).subtractOrZero(lastStakeBlock ?? 0) } ?? 0
             let remainingBlocks = (unlockInterval ?? 0).subtractOrZero(elapsed)
             let remainingTime = (TimeInterval(remainingBlocks) * TimeInterval(blockTime)).seconds
+            let eta = remainingTime.localizedDaysHoursOrFallbackMinutes(for: locale)
 
-            presentable.presentUnstakeLocked(
-                view,
-                eta: remainingTime.localizedDaysHoursOrFallbackMinutes(for: locale),
-                locale: locale
-            )
+            return (strings.stakingSubtensorUnstakeLockedTitle(), strings.stakingSubtensorUnstakeLockedMessage(eta))
         }, preservesCondition: {
             guard let unlockInterval, unlockInterval > 0, let lastStakeBlock else {
                 return true
@@ -165,32 +154,20 @@ private extension SubtensorStakingValidationFactory {
         assetDisplayInfo: AssetBalanceDisplayInfo?,
         locale: Locale
     ) -> DataValidating {
-        ErrorConditionViolation(onError: { [weak self] in
-            guard let self, let view else {
-                return
-            }
+        errorCondition(locale: locale, alert: { factory, strings in
+            let available = factory.formatAmount(maxSell, assetDisplayInfo: assetDisplayInfo, locale: locale)
 
-            presentable.presentUnstakeExceedsAvailable(
-                view,
-                available: formatAmount(maxSell, assetDisplayInfo: assetDisplayInfo, locale: locale),
-                locale: locale
-            )
+            return (strings.commonAmountTooBig(), strings.stakingSubtensorUnstakeExceedsAvailableMessage(available))
         }, preservesCondition: {
             false
         })
     }
 
     func createSellBelowMinimumOut(minStake: Balance, locale: Locale) -> DataValidating {
-        ErrorConditionViolation(onError: { [weak self] in
-            guard let self, let view else {
-                return
-            }
+        errorCondition(locale: locale, alert: { factory, strings in
+            let minimum = factory.formatAmount(minStake, locale: locale)
 
-            presentable.presentUnstakeAmountTooLow(
-                view,
-                minAmount: formatAmount(minStake, locale: locale),
-                locale: locale
-            )
+            return (strings.amountTooLow(), strings.stakingSubtensorUnstakeTooLowMessage(minimum))
         }, preservesCondition: {
             false
         })
@@ -222,16 +199,13 @@ private extension SubtensorStakingValidationFactory {
     }
 
     func createErasedRemainderError(for input: SubtensorSellPlanInput, locale: Locale) -> DataValidating {
-        ErrorConditionViolation(onError: { [weak self] in
-            guard let self, let view else {
-                return
-            }
+        errorCondition(locale: locale, alert: { factory, strings in
+            let remainder = factory.formatAmount(input.remainderTaoValue, locale: locale)
+            let minStake = factory.formatAmount(input.nominatorMinStake, locale: locale)
 
-            presentable.presentLockedRemainder(
-                view,
-                remainder: formatAmount(input.remainderTaoValue, locale: locale),
-                minStake: formatAmount(input.nominatorMinStake, locale: locale),
-                locale: locale
+            return (
+                strings.stakingSubtensorRemainderLockedTitle(),
+                strings.stakingSubtensorRemainderLockedMessage(remainder, minStake)
             )
         }, preservesCondition: {
             false

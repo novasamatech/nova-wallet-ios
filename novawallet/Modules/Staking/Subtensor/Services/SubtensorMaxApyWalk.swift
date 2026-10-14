@@ -203,7 +203,7 @@ private extension SubtensorMaxApyWalk {
             retries = 0
 
             let next = pageResult.value.pageInfo.nextPage
-            let pages = BittensorApiPages(pages: alphaPages, hasMorePages: next != nil)
+            let pages = BittensorApiPages(pages: alphaPages)
             let yields = try? SubtensorYieldService.makeAlphaYields(netuid: netuid, pages: pages, logger: logger)
 
             let hasFoundHotkeys = yields.map { hotkeys.isSubset(of: $0.yields.keys) } ?? false

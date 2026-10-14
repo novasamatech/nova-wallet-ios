@@ -19,7 +19,6 @@ final class SubtensorStakingConfirmPresenter {
     var positionsState: Multistaking.SubtensorStakingState?
     var isPositionsSyncFailed = false
     var preflight: SubtensorStakingPreflight?
-    var existentialDeposit: Balance?
     var quoteState: SubtensorConfirmQuoteState?
     var tradesUnavailable = false
     var catalogue: SubtensorSubnetCatalogue?
@@ -260,7 +259,6 @@ extension SubtensorStakingConfirmPresenter {
             amount: model.amount,
             balance: balance,
             fee: fee,
-            existentialDeposit: existentialDeposit,
             preflight: preflight,
             netuid: model.target.netuid,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
@@ -304,7 +302,8 @@ extension SubtensorStakingConfirmPresenter: SubtensorStakingConfirmPresenterProt
         refreshPreflight()
 
         if !model.target.isRoot {
-            interactor.loadSubnetData()
+            interactor.loadCatalogue()
+            interactor.loadSubnetLogos()
             loadCostBasisIfNeeded()
             refreshQuote()
         }

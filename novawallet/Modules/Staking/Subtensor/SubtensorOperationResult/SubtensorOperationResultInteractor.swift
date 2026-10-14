@@ -19,7 +19,6 @@ final class SubtensorOperationResultInteractor {
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
-    private var seed: HTTPCachePeek<SubtensorSubnetCatalogue> = .miss
     private var confirmationScheduler: SchedulerProtocol?
     private var isSubmissionFinished = false
 
@@ -124,19 +123,17 @@ private extension SubtensorOperationResultInteractor {
             return
         }
 
-        if !seed.isFresh {
-            execute(
-                wrapper: catalogueService.createCatalogueWrapper(),
-                inOperationQueue: operationQueue,
-                runningCallbackIn: .main
-            ) { [weak self] result in
-                switch result {
-                case let .success(catalogue):
-                    self?.presenter?.didReceiveCatalogue(catalogue)
-                case let .failure(error):
-                    self?.logger.error("Subtensor catalogue unavailable for the result: \(error)")
-                    self?.presenter?.didReceiveCatalogue(nil)
-                }
+        execute(
+            wrapper: catalogueService.createCatalogueWrapper(),
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(catalogue):
+                self?.presenter?.didReceiveCatalogue(catalogue)
+            case let .failure(error):
+                self?.logger.error("Subtensor catalogue unavailable for the result: \(error)")
+                self?.presenter?.didReceiveCatalogue(nil)
             }
         }
 
@@ -154,9 +151,7 @@ private extension SubtensorOperationResultInteractor {
 
 extension SubtensorOperationResultInteractor: SubtensorResultInteractorInputProtocol {
     func cachedCatalogue() -> HTTPCachePeek<SubtensorSubnetCatalogue> {
-        seed = loadsSubnetData ? catalogueService.cachedCatalogue() : .miss
-
-        return seed
+        loadsSubnetData ? catalogueService.cachedCatalogue() : .miss
     }
 
     func setup() {

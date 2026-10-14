@@ -18,7 +18,6 @@ final class SubtensorSubnetDetailsInteractor {
     let logger: LoggerProtocol
 
     private var priceProvider: StreamableProvider<PriceData>?
-    private var seed = SubtensorSubnetDetailsSnapshot(yields: .miss)
     private let historyCallStore = CancellableCallStore()
     private let parametersCallStore = CancellableCallStore()
     private let presetCallStore = CancellableCallStore()
@@ -151,12 +150,8 @@ private extension SubtensorSubnetDetailsInteractor {
 }
 
 extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol {
-    func cachedSnapshot() -> SubtensorSubnetDetailsSnapshot {
-        seed = SubtensorSubnetDetailsSnapshot(
-            yields: yieldService.cachedAlphaYields(for: subnet.netuid)
-        )
-
-        return seed
+    func cachedYields() -> SubtensorAlphaYields? {
+        yieldService.cachedAlphaYields(for: subnet.netuid).value
     }
 
     func setup() {
@@ -164,11 +159,7 @@ extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol
         subscribePositions()
 
         loadParameters()
-
-        if !seed.yields.isFresh {
-            loadYields()
-        }
-
+        loadYields()
         loadSubnetLogos()
     }
 

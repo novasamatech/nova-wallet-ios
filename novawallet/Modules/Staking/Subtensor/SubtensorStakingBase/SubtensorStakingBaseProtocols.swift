@@ -31,6 +31,9 @@ protocol SubtensorStakingBaseInteractorInputProtocol: AnyObject {
     func refreshPreflight(for hotkey: AccountId, netuid: UInt16)
     func refreshQuote(for request: SubtensorTradeQuoteRequest)
     func refreshPositions()
+    func loadCatalogue()
+    func loadSubnetLogos()
+    func loadCostBasis(for netuid: UInt16)
 }
 
 protocol SubtensorStakingBaseInteractorOutputProtocol: AnyObject {
@@ -39,12 +42,14 @@ protocol SubtensorStakingBaseInteractorOutputProtocol: AnyObject {
     func didReceiveFee(_ fee: ExtrinsicFeeProtocol)
     func didReceivePositions(_ state: Multistaking.SubtensorStakingState?)
     func didReceivePositionsSyncFailed(_ isFailed: Bool)
-    func didReceiveClaimable(_ claimable: SubtensorRootClaimable?)
     func didReceiveBlockNumber(_ blockNumber: BlockNumber)
     func didReceivePreflight(_ preflight: SubtensorStakingPreflight)
     func didReceiveQuote(_ quote: SubtensorTradeQuote)
     func didReceiveExistentialDeposit(_ deposit: Balance)
     func didReceiveBaseError(_ error: SubtensorStakingBaseError)
+    func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?)
+    func didReceiveSubnetLogos(_ logos: SubtensorSubnetLogos?)
+    func didReceiveCostBasis(_ costBasis: SubtensorCostBasis?)
 }
 
 enum SubtensorStakingBaseError: Error {

@@ -125,8 +125,6 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
         requestPresetIfReady()
     }
 
-    func didReceiveClaimable(_: SubtensorRootClaimable?) {}
-
     func didReceiveBlockNumber(_: BlockNumber) {
         forceQuoteRefresh()
     }
@@ -146,9 +144,7 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
         provideViewModel()
     }
 
-    func didReceiveExistentialDeposit(_ deposit: Balance) {
-        existentialDeposit = deposit
-    }
+    func didReceiveExistentialDeposit(_: Balance) {}
 
     func didReceiveBaseError(_ error: SubtensorStakingBaseError) {
         logger.error("Subtensor setup error: \(error)")

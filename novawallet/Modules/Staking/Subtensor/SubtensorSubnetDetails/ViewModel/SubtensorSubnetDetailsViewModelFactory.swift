@@ -57,17 +57,10 @@ final class SubtensorSubnetDetailsViewModelFactory {
         )
         let taoInfo = chainAsset.assetDisplayInfo
 
-        let alphaInfo = AssetBalanceDisplayInfo(
-            displayPrecision: taoInfo.displayPrecision,
-            assetPrecision: taoInfo.assetPrecision,
-            symbol: SubtensorSubnetNaming.symbol(for: subnet),
-            symbolValueSeparator: taoInfo.symbolValueSeparator,
-            symbolPosition: taoInfo.symbolPosition,
-            icon: nil
-        )
-
         tokenFormatter = formatterFactory.createTokenFormatter(for: taoInfo)
-        alphaFormatter = formatterFactory.createTokenFormatter(for: alphaInfo)
+        alphaFormatter = formatterFactory.createTokenFormatter(
+            for: taoInfo.subtensorAlpha(symbol: SubtensorSubnetNaming.symbol(for: subnet))
+        )
         compactTokenFormatter = formatterFactory.createCompactTokenFormatter(for: taoInfo)
     }
 }
@@ -198,11 +191,5 @@ extension SubtensorSubnetDetailsViewModelFactory: SubnetDetailsViewModelFactoryP
         locale: Locale
     ) -> SubtensorSubnetPriceHeaderViewModel {
         priceWidgetFactory.createHeader(for: createPriceWidgetParams(for: state, locale: locale), locale: locale)
-    }
-}
-
-private extension String {
-    func isolatedLeftToRight() -> String {
-        "\u{2066}\(self)\u{2069}"
     }
 }

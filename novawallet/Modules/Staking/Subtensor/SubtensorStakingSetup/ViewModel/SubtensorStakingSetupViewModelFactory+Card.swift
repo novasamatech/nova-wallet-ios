@@ -181,14 +181,7 @@ private extension SubtensorStakingSetupViewModelFactory {
         return SubtensorPickCardHeaderViewModel(
             icon: iconFactory.icon(for: catalogueSubnet, logos: subnetData.subnetLogos),
             title: SubtensorSubnetNaming.titleWithSymbol(for: netuid, in: catalogue, locale: locale),
-            apy: nil,
             isSelectable: isSelectable
         )
-    }
-}
-
-private extension String {
-    func isolatedLeftToRight() -> String {
-        "\u{2066}\(self)\u{2069}"
     }
 }

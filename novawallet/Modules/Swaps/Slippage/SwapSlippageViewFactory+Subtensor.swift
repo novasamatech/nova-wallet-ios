@@ -3,19 +3,6 @@ import Foundation_iOS
 import UIKit_iOS
 
 extension SwapSlippageViewFactory {
-    static func createSubtensorView(
-        percent: BigRational?,
-        chainAsset: ChainAsset,
-        completionHandler: @escaping (BigRational) -> Void
-    ) -> SwapSlippageViewProtocol? {
-        createView(
-            percent: percent,
-            chainAsset: chainAsset,
-            config: SlippageConfig.subtensorStaking,
-            completionHandler: completionHandler
-        )
-    }
-
     static func createSubtensorSheet(
         percent: BigRational?,
         chainAsset: ChainAsset,

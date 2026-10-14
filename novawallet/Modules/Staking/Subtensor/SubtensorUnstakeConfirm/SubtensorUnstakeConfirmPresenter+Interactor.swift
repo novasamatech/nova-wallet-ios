@@ -58,8 +58,6 @@ extension SubtensorUnstakeConfirmPresenter: SubtensorUnstakeConfirmOutputProtoco
         provideViewModel()
     }
 
-    func didReceiveClaimable(_: SubtensorRootClaimable?) {}
-
     func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
         currentBlock = blockNumber
 
