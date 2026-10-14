@@ -51,7 +51,7 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
     }
 
     func peekSubnets() -> HTTPCachePeek<BittensorApiResult<BittensorApi.SubnetCollection>> {
-        peek(route: .subnets, path: "/subnets")
+        peek(path: "/subnets")
     }
 
     func createValidatorsWrapper(
@@ -61,7 +61,7 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
     }
 
     func peekValidators(netuid: UInt16) -> HTTPCachePeek<BittensorApiResult<BittensorApi.ValidatorCollection>> {
-        peek(route: .validators, path: "/subnets/\(netuid)/validators")
+        peek(path: "/subnets/\(netuid)/validators")
     }
 
     func createRootYieldWrapper(
@@ -89,7 +89,7 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
         page: Int
     ) -> HTTPCachePeek<BittensorApiResult<BittensorApi.AlphaYieldCollection>> {
         guard netuid != 0 else { return .miss }
-        return peekPage(route: .alphaYield, path: "/subnets/\(netuid)/yields/alpha", page: page)
+        return peekPage(path: "/subnets/\(netuid)/yields/alpha", page: page)
     }
 
     func createOperationsWrapper(
@@ -110,7 +110,7 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
     }
 
     func peekRankedSubnets() -> HTTPCachePeek<BittensorApiResult<BittensorApi.SubnetRankingCollection>> {
-        peek(route: .rankedSubnets, path: "/recommendations/subnets")
+        peek(path: "/recommendations/subnets")
     }
 }
 
@@ -122,15 +122,6 @@ private extension BittensorApiOperationFactory {
         case operations
         case recommendations
         case rankedSubnets
-
-        var method: BittensorApiRequest.Method {
-            switch self {
-            case .operations:
-                return .post
-            default:
-                return .get
-            }
-        }
 
         var pathTemplate: String {
             switch self {
@@ -150,12 +141,6 @@ private extension BittensorApiOperationFactory {
         }
     }
 
-    static let searchEncoder: JSONEncoder = {
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = [.sortedKeys]
-        return encoder
-    }()
-
     func createPagedWrapper<T: Decodable & BittensorApiWireChecked>(
         route: Route,
         path: String,
@@ -168,17 +153,17 @@ private extension BittensorApiOperationFactory {
         return createWrapper(route: route, path: path, queryItems: Self.pagedQueryItems(page: page))
     }
 
-    func peekPage<T>(route: Route, path: String, page: Int) -> HTTPCachePeek<BittensorApiResult<T>> {
+    func peekPage<T>(path: String, page: Int) -> HTTPCachePeek<BittensorApiResult<T>> {
         guard Self.pageRange.contains(page) else {
             return .miss
         }
 
-        return peek(route: route, path: path, queryItems: Self.pagedQueryItems(page: page))
+        return peek(path: path, queryItems: Self.pagedQueryItems(page: page))
     }
 
-    func peek<T>(route: Route, path: String, queryItems: [URLQueryItem] = []) -> HTTPCachePeek<BittensorApiResult<T>> {
+    func peek<T>(path: String, queryItems: [URLQueryItem] = []) -> HTTPCachePeek<BittensorApiResult<T>> {
         let cached = cache.peek(
-            Self.cacheKey(route: route, path: path, queryItems: queryItems, jsonBody: nil),
+            Self.cacheKey(path: path, queryItems: queryItems),
             invalidationRevision: transport.invalidationRevision
         )
         let isFromExpiredCache = !cached.isFresh
@@ -191,24 +176,17 @@ private extension BittensorApiOperationFactory {
         accountSubject: AccountAddress,
         page: Int?
     ) -> CompoundOperationWrapper<BittensorApiResult<T>> {
-        let invalidRequest = BittensorApiError.invalidRequest(code: nil, requestId: nil)
-
         guard Self.isValidAccountSubject(accountSubject), page.map(Self.pageRange.contains) ?? true else {
-            return .createWithError(invalidRequest)
+            return .createWithError(BittensorApiError.invalidRequest(code: nil, requestId: nil))
         }
 
-        let body: Data
-
-        do {
-            body = try Self.searchEncoder.encode(BittensorApi.SearchRequest(accountSubject: accountSubject, page: page))
-        } catch {
-            return .createWithError(invalidRequest)
-        }
+        let subjectItem = URLQueryItem(name: "accountSubject", value: accountSubject)
+        let pageItems = page.map { [URLQueryItem(name: "page", value: String($0))] } ?? []
 
         return createWrapper(
             route: route,
             path: route.pathTemplate,
-            jsonBody: body,
+            queryItems: [subjectItem] + pageItems,
             accountDigest: Data(accountSubject.utf8).sha256()
         )
     }
@@ -217,24 +195,17 @@ private extension BittensorApiOperationFactory {
         route: Route,
         path: String,
         queryItems: [URLQueryItem] = [],
-        jsonBody: Data? = nil,
         accountDigest: Data? = nil
     ) -> CompoundOperationWrapper<BittensorApiResult<T>> {
         let request = BittensorApiRequest(
-            method: route.method,
             path: path,
             pathTemplate: route.pathTemplate,
-            queryItems: queryItems,
-            jsonBody: jsonBody
+            queryItems: queryItems
         )
 
         let job = BittensorApiCacheJob(
-            key: Self.cacheKey(route: route, path: path, queryItems: queryItems, jsonBody: jsonBody),
-            routeKey: BittensorApiRouteKey(
-                method: route.method.rawValue,
-                pathTemplate: route.pathTemplate,
-                accountDigest: accountDigest
-            ),
+            key: Self.cacheKey(path: path, queryItems: queryItems),
+            routeKey: BittensorApiRouteKey(pathTemplate: route.pathTemplate, accountDigest: accountDigest),
             currentInvalidationRevision: { [transport] in transport.invalidationRevision },
             admit: { [transport] in transport.createAdmissionWrapper() },
             fetch: { [transport, logger] admission in
@@ -265,17 +236,10 @@ private extension BittensorApiOperationFactory {
         ]
     }
 
-    static func cacheKey(
-        route: Route,
-        path: String,
-        queryItems: [URLQueryItem],
-        jsonBody: Data?
-    ) -> BittensorApiCacheKey {
+    static func cacheKey(path: String, queryItems: [URLQueryItem]) -> BittensorApiCacheKey {
         BittensorApiCacheKey(
-            method: route.method.rawValue,
             path: path,
-            query: queryItems.map { "\($0.name)=\($0.value ?? "")" }.sorted(),
-            bodyDigest: jsonBody?.sha256()
+            query: queryItems.map { "\($0.name)=\($0.value ?? "")" }.sorted()
         )
     }
 
@@ -330,12 +294,12 @@ private extension BittensorApiOperationFactory {
             try value.validateWire()
         } catch let violation as BittensorApiWireViolation {
             throw BittensorApiError.contractViolation(
-                detail: "\(route.method.rawValue) \(route.pathTemplate): invalid \(violation.field)",
+                detail: "GET \(route.pathTemplate): invalid \(violation.field)",
                 requestId: response.requestId
             )
         } catch {
             throw BittensorApiError.contractViolation(
-                detail: "\(route.method.rawValue) \(route.pathTemplate): \(describe(error))",
+                detail: "GET \(route.pathTemplate): \(describe(error))",
                 requestId: response.requestId
             )
         }

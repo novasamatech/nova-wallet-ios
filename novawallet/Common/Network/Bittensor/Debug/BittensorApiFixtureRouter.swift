@@ -12,13 +12,13 @@ import Foundation
     }
 
     enum BittensorApiFixtureRouter {
-        static let methods: [String: BittensorApiRequest.Method] = [
-            "/subnets": .get,
-            "/subnets/{netuid}/validators": .get,
-            "/subnets/{netuid}/yields/alpha": .get,
-            "/operations/search": .post,
-            "/recommendations": .get,
-            "/recommendations/subnets": .get
+        static let templates: Set<String> = [
+            "/subnets",
+            "/subnets/{netuid}/validators",
+            "/subnets/{netuid}/yields/alpha",
+            "/operations/search",
+            "/recommendations",
+            "/recommendations/subnets"
         ]
 
         static let pageRange = 1 ... 100
@@ -28,12 +28,8 @@ import Foundation
         static func route(for request: BittensorApiRequest, requestId: String) throws -> BittensorApiFixtureRoute {
             let template = normalized(request.pathTemplate)
 
-            guard let method = methods[template] else {
+            guard templates.contains(template) else {
                 throw BittensorApiError.routeNotPublished
-            }
-
-            guard method == request.method else {
-                throw BittensorApiError.invalidRequest(code: "method_not_allowed", requestId: requestId)
             }
 
             let invalid = BittensorApiError.invalidRequest(code: "invalid_request", requestId: requestId)
@@ -41,22 +37,14 @@ import Foundation
 
             switch template {
             case "/subnets/{netuid}/yields/alpha":
-                guard request.jsonBody == nil else {
-                    throw invalid
-                }
-
                 let paging = try pagination(of: request.queryItems, invalid: invalid)
 
                 guard let netuid, netuid != 0 else { throw invalid }
                 return .alphaYield(netuid: netuid, page: paging.page, pageSize: paging.pageSize)
             case "/operations/search":
-                guard request.queryItems.isEmpty, let body = request.jsonBody else {
-                    throw invalid
-                }
-
-                return .operations(page: try searchPage(of: body, invalid: invalid))
+                return .operations(page: try searchPage(of: request.queryItems, invalid: invalid))
             default:
-                guard request.queryItems.isEmpty, request.jsonBody == nil else {
+                guard request.queryItems.isEmpty else {
                     throw invalid
                 }
 
@@ -183,28 +171,29 @@ import Foundation
             return (values["page"] ?? 1, values["pageSize"] ?? defaultPageSize)
         }
 
-        static func searchPage(of body: Data, invalid: Error) throws -> Int {
-            let object: Any
+        static func searchPage(of queryItems: [URLQueryItem], invalid: Error) throws -> Int {
+            var values: [String: String] = [:]
 
-            do {
-                object = try JSONSerialization.jsonObject(with: body)
-            } catch {
+            for item in queryItems {
+                guard
+                    ["accountSubject", "page"].contains(item.name),
+                    values[item.name] == nil,
+                    let value = item.value else {
+                    throw invalid
+                }
+
+                values[item.name] = value
+            }
+
+            guard let subject = values["accountSubject"], isValidSubject(subject) else {
                 throw invalid
             }
 
-            guard
-                let fields = object as? [String: Any],
-                Set(fields.keys).isSubset(of: ["accountSubject", "page"]),
-                let subject = fields["accountSubject"] as? String,
-                isValidSubject(subject) else {
-                throw invalid
-            }
-
-            guard let rawPage = fields["page"] else {
+            guard let rawPage = values["page"] else {
                 return 1
             }
 
-            guard let page = strictInteger(rawPage), pageRange.contains(page) else {
+            guard let page = canonicalInteger(rawPage), pageRange.contains(page) else {
                 throw invalid
             }
 
@@ -215,17 +204,6 @@ import Foundation
             let scalars = subject.unicodeScalars
 
             return (1 ... maxSubjectLength).contains(scalars.count) && scalars.allSatisfy { ("!" ... "~").contains($0) }
-        }
-
-        static func strictInteger(_ value: Any) -> Int? {
-            guard
-                let number = value as? NSNumber,
-                CFGetTypeID(number) != CFBooleanGetTypeID(),
-                !CFNumberIsFloatType(number) else {
-                return nil
-            }
-
-            return number.intValue
         }
 
         static func canonicalInteger(_ lexeme: String) -> Int? {

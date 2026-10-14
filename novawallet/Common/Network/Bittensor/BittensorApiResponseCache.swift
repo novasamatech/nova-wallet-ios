@@ -2,14 +2,11 @@ import Foundation
 import Operation_iOS
 
 struct BittensorApiCacheKey: Hashable {
-    let method: String
     let path: String
     let query: [String]
-    let bodyDigest: Data?
 }
 
 struct BittensorApiRouteKey: Hashable {
-    let method: String
     let pathTemplate: String
     let accountDigest: Data?
 }
@@ -61,7 +58,7 @@ final class BittensorApiResponseCache {
     }
 
     private enum NegativeKey: Hashable {
-        case route(BittensorApiCacheScope, String, String)
+        case route(BittensorApiCacheScope, String)
         case request(ScopedKey)
     }
 
@@ -164,7 +161,7 @@ private extension BittensorApiResponseCache {
             negatives.removeAll()
             newestGeneration = nil
         }
-        let negativeKeys: [NegativeKey] = [.route(scope, job.routeKey.method, job.routeKey.pathTemplate), .request(key)]
+        let negativeKeys: [NegativeKey] = [.route(scope, job.routeKey.pathTemplate), .request(key)]
         if let negative = negativeKeys.compactMap({ negatives[$0] }).first(where: {
             BittensorMonotonicClock.now() < $0.expiresAt
         }) {
@@ -226,7 +223,7 @@ private extension BittensorApiResponseCache {
             if case let .failure(error as BittensorApiError) = delivery {
                 switch error {
                 case .routeNotPublished:
-                    negatives[.route(key.scope, job.routeKey.method, job.routeKey.pathTemplate)] = NegativeEntry(
+                    negatives[.route(key.scope, job.routeKey.pathTemplate)] = NegativeEntry(
                         error: error, expiresAt: BittensorMonotonicClock.now() + Self.routeNotPublishedLifetime
                     )
                 case .datasetUnavailable:

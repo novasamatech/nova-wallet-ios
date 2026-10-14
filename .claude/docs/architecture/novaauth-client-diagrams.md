@@ -303,7 +303,7 @@ sequenceDiagram
     C->>T: Fetch with<br/>admitted endpoint
     T->>N: createResponseWrapper(request)
     N->>N: Demand again +<br/>pre-send fences
-    N->>H: Authorized GET or<br/>operations-search POST
+    N->>H: Authorized GET<br/>with bearer
     H-->>N: Response, possibly native<br/>cache / revalidation
     N-->>T: Response or<br/>typed auth error
     T-->>C: HTTP grading + factory<br/>decode / wire validation
@@ -315,10 +315,10 @@ sequenceDiagram
 ```
 
 - Auth admission precedes negative-cache lookup and joining a request flight. Synchronous `peek` is only a stale display seed and makes no authentication request.
-- Decoded cache keys include auth scope plus method/path/query/body digest. Route-unpublished negatives last 600 seconds; dataset-unavailable negatives last 60 seconds. There is no successful-response TTL shortcut here.
+- Decoded cache keys include auth scope plus path/query. Route-unpublished negatives last 600 seconds; dataset-unavailable negatives last 60 seconds. There is no successful-response TTL shortcut here.
 - Recommendation dataset ordering uses `(asOf, sourceBlockNumber)`. It is distinct from the authentication generation. An older dataset response returns `generationStale` without overwriting the newer seed.
 - The facade stamps accepted endpoints with an invalidation revision; transport preserves it in each admission. The decoded cache reconciles the latest revision before admission, completion and peek. Delayed or duplicate notifications cannot retire current-revision state; old admissions and completions cannot restore retired results. Same-origin readiness does not advance this invalidation revision. Separate context observers invalidate max-APY resolution, cost-basis histories and validator directories, including cold replacement or a failed replacement after the memory fence changes.
-- Cost basis/P&L reads **`POST /v1/bittensor/operations/search`** and computes the ledger locally. It is a history read, not transaction submission.
+- Cost basis/P&L reads **`GET /v1/bittensor/operations/search`** and computes the ledger locally. It is a history read, not transaction submission.
 - Errors are graded into Bittensor types. Raw network and malformed-protocol failures retain retryable availability meaning; generic business 401/403 are server errors after the scope-specific case below. Presentation depends on the consumer: portfolio catalogue failure supplies no catalogue and can show rates unavailable; validator flows use the typed device/retry properties. Live chain balances do not prove successful backend authentication.
 
 | Response/error | Bittensor type | Device-bound | User retry |

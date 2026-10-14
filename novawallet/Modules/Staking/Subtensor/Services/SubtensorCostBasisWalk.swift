@@ -173,7 +173,7 @@ private extension SubtensorCostBasisWalk {
         guard pageInfo.page == page else {
             return .failed(
                 BittensorApiError.contractViolation(
-                    detail: "POST /operations/search: page \(page) answered as page \(pageInfo.page)",
+                    detail: "GET /operations/search: page \(page) answered as page \(pageInfo.page)",
                     requestId: response.requestId
                 )
             )
