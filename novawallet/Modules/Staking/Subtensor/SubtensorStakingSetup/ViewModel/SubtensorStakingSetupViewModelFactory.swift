@@ -169,12 +169,11 @@ extension SubtensorStakingSetupViewModelFactory {
             icon: AssetIconViewModelFactory().createAssetIconViewModel(from: chainAsset.assetDisplayInfo),
             validator: SubtensorValidatorCardViewModel(
                 icon: icon, name: name, subtitle: strings.stakingCommonValidator(),
-                rate: annualRate.map { .loaded(SubtensorApyFormatter.text(for: $0, style: .bare, locale: locale)) }
-                    ?? .hidden,
+                rate: .loaded(SubtensorApyFormatter.text(for: annualRate, style: .bare, locale: locale)),
                 rateCaption: strings.stakingSubtensorV22EstApy()
             ),
             compactValidator: compact,
-            compactRate: annualRate.map { SubtensorApyFormatter.text(for: $0, style: .leading, locale: locale) },
+            compactRate: SubtensorApyFormatter.text(for: annualRate, style: .leading, locale: locale),
             isQuickPick: input.rootEntryPresentation == .quickPickRoot || input.quickPickOrder != nil,
             networkFee: createNetworkFee(for: input, locale: locale)
         )

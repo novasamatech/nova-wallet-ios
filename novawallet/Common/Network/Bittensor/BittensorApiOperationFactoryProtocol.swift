@@ -27,8 +27,6 @@ protocol BittensorApiOperationFactoryProtocol: AnyObject {
 
     func createRootOverviewWrapper() -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RootOverview>>
 
-    func peekRootOverview() -> HTTPCachePeek<BittensorApiResult<BittensorApi.RootOverview>>
-
     func createOperationsWrapper(
         accountSubject: AccountAddress,
         page: Int?

@@ -244,9 +244,9 @@ private extension SubtensorConfirmViewModelFactory {
         SubtensorConfirmRootViewModel(
             amount: createBalance(input.model.amount, price: input.price, locale: locale),
             stakeAfter: input.stakeChange.flatMap { createStakeAfter($0, locale: locale) },
-            apy: input.model.validator.annualRate.map {
-                SubtensorApyFormatter.text(for: $0, style: .paidInTao, locale: locale)
-            }
+            apy: input.model.direction == .buy
+                ? SubtensorApyFormatter.text(for: input.model.validator.annualRate, style: .paidInTao, locale: locale)
+                : nil
         )
     }
 }

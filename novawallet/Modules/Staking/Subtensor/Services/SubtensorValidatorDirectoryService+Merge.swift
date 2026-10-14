@@ -148,8 +148,7 @@ extension SubtensorValidatorDirectoryService {
             },
             listStamp: listing.listStamp,
             isPartial: listing.isPartial,
-            isEnrichmentTruncated: listing.rows.count > enrichmentRowLimit,
-            chainBlock: enrichment.snapshot.blockNumber
+            isEnrichmentTruncated: listing.rows.count > enrichmentRowLimit
         )
     }
 }

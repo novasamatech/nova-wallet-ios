@@ -23,6 +23,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
     private var hasReportedAccountChange = false
     private let catalogueStore = CancellableCallStore()
     private let rootRateStore = CancellableCallStore()
+    private let networkRootRateStore = CancellableCallStore()
     private let logosStore = CancellableCallStore()
     private let weeklyChangesStore = CancellableCallStore()
     private let historiesStore = CancellableCallStore()
@@ -66,6 +67,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
     deinit {
         catalogueStore.cancel()
         rootRateStore.cancel()
+        networkRootRateStore.cancel()
         logosStore.cancel()
         weeklyChangesStore.cancel()
         historiesStore.cancel()
@@ -146,7 +148,7 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
         executeCancellable(
             wrapper: yieldService.createNetworkRootRateWrapper(),
             inOperationQueue: operationQueue,
-            backingCallIn: rootRateStore,
+            backingCallIn: networkRootRateStore,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {

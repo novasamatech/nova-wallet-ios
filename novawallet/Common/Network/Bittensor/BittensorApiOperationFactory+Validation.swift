@@ -136,8 +136,6 @@ extension BittensorApi.OperationCollection: BittensorApiWireChecked {
 
 extension BittensorApi.RecommendationCollection: BittensorApiWireChecked {
     func validateWire() throws {
-        try BittensorApiWireCheck.clientGates(meta.clientGates, "meta.clientGates.maxTake")
-
         let groups: [(String, [BittensorApi.Recommendation])] = [
             ("stable", classes.stable),
             ("balanced", classes.balanced),
@@ -156,8 +154,6 @@ extension BittensorApi.RecommendationCollection: BittensorApiWireChecked {
 
 extension BittensorApi.SubnetRankingCollection: BittensorApiWireChecked {
     func validateWire() throws {
-        try BittensorApiWireCheck.clientGates(meta.clientGates, "meta.clientGates.maxTake")
-
         for (index, item) in items.enumerated() {
             let path = "items[\(index)]"
 
