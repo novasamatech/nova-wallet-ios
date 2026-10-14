@@ -83,17 +83,6 @@ final class SubtensorSubnetViewModelFactoryTests: XCTestCase {
         XCTAssertNil(viewModel.subtitle)
     }
 
-    func testRootBarShowsTheBackendRateAndFallsBackWithoutIt() throws {
-        let factory = makeFactory()
-
-        let withRate = factory.createRootBarViewModel(annualRate: try XCTUnwrap(Decimal(string: "0.07")), locale: locale)
-        let withoutRate = factory.createRootBarViewModel(annualRate: nil, locale: locale)
-
-        XCTAssertEqual(withRate.title, "Stake to root")
-        XCTAssertEqual(withRate.subtitle, "7% APY · paid in TAO · no swap")
-        XCTAssertEqual(withoutRate.subtitle, "Paid in TAO · no swap")
-    }
-
     func testFiltersSheetShowsTheCountWithTheCompactThinThresholdAndWaitsWhilePending() {
         let factory = makeFactory()
         let filters = SubtensorSubnetFilters(hideThinPools: true)
@@ -115,6 +104,20 @@ final class SubtensorSubnetViewModelFactoryTests: XCTestCase {
         XCTAssertFalse(counted.isLoading)
         XCTAssertEqual(pending.actionTitle, "Show subnets")
         XCTAssertTrue(pending.isLoading)
+    }
+
+    func testSortOptionsShowApyAsUnavailableAndCountExcludesLikes() {
+        let factory = makeFactory()
+        let sheet = factory.createSortSheetViewModel(selected: .poolDepth, locale: locale)
+        XCTAssertEqual(sheet.options.map(\.title), ["Pool size", "Age", "APY", "7-day change", "Name"])
+        XCTAssertEqual(sheet.options.map(\.isEnabled), [true, true, false, true, true])
+        XCTAssertEqual(sheet.options[2].subtitle, "APY ordering is unavailable")
+        let item = makeItem(weekly: nil)
+        let model = factory.createListViewModel(for: .init(
+            list: .init(picks: [item], others: [], emptyKind: nil), sort: .name, filters: .init(),
+            subnetLogos: nil, stamp: nil, entriesError: nil
+        ), locale: locale)
+        XCTAssertEqual(model.caption, "0 of 128")
     }
 
     private func makeFactory() -> SubtensorSubnetViewModelFactory {

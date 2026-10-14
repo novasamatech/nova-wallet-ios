@@ -118,6 +118,7 @@ enum SubtensorFlowChainWorld {
 
         return SubtensorSubnetsInfo(
             subnets: [root] + subnets,
+            isComplete: true,
             prices: prices.merging(overridingPrices) { $1 },
             subtokenEnabled: Set(([root] + subnets).map(\.netuid)),
             ownerCut: SubtensorStakingPallet.defaultSubnetOwnerCut

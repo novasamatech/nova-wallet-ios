@@ -4,6 +4,8 @@ final class StartStakingInfoSubtensorWireframe: StartStakingInfoWireframe,
     StartStakingInfoSubtensorWireframeProtocol {
     let state: SubtensorStakingSharedStateProtocol
 
+    let browseState = SubtensorSubnetBrowseState()
+
     weak var subnetSelectDelegate: SubtensorSubnetSelectDelegate?
 
     init(state: SubtensorStakingSharedStateProtocol) {
@@ -11,11 +13,17 @@ final class StartStakingInfoSubtensorWireframe: StartStakingInfoWireframe,
     }
 
     override func showSetupAmount(from view: ControllerBackedProtocol?) {
+        let carousel = SubtensorWhereToStakeViewFactory.createView(for: state)
+        view?.controller.navigationController?.pushViewController(carousel.controller, animated: true)
+    }
+
+    func showAllOptions(from view: ControllerBackedProtocol?) {
         guard
             let subnetSelectDelegate,
             let picker = SubtensorSubnetSelectViewFactory.createPicker(
                 for: state,
-                delegate: subnetSelectDelegate
+                delegate: subnetSelectDelegate,
+                browseState: browseState
             ) else {
             return
         }
@@ -24,7 +32,9 @@ final class StartStakingInfoSubtensorWireframe: StartStakingInfoWireframe,
     }
 
     func showRootDetails(from view: ControllerBackedProtocol?) {
-        guard let setupView = SubtensorStakingSetupViewFactory.createRootDetailsView(for: state) else {
+        guard let setupView = SubtensorStakingSetupViewFactory.createRootDetailsView(
+            for: state, browseState: browseState
+        ) else {
             return
         }
 
@@ -42,7 +52,8 @@ final class StartStakingInfoSubtensorWireframe: StartStakingInfoWireframe,
         guard let setupView = SubtensorStakingSetupViewFactory.createSubnetView(
             for: state,
             target: target,
-            validator: validator
+            validator: validator,
+            browseState: browseState
         ) else {
             return
         }

@@ -33,9 +33,21 @@ final class SubtensorStakingSetupViewModelFactory {
     ) -> SubtensorStakingSetupViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
-        let details: SubtensorSetupDetailsViewModel = input.mode.isRootLane
-            ? .root(createRootDetails(for: input, locale: locale))
-            : .subnet(createSubnetDetails(for: input, locale: locale))
+        let details: SubtensorSetupDetailsViewModel
+        if case let .quickPick(order) = input.mode {
+            let message = input.selectionFailed
+                ? strings.stakingSubtensorQuickUnavailable()
+                : strings.stakingSubtensorQuickLoading()
+            details = .selection(
+                section: sectionTitle(order: order, locale: locale),
+                message: input.selectedRef.map { "\($0.netuid) · \(message)" } ?? message,
+                retryTitle: input.selectionFailed ? strings.commonTryAgain() : nil
+            )
+        } else {
+            details = input.mode.isRootLane
+                ? .root(createRootDetails(for: input, locale: locale))
+                : .subnet(createSubnetDetails(for: input, locale: locale))
+        }
 
         let amountTitle: String
 
@@ -54,6 +66,7 @@ final class SubtensorStakingSetupViewModelFactory {
             reserveWarning: createReserveWarning(for: input, locale: locale),
             details: details,
             caption: createCaption(for: input, locale: locale),
+            browseTitle: input.mode.isLocked ? nil : strings.stakingSubtensorQuickSeeAll(),
             action: createAction(for: input, locale: locale)
         )
     }
@@ -84,7 +97,7 @@ extension SubtensorStakingSetupViewModelFactory {
     }
 }
 
-private extension SubtensorStakingSetupViewModelFactory {
+extension SubtensorStakingSetupViewModelFactory {
     func createTitle(for input: SubtensorStakingSetupViewModelInput, locale: Locale) -> String {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
@@ -93,12 +106,12 @@ private extension SubtensorStakingSetupViewModelFactory {
             return strings.stakingSubtensorUiStakeToRoot()
         case .addStake:
             return strings.stakingSubtensorUiAddStakeRootTitle()
-        case .subnetPick:
+        case .quickPick, .subnetPick:
             return strings.stakingSubtensorBannerTitle()
         case let .buyMore(position):
             let subnetTitle = SubtensorSubnetNaming.title(
                 for: position.netuid,
-                in: input.subnetData.catalogue,
+                in: input.matchingCatalogue,
                 locale: locale
             )
 
@@ -203,7 +216,7 @@ private extension SubtensorStakingSetupViewModelFactory {
             return nil
         case .addStake:
             return createAddStakeCaption(for: input, locale: locale)
-        case .subnetPick, .buyMore:
+        case .quickPick, .subnetPick, .buyMore:
             return strings.stakingSubtensorUiSafetyNote()
         }
     }

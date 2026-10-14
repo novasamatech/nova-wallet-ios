@@ -12,6 +12,9 @@ final class SubtensorPickCardView: UIView {
         view.contentInsets = .zero
     }
 
+    let validatorCell = StackTitleMultiValueCell()
+    let browseButton = UIButton(type: .system)
+
     let receiveCell = SubtensorPickCardView.createCell()
 
     let swapRateCell = SubtensorPickCardView.createCell()
@@ -34,6 +37,9 @@ final class SubtensorPickCardView: UIView {
     }
 
     func bind(viewModel: SubtensorPickCardViewModel) {
+        bindValidator(viewModel)
+        browseButton.setTitle(viewModel.browseTitle, for: .normal)
+        browseButton.isHidden = viewModel.browseTitle == nil
         headerView.bind(viewModel: viewModel.header)
         chipsView.bind(titles: viewModel.chips)
 
@@ -59,19 +65,39 @@ private extension SubtensorPickCardView {
     func setupLayout() {
         swapRateCell.canSelect = true
 
+        rowsView.addArrangedSubview(validatorCell)
         rowsView.addArrangedSubview(receiveCell)
         rowsView.addArrangedSubview(swapRateCell)
         rowsView.addArrangedSubview(networkFeeCell)
 
-        let contentView = UIView.vStack(spacing: 0, [headerView, chipsView, rowsView])
+        [validatorCell, receiveCell, swapRateCell, networkFeeCell].forEach { $0.borderView.strokeWidth = 0.5 }
+        browseButton.contentHorizontalAlignment = .right
+        browseButton.titleLabel?.font = .semiBoldFootnote
+        browseButton.snp.makeConstraints { $0.height.equalTo(44) }
+        let contentView = UIView.vStack(spacing: 0, [headerView, chipsView, rowsView, browseButton])
         contentView.setCustomSpacing(12, after: headerView)
         contentView.setCustomSpacing(4, after: chipsView)
-        contentView.layoutMargins = UIEdgeInsets(top: 12, left: 16, bottom: 4, right: 16)
+        contentView.layoutMargins = UIEdgeInsets(top: 12, left: 12, bottom: 4, right: 12)
         contentView.isLayoutMarginsRelativeArrangement = true
 
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+        }
+    }
+
+    func bindValidator(_ model: SubtensorPickCardViewModel) {
+        validatorCell.canSelect = model.isValidatorEditable && !model.validator.isLoading
+        switch model.validator {
+        case .loading: validatorCell.startLoadingIfNeeded()
+        case let .unselected(title):
+            validatorCell.stopLoadingIfNeeded()
+            validatorCell.rowContentView.valueView.bind(topValue: title, bottomValue: nil)
+        case let .selected(address, _):
+            validatorCell.stopLoadingIfNeeded()
+            validatorCell.rowContentView.valueView.bind(
+                topValue: address.name ?? address.address, bottomValue: model.validatorRate
+            )
         }
     }
 

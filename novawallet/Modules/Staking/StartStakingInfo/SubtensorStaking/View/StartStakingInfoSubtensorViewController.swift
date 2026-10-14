@@ -39,6 +39,9 @@ final class StartStakingInfoSubtensorViewController: UIViewController, ViewHolde
 
 private extension StartStakingInfoSubtensorViewController {
     func setupActions() {
+        rootView.seeAllButton.addAction(UIAction { [weak self] _ in
+            self?.presenter.seeAllOptions()
+        }, for: .touchUpInside)
         rootView.actionButton.addTarget(
             self,
             action: #selector(actionStartStaking),
@@ -53,6 +56,8 @@ private extension StartStakingInfoSubtensorViewController {
 
 extension StartStakingInfoSubtensorViewController: StartStakingInfoSubtensorViewProtocol {
     func didReceive(subtensorViewModel: StartStakingInfoSubtensorViewModel) {
+        let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
+        rootView.seeAllButton.setTitle(strings.stakingSubtensorQuickAllOptions(), for: .normal)
         rootView.bind(viewModel: subtensorViewModel)
     }
 

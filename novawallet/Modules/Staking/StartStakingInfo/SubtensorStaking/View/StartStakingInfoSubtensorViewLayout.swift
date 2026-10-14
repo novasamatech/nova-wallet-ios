@@ -30,6 +30,8 @@ final class StartStakingInfoSubtensorViewLayout: UIView {
         button.applyDefaultStyle()
     }
 
+    let seeAllButton = UIButton(type: .system)
+
     let balanceLabel = UILabel(style: .caption1Secondary, textAlignment: .center, numberOfLines: 1)
 
     init(themeColor: UIColor) {
@@ -66,11 +68,18 @@ private extension StartStakingInfoSubtensorViewLayout {
             make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).inset(Constants.balanceBottomInset)
         }
 
+        addSubview(seeAllButton)
+        seeAllButton.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(Constants.horizontalInset)
+            make.height.equalTo(44)
+            make.bottom.equalTo(balanceLabel.snp.top).offset(-Constants.actionSpacing)
+        }
+
         addSubview(actionButton)
         actionButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(Constants.horizontalInset)
             make.height.equalTo(Constants.buttonHeight)
-            make.bottom.equalTo(balanceLabel.snp.top).offset(-Constants.actionSpacing)
+            make.bottom.equalTo(seeAllButton.snp.top).offset(-Constants.actionSpacing)
         }
 
         addSubview(containerView)

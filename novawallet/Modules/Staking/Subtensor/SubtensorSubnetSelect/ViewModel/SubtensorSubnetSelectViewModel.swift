@@ -41,12 +41,6 @@ struct SubtensorSubnetListViewModel {
     let content: Content
 }
 
-struct SubtensorStakeToRootBarViewModel {
-    let icon: ImageViewModelProtocol
-    let title: String
-    let subtitle: String
-}
-
 struct SubtensorSubnetListState {
     let list: SubtensorSubnetList?
     let sort: SubtensorSubnetSort
@@ -58,8 +52,6 @@ struct SubtensorSubnetListState {
 
 protocol SubtensorSubnetViewModelFactoryProtocol {
     func createListViewModel(for state: SubtensorSubnetListState, locale: Locale) -> SubtensorSubnetListViewModel
-
-    func createRootBarViewModel(annualRate: Decimal?, locale: Locale) -> SubtensorStakeToRootBarViewModel
 
     func createSortSheetViewModel(selected: SubtensorSubnetSort, locale: Locale) -> SubtensorSortSheetViewModel
 
@@ -73,7 +65,6 @@ protocol SubtensorSubnetViewModelFactoryProtocol {
 final class SubtensorSubnetViewModelFactory {
     let chainAsset: ChainAsset
     let iconFactory: SubtensorSubnetIconFactoryProtocol
-    let assetIconFactory: AssetIconViewModelFactoryProtocol
 
     private let tokenFormatter: LocalizableResource<TokenFormatter>
     private let compactTokenFormatter: LocalizableResource<TokenFormatter>
@@ -82,12 +73,10 @@ final class SubtensorSubnetViewModelFactory {
     init(
         chainAsset: ChainAsset,
         iconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory(),
-        assetIconFactory: AssetIconViewModelFactoryProtocol = AssetIconViewModelFactory(),
         balanceFormatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory()
     ) {
         self.chainAsset = chainAsset
         self.iconFactory = iconFactory
-        self.assetIconFactory = assetIconFactory
 
         tokenFormatter = balanceFormatterFactory.createTokenFormatter(for: chainAsset.assetDisplayInfo)
         compactTokenFormatter = balanceFormatterFactory.createCompactTokenFormatter(for: chainAsset.assetDisplayInfo)
@@ -201,26 +190,13 @@ private extension SubtensorSubnetViewModelFactory {
         case .sevenDayChange:
             return strings.stakingSubtensorUiPickerChipSevenDay()
         case .poolDepth:
-            return strings.stakingSubtensorUiPickerPoolDepth()
+            return strings.stakingSubtensorQuickPoolTitle()
         case .age:
             return strings.stakingSubtensorUiPickerAge()
+        case .apy:
+            return strings.stakingSubtensorUiValidatorSortApy()
         case .name:
             return strings.commonName()
-        }
-    }
-
-    func sortPhrase(for sort: SubtensorSubnetSort, locale: Locale) -> String {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
-        switch sort {
-        case .sevenDayChange:
-            return strings.stakingSubtensorUiPickerBySevenDay()
-        case .poolDepth:
-            return strings.stakingSubtensorUiPickerByPool()
-        case .age:
-            return strings.stakingSubtensorUiPickerByAge()
-        case .name:
-            return strings.stakingSubtensorUiPickerByName()
         }
     }
 
@@ -235,13 +211,19 @@ private extension SubtensorSubnetViewModelFactory {
             )
         case .poolDepth:
             return .init(
-                title: strings.stakingSubtensorUiPickerPoolDepth(),
+                title: strings.stakingSubtensorQuickPoolTitle(),
                 subtitle: strings.stakingSubtensorUiPickerPoolDetail()
             )
         case .age:
             return .init(
                 title: strings.stakingSubtensorUiPickerAge(),
                 subtitle: strings.stakingSubtensorUiPickerAgeDetail()
+            )
+        case .apy:
+            return .init(
+                title: strings.stakingSubtensorUiValidatorSortApy(),
+                subtitle: strings.stakingSubtensorQuickApyUnavailable(),
+                isEnabled: false
             )
         case .name:
             return .init(title: strings.commonName(), subtitle: strings.stakingSubtensorUiPickerNameDetail())
@@ -275,11 +257,10 @@ extension SubtensorSubnetViewModelFactory: SubtensorSubnetViewModelFactoryProtoc
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         let caption = state.list.map { list in
-            strings.stakingSubtensorUiJoinDotFormat(
-                strings.stakingSubtensorUiPickerCount(format: list.count),
-                SubtensorFreshnessFormatter.agedHint(for: state.stamp, locale: locale)
-                    ?? sortPhrase(for: state.sort, locale: locale)
-            )
+            let count = strings.stakingSubtensorQuickCount(list.others.count)
+            return SubtensorFreshnessFormatter.agedHint(for: state.stamp, locale: locale).map {
+                strings.stakingSubtensorUiJoinDotFormat(count, $0)
+            } ?? count
         }
 
         return SubtensorSubnetListViewModel(
@@ -288,22 +269,6 @@ extension SubtensorSubnetViewModelFactory: SubtensorSubnetViewModelFactoryProtoc
             isFilterActive: state.filters.isApplied,
             areControlsEnabled: state.list != nil,
             content: createContent(for: state, locale: locale)
-        )
-    }
-
-    func createRootBarViewModel(annualRate: Decimal?, locale: Locale) -> SubtensorStakeToRootBarViewModel {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
-        let subtitle = annualRate.map { rate in
-            strings.stakingSubtensorUiPickerRootRateFormat(
-                SubtensorApyFormatter.text(for: rate, style: .bare, locale: locale)
-            )
-        } ?? strings.stakingSubtensorUiPickerRootSubtitle()
-
-        return SubtensorStakeToRootBarViewModel(
-            icon: assetIconFactory.createAssetIconViewModel(from: chainAsset.assetDisplayInfo),
-            title: strings.stakingSubtensorUiStakeToRoot(),
-            subtitle: subtitle
         )
     }
 

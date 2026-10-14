@@ -8,6 +8,17 @@ final class SubtensorStakingSetupWireframe: SubtensorStakingSetupWireframeProtoc
         self.state = state
     }
 
+    func showAllSubnets(
+        from view: SubtensorStakingSetupViewProtocol?,
+        browseState: SubtensorSubnetBrowseState,
+        delegate: SubtensorSubnetSelectDelegate
+    ) {
+        guard let picker = SubtensorSubnetSelectViewFactory.createPicker(
+            for: state, delegate: delegate, browseState: browseState
+        ) else { return }
+        view?.controller.presentWithCardLayout(picker, animated: true)
+    }
+
     func showConfirmation(
         from view: SubtensorStakingSetupViewProtocol?,
         model: SubtensorStakingConfirmModel
