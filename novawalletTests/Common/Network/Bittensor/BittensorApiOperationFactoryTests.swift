@@ -125,12 +125,7 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
     }
 
     private func createResponse(_ body: Data, requestId: String) -> BittensorApiRawResponse {
-        BittensorApiRawResponse(
-            statusCode: 200,
-            requestId: requestId,
-            body: body,
-            cacheDirectives: HTTPCacheDirectives(cacheControl: "public, max-age=150, must-revalidate", age: nil)
-        )
+        BittensorApiRawResponse(statusCode: 200, requestId: requestId, body: body)
     }
 
     private func mutatedBody(_ original: String, replacing replacements: [(String, String)]) -> Data {

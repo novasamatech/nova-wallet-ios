@@ -185,16 +185,14 @@ private extension BittensorApiOperationFactory {
         return createWrapper(
             route: route,
             path: route.pathTemplate,
-            queryItems: [subjectItem] + pageItems + queryItems,
-            accountDigest: Data(accountSubject.utf8).sha256()
+            queryItems: [subjectItem] + pageItems + queryItems
         )
     }
 
     func createWrapper<T: Decodable & BittensorApiWireChecked>(
         route: Route,
         path: String,
-        queryItems: [URLQueryItem] = [],
-        accountDigest: Data? = nil
+        queryItems: [URLQueryItem] = []
     ) -> CompoundOperationWrapper<BittensorApiResult<T>> {
         let request = BittensorApiRequest(
             path: path,
@@ -204,7 +202,6 @@ private extension BittensorApiOperationFactory {
 
         let job = BittensorApiCacheJob(
             key: Self.cacheKey(path: path, queryItems: queryItems),
-            routeKey: BittensorApiRouteKey(pathTemplate: route.pathTemplate, accountDigest: accountDigest),
             currentInvalidationRevision: { [transport] in transport.invalidationRevision },
             admit: { [transport] in transport.createAdmissionWrapper() },
             fetch: { [transport, logger] admission in
@@ -215,17 +212,17 @@ private extension BittensorApiOperationFactory {
             }
         )
 
-        let deliveryWrapper = cache.createWrapper(for: job)
+        let entryWrapper = cache.createWrapper(for: job)
 
         let resultOperation = ClosureOperation<BittensorApiResult<T>> {
-            let delivery = try deliveryWrapper.targetOperation.extractNoCancellableResultData()
+            let entry = try entryWrapper.targetOperation.extractNoCancellableResultData()
 
-            return try Self.makeResult(from: delivery.entry, isFromExpiredCache: delivery.isFromExpiredCache)
+            return try Self.makeResult(from: entry, isFromExpiredCache: false)
         }
 
-        resultOperation.addDependency(deliveryWrapper.targetOperation)
+        resultOperation.addDependency(entryWrapper.targetOperation)
 
-        return deliveryWrapper.insertingTail(operation: resultOperation)
+        return entryWrapper.insertingTail(operation: resultOperation)
     }
 
     static func pagedQueryItems(page: Int) -> [URLQueryItem] {
@@ -308,7 +305,6 @@ private extension BittensorApiOperationFactory {
         return BittensorApiFetchedValue(
             value: value,
             requestId: response.requestId,
-            cacheDirectives: response.cacheDirectives,
             generation: generational?.generationOrder
         )
     }
