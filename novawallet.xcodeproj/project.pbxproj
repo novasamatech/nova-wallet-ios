@@ -41,7 +41,6 @@
 		91F43920935DC57F69FD6CAC /* SubtensorNovaFeeRateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FFA1B88A39D1918B83B1BC0 /* SubtensorNovaFeeRateStore.swift */; };
 		2CACFC81CB694523A08D4E01 /* SubtensorInfoSheetPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A292CA074E494032AD1E6E94 /* SubtensorInfoSheetPresentable.swift */; };
 		307FAA6743BB406A9198D654 /* SubtensorSubnetSelectDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD15EEE63DE9490095C8ED0E /* SubtensorSubnetSelectDelegate.swift */; };
-		370C652D1C2E448BAC5A3942 /* SubtensorGetTaoRouting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C170BB3E7854B17886F539D /* SubtensorGetTaoRouting.swift */; };
 		3895C4A693764784A099DA7C /* SubtensorPortfolioPositionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C7DE8F8AF0F444CA721D391 /* SubtensorPortfolioPositionView.swift */; };
 		3AA28593DF4B481F9ECF82BC /* SubtensorTradeQuoteRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB24FE7616134AED90BDE88A /* SubtensorTradeQuoteRequest.swift */; };
 		3B27714A3EC247968F9638A9 /* SubtensorSubnetNaming.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57E5E4B834D242F083B9B4AC /* SubtensorSubnetNaming.swift */; };
@@ -4986,6 +4985,7 @@
 		8490142E24A935FE008F705E /* LoadableViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490142924A935FE008F705E /* LoadableViewProtocol.swift */; };
 		8490142F24A935FE008F705E /* ControllerBackedProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490142A24A935FE008F705E /* ControllerBackedProtocol.swift */; };
 		8490143024A935FE008F705E /* AlertPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490142B24A935FE008F705E /* AlertPresentable.swift */; };
+		6A1B2C3D4E5F60718293A4B6 /* GetTokenOptionsPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A1B2C3D4E5F60718293A4B5 /* GetTokenOptionsPresentable.swift */; };
 		8490144C24A93D0B008F705E /* NovaNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490144A24A93D0B008F705E /* NovaNavigationController.swift */; };
 		8490144F24A93E2E008F705E /* UIImage+Drawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490144E24A93E2E008F705E /* UIImage+Drawing.swift */; };
 		8490145224A93FD1008F705E /* NovaLoadingViewPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490145024A93FD1008F705E /* NovaLoadingViewPresenter.swift */; };
@@ -7222,7 +7222,6 @@
 		59AB1C268DA543FEAA29418A /* SwapNetworkFeeViewCell+CostBasis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwapNetworkFeeViewCell+CostBasis.swift"; sourceTree = "<group>"; };
 		59FE53582AC344DA9C06645C /* SubtensorPositionViewModelFactory+Chart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorPositionViewModelFactory+Chart.swift"; sourceTree = "<group>"; };
 		5B70DBD98058407E9BF30BE2 /* SubtensorPickCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorPickCardView.swift; sourceTree = "<group>"; };
-		5C170BB3E7854B17886F539D /* SubtensorGetTaoRouting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorGetTaoRouting.swift; sourceTree = "<group>"; };
 		5E90D29068564E38902DA201 /* SubtensorSubnetMarketsServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSubnetMarketsServiceProtocol.swift; sourceTree = "<group>"; };
 		5EBB36DB4417444D901F40DF /* SubtensorStakingSetupPresenter+Delegates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorStakingSetupPresenter+Delegates.swift"; sourceTree = "<group>"; };
 		5F4838C35D0C44D98ECD3551 /* SubtensorOperationStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorOperationStatusView.swift; sourceTree = "<group>"; };
@@ -11806,6 +11805,7 @@
 		8490142924A935FE008F705E /* LoadableViewProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadableViewProtocol.swift; sourceTree = "<group>"; };
 		8490142A24A935FE008F705E /* ControllerBackedProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControllerBackedProtocol.swift; sourceTree = "<group>"; };
 		8490142B24A935FE008F705E /* AlertPresentable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertPresentable.swift; sourceTree = "<group>"; };
+		6A1B2C3D4E5F60718293A4B5 /* GetTokenOptionsPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTokenOptionsPresentable.swift; sourceTree = "<group>"; };
 		8490144A24A93D0B008F705E /* NovaNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NovaNavigationController.swift; sourceTree = "<group>"; };
 		8490144E24A93E2E008F705E /* UIImage+Drawing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+Drawing.swift"; sourceTree = "<group>"; };
 		8490145024A93FD1008F705E /* NovaLoadingViewPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NovaLoadingViewPresenter.swift; sourceTree = "<group>"; };
@@ -21079,7 +21079,6 @@
 				CD15EEE63DE9490095C8ED0E /* SubtensorSubnetSelectDelegate.swift */,
 				C81940DC0C784501BA840B12 /* SubtensorSubnetPickerCompleting.swift */,
 				98AA56CC6D93450AAAD9D507 /* SubtensorEarnInfoPresentable.swift */,
-				5C170BB3E7854B17886F539D /* SubtensorGetTaoRouting.swift */,
 				33217CB880FE4E468B47CA90 /* SubtensorOperationResultPresenting.swift */,
 				DB25C60873BD49718F8F0E6D /* SubtensorYourBittensorPresentable.swift */,
 				E3DC7FF4678C4CE08ED082DA /* SubtensorEarnFlowRoot.swift */,
@@ -26053,6 +26052,7 @@
 				8490142924A935FE008F705E /* LoadableViewProtocol.swift */,
 				8490142A24A935FE008F705E /* ControllerBackedProtocol.swift */,
 				8490142B24A935FE008F705E /* AlertPresentable.swift */,
+				6A1B2C3D4E5F60718293A4B5 /* GetTokenOptionsPresentable.swift */,
 				842D1E8324D197C900C30A7A /* KeyboardAdoptable.swift */,
 				84754C842510A1A400854599 /* ModalAlertPresenting.swift */,
 				849DEC6025EE13CE00C64C19 /* AddressOptionsPresentable.swift */,
@@ -34113,6 +34113,7 @@
 				842349C02624E7B40066ACFE /* SubstrateAccountId.swift in Sources */,
 				8466781627EC9B90007935D3 /* PersistExtrinsicFactory.swift in Sources */,
 				8490143024A935FE008F705E /* AlertPresentable.swift in Sources */,
+				6A1B2C3D4E5F60718293A4B6 /* GetTokenOptionsPresentable.swift in Sources */,
 				F4C086B826D10E3400716AEC /* UIRefreshControl+ProgramaticallyBeginRefresh.swift in Sources */,
 				84E8BA1D29FFB38600FD9F40 /* EthereumResultParser.swift in Sources */,
 				8487584527F096F800495306 /* QRScannerWireframe.swift in Sources */,
@@ -39627,7 +39628,6 @@
 				70DE23C1893A48A3AEA9852B /* SubtensorSubnetFiltersSheetViewLayout.swift in Sources */,
 				54979AB8342448338C1E2A27 /* SubtensorEarnInfoPresentable.swift in Sources */,
 				546F9B120CEA43A1AEC5E736 /* SubtensorStakingSetupMode.swift in Sources */,
-				370C652D1C2E448BAC5A3942 /* SubtensorGetTaoRouting.swift in Sources */,
 				B76A8DCD32134C548322F7B0 /* SubtensorValidatorPresetFactory.swift in Sources */,
 				7AC1B930F91C4F4397056E77 /* SubtensorStakingSetupPresenter+Interactor.swift in Sources */,
 				BE74C837529C4013A6926C8A /* SubtensorStakingSetupPresenter+Delegates.swift in Sources */,

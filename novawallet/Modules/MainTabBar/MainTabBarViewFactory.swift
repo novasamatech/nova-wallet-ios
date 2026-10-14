@@ -119,18 +119,21 @@ private extension MainTabBarViewFactory {
         let dAppMediator = serviceCoordinator.dappMediator
         let walletNotificationService = serviceCoordinator.walletNotificationService
         let delegatedAccountSyncService = serviceCoordinator.delegatedAccountSyncService
+        let assetListObservable = AssetListModelObservable(state: .init(value: .init()))
 
         guard
             let walletController = createWalletController(
                 for: localizationManager,
                 dAppMediator: dAppMediator,
                 walletNotificationService: walletNotificationService,
-                delegatedAccountSyncService: delegatedAccountSyncService
+                delegatedAccountSyncService: delegatedAccountSyncService,
+                assetListObservable: assetListObservable
             ),
             let stakingController = createStakingController(
                 for: localizationManager,
                 walletNotificationService: walletNotificationService,
-                delegatedAccountSyncService: delegatedAccountSyncService
+                delegatedAccountSyncService: delegatedAccountSyncService,
+                assetListObservable: assetListObservable
             ),
             let voteController = createVoteController(
                 for: localizationManager,
@@ -165,12 +168,14 @@ private extension MainTabBarViewFactory {
         for localizationManager: LocalizationManagerProtocol,
         dAppMediator: DAppInteractionMediating,
         walletNotificationService: WalletNotificationServiceProtocol,
-        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol,
+        assetListObservable: AssetListModelObservable
     ) -> UIViewController? {
         guard let viewController = AssetListViewFactory.createView(
             dAppMediator: dAppMediator,
             walletNotificationService: walletNotificationService,
-            delegatedAccountSyncService: delegatedAccountSyncService
+            delegatedAccountSyncService: delegatedAccountSyncService,
+            assetListModelObservable: assetListObservable
         )?.controller else {
             return nil
         }
@@ -208,11 +213,13 @@ private extension MainTabBarViewFactory {
     static func createStakingController(
         for localizationManager: LocalizationManagerProtocol,
         walletNotificationService: WalletNotificationServiceProtocol,
-        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol,
+        assetListObservable: AssetListModelObservable
     ) -> UIViewController? {
         let viewController = StakingDashboardViewFactory.createView(
             walletNotificationService: walletNotificationService,
-            delegatedAccountSyncService: delegatedAccountSyncService
+            delegatedAccountSyncService: delegatedAccountSyncService,
+            assetListObservable: assetListObservable
         )?.controller ?? UIViewController()
 
         let localizableTitle = LocalizableResource { locale in

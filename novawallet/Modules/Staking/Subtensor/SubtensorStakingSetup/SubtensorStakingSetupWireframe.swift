@@ -4,6 +4,8 @@ import UIKit
 final class SubtensorStakingSetupWireframe: SubtensorStakingSetupWireframeProtocol {
     let state: SubtensorStakingSharedStateProtocol
 
+    var assetListObservable: AssetListModelObservable { state.flowState.assetListObservable }
+
     init(state: SubtensorStakingSharedStateProtocol) {
         self.state = state
     }

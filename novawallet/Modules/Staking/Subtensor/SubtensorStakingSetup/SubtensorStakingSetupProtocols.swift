@@ -48,7 +48,7 @@ protocol SubtensorSetupInteractorOutputProtocol: SubtensorStakingBaseInteractorO
 }
 
 protocol SubtensorStakingSetupWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
-    CommonRetryable, SubtensorStakingErrorPresentable, SubtensorGetTaoRouting, SubtensorInfoSheetPresentable,
+    CommonRetryable, SubtensorStakingErrorPresentable, GetTokenOptionsPresentable, SubtensorInfoSheetPresentable,
     SubtensorValidatorInfoPresentable {
     func showAllSubnets(
         from view: SubtensorStakingSetupViewProtocol?,

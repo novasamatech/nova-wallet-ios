@@ -308,7 +308,7 @@ extension GiftTransferSetupPresenter: GiftTransferSetupPresenterProtocol {
     func getTokens() {
         wireframe.showGetTokenOptions(
             from: view,
-            purchaseHadler: self,
+            purchaseHandler: self,
             destinationChainAsset: chainAsset,
             locale: selectedLocale
         )
