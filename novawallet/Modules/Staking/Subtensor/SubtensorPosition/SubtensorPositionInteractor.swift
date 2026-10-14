@@ -19,7 +19,6 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning {
     private var priceProvider: StreamableProvider<PriceData>?
     private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
     private var failedHoldsHotkeys: [AccountId]?
-    private var seed = SubtensorPositionSnapshot(catalogue: .miss, rootRate: .miss, yields: .miss)
     private let catalogueStore = CancellableCallStore()
     private let logosStore = CancellableCallStore()
     private let validatorStore = CancellableCallStore()
@@ -158,23 +157,6 @@ private extension SubtensorPositionInteractor {
         }
     }
 
-    func loadRootRate() {
-        executeCancellable(
-            wrapper: yieldService.createRootYieldWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: rateStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(yield):
-                self?.presenter?.didReceive(rootRate: SubtensorAlphaApyFormatter.annualRate(from: yield))
-            case let .failure(error):
-                self?.logger.warning("Subtensor position root rate unavailable: \(error)")
-                self?.presenter?.didReceive(rootRate: nil)
-            }
-        }
-    }
-
     func loadYields() {
         executeCancellable(
             wrapper: yieldService.createAlphaYieldsWrapper(for: netuid),
@@ -199,29 +181,19 @@ private extension SubtensorPositionInteractor {
 
         loadRootHolds(for: hotkeys)
     }
-
-    func makeSnapshot() -> SubtensorPositionSnapshot {
-        guard !isRoot else {
-            let rootRate = yieldService.cachedRootYield().map(SubtensorAlphaApyFormatter.annualRate(from:))
-
-            return SubtensorPositionSnapshot(catalogue: .miss, rootRate: rootRate, yields: .miss)
-        }
-
-        let catalogue = catalogueService.cachedCatalogue()
-
-        return SubtensorPositionSnapshot(
-            catalogue: catalogue.value?.subnet(for: netuid) != nil ? catalogue : .miss,
-            rootRate: .miss,
-            yields: yieldService.cachedAlphaYields(for: netuid)
-        )
-    }
 }
 
 extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol {
-    func cachedSnapshot() -> SubtensorPositionSnapshot {
-        seed = makeSnapshot()
+    func cachedCatalogue() -> SubtensorSubnetCatalogue? {
+        guard !isRoot, let catalogue = catalogueService.cachedCatalogue().value else {
+            return nil
+        }
 
-        return seed
+        return catalogue.subnet(for: netuid) != nil ? catalogue : nil
+    }
+
+    func cachedYields() -> SubtensorAlphaYields? {
+        isRoot ? nil : yieldService.cachedAlphaYields(for: netuid).value
     }
 
     func setup() {
@@ -231,21 +203,10 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
         if isRoot {
             subscribeClaimable()
             blockNumberProvider = subscribeToBlockNumber(for: chainAsset.chain.chainId)
-
-            if !seed.rootRate.isFresh {
-                loadRootRate()
-            }
         } else {
-            if !seed.catalogue.isFresh {
-                loadCatalogue()
-            }
-
+            loadCatalogue()
             loadSubnetLogos()
-
-            if !seed.yields.isFresh {
-                loadYields()
-            }
-
+            loadYields()
             loadSubnetsInfo(forcingRefresh: false)
         }
     }

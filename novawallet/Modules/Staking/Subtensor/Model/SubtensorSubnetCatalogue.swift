@@ -1,24 +1,11 @@
 import BigInt
 import Foundation
 
-struct SubtensorSubnetLinks: Equatable {
-    let githubRepo: String
-    let subnetContact: String
-    let subnetUrl: String
-    let subnetWebsite: String
-    let discord: String
-    let additional: String
-}
-
 struct SubtensorCatalogueSubnet: Equatable {
     let netuid: UInt16
     let name: String
     let symbol: String
     let networkRegisteredAt: UInt64
-    let tempo: UInt64
-    let ownerColdkey: String
-    let ownerHotkey: String
-    let links: SubtensorSubnetLinks
     let taoReserve: Balance
     let alphaReserve: Balance
     let alphaOutstanding: Balance

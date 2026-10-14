@@ -83,14 +83,7 @@ final class SubtensorUnstakeSetupViewModelFactory {
             return taoInfo
         }
 
-        return AssetBalanceDisplayInfo(
-            displayPrecision: taoInfo.displayPrecision,
-            assetPrecision: taoInfo.assetPrecision,
-            symbol: SubtensorSubnetNaming.symbol(for: netuid, in: catalogue),
-            symbolValueSeparator: taoInfo.symbolValueSeparator,
-            symbolPosition: taoInfo.symbolPosition,
-            icon: nil
-        )
+        return taoInfo.subtensorAlpha(symbol: SubtensorSubnetNaming.symbol(for: netuid, in: catalogue))
     }
 }
 
@@ -383,14 +376,7 @@ private extension SubtensorUnstakeSetupViewModelFactory {
         )
 
         return .selected(
-            DisplayAddressViewModel(address: viewModel.address, name: name, imageViewModel: viewModel.imageViewModel),
-            accessory: .info
+            DisplayAddressViewModel(address: viewModel.address, name: name, imageViewModel: viewModel.imageViewModel)
         )
-    }
-}
-
-private extension String {
-    func isolatedLeftToRight() -> String {
-        "\u{2066}\(self)\u{2069}"
     }
 }

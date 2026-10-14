@@ -162,20 +162,15 @@ extension SubtensorStakingSetupViewModelFactory {
         switch compact {
         case .loading: name = nil; icon = nil
         case let .unselected(title): name = title; icon = nil
-        case let .selected(display, _): name = display.name ?? display.address; icon = display.imageViewModel
+        case let .selected(display): name = display.name ?? display.address; icon = display.imageViewModel
         }
-        let rate: SubtensorPortfolioLoadable<String> = input.isRootRateLoaded
-            ? input.rootRate
-            .map { .loaded(SubtensorApyFormatter.text(for: $0, style: .bare, locale: locale)) } ?? .hidden
-            : .loading
         return SubtensorSetupRootViewModel(
             icon: AssetIconViewModelFactory().createAssetIconViewModel(from: chainAsset.assetDisplayInfo),
             validator: SubtensorValidatorCardViewModel(
-                icon: icon, name: name, subtitle: strings.stakingCommonValidator(), rate: rate,
+                icon: icon, name: name, subtitle: strings.stakingCommonValidator(), rate: .hidden,
                 rateCaption: strings.stakingSubtensorV22EstApy()
             ),
             compactValidator: compact,
-            compactRate: input.rootRate.map { SubtensorApyFormatter.text(for: $0, style: .leading, locale: locale) },
             isQuickPick: input.rootEntryPresentation == .quickPickRoot || input.quickPickOrder != nil,
             networkFee: createNetworkFee(for: input, locale: locale)
         )
@@ -186,7 +181,6 @@ extension SubtensorStakingSetupViewModelFactory {
         locale: Locale
     ) -> SubtensorSetupValidatorViewModel {
         let selectTitle = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorSelectValidator()
-        let accessory: SubtensorSetupValidatorAccessory = input.mode.isLocked ? .info : .chevron
 
         switch input.validator {
         case .pending:
@@ -206,8 +200,7 @@ extension SubtensorStakingSetupViewModelFactory {
                     address: viewModel.address,
                     name: validator.name ?? address.mediumTruncated,
                     imageViewModel: viewModel.imageViewModel
-                ),
-                accessory: accessory
+                )
             )
         }
     }

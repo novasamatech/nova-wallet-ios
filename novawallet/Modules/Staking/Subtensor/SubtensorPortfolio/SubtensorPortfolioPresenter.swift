@@ -46,19 +46,6 @@ private extension SubtensorPortfolioPresenter {
         view?.didReceive(viewModel: viewModel)
     }
 
-    func seed(from snapshot: SubtensorPortfolioSnapshot) {
-        if case let .fresh(catalogue, _) = snapshot.catalogue {
-            state.catalogue = catalogue
-            state.isCatalogueResolved = true
-        }
-
-        if let rootRate = snapshot.rootRate.value {
-            state.rootRate = rootRate
-        }
-
-        state.isRootRateResolved = snapshot.rootRate.isFresh
-    }
-
     func requestPriceDataIfNeeded() {
         guard state.positions != nil, state.isCatalogueResolved else {
             return
@@ -89,7 +76,6 @@ private extension SubtensorPortfolioPresenter {
 
 extension SubtensorPortfolioPresenter: SubtensorPortfolioPresenterProtocol {
     func setup() {
-        seed(from: interactor.cachedSnapshot())
         provideViewModel()
         interactor.setup()
     }
@@ -165,12 +151,6 @@ extension SubtensorPortfolioPresenter: SubnetPortfolioInteractorOutputProtocol {
 
     func didReceive(subnetLogos: SubtensorSubnetLogos?) {
         state.subnetLogos = subnetLogos
-        provideViewModel()
-    }
-
-    func didReceive(rootRate: Decimal?) {
-        state.rootRate = rootRate
-        state.isRootRateResolved = true
         provideViewModel()
     }
 

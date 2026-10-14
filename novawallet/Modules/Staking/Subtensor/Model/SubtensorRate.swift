@@ -28,5 +28,4 @@ struct SubtensorAlphaYields: Equatable {
     let netuid: UInt16
     let yields: [AccountId: SubtensorReportedYield]
     let stamp: SubtensorBackendStamp
-    let isTruncated: Bool
 }

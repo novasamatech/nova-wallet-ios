@@ -2258,7 +2258,6 @@ Do you want to continue?";
 "staking.subtensor.ui.portfolio.empty.subnet.title" = "Put TAO to work on a subnet";
 "staking.subtensor.ui.portfolio.empty.subnet.subtitle" = "Rewards arrive as subnet tokens · value moves with the market";
 "staking.subtensor.ui.portfolio.empty.root.title" = "Or stake to root · the calm option";
-"staking.subtensor.ui.portfolio.empty.root.subtitle.format" = "%@ APY, paid in TAO";
 "staking.subtensor.ui.portfolio.empty.unstake.title" = "Unstake any time";
 "staking.subtensor.ui.portfolio.empty.unstake.subtitle" = "No waiting period";
 "staking.subtensor.result.buying.format" = "Buying %@ with TAO";

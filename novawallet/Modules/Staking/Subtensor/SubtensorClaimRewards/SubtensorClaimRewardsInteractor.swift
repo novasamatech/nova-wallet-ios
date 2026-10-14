@@ -12,43 +12,37 @@ final class SubtensorClaimRewardsInteractor: SubtensorStakingBaseInteractor {
         }
     }
 
+    let rootClaimableService: SubtensorRootClaimableServiceProtocol
     let claimableFetchFactory: SubtensorRootClaimableFetching
 
     private let snapshotCallStore = CancellableCallStore()
 
     init(
-        baseServices: SubtensorFlowServices,
-        chainAsset: ChainAsset,
+        flowServices: SubtensorFlowServices,
+        state: SubtensorStakingSharedStateProtocol,
         claimableFetchFactory: SubtensorRootClaimableFetching,
-        catalogueService: SubtensorSubnetCatalogueServiceProtocol,
-        costBasisService: SubtensorCostBasisServiceProtocol,
-        generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         logger: LoggerProtocol
     ) {
+        rootClaimableService = flowServices.rootClaimableService
         self.claimableFetchFactory = claimableFetchFactory
 
-        super.init(
-            chainAsset: chainAsset,
-            selectedAccount: baseServices.account.chainAccount,
-            positionsSyncService: baseServices.positionsSyncService,
-            rootClaimableService: baseServices.rootClaimableService,
-            preflightFactory: baseServices.preflightFactory,
-            tradeQuoteFactory: baseServices.tradeQuoteFactory,
-            operationService: baseServices.operationService,
-            catalogueService: catalogueService,
-            costBasisService: costBasisService,
-            walletLocalSubscriptionFactory: baseServices.walletLocalSubscriptionFactory,
-            priceLocalSubscriptionFactory: baseServices.priceLocalSubscriptionFactory,
-            generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
-            runtimeProvider: baseServices.runtimeProvider,
-            currencyManager: baseServices.currencyManager,
-            operationQueue: baseServices.operationQueue,
-            logger: logger
-        )
+        super.init(flowServices: flowServices, state: state, logger: logger)
     }
 
     deinit {
         snapshotCallStore.cancel()
+
+        rootClaimableService.remove(observer: self)
+    }
+
+    override func onSetup() {
+        rootClaimableService.add(
+            observer: self,
+            sendStateOnSubscription: true,
+            queue: .main
+        ) { [weak self] _, newState in
+            self?.presenter?.didReceiveClaimable(newState)
+        }
     }
 }
 

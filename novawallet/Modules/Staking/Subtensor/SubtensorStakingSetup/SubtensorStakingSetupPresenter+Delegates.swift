@@ -49,7 +49,6 @@ extension SubtensorStakingSetupPresenter: SubtensorStakePresenterValidating {
             amount: inputAmount(),
             balance: balance,
             fee: fee,
-            existentialDeposit: existentialDeposit,
             preflight: preflight,
             netuid: target.netuid,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
@@ -93,7 +92,7 @@ extension SubtensorStakingSetupPresenter: SubtensorStakePresenterValidating {
             validator: SubtensorConfirmValidator(
                 hotkey: validator.hotkey,
                 display: DisplayAddress(address: address, username: validator.name ?? ""),
-                annualRate: target.isRoot ? rootRate : subnetAnnualRate()
+                annualRate: target.isRoot ? nil : subnetAnnualRate()
             ),
             amount: amount,
             tolerance: target.isRoot ? nil : slippage,

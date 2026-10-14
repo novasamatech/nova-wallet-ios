@@ -16,7 +16,8 @@ protocol SubtensorPositionPresenterProtocol: AnyObject {
 }
 
 protocol SubtensorPositionInteractorInputProtocol: AnyObject {
-    func cachedSnapshot() -> SubtensorPositionSnapshot
+    func cachedCatalogue() -> SubtensorSubnetCatalogue?
+    func cachedYields() -> SubtensorAlphaYields?
     func setup()
     func refreshPositions()
     func loadCatalogue()
@@ -35,7 +36,6 @@ protocol SubnetPositionInteractorOutputProtocol: AnyObject {
     func didReceive(subnetsInfo: SubtensorSubnetsInfo?)
     func didReceive(subnetLogos: SubtensorSubnetLogos?)
     func didReceive(validator: SubtensorValidatorDirectoryItem?, for hotkey: AccountId)
-    func didReceive(rootRate: Decimal?)
     func didReceive(yields: SubtensorAlphaYields?)
     func didReceive(claimable: SubtensorRootClaimable?)
     func didReceiveClaimableFailure(_ isFailed: Bool)
@@ -51,10 +51,4 @@ protocol SubtensorPositionWireframeProtocol: AnyObject, MessageSheetPresentable,
     func showBuyMore(from view: SubtensorPositionViewProtocol?, position: SubtensorStakingPosition)
     func showUnstake(from view: SubtensorPositionViewProtocol?, netuid: UInt16)
     func popToPortfolio(from view: SubtensorPositionViewProtocol?)
-}
-
-struct SubtensorPositionSnapshot {
-    let catalogue: HTTPCachePeek<SubtensorSubnetCatalogue>
-    let rootRate: HTTPCachePeek<Decimal?>
-    let yields: HTTPCachePeek<SubtensorAlphaYields>
 }

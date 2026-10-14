@@ -264,7 +264,8 @@ extension SubtensorUnstakeConfirmPresenter: SubtensorStakingConfirmPresenterProt
         refreshHolds()
 
         if !model.target.isRoot {
-            interactor.loadSubnetData()
+            interactor.loadCatalogue()
+            interactor.loadSubnetLogos()
             loadCostBasisIfNeeded()
             refreshQuote()
         }

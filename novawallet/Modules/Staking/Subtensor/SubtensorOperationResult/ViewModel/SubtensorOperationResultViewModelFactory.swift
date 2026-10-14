@@ -57,13 +57,8 @@ extension SubtensorOperationResultViewModelFactory {
     }
 
     func alphaInfo(for context: SubtensorResultViewContext) -> AssetBalanceDisplayInfo {
-        AssetBalanceDisplayInfo(
-            displayPrecision: taoInfo.displayPrecision,
-            assetPrecision: taoInfo.assetPrecision,
-            symbol: SubtensorSubnetNaming.symbol(for: context.request.target.netuid, in: context.catalogue),
-            symbolValueSeparator: taoInfo.symbolValueSeparator,
-            symbolPosition: taoInfo.symbolPosition,
-            icon: nil
+        taoInfo.subtensorAlpha(
+            symbol: SubtensorSubnetNaming.symbol(for: context.request.target.netuid, in: context.catalogue)
         )
     }
 

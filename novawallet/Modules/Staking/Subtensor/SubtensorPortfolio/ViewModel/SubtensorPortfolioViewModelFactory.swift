@@ -65,22 +65,15 @@ private extension SubtensorPortfolioViewModelFactory {
         catalogue: SubtensorSubnetCatalogue?,
         locale: Locale
     ) -> String {
-        let taoInfo = chainAsset.assetDisplayInfo
-
-        let alphaInfo = AssetBalanceDisplayInfo(
-            displayPrecision: taoInfo.displayPrecision,
-            assetPrecision: taoInfo.assetPrecision,
-            symbol: SubtensorSubnetNaming.symbol(for: netuid, in: catalogue),
-            symbolValueSeparator: taoInfo.symbolValueSeparator,
-            symbolPosition: taoInfo.symbolPosition,
-            icon: nil
+        let alphaInfo = chainAsset.assetDisplayInfo.subtensorAlpha(
+            symbol: SubtensorSubnetNaming.symbol(for: netuid, in: catalogue)
         )
 
         let text = formatterFactory.createTokenFormatter(for: alphaInfo)
             .value(for: locale)
             .stringFromDecimal(decimal(amount)) ?? unknownValue(for: locale)
 
-        return "\u{2066}\(text)\u{2069}"
+        return text.isolatedLeftToRight()
     }
 
     func formatSignedPercent(_ value: Decimal, locale: Locale) -> String? {
@@ -244,7 +237,7 @@ private extension SubtensorPortfolioViewModelFactory {
         return SubtensorPortfolioRowViewModel(
             icon: assetIconFactory.createAssetIconViewModel(from: chainAsset.assetDisplayInfo),
             title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiRootStaking(),
-            subtitle: state.rootRate.map { SubtensorApyFormatter.text(for: $0, style: .leading, locale: locale) },
+            subtitle: nil,
             value: formatTao(amount, locale: locale),
             detail: detail
         )
@@ -303,16 +296,10 @@ private extension SubtensorPortfolioViewModelFactory {
             formatFiat(0, price: price, locale: locale)
         }
 
-        let rootSubtitle = state.rootRate.map { rate in
-            strings.stakingSubtensorUiPortfolioEmptyRootSubtitleFormat(
-                SubtensorApyFormatter.text(for: rate, style: .bare, locale: locale)
-            )
-        } ?? strings.stakingSubtensorUiPickerRootSubtitle()
-
         return SubtensorPortfolioEmptyViewModel(
             total: formatTao(0, locale: locale),
             fiat: fiat,
-            rootSubtitle: rootSubtitle
+            rootSubtitle: strings.stakingSubtensorUiPickerRootSubtitle()
         )
     }
 }
@@ -333,7 +320,7 @@ extension SubtensorPortfolioViewModelFactory: SubnetPortfolioViewModelFactoryPro
             return SubtensorPortfolioViewModel(
                 content: .empty(createEmpty(for: state, locale: locale)),
                 isSyncFailed: state.isSyncFailed,
-                isRatesUnavailable: state.isRootRateUnavailable
+                isRatesUnavailable: true
             )
         }
 
@@ -343,8 +330,7 @@ extension SubtensorPortfolioViewModelFactory: SubnetPortfolioViewModelFactoryPro
                 : createSubnetRow(for: group, state: state, locale: locale)
         }
 
-        let isRootRateUnavailable = state.isRootRateUnavailable &&
-            groups.contains { $0.netuid == SubtensorStakingPallet.rootNetuid }
+        let isRootRateUnavailable = groups.contains { $0.netuid == SubtensorStakingPallet.rootNetuid }
 
         let selection = createSelection(for: portfolio, state: state, locale: locale)
 

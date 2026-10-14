@@ -29,7 +29,6 @@ struct SubtensorSetupRootViewModel {
     let icon: ImageViewModelProtocol
     let validator: SubtensorValidatorCardViewModel
     let compactValidator: SubtensorSetupValidatorViewModel
-    let compactRate: String?
     let isQuickPick: Bool
     let networkFee: BalanceViewModelProtocol?
 }
@@ -55,7 +54,6 @@ struct SubtensorPickCardViewModel {
 struct SubtensorPickCardHeaderViewModel {
     let icon: ImageViewModelProtocol
     let title: String
-    let apy: String?
     let isSelectable: Bool
 }
 
@@ -82,15 +80,10 @@ enum SubtensorSetupBalanceRowViewModel {
     case value(BalanceViewModelProtocol)
 }
 
-enum SubtensorSetupValidatorAccessory: Equatable {
-    case chevron
-    case info
-}
-
 enum SubtensorSetupValidatorViewModel {
     case loading
     case unselected(title: String)
-    case selected(DisplayAddressViewModel, accessory: SubtensorSetupValidatorAccessory)
+    case selected(DisplayAddressViewModel)
 
     var isLoading: Bool {
         if case .loading = self {
@@ -160,8 +153,6 @@ struct SubtensorStakingSetupViewModelInput {
     let maxAmount: Balance?
     let amount: Balance?
     let validator: SubtensorSetupValidatorState
-    let rootRate: Decimal?
-    let isRootRateLoaded: Bool
     let fee: ExtrinsicFeeProtocol?
     let price: PriceData?
     let quote: SubtensorTradeQuote?

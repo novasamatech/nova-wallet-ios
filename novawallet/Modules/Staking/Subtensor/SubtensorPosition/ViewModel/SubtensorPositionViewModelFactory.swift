@@ -62,22 +62,15 @@ private extension SubtensorPositionViewModelFactory {
     }
 
     func formatAlpha(_ amount: Balance, state: SubtensorPositionState, locale: Locale) -> String {
-        let taoInfo = chainAsset.assetDisplayInfo
-
-        let alphaInfo = AssetBalanceDisplayInfo(
-            displayPrecision: taoInfo.displayPrecision,
-            assetPrecision: taoInfo.assetPrecision,
-            symbol: SubtensorSubnetNaming.symbol(for: state.netuid, in: state.catalogue),
-            symbolValueSeparator: taoInfo.symbolValueSeparator,
-            symbolPosition: taoInfo.symbolPosition,
-            icon: nil
+        let alphaInfo = chainAsset.assetDisplayInfo.subtensorAlpha(
+            symbol: SubtensorSubnetNaming.symbol(for: state.netuid, in: state.catalogue)
         )
 
         let text = formatterFactory.createTokenFormatter(for: alphaInfo)
             .value(for: locale)
             .stringFromDecimal(decimal(amount)) ?? unknownValue(for: locale)
 
-        return "\u{2066}\(text)\u{2069}"
+        return text.isolatedLeftToRight()
     }
 
     func formatDuration(blocks: UInt64, locale: Locale) -> String {
@@ -256,7 +249,7 @@ private extension SubtensorPositionViewModelFactory {
 
         let rate: SubtensorPortfolioLoadable<String>
 
-        if !state.isRateResolved {
+        if !state.isRoot, !state.isRateResolved {
             rate = .loading
         } else if let annualRate = state.annualRate {
             rate = .loaded(SubtensorApyFormatter.text(for: annualRate, style: .bare, locale: locale))

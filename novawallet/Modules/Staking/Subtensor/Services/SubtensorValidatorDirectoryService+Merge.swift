@@ -7,21 +7,10 @@ extension SubtensorValidatorDirectoryService {
         let stake: BigRational?
     }
 
-    struct ListingReceipt: Equatable {
-        let requestId: String?
-        let receivedAt: TimeInterval
-
-        init(response: BittensorApiResult<BittensorApi.ValidatorCollection>) {
-            requestId = response.requestId
-            receivedAt = response.receivedAt
-        }
-    }
-
     struct Listing {
         let rows: [Row]
         let listStamp: SubtensorBackendStamp?
         let isPartial: Bool
-        let receipt: ListingReceipt
     }
 
     struct Enrichment {
@@ -35,6 +24,13 @@ extension SubtensorValidatorDirectoryService {
         logger: LoggerProtocol
     ) throws -> Listing {
         let collection = response.value
+        let reader = BittensorApiFieldReader(route: "/subnets/{netuid}/validators", requestId: response.requestId)
+
+        for (index, item) in collection.items.enumerated() {
+            let field = "items[\(index)].reportedMeasurements.validatorStake"
+            _ = try reader.optionalDecimal(item.reportedMeasurements.validatorStake, field)
+        }
+
         var rows: [Row] = []
 
         let candidates: [BittensorApi.Validator]
@@ -76,8 +72,7 @@ extension SubtensorValidatorDirectoryService {
         return Listing(
             rows: rows,
             listStamp: SubtensorBackendStamp.aggregate(stamps),
-            isPartial: collection.meta.completeness == .partial,
-            receipt: ListingReceipt(response: response)
+            isPartial: collection.meta.completeness == .partial
         )
     }
 

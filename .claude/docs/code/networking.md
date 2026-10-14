@@ -152,8 +152,7 @@ for a persisted 1 h / 6 h / 24 h refusal delay that resets on an app version or 
 
 One origin/API-major bearer serves ordinary protected GET/HEAD and POST routes. Auth has no
 business allowlist or flow/scope. Consumers own method/path/body validation and ordinary business retry policy. Bittensor uses `/v1/bittensor/...`.
-The removed root-yield route returns unavailable/cache miss locally, its optional service returns
-nil without networking, and alpha netuid 0 is rejected locally.
+The root-yield route and its client plumbing are removed, and alpha netuid 0 is rejected locally.
 
 Only conclusive `invalid_token` permits one replay preserving method/path/query/body: same
 expected HTTPS origin, 401 and the exact Bearer error header, plus a valid envelope for GET/POST.

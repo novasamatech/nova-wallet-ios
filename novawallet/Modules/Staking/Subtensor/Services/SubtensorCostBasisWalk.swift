@@ -74,6 +74,8 @@ extension SubtensorCostBasisWalk: CancellableCall {
 private extension SubtensorCostBasisWalk {
     typealias Page = BittensorApiResult<BittensorApi.OperationCollection>
 
+    static let historyScope = "TAO_APP_PARTIAL"
+
     enum Step {
         case request
         case collected([BittensorApi.Operation], isHistoryComplete: Bool)
@@ -167,13 +169,39 @@ private extension SubtensorCostBasisWalk {
         }
     }
 
+    static func validate(_ response: Page) throws {
+        let collection = response.value
+        let pageInfo = collection.pageInfo
+        let pageRange = BittensorApiOperationFactory.pageRange
+        let reader = BittensorApiFieldReader(route: "/operations/search", requestId: response.requestId)
+        let isNextPageValid = pageInfo.nextPage.map { $0 == pageInfo.page + 1 && pageRange.contains($0) } ?? true
+
+        try reader.require(collection.historyScope == historyScope, "historyScope")
+        try reader.require(pageInfo.pageSize == BittensorApiOperationFactory.pageSize, "pageInfo.pageSize")
+        try reader.require(pageRange.contains(pageInfo.page), "pageInfo.page")
+        try reader.require(collection.items.count <= pageInfo.pageSize, "items")
+        try reader.require(isNextPageValid, "pageInfo.nextPage")
+
+        for (index, item) in collection.items.enumerated() {
+            _ = try reader.decimal(item.reportedAmountIn, "items[\(index)].reportedAmountIn")
+            _ = try reader.decimal(item.reportedAmountOut, "items[\(index)].reportedAmountOut")
+            _ = try reader.decimal(item.reportedPrice, "items[\(index)].reportedPrice")
+        }
+    }
+
     func accept(_ response: Page, page: Int, requestedAt: TimeInterval) -> Step {
+        do {
+            try Self.validate(response)
+        } catch {
+            return .failed(error)
+        }
+
         let pageInfo = response.value.pageInfo
 
         guard pageInfo.page == page else {
             return .failed(
                 BittensorApiError.contractViolation(
-                    detail: "POST /operations/search: page \(page) answered as page \(pageInfo.page)",
+                    detail: "GET /operations/search: page \(page) answered as page \(pageInfo.page)",
                     requestId: response.requestId
                 )
             )

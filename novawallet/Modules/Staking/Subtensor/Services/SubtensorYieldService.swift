@@ -7,7 +7,6 @@ enum SubtensorYieldServiceError: Error {
 
 final class SubtensorYieldService {
     static let alphaYieldPageLimit = 3
-    static let rootYieldPage = 1
 
     let apiOperationFactory: BittensorApiOperationFactoryProtocol
     let operationQueue: OperationQueue
@@ -25,6 +24,23 @@ final class SubtensorYieldService {
 }
 
 extension SubtensorYieldService {
+    static let alphaYieldKind = "ALPHA_VALIDATOR_APY"
+
+    static func validated(
+        _ page: BittensorApiResult<BittensorApi.AlphaYieldCollection>
+    ) -> Result<BittensorApiResult<BittensorApi.AlphaYieldCollection>, Error> {
+        let reader = BittensorApiFieldReader(route: "/subnets/{netuid}/yields/alpha", requestId: page.requestId)
+
+        return Result {
+            for (index, item) in page.value.items.enumerated() {
+                try reader.require(item.metricKind == alphaYieldKind, "items[\(index)].metricKind")
+                _ = try reader.decimal(item.reportedRate, "items[\(index)].reportedRate")
+            }
+
+            return page
+        }
+    }
+
     static func makeAlphaYields(
         netuid: UInt16,
         pages: BittensorApiPages<BittensorApi.AlphaYieldCollection>,
@@ -68,24 +84,7 @@ extension SubtensorYieldService {
         return SubtensorAlphaYields(
             netuid: netuid,
             yields: yields,
-            stamp: aggregateStamp,
-            isTruncated: pages.hasMorePages
-        )
-    }
-
-    static func makeRootYield(
-        from page: BittensorApiResult<BittensorApi.RootYieldCollection>
-    ) -> SubtensorReportedYield? {
-        guard let item = page.value.items.first else {
-            return nil
-        }
-
-        return SubtensorReportedYield(
-            reportedRate: item.reportedRate,
-            stamp: SubtensorBackendStamp(
-                component: page.value.meta.components.rootYield,
-                isFromExpiredCache: page.isFromExpiredCache
-            )
+            stamp: aggregateStamp
         )
     }
 }
@@ -99,7 +98,15 @@ extension SubtensorYieldService: SubtensorYieldServiceProtocol {
             operationQueue: operationQueue,
             nextPage: { $0.pageInfo.nextPage },
             pageWrapper: { page in
-                apiOperationFactory.createAlphaYieldWrapper(netuid: netuid, page: page)
+                let wrapper = apiOperationFactory.createAlphaYieldWrapper(netuid: netuid, page: page)
+
+                let validationOperation = ClosureOperation {
+                    try Self.validated(wrapper.targetOperation.extractNoCancellableResultData()).get()
+                }
+
+                validationOperation.addDependency(wrapper.targetOperation)
+
+                return wrapper.insertingTail(operation: validationOperation)
             }
         )
 
@@ -121,18 +128,10 @@ extension SubtensorYieldService: SubtensorYieldServiceProtocol {
             maxPages: Self.alphaYieldPageLimit,
             nextPage: { $0.pageInfo.nextPage },
             peekPage: { page in
-                apiOperationFactory.peekAlphaYield(netuid: netuid, page: page)
+                apiOperationFactory.peekAlphaYield(netuid: netuid, page: page).map { try Self.validated($0).get() }
             }
         )
 
         return pagesPeek.map { try Self.makeAlphaYields(netuid: netuid, pages: $0, logger: logger) }
-    }
-
-    func createRootYieldWrapper() -> CompoundOperationWrapper<SubtensorReportedYield?> {
-        .createWithResult(nil)
-    }
-
-    func cachedRootYield() -> HTTPCachePeek<SubtensorReportedYield?> {
-        .miss
     }
 }

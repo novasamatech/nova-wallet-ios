@@ -228,22 +228,15 @@ private extension SubtensorValidatorListFactory {
     }
 
     func taoStake(for item: SubtensorValidatorDirectoryItem, input: SubtensorValidatorListInput) -> Decimal? {
-        guard let stake = item.reportedStake, input.directory.listStamp?.freshness == .fresh else {
+        guard input.directory.listStamp?.freshness == .fresh else {
             return nil
         }
 
-        guard !input.isRoot else {
-            return stake.decimalValue
-        }
-
-        guard let alphaPrice = input.alphaPrice else {
-            return nil
-        }
-
-        return BigRational(
-            numerator: stake.numerator * alphaPrice,
-            denominator: stake.denominator * SubtensorStakingPallet.alphaPriceScale
-        ).decimalValue
+        return SubtensorValidatorInfoViewModelFactory.taoStake(
+            for: item,
+            isRoot: input.isRoot,
+            alphaPrice: input.alphaPrice
+        )
     }
 
     func createRow(

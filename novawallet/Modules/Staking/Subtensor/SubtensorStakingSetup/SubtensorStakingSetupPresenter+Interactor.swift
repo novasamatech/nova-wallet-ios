@@ -28,13 +28,6 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
         }
     }
 
-    func didReceiveRootYield(_ yield: SubtensorReportedYield?) {
-        rootRate = SubtensorAlphaApyFormatter.annualRate(from: yield)
-        isRootRateLoaded = true
-
-        provideViewModel()
-    }
-
     func didReceiveSubnet(_ target: SubtensorStakeTarget) {
         guard case let .buyMore(position) = mode, self.target == nil, target.netuid == position.netuid else {
             return
@@ -132,8 +125,6 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
         requestPresetIfReady()
     }
 
-    func didReceiveClaimable(_: SubtensorRootClaimable?) {}
-
     func didReceiveBlockNumber(_: BlockNumber) {
         forceQuoteRefresh()
     }
@@ -153,9 +144,7 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
         provideViewModel()
     }
 
-    func didReceiveExistentialDeposit(_ deposit: Balance) {
-        existentialDeposit = deposit
-    }
+    func didReceiveExistentialDeposit(_: Balance) {}
 
     func didReceiveBaseError(_ error: SubtensorStakingBaseError) {
         logger.error("Subtensor setup error: \(error)")

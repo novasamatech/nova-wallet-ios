@@ -23,13 +23,12 @@ final class SubtensorMaxApyWalk {
     private var completion: Completion?
     private var currentCall: CancellableCall?
     private var isCancelled = false
-    private var pairs: [SubtensorRecommendedPair] = []
+    private var pairs: [SubtensorHotkeySubnet] = []
     private var targets: [Target] = []
     private var alphaPages: [BittensorApiResult<BittensorApi.AlphaYieldCollection>] = []
     private var nextPage = 1
     private var retries = 0
     private var nextRequestAt: TimeInterval?
-    private var rootYield: SubtensorReportedYield?
     private var alphaYields: [UInt16: SubtensorAlphaYields] = [:]
 
     init(
@@ -80,23 +79,20 @@ extension SubtensorMaxApyWalk: CancellableCall {
 }
 
 private extension SubtensorMaxApyWalk {
-    enum Target {
-        case root
-        case alpha(netuid: UInt16, hotkeys: Set<AccountId>)
+    struct Target {
+        let netuid: UInt16
+        let hotkeys: Set<AccountId>
     }
 
-    static func targets(for pairs: [SubtensorRecommendedPair]) -> [Target] {
+    static func targets(for pairs: [SubtensorHotkeySubnet]) -> [Target] {
         let rootNetuid = SubtensorStakingPallet.rootNetuid
-        let rootTargets: [Target] = pairs.contains { $0.netuid == rootNetuid } ? [.root] : []
 
         let hotkeysByNetuid = Dictionary(grouping: pairs.filter { $0.netuid != rootNetuid }, by: \.netuid)
             .mapValues { Set($0.map(\.hotkey)) }
 
-        let alphaTargets = hotkeysByNetuid.sorted { $0.key < $1.key }.map { netuid, hotkeys in
-            Target.alpha(netuid: netuid, hotkeys: hotkeys)
+        return hotkeysByNetuid.sorted { $0.key < $1.key }.map { netuid, hotkeys in
+            Target(netuid: netuid, hotkeys: hotkeys)
         }
-
-        return rootTargets + alphaTargets
     }
 
     func run<T>(
@@ -180,48 +176,13 @@ private extension SubtensorMaxApyWalk {
     }
 
     func request(_ target: Target, page: Int) {
-        switch target {
-        case .root:
-            let wrapper = apiOperationFactory.createRootYieldWrapper(page: SubtensorYieldService.rootYieldPage)
+        let netuid = target.netuid
+        let hotkeys = target.hotkeys
+        let wrapper = apiOperationFactory.createAlphaYieldWrapper(netuid: netuid, page: page)
 
-            run(wrapper) { [weak self] result, requestedAt in
-                self?.handleRootYield(result, requestedAt: requestedAt)
-            }
-        case let .alpha(netuid, hotkeys):
-            let wrapper = apiOperationFactory.createAlphaYieldWrapper(netuid: netuid, page: page)
-
-            run(wrapper) { [weak self] result, requestedAt in
-                self?.handleAlphaPage(result, netuid: netuid, hotkeys: hotkeys, page: page, requestedAt: requestedAt)
-            }
+        run(wrapper) { [weak self] result, requestedAt in
+            self?.handleAlphaPage(result, netuid: netuid, hotkeys: hotkeys, page: page, requestedAt: requestedAt)
         }
-    }
-
-    func handleRootYield(
-        _ result: Result<BittensorApiResult<BittensorApi.RootYieldCollection>, Error>,
-        requestedAt: TimeInterval
-    ) {
-        mutex.lock()
-
-        var walkError: Error?
-
-        switch Self.unexpired(result) {
-        case let .success(page):
-            rootYield = SubtensorYieldService.makeRootYield(from: page)
-            pace(afterReceivingAt: page.receivedAt, requestedAt: requestedAt)
-            completeTarget()
-        case let .failure(error) where Self.isTerminalAuthError(error):
-            walkError = error
-        case let .failure(error) where Self.isRetryable(error):
-            walkError = scheduleRetry(after: error) ? nil : error
-        case let .failure(error):
-            logger.warning("Subtensor root yield unavailable for the max APY: \(error)")
-            pace(afterReceivingAt: nil, requestedAt: requestedAt)
-            completeTarget()
-        }
-
-        mutex.unlock()
-
-        proceed(unlessFailedWith: walkError)
     }
 
     func handleAlphaPage(
@@ -235,14 +196,14 @@ private extension SubtensorMaxApyWalk {
 
         var walkError: Error?
 
-        switch Self.unexpired(result) {
+        switch Self.unexpired(result.flatMap(SubtensorYieldService.validated)) {
         case let .success(pageResult):
             pace(afterReceivingAt: pageResult.receivedAt, requestedAt: requestedAt)
             alphaPages.append(pageResult)
             retries = 0
 
             let next = pageResult.value.pageInfo.nextPage
-            let pages = BittensorApiPages(pages: alphaPages, hasMorePages: next != nil)
+            let pages = BittensorApiPages(pages: alphaPages)
             let yields = try? SubtensorYieldService.makeAlphaYields(netuid: netuid, pages: pages, logger: logger)
 
             let hasFoundHotkeys = yields.map { hotkeys.isSubset(of: $0.yields.keys) } ?? false
@@ -351,13 +312,7 @@ private extension SubtensorMaxApyWalk {
     }
 
     func bestRate() -> Decimal? {
-        pairs.compactMap { pair in
-            guard pair.netuid != SubtensorStakingPallet.rootNetuid else {
-                return rootYield?.annualRate
-            }
-
-            return alphaYields[pair.netuid]?.yields[pair.hotkey]?.annualRate
-        }.max()
+        pairs.compactMap { alphaYields[$0.netuid]?.yields[$0.hotkey]?.annualRate }.max()
     }
 
     func finish(with result: Result<Decimal?, Error>) {

@@ -82,12 +82,10 @@ private extension SubtensorPortfolioViewFactory {
             eventCenter: EventCenter.shared,
             applicationHandler: ApplicationHandler(),
             catalogueService: earnServices.catalogueService,
-            yieldService: earnServices.yieldService,
             subnetLogosProvider: earnServices.subnetLogosProvider,
             priceHistoryService: earnServices.priceHistoryService,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
-            flowState: state.flowState,
             operationQueue: operationQueue,
             logger: Logger.shared
         )

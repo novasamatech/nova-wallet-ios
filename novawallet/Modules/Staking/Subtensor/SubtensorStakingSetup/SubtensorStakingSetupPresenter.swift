@@ -30,10 +30,6 @@ final class SubtensorStakingSetupPresenter {
     var positionsState: Multistaking.SubtensorStakingState?
     var isPositionsSyncFailed = false
     var preflight: SubtensorStakingPreflight?
-    var existentialDeposit: Balance?
-    var rootRate: Decimal?
-    var isRootRateLoaded = false
-    var isRootRateRequested = false
     var catalogue: SubtensorSubnetCatalogue?
     var isCatalogueLoaded = false
     var subnetLogos: SubtensorSubnetLogos?
@@ -126,8 +122,6 @@ extension SubtensorStakingSetupPresenter {
             loadQuickPick(forcingRefresh: false)
             return
         }
-
-        loadRootYieldIfNeeded()
 
         if case let .buyMore(position) = mode {
             interactor.loadSubnet(netuid: position.netuid)

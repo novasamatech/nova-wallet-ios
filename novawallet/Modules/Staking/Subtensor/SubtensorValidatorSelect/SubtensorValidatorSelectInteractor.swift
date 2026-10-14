@@ -12,12 +12,6 @@ final class SubtensorValidatorSelectInteractor: AnyCancellableCleaning {
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
-    private var seed = SubtensorValidatorSelectSnapshot(
-        directory: .miss,
-        clientGates: .miss,
-        yields: .miss,
-        alphaPrice: .miss
-    )
     private let directoryStore = CancellableCallStore()
     private let clientGatesStore = CancellableCallStore()
     private let yieldStore = CancellableCallStore()
@@ -147,8 +141,10 @@ private extension SubtensorValidatorSelectInteractor {
         loadYields()
         loadAlphaPrice()
     }
+}
 
-    func makeSnapshot() -> SubtensorValidatorSelectSnapshot {
+extension SubtensorValidatorSelectInteractor: ValidatorSelectInteractorInputProtocol {
+    func cachedSnapshot() -> SubtensorValidatorSelectSnapshot {
         let subnet = subnet
         let directory = directoryService.cachedDirectory(for: subnet)
         let clientGates = recommendationService.cachedClientGates()
@@ -169,35 +165,9 @@ private extension SubtensorValidatorSelectInteractor {
             alphaPrice: catalogueService.cachedCatalogue().map { $0.subnet(for: subnet)?.freshTaoPerAlpha }
         )
     }
-}
-
-extension SubtensorValidatorSelectInteractor: ValidatorSelectInteractorInputProtocol {
-    func cachedSnapshot() -> SubtensorValidatorSelectSnapshot {
-        seed = makeSnapshot()
-
-        return seed
-    }
 
     func setup() {
-        if !seed.directory.isFresh {
-            loadDirectory()
-        }
-
-        if !seed.clientGates.isFresh {
-            loadClientGates()
-        }
-
-        guard !target.isRoot else {
-            return
-        }
-
-        if !seed.yields.isFresh {
-            loadYields()
-        }
-
-        if !seed.alphaPrice.isFresh {
-            loadAlphaPrice()
-        }
+        loadAll()
     }
 
     func retry() {

@@ -165,7 +165,7 @@ private extension SubtensorUnstakeSetupVC {
 
         let cell = rootView.validatorCell
 
-        if case let .selected(displayAddress, _) = viewModel {
+        if case let .selected(displayAddress) = viewModel {
             cell.bind(
                 viewModel: StackCellViewModel(
                     details: displayAddress.name ?? displayAddress.address,
@@ -184,7 +184,7 @@ private extension SubtensorUnstakeSetupVC {
     func applySubnetValidator(_ viewModel: SubtensorSetupValidatorViewModel) {
         let cell = rootView.subnetValidatorCell
 
-        if case let .selected(displayAddress, _) = viewModel {
+        if case let .selected(displayAddress) = viewModel {
             cell.rowContentView.bind(viewModel: displayAddress)
         }
 

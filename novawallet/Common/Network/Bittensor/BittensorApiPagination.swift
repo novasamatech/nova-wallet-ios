@@ -3,7 +3,6 @@ import Operation_iOS
 
 struct BittensorApiPages<T> {
     let pages: [BittensorApiResult<T>]
-    let hasMorePages: Bool
 }
 
 enum BittensorApiPagination {
@@ -39,24 +38,14 @@ enum BittensorApiPagination {
     ) -> HTTPCachePeek<BittensorApiPages<T>> {
         let pageLimit = max(1, maxPages)
         var pages: [BittensorApiResult<T>] = []
-        var earliestFreshUntil = TimeInterval.infinity
-        var hasExpiredPage = false
         var page = 1
 
         while true {
-            let pagePeek = peekPage(page)
-
-            guard let pageResult = pagePeek.value else {
+            guard let pageResult = peekPage(page).value else {
                 return .miss
             }
 
             pages.append(pageResult)
-
-            if case let .fresh(_, freshUntil) = pagePeek {
-                earliestFreshUntil = min(earliestFreshUntil, freshUntil)
-            } else {
-                hasExpiredPage = true
-            }
 
             let next = nextPage(pageResult.value)
 
@@ -65,9 +54,9 @@ enum BittensorApiPagination {
                 continue
             }
 
-            let outcome = BittensorApiPages(pages: pages, hasMorePages: next != nil)
+            let outcome = BittensorApiPages(pages: pages)
 
-            return hasExpiredPage ? .expired(outcome) : .fresh(outcome, freshUntil: earliestFreshUntil)
+            return .expired(outcome)
         }
     }
 }
@@ -181,7 +170,7 @@ private final class BittensorApiPageFetch<T> {
             return
         }
 
-        let outcome = BittensorApiPages(pages: pages, hasMorePages: next != nil)
+        let outcome = BittensorApiPages(pages: pages)
         self.completion = nil
 
         mutex.unlock()
