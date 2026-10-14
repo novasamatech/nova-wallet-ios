@@ -184,7 +184,11 @@ private extension SubtensorValidatorListFactory {
     }
 
     func createEntries(for input: SubtensorValidatorListInput, unknown: String) -> [Entry] {
-        input.directory.items.filter { input.recommendedHotkeys?.contains($0.hotkey) ?? true }.map { item in
+        let pinned = [input.selectedHotkey, input.preselectedHotkey]
+
+        return input.directory.items.filter { item in
+            input.recommendedHotkeys.map { $0.contains(item.hotkey) || pinned.contains(item.hotkey) } ?? true
+        }.map { item in
             let address = try? item.hotkey.toAddress(using: chainFormat)
 
             return Entry(
@@ -237,8 +241,8 @@ private extension SubtensorValidatorListFactory {
 
         let trailing: SubtensorValidatorRowViewModel.Trailing
 
-        if let rate = entry.rate {
-            trailing = .rate(SubtensorApyFormatter.text(for: rate, style: .column, locale: context.locale))
+        if entry.rate != nil || (context.input.isRoot && Self.ratesShown(yields: context.input.yields)) {
+            trailing = .rate(SubtensorApyFormatter.text(for: entry.rate, style: .column, locale: context.locale))
         } else {
             trailing = .none
         }

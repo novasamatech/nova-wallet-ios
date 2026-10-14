@@ -99,10 +99,6 @@ private extension SubtensorValidatorSelectPresenter {
     }
 
     func seed(from snapshot: SubtensorValidatorSelectSnapshot) {
-        if let directory = snapshot.directory.value {
-            apply(directory: directory)
-        }
-
         if let yields = snapshot.yields.value, yields.netuid == target.netuid {
             self.yields = yields
         }
