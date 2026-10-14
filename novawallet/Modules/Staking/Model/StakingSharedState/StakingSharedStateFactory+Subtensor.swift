@@ -72,8 +72,7 @@ private extension SubtensorStakingProcessServices {
         SubtensorCostBasisService(
             apiOperationFactory: apiOperationFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
-            eventCenter: EventCenter.shared,
-            logger: Logger.shared
+            eventCenter: EventCenter.shared
         )
     }
 }
