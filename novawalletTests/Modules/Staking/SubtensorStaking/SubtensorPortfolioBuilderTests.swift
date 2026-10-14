@@ -78,8 +78,6 @@ final class SubtensorPortfolioBuilderTests: XCTestCase {
             hotkey: hotkey,
             netuid: netuid,
             stakeAlpha: stake,
-            hotkeyEmissionPerTempo: 0,
-            totalHotkeyAlpha: nil,
             isRegistered: true
         )
     }

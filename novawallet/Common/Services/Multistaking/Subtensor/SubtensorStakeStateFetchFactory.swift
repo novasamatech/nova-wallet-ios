@@ -32,8 +32,6 @@ final class SubtensorStakeStateFetchFactory {
                 hotkey: stakeInfo.hotkey,
                 netuid: stakeInfo.netuid,
                 stakeAlpha: stakeInfo.stake,
-                hotkeyEmissionPerTempo: stakeInfo.emission,
-                totalHotkeyAlpha: nil,
                 isRegistered: stakeInfo.isRegistered
             )
         }

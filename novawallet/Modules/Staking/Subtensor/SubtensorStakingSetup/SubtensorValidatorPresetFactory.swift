@@ -137,7 +137,7 @@ private extension SubtensorValidatorPresetFactory {
 
         let itemOperation = ClosureOperation<SubtensorValidatorDirectoryItem?> {
             do {
-                return try detailWrapper.targetOperation.extractNoCancellableResultData().item
+                return try detailWrapper.targetOperation.extractNoCancellableResultData()
             } catch {
                 logger.warning("Subtensor validator detail unavailable for the preset: \(error)")
 

@@ -128,8 +128,7 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
             lastUpdates: [64: lastUpdates],
             effectiveActivityCutoffs: [64: 5000],
             takes: [rootKept: 11796, subnetKept: 6553, subnetUnpermitted: 0, subnetSecondKept: 11796,
-                    subnetTakeAboveMax: 11797, subnetInactive: 0],
-            hotkeyAlpha: [:]
+                    subnetTakeAboveMax: 11797, subnetInactive: 0]
         )
 
         let chainFactory = MockSubtensorValidatorChainOperationFactoryProtocol()

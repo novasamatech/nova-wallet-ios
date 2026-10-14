@@ -78,7 +78,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
             from: view,
             target: target,
             hotkey: primary,
-            detail: validatorItem.map { SubtensorValidatorDetail(item: $0, identity: nil) }
+            detail: validatorItem
         )
     }
 

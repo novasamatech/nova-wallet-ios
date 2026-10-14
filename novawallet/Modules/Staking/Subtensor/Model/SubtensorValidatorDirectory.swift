@@ -43,8 +43,3 @@ extension SubtensorValidatorDirectory {
         )
     }
 }
-
-struct SubtensorValidatorDetail: Equatable {
-    let item: SubtensorValidatorDirectoryItem
-    let identity: SubtensorValidatorIdentity?
-}

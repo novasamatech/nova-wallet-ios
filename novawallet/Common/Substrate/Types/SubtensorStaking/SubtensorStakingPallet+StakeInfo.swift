@@ -8,7 +8,6 @@ extension SubtensorStakingPallet {
         @BytesCodable var coldkey: AccountId
         @StringCodable var netuid: UInt16
         @StringCodable var stake: Balance
-        @StringCodable var emission: Balance
         let isRegistered: Bool
     }
 
