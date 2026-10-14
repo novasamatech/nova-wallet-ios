@@ -88,6 +88,24 @@ extension BittensorApi.AlphaYieldCollection: BittensorApiWireChecked {
     }
 }
 
+extension BittensorApi.RootValidatorCollection: BittensorApiWireChecked {
+    func validateWire() throws {
+        for (index, item) in items.enumerated() {
+            try BittensorApiWireCheck.decimal(item.rootStakeTao, "items[\(index)].rootStakeTao")
+            try BittensorApiWireCheck.decimal(item.stakeYield.d30?.apy, "items[\(index)].stakeYield.d30.apy")
+        }
+    }
+}
+
+extension BittensorApi.RootOverview: BittensorApiWireChecked {
+    func validateWire() throws {
+        try BittensorApiWireCheck.decimal(
+            validatorYield?.stakeWeightedApy24h,
+            "validatorYield.stakeWeightedApy24h"
+        )
+    }
+}
+
 extension BittensorApi.OperationCollection: BittensorApiWireChecked {
     func validateWire() throws {
         try BittensorApiWireCheck.require(historyScope == BittensorApiWireCheck.historyScope) { "historyScope" }
@@ -147,6 +165,18 @@ extension BittensorApi.SubnetRankingCollection: BittensorApiWireChecked {
 
             if let breakdown = item.breakdown {
                 try BittensorApiWireCheck.metric(breakdown.volatility, "\(path).breakdown.volatility")
+            }
+        }
+    }
+}
+
+extension BittensorApi.RankedValidatorCollection: BittensorApiWireChecked {
+    func validateWire() throws {
+        try BittensorApiWireCheck.clientGates(meta.clientGates, "meta.clientGates.maxTake")
+
+        for (index, item) in items.enumerated() {
+            try BittensorApiWireCheck.require(item.clientChecks == BittensorApiWireCheck.clientChecks) {
+                "items[\(index)].clientChecks"
             }
         }
     }

@@ -16,7 +16,6 @@ enum SubtensorValidatorSelectViewFactory {
             directoryService: earnServices.validatorDirectoryService,
             yieldService: earnServices.yieldService,
             catalogueService: earnServices.catalogueService,
-            recommendationService: earnServices.recommendationService,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared
         )

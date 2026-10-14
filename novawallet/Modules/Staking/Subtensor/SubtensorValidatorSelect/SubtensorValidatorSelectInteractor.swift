@@ -8,12 +8,10 @@ final class SubtensorValidatorSelectInteractor: AnyCancellableCleaning {
     let directoryService: SubtensorValidatorDirectoryServiceProtocol
     let yieldService: SubtensorYieldServiceProtocol
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
-    let recommendationService: SubtensorRecommendationServiceProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     private let directoryStore = CancellableCallStore()
-    private let clientGatesStore = CancellableCallStore()
     private let yieldStore = CancellableCallStore()
     private let catalogueStore = CancellableCallStore()
 
@@ -22,7 +20,6 @@ final class SubtensorValidatorSelectInteractor: AnyCancellableCleaning {
         directoryService: SubtensorValidatorDirectoryServiceProtocol,
         yieldService: SubtensorYieldServiceProtocol,
         catalogueService: SubtensorSubnetCatalogueServiceProtocol,
-        recommendationService: SubtensorRecommendationServiceProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
@@ -30,14 +27,12 @@ final class SubtensorValidatorSelectInteractor: AnyCancellableCleaning {
         self.directoryService = directoryService
         self.yieldService = yieldService
         self.catalogueService = catalogueService
-        self.recommendationService = recommendationService
         self.operationQueue = operationQueue
         self.logger = logger
     }
 
     deinit {
         directoryStore.cancel()
-        clientGatesStore.cancel()
         yieldStore.cancel()
         catalogueStore.cancel()
     }
@@ -67,25 +62,6 @@ private extension SubtensorValidatorSelectInteractor {
             case let .failure(error):
                 logger.warning("Subnet validators unavailable: \(error)")
                 presenter?.didFailDirectory(error)
-            }
-        }
-    }
-
-    func loadClientGates() {
-        clientGatesStore.cancel()
-
-        executeCancellable(
-            wrapper: recommendationService.createClientGatesWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: clientGatesStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(clientGates):
-                self?.presenter?.didReceive(clientGates: clientGates)
-            case let .failure(error):
-                self?.logger.warning("Subtensor client gates unavailable for the validator list: \(error)")
-                self?.presenter?.didFailClientGates(error)
             }
         }
     }
@@ -132,13 +108,12 @@ private extension SubtensorValidatorSelectInteractor {
 
     func loadAll() {
         loadDirectory()
-        loadClientGates()
+        loadYields()
 
         guard !target.isRoot else {
             return
         }
 
-        loadYields()
         loadAlphaPrice()
     }
 }
@@ -146,23 +121,13 @@ private extension SubtensorValidatorSelectInteractor {
 extension SubtensorValidatorSelectInteractor: ValidatorSelectInteractorInputProtocol {
     func cachedSnapshot() -> SubtensorValidatorSelectSnapshot {
         let subnet = subnet
-        let directory = directoryService.cachedDirectory(for: subnet)
-        let clientGates = recommendationService.cachedClientGates()
-
-        guard !target.isRoot else {
-            return SubtensorValidatorSelectSnapshot(
-                directory: directory,
-                clientGates: clientGates,
-                yields: .miss,
-                alphaPrice: .miss
-            )
-        }
 
         return SubtensorValidatorSelectSnapshot(
-            directory: directory,
-            clientGates: clientGates,
+            directory: directoryService.cachedDirectory(for: subnet),
             yields: yieldService.cachedAlphaYields(for: subnet.netuid),
-            alphaPrice: catalogueService.cachedCatalogue().map { $0.subnet(for: subnet)?.freshTaoPerAlpha }
+            alphaPrice: target.isRoot
+                ? .miss
+                : catalogueService.cachedCatalogue().map { $0.subnet(for: subnet)?.freshTaoPerAlpha }
         )
     }
 

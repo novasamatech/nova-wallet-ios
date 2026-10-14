@@ -7,7 +7,6 @@ struct SubtensorStakingProcessServices {
     let bittensorApiOperationFactory: BittensorApiOperationFactoryProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let subnetMarketsService: SubtensorSubnetMarketsServiceProtocol
-    let maxApyResolution: SubtensorMaxApyResolution
     let costBasisService: SubtensorCostBasisServiceProtocol
 }
 
@@ -23,41 +22,21 @@ extension SubtensorStakingProcessServices {
             bittensorApiOperationFactory: apiOperationFactory,
             subnetLogosProvider: SubtensorConfigProvider(url: ApplicationConfig.shared.bittensorConfigURL),
             subnetMarketsService: createSubnetMarketsService(),
-            maxApyResolution: SubtensorMaxApyResolution(),
             costBasisService: createCostBasisService(apiOperationFactory: apiOperationFactory)
         )
     }()
 
     func createMaxApyProvider(
-        runtimeConnectionStore: RuntimeConnectionStoring,
-        operationQueue: OperationQueue,
-        logger: LoggerProtocol
-    ) -> SubtensorMaxApyProviderProtocol {
-        let recommendationService = SubtensorRecommendationService(
-            apiOperationFactory: bittensorApiOperationFactory,
-            chainOperationFactory: SubtensorValidatorChainOperationFactory(
-                runtimeConnectionStore: runtimeConnectionStore
-            ),
-            operationQueue: operationQueue,
-            logger: logger
-        )
-
-        return createMaxApyProvider(
-            recommendationService: recommendationService,
-            operationQueue: operationQueue,
-            logger: logger
-        )
-    }
-
-    func createMaxApyProvider(
-        recommendationService: SubtensorRecommendationServiceProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) -> SubtensorMaxApyProviderProtocol {
         SubtensorMaxApyProvider(
-            recommendationService: recommendationService,
             apiOperationFactory: bittensorApiOperationFactory,
-            resolution: maxApyResolution,
+            yieldService: SubtensorYieldService(
+                apiOperationFactory: bittensorApiOperationFactory,
+                operationQueue: operationQueue,
+                logger: logger
+            ),
             operationQueue: operationQueue,
             logger: logger
         )

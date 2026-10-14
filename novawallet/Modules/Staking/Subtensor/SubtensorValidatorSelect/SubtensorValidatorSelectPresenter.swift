@@ -13,8 +13,6 @@ final class SubtensorValidatorSelectPresenter {
 
     private var directory: SubtensorValidatorDirectory?
     private var directoryError: Error?
-    private var clientGates: SubtensorClientGates?
-    private var clientGatesError: Error?
     private var yields: SubtensorAlphaYields?
     private var alphaPrice: Balance?
     private let filterSession: SubtensorValidatorFilterSession
@@ -49,18 +47,18 @@ final class SubtensorValidatorSelectPresenter {
 
 private extension SubtensorValidatorSelectPresenter {
     func provideState() {
-        let header = listFactory.createLoadingViewModel(isRoot: target.isRoot, sort: sort, locale: selectedLocale)
+        let header = listFactory.createLoadingViewModel(yields: yields, sort: sort, locale: selectedLocale)
         view?.didReceive(
             header: header,
             isFilterActive: filterSession.applied(isRoot: target.isRoot) != .supportedDefault
         )
-        if let error = directoryError ?? clientGatesError {
+        if let error = directoryError {
             let viewModel = listFactory.createErrorViewModel(for: error, locale: selectedLocale)
             view?.didReceive(state: .failed(viewModel))
             return
         }
 
-        guard let directory, let clientGates else {
+        guard let directory else {
             view?.didReceive(
                 state: .loading(header)
             )
@@ -72,7 +70,6 @@ private extension SubtensorValidatorSelectPresenter {
             yields: yields,
             alphaPrice: alphaPrice,
             isRoot: target.isRoot,
-            clientGates: clientGates,
             sort: sort,
             query: query,
             selectedHotkey: selectedHotkey,
@@ -83,34 +80,11 @@ private extension SubtensorValidatorSelectPresenter {
     }
 
     func selectableItem(for hotkey: AccountId?) -> SubtensorValidatorDirectoryItem? {
-        guard let clientGates else {
-            return nil
-        }
-
-        return SubtensorValidatorEligibility.selectableItem(
-            for: hotkey,
-            in: directory,
-            isRoot: target.isRoot,
-            gates: clientGates
-        )
+        directory?.items.first { $0.hotkey == hotkey }
     }
 
     func handedOut(_ item: SubtensorValidatorDirectoryItem) -> SubtensorValidatorDirectoryItem {
         directory?.listStamp?.freshness == .fresh ? item : item.withoutReportedStake()
-    }
-
-    func applyPreselection() {
-        guard let directory, let clientGates else {
-            return
-        }
-
-        selectedHotkey = SubtensorValidatorEligibility.preselectedHotkey(
-            selectedHotkey,
-            in: directory,
-            isRoot: target.isRoot,
-            gates: clientGates
-        )
-        preselectedHotkey = selectedHotkey
     }
 
     func apply(directory: SubtensorValidatorDirectory) {
@@ -118,24 +92,13 @@ private extension SubtensorValidatorSelectPresenter {
               target.isRoot || directory.subnet.registeredAt == target.subnetInfo?.networkRegisteredAt else { return }
         self.directory = directory
         directoryError = nil
-
-        applyPreselection()
-    }
-
-    func apply(clientGates: SubtensorClientGates) {
-        self.clientGates = clientGates
-        clientGatesError = nil
-
-        applyPreselection()
+        selectedHotkey = selectableItem(for: selectedHotkey)?.hotkey
+        preselectedHotkey = selectedHotkey
     }
 
     func seed(from snapshot: SubtensorValidatorSelectSnapshot) {
         if let directory = snapshot.directory.value {
             apply(directory: directory)
-        }
-
-        if let clientGates = snapshot.clientGates.value {
-            apply(clientGates: clientGates)
         }
 
         if let yields = snapshot.yields.value, yields.netuid == target.netuid {
@@ -158,11 +121,9 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectPresenterProtocol {
     func retry() {
         directory = nil
         directoryError = nil
-        clientGates = nil
-        clientGatesError = nil
+        yields = nil
 
         if !target.isRoot {
-            yields = nil
             alphaPrice = nil
         }
 
@@ -195,13 +156,11 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectPresenterProtocol {
     }
 
     func showInfo(hotkey: AccountId) {
-        let item = directory?.items.first { $0.hotkey == hotkey }
-
         wireframe.showValidatorInfo(
             from: view,
             target: target,
             hotkey: hotkey,
-            detail: item.map(handedOut)
+            detail: selectableItem(for: hotkey).map(handedOut)
         )
     }
 
@@ -224,17 +183,6 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectInteractorOutputProt
     func didFailDirectory(_ error: Error) {
         directory = nil
         directoryError = error
-        provideState()
-    }
-
-    func didReceive(clientGates: SubtensorClientGates) {
-        apply(clientGates: clientGates)
-        provideState()
-    }
-
-    func didFailClientGates(_ error: Error) {
-        clientGates = nil
-        clientGatesError = error
         provideState()
     }
 

@@ -45,32 +45,25 @@ private extension SubtensorValidatorDirectoryService {
         for hotkey: AccountId,
         subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<Row?> {
-        OperationCombiningService.compoundOptionalWrapper(
-            operationManager: OperationManager(operationQueue: operationQueue)
-        ) { [weak self] in
-            guard let self, cache.entry(for: subnet)?.items[hotkey] != nil else {
+        let listingWrapper = createListingWrapper(for: subnet.netuid)
+
+        let rowOperation = ClosureOperation<Row?> {
+            guard
+                let listing = try? listingWrapper.targetOperation.extractNoCancellableResultData(),
+                let row = listing.rows.first(where: { $0.hotkey == hotkey }) else {
                 return nil
             }
 
-            let listingWrapper = createListingWrapper(for: subnet.netuid)
-            let rowOperation = ClosureOperation<Row?> {
-                guard
-                    let listing = try? listingWrapper.targetOperation.extractNoCancellableResultData(),
-                    let row = listing.rows.first(where: { $0.hotkey == hotkey }) else {
-                    return nil
-                }
-
-                return Row(
-                    hotkey: row.hotkey,
-                    name: row.name,
-                    stake: listing.listStamp?.freshness == .fresh ? row.stake : nil
-                )
-            }
-
-            rowOperation.addDependency(listingWrapper.targetOperation)
-
-            return listingWrapper.insertingTail(operation: rowOperation)
+            return Row(
+                hotkey: row.hotkey,
+                name: row.name,
+                stake: listing.listStamp?.freshness == .fresh ? row.stake : nil
+            )
         }
+
+        rowOperation.addDependency(listingWrapper.targetOperation)
+
+        return listingWrapper.insertingTail(operation: rowOperation)
     }
 
     func createListingWrapper(for netuid: UInt16) -> CompoundOperationWrapper<Listing> {

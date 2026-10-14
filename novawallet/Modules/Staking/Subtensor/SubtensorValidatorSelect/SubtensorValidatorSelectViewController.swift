@@ -193,7 +193,7 @@ extension SubtensorValidatorSelectViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        guard let model = rowModel(at: indexPath), model.isSelectable else {
+        guard let model = rowModel(at: indexPath) else {
             return
         }
 
