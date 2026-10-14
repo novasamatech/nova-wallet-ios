@@ -53,7 +53,7 @@ extension SubtensorStakingSetupPresenter: SubtensorStakePresenterValidating {
             netuid: target.netuid,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
             onFeeRefresh: { [weak self] in
-                self?.refreshFee(resetting: false)
+                self?.refreshFee()
             },
             onPreflightRefresh: { [weak self] in
                 self?.refreshPreflight()

@@ -14,8 +14,8 @@ struct SubtensorConfirmSwapViewModel {
     let pay: SubtensorConfirmTileViewModel
     let receive: LoadableViewModelState<SubtensorConfirmTileViewModel>
     let swapRate: LoadableViewModelState<String>
-    let avgBuyPrice: SubtensorCostBasisRowViewModel
-    let youWillEarn: SubtensorCostBasisRowViewModel
+    let avgBuyPrice: SubtensorRowState<SubtensorCostBasisValueViewModel>
+    let youWillEarn: SubtensorRowState<SubtensorCostBasisValueViewModel>
     let slippage: String?
     let validatorApy: String?
     let remark: String?

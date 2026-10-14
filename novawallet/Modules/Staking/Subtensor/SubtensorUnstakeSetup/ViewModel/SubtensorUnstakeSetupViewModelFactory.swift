@@ -264,7 +264,7 @@ private extension SubtensorUnstakeSetupViewModelFactory {
     func createAvgBuyPrice(
         for input: SubtensorUnstakeSetupViewModelInput,
         locale: Locale
-    ) -> SubtensorCostBasisRowViewModel {
+    ) -> SubtensorRowState<SubtensorCostBasisValueViewModel> {
         guard !input.isRoot else {
             return .hidden
         }
@@ -279,7 +279,7 @@ private extension SubtensorUnstakeSetupViewModelFactory {
     func createEarned(
         for input: SubtensorUnstakeSetupViewModelInput,
         locale: Locale
-    ) -> SubtensorCostBasisRowViewModel {
+    ) -> SubtensorRowState<SubtensorCostBasisValueViewModel> {
         guard !input.isRoot else {
             return .hidden
         }
@@ -326,7 +326,7 @@ private extension SubtensorUnstakeSetupViewModelFactory {
         for input: SubtensorUnstakeSetupViewModelInput,
         receive: BalanceViewModelProtocol?,
         locale: Locale
-    ) -> SubtensorSetupBalanceRowViewModel {
+    ) -> SubtensorRowState<BalanceViewModelProtocol> {
         guard !input.isRoot else {
             return .hidden
         }
@@ -350,7 +350,7 @@ private extension SubtensorUnstakeSetupViewModelFactory {
         for input: SubtensorUnstakeSetupViewModelInput,
         swapRate: String?,
         locale: Locale
-    ) -> SubtensorSetupRowViewModel {
+    ) -> SubtensorRowState<String> {
         guard !input.isRoot else {
             return .hidden
         }

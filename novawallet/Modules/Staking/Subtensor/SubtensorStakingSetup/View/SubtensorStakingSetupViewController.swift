@@ -131,7 +131,7 @@ private extension SubtensorStakingSetupViewController {
             rootView.validatorCardView.bind(viewModel: viewModel.validator)
             rootView.rootPickCardView.bind(viewModel, locale: selectedLocale)
             if viewModel.isQuickPick { rootView.browseButton.isHidden = true }
-            applyNetworkFee(viewModel.networkFee)
+            rootView.applyNetworkFee(viewModel.networkFee)
         case let .subnet(viewModel):
             rootView.detailsTableView.isHidden = true
             rootView.sectionLabel.isHidden = false
@@ -144,7 +144,7 @@ private extension SubtensorStakingSetupViewController {
         }
     }
 
-    func applyAvgBuyPrice(_ viewModel: SubtensorCostBasisRowViewModel) {
+    func applyAvgBuyPrice(_ viewModel: SubtensorRowState<SubtensorCostBasisValueViewModel>) {
         rootView.setAvgBuyPriceVisible(viewModel != .hidden)
         rootView.avgBuyPriceCell.bind(costBasisRow: viewModel)
     }
@@ -165,25 +165,6 @@ private extension SubtensorStakingSetupViewController {
             target: self,
             action: #selector(actionSettings)
         )
-    }
-
-    func applyNetworkFee(_ viewModel: BalanceViewModelProtocol?) {
-        let feeView: NetworkFeeView = rootView.networkFeeCell.rowContentView
-
-        feeView.bind(viewModel: viewModel ?? BalanceViewModel(amount: "", price: nil))
-        rootView.setSkeleton(rootView.feeSkeletonView, loading: viewModel == nil, hiding: feeView.tokenLabel)
-    }
-
-    func applyAction(_ viewModel: SubtensorSetupActionViewModel) {
-        if viewModel.isEnabled {
-            rootView.actionButton.applyEnabledStyle()
-        } else {
-            rootView.actionButton.applyDisabledStyle()
-        }
-
-        rootView.actionButton.isUserInteractionEnabled = viewModel.isEnabled
-        rootView.actionButton.imageWithTitleView?.title = viewModel.title
-        rootView.actionButton.invalidateLayout()
     }
 
     @objc func actionBrowse() { presenter.showAllSubnets() }
@@ -263,7 +244,7 @@ extension SubtensorStakingSetupViewController: SubtensorStakingSetupViewProtocol
         rootView.captionLabel.text = viewModel.caption
         rootView.placeCaption(afterAction: viewModel.getTao != nil)
 
-        applyAction(viewModel.action)
+        rootView.applyAction(viewModel.action)
     }
 }
 

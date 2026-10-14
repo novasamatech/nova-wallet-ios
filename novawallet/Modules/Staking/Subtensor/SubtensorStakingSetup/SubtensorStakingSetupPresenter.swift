@@ -156,7 +156,8 @@ extension SubtensorStakingSetupPresenter {
 
         requestPresetIfReady()
         refreshPreflight()
-        refreshFee(resetting: true)
+        fee = nil
+        refreshFee()
         updateQuote()
         provideViewModel()
     }
@@ -195,7 +196,7 @@ extension SubtensorStakingSetupPresenter {
         preflight = nil
 
         refreshPreflight()
-        refreshFee(resetting: false)
+        refreshFee()
         provideViewModel()
     }
 
@@ -235,11 +236,7 @@ extension SubtensorStakingSetupPresenter {
         }
     }
 
-    func refreshFee(resetting: Bool) {
-        if resetting {
-            fee = nil
-        }
-
+    func refreshFee() {
         guard let operation = feeOperation() else {
             return
         }
@@ -258,25 +255,8 @@ extension SubtensorStakingSetupPresenter {
         return .buy(netuid: info.netuid, grossTao: amount, tolerance: slippage)
     }
 
-    func updateQuote() {
-        if let request = quoteFlow.updateRequest(quoteRequest()) {
-            isQuoteFailed = false
-            interactor.refreshQuote(for: request)
-        }
-    }
-
-    func forceQuoteRefresh() {
-        let request = quoteRequest()
-
-        _ = quoteFlow.updateRequest(request)
-
-        if let request {
-            interactor.refreshQuote(for: request)
-        }
-    }
-
     func applyInputChange() {
-        refreshFee(resetting: false)
+        refreshFee()
         updateQuote()
         provideAssetViewModel()
         provideViewModel()
@@ -307,6 +287,12 @@ extension SubtensorStakingSetupPresenter {
 
         view?.didReceiveAmountAsset(viewModel: viewModel)
     }
+}
+
+extension SubtensorStakingSetupPresenter: SubtensorQuoteHandling {
+    var retryView: ControllerBackedProtocol? { view }
+    var retryWireframe: AlertPresentable & FeeRetryable & CommonRetryable { wireframe }
+    var quoteInteractor: SubtensorStakingBaseInteractorInputProtocol { interactor }
 }
 
 extension SubtensorStakingSetupPresenter: SubtensorStakingSetupPresenterProtocol {

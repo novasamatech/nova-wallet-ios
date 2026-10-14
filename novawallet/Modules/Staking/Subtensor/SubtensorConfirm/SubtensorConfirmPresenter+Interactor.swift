@@ -113,19 +113,13 @@ extension SubtensorConfirmPresenter: SubtensorConfirmInteractorOutputProtocol {
             return
         }
 
-        switch error {
-        case .feeFailed:
-            wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.refreshFee()
-            }
-        case .preflightFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.refreshPreflight()
-            }
-        case .quoteFailed:
-            quoteState?.markLatestFailed()
-            provideViewModel()
+        guard case .quoteFailed = error else {
+            presentBaseRetry(for: error)
+            return
         }
+
+        quoteState?.markLatestFailed()
+        provideViewModel()
     }
 
     func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?) {
@@ -164,6 +158,11 @@ extension SubtensorConfirmPresenter: SubtensorOperationResultDelegate {
 
         provideViewModel()
     }
+}
+
+extension SubtensorConfirmPresenter: SubtensorBaseRetrying {
+    var retryView: ControllerBackedProtocol? { view }
+    var retryWireframe: AlertPresentable & FeeRetryable & CommonRetryable { wireframe }
 }
 
 extension SubtensorConfirmPresenter: Localizable {
