@@ -290,15 +290,16 @@ private extension SubtensorValidatorPresetFactory {
         on subnet: SubtensorSubnetRef,
         gates: SubtensorClientGates?
     ) -> Bool {
-        guard let item, let gates else {
+        let isRoot = subnet.netuid == SubtensorStakingPallet.rootNetuid
+
+        guard
+            let status = item?.status,
+            let take = item?.take,
+            let maxTake = gates?.maxTake.decimalValue else {
             return false
         }
 
-        return SubtensorValidatorEligibility.eligibility(
-            of: item,
-            isRoot: subnet.netuid == SubtensorStakingPallet.rootNetuid,
-            gates: gates
-        ) == .selectable
+        return take <= maxTake && (isRoot || (status.hasPermit == true && status.isActive == true))
     }
 }
 

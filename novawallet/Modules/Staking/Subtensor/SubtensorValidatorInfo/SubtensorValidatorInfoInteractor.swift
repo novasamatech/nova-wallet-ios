@@ -76,11 +76,6 @@ private extension SubtensorValidatorInfoInteractor {
     }
 
     func loadRate() {
-        guard !target.isRoot else {
-            presenter?.didReceive(annualRate: nil)
-            return
-        }
-
         rateStore.cancel()
 
         executeCancellable(
@@ -137,10 +132,6 @@ private extension SubtensorValidatorInfoInteractor {
 
 extension SubtensorValidatorInfoInteractor: SubtensorValInfoInteractorInputProtocol {
     func cachedSnapshot() -> SubtensorValidatorInfoSnapshot {
-        guard !target.isRoot else {
-            return SubtensorValidatorInfoSnapshot(annualRate: .miss, alphaPrice: .miss)
-        }
-
         let hotkey = hotkey
         let subnet = subnet
 
@@ -148,7 +139,9 @@ extension SubtensorValidatorInfoInteractor: SubtensorValInfoInteractorInputProto
             annualRate: yieldService.cachedAlphaYields(for: subnet.netuid).map { yields in
                 SubtensorAlphaApyFormatter.annualRate(for: hotkey, in: yields)
             },
-            alphaPrice: catalogueService.cachedCatalogue().map { $0.subnet(for: subnet)?.freshTaoPerAlpha }
+            alphaPrice: target.isRoot
+                ? .miss
+                : catalogueService.cachedCatalogue().map { $0.subnet(for: subnet)?.freshTaoPerAlpha }
         )
     }
 
