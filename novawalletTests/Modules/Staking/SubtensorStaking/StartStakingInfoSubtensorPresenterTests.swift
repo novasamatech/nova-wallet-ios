@@ -20,6 +20,61 @@ final class StartStakingInfoSubtensorPresenterTests: XCTestCase {
         verify(wireframe, never()).complete(from: any())
     }
 
+    func testBothSupportedEntryActionsUseTheirOwnRoutes() {
+        let wireframe = MockStartStakingInfoSubtensorWireframeProtocol()
+        let presenter = makePresenter(wireframe: wireframe)
+        let view = MockStartStakingInfoViewProtocol()
+        stub(view) { when($0.didReceive(balance: any())).thenDoNothing() }
+        stub(wireframe) { stub in
+            when(stub.showSetupAmount(from: any())).thenDoNothing()
+            when(stub.showAllOptions(from: any())).thenDoNothing()
+        }
+        presenter.view = view
+        let wallet = AccountGenerator.generateMetaAccount()
+        presenter.didReceive(wallet: wallet, chainAccountId: wallet.substrateAccountId)
+        presenter.didReceive(assetBalance: makeBalance())
+        presenter.startStaking()
+        presenter.seeAllOptions()
+        verify(wireframe).showSetupAmount(from: any())
+        verify(wireframe).showAllOptions(from: any())
+    }
+
+    func testBothEntryActionsKeepUnsupportedSignerAndMissingAccountGates() {
+        for hasAccount in [true, false] {
+            let wireframe = MockStartStakingInfoSubtensorWireframeProtocol()
+            let presenter = makePresenter(wireframe: wireframe)
+            let view = MockStartStakingInfoViewProtocol()
+            stub(view) { when($0.didReceive(balance: any())).thenDoNothing() }
+            stub(wireframe) { stub in
+                when(stub.present(viewModel: any(), style: any(), from: any())).thenDoNothing()
+                when(stub.presentSignerNotSupportedView(from: any(), type: any(), completion: any())).thenDoNothing()
+                when(stub.present(message: any(), title: any(), closeAction: any(), from: any())).thenDoNothing()
+            }
+            presenter.view = view
+            let wallet = AccountGenerator.generateMetaAccount(type: .ledger)
+            presenter.didReceive(wallet: wallet, chainAccountId: hasAccount ? wallet.substrateAccountId : nil)
+            if hasAccount { presenter.didReceive(assetBalance: makeBalance()) }
+            presenter.startStaking()
+            presenter.seeAllOptions()
+            verify(wireframe, never()).showSetupAmount(from: any())
+            verify(wireframe, never()).showAllOptions(from: any())
+        }
+    }
+
+    private func makeBalance() -> AssetBalance {
+        let asset = SubtensorFlowChainWorld.chainAsset()
+        return AssetBalance(
+            chainAssetId: asset.chainAssetId,
+            accountId: Data(repeating: 1, count: 32),
+            freeInPlank: 10_000_000_000,
+            reservedInPlank: 0,
+            frozenInPlank: 0,
+            edCountMode: .basedOnFree,
+            transferrableMode: .fungibleTrait,
+            blocked: false
+        )
+    }
+
     private func makePresenter(
         wireframe: MockStartStakingInfoSubtensorWireframeProtocol
     ) -> StartStakingInfoSubtensorPresenter {

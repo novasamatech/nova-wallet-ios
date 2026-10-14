@@ -1,10 +1,13 @@
 import Foundation
 
 enum SubtensorSubnetSort: CaseIterable, Equatable {
-    case sevenDayChange
     case poolDepth
     case age
+    case apy
+    case sevenDayChange
     case name
+
+    var isAvailable: Bool { self != .apy }
 }
 
 struct SubtensorSubnetFilters: Equatable {
@@ -15,13 +18,10 @@ struct SubtensorSubnetFilters: Equatable {
 
 struct SubtensorSubnetSelectSnapshot {
     let entries: HTTPCachePeek<[SubtensorSubnetListEntry]>
-    let rootRate: HTTPCachePeek<Decimal?>
-    let rankedSubnets: HTTPCachePeek<SubtensorRankedSubnets>
 }
 
 protocol SubtensorSubnetSelectViewProtocol: ControllerBackedProtocol {
     func didReceive(list: SubtensorSubnetListViewModel)
-    func didReceive(rootBar: SubtensorStakeToRootBarViewModel)
 }
 
 protocol SubtensorSubnetFiltersViewProtocol: ControllerBackedProtocol {
@@ -50,8 +50,6 @@ protocol SubnetSelectInteractorInputProtocol: AnyObject {
 protocol SubnetSelectInteractorOutputProtocol: AnyObject {
     func didReceive(entries: [SubtensorSubnetListEntry])
     func didReceive(subnetLogos: SubtensorSubnetLogos?)
-    func didReceive(rootRate: Decimal?)
-    func didReceive(rankedSubnets: SubtensorRankedSubnets?)
     func didReceive(weeklyPrices: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>])
     func didReceiveError(_ error: Error)
 }

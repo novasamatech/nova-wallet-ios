@@ -152,6 +152,7 @@ sources = [
     "novawallet/Modules/Staking/Subtensor/SubtensorStakingConfirm/SubtensorStakingConfirmProtocols.swift",
     "novawallet/Modules/Staking/Subtensor/SubtensorUnstakeConfirm/SubtensorUnstakeConfirmProtocols.swift",
     "novawallet/Modules/Staking/Subtensor/SubtensorSubnetSelect/SubtensorSubnetSelectProtocols.swift",
+    "novawallet/Modules/Staking/Subtensor/Protocols/SubtensorSortSheetPresentable.swift",
     "novawallet/Modules/Staking/CollatorStaking/Setup/CollatorStakingSetupProtocols.swift",
     "novawallet/Modules/Swaps/Slippage/SwapSlippageProtocols.swift",
     "novawallet/Common/Network/Bittensor/BittensorApiTransportProtocol.swift",

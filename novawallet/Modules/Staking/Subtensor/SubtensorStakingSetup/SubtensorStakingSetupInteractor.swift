@@ -20,6 +20,7 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
     let subnetsService: SubtensorSubnetsServiceProtocol
     let earnSettings: SubtensorEarnSettingsProtocol
 
+    private let quickPickCallStore = CancellableCallStore()
     private let validatorCallStore = CancellableCallStore()
     private let rootYieldCallStore = CancellableCallStore()
     private let catalogueCallStore = CancellableCallStore()
@@ -70,6 +71,7 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
     }
 
     deinit {
+        quickPickCallStore.cancel()
         validatorCallStore.cancel()
         rootYieldCallStore.cancel()
         catalogueCallStore.cancel()
@@ -105,6 +107,26 @@ private extension SubtensorStakingSetupInteractor {
 }
 
 extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol {
+    func cancelQuickPickSnapshot() { quickPickCallStore.cancel() }
+
+    func loadQuickPickSnapshot(generation: Int, forcingRefresh: Bool) {
+        quickPickCallStore.cancel()
+        let subnetsService = subnetsService
+        let operation = AsyncClosureOperation<SubtensorSubnetsInfo> { completion in
+            subnetsService.fetchSubnetsInfo(
+                forcingRefresh: forcingRefresh, runningCompletionIn: .global(), completion: completion
+            )
+        }
+        executeCancellable(
+            wrapper: CompoundOperationWrapper(targetOperation: operation),
+            inOperationQueue: operationQueue,
+            backingCallIn: quickPickCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            self?.presenter?.didReceiveQuickPickSnapshot(result, generation: generation)
+        }
+    }
+
     func cachedRankingView() -> HTTPCachePeek<SubtensorRankedSubnets> {
         rankingViewService.cachedRankingView()
     }
