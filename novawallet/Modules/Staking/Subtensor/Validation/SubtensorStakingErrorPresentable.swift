@@ -30,13 +30,6 @@ protocol SubtensorStakingErrorPresentable: BaseErrorPresentable {
 
     func presentSubnetTradesUnavailable(_ view: ControllerBackedProtocol, locale: Locale?)
 
-    func presentFeeFromStakeWarning(
-        _ view: ControllerBackedProtocol,
-        fee: String,
-        action: @escaping () -> Void,
-        locale: Locale?
-    )
-
     func presentDustRemainderWarning(
         _ view: ControllerBackedProtocol,
         remainder: String,
@@ -128,23 +121,6 @@ extension SubtensorStakingErrorPresentable where Self: AlertPresentable & ErrorP
         presentError(
             title: strings.stakingSubtensorTradesUnavailableTitle(),
             message: strings.stakingSubtensorErrorNovaFeeUnavailable(),
-            view: view,
-            locale: locale
-        )
-    }
-
-    func presentFeeFromStakeWarning(
-        _ view: ControllerBackedProtocol,
-        fee: String,
-        action: @escaping () -> Void,
-        locale: Locale?
-    ) {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
-        presentWarning(
-            for: strings.stakingSubtensorFeeFromStakeTitle(),
-            message: strings.stakingSubtensorFeeFromStakeMessage(fee),
-            action: action,
             view: view,
             locale: locale
         )

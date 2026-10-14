@@ -133,39 +133,5 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
         self.preflight = preflight
     }
 
-    func didReceiveQuote(_ quote: SubtensorTradeQuote) {
-        guard quoteFlow.applyQuote(quote) else {
-            return
-        }
-
-        tradesUnavailable = false
-        isQuoteFailed = false
-
-        provideViewModel()
-    }
-
     func didReceiveExistentialDeposit(_: Balance) {}
-
-    func didReceiveBaseError(_ error: SubtensorStakingBaseError) {
-        logger.error("Subtensor setup error: \(error)")
-
-        if error.isNovaFeeUnavailable {
-            tradesUnavailable = true
-        }
-
-        switch error {
-        case .feeFailed:
-            wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.refreshFee(resetting: false)
-            }
-        case .preflightFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.refreshPreflight()
-            }
-        case .quoteFailed:
-            quoteFlow.clearQuote()
-            isQuoteFailed = true
-            provideViewModel()
-        }
-    }
 }

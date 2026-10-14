@@ -258,23 +258,6 @@ extension SubtensorUnstakeSetupPresenter {
         return .sell(netuid: netuid, alpha: amount, tolerance: slippage)
     }
 
-    func updateQuote() {
-        if let request = quoteFlow.updateRequest(quoteRequest()) {
-            isQuoteFailed = false
-            interactor.refreshQuote(for: request)
-        }
-    }
-
-    func forceQuoteRefresh() {
-        let request = quoteRequest()
-
-        _ = quoteFlow.updateRequest(request)
-
-        if let request {
-            interactor.refreshQuote(for: request)
-        }
-    }
-
     func refreshPreflight() {
         guard let primary = group?.primaryHotkey else {
             return
@@ -343,6 +326,12 @@ extension SubtensorUnstakeSetupPresenter {
 
         view?.didReceive(viewModel: viewModelFactory.createViewModel(for: input, locale: selectedLocale))
     }
+}
+
+extension SubtensorUnstakeSetupPresenter: SubtensorQuoteHandling {
+    var retryView: ControllerBackedProtocol? { view }
+    var retryWireframe: AlertPresentable & FeeRetryable & CommonRetryable { wireframe }
+    var quoteInteractor: SubtensorStakingBaseInteractorInputProtocol { interactor }
 }
 
 extension SubtensorUnstakeSetupPresenter: Localizable {

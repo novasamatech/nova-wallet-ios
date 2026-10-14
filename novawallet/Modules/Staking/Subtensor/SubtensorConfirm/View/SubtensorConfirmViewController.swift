@@ -1,15 +1,15 @@
 import Foundation_iOS
 import UIKit
 
-final class SubtensorStakingConfirmViewController: UIViewController, ViewHolder {
-    typealias RootViewType = SubtensorStakingConfirmViewLayout
+final class SubtensorConfirmViewController: UIViewController, ViewHolder {
+    typealias RootViewType = SubtensorConfirmViewLayout
 
-    let presenter: SubtensorStakingConfirmPresenterProtocol
-    let mode: SubtensorStakingConfirmViewLayout.Mode
+    let presenter: SubtensorConfirmPresenterProtocol
+    let mode: SubtensorConfirmViewLayout.Mode
 
     init(
-        presenter: SubtensorStakingConfirmPresenterProtocol,
-        mode: SubtensorStakingConfirmViewLayout.Mode,
+        presenter: SubtensorConfirmPresenterProtocol,
+        mode: SubtensorConfirmViewLayout.Mode,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
@@ -26,7 +26,7 @@ final class SubtensorStakingConfirmViewController: UIViewController, ViewHolder 
     }
 
     override func loadView() {
-        view = SubtensorStakingConfirmViewLayout()
+        view = SubtensorConfirmViewLayout()
     }
 
     override func viewDidLoad() {
@@ -46,7 +46,7 @@ final class SubtensorStakingConfirmViewController: UIViewController, ViewHolder 
     }
 }
 
-private extension SubtensorStakingConfirmViewController {
+private extension SubtensorConfirmViewController {
     func setupLocalization() {
         let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
 
@@ -201,7 +201,7 @@ private extension SubtensorStakingConfirmViewController {
     }
 }
 
-extension SubtensorStakingConfirmViewController: SubtensorStakingConfirmViewProtocol {
+extension SubtensorConfirmViewController: SubtensorConfirmViewProtocol {
     func didReceiveWallet(viewModel: DisplayWalletViewModel) {
         rootView.walletCell.bind(viewModel: viewModel.cellViewModel)
     }
@@ -250,7 +250,7 @@ extension SubtensorStakingConfirmViewController: SubtensorStakingConfirmViewProt
     }
 }
 
-extension SubtensorStakingConfirmViewController: Localizable {
+extension SubtensorConfirmViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()

@@ -2,11 +2,11 @@ import Foundation
 import Foundation_iOS
 import Operation_iOS
 
-enum SubtensorUnstakeConfirmViewFactory {
+enum SubtensorConfirmViewFactory {
     static func createView(
         for state: SubtensorStakingSharedStateProtocol,
-        model: SubtensorUnstakeConfirmModel
-    ) -> SubtensorUnstakeConfirmViewProtocol? {
+        model: SubtensorConfirmModel
+    ) -> SubtensorConfirmViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
 
         guard
@@ -15,9 +15,9 @@ enum SubtensorUnstakeConfirmViewFactory {
             return nil
         }
 
-        let interactor = SubtensorUnstakeConfirmInteractor(flowServices: services, state: state, logger: Logger.shared)
+        let interactor = SubtensorConfirmInteractor(flowServices: services, state: state, logger: Logger.shared)
 
-        let wireframe = SubtensorUnstakeConfirmWireframe(state: state)
+        let wireframe = SubtensorConfirmWireframe(state: state)
 
         let localizationManager = LocalizationManager.shared
 
@@ -29,7 +29,7 @@ enum SubtensorUnstakeConfirmViewFactory {
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
-        let presenter = SubtensorUnstakeConfirmPresenter(
+        let presenter = SubtensorConfirmPresenter(
             interactor: interactor,
             wireframe: wireframe,
             chainAsset: chainAsset,
@@ -43,9 +43,9 @@ enum SubtensorUnstakeConfirmViewFactory {
             logger: Logger.shared
         )
 
-        let view = SubtensorStakingConfirmViewController(
+        let view = SubtensorConfirmViewController(
             presenter: presenter,
-            mode: model.target.isRoot ? .rootUnstake : .swap(.sell),
+            mode: createViewMode(for: model),
             localizationManager: localizationManager
         )
 
@@ -54,5 +54,13 @@ enum SubtensorUnstakeConfirmViewFactory {
         dataValidationFactory.view = view
 
         return view
+    }
+
+    private static func createViewMode(for model: SubtensorConfirmModel) -> SubtensorConfirmViewLayout.Mode {
+        guard model.target.isRoot else {
+            return .swap(model.direction)
+        }
+
+        return model.direction == .buy ? .rootStake : .rootUnstake
     }
 }

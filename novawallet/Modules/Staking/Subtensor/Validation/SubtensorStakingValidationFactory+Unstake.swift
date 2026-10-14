@@ -41,45 +41,9 @@ extension SubtensorStakingValidationFactory {
                 return false
             }
 
-            return SubtensorAmountPolicy.canPayBatchedSell(
+            return SubtensorAmountPolicy.paysFeeFromFreeBalance(
                 transferable: transferable,
                 networkFee: networkFee,
-                existentialDeposit: existentialDeposit
-            )
-        })
-    }
-
-    func canPayFeeFromStakeOtherwiseWarns(
-        transferable: Balance?,
-        fee: Balance?,
-        existentialDeposit: Balance?,
-        locale: Locale
-    ) -> DataValidating {
-        WarningConditionViolation(onWarning: { [weak self] delegate in
-            guard let self, let view else {
-                return
-            }
-
-            presentable.presentFeeFromStakeWarning(
-                view,
-                fee: formatRequiredAmount(fee ?? 0, locale: locale),
-                action: {
-                    delegate.didCompleteWarningHandling()
-                },
-                locale: locale
-            )
-        }, preservesCondition: {
-            guard let fee else {
-                return true
-            }
-
-            guard let transferable, let existentialDeposit else {
-                return false
-            }
-
-            return !SubtensorAmountPolicy.paysFeeFromStake(
-                transferable: transferable,
-                networkFee: fee,
                 existentialDeposit: existentialDeposit
             )
         })

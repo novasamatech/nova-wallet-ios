@@ -65,18 +65,7 @@ extension SubtensorClaimRewardsPresenter: SubtensorClaimInteractorOutputProtocol
     func didReceiveBaseError(_ error: SubtensorStakingBaseError) {
         logger.error("Error: \(error)")
 
-        switch error {
-        case .feeFailed:
-            wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.refreshFee()
-            }
-        case .preflightFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.refreshPreflight()
-            }
-        case .quoteFailed:
-            break
-        }
+        presentBaseRetry(for: error)
     }
 
     func didReceiveClaimSnapshot(_ claimable: SubtensorRootClaimable) {
@@ -101,6 +90,11 @@ extension SubtensorClaimRewardsPresenter: SubtensorOperationResultDelegate {
 
         provideViewModel()
     }
+}
+
+extension SubtensorClaimRewardsPresenter: SubtensorBaseRetrying {
+    var retryView: ControllerBackedProtocol? { view }
+    var retryWireframe: AlertPresentable & FeeRetryable & CommonRetryable { wireframe }
 }
 
 extension SubtensorClaimRewardsPresenter: Localizable {

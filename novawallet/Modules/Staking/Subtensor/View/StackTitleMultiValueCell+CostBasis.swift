@@ -1,8 +1,8 @@
 import UIKit
 
 extension StackTitleMultiValueCell {
-    func bind(costBasisRow viewModel: SubtensorCostBasisRowViewModel) {
-        switch viewModel {
+    func apply<Value>(_ state: SubtensorRowState<Value>, bind: (Value) -> Void) {
+        switch state {
         case .hidden:
             isHidden = true
             stopLoadingIfNeeded()
@@ -12,6 +12,16 @@ extension StackTitleMultiValueCell {
         case let .value(value):
             isHidden = false
             stopLoadingIfNeeded()
+            bind(value)
+        }
+    }
+
+    func apply(_ state: SubtensorRowState<String>) {
+        apply(state) { rowContentView.valueView.bind(topValue: $0, bottomValue: nil) }
+    }
+
+    func bind(costBasisRow viewModel: SubtensorRowState<SubtensorCostBasisValueViewModel>) {
+        apply(viewModel) { value in
             topValueLabel.attributedText = value.attributedAmount
             bottomValueLabel.text = value.detail ?? ""
             bottomValueLabel.isHidden = value.detail == nil
