@@ -23,6 +23,8 @@ final class SubtensorValidatorInfoViewLayout: UIView {
         view.isHidden = true
     }
 
+    let coverageCell: StackTitleMultiValueCell = .create { $0.canSelect = false }
+
     let statusCell: StackTableCell = .create { cell in
         cell.isUserInteractionEnabled = false
     }
@@ -54,11 +56,17 @@ final class SubtensorValidatorInfoViewLayout: UIView {
     func bind(viewModel: SubtensorValidatorInfoViewModel) {
         accountView.bind(viewModel: viewModel.account)
 
-        guard let staking = viewModel.staking else {
-            stakingTitleLabel.isHidden = true
-            stakingTableView.isHidden = true
-            return
+        coverageCell.bind(loadableViewModel: viewModel.coverage)
+        [statusCell, stakeCell, takeCell, rewardCell].forEach { $0.isHidden = viewModel.staking == nil }
+        stakingTitleLabel.isHidden = false
+        stakingTableView.isHidden = false
+        stakingTableView.updateLayout()
+        let cells: [StackTableViewCellProtocol] = [statusCell, stakeCell, takeCell, coverageCell, rewardCell]
+        cells.forEach { SubtensorDividerStyle.apply(to: $0, hasPrevious: false) }
+        cells.filter { !$0.isHidden }.enumerated().forEach { index, cell in
+            SubtensorDividerStyle.apply(to: cell, hasPrevious: index > 0)
         }
+        guard let staking = viewModel.staking else { return }
 
         stakingTitleLabel.isHidden = false
         stakingTableView.isHidden = false
@@ -92,6 +100,7 @@ final class SubtensorValidatorInfoViewLayout: UIView {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         stakingTitleLabel.text = strings.stakingSubtensorUiValidatorInfoStaking().uppercased(with: locale)
+        coverageCell.titleLabel.text = strings.stakingSubtensorV22Coverage()
         statusCell.titleLabel.text = strings.commonStatus()
         takeCell.titleLabel.text = strings.stakingSubtensorUiValidatorInfoTake()
         rewardCell.titleLabel.text = strings.stakingValidatorEstimatedReward()
@@ -118,6 +127,7 @@ final class SubtensorValidatorInfoViewLayout: UIView {
         stakingTableView.addArrangedSubview(statusCell)
         stakingTableView.addArrangedSubview(stakeCell)
         stakingTableView.addArrangedSubview(takeCell)
+        stakingTableView.addArrangedSubview(coverageCell)
         stakingTableView.addArrangedSubview(rewardCell)
     }
 }

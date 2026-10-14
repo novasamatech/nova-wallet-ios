@@ -103,7 +103,8 @@ extension SubtensorStakingSetupViewModelFactory {
 
         switch input.mode {
         case .rootDetails:
-            return strings.stakingSubtensorUiStakeToRoot()
+            return input.rootEntryPresentation == .quickPickRoot || input.quickPickOrder != nil
+                ? strings.stakingSubtensorBannerTitle() : strings.stakingSubtensorUiStakeToRoot()
         case .addStake:
             return strings.stakingSubtensorUiAddStakeRootTitle()
         case .quickPick, .subnetPick:
@@ -154,9 +155,28 @@ extension SubtensorStakingSetupViewModelFactory {
         for input: SubtensorStakingSetupViewModelInput,
         locale: Locale
     ) -> SubtensorSetupRootViewModel {
-        SubtensorSetupRootViewModel(
-            validator: createValidator(for: input, locale: locale),
-            apy: createRootApy(for: input, locale: locale),
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+        let compact = createValidator(for: input, locale: locale)
+        let name: String?
+        let icon: ImageViewModelProtocol?
+        switch compact {
+        case .loading: name = nil; icon = nil
+        case let .unselected(title): name = title; icon = nil
+        case let .selected(display, _): name = display.name ?? display.address; icon = display.imageViewModel
+        }
+        let rate: SubtensorPortfolioLoadable<String> = input.isRootRateLoaded
+            ? input.rootRate
+            .map { .loaded(SubtensorApyFormatter.text(for: $0, style: .bare, locale: locale)) } ?? .hidden
+            : .loading
+        return SubtensorSetupRootViewModel(
+            icon: AssetIconViewModelFactory().createAssetIconViewModel(from: chainAsset.assetDisplayInfo),
+            validator: SubtensorValidatorCardViewModel(
+                icon: icon, name: name, subtitle: strings.stakingCommonValidator(), rate: rate,
+                rateCaption: strings.stakingSubtensorV22EstApy()
+            ),
+            compactValidator: compact,
+            compactRate: input.rootRate.map { SubtensorApyFormatter.text(for: $0, style: .leading, locale: locale) },
+            isQuickPick: input.rootEntryPresentation == .quickPickRoot || input.quickPickOrder != nil,
             networkFee: createNetworkFee(for: input, locale: locale)
         )
     }
@@ -190,18 +210,6 @@ extension SubtensorStakingSetupViewModelFactory {
                 accessory: accessory
             )
         }
-    }
-
-    func createRootApy(for input: SubtensorStakingSetupViewModelInput, locale: Locale) -> SubtensorSetupRowViewModel {
-        guard input.isRootRateLoaded else {
-            return .loading
-        }
-
-        guard let rootRate = input.rootRate else {
-            return .hidden
-        }
-
-        return .value(SubtensorApyFormatter.text(for: rootRate, style: .paidInTao, locale: locale))
     }
 
     func createCaption(for input: SubtensorStakingSetupViewModelInput, locale: Locale) -> String? {

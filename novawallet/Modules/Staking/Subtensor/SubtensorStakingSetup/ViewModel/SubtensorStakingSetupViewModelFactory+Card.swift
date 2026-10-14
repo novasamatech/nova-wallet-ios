@@ -37,8 +37,7 @@ extension SubtensorStakingSetupViewModelFactory {
         return SubtensorSetupSubnetViewModel(
             sectionTitle: sectionTitle,
             card: card,
-            avgBuyPrice: createAvgBuyPrice(for: input, locale: locale),
-            feeDisclosure: quoteViewModelFactory.novaFeeDisclosure(locale: locale)
+            avgBuyPrice: createAvgBuyPrice(for: input, locale: locale)
         )
     }
 

@@ -428,7 +428,7 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
         )
     }
 
-    private func makeSetup(mode: SubtensorStakingSetupMode, free: Balance = 10_000_000_000, visit: SubtensorQuickPickVisit? = nil) -> Setup {
+    private func makeSetup(mode: SubtensorStakingSetupMode, free: Balance = 10_000_000_000, visit: SubtensorQuickPickVisit? = nil, rootPresentation: SubtensorRootEntryPresentation = .standard) -> Setup {
         let chainAsset = makeChainAsset()
         let interactor = MockSubtensorSetupInteractorInputProtocol()
 
@@ -496,7 +496,8 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared,
             browseState: SubtensorSubnetBrowseState(order: visit?.order),
-            quickPickVisit: visit
+            quickPickVisit: visit,
+            rootEntryPresentation: rootPresentation
         )
 
         presenter.view = view
@@ -506,6 +507,22 @@ final class SubtensorStakingSetupPresenterTests: XCTestCase {
         presenter.didReceiveExistentialDeposit(500_000)
 
         return Setup(presenter: presenter, wireframe: wireframe, interactor: interactor, view: view)
+    }
+
+    func testRootCarouselPresentationIsDistinctWithoutChangingTransactionMode() throws {
+        let standard = makeSetup(mode: .rootDetails)
+        let quick = makeSetup(mode: .rootDetails, rootPresentation: .quickPickRoot)
+        guard case let .root(standardRoot) = try lastViewModel(standard).details,
+              case let .root(quickRoot) = try lastViewModel(quick).details else { return XCTFail("Expected root") }
+        XCTAssertFalse(standardRoot.isQuickPick)
+        XCTAssertTrue(quickRoot.isQuickPick)
+        XCTAssertEqual(standard.presenter.mode, .rootDetails)
+        XCTAssertEqual(quick.presenter.mode, .rootDetails)
+        XCTAssertEqual(try lastViewModel(quick).title, "Earn with Bittensor")
+        quick.presenter.didReceiveRootYield(nil)
+        guard case let .root(loaded) = try lastViewModel(quick).details else { return XCTFail("Expected root") }
+        XCTAssertEqual(loaded.validator.rate, .hidden)
+        XCTAssertNil(loaded.compactRate)
     }
 
     private func presetRootValidator(_ setup: Setup) {

@@ -17,15 +17,14 @@ protocol SubnetDetailsViewModelFactoryProtocol {
 }
 
 final class SubtensorSubnetDetailsViewModelFactory {
-    static let chipAmounts: [Decimal] = [1, 5, 10]
-    static let defaultChip = SubtensorSubnetAmountChip.fixed(5)
-
     let subnet: SubtensorCatalogueSubnet
     let chainAsset: ChainAsset
     let currency: Currency
     let iconFactory: SubtensorSubnetIconFactoryProtocol
     let displayAddressFactory: DisplayAddressViewModelFactoryProtocol
     let priceWidgetFactory: SubtensorPriceWidgetFactoryProtocol
+
+    let balanceViewModelFactory: BalanceViewModelFactoryProtocol
 
     let tokenFormatter: LocalizableResource<TokenFormatter>
     let alphaFormatter: LocalizableResource<TokenFormatter>
@@ -52,6 +51,10 @@ final class SubtensorSubnetDetailsViewModelFactory {
             formatterFactory: formatterFactory
         )
 
+        balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: chainAsset.assetDisplayInfo,
+            priceAssetInfoFactory: priceAssetInfoFactory
+        )
         let taoInfo = chainAsset.assetDisplayInfo
 
         let alphaInfo = AssetBalanceDisplayInfo(
@@ -139,33 +142,23 @@ private extension SubtensorSubnetDetailsViewModelFactory {
     func createValidator(
         for state: SubtensorSubnetDetailsState,
         locale: Locale
-    ) -> SubtensorSubnetValidatorRowViewModel {
-        switch state.validator {
-        case .pending:
-            return .loading
-        case .unselected:
-            return .unselected(
-                R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiDetailChooseValidator()
-            )
-        case let .selected(item):
-            let address = try? item.hotkey.toAddress(using: chainAsset.chain.chainFormat)
-
-            let icon = address.flatMap { address in
-                displayAddressFactory.createViewModel(
-                    from: DisplayAddress(address: address, username: item.name ?? "")
-                ).imageViewModel
-            }
-
-            let apy = SubtensorAlphaApyFormatter.annualRate(for: item.hotkey, in: state.yields).map { rate in
-                SubtensorApyFormatter.text(for: rate, style: .trailing, locale: locale)
-            }
-
-            return .selected(
-                name: item.name ?? address?.mediumTruncated ?? unknownValue(for: locale),
-                icon: icon,
-                apy: apy
-            )
+    ) -> SubtensorValidatorCardViewModel {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+        let item = state.validator.item
+        let address = item.flatMap { try? $0.hotkey.toAddress(using: chainAsset.chain.chainFormat) }
+        let display = address.map {
+            displayAddressFactory.createViewModel(from: DisplayAddress(address: $0, username: item?.name ?? ""))
         }
+        let rate = item.flatMap { SubtensorAlphaApyFormatter.annualRate(for: $0.hotkey, in: state.yields) }
+        let name: String? = state.validator == .pending ? nil : item?.name ?? address?.mediumTruncated ??
+            strings.stakingSubtensorUiDetailChooseValidator()
+        return SubtensorValidatorCardViewModel(
+            icon: display?.imageViewModel,
+            name: name,
+            subtitle: strings.stakingCommonValidator(),
+            rate: rate.map { .loaded(SubtensorApyFormatter.text(for: $0, style: .bare, locale: locale)) } ?? .hidden,
+            rateCaption: strings.stakingSubtensorV22EstApy()
+        )
     }
 }
 
@@ -190,9 +183,8 @@ extension SubtensorSubnetDetailsViewModelFactory: SubnetDetailsViewModelFactoryP
                 locale: locale
             ),
             validator: createValidator(for: state, locale: locale),
-            estimate: createEstimate(for: state, locale: locale),
-            factors: createFactors(for: state, locale: locale),
-            subnetNumber: String(subnet.netuid),
+            parameters: createParameters(for: state, locale: locale),
+            moreDetails: createMoreDetails(for: state, locale: locale),
             isFavorite: state.isFavorite,
             favoriteAccessibilityLabel: state.isFavorite
                 ? strings.stakingSubtensorUiDetailFavoriteRemove()

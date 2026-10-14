@@ -24,14 +24,10 @@ final class SubtensorSubnetDetailsPresenter {
         }
     }
 
-    private var listing: SubtensorSubnetListingState = .loading
-    private var isRankingLoaded = false
-    private var rankingView: SubtensorRankedSubnets?
-    private var hasExpiredRankingSeed = false
+    private var parameters: SubtensorSubnetParameters?
+    private var isParametersLoaded = false
     private var validator: SubtensorSubnetValidatorState
     private var yields: SubtensorAlphaYields?
-    private var amount = SubtensorSubnetDetailsViewModelFactory.defaultChip
-    private var transferable: Balance?
     private var taoPrice: PriceData?
     private var subnetLogos: SubtensorSubnetLogos?
     private var positions: Multistaking.SubtensorStakingState?
@@ -90,13 +86,10 @@ private extension SubtensorSubnetDetailsPresenter {
             isFiat: isFiat,
             period: period,
             history: history,
-            listing: listing,
-            isRankingLoaded: isRankingLoaded,
-            rankingView: rankingView,
+            parameters: parameters,
+            isParametersLoaded: isParametersLoaded,
             validator: validator,
             yields: yields,
-            amount: amount,
-            transferable: transferable,
             taoPrice: taoPrice,
             isFavorite: isFavorite,
             now: now(),
@@ -120,13 +113,7 @@ private extension SubtensorSubnetDetailsPresenter {
     }
 
     func seed(from snapshot: SubtensorSubnetDetailsSnapshot) {
-        if let rankingView = snapshot.rankingView.value {
-            self.rankingView = rankingView
-            isRankingLoaded = true
-            hasExpiredRankingSeed = !snapshot.rankingView.isFresh
-        }
-
-        if let yields = snapshot.yields.value {
+        if let yields = snapshot.yields.value, yields.netuid == subnetRef.netuid {
             self.yields = yields
         }
     }
@@ -218,18 +205,6 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
         provideViewModel()
     }
 
-    func selectAmount(at index: Int) {
-        let amounts = SubtensorSubnetDetailsViewModelFactory.chipAmounts
-
-        if amounts.indices.contains(index) {
-            amount = .fixed(amounts[index])
-        } else if SubtensorSubnetDetailsViewModelFactory.maxAmount(for: transferable) != nil {
-            amount = .max
-        }
-
-        provideViewModel()
-    }
-
     func toggleFavorite() {
         var favorites = Set(earnSettings.favouriteSubnets)
 
@@ -301,26 +276,10 @@ extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol
         provideViewModel()
     }
 
-    func didReceiveListing(_ result: SubtensorPriceHistoryResult?) {
-        switch result {
-        case let .available(value):
-            listing = .listed(since: value.points.first?.date)
-        case .notListed:
-            listing = .notListed
-        case .none:
-            listing = .failed
-        }
-
-        provideViewModel()
-    }
-
-    func didReceiveRankingView(_ rankingView: SubtensorRankedSubnets?) {
-        guard rankingView != nil || !hasExpiredRankingSeed else {
-            return
-        }
-
-        self.rankingView = rankingView
-        isRankingLoaded = true
+    func didReceiveParameters(_ parameters: SubtensorSubnetParameters?) {
+        guard parameters == nil || parameters?.ref == subnetRef else { return }
+        self.parameters = parameters
+        isParametersLoaded = true
         provideViewModel()
     }
 
@@ -334,17 +293,8 @@ extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol
     }
 
     func didReceiveYields(_ yields: SubtensorAlphaYields?) {
+        guard yields == nil || yields?.netuid == subnetRef.netuid else { return }
         self.yields = yields
-        provideViewModel()
-    }
-
-    func didReceiveBalance(_ balance: AssetBalance?) {
-        transferable = balance?.transferable
-
-        if amount == .max, SubtensorSubnetDetailsViewModelFactory.maxAmount(for: transferable) == nil {
-            amount = SubtensorSubnetDetailsViewModelFactory.defaultChip
-        }
-
         provideViewModel()
     }
 
@@ -370,7 +320,8 @@ extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol
 }
 
 extension SubtensorSubnetDetailsPresenter: SubtensorValidatorSelectDelegate {
-    func didSelectValidator(_ validator: SubtensorValidatorDirectoryItem, for _: SubtensorStakeTarget) {
+    func didSelectValidator(_ validator: SubtensorValidatorDirectoryItem, for target: SubtensorStakeTarget) {
+        guard target == input.target else { return }
         self.validator = .selected(validator)
         provideViewModel()
 

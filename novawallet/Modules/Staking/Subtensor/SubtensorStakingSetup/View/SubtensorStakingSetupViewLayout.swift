@@ -28,19 +28,13 @@ final class SubtensorStakingSetupViewLayout: UIView {
     let selectionAlert: InlineAlertView = .create { $0.isHidden = true }
     let browseButton = UIButton(type: .system)
 
-    let detailsTableView = StackTableView()
-
-    let validatorCell: StackInfoTableCell = .create { cell in
-        cell.detailsLabel.lineBreakMode = .byTruncatingMiddle
+    let detailsTableView: UIView = .create {
+        $0.backgroundColor = R.color.colorBlockBackground()
+        $0.layer.cornerRadius = 12
     }
 
-    let validatorSkeletonView = SubtensorStakingSetupViewLayout.createSkeletonView()
-
-    let apyCell: StackTableCell = .create { cell in
-        cell.detailsLabel.textColor = R.color.colorTextPositive()
-    }
-
-    let apySkeletonView = SubtensorStakingSetupViewLayout.createSkeletonView()
+    let validatorCardView: SubtensorValidatorCardView = .create { $0.applyEmbeddedStyle() }
+    let rootPickCardView: SubtensorRootPickCardView = .create { $0.isHidden = true }
 
     let networkFeeCell = StackNetworkFeeCell()
 
@@ -61,19 +55,14 @@ final class SubtensorStakingSetupViewLayout: UIView {
 
     let avgBuyPriceCell = StackTitleMultiValueCell()
 
-    let feeDisclosureLabel: UILabel = .create { label in
-        label.apply(style: .caption1Secondary)
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        label.isHidden = true
-    }
-
     let captionLabel: UILabel = .create { label in
         label.apply(style: .caption1Secondary)
         label.textAlignment = .center
         label.numberOfLines = 0
         label.isHidden = true
     }
+
+    private let bottomStack = UIStackView()
 
     let actionButton: TriangularedButton = .create { button in
         button.applyDefaultStyle()
@@ -92,6 +81,11 @@ final class SubtensorStakingSetupViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func placeCaption(afterAction: Bool) {
+        bottomStack.removeArrangedSubview(captionLabel)
+        bottomStack.insertArrangedSubview(captionLabel, at: afterAction ? 1 : 0)
+    }
+
     func setSkeleton(_ skeletonView: SubtensorChartLoadingView, loading: Bool, hiding view: UIView) {
         skeletonView.setLoading(loading)
         view.alpha = loading ? 0 : 1
@@ -101,7 +95,7 @@ final class SubtensorStakingSetupViewLayout: UIView {
         avgBuyPriceTableView.isHidden = !isVisible
 
         containerView.stackView.setCustomSpacing(
-            isVisible ? Constants.avgBuyPriceSpacing : Constants.feeDisclosureSpacing,
+            isVisible ? Constants.avgBuyPriceSpacing : Constants.detailsSpacing,
             after: pickCardView
         )
     }
@@ -110,7 +104,7 @@ final class SubtensorStakingSetupViewLayout: UIView {
 private extension SubtensorStakingSetupViewLayout {
     enum Constants {
         static let avgBuyPriceSpacing: CGFloat = 8
-        static let feeDisclosureSpacing: CGFloat = 16
+        static let detailsSpacing: CGFloat = 16
         static let afterAvgBuyPriceSpacing: CGFloat = 12
     }
 
@@ -121,7 +115,10 @@ private extension SubtensorStakingSetupViewLayout {
     }
 
     func setupLayout() {
-        let bottomStack = UIView.vStack(spacing: 16, [captionLabel, actionButton])
+        bottomStack.axis = .vertical
+        bottomStack.spacing = 16
+        bottomStack.addArrangedSubview(actionButton)
+        bottomStack.addArrangedSubview(captionLabel)
 
         addSubview(bottomStack)
         bottomStack.snp.makeConstraints { make in
@@ -178,25 +175,25 @@ private extension SubtensorStakingSetupViewLayout {
         containerView.stackView.setCustomSpacing(16, after: selectionAlert)
         containerView.stackView.addArrangedSubview(detailsTableView)
 
-        detailsTableView.addArrangedSubview(validatorCell)
-        detailsTableView.addArrangedSubview(apyCell)
-        detailsTableView.addArrangedSubview(networkFeeCell)
+        let detailsStack = UIView.vStack(spacing: 0, [validatorCardView, networkFeeCell])
+        detailsTableView.addSubview(detailsStack)
+        detailsStack.snp.makeConstraints { $0.edges.equalToSuperview() }
+        networkFeeCell.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        SubtensorDividerStyle.apply(to: networkFeeCell, hasPrevious: true)
+        containerView.stackView.addArrangedSubview(rootPickCardView)
 
         containerView.stackView.addArrangedSubview(pickCardView)
-        containerView.stackView.setCustomSpacing(Constants.feeDisclosureSpacing, after: pickCardView)
+        containerView.stackView.setCustomSpacing(Constants.detailsSpacing, after: pickCardView)
         containerView.stackView.addArrangedSubview(browseButton)
         browseButton.contentHorizontalAlignment = .right
         browseButton.titleLabel?.font = .semiBoldFootnote
         browseButton.snp.makeConstraints { $0.height.equalTo(44) }
         containerView.stackView.addArrangedSubview(avgBuyPriceTableView)
         containerView.stackView.setCustomSpacing(Constants.afterAvgBuyPriceSpacing, after: avgBuyPriceTableView)
-        containerView.stackView.addArrangedSubview(feeDisclosureLabel)
 
         avgBuyPriceTableView.addArrangedSubview(avgBuyPriceCell)
 
         let skeletons: [(SubtensorChartLoadingView, UIView, CGFloat)] = [
-            (validatorSkeletonView, validatorCell, 100),
-            (apySkeletonView, apyCell, 80),
             (feeSkeletonView, networkFeeCell, 70)
         ]
 

@@ -1,6 +1,6 @@
 import UIKit
 
-final class SubtensorPositionValidatorView: UIControl {
+final class SubtensorValidatorCardView: UIControl {
     let iconView: UIImageView = .create { view in
         view.contentMode = .scaleAspectFit
     }
@@ -55,7 +55,12 @@ final class SubtensorPositionValidatorView: UIControl {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func bind(viewModel: SubtensorPositionValidatorViewModel) {
+    func applyEmbeddedStyle() {
+        backgroundColor = .clear
+        layer.cornerRadius = 0
+    }
+
+    func bind(viewModel: SubtensorValidatorCardViewModel) {
         iconViewModel?.cancel(on: iconView)
         iconViewModel = viewModel.icon
         iconView.image = nil
@@ -87,7 +92,7 @@ final class SubtensorPositionValidatorView: UIControl {
     }
 }
 
-private extension SubtensorPositionValidatorView {
+private extension SubtensorValidatorCardView {
     enum Constants {
         static let iconSize: CGFloat = 32
         static let chevronSize: CGFloat = 16

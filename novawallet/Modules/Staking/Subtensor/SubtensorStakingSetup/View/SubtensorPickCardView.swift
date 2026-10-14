@@ -12,7 +12,7 @@ final class SubtensorPickCardView: UIView {
         view.contentInsets = .zero
     }
 
-    let validatorCell = StackTitleMultiValueCell()
+    let validatorCell = SubtensorPickValidatorCell()
     let browseButton = UIButton(type: .system)
 
     let receiveCell = SubtensorPickCardView.createCell()
@@ -37,7 +37,11 @@ final class SubtensorPickCardView: UIView {
     }
 
     func bind(viewModel: SubtensorPickCardViewModel) {
-        bindValidator(viewModel)
+        validatorCell.bind(
+            validator: viewModel.validator,
+            rate: viewModel.validatorRate,
+            isEditable: viewModel.isValidatorEditable
+        )
         browseButton.setTitle(viewModel.browseTitle, for: .normal)
         browseButton.isHidden = viewModel.browseTitle == nil
         headerView.bind(viewModel: viewModel.header)
@@ -48,6 +52,11 @@ final class SubtensorPickCardView: UIView {
         bind(networkFee: viewModel.networkFee)
 
         rowsView.updateLayout()
+        let rows: [StackTableViewCellProtocol] = [validatorCell, receiveCell, swapRateCell, networkFeeCell]
+        rows.forEach { SubtensorDividerStyle.apply(to: $0, hasPrevious: false) }
+        rows.filter { !$0.isHidden }.enumerated().forEach { index, cell in
+            SubtensorDividerStyle.apply(to: cell, hasPrevious: index > 0)
+        }
     }
 }
 
@@ -70,7 +79,8 @@ private extension SubtensorPickCardView {
         rowsView.addArrangedSubview(swapRateCell)
         rowsView.addArrangedSubview(networkFeeCell)
 
-        [validatorCell, receiveCell, swapRateCell, networkFeeCell].forEach { $0.borderView.strokeWidth = 0.5 }
+        let cells: [StackTableViewCellProtocol] = [validatorCell, receiveCell, swapRateCell, networkFeeCell]
+        cells.forEach { $0.borderView.strokeWidth = SubtensorDividerStyle.thickness }
         browseButton.contentHorizontalAlignment = .right
         browseButton.titleLabel?.font = .semiBoldFootnote
         browseButton.snp.makeConstraints { $0.height.equalTo(44) }
@@ -83,21 +93,6 @@ private extension SubtensorPickCardView {
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-        }
-    }
-
-    func bindValidator(_ model: SubtensorPickCardViewModel) {
-        validatorCell.canSelect = model.isValidatorEditable && !model.validator.isLoading
-        switch model.validator {
-        case .loading: validatorCell.startLoadingIfNeeded()
-        case let .unselected(title):
-            validatorCell.stopLoadingIfNeeded()
-            validatorCell.rowContentView.valueView.bind(topValue: title, bottomValue: nil)
-        case let .selected(address, _):
-            validatorCell.stopLoadingIfNeeded()
-            validatorCell.rowContentView.valueView.bind(
-                topValue: address.name ?? address.address, bottomValue: model.validatorRate
-            )
         }
     }
 

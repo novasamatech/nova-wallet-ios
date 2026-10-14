@@ -7,7 +7,8 @@ final class SubtensorWhereToStakeWireframe: SubtensorWhereToStakeWireframeProtoc
     func showSetup(from view: SubtensorWhereToStakeViewProtocol?, order: SubtensorQuickPickOrder) {
         let setup: SubtensorStakingSetupViewProtocol?
         switch order {
-        case .root: setup = SubtensorStakingSetupViewFactory.createRootDetailsView(for: state)
+        case .root: setup = SubtensorStakingSetupViewFactory
+            .createRootDetailsView(for: state, presentation: .quickPickRoot)
         case .poolSize, .age: setup = SubtensorStakingSetupViewFactory.createQuickPickView(for: state, order: order)
         case .apy: return
         }

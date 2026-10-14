@@ -10,6 +10,7 @@ struct SubtensorValidatorInfoInput {
     let annualRate: LoadableViewModelState<Decimal?>
     let alphaPrice: LoadableViewModelState<Balance?>
     let price: PriceData?
+    var coverage: LoadableViewModelState<SubtensorValidatorCoverage?> = .loading
 }
 
 final class SubtensorValidatorInfoViewModelFactory {
@@ -33,6 +34,7 @@ final class SubtensorValidatorInfoViewModelFactory {
 
     func createViewModel(for input: SubtensorValidatorInfoInput, locale: Locale) -> SubtensorValidatorInfoViewModel {
         SubtensorValidatorInfoViewModel(
+            coverage: createCoverage(for: input, locale: locale),
             account: createAccountViewModel(for: input),
             staking: input.detail.map { createStakingViewModel(for: $0.item, input: input, locale: locale) }
         )
@@ -71,6 +73,18 @@ final class SubtensorValidatorInfoViewModelFactory {
 }
 
 private extension SubtensorValidatorInfoViewModelFactory {
+    func createCoverage(for input: SubtensorValidatorInfoInput, locale: Locale) -> LoadableViewModelState<String> {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+        switch input.coverage {
+        case .loading: return .loading
+        case let .loaded(value), let .cached(value):
+            return .loaded(
+                value: value.map { strings.stakingSubtensorV22CoverageFormat($0.permitted, $0.total) }
+                    ?? strings.stakingSubtensorUiValueUnknown()
+            )
+        }
+    }
+
     func createAccountViewModel(for input: SubtensorValidatorInfoInput) -> DisplayAddressViewModel {
         let chainFormat = chainAsset.chain.chainFormat
         let address = (try? input.hotkey.toAddress(using: chainFormat)) ?? input.hotkey.toHex(includePrefix: true)
@@ -99,8 +113,10 @@ private extension SubtensorValidatorInfoViewModelFactory {
             reward = .loading
             hasReward = false
         case let .cached(rate), let .loaded(rate):
-            reward = .loaded(value: rate.map { SubtensorApyFormatter.text(for: $0, style: .trailing, locale: locale) }
-                ?? unknown)
+            reward = .loaded(
+                value: rate.map { SubtensorApyFormatter.text(for: $0, style: .trailing, locale: locale) }
+                    ?? unknown
+            )
             hasReward = rate != nil
         }
 

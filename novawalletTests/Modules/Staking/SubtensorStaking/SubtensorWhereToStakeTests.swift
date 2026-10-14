@@ -4,6 +4,15 @@ import Foundation_iOS
 import XCTest
 
 final class SubtensorWhereToStakeTests: XCTestCase {
+    func testCarouselUsesRecoveredArtForEachSupportedOrder() {
+        let factory = SubtensorWhereToStakeViewModelFactory()
+        let locale = Locale(identifier: "en")
+        XCTAssertEqual(factory.create(order: .age, locale: locale).artwork, R.image.subtensorQuickAge())
+        XCTAssertEqual(factory.create(order: .apy, locale: locale).artwork, R.image.subtensorQuickApy())
+        XCTAssertEqual(factory.create(order: .root, locale: locale).artwork, R.image.subtensorQuickRoot())
+        XCTAssertEqual(factory.create(order: .poolSize, locale: locale).artwork, R.image.subtensorQuickPool())
+    }
+
     func testCarouselOrderBoundsAndUnavailableApy() {
         let wireframe = Wireframe()
         let presenter = SubtensorWhereToStakePresenter(

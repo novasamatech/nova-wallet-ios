@@ -46,7 +46,6 @@ final class SubtensorUnstakeSetupViewModelFactory {
             details: createDetails(for: input, locale: locale),
             note: createRootNote(for: input, locale: locale),
             feeWarning: createFeeWarning(for: input, locale: locale),
-            feeDisclosure: input.isRoot ? nil : quoteViewModelFactory.novaFeeDisclosure(locale: locale),
             holdWarning: createHoldWarning(for: input, locale: locale),
             caption: input.isRoot ? nil : strings.stakingSubtensorUiSafetyNote(),
             action: createAction(for: input, locale: locale)

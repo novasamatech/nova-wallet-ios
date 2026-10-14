@@ -77,6 +77,12 @@ final class SubtensorStakingConfirmViewLayout: UIView {
         $0.detailsLabel.textColor = R.color.colorTextPositive()
     }
 
+    let feeDisclosureLabel: UILabel = .create {
+        $0.textAlignment = .center
+        $0.apply(style: .caption1Secondary)
+        $0.numberOfLines = 0
+    }
+
     let remarkLabel: UILabel = .create {
         $0.apply(style: .footnoteSecondary)
         $0.textAlignment = .center
@@ -182,6 +188,8 @@ private extension SubtensorStakingConfirmViewLayout {
         walletTableView.addArrangedSubview(accountCell)
 
         stackView.addArrangedSubview(remarkLabel)
+        stackView.setCustomSpacing(8, after: remarkLabel)
+        stackView.addArrangedSubview(feeDisclosureLabel)
     }
 
     func setupRootContent(with rows: [StackTableViewCellProtocol]) {
