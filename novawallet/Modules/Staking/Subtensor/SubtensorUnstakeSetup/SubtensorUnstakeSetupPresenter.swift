@@ -27,7 +27,6 @@ final class SubtensorUnstakeSetupPresenter {
     var existentialDeposit: Balance?
     var currentBlock: BlockNumber?
     var catalogue: SubtensorSubnetCatalogue?
-    var isCatalogueRefreshForced = false
     var subnetLogos: SubtensorSubnetLogos?
     var isSubnetsRefreshForced = false
     var validatorItem: SubtensorValidatorDirectoryItem?

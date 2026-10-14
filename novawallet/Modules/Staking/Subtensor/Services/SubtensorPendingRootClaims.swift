@@ -8,7 +8,7 @@ protocol SubtensorPendingRootClaimsProtocol: AnyObject {
     func pendingHotkeys(
         for coldkey: AccountId,
         at date: Date,
-        claimable: SubtensorRootClaimable?
+        claimable: [SubtensorRootClaimPreview]?
     ) -> Set<AccountId>
 }
 
@@ -50,7 +50,7 @@ extension SubtensorPendingRootClaims: SubtensorPendingRootClaimsProtocol {
     func pendingHotkeys(
         for coldkey: AccountId,
         at date: Date,
-        claimable: SubtensorRootClaimable?
+        claimable: [SubtensorRootClaimPreview]?
     ) -> Set<AccountId> {
         mutex.lock()
 
@@ -71,12 +71,12 @@ extension SubtensorPendingRootClaims: SubtensorPendingRootClaimsProtocol {
 }
 
 private extension SubtensorPendingRootClaims {
-    static func isSettled(hotkey: AccountId, claimable: SubtensorRootClaimable?) -> Bool {
+    static func isSettled(hotkey: AccountId, claimable: [SubtensorRootClaimPreview]?) -> Bool {
         guard let claimable else {
             return false
         }
 
-        return !claimable.previews.contains { $0.hotkey == hotkey && SubtensorRootClaimRule.isClaimable($0) }
+        return !claimable.contains { $0.hotkey == hotkey && SubtensorRootClaimRule.isClaimable($0) }
     }
 }
 

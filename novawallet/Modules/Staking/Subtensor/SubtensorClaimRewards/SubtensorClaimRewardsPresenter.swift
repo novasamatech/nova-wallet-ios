@@ -4,7 +4,7 @@ import Foundation_iOS
 final class SubtensorClaimRewardsPresenter {
     weak var view: SubtensorClaimRewardsViewProtocol?
     let wireframe: SubtensorClaimRewardsWireframeProtocol
-    let interactor: SubtensorClaimInteractorInputProtocol
+    let interactor: SubtensorStakingBaseInteractorInputProtocol
 
     let chainAsset: ChainAsset
     let model: SubtensorClaimRewardsModel
@@ -19,19 +19,18 @@ final class SubtensorClaimRewardsPresenter {
     var fee: ExtrinsicFeeProtocol?
     var positionsState: Multistaking.SubtensorStakingState?
     var isPositionsSyncFailed = false
-    var claimable: SubtensorRootClaimable?
+    var claimable: [SubtensorRootClaimPreview]?
     var preflight: SubtensorStakingPreflight?
     var existentialDeposit: Balance?
     private(set) var shownPreview: SubtensorRootClaimPreview
     private(set) var isNothingToClaim = false
-    private(set) var isVerifyingAtTap = false
     private(set) var isHandingOff = false
 
     private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
     private lazy var displayAddressViewModelFactory = DisplayAddressViewModelFactory()
 
     init(
-        interactor: SubtensorClaimInteractorInputProtocol,
+        interactor: SubtensorStakingBaseInteractorInputProtocol,
         wireframe: SubtensorClaimRewardsWireframeProtocol,
         chainAsset: ChainAsset,
         model: SubtensorClaimRewardsModel,
@@ -102,46 +101,14 @@ extension SubtensorClaimRewardsPresenter {
         interactor.refreshPreflight(for: hotkey, netuid: SubtensorStakingPallet.rootNetuid)
     }
 
-    func handleClaimSnapshot(_ claimable: SubtensorRootClaimable) {
-        self.claimable = claimable
-
-        guard isVerifyingAtTap else {
-            applySilently(claimable)
-            provideViewModel()
+    func applySilently(_ claimable: [SubtensorRootClaimPreview]) {
+        guard
+            let preview = claimable.first(where: { $0.hotkey == hotkey }),
+            SubtensorRootClaimRule.isClaimable(preview) else {
             return
         }
 
-        isVerifyingAtTap = false
-
-        switch SubtensorClaimTapRule.verdict(shown: shownPreview, fresh: claimable) {
-        case .nothingToClaim:
-            isNothingToClaim = true
-            view?.didStopLoading()
-            provideViewModel()
-            presentNothingToClaim()
-        case let .changed(preview):
-            shownPreview = preview
-            view?.didStopLoading()
-            provideViewModel()
-            presentAmountChanged()
-        case let .proceed(preview):
-            shownPreview = preview
-            provideViewModel()
-            handOff(with: preview)
-        }
-    }
-
-    func handleClaimSnapshotFailure() {
-        guard isVerifyingAtTap else {
-            return
-        }
-
-        isVerifyingAtTap = false
-        view?.didStopLoading()
-
-        wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-            self?.confirm()
-        }
+        shownPreview = preview
     }
 
     func finishHandOff() {
@@ -159,16 +126,6 @@ private extension SubtensorClaimRewardsPresenter {
 
     var rootGroup: SubtensorPortfolioGroup? {
         positionsState.flatMap { SubtensorPortfolioBuilder.build(state: $0).root }
-    }
-
-    func applySilently(_ claimable: SubtensorRootClaimable) {
-        guard
-            let preview = claimable.previews.first(where: { $0.hotkey == hotkey }),
-            SubtensorRootClaimRule.isClaimable(preview) else {
-            return
-        }
-
-        shownPreview = preview
     }
 
     func presentNothingToClaim() {
@@ -239,19 +196,31 @@ private extension SubtensorClaimRewardsPresenter {
     }
 
     func verifyAtTap() {
-        guard !isVerifyingAtTap, !isHandingOff else {
+        guard let claimable else {
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.confirm()
+            }
             return
         }
 
-        isVerifyingAtTap = true
-        view?.didStartLoading()
-
-        interactor.refreshClaimSnapshot()
+        switch SubtensorClaimTapRule.verdict(shown: shownPreview, fresh: claimable) {
+        case .nothingToClaim:
+            isNothingToClaim = true
+            provideViewModel()
+            presentNothingToClaim()
+        case let .changed(preview):
+            shownPreview = preview
+            provideViewModel()
+            presentAmountChanged()
+        case let .proceed(preview):
+            shownPreview = preview
+            provideViewModel()
+            handOff(with: preview)
+        }
     }
 
     func handOff(with preview: SubtensorRootClaimPreview) {
         guard !isHandingOff, let fee else {
-            view?.didStopLoading()
             return
         }
 
@@ -276,6 +245,7 @@ private extension SubtensorClaimRewardsPresenter {
         )
 
         isHandingOff = true
+        view?.didStartLoading()
 
         wireframe.showOperationResult(from: view, request: request, delegate: self)
     }
@@ -290,11 +260,10 @@ extension SubtensorClaimRewardsPresenter: SubtensorClaimRewardsPresenterProtocol
 
         refreshPreflight()
         refreshFee()
-        interactor.refreshClaimSnapshot()
     }
 
     func confirm() {
-        guard signing == .allowed, !isNothingToClaim, !isVerifyingAtTap, !isHandingOff else {
+        guard signing == .allowed, !isNothingToClaim, !isHandingOff else {
             return
         }
 

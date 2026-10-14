@@ -4,7 +4,6 @@ import Operation_iOS
 struct SubtensorFlowServices {
     let account: MetaChainAccountResponse
     let positionsSyncService: SubtensorPositionsSyncServiceProtocol
-    let rootClaimableService: SubtensorRootClaimableServiceProtocol
     let runtimeProvider: RuntimeCodingServiceProtocol
     let extrinsicService: ExtrinsicServiceProtocol
     let extrinsicSubmitMonitor: ExtrinsicSubmitMonitorFactoryProtocol
@@ -29,7 +28,6 @@ enum SubtensorFlowServicesFactory {
         guard
             let account = state.selectedAccount,
             let positionsSyncService = state.positionsSyncService,
-            let rootClaimableService = state.rootClaimableService,
             let connection = state.chainRegistry.getConnection(for: chain.chainId),
             let runtimeProvider = state.chainRegistry.getRuntimeProvider(for: chain.chainId),
             let currencyManager = CurrencyManager.shared else {
@@ -67,7 +65,6 @@ enum SubtensorFlowServicesFactory {
         return SubtensorFlowServices(
             account: account,
             positionsSyncService: positionsSyncService,
-            rootClaimableService: rootClaimableService,
             runtimeProvider: runtimeProvider,
             extrinsicService: extrinsicService,
             extrinsicSubmitMonitor: extrinsicSubmitMonitor,

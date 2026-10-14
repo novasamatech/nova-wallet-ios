@@ -7,9 +7,9 @@ enum SubtensorClaimTapRule {
         case proceed(SubtensorRootClaimPreview)
     }
 
-    static func verdict(shown: SubtensorRootClaimPreview, fresh: SubtensorRootClaimable) -> Verdict {
+    static func verdict(shown: SubtensorRootClaimPreview, fresh: [SubtensorRootClaimPreview]) -> Verdict {
         guard
-            let preview = fresh.previews.first(where: { $0.hotkey == shown.hotkey }),
+            let preview = fresh.first(where: { $0.hotkey == shown.hotkey }),
             SubtensorRootClaimRule.isClaimable(preview) else {
             return .nothingToClaim
         }
