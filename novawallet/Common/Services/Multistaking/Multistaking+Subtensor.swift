@@ -16,19 +16,25 @@ extension Multistaking {
     struct SubtensorStakingState: Equatable {
         let positions: [SubtensorStakingPosition]
         let availability: [UInt16: SubtensorStakingPallet.StakeAvailability]
-        let rootRedeemable: [AccountId: BigUInt]
+        let rootClaimPreviews: [SubtensorRootClaimPreview]
         let isRootRedeemableStale: Bool
 
         init(
             positions: [SubtensorStakingPosition],
             availability: [UInt16: SubtensorStakingPallet.StakeAvailability] = [:],
-            rootRedeemable: [AccountId: BigUInt] = [:],
+            rootClaimPreviews: [SubtensorRootClaimPreview] = [],
             isRootRedeemableStale: Bool = false
         ) {
             self.positions = positions
             self.availability = availability
-            self.rootRedeemable = rootRedeemable
+            self.rootClaimPreviews = rootClaimPreviews
             self.isRootRedeemableStale = isRootRedeemableStale
+        }
+
+        var rootRedeemable: [AccountId: BigUInt] {
+            rootClaimPreviews.filter(SubtensorRootClaimRule.isClaimable).reduce(into: [:]) { accum, preview in
+                accum[preview.hotkey, default: .zero] += preview.redeemable
+            }
         }
 
         var rootRedeemableError: SubtensorStakingStateError? {
@@ -67,7 +73,7 @@ extension Multistaking {
             return SubtensorStakingState(
                 positions: positions,
                 availability: availability,
-                rootRedeemable: previousState.rootRedeemable,
+                rootClaimPreviews: previousState.rootClaimPreviews,
                 isRootRedeemableStale: true
             )
         }

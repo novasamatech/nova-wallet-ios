@@ -7,16 +7,16 @@ enum SubtensorRootClaimRule {
     }
 
     static func target(
-        in claimable: SubtensorRootClaimable,
+        in claimable: [SubtensorRootClaimPreview],
         excluding hotkeys: Set<AccountId>
     ) -> SubtensorRootClaimPreview? {
-        claimable.previews
+        claimable
             .filter { !hotkeys.contains($0.hotkey) && isClaimable($0) }
             .min(by: isOrderedBefore)
     }
 
-    static func otherClaimableCount(in claimable: SubtensorRootClaimable, target: AccountId) -> Int {
-        claimable.previews.filter { preview in
+    static func otherClaimableCount(in claimable: [SubtensorRootClaimPreview], target: AccountId) -> Int {
+        claimable.filter { preview in
             preview.hotkey != target && isClaimable(preview)
         }.count
     }

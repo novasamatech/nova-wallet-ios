@@ -23,16 +23,6 @@ protocol SubtensorPositionsSyncServiceProtocol: ApplicationServiceProtocol {
 
     func remove(failureObserver: AnyObject)
 
-    /// counts completed state fetches; it moves on every fetch, also when the state is unchanged
-    func add(
-        fetchObserver: AnyObject,
-        sendStateOnSubscription: Bool,
-        queue: DispatchQueue?,
-        closure: @escaping Observable<UInt>.StateChangeClosure
-    )
-
-    func remove(fetchObserver: AnyObject)
-
     func refresh()
 }
 
@@ -57,7 +47,6 @@ final class SubtensorStakingPositionsSyncService: BaseSyncService {
 
     private var stateObservable: Observable<Multistaking.SubtensorStakingState?> = .init(state: nil)
     private var failureObservable: Observable<Bool> = .init(state: false)
-    private var fetchCountObservable: Observable<UInt> = .init(state: 0)
 
     init(
         accountId: AccountId,
@@ -186,8 +175,6 @@ private extension SubtensorStakingPositionsSyncService {
 
                 self?.stateObservable.state = state
 
-                self?.fetchCountObservable.state &+= 1
-
                 self?.completeImmediate(state.rootRedeemableError)
             case let .failure(error):
                 self?.logger.error("State fetch error: \(error)")
@@ -310,36 +297,6 @@ extension SubtensorStakingPositionsSyncService: SubtensorPositionsSyncServicePro
         }
 
         failureObservable.removeObserver(by: failureObserver)
-    }
-
-    func add(
-        fetchObserver: AnyObject,
-        sendStateOnSubscription: Bool,
-        queue: DispatchQueue?,
-        closure: @escaping Observable<UInt>.StateChangeClosure
-    ) {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        fetchCountObservable.addObserver(
-            with: fetchObserver,
-            sendStateOnSubscription: sendStateOnSubscription,
-            queue: queue,
-            closure: closure
-        )
-    }
-
-    func remove(fetchObserver: AnyObject) {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        fetchCountObservable.removeObserver(by: fetchObserver)
     }
 
     func refresh() {

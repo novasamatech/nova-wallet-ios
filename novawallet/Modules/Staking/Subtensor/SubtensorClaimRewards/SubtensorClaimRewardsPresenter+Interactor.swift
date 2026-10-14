@@ -1,7 +1,7 @@
 import Foundation
 import Foundation_iOS
 
-extension SubtensorClaimRewardsPresenter: SubtensorClaimInteractorOutputProtocol {
+extension SubtensorClaimRewardsPresenter: SubtensorStakingBaseInteractorOutputProtocol {
     func didReceiveAssetBalance(_ balance: AssetBalance?) {
         self.balance = balance
     }
@@ -23,21 +23,16 @@ extension SubtensorClaimRewardsPresenter: SubtensorClaimInteractorOutputProtocol
     func didReceivePositions(_ state: Multistaking.SubtensorStakingState?) {
         positionsState = state
 
+        if let state, !state.isRootRedeemableStale {
+            claimable = state.rootClaimPreviews
+            applySilently(state.rootClaimPreviews)
+        }
+
         provideViewModel()
     }
 
     func didReceivePositionsSyncFailed(_ isFailed: Bool) {
         isPositionsSyncFailed = isFailed
-
-        provideViewModel()
-    }
-
-    func didReceiveClaimable(_ claimable: SubtensorRootClaimable?) {
-        guard let claimable else {
-            return
-        }
-
-        self.claimable = claimable
 
         provideViewModel()
     }
@@ -67,16 +62,6 @@ extension SubtensorClaimRewardsPresenter: SubtensorClaimInteractorOutputProtocol
 
         presentBaseRetry(for: error)
     }
-
-    func didReceiveClaimSnapshot(_ claimable: SubtensorRootClaimable) {
-        handleClaimSnapshot(claimable)
-    }
-
-    func didFailClaimSnapshot(_ error: Error) {
-        logger.error("Claim snapshot failed: \(error)")
-
-        handleClaimSnapshotFailure()
-    }
 }
 
 extension SubtensorClaimRewardsPresenter: SubtensorOperationResultDelegate {
@@ -86,7 +71,6 @@ extension SubtensorClaimRewardsPresenter: SubtensorOperationResultDelegate {
         refreshFee()
         refreshPreflight()
         interactor.refreshPositions()
-        interactor.refreshClaimSnapshot()
 
         provideViewModel()
     }

@@ -20,7 +20,6 @@ protocol SubtensorPositionInteractorInputProtocol: AnyObject {
     func cachedYields() -> SubtensorAlphaYields?
     func setup()
     func refreshPositions()
-    func loadCatalogue()
     func loadSubnetsInfo(forcingRefresh: Bool)
     func loadValidator(_ hotkey: AccountId, on subnet: SubtensorSubnetRef)
     func loadRootHolds(for hotkeys: [AccountId])
@@ -37,8 +36,7 @@ protocol SubnetPositionInteractorOutputProtocol: AnyObject {
     func didReceive(subnetLogos: SubtensorSubnetLogos?)
     func didReceive(validator: SubtensorValidatorDirectoryItem?, for hotkey: AccountId)
     func didReceive(yields: SubtensorAlphaYields?)
-    func didReceive(claimable: SubtensorRootClaimable?)
-    func didReceiveClaimableFailure(_ isFailed: Bool)
+    func didReceive(claimable: [SubtensorRootClaimPreview], isFailed: Bool)
     func didReceive(holds: [AccountId: SubtensorRootHold])
     func didReceive(blockNumber: BlockNumber)
     func didReceive(history: SubtensorPriceHistoryResult, for period: SubtensorPricePeriod)
