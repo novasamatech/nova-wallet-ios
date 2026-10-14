@@ -8,6 +8,7 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
     private let chutesRef = SubtensorSubnetRef(netuid: 64, registeredAt: 4_531_295)
     private let existingHotkey = Data(repeating: 0x22, count: 32)
     private let chutesPairHotkey = Data(repeating: 0x55, count: 32)
+    private let topYieldHotkey = Data(repeating: 0x66, count: 32)
 
     func testExistingStakeValidatorIsPresetBeforeRecommendation() throws {
         let recommendationService = createRecommendationService()
@@ -29,6 +30,21 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
         )
 
         XCTAssertNil(preset)
+    }
+
+    func testHighestYieldRecommendedValidatorBeatsEarlierLowerYieldOne() throws {
+        let factory = createFactory(
+            existingTake: nil,
+            recommendationService: createRecommendationService(),
+            yieldService: createYieldService(rates: [chutesPairHotkey: "12.5", topYieldHotkey: "31.2"])
+        )
+
+        let preset = try withExtendedLifetime(factory) {
+            try run(factory.createPresetWrapper(for: chutesRef, existingHotkey: nil))
+        }
+
+        XCTAssertEqual(preset?.hotkey, topYieldHotkey)
+        XCTAssertEqual(preset?.name, "Rizzo")
     }
 
     private func generateItem(
@@ -76,7 +92,10 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
                 carriedOverNetuids: [],
                 stamp: SubtensorBackendStamp(asOf: Date(timeIntervalSince1970: 1_790_000_000), freshness: freshness)
             ),
-            validators: [SubtensorRecommendedValidator(hotkey: chutesPairHotkey, name: nil)]
+            validators: [
+                SubtensorRecommendedValidator(hotkey: chutesPairHotkey, name: nil),
+                SubtensorRecommendedValidator(hotkey: topYieldHotkey, name: "Rizzo")
+            ]
         )
 
         stub(recommendationService) { stub in
@@ -88,12 +107,25 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
         return recommendationService
     }
 
-    private func createYieldService() -> MockSubtensorYieldServiceProtocol {
+    private func createYieldService(rates: [AccountId: String]? = nil) -> MockSubtensorYieldServiceProtocol {
         let yieldService = MockSubtensorYieldServiceProtocol()
+        let stamp = SubtensorBackendStamp(asOf: Date(timeIntervalSince1970: 1_790_000_000), freshness: .fresh)
 
         stub(yieldService) { stub in
-            when(stub.createAlphaYieldsWrapper(for: any())).then { _ in
-                CompoundOperationWrapper.createWithError(BittensorApiError.unavailable(code: nil, requestId: nil))
+            when(stub.createAlphaYieldsWrapper(for: any())).then { netuid in
+                guard let rates else {
+                    return CompoundOperationWrapper.createWithError(
+                        BittensorApiError.unavailable(code: nil, requestId: nil)
+                    )
+                }
+
+                return CompoundOperationWrapper.createWithResult(
+                    SubtensorAlphaYields(
+                        netuid: netuid,
+                        yields: rates.mapValues { SubtensorReportedYield(reportedRate: $0, stamp: stamp) },
+                        stamp: stamp
+                    )
+                )
             }
         }
 
@@ -102,12 +134,13 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
 
     private func createFactory(
         existingTake: Decimal?,
-        recommendationService: MockSubtensorRecommendationServiceProtocol
+        recommendationService: MockSubtensorRecommendationServiceProtocol,
+        yieldService: MockSubtensorYieldServiceProtocol? = nil
     ) -> SubtensorValidatorPresetFactory {
         SubtensorValidatorPresetFactory(
             directoryService: createDirectoryService(existingTake: existingTake),
             recommendationService: recommendationService,
-            yieldService: createYieldService(),
+            yieldService: yieldService ?? createYieldService(),
             operationQueue: OperationQueue(),
             logger: Logger.shared
         )
