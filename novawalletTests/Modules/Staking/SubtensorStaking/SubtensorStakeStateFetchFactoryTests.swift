@@ -67,7 +67,6 @@ final class SubtensorStakeStateFetchFactoryTests: XCTestCase {
             coldkey: coldkey,
             netuid: netuid,
             stake: stake,
-            emission: 123,
             isRegistered: true
         )
     }
@@ -77,8 +76,6 @@ final class SubtensorStakeStateFetchFactoryTests: XCTestCase {
             hotkey: hotkey,
             netuid: netuid,
             stakeAlpha: stake,
-            hotkeyEmissionPerTempo: 123,
-            totalHotkeyAlpha: nil,
             isRegistered: true
         )
     }

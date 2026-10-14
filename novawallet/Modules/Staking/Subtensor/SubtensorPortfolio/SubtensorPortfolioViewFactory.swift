@@ -84,6 +84,7 @@ private extension SubtensorPortfolioViewFactory {
             catalogueService: earnServices.catalogueService,
             subnetLogosProvider: earnServices.subnetLogosProvider,
             priceHistoryService: earnServices.priceHistoryService,
+            bittensorApiFactory: SubtensorStakingProcessServices.shared.bittensorApiOperationFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
             operationQueue: operationQueue,

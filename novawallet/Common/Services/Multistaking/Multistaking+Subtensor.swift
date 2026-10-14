@@ -5,22 +5,7 @@ struct SubtensorStakingPosition: Equatable {
     let hotkey: AccountId
     let netuid: UInt16
     let stakeAlpha: BigUInt
-    // StakeInfo.emission is AlphaDividendsPerSubnet[netuid, hotkey] — the hotkey-wide nominator
-    // dividend per tempo; scale by stakeAlpha / TotalHotkeyAlpha before showing a per-user rate
-    let hotkeyEmissionPerTempo: BigUInt
-    let totalHotkeyAlpha: BigUInt?
     let isRegistered: Bool
-
-    func byReplacing(totalHotkeyAlpha: BigUInt?) -> SubtensorStakingPosition {
-        SubtensorStakingPosition(
-            hotkey: hotkey,
-            netuid: netuid,
-            stakeAlpha: stakeAlpha,
-            hotkeyEmissionPerTempo: hotkeyEmissionPerTempo,
-            totalHotkeyAlpha: totalHotkeyAlpha,
-            isRegistered: isRegistered
-        )
-    }
 }
 
 enum SubtensorStakingStateError: Error {
@@ -72,15 +57,6 @@ extension Multistaking {
 
         var subnetCount: Int {
             Set(positions.map(\.netuid).filter { $0 != SubtensorStakingPallet.rootNetuid }).count
-        }
-
-        func byReplacing(positions: [SubtensorStakingPosition]) -> SubtensorStakingState {
-            SubtensorStakingState(
-                positions: positions,
-                availability: availability,
-                rootRedeemable: rootRedeemable,
-                isRootRedeemableStale: isRootRedeemableStale
-            )
         }
 
         func byKeepingRootRedeemable(of previousState: SubtensorStakingState?) -> SubtensorStakingState {

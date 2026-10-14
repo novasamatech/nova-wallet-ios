@@ -82,10 +82,9 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
             when(stub.createDetailWrapper(for: any(), subnet: any())).then { hotkey, subnet in
                 let take = hotkey == self.existingHotkey ? existingTake : Decimal(string: "0.09")
 
-                return CompoundOperationWrapper.createWithResult(SubtensorValidatorDetail(
-                    item: self.generateItem(hotkey: hotkey, netuid: subnet.netuid, name: nil, take: take),
-                    identity: nil
-                ))
+                return CompoundOperationWrapper.createWithResult(
+                    self.generateItem(hotkey: hotkey, netuid: subnet.netuid, name: nil, take: take)
+                )
             }
         }
 

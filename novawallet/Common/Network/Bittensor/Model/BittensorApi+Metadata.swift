@@ -62,7 +62,7 @@ extension BittensorApi.AvailableComponent: Decodable {
 
         let rawAsOf = try container.decode(String.self, forKey: .asOf)
 
-        guard let asOf = Self.instant(from: rawAsOf) else {
+        guard let asOf = BittensorApi.instant(from: rawAsOf) else {
             throw DecodingError.dataCorruptedError(
                 forKey: .asOf,
                 in: container,
@@ -73,8 +73,10 @@ extension BittensorApi.AvailableComponent: Decodable {
         self.asOf = asOf
         freshness = try container.decode(BittensorApi.Freshness.self, forKey: .freshness)
     }
+}
 
-    private static func instant(from value: String) -> Date? {
+extension BittensorApi {
+    static func instant(from value: String) -> Date? {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime]
 

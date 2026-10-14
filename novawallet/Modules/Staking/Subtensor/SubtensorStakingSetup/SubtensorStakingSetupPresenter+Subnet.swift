@@ -134,7 +134,7 @@ extension SubtensorStakingSetupPresenter {
             from: view,
             target: .root,
             hotkey: hotkey,
-            detail: validatorItem.map { SubtensorValidatorDetail(item: $0, identity: nil) }
+            detail: validatorItem
         )
     }
 

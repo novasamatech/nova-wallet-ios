@@ -151,3 +151,37 @@ extension BittensorApi.SubnetRankingCollection: BittensorApiWireChecked {
         }
     }
 }
+
+extension BittensorApi.PortfolioHistoryCollection: BittensorApiWireChecked {
+    static let maxPoints = 512
+
+    func validateWire() throws {
+        try BittensorApiWireCheck.require(historyScope == BittensorApiWireCheck.historyScope) { "historyScope" }
+        try BittensorApiWireCheck.require(points.count <= Self.maxPoints) { "points" }
+
+        guard
+            let start = BittensorApi.instant(from: window.start),
+            let end = BittensorApi.instant(from: window.end),
+            start <= end else {
+            throw BittensorApiWireViolation(field: "window")
+        }
+
+        var previous: Date?
+
+        for (index, point) in points.enumerated() {
+            let field = "points[\(index)]"
+
+            guard
+                let timestamp = BittensorApi.instant(from: point.timestamp),
+                (start ... end).contains(timestamp),
+                previous.map({ $0 < timestamp }) ?? true else {
+                throw BittensorApiWireViolation(field: "\(field).timestamp")
+            }
+
+            try BittensorApiWireCheck.decimal(point.reportedValueTao, "\(field).reportedValueTao")
+            try BittensorApiWireCheck.decimal(point.reportedValueUsd, "\(field).reportedValueUsd")
+
+            previous = timestamp
+        }
+    }
+}

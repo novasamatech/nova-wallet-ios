@@ -201,7 +201,7 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectPresenterProtocol {
             from: view,
             target: target,
             hotkey: hotkey,
-            detail: item.map { SubtensorValidatorDetail(item: handedOut($0), identity: nil) }
+            detail: item.map(handedOut)
         )
     }
 

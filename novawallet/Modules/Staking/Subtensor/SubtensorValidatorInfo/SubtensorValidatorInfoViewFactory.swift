@@ -6,7 +6,7 @@ enum SubtensorValidatorInfoViewFactory {
         for state: SubtensorStakingSharedStateProtocol,
         target: SubtensorStakeTarget,
         hotkey: AccountId,
-        detail: SubtensorValidatorDetail?
+        detail: SubtensorValidatorDirectoryItem?
     ) -> ControllerBackedProtocol? {
         guard let currencyManager = CurrencyManager.shared else {
             return nil
