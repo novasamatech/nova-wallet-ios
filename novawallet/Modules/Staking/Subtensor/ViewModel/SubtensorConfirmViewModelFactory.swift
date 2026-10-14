@@ -1,70 +1,5 @@
 import Foundation
 
-private struct SubtensorConfirmViewModelContext {
-    let origin: SubtensorOperationOrigin
-    let target: SubtensorStakeTarget
-    let direction: SubtensorTradeDirection
-    let amount: Balance
-    let annualRate: Decimal?
-    let tolerance: BigRational?
-    let stakeChange: SubtensorConfirmStakeChange?
-    let catalogue: SubtensorSubnetCatalogue?
-    let latestQuote: SubtensorTradeQuote?
-    let tradesUnavailable: Bool
-    let isQuoteFailed: Bool
-    let isPriceMoved: Bool
-    let price: PriceData?
-    let fee: ExtrinsicFeeProtocol?
-    let signing: SubtensorOperationGate.Verdict
-    let costBasis: SubtensorCostBasisState?
-}
-
-private extension SubtensorConfirmViewModelContext {
-    init(input: SubtensorConfirmViewModelInput) {
-        let model = input.model
-
-        origin = model.origin
-        target = model.target
-        direction = .buy
-        amount = model.amount
-        annualRate = model.validator.annualRate
-        tolerance = model.tolerance
-        stakeChange = model.origin == .addStake ? input.stakeBefore.map { before in
-            SubtensorConfirmStakeChange(before: before, after: before + model.amount)
-        } : nil
-        catalogue = input.catalogue
-        latestQuote = input.latestQuote
-        tradesUnavailable = input.tradesUnavailable
-        isQuoteFailed = input.isQuoteFailed
-        isPriceMoved = input.isPriceMoved
-        price = input.price
-        fee = input.fee
-        signing = input.signing
-        costBasis = input.costBasis
-    }
-
-    init(input: SubtensorUnstakeConfirmViewModelInput) {
-        let model = input.model
-
-        origin = model.origin
-        target = model.target
-        direction = .sell
-        amount = model.unstakeModel.amount
-        annualRate = model.validator.annualRate
-        tolerance = model.tolerance
-        stakeChange = input.stakeChange
-        catalogue = input.catalogue
-        latestQuote = input.latestQuote
-        tradesUnavailable = input.tradesUnavailable
-        isQuoteFailed = input.isQuoteFailed
-        isPriceMoved = input.isPriceMoved
-        price = input.price
-        fee = input.fee
-        signing = input.signing
-        costBasis = input.costBasis
-    }
-}
-
 final class SubtensorConfirmViewModelFactory {
     let chainAsset: ChainAsset
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
@@ -107,14 +42,14 @@ private extension SubtensorConfirmViewModelFactory {
         chainAsset.assetDisplayInfo
     }
 
-    func title(for context: SubtensorConfirmViewModelContext, locale: Locale) -> String {
+    func title(for model: SubtensorConfirmModel, locale: Locale) -> String {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
-        guard context.target.isRoot else {
-            return context.origin == .sell ? strings.stakingSubtensorUiReviewSale() : strings.stakingSubtensorUiReview()
+        guard model.target.isRoot else {
+            return model.origin == .sell ? strings.stakingSubtensorUiReviewSale() : strings.stakingSubtensorUiReview()
         }
 
-        switch context.origin {
+        switch model.origin {
         case .addStake:
             return strings.stakingSubtensorUiAddStakeRootTitle()
         case .unstake:
@@ -140,25 +75,25 @@ private extension SubtensorConfirmViewModelFactory {
     }
 
     func createPayTile(
-        for context: SubtensorConfirmViewModelContext,
+        for input: SubtensorConfirmViewModelInput,
         locale: Locale
     ) -> SubtensorConfirmTileViewModel {
-        switch context.direction {
+        switch input.model.direction {
         case .buy:
-            let balance = createBalance(context.amount, price: context.price, locale: locale)
+            let balance = createBalance(input.model.amount, price: input.price, locale: locale)
 
             return SubtensorConfirmTileViewModel(amount: balance.amount, price: balance.price?.approximately())
         case .sell:
-            let alphaInfo = amountDisplayInfo(for: context.target, catalogue: context.catalogue)
+            let alphaInfo = amountDisplayInfo(for: input.model.target, catalogue: input.catalogue)
 
             let amount = formatterFactory.createTokenFormatter(for: alphaInfo).value(for: locale).stringFromDecimal(
-                context.amount.decimal(assetInfo: alphaInfo)
+                input.model.amount.decimal(assetInfo: alphaInfo)
             ) ?? ""
 
-            let fiat = context.latestQuote.flatMap { quote in
-                let taoValue = context.amount * quote.quote.spotPrice / SubtensorStakingPallet.alphaPriceScale
+            let fiat = input.latestQuote.flatMap { quote in
+                let taoValue = input.model.amount * quote.quote.spotPrice / SubtensorStakingPallet.alphaPriceScale
 
-                return createBalance(taoValue, price: context.price, locale: locale).price
+                return createBalance(taoValue, price: input.price, locale: locale).price
             }
 
             return SubtensorConfirmTileViewModel(amount: isolatedAlpha(amount), price: fiat?.approximately())
@@ -166,42 +101,42 @@ private extension SubtensorConfirmViewModelFactory {
     }
 
     func createSaleCostBasis(
-        for context: SubtensorConfirmViewModelContext,
+        for input: SubtensorConfirmViewModelInput,
         locale: Locale
     ) -> SubtensorSaleCostBasisViewModel {
         let proceeds = SubtensorSaleProceeds(
-            quote: context.tradesUnavailable ? nil : context.latestQuote,
-            soldAlpha: context.amount,
-            isQuotePending: !context.tradesUnavailable && !context.isQuoteFailed
+            quote: input.tradesUnavailable ? nil : input.latestQuote,
+            soldAlpha: input.model.amount,
+            isQuotePending: !input.tradesUnavailable && !input.isQuoteFailed
         )
 
         return costBasisViewModelFactory.createSale(
-            for: context.costBasis,
+            for: input.costBasis,
             proceeds: proceeds,
-            alphaSymbol: SubtensorSubnetNaming.symbol(for: context.target.netuid, in: context.catalogue),
-            taoPrice: context.price,
+            alphaSymbol: SubtensorSubnetNaming.symbol(for: input.model.target.netuid, in: input.catalogue),
+            taoPrice: input.price,
             locale: locale
         )
     }
 
     func createCostBasis(
-        for context: SubtensorConfirmViewModelContext,
+        for input: SubtensorConfirmViewModelInput,
         locale: Locale
     ) -> SubtensorSaleCostBasisViewModel {
-        guard context.direction == .buy else {
-            return createSaleCostBasis(for: context, locale: locale)
+        guard input.model.direction == .buy else {
+            return createSaleCostBasis(for: input, locale: locale)
         }
 
         let purchase = SubtensorPurchaseQuote(
-            quote: context.tradesUnavailable ? nil : context.latestQuote,
-            paidTao: context.amount,
-            isQuotePending: !context.tradesUnavailable && !context.isQuoteFailed
+            quote: input.tradesUnavailable ? nil : input.latestQuote,
+            paidTao: input.model.amount,
+            isQuotePending: !input.tradesUnavailable && !input.isQuoteFailed
         )
 
         let avgBuyPrice = costBasisViewModelFactory.createAvgBuyPrice(
-            for: context.costBasis,
+            for: input.costBasis,
             after: purchase,
-            alphaSymbol: SubtensorSubnetNaming.symbol(for: context.target.netuid, in: context.catalogue),
+            alphaSymbol: SubtensorSubnetNaming.symbol(for: input.model.target.netuid, in: input.catalogue),
             locale: locale
         )
 
@@ -226,33 +161,33 @@ private extension SubtensorConfirmViewModelFactory {
     }
 
     func createSwapViewModel(
-        for context: SubtensorConfirmViewModelContext,
+        for input: SubtensorConfirmViewModelInput,
         locale: Locale
     ) -> SubtensorConfirmSwapViewModel {
         let unknown = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown()
-        let costBasis = createCostBasis(for: context, locale: locale)
+        let costBasis = createCostBasis(for: input, locale: locale)
 
         let panel = quoteViewModelFactory.createTradePanel(
-            for: context.latestQuote,
-            amountIn: context.amount,
-            direction: context.direction,
-            target: context.target,
-            catalogue: context.catalogue,
-            taoPrice: context.price,
-            networkFee: context.fee?.amountForCurrentAccount,
+            for: input.latestQuote,
+            amountIn: input.model.amount,
+            direction: input.model.direction,
+            target: input.model.target,
+            catalogue: input.catalogue,
+            taoPrice: input.price,
+            networkFee: input.fee?.amountForCurrentAccount,
             locale: locale
         )
 
         let receive: LoadableViewModelState<SubtensorConfirmTileViewModel>
         let swapRate: LoadableViewModelState<String>
 
-        if context.tradesUnavailable {
+        if input.tradesUnavailable {
             receive = .loaded(value: SubtensorConfirmTileViewModel(amount: unknown, price: nil))
             swapRate = .loaded(value: unknown)
         } else if let panel, let panelReceive = panel.receive {
             receive = .loaded(
                 value: SubtensorConfirmTileViewModel(
-                    amount: context.direction == .buy ? isolatedAlpha(panelReceive.amount) : panelReceive.amount,
+                    amount: input.model.direction == .buy ? isolatedAlpha(panelReceive.amount) : panelReceive.amount,
                     price: panelReceive.price?.approximately()
                 )
             )
@@ -263,19 +198,19 @@ private extension SubtensorConfirmViewModelFactory {
         }
 
         return SubtensorConfirmSwapViewModel(
-            pay: createPayTile(for: context, locale: locale),
+            pay: createPayTile(for: input, locale: locale),
             receive: receive,
             swapRate: swapRate,
             avgBuyPrice: costBasis.avgBuyPrice,
             youWillEarn: costBasis.earned,
-            slippage: context.tolerance.flatMap {
+            slippage: input.model.tolerance.flatMap {
                 quoteViewModelFactory.createSlippageViewModel(for: $0, locale: locale)
             },
-            validatorApy: context.annualRate.map {
+            validatorApy: input.model.validator.annualRate.map {
                 SubtensorApyFormatter.text(for: $0, style: .trailing, locale: locale)
             },
             remark: createRemark(
-                for: context.direction, isProfitEstimated: costBasis.isEarnedEstimated, locale: locale
+                for: input.model.direction, isProfitEstimated: costBasis.isEarnedEstimated, locale: locale
             ),
             feeDisclosure: quoteViewModelFactory.novaFeeDisclosure(locale: locale)
         )
@@ -303,49 +238,38 @@ private extension SubtensorConfirmViewModelFactory {
     }
 
     func createRootViewModel(
-        for context: SubtensorConfirmViewModelContext,
+        for input: SubtensorConfirmViewModelInput,
         locale: Locale
     ) -> SubtensorConfirmRootViewModel {
         SubtensorConfirmRootViewModel(
-            amount: createBalance(context.amount, price: context.price, locale: locale),
-            stakeAfter: context.stakeChange.flatMap { createStakeAfter($0, locale: locale) },
-            apy: context.annualRate.map {
+            amount: createBalance(input.model.amount, price: input.price, locale: locale),
+            stakeAfter: input.stakeChange.flatMap { createStakeAfter($0, locale: locale) },
+            apy: input.model.validator.annualRate.map {
                 SubtensorApyFormatter.text(for: $0, style: .paidInTao, locale: locale)
             }
         )
     }
-
-    func createViewModel(for context: SubtensorConfirmViewModelContext, locale: Locale) -> SubtensorConfirmViewModel {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
-        let content: SubtensorConfirmContentViewModel = context.target.isRoot
-            ? .root(createRootViewModel(for: context, locale: locale))
-            : .swap(createSwapViewModel(for: context, locale: locale))
-
-        return SubtensorConfirmViewModel(
-            title: title(for: context, locale: locale),
-            content: content,
-            networkFee: context.fee.map { createFee($0.amount, price: context.price, locale: locale) },
-            isPriceMoved: context.isPriceMoved,
-            action: SubtensorConfirmActionViewModel(
-                title: context.isPriceMoved ? strings.stakingSubtensorConfirmNewRate() : strings.commonConfirm(),
-                isEnabled: context.signing == .allowed
-            ),
-            signingHint: context.signing == .noSigning ? strings.accountManagementWatchOnlyHint() : nil
-        )
-    }
 }
 
-extension SubtensorConfirmViewModelFactory: SubtensorConfirmViewModelFactoryProtocol {
+extension SubtensorConfirmViewModelFactory {
     func createViewModel(for input: SubtensorConfirmViewModelInput, locale: Locale) -> SubtensorConfirmViewModel {
-        createViewModel(for: SubtensorConfirmViewModelContext(input: input), locale: locale)
-    }
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
-    func createViewModel(
-        for input: SubtensorUnstakeConfirmViewModelInput,
-        locale: Locale
-    ) -> SubtensorConfirmViewModel {
-        createViewModel(for: SubtensorConfirmViewModelContext(input: input), locale: locale)
+        let content: SubtensorConfirmContentViewModel = input.model.target.isRoot
+            ? .root(createRootViewModel(for: input, locale: locale))
+            : .swap(createSwapViewModel(for: input, locale: locale))
+
+        return SubtensorConfirmViewModel(
+            title: title(for: input.model, locale: locale),
+            content: content,
+            networkFee: input.fee.map { createFee($0.amount, price: input.price, locale: locale) },
+            isPriceMoved: input.isPriceMoved,
+            action: SubtensorConfirmActionViewModel(
+                title: input.isPriceMoved ? strings.stakingSubtensorConfirmNewRate() : strings.commonConfirm(),
+                isEnabled: input.signing == .allowed
+            ),
+            signingHint: input.signing == .noSigning ? strings.accountManagementWatchOnlyHint() : nil
+        )
     }
 
     func createTileIcons(

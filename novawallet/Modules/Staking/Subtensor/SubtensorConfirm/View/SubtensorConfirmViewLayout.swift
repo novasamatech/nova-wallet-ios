@@ -1,7 +1,7 @@
 import UIKit
 import UIKit_iOS
 
-final class SubtensorStakingConfirmViewLayout: UIView {
+final class SubtensorConfirmViewLayout: UIView {
     let containerView: ScrollableContainerView = .create {
         $0.stackView.isLayoutMarginsRelativeArrangement = true
         $0.stackView.layoutMargins = UIEdgeInsets(top: 12, left: 16, bottom: 16, right: 16)
@@ -39,9 +39,9 @@ final class SubtensorStakingConfirmViewLayout: UIView {
 
     let validatorCell = SubtensorValidatorDetailsCell()
 
-    let avgBuyPriceCell = SubtensorStakingConfirmViewLayout.createCostBasisCell()
+    let avgBuyPriceCell = SubtensorConfirmViewLayout.createCostBasisCell()
 
-    let youWillEarnCell = SubtensorStakingConfirmViewLayout.createCostBasisCell()
+    let youWillEarnCell = SubtensorConfirmViewLayout.createCostBasisCell()
 
     let networkFeeCell = SwapNetworkFeeViewCell()
 
@@ -124,7 +124,7 @@ final class SubtensorStakingConfirmViewLayout: UIView {
     }
 }
 
-extension SubtensorStakingConfirmViewLayout {
+extension SubtensorConfirmViewLayout {
     enum Mode {
         case swap(SubtensorTradeDirection)
         case rootStake
@@ -132,7 +132,7 @@ extension SubtensorStakingConfirmViewLayout {
     }
 }
 
-private extension SubtensorStakingConfirmViewLayout {
+private extension SubtensorConfirmViewLayout {
     static func createCostBasisCell() -> SwapNetworkFeeViewCell {
         .create {
             $0.rowContentView.valueView.stackView.alignment = .trailing

@@ -48,26 +48,7 @@ struct SubtensorConfirmViewModel {
 }
 
 struct SubtensorConfirmViewModelInput {
-    let model: SubtensorStakingConfirmModel
-    let catalogue: SubtensorSubnetCatalogue?
-    let latestQuote: SubtensorTradeQuote?
-    let tradesUnavailable: Bool
-    let isQuoteFailed: Bool
-    let isPriceMoved: Bool
-    let price: PriceData?
-    let fee: ExtrinsicFeeProtocol?
-    let stakeBefore: Balance?
-    let signing: SubtensorOperationGate.Verdict
-    let costBasis: SubtensorCostBasisState?
-}
-
-struct SubtensorConfirmStakeChange: Equatable {
-    let before: Balance
-    let after: Balance
-}
-
-struct SubtensorUnstakeConfirmViewModelInput {
-    let model: SubtensorUnstakeConfirmModel
+    let model: SubtensorConfirmModel
     let catalogue: SubtensorSubnetCatalogue?
     let latestQuote: SubtensorTradeQuote?
     let tradesUnavailable: Bool
@@ -77,5 +58,10 @@ struct SubtensorUnstakeConfirmViewModelInput {
     let fee: ExtrinsicFeeProtocol?
     let stakeChange: SubtensorConfirmStakeChange?
     let signing: SubtensorOperationGate.Verdict
-    let costBasis: SubtensorCostBasisState
+    let costBasis: SubtensorCostBasisState?
+}
+
+struct SubtensorConfirmStakeChange: Equatable {
+    let before: Balance
+    let after: Balance
 }

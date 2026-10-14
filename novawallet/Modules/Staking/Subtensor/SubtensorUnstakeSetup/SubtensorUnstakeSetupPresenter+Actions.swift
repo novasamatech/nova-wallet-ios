@@ -195,7 +195,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakePresenterValidating {
         )
     }
 
-    func createConfirmModel(for dependencies: SubtensorUnstakeValidatingDep) -> SubtensorUnstakeConfirmModel? {
+    func createConfirmModel(for dependencies: SubtensorUnstakeValidatingDep) -> SubtensorConfirmModel? {
         guard
             let target,
             let primary = group?.primaryHotkey,
@@ -204,7 +204,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakePresenterValidating {
             return nil
         }
 
-        return SubtensorUnstakeConfirmModel(
+        return SubtensorConfirmModel(
             origin: isRoot ? .unstake : .sell,
             account: selectedAccount,
             target: target,
@@ -213,12 +213,12 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakePresenterValidating {
                 display: DisplayAddress(address: address, username: validatorItem?.name ?? ""),
                 annualRate: nil
             ),
-            unstakeModel: SubtensorUnstakeModel(
+            mode: .unstake(SubtensorUnstakeModel(
                 hotkey: primary,
                 netuid: netuid,
                 amount: amount,
                 exitHotkeys: dependencies.exitHotkeys
-            ),
+            )),
             tolerance: isRoot ? nil : slippage,
             acknowledgedQuote: dependencies.quoteContext?.latestQuote
         )

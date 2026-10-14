@@ -2,10 +2,10 @@ import Operation_iOS
 import SubstrateSdk
 import UIKit
 
-final class SubtensorUnstakeConfirmInteractor: SubtensorStakingBaseInteractor {
-    var presenter: SubtensorUnstakeConfirmOutputProtocol? {
+final class SubtensorConfirmInteractor: SubtensorStakingBaseInteractor {
+    var presenter: SubtensorConfirmInteractorOutputProtocol? {
         get {
-            basePresenter as? SubtensorUnstakeConfirmOutputProtocol
+            basePresenter as? SubtensorConfirmInteractorOutputProtocol
         }
 
         set {
@@ -32,7 +32,7 @@ final class SubtensorUnstakeConfirmInteractor: SubtensorStakingBaseInteractor {
     }
 }
 
-extension SubtensorUnstakeConfirmInteractor: SubtensorUnstakeConfirmInputProtocol {
+extension SubtensorConfirmInteractor: SubtensorConfirmInteractorInputProtocol {
     func loadRootHolds(for hotkeys: [AccountId]) {
         holdsCallStore.cancel()
 

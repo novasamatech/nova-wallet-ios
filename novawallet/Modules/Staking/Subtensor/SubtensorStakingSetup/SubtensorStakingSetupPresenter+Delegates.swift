@@ -76,7 +76,7 @@ extension SubtensorStakingSetupPresenter: SubtensorStakePresenterValidating {
         return dependencies
     }
 
-    func createConfirmModel() -> SubtensorStakingConfirmModel? {
+    func createConfirmModel() -> SubtensorConfirmModel? {
         guard
             let target,
             let validator = validatorState.validator,
@@ -85,7 +85,7 @@ extension SubtensorStakingSetupPresenter: SubtensorStakePresenterValidating {
             return nil
         }
 
-        return SubtensorStakingConfirmModel(
+        return SubtensorConfirmModel(
             origin: mode.origin,
             account: selectedAccount,
             target: target,
@@ -94,7 +94,7 @@ extension SubtensorStakingSetupPresenter: SubtensorStakePresenterValidating {
                 display: DisplayAddress(address: address, username: validator.name ?? ""),
                 annualRate: validatorAnnualRate()
             ),
-            amount: amount,
+            mode: .stake(amount: amount),
             tolerance: target.isRoot ? nil : slippage,
             acknowledgedQuote: target.isRoot ? nil : quoteFlow.freshQuote
         )

@@ -9,9 +9,9 @@ final class SubtensorUnstakeSetupWireframe: SubtensorUnstakeSetupWireframeProtoc
 
     func showConfirm(
         from view: SubtensorUnstakeSetupViewProtocol?,
-        model: SubtensorUnstakeConfirmModel
+        model: SubtensorConfirmModel
     ) {
-        guard let confirmView = SubtensorUnstakeConfirmViewFactory.createView(
+        guard let confirmView = SubtensorConfirmViewFactory.createView(
             for: state,
             model: model
         ) else {
