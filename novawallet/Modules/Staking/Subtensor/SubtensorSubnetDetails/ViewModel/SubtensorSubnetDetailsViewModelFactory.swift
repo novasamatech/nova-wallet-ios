@@ -74,7 +74,7 @@ extension SubtensorSubnetDetailsViewModelFactory {
         let decimal = amount.decimal(assetInfo: chainAsset.assetDisplayInfo)
         let text = alphaFormatter.value(for: locale).stringFromDecimal(decimal) ?? unknownValue(for: locale)
 
-        return text.isolatedLeftToRight()
+        return SubtensorSubnetNaming.isolatedLeftToRight(text)
     }
 
     func formatTao(_ amount: Decimal, locale: Locale) -> String {

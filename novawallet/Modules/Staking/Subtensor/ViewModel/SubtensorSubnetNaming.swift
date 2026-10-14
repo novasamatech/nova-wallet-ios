@@ -30,6 +30,10 @@ enum SubtensorSubnetNaming {
     static func symbol(for netuid: UInt16, in catalogue: SubtensorSubnetCatalogue?) -> String {
         symbol(catalogue?.subnet(for: netuid)?.symbol, netuid: netuid)
     }
+
+    static func isolatedLeftToRight(_ text: String) -> String {
+        "\u{2066}\(text)\u{2069}"
+    }
 }
 
 private extension SubtensorSubnetNaming {
@@ -74,11 +78,5 @@ extension AssetBalanceDisplayInfo {
             symbolPosition: symbolPosition,
             icon: nil
         )
-    }
-}
-
-extension String {
-    func isolatedLeftToRight() -> String {
-        "\u{2066}\(self)\u{2069}"
     }
 }
