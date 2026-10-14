@@ -30,7 +30,10 @@ final class SubtensorValidatorFiltersPresenter: ValidatorFiltersPresenterProtoco
         provideViewModel()
     }
 
-    func setHidesUnusualApy(_: Bool) { provideViewModel() }
+    func setHidesUnusualApy(_ value: Bool) {
+        draft.hidesUnusualApy = value
+        provideViewModel()
+    }
 
     func reset() {
         draft = .supportedDefault
@@ -47,6 +50,7 @@ final class SubtensorValidatorFiltersPresenter: ValidatorFiltersPresenterProtoco
     private func provideViewModel() {
         view?.didReceive(SubtensorValidatorFiltersViewModel(
             selectedSort: draft.sort,
+            hidesUnusualApy: draft.hidesUnusualApy,
             canReset: draft != .supportedDefault,
             canApply: draft != applied && !hasApplied
         ))

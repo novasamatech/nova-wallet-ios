@@ -86,6 +86,8 @@ protocol ValidatorSelectInteractorOutputProtocol: AnyObject {
     func didFailDirectory(_ error: Error)
     func didReceive(yields: SubtensorAlphaYields?)
     func didReceive(alphaPrice: Balance?)
+    func didReceive(recommendedHotkeys: Set<AccountId>)
+    func didFailRecommended(_ error: Error)
 }
 
 protocol ValidatorSelectWireframeProtocol: SubtensorValidatorInfoPresentable {
