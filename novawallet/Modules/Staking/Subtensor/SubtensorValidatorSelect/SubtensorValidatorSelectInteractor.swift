@@ -8,18 +8,21 @@ final class SubtensorValidatorSelectInteractor: AnyCancellableCleaning {
     let directoryService: SubtensorValidatorDirectoryServiceProtocol
     let yieldService: SubtensorYieldServiceProtocol
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
+    let recommendationService: SubtensorRecommendationServiceProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     private let directoryStore = CancellableCallStore()
     private let yieldStore = CancellableCallStore()
     private let catalogueStore = CancellableCallStore()
+    private let recommendedStore = CancellableCallStore()
 
     init(
         target: SubtensorStakeTarget,
         directoryService: SubtensorValidatorDirectoryServiceProtocol,
         yieldService: SubtensorYieldServiceProtocol,
         catalogueService: SubtensorSubnetCatalogueServiceProtocol,
+        recommendationService: SubtensorRecommendationServiceProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
@@ -27,6 +30,7 @@ final class SubtensorValidatorSelectInteractor: AnyCancellableCleaning {
         self.directoryService = directoryService
         self.yieldService = yieldService
         self.catalogueService = catalogueService
+        self.recommendationService = recommendationService
         self.operationQueue = operationQueue
         self.logger = logger
     }
@@ -35,6 +39,7 @@ final class SubtensorValidatorSelectInteractor: AnyCancellableCleaning {
         directoryStore.cancel()
         yieldStore.cancel()
         catalogueStore.cancel()
+        recommendedStore.cancel()
     }
 }
 
@@ -85,6 +90,25 @@ private extension SubtensorValidatorSelectInteractor {
         }
     }
 
+    func loadRecommended() {
+        recommendedStore.cancel()
+
+        executeCancellable(
+            wrapper: recommendationService.createRecommendedValidatorsWrapper(for: subnet),
+            inOperationQueue: operationQueue,
+            backingCallIn: recommendedStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(recommended):
+                self?.presenter?.didReceive(recommendedHotkeys: Set(recommended.validators.map(\.hotkey)))
+            case let .failure(error):
+                self?.logger.warning("Recommended validators unavailable for the list filter: \(error)")
+                self?.presenter?.didFailRecommended(error)
+            }
+        }
+    }
+
     func loadAlphaPrice() {
         catalogueStore.cancel()
 
@@ -109,6 +133,7 @@ private extension SubtensorValidatorSelectInteractor {
     func loadAll() {
         loadDirectory()
         loadYields()
+        loadRecommended()
 
         guard !target.isRoot else {
             return

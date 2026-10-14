@@ -15,8 +15,9 @@ final class SubtensorValidatorSelectPresenter {
     private var directoryError: Error?
     private var yields: SubtensorAlphaYields?
     private var alphaPrice: Balance?
+    private var recommendedHotkeys: Set<AccountId>?
+    private var recommendedError: Error?
     private let filterSession: SubtensorValidatorFilterSession
-    private var sort: SubtensorValidatorSort
     private var query = ""
     private var selectedHotkey: AccountId?
     private var preselectedHotkey: AccountId?
@@ -40,25 +41,25 @@ final class SubtensorValidatorSelectPresenter {
         self.delegate = delegate
         self.logger = logger
         self.filterSession = filterSession
-        sort = filterSession.applied(isRoot: target.isRoot).sort
         self.localizationManager = localizationManager
     }
 }
 
 private extension SubtensorValidatorSelectPresenter {
+    var filters: SubtensorValidatorFilters { filterSession.applied(isRoot: target.isRoot) }
+
     func provideState() {
-        let header = listFactory.createLoadingViewModel(yields: yields, sort: sort, locale: selectedLocale)
-        view?.didReceive(
-            header: header,
-            isFilterActive: filterSession.applied(isRoot: target.isRoot) != .supportedDefault
-        )
-        if let error = directoryError {
+        let filters = filters
+        let header = listFactory.createLoadingViewModel(yields: yields, sort: filters.sort, locale: selectedLocale)
+        view?.didReceive(header: header, isFilterActive: filters != .supportedDefault)
+
+        if let error = directoryError ?? (filters.hidesUnusualApy ? recommendedError : nil) {
             let viewModel = listFactory.createErrorViewModel(for: error, locale: selectedLocale)
             view?.didReceive(state: .failed(viewModel))
             return
         }
 
-        guard let directory else {
+        guard let directory, !filters.hidesUnusualApy || recommendedHotkeys != nil else {
             view?.didReceive(
                 state: .loading(header)
             )
@@ -70,10 +71,11 @@ private extension SubtensorValidatorSelectPresenter {
             yields: yields,
             alphaPrice: alphaPrice,
             isRoot: target.isRoot,
-            sort: sort,
+            sort: filters.sort,
             query: query,
             selectedHotkey: selectedHotkey,
-            preselectedHotkey: preselectedHotkey
+            preselectedHotkey: preselectedHotkey,
+            recommendedHotkeys: filters.hidesUnusualApy ? recommendedHotkeys : nil
         )
 
         view?.didReceive(state: .loaded(listFactory.createListViewModel(for: input, locale: selectedLocale)))
@@ -122,6 +124,8 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectPresenterProtocol {
         directory = nil
         directoryError = nil
         yields = nil
+        recommendedHotkeys = nil
+        recommendedError = nil
 
         if !target.isRoot {
             alphaPrice = nil
@@ -138,10 +142,9 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectPresenterProtocol {
 
     func showSortOptions() {
         wireframe
-            .showFilters(from: view, applied: filterSession.applied(isRoot: target.isRoot)) { [weak self] filters in
+            .showFilters(from: view, applied: filters) { [weak self] filters in
                 guard let self else { return }
                 self.filterSession.apply(filters, isRoot: self.target.isRoot)
-                self.sort = self.filterSession.applied(isRoot: self.target.isRoot).sort
                 self.provideState()
             }
     }
@@ -194,6 +197,18 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectInteractorOutputProt
 
     func didReceive(alphaPrice: Balance?) {
         self.alphaPrice = alphaPrice
+        provideState()
+    }
+
+    func didReceive(recommendedHotkeys: Set<AccountId>) {
+        self.recommendedHotkeys = recommendedHotkeys
+        recommendedError = nil
+        provideState()
+    }
+
+    func didFailRecommended(_ error: Error) {
+        recommendedHotkeys = nil
+        recommendedError = error
         provideState()
     }
 }

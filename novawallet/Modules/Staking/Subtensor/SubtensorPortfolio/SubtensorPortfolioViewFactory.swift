@@ -82,6 +82,7 @@ private extension SubtensorPortfolioViewFactory {
             eventCenter: EventCenter.shared,
             applicationHandler: ApplicationHandler(),
             catalogueService: earnServices.catalogueService,
+            yieldService: earnServices.yieldService,
             subnetLogosProvider: earnServices.subnetLogosProvider,
             priceHistoryService: earnServices.priceHistoryService,
             bittensorApiFactory: SubtensorStakingProcessServices.shared.bittensorApiOperationFactory,

@@ -22,7 +22,6 @@ extension BittensorApi {
         let hotkey: String
         let stakeSourceName: String?
         let identitySourceName: String?
-        let metagraphUid: UInt16?
         let reportedMeasurements: ValidatorMeasurements
     }
 

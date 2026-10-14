@@ -193,12 +193,13 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
     }
 
     func cachedYields() -> SubtensorAlphaYields? {
-        isRoot ? nil : yieldService.cachedAlphaYields(for: netuid).value
+        yieldService.cachedAlphaYields(for: netuid).value
     }
 
     func setup() {
         subscribePositions()
         subscribePrice()
+        loadYields()
 
         if isRoot {
             subscribeClaimable()
@@ -206,7 +207,6 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
         } else {
             loadCatalogue()
             loadSubnetLogos()
-            loadYields()
             loadSubnetsInfo(forcingRefresh: false)
         }
     }

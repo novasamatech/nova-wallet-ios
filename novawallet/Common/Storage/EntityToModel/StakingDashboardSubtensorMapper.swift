@@ -45,6 +45,7 @@ extension StakingDashboardSubtensorMapper: CoreDataMapperProtocol {
         }
 
         entity.onchainState = state?.rawValue
+        entity.subtensorRootRate = model.rootRate.map { $0 as NSDecimalNumber }
 
         if case let .replace(maxApy) = model.maxApy {
             entity.maxApy = maxApy.map { $0 as NSDecimalNumber }

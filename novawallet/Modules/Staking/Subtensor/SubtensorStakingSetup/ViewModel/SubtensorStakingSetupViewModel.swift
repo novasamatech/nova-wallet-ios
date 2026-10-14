@@ -29,6 +29,7 @@ struct SubtensorSetupRootViewModel {
     let icon: ImageViewModelProtocol
     let validator: SubtensorValidatorCardViewModel
     let compactValidator: SubtensorSetupValidatorViewModel
+    let compactRate: String?
     let isQuickPick: Bool
     let networkFee: BalanceViewModelProtocol?
 }

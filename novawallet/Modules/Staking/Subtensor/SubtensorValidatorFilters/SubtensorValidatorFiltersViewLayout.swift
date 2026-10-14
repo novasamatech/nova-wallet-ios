@@ -5,8 +5,7 @@ final class SubtensorValidatorFiltersViewLayout: UIView {
     let showLabel: UILabel = .create { $0.apply(style: .boldTitle3Primary) }
     let toggleTitle: UILabel = .create { $0.apply(style: .regularBodyPrimary) }
     let toggleSubtitle: UILabel = .create { $0.apply(style: .footnoteSecondary) }
-    let toggle: UISwitch = .create { $0.isOn = false; $0.isEnabled = false }
-    let unavailableLabel: UILabel = .create { $0.apply(style: .footnoteSecondary); $0.numberOfLines = 0 }
+    let toggle: UISwitch = .create { $0.onTintColor = R.color.colorIconAccent() }
     let sortLabel: UILabel = .create { $0.apply(style: .boldTitle3Primary) }
     let tableView: UITableView = .create {
         $0.backgroundColor = .clear
@@ -22,8 +21,7 @@ final class SubtensorValidatorFiltersViewLayout: UIView {
         backgroundColor = R.color.colorSecondaryScreenBackground()
         let titles = UIView.vStack(alignment: .leading, spacing: 2, [toggleTitle, toggleSubtitle])
         let toggleRow = UIView.hStack(alignment: .center, spacing: 12, [titles, UIView(), toggle])
-        toggleRow.alpha = 0.5
-        let stack = UIView.vStack(spacing: 24, [showLabel, toggleRow, unavailableLabel, sortLabel, tableView])
+        let stack = UIView.vStack(spacing: 24, [showLabel, toggleRow, sortLabel, tableView])
         stack.setCustomSpacing(8, after: sortLabel)
         addSubview(stack)
         addSubview(applyButton)
