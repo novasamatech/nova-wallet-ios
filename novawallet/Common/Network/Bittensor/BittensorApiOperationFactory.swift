@@ -64,16 +64,6 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
         peek(path: "/subnets/\(netuid)/validators")
     }
 
-    func createRootYieldWrapper(
-        page _: Int
-    ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RootYieldCollection>> {
-        .createWithError(BittensorApiError.routeNotPublished)
-    }
-
-    func peekRootYield(page _: Int) -> HTTPCachePeek<BittensorApiResult<BittensorApi.RootYieldCollection>> {
-        .miss
-    }
-
     func createAlphaYieldWrapper(
         netuid: UInt16,
         page: Int

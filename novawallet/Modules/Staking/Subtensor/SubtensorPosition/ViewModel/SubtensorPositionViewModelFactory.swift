@@ -256,7 +256,7 @@ private extension SubtensorPositionViewModelFactory {
 
         let rate: SubtensorPortfolioLoadable<String>
 
-        if !state.isRateResolved {
+        if !state.isRoot, !state.isRateResolved {
             rate = .loading
         } else if let annualRate = state.annualRate {
             rate = .loaded(SubtensorApyFormatter.text(for: annualRate, style: .bare, locale: locale))

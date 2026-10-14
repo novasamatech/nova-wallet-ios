@@ -62,20 +62,6 @@ private extension SubtensorValidatorInfoInteractor {
     }
 
     func createRateWrapper() -> CompoundOperationWrapper<Decimal?> {
-        guard !target.isRoot else {
-            let rootWrapper = yieldService.createRootYieldWrapper()
-
-            let mapOperation = ClosureOperation<Decimal?> {
-                let yield = try rootWrapper.targetOperation.extractNoCancellableResultData()
-
-                return SubtensorAlphaApyFormatter.annualRate(from: yield)
-            }
-
-            mapOperation.addDependency(rootWrapper.targetOperation)
-
-            return rootWrapper.insertingTail(operation: mapOperation)
-        }
-
         let hotkey = hotkey
         let yieldsWrapper = yieldService.createAlphaYieldsWrapper(for: subnet.netuid)
 
@@ -91,6 +77,11 @@ private extension SubtensorValidatorInfoInteractor {
     }
 
     func loadRate() {
+        guard !target.isRoot else {
+            presenter?.didReceive(annualRate: nil)
+            return
+        }
+
         rateStore.cancel()
 
         executeCancellable(
@@ -146,10 +137,7 @@ private extension SubtensorValidatorInfoInteractor {
 
     func makeSnapshot() -> SubtensorValidatorInfoSnapshot {
         guard !target.isRoot else {
-            return SubtensorValidatorInfoSnapshot(
-                annualRate: yieldService.cachedRootYield().map(SubtensorAlphaApyFormatter.annualRate(from:)),
-                alphaPrice: .miss
-            )
+            return SubtensorValidatorInfoSnapshot(annualRate: .miss, alphaPrice: .miss)
         }
 
         let hotkey = hotkey

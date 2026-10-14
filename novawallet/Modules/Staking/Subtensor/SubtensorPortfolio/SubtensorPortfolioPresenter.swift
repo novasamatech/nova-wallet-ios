@@ -51,12 +51,6 @@ private extension SubtensorPortfolioPresenter {
             state.catalogue = catalogue
             state.isCatalogueResolved = true
         }
-
-        if let rootRate = snapshot.rootRate.value {
-            state.rootRate = rootRate
-        }
-
-        state.isRootRateResolved = snapshot.rootRate.isFresh
     }
 
     func requestPriceDataIfNeeded() {
@@ -165,12 +159,6 @@ extension SubtensorPortfolioPresenter: SubnetPortfolioInteractorOutputProtocol {
 
     func didReceive(subnetLogos: SubtensorSubnetLogos?) {
         state.subnetLogos = subnetLogos
-        provideViewModel()
-    }
-
-    func didReceive(rootRate: Decimal?) {
-        state.rootRate = rootRate
-        state.isRootRateResolved = true
         provideViewModel()
     }
 

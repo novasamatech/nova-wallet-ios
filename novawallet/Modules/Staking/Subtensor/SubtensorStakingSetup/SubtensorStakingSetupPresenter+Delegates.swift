@@ -93,7 +93,7 @@ extension SubtensorStakingSetupPresenter: SubtensorStakePresenterValidating {
             validator: SubtensorConfirmValidator(
                 hotkey: validator.hotkey,
                 display: DisplayAddress(address: address, username: validator.name ?? ""),
-                annualRate: target.isRoot ? rootRate : subnetAnnualRate()
+                annualRate: target.isRoot ? nil : subnetAnnualRate()
             ),
             amount: amount,
             tolerance: target.isRoot ? nil : slippage,

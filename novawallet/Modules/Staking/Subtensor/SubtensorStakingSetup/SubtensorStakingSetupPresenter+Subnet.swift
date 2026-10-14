@@ -58,25 +58,6 @@ extension SubtensorStakingSetupPresenter {
         }
     }
 
-    func loadRootYieldIfNeeded() {
-        guard mode.isRootLane, !isRootRateRequested else {
-            return
-        }
-
-        isRootRateRequested = true
-
-        let cachedRootYield = interactor.cachedRootYield()
-
-        if let yield = cachedRootYield.value {
-            rootRate = SubtensorAlphaApyFormatter.annualRate(from: yield)
-            isRootRateLoaded = true
-        }
-
-        if !cachedRootYield.isFresh {
-            interactor.loadRootYield()
-        }
-    }
-
     func loadCostBasisIfNeeded(for netuid: UInt16) {
         if case let .fresh(cachedCostBasis, _) = interactor.cachedCostBasis(netuid: netuid) {
             costBasis = .resolved(cachedCostBasis)
@@ -139,8 +120,6 @@ extension SubtensorStakingSetupPresenter {
             maxAmount: maxAmount,
             amount: inputAmount(),
             validator: validatorState,
-            rootRate: rootRate,
-            isRootRateLoaded: isRootRateLoaded,
             fee: fee,
             price: price,
             quote: quoteFlow.freshQuote,

@@ -28,8 +28,8 @@ It only fails when the flight detach, context validation and identity discard ar
 
 Two approved behaviours are deliberately no longer pinned by any test under the lean mandate:
 the D4 cap of two automatic consent re-arms per launch, and the Max-APY termination
-classification for the alpha-yield branch and for final token denial. Only the root-yield refusal
-path is tested. Do not assume a regression in either would fail the suite.
+classification for the alpha-yield branch and for final token denial. The root-yield branch was
+removed with the root-yield route. Do not assume a regression in either would fail the suite.
 
 ## Round 3 corrections
 
