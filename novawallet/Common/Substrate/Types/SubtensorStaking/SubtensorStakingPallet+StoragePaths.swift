@@ -74,10 +74,6 @@ extension SubtensorStakingPallet {
         StorageCodingPath(moduleName: name, itemName: "ActivityCutoffFactorMilli")
     }
 
-    static var identitiesV2Path: StorageCodingPath {
-        StorageCodingPath(moduleName: name, itemName: "IdentitiesV2")
-    }
-
     static var initialMinStakePath: ConstantCodingPath {
         ConstantCodingPath(moduleName: name, constantName: "InitialMinStake")
     }

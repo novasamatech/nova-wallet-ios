@@ -34,27 +34,6 @@ protocol SubtensorPositionsSyncServiceProtocol: ApplicationServiceProtocol {
     func refresh()
 }
 
-struct SubtensorHotkeyAlphaBatch: BatchStorageSubscriptionResult {
-    let amounts: [String: Balance]
-
-    init(
-        values: [BatchStorageSubscriptionResultValue],
-        blockHashJson _: JSON,
-        context: [CodingUserInfoKey: Any]?
-    ) throws {
-        amounts = try values.reduce(into: [String: Balance]()) { accum, item in
-            guard let mappingKey = item.mappingKey else {
-                return
-            }
-
-            // TotalHotkeyAlpha is ValueQuery, so a null read means the hotkey holds no alpha there
-            let decoded = try item.value.map(to: StringScaleMapper<Balance>?.self, with: context)
-
-            accum[mappingKey] = decoded?.value ?? 0
-        }
-    }
-}
-
 final class SubtensorStakingPositionsSyncService: BaseSyncService {
     struct PositionKey: Hashable {
         let hotkey: AccountId
@@ -69,10 +48,8 @@ final class SubtensorStakingPositionsSyncService: BaseSyncService {
     let operationQueue: OperationQueue
 
     private var hotkeysSubscription: CallbackStorageSubscription<[BytesCodable]>?
-    private var alphaTriggerSubscription: CallbackBatchStorageSubscription<SubtensorHotkeyAlphaBatch>?
+    private var alphaTriggerSubscription: CallbackBatchRawStorageSubscription?
     private var subscribedPositionKeys: Set<PositionKey>?
-
-    private var hotkeyAlphaByPosition: [PositionKey: Balance] = [:]
 
     private var fetchCallStore = CancellableCallStore()
 
@@ -124,41 +101,6 @@ final class SubtensorStakingPositionsSyncService: BaseSyncService {
     }
 }
 
-extension SubtensorStakingPositionsSyncService {
-    static func mappingKey(for positionKey: PositionKey) -> String {
-        "\(positionKey.hotkey.toHex())-\(positionKey.netuid)"
-    }
-
-    /// a storage update carries only the keys that changed, so the map is merged, never replaced,
-    /// and a payload key outside the subscribed set is dropped rather than accumulated
-    static func merging(
-        _ current: [PositionKey: Balance],
-        with batch: SubtensorHotkeyAlphaBatch,
-        subscribedKeys: Set<PositionKey>
-    ) -> [PositionKey: Balance] {
-        let keyByMapping = subscribedKeys.reduce(into: [String: PositionKey]()) { accum, key in
-            accum[mappingKey(for: key)] = key
-        }
-
-        return batch.amounts.reduce(into: current) { accum, item in
-            guard let positionKey = keyByMapping[item.key] else {
-                return
-            }
-
-            accum[positionKey] = item.value
-        }
-    }
-
-    /// a position that left the subscribed set stops receiving updates, so its denominator goes
-    /// rather than being carried forward at its last value
-    static func pruning(
-        _ current: [PositionKey: Balance],
-        to subscribedKeys: Set<PositionKey>
-    ) -> [PositionKey: Balance] {
-        current.filter { subscribedKeys.contains($0.key) }
-    }
-}
-
 private extension SubtensorStakingPositionsSyncService {
     func clearSubscriptions() {
         hotkeysSubscription = nil
@@ -166,19 +108,6 @@ private extension SubtensorStakingPositionsSyncService {
         alphaTriggerSubscription?.unsubscribe()
         alphaTriggerSubscription = nil
         subscribedPositionKeys = nil
-        hotkeyAlphaByPosition = [:]
-    }
-
-    func decorate(
-        _ state: Multistaking.SubtensorStakingState
-    ) -> Multistaking.SubtensorStakingState {
-        let positions = state.positions.map { position in
-            let key = PositionKey(hotkey: position.hotkey, netuid: position.netuid)
-
-            return position.byReplacing(totalHotkeyAlpha: hotkeyAlphaByPosition[key])
-        }
-
-        return state.byReplacing(positions: positions)
     }
 
     func makeHotkeysSubscription(for accountId: AccountId) {
@@ -216,15 +145,9 @@ private extension SubtensorStakingPositionsSyncService {
         }
     }
 
-    func handleAlphaTrigger(result: Result<SubtensorHotkeyAlphaBatch, Error>) {
+    func handleAlphaTrigger(result: Result<BatchStorageSubscriptionRawResult, Error>) {
         switch result {
-        case let .success(batch):
-            hotkeyAlphaByPosition = Self.merging(
-                hotkeyAlphaByPosition,
-                with: batch,
-                subscribedKeys: subscribedPositionKeys ?? []
-            )
-
+        case .success:
             markSyncingImmediate()
 
             performStateFetch()
@@ -259,7 +182,7 @@ private extension SubtensorStakingPositionsSyncService {
 
                 self?.failureObservable.state = false
 
-                self?.stateObservable.state = self?.decorate(state)
+                self?.stateObservable.state = state
 
                 self?.fetchCountObservable.state &+= 1
 
@@ -284,8 +207,6 @@ private extension SubtensorStakingPositionsSyncService {
 
         subscribedPositionKeys = newKeys
 
-        hotkeyAlphaByPosition = Self.pruning(hotkeyAlphaByPosition, to: newKeys)
-
         alphaTriggerSubscription?.unsubscribe()
         alphaTriggerSubscription = nil
 
@@ -305,7 +226,7 @@ private extension SubtensorStakingPositionsSyncService {
                         )
                     }
                 ),
-                mappingKey: Self.mappingKey(for: positionKey)
+                mappingKey: nil
             )
         }
 

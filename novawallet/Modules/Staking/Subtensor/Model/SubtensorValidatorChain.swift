@@ -8,7 +8,6 @@ struct SubtensorHotkeySubnet: Hashable {
 
 struct SubtensorValidatorChainQuery: Equatable {
     let pairs: [SubtensorHotkeySubnet]
-    let includesHotkeyAlpha: Bool
 }
 
 struct SubtensorValidatorChainStatus: Equatable {
@@ -26,7 +25,6 @@ struct SubtensorValidatorChainSnapshot {
     let lastUpdates: [UInt16: [UInt64]]
     let effectiveActivityCutoffs: [UInt16: UInt64]
     let takes: [AccountId: UInt16]
-    let hotkeyAlpha: [SubtensorHotkeySubnet: Balance]
 }
 
 extension SubtensorValidatorChainStatus {
@@ -85,13 +83,4 @@ enum SubtensorTakeGate {
 
         return takeScaled > maxTakeScaled
     }
-}
-
-struct SubtensorValidatorIdentity: Equatable {
-    let name: String?
-    let url: String?
-    let githubRepo: String?
-    let image: String?
-    let discord: String?
-    let description: String?
 }

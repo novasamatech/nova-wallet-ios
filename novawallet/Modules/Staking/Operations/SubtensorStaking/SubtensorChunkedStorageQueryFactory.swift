@@ -10,7 +10,7 @@ final class SubtensorChunkedStorageQueryFactory {
     struct Context {
         let engine: JSONRPCEngine
         let codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
-        let blockHashOperation: BaseOperation<BlockHashData>?
+        let blockHashOperation: BaseOperation<BlockHashData>
     }
 
     let keysPerQuery: Int
@@ -50,28 +50,6 @@ final class SubtensorChunkedStorageQueryFactory {
             }
         }
 
-        operation.addDependency(codingFactoryOperation)
-
-        return operation
-    }
-
-    func createKeysOperation<K: Encodable>(
-        path: StorageCodingPath,
-        paramsOperation: BaseOperation<[K]>,
-        codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
-    ) -> BaseOperation<[Data]> {
-        let operation = MapKeyEncodingOperation<K>(path: path, storageKeyFactory: storageKeyFactory)
-
-        operation.configurationBlock = {
-            do {
-                operation.keyParams = try paramsOperation.extractNoCancellableResultData()
-                operation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-            } catch {
-                operation.result = .failure(error)
-            }
-        }
-
-        operation.addDependency(paramsOperation)
         operation.addDependency(codingFactoryOperation)
 
         return operation
@@ -190,7 +168,7 @@ private extension SubtensorChunkedStorageQueryFactory {
                 }
 
                 let upperBound = min(lowerBound + chunkSize, keys.count)
-                let blockHash = try context.blockHashOperation?.extractNoCancellableResultData()
+                let blockHash = try context.blockHashOperation.extractNoCancellableResultData()
 
                 operation.parameters = StorageQuery(keys: Array(keys[lowerBound ..< upperBound]), blockHash: blockHash)
             } catch {
@@ -199,10 +177,7 @@ private extension SubtensorChunkedStorageQueryFactory {
         }
 
         operation.addDependency(keysOperation)
-
-        if let blockHashOperation = context.blockHashOperation {
-            operation.addDependency(blockHashOperation)
-        }
+        operation.addDependency(context.blockHashOperation)
 
         return operation
     }

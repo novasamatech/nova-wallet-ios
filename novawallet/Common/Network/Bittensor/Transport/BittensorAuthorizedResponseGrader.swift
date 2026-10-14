@@ -7,12 +7,7 @@ enum BittensorAuthorizedResponseGrader {
         let status = response.statusCode
         let requestId = bounded(response.value(forHTTPHeaderField: "X-Request-ID"))
         if (200 ..< 300).contains(status) {
-            return BittensorApiRawResponse(
-                statusCode: status,
-                requestId: requestId,
-                body: result.body,
-                cacheDirectives: HTTPCacheDirectives(response: response)
-            )
+            return BittensorApiRawResponse(statusCode: status, requestId: requestId, body: result.body)
         }
         let code = errorCode(result.body)
         switch status {

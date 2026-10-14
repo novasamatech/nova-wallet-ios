@@ -25,6 +25,11 @@ protocol BittensorApiOperationFactoryProtocol: AnyObject {
         page: Int?
     ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.OperationCollection>>
 
+    func createPortfolioHistoryWrapper(
+        accountSubject: AccountAddress,
+        period: BittensorApi.PortfolioHistoryPeriod
+    ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.PortfolioHistoryCollection>>
+
     func createRecommendationsWrapper()
         -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RecommendationCollection>>
 

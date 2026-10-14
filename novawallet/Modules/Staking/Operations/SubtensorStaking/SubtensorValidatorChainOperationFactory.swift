@@ -36,7 +36,6 @@ private extension SubtensorValidatorChainOperationFactory {
         let pairs: [SubtensorHotkeySubnet]
         let subnetNetuids: [UInt16]
         let hotkeys: [AccountId]
-        let includesHotkeyAlpha: Bool
 
         init(query: SubtensorValidatorChainQuery) {
             pairs = SubtensorChunkedStorageQueryFactory.distinct(query.pairs)
@@ -46,7 +45,6 @@ private extension SubtensorValidatorChainOperationFactory {
             )
 
             hotkeys = SubtensorChunkedStorageQueryFactory.distinct(pairs.map(\.hotkey))
-            includesHotkeyAlpha = query.includesHotkeyAlpha
         }
     }
 
@@ -58,14 +56,11 @@ private extension SubtensorValidatorChainOperationFactory {
         let tempos: QueryWrapper<UInt16Value>
         let factors: QueryWrapper<StringScaleMapper<UInt32>>
         let takes: QueryWrapper<UInt16Value>
-        let hotkeyAlpha: QueryWrapper<StringScaleMapper<Balance>>?
 
         var allOperations: [Operation] {
-            let hotkeyAlphaOperations = hotkeyAlpha?.allOperations ?? []
-
-            return blockNumber.allOperations + uids.allOperations + permits.allOperations +
+            blockNumber.allOperations + uids.allOperations + permits.allOperations +
                 lastUpdates.allOperations + tempos.allOperations + factors.allOperations +
-                takes.allOperations + hotkeyAlphaOperations
+                takes.allOperations
         }
 
         var targetOperations: [Operation] {
@@ -77,7 +72,7 @@ private extension SubtensorValidatorChainOperationFactory {
                 tempos.targetOperation,
                 factors.targetOperation,
                 takes.targetOperation
-            ] + (hotkeyAlpha.map { [$0.targetOperation] } ?? [])
+            ]
         }
     }
 
@@ -151,10 +146,6 @@ private extension SubtensorValidatorChainOperationFactory {
 
         let subnets = plan.subnetNetuids
 
-        let hotkeyAlpha: QueryWrapper<StringScaleMapper<Balance>>? = plan.includesHotkeyAlpha
-            ? createPairRead(path: Pallet.totalHotkeyAlphaPath, pairs: plan.pairs, netuidFirst: false, context: context)
-            : nil
-
         return try SnapshotReads(
             blockNumber: queryFactory.createQueryWrapper(
                 path: SystemPallet.blockNumberPath,
@@ -167,8 +158,7 @@ private extension SubtensorValidatorChainOperationFactory {
             lastUpdates: createNetuidRead(path: Pallet.lastUpdatePath, netuids: subnets, context: context),
             tempos: createNetuidRead(path: Pallet.tempoPath, netuids: subnets, context: context),
             factors: createNetuidRead(path: Pallet.activityCutoffFactorMilliPath, netuids: subnets, context: context),
-            takes: createHotkeyRead(path: Pallet.delegatesTakePath, hotkeys: plan.hotkeys, context: context),
-            hotkeyAlpha: hotkeyAlpha
+            takes: createHotkeyRead(path: Pallet.delegatesTakePath, hotkeys: plan.hotkeys, context: context)
         )
     }
 }
@@ -240,10 +230,6 @@ private extension SubtensorValidatorChainOperationFactory {
                 result[item.0] = item.1.value?.value ?? defaultDelegateTake
             }
 
-        let hotkeyAlpha = try reads.hotkeyAlpha.map { wrapper in
-            try extractPairValues(pairs: plan.pairs, wrapper: wrapper) { $0.value?.value ?? 0 }
-        }
-
         return try SubtensorValidatorChainSnapshot(
             blockHash: blockHash.toHex(includePrefix: true),
             blockNumber: blockNumber,
@@ -251,68 +237,8 @@ private extension SubtensorValidatorChainOperationFactory {
             permits: vectors.permits,
             lastUpdates: vectors.lastUpdates,
             effectiveActivityCutoffs: extractCutoffs(plan: plan, reads: reads),
-            takes: takes,
-            hotkeyAlpha: hotkeyAlpha ?? [:]
+            takes: takes
         )
-    }
-}
-
-private extension SubtensorValidatorChainOperationFactory {
-    static func distinctOwners(hotkeys: [AccountId], owners: [AccountId: AccountId]) -> [AccountId] {
-        SubtensorChunkedStorageQueryFactory.distinct(hotkeys.compactMap { owners[$0] })
-    }
-
-    func createOwnersWrapper(
-        hotkeys: [AccountId],
-        context: Context
-    ) -> CompoundOperationWrapper<[AccountId: AccountId]> {
-        let ownersWrapper: QueryWrapper<BytesCodable> = createHotkeyRead(
-            path: SubtensorStakingPallet.ownerPath,
-            hotkeys: hotkeys,
-            context: context
-        )
-
-        let mappingOperation = ClosureOperation<[AccountId: AccountId]> {
-            try zip(hotkeys, ownersWrapper.targetOperation.extractNoCancellableResultData())
-                .reduce(into: [AccountId: AccountId]()) { result, item in
-                    guard item.1.data != nil, let owner = item.1.value?.wrappedValue else {
-                        return
-                    }
-
-                    result[item.0] = owner
-                }
-        }
-
-        mappingOperation.addDependency(ownersWrapper.targetOperation)
-
-        return ownersWrapper.insertingTail(operation: mappingOperation)
-    }
-
-    func createIdentityRecordsWrapper(
-        hotkeys: [AccountId],
-        ownersOperation: BaseOperation<[AccountId: AccountId]>,
-        context: Context
-    ) -> QueryWrapper<SubtensorStakingPallet.ChainIdentityV2> {
-        let ownerParamsOperation = ClosureOperation<[BytesCodable]> {
-            let owners = try ownersOperation.extractNoCancellableResultData()
-
-            return Self.distinctOwners(hotkeys: hotkeys, owners: owners).map { BytesCodable(wrappedValue: $0) }
-        }
-
-        ownerParamsOperation.addDependency(ownersOperation)
-
-        let wrapper: QueryWrapper<SubtensorStakingPallet.ChainIdentityV2> = queryFactory.createQueryWrapper(
-            path: SubtensorStakingPallet.identitiesV2Path,
-            keysOperation: queryFactory.createKeysOperation(
-                path: SubtensorStakingPallet.identitiesV2Path,
-                paramsOperation: ownerParamsOperation,
-                codingFactoryOperation: context.codingFactoryOperation
-            ),
-            maxKeyCount: hotkeys.count,
-            context: context
-        )
-
-        return wrapper.insertingHead(operations: [ownerParamsOperation])
     }
 }
 
@@ -346,54 +272,6 @@ extension SubtensorValidatorChainOperationFactory: SubtensorValidatorChainOperat
             return CompoundOperationWrapper(
                 targetOperation: mergeOperation,
                 dependencies: [codingFactoryOperation] + blockHashWrapper.allOperations + reads.allOperations
-            )
-        } catch {
-            return .createWithError(error)
-        }
-    }
-
-    func createIdentitiesWrapper(
-        for hotkeys: [AccountId]
-    ) -> CompoundOperationWrapper<[AccountId: SubtensorValidatorIdentity]> {
-        do {
-            let context = try Context(
-                engine: runtimeConnectionStore.getConnection(),
-                codingFactoryOperation: runtimeConnectionStore.getRuntimeProvider().fetchCoderFactoryOperation(),
-                blockHashOperation: nil
-            )
-
-            let distinctHotkeys = SubtensorChunkedStorageQueryFactory.distinct(hotkeys)
-            let ownersWrapper = createOwnersWrapper(hotkeys: distinctHotkeys, context: context)
-
-            let recordsWrapper = createIdentityRecordsWrapper(
-                hotkeys: distinctHotkeys,
-                ownersOperation: ownersWrapper.targetOperation,
-                context: context
-            )
-
-            let mergeOperation = ClosureOperation<[AccountId: SubtensorValidatorIdentity]> {
-                let owners = try ownersWrapper.targetOperation.extractNoCancellableResultData()
-                let ownerList = Self.distinctOwners(hotkeys: distinctHotkeys, owners: owners)
-                let records = try recordsWrapper.targetOperation.extractNoCancellableResultData()
-
-                let identities = zip(ownerList, records).reduce(
-                    into: [AccountId: SubtensorValidatorIdentity]()
-                ) { result, item in
-                    result[item.0] = item.1.value?.toValidatorIdentity()
-                }
-
-                return owners.reduce(into: [AccountId: SubtensorValidatorIdentity]()) { result, item in
-                    result[item.key] = identities[item.value]
-                }
-            }
-
-            mergeOperation.addDependency(recordsWrapper.targetOperation)
-            mergeOperation.addDependency(ownersWrapper.targetOperation)
-
-            return CompoundOperationWrapper(
-                targetOperation: mergeOperation,
-                dependencies: [context.codingFactoryOperation] + ownersWrapper.allOperations +
-                    recordsWrapper.allOperations
             )
         } catch {
             return .createWithError(error)

@@ -6,7 +6,7 @@ import SubstrateSdk
 struct SubtensorValidatorInfoInput {
     let target: SubtensorStakeTarget
     let hotkey: AccountId
-    let detail: SubtensorValidatorDetail?
+    let detail: SubtensorValidatorDirectoryItem?
     let annualRate: LoadableViewModelState<Decimal?>
     let alphaPrice: LoadableViewModelState<Balance?>
     let price: PriceData?
@@ -36,7 +36,7 @@ final class SubtensorValidatorInfoViewModelFactory {
         SubtensorValidatorInfoViewModel(
             coverage: createCoverage(for: input, locale: locale),
             account: createAccountViewModel(for: input),
-            staking: input.detail.map { createStakingViewModel(for: $0.item, input: input, locale: locale) }
+            staking: input.detail.map { createStakingViewModel(for: $0, input: input, locale: locale) }
         )
     }
 
@@ -90,7 +90,7 @@ private extension SubtensorValidatorInfoViewModelFactory {
         let address = (try? input.hotkey.toAddress(using: chainFormat)) ?? input.hotkey.toHex(includePrefix: true)
 
         return displayAddressFactory.createViewModel(
-            from: DisplayAddress(address: address, username: input.detail?.item.name ?? ""),
+            from: DisplayAddress(address: address, username: input.detail?.name ?? ""),
             using: chainFormat
         )
     }

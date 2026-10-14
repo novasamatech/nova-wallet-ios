@@ -72,7 +72,6 @@ private extension SubtensorPortfolioViewController {
 
         let emptyView = rootView.emptyView
         emptyView.captionLabel.text = strings.stakingSubtensorUiPortfolioEmptyCaption()
-        emptyView.ratesAlertView.contentView.detailsLabel.text = ratesUnavailable
         emptyView.subnetCardView.titleLabel.text = strings.stakingSubtensorUiPortfolioEmptySubnetTitle()
         emptyView.subnetCardView.subtitleLabel.text = strings.stakingSubtensorUiPortfolioEmptySubnetSubtitle()
         emptyView.rootCardView.titleLabel.text = strings.stakingSubtensorUiPortfolioEmptyRootTitle()
