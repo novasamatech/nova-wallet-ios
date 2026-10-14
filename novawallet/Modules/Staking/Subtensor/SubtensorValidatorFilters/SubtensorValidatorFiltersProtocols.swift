@@ -2,6 +2,7 @@ import Foundation
 
 struct SubtensorValidatorFiltersViewModel {
     let selectedSort: SubtensorValidatorSort
+    let hidesUnusualApy: Bool
     let canReset: Bool
     let canApply: Bool
 }

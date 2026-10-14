@@ -12,6 +12,7 @@ struct SubtensorValidatorListInput {
     let query: String
     let selectedHotkey: AccountId?
     let preselectedHotkey: AccountId?
+    let recommendedHotkeys: Set<AccountId>?
 }
 
 final class SubtensorValidatorListFactory {
@@ -183,7 +184,7 @@ private extension SubtensorValidatorListFactory {
     }
 
     func createEntries(for input: SubtensorValidatorListInput, unknown: String) -> [Entry] {
-        input.directory.items.map { item in
+        input.directory.items.filter { input.recommendedHotkeys?.contains($0.hotkey) ?? true }.map { item in
             let address = try? item.hotkey.toAddress(using: chainFormat)
 
             return Entry(

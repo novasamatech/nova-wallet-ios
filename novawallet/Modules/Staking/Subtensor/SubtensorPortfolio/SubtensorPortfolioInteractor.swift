@@ -11,6 +11,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
     let eventCenter: EventCenterProtocol
     let applicationHandler: ApplicationHandlerProtocol
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
+    let yieldService: SubtensorYieldServiceProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
     let bittensorApiFactory: BittensorApiOperationFactoryProtocol
@@ -23,6 +24,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
     private var heldNetuids: Set<UInt16> = []
     private var forcedCatalogueNetuids: Set<UInt16> = []
     private let catalogueStore = CancellableCallStore()
+    private let rootRateStore = CancellableCallStore()
     private let logosStore = CancellableCallStore()
     private let weeklyChangesStore = CancellableCallStore()
     private let historiesStore = CancellableCallStore()
@@ -38,6 +40,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
         eventCenter: EventCenterProtocol,
         applicationHandler: ApplicationHandlerProtocol,
         catalogueService: SubtensorSubnetCatalogueServiceProtocol,
+        yieldService: SubtensorYieldServiceProtocol,
         subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
         priceHistoryService: SubtensorPriceHistoryServiceProtocol?,
         bittensorApiFactory: BittensorApiOperationFactoryProtocol,
@@ -52,6 +55,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
         self.eventCenter = eventCenter
         self.applicationHandler = applicationHandler
         self.catalogueService = catalogueService
+        self.yieldService = yieldService
         self.subnetLogosProvider = subnetLogosProvider
         self.priceHistoryService = priceHistoryService
         self.bittensorApiFactory = bittensorApiFactory
@@ -63,6 +67,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
 
     deinit {
         catalogueStore.cancel()
+        rootRateStore.cancel()
         logosStore.cancel()
         weeklyChangesStore.cancel()
         historiesStore.cancel()
@@ -119,6 +124,39 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
             case let .failure(error):
                 self?.logger.warning("Bittensor portfolio chart unavailable: \(error)")
                 self?.presenter?.didFailHistories(for: period)
+            }
+        }
+    }
+
+    func loadRootYields() {
+        executeCancellable(
+            wrapper: yieldService.createAlphaYieldsWrapper(for: SubtensorStakingPallet.rootNetuid),
+            inOperationQueue: operationQueue,
+            backingCallIn: rootRateStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(yields):
+                self?.presenter?.didReceive(rootYields: yields)
+            case let .failure(error):
+                self?.logger.warning("Bittensor portfolio root yields unavailable: \(error)")
+                self?.presenter?.didReceive(rootYields: nil)
+            }
+        }
+    }
+
+    func loadNetworkRootRate() {
+        executeCancellable(
+            wrapper: yieldService.createNetworkRootRateWrapper(),
+            inOperationQueue: operationQueue,
+            backingCallIn: rootRateStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(rate):
+                self?.presenter?.didReceive(networkRootRate: rate?.annualRate)
+            case let .failure(error):
+                self?.logger.warning("Bittensor portfolio network root rate unavailable: \(error)")
             }
         }
     }

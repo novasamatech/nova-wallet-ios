@@ -14,6 +14,8 @@ final class SubtensorPortfolioPresenter {
     private var state = SubtensorPortfolioState()
     private var weeklyChangesRequest: [SubtensorSubnetRef]?
     private var historiesPeriod: SubtensorPricePeriod?
+    private var isRootYieldsRequested = false
+    private var isNetworkRootRateRequested = false
     private var chartSelection: SubtensorPortfolioChartSelection?
 
     init(
@@ -39,6 +41,18 @@ private extension SubtensorPortfolioPresenter {
 
         let viewModel = viewModelFactory.createViewModel(for: state, locale: localizationManager.selectedLocale)
         view?.didReceive(viewModel: viewModel)
+    }
+
+    func requestRootRateIfNeeded() {
+        let groups = state.groups
+
+        if groups.isEmpty, !isNetworkRootRateRequested {
+            isNetworkRootRateRequested = true
+            interactor.loadNetworkRootRate()
+        } else if !isRootYieldsRequested, groups.contains(where: { $0.netuid == SubtensorStakingPallet.rootNetuid }) {
+            isRootYieldsRequested = true
+            interactor.loadRootYields()
+        }
     }
 
     func requestPriceDataIfNeeded() {
@@ -126,6 +140,7 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioPresenterProtocol {
 extension SubtensorPortfolioPresenter: SubnetPortfolioInteractorOutputProtocol {
     func didReceive(state positions: Multistaking.SubtensorStakingState) {
         state.positions = positions
+        requestRootRateIfNeeded()
         requestPriceDataIfNeeded()
         provideViewModel()
     }
@@ -140,6 +155,17 @@ extension SubtensorPortfolioPresenter: SubnetPortfolioInteractorOutputProtocol {
 
     func didReceive(subnetLogos: SubtensorSubnetLogos?) {
         state.subnetLogos = subnetLogos
+        provideViewModel()
+    }
+
+    func didReceive(rootYields: SubtensorAlphaYields?) {
+        state.rootYields = rootYields
+        state.isRootRateResolved = true
+        provideViewModel()
+    }
+
+    func didReceive(networkRootRate: Decimal?) {
+        state.networkRootRate = networkRootRate
         provideViewModel()
     }
 
