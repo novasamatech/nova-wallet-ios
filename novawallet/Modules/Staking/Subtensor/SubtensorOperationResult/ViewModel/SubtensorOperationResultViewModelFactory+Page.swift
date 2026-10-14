@@ -62,7 +62,10 @@ private extension SubtensorOperationResultViewModelFactory {
         let quotedOut = request.quote?.expectedOut
 
         guard case let .done(outcome, _) = state, let executed = outcome.executed else {
-            return SubtensorResultTradeAmounts(pay: request.payAmount, receive: quotedOut)
+            let receive = direction == .sell
+                ? quotedOut?.subtractOrZero(request.estimatedNetworkFee.amountForCurrentAccount ?? 0)
+                : quotedOut
+            return SubtensorResultTradeAmounts(pay: request.payAmount, receive: receive)
         }
 
         switch direction {
@@ -70,7 +73,8 @@ private extension SubtensorOperationResultViewModelFactory {
             let pay = outcome.novaFeePaid.map { executed.tao + $0 } ?? request.payAmount
             return SubtensorResultTradeAmounts(pay: pay, receive: executed.alpha)
         case .sell:
-            let receive = executed.tao.subtractOrZero(outcome.novaFeePaid ?? 0)
+            let networkFee = outcome.alphaFeePaid == nil ? (outcome.networkFeePaid ?? 0) : 0
+            let receive = executed.tao.subtractOrZero((outcome.novaFeePaid ?? 0) + networkFee)
             return SubtensorResultTradeAmounts(pay: executed.alpha, receive: receive)
         }
     }

@@ -313,6 +313,7 @@ private extension SubtensorUnstakeSetupViewModelFactory {
             target: target,
             catalogue: input.catalogue,
             taoPrice: input.price,
+            networkFee: input.fee?.amountForCurrentAccount,
             locale: locale
         )
     }

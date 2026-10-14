@@ -133,29 +133,9 @@ extension SubtensorUnstakeConfirmPresenter {
             return nil
         }
 
-        guard !unstakeModel.isFullUnstake else {
-            return SubtensorConfirmStakeChange(before: group.totalAlpha, after: 0, isEstimated: false)
-        }
+        let after = unstakeModel.isFullUnstake ? 0 : group.totalAlpha.subtractOrZero(unstakeModel.amount)
 
-        let remaining = group.totalAlpha.subtractOrZero(unstakeModel.amount)
-
-        guard
-            let feeAmount = fee?.amountForCurrentAccount,
-            let transferable = balance?.transferable,
-            let existentialDeposit,
-            SubtensorAmountPolicy.paysFeeFromStake(
-                transferable: transferable,
-                networkFee: feeAmount,
-                existentialDeposit: existentialDeposit
-            ) else {
-            return SubtensorConfirmStakeChange(before: group.totalAlpha, after: remaining, isEstimated: false)
-        }
-
-        return SubtensorConfirmStakeChange(
-            before: group.totalAlpha,
-            after: remaining.subtractOrZero(feeAmount),
-            isEstimated: true
-        )
+        return SubtensorConfirmStakeChange(before: group.totalAlpha, after: after)
     }
 
     func refreshQuote() {
@@ -199,8 +179,15 @@ extension SubtensorUnstakeConfirmPresenter {
         quotedTaoOut: Balance?
     ) -> SubtensorStakingOperation? {
         guard !model.target.isRoot else {
+            let amount = SubtensorAmountPolicy.rootUnstakeAmount(
+                requested: unstakeModel.amount,
+                transferable: balance?.transferable,
+                networkFee: fee?.amountForCurrentAccount,
+                existentialDeposit: existentialDeposit
+            )
+
             return exitHotkeys.map { .rootUnstakeAll(hotkeys: $0) } ??
-                .rootUnstake(hotkey: unstakeModel.hotkey, amount: unstakeModel.amount)
+                .rootUnstake(hotkey: unstakeModel.hotkey, amount: amount)
         }
 
         guard let limitPrice, let quotedTaoOut else {

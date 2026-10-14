@@ -30,7 +30,7 @@ private extension SubtensorConfirmViewModelContext {
         annualRate = model.validator.annualRate
         tolerance = model.tolerance
         stakeChange = model.origin == .addStake ? input.stakeBefore.map { before in
-            SubtensorConfirmStakeChange(before: before, after: before + model.amount, isEstimated: false)
+            SubtensorConfirmStakeChange(before: before, after: before + model.amount)
         } : nil
         catalogue = input.catalogue
         latestQuote = input.latestQuote
@@ -239,6 +239,7 @@ private extension SubtensorConfirmViewModelFactory {
             target: context.target,
             catalogue: context.catalogue,
             taoPrice: context.price,
+            networkFee: context.fee?.amountForCurrentAccount,
             locale: locale
         )
 
@@ -297,7 +298,7 @@ private extension SubtensorConfirmViewModelFactory {
 
         return R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiStakeAfterFormat(
             beforeString,
-            change.isEstimated ? afterString.approximatelyEqual() : afterString
+            afterString
         )
     }
 

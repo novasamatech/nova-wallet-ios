@@ -64,7 +64,6 @@ struct SubtensorConfirmViewModelInput {
 struct SubtensorConfirmStakeChange: Equatable {
     let before: Balance
     let after: Balance
-    let isEstimated: Bool
 }
 
 struct SubtensorUnstakeConfirmViewModelInput {

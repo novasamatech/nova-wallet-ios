@@ -96,6 +96,7 @@ private extension SubtensorStakingSetupViewModelFactory {
             target: target,
             catalogue: input.matchingCatalogue,
             taoPrice: input.price,
+            networkFee: nil,
             locale: locale
         )
     }
