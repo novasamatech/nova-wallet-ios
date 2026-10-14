@@ -64,6 +64,7 @@ struct SubtensorValidatorSelectSnapshot {
 }
 
 protocol SubtensorValidatorSelectViewProtocol: ControllerBackedProtocol {
+    func didReceive(header: SubtensorValidatorListHeaderViewModel, isFilterActive: Bool)
     func didReceive(state: SubtensorValidatorListState)
 }
 
@@ -92,6 +93,11 @@ protocol ValidatorSelectInteractorOutputProtocol: AnyObject {
     func didReceive(alphaPrice: Balance?)
 }
 
-protocol ValidatorSelectWireframeProtocol: SubtensorValidatorInfoPresentable, SubtensorSortSheetPresentable {
+protocol ValidatorSelectWireframeProtocol: SubtensorValidatorInfoPresentable {
+    func showFilters(
+        from view: SubtensorValidatorSelectViewProtocol?,
+        applied: SubtensorValidatorFilters,
+        onApply: @escaping (SubtensorValidatorFilters) -> Void
+    )
     func complete(from view: SubtensorValidatorSelectViewProtocol?)
 }

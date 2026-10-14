@@ -6,25 +6,21 @@ final class SubtensorSubnetDetailsInteractor {
 
     let subnet: SubtensorSubnetRef
     let chainAsset: ChainAsset
-    let accountId: AccountId?
     let priceHistoryStore: SubtensorPriceHistoryStore
-    let rankingViewService: SubtensorRankingViewServiceProtocol
+    let parametersFactory: SubnetParametersFactoryProtocol
     let presetFactory: SubtensorValidatorPresetFactoryProtocol
     let yieldService: SubtensorYieldServiceProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let positionsSyncService: SubtensorPositionsSyncServiceProtocol?
-    let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let currencyManager: CurrencyManagerProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
-    private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: StreamableProvider<PriceData>?
-    private var seed = SubtensorSubnetDetailsSnapshot(rankingView: .miss, yields: .miss)
+    private var seed = SubtensorSubnetDetailsSnapshot(yields: .miss)
     private let historyCallStore = CancellableCallStore()
-    private let listingCallStore = CancellableCallStore()
-    private let rankingCallStore = CancellableCallStore()
+    private let parametersCallStore = CancellableCallStore()
     private let presetCallStore = CancellableCallStore()
     private let yieldsCallStore = CancellableCallStore()
     private let logosCallStore = CancellableCallStore()
@@ -32,14 +28,12 @@ final class SubtensorSubnetDetailsInteractor {
     init(
         subnet: SubtensorSubnetRef,
         chainAsset: ChainAsset,
-        accountId: AccountId?,
         priceHistoryStore: SubtensorPriceHistoryStore,
-        rankingViewService: SubtensorRankingViewServiceProtocol,
+        parametersFactory: SubnetParametersFactoryProtocol,
         presetFactory: SubtensorValidatorPresetFactoryProtocol,
         yieldService: SubtensorYieldServiceProtocol,
         subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
         positionsSyncService: SubtensorPositionsSyncServiceProtocol?,
-        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue,
@@ -47,14 +41,12 @@ final class SubtensorSubnetDetailsInteractor {
     ) {
         self.subnet = subnet
         self.chainAsset = chainAsset
-        self.accountId = accountId
         self.priceHistoryStore = priceHistoryStore
-        self.rankingViewService = rankingViewService
+        self.parametersFactory = parametersFactory
         self.presetFactory = presetFactory
         self.yieldService = yieldService
         self.subnetLogosProvider = subnetLogosProvider
         self.positionsSyncService = positionsSyncService
-        self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.currencyManager = currencyManager
         self.operationQueue = operationQueue
@@ -63,8 +55,7 @@ final class SubtensorSubnetDetailsInteractor {
 
     deinit {
         historyCallStore.cancel()
-        listingCallStore.cancel()
-        rankingCallStore.cancel()
+        parametersCallStore.cancel()
         presetCallStore.cancel()
         yieldsCallStore.cancel()
         logosCallStore.cancel()
@@ -75,19 +66,6 @@ final class SubtensorSubnetDetailsInteractor {
 }
 
 private extension SubtensorSubnetDetailsInteractor {
-    func subscribeBalance() {
-        guard let accountId else {
-            presenter?.didReceiveBalance(nil)
-            return
-        }
-
-        balanceProvider = subscribeToAssetBalanceProvider(
-            for: accountId,
-            chainId: chainAsset.chain.chainId,
-            assetId: chainAsset.asset.assetId
-        )
-    }
-
     func subscribePrice() {
         guard let priceId = chainAsset.asset.priceId else {
             presenter?.didReceiveTaoPrice(nil)
@@ -120,36 +98,19 @@ private extension SubtensorSubnetDetailsInteractor {
         }
     }
 
-    func loadListing() {
-        priceHistoryStore.loadHistory(
-            for: subnet,
-            period: .all,
-            currency: currencyManager.selectedCurrency,
-            backingCallIn: listingCallStore
-        ) { [weak self] result in
-            switch result {
-            case let .success(listing):
-                self?.presenter?.didReceiveListing(listing)
-            case let .failure(error):
-                self?.logger.warning("Subtensor subnet listing history unavailable: \(error)")
-                self?.presenter?.didReceiveListing(nil)
-            }
-        }
-    }
-
-    func loadRankingView() {
+    func loadParameters() {
+        parametersCallStore.cancel()
         executeCancellable(
-            wrapper: rankingViewService.createRankingViewWrapper(),
+            wrapper: parametersFactory.createWrapper(for: subnet),
             inOperationQueue: operationQueue,
-            backingCallIn: rankingCallStore,
+            backingCallIn: parametersCallStore,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(rankingView):
-                self?.presenter?.didReceiveRankingView(rankingView)
+            case let .success(parameters): self?.presenter?.didReceiveParameters(parameters)
             case let .failure(error):
-                self?.logger.warning("Subtensor ranking view unavailable for the subnet: \(error)")
-                self?.presenter?.didReceiveRankingView(nil)
+                self?.logger.warning("Subtensor parameters unavailable: \(error)")
+                self?.presenter?.didReceiveParameters(nil)
             }
         }
     }
@@ -192,7 +153,6 @@ private extension SubtensorSubnetDetailsInteractor {
 extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol {
     func cachedSnapshot() -> SubtensorSubnetDetailsSnapshot {
         seed = SubtensorSubnetDetailsSnapshot(
-            rankingView: rankingViewService.cachedRankingView(),
             yields: yieldService.cachedAlphaYields(for: subnet.netuid)
         )
 
@@ -200,15 +160,10 @@ extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol
     }
 
     func setup() {
-        subscribeBalance()
         subscribePrice()
         subscribePositions()
 
-        loadListing()
-
-        if !seed.rankingView.isFresh {
-            loadRankingView()
-        }
+        loadParameters()
 
         if !seed.yields.isFresh {
             loadYields()
@@ -250,23 +205,6 @@ extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol
                 self?.logger.warning("Subtensor subnet validator preset failed: \(error)")
                 self?.presenter?.didReceivePreset(nil)
             }
-        }
-    }
-}
-
-extension SubtensorSubnetDetailsInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
-    func handleAssetBalance(
-        result: Result<AssetBalance?, Error>,
-        accountId _: AccountId,
-        chainId _: ChainModel.Id,
-        assetId _: AssetModel.Id
-    ) {
-        switch result {
-        case let .success(balance):
-            presenter?.didReceiveBalance(balance)
-        case let .failure(error):
-            logger.error("Subtensor subnet details balance subscription failed: \(error)")
-            presenter?.didReceiveBalance(nil)
         }
     }
 }

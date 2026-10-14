@@ -131,13 +131,13 @@ private extension SubtensorPositionSummaryView {
 
         addSubview(headerView)
         headerView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview().inset(16)
+            make.top.leading.trailing.equalToSuperview().inset(12)
         }
 
         addSubview(rowsStackView)
         rowsStackView.snp.makeConstraints { make in
             make.top.equalTo(headerView.snp.bottom).offset(8)
-            make.leading.trailing.equalToSuperview().inset(16)
+            make.leading.trailing.equalToSuperview().inset(12)
             make.bottom.equalToSuperview().inset(4)
         }
 
@@ -240,7 +240,7 @@ private final class SubtensorPositionSummaryRowView: UIView {
         addSubview(dividerView)
         dividerView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
-            make.height.equalTo(UIConstants.separatorHeight)
+            make.height.equalTo(SubtensorDividerStyle.thickness)
         }
 
         let valueView = UIView.vStack(alignment: .trailing, spacing: 2, [valueLabel, detailLabel])

@@ -159,14 +159,6 @@ struct SubtensorPositionActionViewModel: Equatable {
     let details: String?
 }
 
-struct SubtensorPositionValidatorViewModel {
-    let icon: ImageViewModelProtocol?
-    let name: String?
-    let subtitle: String
-    let rate: SubtensorPortfolioLoadable<String>
-    let rateCaption: String
-}
-
 struct SubtensorPositionNoticeViewModel: Equatable {
     let title: String
     let timeLeft: String?
@@ -178,7 +170,7 @@ struct SubtensorPositionViewModel {
     let summary: SubtensorPositionSummaryViewModel
     let priceWidget: SubtensorPriceWidgetViewModel?
     let actions: [SubtensorPositionActionViewModel]
-    let validator: SubtensorPositionValidatorViewModel
+    let validator: SubtensorValidatorCardViewModel
     let notice: SubtensorPositionNoticeViewModel?
     let isSyncFailed: Bool
 }

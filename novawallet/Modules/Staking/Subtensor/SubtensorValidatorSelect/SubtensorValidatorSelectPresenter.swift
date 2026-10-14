@@ -16,9 +16,8 @@ final class SubtensorValidatorSelectPresenter {
     private var clientGates: SubtensorClientGates?
     private var clientGatesError: Error?
     private var yields: SubtensorAlphaYields?
-    private var hasYieldsAnswer: Bool
     private var alphaPrice: Balance?
-    private var hasAlphaPriceAnswer: Bool
+    private let filterSession: SubtensorValidatorFilterSession
     private var sort: SubtensorValidatorSort
     private var query = ""
     private var selectedHotkey: AccountId?
@@ -32,7 +31,8 @@ final class SubtensorValidatorSelectPresenter {
         listFactory: SubtensorValidatorListFactory,
         delegate: SubtensorValidatorSelectDelegate,
         localizationManager: LocalizationManagerProtocol,
-        logger: LoggerProtocol
+        logger: LoggerProtocol,
+        filterSession: SubtensorValidatorFilterSession = SubtensorValidatorFilterSession()
     ) {
         self.target = target
         self.selectedHotkey = selectedHotkey
@@ -41,28 +41,28 @@ final class SubtensorValidatorSelectPresenter {
         self.listFactory = listFactory
         self.delegate = delegate
         self.logger = logger
-        sort = target.isRoot ? .totalStaked : .apy
-        hasYieldsAnswer = target.isRoot
-        hasAlphaPriceAnswer = target.isRoot
+        self.filterSession = filterSession
+        sort = filterSession.applied(isRoot: target.isRoot).sort
         self.localizationManager = localizationManager
     }
 }
 
 private extension SubtensorValidatorSelectPresenter {
-    var answeredYields: SubtensorAlphaYields? {
-        hasYieldsAnswer ? yields : nil
-    }
-
     func provideState() {
+        let header = listFactory.createLoadingViewModel(isRoot: target.isRoot, sort: sort, locale: selectedLocale)
+        view?.didReceive(
+            header: header,
+            isFilterActive: filterSession.applied(isRoot: target.isRoot) != .supportedDefault
+        )
         if let error = directoryError ?? clientGatesError {
             let viewModel = listFactory.createErrorViewModel(for: error, locale: selectedLocale)
             view?.didReceive(state: .failed(viewModel))
             return
         }
 
-        guard let directory, let clientGates, hasYieldsAnswer, hasAlphaPriceAnswer else {
+        guard let directory, let clientGates else {
             view?.didReceive(
-                state: .loading(listFactory.createLoadingViewModel(isRoot: target.isRoot, locale: selectedLocale))
+                state: .loading(header)
             )
             return
         }
@@ -114,6 +114,8 @@ private extension SubtensorValidatorSelectPresenter {
     }
 
     func apply(directory: SubtensorValidatorDirectory) {
+        guard directory.subnet.netuid == target.netuid,
+              target.isRoot || directory.subnet.registeredAt == target.subnetInfo?.networkRegisteredAt else { return }
         self.directory = directory
         directoryError = nil
 
@@ -136,14 +138,12 @@ private extension SubtensorValidatorSelectPresenter {
             apply(clientGates: clientGates)
         }
 
-        if let yields = snapshot.yields.value {
+        if let yields = snapshot.yields.value, yields.netuid == target.netuid {
             self.yields = yields
-            hasYieldsAnswer = true
         }
 
         if let alphaPrice = snapshot.alphaPrice.value {
             self.alphaPrice = alphaPrice
-            hasAlphaPriceAnswer = true
         }
     }
 }
@@ -163,9 +163,7 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectPresenterProtocol {
 
         if !target.isRoot {
             yields = nil
-            hasYieldsAnswer = false
             alphaPrice = nil
-            hasAlphaPriceAnswer = false
         }
 
         provideState()
@@ -178,23 +176,13 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectPresenterProtocol {
     }
 
     func showSortOptions() {
-        let options = SubtensorValidatorListFactory.sortOptions(isRoot: target.isRoot, yields: answeredYields)
-        let applied = SubtensorValidatorListFactory.appliedSort(sort, isRoot: target.isRoot, yields: answeredYields)
-
-        let viewModel = listFactory.createSortSheetViewModel(
-            options: options,
-            selected: applied,
-            locale: selectedLocale
-        )
-
-        wireframe.showSortSheet(from: view, viewModel: viewModel) { [weak self] index in
-            guard options.indices.contains(index) else {
-                return
+        wireframe
+            .showFilters(from: view, applied: filterSession.applied(isRoot: target.isRoot)) { [weak self] filters in
+                guard let self else { return }
+                self.filterSession.apply(filters, isRoot: self.target.isRoot)
+                self.sort = self.filterSession.applied(isRoot: self.target.isRoot).sort
+                self.provideState()
             }
-
-            self?.sort = options[index]
-            self?.provideState()
-        }
     }
 
     func select(hotkey: AccountId) {
@@ -251,14 +239,13 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectInteractorOutputProt
     }
 
     func didReceive(yields: SubtensorAlphaYields?) {
+        guard yields == nil || yields?.netuid == target.netuid else { return }
         self.yields = yields
-        hasYieldsAnswer = true
         provideState()
     }
 
     func didReceive(alphaPrice: Balance?) {
         self.alphaPrice = alphaPrice
-        hasAlphaPriceAnswer = true
         provideState()
     }
 }

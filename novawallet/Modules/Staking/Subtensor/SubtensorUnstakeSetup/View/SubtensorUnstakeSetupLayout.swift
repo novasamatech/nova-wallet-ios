@@ -64,13 +64,6 @@ final class SubtensorUnstakeSetupLayout: UIView {
         return view
     }()
 
-    let feeDisclosureLabel: UILabel = .create { label in
-        label.apply(style: .caption1Secondary)
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        label.isHidden = true
-    }
-
     let holdAlertView: InlineAlertView = {
         let view = InlineAlertView.warning()
         view.isHidden = true
@@ -182,7 +175,6 @@ private extension SubtensorUnstakeSetupLayout {
         containerView.stackView.addArrangedSubview(noteView)
         containerView.stackView.addArrangedSubview(feeAlertView)
         containerView.stackView.setCustomSpacing(16.0, after: feeAlertView)
-        containerView.stackView.addArrangedSubview(feeDisclosureLabel)
 
         let skeletons: [(SubtensorChartLoadingView, UIView, CGFloat)] = [
             (validatorSkeletonView, validatorCell, 100),

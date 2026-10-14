@@ -42,8 +42,6 @@ private extension SubtensorStakingSetupViewController {
 
         rootView.amountTitleView.titleLabel.text = strings.stakingSubtensorUiYouStake()
         rootView.amountTitleView.buttonTitle.text = strings.swapsSetupAssetMax()
-        rootView.validatorCell.titleLabel.text = strings.stakingCommonValidator()
-        rootView.apyCell.titleLabel.text = strings.stakingSubtensorUiValidatorSortApy()
         rootView.networkFeeCell.rowContentView.locale = selectedLocale
 
         let cardView = rootView.pickCardView
@@ -66,7 +64,7 @@ private extension SubtensorStakingSetupViewController {
     func setupHandlers() {
         rootView.amountTitleView.button.addTarget(self, action: #selector(actionMax), for: .touchUpInside)
         rootView.amountInputView.addTarget(self, action: #selector(actionAmountChange), for: .editingChanged)
-        rootView.validatorCell.addTarget(self, action: #selector(actionSelectValidator), for: .touchUpInside)
+        rootView.validatorCardView.addTarget(self, action: #selector(actionSelectValidator), for: .touchUpInside)
         rootView.pickCardView.headerView.addTarget(self, action: #selector(actionCardHeader), for: .touchUpInside)
         rootView.pickCardView.swapRateCell.addTarget(self, action: #selector(actionSwapRateInfo), for: .touchUpInside)
         rootView.avgBuyPriceCell.addTarget(self, action: #selector(actionAvgBuyPriceInfo), for: .touchUpInside)
@@ -76,6 +74,12 @@ private extension SubtensorStakingSetupViewController {
         )
         rootView.pickCardView.browseButton.addTarget(self, action: #selector(actionBrowse), for: .touchUpInside)
         rootView.browseButton.addTarget(self, action: #selector(actionBrowse), for: .touchUpInside)
+        rootView.rootPickCardView.validatorCell.addTarget(
+            self,
+            action: #selector(actionSelectValidator),
+            for: .touchUpInside
+        )
+        rootView.rootPickCardView.browseButton.addTarget(self, action: #selector(actionBrowse), for: .touchUpInside)
         rootView.selectionAlert.onLinkTap = { [weak self] in self?.presenter.retryQuickPick() }
         rootView.actionButton.addTarget(self, action: #selector(actionProceed), for: .touchUpInside)
     }
@@ -102,64 +106,13 @@ private extension SubtensorStakingSetupViewController {
         }
     }
 
-    func applyValidator(_ viewModel: SubtensorSetupValidatorViewModel) {
-        let cell = rootView.validatorCell
-
-        var accessory = SubtensorSetupValidatorAccessory.chevron
-
-        switch viewModel {
-        case .loading:
-            cell.canSelect = false
-            cell.bind(viewModel: nil)
-        case let .unselected(title):
-            cell.canSelect = true
-            cell.bind(details: title)
-        case let .selected(displayAddress, validatorAccessory):
-            cell.canSelect = true
-            accessory = validatorAccessory
-            cell.bind(
-                viewModel: StackCellViewModel(
-                    details: displayAddress.name ?? displayAddress.address,
-                    imageViewModel: displayAddress.imageViewModel
-                )
-            )
-        }
-
-        if cell.canSelect {
-            let image = accessory == .info ? R.image.iconInfoFilled() : R.image.iconSmallArrow()
-            cell.accessoryImageView.image = image?.tinted(with: R.color.colorIconSecondary()!)
-        }
-
-        rootView.setSkeleton(
-            rootView.validatorSkeletonView,
-            loading: viewModel.isLoading,
-            hiding: cell.rowContentView.valueView
-        )
-    }
-
-    func applyRow(
-        _ viewModel: SubtensorSetupRowViewModel,
-        cell: StackTableCell,
-        skeletonView: SubtensorChartLoadingView?
-    ) {
-        cell.isHidden = viewModel == .hidden
-
-        if case let .value(details) = viewModel {
-            cell.bind(details: details)
-        }
-
-        if let skeletonView {
-            rootView.setSkeleton(skeletonView, loading: viewModel == .loading, hiding: cell.rowContentView.valueView)
-        }
-    }
-
     func applyDetails(_ details: SubtensorSetupDetailsViewModel) {
         rootView.selectionAlert.isHidden = true
+        rootView.rootPickCardView.isHidden = true
         switch details {
         case let .selection(section, message, retryTitle):
             rootView.detailsTableView.isHidden = true
             rootView.pickCardView.isHidden = true
-            rootView.feeDisclosureLabel.isHidden = true
             rootView.sectionLabel.isHidden = false
             rootView.sectionLabel.text = section
             rootView.selectionAlert.isHidden = false
@@ -167,26 +120,25 @@ private extension SubtensorStakingSetupViewController {
             rootView.selectionAlert.setLink(title: retryTitle)
             applyAvgBuyPrice(.hidden)
         case let .root(viewModel):
-            rootView.detailsTableView.isHidden = false
-            rootView.sectionLabel.isHidden = false
+            rootView.detailsTableView.isHidden = viewModel.isQuickPick
+            rootView.rootPickCardView.isHidden = !viewModel.isQuickPick
+            rootView.sectionLabel.isHidden = !viewModel.isQuickPick
             let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
             rootView.sectionLabel.text = strings.stakingSubtensorQuickRootSection()
             rootView.pickCardView.isHidden = true
-            rootView.feeDisclosureLabel.isHidden = true
 
             applyAvgBuyPrice(.hidden)
-            applyValidator(viewModel.validator)
-            applyRow(viewModel.apy, cell: rootView.apyCell, skeletonView: rootView.apySkeletonView)
+            rootView.validatorCardView.bind(viewModel: viewModel.validator)
+            rootView.rootPickCardView.bind(viewModel, locale: selectedLocale)
+            if viewModel.isQuickPick { rootView.browseButton.isHidden = true }
             applyNetworkFee(viewModel.networkFee)
         case let .subnet(viewModel):
             rootView.detailsTableView.isHidden = true
             rootView.sectionLabel.isHidden = false
             rootView.pickCardView.isHidden = false
-            rootView.feeDisclosureLabel.isHidden = false
 
             rootView.sectionLabel.text = viewModel.sectionTitle
             rootView.pickCardView.bind(viewModel: viewModel.card)
-            rootView.feeDisclosureLabel.text = viewModel.feeDisclosure
 
             applyAvgBuyPrice(viewModel.avgBuyPrice)
         }
@@ -309,6 +261,7 @@ extension SubtensorStakingSetupViewController: SubtensorStakingSetupViewProtocol
 
         rootView.captionLabel.isHidden = viewModel.caption == nil
         rootView.captionLabel.text = viewModel.caption
+        rootView.placeCaption(afterAction: viewModel.getTao != nil)
 
         applyAction(viewModel.action)
     }

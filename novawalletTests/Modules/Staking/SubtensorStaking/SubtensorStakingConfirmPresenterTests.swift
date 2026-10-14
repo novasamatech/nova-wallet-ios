@@ -321,6 +321,8 @@ final class SubtensorStakingConfirmPresenterTests: XCTestCase {
             return nil
         }
 
+        XCTAssertNil(swap.remark)
+        XCTAssertEqual(swap.feeDisclosure, SubtensorQuoteViewModelFactory(chainAsset: makeChainAsset(), priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: CurrencyManagerStub())).novaFeeDisclosure(locale: LocalizationManager.shared.selectedLocale))
         return swap.avgBuyPrice
     }
 

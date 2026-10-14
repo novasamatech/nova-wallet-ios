@@ -175,7 +175,7 @@ private extension SubtensorConfirmViewModelFactory {
                 return createBalance(taoValue, price: context.price, locale: locale).price
             }
 
-            return SubtensorConfirmTileViewModel(amount: amount, price: fiat?.approximately())
+            return SubtensorConfirmTileViewModel(amount: isolatedAlpha(amount), price: fiat?.approximately())
         }
     }
 
@@ -226,12 +226,12 @@ private extension SubtensorConfirmViewModelFactory {
         for direction: SubtensorTradeDirection,
         isProfitEstimated: Bool,
         locale: Locale
-    ) -> String {
+    ) -> String? {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         switch direction {
         case .buy:
-            return strings.stakingSubtensorConfirmRemarkBuy()
+            return nil
         case .sell where isProfitEstimated:
             return strings.stakingSubtensorConfirmRemarkSellProfit()
         case .sell:
@@ -264,11 +264,11 @@ private extension SubtensorConfirmViewModelFactory {
         } else if let panel, let panelReceive = panel.receive {
             receive = .loaded(
                 value: SubtensorConfirmTileViewModel(
-                    amount: panelReceive.amount,
+                    amount: context.direction == .buy ? isolatedAlpha(panelReceive.amount) : panelReceive.amount,
                     price: panelReceive.price?.approximately()
                 )
             )
-            swapRate = .loaded(value: panel.swapRate)
+            swapRate = .loaded(value: isolatedAlpha(panel.swapRate))
         } else {
             receive = .loading
             swapRate = .loading
@@ -286,8 +286,15 @@ private extension SubtensorConfirmViewModelFactory {
             validatorApy: context.annualRate.map {
                 SubtensorApyFormatter.text(for: $0, style: .trailing, locale: locale)
             },
-            remark: createRemark(for: context.direction, isProfitEstimated: costBasis.isEarnedEstimated, locale: locale)
+            remark: createRemark(
+                for: context.direction, isProfitEstimated: costBasis.isEarnedEstimated, locale: locale
+            ),
+            feeDisclosure: quoteViewModelFactory.novaFeeDisclosure(locale: locale)
         )
+    }
+
+    private func isolatedAlpha(_ text: String) -> String {
+        text.hasPrefix("\u{2066}") ? text : "\u{2066}\(text)\u{2069}"
     }
 
     func createStakeAfter(_ change: SubtensorConfirmStakeChange, locale: Locale) -> String? {

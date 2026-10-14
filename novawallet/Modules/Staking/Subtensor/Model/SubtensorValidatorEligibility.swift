@@ -14,14 +14,14 @@ extension SubtensorValidatorEligibility {
     ) -> SubtensorValidatorEligibility {
         guard
             let status = item.status,
-            isRoot || !gates.requirePermit || status.hasPermit == true,
+            isRoot || status.hasPermit == true,
             let take = item.take,
             let maxTake = gates.maxTake.decimalValue,
             take <= maxTake else {
             return .unlisted
         }
 
-        return isRoot || !gates.requireActiveWithinCutoff || status.isActive == true ? .selectable : .inactive
+        return isRoot || status.isActive == true ? .selectable : .inactive
     }
 
     static func preselectedHotkey(

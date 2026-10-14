@@ -7,6 +7,7 @@ final class SubtensorValidatorInfoInteractor: AnyCancellableCleaning {
     let target: SubtensorStakeTarget
     let hotkey: AccountId
     let chainAsset: ChainAsset
+    let coverageFactory: ValidatorCoverageFactoryProtocol
     let directoryService: SubtensorValidatorDirectoryServiceProtocol
     let yieldService: SubtensorYieldServiceProtocol
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
@@ -15,6 +16,7 @@ final class SubtensorValidatorInfoInteractor: AnyCancellableCleaning {
     let logger: LoggerProtocol
 
     private var seed = SubtensorValidatorInfoSnapshot(annualRate: .miss, alphaPrice: .miss)
+    private let coverageStore = CancellableCallStore()
     private let detailStore = CancellableCallStore()
     private let rateStore = CancellableCallStore()
     private let catalogueStore = CancellableCallStore()
@@ -24,6 +26,7 @@ final class SubtensorValidatorInfoInteractor: AnyCancellableCleaning {
         target: SubtensorStakeTarget,
         hotkey: AccountId,
         chainAsset: ChainAsset,
+        coverageFactory: ValidatorCoverageFactoryProtocol,
         directoryService: SubtensorValidatorDirectoryServiceProtocol,
         yieldService: SubtensorYieldServiceProtocol,
         catalogueService: SubtensorSubnetCatalogueServiceProtocol,
@@ -35,6 +38,7 @@ final class SubtensorValidatorInfoInteractor: AnyCancellableCleaning {
         self.target = target
         self.hotkey = hotkey
         self.chainAsset = chainAsset
+        self.coverageFactory = coverageFactory
         self.directoryService = directoryService
         self.yieldService = yieldService
         self.catalogueService = catalogueService
@@ -45,6 +49,7 @@ final class SubtensorValidatorInfoInteractor: AnyCancellableCleaning {
     }
 
     deinit {
+        coverageStore.cancel()
         detailStore.cancel()
         rateStore.cancel()
         catalogueStore.cancel()
@@ -167,6 +172,17 @@ extension SubtensorValidatorInfoInteractor: SubtensorValInfoInteractorInputProto
     }
 
     func setup() {
+        executeCancellable(
+            wrapper: coverageFactory.createWrapper(for: hotkey),
+            inOperationQueue: operationQueue, backingCallIn: coverageStore, runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(value): self?.presenter?.didReceive(coverage: value)
+            case let .failure(error):
+                self?.logger.warning("Validator coverage unavailable: \(error)")
+                self?.presenter?.didReceive(coverage: nil)
+            }
+        }
         if !seed.annualRate.isFresh {
             loadRate()
         }

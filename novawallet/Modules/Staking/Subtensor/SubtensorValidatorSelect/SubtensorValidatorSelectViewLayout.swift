@@ -13,6 +13,8 @@ final class SubtensorValidatorSelectViewLayout: UIView {
         field.isHidden = true
     }
 
+    let headerView = SubtensorValidatorSectionHeaderView(reuseIdentifier: nil)
+
     let tableView: UITableView = .create { view in
         view.backgroundColor = .clear
         view.separatorStyle = .none
@@ -60,15 +62,14 @@ final class SubtensorValidatorSelectViewLayout: UIView {
     func setSearchVisible(_ visible: Bool) {
         searchField.isHidden = !visible
 
-        tableView.snp.remakeConstraints { make in
+        headerView.snp.remakeConstraints { make in
             if visible {
                 make.top.equalTo(searchField.snp.bottom).offset(12)
             } else {
                 make.top.equalTo(safeAreaLayoutGuide)
             }
-
             make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(bottomBar.snp.top)
+            make.height.equalTo(36)
         }
     }
 
@@ -103,7 +104,7 @@ final class SubtensorValidatorSelectViewLayout: UIView {
     }
 
     private func setupLayout() {
-        [searchField, tableView, emptyLabel, errorView, bottomBar].forEach(addSubview)
+        [searchField, headerView, tableView, emptyLabel, errorView, bottomBar].forEach(addSubview)
         bottomBar.addSubview(actionButton)
 
         searchField.snp.makeConstraints { make in
@@ -112,8 +113,14 @@ final class SubtensorValidatorSelectViewLayout: UIView {
             make.height.equalTo(40)
         }
 
-        tableView.snp.makeConstraints { make in
+        headerView.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide)
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(36)
+        }
+
+        tableView.snp.makeConstraints { make in
+            make.top.equalTo(headerView.snp.bottom)
             make.leading.trailing.equalToSuperview()
             make.bottom.equalTo(bottomBar.snp.top)
         }
