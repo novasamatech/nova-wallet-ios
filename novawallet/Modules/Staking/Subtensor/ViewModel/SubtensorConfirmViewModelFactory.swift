@@ -294,7 +294,7 @@ private extension SubtensorConfirmViewModelFactory {
     }
 
     private func isolatedAlpha(_ text: String) -> String {
-        text.hasPrefix("\u{2066}") ? text : text.isolatedLeftToRight()
+        text.hasPrefix("\u{2066}") ? text : SubtensorSubnetNaming.isolatedLeftToRight(text)
     }
 
     func createStakeAfter(_ change: SubtensorConfirmStakeChange, locale: Locale) -> String? {

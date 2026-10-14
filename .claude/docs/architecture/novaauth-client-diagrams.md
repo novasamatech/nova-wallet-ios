@@ -306,7 +306,7 @@ sequenceDiagram
     N->>H: Authorized GET<br/>with bearer
     H-->>N: Response, possibly native<br/>cache / revalidation
     N-->>T: Response or<br/>typed auth error
-    T-->>C: HTTP grading + factory<br/>decode
+    T-->>C: HTTP grading + factory<br/>decode / wire validation
     C->>C: Reconcile invalidation floor,<br/>auth scope and dataset generation
   end
   C-->>UI: Result/error via factory and domain service

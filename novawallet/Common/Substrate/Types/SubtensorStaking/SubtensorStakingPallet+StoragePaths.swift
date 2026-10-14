@@ -90,4 +90,8 @@ extension SubtensorStakingPallet {
     static var initialMinStakePath: ConstantCodingPath {
         ConstantCodingPath(moduleName: name, constantName: "InitialMinStake")
     }
+
+    static var initialDefaultDelegateTakePath: ConstantCodingPath {
+        ConstantCodingPath(moduleName: name, constantName: "InitialDefaultDelegateTake")
+    }
 }

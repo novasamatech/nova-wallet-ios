@@ -80,37 +80,6 @@ enum BittensorApiDecimal {
     }
 }
 
-struct BittensorApiFieldReader {
-    let route: String
-    let requestId: String?
-
-    func violation(_ field: String) -> BittensorApiError {
-        .contractViolation(detail: "GET \(route): invalid \(field)", requestId: requestId)
-    }
-
-    func require(_ condition: Bool, _ field: @autoclosure () -> String) throws {
-        guard condition else {
-            throw violation(field())
-        }
-    }
-
-    func decimal(_ value: String, _ field: @autoclosure () -> String) throws -> Decimal {
-        do {
-            return try BittensorApiDecimal.decimal(value)
-        } catch {
-            throw violation(field())
-        }
-    }
-
-    func optionalDecimal(_ value: String?, _ field: @autoclosure () -> String) throws -> Decimal? {
-        guard let value else {
-            return nil
-        }
-
-        return try decimal(value, field())
-    }
-}
-
 private extension BittensorApiDecimal {
     static let maxLength = 1024
     static let maxSignificantDigits = 38

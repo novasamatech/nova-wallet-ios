@@ -3,8 +3,9 @@
 13 October 2026 · `feature/nova-auth` · local commits only.
 
 The client remains profile 3 only, with one NovaAuth owner and one current bearer shared by
-analytics and Bittensor. Both existing POST routes are unchanged. Server authorization and
-pre-handler token rejection belong to the separately owned backend migration.
+analytics and Bittensor. The analytics POST route is unchanged; Bittensor operations/search is
+now sent as GET under the new contract. Server authorization and pre-handler token rejection
+belong to the separately owned backend migration.
 
 ## Lean test suite
 
