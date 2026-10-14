@@ -30,7 +30,6 @@ extension BittensorApi {
         let subnetWebsite: String
         let discord: String
         let additional: String
-        let reportedRootProportion: String
         let taoReserve: String
         let alphaReserve: String
         let alphaOutstanding: String

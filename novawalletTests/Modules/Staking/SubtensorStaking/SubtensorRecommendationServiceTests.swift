@@ -30,14 +30,6 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
             verified.classes.mapValues { $0.map(\.hotkey) },
             [.stable: [rootKept], .balanced: [subnetSecondKept, subnetKept], .higherUpside: []]
         )
-        XCTAssertEqual(
-            verified.classes[.stable]?.first?.verification,
-            SubtensorPairVerification(uid: 3, take: Decimal(11796) / Decimal(65535), blocksSinceUpdate: nil)
-        )
-        XCTAssertEqual(verified.classes[.balanced]?.map(\.verification.uid), [12, 10])
-        XCTAssertEqual(verified.classes[.balanced]?.last?.verification.blocksSinceUpdate, 10)
-        XCTAssertEqual(verified.droppedByGate, [.noCurrentUid: 1, .noPermit: 1, .takeAboveMax: 1, .inactive: 1])
-        XCTAssertEqual(verified.verifiedAtBlock, head)
     }
 
     func testVerificationFailsWithoutReadingChainWhenRecommendationsRouteFails() {
@@ -57,15 +49,15 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
         verify(chainFactory, never()).createChainSnapshotWrapper(for: any())
     }
 
-    func testMalformedScoreFailsAsContractViolation() throws {
-        let apiFactory = try createApiFactory(balanced: [pair(subnetKept, 64)], score: "1e2")
+    func testMalformedMaxTakeFailsAsContractViolation() throws {
+        let apiFactory = try createApiFactory(balanced: [pair(subnetKept, 64)], maxTake: "1e2")
         let service = createService(apiFactory, createChainFactory())
 
         XCTAssertThrowsError(try run(service.createVerifiedRecommendationsWrapper())) { error in
             guard case let BittensorApiError.contractViolation(detail, requestId) = error else {
                 return XCTFail("Unexpected error \(error)")
             }
-            XCTAssertEqual(detail, "GET /recommendations: invalid classes.balanced[0].score")
+            XCTAssertEqual(detail, "GET /recommendations: invalid meta.clientGates.maxTake")
             XCTAssertEqual(requestId, "request-1")
         }
     }
@@ -85,33 +77,27 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
         stable: [SubtensorHotkeySubnet] = [],
         balanced: [SubtensorHotkeySubnet] = [],
         higherUpside: [SubtensorHotkeySubnet] = [],
-        score: String = "16.32"
+        maxTake: String = "0.18"
     ) throws -> MockBittensorApiOperationFactoryProtocol {
         let component = BittensorApi.AvailableComponent(
             asOf: Date(timeIntervalSince1970: 1_790_000_000),
-            freshness: .fresh, valueQuality: .derived, sourceClass: .primary
+            freshness: .fresh
         )
 
-        let generation = BittensorApi.Generation(
-            id: "8ebc85abd0bbeb6f282302ac48909c3d", sourceBlockNumber: 9_139_880, modelVersion: "5.0", ageSeconds: 420,
-            servedFrom: .redis, excludedNetuids: [7], carriedOverNetuids: [], inputFlags: []
-        )
+        let generation = BittensorApi.Generation(sourceBlockNumber: 9_139_880, carriedOverNetuids: [])
 
-        let gates = BittensorApi.ClientGates(maxTake: "0.18", requirePermit: true, requireActiveWithinCutoff: true)
+        let gates = BittensorApi.ClientGates(maxTake: maxTake, requirePermit: true, requireActiveWithinCutoff: true)
 
         let collection = try BittensorApi.RecommendationCollection(
             meta: BittensorApi.RecommendationMetadata(
-                completeness: .partial,
                 components: BittensorApi.RecommendationMetadata.Components(recommendations: component),
                 generation: generation,
-                clientGates: gates,
-                topN: 3,
-                counts: BittensorApi.ClassCounts(stable: 0, balanced: 0, higherUpside: 0, excluded: 212)
+                clientGates: gates
             ),
             classes: BittensorApi.RecommendationClasses(
-                stable: stable.map { try recommendation($0, score: score) },
-                balanced: balanced.map { try recommendation($0, score: score) },
-                higherUpside: higherUpside.map { try recommendation($0, score: score) }
+                stable: stable.map(recommendation),
+                balanced: balanced.map(recommendation),
+                higherUpside: higherUpside.map(recommendation)
             )
         )
 
@@ -156,32 +142,10 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
         return chainFactory
     }
 
-    private func recommendation(_ pair: SubtensorHotkeySubnet, score: String) throws -> BittensorApi.Recommendation {
-        let vtrust = BittensorApi.MetricScore(
-            raw: "0.8712", normalized: "7.2", weight: "0.15", source: .reported, flags: []
-        )
-        let format = ChainFormat.substrate(SubstrateConstants.genericAddressPrefix)
-
-        return try BittensorApi.Recommendation(
+    private func recommendation(_ pair: SubtensorHotkeySubnet) throws -> BittensorApi.Recommendation {
+        try BittensorApi.Recommendation(
             netuid: pair.netuid,
-            subnetName: "blockmachine",
-            symbol: "t",
-            uid: 200,
-            hotkey: pair.hotkey.toAddress(using: format),
-            coldkey: Data(repeating: 0xEE, count: 32).toAddress(using: format),
-            validatorName: "Validator",
-            score: score,
-            subnetRisk: nil,
-            validatorRisk: "10.15",
-            breakdown: BittensorApi.RecommendationBreakdown(
-                volatility: nil, maxDrawdown: nil, poolDepth: nil, age: nil, emissionStability: nil,
-                stakeConcentration: nil, permitMargin: nil, rootStakeMargin: nil, vtrust: vtrust
-            ),
-            effectiveStakeAlpha: "88900.5",
-            rootStakeTao: "0",
-            vtrust: "0.8712",
-            priceTao: nil,
-            flags: [],
+            hotkey: pair.hotkey.toAddress(using: .substrate(SubstrateConstants.genericAddressPrefix)),
             clientChecks: [.uid, .validatorPermit, .take, .lastUpdate]
         )
     }

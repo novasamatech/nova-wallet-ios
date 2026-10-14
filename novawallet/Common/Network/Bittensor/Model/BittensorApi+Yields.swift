@@ -20,12 +20,7 @@ extension BittensorApi {
         let metricKind: String
         let netuid: UInt16
         let hotkey: String
-        let validatorName: String
         let reportedRate: String
-        let reportedValidatorTrust: String
-        let reportedAlphaDividendsPerHotkey: String
-        let reportedAlphaStake: String
-        let reportedNominatedStake: String
         let sourceTimestamp: String
     }
 }

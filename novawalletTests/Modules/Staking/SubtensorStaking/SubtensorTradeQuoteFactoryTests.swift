@@ -111,9 +111,7 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
                 taoAmount: 4_955_361_688,
                 alphaAmount: alphaOut,
                 taoFee: 2_496_518,
-                alphaFee: 0,
-                taoSlippage: 0,
-                alphaSlippage: 0
+                alphaFee: 0
             )
         )
     }
@@ -125,9 +123,7 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
                 taoAmount: taoOut,
                 alphaAmount: 56_171_700_618,
                 taoFee: 0,
-                alphaFee: 28_299_382,
-                taoSlippage: 0,
-                alphaSlippage: 0
+                alphaFee: 28_299_382
             )
         )
     }

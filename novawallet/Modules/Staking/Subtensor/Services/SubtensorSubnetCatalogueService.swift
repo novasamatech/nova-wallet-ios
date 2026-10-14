@@ -43,14 +43,14 @@ private extension SubtensorSubnetCatalogueService {
         var subnets: [SubtensorCatalogueSubnet] = []
 
         for (index, item) in response.value.items.enumerated() {
+            let subnet = try makeSubnet(item, path: "items[\(index)]", stamps: stamps, requestId: response.requestId)
+
             guard item.netuid != SubtensorStakingPallet.rootNetuid, !listedNetuids.contains(item.netuid) else {
                 logger.warning("Skipped the subnet catalogue row items[\(index)] with netuid \(item.netuid)")
                 continue
             }
 
             listedNetuids.insert(item.netuid)
-
-            let subnet = try makeSubnet(item, path: "items[\(index)]", stamps: stamps, requestId: response.requestId)
             subnets.append(subnet)
         }
 
@@ -89,11 +89,13 @@ private extension SubtensorSubnetCatalogueService {
     }
 
     static func amount(_ value: String, field: String, requestId: String?) throws -> Balance {
-        do {
-            return try BittensorApiDecimal.atomic(value, scale: atomicScale)
-        } catch {
+        guard
+            let amount = try? BittensorApiDecimal.atomic(value, scale: atomicScale),
+            amount <= Balance(UInt64.max) else {
             throw BittensorApiError.contractViolation(detail: "GET /subnets: invalid \(field)", requestId: requestId)
         }
+
+        return amount
     }
 }
 
