@@ -148,7 +148,7 @@ private extension SubtensorPositionPresenter {
         }
 
         isSubnetsInfoUnavailable = false
-        interactor.loadSubnetsInfo(forcingRefresh: true)
+        interactor.loadSubnetsInfo()
     }
 }
 
@@ -294,7 +294,7 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
                 isSubnetsInfoUnavailable = true
             } else {
                 isSubnetsRefreshForced = true
-                interactor.loadSubnetsInfo(forcingRefresh: true)
+                interactor.loadSubnetsInfo()
             }
 
             return

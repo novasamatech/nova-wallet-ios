@@ -17,7 +17,7 @@ enum SubtensorPositionViewFactory {
             catalogueService: earnServices.catalogueService,
             yieldService: earnServices.yieldService,
             subnetLogosProvider: earnServices.subnetLogosProvider,
-            priceHistoryStore: SubtensorPriceHistoryStore(state: state, operationQueue: operationQueue),
+            priceHistoryService: earnServices.priceHistoryService,
             validatorFactory: SubtensorValidatorPresetFactory(
                 directoryService: earnServices.validatorDirectoryService,
                 recommendationService: earnServices.recommendationService,

@@ -53,7 +53,7 @@ final class SubtensorCostBasisServiceTests: XCTestCase {
         }
     }
 
-    func testOwnStakingChangeRefetchesHistory() throws {
+    func testOwnStakingChangeDropsCostBasisSeed() throws {
         let apiOperationFactory = createApiOperationFactory(pages: [
             createPage(1, nextPage: nil, rows: [
                 createOperation(netuid: chutesNetuid, amountIn: "1.25", amountOut: "25", price: "0.05")
@@ -63,9 +63,8 @@ final class SubtensorCostBasisServiceTests: XCTestCase {
         let eventCenter = EventCenter(syncQueue: eventQueue)
         let service = createService(apiOperationFactory, eventCenter: eventCenter)
 
-        _ = try run(service.createCostBasisWrapper(for: accountId, netuid: chutesNetuid))
-        _ = try run(service.createCostBasisWrapper(for: accountId, netuid: chutesNetuid))
-        verify(apiOperationFactory, times(1)).createOperationsWrapper(accountSubject: any(), page: any())
+        let costBasis = try run(service.createCostBasisWrapper(for: accountId, netuid: chutesNetuid))
+        XCTAssertEqual(service.cachedCostBasis(for: accountId, netuid: chutesNetuid).value, costBasis)
 
         eventCenter.notify(
             with: SubtensorStakingChanged(
@@ -74,8 +73,11 @@ final class SubtensorCostBasisServiceTests: XCTestCase {
             )
         )
         eventQueue.sync {}
+        XCTAssertNil(service.cachedCostBasis(for: accountId, netuid: chutesNetuid).value)
+
         _ = try run(service.createCostBasisWrapper(for: accountId, netuid: chutesNetuid))
 
+        XCTAssertNil(service.cachedCostBasis(for: accountId, netuid: chutesNetuid).value)
         verify(apiOperationFactory, times(2)).createOperationsWrapper(accountSubject: any(), page: any())
     }
 
@@ -108,7 +110,6 @@ final class SubtensorCostBasisServiceTests: XCTestCase {
             apiOperationFactory: apiOperationFactory,
             operationQueue: OperationQueue(),
             eventCenter: eventCenter,
-            walkSettings: SubtensorCostBasisWalk.Settings(requestSpacing: 0, retryDelay: 0, maxPages: 10),
             timeProvider: { clock }
         )
     }

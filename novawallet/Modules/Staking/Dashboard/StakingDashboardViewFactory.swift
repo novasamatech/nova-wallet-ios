@@ -4,7 +4,8 @@ import Foundation_iOS
 struct StakingDashboardViewFactory {
     static func createView(
         walletNotificationService: WalletNotificationServiceProtocol,
-        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol,
+        assetListObservable: AssetListModelObservable
     ) -> StakingDashboardViewProtocol? {
         let stateObserver = Observable(state: StakingDashboardModel())
 
@@ -22,7 +23,7 @@ struct StakingDashboardViewFactory {
             delegatedAccountSyncService: delegatedAccountSyncService,
             subtensorFlowState: SubtensorStakingFlowState(
                 coingeckoOperationFactory: CoingeckoOperationFactory(),
-                operationQueue: OperationManagerFacade.sharedDefaultQueue
+                assetListObservable: assetListObservable
             )
         )
 
