@@ -50,11 +50,6 @@ protocol SubtensorApiOperationFactoryProtocol {
         blockHash: BlockHash?
     ) -> CompoundOperationWrapper<UInt16>
 
-    /// nil when the chain-wide ValueQuery key is unset, so the caller applies the runtime default
-    func createSubnetOwnerCutWrapper(
-        blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<UInt16?>
-
     func createSubtokenEnabledWrapper(
         for netuids: [UInt16],
         blockHash: BlockHash?
@@ -64,10 +59,6 @@ protocol SubtensorApiOperationFactoryProtocol {
         coldkey: AccountId,
         blockHash: BlockHash?
     ) -> CompoundOperationWrapper<[SubtensorStakingPallet.BasketClaimPreview]>
-
-    func createRootClaimableThresholdWrapper(
-        blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<SubtensorStakingPallet.FixedPoint96F32?>
 }
 
 final class SubtensorApiOperationFactory {
@@ -368,25 +359,6 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
         )
     }
 
-    func createSubnetOwnerCutWrapper(
-        blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<UInt16?> {
-        createStorageWrapper(
-            blockHash: blockHash,
-            query: { engine, factory, atBlock in
-                self.requestFactory.queryItem(
-                    engine: engine,
-                    factory: factory,
-                    storagePath: SubtensorStakingPallet.subnetOwnerCutPath,
-                    at: atBlock
-                )
-            },
-            mapping: { (response: StorageResponse<StringScaleMapper<UInt16>>) in
-                response.value?.value
-            }
-        )
-    }
-
     func createSubtokenEnabledWrapper(
         for netuids: [UInt16],
         blockHash: BlockHash?
@@ -420,26 +392,6 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
             path: SubtensorStakingPallet.rootBasketClaimPreviewsApi,
             blockHash: blockHash,
             paramsClosure: createSingleParamClosure(BytesCodable(wrappedValue: coldkey))
-        )
-    }
-
-    func createRootClaimableThresholdWrapper(
-        blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<SubtensorStakingPallet.FixedPoint96F32?> {
-        createStorageWrapper(
-            blockHash: blockHash,
-            query: { engine, factory, atBlock in
-                self.requestFactory.queryItems(
-                    engine: engine,
-                    keyParams: { [StringScaleMapper(value: SubtensorStakingPallet.rootNetuid)] },
-                    factory: factory,
-                    storagePath: SubtensorStakingPallet.rootClaimableThresholdPath,
-                    options: StorageQueryListOptions(atBlock: atBlock)
-                )
-            },
-            mapping: { (responses: [StorageResponse<SubtensorStakingPallet.FixedPoint96F32>]) in
-                responses.first?.value
-            }
         )
     }
 }

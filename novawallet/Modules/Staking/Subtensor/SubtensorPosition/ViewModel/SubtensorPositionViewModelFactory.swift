@@ -182,34 +182,11 @@ private extension SubtensorPositionViewModelFactory {
     }
 
     func createClaimDetails(for state: SubtensorPositionState, locale: Locale) -> String? {
-        guard
-            !state.isClaimableFailed,
-            let claimable = state.claimable,
-            let minimumClaim = claimable.minimumClaim else {
+        guard !state.isClaimableFailed, let target = state.claimTarget else {
             return nil
         }
 
-        if let target = state.claimTarget {
-            return formatTao(target.redeemable, locale: locale)
-        }
-
-        let isOwed = claimable.previews.contains { $0.redeemable > 0 }
-        let reachesMinimum = claimable.previews.contains { preview in
-            SubtensorRootClaimRule.isClaimable(preview, minimumClaim: minimumClaim)
-        }
-
-        guard isOwed, !reachesMinimum else {
-            return nil
-        }
-
-        let minimum = balanceViewModelFactory.amountFromValue(
-            decimal(minimumClaim),
-            roundingMode: .up
-        ).value(for: locale)
-
-        return R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorClaimMinimumDetailsFormat(
-            minimum
-        )
+        return formatTao(target.redeemable, locale: locale)
     }
 
     func createActions(for state: SubtensorPositionState, locale: Locale) -> [SubtensorPositionActionViewModel] {

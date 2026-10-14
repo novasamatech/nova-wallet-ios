@@ -104,11 +104,11 @@ extension SubtensorStakingSetupViewModelFactory {
         switch input.mode {
         case .rootDetails:
             return input.rootEntryPresentation == .quickPickRoot || input.quickPickOrder != nil
-                ? strings.stakingSubtensorBannerTitle() : strings.stakingSubtensorUiStakeToRoot()
+                ? strings.stakingSubtensorUiEarnTitle() : strings.stakingSubtensorUiStakeToRoot()
         case .addStake:
             return strings.stakingSubtensorUiAddStakeRootTitle()
         case .quickPick, .subnetPick:
-            return strings.stakingSubtensorBannerTitle()
+            return strings.stakingSubtensorUiEarnTitle()
         case let .buyMore(position):
             let subnetTitle = SubtensorSubnetNaming.title(
                 for: position.netuid,

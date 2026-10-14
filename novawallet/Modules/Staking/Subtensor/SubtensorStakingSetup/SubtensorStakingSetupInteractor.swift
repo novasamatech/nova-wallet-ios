@@ -77,13 +77,25 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
     func loadQuickPickSnapshot(generation: Int, forcingRefresh: Bool) {
         quickPickCallStore.cancel()
         let subnetsService = subnetsService
-        let operation = AsyncClosureOperation<SubtensorSubnetsInfo> { completion in
+        let catalogueWrapper = catalogueService.createCatalogueWrapper()
+        let infoOperation = AsyncClosureOperation<SubtensorSubnetsInfo> { completion in
             subnetsService.fetchSubnetsInfo(
                 forcingRefresh: forcingRefresh, runningCompletionIn: .global(), completion: completion
             )
         }
+        let mergeOperation = ClosureOperation<(SubtensorSubnetCatalogue, SubtensorSubnetsInfo)> {
+            (
+                try catalogueWrapper.targetOperation.extractNoCancellableResultData(),
+                try infoOperation.extractNoCancellableResultData()
+            )
+        }
+        mergeOperation.addDependency(catalogueWrapper.targetOperation)
+        mergeOperation.addDependency(infoOperation)
         executeCancellable(
-            wrapper: CompoundOperationWrapper(targetOperation: operation),
+            wrapper: CompoundOperationWrapper(
+                targetOperation: mergeOperation,
+                dependencies: catalogueWrapper.allOperations + [infoOperation]
+            ),
             inOperationQueue: operationQueue,
             backingCallIn: quickPickCallStore,
             runningCallbackIn: .main

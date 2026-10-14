@@ -34,11 +34,6 @@ extension SubtensorStakingPallet {
         StorageCodingPath(moduleName: name, itemName: "ColdkeySwapAnnouncements")
     }
 
-    /// chain-wide StorageValue, not a per-subnet map (subtensor: `pallets/subtensor/src/lib.rs:2015`)
-    static var subnetOwnerCutPath: StorageCodingPath {
-        StorageCodingPath(moduleName: name, itemName: "SubnetOwnerCut")
-    }
-
     static var rootStakeUnlockIntervalPath: StorageCodingPath {
         StorageCodingPath(moduleName: name, itemName: "RootStakeUnlockInterval")
     }
@@ -53,10 +48,6 @@ extension SubtensorStakingPallet {
 
     static var nominatorMinRequiredStakePath: StorageCodingPath {
         StorageCodingPath(moduleName: name, itemName: "NominatorMinRequiredStake")
-    }
-
-    static var rootClaimableThresholdPath: StorageCodingPath {
-        StorageCodingPath(moduleName: name, itemName: "RootClaimableThreshold")
     }
 
     static var safeModeEnteredUntilPath: StorageCodingPath {
@@ -89,9 +80,5 @@ extension SubtensorStakingPallet {
 
     static var initialMinStakePath: ConstantCodingPath {
         ConstantCodingPath(moduleName: name, constantName: "InitialMinStake")
-    }
-
-    static var initialDefaultDelegateTakePath: ConstantCodingPath {
-        ConstantCodingPath(moduleName: name, constantName: "InitialDefaultDelegateTake")
     }
 }
