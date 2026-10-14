@@ -30,11 +30,8 @@ extension SubtensorRootClaimableFetchFactory: SubtensorRootClaimableFetching {
             blockHash: blockHash
         )
 
-        let thresholdWrapper = operationFactory.createRootClaimableThresholdWrapper(blockHash: blockHash)
-
         let mappingOperation = ClosureOperation<SubtensorRootClaimable> {
             let previews = try previewsWrapper.targetOperation.extractNoCancellableResultData()
-            let threshold = try thresholdWrapper.targetOperation.extractNoCancellableResultData()
 
             return SubtensorRootClaimable(
                 previews: previews.map { preview in
@@ -44,17 +41,13 @@ extension SubtensorRootClaimableFetchFactory: SubtensorRootClaimableFetching {
                         redeemable: preview.redeemableTao,
                         forfeitedEstimate: preview.forfeitedTaoEst
                     )
-                },
-                minimumClaim: SubtensorRootClaimRule.minimumClaim(fromThresholdBits: threshold?.bits)
+                }
             )
         }
 
         mappingOperation.addDependency(previewsWrapper.targetOperation)
-        mappingOperation.addDependency(thresholdWrapper.targetOperation)
 
-        return thresholdWrapper
-            .insertingHead(operations: previewsWrapper.allOperations)
-            .insertingTail(operation: mappingOperation)
+        return previewsWrapper.insertingTail(operation: mappingOperation)
     }
 
     func createLatestClaimableWrapper(for coldkey: AccountId) -> CompoundOperationWrapper<SubtensorRootClaimable> {

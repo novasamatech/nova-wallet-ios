@@ -64,10 +64,6 @@ protocol SubtensorApiOperationFactoryProtocol {
         coldkey: AccountId,
         blockHash: BlockHash?
     ) -> CompoundOperationWrapper<[SubtensorStakingPallet.BasketClaimPreview]>
-
-    func createRootClaimableThresholdWrapper(
-        blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<SubtensorStakingPallet.FixedPoint96F32?>
 }
 
 final class SubtensorApiOperationFactory {
@@ -420,26 +416,6 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
             path: SubtensorStakingPallet.rootBasketClaimPreviewsApi,
             blockHash: blockHash,
             paramsClosure: createSingleParamClosure(BytesCodable(wrappedValue: coldkey))
-        )
-    }
-
-    func createRootClaimableThresholdWrapper(
-        blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<SubtensorStakingPallet.FixedPoint96F32?> {
-        createStorageWrapper(
-            blockHash: blockHash,
-            query: { engine, factory, atBlock in
-                self.requestFactory.queryItems(
-                    engine: engine,
-                    keyParams: { [StringScaleMapper(value: SubtensorStakingPallet.rootNetuid)] },
-                    factory: factory,
-                    storagePath: SubtensorStakingPallet.rootClaimableThresholdPath,
-                    options: StorageQueryListOptions(atBlock: atBlock)
-                )
-            },
-            mapping: { (responses: [StorageResponse<SubtensorStakingPallet.FixedPoint96F32>]) in
-                responses.first?.value
-            }
         )
     }
 }

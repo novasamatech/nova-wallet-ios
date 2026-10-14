@@ -14,7 +14,6 @@ struct SubtensorStakingPreflight: Equatable {
     let lastStakeBlock: UInt64?
     let minStake: Balance
     let effectiveNominatorMinStake: Balance
-    let rootClaimableThreshold: Balance
     let delegateTake: UInt16
     var hotkeyOwner: AccountId?
 }
@@ -23,14 +22,6 @@ extension SubtensorStakingPreflight {
     /// NominatorMinRequiredStake stores a per-million factor of the min stake constant, not raos
     static func effectiveNominatorMinStake(minStake: Balance, factor: Balance) -> Balance {
         minStake * factor / BigUInt(1_000_000)
-    }
-
-    static func rootClaimableThreshold(fromBits bits: Balance?) -> Balance {
-        guard let bits else {
-            return SubtensorStakingPallet.defaultRootClaimableThreshold
-        }
-
-        return bits >> SubtensorStakingPallet.fixedPointFractionalBits
     }
 }
 
@@ -72,14 +63,12 @@ private extension SubtensorPreflightFactory {
         let unlockInterval: CompoundOperationWrapper<StorageResponse<StringScaleMapper<UInt64>>>
         let lastStakeBlock: CompoundOperationWrapper<[StorageResponse<StringScaleMapper<UInt64>>]>
         let minNominatorFactor: CompoundOperationWrapper<StorageResponse<StringScaleMapper<Balance>>>
-        let claimableThresholdBits: CompoundOperationWrapper<[StorageResponse<SubtensorStakingPallet.FixedPoint96F32>]>
         let delegateTake: CompoundOperationWrapper<[StorageResponse<StringScaleMapper<UInt16>>]>
 
         var allOperations: [Operation] {
             owner.allOperations + networksAdded.allOperations + subtokenEnabled.allOperations +
                 swapAnnouncement.allOperations + safeMode.allOperations + unlockInterval.allOperations +
-                lastStakeBlock.allOperations + minNominatorFactor.allOperations +
-                claimableThresholdBits.allOperations + delegateTake.allOperations
+                lastStakeBlock.allOperations + minNominatorFactor.allOperations + delegateTake.allOperations
         }
 
         var targetOperations: [Operation] {
@@ -92,7 +81,6 @@ private extension SubtensorPreflightFactory {
                 unlockInterval.targetOperation,
                 lastStakeBlock.targetOperation,
                 minNominatorFactor.targetOperation,
-                claimableThresholdBits.targetOperation,
                 delegateTake.targetOperation
             ]
         }
@@ -158,13 +146,6 @@ private extension SubtensorPreflightFactory {
                 factory: codingFactoryClosure,
                 storagePath: SubtensorStakingPallet.nominatorMinRequiredStakePath
             ),
-            claimableThresholdBits: requestFactory.queryItems(
-                engine: engine,
-                keyParams: { [StringScaleMapper(value: SubtensorStakingPallet.rootNetuid)] },
-                factory: codingFactoryClosure,
-                storagePath: SubtensorStakingPallet.rootClaimableThresholdPath,
-                options: StorageQueryListOptions()
-            ),
             delegateTake: requestFactory.queryItems(
                 engine: engine,
                 keyParams: { [BytesCodable(wrappedValue: hotkey)] },
@@ -208,9 +189,6 @@ private extension SubtensorPreflightFactory {
             let factor = try reads.minNominatorFactor.targetOperation
                 .extractNoCancellableResultData().value?.value ?? 0
 
-            let thresholdBits = try reads.claimableThresholdBits.targetOperation
-                .extractNoCancellableResultData().first?.value?.bits
-
             let minStake = try minStakeOperation.extractNoCancellableResultData()
 
             let storedTake = try reads.delegateTake.targetOperation
@@ -238,9 +216,6 @@ private extension SubtensorPreflightFactory {
                 effectiveNominatorMinStake: SubtensorStakingPreflight.effectiveNominatorMinStake(
                     minStake: minStake,
                     factor: factor
-                ),
-                rootClaimableThreshold: SubtensorStakingPreflight.rootClaimableThreshold(
-                    fromBits: thresholdBits
                 ),
                 delegateTake: delegateTake,
                 hotkeyOwner: hotkeyExists ? ownerResponse?.value?.wrappedValue : nil

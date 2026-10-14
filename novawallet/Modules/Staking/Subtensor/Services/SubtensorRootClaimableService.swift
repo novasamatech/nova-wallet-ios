@@ -4,12 +4,6 @@ import Operation_iOS
 
 struct SubtensorRootClaimable: Equatable {
     let previews: [SubtensorRootClaimPreview]
-    let minimumClaim: Balance?
-
-    init(previews: [SubtensorRootClaimPreview], minimumClaim: Balance? = nil) {
-        self.previews = previews
-        self.minimumClaim = minimumClaim
-    }
 
     var totalRedeemable: Balance {
         previews.reduce(Balance.zero) { $0 + $1.redeemable }

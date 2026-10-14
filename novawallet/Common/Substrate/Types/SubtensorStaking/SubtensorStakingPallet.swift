@@ -31,14 +31,4 @@ enum SubtensorStakingPallet {
 
     // SubnetOwnerCut chain-wide default (runtime/src/lib.rs:860); governance-mutable
     static let defaultSubnetOwnerCut: UInt16 = 11796
-
-    // DefaultMinRootClaimAmount applied when RootClaimableThreshold[root] is unset (lib.rs:502-505)
-    static let defaultRootClaimableThreshold = BigUInt(500_000)
-
-    // I96F32 storage values carry the integer part shifted left by the fractional bit count
-    static let fixedPointFractionalBits = 32
-
-    struct FixedPoint96F32: Decodable, Equatable {
-        @StringCodable var bits: Balance
-    }
 }
