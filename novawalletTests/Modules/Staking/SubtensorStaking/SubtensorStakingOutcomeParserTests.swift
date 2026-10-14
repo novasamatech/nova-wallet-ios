@@ -17,11 +17,16 @@ final class SubtensorStakingOutcomeParserTests: XCTestCase {
             stakeRemoved(tao: 734_304, alpha: 95_364_155, poolFee: 0),
             stakeRemoved(tao: 3_840_000_000, alpha: 499_750_000_000, poolFee: 250_000_000),
             stakeRemoved(tao: 19_500_000, alpha: 2_598_700_000, poolFee: 1_300_000),
-            transfer(from: subnetAccount(), to: coldkey, amount: 3_859_500_000),
-            transfer(from: subnetAccount(), to: blockAuthor, amount: 11_467_258),
-            transfer(from: coldkey, to: beneficiary, amount: 11_467_258),
-            alphaFeePaid(alphaFee: 95_364_155, taoAmount: 734_304),
-            transactionFeePaid(actualFee: 700_000)
+            SubtensorFixtureDecoding.transferEvent(from: subnetAccount(), to: coldkey, amount: 3_859_500_000),
+            SubtensorFixtureDecoding.transferEvent(from: subnetAccount(), to: blockAuthor, amount: 11_467_258),
+            SubtensorFixtureDecoding.transferEvent(from: coldkey, to: beneficiary, amount: 11_467_258),
+            SubtensorFixtureDecoding.alphaFeePaidEvent(
+                coldkey: coldkey,
+                netuid: netuid,
+                alphaFee: 95_364_155,
+                taoAmount: 734_304
+            ),
+            SubtensorFixtureDecoding.transactionFeePaidEvent(who: coldkey, actualFee: 700_000)
         ]
         let operation = SubtensorStakingOperation.subnetSell(
             hotkey: hotkey,
@@ -45,10 +50,10 @@ final class SubtensorStakingOutcomeParserTests: XCTestCase {
 
     func testBuyOutcomeReportsStakeAddedNovaFeeAndNetworkFee() throws {
         let events = [
-            transfer(from: coldkey, to: subnetAccount(), amount: 9_915_716_411),
+            SubtensorFixtureDecoding.transferEvent(from: coldkey, to: subnetAccount(), amount: 9_915_716_411),
             stakeAdded(tao: 9_915_716_411, alpha: 133_000_000_000, poolFee: 4_993_036),
-            transfer(from: coldkey, to: beneficiary, amount: 84_283_589),
-            transactionFeePaid(actualFee: 1_500_000)
+            SubtensorFixtureDecoding.transferEvent(from: coldkey, to: beneficiary, amount: 84_283_589),
+            SubtensorFixtureDecoding.transactionFeePaidEvent(who: coldkey, actualFee: 1_500_000)
         ]
         let operation = SubtensorStakingOperation.subnetBuy(
             hotkey: hotkey,
@@ -72,7 +77,7 @@ final class SubtensorStakingOutcomeParserTests: XCTestCase {
     func testInterruptedBatchFailsWithTheInnerDispatchError() {
         let events = [
             stakeAdded(tao: 996_999_500, alpha: 129_000_000_000, poolFee: 498_000),
-            batchInterrupted(itemIndex: 1, palletIndex: 5, errorIndex: 4)
+            SubtensorFixtureDecoding.batchInterruptedEvent(itemIndex: 1, palletIndex: 5, errorIndex: 4)
         ]
         let operation = SubtensorStakingOperation.subnetBuy(
             hotkey: hotkey,
@@ -114,30 +119,24 @@ final class SubtensorStakingOutcomeParserTests: XCTestCase {
     }
 
     private func stakeAdded(tao: UInt64, alpha: UInt64, poolFee: UInt64) -> String {
-        "0702" + coldkey.toHex() + hotkey.toHex() + le(tao) + le(alpha) + le(netuid) + le(poolFee)
+        SubtensorFixtureDecoding.stakeAddedEvent(
+            coldkey: coldkey,
+            hotkey: hotkey,
+            netuid: netuid,
+            tao: tao,
+            alpha: alpha,
+            poolFee: poolFee
+        )
     }
 
     private func stakeRemoved(tao: UInt64, alpha: UInt64, poolFee: UInt64) -> String {
-        "0703" + coldkey.toHex() + hotkey.toHex() + le(tao) + le(alpha) + le(netuid) + le(poolFee)
-    }
-
-    private func alphaFeePaid(alphaFee: UInt64, taoAmount: UInt64) -> String {
-        "0780" + coldkey.toHex() + le(netuid) + le(alphaFee) + le(taoAmount)
-    }
-
-    private func transactionFeePaid(actualFee: UInt64) -> String {
-        "0600" + coldkey.toHex() + le(actualFee) + le(UInt64(0))
-    }
-
-    private func transfer(from sender: AccountId, to receiver: AccountId, amount: UInt64) -> String {
-        "0502" + sender.toHex() + receiver.toHex() + le(amount)
-    }
-
-    private func batchInterrupted(itemIndex: UInt32, palletIndex: UInt8, errorIndex: UInt8) -> String {
-        "0b00" + le(itemIndex) + "03" + le(palletIndex) + le(errorIndex) + "000000"
-    }
-
-    private func le<T: FixedWidthInteger>(_ value: T) -> String {
-        SubtensorFixtureDecoding.littleEndianHex(value)
+        SubtensorFixtureDecoding.stakeRemovedEvent(
+            coldkey: coldkey,
+            hotkey: hotkey,
+            netuid: netuid,
+            tao: tao,
+            alpha: alpha,
+            poolFee: poolFee
+        )
     }
 }

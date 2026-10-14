@@ -55,25 +55,11 @@ final class SubtensorStakingPositionsSyncServiceTests: XCTestCase {
         _ = performRefresh(on: service)
 
         stubFetch(fetchFactory, result: .failure(CommonError.dataCorruption))
-        let failureExpectation = expectation(description: "failure published")
-        var isFailed: Bool?
-        service.add(failureObserver: self, sendStateOnSubscription: false, queue: .main) { _, newValue in
-            isFailed = newValue
-            failureExpectation.fulfill()
-        }
-        service.refresh()
-        wait(for: [failureExpectation], timeout: 10)
 
-        let retainedExpectation = expectation(description: "last state retained")
-        var retained: Multistaking.SubtensorStakingState?
-        service.add(observer: NSObject(), sendStateOnSubscription: true, queue: .main) { _, newState in
-            retained = newState ?? nil
-            retainedExpectation.fulfill()
-        }
-        wait(for: [retainedExpectation], timeout: 10)
+        let isFailed = performFailingRefresh(on: service)
 
         XCTAssertEqual(isFailed, true)
-        XCTAssertEqual(retained, state)
+        XCTAssertEqual(fetchCurrentState(of: service), state)
     }
 
     private func performRefresh(
@@ -88,6 +74,39 @@ final class SubtensorStakingPositionsSyncServiceTests: XCTestCase {
             stateExpectation.fulfill()
         }
         service.refresh()
+        wait(for: [stateExpectation], timeout: 10)
+        service.remove(observer: observer)
+
+        return received
+    }
+
+    private func performFailingRefresh(on service: SubtensorStakingPositionsSyncService) -> Bool? {
+        let failureExpectation = expectation(description: "failure published")
+        var isFailed: Bool?
+        let observer = NSObject()
+
+        service.add(failureObserver: observer, sendStateOnSubscription: false, queue: .main) { _, newValue in
+            isFailed = newValue
+            failureExpectation.fulfill()
+        }
+        service.refresh()
+        wait(for: [failureExpectation], timeout: 10)
+        service.remove(failureObserver: observer)
+
+        return isFailed
+    }
+
+    private func fetchCurrentState(
+        of service: SubtensorStakingPositionsSyncService
+    ) -> Multistaking.SubtensorStakingState? {
+        let stateExpectation = expectation(description: "current state")
+        var received: Multistaking.SubtensorStakingState?
+        let observer = NSObject()
+
+        service.add(observer: observer, sendStateOnSubscription: true, queue: .main) { _, newState in
+            received = newState ?? nil
+            stateExpectation.fulfill()
+        }
         wait(for: [stateExpectation], timeout: 10)
         service.remove(observer: observer)
 
