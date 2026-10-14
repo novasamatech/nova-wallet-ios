@@ -134,21 +134,20 @@ module should call `EvmTransactionService`, not the RPC layer.
 provider. Config is
 fetched once per process, so `NovaAuthFacade` maps `infraUrl` to one memoised endpoint and nothing
 observes config or context changes. Host
-activation authorizes later demand-driven bootstrap.
 `Packages/NovaAuth` owns profile-3 bootstrap, the single persisted bearer, bounded renewal and
 native URLCache. App consumers inject `NovaAuthFacade.shared`; never build a per-feature auth
-provider. Bittensor completes auth admission before domain coalescing or negative availability
-lookups, then authorizes again before the native request. `BittensorApiResponseCache` stores only
-decoded stale presentation seeds and in-flight waiters, never successful HTTP freshness. Older
-recommendation generations return `generationStale`, preserving a newer seed without refetch.
-Endpoint admissions carry an immutable facade invalidation revision. The decoded cache advances
-its revision floor monotonically and reconciles the latest revision before participation,
-completion and peek. Delayed or duplicate notifications preserve current-revision state;
+provider. Bittensor completes auth admission, then authorizes again before the native request.
+HTTP freshness is URLCache max-age only: there is no request coalescing, negative availability
+TTL or client TTL. `BittensorApiResponseCache` stores only decoded stale presentation seeds, never
+successful HTTP freshness. Older recommendation generations return `generationStale`, preserving
+a newer seed without refetch. Endpoint admissions carry an immutable facade invalidation revision.
+The decoded cache advances its revision floor monotonically and reconciles the latest revision
+before completion and peek. Delayed or duplicate notifications preserve current-revision state;
 old admissions/completions remain fenced. Same-origin readiness does not invalidate the cache.
-Auth origin/generation changes also clear derived max-APY, cost-basis and
-validator-directory state. Their pending completions cannot restore a prior context's memo or
-return a directory enriched after that context was invalidated. Host activation authorizes
-later demand-driven bootstrap; catalogue requests carry no authentication intent.
+Auth origin/generation changes also clear the cost-basis presentation seed; a pending cost-basis
+completion cannot restore a prior context's seed. Chain data is never cached client-side. Host
+activation authorizes later demand-driven bootstrap; catalogue requests carry no authentication
+intent.
 
 Main-owner admission returns a usable bearer before issuance cooldown checks. Every actual
 business send checks shared-origin protection before network access. Only business
@@ -164,11 +163,10 @@ Bittensor bootstrap `401 attestation_failed` maps to device-bound `attestationRe
 no user retry. `409 client_already_registered` maps to non-device-bound `bindingConflict`, also
 without retry. `403 insufficient_scope` maps to generic `invalidRequest` without retry before
 the generic 401/403 branch. Invalid challenge, 503 and transport errors remain retryable.
-The max-APY walk propagates authentication-wide refusals and final token denial immediately,
-without another outer retry or a cached nil/partial result. Local unsupported/configuration
-failures also terminate it. Route/data gaps retain per-target skipping, and transient failures
-retain bounded retries. No walk result is kept between requests, so nothing can mask
-authentication recovery in the same context.
+The dashboard max APY is one burst: `GET /recommendations` joined with the alpha yields of each
+recommended netuid and the root d30, with no spacing, retries or memo. A netuid whose yields fail
+is skipped; the burst fails with the first error only when no rate is left. No result is kept
+between requests, so nothing can mask authentication recovery in the same context.
 
 One origin/API-major bearer serves ordinary protected GET/HEAD and POST routes. Auth has no
 business allowlist or flow/scope. Consumers own method/path/body validation and ordinary business retry policy. Bittensor uses `/v1/bittensor/...`.
