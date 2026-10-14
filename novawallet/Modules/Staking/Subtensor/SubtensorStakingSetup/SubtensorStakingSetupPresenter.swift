@@ -15,6 +15,7 @@ final class SubtensorStakingSetupPresenter {
     let dataValidationFactory: SubtensorStakingValidationFactoryProtocol
 
     let quickPickVisit: SubtensorQuickPickVisit?
+    let rootEntryPresentation: SubtensorRootEntryPresentation
     let browseState: SubtensorSubnetBrowseState
 
     var mode: SubtensorStakingSetupMode
@@ -61,8 +62,10 @@ final class SubtensorStakingSetupPresenter {
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol,
         browseState: SubtensorSubnetBrowseState = .init(),
-        quickPickVisit: SubtensorQuickPickVisit? = nil
+        quickPickVisit: SubtensorQuickPickVisit? = nil,
+        rootEntryPresentation: SubtensorRootEntryPresentation = .standard
     ) {
+        self.rootEntryPresentation = rootEntryPresentation
         self.browseState = browseState
         self.quickPickVisit = quickPickVisit
         self.interactor = interactor

@@ -18,6 +18,10 @@ extension SubtensorStakingPallet {
         StorageCodingPath(moduleName: name, itemName: "Delegates")
     }
 
+    static var subnetEmissionEnabledPath: StorageCodingPath {
+        StorageCodingPath(moduleName: name, itemName: "SubnetEmissionEnabled")
+    }
+
     static var subtokenEnabledPath: StorageCodingPath {
         StorageCodingPath(moduleName: name, itemName: "SubtokenEnabled")
     }

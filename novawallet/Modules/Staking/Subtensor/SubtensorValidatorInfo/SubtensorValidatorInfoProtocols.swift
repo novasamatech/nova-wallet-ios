@@ -16,6 +16,7 @@ struct SubtensorValidatorInfoViewModel {
         let hasReward: Bool
     }
 
+    let coverage: LoadableViewModelState<String>
     let account: DisplayAddressViewModel
     let staking: Staking?
 }
@@ -42,6 +43,7 @@ protocol SubtensorValInfoInteractorInputProtocol: AnyObject {
 }
 
 protocol SubtensorValInfoInteractorOutputProtocol: AnyObject {
+    func didReceive(coverage: SubtensorValidatorCoverage?)
     func didReceive(detail: SubtensorValidatorDetail)
     func didFailDetail(_ error: Error)
     func didReceive(annualRate: Decimal?)

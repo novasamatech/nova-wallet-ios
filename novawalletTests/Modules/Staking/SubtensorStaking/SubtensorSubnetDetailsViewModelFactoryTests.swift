@@ -5,18 +5,44 @@ import XCTest
 final class SubtensorSubnetDetailsViewModelFactoryTests: XCTestCase {
     private let locale = Locale(identifier: "en")
 
-    func testThreeSaferFactorsGiveTheSaferHeading() {
-        let factors = makeFactory().createFactors(for: makeState(poolTao: 30000), locale: locale)
-
-        XCTAssertEqual(factors.heading, "WHY THIS IS SAFER")
-        XCTAssertEqual(factors.footer, "3 of 5 factors on the safer side · this is not a guarantee")
+    func testLoadedUnavailableParametersKeepNeutralRowsAndNoCatalogueReserves() {
+        let model = makeFactory().createViewModel(for: makeState(), isUseEnabled: true, locale: locale)
+        XCTAssertEqual(model.parameters.rows.map(\.title), ["Age", "Validators", "Pool size"])
+        XCTAssertEqual(model.parameters.rows.map(\.value), ["—", "—", "—"])
+        XCTAssertEqual(model.moreDetails.map(\.title), ["UID", "TAO in pool", "Alpha in pool", "Emission"])
+        XCTAssertEqual(model.moreDetails.map(\.value), ["64", "—", "—", "—"])
+        XCTAssertEqual(model.validator.rate, .hidden)
     }
 
-    func testTwoSaferFactorsGiveTheRiskierHeading() {
-        let factors = makeFactory().createFactors(for: makeState(poolTao: 8400), locale: locale)
+    func testLoadingParametersKeepFixedNeutralHierarchy() {
+        let model = makeFactory().createViewModel(for: makeState(isLoaded: false), isUseEnabled: true, locale: locale)
+        XCTAssertEqual(model.parameters.rows.count, 3)
+        XCTAssertTrue(model.parameters.rows.allSatisfy { $0.value == nil })
+        XCTAssertEqual(model.moreDetails.count, 4)
+    }
 
-        XCTAssertEqual(factors.heading, "WHY THIS IS RISKIER")
-        XCTAssertEqual(factors.footer, "2 of 5 factors on the safer side · this is not a guarantee")
+    func testReserveFiatUsesMatchingAlphaPriceAndIsolatesRtlSymbol() throws {
+        let info = SubtensorSubnetParametersTests.subnet(netuid: 64, registeredAt: 4_531_295, tao: 2_000_000_000, alpha: 8_000_000_000)
+        let parameters = SubtensorSubnetParameters(
+            ref: makeSubnet().ref,
+            blockHash: "hash",
+            rows: [info],
+            prices: [.init(netuid: 64, price: 500_000_000)],
+            blockNumber: 4_532_000,
+            permits: [true, false],
+            emissionEnabled: true,
+            blockTime: 12000
+        )
+        let state = makeState(parameters: parameters, price: PriceData(identifier: "tao", price: "10", dayChange: nil, currencyId: Currency.usd.id))
+        let model = makeFactory().createViewModel(for: state, isUseEnabled: true, locale: locale)
+        XCTAssertEqual(model.parameters.split, Decimal(string: "0.2"))
+        XCTAssertEqual(model.moreDetails[1].detail, "$20")
+        XCTAssertEqual(model.moreDetails[2].detail, "$40")
+        XCTAssertTrue(try XCTUnwrap(model.moreDetails[2].value).hasPrefix("\u{2066}"))
+        XCTAssertTrue(try XCTUnwrap(model.moreDetails[2].value).hasSuffix("\u{2069}"))
+        let rtl = makeFactory().createViewModel(for: state, isUseEnabled: true, locale: Locale(identifier: "ar"))
+        XCTAssertTrue(try XCTUnwrap(rtl.moreDetails[2].value).hasPrefix("\u{2066}"))
+        XCTAssertEqual(model.parameters.rows[1].value, "1")
     }
 
     private func makeFactory() -> SubtensorSubnetDetailsViewModelFactory {
@@ -28,84 +54,21 @@ final class SubtensorSubnetDetailsViewModelFactoryTests: XCTestCase {
         )
     }
 
-    private func makeState(poolTao: Decimal) -> SubtensorSubnetDetailsState {
+    private func makeState(isLoaded: Bool = true, parameters: SubtensorSubnetParameters? = nil, price: PriceData? = nil) -> SubtensorSubnetDetailsState {
         SubtensorSubnetDetailsState(
             isFiat: false,
             period: .week,
             history: .loading,
-            listing: .notListed,
-            isRankingLoaded: true,
-            rankingView: makeRankingView(poolTao: poolTao),
+            parameters: parameters,
+            isParametersLoaded: isLoaded,
             validator: .unselected,
             yields: nil,
-            amount: .fixed(5),
-            transferable: nil,
-            taoPrice: nil,
+            taoPrice: price,
             isFavorite: false,
             now: Date(timeIntervalSince1970: 1_790_000_000),
             chartEndDate: Date(timeIntervalSince1970: 1_790_000_000),
             chartSelection: nil
         )
-    }
-
-    private func makeRankingView(poolTao: Decimal) -> SubtensorRankedSubnets {
-        let stamp = SubtensorBackendStamp(asOf: Date(timeIntervalSince1970: 1_790_000_000), freshness: .fresh)
-
-        let generation = SubtensorRecommendationGeneration(
-            id: "generation",
-            sourceBlockNumber: 6_000_000,
-            modelVersion: "5.0",
-            ageSeconds: 60,
-            receivedAt: 0,
-            isServedFromMemory: false,
-            excludedNetuids: [],
-            carriedOverNetuids: [],
-            inputFlags: [],
-            stamp: stamp,
-            isPartial: false
-        )
-
-        let volatility = makeScore(raw: 0.052, normalized: 57)
-
-        let rankedSubnet = SubtensorRankedSubnet(
-            netuid: 64,
-            subnetName: "Chutes",
-            symbol: "ش",
-            status: .scored,
-            isEligible: true,
-            reasons: [],
-            riskClass: .balanced,
-            subnetRisk: 41,
-            breakdown: SubtensorSubnetBreakdown(
-                volatility: volatility,
-                maxDrawdown: makeScore(raw: 0.2, normalized: 22),
-                poolDepth: makeScore(raw: poolTao, normalized: 10),
-                age: makeScore(raw: 2_000_000, normalized: 30),
-                emissionStability: makeScore(raw: 1, normalized: 0),
-                stakeConcentration: makeScore(raw: 0.85, normalized: 28)
-            ),
-            taoIn: poolTao,
-            priceTao: 0.0738,
-            ageBlocks: 2_000_000,
-            scoredValidators: 24,
-            eligibleValidators: 20,
-            flags: []
-        )
-
-        return SubtensorRankedSubnets(
-            generation: generation,
-            policy: SubtensorRecommendationPolicy(
-                classification: .pair,
-                requiresIdentity: true,
-                requiresPositiveSignal: false,
-                insufficientHistory: .neutral
-            ),
-            items: [rankedSubnet]
-        )
-    }
-
-    private func makeScore(raw: Decimal, normalized: Decimal) -> SubtensorMetricScore {
-        SubtensorMetricScore(raw: raw, normalized: normalized, weight: 0.2, isDerived: false, flags: [])
     }
 
     private func makeSubnet() -> SubtensorCatalogueSubnet {

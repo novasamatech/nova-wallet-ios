@@ -24,7 +24,7 @@ final class SubtensorPositionViewLayout: UIView {
         view.contentInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
     }
 
-    let validatorView = SubtensorPositionValidatorView()
+    let validatorView = SubtensorValidatorCardView()
 
     let noticeView: SubtensorPositionNoticeView = .create { view in
         view.isHidden = true
@@ -106,6 +106,11 @@ private extension SubtensorPositionViewLayout {
 
     func bind(actions viewModels: [SubtensorPositionActionViewModel]) {
         actions = viewModels.map(\.action)
+
+        actionCells.enumerated().forEach { index, cell in
+            cell.isHidden = index >= viewModels.count
+            SubtensorDividerStyle.apply(to: cell, hasPrevious: index > 0 && !cell.isHidden)
+        }
 
         for viewModel in viewModels {
             switch viewModel.action {

@@ -14,6 +14,7 @@ final class SubtensorValidatorInfoPresenter {
     private var detail: SubtensorValidatorDetail?
     private var annualRate: LoadableViewModelState<Decimal?> = .loading
     private var alphaPrice: LoadableViewModelState<Balance?> = .loading
+    private var coverage: LoadableViewModelState<SubtensorValidatorCoverage?> = .loading
     private var price: PriceData?
 
     init(
@@ -45,7 +46,8 @@ private extension SubtensorValidatorInfoPresenter {
             detail: detail,
             annualRate: annualRate,
             alphaPrice: alphaPrice,
-            price: price
+            price: price,
+            coverage: coverage
         )
 
         view?.didReceive(viewModel: viewModelFactory.createViewModel(for: input, locale: selectedLocale))
@@ -89,6 +91,11 @@ extension SubtensorValidatorInfoPresenter: SubtensorValidatorInfoPresenterProtoc
 }
 
 extension SubtensorValidatorInfoPresenter: SubtensorValInfoInteractorOutputProtocol {
+    func didReceive(coverage: SubtensorValidatorCoverage?) {
+        self.coverage = .loaded(value: coverage)
+        provideViewModel()
+    }
+
     func didReceive(detail: SubtensorValidatorDetail) {
         view?.didStopLoading()
 

@@ -135,23 +135,6 @@ private extension SubtensorPositionViewModelFactory {
     func createSubnetRows(for state: SubtensorPositionState, locale: Locale) -> [SubtensorPositionRowViewModel] {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
-        let apyRow: SubtensorPositionRowViewModel?
-
-        if !state.isRateResolved {
-            apyRow = SubtensorPositionRowViewModel(title: strings.stakingEstimatedEarnings(), value: .loading)
-        } else {
-            apyRow = state.annualRate.map { rate in
-                SubtensorPositionRowViewModel(
-                    title: strings.stakingEstimatedEarnings(),
-                    value: .loaded(
-                        value: SubtensorApyFormatter.text(for: rate, style: .trailing, locale: locale),
-                        detail: nil,
-                        isPositive: true
-                    )
-                )
-            }
-        }
-
         let worthValue: SubtensorPositionValueViewModel
 
         if state.price == .loading || !state.isCatalogueResolved {
@@ -171,7 +154,7 @@ private extension SubtensorPositionViewModelFactory {
             value: worthValue
         )
 
-        return [apyRow, worthRow].compactMap { $0 }
+        return [worthRow]
     }
 
     func createSummary(for state: SubtensorPositionState, locale: Locale) -> SubtensorPositionSummaryViewModel {
@@ -257,7 +240,7 @@ private extension SubtensorPositionViewModelFactory {
         }
     }
 
-    func createValidator(for state: SubtensorPositionState, locale: Locale) -> SubtensorPositionValidatorViewModel {
+    func createValidator(for state: SubtensorPositionState, locale: Locale) -> SubtensorValidatorCardViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
         let address = state.group.flatMap { try? $0.primaryHotkey.toAddress(using: chainAsset.chain.chainFormat) }
 
@@ -281,12 +264,12 @@ private extension SubtensorPositionViewModelFactory {
             rate = .hidden
         }
 
-        return SubtensorPositionValidatorViewModel(
+        return SubtensorValidatorCardViewModel(
             icon: icon,
             name: name,
             subtitle: strings.stakingCommonValidator(),
             rate: rate,
-            rateCaption: strings.stakingSubtensorUiValidatorSortApy()
+            rateCaption: strings.stakingSubtensorV22EstApy()
         )
     }
 

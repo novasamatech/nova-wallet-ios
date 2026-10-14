@@ -10,7 +10,6 @@ protocol SubtensorSubnetDetailsPresenterProtocol: AnyObject {
     func setup()
     func selectCurrency(at index: Int)
     func selectPeriod(at index: Int)
-    func selectAmount(at index: Int)
     func toggleFavorite()
     func selectValidator()
     func useSubnet()
@@ -28,11 +27,9 @@ protocol SubnetDetailsInteractorInputProtocol: AnyObject {
 protocol SubnetDetailsInteractorOutputProtocol: AnyObject {
     func didReceiveHistory(_ result: SubtensorPriceHistoryResult, for period: SubtensorPricePeriod)
     func didFailHistory(for period: SubtensorPricePeriod)
-    func didReceiveListing(_ result: SubtensorPriceHistoryResult?)
-    func didReceiveRankingView(_ rankingView: SubtensorRankedSubnets?)
+    func didReceiveParameters(_ parameters: SubtensorSubnetParameters?)
     func didReceivePreset(_ validator: SubtensorValidatorDirectoryItem?)
     func didReceiveYields(_ yields: SubtensorAlphaYields?)
-    func didReceiveBalance(_ balance: AssetBalance?)
     func didReceiveTaoPrice(_ price: PriceData?)
     func didReceivePositions(_ state: Multistaking.SubtensorStakingState?)
     func didReceivePositionsSyncFailed(_ isFailed: Bool)
@@ -57,6 +54,5 @@ protocol SubtensorSubnetDetailsWireframeProtocol: AnyObject {
 }
 
 struct SubtensorSubnetDetailsSnapshot {
-    let rankingView: HTTPCachePeek<SubtensorRankedSubnets>
     let yields: HTTPCachePeek<SubtensorAlphaYields>
 }

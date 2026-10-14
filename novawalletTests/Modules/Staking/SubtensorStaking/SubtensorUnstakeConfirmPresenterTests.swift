@@ -412,6 +412,7 @@ final class SubtensorUnstakeConfirmPresenterTests: XCTestCase {
         XCTAssertEqual(swap.avgBuyPrice, unknown)
         XCTAssertEqual(swap.youWillEarn, unknown)
         XCTAssertEqual(swap.remark, "The rate can change until the order fills.")
+        XCTAssertNotNil(swap.feeDisclosure)
     }
 
     func testSellConfirmShowsADashForWhatTheSaleWillEarnWhileTheQuoteFails() throws {

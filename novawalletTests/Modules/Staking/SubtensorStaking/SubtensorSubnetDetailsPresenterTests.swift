@@ -95,7 +95,7 @@ final class SubtensorSubnetDetailsPresenterTests: XCTestCase {
         XCTAssertEqual(header?.price, "—")
         setup.presenter.selectChart(.point(sourceIndex: 2))
         XCTAssertEqual(header?.price, "1 TAO")
-        setup.presenter.didReceiveBalance(nil)
+        setup.presenter.didReceiveParameters(nil)
         setup.presenter.didReceiveYields(nil)
         setup.presenter.applyLocalization()
         let afterUpdates = try Helper.series(Helper.chart(XCTUnwrap(latest).priceWidget))
@@ -122,14 +122,32 @@ final class SubtensorSubnetDetailsPresenterTests: XCTestCase {
         XCTAssertEqual(try Helper.series(Helper.chart(XCTUnwrap(latest).priceWidget)), month)
     }
 
-    private func makeSetup(now: @escaping () -> Date = Date.init) -> Setup {
+    func testPresetCannotReplaceAuthoritativeInputAndWrongTargetCannotComplete() {
+        let original = makeValidator()
+        let setup = makeSetup(initialValidator: original)
+        let other = SubtensorValidatorDirectoryItem(
+            hotkey: Data(repeating: 9, count: 32),
+            netuid: 64,
+            name: "Other",
+            take: nil,
+            reportedStake: nil,
+            status: nil
+        )
+        stub(setup.wireframe) { when($0.complete(from: any(), host: any(), target: any(), validator: any(), delegate: any())).thenDoNothing() }
+        setup.presenter.didReceivePreset(other)
+        setup.presenter.didSelectValidator(other, for: .root)
+        setup.presenter.useSubnet()
+        verify(setup.wireframe).complete(from: any(), host: any(), target: equal(to: setup.target), validator: equal(to: original), delegate: any())
+    }
+
+    private func makeSetup(initialValidator: SubtensorValidatorDirectoryItem? = nil, now: @escaping () -> Date = Date.init) -> Setup {
         let interactor = MockSubnetDetailsInteractorInputProtocol()
         let wireframe = MockSubtensorSubnetDetailsWireframeProtocol()
         let subnet = makeSubnet()
         let target = makeTarget(for: subnet)
 
         let presenter = SubtensorSubnetDetailsPresenter(
-            input: SubtensorSubnetDetailsInput(subnet: subnet, target: target, validator: nil),
+            input: SubtensorSubnetDetailsInput(subnet: subnet, target: target, validator: initialValidator),
             host: .picker,
             selectionDelegate: MockSubtensorSubnetSelectDelegate(),
             interactor: interactor,

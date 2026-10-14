@@ -334,7 +334,7 @@ final class SubtensorActiveSubnetFlowTests: SubtensorFlowTestCase {
             limitPrice: 73_431_000
         ))
 
-        XCTAssertEqual(lastPayTile(of: confirm.view)?.amount, "70 ش")
+        XCTAssertEqual(lastPayTile(of: confirm.view)?.amount, "\u{2066}70 ش\u{2069}")
         XCTAssertEqual(request.payAmount, 70_000_000_000)
         XCTAssertEqual(validation.requestedAlpha, 70_000_000_000)
         XCTAssertEqual(validation.positionAlpha, 70_000_000_000)

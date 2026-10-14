@@ -22,7 +22,18 @@ enum SubtensorApyFormatter {
         case .bare:
             return rateText(annualRate, locale: locale)
         case .column:
-            return rateText(annualRate, formatter: NumberFormatter.percent, locale: locale)
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .percent
+            formatter.roundingMode = .halfEven
+            formatter.locale = locale
+            formatter.minimumFractionDigits = 1
+            formatter.maximumFractionDigits = 1
+            let symbol = formatter.percentSymbol ?? "%"
+            formatter.positivePrefix = formatter.positivePrefix.replacingOccurrences(of: symbol, with: "")
+            formatter.negativePrefix = formatter.negativePrefix.replacingOccurrences(of: symbol, with: "")
+            formatter.positiveSuffix = " " + symbol
+            formatter.negativeSuffix = " " + symbol
+            return rateText(annualRate, formatter: formatter, locale: locale)
         }
     }
 }

@@ -23,7 +23,7 @@ final class SubtensorValidatorListFactoryTests: XCTestCase {
         icon: nil
     )
 
-    func testSubnetListShowsOnlyActivePermittedValidatorsWithApyOrderedByApy() throws {
+    func testFreshRatesStayDisplayOnlyAndUnratedEligibleValidatorsRemainVisible() throws {
         let viewModel = makeFactory().createListViewModel(
             for: makeInput(yields: makeYields(freshness: .fresh), sort: .apy, selectedHotkey: nil),
             locale: locale
@@ -31,12 +31,12 @@ final class SubtensorValidatorListFactoryTests: XCTestCase {
 
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
-        XCTAssertEqual(viewModel.rows.map(\.hotkey), [topRated, lowRated])
-        XCTAssertEqual(viewModel.rows.map(\.trailing), [.rate("49.40%"), .rate("14.88%")])
-        XCTAssertEqual(viewModel.countTitle, strings.stakingSubtensorUiValidatorCountFormat(2))
+        XCTAssertEqual(viewModel.rows.map(\.hotkey), [unrated, lowRated, topRated])
+        XCTAssertEqual(viewModel.rows.map(\.trailing), [.none, .rate("14.9 %"), .rate("49.4 %")])
+        XCTAssertEqual(viewModel.countTitle, strings.stakingSubtensorV22CountFormat("3", "3"))
         XCTAssertEqual(
             viewModel.rows.first?.subtitle,
-            strings.stakingSubtensorUiValidatorRowSubtitleFormat("285.6K TAO", "18%")
+            strings.stakingSubtensorUiValidatorRowSubtitleFormat("400K TAO", "18%")
         )
     }
 
@@ -80,7 +80,7 @@ final class SubtensorValidatorListFactoryTests: XCTestCase {
             locale: locale
         )
 
-        XCTAssertEqual(viewModel.rows.map(\.hotkey), [topRated, lowRated, unrated])
+        XCTAssertEqual(viewModel.rows.map(\.hotkey), [topRated, unrated, lowRated])
         XCTAssertEqual(viewModel.rows.map(\.isSelected), [true, false, false])
     }
 
@@ -107,6 +107,44 @@ final class SubtensorValidatorListFactoryTests: XCTestCase {
             viewModel.details,
             R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValidatorFetchDeviceDetail()
         )
+    }
+
+    func testPermissiveLegacyFlagsNeverAdmitMissingPermitInactiveOrUnknownTake() {
+        let gates = SubtensorClientGates(maxTake: BigRational(numerator: 18, denominator: 100), requirePermit: false, requireActiveWithinCutoff: false)
+        let directory = makeDirectory()
+        XCTAssertEqual(directory.items.filter { SubtensorValidatorEligibility.eligibility(of: $0, isRoot: false, gates: gates) == .selectable }.map(\.hotkey), [topRated, lowRated, unrated])
+        let unknown = SubtensorValidatorDirectoryItem(hotkey: miner, netuid: 64, name: "Unknown", take: nil, reportedStake: nil, status: nil)
+        XCTAssertNotEqual(SubtensorValidatorEligibility.eligibility(of: unknown, isRoot: false, gates: gates), .selectable)
+        XCTAssertEqual(SubtensorValidatorEligibility.eligibility(of: directory.items[1], isRoot: true, gates: gates), .selectable)
+    }
+
+    func testSearchDoesNotForcePinnedSelectionAndPartialCountsStayUnknown() {
+        let original = makeDirectory()
+        for truncated in [false, true] {
+            let partial = SubtensorValidatorDirectory(
+                subnet: original.subnet,
+                items: original.items,
+                listStamp: original.listStamp,
+                isPartial: !truncated,
+                isEnrichmentTruncated: truncated,
+                chainBlock: original.chainBlock
+            )
+            let input = SubtensorValidatorListInput(
+                directory: partial,
+                yields: nil,
+                alphaPrice: nil,
+                isRoot: false,
+                clientGates: .init(maxTake: BigRational(numerator: 18, denominator: 100), requirePermit: false, requireActiveWithinCutoff: false),
+                sort: .name,
+                query: "Arbos",
+                selectedHotkey: topRated,
+                preselectedHotkey: unrated
+            )
+            let model = makeFactory().createListViewModel(for: input, locale: locale)
+            XCTAssertEqual(model.rows.map(\.hotkey), [lowRated])
+            XCTAssertEqual(model.countTitle, "VALIDATORS: 1 OF —")
+            XCTAssertTrue(model.canSelect)
+        }
     }
 
     private func makeFactory() -> SubtensorValidatorListFactory {
