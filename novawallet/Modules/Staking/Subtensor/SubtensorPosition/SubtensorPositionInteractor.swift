@@ -19,7 +19,6 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning {
     private var priceProvider: StreamableProvider<PriceData>?
     private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
     private var failedHoldsHotkeys: [AccountId]?
-    private var seed = SubtensorPositionSnapshot(catalogue: .miss, yields: .miss)
     private let catalogueStore = CancellableCallStore()
     private let logosStore = CancellableCallStore()
     private let validatorStore = CancellableCallStore()
@@ -182,26 +181,19 @@ private extension SubtensorPositionInteractor {
 
         loadRootHolds(for: hotkeys)
     }
-
-    func makeSnapshot() -> SubtensorPositionSnapshot {
-        guard !isRoot else {
-            return SubtensorPositionSnapshot(catalogue: .miss, yields: .miss)
-        }
-
-        let catalogue = catalogueService.cachedCatalogue()
-
-        return SubtensorPositionSnapshot(
-            catalogue: catalogue.value?.subnet(for: netuid) != nil ? catalogue : .miss,
-            yields: yieldService.cachedAlphaYields(for: netuid)
-        )
-    }
 }
 
 extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol {
-    func cachedSnapshot() -> SubtensorPositionSnapshot {
-        seed = makeSnapshot()
+    func cachedCatalogue() -> SubtensorSubnetCatalogue? {
+        guard !isRoot, let catalogue = catalogueService.cachedCatalogue().value else {
+            return nil
+        }
 
-        return seed
+        return catalogue.subnet(for: netuid) != nil ? catalogue : nil
+    }
+
+    func cachedYields() -> SubtensorAlphaYields? {
+        isRoot ? nil : yieldService.cachedAlphaYields(for: netuid).value
     }
 
     func setup() {
@@ -212,16 +204,9 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
             subscribeClaimable()
             blockNumberProvider = subscribeToBlockNumber(for: chainAsset.chain.chainId)
         } else {
-            if !seed.catalogue.isFresh {
-                loadCatalogue()
-            }
-
+            loadCatalogue()
             loadSubnetLogos()
-
-            if !seed.yields.isFresh {
-                loadYields()
-            }
-
+            loadYields()
             loadSubnetsInfo(forcingRefresh: false)
         }
     }

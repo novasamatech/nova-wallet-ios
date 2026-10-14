@@ -32,8 +32,7 @@ final class SubtensorRootPickCardView: UIView {
     func bind(_ model: SubtensorSetupRootViewModel, locale: Locale) {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
         headerView.bind(viewModel: SubtensorPickCardHeaderViewModel(
-            icon: model.icon, title: strings.stakingSubtensorUiStakeToRoot(),
-            apy: nil, isSelectable: false
+            icon: model.icon, title: strings.stakingSubtensorUiStakeToRoot(), isSelectable: false
         ))
         validatorCell.titleLabel.text = strings.stakingCommonValidator()
         validatorCell.bind(validator: model.compactValidator, rate: nil, isEditable: true)

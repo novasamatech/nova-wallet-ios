@@ -21,7 +21,7 @@ final class SubtensorPickValidatorCell: StackInfoTableCell {
         switch validator {
         case .loading: bind(viewModel: nil)
         case let .unselected(title): bind(details: title)
-        case let .selected(address, _):
+        case let .selected(address):
             bind(viewModel: StackCellViewModel(
                 details: address.name ?? address.address,
                 imageViewModel: address.imageViewModel

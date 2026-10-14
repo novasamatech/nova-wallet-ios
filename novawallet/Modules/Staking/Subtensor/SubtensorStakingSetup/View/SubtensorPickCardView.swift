@@ -131,10 +131,6 @@ final class SubtensorPickCardHeaderView: UIControl {
         label.apply(style: .semiboldBodyPrimary)
     }
 
-    let apyLabel: UILabel = .create { label in
-        label.apply(style: .footnotePositive)
-    }
-
     let chevronView: UIImageView = .create { view in
         view.image = R.image.iconSmallArrow()?.tinted(with: R.color.colorIconSecondary()!)
         view.contentMode = .center
@@ -169,8 +165,6 @@ final class SubtensorPickCardHeaderView: UIControl {
         )
 
         titleLabel.text = viewModel?.title
-        apyLabel.text = viewModel?.apy
-        apyLabel.isHidden = viewModel?.apy == nil
         chevronView.isHidden = !(viewModel?.isSelectable ?? false)
         isUserInteractionEnabled = viewModel?.isSelectable ?? false
 
@@ -185,7 +179,7 @@ private extension SubtensorPickCardHeaderView {
     }
 
     func setupLayout() {
-        let labelsView = UIView.vStack(spacing: 2, [titleLabel, apyLabel])
+        let labelsView = UIView.vStack(spacing: 2, [titleLabel])
         labelsView.isUserInteractionEnabled = false
 
         let contentView = UIView.hStack(alignment: .center, spacing: 12, [iconView, labelsView, chevronView])

@@ -15,15 +15,12 @@ enum SubtensorClaimRewardsViewFactory {
         }
 
         let interactor = SubtensorClaimRewardsInteractor(
-            baseServices: services,
-            chainAsset: chainAsset,
+            flowServices: services,
+            state: state,
             claimableFetchFactory: SubtensorRootClaimableFetchFactory(
                 operationFactory: state.apiOperationFactory,
                 operationQueue: services.operationQueue
             ),
-            catalogueService: state.earnServices.catalogueService,
-            costBasisService: state.earnServices.costBasisService,
-            generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             logger: Logger.shared
         )
 

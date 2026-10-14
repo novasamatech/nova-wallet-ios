@@ -65,22 +65,15 @@ private extension SubtensorPortfolioViewModelFactory {
         catalogue: SubtensorSubnetCatalogue?,
         locale: Locale
     ) -> String {
-        let taoInfo = chainAsset.assetDisplayInfo
-
-        let alphaInfo = AssetBalanceDisplayInfo(
-            displayPrecision: taoInfo.displayPrecision,
-            assetPrecision: taoInfo.assetPrecision,
-            symbol: SubtensorSubnetNaming.symbol(for: netuid, in: catalogue),
-            symbolValueSeparator: taoInfo.symbolValueSeparator,
-            symbolPosition: taoInfo.symbolPosition,
-            icon: nil
+        let alphaInfo = chainAsset.assetDisplayInfo.subtensorAlpha(
+            symbol: SubtensorSubnetNaming.symbol(for: netuid, in: catalogue)
         )
 
         let text = formatterFactory.createTokenFormatter(for: alphaInfo)
             .value(for: locale)
             .stringFromDecimal(decimal(amount)) ?? unknownValue(for: locale)
 
-        return "\u{2066}\(text)\u{2069}"
+        return text.isolatedLeftToRight()
     }
 
     func formatSignedPercent(_ value: Decimal, locale: Locale) -> String? {

@@ -24,13 +24,8 @@ final class SubtensorCataloguePricingTracker {
         self.logger = logger
     }
 
-    func seed() {
-        guard case let .fresh(seed, _) = catalogueService.cachedCatalogue() else {
-            catalogue = nil
-            return
-        }
-
-        catalogue = .success(seed)
+    func reset() {
+        catalogue = nil
     }
 
     func cancel() {

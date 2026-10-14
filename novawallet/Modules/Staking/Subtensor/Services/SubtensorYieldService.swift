@@ -84,8 +84,7 @@ extension SubtensorYieldService {
         return SubtensorAlphaYields(
             netuid: netuid,
             yields: yields,
-            stamp: aggregateStamp,
-            isTruncated: pages.hasMorePages
+            stamp: aggregateStamp
         )
     }
 }

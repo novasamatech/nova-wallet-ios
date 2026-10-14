@@ -49,7 +49,6 @@ extension SubtensorStakingSetupPresenter: SubtensorStakePresenterValidating {
             amount: inputAmount(),
             balance: balance,
             fee: fee,
-            existentialDeposit: existentialDeposit,
             preflight: preflight,
             netuid: target.netuid,
             assetDisplayInfo: chainAsset.assetDisplayInfo,

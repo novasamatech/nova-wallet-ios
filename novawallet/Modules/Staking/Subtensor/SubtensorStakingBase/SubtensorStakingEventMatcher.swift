@@ -9,9 +9,7 @@ struct SubtensorStakingEventMatcher: ExtrinsicEventsMatching {
         SubtensorStakingPallet.rootClaimedEventPath,
         SubtensorStakingPallet.transactionFeePaidWithAlphaEventPath,
         TransactionPaymentPallet.feePaidPath,
-        BalancesPallet.balancesTransfer,
-        UtilityPallet.batchInterruptedEventPath,
-        UtilityPallet.itemFailedEventPath
+        BalancesPallet.balancesTransfer
     ]
 
     func match(event: Event, using codingFactory: RuntimeCoderFactoryProtocol) -> Bool {
@@ -41,20 +39,6 @@ extension SubtensorStakingPallet {
     }
 }
 
-extension UtilityPallet {
-    static var batchInterruptedEventPath: EventCodingPath {
-        EventCodingPath(moduleName: name, eventName: "BatchInterrupted")
-    }
-
-    static var itemFailedEventPath: EventCodingPath {
-        EventCodingPath(moduleName: name, eventName: "ItemFailed")
-    }
-}
-
-enum SubtensorStakingOutcomeError: Error {
-    case batchInterrupted
-}
-
 struct SubtensorStakingOutcomeParser {
     let coldkey: AccountId
     let novaFeeBeneficiary: AccountId?
@@ -65,13 +49,9 @@ struct SubtensorStakingOutcomeParser {
         for operation: SubtensorStakingOperation,
         extrinsicHash: ExtrinsicHash,
         blockHash: BlockHash
-    ) throws -> SubtensorStakingOperationOutcome {
+    ) -> SubtensorStakingOperationOutcome {
         let context = codingFactory.createRuntimeJsonContext().toRawContext()
         let decodedEvents = events.compactMap { decode(event: $0, context: context) }
-
-        for case let .batchFailed(error) in decodedEvents {
-            throw error
-        }
 
         let target = SubtensorOutcomeTarget(operation: operation, coldkey: coldkey)
         let alphaFee = decodedEvents.lazy.compactMap { $0.alphaFeePaid(by: coldkey) }.first
@@ -127,22 +107,7 @@ private extension SubtensorStakingOutcomeParser {
                 .map { .transfer($0) }
         }
 
-        if metadata.eventMatches(event, path: UtilityPallet.batchInterruptedEventPath) {
-            return .batchFailed(dispatchError(from: Array(event.params.arrayValue?.dropFirst() ?? [])))
-        }
-
-        if metadata.eventMatches(event, path: UtilityPallet.itemFailedEventPath) {
-            return .batchFailed(dispatchError(from: event.params.arrayValue ?? []))
-        }
-
         return nil
-    }
-
-    func dispatchError(from errorParams: [JSON]) -> Error {
-        let decoder = CallDispatchErrorDecoder(logger: Logger.shared)
-
-        return decoder.decode(errorParams: .arrayValue(errorParams), using: codingFactory) ??
-            SubtensorStakingOutcomeError.batchInterrupted
     }
 
     func executedAmounts(
@@ -264,7 +229,6 @@ private enum SubtensorDecodedStakingEvent {
     case alphaFeePaid(SubtensorStakingPallet.TransactionFeePaidWithAlphaEvent)
     case transactionFeePaid(TransactionPaymentPallet.TransactionFeePaid)
     case transfer(BalancesPallet.TransferEvent)
-    case batchFailed(Error)
 
     func alphaFeePaid(by coldkey: AccountId) -> SubtensorStakingPallet.TransactionFeePaidWithAlphaEvent? {
         guard case let .alphaFeePaid(fee) = self, fee.who == coldkey else {

@@ -54,7 +54,6 @@ struct SubtensorPickCardViewModel {
 struct SubtensorPickCardHeaderViewModel {
     let icon: ImageViewModelProtocol
     let title: String
-    let apy: String?
     let isSelectable: Bool
 }
 
@@ -81,15 +80,10 @@ enum SubtensorSetupBalanceRowViewModel {
     case value(BalanceViewModelProtocol)
 }
 
-enum SubtensorSetupValidatorAccessory: Equatable {
-    case chevron
-    case info
-}
-
 enum SubtensorSetupValidatorViewModel {
     case loading
     case unselected(title: String)
-    case selected(DisplayAddressViewModel, accessory: SubtensorSetupValidatorAccessory)
+    case selected(DisplayAddressViewModel)
 
     var isLoading: Bool {
         if case .loading = self {

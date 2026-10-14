@@ -92,7 +92,7 @@ private extension SubtensorStakingOperationService {
             case let .success(success):
                 let codingFactory = try? codingFactoryOperation.extractNoCancellableResultData()
 
-                return try finalizer.complete(operation: operation, success: success, codingFactory: codingFactory)
+                return finalizer.complete(operation: operation, success: success, codingFactory: codingFactory)
             case let .failure(failure):
                 throw finalizer.dispatchFailure(for: failure)
             }
@@ -312,7 +312,7 @@ private struct SubtensorStakingSubmissionFinalizer {
         operation: SubtensorStakingOperation,
         success: SubstrateExtrinsicStatus.SuccessExtrinsic,
         codingFactory: RuntimeCoderFactoryProtocol?
-    ) throws -> SubtensorStakingOperationOutcome {
+    ) -> SubtensorStakingOperationOutcome {
         let outcome: SubtensorStakingOperationOutcome
 
         if let codingFactory {
@@ -322,19 +322,12 @@ private struct SubtensorStakingSubmissionFinalizer {
                 codingFactory: codingFactory
             )
 
-            do {
-                outcome = try parser.parse(
-                    events: success.interestedEvents,
-                    for: operation,
-                    extrinsicHash: success.extrinsicHash,
-                    blockHash: success.blockHash
-                )
-            } catch {
-                throw SubtensorStakingSubmissionFailure(
-                    stage: .dispatched(blockHash: success.blockHash, extrinsicHash: success.extrinsicHash),
-                    error: errorMapper.mapSubmission(error: error)
-                )
-            }
+            outcome = parser.parse(
+                events: success.interestedEvents,
+                for: operation,
+                extrinsicHash: success.extrinsicHash,
+                blockHash: success.blockHash
+            )
         } else {
             outcome = SubtensorStakingOperationOutcome(
                 executed: nil,

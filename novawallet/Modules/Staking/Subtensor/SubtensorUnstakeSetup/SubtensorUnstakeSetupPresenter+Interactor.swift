@@ -158,8 +158,6 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtoc
         isPositionsSyncFailed = isFailed
     }
 
-    func didReceiveClaimable(_: SubtensorRootClaimable?) {}
-
     func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
         let previousMax = maxAmount
 

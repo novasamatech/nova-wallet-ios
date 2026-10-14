@@ -52,6 +52,12 @@ extension SubtensorClaimRewardsPresenter: SubtensorClaimInteractorOutputProtocol
 
     func didReceiveQuote(_: SubtensorTradeQuote) {}
 
+    func didReceiveCatalogue(_: SubtensorSubnetCatalogue?) {}
+
+    func didReceiveSubnetLogos(_: SubtensorSubnetLogos?) {}
+
+    func didReceiveCostBasis(_: SubtensorCostBasis?) {}
+
     func didReceiveExistentialDeposit(_ deposit: Balance) {
         existentialDeposit = deposit
     }

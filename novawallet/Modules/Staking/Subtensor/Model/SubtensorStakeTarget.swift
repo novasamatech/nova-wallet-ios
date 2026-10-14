@@ -67,14 +67,7 @@ extension SubtensorStakeTarget {
         case let .subnet(info, _):
             let symbol = info.displaySymbol
 
-            return AssetBalanceDisplayInfo(
-                displayPrecision: taoDisplayInfo.displayPrecision,
-                assetPrecision: taoDisplayInfo.assetPrecision,
-                symbol: symbol.isEmpty ? "SN\(info.netuid)" : symbol,
-                symbolValueSeparator: taoDisplayInfo.symbolValueSeparator,
-                symbolPosition: taoDisplayInfo.symbolPosition,
-                icon: nil
-            )
+            return taoDisplayInfo.subtensorAlpha(symbol: symbol.isEmpty ? "SN\(info.netuid)" : symbol)
         }
     }
 }
