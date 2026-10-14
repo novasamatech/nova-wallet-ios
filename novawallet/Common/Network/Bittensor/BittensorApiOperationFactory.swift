@@ -65,7 +65,7 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
         page: Int
     ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.AlphaYieldCollection>> {
         guard netuid != 0 else {
-            return .createWithError(BittensorApiError.invalidRequest(code: nil, requestId: nil))
+            return .createWithError(BittensorApiError.rejected(code: nil, requestId: nil))
         }
         return createPagedWrapper(route: .alphaYield, path: "/subnets/\(netuid)/yields/alpha", page: page)
     }
@@ -89,10 +89,6 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
 
     func createRootOverviewWrapper() -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RootOverview>> {
         createWrapper(route: .rootOverview, path: "/root/overview")
-    }
-
-    func peekRootOverview() -> HTTPCachePeek<BittensorApiResult<BittensorApi.RootOverview>> {
-        peek(path: "/root/overview")
     }
 
     func createOperationsWrapper(
@@ -180,7 +176,7 @@ private extension BittensorApiOperationFactory {
         page: Int
     ) -> CompoundOperationWrapper<BittensorApiResult<T>> {
         guard Self.pageRange.contains(page) else {
-            return .createWithError(BittensorApiError.invalidRequest(code: nil, requestId: nil))
+            return .createWithError(BittensorApiError.rejected(code: nil, requestId: nil))
         }
 
         return createWrapper(route: route, path: path, queryItems: Self.pagedQueryItems(page: page))
@@ -208,7 +204,7 @@ private extension BittensorApiOperationFactory {
         queryItems: [URLQueryItem] = []
     ) -> CompoundOperationWrapper<BittensorApiResult<T>> {
         guard Self.isValidAccountSubject(accountSubject), page.map(Self.pageRange.contains) ?? true else {
-            return .createWithError(BittensorApiError.invalidRequest(code: nil, requestId: nil))
+            return .createWithError(BittensorApiError.rejected(code: nil, requestId: nil))
         }
 
         let subjectItem = URLQueryItem(name: "accountSubject", value: accountSubject)

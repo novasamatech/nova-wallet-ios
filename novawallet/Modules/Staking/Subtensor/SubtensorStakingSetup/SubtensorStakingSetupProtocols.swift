@@ -23,7 +23,7 @@ protocol SubtensorStakingSetupPresenterProtocol: AnyObject {
 }
 
 protocol SubtensorSetupInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {
-    func loadQuickPickSnapshot(generation: Int, forcingRefresh: Bool)
+    func loadQuickPickSnapshot(generation: Int)
     func cancelQuickPickSnapshot()
     func cachedRankingView() -> HTTPCachePeek<SubtensorRankedSubnets>
     func cachedYields(netuid: UInt16) -> HTTPCachePeek<SubtensorAlphaYields>
@@ -48,7 +48,7 @@ protocol SubtensorSetupInteractorOutputProtocol: SubtensorStakingBaseInteractorO
 }
 
 protocol SubtensorStakingSetupWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
-    CommonRetryable, SubtensorStakingErrorPresentable, SubtensorGetTaoRouting, SubtensorInfoSheetPresentable,
+    CommonRetryable, SubtensorStakingErrorPresentable, GetTokenOptionsPresentable, SubtensorInfoSheetPresentable,
     SubtensorValidatorInfoPresentable {
     func showAllSubnets(
         from view: SubtensorStakingSetupViewProtocol?,

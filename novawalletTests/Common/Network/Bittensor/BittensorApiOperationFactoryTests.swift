@@ -26,13 +26,6 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
     "sourceBlockNumber":9139880}
     """
 
-    private var recommendationsJson: String {
-        """
-        {"classes":{"balanced":[],"higherUpside":[],"stable":[]},"meta":{\(generationMetaJson),\
-        "counts":{"balanced":3,"excluded":212,"higherUpside":3,"stable":3},"topN":3}}
-        """
-    }
-
     private var rankedSubnetsJson: String {
         """
         {"items":[],"meta":{\(generationMetaJson),"policy":{"classification":"PAIR",\
@@ -54,19 +47,19 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
 
     func testGrammarInvalidDecimalIsAContractViolationWithTheRequestId() throws {
         let body = mutatedBody(
-            recommendationsJson,
-            replacing: [(#""maxTake":"0.18""#, #""maxTake":".18""#)]
+            subnetsJson,
+            replacing: [(#""taoPerAlpha":"0.054961234""#, #""taoPerAlpha":".054961234""#)]
         )
         let transport = createTransport(replies: [createResponse(body, requestId: "req-decimal")])
         let factory = createFactory(transport: transport)
 
-        XCTAssertThrowsError(try run(factory.createRecommendationsWrapper())) { error in
+        XCTAssertThrowsError(try run(factory.createSubnetsWrapper())) { error in
             guard case let .contractViolation(detail, requestId) = error as? BittensorApiError else {
                 return XCTFail("Unexpected error: \(error)")
             }
 
             XCTAssertEqual(requestId, "req-decimal")
-            XCTAssertTrue(detail.contains("maxTake"))
+            XCTAssertTrue(detail.contains("taoPerAlpha"))
         }
     }
 

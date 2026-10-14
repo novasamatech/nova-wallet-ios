@@ -23,6 +23,7 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
     private let validatorCallStore = CancellableCallStore()
     private let yieldsCallStore = CancellableCallStore()
     private let rankingCallStore = CancellableCallStore()
+    private let subnetCallStore = CancellableCallStore()
 
     init(
         flowServices: SubtensorFlowServices,
@@ -44,6 +45,7 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
         validatorCallStore.cancel()
         yieldsCallStore.cancel()
         rankingCallStore.cancel()
+        subnetCallStore.cancel()
     }
 }
 
@@ -74,27 +76,22 @@ private extension SubtensorStakingSetupInteractor {
 extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol {
     func cancelQuickPickSnapshot() { quickPickCallStore.cancel() }
 
-    func loadQuickPickSnapshot(generation: Int, forcingRefresh: Bool) {
+    func loadQuickPickSnapshot(generation: Int) {
         quickPickCallStore.cancel()
-        let subnetsService = subnetsService
         let catalogueWrapper = catalogueService.createCatalogueWrapper()
-        let infoOperation = AsyncClosureOperation<SubtensorSubnetsInfo> { completion in
-            subnetsService.fetchSubnetsInfo(
-                forcingRefresh: forcingRefresh, runningCompletionIn: .global(), completion: completion
-            )
-        }
+        let infoWrapper = subnetsService.createSubnetsInfoWrapper()
         let mergeOperation = ClosureOperation<(SubtensorSubnetCatalogue, SubtensorSubnetsInfo)> {
             (
                 try catalogueWrapper.targetOperation.extractNoCancellableResultData(),
-                try infoOperation.extractNoCancellableResultData()
+                try infoWrapper.targetOperation.extractNoCancellableResultData()
             )
         }
         mergeOperation.addDependency(catalogueWrapper.targetOperation)
-        mergeOperation.addDependency(infoOperation)
+        mergeOperation.addDependency(infoWrapper.targetOperation)
         executeCancellable(
             wrapper: CompoundOperationWrapper(
                 targetOperation: mergeOperation,
-                dependencies: catalogueWrapper.allOperations + [infoOperation]
+                dependencies: catalogueWrapper.allOperations + infoWrapper.allOperations
             ),
             inOperationQueue: operationQueue,
             backingCallIn: quickPickCallStore,
@@ -125,7 +122,14 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
     }
 
     func loadSubnet(netuid: UInt16) {
-        subnetsService.fetchSubnetsInfo(runningCompletionIn: .main) { [weak self] result in
+        subnetCallStore.cancel()
+
+        executeCancellable(
+            wrapper: subnetsService.createSubnetsInfoWrapper(),
+            inOperationQueue: operationQueue,
+            backingCallIn: subnetCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
             switch result {
             case let .success(info):
                 guard

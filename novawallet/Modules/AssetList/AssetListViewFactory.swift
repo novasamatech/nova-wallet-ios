@@ -6,7 +6,8 @@ struct AssetListViewFactory {
     static func createView(
         dAppMediator: DAppInteractionMediating,
         walletNotificationService: WalletNotificationServiceProtocol,
-        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol,
+        assetListModelObservable: AssetListModelObservable
     ) -> AssetListViewProtocol? {
         guard let currencyManager = CurrencyManager.shared,
               let walletConnect = dAppMediator.children.first(
@@ -14,8 +15,6 @@ struct AssetListViewFactory {
               ) as? WalletConnectDelegateInputProtocol else {
             return nil
         }
-
-        let assetListModelObservable = AssetListModelObservable(state: .init(value: .init()))
 
         let interactor = AssetListInteractor(
             selectedWalletSettings: SelectedWalletSettings.shared,

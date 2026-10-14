@@ -7,6 +7,4 @@ protocol SubtensorYieldServiceProtocol: AnyObject {
     func cachedAlphaYields(for netuid: UInt16) -> HTTPCachePeek<SubtensorAlphaYields>
 
     func createNetworkRootRateWrapper() -> CompoundOperationWrapper<SubtensorReportedYield?>
-
-    func cachedNetworkRootRate() -> HTTPCachePeek<SubtensorReportedYield?>
 }

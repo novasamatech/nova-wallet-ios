@@ -9,7 +9,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning {
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
     let yieldService: SubtensorYieldServiceProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
-    let priceHistoryStore: SubtensorPriceHistoryStore
+    let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
     let validatorFactory: SubtensorValidatorPresetFactoryProtocol
     let rootHoldFactory: SubtensorRootHoldFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
@@ -25,6 +25,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning {
     private let rateStore = CancellableCallStore()
     private let holdsStore = CancellableCallStore()
     private let historyStore = CancellableCallStore()
+    private let subnetsInfoStore = CancellableCallStore()
 
     private var isRoot: Bool {
         netuid == SubtensorStakingPallet.rootNetuid
@@ -44,7 +45,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning {
         catalogueService: SubtensorSubnetCatalogueServiceProtocol,
         yieldService: SubtensorYieldServiceProtocol,
         subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
-        priceHistoryStore: SubtensorPriceHistoryStore,
+        priceHistoryService: SubtensorPriceHistoryServiceProtocol?,
         validatorFactory: SubtensorValidatorPresetFactoryProtocol,
         rootHoldFactory: SubtensorRootHoldFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
@@ -57,7 +58,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning {
         self.catalogueService = catalogueService
         self.yieldService = yieldService
         self.subnetLogosProvider = subnetLogosProvider
-        self.priceHistoryStore = priceHistoryStore
+        self.priceHistoryService = priceHistoryService
         self.validatorFactory = validatorFactory
         self.rootHoldFactory = rootHoldFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
@@ -67,7 +68,9 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning {
     }
 
     deinit {
-        [catalogueStore, logosStore, validatorStore, rateStore, holdsStore, historyStore].forEach { $0.cancel() }
+        [catalogueStore, logosStore, validatorStore, rateStore, holdsStore, historyStore, subnetsInfoStore].forEach {
+            $0.cancel()
+        }
 
         state.positionsSyncService?.remove(observer: self)
         state.positionsSyncService?.remove(failureObserver: self)
@@ -207,7 +210,7 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
         } else {
             loadCatalogue()
             loadSubnetLogos()
-            loadSubnetsInfo(forcingRefresh: false)
+            loadSubnetsInfo()
         }
     }
 
@@ -215,10 +218,14 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
         state.positionsSyncService?.refresh()
     }
 
-    func loadSubnetsInfo(forcingRefresh: Bool) {
-        state.subnetsService.fetchSubnetsInfo(
-            forcingRefresh: forcingRefresh,
-            runningCompletionIn: .main
+    func loadSubnetsInfo() {
+        subnetsInfoStore.cancel()
+
+        executeCancellable(
+            wrapper: state.subnetsService.createSubnetsInfoWrapper(),
+            inOperationQueue: operationQueue,
+            backingCallIn: subnetsInfoStore,
+            runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
             case let .success(subnetsInfo):
@@ -274,11 +281,19 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
     }
 
     func loadHistory(for subnet: SubtensorSubnetRef, period: SubtensorPricePeriod) {
-        priceHistoryStore.loadHistory(
+        historyStore.cancel()
+
+        let wrapper = priceHistoryService?.createHistoryWrapper(
             for: subnet,
             period: period,
-            currency: selectedCurrency,
-            backingCallIn: historyStore
+            currency: selectedCurrency
+        ) ?? .createWithResult(.notListed)
+
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: historyStore,
+            runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
             case let .success(history):

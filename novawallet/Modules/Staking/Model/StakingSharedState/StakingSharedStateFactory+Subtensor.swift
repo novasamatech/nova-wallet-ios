@@ -21,7 +21,7 @@ extension SubtensorStakingProcessServices {
         return SubtensorStakingProcessServices(
             bittensorApiOperationFactory: apiOperationFactory,
             subnetLogosProvider: SubtensorConfigProvider(url: ApplicationConfig.shared.bittensorConfigURL),
-            subnetMarketsService: createSubnetMarketsService(),
+            subnetMarketsService: SubtensorSubnetMarketsService(coingeckoOperationFactory: CoingeckoOperationFactory()),
             costBasisService: createCostBasisService(apiOperationFactory: apiOperationFactory)
         )
     }()
@@ -58,22 +58,13 @@ extension SubtensorStakingProcessServices {
 }
 
 private extension SubtensorStakingProcessServices {
-    static func createSubnetMarketsService() -> SubtensorSubnetMarketsServiceProtocol {
-        SubtensorSubnetMarketsService(
-            coingeckoOperationFactory: CoingeckoOperationFactory(),
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
-            logger: Logger.shared
-        )
-    }
-
     static func createCostBasisService(
         apiOperationFactory: BittensorApiOperationFactoryProtocol
     ) -> SubtensorCostBasisServiceProtocol {
         SubtensorCostBasisService(
             apiOperationFactory: apiOperationFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
-            eventCenter: EventCenter.shared,
-            logger: Logger.shared
+            eventCenter: EventCenter.shared
         )
     }
 }
@@ -96,8 +87,7 @@ extension StakingSharedStateFactory {
         let runtimeConnectionStore = ChainRegistryRuntimeConnectionStore(chainId: chainId, chainRegistry: chainRegistry)
 
         let apiOperationFactory = SubtensorApiOperationFactory(
-            runtimeConnectionStore: runtimeConnectionStore,
-            operationQueue: syncOperationQueue
+            runtimeConnectionStore: runtimeConnectionStore, operationQueue: syncOperationQueue
         )
 
         let novaFeeCalculator = SubtensorNovaFeeCalculator()
@@ -113,9 +103,7 @@ extension StakingSharedStateFactory {
             ),
             subnetsService: SubtensorSubnetsService(
                 operationFactory: apiOperationFactory,
-                cache: flowState.subnetsInfoCache,
-                operationQueue: syncOperationQueue,
-                logger: logger
+                operationQueue: syncOperationQueue
             ),
             apiOperationFactory: apiOperationFactory,
             stakeStateFetchFactory: SubtensorStakeStateFetchFactory(
@@ -148,7 +136,7 @@ extension StakingSharedStateFactory {
         let processServices = SubtensorStakingProcessServices.shared
 
         let validatorChainOperationFactory = SubtensorValidatorChainOperationFactory(
-            runtimeConnectionStore: runtimeConnectionStore
+            runtimeConnectionStore: runtimeConnectionStore, operationQueue: syncOperationQueue
         )
 
         let yieldService = SubtensorYieldService(
@@ -167,7 +155,6 @@ extension StakingSharedStateFactory {
         let validatorDirectoryService = SubtensorValidatorDirectoryService(
             apiOperationFactory: processServices.bittensorApiOperationFactory,
             chainOperationFactory: validatorChainOperationFactory,
-            cache: flowState.validatorDirectoryCache,
             operationQueue: syncOperationQueue,
             logger: logger
         )
@@ -188,13 +175,13 @@ extension StakingSharedStateFactory {
                 seriesProvider: flowState.priceSeriesCache
             ),
             tradeQuoteFactory: SubtensorTradeQuoteFactory(
-                quoteFactory: SubtensorQuoteOperationFactory(
-                    operationFactory: apiOperationFactory,
-                    operationQueue: syncOperationQueue
-                ),
+                operationFactory: apiOperationFactory,
+                operationQueue: syncOperationQueue,
                 feeCalculator: novaFeeCalculator
             ),
-            rootHoldFactory: SubtensorRootHoldFactory(runtimeConnectionStore: runtimeConnectionStore),
+            rootHoldFactory: SubtensorRootHoldFactory(
+                runtimeConnectionStore: runtimeConnectionStore, operationQueue: syncOperationQueue
+            ),
             costBasisService: processServices.costBasisService
         )
     }

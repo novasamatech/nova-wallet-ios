@@ -20,7 +20,7 @@ protocol SubtensorPositionInteractorInputProtocol: AnyObject {
     func cachedYields() -> SubtensorAlphaYields?
     func setup()
     func refreshPositions()
-    func loadSubnetsInfo(forcingRefresh: Bool)
+    func loadSubnetsInfo()
     func loadValidator(_ hotkey: AccountId, on subnet: SubtensorSubnetRef)
     func loadRootHolds(for hotkeys: [AccountId])
     func loadHistory(for subnet: SubtensorSubnetRef, period: SubtensorPricePeriod)

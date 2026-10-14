@@ -119,7 +119,7 @@ extension SubtensorStakingSetupPresenter {
         tradesUnavailable = false
 
         if case .quickPick = mode {
-            loadQuickPick(forcingRefresh: false)
+            loadQuickPick()
             return
         }
 
@@ -344,7 +344,12 @@ extension SubtensorStakingSetupPresenter: SubtensorStakingSetupPresenterProtocol
     }
 
     func getTao() {
-        wireframe.showGetTao(from: view, chainAsset: chainAsset, rampHandler: self)
+        wireframe.showGetTokenOptions(
+            from: view,
+            purchaseHandler: self,
+            destinationChainAsset: chainAsset,
+            locale: selectedLocale
+        )
     }
 
     func proceed() {

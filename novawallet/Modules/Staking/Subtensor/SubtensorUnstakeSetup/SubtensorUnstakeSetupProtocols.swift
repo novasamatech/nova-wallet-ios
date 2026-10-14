@@ -18,7 +18,7 @@ protocol SubtensorUnstakeSetupPresenterProtocol: AnyObject {
 }
 
 protocol SubtensorUnstakeInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {
-    func loadSubnetsInfo(forcingRefresh: Bool)
+    func loadSubnetsInfo()
     func loadValidator(_ hotkey: AccountId, on subnet: SubtensorSubnetRef)
     func loadRootHolds(for hotkeys: [AccountId])
 }

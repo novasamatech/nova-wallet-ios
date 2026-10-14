@@ -6,37 +6,23 @@ final class SubtensorValidatorDirectoryService {
 
     let apiOperationFactory: BittensorApiOperationFactoryProtocol
     let chainOperationFactory: SubtensorValidatorChainOperationFactoryProtocol
-    let cache: SubtensorValidatorDirectoryCaching
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     init(
         apiOperationFactory: BittensorApiOperationFactoryProtocol,
         chainOperationFactory: SubtensorValidatorChainOperationFactoryProtocol,
-        cache: SubtensorValidatorDirectoryCaching,
         operationQueue: OperationQueue,
         logger: LoggerProtocol = Logger.shared
     ) {
         self.apiOperationFactory = apiOperationFactory
         self.chainOperationFactory = chainOperationFactory
-        self.cache = cache
         self.operationQueue = operationQueue
         self.logger = logger
-        apiOperationFactory.addContextObserver(cache) { [weak cache] in cache?.invalidate() }
     }
 }
 
 private extension SubtensorValidatorDirectoryService {
-    func store(_ directory: SubtensorValidatorDirectory, generation: UUID) throws {
-        try cache.store(
-            SubtensorValidatorDirectoryCacheEntry(
-                directory: directory,
-                items: Dictionary(directory.items.map { ($0.hotkey, $0) }, uniquingKeysWith: { first, _ in first })
-            ),
-            generation: generation
-        )
-    }
-
     func createListedRowWrapper(
         for hotkey: AccountId,
         subnet: SubtensorSubnetRef
@@ -143,7 +129,6 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
     func createDirectoryWrapper(
         for subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectory> {
-        let generation = cache.generation
         let listingWrapper = createListingWrapper(for: subnet.netuid)
 
         let queryOperation = ClosureOperation<SubtensorValidatorChainQuery> {
@@ -156,19 +141,14 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
 
         let snapshotWrapper = createSnapshotWrapper(dependingOn: queryOperation)
 
-        let directoryOperation = ClosureOperation<SubtensorValidatorDirectory> { [weak self] in
+        let directoryOperation = ClosureOperation<SubtensorValidatorDirectory> {
             let listing = try listingWrapper.targetOperation.extractNoCancellableResultData()
             let enrichedPairs = try Set(queryOperation.extractNoCancellableResultData().pairs)
             let snapshot = try snapshotWrapper.targetOperation.extractNoCancellableResultData()
 
             let enrichment = Enrichment(snapshot: snapshot, enrichedPairs: enrichedPairs)
 
-            let directory = Self.makeDirectory(subnet: subnet, listing: listing, enrichment: enrichment)
-
-            guard let self else { throw BaseOperationError.parentOperationCancelled }
-            try store(directory, generation: generation)
-
-            return directory
+            return Self.makeDirectory(subnet: subnet, listing: listing, enrichment: enrichment)
         }
 
         directoryOperation.addDependency(snapshotWrapper.targetOperation)
@@ -179,20 +159,10 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
         )
     }
 
-    func cachedDirectory(for subnet: SubtensorSubnetRef) -> HTTPCachePeek<SubtensorValidatorDirectory> {
-        guard let cached = cache.entry(for: subnet) else {
-            return .miss
-        }
-
-        return .expired(cached.directory.markingStale())
-    }
-
     func createDetailWrapper(
         for hotkey: AccountId,
         subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem> {
-        let cache = cache
-        let generation = cache.generation
         let listedWrapper = createListedRowWrapper(for: hotkey, subnet: subnet)
 
         let itemWrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem> =
@@ -213,21 +183,6 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
 
         itemWrapper.addDependency(wrapper: listedWrapper)
 
-        let detailOperation = ClosureOperation<SubtensorValidatorDirectoryItem> {
-            let item = try itemWrapper.targetOperation.extractNoCancellableResultData()
-
-            guard generation == cache.generation else {
-                throw BittensorApiError.attestationUnavailable(requestId: nil)
-            }
-
-            return item
-        }
-
-        detailOperation.addDependency(itemWrapper.targetOperation)
-
-        return CompoundOperationWrapper(
-            targetOperation: detailOperation,
-            dependencies: listedWrapper.allOperations + itemWrapper.allOperations
-        )
+        return itemWrapper.insertingHead(operations: listedWrapper.allOperations)
     }
 }

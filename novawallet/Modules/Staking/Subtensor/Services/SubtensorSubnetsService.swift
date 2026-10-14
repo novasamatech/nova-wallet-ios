@@ -9,45 +9,28 @@ struct SubtensorSubnetsInfo: Equatable {
 }
 
 protocol SubtensorSubnetsServiceProtocol: AnyObject {
-    func fetchSubnetsInfo(
-        runningCompletionIn queue: DispatchQueue,
-        completion: @escaping (Result<SubtensorSubnetsInfo, Error>) -> Void
-    )
-
-    func fetchSubnetsInfo(
-        forcingRefresh: Bool,
-        runningCompletionIn queue: DispatchQueue,
-        completion: @escaping (Result<SubtensorSubnetsInfo, Error>) -> Void
-    )
-
-    func cachedSubnetsInfo() -> SubtensorSubnetsInfo?
+    func createSubnetsInfoWrapper() -> CompoundOperationWrapper<SubtensorSubnetsInfo>
 }
 
-final class SubtensorSubnetsService: SubtensorSessionCachingService<SubtensorSubnetsInfo> {
+final class SubtensorSubnetsService {
     let operationFactory: SubtensorApiOperationFactoryProtocol
+    let operationQueue: OperationQueue
 
-    init(
-        operationFactory: SubtensorApiOperationFactoryProtocol,
-        cache: SubtensorSessionCache<SubtensorSubnetsInfo>,
-        operationQueue: OperationQueue,
-        logger: LoggerProtocol = Logger.shared
-    ) {
+    init(operationFactory: SubtensorApiOperationFactoryProtocol, operationQueue: OperationQueue) {
         self.operationFactory = operationFactory
-
-        super.init(operationQueue: operationQueue, cache: cache, logger: logger)
+        self.operationQueue = operationQueue
     }
+}
 
-    override func createFetchWrapper() -> CompoundOperationWrapper<SubtensorSubnetsInfo> {
+extension SubtensorSubnetsService: SubtensorSubnetsServiceProtocol {
+    func createSubnetsInfoWrapper() -> CompoundOperationWrapper<SubtensorSubnetsInfo> {
         let dynamicInfoWrapper = operationFactory.createAllDynamicInfoWrapper(at: nil)
         let pricesWrapper = operationFactory.createAlphaPricesWrapper(at: nil)
+        let operationFactory = operationFactory
 
         let subtokenWrapper = OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
-        ) { [weak self] in
-            guard let self else {
-                throw BaseOperationError.parentOperationCancelled
-            }
-
+        ) {
             let netuids = try dynamicInfoWrapper.targetOperation
                 .extractNoCancellableResultData()
                 .compactMap { $0?.netuid }
@@ -82,26 +65,5 @@ final class SubtensorSubnetsService: SubtensorSessionCachingService<SubtensorSub
             dependencies: dynamicInfoWrapper.allOperations + pricesWrapper.allOperations +
                 subtokenWrapper.allOperations
         )
-    }
-}
-
-extension SubtensorSubnetsService: SubtensorSubnetsServiceProtocol {
-    func fetchSubnetsInfo(
-        runningCompletionIn queue: DispatchQueue,
-        completion: @escaping (Result<SubtensorSubnetsInfo, Error>) -> Void
-    ) {
-        fetchSubnetsInfo(forcingRefresh: false, runningCompletionIn: queue, completion: completion)
-    }
-
-    func fetchSubnetsInfo(
-        forcingRefresh: Bool,
-        runningCompletionIn queue: DispatchQueue,
-        completion: @escaping (Result<SubtensorSubnetsInfo, Error>) -> Void
-    ) {
-        fetch(forcingRefresh: forcingRefresh, runningCompletionIn: queue, completion: completion)
-    }
-
-    func cachedSubnetsInfo() -> SubtensorSubnetsInfo? {
-        cachedModel()
     }
 }

@@ -18,7 +18,7 @@ protocol CoingeckoOperationFactoryProtocol {
         for tokenId: String,
         currency: Currency,
         period: PriceHistoryPeriod
-    ) -> BaseOperation<HTTPCacheFetchOutcome<PriceHistory>>
+    ) -> BaseOperation<(PriceHistory, HTTPCacheDirectives)>
 
     func fetchMarkets(category: String, currency: Currency) -> BaseOperation<Data>
 }
@@ -260,7 +260,7 @@ extension CoingeckoOperationFactory: CoingeckoOperationFactoryProtocol {
         for tokenId: String,
         currency: Currency,
         period: PriceHistoryPeriod
-    ) -> BaseOperation<HTTPCacheFetchOutcome<PriceHistory>> {
+    ) -> BaseOperation<(PriceHistory, HTTPCacheDirectives)> {
         guard
             let url = buildURLForPriceHistoryPeriod(
                 tokenId: tokenId,
@@ -270,7 +270,7 @@ extension CoingeckoOperationFactory: CoingeckoOperationFactoryProtocol {
             return BaseOperation.createWithError(NetworkBaseError.invalidUrl)
         }
 
-        typealias Outcome = HTTPCacheFetchOutcome<PriceHistory>
+        typealias Outcome = (PriceHistory, HTTPCacheDirectives)
 
         let resultFactory = AnyNetworkResultFactory<Outcome> { [weak self] data, response, error in
             if let error {
@@ -292,7 +292,7 @@ extension CoingeckoOperationFactory: CoingeckoOperationFactoryProtocol {
             do {
                 let history = try decodeToPriceHistory(data, currency)
 
-                return .success(.response(history, HTTPCacheDirectives(response: httpResponse)))
+                return .success((history, HTTPCacheDirectives(response: httpResponse)))
             } catch {
                 return .failure(error)
             }

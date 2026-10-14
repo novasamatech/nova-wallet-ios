@@ -195,8 +195,4 @@ extension SubtensorYieldService: SubtensorYieldServiceProtocol {
 
         return overviewWrapper.insertingTail(operation: mappingOperation)
     }
-
-    func cachedNetworkRootRate() -> HTTPCachePeek<SubtensorReportedYield?> {
-        apiOperationFactory.peekRootOverview().map { Self.makeNetworkRootRate(from: $0) }
-    }
 }

@@ -228,8 +228,8 @@ private extension SubtensorPositionViewModelFactory {
 
         if !state.isRateResolved {
             rate = .loading
-        } else if let annualRate = state.annualRate {
-            rate = .loaded(SubtensorApyFormatter.text(for: annualRate, style: .bare, locale: locale))
+        } else if state.isRoot || state.annualRate != nil {
+            rate = .loaded(SubtensorApyFormatter.text(for: state.annualRate, style: .bare, locale: locale))
         } else {
             rate = .hidden
         }
