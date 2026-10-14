@@ -119,7 +119,7 @@ extension SubtensorStakingSetupPresenter {
         tradesUnavailable = false
 
         if case .quickPick = mode {
-            loadQuickPick(forcingRefresh: false)
+            loadQuickPick()
             return
         }
 

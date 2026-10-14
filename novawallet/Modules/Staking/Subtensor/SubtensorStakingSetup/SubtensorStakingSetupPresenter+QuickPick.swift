@@ -2,16 +2,16 @@ import Foundation
 import Foundation_iOS
 
 extension SubtensorStakingSetupPresenter {
-    func loadQuickPick(forcingRefresh: Bool) {
+    func loadQuickPick() {
         guard let quickPickVisit, !quickPickVisit.isManuallyReplaced, target == nil else { return }
         let generation = quickPickVisit.beginRequest()
         provideViewModel()
-        interactor.loadQuickPickSnapshot(generation: generation, forcingRefresh: forcingRefresh)
+        interactor.loadQuickPickSnapshot(generation: generation)
     }
 
     func retryQuickPick() {
         guard quickPickVisit?.isLoading == false else { return }
-        loadQuickPick(forcingRefresh: true)
+        loadQuickPick()
     }
 
     func didReceiveQuickPickSnapshot(

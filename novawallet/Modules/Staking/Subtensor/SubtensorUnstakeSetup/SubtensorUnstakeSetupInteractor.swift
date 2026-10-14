@@ -19,6 +19,7 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
 
     private let validatorCallStore = CancellableCallStore()
     private let holdsCallStore = CancellableCallStore()
+    private let subnetsInfoCallStore = CancellableCallStore()
 
     init(
         flowServices: SubtensorFlowServices,
@@ -36,14 +37,19 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
     deinit {
         validatorCallStore.cancel()
         holdsCallStore.cancel()
+        subnetsInfoCallStore.cancel()
     }
 }
 
 extension SubtensorUnstakeSetupInteractor: SubtensorUnstakeInteractorInputProtocol {
-    func loadSubnetsInfo(forcingRefresh: Bool) {
-        subnetsService.fetchSubnetsInfo(
-            forcingRefresh: forcingRefresh,
-            runningCompletionIn: .main
+    func loadSubnetsInfo() {
+        subnetsInfoCallStore.cancel()
+
+        executeCancellable(
+            wrapper: subnetsService.createSubnetsInfoWrapper(),
+            inOperationQueue: operationQueue,
+            backingCallIn: subnetsInfoCallStore,
+            runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
             case let .success(info):

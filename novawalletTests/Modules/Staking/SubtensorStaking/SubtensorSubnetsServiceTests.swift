@@ -45,28 +45,6 @@ final class SubtensorSubnetsServiceTests: XCTestCase {
         XCTAssertThrowsError(try fetchInfo(using: createService(apiFactory: apiFactory)))
     }
 
-    func testSecondFetchWithinSessionServesCacheUntilForcedRefresh() throws {
-        let apex = generateDynamicInfo(netuid: 1, name: "Apex")
-        let chutes = generateDynamicInfo(netuid: 64, name: "Chutes")
-        let apiFactory = createApiFactory(subnets: [apex], prices: [], subtokenEnabled: [1])
-        let service = createService(apiFactory: apiFactory)
-
-        let firstInfo = try fetchInfo(using: service)
-        let cachedInfo = try fetchInfo(using: service)
-
-        stub(apiFactory) { stub in
-            when(stub.createAllDynamicInfoWrapper(at: any())).then { _ in
-                CompoundOperationWrapper.createWithResult([apex, chutes])
-            }
-        }
-
-        let refreshedInfo = try fetchInfo(using: service, forcingRefresh: true)
-
-        XCTAssertEqual(cachedInfo, firstInfo)
-        XCTAssertEqual(refreshedInfo.subnets, [apex, chutes])
-        verify(apiFactory, times(2)).createAllDynamicInfoWrapper(at: any())
-    }
-
     private func generateDynamicInfo(netuid: UInt16, name: String) -> SubtensorStakingPallet.DynamicInfo {
         SubtensorStakingPallet.DynamicInfo(
             netuid: netuid,
@@ -108,28 +86,14 @@ final class SubtensorSubnetsServiceTests: XCTestCase {
     private func createService(
         apiFactory: MockSubtensorApiOperationFactoryProtocol
     ) -> SubtensorSubnetsService {
-        SubtensorSubnetsService(
-            operationFactory: apiFactory,
-            cache: SubtensorSessionCache(),
-            operationQueue: OperationQueue(),
-            logger: Logger.shared
-        )
+        SubtensorSubnetsService(operationFactory: apiFactory, operationQueue: OperationQueue())
     }
 
-    private func fetchInfo(
-        using service: SubtensorSubnetsService,
-        forcingRefresh: Bool = false
-    ) throws -> SubtensorSubnetsInfo {
-        let fetchExpectation = expectation(description: "subnets fetch")
-        var fetchResult: Result<SubtensorSubnetsInfo, Error>?
+    private func fetchInfo(using service: SubtensorSubnetsService) throws -> SubtensorSubnetsInfo {
+        let wrapper = service.createSubnetsInfoWrapper()
 
-        service.fetchSubnetsInfo(forcingRefresh: forcingRefresh, runningCompletionIn: .main) { result in
-            fetchResult = result
-            fetchExpectation.fulfill()
-        }
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
 
-        wait(for: [fetchExpectation], timeout: 10)
-
-        return try XCTUnwrap(fetchResult).get()
+        return try wrapper.targetOperation.extractNoCancellableResultData()
     }
 }

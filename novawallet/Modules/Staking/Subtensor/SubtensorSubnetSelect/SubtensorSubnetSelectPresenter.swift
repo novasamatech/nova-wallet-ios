@@ -79,12 +79,6 @@ private extension SubtensorSubnetSelectPresenter {
         view?.didReceive(list: viewModelFactory.createListViewModel(for: state, locale: selectedLocale))
     }
 
-    func seed(from snapshot: SubtensorSubnetSelectSnapshot) {
-        if let entries = snapshot.entries.value {
-            self.entries = entries
-        }
-    }
-
     func createFiltersViewModel(for draft: SubtensorSubnetFilters) -> SubtensorSubnetFiltersViewModel {
         let count = makeBuilder()?.build(query: query, sort: sort, filters: draft).others.count
 
@@ -144,13 +138,9 @@ private extension SubtensorSubnetSelectPresenter {
 
 extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol {
     func setup() {
-        seed(from: interactor.cachedSnapshot())
-
         provideList()
 
         interactor.setup()
-
-        requestWeeklyPricesIfNeeded()
     }
 
     func becomeActive() {

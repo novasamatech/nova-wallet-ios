@@ -75,7 +75,7 @@ private extension SubtensorSubnetDetailsViewFactory {
         return SubtensorSubnetDetailsInteractor(
             subnet: input.subnet.ref,
             chainAsset: state.stakingOption.chainAsset,
-            priceHistoryStore: SubtensorPriceHistoryStore(state: state, operationQueue: operationQueue),
+            priceHistoryService: earnServices.priceHistoryService,
             parametersFactory: createParametersFactory(state: state, operationQueue: operationQueue),
             presetFactory: presetFactory,
             yieldService: earnServices.yieldService,

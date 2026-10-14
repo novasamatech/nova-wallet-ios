@@ -23,7 +23,7 @@ protocol SubtensorStakingSetupPresenterProtocol: AnyObject {
 }
 
 protocol SubtensorSetupInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {
-    func loadQuickPickSnapshot(generation: Int, forcingRefresh: Bool)
+    func loadQuickPickSnapshot(generation: Int)
     func cancelQuickPickSnapshot()
     func cachedRankingView() -> HTTPCachePeek<SubtensorRankedSubnets>
     func cachedYields(netuid: UInt16) -> HTTPCachePeek<SubtensorAlphaYields>

@@ -6,7 +6,7 @@ final class SubtensorSubnetDetailsInteractor {
 
     let subnet: SubtensorSubnetRef
     let chainAsset: ChainAsset
-    let priceHistoryStore: SubtensorPriceHistoryStore
+    let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
     let parametersFactory: SubnetParametersFactoryProtocol
     let presetFactory: SubtensorValidatorPresetFactoryProtocol
     let yieldService: SubtensorYieldServiceProtocol
@@ -27,7 +27,7 @@ final class SubtensorSubnetDetailsInteractor {
     init(
         subnet: SubtensorSubnetRef,
         chainAsset: ChainAsset,
-        priceHistoryStore: SubtensorPriceHistoryStore,
+        priceHistoryService: SubtensorPriceHistoryServiceProtocol?,
         parametersFactory: SubnetParametersFactoryProtocol,
         presetFactory: SubtensorValidatorPresetFactoryProtocol,
         yieldService: SubtensorYieldServiceProtocol,
@@ -40,7 +40,7 @@ final class SubtensorSubnetDetailsInteractor {
     ) {
         self.subnet = subnet
         self.chainAsset = chainAsset
-        self.priceHistoryStore = priceHistoryStore
+        self.priceHistoryService = priceHistoryService
         self.parametersFactory = parametersFactory
         self.presetFactory = presetFactory
         self.yieldService = yieldService
@@ -164,11 +164,19 @@ extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol
     }
 
     func loadHistory(for period: SubtensorPricePeriod) {
-        priceHistoryStore.loadHistory(
+        historyCallStore.cancel()
+
+        let wrapper = priceHistoryService?.createHistoryWrapper(
             for: subnet,
             period: period,
-            currency: currencyManager.selectedCurrency,
-            backingCallIn: historyCallStore
+            currency: currencyManager.selectedCurrency
+        ) ?? .createWithResult(.notListed)
+
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: historyCallStore,
+            runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
             case let .success(history):

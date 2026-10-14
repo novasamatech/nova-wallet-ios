@@ -20,10 +20,7 @@ struct StakingDashboardViewFactory {
         let wireframe = StakingDashboardWireframe(
             stateObserver: stateObserver,
             delegatedAccountSyncService: delegatedAccountSyncService,
-            subtensorFlowState: SubtensorStakingFlowState(
-                coingeckoOperationFactory: CoingeckoOperationFactory(),
-                operationQueue: OperationManagerFacade.sharedDefaultQueue
-            )
+            subtensorFlowState: SubtensorStakingFlowState(coingeckoOperationFactory: CoingeckoOperationFactory())
         )
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: currencyManager)

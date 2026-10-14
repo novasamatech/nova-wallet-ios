@@ -43,7 +43,7 @@ private extension SubtensorUnstakeSetupPresenter {
 
     func presentSubnetRetry() {
         wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-            self?.interactor.loadSubnetsInfo(forcingRefresh: true)
+            self?.interactor.loadSubnetsInfo()
         }
     }
 }
@@ -63,7 +63,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtoc
             }
 
             isSubnetsRefreshForced = true
-            interactor.loadSubnetsInfo(forcingRefresh: true)
+            interactor.loadSubnetsInfo()
             return
         }
 

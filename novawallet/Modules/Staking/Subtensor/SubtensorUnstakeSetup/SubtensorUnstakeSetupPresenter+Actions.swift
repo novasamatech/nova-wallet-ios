@@ -33,7 +33,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
             return
         }
 
-        interactor.loadSubnetsInfo(forcingRefresh: false)
+        interactor.loadSubnetsInfo()
 
         interactor.loadCatalogue()
         interactor.loadSubnetLogos()
