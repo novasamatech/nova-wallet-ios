@@ -71,8 +71,6 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning {
 
         state.positionsSyncService?.remove(observer: self)
         state.positionsSyncService?.remove(failureObserver: self)
-        state.rootClaimableService?.remove(observer: self)
-        state.rootClaimableService?.remove(failureObserver: self)
     }
 }
 
@@ -95,6 +93,13 @@ private extension SubtensorPositionInteractor {
             }
 
             presenter?.didReceive(group: findGroup(in: newState))
+
+            if isRoot {
+                presenter?.didReceive(
+                    claimable: newState.rootClaimPreviews,
+                    isFailed: newState.isRootRedeemableStale
+                )
+            }
         }
 
         state.positionsSyncService?.add(
@@ -103,29 +108,6 @@ private extension SubtensorPositionInteractor {
             queue: .main
         ) { [weak self] _, isFailed in
             self?.presenter?.didReceiveSyncFailure(isFailed)
-        }
-    }
-
-    func subscribeClaimable() {
-        guard let claimableService = state.rootClaimableService else {
-            presenter?.didReceiveClaimableFailure(true)
-            return
-        }
-
-        claimableService.add(
-            observer: self,
-            sendStateOnSubscription: true,
-            queue: .main
-        ) { [weak self] _, claimable in
-            self?.presenter?.didReceive(claimable: claimable)
-        }
-
-        claimableService.add(
-            failureObserver: self,
-            sendStateOnSubscription: true,
-            queue: .main
-        ) { [weak self] _, isFailed in
-            self?.presenter?.didReceiveClaimableFailure(isFailed)
         }
     }
 
@@ -174,6 +156,25 @@ private extension SubtensorPositionInteractor {
         }
     }
 
+    func loadCatalogue() {
+        catalogueStore.cancel()
+
+        executeCancellable(
+            wrapper: catalogueService.createCatalogueWrapper(),
+            inOperationQueue: operationQueue,
+            backingCallIn: catalogueStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(catalogue):
+                self?.presenter?.didReceive(catalogue: catalogue)
+            case let .failure(error):
+                self?.logger.warning("Subtensor position catalogue unavailable: \(error)")
+                self?.presenter?.didReceive(catalogue: nil)
+            }
+        }
+    }
+
     func retryFailedRootHolds() {
         guard let hotkeys = failedHoldsHotkeys else {
             return
@@ -202,7 +203,6 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
         loadYields()
 
         if isRoot {
-            subscribeClaimable()
             blockNumberProvider = subscribeToBlockNumber(for: chainAsset.chain.chainId)
         } else {
             loadCatalogue()
@@ -213,25 +213,6 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
 
     func refreshPositions() {
         state.positionsSyncService?.refresh()
-    }
-
-    func loadCatalogue() {
-        catalogueStore.cancel()
-
-        executeCancellable(
-            wrapper: catalogueService.createCatalogueWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: catalogueStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(catalogue):
-                self?.presenter?.didReceive(catalogue: catalogue)
-            case let .failure(error):
-                self?.logger.warning("Subtensor position catalogue unavailable: \(error)")
-                self?.presenter?.didReceive(catalogue: nil)
-            }
-        }
     }
 
     func loadSubnetsInfo(forcingRefresh: Bool) {

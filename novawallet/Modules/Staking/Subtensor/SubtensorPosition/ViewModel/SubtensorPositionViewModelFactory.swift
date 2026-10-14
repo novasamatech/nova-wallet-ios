@@ -109,10 +109,10 @@ private extension SubtensorPositionViewModelFactory {
 
         if state.isClaimableFailed {
             value = .loaded(value: unknownValue(for: locale), detail: nil, isPositive: false)
-        } else if let claimable = state.claimable {
+        } else if let redeemable = state.claimable?.reduce(Balance.zero, { $0 + $1.redeemable }) {
             value = .loaded(
-                value: formatTao(claimable.totalRedeemable, locale: locale),
-                detail: formatFiat(claimable.totalRedeemable, price: state.price.value, locale: locale),
+                value: formatTao(redeemable, locale: locale),
+                detail: formatFiat(redeemable, price: state.price.value, locale: locale),
                 isPositive: false
             )
         } else {

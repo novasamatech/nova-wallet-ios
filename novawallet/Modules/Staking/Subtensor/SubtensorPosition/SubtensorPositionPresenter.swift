@@ -16,7 +16,6 @@ final class SubtensorPositionPresenter {
     private var target: SubtensorStakeTarget?
     private var validatorRequest: ValidatorRequest?
     private var historyRequest: HistoryRequest?
-    private var isCatalogueRefreshForced = false
     private var isSubnetsRefreshForced = false
     private var isSubnetsInfoUnavailable = false
     private var isClosed = false
@@ -281,13 +280,6 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
 
     func didReceive(catalogue: SubtensorSubnetCatalogue?) {
         state.catalogue = catalogue
-
-        if catalogue != nil, state.catalogue?.subnet(for: state.netuid) == nil, !isCatalogueRefreshForced {
-            isCatalogueRefreshForced = true
-            interactor.loadCatalogue()
-            return
-        }
-
         state.isCatalogueResolved = true
         loadValidatorIfNeeded()
         requestHistoryIfNeeded()
@@ -332,12 +324,8 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
         provideViewModel()
     }
 
-    func didReceive(claimable: SubtensorRootClaimable?) {
+    func didReceive(claimable: [SubtensorRootClaimPreview], isFailed: Bool) {
         state.claimable = claimable
-        provideViewModel()
-    }
-
-    func didReceiveClaimableFailure(_ isFailed: Bool) {
         state.isClaimableFailed = isFailed
         provideViewModel()
     }

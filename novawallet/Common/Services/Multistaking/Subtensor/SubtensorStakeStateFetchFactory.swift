@@ -1,5 +1,4 @@
 import Foundation
-import BigInt
 import Operation_iOS
 
 protocol SubtensorStakeStateFetchFactoryProtocol {
@@ -42,18 +41,19 @@ final class SubtensorStakeStateFetchFactory {
             accum[subnet.netuid] = subnet.availability
         }
 
-        let rootRedeemable = (claimPreviews ?? []).reduce(into: [AccountId: BigUInt]()) { accum, preview in
-            guard preview.redeemableTao > 0 else {
-                return
-            }
-
-            accum[preview.hotkey, default: .zero] += preview.redeemableTao
+        let rootClaimPreviews = (claimPreviews ?? []).map { preview in
+            SubtensorRootClaimPreview(
+                hotkey: preview.hotkey,
+                accrued: preview.accruedTao,
+                redeemable: preview.redeemableTao,
+                forfeitedEstimate: preview.forfeitedTaoEst
+            )
         }
 
         return Multistaking.SubtensorStakingState(
             positions: positions,
             availability: availability,
-            rootRedeemable: rootRedeemable,
+            rootClaimPreviews: rootClaimPreviews,
             isRootRedeemableStale: claimPreviews == nil
         )
     }
