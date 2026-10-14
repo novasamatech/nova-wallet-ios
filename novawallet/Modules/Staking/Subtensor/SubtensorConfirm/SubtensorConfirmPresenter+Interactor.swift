@@ -13,7 +13,7 @@ extension SubtensorConfirmPresenter {
 
         guard
             tracksCostBasis,
-            case let .fresh(costBasis, _) = interactor.cachedCostBasis(netuid: model.target.netuid) else {
+            let costBasis = interactor.cachedCostBasis(netuid: model.target.netuid).value else {
             return
         }
 
@@ -21,7 +21,7 @@ extension SubtensorConfirmPresenter {
     }
 
     func loadCostBasisIfNeeded() {
-        guard tracksCostBasis, costBasis == .loading else {
+        guard tracksCostBasis else {
             return
         }
 

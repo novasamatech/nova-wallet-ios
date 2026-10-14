@@ -37,36 +37,30 @@ final class SubtensorSubnetSelectInteractor {
 }
 
 private extension SubtensorSubnetSelectInteractor {
-    func createEntriesWrapper(forcingRefresh: Bool) -> CompoundOperationWrapper<[SubtensorSubnetListEntry]> {
+    func createEntriesWrapper() -> CompoundOperationWrapper<[SubtensorSubnetListEntry]> {
         let catalogueWrapper = catalogueService.createCatalogueWrapper()
-        let subnetsService = subnetsService
-
-        let subnetsInfoOperation = AsyncClosureOperation<SubtensorSubnetsInfo> { completion in
-            subnetsService.fetchSubnetsInfo(
-                forcingRefresh: forcingRefresh, runningCompletionIn: .global(), completion: completion
-            )
-        }
+        let subnetsInfoWrapper = subnetsService.createSubnetsInfoWrapper()
 
         let entriesOperation = ClosureOperation<[SubtensorSubnetListEntry]> {
             let catalogue = try catalogueWrapper.targetOperation.extractNoCancellableResultData()
-            let subnetsInfo = try subnetsInfoOperation.extractNoCancellableResultData()
+            let subnetsInfo = try subnetsInfoWrapper.targetOperation.extractNoCancellableResultData()
 
             return SubtensorSubnetListBuilder.entries(from: catalogue, subnetsInfo: subnetsInfo)
         }
 
         entriesOperation.addDependency(catalogueWrapper.targetOperation)
-        entriesOperation.addDependency(subnetsInfoOperation)
+        entriesOperation.addDependency(subnetsInfoWrapper.targetOperation)
 
         return catalogueWrapper
-            .insertingHead(operations: [subnetsInfoOperation])
+            .insertingHead(operations: subnetsInfoWrapper.allOperations)
             .insertingTail(operation: entriesOperation)
     }
 
-    func provideEntries(forcingRefresh: Bool = false) {
+    func provideEntries() {
         entriesStore.cancel()
 
         executeCancellable(
-            wrapper: createEntriesWrapper(forcingRefresh: forcingRefresh),
+            wrapper: createEntriesWrapper(),
             inOperationQueue: operationQueue,
             backingCallIn: entriesStore,
             runningCallbackIn: .main
@@ -103,32 +97,16 @@ private extension SubtensorSubnetSelectInteractor {
     ) -> [SubtensorSubnetRef: SubtensorPriceData<Value>] {
         Dictionary(subnets.map { ($0, .unavailable) }, uniquingKeysWith: { first, _ in first })
     }
-
-    func makeCachedEntries() -> HTTPCachePeek<[SubtensorSubnetListEntry]> {
-        guard let subnetsInfo = subnetsService.cachedSubnetsInfo() else {
-            return .miss
-        }
-
-        return catalogueService.cachedCatalogue().map { catalogue in
-            SubtensorSubnetListBuilder.entries(from: catalogue, subnetsInfo: subnetsInfo)
-        }
-    }
 }
 
 extension SubtensorSubnetSelectInteractor: SubnetSelectInteractorInputProtocol {
-    func cachedSnapshot() -> SubtensorSubnetSelectSnapshot {
-        SubtensorSubnetSelectSnapshot(
-            entries: makeCachedEntries()
-        )
-    }
-
     func setup() {
         provideEntries()
         provideSubnetLogos()
     }
 
     func refresh() {
-        provideEntries(forcingRefresh: true)
+        provideEntries()
     }
 
     func loadWeeklyPrices(for subnets: [SubtensorSubnetRef]) {

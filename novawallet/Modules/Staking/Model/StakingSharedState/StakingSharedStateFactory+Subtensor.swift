@@ -21,7 +21,7 @@ extension SubtensorStakingProcessServices {
         return SubtensorStakingProcessServices(
             bittensorApiOperationFactory: apiOperationFactory,
             subnetLogosProvider: SubtensorConfigProvider(url: ApplicationConfig.shared.bittensorConfigURL),
-            subnetMarketsService: createSubnetMarketsService(),
+            subnetMarketsService: SubtensorSubnetMarketsService(coingeckoOperationFactory: CoingeckoOperationFactory()),
             costBasisService: createCostBasisService(apiOperationFactory: apiOperationFactory)
         )
     }()
@@ -58,22 +58,13 @@ extension SubtensorStakingProcessServices {
 }
 
 private extension SubtensorStakingProcessServices {
-    static func createSubnetMarketsService() -> SubtensorSubnetMarketsServiceProtocol {
-        SubtensorSubnetMarketsService(
-            coingeckoOperationFactory: CoingeckoOperationFactory(),
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
-            logger: Logger.shared
-        )
-    }
-
     static func createCostBasisService(
         apiOperationFactory: BittensorApiOperationFactoryProtocol
     ) -> SubtensorCostBasisServiceProtocol {
         SubtensorCostBasisService(
             apiOperationFactory: apiOperationFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
-            eventCenter: EventCenter.shared,
-            logger: Logger.shared
+            eventCenter: EventCenter.shared
         )
     }
 }
@@ -113,9 +104,7 @@ extension StakingSharedStateFactory {
             ),
             subnetsService: SubtensorSubnetsService(
                 operationFactory: apiOperationFactory,
-                cache: flowState.subnetsInfoCache,
-                operationQueue: syncOperationQueue,
-                logger: logger
+                operationQueue: syncOperationQueue
             ),
             apiOperationFactory: apiOperationFactory,
             stakeStateFetchFactory: SubtensorStakeStateFetchFactory(

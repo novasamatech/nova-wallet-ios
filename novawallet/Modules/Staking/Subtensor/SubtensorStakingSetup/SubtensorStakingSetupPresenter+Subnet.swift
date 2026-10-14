@@ -47,11 +47,11 @@ extension SubtensorStakingSetupPresenter {
     }
 
     func loadCostBasisIfNeeded(for netuid: UInt16) {
-        if case let .fresh(cachedCostBasis, _) = interactor.cachedCostBasis(netuid: netuid) {
+        if let cachedCostBasis = interactor.cachedCostBasis(netuid: netuid).value {
             costBasis = .resolved(cachedCostBasis)
-        } else {
-            interactor.loadCostBasis(for: netuid)
         }
+
+        interactor.loadCostBasis(for: netuid)
     }
 
     func validatorAnnualRate() -> Decimal? {

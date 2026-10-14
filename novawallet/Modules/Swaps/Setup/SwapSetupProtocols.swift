@@ -55,7 +55,7 @@ protocol SwapSetupInteractorOutputProtocol: SwapBaseInteractorOutputProtocol {
 
 protocol SwapSetupWireframeProtocol: SwapBaseWireframeProtocol,
     ShortTextInfoPresentable,
-    RampPresentable,
+    GetTokenOptionsPresentable,
     FeeAssetSelectionPresentable {
     func showPayTokenSelection(
         from view: ControllerBackedProtocol?,
@@ -76,13 +76,6 @@ protocol SwapSetupWireframeProtocol: SwapBaseWireframeProtocol,
     func showConfirmation(
         from view: ControllerBackedProtocol?,
         initState: SwapConfirmInitState
-    )
-
-    func showGetTokenOptions(
-        form view: ControllerBackedProtocol?,
-        purchaseHadler: RampFlowManaging & RampDelegate,
-        destinationChainAsset: ChainAsset,
-        locale: Locale
     )
 
     func showRouteDetails(

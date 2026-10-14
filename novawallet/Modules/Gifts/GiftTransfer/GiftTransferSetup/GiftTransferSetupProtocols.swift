@@ -32,18 +32,12 @@ protocol GiftTransferSetupWireframeProtocol: AlertPresentable,
     ErrorPresentable,
     TransferErrorPresentable,
     PhishingErrorPresentable,
-    RampPresentable,
+    GetTokenOptionsPresentable,
     FeeRetryable {
     func showConfirmation(
         from view: GiftTransferSetupViewProtocol?,
         chainAsset: ChainAsset,
         sendingAmount: OnChainTransferAmount<Decimal>
-    )
-    func showGetTokenOptions(
-        from view: ControllerBackedProtocol?,
-        purchaseHadler: RampFlowManaging & RampDelegate,
-        destinationChainAsset: ChainAsset,
-        locale: Locale
     )
     func popTopControllers(
         from view: ControllerBackedProtocol?,

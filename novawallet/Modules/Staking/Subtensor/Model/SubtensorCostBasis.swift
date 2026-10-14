@@ -17,7 +17,6 @@ enum SubtensorCostBasis: Equatable {
 
 enum SubtensorCostBasisError: Error, Equatable {
     case unclassifiedOperations(netuid: UInt16)
-    case expiredHistoryPage
 }
 
 enum SubtensorCostBasisState: Equatable {
