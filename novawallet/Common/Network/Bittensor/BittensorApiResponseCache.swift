@@ -104,7 +104,7 @@ private extension BittensorApiResponseCache {
         defer { mutex.unlock() }
         invalidateLocked(before: max(currentRevision, scope.invalidationRevision))
         guard scope.invalidationRevision >= minimumInvalidationRevision else {
-            throw BittensorApiError.attestationUnavailable(requestId: nil)
+            throw BittensorApiError.unavailable(code: nil, requestId: nil)
         }
         if activeScope != scope {
             activeScope = scope
@@ -122,7 +122,7 @@ private extension BittensorApiResponseCache {
         defer { mutex.unlock() }
         invalidateLocked(before: currentRevision)
         guard activeScope == key.scope else {
-            throw BittensorApiError.attestationUnavailable(requestId: nil)
+            throw BittensorApiError.unavailable(code: nil, requestId: nil)
         }
         let fetched = try fetched()
         if let generation = fetched.generation, let newestGeneration, generation < newestGeneration {

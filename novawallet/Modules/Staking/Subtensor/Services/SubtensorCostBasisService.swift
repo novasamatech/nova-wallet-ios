@@ -101,7 +101,7 @@ private extension SubtensorCostBasisService {
         defer { mutex.unlock() }
 
         guard generation == contextGeneration else {
-            throw BittensorApiError.attestationUnavailable(requestId: nil)
+            throw BittensorApiError.unavailable(code: nil, requestId: nil)
         }
 
         if timeProvider() >= seedBlockedUntil[accountId] ?? 0 {
