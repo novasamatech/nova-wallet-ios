@@ -81,24 +81,11 @@ extension SubtensorStakingSetupViewModelFactory {
 }
 
 private extension SubtensorStakingSetupViewModelFactory {
-    func displayTarget(for input: SubtensorStakingSetupViewModelInput) -> SubtensorStakeTarget? {
-        guard case let .subnet(info, price) = input.target else {
-            return input.target
-        }
-
-        var displayInfo = info
-        displayInfo.tokenSymbol = Data(
-            SubtensorSubnetNaming.symbol(for: info.netuid, in: input.matchingCatalogue).utf8
-        )
-
-        return .subnet(info: displayInfo, price: price)
-    }
-
     func createTradePanel(
         for input: SubtensorStakingSetupViewModelInput,
         locale: Locale
     ) -> SubtensorTradePanelViewModel? {
-        guard let target = displayTarget(for: input) else {
+        guard let target = input.target else {
             return nil
         }
 
@@ -107,6 +94,7 @@ private extension SubtensorStakingSetupViewModelFactory {
             amountIn: input.amount,
             direction: .buy,
             target: target,
+            catalogue: input.matchingCatalogue,
             taoPrice: input.price,
             locale: locale
         )

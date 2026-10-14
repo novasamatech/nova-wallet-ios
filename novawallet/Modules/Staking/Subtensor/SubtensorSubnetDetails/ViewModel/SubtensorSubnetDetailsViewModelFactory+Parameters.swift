@@ -7,7 +7,8 @@ extension SubtensorSubnetDetailsViewModelFactory {
     ) -> SubtensorSubnetParametersViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
         let parameters = state.parameters
-        let split = parameters?.poolSplit
+        let pool = subnet.taoReserve + subnet.alphaReserve
+        let split = pool > 0 ? BigRational(numerator: subnet.taoReserve, denominator: pool).decimalValue : nil
         let age = parameters?.age.flatMap { interval -> String? in
             let formatter = DateComponentsFormatter()
             formatter.calendar = Calendar(identifier: .gregorian)
@@ -17,7 +18,6 @@ extension SubtensorSubnetDetailsViewModelFactory {
             formatter.unitsStyle = .full
             return formatter.string(from: interval).map { strings.stakingSubtensorV22ApproximateFormat($0) }
         }
-        let tao = parameters?.subnet?.taoIn
         return SubtensorSubnetParametersViewModel(
             split: split,
             taoShare: strings.stakingSubtensorV22PoolShareFormat(
@@ -36,56 +36,29 @@ extension SubtensorSubnetDetailsViewModelFactory {
                     state: state,
                     locale: locale
                 ),
-                row(
-                    strings.stakingSubtensorQuickPoolTitle(),
-                    value: tao
-                        .map { formatCompactTao($0.decimal(assetInfo: chainAsset.assetDisplayInfo), locale: locale) },
-                    detail: tao
-                        .flatMap {
-                            fiat($0.decimal(assetInfo: chainAsset.assetDisplayInfo), state: state, locale: locale)
-                        },
-                    state: state,
-                    locale: locale
-                )
+                taoPoolRow(strings.stakingSubtensorQuickPoolTitle(), state: state, locale: locale)
             ]
         )
     }
 
     func createMoreDetails(for state: SubtensorSubnetDetailsState, locale: Locale) -> [SubtensorParameterRowViewModel] {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-        let parameters = state.parameters
-        let tao = parameters?.subnet?.taoIn
-        let alpha = parameters?.subnet?.alphaIn
-        let alphaTao = alpha.flatMap { amount in
-            parameters?.alphaPrice.map {
-                amount.decimal(assetInfo: chainAsset.assetDisplayInfo) *
-                    $0.decimal(assetInfo: chainAsset.assetDisplayInfo)
-            }
-        }
+        let alphaTao = subnet.alphaReserve * subnet.taoPerAlpha / SubtensorStakingPallet.alphaPriceScale
         return [
             SubtensorParameterRowViewModel(
                 title: strings.stakingSubtensorV22Uid(),
                 value: String(subnet.netuid),
                 detail: nil
             ),
-            row(
-                strings.stakingSubtensorV22TaoPool(),
-                value: tao.map { formatCompactTao($0.decimal(assetInfo: chainAsset.assetDisplayInfo), locale: locale) },
-                detail: tao
-                    .flatMap { fiat($0.decimal(assetInfo: chainAsset.assetDisplayInfo), state: state, locale: locale) },
-                state: state,
-                locale: locale
-            ),
-            row(
-                strings.stakingSubtensorV22AlphaPool(),
-                value: alpha.map { formatAlpha($0, locale: locale) },
-                detail: alphaTao.flatMap { fiat($0, state: state, locale: locale) },
-                state: state,
-                locale: locale
+            taoPoolRow(strings.stakingSubtensorV22TaoPool(), state: state, locale: locale),
+            SubtensorParameterRowViewModel(
+                title: strings.stakingSubtensorV22AlphaPool(),
+                value: formatAlpha(subnet.alphaReserve, locale: locale),
+                detail: fiat(alphaTao.decimal(assetInfo: chainAsset.assetDisplayInfo), state: state, locale: locale)
             ),
             row(
                 strings.stakingSubtensorV22Emission(),
-                value: parameters?.emission.map { formatPercent($0, locale: locale) },
+                value: state.parameters?.emission.map { formatPercent($0, locale: locale) },
                 state: state,
                 locale: locale
             )
@@ -100,6 +73,15 @@ private extension SubtensorSubnetDetailsViewModelFactory {
     ) -> SubtensorParameterRowViewModel {
         SubtensorParameterRowViewModel(
             title: title, value: state.isParametersLoaded ? value ?? unknownValue(for: locale) : nil, detail: detail
+        )
+    }
+
+    func taoPoolRow(
+        _ title: String, state: SubtensorSubnetDetailsState, locale: Locale
+    ) -> SubtensorParameterRowViewModel {
+        let tao = subnet.taoReserve.decimal(assetInfo: chainAsset.assetDisplayInfo)
+        return SubtensorParameterRowViewModel(
+            title: title, value: formatCompactTao(tao, locale: locale), detail: fiat(tao, state: state, locale: locale)
         )
     }
 

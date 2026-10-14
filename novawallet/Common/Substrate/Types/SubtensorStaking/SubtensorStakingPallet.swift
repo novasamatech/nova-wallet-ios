@@ -28,7 +28,4 @@ enum SubtensorStakingPallet {
     // Swap.FeeRate is ValueQuery with runtime DefaultFeeRate = 33 (swap pallet mod.rs:89-97);
     // an unset key reads as null over RPC, so the runtime default is applied app-side
     static let defaultFeeRate: UInt16 = 33
-
-    // SubnetOwnerCut chain-wide default (runtime/src/lib.rs:860); governance-mutable
-    static let defaultSubnetOwnerCut: UInt16 = 11796
 }

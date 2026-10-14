@@ -12,6 +12,7 @@ protocol SubtensorQuoteViewModelFactoryProtocol {
         amountIn: Balance?,
         direction: SubtensorTradeDirection,
         target: SubtensorStakeTarget,
+        catalogue: SubtensorSubnetCatalogue?,
         taoPrice: PriceData?,
         locale: Locale
     ) -> SubtensorTradePanelViewModel?
@@ -111,6 +112,7 @@ extension SubtensorQuoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
         amountIn: Balance?,
         direction: SubtensorTradeDirection,
         target: SubtensorStakeTarget,
+        catalogue: SubtensorSubnetCatalogue?,
         taoPrice: PriceData?,
         locale: Locale
     ) -> SubtensorTradePanelViewModel? {
@@ -119,7 +121,7 @@ extension SubtensorQuoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
         }
 
         let taoInfo = chainAsset.assetDisplayInfo
-        let alphaInfo = target.assetDisplayInfo(basedOn: taoInfo)
+        let alphaInfo = target.assetDisplayInfo(basedOn: taoInfo, catalogue: catalogue)
         let hasReceive = amountIn == quote.amountIn
 
         switch (direction, quote.quote.args.direction) {

@@ -4,11 +4,8 @@ import Operation_iOS
 
 struct SubtensorSubnetsInfo: Equatable {
     let subnets: [SubtensorStakingPallet.DynamicInfo]
-    let isComplete: Bool
     let prices: [UInt16: Balance]
     let subtokenEnabled: Set<UInt16>
-    /// chain-wide, governance-mutable; falls back to the runtime default while unset
-    let ownerCut: UInt16
 }
 
 protocol SubtensorSubnetsServiceProtocol: AnyObject {
@@ -40,15 +37,9 @@ final class SubtensorSubnetsService: SubtensorSessionCachingService<SubtensorSub
         super.init(operationQueue: operationQueue, cache: cache, logger: logger)
     }
 
-    static func isCompleteSnapshot(_ rows: [SubtensorStakingPallet.DynamicInfo?]) -> Bool {
-        let netuids = rows.compactMap { $0?.netuid }
-        return netuids.count == rows.count && Set(netuids).count == netuids.count
-    }
-
     override func createFetchWrapper() -> CompoundOperationWrapper<SubtensorSubnetsInfo> {
         let dynamicInfoWrapper = operationFactory.createAllDynamicInfoWrapper(at: nil)
         let pricesWrapper = operationFactory.createAlphaPricesWrapper(at: nil)
-        let ownerCutWrapper = operationFactory.createSubnetOwnerCutWrapper(blockHash: nil)
 
         let subtokenWrapper = OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue
@@ -70,10 +61,6 @@ final class SubtensorSubnetsService: SubtensorSessionCachingService<SubtensorSub
             let dynamicInfos = try dynamicInfoWrapper.targetOperation.extractNoCancellableResultData()
             let subnetPrices = try pricesWrapper.targetOperation.extractNoCancellableResultData()
             let subtokenEnabled = try subtokenWrapper.targetOperation.extractNoCancellableResultData()
-            // SubnetOwnerCut is ValueQuery and reads as null on live finney, so the runtime
-            // default stands in until governance sets it
-            let ownerCut = try ownerCutWrapper.targetOperation.extractNoCancellableResultData()
-                ?? SubtensorStakingPallet.defaultSubnetOwnerCut
 
             let prices = subnetPrices.reduce(into: [UInt16: Balance]()) { accum, subnetPrice in
                 accum[subnetPrice.netuid] = subnetPrice.price
@@ -81,22 +68,19 @@ final class SubtensorSubnetsService: SubtensorSessionCachingService<SubtensorSub
 
             return SubtensorSubnetsInfo(
                 subnets: dynamicInfos.compactMap { $0 },
-                isComplete: Self.isCompleteSnapshot(dynamicInfos),
                 prices: prices,
-                subtokenEnabled: subtokenEnabled,
-                ownerCut: ownerCut
+                subtokenEnabled: subtokenEnabled
             )
         }
 
         mergeOperation.addDependency(dynamicInfoWrapper.targetOperation)
         mergeOperation.addDependency(pricesWrapper.targetOperation)
         mergeOperation.addDependency(subtokenWrapper.targetOperation)
-        mergeOperation.addDependency(ownerCutWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: mergeOperation,
             dependencies: dynamicInfoWrapper.allOperations + pricesWrapper.allOperations +
-                subtokenWrapper.allOperations + ownerCutWrapper.allOperations
+                subtokenWrapper.allOperations
         )
     }
 }

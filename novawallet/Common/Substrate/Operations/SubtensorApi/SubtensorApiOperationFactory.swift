@@ -50,11 +50,6 @@ protocol SubtensorApiOperationFactoryProtocol {
         blockHash: BlockHash?
     ) -> CompoundOperationWrapper<UInt16>
 
-    /// nil when the chain-wide ValueQuery key is unset, so the caller applies the runtime default
-    func createSubnetOwnerCutWrapper(
-        blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<UInt16?>
-
     func createSubtokenEnabledWrapper(
         for netuids: [UInt16],
         blockHash: BlockHash?
@@ -360,25 +355,6 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
             },
             mapping: { (responses: [StorageResponse<StringScaleMapper<UInt16>>]) in
                 responses.first?.value?.value ?? SubtensorStakingPallet.defaultFeeRate
-            }
-        )
-    }
-
-    func createSubnetOwnerCutWrapper(
-        blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<UInt16?> {
-        createStorageWrapper(
-            blockHash: blockHash,
-            query: { engine, factory, atBlock in
-                self.requestFactory.queryItem(
-                    engine: engine,
-                    factory: factory,
-                    storagePath: SubtensorStakingPallet.subnetOwnerCutPath,
-                    at: atBlock
-                )
-            },
-            mapping: { (response: StorageResponse<StringScaleMapper<UInt16>>) in
-                response.value?.value
             }
         )
     }

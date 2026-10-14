@@ -34,11 +34,6 @@ extension SubtensorStakingPallet {
         StorageCodingPath(moduleName: name, itemName: "ColdkeySwapAnnouncements")
     }
 
-    /// chain-wide StorageValue, not a per-subnet map (subtensor: `pallets/subtensor/src/lib.rs:2015`)
-    static var subnetOwnerCutPath: StorageCodingPath {
-        StorageCodingPath(moduleName: name, itemName: "SubnetOwnerCut")
-    }
-
     static var rootStakeUnlockIntervalPath: StorageCodingPath {
         StorageCodingPath(moduleName: name, itemName: "RootStakeUnlockInterval")
     }

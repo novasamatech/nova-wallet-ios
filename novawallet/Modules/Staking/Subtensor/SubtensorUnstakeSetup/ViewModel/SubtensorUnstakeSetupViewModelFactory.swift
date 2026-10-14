@@ -302,18 +302,16 @@ private extension SubtensorUnstakeSetupViewModelFactory {
         for input: SubtensorUnstakeSetupViewModelInput,
         locale: Locale
     ) -> SubtensorTradePanelViewModel? {
-        guard !input.isRoot, case let .subnet(info, price) = input.target else {
+        guard !input.isRoot, let target = input.target else {
             return nil
         }
-
-        var displayInfo = info
-        displayInfo.tokenSymbol = Data(SubtensorSubnetNaming.symbol(for: info.netuid, in: input.catalogue).utf8)
 
         return quoteViewModelFactory.createTradePanel(
             for: input.quote,
             amountIn: input.amount,
             direction: .sell,
-            target: .subnet(info: displayInfo, price: price),
+            target: target,
+            catalogue: input.catalogue,
             taoPrice: input.price,
             locale: locale
         )
