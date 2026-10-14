@@ -35,6 +35,13 @@ extension SubtensorValidatorDirectoryService {
         logger: LoggerProtocol
     ) throws -> Listing {
         let collection = response.value
+        let reader = BittensorApiFieldReader(route: "/subnets/{netuid}/validators", requestId: response.requestId)
+
+        for (index, item) in collection.items.enumerated() {
+            let field = "items[\(index)].reportedMeasurements.validatorStake"
+            _ = try reader.optionalDecimal(item.reportedMeasurements.validatorStake, field)
+        }
+
         var rows: [Row] = []
 
         let candidates: [BittensorApi.Validator]

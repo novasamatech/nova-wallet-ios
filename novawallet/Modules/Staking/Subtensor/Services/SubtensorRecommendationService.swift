@@ -29,17 +29,13 @@ extension SubtensorRankedSubnets {
 private extension SubtensorRecommendationService {
     struct Candidate {
         let recommendationClass: SubtensorRecommendationClass
-        let path: String
         let pair: SubtensorHotkeySubnet
-        let recommendation: BittensorApi.Recommendation
     }
 
     struct ParsedGeneration {
         let generation: SubtensorRecommendationGeneration
         let gates: SubtensorClientGates
-        let topN: Int
         let candidates: [Candidate]
-        let reader: DecimalReader
     }
 
     static func parse(
@@ -48,7 +44,8 @@ private extension SubtensorRecommendationService {
     ) throws -> ParsedGeneration {
         let meta = response.value.meta
         let classes = response.value.classes
-        let reader = DecimalReader(route: "/recommendations", requestId: response.requestId)
+        let reader = BittensorApiFieldReader(route: "/recommendations", requestId: response.requestId)
+        let gates = try clientGates(meta.clientGates, reader: reader)
 
         let groups: [(SubtensorRecommendationClass, String, [BittensorApi.Recommendation])] = [
             (.stable, "stable", classes.stable),
@@ -62,6 +59,8 @@ private extension SubtensorRecommendationService {
             for (index, recommendation) in recommendations.enumerated() {
                 let path = "classes.\(name)[\(index)]"
 
+                try reader.require(recommendation.clientChecks == requiredClientChecks, "\(path).clientChecks")
+
                 guard let hotkey = try? recommendation.hotkey.toAccountId(
                     using: .substrate(SubstrateConstants.genericAddressPrefix)
                 ) else {
@@ -71,65 +70,43 @@ private extension SubtensorRecommendationService {
 
                 let candidate = Candidate(
                     recommendationClass: recommendationClass,
-                    path: path,
-                    pair: SubtensorHotkeySubnet(hotkey: hotkey, netuid: recommendation.netuid),
-                    recommendation: recommendation
+                    pair: SubtensorHotkeySubnet(hotkey: hotkey, netuid: recommendation.netuid)
                 )
 
                 candidates.append(candidate)
             }
         }
 
-        return try ParsedGeneration(
+        return ParsedGeneration(
             generation: makeGeneration(
-                meta.generation,
-                component: meta.components.recommendations,
-                completeness: meta.completeness,
+                meta,
                 receivedAt: response.receivedAt,
                 isFromExpiredCache: response.isFromExpiredCache
             ),
-            gates: reader.clientGates(meta.clientGates),
-            topN: meta.topN,
-            candidates: candidates,
-            reader: reader
+            gates: gates,
+            candidates: candidates
         )
     }
 
     static func verify(
         _ parsed: ParsedGeneration,
         snapshot: SubtensorValidatorChainSnapshot
-    ) throws -> SubtensorVerifiedRecommendations {
-        var classes: [SubtensorRecommendationClass: [SubtensorRecommendedPair]] = [
+    ) -> SubtensorVerifiedRecommendations {
+        var classes: [SubtensorRecommendationClass: [SubtensorHotkeySubnet]] = [
             .stable: [],
             .balanced: [],
             .higherUpside: []
         ]
 
-        var droppedByGate: [SubtensorRecommendationGate: Int] = [:]
-
-        for candidate in parsed.candidates {
-            switch SubtensorRecommendationVerifier.verify(candidate.pair, snapshot: snapshot, gates: parsed.gates) {
-            case let .verified(verification):
-                let pair = try parsed.reader.pair(
-                    candidate.recommendation,
-                    hotkey: candidate.pair.hotkey,
-                    path: candidate.path,
-                    verification: verification
-                )
-
-                classes[candidate.recommendationClass, default: []].append(pair)
-            case let .dropped(gate):
-                droppedByGate[gate, default: 0] += 1
-            }
+        for candidate in parsed.candidates
+            where SubtensorRecommendationVerifier.passesGates(candidate.pair, snapshot: snapshot, gates: parsed.gates) {
+            classes[candidate.recommendationClass, default: []].append(candidate.pair)
         }
 
         return SubtensorVerifiedRecommendations(
             generation: parsed.generation,
             clientGates: parsed.gates,
-            topN: parsed.topN,
-            classes: classes,
-            droppedByGate: droppedByGate,
-            verifiedAtBlock: snapshot.blockNumber
+            classes: classes
         )
     }
 
@@ -137,39 +114,24 @@ private extension SubtensorRecommendationService {
         from response: BittensorApiResult<BittensorApi.SubnetRankingCollection>
     ) throws -> (subnets: SubtensorRankedSubnets, gates: SubtensorClientGates) {
         let meta = response.value.meta
-        let reader = DecimalReader(route: "/recommendations/subnets", requestId: response.requestId)
+        let reader = BittensorApiFieldReader(route: "/recommendations/subnets", requestId: response.requestId)
 
-        let gates = try reader.clientGates(meta.clientGates)
+        let gates = try clientGates(meta.clientGates, reader: reader)
 
         let items = try response.value.items.enumerated().map { index, item in
-            try reader.rankedSubnet(item, "items[\(index)]")
+            try rankedSubnet(item, "items[\(index)]", reader: reader)
         }
 
         let subnets = SubtensorRankedSubnets(
             generation: makeGeneration(
-                meta.generation,
-                component: meta.components.recommendations,
-                completeness: meta.completeness,
+                meta,
                 receivedAt: response.receivedAt,
                 isFromExpiredCache: response.isFromExpiredCache
             ),
-            policy: policy(meta.policy),
             items: items
         )
 
         return (subnets, gates)
-    }
-
-    static func logDrops(of recommendations: SubtensorVerifiedRecommendations, total: Int, logger: LoggerProtocol) {
-        let dropped = recommendations.droppedByGate
-        let generation = recommendations.generation.id
-        let block = recommendations.verifiedAtBlock
-
-        logger.debug(
-            "Subtensor recommendations \(generation) verified at block \(block): \(total) pairs, dropped " +
-                "noCurrentUid \(dropped[.noCurrentUid] ?? 0), noPermit \(dropped[.noPermit] ?? 0), " +
-                "takeAboveMax \(dropped[.takeAboveMax] ?? 0), inactive \(dropped[.inactive] ?? 0)"
-        )
     }
 }
 
@@ -202,11 +164,7 @@ extension SubtensorRecommendationService: SubtensorRecommendationServiceProtocol
             let parsed = try parseOperation.extractNoCancellableResultData()
             let snapshot = try snapshotWrapper.targetOperation.extractNoCancellableResultData()
 
-            let recommendations = try Self.verify(parsed, snapshot: snapshot)
-
-            Self.logDrops(of: recommendations, total: parsed.candidates.count, logger: logger)
-
-            return recommendations
+            return Self.verify(parsed, snapshot: snapshot)
         }
 
         verifyOperation.addDependency(snapshotWrapper.targetOperation)

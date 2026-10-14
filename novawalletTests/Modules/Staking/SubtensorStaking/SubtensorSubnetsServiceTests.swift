@@ -75,21 +75,11 @@ final class SubtensorSubnetsServiceTests: XCTestCase {
             subnetName: Data(name.utf8),
             tokenSymbol: Data("α".utf8),
             tempo: 360,
-            lastStep: 0,
-            blocksSinceLastStep: 0,
             emission: 0,
             alphaIn: 0,
-            alphaOut: 0,
             taoIn: 0,
-            alphaOutEmission: 0,
-            alphaInEmission: 0,
             taoInEmission: 0,
-            pendingAlphaEmission: 0,
-            pendingRootEmission: 0,
-            subnetVolume: 0,
-            networkRegisteredAt: 0,
-            subnetIdentity: nil,
-            movingPrice: .null
+            networkRegisteredAt: 0
         )
     }
 

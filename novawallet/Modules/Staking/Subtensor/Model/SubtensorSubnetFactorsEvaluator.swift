@@ -15,7 +15,7 @@ extension SubtensorSubnetFactorsInput {
         ageBlocks = rankedSubnet?.ageBlocks
         poolTao = rankedSubnet?.taoIn
         validatorCount = rankedSubnet.flatMap { $0.status == .scored ? $0.scoredValidators : nil }
-        volatility = rankedSubnet?.breakdown?.volatility
+        volatility = rankedSubnet?.volatility
         self.listedSince = listedSince
         self.isNotListed = isNotListed
         self.now = now

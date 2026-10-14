@@ -1,10 +1,5 @@
 import Foundation
 
-enum SubtensorRecommendationVerdict: Equatable {
-    case verified(SubtensorPairVerification)
-    case dropped(SubtensorRecommendationGate)
-}
-
 enum SubtensorRecommendationVerifier {
     static func chainQuery(for pairs: [SubtensorHotkeySubnet]) -> SubtensorValidatorChainQuery {
         var seenPairs: Set<SubtensorHotkeySubnet> = []
@@ -15,37 +10,27 @@ enum SubtensorRecommendationVerifier {
         )
     }
 
-    static func verify(
+    static func passesGates(
         _ pair: SubtensorHotkeySubnet,
         snapshot: SubtensorValidatorChainSnapshot,
         gates: SubtensorClientGates
-    ) -> SubtensorRecommendationVerdict {
+    ) -> Bool {
         guard let status = SubtensorValidatorChainStatus.make(snapshot: snapshot, pair: pair) else {
-            return .dropped(.noCurrentUid)
+            return false
         }
 
         let isSubnet = pair.netuid != SubtensorStakingPallet.rootNetuid
 
         if isSubnet, gates.requirePermit, status.hasPermit != true {
-            return .dropped(.noPermit)
+            return false
         }
 
         guard
             let take = snapshot.takes[pair.hotkey],
             !SubtensorTakeGate.exceedsMax(take: take, maxTake: gates.maxTake) else {
-            return .dropped(.takeAboveMax)
+            return false
         }
 
-        if isSubnet, gates.requireActiveWithinCutoff, status.isActive != true {
-            return .dropped(.inactive)
-        }
-
-        let verification = SubtensorPairVerification(
-            uid: status.uid,
-            take: Decimal(take) / Decimal(SubtensorStakingPallet.perU16Denominator),
-            blocksSinceUpdate: status.blocksSinceUpdate
-        )
-
-        return .verified(verification)
+        return !isSubnet || !gates.requireActiveWithinCutoff || status.isActive == true
     }
 }

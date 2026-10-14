@@ -46,9 +46,9 @@ final class SubtensorSubnetsService: SubtensorSessionCachingService<SubtensorSub
     }
 
     override func createFetchWrapper() -> CompoundOperationWrapper<SubtensorSubnetsInfo> {
-        let dynamicInfoWrapper = operationFactory.createAllDynamicInfoWrapper()
-        let pricesWrapper = operationFactory.createAlphaPricesWrapper()
-        let ownerCutWrapper = operationFactory.createSubnetOwnerCutWrapper()
+        let dynamicInfoWrapper = operationFactory.createAllDynamicInfoWrapper(at: nil)
+        let pricesWrapper = operationFactory.createAlphaPricesWrapper(at: nil)
+        let ownerCutWrapper = operationFactory.createSubnetOwnerCutWrapper(blockHash: nil)
 
         let subtokenWrapper = OperationCombiningService.compoundNonOptionalWrapper(
             operationQueue: operationQueue

@@ -52,10 +52,10 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
         XCTAssertFalse(result.isFromExpiredCache)
     }
 
-    func testGrammarInvalidDecimalIsAContractViolationWithTheRequestId() throws {
+    func testUndecodableFieldIsAContractViolationWithTheRequestId() throws {
         let body = mutatedBody(
             recommendationsJson,
-            replacing: [(#""maxTake":"0.18""#, #""maxTake":".18""#)]
+            replacing: [(#""sourceBlockNumber":9139880"#, #""sourceBlockNumber":"9139880""#)]
         )
         let transport = createTransport(replies: [createResponse(body, requestId: "req-decimal")])
         let factory = createFactory(transport: transport)
@@ -66,7 +66,7 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
             }
 
             XCTAssertEqual(requestId, "req-decimal")
-            XCTAssertTrue(detail.contains("maxTake"))
+            XCTAssertTrue(detail.contains("sourceBlockNumber"))
         }
     }
 

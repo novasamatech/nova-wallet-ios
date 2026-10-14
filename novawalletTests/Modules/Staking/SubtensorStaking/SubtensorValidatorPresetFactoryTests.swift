@@ -92,63 +92,28 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
         return directoryService
     }
 
-    private func generatePair(_ hotkey: AccountId, netuid: UInt16) -> SubtensorRecommendedPair {
-        SubtensorRecommendedPair(
-            netuid: netuid,
-            hotkey: hotkey,
-            subnetName: "",
-            symbol: "",
-            validatorName: nil,
-            score: 0,
-            subnetRisk: nil,
-            validatorRisk: 0,
-            breakdown: SubtensorRecommendationBreakdown(
-                volatility: nil,
-                maxDrawdown: nil,
-                poolDepth: nil,
-                age: nil,
-                emissionStability: nil,
-                stakeConcentration: nil,
-                permitMargin: nil,
-                rootStakeMargin: nil,
-                vtrust: SubtensorMetricScore(raw: nil, normalized: 0, weight: 0, isDerived: false, flags: [])
-            ),
-            effectiveStakeAlpha: 0,
-            rootStakeTao: 0,
-            priceTao: nil,
-            flags: [],
-            verification: SubtensorPairVerification(uid: 1, take: 0, blocksSinceUpdate: nil)
-        )
+    private func generatePair(_ hotkey: AccountId, netuid: UInt16) -> SubtensorHotkeySubnet {
+        SubtensorHotkeySubnet(hotkey: hotkey, netuid: netuid)
     }
 
     private func generateRecommendations(freshness: SubtensorBackendStamp.Freshness) -> SubtensorVerifiedRecommendations {
         SubtensorVerifiedRecommendations(
             generation: SubtensorRecommendationGeneration(
-                id: "8ebc85abd0bbeb6f282302ac48909c3d",
                 sourceBlockNumber: 9_139_880,
-                modelVersion: "5.0",
-                ageSeconds: 420,
                 receivedAt: 0,
-                isServedFromMemory: false,
-                excludedNetuids: [],
                 carriedOverNetuids: [],
-                inputFlags: [],
-                stamp: SubtensorBackendStamp(asOf: Date(timeIntervalSince1970: 1_790_000_000), freshness: freshness),
-                isPartial: false
+                stamp: SubtensorBackendStamp(asOf: Date(timeIntervalSince1970: 1_790_000_000), freshness: freshness)
             ),
             clientGates: SubtensorClientGates(
                 maxTake: BigRational(numerator: 18, denominator: 100),
                 requirePermit: true,
                 requireActiveWithinCutoff: true
             ),
-            topN: 3,
             classes: [
                 .stable: [generatePair(rootPairHotkey, netuid: 0)],
                 .balanced: [generatePair(targonPairHotkey, netuid: 4), generatePair(chutesPairHotkey, netuid: 64)],
                 .higherUpside: [generatePair(chutesRiskierPairHotkey, netuid: 64)]
-            ],
-            droppedByGate: [:],
-            verifiedAtBlock: 9_140_000
+            ]
         )
     }
 

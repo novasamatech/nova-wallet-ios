@@ -14,8 +14,6 @@ final class SubtensorSwapApiDecodeTests: XCTestCase {
         XCTAssertEqual(simSwapResult.alphaAmount, BigUInt(130_082_405_209))
         XCTAssertEqual(simSwapResult.taoFee, BigUInt(503_547))
         XCTAssertEqual(simSwapResult.alphaFee, 0)
-        XCTAssertEqual(simSwapResult.taoSlippage, 0)
-        XCTAssertEqual(simSwapResult.alphaSlippage, BigUInt(70_762_340))
     }
 
     func testCapturedSellSimDecodesAmountsAndAlphaFee() throws {
@@ -28,8 +26,6 @@ final class SubtensorSwapApiDecodeTests: XCTestCase {
         XCTAssertEqual(simSwapResult.alphaAmount, BigUInt(130_016_902_511))
         XCTAssertEqual(simSwapResult.taoFee, 0)
         XCTAssertEqual(simSwapResult.alphaFee, BigUInt(65_502_698))
-        XCTAssertEqual(simSwapResult.taoSlippage, BigUInt(543_368))
-        XCTAssertEqual(simSwapResult.alphaSlippage, 0)
     }
 
     func testStakeInfoForColdkeyDecodesRootStake() throws {

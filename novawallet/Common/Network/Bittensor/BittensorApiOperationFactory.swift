@@ -2,20 +2,12 @@ import Foundation
 import NovaCrypto
 import Operation_iOS
 
-protocol BittensorApiWireChecked {
-    func validateWire() throws
-}
-
 protocol BittensorApiGenerationalResponse {
     var generationOrder: BittensorApiGenerationOrder { get }
 }
 
 protocol BittensorApiContextObserving: AnyObject {
     func addContextObserver(_ owner: AnyObject, closure: @escaping () -> Void)
-}
-
-struct BittensorApiWireViolation: Error {
-    let field: String
 }
 
 final class BittensorApiOperationFactory {
@@ -131,7 +123,7 @@ private extension BittensorApiOperationFactory {
         }
     }
 
-    func createPagedWrapper<T: Decodable & BittensorApiWireChecked>(
+    func createPagedWrapper<T: Decodable>(
         route: Route,
         path: String,
         page: Int
@@ -161,7 +153,7 @@ private extension BittensorApiOperationFactory {
         return cached.map { try Self.makeResult(from: $0, isFromExpiredCache: isFromExpiredCache) }
     }
 
-    func createSearchWrapper<T: Decodable & BittensorApiWireChecked>(
+    func createSearchWrapper<T: Decodable>(
         route: Route,
         accountSubject: AccountAddress,
         page: Int?
@@ -181,7 +173,7 @@ private extension BittensorApiOperationFactory {
         )
     }
 
-    func createWrapper<T: Decodable & BittensorApiWireChecked>(
+    func createWrapper<T: Decodable>(
         route: Route,
         path: String,
         queryItems: [URLQueryItem] = [],
@@ -249,7 +241,7 @@ private extension BittensorApiOperationFactory {
         )
     }
 
-    static func createFetchWrapper<T: Decodable & BittensorApiWireChecked>(
+    static func createFetchWrapper<T: Decodable>(
         _ type: T.Type,
         responseWrapper: CompoundOperationWrapper<BittensorApiRawResponse>,
         route: Route,
@@ -272,7 +264,7 @@ private extension BittensorApiOperationFactory {
         return responseWrapper.insertingTail(operation: parseOperation)
     }
 
-    static func parse<T: Decodable & BittensorApiWireChecked>(
+    static func parse<T: Decodable>(
         _ type: T.Type,
         response: BittensorApiRawResponse,
         route: Route
@@ -281,12 +273,6 @@ private extension BittensorApiOperationFactory {
 
         do {
             value = try JSONDecoder().decode(type, from: response.body)
-            try value.validateWire()
-        } catch let violation as BittensorApiWireViolation {
-            throw BittensorApiError.contractViolation(
-                detail: "GET \(route.pathTemplate): invalid \(violation.field)",
-                requestId: response.requestId
-            )
         } catch {
             throw BittensorApiError.contractViolation(
                 detail: "GET \(route.pathTemplate): \(describe(error))",

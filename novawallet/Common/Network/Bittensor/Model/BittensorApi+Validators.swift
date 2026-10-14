@@ -22,25 +22,12 @@ extension BittensorApi {
         let hotkey: String
         let stakeSourceName: String?
         let identitySourceName: String?
-        let metagraphBlockNumber: UInt64?
         let metagraphUid: UInt16?
-        let metagraphColdkey: String?
         let reportedMeasurements: ValidatorMeasurements
     }
 
     struct ValidatorMeasurements: Decodable, Equatable {
         let validatorStake: String?
-        let metagraphStake: String?
-        let reportedTaoStake: String?
-        let reportedAlphaStake: String?
-        let reportedNominatedStake: String?
-        let reportedValidatorTrust: String?
-        let reportedTrust: String?
-        let reportedDividend: String?
-        let reportedIncentive: String?
-        let reportedEmission: String?
-        let reportedTaoDividendsPerHotkey: String?
-        let reportedAlphaDividendsPerHotkey: String?
     }
 }
 
