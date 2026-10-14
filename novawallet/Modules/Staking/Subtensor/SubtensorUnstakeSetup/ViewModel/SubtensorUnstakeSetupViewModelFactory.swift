@@ -129,7 +129,9 @@ private extension SubtensorUnstakeSetupViewModelFactory {
             return SubtensorUnstakeHeaderViewModel(
                 title: strings.stakingSubtensorUiYouSell(),
                 prefix: strings.swapsSetupAssetMax(),
-                value: input.maxAmount.map { formatAmount($0, input: input, locale: locale).isolatedLeftToRight() },
+                value: input.maxAmount.map {
+                    SubtensorSubnetNaming.isolatedLeftToRight(formatAmount($0, input: input, locale: locale))
+                },
                 link: nil,
                 isEnabled: (input.maxAmount ?? 0) > 0
             )
@@ -331,7 +333,9 @@ private extension SubtensorUnstakeSetupViewModelFactory {
         }
 
         if let receive {
-            return .value(BalanceViewModel(amount: receive.amount.isolatedLeftToRight(), price: receive.price))
+            let amount = SubtensorSubnetNaming.isolatedLeftToRight(receive.amount)
+
+            return .value(BalanceViewModel(amount: amount, price: receive.price))
         }
 
         if isQuotePending(for: input) {
@@ -353,7 +357,7 @@ private extension SubtensorUnstakeSetupViewModelFactory {
         }
 
         if let swapRate, !swapRate.isEmpty {
-            return .value(swapRate.isolatedLeftToRight())
+            return .value(SubtensorSubnetNaming.isolatedLeftToRight(swapRate))
         }
 
         if isQuotePending(for: input) {

@@ -21,15 +21,6 @@ extension BittensorApi {
         let name: String
         let symbol: String
         let networkRegisteredAt: UInt64
-        let ownerColdkey: String
-        let ownerHotkey: String
-        let tempo: UInt64
-        let githubRepo: String
-        let subnetContact: String
-        let subnetUrl: String
-        let subnetWebsite: String
-        let discord: String
-        let additional: String
         let taoReserve: String
         let alphaReserve: String
         let alphaOutstanding: String

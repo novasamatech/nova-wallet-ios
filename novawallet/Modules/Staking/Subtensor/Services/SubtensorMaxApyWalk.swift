@@ -196,7 +196,7 @@ private extension SubtensorMaxApyWalk {
 
         var walkError: Error?
 
-        switch Self.unexpired(result.flatMap(SubtensorYieldService.validated)) {
+        switch Self.unexpired(result) {
         case let .success(pageResult):
             pace(afterReceivingAt: pageResult.receivedAt, requestedAt: requestedAt)
             alphaPages.append(pageResult)
