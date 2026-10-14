@@ -17,7 +17,6 @@ struct SubtensorStakingChainServices {
     let subnetsService: SubtensorSubnetsServiceProtocol
     let quoteOperationFactory: SubtensorQuoteOperationFactoryProtocol
     let rootHoldFactory: SubtensorRootHoldFactoryProtocol
-    let positionsSyncServiceFactory: ((AccountId) -> SubtensorPositionsSyncServiceProtocol)?
     let novaFeeCalculator: SubtensorNovaFeeCalculator
     let settingsManager: SettingsManagerProtocol
 }
@@ -146,15 +145,6 @@ extension StakingSharedStateFactory {
         for stakingOption: Multistaking.ChainAssetOption,
         flowState: SubtensorStakingFlowStateProtocol
     ) throws -> SubtensorStakingSharedStateProtocol {
-        try createSubtensorStaking(for: stakingOption, processServices: .shared, flowState: flowState)
-    }
-
-    func createSubtensorStaking(
-        for stakingOption: Multistaking.ChainAssetOption,
-        processServices: SubtensorStakingProcessServices,
-        chainServices: SubtensorStakingChainServices? = nil,
-        flowState: SubtensorStakingFlowStateProtocol
-    ) throws -> SubtensorStakingSharedStateProtocol {
         let chainId = stakingOption.chainAsset.chain.chainId
 
         guard chainRegistry.getConnection(for: chainId) != nil else {
@@ -173,8 +163,8 @@ extension StakingSharedStateFactory {
         return createSubtensorSharedState(
             for: stakingOption,
             runtimeConnectionStore: runtimeConnectionStore,
-            processServices: processServices,
-            chainServices: chainServices ?? createChainServices(
+            processServices: .shared,
+            chainServices: createChainServices(
                 runtimeConnectionStore: runtimeConnectionStore,
                 flowState: flowState
             ),
@@ -206,7 +196,6 @@ extension StakingSharedStateFactory {
                 operationQueue: syncOperationQueue
             ),
             rootHoldFactory: SubtensorRootHoldFactory(runtimeConnectionStore: runtimeConnectionStore),
-            positionsSyncServiceFactory: nil,
             novaFeeCalculator: SubtensorNovaFeeCalculator(),
             settingsManager: SettingsManager.shared
         )
@@ -250,8 +239,7 @@ extension StakingSharedStateFactory {
             operationQueue: syncOperationQueue,
             workingQueue: .global(),
             logger: logger,
-            novaFeeCalculator: chainServices.novaFeeCalculator,
-            positionsSyncServiceFactory: chainServices.positionsSyncServiceFactory
+            novaFeeCalculator: chainServices.novaFeeCalculator
         )
     }
 
