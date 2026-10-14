@@ -3,7 +3,6 @@ import Operation_iOS
 
 struct BittensorApiPages<T> {
     let pages: [BittensorApiResult<T>]
-    let hasMorePages: Bool
 }
 
 enum BittensorApiPagination {
@@ -55,7 +54,7 @@ enum BittensorApiPagination {
                 continue
             }
 
-            let outcome = BittensorApiPages(pages: pages, hasMorePages: next != nil)
+            let outcome = BittensorApiPages(pages: pages)
 
             return .expired(outcome)
         }
@@ -171,7 +170,7 @@ private final class BittensorApiPageFetch<T> {
             return
         }
 
-        let outcome = BittensorApiPages(pages: pages, hasMorePages: next != nil)
+        let outcome = BittensorApiPages(pages: pages)
         self.completion = nil
 
         mutex.unlock()

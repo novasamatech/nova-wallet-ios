@@ -162,7 +162,7 @@ extension SubtensorStakingSetupViewModelFactory {
         switch compact {
         case .loading: name = nil; icon = nil
         case let .unselected(title): name = title; icon = nil
-        case let .selected(display, _): name = display.name ?? display.address; icon = display.imageViewModel
+        case let .selected(display): name = display.name ?? display.address; icon = display.imageViewModel
         }
         return SubtensorSetupRootViewModel(
             icon: AssetIconViewModelFactory().createAssetIconViewModel(from: chainAsset.assetDisplayInfo),
@@ -181,7 +181,6 @@ extension SubtensorStakingSetupViewModelFactory {
         locale: Locale
     ) -> SubtensorSetupValidatorViewModel {
         let selectTitle = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorSelectValidator()
-        let accessory: SubtensorSetupValidatorAccessory = input.mode.isLocked ? .info : .chevron
 
         switch input.validator {
         case .pending:
@@ -201,8 +200,7 @@ extension SubtensorStakingSetupViewModelFactory {
                     address: viewModel.address,
                     name: validator.name ?? address.mediumTruncated,
                     imageViewModel: viewModel.imageViewModel
-                ),
-                accessory: accessory
+                )
             )
         }
     }

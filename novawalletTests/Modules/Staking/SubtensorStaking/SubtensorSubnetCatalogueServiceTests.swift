@@ -38,17 +38,6 @@ final class SubtensorSubnetCatalogueServiceTests: XCTestCase {
             name: "Chutes",
             symbol: "ش",
             networkRegisteredAt: 4_531_295,
-            tempo: 360,
-            ownerColdkey: "5HAQXW8HcVSKCp6Se52dEePjsiFtkWqjTK9huLi1Hfa9DmTC",
-            ownerHotkey: "5GBCaF2ekuV49ipSHxtntwHBNr8Lj3c2XYJtd8eacVwREVek",
-            links: SubtensorSubnetLinks(
-                githubRepo: "",
-                subnetContact: "",
-                subnetUrl: "",
-                subnetWebsite: "",
-                discord: "",
-                additional: ""
-            ),
             taoReserve: 187_432_117_000_000,
             alphaReserve: 3_410_260_348_230_173,
             alphaOutstanding: 5_120_000_000_000_000,

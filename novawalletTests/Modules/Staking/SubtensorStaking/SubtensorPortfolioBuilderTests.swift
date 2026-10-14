@@ -97,17 +97,6 @@ final class SubtensorPortfolioBuilderTests: XCTestCase {
                 name: "",
                 symbol: "",
                 networkRegisteredAt: 0,
-                tempo: 360,
-                ownerColdkey: "",
-                ownerHotkey: "",
-                links: SubtensorSubnetLinks(
-                    githubRepo: "",
-                    subnetContact: "",
-                    subnetUrl: "",
-                    subnetWebsite: "",
-                    discord: "",
-                    additional: ""
-                ),
                 taoReserve: 0,
                 alphaReserve: 0,
                 alphaOutstanding: 0,

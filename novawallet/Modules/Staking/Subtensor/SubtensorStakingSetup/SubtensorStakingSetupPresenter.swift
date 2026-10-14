@@ -30,7 +30,6 @@ final class SubtensorStakingSetupPresenter {
     var positionsState: Multistaking.SubtensorStakingState?
     var isPositionsSyncFailed = false
     var preflight: SubtensorStakingPreflight?
-    var existentialDeposit: Balance?
     var catalogue: SubtensorSubnetCatalogue?
     var isCatalogueLoaded = false
     var subnetLogos: SubtensorSubnetLogos?

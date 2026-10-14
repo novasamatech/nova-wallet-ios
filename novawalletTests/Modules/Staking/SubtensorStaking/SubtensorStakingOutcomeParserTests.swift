@@ -74,28 +74,6 @@ final class SubtensorStakingOutcomeParserTests: XCTestCase {
         ))
     }
 
-    func testInterruptedBatchFailsWithTheInnerDispatchError() {
-        let events = [
-            stakeAdded(tao: 996_999_500, alpha: 129_000_000_000, poolFee: 498_000),
-            SubtensorFixtureDecoding.batchInterruptedEvent(itemIndex: 1, palletIndex: 5, errorIndex: 4)
-        ]
-        let operation = SubtensorStakingOperation.subnetBuy(
-            hotkey: hotkey,
-            netuid: netuid,
-            grossTao: 1_000_000_000,
-            limitPrice: 7_721_671
-        )
-
-        XCTAssertThrowsError(try parse(events, for: operation)) { error in
-            guard case let .module(moduleError) = error as? DispatchCallError else {
-                return XCTFail("unexpected error \(error)")
-            }
-
-            XCTAssertEqual(moduleError.display.moduleName, "Balances")
-            XCTAssertEqual(moduleError.display.errorName, "Expendability")
-        }
-    }
-
     private func parse(
         _ eventsHex: [String],
         for operation: SubtensorStakingOperation
@@ -108,7 +86,7 @@ final class SubtensorStakingOutcomeParserTests: XCTestCase {
             codingFactory: codingFactory
         )
 
-        return try parser.parse(events: events, for: operation, extrinsicHash: extrinsicHash, blockHash: blockHash)
+        return parser.parse(events: events, for: operation, extrinsicHash: extrinsicHash, blockHash: blockHash)
     }
 
     private func subnetAccount() -> AccountId {

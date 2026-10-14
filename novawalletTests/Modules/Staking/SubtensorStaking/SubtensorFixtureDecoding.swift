@@ -77,8 +77,4 @@ enum SubtensorFixtureDecoding {
     static func transferEvent(from sender: AccountId, to receiver: AccountId, amount: UInt64) -> String {
         "0502" + sender.toHex() + receiver.toHex() + littleEndianHex(amount)
     }
-
-    static func batchInterruptedEvent(itemIndex: UInt32, palletIndex: UInt8, errorIndex: UInt8) -> String {
-        "0b00" + littleEndianHex(itemIndex) + "03" + littleEndianHex(palletIndex) + littleEndianHex(errorIndex) + "000000"
-    }
 }

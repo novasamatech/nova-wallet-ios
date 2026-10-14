@@ -93,9 +93,7 @@ extension SubtensorStakingConfirmPresenter: SubtensorConfirmInteractorOutputProt
         provideViewModel()
     }
 
-    func didReceiveExistentialDeposit(_ deposit: Balance) {
-        existentialDeposit = deposit
-    }
+    func didReceiveExistentialDeposit(_: Balance) {}
 
     func didReceiveBaseError(_ error: SubtensorStakingBaseError) {
         logger.error("Error: \(error)")

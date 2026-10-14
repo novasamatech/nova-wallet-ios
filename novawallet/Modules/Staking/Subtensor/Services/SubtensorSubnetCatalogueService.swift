@@ -68,17 +68,6 @@ private extension SubtensorSubnetCatalogueService {
             name: item.name,
             symbol: item.symbol,
             networkRegisteredAt: item.networkRegisteredAt,
-            tempo: item.tempo,
-            ownerColdkey: item.ownerColdkey,
-            ownerHotkey: item.ownerHotkey,
-            links: SubtensorSubnetLinks(
-                githubRepo: item.githubRepo,
-                subnetContact: item.subnetContact,
-                subnetUrl: item.subnetUrl,
-                subnetWebsite: item.subnetWebsite,
-                discord: item.discord,
-                additional: item.additional
-            ),
             taoReserve: amount(item.taoReserve, field: "\(path).taoReserve", requestId: requestId),
             alphaReserve: amount(item.alphaReserve, field: "\(path).alphaReserve", requestId: requestId),
             alphaOutstanding: amount(item.alphaOutstanding, field: "\(path).alphaOutstanding", requestId: requestId),
