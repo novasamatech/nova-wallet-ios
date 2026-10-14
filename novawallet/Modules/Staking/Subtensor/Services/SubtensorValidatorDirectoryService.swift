@@ -1,10 +1,6 @@
 import Foundation
 import Operation_iOS
 
-enum SubtensorValidatorDirectoryServiceError: Error {
-    case rootMetagraphUnavailable
-}
-
 final class SubtensorValidatorDirectoryService {
     static let enrichmentRowLimit = 512
 
@@ -67,13 +63,28 @@ private extension SubtensorValidatorDirectoryService {
     }
 
     func createListingWrapper(for netuid: UInt16) -> CompoundOperationWrapper<Listing> {
-        let validatorsWrapper = apiOperationFactory.createValidatorsWrapper(netuid: netuid)
         let logger = logger
+
+        guard netuid != SubtensorStakingPallet.rootNetuid else {
+            let rootWrapper = apiOperationFactory.createRootValidatorsWrapper()
+
+            let listingOperation = ClosureOperation<Listing> {
+                let response = try rootWrapper.targetOperation.extractNoCancellableResultData()
+
+                return Self.makeRootListing(from: response, logger: logger)
+            }
+
+            listingOperation.addDependency(rootWrapper.targetOperation)
+
+            return rootWrapper.insertingTail(operation: listingOperation)
+        }
+
+        let validatorsWrapper = apiOperationFactory.createValidatorsWrapper(netuid: netuid)
 
         let listingOperation = ClosureOperation<Listing> {
             let response = try validatorsWrapper.targetOperation.extractNoCancellableResultData()
 
-            return try Self.makeListing(from: response, netuid: netuid, logger: logger)
+            return Self.makeListing(from: response, netuid: netuid, logger: logger)
         }
 
         listingOperation.addDependency(validatorsWrapper.targetOperation)

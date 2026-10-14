@@ -41,6 +41,7 @@ extension BittensorApi {
 
     struct RootValidator: Decodable, Equatable {
         let hotkey: String
+        let name: String?
         let rootStakeTao: String?
         let stakeYield: RootStakeYield
     }
