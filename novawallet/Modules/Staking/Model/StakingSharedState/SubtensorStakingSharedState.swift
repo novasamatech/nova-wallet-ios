@@ -5,11 +5,9 @@ import Operation_iOS
 struct SubtensorEarnServices {
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let earnSettings: SubtensorEarnSettingsProtocol
-    let validatorChainOperationFactory: SubtensorValidatorChainOperationFactoryProtocol
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
     let yieldService: SubtensorYieldServiceProtocol
     let recommendationService: SubtensorRecommendationServiceProtocol
-    let rankingViewService: SubtensorRankingViewServiceProtocol
     let validatorDirectoryService: SubtensorValidatorDirectoryServiceProtocol
     let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
     let tradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol

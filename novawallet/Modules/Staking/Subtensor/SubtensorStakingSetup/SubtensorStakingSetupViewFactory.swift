@@ -145,7 +145,7 @@ private extension SubtensorStakingSetupViewFactory {
             presetFactory: presetFactory,
             yieldService: earnServices.yieldService,
             catalogueService: earnServices.catalogueService,
-            rankingViewService: earnServices.rankingViewService,
+            recommendationService: earnServices.recommendationService,
             subnetLogosProvider: earnServices.subnetLogosProvider,
             subnetsService: state.subnetsService,
             earnSettings: earnServices.earnSettings,

@@ -15,7 +15,7 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
 
     let presetFactory: SubtensorValidatorPresetFactoryProtocol
     let yieldService: SubtensorYieldServiceProtocol
-    let rankingViewService: SubtensorRankingViewServiceProtocol
+    let recommendationService: SubtensorRecommendationServiceProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let subnetsService: SubtensorSubnetsServiceProtocol
     let earnSettings: SubtensorEarnSettingsProtocol
@@ -34,7 +34,7 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
         presetFactory: SubtensorValidatorPresetFactoryProtocol,
         yieldService: SubtensorYieldServiceProtocol,
         catalogueService: SubtensorSubnetCatalogueServiceProtocol,
-        rankingViewService: SubtensorRankingViewServiceProtocol,
+        recommendationService: SubtensorRecommendationServiceProtocol,
         subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
         subnetsService: SubtensorSubnetsServiceProtocol,
         earnSettings: SubtensorEarnSettingsProtocol,
@@ -44,7 +44,7 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
     ) {
         self.presetFactory = presetFactory
         self.yieldService = yieldService
-        self.rankingViewService = rankingViewService
+        self.recommendationService = recommendationService
         self.subnetLogosProvider = subnetLogosProvider
         self.subnetsService = subnetsService
         self.earnSettings = earnSettings
@@ -126,7 +126,7 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
     }
 
     func cachedRankingView() -> HTTPCachePeek<SubtensorRankedSubnets> {
-        rankingViewService.cachedRankingView()
+        recommendationService.cachedRankedSubnets()
     }
 
     func cachedYields(netuid: UInt16) -> HTTPCachePeek<SubtensorAlphaYields> {
@@ -205,7 +205,7 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
         rankingCallStore.cancel()
 
         executeCancellable(
-            wrapper: rankingViewService.createRankingViewWrapper(),
+            wrapper: recommendationService.createRankedSubnetsWrapper(),
             inOperationQueue: operationQueue,
             backingCallIn: rankingCallStore,
             runningCallbackIn: .main
@@ -213,6 +213,8 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
             switch result {
             case let .success(rankingView):
                 self?.presenter?.didReceiveRankingView(rankingView)
+            case .failure(BittensorApiError.generationStale):
+                self?.presenter?.didReceiveRankingView(self?.recommendationService.cachedRankedSubnets().value)
             case let .failure(error):
                 self?.logger.warning("Subtensor ranking view unavailable for the setup: \(error)")
                 self?.presenter?.didReceiveRankingView(nil)
