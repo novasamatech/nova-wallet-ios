@@ -73,7 +73,7 @@ private extension SubtensorPortfolioViewModelFactory {
             .value(for: locale)
             .stringFromDecimal(decimal(amount)) ?? unknownValue(for: locale)
 
-        return text.isolatedLeftToRight()
+        return SubtensorSubnetNaming.isolatedLeftToRight(text)
     }
 
     func formatSignedPercent(_ value: Decimal, locale: Locale) -> String? {

@@ -1,56 +1,59 @@
 import Foundation
-import BigInt
 
 extension SubtensorRecommendationService {
-    static let requiredClientChecks: [BittensorApi.ClientCheck] = [.uid, .validatorPermit, .take, .lastUpdate]
-    static let maxScoreHundredths = BigUInt(10000)
+    struct DecimalReader {
+        let route: String
+        let requestId: String?
 
-    static func clientGates(
-        _ gates: BittensorApi.ClientGates,
-        reader: BittensorApiFieldReader
-    ) throws -> SubtensorClientGates {
-        guard
-            let maxTake = try? BittensorApiDecimal.fraction(gates.maxTake),
-            maxTake.numerator > 0,
-            maxTake.numerator <= maxTake.denominator else {
-            throw reader.violation("meta.clientGates.maxTake")
+        func violation(_ field: String) -> BittensorApiError {
+            .contractViolation(detail: "GET \(route): invalid \(field)", requestId: requestId)
         }
 
-        return SubtensorClientGates(
-            maxTake: maxTake,
-            requirePermit: gates.requirePermit,
-            requireActiveWithinCutoff: gates.requireActiveWithinCutoff
-        )
-    }
+        func decimal(_ value: String, _ field: @autoclosure () -> String) throws -> Decimal {
+            do {
+                return try BittensorApiDecimal.decimal(value)
+            } catch {
+                throw violation(field())
+            }
+        }
 
-    static func metric(
-        _ metric: BittensorApi.MetricScore,
-        _ field: String,
-        reader: BittensorApiFieldReader
-    ) throws -> SubtensorMetricScore {
-        let raw = try reader.optionalDecimal(metric.raw, "\(field).raw")
-        let hundredths = try? BittensorApiDecimal.atomic(metric.normalized, scale: 2)
+        func optionalDecimal(_ value: String?, _ field: @autoclosure () -> String) throws -> Decimal? {
+            guard let value else {
+                return nil
+            }
 
-        try reader.require(hundredths.map { $0 <= maxScoreHundredths } ?? false, "\(field).normalized")
+            return try decimal(value, field())
+        }
 
-        return try SubtensorMetricScore(raw: raw, normalized: reader.decimal(metric.normalized, "\(field).normalized"))
-    }
+        func metric(_ metric: BittensorApi.MetricScore, _ field: String) throws -> SubtensorMetricScore {
+            try SubtensorMetricScore(
+                raw: optionalDecimal(metric.raw, "\(field).raw"),
+                normalized: decimal(metric.normalized, "\(field).normalized")
+            )
+        }
 
-    static func rankedSubnet(
-        _ item: BittensorApi.SubnetRanking,
-        _ path: String,
-        reader: BittensorApiFieldReader
-    ) throws -> SubtensorRankedSubnet {
-        try SubtensorRankedSubnet(
-            netuid: item.netuid,
-            status: rankedStatus(item.status),
-            taoIn: reader.optionalDecimal(item.taoIn, "\(path).taoIn"),
-            volatility: item.breakdown.map {
-                try metric($0.volatility, "\(path).breakdown.volatility", reader: reader)
-            },
-            ageBlocks: item.ageBlocks,
-            scoredValidators: Int(clamping: item.validators.scored)
-        )
+        func clientGates(_ gates: BittensorApi.ClientGates) throws -> SubtensorClientGates {
+            do {
+                return try SubtensorClientGates(
+                    maxTake: BittensorApiDecimal.fraction(gates.maxTake),
+                    requirePermit: gates.requirePermit,
+                    requireActiveWithinCutoff: gates.requireActiveWithinCutoff
+                )
+            } catch {
+                throw violation("meta.clientGates.maxTake")
+            }
+        }
+
+        func rankedSubnet(_ item: BittensorApi.SubnetRanking, _ path: String) throws -> SubtensorRankedSubnet {
+            try SubtensorRankedSubnet(
+                netuid: item.netuid,
+                status: SubtensorRecommendationService.rankedStatus(item.status),
+                taoIn: optionalDecimal(item.taoIn, "\(path).taoIn"),
+                volatility: item.breakdown.map { try metric($0.volatility, "\(path).breakdown.volatility") },
+                ageBlocks: item.ageBlocks,
+                scoredValidators: Int(clamping: item.validators.scored)
+            )
+        }
     }
 
     static func rankedStatus(_ status: BittensorApi.RankingStatus) -> SubtensorRankedSubnet.Status {

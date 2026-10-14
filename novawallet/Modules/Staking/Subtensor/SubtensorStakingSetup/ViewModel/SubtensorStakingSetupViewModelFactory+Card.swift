@@ -144,7 +144,7 @@ private extension SubtensorStakingSetupViewModelFactory {
         locale: Locale
     ) -> SubtensorSetupRowViewModel {
         if let value {
-            return .value(value.isolatedLeftToRight())
+            return .value(SubtensorSubnetNaming.isolatedLeftToRight(value))
         }
 
         if isQuotePending(for: input) {

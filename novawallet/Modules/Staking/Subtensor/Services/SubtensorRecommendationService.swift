@@ -44,8 +44,7 @@ private extension SubtensorRecommendationService {
     ) throws -> ParsedGeneration {
         let meta = response.value.meta
         let classes = response.value.classes
-        let reader = BittensorApiFieldReader(route: "/recommendations", requestId: response.requestId)
-        let gates = try clientGates(meta.clientGates, reader: reader)
+        let reader = DecimalReader(route: "/recommendations", requestId: response.requestId)
 
         let groups: [(SubtensorRecommendationClass, String, [BittensorApi.Recommendation])] = [
             (.stable, "stable", classes.stable),
@@ -58,8 +57,6 @@ private extension SubtensorRecommendationService {
         for (recommendationClass, name, recommendations) in groups {
             for (index, recommendation) in recommendations.enumerated() {
                 let path = "classes.\(name)[\(index)]"
-
-                try reader.require(recommendation.clientChecks == requiredClientChecks, "\(path).clientChecks")
 
                 guard let hotkey = try? recommendation.hotkey.toAccountId(
                     using: .substrate(SubstrateConstants.genericAddressPrefix)
@@ -77,13 +74,13 @@ private extension SubtensorRecommendationService {
             }
         }
 
-        return ParsedGeneration(
+        return try ParsedGeneration(
             generation: makeGeneration(
                 meta,
                 receivedAt: response.receivedAt,
                 isFromExpiredCache: response.isFromExpiredCache
             ),
-            gates: gates,
+            gates: reader.clientGates(meta.clientGates),
             candidates: candidates
         )
     }
@@ -114,12 +111,12 @@ private extension SubtensorRecommendationService {
         from response: BittensorApiResult<BittensorApi.SubnetRankingCollection>
     ) throws -> (subnets: SubtensorRankedSubnets, gates: SubtensorClientGates) {
         let meta = response.value.meta
-        let reader = BittensorApiFieldReader(route: "/recommendations/subnets", requestId: response.requestId)
+        let reader = DecimalReader(route: "/recommendations/subnets", requestId: response.requestId)
 
-        let gates = try clientGates(meta.clientGates, reader: reader)
+        let gates = try reader.clientGates(meta.clientGates)
 
         let items = try response.value.items.enumerated().map { index, item in
-            try rankedSubnet(item, "items[\(index)]", reader: reader)
+            try reader.rankedSubnet(item, "items[\(index)]")
         }
 
         let subnets = SubtensorRankedSubnets(

@@ -70,7 +70,7 @@ private extension SubtensorPositionViewModelFactory {
             .value(for: locale)
             .stringFromDecimal(decimal(amount)) ?? unknownValue(for: locale)
 
-        return text.isolatedLeftToRight()
+        return SubtensorSubnetNaming.isolatedLeftToRight(text)
     }
 
     func formatDuration(blocks: UInt64, locale: Locale) -> String {

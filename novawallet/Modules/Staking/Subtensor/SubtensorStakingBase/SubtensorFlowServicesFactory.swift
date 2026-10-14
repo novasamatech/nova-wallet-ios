@@ -139,6 +139,7 @@ private extension SubtensorFlowServicesFactory {
                 chainId: chainId,
                 chainRegistry: state.chainRegistry
             ),
+            operationFactory: state.apiOperationFactory,
             operationQueue: operationQueue
         )
     }
