@@ -164,13 +164,17 @@ extension SubtensorStakingSetupViewModelFactory {
         case let .unselected(title): name = title; icon = nil
         case let .selected(display): name = display.name ?? display.address; icon = display.imageViewModel
         }
+        let annualRate = input.subnetData.annualRate
         return SubtensorSetupRootViewModel(
             icon: AssetIconViewModelFactory().createAssetIconViewModel(from: chainAsset.assetDisplayInfo),
             validator: SubtensorValidatorCardViewModel(
-                icon: icon, name: name, subtitle: strings.stakingCommonValidator(), rate: .hidden,
+                icon: icon, name: name, subtitle: strings.stakingCommonValidator(),
+                rate: annualRate.map { .loaded(SubtensorApyFormatter.text(for: $0, style: .bare, locale: locale)) }
+                    ?? .hidden,
                 rateCaption: strings.stakingSubtensorV22EstApy()
             ),
             compactValidator: compact,
+            compactRate: annualRate.map { SubtensorApyFormatter.text(for: $0, style: .leading, locale: locale) },
             isQuickPick: input.rootEntryPresentation == .quickPickRoot || input.quickPickOrder != nil,
             networkFee: createNetworkFee(for: input, locale: locale)
         )

@@ -56,11 +56,7 @@ struct SubtensorPositionState {
     }
 
     var annualRate: Decimal? {
-        guard !isRoot else {
-            return nil
-        }
-
-        return group.flatMap { SubtensorAlphaApyFormatter.annualRate(for: $0.primaryHotkey, in: yields) }
+        group.flatMap { SubtensorAlphaApyFormatter.annualRate(for: $0.primaryHotkey, in: yields) }
     }
 
     var unstakeBasis: SubtensorGroupUnstakeBasis? {

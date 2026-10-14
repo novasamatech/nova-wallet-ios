@@ -26,6 +26,9 @@ struct SubtensorPortfolioState {
     var isCatalogueResolved = false
     var catalogue: SubtensorSubnetCatalogue?
     var subnetLogos: SubtensorSubnetLogos?
+    var rootYields: SubtensorAlphaYields?
+    var isRootRateResolved = false
+    var networkRootRate: Decimal?
     var weeklyChanges: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>] = [:]
     var histories = SubtensorPortfolioHistoriesState.loading {
         didSet {
@@ -62,6 +65,10 @@ struct SubtensorPortfolioState {
         return portfolio.subnets
             .compactMap { catalogue?.subnet(for: $0.netuid)?.ref }
             .sorted { $0.netuid < $1.netuid }
+    }
+
+    var isRootRateUnavailable: Bool {
+        isRootRateResolved && rootYields == nil && groups.contains { $0.netuid == SubtensorStakingPallet.rootNetuid }
     }
 
     var isCatalogueUnavailable: Bool {

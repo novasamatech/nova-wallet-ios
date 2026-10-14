@@ -234,10 +234,18 @@ private extension SubtensorPortfolioViewModelFactory {
             SubtensorPortfolioRowViewModel.Detail.fiat(formatFiat(amount, price: price, locale: locale))
         }
 
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        let subtitle = SubtensorAlphaApyFormatter.stakeWeightedRate(of: group.positions, in: state.rootYields).map {
+            strings.stakingSubtensorUiPortfolioRootApyFormat(
+                SubtensorApyFormatter.text(for: $0, style: .bare, locale: locale)
+            )
+        }
+
         return SubtensorPortfolioRowViewModel(
             icon: assetIconFactory.createAssetIconViewModel(from: chainAsset.assetDisplayInfo),
-            title: R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiRootStaking(),
-            subtitle: nil,
+            title: strings.stakingSubtensorUiRootStaking(),
+            subtitle: subtitle,
             value: formatTao(amount, locale: locale),
             detail: detail
         )
@@ -299,7 +307,11 @@ private extension SubtensorPortfolioViewModelFactory {
         return SubtensorPortfolioEmptyViewModel(
             total: formatTao(0, locale: locale),
             fiat: fiat,
-            rootSubtitle: strings.stakingSubtensorUiPickerRootSubtitle()
+            rootSubtitle: state.networkRootRate.map {
+                strings.stakingSubtensorUiPortfolioEmptyRootSubtitleFormat(
+                    SubtensorApyFormatter.text(for: $0, style: .bare, locale: locale)
+                )
+            } ?? strings.stakingSubtensorUiPickerRootSubtitle()
         )
     }
 }
@@ -335,7 +347,7 @@ extension SubtensorPortfolioViewModelFactory: SubnetPortfolioViewModelFactoryPro
         return SubtensorPortfolioViewModel(
             content: .positions(header: createHeader(for: selection, state: state, locale: locale), rows: rows),
             isSyncFailed: state.isSyncFailed,
-            isRatesUnavailable: state.isCatalogueUnavailable
+            isRatesUnavailable: state.isCatalogueUnavailable || state.isRootRateUnavailable
         )
     }
 

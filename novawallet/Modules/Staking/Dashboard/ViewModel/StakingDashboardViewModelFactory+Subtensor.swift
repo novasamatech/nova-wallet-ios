@@ -32,7 +32,7 @@ extension StakingDashboardViewModelFactory {
         let hasRootStake = details.map { $0.rootStake != nil } ?? true
 
         let estimatedEarnings = createEstimatedEarnings(
-            from: nil,
+            from: hasRootStake ? details?.rootRate : nil,
             isSyncing: hasRootStake && model.isOnchainSync,
             locale: locale
         )

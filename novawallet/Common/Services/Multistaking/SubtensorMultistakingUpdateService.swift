@@ -18,6 +18,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     let stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol
     let cacheRepository: AnyDataProviderRepository<ChainStorageItem>
     let maxApyProvider: SubtensorMaxApyProviderProtocol?
+    let rootYieldService: SubtensorYieldServiceProtocol?
     let cataloguePricing: SubtensorCataloguePricingTracker?
     let eventCenter: EventCenterProtocol
     let workingQueue: DispatchQueue
@@ -28,10 +29,12 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     private var subscribedPositionKeys: Set<PositionKey>?
     private var lastState: Multistaking.SubtensorStakingState?
     private var maxApyUpdate: Multistaking.DashboardItemSubtensorPart.MaxApyUpdate = .keep
+    private var rootYields: SubtensorAlphaYields?
     private var isMaxApyResolved = false
 
     private var fetchCallStore = CancellableCallStore()
     private var maxApyCallStore = CancellableCallStore()
+    private var rootYieldsCallStore = CancellableCallStore()
     private var saveCallStore = CancellableCallStore()
 
     init(
@@ -48,6 +51,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         workingQueue: DispatchQueue,
         logger: LoggerProtocol,
         maxApyProvider: SubtensorMaxApyProviderProtocol? = nil,
+        rootYieldService: SubtensorYieldServiceProtocol? = nil,
         cataloguePricing: SubtensorCataloguePricingTracker? = nil,
         eventCenter: EventCenterProtocol = EventCenter.shared
     ) {
@@ -61,6 +65,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         self.connection = connection
         self.runtimeService = runtimeService
         self.maxApyProvider = maxApyProvider
+        self.rootYieldService = rootYieldService
         self.cataloguePricing = cataloguePricing
         self.eventCenter = eventCenter
         self.workingQueue = workingQueue
@@ -74,6 +79,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         fetchCallStore.cancel()
         isMaxApyResolved = false
 
+        seedRootYields()
         cataloguePricing?.reset()
 
         eventCenter.add(observer: self, dispatchIn: workingQueue)
@@ -84,6 +90,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     override func stopSyncUp() {
         fetchCallStore.cancel()
         maxApyCallStore.cancel()
+        rootYieldsCallStore.cancel()
         cataloguePricing?.cancel()
         clearSubscriptions()
     }
@@ -95,6 +102,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
 
         fetchCallStore.cancel()
         maxApyCallStore.cancel()
+        rootYieldsCallStore.cancel()
         cataloguePricing?.cancel()
         clearSubscriptions()
     }
@@ -198,6 +206,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
                 self?.updateAlphaTriggerSubscription(for: state)
                 self?.persistState(state)
                 self?.performMaxApyFetch()
+                self?.performRootYieldsFetch()
                 self?.performCataloguePricingRefresh()
             case let .failure(error):
                 self?.logger.error("State fetch error: \(error)")
@@ -236,6 +245,54 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
 
         maxApyUpdate = newUpdate
 
+        persistLastStateIfIdle()
+    }
+
+    private func seedRootYields() {
+        guard
+            let rootYieldService,
+            case let .fresh(yields, _) = rootYieldService.cachedAlphaYields(
+                for: SubtensorStakingPallet.rootNetuid
+            ) else {
+            rootYields = nil
+            return
+        }
+
+        rootYields = yields
+    }
+
+    private func performRootYieldsFetch() {
+        guard let rootYieldService, !rootYieldsCallStore.hasCall, lastState?.rootStakeInRao != nil else {
+            return
+        }
+
+        executeCancellable(
+            wrapper: rootYieldService.createAlphaYieldsWrapper(for: SubtensorStakingPallet.rootNetuid),
+            inOperationQueue: operationQueue,
+            backingCallIn: rootYieldsCallStore,
+            runningCallbackIn: workingQueue,
+            mutex: mutex
+        ) { [weak self] result in
+            switch result {
+            case let .success(yields):
+                self?.updateRootYields(yields)
+            case let .failure(error):
+                self?.logger.warning("Root yields fetch error: \(error)")
+            }
+        }
+    }
+
+    private func updateRootYields(_ newRootYields: SubtensorAlphaYields) {
+        guard newRootYields != rootYields else {
+            return
+        }
+
+        rootYields = newRootYields
+
+        persistLastStateIfIdle()
+    }
+
+    private func persistLastStateIfIdle() {
         guard let lastState, !fetchCallStore.hasCall else {
             return
         }
@@ -251,13 +308,9 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
             runningCallbackIn: workingQueue,
             mutex: mutex,
             onUpdate: { [weak self] didChange in
-                guard didChange, let self, let lastState, !fetchCallStore.hasCall else {
-                    return
+                if didChange {
+                    self?.persistLastStateIfIdle()
                 }
-
-                markSyncingImmediate()
-
-                persistState(lastState)
             }
         )
     }
@@ -330,6 +383,10 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
             state: state,
             stake: valuation?.stake ?? state.rootStakeInRao ?? .zero,
             maxApy: maxApyUpdate,
+            rootRate: SubtensorAlphaApyFormatter.stakeWeightedRate(
+                of: state.positions.filter { $0.netuid == SubtensorStakingPallet.rootNetuid },
+                in: rootYields
+            ),
             isFullyPriced: valuation?.isFullyPriced
         )
 
