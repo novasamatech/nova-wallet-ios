@@ -20,14 +20,7 @@ final class ChainModelConverter: ChainModelConversionProtocol {
 
         let remoteAssets = remoteModel.assets + additionalAssets
 
-        #if DEBUG
-            let chainAssets = BittensorApiFixtureMode.applyingSubtensorStaking(
-                to: remoteAssets.map { AssetModel(remoteModel: $0) },
-                chainId: remoteModel.chainId
-            )
-        #else
-            let chainAssets = remoteAssets.map { AssetModel(remoteModel: $0) }
-        #endif
+        let chainAssets = remoteAssets.map { AssetModel(remoteModel: $0) }
 
         let newAssets = Set(chainAssets).union(localUserAssets)
 

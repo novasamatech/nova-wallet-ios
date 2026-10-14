@@ -9,7 +9,6 @@ struct SubtensorStakingProcessServices {
     let subnetMarketsService: SubtensorSubnetMarketsServiceProtocol
     let maxApyResolution: SubtensorMaxApyResolution
     let costBasisService: SubtensorCostBasisServiceProtocol
-    let isFixtureMode: Bool
 }
 
 struct SubtensorStakingChainServices {
@@ -23,10 +22,8 @@ struct SubtensorStakingChainServices {
 
 extension SubtensorStakingProcessServices {
     static let shared: SubtensorStakingProcessServices = {
-        let isFixtureMode = isFixtureModeEnabled
-
         let apiOperationFactory = BittensorApiOperationFactory(
-            transport: createTransport(isFixtureMode: isFixtureMode),
+            transport: BittensorAuthorizedTransport.shared,
             cache: BittensorApiResponseCache(operationQueue: OperationManagerFacade.sharedDefaultQueue),
             logger: Logger.shared
         )
@@ -36,22 +33,9 @@ extension SubtensorStakingProcessServices {
             subnetLogosProvider: SubtensorConfigProvider(url: ApplicationConfig.shared.bittensorConfigURL),
             subnetMarketsService: createSubnetMarketsService(),
             maxApyResolution: SubtensorMaxApyResolution(),
-            costBasisService: createCostBasisService(apiOperationFactory: apiOperationFactory),
-            isFixtureMode: isFixtureMode
+            costBasisService: createCostBasisService(apiOperationFactory: apiOperationFactory)
         )
     }()
-
-    func createValidatorChainOperationFactory(
-        runtimeConnectionStore: RuntimeConnectionStoring
-    ) -> SubtensorValidatorChainOperationFactoryProtocol {
-        #if DEBUG
-            if isFixtureMode {
-                return BittensorFixtureChainSnapshot()
-            }
-        #endif
-
-        return SubtensorValidatorChainOperationFactory(runtimeConnectionStore: runtimeConnectionStore)
-    }
 
     func createMaxApyProvider(
         runtimeConnectionStore: RuntimeConnectionStoring,
@@ -60,7 +44,9 @@ extension SubtensorStakingProcessServices {
     ) -> SubtensorMaxApyProviderProtocol {
         let recommendationService = SubtensorRecommendationService(
             apiOperationFactory: bittensorApiOperationFactory,
-            chainOperationFactory: createValidatorChainOperationFactory(runtimeConnectionStore: runtimeConnectionStore),
+            chainOperationFactory: SubtensorValidatorChainOperationFactory(
+                runtimeConnectionStore: runtimeConnectionStore
+            ),
             operationQueue: operationQueue,
             logger: logger
         )
@@ -102,24 +88,6 @@ extension SubtensorStakingProcessServices {
 }
 
 private extension SubtensorStakingProcessServices {
-    static var isFixtureModeEnabled: Bool {
-        #if DEBUG
-            BittensorApiFixtureMode.isEnabled
-        #else
-            false
-        #endif
-    }
-
-    static func createTransport(isFixtureMode: Bool) -> BittensorApiTransportProtocol {
-        #if DEBUG
-            if isFixtureMode {
-                return BittensorApiFixtureTransport()
-            }
-        #endif
-
-        return BittensorAuthorizedTransport.shared
-    }
-
     static func createSubnetMarketsService() -> SubtensorSubnetMarketsServiceProtocol {
         SubtensorSubnetMarketsService(
             coingeckoOperationFactory: CoingeckoOperationFactory(),
@@ -250,7 +218,7 @@ extension StakingSharedStateFactory {
         chainServices: SubtensorStakingChainServices,
         flowState: SubtensorStakingFlowStateProtocol
     ) -> SubtensorEarnServices {
-        let validatorChainOperationFactory = processServices.createValidatorChainOperationFactory(
+        let validatorChainOperationFactory = SubtensorValidatorChainOperationFactory(
             runtimeConnectionStore: runtimeConnectionStore
         )
 
