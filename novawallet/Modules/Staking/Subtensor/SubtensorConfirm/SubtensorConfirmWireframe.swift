@@ -1,6 +1,6 @@
 import Foundation
 
-final class SubtensorStakingConfirmWireframe: SubtensorStakingConfirmWireframeProtocol {
+final class SubtensorConfirmWireframe: SubtensorConfirmWireframeProtocol {
     let state: SubtensorStakingSharedStateProtocol
 
     init(state: SubtensorStakingSharedStateProtocol) {

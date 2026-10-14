@@ -21,25 +21,10 @@ protocol SubtensorPositionsSyncServiceProtocol: ApplicationServiceProtocol {
 
     func remove(failureObserver: AnyObject)
 
-    /// counts completed state fetches; it moves on every fetch, also when the state is unchanged
-    func add(
-        fetchObserver: AnyObject,
-        sendStateOnSubscription: Bool,
-        queue: DispatchQueue?,
-        closure: @escaping Observable<UInt>.StateChangeClosure
-    )
-
-    func remove(fetchObserver: AnyObject)
-
     func refresh()
 }
 
 final class SubtensorStakingPositionsSyncService: BaseSyncService {
-    struct PositionKey: Hashable {
-        let hotkey: AccountId
-        let netuid: UInt16
-    }
-
     let accountId: AccountId
     let connection: JSONRPCEngine
     let runtimeService: RuntimeCodingServiceProtocol
@@ -47,15 +32,22 @@ final class SubtensorStakingPositionsSyncService: BaseSyncService {
     let workingQueue: DispatchQueue
     let operationQueue: OperationQueue
 
-    private var hotkeysSubscription: CallbackStorageSubscription<[BytesCodable]>?
-    private var alphaTriggerSubscription: CallbackBatchRawStorageSubscription?
-    private var subscribedPositionKeys: Set<PositionKey>?
-
-    private var fetchCallStore = CancellableCallStore()
+    private lazy var stakeStateSubscription = SubtensorStakeStateSubscription(
+        accountId: accountId,
+        stakeStateFetchFactory: stakeStateFetchFactory,
+        connection: connection,
+        runtimeService: runtimeService,
+        mutex: mutex,
+        operationQueue: operationQueue,
+        workingQueue: workingQueue,
+        logger: logger,
+        onSyncing: { [weak self] in self?.markSyncingImmediate() },
+        onState: { [weak self] in self?.publish(state: $0) },
+        onFailure: { [weak self] in self?.markFailed($0) }
+    )
 
     private var stateObservable: Observable<Multistaking.SubtensorStakingState?> = .init(state: nil)
     private var failureObservable: Observable<Bool> = .init(state: false)
-    private var fetchCountObservable: Observable<UInt> = .init(state: 0)
 
     init(
         accountId: AccountId,
@@ -76,176 +68,32 @@ final class SubtensorStakingPositionsSyncService: BaseSyncService {
         super.init(logger: logger)
     }
 
-    deinit {
-        fetchCallStore.cancel()
-        clearSubscriptions()
-    }
-
     override func performSyncUp() {
-        clearSubscriptions()
-        fetchCallStore.cancel()
-
-        makeHotkeysSubscription(for: accountId)
+        stakeStateSubscription.subscribe()
     }
 
     override func stopSyncUp() {
-        fetchCallStore.cancel()
-        clearSubscriptions()
+        stakeStateSubscription.unsubscribe()
     }
 
-    // throttle() skips stopSyncUp() when a fetch already completed, so the batch
-    // subscription must be released here as well
     override func deactivate() {
-        fetchCallStore.cancel()
-        clearSubscriptions()
+        stakeStateSubscription.unsubscribe()
     }
 }
 
 private extension SubtensorStakingPositionsSyncService {
-    func clearSubscriptions() {
-        hotkeysSubscription = nil
+    func publish(state: Multistaking.SubtensorStakingState) {
+        failureObservable.state = false
 
-        alphaTriggerSubscription?.unsubscribe()
-        alphaTriggerSubscription = nil
-        subscribedPositionKeys = nil
-    }
+        stateObservable.state = state
 
-    func makeHotkeysSubscription(for accountId: AccountId) {
-        let request = MapSubscriptionRequest(
-            storagePath: SubtensorStakingPallet.stakingHotkeysPath,
-            localKey: .empty
-        ) {
-            BytesCodable(wrappedValue: accountId)
-        }
-
-        hotkeysSubscription = CallbackStorageSubscription(
-            request: request,
-            connection: connection,
-            runtimeService: runtimeService,
-            repository: nil,
-            operationQueue: operationQueue,
-            callbackQueue: workingQueue
-        ) { [weak self] result in
-            self?.mutex.lock()
-
-            self?.handleHotkeys(result: result)
-
-            self?.mutex.unlock()
-        }
-    }
-
-    func handleHotkeys(result: Result<[BytesCodable]?, Error>) {
-        switch result {
-        case .success:
-            markSyncingImmediate()
-
-            performStateFetch()
-        case let .failure(error):
-            markFailed(error)
-        }
-    }
-
-    func handleAlphaTrigger(result: Result<BatchStorageSubscriptionRawResult, Error>) {
-        switch result {
-        case .success:
-            markSyncingImmediate()
-
-            performStateFetch()
-        case let .failure(error):
-            markFailed(error)
-        }
+        completeImmediate(state.rootRedeemableError)
     }
 
     func markFailed(_ error: Error) {
         failureObservable.state = true
 
         completeImmediate(error)
-    }
-
-    func performStateFetch() {
-        fetchCallStore.cancel()
-
-        let wrapper = stakeStateFetchFactory.createStateWrapper(for: accountId)
-
-        executeCancellable(
-            wrapper: wrapper,
-            inOperationQueue: operationQueue,
-            backingCallIn: fetchCallStore,
-            runningCallbackIn: workingQueue,
-            mutex: mutex
-        ) { [weak self] result in
-            switch result {
-            case let .success(fetchedState):
-                let state = fetchedState.byKeepingRootRedeemable(of: self?.stateObservable.state)
-
-                self?.updateAlphaTriggerSubscription(for: state)
-
-                self?.failureObservable.state = false
-
-                self?.stateObservable.state = state
-
-                self?.fetchCountObservable.state &+= 1
-
-                self?.completeImmediate(state.rootRedeemableError)
-            case let .failure(error):
-                self?.logger.error("State fetch error: \(error)")
-
-                self?.markFailed(error)
-            }
-        }
-    }
-
-    func updateAlphaTriggerSubscription(for state: Multistaking.SubtensorStakingState) {
-        let newKeys = Set(
-            state.positions.map { PositionKey(hotkey: $0.hotkey, netuid: $0.netuid) } +
-                state.rootRedeemable.keys.map { PositionKey(hotkey: $0, netuid: SubtensorStakingPallet.rootNetuid) }
-        )
-
-        guard newKeys != subscribedPositionKeys else {
-            return
-        }
-
-        subscribedPositionKeys = newKeys
-
-        alphaTriggerSubscription?.unsubscribe()
-        alphaTriggerSubscription = nil
-
-        guard !newKeys.isEmpty else {
-            return
-        }
-
-        let requests = newKeys.map { positionKey in
-            BatchStorageSubscriptionRequest(
-                innerRequest: DoubleMapSubscriptionRequest(
-                    storagePath: SubtensorStakingPallet.totalHotkeyAlphaPath,
-                    localKey: "",
-                    keyParamClosure: {
-                        (
-                            BytesCodable(wrappedValue: positionKey.hotkey),
-                            StringScaleMapper(value: positionKey.netuid)
-                        )
-                    }
-                ),
-                mappingKey: nil
-            )
-        }
-
-        alphaTriggerSubscription = CallbackBatchStorageSubscription(
-            requests: requests,
-            connection: connection,
-            runtimeService: runtimeService,
-            repository: nil,
-            operationQueue: operationQueue,
-            callbackQueue: workingQueue
-        ) { [weak self] result in
-            self?.mutex.lock()
-
-            self?.handleAlphaTrigger(result: result)
-
-            self?.mutex.unlock()
-        }
-
-        alphaTriggerSubscription?.subscribe()
     }
 }
 
@@ -310,36 +158,6 @@ extension SubtensorStakingPositionsSyncService: SubtensorPositionsSyncServicePro
         failureObservable.removeObserver(by: failureObserver)
     }
 
-    func add(
-        fetchObserver: AnyObject,
-        sendStateOnSubscription: Bool,
-        queue: DispatchQueue?,
-        closure: @escaping Observable<UInt>.StateChangeClosure
-    ) {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        fetchCountObservable.addObserver(
-            with: fetchObserver,
-            sendStateOnSubscription: sendStateOnSubscription,
-            queue: queue,
-            closure: closure
-        )
-    }
-
-    func remove(fetchObserver: AnyObject) {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        fetchCountObservable.removeObserver(by: fetchObserver)
-    }
-
     func refresh() {
         mutex.lock()
 
@@ -351,8 +169,6 @@ extension SubtensorStakingPositionsSyncService: SubtensorPositionsSyncServicePro
             return
         }
 
-        markSyncingImmediate()
-
-        performStateFetch()
+        stakeStateSubscription.refresh()
     }
 }

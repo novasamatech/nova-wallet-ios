@@ -11,6 +11,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
     let eventCenter: EventCenterProtocol
     let applicationHandler: ApplicationHandlerProtocol
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
+    let yieldService: SubtensorYieldServiceProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
     let bittensorApiFactory: BittensorApiOperationFactoryProtocol
@@ -20,9 +21,8 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
 
     private var priceProvider: StreamableProvider<PriceData>?
     private var hasReportedAccountChange = false
-    private var heldNetuids: Set<UInt16> = []
-    private var forcedCatalogueNetuids: Set<UInt16> = []
     private let catalogueStore = CancellableCallStore()
+    private let rootRateStore = CancellableCallStore()
     private let logosStore = CancellableCallStore()
     private let weeklyChangesStore = CancellableCallStore()
     private let historiesStore = CancellableCallStore()
@@ -38,6 +38,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
         eventCenter: EventCenterProtocol,
         applicationHandler: ApplicationHandlerProtocol,
         catalogueService: SubtensorSubnetCatalogueServiceProtocol,
+        yieldService: SubtensorYieldServiceProtocol,
         subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
         priceHistoryService: SubtensorPriceHistoryServiceProtocol?,
         bittensorApiFactory: BittensorApiOperationFactoryProtocol,
@@ -52,6 +53,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
         self.eventCenter = eventCenter
         self.applicationHandler = applicationHandler
         self.catalogueService = catalogueService
+        self.yieldService = yieldService
         self.subnetLogosProvider = subnetLogosProvider
         self.priceHistoryService = priceHistoryService
         self.bittensorApiFactory = bittensorApiFactory
@@ -63,12 +65,12 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
 
     deinit {
         catalogueStore.cancel()
+        rootRateStore.cancel()
         logosStore.cancel()
         weeklyChangesStore.cancel()
         historiesStore.cancel()
         state.positionsSyncService?.remove(observer: self)
         state.positionsSyncService?.remove(failureObserver: self)
-        state.positionsSyncService?.remove(fetchObserver: self)
         state.throttle()
     }
 }
@@ -119,6 +121,39 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
             case let .failure(error):
                 self?.logger.warning("Bittensor portfolio chart unavailable: \(error)")
                 self?.presenter?.didFailHistories(for: period)
+            }
+        }
+    }
+
+    func loadRootYields() {
+        executeCancellable(
+            wrapper: yieldService.createAlphaYieldsWrapper(for: SubtensorStakingPallet.rootNetuid),
+            inOperationQueue: operationQueue,
+            backingCallIn: rootRateStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(yields):
+                self?.presenter?.didReceive(rootYields: yields)
+            case let .failure(error):
+                self?.logger.warning("Bittensor portfolio root yields unavailable: \(error)")
+                self?.presenter?.didReceive(rootYields: nil)
+            }
+        }
+    }
+
+    func loadNetworkRootRate() {
+        executeCancellable(
+            wrapper: yieldService.createNetworkRootRateWrapper(),
+            inOperationQueue: operationQueue,
+            backingCallIn: rootRateStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(rate):
+                self?.presenter?.didReceive(networkRootRate: rate?.annualRate)
+            case let .failure(error):
+                self?.logger.warning("Bittensor portfolio network root rate unavailable: \(error)")
             }
         }
     }
@@ -196,19 +231,9 @@ private extension SubtensorPortfolioInteractor {
 
             presenter?.didReceive(state: newState)
 
-            heldNetuids = Set(newState.positions.map(\.netuid)).subtracting([SubtensorStakingPallet.rootNetuid])
-        }
-
-        state.positionsSyncService?.add(
-            fetchObserver: self,
-            sendStateOnSubscription: false,
-            queue: .main
-        ) { [weak self] _, _ in
-            guard let self, !catalogueStore.hasCall else {
-                return
+            if !catalogueStore.hasCall {
+                provideCatalogue()
             }
-
-            provideCatalogue()
         }
 
         state.positionsSyncService?.add(
@@ -240,32 +265,14 @@ private extension SubtensorPortfolioInteractor {
             backingCallIn: catalogueStore,
             runningCallbackIn: .main
         ) { [weak self] result in
-            guard let self else {
-                return
-            }
-
             switch result {
             case let .success(catalogue):
-                presenter?.didReceive(catalogue: catalogue)
-                refreshCatalogueIfMissing(in: catalogue)
+                self?.presenter?.didReceive(catalogue: catalogue)
             case let .failure(error):
-                logger.warning("Bittensor portfolio catalogue unavailable: \(error)")
-                presenter?.didReceive(catalogue: nil)
+                self?.logger.warning("Bittensor portfolio catalogue unavailable: \(error)")
+                self?.presenter?.didReceive(catalogue: nil)
             }
         }
-    }
-
-    func refreshCatalogueIfMissing(in catalogue: SubtensorSubnetCatalogue) {
-        let missingNetuids = heldNetuids
-            .filter { catalogue.subnet(for: $0) == nil }
-            .subtracting(forcedCatalogueNetuids)
-
-        guard !missingNetuids.isEmpty else {
-            return
-        }
-
-        forcedCatalogueNetuids.formUnion(missingNetuids)
-        provideCatalogue()
     }
 
     func provideSubnetLogos() {

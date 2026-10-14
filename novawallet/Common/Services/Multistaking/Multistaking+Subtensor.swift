@@ -16,19 +16,25 @@ extension Multistaking {
     struct SubtensorStakingState: Equatable {
         let positions: [SubtensorStakingPosition]
         let availability: [UInt16: SubtensorStakingPallet.StakeAvailability]
-        let rootRedeemable: [AccountId: BigUInt]
+        let rootClaimPreviews: [SubtensorRootClaimPreview]
         let isRootRedeemableStale: Bool
 
         init(
             positions: [SubtensorStakingPosition],
             availability: [UInt16: SubtensorStakingPallet.StakeAvailability] = [:],
-            rootRedeemable: [AccountId: BigUInt] = [:],
+            rootClaimPreviews: [SubtensorRootClaimPreview] = [],
             isRootRedeemableStale: Bool = false
         ) {
             self.positions = positions
             self.availability = availability
-            self.rootRedeemable = rootRedeemable
+            self.rootClaimPreviews = rootClaimPreviews
             self.isRootRedeemableStale = isRootRedeemableStale
+        }
+
+        var rootRedeemable: [AccountId: BigUInt] {
+            rootClaimPreviews.filter(SubtensorRootClaimRule.isClaimable).reduce(into: [:]) { accum, preview in
+                accum[preview.hotkey, default: .zero] += preview.redeemable
+            }
         }
 
         var rootRedeemableError: SubtensorStakingStateError? {
@@ -67,7 +73,7 @@ extension Multistaking {
             return SubtensorStakingState(
                 positions: positions,
                 availability: availability,
-                rootRedeemable: previousState.rootRedeemable,
+                rootClaimPreviews: previousState.rootClaimPreviews,
                 isRootRedeemableStale: true
             )
         }
@@ -76,6 +82,7 @@ extension Multistaking {
     struct DashboardItemSubtensorDetails: Equatable {
         let rootStake: BigUInt?
         let subnetCount: Int
+        let rootRate: Decimal?
         let isFullyPriced: Bool?
     }
 
@@ -89,6 +96,7 @@ extension Multistaking {
         let state: SubtensorStakingState
         let stake: BigUInt
         let maxApy: MaxApyUpdate
+        let rootRate: Decimal?
         let isFullyPriced: Bool?
 
         init(
@@ -96,12 +104,14 @@ extension Multistaking {
             state: SubtensorStakingState,
             stake: BigUInt,
             maxApy: MaxApyUpdate = .keep,
+            rootRate: Decimal? = nil,
             isFullyPriced: Bool? = nil
         ) {
             self.stakingOption = stakingOption
             self.state = state
             self.stake = stake
             self.maxApy = maxApy
+            self.rootRate = rootRate
             self.isFullyPriced = isFullyPriced
         }
     }

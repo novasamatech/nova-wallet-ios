@@ -1,7 +1,7 @@
 import Foundation
 import Foundation_iOS
 
-extension SubtensorClaimRewardsPresenter: SubtensorClaimInteractorOutputProtocol {
+extension SubtensorClaimRewardsPresenter: SubtensorStakingBaseInteractorOutputProtocol {
     func didReceiveAssetBalance(_ balance: AssetBalance?) {
         self.balance = balance
     }
@@ -23,21 +23,16 @@ extension SubtensorClaimRewardsPresenter: SubtensorClaimInteractorOutputProtocol
     func didReceivePositions(_ state: Multistaking.SubtensorStakingState?) {
         positionsState = state
 
+        if let state, !state.isRootRedeemableStale {
+            claimable = state.rootClaimPreviews
+            applySilently(state.rootClaimPreviews)
+        }
+
         provideViewModel()
     }
 
     func didReceivePositionsSyncFailed(_ isFailed: Bool) {
         isPositionsSyncFailed = isFailed
-
-        provideViewModel()
-    }
-
-    func didReceiveClaimable(_ claimable: SubtensorRootClaimable?) {
-        guard let claimable else {
-            return
-        }
-
-        self.claimable = claimable
 
         provideViewModel()
     }
@@ -65,28 +60,7 @@ extension SubtensorClaimRewardsPresenter: SubtensorClaimInteractorOutputProtocol
     func didReceiveBaseError(_ error: SubtensorStakingBaseError) {
         logger.error("Error: \(error)")
 
-        switch error {
-        case .feeFailed:
-            wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.refreshFee()
-            }
-        case .preflightFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.refreshPreflight()
-            }
-        case .quoteFailed:
-            break
-        }
-    }
-
-    func didReceiveClaimSnapshot(_ claimable: SubtensorRootClaimable) {
-        handleClaimSnapshot(claimable)
-    }
-
-    func didFailClaimSnapshot(_ error: Error) {
-        logger.error("Claim snapshot failed: \(error)")
-
-        handleClaimSnapshotFailure()
+        presentBaseRetry(for: error)
     }
 }
 
@@ -97,10 +71,14 @@ extension SubtensorClaimRewardsPresenter: SubtensorOperationResultDelegate {
         refreshFee()
         refreshPreflight()
         interactor.refreshPositions()
-        interactor.refreshClaimSnapshot()
 
         provideViewModel()
     }
+}
+
+extension SubtensorClaimRewardsPresenter: SubtensorBaseRetrying {
+    var retryView: ControllerBackedProtocol? { view }
+    var retryWireframe: AlertPresentable & FeeRetryable & CommonRetryable { wireframe }
 }
 
 extension SubtensorClaimRewardsPresenter: Localizable {

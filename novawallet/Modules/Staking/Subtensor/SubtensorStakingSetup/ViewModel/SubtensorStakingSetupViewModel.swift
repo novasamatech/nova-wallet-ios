@@ -29,6 +29,7 @@ struct SubtensorSetupRootViewModel {
     let icon: ImageViewModelProtocol
     let validator: SubtensorValidatorCardViewModel
     let compactValidator: SubtensorSetupValidatorViewModel
+    let compactRate: String?
     let isQuickPick: Bool
     let networkFee: BalanceViewModelProtocol?
 }
@@ -36,7 +37,7 @@ struct SubtensorSetupRootViewModel {
 struct SubtensorSetupSubnetViewModel {
     let sectionTitle: String
     let card: SubtensorPickCardViewModel
-    let avgBuyPrice: SubtensorCostBasisRowViewModel
+    let avgBuyPrice: SubtensorRowState<SubtensorCostBasisValueViewModel>
 }
 
 struct SubtensorPickCardViewModel {
@@ -46,8 +47,8 @@ struct SubtensorPickCardViewModel {
     let browseTitle: String?
     let header: SubtensorPickCardHeaderViewModel?
     let chips: [String]
-    let receive: SubtensorSetupRowViewModel
-    let swapRate: SubtensorSetupRowViewModel
+    let receive: SubtensorRowState<String>
+    let swapRate: SubtensorRowState<String>
     let networkFee: BalanceViewModelProtocol?
 }
 
@@ -68,17 +69,13 @@ struct SubtensorSetupActionViewModel: Equatable {
     let isEnabled: Bool
 }
 
-enum SubtensorSetupRowViewModel: Equatable {
+enum SubtensorRowState<Value> {
     case hidden
     case loading
-    case value(String)
+    case value(Value)
 }
 
-enum SubtensorSetupBalanceRowViewModel {
-    case hidden
-    case loading
-    case value(BalanceViewModelProtocol)
-}
+extension SubtensorRowState: Equatable where Value: Equatable {}
 
 enum SubtensorSetupValidatorViewModel {
     case loading

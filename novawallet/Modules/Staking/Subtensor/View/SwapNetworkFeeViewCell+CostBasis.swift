@@ -1,7 +1,7 @@
 import UIKit
 
 extension SwapNetworkFeeViewCell {
-    func bind(costBasisRow viewModel: SubtensorCostBasisRowViewModel, locale: Locale) {
+    func bind(costBasisRow viewModel: SubtensorRowState<SubtensorCostBasisValueViewModel>, locale: Locale) {
         isAccessibilityElement = true
         accessibilityLabel = titleButton.imageWithTitleView?.title
 

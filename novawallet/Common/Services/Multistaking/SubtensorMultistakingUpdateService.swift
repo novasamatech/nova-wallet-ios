@@ -3,11 +3,6 @@ import SubstrateSdk
 import Operation_iOS
 
 final class SubtensorMultistakingUpdateService: ObservableSyncService {
-    struct PositionKey: Hashable {
-        let hotkey: AccountId
-        let netuid: UInt16
-    }
-
     let accountId: AccountId
     let walletId: MetaAccountModel.Id
     let chainAsset: ChainAsset
@@ -18,20 +13,37 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     let stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol
     let cacheRepository: AnyDataProviderRepository<ChainStorageItem>
     let maxApyProvider: SubtensorMaxApyProviderProtocol?
+    let rootYieldService: SubtensorYieldServiceProtocol?
     let cataloguePricing: SubtensorCataloguePricingTracker?
     let eventCenter: EventCenterProtocol
     let workingQueue: DispatchQueue
     let operationQueue: OperationQueue
 
-    private var hotkeysSubscription: CallbackStorageSubscription<[BytesCodable]>?
-    private var alphaTriggerSubscription: CallbackBatchRawStorageSubscription?
-    private var subscribedPositionKeys: Set<PositionKey>?
-    private var lastState: Multistaking.SubtensorStakingState?
     private var maxApyUpdate: Multistaking.DashboardItemSubtensorPart.MaxApyUpdate = .keep
+    private var rootYields: SubtensorAlphaYields?
     private var isMaxApyResolved = false
 
-    private var fetchCallStore = CancellableCallStore()
+    private lazy var stakeStateSubscription = SubtensorStakeStateSubscription(
+        accountId: accountId,
+        stakeStateFetchFactory: stakeStateFetchFactory,
+        connection: connection,
+        runtimeService: runtimeService,
+        hotkeysCache: (cacheRepository, chainAsset.chain.chainId),
+        mutex: mutex,
+        operationQueue: operationQueue,
+        workingQueue: workingQueue,
+        logger: logger,
+        onSyncing: { [weak self] in self?.markSyncingImmediate() },
+        onState: { [weak self] in self?.handle(state: $0) },
+        onFailure: { [weak self] in self?.completeImmediate($0) }
+    )
+
+    private var lastState: Multistaking.SubtensorStakingState? {
+        stakeStateSubscription.lastState
+    }
+
     private var maxApyCallStore = CancellableCallStore()
+    private var rootYieldsCallStore = CancellableCallStore()
     private var saveCallStore = CancellableCallStore()
 
     init(
@@ -48,6 +60,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         workingQueue: DispatchQueue,
         logger: LoggerProtocol,
         maxApyProvider: SubtensorMaxApyProviderProtocol? = nil,
+        rootYieldService: SubtensorYieldServiceProtocol? = nil,
         cataloguePricing: SubtensorCataloguePricingTracker? = nil,
         eventCenter: EventCenterProtocol = EventCenter.shared
     ) {
@@ -61,6 +74,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         self.connection = connection
         self.runtimeService = runtimeService
         self.maxApyProvider = maxApyProvider
+        self.rootYieldService = rootYieldService
         self.cataloguePricing = cataloguePricing
         self.eventCenter = eventCenter
         self.workingQueue = workingQueue
@@ -70,22 +84,21 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     }
 
     override func performSyncUp() {
-        clearSubscriptions()
-        fetchCallStore.cancel()
         isMaxApyResolved = false
 
+        seedRootYields()
         cataloguePricing?.reset()
 
         eventCenter.add(observer: self, dispatchIn: workingQueue)
 
-        makeHotkeysSubscription(for: accountId, chainId: chainAsset.chain.chainId)
+        stakeStateSubscription.subscribe()
     }
 
     override func stopSyncUp() {
-        fetchCallStore.cancel()
         maxApyCallStore.cancel()
+        rootYieldsCallStore.cancel()
         cataloguePricing?.cancel()
-        clearSubscriptions()
+        stakeStateSubscription.unsubscribe()
     }
 
     // throttle() skips stopSyncUp() when a fetch already completed, so the storage
@@ -93,10 +106,10 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     override func deactivate() {
         eventCenter.remove(observer: self)
 
-        fetchCallStore.cancel()
         maxApyCallStore.cancel()
+        rootYieldsCallStore.cancel()
         cataloguePricing?.cancel()
-        clearSubscriptions()
+        stakeStateSubscription.unsubscribe()
     }
 
     func refreshCataloguePricing() {
@@ -113,98 +126,11 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         performCataloguePricingRefresh()
     }
 
-    private func clearSubscriptions() {
-        hotkeysSubscription = nil
-
-        alphaTriggerSubscription?.unsubscribe()
-        alphaTriggerSubscription = nil
-        subscribedPositionKeys = nil
-    }
-
-    private func makeHotkeysSubscription(for accountId: AccountId, chainId: ChainModel.Id) {
-        do {
-            let localKey = try LocalStorageKeyFactory().createFromStoragePath(
-                SubtensorStakingPallet.stakingHotkeysPath,
-                accountId: accountId,
-                chainId: chainId
-            )
-
-            let request = MapSubscriptionRequest(
-                storagePath: SubtensorStakingPallet.stakingHotkeysPath,
-                localKey: localKey
-            ) {
-                BytesCodable(wrappedValue: accountId)
-            }
-
-            hotkeysSubscription = CallbackStorageSubscription(
-                request: request,
-                connection: connection,
-                runtimeService: runtimeService,
-                repository: cacheRepository,
-                operationQueue: operationQueue,
-                callbackQueue: workingQueue
-            ) { [weak self] result in
-                self?.mutex.lock()
-
-                self?.handleHotkeys(result: result)
-
-                self?.mutex.unlock()
-            }
-        } catch {
-            logger.error("Subscription error: \(error)")
-
-            completeImmediate(error)
-        }
-    }
-
-    private func handleHotkeys(result: Result<[BytesCodable]?, Error>) {
-        switch result {
-        case .success:
-            markSyncingImmediate()
-
-            performStateFetch()
-        case let .failure(error):
-            completeImmediate(error)
-        }
-    }
-
-    private func handleAlphaTrigger(result: Result<BatchStorageSubscriptionRawResult, Error>) {
-        switch result {
-        case .success:
-            markSyncingImmediate()
-
-            performStateFetch()
-        case let .failure(error):
-            completeImmediate(error)
-        }
-    }
-
-    private func performStateFetch() {
-        fetchCallStore.cancel()
-
-        let wrapper = stakeStateFetchFactory.createStateWrapper(for: accountId)
-
-        executeCancellable(
-            wrapper: wrapper,
-            inOperationQueue: operationQueue,
-            backingCallIn: fetchCallStore,
-            runningCallbackIn: workingQueue,
-            mutex: mutex
-        ) { [weak self] result in
-            switch result {
-            case let .success(fetchedState):
-                let state = fetchedState.byKeepingRootRedeemable(of: self?.lastState)
-                self?.lastState = state
-                self?.updateAlphaTriggerSubscription(for: state)
-                self?.persistState(state)
-                self?.performMaxApyFetch()
-                self?.performCataloguePricingRefresh()
-            case let .failure(error):
-                self?.logger.error("State fetch error: \(error)")
-
-                self?.completeImmediate(error)
-            }
-        }
+    private func handle(state: Multistaking.SubtensorStakingState) {
+        persistState(state)
+        performMaxApyFetch()
+        performRootYieldsFetch()
+        performCataloguePricingRefresh()
     }
 
     private func performMaxApyFetch() {
@@ -236,7 +162,55 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
 
         maxApyUpdate = newUpdate
 
-        guard let lastState, !fetchCallStore.hasCall else {
+        persistLastStateIfIdle()
+    }
+
+    private func seedRootYields() {
+        guard
+            let rootYieldService,
+            case let .fresh(yields, _) = rootYieldService.cachedAlphaYields(
+                for: SubtensorStakingPallet.rootNetuid
+            ) else {
+            rootYields = nil
+            return
+        }
+
+        rootYields = yields
+    }
+
+    private func performRootYieldsFetch() {
+        guard let rootYieldService, !rootYieldsCallStore.hasCall, lastState?.rootStakeInRao != nil else {
+            return
+        }
+
+        executeCancellable(
+            wrapper: rootYieldService.createAlphaYieldsWrapper(for: SubtensorStakingPallet.rootNetuid),
+            inOperationQueue: operationQueue,
+            backingCallIn: rootYieldsCallStore,
+            runningCallbackIn: workingQueue,
+            mutex: mutex
+        ) { [weak self] result in
+            switch result {
+            case let .success(yields):
+                self?.updateRootYields(yields)
+            case let .failure(error):
+                self?.logger.warning("Root yields fetch error: \(error)")
+            }
+        }
+    }
+
+    private func updateRootYields(_ newRootYields: SubtensorAlphaYields) {
+        guard newRootYields != rootYields else {
+            return
+        }
+
+        rootYields = newRootYields
+
+        persistLastStateIfIdle()
+    }
+
+    private func persistLastStateIfIdle() {
+        guard let lastState, !stakeStateSubscription.isFetching else {
             return
         }
 
@@ -251,68 +225,11 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
             runningCallbackIn: workingQueue,
             mutex: mutex,
             onUpdate: { [weak self] didChange in
-                guard didChange, let self, let lastState, !fetchCallStore.hasCall else {
-                    return
+                if didChange {
+                    self?.persistLastStateIfIdle()
                 }
-
-                markSyncingImmediate()
-
-                persistState(lastState)
             }
         )
-    }
-
-    private func updateAlphaTriggerSubscription(for state: Multistaking.SubtensorStakingState) {
-        let newKeys = Set(
-            state.positions.map { PositionKey(hotkey: $0.hotkey, netuid: $0.netuid) } +
-                state.rootRedeemable.keys.map { PositionKey(hotkey: $0, netuid: SubtensorStakingPallet.rootNetuid) }
-        )
-
-        guard newKeys != subscribedPositionKeys else {
-            return
-        }
-
-        subscribedPositionKeys = newKeys
-
-        alphaTriggerSubscription?.unsubscribe()
-        alphaTriggerSubscription = nil
-
-        guard !newKeys.isEmpty else {
-            return
-        }
-
-        let requests = newKeys.map { positionKey in
-            BatchStorageSubscriptionRequest(
-                innerRequest: DoubleMapSubscriptionRequest(
-                    storagePath: SubtensorStakingPallet.totalHotkeyAlphaPath,
-                    localKey: "",
-                    keyParamClosure: {
-                        (
-                            BytesCodable(wrappedValue: positionKey.hotkey),
-                            StringScaleMapper(value: positionKey.netuid)
-                        )
-                    }
-                ),
-                mappingKey: nil
-            )
-        }
-
-        alphaTriggerSubscription = CallbackBatchStorageSubscription(
-            requests: requests,
-            connection: connection,
-            runtimeService: runtimeService,
-            repository: nil,
-            operationQueue: operationQueue,
-            callbackQueue: workingQueue
-        ) { [weak self] result in
-            self?.mutex.lock()
-
-            self?.handleAlphaTrigger(result: result)
-
-            self?.mutex.unlock()
-        }
-
-        alphaTriggerSubscription?.subscribe()
     }
 
     private func persistState(_ state: Multistaking.SubtensorStakingState) {
@@ -330,6 +247,10 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
             state: state,
             stake: valuation?.stake ?? state.rootStakeInRao ?? .zero,
             maxApy: maxApyUpdate,
+            rootRate: SubtensorAlphaApyFormatter.stakeWeightedRate(
+                of: state.positions.filter { $0.netuid == SubtensorStakingPallet.rootNetuid },
+                in: rootYields
+            ),
             isFullyPriced: valuation?.isFullyPriced
         )
 
@@ -377,8 +298,6 @@ extension SubtensorMultistakingUpdateService: EventVisitorProtocol {
             return
         }
 
-        markSyncingImmediate()
-
-        performStateFetch()
+        stakeStateSubscription.refresh()
     }
 }

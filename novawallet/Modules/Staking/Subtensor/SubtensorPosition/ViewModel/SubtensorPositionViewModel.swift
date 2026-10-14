@@ -20,7 +20,7 @@ struct SubtensorPositionState {
     var validator: SubtensorValidatorDirectoryItem?
     var isRateResolved = false
     var yields: SubtensorAlphaYields?
-    var claimable: SubtensorRootClaimable?
+    var claimable: [SubtensorRootClaimPreview]?
     var isClaimableFailed = false
     var pendingClaimHotkeys: Set<AccountId> = []
     var holds: [AccountId: SubtensorRootHold] = [:]
@@ -56,11 +56,7 @@ struct SubtensorPositionState {
     }
 
     var annualRate: Decimal? {
-        guard !isRoot else {
-            return nil
-        }
-
-        return group.flatMap { SubtensorAlphaApyFormatter.annualRate(for: $0.primaryHotkey, in: yields) }
+        group.flatMap { SubtensorAlphaApyFormatter.annualRate(for: $0.primaryHotkey, in: yields) }
     }
 
     var unstakeBasis: SubtensorGroupUnstakeBasis? {

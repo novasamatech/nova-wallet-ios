@@ -47,8 +47,8 @@ final class SubtensorPickCardView: UIView {
         headerView.bind(viewModel: viewModel.header)
         chipsView.bind(titles: viewModel.chips)
 
-        bind(row: viewModel.receive, cell: receiveCell)
-        bind(row: viewModel.swapRate, cell: swapRateCell)
+        receiveCell.apply(viewModel.receive)
+        swapRateCell.apply(viewModel.swapRate)
         bind(networkFee: viewModel.networkFee)
 
         rowsView.updateLayout()
@@ -93,20 +93,6 @@ private extension SubtensorPickCardView {
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-        }
-    }
-
-    func bind(row: SubtensorSetupRowViewModel, cell: StackTitleMultiValueCell) {
-        cell.isHidden = row == .hidden
-
-        switch row {
-        case .hidden:
-            cell.stopLoadingIfNeeded()
-        case .loading:
-            cell.startLoadingIfNeeded()
-        case let .value(value):
-            cell.stopLoadingIfNeeded()
-            cell.rowContentView.valueView.bind(topValue: value, bottomValue: nil)
         }
     }
 

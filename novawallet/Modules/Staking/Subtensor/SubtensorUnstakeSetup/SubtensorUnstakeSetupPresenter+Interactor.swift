@@ -84,11 +84,6 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtoc
     func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?) {
         self.catalogue = catalogue
 
-        if !isRoot, let catalogue, catalogue.subnet(for: netuid) == nil, !isCatalogueRefreshForced {
-            isCatalogueRefreshForced = true
-            interactor.loadCatalogue()
-        }
-
         provideAssetViewModel()
         provideViewModel()
     }
@@ -176,41 +171,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtoc
         self.preflight = preflight
     }
 
-    func didReceiveQuote(_ quote: SubtensorTradeQuote) {
-        guard quoteFlow.applyQuote(quote) else {
-            return
-        }
-
-        tradesUnavailable = false
-        isQuoteFailed = false
-
-        provideViewModel()
-    }
-
     func didReceiveExistentialDeposit(_ deposit: Balance) {
         existentialDeposit = deposit
-    }
-
-    func didReceiveBaseError(_ error: SubtensorStakingBaseError) {
-        logger.error("Subtensor unstake setup error: \(error)")
-
-        if error.isNovaFeeUnavailable {
-            tradesUnavailable = true
-        }
-
-        switch error {
-        case .feeFailed:
-            wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.refreshFee()
-            }
-        case .preflightFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.refreshPreflight()
-            }
-        case .quoteFailed:
-            quoteFlow.clearQuote()
-            isQuoteFailed = true
-            provideViewModel()
-        }
     }
 }

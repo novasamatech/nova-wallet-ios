@@ -24,6 +24,7 @@ final class SubtensorValidatorFiltersViewController: UIViewController, ViewHolde
         rootView.tableView.dataSource = self
         rootView.tableView.delegate = self
         rootView.applyButton.addTarget(self, action: #selector(apply), for: .touchUpInside)
+        rootView.toggle.addTarget(self, action: #selector(toggleUnusualApy), for: .valueChanged)
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             title: nil,
             style: .plain,
@@ -36,12 +37,14 @@ final class SubtensorValidatorFiltersViewController: UIViewController, ViewHolde
 
     @objc private func apply() { presenter.apply() }
     @objc private func reset() { presenter.reset() }
+    @objc private func toggleUnusualApy() { presenter.setHidesUnusualApy(rootView.toggle.isOn) }
 }
 
 extension SubtensorValidatorFiltersViewController: SubtensorValidatorFiltersViewProtocol {
     func didReceive(_ viewModel: SubtensorValidatorFiltersViewModel) {
         model = viewModel
         navigationItem.rightBarButtonItem?.isEnabled = viewModel.canReset
+        rootView.toggle.isOn = viewModel.hidesUnusualApy
         rootView.applyButton.isEnabled = viewModel.canApply
         if viewModel.canApply {
             rootView.applyButton.applyEnabledStyle()
@@ -61,7 +64,6 @@ extension SubtensorValidatorFiltersViewController: Localizable {
         rootView.showLabel.text = strings.stakingSubtensorV22Show()
         rootView.toggleTitle.text = strings.stakingSubtensorV22HideUnusual()
         rootView.toggleSubtitle.text = strings.stakingSubtensorV22FarAverage()
-        rootView.unavailableLabel.text = strings.stakingSubtensorV22FilterUnavailable()
         rootView.sortLabel.text = strings.stakingSubtensorV22SortBy()
         rootView.applyButton.imageWithTitleView?.title = strings.commonApply()
         rootView.applyButton.invalidateLayout()

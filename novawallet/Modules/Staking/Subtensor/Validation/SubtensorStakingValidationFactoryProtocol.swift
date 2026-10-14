@@ -87,13 +87,6 @@ protocol SubtensorStakingValidationFactoryProtocol: BaseDataValidatingFactoryPro
         locale: Locale
     ) -> DataValidating
 
-    func canPayFeeFromStakeOtherwiseWarns(
-        transferable: Balance?,
-        fee: Balance?,
-        existentialDeposit: Balance?,
-        locale: Locale
-    ) -> DataValidating
-
     func sellPlanAllows(
         _ input: SubtensorSellPlanInput?,
         assetDisplayInfo: AssetBalanceDisplayInfo?,

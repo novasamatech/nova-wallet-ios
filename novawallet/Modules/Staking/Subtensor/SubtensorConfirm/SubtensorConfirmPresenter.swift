@@ -1,15 +1,15 @@
 import Foundation
 import Foundation_iOS
 
-final class SubtensorStakingConfirmPresenter {
-    weak var view: SubtensorStakingConfirmViewProtocol?
-    let wireframe: SubtensorStakingConfirmWireframeProtocol
+final class SubtensorConfirmPresenter {
+    weak var view: SubtensorConfirmViewProtocol?
+    let wireframe: SubtensorConfirmWireframeProtocol
     let interactor: SubtensorConfirmInteractorInputProtocol
 
     let chainAsset: ChainAsset
-    let model: SubtensorStakingConfirmModel
+    let model: SubtensorConfirmModel
     let signing: SubtensorOperationGate.Verdict
-    let viewModelFactory: SubtensorConfirmViewModelFactoryProtocol
+    let viewModelFactory: SubtensorConfirmViewModelFactory
     let dataValidationFactory: SubtensorStakingValidationFactoryProtocol
     let logger: LoggerProtocol
 
@@ -19,6 +19,9 @@ final class SubtensorStakingConfirmPresenter {
     var positionsState: Multistaking.SubtensorStakingState?
     var isPositionsSyncFailed = false
     var preflight: SubtensorStakingPreflight?
+    var existentialDeposit: Balance?
+    var currentBlock: BlockNumber?
+    var holds: [AccountId: SubtensorRootHold]?
     var quoteState: SubtensorConfirmQuoteState?
     var tradesUnavailable = false
     var catalogue: SubtensorSubnetCatalogue?
@@ -32,10 +35,10 @@ final class SubtensorStakingConfirmPresenter {
 
     init(
         interactor: SubtensorConfirmInteractorInputProtocol,
-        wireframe: SubtensorStakingConfirmWireframeProtocol,
+        wireframe: SubtensorConfirmWireframeProtocol,
         chainAsset: ChainAsset,
-        model: SubtensorStakingConfirmModel,
-        viewModelFactory: SubtensorConfirmViewModelFactoryProtocol,
+        model: SubtensorConfirmModel,
+        viewModelFactory: SubtensorConfirmViewModelFactory,
         dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
@@ -52,23 +55,34 @@ final class SubtensorStakingConfirmPresenter {
         if case let .subnet(info, _) = model.target {
             let tolerance = model.tolerance ?? SubtensorSlippageTolerance.defaultTolerance
 
-            quoteState = SubtensorConfirmQuoteState(
-                request: .buy(netuid: info.netuid, grossTao: model.amount, tolerance: tolerance),
-                acknowledged: model.acknowledgedQuote
-            )
+            let request: SubtensorTradeQuoteRequest = model.direction == .buy
+                ? .buy(netuid: info.netuid, grossTao: model.amount, tolerance: tolerance)
+                : .sell(netuid: info.netuid, alpha: model.amount, tolerance: tolerance)
+
+            quoteState = SubtensorConfirmQuoteState(request: request, acknowledged: model.acknowledgedQuote)
         }
 
         self.localizationManager = localizationManager
     }
 }
 
-extension SubtensorStakingConfirmPresenter {
+extension SubtensorConfirmPresenter {
     var subnetName: String {
         SubtensorSubnetNaming.titleWithSymbol(for: model.target.netuid, in: catalogue, locale: selectedLocale)
     }
 
-    var buyMoreCostBasis: SubtensorCostBasisState? {
-        model.origin == .buyMore ? costBasis : nil
+    var tracksCostBasis: Bool {
+        model.origin == .buyMore || model.origin == .sell
+    }
+
+    func liveGroup() -> SubtensorPortfolioGroup? {
+        guard let positionsState else {
+            return nil
+        }
+
+        let portfolio = SubtensorPortfolioBuilder.build(state: positionsState)
+
+        return ([portfolio.stakedRoot].compactMap { $0 } + portfolio.subnets).first { $0.netuid == model.target.netuid }
     }
 
     func provideAccountViewModels() {
@@ -89,7 +103,7 @@ extension SubtensorStakingConfirmPresenter {
     func provideTileIcons() {
         let viewModel = viewModelFactory.createTileIcons(
             for: model.target,
-            direction: .buy,
+            direction: model.direction,
             catalogue: catalogue,
             subnetLogos: subnetLogos
         )
@@ -107,27 +121,21 @@ extension SubtensorStakingConfirmPresenter {
             isPriceMoved: quoteState?.isPriceMoved ?? false,
             price: price,
             fee: fee,
-            stakeBefore: isPositionsSyncFailed || positionsState == nil ? nil : stakeGroup().total,
+            stakeChange: createStakeChange(),
             signing: signing,
-            costBasis: buyMoreCostBasis
+            costBasis: tracksCostBasis ? costBasis : nil
         )
 
         view?.didReceive(viewModel: viewModelFactory.createViewModel(for: input, locale: selectedLocale))
     }
 
-    func stakeGroup() -> (total: Balance, hotkeyCount: Int) {
-        guard let positionsState else {
-            return (0, 0)
+    func createStakeChange() -> SubtensorConfirmStakeChange? {
+        switch model.mode {
+        case let .stake(amount):
+            return createStakeChange(adding: amount)
+        case let .unstake(unstakeModel):
+            return createStakeChange(removing: unstakeModel)
         }
-
-        let portfolio = SubtensorPortfolioBuilder.build(state: positionsState)
-        let groups = [portfolio.stakedRoot].compactMap { $0 } + portfolio.subnets
-
-        guard let group = groups.first(where: { $0.netuid == model.target.netuid }) else {
-            return (0, 0)
-        }
-
-        return (group.totalAlpha, group.positions.count)
     }
 
     func refreshQuote() {
@@ -139,7 +147,12 @@ extension SubtensorStakingConfirmPresenter {
     }
 
     func refreshFee() {
-        guard let operation = createOperation(limitPrice: quoteState?.acknowledged?.limitPrice) else {
+        let acknowledged = quoteState?.acknowledged
+
+        guard let operation = createOperation(
+            limitPrice: acknowledged?.limitPrice,
+            quotedTaoOut: acknowledged?.quote.sim.taoAmount
+        ) else {
             refreshQuote()
             return
         }
@@ -151,21 +164,26 @@ extension SubtensorStakingConfirmPresenter {
         interactor.refreshPreflight(for: model.validator.hotkey, netuid: model.target.netuid)
     }
 
-    func createOperation(limitPrice: Balance?) -> SubtensorStakingOperation? {
-        guard !model.target.isRoot else {
-            return .rootStake(hotkey: model.validator.hotkey, amount: model.amount)
+    func createOperation(limitPrice: Balance?, quotedTaoOut: Balance?) -> SubtensorStakingOperation? {
+        switch model.mode {
+        case let .stake(amount):
+            return createStakeOperation(amount: amount, limitPrice: limitPrice)
+        case let .unstake(unstakeModel):
+            return createUnstakeOperation(for: unstakeModel, limitPrice: limitPrice, quotedTaoOut: quotedTaoOut)
         }
+    }
 
-        guard let limitPrice else {
-            return nil
+    func createQuoteContext() -> SubtensorQuoteValidatingContext? {
+        quoteState.map { quoteState in
+            SubtensorQuoteValidatingContext(
+                latestQuote: quoteState.latest,
+                acknowledgedLimit: quoteState.signingLimit,
+                tradesUnavailable: tradesUnavailable,
+                onQuoteRefresh: { [weak self] in
+                    self?.refreshQuote()
+                }
+            )
         }
-
-        return .subnetBuy(
-            hotkey: model.validator.hotkey,
-            netuid: model.target.netuid,
-            grossTao: model.amount,
-            limitPrice: limitPrice
-        )
     }
 
     func presentQuoteMissing() {
@@ -207,13 +225,21 @@ extension SubtensorStakingConfirmPresenter {
     }
 
     func createVerifiedOperation() -> (operation: SubtensorStakingOperation, quote: SubtensorTradeQuote?)? {
+        guard isExitGroupUnchanged() else {
+            presentGroupChanged()
+            return nil
+        }
+
         guard let state = quoteState else {
-            return createOperation(limitPrice: nil).map { ($0, nil) }
+            return createOperation(limitPrice: nil, quotedTaoOut: nil).map { ($0, nil) }
         }
 
         switch SubtensorConfirmTapRule.quoteVerdict(latest: state.latest, acknowledged: state.acknowledged) {
         case let .proceed(latest, limitPrice) where !state.isPriceMoved:
-            return createOperation(limitPrice: limitPrice).map { ($0, latest) }
+            return createOperation(
+                limitPrice: limitPrice,
+                quotedTaoOut: latest.quote.sim.taoAmount
+            ).map { ($0, latest) }
         case .quoteMissing:
             presentQuoteMissing()
             return nil
@@ -229,7 +255,7 @@ extension SubtensorStakingConfirmPresenter {
             return
         }
 
-        let group = stakeGroup()
+        let group = liveGroup()
 
         let request = SubtensorOperationResultRequest(
             operation: verified.operation,
@@ -241,11 +267,11 @@ extension SubtensorStakingConfirmPresenter {
             slippage: model.tolerance,
             validator: model.validator,
             estimatedNetworkFee: fee,
-            stakeBefore: group.total,
-            groupHotkeyCount: group.hotkeyCount,
-            emptiesPosition: false,
+            stakeBefore: group?.totalAlpha ?? 0,
+            groupHotkeyCount: group?.positions.count ?? 0,
+            emptiesPosition: emptiesPosition(verified.operation, group: group),
             prices: SubtensorOperationResultPrices(taoPrice: price, alphaSpot: verified.quote?.quote.spotPrice),
-            costBasis: buyMoreCostBasis
+            costBasis: tracksCostBasis ? costBasis : nil
         )
 
         isHandingOff = true
@@ -254,43 +280,13 @@ extension SubtensorStakingConfirmPresenter {
         wireframe.showOperationResult(from: view, request: request, delegate: self)
     }
 
-    func getValidationDependencies() -> SubtensorStakeValidatingDep {
-        var dependencies = SubtensorStakeValidatingDep(
-            amount: model.amount,
-            balance: balance,
-            fee: fee,
-            preflight: preflight,
-            netuid: model.target.netuid,
-            assetDisplayInfo: chainAsset.assetDisplayInfo,
-            onFeeRefresh: { [weak self] in
-                self?.refreshFee()
-            },
-            onPreflightRefresh: { [weak self] in
-                self?.refreshPreflight()
-            }
-        )
-
-        if let quoteState {
-            dependencies.quoteContext = SubtensorQuoteValidatingContext(
-                latestQuote: quoteState.latest,
-                acknowledgedLimit: quoteState.signingLimit,
-                tradesUnavailable: tradesUnavailable,
-                onQuoteRefresh: { [weak self] in
-                    self?.refreshQuote()
-                }
-            )
-        }
-
-        return dependencies
-    }
-
     func finishHandOff() {
         isHandingOff = false
         view?.didStopLoading()
     }
 }
 
-extension SubtensorStakingConfirmPresenter: SubtensorStakingConfirmPresenterProtocol {
+extension SubtensorConfirmPresenter: SubtensorConfirmPresenterProtocol {
     func setup() {
         seedSubnetData()
         provideAccountViewModels()
@@ -300,6 +296,7 @@ extension SubtensorStakingConfirmPresenter: SubtensorStakingConfirmPresenterProt
         interactor.setup()
 
         refreshPreflight()
+        refreshHolds()
 
         if !model.target.isRoot {
             interactor.loadCatalogue()
@@ -338,12 +335,11 @@ extension SubtensorStakingConfirmPresenter: SubtensorStakingConfirmPresenterProt
             return
         }
 
-        validateStake(
-            for: getValidationDependencies(),
-            dataValidationFactory: dataValidationFactory,
-            selectedLocale: selectedLocale
-        ) { [weak self] in
-            self?.handOffAtTap()
+        switch model.mode {
+        case let .stake(amount):
+            confirmStake(amount: amount)
+        case let .unstake(unstakeModel):
+            confirmUnstake(unstakeModel)
         }
     }
 
@@ -365,7 +361,7 @@ extension SubtensorStakingConfirmPresenter: SubtensorStakingConfirmPresenterProt
     }
 
     func showSwapRateInfo() {
-        wireframe.showSubtensorInfo(.swapRate(.buy, subnetName: subnetName), from: view)
+        wireframe.showSubtensorInfo(.swapRate(model.direction, subnetName: subnetName), from: view)
     }
 
     func showSlippageInfo() {
@@ -382,11 +378,13 @@ extension SubtensorStakingConfirmPresenter: SubtensorStakingConfirmPresenterProt
         wireframe.showSubtensorInfo(.avgBuyPrice(symbol: symbol, subnetName: subnetName), from: view)
     }
 
-    func showYouWillEarnInfo() {}
+    func showYouWillEarnInfo() {
+        wireframe.showSubtensorInfo(.youWillEarn, from: view)
+    }
 
     func showNetworkFeeInfo() {
-        wireframe.showSubtensorInfo(.networkFee(.buy), from: view)
+        wireframe.showSubtensorInfo(.networkFee(model.direction), from: view)
     }
 }
 
-extension SubtensorStakingConfirmPresenter: SubtensorStakePresenterValidating {}
+extension SubtensorConfirmPresenter: SubtensorStakePresenterValidating, SubtensorUnstakePresenterValidating {}

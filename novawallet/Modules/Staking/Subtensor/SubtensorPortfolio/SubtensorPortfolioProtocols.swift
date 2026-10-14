@@ -19,12 +19,16 @@ protocol SubnetPortfolioInteractorInputProtocol: AnyObject {
     func refresh()
     func loadHistories(for period: SubtensorPricePeriod)
     func loadWeeklyChanges(for subnets: [SubtensorSubnetRef])
+    func loadRootYields()
+    func loadNetworkRootRate()
 }
 
 protocol SubnetPortfolioInteractorOutputProtocol: AnyObject {
     func didReceive(state: Multistaking.SubtensorStakingState)
     func didReceive(catalogue: SubtensorSubnetCatalogue?)
     func didReceive(subnetLogos: SubtensorSubnetLogos?)
+    func didReceive(rootYields: SubtensorAlphaYields?)
+    func didReceive(networkRootRate: Decimal?)
     func didReceive(price: PriceData?)
     func didReceive(histories: SubtensorPortfolioPriceHistories)
     func didFailHistories(for period: SubtensorPricePeriod)

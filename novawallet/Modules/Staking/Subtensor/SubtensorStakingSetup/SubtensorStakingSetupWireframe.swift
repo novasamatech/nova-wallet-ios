@@ -21,9 +21,9 @@ final class SubtensorStakingSetupWireframe: SubtensorStakingSetupWireframeProtoc
 
     func showConfirmation(
         from view: SubtensorStakingSetupViewProtocol?,
-        model: SubtensorStakingConfirmModel
+        model: SubtensorConfirmModel
     ) {
-        guard let confirmView = SubtensorStakingConfirmViewFactory.createView(
+        guard let confirmView = SubtensorConfirmViewFactory.createView(
             for: state,
             model: model
         ) else {

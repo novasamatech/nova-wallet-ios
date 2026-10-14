@@ -2,11 +2,11 @@ import Foundation
 
 extension SubtensorStakingSetupPresenter {
     func loadSubnetDataIfNeeded() {
-        guard !mode.isRootLane, let netuid = mode.netuid else {
+        guard let netuid = mode.netuid else {
             return
         }
 
-        if !isSubnetDataRequested {
+        if !mode.isRootLane, !isSubnetDataRequested {
             isSubnetDataRequested = true
 
             loadCatalogue()
@@ -54,9 +54,8 @@ extension SubtensorStakingSetupPresenter {
         }
     }
 
-    func subnetAnnualRate() -> Decimal? {
+    func validatorAnnualRate() -> Decimal? {
         guard
-            !mode.isRootLane,
             let hotkey = validatorState.validator?.hotkey,
             yields?.netuid == mode.netuid else {
             return nil
@@ -95,7 +94,7 @@ extension SubtensorStakingSetupPresenter {
             isCatalogueLoaded: isCatalogueLoaded,
             subnetLogos: subnetLogos,
             rankedSubnet: matchingRankedSubnet(),
-            annualRate: subnetAnnualRate(),
+            annualRate: validatorAnnualRate(),
             isQuoteFailed: isQuoteFailed,
             costBasis: costBasis
         )
@@ -167,7 +166,7 @@ extension SubtensorStakingSetupPresenter {
             slippage = newValue
             interactor.saveSlippage(newValue)
 
-            refreshFee(resetting: false)
+            refreshFee()
             updateQuote()
             provideViewModel()
         }
