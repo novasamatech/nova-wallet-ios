@@ -100,9 +100,6 @@ final class SubtensorSubnetsServiceTests: XCTestCase {
             when(stub.createSubtokenEnabledWrapper(for: any(), blockHash: any())).then { _, _ in
                 CompoundOperationWrapper.createWithResult(subtokenEnabled)
             }
-            when(stub.createSubnetOwnerCutWrapper(blockHash: any())).then { _ in
-                CompoundOperationWrapper<UInt16?>.createWithResult(nil)
-            }
         }
 
         return apiFactory

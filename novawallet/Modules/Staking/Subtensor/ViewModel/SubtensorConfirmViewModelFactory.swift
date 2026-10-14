@@ -124,20 +124,6 @@ private extension SubtensorConfirmViewModelFactory {
         }
     }
 
-    func displayTarget(
-        for target: SubtensorStakeTarget,
-        catalogue: SubtensorSubnetCatalogue?
-    ) -> SubtensorStakeTarget {
-        guard case let .subnet(info, price) = target else {
-            return target
-        }
-
-        var displayInfo = info
-        displayInfo.tokenSymbol = Data(SubtensorSubnetNaming.symbol(for: info.netuid, in: catalogue).utf8)
-
-        return .subnet(info: displayInfo, price: price)
-    }
-
     func createBalance(_ amount: Balance, price: PriceData?, locale: Locale) -> BalanceViewModelProtocol {
         balanceViewModelFactory.balanceFromPrice(
             amount.decimal(assetInfo: taoInfo),
@@ -250,7 +236,8 @@ private extension SubtensorConfirmViewModelFactory {
             for: context.latestQuote,
             amountIn: context.amount,
             direction: context.direction,
-            target: displayTarget(for: context.target, catalogue: context.catalogue),
+            target: context.target,
+            catalogue: context.catalogue,
             taoPrice: context.price,
             locale: locale
         )
@@ -383,6 +370,6 @@ extension SubtensorConfirmViewModelFactory: SubtensorConfirmViewModelFactoryProt
         for target: SubtensorStakeTarget,
         catalogue: SubtensorSubnetCatalogue?
     ) -> AssetBalanceDisplayInfo {
-        displayTarget(for: target, catalogue: catalogue).assetDisplayInfo(basedOn: taoInfo)
+        target.assetDisplayInfo(basedOn: taoInfo, catalogue: catalogue)
     }
 }

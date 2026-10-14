@@ -15,9 +15,5 @@ extension SubtensorStakingPallet {
         @StringCodable var taoIn: Balance
         @StringCodable var taoInEmission: Balance
         @StringCodable var networkRegisteredAt: UInt64
-
-        var displaySymbol: String {
-            String(decoding: tokenSymbol, as: UTF8.self)
-        }
     }
 }

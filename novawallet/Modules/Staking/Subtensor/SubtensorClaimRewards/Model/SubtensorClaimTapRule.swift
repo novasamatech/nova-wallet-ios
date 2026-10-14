@@ -9,9 +9,8 @@ enum SubtensorClaimTapRule {
 
     static func verdict(shown: SubtensorRootClaimPreview, fresh: SubtensorRootClaimable) -> Verdict {
         guard
-            let minimumClaim = fresh.minimumClaim,
             let preview = fresh.previews.first(where: { $0.hotkey == shown.hotkey }),
-            SubtensorRootClaimRule.isClaimable(preview, minimumClaim: minimumClaim) else {
+            SubtensorRootClaimRule.isClaimable(preview) else {
             return .nothingToClaim
         }
 

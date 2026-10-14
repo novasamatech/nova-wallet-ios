@@ -72,13 +72,11 @@ extension SubtensorPendingRootClaims: SubtensorPendingRootClaimsProtocol {
 
 private extension SubtensorPendingRootClaims {
     static func isSettled(hotkey: AccountId, claimable: SubtensorRootClaimable?) -> Bool {
-        guard let claimable, let minimumClaim = claimable.minimumClaim else {
+        guard let claimable else {
             return false
         }
 
-        return !claimable.previews.contains { preview in
-            preview.hotkey == hotkey && SubtensorRootClaimRule.isClaimable(preview, minimumClaim: minimumClaim)
-        }
+        return !claimable.previews.contains { $0.hotkey == hotkey && SubtensorRootClaimRule.isClaimable($0) }
     }
 }
 

@@ -10,7 +10,6 @@ struct SubtensorSubnetListItem: Equatable {
     let subnet: SubtensorCatalogueSubnet
     let target: SubtensorStakeTarget
     let weekly: SubtensorPriceData<SubtensorWeeklyPriceSummary>?
-    let ageBlocks: UInt64?
 
     var ref: SubtensorSubnetRef {
         subnet.ref
@@ -112,8 +111,7 @@ private extension SubtensorSubnetListBuilder {
         return SubtensorSubnetListItem(
             subnet: entry.subnet,
             target: entry.target,
-            weekly: weekly?[ref],
-            ageBlocks: nil
+            weekly: weekly?[ref]
         )
     }
 
@@ -132,7 +130,7 @@ private extension SubtensorSubnetListBuilder {
 
     func passes(_ item: SubtensorSubnetListItem, filters: SubtensorSubnetFilters) -> Bool {
         if filters.hideThinPools, !favourites.contains(item.ref),
-           (item.target.subnetInfo?.taoIn ?? 0) < Self.thinPoolThreshold {
+           item.subnet.taoReserve < Self.thinPoolThreshold {
             return false
         }
 
@@ -149,15 +147,9 @@ private extension SubtensorSubnetListBuilder {
         case .sevenDayChange:
             return compareOptional(weeklyValue(of: lhs), weeklyValue(of: rhs), ascending: false)
         case .poolDepth:
-            let left = lhs.target.subnetInfo?.taoIn
-            let right = rhs.target.subnetInfo?.taoIn
-            return compareOptional(left, right, ascending: false)
+            return compare(lhs.subnet.taoReserve, rhs.subnet.taoReserve, ascending: false)
         case .age:
-            return compareOptional(
-                lhs.target.subnetInfo?.networkRegisteredAt,
-                rhs.target.subnetInfo?.networkRegisteredAt,
-                ascending: true
-            )
+            return compare(lhs.subnet.networkRegisteredAt, rhs.subnet.networkRegisteredAt, ascending: true)
         case .name:
             switch (titles[lhs.ref] ?? "").localizedStandardCompare(titles[rhs.ref] ?? "") {
             case .orderedAscending: return true
@@ -169,9 +161,13 @@ private extension SubtensorSubnetListBuilder {
         }
     }
 
+    func compare<Value: Comparable>(_ lhs: Value, _ rhs: Value, ascending: Bool) -> Bool? {
+        lhs == rhs ? nil : (ascending ? lhs < rhs : lhs > rhs)
+    }
+
     func compareOptional<Value: Comparable>(_ lhs: Value?, _ rhs: Value?, ascending: Bool) -> Bool? {
         switch (lhs, rhs) {
-        case let (.some(left), .some(right)): return left == right ? nil : (ascending ? left < right : left > right)
+        case let (.some(left), .some(right)): return compare(left, right, ascending: ascending)
         case (.some, .none): return true
         case (.none, .some): return false
         case (.none, .none): return nil

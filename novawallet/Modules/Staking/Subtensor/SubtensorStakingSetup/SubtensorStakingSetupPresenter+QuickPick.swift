@@ -14,7 +14,10 @@ extension SubtensorStakingSetupPresenter {
         loadQuickPick(forcingRefresh: true)
     }
 
-    func didReceiveQuickPickSnapshot(_ result: Result<SubtensorSubnetsInfo, Error>, generation: Int) {
+    func didReceiveQuickPickSnapshot(
+        _ result: Result<(SubtensorSubnetCatalogue, SubtensorSubnetsInfo), Error>,
+        generation: Int
+    ) {
         guard let quickPickVisit, !quickPickVisit.isManuallyReplaced, target == nil else { return }
         if let target = quickPickVisit.resolve(result, generation: generation) {
             mode = .subnetPick(target: target, validator: nil)

@@ -3,7 +3,7 @@ import Foundation
 protocol SubtensorClaimErrorPresentable {
     func presentClaimPending(_ view: ControllerBackedProtocol, locale: Locale?)
 
-    func presentNothingToClaim(_ view: ControllerBackedProtocol, minimum: String, locale: Locale?)
+    func presentNothingToClaim(_ view: ControllerBackedProtocol, locale: Locale?)
 
     func presentClaimAmountChanged(_ view: ControllerBackedProtocol, locale: Locale?)
 }
@@ -20,11 +20,11 @@ extension SubtensorClaimErrorPresentable where Self: AlertPresentable {
         )
     }
 
-    func presentNothingToClaim(_ view: ControllerBackedProtocol, minimum: String, locale: Locale?) {
+    func presentNothingToClaim(_ view: ControllerBackedProtocol, locale: Locale?) {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         present(
-            message: strings.stakingSubtensorClaimBelowMinimumMessageFormat(minimum),
+            message: strings.stakingSubtensorClaimNothingMessage(),
             title: strings.stakingSubtensorClaimBelowMinimumTitle(),
             closeAction: strings.commonClose(),
             from: view

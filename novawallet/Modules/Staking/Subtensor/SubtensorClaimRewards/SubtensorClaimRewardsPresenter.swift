@@ -23,7 +23,6 @@ final class SubtensorClaimRewardsPresenter {
     var preflight: SubtensorStakingPreflight?
     var existentialDeposit: Balance?
     private(set) var shownPreview: SubtensorRootClaimPreview
-    private(set) var minimumClaim: Balance
     private(set) var isNothingToClaim = false
     private(set) var isVerifyingAtTap = false
     private(set) var isHandingOff = false
@@ -52,7 +51,6 @@ final class SubtensorClaimRewardsPresenter {
         self.dataValidationFactory = dataValidationFactory
         self.logger = logger
         shownPreview = model.shownPreview
-        minimumClaim = model.minimumClaim
 
         self.localizationManager = localizationManager
     }
@@ -120,14 +118,14 @@ extension SubtensorClaimRewardsPresenter {
             isNothingToClaim = true
             view?.didStopLoading()
             provideViewModel()
-            presentNothingToClaim(minimum: claimable.minimumClaim ?? minimumClaim)
+            presentNothingToClaim()
         case let .changed(preview):
-            accept(preview, from: claimable)
+            shownPreview = preview
             view?.didStopLoading()
             provideViewModel()
             presentAmountChanged()
         case let .proceed(preview):
-            accept(preview, from: claimable)
+            shownPreview = preview
             provideViewModel()
             handOff(with: preview)
         }
@@ -165,30 +163,20 @@ private extension SubtensorClaimRewardsPresenter {
 
     func applySilently(_ claimable: SubtensorRootClaimable) {
         guard
-            let minimumClaim = claimable.minimumClaim,
             let preview = claimable.previews.first(where: { $0.hotkey == hotkey }),
-            SubtensorRootClaimRule.isClaimable(preview, minimumClaim: minimumClaim) else {
+            SubtensorRootClaimRule.isClaimable(preview) else {
             return
         }
 
-        accept(preview, from: claimable)
-    }
-
-    func accept(_ preview: SubtensorRootClaimPreview, from claimable: SubtensorRootClaimable) {
         shownPreview = preview
-        minimumClaim = claimable.minimumClaim ?? minimumClaim
     }
 
-    func presentNothingToClaim(minimum: Balance) {
+    func presentNothingToClaim() {
         guard let view else {
             return
         }
 
-        wireframe.presentNothingToClaim(
-            view,
-            minimum: viewModelFactory.createMinimumClaim(minimum, locale: selectedLocale),
-            locale: selectedLocale
-        )
+        wireframe.presentNothingToClaim(view, locale: selectedLocale)
     }
 
     func presentAmountChanged() {

@@ -92,7 +92,6 @@ private extension SubtensorSubnetParametersFactory {
         at hash: BlockHash
     ) -> CompoundOperationWrapper<SubtensorSubnetParameters> {
         let dynamic = apiFactory.createAllDynamicInfoWrapper(at: hash)
-        let prices = apiFactory.createAlphaPricesWrapper(at: hash)
         let number: CompoundOperationWrapper<StringScaleMapper<BlockNumber>?> = createStorageRead(
             path: SystemPallet.blockNumberPath, netuid: nil, blockHash: hash
         )
@@ -105,16 +104,15 @@ private extension SubtensorSubnetParametersFactory {
         let time = timeline.createBlockTimeOperation()
         let merge = ClosureOperation<SubtensorSubnetParameters> {
             SubtensorSubnetParameters(
-                ref: ref, blockHash: hash,
-                rows: self.value(from: dynamic.targetOperation, field: "reserves"),
-                prices: self.value(from: prices.targetOperation, field: "price"),
+                ref: ref,
+                rows: self.value(from: dynamic.targetOperation, field: "emission share"),
                 blockNumber: (self.value(from: number.targetOperation, field: "block") ?? nil)?.value,
                 permits: self.value(from: permits.targetOperation, field: "permits") ?? nil,
                 emissionEnabled: self.value(from: enabled.targetOperation, field: "emission") ?? nil,
                 blockTime: self.value(from: time.targetOperation, field: "block time")
             )
         }
-        let dependencies = dynamic.allOperations + prices.allOperations + number.allOperations +
+        let dependencies = dynamic.allOperations + number.allOperations +
             permits.allOperations + enabled.allOperations + time.allOperations
         dependencies.forEach { merge.addDependency($0) }
         return CompoundOperationWrapper(targetOperation: merge, dependencies: dependencies)
