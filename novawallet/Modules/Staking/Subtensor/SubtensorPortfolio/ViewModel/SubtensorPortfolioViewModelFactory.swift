@@ -8,6 +8,7 @@ protocol SubnetPortfolioViewModelFactoryProtocol: SubnetPortfolioChartFactoryPro
 final class SubtensorPortfolioViewModelFactory {
     static let periods: [SubtensorPricePeriod] = [.day, .week, .month, .quarter]
     static let defaultPeriod = SubtensorPricePeriod.month
+    private static let placeholderRows = 2
 
     let chainAsset: ChainAsset
     let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
@@ -248,6 +249,7 @@ private extension SubtensorPortfolioViewModelFactory {
             title: strings.stakingSubtensorUiRootStaking(),
             subtitle: subtitle,
             value: formatTao(amount, locale: locale),
+            symbol: chainAsset.assetDisplayInfo.symbol,
             detail: detail
         )
     }
@@ -275,6 +277,7 @@ private extension SubtensorPortfolioViewModelFactory {
             title: SubtensorSubnetNaming.titleWithSymbol(for: group.netuid, in: state.catalogue, locale: locale),
             subtitle: subtitle,
             value: value,
+            symbol: chainAsset.assetDisplayInfo.symbol,
             detail: detail
         )
     }
@@ -319,15 +322,21 @@ private extension SubtensorPortfolioViewModelFactory {
 
 extension SubtensorPortfolioViewModelFactory: SubnetPortfolioViewModelFactoryProtocol {
     func createViewModel(for state: SubtensorPortfolioState, locale: Locale) -> SubtensorPortfolioViewModel {
+        let groups = state.groups
+
         guard let portfolio = state.portfolio, !state.isValuationPending else {
+            let rootRows = groups
+                .filter { $0.netuid == SubtensorStakingPallet.rootNetuid }
+                .map { createRootRow(for: $0, state: state, locale: locale) }
+            let loadingRows = state.portfolio == nil ? Self.placeholderRows : groups.count - rootRows.count
+            let header = createLoadingHeader(for: state, locale: locale)
+
             return SubtensorPortfolioViewModel(
-                content: .positions(header: createLoadingHeader(for: state, locale: locale), rows: nil),
+                content: .positions(header: header, rows: rootRows, loadingRows: loadingRows),
                 isSyncFailed: state.isSyncFailed,
                 isRatesUnavailable: false
             )
         }
-
-        let groups = state.groups
 
         guard !groups.isEmpty else {
             return SubtensorPortfolioViewModel(
