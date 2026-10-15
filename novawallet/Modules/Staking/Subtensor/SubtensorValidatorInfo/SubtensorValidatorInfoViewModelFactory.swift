@@ -110,6 +110,7 @@ private extension SubtensorValidatorInfoViewModelFactory {
         let isRoot = input.target.isRoot
         let isActive = Self.isActive(item, isRoot: isRoot)
         let unknown = strings.stakingSubtensorUiValueUnknown()
+        let activeStatus = isActive ? strings.stakingNominatorStatusActive() : strings.stakingNominatorStatusInactive()
 
         let reward: LoadableViewModelState<String>
         let hasReward: Bool
@@ -127,7 +128,7 @@ private extension SubtensorValidatorInfoViewModelFactory {
         }
 
         return SubtensorValidatorInfoViewModel.Staking(
-            status: isActive ? strings.stakingNominatorStatusActive() : strings.stakingNominatorStatusInactive(),
+            status: item.status == nil ? unknown : activeStatus,
             isActive: isActive,
             stakeTitle: isRoot
                 ? strings.stakingSubtensorUiValidatorInfoStakedRoot()
