@@ -248,9 +248,7 @@ extension SubtensorStakingSetupViewController: SubtensorStakingSetupViewProtocol
         }
         applyDetails(viewModel.details)
 
-        rootView.captionLabel.isHidden = viewModel.caption == nil
-        rootView.captionLabel.text = viewModel.caption
-        rootView.placeCaption(afterAction: viewModel.getTao != nil)
+        rootView.applyCaption(viewModel.caption)
 
         rootView.applyAction(viewModel.action)
     }
