@@ -36,6 +36,7 @@ final class SubtensorValidatorSelectPresenter {
     ) {
         self.target = target
         self.selectedHotkey = selectedHotkey
+        preselectedHotkey = selectedHotkey
         self.interactor = interactor
         self.wireframe = wireframe
         self.listFactory = listFactory
@@ -100,7 +101,7 @@ private extension SubtensorValidatorSelectPresenter {
         self.directory = directory
         directoryError = nil
         selectedHotkey = selectableItem(for: selectedHotkey)?.hotkey
-        preselectedHotkey = selectedHotkey
+        preselectedHotkey = selectableItem(for: preselectedHotkey)?.hotkey
     }
 
     func seed(from snapshot: SubtensorValidatorSelectSnapshot) {
