@@ -65,9 +65,7 @@ private extension SubtensorSubnetDetailsViewLayout {
     }
 
     static func createSectionLabel() -> UILabel {
-        .create { label in
-            label.apply(style: .semiboldCaps2Secondary)
-        }
+        UILabel(style: .semiboldCaps1Secondary, numberOfLines: 1)
     }
 
     func setupLayout() {
@@ -117,10 +115,6 @@ private extension SubtensorSubnetDetailsViewLayout {
         ]
 
         sections.forEach { label, view in
-            label.snp.makeConstraints { make in
-                make.height.greaterThanOrEqualTo(16)
-            }
-
             containerView.stackView.addArrangedSubview(label)
             containerView.stackView.setCustomSpacing(8, after: label)
             containerView.stackView.addArrangedSubview(view)

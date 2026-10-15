@@ -4,13 +4,17 @@ import UIKit
 class SubtensorAmountSetupLayout: UIView {
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
-        view.stackView.layoutMargins = UIEdgeInsets(top: 16.0, left: 16.0, bottom: 16.0, right: 16.0)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 26.0, left: 16.0, bottom: 16.0, right: 16.0)
         view.stackView.isLayoutMarginsRelativeArrangement = true
         view.stackView.alignment = .fill
         return view
     }()
 
-    let amountTitleView = SwapSetupTitleView(frame: .zero)
+    let amountTitleView: SwapSetupTitleView = .create { view in
+        view.titleLabel.apply(style: .regularSubhedlineSecondary)
+        view.buttonTitle.apply(style: .regularSubhedlineAccent)
+        view.buttonValue.apply(style: .regularSubhedlinePrimary)
+    }
 
     let maxSkeletonView = SubtensorAmountSetupLayout.createSkeletonView()
 
@@ -138,7 +142,7 @@ class SubtensorAmountSetupLayout: UIView {
 
         containerView.stackView.addArrangedSubview(amountTitleView)
         amountTitleView.snp.makeConstraints { make in
-            make.height.equalTo(34.0)
+            make.height.equalTo(28.0)
         }
 
         amountTitleView.addSubview(maxSkeletonView)
@@ -147,7 +151,7 @@ class SubtensorAmountSetupLayout: UIView {
             make.size.equalTo(CGSize(width: 90, height: 12))
         }
 
-        containerView.stackView.setCustomSpacing(8.0, after: amountTitleView)
+        containerView.stackView.setCustomSpacing(4.0, after: amountTitleView)
 
         containerView.stackView.addArrangedSubview(amountInputView)
         amountInputView.snp.makeConstraints { make in

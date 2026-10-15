@@ -70,8 +70,8 @@ private extension SubtensorSubnetDetailsViewController {
     func setupLocalization() {
         let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
 
-        rootView.validatorCaptionLabel.text = strings.stakingSubtensorV22Validators()
-        rootView.parametersHeadingLabel.text = strings.stakingSubtensorV22Parameters()
+        rootView.validatorCaptionLabel.applySubtensorCaps(strings.stakingSubtensorV22Validators())
+        rootView.parametersHeadingLabel.applySubtensorCaps(strings.stakingSubtensorV22Parameters())
 
         rootView.moreDetailsView.titleControl.titleLabel.text = strings.stakingSubtensorUiDetailMore()
         rootView.moreDetailsView.titleControl.invalidateLayout()

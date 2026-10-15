@@ -69,7 +69,7 @@ private extension SubtensorPortfolioViewController {
 
         rootView.headerView.captionLabel.text = strings.stakingSubtensorUiPortfolioTotal()
         rootView.headerView.ratesAlertView.contentView.detailsLabel.text = ratesUnavailable
-        rootView.positionsCaptionLabel.text = strings.stakingSubtensorUiPortfolioPositions()
+        rootView.positionsCaptionLabel.applySubtensorCaps(strings.stakingSubtensorUiPortfolioPositions())
         rootView.syncNoticeView.contentView.detailsLabel.text = strings.stakingSubtensorUiPortfolioSyncFailed()
 
         let emptyView = rootView.emptyView
