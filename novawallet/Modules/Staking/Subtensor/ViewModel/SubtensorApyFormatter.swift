@@ -70,6 +70,15 @@ extension NumberFormatter {
         }
     }
 
+    static var subtensorPercentSingleHalfEven: LocalizableResource<NumberFormatter> {
+        LocalizableResource { locale in
+            let formatter = NumberFormatter.percentSingleHalfEven
+            formatter.locale = locale
+            formatter.spacePercentSymbol()
+            return formatter
+        }
+    }
+
     func spacePercentSymbol() {
         let symbol = percentSymbol ?? "%"
         positivePrefix = positivePrefix.replacingOccurrences(of: symbol, with: "")
