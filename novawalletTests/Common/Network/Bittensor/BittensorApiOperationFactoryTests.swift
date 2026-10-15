@@ -73,6 +73,7 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
     }
 
     func testAnOlderGenerationIsRejectedAndKeepsTheNewerSeed() throws {
+        var now: TimeInterval = 0
         let newer = Data(rankedSubnetsJson.utf8)
         let older = mutatedBody(
             rankedSubnetsJson,
@@ -82,11 +83,12 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
             ]
         )
         let transport = createTransport(replies: [
-            createResponse(newer, requestId: "req-newer"),
+            createResponse(newer, requestId: "req-newer", directives: .reusable(lifetime: 60)),
             createResponse(older, requestId: "req-older")
         ])
-        let factory = createFactory(transport: transport)
+        let factory = createFactory(transport: transport, timeProvider: { now })
         _ = try run(factory.createRankedSubnetsWrapper())
+        now = 60
 
         XCTAssertThrowsError(try run(factory.createRankedSubnetsWrapper())) { error in
             guard case .generationStale = error as? BittensorApiError else {
@@ -138,12 +140,37 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
         XCTAssertEqual(try run(factory.createSubnetsWrapper()).requestId, "req-second")
     }
 
-    func testNoStoreResponseIsOnlyAnExpiredSeed() throws {
-        try assertOnlyExpiredSeed(HTTPCacheDirectives(cacheControl: "no-store", age: nil))
+    func testNoStoreResponseIsNotStored() throws {
+        try assertNotStored(HTTPCacheDirectives(cacheControl: "no-store", age: nil))
     }
 
-    func testResponseWithoutCacheControlIsOnlyAnExpiredSeed() throws {
-        try assertOnlyExpiredSeed(HTTPCacheDirectives(cacheControl: nil, age: nil))
+    func testResponseWithoutCacheControlIsNotStored() throws {
+        try assertNotStored(HTTPCacheDirectives(cacheControl: nil, age: nil))
+    }
+
+    func testPageFetchedBeforeADropIsNotStored() throws {
+        var now: TimeInterval = 0
+        var isDropping = true
+        var factory: BittensorApiOperationFactory?
+        let transport = createTransport(
+            replies: [
+                createResponse(Data(operationsJson.utf8), requestId: "req-before", directives: .reusable(lifetime: 60)),
+                createResponse(Data(operationsJson.utf8), requestId: "req-after", directives: .reusable(lifetime: 60))
+            ],
+            beforeReply: {
+                now += 1
+                if isDropping { factory?.dropOperations(accountSubject: self.aliceSubject) }
+            }
+        )
+        factory = createFactory(transport: transport, timeProvider: { now })
+        let fetchedFactory = try XCTUnwrap(factory)
+
+        XCTAssertEqual(try run(fetchedFactory.createOperationsWrapper(accountSubject: aliceSubject, page: 1)).requestId, "req-before")
+        XCTAssertNil(fetchedFactory.peekOperations(accountSubject: aliceSubject, page: 1).value)
+
+        isDropping = false
+        XCTAssertEqual(try run(fetchedFactory.createOperationsWrapper(accountSubject: aliceSubject, page: 1)).requestId, "req-after")
+        XCTAssertEqual(fetchedFactory.peekOperations(accountSubject: aliceSubject, page: 1).value?.requestId, "req-after")
     }
 
     func testPrivateResponseIsReusable() throws {
@@ -175,19 +202,22 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
         XCTAssertEqual(factory.peekOperations(accountSubject: bobSubject, page: 1).value?.requestId, "req-bob")
     }
 
-    private func assertOnlyExpiredSeed(_ directives: HTTPCacheDirectives, line: UInt = #line) throws {
-        let transport = createTransport(replies: createSubnetReplies(directives: directives))
-        let factory = createFactory(transport: transport)
+    private func assertNotStored(_ directives: HTTPCacheDirectives, line: UInt = #line) throws {
+        var now: TimeInterval = 0
+        let transport = createTransport(replies: [
+            createResponse(Data(subnetsJson.utf8), requestId: "req-first", directives: .reusable(lifetime: 60)),
+            createResponse(Data(subnetsJson.utf8), requestId: "req-second", directives: directives),
+            createResponse(Data(subnetsJson.utf8), requestId: "req-third", directives: directives)
+        ])
+        let factory = createFactory(transport: transport, timeProvider: { now })
 
         _ = try run(factory.createSubnetsWrapper())
+        now = 60
+        XCTAssertEqual(factory.peekSubnets().value?.requestId, "req-first", line: line)
 
-        guard case let .expired(seed) = factory.peekSubnets() else {
-            return XCTFail("Expected an expired seed", line: line)
-        }
-
-        XCTAssertEqual(seed.requestId, "req-first", line: line)
-        XCTAssertTrue(seed.isFromExpiredCache, line: line)
         XCTAssertEqual(try run(factory.createSubnetsWrapper()).requestId, "req-second", line: line)
+        XCTAssertNil(factory.peekSubnets().value, line: line)
+        XCTAssertEqual(try run(factory.createSubnetsWrapper()).requestId, "req-third", line: line)
     }
 
     private func createSubnetReplies(directives: HTTPCacheDirectives) -> [BittensorApiRawResponse] {
@@ -208,7 +238,10 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
         )
     }
 
-    private func createTransport(replies: [BittensorApiRawResponse]) -> MockBittensorApiTransportProtocol {
+    private func createTransport(
+        replies: [BittensorApiRawResponse],
+        beforeReply: @escaping () -> Void = {}
+    ) -> MockBittensorApiTransportProtocol {
         let transport = MockBittensorApiTransportProtocol()
         var remaining = replies
 
@@ -222,6 +255,8 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
             when(stub.addInvalidationObserver(any(), closure: any())).thenReturn(0)
             when(stub.createAdmissionWrapper()).then { CompoundOperationWrapper.createWithResult(admission) }
             when(stub.createResponseWrapper(for: any(), admission: any())).then { _ in
+                beforeReply()
+
                 guard !remaining.isEmpty else {
                     return .createWithError(BittensorApiError.unavailable(code: nil, requestId: nil))
                 }

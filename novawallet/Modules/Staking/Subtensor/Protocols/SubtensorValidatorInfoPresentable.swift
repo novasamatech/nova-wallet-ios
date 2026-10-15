@@ -2,13 +2,6 @@ import UIKit
 
 protocol SubtensorValidatorInfoPresentable {
     var state: SubtensorStakingSharedStateProtocol { get }
-
-    func showValidatorInfo(
-        from view: ControllerBackedProtocol?,
-        target: SubtensorStakeTarget,
-        hotkey: AccountId,
-        detail: SubtensorValidatorDirectoryItem?
-    )
 }
 
 extension SubtensorValidatorInfoPresentable {
@@ -16,7 +9,8 @@ extension SubtensorValidatorInfoPresentable {
         from view: ControllerBackedProtocol?,
         target: SubtensorStakeTarget,
         hotkey: AccountId,
-        detail: SubtensorValidatorDirectoryItem?
+        detail: SubtensorValidatorDirectoryItem?,
+        needsChainDetail: Bool = false
     ) {
         guard
             let view,
@@ -24,7 +18,8 @@ extension SubtensorValidatorInfoPresentable {
                 for: state,
                 target: target,
                 hotkey: hotkey,
-                detail: detail
+                detail: detail,
+                needsChainDetail: needsChainDetail
             ) else {
             return
         }

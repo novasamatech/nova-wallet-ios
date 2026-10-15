@@ -7,8 +7,9 @@ and one persisted current bearer serve every protected consumer; renewal replace
 `activate(origin:)` selects the exact HTTPS backend origin. `createAdmissionWrapper` checks a
 usable bearer before a store miss is fetched, while `createResponseWrapper` checks again before
 network access. One origin/API-major bearer authorizes ordinary protected paths:
-GET and HEAD reads and analytics POSTs. Auth validates transport syntax
+GET and HEAD reads, account-search POSTs, and analytics POSTs. Auth validates transport syntax
 and the selected HTTPS origin; each consumer and the server own business route/payload validation.
+Bittensor uses `/v1/bittensor/...` for reads and searches, with immutable request bodies.
 Only conclusive pre-backend `invalid_token` allows a single replay: expected-origin 401 and
 exact `WWW-Authenticate: Bearer error="invalid_token"`, plus a valid `invalid_token` envelope
 for GET/POST. HEAD uses the status and header without a response body. A credential rejected by
@@ -35,15 +36,20 @@ wording; it is an explicit eligibility change, not behavioral equivalence.
 The package has no explicit reset API. Analytics consent/erasure and wallet changes do not
 reset the shared identity. Requests carry a demand intent that only gates re-registration after a refusal.
 
-NovaAuth has no HTTP cache: its single ephemeral session stores nothing, refuses redirects and
-sends each authorized request to the network as one Operation-iOS `NetworkOperation`. Fresh, complete 200 reads carry `public, max-age=N,
-must-revalidate`; POSTs and bootstrap use `no-store`.
+NovaAuth has no HTTP cache: every session is ephemeral, stores nothing and sends each
+authorized request to the network. Fresh, complete 200 reads carry `public, max-age=N,
+must-revalidate` (account searches `private`); POSTs and bootstrap use `no-store`. The app's
+`BittensorApiResponseCache` reuses a fresh decoded body above admission for its `max-age`, so
+NovaAuth sees only misses, and a reused body neither confirms nor extends the credential deadline.
 Issuance commits to the canonical origin and API major 1 without a flow or scope. Renewal
 obtains a fresh challenge and App Attest assertion; the server issues no refresh credential.
 
-The host maps `infraUrl` to one endpoint per process and memoises it. The Bittensor store keys
-every seed by that endpoint's origin and generation and drops them all when a different scope is
-admitted, so a later context can never serve an older seed.
+The host maps `infraUrl` to one endpoint per process and memoises it.
+Past `max-age` the app store keeps a decoded body only as an explicitly stale display seed; it
+never returns a seed as a protected fetch result.
+The host stamps each accepted endpoint with an invalidation revision. Bittensor carries it
+through admission and checks the latest revision before cache participation, completion and
+peek. Delayed invalidations cannot retire newer state; old work cannot restore retired seeds.
 
 ## Recovery and admission
 
@@ -124,6 +130,7 @@ record. Corrupt token reads do not delete unrelated data. Version-1 bearer recor
 issuance while preserving valid installation identity. Repeated denial suppresses rejected
 credentials and applies issuance backoff before attempting deletion.
 
+every send and replay.
 Bittensor retains typed error grading and its own retry/presentation decisions, including
 nonretryable configuration, unsupported-device, registration-refusal and final-denial errors.
 Max-APY auth refusal terminates without caching a partial result. Analytics retains batches
@@ -152,7 +159,7 @@ substitute. This implementation retains the mandated reboot detection and existi
 See [Apple's calendar-clock implementation](https://github.com/apple-oss-distributions/xnu/blob/main/osfmk/kern/clock.c)
 and [iOS 18 release notes](https://developer.apple.com/documentation/ios-ipados-release-notes/ios-ipados-18-release-notes).
 
-## Protected requests and optional yields
+## Protected requests
 
 Ingress authenticates before protected business handlers execute. A conclusive token denial
 therefore permits one replay preserving the original method, path, query and body. Other
@@ -160,7 +167,6 @@ therefore permits one replay preserving the original method, path, query and bod
 Consumers grade business responses through `NovaAuthResponse.serverError` and `requestID`, the
 package's own envelope parser: status, lowercase code up to 64 characters, sanitized
 `X-Request-ID` and numeric Retry-After clamped to 905 seconds.
-
 The removed root-yield read returns unavailable/cache miss locally. Its optional presentation
 service returns nil without a request, keeping root staking screens usable without a rate.
 Alpha yields reject netuid 0 locally. New root staking APIs belong to their domain feature.
@@ -170,6 +176,6 @@ Alpha yields reject netuid 0 locally. New root staking APIs belong to their doma
 Run retained XCTest suites using `xcodebuild test -scheme NovaAuth` on an iOS simulator;
 `swift test` targets macOS and is inappropriate for these iOS dependencies. Existing checks
 exercise framing, operation recovery, same-binding refusal, pending registration, origin fencing,
-bounded token replay, shared throttling and exchange release. App tests cover Bittensor cache
-behaviour, domain recovery/presentation and Subtensor flows. Real App Attest,
-Keychain behavior, protected data and physical reboot behavior need device validation.
+bounded token replay, shared throttling and exchange release. App tests cover facade publication,
+Bittensor cache invalidation, domain recovery/presentation and Subtensor flows. Real App Attest,
+signed Keychain access-group sharing, protected data and physical reboot behavior need device validation.
