@@ -6,85 +6,48 @@ import XCTest
 final class SubtensorValidatorPresetFactoryTests: XCTestCase {
     private let rootRef = SubtensorSubnetRef(netuid: SubtensorStakingPallet.rootNetuid, registeredAt: 0)
     private let chutesRef = SubtensorSubnetRef(netuid: 64, registeredAt: 4_531_295)
-    private let generationBlock: UInt64 = 9_139_880
     private let existingHotkey = Data(repeating: 0x22, count: 32)
-    private let rootPairHotkey = Data(repeating: 0x33, count: 32)
-    private let targonPairHotkey = Data(repeating: 0x44, count: 32)
     private let chutesPairHotkey = Data(repeating: 0x55, count: 32)
-    private let chutesRiskierPairHotkey = Data(repeating: 0x66, count: 32)
+    private let topYieldHotkey = Data(repeating: 0x66, count: 32)
 
-    func testExistingStakeOnTheNetuidIsPresetBeforeTheRecommendation() throws {
-        let recommendationService = makeRecommendationService(.success(makeRecommendations(freshness: .fresh)))
+    func testExistingStakeValidatorIsPresetBeforeRecommendation() throws {
+        let recommendationService = createRecommendationService()
 
         let preset = try run(
-            makeFactory(existingTake: Decimal(string: "0.09"), recommendationService: recommendationService)
+            createFactory(existingTake: Decimal(string: "0.09"), recommendationService: recommendationService)
                 .createPresetWrapper(for: rootRef, existingHotkey: existingHotkey)
         )
 
         XCTAssertEqual(preset?.hotkey, existingHotkey)
         XCTAssertEqual(preset?.name, "Existing")
-        verify(recommendationService, never()).createVerifiedRecommendationsWrapper()
+        verify(recommendationService, never()).createRecommendedValidatorsWrapper(for: any())
     }
 
-    func testRootRecommendationIsPresetWhenTheExistingValidatorTakesAboveTheGate() throws {
-        let recommendationService = makeRecommendationService(.success(makeRecommendations(freshness: .fresh)))
-
+    func testNoPresetWhenRecommendationsAreStale() throws {
         let preset = try run(
-            makeFactory(existingTake: Decimal(string: "0.5"), recommendationService: recommendationService)
-                .createPresetWrapper(for: rootRef, existingHotkey: existingHotkey)
-        )
-
-        XCTAssertEqual(preset?.hotkey, rootPairHotkey)
-        XCTAssertEqual(preset?.name, "Blue Harbor")
-    }
-
-    func testSubnetPresetIsTheFirstRecommendedPairOfThatNetuidInClassOrder() throws {
-        let recommendationService = makeRecommendationService(.success(makeRecommendations(freshness: .fresh)))
-
-        let preset = try run(
-            makeFactory(existingTake: nil, recommendationService: recommendationService)
-                .createPresetWrapper(for: chutesRef, existingHotkey: nil)
-        )
-
-        XCTAssertEqual(preset?.hotkey, chutesPairHotkey)
-        XCTAssertEqual(preset?.name, "Cinder Node")
-    }
-
-    func testNoPresetWhenTheRecommendationsAreStale() throws {
-        let recommendationService = makeRecommendationService(.success(makeRecommendations(freshness: .stale)))
-
-        let preset = try run(
-            makeFactory(existingTake: nil, recommendationService: recommendationService)
+            createFactory(existingTake: nil, recommendationService: createRecommendationService(freshness: .stale))
                 .createPresetWrapper(for: chutesRef, existingHotkey: nil)
         )
 
         XCTAssertNil(preset)
     }
 
-    func testNoPresetWhenTheDeviceFailsAppAttest() throws {
-        let recommendationService = makeRecommendationService(.failure(BittensorApiError.unsupportedDevice))
-
-        let preset = try run(
-            makeFactory(existingTake: nil, recommendationService: recommendationService)
-                .createPresetWrapper(for: chutesRef, existingHotkey: nil)
+    func testHighestYieldRecommendedValidatorBeatsEarlierLowerYieldOne() throws {
+        let factory = createFactory(
+            existingTake: nil,
+            recommendationService: createRecommendationService(),
+            yieldService: createYieldService(rates: [chutesPairHotkey: "12.5", topYieldHotkey: "31.2"])
         )
 
-        XCTAssertNil(preset)
+        let preset = try withExtendedLifetime(factory) {
+            try run(factory.createPresetWrapper(for: chutesRef, existingHotkey: nil))
+        }
+
+        XCTAssertEqual(preset?.hotkey, topYieldHotkey)
+        XCTAssertEqual(preset?.name, "Rizzo")
     }
 
-    func testNoPresetForASubnetRegisteredAfterTheRecommendedGeneration() throws {
-        let recommendationService = makeRecommendationService(.success(makeRecommendations(freshness: .fresh)))
-        let reRegisteredChutes = SubtensorSubnetRef(netuid: 64, registeredAt: generationBlock + 1)
-
-        let preset = try run(
-            makeFactory(existingTake: nil, recommendationService: recommendationService)
-                .createPresetWrapper(for: reRegisteredChutes, existingHotkey: nil)
-        )
-
-        XCTAssertNil(preset)
-    }
-
-    private func makeItem(
+    private func generateItem(
         hotkey: AccountId,
         netuid: UInt16,
         name: String?,
@@ -100,152 +63,91 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
         )
     }
 
-    private func makeDirectoryService(existingTake: Decimal?) -> MockSubtensorValidatorDirectoryServiceProtocol {
+    private func createDirectoryService(existingTake: Decimal?) -> MockSubtensorValidatorDirectoryServiceProtocol {
         let directoryService = MockSubtensorValidatorDirectoryServiceProtocol()
 
-        let names = [existingHotkey: "Existing", rootPairHotkey: "Blue Harbor", chutesPairHotkey: "Cinder Node"]
+        let names = [existingHotkey: "Existing", chutesPairHotkey: "Cinder Node"]
 
         stub(directoryService) { stub in
-            when(stub.createDirectoryWrapper(for: any())).then { subnet in
-                CompoundOperationWrapper.createWithResult(SubtensorValidatorDirectory(
-                    subnet: subnet,
-                    items: names.map { hotkey, name in
-                        self.makeItem(hotkey: hotkey, netuid: subnet.netuid, name: name, take: Decimal(string: "0.09"))
-                    },
-                    listStamp: nil,
-                    isPartial: false,
-                    isEnrichmentTruncated: false,
-                    chainBlock: 100
-                ))
-            }
-
             when(stub.createDetailWrapper(for: any(), subnet: any())).then { hotkey, subnet in
                 let take = hotkey == self.existingHotkey ? existingTake : Decimal(string: "0.09")
 
-                return CompoundOperationWrapper.createWithResult(SubtensorValidatorDetail(
-                    item: self.makeItem(hotkey: hotkey, netuid: subnet.netuid, name: nil, take: take),
-                    identity: nil
-                ))
+                return CompoundOperationWrapper.createWithResult(
+                    self.generateItem(hotkey: hotkey, netuid: subnet.netuid, name: names[hotkey], take: take)
+                )
             }
         }
 
         return directoryService
     }
 
-    private func makePair(_ hotkey: AccountId, netuid: UInt16) -> SubtensorRecommendedPair {
-        SubtensorRecommendedPair(
-            netuid: netuid,
-            hotkey: hotkey,
-            subnetName: "",
-            symbol: "",
-            validatorName: nil,
-            score: 0,
-            subnetRisk: nil,
-            validatorRisk: 0,
-            breakdown: SubtensorRecommendationBreakdown(
-                volatility: nil,
-                maxDrawdown: nil,
-                poolDepth: nil,
-                age: nil,
-                emissionStability: nil,
-                stakeConcentration: nil,
-                permitMargin: nil,
-                rootStakeMargin: nil,
-                vtrust: SubtensorMetricScore(raw: nil, normalized: 0, weight: 0, isDerived: false, flags: [])
-            ),
-            effectiveStakeAlpha: 0,
-            rootStakeTao: 0,
-            priceTao: nil,
-            flags: [],
-            verification: SubtensorPairVerification(uid: 1, take: 0, blocksSinceUpdate: nil)
-        )
-    }
-
-    private func makeRecommendations(
-        freshness: SubtensorBackendStamp.Freshness
-    ) -> SubtensorVerifiedRecommendations {
-        SubtensorVerifiedRecommendations(
-            generation: SubtensorRecommendationGeneration(
-                id: "8ebc85abd0bbeb6f282302ac48909c3d",
-                sourceBlockNumber: generationBlock,
-                modelVersion: "5.0",
-                ageSeconds: 420,
-                receivedAt: 0,
-                isServedFromMemory: false,
-                excludedNetuids: [],
-                carriedOverNetuids: [],
-                inputFlags: [],
-                stamp: SubtensorBackendStamp(asOf: Date(timeIntervalSince1970: 1_790_000_000), freshness: freshness),
-                isPartial: false
-            ),
-            clientGates: SubtensorClientGates(
-                maxTake: BigRational(numerator: 18, denominator: 100),
-                requirePermit: true,
-                requireActiveWithinCutoff: true
-            ),
-            topN: 3,
-            classes: [
-                .stable: [makePair(rootPairHotkey, netuid: 0)],
-                .balanced: [makePair(targonPairHotkey, netuid: 4), makePair(chutesPairHotkey, netuid: 64)],
-                .higherUpside: [makePair(chutesRiskierPairHotkey, netuid: 64)]
-            ],
-            droppedByGate: [:],
-            verifiedAtBlock: 9_140_000
-        )
-    }
-
-    private func makeRecommendationService(
-        _ result: Result<SubtensorVerifiedRecommendations, Error>
+    private func createRecommendationService(
+        freshness: SubtensorBackendStamp.Freshness = .fresh
     ) -> MockSubtensorRecommendationServiceProtocol {
         let recommendationService = MockSubtensorRecommendationServiceProtocol()
 
-        stub(recommendationService) { stub in
-            when(stub.createClientGatesWrapper()).then {
-                CompoundOperationWrapper.createWithResult(
-                    SubtensorClientGates(
-                        maxTake: BigRational(numerator: 18, denominator: 100),
-                        requirePermit: true,
-                        requireActiveWithinCutoff: true
-                    )
-                )
-            }
+        let recommended = SubtensorRecommendedValidators(
+            generation: SubtensorRecommendationGeneration(
+                sourceBlockNumber: 9_139_880,
+                carriedOverNetuids: [],
+                stamp: SubtensorBackendStamp(asOf: Date(timeIntervalSince1970: 1_790_000_000), freshness: freshness)
+            ),
+            validators: [
+                SubtensorRecommendedValidator(hotkey: chutesPairHotkey, name: nil),
+                SubtensorRecommendedValidator(hotkey: topYieldHotkey, name: "Rizzo")
+            ]
+        )
 
-            when(stub.createVerifiedRecommendationsWrapper()).then {
-                switch result {
-                case let .success(recommendations):
-                    return CompoundOperationWrapper.createWithResult(recommendations)
-                case let .failure(error):
-                    return CompoundOperationWrapper.createWithError(error)
-                }
+        stub(recommendationService) { stub in
+            when(stub.createRecommendedValidatorsWrapper(for: any())).then { _ in
+                CompoundOperationWrapper.createWithResult(recommended)
             }
         }
 
         return recommendationService
     }
 
-    private func makeFactory(
+    private func createYieldService(rates: [AccountId: String]? = nil) -> MockSubtensorYieldServiceProtocol {
+        let yieldService = MockSubtensorYieldServiceProtocol()
+        let stamp = SubtensorBackendStamp(asOf: Date(timeIntervalSince1970: 1_790_000_000), freshness: .fresh)
+
+        stub(yieldService) { stub in
+            when(stub.createAlphaYieldsWrapper(for: any())).then { netuid in
+                guard let rates else {
+                    return CompoundOperationWrapper.createWithError(
+                        BittensorApiError.unavailable(code: nil, requestId: nil)
+                    )
+                }
+
+                return CompoundOperationWrapper.createWithResult(
+                    SubtensorAlphaYields(
+                        netuid: netuid,
+                        yields: rates.mapValues { SubtensorReportedYield(reportedRate: $0, stamp: stamp) },
+                        stamp: stamp
+                    )
+                )
+            }
+        }
+
+        return yieldService
+    }
+
+    private func createFactory(
         existingTake: Decimal?,
-        recommendationService: MockSubtensorRecommendationServiceProtocol
+        recommendationService: MockSubtensorRecommendationServiceProtocol,
+        yieldService: MockSubtensorYieldServiceProtocol? = nil
     ) -> SubtensorValidatorPresetFactory {
         SubtensorValidatorPresetFactory(
-            directoryService: makeDirectoryService(existingTake: existingTake),
+            directoryService: createDirectoryService(existingTake: existingTake),
             recommendationService: recommendationService,
+            yieldService: yieldService ?? createYieldService(),
             operationQueue: OperationQueue(),
             logger: Logger.shared
         )
     }
 
     private func run<T>(_ wrapper: CompoundOperationWrapper<T>) throws -> T {
-        let completed = expectation(description: "wrapper completed")
-
-        wrapper.targetOperation.completionBlock = {
-            completed.fulfill()
-        }
-
-        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: false)
-
-        wait(for: [completed], timeout: 10)
-
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
         return try wrapper.targetOperation.extractNoCancellableResultData()
     }
 }

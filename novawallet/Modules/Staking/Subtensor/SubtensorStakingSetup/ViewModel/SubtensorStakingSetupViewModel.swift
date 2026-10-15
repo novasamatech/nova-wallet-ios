@@ -10,39 +10,51 @@ struct SubtensorStakingSetupViewModel {
     let reserveWarning: String?
     let details: SubtensorSetupDetailsViewModel
     let caption: String?
+    let browseTitle: String?
     let action: SubtensorSetupActionViewModel
 }
 
 enum SubtensorSetupDetailsViewModel {
+    case selection(section: String, message: String, retryTitle: String?)
     case root(SubtensorSetupRootViewModel)
     case subnet(SubtensorSetupSubnetViewModel)
 }
 
+enum SubtensorRootEntryPresentation {
+    case standard
+    case quickPickRoot
+}
+
 struct SubtensorSetupRootViewModel {
-    let validator: SubtensorSetupValidatorViewModel
-    let apy: SubtensorSetupRowViewModel
+    let icon: ImageViewModelProtocol
+    let validator: SubtensorValidatorCardViewModel
+    let compactValidator: SubtensorSetupValidatorViewModel
+    let compactRate: String?
+    let isQuickPick: Bool
     let networkFee: BalanceViewModelProtocol?
 }
 
 struct SubtensorSetupSubnetViewModel {
     let sectionTitle: String
     let card: SubtensorPickCardViewModel
-    let avgBuyPrice: SubtensorCostBasisRowViewModel
-    let feeDisclosure: String
+    let avgBuyPrice: SubtensorRowState<SubtensorCostBasisValueViewModel>
 }
 
 struct SubtensorPickCardViewModel {
+    let validator: SubtensorSetupValidatorViewModel
+    let validatorRate: String?
+    let isValidatorEditable: Bool
+    let browseTitle: String?
     let header: SubtensorPickCardHeaderViewModel?
     let chips: [String]
-    let receive: SubtensorSetupRowViewModel
-    let swapRate: SubtensorSetupRowViewModel
+    let receive: SubtensorRowState<String>
+    let swapRate: SubtensorRowState<String>
     let networkFee: BalanceViewModelProtocol?
 }
 
 struct SubtensorPickCardHeaderViewModel {
     let icon: ImageViewModelProtocol
     let title: String
-    let apy: String?
     let isSelectable: Bool
 }
 
@@ -57,27 +69,18 @@ struct SubtensorSetupActionViewModel: Equatable {
     let isEnabled: Bool
 }
 
-enum SubtensorSetupRowViewModel: Equatable {
+enum SubtensorRowState<Value> {
     case hidden
     case loading
-    case value(String)
+    case value(Value)
 }
 
-enum SubtensorSetupBalanceRowViewModel {
-    case hidden
-    case loading
-    case value(BalanceViewModelProtocol)
-}
-
-enum SubtensorSetupValidatorAccessory: Equatable {
-    case chevron
-    case info
-}
+extension SubtensorRowState: Equatable where Value: Equatable {}
 
 enum SubtensorSetupValidatorViewModel {
     case loading
     case unselected(title: String)
-    case selected(DisplayAddressViewModel, accessory: SubtensorSetupValidatorAccessory)
+    case selected(DisplayAddressViewModel)
 
     var isLoading: Bool {
         if case .loading = self {
@@ -147,15 +150,26 @@ struct SubtensorStakingSetupViewModelInput {
     let maxAmount: Balance?
     let amount: Balance?
     let validator: SubtensorSetupValidatorState
-    let rootRate: Decimal?
-    let isRootRateLoaded: Bool
     let fee: ExtrinsicFeeProtocol?
     let price: PriceData?
     let quote: SubtensorTradeQuote?
     let positionStake: Balance?
+    var quickPickOrder: SubtensorQuickPickOrder?
+    var selectionFailed = false
+    var selectedRef: SubtensorSubnetRef?
+    var rootEntryPresentation: SubtensorRootEntryPresentation = .standard
+
+    // A reused netuid can still have metadata cached for its previous registration.
+    var matchingCatalogue: SubtensorSubnetCatalogue? {
+        guard let info = target?.subnetInfo else { return nil }
+        let ref = SubtensorSubnetRef(netuid: info.netuid, registeredAt: info.networkRegisteredAt)
+        guard let subnet = subnetData.catalogue?.subnet(for: ref) else { return nil }
+        return SubtensorSubnetCatalogue(subnets: [subnet])
+    }
 
     var amountState: SubtensorSetupAmountState {
-        let state = SubtensorSetupAmountState(maxAmount: maxAmount, amount: amount)
+        let state: SubtensorSetupAmountState = transferable == 0
+            ? .noTao : SubtensorSetupAmountState(maxAmount: maxAmount, amount: amount)
 
         guard state == .noTao, mode.isLocked else {
             return state

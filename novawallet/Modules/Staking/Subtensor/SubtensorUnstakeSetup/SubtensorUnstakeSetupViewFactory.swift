@@ -71,20 +71,15 @@ private extension SubtensorUnstakeSetupViewFactory {
         let validatorFactory = SubtensorValidatorPresetFactory(
             directoryService: earnServices.validatorDirectoryService,
             recommendationService: earnServices.recommendationService,
+            yieldService: earnServices.yieldService,
             operationQueue: services.operationQueue,
             logger: Logger.shared
         )
 
         return SubtensorUnstakeSetupInteractor(
             flowServices: services,
-            chainAsset: state.stakingOption.chainAsset,
-            subnetsService: state.subnetsService,
-            catalogueService: earnServices.catalogueService,
-            subnetLogosProvider: earnServices.subnetLogosProvider,
+            state: state,
             validatorFactory: validatorFactory,
-            rootHoldFactory: earnServices.rootHoldFactory,
-            costBasisService: earnServices.costBasisService,
-            generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             logger: Logger.shared
         )
     }

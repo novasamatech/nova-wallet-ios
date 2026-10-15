@@ -1,20 +1,24 @@
 import Foundation
 
 enum BittensorApiError: Error {
-    case unsupportedDevice
-    case configuration
-    case attestationRejected(requestId: String?)
-    case bindingConflict(requestId: String?)
-    case attestationUnavailable(requestId: String?)
-    case attestationFailure(requestId: String?)
+    case deviceBound(requestId: String?)
+    case rejected(code: String?, requestId: String?)
+    case unavailable(code: String?, requestId: String?)
     case generationStale
-    case routeNotPublished
-    case invalidRequest(code: String?, requestId: String?)
-    case datasetUnavailable(requestId: String?)
-    case rateLimited(requestId: String?)
-    case upstreamUnavailable(requestId: String?)
-    case upstreamInvalidResponse(requestId: String?)
-    case server(statusCode: Int, code: String?, requestId: String?)
     case contractViolation(detail: String, requestId: String?)
     case transport(Error)
+
+    var isDeviceBound: Bool {
+        if case .deviceBound = self { return true }
+        return false
+    }
+
+    var allowsUserRetry: Bool {
+        switch self {
+        case .deviceBound, .rejected:
+            return false
+        case .unavailable, .generationStale, .contractViolation, .transport:
+            return true
+        }
+    }
 }

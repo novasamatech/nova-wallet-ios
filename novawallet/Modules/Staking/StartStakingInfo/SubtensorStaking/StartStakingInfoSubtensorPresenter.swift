@@ -48,22 +48,25 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
     override func didReceiveStakingEnabled() {}
 
     override func startStaking() {
-        guard let view, let walletType, let accountExistense else {
-            return
-        }
+        startStakingWithGate { [self] in subtensorWireframe.showSetupAmount(from: view) }
+    }
 
-        if
-            case .assetBalance = accountExistense,
-            case let .signerNotSupported(type) = SubtensorOperationGate.verdict(for: walletType) {
+    func startStakingWithGate(continuation: () -> Void) {
+        guard let view, let walletType, let accountExistense else { return }
+        if case .assetBalance = accountExistense,
+           case let .signerNotSupported(type) = SubtensorOperationGate.verdict(for: walletType) {
             subtensorWireframe.presentSignerNotSupportedView(from: view, type: type) {}
             return
         }
-
-        super.startStaking()
+        super.startStaking(continuation: continuation)
     }
 }
 
 extension StartStakingInfoSubtensorPresenter: StartStakingInfoSubtensorPresenterProtocol {
+    func seeAllOptions() {
+        startStakingWithGate { [self] in subtensorWireframe.showAllOptions(from: view) }
+    }
+
     func refreshContent() {
         provideSubtensorViewModel()
         provideBalanceModel()

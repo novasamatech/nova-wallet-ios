@@ -4,13 +4,14 @@ import Foundation_iOS
 struct SubtensorPriceWidgetParams {
     let caption: String
     let spotPrice: Decimal?
-    var history: SubtensorSubnetHistoryState
+    let history: SubtensorSubnetHistoryState
     let period: SubtensorPricePeriod
     let isFiat: Bool
     let taoPrice: PriceData?
     let currencyId: Int?
     let currency: SubtensorSubnetCurrencyViewModel?
-    let selectedPoint: Int?
+    let chartEndDate: Date
+    let selection: SubtensorPriceChartSelection?
 }
 
 protocol SubtensorPriceWidgetFactoryProtocol {
@@ -62,15 +63,6 @@ final class SubtensorPriceWidgetViewModelFactory {
 }
 
 private extension SubtensorPriceWidgetViewModelFactory {
-    struct SeriesPoint {
-        let date: Date
-        let value: Decimal
-
-        var plotValue: Double {
-            NSDecimalNumber(decimal: value).doubleValue
-        }
-    }
-
     func unknownValue(for locale: Locale) -> String {
         R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown()
     }
@@ -98,16 +90,6 @@ private extension SubtensorPriceWidgetViewModelFactory {
         return title.uppercased(with: locale)
     }
 
-    func series(of history: SubtensorPriceHistory, isFiat: Bool) -> [SeriesPoint] {
-        history.points
-            .map { SeriesPoint(date: $0.date, value: isFiat ? $0.fiatPerAlpha : $0.taoPerAlpha) }
-            .filter(\.plotValue.isFinite)
-    }
-
-    func periodChange(of history: SubtensorPriceHistory, isFiat: Bool) -> Decimal? {
-        isFiat ? history.changeInFiat : history.changeInTao
-    }
-
     func formatSpotPrice(for params: SubtensorPriceWidgetParams, locale: Locale) -> String {
         guard let spotPrice = params.spotPrice else {
             return unknownValue(for: locale)
@@ -130,22 +112,8 @@ private extension SubtensorPriceWidgetViewModelFactory {
         return balanceViewModelFactory.priceFromFiatAmount(value, currencyId: params.currencyId).value(for: locale)
     }
 
-    func formatAxis(_ value: Double, params: SubtensorPriceWidgetParams, locale: Locale) -> String {
-        let decimal = Decimal(value)
-
-        guard params.isFiat else {
-            return axisFormatter.value(for: locale).stringFromDecimal(decimal) ?? unknownValue(for: locale)
-        }
-
-        let fiatInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: params.currencyId)
-
-        return formatterFactory.createAssetPriceFormatter(for: fiatInfo)
-            .value(for: locale)
-            .stringFromDecimal(decimal) ?? unknownValue(for: locale)
-    }
-
-    func formatPointDate(_ date: Date, locale: Locale) -> String {
-        let formatter = date.sameYear(as: Date())
+    func formatPointDate(_ date: Date, endingAt endDate: Date, locale: Locale) -> String {
+        let formatter = date.sameYear(as: endDate)
             ? DateFormatter.chartEntryDate
             : DateFormatter.chartEntryWithYear
 
@@ -185,7 +153,7 @@ private extension SubtensorPriceWidgetViewModelFactory {
             change = .hidden
         case let .available(history):
             change = createChange(
-                periodChange(of: history, isFiat: params.isFiat),
+                displayChange(history: history, params: params),
                 suffix: periodTitle(for: params.period, locale: locale),
                 locale: locale
             )
@@ -199,114 +167,51 @@ private extension SubtensorPriceWidgetViewModelFactory {
         )
     }
 
-    func createPointHeader(
-        for params: SubtensorPriceWidgetParams,
-        locale: Locale
-    ) -> SubtensorSubnetPriceHeaderViewModel? {
-        guard
-            let index = params.selectedPoint,
-            case let .available(history) = params.history else {
-            return nil
-        }
-
-        let points = series(of: history, isFiat: params.isFiat)
-
-        guard points.indices.contains(index), let first = points.first else {
-            return nil
-        }
-
-        let point = points[index]
-        let pointChange = first.value > 0 ? (point.value - first.value) / first.value : nil
-        let wholePeriodChange = index == points.count - 1 ? periodChange(of: history, isFiat: params.isFiat) : nil
-
-        let change = if let wholePeriodChange {
-            createChange(wholePeriodChange, suffix: periodTitle(for: params.period, locale: locale), locale: locale)
-        } else {
-            createChange(pointChange, suffix: formatPointDate(point.date, locale: locale), locale: locale)
-        }
-
-        return SubtensorSubnetPriceHeaderViewModel(
-            caption: params.caption,
-            price: formatPointPrice(point.value, params: params, locale: locale),
-            change: change,
-            currency: params.currency
-        )
-    }
-
-    func applyingSpotPrice(to params: SubtensorPriceWidgetParams) -> SubtensorPriceWidgetParams {
-        guard
-            case let .available(history) = params.history,
-            let spotPrice = params.spotPrice,
-            spotPrice > 0,
-            let latest = history.points.last else {
-            return params
-        }
-
-        let fiatRate = params.taoPrice?.decimalRate
-
-        var updatedParams = params
-        updatedParams.history = .available(
-            history.replacingLatest(
-                with: SubtensorPricePoint(
-                    date: Date(),
-                    taoPerAlpha: spotPrice,
-                    fiatPerAlpha: fiatRate.map { spotPrice * $0 } ?? latest.fiatPerAlpha
-                )
-            )
-        )
-
-        return updatedParams
-    }
-
     func createAnyHeader(
         for params: SubtensorPriceWidgetParams,
         locale: Locale
     ) -> SubtensorSubnetPriceHeaderViewModel {
-        createPointHeader(for: params, locale: locale) ?? createSpotHeader(for: params, locale: locale)
-    }
+        guard let selection = params.selection else {
+            return createSpotHeader(for: params, locale: locale)
+        }
 
-    func createUnavailableChart(locale: Locale) -> SubtensorSubnetChartViewModel {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+        let date: Date
+        let price: String
+        var change: Decimal?
 
-        return .unavailable(
-            title: strings.stakingSubtensorUiDetailHistoryUnavailable(),
-            details: strings.stakingSubtensorUiDetailHistorySource()
-        )
-    }
-
-    func createChart(for params: SubtensorPriceWidgetParams, locale: Locale) -> SubtensorSubnetChartViewModel {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
-        switch params.history {
-        case .loading:
-            return .loading
-        case .notListed:
-            return createUnavailableChart(locale: locale)
-        case .failed:
-            return .failed(title: strings.stakingSubtensorUiDetailHistoryFailed(), action: strings.commonTryAgain())
-        case let .available(history):
-            let values = series(of: history, isFiat: params.isFiat).map(\.plotValue)
-
-            guard
-                values.count > 1,
-                let first = values.first,
-                let last = values.last,
-                let minimum = values.min(),
-                let maximum = values.max() else {
-                return createUnavailableChart(locale: locale)
+        switch selection {
+        case let .noData(selectedDate):
+            date = selectedDate
+            price = unknownValue(for: locale)
+        case let .point(sourceIndex):
+            guard case let .available(history) = params.history,
+                  let series = datedSeries(history: history, params: params),
+                  let point = series.points.first(where: { $0.sourceIndex == sourceIndex }) else {
+                return SubtensorSubnetPriceHeaderViewModel(
+                    caption: params.caption,
+                    price: unknownValue(for: locale),
+                    change: .date(formatPointDate(params.chartEndDate, endingAt: params.chartEndDate, locale: locale)),
+                    currency: params.currency
+                )
             }
 
-            return .chart(
-                SubtensorPriceChartViewModel(
-                    values: values,
-                    axisLabels: [
-                        formatAxis(maximum, params: params, locale: locale),
-                        formatAxis(minimum, params: params, locale: locale)
-                    ],
-                    isRising: periodChange(of: history, isFiat: params.isFiat).map { $0 >= 0 } ?? (last >= first)
-                )
-            )
+            date = point.date
+            price = formatPointPrice(point.value, params: params, locale: locale)
+
+            if displayChange(history: history, params: params) != nil, let first = series.points.first {
+                change = (point.value - first.value) / first.value
+            }
         }
+
+        let dateText = formatPointDate(date, endingAt: params.chartEndDate, locale: locale)
+        let detail = change.map { createChange($0, suffix: dateText, locale: locale) } ?? .date(dateText)
+
+        return SubtensorSubnetPriceHeaderViewModel(
+            caption: params.caption,
+            price: price,
+            change: detail,
+            currency: params.currency
+        )
     }
 
     func createPeriods(
@@ -344,9 +249,7 @@ extension SubtensorPriceWidgetViewModelFactory: SubtensorPriceWidgetFactoryProto
         for params: SubtensorPriceWidgetParams,
         locale: Locale
     ) -> SubtensorPriceWidgetViewModel {
-        let params = applyingSpotPrice(to: params)
-
-        return SubtensorPriceWidgetViewModel(
+        SubtensorPriceWidgetViewModel(
             header: createAnyHeader(for: params, locale: locale),
             chart: createChart(for: params, locale: locale),
             periods: createPeriods(for: params, locale: locale)
@@ -357,6 +260,22 @@ extension SubtensorPriceWidgetViewModelFactory: SubtensorPriceWidgetFactoryProto
         for params: SubtensorPriceWidgetParams,
         locale: Locale
     ) -> SubtensorSubnetPriceHeaderViewModel {
-        createAnyHeader(for: applyingSpotPrice(to: params), locale: locale)
+        createAnyHeader(for: params, locale: locale)
+    }
+}
+
+extension SubtensorPriceWidgetViewModelFactory {
+    func formatAxis(_ value: Double, params: SubtensorPriceWidgetParams, locale: Locale) -> String {
+        let decimal = Decimal(value)
+
+        guard params.isFiat else {
+            return axisFormatter.value(for: locale).stringFromDecimal(decimal) ?? unknownValue(for: locale)
+        }
+
+        let fiatInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: params.currencyId)
+
+        return formatterFactory.createAssetPriceFormatter(for: fiatInfo)
+            .value(for: locale)
+            .stringFromDecimal(decimal) ?? unknownValue(for: locale)
     }
 }

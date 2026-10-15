@@ -6,6 +6,9 @@ extension SubtensorStakingSetupPresenter: SubtensorSubnetSelectDelegate {
             return
         }
 
+        quickPickVisit?.replaceManually()
+        interactor.cancelQuickPickSnapshot()
+
         switch target {
         case .root:
             mode = .rootDetails
@@ -19,7 +22,8 @@ extension SubtensorStakingSetupPresenter: SubtensorSubnetSelectDelegate {
 
 extension SubtensorStakingSetupPresenter: SubtensorValidatorSelectDelegate {
     func didSelectValidator(_ validator: SubtensorValidatorDirectoryItem, for target: SubtensorStakeTarget) {
-        guard !mode.isLocked, target.netuid == self.target?.netuid else {
+        guard !mode.isLocked, target.netuid == self.target?.netuid,
+              target.subnetInfo?.networkRegisteredAt == self.target?.subnetInfo?.networkRegisteredAt else {
             return
         }
 
@@ -45,12 +49,11 @@ extension SubtensorStakingSetupPresenter: SubtensorStakePresenterValidating {
             amount: inputAmount(),
             balance: balance,
             fee: fee,
-            existentialDeposit: existentialDeposit,
             preflight: preflight,
             netuid: target.netuid,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
             onFeeRefresh: { [weak self] in
-                self?.refreshFee(resetting: false)
+                self?.refreshFee()
             },
             onPreflightRefresh: { [weak self] in
                 self?.refreshPreflight()
@@ -73,7 +76,7 @@ extension SubtensorStakingSetupPresenter: SubtensorStakePresenterValidating {
         return dependencies
     }
 
-    func createConfirmModel() -> SubtensorStakingConfirmModel? {
+    func createConfirmModel() -> SubtensorConfirmModel? {
         guard
             let target,
             let validator = validatorState.validator,
@@ -82,16 +85,16 @@ extension SubtensorStakingSetupPresenter: SubtensorStakePresenterValidating {
             return nil
         }
 
-        return SubtensorStakingConfirmModel(
+        return SubtensorConfirmModel(
             origin: mode.origin,
             account: selectedAccount,
             target: target,
             validator: SubtensorConfirmValidator(
                 hotkey: validator.hotkey,
                 display: DisplayAddress(address: address, username: validator.name ?? ""),
-                annualRate: target.isRoot ? rootRate : subnetAnnualRate()
+                annualRate: validatorAnnualRate()
             ),
-            amount: amount,
+            mode: .stake(amount: amount),
             tolerance: target.isRoot ? nil : slippage,
             acknowledgedQuote: target.isRoot ? nil : quoteFlow.freshQuote
         )

@@ -42,8 +42,6 @@ final class SubtensorSubnetSelectViewLayout: UIView {
         view.isHidden = true
     }
 
-    let rootBarView = SubtensorStakeToRootBarView()
-
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -141,26 +139,19 @@ private extension SubtensorSubnetSelectViewLayout {
         tableView.snp.makeConstraints { make in
             make.top.equalTo(controlsView.snp.bottom).offset(Constants.listTopSpacing)
             make.leading.trailing.equalToSuperview()
-        }
-
-        addSubview(rootBarView)
-        rootBarView.snp.makeConstraints { make in
-            make.top.equalTo(tableView.snp.bottom)
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).offset(-Constants.barBottomInset)
-            make.height.equalTo(SubtensorStakeToRootBarView.preferredHeight)
+            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom)
         }
 
         addSubview(emptyStateView)
         emptyStateView.snp.makeConstraints { make in
-            make.top.equalTo(controlsView.snp.bottom)
+            make.top.equalTo(tableView.snp.top).offset(SubtensorSubnetCell.preferredHeight)
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.bottom.equalTo(rootBarView.snp.top)
+            make.bottom.equalTo(tableView.snp.bottom)
         }
 
         addSubview(errorView)
         errorView.snp.makeConstraints { make in
-            make.top.equalTo(tableView.snp.top).offset(Constants.errorTopSpacing)
+            make.top.equalTo(tableView.snp.top).offset(SubtensorSubnetCell.preferredHeight + Constants.errorTopSpacing)
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
         }
 
@@ -179,52 +170,5 @@ private extension SubtensorSubnetSelectViewLayout {
         static let barTopSpacing: CGFloat = 8
         static let inactiveAlpha: CGFloat = 0.5
         static let errorTopSpacing: CGFloat = 16
-    }
-}
-
-final class SubtensorSubnetPicksHeaderView: UITableViewHeaderFooterView {
-    static let preferredHeight: CGFloat = 36
-
-    let titleLabel: UILabel = .create { view in
-        view.apply(style: .semiboldCaps1Secondary)
-    }
-
-    let captionLabel: UILabel = .create { view in
-        view.apply(style: .caption1Secondary)
-        view.textAlignment = .right
-    }
-
-    override init(reuseIdentifier: String?) {
-        super.init(reuseIdentifier: reuseIdentifier)
-
-        setupLayout()
-    }
-
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    func bind(title: String, caption: String) {
-        titleLabel.text = title
-        captionLabel.text = caption
-    }
-
-    private func setupLayout() {
-        backgroundView = UIView()
-        backgroundView?.backgroundColor = R.color.colorSecondaryScreenBackground()
-
-        [titleLabel, captionLabel].forEach(contentView.addSubview)
-
-        titleLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.centerY.equalToSuperview()
-        }
-
-        captionLabel.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(UIConstants.horizontalInset)
-            make.centerY.equalToSuperview()
-        }
     }
 }

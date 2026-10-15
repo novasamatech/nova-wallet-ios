@@ -19,19 +19,9 @@ final class SubtensorSubnetDetailsViewLayout: UIView {
 
     let validatorCaptionLabel = SubtensorSubnetDetailsViewLayout.createSectionLabel()
 
-    let validatorView = SubtensorSubnetValidatorRowView()
-
-    let estimateCaptionLabel = SubtensorSubnetDetailsViewLayout.createSectionLabel()
-
-    let estimateView = SubtensorSubnetEstimateView()
-
-    let factorsHeadingLabel = SubtensorSubnetDetailsViewLayout.createSectionLabel()
-
-    let factorsHeadingSkeletonView: SubtensorChartLoadingView = .create { view in
-        view.layer.cornerRadius = 6
-    }
-
-    let factorsView = SubtensorSubnetFactorsView()
+    let validatorView = SubtensorValidatorCardView()
+    let parametersHeadingLabel = SubtensorSubnetDetailsViewLayout.createSectionLabel()
+    let parametersView = SubtensorSubnetParametersView()
 
     let moreDetailsView = SubtensorSubnetMoreDetailsView()
 
@@ -63,12 +53,6 @@ final class SubtensorSubnetDetailsViewLayout: UIView {
     var chartView: SubtensorSubnetPriceChartView { priceWidget.chartView }
 
     var chartUnavailableView: SubtensorChartUnavailableView { priceWidget.chartUnavailableView }
-
-    func bind(factorsHeading heading: String?) {
-        factorsHeadingLabel.text = heading
-        factorsHeadingLabel.alpha = heading == nil ? 0 : 1
-        factorsHeadingSkeletonView.setLoading(heading == nil)
-    }
 }
 
 private extension SubtensorSubnetDetailsViewLayout {
@@ -123,9 +107,8 @@ private extension SubtensorSubnetDetailsViewLayout {
 
     func setupSections() {
         let sections: [(UILabel, UIView)] = [
-            (validatorCaptionLabel, validatorView),
-            (estimateCaptionLabel, estimateView),
-            (factorsHeadingLabel, factorsView)
+            (parametersHeadingLabel, parametersView),
+            (validatorCaptionLabel, validatorView)
         ]
 
         sections.forEach { label, view in
@@ -139,12 +122,6 @@ private extension SubtensorSubnetDetailsViewLayout {
             containerView.stackView.setCustomSpacing(24, after: view)
         }
 
-        containerView.stackView.addSubview(factorsHeadingSkeletonView)
-        factorsHeadingSkeletonView.snp.makeConstraints { make in
-            make.leading.centerY.equalTo(factorsHeadingLabel)
-            make.size.equalTo(CGSize(width: 120, height: 10))
-        }
-
         let moreDetailsCard = UIView()
         moreDetailsCard.backgroundColor = R.color.colorBlockBackground()
         moreDetailsCard.layer.cornerRadius = 12
@@ -154,7 +131,7 @@ private extension SubtensorSubnetDetailsViewLayout {
             make.edges.equalToSuperview().inset(UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16))
         }
 
-        containerView.stackView.setCustomSpacing(12, after: factorsView)
+        containerView.stackView.setCustomSpacing(12, after: validatorView)
         containerView.stackView.addArrangedSubview(moreDetailsCard)
     }
 }

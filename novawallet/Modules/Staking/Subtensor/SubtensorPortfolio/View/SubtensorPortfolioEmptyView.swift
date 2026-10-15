@@ -16,13 +16,6 @@ final class SubtensorPortfolioEmptyView: UIView {
         label.textAlignment = .center
     }
 
-    let ratesAlertView: InlineAlertView = .create { view in
-        view.apply(style: .info)
-        view.backgroundView.cornerRadius = 12
-        view.contentView.detailsLabel.apply(style: .caption1Secondary)
-        view.isHidden = true
-    }
-
     let subnetCardView = SubtensorPortfolioInfoCardView()
     let rootCardView = SubtensorPortfolioInfoCardView()
     let unstakeCardView = SubtensorPortfolioInfoCardView()
@@ -49,14 +42,13 @@ final class SubtensorPortfolioEmptyView: UIView {
 private extension SubtensorPortfolioEmptyView {
     func setupLayout() {
         let headerContentView = UIView.vStack(alignment: .center, spacing: 4, [captionLabel, totalLabel, fiatLabel])
-        let headerStackView = UIView.vStack(spacing: 16, [headerContentView, ratesAlertView])
 
         let headerView = UIView()
         headerView.backgroundColor = R.color.colorBlockBackground()
         headerView.layer.cornerRadius = 12
-        headerView.addSubview(headerStackView)
+        headerView.addSubview(headerContentView)
 
-        headerStackView.snp.makeConstraints { make in
+        headerContentView.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16))
         }
 

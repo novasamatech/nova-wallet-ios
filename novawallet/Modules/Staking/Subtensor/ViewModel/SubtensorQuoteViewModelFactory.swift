@@ -12,7 +12,9 @@ protocol SubtensorQuoteViewModelFactoryProtocol {
         amountIn: Balance?,
         direction: SubtensorTradeDirection,
         target: SubtensorStakeTarget,
+        catalogue: SubtensorSubnetCatalogue?,
         taoPrice: PriceData?,
+        networkFee: Balance?,
         locale: Locale
     ) -> SubtensorTradePanelViewModel?
 
@@ -111,7 +113,9 @@ extension SubtensorQuoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
         amountIn: Balance?,
         direction: SubtensorTradeDirection,
         target: SubtensorStakeTarget,
+        catalogue: SubtensorSubnetCatalogue?,
         taoPrice: PriceData?,
+        networkFee: Balance?,
         locale: Locale
     ) -> SubtensorTradePanelViewModel? {
         guard let quote, case .subnet = target else {
@@ -119,7 +123,7 @@ extension SubtensorQuoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
         }
 
         let taoInfo = chainAsset.assetDisplayInfo
-        let alphaInfo = target.assetDisplayInfo(basedOn: taoInfo)
+        let alphaInfo = target.assetDisplayInfo(basedOn: taoInfo, catalogue: catalogue)
         let hasReceive = amountIn == quote.amountIn
 
         switch (direction, quote.quote.args.direction) {
@@ -136,9 +140,10 @@ extension SubtensorQuoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
                 swapRate: formatSwapRate(for: quote, inInfo: taoInfo, outInfo: alphaInfo, locale: locale)
             )
         case (.sell, .unstake):
+            let netOut = quote.expectedOut.subtractOrZero(networkFee ?? 0)
             let receive = BalanceViewModel(
-                amount: formatAmount(quote.expectedOut, displayInfo: taoInfo, locale: locale).approximatelyEqual(),
-                price: formatFiat(taoAmount: quote.expectedOut, taoPrice: taoPrice, locale: locale)
+                amount: formatAmount(netOut, displayInfo: taoInfo, locale: locale).approximatelyEqual(),
+                price: formatFiat(taoAmount: netOut, taoPrice: taoPrice, locale: locale)
             )
 
             return SubtensorTradePanelViewModel(

@@ -21,17 +21,11 @@ struct SubtensorCostBasisValueViewModel: Equatable {
     }
 }
 
-enum SubtensorCostBasisRowViewModel: Equatable {
-    case hidden
-    case loading
-    case value(SubtensorCostBasisValueViewModel)
-}
-
 struct SubtensorSaleCostBasisViewModel: Equatable {
     static let hidden = SubtensorSaleCostBasisViewModel(avgBuyPrice: .hidden, earned: .hidden, isEarnedEstimated: false)
 
-    let avgBuyPrice: SubtensorCostBasisRowViewModel
-    let earned: SubtensorCostBasisRowViewModel
+    let avgBuyPrice: SubtensorRowState<SubtensorCostBasisValueViewModel>
+    let earned: SubtensorRowState<SubtensorCostBasisValueViewModel>
     let isEarnedEstimated: Bool
 }
 
@@ -53,13 +47,13 @@ private extension SubtensorCostBasisViewModelFactory {
         static let minusSign = "\u{2212}"
     }
 
-    func createUnknownValue(locale: Locale) -> SubtensorCostBasisRowViewModel {
+    func createUnknownValue(locale: Locale) -> SubtensorRowState<SubtensorCostBasisValueViewModel> {
         let unknown = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown()
 
         return .value(SubtensorCostBasisValueViewModel(amount: unknown, detail: nil, tone: .neutral))
     }
 
-    func createNoPurchasesValue(locale: Locale) -> SubtensorCostBasisRowViewModel {
+    func createNoPurchasesValue(locale: Locale) -> SubtensorRowState<SubtensorCostBasisValueViewModel> {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         return .value(
@@ -75,7 +69,7 @@ private extension SubtensorCostBasisViewModelFactory {
         for totals: SubtensorPurchaseTotals,
         alphaSymbol: String,
         locale: Locale
-    ) -> SubtensorCostBasisRowViewModel {
+    ) -> SubtensorRowState<SubtensorCostBasisValueViewModel> {
         let formatter = formatterFactory.createTokenFormatter(for: taoInfo).value(for: locale)
 
         guard let average = totals.averagePrice.decimalValue, let price = formatter.stringFromDecimal(average) else {
@@ -94,7 +88,7 @@ private extension SubtensorCostBasisViewModelFactory {
         to projected: SubtensorPurchaseTotals,
         alphaSymbol: String,
         locale: Locale
-    ) -> SubtensorCostBasisRowViewModel {
+    ) -> SubtensorRowState<SubtensorCostBasisValueViewModel> {
         let priceFormatter = formatterFactory.createTokenFormatter(for: taoInfo).value(for: locale)
         let numberFormatter = formatterFactory.createDisplayFormatter(for: taoInfo).value(for: locale)
 
@@ -159,7 +153,7 @@ extension SubtensorCostBasisViewModelFactory {
         for costBasis: SubtensorCostBasisState,
         alphaSymbol: String,
         locale: Locale
-    ) -> SubtensorCostBasisRowViewModel {
+    ) -> SubtensorRowState<SubtensorCostBasisValueViewModel> {
         switch costBasis {
         case .loading:
             return .loading
@@ -177,7 +171,7 @@ extension SubtensorCostBasisViewModelFactory {
         after purchase: SubtensorPurchaseQuote,
         alphaSymbol: String,
         locale: Locale
-    ) -> SubtensorCostBasisRowViewModel {
+    ) -> SubtensorRowState<SubtensorCostBasisValueViewModel> {
         guard let costBasis else {
             return .hidden
         }
@@ -206,7 +200,7 @@ extension SubtensorCostBasisViewModelFactory {
         proceeds: SubtensorSaleProceeds,
         taoPrice: PriceData?,
         locale: Locale
-    ) -> SubtensorCostBasisRowViewModel {
+    ) -> SubtensorRowState<SubtensorCostBasisValueViewModel> {
         if let earned = costBasis.earnedTao(from: proceeds) {
             return .value(createEarnedValue(earned, taoPrice: taoPrice, locale: locale))
         }

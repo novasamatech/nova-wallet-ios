@@ -123,8 +123,8 @@ private extension SubtensorOperationResultViewModelFactory {
         locale: Locale
     ) -> SubtensorResultSheetViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-        let executed = outcome.executed?.tao ?? request.payAmount
-        let executedString = formatAmount(executed, info: taoInfo, locale: locale)
+        let stakeMoved = (outcome.executed?.tao ?? request.payAmount) + (outcome.alphaFeePaid ?? 0)
+        let stakeMovedString = formatAmount(stakeMoved, info: taoInfo, locale: locale)
         let feeRow = networkFeeRow(for: state, request: request, locale: locale)
 
         guard request.origin != .newPosition else {
@@ -136,7 +136,7 @@ private extension SubtensorOperationResultViewModelFactory {
 
             return SubtensorResultSheetViewModel(
                 status: .done,
-                title: strings.stakingSubtensorResultRootStakedFormat(executedString),
+                title: strings.stakingSubtensorResultRootStakedFormat(stakeMovedString),
                 message: strings.stakingSubtensorResultRootLiveMessage(),
                 rows: [validatorRow, feeRow],
                 reason: nil,
@@ -145,15 +145,14 @@ private extension SubtensorOperationResultViewModelFactory {
         }
 
         let isUnstake = request.origin == .unstake
-        let stakeRemoved = executed + (outcome.alphaFeePaid ?? 0)
         let stakeAfter = isUnstake
-            ? (request.emptiesPosition ? 0 : request.stakeBefore.subtractOrZero(stakeRemoved))
-            : request.stakeBefore + executed
+            ? (request.emptiesPosition ? 0 : request.stakeBefore.subtractOrZero(stakeMoved))
+            : request.stakeBefore + stakeMoved
         let stakeAfterString = formatAmount(stakeAfter, info: taoInfo, locale: locale)
 
         let title = isUnstake
-            ? strings.stakingSubtensorResultRootUnstakedFormat(executedString)
-            : strings.stakingSubtensorResultRootStakedMoreFormat(executedString)
+            ? strings.stakingSubtensorResultRootUnstakedFormat(stakeMovedString)
+            : strings.stakingSubtensorResultRootStakedMoreFormat(stakeMovedString)
 
         let message = if isUnstake, request.emptiesPosition {
             strings.stakingSubtensorResultRootUnstakedAllMessage()

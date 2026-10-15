@@ -33,9 +33,21 @@ final class SubtensorStakingSetupViewModelFactory {
     ) -> SubtensorStakingSetupViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
-        let details: SubtensorSetupDetailsViewModel = input.mode.isRootLane
-            ? .root(createRootDetails(for: input, locale: locale))
-            : .subnet(createSubnetDetails(for: input, locale: locale))
+        let details: SubtensorSetupDetailsViewModel
+        if case let .quickPick(order) = input.mode {
+            let message = input.selectionFailed
+                ? strings.stakingSubtensorQuickUnavailable()
+                : strings.stakingSubtensorQuickLoading()
+            details = .selection(
+                section: sectionTitle(order: order, locale: locale),
+                message: input.selectedRef.map { "\($0.netuid) · \(message)" } ?? message,
+                retryTitle: input.selectionFailed ? strings.commonTryAgain() : nil
+            )
+        } else {
+            details = input.mode.isRootLane
+                ? .root(createRootDetails(for: input, locale: locale))
+                : .subnet(createSubnetDetails(for: input, locale: locale))
+        }
 
         let amountTitle: String
 
@@ -54,6 +66,7 @@ final class SubtensorStakingSetupViewModelFactory {
             reserveWarning: createReserveWarning(for: input, locale: locale),
             details: details,
             caption: createCaption(for: input, locale: locale),
+            browseTitle: input.mode.isLocked ? nil : strings.stakingSubtensorQuickSeeAll(),
             action: createAction(for: input, locale: locale)
         )
     }
@@ -84,21 +97,22 @@ extension SubtensorStakingSetupViewModelFactory {
     }
 }
 
-private extension SubtensorStakingSetupViewModelFactory {
+extension SubtensorStakingSetupViewModelFactory {
     func createTitle(for input: SubtensorStakingSetupViewModelInput, locale: Locale) -> String {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         switch input.mode {
         case .rootDetails:
-            return strings.stakingSubtensorUiStakeToRoot()
+            return input.rootEntryPresentation == .quickPickRoot || input.quickPickOrder != nil
+                ? strings.stakingSubtensorUiEarnTitle() : strings.stakingSubtensorUiStakeToRoot()
         case .addStake:
             return strings.stakingSubtensorUiAddStakeRootTitle()
-        case .subnetPick:
-            return strings.stakingSubtensorBannerTitle()
+        case .quickPick, .subnetPick:
+            return strings.stakingSubtensorUiEarnTitle()
         case let .buyMore(position):
             let subnetTitle = SubtensorSubnetNaming.title(
                 for: position.netuid,
-                in: input.subnetData.catalogue,
+                in: input.matchingCatalogue,
                 locale: locale
             )
 
@@ -141,9 +155,26 @@ private extension SubtensorStakingSetupViewModelFactory {
         for input: SubtensorStakingSetupViewModelInput,
         locale: Locale
     ) -> SubtensorSetupRootViewModel {
-        SubtensorSetupRootViewModel(
-            validator: createValidator(for: input, locale: locale),
-            apy: createRootApy(for: input, locale: locale),
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+        let compact = createValidator(for: input, locale: locale)
+        let name: String?
+        let icon: ImageViewModelProtocol?
+        switch compact {
+        case .loading: name = nil; icon = nil
+        case let .unselected(title): name = title; icon = nil
+        case let .selected(display): name = display.name ?? display.address; icon = display.imageViewModel
+        }
+        let annualRate = input.subnetData.annualRate
+        return SubtensorSetupRootViewModel(
+            icon: AssetIconViewModelFactory().createAssetIconViewModel(from: chainAsset.assetDisplayInfo),
+            validator: SubtensorValidatorCardViewModel(
+                icon: icon, name: name, subtitle: strings.stakingCommonValidator(),
+                rate: .loaded(SubtensorApyFormatter.text(for: annualRate, style: .bare, locale: locale)),
+                rateCaption: strings.stakingSubtensorV22EstApy()
+            ),
+            compactValidator: compact,
+            compactRate: SubtensorApyFormatter.text(for: annualRate, style: .leading, locale: locale),
+            isQuickPick: input.rootEntryPresentation == .quickPickRoot || input.quickPickOrder != nil,
             networkFee: createNetworkFee(for: input, locale: locale)
         )
     }
@@ -153,7 +184,6 @@ private extension SubtensorStakingSetupViewModelFactory {
         locale: Locale
     ) -> SubtensorSetupValidatorViewModel {
         let selectTitle = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorSelectValidator()
-        let accessory: SubtensorSetupValidatorAccessory = input.mode.isLocked ? .info : .chevron
 
         switch input.validator {
         case .pending:
@@ -173,22 +203,9 @@ private extension SubtensorStakingSetupViewModelFactory {
                     address: viewModel.address,
                     name: validator.name ?? address.mediumTruncated,
                     imageViewModel: viewModel.imageViewModel
-                ),
-                accessory: accessory
+                )
             )
         }
-    }
-
-    func createRootApy(for input: SubtensorStakingSetupViewModelInput, locale: Locale) -> SubtensorSetupRowViewModel {
-        guard input.isRootRateLoaded else {
-            return .loading
-        }
-
-        guard let rootRate = input.rootRate else {
-            return .hidden
-        }
-
-        return .value(SubtensorApyFormatter.text(for: rootRate, style: .paidInTao, locale: locale))
     }
 
     func createCaption(for input: SubtensorStakingSetupViewModelInput, locale: Locale) -> String? {
@@ -203,7 +220,7 @@ private extension SubtensorStakingSetupViewModelFactory {
             return nil
         case .addStake:
             return createAddStakeCaption(for: input, locale: locale)
-        case .subnetPick, .buyMore:
+        case .quickPick, .subnetPick, .buyMore:
             return strings.stakingSubtensorUiSafetyNote()
         }
     }

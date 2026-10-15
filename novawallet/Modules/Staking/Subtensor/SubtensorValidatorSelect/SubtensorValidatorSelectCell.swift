@@ -72,9 +72,6 @@ final class SubtensorValidatorSelectCell: UITableViewCell {
         case let .rate(text):
             trailingLabel.text = text
             trailingLabel.textColor = R.color.colorTextPositive()
-        case let .inactive(text):
-            trailingLabel.text = text
-            trailingLabel.textColor = R.color.colorTextSecondary()
         case .none:
             trailingLabel.text = nil
         }
@@ -82,9 +79,6 @@ final class SubtensorValidatorSelectCell: UITableViewCell {
         radioView.image = model.isSelected
             ? R.image.iconRadioButtonSelected()
             : R.image.iconRadioButtonUnselected()
-
-        radioView.alpha = model.isSelectable ? 1 : 0.5
-        selectionStyle = model.isSelectable ? .default : .none
 
         if let icon = model.icon {
             iconView.bind(icon: icon)

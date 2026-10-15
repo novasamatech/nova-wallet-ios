@@ -13,23 +13,20 @@ final class SubtensorSubnetDetailsPresenter {
     let earnSettings: SubtensorEarnSettingsProtocol
     let logger: LoggerProtocol
 
+    private var chartEndDate: Date
     private var isFiat = false
     private var period = SubtensorPriceWidgetViewModelFactory.defaultPeriod
-    private var chartPoint: Int?
+    private var chartSelection: SubtensorPriceChartSelection?
     private var history: SubtensorSubnetHistoryState = .loading {
         didSet {
-            chartPoint = nil
+            chartSelection = nil
         }
     }
 
-    private var listing: SubtensorSubnetListingState = .loading
-    private var isRankingLoaded = false
-    private var rankingView: SubtensorRankedSubnets?
-    private var hasExpiredRankingSeed = false
+    private var parameters: SubtensorSubnetParameters?
+    private var isParametersLoaded = false
     private var validator: SubtensorSubnetValidatorState
     private var yields: SubtensorAlphaYields?
-    private var amount = SubtensorSubnetDetailsViewModelFactory.defaultChip
-    private var transferable: Balance?
     private var taoPrice: PriceData?
     private var subnetLogos: SubtensorSubnetLogos?
     private var positions: Multistaking.SubtensorStakingState?
@@ -48,6 +45,7 @@ final class SubtensorSubnetDetailsPresenter {
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
+        chartEndDate = Date()
         self.input = input
         self.host = host
         self.selectionDelegate = selectionDelegate
@@ -85,17 +83,15 @@ private extension SubtensorSubnetDetailsPresenter {
             isFiat: isFiat,
             period: period,
             history: history,
-            listing: listing,
-            isRankingLoaded: isRankingLoaded,
-            rankingView: rankingView,
+            parameters: parameters,
+            isParametersLoaded: isParametersLoaded,
             validator: validator,
             yields: yields,
-            amount: amount,
-            transferable: transferable,
             taoPrice: taoPrice,
             isFavorite: isFavorite,
             now: Date(),
-            chartPoint: chartPoint
+            chartEndDate: chartEndDate,
+            chartSelection: chartSelection
         )
     }
 
@@ -111,18 +107,6 @@ private extension SubtensorSubnetDetailsPresenter {
         )
 
         view?.didReceive(viewModel: viewModel)
-    }
-
-    func seed(from snapshot: SubtensorSubnetDetailsSnapshot) {
-        if let rankingView = snapshot.rankingView.value {
-            self.rankingView = rankingView
-            isRankingLoaded = true
-            hasExpiredRankingSeed = !snapshot.rankingView.isFresh
-        }
-
-        if let yields = snapshot.yields.value {
-            self.yields = yields
-        }
     }
 
     func loadHistory() {
@@ -177,7 +161,9 @@ private extension SubtensorSubnetDetailsPresenter {
 
 extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtocol {
     func setup() {
-        seed(from: interactor.cachedSnapshot())
+        if let yields = interactor.cachedYields(), yields.netuid == subnetRef.netuid {
+            self.yields = yields
+        }
 
         provideTitle()
         provideViewModel()
@@ -194,6 +180,7 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
             return
         }
 
+        chartSelection = nil
         isFiat = newIsFiat
         provideViewModel()
     }
@@ -208,18 +195,6 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
 
         period = periods[index]
         loadHistory()
-        provideViewModel()
-    }
-
-    func selectAmount(at index: Int) {
-        let amounts = SubtensorSubnetDetailsViewModelFactory.chipAmounts
-
-        if amounts.indices.contains(index) {
-            amount = .fixed(amounts[index])
-        } else if SubtensorSubnetDetailsViewModelFactory.maxAmount(for: transferable) != nil {
-            amount = .max
-        }
-
         provideViewModel()
     }
 
@@ -259,8 +234,8 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
         provideViewModel()
     }
 
-    func selectChartPoint(at index: Int?) {
-        chartPoint = index
+    func selectChart(_ selection: SubtensorPriceChartSelection?) {
+        chartSelection = selection
 
         let header = viewModelFactory.createPriceHeader(for: createState(), locale: selectedLocale)
         view?.didReceive(priceHeader: header)
@@ -272,6 +247,8 @@ extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol
         guard period == self.period else {
             return
         }
+
+        chartEndDate = Date()
 
         switch result {
         case let .available(value):
@@ -292,26 +269,10 @@ extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol
         provideViewModel()
     }
 
-    func didReceiveListing(_ result: SubtensorPriceHistoryResult?) {
-        switch result {
-        case let .available(value):
-            listing = .listed(since: value.points.first?.date)
-        case .notListed:
-            listing = .notListed
-        case .none:
-            listing = .failed
-        }
-
-        provideViewModel()
-    }
-
-    func didReceiveRankingView(_ rankingView: SubtensorRankedSubnets?) {
-        guard rankingView != nil || !hasExpiredRankingSeed else {
-            return
-        }
-
-        self.rankingView = rankingView
-        isRankingLoaded = true
+    func didReceiveParameters(_ parameters: SubtensorSubnetParameters?) {
+        guard parameters == nil || parameters?.ref == subnetRef else { return }
+        self.parameters = parameters
+        isParametersLoaded = true
         provideViewModel()
     }
 
@@ -325,17 +286,8 @@ extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol
     }
 
     func didReceiveYields(_ yields: SubtensorAlphaYields?) {
+        guard yields == nil || yields?.netuid == subnetRef.netuid else { return }
         self.yields = yields
-        provideViewModel()
-    }
-
-    func didReceiveBalance(_ balance: AssetBalance?) {
-        transferable = balance?.transferable
-
-        if amount == .max, SubtensorSubnetDetailsViewModelFactory.maxAmount(for: transferable) == nil {
-            amount = SubtensorSubnetDetailsViewModelFactory.defaultChip
-        }
-
         provideViewModel()
     }
 
@@ -361,7 +313,8 @@ extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol
 }
 
 extension SubtensorSubnetDetailsPresenter: SubtensorValidatorSelectDelegate {
-    func didSelectValidator(_ validator: SubtensorValidatorDirectoryItem, for _: SubtensorStakeTarget) {
+    func didSelectValidator(_ validator: SubtensorValidatorDirectoryItem, for target: SubtensorStakeTarget) {
+        guard target == input.target else { return }
         self.validator = .selected(validator)
         provideViewModel()
 

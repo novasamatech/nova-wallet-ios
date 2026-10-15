@@ -9,7 +9,6 @@ struct SubtensorUnstakeSetupViewModel {
     let details: SubtensorUnstakeDetailsViewModel
     let note: String?
     let feeWarning: String?
-    let feeDisclosure: String?
     let holdWarning: String?
     let caption: String?
     let action: SubtensorSetupActionViewModel
@@ -24,10 +23,10 @@ struct SubtensorUnstakeHeaderViewModel {
 }
 
 struct SubtensorUnstakeDetailsViewModel {
-    let receive: SubtensorSetupBalanceRowViewModel
-    let swapRate: SubtensorSetupRowViewModel
-    let avgBuyPrice: SubtensorCostBasisRowViewModel
-    let earned: SubtensorCostBasisRowViewModel
+    let receive: SubtensorRowState<BalanceViewModelProtocol>
+    let swapRate: SubtensorRowState<String>
+    let avgBuyPrice: SubtensorRowState<SubtensorCostBasisValueViewModel>
+    let earned: SubtensorRowState<SubtensorCostBasisValueViewModel>
     let validator: SubtensorSetupValidatorViewModel
     let networkFee: BalanceViewModelProtocol?
 }

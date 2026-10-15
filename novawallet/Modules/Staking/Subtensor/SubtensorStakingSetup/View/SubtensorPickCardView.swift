@@ -12,6 +12,9 @@ final class SubtensorPickCardView: UIView {
         view.contentInsets = .zero
     }
 
+    let validatorCell = SubtensorPickValidatorCell()
+    let browseButton = UIButton(type: .system)
+
     let receiveCell = SubtensorPickCardView.createCell()
 
     let swapRateCell = SubtensorPickCardView.createCell()
@@ -34,14 +37,26 @@ final class SubtensorPickCardView: UIView {
     }
 
     func bind(viewModel: SubtensorPickCardViewModel) {
+        validatorCell.bind(
+            validator: viewModel.validator,
+            rate: viewModel.validatorRate,
+            isEditable: viewModel.isValidatorEditable
+        )
+        browseButton.setTitle(viewModel.browseTitle, for: .normal)
+        browseButton.isHidden = viewModel.browseTitle == nil
         headerView.bind(viewModel: viewModel.header)
         chipsView.bind(titles: viewModel.chips)
 
-        bind(row: viewModel.receive, cell: receiveCell)
-        bind(row: viewModel.swapRate, cell: swapRateCell)
+        receiveCell.apply(viewModel.receive)
+        swapRateCell.apply(viewModel.swapRate)
         bind(networkFee: viewModel.networkFee)
 
         rowsView.updateLayout()
+        let rows: [StackTableViewCellProtocol] = [validatorCell, receiveCell, swapRateCell, networkFeeCell]
+        rows.forEach { SubtensorDividerStyle.apply(to: $0, hasPrevious: false) }
+        rows.filter { !$0.isHidden }.enumerated().forEach { index, cell in
+            SubtensorDividerStyle.apply(to: cell, hasPrevious: index > 0)
+        }
     }
 }
 
@@ -59,33 +74,25 @@ private extension SubtensorPickCardView {
     func setupLayout() {
         swapRateCell.canSelect = true
 
+        rowsView.addArrangedSubview(validatorCell)
         rowsView.addArrangedSubview(receiveCell)
         rowsView.addArrangedSubview(swapRateCell)
         rowsView.addArrangedSubview(networkFeeCell)
 
-        let contentView = UIView.vStack(spacing: 0, [headerView, chipsView, rowsView])
+        let cells: [StackTableViewCellProtocol] = [validatorCell, receiveCell, swapRateCell, networkFeeCell]
+        cells.forEach { $0.borderView.strokeWidth = SubtensorDividerStyle.thickness }
+        browseButton.contentHorizontalAlignment = .right
+        browseButton.titleLabel?.font = .semiBoldFootnote
+        browseButton.snp.makeConstraints { $0.height.equalTo(44) }
+        let contentView = UIView.vStack(spacing: 0, [headerView, chipsView, rowsView, browseButton])
         contentView.setCustomSpacing(12, after: headerView)
         contentView.setCustomSpacing(4, after: chipsView)
-        contentView.layoutMargins = UIEdgeInsets(top: 12, left: 16, bottom: 4, right: 16)
+        contentView.layoutMargins = UIEdgeInsets(top: 12, left: 12, bottom: 4, right: 12)
         contentView.isLayoutMarginsRelativeArrangement = true
 
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-        }
-    }
-
-    func bind(row: SubtensorSetupRowViewModel, cell: StackTitleMultiValueCell) {
-        cell.isHidden = row == .hidden
-
-        switch row {
-        case .hidden:
-            cell.stopLoadingIfNeeded()
-        case .loading:
-            cell.startLoadingIfNeeded()
-        case let .value(value):
-            cell.stopLoadingIfNeeded()
-            cell.rowContentView.valueView.bind(topValue: value, bottomValue: nil)
         }
     }
 
@@ -108,10 +115,6 @@ final class SubtensorPickCardHeaderView: UIControl {
 
     let titleLabel: UILabel = .create { label in
         label.apply(style: .semiboldBodyPrimary)
-    }
-
-    let apyLabel: UILabel = .create { label in
-        label.apply(style: .footnotePositive)
     }
 
     let chevronView: UIImageView = .create { view in
@@ -148,8 +151,6 @@ final class SubtensorPickCardHeaderView: UIControl {
         )
 
         titleLabel.text = viewModel?.title
-        apyLabel.text = viewModel?.apy
-        apyLabel.isHidden = viewModel?.apy == nil
         chevronView.isHidden = !(viewModel?.isSelectable ?? false)
         isUserInteractionEnabled = viewModel?.isSelectable ?? false
 
@@ -164,7 +165,7 @@ private extension SubtensorPickCardHeaderView {
     }
 
     func setupLayout() {
-        let labelsView = UIView.vStack(spacing: 2, [titleLabel, apyLabel])
+        let labelsView = UIView.vStack(spacing: 2, [titleLabel])
         labelsView.isUserInteractionEnabled = false
 
         let contentView = UIView.hStack(alignment: .center, spacing: 12, [iconView, labelsView, chevronView])

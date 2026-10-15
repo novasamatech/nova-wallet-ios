@@ -11,15 +11,16 @@ final class SubtensorValidatorInfoPresenter {
     let viewModelFactory: SubtensorValidatorInfoViewModelFactory
     let logger: LoggerProtocol
 
-    private var detail: SubtensorValidatorDetail?
+    private var detail: SubtensorValidatorDirectoryItem?
     private var annualRate: LoadableViewModelState<Decimal?> = .loading
     private var alphaPrice: LoadableViewModelState<Balance?> = .loading
+    private var coverage: LoadableViewModelState<SubtensorValidatorCoverage?> = .loading
     private var price: PriceData?
 
     init(
         target: SubtensorStakeTarget,
         hotkey: AccountId,
-        detail: SubtensorValidatorDetail?,
+        detail: SubtensorValidatorDirectoryItem?,
         interactor: SubtensorValInfoInteractorInputProtocol,
         wireframe: SubtensorValidatorInfoWireframeProtocol,
         viewModelFactory: SubtensorValidatorInfoViewModelFactory,
@@ -45,7 +46,8 @@ private extension SubtensorValidatorInfoPresenter {
             detail: detail,
             annualRate: annualRate,
             alphaPrice: alphaPrice,
-            price: price
+            price: price,
+            coverage: coverage
         )
 
         view?.didReceive(viewModel: viewModelFactory.createViewModel(for: input, locale: selectedLocale))
@@ -89,7 +91,12 @@ extension SubtensorValidatorInfoPresenter: SubtensorValidatorInfoPresenterProtoc
 }
 
 extension SubtensorValidatorInfoPresenter: SubtensorValInfoInteractorOutputProtocol {
-    func didReceive(detail: SubtensorValidatorDetail) {
+    func didReceive(coverage: SubtensorValidatorCoverage?) {
+        self.coverage = .loaded(value: coverage)
+        provideViewModel()
+    }
+
+    func didReceive(detail: SubtensorValidatorDirectoryItem) {
         view?.didStopLoading()
 
         self.detail = detail

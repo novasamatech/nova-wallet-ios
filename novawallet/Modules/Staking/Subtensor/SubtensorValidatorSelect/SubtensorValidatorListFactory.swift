@@ -8,11 +8,11 @@ struct SubtensorValidatorListInput {
     let yields: SubtensorAlphaYields?
     let alphaPrice: Balance?
     let isRoot: Bool
-    let clientGates: SubtensorClientGates
     let sort: SubtensorValidatorSort
     let query: String
     let selectedHotkey: AccountId?
     let preselectedHotkey: AccountId?
+    let recommendedHotkeys: Set<AccountId>?
 }
 
 final class SubtensorValidatorListFactory {
@@ -34,8 +34,8 @@ final class SubtensorValidatorListFactory {
 }
 
 extension SubtensorValidatorListFactory {
-    static func sortOptions(isRoot: Bool, yields: SubtensorAlphaYields?) -> [SubtensorValidatorSort] {
-        ratesShown(isRoot: isRoot, yields: yields) ? [.apy, .totalStaked, .name] : [.totalStaked, .name]
+    static func sortOptions(isRoot _: Bool, yields _: SubtensorAlphaYields?) -> [SubtensorValidatorSort] {
+        [.totalStaked, .name]
     }
 
     static func appliedSort(
@@ -54,19 +54,16 @@ extension SubtensorValidatorListFactory {
     ) -> SubtensorValidatorListViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
         let sort = Self.appliedSort(input.sort, isRoot: input.isRoot, yields: input.yields)
-        let ratesShown = Self.ratesShown(isRoot: input.isRoot, yields: input.yields)
+        let ratesShown = Self.ratesShown(yields: input.yields)
 
-        let entries = createEntries(for: input, unknown: strings.stakingSubtensorUiValueUnknown())
-        let hidesUnrated = ratesShown && entries.contains { $0.isSelectable && $0.rate != nil }
-        let keptHotkeys = [input.selectedHotkey, input.preselectedHotkey]
-        let listed = entries.filter { entry in
-            keptHotkeys.contains(entry.item.hotkey) || (entry.isSelectable && (entry.rate != nil || !hidesUnrated))
+        let listed = createEntries(for: input, unknown: strings.stakingSubtensorUiValueUnknown())
+        let pinned = input.selectedHotkey ?? input.preselectedHotkey
+        let matching = listed.filter { matches($0, query: input.query) }.sorted {
+            if ($0.item.hotkey == pinned) != ($1.item.hotkey == pinned) { return $0.item.hotkey == pinned }
+            return Self.isOrderedBefore($0, $1, sort: sort)
         }
-        let matching = listed
-            .filter { matches($0, query: input.query) }
-            .sorted { Self.isOrderedBefore($0, $1, sort: sort) }
 
-        let selected = listed.first { $0.isSelectable && $0.item.hotkey == input.selectedHotkey }
+        let selected = listed.first { $0.item.hotkey == input.selectedHotkey }
 
         let rowContext = RowContext(
             input: input,
@@ -77,7 +74,10 @@ extension SubtensorValidatorListFactory {
 
         return SubtensorValidatorListViewModel(
             rows: matching.map { createRow(for: $0, context: rowContext) },
-            countTitle: strings.stakingSubtensorUiValidatorCountFormat(matching.count),
+            countTitle: strings.stakingSubtensorV22CountFormat(
+                String(matching.count),
+                !input.directory.isPartial && !input.directory.isEnrichmentTruncated ? String(listed.count) : "—"
+            ),
             sortTitle: createSortTitle(
                 for: sort,
                 ratesShown: ratesShown,
@@ -95,12 +95,16 @@ extension SubtensorValidatorListFactory {
         )
     }
 
-    func createLoadingViewModel(isRoot: Bool, locale: Locale) -> SubtensorValidatorListHeaderViewModel {
+    func createLoadingViewModel(
+        yields: SubtensorAlphaYields?,
+        sort: SubtensorValidatorSort = .totalStaked,
+        locale: Locale
+    ) -> SubtensorValidatorListHeaderViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         return SubtensorValidatorListHeaderViewModel(
-            countTitle: strings.stakingSubtensorUiValidatorLoadingCount(),
-            sortTitle: createSortTitle(for: isRoot ? .totalStaked : .apy, ratesShown: !isRoot, locale: locale),
+            countTitle: strings.stakingSubtensorV22CountFormat("—", "—"),
+            sortTitle: createSortTitle(for: sort, ratesShown: Self.ratesShown(yields: yields), locale: locale),
             selectTitle: strings.stakingSubtensorSelectValidator()
         )
     }
@@ -120,24 +124,11 @@ extension SubtensorValidatorListFactory {
             selectTitle: strings.stakingSubtensorSelectValidator()
         )
     }
-
-    func createSortSheetViewModel(
-        options: [SubtensorValidatorSort],
-        selected: SubtensorValidatorSort,
-        locale: Locale
-    ) -> SubtensorSortSheetViewModel {
-        SubtensorSortSheetViewModel(
-            title: R.string(preferredLanguages: locale.rLanguages).localizable.delegationsSortTitle(),
-            options: options.map { .init(title: createSortOptionTitle(for: $0, locale: locale), subtitle: nil) },
-            selectedIndex: options.firstIndex(of: selected)
-        )
-    }
 }
 
 private extension SubtensorValidatorListFactory {
     struct Entry {
         let item: SubtensorValidatorDirectoryItem
-        let isSelectable: Bool
         let title: String
         let address: String?
         let rate: Decimal?
@@ -150,8 +141,8 @@ private extension SubtensorValidatorListFactory {
         let takeFormatter: NumberFormatter
     }
 
-    static func ratesShown(isRoot: Bool, yields: SubtensorAlphaYields?) -> Bool {
-        !isRoot && yields?.stamp.freshness == .fresh
+    static func ratesShown(yields: SubtensorAlphaYields?) -> Bool {
+        yields?.stamp.freshness == .fresh
     }
 
     static func compareStakes(_ lhs: BigRational?, _ rhs: BigRational?) -> ComparisonResult {
@@ -173,33 +164,11 @@ private extension SubtensorValidatorListFactory {
         return left < right ? .orderedAscending : .orderedDescending
     }
 
-    static func compareRates(_ lhs: Decimal?, _ rhs: Decimal?) -> ComparisonResult {
-        switch (lhs, rhs) {
-        case let (lhs?, rhs?):
-            return lhs == rhs ? .orderedSame : (lhs < rhs ? .orderedAscending : .orderedDescending)
-        case (.some, .none):
-            return .orderedDescending
-        case (.none, .some):
-            return .orderedAscending
-        case (.none, .none):
-            return .orderedSame
-        }
-    }
-
     static func isOrderedBefore(_ lhs: Entry, _ rhs: Entry, sort: SubtensorValidatorSort) -> Bool {
-        if lhs.isSelectable != rhs.isSelectable {
-            return lhs.isSelectable
-        }
-
         let orders: [ComparisonResult]
 
         switch sort {
-        case .apy:
-            orders = [
-                compareRates(lhs.rate, rhs.rate),
-                compareStakes(lhs.item.reportedStake, rhs.item.reportedStake)
-            ]
-        case .totalStaked:
+        case .apy, .totalStaked:
             orders = [compareStakes(lhs.item.reportedStake, rhs.item.reportedStake)]
         case .name:
             orders = []
@@ -209,29 +178,24 @@ private extension SubtensorValidatorListFactory {
             return order == .orderedDescending
         }
 
-        return lhs.title.localizedStandardCompare(rhs.title) == .orderedAscending
+        let nameOrder = lhs.title.localizedStandardCompare(rhs.title)
+        return nameOrder == .orderedSame ? lhs.item.hotkey
+            .lexicographicallyPrecedes(rhs.item.hotkey) : nameOrder == .orderedAscending
     }
 
     func createEntries(for input: SubtensorValidatorListInput, unknown: String) -> [Entry] {
-        input.directory.items.compactMap { item in
-            let eligibility = SubtensorValidatorEligibility.eligibility(
-                of: item,
-                isRoot: input.isRoot,
-                gates: input.clientGates
-            )
+        let pinned = [input.selectedHotkey, input.preselectedHotkey]
 
-            guard eligibility != .unlisted else {
-                return nil
-            }
-
+        return input.directory.items.filter { item in
+            input.recommendedHotkeys.map { $0.contains(item.hotkey) || pinned.contains(item.hotkey) } ?? true
+        }.map { item in
             let address = try? item.hotkey.toAddress(using: chainFormat)
 
             return Entry(
                 item: item,
-                isSelectable: eligibility == .selectable,
                 title: item.name ?? address?.mediumTruncated ?? unknown,
                 address: address,
-                rate: input.isRoot ? nil : SubtensorAlphaApyFormatter.annualRate(for: item.hotkey, in: input.yields)
+                rate: SubtensorAlphaApyFormatter.annualRate(for: item.hotkey, in: input.yields)
             )
         }
     }
@@ -251,22 +215,15 @@ private extension SubtensorValidatorListFactory {
     }
 
     func taoStake(for item: SubtensorValidatorDirectoryItem, input: SubtensorValidatorListInput) -> Decimal? {
-        guard let stake = item.reportedStake, input.directory.listStamp?.freshness == .fresh else {
+        guard input.directory.listStamp?.freshness == .fresh else {
             return nil
         }
 
-        guard !input.isRoot else {
-            return stake.decimalValue
-        }
-
-        guard let alphaPrice = input.alphaPrice else {
-            return nil
-        }
-
-        return BigRational(
-            numerator: stake.numerator * alphaPrice,
-            denominator: stake.denominator * SubtensorStakingPallet.alphaPriceScale
-        ).decimalValue
+        return SubtensorValidatorInfoViewModelFactory.taoStake(
+            for: item,
+            isRoot: input.isRoot,
+            alphaPrice: input.alphaPrice
+        )
     }
 
     func createRow(
@@ -284,10 +241,8 @@ private extension SubtensorValidatorListFactory {
 
         let trailing: SubtensorValidatorRowViewModel.Trailing
 
-        if !entry.isSelectable {
-            trailing = .inactive(strings.stakingNominatorStatusInactive())
-        } else if let rate = entry.rate {
-            trailing = .rate(SubtensorApyFormatter.text(for: rate, style: .column, locale: context.locale))
+        if entry.rate != nil || (context.input.isRoot && Self.ratesShown(yields: context.input.yields)) {
+            trailing = .rate(SubtensorApyFormatter.text(for: entry.rate, style: .column, locale: context.locale))
         } else {
             trailing = .none
         }
@@ -298,8 +253,7 @@ private extension SubtensorValidatorListFactory {
             title: entry.title,
             subtitle: strings.stakingSubtensorUiValidatorRowSubtitleFormat(stakeText, takeText),
             trailing: trailing,
-            isSelected: entry.item.hotkey == context.input.selectedHotkey,
-            isSelectable: entry.isSelectable
+            isSelected: entry.item.hotkey == context.input.selectedHotkey
         )
     }
 

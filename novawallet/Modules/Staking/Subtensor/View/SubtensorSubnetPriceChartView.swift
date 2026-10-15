@@ -2,15 +2,9 @@ import DGCharts
 import UIKit
 import UIKit_iOS
 
-struct SubtensorPriceChartViewModel: Equatable {
-    let values: [Double]
-    let axisLabels: [String]
-    let isRising: Bool
-}
-
 protocol SubtensorPriceChartViewDelegate: AnyObject {
     func priceChartViewDidBeginSelection(_ chartView: SubtensorSubnetPriceChartView)
-    func priceChartView(_ chartView: SubtensorSubnetPriceChartView, didSelectPointAt index: Int)
+    func priceChartView(_ chartView: SubtensorSubnetPriceChartView, didSelect selection: SubtensorPriceChartSelection)
     func priceChartViewDidEndSelection(_ chartView: SubtensorSubnetPriceChartView)
 }
 
@@ -31,7 +25,8 @@ final class SubtensorSubnetPriceChartView: UIView {
     private var entries: [ChartDataEntry] = []
     private var lineColor: UIColor?
     private var dotShadowColor: UIColor?
-    private var selectedIndex: Int?
+    private var selection: SubtensorPriceChartSelection?
+    private var chartData: SubtensorPriceChartData?
 
     init(style: Style = .price, isSelectable: Bool = false) {
         self.style = style
@@ -92,8 +87,6 @@ private extension SubtensorSubnetPriceChartView {
         static let midLineWidth: CGFloat = 0.5
         static let midLineDashLengths: [CGFloat] = [2, 3]
         static let fillTopAlpha: CGFloat = 0.28
-        static let flatRangeFactor: Double = 0.02
-        static let minimumSpread: Double = 1e-6
         static let selectionPressDuration: TimeInterval = 0.05
     }
 
@@ -102,31 +95,24 @@ private extension SubtensorSubnetPriceChartView {
     }
 
     func plot(viewModel: SubtensorPriceChartViewModel) {
-        let hadSelection = selectedIndex != nil
-
-        clearSelection()
+        endSelection()
         plottedWidth = bounds.width
+        chartData = SubtensorPriceChartDataFactory.create(
+            series: viewModel.series,
+            availablePoints: Int(bounds.width)
+        )
 
-        defer {
-            if hadSelection {
-                delegate?.priceChartViewDidEndSelection(self)
-            }
-        }
-
-        let points = viewModel.values.enumerated().filter(\.element.isFinite)
-        let values = points.map(\.element)
-
-        guard values.count > 1, let minimum = values.min(), let maximum = values.max() else {
+        guard let chartData else {
             entries = []
             chart.clear()
             return
         }
 
-        let padding = maximum > minimum ? 0 : max(abs(maximum) * Constants.flatRangeFactor, Constants.minimumSpread)
-        let lower = minimum - padding
-        let upper = maximum + padding
-
-        applyAxis(lower: lower, upper: upper, labels: viewModel.axisLabels)
+        chart.xAxis.axisMinimum = chartData.xRange.lowerBound
+        chart.xAxis.axisMaximum = chartData.xRange.upperBound
+        chart.dragEnabled = isSelectable && chartData.coverage == nil
+        chart.highlightPerDragEnabled = chart.dragEnabled
+        applyAxis(lower: chartData.yRange.lowerBound, upper: chartData.yRange.upperBound, labels: viewModel.axisLabels)
 
         let lineColor = viewModel.isRising ? R.color.colorTextPositive()! : R.color.colorTextNegative()!
         self.lineColor = lineColor
@@ -134,11 +120,8 @@ private extension SubtensorSubnetPriceChartView {
             ? R.color.colorPriceChartPositiveShadow()!
             : R.color.colorPriceChartNegativeShadow()!
 
-        let availablePoints = Int(bounds.width)
-        let plottedPoints = availablePoints > 0 ? points.optimizedForChart(availablePoints: availablePoints) : points
-
-        entries = plottedPoints.map { index, value in
-            ChartDataEntry(x: Double(index), y: value)
+        entries = chartData.entries.map { entry in
+            ChartDataEntry(x: entry.coordinate, y: entry.value, data: entry.sourceIndex)
         }
 
         applyLine(lineColor: lineColor)
@@ -252,7 +235,7 @@ private extension SubtensorSubnetPriceChartView {
 
     func applySelection(of entry: ChartDataEntry) {
         guard
-            let position = entries.firstIndex(where: { $0.x == entry.x }),
+            let position = entries.firstIndex(where: { $0 === entry }),
             let lineColor,
             let selectionRenderer else {
             return
@@ -271,8 +254,6 @@ private extension SubtensorSubnetPriceChartView {
     }
 
     func clearSelection() {
-        selectedIndex = nil
-
         guard let selectionRenderer else {
             return
         }
@@ -284,25 +265,21 @@ private extension SubtensorSubnetPriceChartView {
     }
 
     func selectEntry(_ entry: ChartDataEntry) {
-        applySelection(of: entry)
-
-        let index = Int(entry.x)
-
-        guard index != selectedIndex else {
+        guard let sourceIndex = entry.data as? Int else {
             return
         }
 
-        selectedIndex = index
-        delegate?.priceChartView(self, didSelectPointAt: index)
+        applySelection(of: entry)
+        notifySelection(.point(sourceIndex: sourceIndex))
     }
 
-    func endSelection() {
-        clearSelection()
-        delegate?.priceChartViewDidEndSelection(self)
-    }
+    func notifySelection(_ newSelection: SubtensorPriceChartSelection) {
+        guard newSelection != selection else {
+            return
+        }
 
-    func highlightEntry(at location: CGPoint) {
-        chart.highlightValue(chart.getHighlightByTouchPoint(location), callDelegate: true)
+        selection = newSelection
+        delegate?.priceChartView(self, didSelect: newSelection)
     }
 
     @objc func handleLongPress(_ recognizer: UILongPressGestureRecognizer) {
@@ -320,8 +297,51 @@ private extension SubtensorSubnetPriceChartView {
     }
 }
 
+extension SubtensorSubnetPriceChartView {
+    func endSelection() {
+        let hadSelection = selection != nil
+        selection = nil
+        clearSelection()
+
+        if hadSelection {
+            delegate?.priceChartViewDidEndSelection(self)
+        }
+    }
+
+    func highlightEntry(at location: CGPoint) {
+        guard isSelectable, let chartData else {
+            return
+        }
+
+        let coordinate = chart.valueForTouchPoint(point: location, axis: .right).x
+
+        guard let selection = chartData.selection(at: coordinate) else {
+            return
+        }
+
+        switch selection {
+        case let .point(sourceIndex):
+            guard let entry = entries.first(where: { ($0.data as? Int) == sourceIndex }) else {
+                return
+            }
+
+            chart.highlightValue(x: entry.x, y: entry.y, dataSetIndex: 0, callDelegate: false)
+            applySelection(of: entry)
+        case .noData:
+            clearSelection()
+        }
+
+        notifySelection(selection)
+    }
+}
+
 extension SubtensorSubnetPriceChartView: ChartViewDelegate {
     func chartValueSelected(_: ChartViewBase, entry: ChartDataEntry, highlight _: Highlight) {
+        guard chartData?.coverage == nil else {
+            chart.highlightValues(nil)
+            return
+        }
+
         selectEntry(entry)
     }
 

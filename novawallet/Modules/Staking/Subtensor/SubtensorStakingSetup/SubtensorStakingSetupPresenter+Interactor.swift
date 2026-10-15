@@ -28,13 +28,6 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
         }
     }
 
-    func didReceiveRootYield(_ yield: SubtensorReportedYield?) {
-        rootRate = SubtensorAlphaApyFormatter.annualRate(from: yield)
-        isRootRateLoaded = true
-
-        provideViewModel()
-    }
-
     func didReceiveSubnet(_ target: SubtensorStakeTarget) {
         guard case let .buyMore(position) = mode, self.target == nil, target.netuid == position.netuid else {
             return
@@ -132,8 +125,6 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
         requestPresetIfReady()
     }
 
-    func didReceiveClaimable(_: SubtensorRootClaimable?) {}
-
     func didReceiveBlockNumber(_: BlockNumber) {
         forceQuoteRefresh()
     }
@@ -142,41 +133,5 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
         self.preflight = preflight
     }
 
-    func didReceiveQuote(_ quote: SubtensorTradeQuote) {
-        guard quoteFlow.applyQuote(quote) else {
-            return
-        }
-
-        tradesUnavailable = false
-        isQuoteFailed = false
-
-        provideViewModel()
-    }
-
-    func didReceiveExistentialDeposit(_ deposit: Balance) {
-        existentialDeposit = deposit
-    }
-
-    func didReceiveBaseError(_ error: SubtensorStakingBaseError) {
-        logger.error("Subtensor setup error: \(error)")
-
-        if error.isNovaFeeUnavailable {
-            tradesUnavailable = true
-        }
-
-        switch error {
-        case .feeFailed:
-            wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.refreshFee(resetting: false)
-            }
-        case .preflightFailed:
-            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.refreshPreflight()
-            }
-        case .quoteFailed:
-            quoteFlow.clearQuote()
-            isQuoteFailed = true
-            provideViewModel()
-        }
-    }
+    func didReceiveExistentialDeposit(_: Balance) {}
 }

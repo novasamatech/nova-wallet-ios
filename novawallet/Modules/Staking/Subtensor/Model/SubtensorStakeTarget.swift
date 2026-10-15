@@ -60,21 +60,14 @@ extension SubtensorStakeTarget {
 }
 
 extension SubtensorStakeTarget {
-    func assetDisplayInfo(basedOn taoDisplayInfo: AssetBalanceDisplayInfo) -> AssetBalanceDisplayInfo {
-        switch self {
-        case .root:
+    func assetDisplayInfo(
+        basedOn taoDisplayInfo: AssetBalanceDisplayInfo,
+        catalogue: SubtensorSubnetCatalogue?
+    ) -> AssetBalanceDisplayInfo {
+        guard !isRoot else {
             return taoDisplayInfo
-        case let .subnet(info, _):
-            let symbol = info.displaySymbol
-
-            return AssetBalanceDisplayInfo(
-                displayPrecision: taoDisplayInfo.displayPrecision,
-                assetPrecision: taoDisplayInfo.assetPrecision,
-                symbol: symbol.isEmpty ? "SN\(info.netuid)" : symbol,
-                symbolValueSeparator: taoDisplayInfo.symbolValueSeparator,
-                symbolPosition: taoDisplayInfo.symbolPosition,
-                icon: nil
-            )
         }
+
+        return taoDisplayInfo.subtensorAlpha(symbol: SubtensorSubnetNaming.symbol(for: netuid, in: catalogue))
     }
 }

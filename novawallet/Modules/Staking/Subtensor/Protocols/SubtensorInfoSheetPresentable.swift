@@ -1,8 +1,7 @@
-import UIKit
+import Foundation
 import Foundation_iOS
-import UIKit_iOS
 
-protocol SubtensorInfoSheetPresentable: AddressOptionsPresentable {
+protocol SubtensorInfoSheetPresentable: AddressOptionsPresentable, ShortTextInfoPresentable {
     func showSubtensorInfo(_ sheet: SubtensorInfoSheet, from view: ControllerBackedProtocol?)
 }
 
@@ -23,10 +22,6 @@ extension SubtensorInfoSheetPresentable {
             return
         }
 
-        guard let text = sheet.text else {
-            return
-        }
-
         let gotItAction = MessageSheetAction(
             title: LocalizableResource { locale in
                 R.string(preferredLanguages: locale.rLanguages).localizable.commonGotIt()
@@ -34,34 +29,13 @@ extension SubtensorInfoSheetPresentable {
             handler: {}
         )
 
-        let viewModel = TitleDetailsSheetViewModel(
-            title: text.title,
-            message: text.details,
+        showInfo(
+            from: view,
+            title: sheet.title,
+            details: sheet.details,
             mainAction: gotItAction,
-            secondaryAction: nil
+            titleStyle: .boldTitle3Primary,
+            extraHeight: 24
         )
-
-        let bottomSheet = TitleDetailsSheetViewFactory.createContentSizedView(from: viewModel)
-
-        if let titleDetailsView = bottomSheet as? TitleDetailsSheetViewController {
-            titleDetailsView.rootView.titleLabel.apply(style: .boldTitle3Primary)
-            titleDetailsView.preferredContentSize.height = titleDetailsView.rootView.contentHeight(
-                model: viewModel,
-                locale: LocalizationManager.shared.selectedLocale
-            )
-        }
-
-        bottomSheet.controller.preferredContentSize.height += SubtensorInfoSheetConstants.actionTopSpacing
-
-        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.novaManual)
-
-        bottomSheet.controller.modalTransitioningFactory = factory
-        bottomSheet.controller.modalPresentationStyle = .custom
-
-        view.controller.present(bottomSheet.controller, animated: true)
     }
-}
-
-private enum SubtensorInfoSheetConstants {
-    static let actionTopSpacing: CGFloat = 24
 }

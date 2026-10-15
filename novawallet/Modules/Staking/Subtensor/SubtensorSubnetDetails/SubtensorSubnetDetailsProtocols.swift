@@ -10,16 +10,15 @@ protocol SubtensorSubnetDetailsPresenterProtocol: AnyObject {
     func setup()
     func selectCurrency(at index: Int)
     func selectPeriod(at index: Int)
-    func selectAmount(at index: Int)
     func toggleFavorite()
     func selectValidator()
     func useSubnet()
     func retryHistory()
-    func selectChartPoint(at index: Int?)
+    func selectChart(_ selection: SubtensorPriceChartSelection?)
 }
 
 protocol SubnetDetailsInteractorInputProtocol: AnyObject {
-    func cachedSnapshot() -> SubtensorSubnetDetailsSnapshot
+    func cachedYields() -> SubtensorAlphaYields?
     func setup()
     func loadHistory(for period: SubtensorPricePeriod)
     func presetValidator(existingHotkey: AccountId?)
@@ -28,11 +27,9 @@ protocol SubnetDetailsInteractorInputProtocol: AnyObject {
 protocol SubnetDetailsInteractorOutputProtocol: AnyObject {
     func didReceiveHistory(_ result: SubtensorPriceHistoryResult, for period: SubtensorPricePeriod)
     func didFailHistory(for period: SubtensorPricePeriod)
-    func didReceiveListing(_ result: SubtensorPriceHistoryResult?)
-    func didReceiveRankingView(_ rankingView: SubtensorRankedSubnets?)
+    func didReceiveParameters(_ parameters: SubtensorSubnetParameters?)
     func didReceivePreset(_ validator: SubtensorValidatorDirectoryItem?)
     func didReceiveYields(_ yields: SubtensorAlphaYields?)
-    func didReceiveBalance(_ balance: AssetBalance?)
     func didReceiveTaoPrice(_ price: PriceData?)
     func didReceivePositions(_ state: Multistaking.SubtensorStakingState?)
     func didReceivePositionsSyncFailed(_ isFailed: Bool)
@@ -54,9 +51,4 @@ protocol SubtensorSubnetDetailsWireframeProtocol: AnyObject {
         validator: SubtensorValidatorDirectoryItem?,
         delegate: SubtensorSubnetSelectDelegate?
     )
-}
-
-struct SubtensorSubnetDetailsSnapshot {
-    let rankingView: HTTPCachePeek<SubtensorRankedSubnets>
-    let yields: HTTPCachePeek<SubtensorAlphaYields>
 }

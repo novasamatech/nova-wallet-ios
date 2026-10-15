@@ -15,68 +15,37 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
 
     let presetFactory: SubtensorValidatorPresetFactoryProtocol
     let yieldService: SubtensorYieldServiceProtocol
-    let rankingViewService: SubtensorRankingViewServiceProtocol
-    let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
+    let recommendationService: SubtensorRecommendationServiceProtocol
     let subnetsService: SubtensorSubnetsServiceProtocol
     let earnSettings: SubtensorEarnSettingsProtocol
 
+    private let quickPickCallStore = CancellableCallStore()
     private let validatorCallStore = CancellableCallStore()
-    private let rootYieldCallStore = CancellableCallStore()
-    private let catalogueCallStore = CancellableCallStore()
     private let yieldsCallStore = CancellableCallStore()
     private let rankingCallStore = CancellableCallStore()
-    private let logosCallStore = CancellableCallStore()
-    private let costBasisCallStore = CancellableCallStore()
+    private let subnetCallStore = CancellableCallStore()
 
     init(
         flowServices: SubtensorFlowServices,
-        chainAsset: ChainAsset,
+        state: SubtensorStakingSharedStateProtocol,
         presetFactory: SubtensorValidatorPresetFactoryProtocol,
-        yieldService: SubtensorYieldServiceProtocol,
-        catalogueService: SubtensorSubnetCatalogueServiceProtocol,
-        rankingViewService: SubtensorRankingViewServiceProtocol,
-        subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
-        subnetsService: SubtensorSubnetsServiceProtocol,
-        earnSettings: SubtensorEarnSettingsProtocol,
-        costBasisService: SubtensorCostBasisServiceProtocol,
-        generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
         logger: LoggerProtocol
     ) {
         self.presetFactory = presetFactory
-        self.yieldService = yieldService
-        self.rankingViewService = rankingViewService
-        self.subnetLogosProvider = subnetLogosProvider
-        self.subnetsService = subnetsService
-        self.earnSettings = earnSettings
+        yieldService = state.earnServices.yieldService
+        recommendationService = state.earnServices.recommendationService
+        subnetsService = state.subnetsService
+        earnSettings = state.earnServices.earnSettings
 
-        super.init(
-            chainAsset: chainAsset,
-            selectedAccount: flowServices.account.chainAccount,
-            positionsSyncService: flowServices.positionsSyncService,
-            rootClaimableService: flowServices.rootClaimableService,
-            preflightFactory: flowServices.preflightFactory,
-            tradeQuoteFactory: flowServices.tradeQuoteFactory,
-            operationService: flowServices.operationService,
-            catalogueService: catalogueService,
-            costBasisService: costBasisService,
-            walletLocalSubscriptionFactory: flowServices.walletLocalSubscriptionFactory,
-            priceLocalSubscriptionFactory: flowServices.priceLocalSubscriptionFactory,
-            generalLocalSubscriptionFactory: generalLocalSubscriptionFactory,
-            runtimeProvider: flowServices.runtimeProvider,
-            currencyManager: flowServices.currencyManager,
-            operationQueue: flowServices.operationQueue,
-            logger: logger
-        )
+        super.init(flowServices: flowServices, state: state, logger: logger)
     }
 
     deinit {
+        quickPickCallStore.cancel()
         validatorCallStore.cancel()
-        rootYieldCallStore.cancel()
-        catalogueCallStore.cancel()
         yieldsCallStore.cancel()
         rankingCallStore.cancel()
-        logosCallStore.cancel()
-        costBasisCallStore.cancel()
+        subnetCallStore.cancel()
     }
 }
 
@@ -105,16 +74,39 @@ private extension SubtensorStakingSetupInteractor {
 }
 
 extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol {
+    func cancelQuickPickSnapshot() { quickPickCallStore.cancel() }
+
+    func loadQuickPickSnapshot(generation: Int) {
+        quickPickCallStore.cancel()
+        let catalogueWrapper = catalogueService.createCatalogueWrapper()
+        let infoWrapper = subnetsService.createSubnetsInfoWrapper()
+        let mergeOperation = ClosureOperation<(SubtensorSubnetCatalogue, SubtensorSubnetsInfo)> {
+            (
+                try catalogueWrapper.targetOperation.extractNoCancellableResultData(),
+                try infoWrapper.targetOperation.extractNoCancellableResultData()
+            )
+        }
+        mergeOperation.addDependency(catalogueWrapper.targetOperation)
+        mergeOperation.addDependency(infoWrapper.targetOperation)
+        executeCancellable(
+            wrapper: CompoundOperationWrapper(
+                targetOperation: mergeOperation,
+                dependencies: catalogueWrapper.allOperations + infoWrapper.allOperations
+            ),
+            inOperationQueue: operationQueue,
+            backingCallIn: quickPickCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            self?.presenter?.didReceiveQuickPickSnapshot(result, generation: generation)
+        }
+    }
+
     func cachedRankingView() -> HTTPCachePeek<SubtensorRankedSubnets> {
-        rankingViewService.cachedRankingView()
+        recommendationService.cachedRankedSubnets()
     }
 
     func cachedYields(netuid: UInt16) -> HTTPCachePeek<SubtensorAlphaYields> {
         yieldService.cachedAlphaYields(for: netuid)
-    }
-
-    func cachedRootYield() -> HTTPCachePeek<SubtensorReportedYield?> {
-        yieldService.cachedRootYield()
     }
 
     func presetValidator(on subnet: SubtensorSubnetRef, existingHotkey: AccountId?) {
@@ -129,27 +121,15 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
         provideValidator(using: wrapper, subnet: subnet)
     }
 
-    func loadRootYield() {
-        rootYieldCallStore.cancel()
+    func loadSubnet(netuid: UInt16) {
+        subnetCallStore.cancel()
 
         executeCancellable(
-            wrapper: yieldService.createRootYieldWrapper(),
+            wrapper: subnetsService.createSubnetsInfoWrapper(),
             inOperationQueue: operationQueue,
-            backingCallIn: rootYieldCallStore,
+            backingCallIn: subnetCallStore,
             runningCallbackIn: .main
         ) { [weak self] result in
-            switch result {
-            case let .success(yield):
-                self?.presenter?.didReceiveRootYield(yield)
-            case let .failure(error):
-                self?.logger.warning("Subtensor root yield unavailable: \(error)")
-                self?.presenter?.didReceiveRootYield(nil)
-            }
-        }
-    }
-
-    func loadSubnet(netuid: UInt16) {
-        subnetsService.fetchSubnetsInfo(runningCompletionIn: .main) { [weak self] result in
             switch result {
             case let .success(info):
                 guard
@@ -162,25 +142,6 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
                 self?.presenter?.didReceiveSubnet(.subnet(info: subnet, price: price))
             case let .failure(error):
                 self?.presenter?.didFailSubnet(error)
-            }
-        }
-    }
-
-    func loadCatalogue() {
-        catalogueCallStore.cancel()
-
-        executeCancellable(
-            wrapper: catalogueService.createCatalogueWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: catalogueCallStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(catalogue):
-                self?.presenter?.didReceiveCatalogue(catalogue)
-            case let .failure(error):
-                self?.logger.warning("Subtensor catalogue unavailable for the setup: \(error)")
-                self?.presenter?.didReceiveCatalogue(nil)
             }
         }
     }
@@ -208,7 +169,7 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
         rankingCallStore.cancel()
 
         executeCancellable(
-            wrapper: rankingViewService.createRankingViewWrapper(),
+            wrapper: recommendationService.createRankedSubnetsWrapper(),
             inOperationQueue: operationQueue,
             backingCallIn: rankingCallStore,
             runningCallbackIn: .main
@@ -216,47 +177,11 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
             switch result {
             case let .success(rankingView):
                 self?.presenter?.didReceiveRankingView(rankingView)
+            case .failure(BittensorApiError.generationStale):
+                self?.presenter?.didReceiveRankingView(self?.recommendationService.cachedRankedSubnets().value)
             case let .failure(error):
                 self?.logger.warning("Subtensor ranking view unavailable for the setup: \(error)")
                 self?.presenter?.didReceiveRankingView(nil)
-            }
-        }
-    }
-
-    func loadSubnetLogos() {
-        logosCallStore.cancel()
-
-        executeCancellable(
-            wrapper: subnetLogosProvider.createLogosWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: logosCallStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(logos):
-                self?.presenter?.didReceiveSubnetLogos(logos)
-            case let .failure(error):
-                self?.logger.warning("Subtensor subnet logos unavailable for the setup mark: \(error)")
-                self?.presenter?.didReceiveSubnetLogos(nil)
-            }
-        }
-    }
-
-    func loadCostBasis(for netuid: UInt16) {
-        costBasisCallStore.cancel()
-
-        executeCancellable(
-            wrapper: costBasisService.createCostBasisWrapper(for: selectedAccount.accountId, netuid: netuid),
-            inOperationQueue: operationQueue,
-            backingCallIn: costBasisCallStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(costBasis):
-                self?.presenter?.didReceiveCostBasis(costBasis)
-            case let .failure(error):
-                self?.logger.warning("Subtensor cost basis unavailable for the buy on netuid \(netuid): \(error)")
-                self?.presenter?.didReceiveCostBasis(nil)
             }
         }
     }

@@ -62,6 +62,10 @@ final class SubtensorPriceWidgetView: UIView {
         case .hidden:
             changeLabel.text = nil
             changeSkeletonView.setLoading(false)
+        case let .date(text):
+            changeLabel.text = text
+            changeLabel.textColor = R.color.colorTextSecondary()
+            changeSkeletonView.setLoading(false)
         case let .value(text, isRising):
             changeLabel.text = text
             changeLabel.textColor = isRising ? R.color.colorTextPositive() : R.color.colorTextNegative()
@@ -111,6 +115,8 @@ private extension SubtensorPriceWidgetView {
 
         chartViewModel = viewModel
         chartLoadingView.setLoading(viewModel == .loading)
+
+        chartView.endSelection()
 
         switch viewModel {
         case .loading:

@@ -64,24 +64,17 @@ private extension SubtensorSubnetDetailsViewController {
         rootView.favoriteButton.addTarget(self, action: #selector(actionFavorite), for: .touchUpInside)
         rootView.actionButton.addTarget(self, action: #selector(actionUseSubnet), for: .touchUpInside)
 
-        rootView.estimateView.chipButtons.forEach { button in
-            button.addTarget(self, action: #selector(actionChip(_:)), for: .touchUpInside)
-        }
-
         rootView.moreDetailsView.delegate = self
     }
 
     func setupLocalization() {
         let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
 
-        rootView.validatorCaptionLabel.text = strings.stakingSubtensorUiDetailValidator()
-        rootView.validatorView.titleLabel.text = strings.stakingCommonValidator()
-        rootView.estimateCaptionLabel.text = strings.stakingSubtensorUiDetailEstimate()
-        rootView.estimateView.noteLabel.text = strings.stakingSubtensorUiDetailEstimateNote()
+        rootView.validatorCaptionLabel.text = strings.stakingSubtensorV22Validators()
+        rootView.parametersHeadingLabel.text = strings.stakingSubtensorV22Parameters()
 
         rootView.moreDetailsView.titleControl.titleLabel.text = strings.stakingSubtensorUiDetailMore()
         rootView.moreDetailsView.titleControl.invalidateLayout()
-        rootView.moreDetailsView.numberCell.titleLabel.text = strings.stakingSubtensorUiPickerNumber()
 
         rootView.actionButton.imageWithTitleView?.title = strings.stakingSubtensorUiDetailUseSubnet()
         rootView.actionButton.invalidateLayout()
@@ -102,10 +95,6 @@ private extension SubtensorSubnetDetailsViewController {
 
     @objc func actionValidator() {
         presenter.selectValidator()
-    }
-
-    @objc func actionChip(_ sender: UIControl) {
-        presenter.selectAmount(at: sender.tag)
     }
 
     @objc func actionFavorite() {
@@ -131,10 +120,8 @@ extension SubtensorSubnetDetailsViewController: SubtensorSubnetDetailsViewProtoc
     func didReceive(viewModel: SubtensorSubnetDetailsViewModel) {
         rootView.priceWidget.bind(viewModel: viewModel.priceWidget)
         rootView.validatorView.bind(viewModel: viewModel.validator)
-        rootView.estimateView.bind(viewModel: viewModel.estimate)
-        rootView.bind(factorsHeading: viewModel.factors.heading)
-        rootView.factorsView.bind(viewModel: viewModel.factors)
-        rootView.moreDetailsView.numberCell.detailsLabel.text = viewModel.subnetNumber
+        rootView.parametersView.bind(viewModel.parameters)
+        rootView.moreDetailsView.bind(viewModel.moreDetails)
 
         rootView.favoriteButton.imageWithTitleView?.iconImage = viewModel.isFavorite
             ? R.image.iconFavToolbarSel()
@@ -161,14 +148,14 @@ extension SubtensorSubnetDetailsViewController: SubtensorPriceChartViewDelegate 
         chartLongPressHapticPlayer.play()
     }
 
-    func priceChartView(_: SubtensorSubnetPriceChartView, didSelectPointAt index: Int) {
+    func priceChartView(_: SubtensorSubnetPriceChartView, didSelect selection: SubtensorPriceChartSelection) {
         seekHapticPlayer.play()
-        presenter.selectChartPoint(at: index)
+        presenter.selectChart(selection)
     }
 
     func priceChartViewDidEndSelection(_: SubtensorSubnetPriceChartView) {
         seekHapticPlayer.reset()
-        presenter.selectChartPoint(at: nil)
+        presenter.selectChart(nil)
     }
 }
 

@@ -427,7 +427,6 @@ final class MultistakingSyncService {
             workingQueue: workingQueue,
             logger: logger,
             maxApyProvider: subtensorProcessServices.createMaxApyProvider(
-                runtimeConnectionStore: runtimeConnectionStore,
                 operationQueue: operationQueue,
                 logger: logger
             ),

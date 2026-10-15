@@ -19,9 +19,8 @@ struct SubtensorPositionState {
     var validatorHotkey: AccountId?
     var validator: SubtensorValidatorDirectoryItem?
     var isRateResolved = false
-    var rootRate: Decimal?
     var yields: SubtensorAlphaYields?
-    var claimable: SubtensorRootClaimable?
+    var claimable: [SubtensorRootClaimPreview]?
     var isClaimableFailed = false
     var pendingClaimHotkeys: Set<AccountId> = []
     var holds: [AccountId: SubtensorRootHold] = [:]
@@ -29,12 +28,13 @@ struct SubtensorPositionState {
     var period = SubtensorPriceWidgetViewModelFactory.defaultPeriod
     var history = SubtensorSubnetHistoryState.loading {
         didSet {
-            chartPoint = nil
+            chartSelection = nil
         }
     }
 
     var hasResolvedHistory = false
-    var chartPoint: Int?
+    var chartEndDate = Date.distantPast
+    var chartSelection: SubtensorPriceChartSelection?
 
     init(netuid: UInt16, group: SubtensorPortfolioGroup?) {
         self.netuid = netuid
@@ -56,11 +56,7 @@ struct SubtensorPositionState {
     }
 
     var annualRate: Decimal? {
-        guard !isRoot else {
-            return rootRate
-        }
-
-        return group.flatMap { SubtensorAlphaApyFormatter.annualRate(for: $0.primaryHotkey, in: yields) }
+        group.flatMap { SubtensorAlphaApyFormatter.annualRate(for: $0.primaryHotkey, in: yields) }
     }
 
     var unstakeBasis: SubtensorGroupUnstakeBasis? {
@@ -111,7 +107,6 @@ extension SubtensorPositionState {
         chainFormat: ChainFormat
     ) -> SubtensorClaimRewardsModel? {
         guard
-            let minimumClaim = claimable?.minimumClaim,
             let target = claimTarget,
             let address = try? target.hotkey.toAddress(using: chainFormat) else {
             return nil
@@ -126,8 +121,7 @@ extension SubtensorPositionState {
                 display: DisplayAddress(address: address, username: name ?? ""),
                 annualRate: nil
             ),
-            shownPreview: target,
-            minimumClaim: minimumClaim
+            shownPreview: target
         )
     }
 }
@@ -158,14 +152,6 @@ struct SubtensorPositionActionViewModel: Equatable {
     let details: String?
 }
 
-struct SubtensorPositionValidatorViewModel {
-    let icon: ImageViewModelProtocol?
-    let name: String?
-    let subtitle: String
-    let rate: SubtensorPortfolioLoadable<String>
-    let rateCaption: String
-}
-
 struct SubtensorPositionNoticeViewModel: Equatable {
     let title: String
     let timeLeft: String?
@@ -177,7 +163,7 @@ struct SubtensorPositionViewModel {
     let summary: SubtensorPositionSummaryViewModel
     let priceWidget: SubtensorPriceWidgetViewModel?
     let actions: [SubtensorPositionActionViewModel]
-    let validator: SubtensorPositionValidatorViewModel
+    let validator: SubtensorValidatorCardViewModel
     let notice: SubtensorPositionNoticeViewModel?
     let isSyncFailed: Bool
 }

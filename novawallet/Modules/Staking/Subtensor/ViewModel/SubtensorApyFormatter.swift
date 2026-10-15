@@ -9,7 +9,7 @@ enum SubtensorApyStyle: Equatable {
 }
 
 enum SubtensorApyFormatter {
-    static func text(for annualRate: Decimal, style: SubtensorApyStyle, locale: Locale) -> String {
+    static func text(for annualRate: Decimal?, style: SubtensorApyStyle, locale: Locale) -> String {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         switch style {
@@ -22,20 +22,31 @@ enum SubtensorApyFormatter {
         case .bare:
             return rateText(annualRate, locale: locale)
         case .column:
-            return rateText(annualRate, formatter: NumberFormatter.percent, locale: locale)
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .percent
+            formatter.roundingMode = .halfEven
+            formatter.locale = locale
+            formatter.minimumFractionDigits = 1
+            formatter.maximumFractionDigits = 1
+            let symbol = formatter.percentSymbol ?? "%"
+            formatter.positivePrefix = formatter.positivePrefix.replacingOccurrences(of: symbol, with: "")
+            formatter.negativePrefix = formatter.negativePrefix.replacingOccurrences(of: symbol, with: "")
+            formatter.positiveSuffix = " " + symbol
+            formatter.negativeSuffix = " " + symbol
+            return rateText(annualRate, formatter: formatter, locale: locale)
         }
     }
 }
 
 private extension SubtensorApyFormatter {
     static func rateText(
-        _ annualRate: Decimal,
+        _ annualRate: Decimal?,
         formatter: NumberFormatter = NumberFormatter.percentSingle,
         locale: Locale
     ) -> String {
         formatter.locale = locale
 
-        return formatter.stringFromDecimal(annualRate) ??
+        return annualRate.flatMap { formatter.stringFromDecimal($0) } ??
             R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown()
     }
 }

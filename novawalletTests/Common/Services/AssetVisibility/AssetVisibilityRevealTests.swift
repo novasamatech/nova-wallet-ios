@@ -665,7 +665,7 @@ private final class UnusedCoingeckoOperationFactory: CoingeckoOperationFactoryPr
         for _: String,
         currency _: Currency,
         period _: PriceHistoryPeriod
-    ) -> BaseOperation<HTTPCacheFetchOutcome<PriceHistory>> {
+    ) -> BaseOperation<(PriceHistory, HTTPCacheDirectives)> {
         fatalError("Unused")
     }
 

@@ -62,22 +62,15 @@ private extension SubtensorPositionViewModelFactory {
     }
 
     func formatAlpha(_ amount: Balance, state: SubtensorPositionState, locale: Locale) -> String {
-        let taoInfo = chainAsset.assetDisplayInfo
-
-        let alphaInfo = AssetBalanceDisplayInfo(
-            displayPrecision: taoInfo.displayPrecision,
-            assetPrecision: taoInfo.assetPrecision,
-            symbol: SubtensorSubnetNaming.symbol(for: state.netuid, in: state.catalogue),
-            symbolValueSeparator: taoInfo.symbolValueSeparator,
-            symbolPosition: taoInfo.symbolPosition,
-            icon: nil
+        let alphaInfo = chainAsset.assetDisplayInfo.subtensorAlpha(
+            symbol: SubtensorSubnetNaming.symbol(for: state.netuid, in: state.catalogue)
         )
 
         let text = formatterFactory.createTokenFormatter(for: alphaInfo)
             .value(for: locale)
             .stringFromDecimal(decimal(amount)) ?? unknownValue(for: locale)
 
-        return "\u{2066}\(text)\u{2069}"
+        return SubtensorSubnetNaming.isolatedLeftToRight(text)
     }
 
     func formatDuration(blocks: UInt64, locale: Locale) -> String {
@@ -116,10 +109,10 @@ private extension SubtensorPositionViewModelFactory {
 
         if state.isClaimableFailed {
             value = .loaded(value: unknownValue(for: locale), detail: nil, isPositive: false)
-        } else if let claimable = state.claimable {
+        } else if let redeemable = state.claimable?.reduce(Balance.zero, { $0 + $1.redeemable }) {
             value = .loaded(
-                value: formatTao(claimable.totalRedeemable, locale: locale),
-                detail: formatFiat(claimable.totalRedeemable, price: state.price.value, locale: locale),
+                value: formatTao(redeemable, locale: locale),
+                detail: formatFiat(redeemable, price: state.price.value, locale: locale),
                 isPositive: false
             )
         } else {
@@ -134,23 +127,6 @@ private extension SubtensorPositionViewModelFactory {
 
     func createSubnetRows(for state: SubtensorPositionState, locale: Locale) -> [SubtensorPositionRowViewModel] {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
-        let apyRow: SubtensorPositionRowViewModel?
-
-        if !state.isRateResolved {
-            apyRow = SubtensorPositionRowViewModel(title: strings.stakingEstimatedEarnings(), value: .loading)
-        } else {
-            apyRow = state.annualRate.map { rate in
-                SubtensorPositionRowViewModel(
-                    title: strings.stakingEstimatedEarnings(),
-                    value: .loaded(
-                        value: SubtensorApyFormatter.text(for: rate, style: .trailing, locale: locale),
-                        detail: nil,
-                        isPositive: true
-                    )
-                )
-            }
-        }
 
         let worthValue: SubtensorPositionValueViewModel
 
@@ -171,7 +147,7 @@ private extension SubtensorPositionViewModelFactory {
             value: worthValue
         )
 
-        return [apyRow, worthRow].compactMap { $0 }
+        return [worthRow]
     }
 
     func createSummary(for state: SubtensorPositionState, locale: Locale) -> SubtensorPositionSummaryViewModel {
@@ -206,34 +182,11 @@ private extension SubtensorPositionViewModelFactory {
     }
 
     func createClaimDetails(for state: SubtensorPositionState, locale: Locale) -> String? {
-        guard
-            !state.isClaimableFailed,
-            let claimable = state.claimable,
-            let minimumClaim = claimable.minimumClaim else {
+        guard !state.isClaimableFailed, let target = state.claimTarget else {
             return nil
         }
 
-        if let target = state.claimTarget {
-            return formatTao(target.redeemable, locale: locale)
-        }
-
-        let isOwed = claimable.previews.contains { $0.redeemable > 0 }
-        let reachesMinimum = claimable.previews.contains { preview in
-            SubtensorRootClaimRule.isClaimable(preview, minimumClaim: minimumClaim)
-        }
-
-        guard isOwed, !reachesMinimum else {
-            return nil
-        }
-
-        let minimum = balanceViewModelFactory.amountFromValue(
-            decimal(minimumClaim),
-            roundingMode: .up
-        ).value(for: locale)
-
-        return R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorClaimMinimumDetailsFormat(
-            minimum
-        )
+        return formatTao(target.redeemable, locale: locale)
     }
 
     func createActions(for state: SubtensorPositionState, locale: Locale) -> [SubtensorPositionActionViewModel] {
@@ -257,7 +210,7 @@ private extension SubtensorPositionViewModelFactory {
         }
     }
 
-    func createValidator(for state: SubtensorPositionState, locale: Locale) -> SubtensorPositionValidatorViewModel {
+    func createValidator(for state: SubtensorPositionState, locale: Locale) -> SubtensorValidatorCardViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
         let address = state.group.flatMap { try? $0.primaryHotkey.toAddress(using: chainAsset.chain.chainFormat) }
 
@@ -275,18 +228,18 @@ private extension SubtensorPositionViewModelFactory {
 
         if !state.isRateResolved {
             rate = .loading
-        } else if let annualRate = state.annualRate {
-            rate = .loaded(SubtensorApyFormatter.text(for: annualRate, style: .bare, locale: locale))
+        } else if state.isRoot || state.annualRate != nil {
+            rate = .loaded(SubtensorApyFormatter.text(for: state.annualRate, style: .bare, locale: locale))
         } else {
             rate = .hidden
         }
 
-        return SubtensorPositionValidatorViewModel(
+        return SubtensorValidatorCardViewModel(
             icon: icon,
             name: name,
             subtitle: strings.stakingCommonValidator(),
             rate: rate,
-            rateCaption: strings.stakingSubtensorUiValidatorSortApy()
+            rateCaption: strings.stakingSubtensorV22EstApy()
         )
     }
 

@@ -11,11 +11,11 @@ final class SubtensorPositionPresenter {
     let chainAsset: ChainAsset
     let pendingRootClaims: SubtensorPendingRootClaimsProtocol
 
+    private let now: () -> Date
     private var state: SubtensorPositionState
     private var target: SubtensorStakeTarget?
     private var validatorRequest: ValidatorRequest?
     private var historyRequest: HistoryRequest?
-    private var isCatalogueRefreshForced = false
     private var isSubnetsRefreshForced = false
     private var isSubnetsInfoUnavailable = false
     private var isClosed = false
@@ -28,8 +28,10 @@ final class SubtensorPositionPresenter {
         interactor: SubtensorPositionInteractorInputProtocol,
         wireframe: SubtensorPositionWireframeProtocol,
         viewModelFactory: SubnetPositionViewModelFactoryProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        now: @escaping () -> Date = Date.init
     ) {
+        self.now = now
         state = SubtensorPositionState(netuid: group.netuid, group: group)
         self.account = account
         self.chainAsset = chainAsset
@@ -72,23 +74,6 @@ private extension SubtensorPositionPresenter {
         } ?? []
 
         view?.didReceive(viewModel: viewModelFactory.createViewModel(for: state, locale: selectedLocale))
-    }
-
-    func seed(from snapshot: SubtensorPositionSnapshot) {
-        if let catalogue = snapshot.catalogue.value {
-            state.catalogue = catalogue
-            state.isCatalogueResolved = true
-        }
-
-        if let rootRate = snapshot.rootRate.value {
-            state.isRateResolved = true
-            state.rootRate = rootRate
-        }
-
-        if let yields = snapshot.yields.value {
-            state.isRateResolved = true
-            state.yields = yields
-        }
     }
 
     func loadValidatorIfNeeded() {
@@ -163,15 +148,24 @@ private extension SubtensorPositionPresenter {
         }
 
         isSubnetsInfoUnavailable = false
-        interactor.loadSubnetsInfo(forcingRefresh: true)
+        interactor.loadSubnetsInfo()
     }
 }
 
 extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
     func setup() {
-        let snapshot = interactor.cachedSnapshot()
+        let catalogue = interactor.cachedCatalogue()
 
-        seed(from: snapshot)
+        if let catalogue {
+            state.catalogue = catalogue
+            state.isCatalogueResolved = true
+        }
+
+        if let yields = interactor.cachedYields() {
+            state.isRateResolved = true
+            state.yields = yields
+        }
+
         provideViewModel()
         interactor.setup()
 
@@ -179,7 +173,7 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
             apply(group: group)
         }
 
-        if snapshot.catalogue.value != nil {
+        if catalogue != nil {
             requestHistoryIfNeeded()
         }
     }
@@ -191,6 +185,7 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
             return
         }
 
+        state.chartSelection = nil
         state.period = periods[index]
         requestHistoryIfNeeded()
         provideViewModel()
@@ -227,9 +222,7 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
             return
         }
 
-        let detail = state.isValidatorResolved
-            ? state.validator.map { SubtensorValidatorDetail(item: $0, identity: nil) }
-            : nil
+        let detail = state.isValidatorResolved ? state.validator : nil
 
         wireframe.showValidatorInfo(from: view, target: target, hotkey: hotkey, detail: detail)
     }
@@ -244,8 +237,8 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
         provideViewModel()
     }
 
-    func selectChartPoint(at index: Int?) {
-        state.chartPoint = index
+    func selectChart(_ selection: SubtensorPriceChartSelection?) {
+        state.chartSelection = selection
 
         if let header = viewModelFactory.createPriceHeader(for: state, locale: selectedLocale) {
             view?.didReceive(priceHeader: header)
@@ -280,19 +273,13 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
     }
 
     func didChangeCurrency() {
+        state.chartSelection = nil
         state.price = .loading
         provideViewModel()
     }
 
     func didReceive(catalogue: SubtensorSubnetCatalogue?) {
         state.catalogue = catalogue
-
-        if catalogue != nil, state.catalogue?.subnet(for: state.netuid) == nil, !isCatalogueRefreshForced {
-            isCatalogueRefreshForced = true
-            interactor.loadCatalogue()
-            return
-        }
-
         state.isCatalogueResolved = true
         loadValidatorIfNeeded()
         requestHistoryIfNeeded()
@@ -307,7 +294,7 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
                 isSubnetsInfoUnavailable = true
             } else {
                 isSubnetsRefreshForced = true
-                interactor.loadSubnetsInfo(forcingRefresh: true)
+                interactor.loadSubnetsInfo()
             }
 
             return
@@ -331,24 +318,14 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
         provideViewModel()
     }
 
-    func didReceive(rootRate: Decimal?) {
-        state.isRateResolved = true
-        state.rootRate = rootRate
-        provideViewModel()
-    }
-
     func didReceive(yields: SubtensorAlphaYields?) {
         state.isRateResolved = true
         state.yields = yields
         provideViewModel()
     }
 
-    func didReceive(claimable: SubtensorRootClaimable?) {
+    func didReceive(claimable: [SubtensorRootClaimPreview], isFailed: Bool) {
         state.claimable = claimable
-        provideViewModel()
-    }
-
-    func didReceiveClaimableFailure(_ isFailed: Bool) {
         state.isClaimableFailed = isFailed
         provideViewModel()
     }
@@ -367,6 +344,8 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
         guard period == state.period else {
             return
         }
+
+        state.chartEndDate = now()
 
         switch history {
         case let .available(priceHistory):

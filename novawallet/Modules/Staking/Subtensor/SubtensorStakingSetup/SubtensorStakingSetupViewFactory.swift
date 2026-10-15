@@ -3,21 +3,37 @@ import Foundation_iOS
 
 enum SubtensorStakingSetupViewFactory {
     static func createRootDetailsView(
-        for state: SubtensorStakingSharedStateProtocol
+        for state: SubtensorStakingSharedStateProtocol,
+        browseState: SubtensorSubnetBrowseState = .init(),
+        presentation: SubtensorRootEntryPresentation = .standard
     ) -> SubtensorStakingSetupViewProtocol? {
-        createView(for: state, mode: .rootDetails)
+        createView(for: state, mode: .rootDetails, browseState: browseState, rootEntryPresentation: presentation)
     }
 
     static func createSubnetView(
         for state: SubtensorStakingSharedStateProtocol,
         target: SubtensorStakeTarget,
-        validator: SubtensorValidatorDirectoryItem?
+        validator: SubtensorValidatorDirectoryItem?,
+        browseState: SubtensorSubnetBrowseState = .init()
     ) -> SubtensorStakingSetupViewProtocol? {
         guard !target.isRoot else {
             return nil
         }
 
-        return createView(for: state, mode: .subnetPick(target: target, validator: validator))
+        return createView(for: state, mode: .subnetPick(target: target, validator: validator), browseState: browseState)
+    }
+
+    static func createQuickPickView(
+        for state: SubtensorStakingSharedStateProtocol,
+        order: SubtensorQuickPickOrder
+    ) -> SubtensorStakingSetupViewProtocol? {
+        guard order.subnetSort != nil else { return nil }
+        return createView(
+            for: state,
+            mode: .quickPick(order),
+            browseState: SubtensorSubnetBrowseState(order: order),
+            quickPickVisit: SubtensorQuickPickVisit(order: order)
+        )
     }
 
     static func createAddStakeView(
@@ -46,7 +62,10 @@ enum SubtensorStakingSetupViewFactory {
 private extension SubtensorStakingSetupViewFactory {
     static func createView(
         for state: SubtensorStakingSharedStateProtocol,
-        mode: SubtensorStakingSetupMode
+        mode: SubtensorStakingSetupMode,
+        browseState: SubtensorSubnetBrowseState = .init(),
+        quickPickVisit: SubtensorQuickPickVisit? = nil,
+        rootEntryPresentation: SubtensorRootEntryPresentation = .standard
     ) -> SubtensorStakingSetupViewProtocol? {
         guard let services = SubtensorFlowServicesFactory.createServices(for: state) else {
             return nil
@@ -89,7 +108,10 @@ private extension SubtensorStakingSetupViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             viewModelFactory: viewModelFactory,
             localizationManager: localizationManager,
-            logger: Logger.shared
+            logger: Logger.shared,
+            browseState: browseState,
+            quickPickVisit: quickPickVisit,
+            rootEntryPresentation: rootEntryPresentation
         )
 
         let view = SubtensorStakingSetupViewController(
@@ -113,22 +135,15 @@ private extension SubtensorStakingSetupViewFactory {
         let presetFactory = SubtensorValidatorPresetFactory(
             directoryService: earnServices.validatorDirectoryService,
             recommendationService: earnServices.recommendationService,
+            yieldService: earnServices.yieldService,
             operationQueue: services.operationQueue,
             logger: Logger.shared
         )
 
         return SubtensorStakingSetupInteractor(
             flowServices: services,
-            chainAsset: state.stakingOption.chainAsset,
+            state: state,
             presetFactory: presetFactory,
-            yieldService: earnServices.yieldService,
-            catalogueService: earnServices.catalogueService,
-            rankingViewService: earnServices.rankingViewService,
-            subnetLogosProvider: earnServices.subnetLogosProvider,
-            subnetsService: state.subnetsService,
-            earnSettings: earnServices.earnSettings,
-            costBasisService: earnServices.costBasisService,
-            generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
             logger: Logger.shared
         )
     }

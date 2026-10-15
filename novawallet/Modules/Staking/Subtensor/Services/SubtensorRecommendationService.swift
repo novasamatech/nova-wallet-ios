@@ -20,12 +20,6 @@ final class SubtensorRecommendationService {
     }
 }
 
-extension SubtensorRecommendationGeneration {
-    func shownAge(at now: TimeInterval = BittensorMonotonicClock.now()) -> TimeInterval {
-        TimeInterval(ageSeconds) + max(0, now - receivedAt)
-    }
-}
-
 extension SubtensorRankedSubnets {
     func subnet(for netuid: UInt16) -> SubtensorRankedSubnet? {
         items.first { $0.netuid == netuid }
@@ -33,193 +27,123 @@ extension SubtensorRankedSubnets {
 }
 
 private extension SubtensorRecommendationService {
-    struct Candidate {
-        let recommendationClass: SubtensorRecommendationClass
-        let path: String
-        let pair: SubtensorHotkeySubnet
-        let recommendation: BittensorApi.Recommendation
-    }
-
-    struct ParsedGeneration {
-        let generation: SubtensorRecommendationGeneration
+    struct Candidates {
+        let recommended: SubtensorRecommendedValidators
         let gates: SubtensorClientGates
-        let topN: Int
-        let candidates: [Candidate]
-        let reader: DecimalReader
     }
 
-    static func parse(
-        _ response: BittensorApiResult<BittensorApi.RecommendationCollection>,
+    static func makeCandidates(
+        from response: BittensorApiResult<BittensorApi.RankedValidatorCollection>,
+        subnet: SubtensorSubnetRef,
         logger: LoggerProtocol
-    ) throws -> ParsedGeneration {
+    ) throws -> Candidates {
         let meta = response.value.meta
-        let classes = response.value.classes
-        let reader = DecimalReader(route: "/recommendations", requestId: response.requestId)
-
-        let groups: [(SubtensorRecommendationClass, String, [BittensorApi.Recommendation])] = [
-            (.stable, "stable", classes.stable),
-            (.balanced, "balanced", classes.balanced),
-            (.higherUpside, "higherUpside", classes.higherUpside)
-        ]
-
-        var candidates: [Candidate] = []
-
-        for (recommendationClass, name, recommendations) in groups {
-            for (index, recommendation) in recommendations.enumerated() {
-                let path = "classes.\(name)[\(index)]"
-
-                guard let hotkey = try? recommendation.hotkey.toAccountId(
-                    using: .substrate(SubstrateConstants.genericAddressPrefix)
-                ) else {
-                    logger.warning("Skipped the recommendation at \(path) with an undecodable hotkey")
-                    continue
-                }
-
-                let candidate = Candidate(
-                    recommendationClass: recommendationClass,
-                    path: path,
-                    pair: SubtensorHotkeySubnet(hotkey: hotkey, netuid: recommendation.netuid),
-                    recommendation: recommendation
-                )
-
-                candidates.append(candidate)
-            }
-        }
-
-        return try ParsedGeneration(
-            generation: makeGeneration(
-                meta.generation,
-                component: meta.components.recommendations,
-                completeness: meta.completeness,
-                receivedAt: response.receivedAt,
-                isFromExpiredCache: response.isFromExpiredCache
-            ),
-            gates: reader.clientGates(meta.clientGates),
-            topN: meta.topN,
-            candidates: candidates,
-            reader: reader
+        let reader = DecimalReader(
+            route: "/recommendations/subnets/\(subnet.netuid)/validators",
+            requestId: response.requestId
         )
-    }
 
-    static func verify(
-        _ parsed: ParsedGeneration,
-        snapshot: SubtensorValidatorChainSnapshot
-    ) throws -> SubtensorVerifiedRecommendations {
-        var classes: [SubtensorRecommendationClass: [SubtensorRecommendedPair]] = [
-            .stable: [],
-            .balanced: [],
-            .higherUpside: []
-        ]
+        let generation = makeGeneration(meta, isFromExpiredCache: response.isFromExpiredCache)
+        let isSameSubnet = subnet.registeredAt <= generation.sourceBlockNumber
 
-        var droppedByGate: [SubtensorRecommendationGate: Int] = [:]
-
-        for candidate in parsed.candidates {
-            switch SubtensorRecommendationVerifier.verify(candidate.pair, snapshot: snapshot, gates: parsed.gates) {
-            case let .verified(verification):
-                let pair = try parsed.reader.pair(
-                    candidate.recommendation,
-                    hotkey: candidate.pair.hotkey,
-                    path: candidate.path,
-                    verification: verification
-                )
-
-                classes[candidate.recommendationClass, default: []].append(pair)
-            case let .dropped(gate):
-                droppedByGate[gate, default: 0] += 1
+        let validators = response.value.items.compactMap { item -> SubtensorRecommendedValidator? in
+            guard
+                isSameSubnet,
+                item.netuid == subnet.netuid,
+                item.eligible,
+                item.recommendationClass != .aboveThreshold else {
+                return nil
             }
+
+            guard let hotkey = try? item.hotkey.toAccountId(
+                using: .substrate(SubstrateConstants.genericAddressPrefix)
+            ) else {
+                logger.warning("Skipped a recommended validator of netuid \(subnet.netuid) with an undecodable hotkey")
+                return nil
+            }
+
+            return SubtensorRecommendedValidator(hotkey: hotkey, name: item.validatorName)
         }
 
-        return SubtensorVerifiedRecommendations(
-            generation: parsed.generation,
-            clientGates: parsed.gates,
-            topN: parsed.topN,
-            classes: classes,
-            droppedByGate: droppedByGate,
-            verifiedAtBlock: snapshot.blockNumber
+        return try Candidates(
+            recommended: SubtensorRecommendedValidators(generation: generation, validators: validators),
+            gates: reader.clientGates(meta.clientGates)
         )
     }
 
     static func makeRankedSubnets(
         from response: BittensorApiResult<BittensorApi.SubnetRankingCollection>
-    ) throws -> (subnets: SubtensorRankedSubnets, gates: SubtensorClientGates) {
-        let meta = response.value.meta
+    ) throws -> SubtensorRankedSubnets {
         let reader = DecimalReader(route: "/recommendations/subnets", requestId: response.requestId)
-
-        let gates = try reader.clientGates(meta.clientGates)
 
         let items = try response.value.items.enumerated().map { index, item in
             try reader.rankedSubnet(item, "items[\(index)]")
         }
 
-        let subnets = SubtensorRankedSubnets(
-            generation: makeGeneration(
-                meta.generation,
-                component: meta.components.recommendations,
-                completeness: meta.completeness,
-                receivedAt: response.receivedAt,
-                isFromExpiredCache: response.isFromExpiredCache
-            ),
-            policy: policy(meta.policy),
+        return SubtensorRankedSubnets(
+            generation: makeGeneration(response.value.meta, isFromExpiredCache: response.isFromExpiredCache),
             items: items
-        )
-
-        return (subnets, gates)
-    }
-
-    static func logDrops(of recommendations: SubtensorVerifiedRecommendations, total: Int, logger: LoggerProtocol) {
-        let dropped = recommendations.droppedByGate
-        let generation = recommendations.generation.id
-        let block = recommendations.verifiedAtBlock
-
-        logger.debug(
-            "Subtensor recommendations \(generation) verified at block \(block): \(total) pairs, dropped " +
-                "noCurrentUid \(dropped[.noCurrentUid] ?? 0), noPermit \(dropped[.noPermit] ?? 0), " +
-                "takeAboveMax \(dropped[.takeAboveMax] ?? 0), inactive \(dropped[.inactive] ?? 0)"
         )
     }
 }
 
 extension SubtensorRecommendationService: SubtensorRecommendationServiceProtocol {
-    func createVerifiedRecommendationsWrapper() -> CompoundOperationWrapper<SubtensorVerifiedRecommendations> {
-        let responseWrapper = apiOperationFactory.createRecommendationsWrapper()
+    func createRecommendedValidatorsWrapper(
+        for subnet: SubtensorSubnetRef
+    ) -> CompoundOperationWrapper<SubtensorRecommendedValidators> {
+        let responseWrapper = apiOperationFactory.createRankedValidatorsWrapper(netuid: subnet.netuid)
         let chainOperationFactory = chainOperationFactory
         let logger = logger
 
-        let parseOperation = ClosureOperation<ParsedGeneration> {
+        let candidatesOperation = ClosureOperation<Candidates> {
             let response = try responseWrapper.targetOperation.extractNoCancellableResultData()
 
-            return try Self.parse(response, logger: logger)
+            return try Self.makeCandidates(from: response, subnet: subnet, logger: logger)
         }
 
-        parseOperation.addDependency(responseWrapper.targetOperation)
+        candidatesOperation.addDependency(responseWrapper.targetOperation)
 
-        let snapshotWrapper: CompoundOperationWrapper<SubtensorValidatorChainSnapshot> =
-            OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
-                let pairs = try parseOperation.extractNoCancellableResultData().candidates.map(\.pair)
+        let pair: (SubtensorRecommendedValidator) -> SubtensorHotkeySubnet = {
+            SubtensorHotkeySubnet(hotkey: $0.hotkey, netuid: subnet.netuid)
+        }
+
+        let snapshotWrapper: CompoundOperationWrapper<SubtensorValidatorChainSnapshot?> =
+            OperationCombiningService.compoundWrapper(
+                operationManager: OperationManager(operationQueue: operationQueue)
+            ) {
+                let validators = try candidatesOperation.extractNoCancellableResultData().recommended.validators
+
+                guard !validators.isEmpty else {
+                    return nil
+                }
 
                 return chainOperationFactory.createChainSnapshotWrapper(
-                    for: SubtensorRecommendationVerifier.chainQuery(for: pairs)
+                    for: SubtensorRecommendationVerifier.chainQuery(for: validators.map(pair))
                 )
             }
 
-        snapshotWrapper.addDependency(operations: [parseOperation])
+        snapshotWrapper.addDependency(operations: [candidatesOperation])
 
-        let verifyOperation = ClosureOperation<SubtensorVerifiedRecommendations> {
-            let parsed = try parseOperation.extractNoCancellableResultData()
-            let snapshot = try snapshotWrapper.targetOperation.extractNoCancellableResultData()
+        let verifyOperation = ClosureOperation<SubtensorRecommendedValidators> {
+            let candidates = try candidatesOperation.extractNoCancellableResultData()
 
-            let recommendations = try Self.verify(parsed, snapshot: snapshot)
+            guard let snapshot = try snapshotWrapper.targetOperation.extractNoCancellableResultData() else {
+                return candidates.recommended
+            }
 
-            Self.logDrops(of: recommendations, total: parsed.candidates.count, logger: logger)
-
-            return recommendations
+            return SubtensorRecommendedValidators(
+                generation: candidates.recommended.generation,
+                validators: candidates.recommended.validators.filter {
+                    SubtensorRecommendationVerifier.passesGates(pair($0), snapshot: snapshot, gates: candidates.gates)
+                }
+            )
         }
 
         verifyOperation.addDependency(snapshotWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: verifyOperation,
-            dependencies: responseWrapper.allOperations + [parseOperation] + snapshotWrapper.allOperations
+            dependencies: responseWrapper.allOperations + [candidatesOperation] + snapshotWrapper.allOperations
         )
     }
 
@@ -229,7 +153,7 @@ extension SubtensorRecommendationService: SubtensorRecommendationServiceProtocol
         let mappingOperation = ClosureOperation<SubtensorRankedSubnets> {
             let response = try responseWrapper.targetOperation.extractNoCancellableResultData()
 
-            return try Self.makeRankedSubnets(from: response).subnets
+            return try Self.makeRankedSubnets(from: response)
         }
 
         mappingOperation.addDependency(responseWrapper.targetOperation)
@@ -238,24 +162,6 @@ extension SubtensorRecommendationService: SubtensorRecommendationServiceProtocol
     }
 
     func cachedRankedSubnets() -> HTTPCachePeek<SubtensorRankedSubnets> {
-        apiOperationFactory.peekRankedSubnets().map { try Self.makeRankedSubnets(from: $0).subnets }
-    }
-
-    func createClientGatesWrapper() -> CompoundOperationWrapper<SubtensorClientGates> {
-        let responseWrapper = apiOperationFactory.createRankedSubnetsWrapper()
-
-        let gatesOperation = ClosureOperation<SubtensorClientGates> {
-            let response = try responseWrapper.targetOperation.extractNoCancellableResultData()
-
-            return try Self.makeRankedSubnets(from: response).gates
-        }
-
-        gatesOperation.addDependency(responseWrapper.targetOperation)
-
-        return responseWrapper.insertingTail(operation: gatesOperation)
-    }
-
-    func cachedClientGates() -> HTTPCachePeek<SubtensorClientGates> {
-        apiOperationFactory.peekRankedSubnets().map { try Self.makeRankedSubnets(from: $0).gates }
+        apiOperationFactory.peekRankedSubnets().map { try Self.makeRankedSubnets(from: $0) }
     }
 }

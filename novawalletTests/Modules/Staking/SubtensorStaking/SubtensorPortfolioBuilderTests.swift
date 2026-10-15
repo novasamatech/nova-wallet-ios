@@ -7,7 +7,7 @@ final class SubtensorPortfolioBuilderTests: XCTestCase {
     private let secondHotkey = Data(repeating: 0x0B, count: 32)
     private let thirdHotkey = Data(repeating: 0x0C, count: 32)
 
-    func testGroupsRootAndSubnetMembersWithTotalsAvailabilityAndTaoValue() {
+    func testGroupsRootAndSubnetsWithTotalsAndTaoValue() {
         let rootMember = position(hotkey: secondHotkey, netuid: 0, stake: 2_000_000_000)
         let rootPrimary = position(hotkey: firstHotkey, netuid: 0, stake: 5_000_000_000)
         let subnetMember = position(hotkey: thirdHotkey, netuid: 64, stake: 20_000_000_000)
@@ -51,7 +51,7 @@ final class SubtensorPortfolioBuilderTests: XCTestCase {
         XCTAssertEqual(portfolio, expected)
     }
 
-    func testSubnetsOrderByTaoValueDescendingWithUnpricedGroupsLast() {
+    func testUnpricedSubnetsExcludedFromTotalAndOrderedLast() {
         let state = Multistaking.SubtensorStakingState(
             positions: [
                 position(hotkey: firstHotkey, netuid: 12, stake: 80_000_000_000),
@@ -73,26 +73,11 @@ final class SubtensorPortfolioBuilderTests: XCTestCase {
         XCTAssertEqual(portfolio.unpricedNetuids, [7, 12])
     }
 
-    func testPrimaryHotkeyTieGoesToTheLowestHotkeyBytes() {
-        let state = Multistaking.SubtensorStakingState(
-            positions: [
-                position(hotkey: secondHotkey, netuid: 64, stake: 40_000_000_000),
-                position(hotkey: firstHotkey, netuid: 64, stake: 40_000_000_000)
-            ]
-        )
-
-        let portfolio = SubtensorPortfolioBuilder.build(state: state)
-
-        XCTAssertEqual(portfolio.subnets.first?.primaryHotkey, firstHotkey)
-    }
-
     private func position(hotkey: AccountId, netuid: UInt16, stake: Balance) -> SubtensorStakingPosition {
         SubtensorStakingPosition(
             hotkey: hotkey,
             netuid: netuid,
             stakeAlpha: stake,
-            hotkeyEmissionPerTempo: 0,
-            totalHotkeyAlpha: nil,
             isRegistered: true
         )
     }
@@ -110,17 +95,6 @@ final class SubtensorPortfolioBuilderTests: XCTestCase {
                 name: "",
                 symbol: "",
                 networkRegisteredAt: 0,
-                tempo: 360,
-                ownerColdkey: "",
-                ownerHotkey: "",
-                links: SubtensorSubnetLinks(
-                    githubRepo: "",
-                    subnetContact: "",
-                    subnetUrl: "",
-                    subnetWebsite: "",
-                    discord: "",
-                    additional: ""
-                ),
                 taoReserve: 0,
                 alphaReserve: 0,
                 alphaOutstanding: 0,

@@ -16,88 +16,20 @@ final class SubtensorStakingTxValidationTests: XCTestCase {
         .arrayValue([.stringValue("Invalid"), .arrayValue([.stringValue("Payment"), .null])])
     ])
 
-    func testSubnetBuySignaturePassesValidation() {
-        do {
-            let validity = try performValidation(
-                of: .subnetBuy(hotkey: hotkeys[0], netuid: netuid, grossTao: amount, limitPrice: limitPrice)
-            )
+    func testSubnetBuySignaturePassesValidation() throws {
+        let validity = try performValidation(
+            of: .subnetBuy(hotkey: hotkeys[0], netuid: netuid, grossTao: amount, limitPrice: limitPrice)
+        )
 
-            Logger.shared.info("Subnet buy validity: \(validity)")
-
-            XCTAssertEqual(validity, unfundedSignerRejection)
-        } catch {
-            XCTFail("Unexpected error: \(error)")
-        }
+        XCTAssertEqual(validity, unfundedSignerRejection)
     }
 
-    func testSubnetSellSignaturePassesValidation() {
-        do {
-            let validity = try performValidation(
-                of: .subnetSell(
-                    hotkey: hotkeys[0],
-                    netuid: netuid,
-                    alpha: amount,
-                    limitPrice: limitPrice,
-                    quotedTaoOut: amount
-                )
-            )
+    func testSubnetSellAllSignaturePassesValidation() throws {
+        let validity = try performValidation(
+            of: .subnetSellAll(hotkeys: hotkeys, netuid: netuid, limitPrice: limitPrice, quotedTaoOut: amount)
+        )
 
-            Logger.shared.info("Subnet sell validity: \(validity)")
-
-            XCTAssertEqual(validity, unfundedSignerRejection)
-        } catch {
-            XCTFail("Unexpected error: \(error)")
-        }
-    }
-
-    func testSubnetSellAllOverThreeHotkeysSignaturePassesValidation() {
-        do {
-            let validity = try performValidation(
-                of: .subnetSellAll(hotkeys: hotkeys, netuid: netuid, limitPrice: limitPrice, quotedTaoOut: amount)
-            )
-
-            Logger.shared.info("Subnet sell all validity: \(validity)")
-
-            XCTAssertEqual(validity, unfundedSignerRejection)
-        } catch {
-            XCTFail("Unexpected error: \(error)")
-        }
-    }
-
-    func testRootStakeSignaturePassesValidation() {
-        do {
-            let validity = try performValidation(of: .rootStake(hotkey: hotkeys[0], amount: amount))
-
-            Logger.shared.info("Root stake validity: \(validity)")
-
-            XCTAssertEqual(validity, unfundedSignerRejection)
-        } catch {
-            XCTFail("Unexpected error: \(error)")
-        }
-    }
-
-    func testRootUnstakeSignaturePassesValidation() {
-        do {
-            let validity = try performValidation(of: .rootUnstake(hotkey: hotkeys[0], amount: amount))
-
-            Logger.shared.info("Root unstake validity: \(validity)")
-
-            XCTAssertEqual(validity, unfundedSignerRejection)
-        } catch {
-            XCTFail("Unexpected error: \(error)")
-        }
-    }
-
-    func testRootUnstakeAllOverTwoHotkeysSignaturePassesValidation() {
-        do {
-            let validity = try performValidation(of: .rootUnstakeAll(hotkeys: Array(hotkeys.prefix(2))))
-
-            Logger.shared.info("Root unstake all validity: \(validity)")
-
-            XCTAssertEqual(validity, unfundedSignerRejection)
-        } catch {
-            XCTFail("Unexpected error: \(error)")
-        }
+        XCTAssertEqual(validity, unfundedSignerRejection)
     }
 
     private func performValidation(of operation: SubtensorStakingOperation) throws -> JSON {

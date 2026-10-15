@@ -4,7 +4,6 @@ struct SubtensorStakeValidatingDep {
     let amount: Balance?
     let balance: AssetBalance?
     let fee: ExtrinsicFeeProtocol?
-    let existentialDeposit: Balance?
     let preflight: SubtensorStakingPreflight?
     let netuid: UInt16
     let assetDisplayInfo: AssetBalanceDisplayInfo

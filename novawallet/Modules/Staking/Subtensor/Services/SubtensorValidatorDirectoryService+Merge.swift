@@ -7,21 +7,10 @@ extension SubtensorValidatorDirectoryService {
         let stake: BigRational?
     }
 
-    struct ListingReceipt: Equatable {
-        let requestId: String?
-        let receivedAt: TimeInterval
-
-        init(response: BittensorApiResult<BittensorApi.ValidatorCollection>) {
-            requestId = response.requestId
-            receivedAt = response.receivedAt
-        }
-    }
-
     struct Listing {
         let rows: [Row]
         let listStamp: SubtensorBackendStamp?
         let isPartial: Bool
-        let receipt: ListingReceipt
     }
 
     struct Enrichment {
@@ -33,32 +22,16 @@ extension SubtensorValidatorDirectoryService {
         from response: BittensorApiResult<BittensorApi.ValidatorCollection>,
         netuid: UInt16,
         logger: LoggerProtocol
-    ) throws -> Listing {
+    ) -> Listing {
         let collection = response.value
-        var rows: [Row] = []
+        let candidates = collection.items.filter { $0.netuid == netuid }
 
-        let candidates: [BittensorApi.Validator]
-
-        if netuid == SubtensorStakingPallet.rootNetuid {
-            guard case .available = collection.meta.components.validatorMetagraph else {
-                throw SubtensorValidatorDirectoryServiceError.rootMetagraphUnavailable
-            }
-
-            candidates = collection.items.filter { $0.metagraphUid != nil }
-        } else {
-            candidates = collection.items
-        }
-
-        for item in candidates where item.netuid == netuid {
-            guard let hotkey = try? item.hotkey.toAccountId(
-                using: .substrate(SubstrateConstants.genericAddressPrefix)
-            ) else {
-                continue
-            }
-
-            let name = nonBlank(item.identitySourceName) ?? nonBlank(item.stakeSourceName)
-            let stake = reportedStake(item.reportedMeasurements.validatorStake)
-            rows.append(Row(hotkey: hotkey, name: name, stake: stake))
+        let rows = candidates.compactMap { item in
+            makeRow(
+                hotkey: item.hotkey,
+                name: nonBlank(item.identitySourceName) ?? nonBlank(item.stakeSourceName),
+                stake: reportedStake(item.reportedMeasurements.validatorStake)
+            )
         }
 
         if rows.count < candidates.count {
@@ -76,9 +49,42 @@ extension SubtensorValidatorDirectoryService {
         return Listing(
             rows: rows,
             listStamp: SubtensorBackendStamp.aggregate(stamps),
-            isPartial: collection.meta.completeness == .partial,
-            receipt: ListingReceipt(response: response)
+            isPartial: collection.meta.completeness == .partial
         )
+    }
+
+    static func makeRootListing(
+        from response: BittensorApiResult<BittensorApi.RootValidatorCollection>,
+        logger: LoggerProtocol
+    ) -> Listing {
+        let collection = response.value
+
+        let candidates = collection.items.filter { (reportedStake($0.rootStakeTao)?.numerator ?? 0) > 0 }
+
+        let rows = candidates.compactMap { item in
+            makeRow(hotkey: item.hotkey, name: nonBlank(item.name), stake: reportedStake(item.rootStakeTao))
+        }
+
+        if rows.count < candidates.count {
+            logger.warning("Dropped \(candidates.count - rows.count) root validator rows")
+        }
+
+        return Listing(
+            rows: rows,
+            listStamp: SubtensorBackendStamp(
+                component: collection.meta.components.rootValidators,
+                isFromExpiredCache: response.isFromExpiredCache
+            ),
+            isPartial: false
+        )
+    }
+
+    static func makeRow(hotkey: String, name: String?, stake: BigRational?) -> Row? {
+        guard let accountId = try? hotkey.toAccountId(using: .substrate(SubstrateConstants.genericAddressPrefix)) else {
+            return nil
+        }
+
+        return Row(hotkey: accountId, name: name, stake: stake)
     }
 
     static func nonBlank(_ value: String?) -> String? {
@@ -96,7 +102,7 @@ extension SubtensorValidatorDirectoryService {
     static func enrichmentQuery(rows: [Row], netuid: UInt16) -> SubtensorValidatorChainQuery {
         let pairs = rows.prefix(enrichmentRowLimit).map { SubtensorHotkeySubnet(hotkey: $0.hotkey, netuid: netuid) }
 
-        return SubtensorValidatorChainQuery(pairs: pairs, includesHotkeyAlpha: true)
+        return SubtensorValidatorChainQuery(pairs: pairs)
     }
 
     static func takeFraction(_ take: UInt16) -> Decimal {
@@ -142,8 +148,7 @@ extension SubtensorValidatorDirectoryService {
             },
             listStamp: listing.listStamp,
             isPartial: listing.isPartial,
-            isEnrichmentTruncated: listing.rows.count > enrichmentRowLimit,
-            chainBlock: enrichment.snapshot.blockNumber
+            isEnrichmentTruncated: listing.rows.count > enrichmentRowLimit
         )
     }
 }

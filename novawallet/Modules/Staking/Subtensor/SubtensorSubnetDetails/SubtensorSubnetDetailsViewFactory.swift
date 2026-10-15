@@ -1,5 +1,6 @@
 import Foundation
 import Foundation_iOS
+import Operation_iOS
 
 enum SubtensorSubnetDetailsViewFactory {
     static func createView(
@@ -11,6 +12,7 @@ enum SubtensorSubnetDetailsViewFactory {
         guard
             !input.target.isRoot,
             input.target.netuid == input.subnet.netuid,
+            input.target.subnetInfo?.networkRegisteredAt == input.subnet.ref.registeredAt,
             let currencyManager = CurrencyManager.shared else {
             return nil
         }
@@ -65,6 +67,7 @@ private extension SubtensorSubnetDetailsViewFactory {
         let presetFactory = SubtensorValidatorPresetFactory(
             directoryService: earnServices.validatorDirectoryService,
             recommendationService: earnServices.recommendationService,
+            yieldService: earnServices.yieldService,
             operationQueue: operationQueue,
             logger: Logger.shared
         )
@@ -72,18 +75,53 @@ private extension SubtensorSubnetDetailsViewFactory {
         return SubtensorSubnetDetailsInteractor(
             subnet: input.subnet.ref,
             chainAsset: state.stakingOption.chainAsset,
-            accountId: state.selectedAccount?.chainAccount.accountId,
-            priceHistoryStore: SubtensorPriceHistoryStore(state: state, operationQueue: operationQueue),
-            rankingViewService: earnServices.rankingViewService,
+            priceHistoryService: earnServices.priceHistoryService,
+            parametersFactory: createParametersFactory(state: state, operationQueue: operationQueue),
             presetFactory: presetFactory,
             yieldService: earnServices.yieldService,
             subnetLogosProvider: earnServices.subnetLogosProvider,
             positionsSyncService: state.positionsSyncService,
-            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
             operationQueue: operationQueue,
             logger: Logger.shared
         )
+    }
+}
+
+extension SubtensorSubnetDetailsViewFactory {
+    static func createParametersFactory(
+        state: SubtensorStakingSharedStateProtocol,
+        operationQueue: OperationQueue
+    ) -> SubnetParametersFactoryProtocol {
+        let chainId = state.stakingOption.chainAsset.chain.chainId
+        let timeline = SubtensorParametersTimeline(
+            chainId: chainId, chainRegistry: state.chainRegistry
+        )
+        return SubtensorSubnetParametersFactory(
+            apiFactory: state.apiOperationFactory,
+            runtimeConnectionStore: ChainRegistryRuntimeConnectionStore(
+                chainId: chainId, chainRegistry: state.chainRegistry
+            ),
+            timeline: timeline, operationQueue: operationQueue, logger: state.logger
+        )
+    }
+}
+
+private struct SubtensorParametersTimeline: ChainTimelineFacadeProtocol {
+    let chainId: ChainModel.Id
+    let chainRegistry: ChainRegistryProtocol
+    var timelineChainId: ChainModel.Id { chainRegistry.getChain(for: chainId)?.timelineChain ?? chainId }
+
+    func createBlockTimeOperation() -> CompoundOperationWrapper<BlockTime> {
+        do {
+            let chain = try chainRegistry.getChainOrError(for: timelineChainId)
+            let runtime = try chainRegistry.getRuntimeProviderOrError(for: timelineChainId)
+
+            // Approximate age needs the expected duration, without a subscription-backed estimator.
+            return BlockTimeOperationFactory(chain: chain).createExpectedBlockTimeWrapper(from: runtime)
+        } catch {
+            return .createWithError(error)
+        }
     }
 }

@@ -13,13 +13,11 @@ final class SubtensorValidatorSelectPresenter {
 
     private var directory: SubtensorValidatorDirectory?
     private var directoryError: Error?
-    private var clientGates: SubtensorClientGates?
-    private var clientGatesError: Error?
     private var yields: SubtensorAlphaYields?
-    private var hasYieldsAnswer: Bool
     private var alphaPrice: Balance?
-    private var hasAlphaPriceAnswer: Bool
-    private var sort: SubtensorValidatorSort
+    private var recommendedHotkeys: Set<AccountId>?
+    private var recommendedError: Error?
+    private let filterSession: SubtensorValidatorFilterSession
     private var query = ""
     private var selectedHotkey: AccountId?
     private var preselectedHotkey: AccountId?
@@ -32,7 +30,8 @@ final class SubtensorValidatorSelectPresenter {
         listFactory: SubtensorValidatorListFactory,
         delegate: SubtensorValidatorSelectDelegate,
         localizationManager: LocalizationManagerProtocol,
-        logger: LoggerProtocol
+        logger: LoggerProtocol,
+        filterSession: SubtensorValidatorFilterSession = SubtensorValidatorFilterSession()
     ) {
         self.target = target
         self.selectedHotkey = selectedHotkey
@@ -41,28 +40,28 @@ final class SubtensorValidatorSelectPresenter {
         self.listFactory = listFactory
         self.delegate = delegate
         self.logger = logger
-        sort = target.isRoot ? .totalStaked : .apy
-        hasYieldsAnswer = target.isRoot
-        hasAlphaPriceAnswer = target.isRoot
+        self.filterSession = filterSession
         self.localizationManager = localizationManager
     }
 }
 
 private extension SubtensorValidatorSelectPresenter {
-    var answeredYields: SubtensorAlphaYields? {
-        hasYieldsAnswer ? yields : nil
-    }
+    var filters: SubtensorValidatorFilters { filterSession.applied(isRoot: target.isRoot) }
 
     func provideState() {
-        if let error = directoryError ?? clientGatesError {
+        let filters = filters
+        let header = listFactory.createLoadingViewModel(yields: yields, sort: filters.sort, locale: selectedLocale)
+        view?.didReceive(header: header, isFilterActive: filters != .supportedDefault)
+
+        if let error = directoryError ?? (filters.hidesUnusualApy ? recommendedError : nil) {
             let viewModel = listFactory.createErrorViewModel(for: error, locale: selectedLocale)
             view?.didReceive(state: .failed(viewModel))
             return
         }
 
-        guard let directory, let clientGates, hasYieldsAnswer, hasAlphaPriceAnswer else {
+        guard let directory, !filters.hidesUnusualApy || recommendedHotkeys != nil else {
             view?.didReceive(
-                state: .loading(listFactory.createLoadingViewModel(isRoot: target.isRoot, locale: selectedLocale))
+                state: .loading(header)
             )
             return
         }
@@ -72,78 +71,40 @@ private extension SubtensorValidatorSelectPresenter {
             yields: yields,
             alphaPrice: alphaPrice,
             isRoot: target.isRoot,
-            clientGates: clientGates,
-            sort: sort,
+            sort: filters.sort,
             query: query,
             selectedHotkey: selectedHotkey,
-            preselectedHotkey: preselectedHotkey
+            preselectedHotkey: preselectedHotkey,
+            recommendedHotkeys: filters.hidesUnusualApy ? recommendedHotkeys : nil
         )
 
         view?.didReceive(state: .loaded(listFactory.createListViewModel(for: input, locale: selectedLocale)))
     }
 
     func selectableItem(for hotkey: AccountId?) -> SubtensorValidatorDirectoryItem? {
-        guard let clientGates else {
-            return nil
-        }
-
-        return SubtensorValidatorEligibility.selectableItem(
-            for: hotkey,
-            in: directory,
-            isRoot: target.isRoot,
-            gates: clientGates
-        )
+        directory?.items.first { $0.hotkey == hotkey }
     }
 
     func handedOut(_ item: SubtensorValidatorDirectoryItem) -> SubtensorValidatorDirectoryItem {
         directory?.listStamp?.freshness == .fresh ? item : item.withoutReportedStake()
     }
 
-    func applyPreselection() {
-        guard let directory, let clientGates else {
-            return
-        }
-
-        selectedHotkey = SubtensorValidatorEligibility.preselectedHotkey(
-            selectedHotkey,
-            in: directory,
-            isRoot: target.isRoot,
-            gates: clientGates
-        )
+    func apply(directory: SubtensorValidatorDirectory) {
+        guard directory.subnet.netuid == target.netuid,
+              target.isRoot || directory.subnet.registeredAt == target.subnetInfo?.networkRegisteredAt else { return }
+        self.directory = directory
+        directoryError = nil
+        selectedHotkey = selectableItem(for: selectedHotkey)?.hotkey
         preselectedHotkey = selectedHotkey
     }
 
-    func apply(directory: SubtensorValidatorDirectory) {
-        self.directory = directory
-        directoryError = nil
-
-        applyPreselection()
-    }
-
-    func apply(clientGates: SubtensorClientGates) {
-        self.clientGates = clientGates
-        clientGatesError = nil
-
-        applyPreselection()
-    }
-
     func seed(from snapshot: SubtensorValidatorSelectSnapshot) {
-        if let directory = snapshot.directory.value {
-            apply(directory: directory)
-        }
-
-        if let clientGates = snapshot.clientGates.value {
-            apply(clientGates: clientGates)
-        }
-
-        if let yields = snapshot.yields.value {
+        if let yields = snapshot.yields.value, yields.netuid == target.netuid {
             self.yields = yields
-            hasYieldsAnswer = true
         }
 
         if let alphaPrice = snapshot.alphaPrice.value {
             self.alphaPrice = alphaPrice
-            hasAlphaPriceAnswer = true
         }
     }
 }
@@ -158,14 +119,12 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectPresenterProtocol {
     func retry() {
         directory = nil
         directoryError = nil
-        clientGates = nil
-        clientGatesError = nil
+        yields = nil
+        recommendedHotkeys = nil
+        recommendedError = nil
 
         if !target.isRoot {
-            yields = nil
-            hasYieldsAnswer = false
             alphaPrice = nil
-            hasAlphaPriceAnswer = false
         }
 
         provideState()
@@ -178,23 +137,12 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectPresenterProtocol {
     }
 
     func showSortOptions() {
-        let options = SubtensorValidatorListFactory.sortOptions(isRoot: target.isRoot, yields: answeredYields)
-        let applied = SubtensorValidatorListFactory.appliedSort(sort, isRoot: target.isRoot, yields: answeredYields)
-
-        let viewModel = listFactory.createSortSheetViewModel(
-            options: options,
-            selected: applied,
-            locale: selectedLocale
-        )
-
-        wireframe.showSortSheet(from: view, viewModel: viewModel) { [weak self] index in
-            guard options.indices.contains(index) else {
-                return
+        wireframe
+            .showFilters(from: view, applied: filters) { [weak self] filters in
+                guard let self else { return }
+                self.filterSession.apply(filters, isRoot: self.target.isRoot)
+                self.provideState()
             }
-
-            self?.sort = options[index]
-            self?.provideState()
-        }
     }
 
     func select(hotkey: AccountId) {
@@ -207,13 +155,11 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectPresenterProtocol {
     }
 
     func showInfo(hotkey: AccountId) {
-        let item = directory?.items.first { $0.hotkey == hotkey }
-
         wireframe.showValidatorInfo(
             from: view,
             target: target,
             hotkey: hotkey,
-            detail: item.map { SubtensorValidatorDetail(item: handedOut($0), identity: nil) }
+            detail: selectableItem(for: hotkey).map(handedOut)
         )
     }
 
@@ -239,26 +185,26 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectInteractorOutputProt
         provideState()
     }
 
-    func didReceive(clientGates: SubtensorClientGates) {
-        apply(clientGates: clientGates)
-        provideState()
-    }
-
-    func didFailClientGates(_ error: Error) {
-        clientGates = nil
-        clientGatesError = error
-        provideState()
-    }
-
     func didReceive(yields: SubtensorAlphaYields?) {
+        guard yields == nil || yields?.netuid == target.netuid else { return }
         self.yields = yields
-        hasYieldsAnswer = true
         provideState()
     }
 
     func didReceive(alphaPrice: Balance?) {
         self.alphaPrice = alphaPrice
-        hasAlphaPriceAnswer = true
+        provideState()
+    }
+
+    func didReceive(recommendedHotkeys: Set<AccountId>) {
+        self.recommendedHotkeys = recommendedHotkeys
+        recommendedError = nil
+        provideState()
+    }
+
+    func didFailRecommended(_ error: Error) {
+        recommendedHotkeys = nil
+        recommendedError = error
         provideState()
     }
 }

@@ -5,8 +5,6 @@ protocol SubtensorClaimViewModelFactoryProtocol {
         for input: SubtensorClaimRewardsViewModelInput,
         locale: Locale
     ) -> SubtensorClaimRewardsViewModel
-
-    func createMinimumClaim(_ amount: Balance, locale: Locale) -> String
 }
 
 final class SubtensorClaimRewardsViewModelFactory {
@@ -125,9 +123,5 @@ extension SubtensorClaimRewardsViewModelFactory: SubtensorClaimViewModelFactoryP
             signingHint: input.signing == .noSigning ? strings.accountManagementWatchOnlyHint() : nil,
             isActionEnabled: input.signing == .allowed && !input.isNothingToClaim
         )
-    }
-
-    func createMinimumClaim(_ amount: Balance, locale: Locale) -> String {
-        formatTao(amount, roundingMode: .up, locale: locale)
     }
 }

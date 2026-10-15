@@ -12,16 +12,10 @@ final class SubtensorValidatorSelectInteractor: AnyCancellableCleaning {
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
-    private var seed = SubtensorValidatorSelectSnapshot(
-        directory: .miss,
-        clientGates: .miss,
-        yields: .miss,
-        alphaPrice: .miss
-    )
     private let directoryStore = CancellableCallStore()
-    private let clientGatesStore = CancellableCallStore()
     private let yieldStore = CancellableCallStore()
     private let catalogueStore = CancellableCallStore()
+    private let recommendedStore = CancellableCallStore()
 
     init(
         target: SubtensorStakeTarget,
@@ -43,9 +37,9 @@ final class SubtensorValidatorSelectInteractor: AnyCancellableCleaning {
 
     deinit {
         directoryStore.cancel()
-        clientGatesStore.cancel()
         yieldStore.cancel()
         catalogueStore.cancel()
+        recommendedStore.cancel()
     }
 }
 
@@ -77,25 +71,6 @@ private extension SubtensorValidatorSelectInteractor {
         }
     }
 
-    func loadClientGates() {
-        clientGatesStore.cancel()
-
-        executeCancellable(
-            wrapper: recommendationService.createClientGatesWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: clientGatesStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(clientGates):
-                self?.presenter?.didReceive(clientGates: clientGates)
-            case let .failure(error):
-                self?.logger.warning("Subtensor client gates unavailable for the validator list: \(error)")
-                self?.presenter?.didFailClientGates(error)
-            }
-        }
-    }
-
     func loadYields() {
         yieldStore.cancel()
 
@@ -111,6 +86,25 @@ private extension SubtensorValidatorSelectInteractor {
             case let .failure(error):
                 self?.logger.warning("Subnet validator yields unavailable: \(error)")
                 self?.presenter?.didReceive(yields: nil)
+            }
+        }
+    }
+
+    func loadRecommended() {
+        recommendedStore.cancel()
+
+        executeCancellable(
+            wrapper: recommendationService.createRecommendedValidatorsWrapper(for: subnet),
+            inOperationQueue: operationQueue,
+            backingCallIn: recommendedStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(recommended):
+                self?.presenter?.didReceive(recommendedHotkeys: Set(recommended.validators.map(\.hotkey)))
+            case let .failure(error):
+                self?.logger.warning("Recommended validators unavailable for the list filter: \(error)")
+                self?.presenter?.didFailRecommended(error)
             }
         }
     }
@@ -138,66 +132,31 @@ private extension SubtensorValidatorSelectInteractor {
 
     func loadAll() {
         loadDirectory()
-        loadClientGates()
+        loadYields()
+        loadRecommended()
 
         guard !target.isRoot else {
             return
         }
 
-        loadYields()
         loadAlphaPrice()
-    }
-
-    func makeSnapshot() -> SubtensorValidatorSelectSnapshot {
-        let subnet = subnet
-        let directory = directoryService.cachedDirectory(for: subnet)
-        let clientGates = recommendationService.cachedClientGates()
-
-        guard !target.isRoot else {
-            return SubtensorValidatorSelectSnapshot(
-                directory: directory,
-                clientGates: clientGates,
-                yields: .miss,
-                alphaPrice: .miss
-            )
-        }
-
-        return SubtensorValidatorSelectSnapshot(
-            directory: directory,
-            clientGates: clientGates,
-            yields: yieldService.cachedAlphaYields(for: subnet.netuid),
-            alphaPrice: catalogueService.cachedCatalogue().map { $0.subnet(for: subnet)?.freshTaoPerAlpha }
-        )
     }
 }
 
 extension SubtensorValidatorSelectInteractor: ValidatorSelectInteractorInputProtocol {
     func cachedSnapshot() -> SubtensorValidatorSelectSnapshot {
-        seed = makeSnapshot()
+        let subnet = subnet
 
-        return seed
+        return SubtensorValidatorSelectSnapshot(
+            yields: yieldService.cachedAlphaYields(for: subnet.netuid),
+            alphaPrice: target.isRoot
+                ? .miss
+                : catalogueService.cachedCatalogue().map { $0.subnet(for: subnet)?.freshTaoPerAlpha }
+        )
     }
 
     func setup() {
-        if !seed.directory.isFresh {
-            loadDirectory()
-        }
-
-        if !seed.clientGates.isFresh {
-            loadClientGates()
-        }
-
-        guard !target.isRoot else {
-            return
-        }
-
-        if !seed.yields.isFresh {
-            loadYields()
-        }
-
-        if !seed.alphaPrice.isFresh {
-            loadAlphaPrice()
-        }
+        loadAll()
     }
 
     func retry() {

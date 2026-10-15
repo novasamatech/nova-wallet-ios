@@ -18,22 +18,16 @@ protocol SubtensorUnstakeSetupPresenterProtocol: AnyObject {
 }
 
 protocol SubtensorUnstakeInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {
-    func loadSubnetsInfo(forcingRefresh: Bool)
-    func loadCatalogue()
-    func loadSubnetLogos()
+    func loadSubnetsInfo()
     func loadValidator(_ hotkey: AccountId, on subnet: SubtensorSubnetRef)
     func loadRootHolds(for hotkeys: [AccountId])
-    func loadCostBasis(for netuid: UInt16)
 }
 
 protocol SubtensorUnstakeInteractorOutputProtocol: SubtensorStakingBaseInteractorOutputProtocol {
     func didReceiveSubnetsInfo(_ info: SubtensorSubnetsInfo)
     func didReceiveSubnetsInfoError(_ error: Error)
-    func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?)
-    func didReceiveSubnetLogos(_ logos: SubtensorSubnetLogos?)
     func didReceiveValidator(_ validator: SubtensorValidatorDirectoryItem?, hotkey: AccountId)
     func didReceiveRootHolds(_ holds: [AccountId: SubtensorRootHold])
-    func didReceiveCostBasis(_ costBasis: SubtensorCostBasis?)
 }
 
 protocol SubtensorUnstakeSetupWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
@@ -41,6 +35,6 @@ protocol SubtensorUnstakeSetupWireframeProtocol: AlertPresentable, ErrorPresenta
     SubtensorValidatorInfoPresentable {
     func showConfirm(
         from view: SubtensorUnstakeSetupViewProtocol?,
-        model: SubtensorUnstakeConfirmModel
+        model: SubtensorConfirmModel
     )
 }

@@ -47,44 +47,13 @@ extension SubtensorNovaFeeCalculator {
         return gross
     }
 
-    func buyFee(grossTao: Balance) throws -> SubtensorNovaFee? {
-        let beneficiary = try resolveBeneficiary()
-
-        try SubtensorStakingPallet.ensureU64Amount(grossTao)
-
-        return makeFee(basis: grossTao, beneficiary: beneficiary)
-    }
-
-    func sellFee(quotedTaoOut: Balance) throws -> SubtensorNovaFee? {
-        let beneficiary = try resolveBeneficiary()
-
-        try SubtensorStakingPallet.ensureU64Amount(quotedTaoOut)
-
-        return makeFee(basis: quotedTaoOut, beneficiary: beneficiary)
-    }
-
-    func novaFee(for operation: SubtensorStakingOperation) throws -> SubtensorNovaFee? {
-        switch operation {
-        case .rootStake, .rootUnstake, .rootUnstakeAll, .rootClaim:
-            return nil
-        case let .subnetBuy(_, _, grossTao, _):
-            return try buyFee(grossTao: grossTao)
-        case let .subnetSell(_, _, _, _, quotedTaoOut), let .subnetSellAll(_, _, _, quotedTaoOut):
-            return try sellFee(quotedTaoOut: quotedTaoOut)
-        }
-    }
-}
-
-private extension SubtensorNovaFeeCalculator {
-    func resolveBeneficiary() throws -> AccountId {
+    func fee(basis: Balance) throws -> SubtensorNovaFee? {
         guard let beneficiary else {
             throw SubtensorStakingOperationError.novaFeeUnavailable
         }
 
-        return beneficiary
-    }
+        try SubtensorStakingPallet.ensureU64Amount(basis)
 
-    func makeFee(basis: Balance, beneficiary: AccountId) -> SubtensorNovaFee? {
         let amount = SubtensorNovaFeeRateStore.shared.rate.asShareOfGross.mul(value: basis)
 
         guard amount > 0 else {
@@ -92,5 +61,16 @@ private extension SubtensorNovaFeeCalculator {
         }
 
         return SubtensorNovaFee(amount: amount, beneficiary: beneficiary)
+    }
+
+    func novaFee(for operation: SubtensorStakingOperation) throws -> SubtensorNovaFee? {
+        switch operation {
+        case .rootStake, .rootUnstake, .rootUnstakeAll, .rootClaim:
+            return nil
+        case let .subnetBuy(_, _, grossTao, _):
+            return try fee(basis: grossTao)
+        case let .subnetSell(_, _, _, _, quotedTaoOut), let .subnetSellAll(_, _, _, quotedTaoOut):
+            return try fee(basis: quotedTaoOut)
+        }
     }
 }

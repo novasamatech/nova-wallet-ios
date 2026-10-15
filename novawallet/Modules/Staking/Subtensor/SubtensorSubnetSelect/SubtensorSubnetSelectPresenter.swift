@@ -13,20 +13,18 @@ final class SubtensorSubnetSelectPresenter {
     private var entries: [SubtensorSubnetListEntry]?
     private var entriesError: Error?
     private var weeklyPrices: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]?
-    private var ageBlocks: [UInt16: UInt64] = [:]
     private var subnetLogos: SubtensorSubnetLogos?
-    private var rootRate: Decimal?
     private var favourites: Set<SubtensorSubnetRef>
     private var query = ""
-    private var sort: SubtensorSubnetSort = .sevenDayChange
-    private var filters = SubtensorSubnetFilters()
+    let browseState: SubtensorSubnetBrowseState
+    private var sort: SubtensorSubnetSort { browseState.sort }
+    private var filters: SubtensorSubnetFilters { browseState.filters }
     private var pendingFilters: SubtensorSubnetFilters?
     private var list: SubtensorSubnetList?
 
     private weak var filtersView: SubtensorSubnetFiltersViewProtocol?
     private var requestedWeeklySubnets: Set<SubtensorSubnetRef> = []
     private var isWeeklyPending = false
-    private var hasExpiredAgesSeed = false
 
     init(
         interactor: SubnetSelectInteractorInputProtocol,
@@ -34,8 +32,10 @@ final class SubtensorSubnetSelectPresenter {
         viewModelFactory: SubtensorSubnetViewModelFactoryProtocol,
         delegate: SubtensorSubnetSelectDelegate,
         earnSettings: SubtensorEarnSettingsProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        browseState: SubtensorSubnetBrowseState = .init()
     ) {
+        self.browseState = browseState
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
@@ -56,14 +56,16 @@ private extension SubtensorSubnetSelectPresenter {
         return SubtensorSubnetListBuilder(
             entries: entries,
             weekly: weeklyPrices,
-            ageBlocks: ageBlocks,
+            previousOrder: browseState.orderedRefs,
             favourites: favourites,
             locale: selectedLocale
         )
     }
 
     func provideList() {
-        list = makeBuilder()?.build(query: query, sort: sort, filters: filters)
+        let builder = makeBuilder()
+        list = builder?.build(query: query, sort: sort, filters: filters)
+        if let builder { browseState.orderedRefs = builder.orderedRefs(sort: sort) }
 
         let state = SubtensorSubnetListState(
             list: list,
@@ -77,34 +79,8 @@ private extension SubtensorSubnetSelectPresenter {
         view?.didReceive(list: viewModelFactory.createListViewModel(for: state, locale: selectedLocale))
     }
 
-    func provideRootBar() {
-        view?.didReceive(rootBar: viewModelFactory.createRootBarViewModel(annualRate: rootRate, locale: selectedLocale))
-    }
-
-    func makeAgeBlocks(from rankedSubnets: SubtensorRankedSubnets?) -> [UInt16: UInt64] {
-        Dictionary(
-            (rankedSubnets?.items ?? []).compactMap { item in item.ageBlocks.map { (item.netuid, $0) } },
-            uniquingKeysWith: { first, _ in first }
-        )
-    }
-
-    func seed(from snapshot: SubtensorSubnetSelectSnapshot) {
-        if let entries = snapshot.entries.value {
-            self.entries = entries
-        }
-
-        if let rootRate = snapshot.rootRate.value {
-            self.rootRate = rootRate
-        }
-
-        if let rankedSubnets = snapshot.rankedSubnets.value {
-            ageBlocks = makeAgeBlocks(from: rankedSubnets)
-            hasExpiredAgesSeed = !snapshot.rankedSubnets.isFresh
-        }
-    }
-
     func createFiltersViewModel(for draft: SubtensorSubnetFilters) -> SubtensorSubnetFiltersViewModel {
-        let count = makeBuilder()?.build(query: query, sort: sort, filters: draft).count
+        let count = makeBuilder()?.build(query: query, sort: sort, filters: draft).others.count
 
         return viewModelFactory.createFiltersViewModel(
             filters: draft,
@@ -139,7 +115,8 @@ private extension SubtensorSubnetSelectPresenter {
     }
 
     func applySort(_ newSort: SubtensorSubnetSort) {
-        sort = newSort
+        guard newSort.isAvailable else { return }
+        browseState.sort = newSort
 
         provideList()
     }
@@ -161,14 +138,9 @@ private extension SubtensorSubnetSelectPresenter {
 
 extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol {
     func setup() {
-        seed(from: interactor.cachedSnapshot())
-
         provideList()
-        provideRootBar()
 
         interactor.setup()
-
-        requestWeeklyPricesIfNeeded()
     }
 
     func becomeActive() {
@@ -247,7 +219,7 @@ extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol
     }
 
     func applyFilters(_ filters: SubtensorSubnetFilters) {
-        self.filters = filters
+        browseState.filters = filters
         pendingFilters = nil
 
         provideList()
@@ -278,22 +250,6 @@ extension SubtensorSubnetSelectPresenter: SubnetSelectInteractorOutputProtocol {
         provideList()
     }
 
-    func didReceive(rootRate: Decimal?) {
-        self.rootRate = rootRate
-
-        provideRootBar()
-    }
-
-    func didReceive(rankedSubnets: SubtensorRankedSubnets?) {
-        guard rankedSubnets != nil || !hasExpiredAgesSeed else {
-            return
-        }
-
-        ageBlocks = makeAgeBlocks(from: rankedSubnets)
-
-        provideList()
-    }
-
     func didReceive(weeklyPrices: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]) {
         self.weeklyPrices = (self.weeklyPrices ?? [:]).merging(weeklyPrices) { _, new in new }
         isWeeklyPending = false
@@ -316,7 +272,6 @@ extension SubtensorSubnetSelectPresenter: Localizable {
         }
 
         provideList()
-        provideRootBar()
         provideFilters()
     }
 }

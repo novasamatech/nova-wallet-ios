@@ -2,7 +2,7 @@ import Foundation
 import NovaAuth
 import Operation_iOS
 
-final class BittensorAuthorizedTransport: BittensorApiAdmittingTransportProtocol {
+final class BittensorAuthorizedTransport: BittensorApiTransportProtocol {
     private let provider: NovaAuthProvidingProtocol
     private let operationQueue: OperationQueue
 
@@ -56,25 +56,12 @@ final class BittensorAuthorizedTransport: BittensorApiAdmittingTransportProtocol
         return admission.insertingHead(operations: endpointWrapper.allOperations)
     }
 
-    func createResponseWrapper(for request: BittensorApiRequest) -> CompoundOperationWrapper<BittensorApiRawResponse> {
-        let admission = createAdmissionWrapper()
-        let response = OperationCombiningService<BittensorApiRawResponse>.compoundNonOptionalWrapper(
-            operationQueue: operationQueue
-        ) { [self] in
-            try createResponseWrapper(
-                for: request, admission: admission.targetOperation.extractNoCancellableResultData()
-            )
-        }
-        response.addDependency(wrapper: admission)
-        return response.insertingHead(operations: admission.allOperations)
-    }
-
     func createResponseWrapper(
         for request: BittensorApiRequest,
         admission: BittensorApiAdmission
     ) -> CompoundOperationWrapper<BittensorApiRawResponse> {
         do {
-            guard let endpoint = admission.endpoint else { throw BittensorApiError.configuration }
+            guard let endpoint = admission.endpoint else { throw BittensorApiError.deviceBound(requestId: nil) }
             let prepared = try BittensorAuthorizedRequestBuilder.prepare(request, endpoint: endpoint)
             let response = endpoint.client.createResponseWrapper(for: prepared, beforeSend: {})
             let grade = ClosureOperation<BittensorApiRawResponse> {

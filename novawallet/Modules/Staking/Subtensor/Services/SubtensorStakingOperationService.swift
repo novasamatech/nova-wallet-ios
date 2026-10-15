@@ -15,7 +15,6 @@ final class SubtensorStakingOperationService {
     let pendingRootClaims: SubtensorPendingRootClaimsProtocol?
     let errorMapper: SubtensorStakingErrorMapping
     let feeCalculator: SubtensorNovaFeeCalculator
-    let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
 
     init(
@@ -31,7 +30,6 @@ final class SubtensorStakingOperationService {
         pendingRootClaims: SubtensorPendingRootClaimsProtocol? = nil,
         errorMapper: SubtensorStakingErrorMapping = SubtensorStakingErrorMapper(),
         feeCalculator: SubtensorNovaFeeCalculator = SubtensorNovaFeeCalculator(),
-        operationQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue,
         workingQueue: DispatchQueue = .global(qos: .userInitiated)
     ) {
         self.chainAsset = chainAsset
@@ -46,7 +44,6 @@ final class SubtensorStakingOperationService {
         self.pendingRootClaims = pendingRootClaims
         self.errorMapper = errorMapper
         self.feeCalculator = feeCalculator
-        self.operationQueue = operationQueue
         self.workingQueue = workingQueue
     }
 }
@@ -92,7 +89,7 @@ private extension SubtensorStakingOperationService {
             case let .success(success):
                 let codingFactory = try? codingFactoryOperation.extractNoCancellableResultData()
 
-                return try finalizer.complete(operation: operation, success: success, codingFactory: codingFactory)
+                return finalizer.complete(operation: operation, success: success, codingFactory: codingFactory)
             case let .failure(failure):
                 throw finalizer.dispatchFailure(for: failure)
             }
@@ -150,129 +147,46 @@ extension SubtensorStakingOperationService: SubtensorStakingOperationServiceProt
 
         let finalizer = createFinalizer(signer: recordingSigner)
 
-        let submission = SubtensorStakingSubmission(
-            statusKeeper: SubtensorSharedOperationStatusKeeper(sharedOperation: sharedOperation),
-            claimMarker: claimMarker,
-            finalizer: finalizer,
-            operationQueue: operationQueue
-        ) { [self] in
-            createSubmissionWrapper(
-                for: operation,
-                builderClosure: builderClosure,
-                signer: recordingSigner,
-                finalizer: finalizer
-            )
+        let markSentOperation = ClosureOperation { [sharedOperation] in
+            DispatchQueue.main.async {
+                sharedOperation?.markSent()
+            }
         }
 
-        let submitOperation = SubtensorStakingSubmitOperation(longrun: AnyLongrun(longrun: submission))
+        let submissionWrapper = createSubmissionWrapper(
+            for: operation,
+            builderClosure: builderClosure,
+            signer: recordingSigner,
+            finalizer: finalizer
+        )
 
-        return CompoundOperationWrapper(targetOperation: submitOperation)
-    }
-}
+        submissionWrapper.addDependency(operations: [markSentOperation])
 
-private final class SubtensorStakingSubmitOperation: LongrunOperation<SubtensorStakingOperationOutcome> {
-    override func cancel() {
-        longrun.cancel()
-    }
-}
-
-private final class SubtensorStakingSubmission: Longrunable {
-    typealias ResultType = SubtensorStakingOperationOutcome
-
-    private let statusKeeper: SubtensorSharedOperationStatusKeeper
-    private let claimMarker: SubtensorPendingRootClaimMarker?
-    private let finalizer: SubtensorStakingSubmissionFinalizer
-    private let operationQueue: OperationQueue
-    private let submissionWrapperClosure: () -> CompoundOperationWrapper<ResultType>
-    private let mutex = NSLock()
-
-    private var isCancelled = false
-
-    init(
-        statusKeeper: SubtensorSharedOperationStatusKeeper,
-        claimMarker: SubtensorPendingRootClaimMarker?,
-        finalizer: SubtensorStakingSubmissionFinalizer,
-        operationQueue: OperationQueue,
-        submissionWrapperClosure: @escaping () -> CompoundOperationWrapper<ResultType>
-    ) {
-        self.statusKeeper = statusKeeper
-        self.claimMarker = claimMarker
-        self.finalizer = finalizer
-        self.operationQueue = operationQueue
-        self.submissionWrapperClosure = submissionWrapperClosure
-    }
-
-    func start(with completionClosure: @escaping (Result<ResultType, Error>) -> Void) {
-        mutex.lock()
-        let wasCancelled = isCancelled
-        mutex.unlock()
-
-        guard !wasCancelled else {
-            let failure = SubtensorStakingSubmissionFailure(
-                stage: .notSubmitted,
-                error: BaseOperationError.parentOperationCancelled
-            )
-
-            completionClosure(.failure(failure))
-
-            return
-        }
-
-        statusKeeper.markSent()
-
-        execute(
-            wrapper: submissionWrapperClosure(),
-            inOperationQueue: operationQueue,
-            runningCallbackIn: nil
-        ) { [statusKeeper, claimMarker, finalizer] result in
-            switch result {
-            case let .success(outcome):
+        let resultOperation = ClosureOperation<SubtensorStakingOperationOutcome> { [sharedOperation] in
+            do {
+                let outcome = try submissionWrapper.targetOperation.extractNoCancellableResultData()
                 claimMarker?.finish()
-                completionClosure(.success(outcome))
-            case let .failure(error):
+                return outcome
+            } catch {
                 let failure = finalizer.failure(for: error)
 
                 claimMarker?.finish(failedAt: failure.stage)
 
                 if failure.stage.revertsSharedOperation {
-                    statusKeeper.restore()
+                    DispatchQueue.main.async {
+                        sharedOperation?.markComposing()
+                    }
                 }
 
-                completionClosure(.failure(failure))
+                throw failure
             }
         }
-    }
 
-    func cancel() {
-        mutex.lock()
-        isCancelled = true
-        mutex.unlock()
-    }
-}
+        resultOperation.addDependency(submissionWrapper.targetOperation)
 
-private final class SubtensorSharedOperationStatusKeeper {
-    private let sharedOperation: SharedOperationProtocol?
-    private var capturedStatus: SharedOperationStatus?
-
-    init(sharedOperation: SharedOperationProtocol?) {
-        self.sharedOperation = sharedOperation
-    }
-
-    func markSent() {
-        DispatchQueue.main.async { [self] in
-            capturedStatus = sharedOperation?.status
-            sharedOperation?.markSent()
-        }
-    }
-
-    func restore() {
-        DispatchQueue.main.async { [self] in
-            guard let capturedStatus else {
-                return
-            }
-
-            sharedOperation?.status = capturedStatus
-        }
+        return submissionWrapper
+            .insertingHead(operations: [markSentOperation])
+            .insertingTail(operation: resultOperation)
     }
 }
 
@@ -312,7 +226,7 @@ private struct SubtensorStakingSubmissionFinalizer {
         operation: SubtensorStakingOperation,
         success: SubstrateExtrinsicStatus.SuccessExtrinsic,
         codingFactory: RuntimeCoderFactoryProtocol?
-    ) throws -> SubtensorStakingOperationOutcome {
+    ) -> SubtensorStakingOperationOutcome {
         let outcome: SubtensorStakingOperationOutcome
 
         if let codingFactory {
@@ -322,19 +236,12 @@ private struct SubtensorStakingSubmissionFinalizer {
                 codingFactory: codingFactory
             )
 
-            do {
-                outcome = try parser.parse(
-                    events: success.interestedEvents,
-                    for: operation,
-                    extrinsicHash: success.extrinsicHash,
-                    blockHash: success.blockHash
-                )
-            } catch {
-                throw SubtensorStakingSubmissionFailure(
-                    stage: .dispatched(blockHash: success.blockHash, extrinsicHash: success.extrinsicHash),
-                    error: errorMapper.mapSubmission(error: error)
-                )
-            }
+            outcome = parser.parse(
+                events: success.interestedEvents,
+                for: operation,
+                extrinsicHash: success.extrinsicHash,
+                blockHash: success.blockHash
+            )
         } else {
             outcome = SubtensorStakingOperationOutcome(
                 executed: nil,

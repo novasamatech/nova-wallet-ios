@@ -1,41 +1,27 @@
 import Foundation
 
 private extension SubtensorUnstakeSetupPresenter {
-    func seedCatalogue() -> HTTPCachePeek<SubtensorSubnetCatalogue> {
-        guard !isRoot else {
-            return .miss
-        }
-
-        let cachedCatalogue = interactor.cachedCatalogue()
-
-        guard let catalogue = cachedCatalogue.value, catalogue.subnet(for: netuid) != nil else {
-            return .miss
+    func seedCatalogue() {
+        guard !isRoot, let catalogue = interactor.cachedCatalogue().value, catalogue.subnet(for: netuid) != nil else {
+            return
         }
 
         self.catalogue = catalogue
-
-        return cachedCatalogue
     }
 
-    func seedCostBasis() -> HTTPCachePeek<SubtensorCostBasis> {
-        guard !isRoot else {
-            return .miss
+    func seedCostBasis() {
+        guard !isRoot, let costBasis = interactor.cachedCostBasis(netuid: netuid).value else {
+            return
         }
 
-        let cachedCostBasis = interactor.cachedCostBasis(netuid: netuid)
-
-        if case let .fresh(costBasis, _) = cachedCostBasis {
-            self.costBasis = .resolved(costBasis)
-        }
-
-        return cachedCostBasis
+        self.costBasis = .resolved(costBasis)
     }
 }
 
 extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol {
     func setup() {
-        let cachedCatalogue = seedCatalogue()
-        let cachedCostBasis = seedCostBasis()
+        seedCatalogue()
+        seedCostBasis()
 
         provideAmountInputViewModel()
         provideAssetViewModel()
@@ -47,17 +33,11 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
             return
         }
 
-        interactor.loadSubnetsInfo(forcingRefresh: false)
+        interactor.loadSubnetsInfo()
 
-        if !cachedCatalogue.isFresh {
-            interactor.loadCatalogue()
-        }
-
+        interactor.loadCatalogue()
         interactor.loadSubnetLogos()
-
-        if !cachedCostBasis.isFresh {
-            interactor.loadCostBasis(for: netuid)
-        }
+        interactor.loadCostBasis(for: netuid)
     }
 
     func updateAmount(_ newValue: Decimal?) {
@@ -89,7 +69,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
             from: view,
             target: target,
             hotkey: primary,
-            detail: validatorItem.map { SubtensorValidatorDetail(item: $0, identity: nil) }
+            detail: validatorItem
         )
     }
 
@@ -206,7 +186,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakePresenterValidating {
         )
     }
 
-    func createConfirmModel(for dependencies: SubtensorUnstakeValidatingDep) -> SubtensorUnstakeConfirmModel? {
+    func createConfirmModel(for dependencies: SubtensorUnstakeValidatingDep) -> SubtensorConfirmModel? {
         guard
             let target,
             let primary = group?.primaryHotkey,
@@ -215,7 +195,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakePresenterValidating {
             return nil
         }
 
-        return SubtensorUnstakeConfirmModel(
+        return SubtensorConfirmModel(
             origin: isRoot ? .unstake : .sell,
             account: selectedAccount,
             target: target,
@@ -224,12 +204,12 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakePresenterValidating {
                 display: DisplayAddress(address: address, username: validatorItem?.name ?? ""),
                 annualRate: nil
             ),
-            unstakeModel: SubtensorUnstakeModel(
+            mode: .unstake(SubtensorUnstakeModel(
                 hotkey: primary,
                 netuid: netuid,
                 amount: amount,
                 exitHotkeys: dependencies.exitHotkeys
-            ),
+            )),
             tolerance: isRoot ? nil : slippage,
             acknowledgedQuote: dependencies.quoteContext?.latestQuote
         )

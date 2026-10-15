@@ -2,23 +2,22 @@ import Foundation
 
 protocol SubtensorStakingFlowStateProtocol: AnyObject {
     var priceSeriesCache: SubtensorPriceSeriesProviding { get }
-    var priceHistoryCache: SubtensorPriceHistoryCaching { get }
-    var subnetsInfoCache: SubtensorSessionCache<SubtensorSubnetsInfo> { get }
-    var validatorDirectoryCache: SubtensorValidatorDirectoryCaching { get }
+    var validatorFilterSession: SubtensorValidatorFilterSession { get }
     var pendingRootClaims: SubtensorPendingRootClaimsProtocol { get }
+    var assetListObservable: AssetListModelObservable { get }
 }
 
 final class SubtensorStakingFlowState: SubtensorStakingFlowStateProtocol {
     let priceSeriesCache: SubtensorPriceSeriesProviding
-    let priceHistoryCache: SubtensorPriceHistoryCaching = SubtensorPriceHistoryCache()
-    let subnetsInfoCache = SubtensorSessionCache<SubtensorSubnetsInfo>()
-    let validatorDirectoryCache: SubtensorValidatorDirectoryCaching = SubtensorValidatorDirectoryCache()
+    let validatorFilterSession = SubtensorValidatorFilterSession()
     let pendingRootClaims: SubtensorPendingRootClaimsProtocol = SubtensorPendingRootClaims()
+    let assetListObservable: AssetListModelObservable
 
-    init(coingeckoOperationFactory: CoingeckoOperationFactoryProtocol, operationQueue: OperationQueue) {
-        priceSeriesCache = SubtensorPriceSeriesCache(
-            coingeckoOperationFactory: coingeckoOperationFactory,
-            operationQueue: operationQueue
-        )
+    init(
+        coingeckoOperationFactory: CoingeckoOperationFactoryProtocol,
+        assetListObservable: AssetListModelObservable
+    ) {
+        priceSeriesCache = SubtensorPriceSeriesCache(coingeckoOperationFactory: coingeckoOperationFactory)
+        self.assetListObservable = assetListObservable
     }
 }

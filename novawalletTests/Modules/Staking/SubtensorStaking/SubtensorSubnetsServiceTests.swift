@@ -7,9 +7,9 @@ import Cuckoo
 final class SubtensorSubnetsServiceTests: XCTestCase {
     func testFetchMergesSubnetsPricesAndSubtokenEnabled() throws {
         let subnets = [
-            makeDynamicInfo(netuid: 0, name: "root"),
-            makeDynamicInfo(netuid: 1, name: "Apex"),
-            makeDynamicInfo(netuid: 5, name: "OpenKaito")
+            generateDynamicInfo(netuid: 0, name: "root"),
+            generateDynamicInfo(netuid: 1, name: "Apex"),
+            generateDynamicInfo(netuid: 5, name: "OpenKaito")
         ]
 
         let prices = [
@@ -18,8 +18,8 @@ final class SubtensorSubnetsServiceTests: XCTestCase {
             SubtensorStakingPallet.SubnetPrice(netuid: 5, price: 12_672_077)
         ]
 
-        let service = makeService(
-            apiFactory: makeApiFactory(subnets: subnets, prices: prices, subtokenEnabled: [1, 5])
+        let service = createService(
+            apiFactory: createApiFactory(subnets: subnets, prices: prices, subtokenEnabled: [1, 5])
         )
 
         let info = try fetchInfo(using: service)
@@ -29,166 +29,23 @@ final class SubtensorSubnetsServiceTests: XCTestCase {
         XCTAssertEqual(info.subtokenEnabled, [1, 5])
     }
 
-    func testSubtokenEnabledQueriedForEveryDecodedNetuid() throws {
-        let apiFactory = makeApiFactory(
-            subnets: [
-                makeDynamicInfo(netuid: 0, name: "root"),
-                nil,
-                makeDynamicInfo(netuid: 64, name: "Chutes")
-            ],
-            prices: [],
-            subtokenEnabled: [64]
-        )
-
-        _ = try fetchInfo(using: makeService(apiFactory: apiFactory))
-
-        let netuidsCaptor = ArgumentCaptor<[UInt16]>()
-        let blockHashCaptor = ArgumentCaptor<BlockHash?>()
-
-        verify(apiFactory, times(1)).createSubtokenEnabledWrapper(
-            for: netuidsCaptor.capture(),
-            blockHash: blockHashCaptor.capture()
-        )
-
-        XCTAssertEqual(netuidsCaptor.value, [0, 64])
-
-        let capturedBlockHash = try XCTUnwrap(blockHashCaptor.value)
-
-        XCTAssertNil(capturedBlockHash)
-    }
-
     func testSubtokenEnabledFailureFailsFetch() {
-        let apiFactory = MockSubtensorApiOperationFactoryProtocol()
+        let apiFactory = createApiFactory(
+            subnets: [generateDynamicInfo(netuid: 1, name: "Apex")],
+            prices: [],
+            subtokenEnabled: [1]
+        )
 
         stub(apiFactory) { stub in
-            when(stub.createAllDynamicInfoWrapper(at: any())).thenReturn(
-                CompoundOperationWrapper.createWithResult([makeDynamicInfo(netuid: 1, name: "Apex")])
-            )
-            when(stub.createAlphaPricesWrapper(at: any())).thenReturn(
-                CompoundOperationWrapper.createWithResult([])
-            )
-            when(stub.createSubtokenEnabledWrapper(for: any(), blockHash: any())).thenReturn(
+            when(stub.createSubtokenEnabledWrapper(for: any(), blockHash: any())).then { _, _ in
                 CompoundOperationWrapper.createWithError(CommonError.dataCorruption)
-            )
-            when(stub.createSubnetOwnerCutWrapper(blockHash: any())).thenReturn(
-                CompoundOperationWrapper.createWithResult(SubtensorStakingPallet.defaultSubnetOwnerCut)
-            )
-        }
-
-        XCTAssertThrowsError(try fetchInfo(using: makeService(apiFactory: apiFactory)))
-    }
-
-    func testOwnerCutIsFetchedOncePerSession() throws {
-        let apiFactory = makeApiFactory(
-            subnets: [makeDynamicInfo(netuid: 1, name: "Apex")],
-            prices: [],
-            subtokenEnabled: [1]
-        )
-
-        let service = makeService(apiFactory: apiFactory)
-
-        _ = try fetchInfo(using: service)
-        _ = try fetchInfo(using: service)
-
-        verify(apiFactory, times(1)).createSubnetOwnerCutWrapper(blockHash: any())
-    }
-
-    func testOwnerCutIsFetchedWithSubnetsInfo() throws {
-        let apiFactory = makeApiFactory(
-            subnets: [makeDynamicInfo(netuid: 1, name: "Apex")],
-            prices: [SubtensorStakingPallet.SubnetPrice(netuid: 1, price: 7_683_255)],
-            subtokenEnabled: [1],
-            ownerCut: 20000
-        )
-
-        let info = try fetchInfo(using: makeService(apiFactory: apiFactory))
-
-        XCTAssertEqual(info.ownerCut, 20000)
-
-        let blockHashCaptor = ArgumentCaptor<BlockHash?>()
-
-        verify(apiFactory, times(1)).createSubnetOwnerCutWrapper(blockHash: blockHashCaptor.capture())
-
-        let capturedBlockHash = try XCTUnwrap(blockHashCaptor.value)
-
-        XCTAssertNil(capturedBlockHash)
-    }
-
-    func testUnsetOwnerCutFallsBackToRuntimeDefault() throws {
-        let apiFactory = makeApiFactory(
-            subnets: [makeDynamicInfo(netuid: 1, name: "Apex")],
-            prices: [],
-            subtokenEnabled: [1],
-            ownerCut: nil
-        )
-
-        let info = try fetchInfo(using: makeService(apiFactory: apiFactory))
-
-        XCTAssertEqual(info.ownerCut, SubtensorStakingPallet.defaultSubnetOwnerCut)
-    }
-
-    func testOwnerCutFailureFailsFetch() {
-        let apiFactory = makeApiFactory(
-            subnets: [makeDynamicInfo(netuid: 1, name: "Apex")],
-            prices: [],
-            subtokenEnabled: [1]
-        )
-
-        stub(apiFactory) { stub in
-            when(stub.createSubnetOwnerCutWrapper(blockHash: any())).thenReturn(
-                CompoundOperationWrapper.createWithError(CommonError.dataCorruption)
-            )
-        }
-
-        XCTAssertThrowsError(try fetchInfo(using: makeService(apiFactory: apiFactory)))
-    }
-
-    func testSecondFetchWithinSessionServesCache() throws {
-        let apiFactory = makeApiFactory(
-            subnets: [makeDynamicInfo(netuid: 1, name: "Apex")],
-            prices: [SubtensorStakingPallet.SubnetPrice(netuid: 1, price: 7_683_255)],
-            subtokenEnabled: [1]
-        )
-
-        let service = makeService(apiFactory: apiFactory)
-
-        let firstInfo = try fetchInfo(using: service)
-        let secondInfo = try fetchInfo(using: service)
-
-        XCTAssertEqual(firstInfo, secondInfo)
-        verify(apiFactory, times(1)).createAllDynamicInfoWrapper(at: any())
-        verify(apiFactory, times(1)).createSubtokenEnabledWrapper(for: any(), blockHash: any())
-    }
-
-    func testForcedRefreshBypassesTheSessionCache() throws {
-        let apex = makeDynamicInfo(netuid: 1, name: "Apex")
-        let chutes = makeDynamicInfo(netuid: 64, name: "Chutes")
-
-        let apiFactory = makeApiFactory(subnets: [apex], prices: [], subtokenEnabled: [1])
-        let service = makeService(apiFactory: apiFactory)
-
-        _ = try fetchInfo(using: service)
-
-        stub(apiFactory) { stub in
-            when(stub.createAllDynamicInfoWrapper(at: any())).then { _ in
-                CompoundOperationWrapper.createWithResult([apex, chutes])
             }
         }
 
-        let refreshExpectation = expectation(description: "forced subnets fetch")
-        var refreshResult: Result<SubtensorSubnetsInfo, Error>?
-
-        service.fetchSubnetsInfo(forcingRefresh: true, runningCompletionIn: .main) { result in
-            refreshResult = result
-            refreshExpectation.fulfill()
-        }
-
-        wait(for: [refreshExpectation], timeout: 10)
-
-        XCTAssertEqual(try XCTUnwrap(refreshResult).get().subnets, [apex, chutes])
+        XCTAssertThrowsError(try fetchInfo(using: createService(apiFactory: apiFactory)))
     }
 
-    private func makeDynamicInfo(netuid: UInt16, name: String) -> SubtensorStakingPallet.DynamicInfo {
+    private func generateDynamicInfo(netuid: UInt16, name: String) -> SubtensorStakingPallet.DynamicInfo {
         SubtensorStakingPallet.DynamicInfo(
             netuid: netuid,
             ownerHotkey: Data(repeating: 0, count: 32),
@@ -196,29 +53,18 @@ final class SubtensorSubnetsServiceTests: XCTestCase {
             subnetName: Data(name.utf8),
             tokenSymbol: Data("α".utf8),
             tempo: 360,
-            lastStep: 0,
-            blocksSinceLastStep: 0,
             emission: 0,
             alphaIn: 0,
-            alphaOut: 0,
             taoIn: 0,
-            alphaOutEmission: 0,
-            alphaInEmission: 0,
             taoInEmission: 0,
-            pendingAlphaEmission: 0,
-            pendingRootEmission: 0,
-            subnetVolume: 0,
-            networkRegisteredAt: 0,
-            subnetIdentity: nil,
-            movingPrice: .null
+            networkRegisteredAt: 0
         )
     }
 
-    private func makeApiFactory(
+    private func createApiFactory(
         subnets: [SubtensorStakingPallet.DynamicInfo?],
         prices: [SubtensorStakingPallet.SubnetPrice],
-        subtokenEnabled: Set<UInt16>,
-        ownerCut: UInt16? = SubtensorStakingPallet.defaultSubnetOwnerCut
+        subtokenEnabled: Set<UInt16>
     ) -> MockSubtensorApiOperationFactoryProtocol {
         let apiFactory = MockSubtensorApiOperationFactoryProtocol()
 
@@ -232,36 +78,22 @@ final class SubtensorSubnetsServiceTests: XCTestCase {
             when(stub.createSubtokenEnabledWrapper(for: any(), blockHash: any())).then { _, _ in
                 CompoundOperationWrapper.createWithResult(subtokenEnabled)
             }
-            when(stub.createSubnetOwnerCutWrapper(blockHash: any())).then { _ in
-                CompoundOperationWrapper.createWithResult(ownerCut)
-            }
         }
 
         return apiFactory
     }
 
-    private func makeService(
+    private func createService(
         apiFactory: MockSubtensorApiOperationFactoryProtocol
     ) -> SubtensorSubnetsService {
-        SubtensorSubnetsService(
-            operationFactory: apiFactory,
-            cache: SubtensorSessionCache(),
-            operationQueue: OperationQueue(),
-            logger: Logger.shared
-        )
+        SubtensorSubnetsService(operationFactory: apiFactory, operationQueue: OperationQueue())
     }
 
     private func fetchInfo(using service: SubtensorSubnetsService) throws -> SubtensorSubnetsInfo {
-        let fetchExpectation = expectation(description: "subnets fetch")
-        var fetchResult: Result<SubtensorSubnetsInfo, Error>?
+        let wrapper = service.createSubnetsInfoWrapper()
 
-        service.fetchSubnetsInfo(runningCompletionIn: .main) { result in
-            fetchResult = result
-            fetchExpectation.fulfill()
-        }
+        OperationQueue().addOperations(wrapper.allOperations, waitUntilFinished: true)
 
-        wait(for: [fetchExpectation], timeout: 10)
-
-        return try XCTUnwrap(fetchResult).get()
+        return try wrapper.targetOperation.extractNoCancellableResultData()
     }
 }

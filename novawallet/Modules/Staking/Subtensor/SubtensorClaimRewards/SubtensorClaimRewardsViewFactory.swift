@@ -14,18 +14,7 @@ enum SubtensorClaimRewardsViewFactory {
             return nil
         }
 
-        let interactor = SubtensorClaimRewardsInteractor(
-            baseServices: services,
-            chainAsset: chainAsset,
-            claimableFetchFactory: SubtensorRootClaimableFetchFactory(
-                operationFactory: state.apiOperationFactory,
-                operationQueue: services.operationQueue
-            ),
-            catalogueService: state.earnServices.catalogueService,
-            costBasisService: state.earnServices.costBasisService,
-            generalLocalSubscriptionFactory: state.generalLocalSubscriptionFactory,
-            logger: Logger.shared
-        )
+        let interactor = SubtensorStakingBaseInteractor(flowServices: services, state: state, logger: Logger.shared)
 
         let wireframe = SubtensorClaimRewardsWireframe(state: state)
 
@@ -60,7 +49,7 @@ enum SubtensorClaimRewardsViewFactory {
         )
 
         presenter.view = view
-        interactor.presenter = presenter
+        interactor.basePresenter = presenter
         dataValidationFactory.view = view
 
         return view

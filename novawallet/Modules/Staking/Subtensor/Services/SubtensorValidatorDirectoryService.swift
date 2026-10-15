@@ -1,102 +1,76 @@
 import Foundation
 import Operation_iOS
 
-enum SubtensorValidatorDirectoryServiceError: Error {
-    case rootMetagraphUnavailable
-}
-
 final class SubtensorValidatorDirectoryService {
     static let enrichmentRowLimit = 512
 
     let apiOperationFactory: BittensorApiOperationFactoryProtocol
     let chainOperationFactory: SubtensorValidatorChainOperationFactoryProtocol
-    let cache: SubtensorValidatorDirectoryCaching
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     init(
         apiOperationFactory: BittensorApiOperationFactoryProtocol,
         chainOperationFactory: SubtensorValidatorChainOperationFactoryProtocol,
-        cache: SubtensorValidatorDirectoryCaching,
         operationQueue: OperationQueue,
         logger: LoggerProtocol = Logger.shared
     ) {
         self.apiOperationFactory = apiOperationFactory
         self.chainOperationFactory = chainOperationFactory
-        self.cache = cache
         self.operationQueue = operationQueue
         self.logger = logger
-        apiOperationFactory.addContextObserver(cache) { [weak cache] in cache?.invalidate() }
     }
 }
 
 private extension SubtensorValidatorDirectoryService {
-    func store(_ directory: SubtensorValidatorDirectory, listingReceipt: ListingReceipt, generation: UUID) throws {
-        try cache.store(
-            SubtensorValidatorDirectoryCacheEntry(
-                directory: directory,
-                listingReceipt: listingReceipt,
-                items: Dictionary(directory.items.map { ($0.hotkey, $0) }, uniquingKeysWith: { first, _ in first })
-            ),
-            generation: generation
-        )
-    }
-
-    func peek(
-        _ cached: SubtensorValidatorDirectoryCacheEntry,
-        netuid: UInt16
-    ) -> HTTPCachePeek<SubtensorValidatorDirectory> {
-        guard
-            case let .fresh(response, freshUntil) = apiOperationFactory.peekValidators(netuid: netuid),
-            ListingReceipt(response: response) == cached.listingReceipt else {
-            return .expired(cached.directory.markingStale())
-        }
-
-        return .fresh(cached.directory, freshUntil: freshUntil)
-    }
-
     func createListedRowWrapper(
         for hotkey: AccountId,
         subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<Row?> {
-        OperationCombiningService.compoundOptionalWrapper(
-            operationManager: OperationManager(operationQueue: operationQueue)
-        ) { [weak self] in
-            guard let self, cache.entry(for: subnet)?.items[hotkey] != nil else {
+        let listingWrapper = createListingWrapper(for: subnet.netuid)
+
+        let rowOperation = ClosureOperation<Row?> {
+            guard
+                let listing = try? listingWrapper.targetOperation.extractNoCancellableResultData(),
+                let row = listing.rows.first(where: { $0.hotkey == hotkey }) else {
                 return nil
             }
 
-            // A decoded directory is only a display seed. Refresh through admission and
-            // native HTTP caching before using backend metadata in a new detail result.
-            let listingWrapper = createListingWrapper(for: subnet.netuid)
-            let rowOperation = ClosureOperation<Row?> {
-                guard
-                    let listing = try? listingWrapper.targetOperation.extractNoCancellableResultData(),
-                    let row = listing.rows.first(where: { $0.hotkey == hotkey }) else {
-                    return nil
-                }
-
-                return Row(
-                    hotkey: row.hotkey,
-                    name: row.name,
-                    stake: listing.listStamp?.freshness == .fresh ? row.stake : nil
-                )
-            }
-
-            rowOperation.addDependency(listingWrapper.targetOperation)
-
-            return listingWrapper.insertingTail(operation: rowOperation)
+            return Row(
+                hotkey: row.hotkey,
+                name: row.name,
+                stake: listing.listStamp?.freshness == .fresh ? row.stake : nil
+            )
         }
+
+        rowOperation.addDependency(listingWrapper.targetOperation)
+
+        return listingWrapper.insertingTail(operation: rowOperation)
     }
 
     func createListingWrapper(for netuid: UInt16) -> CompoundOperationWrapper<Listing> {
-        let validatorsWrapper = apiOperationFactory.createValidatorsWrapper(netuid: netuid)
         let logger = logger
+
+        guard netuid != SubtensorStakingPallet.rootNetuid else {
+            let rootWrapper = apiOperationFactory.createRootValidatorsWrapper()
+
+            let listingOperation = ClosureOperation<Listing> {
+                let response = try rootWrapper.targetOperation.extractNoCancellableResultData()
+
+                return Self.makeRootListing(from: response, logger: logger)
+            }
+
+            listingOperation.addDependency(rootWrapper.targetOperation)
+
+            return rootWrapper.insertingTail(operation: listingOperation)
+        }
+
+        let validatorsWrapper = apiOperationFactory.createValidatorsWrapper(netuid: netuid)
 
         let listingOperation = ClosureOperation<Listing> {
             let response = try validatorsWrapper.targetOperation.extractNoCancellableResultData()
 
-            return try Self.makeListing(from: response, netuid: netuid, logger: logger)
+            return Self.makeListing(from: response, netuid: netuid, logger: logger)
         }
 
         listingOperation.addDependency(validatorsWrapper.targetOperation)
@@ -128,7 +102,7 @@ private extension SubtensorValidatorDirectoryService {
         stake: BigRational?
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem> {
         let pair = SubtensorHotkeySubnet(hotkey: hotkey, netuid: subnet.netuid)
-        let query = SubtensorValidatorChainQuery(pairs: [pair], includesHotkeyAlpha: true)
+        let query = SubtensorValidatorChainQuery(pairs: [pair])
         let snapshotWrapper = chainOperationFactory.createChainSnapshotWrapper(for: query)
 
         let itemOperation = ClosureOperation<SubtensorValidatorDirectoryItem> {
@@ -155,7 +129,6 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
     func createDirectoryWrapper(
         for subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectory> {
-        let generation = cache.generation
         let listingWrapper = createListingWrapper(for: subnet.netuid)
 
         let queryOperation = ClosureOperation<SubtensorValidatorChainQuery> {
@@ -168,19 +141,14 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
 
         let snapshotWrapper = createSnapshotWrapper(dependingOn: queryOperation)
 
-        let directoryOperation = ClosureOperation<SubtensorValidatorDirectory> { [weak self] in
+        let directoryOperation = ClosureOperation<SubtensorValidatorDirectory> {
             let listing = try listingWrapper.targetOperation.extractNoCancellableResultData()
             let enrichedPairs = try Set(queryOperation.extractNoCancellableResultData().pairs)
             let snapshot = try snapshotWrapper.targetOperation.extractNoCancellableResultData()
 
             let enrichment = Enrichment(snapshot: snapshot, enrichedPairs: enrichedPairs)
 
-            let directory = Self.makeDirectory(subnet: subnet, listing: listing, enrichment: enrichment)
-
-            guard let self else { throw BaseOperationError.parentOperationCancelled }
-            try store(directory, listingReceipt: listing.receipt, generation: generation)
-
-            return directory
+            return Self.makeDirectory(subnet: subnet, listing: listing, enrichment: enrichment)
         }
 
         directoryOperation.addDependency(snapshotWrapper.targetOperation)
@@ -191,23 +159,11 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
         )
     }
 
-    func cachedDirectory(for subnet: SubtensorSubnetRef) -> HTTPCachePeek<SubtensorValidatorDirectory> {
-        guard let cached = cache.entry(for: subnet) else {
-            return .miss
-        }
-
-        return peek(cached, netuid: subnet.netuid)
-    }
-
     func createDetailWrapper(
         for hotkey: AccountId,
         subnet: SubtensorSubnetRef
-    ) -> CompoundOperationWrapper<SubtensorValidatorDetail> {
-        let cache = cache
-        let generation = cache.generation
-        let identitiesWrapper = chainOperationFactory.createIdentitiesWrapper(for: [hotkey])
+    ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem> {
         let listedWrapper = createListedRowWrapper(for: hotkey, subnet: subnet)
-        let logger = logger
 
         let itemWrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem> =
             OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) { [weak self] in
@@ -227,30 +183,6 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
 
         itemWrapper.addDependency(wrapper: listedWrapper)
 
-        let detailOperation = ClosureOperation<SubtensorValidatorDetail> {
-            let item = try itemWrapper.targetOperation.extractNoCancellableResultData()
-
-            guard generation == cache.generation else {
-                throw BittensorApiError.attestationUnavailable(requestId: nil)
-            }
-
-            do {
-                let identities = try identitiesWrapper.targetOperation.extractNoCancellableResultData()
-
-                return SubtensorValidatorDetail(item: item, identity: identities[hotkey])
-            } catch {
-                logger.warning("Subtensor validator identity unavailable: \(error)")
-
-                return SubtensorValidatorDetail(item: item, identity: nil)
-            }
-        }
-
-        detailOperation.addDependency(itemWrapper.targetOperation)
-        detailOperation.addDependency(identitiesWrapper.targetOperation)
-
-        return CompoundOperationWrapper(
-            targetOperation: detailOperation,
-            dependencies: identitiesWrapper.allOperations + listedWrapper.allOperations + itemWrapper.allOperations
-        )
+        return itemWrapper.insertingHead(operations: listedWrapper.allOperations)
     }
 }

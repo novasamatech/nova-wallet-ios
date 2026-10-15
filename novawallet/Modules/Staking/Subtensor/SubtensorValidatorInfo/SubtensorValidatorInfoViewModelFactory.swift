@@ -6,10 +6,11 @@ import SubstrateSdk
 struct SubtensorValidatorInfoInput {
     let target: SubtensorStakeTarget
     let hotkey: AccountId
-    let detail: SubtensorValidatorDetail?
+    let detail: SubtensorValidatorDirectoryItem?
     let annualRate: LoadableViewModelState<Decimal?>
     let alphaPrice: LoadableViewModelState<Balance?>
     let price: PriceData?
+    var coverage: LoadableViewModelState<SubtensorValidatorCoverage?> = .loading
 }
 
 final class SubtensorValidatorInfoViewModelFactory {
@@ -33,8 +34,9 @@ final class SubtensorValidatorInfoViewModelFactory {
 
     func createViewModel(for input: SubtensorValidatorInfoInput, locale: Locale) -> SubtensorValidatorInfoViewModel {
         SubtensorValidatorInfoViewModel(
+            coverage: createCoverage(for: input, locale: locale),
             account: createAccountViewModel(for: input),
-            staking: input.detail.map { createStakingViewModel(for: $0.item, input: input, locale: locale) }
+            staking: input.detail.map { createStakingViewModel(for: $0, input: input, locale: locale) }
         )
     }
 
@@ -71,12 +73,24 @@ final class SubtensorValidatorInfoViewModelFactory {
 }
 
 private extension SubtensorValidatorInfoViewModelFactory {
+    func createCoverage(for input: SubtensorValidatorInfoInput, locale: Locale) -> LoadableViewModelState<String> {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+        switch input.coverage {
+        case .loading: return .loading
+        case let .loaded(value), let .cached(value):
+            return .loaded(
+                value: value.map { strings.stakingSubtensorV22CoverageFormat($0.permitted, $0.total) }
+                    ?? strings.stakingSubtensorUiValueUnknown()
+            )
+        }
+    }
+
     func createAccountViewModel(for input: SubtensorValidatorInfoInput) -> DisplayAddressViewModel {
         let chainFormat = chainAsset.chain.chainFormat
         let address = (try? input.hotkey.toAddress(using: chainFormat)) ?? input.hotkey.toHex(includePrefix: true)
 
         return displayAddressFactory.createViewModel(
-            from: DisplayAddress(address: address, username: input.detail?.item.name ?? ""),
+            from: DisplayAddress(address: address, username: input.detail?.name ?? ""),
             using: chainFormat
         )
     }
@@ -99,8 +113,10 @@ private extension SubtensorValidatorInfoViewModelFactory {
             reward = .loading
             hasReward = false
         case let .cached(rate), let .loaded(rate):
-            reward = .loaded(value: rate.map { SubtensorApyFormatter.text(for: $0, style: .trailing, locale: locale) }
-                ?? unknown)
+            reward = .loaded(
+                value: rate.map { SubtensorApyFormatter.text(for: $0, style: .trailing, locale: locale) }
+                    ?? unknown
+            )
             hasReward = rate != nil
         }
 

@@ -5,24 +5,7 @@ struct SubtensorStakingPosition: Equatable {
     let hotkey: AccountId
     let netuid: UInt16
     let stakeAlpha: BigUInt
-    // StakeInfo.emission is AlphaDividendsPerSubnet[netuid, hotkey] — the hotkey-wide nominator
-    // dividend per tempo; scale by stakeAlpha / TotalHotkeyAlpha before showing a per-user rate
-    let hotkeyEmissionPerTempo: BigUInt
-    // TotalHotkeyAlpha[hotkey, netuid], the denominator of that scaling. Nil until the positions
-    // subscription has delivered it, which is one refresh behind the first state fetch
-    let totalHotkeyAlpha: BigUInt?
     let isRegistered: Bool
-
-    func byReplacing(totalHotkeyAlpha: BigUInt?) -> SubtensorStakingPosition {
-        SubtensorStakingPosition(
-            hotkey: hotkey,
-            netuid: netuid,
-            stakeAlpha: stakeAlpha,
-            hotkeyEmissionPerTempo: hotkeyEmissionPerTempo,
-            totalHotkeyAlpha: totalHotkeyAlpha,
-            isRegistered: isRegistered
-        )
-    }
 }
 
 enum SubtensorStakingStateError: Error {
@@ -33,19 +16,25 @@ extension Multistaking {
     struct SubtensorStakingState: Equatable {
         let positions: [SubtensorStakingPosition]
         let availability: [UInt16: SubtensorStakingPallet.StakeAvailability]
-        let rootRedeemable: [AccountId: BigUInt]
+        let rootClaimPreviews: [SubtensorRootClaimPreview]
         let isRootRedeemableStale: Bool
 
         init(
             positions: [SubtensorStakingPosition],
             availability: [UInt16: SubtensorStakingPallet.StakeAvailability] = [:],
-            rootRedeemable: [AccountId: BigUInt] = [:],
+            rootClaimPreviews: [SubtensorRootClaimPreview] = [],
             isRootRedeemableStale: Bool = false
         ) {
             self.positions = positions
             self.availability = availability
-            self.rootRedeemable = rootRedeemable
+            self.rootClaimPreviews = rootClaimPreviews
             self.isRootRedeemableStale = isRootRedeemableStale
+        }
+
+        var rootRedeemable: [AccountId: BigUInt] {
+            rootClaimPreviews.filter(SubtensorRootClaimRule.isClaimable).reduce(into: [:]) { accum, preview in
+                accum[preview.hotkey, default: .zero] += preview.redeemable
+            }
         }
 
         var rootRedeemableError: SubtensorStakingStateError? {
@@ -76,15 +65,6 @@ extension Multistaking {
             Set(positions.map(\.netuid).filter { $0 != SubtensorStakingPallet.rootNetuid }).count
         }
 
-        func byReplacing(positions: [SubtensorStakingPosition]) -> SubtensorStakingState {
-            SubtensorStakingState(
-                positions: positions,
-                availability: availability,
-                rootRedeemable: rootRedeemable,
-                isRootRedeemableStale: isRootRedeemableStale
-            )
-        }
-
         func byKeepingRootRedeemable(of previousState: SubtensorStakingState?) -> SubtensorStakingState {
             guard isRootRedeemableStale, let previousState else {
                 return self
@@ -93,7 +73,7 @@ extension Multistaking {
             return SubtensorStakingState(
                 positions: positions,
                 availability: availability,
-                rootRedeemable: previousState.rootRedeemable,
+                rootClaimPreviews: previousState.rootClaimPreviews,
                 isRootRedeemableStale: true
             )
         }

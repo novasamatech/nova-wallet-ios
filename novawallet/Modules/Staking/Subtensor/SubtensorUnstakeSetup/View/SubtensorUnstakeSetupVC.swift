@@ -111,52 +111,6 @@ private extension SubtensorUnstakeSetupVC {
         return attributedText
     }
 
-    func applyBalanceRow(_ viewModel: SubtensorSetupBalanceRowViewModel, cell: StackTitleMultiValueCell) {
-        switch viewModel {
-        case .hidden:
-            cell.isHidden = true
-            cell.stopLoadingIfNeeded()
-        case .loading:
-            cell.isHidden = false
-            cell.startLoadingIfNeeded()
-        case let .value(balance):
-            cell.isHidden = false
-            cell.stopLoadingIfNeeded()
-            cell.bind(viewModel: balance)
-        }
-    }
-
-    func applyRow(_ viewModel: SubtensorSetupRowViewModel, cell: StackTitleMultiValueCell) {
-        switch viewModel {
-        case .hidden:
-            cell.isHidden = true
-            cell.stopLoadingIfNeeded()
-        case .loading:
-            cell.isHidden = false
-            cell.startLoadingIfNeeded()
-        case let .value(value):
-            cell.isHidden = false
-            cell.stopLoadingIfNeeded()
-            cell.rowContentView.valueView.bind(topValue: value, bottomValue: nil)
-        }
-    }
-
-    func applyCostBasisRow(_ viewModel: SubtensorCostBasisRowViewModel, cell: StackTitleMultiValueCell) {
-        switch viewModel {
-        case .hidden:
-            cell.isHidden = true
-            cell.stopLoadingIfNeeded()
-        case .loading:
-            cell.isHidden = false
-            cell.startLoadingIfNeeded()
-        case let .value(value):
-            cell.isHidden = false
-            cell.stopLoadingIfNeeded()
-            cell.topValueLabel.textColor = value.tone.textColor
-            cell.rowContentView.valueView.bind(topValue: value.amount, bottomValue: value.detail)
-        }
-    }
-
     func applyValidator(_ viewModel: SubtensorSetupValidatorViewModel) {
         guard isRoot else {
             applySubnetValidator(viewModel)
@@ -165,7 +119,7 @@ private extension SubtensorUnstakeSetupVC {
 
         let cell = rootView.validatorCell
 
-        if case let .selected(displayAddress, _) = viewModel {
+        if case let .selected(displayAddress) = viewModel {
             cell.bind(
                 viewModel: StackCellViewModel(
                     details: displayAddress.name ?? displayAddress.address,
@@ -184,7 +138,7 @@ private extension SubtensorUnstakeSetupVC {
     func applySubnetValidator(_ viewModel: SubtensorSetupValidatorViewModel) {
         let cell = rootView.subnetValidatorCell
 
-        if case let .selected(displayAddress, _) = viewModel {
+        if case let .selected(displayAddress) = viewModel {
             cell.rowContentView.bind(viewModel: displayAddress)
         }
 
@@ -195,22 +149,15 @@ private extension SubtensorUnstakeSetupVC {
         )
     }
 
-    func applyNetworkFee(_ viewModel: BalanceViewModelProtocol?) {
-        let feeView: NetworkFeeView = rootView.networkFeeCell.rowContentView
-
-        feeView.bind(viewModel: viewModel ?? BalanceViewModel(amount: "", price: nil))
-        rootView.setSkeleton(rootView.feeSkeletonView, loading: viewModel == nil, hiding: feeView.tokenLabel)
-    }
-
     func applyDetails(_ details: SubtensorUnstakeDetailsViewModel) {
-        applyBalanceRow(details.receive, cell: rootView.receiveCell)
-        applyRow(details.swapRate, cell: rootView.swapRateCell)
-        applyCostBasisRow(details.avgBuyPrice, cell: rootView.avgBuyPriceCell)
-        applyCostBasisRow(details.earned, cell: rootView.earnedCell)
+        rootView.receiveCell.apply(details.receive, bind: rootView.receiveCell.bind(viewModel:))
+        rootView.swapRateCell.apply(details.swapRate)
+        rootView.avgBuyPriceCell.bind(costBasisRow: details.avgBuyPrice)
+        rootView.earnedCell.bind(costBasisRow: details.earned)
         applyValidator(details.validator)
-        applyNetworkFee(details.networkFee)
+        rootView.applyNetworkFee(details.networkFee)
 
-        rootView.detailsTableView.updateLayout()
+        SubtensorDividerStyle.apply(to: rootView.detailsTableView)
     }
 
     func applyNotes(_ viewModel: SubtensorUnstakeSetupViewModel) {
@@ -220,26 +167,11 @@ private extension SubtensorUnstakeSetupVC {
         rootView.feeAlertView.isHidden = viewModel.feeWarning == nil
         rootView.feeAlertView.contentView.detailsLabel.text = viewModel.feeWarning
 
-        rootView.feeDisclosureLabel.isHidden = viewModel.feeDisclosure == nil
-        rootView.feeDisclosureLabel.text = viewModel.feeDisclosure
-
         rootView.holdAlertView.isHidden = viewModel.holdWarning == nil
         rootView.holdAlertView.contentView.detailsLabel.text = viewModel.holdWarning
 
         rootView.captionLabel.isHidden = viewModel.caption == nil
         rootView.captionLabel.text = viewModel.caption
-    }
-
-    func applyAction(_ viewModel: SubtensorSetupActionViewModel) {
-        if viewModel.isEnabled {
-            rootView.actionButton.applyEnabledStyle()
-        } else {
-            rootView.actionButton.applyDisabledStyle()
-        }
-
-        rootView.actionButton.isUserInteractionEnabled = viewModel.isEnabled
-        rootView.actionButton.imageWithTitleView?.title = viewModel.title
-        rootView.actionButton.invalidateLayout()
     }
 
     @objc func actionMax() {
@@ -288,7 +220,7 @@ extension SubtensorUnstakeSetupVC: SubtensorUnstakeSetupViewProtocol {
 
         applyDetails(viewModel.details)
         applyNotes(viewModel)
-        applyAction(viewModel.action)
+        rootView.applyAction(viewModel.action)
     }
 }
 

@@ -72,7 +72,6 @@ private extension SubtensorPortfolioViewController {
 
         let emptyView = rootView.emptyView
         emptyView.captionLabel.text = strings.stakingSubtensorUiPortfolioEmptyCaption()
-        emptyView.ratesAlertView.contentView.detailsLabel.text = ratesUnavailable
         emptyView.subnetCardView.titleLabel.text = strings.stakingSubtensorUiPortfolioEmptySubnetTitle()
         emptyView.subnetCardView.subtitleLabel.text = strings.stakingSubtensorUiPortfolioEmptySubnetSubtitle()
         emptyView.rootCardView.titleLabel.text = strings.stakingSubtensorUiPortfolioEmptyRootTitle()
@@ -112,9 +111,14 @@ extension SubtensorPortfolioViewController: SubtensorPriceChartViewDelegate {
         chartLongPressHapticPlayer.play()
     }
 
-    func priceChartView(_: SubtensorSubnetPriceChartView, didSelectPointAt index: Int) {
+    func priceChartView(_: SubtensorSubnetPriceChartView, didSelect selection: SubtensorPriceChartSelection) {
         seekHapticPlayer.play()
-        presenter.selectChartPoint(at: index)
+        switch selection {
+        case let .point(sourceIndex):
+            presenter.selectChartPoint(at: sourceIndex)
+        case .noData:
+            presenter.selectChartPoint(at: nil)
+        }
     }
 
     func priceChartViewDidEndSelection(_: SubtensorSubnetPriceChartView) {

@@ -46,7 +46,6 @@ final class SubtensorUnstakeSetupViewModelFactory {
             details: createDetails(for: input, locale: locale),
             note: createRootNote(for: input, locale: locale),
             feeWarning: createFeeWarning(for: input, locale: locale),
-            feeDisclosure: input.isRoot ? nil : quoteViewModelFactory.novaFeeDisclosure(locale: locale),
             holdWarning: createHoldWarning(for: input, locale: locale),
             caption: input.isRoot ? nil : strings.stakingSubtensorUiSafetyNote(),
             action: createAction(for: input, locale: locale)
@@ -84,14 +83,7 @@ final class SubtensorUnstakeSetupViewModelFactory {
             return taoInfo
         }
 
-        return AssetBalanceDisplayInfo(
-            displayPrecision: taoInfo.displayPrecision,
-            assetPrecision: taoInfo.assetPrecision,
-            symbol: SubtensorSubnetNaming.symbol(for: netuid, in: catalogue),
-            symbolValueSeparator: taoInfo.symbolValueSeparator,
-            symbolPosition: taoInfo.symbolPosition,
-            icon: nil
-        )
+        return taoInfo.subtensorAlpha(symbol: SubtensorSubnetNaming.symbol(for: netuid, in: catalogue))
     }
 }
 
@@ -137,7 +129,9 @@ private extension SubtensorUnstakeSetupViewModelFactory {
             return SubtensorUnstakeHeaderViewModel(
                 title: strings.stakingSubtensorUiYouSell(),
                 prefix: strings.swapsSetupAssetMax(),
-                value: input.maxAmount.map { formatAmount($0, input: input, locale: locale).isolatedLeftToRight() },
+                value: input.maxAmount.map {
+                    SubtensorSubnetNaming.isolatedLeftToRight(formatAmount($0, input: input, locale: locale))
+                },
                 link: nil,
                 isEnabled: (input.maxAmount ?? 0) > 0
             )
@@ -270,7 +264,7 @@ private extension SubtensorUnstakeSetupViewModelFactory {
     func createAvgBuyPrice(
         for input: SubtensorUnstakeSetupViewModelInput,
         locale: Locale
-    ) -> SubtensorCostBasisRowViewModel {
+    ) -> SubtensorRowState<SubtensorCostBasisValueViewModel> {
         guard !input.isRoot else {
             return .hidden
         }
@@ -285,7 +279,7 @@ private extension SubtensorUnstakeSetupViewModelFactory {
     func createEarned(
         for input: SubtensorUnstakeSetupViewModelInput,
         locale: Locale
-    ) -> SubtensorCostBasisRowViewModel {
+    ) -> SubtensorRowState<SubtensorCostBasisValueViewModel> {
         guard !input.isRoot else {
             return .hidden
         }
@@ -308,19 +302,18 @@ private extension SubtensorUnstakeSetupViewModelFactory {
         for input: SubtensorUnstakeSetupViewModelInput,
         locale: Locale
     ) -> SubtensorTradePanelViewModel? {
-        guard !input.isRoot, case let .subnet(info, price) = input.target else {
+        guard !input.isRoot, let target = input.target else {
             return nil
         }
-
-        var displayInfo = info
-        displayInfo.tokenSymbol = Data(SubtensorSubnetNaming.symbol(for: info.netuid, in: input.catalogue).utf8)
 
         return quoteViewModelFactory.createTradePanel(
             for: input.quote,
             amountIn: input.amount,
             direction: .sell,
-            target: .subnet(info: displayInfo, price: price),
+            target: target,
+            catalogue: input.catalogue,
             taoPrice: input.price,
+            networkFee: input.fee?.amountForCurrentAccount,
             locale: locale
         )
     }
@@ -333,13 +326,15 @@ private extension SubtensorUnstakeSetupViewModelFactory {
         for input: SubtensorUnstakeSetupViewModelInput,
         receive: BalanceViewModelProtocol?,
         locale: Locale
-    ) -> SubtensorSetupBalanceRowViewModel {
+    ) -> SubtensorRowState<BalanceViewModelProtocol> {
         guard !input.isRoot else {
             return .hidden
         }
 
         if let receive {
-            return .value(BalanceViewModel(amount: receive.amount.isolatedLeftToRight(), price: receive.price))
+            let amount = SubtensorSubnetNaming.isolatedLeftToRight(receive.amount)
+
+            return .value(BalanceViewModel(amount: amount, price: receive.price))
         }
 
         if isQuotePending(for: input) {
@@ -355,13 +350,13 @@ private extension SubtensorUnstakeSetupViewModelFactory {
         for input: SubtensorUnstakeSetupViewModelInput,
         swapRate: String?,
         locale: Locale
-    ) -> SubtensorSetupRowViewModel {
+    ) -> SubtensorRowState<String> {
         guard !input.isRoot else {
             return .hidden
         }
 
         if let swapRate, !swapRate.isEmpty {
-            return .value(swapRate.isolatedLeftToRight())
+            return .value(SubtensorSubnetNaming.isolatedLeftToRight(swapRate))
         }
 
         if isQuotePending(for: input) {
@@ -384,14 +379,7 @@ private extension SubtensorUnstakeSetupViewModelFactory {
         )
 
         return .selected(
-            DisplayAddressViewModel(address: viewModel.address, name: name, imageViewModel: viewModel.imageViewModel),
-            accessory: .info
+            DisplayAddressViewModel(address: viewModel.address, name: name, imageViewModel: viewModel.imageViewModel)
         )
-    }
-}
-
-private extension String {
-    func isolatedLeftToRight() -> String {
-        "\u{2066}\(self)\u{2069}"
     }
 }

@@ -4,15 +4,28 @@ import UIKit
 final class SubtensorStakingSetupWireframe: SubtensorStakingSetupWireframeProtocol {
     let state: SubtensorStakingSharedStateProtocol
 
+    var assetListObservable: AssetListModelObservable { state.flowState.assetListObservable }
+
     init(state: SubtensorStakingSharedStateProtocol) {
         self.state = state
     }
 
+    func showAllSubnets(
+        from view: SubtensorStakingSetupViewProtocol?,
+        browseState: SubtensorSubnetBrowseState,
+        delegate: SubtensorSubnetSelectDelegate
+    ) {
+        guard let picker = SubtensorSubnetSelectViewFactory.createPicker(
+            for: state, delegate: delegate, browseState: browseState
+        ) else { return }
+        view?.controller.presentWithCardLayout(picker, animated: true)
+    }
+
     func showConfirmation(
         from view: SubtensorStakingSetupViewProtocol?,
-        model: SubtensorStakingConfirmModel
+        model: SubtensorConfirmModel
     ) {
-        guard let confirmView = SubtensorStakingConfirmViewFactory.createView(
+        guard let confirmView = SubtensorConfirmViewFactory.createView(
             for: state,
             model: model
         ) else {
