@@ -73,12 +73,12 @@ private extension SubtensorPortfolioViewController {
         rootView.syncNoticeView.contentView.detailsLabel.text = strings.stakingSubtensorUiPortfolioSyncFailed()
 
         let emptyView = rootView.emptyView
-        emptyView.captionLabel.text = strings.stakingSubtensorUiPortfolioEmptyCaption()
-        emptyView.subnetCardView.titleLabel.text = strings.stakingSubtensorUiPortfolioEmptySubnetTitle()
-        emptyView.subnetCardView.subtitleLabel.text = strings.stakingSubtensorUiPortfolioEmptySubnetSubtitle()
-        emptyView.rootCardView.titleLabel.text = strings.stakingSubtensorUiPortfolioEmptyRootTitle()
-        emptyView.unstakeCardView.titleLabel.text = strings.stakingSubtensorUiPortfolioEmptyUnstakeTitle()
-        emptyView.unstakeCardView.subtitleLabel.text = strings.stakingSubtensorUiPortfolioEmptyUnstakeSubtitle()
+        emptyView.bind(caption: strings.stakingSubtensorUiPortfolioEmptyCaption())
+        emptyView.subnetCardView.bind(title: strings.stakingSubtensorUiPortfolioEmptySubnetTitle())
+        emptyView.subnetCardView.bind(subtitle: strings.stakingSubtensorUiPortfolioEmptySubnetSubtitle())
+        emptyView.rootCardView.bind(title: strings.stakingSubtensorUiPortfolioEmptyRootTitle())
+        emptyView.unstakeCardView.bind(title: strings.stakingSubtensorUiPortfolioEmptyUnstakeTitle())
+        emptyView.unstakeCardView.bind(subtitle: strings.stakingSubtensorUiPortfolioEmptyUnstakeSubtitle())
 
         rootView.addButton.imageWithTitleView?.title = strings.stakingSubtensorUiPortfolioAdd()
         rootView.addButton.invalidateLayout()

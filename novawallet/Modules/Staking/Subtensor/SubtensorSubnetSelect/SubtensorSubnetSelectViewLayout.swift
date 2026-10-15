@@ -69,7 +69,9 @@ final class SubtensorSubnetSelectViewLayout: UIView {
         sortView.control.isEnabled = viewModel.areControlsEnabled
 
         filterButton.setImage(
-            viewModel.isFilterActive ? R.image.iconFilterActive() : R.image.iconFilter(),
+            viewModel.isFilterActive
+                ? R.image.iconFilterActive()?.tinted(with: R.color.colorButtonBackgroundPrimary()!)
+                : R.image.iconFilter(),
             for: .normal
         )
 
@@ -143,7 +145,7 @@ private extension SubtensorSubnetSelectViewLayout {
         tableView.snp.makeConstraints { make in
             make.top.equalTo(controlsView.snp.bottom).offset(Constants.listTopSpacing)
             make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom)
+            make.bottom.equalToSuperview()
         }
 
         emptyStateView.addArrangedSubview(UIImageView(image: R.image.iconEmptyHistory()))

@@ -84,8 +84,8 @@ final class SubtensorSubnetPriceChartView: UIView {
 private extension SubtensorSubnetPriceChartView {
     enum Constants {
         static let lineWidth: CGFloat = 1.5
-        static let midLineWidth: CGFloat = 0.5
-        static let midLineDashLengths: [CGFloat] = [2, 3]
+        static let midLineWidth: CGFloat = 1
+        static let midLineDashLengths: [CGFloat] = [3, 3]
         static let fillTopAlpha: CGFloat = 0.28
         static let selectionPressDuration: TimeInterval = 0.05
     }
@@ -172,12 +172,11 @@ private extension SubtensorSubnetPriceChartView {
 
     func addMidLine(at value: Double) {
         let guide = ChartLimitLine(limit: value)
-        guide.lineColor = R.color.colorChartGridLine()!
+        guide.lineColor = R.color.colorTextTertiary()!
         guide.lineWidth = Constants.midLineWidth
         guide.lineDashLengths = Constants.midLineDashLengths
         guide.drawLabelEnabled = false
         chart.rightAxis.addLimitLine(guide)
-        chart.rightAxis.drawLimitLinesBehindDataEnabled = true
     }
 
     func fill(for lineColor: UIColor) -> Fill? {
