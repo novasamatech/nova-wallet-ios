@@ -11,4 +11,5 @@ protocol SubtensorClaimRewardsPresenterProtocol: StakingGenericRewardsPresenterP
 
 protocol SubtensorClaimRewardsWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
     CommonRetryable, MessageSheetPresentable, SubtensorStakingErrorPresentable, SubtensorClaimErrorPresentable,
-    SubtensorInfoSheetPresentable, SubtensorValidatorInfoPresentable, SubtensorOperationResultPresenting {}
+    AddressOptionsPresentable, SubtensorInfoSheetPresentable, SubtensorValidatorInfoPresentable,
+    SubtensorOperationResultPresenting {}

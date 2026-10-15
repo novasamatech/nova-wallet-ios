@@ -27,9 +27,9 @@ final class SubtensorSubnetCell: SubtensorSubnetCardCell {
 
     let sparklineView = SubtensorSparklineView()
 
-    let changeLoadingView = SubtensorChartLoadingView(cornerRadius: Constants.changePlaceholderSize.height / 2)
+    let changeLoadingView = SubtensorSkeletonView(cornerRadius: Constants.changePlaceholderSize.height / 2)
 
-    let sparklineLoadingView = SubtensorChartLoadingView(cornerRadius: Constants.sparklinePlaceholderSize.height / 2)
+    let sparklineLoadingView = SubtensorSkeletonView(cornerRadius: Constants.sparklinePlaceholderSize.height / 2)
 
     let favoriteButton = UIButton()
 

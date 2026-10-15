@@ -20,13 +20,13 @@ final class SubtensorUnstakeSetupLayout: SubtensorAmountSetupLayout {
         cell.accessoryImageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorIconSecondary()!)
     }
 
-    let validatorSkeletonView = SubtensorChartLoadingView(cornerRadius: 6)
+    let validatorSkeletonView = SubtensorSkeletonView(cornerRadius: 6)
 
     let subnetValidatorCell: SubtensorValidatorDetailsCell = .create { cell in
         cell.rowContentView.bind(apy: nil)
     }
 
-    let subnetValidatorSkeletonView = SubtensorChartLoadingView(cornerRadius: 6)
+    let subnetValidatorSkeletonView = SubtensorSkeletonView(cornerRadius: 6)
 
     let noteLabel: UILabel = .create { label in
         label.apply(style: .footnoteSecondary)

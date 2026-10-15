@@ -1,7 +1,7 @@
 import UIKit
 import UIKit_iOS
 
-final class SubtensorChartLoadingView: UIView, SkeletonableView {
+final class SubtensorSkeletonView: UIView, SkeletonableView {
     var skeletonView: SkrullableView?
     var skeletonSuperview: UIView { self }
     var hidingViews: [UIView] { [] }
