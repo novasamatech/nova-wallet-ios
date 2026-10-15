@@ -59,6 +59,15 @@ enum UniversalLink {
         }
     }
 
+    enum StakingScreen {
+        enum QueryKey {
+            static let chainId = "chainid"
+            static let assetId = "assetid"
+        }
+
+        static var defaultAssetId: AssetModel.Id { 0 }
+    }
+
     enum WalletEntity {
         enum QueryKey {
             static let mnemonic = "mnemonic"
