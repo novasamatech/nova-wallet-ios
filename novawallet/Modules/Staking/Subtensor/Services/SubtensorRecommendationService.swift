@@ -38,11 +38,6 @@ private extension SubtensorRecommendationService {
         logger: LoggerProtocol
     ) throws -> Candidates {
         let meta = response.value.meta
-        let reader = DecimalReader(
-            route: "/recommendations/subnets/\(subnet.netuid)/validators",
-            requestId: response.requestId
-        )
-
         let generation = makeGeneration(meta, isFromExpiredCache: response.isFromExpiredCache)
         let isSameSubnet = subnet.registeredAt <= generation.sourceBlockNumber
 
@@ -67,22 +62,16 @@ private extension SubtensorRecommendationService {
 
         return try Candidates(
             recommended: SubtensorRecommendedValidators(generation: generation, validators: validators),
-            gates: reader.clientGates(meta.clientGates)
+            gates: clientGates(meta.clientGates)
         )
     }
 
     static func makeRankedSubnets(
         from response: BittensorApiResult<BittensorApi.SubnetRankingCollection>
     ) throws -> SubtensorRankedSubnets {
-        let reader = DecimalReader(route: "/recommendations/subnets", requestId: response.requestId)
-
-        let items = try response.value.items.enumerated().map { index, item in
-            try reader.rankedSubnet(item, "items[\(index)]")
-        }
-
-        return SubtensorRankedSubnets(
+        try SubtensorRankedSubnets(
             generation: makeGeneration(response.value.meta, isFromExpiredCache: response.isFromExpiredCache),
-            items: items
+            items: response.value.items.map { try rankedSubnet($0) }
         )
     }
 }

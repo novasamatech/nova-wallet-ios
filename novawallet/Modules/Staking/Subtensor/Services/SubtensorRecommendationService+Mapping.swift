@@ -1,57 +1,26 @@
 import Foundation
 
 extension SubtensorRecommendationService {
-    struct DecimalReader {
-        let route: String
-        let requestId: String?
+    static func clientGates(_ gates: BittensorApi.ClientGates) throws -> SubtensorClientGates {
+        try SubtensorClientGates(
+            maxTake: BittensorApiDecimal.fraction(gates.maxTake),
+            requirePermit: gates.requirePermit,
+            requireActiveWithinCutoff: gates.requireActiveWithinCutoff
+        )
+    }
 
-        func violation(_ field: String) -> BittensorApiError {
-            .contractViolation(detail: "GET \(route): invalid \(field)", requestId: requestId)
-        }
-
-        func decimal(_ value: String, _ field: @autoclosure () -> String) throws -> Decimal {
-            do {
-                return try BittensorApiDecimal.decimal(value)
-            } catch {
-                throw violation(field())
-            }
-        }
-
-        func optionalDecimal(_ value: String?, _ field: @autoclosure () -> String) throws -> Decimal? {
-            guard let value else {
-                return nil
-            }
-
-            return try decimal(value, field())
-        }
-
-        func metric(_ metric: BittensorApi.MetricScore, _ field: String) throws -> SubtensorMetricScore {
-            try SubtensorMetricScore(
-                raw: optionalDecimal(metric.raw, "\(field).raw"),
-                normalized: decimal(metric.normalized, "\(field).normalized")
-            )
-        }
-
-        func clientGates(_ gates: BittensorApi.ClientGates) throws -> SubtensorClientGates {
-            do {
-                return try SubtensorClientGates(
-                    maxTake: BittensorApiDecimal.fraction(gates.maxTake),
-                    requirePermit: gates.requirePermit,
-                    requireActiveWithinCutoff: gates.requireActiveWithinCutoff
+    static func rankedSubnet(_ item: BittensorApi.SubnetRanking) throws -> SubtensorRankedSubnet {
+        try SubtensorRankedSubnet(
+            netuid: item.netuid,
+            taoIn: item.taoIn.map { try BittensorApiDecimal.decimal($0) },
+            volatility: item.breakdown.map { breakdown in
+                try SubtensorMetricScore(
+                    raw: breakdown.volatility.raw.map { try BittensorApiDecimal.decimal($0) },
+                    normalized: BittensorApiDecimal.decimal(breakdown.volatility.normalized)
                 )
-            } catch {
-                throw violation("meta.clientGates.maxTake")
-            }
-        }
-
-        func rankedSubnet(_ item: BittensorApi.SubnetRanking, _ path: String) throws -> SubtensorRankedSubnet {
-            try SubtensorRankedSubnet(
-                netuid: item.netuid,
-                taoIn: optionalDecimal(item.taoIn, "\(path).taoIn"),
-                volatility: item.breakdown.map { try metric($0.volatility, "\(path).breakdown.volatility") },
-                ageBlocks: item.ageBlocks
-            )
-        }
+            },
+            ageBlocks: item.ageBlocks
+        )
     }
 
     static func makeGeneration(

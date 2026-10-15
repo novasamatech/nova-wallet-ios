@@ -50,39 +50,25 @@ private extension SubtensorSubnetCatalogueService {
 
             listedNetuids.insert(item.netuid)
 
-            let subnet = try makeSubnet(item, path: "items[\(index)]", stamps: stamps, requestId: response.requestId)
-            subnets.append(subnet)
+            try subnets.append(makeSubnet(item, stamps: stamps))
         }
 
         return SubtensorSubnetCatalogue(subnets: subnets)
     }
 
-    static func makeSubnet(
-        _ item: BittensorApi.Subnet,
-        path: String,
-        stamps: Stamps,
-        requestId: String?
-    ) throws -> SubtensorCatalogueSubnet {
+    static func makeSubnet(_ item: BittensorApi.Subnet, stamps: Stamps) throws -> SubtensorCatalogueSubnet {
         try SubtensorCatalogueSubnet(
             netuid: item.netuid,
             name: item.name,
             symbol: item.symbol,
             networkRegisteredAt: item.networkRegisteredAt,
-            taoReserve: amount(item.taoReserve, field: "\(path).taoReserve", requestId: requestId),
-            alphaReserve: amount(item.alphaReserve, field: "\(path).alphaReserve", requestId: requestId),
-            alphaOutstanding: amount(item.alphaOutstanding, field: "\(path).alphaOutstanding", requestId: requestId),
-            taoPerAlpha: amount(item.taoPerAlpha, field: "\(path).taoPerAlpha", requestId: requestId),
+            taoReserve: BittensorApiDecimal.atomic(item.taoReserve, scale: atomicScale),
+            alphaReserve: BittensorApiDecimal.atomic(item.alphaReserve, scale: atomicScale),
+            alphaOutstanding: BittensorApiDecimal.atomic(item.alphaOutstanding, scale: atomicScale),
+            taoPerAlpha: BittensorApiDecimal.atomic(item.taoPerAlpha, scale: atomicScale),
             metadataStamp: stamps.metadata,
             pricesStamp: stamps.prices
         )
-    }
-
-    static func amount(_ value: String, field: String, requestId: String?) throws -> Balance {
-        do {
-            return try BittensorApiDecimal.atomic(value, scale: atomicScale)
-        } catch {
-            throw BittensorApiError.contractViolation(detail: "GET /subnets: invalid \(field)", requestId: requestId)
-        }
     }
 }
 
