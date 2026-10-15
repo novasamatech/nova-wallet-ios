@@ -1,6 +1,12 @@
 import UIKit
 
 struct SubtensorWhereToStakeCardModel {
+    struct Palette {
+        let border: UIColor
+        let gradient: [UIColor]
+        let mark: UIColor
+    }
+
     let order: SubtensorQuickPickOrder
     let title: String
     let subtitle: String
@@ -9,9 +15,9 @@ struct SubtensorWhereToStakeCardModel {
     let pros: [String]
     let cons: [String]
     let artwork: UIImage?
-    let tint: UIColor
+    let palette: Palette
     let chooseTitle: String
-    let unavailable: String?
+    let isChoosable: Bool
 }
 
 struct SubtensorWhereToStakeViewModelFactory {
@@ -21,44 +27,90 @@ struct SubtensorWhereToStakeViewModelFactory {
         let subtitle: String
         let pros: [String]
         let cons: [String]
-        let artwork: UIImage?
-        let tint: UIColor
         switch order {
         case .poolSize:
             title = strings.stakingSubtensorQuickPoolTitle()
             subtitle = strings.stakingSubtensorQuickPoolOrder()
             pros = [strings.stakingSubtensorQuickPoolProOne(), strings.stakingSubtensorQuickPoolProTwo()]
             cons = [strings.stakingSubtensorQuickPoolConOne(), strings.stakingSubtensorQuickPoolConTwo()]
-            artwork = R.image.subtensorQuickPool()
-            tint = R.color.colorQuickPickPool()!
         case .age:
             title = strings.stakingSubtensorUiPickerAge()
             subtitle = strings.stakingSubtensorQuickAgeOrder()
             pros = [strings.stakingSubtensorQuickAgePro()]
             cons = [strings.stakingSubtensorQuickAgeConOne(), strings.stakingSubtensorQuickAgeConTwo()]
-            artwork = R.image.subtensorQuickAge()
-            tint = R.color.colorQuickPickAge()!
         case .apy:
             title = strings.stakingSubtensorUiValidatorSortApy()
             subtitle = strings.stakingSubtensorQuickApyOrder()
             pros = [strings.stakingSubtensorQuickApyPro()]
             cons = [strings.stakingSubtensorQuickApyConOne(), strings.stakingSubtensorQuickApyConTwo()]
-            artwork = R.image.subtensorQuickApy()
-            tint = R.color.colorQuickPickApy()!
         case .root:
             title = strings.stakingSubtensorQuickRootTitle()
             subtitle = strings.stakingSubtensorQuickRootOrder()
             pros = [strings.stakingSubtensorQuickRootProOne(), strings.stakingSubtensorQuickRootProTwo()]
             cons = []
-            artwork = R.image.subtensorQuickRoot()
-            tint = R.color.colorQuickPickRoot()!
         }
         return SubtensorWhereToStakeCardModel(
             order: order, title: title, subtitle: subtitle,
             prosTitle: strings.stakingSubtensorQuickPros(), consTitle: strings.stakingSubtensorQuickCons(),
-            pros: pros, cons: cons, artwork: artwork, tint: tint,
+            pros: pros, cons: cons, artwork: order.artwork, palette: order.palette,
             chooseTitle: strings.stakingSubtensorQuickChoose(),
-            unavailable: order.isAvailable ? nil : strings.stakingSubtensorQuickApyUnavailable()
+            isChoosable: order.isAvailable
         )
+    }
+}
+
+private extension SubtensorQuickPickOrder {
+    var artwork: UIImage? {
+        switch self {
+        case .poolSize: return R.image.subtensorQuickPool()
+        case .age: return R.image.subtensorQuickAge()
+        case .apy: return R.image.subtensorQuickApy()
+        case .root: return R.image.subtensorQuickRoot()
+        }
+    }
+
+    var palette: SubtensorWhereToStakeCardModel.Palette {
+        switch self {
+        case .poolSize:
+            return .init(
+                border: R.color.colorQuickPickPoolBorder()!,
+                gradient: [
+                    R.color.colorQuickPickPoolGradientStart()!,
+                    R.color.colorQuickPickPoolGradientMiddle()!,
+                    R.color.colorQuickPickPoolGradientEnd()!
+                ],
+                mark: R.color.colorQuickPickPoolMark()!
+            )
+        case .age:
+            return .init(
+                border: R.color.colorQuickPickAgeBorder()!,
+                gradient: [
+                    R.color.colorQuickPickAgeGradientStart()!,
+                    R.color.colorQuickPickAgeGradientMiddle()!,
+                    R.color.colorQuickPickAgeGradientEnd()!
+                ],
+                mark: R.color.colorQuickPickAgeMark()!
+            )
+        case .apy:
+            return .init(
+                border: R.color.colorQuickPickApyBorder()!,
+                gradient: [
+                    R.color.colorQuickPickApyGradientStart()!,
+                    R.color.colorQuickPickApyGradientMiddle()!,
+                    R.color.colorQuickPickApyGradientEnd()!
+                ],
+                mark: R.color.colorQuickPickApyMark()!
+            )
+        case .root:
+            return .init(
+                border: R.color.colorQuickPickRootBorder()!,
+                gradient: [
+                    R.color.colorQuickPickRootGradientStart()!,
+                    R.color.colorQuickPickRootGradientMiddle()!,
+                    R.color.colorQuickPickRootGradientEnd()!
+                ],
+                mark: R.color.colorQuickPickRootMark()!
+            )
+        }
     }
 }
