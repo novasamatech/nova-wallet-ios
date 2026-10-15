@@ -2,7 +2,7 @@ import UIKit
 import Foundation_iOS
 import UIKit_iOS
 
-protocol SubtensorInfoSheetPresentable: AddressOptionsPresentable, ShortTextInfoPresentable {
+protocol SubtensorInfoSheetPresentable {
     func showSubtensorInfo(_ sheet: SubtensorInfoSheet, from view: ControllerBackedProtocol?)
 }
 
