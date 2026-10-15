@@ -1,20 +1,22 @@
 import UIKit
 
 final class SubtensorBottomPanelView: UIView {
-    let backgroundView: TriangularedView = .create { view in
-        view.shadowOpacity = 0
-        view.sideLength = Constants.cornerRadius
-        view.cornerCut = [.topLeft, .topRight]
-        view.fillColor = R.color.colorBlockBackground()!
-        view.strokeColor = R.color.colorContainerBorder()!
-        view.strokeWidth = Constants.borderWidth
+    enum Style {
+        case translucent
+        case solid
+    }
+
+    let backgroundView: UIView = .create { view in
+        view.layer.cornerRadius = Constants.cornerRadius
+        view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
     }
 
     let contentView = UIView()
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(style: Style = .translucent) {
+        super.init(frame: .zero)
 
+        apply(style: style)
         setupLayout()
     }
 
@@ -28,15 +30,25 @@ private extension SubtensorBottomPanelView {
     enum Constants {
         static let cornerRadius: CGFloat = 16
         static let borderWidth: CGFloat = 1
-        static let strokeOutset = borderWidth / 2
         static let contentInset: CGFloat = 16
+    }
+
+    func apply(style: Style) {
+        switch style {
+        case .translucent:
+            backgroundView.backgroundColor = R.color.colorBlockBackground()
+            backgroundView.layer.borderWidth = Constants.borderWidth
+            backgroundView.layer.borderColor = R.color.colorContainerBorder()!.cgColor
+        case .solid:
+            backgroundView.backgroundColor = R.color.colorBottomSheetBackground()
+        }
     }
 
     func setupLayout() {
         addSubview(backgroundView)
         backgroundView.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(Constants.strokeOutset)
-            make.leading.trailing.bottom.equalToSuperview().inset(-Constants.strokeOutset)
+            make.top.equalToSuperview()
+            make.leading.trailing.bottom.equalToSuperview().inset(-Constants.borderWidth)
         }
 
         addSubview(contentView)

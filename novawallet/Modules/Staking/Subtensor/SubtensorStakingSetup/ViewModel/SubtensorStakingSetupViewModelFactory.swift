@@ -205,17 +205,14 @@ extension SubtensorStakingSetupViewModelFactory {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         if input.amountState == .noTao {
-            return strings.stakingSubtensorUiGetTaoCaption()
+            return input.mode.isRootLane ? strings.stakingSubtensorUiGetTaoRootCaption() : nil
         }
 
-        switch input.mode {
-        case .rootDetails:
+        guard case .addStake = input.mode else {
             return nil
-        case .addStake:
-            return createAddStakeCaption(for: input, locale: locale)
-        case .quickPick, .subnetPick, .buyMore:
-            return strings.stakingSubtensorUiSafetyNote()
         }
+
+        return createAddStakeCaption(for: input, locale: locale)
     }
 
     func createAddStakeCaption(for input: SubtensorStakingSetupViewModelInput, locale: Locale) -> String? {
