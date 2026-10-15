@@ -34,7 +34,6 @@ enum SubtensorValidatorSelectViewFactory {
             listFactory: listFactory,
             delegate: delegate,
             localizationManager: LocalizationManager.shared,
-            logger: Logger.shared,
             filterSession: state.flowState.validatorFilterSession
         )
 

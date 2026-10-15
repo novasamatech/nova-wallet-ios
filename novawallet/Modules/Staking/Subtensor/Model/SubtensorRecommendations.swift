@@ -28,18 +28,10 @@ struct SubtensorRecommendedValidators: Equatable {
 }
 
 struct SubtensorRankedSubnet: Equatable {
-    enum Status: Equatable {
-        case scored
-        case gated
-        case unavailable
-    }
-
     let netuid: UInt16
-    let status: Status
     let taoIn: Decimal?
     let volatility: SubtensorMetricScore?
     let ageBlocks: UInt64?
-    let scoredValidators: Int
 }
 
 struct SubtensorRankedSubnets: Equatable {

@@ -52,7 +52,6 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
 
     func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?) {
         self.catalogue = catalogue
-        isCatalogueLoaded = true
 
         provideViewModel()
     }
@@ -88,6 +87,8 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
 
         provideViewModel()
     }
+
+    func didReceiveRootHolds(_: [AccountId: SubtensorRootHold]) {}
 
     func didReceiveAssetBalance(_ balance: AssetBalance?) {
         self.balance = balance

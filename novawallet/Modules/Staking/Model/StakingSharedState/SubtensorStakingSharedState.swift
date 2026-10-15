@@ -29,8 +29,6 @@ protocol SubtensorStakingSharedStateProtocol: AnyObject {
 
     var logger: LoggerProtocol { get }
 
-    var sharedOperation: SharedOperationProtocol? { get }
-
     func setup(for account: MetaChainAccountResponse?)
     func throttle()
     func startSharedOperation() -> SharedOperationProtocol
@@ -127,6 +125,16 @@ private extension SubtensorStakingSharedState {
 
         currentAccount = nil
     }
+
+    var sharedOperation: SharedOperationProtocol? {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return currentSharedOperation
+    }
 }
 
 extension SubtensorStakingSharedState: SubtensorStakingSharedStateProtocol {
@@ -148,16 +156,6 @@ extension SubtensorStakingSharedState: SubtensorStakingSharedStateProtocol {
         }
 
         return currentPositionsSyncService
-    }
-
-    var sharedOperation: SharedOperationProtocol? {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        return currentSharedOperation
     }
 
     func setup(for account: MetaChainAccountResponse?) {

@@ -9,8 +9,6 @@ protocol StartStakingInfoSubtensorPresenterProtocol: StartStakingInfoPresenterPr
     func refreshContent()
 }
 
-protocol StartStakingInfoSubtensorInteractorInputProtocol: StartStakingInfoInteractorInputProtocol {}
-
 protocol StartStakingInfoSubtensorInteractorOutputProtocol: StartStakingInfoInteractorOutputProtocol {
     func didReceive(headlineRate: Decimal?)
     func didReceiveAccountChange()

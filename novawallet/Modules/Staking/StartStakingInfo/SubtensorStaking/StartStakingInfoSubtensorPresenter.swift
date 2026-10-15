@@ -10,7 +10,7 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
 
     init(
         chainAsset: ChainAsset,
-        interactor: StartStakingInfoSubtensorInteractorInputProtocol,
+        interactor: StartStakingInfoInteractorInputProtocol,
         wireframe: StartStakingInfoSubtensorWireframeProtocol,
         startStakingViewModelFactory: StartStakingViewModelFactoryProtocol,
         subtensorViewModelFactory: StartStakingInfoSubtensorViewModelFactoryProtocol,

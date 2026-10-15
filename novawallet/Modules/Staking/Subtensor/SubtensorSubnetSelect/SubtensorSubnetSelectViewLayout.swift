@@ -175,7 +175,6 @@ private extension SubtensorSubnetSelectViewLayout {
         static let filterSpacing: CGFloat = 7
         static let captionSpacing: CGFloat = 8
         static let listTopSpacing: CGFloat = 18
-        static let barBottomInset: CGFloat = 8
         static let barTopSpacing: CGFloat = 8
         static let errorTopSpacing: CGFloat = 16
         static let emptyTopSpacing: CGFloat = 148

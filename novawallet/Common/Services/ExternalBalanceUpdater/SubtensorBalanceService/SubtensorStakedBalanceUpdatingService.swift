@@ -142,7 +142,6 @@ private extension SubtensorStakedBalanceUpdatingService {
             return CompoundOperationWrapper(targetOperation: repository.saveOperation({ [item] }, { [] }))
         }
 
-        // a partial total never replaces a complete one; it only fills in or updates an earlier partial
         let fetchOperation = repository.fetchOperation(by: { identifier }, options: .init())
 
         let saveOperation = repository.saveOperation({

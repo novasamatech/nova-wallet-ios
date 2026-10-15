@@ -240,11 +240,7 @@ private extension BittensorApiOperationFactory {
         path: String,
         queryItems: [URLQueryItem] = []
     ) -> CompoundOperationWrapper<BittensorApiResult<T>> {
-        let request = BittensorApiRequest(
-            path: path,
-            pathTemplate: route.pathTemplate,
-            queryItems: queryItems
-        )
+        let request = BittensorApiRequest(path: path, queryItems: queryItems)
 
         let job = BittensorApiCacheJob(
             key: Self.cacheKey(path: path, queryItems: queryItems),

@@ -142,7 +142,6 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakePresenterValidating {
             preflight: preflight,
             holds: holds,
             currentBlock: currentBlock,
-            blockTime: SubtensorStakingFlowConstants.blockTimeMillis,
             assetDisplayInfo: inputDisplayInfo,
             syncFailed: isPositionsSyncFailed,
             onFeeRefresh: { [weak self] in

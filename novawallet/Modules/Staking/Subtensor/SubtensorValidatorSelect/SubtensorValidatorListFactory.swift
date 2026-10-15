@@ -96,7 +96,7 @@ extension SubtensorValidatorListFactory {
 
     func createLoadingViewModel(
         yields: SubtensorAlphaYields?,
-        sort: SubtensorValidatorSort = .totalStaked,
+        sort: SubtensorValidatorSort,
         locale: Locale
     ) -> SubtensorValidatorListHeaderViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable

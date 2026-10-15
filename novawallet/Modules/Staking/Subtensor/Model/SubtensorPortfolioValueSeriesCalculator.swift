@@ -20,7 +20,7 @@ struct SubtensorPortfolioPriceHistories: Equatable {
 }
 
 extension SubtensorPricePeriod {
-    var portfolioHistoryPeriod: BittensorApi.PortfolioHistoryPeriod? {
+    var portfolioHistoryPeriod: BittensorApi.PortfolioHistoryPeriod {
         switch self {
         case .day:
             return .oneDay
@@ -28,10 +28,8 @@ extension SubtensorPricePeriod {
             return .sevenDays
         case .month:
             return .thirtyDays
-        case .quarter:
+        case .quarter, .all:
             return .ninetyDays
-        case .all:
-            return nil
         }
     }
 
@@ -43,9 +41,7 @@ extension SubtensorPricePeriod {
             return .week
         case .month:
             return .month
-        case .quarter:
-            return .year
-        case .all:
+        case .quarter, .all:
             return .allTime
         }
     }
