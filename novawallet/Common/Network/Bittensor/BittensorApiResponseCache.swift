@@ -6,6 +6,15 @@ struct BittensorApiCacheKey: Hashable {
     let query: [String]
 }
 
+struct BittensorApiCacheDrop: Hashable {
+    let path: String
+    let queryItem: String
+
+    func covers(_ key: BittensorApiCacheKey) -> Bool {
+        key.path == path && key.query.contains(queryItem)
+    }
+}
+
 struct BittensorApiGenerationOrder: Comparable {
     let asOf: Date
     let sourceBlockNumber: UInt64
@@ -49,6 +58,7 @@ final class BittensorApiResponseCache {
     private var activeScope: BittensorApiCacheScope?
     private var minimumInvalidationRevision: UInt64 = 0
     private var newestGeneration: BittensorApiGenerationOrder?
+    private var drops: [BittensorApiCacheDrop: TimeInterval] = [:]
 
     init(operationQueue: OperationQueue, timeProvider: @escaping () -> TimeInterval = BittensorMonotonicClock.now) {
         self.operationQueue = operationQueue
@@ -61,9 +71,10 @@ final class BittensorApiResponseCache {
         mutex.unlock()
     }
 
-    func removeEntries(where predicate: (BittensorApiCacheKey) -> Bool) {
+    func drop(_ drop: BittensorApiCacheDrop) {
         mutex.lock()
-        entries = entries.filter { !predicate($0.key.request) }
+        drops[drop] = timeProvider()
+        entries = entries.filter { !drop.covers($0.key.request) }
         mutex.unlock()
     }
 
@@ -113,6 +124,7 @@ private extension BittensorApiResponseCache {
         activeScope = nil
         entries.removeAll()
         newestGeneration = nil
+        drops.removeAll()
     }
 
     func activate(_ scope: BittensorApiCacheScope, currentRevision: UInt64) throws {
@@ -126,6 +138,7 @@ private extension BittensorApiResponseCache {
             activeScope = scope
             entries.removeAll()
             newestGeneration = nil
+            drops.removeAll()
         }
     }
 
@@ -161,7 +174,9 @@ private extension BittensorApiResponseCache {
         let entry = BittensorApiCacheEntry(
             value: fetched.value, requestId: fetched.requestId, generation: fetched.generation, freshUntil: freshUntil
         )
-        entries[key] = entry
+        if !drops.contains(where: { $0.key.covers(key.request) && startedAt < $0.value }) {
+            entries[key] = entry
+        }
         return entry
     }
 }
