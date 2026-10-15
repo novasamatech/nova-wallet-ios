@@ -17,6 +17,7 @@ final class SubtensorValidatorSelectPresenter {
     private var alphaPrice: Balance?
     private var recommendedHotkeys: Set<AccountId>?
     private var recommendedError: Error?
+    private var verificationError: Error?
     private let filterSession: SubtensorValidatorFilterSession
     private var query = ""
     private var selectedHotkey: AccountId?
@@ -35,6 +36,7 @@ final class SubtensorValidatorSelectPresenter {
     ) {
         self.target = target
         self.selectedHotkey = selectedHotkey
+        preselectedHotkey = selectedHotkey
         self.interactor = interactor
         self.wireframe = wireframe
         self.listFactory = listFactory
@@ -53,7 +55,7 @@ private extension SubtensorValidatorSelectPresenter {
         let header = listFactory.createLoadingViewModel(yields: yields, sort: filters.sort, locale: selectedLocale)
         view?.didReceive(header: header, isFilterActive: filters.hidesUnusualApy)
 
-        if let error = directoryError ?? (filters.hidesUnusualApy ? recommendedError : nil) {
+        if let error = directoryError ?? verificationError ?? (filters.hidesUnusualApy ? recommendedError : nil) {
             let viewModel = listFactory.createErrorViewModel(for: error, locale: selectedLocale)
             view?.didReceive(state: .failed(viewModel))
             return
@@ -89,18 +91,22 @@ private extension SubtensorValidatorSelectPresenter {
         directory?.listStamp?.freshness == .fresh ? item : item.withoutReportedStake()
     }
 
+    func accepts(_ directory: SubtensorValidatorDirectory) -> Bool {
+        directory.subnet.netuid == target.netuid &&
+            (target.isRoot || directory.subnet.registeredAt == target.subnetInfo?.networkRegisteredAt)
+    }
+
     func apply(directory: SubtensorValidatorDirectory) {
-        guard directory.subnet.netuid == target.netuid,
-              target.isRoot || directory.subnet.registeredAt == target.subnetInfo?.networkRegisteredAt else { return }
+        guard accepts(directory) else { return }
         self.directory = directory
         directoryError = nil
         selectedHotkey = selectableItem(for: selectedHotkey)?.hotkey
-        preselectedHotkey = selectedHotkey
+        preselectedHotkey = selectableItem(for: preselectedHotkey)?.hotkey
     }
 
     func seed(from snapshot: SubtensorValidatorSelectSnapshot) {
-        if let directory = snapshot.directory.value {
-            apply(directory: directory)
+        if let directory = snapshot.directory.value, accepts(directory) {
+            self.directory = directory
         }
 
         if let yields = snapshot.yields.value, yields.netuid == target.netuid {
@@ -126,6 +132,7 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectPresenterProtocol {
         yields = nil
         recommendedHotkeys = nil
         recommendedError = nil
+        verificationError = nil
 
         if !target.isRoot {
             alphaPrice = nil
@@ -163,7 +170,8 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectPresenterProtocol {
             from: view,
             target: target,
             hotkey: hotkey,
-            detail: selectableItem(for: hotkey).map(handedOut)
+            detail: selectableItem(for: hotkey).map(handedOut),
+            needsChainDetail: true
         )
     }
 
@@ -202,20 +210,23 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectInteractorOutputProt
 
     func didReceive(verification: SubtensorValidatorListVerification) {
         directory = directory?.withTakes(verification.takes)
+        verificationError = nil
 
         switch verification.recommended {
         case let .success(hotkeys):
             recommendedHotkeys = hotkeys
             recommendedError = nil
-            provideState()
         case let .failure(error):
-            didFailVerification(error)
+            recommendedHotkeys = nil
+            recommendedError = error
         }
+
+        provideState()
     }
 
     func didFailVerification(_ error: Error) {
         recommendedHotkeys = nil
-        recommendedError = error
+        verificationError = error
         provideState()
     }
 }

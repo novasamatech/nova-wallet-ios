@@ -105,8 +105,9 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
     }
 
     func dropOperations(accountSubject: AccountAddress) {
-        let subjectItem = "accountSubject=\(accountSubject)"
-        cache.removeEntries { $0.path == Route.operations.pathTemplate && $0.query.contains(subjectItem) }
+        cache.drop(
+            BittensorApiCacheDrop(path: Route.operations.pathTemplate, queryItem: "accountSubject=\(accountSubject)")
+        )
     }
 
     func createPortfolioHistoryWrapper(

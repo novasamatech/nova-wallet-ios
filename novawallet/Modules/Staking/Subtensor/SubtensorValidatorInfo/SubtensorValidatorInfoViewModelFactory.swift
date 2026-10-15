@@ -7,6 +7,7 @@ struct SubtensorValidatorInfoInput {
     let target: SubtensorStakeTarget
     let hotkey: AccountId
     let detail: SubtensorValidatorDirectoryItem?
+    let needsChainDetail: Bool
     let annualRate: LoadableViewModelState<Decimal?>
     let alphaPrice: LoadableViewModelState<Balance?>
     let price: PriceData?
@@ -128,7 +129,7 @@ private extension SubtensorValidatorInfoViewModelFactory {
         }
 
         return SubtensorValidatorInfoViewModel.Staking(
-            status: item.status == nil ? unknown : activeStatus,
+            status: input.needsChainDetail ? unknown : activeStatus,
             isActive: isActive,
             stakeTitle: isRoot
                 ? strings.stakingSubtensorUiValidatorInfoStakedRoot()

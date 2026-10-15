@@ -83,6 +83,37 @@ final class SubtensorCostBasisServiceTests: XCTestCase {
         verify(apiOperationFactory, times(2)).createOperationsWrapper(accountSubject: any(), page: any())
     }
 
+    func testOwnStakingChangeDropsPagesAgainWhenTheBlockExpires() throws {
+        var now = clock
+        let apiOperationFactory = createApiOperationFactory(pages: [
+            createPage(1, nextPage: nil, rows: [
+                createOperation(netuid: chutesNetuid, amountIn: "1.25", amountOut: "25", price: "0.05")
+            ])
+        ])
+        let eventQueue = DispatchQueue(label: "test.subtensor.cost.basis.events")
+        let eventCenter = EventCenter(syncQueue: eventQueue)
+        let accountSubject = try accountId.toAddress(using: .defaultSubstrateFormat)
+        let service = createService(apiOperationFactory, eventCenter: eventCenter, timeProvider: { now })
+
+        eventCenter.notify(
+            with: SubtensorStakingChanged(
+                chainAssetId: ChainAssetId(chainId: KnowChainId.bittensor, assetId: AssetModel.utilityAssetId),
+                accountId: accountId
+            )
+        )
+        eventQueue.sync {}
+        now += SubtensorCostBasisService.ownTradeSettleTime - 1
+        XCTAssertNil(service.cachedCostBasis(for: accountId, netuid: chutesNetuid).value)
+        verify(apiOperationFactory, times(1)).dropOperations(accountSubject: equal(to: accountSubject))
+
+        now += 1
+        XCTAssertNil(service.cachedCostBasis(for: accountId, netuid: chutesNetuid).value)
+        verify(apiOperationFactory, times(2)).dropOperations(accountSubject: equal(to: accountSubject))
+
+        XCTAssertNotNil(service.cachedCostBasis(for: accountId, netuid: chutesNetuid).value)
+        verify(apiOperationFactory, times(2)).dropOperations(accountSubject: equal(to: accountSubject))
+    }
+
     func testBuyingMoreAtHigherPriceRaisesAverage() {
         let totals = SubtensorPurchaseTotals(paidTao: 1_250_000_000, receivedAlpha: 25_000_000_000)
 
@@ -104,7 +135,8 @@ final class SubtensorCostBasisServiceTests: XCTestCase {
 
     private func createService(
         _ apiOperationFactory: BittensorApiOperationFactoryProtocol,
-        eventCenter: EventCenterProtocol = EventCenter()
+        eventCenter: EventCenterProtocol = EventCenter(),
+        timeProvider: (() -> TimeInterval)? = nil
     ) -> SubtensorCostBasisService {
         let clock = clock
 
@@ -112,7 +144,7 @@ final class SubtensorCostBasisServiceTests: XCTestCase {
             apiOperationFactory: apiOperationFactory,
             operationQueue: OperationQueue(),
             eventCenter: eventCenter,
-            timeProvider: { clock }
+            timeProvider: timeProvider ?? { clock }
         )
     }
 

@@ -12,6 +12,7 @@ final class SubtensorValidatorInfoPresenter {
     let logger: LoggerProtocol
 
     private var detail: SubtensorValidatorDirectoryItem?
+    private var needsChainDetail: Bool
     private var annualRate: LoadableViewModelState<Decimal?> = .loading
     private var alphaPrice: LoadableViewModelState<Balance?> = .loading
     private var coverage: LoadableViewModelState<SubtensorValidatorCoverage?> = .loading
@@ -21,6 +22,7 @@ final class SubtensorValidatorInfoPresenter {
         target: SubtensorStakeTarget,
         hotkey: AccountId,
         detail: SubtensorValidatorDirectoryItem?,
+        needsChainDetail: Bool,
         interactor: SubtensorValInfoInteractorInputProtocol,
         wireframe: SubtensorValidatorInfoWireframeProtocol,
         viewModelFactory: SubtensorValidatorInfoViewModelFactory,
@@ -30,6 +32,7 @@ final class SubtensorValidatorInfoPresenter {
         self.target = target
         self.hotkey = hotkey
         self.detail = detail
+        self.needsChainDetail = needsChainDetail
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
@@ -44,6 +47,7 @@ private extension SubtensorValidatorInfoPresenter {
             target: target,
             hotkey: hotkey,
             detail: detail,
+            needsChainDetail: needsChainDetail,
             annualRate: annualRate,
             alphaPrice: alphaPrice,
             price: price,
@@ -76,7 +80,7 @@ extension SubtensorValidatorInfoPresenter: SubtensorValidatorInfoPresenterProtoc
 
         interactor.setup()
 
-        if detail?.status == nil {
+        if detail == nil || needsChainDetail {
             loadDetail()
         }
     }
@@ -100,6 +104,7 @@ extension SubtensorValidatorInfoPresenter: SubtensorValInfoInteractorOutputProto
         view?.didStopLoading()
 
         self.detail = detail
+        needsChainDetail = false
         provideViewModel()
     }
 
