@@ -4,9 +4,7 @@ import UIKit_iOS
 final class SubtensorSubnetMoreDetailsView: UIView {
     let titleControl: ActionTitleControl = .create {
         $0.indicator = ResizableImageActionIndicator(size: .init(width: 24, height: 24))
-        $0.imageView.image = R.image.iconLinkChevron()?.tinted(with: R.color.colorTextSecondary()!)
-        $0.identityIconAngle = CGFloat.pi / 2
-        $0.activationIconAngle = -CGFloat.pi / 2
+        $0.imageView.image = R.image.iconSmallArrowDown()?.tinted(with: R.color.colorIconSecondary()!)
         $0.titleLabel.apply(style: .regularSubhedlineSecondary)
         $0.layoutType = .flexible
     }
@@ -25,7 +23,7 @@ final class SubtensorSubnetMoreDetailsView: UIView {
         stackView.addArrangedSubview(rowsView)
         addSubview(stackView)
         stackView.snp.makeConstraints { $0.edges.equalToSuperview() }
-        titleControl.snp.makeConstraints { $0.height.equalTo(38) }
+        titleControl.snp.makeConstraints { $0.height.equalTo(44) }
         rowsView.isHidden = true
         titleControl.addTarget(self, action: #selector(toggle), for: .valueChanged)
     }
@@ -35,7 +33,7 @@ final class SubtensorSubnetMoreDetailsView: UIView {
 
     func bind(_ rows: [SubtensorParameterRowViewModel]) {
         while rowViews.count < rows.count {
-            let row = SubtensorParameterRowView()
+            let row = SubtensorParameterRowView(style: .detail)
             rowViews.append(row)
             rowsView.addArrangedSubview(row)
         }
