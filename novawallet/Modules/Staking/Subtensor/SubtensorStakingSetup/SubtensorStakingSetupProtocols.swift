@@ -74,6 +74,11 @@ protocol SubtensorStakingSetupWireframeProtocol: AlertPresentable, ErrorPresenta
         delegate: SubtensorSubnetSelectDelegate
     )
 
+    func showRootDetails(
+        from view: SubtensorStakingSetupViewProtocol?,
+        browseState: SubtensorSubnetBrowseState
+    )
+
     func showSlippageSettings(
         from view: SubtensorStakingSetupViewProtocol?,
         current: BigRational,

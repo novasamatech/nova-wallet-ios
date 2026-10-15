@@ -84,6 +84,7 @@ private extension SubtensorStakingSetupViewController {
             action: #selector(actionSelectValidator),
             for: .touchUpInside
         )
+        rootView.rootPickCardView.headerView.addTarget(self, action: #selector(actionCardHeader), for: .touchUpInside)
         rootView.rootPickCardView.browseButton.addTarget(self, action: #selector(actionBrowse), for: .touchUpInside)
         rootView.selectionAlert.learnMoreButton.addTarget(
             self,

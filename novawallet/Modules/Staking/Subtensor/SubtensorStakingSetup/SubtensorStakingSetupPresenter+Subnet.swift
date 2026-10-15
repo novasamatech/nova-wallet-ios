@@ -138,6 +138,11 @@ extension SubtensorStakingSetupPresenter {
     }
 
     func selectCardHeader() {
+        if case .rootDetails = mode {
+            wireframe.showRootDetails(from: view, browseState: browseState)
+            return
+        }
+
         guard
             case .subnetPick = mode,
             let target,

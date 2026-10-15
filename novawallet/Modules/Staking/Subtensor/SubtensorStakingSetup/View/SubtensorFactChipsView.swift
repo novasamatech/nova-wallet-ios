@@ -34,13 +34,13 @@ private extension SubtensorFactChipsView {
     enum Constants {
         static let spacing: CGFloat = 6
         static let height: CGFloat = 24
-        static let cornerRadius: CGFloat = 6
+        static let cornerRadius: CGFloat = 8
         static let insets = UIEdgeInsets(top: 4, left: 8, bottom: 4, right: 8)
     }
 
     func createChip(title: String) -> BorderedLabelView {
         let chip = BorderedLabelView()
-        chip.titleLabel.apply(style: .footnotePrimary)
+        chip.titleLabel.apply(style: .caption1Primary)
         chip.titleLabel.text = title
         chip.backgroundView.cornerRadius = Constants.cornerRadius
         chip.contentInsets = Constants.insets
