@@ -45,11 +45,8 @@ enum SubtensorSetupRootValidatorViewModel {
 }
 
 struct SubtensorSetupRootViewModel {
-    let icon: ImageViewModelProtocol
     let validator: SubtensorSetupRootValidatorViewModel
-    let compactValidator: SubtensorSetupValidatorViewModel
-    let compactRate: String?
-    let isQuickPick: Bool
+    let pickCard: SubtensorPickCardViewModel?
     let networkFee: BalanceViewModelProtocol?
 }
 
@@ -69,6 +66,7 @@ struct SubtensorPickCardViewModel {
     let receive: SubtensorRowState<String>
     let swapRate: SubtensorRowState<String>
     let networkFee: BalanceViewModelProtocol?
+    let hasHeaderDivider: Bool
 }
 
 struct SubtensorPickCardHeaderViewModel {
@@ -177,6 +175,7 @@ struct SubtensorStakingSetupViewModelInput {
     var selectedRef: SubtensorSubnetRef?
     var rootEntryPresentation: SubtensorRootEntryPresentation = .standard
 
+    // A reused netuid can still have metadata cached for its previous registration.
     var matchingCatalogue: SubtensorSubnetCatalogue? {
         guard let info = target?.subnetInfo else { return nil }
         let ref = SubtensorSubnetRef(netuid: info.netuid, registeredAt: info.networkRegisteredAt)

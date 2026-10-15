@@ -16,9 +16,7 @@ final class SubtensorPriceWidgetView: UIView {
         label.apply(style: .footnotePositive)
     }
 
-    let changeSkeletonView: SubtensorChartLoadingView = .create { view in
-        view.layer.cornerRadius = 6
-    }
+    let changeSkeletonView = SubtensorSkeletonView(cornerRadius: 6)
 
     let currencyControl: RoundedSegmentedControl = .create { view in
         view.backgroundView.fillColor = R.color.colorSegmentedBackground()!
@@ -34,7 +32,7 @@ final class SubtensorPriceWidgetView: UIView {
 
     let chartView: SubtensorSubnetPriceChartView
 
-    let chartLoadingView: SubtensorChartLoadingView = .create { view in
+    let chartLoadingView: SubtensorSkeletonView = .create { view in
         view.layer.cornerRadius = Constants.chartCornerRadius
         view.skeletonCornerRadius = Constants.chartCornerRadius
     }

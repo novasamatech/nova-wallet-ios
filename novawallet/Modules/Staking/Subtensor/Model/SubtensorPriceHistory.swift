@@ -5,7 +5,6 @@ enum SubtensorPricePeriod: Equatable {
     case week
     case month
     case quarter
-    case all
 
     static let selectable: [SubtensorPricePeriod] = [.day, .week, .month, .quarter]
 }

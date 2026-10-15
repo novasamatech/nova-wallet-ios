@@ -30,13 +30,11 @@ final class SubtensorPositionSummaryView: UIView {
         view.spacing = Constants.spacing
     }
 
-    private let iconSkeletonView: SubtensorChartLoadingView = .create { view in
-        view.layer.cornerRadius = Constants.iconSize / 2
-    }
+    private let iconSkeletonView = SubtensorSkeletonView(cornerRadius: Constants.iconSize / 2)
 
-    private let captionSkeletonView = SubtensorPositionSummaryView.createSkeleton()
-    private let amountSkeletonView = SubtensorPositionSummaryView.createSkeleton()
-    private let fiatSkeletonView = SubtensorPositionSummaryView.createSkeleton()
+    private let captionSkeletonView = SubtensorSkeletonView(cornerRadius: 6)
+    private let amountSkeletonView = SubtensorSkeletonView(cornerRadius: 6)
+    private let fiatSkeletonView = SubtensorSkeletonView(cornerRadius: 6)
 
     private var rowViews: [SubtensorPositionSummaryRowView] = []
     private var iconViewModel: ImageViewModelProtocol?
@@ -109,12 +107,6 @@ private extension SubtensorPositionSummaryView {
         static let detailLineHeight: CGFloat = 16
     }
 
-    static func createSkeleton() -> SubtensorChartLoadingView {
-        .create { view in
-            view.layer.cornerRadius = 6
-        }
-    }
-
     func bind(rows: [SubtensorPositionRowViewModel]) {
         while rowViews.count < rows.count {
             let rowView = SubtensorPositionSummaryRowView()
@@ -175,7 +167,7 @@ private extension SubtensorPositionSummaryView {
             make.edges.equalTo(iconView)
         }
 
-        let skeletons: [(SubtensorChartLoadingView, UILabel, CGFloat)] = [
+        let skeletons: [(SubtensorSkeletonView, UILabel, CGFloat)] = [
             (captionSkeletonView, captionLabel, 80),
             (amountSkeletonView, amountLabel, 140),
             (fiatSkeletonView, fiatLabel, 60)
@@ -207,9 +199,7 @@ private final class SubtensorPositionSummaryRowView: UIView {
         label.textAlignment = .right
     }
 
-    let skeletonView: SubtensorChartLoadingView = .create { view in
-        view.layer.cornerRadius = 6
-    }
+    let skeletonView = SubtensorSkeletonView(cornerRadius: 6)
 
     override init(frame: CGRect) {
         super.init(frame: frame)

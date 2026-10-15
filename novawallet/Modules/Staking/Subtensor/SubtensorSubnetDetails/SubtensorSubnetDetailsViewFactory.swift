@@ -109,7 +109,6 @@ private struct SubtensorParametersTimeline: ChainTimelineFacadeProtocol {
             let chain = try chainRegistry.getChainOrError(for: timelineChainId)
             let runtime = try chainRegistry.getRuntimeProviderOrError(for: timelineChainId)
 
-            // Approximate age needs the expected duration, without a subscription-backed estimator.
             return BlockTimeOperationFactory(chain: chain).createExpectedBlockTimeWrapper(from: runtime)
         } catch {
             return .createWithError(error)

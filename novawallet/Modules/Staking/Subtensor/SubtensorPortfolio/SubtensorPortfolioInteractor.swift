@@ -201,7 +201,7 @@ private extension SubtensorPortfolioInteractor {
         let taoWrapper = currency.id == Currency.usd.id ? nil : state.flowState.priceSeriesCache.createSeriesWrapper(
             for: taoPriceId,
             currency: currency,
-            period: period.sourcePeriod.coingeckoPeriod
+            period: period.sourceCoingeckoPeriod
         )
 
         let historiesOperation = ClosureOperation<SubtensorPortfolioPriceHistories> {
