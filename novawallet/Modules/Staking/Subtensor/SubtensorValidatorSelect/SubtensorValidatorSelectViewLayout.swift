@@ -38,9 +38,7 @@ final class SubtensorValidatorSelectViewLayout: UIView {
         view.isHidden = true
     }
 
-    let bottomBar: UIView = .create { view in
-        view.backgroundColor = R.color.colorSecondaryScreenBackground()
-    }
+    let bottomPanel = SubtensorBottomPanelView()
 
     let actionButton: TriangularedButton = .create { button in
         button.applyDefaultStyle()
@@ -104,8 +102,8 @@ final class SubtensorValidatorSelectViewLayout: UIView {
     }
 
     private func setupLayout() {
-        [searchField, headerView, tableView, emptyLabel, errorView, bottomBar].forEach(addSubview)
-        bottomBar.addSubview(actionButton)
+        [searchField, headerView, tableView, emptyLabel, errorView, bottomPanel].forEach(addSubview)
+        bottomPanel.contentView.addSubview(actionButton)
 
         searchField.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide).offset(12)
@@ -122,7 +120,7 @@ final class SubtensorValidatorSelectViewLayout: UIView {
         tableView.snp.makeConstraints { make in
             make.top.equalTo(headerView.snp.bottom)
             make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(bottomBar.snp.top)
+            make.bottom.equalTo(bottomPanel.snp.top)
         }
 
         emptyLabel.snp.makeConstraints { make in
@@ -135,15 +133,13 @@ final class SubtensorValidatorSelectViewLayout: UIView {
             make.leading.trailing.equalToSuperview().inset(16)
         }
 
-        bottomBar.snp.makeConstraints { make in
+        bottomPanel.snp.makeConstraints { make in
             make.leading.trailing.bottom.equalToSuperview()
         }
 
         actionButton.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(16)
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.height.equalTo(52)
-            make.bottom.equalTo(safeAreaLayoutGuide).inset(12)
+            make.edges.equalToSuperview()
+            make.height.equalTo(UIConstants.actionHeight)
         }
     }
 }

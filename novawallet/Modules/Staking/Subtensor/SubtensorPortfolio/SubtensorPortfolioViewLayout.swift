@@ -37,9 +37,7 @@ final class SubtensorPortfolioViewLayout: UIView {
         view.spacing = 8
     }
 
-    let bottomBar: UIView = .create { view in
-        view.backgroundColor = R.color.colorSecondaryScreenBackground()
-    }
+    let bottomPanel = SubtensorBottomPanelView(style: .solid)
 
     let addButton: TriangularedButton = .create { button in
         button.applySecondaryDefaultStyle()
@@ -91,7 +89,6 @@ final class SubtensorPortfolioViewLayout: UIView {
 
 private extension SubtensorPortfolioViewLayout {
     enum Constants {
-        static let buttonHeight: CGFloat = 52
         static let rowHeight: CGFloat = 64
     }
 
@@ -130,23 +127,21 @@ private extension SubtensorPortfolioViewLayout {
             make.edges.equalToSuperview()
         }
 
-        addSubview(bottomBar)
-        bottomBar.snp.makeConstraints { make in
+        addSubview(bottomPanel)
+        bottomPanel.snp.makeConstraints { make in
             make.leading.trailing.bottom.equalToSuperview()
         }
 
-        bottomBar.addSubview(addButton)
+        bottomPanel.contentView.addSubview(addButton)
         addButton.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.top.equalToSuperview().inset(16)
-            make.bottom.equalTo(safeAreaLayoutGuide).inset(12)
-            make.height.equalTo(Constants.buttonHeight)
+            make.edges.equalToSuperview()
+            make.height.equalTo(UIConstants.actionHeight)
         }
 
         addSubview(containerView)
         containerView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(bottomBar.snp.top)
+            make.bottom.equalTo(bottomPanel.snp.top)
         }
 
         let stackView = containerView.stackView

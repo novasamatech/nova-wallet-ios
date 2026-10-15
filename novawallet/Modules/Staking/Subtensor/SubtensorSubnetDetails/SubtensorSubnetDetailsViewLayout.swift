@@ -25,8 +25,12 @@ final class SubtensorSubnetDetailsViewLayout: UIView {
 
     let moreDetailsView = SubtensorSubnetMoreDetailsView()
 
+    let bottomPanel = SubtensorBottomPanelView(style: .solid)
+
     let favoriteButton: RoundedButton = .create { button in
         button.applyIconWithBackgroundStyle()
+        button.roundedBackgroundView?.fillColor = R.color.colorButtonBackgroundSecondary()!
+        button.roundedBackgroundView?.highlightedFillColor = R.color.colorButtonBackgroundSecondary()!
     }
 
     let actionButton: TriangularedButton = .create { button in
@@ -77,26 +81,27 @@ private extension SubtensorSubnetDetailsViewLayout {
     }
 
     func setupBottomBar() {
-        addSubview(favoriteButton)
-        addSubview(actionButton)
-
-        actionButton.snp.makeConstraints { make in
-            make.leading.equalTo(favoriteButton.snp.trailing).offset(12)
-            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
-            make.height.equalTo(UIConstants.actionHeight)
+        addSubview(bottomPanel)
+        bottomPanel.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
         }
 
+        bottomPanel.contentView.addSubview(favoriteButton)
         favoriteButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.centerY.equalTo(actionButton)
+            make.top.leading.bottom.equalToSuperview()
             make.size.equalTo(Constants.buttonSize)
+        }
+
+        bottomPanel.contentView.addSubview(actionButton)
+        actionButton.snp.makeConstraints { make in
+            make.leading.equalTo(favoriteButton.snp.trailing).offset(12)
+            make.top.trailing.bottom.equalToSuperview()
         }
 
         addSubview(containerView)
         containerView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(actionButton.snp.top).offset(-16)
+            make.bottom.equalTo(bottomPanel.snp.top)
         }
     }
 
