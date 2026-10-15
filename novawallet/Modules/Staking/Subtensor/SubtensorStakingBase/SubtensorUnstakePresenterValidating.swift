@@ -108,13 +108,7 @@ private extension SubtensorUnstakeValidatingDep {
     }
 }
 
-protocol SubtensorUnstakePresenterValidating {
-    func createUnstakeValidations(
-        for dep: SubtensorUnstakeValidatingDep,
-        dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
-        selectedLocale: Locale
-    ) -> [DataValidating]
-}
+protocol SubtensorUnstakePresenterValidating {}
 
 extension SubtensorUnstakePresenterValidating {
     func createUnstakeValidations(

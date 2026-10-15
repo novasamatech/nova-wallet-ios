@@ -114,8 +114,6 @@ private extension StartStakingInfoSubtensorInteractor {
     }
 }
 
-extension StartStakingInfoSubtensorInteractor: StartStakingInfoSubtensorInteractorInputProtocol {}
-
 extension StartStakingInfoSubtensorInteractor: EventVisitorProtocol {
     func processSelectedWalletChanged(event _: SelectedWalletSwitched) {
         verifyBoundAccount()
