@@ -5,8 +5,8 @@ instance and injects its `NovaAuthClientProtocol` into analytics. One installati
 and one persisted current bearer serve every protected consumer; renewal replaces that bearer.
 
 `activate(origin:)` selects the exact HTTPS backend origin. `createAdmissionWrapper` checks a
-usable bearer before domain caches, while `createResponseWrapper` checks again before native
-URLCache or network access. One origin/API-major bearer authorizes ordinary protected paths:
+usable bearer before a store miss is fetched, while `createResponseWrapper` checks again before
+network access. One origin/API-major bearer authorizes ordinary protected paths:
 GET and HEAD reads, account-search POSTs, and analytics POSTs. Auth validates transport syntax
 and the selected HTTPS origin; each consumer and the server own business route/payload validation.
 Only conclusive pre-backend `invalid_token` allows a single replay: expected-origin 401 and
@@ -35,13 +35,12 @@ wording; it is an explicit eligibility change, not behavioral equivalence.
 The package has no explicit reset API. Analytics consent/erasure and wallet changes do not
 reset the shared identity. Requests carry no human/background privilege.
 
-Native URLCache owns GET/HEAD HTTP freshness, driven by server Date/Age/Cache-Control.
-Fresh, complete 200 reads use `public, max-age=N, must-revalidate`; POSTs and bootstrap use
-`no-store`. A public cache success neither confirms nor extends the credential deadline.
-Issuance commits to the canonical origin and API major 1 without a flow or scope. Renewal
+NovaAuth has no HTTP cache: every session is ephemeral, stores nothing and sends each
+authorized request to the network. Fresh, complete 200 reads carry `public, max-age=N,
+must-revalidate` (account searches `private`); POSTs and bootstrap use `no-store`. Issuance commits to the canonical origin and API major 1 without a flow or scope. Renewal
 obtains a fresh challenge and App Attest assertion; the server issues no refresh credential.
 
-Native URLCache owns HTTP freshness. The host stamps each accepted endpoint with an invalidation revision.
+The host stamps each accepted endpoint with an invalidation revision.
 
 ## Recovery and admission
 
