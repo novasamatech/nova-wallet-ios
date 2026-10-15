@@ -34,7 +34,8 @@ extension SubtensorStakingSetupViewModelFactory {
             chips: input.amountState == .noTao ? [] : createChips(for: input.subnetData.rankedSubnet, locale: locale),
             receive: createTradeRow(for: input, value: tradePanel?.receive?.amount, locale: locale),
             swapRate: createTradeRow(for: input, value: tradePanel?.swapRate, locale: locale),
-            networkFee: createNetworkFee(for: input, locale: locale)
+            networkFee: createNetworkFee(for: input, locale: locale),
+            hasHeaderDivider: false
         )
 
         return SubtensorSetupSubnetViewModel(

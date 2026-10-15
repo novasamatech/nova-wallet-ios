@@ -19,18 +19,14 @@ final class SubtensorPortfolioHeaderView: UIView {
         label.minimumScaleFactor = 0.5
     }
 
-    let totalSkeletonView: SubtensorChartLoadingView = .create { view in
-        view.layer.cornerRadius = 8
-    }
+    let totalSkeletonView = SubtensorChartLoadingView(cornerRadius: 8)
 
     let fiatLabel: UILabel = .create { label in
         label.font = .regularSubheadline
         label.textColor = R.color.colorTextSecondary()
     }
 
-    let fiatSkeletonView: SubtensorChartLoadingView = .create { view in
-        view.layer.cornerRadius = 7
-    }
+    let fiatSkeletonView = SubtensorChartLoadingView(cornerRadius: 7)
 
     let ratesAlertView: InlineAlertView = .create { view in
         view.apply(style: .info)
