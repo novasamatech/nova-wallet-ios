@@ -82,17 +82,6 @@ private extension SubtensorStakingSetupViewController {
         )
         rootView.pickCardView.browseView.button.addTarget(self, action: #selector(actionBrowse), for: .touchUpInside)
         rootView.browseView.button.addTarget(self, action: #selector(actionBrowse), for: .touchUpInside)
-        rootView.rootPickCardView.validatorCell.addTarget(
-            self,
-            action: #selector(actionSelectValidator),
-            for: .touchUpInside
-        )
-        rootView.rootPickCardView.headerView.addTarget(self, action: #selector(actionCardHeader), for: .touchUpInside)
-        rootView.rootPickCardView.browseView.button.addTarget(
-            self,
-            action: #selector(actionBrowse),
-            for: .touchUpInside
-        )
         rootView.selectionAlert.learnMoreButton.addTarget(
             self,
             action: #selector(actionRetryQuickPick),
@@ -124,7 +113,6 @@ private extension SubtensorStakingSetupViewController {
     }
 
     func applyDetails(_ details: SubtensorSetupDetailsViewModel) {
-        rootView.rootPickCardView.isHidden = true
         rootView.setSelection(details.selection)
         switch details {
         case let .selection(viewModel):
@@ -135,17 +123,18 @@ private extension SubtensorStakingSetupViewController {
             rootView.setSection(viewModel.section)
             applyAvgBuyPrice(.hidden)
         case let .root(viewModel):
-            rootView.detailsTableView.isHidden = viewModel.isQuickPick
-            rootView.rootPickCardView.isHidden = !viewModel.isQuickPick
-            rootView.sectionLabel.isHidden = !viewModel.isQuickPick
+            rootView.detailsTableView.isHidden = viewModel.pickCard != nil
+            rootView.sectionLabel.isHidden = viewModel.pickCard == nil
             let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
             rootView.setSection(strings.stakingSubtensorQuickRootSection())
-            rootView.pickCardView.isHidden = true
+            rootView.pickCardView.isHidden = viewModel.pickCard == nil
 
             applyAvgBuyPrice(.hidden)
             rootView.applyRootValidator(viewModel.validator)
-            rootView.rootPickCardView.bind(viewModel, locale: selectedLocale)
-            if viewModel.isQuickPick { rootView.browseView.isHidden = true }
+            if let pickCard = viewModel.pickCard {
+                rootView.pickCardView.bind(viewModel: pickCard)
+                rootView.browseView.isHidden = true
+            }
             rootView.applyNetworkFee(viewModel.networkFee)
         case let .subnet(viewModel):
             rootView.detailsTableView.isHidden = true

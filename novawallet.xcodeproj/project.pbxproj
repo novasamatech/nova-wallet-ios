@@ -7113,7 +7113,6 @@
 		492B4AADFD751FFE150FC7A9 /* SubtensorValidatorFiltersProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8673B3AF721A64E6EC334748 /* SubtensorValidatorFiltersProtocols.swift */; };
 		4B1D037FB7C081DF6ABBEB7B /* SubtensorValidatorFiltersWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C603325FC9E495539F0A96A /* SubtensorValidatorFiltersWireframe.swift */; };
 		52ED479788BD2865A1AF9E3A /* SubtensorSubnetParametersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F5D03A67387D275E89F9E79 /* SubtensorSubnetParametersView.swift */; };
-		61C85C5FDB02767A59BE1138 /* SubtensorRootPickCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D91FD2D8C0F92DD48819CF7 /* SubtensorRootPickCardView.swift */; };
 		6C20F93FA855568E8D4BB44A /* SubtensorValidatorCoverage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF2C77F3BCF7012B21099072 /* SubtensorValidatorCoverage.swift */; };
 		8E56E9BFD6A41CEC5D29CDD2 /* SubtensorSubnetParametersOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = D52BE07FE47A0051C6D1FFF9 /* SubtensorSubnetParametersOperationFactory.swift */; };
 		90BFDC091007C0B39DE82F47 /* SubtensorValidatorCardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA373D4CE1BEEEDB2B078359 /* SubtensorValidatorCardViewModel.swift */; };
@@ -13972,7 +13971,6 @@
 		CFFF90CD2EF24DE06286E475 /* SubtensorWhereToStakeViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SubtensorWhereToStakeViewModel.swift; sourceTree = "<group>"; };
 		EA5BC9DCBF6C2759B573BEA5 /* SubtensorWhereToStakeViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SubtensorWhereToStakeViewLayout.swift; sourceTree = "<group>"; };
 		2C603325FC9E495539F0A96A /* SubtensorValidatorFiltersWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SubtensorValidatorFiltersWireframe.swift; sourceTree = "<group>"; };
-		2D91FD2D8C0F92DD48819CF7 /* SubtensorRootPickCardView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SubtensorRootPickCardView.swift; sourceTree = "<group>"; };
 		2F922C71506AD194CD58466C /* SubtensorValidatorFiltersViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SubtensorValidatorFiltersViewFactory.swift; sourceTree = "<group>"; };
 		34939B8A2FE109E4214B8E66 /* SubtensorValidatorCoverageOperationFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SubtensorValidatorCoverageOperationFactory.swift; sourceTree = "<group>"; };
 		34B2D68B75A56B129BB5F86B /* SubtensorValidatorCardView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SubtensorValidatorCardView.swift; sourceTree = "<group>"; };
@@ -30249,7 +30247,6 @@
 				5B70DBD98058407E9BF30BE2 /* SubtensorPickCardView.swift */,
 				17815D1A557947C085F49A69 /* SubtensorFactChipsView.swift */,
 				CB5DC1C3A48A8254C69A2786 /* SubtensorPickValidatorCell.swift */,
-				2D91FD2D8C0F92DD48819CF7 /* SubtensorRootPickCardView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -39712,7 +39709,6 @@
 				E26B0ED3F43EF06C746765AD /* SubtensorValidatorFilterSession.swift in Sources */,
 				EF642AF3A533AA5E19F2FA34 /* SubtensorValidatorFilters.swift in Sources */,
 				9F88672770EB38183FA4295C /* SubtensorPickValidatorCell.swift in Sources */,
-				61C85C5FDB02767A59BE1138 /* SubtensorRootPickCardView.swift in Sources */,
 				52ED479788BD2865A1AF9E3A /* SubtensorSubnetParametersView.swift in Sources */,
 				0927732BA0C8A56F62CCA8E7 /* SubtensorSubnetPoolSplitView.swift in Sources */,
 				074F2AD623C9972662529316 /* SubtensorSubnetDetailsViewModelFactory+Parameters.swift in Sources */,

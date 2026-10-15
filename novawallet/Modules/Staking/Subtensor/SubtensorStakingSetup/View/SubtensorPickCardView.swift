@@ -54,7 +54,7 @@ final class SubtensorPickCardView: UIView {
         let rows: [StackTableViewCellProtocol] = [validatorCell, receiveCell, swapRateCell, networkFeeCell]
         rows.forEach { SubtensorDividerStyle.apply(to: $0, hasPrevious: false) }
         rows.filter { !$0.isHidden }.enumerated().forEach { index, cell in
-            SubtensorDividerStyle.apply(to: cell, hasPrevious: index > 0)
+            SubtensorDividerStyle.apply(to: cell, hasPrevious: index > 0 || viewModel.hasHeaderDivider)
         }
     }
 
