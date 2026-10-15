@@ -68,17 +68,21 @@ final class SwapSlippageViewController: UIViewController, ViewHolder {
     private func setupSheetLocalization() {
         let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
 
-        rootView.titleLabel.text = strings.commonButtonSettings()
+        rootView.bindSheet(
+            title: strings.commonButtonSettings(),
+            explanation: strings.stakingSubtensorUiSlippageExplanation()
+        )
         rootView.slippageButton.imageWithTitleView?.title = strings.stakingSubtensorInfoSlippageTitle()
-        rootView.explanationLabel.text = strings.stakingSubtensorUiSlippageExplanation()
         rootView.actionButton.imageWithTitleView?.title = strings.commonDone()
         rootView.amountInput.textField.attributedPlaceholder = NSAttributedString(
             string: strings.stakingSubtensorUiSlippageCustom(),
             attributes: [
-                .foregroundColor: R.color.colorHintText()!,
+                .foregroundColor: R.color.colorTextSecondary()!,
                 .font: UIFont.regularSubheadline
             ]
         )
+
+        updateSheetHeight()
     }
 
     private func setupHandlers() {
@@ -213,10 +217,41 @@ extension SwapSlippageViewController: SwapSlippageViewProtocol {
         hasInputError = error != nil
         rootView.set(error: error)
         updateActionButton()
+        updateSheetHeight()
     }
 
     func didReceiveInput(warning: String?) {
         rootView.set(warning: warning)
+        updateSheetHeight()
+    }
+}
+
+private extension SwapSlippageViewController {
+    func updateSheetHeight() {
+        guard presentation == .subtensorSheet else {
+            return
+        }
+
+        let width = view.bounds.width > 0 ? view.bounds.width : UIScreen.main.bounds.width
+        let height = rootView.preferredSheetHeight(for: width)
+
+        guard preferredContentSize.height != height else {
+            return
+        }
+
+        preferredContentSize = CGSize(width: 0, height: height)
+
+        guard
+            view.window != nil,
+            let presentationController,
+            let containerView = presentationController.containerView else {
+            return
+        }
+
+        UIView.animate(withDuration: 0.25) {
+            self.view.frame = presentationController.frameOfPresentedViewInContainerView
+            containerView.layoutIfNeeded()
+        }
     }
 }
 

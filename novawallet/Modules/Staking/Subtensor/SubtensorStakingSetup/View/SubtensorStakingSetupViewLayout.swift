@@ -27,6 +27,15 @@ final class SubtensorStakingSetupViewLayout: SubtensorAmountSetupLayout {
     }
 
     let validatorCardView: SubtensorValidatorCardView = .create { $0.applyEmbeddedStyle() }
+
+    let validatorCell: StackInfoTableCell = .create { cell in
+        cell.detailsLabel.lineBreakMode = .byTruncatingMiddle
+    }
+
+    let apyCell: StackTableCell = .create { cell in
+        cell.detailsLabel.textColor = R.color.colorTextPositive()
+    }
+
     let rootPickCardView: SubtensorRootPickCardView = .create { $0.isHidden = true }
 
     let sectionLabel: UILabel = .create { label in
@@ -66,6 +75,18 @@ final class SubtensorStakingSetupViewLayout: SubtensorAmountSetupLayout {
         }
     }
 
+    func applyRootValidator(_ viewModel: SubtensorSetupRootValidatorViewModel) {
+        switch viewModel {
+        case let .card(card):
+            validatorCardView.bind(viewModel: card)
+            setValidatorRowsVisible(false)
+        case let .rows(validator, apy):
+            validatorCell.bind(viewModel: validator)
+            apyCell.bind(details: apy)
+            setValidatorRowsVisible(true)
+        }
+    }
+
     func setSection(_ title: String) {
         sectionLabel.apply(text: title, lineHeight: Constants.sectionLineHeight, kern: Constants.sectionKern)
     }
@@ -102,6 +123,12 @@ private extension SubtensorStakingSetupViewLayout {
         static let sectionKern: CGFloat = 0.6
     }
 
+    func setValidatorRowsVisible(_ isVisible: Bool) {
+        validatorCardView.isHidden = isVisible
+        validatorCell.isHidden = !isVisible
+        apyCell.isHidden = !isVisible
+    }
+
     func setupAmountLayout() {
         containerView.stackView.addArrangedSubview(getTaoCardView)
 
@@ -119,10 +146,12 @@ private extension SubtensorStakingSetupViewLayout {
         containerView.stackView.setCustomSpacing(Constants.sectionSpacing, after: sectionLabel)
         containerView.stackView.addArrangedSubview(detailsTableView)
 
-        let detailsStack = UIView.vStack(spacing: 0, [validatorCardView, networkFeeCell])
+        let detailsStack = UIView.vStack(spacing: 0, [validatorCardView, validatorCell, apyCell, networkFeeCell])
         detailsTableView.addSubview(detailsStack)
         detailsStack.snp.makeConstraints { $0.edges.equalToSuperview() }
+        apyCell.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         networkFeeCell.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        SubtensorDividerStyle.apply(to: apyCell, hasPrevious: true)
         SubtensorDividerStyle.apply(to: networkFeeCell, hasPrevious: true)
         containerView.stackView.addArrangedSubview(rootPickCardView)
 

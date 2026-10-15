@@ -43,6 +43,8 @@ private extension SubtensorStakingSetupViewController {
         rootView.amountTitleView.titleLabel.text = strings.stakingSubtensorUiYouStake()
         rootView.amountTitleView.buttonTitle.text = strings.swapsSetupAssetMax()
         rootView.networkFeeCell.rowContentView.locale = selectedLocale
+        rootView.validatorCell.titleLabel.text = strings.stakingCommonValidator()
+        rootView.apyCell.titleLabel.text = strings.stakingSubtensorUiValidatorSortApy()
 
         let cardView = rootView.pickCardView
         cardView.validatorCell.titleLabel.text = strings.stakingCommonValidator()
@@ -70,6 +72,7 @@ private extension SubtensorStakingSetupViewController {
         rootView.amountTitleView.button.addTarget(self, action: #selector(actionMax), for: .touchUpInside)
         rootView.amountInputView.addTarget(self, action: #selector(actionAmountChange), for: .editingChanged)
         rootView.validatorCardView.addTarget(self, action: #selector(actionSelectValidator), for: .touchUpInside)
+        rootView.validatorCell.addTarget(self, action: #selector(actionSelectValidator), for: .touchUpInside)
         rootView.pickCardView.headerView.addTarget(self, action: #selector(actionCardHeader), for: .touchUpInside)
         rootView.pickCardView.swapRateCell.addTarget(self, action: #selector(actionSwapRateInfo), for: .touchUpInside)
         rootView.avgBuyPriceCell.addTarget(self, action: #selector(actionAvgBuyPriceInfo), for: .touchUpInside)
@@ -136,7 +139,7 @@ private extension SubtensorStakingSetupViewController {
             rootView.pickCardView.isHidden = true
 
             applyAvgBuyPrice(.hidden)
-            rootView.validatorCardView.bind(viewModel: viewModel.validator)
+            rootView.applyRootValidator(viewModel.validator)
             rootView.rootPickCardView.bind(viewModel, locale: selectedLocale)
             if viewModel.isQuickPick { rootView.browseButton.isHidden = true }
             rootView.applyNetworkFee(viewModel.networkFee)
