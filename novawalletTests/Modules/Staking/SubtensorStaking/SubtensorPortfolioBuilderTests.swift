@@ -83,7 +83,7 @@ final class SubtensorPortfolioBuilderTests: XCTestCase {
     }
 
     private func availability(total: Balance, locked: Balance) -> SubtensorStakingPallet.StakeAvailability {
-        SubtensorStakingPallet.StakeAvailability(total: total, locked: locked, available: total - locked)
+        SubtensorStakingPallet.StakeAvailability(available: total - locked)
     }
 
     private func catalogue(prices: [UInt16: Balance]) -> SubtensorSubnetCatalogue {

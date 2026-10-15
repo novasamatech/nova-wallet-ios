@@ -12,6 +12,7 @@ struct SubtensorEarnServices {
     let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
     let tradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol
     let rootHoldFactory: SubtensorRootHoldFactoryProtocol
+    let validatorPresetFactory: SubtensorValidatorPresetFactoryProtocol
     let costBasisService: SubtensorCostBasisServiceProtocol
 }
 
@@ -28,8 +29,6 @@ protocol SubtensorStakingSharedStateProtocol: AnyObject {
     var positionsSyncService: SubtensorPositionsSyncServiceProtocol? { get }
 
     var logger: LoggerProtocol { get }
-
-    var sharedOperation: SharedOperationProtocol? { get }
 
     func setup(for account: MetaChainAccountResponse?)
     func throttle()
@@ -127,6 +126,16 @@ private extension SubtensorStakingSharedState {
 
         currentAccount = nil
     }
+
+    var sharedOperation: SharedOperationProtocol? {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return currentSharedOperation
+    }
 }
 
 extension SubtensorStakingSharedState: SubtensorStakingSharedStateProtocol {
@@ -148,16 +157,6 @@ extension SubtensorStakingSharedState: SubtensorStakingSharedStateProtocol {
         }
 
         return currentPositionsSyncService
-    }
-
-    var sharedOperation: SharedOperationProtocol? {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        return currentSharedOperation
     }
 
     func setup(for account: MetaChainAccountResponse?) {

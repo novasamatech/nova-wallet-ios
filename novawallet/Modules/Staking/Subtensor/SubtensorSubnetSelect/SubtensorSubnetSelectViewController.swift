@@ -157,10 +157,6 @@ private extension SubtensorSubnetSelectViewController {
     @objc func actionFilters() {
         presenter.showFilters()
     }
-
-    @objc func actionRoot() {
-        presenter.selectRoot()
-    }
 }
 
 extension SubtensorSubnetSelectViewController: UITableViewDataSource {

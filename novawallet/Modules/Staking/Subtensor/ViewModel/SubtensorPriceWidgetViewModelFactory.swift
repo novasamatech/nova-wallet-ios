@@ -39,7 +39,6 @@ protocol SubtensorPriceWidgetFactoryProtocol {
 }
 
 final class SubtensorPriceWidgetViewModelFactory {
-    static let periods: [SubtensorPricePeriod] = [.day, .week, .month, .quarter]
     static let defaultPeriod = SubtensorPricePeriod.week
 
     let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
@@ -66,31 +65,27 @@ final class SubtensorPriceWidgetViewModelFactory {
 }
 
 private extension SubtensorPriceWidgetViewModelFactory {
-    func unknownValue(for locale: Locale) -> String {
-        R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown()
-    }
-
     func formatSpotPrice(
         for header: SubtensorPriceHeaderParams,
         params: SubtensorPriceWidgetParams,
         locale: Locale
     ) -> String {
         guard let spotPrice = header.spotPrice else {
-            return unknownValue(for: locale)
+            return .subtensorUnknown(for: locale)
         }
 
         guard params.isFiat else {
-            return tokenFormatter.value(for: locale).stringFromDecimal(spotPrice) ?? unknownValue(for: locale)
+            return tokenFormatter.value(for: locale).stringFromDecimal(spotPrice) ?? .subtensorUnknown(for: locale)
         }
 
         return params.taoPrice.map { priceData in
             balanceViewModelFactory.priceFromAmount(spotPrice, priceData: priceData).value(for: locale)
-        } ?? unknownValue(for: locale)
+        } ?? .subtensorUnknown(for: locale)
     }
 
     func formatPointPrice(_ value: Decimal, params: SubtensorPriceWidgetParams, locale: Locale) -> String {
         guard params.isFiat else {
-            return tokenFormatter.value(for: locale).stringFromDecimal(value) ?? unknownValue(for: locale)
+            return tokenFormatter.value(for: locale).stringFromDecimal(value) ?? .subtensorUnknown(for: locale)
         }
 
         return balanceViewModelFactory.priceFromFiatAmount(value, currencyId: params.currencyId).value(for: locale)
@@ -167,14 +162,14 @@ private extension SubtensorPriceWidgetViewModelFactory {
         switch selection {
         case let .noData(selectedDate):
             date = selectedDate
-            price = unknownValue(for: locale)
+            price = .subtensorUnknown(for: locale)
         case let .point(sourceIndex):
             guard case let .available(history) = params.history,
                   let series = datedSeries(history: history, params: params),
                   let point = series.points.first(where: { $0.sourceIndex == sourceIndex }) else {
                 return SubtensorSubnetPriceHeaderViewModel(
                     caption: header.caption,
-                    price: unknownValue(for: locale),
+                    price: .subtensorUnknown(for: locale),
                     change: .date(formatPointDate(params.chartEndDate, endingAt: params.chartEndDate, locale: locale)),
                     currency: header.currency
                 )
@@ -204,8 +199,8 @@ private extension SubtensorPriceWidgetViewModelFactory {
         locale: Locale
     ) -> SubtensorSubnetPeriodsViewModel {
         SubtensorSubnetPeriodsViewModel(
-            titles: Self.periods.map { $0.title(for: locale) },
-            selectedIndex: Self.periods.firstIndex(of: params.period) ?? 0,
+            titles: SubtensorPricePeriod.selectable.map { $0.title(for: locale) },
+            selectedIndex: SubtensorPricePeriod.selectable.firstIndex(of: params.period) ?? 0,
             isEnabled: params.history != .notListed && params.history != .loading
         )
     }
@@ -264,14 +259,14 @@ extension SubtensorPriceWidgetViewModelFactory {
                 abs(value) >= 1 ? Int(log10(abs(value))) + 1 : 0
             )
 
-            return formatter.string(from: NSNumber(value: value)) ?? unknownValue(for: locale)
+            return formatter.string(from: NSNumber(value: value)) ?? .subtensorUnknown(for: locale)
         }
 
         let fiatInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: params.currencyId)
 
         return formatterFactory.createAssetPriceFormatter(for: fiatInfo)
             .value(for: locale)
-            .stringFromDecimal(Decimal(value)) ?? unknownValue(for: locale)
+            .stringFromDecimal(Decimal(value)) ?? .subtensorUnknown(for: locale)
     }
 }
 
@@ -292,10 +287,8 @@ extension SubtensorPricePeriod {
             return strings.commonPeriod7d().uppercased(with: locale)
         case .month:
             return strings.commonPeriod30d().uppercased(with: locale)
-        case .quarter:
+        case .quarter, .all:
             return strings.commonPeriod90d().uppercased(with: locale)
-        case .all:
-            return strings.commonPeriodAll().capitalized(with: locale)
         }
     }
 }

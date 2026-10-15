@@ -6,7 +6,6 @@ enum SubtensorInfoSheet: Equatable {
     case slippage(BigRational, canEdit: Bool)
     case validator
     case networkFee(SubtensorTradeDirection)
-    case account(address: AccountAddress, chain: ChainModel)
     case totalStaked(isRoot: Bool)
     case validatorTake
     case avgBuyPrice(symbol: String, subnetName: String)
@@ -27,8 +26,6 @@ extension SubtensorInfoSheet {
                 return strings.stakingCommonValidator()
             case .networkFee:
                 return strings.commonNetworkFee()
-            case .account:
-                return ""
             case .totalStaked:
                 return strings.stakingMainTotalStakedTitle()
             case .validatorTake:
@@ -77,8 +74,6 @@ extension SubtensorInfoSheet {
                 case .sell:
                     return strings.stakingSubtensorInfoNetworkFeeSell()
                 }
-            case .account:
-                return ""
             case let .totalStaked(isRoot):
                 return isRoot
                     ? strings.stakingSubtensorInfoStakedRoot()

@@ -13,9 +13,9 @@ final class SubtensorStakingOperationService {
     let sharedOperation: SharedOperationProtocol?
     let eventCenter: EventCenterProtocol
     let pendingRootClaims: SubtensorPendingRootClaimsProtocol?
-    let errorMapper: SubtensorStakingErrorMapping
+    let errorMapper: SubtensorStakingErrorMapping = SubtensorStakingErrorMapper()
     let feeCalculator: SubtensorNovaFeeCalculator
-    let workingQueue: DispatchQueue
+    let workingQueue = DispatchQueue.global(qos: .userInitiated)
 
     init(
         chainAsset: ChainAsset,
@@ -28,9 +28,7 @@ final class SubtensorStakingOperationService {
         sharedOperation: SharedOperationProtocol?,
         eventCenter: EventCenterProtocol,
         pendingRootClaims: SubtensorPendingRootClaimsProtocol? = nil,
-        errorMapper: SubtensorStakingErrorMapping = SubtensorStakingErrorMapper(),
-        feeCalculator: SubtensorNovaFeeCalculator = SubtensorNovaFeeCalculator(),
-        workingQueue: DispatchQueue = .global(qos: .userInitiated)
+        feeCalculator: SubtensorNovaFeeCalculator = SubtensorNovaFeeCalculator()
     ) {
         self.chainAsset = chainAsset
         self.accountId = accountId
@@ -42,9 +40,7 @@ final class SubtensorStakingOperationService {
         self.sharedOperation = sharedOperation
         self.eventCenter = eventCenter
         self.pendingRootClaims = pendingRootClaims
-        self.errorMapper = errorMapper
         self.feeCalculator = feeCalculator
-        self.workingQueue = workingQueue
     }
 }
 

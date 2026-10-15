@@ -40,26 +40,6 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
         interactor.loadCostBasis(for: netuid)
     }
 
-    func updateAmount(_ newValue: Decimal?) {
-        inputResult = newValue.map { .absolute($0) }
-
-        applyInputChange()
-    }
-
-    func selectMax() {
-        inputResult = .rate(1)
-
-        provideAmountInputViewModel()
-        applyInputChange()
-    }
-
-    func selectAmountPercentage(_ percentage: Float) {
-        inputResult = .rate(Decimal(Double(percentage)))
-
-        provideAmountInputViewModel()
-        applyInputChange()
-    }
-
     func showValidatorInfo() {
         guard let primary = group?.primaryHotkey, let target else {
             return
@@ -142,7 +122,6 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakePresenterValidating {
             preflight: preflight,
             holds: holds,
             currentBlock: currentBlock,
-            blockTime: SubtensorStakingFlowConstants.blockTimeMillis,
             assetDisplayInfo: inputDisplayInfo,
             syncFailed: isPositionsSyncFailed,
             onFeeRefresh: { [weak self] in

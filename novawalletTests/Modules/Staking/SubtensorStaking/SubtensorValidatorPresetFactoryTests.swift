@@ -59,7 +59,7 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
             name: name,
             take: take,
             reportedStake: nil,
-            status: SubtensorValidatorChainStatus(uid: 1, hasPermit: true, blocksSinceUpdate: 10, isActive: true)
+            status: SubtensorValidatorChainStatus(hasPermit: true, isActive: true)
         )
     }
 

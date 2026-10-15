@@ -153,7 +153,6 @@ enum SubtensorSetupAmountState: Equatable {
 
 struct SubtensorSetupSubnetData {
     let catalogue: SubtensorSubnetCatalogue?
-    let isCatalogueLoaded: Bool
     let subnetLogos: SubtensorSubnetLogos?
     let rankedSubnet: SubtensorRankedSubnet?
     let annualRate: Decimal?
@@ -178,7 +177,6 @@ struct SubtensorStakingSetupViewModelInput {
     var selectedRef: SubtensorSubnetRef?
     var rootEntryPresentation: SubtensorRootEntryPresentation = .standard
 
-    // A reused netuid can still have metadata cached for its previous registration.
     var matchingCatalogue: SubtensorSubnetCatalogue? {
         guard let info = target?.subnetInfo else { return nil }
         let ref = SubtensorSubnetRef(netuid: info.netuid, registeredAt: info.networkRegisteredAt)

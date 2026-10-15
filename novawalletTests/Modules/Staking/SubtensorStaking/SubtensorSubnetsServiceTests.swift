@@ -7,9 +7,9 @@ import Cuckoo
 final class SubtensorSubnetsServiceTests: XCTestCase {
     func testFetchMergesSubnetsPricesAndSubtokenEnabled() throws {
         let subnets = [
-            generateDynamicInfo(netuid: 0, name: "root"),
-            generateDynamicInfo(netuid: 1, name: "Apex"),
-            generateDynamicInfo(netuid: 5, name: "OpenKaito")
+            generateDynamicInfo(netuid: 0),
+            generateDynamicInfo(netuid: 1),
+            generateDynamicInfo(netuid: 5)
         ]
 
         let prices = [
@@ -31,13 +31,13 @@ final class SubtensorSubnetsServiceTests: XCTestCase {
 
     func testSubtokenEnabledFailureFailsFetch() {
         let apiFactory = createApiFactory(
-            subnets: [generateDynamicInfo(netuid: 1, name: "Apex")],
+            subnets: [generateDynamicInfo(netuid: 1)],
             prices: [],
             subtokenEnabled: [1]
         )
 
         stub(apiFactory) { stub in
-            when(stub.createSubtokenEnabledWrapper(for: any(), blockHash: any())).then { _, _ in
+            when(stub.createSubtokenEnabledWrapper(for: any())).then { _ in
                 CompoundOperationWrapper.createWithError(CommonError.dataCorruption)
             }
         }
@@ -45,20 +45,8 @@ final class SubtensorSubnetsServiceTests: XCTestCase {
         XCTAssertThrowsError(try fetchInfo(using: createService(apiFactory: apiFactory)))
     }
 
-    private func generateDynamicInfo(netuid: UInt16, name: String) -> SubtensorStakingPallet.DynamicInfo {
-        SubtensorStakingPallet.DynamicInfo(
-            netuid: netuid,
-            ownerHotkey: Data(repeating: 0, count: 32),
-            ownerColdkey: Data(repeating: 0, count: 32),
-            subnetName: Data(name.utf8),
-            tokenSymbol: Data("α".utf8),
-            tempo: 360,
-            emission: 0,
-            alphaIn: 0,
-            taoIn: 0,
-            taoInEmission: 0,
-            networkRegisteredAt: 0
-        )
+    private func generateDynamicInfo(netuid: UInt16) -> SubtensorStakingPallet.DynamicInfo {
+        SubtensorStakingPallet.DynamicInfo(netuid: netuid, taoInEmission: 0, networkRegisteredAt: 0)
     }
 
     private func createApiFactory(
@@ -72,10 +60,10 @@ final class SubtensorSubnetsServiceTests: XCTestCase {
             when(stub.createAllDynamicInfoWrapper(at: any())).then { _ in
                 CompoundOperationWrapper.createWithResult(subnets)
             }
-            when(stub.createAlphaPricesWrapper(at: any())).then { _ in
+            when(stub.createAlphaPricesWrapper()).then {
                 CompoundOperationWrapper.createWithResult(prices)
             }
-            when(stub.createSubtokenEnabledWrapper(for: any(), blockHash: any())).then { _, _ in
+            when(stub.createSubtokenEnabledWrapper(for: any())).then { _ in
                 CompoundOperationWrapper.createWithResult(subtokenEnabled)
             }
         }

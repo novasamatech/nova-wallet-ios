@@ -1,11 +1,13 @@
 import Foundation
 
-enum SubtensorPricePeriod: Equatable, CaseIterable {
+enum SubtensorPricePeriod: Equatable {
     case day
     case week
     case month
     case quarter
     case all
+
+    static let selectable: [SubtensorPricePeriod] = [.day, .week, .month, .quarter]
 }
 
 struct SubtensorPricePoint: Equatable {

@@ -115,7 +115,6 @@ extension SubtensorConfirmPresenter {
             preflight: preflight,
             holds: holds,
             currentBlock: currentBlock,
-            blockTime: SubtensorStakingFlowConstants.blockTimeMillis,
             assetDisplayInfo: viewModelFactory.amountDisplayInfo(for: model.target, catalogue: catalogue),
             syncFailed: isPositionsSyncFailed || positionsState == nil,
             onFeeRefresh: { [weak self] in

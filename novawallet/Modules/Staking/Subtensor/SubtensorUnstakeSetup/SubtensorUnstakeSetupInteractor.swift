@@ -15,28 +15,23 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
 
     let subnetsService: SubtensorSubnetsServiceProtocol
     let validatorFactory: SubtensorValidatorPresetFactoryProtocol
-    let rootHoldFactory: SubtensorRootHoldFactoryProtocol
 
     private let validatorCallStore = CancellableCallStore()
-    private let holdsCallStore = CancellableCallStore()
     private let subnetsInfoCallStore = CancellableCallStore()
 
-    init(
+    override init(
         flowServices: SubtensorFlowServices,
         state: SubtensorStakingSharedStateProtocol,
-        validatorFactory: SubtensorValidatorPresetFactoryProtocol,
         logger: LoggerProtocol
     ) {
         subnetsService = state.subnetsService
-        self.validatorFactory = validatorFactory
-        rootHoldFactory = state.earnServices.rootHoldFactory
+        validatorFactory = state.earnServices.validatorPresetFactory
 
         super.init(flowServices: flowServices, state: state, logger: logger)
     }
 
     deinit {
         validatorCallStore.cancel()
-        holdsCallStore.cancel()
         subnetsInfoCallStore.cancel()
     }
 }
@@ -75,24 +70,6 @@ extension SubtensorUnstakeSetupInteractor: SubtensorUnstakeInteractorInputProtoc
             case let .failure(error):
                 self?.logger.warning("Subtensor unstake validator unavailable: \(error)")
                 self?.presenter?.didReceiveValidator(nil, hotkey: hotkey)
-            }
-        }
-    }
-
-    func loadRootHolds(for hotkeys: [AccountId]) {
-        holdsCallStore.cancel()
-
-        executeCancellable(
-            wrapper: rootHoldFactory.createHoldsWrapper(coldkey: selectedAccount.accountId, hotkeys: hotkeys),
-            inOperationQueue: operationQueue,
-            backingCallIn: holdsCallStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(holds):
-                self?.presenter?.didReceiveRootHolds(holds)
-            case let .failure(error):
-                self?.logger.warning("Subtensor root holds unavailable for the unstake: \(error)")
             }
         }
     }

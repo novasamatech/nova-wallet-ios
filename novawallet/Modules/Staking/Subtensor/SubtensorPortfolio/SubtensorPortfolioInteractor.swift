@@ -98,7 +98,6 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
     func loadHistories(for period: SubtensorPricePeriod) {
         guard
             let priceId = chainAsset.asset.priceId,
-            let historyPeriod = period.portfolioHistoryPeriod,
             let accountSubject = try? account.chainAccount.accountId.toAddress(using: .defaultSubstrateFormat) else {
             presenter?.didFailHistories(for: period)
             return
@@ -109,7 +108,7 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
         executeCancellable(
             wrapper: createHistoriesWrapper(
                 for: period,
-                historyPeriod: historyPeriod,
+                historyPeriod: period.portfolioHistoryPeriod,
                 accountSubject: accountSubject,
                 taoPriceId: priceId
             ),

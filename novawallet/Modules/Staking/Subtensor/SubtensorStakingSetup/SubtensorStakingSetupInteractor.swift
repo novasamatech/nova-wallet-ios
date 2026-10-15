@@ -25,13 +25,12 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
     private let rankingCallStore = CancellableCallStore()
     private let subnetCallStore = CancellableCallStore()
 
-    init(
+    override init(
         flowServices: SubtensorFlowServices,
         state: SubtensorStakingSharedStateProtocol,
-        presetFactory: SubtensorValidatorPresetFactoryProtocol,
         logger: LoggerProtocol
     ) {
-        self.presetFactory = presetFactory
+        presetFactory = state.earnServices.validatorPresetFactory
         yieldService = state.earnServices.yieldService
         recommendationService = state.earnServices.recommendationService
         subnetsService = state.subnetsService
@@ -76,7 +75,7 @@ private extension SubtensorStakingSetupInteractor {
 extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol {
     func cancelQuickPickSnapshot() { quickPickCallStore.cancel() }
 
-    func loadQuickPickSnapshot(generation: Int) {
+    func loadQuickPickSnapshot() {
         quickPickCallStore.cancel()
         let catalogueWrapper = catalogueService.createCatalogueWrapper()
         let infoWrapper = subnetsService.createSubnetsInfoWrapper()
@@ -97,7 +96,7 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
             backingCallIn: quickPickCallStore,
             runningCallbackIn: .main
         ) { [weak self] result in
-            self?.presenter?.didReceiveQuickPickSnapshot(result, generation: generation)
+            self?.presenter?.didReceiveQuickPickSnapshot(result)
         }
     }
 

@@ -15,7 +15,7 @@ enum SubtensorConfirmViewFactory {
             return nil
         }
 
-        let interactor = SubtensorConfirmInteractor(flowServices: services, state: state, logger: Logger.shared)
+        let interactor = SubtensorStakingBaseInteractor(flowServices: services, state: state, logger: Logger.shared)
 
         let wireframe = SubtensorConfirmWireframe(state: state)
 
@@ -50,7 +50,7 @@ enum SubtensorConfirmViewFactory {
         )
 
         presenter.view = view
-        interactor.presenter = presenter
+        interactor.basePresenter = presenter
         dataValidationFactory.view = view
 
         return view

@@ -25,7 +25,7 @@ final class SubtensorSubnetsService {
 extension SubtensorSubnetsService: SubtensorSubnetsServiceProtocol {
     func createSubnetsInfoWrapper() -> CompoundOperationWrapper<SubtensorSubnetsInfo> {
         let dynamicInfoWrapper = operationFactory.createAllDynamicInfoWrapper(at: nil)
-        let pricesWrapper = operationFactory.createAlphaPricesWrapper(at: nil)
+        let pricesWrapper = operationFactory.createAlphaPricesWrapper()
         let operationFactory = operationFactory
 
         let subtokenWrapper = OperationCombiningService.compoundNonOptionalWrapper(
@@ -35,7 +35,7 @@ extension SubtensorSubnetsService: SubtensorSubnetsServiceProtocol {
                 .extractNoCancellableResultData()
                 .compactMap { $0?.netuid }
 
-            return operationFactory.createSubtokenEnabledWrapper(for: netuids, blockHash: nil)
+            return operationFactory.createSubtokenEnabledWrapper(for: netuids)
         }
 
         subtokenWrapper.addDependency(wrapper: dynamicInfoWrapper)

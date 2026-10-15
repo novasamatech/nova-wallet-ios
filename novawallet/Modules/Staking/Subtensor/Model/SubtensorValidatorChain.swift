@@ -12,14 +12,11 @@ struct SubtensorValidatorChainQuery: Equatable {
 }
 
 struct SubtensorValidatorChainStatus: Equatable {
-    let uid: UInt16
     let hasPermit: Bool?
-    let blocksSinceUpdate: UInt64?
     let isActive: Bool?
 }
 
 struct SubtensorValidatorChainSnapshot {
-    let blockHash: BlockHash
     let blockNumber: BlockNumber
     let uids: [SubtensorHotkeySubnet: UInt16]
     let permits: [UInt16: [Bool]]
@@ -49,12 +46,7 @@ extension SubtensorValidatorChainStatus {
         }
 
         guard pair.netuid != SubtensorStakingPallet.rootNetuid else {
-            return SubtensorValidatorChainStatus(
-                uid: uid,
-                hasPermit: nil,
-                blocksSinceUpdate: nil,
-                isActive: nil
-            )
+            return SubtensorValidatorChainStatus(hasPermit: nil, isActive: nil)
         }
 
         let index = Int(uid)
@@ -72,12 +64,7 @@ extension SubtensorValidatorChainStatus {
         let lastUpdate = lastUpdates[index]
         let blocksSinceUpdate = head > lastUpdate ? head - lastUpdate : 0
 
-        return SubtensorValidatorChainStatus(
-            uid: uid,
-            hasPermit: permits[index],
-            blocksSinceUpdate: blocksSinceUpdate,
-            isActive: blocksSinceUpdate <= cutoff
-        )
+        return SubtensorValidatorChainStatus(hasPermit: permits[index], isActive: blocksSinceUpdate <= cutoff)
     }
 }
 

@@ -13,7 +13,6 @@ struct SubtensorUnstakeValidatingDep {
     let preflight: SubtensorStakingPreflight?
     let holds: [AccountId: SubtensorRootHold]?
     let currentBlock: BlockNumber?
-    let blockTime: BlockTime
     let assetDisplayInfo: AssetBalanceDisplayInfo
     let syncFailed: Bool
     let onFeeRefresh: () -> Void
@@ -52,11 +51,7 @@ extension SubtensorUnstakeValidatingDep {
         return SubtensorSellPlanInput(
             requestedAlpha: amount,
             positionAlpha: positionAlpha,
-            availability: availability ?? SubtensorStakingPallet.StakeAvailability(
-                total: positionAlpha,
-                locked: 0,
-                available: positionAlpha
-            ),
+            availability: availability ?? SubtensorStakingPallet.StakeAvailability(available: positionAlpha),
             minimumTaoOut: bases.minimumTaoOut,
             sellLimitPrice: bases.sellLimitPrice,
             isOwnHotkey: preflight.hotkeyOwner == accountId,
@@ -109,13 +104,7 @@ private extension SubtensorUnstakeValidatingDep {
     }
 }
 
-protocol SubtensorUnstakePresenterValidating {
-    func createUnstakeValidations(
-        for dep: SubtensorUnstakeValidatingDep,
-        dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
-        selectedLocale: Locale
-    ) -> [DataValidating]
-}
+protocol SubtensorUnstakePresenterValidating {}
 
 extension SubtensorUnstakePresenterValidating {
     func createUnstakeValidations(
@@ -259,7 +248,6 @@ private extension SubtensorUnstakePresenterValidating {
                     currentBlock: dep.currentBlock,
                     lastStakeBlock: dep.preflight?.lastStakeBlock,
                     unlockInterval: dep.preflight?.rootStakeUnlockInterval,
-                    blockTime: dep.blockTime,
                     locale: selectedLocale
                 )
             ]
@@ -270,7 +258,6 @@ private extension SubtensorUnstakePresenterValidating {
                 currentBlock: dep.currentBlock,
                 lastStakeBlock: hold.lastStakeBlock,
                 unlockInterval: hold.interval,
-                blockTime: dep.blockTime,
                 locale: selectedLocale
             )
         }
