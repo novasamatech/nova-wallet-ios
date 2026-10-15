@@ -14,10 +14,24 @@ struct SubtensorStakingSetupViewModel {
     let action: SubtensorSetupActionViewModel
 }
 
+struct SubtensorSetupSelectionViewModel {
+    let section: String
+    let caption: String
+    let failure: WarningView.Model?
+}
+
 enum SubtensorSetupDetailsViewModel {
-    case selection(section: String, message: String, retryTitle: String?)
+    case selection(SubtensorSetupSelectionViewModel)
     case root(SubtensorSetupRootViewModel)
     case subnet(SubtensorSetupSubnetViewModel)
+
+    var selection: SubtensorSetupSelectionViewModel? {
+        if case let .selection(viewModel) = self {
+            return viewModel
+        }
+
+        return nil
+    }
 }
 
 enum SubtensorRootEntryPresentation {

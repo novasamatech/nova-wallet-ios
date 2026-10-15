@@ -191,3 +191,147 @@ private extension SubtensorPickCardHeaderView {
         }
     }
 }
+
+final class SubtensorPickCardSkeletonView: UIView, SkeletonableView {
+    let receiveTitleLabel = UILabel(style: .footnoteSecondary, numberOfLines: 1)
+    let swapRateTitleLabel = UILabel(style: .footnoteSecondary, numberOfLines: 1)
+    let networkFeeTitleLabel = UILabel(style: .footnoteSecondary, numberOfLines: 1)
+    let captionLabel = UILabel(style: .caption1Secondary)
+
+    var skeletonView: SkrullableView?
+    var skeletonSuperview: UIView { self }
+    var hidingViews: [UIView] { [] }
+
+    private var placeholders: [UIView] = []
+    private var isLoading = false
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        backgroundColor = R.color.colorBlockBackground()
+        layer.cornerRadius = Constants.cornerRadius
+        clipsToBounds = true
+        isHidden = true
+
+        setupLayout()
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        if isLoading {
+            updateLoadingState()
+        }
+    }
+
+    func setLoading(_ loading: Bool) {
+        isLoading = loading
+        isHidden = !loading
+
+        if loading {
+            startLoadingIfNeeded()
+        } else {
+            stopLoadingIfNeeded()
+        }
+    }
+
+    func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
+        placeholders.map { placeholder in
+            SingleSkeleton.createRow(
+                on: placeholder,
+                containerView: self,
+                spaceSize: spaceSize,
+                offset: .zero,
+                size: placeholder.frame.size
+            )
+        }
+    }
+}
+
+private extension SubtensorPickCardSkeletonView {
+    enum Constants {
+        static let cornerRadius: CGFloat = 12
+        static let contentInsets = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
+        static let spacing: CGFloat = 10
+        static let captionSpacing: CGFloat = 12
+        static let captionLineHeight: CGFloat = 16
+        static let iconSize = CGSize(width: 36, height: 36)
+        static let titleSize = CGSize(width: 140, height: 12)
+        static let subtitleSize = CGSize(width: 90, height: 10)
+        static let titleSpacing: CGFloat = 2
+        static let chipSizes = [96, 72, 110].map { CGSize(width: $0, height: 26) }
+        static let chipSpacing: CGFloat = 6
+        static let valueSize = CGSize(width: 120, height: 12)
+        static let rowHeight: CGFloat = 36
+        static let infoSpacing: CGFloat = 4
+    }
+
+    func makePlaceholder(_ size: CGSize) -> UIView {
+        let view = UIView()
+        view.snp.makeConstraints { $0.size.equalTo(size) }
+        placeholders.append(view)
+        return view
+    }
+
+    func makeRow(_ titleLabel: UILabel, hasInfo: Bool = false) -> UIView {
+        let infoView = UIImageView(image: R.image.iconInfoFilled())
+        infoView.isHidden = !hasInfo
+        let titleView = UIView.hStack(alignment: .center, spacing: Constants.infoSpacing, [titleLabel, infoView])
+        let row = UIView.hStack(alignment: .center, [titleView, .spacer(), makePlaceholder(Constants.valueSize)])
+        row.snp.makeConstraints { $0.height.equalTo(Constants.rowHeight) }
+        return row
+    }
+
+    func makeDivider() -> UIView {
+        let view = UIView()
+        view.backgroundColor = R.color.colorDivider()
+        view.snp.makeConstraints { $0.height.equalTo(SubtensorDividerStyle.thickness) }
+        return view
+    }
+
+    func setupLayout() {
+        let chevronView = UIImageView(image: R.image.iconSmallArrow()?.tinted(with: R.color.colorIconSecondary()!))
+        chevronView.setContentHuggingPriority(.required, for: .horizontal)
+        let titlesView = UIView.vStack(
+            alignment: .leading,
+            spacing: Constants.titleSpacing,
+            [makePlaceholder(Constants.titleSize), makePlaceholder(Constants.subtitleSize)]
+        )
+        let headerView = UIView.hStack(
+            alignment: .center,
+            spacing: Constants.spacing,
+            [makePlaceholder(Constants.iconSize), titlesView, chevronView]
+        )
+        let chipsView = UIView.hStack(
+            spacing: Constants.chipSpacing,
+            Constants.chipSizes.map { makePlaceholder($0) } + [.spacer()]
+        )
+        let rowsView = UIView.vStack([
+            makeRow(receiveTitleLabel),
+            makeDivider(),
+            makeRow(swapRateTitleLabel, hasInfo: true),
+            makeDivider(),
+            makeRow(networkFeeTitleLabel)
+        ])
+        let contentView = UIView.vStack(
+            spacing: Constants.spacing,
+            margins: Constants.contentInsets,
+            [headerView, chipsView, rowsView, captionLabel]
+        )
+        contentView.setCustomSpacing(Constants.captionSpacing, after: rowsView)
+
+        addSubview(contentView)
+        contentView.snp.makeConstraints { $0.edges.equalToSuperview() }
+    }
+}
+
+extension SubtensorPickCardSkeletonView {
+    func bind(caption: String) {
+        captionLabel.apply(text: caption, lineHeight: Constants.captionLineHeight)
+    }
+}
