@@ -8,6 +8,7 @@ struct SubtensorHotkeySubnet: Hashable {
 
 struct SubtensorValidatorChainQuery: Equatable {
     let pairs: [SubtensorHotkeySubnet]
+    var takeHotkeys: [AccountId] = []
 }
 
 struct SubtensorValidatorChainStatus: Equatable {
@@ -25,6 +26,10 @@ struct SubtensorValidatorChainSnapshot {
     let lastUpdates: [UInt16: [UInt64]]
     let effectiveActivityCutoffs: [UInt16: UInt64]
     let takes: [AccountId: UInt16]
+
+    var takeFractions: [AccountId: Decimal] {
+        takes.mapValues { Decimal($0) / Decimal(SubtensorStakingPallet.perU16Denominator) }
+    }
 }
 
 extension SubtensorValidatorChainStatus {

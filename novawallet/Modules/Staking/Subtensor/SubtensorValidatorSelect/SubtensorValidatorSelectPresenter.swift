@@ -99,6 +99,10 @@ private extension SubtensorValidatorSelectPresenter {
     }
 
     func seed(from snapshot: SubtensorValidatorSelectSnapshot) {
+        if let directory = snapshot.directory.value {
+            apply(directory: directory)
+        }
+
         if let yields = snapshot.yields.value, yields.netuid == target.netuid {
             self.yields = yields
         }
@@ -196,13 +200,20 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectInteractorOutputProt
         provideState()
     }
 
-    func didReceive(recommendedHotkeys: Set<AccountId>) {
-        self.recommendedHotkeys = recommendedHotkeys
-        recommendedError = nil
-        provideState()
+    func didReceive(verification: SubtensorValidatorListVerification) {
+        directory = directory?.withTakes(verification.takes)
+
+        switch verification.recommended {
+        case let .success(hotkeys):
+            recommendedHotkeys = hotkeys
+            recommendedError = nil
+            provideState()
+        case let .failure(error):
+            didFailVerification(error)
+        }
     }
 
-    func didFailRecommended(_ error: Error) {
+    func didFailVerification(_ error: Error) {
         recommendedHotkeys = nil
         recommendedError = error
         provideState()

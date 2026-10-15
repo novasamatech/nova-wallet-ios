@@ -50,6 +50,10 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
         createWrapper(route: .validators, path: "/subnets/\(netuid)/validators")
     }
 
+    func peekValidators(netuid: UInt16) -> HTTPCachePeek<BittensorApiResult<BittensorApi.ValidatorCollection>> {
+        peek(path: "/subnets/\(netuid)/validators")
+    }
+
     func createAlphaYieldWrapper(
         netuid: UInt16,
         page: Int
