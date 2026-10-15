@@ -36,8 +36,6 @@ final class SubtensorStakingSetupViewLayout: SubtensorAmountSetupLayout {
         cell.detailsLabel.textColor = R.color.colorTextPositive()
     }
 
-    let rootPickCardView: SubtensorRootPickCardView = .create { $0.isHidden = true }
-
     let sectionLabel: UILabel = .create { label in
         label.apply(style: .semiboldCaps1Secondary)
         label.isHidden = true
@@ -153,8 +151,6 @@ private extension SubtensorStakingSetupViewLayout {
         networkFeeCell.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         SubtensorDividerStyle.apply(to: apyCell, hasPrevious: true)
         SubtensorDividerStyle.apply(to: networkFeeCell, hasPrevious: true)
-        containerView.stackView.addArrangedSubview(rootPickCardView)
-
         containerView.stackView.addArrangedSubview(pickCardView)
         containerView.stackView.setCustomSpacing(Constants.detailsSpacing, after: pickCardView)
         containerView.stackView.addArrangedSubview(pickSkeletonView)

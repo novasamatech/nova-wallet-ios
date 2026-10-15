@@ -30,13 +30,11 @@ final class SubtensorPositionSummaryView: UIView {
         view.spacing = Constants.spacing
     }
 
-    private let iconSkeletonView: SubtensorChartLoadingView = .create { view in
-        view.layer.cornerRadius = Constants.iconSize / 2
-    }
+    private let iconSkeletonView = SubtensorChartLoadingView(cornerRadius: Constants.iconSize / 2)
 
-    private let captionSkeletonView = SubtensorPositionSummaryView.createSkeleton()
-    private let amountSkeletonView = SubtensorPositionSummaryView.createSkeleton()
-    private let fiatSkeletonView = SubtensorPositionSummaryView.createSkeleton()
+    private let captionSkeletonView = SubtensorChartLoadingView(cornerRadius: 6)
+    private let amountSkeletonView = SubtensorChartLoadingView(cornerRadius: 6)
+    private let fiatSkeletonView = SubtensorChartLoadingView(cornerRadius: 6)
 
     private var rowViews: [SubtensorPositionSummaryRowView] = []
     private var iconViewModel: ImageViewModelProtocol?
@@ -107,12 +105,6 @@ private extension SubtensorPositionSummaryView {
         static let spacing: CGFloat = 10
         static let valueLineHeight: CGFloat = 18
         static let detailLineHeight: CGFloat = 16
-    }
-
-    static func createSkeleton() -> SubtensorChartLoadingView {
-        .create { view in
-            view.layer.cornerRadius = 6
-        }
     }
 
     func bind(rows: [SubtensorPositionRowViewModel]) {
@@ -207,9 +199,7 @@ private final class SubtensorPositionSummaryRowView: UIView {
         label.textAlignment = .right
     }
 
-    let skeletonView: SubtensorChartLoadingView = .create { view in
-        view.layer.cornerRadius = 6
-    }
+    let skeletonView = SubtensorChartLoadingView(cornerRadius: 6)
 
     override init(frame: CGRect) {
         super.init(frame: frame)
