@@ -30,7 +30,7 @@ final class SubtensorValidatorInfoViewModelFactory {
         self.chainAsset = chainAsset
         self.balanceViewModelFactory = balanceViewModelFactory
         stakeFormatter = formatterFactory.createCompactTokenFormatter(for: chainAsset.assetDisplayInfo)
-        takeFormatter = NumberFormatter.percentSingleHalfEven.localizableResource()
+        takeFormatter = NumberFormatter.subtensorPercentSingleHalfEven
     }
 
     func createViewModel(for input: SubtensorValidatorInfoInput, locale: Locale) -> SubtensorValidatorInfoViewModel {
