@@ -89,9 +89,13 @@ private extension SubtensorValidatorSelectPresenter {
         directory?.listStamp?.freshness == .fresh ? item : item.withoutReportedStake()
     }
 
+    func accepts(_ directory: SubtensorValidatorDirectory) -> Bool {
+        directory.subnet.netuid == target.netuid &&
+            (target.isRoot || directory.subnet.registeredAt == target.subnetInfo?.networkRegisteredAt)
+    }
+
     func apply(directory: SubtensorValidatorDirectory) {
-        guard directory.subnet.netuid == target.netuid,
-              target.isRoot || directory.subnet.registeredAt == target.subnetInfo?.networkRegisteredAt else { return }
+        guard accepts(directory) else { return }
         self.directory = directory
         directoryError = nil
         selectedHotkey = selectableItem(for: selectedHotkey)?.hotkey
@@ -99,8 +103,8 @@ private extension SubtensorValidatorSelectPresenter {
     }
 
     func seed(from snapshot: SubtensorValidatorSelectSnapshot) {
-        if let directory = snapshot.directory.value {
-            apply(directory: directory)
+        if let directory = snapshot.directory.value, accepts(directory) {
+            self.directory = directory
         }
 
         if let yields = snapshot.yields.value, yields.netuid == target.netuid {
