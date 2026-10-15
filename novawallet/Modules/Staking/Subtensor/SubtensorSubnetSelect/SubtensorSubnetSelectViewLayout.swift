@@ -144,14 +144,14 @@ private extension SubtensorSubnetSelectViewLayout {
 
         addSubview(emptyStateView)
         emptyStateView.snp.makeConstraints { make in
-            make.top.equalTo(tableView.snp.top).offset(SubtensorSubnetCell.preferredHeight)
+            make.top.equalTo(tableView.snp.top).offset(SubtensorSubnetCell.cardHeight)
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.bottom.equalTo(tableView.snp.bottom)
         }
 
         addSubview(errorView)
         errorView.snp.makeConstraints { make in
-            make.top.equalTo(tableView.snp.top).offset(SubtensorSubnetCell.preferredHeight + Constants.errorTopSpacing)
+            make.top.equalTo(tableView.snp.top).offset(SubtensorSubnetCell.cardHeight + Constants.errorTopSpacing)
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
         }
 
@@ -165,7 +165,7 @@ private extension SubtensorSubnetSelectViewLayout {
         static let filterSize: CGFloat = 28
         static let filterSpacing: CGFloat = 7
         static let captionSpacing: CGFloat = 8
-        static let listTopSpacing: CGFloat = 8
+        static let listTopSpacing: CGFloat = 18
         static let barBottomInset: CGFloat = 8
         static let barTopSpacing: CGFloat = 8
         static let inactiveAlpha: CGFloat = 0.5
