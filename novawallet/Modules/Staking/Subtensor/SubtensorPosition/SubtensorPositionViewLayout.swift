@@ -23,7 +23,7 @@ final class SubtensorPositionViewLayout: UIView {
 
     let actionsTableView: StackTableView = .create { view in
         view.hasSeparators = false
-        view.contentInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
+        view.contentInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
     }
 
     let validatorView = SubtensorValidatorCardView()
@@ -32,17 +32,11 @@ final class SubtensorPositionViewLayout: UIView {
         view.isHidden = true
     }
 
-    let syncNoticeControl: UIControl = .create { view in
-        view.backgroundColor = R.color.colorBlockBackground()
-        view.layer.cornerRadius = 12
+    let syncNoticeView: InlineAlertView = {
+        let view = InlineAlertView.warning()
         view.isHidden = true
-    }
-
-    let syncNoticeLabel: UILabel = .create { label in
-        label.apply(style: .footnotePrimary)
-        label.textAlignment = .center
-        label.numberOfLines = 0
-    }
+        return view
+    }()
 
     let bottomPanel = SubtensorBottomPanelView(style: .solid)
 
@@ -90,8 +84,8 @@ final class SubtensorPositionViewLayout: UIView {
             noticeView.bind(viewModel: notice)
         }
 
-        syncNoticeControl.isHidden = !viewModel.isSyncFailed
-        syncNoticeLabel.text = R.string(
+        syncNoticeView.isHidden = !viewModel.isSyncFailed
+        syncNoticeView.contentView.detailsLabel.text = R.string(
             preferredLanguages: locale.rLanguages
         ).localizable.stakingSubtensorUiPortfolioSyncFailed()
     }
@@ -199,7 +193,7 @@ private extension SubtensorPositionViewLayout {
             containerView.stackView.addArrangedSubview(validatorView)
         }
 
-        setupSyncNotice()
+        containerView.stackView.addArrangedSubview(syncNoticeView)
     }
 
     func setupBottomBar() {
@@ -244,15 +238,5 @@ private extension SubtensorPositionViewLayout {
         }
 
         containerView.stackView.addArrangedSubview(backgroundView)
-    }
-
-    func setupSyncNotice() {
-        syncNoticeControl.addSubview(syncNoticeLabel)
-        syncNoticeLabel.isUserInteractionEnabled = false
-        syncNoticeLabel.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(16)
-        }
-
-        containerView.stackView.addArrangedSubview(syncNoticeControl)
     }
 }
