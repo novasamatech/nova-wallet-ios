@@ -87,7 +87,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         isMaxApyResolved = false
 
         seedRootYields()
-        cataloguePricing?.reset()
+        cataloguePricing?.seed()
 
         eventCenter.add(observer: self, dispatchIn: workingQueue)
 
