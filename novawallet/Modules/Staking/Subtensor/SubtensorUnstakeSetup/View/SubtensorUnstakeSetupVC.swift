@@ -170,8 +170,7 @@ private extension SubtensorUnstakeSetupVC {
         rootView.holdAlertView.isHidden = viewModel.holdWarning == nil
         rootView.holdAlertView.contentView.detailsLabel.text = viewModel.holdWarning
 
-        rootView.captionLabel.isHidden = viewModel.caption == nil
-        rootView.captionLabel.text = viewModel.caption
+        rootView.applyCaption(viewModel.caption)
     }
 
     @objc func actionMax() {

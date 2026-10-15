@@ -56,7 +56,6 @@ final class SubtensorUnstakeSetupLayout: SubtensorAmountSetupLayout {
         super.setupLayout()
 
         bottomStack.insertArrangedSubview(holdAlertView, at: 0)
-        bottomStack.setCustomSpacing(12, after: holdAlertView)
 
         containerView.stackView.setCustomSpacing(16.0, after: amountInputView)
 
