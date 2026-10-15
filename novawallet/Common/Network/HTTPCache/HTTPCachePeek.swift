@@ -1,7 +1,7 @@
 import Foundation
 
 enum HTTPCachePeek<Value> {
-    case fresh(Value, freshUntil: TimeInterval)
+    case fresh(Value)
     case expired(Value)
     case miss
 }
@@ -9,7 +9,7 @@ enum HTTPCachePeek<Value> {
 extension HTTPCachePeek {
     var value: Value? {
         switch self {
-        case let .fresh(value, _), let .expired(value):
+        case let .fresh(value), let .expired(value):
             return value
         case .miss:
             return nil
@@ -28,8 +28,8 @@ extension HTTPCachePeek {
     func map<T>(_ transform: (Value) throws -> T) -> HTTPCachePeek<T> {
         do {
             switch self {
-            case let .fresh(value, freshUntil):
-                return .fresh(try transform(value), freshUntil: freshUntil)
+            case let .fresh(value):
+                return .fresh(try transform(value))
             case let .expired(value):
                 return .expired(try transform(value))
             case .miss:

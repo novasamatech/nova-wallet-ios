@@ -65,8 +65,7 @@ extension SubtensorValidatorListFactory {
 
         let selected = listed.first { $0.item.hotkey == input.selectedHotkey }
 
-        let isTotalKnown = !input.directory.isPartial && !input.directory.isEnrichmentTruncated
-        let total = isTotalKnown ? String(input.directory.items.count) : "—"
+        let total = input.directory.isPartial ? "—" : String(input.directory.items.count)
 
         let rowContext = RowContext(
             input: input,

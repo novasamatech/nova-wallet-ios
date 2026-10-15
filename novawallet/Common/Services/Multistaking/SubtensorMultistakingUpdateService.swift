@@ -87,7 +87,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         isMaxApyResolved = false
 
         seedRootYields()
-        cataloguePricing?.reset()
+        cataloguePricing?.seed()
 
         eventCenter.add(observer: self, dispatchIn: workingQueue)
 
@@ -168,7 +168,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     private func seedRootYields() {
         guard
             let rootYieldService,
-            case let .fresh(yields, _) = rootYieldService.cachedAlphaYields(
+            case let .fresh(yields) = rootYieldService.cachedAlphaYields(
                 for: SubtensorStakingPallet.rootNetuid
             ) else {
             rootYields = nil

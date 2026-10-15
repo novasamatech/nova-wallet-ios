@@ -97,7 +97,6 @@ final class SubtensorSubnetCatalogueServiceTests: XCTestCase {
         return BittensorApiResult(
             value: collection,
             requestId: "req-subnets",
-            receivedAt: 0,
             isFromExpiredCache: false
         )
     }
