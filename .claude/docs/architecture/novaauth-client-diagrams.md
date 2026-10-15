@@ -224,9 +224,10 @@ flowchart TB
   R -- "Other response" --> C["Return to caller grading/retry policy"]
 ```
 
-GET/HEAD freshness belongs to native URLCache, driven by Date/Age/Cache-Control. Complete reads
-use public max-age/must-revalidate; POST/bootstrap use no-store. Cache success cannot extend bearer
-validity. Admission still precedes the decoded seed cache; there is no request coalescing. Endpoint availability is insufficient.
+NovaAuth has no HTTP cache. The app's `BittensorApiResponseCache` reuses a fresh decoded body for
+its max-age before admission, keeps expired bodies only as stale display seeds, never keeps
+`no-store`, and drops an account's `operations/search` pages on its own trades. A store hit cannot
+extend bearer validity; on a miss admission precedes the fetch, with no request coalescing. Endpoint availability is insufficient.
 
 Conclusive replay requires the exact expected HTTPS origin, status 401 and exact
 `WWW-Authenticate: Bearer error="invalid_token"`; GET/POST also need a valid invalid-token body,
@@ -317,7 +318,7 @@ sequenceDiagram
 - Auth admission precedes negative-cache lookup and joining a request flight. Synchronous `peek` is only a stale display seed and makes no authentication request.
 - Decoded cache keys include auth scope plus path/query. Route-unpublished negatives last 600 seconds; dataset-unavailable negatives last 60 seconds. There is no successful-response TTL shortcut here.
 - Recommendation dataset ordering uses `(asOf, sourceBlockNumber)`. It is distinct from the authentication generation. An older dataset response returns `generationStale` without overwriting the newer seed.
-- The facade stamps accepted endpoints with an invalidation revision; transport preserves it in each admission. The decoded cache reconciles the latest revision before admission, completion and peek. Delayed or duplicate notifications cannot retire current-revision state; old admissions and completions cannot restore retired results. Same-origin readiness does not advance this invalidation revision. A separate context observer clears the cost-basis presentation seed, including on cold replacement or a failed replacement after the memory fence changes.
+- The facade stamps accepted endpoints with an invalidation revision; transport preserves it in each admission. The decoded cache reconciles the latest revision before admission, completion and peek. Delayed or duplicate notifications cannot retire current-revision state; old admissions and completions cannot restore retired results. Same-origin readiness does not advance this invalidation revision. Auth origin or generation changes clear every stored body, including the cost-basis pages, through that revision; nothing else observes the context.
 - Cost basis/P&L reads **`GET /v1/bittensor/operations/search`** and computes the ledger locally. It is a history read, not transaction submission.
 - Errors are graded into Bittensor types. Raw network and malformed-protocol failures retain retryable availability meaning; generic business 401/403 are server errors after the scope-specific case below. Presentation depends on the consumer: portfolio catalogue failure supplies no catalogue and can show rates unavailable; validator flows use the typed device/retry properties. Live chain balances do not prove successful backend authentication.
 
