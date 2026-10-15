@@ -107,7 +107,7 @@ private extension SubtensorSubnetDetailsViewLayout {
 
     func setupPriceWidget() {
         containerView.stackView.addArrangedSubview(priceWidget)
-        containerView.stackView.setCustomSpacing(24, after: priceWidget)
+        containerView.stackView.setCustomSpacing(16, after: priceWidget)
     }
 
     func setupSections() {
@@ -124,7 +124,7 @@ private extension SubtensorSubnetDetailsViewLayout {
             containerView.stackView.addArrangedSubview(label)
             containerView.stackView.setCustomSpacing(8, after: label)
             containerView.stackView.addArrangedSubview(view)
-            containerView.stackView.setCustomSpacing(24, after: view)
+            containerView.stackView.setCustomSpacing(16, after: view)
         }
 
         let moreDetailsCard = UIView()
@@ -133,10 +133,9 @@ private extension SubtensorSubnetDetailsViewLayout {
         moreDetailsCard.addSubview(moreDetailsView)
 
         moreDetailsView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16))
+            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 6, left: 16, bottom: 6, right: 16))
         }
 
-        containerView.stackView.setCustomSpacing(12, after: validatorView)
         containerView.stackView.addArrangedSubview(moreDetailsCard)
     }
 }
