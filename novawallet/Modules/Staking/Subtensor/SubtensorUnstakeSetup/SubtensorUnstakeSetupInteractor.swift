@@ -19,14 +19,13 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
     private let validatorCallStore = CancellableCallStore()
     private let subnetsInfoCallStore = CancellableCallStore()
 
-    init(
+    override init(
         flowServices: SubtensorFlowServices,
         state: SubtensorStakingSharedStateProtocol,
-        validatorFactory: SubtensorValidatorPresetFactoryProtocol,
         logger: LoggerProtocol
     ) {
         subnetsService = state.subnetsService
-        self.validatorFactory = validatorFactory
+        validatorFactory = state.earnServices.validatorPresetFactory
 
         super.init(flowServices: flowServices, state: state, logger: logger)
     }
