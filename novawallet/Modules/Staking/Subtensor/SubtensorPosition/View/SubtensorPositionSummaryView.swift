@@ -11,7 +11,7 @@ final class SubtensorPositionSummaryView: UIView {
     }
 
     let amountLabel: UILabel = .create { label in
-        label.apply(style: .boldTitle1Primary)
+        label.apply(style: .boldTitle2Primary)
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.5
     }
@@ -105,6 +105,8 @@ private extension SubtensorPositionSummaryView {
         static let iconSize: CGFloat = 40
         static let skeletonHeight: CGFloat = 12
         static let spacing: CGFloat = 10
+        static let valueLineHeight: CGFloat = 18
+        static let detailLineHeight: CGFloat = 16
     }
 
     static func createSkeleton() -> SubtensorChartLoadingView {
@@ -158,7 +160,7 @@ private extension SubtensorPositionSummaryView {
         }
 
         amountLabel.snp.makeConstraints { make in
-            make.height.greaterThanOrEqualTo(32)
+            make.height.greaterThanOrEqualTo(28)
         }
 
         textView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
@@ -264,6 +266,14 @@ private final class SubtensorPositionSummaryRowView: UIView {
             make.trailing.centerY.equalTo(contentView)
             make.width.equalTo(100)
             make.height.equalTo(12)
+        }
+
+        valueLabel.snp.makeConstraints { make in
+            make.height.equalTo(SubtensorPositionSummaryView.Constants.valueLineHeight)
+        }
+
+        detailLabel.snp.makeConstraints { make in
+            make.height.equalTo(SubtensorPositionSummaryView.Constants.detailLineHeight)
         }
 
         titleLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)

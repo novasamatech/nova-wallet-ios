@@ -107,7 +107,7 @@ private extension SubtensorWhereToStakeCardView {
 
     func makeHeader(_ text: String) -> UILabel {
         let label = UILabel(style: .semiboldCaps2Secondary)
-        label.apply(text: text, lineHeight: Constants.capsLineHeight, kern: Constants.capsKern)
+        label.applySubtensorCaps(text)
         return label
     }
 
@@ -141,8 +141,6 @@ private extension SubtensorWhereToStakeCardView {
         static let groupSpacing: CGFloat = 16
         static let titleLineHeight: CGFloat = 28
         static let subtitleLineHeight: CGFloat = 18
-        static let capsLineHeight: CGFloat = 13
-        static let capsKern: CGFloat = 0.6
         static let rowLineHeight: CGFloat = 16
         static let markSize: CGFloat = 16
         static let markSpacing: CGFloat = 8

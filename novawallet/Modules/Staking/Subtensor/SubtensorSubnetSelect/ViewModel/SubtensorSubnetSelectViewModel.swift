@@ -91,7 +91,7 @@ final class SubtensorSubnetViewModelFactory {
 
         tokenFormatter = balanceFormatterFactory.createTokenFormatter(for: chainAsset.assetDisplayInfo)
         compactTokenFormatter = balanceFormatterFactory.createCompactTokenFormatter(for: chainAsset.assetDisplayInfo)
-        changeFormatter = NumberFormatter.signedPercentSingle.localizableResource()
+        changeFormatter = NumberFormatter.subtensorSignedPercentSingle
     }
 }
 

@@ -78,8 +78,7 @@ private extension SubtensorPortfolioViewModelFactory {
     }
 
     func formatSignedPercent(_ value: Decimal, locale: Locale) -> String? {
-        let formatter = NumberFormatter.signedPercentSingle
-        formatter.locale = locale
+        let formatter = NumberFormatter.subtensorSignedPercentSingle.value(for: locale)
 
         return formatter.stringFromDecimal(value)
     }
@@ -88,28 +87,9 @@ private extension SubtensorPortfolioViewModelFactory {
         R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown()
     }
 
-    func periodTitle(for period: SubtensorPricePeriod, locale: Locale) -> String {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
-        switch period {
-        case .day:
-            return strings.commonPeriod1d().uppercased(with: locale)
-        case .week:
-            return strings.commonPeriod7d().uppercased(with: locale)
-        case .month:
-            return strings.commonPeriod30d().uppercased(with: locale)
-        case .quarter:
-            return strings.commonPeriod90d().uppercased(with: locale)
-        case .year:
-            return strings.commonPeriod1y().uppercased(with: locale)
-        case .all:
-            return strings.commonPeriodAll().capitalized(with: locale)
-        }
-    }
-
     func createPeriods(for state: SubtensorPortfolioState, locale: Locale) -> SubtensorPortfolioPeriodsViewModel {
         SubtensorPortfolioPeriodsViewModel(
-            titles: Self.periods.map { periodTitle(for: $0, locale: locale) },
+            titles: Self.periods.map { $0.title(for: locale) },
             selectedIndex: Self.periods.firstIndex(of: state.period) ?? 0
         )
     }
@@ -186,7 +166,7 @@ private extension SubtensorPortfolioViewModelFactory {
 
         let text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiJoinDotFormat(
             percent,
-            periodTitle(for: period, locale: locale)
+            period.title(for: locale)
         )
 
         return SubtensorPortfolioChangeViewModel(text: text, isRising: change >= 0)
@@ -295,7 +275,7 @@ private extension SubtensorPortfolioViewModelFactory {
 
         let text = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiJoinSpaceFormat(
             percent,
-            periodTitle(for: .week, locale: locale)
+            SubtensorPricePeriod.week.title(for: locale)
         )
 
         return .change(SubtensorPortfolioChangeViewModel(text: text, isRising: change >= 0))

@@ -39,7 +39,7 @@ final class SubtensorGetTaoCardView: UIView {
 
     func bind(viewModel: SubtensorGetTaoViewModel) {
         titleLabel.text = viewModel.title
-        messageLabel.text = viewModel.message
+        messageLabel.apply(text: viewModel.message, lineHeight: Constants.messageLineHeight)
         actionButton.imageWithTitleView?.title = viewModel.action
         actionButton.invalidateLayout()
     }
@@ -83,10 +83,11 @@ private extension SubtensorGetTaoCardView {
     enum Constants {
         static let cornerRadius: CGFloat = 12
         static let contentInset: CGFloat = 16
-        static let iconSize: CGFloat = 36
+        static let iconSize: CGFloat = 40
         static let iconSpacing: CGFloat = 12
         static let textSpacing: CGFloat = 4
-        static let actionSpacing: CGFloat = 16
+        static let messageLineHeight: CGFloat = 18
+        static let actionSpacing: CGFloat = 12
         static let actionHeight: CGFloat = 52
     }
 }

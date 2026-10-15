@@ -8,13 +8,6 @@ final class SubtensorSubnetDetailsViewLayout: UIView {
         view.stackView.alignment = .fill
     }
 
-    let titleView: IconDetailsView = .create { view in
-        view.detailsLabel.apply(style: .semiboldBodyPrimary)
-        view.imageView.contentMode = .scaleAspectFit
-        view.iconWidth = 24
-        view.spacing = 8
-    }
-
     let priceWidget = SubtensorPriceWidgetView()
 
     let validatorCaptionLabel = SubtensorSubnetDetailsViewLayout.createSectionLabel()
@@ -65,16 +58,10 @@ private extension SubtensorSubnetDetailsViewLayout {
     }
 
     static func createSectionLabel() -> UILabel {
-        .create { label in
-            label.apply(style: .semiboldCaps2Secondary)
-        }
+        UILabel(style: .semiboldCaps1Secondary, numberOfLines: 1)
     }
 
     func setupLayout() {
-        titleView.imageView.snp.makeConstraints { make in
-            make.height.equalTo(24)
-        }
-
         setupBottomBar()
         setupPriceWidget()
         setupSections()
@@ -117,10 +104,6 @@ private extension SubtensorSubnetDetailsViewLayout {
         ]
 
         sections.forEach { label, view in
-            label.snp.makeConstraints { make in
-                make.height.greaterThanOrEqualTo(16)
-            }
-
             containerView.stackView.addArrangedSubview(label)
             containerView.stackView.setCustomSpacing(8, after: label)
             containerView.stackView.addArrangedSubview(view)
