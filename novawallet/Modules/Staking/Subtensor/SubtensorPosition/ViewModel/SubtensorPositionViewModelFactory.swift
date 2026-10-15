@@ -3,7 +3,6 @@ import Foundation_iOS
 
 protocol SubnetPositionViewModelFactoryProtocol {
     func createViewModel(for state: SubtensorPositionState, locale: Locale) -> SubtensorPositionViewModel
-    func createPriceHeader(for state: SubtensorPositionState, locale: Locale) -> SubtensorSubnetPriceHeaderViewModel?
 }
 
 final class SubtensorPositionViewModelFactory {

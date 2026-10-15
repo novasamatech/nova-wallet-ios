@@ -101,10 +101,21 @@ extension SubtensorSubnetDetailsViewModelFactory {
 }
 
 private extension SubtensorSubnetDetailsViewModelFactory {
-    func createPriceWidgetParams(
+    func createPriceWidgetParams(for state: SubtensorSubnetDetailsState) -> SubtensorPriceWidgetParams {
+        SubtensorPriceWidgetParams(
+            history: state.history,
+            period: state.period,
+            isFiat: state.isFiat,
+            taoPrice: state.taoPrice,
+            currencyId: currency.id,
+            chartEndDate: state.chartEndDate
+        )
+    }
+
+    func createPriceHeaderParams(
         for state: SubtensorSubnetDetailsState,
         locale: Locale
-    ) -> SubtensorPriceWidgetParams {
+    ) -> SubtensorPriceHeaderParams {
         let caption = priceWidgetFactory.createCaption(
             subnetTitle: SubtensorSubnetNaming.titleWithSymbol(for: subnet, locale: locale),
             stamps: subnet.stamps,
@@ -118,16 +129,10 @@ private extension SubtensorSubnetDetailsViewModelFactory {
             isEnabled: state.taoPrice != nil || state.isFiat
         )
 
-        return SubtensorPriceWidgetParams(
+        return SubtensorPriceHeaderParams(
             caption: caption,
             spotPrice: subnet.taoPerAlpha.decimal(assetInfo: chainAsset.assetDisplayInfo),
-            history: state.history,
-            period: state.period,
-            isFiat: state.isFiat,
-            taoPrice: state.taoPrice,
-            currencyId: currency.id,
             currency: currencyViewModel,
-            chartEndDate: state.chartEndDate,
             selection: state.chartSelection
         )
     }
@@ -172,7 +177,8 @@ extension SubtensorSubnetDetailsViewModelFactory: SubnetDetailsViewModelFactoryP
 
         return SubtensorSubnetDetailsViewModel(
             priceWidget: priceWidgetFactory.createWidget(
-                for: createPriceWidgetParams(for: state, locale: locale),
+                for: createPriceWidgetParams(for: state),
+                header: createPriceHeaderParams(for: state, locale: locale),
                 locale: locale
             ),
             validator: createValidator(for: state, locale: locale),
@@ -190,6 +196,10 @@ extension SubtensorSubnetDetailsViewModelFactory: SubnetDetailsViewModelFactoryP
         for state: SubtensorSubnetDetailsState,
         locale: Locale
     ) -> SubtensorSubnetPriceHeaderViewModel {
-        priceWidgetFactory.createHeader(for: createPriceWidgetParams(for: state, locale: locale), locale: locale)
+        priceWidgetFactory.createHeader(
+            createPriceHeaderParams(for: state, locale: locale),
+            for: createPriceWidgetParams(for: state),
+            locale: locale
+        )
     }
 }
