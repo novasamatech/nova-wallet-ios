@@ -3,7 +3,6 @@ import Operation_iOS
 
 struct BittensorApiCacheScope: Hashable {
     let origin: String
-    let profile: Int
     let generation: UInt64
     let invalidationRevision: UInt64
 }

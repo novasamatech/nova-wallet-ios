@@ -11,7 +11,6 @@ final class SubtensorSubnetDetailsPresenter {
     let wireframe: SubtensorSubnetDetailsWireframeProtocol
     let viewModelFactory: SubnetDetailsViewModelFactoryProtocol
     let earnSettings: SubtensorEarnSettingsProtocol
-    let logger: LoggerProtocol
 
     private var chartEndDate: Date
     private var isFiat = false
@@ -42,8 +41,7 @@ final class SubtensorSubnetDetailsPresenter {
         wireframe: SubtensorSubnetDetailsWireframeProtocol,
         viewModelFactory: SubnetDetailsViewModelFactoryProtocol,
         earnSettings: SubtensorEarnSettingsProtocol,
-        localizationManager: LocalizationManagerProtocol,
-        logger: LoggerProtocol
+        localizationManager: LocalizationManagerProtocol
     ) {
         chartEndDate = Date()
         self.input = input
@@ -53,7 +51,6 @@ final class SubtensorSubnetDetailsPresenter {
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.earnSettings = earnSettings
-        self.logger = logger
 
         if let validator = input.validator {
             self.validator = .selected(validator)

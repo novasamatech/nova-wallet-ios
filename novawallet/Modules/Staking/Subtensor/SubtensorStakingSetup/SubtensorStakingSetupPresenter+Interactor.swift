@@ -52,7 +52,6 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
 
     func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?) {
         self.catalogue = catalogue
-        isCatalogueLoaded = true
 
         provideViewModel()
     }

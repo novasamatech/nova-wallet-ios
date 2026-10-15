@@ -34,8 +34,7 @@ enum SubtensorSubnetDetailsViewFactory {
             wireframe: SubtensorSubnetDetailsWireframe(state: state),
             viewModelFactory: viewModelFactory,
             earnSettings: state.earnServices.earnSettings,
-            localizationManager: LocalizationManager.shared,
-            logger: Logger.shared
+            localizationManager: LocalizationManager.shared
         )
 
         let singleTapHapticPlayer = HapticPlayerFactory.createHapticPlayer(patternConfiguration: .singleTap)

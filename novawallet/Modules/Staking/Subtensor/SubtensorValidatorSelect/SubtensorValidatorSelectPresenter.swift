@@ -9,7 +9,6 @@ final class SubtensorValidatorSelectPresenter {
     let interactor: ValidatorSelectInteractorInputProtocol
     let wireframe: ValidatorSelectWireframeProtocol
     let listFactory: SubtensorValidatorListFactory
-    let logger: LoggerProtocol
 
     private var directory: SubtensorValidatorDirectory?
     private var directoryError: Error?
@@ -31,8 +30,7 @@ final class SubtensorValidatorSelectPresenter {
         listFactory: SubtensorValidatorListFactory,
         delegate: SubtensorValidatorSelectDelegate,
         localizationManager: LocalizationManagerProtocol,
-        logger: LoggerProtocol,
-        filterSession: SubtensorValidatorFilterSession = SubtensorValidatorFilterSession()
+        filterSession: SubtensorValidatorFilterSession
     ) {
         self.target = target
         self.selectedHotkey = selectedHotkey
@@ -41,7 +39,6 @@ final class SubtensorValidatorSelectPresenter {
         self.wireframe = wireframe
         self.listFactory = listFactory
         self.delegate = delegate
-        self.logger = logger
         self.filterSession = filterSession
         self.localizationManager = localizationManager
     }

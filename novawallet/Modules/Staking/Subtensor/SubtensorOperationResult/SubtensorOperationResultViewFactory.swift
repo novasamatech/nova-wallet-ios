@@ -15,27 +15,11 @@ enum SubtensorOperationResultViewFactory {
         guard
             let services = SubtensorFlowServicesFactory.createServices(for: state),
             services.isFlowAccount(request.account),
-            let connection = state.chainRegistry.getConnection(for: chain.chainId),
-            let currencyManager = CurrencyManager.shared else {
+            let connection = state.chainRegistry.getConnection(for: chain.chainId) else {
             return nil
         }
 
-        guard let operationService = try? state.createStakingOperationService(
-            for: services.account.chainAccount.accountId,
-            extrinsicService: services.extrinsicService,
-            extrinsicSubmitMonitor: services.extrinsicSubmitMonitor,
-            signer: services.signer
-        ) else {
-            return nil
-        }
-
-        let interactor = createInteractor(
-            for: state,
-            request: request,
-            operationService: operationService,
-            connection: connection,
-            services: services
-        )
+        let interactor = createInteractor(for: state, request: request, connection: connection, services: services)
 
         let presenter = SubtensorOperationResultPresenter(
             request: request,
@@ -44,7 +28,7 @@ enum SubtensorOperationResultViewFactory {
             wireframe: SubtensorOperationResultWireframe(state: state),
             viewModelFactory: SubtensorOperationResultViewModelFactory(
                 chainAsset: state.stakingOption.chainAsset,
-                priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
+                priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: services.currencyManager)
             ),
             localizationManager: LocalizationManager.shared
         )
@@ -63,7 +47,6 @@ private extension SubtensorOperationResultViewFactory {
     static func createInteractor(
         for state: SubtensorStakingSharedStateProtocol,
         request: SubtensorOperationResultRequest,
-        operationService: SubtensorStakingOperationServiceProtocol,
         connection: JSONRPCEngine,
         services: SubtensorFlowServices
     ) -> SubtensorOperationResultInteractor {
@@ -88,7 +71,7 @@ private extension SubtensorOperationResultViewFactory {
             operation: request.operation,
             coldkey: request.account.chainAccount.accountId,
             loadsSubnetData: !request.target.isRoot,
-            operationService: operationService,
+            operationService: services.operationService,
             chainFactory: chainFactory,
             catalogueService: state.earnServices.catalogueService,
             subnetLogosProvider: state.earnServices.subnetLogosProvider,

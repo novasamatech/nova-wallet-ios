@@ -153,7 +153,6 @@ enum SubtensorSetupAmountState: Equatable {
 
 struct SubtensorSetupSubnetData {
     let catalogue: SubtensorSubnetCatalogue?
-    let isCatalogueLoaded: Bool
     let subnetLogos: SubtensorSubnetLogos?
     let rankedSubnet: SubtensorRankedSubnet?
     let annualRate: Decimal?

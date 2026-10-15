@@ -9,7 +9,6 @@ final class SubtensorValidatorInfoPresenter {
     let interactor: SubtensorValInfoInteractorInputProtocol
     let wireframe: SubtensorValidatorInfoWireframeProtocol
     let viewModelFactory: SubtensorValidatorInfoViewModelFactory
-    let logger: LoggerProtocol
 
     private var detail: SubtensorValidatorDirectoryItem?
     private var needsChainDetail: Bool
@@ -26,8 +25,7 @@ final class SubtensorValidatorInfoPresenter {
         interactor: SubtensorValInfoInteractorInputProtocol,
         wireframe: SubtensorValidatorInfoWireframeProtocol,
         viewModelFactory: SubtensorValidatorInfoViewModelFactory,
-        localizationManager: LocalizationManagerProtocol,
-        logger: LoggerProtocol
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.target = target
         self.hotkey = hotkey
@@ -36,7 +34,6 @@ final class SubtensorValidatorInfoPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
-        self.logger = logger
         self.localizationManager = localizationManager
     }
 }

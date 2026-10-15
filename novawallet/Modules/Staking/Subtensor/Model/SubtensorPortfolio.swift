@@ -32,7 +32,6 @@ struct SubtensorRootHold: Equatable {
 
 struct SubtensorRootClaimPreview: Equatable {
     let hotkey: AccountId
-    let accrued: Balance
     let redeemable: Balance
     let forfeitedEstimate: Balance
 }

@@ -68,10 +68,6 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
         positionsSyncService.remove(observer: self)
         positionsSyncService.remove(failureObserver: self)
     }
-
-    func onSetup() {}
-
-    func onPositions(_: Multistaking.SubtensorStakingState?) {}
 }
 
 private extension SubtensorStakingBaseInteractor {
@@ -103,7 +99,6 @@ private extension SubtensorStakingBaseInteractor {
             sendStateOnSubscription: true,
             queue: .main
         ) { [weak self] _, newState in
-            self?.onPositions(newState)
             self?.basePresenter?.didReceivePositions(newState)
         }
     }
@@ -154,8 +149,6 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
         makePositionsFailureSubscription()
 
         provideExistentialDeposit()
-
-        onSetup()
     }
 
     func cachedCatalogue() -> HTTPCachePeek<SubtensorSubnetCatalogue> {

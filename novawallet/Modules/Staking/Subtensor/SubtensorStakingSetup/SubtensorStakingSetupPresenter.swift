@@ -31,7 +31,6 @@ final class SubtensorStakingSetupPresenter {
     var isPositionsSyncFailed = false
     var preflight: SubtensorStakingPreflight?
     var catalogue: SubtensorSubnetCatalogue?
-    var isCatalogueLoaded = false
     var subnetLogos: SubtensorSubnetLogos?
     var rankingView: SubtensorRankedSubnets?
     var hasExpiredRankingSeed = false
