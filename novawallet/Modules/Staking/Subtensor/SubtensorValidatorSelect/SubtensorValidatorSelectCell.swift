@@ -27,16 +27,12 @@ final class SubtensorValidatorSelectCell: UITableViewCell {
     }
 
     let trailingLabel: UILabel = .create { label in
-        label.font = .regularSubheadline
+        label.font = .semiBoldFootnote
         label.textAlignment = .right
     }
 
     let infoButton: UIButton = .create { button in
         button.setImage(R.image.iconInfoFilled(), for: .normal)
-    }
-
-    let divider: UIView = .create { view in
-        view.backgroundColor = R.color.colorDivider()
     }
 
     var infoAction: (() -> Void)?
@@ -94,7 +90,7 @@ final class SubtensorValidatorSelectCell: UITableViewCell {
     private func setupLayout() {
         titleStackView.addArrangedSubview(titleLabel)
 
-        [radioView, iconView, titleStackView, subtitleLabel, trailingLabel, infoButton, divider]
+        [radioView, iconView, titleStackView, subtitleLabel, trailingLabel, infoButton]
             .forEach(contentView.addSubview)
 
         radioView.snp.makeConstraints { make in
@@ -112,6 +108,7 @@ final class SubtensorValidatorSelectCell: UITableViewCell {
         titleStackView.snp.makeConstraints { make in
             make.leading.equalTo(iconView.snp.trailing).offset(12)
             make.top.equalToSuperview().offset(10)
+            make.height.equalTo(20)
             make.trailing.lessThanOrEqualTo(trailingLabel.snp.leading).offset(-8)
         }
 
@@ -120,6 +117,7 @@ final class SubtensorValidatorSelectCell: UITableViewCell {
         subtitleLabel.snp.makeConstraints { make in
             make.leading.equalTo(titleStackView)
             make.top.equalTo(titleStackView.snp.bottom).offset(2)
+            make.height.equalTo(16)
             make.trailing.lessThanOrEqualTo(trailingLabel.snp.leading).offset(-8)
         }
 
@@ -135,12 +133,6 @@ final class SubtensorValidatorSelectCell: UITableViewCell {
         }
 
         trailingLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
-
-        divider.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.bottom.equalToSuperview()
-            make.height.equalTo(0.5)
-        }
     }
 }
 
@@ -153,17 +145,13 @@ final class SubtensorValidatorSkeletonCell: UITableViewCell, SkeletonableView {
     private let radioView = UIImageView(image: R.image.iconRadioButtonUnselected())
     private let infoView = UIImageView(image: R.image.iconInfoFilled())
 
-    private let divider: UIView = .create { view in
-        view.backgroundColor = R.color.colorDivider()
-    }
-
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         backgroundColor = .clear
         selectionStyle = .none
 
-        [radioView, infoView, divider].forEach(contentView.addSubview)
+        [radioView, infoView].forEach(contentView.addSubview)
 
         radioView.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(16)
@@ -175,12 +163,6 @@ final class SubtensorValidatorSkeletonCell: UITableViewCell, SkeletonableView {
             make.trailing.equalToSuperview().inset(16)
             make.centerY.equalToSuperview()
             make.size.equalTo(16)
-        }
-
-        divider.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.bottom.equalToSuperview()
-            make.height.equalTo(0.5)
         }
     }
 
@@ -198,7 +180,7 @@ final class SubtensorValidatorSkeletonCell: UITableViewCell, SkeletonableView {
             updateLoadingState()
         }
 
-        [radioView, infoView, divider].forEach(contentView.bringSubviewToFront)
+        [radioView, infoView].forEach(contentView.bringSubviewToFront)
     }
 
     override func didMoveToWindow() {
@@ -218,7 +200,7 @@ final class SubtensorValidatorSkeletonCell: UITableViewCell, SkeletonableView {
 
         let shapes: [(CGPoint, CGSize)] = [
             (CGPoint(x: 52, y: 17), CGSize(width: 24, height: 24)),
-            (CGPoint(x: 88, y: 14), CGSize(width: 120, height: 12)),
+            (CGPoint(x: 88, y: 17), CGSize(width: 120, height: 12)),
             (CGPoint(x: 88, y: 31), CGSize(width: min(160, size.width - 168), height: 10)),
             (CGPoint(x: size.width - 92, y: 23), CGSize(width: 48, height: 12))
         ]
