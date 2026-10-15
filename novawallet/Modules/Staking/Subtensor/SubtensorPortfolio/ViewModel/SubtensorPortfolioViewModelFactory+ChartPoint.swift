@@ -43,17 +43,17 @@ extension SubtensorPortfolioViewModelFactory: SubnetPortfolioChartFactoryProtoco
 
         let point = points[index]
 
-        let change: SubtensorPortfolioLoadable<SubtensorPortfolioChangeViewModel> = if index == points.count - 1 {
+        let change: SubtensorRowState<SubtensorPortfolioChangeViewModel> = if index == points.count - 1 {
             header.change
         } else {
-            createPointChange(from: first, to: point, locale: locale).map { .loaded($0) } ?? .hidden
+            createPointChange(from: first, to: point, locale: locale).map { .value($0) } ?? .hidden
         }
 
         let fiat = balanceViewModelFactory.priceFromFiatAmount(point.fiatValue, currencyId: price.currencyId)
 
         return SubtensorPortfolioHeaderViewModel(
             total: balanceViewModelFactory.amountFromValue(point.taoValue, roundingMode: .down).value(for: locale),
-            fiat: .loaded(fiat.value(for: locale)),
+            fiat: .value(fiat.value(for: locale)),
             change: change,
             chart: header.chart,
             periods: header.periods

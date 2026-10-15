@@ -167,7 +167,7 @@ extension SubtensorStakingSetupViewModelFactory {
         } else {
             validator = .card(SubtensorValidatorCardViewModel(
                 icon: icon, name: name, subtitle: strings.stakingCommonValidator(),
-                rate: .loaded(SubtensorApyFormatter.text(for: annualRate, style: .bare, locale: locale)),
+                rate: .value(SubtensorApyFormatter.text(for: annualRate, style: .bare, locale: locale)),
                 rateCaption: strings.stakingSubtensorV22EstApy()
             ))
         }

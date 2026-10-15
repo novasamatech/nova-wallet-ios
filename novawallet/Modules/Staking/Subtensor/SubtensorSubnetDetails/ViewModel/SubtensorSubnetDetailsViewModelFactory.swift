@@ -155,7 +155,7 @@ private extension SubtensorSubnetDetailsViewModelFactory {
             icon: display?.imageViewModel,
             name: name,
             subtitle: strings.stakingCommonValidator(),
-            rate: item == nil ? .hidden : .loaded(SubtensorApyFormatter.text(for: rate, style: .bare, locale: locale)),
+            rate: item == nil ? .hidden : .value(SubtensorApyFormatter.text(for: rate, style: .bare, locale: locale)),
             rateCaption: strings.stakingSubtensorV22EstApy()
         )
     }

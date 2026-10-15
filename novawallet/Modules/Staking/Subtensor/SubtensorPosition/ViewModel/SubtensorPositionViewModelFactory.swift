@@ -90,7 +90,7 @@ private extension SubtensorPositionViewModelFactory {
         return SubtensorSubnetNaming.titleWithSymbol(for: state.netuid, in: state.catalogue, locale: locale)
     }
 
-    func createFiat(for state: SubtensorPositionState, locale: Locale) -> SubtensorPortfolioLoadable<String> {
+    func createFiat(for state: SubtensorPositionState, locale: Locale) -> SubtensorRowState<String> {
         guard state.isRoot, let group = state.group else {
             return .hidden
         }
@@ -99,7 +99,7 @@ private extension SubtensorPositionViewModelFactory {
         case .loading:
             return .loading
         case let .loaded(price):
-            return formatFiat(group.totalAlpha, price: price, locale: locale).map { .loaded($0) } ?? .hidden
+            return formatFiat(group.totalAlpha, price: price, locale: locale).map { .value($0) } ?? .hidden
         }
     }
 
@@ -223,12 +223,12 @@ private extension SubtensorPositionViewModelFactory {
             ? state.validator?.name ?? address?.mediumTruncated ?? unknownValue(for: locale)
             : nil
 
-        let rate: SubtensorPortfolioLoadable<String>
+        let rate: SubtensorRowState<String>
 
         if !state.isRateResolved {
             rate = .loading
         } else if state.isRoot || state.annualRate != nil {
-            rate = .loaded(SubtensorApyFormatter.text(for: state.annualRate, style: .bare, locale: locale))
+            rate = .value(SubtensorApyFormatter.text(for: state.annualRate, style: .bare, locale: locale))
         } else {
             rate = .hidden
         }
