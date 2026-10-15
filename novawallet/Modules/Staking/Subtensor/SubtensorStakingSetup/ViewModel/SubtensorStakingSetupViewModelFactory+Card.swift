@@ -35,7 +35,7 @@ extension SubtensorStakingSetupViewModelFactory {
             receive: createTradeRow(for: input, value: tradePanel?.receive?.amount, locale: locale),
             swapRate: createTradeRow(for: input, value: tradePanel?.swapRate, locale: locale),
             networkFee: createNetworkFee(for: input, locale: locale),
-            hasHeaderDivider: false
+            isRoot: false
         )
 
         return SubtensorSetupSubnetViewModel(
