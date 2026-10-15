@@ -61,6 +61,7 @@ final class SubtensorCostBasisServiceTests: XCTestCase {
         ])
         let eventQueue = DispatchQueue(label: "test.subtensor.cost.basis.events")
         let eventCenter = EventCenter(syncQueue: eventQueue)
+        let accountSubject = try accountId.toAddress(using: .defaultSubstrateFormat)
         let service = createService(apiOperationFactory, eventCenter: eventCenter)
 
         let costBasis = try run(service.createCostBasisWrapper(for: accountId, netuid: chutesNetuid))
@@ -73,6 +74,7 @@ final class SubtensorCostBasisServiceTests: XCTestCase {
             )
         )
         eventQueue.sync {}
+        verify(apiOperationFactory, times(1)).dropOperations(accountSubject: equal(to: accountSubject))
         XCTAssertNil(service.cachedCostBasis(for: accountId, netuid: chutesNetuid).value)
 
         _ = try run(service.createCostBasisWrapper(for: accountId, netuid: chutesNetuid))
@@ -125,6 +127,10 @@ final class SubtensorCostBasisServiceTests: XCTestCase {
 
                 return CompoundOperationWrapper.createWithResult(operationsPage)
             }
+            when(stub.peekOperations(accountSubject: any(), page: any())).then { _, page in
+                pages.first { $0.value.pageInfo.page == page }.map { HTTPCachePeek.expired($0) } ?? .miss
+            }
+            when(stub.dropOperations(accountSubject: any())).thenDoNothing()
         }
 
         return apiOperationFactory

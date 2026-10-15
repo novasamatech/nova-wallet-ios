@@ -32,6 +32,13 @@ protocol BittensorApiOperationFactoryProtocol: AnyObject {
         page: Int?
     ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.OperationCollection>>
 
+    func peekOperations(
+        accountSubject: AccountAddress,
+        page: Int
+    ) -> HTTPCachePeek<BittensorApiResult<BittensorApi.OperationCollection>>
+
+    func dropOperations(accountSubject: AccountAddress)
+
     func createPortfolioHistoryWrapper(
         accountSubject: AccountAddress,
         period: BittensorApi.PortfolioHistoryPeriod
@@ -57,9 +64,3 @@ struct BittensorApiResult<T> {
 }
 
 extension BittensorApiResult: Equatable where T: Equatable {}
-
-extension BittensorApiOperationFactoryProtocol {
-    func addContextObserver(_ owner: AnyObject, closure: @escaping () -> Void) {
-        (self as? BittensorApiContextObserving)?.addContextObserver(owner, closure: closure)
-    }
-}

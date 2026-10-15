@@ -20,6 +20,5 @@ protocol BittensorApiTransportProtocol: AnyObject {
         for request: BittensorApiRequest,
         admission: BittensorApiAdmission
     ) -> CompoundOperationWrapper<BittensorApiRawResponse>
-    func addContextObserver(_ owner: AnyObject, closure: @escaping () -> Void)
     func addInvalidationObserver(_ owner: AnyObject, closure: @escaping (UInt64) -> Void) -> UInt64
 }

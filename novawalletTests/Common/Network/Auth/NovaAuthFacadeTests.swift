@@ -41,7 +41,7 @@ final class NovaAuthFacadeTests: XCTestCase {
         DispatchQueue.global().async {
             _ = transport.invalidationRevision
             _ = transport.addInvalidationObserver(self) { _ in notified.fulfill() }
-            transport.addContextObserver(self) { notified.fulfill() }
+            provider.addContextObserver(self) { notified.fulfill() }
             revisionRead.signal()
         }
 

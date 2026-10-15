@@ -61,6 +61,12 @@ final class BittensorApiResponseCache {
         mutex.unlock()
     }
 
+    func removeEntries(where predicate: (BittensorApiCacheKey) -> Bool) {
+        mutex.lock()
+        entries = entries.filter { !predicate($0.key.request) }
+        mutex.unlock()
+    }
+
     func peek(_ key: BittensorApiCacheKey, invalidationRevision: UInt64) -> HTTPCachePeek<BittensorApiCacheEntry> {
         mutex.lock()
         defer { mutex.unlock() }
