@@ -65,6 +65,9 @@ extension SubtensorValidatorListFactory {
 
         let selected = listed.first { $0.item.hotkey == input.selectedHotkey }
 
+        let isTotalKnown = !input.directory.isPartial && !input.directory.isEnrichmentTruncated
+        let total = isTotalKnown ? String(input.directory.items.count) : "—"
+
         let rowContext = RowContext(
             input: input,
             locale: locale,
@@ -74,10 +77,7 @@ extension SubtensorValidatorListFactory {
 
         return SubtensorValidatorListViewModel(
             rows: matching.map { createRow(for: $0, context: rowContext) },
-            countTitle: strings.stakingSubtensorV22CountFormat(
-                String(matching.count),
-                !input.directory.isPartial && !input.directory.isEnrichmentTruncated ? String(listed.count) : "—"
-            ),
+            countTitle: strings.stakingSubtensorV22CountFormat(String(matching.count), total),
             sortTitle: createSortTitle(
                 for: sort,
                 ratesShown: ratesShown,

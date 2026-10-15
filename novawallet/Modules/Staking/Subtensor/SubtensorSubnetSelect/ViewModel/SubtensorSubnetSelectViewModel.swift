@@ -266,8 +266,10 @@ extension SubtensorSubnetViewModelFactory: SubtensorSubnetViewModelFactoryProtoc
     func createListViewModel(for state: SubtensorSubnetListState, locale: Locale) -> SubtensorSubnetListViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
+        let unknown = strings.stakingSubtensorUiValueUnknown()
         let count = strings.stakingSubtensorQuickCount(
-            state.list.map { String($0.others.count) } ?? strings.stakingSubtensorUiValueUnknown()
+            state.list.map { String($0.count) } ?? unknown,
+            state.list.map { String($0.total) } ?? unknown
         )
 
         let caption = SubtensorFreshnessFormatter.agedHint(for: state.stamp, locale: locale).map {

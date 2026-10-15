@@ -69,7 +69,9 @@ final class SubtensorSubnetSelectViewLayout: UIView {
         sortView.control.isEnabled = viewModel.areControlsEnabled
 
         filterButton.setImage(
-            viewModel.isFilterActive ? R.image.iconFilterActive() : R.image.iconFilter(),
+            viewModel.isFilterActive
+                ? R.image.iconFilterActive()?.tinted(with: R.color.colorButtonBackgroundPrimary()!)
+                : R.image.iconFilter(),
             for: .normal
         )
 
