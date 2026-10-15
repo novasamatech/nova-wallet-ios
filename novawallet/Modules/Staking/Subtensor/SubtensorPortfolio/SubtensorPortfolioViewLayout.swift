@@ -40,7 +40,7 @@ final class SubtensorPortfolioViewLayout: UIView {
     var onSelectPosition: ((Int) -> Void)?
 
     private var positionViews: [SubtensorPortfolioPositionView] = []
-    private let skeletonViews: [SubtensorChartLoadingView] = (0 ..< 2).map { _ in SubtensorChartLoadingView() }
+    private var skeletonViews: [SubtensorChartLoadingView] = []
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -59,14 +59,14 @@ final class SubtensorPortfolioViewLayout: UIView {
         syncNoticeView.isHidden = !viewModel.isSyncFailed
 
         switch viewModel.content {
-        case let .positions(header, rows):
+        case let .positions(header, rows, loadingRows):
             headerView.isHidden = false
             emptyView.isHidden = true
             positionsCaptionLabel.isHidden = false
             positionsStackView.isHidden = false
             headerView.bind(viewModel: header)
-            headerView.ratesAlertView.isHidden = !viewModel.isRatesUnavailable
-            bind(rows: rows)
+            headerView.bind(isRatesUnavailable: viewModel.isRatesUnavailable)
+            bind(rows: rows, loadingRows: loadingRows)
             addButton.applySecondaryDefaultStyle()
         case let .empty(emptyViewModel):
             headerView.isHidden = true
@@ -86,11 +86,7 @@ private extension SubtensorPortfolioViewLayout {
         static let rowHeight: CGFloat = 64
     }
 
-    func bind(rows: [SubtensorPortfolioRowViewModel]?) {
-        skeletonViews.forEach { $0.setLoading(rows == nil) }
-
-        let rows = rows ?? []
-
+    func bind(rows: [SubtensorPortfolioRowViewModel], loadingRows: Int) {
         while positionViews.count > rows.count {
             positionViews.removeLast().removeFromSuperview()
         }
@@ -98,12 +94,30 @@ private extension SubtensorPortfolioViewLayout {
         while positionViews.count < rows.count {
             let positionView = SubtensorPortfolioPositionView()
             positionView.addTarget(self, action: #selector(actionPosition(_:)), for: .touchUpInside)
-            positionsStackView.addArrangedSubview(positionView)
+            positionsStackView.insertArrangedSubview(positionView, at: positionViews.count)
             positionViews.append(positionView)
         }
 
         zip(positionViews, rows).forEach { positionView, row in
             positionView.bind(viewModel: row)
+        }
+
+        while skeletonViews.count > loadingRows {
+            skeletonViews.removeLast().removeFromSuperview()
+        }
+
+        while skeletonViews.count < loadingRows {
+            let skeletonView: SubtensorChartLoadingView = .create { view in
+                view.skeletonCornerRadius = 12
+            }
+
+            positionsStackView.addArrangedSubview(skeletonView)
+            skeletonView.snp.makeConstraints { make in
+                make.height.equalTo(Constants.rowHeight)
+            }
+
+            skeletonView.setLoading(true)
+            skeletonViews.append(skeletonView)
         }
     }
 
@@ -141,7 +155,7 @@ private extension SubtensorPortfolioViewLayout {
         let stackView = containerView.stackView
 
         stackView.addArrangedSubview(headerView)
-        stackView.setCustomSpacing(16, after: headerView)
+        stackView.setCustomSpacing(20, after: headerView)
 
         stackView.addArrangedSubview(emptyView)
         stackView.setCustomSpacing(16, after: emptyView)
@@ -153,12 +167,5 @@ private extension SubtensorPortfolioViewLayout {
         stackView.setCustomSpacing(8, after: positionsCaptionLabel)
 
         stackView.addArrangedSubview(positionsStackView)
-
-        skeletonViews.forEach { view in
-            positionsStackView.addArrangedSubview(view)
-            view.snp.makeConstraints { make in
-                make.height.equalTo(Constants.rowHeight)
-            }
-        }
     }
 }
