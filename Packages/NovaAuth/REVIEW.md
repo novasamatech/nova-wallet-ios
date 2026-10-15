@@ -35,10 +35,11 @@ arbitrary domain closure. The caller's `beforeSend` guard runs before every send
 
 Bittensor retains typed error mapping and flow-owned retry/presentation. Analytics checks
 consent and its epoch before every send, retains auth-failed batches silently, and relies on
-normal later flushes. Auth schedules no retry or UI. Admission precedes Bittensor cache
-participation, then authorization precedes native URLCache/network access. Native URLCache
-owns HTTP freshness; domain caches provide stale display seeds and coalesce admitted work.
-Cache hits never extend bearer lifetime.
+normal later flushes. Auth schedules no retry or UI. A fresh hit in the app's
+`BittensorApiResponseCache` is served above admission; otherwise admission precedes the fetch and
+authorization precedes network access. NovaAuth has no HTTP cache; the app store reuses fresh
+bodies for their `max-age` and keeps expired ones only as stale display seeds.
+Store hits never extend bearer lifetime.
 
 **Local lifecycle policy:** host `activate(origin:)` authorizes later demand, including
 consented Analytics, after accepted origin adoption or legacy-reset repair. Activation itself
