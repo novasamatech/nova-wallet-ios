@@ -12,7 +12,6 @@ struct SubtensorSubnetSelectViewModel {
     let subnetRef: SubtensorSubnetRef
     let icon: ImageViewModelProtocol
     let title: String
-    let subtitle: String?
     let price: String
     let change: Change
     let isFavorite: Bool
@@ -31,15 +30,24 @@ struct SubtensorSubnetListViewModel {
         case loading
         case rows(picks: [SubtensorSubnetSelectViewModel], others: [SubtensorSubnetSelectViewModel])
         case empty(String)
+        case noMatches(String)
         case failed(Failure)
     }
 
     let rootIcon: ImageViewModelProtocol
     let chipTitle: String
-    let caption: String?
+    let caption: String
     let isFilterActive: Bool
     let areControlsEnabled: Bool
     let content: Content
+
+    var isNoMatches: Bool {
+        if case .noMatches = content {
+            return true
+        }
+
+        return false
+    }
 }
 
 struct SubtensorSubnetListState {
@@ -150,7 +158,7 @@ private extension SubtensorSubnetViewModelFactory {
 
         switch list.emptyKind {
         case let .query(query):
-            return .empty(strings.stakingSubtensorUiPickerEmptyQueryFormat(query))
+            return .noMatches(strings.stakingSubtensorUiPickerEmptyQueryFormat(query))
         case .filters:
             return .empty(strings.stakingSubtensorUiPickerEmpty())
         case .none:
@@ -191,7 +199,7 @@ private extension SubtensorSubnetViewModelFactory {
 
         switch sort {
         case .sevenDayChange:
-            return strings.stakingSubtensorUiPickerChipSevenDay()
+            return strings.stakingSubtensorUiPickerSevenDay()
         case .poolDepth:
             return strings.stakingSubtensorQuickPoolTitle()
         case .age:
@@ -247,7 +255,6 @@ extension SubtensorSubnetViewModelFactory: SubtensorSubnetViewModelFactoryProtoc
             subnetRef: item.ref,
             icon: iconFactory.icon(for: item.subnet, logos: subnetLogos),
             title: SubtensorSubnetNaming.titleWithSymbol(for: item.subnet, locale: locale),
-            subtitle: item.weekly == .notListed ? strings.stakingSubtensorUiPickerOnchainRatio() : nil,
             price: formatTokenAmount(item.subnet.taoPerAlpha, formatter: tokenFormatter, locale: locale),
             change: createChange(for: item.weekly, locale: locale),
             isFavorite: isFavorite,
@@ -259,12 +266,13 @@ extension SubtensorSubnetViewModelFactory: SubtensorSubnetViewModelFactoryProtoc
     func createListViewModel(for state: SubtensorSubnetListState, locale: Locale) -> SubtensorSubnetListViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
-        let caption = state.list.map { list in
-            let count = strings.stakingSubtensorQuickCount(list.others.count)
-            return SubtensorFreshnessFormatter.agedHint(for: state.stamp, locale: locale).map {
-                strings.stakingSubtensorUiJoinDotFormat(count, $0)
-            } ?? count
-        }
+        let count = strings.stakingSubtensorQuickCount(
+            state.list.map { String($0.others.count) } ?? strings.stakingSubtensorUiValueUnknown()
+        )
+
+        let caption = SubtensorFreshnessFormatter.agedHint(for: state.stamp, locale: locale).map {
+            strings.stakingSubtensorUiJoinDotFormat(count, $0)
+        } ?? count
 
         return SubtensorSubnetListViewModel(
             rootIcon: rootIcon,

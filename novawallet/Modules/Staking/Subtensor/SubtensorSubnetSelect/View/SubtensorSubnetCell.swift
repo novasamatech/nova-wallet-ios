@@ -1,4 +1,3 @@
-import SnapKit
 import UIKit
 import UIKit_iOS
 
@@ -13,11 +12,6 @@ final class SubtensorSubnetCell: SubtensorSubnetCardCell {
 
     let titleLabel: UILabel = .create { view in
         view.apply(style: .semiboldSubhedlinePrimary)
-        view.lineBreakMode = .byTruncatingTail
-    }
-
-    let subtitleLabel: UILabel = .create { view in
-        view.apply(style: .caption1Secondary)
         view.lineBreakMode = .byTruncatingTail
     }
 
@@ -51,8 +45,6 @@ final class SubtensorSubnetCell: SubtensorSubnetCardCell {
     var favoriteAction: (() -> Void)?
 
     private var iconViewModel: ImageViewModelProtocol?
-    private var sparklineWidthConstraint: Constraint?
-    private var valuesTrailingConstraint: Constraint?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -87,8 +79,6 @@ final class SubtensorSubnetCell: SubtensorSubnetCardCell {
         )
 
         titleLabel.text = viewModel.title
-        subtitleLabel.text = viewModel.subtitle
-        subtitleLabel.isHidden = viewModel.subtitle == nil
 
         priceLabel.text = viewModel.price
 
@@ -108,31 +98,17 @@ private extension SubtensorSubnetCell {
             changeLabel.text = nil
             sparklineView.clear()
             setChangeLoading(true)
-            setSparklineSlot(isVisible: true)
         case let .value(text, isRising, sparkline):
             changeLabel.text = text
             changeLabel.textColor = isRising ? R.color.colorTextPositive() : R.color.colorTextNegative()
             sparklineView.bind(values: sparkline, isRising: isRising)
             setChangeLoading(false)
-            setSparklineSlot(isVisible: true)
-        case let .unavailable(text):
+        case let .unavailable(text), let .notListed(text):
             changeLabel.text = text
             changeLabel.textColor = R.color.colorTextSecondary()
             sparklineView.clear()
             setChangeLoading(false)
-            setSparklineSlot(isVisible: true)
-        case let .notListed(text):
-            changeLabel.text = text
-            changeLabel.textColor = R.color.colorTextSecondary()
-            sparklineView.clear()
-            setChangeLoading(false)
-            setSparklineSlot(isVisible: false)
         }
-    }
-
-    func setSparklineSlot(isVisible: Bool) {
-        sparklineWidthConstraint?.update(offset: isVisible ? Constants.sparklineSize.width : 0)
-        valuesTrailingConstraint?.update(offset: isVisible ? -Constants.contentSpacing : 0)
     }
 
     func setChangeLoading(_ isLoading: Bool) {
@@ -145,11 +121,6 @@ private extension SubtensorSubnetCell {
     }
 
     func setupLayout() {
-        let labelsView = UIView.vStack(alignment: .leading, spacing: Constants.labelsSpacing, [
-            titleLabel,
-            subtitleLabel
-        ])
-
         let valuesView = UIView.vStack(alignment: .trailing, spacing: Constants.labelsSpacing, [
             priceLabel,
             changeLabel
@@ -157,7 +128,7 @@ private extension SubtensorSubnetCell {
 
         [
             iconView,
-            labelsView,
+            titleLabel,
             valuesView,
             sparklineView,
             changeLoadingView,
@@ -166,7 +137,7 @@ private extension SubtensorSubnetCell {
         ].forEach(cardView.addSubview)
 
         setupEdgesLayout()
-        setupValuesLayout(labelsView: labelsView, valuesView: valuesView)
+        setupValuesLayout(valuesView: valuesView)
     }
 
     func setupEdgesLayout() {
@@ -193,8 +164,7 @@ private extension SubtensorSubnetCell {
                 -(Constants.contentSpacing - Constants.favoriteTouchOutset)
             )
             make.centerY.equalToSuperview()
-            make.height.equalTo(Constants.sparklineSize.height)
-            sparklineWidthConstraint = make.width.equalTo(Constants.sparklineSize.width).constraint
+            make.size.equalTo(Constants.sparklineSize)
         }
 
         sparklineLoadingView.snp.makeConstraints { make in
@@ -203,11 +173,9 @@ private extension SubtensorSubnetCell {
         }
     }
 
-    func setupValuesLayout(labelsView: UIView, valuesView: UIView) {
+    func setupValuesLayout(valuesView: UIView) {
         valuesView.snp.makeConstraints { make in
-            valuesTrailingConstraint = make.trailing.equalTo(sparklineView.snp.leading)
-                .offset(-Constants.contentSpacing)
-                .constraint
+            make.trailing.equalTo(sparklineView.snp.leading).offset(-Constants.contentSpacing)
             make.centerY.equalToSuperview()
         }
 
@@ -221,7 +189,7 @@ private extension SubtensorSubnetCell {
             make.size.equalTo(Constants.changePlaceholderSize)
         }
 
-        labelsView.snp.makeConstraints { make in
+        titleLabel.snp.makeConstraints { make in
             make.leading.equalTo(iconView.snp.trailing).offset(Constants.contentSpacing)
             make.trailing.lessThanOrEqualTo(valuesView.snp.leading).offset(-Constants.contentSpacing)
             make.centerY.equalToSuperview()
