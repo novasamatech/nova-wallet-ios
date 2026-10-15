@@ -220,9 +220,8 @@ flowchart TB
   R -- "Other response" --> C["Return to caller grading/retry policy"]
 ```
 
-GET/HEAD freshness belongs to native URLCache, driven by Date/Age/Cache-Control. Complete reads
-use public max-age/must-revalidate; POST/bootstrap use no-store. Cache success cannot extend bearer
-validity. Endpoint availability is insufficient.
+NovaAuth has no HTTP cache. A store hit cannot
+extend bearer validity; on a miss admission precedes the fetch, with no request coalescing. Endpoint availability is insufficient.
 
 Conclusive replay requires the exact expected HTTPS origin, status 401 and exact
 `WWW-Authenticate: Bearer error="invalid_token"`; GET/POST also need a valid invalid-token body,
