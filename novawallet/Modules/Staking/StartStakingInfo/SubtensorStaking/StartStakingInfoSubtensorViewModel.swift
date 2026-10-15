@@ -1,4 +1,5 @@
 import Foundation
+import Foundation_iOS
 import UIKit
 
 struct StartStakingInfoSubtensorViewModel {
@@ -9,15 +10,19 @@ struct StartStakingInfoSubtensorViewModel {
 
 protocol StartStakingInfoSubtensorViewModelFactoryProtocol {
     func createViewModel(
-        title: AccentTextModel,
+        headlineRate: Decimal?,
+        symbol: String,
         locale: Locale
     ) -> StartStakingInfoSubtensorViewModel
 }
 
 struct StartStakingInfoSubtensorViewModelFactory:
     StartStakingInfoSubtensorViewModelFactoryProtocol {
+    let percentFormatter: LocalizableResource<NumberFormatter>
+
     func createViewModel(
-        title: AccentTextModel,
+        headlineRate: Decimal?,
+        symbol: String,
         locale: Locale
     ) -> StartStakingInfoSubtensorViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
@@ -30,7 +35,7 @@ struct StartStakingInfoSubtensorViewModelFactory:
         let anyTimeAccent = strings.stakingSubtensorUiHowAnyTimeAccent()
 
         return .init(
-            title: title,
+            title: createTitle(headlineRate: headlineRate, symbol: symbol, locale: locale),
             paragraphs: [
                 createParagraph(
                     image: R.image.coin(),
@@ -38,7 +43,7 @@ struct StartStakingInfoSubtensorViewModelFactory:
                     accents: [rootAccent, paidInTaoAccent]
                 ),
                 createParagraph(
-                    image: R.image.iconNetworkFallback(),
+                    image: R.image.subnets(),
                     text: strings.stakingSubtensorUiHowSubnet(subnetTokenAccent, marketAccent),
                     accents: [subnetTokenAccent, marketAccent]
                 ),
@@ -53,12 +58,26 @@ struct StartStakingInfoSubtensorViewModelFactory:
                     accents: [anyTimeAccent]
                 )
             ],
-            actionTitle: strings.stakingStartTitle()
+            actionTitle: strings.stakingSubtensorUiHowAction()
         )
     }
 }
 
 private extension StartStakingInfoSubtensorViewModelFactory {
+    func createTitle(headlineRate: Decimal?, symbol: String, locale: Locale) -> AccentTextModel {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        guard
+            let headlineRate,
+            let rate = percentFormatter.value(for: locale).stringFromDecimal(headlineRate) else {
+            return AccentTextModel(text: strings.stakingStakeFormat(symbol), accents: [symbol])
+        }
+
+        let accent = strings.stakingStartEarnUp(rate)
+
+        return AccentTextModel(text: strings.stakingSubtensorUiHowTitle(accent, symbol), accents: [accent])
+    }
+
     func createParagraph(
         image: UIImage?,
         text: String,

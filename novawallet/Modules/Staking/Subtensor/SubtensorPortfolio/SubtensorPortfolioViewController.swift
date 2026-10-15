@@ -49,7 +49,9 @@ final class SubtensorPortfolioViewController: UIViewController, ViewHolder {
 private extension SubtensorPortfolioViewController {
     func setupHandlers() {
         rootView.addButton.addTarget(self, action: #selector(actionAdd), for: .touchUpInside)
-        rootView.syncNoticeControl.addTarget(self, action: #selector(actionRetry), for: .touchUpInside)
+        rootView.syncNoticeView.addGestureRecognizer(
+            UITapGestureRecognizer(target: self, action: #selector(actionRetry))
+        )
         rootView.headerView.periodControl.addTarget(self, action: #selector(actionPeriod), for: .valueChanged)
         rootView.headerView.chartView.delegate = self
 
@@ -68,7 +70,7 @@ private extension SubtensorPortfolioViewController {
         rootView.headerView.captionLabel.text = strings.stakingSubtensorUiPortfolioTotal()
         rootView.headerView.ratesAlertView.contentView.detailsLabel.text = ratesUnavailable
         rootView.positionsCaptionLabel.text = strings.stakingSubtensorUiPortfolioPositions()
-        rootView.syncNoticeLabel.text = strings.stakingSubtensorUiPortfolioSyncFailed()
+        rootView.syncNoticeView.contentView.detailsLabel.text = strings.stakingSubtensorUiPortfolioSyncFailed()
 
         let emptyView = rootView.emptyView
         emptyView.captionLabel.text = strings.stakingSubtensorUiPortfolioEmptyCaption()

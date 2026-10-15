@@ -1,18 +1,16 @@
+import SnapKit
 import UIKit
 import UIKit_iOS
 
 final class SubtensorPortfolioHeaderView: UIView {
     let captionLabel: UILabel = .create { label in
-        label.apply(style: .footnoteSecondary)
+        label.font = .regularSubheadline
+        label.textColor = R.color.colorTextSecondary()
     }
 
     let changeLabel: UILabel = .create { label in
-        label.apply(style: .footnotePositive)
+        label.apply(style: .semiboldFootnotePositive)
         label.textAlignment = .right
-    }
-
-    let changeSkeletonView: SubtensorChartLoadingView = .create { view in
-        view.layer.cornerRadius = 6
     }
 
     let totalLabel: UILabel = .create { label in
@@ -26,11 +24,12 @@ final class SubtensorPortfolioHeaderView: UIView {
     }
 
     let fiatLabel: UILabel = .create { label in
-        label.apply(style: .regularBodySecondary)
+        label.font = .regularSubheadline
+        label.textColor = R.color.colorTextSecondary()
     }
 
     let fiatSkeletonView: SubtensorChartLoadingView = .create { view in
-        view.layer.cornerRadius = 6
+        view.layer.cornerRadius = 7
     }
 
     let ratesAlertView: InlineAlertView = .create { view in
@@ -44,7 +43,9 @@ final class SubtensorPortfolioHeaderView: UIView {
 
     let chartView = SubtensorSubnetPriceChartView(style: .portfolio, isSelectable: true)
 
-    let chartLoadingView = SubtensorChartLoadingView()
+    let chartLoadingView: SubtensorChartLoadingView = .create { view in
+        view.skeletonCornerRadius = 12
+    }
 
     let chartUnavailableLabel: UILabel = .create { label in
         label.apply(style: .footnoteSecondary)
@@ -60,6 +61,13 @@ final class SubtensorPortfolioHeaderView: UIView {
         view.titleColor = R.color.colorTextSecondary()!
     }
 
+    private let contentView: UIStackView = .create { view in
+        view.axis = .vertical
+    }
+
+    private lazy var totalView = UIView.hStack(alignment: .lastBaseline, spacing: 8, [totalLabel, fiatLabel, UIView()])
+
+    private var contentBottomConstraint: Constraint?
     private var chartViewModel: SubtensorPriceChartViewModel?
 
     override init(frame: CGRect) {
@@ -80,7 +88,7 @@ final class SubtensorPortfolioHeaderView: UIView {
         totalLabel.text = viewModel.total
         totalSkeletonView.setLoading(viewModel.total == nil)
 
-        bind(fiat: viewModel.fiat, hasTotal: viewModel.total != nil)
+        bind(fiat: viewModel.fiat)
         bind(change: viewModel.change)
         bind(chart: viewModel.chart)
 
@@ -90,6 +98,12 @@ final class SubtensorPortfolioHeaderView: UIView {
 
         periodControl.selectedSegmentIndex = viewModel.periods.selectedIndex
     }
+
+    func bind(isRatesUnavailable: Bool) {
+        ratesAlertView.isHidden = !isRatesUnavailable
+        let spacing = isRatesUnavailable ? Constants.alertSpacing : Constants.chartSpacing
+        contentView.setCustomSpacing(spacing, after: totalView)
+    }
 }
 
 private extension SubtensorPortfolioHeaderView {
@@ -97,13 +111,19 @@ private extension SubtensorPortfolioHeaderView {
         static let chartHeight: CGFloat = 120
         static let controlHeight: CGFloat = 32
         static let totalHeight: CGFloat = 34
+        static let captionHeight: CGFloat = 20
+        static let chartSpacing: CGFloat = 14
+        static let alertSpacing: CGFloat = 22
+        static let chartSkeletonInset: CGFloat = 12
+        static let bottomInset: CGFloat = 12
+        static let alertBottomInset: CGFloat = 16
     }
 
-    func bind(fiat: SubtensorPortfolioLoadable<String>, hasTotal: Bool) {
+    func bind(fiat: SubtensorPortfolioLoadable<String>) {
         switch fiat {
         case .loading:
             fiatLabel.text = nil
-            fiatSkeletonView.setLoading(hasTotal)
+            fiatSkeletonView.setLoading(true)
         case .hidden:
             fiatLabel.text = nil
             fiatSkeletonView.setLoading(false)
@@ -115,22 +135,18 @@ private extension SubtensorPortfolioHeaderView {
 
     func bind(change: SubtensorPortfolioLoadable<SubtensorPortfolioChangeViewModel>) {
         switch change {
-        case .loading:
+        case .loading, .hidden:
             changeLabel.text = nil
-            changeSkeletonView.setLoading(true)
-        case .hidden:
-            changeLabel.text = nil
-            changeSkeletonView.setLoading(false)
         case let .loaded(viewModel):
             changeLabel.text = viewModel.text
             changeLabel.textColor = viewModel.isRising ? R.color.colorTextPositive() : R.color.colorTextNegative()
-            changeSkeletonView.setLoading(false)
         }
     }
 
     func bind(chart: SubtensorPortfolioChartViewModel) {
         chartContainerView.isHidden = chart == .hidden
         periodControl.isHidden = chart == .hidden
+        contentBottomConstraint?.update(inset: chart == .hidden ? Constants.alertBottomInset : Constants.bottomInset)
 
         switch chart {
         case .loading:
@@ -160,27 +176,36 @@ private extension SubtensorPortfolioHeaderView {
 
     func setupLayout() {
         let topView = UIView.hStack(alignment: .center, spacing: 8, [captionLabel, UIView(), changeLabel])
-        let totalView = UIView.hStack(alignment: .lastBaseline, spacing: 8, [totalLabel, fiatLabel, UIView()])
 
-        [chartView, chartLoadingView, chartUnavailableLabel].forEach { view in
+        [chartView, chartUnavailableLabel].forEach { view in
             chartContainerView.addSubview(view)
             view.snp.makeConstraints { make in
                 make.edges.equalToSuperview()
             }
         }
 
-        let contentView = UIView.vStack(
-            spacing: 4,
-            [topView, totalView, ratesAlertView, chartContainerView, periodControl]
-        )
+        chartContainerView.addSubview(chartLoadingView)
+        chartLoadingView.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(Constants.chartSkeletonInset)
+            make.leading.trailing.bottom.equalToSuperview()
+        }
 
-        contentView.setCustomSpacing(12, after: totalView)
+        [topView, totalView, ratesAlertView, chartContainerView, periodControl].forEach(contentView.addArrangedSubview)
+
+        contentView.setCustomSpacing(2, after: topView)
+        contentView.setCustomSpacing(Constants.chartSpacing, after: totalView)
         contentView.setCustomSpacing(12, after: ratesAlertView)
-        contentView.setCustomSpacing(12, after: chartContainerView)
+        contentView.setCustomSpacing(10, after: chartContainerView)
 
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 16, left: 16, bottom: 12, right: 16))
+            make.top.equalToSuperview().inset(14)
+            make.leading.trailing.equalToSuperview().inset(16)
+            contentBottomConstraint = make.bottom.equalToSuperview().inset(Constants.bottomInset).constraint
+        }
+
+        captionLabel.snp.makeConstraints { make in
+            make.height.equalTo(Constants.captionHeight)
         }
 
         chartContainerView.snp.makeConstraints { make in
@@ -202,13 +227,6 @@ private extension SubtensorPortfolioHeaderView {
     }
 
     func setupSkeletons() {
-        addSubview(changeSkeletonView)
-        changeSkeletonView.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(16)
-            make.centerY.equalTo(captionLabel)
-            make.size.equalTo(CGSize(width: 80, height: 12))
-        }
-
         addSubview(totalSkeletonView)
         totalSkeletonView.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(16)
@@ -218,9 +236,9 @@ private extension SubtensorPortfolioHeaderView {
 
         addSubview(fiatSkeletonView)
         fiatSkeletonView.snp.makeConstraints { make in
-            make.leading.equalTo(totalLabel.snp.trailing).offset(8)
-            make.centerY.equalTo(totalLabel)
-            make.size.equalTo(CGSize(width: 72, height: 14))
+            make.leading.equalToSuperview().inset(16)
+            make.top.equalTo(totalLabel.snp.bottom)
+            make.size.equalTo(CGSize(width: 120, height: 14))
         }
     }
 }

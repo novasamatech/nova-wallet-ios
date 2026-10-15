@@ -55,6 +55,15 @@ extension StakingDashboardViewModelFactory {
             announcement: announcement
         )
     }
+
+    func createSubtensorMaxApy(
+        from maxApy: LoadableViewModelState<String?>,
+        locale: Locale
+    ) -> LoadableViewModelState<String?> {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        return maxApy.map { $0.map { strings.stakingSubtensorUiDashboardMaxApyFormat($0) } }
+    }
 }
 
 private extension StakingDashboardViewModelFactory {
