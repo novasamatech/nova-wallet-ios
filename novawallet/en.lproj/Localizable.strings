@@ -2296,6 +2296,7 @@ Do you want to continue?";
 "staking.subtensor.ui.join.comma.format" = "%1$@, %2$@";
 "staking.subtensor.ui.dashboard.root" = "Root";
 "staking.subtensor.ui.dashboard.estimated.format" = "%@ · estimated";
+"staking.subtensor.ui.dashboard.max.apy.format" = "up to %@";
 "staking.subtensor.claim.pending.message" = "A claim for this validator is still being confirmed. Check your history before you claim again.";
 "staking.subtensor.claim.below.minimum.title" = "Nothing to claim yet";
 "staking.subtensor.claim.nothing.message" = "There are no rewards to claim from this validator right now.";
