@@ -73,8 +73,6 @@ final class SubtensorValidatorInfoViewLayout: UIView {
             ? R.color.colorTextPositive()
             : R.color.colorTextSecondary()
 
-        stakeCell.titleLabel.text = staking.stakeTitle
-
         switch staking.stake {
         case .loading:
             stakeCell.bind(loadableViewModel: .loading)
@@ -106,6 +104,7 @@ final class SubtensorValidatorInfoViewLayout: UIView {
         stakingTitleLabel.applySubtensorCaps(strings.stakingSubtensorUiValidatorInfoStaking().uppercased(with: locale))
         coverageCell.titleLabel.text = strings.stakingSubtensorV22Coverage()
         statusCell.titleLabel.text = strings.commonStatus()
+        stakeCell.titleLabel.text = strings.stakingMainTotalStakedTitle()
         takeCell.titleLabel.text = strings.stakingSubtensorUiValidatorInfoTake()
         rewardCell.titleLabel.text = strings.stakingValidatorEstimatedReward()
     }

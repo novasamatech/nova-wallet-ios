@@ -152,11 +152,17 @@ final class SubtensorValidatorSectionHeaderView: UITableViewHeaderFooterView {
             make.top.equalToSuperview().inset(14)
         }
 
+        titleLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+
         detailsLabel.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(16)
-            make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(8)
+            make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(7)
             make.top.equalTo(titleLabel)
         }
+
+        detailsLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        detailsLabel.adjustsFontSizeToFitWidth = true
+        detailsLabel.minimumScaleFactor = 0.9
     }
 
     @available(*, unavailable)
@@ -167,5 +173,6 @@ final class SubtensorValidatorSectionHeaderView: UITableViewHeaderFooterView {
     func bind(title: String, details: String?) {
         titleLabel.applySubtensorCaps(title)
         detailsLabel.applySubtensorCaps(details ?? "")
+        detailsLabel.lineBreakMode = .byTruncatingTail
     }
 }

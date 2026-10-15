@@ -11,11 +11,15 @@ final class BittensorAuthorizedTransport: BittensorApiTransportProtocol {
         self.operationQueue = operationQueue
     }
 
-    var invalidationRevision: UInt64 { 0 }
+    var invalidationRevision: UInt64 {
+        provider.endpointAvailability.invalidationRevision
+    }
 
-    func addInvalidationObserver(_: AnyObject, closure _: @escaping (UInt64) -> Void) -> UInt64 { 0 }
-
-    func addContextObserver(_: AnyObject, closure _: @escaping () -> Void) {}
+    func addInvalidationObserver(_ owner: AnyObject, closure: @escaping (UInt64) -> Void) -> UInt64 {
+        provider.addAvailabilityObserver(owner) { availability in
+            closure(availability.invalidationRevision)
+        }.invalidationRevision
+    }
 
     func createAdmissionWrapper() -> CompoundOperationWrapper<BittensorApiAdmission> {
         let endpointWrapper = provider.createEndpointWrapper()
@@ -36,7 +40,7 @@ final class BittensorAuthorizedTransport: BittensorApiTransportProtocol {
                         origin: endpoint.context.origin.value,
                         profile: 3,
                         generation: endpoint.context.generation,
-                        invalidationRevision: 0
+                        invalidationRevision: endpoint.invalidationRevision
                     ),
                     endpoint: endpoint
                 )

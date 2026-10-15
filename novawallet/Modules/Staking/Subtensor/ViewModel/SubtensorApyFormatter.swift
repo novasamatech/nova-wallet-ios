@@ -27,7 +27,6 @@ enum SubtensorApyFormatter {
             formatter.numberStyle = .percent
             formatter.roundingMode = .halfEven
             formatter.locale = locale
-            formatter.minimumFractionDigits = 1
             formatter.maximumFractionDigits = 1
             formatter.spacePercentSymbol()
             return rateText(annualRate, formatter: formatter, locale: locale)
@@ -61,6 +60,15 @@ extension NumberFormatter {
     static var subtensorPercentSingle: LocalizableResource<NumberFormatter> {
         LocalizableResource { locale in
             let formatter = NumberFormatter.percentSingle
+            formatter.locale = locale
+            formatter.spacePercentSymbol()
+            return formatter
+        }
+    }
+
+    static var subtensorPercentSingleHalfEven: LocalizableResource<NumberFormatter> {
+        LocalizableResource { locale in
+            let formatter = NumberFormatter.percentSingleHalfEven
             formatter.locale = locale
             formatter.spacePercentSymbol()
             return formatter
