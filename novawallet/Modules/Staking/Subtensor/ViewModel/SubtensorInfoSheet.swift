@@ -29,10 +29,8 @@ extension SubtensorInfoSheet {
                 return strings.commonNetworkFee()
             case .account:
                 return ""
-            case let .totalStaked(isRoot):
-                return isRoot
-                    ? strings.stakingSubtensorUiValidatorInfoStakedRoot()
-                    : strings.stakingSubtensorUiValidatorInfoStakedSubnet()
+            case .totalStaked:
+                return strings.stakingMainTotalStakedTitle()
             case .validatorTake:
                 return strings.stakingSubtensorUiValidatorInfoTake()
             case .avgBuyPrice:
