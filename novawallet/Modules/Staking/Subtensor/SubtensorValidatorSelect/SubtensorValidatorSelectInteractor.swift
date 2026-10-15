@@ -15,7 +15,7 @@ final class SubtensorValidatorSelectInteractor: AnyCancellableCleaning {
     private let directoryStore = CancellableCallStore()
     private let yieldStore = CancellableCallStore()
     private let catalogueStore = CancellableCallStore()
-    private let recommendedStore = CancellableCallStore()
+    private let verificationStore = CancellableCallStore()
 
     init(
         target: SubtensorStakeTarget,
@@ -39,7 +39,7 @@ final class SubtensorValidatorSelectInteractor: AnyCancellableCleaning {
         directoryStore.cancel()
         yieldStore.cancel()
         catalogueStore.cancel()
-        recommendedStore.cancel()
+        verificationStore.cancel()
     }
 }
 
@@ -64,6 +64,11 @@ private extension SubtensorValidatorSelectInteractor {
             switch result {
             case let .success(directory):
                 presenter?.didReceive(directory: directory)
+                loadVerification(listedHotkeys: directory.items.map(\.hotkey))
+
+                if target.isRoot {
+                    loadYields()
+                }
             case let .failure(error):
                 logger.warning("Subnet validators unavailable: \(error)")
                 presenter?.didFailDirectory(error)
@@ -90,21 +95,21 @@ private extension SubtensorValidatorSelectInteractor {
         }
     }
 
-    func loadRecommended() {
-        recommendedStore.cancel()
+    func loadVerification(listedHotkeys: [AccountId]) {
+        verificationStore.cancel()
 
         executeCancellable(
-            wrapper: recommendationService.createRecommendedValidatorsWrapper(for: subnet),
+            wrapper: recommendationService.createListVerificationWrapper(for: subnet, listedHotkeys: listedHotkeys),
             inOperationQueue: operationQueue,
-            backingCallIn: recommendedStore,
+            backingCallIn: verificationStore,
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(recommended):
-                self?.presenter?.didReceive(recommendedHotkeys: Set(recommended.validators.map(\.hotkey)))
+            case let .success(verification):
+                self?.presenter?.didReceive(verification: verification)
             case let .failure(error):
-                self?.logger.warning("Recommended validators unavailable for the list filter: \(error)")
-                self?.presenter?.didFailRecommended(error)
+                self?.logger.warning("Validator list verification unavailable: \(error)")
+                self?.presenter?.didFailVerification(error)
             }
         }
     }
@@ -132,13 +137,12 @@ private extension SubtensorValidatorSelectInteractor {
 
     func loadAll() {
         loadDirectory()
-        loadYields()
-        loadRecommended()
 
         guard !target.isRoot else {
             return
         }
 
+        loadYields()
         loadAlphaPrice()
     }
 }
@@ -148,6 +152,7 @@ extension SubtensorValidatorSelectInteractor: ValidatorSelectInteractorInputProt
         let subnet = subnet
 
         return SubtensorValidatorSelectSnapshot(
+            directory: directoryService.cachedDirectory(for: subnet),
             yields: yieldService.cachedAlphaYields(for: subnet.netuid),
             alphaPrice: target.isRoot
                 ? .miss

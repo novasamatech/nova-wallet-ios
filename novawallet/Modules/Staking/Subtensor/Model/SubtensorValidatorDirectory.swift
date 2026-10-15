@@ -4,7 +4,7 @@ struct SubtensorValidatorDirectoryItem: Equatable {
     let hotkey: AccountId
     let netuid: UInt16
     let name: String?
-    let take: Decimal?
+    var take: Decimal?
     let reportedStake: BigRational?
     let status: SubtensorValidatorChainStatus?
 }
@@ -27,5 +27,19 @@ struct SubtensorValidatorDirectory: Equatable {
     let items: [SubtensorValidatorDirectoryItem]
     let listStamp: SubtensorBackendStamp?
     let isPartial: Bool
-    let isEnrichmentTruncated: Bool
+}
+
+extension SubtensorValidatorDirectory {
+    func withTakes(_ takes: [AccountId: Decimal]) -> SubtensorValidatorDirectory {
+        SubtensorValidatorDirectory(
+            subnet: subnet,
+            items: items.map { item in
+                var item = item
+                item.take = takes[item.hotkey]
+                return item
+            },
+            listStamp: listStamp,
+            isPartial: isPartial
+        )
+    }
 }
