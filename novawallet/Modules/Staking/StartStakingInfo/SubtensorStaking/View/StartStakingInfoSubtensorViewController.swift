@@ -5,15 +5,12 @@ final class StartStakingInfoSubtensorViewController: UIViewController, ViewHolde
     typealias RootViewType = StartStakingInfoSubtensorViewLayout
 
     let presenter: StartStakingInfoSubtensorPresenterProtocol
-    let themeColor: UIColor
 
     init(
         presenter: StartStakingInfoSubtensorPresenterProtocol,
-        themeColor: UIColor,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
-        self.themeColor = themeColor
 
         super.init(nibName: nil, bundle: nil)
 
@@ -26,7 +23,7 @@ final class StartStakingInfoSubtensorViewController: UIViewController, ViewHolde
     }
 
     override func loadView() {
-        view = StartStakingInfoSubtensorViewLayout(themeColor: themeColor)
+        view = StartStakingInfoSubtensorViewLayout()
     }
 
     override func viewDidLoad() {
