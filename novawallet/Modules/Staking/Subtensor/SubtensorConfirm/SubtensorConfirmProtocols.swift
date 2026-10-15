@@ -21,14 +21,6 @@ protocol SubtensorConfirmPresenterProtocol: AnyObject {
     func showNetworkFeeInfo()
 }
 
-protocol SubtensorConfirmInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {
-    func loadRootHolds(for hotkeys: [AccountId])
-}
-
-protocol SubtensorConfirmInteractorOutputProtocol: SubtensorStakingBaseInteractorOutputProtocol {
-    func didReceiveRootHolds(_ holds: [AccountId: SubtensorRootHold])
-}
-
 protocol SubtensorConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
     CommonRetryable, MessageSheetPresentable, SubtensorStakingErrorPresentable, SubtensorInfoSheetPresentable,
     SubtensorValidatorInfoPresentable, SubtensorOperationResultPresenting {}

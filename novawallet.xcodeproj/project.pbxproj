@@ -2997,7 +2997,6 @@
 		3E5C11122E5E000300000002 /* SubtensorStakingSetupWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11122E5E000300000001 /* SubtensorStakingSetupWireframe.swift */; };
 		3E5C11132E5E000300000002 /* SubtensorStakingSetupViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11132E5E000300000001 /* SubtensorStakingSetupViewFactory.swift */; };
 		3E5C11142E5E000300000002 /* SubtensorConfirmProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11142E5E000300000001 /* SubtensorConfirmProtocols.swift */; };
-		3E5C11152E5E000300000002 /* SubtensorConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11152E5E000300000001 /* SubtensorConfirmInteractor.swift */; };
 		3E5C11162E5E000300000002 /* SubtensorConfirmPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5C11162E5E000300000001 /* SubtensorConfirmPresenter.swift */; };
 		D7BF22D83AC356B43B2CA256 /* SubtensorClaimRewardsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 390FFFACBD54871FABB52BA4 /* SubtensorClaimRewardsProtocols.swift */; };
 		28892A834DBBDCE420EA6B98 /* SubtensorClaimRewardsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49F707EC15C2D5A24C5C4FD4 /* SubtensorClaimRewardsPresenter.swift */; };
@@ -9910,7 +9909,6 @@
 		3E5C11122E5E000300000001 /* SubtensorStakingSetupWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingSetupWireframe.swift; sourceTree = "<group>"; };
 		3E5C11132E5E000300000001 /* SubtensorStakingSetupViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakingSetupViewFactory.swift; sourceTree = "<group>"; };
 		3E5C11142E5E000300000001 /* SubtensorConfirmProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorConfirmProtocols.swift; sourceTree = "<group>"; };
-		3E5C11152E5E000300000001 /* SubtensorConfirmInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorConfirmInteractor.swift; sourceTree = "<group>"; };
 		3E5C11162E5E000300000001 /* SubtensorConfirmPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorConfirmPresenter.swift; sourceTree = "<group>"; };
 		390FFFACBD54871FABB52BA4 /* SubtensorClaimRewardsProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimRewardsProtocols.swift; sourceTree = "<group>"; };
 		49F707EC15C2D5A24C5C4FD4 /* SubtensorClaimRewardsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimRewardsPresenter.swift; sourceTree = "<group>"; };
@@ -20995,7 +20993,6 @@
 			children = (
 				9A6D2EA22E60000100000001 /* View */,
 				3E5C11142E5E000300000001 /* SubtensorConfirmProtocols.swift */,
-				3E5C11152E5E000300000001 /* SubtensorConfirmInteractor.swift */,
 				3E5C11162E5E000300000001 /* SubtensorConfirmPresenter.swift */,
 				3E5C11172E5E000300000001 /* SubtensorConfirmWireframe.swift */,
 				3E5C11182E5E000300000001 /* SubtensorConfirmViewFactory.swift */,
@@ -37372,7 +37369,6 @@
 				3E5C11122E5E000300000002 /* SubtensorStakingSetupWireframe.swift in Sources */,
 				3E5C11132E5E000300000002 /* SubtensorStakingSetupViewFactory.swift in Sources */,
 				3E5C11142E5E000300000002 /* SubtensorConfirmProtocols.swift in Sources */,
-				3E5C11152E5E000300000002 /* SubtensorConfirmInteractor.swift in Sources */,
 				3E5C11162E5E000300000002 /* SubtensorConfirmPresenter.swift in Sources */,
 				D7BF22D83AC356B43B2CA256 /* SubtensorClaimRewardsProtocols.swift in Sources */,
 				28892A834DBBDCE420EA6B98 /* SubtensorClaimRewardsPresenter.swift in Sources */,

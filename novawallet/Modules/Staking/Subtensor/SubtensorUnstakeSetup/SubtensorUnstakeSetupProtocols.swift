@@ -20,14 +20,12 @@ protocol SubtensorUnstakeSetupPresenterProtocol: AnyObject {
 protocol SubtensorUnstakeInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {
     func loadSubnetsInfo()
     func loadValidator(_ hotkey: AccountId, on subnet: SubtensorSubnetRef)
-    func loadRootHolds(for hotkeys: [AccountId])
 }
 
 protocol SubtensorUnstakeInteractorOutputProtocol: SubtensorStakingBaseInteractorOutputProtocol {
     func didReceiveSubnetsInfo(_ info: SubtensorSubnetsInfo)
     func didReceiveSubnetsInfoError(_ error: Error)
     func didReceiveValidator(_ validator: SubtensorValidatorDirectoryItem?, hotkey: AccountId)
-    func didReceiveRootHolds(_ holds: [AccountId: SubtensorRootHold])
 }
 
 protocol SubtensorUnstakeSetupWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,

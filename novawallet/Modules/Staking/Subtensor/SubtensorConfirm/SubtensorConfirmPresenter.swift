@@ -4,7 +4,7 @@ import Foundation_iOS
 final class SubtensorConfirmPresenter {
     weak var view: SubtensorConfirmViewProtocol?
     let wireframe: SubtensorConfirmWireframeProtocol
-    let interactor: SubtensorConfirmInteractorInputProtocol
+    let interactor: SubtensorStakingBaseInteractorInputProtocol
 
     let chainAsset: ChainAsset
     let model: SubtensorConfirmModel
@@ -34,7 +34,7 @@ final class SubtensorConfirmPresenter {
     private lazy var displayAddressViewModelFactory = DisplayAddressViewModelFactory()
 
     init(
-        interactor: SubtensorConfirmInteractorInputProtocol,
+        interactor: SubtensorStakingBaseInteractorInputProtocol,
         wireframe: SubtensorConfirmWireframeProtocol,
         chainAsset: ChainAsset,
         model: SubtensorConfirmModel,

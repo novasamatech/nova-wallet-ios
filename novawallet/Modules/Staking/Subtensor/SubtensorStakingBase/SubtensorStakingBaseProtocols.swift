@@ -34,6 +34,7 @@ protocol SubtensorStakingBaseInteractorInputProtocol: AnyObject {
     func loadCatalogue()
     func loadSubnetLogos()
     func loadCostBasis(for netuid: UInt16)
+    func loadRootHolds(for hotkeys: [AccountId])
 }
 
 protocol SubtensorStakingBaseInteractorOutputProtocol: AnyObject {
@@ -50,6 +51,7 @@ protocol SubtensorStakingBaseInteractorOutputProtocol: AnyObject {
     func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?)
     func didReceiveSubnetLogos(_ logos: SubtensorSubnetLogos?)
     func didReceiveCostBasis(_ costBasis: SubtensorCostBasis?)
+    func didReceiveRootHolds(_ holds: [AccountId: SubtensorRootHold])
 }
 
 enum SubtensorStakingBaseError: Error {
