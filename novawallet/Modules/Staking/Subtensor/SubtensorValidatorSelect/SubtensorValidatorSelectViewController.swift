@@ -38,7 +38,7 @@ final class SubtensorValidatorSelectViewController: UIViewController, ViewHolder
 }
 
 private extension SubtensorValidatorSelectViewController {
-    static let loadingRowsCount = 6
+    static let loadingRowsCount = 7
 
     var loadedViewModel: SubtensorValidatorListViewModel? {
         if case let .loaded(viewModel) = state {
@@ -65,12 +65,10 @@ private extension SubtensorValidatorSelectViewController {
     }
 
     func setupHandlers() {
-        rootView.searchField.addTarget(self, action: #selector(actionSearchChanged), for: .editingChanged)
+        rootView.searchTextField.addTarget(self, action: #selector(actionSearchChanged), for: .editingChanged)
         rootView.actionButton.addTarget(self, action: #selector(actionConfirm), for: .touchUpInside)
 
-        rootView.errorView.onLinkTap = { [weak self] in
-            self?.presenter.retry()
-        }
+        rootView.errorView.learnMoreButton.addTarget(self, action: #selector(actionRetry), for: .touchUpInside)
     }
 
     func setupNavigationItems() {
@@ -94,7 +92,10 @@ private extension SubtensorValidatorSelectViewController {
         let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
 
         title = strings.stakingSubtensorSelectValidator()
-        rootView.searchField.placeholder = strings.stakingSubtensorUiValidatorSearch()
+        rootView.searchTextField.attributedPlaceholder = NSAttributedString(
+            string: strings.stakingSubtensorUiValidatorSearch(),
+            attributes: [.foregroundColor: R.color.colorHintText()!]
+        )
     }
 
     func applyState() {
@@ -107,6 +108,7 @@ private extension SubtensorValidatorSelectViewController {
             rootView.bindAction(title: viewModel.selectTitle, isEnabled: false)
             rootView.emptyLabel.isHidden = true
             rootView.errorView.isHidden = true
+            rootView.headerView.isHidden = false
             rootView.tableView.isHidden = false
         case let .loaded(viewModel):
             rootView.headerView.bind(title: viewModel.countTitle, details: viewModel.sortTitle)
@@ -114,12 +116,14 @@ private extension SubtensorValidatorSelectViewController {
             rootView.emptyLabel.text = viewModel.emptyText
             rootView.emptyLabel.isHidden = viewModel.emptyText == nil
             rootView.errorView.isHidden = true
+            rootView.headerView.isHidden = false
             rootView.tableView.isHidden = false
         case let .failed(viewModel):
             rootView.bindAction(title: viewModel.selectTitle, isEnabled: false)
             rootView.bindError(viewModel)
             rootView.emptyLabel.isHidden = true
             rootView.errorView.isHidden = false
+            rootView.headerView.isHidden = true
             rootView.tableView.isHidden = true
         }
 
@@ -135,7 +139,11 @@ private extension SubtensorValidatorSelectViewController {
     }
 
     @objc func actionSearchChanged() {
-        presenter.search(rootView.searchField.text ?? "")
+        presenter.search(rootView.searchTextField.text ?? "")
+    }
+
+    @objc func actionRetry() {
+        presenter.retry()
     }
 
     @objc func actionConfirm() {
@@ -147,15 +155,15 @@ private extension SubtensorValidatorSelectViewController {
     }
 
     @objc func actionToggleSearch() {
-        let isVisible = rootView.searchField.isHidden
+        let isVisible = rootView.searchView.isHidden
 
         rootView.setSearchVisible(isVisible)
 
         if isVisible {
-            rootView.searchField.becomeFirstResponder()
+            rootView.searchTextField.becomeFirstResponder()
         } else {
-            rootView.searchField.resignFirstResponder()
-            rootView.searchField.text = nil
+            rootView.searchTextField.resignFirstResponder()
+            rootView.searchTextField.text = nil
             presenter.search("")
         }
     }

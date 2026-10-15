@@ -2,15 +2,12 @@ import UIKit
 import UIKit_iOS
 
 final class SubtensorValidatorSelectViewLayout: UIView {
-    let searchField: UITextField = .create { field in
-        field.backgroundColor = R.color.colorBlockBackground()
-        field.textColor = R.color.colorTextPrimary()
-        field.font = .regularSubheadline
-        field.layer.cornerRadius = 10
-        field.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 14, height: 1))
-        field.leftViewMode = .always
-        field.returnKeyType = .search
-        field.isHidden = true
+    let searchView: TopCustomSearchView = .create { view in
+        view.isHidden = true
+    }
+
+    var searchTextField: UITextField {
+        searchView.searchBar.textField
     }
 
     let headerView = SubtensorValidatorSectionHeaderView(reuseIdentifier: nil)
@@ -33,9 +30,11 @@ final class SubtensorValidatorSelectViewLayout: UIView {
         label.isHidden = true
     }
 
-    let errorView: InlineAlertView = .create { view in
-        view.apply(style: .warning)
+    let errorView: WarningView = .create { view in
         view.isHidden = true
+        view.contentInsets.bottom = 4
+        view.contentView.sView.spacing = 8
+        view.contentView.sView.sView.spacing = 0
     }
 
     let bottomBar: UIView = .create { view in
@@ -60,11 +59,11 @@ final class SubtensorValidatorSelectViewLayout: UIView {
     }
 
     func setSearchVisible(_ visible: Bool) {
-        searchField.isHidden = !visible
+        searchView.isHidden = !visible
 
         headerView.snp.remakeConstraints { make in
             if visible {
-                make.top.equalTo(searchField.snp.bottom).offset(12)
+                make.top.equalTo(searchView.snp.bottom)
             } else {
                 make.top.equalTo(safeAreaLayoutGuide)
             }
@@ -74,20 +73,11 @@ final class SubtensorValidatorSelectViewLayout: UIView {
     }
 
     func bindError(_ viewModel: SubtensorValidatorErrorViewModel) {
-        let text = NSMutableAttributedString(
-            string: viewModel.title,
-            attributes: [.font: UIFont.semiBoldCaption1, .foregroundColor: R.color.colorTextPrimary()!]
-        )
-
-        text.append(NSAttributedString(string: "\n"))
-
-        text.append(NSAttributedString(
-            string: viewModel.details,
-            attributes: [.font: UIFont.caption1, .foregroundColor: R.color.colorTextSecondary()!]
+        errorView.bind(WarningView.Model(
+            title: viewModel.title,
+            message: viewModel.details,
+            learnMore: viewModel.retryTitle.map { LearnMoreViewModel(iconViewModel: nil, title: $0) }
         ))
-
-        errorView.contentView.detailsLabel.attributedText = text
-        errorView.setLink(title: viewModel.retryTitle)
     }
 
     func bindAction(title: String, isEnabled: Bool) {
@@ -104,13 +94,12 @@ final class SubtensorValidatorSelectViewLayout: UIView {
     }
 
     private func setupLayout() {
-        [searchField, headerView, tableView, emptyLabel, errorView, bottomBar].forEach(addSubview)
+        [searchView, headerView, tableView, emptyLabel, errorView, bottomBar].forEach(addSubview)
         bottomBar.addSubview(actionButton)
 
-        searchField.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide).offset(12)
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.height.equalTo(40)
+        searchView.snp.makeConstraints { make in
+            make.leading.trailing.top.equalToSuperview()
+            make.bottom.equalTo(safeAreaLayoutGuide.snp.top).offset(52)
         }
 
         headerView.snp.makeConstraints { make in
@@ -131,7 +120,7 @@ final class SubtensorValidatorSelectViewLayout: UIView {
         }
 
         errorView.snp.makeConstraints { make in
-            make.top.equalTo(tableView.snp.top).offset(16)
+            make.top.equalTo(headerView).offset(14)
             make.leading.trailing.equalToSuperview().inset(16)
         }
 
@@ -171,13 +160,13 @@ final class SubtensorValidatorSectionHeaderView: UITableViewHeaderFooterView {
 
         titleLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(16)
-            make.centerY.equalToSuperview()
+            make.top.equalToSuperview().inset(14)
         }
 
         detailsLabel.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(16)
             make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(8)
-            make.centerY.equalToSuperview()
+            make.top.equalTo(titleLabel)
         }
     }
 
