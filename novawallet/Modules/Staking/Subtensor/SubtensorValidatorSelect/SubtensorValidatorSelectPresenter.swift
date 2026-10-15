@@ -167,7 +167,8 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectPresenterProtocol {
             from: view,
             target: target,
             hotkey: hotkey,
-            detail: selectableItem(for: hotkey).map(handedOut)
+            detail: selectableItem(for: hotkey).map(handedOut),
+            needsChainDetail: true
         )
     }
 
