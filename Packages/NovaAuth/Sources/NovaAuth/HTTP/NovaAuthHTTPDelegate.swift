@@ -62,35 +62,6 @@ final class NovaAuthHTTPDelegate: NSObject, URLSessionDataDelegate {
             completionHandler(.cancelAuthenticationChallenge, nil)
         }
     }
-
-    func urlSession(
-        _ session: URLSession,
-        dataTask: URLSessionDataTask,
-        willCacheResponse proposedResponse: CachedURLResponse,
-        completionHandler: @escaping (CachedURLResponse?) -> Void
-    ) {
-        let allowed = call(task: dataTask, session: session)?.kind == .businessRead && Self
-            .isPublicCacheResponse(proposedResponse)
-        completionHandler(allowed ? proposedResponse : nil)
-    }
-
-    static func isPublicCacheResponse(_ cached: CachedURLResponse) -> Bool {
-        guard let response = cached.response as? HTTPURLResponse,
-              (200 ..< 300).contains(response.statusCode) else { return false }
-        let directives = (response.value(forHTTPHeaderField: "Cache-Control") ?? "").lowercased()
-            .split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
-        guard directives.contains("public"), !directives.contains("no-store"),
-              !directives.contains(where: { $0 == "private" || $0.hasPrefix("private=") }) else { return false }
-        for field in response.allHeaderFields.keys {
-            guard let name = field as? String else { return false }
-            if isIdentityHeader(name.lowercased()) { return false }
-        }
-        let vary = (response.value(forHTTPHeaderField: "Vary") ?? "").lowercased().split(separator: ",")
-        return !vary.contains { value in
-            let name = value.trimmingCharacters(in: .whitespaces)
-            return name == "*" || isIdentityHeader(name)
-        }
-    }
 }
 
 private extension NovaAuthHTTPDelegate {
@@ -103,14 +74,5 @@ private extension NovaAuthHTTPDelegate {
         mutex.lock()
         defer { mutex.unlock() }
         return calls[key(task: task, session: session)]
-    }
-
-    static func isIdentityHeader(_ name: String) -> Bool {
-        ["authorization", "proxy-authorization", "cookie", "cookie2", "set-cookie", "set-cookie2", "www-authenticate",
-         "proxy-authenticate", "authentication-info"].contains(name) || name.contains("attestation") ||
-            name.contains("app-attest") || name.contains("client-id") || name.contains("user-id") ||
-            name.contains("session") || name.contains("token") || name.contains("identity") || name
-            .contains("install") ||
-            name.contains("account") || name.contains("proof") || name.contains("credential")
     }
 }

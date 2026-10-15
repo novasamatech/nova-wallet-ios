@@ -37,11 +37,9 @@ final class NovaAuthFacadeTests: XCTestCase {
 
         let revisionRead = DispatchSemaphore(value: 0)
         let notified = expectation(description: "observers registered during the adoption notified")
-        notified.expectedFulfillmentCount = 2
         DispatchQueue.global().async {
             _ = transport.invalidationRevision
             _ = transport.addInvalidationObserver(self) { _ in notified.fulfill() }
-            transport.addContextObserver(self) { notified.fulfill() }
             revisionRead.signal()
         }
 

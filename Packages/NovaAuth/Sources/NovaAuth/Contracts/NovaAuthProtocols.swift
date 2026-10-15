@@ -45,7 +45,6 @@ protocol NovaAuthHTTPProtocol: AnyObject {
         kind: NovaAuthHTTPKind,
         beforeSend: @escaping () throws -> Void
     ) -> CompoundOperationWrapper<NovaAuthResponse>
-    func clearReadCache()
 }
 
 enum NovaAuthAppAttestError: Error { case serverUnavailable, invalidKey, unsupported, failure, timedOut }

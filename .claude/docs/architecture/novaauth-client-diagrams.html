@@ -212,9 +212,10 @@ The package exposes no reset API. Removed optional legacy quota/gate/delay field
   R -- &quot;Other response&quot; --&gt; C[&quot;Return to caller grading/retry policy&quot;]
 </pre></details></div>
 
-<p>GET/HEAD freshness belongs to native URLCache, driven by Date/Age/Cache-Control. Complete reads
-use public max-age/must-revalidate; POST/bootstrap use no-store. Cache success cannot extend bearer
-validity. Admission still precedes domain cache/coalescing; endpoint availability is insufficient.</p>
+<p>NovaAuth has no HTTP cache. The app's BittensorApiResponseCache reuses a fresh decoded body for
+its max-age before admission, keeps expired bodies only as stale display seeds, never keeps
+no-store, and drops an account's operations/search pages on its own trades. A store hit cannot
+extend bearer validity; on a miss admission precedes the fetch, with no request coalescing. Endpoint availability is insufficient.</p>
 <p>Conclusive replay requires the exact expected HTTPS origin, status 401 and exact
 <code>WWW-Authenticate: Bearer error=&quot;invalid_token&quot;</code>; GET/POST also need a valid invalid-token body,
 while HEAD has no body. Maximum one bearer replay preserves method/path/query/body bytes.
@@ -294,7 +295,7 @@ sanitized correlation ID. Tokens, IDs, proofs, bodies and arbitrary Error/state 
 <li>Auth admission precedes negative-cache lookup and joining a request flight. Synchronous <code>peek</code> is only a stale display seed and makes no authentication request.</li>
 <li>Decoded cache keys include auth scope plus path/query. Route-unpublished negatives last 600 seconds; dataset-unavailable negatives last 60 seconds. There is no successful-response TTL shortcut here.</li>
 <li>Recommendation dataset ordering uses <code>(asOf, sourceBlockNumber)</code>. It is distinct from the authentication generation. An older dataset response returns <code>generationStale</code> without overwriting the newer seed.</li>
-<li>The facade stamps accepted endpoints with an invalidation revision; transport preserves it in each admission. The decoded cache reconciles the latest revision before admission, completion and peek. Delayed or duplicate notifications cannot retire current-revision state; old admissions and completions cannot restore retired results. Same-origin readiness does not advance this invalidation revision. Separate context observers invalidate max-APY resolution, cost-basis histories and validator directories, including cold replacement or a failed replacement after the memory fence changes.</li>
+<li>The facade stamps accepted endpoints with an invalidation revision; transport preserves it in each admission. The decoded cache reconciles the latest revision before admission, completion and peek. Delayed or duplicate notifications cannot retire current-revision state; old admissions and completions cannot restore retired results. Same-origin readiness does not advance this invalidation revision. Auth origin or generation changes clear every stored body, including the cost-basis pages, through that revision; nothing else observes the context.</li>
 <li>Cost basis/P&amp;L reads <strong><code>GET /v1/bittensor/operations/search</code></strong> and computes the ledger locally. It is a history read, not transaction submission.</li>
 <li>Errors are graded into Bittensor types. Raw network and malformed-protocol failures retain retryable availability meaning; generic business 401/403 are server errors after the scope-specific case below. Presentation depends on the consumer: portfolio catalogue failure supplies no catalogue and can show rates unavailable; validator flows use the typed device/retry properties. Live chain balances do not prove successful backend authentication.</li>
 </ul>

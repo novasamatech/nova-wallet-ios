@@ -6,6 +6,15 @@ struct BittensorApiCacheKey: Hashable {
     let query: [String]
 }
 
+struct BittensorApiCacheDrop: Hashable {
+    let path: String
+    let queryItem: String
+
+    func covers(_ key: BittensorApiCacheKey) -> Bool {
+        key.path == path && key.query.contains(queryItem)
+    }
+}
+
 struct BittensorApiGenerationOrder: Comparable {
     let asOf: Date
     let sourceBlockNumber: UInt64
@@ -19,14 +28,14 @@ struct BittensorApiFetchedValue {
     let value: Any
     let requestId: String?
     let generation: BittensorApiGenerationOrder?
+    let directives: HTTPCacheDirectives
 }
 
 struct BittensorApiCacheEntry {
     let value: Any
     let requestId: String?
-    let receivedAt: TimeInterval
     let generation: BittensorApiGenerationOrder?
-    let newestGenerationWhenAccepted: BittensorApiGenerationOrder?
+    let freshUntil: TimeInterval
 }
 
 struct BittensorApiCacheJob {
@@ -36,7 +45,6 @@ struct BittensorApiCacheJob {
     let fetch: (BittensorApiAdmission) -> CompoundOperationWrapper<BittensorApiFetchedValue>
 }
 
-/// Decoded presentation seeds. HTTP freshness belongs to URLCache.
 final class BittensorApiResponseCache {
     private struct ScopedKey: Hashable {
         let scope: BittensorApiCacheScope
@@ -44,14 +52,17 @@ final class BittensorApiResponseCache {
     }
 
     private let operationQueue: OperationQueue
+    private let timeProvider: () -> TimeInterval
     private let mutex = NSLock()
     private var entries: [ScopedKey: BittensorApiCacheEntry] = [:]
     private var activeScope: BittensorApiCacheScope?
     private var minimumInvalidationRevision: UInt64 = 0
     private var newestGeneration: BittensorApiGenerationOrder?
+    private var drops: [BittensorApiCacheDrop: TimeInterval] = [:]
 
-    init(operationQueue: OperationQueue) {
+    init(operationQueue: OperationQueue, timeProvider: @escaping () -> TimeInterval = BittensorMonotonicClock.now) {
         self.operationQueue = operationQueue
+        self.timeProvider = timeProvider
     }
 
     func invalidate(before revision: UInt64) {
@@ -60,33 +71,49 @@ final class BittensorApiResponseCache {
         mutex.unlock()
     }
 
+    func drop(_ drop: BittensorApiCacheDrop) {
+        mutex.lock()
+        drops[drop] = timeProvider()
+        entries = entries.filter { !drop.covers($0.key.request) }
+        mutex.unlock()
+    }
+
     func peek(_ key: BittensorApiCacheKey, invalidationRevision: UInt64) -> HTTPCachePeek<BittensorApiCacheEntry> {
         mutex.lock()
         defer { mutex.unlock() }
         invalidateLocked(before: invalidationRevision)
         guard let scope = activeScope, let entry = entries[ScopedKey(scope: scope, request: key)] else { return .miss }
-        return .expired(entry)
+        return timeProvider() < entry.freshUntil ? .fresh(entry) : .expired(entry)
     }
 
     func createWrapper(for job: BittensorApiCacheJob) -> CompoundOperationWrapper<BittensorApiCacheEntry> {
+        if case let .fresh(entry) = peek(job.key, invalidationRevision: job.currentInvalidationRevision()) {
+            return .createWithResult(entry)
+        }
         let admission = job.admit()
+        let start = ClosureOperation<TimeInterval> {
+            let admitted = try admission.targetOperation.extractNoCancellableResultData()
+            try self.activate(admitted.scope, currentRevision: job.currentInvalidationRevision())
+            return self.timeProvider()
+        }
+        start.addDependency(admission.targetOperation)
         let fetch = OperationCombiningService<BittensorApiFetchedValue>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
         ) {
-            let admitted = try admission.targetOperation.extractNoCancellableResultData()
-            try self.activate(admitted.scope, currentRevision: job.currentInvalidationRevision())
-            return job.fetch(admitted)
+            _ = try start.extractNoCancellableResultData()
+            return try job.fetch(admission.targetOperation.extractNoCancellableResultData())
         }
-        fetch.addDependency(wrapper: admission)
+        fetch.addDependency(operations: [start])
         let store = ClosureOperation<BittensorApiCacheEntry> {
             let scope = try admission.targetOperation.extractNoCancellableResultData().scope
             return try self.store(
                 key: ScopedKey(scope: scope, request: job.key),
-                currentRevision: job.currentInvalidationRevision()
+                currentRevision: job.currentInvalidationRevision(),
+                startedAt: start.extractNoCancellableResultData()
             ) { try fetch.targetOperation.extractNoCancellableResultData() }
         }
         store.addDependency(fetch.targetOperation)
-        return fetch.insertingHead(operations: admission.allOperations).insertingTail(operation: store)
+        return fetch.insertingHead(operations: admission.allOperations + [start]).insertingTail(operation: store)
     }
 }
 
@@ -97,6 +124,7 @@ private extension BittensorApiResponseCache {
         activeScope = nil
         entries.removeAll()
         newestGeneration = nil
+        drops.removeAll()
     }
 
     func activate(_ scope: BittensorApiCacheScope, currentRevision: UInt64) throws {
@@ -110,12 +138,14 @@ private extension BittensorApiResponseCache {
             activeScope = scope
             entries.removeAll()
             newestGeneration = nil
+            drops.removeAll()
         }
     }
 
     private func store(
         key: ScopedKey,
         currentRevision: UInt64,
+        startedAt: TimeInterval,
         fetched: () throws -> BittensorApiFetchedValue
     ) throws -> BittensorApiCacheEntry {
         mutex.lock()
@@ -134,11 +164,22 @@ private extension BittensorApiResponseCache {
             }
             newestGeneration = generation
         }
+        let lifetime: TimeInterval?
+        switch fetched.directives {
+        case let .reusable(seconds):
+            lifetime = seconds
+        case .notStorable:
+            lifetime = nil
+        }
         let entry = BittensorApiCacheEntry(
-            value: fetched.value, requestId: fetched.requestId, receivedAt: BittensorMonotonicClock.now(),
-            generation: fetched.generation, newestGenerationWhenAccepted: newestGeneration
+            value: fetched.value, requestId: fetched.requestId, generation: fetched.generation,
+            freshUntil: startedAt + (lifetime ?? 0)
         )
-        entries[key] = entry
+        if lifetime == nil {
+            entries[key] = nil
+        } else if !drops.contains(where: { $0.key.covers(key.request) && startedAt < $0.value }) {
+            entries[key] = entry
+        }
         return entry
     }
 }

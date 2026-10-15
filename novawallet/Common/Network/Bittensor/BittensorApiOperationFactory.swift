@@ -10,10 +10,6 @@ protocol BittensorApiGenerationalResponse {
     var generationOrder: BittensorApiGenerationOrder { get }
 }
 
-protocol BittensorApiContextObserving: AnyObject {
-    func addContextObserver(_ owner: AnyObject, closure: @escaping () -> Void)
-}
-
 struct BittensorApiWireViolation: Error {
     let field: String
 }
@@ -39,12 +35,6 @@ final class BittensorApiOperationFactory {
     }
 }
 
-extension BittensorApiOperationFactory: BittensorApiContextObserving {
-    func addContextObserver(_ owner: AnyObject, closure: @escaping () -> Void) {
-        transport.addContextObserver(owner, closure: closure)
-    }
-}
-
 extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
     func createSubnetsWrapper() -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.SubnetCollection>> {
         createWrapper(route: .subnets, path: "/subnets")
@@ -58,6 +48,10 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
         netuid: UInt16
     ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.ValidatorCollection>> {
         createWrapper(route: .validators, path: "/subnets/\(netuid)/validators")
+    }
+
+    func peekValidators(netuid: UInt16) -> HTTPCachePeek<BittensorApiResult<BittensorApi.ValidatorCollection>> {
+        peek(path: "/subnets/\(netuid)/validators")
     }
 
     func createAlphaYieldWrapper(
@@ -96,6 +90,24 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
         page: Int?
     ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.OperationCollection>> {
         createSearchWrapper(route: .operations, accountSubject: accountSubject, page: page)
+    }
+
+    func peekOperations(
+        accountSubject: AccountAddress,
+        page: Int
+    ) -> HTTPCachePeek<BittensorApiResult<BittensorApi.OperationCollection>> {
+        guard Self.isValidAccountSubject(accountSubject), Self.pageRange.contains(page) else { return .miss }
+
+        return peek(
+            path: Route.operations.pathTemplate,
+            queryItems: Self.searchQueryItems(accountSubject: accountSubject, page: page)
+        )
+    }
+
+    func dropOperations(accountSubject: AccountAddress) {
+        cache.drop(
+            BittensorApiCacheDrop(path: Route.operations.pathTemplate, queryItem: "accountSubject=\(accountSubject)")
+        )
     }
 
     func createPortfolioHistoryWrapper(
@@ -191,10 +203,12 @@ private extension BittensorApiOperationFactory {
     }
 
     func peek<T>(path: String, queryItems: [URLQueryItem] = []) -> HTTPCachePeek<BittensorApiResult<T>> {
-        cache.peek(
+        let cached = cache.peek(
             Self.cacheKey(path: path, queryItems: queryItems),
             invalidationRevision: transport.invalidationRevision
-        ).map { try Self.makeResult(from: $0, isFromExpiredCache: true) }
+        )
+
+        return cached.map { try Self.makeResult(from: $0, isFromExpiredCache: !cached.isFresh) }
     }
 
     func createSearchWrapper<T: Decodable & BittensorApiWireChecked>(
@@ -207,14 +221,18 @@ private extension BittensorApiOperationFactory {
             return .createWithError(BittensorApiError.rejected(code: nil, requestId: nil))
         }
 
-        let subjectItem = URLQueryItem(name: "accountSubject", value: accountSubject)
-        let pageItems = page.map { [URLQueryItem(name: "page", value: String($0))] } ?? []
-
         return createWrapper(
             route: route,
             path: route.pathTemplate,
-            queryItems: [subjectItem] + pageItems + queryItems
+            queryItems: Self.searchQueryItems(accountSubject: accountSubject, page: page) + queryItems
         )
+    }
+
+    static func searchQueryItems(accountSubject: AccountAddress, page: Int?) -> [URLQueryItem] {
+        let subjectItem = URLQueryItem(name: "accountSubject", value: accountSubject)
+        let pageItems = page.map { [URLQueryItem(name: "page", value: String($0))] } ?? []
+
+        return [subjectItem] + pageItems
     }
 
     func createWrapper<T: Decodable & BittensorApiWireChecked>(
@@ -278,7 +296,6 @@ private extension BittensorApiOperationFactory {
         return BittensorApiResult(
             value: value,
             requestId: entry.requestId,
-            receivedAt: entry.receivedAt,
             isFromExpiredCache: isFromExpiredCache
         )
     }
@@ -333,7 +350,8 @@ private extension BittensorApiOperationFactory {
         return BittensorApiFetchedValue(
             value: value,
             requestId: response.requestId,
-            generation: generational?.generationOrder
+            generation: generational?.generationOrder,
+            directives: response.directives
         )
     }
 

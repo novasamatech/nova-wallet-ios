@@ -2,8 +2,6 @@ import Foundation
 import Operation_iOS
 
 final class SubtensorValidatorDirectoryService {
-    static let enrichmentRowLimit = 512
-
     let apiOperationFactory: BittensorApiOperationFactoryProtocol
     let chainOperationFactory: SubtensorValidatorChainOperationFactoryProtocol
     let operationQueue: OperationQueue
@@ -78,21 +76,16 @@ private extension SubtensorValidatorDirectoryService {
         return validatorsWrapper.insertingTail(operation: listingOperation)
     }
 
-    func createSnapshotWrapper(
-        dependingOn queryOperation: BaseOperation<SubtensorValidatorChainQuery>
-    ) -> CompoundOperationWrapper<SubtensorValidatorChainSnapshot> {
-        let chainOperationFactory = chainOperationFactory
+    func cachedListing(for netuid: UInt16) -> HTTPCachePeek<Listing> {
+        let logger = logger
 
-        let snapshotWrapper: CompoundOperationWrapper<SubtensorValidatorChainSnapshot> =
-            OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
-                let query = try queryOperation.extractNoCancellableResultData()
+        guard netuid != SubtensorStakingPallet.rootNetuid else {
+            return apiOperationFactory.peekRootValidators().map { Self.makeRootListing(from: $0, logger: logger) }
+        }
 
-                return chainOperationFactory.createChainSnapshotWrapper(for: query)
-            }
-
-        snapshotWrapper.addDependency(operations: [queryOperation])
-
-        return snapshotWrapper
+        return apiOperationFactory.peekValidators(netuid: netuid).map {
+            Self.makeListing(from: $0, netuid: netuid, logger: logger)
+        }
     }
 
     func createChainItemWrapper(
@@ -108,14 +101,13 @@ private extension SubtensorValidatorDirectoryService {
         let itemOperation = ClosureOperation<SubtensorValidatorDirectoryItem> {
             let snapshot = try snapshotWrapper.targetOperation.extractNoCancellableResultData()
 
-            let enrichment = Enrichment(snapshot: snapshot, enrichedPairs: [pair])
-
-            return Self.makeItem(
+            return SubtensorValidatorDirectoryItem(
                 hotkey: hotkey,
-                name: name,
-                stake: stake,
                 netuid: subnet.netuid,
-                enrichment: enrichment
+                name: name,
+                take: snapshot.takeFractions[hotkey],
+                reportedStake: stake,
+                status: SubtensorValidatorChainStatus.make(snapshot: snapshot, pair: pair)
             )
         }
 
@@ -131,32 +123,19 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectory> {
         let listingWrapper = createListingWrapper(for: subnet.netuid)
 
-        let queryOperation = ClosureOperation<SubtensorValidatorChainQuery> {
-            let rows = try listingWrapper.targetOperation.extractNoCancellableResultData().rows
-
-            return Self.enrichmentQuery(rows: rows, netuid: subnet.netuid)
-        }
-
-        queryOperation.addDependency(listingWrapper.targetOperation)
-
-        let snapshotWrapper = createSnapshotWrapper(dependingOn: queryOperation)
-
         let directoryOperation = ClosureOperation<SubtensorValidatorDirectory> {
             let listing = try listingWrapper.targetOperation.extractNoCancellableResultData()
-            let enrichedPairs = try Set(queryOperation.extractNoCancellableResultData().pairs)
-            let snapshot = try snapshotWrapper.targetOperation.extractNoCancellableResultData()
 
-            let enrichment = Enrichment(snapshot: snapshot, enrichedPairs: enrichedPairs)
-
-            return Self.makeDirectory(subnet: subnet, listing: listing, enrichment: enrichment)
+            return Self.makeDirectory(subnet: subnet, listing: listing)
         }
 
-        directoryOperation.addDependency(snapshotWrapper.targetOperation)
+        directoryOperation.addDependency(listingWrapper.targetOperation)
 
-        return CompoundOperationWrapper(
-            targetOperation: directoryOperation,
-            dependencies: listingWrapper.allOperations + [queryOperation] + snapshotWrapper.allOperations
-        )
+        return listingWrapper.insertingTail(operation: directoryOperation)
+    }
+
+    func cachedDirectory(for subnet: SubtensorSubnetRef) -> HTTPCachePeek<SubtensorValidatorDirectory> {
+        cachedListing(for: subnet.netuid).map { Self.makeDirectory(subnet: subnet, listing: $0) }
     }
 
     func createDetailWrapper(

@@ -27,9 +27,11 @@ extension SubtensorStakingSetupPresenter {
     }
 
     func loadRankingView() {
-        if let rankingView = interactor.cachedRankingView().value {
+        let cachedRankingView = interactor.cachedRankingView()
+
+        if let rankingView = cachedRankingView.value {
             self.rankingView = rankingView
-            hasExpiredRankingSeed = true
+            hasExpiredRankingSeed = !cachedRankingView.isFresh
         }
 
         interactor.loadRankingView()

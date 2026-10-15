@@ -13,11 +13,6 @@ extension SubtensorValidatorDirectoryService {
         let isPartial: Bool
     }
 
-    struct Enrichment {
-        let snapshot: SubtensorValidatorChainSnapshot
-        let enrichedPairs: Set<SubtensorHotkeySubnet>
-    }
-
     static func makeListing(
         from response: BittensorApiResult<BittensorApi.ValidatorCollection>,
         netuid: UInt16,
@@ -99,56 +94,21 @@ extension SubtensorValidatorDirectoryService {
         value.flatMap { try? BittensorApiDecimal.fraction($0) }
     }
 
-    static func enrichmentQuery(rows: [Row], netuid: UInt16) -> SubtensorValidatorChainQuery {
-        let pairs = rows.prefix(enrichmentRowLimit).map { SubtensorHotkeySubnet(hotkey: $0.hotkey, netuid: netuid) }
-
-        return SubtensorValidatorChainQuery(pairs: pairs)
-    }
-
-    static func takeFraction(_ take: UInt16) -> Decimal {
-        Decimal(take) / Decimal(SubtensorStakingPallet.perU16Denominator)
-    }
-
-    static func makeItem(
-        hotkey: AccountId,
-        name: String?,
-        stake: BigRational?,
-        netuid: UInt16,
-        enrichment: Enrichment
-    ) -> SubtensorValidatorDirectoryItem {
-        let pair = SubtensorHotkeySubnet(hotkey: hotkey, netuid: netuid)
-        let snapshot = enrichment.snapshot
-        let isEnriched = enrichment.enrichedPairs.contains(pair)
-
-        return SubtensorValidatorDirectoryItem(
-            hotkey: hotkey,
-            netuid: netuid,
-            name: name,
-            take: isEnriched ? snapshot.takes[hotkey].map { takeFraction($0) } : nil,
-            reportedStake: stake,
-            status: isEnriched ? SubtensorValidatorChainStatus.make(snapshot: snapshot, pair: pair) : nil
-        )
-    }
-
-    static func makeDirectory(
-        subnet: SubtensorSubnetRef,
-        listing: Listing,
-        enrichment: Enrichment
-    ) -> SubtensorValidatorDirectory {
+    static func makeDirectory(subnet: SubtensorSubnetRef, listing: Listing) -> SubtensorValidatorDirectory {
         SubtensorValidatorDirectory(
             subnet: subnet,
             items: listing.rows.map { row in
-                makeItem(
+                SubtensorValidatorDirectoryItem(
                     hotkey: row.hotkey,
-                    name: row.name,
-                    stake: row.stake,
                     netuid: subnet.netuid,
-                    enrichment: enrichment
+                    name: row.name,
+                    take: nil,
+                    reportedStake: row.stake,
+                    status: nil
                 )
             },
             listStamp: listing.listStamp,
-            isPartial: listing.isPartial,
-            isEnrichmentTruncated: listing.rows.count > enrichmentRowLimit
+            isPartial: listing.isPartial
         )
     }
 }

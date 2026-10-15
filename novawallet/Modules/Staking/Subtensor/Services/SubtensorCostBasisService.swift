@@ -10,8 +10,6 @@ final class SubtensorCostBasisService {
     let timeProvider: () -> TimeInterval
 
     private let mutex = NSLock()
-    private var contextGeneration = UUID()
-    private var seeds: [AccountId: SubtensorCostBasisLedger] = [:]
     private var seedBlockedUntil: [AccountId: TimeInterval] = [:]
 
     init(
@@ -25,7 +23,33 @@ final class SubtensorCostBasisService {
         self.timeProvider = timeProvider
 
         eventCenter.add(observer: self, dispatchIn: nil)
-        apiOperationFactory.addContextObserver(self) { [weak self] in self?.invalidate() }
+    }
+}
+
+private extension SubtensorCostBasisService {
+    static func makeLedger(
+        from pages: BittensorApiPages<BittensorApi.OperationCollection>
+    ) -> SubtensorCostBasisLedger {
+        SubtensorCostBasisLedger(
+            operations: pages.pages.flatMap(\.value.items),
+            isHistoryComplete: pages.pages.last?.value.pageInfo.nextPage == nil
+        )
+    }
+
+    func isSeedBlocked(for accountId: AccountId, accountSubject: AccountAddress) -> Bool {
+        mutex.lock()
+        defer { mutex.unlock() }
+
+        guard let blockedUntil = seedBlockedUntil[accountId] else {
+            return false
+        }
+
+        if timeProvider() >= blockedUntil {
+            seedBlockedUntil[accountId] = nil
+            apiOperationFactory.dropOperations(accountSubject: accountSubject)
+        }
+
+        return true
     }
 }
 
@@ -42,10 +66,6 @@ extension SubtensorCostBasisService: SubtensorCostBasisServiceProtocol {
             return .createWithError(error)
         }
 
-        mutex.lock()
-        let generation = contextGeneration
-        mutex.unlock()
-
         let pagesWrapper = BittensorApiPagination.createPagesWrapper(
             maxPages: Self.maxPages,
             operationQueue: operationQueue,
@@ -55,17 +75,9 @@ extension SubtensorCostBasisService: SubtensorCostBasisServiceProtocol {
             }
         )
 
-        let mappingOperation = ClosureOperation<SubtensorCostBasis> { [weak self] in
+        let mappingOperation = ClosureOperation<SubtensorCostBasis> {
             let pages = try pagesWrapper.targetOperation.extractNoCancellableResultData()
-
-            let ledger = SubtensorCostBasisLedger(
-                operations: pages.pages.flatMap(\.value.items),
-                isHistoryComplete: pages.pages.last?.value.pageInfo.nextPage == nil
-            )
-
-            try self?.store(ledger, for: accountId, generation: generation)
-
-            return try ledger.costBasis(for: netuid)
+            return try Self.makeLedger(from: pages).costBasis(for: netuid)
         }
 
         mappingOperation.addDependency(pagesWrapper.targetOperation)
@@ -74,46 +86,32 @@ extension SubtensorCostBasisService: SubtensorCostBasisServiceProtocol {
     }
 
     func cachedCostBasis(for accountId: AccountId, netuid: UInt16) -> HTTPCachePeek<SubtensorCostBasis> {
-        mutex.lock()
-        let ledger = seeds[accountId]
-        mutex.unlock()
-
-        guard let costBasis = try? ledger?.costBasis(for: netuid) else {
+        guard
+            let accountSubject = try? accountId.toAddress(using: .defaultSubstrateFormat),
+            !isSeedBlocked(for: accountId, accountSubject: accountSubject) else {
             return .miss
         }
 
-        return .expired(costBasis)
+        return BittensorApiPagination.peekPages(
+            maxPages: Self.maxPages,
+            nextPage: { $0.pageInfo.nextPage },
+            peekPage: { [apiOperationFactory] page in
+                apiOperationFactory.peekOperations(accountSubject: accountSubject, page: page)
+            }
+        ).map { try Self.makeLedger(from: $0).costBasis(for: netuid) }
     }
 }
 
 extension SubtensorCostBasisService: EventVisitorProtocol {
     func processSubtensorStakingChanged(event: SubtensorStakingChanged) {
+        guard let accountSubject = try? event.accountId.toAddress(using: .defaultSubstrateFormat) else {
+            return
+        }
+
+        apiOperationFactory.dropOperations(accountSubject: accountSubject)
+
         mutex.lock()
-        seeds[event.accountId] = nil
         seedBlockedUntil[event.accountId] = timeProvider() + Self.ownTradeSettleTime
-        mutex.unlock()
-    }
-}
-
-private extension SubtensorCostBasisService {
-    func store(_ ledger: SubtensorCostBasisLedger, for accountId: AccountId, generation: UUID) throws {
-        mutex.lock()
-        defer { mutex.unlock() }
-
-        guard generation == contextGeneration else {
-            throw BittensorApiError.unavailable(code: nil, requestId: nil)
-        }
-
-        if timeProvider() >= seedBlockedUntil[accountId] ?? 0 {
-            seeds[accountId] = ledger
-        }
-    }
-
-    func invalidate() {
-        mutex.lock()
-        contextGeneration = UUID()
-        seeds = [:]
-        seedBlockedUntil = [:]
         mutex.unlock()
     }
 }

@@ -21,10 +21,6 @@ final class BittensorAuthorizedTransport: BittensorApiTransportProtocol {
         }.invalidationRevision
     }
 
-    func addContextObserver(_ owner: AnyObject, closure: @escaping () -> Void) {
-        provider.addContextObserver(owner, closure: closure)
-    }
-
     func createAdmissionWrapper() -> CompoundOperationWrapper<BittensorApiAdmission> {
         let endpointWrapper = provider.createEndpointWrapper()
         let admission = OperationCombiningService<BittensorApiAdmission>.compoundNonOptionalWrapper(

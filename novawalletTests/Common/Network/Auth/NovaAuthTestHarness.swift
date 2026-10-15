@@ -93,8 +93,6 @@ final class HostAuthProvider: NovaAuthProvidingProtocol {
         return .createWithResult(NovaAuthEndpoint(context: context, client: client, invalidationRevision: 0))
     }
 
-    func addContextObserver(_: AnyObject, closure _: @escaping () -> Void) {}
-
     func addAvailabilityObserver(
         _: AnyObject,
         closure _: @escaping (NovaAuthEndpointAvailability) -> Void
