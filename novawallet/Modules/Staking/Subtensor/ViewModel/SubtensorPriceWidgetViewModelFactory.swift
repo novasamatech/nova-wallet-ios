@@ -287,7 +287,7 @@ extension SubtensorPricePeriod {
             return strings.commonPeriod7d().uppercased(with: locale)
         case .month:
             return strings.commonPeriod30d().uppercased(with: locale)
-        case .quarter, .all:
+        case .quarter:
             return strings.commonPeriod90d().uppercased(with: locale)
         }
     }

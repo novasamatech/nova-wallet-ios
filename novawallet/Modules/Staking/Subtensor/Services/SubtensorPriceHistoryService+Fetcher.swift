@@ -109,18 +109,16 @@ extension SubtensorPriceHistoryService.Fetcher {
         currency: Currency,
         period: SubtensorPricePeriod
     ) -> CompoundOperationWrapper<[SubtensorPricePoint]> {
-        let source = period.sourcePeriod
-
         let alphaWrapper = seriesProvider.createSeriesWrapper(
             for: alphaPriceId,
             currency: currency,
-            period: source.coingeckoPeriod
+            period: period.sourceCoingeckoPeriod
         )
 
         let taoWrapper = seriesProvider.createSeriesWrapper(
             for: taoPriceId,
             currency: currency,
-            period: source.coingeckoPeriod
+            period: period.sourceCoingeckoPeriod
         )
 
         let pointsOperation = ClosureOperation<[SubtensorPricePoint]> {
@@ -130,7 +128,7 @@ extension SubtensorPriceHistoryService.Fetcher {
             return SubtensorPriceSeries.matchedPoints(
                 alpha: alpha.items,
                 tao: tao.items,
-                tolerance: source.samplingInterval
+                tolerance: period.samplingInterval
             )
         }
 
@@ -149,7 +147,7 @@ extension SubtensorPriceHistoryService.Fetcher {
         let taoWrapper = seriesProvider.createSeriesWrapper(
             for: taoPriceId,
             currency: .usd,
-            period: SubtensorPricePeriod.week.coingeckoPeriod
+            period: .week
         )
 
         let headBlockWrapper = createHeadBlockWrapper()
