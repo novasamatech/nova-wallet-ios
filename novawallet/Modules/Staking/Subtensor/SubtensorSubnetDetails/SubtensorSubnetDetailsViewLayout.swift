@@ -8,13 +8,6 @@ final class SubtensorSubnetDetailsViewLayout: UIView {
         view.stackView.alignment = .fill
     }
 
-    let titleView: IconDetailsView = .create { view in
-        view.detailsLabel.apply(style: .semiboldBodyPrimary)
-        view.imageView.contentMode = .scaleAspectFit
-        view.iconWidth = 24
-        view.spacing = 8
-    }
-
     let priceWidget = SubtensorPriceWidgetView()
 
     let validatorCaptionLabel = SubtensorSubnetDetailsViewLayout.createSectionLabel()
@@ -69,10 +62,6 @@ private extension SubtensorSubnetDetailsViewLayout {
     }
 
     func setupLayout() {
-        titleView.imageView.snp.makeConstraints { make in
-            make.height.equalTo(24)
-        }
-
         setupBottomBar()
         setupPriceWidget()
         setupSections()

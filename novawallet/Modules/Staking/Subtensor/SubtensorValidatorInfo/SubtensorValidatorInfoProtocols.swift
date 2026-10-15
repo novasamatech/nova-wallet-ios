@@ -13,6 +13,7 @@ struct SubtensorValidatorInfoViewModel {
         let stake: LoadableViewModelState<Stake>
         let take: String
         let reward: LoadableViewModelState<String>
+        let rewardDetail: String?
         let hasReward: Bool
     }
 

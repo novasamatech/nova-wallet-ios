@@ -38,10 +38,10 @@ enum SubtensorApyFormatter {
 private extension SubtensorApyFormatter {
     static func rateText(
         _ annualRate: Decimal?,
-        formatter: NumberFormatter = NumberFormatter.percentSingle,
+        formatter: NumberFormatter? = nil,
         locale: Locale
     ) -> String {
-        formatter.locale = locale
+        let formatter = formatter ?? NumberFormatter.subtensorPercentSingle.value(for: locale)
 
         return annualRate.flatMap { formatter.stringFromDecimal($0) } ??
             R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown()
@@ -49,6 +49,15 @@ private extension SubtensorApyFormatter {
 }
 
 extension NumberFormatter {
+    static var subtensorSignedPercentSingle: LocalizableResource<NumberFormatter> {
+        LocalizableResource { locale in
+            let formatter = NumberFormatter.signedPercentSingle
+            formatter.locale = locale
+            formatter.spacePercentSymbol()
+            return formatter
+        }
+    }
+
     static var subtensorPercentSingle: LocalizableResource<NumberFormatter> {
         LocalizableResource { locale in
             let formatter = NumberFormatter.percentSingle

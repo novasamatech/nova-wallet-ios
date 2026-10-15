@@ -39,13 +39,12 @@ protocol SubtensorPriceWidgetFactoryProtocol {
 }
 
 final class SubtensorPriceWidgetViewModelFactory {
-    static let periods: [SubtensorPricePeriod] = [.day, .week, .month, .quarter, .year]
+    static let periods: [SubtensorPricePeriod] = [.day, .week, .month, .quarter]
     static let defaultPeriod = SubtensorPricePeriod.week
 
     let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     let formatterFactory: AssetBalanceFormatterFactoryProtocol
     let tokenFormatter: LocalizableResource<TokenFormatter>
-    let axisFormatter: LocalizableResource<LocalizableDecimalFormatting>
     let balanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
 
     init(
@@ -59,7 +58,6 @@ final class SubtensorPriceWidgetViewModelFactory {
         let taoInfo = chainAsset.assetDisplayInfo
 
         tokenFormatter = formatterFactory.createTokenFormatter(for: taoInfo)
-        axisFormatter = formatterFactory.createDisplayFormatter(for: taoInfo)
         balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: taoInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
@@ -70,29 +68,6 @@ final class SubtensorPriceWidgetViewModelFactory {
 private extension SubtensorPriceWidgetViewModelFactory {
     func unknownValue(for locale: Locale) -> String {
         R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown()
-    }
-
-    func periodTitle(for period: SubtensorPricePeriod, locale: Locale) -> String {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
-        let title: String
-
-        switch period {
-        case .day:
-            title = strings.commonPeriod1d()
-        case .week:
-            title = strings.commonPeriod7d()
-        case .month:
-            title = strings.commonPeriod1m()
-        case .quarter:
-            title = strings.commonPeriod3m()
-        case .year:
-            title = strings.commonPeriod1y()
-        case .all:
-            title = strings.commonPeriodAll()
-        }
-
-        return title.uppercased(with: locale)
     }
 
     func formatSpotPrice(
@@ -134,8 +109,7 @@ private extension SubtensorPriceWidgetViewModelFactory {
         suffix: String,
         locale: Locale
     ) -> SubtensorSubnetPriceHeaderViewModel.Change {
-        let formatter = NumberFormatter.signedPercentSingle
-        formatter.locale = locale
+        let formatter = NumberFormatter.subtensorSignedPercentSingle.value(for: locale)
 
         guard let change, let percent = formatter.stringFromDecimal(change) else {
             return .hidden
@@ -164,7 +138,7 @@ private extension SubtensorPriceWidgetViewModelFactory {
         case let .available(history):
             change = createChange(
                 displayChange(history: history, params: params),
-                suffix: periodTitle(for: params.period, locale: locale),
+                suffix: params.period.title(for: locale),
                 locale: locale
             )
         }
@@ -230,7 +204,7 @@ private extension SubtensorPriceWidgetViewModelFactory {
         locale: Locale
     ) -> SubtensorSubnetPeriodsViewModel {
         SubtensorSubnetPeriodsViewModel(
-            titles: Self.periods.map { periodTitle(for: $0, locale: locale) },
+            titles: Self.periods.map { $0.title(for: locale) },
             selectedIndex: Self.periods.firstIndex(of: params.period) ?? 0,
             isEnabled: params.history != .notListed
         )
@@ -279,16 +253,49 @@ extension SubtensorPriceWidgetViewModelFactory: SubtensorPriceWidgetFactoryProto
 
 extension SubtensorPriceWidgetViewModelFactory {
     func formatAxis(_ value: Double, params: SubtensorPriceWidgetParams, locale: Locale) -> String {
-        let decimal = Decimal(value)
-
         guard params.isFiat else {
-            return axisFormatter.value(for: locale).stringFromDecimal(decimal) ?? unknownValue(for: locale)
+            let formatter = NumberFormatter()
+            formatter.locale = locale
+            formatter.numberStyle = .decimal
+            formatter.usesSignificantDigits = true
+            formatter.minimumSignificantDigits = Constants.axisSignificantDigits
+            formatter.maximumSignificantDigits = max(
+                Constants.axisSignificantDigits,
+                abs(value) >= 1 ? Int(log10(abs(value))) + 1 : 0
+            )
+
+            return formatter.string(from: NSNumber(value: value)) ?? unknownValue(for: locale)
         }
 
         let fiatInfo = priceAssetInfoFactory.createAssetBalanceDisplayInfo(from: params.currencyId)
 
         return formatterFactory.createAssetPriceFormatter(for: fiatInfo)
             .value(for: locale)
-            .stringFromDecimal(decimal) ?? unknownValue(for: locale)
+            .stringFromDecimal(Decimal(value)) ?? unknownValue(for: locale)
+    }
+}
+
+private extension SubtensorPriceWidgetViewModelFactory {
+    enum Constants {
+        static let axisSignificantDigits = 3
+    }
+}
+
+extension SubtensorPricePeriod {
+    func title(for locale: Locale) -> String {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        switch self {
+        case .day:
+            return strings.commonPeriod1d().uppercased(with: locale)
+        case .week:
+            return strings.commonPeriod7d().uppercased(with: locale)
+        case .month:
+            return strings.commonPeriod30d().uppercased(with: locale)
+        case .quarter:
+            return strings.commonPeriod90d().uppercased(with: locale)
+        case .all:
+            return strings.commonPeriodAll().capitalized(with: locale)
+        }
     }
 }

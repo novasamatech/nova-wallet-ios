@@ -5,7 +5,6 @@ enum SubtensorPricePeriod: Equatable, CaseIterable {
     case week
     case month
     case quarter
-    case year
     case all
 }
 

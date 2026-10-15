@@ -30,7 +30,7 @@ extension SubtensorPricePeriod {
             return .thirtyDays
         case .quarter:
             return .ninetyDays
-        case .year, .all:
+        case .all:
             return nil
         }
     }
@@ -43,7 +43,7 @@ extension SubtensorPricePeriod {
             return .week
         case .month:
             return .month
-        case .quarter, .year:
+        case .quarter:
             return .year
         case .all:
             return .allTime
@@ -56,7 +56,7 @@ extension SubtensorPricePeriod {
             return 5 * 60
         case .week, .month:
             return 60 * 60
-        case .quarter, .year, .all:
+        case .quarter, .all:
             return 24 * 60 * 60
         }
     }
@@ -71,7 +71,7 @@ extension SubtensorPricePeriod {
             return .day
         case .week, .month:
             return .month
-        case .quarter, .year, .all:
+        case .quarter, .all:
             return .all
         }
     }
@@ -92,9 +92,7 @@ extension SubtensorPricePeriod {
         case .month:
             return calendar.date(byAdding: .day, value: -30, to: endDate)
         case .quarter:
-            return calendar.date(byAdding: .month, value: -3, to: endDate)
-        case .year:
-            return calendar.date(byAdding: .day, value: -365, to: endDate)
+            return calendar.date(byAdding: .day, value: -90, to: endDate)
         case .all:
             return nil
         }
