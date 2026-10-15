@@ -16,17 +16,11 @@ final class SubtensorPortfolioViewLayout: UIView {
         view.isHidden = true
     }
 
-    let syncNoticeControl: UIControl = .create { view in
-        view.backgroundColor = R.color.colorBlockBackground()
-        view.layer.cornerRadius = 12
+    let syncNoticeView: InlineAlertView = {
+        let view = InlineAlertView.warning()
         view.isHidden = true
-    }
-
-    let syncNoticeLabel: UILabel = .create { label in
-        label.apply(style: .footnotePrimary)
-        label.textAlignment = .center
-        label.numberOfLines = 0
-    }
+        return view
+    }()
 
     let positionsCaptionLabel: UILabel = .create { label in
         label.apply(style: .semiboldCaps2Secondary)
@@ -64,7 +58,7 @@ final class SubtensorPortfolioViewLayout: UIView {
     }
 
     func bind(viewModel: SubtensorPortfolioViewModel) {
-        syncNoticeControl.isHidden = !viewModel.isSyncFailed
+        syncNoticeView.isHidden = !viewModel.isSyncFailed
 
         switch viewModel.content {
         case let .positions(header, rows):
@@ -157,13 +151,8 @@ private extension SubtensorPortfolioViewLayout {
         stackView.addArrangedSubview(emptyView)
         stackView.setCustomSpacing(16, after: emptyView)
 
-        syncNoticeControl.addSubview(syncNoticeLabel)
-        syncNoticeLabel.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16))
-        }
-
-        stackView.addArrangedSubview(syncNoticeControl)
-        stackView.setCustomSpacing(16, after: syncNoticeControl)
+        stackView.addArrangedSubview(syncNoticeView)
+        stackView.setCustomSpacing(16, after: syncNoticeView)
 
         stackView.addArrangedSubview(positionsCaptionLabel)
         stackView.setCustomSpacing(8, after: positionsCaptionLabel)

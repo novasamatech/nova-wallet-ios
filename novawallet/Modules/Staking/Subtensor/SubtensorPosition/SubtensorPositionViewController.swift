@@ -60,7 +60,9 @@ private extension SubtensorPositionViewController {
         rootView.periodControl.addTarget(self, action: #selector(actionPeriod), for: .valueChanged)
         rootView.chartUnavailableView.addTarget(self, action: #selector(actionRetryHistory), for: .touchUpInside)
         rootView.chartView.delegate = self
-        rootView.syncNoticeControl.addTarget(self, action: #selector(actionRetrySync), for: .touchUpInside)
+        rootView.syncNoticeView.addGestureRecognizer(
+            UITapGestureRecognizer(target: self, action: #selector(actionRetrySync))
+        )
     }
 
     @objc func actionSell() {
