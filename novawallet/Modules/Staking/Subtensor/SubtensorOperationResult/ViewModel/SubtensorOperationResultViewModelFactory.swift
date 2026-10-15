@@ -145,7 +145,14 @@ extension SubtensorOperationResultViewModelFactory {
                 return reason
             }
 
-            let duration = holdRemaining.localizedDaysHoursOrFallbackMinutes(for: locale)
+            let formatter = DateComponentsFormatter()
+            formatter.calendar = Calendar(identifier: .gregorian)
+            formatter.calendar?.locale = locale
+            formatter.allowedUnits = [.day, .hour, .minute]
+            formatter.maximumUnitCount = 2
+            formatter.unitsStyle = .abbreviated
+
+            let duration = formatter.string(from: max(holdRemaining, 60)) ?? ""
 
             return [reason, strings.stakingSubtensorResultTryAgainInFormat(duration)].joined(separator: " ")
         default:

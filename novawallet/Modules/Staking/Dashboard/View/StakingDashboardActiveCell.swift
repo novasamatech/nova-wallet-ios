@@ -183,6 +183,10 @@ final class StakingDashboardActiveCellView: UIView {
             make.trailing.lessThanOrEqualTo(detailsView.snp.leading).offset(-8)
         }
 
+        assetView.snp.makeConstraints { make in
+            make.size.equalTo(Constants.assetIconSize)
+        }
+
         assetView.setContentCompressionResistancePriority(.low, for: .horizontal)
     }
 }
@@ -245,13 +249,22 @@ extension StakingDashboardActiveCellView: SkeletonableView {
         if loadingState.contains(.rewards) {
             if loadingState == .all {
                 skeletons.append(
-                    SingleSkeleton.createRow(
-                        on: self,
-                        containerView: self,
-                        spaceSize: spaceSize,
-                        offset: CGPoint(x: Constants.leadingOffset, y: 67),
-                        size: CGSize(width: 49, height: 10)
-                    )
+                    contentsOf: [
+                        SingleSkeleton.createRow(
+                            on: self,
+                            containerView: self,
+                            spaceSize: spaceSize,
+                            offset: CGPoint(x: 14, y: 14),
+                            size: CGSize(width: 36, height: 36)
+                        ),
+                        SingleSkeleton.createRow(
+                            on: self,
+                            containerView: self,
+                            spaceSize: spaceSize,
+                            offset: CGPoint(x: Constants.leadingOffset, y: 67),
+                            size: CGSize(width: 49, height: 10)
+                        )
+                    ]
                 )
             }
 

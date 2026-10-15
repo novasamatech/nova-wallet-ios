@@ -110,10 +110,12 @@ private extension SubtensorOperationResultViewModelFactory {
 
         let fiat = taoAmount.flatMap { formatTaoFiat($0, prices: request.prices, locale: locale) }
 
+        let displayAmount = tile.isApproximate ? amountString.approximatelyEqual() : amountString
+
         return SwapAssetAmountViewModel(
             imageViewModel: icon,
             hub: NetworkViewModel(name: "", icon: nil),
-            amount: tile.isApproximate ? amountString.approximatelyEqual() : amountString,
+            amount: tile.isTao ? displayAmount : SubtensorSubnetNaming.isolatedLeftToRight(displayAmount),
             price: fiat.map { $0.approximately() }
         )
     }
@@ -322,7 +324,7 @@ private extension SubtensorOperationResultViewModelFactory {
             return nil
         }
 
-        return oneIn.estimatedEqual(to: rateOut)
+        return SubtensorSubnetNaming.isolatedRate(oneIn, rateOut)
     }
 
     func createPageAction(

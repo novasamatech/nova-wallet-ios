@@ -10,7 +10,7 @@ extension ShortTextInfoPresentable {
         title: LocalizableResource<String>,
         details: LocalizableResource<String>,
         mainAction: MessageSheetAction? = nil,
-        titleStyle: UILabel.Style? = nil,
+        style: TitleDetailsSheetViewLayout.Style? = nil,
         extraHeight: CGFloat = 0
     ) {
         let viewModel = TitleDetailsSheetViewModel(
@@ -22,8 +22,9 @@ extension ShortTextInfoPresentable {
 
         let bottomSheet = TitleDetailsSheetViewFactory.createContentSizedView(from: viewModel)
 
-        if let titleStyle, let titleDetailsView = bottomSheet as? TitleDetailsSheetViewController {
-            titleDetailsView.rootView.titleLabel.apply(style: titleStyle)
+        if let style, let titleDetailsView = bottomSheet as? TitleDetailsSheetViewController {
+            titleDetailsView.rootView.apply(style: style)
+            titleDetailsView.rootView.bind(details: details.value(for: LocalizationManager.shared.selectedLocale))
             titleDetailsView.preferredContentSize.height = titleDetailsView.rootView.contentHeight(
                 model: viewModel,
                 locale: LocalizationManager.shared.selectedLocale

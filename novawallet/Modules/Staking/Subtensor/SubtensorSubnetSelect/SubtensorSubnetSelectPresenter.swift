@@ -80,7 +80,7 @@ private extension SubtensorSubnetSelectPresenter {
     }
 
     func createFiltersViewModel(for draft: SubtensorSubnetFilters) -> SubtensorSubnetFiltersViewModel {
-        let count = makeBuilder()?.build(query: query, sort: sort, filters: draft).others.count
+        let count = makeBuilder()?.build(query: query, sort: sort, filters: draft).count
 
         return viewModelFactory.createFiltersViewModel(
             filters: draft,

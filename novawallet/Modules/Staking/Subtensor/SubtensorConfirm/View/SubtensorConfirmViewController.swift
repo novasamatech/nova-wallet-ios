@@ -107,6 +107,8 @@ private extension SubtensorConfirmViewController {
             height: diameter - insets.top - insets.bottom
         )
 
+        tileView.assetIconView.imageView.layer.cornerRadius = size.width / 2
+        tileView.assetIconView.imageView.clipsToBounds = true
         tileView.assetIconView.bind(viewModel: iconViewModel, size: size)
     }
 
@@ -132,7 +134,7 @@ private extension SubtensorConfirmViewController {
 
         rootView.feeDisclosureLabel.text = viewModel.feeDisclosure
         rootView.feeDisclosureLabel.isHidden = viewModel.feeDisclosure == nil
-        rootView.remarkLabel.text = viewModel.remark
+        rootView.remarkLabel.apply(text: viewModel.remark ?? "", lineHeight: Constants.remarkLineHeight)
         rootView.remarkLabel.isHidden = viewModel.remark == nil
     }
 
@@ -207,7 +209,9 @@ extension SubtensorConfirmViewController: SubtensorConfirmViewProtocol {
     }
 
     func didReceiveAccount(viewModel: DisplayAddressViewModel) {
-        rootView.accountCell.bind(viewModel: viewModel.cellViewModel)
+        let address = viewModel.address.truncated(prefix: Constants.addressPrefix, suffix: Constants.addressSuffix)
+        let cellViewModel = StackCellViewModel(details: address, imageViewModel: viewModel.imageViewModel)
+        rootView.accountCell.bind(viewModel: cellViewModel)
     }
 
     func didReceiveValidator(viewModel: DisplayAddressViewModel) {
@@ -255,5 +259,13 @@ extension SubtensorConfirmViewController: Localizable {
         if isViewLoaded {
             setupLocalization()
         }
+    }
+}
+
+private extension SubtensorConfirmViewController {
+    enum Constants {
+        static let remarkLineHeight: CGFloat = 16
+        static let addressPrefix = 7
+        static let addressSuffix = 5
     }
 }

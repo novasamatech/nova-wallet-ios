@@ -83,7 +83,7 @@ final class SubtensorConfirmViewLayout: UIView {
     }
 
     let remarkLabel: UILabel = .create {
-        $0.apply(style: .footnoteSecondary)
+        $0.apply(style: .caption1Secondary)
         $0.textAlignment = .center
         $0.numberOfLines = 0
     }

@@ -88,7 +88,7 @@ private extension SubtensorQuoteViewModelFactory {
         let oneIn = inFormatter.stringFromDecimal(1) ?? ""
         let rateOut = outFormatter.stringFromDecimal(rate) ?? ""
 
-        return oneIn.estimatedEqual(to: rateOut)
+        return SubtensorSubnetNaming.isolatedRate(oneIn, rateOut)
     }
 
     func createBuyReceive(

@@ -15,7 +15,7 @@ extension SubtensorSubnetDetailsViewModelFactory {
             let formatter = DateComponentsFormatter()
             formatter.calendar = Calendar(identifier: .gregorian)
             formatter.calendar?.locale = locale
-            formatter.allowedUnits = [.year, .month, .day, .hour, .minute]
+            formatter.allowedUnits = [.month, .day, .hour, .minute]
             formatter.maximumUnitCount = 1
             formatter.unitsStyle = .full
             return formatter.string(from: interval)
