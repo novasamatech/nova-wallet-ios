@@ -7,17 +7,12 @@ final class NovaAuthHTTPTransport: NovaAuthHTTPProtocol {
     private let bootstrap: URLSession
     private let reads: URLSession
     private let posts: URLSession
-    private let cache: URLCache
 
-    init(
-        protocolClasses: [AnyClass]? = nil,
-        cache: URLCache = URLCache(memoryCapacity: 16 * 1024 * 1024, diskCapacity: 0)
-    ) {
-        self.cache = cache
+    init(protocolClasses: [AnyClass]? = nil) {
         delegate = NovaAuthHTTPDelegate()
-        bootstrap = Self.session(kind: .bootstrap, delegate: delegate, cache: nil, protocolClasses: protocolClasses)
-        reads = Self.session(kind: .businessRead, delegate: delegate, cache: cache, protocolClasses: protocolClasses)
-        posts = Self.session(kind: .businessPost, delegate: delegate, cache: nil, protocolClasses: protocolClasses)
+        bootstrap = Self.session(kind: .bootstrap, delegate: delegate, protocolClasses: protocolClasses)
+        reads = Self.session(kind: .businessRead, delegate: delegate, protocolClasses: protocolClasses)
+        posts = Self.session(kind: .businessPost, delegate: delegate, protocolClasses: protocolClasses)
     }
 
     deinit {
@@ -25,8 +20,6 @@ final class NovaAuthHTTPTransport: NovaAuthHTTPProtocol {
         reads.invalidateAndCancel()
         posts.invalidateAndCancel()
     }
-
-    func clearReadCache() { cache.removeAllCachedResponses() }
 
     func createResponseWrapper(
         for request: URLRequest,
@@ -36,7 +29,7 @@ final class NovaAuthHTTPTransport: NovaAuthHTTPProtocol {
         do {
             try Self.validate(request, kind: kind)
             var frozenRequest = request
-            frozenRequest.cachePolicy = kind == .businessRead ? .useProtocolCachePolicy : .reloadIgnoringLocalCacheData
+            frozenRequest.cachePolicy = .reloadIgnoringLocalCacheData
             frozenRequest.httpShouldHandleCookies = false
             let timeout: TimeInterval = kind == .bootstrap && request.url?.path == NovaAuthPurpose.registration
                 .path ? 100 : 20
@@ -65,16 +58,14 @@ private extension NovaAuthHTTPTransport {
     static func session(
         kind: NovaAuthHTTPKind,
         delegate: NovaAuthHTTPDelegate,
-        cache: URLCache?,
         protocolClasses: [AnyClass]?
     ) -> URLSession {
-        let configuration = kind == .businessRead ? URLSessionConfiguration.default : .ephemeral
+        let configuration = URLSessionConfiguration.ephemeral
         configuration.httpShouldSetCookies = false
         configuration.httpCookieStorage = nil
         configuration.urlCredentialStorage = nil
-        configuration.urlCache = cache
-        configuration
-            .requestCachePolicy = kind == .businessRead ? .useProtocolCachePolicy : .reloadIgnoringLocalCacheData
+        configuration.urlCache = nil
+        configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
         configuration.timeoutIntervalForRequest = 20
         configuration.timeoutIntervalForResource = kind == .bootstrap ? 100 : 20
         configuration.waitsForConnectivity = false

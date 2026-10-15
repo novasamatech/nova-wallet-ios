@@ -179,8 +179,6 @@ final class FakeAuthServer: NovaAuthHTTPProtocol {
         requests.filter { $0.url?.path.hasSuffix(suffix) == true }.count
     }
 
-    func clearReadCache() {}
-
     func createResponseWrapper(for request: URLRequest, kind _: NovaAuthHTTPKind, beforeSend: @escaping () throws -> Void)
         -> CompoundOperationWrapper<NovaAuthResponse> {
         CompoundOperationWrapper(targetOperation: ClosureOperation { [self] in
