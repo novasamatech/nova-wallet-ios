@@ -117,8 +117,12 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
         return transport
     }
 
-    private func createResponse(_ body: Data, requestId: String) -> BittensorApiRawResponse {
-        BittensorApiRawResponse(statusCode: 200, requestId: requestId, body: body)
+    private func createResponse(
+        _ body: Data,
+        requestId: String,
+        directives: HTTPCacheDirectives = .notStorable
+    ) -> BittensorApiRawResponse {
+        BittensorApiRawResponse(statusCode: 200, requestId: requestId, body: body, directives: directives)
     }
 
     private func mutatedBody(_ original: String, replacing replacements: [(String, String)]) -> Data {

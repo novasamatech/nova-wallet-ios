@@ -38,14 +38,18 @@ enum BittensorApiPagination {
     ) -> HTTPCachePeek<BittensorApiPages<T>> {
         let pageLimit = max(1, maxPages)
         var pages: [BittensorApiResult<T>] = []
+        var isFresh = true
         var page = 1
 
         while true {
-            guard let pageResult = peekPage(page).value else {
+            let pagePeek = peekPage(page)
+
+            guard let pageResult = pagePeek.value else {
                 return .miss
             }
 
             pages.append(pageResult)
+            isFresh = isFresh && pagePeek.isFresh
 
             let next = nextPage(pageResult.value)
 
@@ -56,7 +60,7 @@ enum BittensorApiPagination {
 
             let outcome = BittensorApiPages(pages: pages)
 
-            return .expired(outcome)
+            return isFresh ? .fresh(outcome) : .expired(outcome)
         }
     }
 }

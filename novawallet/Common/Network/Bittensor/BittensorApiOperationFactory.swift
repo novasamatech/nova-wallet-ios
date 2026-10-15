@@ -191,10 +191,12 @@ private extension BittensorApiOperationFactory {
     }
 
     func peek<T>(path: String, queryItems: [URLQueryItem] = []) -> HTTPCachePeek<BittensorApiResult<T>> {
-        cache.peek(
+        let cached = cache.peek(
             Self.cacheKey(path: path, queryItems: queryItems),
             invalidationRevision: transport.invalidationRevision
-        ).map { try Self.makeResult(from: $0, isFromExpiredCache: true) }
+        )
+
+        return cached.map { try Self.makeResult(from: $0, isFromExpiredCache: !cached.isFresh) }
     }
 
     func createSearchWrapper<T: Decodable & BittensorApiWireChecked>(
@@ -278,7 +280,6 @@ private extension BittensorApiOperationFactory {
         return BittensorApiResult(
             value: value,
             requestId: entry.requestId,
-            receivedAt: entry.receivedAt,
             isFromExpiredCache: isFromExpiredCache
         )
     }
@@ -333,7 +334,8 @@ private extension BittensorApiOperationFactory {
         return BittensorApiFetchedValue(
             value: value,
             requestId: response.requestId,
-            generation: generational?.generationOrder
+            generation: generational?.generationOrder,
+            directives: response.directives
         )
     }
 

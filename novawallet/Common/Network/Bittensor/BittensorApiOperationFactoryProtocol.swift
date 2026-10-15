@@ -53,7 +53,6 @@ protocol BittensorApiOperationFactoryProtocol: AnyObject {
 struct BittensorApiResult<T> {
     let value: T
     let requestId: String?
-    let receivedAt: TimeInterval
     let isFromExpiredCache: Bool
 }
 

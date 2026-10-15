@@ -146,7 +146,7 @@ final class SubtensorCostBasisServiceTests: XCTestCase {
             )
         )
 
-        return OperationsPage(value: collection, requestId: nil, receivedAt: clock, isFromExpiredCache: false)
+        return OperationsPage(value: collection, requestId: nil, isFromExpiredCache: false)
     }
 
     private func createOperation(
