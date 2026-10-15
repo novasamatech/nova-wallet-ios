@@ -183,7 +183,7 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
     }
 
     func selectPeriod(at index: Int) {
-        let periods = SubtensorPriceWidgetViewModelFactory.periods
+        let periods = SubtensorPricePeriod.selectable
 
         guard periods.indices.contains(index), periods[index] != period, history != .notListed else {
             provideViewModel()

@@ -306,22 +306,6 @@
 			<string>Show %li subnets</string>
 		</dict>
 	</dict>
-	<key>common.months.format</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@format@</string>
-		<key>format</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>li</string>
-			<key>one</key>
-			<string>%li month</string>
-			<key>other</key>
-			<string>%li months</string>
-		</dict>
-	</dict>
 	<key>staking.subtensor.ui.chip.age.months</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

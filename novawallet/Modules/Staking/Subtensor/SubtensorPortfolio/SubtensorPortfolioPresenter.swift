@@ -85,12 +85,12 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioPresenterProtocol {
 
     func selectPeriod(at index: Int) {
         guard
-            SubtensorPortfolioViewModelFactory.periods.indices.contains(index),
-            SubtensorPortfolioViewModelFactory.periods[index] != state.period else {
+            SubtensorPricePeriod.selectable.indices.contains(index),
+            SubtensorPricePeriod.selectable[index] != state.period else {
             return
         }
 
-        state.period = SubtensorPortfolioViewModelFactory.periods[index]
+        state.period = SubtensorPricePeriod.selectable[index]
         state.histories = .loading
         requestPriceDataIfNeeded()
         provideViewModel()
