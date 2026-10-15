@@ -17,6 +17,7 @@ final class SubtensorValidatorSelectPresenter {
     private var alphaPrice: Balance?
     private var recommendedHotkeys: Set<AccountId>?
     private var recommendedError: Error?
+    private var verificationError: Error?
     private let filterSession: SubtensorValidatorFilterSession
     private var query = ""
     private var selectedHotkey: AccountId?
@@ -53,7 +54,7 @@ private extension SubtensorValidatorSelectPresenter {
         let header = listFactory.createLoadingViewModel(yields: yields, sort: filters.sort, locale: selectedLocale)
         view?.didReceive(header: header, isFilterActive: filters.hidesUnusualApy)
 
-        if let error = directoryError ?? (filters.hidesUnusualApy ? recommendedError : nil) {
+        if let error = directoryError ?? verificationError ?? (filters.hidesUnusualApy ? recommendedError : nil) {
             let viewModel = listFactory.createErrorViewModel(for: error, locale: selectedLocale)
             view?.didReceive(state: .failed(viewModel))
             return
@@ -130,6 +131,7 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectPresenterProtocol {
         yields = nil
         recommendedHotkeys = nil
         recommendedError = nil
+        verificationError = nil
 
         if !target.isRoot {
             alphaPrice = nil
@@ -207,20 +209,23 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectInteractorOutputProt
 
     func didReceive(verification: SubtensorValidatorListVerification) {
         directory = directory?.withTakes(verification.takes)
+        verificationError = nil
 
         switch verification.recommended {
         case let .success(hotkeys):
             recommendedHotkeys = hotkeys
             recommendedError = nil
-            provideState()
         case let .failure(error):
-            didFailVerification(error)
+            recommendedHotkeys = nil
+            recommendedError = error
         }
+
+        provideState()
     }
 
     func didFailVerification(_ error: Error) {
         recommendedHotkeys = nil
-        recommendedError = error
+        verificationError = error
         provideState()
     }
 }
