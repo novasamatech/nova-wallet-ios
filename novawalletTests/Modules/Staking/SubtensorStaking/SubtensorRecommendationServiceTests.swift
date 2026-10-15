@@ -12,6 +12,49 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
     private let subnetSecondKept = Data(repeating: 0x13, count: 32)
     private let subnetTakeAboveMax = Data(repeating: 0x14, count: 32)
     private let subnetInactive = Data(repeating: 0x21, count: 32)
+    private let listedOnly = Data(repeating: 0x31, count: 32)
+
+    func testListVerificationReadsCandidateGatesAndListedTakesAtOneBlock() throws {
+        let hotkeys = [subnetSecondKept, subnetUnpermitted, subnetKept, subnetInactive, subnetTakeAboveMax]
+        let listed = [subnetKept, listedOnly]
+        let apiFactory = try createApiFactory(hotkeys: hotkeys)
+        let chainFactory = createChainFactory()
+
+        let verification = try run(
+            createService(apiFactory, chainFactory).createListVerificationWrapper(for: subnet, listedHotkeys: listed)
+        )
+
+        let captor = ArgumentCaptor<SubtensorValidatorChainQuery>()
+        verify(chainFactory, times(1)).createChainSnapshotWrapper(for: captor.capture())
+        XCTAssertEqual(captor.value?.pairs, hotkeys.map { pair($0, 64) })
+        XCTAssertEqual(captor.value?.takeHotkeys, listed)
+        XCTAssertEqual(try verification.recommended.get(), [subnetSecondKept, subnetKept])
+        XCTAssertEqual(verification.takes[listedOnly], takeFraction(11796))
+    }
+
+    func testListVerificationStillReadsListedTakesWhenRecommendationsRouteFails() throws {
+        let apiFactory = MockBittensorApiOperationFactoryProtocol()
+        stub(apiFactory) { stub in
+            when(stub.createRankedValidatorsWrapper(netuid: any())).then { _ in
+                CompoundOperationWrapper.createWithError(BittensorApiError.unavailable(code: nil, requestId: nil))
+            }
+        }
+        let chainFactory = createChainFactory()
+
+        let verification = try run(
+            createService(apiFactory, chainFactory).createListVerificationWrapper(for: subnet, listedHotkeys: [listedOnly])
+        )
+
+        let captor = ArgumentCaptor<SubtensorValidatorChainQuery>()
+        verify(chainFactory, times(1)).createChainSnapshotWrapper(for: captor.capture())
+        XCTAssertEqual(captor.value, SubtensorValidatorChainQuery(pairs: [], takeHotkeys: [listedOnly]))
+        XCTAssertEqual(verification.takes[listedOnly], takeFraction(11796))
+        XCTAssertThrowsError(try verification.recommended.get()) {
+            guard case BittensorApiError.unavailable(code: nil, requestId: nil) = $0 else {
+                return XCTFail("Unexpected error \($0)")
+            }
+        }
+    }
 
     func testVerificationKeepsValidatorsPassingChainGatesAndDropsTheRest() throws {
         let hotkeys = [subnetSecondKept, subnetUnpermitted, subnetKept, subnetInactive, subnetTakeAboveMax]
@@ -117,7 +160,7 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
             lastUpdates: [64: lastUpdates],
             effectiveActivityCutoffs: [64: 5000],
             takes: [subnetKept: 6553, subnetUnpermitted: 0, subnetSecondKept: 11796,
-                    subnetTakeAboveMax: 11797, subnetInactive: 0]
+                    subnetTakeAboveMax: 11797, subnetInactive: 0, listedOnly: 11796]
         )
 
         let chainFactory = MockSubtensorValidatorChainOperationFactoryProtocol()
@@ -143,6 +186,10 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
 
     private func pair(_ hotkey: AccountId, _ netuid: UInt16) -> SubtensorHotkeySubnet {
         SubtensorHotkeySubnet(hotkey: hotkey, netuid: netuid)
+    }
+
+    private func takeFraction(_ take: UInt16) -> Decimal {
+        Decimal(take) / Decimal(SubtensorStakingPallet.perU16Denominator)
     }
 
     private func run<T>(_ wrapper: CompoundOperationWrapper<T>) throws -> T {
