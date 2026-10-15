@@ -127,6 +127,7 @@ struct SubtensorPortfolioRowViewModel {
     let title: String
     let subtitle: String?
     let value: String
+    let symbol: String
     let detail: Detail?
 }
 
@@ -137,7 +138,11 @@ struct SubtensorPortfolioEmptyViewModel: Equatable {
 }
 
 enum SubtensorPortfolioContentViewModel {
-    case positions(header: SubtensorPortfolioHeaderViewModel, rows: [SubtensorPortfolioRowViewModel]?)
+    case positions(
+        header: SubtensorPortfolioHeaderViewModel,
+        rows: [SubtensorPortfolioRowViewModel],
+        loadingRows: Int = 0
+    )
     case empty(SubtensorPortfolioEmptyViewModel)
 }
 
