@@ -34,7 +34,10 @@ final class SubtensorPriceWidgetView: UIView {
 
     let chartView: SubtensorSubnetPriceChartView
 
-    let chartLoadingView = SubtensorChartLoadingView()
+    let chartLoadingView: SubtensorChartLoadingView = .create { view in
+        view.layer.cornerRadius = Constants.chartCornerRadius
+        view.skeletonCornerRadius = Constants.chartCornerRadius
+    }
 
     let chartUnavailableView: SubtensorChartUnavailableView = .create { view in
         view.isHidden = true
@@ -109,6 +112,7 @@ final class SubtensorPriceWidgetView: UIView {
 private extension SubtensorPriceWidgetView {
     enum Constants {
         static let chartHeight: CGFloat = 208
+        static let chartCornerRadius: CGFloat = 16
         static let sectionSpacing: CGFloat = 12
         static let headerSpacing: CGFloat = 12
         static let priceSpacing: CGFloat = 4

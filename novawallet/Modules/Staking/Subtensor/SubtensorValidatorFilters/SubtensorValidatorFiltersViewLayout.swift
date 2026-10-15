@@ -22,16 +22,20 @@ final class SubtensorValidatorFiltersViewLayout: UIView {
         backgroundColor = R.color.colorSecondaryScreenBackground()
         let titles = UIView.vStack(alignment: .leading, spacing: 2, [toggleTitle, toggleSubtitle])
         let toggleRow = UIView.hStack(alignment: .center, spacing: 12, [titles, UIView(), toggle])
-        let stack = UIView.vStack(spacing: 24, [showLabel, toggleRow, sortLabel, tableView])
-        stack.setCustomSpacing(8, after: sortLabel)
+        let stack = UIView.vStack(spacing: 24, [showLabel, toggleRow, sortLabel])
         addSubview(stack)
+        addSubview(tableView)
         addSubview(bottomPanel)
         bottomPanel.contentView.addSubview(applyButton)
         stack.snp
             .makeConstraints {
                 $0.top.equalTo(safeAreaLayoutGuide).offset(20); $0.leading.trailing.equalToSuperview().inset(16)
             }
-        tableView.snp.makeConstraints { $0.height.equalTo(144) }
+        tableView.snp.makeConstraints {
+            $0.top.equalTo(stack.snp.bottom).offset(8)
+            $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(144)
+        }
         bottomPanel.snp.makeConstraints { $0.leading.trailing.bottom.equalToSuperview() }
         applyButton.snp.makeConstraints {
             $0.edges.equalToSuperview()

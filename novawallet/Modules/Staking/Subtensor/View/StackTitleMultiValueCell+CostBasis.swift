@@ -31,20 +31,14 @@ extension StackTitleMultiValueCell {
 
 private extension SubtensorCostBasisValueViewModel {
     var attributedAmount: NSAttributedString {
-        let amountAttributes = Self.attributes(font: .regularFootnote, tone: tone)
-
         guard let arrow = trend?.arrow else {
-            return NSAttributedString(string: amount, attributes: amountAttributes)
+            return NSAttributedString(string: amount, attributes: Self.attributes(font: .regularFootnote, tone: tone))
         }
 
-        let text = NSMutableAttributedString(
-            string: arrow.glyph,
+        return NSAttributedString(
+            string: arrow.glyph + " " + amount,
             attributes: Self.attributes(font: .caption2, tone: arrow.tone)
         )
-
-        text.append(NSAttributedString(string: " " + amount, attributes: amountAttributes))
-
-        return text
     }
 
     static func attributes(font: UIFont, tone: SubtensorValueTone) -> [NSAttributedString.Key: Any] {
