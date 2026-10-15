@@ -19,14 +19,14 @@ final class SubtensorPortfolioHeaderView: UIView {
         label.minimumScaleFactor = 0.5
     }
 
-    let totalSkeletonView = SubtensorChartLoadingView(cornerRadius: 8)
+    let totalSkeletonView = SubtensorSkeletonView(cornerRadius: 8)
 
     let fiatLabel: UILabel = .create { label in
         label.font = .regularSubheadline
         label.textColor = R.color.colorTextSecondary()
     }
 
-    let fiatSkeletonView = SubtensorChartLoadingView(cornerRadius: 7)
+    let fiatSkeletonView = SubtensorSkeletonView(cornerRadius: 7)
 
     let ratesAlertView: InlineAlertView = .create { view in
         view.apply(style: .info)
@@ -39,7 +39,7 @@ final class SubtensorPortfolioHeaderView: UIView {
 
     let chartView = SubtensorSubnetPriceChartView(style: .portfolio, isSelectable: true)
 
-    let chartLoadingView: SubtensorChartLoadingView = .create { view in
+    let chartLoadingView: SubtensorSkeletonView = .create { view in
         view.skeletonCornerRadius = 12
     }
 

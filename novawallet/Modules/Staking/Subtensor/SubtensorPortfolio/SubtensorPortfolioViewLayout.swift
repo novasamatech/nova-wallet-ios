@@ -38,7 +38,7 @@ final class SubtensorPortfolioViewLayout: UIView {
     var onSelectPosition: ((Int) -> Void)?
 
     private var positionViews: [SubtensorPortfolioPositionView] = []
-    private var skeletonViews: [SubtensorChartLoadingView] = []
+    private var skeletonViews: [SubtensorSkeletonView] = []
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -105,7 +105,7 @@ private extension SubtensorPortfolioViewLayout {
         }
 
         while skeletonViews.count < loadingRows {
-            let skeletonView: SubtensorChartLoadingView = .create { view in
+            let skeletonView: SubtensorSkeletonView = .create { view in
                 view.skeletonCornerRadius = 12
             }
 

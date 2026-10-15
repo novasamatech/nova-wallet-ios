@@ -30,9 +30,9 @@ final class SubtensorValidatorCardView: UIControl {
         view.contentMode = .scaleAspectFit
     }
 
-    private let nameSkeletonView = SubtensorChartLoadingView(cornerRadius: 6)
+    private let nameSkeletonView = SubtensorSkeletonView(cornerRadius: 6)
 
-    private let rateSkeletonView = SubtensorChartLoadingView(cornerRadius: 6)
+    private let rateSkeletonView = SubtensorSkeletonView(cornerRadius: 6)
 
     private lazy var rateView = UIView.vStack(alignment: .trailing, spacing: 2, [rateLabel, rateCaptionLabel])
 
