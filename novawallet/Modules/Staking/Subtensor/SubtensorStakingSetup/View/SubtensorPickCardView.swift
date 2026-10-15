@@ -13,7 +13,7 @@ final class SubtensorPickCardView: UIView {
     }
 
     let validatorCell = SubtensorPickValidatorCell()
-    let browseButton = UIButton(type: .system)
+    let browseView = SubtensorBrowseLinkView()
 
     let receiveCell = SubtensorPickCardView.createCell()
 
@@ -42,8 +42,7 @@ final class SubtensorPickCardView: UIView {
             rate: viewModel.validatorRate,
             isEditable: viewModel.isValidatorEditable
         )
-        browseButton.setTitle(viewModel.browseTitle, for: .normal)
-        browseButton.isHidden = viewModel.browseTitle == nil
+        browseView.bind(title: viewModel.browseTitle)
         headerView.bind(viewModel: viewModel.header)
         chipsView.bind(titles: viewModel.chips)
 
@@ -81,13 +80,11 @@ private extension SubtensorPickCardView {
 
         let cells: [StackTableViewCellProtocol] = [validatorCell, receiveCell, swapRateCell, networkFeeCell]
         cells.forEach { $0.borderView.strokeWidth = SubtensorDividerStyle.thickness }
-        browseButton.contentHorizontalAlignment = .right
-        browseButton.titleLabel?.font = .semiBoldFootnote
-        browseButton.snp.makeConstraints { $0.height.equalTo(44) }
-        let contentView = UIView.vStack(spacing: 0, [headerView, chipsView, rowsView, browseButton])
+        let contentView = UIView.vStack(spacing: 0, [headerView, chipsView, rowsView, browseView])
         contentView.setCustomSpacing(12, after: headerView)
         contentView.setCustomSpacing(4, after: chipsView)
-        contentView.layoutMargins = UIEdgeInsets(top: 12, left: 12, bottom: 4, right: 12)
+        contentView.setCustomSpacing(10, after: rowsView)
+        contentView.layoutMargins = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
         contentView.isLayoutMarginsRelativeArrangement = true
 
         addSubview(contentView)
@@ -333,5 +330,43 @@ private extension SubtensorPickCardSkeletonView {
 extension SubtensorPickCardSkeletonView {
     func bind(caption: String) {
         captionLabel.apply(text: caption, lineHeight: Constants.captionLineHeight)
+    }
+}
+
+final class SubtensorBrowseLinkView: UIView {
+    let button: RoundedButton = .create { button in
+        button.applyLinkStyle()
+        button.imageWithTitleView?.titleFont = .semiBoldFootnote
+        button.imageWithTitleView?.spacingBetweenLabelAndIcon = Constants.iconSpacing
+    }
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        addSubview(button)
+        button.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(Constants.topInset)
+            make.trailing.bottom.equalToSuperview()
+            make.leading.greaterThanOrEqualToSuperview()
+            make.height.equalTo(Constants.height)
+        }
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func bind(title: String?) {
+        button.setTitle(title)
+        isHidden = title == nil
+    }
+}
+
+private extension SubtensorBrowseLinkView {
+    enum Constants {
+        static let topInset: CGFloat = 2
+        static let height: CGFloat = 18
+        static let iconSpacing: CGFloat = 2
     }
 }

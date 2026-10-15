@@ -77,14 +77,18 @@ private extension SubtensorStakingSetupViewController {
         rootView.pickCardView.validatorCell.addTarget(
             self, action: #selector(actionSelectValidator), for: .touchUpInside
         )
-        rootView.pickCardView.browseButton.addTarget(self, action: #selector(actionBrowse), for: .touchUpInside)
-        rootView.browseButton.addTarget(self, action: #selector(actionBrowse), for: .touchUpInside)
+        rootView.pickCardView.browseView.button.addTarget(self, action: #selector(actionBrowse), for: .touchUpInside)
+        rootView.browseView.button.addTarget(self, action: #selector(actionBrowse), for: .touchUpInside)
         rootView.rootPickCardView.validatorCell.addTarget(
             self,
             action: #selector(actionSelectValidator),
             for: .touchUpInside
         )
-        rootView.rootPickCardView.browseButton.addTarget(self, action: #selector(actionBrowse), for: .touchUpInside)
+        rootView.rootPickCardView.browseView.button.addTarget(
+            self,
+            action: #selector(actionBrowse),
+            for: .touchUpInside
+        )
         rootView.selectionAlert.learnMoreButton.addTarget(
             self,
             action: #selector(actionRetryQuickPick),
@@ -122,7 +126,7 @@ private extension SubtensorStakingSetupViewController {
         case let .selection(viewModel):
             rootView.detailsTableView.isHidden = true
             rootView.pickCardView.isHidden = true
-            rootView.browseButton.isHidden = true
+            rootView.browseView.isHidden = true
             rootView.sectionLabel.isHidden = false
             rootView.setSection(viewModel.section)
             applyAvgBuyPrice(.hidden)
@@ -137,7 +141,7 @@ private extension SubtensorStakingSetupViewController {
             applyAvgBuyPrice(.hidden)
             rootView.validatorCardView.bind(viewModel: viewModel.validator)
             rootView.rootPickCardView.bind(viewModel, locale: selectedLocale)
-            if viewModel.isQuickPick { rootView.browseButton.isHidden = true }
+            if viewModel.isQuickPick { rootView.browseView.isHidden = true }
             rootView.applyNetworkFee(viewModel.networkFee)
         case let .subnet(viewModel):
             rootView.detailsTableView.isHidden = true
@@ -240,11 +244,9 @@ extension SubtensorStakingSetupViewController: SubtensorStakingSetupViewProtocol
 
         rootView.setReserveWarning(viewModel.reserveWarning)
 
-        rootView.browseButton.setTitle(viewModel.browseTitle, for: .normal)
+        rootView.browseView.bind(title: viewModel.browseTitle)
         if case .subnet = viewModel.details {
-            rootView.browseButton.isHidden = true
-        } else {
-            rootView.browseButton.isHidden = viewModel.browseTitle == nil
+            rootView.browseView.isHidden = true
         }
         applyDetails(viewModel.details)
 

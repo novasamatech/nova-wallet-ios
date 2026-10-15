@@ -57,7 +57,7 @@ private extension StartStakingInfoSubtensorViewController {
 extension StartStakingInfoSubtensorViewController: StartStakingInfoSubtensorViewProtocol {
     func didReceive(subtensorViewModel: StartStakingInfoSubtensorViewModel) {
         let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
-        rootView.seeAllButton.setTitle(strings.stakingSubtensorQuickAllOptions(), for: .normal)
+        rootView.seeAllButton.setTitle(strings.stakingSubtensorQuickAllOptions())
         rootView.bind(viewModel: subtensorViewModel)
     }
 

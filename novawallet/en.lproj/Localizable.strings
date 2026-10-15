@@ -2338,7 +2338,7 @@ Do you want to continue?";
 "staking.subtensor.quick.first.pool" = "FIRST BY POOL SIZE";
 "staking.subtensor.quick.first.age" = "FIRST BY AGE";
 "staking.subtensor.quick.root.section" = "ROOT NETWORK";
-"staking.subtensor.quick.see.all" = "See all subnets ›";
+"staking.subtensor.quick.see.all" = "See all subnets";
 "staking.subtensor.quick.all.options" = "See all options";
 "staking.subtensor.quick.loading" = "Finding a subnet for you…";
 "staking.subtensor.quick.unavailable" = "The subnet and its rate appear once the backend answers.";

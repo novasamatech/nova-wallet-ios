@@ -19,7 +19,7 @@ final class SubtensorStakingSetupViewLayout: SubtensorAmountSetupLayout {
     }
 
     let pickSkeletonView = SubtensorPickCardSkeletonView()
-    let browseButton = UIButton(type: .system)
+    let browseView = SubtensorBrowseLinkView()
 
     let detailsTableView: UIView = .create {
         $0.backgroundColor = R.color.colorBlockBackground()
@@ -105,6 +105,7 @@ private extension SubtensorStakingSetupViewLayout {
         static let sectionSpacing: CGFloat = 11
         static let sectionLineHeight: CGFloat = 13
         static let sectionKern: CGFloat = 0.6
+        static let browseSpacing: CGFloat = 12
     }
 
     func setupAmountLayout() {
@@ -123,6 +124,7 @@ private extension SubtensorStakingSetupViewLayout {
         containerView.stackView.addArrangedSubview(sectionLabel)
         containerView.stackView.setCustomSpacing(Constants.sectionSpacing, after: sectionLabel)
         containerView.stackView.addArrangedSubview(detailsTableView)
+        containerView.stackView.setCustomSpacing(Constants.browseSpacing, after: detailsTableView)
 
         let detailsStack = UIView.vStack(spacing: 0, [validatorCardView, networkFeeCell])
         detailsTableView.addSubview(detailsStack)
@@ -135,10 +137,7 @@ private extension SubtensorStakingSetupViewLayout {
         containerView.stackView.setCustomSpacing(Constants.detailsSpacing, after: pickCardView)
         containerView.stackView.addArrangedSubview(pickSkeletonView)
         containerView.stackView.setCustomSpacing(Constants.detailsSpacing, after: pickSkeletonView)
-        containerView.stackView.addArrangedSubview(browseButton)
-        browseButton.contentHorizontalAlignment = .right
-        browseButton.titleLabel?.font = .semiBoldFootnote
-        browseButton.snp.makeConstraints { $0.height.equalTo(44) }
+        containerView.stackView.addArrangedSubview(browseView)
         containerView.stackView.addArrangedSubview(avgBuyPriceTableView)
         containerView.stackView.setCustomSpacing(Constants.afterAvgBuyPriceSpacing, after: avgBuyPriceTableView)
 
