@@ -8,7 +8,7 @@ final class SubtensorPickValidatorCell: RowView<
     private var validatorView: SubtensorValidatorDetailsValueView { rowContentView.valueView.fView }
     private var accessoryImageView: UIImageView { rowContentView.valueView.sView }
 
-    private let loadingView = SubtensorChartLoadingView()
+    private let loadingView = SubtensorSkeletonView()
 
     convenience init() {
         self.init(frame: .zero)

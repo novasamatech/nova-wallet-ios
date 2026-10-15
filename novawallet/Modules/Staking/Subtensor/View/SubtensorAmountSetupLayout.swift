@@ -16,13 +16,13 @@ class SubtensorAmountSetupLayout: UIView {
         view.buttonValue.apply(style: .regularSubhedlinePrimary)
     }
 
-    let maxSkeletonView = SubtensorChartLoadingView(cornerRadius: 6)
+    let maxSkeletonView = SubtensorSkeletonView(cornerRadius: 6)
 
     let amountInputView = NewAmountInputView()
 
     let networkFeeCell = StackNetworkFeeCell()
 
-    let feeSkeletonView = SubtensorChartLoadingView(cornerRadius: 6)
+    let feeSkeletonView = SubtensorSkeletonView(cornerRadius: 6)
 
     let captionLabel: UILabel = .create { label in
         label.apply(style: .footnoteSecondary)
@@ -58,12 +58,12 @@ class SubtensorAmountSetupLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func setSkeleton(_ skeletonView: SubtensorChartLoadingView, loading: Bool, hiding view: UIView) {
+    func setSkeleton(_ skeletonView: SubtensorSkeletonView, loading: Bool, hiding view: UIView) {
         skeletonView.setLoading(loading)
         view.alpha = loading ? 0 : 1
     }
 
-    func addSkeleton(_ skeletonView: SubtensorChartLoadingView, to cell: UIView, width: CGFloat) {
+    func addSkeleton(_ skeletonView: SubtensorSkeletonView, to cell: UIView, width: CGFloat) {
         cell.addSubview(skeletonView)
         skeletonView.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(16)
