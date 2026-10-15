@@ -37,6 +37,24 @@ private extension MainTabBarWireframe {
         }
     }
 
+    func openStakingScreen(
+        in controller: UITabBarController,
+        navigation: StakingNavigation?
+    ) {
+        controller.selectedIndex = MainTabBarIndex.staking
+
+        guard let navigation else {
+            return
+        }
+
+        let stakingViewController = controller.viewControllers?[MainTabBarIndex.staking]
+        (stakingViewController as? UINavigationController)?.popToRootViewController(animated: true)
+
+        if let stakingController: StakingDashboardViewProtocol = stakingViewController?.contentViewController() {
+            stakingController.openStaking(for: navigation.chainAssetId)
+        }
+    }
+
     func openCardScreen(
         in view: MainTabBarViewProtocol?,
         cardNavigation: PayCardNavigation?
@@ -398,8 +416,8 @@ extension MainTabBarWireframe: MainTabBarWireframeProtocol {
                         from: view
                     )
                 }
-            case .staking:
-                controller.selectedIndex = MainTabBarIndex.staking
+            case let .staking(navigation):
+                openStakingScreen(in: controller, navigation: navigation)
             case let .gov(rederendumIndex):
                 openGovernanceScreen(in: controller, rederendumIndex: rederendumIndex)
             case let .card(cardNavigation):

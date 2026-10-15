@@ -132,6 +132,7 @@ public enum ConvictionLevel: String, CaseIterable, AnalyticsPropertyConvertible 
 public enum StakingFlowSource: String, CaseIterable, AnalyticsPropertyConvertible {
     case dashboard
     case assetDetails = "asset_details"
+    case deepLink = "deep_link"
 }
 
 public enum AnalyticsBannerScreen: String, CaseIterable, AnalyticsPropertyConvertible {

@@ -4,6 +4,7 @@ protocol StakingDashboardViewProtocol: ControllerBackedProtocol {
     func didReceiveWallet(viewModel: WalletSwitchViewModel)
     func didReceiveStakings(viewModel: StakingDashboardViewModel)
     func didReceiveUpdate(viewModel: StakingDashboardUpdateViewModel)
+    func openStaking(for chainAssetId: ChainAssetId)
 }
 
 protocol StakingDashboardPresenterProtocol: AnyObject {
@@ -14,6 +15,7 @@ protocol StakingDashboardPresenterProtocol: AnyObject {
     func selectAnnouncementLink(at index: Int)
     func switchWallet()
     func refresh()
+    func openStaking(for chainAssetId: ChainAssetId)
 }
 
 protocol StakingDashboardInteractorInputProtocol: AnyObject {
