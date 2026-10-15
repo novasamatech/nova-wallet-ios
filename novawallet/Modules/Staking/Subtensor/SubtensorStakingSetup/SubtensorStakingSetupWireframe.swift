@@ -70,6 +70,20 @@ final class SubtensorStakingSetupWireframe: SubtensorStakingSetupWireframeProtoc
         view?.controller.navigationController?.pushViewController(detailsView.controller, animated: true)
     }
 
+    func showRootDetails(
+        from view: SubtensorStakingSetupViewProtocol?,
+        browseState: SubtensorSubnetBrowseState
+    ) {
+        guard let detailsView = SubtensorStakingSetupViewFactory.createRootDetailsView(
+            for: state,
+            browseState: browseState
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(detailsView.controller, animated: true)
+    }
+
     func showSlippageSettings(
         from view: SubtensorStakingSetupViewProtocol?,
         current: BigRational,
