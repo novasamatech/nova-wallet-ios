@@ -76,7 +76,7 @@ extension SubtensorValidatorInfoPresenter: SubtensorValidatorInfoPresenterProtoc
 
         interactor.setup()
 
-        if detail == nil {
+        if detail?.status == nil {
             loadDetail()
         }
     }

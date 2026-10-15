@@ -55,6 +55,7 @@ enum SubtensorValidatorListState: Equatable {
 }
 
 struct SubtensorValidatorSelectSnapshot {
+    let directory: HTTPCachePeek<SubtensorValidatorDirectory>
     let yields: HTTPCachePeek<SubtensorAlphaYields>
     let alphaPrice: HTTPCachePeek<Balance?>
 }
@@ -85,8 +86,8 @@ protocol ValidatorSelectInteractorOutputProtocol: AnyObject {
     func didFailDirectory(_ error: Error)
     func didReceive(yields: SubtensorAlphaYields?)
     func didReceive(alphaPrice: Balance?)
-    func didReceive(recommendedHotkeys: Set<AccountId>)
-    func didFailRecommended(_ error: Error)
+    func didReceive(verification: SubtensorValidatorListVerification)
+    func didFailVerification(_ error: Error)
 }
 
 protocol ValidatorSelectWireframeProtocol: SubtensorValidatorInfoPresentable {
