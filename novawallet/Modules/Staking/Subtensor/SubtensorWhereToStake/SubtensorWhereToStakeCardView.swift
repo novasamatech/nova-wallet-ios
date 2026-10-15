@@ -58,20 +58,6 @@ final class SubtensorWhereToStakeCardView: UIView {
     }
 }
 
-extension UILabel {
-    func apply(text: String, lineHeight: CGFloat, kern: CGFloat = 0) {
-        let paragraph = NSMutableParagraphStyle()
-        paragraph.minimumLineHeight = lineHeight
-        paragraph.maximumLineHeight = lineHeight
-        paragraph.alignment = textAlignment
-        attributedText = NSAttributedString(string: text, attributes: [
-            .paragraphStyle: paragraph,
-            .baselineOffset: (lineHeight - font.lineHeight) / 2,
-            .kern: kern
-        ])
-    }
-}
-
 private extension SubtensorWhereToStakeCardView {
     func setupAppearance() {
         gradientLayer?.startPoint = Constants.gradientStart

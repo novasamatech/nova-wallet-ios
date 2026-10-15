@@ -11,7 +11,14 @@ final class SubtensorStakingSetupViewLayout: SubtensorAmountSetupLayout {
         return view
     }()
 
-    let selectionAlert: InlineAlertView = .create { $0.isHidden = true }
+    let selectionAlert: WarningView = .create { view in
+        view.isHidden = true
+        view.contentInsets.bottom = Constants.selectionAlertBottomInset
+        view.contentView.sView.spacing = Constants.selectionAlertTitleSpacing
+        view.contentView.sView.sView.spacing = 0
+    }
+
+    let pickSkeletonView = SubtensorPickCardSkeletonView()
     let browseButton = UIButton(type: .system)
 
     let detailsTableView: UIView = .create {
@@ -36,6 +43,32 @@ final class SubtensorStakingSetupViewLayout: SubtensorAmountSetupLayout {
     }
 
     let avgBuyPriceCell = StackTitleMultiValueCell()
+
+    func setReserveWarning(_ warning: String?) {
+        reserveAlertView.isHidden = warning == nil
+        reserveAlertView.contentView.detailsLabel.text = warning
+        containerView.stackView.setCustomSpacing(
+            warning == nil ? Constants.amountSpacing : Constants.reserveWarningSpacing,
+            after: amountInputView
+        )
+    }
+
+    func setSelection(_ selection: SubtensorSetupSelectionViewModel?) {
+        pickSkeletonView.setLoading(selection != nil)
+        selectionAlert.isHidden = selection?.failure == nil
+
+        if let caption = selection?.caption {
+            pickSkeletonView.bind(caption: caption)
+        }
+
+        if let failure = selection?.failure {
+            selectionAlert.bind(failure)
+        }
+    }
+
+    func setSection(_ title: String) {
+        sectionLabel.apply(text: title, lineHeight: Constants.sectionLineHeight, kern: Constants.sectionKern)
+    }
 
     func placeCaption(afterAction: Bool) {
         bottomStack.removeArrangedSubview(captionLabel)
@@ -64,12 +97,20 @@ private extension SubtensorStakingSetupViewLayout {
         static let avgBuyPriceSpacing: CGFloat = 8
         static let detailsSpacing: CGFloat = 16
         static let afterAvgBuyPriceSpacing: CGFloat = 12
+        static let amountSpacing: CGFloat = 24
+        static let reserveWarningSpacing: CGFloat = 8
+        static let selectionAlertBottomInset: CGFloat = 4
+        static let selectionAlertTitleSpacing: CGFloat = 8
+        static let selectionAlertSpacing: CGFloat = 24
+        static let sectionSpacing: CGFloat = 11
+        static let sectionLineHeight: CGFloat = 13
+        static let sectionKern: CGFloat = 0.6
     }
 
     func setupAmountLayout() {
         containerView.stackView.addArrangedSubview(getTaoCardView)
 
-        containerView.stackView.setCustomSpacing(12.0, after: amountInputView)
+        containerView.stackView.setCustomSpacing(Constants.amountSpacing, after: amountInputView)
         containerView.stackView.setCustomSpacing(16.0, after: getTaoCardView)
 
         containerView.stackView.addArrangedSubview(reserveAlertView)
@@ -77,10 +118,10 @@ private extension SubtensorStakingSetupViewLayout {
     }
 
     func setupDetailsLayout() {
-        containerView.stackView.addArrangedSubview(sectionLabel)
-        containerView.stackView.setCustomSpacing(8, after: sectionLabel)
         containerView.stackView.addArrangedSubview(selectionAlert)
-        containerView.stackView.setCustomSpacing(16, after: selectionAlert)
+        containerView.stackView.setCustomSpacing(Constants.selectionAlertSpacing, after: selectionAlert)
+        containerView.stackView.addArrangedSubview(sectionLabel)
+        containerView.stackView.setCustomSpacing(Constants.sectionSpacing, after: sectionLabel)
         containerView.stackView.addArrangedSubview(detailsTableView)
 
         let detailsStack = UIView.vStack(spacing: 0, [validatorCardView, networkFeeCell])
@@ -92,6 +133,8 @@ private extension SubtensorStakingSetupViewLayout {
 
         containerView.stackView.addArrangedSubview(pickCardView)
         containerView.stackView.setCustomSpacing(Constants.detailsSpacing, after: pickCardView)
+        containerView.stackView.addArrangedSubview(pickSkeletonView)
+        containerView.stackView.setCustomSpacing(Constants.detailsSpacing, after: pickSkeletonView)
         containerView.stackView.addArrangedSubview(browseButton)
         browseButton.contentHorizontalAlignment = .right
         browseButton.titleLabel?.font = .semiBoldFootnote

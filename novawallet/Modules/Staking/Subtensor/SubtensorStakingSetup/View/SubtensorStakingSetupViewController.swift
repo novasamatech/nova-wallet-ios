@@ -50,6 +50,11 @@ private extension SubtensorStakingSetupViewController {
         cardView.swapRateCell.titleLabel.text = strings.stakingSubtensorUiSwapRate()
         cardView.networkFeeCell.titleLabel.text = strings.commonNetworkFee()
 
+        let skeletonView = rootView.pickSkeletonView
+        skeletonView.receiveTitleLabel.text = strings.stakingSubtensorUiYouWillGet()
+        skeletonView.swapRateTitleLabel.text = strings.stakingSubtensorUiSwapRate()
+        skeletonView.networkFeeTitleLabel.text = strings.commonNetworkFee()
+
         rootView.avgBuyPriceCell.titleLabel.text = strings.stakingSubtensorUiAvgBuyPrice()
 
         setupAmountInputAccessoryView()
@@ -80,7 +85,11 @@ private extension SubtensorStakingSetupViewController {
             for: .touchUpInside
         )
         rootView.rootPickCardView.browseButton.addTarget(self, action: #selector(actionBrowse), for: .touchUpInside)
-        rootView.selectionAlert.onLinkTap = { [weak self] in self?.presenter.retryQuickPick() }
+        rootView.selectionAlert.learnMoreButton.addTarget(
+            self,
+            action: #selector(actionRetryQuickPick),
+            for: .touchUpInside
+        )
         rootView.actionButton.addTarget(self, action: #selector(actionProceed), for: .touchUpInside)
     }
 
@@ -107,24 +116,22 @@ private extension SubtensorStakingSetupViewController {
     }
 
     func applyDetails(_ details: SubtensorSetupDetailsViewModel) {
-        rootView.selectionAlert.isHidden = true
         rootView.rootPickCardView.isHidden = true
+        rootView.setSelection(details.selection)
         switch details {
-        case let .selection(section, message, retryTitle):
+        case let .selection(viewModel):
             rootView.detailsTableView.isHidden = true
             rootView.pickCardView.isHidden = true
+            rootView.browseButton.isHidden = true
             rootView.sectionLabel.isHidden = false
-            rootView.sectionLabel.text = section
-            rootView.selectionAlert.isHidden = false
-            rootView.selectionAlert.contentView.detailsLabel.text = message
-            rootView.selectionAlert.setLink(title: retryTitle)
+            rootView.setSection(viewModel.section)
             applyAvgBuyPrice(.hidden)
         case let .root(viewModel):
             rootView.detailsTableView.isHidden = viewModel.isQuickPick
             rootView.rootPickCardView.isHidden = !viewModel.isQuickPick
             rootView.sectionLabel.isHidden = !viewModel.isQuickPick
             let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
-            rootView.sectionLabel.text = strings.stakingSubtensorQuickRootSection()
+            rootView.setSection(strings.stakingSubtensorQuickRootSection())
             rootView.pickCardView.isHidden = true
 
             applyAvgBuyPrice(.hidden)
@@ -137,7 +144,7 @@ private extension SubtensorStakingSetupViewController {
             rootView.sectionLabel.isHidden = false
             rootView.pickCardView.isHidden = false
 
-            rootView.sectionLabel.text = viewModel.sectionTitle
+            rootView.setSection(viewModel.sectionTitle)
             rootView.pickCardView.bind(viewModel: viewModel.card)
 
             applyAvgBuyPrice(viewModel.avgBuyPrice)
@@ -168,6 +175,8 @@ private extension SubtensorStakingSetupViewController {
     }
 
     @objc func actionBrowse() { presenter.showAllSubnets() }
+
+    @objc func actionRetryQuickPick() { presenter.retryQuickPick() }
 
     @objc func actionMax() {
         presenter.selectMax()
@@ -229,8 +238,7 @@ extension SubtensorStakingSetupViewController: SubtensorStakingSetupViewProtocol
         applyMax(viewModel.maxAmount, isAccented: viewModel.getTao != nil)
         applyGetTao(viewModel.getTao)
 
-        rootView.reserveAlertView.isHidden = viewModel.reserveWarning == nil
-        rootView.reserveAlertView.contentView.detailsLabel.text = viewModel.reserveWarning
+        rootView.setReserveWarning(viewModel.reserveWarning)
 
         rootView.browseButton.setTitle(viewModel.browseTitle, for: .normal)
         if case .subnet = viewModel.details {
