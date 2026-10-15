@@ -1,12 +1,14 @@
 import UIKit
 
 final class SubtensorPortfolioPositionView: UIControl {
-    let iconView: UIImageView = .create { view in
-        view.contentMode = .scaleAspectFit
+    let iconView: AssetIconView = .create { view in
+        view.backgroundView.cornerRadius = Constants.iconSize.height / 2
+        view.imageView.layer.cornerRadius = Constants.iconSize.height / 2
+        view.imageView.clipsToBounds = true
     }
 
     let titleLabel: UILabel = .create { label in
-        label.apply(style: .regularBodyPrimary)
+        label.apply(style: .semiboldBodyPrimary)
     }
 
     let subtitleLabel: UILabel = .create { label in
@@ -14,7 +16,6 @@ final class SubtensorPortfolioPositionView: UIControl {
     }
 
     let valueLabel: UILabel = .create { label in
-        label.apply(style: .semiboldBodyPrimary)
         label.textAlignment = .right
     }
 
@@ -24,11 +25,9 @@ final class SubtensorPortfolioPositionView: UIControl {
     }
 
     let chevronView: UIImageView = .create { view in
-        view.image = R.image.iconChevronRight()?.tinted(with: R.color.colorIconSecondary()!)
+        view.image = R.image.iconSmallArrow()?.tinted(with: R.color.colorIconSecondary()!)
         view.contentMode = .scaleAspectFit
     }
-
-    private var imageViewModel: ImageViewModelProtocol?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -45,14 +44,12 @@ final class SubtensorPortfolioPositionView: UIControl {
     }
 
     func bind(viewModel: SubtensorPortfolioRowViewModel) {
-        imageViewModel?.cancel(on: iconView)
-        imageViewModel = viewModel.icon
-        viewModel.icon.loadImage(on: iconView, targetSize: Constants.iconSize, animated: false)
+        iconView.bind(viewModel: viewModel.icon, size: Constants.iconSize)
 
         titleLabel.text = viewModel.title
         subtitleLabel.text = viewModel.subtitle
         subtitleLabel.isHidden = viewModel.subtitle == nil
-        valueLabel.text = viewModel.value
+        bind(value: viewModel.value, symbol: viewModel.symbol)
 
         switch viewModel.detail {
         case .none:
@@ -72,14 +69,32 @@ final class SubtensorPortfolioPositionView: UIControl {
 
 private extension SubtensorPortfolioPositionView {
     enum Constants {
-        static let iconSize = CGSize(width: 32, height: 32)
-        static let chevronSize: CGFloat = 16
+        static let iconSize = CGSize(width: 40, height: 40)
+        static let chevronSize: CGFloat = 20
         static let minHeight: CGFloat = 64
+        static let titleHeight: CGFloat = 22
+        static let detailHeight: CGFloat = 18
+    }
+
+    func bind(value: String, symbol: String) {
+        let text = NSMutableAttributedString(string: value, attributes: [
+            .font: UIFont.semiBoldBody,
+            .foregroundColor: R.color.colorTextPrimary()!
+        ])
+
+        if let range = value.range(of: symbol, options: .backwards) {
+            text.addAttributes(
+                [.font: UIFont.semiBoldSubheadline, .foregroundColor: R.color.colorTextSecondary()!],
+                range: NSRange(range, in: value)
+            )
+        }
+
+        valueLabel.attributedText = text
     }
 
     func setupLayout() {
-        let titleView = UIView.vStack(alignment: .leading, spacing: 2, [titleLabel, subtitleLabel])
-        let valueView = UIView.vStack(alignment: .trailing, spacing: 2, [valueLabel, detailLabel])
+        let titleView = UIView.vStack(alignment: .leading, [titleLabel, subtitleLabel])
+        let valueView = UIView.vStack(alignment: .trailing, [valueLabel, detailLabel])
 
         let contentView = UIView.hStack(
             alignment: .center,
@@ -87,12 +102,12 @@ private extension SubtensorPortfolioPositionView {
             [iconView, titleView, UIView(), valueView, chevronView]
         )
 
-        contentView.setCustomSpacing(8, after: valueView)
+        contentView.setCustomSpacing(20, after: valueView)
         contentView.isUserInteractionEnabled = false
 
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16)
+            make.leading.trailing.equalToSuperview().inset(12)
             make.top.bottom.equalToSuperview().inset(12)
         }
 
@@ -106,6 +121,18 @@ private extension SubtensorPortfolioPositionView {
 
         chevronView.snp.makeConstraints { make in
             make.size.equalTo(Constants.chevronSize)
+        }
+
+        [titleLabel, valueLabel].forEach { label in
+            label.snp.makeConstraints { make in
+                make.height.equalTo(Constants.titleHeight)
+            }
+        }
+
+        [subtitleLabel, detailLabel].forEach { label in
+            label.snp.makeConstraints { make in
+                make.height.equalTo(Constants.detailHeight)
+            }
         }
 
         titleLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)

@@ -354,6 +354,7 @@ final class SubtensorChartLoadingView: UIView, SkeletonableView {
     var skeletonView: SkrullableView?
     var skeletonSuperview: UIView { self }
     var hidingViews: [UIView] { [] }
+    var skeletonCornerRadius: CGFloat?
 
     private var loading = false
 
@@ -379,12 +380,15 @@ final class SubtensorChartLoadingView: UIView, SkeletonableView {
     }
 
     func createSkeletons(for size: CGSize) -> [Skeletonable] {
-        [SingleSkeleton.createRow(
+        let cornerRadii = skeletonCornerRadius.map { CGSize(width: $0 / size.width, height: $0 / size.height) }
+
+        return [SingleSkeleton.createRow(
             on: self,
             containerView: self,
             spaceSize: size,
             offset: .zero,
-            size: size
+            size: size,
+            cornerRadii: cornerRadii ?? CGSize(width: 0.5, height: 0.5)
         )]
     }
 }
