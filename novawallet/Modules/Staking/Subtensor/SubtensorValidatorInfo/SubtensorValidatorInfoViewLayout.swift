@@ -14,10 +14,7 @@ final class SubtensorValidatorInfoViewLayout: UIView {
         view.isUserInteractionEnabled = false
     }
 
-    let stakingTitleLabel: UILabel = .create { label in
-        label.font = .semiBoldCaps1
-        label.textColor = R.color.colorTextSecondary()
-    }
+    let stakingTitleLabel = UILabel(style: .semiboldCaps1Secondary, numberOfLines: 1)
 
     let stakingTableView: StackTableView = .create { view in
         view.isHidden = true
@@ -99,7 +96,7 @@ final class SubtensorValidatorInfoViewLayout: UIView {
     func setupLocalization(for locale: Locale) {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
-        stakingTitleLabel.text = strings.stakingSubtensorUiValidatorInfoStaking().uppercased(with: locale)
+        stakingTitleLabel.applySubtensorCaps(strings.stakingSubtensorUiValidatorInfoStaking().uppercased(with: locale))
         coverageCell.titleLabel.text = strings.stakingSubtensorV22Coverage()
         statusCell.titleLabel.text = strings.commonStatus()
         takeCell.titleLabel.text = strings.stakingSubtensorUiValidatorInfoTake()

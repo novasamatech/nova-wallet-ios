@@ -78,12 +78,12 @@ private extension SubtensorUnstakeSetupVC {
         titleView.buttonTitle.text = header.prefix
 
         if let link = header.link {
-            titleView.buttonTitle.apply(style: .footnoteSecondary)
-            titleView.buttonValue.apply(style: .footnoteSecondary)
+            titleView.buttonTitle.apply(style: .regularSubhedlineSecondary)
+            titleView.buttonValue.apply(style: .regularSubhedlineSecondary)
             titleView.buttonValue.attributedText = createLinkText(header.value ?? "", link: link)
         } else {
-            titleView.buttonTitle.apply(style: .footnoteAccentText)
-            titleView.buttonValue.apply(style: .footnotePrimary)
+            titleView.buttonTitle.apply(style: .regularSubhedlineAccent)
+            titleView.buttonValue.apply(style: .regularSubhedlinePrimary)
             titleView.buttonValue.text = header.value
         }
 
@@ -97,7 +97,7 @@ private extension SubtensorUnstakeSetupVC {
         let attributedText = NSMutableAttributedString(
             string: text,
             attributes: [
-                .font: UIFont.regularFootnote,
+                .font: UIFont.regularSubheadline,
                 .foregroundColor: R.color.colorTextSecondary()!
             ]
         )
