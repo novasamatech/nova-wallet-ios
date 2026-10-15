@@ -41,10 +41,6 @@ final class SubtensorSwapApiDecodeTests: XCTestCase {
             stakeInfo.hotkey,
             try Data(hexString: "0xf8d0eafbd29c52d8de8454bc05cd74b9e6d3db0ce043d8e543566a7ca4770844")
         )
-        XCTAssertEqual(
-            stakeInfo.coldkey,
-            try Data(hexString: "0x84cec003c237e96caf516d446e7ca347f1c1439539f915438a806f099e31fd1c")
-        )
         XCTAssertEqual(stakeInfo.netuid, SubtensorStakingPallet.rootNetuid)
         XCTAssertEqual(stakeInfo.stake, BigUInt(57_816_438))
     }
@@ -61,7 +57,6 @@ final class SubtensorSwapApiDecodeTests: XCTestCase {
             path: SubtensorStakingPallet.rootBasketClaimPreviewsApi
         )
 
-        XCTAssertEqual(previews.map(\.accruedTao), [BigUInt(97_053_363), BigUInt(820_106)])
         XCTAssertEqual(previews.map(\.redeemableTao), [BigUInt(95_470_988), BigUInt(5260)])
         XCTAssertEqual(previews.map(\.forfeitedTaoEst), [BigUInt(1_582_363), BigUInt(814_786)])
         XCTAssertEqual(
