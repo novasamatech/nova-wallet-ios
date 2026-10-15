@@ -17,25 +17,28 @@ enum SubtensorApyFormatter {
         case .leading:
             return strings.stakingSubtensorUiRateApyLeadingFormat(rateText(annualRate, locale: locale))
         case .trailing:
-            return strings.stakingSubtensorUiRateApyTrailingFormat(rateText(annualRate, locale: locale))
+            return strings.stakingSubtensorUiRateApyTrailingFormat(validatorRateText(annualRate, locale: locale))
         case .paidInTao:
             return strings.stakingSubtensorUiRatePaidInTaoFormat(rateText(annualRate, locale: locale))
         case .bare:
             return rateText(annualRate, locale: locale)
         case .column:
-            let formatter = NumberFormatter()
-            formatter.numberStyle = .percent
-            formatter.roundingMode = .halfEven
-            formatter.locale = locale
-            formatter.minimumFractionDigits = 1
-            formatter.maximumFractionDigits = 1
-            formatter.spacePercentSymbol()
-            return rateText(annualRate, formatter: formatter, locale: locale)
+            return validatorRateText(annualRate, locale: locale)
         }
     }
 }
 
 private extension SubtensorApyFormatter {
+    static func validatorRateText(_ annualRate: Decimal?, locale: Locale) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .percent
+        formatter.roundingMode = .halfEven
+        formatter.locale = locale
+        formatter.maximumFractionDigits = 1
+        formatter.spacePercentSymbol()
+        return rateText(annualRate, formatter: formatter, locale: locale)
+    }
+
     static func rateText(
         _ annualRate: Decimal?,
         formatter: NumberFormatter? = nil,
@@ -61,6 +64,15 @@ extension NumberFormatter {
     static var subtensorPercentSingle: LocalizableResource<NumberFormatter> {
         LocalizableResource { locale in
             let formatter = NumberFormatter.percentSingle
+            formatter.locale = locale
+            formatter.spacePercentSymbol()
+            return formatter
+        }
+    }
+
+    static var subtensorPercentSingleHalfEven: LocalizableResource<NumberFormatter> {
+        LocalizableResource { locale in
+            let formatter = NumberFormatter.percentSingleHalfEven
             formatter.locale = locale
             formatter.spacePercentSymbol()
             return formatter
