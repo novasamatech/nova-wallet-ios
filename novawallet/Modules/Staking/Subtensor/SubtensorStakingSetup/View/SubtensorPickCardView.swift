@@ -26,7 +26,6 @@ final class SubtensorPickCardView: UIView {
 
         backgroundColor = R.color.colorBlockBackground()
         layer.cornerRadius = Constants.cornerRadius
-        clipsToBounds = true
 
         setupLayout()
     }
@@ -37,6 +36,7 @@ final class SubtensorPickCardView: UIView {
     }
 
     func bind(viewModel: SubtensorPickCardViewModel) {
+        clipsToBounds = !viewModel.isRoot
         validatorCell.bind(
             validator: viewModel.validator,
             rate: viewModel.validatorRate,
@@ -54,7 +54,7 @@ final class SubtensorPickCardView: UIView {
         let rows: [StackTableViewCellProtocol] = [validatorCell, receiveCell, swapRateCell, networkFeeCell]
         rows.forEach { SubtensorDividerStyle.apply(to: $0, hasPrevious: false) }
         rows.filter { !$0.isHidden }.enumerated().forEach { index, cell in
-            SubtensorDividerStyle.apply(to: cell, hasPrevious: index > 0 || viewModel.hasHeaderDivider)
+            SubtensorDividerStyle.apply(to: cell, hasPrevious: index > 0 || viewModel.isRoot)
         }
     }
 
