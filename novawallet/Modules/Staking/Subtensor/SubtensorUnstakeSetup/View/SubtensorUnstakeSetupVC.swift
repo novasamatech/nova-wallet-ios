@@ -78,12 +78,12 @@ private extension SubtensorUnstakeSetupVC {
         titleView.buttonTitle.text = header.prefix
 
         if let link = header.link {
-            titleView.buttonTitle.apply(style: .footnoteSecondary)
-            titleView.buttonValue.apply(style: .footnoteSecondary)
+            titleView.buttonTitle.apply(style: .regularSubhedlineSecondary)
+            titleView.buttonValue.apply(style: .regularSubhedlineSecondary)
             titleView.buttonValue.attributedText = createLinkText(header.value ?? "", link: link)
         } else {
-            titleView.buttonTitle.apply(style: .footnoteAccentText)
-            titleView.buttonValue.apply(style: .footnotePrimary)
+            titleView.buttonTitle.apply(style: .regularSubhedlineAccent)
+            titleView.buttonValue.apply(style: .regularSubhedlinePrimary)
             titleView.buttonValue.text = header.value
         }
 
@@ -97,7 +97,7 @@ private extension SubtensorUnstakeSetupVC {
         let attributedText = NSMutableAttributedString(
             string: text,
             attributes: [
-                .font: UIFont.regularFootnote,
+                .font: UIFont.regularSubheadline,
                 .foregroundColor: R.color.colorTextSecondary()!
             ]
         )
@@ -162,16 +162,19 @@ private extension SubtensorUnstakeSetupVC {
 
     func applyNotes(_ viewModel: SubtensorUnstakeSetupViewModel) {
         rootView.noteView.isHidden = viewModel.note == nil
-        rootView.noteLabel.text = viewModel.note
+        rootView.noteLabel.apply(text: viewModel.note ?? "", lineHeight: Constants.noteLineHeight)
 
         rootView.feeAlertView.isHidden = viewModel.feeWarning == nil
-        rootView.feeAlertView.contentView.detailsLabel.text = viewModel.feeWarning
+        rootView.feeAlertView.contentView.detailsLabel.apply(
+            text: viewModel.feeWarning ?? "",
+            lineHeight: Constants.alertLineHeight
+        )
 
         rootView.holdAlertView.isHidden = viewModel.holdWarning == nil
-        rootView.holdAlertView.contentView.detailsLabel.text = viewModel.holdWarning
-
-        rootView.captionLabel.isHidden = viewModel.caption == nil
-        rootView.captionLabel.text = viewModel.caption
+        rootView.holdAlertView.contentView.detailsLabel.apply(
+            text: viewModel.holdWarning ?? "",
+            lineHeight: Constants.alertLineHeight
+        )
     }
 
     @objc func actionMax() {
@@ -241,5 +244,12 @@ extension SubtensorUnstakeSetupVC: Localizable {
         if isViewLoaded {
             setupLocalization()
         }
+    }
+}
+
+private extension SubtensorUnstakeSetupVC {
+    enum Constants {
+        static let noteLineHeight: CGFloat = 18
+        static let alertLineHeight: CGFloat = 16
     }
 }

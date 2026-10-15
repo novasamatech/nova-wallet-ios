@@ -206,9 +206,9 @@ private extension SubtensorConfirmViewModelFactory {
             slippage: input.model.tolerance.flatMap {
                 quoteViewModelFactory.createSlippageViewModel(for: $0, locale: locale)
             },
-            validatorApy: input.model.validator.annualRate.map {
-                SubtensorApyFormatter.text(for: $0, style: .trailing, locale: locale)
-            },
+            validatorApy: input.model.direction == .buy ? input.model.validator.annualRate.map {
+                SubtensorApyFormatter.text(for: $0, style: .leading, locale: locale)
+            } : nil,
             remark: createRemark(
                 for: input.model.direction, isProfitEstimated: costBasis.isEarnedEstimated, locale: locale
             ),

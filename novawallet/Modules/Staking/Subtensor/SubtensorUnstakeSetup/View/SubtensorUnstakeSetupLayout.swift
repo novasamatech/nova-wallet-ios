@@ -56,9 +56,12 @@ final class SubtensorUnstakeSetupLayout: SubtensorAmountSetupLayout {
         super.setupLayout()
 
         bottomStack.insertArrangedSubview(holdAlertView, at: 0)
-        bottomStack.setCustomSpacing(12, after: holdAlertView)
 
         containerView.stackView.setCustomSpacing(16.0, after: amountInputView)
+
+        amountInputView.iconRadius = Constants.inputIconRadius
+        amountInputView.iconView.imageView.layer.cornerRadius = Constants.inputIconRadius
+        amountInputView.iconView.imageView.clipsToBounds = true
 
         setupDetailsLayout()
     }
@@ -90,5 +93,11 @@ private extension SubtensorUnstakeSetupLayout {
 
         addSkeleton(validatorSkeletonView, to: validatorCell, width: 100)
         addSkeleton(subnetValidatorSkeletonView, to: subnetValidatorCell, width: 100)
+    }
+}
+
+private extension SubtensorUnstakeSetupLayout {
+    enum Constants {
+        static let inputIconRadius: CGFloat = 20
     }
 }

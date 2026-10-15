@@ -64,7 +64,6 @@ final class SubtensorConfirmViewLayout: UIView {
     let rootTableView: StackTableView = .create {
         $0.cellHeight = 44
         $0.hasSeparators = true
-        $0.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 8, right: 16)
     }
 
     let stakingTypeCell = StackTableCell()
@@ -84,7 +83,7 @@ final class SubtensorConfirmViewLayout: UIView {
     }
 
     let remarkLabel: UILabel = .create {
-        $0.apply(style: .footnoteSecondary)
+        $0.apply(style: .caption1Secondary)
         $0.textAlignment = .center
         $0.numberOfLines = 0
     }
@@ -193,12 +192,14 @@ private extension SubtensorConfirmViewLayout {
     }
 
     func setupRootContent(with rows: [StackTableViewCellProtocol]) {
+        stackView.layoutMargins.top = 24
         stackView.addArrangedSubview(amountView)
-        stackView.setCustomSpacing(24, after: amountView)
+        stackView.setCustomSpacing(32, after: amountView)
 
         stackView.addArrangedSubview(walletTableView)
         stackView.setCustomSpacing(8, after: walletTableView)
 
+        walletTableView.contentInsets.bottom = 0
         walletTableView.addArrangedSubview(walletCell)
         walletTableView.addArrangedSubview(accountCell)
         walletTableView.addArrangedSubview(rootFeeCell)

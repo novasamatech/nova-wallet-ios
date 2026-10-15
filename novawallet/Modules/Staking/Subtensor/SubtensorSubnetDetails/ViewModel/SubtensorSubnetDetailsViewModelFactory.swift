@@ -85,9 +85,10 @@ extension SubtensorSubnetDetailsViewModelFactory {
         compactTokenFormatter.value(for: locale).stringFromDecimal(amount) ?? unknownValue(for: locale)
     }
 
-    func formatPercent(_ value: Decimal, locale: Locale) -> String {
-        let formatter = NumberFormatter.percentSingle
-        formatter.locale = locale
+    func formatPercent(_ value: Decimal, maximumFractionDigits: Int = 2, locale: Locale) -> String {
+        let formatter = NumberFormatter.subtensorPercentSingle.value(for: locale)
+        formatter.maximumFractionDigits = maximumFractionDigits
+        formatter.roundingMode = .halfEven
 
         return formatter.stringFromDecimal(value) ?? unknownValue(for: locale)
     }
@@ -101,10 +102,21 @@ extension SubtensorSubnetDetailsViewModelFactory {
 }
 
 private extension SubtensorSubnetDetailsViewModelFactory {
-    func createPriceWidgetParams(
+    func createPriceWidgetParams(for state: SubtensorSubnetDetailsState) -> SubtensorPriceWidgetParams {
+        SubtensorPriceWidgetParams(
+            history: state.history,
+            period: state.period,
+            isFiat: state.isFiat,
+            taoPrice: state.taoPrice,
+            currencyId: currency.id,
+            chartEndDate: state.chartEndDate
+        )
+    }
+
+    func createPriceHeaderParams(
         for state: SubtensorSubnetDetailsState,
         locale: Locale
-    ) -> SubtensorPriceWidgetParams {
+    ) -> SubtensorPriceHeaderParams {
         let caption = priceWidgetFactory.createCaption(
             subnetTitle: SubtensorSubnetNaming.titleWithSymbol(for: subnet, locale: locale),
             stamps: subnet.stamps,
@@ -118,16 +130,10 @@ private extension SubtensorSubnetDetailsViewModelFactory {
             isEnabled: state.taoPrice != nil || state.isFiat
         )
 
-        return SubtensorPriceWidgetParams(
+        return SubtensorPriceHeaderParams(
             caption: caption,
             spotPrice: subnet.taoPerAlpha.decimal(assetInfo: chainAsset.assetDisplayInfo),
-            history: state.history,
-            period: state.period,
-            isFiat: state.isFiat,
-            taoPrice: state.taoPrice,
-            currencyId: currency.id,
             currency: currencyViewModel,
-            chartEndDate: state.chartEndDate,
             selection: state.chartSelection
         )
     }
@@ -149,7 +155,7 @@ private extension SubtensorSubnetDetailsViewModelFactory {
             icon: display?.imageViewModel,
             name: name,
             subtitle: strings.stakingCommonValidator(),
-            rate: rate.map { .loaded(SubtensorApyFormatter.text(for: $0, style: .bare, locale: locale)) } ?? .hidden,
+            rate: item == nil ? .hidden : .loaded(SubtensorApyFormatter.text(for: rate, style: .bare, locale: locale)),
             rateCaption: strings.stakingSubtensorV22EstApy()
         )
     }
@@ -172,7 +178,8 @@ extension SubtensorSubnetDetailsViewModelFactory: SubnetDetailsViewModelFactoryP
 
         return SubtensorSubnetDetailsViewModel(
             priceWidget: priceWidgetFactory.createWidget(
-                for: createPriceWidgetParams(for: state, locale: locale),
+                for: createPriceWidgetParams(for: state),
+                header: createPriceHeaderParams(for: state, locale: locale),
                 locale: locale
             ),
             validator: createValidator(for: state, locale: locale),
@@ -190,6 +197,10 @@ extension SubtensorSubnetDetailsViewModelFactory: SubnetDetailsViewModelFactoryP
         for state: SubtensorSubnetDetailsState,
         locale: Locale
     ) -> SubtensorSubnetPriceHeaderViewModel {
-        priceWidgetFactory.createHeader(for: createPriceWidgetParams(for: state, locale: locale), locale: locale)
+        priceWidgetFactory.createHeader(
+            createPriceHeaderParams(for: state, locale: locale),
+            for: createPriceWidgetParams(for: state),
+            locale: locale
+        )
     }
 }

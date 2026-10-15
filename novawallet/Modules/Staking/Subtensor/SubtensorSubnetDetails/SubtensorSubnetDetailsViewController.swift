@@ -41,8 +41,6 @@ final class SubtensorSubnetDetailsViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.titleView = rootView.titleView
-
         setupHandlers()
         setupLocalization()
 
@@ -52,7 +50,8 @@ final class SubtensorSubnetDetailsViewController: UIViewController, ViewHolder {
 
 private extension SubtensorSubnetDetailsViewController {
     enum Constants {
-        static let titleIconSize = CGSize(width: 24, height: 24)
+        static let titleIconSize = CGSize(width: 28, height: 28)
+        static let titleSpacing: CGFloat = 8
     }
 
     func setupHandlers() {
@@ -70,8 +69,8 @@ private extension SubtensorSubnetDetailsViewController {
     func setupLocalization() {
         let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
 
-        rootView.validatorCaptionLabel.text = strings.stakingSubtensorV22Validators()
-        rootView.parametersHeadingLabel.text = strings.stakingSubtensorV22Parameters()
+        rootView.validatorCaptionLabel.applySubtensorCaps(strings.stakingSubtensorV22Validators())
+        rootView.parametersHeadingLabel.applySubtensorCaps(strings.stakingSubtensorV22Parameters())
 
         rootView.moreDetailsView.titleControl.titleLabel.text = strings.stakingSubtensorUiDetailMore()
         rootView.moreDetailsView.titleControl.invalidateLayout()
@@ -108,13 +107,25 @@ private extension SubtensorSubnetDetailsViewController {
 
 extension SubtensorSubnetDetailsViewController: SubtensorSubnetDetailsViewProtocol {
     func didReceive(title: SubtensorSubnetDetailsTitleViewModel) {
-        let titleView = rootView.titleView
+        if let titleView = navigationItem.titleView as? IconDetailsView {
+            titleImageViewModel?.cancel(on: titleView.imageView)
+        }
 
-        titleImageViewModel?.cancel(on: titleView.imageView)
+        let titleView: IconDetailsView = .create { view in
+            view.detailsLabel.apply(style: .semiboldBodyPrimary)
+            view.detailsLabel.text = title.title
+            view.imageView.contentMode = .scaleAspectFit
+            view.imageView.layer.cornerRadius = Constants.titleIconSize.height / 2
+            view.imageView.clipsToBounds = true
+            view.iconWidth = Constants.titleIconSize.width
+            view.spacing = Constants.titleSpacing
+            view.imageView.snp.makeConstraints { $0.height.equalTo(Constants.titleIconSize.height) }
+        }
+
         titleImageViewModel = title.icon
-
-        titleView.detailsLabel.text = title.title
         title.icon.loadImage(on: titleView.imageView, targetSize: Constants.titleIconSize, animated: true)
+
+        navigationItem.titleView = titleView
     }
 
     func didReceive(viewModel: SubtensorSubnetDetailsViewModel) {

@@ -49,7 +49,9 @@ final class SubtensorPortfolioViewController: UIViewController, ViewHolder {
 private extension SubtensorPortfolioViewController {
     func setupHandlers() {
         rootView.addButton.addTarget(self, action: #selector(actionAdd), for: .touchUpInside)
-        rootView.syncNoticeControl.addTarget(self, action: #selector(actionRetry), for: .touchUpInside)
+        rootView.syncNoticeView.addGestureRecognizer(
+            UITapGestureRecognizer(target: self, action: #selector(actionRetry))
+        )
         rootView.headerView.periodControl.addTarget(self, action: #selector(actionPeriod), for: .valueChanged)
         rootView.headerView.chartView.delegate = self
 
@@ -67,16 +69,16 @@ private extension SubtensorPortfolioViewController {
 
         rootView.headerView.captionLabel.text = strings.stakingSubtensorUiPortfolioTotal()
         rootView.headerView.ratesAlertView.contentView.detailsLabel.text = ratesUnavailable
-        rootView.positionsCaptionLabel.text = strings.stakingSubtensorUiPortfolioPositions()
-        rootView.syncNoticeLabel.text = strings.stakingSubtensorUiPortfolioSyncFailed()
+        rootView.positionsCaptionLabel.applySubtensorCaps(strings.stakingSubtensorUiPortfolioPositions())
+        rootView.syncNoticeView.contentView.detailsLabel.text = strings.stakingSubtensorUiPortfolioSyncFailed()
 
         let emptyView = rootView.emptyView
-        emptyView.captionLabel.text = strings.stakingSubtensorUiPortfolioEmptyCaption()
-        emptyView.subnetCardView.titleLabel.text = strings.stakingSubtensorUiPortfolioEmptySubnetTitle()
-        emptyView.subnetCardView.subtitleLabel.text = strings.stakingSubtensorUiPortfolioEmptySubnetSubtitle()
-        emptyView.rootCardView.titleLabel.text = strings.stakingSubtensorUiPortfolioEmptyRootTitle()
-        emptyView.unstakeCardView.titleLabel.text = strings.stakingSubtensorUiPortfolioEmptyUnstakeTitle()
-        emptyView.unstakeCardView.subtitleLabel.text = strings.stakingSubtensorUiPortfolioEmptyUnstakeSubtitle()
+        emptyView.bind(caption: strings.stakingSubtensorUiPortfolioEmptyCaption())
+        emptyView.subnetCardView.bind(title: strings.stakingSubtensorUiPortfolioEmptySubnetTitle())
+        emptyView.subnetCardView.bind(subtitle: strings.stakingSubtensorUiPortfolioEmptySubnetSubtitle())
+        emptyView.rootCardView.bind(title: strings.stakingSubtensorUiPortfolioEmptyRootTitle())
+        emptyView.unstakeCardView.bind(title: strings.stakingSubtensorUiPortfolioEmptyUnstakeTitle())
+        emptyView.unstakeCardView.bind(subtitle: strings.stakingSubtensorUiPortfolioEmptyUnstakeSubtitle())
 
         rootView.addButton.imageWithTitleView?.title = strings.stakingSubtensorUiPortfolioAdd()
         rootView.addButton.invalidateLayout()

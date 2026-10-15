@@ -185,7 +185,6 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
             return
         }
 
-        state.chartSelection = nil
         state.period = periods[index]
         requestHistoryIfNeeded()
         provideViewModel()
@@ -236,14 +235,6 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
         requestHistoryIfNeeded()
         provideViewModel()
     }
-
-    func selectChart(_ selection: SubtensorPriceChartSelection?) {
-        state.chartSelection = selection
-
-        if let header = viewModelFactory.createPriceHeader(for: state, locale: selectedLocale) {
-            view?.didReceive(priceHeader: header)
-        }
-    }
 }
 
 extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
@@ -273,7 +264,6 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
     }
 
     func didChangeCurrency() {
-        state.chartSelection = nil
         state.price = .loading
         provideViewModel()
     }

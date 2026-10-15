@@ -9,25 +9,23 @@ extension SubtensorSubnetDetailsViewModelFactory {
         let parameters = state.parameters
         let pool = subnet.taoReserve + subnet.alphaReserve
         let split = pool > 0 ? BigRational(numerator: subnet.taoReserve, denominator: pool).decimalValue : nil
+        let taoShare = split.map { formatPercent($0, maximumFractionDigits: 1, locale: locale) }
+        let alphaShare = split.map { formatPercent(1 - $0, maximumFractionDigits: 1, locale: locale) }
         let age = parameters?.age.flatMap { interval -> String? in
             let formatter = DateComponentsFormatter()
             formatter.calendar = Calendar(identifier: .gregorian)
             formatter.calendar?.locale = locale
-            formatter.allowedUnits = [.year, .month, .day, .hour, .minute]
+            formatter.allowedUnits = [.month, .day, .hour, .minute]
             formatter.maximumUnitCount = 1
             formatter.unitsStyle = .full
-            return formatter.string(from: interval).map { strings.stakingSubtensorV22ApproximateFormat($0) }
+            return formatter.string(from: interval)
         }
         return SubtensorSubnetParametersViewModel(
             split: split,
-            taoShare: strings.stakingSubtensorV22PoolShareFormat(
-                strings.stakingSubtensorV22TaoPool(),
-                split.map { formatPercent($0, locale: locale) } ?? unknownValue(for: locale)
-            ),
-            alphaShare: strings.stakingSubtensorV22PoolShareFormat(
-                strings.stakingSubtensorV22AlphaPool(),
-                split.map { formatPercent(1 - $0, locale: locale) } ?? unknownValue(for: locale)
-            ),
+            taoTitle: strings.stakingSubtensorV22TaoPool(),
+            taoShare: taoShare ?? unknownValue(for: locale),
+            alphaTitle: strings.stakingSubtensorV22AlphaPool(),
+            alphaShare: alphaShare ?? unknownValue(for: locale),
             rows: [
                 row(strings.stakingSubtensorUiPickerAge(), value: age, state: state, locale: locale),
                 row(

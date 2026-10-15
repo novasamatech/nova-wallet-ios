@@ -54,8 +54,7 @@ final class SubtensorSortSheetViewLayout: UIView {
 
         let optionsHeight = viewModel.options.reduce(CGFloat(0)) { $0 + rowHeight(for: $1) }
 
-        return Constants.titleTopInset + ceil(titleHeight) + Constants.optionsTopSpacing + optionsHeight +
-            Constants.bottomInset
+        return Constants.titleTopInset + ceil(titleHeight) + Constants.optionsTopSpacing + optionsHeight
     }
 }
 
@@ -81,7 +80,6 @@ private extension SubtensorSortSheetViewLayout {
     enum Constants {
         static let titleTopInset: CGFloat = 8
         static let optionsTopSpacing: CGFloat = 10
-        static let bottomInset: CGFloat = 16
         static let titleRowHeight: CGFloat = 52
         static let subtitleRowHeight: CGFloat = 54
     }
@@ -112,7 +110,7 @@ final class SubtensorSortSheetOptionView: RowView<GenericTitleValueView<GenericM
 
         radioView.image = isSelected
             ? R.image.iconRadioButtonSelected()
-            : R.image.iconRadioButtonUnselected()
+            : R.image.iconRadioButtonUnselected()?.tinted(with: R.color.colorRadioBorder()!)
     }
 }
 
@@ -124,7 +122,7 @@ private extension SubtensorSortSheetOptionView {
         subtitleLabel.apply(style: .caption1Secondary)
         subtitleLabel.textAlignment = .left
 
-        radioView.contentMode = .scaleAspectFit
+        radioView.contentMode = .center
         radioView.snp.makeConstraints { make in
             make.size.equalTo(Constants.radioSize)
         }

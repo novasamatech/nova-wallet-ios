@@ -14,10 +14,24 @@ struct SubtensorStakingSetupViewModel {
     let action: SubtensorSetupActionViewModel
 }
 
+struct SubtensorSetupSelectionViewModel {
+    let section: String
+    let caption: String
+    let failure: WarningView.Model?
+}
+
 enum SubtensorSetupDetailsViewModel {
-    case selection(section: String, message: String, retryTitle: String?)
+    case selection(SubtensorSetupSelectionViewModel)
     case root(SubtensorSetupRootViewModel)
     case subnet(SubtensorSetupSubnetViewModel)
+
+    var selection: SubtensorSetupSelectionViewModel? {
+        if case let .selection(viewModel) = self {
+            return viewModel
+        }
+
+        return nil
+    }
 }
 
 enum SubtensorRootEntryPresentation {
@@ -25,9 +39,14 @@ enum SubtensorRootEntryPresentation {
     case quickPickRoot
 }
 
+enum SubtensorSetupRootValidatorViewModel {
+    case card(SubtensorValidatorCardViewModel)
+    case rows(validator: StackCellViewModel, apy: String)
+}
+
 struct SubtensorSetupRootViewModel {
     let icon: ImageViewModelProtocol
-    let validator: SubtensorValidatorCardViewModel
+    let validator: SubtensorSetupRootValidatorViewModel
     let compactValidator: SubtensorSetupValidatorViewModel
     let compactRate: String?
     let isQuickPick: Bool

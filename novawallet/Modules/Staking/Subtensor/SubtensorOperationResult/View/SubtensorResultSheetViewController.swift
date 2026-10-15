@@ -97,9 +97,9 @@ extension ModalSheetPresentationConfiguration {
             preferredHeight: 20.0,
             backgroundColor: R.color.colorBottomSheetBackground()!,
             cornerRadius: 16.0,
-            indicatorVerticalOffset: 4.0,
-            indicatorSize: CGSize(width: 32.0, height: 3.0),
-            indicatorColor: .clear
+            indicatorVerticalOffset: 8.0,
+            indicatorSize: CGSize(width: 36.0, height: 4.0),
+            indicatorColor: R.color.colorPullIndicator()!
         )
 
         let style = ModalSheetPresentationStyle(

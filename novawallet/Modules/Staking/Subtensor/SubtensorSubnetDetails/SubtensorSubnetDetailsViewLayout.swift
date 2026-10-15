@@ -8,13 +8,6 @@ final class SubtensorSubnetDetailsViewLayout: UIView {
         view.stackView.alignment = .fill
     }
 
-    let titleView: IconDetailsView = .create { view in
-        view.detailsLabel.apply(style: .semiboldBodyPrimary)
-        view.imageView.contentMode = .scaleAspectFit
-        view.iconWidth = 24
-        view.spacing = 8
-    }
-
     let priceWidget = SubtensorPriceWidgetView()
 
     let validatorCaptionLabel = SubtensorSubnetDetailsViewLayout.createSectionLabel()
@@ -25,8 +18,12 @@ final class SubtensorSubnetDetailsViewLayout: UIView {
 
     let moreDetailsView = SubtensorSubnetMoreDetailsView()
 
+    let bottomPanel = SubtensorBottomPanelView(style: .solid)
+
     let favoriteButton: RoundedButton = .create { button in
         button.applyIconWithBackgroundStyle()
+        button.roundedBackgroundView?.fillColor = R.color.colorButtonBackgroundSecondary()!
+        button.roundedBackgroundView?.highlightedFillColor = R.color.colorButtonBackgroundSecondary()!
     }
 
     let actionButton: TriangularedButton = .create { button in
@@ -61,48 +58,43 @@ private extension SubtensorSubnetDetailsViewLayout {
     }
 
     static func createSectionLabel() -> UILabel {
-        .create { label in
-            label.apply(style: .semiboldCaps2Secondary)
-        }
+        UILabel(style: .semiboldCaps1Secondary, numberOfLines: 1)
     }
 
     func setupLayout() {
-        titleView.imageView.snp.makeConstraints { make in
-            make.height.equalTo(24)
-        }
-
         setupBottomBar()
         setupPriceWidget()
         setupSections()
     }
 
     func setupBottomBar() {
-        addSubview(favoriteButton)
-        addSubview(actionButton)
-
-        actionButton.snp.makeConstraints { make in
-            make.leading.equalTo(favoriteButton.snp.trailing).offset(12)
-            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
-            make.height.equalTo(UIConstants.actionHeight)
+        addSubview(bottomPanel)
+        bottomPanel.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
         }
 
+        bottomPanel.contentView.addSubview(favoriteButton)
         favoriteButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.centerY.equalTo(actionButton)
+            make.top.leading.bottom.equalToSuperview()
             make.size.equalTo(Constants.buttonSize)
+        }
+
+        bottomPanel.contentView.addSubview(actionButton)
+        actionButton.snp.makeConstraints { make in
+            make.leading.equalTo(favoriteButton.snp.trailing).offset(12)
+            make.top.trailing.bottom.equalToSuperview()
         }
 
         addSubview(containerView)
         containerView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(actionButton.snp.top).offset(-16)
+            make.bottom.equalTo(bottomPanel.snp.top)
         }
     }
 
     func setupPriceWidget() {
         containerView.stackView.addArrangedSubview(priceWidget)
-        containerView.stackView.setCustomSpacing(24, after: priceWidget)
+        containerView.stackView.setCustomSpacing(16, after: priceWidget)
     }
 
     func setupSections() {
@@ -112,14 +104,10 @@ private extension SubtensorSubnetDetailsViewLayout {
         ]
 
         sections.forEach { label, view in
-            label.snp.makeConstraints { make in
-                make.height.greaterThanOrEqualTo(16)
-            }
-
             containerView.stackView.addArrangedSubview(label)
             containerView.stackView.setCustomSpacing(8, after: label)
             containerView.stackView.addArrangedSubview(view)
-            containerView.stackView.setCustomSpacing(24, after: view)
+            containerView.stackView.setCustomSpacing(16, after: view)
         }
 
         let moreDetailsCard = UIView()
@@ -128,10 +116,9 @@ private extension SubtensorSubnetDetailsViewLayout {
         moreDetailsCard.addSubview(moreDetailsView)
 
         moreDetailsView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16))
+            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 6, left: 16, bottom: 6, right: 16))
         }
 
-        containerView.stackView.setCustomSpacing(12, after: validatorView)
         containerView.stackView.addArrangedSubview(moreDetailsCard)
     }
 }

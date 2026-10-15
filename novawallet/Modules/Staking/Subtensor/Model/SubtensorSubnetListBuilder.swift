@@ -25,6 +25,7 @@ struct SubtensorSubnetList: Equatable {
     let picks: [SubtensorSubnetListItem]
     let others: [SubtensorSubnetListItem]
     let emptyKind: EmptyKind?
+    let total: Int
 
     var count: Int {
         picks.count + others.count
@@ -53,7 +54,7 @@ struct SubtensorSubnetListBuilder {
         let others = sorted.filter { !favourites.contains($0.ref) }
         let emptyKind: SubtensorSubnetList.EmptyKind? = sorted.isEmpty
             ? (trimmedQuery.isEmpty ? .filters : .query(trimmedQuery)) : nil
-        return SubtensorSubnetList(picks: picks, others: others, emptyKind: emptyKind)
+        return SubtensorSubnetList(picks: picks, others: others, emptyKind: emptyKind, total: entries.count)
     }
 
     func orderedRefs(sort: SubtensorSubnetSort) -> [SubtensorSubnetRef] {

@@ -7,11 +7,11 @@ final class SubtensorPositionSummaryView: UIView {
     }
 
     let captionLabel: UILabel = .create { label in
-        label.apply(style: .footnoteSecondary)
+        label.apply(style: .caption1Secondary)
     }
 
     let amountLabel: UILabel = .create { label in
-        label.apply(style: .boldTitle1Primary)
+        label.apply(style: .boldTitle2Primary)
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.5
     }
@@ -27,7 +27,7 @@ final class SubtensorPositionSummaryView: UIView {
 
     let rowsStackView: UIStackView = .create { view in
         view.axis = .vertical
-        view.spacing = 0
+        view.spacing = Constants.spacing
     }
 
     private let iconSkeletonView: SubtensorChartLoadingView = .create { view in
@@ -91,6 +91,9 @@ final class SubtensorPositionSummaryView: UIView {
 
         if let isActive = viewModel.isActive {
             statusView.bind(status: isActive ? .active : .inactive, locale: locale)
+            statusView.backgroundView.fillColor = isActive
+                ? R.color.colorActiveStatusBackground()!
+                : R.color.colorChipsBackground()!
         }
 
         bind(rows: viewModel.rows)
@@ -101,6 +104,9 @@ private extension SubtensorPositionSummaryView {
     enum Constants {
         static let iconSize: CGFloat = 40
         static let skeletonHeight: CGFloat = 12
+        static let spacing: CGFloat = 10
+        static let valueLineHeight: CGFloat = 18
+        static let detailLineHeight: CGFloat = 16
     }
 
     static func createSkeleton() -> SubtensorChartLoadingView {
@@ -126,7 +132,7 @@ private extension SubtensorPositionSummaryView {
     }
 
     func setupLayout() {
-        let textView = UIView.vStack(alignment: .leading, spacing: 4, [captionLabel, amountLabel, fiatLabel])
+        let textView = UIView.vStack(alignment: .leading, spacing: 2, [captionLabel, amountLabel, fiatLabel])
         let headerView = UIView.hStack(alignment: .top, spacing: 12, [iconView, textView, UIView(), statusView])
 
         addSubview(headerView)
@@ -136,23 +142,25 @@ private extension SubtensorPositionSummaryView {
 
         addSubview(rowsStackView)
         rowsStackView.snp.makeConstraints { make in
-            make.top.equalTo(headerView.snp.bottom).offset(8)
+            make.top.equalTo(headerView.snp.bottom).offset(Constants.spacing)
             make.leading.trailing.equalToSuperview().inset(12)
-            make.bottom.equalToSuperview().inset(4)
+            make.bottom.equalToSuperview().inset(12)
         }
 
         iconView.snp.makeConstraints { make in
             make.size.equalTo(Constants.iconSize)
         }
 
-        [captionLabel, fiatLabel].forEach { label in
-            label.snp.makeConstraints { make in
-                make.height.greaterThanOrEqualTo(18)
-            }
+        captionLabel.snp.makeConstraints { make in
+            make.height.greaterThanOrEqualTo(16)
+        }
+
+        fiatLabel.snp.makeConstraints { make in
+            make.height.greaterThanOrEqualTo(18)
         }
 
         amountLabel.snp.makeConstraints { make in
-            make.height.greaterThanOrEqualTo(32)
+            make.height.greaterThanOrEqualTo(28)
         }
 
         textView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
@@ -248,9 +256,8 @@ private final class SubtensorPositionSummaryRowView: UIView {
 
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
-            make.top.equalTo(dividerView.snp.bottom).offset(12)
-            make.leading.trailing.equalToSuperview()
-            make.bottom.equalToSuperview().inset(12)
+            make.top.equalTo(dividerView.snp.bottom).offset(SubtensorPositionSummaryView.Constants.spacing)
+            make.leading.trailing.bottom.equalToSuperview()
             make.height.greaterThanOrEqualTo(24)
         }
 
@@ -259,6 +266,14 @@ private final class SubtensorPositionSummaryRowView: UIView {
             make.trailing.centerY.equalTo(contentView)
             make.width.equalTo(100)
             make.height.equalTo(12)
+        }
+
+        valueLabel.snp.makeConstraints { make in
+            make.height.equalTo(SubtensorPositionSummaryView.Constants.valueLineHeight)
+        }
+
+        detailLabel.snp.makeConstraints { make in
+            make.height.equalTo(SubtensorPositionSummaryView.Constants.detailLineHeight)
         }
 
         titleLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)

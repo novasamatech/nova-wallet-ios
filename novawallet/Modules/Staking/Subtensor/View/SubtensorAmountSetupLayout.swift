@@ -1,15 +1,20 @@
+import SnapKit
 import UIKit
 
 class SubtensorAmountSetupLayout: UIView {
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
-        view.stackView.layoutMargins = UIEdgeInsets(top: 16.0, left: 16.0, bottom: 16.0, right: 16.0)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 26.0, left: 16.0, bottom: 16.0, right: 16.0)
         view.stackView.isLayoutMarginsRelativeArrangement = true
         view.stackView.alignment = .fill
         return view
     }()
 
-    let amountTitleView = SwapSetupTitleView(frame: .zero)
+    let amountTitleView: SwapSetupTitleView = .create { view in
+        view.titleLabel.apply(style: .regularSubhedlineSecondary)
+        view.buttonTitle.apply(style: .regularSubhedlineAccent)
+        view.buttonValue.apply(style: .regularSubhedlinePrimary)
+    }
 
     let maxSkeletonView = SubtensorAmountSetupLayout.createSkeletonView()
 
@@ -20,7 +25,7 @@ class SubtensorAmountSetupLayout: UIView {
     let feeSkeletonView = SubtensorAmountSetupLayout.createSkeletonView()
 
     let captionLabel: UILabel = .create { label in
-        label.apply(style: .caption1Secondary)
+        label.apply(style: .footnoteSecondary)
         label.textAlignment = .center
         label.numberOfLines = 0
         label.isHidden = true
@@ -28,12 +33,17 @@ class SubtensorAmountSetupLayout: UIView {
 
     let bottomStack: UIStackView = .create { view in
         view.axis = .vertical
-        view.spacing = 16
+        view.spacing = Constants.bottomStackSpacing
     }
+
+    let bottomPanel = SubtensorBottomPanelView()
 
     let actionButton: TriangularedButton = .create { button in
         button.applyDefaultStyle()
     }
+
+    private var bottomStackConstraint: Constraint?
+    private var scrollBottomConstraint: Constraint?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -75,6 +85,22 @@ class SubtensorAmountSetupLayout: UIView {
         setSkeleton(feeSkeletonView, loading: viewModel == nil, hiding: feeView.tokenLabel)
     }
 
+    func applyCaption(_ caption: String?) {
+        captionLabel.isHidden = caption == nil
+        captionLabel.apply(text: caption ?? "", lineHeight: Constants.captionLineHeight)
+        setNeedsLayout()
+    }
+
+    override func layoutSubviews() {
+        let hasBottomContent = bottomStack.arrangedSubviews.contains { !$0.isHidden }
+        let panelSpacing = captionLabel.isHidden ? Constants.alertToPanelSpacing : Constants.captionToPanelSpacing
+
+        bottomStackConstraint?.update(offset: hasBottomContent ? -panelSpacing : 0)
+        scrollBottomConstraint?.update(offset: hasBottomContent ? -Constants.scrollToStackSpacing : 0)
+
+        super.layoutSubviews()
+    }
+
     func applyAction(_ viewModel: SubtensorSetupActionViewModel) {
         if viewModel.isEnabled {
             actionButton.applyEnabledStyle()
@@ -88,28 +114,35 @@ class SubtensorAmountSetupLayout: UIView {
     }
 
     func setupLayout() {
+        addSubview(containerView)
+
+        bottomPanel.contentView.addSubview(actionButton)
+        actionButton.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+            make.height.equalTo(UIConstants.actionHeight)
+        }
+
+        addSubview(bottomPanel)
+        bottomPanel.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+        }
+
         bottomStack.addArrangedSubview(captionLabel)
-        bottomStack.addArrangedSubview(actionButton)
 
         addSubview(bottomStack)
         bottomStack.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
+            bottomStackConstraint = make.bottom.equalTo(bottomPanel.snp.top).constraint
         }
 
-        actionButton.snp.makeConstraints { make in
-            make.height.equalTo(UIConstants.actionHeight)
-        }
-
-        addSubview(containerView)
         containerView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(bottomStack.snp.top).offset(-8.0)
+            scrollBottomConstraint = make.bottom.equalTo(bottomStack.snp.top).constraint
         }
 
         containerView.stackView.addArrangedSubview(amountTitleView)
         amountTitleView.snp.makeConstraints { make in
-            make.height.equalTo(34.0)
+            make.height.equalTo(28.0)
         }
 
         amountTitleView.addSubview(maxSkeletonView)
@@ -118,7 +151,7 @@ class SubtensorAmountSetupLayout: UIView {
             make.size.equalTo(CGSize(width: 90, height: 12))
         }
 
-        containerView.stackView.setCustomSpacing(8.0, after: amountTitleView)
+        containerView.stackView.setCustomSpacing(4.0, after: amountTitleView)
 
         containerView.stackView.addArrangedSubview(amountInputView)
         amountInputView.snp.makeConstraints { make in
@@ -126,5 +159,15 @@ class SubtensorAmountSetupLayout: UIView {
         }
 
         addSkeleton(feeSkeletonView, to: networkFeeCell, width: 70)
+    }
+}
+
+private extension SubtensorAmountSetupLayout {
+    enum Constants {
+        static let bottomStackSpacing: CGFloat = 12
+        static let captionToPanelSpacing: CGFloat = 8
+        static let alertToPanelSpacing: CGFloat = 12
+        static let scrollToStackSpacing: CGFloat = 8
+        static let captionLineHeight: CGFloat = 18
     }
 }

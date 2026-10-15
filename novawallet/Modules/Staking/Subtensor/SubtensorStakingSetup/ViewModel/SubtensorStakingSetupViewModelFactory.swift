@@ -35,14 +35,7 @@ final class SubtensorStakingSetupViewModelFactory {
 
         let details: SubtensorSetupDetailsViewModel
         if case let .quickPick(order) = input.mode {
-            let message = input.selectionFailed
-                ? strings.stakingSubtensorQuickUnavailable()
-                : strings.stakingSubtensorQuickLoading()
-            details = .selection(
-                section: sectionTitle(order: order, locale: locale),
-                message: input.selectedRef.map { "\($0.netuid) · \(message)" } ?? message,
-                retryTitle: input.selectionFailed ? strings.commonTryAgain() : nil
-            )
+            details = .selection(createSelection(for: input, order: order, locale: locale))
         } else {
             details = input.mode.isRootLane
                 ? .root(createRootDetails(for: input, locale: locale))
@@ -165,13 +158,22 @@ extension SubtensorStakingSetupViewModelFactory {
         case let .selected(display): name = display.name ?? display.address; icon = display.imageViewModel
         }
         let annualRate = input.subnetData.annualRate
-        return SubtensorSetupRootViewModel(
-            icon: AssetIconViewModelFactory().createAssetIconViewModel(from: chainAsset.assetDisplayInfo),
-            validator: SubtensorValidatorCardViewModel(
+        let validator: SubtensorSetupRootValidatorViewModel
+        if case .addStake = input.mode {
+            validator = .rows(
+                validator: StackCellViewModel(details: name ?? "", imageViewModel: icon),
+                apy: SubtensorApyFormatter.text(for: annualRate, style: .paidInTao, locale: locale)
+            )
+        } else {
+            validator = .card(SubtensorValidatorCardViewModel(
                 icon: icon, name: name, subtitle: strings.stakingCommonValidator(),
                 rate: .loaded(SubtensorApyFormatter.text(for: annualRate, style: .bare, locale: locale)),
                 rateCaption: strings.stakingSubtensorV22EstApy()
-            ),
+            ))
+        }
+        return SubtensorSetupRootViewModel(
+            icon: AssetIconViewModelFactory().createAssetIconViewModel(from: chainAsset.assetDisplayInfo),
+            validator: validator,
             compactValidator: compact,
             compactRate: SubtensorApyFormatter.text(for: annualRate, style: .leading, locale: locale),
             isQuickPick: input.rootEntryPresentation == .quickPickRoot || input.quickPickOrder != nil,
@@ -212,17 +214,14 @@ extension SubtensorStakingSetupViewModelFactory {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         if input.amountState == .noTao {
-            return strings.stakingSubtensorUiGetTaoCaption()
+            return input.mode.isRootLane ? strings.stakingSubtensorUiGetTaoRootCaption() : nil
         }
 
-        switch input.mode {
-        case .rootDetails:
+        guard case .addStake = input.mode else {
             return nil
-        case .addStake:
-            return createAddStakeCaption(for: input, locale: locale)
-        case .quickPick, .subnetPick, .buyMore:
-            return strings.stakingSubtensorUiSafetyNote()
         }
+
+        return createAddStakeCaption(for: input, locale: locale)
     }
 
     func createAddStakeCaption(for input: SubtensorStakingSetupViewModelInput, locale: Locale) -> String? {

@@ -44,7 +44,9 @@ extension StartStakingInfoViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             startStakingViewModelFactory: startStakingViewModelFactory,
-            subtensorViewModelFactory: StartStakingInfoSubtensorViewModelFactory(),
+            subtensorViewModelFactory: StartStakingInfoSubtensorViewModelFactory(
+                percentFormatter: NumberFormatter.percentSingle.localizableResource()
+            ),
             balanceDerivationFactory: StakingTypeBalanceFactory(stakingType: stakingOption.type),
             localizationManager: LocalizationManager.shared,
             applicationConfig: ApplicationConfig.shared,
@@ -53,7 +55,6 @@ extension StartStakingInfoViewFactory {
 
         let view = StartStakingInfoSubtensorViewController(
             presenter: presenter,
-            themeColor: stakingOption.chainAsset.chain.themeColor ?? R.color.colorPolkadotBrand()!,
             localizationManager: LocalizationManager.shared
         )
 

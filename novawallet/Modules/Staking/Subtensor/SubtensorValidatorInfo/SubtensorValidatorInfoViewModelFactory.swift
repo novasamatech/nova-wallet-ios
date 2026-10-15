@@ -89,9 +89,15 @@ private extension SubtensorValidatorInfoViewModelFactory {
         let chainFormat = chainAsset.chain.chainFormat
         let address = (try? input.hotkey.toAddress(using: chainFormat)) ?? input.hotkey.toHex(includePrefix: true)
 
-        return displayAddressFactory.createViewModel(
+        let viewModel = displayAddressFactory.createViewModel(
             from: DisplayAddress(address: address, username: input.detail?.name ?? ""),
             using: chainFormat
+        )
+
+        return DisplayAddressViewModel(
+            address: address.truncated(prefix: Constants.addressPrefix, suffix: Constants.addressSuffix),
+            name: viewModel.name,
+            imageViewModel: viewModel.imageViewModel
         )
     }
 
@@ -129,6 +135,7 @@ private extension SubtensorValidatorInfoViewModelFactory {
             stake: createStakeViewModel(for: item, input: input, locale: locale),
             take: item.take.flatMap { takeFormatter.value(for: locale).stringFromDecimal($0) } ?? unknown,
             reward: reward,
+            rewardDetail: hasReward ? strings.stakingSubtensorUiValidatorInfoRewardAverage() : nil,
             hasReward: hasReward
         )
     }
@@ -159,5 +166,12 @@ private extension SubtensorValidatorInfoViewModelFactory {
         }
 
         return .loaded(value: SubtensorValidatorInfoViewModel.Stake(amount: amountText, price: priceText))
+    }
+}
+
+private extension SubtensorValidatorInfoViewModelFactory {
+    enum Constants {
+        static let addressPrefix = 7
+        static let addressSuffix = 5
     }
 }

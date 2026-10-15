@@ -78,10 +78,11 @@ extension SubtensorValidatorFiltersViewController: UITableViewDataSource, UITabl
         let cell = tableView.dequeueReusableCellWithType(SelectableFilterCell.self, forIndexPath: indexPath)
         let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
         let titles = [
-            strings.stakingSubtensorV22EstimatedReward(),
+            strings.stakingValidatorApyPercent(),
             strings.stakingSubtensorV22TotalStaked(),
             strings.commonName()
         ]
+        cell.titleLabel.apply(style: .regularBodyPrimary)
         cell.bind(viewModel: SelectableViewModel(
             underlyingViewModel: titles[indexPath.row],
             selectable: sorts[indexPath.row] == model?.selectedSort

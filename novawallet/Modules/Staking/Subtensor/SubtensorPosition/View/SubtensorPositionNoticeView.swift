@@ -7,22 +7,22 @@ final class SubtensorPositionNoticeView: UIView {
     }
 
     let timeLeftLabel: UILabel = .create { label in
-        label.font = .regularFootnote
+        label.font = .caption1
         label.textColor = R.color.colorTextWarning()
         label.textAlignment = .right
     }
 
     let clockView: UIImageView = .create { view in
-        view.image = R.image.iconPending()?.tinted(with: R.color.colorIconWarning()!)
+        view.image = R.image.iconTimeFilled()?.tinted(with: R.color.colorIconWarning()!)
         view.contentMode = .scaleAspectFit
     }
 
     let messageLabel: UILabel = .create { label in
-        label.apply(style: .footnoteSecondary)
+        label.apply(style: .caption1Secondary)
         label.numberOfLines = 0
     }
 
-    private lazy var timeLeftView = UIView.hStack(alignment: .center, spacing: 4, [timeLeftLabel, clockView])
+    private lazy var timeLeftView = UIView.hStack(alignment: .center, spacing: 6, [timeLeftLabel, clockView])
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -39,21 +39,26 @@ final class SubtensorPositionNoticeView: UIView {
     }
 
     func bind(viewModel: SubtensorPositionNoticeViewModel) {
-        titleLabel.text = viewModel.title
+        titleLabel.apply(text: viewModel.title, lineHeight: Constants.titleLineHeight)
         timeLeftLabel.text = viewModel.timeLeft
         timeLeftView.isHidden = viewModel.timeLeft == nil
-        messageLabel.text = viewModel.message
+        messageLabel.apply(text: viewModel.message, lineHeight: Constants.messageLineHeight)
     }
 }
 
 private extension SubtensorPositionNoticeView {
+    enum Constants {
+        static let titleLineHeight: CGFloat = 20
+        static let messageLineHeight: CGFloat = 16
+    }
+
     func setupLayout() {
         let headerView = UIView.hStack(alignment: .center, spacing: 8, [titleLabel, UIView(), timeLeftView])
         let contentView = UIView.vStack(spacing: 6, [headerView, messageLabel])
 
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(16)
+            make.edges.equalToSuperview().inset(12)
         }
 
         clockView.snp.makeConstraints { make in

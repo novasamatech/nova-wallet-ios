@@ -43,12 +43,19 @@ private extension SubtensorStakingSetupViewController {
         rootView.amountTitleView.titleLabel.text = strings.stakingSubtensorUiYouStake()
         rootView.amountTitleView.buttonTitle.text = strings.swapsSetupAssetMax()
         rootView.networkFeeCell.rowContentView.locale = selectedLocale
+        rootView.validatorCell.titleLabel.text = strings.stakingCommonValidator()
+        rootView.apyCell.titleLabel.text = strings.stakingSubtensorUiValidatorSortApy()
 
         let cardView = rootView.pickCardView
         cardView.validatorCell.titleLabel.text = strings.stakingCommonValidator()
         cardView.receiveCell.titleLabel.text = strings.stakingSubtensorUiYouWillGet()
         cardView.swapRateCell.titleLabel.text = strings.stakingSubtensorUiSwapRate()
         cardView.networkFeeCell.titleLabel.text = strings.commonNetworkFee()
+
+        let skeletonView = rootView.pickSkeletonView
+        skeletonView.receiveTitleLabel.text = strings.stakingSubtensorUiYouWillGet()
+        skeletonView.swapRateTitleLabel.text = strings.stakingSubtensorUiSwapRate()
+        skeletonView.networkFeeTitleLabel.text = strings.commonNetworkFee()
 
         rootView.avgBuyPriceCell.titleLabel.text = strings.stakingSubtensorUiAvgBuyPrice()
 
@@ -65,6 +72,7 @@ private extension SubtensorStakingSetupViewController {
         rootView.amountTitleView.button.addTarget(self, action: #selector(actionMax), for: .touchUpInside)
         rootView.amountInputView.addTarget(self, action: #selector(actionAmountChange), for: .editingChanged)
         rootView.validatorCardView.addTarget(self, action: #selector(actionSelectValidator), for: .touchUpInside)
+        rootView.validatorCell.addTarget(self, action: #selector(actionSelectValidator), for: .touchUpInside)
         rootView.pickCardView.headerView.addTarget(self, action: #selector(actionCardHeader), for: .touchUpInside)
         rootView.pickCardView.swapRateCell.addTarget(self, action: #selector(actionSwapRateInfo), for: .touchUpInside)
         rootView.avgBuyPriceCell.addTarget(self, action: #selector(actionAvgBuyPriceInfo), for: .touchUpInside)
@@ -72,15 +80,24 @@ private extension SubtensorStakingSetupViewController {
         rootView.pickCardView.validatorCell.addTarget(
             self, action: #selector(actionSelectValidator), for: .touchUpInside
         )
-        rootView.pickCardView.browseButton.addTarget(self, action: #selector(actionBrowse), for: .touchUpInside)
-        rootView.browseButton.addTarget(self, action: #selector(actionBrowse), for: .touchUpInside)
+        rootView.pickCardView.browseView.button.addTarget(self, action: #selector(actionBrowse), for: .touchUpInside)
+        rootView.browseView.button.addTarget(self, action: #selector(actionBrowse), for: .touchUpInside)
         rootView.rootPickCardView.validatorCell.addTarget(
             self,
             action: #selector(actionSelectValidator),
             for: .touchUpInside
         )
-        rootView.rootPickCardView.browseButton.addTarget(self, action: #selector(actionBrowse), for: .touchUpInside)
-        rootView.selectionAlert.onLinkTap = { [weak self] in self?.presenter.retryQuickPick() }
+        rootView.rootPickCardView.headerView.addTarget(self, action: #selector(actionCardHeader), for: .touchUpInside)
+        rootView.rootPickCardView.browseView.button.addTarget(
+            self,
+            action: #selector(actionBrowse),
+            for: .touchUpInside
+        )
+        rootView.selectionAlert.learnMoreButton.addTarget(
+            self,
+            action: #selector(actionRetryQuickPick),
+            for: .touchUpInside
+        )
         rootView.actionButton.addTarget(self, action: #selector(actionProceed), for: .touchUpInside)
     }
 
@@ -88,7 +105,7 @@ private extension SubtensorStakingSetupViewController {
         let valueLabel = rootView.amountTitleView.buttonValue
 
         valueLabel.text = maxAmount
-        valueLabel.apply(style: isAccented ? .footnoteAccentText : .footnotePrimary)
+        valueLabel.apply(style: isAccented ? .regularSubhedlineAccent : .regularSubhedlinePrimary)
         rootView.amountTitleView.button.invalidateLayout()
         rootView.setSkeleton(
             rootView.maxSkeletonView,
@@ -107,37 +124,35 @@ private extension SubtensorStakingSetupViewController {
     }
 
     func applyDetails(_ details: SubtensorSetupDetailsViewModel) {
-        rootView.selectionAlert.isHidden = true
         rootView.rootPickCardView.isHidden = true
+        rootView.setSelection(details.selection)
         switch details {
-        case let .selection(section, message, retryTitle):
+        case let .selection(viewModel):
             rootView.detailsTableView.isHidden = true
             rootView.pickCardView.isHidden = true
+            rootView.browseView.isHidden = true
             rootView.sectionLabel.isHidden = false
-            rootView.sectionLabel.text = section
-            rootView.selectionAlert.isHidden = false
-            rootView.selectionAlert.contentView.detailsLabel.text = message
-            rootView.selectionAlert.setLink(title: retryTitle)
+            rootView.setSection(viewModel.section)
             applyAvgBuyPrice(.hidden)
         case let .root(viewModel):
             rootView.detailsTableView.isHidden = viewModel.isQuickPick
             rootView.rootPickCardView.isHidden = !viewModel.isQuickPick
             rootView.sectionLabel.isHidden = !viewModel.isQuickPick
             let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
-            rootView.sectionLabel.text = strings.stakingSubtensorQuickRootSection()
+            rootView.setSection(strings.stakingSubtensorQuickRootSection())
             rootView.pickCardView.isHidden = true
 
             applyAvgBuyPrice(.hidden)
-            rootView.validatorCardView.bind(viewModel: viewModel.validator)
+            rootView.applyRootValidator(viewModel.validator)
             rootView.rootPickCardView.bind(viewModel, locale: selectedLocale)
-            if viewModel.isQuickPick { rootView.browseButton.isHidden = true }
+            if viewModel.isQuickPick { rootView.browseView.isHidden = true }
             rootView.applyNetworkFee(viewModel.networkFee)
         case let .subnet(viewModel):
             rootView.detailsTableView.isHidden = true
             rootView.sectionLabel.isHidden = false
             rootView.pickCardView.isHidden = false
 
-            rootView.sectionLabel.text = viewModel.sectionTitle
+            rootView.setSection(viewModel.sectionTitle)
             rootView.pickCardView.bind(viewModel: viewModel.card)
 
             applyAvgBuyPrice(viewModel.avgBuyPrice)
@@ -168,6 +183,8 @@ private extension SubtensorStakingSetupViewController {
     }
 
     @objc func actionBrowse() { presenter.showAllSubnets() }
+
+    @objc func actionRetryQuickPick() { presenter.retryQuickPick() }
 
     @objc func actionMax() {
         presenter.selectMax()
@@ -229,20 +246,15 @@ extension SubtensorStakingSetupViewController: SubtensorStakingSetupViewProtocol
         applyMax(viewModel.maxAmount, isAccented: viewModel.getTao != nil)
         applyGetTao(viewModel.getTao)
 
-        rootView.reserveAlertView.isHidden = viewModel.reserveWarning == nil
-        rootView.reserveAlertView.contentView.detailsLabel.text = viewModel.reserveWarning
+        rootView.setReserveWarning(viewModel.reserveWarning)
 
-        rootView.browseButton.setTitle(viewModel.browseTitle, for: .normal)
+        rootView.browseView.bind(title: viewModel.browseTitle)
         if case .subnet = viewModel.details {
-            rootView.browseButton.isHidden = true
-        } else {
-            rootView.browseButton.isHidden = viewModel.browseTitle == nil
+            rootView.browseView.isHidden = true
         }
         applyDetails(viewModel.details)
 
-        rootView.captionLabel.isHidden = viewModel.caption == nil
-        rootView.captionLabel.text = viewModel.caption
-        rootView.placeCaption(afterAction: viewModel.getTao != nil)
+        rootView.applyCaption(viewModel.caption)
 
         rootView.applyAction(viewModel.action)
     }

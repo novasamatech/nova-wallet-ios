@@ -42,7 +42,7 @@ final class TitleDetailsSheetViewController: UIViewController, ViewHolder {
 
     private func setupLocalization() {
         rootView.titleLabel.text = viewModel.title.value(for: selectedLocale)
-        rootView.detailsLabel.text = viewModel.message.value(for: selectedLocale)
+        rootView.bind(details: viewModel.message.value(for: selectedLocale))
 
         if let action = viewModel.mainAction {
             rootView.mainActionButton?.imageWithTitleView?.title = action.title.value(for: selectedLocale)

@@ -84,8 +84,8 @@ final class SubtensorSubnetPriceChartView: UIView {
 private extension SubtensorSubnetPriceChartView {
     enum Constants {
         static let lineWidth: CGFloat = 1.5
-        static let midLineWidth: CGFloat = 0.5
-        static let midLineDashLengths: [CGFloat] = [2, 3]
+        static let midLineWidth: CGFloat = 1
+        static let midLineDashLengths: [CGFloat] = [3, 3]
         static let fillTopAlpha: CGFloat = 0.28
         static let selectionPressDuration: TimeInterval = 0.05
     }
@@ -172,12 +172,11 @@ private extension SubtensorSubnetPriceChartView {
 
     func addMidLine(at value: Double) {
         let guide = ChartLimitLine(limit: value)
-        guide.lineColor = R.color.colorChartGridLine()!
+        guide.lineColor = R.color.colorTextTertiary()!
         guide.lineWidth = Constants.midLineWidth
         guide.lineDashLengths = Constants.midLineDashLengths
         guide.drawLabelEnabled = false
         chart.rightAxis.addLimitLine(guide)
-        chart.rightAxis.drawLimitLinesBehindDataEnabled = true
     }
 
     func fill(for lineColor: UIColor) -> Fill? {
@@ -354,6 +353,7 @@ final class SubtensorChartLoadingView: UIView, SkeletonableView {
     var skeletonView: SkrullableView?
     var skeletonSuperview: UIView { self }
     var hidingViews: [UIView] { [] }
+    var skeletonCornerRadius: CGFloat?
 
     private var loading = false
 
@@ -379,12 +379,15 @@ final class SubtensorChartLoadingView: UIView, SkeletonableView {
     }
 
     func createSkeletons(for size: CGSize) -> [Skeletonable] {
-        [SingleSkeleton.createRow(
+        let cornerRadii = skeletonCornerRadius.map { CGSize(width: $0 / size.width, height: $0 / size.height) }
+
+        return [SingleSkeleton.createRow(
             on: self,
             containerView: self,
             spaceSize: size,
             offset: .zero,
-            size: size
+            size: size,
+            cornerRadii: cornerRadii ?? CGSize(width: 0.5, height: 0.5)
         )]
     }
 }

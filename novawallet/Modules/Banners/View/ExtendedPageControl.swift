@@ -25,6 +25,12 @@ class ExtendedPageControl: UIControl {
 
     private var previousSelectedPage: Int?
 
+    var currentPageIndicatorTintColor: UIColor? = R.color.colorIconInactive() {
+        didSet {
+            updateDots(animated: false)
+        }
+    }
+
     var numberOfPages: Int = 0 {
         didSet {
             guard oldValue != numberOfPages else { return }
@@ -161,10 +167,12 @@ private extension ExtendedPageControl {
     func updateDots() {
         dots.enumerated().forEach { index, dot in
             if index == self.currentPage {
+                dot.backgroundColor = currentPageIndicatorTintColor
                 dot.snp.updateConstraints { make in
                     make.width.equalTo(Constants.extendedDotWidth)
                 }
             } else {
+                dot.backgroundColor = R.color.colorIconInactive()
                 dot.snp.updateConstraints { make in
                     make.width.equalTo(Constants.dotSize)
                 }

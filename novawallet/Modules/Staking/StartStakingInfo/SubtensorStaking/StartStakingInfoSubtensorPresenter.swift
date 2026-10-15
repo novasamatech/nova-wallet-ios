@@ -76,28 +76,12 @@ extension StartStakingInfoSubtensorPresenter: StartStakingInfoSubtensorPresenter
 private extension StartStakingInfoSubtensorPresenter {
     func provideSubtensorViewModel() {
         let viewModel = subtensorViewModelFactory.createViewModel(
-            title: createTitle(locale: selectedLocale),
+            headlineRate: headlineRate,
+            symbol: chainAsset.asset.displayInfo.symbol,
             locale: selectedLocale
         )
 
         (view as? StartStakingInfoSubtensorViewProtocol)?.didReceive(subtensorViewModel: viewModel)
-    }
-
-    func createTitle(locale: Locale) -> AccentTextModel {
-        guard let headlineRate else {
-            let symbol = chainAsset.asset.displayInfo.symbol
-
-            return AccentTextModel(
-                text: R.string(preferredLanguages: locale.rLanguages).localizable.stakingStakeFormat(symbol),
-                accents: [symbol]
-            )
-        }
-
-        return startStakingViewModelFactory.earnupModel(
-            earnings: headlineRate,
-            chainAsset: chainAsset,
-            locale: locale
-        )
     }
 }
 
