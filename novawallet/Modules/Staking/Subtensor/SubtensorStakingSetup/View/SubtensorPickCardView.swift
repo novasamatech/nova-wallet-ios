@@ -63,6 +63,8 @@ final class SubtensorPickCardView: UIView {
 private extension SubtensorPickCardView {
     enum Constants {
         static let cornerRadius: CGFloat = 12
+        static let spacing: CGFloat = 10
+        static let padding: CGFloat = 12
     }
 
     static func createCell() -> StackTitleMultiValueCell {
@@ -84,10 +86,8 @@ private extension SubtensorPickCardView {
         browseButton.contentHorizontalAlignment = .right
         browseButton.titleLabel?.font = .semiBoldFootnote
         browseButton.snp.makeConstraints { $0.height.equalTo(44) }
-        let contentView = UIView.vStack(spacing: 0, [headerView, chipsView, rowsView, browseButton])
-        contentView.setCustomSpacing(12, after: headerView)
-        contentView.setCustomSpacing(4, after: chipsView)
-        contentView.layoutMargins = UIEdgeInsets(top: 12, left: 12, bottom: 4, right: 12)
+        let contentView = UIView.vStack(spacing: Constants.spacing, [headerView, chipsView, rowsView, browseButton])
+        contentView.layoutMargins = UIEdgeInsets(inset: Constants.padding)
         contentView.isLayoutMarginsRelativeArrangement = true
 
         addSubview(contentView)
@@ -114,12 +114,12 @@ final class SubtensorPickCardHeaderView: UIControl {
     }
 
     let titleLabel: UILabel = .create { label in
-        label.apply(style: .semiboldBodyPrimary)
+        label.apply(style: .semiboldSubhedlinePrimary)
     }
 
     let chevronView: UIImageView = .create { view in
         view.image = R.image.iconSmallArrow()?.tinted(with: R.color.colorIconSecondary()!)
-        view.contentMode = .center
+        view.contentMode = .scaleAspectFit
     }
 
     let skeletonView: SubtensorChartLoadingView = .create { view in
@@ -160,28 +160,34 @@ final class SubtensorPickCardHeaderView: UIControl {
 
 private extension SubtensorPickCardHeaderView {
     enum Constants {
-        static let iconSize: CGFloat = 32
-        static let height: CGFloat = 40
+        static let iconSize: CGFloat = 36
+        static let chevronSize: CGFloat = 20
+        static let spacing: CGFloat = 10
     }
 
     func setupLayout() {
         let labelsView = UIView.vStack(spacing: 2, [titleLabel])
         labelsView.isUserInteractionEnabled = false
 
-        let contentView = UIView.hStack(alignment: .center, spacing: 12, [iconView, labelsView, chevronView])
+        let contentView = UIView.hStack(
+            alignment: .center,
+            spacing: Constants.spacing,
+            [iconView, labelsView, chevronView]
+        )
         contentView.isUserInteractionEnabled = false
 
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-            make.height.greaterThanOrEqualTo(Constants.height)
         }
 
         iconView.snp.makeConstraints { make in
             make.size.equalTo(Constants.iconSize)
         }
 
-        chevronView.setContentHuggingPriority(.required, for: .horizontal)
+        chevronView.snp.makeConstraints { make in
+            make.size.equalTo(Constants.chevronSize)
+        }
 
         addSubview(skeletonView)
         skeletonView.snp.makeConstraints { make in

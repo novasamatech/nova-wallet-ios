@@ -15,15 +15,12 @@ final class SubtensorRootPickCardView: UIView {
         rowsView.contentInsets = .zero
         rowsView.addArrangedSubview(validatorCell)
         rowsView.addArrangedSubview(feeCell)
-        let stack = UIView.vStack(spacing: 12, [headerView, rowsView, browseButton])
-        stack.setCustomSpacing(0, after: rowsView)
+        let stack = UIView.vStack(spacing: 10, [headerView, rowsView, browseButton])
         browseButton.contentHorizontalAlignment = .right
         browseButton.titleLabel?.font = .semiBoldFootnote
         browseButton.snp.makeConstraints { $0.height.equalTo(44) }
         addSubview(stack)
-        stack.snp
-            .makeConstraints { $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 12, left: 12, bottom: 4, right: 12))
-            }
+        stack.snp.makeConstraints { $0.edges.equalToSuperview().inset(12) }
     }
 
     @available(*, unavailable)
@@ -32,7 +29,7 @@ final class SubtensorRootPickCardView: UIView {
     func bind(_ model: SubtensorSetupRootViewModel, locale: Locale) {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
         headerView.bind(viewModel: SubtensorPickCardHeaderViewModel(
-            icon: model.icon, title: strings.stakingSubtensorUiStakeToRoot(), isSelectable: false
+            icon: model.icon, title: strings.stakingSubtensorUiStakeToRoot(), isSelectable: true
         ))
         validatorCell.titleLabel.text = strings.stakingCommonValidator()
         validatorCell.bind(validator: model.compactValidator, rate: model.compactRate, isEditable: true)
