@@ -25,7 +25,6 @@ struct NovaAuthEndpointAvailability {
 protocol NovaAuthProvidingProtocol: AnyObject {
     var endpointAvailability: NovaAuthEndpointAvailability { get }
     func createEndpointWrapper() -> CompoundOperationWrapper<NovaAuthEndpoint>
-    func addContextObserver(_ owner: AnyObject, closure: @escaping () -> Void)
     func addAvailabilityObserver(
         _ owner: AnyObject,
         closure: @escaping (NovaAuthEndpointAvailability) -> Void
@@ -33,11 +32,6 @@ protocol NovaAuthProvidingProtocol: AnyObject {
 }
 
 final class NovaAuthFacade: NovaAuthProvidingProtocol {
-    private struct Observer {
-        weak var owner: AnyObject?
-        let closure: () -> Void
-    }
-
     private struct AvailabilityObserver {
         weak var owner: AnyObject?
         let closure: (NovaAuthEndpointAvailability) -> Void
@@ -51,7 +45,6 @@ final class NovaAuthFacade: NovaAuthProvidingProtocol {
     private var latestSnapshot: GlobalConfigSnapshot?
     private let availabilityLock = NSLock()
     private var publishedAvailability = NovaAuthEndpointAvailability()
-    private var observers: [Observer] = []
     private var availabilityObservers: [AvailabilityObserver] = []
 
     init(
@@ -81,13 +74,6 @@ final class NovaAuthFacade: NovaAuthProvidingProtocol {
         }
         map.addDependency(config.targetOperation)
         return config.insertingTail(operation: map)
-    }
-
-    func addContextObserver(_ owner: AnyObject, closure: @escaping () -> Void) {
-        availabilityLock.lock()
-        observers = observers.filter { $0.owner != nil && $0.owner !== owner }
-        observers.append(Observer(owner: owner, closure: closure))
-        availabilityLock.unlock()
     }
 
     func addAvailabilityObserver(
@@ -163,11 +149,8 @@ private extension NovaAuthFacade {
             endpoint: endpoint
         )
         publishedAvailability = current
-        observers = observers.filter { $0.owner != nil }
         availabilityObservers = availabilityObservers.filter { $0.owner != nil }
-        let invalidations = invalidated ? observers.map(\.closure) : []
-        let readiness = availabilityObservers.map { observer in { observer.closure(current) } }
-        return invalidations + readiness
+        return availabilityObservers.map { observer in { observer.closure(current) } }
     }
 
     func createOrigin(from baseURL: URL) throws -> NovaAuthOrigin {
