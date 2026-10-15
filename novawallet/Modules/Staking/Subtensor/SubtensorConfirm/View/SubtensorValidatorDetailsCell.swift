@@ -1,42 +1,49 @@
 import UIKit
 import UIKit_iOS
 
-final class SubtensorValidatorDetailsView: SwapGenericInfoView<GenericPairValueView<IconDetailsView, UILabel>> {
-    var nameView: IconDetailsView { valueView.fView }
-    var apyLabel: UILabel { valueView.sView }
+final class SubtensorValidatorDetailsValueView: GenericPairValueView<IconDetailsView, UILabel> {
+    private var nameView: IconDetailsView { fView }
+    private var apyLabel: UILabel { sView }
 
     private var iconViewModel: ImageViewModelProtocol?
 
-    override func configure() {
-        super.configure()
+    override init(frame: CGRect) {
+        super.init(frame: frame)
 
-        valueView.makeVertical()
-        valueView.stackView.alignment = .trailing
-        valueView.spacing = 2
+        stackView.alignment = .trailing
 
         nameView.mode = .iconDetails
-        nameView.spacing = 8
+        nameView.spacing = Constants.iconSpacing
         nameView.iconWidth = Constants.iconSize
         nameView.detailsLabel.apply(style: .footnotePrimary)
-        nameView.detailsLabel.lineBreakMode = .byTruncatingMiddle
+        nameView.snp.makeConstraints { $0.height.greaterThanOrEqualTo(Constants.nameLineHeight) }
 
         apyLabel.apply(style: .caption1Positive)
         apyLabel.textAlignment = .right
+        apyLabel.snp.makeConstraints { $0.height.greaterThanOrEqualTo(Constants.apyLineHeight) }
     }
 
     func bind(viewModel: DisplayAddressViewModel) {
-        iconViewModel?.cancel(on: nameView.imageView)
-        iconViewModel = viewModel.imageViewModel
+        bind(title: viewModel.name ?? viewModel.address)
 
-        nameView.imageView.image = nil
+        iconViewModel = viewModel.imageViewModel
+        nameView.hidesIcon = false
+        nameView.detailsLabel.lineBreakMode = viewModel.lineBreakMode
         viewModel.imageViewModel?.loadImage(
             on: nameView.imageView,
             targetSize: CGSize(width: Constants.iconSize, height: Constants.iconSize),
             animated: true
         )
+    }
 
-        nameView.detailsLabel.lineBreakMode = viewModel.lineBreakMode
-        nameView.detailsLabel.text = viewModel.name ?? viewModel.address
+    func bind(title: String?) {
+        iconViewModel?.cancel(on: nameView.imageView)
+        iconViewModel = nil
+
+        nameView.imageView.image = nil
+        nameView.hidesIcon = true
+        nameView.detailsLabel.lineBreakMode = .byTruncatingTail
+        nameView.detailsLabel.text = title
     }
 
     func bind(apy: String?) {
@@ -45,9 +52,22 @@ final class SubtensorValidatorDetailsView: SwapGenericInfoView<GenericPairValueV
     }
 }
 
-private extension SubtensorValidatorDetailsView {
+private extension SubtensorValidatorDetailsValueView {
     enum Constants {
-        static let iconSize: CGFloat = 20
+        static let iconSize: CGFloat = 18
+        static let iconSpacing: CGFloat = 6
+        static let nameLineHeight: CGFloat = 18
+        static let apyLineHeight: CGFloat = 16
+    }
+}
+
+final class SubtensorValidatorDetailsView: SwapGenericInfoView<SubtensorValidatorDetailsValueView> {
+    func bind(viewModel: DisplayAddressViewModel) {
+        valueView.bind(viewModel: viewModel)
+    }
+
+    func bind(apy: String?) {
+        valueView.bind(apy: apy)
     }
 }
 
