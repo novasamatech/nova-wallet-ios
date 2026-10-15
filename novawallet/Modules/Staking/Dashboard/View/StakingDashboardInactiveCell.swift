@@ -243,16 +243,15 @@ extension StakingDashboardInactiveCellView: SkeletonableView {
                         on: self,
                         containerView: self,
                         spaceSize: spaceSize,
-                        offset: CGPoint(x: 0, y: 14),
-                        size: CGSize(width: 38, height: 38),
-                        cornerRadii: CGSize(width: 12.0 / 38.0, height: 12.0 / 38.0)
+                        offset: CGPoint(x: 4, y: 14),
+                        size: CGSize(width: 36, height: 36)
                     ),
 
                     SingleSkeleton.createRow(
                         on: self,
                         containerView: self,
                         spaceSize: spaceSize,
-                        offset: CGPoint(x: 48, y: 26),
+                        offset: CGPoint(x: 54, y: 26),
                         size: CGSize(width: 73, height: 12)
                     )
                 ]
@@ -266,14 +265,14 @@ extension StakingDashboardInactiveCellView: SkeletonableView {
                         on: self,
                         containerView: self,
                         spaceSize: spaceSize,
-                        offset: CGPoint(x: spaceSize.width - 61, y: 18),
+                        offset: CGPoint(x: spaceSize.width - 65, y: 18),
                         size: CGSize(width: 57, height: 12)
                     ),
                     SingleSkeleton.createRow(
                         on: self,
                         containerView: self,
                         spaceSize: spaceSize,
-                        offset: CGPoint(x: spaceSize.width - 53, y: 38),
+                        offset: CGPoint(x: spaceSize.width - 57, y: 38),
                         size: CGSize(width: 49, height: 8)
                     )
                 ]
