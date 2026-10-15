@@ -147,6 +147,64 @@ extension SubtensorRecommendationService: SubtensorRecommendationServiceProtocol
         )
     }
 
+    func createListVerificationWrapper(
+        for subnet: SubtensorSubnetRef,
+        listedHotkeys: [AccountId]
+    ) -> CompoundOperationWrapper<SubtensorValidatorListVerification> {
+        let responseWrapper = apiOperationFactory.createRankedValidatorsWrapper(netuid: subnet.netuid)
+        let chainOperationFactory = chainOperationFactory
+        let logger = logger
+
+        let candidatesOperation = ClosureOperation<Result<Candidates, Error>> {
+            Result {
+                let response = try responseWrapper.targetOperation.extractNoCancellableResultData()
+
+                return try Self.makeCandidates(from: response, subnet: subnet, logger: logger)
+            }
+        }
+
+        candidatesOperation.addDependency(responseWrapper.targetOperation)
+
+        let pair: (AccountId) -> SubtensorHotkeySubnet = { SubtensorHotkeySubnet(hotkey: $0, netuid: subnet.netuid) }
+
+        let snapshotWrapper: CompoundOperationWrapper<SubtensorValidatorChainSnapshot> =
+            OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
+                let candidates = try? candidatesOperation.extractNoCancellableResultData().get()
+                let pairs = (candidates?.recommended.validators ?? []).map { pair($0.hotkey) }
+                var query = SubtensorRecommendationVerifier.chainQuery(for: pairs)
+                query.takeHotkeys = listedHotkeys
+
+                return chainOperationFactory.createChainSnapshotWrapper(for: query)
+            }
+
+        snapshotWrapper.addDependency(operations: [candidatesOperation])
+
+        let verifyOperation = ClosureOperation<SubtensorValidatorListVerification> {
+            let candidatesResult = try candidatesOperation.extractNoCancellableResultData()
+            let snapshot = try snapshotWrapper.targetOperation.extractNoCancellableResultData()
+
+            return SubtensorValidatorListVerification(
+                takes: snapshot.takeFractions,
+                recommended: candidatesResult.map { candidates in
+                    Set(candidates.recommended.validators.map(\.hotkey).filter { hotkey in
+                        SubtensorRecommendationVerifier.passesGates(
+                            pair(hotkey),
+                            snapshot: snapshot,
+                            gates: candidates.gates
+                        )
+                    })
+                }
+            )
+        }
+
+        verifyOperation.addDependency(snapshotWrapper.targetOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: verifyOperation,
+            dependencies: responseWrapper.allOperations + [candidatesOperation] + snapshotWrapper.allOperations
+        )
+    }
+
     func createRankedSubnetsWrapper() -> CompoundOperationWrapper<SubtensorRankedSubnets> {
         let responseWrapper = apiOperationFactory.createRankedSubnetsWrapper()
 
