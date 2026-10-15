@@ -62,16 +62,3 @@ extension SubtensorStakeTarget {
         return try? SubtensorLimitPriceCalculator.sellLimit(spot: spot, tolerance: tolerance)
     }
 }
-
-extension SubtensorStakeTarget {
-    func assetDisplayInfo(
-        basedOn taoDisplayInfo: AssetBalanceDisplayInfo,
-        catalogue: SubtensorSubnetCatalogue?
-    ) -> AssetBalanceDisplayInfo {
-        guard !isRoot else {
-            return taoDisplayInfo
-        }
-
-        return taoDisplayInfo.subtensorAlpha(symbol: SubtensorSubnetNaming.symbol(for: netuid, in: catalogue))
-    }
-}

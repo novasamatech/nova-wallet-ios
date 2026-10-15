@@ -295,6 +295,6 @@ extension SubtensorConfirmViewModelFactory {
         for target: SubtensorStakeTarget,
         catalogue: SubtensorSubnetCatalogue?
     ) -> AssetBalanceDisplayInfo {
-        target.assetDisplayInfo(basedOn: taoInfo, catalogue: catalogue)
+        taoInfo.subtensorAlpha(netuid: target.netuid, catalogue: catalogue)
     }
 }

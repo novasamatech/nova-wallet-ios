@@ -123,7 +123,7 @@ extension SubtensorQuoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
         }
 
         let taoInfo = chainAsset.assetDisplayInfo
-        let alphaInfo = target.assetDisplayInfo(basedOn: taoInfo, catalogue: catalogue)
+        let alphaInfo = taoInfo.subtensorAlpha(netuid: target.netuid, catalogue: catalogue)
         let hasReceive = amountIn == quote.amountIn
 
         switch (direction, quote.quote.args.direction) {

@@ -41,12 +41,6 @@ final class SubtensorPositionViewModelFactory {
     }
 }
 
-extension SubtensorPositionViewModelFactory {
-    func unknownValue(for locale: Locale) -> String {
-        R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown()
-    }
-}
-
 private extension SubtensorPositionViewModelFactory {
     func decimal(_ amount: Balance) -> Decimal {
         amount.decimal(assetInfo: chainAsset.assetDisplayInfo)
@@ -67,7 +61,7 @@ private extension SubtensorPositionViewModelFactory {
 
         let text = formatterFactory.createTokenFormatter(for: alphaInfo)
             .value(for: locale)
-            .stringFromDecimal(decimal(amount)) ?? unknownValue(for: locale)
+            .stringFromDecimal(decimal(amount)) ?? .subtensorUnknown(for: locale)
 
         return SubtensorSubnetNaming.isolatedLeftToRight(text)
     }
@@ -107,7 +101,7 @@ private extension SubtensorPositionViewModelFactory {
         let value: SubtensorPositionValueViewModel
 
         if state.isClaimableFailed {
-            value = .loaded(value: unknownValue(for: locale), detail: nil, isPositive: false)
+            value = .loaded(value: .subtensorUnknown(for: locale), detail: nil, isPositive: false)
         } else if let redeemable = state.claimable?.reduce(Balance.zero, { $0 + $1.redeemable }) {
             value = .loaded(
                 value: formatTao(redeemable, locale: locale),
@@ -220,7 +214,7 @@ private extension SubtensorPositionViewModelFactory {
         }
 
         let name = state.isValidatorResolved
-            ? state.validator?.name ?? address?.mediumTruncated ?? unknownValue(for: locale)
+            ? state.validator?.name ?? address?.mediumTruncated ?? .subtensorUnknown(for: locale)
             : nil
 
         let rate: SubtensorRowState<String>

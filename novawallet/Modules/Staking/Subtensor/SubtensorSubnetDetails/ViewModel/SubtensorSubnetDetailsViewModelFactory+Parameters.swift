@@ -23,9 +23,9 @@ extension SubtensorSubnetDetailsViewModelFactory {
         return SubtensorSubnetParametersViewModel(
             split: split,
             taoTitle: strings.stakingSubtensorV22TaoPool(),
-            taoShare: taoShare ?? unknownValue(for: locale),
+            taoShare: taoShare ?? .subtensorUnknown(for: locale),
             alphaTitle: strings.stakingSubtensorV22AlphaPool(),
-            alphaShare: alphaShare ?? unknownValue(for: locale),
+            alphaShare: alphaShare ?? .subtensorUnknown(for: locale),
             rows: [
                 row(strings.stakingSubtensorUiPickerAge(), value: age, state: state, locale: locale),
                 row(
@@ -70,7 +70,9 @@ private extension SubtensorSubnetDetailsViewModelFactory {
         state: SubtensorSubnetDetailsState, locale: Locale
     ) -> SubtensorParameterRowViewModel {
         SubtensorParameterRowViewModel(
-            title: title, value: state.isParametersLoaded ? value ?? unknownValue(for: locale) : nil, detail: detail
+            title: title,
+            value: state.isParametersLoaded ? value ?? .subtensorUnknown(for: locale) : nil,
+            detail: detail
         )
     }
 
