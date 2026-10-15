@@ -62,7 +62,7 @@ extension OpenScreenUrlParsingServiceFactory: OpenScreenUrlParsingServiceFactory
     func createUrlHandler(screen: String) -> OpenScreenUrlParsingServiceProtocol? {
         switch UniversalLink.Screen(rawValue: screen.lowercased()) {
         case .staking:
-            return OpenStakingUrlParsingService()
+            return OpenStakingUrlParsingService(chainRegistry: chainRegistryClosure())
         case .governance:
             let chainRegistry = chainRegistryClosure()
             return OpenGovernanceUrlParsingService(

@@ -17,6 +17,7 @@ final class StakingDashboardPresenter: AnalyticsTracking {
     private var wallet: MetaAccountModel?
     private var hasWalletsListUpdates: Bool = false
     private var announcements: [Announcement] = []
+    private var pendingChainAssetId: ChainAssetId?
 
     init(
         interactor: StakingDashboardInteractorInputProtocol,
@@ -42,6 +43,51 @@ final class StakingDashboardPresenter: AnalyticsTracking {
 // MARK: - Private
 
 private extension StakingDashboardPresenter {
+    /// Opens the deep-linked staking once the dashboard lists the asset. An inactive item is
+    /// awaited until its sync settles: before that an existing stake is still reported as inactive.
+    func processPendingNavigationIfNeeded() {
+        guard let chainAssetId = pendingChainAssetId, let model = lastResult?.model else {
+            return
+        }
+
+        if let item = model.active.first(where: { $0.chainAsset.chainAssetId == chainAssetId }) {
+            pendingChainAssetId = nil
+
+            wireframe.showStakingDetails(from: view, option: item.stakingOption)
+        } else if let item = model.inactive.first(where: { $0.chainAsset.chainAssetId == chainAssetId }) {
+            guard !item.hasAnySync else {
+                return
+            }
+
+            pendingChainAssetId = nil
+
+            showStartStaking(for: item.chainAsset, source: .deepLink)
+        } else if let item = model.more.first(where: { $0.chainAsset.chainAssetId == chainAssetId }) {
+            guard !item.hasAnySync else {
+                return
+            }
+
+            pendingChainAssetId = nil
+
+            switch item {
+            case let .concrete(concrete) where concrete.hasStaking:
+                wireframe.showStakingDetails(from: view, option: concrete.stakingOption)
+            case .concrete, .combined:
+                showStartStaking(for: item.chainAsset, source: .deepLink)
+            }
+        }
+    }
+
+    func showStartStaking(for chainAsset: ChainAsset, source: StakingFlowSource) {
+        let event = chainAsset.chain.analyticsNetworkName.map { network in
+            AnalyticsEvent.stakingFlowOpened(network: network, source: source)
+        }
+
+        trackAnalytics(event)
+
+        wireframe.showStartStaking(from: view, chainAsset: chainAsset)
+    }
+
     func updateWalletView() {
         guard let wallet = wallet else {
             return
@@ -116,13 +162,13 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
             return
         }
 
-        let event = item.chainAsset.chain.analyticsNetworkName.map { network in
-            AnalyticsEvent.stakingFlowOpened(network: network, source: .dashboard)
-        }
+        showStartStaking(for: item.chainAsset, source: .dashboard)
+    }
 
-        trackAnalytics(event)
+    func openStaking(for chainAssetId: ChainAssetId) {
+        pendingChainAssetId = chainAssetId
 
-        wireframe.showStartStaking(from: view, chainAsset: item.chainAsset)
+        processPendingNavigationIfNeeded()
     }
 
     func selectMoreOptions() {
@@ -172,6 +218,7 @@ extension StakingDashboardPresenter: StakingDashboardInteractorOutputProtocol {
         lastResult = result
 
         updateStakingsView()
+        processPendingNavigationIfNeeded()
     }
 
     func didReceive(error: StakingDashboardInteractorError) {

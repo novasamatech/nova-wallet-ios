@@ -347,6 +347,10 @@ extension StakingDashboardViewController: StakingDashboardViewProtocol {
         }
     }
 
+    func openStaking(for chainAssetId: ChainAssetId) {
+        presenter.openStaking(for: chainAssetId)
+    }
+
     func didReceiveUpdate(viewModel: StakingDashboardUpdateViewModel) {
         dashboardViewModel = dashboardViewModel?.applyingUpdate(viewModel: viewModel)
 
