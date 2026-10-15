@@ -11,17 +11,6 @@ extension SubtensorInfoSheetPresentable {
             return
         }
 
-        if case let .account(address, chain) = sheet {
-            presentAccountOptions(
-                from: view,
-                address: address,
-                chain: chain,
-                locale: LocalizationManager.shared.selectedLocale
-            )
-
-            return
-        }
-
         let gotItAction = MessageSheetAction(
             title: LocalizableResource { locale in
                 R.string(preferredLanguages: locale.rLanguages).localizable.commonGotIt()

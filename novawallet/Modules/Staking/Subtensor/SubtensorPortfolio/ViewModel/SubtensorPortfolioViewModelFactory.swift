@@ -39,7 +39,7 @@ final class SubtensorPortfolioViewModelFactory {
 private extension SubtensorPortfolioViewModelFactory {
     struct ChartContent {
         let chart: SubtensorPortfolioChartViewModel
-        let change: SubtensorPortfolioLoadable<SubtensorPortfolioChangeViewModel>
+        let change: SubtensorRowState<SubtensorPortfolioChangeViewModel>
         var points: [SubtensorPortfolioValuePoint] = []
     }
 
@@ -148,7 +148,7 @@ private extension SubtensorPortfolioViewModelFactory {
 
             return ChartContent(
                 chart: .chart(chart),
-                change: change.map { .loaded($0) } ?? .hidden,
+                change: change.map { .value($0) } ?? .hidden,
                 points: points
             )
         }
@@ -351,7 +351,7 @@ extension SubtensorPortfolioViewModelFactory: SubnetPortfolioViewModelFactoryPro
 
         let total = decimal(portfolio.pricedTaoValue)
 
-        let fiat: SubtensorPortfolioLoadable<String>
+        let fiat: SubtensorRowState<String>
 
         switch state.price {
         case .loading:
@@ -359,7 +359,7 @@ extension SubtensorPortfolioViewModelFactory: SubnetPortfolioViewModelFactoryPro
         case .loaded(.none):
             fiat = .hidden
         case let .loaded(.some(price)):
-            fiat = .loaded(formatFiat(total, price: price, locale: locale))
+            fiat = .value(formatFiat(total, price: price, locale: locale))
         }
 
         let header = SubtensorPortfolioHeaderViewModel(

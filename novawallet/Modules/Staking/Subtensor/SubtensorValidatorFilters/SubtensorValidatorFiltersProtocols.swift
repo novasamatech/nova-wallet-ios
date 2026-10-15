@@ -19,10 +19,6 @@ protocol ValidatorFiltersPresenterProtocol: AnyObject {
     func apply()
 }
 
-protocol ValidatorFiltersInteractorProtocol {
-    func supported(_ filters: SubtensorValidatorFilters) -> SubtensorValidatorFilters
-}
-
 protocol ValidatorFiltersWireframeProtocol {
     func complete(from view: SubtensorValidatorFiltersViewProtocol?)
 }

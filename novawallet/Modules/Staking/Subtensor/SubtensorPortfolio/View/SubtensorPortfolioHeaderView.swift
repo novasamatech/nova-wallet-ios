@@ -119,7 +119,7 @@ private extension SubtensorPortfolioHeaderView {
         static let alertBottomInset: CGFloat = 16
     }
 
-    func bind(fiat: SubtensorPortfolioLoadable<String>) {
+    func bind(fiat: SubtensorRowState<String>) {
         switch fiat {
         case .loading:
             fiatLabel.text = nil
@@ -127,17 +127,17 @@ private extension SubtensorPortfolioHeaderView {
         case .hidden:
             fiatLabel.text = nil
             fiatSkeletonView.setLoading(false)
-        case let .loaded(text):
+        case let .value(text):
             fiatLabel.text = text
             fiatSkeletonView.setLoading(false)
         }
     }
 
-    func bind(change: SubtensorPortfolioLoadable<SubtensorPortfolioChangeViewModel>) {
+    func bind(change: SubtensorRowState<SubtensorPortfolioChangeViewModel>) {
         switch change {
         case .loading, .hidden:
             changeLabel.text = nil
-        case let .loaded(viewModel):
+        case let .value(viewModel):
             changeLabel.text = viewModel.text
             changeLabel.textColor = viewModel.isRising ? R.color.colorTextPositive() : R.color.colorTextNegative()
         }

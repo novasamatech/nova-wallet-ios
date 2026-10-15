@@ -4,20 +4,17 @@ final class SubtensorValidatorFiltersPresenter: ValidatorFiltersPresenterProtoco
     weak var view: SubtensorValidatorFiltersViewProtocol?
     private let applied: SubtensorValidatorFilters
     private var draft: SubtensorValidatorFilters
-    private let interactor: ValidatorFiltersInteractorProtocol
     private let wireframe: ValidatorFiltersWireframeProtocol
     private let onApply: (SubtensorValidatorFilters) -> Void
     private var hasApplied = false
 
     init(
         applied: SubtensorValidatorFilters,
-        interactor: ValidatorFiltersInteractorProtocol,
         wireframe: ValidatorFiltersWireframeProtocol,
         onApply: @escaping (SubtensorValidatorFilters) -> Void
     ) {
-        self.applied = interactor.supported(applied)
-        draft = interactor.supported(applied)
-        self.interactor = interactor
+        self.applied = applied
+        draft = applied
         self.wireframe = wireframe
         self.onApply = onApply
     }
@@ -36,14 +33,14 @@ final class SubtensorValidatorFiltersPresenter: ValidatorFiltersPresenterProtoco
     }
 
     func reset() {
-        draft = .supportedDefault
+        draft = SubtensorValidatorFilters()
         provideViewModel()
     }
 
     func apply() {
         guard draft != applied, !hasApplied else { return }
         hasApplied = true
-        onApply(interactor.supported(draft))
+        onApply(draft)
         wireframe.complete(from: view)
     }
 
@@ -51,7 +48,7 @@ final class SubtensorValidatorFiltersPresenter: ValidatorFiltersPresenterProtoco
         view?.didReceive(SubtensorValidatorFiltersViewModel(
             selectedSort: draft.sort,
             hidesUnusualApy: draft.hidesUnusualApy,
-            canReset: draft != .supportedDefault,
+            canReset: draft != SubtensorValidatorFilters(),
             canApply: draft != applied && !hasApplied
         ))
     }
