@@ -29,6 +29,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         connection: connection,
         runtimeService: runtimeService,
         hotkeysCache: (cacheRepository, chainAsset.chain.chainId),
+        chainAssetId: chainAsset.chainAssetId,
         mutex: mutex,
         operationQueue: operationQueue,
         workingQueue: workingQueue,
@@ -44,7 +45,6 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
 
     private var maxApyCallStore = CancellableCallStore()
     private var rootYieldsCallStore = CancellableCallStore()
-    private var saveCallStore = CancellableCallStore()
 
     init(
         walletId: MetaAccountModel.Id,
@@ -89,7 +89,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         seedRootYields()
         cataloguePricing.seed()
 
-        eventCenter.add(observer: self, dispatchIn: workingQueue)
+        eventCenter.add(observer: stakeStateSubscription, dispatchIn: workingQueue)
 
         stakeStateSubscription.subscribe()
     }
@@ -104,12 +104,9 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     // throttle() skips stopSyncUp() when a fetch already completed, so the storage
     // subscriptions must be released here as well
     override func deactivate() {
-        eventCenter.remove(observer: self)
+        eventCenter.remove(observer: stakeStateSubscription)
 
-        maxApyCallStore.cancel()
-        rootYieldsCallStore.cancel()
-        cataloguePricing.cancel()
-        stakeStateSubscription.unsubscribe()
+        stopSyncUp()
     }
 
     func refreshCataloguePricing() {
@@ -249,50 +246,12 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
             isFullyPriced: valuation.isFullyPriced
         )
 
-        let saveOperation = dashboardRepository.saveOperation({
-            [dashboardItem]
-        }, {
-            []
-        })
+        let saveWrapper = CompoundOperationWrapper(
+            targetOperation: dashboardRepository.saveOperation({ [dashboardItem] }, { [] })
+        )
 
-        let wrapper = CompoundOperationWrapper(targetOperation: saveOperation)
-
-        if let pendingOperations = saveCallStore.operatingCall?.allOperations {
-            wrapper.addDependency(operations: pendingOperations)
+        stakeStateSubscription.save(saveWrapper, for: state) { [weak self] in
+            self?.completeImmediate($0)
         }
-
-        executeCancellable(
-            wrapper: wrapper,
-            inOperationQueue: operationQueue,
-            backingCallIn: saveCallStore,
-            runningCallbackIn: workingQueue,
-            mutex: mutex
-        ) { [weak self] result in
-            switch result {
-            case .success:
-                self?.completeImmediate(state.rootRedeemableError)
-            case let .failure(error):
-                self?.completeImmediate(error)
-            }
-        }
-    }
-}
-
-extension SubtensorMultistakingUpdateService: EventVisitorProtocol {
-    func processSubtensorStakingChanged(event: SubtensorStakingChanged) {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        guard
-            isActive,
-            event.accountId == accountId,
-            event.chainAssetId == chainAsset.chainAssetId else {
-            return
-        }
-
-        stakeStateSubscription.refresh()
     }
 }

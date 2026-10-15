@@ -19,6 +19,7 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
         stakeStateFetchFactory: stakeStateFetchFactory,
         connection: connection,
         runtimeService: runtimeService,
+        chainAssetId: chainAsset.chainAssetId,
         mutex: mutex,
         operationQueue: operationQueue,
         workingQueue: workingQueue,
@@ -27,8 +28,6 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
         onState: { [weak self] in self?.persistPricedState($0) },
         onFailure: { [weak self] in self?.completeImmediate($0) }
     )
-
-    private var saveCallStore = CancellableCallStore()
 
     init(
         accountId: AccountId,
@@ -58,7 +57,7 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
     }
 
     override func performSyncUp() {
-        eventCenter.add(observer: self, dispatchIn: workingQueue)
+        eventCenter.add(observer: stakeStateSubscription, dispatchIn: workingQueue)
 
         stakeStateSubscription.subscribe()
     }
@@ -71,10 +70,9 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
     // throttle() skips stopSyncUp() when a fetch already completed, so the storage
     // subscriptions must be released here as well
     override func deactivate() {
-        eventCenter.remove(observer: self)
+        eventCenter.remove(observer: stakeStateSubscription)
 
-        cataloguePricing.cancel()
-        stakeStateSubscription.unsubscribe()
+        stopSyncUp()
     }
 
     private func persistPricedState(_ state: Multistaking.SubtensorStakingState) {
@@ -98,25 +96,8 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
     }
 
     private func persistState(_ state: Multistaking.SubtensorStakingState) {
-        let wrapper = createSaveWrapper(for: state)
-
-        if let pendingOperations = saveCallStore.operatingCall?.allOperations {
-            wrapper.addDependency(operations: pendingOperations)
-        }
-
-        executeCancellable(
-            wrapper: wrapper,
-            inOperationQueue: operationQueue,
-            backingCallIn: saveCallStore,
-            runningCallbackIn: workingQueue,
-            mutex: mutex
-        ) { [weak self] result in
-            switch result {
-            case .success:
-                self?.completeImmediate(state.rootRedeemableError)
-            case let .failure(error):
-                self?.completeImmediate(error)
-            }
+        stakeStateSubscription.save(createSaveWrapper(for: state), for: state) { [weak self] in
+            self?.completeImmediate($0)
         }
     }
 }
@@ -157,24 +138,5 @@ private extension SubtensorStakedBalanceUpdatingService {
         saveOperation.addDependency(fetchOperation)
 
         return CompoundOperationWrapper(targetOperation: saveOperation, dependencies: [fetchOperation])
-    }
-}
-
-extension SubtensorStakedBalanceUpdatingService: EventVisitorProtocol {
-    func processSubtensorStakingChanged(event: SubtensorStakingChanged) {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        guard
-            isActive,
-            event.accountId == accountId,
-            event.chainAssetId == chainAsset.chainAssetId else {
-            return
-        }
-
-        stakeStateSubscription.refresh()
     }
 }

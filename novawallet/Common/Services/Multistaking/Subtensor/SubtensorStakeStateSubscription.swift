@@ -15,6 +15,7 @@ final class SubtensorStakeStateSubscription {
     let connection: JSONRPCEngine
     let runtimeService: RuntimeCodingServiceProtocol
     let hotkeysCache: HotkeysCache?
+    let chainAssetId: ChainAssetId?
     let mutex: NSLock
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
@@ -29,6 +30,7 @@ final class SubtensorStakeStateSubscription {
     private var alphaTriggerSubscription: CallbackBatchRawStorageSubscription?
     private var subscribedPositionKeys: Set<PositionKey>?
     private var fetchCallStore = CancellableCallStore()
+    private var saveCallStore = CancellableCallStore()
 
     var isFetching: Bool {
         fetchCallStore.hasCall
@@ -40,6 +42,7 @@ final class SubtensorStakeStateSubscription {
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
         hotkeysCache: HotkeysCache? = nil,
+        chainAssetId: ChainAssetId? = nil,
         mutex: NSLock,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
@@ -53,6 +56,7 @@ final class SubtensorStakeStateSubscription {
         self.connection = connection
         self.runtimeService = runtimeService
         self.hotkeysCache = hotkeysCache
+        self.chainAssetId = chainAssetId
         self.mutex = mutex
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
@@ -136,6 +140,31 @@ final class SubtensorStakeStateSubscription {
             }
         }
     }
+
+    func save(
+        _ wrapper: CompoundOperationWrapper<Void>,
+        for state: Multistaking.SubtensorStakingState,
+        completion: @escaping (Error?) -> Void
+    ) {
+        if let pendingOperations = saveCallStore.operatingCall?.allOperations {
+            wrapper.addDependency(operations: pendingOperations)
+        }
+
+        executeCancellable(
+            wrapper: wrapper,
+            inOperationQueue: operationQueue,
+            backingCallIn: saveCallStore,
+            runningCallbackIn: workingQueue,
+            mutex: mutex
+        ) { result in
+            switch result {
+            case .success:
+                completion(state.rootRedeemableError)
+            case let .failure(error):
+                completion(error)
+            }
+        }
+    }
 }
 
 private extension SubtensorStakeStateSubscription {
@@ -210,5 +239,24 @@ private extension SubtensorStakeStateSubscription {
         }
 
         alphaTriggerSubscription?.subscribe()
+    }
+}
+
+extension SubtensorStakeStateSubscription: EventVisitorProtocol {
+    func processSubtensorStakingChanged(event: SubtensorStakingChanged) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        guard
+            hotkeysSubscription != nil,
+            event.accountId == accountId,
+            event.chainAssetId == chainAssetId else {
+            return
+        }
+
+        refresh()
     }
 }
