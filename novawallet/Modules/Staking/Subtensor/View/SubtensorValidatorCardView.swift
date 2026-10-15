@@ -1,3 +1,4 @@
+import SnapKit
 import UIKit
 
 final class SubtensorValidatorCardView: UIControl {
@@ -6,15 +7,15 @@ final class SubtensorValidatorCardView: UIControl {
     }
 
     let nameLabel: UILabel = .create { label in
-        label.apply(style: .semiboldBodyPrimary)
+        label.apply(style: .semiboldSubhedlinePrimary)
     }
 
     let subtitleLabel: UILabel = .create { label in
-        label.apply(style: .footnoteSecondary)
+        label.apply(style: .caption1Secondary)
     }
 
     let rateLabel: UILabel = .create { label in
-        label.apply(style: .semiboldBodyPrimary)
+        label.apply(style: .semiboldSubhedlinePrimary)
         label.textColor = R.color.colorTextPositive()
         label.textAlignment = .right
     }
@@ -25,7 +26,7 @@ final class SubtensorValidatorCardView: UIControl {
     }
 
     let chevronView: UIImageView = .create { view in
-        view.image = R.image.iconChevronRight()?.tinted(with: R.color.colorIconSecondary()!)
+        view.image = R.image.iconSmallArrow()?.tinted(with: R.color.colorIconSecondary()!)
         view.contentMode = .scaleAspectFit
     }
 
@@ -38,6 +39,16 @@ final class SubtensorValidatorCardView: UIControl {
     }
 
     private lazy var rateView = UIView.vStack(alignment: .trailing, spacing: 2, [rateLabel, rateCaptionLabel])
+
+    private lazy var contentView = UIView.hStack(
+        alignment: .center,
+        spacing: Constants.spacing,
+        [iconView, titleView, rateView, chevronView]
+    )
+
+    private lazy var titleView = UIView.vStack(alignment: .leading, spacing: 2, [nameLabel, subtitleLabel])
+
+    private var heightConstraint: Constraint?
 
     private var iconViewModel: ImageViewModelProtocol?
 
@@ -58,6 +69,12 @@ final class SubtensorValidatorCardView: UIControl {
     func applyEmbeddedStyle() {
         backgroundColor = .clear
         layer.cornerRadius = 0
+
+        contentView.snp.updateConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(Constants.embeddedHorizontalInset)
+        }
+
+        heightConstraint?.update(offset: Constants.embeddedMinHeight)
     }
 
     func bind(viewModel: SubtensorValidatorCardViewModel) {
@@ -95,30 +112,29 @@ final class SubtensorValidatorCardView: UIControl {
 private extension SubtensorValidatorCardView {
     enum Constants {
         static let iconSize: CGFloat = 32
-        static let chevronSize: CGFloat = 16
+        static let chevronSize: CGFloat = 20
+        static let spacing: CGFloat = 12
+        static let horizontalInset: CGFloat = 12
+        static let embeddedHorizontalInset: CGFloat = 16
+        static let minVerticalInset: CGFloat = 10
         static let minHeight: CGFloat = 64
+        static let embeddedMinHeight: CGFloat = 58
+        static let titleLineHeight: CGFloat = 20
+        static let captionLineHeight: CGFloat = 16
     }
 
     func setupLayout() {
-        let titleView = UIView.vStack(alignment: .leading, spacing: 2, [nameLabel, subtitleLabel])
-
-        let contentView = UIView.hStack(
-            alignment: .center,
-            spacing: 12,
-            [iconView, titleView, UIView(), rateView, chevronView]
-        )
-
-        contentView.setCustomSpacing(8, after: rateView)
         contentView.isUserInteractionEnabled = false
 
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.top.bottom.equalToSuperview().inset(12)
+            make.leading.trailing.equalToSuperview().inset(Constants.horizontalInset)
+            make.centerY.equalToSuperview()
+            make.top.greaterThanOrEqualToSuperview().inset(Constants.minVerticalInset)
         }
 
         snp.makeConstraints { make in
-            make.height.greaterThanOrEqualTo(Constants.minHeight)
+            heightConstraint = make.height.greaterThanOrEqualTo(Constants.minHeight).constraint
         }
 
         iconView.snp.makeConstraints { make in
@@ -129,12 +145,12 @@ private extension SubtensorValidatorCardView {
             make.size.equalTo(Constants.chevronSize)
         }
 
-        nameLabel.snp.makeConstraints { make in
-            make.height.greaterThanOrEqualTo(20)
+        [nameLabel, rateLabel].forEach { label in
+            label.snp.makeConstraints { $0.height.greaterThanOrEqualTo(Constants.titleLineHeight) }
         }
 
-        rateLabel.snp.makeConstraints { make in
-            make.height.greaterThanOrEqualTo(20)
+        [subtitleLabel, rateCaptionLabel].forEach { label in
+            label.snp.makeConstraints { $0.height.greaterThanOrEqualTo(Constants.captionLineHeight) }
         }
 
         addSubview(nameSkeletonView)
@@ -152,6 +168,7 @@ private extension SubtensorValidatorCardView {
         }
 
         titleView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        rateView.setContentHuggingPriority(.required, for: .horizontal)
         rateView.setContentCompressionResistancePriority(.required, for: .horizontal)
     }
 }
