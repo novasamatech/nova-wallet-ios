@@ -1,1 +1,22 @@
-{ "images": [{ "filename": "SubtensorQuickRoot.png", "idiom": "universal" }], "info": { "author": "xcode", "version": 1 } }
+{
+  "images" : [
+    {
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "SubtensorQuickRoot@2x.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "SubtensorQuickRoot@3x.png",
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

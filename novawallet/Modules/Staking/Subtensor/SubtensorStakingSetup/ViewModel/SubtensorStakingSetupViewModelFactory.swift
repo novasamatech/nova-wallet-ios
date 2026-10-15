@@ -35,14 +35,7 @@ final class SubtensorStakingSetupViewModelFactory {
 
         let details: SubtensorSetupDetailsViewModel
         if case let .quickPick(order) = input.mode {
-            let message = input.selectionFailed
-                ? strings.stakingSubtensorQuickUnavailable()
-                : strings.stakingSubtensorQuickLoading()
-            details = .selection(
-                section: sectionTitle(order: order, locale: locale),
-                message: input.selectedRef.map { "\($0.netuid) · \(message)" } ?? message,
-                retryTitle: input.selectionFailed ? strings.commonTryAgain() : nil
-            )
+            details = .selection(createSelection(for: input, order: order, locale: locale))
         } else {
             details = input.mode.isRootLane
                 ? .root(createRootDetails(for: input, locale: locale))

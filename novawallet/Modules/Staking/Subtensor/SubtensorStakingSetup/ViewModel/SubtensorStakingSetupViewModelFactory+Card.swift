@@ -41,6 +41,26 @@ extension SubtensorStakingSetupViewModelFactory {
         )
     }
 
+    func createSelection(
+        for input: SubtensorStakingSetupViewModelInput,
+        order: SubtensorQuickPickOrder,
+        locale: Locale
+    ) -> SubtensorSetupSelectionViewModel {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+        let message = strings.stakingSubtensorQuickUnavailable()
+        let failure = input.selectionFailed ? WarningView.Model(
+            title: strings.stakingSubtensorQuickUnavailableTitle(),
+            message: input.selectedRef.map { "\($0.netuid) · \(message)" } ?? message,
+            learnMore: LearnMoreViewModel(iconViewModel: nil, title: strings.commonTryAgain())
+        ) : nil
+
+        return SubtensorSetupSelectionViewModel(
+            section: sectionTitle(order: order, locale: locale),
+            caption: strings.stakingSubtensorQuickLoading(),
+            failure: failure
+        )
+    }
+
     func sectionTitle(order: SubtensorQuickPickOrder, locale: Locale) -> String {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
         switch order {
