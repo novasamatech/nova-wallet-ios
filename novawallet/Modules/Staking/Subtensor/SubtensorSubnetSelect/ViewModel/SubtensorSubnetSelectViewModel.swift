@@ -223,7 +223,7 @@ private extension SubtensorSubnetViewModelFactory {
         case .poolDepth:
             return .init(
                 title: strings.stakingSubtensorQuickPoolTitle(),
-                subtitle: strings.stakingSubtensorUiPickerPoolDetail()
+                subtitle: strings.stakingSubtensorQuickPoolOrder()
             )
         case .age:
             return .init(

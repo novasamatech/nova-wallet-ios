@@ -50,7 +50,7 @@ final class SubtensorSubnetDetailsViewController: UIViewController, ViewHolder {
 
 private extension SubtensorSubnetDetailsViewController {
     enum Constants {
-        static let titleIconSize = CGSize(width: 24, height: 24)
+        static let titleIconSize = CGSize(width: 28, height: 28)
         static let titleSpacing: CGFloat = 8
     }
 
@@ -115,6 +115,8 @@ extension SubtensorSubnetDetailsViewController: SubtensorSubnetDetailsViewProtoc
             view.detailsLabel.apply(style: .semiboldBodyPrimary)
             view.detailsLabel.text = title.title
             view.imageView.contentMode = .scaleAspectFit
+            view.imageView.layer.cornerRadius = Constants.titleIconSize.height / 2
+            view.imageView.clipsToBounds = true
             view.iconWidth = Constants.titleIconSize.width
             view.spacing = Constants.titleSpacing
             view.imageView.snp.makeConstraints { $0.height.equalTo(Constants.titleIconSize.height) }
