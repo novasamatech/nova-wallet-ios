@@ -130,9 +130,10 @@ private extension SubtensorSubnetSelectViewController {
 
         rootView.bind(controls: viewModel)
 
-        if case let .empty(text) = viewModel.content {
+        switch viewModel.content {
+        case let .empty(text), let .noMatches(text):
             rootView.bind(emptyText: text)
-        } else {
+        default:
             rootView.bind(emptyText: nil)
         }
 
@@ -172,7 +173,7 @@ extension SubtensorSubnetSelectViewController: UITableViewDataSource {
             return 0
         }
 
-        if section == .root { return 1 }
+        if section == .root { return viewModel?.isNoMatches == true ? 0 : 1 }
 
         if isLoading {
             return section == .others ? Self.loadingRowsCount : 0
