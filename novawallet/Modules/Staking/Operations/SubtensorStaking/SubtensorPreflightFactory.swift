@@ -17,9 +17,8 @@ struct SubtensorStakingPreflight: Equatable {
 }
 
 extension SubtensorStakingPreflight {
-    /// NominatorMinRequiredStake stores a per-million factor of the min stake constant, not raos
-    static func effectiveNominatorMinStake(minStake: Balance, factor: Balance) -> Balance {
-        minStake * factor / BigUInt(1_000_000)
+    static func effectiveNominatorMinStake(minStake: Balance, perMillionFactor: Balance) -> Balance {
+        minStake * perMillionFactor / BigUInt(1_000_000)
     }
 }
 
@@ -184,7 +183,7 @@ private extension SubtensorPreflightFactory {
                 minStake: minStake,
                 effectiveNominatorMinStake: SubtensorStakingPreflight.effectiveNominatorMinStake(
                     minStake: minStake,
-                    factor: factor
+                    perMillionFactor: factor
                 ),
                 hotkeyOwner: hotkeyExists ? ownerResponse?.value?.wrappedValue : nil
             )

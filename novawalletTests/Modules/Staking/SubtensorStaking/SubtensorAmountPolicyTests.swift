@@ -48,7 +48,7 @@ final class SubtensorAmountPolicyTests: XCTestCase {
             minStake: minStake,
             nominatorMinStake: SubtensorStakingPreflight.effectiveNominatorMinStake(
                 minStake: minStake,
-                factor: 10_000_000
+                perMillionFactor: 10_000_000
             )
         )
 

@@ -12,8 +12,6 @@ protocol SubtensorPositionsSyncServiceProtocol: ApplicationServiceProtocol {
 
     func remove(observer: AnyObject)
 
-    /// `BaseSyncService` only logs and reschedules on failure, so a parallel observable is the
-    /// one way a caller can tell "still loading" from "we could not read the chain" (spec §3.2)
     func add(
         failureObserver: AnyObject,
         sendStateOnSubscription: Bool,
