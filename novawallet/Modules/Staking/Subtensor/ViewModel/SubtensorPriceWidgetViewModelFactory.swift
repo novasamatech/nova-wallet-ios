@@ -2,15 +2,18 @@ import Foundation
 import Foundation_iOS
 
 struct SubtensorPriceWidgetParams {
-    let caption: String
-    let spotPrice: Decimal?
     let history: SubtensorSubnetHistoryState
     let period: SubtensorPricePeriod
     let isFiat: Bool
     let taoPrice: PriceData?
     let currencyId: Int?
-    let currency: SubtensorSubnetCurrencyViewModel?
     let chartEndDate: Date
+}
+
+struct SubtensorPriceHeaderParams {
+    let caption: String
+    let spotPrice: Decimal?
+    let currency: SubtensorSubnetCurrencyViewModel
     let selection: SubtensorPriceChartSelection?
 }
 
@@ -24,10 +27,12 @@ protocol SubtensorPriceWidgetFactoryProtocol {
 
     func createWidget(
         for params: SubtensorPriceWidgetParams,
+        header: SubtensorPriceHeaderParams?,
         locale: Locale
     ) -> SubtensorPriceWidgetViewModel
 
     func createHeader(
+        _ header: SubtensorPriceHeaderParams,
         for params: SubtensorPriceWidgetParams,
         locale: Locale
     ) -> SubtensorSubnetPriceHeaderViewModel
@@ -90,8 +95,12 @@ private extension SubtensorPriceWidgetViewModelFactory {
         return title.uppercased(with: locale)
     }
 
-    func formatSpotPrice(for params: SubtensorPriceWidgetParams, locale: Locale) -> String {
-        guard let spotPrice = params.spotPrice else {
+    func formatSpotPrice(
+        for header: SubtensorPriceHeaderParams,
+        params: SubtensorPriceWidgetParams,
+        locale: Locale
+    ) -> String {
+        guard let spotPrice = header.spotPrice else {
             return unknownValue(for: locale)
         }
 
@@ -141,6 +150,7 @@ private extension SubtensorPriceWidgetViewModelFactory {
     }
 
     func createSpotHeader(
+        _ header: SubtensorPriceHeaderParams,
         for params: SubtensorPriceWidgetParams,
         locale: Locale
     ) -> SubtensorSubnetPriceHeaderViewModel {
@@ -160,19 +170,20 @@ private extension SubtensorPriceWidgetViewModelFactory {
         }
 
         return SubtensorSubnetPriceHeaderViewModel(
-            caption: params.caption,
-            price: formatSpotPrice(for: params, locale: locale),
+            caption: header.caption,
+            price: formatSpotPrice(for: header, params: params, locale: locale),
             change: change,
-            currency: params.currency
+            currency: header.currency
         )
     }
 
     func createAnyHeader(
+        _ header: SubtensorPriceHeaderParams,
         for params: SubtensorPriceWidgetParams,
         locale: Locale
     ) -> SubtensorSubnetPriceHeaderViewModel {
-        guard let selection = params.selection else {
-            return createSpotHeader(for: params, locale: locale)
+        guard let selection = header.selection else {
+            return createSpotHeader(header, for: params, locale: locale)
         }
 
         let date: Date
@@ -188,10 +199,10 @@ private extension SubtensorPriceWidgetViewModelFactory {
                   let series = datedSeries(history: history, params: params),
                   let point = series.points.first(where: { $0.sourceIndex == sourceIndex }) else {
                 return SubtensorSubnetPriceHeaderViewModel(
-                    caption: params.caption,
+                    caption: header.caption,
                     price: unknownValue(for: locale),
                     change: .date(formatPointDate(params.chartEndDate, endingAt: params.chartEndDate, locale: locale)),
-                    currency: params.currency
+                    currency: header.currency
                 )
             }
 
@@ -207,10 +218,10 @@ private extension SubtensorPriceWidgetViewModelFactory {
         let detail = change.map { createChange($0, suffix: dateText, locale: locale) } ?? .date(dateText)
 
         return SubtensorSubnetPriceHeaderViewModel(
-            caption: params.caption,
+            caption: header.caption,
             price: price,
             change: detail,
-            currency: params.currency
+            currency: header.currency
         )
     }
 
@@ -247,20 +258,22 @@ extension SubtensorPriceWidgetViewModelFactory: SubtensorPriceWidgetFactoryProto
 
     func createWidget(
         for params: SubtensorPriceWidgetParams,
+        header: SubtensorPriceHeaderParams?,
         locale: Locale
     ) -> SubtensorPriceWidgetViewModel {
         SubtensorPriceWidgetViewModel(
-            header: createAnyHeader(for: params, locale: locale),
+            header: header.map { createAnyHeader($0, for: params, locale: locale) },
             chart: createChart(for: params, locale: locale),
             periods: createPeriods(for: params, locale: locale)
         )
     }
 
     func createHeader(
+        _ header: SubtensorPriceHeaderParams,
         for params: SubtensorPriceWidgetParams,
         locale: Locale
     ) -> SubtensorSubnetPriceHeaderViewModel {
-        createAnyHeader(for: params, locale: locale)
+        createAnyHeader(header, for: params, locale: locale)
     }
 }
 

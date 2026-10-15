@@ -15,9 +15,11 @@ final class SubtensorPositionViewLayout: UIView {
 
     let summaryView = SubtensorPositionSummaryView()
 
-    let priceWidget: SubtensorPriceWidgetView = .create { view in
+    let priceWidget: SubtensorPriceWidgetView = {
+        let view = SubtensorPriceWidgetView(hasHeader: false)
         view.isHidden = true
-    }
+        return view
+    }()
 
     let actionsTableView: StackTableView = .create { view in
         view.hasSeparators = false
@@ -73,8 +75,6 @@ final class SubtensorPositionViewLayout: UIView {
     }
 
     var periodControl: RoundedSegmentedControl { priceWidget.periodControl }
-
-    var chartView: SubtensorSubnetPriceChartView { priceWidget.chartView }
 
     var chartUnavailableView: SubtensorChartUnavailableView { priceWidget.chartUnavailableView }
 
