@@ -1,4 +1,5 @@
 import Foundation
+import Foundation_iOS
 
 enum SubtensorApyStyle: Equatable {
     case leading
@@ -28,11 +29,7 @@ enum SubtensorApyFormatter {
             formatter.locale = locale
             formatter.minimumFractionDigits = 1
             formatter.maximumFractionDigits = 1
-            let symbol = formatter.percentSymbol ?? "%"
-            formatter.positivePrefix = formatter.positivePrefix.replacingOccurrences(of: symbol, with: "")
-            formatter.negativePrefix = formatter.negativePrefix.replacingOccurrences(of: symbol, with: "")
-            formatter.positiveSuffix = " " + symbol
-            formatter.negativeSuffix = " " + symbol
+            formatter.spacePercentSymbol()
             return rateText(annualRate, formatter: formatter, locale: locale)
         }
     }
@@ -48,5 +45,24 @@ private extension SubtensorApyFormatter {
 
         return annualRate.flatMap { formatter.stringFromDecimal($0) } ??
             R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown()
+    }
+}
+
+extension NumberFormatter {
+    static var subtensorPercentSingle: LocalizableResource<NumberFormatter> {
+        LocalizableResource { locale in
+            let formatter = NumberFormatter.percentSingle
+            formatter.locale = locale
+            formatter.spacePercentSymbol()
+            return formatter
+        }
+    }
+
+    func spacePercentSymbol() {
+        let symbol = percentSymbol ?? "%"
+        positivePrefix = positivePrefix.replacingOccurrences(of: symbol, with: "")
+        negativePrefix = negativePrefix.replacingOccurrences(of: symbol, with: "")
+        positiveSuffix = " " + symbol
+        negativeSuffix = " " + symbol
     }
 }

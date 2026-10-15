@@ -54,10 +54,15 @@ final class SwapSlippageViewLayout: ScrollableContainerLayoutView {
 
     func applySheetLayout() {
         backgroundColor = R.color.colorBottomSheetBackground()
+        stackView.layoutMargins.top = SheetConstants.topInset
 
         slippageButton.imageWithTitleView?.iconImage = nil
+        slippageButton.imageWithTitleView?.titleFont = .semiBoldSubheadline
         slippageButton.isUserInteractionEnabled = false
         slippageButton.contentInsets = .zero
+        slippageButton.snp.makeConstraints { make in
+            make.height.equalTo(SheetConstants.slippageTitleHeight)
+        }
 
         let slippageTitleView = slippageButton.superview ?? slippageButton
 
@@ -70,6 +75,21 @@ final class SwapSlippageViewLayout: ScrollableContainerLayoutView {
         amountInput.snp.updateConstraints { make in
             make.height.equalTo(52)
         }
+    }
+
+    func bindSheet(title: String, explanation: String) {
+        titleLabel.apply(text: title, lineHeight: SheetConstants.titleLineHeight)
+        explanationLabel.apply(text: explanation, lineHeight: SheetConstants.explanationLineHeight)
+    }
+
+    func preferredSheetHeight(for width: CGFloat) -> CGFloat {
+        let contentHeight = stackView.systemLayoutSizeFitting(
+            CGSize(width: width, height: UIView.layoutFittingCompressedSize.height),
+            withHorizontalFittingPriority: .required,
+            verticalFittingPriority: .fittingSizeLevel
+        ).height
+
+        return contentHeight + SheetConstants.actionSpacing + UIConstants.actionHeight + UIConstants.actionBottomInset
     }
 
     func set(error: String?) {
@@ -85,6 +105,16 @@ final class SwapSlippageViewLayout: ScrollableContainerLayoutView {
             text: warning,
             spacing: 16
         )
+    }
+}
+
+private extension SwapSlippageViewLayout {
+    enum SheetConstants {
+        static let topInset: CGFloat = 8
+        static let actionSpacing: CGFloat = 20
+        static let titleLineHeight: CGFloat = 28
+        static let slippageTitleHeight: CGFloat = 20
+        static let explanationLineHeight: CGFloat = 18
     }
 }
 
