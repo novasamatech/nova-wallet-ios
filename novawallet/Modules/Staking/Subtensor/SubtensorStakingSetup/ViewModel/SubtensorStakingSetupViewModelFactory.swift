@@ -190,7 +190,7 @@ extension SubtensorStakingSetupViewModelFactory {
                 receive: .hidden,
                 swapRate: .hidden,
                 networkFee: networkFee,
-                hasHeaderDivider: true
+                isRoot: true
             ) : nil,
             networkFee: networkFee
         )
