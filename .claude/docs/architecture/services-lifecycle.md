@@ -181,11 +181,10 @@ retains batches silently for its normal later flushes, checking consent before e
 when the stored origin differs or the stored state is corrupt, so the facade's first endpoint
 already carries the current context. Failed adoption leaves no endpoint, and the next demand
 adopts again.
-The same context observer clears the cost-basis presentation seed and fences pending cost-basis
-completions. The cost basis is read on the shared pager on every request; the seed only presents
-the last ledger while the read runs. Max APY keeps no result between bursts and relies on
-URLCache max-age. The dashboard runs one burst per `performSyncUp()` and, if it fails, again after
-later state fetches until one succeeds. Local calculations do not require a separate auth request. The package exposes a
+The cost basis keeps no ledger of its own: its seed is peeked from the store's `operations/search`
+pages, an own trade drops those pages and blocks the seed for 300 s, and the next open refetches.
+Max APY keeps no result between bursts and relies on the store's max-age. The dashboard runs one
+burst per `performSyncUp()` and, if it fails, again after later state fetches until one succeeds. Local calculations do not require a separate auth request. The package exposes a
 context invalidation ID so the facade also detects a cold origin replacement/repair before
 publishing its first endpoint.
 Failed adoption notifies when its memory fence changed.

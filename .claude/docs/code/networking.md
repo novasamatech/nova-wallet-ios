@@ -131,21 +131,22 @@ module should call `EvmTransactionService`, not the RPC layer.
 
 ## Nova backend bearer authentication
 
+`Packages/NovaAuth` owns profile-3 bootstrap, the single persisted bearer and bounded renewal; it
+has no HTTP cache. App consumers inject `NovaAuthFacade.shared`; never build a per-feature auth
 provider. Config is
 fetched once per process, so `NovaAuthFacade` maps `infraUrl` to one memoised endpoint and nothing
 observes config or context changes. Host
-`Packages/NovaAuth` owns profile-3 bootstrap, the single persisted bearer, bounded renewal and
-native URLCache. App consumers inject `NovaAuthFacade.shared`; never build a per-feature auth
-provider. Bittensor completes auth admission, then authorizes again before the native request.
-HTTP freshness is URLCache max-age only: there is no request coalescing, negative availability
-TTL or client TTL. `BittensorApiResponseCache` stores only decoded stale presentation seeds, never
-successful HTTP freshness. Older recommendation generations return `generationStale`, preserving
-a newer seed without refetch. Endpoint admissions carry an immutable facade invalidation revision.
-The decoded cache advances its revision floor monotonically and reconciles the latest revision
-before completion and peek. Delayed or duplicate notifications preserve current-revision state;
-old admissions/completions remain fenced. Same-origin readiness does not invalidate the cache.
-Auth origin/generation changes also clear the cost-basis presentation seed; a pending cost-basis
-completion cannot restore a prior context's seed. Chain data is never cached client-side. Host
+provider. `BittensorApiResponseCache` is the app-owned max-age store: a fresh decoded body
+short-circuits before admission, an expired one stays only as a stale display seed, `no-store`
+bodies are never kept, and own trades drop the account's `operations/search` pages (a page fetched
+before the drop is not kept). On a miss Bittensor completes auth admission, then authorizes again
+before the request. There is no request coalescing, negative availability TTL or client TTL.
+Older recommendation generations return `generationStale`, preserving a newer seed without refetch.
+Endpoint admissions carry an immutable facade invalidation revision. The store advances its
+revision floor monotonically and reconciles the latest revision before completion and peek.
+Delayed or duplicate notifications preserve current-revision state; old admissions/completions
+remain fenced. Same-origin readiness does not invalidate the store. Auth origin/generation changes
+clear every seed, including the cost-basis pages. Chain data is never cached client-side. Host
 activation authorizes later demand-driven bootstrap; catalogue requests carry no authentication
 intent.
 
