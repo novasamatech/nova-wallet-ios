@@ -39,9 +39,14 @@ enum SubtensorRootEntryPresentation {
     case quickPickRoot
 }
 
+enum SubtensorSetupRootValidatorViewModel {
+    case card(SubtensorValidatorCardViewModel)
+    case rows(validator: StackCellViewModel, apy: String)
+}
+
 struct SubtensorSetupRootViewModel {
     let icon: ImageViewModelProtocol
-    let validator: SubtensorValidatorCardViewModel
+    let validator: SubtensorSetupRootValidatorViewModel
     let compactValidator: SubtensorSetupValidatorViewModel
     let compactRate: String?
     let isQuickPick: Bool

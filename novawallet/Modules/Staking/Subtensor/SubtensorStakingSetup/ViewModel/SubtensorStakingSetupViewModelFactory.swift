@@ -158,13 +158,22 @@ extension SubtensorStakingSetupViewModelFactory {
         case let .selected(display): name = display.name ?? display.address; icon = display.imageViewModel
         }
         let annualRate = input.subnetData.annualRate
-        return SubtensorSetupRootViewModel(
-            icon: AssetIconViewModelFactory().createAssetIconViewModel(from: chainAsset.assetDisplayInfo),
-            validator: SubtensorValidatorCardViewModel(
+        let validator: SubtensorSetupRootValidatorViewModel
+        if case .addStake = input.mode {
+            validator = .rows(
+                validator: StackCellViewModel(details: name ?? "", imageViewModel: icon),
+                apy: SubtensorApyFormatter.text(for: annualRate, style: .paidInTao, locale: locale)
+            )
+        } else {
+            validator = .card(SubtensorValidatorCardViewModel(
                 icon: icon, name: name, subtitle: strings.stakingCommonValidator(),
                 rate: .loaded(SubtensorApyFormatter.text(for: annualRate, style: .bare, locale: locale)),
                 rateCaption: strings.stakingSubtensorV22EstApy()
-            ),
+            ))
+        }
+        return SubtensorSetupRootViewModel(
+            icon: AssetIconViewModelFactory().createAssetIconViewModel(from: chainAsset.assetDisplayInfo),
+            validator: validator,
             compactValidator: compact,
             compactRate: SubtensorApyFormatter.text(for: annualRate, style: .leading, locale: locale),
             isQuickPick: input.rootEntryPresentation == .quickPickRoot || input.quickPickOrder != nil,
