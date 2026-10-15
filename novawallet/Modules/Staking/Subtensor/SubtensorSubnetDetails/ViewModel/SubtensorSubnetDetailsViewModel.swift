@@ -49,7 +49,9 @@ struct SubtensorParameterRowViewModel {
 
 struct SubtensorSubnetParametersViewModel {
     let split: Decimal?
+    let taoTitle: String
     let taoShare: String
+    let alphaTitle: String
     let alphaShare: String
     let rows: [SubtensorParameterRowViewModel]
 }
