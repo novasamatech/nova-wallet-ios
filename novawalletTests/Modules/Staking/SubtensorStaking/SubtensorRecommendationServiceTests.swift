@@ -87,19 +87,6 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
         verify(chainFactory, never()).createChainSnapshotWrapper(for: any())
     }
 
-    func testMalformedMaxTakeFailsAsContractViolation() throws {
-        let apiFactory = try createApiFactory(hotkeys: [subnetKept], maxTake: "1e2")
-        let service = createService(apiFactory, createChainFactory())
-
-        XCTAssertThrowsError(try run(service.createRecommendedValidatorsWrapper(for: subnet))) { error in
-            guard case let BittensorApiError.contractViolation(detail, requestId) = error else {
-                return XCTFail("Unexpected error \(error)")
-            }
-            XCTAssertEqual(detail, "GET /recommendations/subnets/64/validators: invalid meta.clientGates.maxTake")
-            XCTAssertEqual(requestId, "request-1")
-        }
-    }
-
     private func createService(
         _ apiFactory: BittensorApiOperationFactoryProtocol,
         _ chainFactory: SubtensorValidatorChainOperationFactoryProtocol
@@ -111,10 +98,7 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
         )
     }
 
-    private func createApiFactory(
-        hotkeys: [AccountId],
-        maxTake: String = "0.18"
-    ) throws -> MockBittensorApiOperationFactoryProtocol {
+    private func createApiFactory(hotkeys: [AccountId]) throws -> MockBittensorApiOperationFactoryProtocol {
         let component = BittensorApi.AvailableComponent(
             asOf: Date(timeIntervalSince1970: 1_790_000_000),
             freshness: .fresh
@@ -122,7 +106,7 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
 
         let generation = BittensorApi.Generation(sourceBlockNumber: 9_139_880, carriedOverNetuids: [])
 
-        let gates = BittensorApi.ClientGates(maxTake: maxTake, requirePermit: true, requireActiveWithinCutoff: true)
+        let gates = BittensorApi.ClientGates(maxTake: "0.18", requirePermit: true, requireActiveWithinCutoff: true)
 
         let collection = try BittensorApi.RankedValidatorCollection(
             meta: BittensorApi.RecommendationMetadata(

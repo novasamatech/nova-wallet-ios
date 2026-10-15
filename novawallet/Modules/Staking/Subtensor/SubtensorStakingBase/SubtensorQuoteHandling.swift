@@ -27,17 +27,47 @@ extension SubtensorBaseRetrying {
 }
 
 protocol SubtensorQuoteHandling: SubtensorBaseRetrying {
+    var chainAsset: ChainAsset { get }
+    var inputResult: AmountInputResult? { get set }
     var quoteFlow: SubtensorQuoteFlowModel { get set }
     var isQuoteFailed: Bool { get set }
     var tradesUnavailable: Bool { get set }
     var logger: LoggerProtocol { get }
     var quoteInteractor: SubtensorStakingBaseInteractorInputProtocol { get }
 
+    func inputAmount() -> Balance?
     func quoteRequest() -> SubtensorTradeQuoteRequest?
+    func applyInputChange()
+    func provideAmountInputViewModel()
     func provideViewModel()
 }
 
 extension SubtensorQuoteHandling {
+    func updateAmount(_ newValue: Decimal?) {
+        inputResult = newValue.map { .absolute($0) }
+
+        applyInputChange()
+    }
+
+    func selectMax() {
+        inputResult = .rate(1)
+
+        provideAmountInputViewModel()
+        applyInputChange()
+    }
+
+    func selectAmountPercentage(_ percentage: Float) {
+        inputResult = .rate(Decimal(Double(percentage)))
+
+        provideAmountInputViewModel()
+        applyInputChange()
+    }
+
+    func inputAmountOrPlaceholder() -> Balance {
+        inputAmount().flatMap { $0 > 0 ? $0 : nil } ??
+            Decimal(1).toSubstrateAmount(precision: chainAsset.assetDisplayInfo.assetPrecision) ?? 1
+    }
+
     func updateQuote() {
         if let request = quoteFlow.updateRequest(quoteRequest()) {
             isQuoteFailed = false

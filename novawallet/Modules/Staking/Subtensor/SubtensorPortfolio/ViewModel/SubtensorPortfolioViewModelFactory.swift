@@ -71,7 +71,7 @@ private extension SubtensorPortfolioViewModelFactory {
 
         let text = formatterFactory.createTokenFormatter(for: alphaInfo)
             .value(for: locale)
-            .stringFromDecimal(decimal(amount)) ?? unknownValue(for: locale)
+            .stringFromDecimal(decimal(amount)) ?? .subtensorUnknown(for: locale)
 
         return SubtensorSubnetNaming.isolatedLeftToRight(text)
     }
@@ -80,10 +80,6 @@ private extension SubtensorPortfolioViewModelFactory {
         let formatter = NumberFormatter.subtensorSignedPercentSingle.value(for: locale)
 
         return formatter.stringFromDecimal(value)
-    }
-
-    func unknownValue(for locale: Locale) -> String {
-        R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown()
     }
 
     func createPeriods(for state: SubtensorPortfolioState, locale: Locale) -> SubtensorPortfolioPeriodsViewModel {
@@ -193,7 +189,7 @@ private extension SubtensorPortfolioViewModelFactory {
         ).value(for: locale)
 
         let axisLabels = [maximum, (maximum + minimum) / 2, minimum].map { value in
-            formatter.stringFromDecimal(Decimal(value)) ?? unknownValue(for: locale)
+            formatter.stringFromDecimal(Decimal(value)) ?? .subtensorUnknown(for: locale)
         }
 
         return SubtensorPriceChartViewModel(
@@ -363,7 +359,7 @@ extension SubtensorPortfolioViewModelFactory: SubnetPortfolioViewModelFactoryPro
         }
 
         let header = SubtensorPortfolioHeaderViewModel(
-            total: portfolio.isFullyPriced ? formatTao(total, locale: locale) : unknownValue(for: locale),
+            total: portfolio.isFullyPriced ? formatTao(total, locale: locale) : .subtensorUnknown(for: locale),
             fiat: portfolio.isFullyPriced ? fiat : .hidden,
             change: chart.change,
             chart: chart.chart,

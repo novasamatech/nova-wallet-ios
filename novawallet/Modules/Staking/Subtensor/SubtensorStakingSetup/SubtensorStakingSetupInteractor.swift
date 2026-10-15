@@ -25,13 +25,12 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
     private let rankingCallStore = CancellableCallStore()
     private let subnetCallStore = CancellableCallStore()
 
-    init(
+    override init(
         flowServices: SubtensorFlowServices,
         state: SubtensorStakingSharedStateProtocol,
-        presetFactory: SubtensorValidatorPresetFactoryProtocol,
         logger: LoggerProtocol
     ) {
-        self.presetFactory = presetFactory
+        presetFactory = state.earnServices.validatorPresetFactory
         yieldService = state.earnServices.yieldService
         recommendationService = state.earnServices.recommendationService
         subnetsService = state.subnetsService

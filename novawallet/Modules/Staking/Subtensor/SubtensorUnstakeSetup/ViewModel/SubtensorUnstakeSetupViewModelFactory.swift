@@ -74,13 +74,7 @@ final class SubtensorUnstakeSetupViewModelFactory {
     }
 
     func inputDisplayInfo(for netuid: UInt16, catalogue: SubtensorSubnetCatalogue?) -> AssetBalanceDisplayInfo {
-        let taoInfo = chainAsset.assetDisplayInfo
-
-        guard netuid != SubtensorStakingPallet.rootNetuid else {
-            return taoInfo
-        }
-
-        return taoInfo.subtensorAlpha(symbol: SubtensorSubnetNaming.symbol(for: netuid, in: catalogue))
+        chainAsset.assetDisplayInfo.subtensorAlpha(netuid: netuid, catalogue: catalogue)
     }
 }
 
