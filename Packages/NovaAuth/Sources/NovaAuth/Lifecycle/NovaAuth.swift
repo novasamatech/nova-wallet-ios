@@ -237,7 +237,6 @@ private extension NovaAuth {
             return record.context.generation
         } ?? 0
         guard previous < UInt64.max else { throw NovaAuthError.invalidConfiguration }
-        dependencies.http.clearReadCache()
         try persist(NovaAuthInstallationState(
             version: 1,
             context: NovaAuthContext(origin: origin, generation: previous + 1),
@@ -269,7 +268,6 @@ private extension NovaAuth {
         issuanceCooldown.clear()
         originCooldown.clear()
         rejectedCredentials = NovaAuthRejectedCredentials()
-        dependencies.http.clearReadCache()
         do {
             try persist(replacement)
             try retryStorageWork()
