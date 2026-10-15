@@ -30,15 +30,16 @@ final class StartStakingInfoSubtensorViewLayout: UIView {
         button.applyDefaultStyle()
     }
 
-    let seeAllButton = UIButton(type: .system)
+    let seeAllButton: TriangularedButton = .create { button in
+        button.applySecondaryDefaultStyle()
+    }
 
     let balanceLabel = UILabel(style: .caption1Secondary, textAlignment: .center, numberOfLines: 1)
 
-    init(themeColor: UIColor) {
-        super.init(frame: .zero)
+    override init(frame: CGRect) {
+        super.init(frame: frame)
 
         backgroundColor = R.color.colorSecondaryScreenBackground()
-        actionButton.applyEnabledStyle(colored: themeColor)
         setupLayout()
     }
 
@@ -71,7 +72,7 @@ private extension StartStakingInfoSubtensorViewLayout {
         addSubview(seeAllButton)
         seeAllButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(Constants.horizontalInset)
-            make.height.equalTo(44)
+            make.height.equalTo(Constants.buttonHeight)
             make.bottom.equalTo(balanceLabel.snp.top).offset(-Constants.actionSpacing)
         }
 
@@ -173,11 +174,17 @@ final class StartStakingInfoSubtensorRowView: UIView {
     func bind(viewModel: ParagraphView.Model) {
         imageView.image = viewModel.image
 
+        let lineStyle = NSMutableParagraphStyle()
+        lineStyle.minimumLineHeight = Constants.lineHeight
+        lineStyle.maximumLineHeight = Constants.lineHeight
+
         let text = NSAttributedString(
             string: viewModel.text.text,
             attributes: [
                 .foregroundColor: paragraphStyle.textColor,
-                .font: paragraphStyle.font
+                .font: paragraphStyle.font,
+                .paragraphStyle: lineStyle,
+                .baselineOffset: (Constants.lineHeight - paragraphStyle.font.lineHeight) / 2
             ]
         )
 
@@ -197,7 +204,8 @@ private extension StartStakingInfoSubtensorRowView {
     enum Constants {
         static let iconSize: CGFloat = 40
         static let textSpacing: CGFloat = 16
-        static let dividerSpacing: CGFloat = 16
+        static let dividerSpacing: CGFloat = 14
         static let dividerHeight: CGFloat = 0.5
+        static let lineHeight: CGFloat = 22
     }
 }

@@ -8,6 +8,8 @@ final class SubtensorSubnetSelectViewLayout: UIView {
         searchView.searchBar.textField
     }
 
+    let controlsView = UIView()
+
     let sortView: BorderedActionControlView = .create { view in
         view.contentInsets = Constants.sortInsets
     }
@@ -30,10 +32,15 @@ final class SubtensorSubnetSelectViewLayout: UIView {
         view.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: Constants.barTopSpacing, right: 0)
     }
 
-    let emptyStateView: EmptyStateView = .create { view in
-        view.image = R.image.iconEmptySearch()
-        view.titleColor = R.color.colorTextSecondary()!
-        view.titleFont = .regularFootnote
+    let emptyLabel: UILabel = .create { view in
+        view.apply(style: .footnoteSecondary)
+        view.textAlignment = .center
+        view.numberOfLines = 0
+    }
+
+    let emptyStateView: UIStackView = .create { view in
+        view.axis = .vertical
+        view.alignment = .center
         view.isHidden = true
     }
 
@@ -56,9 +63,10 @@ final class SubtensorSubnetSelectViewLayout: UIView {
     }
 
     func bind(controls viewModel: SubtensorSubnetListViewModel) {
+        controlsView.isHidden = viewModel.isNoMatches
+
         sortView.bind(title: viewModel.chipTitle)
         sortView.control.isEnabled = viewModel.areControlsEnabled
-        sortView.alpha = viewModel.areControlsEnabled ? 1 : Constants.inactiveAlpha
 
         filterButton.setImage(
             viewModel.isFilterActive ? R.image.iconFilterActive() : R.image.iconFilter(),
@@ -66,14 +74,12 @@ final class SubtensorSubnetSelectViewLayout: UIView {
         )
 
         filterButton.isEnabled = viewModel.areControlsEnabled
-        filterButton.alpha = viewModel.areControlsEnabled ? 1 : Constants.inactiveAlpha
 
         captionLabel.text = viewModel.caption
-        captionLabel.isHidden = viewModel.caption == nil
     }
 
     func bind(emptyText: String?) {
-        emptyStateView.title = emptyText
+        emptyLabel.apply(text: emptyText ?? "", lineHeight: Constants.emptyLineHeight)
         emptyStateView.isHidden = emptyText == nil
     }
 
@@ -109,8 +115,6 @@ private extension SubtensorSubnetSelectViewLayout {
             make.bottom.equalTo(safeAreaLayoutGuide.snp.top).offset(Constants.searchBarHeight)
         }
 
-        let controlsView = UIView()
-
         addSubview(controlsView)
         controlsView.snp.makeConstraints { make in
             make.top.equalTo(searchView.snp.bottom).offset(Constants.controlsTopSpacing)
@@ -142,16 +146,19 @@ private extension SubtensorSubnetSelectViewLayout {
             make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom)
         }
 
+        emptyStateView.addArrangedSubview(UIImageView(image: R.image.iconEmptyHistory()))
+        emptyStateView.addArrangedSubview(emptyLabel)
+
         addSubview(emptyStateView)
         emptyStateView.snp.makeConstraints { make in
-            make.top.equalTo(tableView.snp.top).offset(SubtensorSubnetCell.preferredHeight)
+            make.top.equalTo(searchView.snp.bottom).offset(Constants.emptyTopSpacing).priority(.medium)
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.bottom.equalTo(tableView.snp.bottom)
+            make.bottom.lessThanOrEqualTo(keyboardLayoutGuide.snp.top).offset(-Constants.emptyBottomSpacing)
         }
 
         addSubview(errorView)
         errorView.snp.makeConstraints { make in
-            make.top.equalTo(tableView.snp.top).offset(SubtensorSubnetCell.preferredHeight + Constants.errorTopSpacing)
+            make.top.equalTo(tableView.snp.top).offset(SubtensorSubnetCell.cardHeight + Constants.errorTopSpacing)
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
         }
 
@@ -165,10 +172,12 @@ private extension SubtensorSubnetSelectViewLayout {
         static let filterSize: CGFloat = 28
         static let filterSpacing: CGFloat = 7
         static let captionSpacing: CGFloat = 8
-        static let listTopSpacing: CGFloat = 8
+        static let listTopSpacing: CGFloat = 18
         static let barBottomInset: CGFloat = 8
         static let barTopSpacing: CGFloat = 8
-        static let inactiveAlpha: CGFloat = 0.5
         static let errorTopSpacing: CGFloat = 16
+        static let emptyTopSpacing: CGFloat = 148
+        static let emptyBottomSpacing: CGFloat = 16
+        static let emptyLineHeight: CGFloat = 18
     }
 }

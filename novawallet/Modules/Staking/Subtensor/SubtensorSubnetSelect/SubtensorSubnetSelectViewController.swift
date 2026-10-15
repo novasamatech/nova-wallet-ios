@@ -53,7 +53,7 @@ private extension SubtensorSubnetSelectViewController {
     }
 
     static let loadingRowsCount = 8
-    static let picksSpacing: CGFloat = 12
+    static let rootSpacing: CGFloat = 8
 
     var isLoading: Bool {
         guard let viewModel else {
@@ -94,7 +94,7 @@ private extension SubtensorSubnetSelectViewController {
     func setupTableView() {
         rootView.tableView.registerClassForCell(SubtensorSubnetCell.self)
         rootView.tableView.registerClassForCell(SubtensorSubnetSkeletonCell.self)
-        rootView.tableView.register(UITableViewCell.self, forCellReuseIdentifier: "root")
+        rootView.tableView.registerClassForCell(SubtensorSubnetRootCell.self)
         rootView.tableView.dataSource = self
         rootView.tableView.delegate = self
     }
@@ -130,9 +130,10 @@ private extension SubtensorSubnetSelectViewController {
 
         rootView.bind(controls: viewModel)
 
-        if case let .empty(text) = viewModel.content {
+        switch viewModel.content {
+        case let .empty(text), let .noMatches(text):
             rootView.bind(emptyText: text)
-        } else {
+        default:
             rootView.bind(emptyText: nil)
         }
 
@@ -172,7 +173,7 @@ extension SubtensorSubnetSelectViewController: UITableViewDataSource {
             return 0
         }
 
-        if section == .root { return 1 }
+        if section == .root { return viewModel?.isNoMatches == true ? 0 : 1 }
 
         if isLoading {
             return section == .others ? Self.loadingRowsCount : 0
@@ -183,12 +184,9 @@ extension SubtensorSubnetSelectViewController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == Section.root.rawValue {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "root", for: indexPath)
-            cell.backgroundColor = .clear
-            cell.textLabel?.apply(style: .regularBodyPrimary)
+            let cell = tableView.dequeueReusableCellWithType(SubtensorSubnetRootCell.self, forIndexPath: indexPath)
             let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
-            cell.textLabel?.text = strings.stakingSubtensorUiStakeToRoot()
-            cell.accessoryType = .disclosureIndicator
+            cell.bind(title: strings.stakingSubtensorUiStakeToRoot(), icon: viewModel?.rootIcon)
             return cell
         }
 
@@ -212,13 +210,15 @@ extension SubtensorSubnetSelectViewController: UITableViewDelegate {
     func tableView(_: UITableView, heightForHeaderInSection _: Int) -> CGFloat { .leastNormalMagnitude }
 
     func tableView(_: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        section == Section.picks.rawValue && !rows(for: .picks).isEmpty && !rows(for: .others).isEmpty
-            ? Self.picksSpacing
-            : 0
+        section == Section.root.rawValue ? Self.rootSpacing : 0
     }
 
     func tableView(_: UITableView, viewForFooterInSection _: Int) -> UIView? {
         UIView()
+    }
+
+    func tableView(_: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        indexPath.section == Section.root.rawValue || rowModel(at: indexPath) != nil
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
