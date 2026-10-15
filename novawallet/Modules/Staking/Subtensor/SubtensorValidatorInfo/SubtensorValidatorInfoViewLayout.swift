@@ -85,7 +85,14 @@ final class SubtensorValidatorInfoViewLayout: UIView {
 
         takeCell.detailsLabel.text = staking.take
 
-        rewardCell.bind(loadableViewModel: staking.reward)
+        switch staking.reward {
+        case .loading:
+            rewardCell.bind(loadableViewModel: .loading)
+        case let .cached(reward), let .loaded(reward):
+            rewardCell.bind(loadableViewModel: .loaded(value: reward))
+            rewardCell.rowContentView.valueView.bind(topValue: reward, bottomValue: staking.rewardDetail)
+        }
+
         rewardCell.rowContentView.valueView.valueTop.textColor = staking.hasReward
             ? R.color.colorTextPositive()
             : R.color.colorTextSecondary()

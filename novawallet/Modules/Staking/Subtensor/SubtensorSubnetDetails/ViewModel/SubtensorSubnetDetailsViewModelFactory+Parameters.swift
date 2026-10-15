@@ -9,6 +9,8 @@ extension SubtensorSubnetDetailsViewModelFactory {
         let parameters = state.parameters
         let pool = subnet.taoReserve + subnet.alphaReserve
         let split = pool > 0 ? BigRational(numerator: subnet.taoReserve, denominator: pool).decimalValue : nil
+        let taoShare = split.map { formatPercent($0, maximumFractionDigits: 1, locale: locale) }
+        let alphaShare = split.map { formatPercent(1 - $0, maximumFractionDigits: 1, locale: locale) }
         let age = parameters?.age.flatMap { interval -> String? in
             let formatter = DateComponentsFormatter()
             formatter.calendar = Calendar(identifier: .gregorian)
@@ -21,9 +23,9 @@ extension SubtensorSubnetDetailsViewModelFactory {
         return SubtensorSubnetParametersViewModel(
             split: split,
             taoTitle: strings.stakingSubtensorV22TaoPool(),
-            taoShare: split.map { formatPercent($0, locale: locale) } ?? unknownValue(for: locale),
+            taoShare: taoShare ?? unknownValue(for: locale),
             alphaTitle: strings.stakingSubtensorV22AlphaPool(),
-            alphaShare: split.map { formatPercent(1 - $0, locale: locale) } ?? unknownValue(for: locale),
+            alphaShare: alphaShare ?? unknownValue(for: locale),
             rows: [
                 row(strings.stakingSubtensorUiPickerAge(), value: age, state: state, locale: locale),
                 row(

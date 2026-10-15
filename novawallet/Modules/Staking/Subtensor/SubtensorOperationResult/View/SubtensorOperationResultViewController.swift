@@ -117,6 +117,7 @@ extension SubtensorOperationResultViewController: SubtensorResultViewProtocol {
 
         if currentStatus != pageViewModel.status.status {
             currentStatus = pageViewModel.status.status
+            rootView.applySpacing(isCompact: pageViewModel.status.status == .done)
             rootView.detailsView.setExpanded(pageViewModel.details.isExpanded, animated: false)
         }
 

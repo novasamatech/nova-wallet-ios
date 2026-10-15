@@ -162,13 +162,19 @@ private extension SubtensorUnstakeSetupVC {
 
     func applyNotes(_ viewModel: SubtensorUnstakeSetupViewModel) {
         rootView.noteView.isHidden = viewModel.note == nil
-        rootView.noteLabel.text = viewModel.note
+        rootView.noteLabel.apply(text: viewModel.note ?? "", lineHeight: Constants.noteLineHeight)
 
         rootView.feeAlertView.isHidden = viewModel.feeWarning == nil
-        rootView.feeAlertView.contentView.detailsLabel.text = viewModel.feeWarning
+        rootView.feeAlertView.contentView.detailsLabel.apply(
+            text: viewModel.feeWarning ?? "",
+            lineHeight: Constants.alertLineHeight
+        )
 
         rootView.holdAlertView.isHidden = viewModel.holdWarning == nil
-        rootView.holdAlertView.contentView.detailsLabel.text = viewModel.holdWarning
+        rootView.holdAlertView.contentView.detailsLabel.apply(
+            text: viewModel.holdWarning ?? "",
+            lineHeight: Constants.alertLineHeight
+        )
     }
 
     @objc func actionMax() {
@@ -238,5 +244,12 @@ extension SubtensorUnstakeSetupVC: Localizable {
         if isViewLoaded {
             setupLocalization()
         }
+    }
+}
+
+private extension SubtensorUnstakeSetupVC {
+    enum Constants {
+        static let noteLineHeight: CGFloat = 18
+        static let alertLineHeight: CGFloat = 16
     }
 }

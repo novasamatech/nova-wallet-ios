@@ -85,9 +85,10 @@ extension SubtensorSubnetDetailsViewModelFactory {
         compactTokenFormatter.value(for: locale).stringFromDecimal(amount) ?? unknownValue(for: locale)
     }
 
-    func formatPercent(_ value: Decimal, locale: Locale) -> String {
-        let formatter = NumberFormatter.percentSingle
-        formatter.locale = locale
+    func formatPercent(_ value: Decimal, maximumFractionDigits: Int = 2, locale: Locale) -> String {
+        let formatter = NumberFormatter.subtensorPercentSingle.value(for: locale)
+        formatter.maximumFractionDigits = maximumFractionDigits
+        formatter.roundingMode = .halfEven
 
         return formatter.stringFromDecimal(value) ?? unknownValue(for: locale)
     }
@@ -154,7 +155,7 @@ private extension SubtensorSubnetDetailsViewModelFactory {
             icon: display?.imageViewModel,
             name: name,
             subtitle: strings.stakingCommonValidator(),
-            rate: rate.map { .loaded(SubtensorApyFormatter.text(for: $0, style: .bare, locale: locale)) } ?? .hidden,
+            rate: item == nil ? .hidden : .loaded(SubtensorApyFormatter.text(for: rate, style: .bare, locale: locale)),
             rateCaption: strings.stakingSubtensorV22EstApy()
         )
     }

@@ -51,7 +51,7 @@ private extension SubtensorValidatorSelectPresenter {
     func provideState() {
         let filters = filters
         let header = listFactory.createLoadingViewModel(yields: yields, sort: filters.sort, locale: selectedLocale)
-        view?.didReceive(header: header, isFilterActive: filters != .supportedDefault)
+        view?.didReceive(header: header, isFilterActive: filters.hidesUnusualApy)
 
         if let error = directoryError ?? (filters.hidesUnusualApy ? recommendedError : nil) {
             let viewModel = listFactory.createErrorViewModel(for: error, locale: selectedLocale)

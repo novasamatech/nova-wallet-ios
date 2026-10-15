@@ -73,8 +73,7 @@ private extension SubtensorPortfolioViewModelFactory {
 
         let change = (point.fiatValue - first.fiatValue) / first.fiatValue
 
-        let formatter = NumberFormatter.signedPercentSingle
-        formatter.locale = locale
+        let formatter = NumberFormatter.subtensorSignedPercentSingle.value(for: locale)
 
         guard let percent = formatter.stringFromDecimal(change) else {
             return nil

@@ -85,10 +85,10 @@ private extension WarningView {
 
 extension WarningView {
     func bind(_ viewModel: Model) {
-        titleLabel.text = viewModel.title
+        titleLabel.apply(text: viewModel.title, lineHeight: Constants.lineHeight)
 
         if let message = viewModel.message {
-            messageLabel.text = message
+            messageLabel.apply(text: message, lineHeight: Constants.lineHeight)
             messageLabel.isHidden = false
         } else {
             messageLabel.isHidden = true
@@ -132,6 +132,7 @@ private extension WarningView {
         static let cornerRadius: CGFloat = 12
 
         static let warningViewSize: CGFloat = 16
+        static let lineHeight: CGFloat = 16
         static let learnMoreActionHeight: CGFloat = 32
     }
 }

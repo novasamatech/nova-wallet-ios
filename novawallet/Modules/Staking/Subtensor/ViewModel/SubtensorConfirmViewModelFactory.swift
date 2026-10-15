@@ -207,7 +207,7 @@ private extension SubtensorConfirmViewModelFactory {
                 quoteViewModelFactory.createSlippageViewModel(for: $0, locale: locale)
             },
             validatorApy: input.model.validator.annualRate.map {
-                SubtensorApyFormatter.text(for: $0, style: .trailing, locale: locale)
+                SubtensorApyFormatter.text(for: $0, style: .leading, locale: locale)
             },
             remark: createRemark(
                 for: input.model.direction, isProfitEstimated: costBasis.isEarnedEstimated, locale: locale
