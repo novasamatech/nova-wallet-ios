@@ -128,9 +128,7 @@ final class SubtensorPickCardHeaderView: UIControl {
         view.contentMode = .scaleAspectFit
     }
 
-    let skeletonView: SubtensorChartLoadingView = .create { view in
-        view.layer.cornerRadius = 6
-    }
+    let skeletonView = SubtensorChartLoadingView(cornerRadius: 6)
 
     private var iconViewModel: ImageViewModelProtocol?
 
