@@ -47,23 +47,10 @@ extension SubtensorRecommendationService {
         func rankedSubnet(_ item: BittensorApi.SubnetRanking, _ path: String) throws -> SubtensorRankedSubnet {
             try SubtensorRankedSubnet(
                 netuid: item.netuid,
-                status: SubtensorRecommendationService.rankedStatus(item.status),
                 taoIn: optionalDecimal(item.taoIn, "\(path).taoIn"),
                 volatility: item.breakdown.map { try metric($0.volatility, "\(path).breakdown.volatility") },
-                ageBlocks: item.ageBlocks,
-                scoredValidators: Int(clamping: item.validators.scored)
+                ageBlocks: item.ageBlocks
             )
-        }
-    }
-
-    static func rankedStatus(_ status: BittensorApi.RankingStatus) -> SubtensorRankedSubnet.Status {
-        switch status {
-        case .scored:
-            return .scored
-        case .gated:
-            return .gated
-        case .unavailable:
-            return .unavailable
         }
     }
 
