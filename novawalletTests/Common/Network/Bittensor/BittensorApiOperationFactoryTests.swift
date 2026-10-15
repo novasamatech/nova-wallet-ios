@@ -148,6 +148,60 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
         try assertNotStored(HTTPCacheDirectives(cacheControl: nil, age: nil))
     }
 
+    func testPageFetchedBeforeADropIsNotStored() throws {
+        var now: TimeInterval = 0
+        var isDropping = true
+        var factory: BittensorApiOperationFactory?
+        let transport = createTransport(
+            replies: [
+                createResponse(Data(operationsJson.utf8), requestId: "req-before", directives: .reusable(lifetime: 60)),
+                createResponse(Data(operationsJson.utf8), requestId: "req-after", directives: .reusable(lifetime: 60))
+            ],
+            beforeReply: {
+                now += 1
+                if isDropping { factory?.dropOperations(accountSubject: self.aliceSubject) }
+            }
+        )
+        factory = createFactory(transport: transport, timeProvider: { now })
+        let fetchedFactory = try XCTUnwrap(factory)
+
+        XCTAssertEqual(try run(fetchedFactory.createOperationsWrapper(accountSubject: aliceSubject, page: 1)).requestId, "req-before")
+        XCTAssertNil(fetchedFactory.peekOperations(accountSubject: aliceSubject, page: 1).value)
+
+        isDropping = false
+        XCTAssertEqual(try run(fetchedFactory.createOperationsWrapper(accountSubject: aliceSubject, page: 1)).requestId, "req-after")
+        XCTAssertEqual(fetchedFactory.peekOperations(accountSubject: aliceSubject, page: 1).value?.requestId, "req-after")
+    }
+
+    func testPrivateResponseIsReusable() throws {
+        let directives = HTTPCacheDirectives(cacheControl: "private, max-age=60, must-revalidate", age: nil)
+        let transport = createTransport(replies: [
+            createResponse(Data(operationsJson.utf8), requestId: "req-first", directives: directives),
+            createResponse(Data(operationsJson.utf8), requestId: "req-second", directives: directives)
+        ])
+        let factory = createFactory(transport: transport)
+
+        _ = try run(factory.createOperationsWrapper(accountSubject: aliceSubject, page: 1))
+
+        XCTAssertEqual(try run(factory.createOperationsWrapper(accountSubject: aliceSubject, page: 1)).requestId, "req-first")
+        verify(transport, times(1)).createResponseWrapper(for: any(), admission: any())
+    }
+
+    func testDropOperationsRemovesOnlyThatSubjectsEntries() throws {
+        let transport = createTransport(replies: [
+            createResponse(Data(operationsJson.utf8), requestId: "req-alice", directives: .reusable(lifetime: 60)),
+            createResponse(Data(operationsJson.utf8), requestId: "req-bob", directives: .reusable(lifetime: 60))
+        ])
+        let factory = createFactory(transport: transport)
+        _ = try run(factory.createOperationsWrapper(accountSubject: aliceSubject, page: 1))
+        _ = try run(factory.createOperationsWrapper(accountSubject: bobSubject, page: 1))
+
+        factory.dropOperations(accountSubject: aliceSubject)
+
+        XCTAssertNil(factory.peekOperations(accountSubject: aliceSubject, page: 1).value)
+        XCTAssertEqual(factory.peekOperations(accountSubject: bobSubject, page: 1).value?.requestId, "req-bob")
+    }
+
     private func assertNotStored(_ directives: HTTPCacheDirectives, line: UInt = #line) throws {
         var now: TimeInterval = 0
         let transport = createTransport(replies: [
@@ -184,7 +238,10 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
         )
     }
 
-    private func createTransport(replies: [BittensorApiRawResponse]) -> MockBittensorApiTransportProtocol {
+    private func createTransport(
+        replies: [BittensorApiRawResponse],
+        beforeReply: @escaping () -> Void = {}
+    ) -> MockBittensorApiTransportProtocol {
         let transport = MockBittensorApiTransportProtocol()
         var remaining = replies
 
@@ -198,6 +255,8 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
             when(stub.addInvalidationObserver(any(), closure: any())).thenReturn(0)
             when(stub.createAdmissionWrapper()).then { CompoundOperationWrapper.createWithResult(admission) }
             when(stub.createResponseWrapper(for: any(), admission: any())).then { _ in
+                beforeReply()
+
                 guard !remaining.isEmpty else {
                     return .createWithError(BittensorApiError.unavailable(code: nil, requestId: nil))
                 }
