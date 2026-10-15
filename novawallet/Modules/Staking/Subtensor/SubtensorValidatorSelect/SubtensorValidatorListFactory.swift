@@ -29,7 +29,7 @@ final class SubtensorValidatorListFactory {
     ) {
         self.chainFormat = chainFormat
         stakeFormatter = formatterFactory.createCompactTokenFormatter(for: assetDisplayInfo)
-        takeFormatter = NumberFormatter.percentSingleHalfEven.localizableResource()
+        takeFormatter = NumberFormatter.subtensorPercentSingleHalfEven
     }
 }
 
