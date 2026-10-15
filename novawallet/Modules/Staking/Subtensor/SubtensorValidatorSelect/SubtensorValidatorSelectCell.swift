@@ -3,7 +3,9 @@ import UIKit
 import UIKit_iOS
 
 final class SubtensorValidatorSelectCell: UITableViewCell {
-    let radioView = UIImageView()
+    let radioView: UIImageView = .create { view in
+        view.contentMode = .center
+    }
 
     let iconView: PolkadotIconView = .create { view in
         view.backgroundColor = .clear
@@ -74,7 +76,7 @@ final class SubtensorValidatorSelectCell: UITableViewCell {
 
         radioView.image = model.isSelected
             ? R.image.iconRadioButtonSelected()
-            : R.image.iconRadioButtonUnselected()
+            : R.image.iconRadioButtonUnselected()?.tinted(with: R.color.colorRadioBorder()!)
 
         if let icon = model.icon {
             iconView.bind(icon: icon)
@@ -142,7 +144,11 @@ final class SubtensorValidatorSkeletonCell: UITableViewCell, SkeletonableView {
     var hidingViews: [UIView] { [] }
     var skeletonSpaceSize: CGSize { contentView.bounds.size }
 
-    private let radioView = UIImageView(image: R.image.iconRadioButtonUnselected())
+    private let radioView: UIImageView = .create { view in
+        view.image = R.image.iconRadioButtonUnselected()?.tinted(with: R.color.colorRadioBorder()!)
+        view.contentMode = .center
+    }
+
     private let infoView = UIImageView(image: R.image.iconInfoFilled())
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {

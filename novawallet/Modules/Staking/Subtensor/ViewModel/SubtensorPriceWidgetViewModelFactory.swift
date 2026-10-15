@@ -206,7 +206,7 @@ private extension SubtensorPriceWidgetViewModelFactory {
         SubtensorSubnetPeriodsViewModel(
             titles: Self.periods.map { $0.title(for: locale) },
             selectedIndex: Self.periods.firstIndex(of: params.period) ?? 0,
-            isEnabled: params.history != .notListed
+            isEnabled: params.history != .notListed && params.history != .loading
         )
     }
 }

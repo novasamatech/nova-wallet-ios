@@ -34,6 +34,10 @@ enum SubtensorSubnetNaming {
     static func isolatedLeftToRight(_ text: String) -> String {
         "\u{2066}\(text)\u{2069}"
     }
+
+    static func isolatedRate(_ oneIn: String, _ rateOut: String) -> String {
+        isolatedLeftToRight(isolatedLeftToRight(oneIn).estimatedEqual(to: isolatedLeftToRight(rateOut)))
+    }
 }
 
 private extension SubtensorSubnetNaming {

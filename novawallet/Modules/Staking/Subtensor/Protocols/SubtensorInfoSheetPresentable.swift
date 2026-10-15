@@ -34,7 +34,12 @@ extension SubtensorInfoSheetPresentable {
             title: sheet.title,
             details: sheet.details,
             mainAction: gotItAction,
-            titleStyle: .boldTitle3Primary,
+            style: TitleDetailsSheetViewLayout.Style(
+                title: .boldTitle3Primary,
+                detailsLineHeight: 18,
+                spacing: 12,
+                actionsBottomInset: 0
+            ),
             extraHeight: 24
         )
     }
