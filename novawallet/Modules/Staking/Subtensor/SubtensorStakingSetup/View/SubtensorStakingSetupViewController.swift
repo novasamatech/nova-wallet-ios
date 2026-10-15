@@ -84,6 +84,7 @@ private extension SubtensorStakingSetupViewController {
             action: #selector(actionSelectValidator),
             for: .touchUpInside
         )
+        rootView.rootPickCardView.headerView.addTarget(self, action: #selector(actionCardHeader), for: .touchUpInside)
         rootView.rootPickCardView.browseButton.addTarget(self, action: #selector(actionBrowse), for: .touchUpInside)
         rootView.selectionAlert.learnMoreButton.addTarget(
             self,
@@ -248,9 +249,7 @@ extension SubtensorStakingSetupViewController: SubtensorStakingSetupViewProtocol
         }
         applyDetails(viewModel.details)
 
-        rootView.captionLabel.isHidden = viewModel.caption == nil
-        rootView.captionLabel.text = viewModel.caption
-        rootView.placeCaption(afterAction: viewModel.getTao != nil)
+        rootView.applyCaption(viewModel.caption)
 
         rootView.applyAction(viewModel.action)
     }

@@ -70,11 +70,6 @@ final class SubtensorStakingSetupViewLayout: SubtensorAmountSetupLayout {
         sectionLabel.apply(text: title, lineHeight: Constants.sectionLineHeight, kern: Constants.sectionKern)
     }
 
-    func placeCaption(afterAction: Bool) {
-        bottomStack.removeArrangedSubview(captionLabel)
-        bottomStack.insertArrangedSubview(captionLabel, at: afterAction ? 1 : 0)
-    }
-
     override func setupLayout() {
         super.setupLayout()
 

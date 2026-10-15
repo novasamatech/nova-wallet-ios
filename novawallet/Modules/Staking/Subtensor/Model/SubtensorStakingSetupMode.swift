@@ -50,11 +50,12 @@ extension SubtensorStakingSetupMode {
     }
 
     var hasSettings: Bool {
-        if case .subnetPick = self {
+        switch self {
+        case .quickPick, .subnetPick:
             return true
+        case .rootDetails, .addStake, .buyMore:
+            return false
         }
-
-        return false
     }
 
     var initialTarget: SubtensorStakeTarget? {

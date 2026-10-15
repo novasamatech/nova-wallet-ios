@@ -36,9 +36,7 @@ final class SubtensorUnstakeSetupViewModelFactory {
         for input: SubtensorUnstakeSetupViewModelInput,
         locale: Locale
     ) -> SubtensorUnstakeSetupViewModel {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
-        return SubtensorUnstakeSetupViewModel(
+        SubtensorUnstakeSetupViewModel(
             title: createTitle(for: input, locale: locale),
             header: createHeader(for: input, locale: locale),
             inputPrice: createInputPrice(for: input, locale: locale),
@@ -47,7 +45,6 @@ final class SubtensorUnstakeSetupViewModelFactory {
             note: createRootNote(for: input, locale: locale),
             feeWarning: createFeeWarning(for: input, locale: locale),
             holdWarning: createHoldWarning(for: input, locale: locale),
-            caption: input.isRoot ? nil : strings.stakingSubtensorUiSafetyNote(),
             action: createAction(for: input, locale: locale)
         )
     }
