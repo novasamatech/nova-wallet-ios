@@ -156,11 +156,13 @@ final class SubtensorValidatorSectionHeaderView: UITableViewHeaderFooterView {
 
         detailsLabel.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(16)
-            make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(8)
+            make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(7)
             make.top.equalTo(titleLabel)
         }
 
         detailsLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        detailsLabel.adjustsFontSizeToFitWidth = true
+        detailsLabel.minimumScaleFactor = 0.9
     }
 
     @available(*, unavailable)

@@ -17,28 +17,24 @@ enum SubtensorApyFormatter {
         case .leading:
             return strings.stakingSubtensorUiRateApyLeadingFormat(rateText(annualRate, locale: locale))
         case .trailing:
-            return strings.stakingSubtensorUiRateApyTrailingFormat(validatorRateText(annualRate, locale: locale))
+            return strings.stakingSubtensorUiRateApyTrailingFormat(rateText(annualRate, locale: locale))
         case .paidInTao:
             return strings.stakingSubtensorUiRatePaidInTaoFormat(rateText(annualRate, locale: locale))
         case .bare:
             return rateText(annualRate, locale: locale)
         case .column:
-            return validatorRateText(annualRate, locale: locale)
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .percent
+            formatter.roundingMode = .halfEven
+            formatter.locale = locale
+            formatter.maximumFractionDigits = 1
+            formatter.spacePercentSymbol()
+            return rateText(annualRate, formatter: formatter, locale: locale)
         }
     }
 }
 
 private extension SubtensorApyFormatter {
-    static func validatorRateText(_ annualRate: Decimal?, locale: Locale) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .percent
-        formatter.roundingMode = .halfEven
-        formatter.locale = locale
-        formatter.maximumFractionDigits = 1
-        formatter.spacePercentSymbol()
-        return rateText(annualRate, formatter: formatter, locale: locale)
-    }
-
     static func rateText(
         _ annualRate: Decimal?,
         formatter: NumberFormatter? = nil,
