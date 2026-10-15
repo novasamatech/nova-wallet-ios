@@ -13,6 +13,7 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
     let operationService: SubtensorStakingOperationServiceProtocol
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
     let costBasisService: SubtensorCostBasisServiceProtocol
+    let rootHoldFactory: SubtensorRootHoldFactoryProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
@@ -32,6 +33,7 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
     private let catalogueCallStore = CancellableCallStore()
     private let logosCallStore = CancellableCallStore()
     private let costBasisCallStore = CancellableCallStore()
+    private let holdsCallStore = CancellableCallStore()
 
     init(
         flowServices: SubtensorFlowServices,
@@ -46,6 +48,7 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
         operationService = flowServices.operationService
         catalogueService = state.earnServices.catalogueService
         costBasisService = state.earnServices.costBasisService
+        rootHoldFactory = state.earnServices.rootHoldFactory
         subnetLogosProvider = state.earnServices.subnetLogosProvider
         walletLocalSubscriptionFactory = flowServices.walletLocalSubscriptionFactory
         priceLocalSubscriptionFactory = flowServices.priceLocalSubscriptionFactory
@@ -64,14 +67,11 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
         catalogueCallStore.cancel()
         logosCallStore.cancel()
         costBasisCallStore.cancel()
+        holdsCallStore.cancel()
 
         positionsSyncService.remove(observer: self)
         positionsSyncService.remove(failureObserver: self)
     }
-
-    func onSetup() {}
-
-    func onPositions(_: Multistaking.SubtensorStakingState?) {}
 }
 
 private extension SubtensorStakingBaseInteractor {
@@ -103,7 +103,6 @@ private extension SubtensorStakingBaseInteractor {
             sendStateOnSubscription: true,
             queue: .main
         ) { [weak self] _, newState in
-            self?.onPositions(newState)
             self?.basePresenter?.didReceivePositions(newState)
         }
     }
@@ -154,8 +153,6 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
         makePositionsFailureSubscription()
 
         provideExistentialDeposit()
-
-        onSetup()
     }
 
     func cachedCatalogue() -> HTTPCachePeek<SubtensorSubnetCatalogue> {
@@ -299,6 +296,24 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
             case let .failure(error):
                 self?.logger.warning("Subtensor cost basis unavailable on netuid \(netuid): \(error)")
                 self?.basePresenter?.didReceiveCostBasis(nil)
+            }
+        }
+    }
+
+    func loadRootHolds(for hotkeys: [AccountId]) {
+        holdsCallStore.cancel()
+
+        executeCancellable(
+            wrapper: rootHoldFactory.createHoldsWrapper(coldkey: selectedAccount.accountId, hotkeys: hotkeys),
+            inOperationQueue: operationQueue,
+            backingCallIn: holdsCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(holds):
+                self?.basePresenter?.didReceiveRootHolds(holds)
+            case let .failure(error):
+                self?.logger.warning("Subtensor root holds unavailable: \(error)")
             }
         }
     }

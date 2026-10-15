@@ -30,13 +30,7 @@ struct SubtensorStakeValidatingDep {
     }
 }
 
-protocol SubtensorStakePresenterValidating {
-    func createStakeValidations(
-        for dep: SubtensorStakeValidatingDep,
-        dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
-        selectedLocale: Locale
-    ) -> [DataValidating]
-}
+protocol SubtensorStakePresenterValidating {}
 
 extension SubtensorStakePresenterValidating {
     func createStakeValidations(

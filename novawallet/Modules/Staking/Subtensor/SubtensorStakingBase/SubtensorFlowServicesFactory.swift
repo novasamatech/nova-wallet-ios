@@ -5,9 +5,6 @@ struct SubtensorFlowServices {
     let account: MetaChainAccountResponse
     let positionsSyncService: SubtensorPositionsSyncServiceProtocol
     let runtimeProvider: RuntimeCodingServiceProtocol
-    let extrinsicService: ExtrinsicServiceProtocol
-    let extrinsicSubmitMonitor: ExtrinsicSubmitMonitorFactoryProtocol
-    let signer: SigningWrapperProtocol
     let operationService: SubtensorStakingOperationServiceProtocol
     let preflightFactory: SubtensorPreflightFactoryProtocol
     let tradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol
@@ -66,9 +63,6 @@ enum SubtensorFlowServicesFactory {
             account: account,
             positionsSyncService: positionsSyncService,
             runtimeProvider: runtimeProvider,
-            extrinsicService: extrinsicService,
-            extrinsicSubmitMonitor: extrinsicSubmitMonitor,
-            signer: signer,
             operationService: operationService,
             preflightFactory: createPreflightFactory(for: state, operationQueue: operationQueue),
             tradeQuoteFactory: state.earnServices.tradeQuoteFactory,

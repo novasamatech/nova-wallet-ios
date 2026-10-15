@@ -152,7 +152,6 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
         lastUpdates[20] = UInt64(head) - 6000
 
         let snapshot = SubtensorValidatorChainSnapshot(
-            blockHash: "0x01",
             blockNumber: head,
             uids: [pair(subnetKept, 64): 10, pair(subnetUnpermitted, 64): 11, pair(subnetSecondKept, 64): 12,
                    pair(subnetTakeAboveMax, 64): 13, pair(subnetInactive, 64): 20],

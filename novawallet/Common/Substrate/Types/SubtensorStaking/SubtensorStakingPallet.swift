@@ -25,7 +25,5 @@ enum SubtensorStakingPallet {
 
     static let perU16Denominator: UInt16 = 65535
 
-    // Swap.FeeRate is ValueQuery with runtime DefaultFeeRate = 33 (swap pallet mod.rs:89-97);
-    // an unset key reads as null over RPC, so the runtime default is applied app-side
     static let defaultFeeRate: UInt16 = 33
 }

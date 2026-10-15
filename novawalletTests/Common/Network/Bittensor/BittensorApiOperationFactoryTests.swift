@@ -246,7 +246,7 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
         var remaining = replies
 
         let admission = BittensorApiAdmission(
-            scope: BittensorApiCacheScope(origin: "test", profile: 3, generation: 0, invalidationRevision: 0),
+            scope: BittensorApiCacheScope(origin: "test", generation: 0, invalidationRevision: 0),
             endpoint: nil
         )
 
@@ -273,7 +273,7 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
         requestId: String,
         directives: HTTPCacheDirectives = .notStorable
     ) -> BittensorApiRawResponse {
-        BittensorApiRawResponse(statusCode: 200, requestId: requestId, body: body, directives: directives)
+        BittensorApiRawResponse(requestId: requestId, body: body, directives: directives)
     }
 
     private func mutatedBody(_ original: String, replacing replacements: [(String, String)]) -> Data {

@@ -53,6 +53,8 @@ extension SubtensorClaimRewardsPresenter: SubtensorStakingBaseInteractorOutputPr
 
     func didReceiveCostBasis(_: SubtensorCostBasis?) {}
 
+    func didReceiveRootHolds(_: [AccountId: SubtensorRootHold]) {}
+
     func didReceiveExistentialDeposit(_ deposit: Balance) {
         existentialDeposit = deposit
     }

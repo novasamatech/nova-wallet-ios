@@ -39,7 +39,6 @@ protocol SubtensorPriceWidgetFactoryProtocol {
 }
 
 final class SubtensorPriceWidgetViewModelFactory {
-    static let periods: [SubtensorPricePeriod] = [.day, .week, .month, .quarter]
     static let defaultPeriod = SubtensorPricePeriod.week
 
     let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
@@ -204,8 +203,8 @@ private extension SubtensorPriceWidgetViewModelFactory {
         locale: Locale
     ) -> SubtensorSubnetPeriodsViewModel {
         SubtensorSubnetPeriodsViewModel(
-            titles: Self.periods.map { $0.title(for: locale) },
-            selectedIndex: Self.periods.firstIndex(of: params.period) ?? 0,
+            titles: SubtensorPricePeriod.selectable.map { $0.title(for: locale) },
+            selectedIndex: SubtensorPricePeriod.selectable.firstIndex(of: params.period) ?? 0,
             isEnabled: params.history != .notListed && params.history != .loading
         )
     }
@@ -292,10 +291,8 @@ extension SubtensorPricePeriod {
             return strings.commonPeriod7d().uppercased(with: locale)
         case .month:
             return strings.commonPeriod30d().uppercased(with: locale)
-        case .quarter:
+        case .quarter, .all:
             return strings.commonPeriod90d().uppercased(with: locale)
-        case .all:
-            return strings.commonPeriodAll().capitalized(with: locale)
         }
     }
 }

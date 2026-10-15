@@ -56,13 +56,9 @@ final class SubtensorValidatorInfoInteractor: AnyCancellableCleaning {
 }
 
 private extension SubtensorValidatorInfoInteractor {
-    var subnet: SubtensorSubnetRef {
-        SubtensorSubnetRef(netuid: target.netuid, registeredAt: target.subnetInfo?.networkRegisteredAt ?? 0)
-    }
-
     func createRateWrapper() -> CompoundOperationWrapper<Decimal?> {
         let hotkey = hotkey
-        let yieldsWrapper = yieldService.createAlphaYieldsWrapper(for: subnet.netuid)
+        let yieldsWrapper = yieldService.createAlphaYieldsWrapper(for: target.netuid)
 
         let mapOperation = ClosureOperation<Decimal?> {
             let yields = try yieldsWrapper.targetOperation.extractNoCancellableResultData()
@@ -102,7 +98,7 @@ private extension SubtensorValidatorInfoInteractor {
 
         catalogueStore.cancel()
 
-        let subnet = subnet
+        let subnet = target.subnetRef
 
         executeCancellable(
             wrapper: catalogueService.createCatalogueWrapper(),
@@ -133,7 +129,7 @@ private extension SubtensorValidatorInfoInteractor {
 extension SubtensorValidatorInfoInteractor: SubtensorValInfoInteractorInputProtocol {
     func cachedSnapshot() -> SubtensorValidatorInfoSnapshot {
         let hotkey = hotkey
-        let subnet = subnet
+        let subnet = target.subnetRef
 
         return SubtensorValidatorInfoSnapshot(
             annualRate: yieldService.cachedAlphaYields(for: subnet.netuid).map { yields in
@@ -166,7 +162,7 @@ extension SubtensorValidatorInfoInteractor: SubtensorValInfoInteractorInputProto
         detailStore.cancel()
 
         executeCancellable(
-            wrapper: directoryService.createDetailWrapper(for: hotkey, subnet: subnet),
+            wrapper: directoryService.createDetailWrapper(for: hotkey, subnet: target.subnetRef),
             inOperationQueue: operationQueue,
             backingCallIn: detailStore,
             runningCallbackIn: .main

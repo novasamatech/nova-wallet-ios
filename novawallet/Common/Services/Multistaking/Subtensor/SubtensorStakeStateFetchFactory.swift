@@ -44,7 +44,6 @@ final class SubtensorStakeStateFetchFactory {
         let rootClaimPreviews = (claimPreviews ?? []).map { preview in
             SubtensorRootClaimPreview(
                 hotkey: preview.hotkey,
-                accrued: preview.accruedTao,
                 redeemable: preview.redeemableTao,
                 forfeitedEstimate: preview.forfeitedTaoEst
             )

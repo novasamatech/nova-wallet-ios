@@ -31,7 +31,6 @@ final class SubtensorStakingSetupPresenter {
     var isPositionsSyncFailed = false
     var preflight: SubtensorStakingPreflight?
     var catalogue: SubtensorSubnetCatalogue?
-    var isCatalogueLoaded = false
     var subnetLogos: SubtensorSubnetLogos?
     var rankingView: SubtensorRankedSubnets?
     var hasExpiredRankingSeed = false
@@ -95,7 +94,7 @@ extension SubtensorStakingSetupPresenter {
     }
 
     var subnetRef: SubtensorSubnetRef? {
-        target.map { SubtensorSubnetRef(netuid: $0.netuid, registeredAt: $0.subnetInfo?.networkRegisteredAt ?? 0) }
+        target?.subnetRef
     }
 
     func inputDecimal() -> Decimal? {

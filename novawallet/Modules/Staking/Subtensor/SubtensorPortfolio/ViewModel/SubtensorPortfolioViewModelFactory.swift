@@ -6,7 +6,6 @@ protocol SubnetPortfolioViewModelFactoryProtocol: SubnetPortfolioChartFactoryPro
 }
 
 final class SubtensorPortfolioViewModelFactory {
-    static let periods: [SubtensorPricePeriod] = [.day, .week, .month, .quarter]
     static let defaultPeriod = SubtensorPricePeriod.month
     private static let placeholderRows = 2
 
@@ -89,8 +88,8 @@ private extension SubtensorPortfolioViewModelFactory {
 
     func createPeriods(for state: SubtensorPortfolioState, locale: Locale) -> SubtensorPortfolioPeriodsViewModel {
         SubtensorPortfolioPeriodsViewModel(
-            titles: Self.periods.map { $0.title(for: locale) },
-            selectedIndex: Self.periods.firstIndex(of: state.period) ?? 0
+            titles: SubtensorPricePeriod.selectable.map { $0.title(for: locale) },
+            selectedIndex: SubtensorPricePeriod.selectable.firstIndex(of: state.period) ?? 0
         )
     }
 

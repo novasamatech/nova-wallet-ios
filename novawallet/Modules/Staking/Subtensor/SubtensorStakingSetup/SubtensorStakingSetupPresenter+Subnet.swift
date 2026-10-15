@@ -20,7 +20,6 @@ extension SubtensorStakingSetupPresenter {
     func loadCatalogue() {
         if let catalogue = interactor.cachedCatalogue().value {
             self.catalogue = catalogue
-            isCatalogueLoaded = true
         }
 
         interactor.loadCatalogue()
@@ -93,7 +92,6 @@ extension SubtensorStakingSetupPresenter {
     func createViewModelInput() -> SubtensorStakingSetupViewModelInput {
         let subnetData = SubtensorSetupSubnetData(
             catalogue: catalogue,
-            isCatalogueLoaded: isCatalogueLoaded,
             subnetLogos: subnetLogos,
             rankedSubnet: matchingRankedSubnet(),
             annualRate: validatorAnnualRate(),

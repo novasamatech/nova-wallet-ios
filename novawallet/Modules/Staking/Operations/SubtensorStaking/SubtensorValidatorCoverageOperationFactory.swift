@@ -31,8 +31,7 @@ final class SubtensorValidatorCoverageFactory: ValidatorCoverageFactoryProtocol 
                 return try SubtensorValidatorCoverage.make(
                     hotkey: hotkey,
                     delegates: delegates.targetOperation.extractNoCancellableResultData(),
-                    catalogueNetuids: Set(netuids),
-                    blockHash: blockHash
+                    catalogueNetuids: Set(netuids)
                 )
             }
             merge.addDependency(delegates.targetOperation)

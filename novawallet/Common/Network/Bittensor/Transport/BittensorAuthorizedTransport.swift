@@ -38,7 +38,6 @@ final class BittensorAuthorizedTransport: BittensorApiTransportProtocol {
                 return BittensorApiAdmission(
                     scope: BittensorApiCacheScope(
                         origin: endpoint.context.origin.value,
-                        profile: 3,
                         generation: endpoint.context.generation,
                         invalidationRevision: endpoint.invalidationRevision
                     ),

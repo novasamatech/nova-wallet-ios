@@ -37,7 +37,7 @@ final class SubtensorSubnetsServiceTests: XCTestCase {
         )
 
         stub(apiFactory) { stub in
-            when(stub.createSubtokenEnabledWrapper(for: any(), blockHash: any())).then { _, _ in
+            when(stub.createSubtokenEnabledWrapper(for: any())).then { _ in
                 CompoundOperationWrapper.createWithError(CommonError.dataCorruption)
             }
         }
@@ -72,10 +72,10 @@ final class SubtensorSubnetsServiceTests: XCTestCase {
             when(stub.createAllDynamicInfoWrapper(at: any())).then { _ in
                 CompoundOperationWrapper.createWithResult(subnets)
             }
-            when(stub.createAlphaPricesWrapper(at: any())).then { _ in
+            when(stub.createAlphaPricesWrapper()).then {
                 CompoundOperationWrapper.createWithResult(prices)
             }
-            when(stub.createSubtokenEnabledWrapper(for: any(), blockHash: any())).then { _, _ in
+            when(stub.createSubtokenEnabledWrapper(for: any())).then { _ in
                 CompoundOperationWrapper.createWithResult(subtokenEnabled)
             }
         }

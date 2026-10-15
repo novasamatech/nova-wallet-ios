@@ -50,8 +50,7 @@ enum SubtensorValidatorInfoViewFactory {
                 chainAsset: chainAsset,
                 balanceViewModelFactory: balanceViewModelFactory
             ),
-            localizationManager: LocalizationManager.shared,
-            logger: Logger.shared
+            localizationManager: LocalizationManager.shared
         )
 
         let view = SubtensorValidatorInfoViewController(

@@ -12,7 +12,7 @@ protocol SubtensorApiOperationFactoryProtocol {
 
     func createStakeAvailabilityWrapper(
         for coldkeys: [AccountId],
-        netuids: [UInt16]?,
+        netuids: [UInt16],
         blockHash: BlockHash?
     ) -> CompoundOperationWrapper<[SubtensorStakingPallet.ColdkeyStakeAvailability]>
 
@@ -24,9 +24,7 @@ protocol SubtensorApiOperationFactoryProtocol {
         at blockHash: BlockHash?
     ) -> CompoundOperationWrapper<[SubtensorStakingPallet.DelegateInfo]>
 
-    func createAlphaPricesWrapper(
-        at blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.SubnetPrice]>
+    func createAlphaPricesWrapper() -> CompoundOperationWrapper<[SubtensorStakingPallet.SubnetPrice]>
 
     func createAlphaPriceWrapper(
         for netuid: UInt16,
@@ -50,10 +48,7 @@ protocol SubtensorApiOperationFactoryProtocol {
         blockHash: BlockHash?
     ) -> CompoundOperationWrapper<UInt16>
 
-    func createSubtokenEnabledWrapper(
-        for netuids: [UInt16],
-        blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<Set<UInt16>>
+    func createSubtokenEnabledWrapper(for netuids: [UInt16]) -> CompoundOperationWrapper<Set<UInt16>>
 
     func createRootClaimPreviewsWrapper(
         coldkey: AccountId,
@@ -65,20 +60,15 @@ final class SubtensorApiOperationFactory {
     let runtimeConnectionStore: RuntimeConnectionStoring
     let operationQueue: OperationQueue
 
-    let stateCallFactory: StateCallRequestFactory
+    let stateCallFactory = StateCallRequestFactory()
     let blockHashOperationFactory = BlockHashOperationFactory()
 
     private let requestFactory: StorageRequestFactoryProtocol
 
-    init(
-        runtimeConnectionStore: RuntimeConnectionStoring,
-        operationQueue: OperationQueue,
-        rpcTimeout: Int = JSONRPCTimeout.singleNode
-    ) {
+    init(runtimeConnectionStore: RuntimeConnectionStoring, operationQueue: OperationQueue) {
         self.runtimeConnectionStore = runtimeConnectionStore
         self.operationQueue = operationQueue
 
-        stateCallFactory = StateCallRequestFactory(rpcTimeout: rpcTimeout)
         requestFactory = StorageRequestFactory.createDefault(with: operationQueue)
     }
 
@@ -230,7 +220,7 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
 
     func createStakeAvailabilityWrapper(
         for coldkeys: [AccountId],
-        netuids: [UInt16]?,
+        netuids: [UInt16],
         blockHash: BlockHash?
     ) -> CompoundOperationWrapper<[SubtensorStakingPallet.ColdkeyStakeAvailability]> {
         createWrapper(
@@ -248,17 +238,11 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
                     with: context.toRawContext()
                 )
 
-                let netuidsTypeId = runtimeApi.method.inputs[1].paramType.asTypeId()
-
-                if let netuids {
-                    try encoder.append(
-                        netuids.map { StringScaleMapper(value: $0) },
-                        ofType: netuidsTypeId,
-                        with: context.toRawContext()
-                    )
-                } else {
-                    try encoder.append(json: .null, type: netuidsTypeId)
-                }
+                try encoder.append(
+                    netuids.map { StringScaleMapper(value: $0) },
+                    ofType: runtimeApi.method.inputs[1].paramType.asTypeId(),
+                    with: context.toRawContext()
+                )
             }
         )
     }
@@ -283,14 +267,8 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
         )
     }
 
-    func createAlphaPricesWrapper(
-        at blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.SubnetPrice]> {
-        createWrapper(
-            path: SubtensorStakingPallet.alphaPriceAllApi,
-            blockHash: blockHash,
-            paramsClosure: nil
-        )
+    func createAlphaPricesWrapper() -> CompoundOperationWrapper<[SubtensorStakingPallet.SubnetPrice]> {
+        createWrapper(path: SubtensorStakingPallet.alphaPriceAllApi, blockHash: nil, paramsClosure: nil)
     }
 
     func createAlphaPriceWrapper(
@@ -359,12 +337,9 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
         )
     }
 
-    func createSubtokenEnabledWrapper(
-        for netuids: [UInt16],
-        blockHash: BlockHash?
-    ) -> CompoundOperationWrapper<Set<UInt16>> {
+    func createSubtokenEnabledWrapper(for netuids: [UInt16]) -> CompoundOperationWrapper<Set<UInt16>> {
         createStorageWrapper(
-            blockHash: blockHash,
+            blockHash: nil,
             query: { engine, factory, atBlock in
                 self.requestFactory.queryItems(
                     engine: engine,
