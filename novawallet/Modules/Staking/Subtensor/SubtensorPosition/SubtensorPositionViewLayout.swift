@@ -42,6 +42,8 @@ final class SubtensorPositionViewLayout: UIView {
         label.numberOfLines = 0
     }
 
+    let bottomPanel = SubtensorBottomPanelView(style: .solid)
+
     let sellButton: TriangularedButton = .create { button in
         button.applySecondaryDefaultStyle()
     }
@@ -203,17 +205,21 @@ private extension SubtensorPositionViewLayout {
     func setupBottomBar() {
         let buttonsView = UIView.hStack(distribution: .fillEqually, spacing: 16, [sellButton, buyButton])
 
-        addSubview(buttonsView)
+        addSubview(bottomPanel)
+        bottomPanel.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+        }
+
+        bottomPanel.contentView.addSubview(buttonsView)
         buttonsView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
+            make.edges.equalToSuperview()
             make.height.equalTo(UIConstants.actionHeight)
         }
 
         addSubview(containerView)
         containerView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(buttonsView.snp.top).offset(-16)
+            make.bottom.equalTo(bottomPanel.snp.top)
         }
     }
 
