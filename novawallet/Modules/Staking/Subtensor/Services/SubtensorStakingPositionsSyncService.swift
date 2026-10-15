@@ -12,6 +12,7 @@ protocol SubtensorPositionsSyncServiceProtocol: ApplicationServiceProtocol {
 
     func remove(observer: AnyObject)
 
+    /// `BaseSyncService` only logs and reschedules a failed sync, so failures get their own observable
     func add(
         failureObserver: AnyObject,
         sendStateOnSubscription: Bool,
