@@ -2195,7 +2195,7 @@ Do you want to continue?";
 "staking.subtensor.batched.sell.fee.message" = "The network takes its fee before this order runs, so you need at least %@ of free TAO. Top up TAO and try again.";
 "staking.subtensor.remainder.locked.title" = "Remaining tokens are locked";
 "staking.subtensor.remainder.locked.message" = "After this sale %1$@ would remain, below the network minimum of %2$@. The network would remove it without paying you because it is locked. Sell a smaller amount or wait for the lock to end.";
-"staking.subtensor.ui.validator.header.rates.format" = "EST. APY · BY %@";
+"staking.subtensor.ui.validator.header.rates.format" = "REWARDS (APY) · BY %@";
 "staking.subtensor.ui.validator.header.sort.format" = "BY %@";
 "staking.subtensor.ui.validator.row.subtitle.format" = "%1$@ staked · take %2$@";
 "staking.subtensor.ui.validator.no.data" = "No validator data available";
