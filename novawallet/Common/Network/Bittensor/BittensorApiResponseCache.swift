@@ -164,17 +164,20 @@ private extension BittensorApiResponseCache {
             }
             newestGeneration = generation
         }
-        let freshUntil: TimeInterval
+        let lifetime: TimeInterval?
         switch fetched.directives {
-        case let .reusable(lifetime):
-            freshUntil = startedAt + lifetime
+        case let .reusable(seconds):
+            lifetime = seconds
         case .notStorable:
-            freshUntil = startedAt
+            lifetime = nil
         }
         let entry = BittensorApiCacheEntry(
-            value: fetched.value, requestId: fetched.requestId, generation: fetched.generation, freshUntil: freshUntil
+            value: fetched.value, requestId: fetched.requestId, generation: fetched.generation,
+            freshUntil: startedAt + (lifetime ?? 0)
         )
-        if !drops.contains(where: { $0.key.covers(key.request) && startedAt < $0.value }) {
+        if lifetime == nil {
+            entries[key] = nil
+        } else if !drops.contains(where: { $0.key.covers(key.request) && startedAt < $0.value }) {
             entries[key] = entry
         }
         return entry
