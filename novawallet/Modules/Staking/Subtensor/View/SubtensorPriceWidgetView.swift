@@ -7,7 +7,7 @@ final class SubtensorPriceWidgetView: UIView {
     }
 
     let priceLabel: UILabel = .create { label in
-        label.apply(style: .boldTitle1Primary)
+        label.apply(style: .boldTitle2Primary)
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.5
     }
@@ -20,9 +20,19 @@ final class SubtensorPriceWidgetView: UIView {
         view.layer.cornerRadius = 6
     }
 
-    let currencyControl: RoundedSegmentedControl = SubtensorPriceWidgetView.createSegmentedControl()
+    let currencyControl: RoundedSegmentedControl = .create { view in
+        view.backgroundView.fillColor = R.color.colorSegmentedBackground()!
+        view.backgroundView.cornerRadius = Constants.currencyCornerRadius
+        view.contentInsets = UIEdgeInsets(inset: Constants.currencyInset)
+        view.selectionCornerRadius = Constants.tabCornerRadius
+        view.selectionColor = R.color.colorSegmentedTabActive()!
+        view.titleFont = .semiBoldFootnote
+        view.selectedTitleColor = R.color.colorTextPrimary()!
+        view.titleColor = R.color.colorTextSecondary()!
+        view.layoutStrategy = SubtensorSpacedLayoutStrategy(margin: Constants.currencyTabInset)
+    }
 
-    let chartView = SubtensorSubnetPriceChartView(style: .price, isSelectable: true)
+    let chartView: SubtensorSubnetPriceChartView
 
     let chartLoadingView = SubtensorChartLoadingView()
 
@@ -30,14 +40,25 @@ final class SubtensorPriceWidgetView: UIView {
         view.isHidden = true
     }
 
-    let periodControl: RoundedSegmentedControl = SubtensorPriceWidgetView.createSegmentedControl()
+    let periodControl: RoundedSegmentedControl = .create { view in
+        view.backgroundView.fillColor = .clear
+        view.contentInsets = UIEdgeInsets(inset: Constants.periodInset)
+        view.selectionCornerRadius = Constants.tabCornerRadius
+        view.selectionColor = R.color.colorSegmentedTabActive()!
+        view.titleFont = .regularFootnote
+        view.selectedTitleColor = R.color.colorTextPrimary()!
+        view.titleColor = R.color.colorTextSecondary()!
+        view.layoutStrategy = SubtensorSpacedLayoutStrategy(margin: Constants.periodTabInset)
+    }
 
     private var chartViewModel: SubtensorSubnetChartViewModel?
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(hasHeader: Bool = true) {
+        chartView = SubtensorSubnetPriceChartView(style: .price, isSelectable: hasHeader)
 
-        setupLayout()
+        super.init(frame: .zero)
+
+        setupLayout(hasHeader: hasHeader)
     }
 
     @available(*, unavailable)
@@ -46,14 +67,17 @@ final class SubtensorPriceWidgetView: UIView {
     }
 
     func bind(viewModel: SubtensorPriceWidgetViewModel) {
-        bind(header: viewModel.header)
+        if let header = viewModel.header {
+            bind(header: header)
+        }
+
         bindChartIfNeeded(viewModel.chart)
         bind(periods: viewModel.periods)
     }
 
     func bind(header viewModel: SubtensorSubnetPriceHeaderViewModel) {
-        captionLabel.text = viewModel.caption
-        priceLabel.text = viewModel.price
+        captionLabel.apply(text: viewModel.caption, lineHeight: Constants.footnoteLineHeight)
+        priceLabel.apply(text: viewModel.price, lineHeight: Constants.priceLineHeight)
 
         switch viewModel.change {
         case .loading:
@@ -63,49 +87,44 @@ final class SubtensorPriceWidgetView: UIView {
             changeLabel.text = nil
             changeSkeletonView.setLoading(false)
         case let .date(text):
-            changeLabel.text = text
+            changeLabel.apply(text: text, lineHeight: Constants.footnoteLineHeight)
             changeLabel.textColor = R.color.colorTextSecondary()
             changeSkeletonView.setLoading(false)
         case let .value(text, isRising):
-            changeLabel.text = text
+            changeLabel.apply(text: text, lineHeight: Constants.footnoteLineHeight)
             changeLabel.textColor = isRising ? R.color.colorTextPositive() : R.color.colorTextNegative()
             changeSkeletonView.setLoading(false)
         }
 
-        currencyControl.isHidden = viewModel.currency == nil
-
-        guard let currency = viewModel.currency else {
-            return
+        if currencyControl.titles != viewModel.currency.titles {
+            currencyControl.titles = viewModel.currency.titles
+            updateCurrencyWidth()
         }
 
-        if currencyControl.titles != currency.titles {
-            currencyControl.titles = currency.titles
-        }
-
-        currencyControl.selectedSegmentIndex = currency.selectedIndex
-        currencyControl.isEnabled = currency.isEnabled
+        currencyControl.selectedSegmentIndex = viewModel.currency.selectedIndex
+        currencyControl.isEnabled = viewModel.currency.isEnabled
     }
 }
 
 private extension SubtensorPriceWidgetView {
     enum Constants {
         static let chartHeight: CGFloat = 208
-        static let controlHeight: CGFloat = 32
-        static let currencyControlWidth: CGFloat = 110
-        static let changeMinHeight: CGFloat = 18
+        static let sectionSpacing: CGFloat = 12
+        static let headerSpacing: CGFloat = 12
+        static let priceSpacing: CGFloat = 4
+        static let footnoteLineHeight: CGFloat = 18
+        static let priceLineHeight: CGFloat = 28
         static let changeSkeletonSize = CGSize(width: 90, height: 12)
-        static let sectionSpacing: CGFloat = 16
-        static let disabledAlpha: CGFloat = 0.4
-    }
-
-    static func createSegmentedControl() -> RoundedSegmentedControl {
-        .create { view in
-            view.backgroundView.fillColor = .clear
-            view.selectionColor = R.color.colorSegmentedTabActive()!
-            view.titleFont = .regularFootnote
-            view.selectedTitleColor = R.color.colorTextPrimary()!
-            view.titleColor = R.color.colorTextSecondary()!
-        }
+        static let tabCornerRadius: CGFloat = 8
+        static let currencyCornerRadius: CGFloat = 10
+        static let currencyInset: CGFloat = 2
+        static let currencyTabInset: CGFloat = 14
+        static let currencyTabSpacing: CGFloat = 2
+        static let currencyHeight: CGFloat = 34
+        static let periodInset: CGFloat = 4
+        static let periodTabInset: CGFloat = 12
+        static let periodSize = CGSize(width: 311, height: 32)
+        static let disabledAlpha: CGFloat = 0.5
     }
 
     func bindChartIfNeeded(_ viewModel: SubtensorSubnetChartViewModel) {
@@ -147,36 +166,57 @@ private extension SubtensorPriceWidgetView {
         periodControl.alpha = viewModel.isEnabled ? 1 : Constants.disabledAlpha
     }
 
-    func setupLayout() {
-        let headerView = setupHeader()
-        let chartContainer = setupChart()
+    func updateCurrencyWidth() {
+        let font = currencyControl.titleFont ?? .semiBoldFootnote
+        let tabsWidth = currencyControl.titles.reduce(CGFloat(0)) { width, title in
+            width + ceil((title as NSString).size(withAttributes: [.font: font]).width) +
+                2 * Constants.currencyTabInset
+        }
+        let spacing = CGFloat(max(currencyControl.numberOfSegments - 1, 0)) * Constants.currencyTabSpacing
 
-        let contentView = UIView.vStack(
-            spacing: Constants.sectionSpacing,
-            [headerView, chartContainer, periodControl]
-        )
+        currencyControl.snp.updateConstraints { make in
+            make.width.equalTo(tabsWidth + spacing + 2 * Constants.currencyInset)
+        }
+    }
+
+    func setupLayout(hasHeader: Bool) {
+        let periodsView = UIView()
+        periodsView.addSubview(periodControl)
+        periodControl.snp.makeConstraints { make in
+            make.top.bottom.centerX.equalToSuperview()
+            make.leading.greaterThanOrEqualToSuperview()
+            make.width.equalTo(Constants.periodSize.width).priority(.high)
+            make.height.equalTo(Constants.periodSize.height)
+        }
+
+        let sections = hasHeader
+            ? [setupHeader(), setupChart(), periodsView]
+            : [setupChart(), periodsView]
+
+        let contentView = UIView.vStack(spacing: Constants.sectionSpacing, sections)
 
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
-
-        periodControl.snp.makeConstraints { make in
-            make.height.equalTo(Constants.controlHeight)
-        }
     }
 
     func setupHeader() -> UIView {
-        let priceView = UIView.vStack(alignment: .leading, spacing: 4, [captionLabel, priceLabel, changeLabel])
-        let headerView = UIView.hStack(alignment: .top, spacing: 16, [priceView, currencyControl])
+        let priceView = UIView.vStack(
+            alignment: .leading,
+            spacing: Constants.priceSpacing,
+            [captionLabel, priceLabel, changeLabel]
+        )
+
+        let headerView = UIView.hStack(alignment: .top, spacing: Constants.headerSpacing, [priceView, currencyControl])
 
         currencyControl.snp.makeConstraints { make in
-            make.width.equalTo(Constants.currencyControlWidth)
-            make.height.equalTo(Constants.controlHeight)
+            make.width.equalTo(0)
+            make.height.equalTo(Constants.currencyHeight)
         }
 
         changeLabel.snp.makeConstraints { make in
-            make.height.greaterThanOrEqualTo(Constants.changeMinHeight)
+            make.height.greaterThanOrEqualTo(Constants.footnoteLineHeight)
         }
 
         headerView.addSubview(changeSkeletonView)
@@ -203,5 +243,26 @@ private extension SubtensorPriceWidgetView {
         }
 
         return chartContainer
+    }
+}
+
+private final class SubtensorSpacedLayoutStrategy: ListViewLayoutStrategyProtocol {
+    let margin: CGFloat
+
+    init(margin: CGFloat) {
+        self.margin = margin
+    }
+
+    func layout(views: [UIView], in rect: CGRect) {
+        let fittingSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: rect.height)
+        let widths = views.map { ceil($0.sizeThatFits(fittingSize).width) + 2 * margin }
+        let spacing = views.count > 1 ? (rect.width - widths.reduce(0, +)) / CGFloat(views.count - 1) : 0
+
+        var offsetX = rect.minX
+
+        for (view, width) in zip(views, widths) {
+            view.frame = CGRect(x: offsetX, y: rect.minY, width: width, height: rect.height)
+            offsetX += width + spacing
+        }
     }
 }

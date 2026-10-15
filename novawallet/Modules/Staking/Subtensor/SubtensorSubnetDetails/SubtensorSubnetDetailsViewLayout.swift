@@ -102,7 +102,7 @@ private extension SubtensorSubnetDetailsViewLayout {
 
     func setupPriceWidget() {
         containerView.stackView.addArrangedSubview(priceWidget)
-        containerView.stackView.setCustomSpacing(24, after: priceWidget)
+        containerView.stackView.setCustomSpacing(16, after: priceWidget)
     }
 
     func setupSections() {
