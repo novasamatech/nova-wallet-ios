@@ -7,7 +7,6 @@ enum SubtensorValidatorFiltersViewFactory {
     ) -> SubtensorValidatorFiltersViewProtocol {
         let presenter = SubtensorValidatorFiltersPresenter(
             applied: applied,
-            interactor: SubtensorValidatorFiltersInteractor(),
             wireframe: SubtensorValidatorFiltersWireframe(),
             onApply: onApply
         )

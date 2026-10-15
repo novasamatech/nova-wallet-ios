@@ -100,7 +100,7 @@ final class SubtensorValidatorCardView: UIControl {
         case .hidden:
             rateView.isHidden = true
             rateSkeletonView.setLoading(false)
-        case let .loaded(rate):
+        case let .value(rate):
             rateView.isHidden = false
             rateLabel.text = rate
             rateCaptionLabel.text = viewModel.rateCaption

@@ -81,7 +81,7 @@ final class SubtensorPositionSummaryView: UIView {
             fiatLabel.text = nil
             fiatLabel.isHidden = true
             fiatSkeletonView.setLoading(false)
-        case let .loaded(text):
+        case let .value(text):
             fiatLabel.text = text
             fiatLabel.isHidden = false
             fiatSkeletonView.setLoading(false)

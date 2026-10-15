@@ -86,12 +86,6 @@ struct SubtensorPortfolioState {
     }
 }
 
-enum SubtensorPortfolioLoadable<Value: Equatable>: Equatable {
-    case loading
-    case hidden
-    case loaded(Value)
-}
-
 struct SubtensorPortfolioChangeViewModel: Equatable {
     let text: String
     let isRising: Bool
@@ -111,8 +105,8 @@ struct SubtensorPortfolioPeriodsViewModel: Equatable {
 
 struct SubtensorPortfolioHeaderViewModel: Equatable {
     let total: String?
-    let fiat: SubtensorPortfolioLoadable<String>
-    let change: SubtensorPortfolioLoadable<SubtensorPortfolioChangeViewModel>
+    let fiat: SubtensorRowState<String>
+    let change: SubtensorRowState<SubtensorPortfolioChangeViewModel>
     let chart: SubtensorPortfolioChartViewModel
     let periods: SubtensorPortfolioPeriodsViewModel
 }

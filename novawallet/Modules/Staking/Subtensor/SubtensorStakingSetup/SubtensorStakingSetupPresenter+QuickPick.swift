@@ -4,9 +4,9 @@ import Foundation_iOS
 extension SubtensorStakingSetupPresenter {
     func loadQuickPick() {
         guard let quickPickVisit, !quickPickVisit.isManuallyReplaced, target == nil else { return }
-        let generation = quickPickVisit.beginRequest()
+        quickPickVisit.beginRequest()
         provideViewModel()
-        interactor.loadQuickPickSnapshot(generation: generation)
+        interactor.loadQuickPickSnapshot()
     }
 
     func retryQuickPick() {
@@ -14,12 +14,9 @@ extension SubtensorStakingSetupPresenter {
         loadQuickPick()
     }
 
-    func didReceiveQuickPickSnapshot(
-        _ result: Result<(SubtensorSubnetCatalogue, SubtensorSubnetsInfo), Error>,
-        generation: Int
-    ) {
+    func didReceiveQuickPickSnapshot(_ result: Result<(SubtensorSubnetCatalogue, SubtensorSubnetsInfo), Error>) {
         guard let quickPickVisit, !quickPickVisit.isManuallyReplaced, target == nil else { return }
-        if let target = quickPickVisit.resolve(result, generation: generation) {
+        if let target = quickPickVisit.resolve(result) {
             mode = .subnetPick(target: target, validator: nil)
             startMode()
         } else {

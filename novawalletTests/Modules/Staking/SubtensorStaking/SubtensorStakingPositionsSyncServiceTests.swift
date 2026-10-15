@@ -18,11 +18,7 @@ final class SubtensorStakingPositionsSyncServiceTests: XCTestCase {
                 )
             ],
             availability: [
-                7: SubtensorStakingPallet.StakeAvailability(
-                    total: 3_000_000_000,
-                    locked: 1_000_000_000,
-                    available: 2_000_000_000
-                )
+                7: SubtensorStakingPallet.StakeAvailability(available: 2_000_000_000)
             ]
         )
         let (service, fetchFactory) = try createService()

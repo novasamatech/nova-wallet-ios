@@ -344,11 +344,11 @@ extension SubtensorConfirmPresenter: SubtensorConfirmPresenterProtocol {
     }
 
     func selectAccount() {
-        guard let address = model.account.chainAccount.toAddress() else {
+        guard let view, let address = model.account.chainAccount.toAddress() else {
             return
         }
 
-        wireframe.showSubtensorInfo(.account(address: address, chain: chainAsset.chain), from: view)
+        wireframe.presentAccountOptions(from: view, address: address, chain: chainAsset.chain, locale: selectedLocale)
     }
 
     func selectValidator() {

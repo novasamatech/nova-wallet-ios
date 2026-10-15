@@ -134,7 +134,7 @@ struct SubtensorPositionSummaryViewModel {
     let icon: ImageViewModelProtocol?
     let caption: String?
     let amount: String?
-    let fiat: SubtensorPortfolioLoadable<String>
+    let fiat: SubtensorRowState<String>
     let isActive: Bool?
     let rows: [SubtensorPositionRowViewModel]
 }

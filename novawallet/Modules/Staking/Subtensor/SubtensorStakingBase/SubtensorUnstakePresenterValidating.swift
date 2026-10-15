@@ -51,11 +51,7 @@ extension SubtensorUnstakeValidatingDep {
         return SubtensorSellPlanInput(
             requestedAlpha: amount,
             positionAlpha: positionAlpha,
-            availability: availability ?? SubtensorStakingPallet.StakeAvailability(
-                total: positionAlpha,
-                locked: 0,
-                available: positionAlpha
-            ),
+            availability: availability ?? SubtensorStakingPallet.StakeAvailability(available: positionAlpha),
             minimumTaoOut: bases.minimumTaoOut,
             sellLimitPrice: bases.sellLimitPrice,
             isOwnHotkey: preflight.hotkeyOwner == accountId,

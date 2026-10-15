@@ -76,7 +76,7 @@ private extension SubtensorStakingSetupInteractor {
 extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol {
     func cancelQuickPickSnapshot() { quickPickCallStore.cancel() }
 
-    func loadQuickPickSnapshot(generation: Int) {
+    func loadQuickPickSnapshot() {
         quickPickCallStore.cancel()
         let catalogueWrapper = catalogueService.createCatalogueWrapper()
         let infoWrapper = subnetsService.createSubnetsInfoWrapper()
@@ -97,7 +97,7 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
             backingCallIn: quickPickCallStore,
             runningCallbackIn: .main
         ) { [weak self] result in
-            self?.presenter?.didReceiveQuickPickSnapshot(result, generation: generation)
+            self?.presenter?.didReceiveQuickPickSnapshot(result)
         }
     }
 

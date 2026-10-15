@@ -34,26 +34,12 @@ final class SubtensorValidatorListFactory {
 }
 
 extension SubtensorValidatorListFactory {
-    static func sortOptions(isRoot _: Bool, yields _: SubtensorAlphaYields?) -> [SubtensorValidatorSort] {
-        [.totalStaked, .name]
-    }
-
-    static func appliedSort(
-        _ requested: SubtensorValidatorSort,
-        isRoot: Bool,
-        yields: SubtensorAlphaYields?
-    ) -> SubtensorValidatorSort {
-        sortOptions(isRoot: isRoot, yields: yields).contains(requested) ? requested : .totalStaked
-    }
-}
-
-extension SubtensorValidatorListFactory {
     func createListViewModel(
         for input: SubtensorValidatorListInput,
         locale: Locale
     ) -> SubtensorValidatorListViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-        let sort = Self.appliedSort(input.sort, isRoot: input.isRoot, yields: input.yields)
+        let sort = input.sort
         let ratesShown = Self.ratesShown(yields: input.yields)
 
         let listed = createEntries(for: input, unknown: strings.stakingSubtensorUiValueUnknown())
