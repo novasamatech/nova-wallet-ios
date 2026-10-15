@@ -63,20 +63,12 @@ private extension SubtensorSubnetDetailsViewFactory {
         let earnServices = state.earnServices
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
-        let presetFactory = SubtensorValidatorPresetFactory(
-            directoryService: earnServices.validatorDirectoryService,
-            recommendationService: earnServices.recommendationService,
-            yieldService: earnServices.yieldService,
-            operationQueue: operationQueue,
-            logger: Logger.shared
-        )
-
         return SubtensorSubnetDetailsInteractor(
             subnet: input.subnet.ref,
             chainAsset: state.stakingOption.chainAsset,
             priceHistoryService: earnServices.priceHistoryService,
             parametersFactory: createParametersFactory(state: state, operationQueue: operationQueue),
-            presetFactory: presetFactory,
+            presetFactory: earnServices.validatorPresetFactory,
             yieldService: earnServices.yieldService,
             subnetLogosProvider: earnServices.subnetLogosProvider,
             positionsSyncService: state.positionsSyncService,

@@ -11,7 +11,7 @@ enum SubtensorUnstakeSetupViewFactory {
         }
 
         let chainAsset = state.stakingOption.chainAsset
-        let interactor = createInteractor(for: state, services: services)
+        let interactor = SubtensorUnstakeSetupInteractor(flowServices: services, state: state, logger: Logger.shared)
         let wireframe = SubtensorUnstakeSetupWireframe(state: state)
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: services.currencyManager)
         let localizationManager = LocalizationManager.shared
@@ -58,29 +58,5 @@ enum SubtensorUnstakeSetupViewFactory {
         dataValidationFactory.view = view
 
         return view
-    }
-}
-
-private extension SubtensorUnstakeSetupViewFactory {
-    static func createInteractor(
-        for state: SubtensorStakingSharedStateProtocol,
-        services: SubtensorFlowServices
-    ) -> SubtensorUnstakeSetupInteractor {
-        let earnServices = state.earnServices
-
-        let validatorFactory = SubtensorValidatorPresetFactory(
-            directoryService: earnServices.validatorDirectoryService,
-            recommendationService: earnServices.recommendationService,
-            yieldService: earnServices.yieldService,
-            operationQueue: services.operationQueue,
-            logger: Logger.shared
-        )
-
-        return SubtensorUnstakeSetupInteractor(
-            flowServices: services,
-            state: state,
-            validatorFactory: validatorFactory,
-            logger: Logger.shared
-        )
     }
 }

@@ -170,6 +170,13 @@ extension StakingSharedStateFactory {
             rootHoldFactory: SubtensorRootHoldFactory(
                 runtimeConnectionStore: runtimeConnectionStore, operationQueue: syncOperationQueue
             ),
+            validatorPresetFactory: SubtensorValidatorPresetFactory(
+                directoryService: validatorDirectoryService,
+                recommendationService: recommendationService,
+                yieldService: yieldService,
+                operationQueue: syncOperationQueue,
+                logger: logger
+            ),
             costBasisService: processServices.costBasisService
         )
     }

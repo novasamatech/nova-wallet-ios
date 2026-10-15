@@ -72,7 +72,7 @@ private extension SubtensorStakingSetupViewFactory {
         }
 
         let chainAsset = state.stakingOption.chainAsset
-        let interactor = createInteractor(for: state, services: services)
+        let interactor = SubtensorStakingSetupInteractor(flowServices: services, state: state, logger: Logger.shared)
         let wireframe = SubtensorStakingSetupWireframe(state: state)
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: services.currencyManager)
         let localizationManager = LocalizationManager.shared
@@ -124,27 +124,5 @@ private extension SubtensorStakingSetupViewFactory {
         dataValidationFactory.view = view
 
         return view
-    }
-
-    static func createInteractor(
-        for state: SubtensorStakingSharedStateProtocol,
-        services: SubtensorFlowServices
-    ) -> SubtensorStakingSetupInteractor {
-        let earnServices = state.earnServices
-
-        let presetFactory = SubtensorValidatorPresetFactory(
-            directoryService: earnServices.validatorDirectoryService,
-            recommendationService: earnServices.recommendationService,
-            yieldService: earnServices.yieldService,
-            operationQueue: services.operationQueue,
-            logger: Logger.shared
-        )
-
-        return SubtensorStakingSetupInteractor(
-            flowServices: services,
-            state: state,
-            presetFactory: presetFactory,
-            logger: Logger.shared
-        )
     }
 }
