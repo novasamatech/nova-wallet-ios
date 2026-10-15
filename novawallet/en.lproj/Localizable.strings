@@ -2183,8 +2183,6 @@ Do you want to continue?";
 "staking.subtensor.info.validator.take" = "The share of rewards the validator keeps for running its infrastructure. The APY figures you see are already after the take.";
 "staking.subtensor.info.avg.buy.price" = "The average price you paid per %1$@ for your current %2$@ position. Buying above it moves the average up (red arrow), buying below moves it down (green arrow). We use it to work out what you earn when you sell.";
 "staking.subtensor.info.you.will.earn" = "The difference between what you paid for these tokens on average and what you get for them now, in TAO, before the network fee. The average price comes from your purchases.";
-"staking.subtensor.ui.validator.info.staked.subnet" = "Total staked";
-"staking.subtensor.ui.validator.info.staked.root" = "Total staked";
 "staking.subtensor.ui.validator.info.reward.average" = "30-day average";
 "staking.subtensor.reserve.title" = "Keep %@ for fees";
 "staking.subtensor.reserve.message" = "Lower the amount to %1$@ or less. We hold back %2$@ so you can pay network fees later.";

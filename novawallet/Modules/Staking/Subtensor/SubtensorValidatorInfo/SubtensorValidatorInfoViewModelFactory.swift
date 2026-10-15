@@ -131,9 +131,6 @@ private extension SubtensorValidatorInfoViewModelFactory {
         return SubtensorValidatorInfoViewModel.Staking(
             status: input.needsChainDetail ? unknown : activeStatus,
             isActive: isActive,
-            stakeTitle: isRoot
-                ? strings.stakingSubtensorUiValidatorInfoStakedRoot()
-                : strings.stakingSubtensorUiValidatorInfoStakedSubnet(),
             stake: createStakeViewModel(for: item, input: input, locale: locale),
             take: item.take.flatMap { takeFormatter.value(for: locale).stringFromDecimal($0) } ?? unknown,
             reward: reward,
