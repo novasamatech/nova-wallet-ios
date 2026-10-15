@@ -39,7 +39,7 @@ final class SubtensorStakingSetupViewLayout: SubtensorAmountSetupLayout {
     let rootPickCardView: SubtensorRootPickCardView = .create { $0.isHidden = true }
 
     let sectionLabel: UILabel = .create { label in
-        label.apply(style: .semiboldCaps2Secondary)
+        label.apply(style: .semiboldCaps1Secondary)
         label.isHidden = true
     }
 
@@ -88,7 +88,7 @@ final class SubtensorStakingSetupViewLayout: SubtensorAmountSetupLayout {
     }
 
     func setSection(_ title: String) {
-        sectionLabel.apply(text: title, lineHeight: Constants.sectionLineHeight, kern: Constants.sectionKern)
+        sectionLabel.applySubtensorCaps(title)
     }
 
     override func setupLayout() {
@@ -119,8 +119,6 @@ private extension SubtensorStakingSetupViewLayout {
         static let selectionAlertTitleSpacing: CGFloat = 8
         static let selectionAlertSpacing: CGFloat = 24
         static let sectionSpacing: CGFloat = 11
-        static let sectionLineHeight: CGFloat = 13
-        static let sectionKern: CGFloat = 0.6
         static let browseSpacing: CGFloat = 12
     }
 

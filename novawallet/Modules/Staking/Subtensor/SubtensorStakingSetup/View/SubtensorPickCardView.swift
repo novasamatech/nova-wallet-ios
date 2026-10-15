@@ -15,11 +15,11 @@ final class SubtensorPickCardView: UIView {
     let validatorCell = SubtensorPickValidatorCell()
     let browseView = SubtensorBrowseLinkView()
 
-    let receiveCell = SubtensorPickCardView.createCell()
+    let receiveCell = SubtensorPickCardView.createValueCell()
 
-    let swapRateCell = SubtensorPickCardView.createCell()
+    let swapRateCell = SubtensorPickCardView.createValueCell()
 
-    let networkFeeCell = SubtensorPickCardView.createCell()
+    let networkFeeCell = SubtensorPickCardView.createValueCell()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -48,13 +48,37 @@ final class SubtensorPickCardView: UIView {
 
         receiveCell.apply(viewModel.receive)
         swapRateCell.apply(viewModel.swapRate)
-        bind(networkFee: viewModel.networkFee)
+        networkFeeCell.bindPickValue(viewModel.networkFee)
 
         rowsView.updateLayout()
         let rows: [StackTableViewCellProtocol] = [validatorCell, receiveCell, swapRateCell, networkFeeCell]
         rows.forEach { SubtensorDividerStyle.apply(to: $0, hasPrevious: false) }
         rows.filter { !$0.isHidden }.enumerated().forEach { index, cell in
             SubtensorDividerStyle.apply(to: cell, hasPrevious: index > 0)
+        }
+    }
+
+    static func createValueCell() -> StackTitleMultiValueCell {
+        let cell = StackTitleMultiValueCell()
+        cell.canSelect = false
+        cell.topValueLabel.apply(style: .semiboldFootnotePrimary)
+        cell.bottomValueLabel.apply(style: .semiboldFootnotePrimary)
+
+        [cell.topValueLabel, cell.bottomValueLabel].forEach { label in
+            label.snp.makeConstraints { $0.height.equalTo(Constants.valueLineHeight) }
+        }
+
+        return cell
+    }
+}
+
+extension StackTitleMultiValueCell {
+    func bindPickValue(_ viewModel: BalanceViewModelProtocol?) {
+        if let viewModel {
+            stopLoadingIfNeeded()
+            bind(viewModel: viewModel)
+        } else {
+            startLoadingIfNeeded()
         }
     }
 }
@@ -64,12 +88,7 @@ private extension SubtensorPickCardView {
         static let cornerRadius: CGFloat = 12
         static let spacing: CGFloat = 10
         static let padding: CGFloat = 12
-    }
-
-    static func createCell() -> StackTitleMultiValueCell {
-        let cell = StackTitleMultiValueCell()
-        cell.canSelect = false
-        return cell
+        static let valueLineHeight: CGFloat = 18
     }
 
     func setupLayout() {
@@ -89,15 +108,6 @@ private extension SubtensorPickCardView {
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-        }
-    }
-
-    func bind(networkFee: BalanceViewModelProtocol?) {
-        if let networkFee {
-            networkFeeCell.stopLoadingIfNeeded()
-            networkFeeCell.bind(viewModel: networkFee)
-        } else {
-            networkFeeCell.startLoadingIfNeeded()
         }
     }
 }

@@ -105,7 +105,7 @@ private extension SubtensorStakingSetupViewController {
         let valueLabel = rootView.amountTitleView.buttonValue
 
         valueLabel.text = maxAmount
-        valueLabel.apply(style: isAccented ? .footnoteAccentText : .footnotePrimary)
+        valueLabel.apply(style: isAccented ? .regularSubhedlineAccent : .regularSubhedlinePrimary)
         rootView.amountTitleView.button.invalidateLayout()
         rootView.setSkeleton(
             rootView.maxSkeletonView,

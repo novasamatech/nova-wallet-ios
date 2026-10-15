@@ -22,9 +22,7 @@ final class SubtensorPortfolioViewLayout: UIView {
         return view
     }()
 
-    let positionsCaptionLabel: UILabel = .create { label in
-        label.apply(style: .semiboldCaps2Secondary)
-    }
+    let positionsCaptionLabel = UILabel(style: .semiboldCaps1Secondary, numberOfLines: 1)
 
     let positionsStackView: UIStackView = .create { view in
         view.axis = .vertical
@@ -164,7 +162,7 @@ private extension SubtensorPortfolioViewLayout {
         stackView.setCustomSpacing(16, after: syncNoticeView)
 
         stackView.addArrangedSubview(positionsCaptionLabel)
-        stackView.setCustomSpacing(8, after: positionsCaptionLabel)
+        stackView.setCustomSpacing(9, after: positionsCaptionLabel)
 
         stackView.addArrangedSubview(positionsStackView)
     }

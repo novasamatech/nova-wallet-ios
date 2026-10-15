@@ -3,7 +3,7 @@ import UIKit
 final class SubtensorRootPickCardView: UIView {
     let headerView = SubtensorPickCardHeaderView()
     let validatorCell = SubtensorPickValidatorCell()
-    let feeCell = StackNetworkFeeCell()
+    let feeCell = SubtensorPickCardView.createValueCell()
     let browseView = SubtensorBrowseLinkView()
     private let rowsView = StackTableView()
 
@@ -30,8 +30,8 @@ final class SubtensorRootPickCardView: UIView {
         ))
         validatorCell.titleLabel.text = strings.stakingCommonValidator()
         validatorCell.bind(validator: model.compactValidator, rate: model.compactRate, isEditable: true)
-        feeCell.rowContentView.locale = locale
-        feeCell.rowContentView.bind(viewModel: model.networkFee)
+        feeCell.titleLabel.text = strings.commonNetworkFee()
+        feeCell.bindPickValue(model.networkFee)
         browseView.bind(title: strings.stakingSubtensorQuickSeeAll())
         rowsView.updateLayout()
         SubtensorDividerStyle.apply(to: validatorCell, hasPrevious: true)

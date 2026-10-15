@@ -134,16 +134,9 @@ final class SubtensorValidatorSelectViewLayout: UIView {
 }
 
 final class SubtensorValidatorSectionHeaderView: UITableViewHeaderFooterView {
-    let titleLabel: UILabel = .create { label in
-        label.font = .semiBoldCaps1
-        label.textColor = R.color.colorTextSecondary()
-    }
+    let titleLabel = UILabel(style: .semiboldCaps1Secondary, numberOfLines: 1)
 
-    let detailsLabel: UILabel = .create { label in
-        label.font = .semiBoldCaps1
-        label.textColor = R.color.colorTextSecondary()
-        label.textAlignment = .right
-    }
+    let detailsLabel = UILabel(style: .semiboldCaps1Secondary, textAlignment: .right, numberOfLines: 1)
 
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
@@ -172,7 +165,7 @@ final class SubtensorValidatorSectionHeaderView: UITableViewHeaderFooterView {
     }
 
     func bind(title: String, details: String?) {
-        titleLabel.text = title
-        detailsLabel.text = details
+        titleLabel.applySubtensorCaps(title)
+        detailsLabel.applySubtensorCaps(details ?? "")
     }
 }
