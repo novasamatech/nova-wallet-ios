@@ -10,7 +10,7 @@ extension SwapSlippageViewFactory {
     ) -> SwapSlippageViewProtocol? {
         let presenter = SwapSlippagePresenter(
             wireframe: SubtensorSlippageSheetWireframe(),
-            percentFormatterLocalizable: NumberFormatter.percentSingle.localizableResource(),
+            percentFormatterLocalizable: NumberFormatter.subtensorPercentSingle,
             localizationManager: LocalizationManager.shared,
             initSlippage: percent,
             config: SlippageConfig.subtensorStaking,
@@ -30,7 +30,6 @@ extension SwapSlippageViewFactory {
 
         view.modalTransitioningFactory = factory
         view.modalPresentationStyle = .custom
-        view.preferredContentSize = CGSize(width: 0, height: SubtensorSlippageSheetConstants.height)
 
         return view
     }
@@ -40,8 +39,4 @@ private final class SubtensorSlippageSheetWireframe: SwapSlippageWireframeProtoc
     func close(from view: ControllerBackedProtocol?) {
         view?.controller.presentingViewController?.dismiss(animated: true)
     }
-}
-
-private enum SubtensorSlippageSheetConstants {
-    static let height: CGFloat = 430
 }
