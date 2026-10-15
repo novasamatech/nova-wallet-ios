@@ -90,9 +90,7 @@ final class SubtensorRecommendationServiceTests: XCTestCase {
             items: hotkeys.map(rankedValidator)
         )
 
-        let result = BittensorApiResult(
-            value: collection, requestId: "request-1", receivedAt: 0, isFromExpiredCache: false
-        )
+        let result = BittensorApiResult(value: collection, requestId: "request-1", isFromExpiredCache: false)
         let apiFactory = MockBittensorApiOperationFactoryProtocol()
         stub(apiFactory) { stub in
             when(stub.createRankedValidatorsWrapper(netuid: any())).then { _ in
