@@ -34,6 +34,7 @@ struct SubtensorSubnetListViewModel {
         case failed(Failure)
     }
 
+    let rootIcon: ImageViewModelProtocol
     let chipTitle: String
     let caption: String?
     let isFilterActive: Bool
@@ -65,6 +66,7 @@ protocol SubtensorSubnetViewModelFactoryProtocol {
 final class SubtensorSubnetViewModelFactory {
     let chainAsset: ChainAsset
     let iconFactory: SubtensorSubnetIconFactoryProtocol
+    let rootIcon: ImageViewModelProtocol
 
     private let tokenFormatter: LocalizableResource<TokenFormatter>
     private let compactTokenFormatter: LocalizableResource<TokenFormatter>
@@ -77,6 +79,7 @@ final class SubtensorSubnetViewModelFactory {
     ) {
         self.chainAsset = chainAsset
         self.iconFactory = iconFactory
+        rootIcon = AssetIconViewModelFactory().createAssetIconViewModel(from: chainAsset.assetDisplayInfo)
 
         tokenFormatter = balanceFormatterFactory.createTokenFormatter(for: chainAsset.assetDisplayInfo)
         compactTokenFormatter = balanceFormatterFactory.createCompactTokenFormatter(for: chainAsset.assetDisplayInfo)
@@ -264,6 +267,7 @@ extension SubtensorSubnetViewModelFactory: SubtensorSubnetViewModelFactoryProtoc
         }
 
         return SubtensorSubnetListViewModel(
+            rootIcon: rootIcon,
             chipTitle: chipTitle(for: state.sort, locale: locale),
             caption: caption,
             isFilterActive: state.filters.isApplied,
