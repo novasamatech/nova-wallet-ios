@@ -12,9 +12,9 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     let dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemSubtensorPart>
     let stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol
     let cacheRepository: AnyDataProviderRepository<ChainStorageItem>
-    let maxApyProvider: SubtensorMaxApyProviderProtocol?
-    let rootYieldService: SubtensorYieldServiceProtocol?
-    let cataloguePricing: SubtensorCataloguePricingTracker?
+    let maxApyProvider: SubtensorMaxApyProviderProtocol
+    let rootYieldService: SubtensorYieldServiceProtocol
+    let cataloguePricing: SubtensorCataloguePricingTracker
     let eventCenter: EventCenterProtocol
     let workingQueue: DispatchQueue
     let operationQueue: OperationQueue
@@ -59,9 +59,9 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
         logger: LoggerProtocol,
-        maxApyProvider: SubtensorMaxApyProviderProtocol? = nil,
-        rootYieldService: SubtensorYieldServiceProtocol? = nil,
-        cataloguePricing: SubtensorCataloguePricingTracker? = nil,
+        maxApyProvider: SubtensorMaxApyProviderProtocol,
+        rootYieldService: SubtensorYieldServiceProtocol,
+        cataloguePricing: SubtensorCataloguePricingTracker,
         eventCenter: EventCenterProtocol = EventCenter.shared
     ) {
         self.walletId = walletId
@@ -87,7 +87,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         isMaxApyResolved = false
 
         seedRootYields()
-        cataloguePricing?.seed()
+        cataloguePricing.seed()
 
         eventCenter.add(observer: self, dispatchIn: workingQueue)
 
@@ -97,7 +97,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     override func stopSyncUp() {
         maxApyCallStore.cancel()
         rootYieldsCallStore.cancel()
-        cataloguePricing?.cancel()
+        cataloguePricing.cancel()
         stakeStateSubscription.unsubscribe()
     }
 
@@ -108,7 +108,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
 
         maxApyCallStore.cancel()
         rootYieldsCallStore.cancel()
-        cataloguePricing?.cancel()
+        cataloguePricing.cancel()
         stakeStateSubscription.unsubscribe()
     }
 
@@ -134,7 +134,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     }
 
     private func performMaxApyFetch() {
-        guard let maxApyProvider, !isMaxApyResolved, !maxApyCallStore.hasCall else {
+        guard !isMaxApyResolved, !maxApyCallStore.hasCall else {
             return
         }
 
@@ -166,20 +166,15 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     }
 
     private func seedRootYields() {
-        guard
-            let rootYieldService,
-            case let .fresh(yields) = rootYieldService.cachedAlphaYields(
-                for: SubtensorStakingPallet.rootNetuid
-            ) else {
+        if case let .fresh(yields) = rootYieldService.cachedAlphaYields(for: SubtensorStakingPallet.rootNetuid) {
+            rootYields = yields
+        } else {
             rootYields = nil
-            return
         }
-
-        rootYields = yields
     }
 
     private func performRootYieldsFetch() {
-        guard let rootYieldService, !rootYieldsCallStore.hasCall, lastState?.rootStakeInRao != nil else {
+        guard !rootYieldsCallStore.hasCall, lastState?.rootStakeInRao != nil else {
             return
         }
 
@@ -220,7 +215,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     }
 
     private func performCataloguePricingRefresh() {
-        cataloguePricing?.refresh(
+        cataloguePricing.refresh(
             latestState: { [weak self] in self?.lastState },
             runningCallbackIn: workingQueue,
             mutex: mutex,
@@ -240,18 +235,18 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
             option: .init(chainAssetId: chainAsset.chainAssetId, type: stakingType)
         )
 
-        let valuation = cataloguePricing?.valuation(of: state)
+        let valuation = cataloguePricing.valuation(of: state)
 
         let dashboardItem = Multistaking.DashboardItemSubtensorPart(
             stakingOption: stakingOption,
             state: state,
-            stake: valuation?.stake ?? state.rootStakeInRao ?? .zero,
+            stake: valuation.stake,
             maxApy: maxApyUpdate,
             rootRate: SubtensorAlphaApyFormatter.stakeWeightedRate(
                 of: state.positions.filter { $0.netuid == SubtensorStakingPallet.rootNetuid },
                 in: rootYields
             ),
-            isFullyPriced: valuation?.isFullyPriced
+            isFullyPriced: valuation.isFullyPriced
         )
 
         let saveOperation = dashboardRepository.saveOperation({

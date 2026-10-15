@@ -13,7 +13,6 @@ struct SubtensorUnstakeValidatingDep {
     let preflight: SubtensorStakingPreflight?
     let holds: [AccountId: SubtensorRootHold]?
     let currentBlock: BlockNumber?
-    let blockTime: BlockTime
     let assetDisplayInfo: AssetBalanceDisplayInfo
     let syncFailed: Bool
     let onFeeRefresh: () -> Void
@@ -259,7 +258,6 @@ private extension SubtensorUnstakePresenterValidating {
                     currentBlock: dep.currentBlock,
                     lastStakeBlock: dep.preflight?.lastStakeBlock,
                     unlockInterval: dep.preflight?.rootStakeUnlockInterval,
-                    blockTime: dep.blockTime,
                     locale: selectedLocale
                 )
             ]
@@ -270,7 +268,6 @@ private extension SubtensorUnstakePresenterValidating {
                 currentBlock: dep.currentBlock,
                 lastStakeBlock: hold.lastStakeBlock,
                 unlockInterval: hold.interval,
-                blockTime: dep.blockTime,
                 locale: selectedLocale
             )
         }

@@ -179,12 +179,7 @@ private extension SubtensorStakingSetupViewModelFactory {
         var isSelectable = false
 
         if case let .subnetPick(target, _) = input.mode {
-            let ref = SubtensorSubnetRef(
-                netuid: target.netuid,
-                registeredAt: target.subnetInfo?.networkRegisteredAt ?? 0
-            )
-
-            isSelectable = catalogue?.subnet(for: ref) != nil
+            isSelectable = catalogue?.subnet(for: target.subnetRef) != nil
         }
 
         return SubtensorPickCardHeaderViewModel(

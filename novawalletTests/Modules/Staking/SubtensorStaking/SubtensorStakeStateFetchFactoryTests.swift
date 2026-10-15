@@ -44,7 +44,7 @@ final class SubtensorStakeStateFetchFactoryTests: XCTestCase {
         verify(apiFactory, times(1)).createStakeInfoWrapper(for: any(), blockHash: stakeInfoHashCaptor.capture())
         XCTAssertEqual(stakeInfoHashCaptor.value, bestBlockHash)
 
-        let netuidsCaptor = ArgumentCaptor<[UInt16]?>()
+        let netuidsCaptor = ArgumentCaptor<[UInt16]>()
         let availabilityHashCaptor = ArgumentCaptor<BlockHash?>()
         verify(apiFactory, times(1)).createStakeAvailabilityWrapper(
             for: any(),

@@ -44,15 +44,11 @@ final class SubtensorValidatorSelectInteractor: AnyCancellableCleaning {
 }
 
 private extension SubtensorValidatorSelectInteractor {
-    var subnet: SubtensorSubnetRef {
-        SubtensorSubnetRef(netuid: target.netuid, registeredAt: target.subnetInfo?.networkRegisteredAt ?? 0)
-    }
-
     func loadDirectory() {
         directoryStore.cancel()
 
         executeCancellable(
-            wrapper: directoryService.createDirectoryWrapper(for: subnet),
+            wrapper: directoryService.createDirectoryWrapper(for: target.subnetRef),
             inOperationQueue: operationQueue,
             backingCallIn: directoryStore,
             runningCallbackIn: .main
@@ -80,7 +76,7 @@ private extension SubtensorValidatorSelectInteractor {
         yieldStore.cancel()
 
         executeCancellable(
-            wrapper: yieldService.createAlphaYieldsWrapper(for: subnet.netuid),
+            wrapper: yieldService.createAlphaYieldsWrapper(for: target.netuid),
             inOperationQueue: operationQueue,
             backingCallIn: yieldStore,
             runningCallbackIn: .main
@@ -99,7 +95,10 @@ private extension SubtensorValidatorSelectInteractor {
         verificationStore.cancel()
 
         executeCancellable(
-            wrapper: recommendationService.createListVerificationWrapper(for: subnet, listedHotkeys: listedHotkeys),
+            wrapper: recommendationService.createListVerificationWrapper(
+                for: target.subnetRef,
+                listedHotkeys: listedHotkeys
+            ),
             inOperationQueue: operationQueue,
             backingCallIn: verificationStore,
             runningCallbackIn: .main
@@ -117,7 +116,7 @@ private extension SubtensorValidatorSelectInteractor {
     func loadAlphaPrice() {
         catalogueStore.cancel()
 
-        let subnet = subnet
+        let subnet = target.subnetRef
 
         executeCancellable(
             wrapper: catalogueService.createCatalogueWrapper(),
@@ -149,7 +148,7 @@ private extension SubtensorValidatorSelectInteractor {
 
 extension SubtensorValidatorSelectInteractor: ValidatorSelectInteractorInputProtocol {
     func cachedSnapshot() -> SubtensorValidatorSelectSnapshot {
-        let subnet = subnet
+        let subnet = target.subnetRef
 
         return SubtensorValidatorSelectSnapshot(
             directory: directoryService.cachedDirectory(for: subnet),

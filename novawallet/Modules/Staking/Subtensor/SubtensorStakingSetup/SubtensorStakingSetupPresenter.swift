@@ -94,7 +94,7 @@ extension SubtensorStakingSetupPresenter {
     }
 
     var subnetRef: SubtensorSubnetRef? {
-        target.map { SubtensorSubnetRef(netuid: $0.netuid, registeredAt: $0.subnetInfo?.networkRegisteredAt ?? 0) }
+        target?.subnetRef
     }
 
     func inputDecimal() -> Decimal? {
