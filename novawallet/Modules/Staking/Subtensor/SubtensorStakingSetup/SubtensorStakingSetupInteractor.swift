@@ -68,7 +68,7 @@ private extension SubtensorStakingSetupInteractor {
                 self?.presenter?.didReceiveValidator(validator, on: subnet)
             case let .failure(error):
                 self?.logger.error("Subtensor validator preset failed: \(error)")
-                self?.presenter?.didReceiveValidator(nil, on: subnet)
+                self?.presenter?.didFailValidator(error, on: subnet)
             }
         }
     }
@@ -101,6 +101,10 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
             backingCallIn: quickPickCallStore,
             runningCallbackIn: .main
         ) { [weak self] result in
+            if case let .failure(error) = result {
+                self?.logger.warning("Subtensor quick pick snapshot unavailable for the setup: \(error)")
+            }
+
             self?.presenter?.didReceiveQuickPickSnapshot(result)
         }
     }
