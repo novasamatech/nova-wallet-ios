@@ -50,6 +50,10 @@ extension SubtensorStakingPallet {
         StorageCodingPath(moduleName: name, itemName: "NominatorMinRequiredStake")
     }
 
+    static var rootClaimableThresholdPath: StorageCodingPath {
+        StorageCodingPath(moduleName: name, itemName: "RootClaimableThreshold")
+    }
+
     static var safeModeEnteredUntilPath: StorageCodingPath {
         StorageCodingPath(moduleName: safeModePalletName, itemName: "EnteredUntil")
     }

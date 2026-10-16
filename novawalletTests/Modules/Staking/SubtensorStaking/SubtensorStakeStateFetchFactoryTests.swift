@@ -92,6 +92,9 @@ final class SubtensorStakeStateFetchFactoryTests: XCTestCase {
             when(stub.createRootClaimPreviewsWrapper(coldkey: any(), blockHash: any())).thenReturn(
                 CompoundOperationWrapper.createWithResult([])
             )
+            when(stub.createRootClaimableThresholdWrapper(blockHash: any())).thenReturn(
+                CompoundOperationWrapper.createWithResult(nil)
+            )
         }
 
         return apiFactory
