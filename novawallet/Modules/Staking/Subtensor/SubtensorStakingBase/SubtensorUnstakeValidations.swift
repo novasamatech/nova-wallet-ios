@@ -31,12 +31,19 @@ extension SubtensorUnstakeValidatingDep {
         netuid != SubtensorStakingPallet.rootNetuid
     }
 
-    var isRootHoldEnabled: Bool {
-        (preflight?.rootStakeUnlockInterval ?? 0) > 0
-    }
+    var paysFeeFromPosition: Bool {
+        guard
+            let transferable = balance?.transferable,
+            let networkFee = fee?.amountForCurrentAccount,
+            let existentialDeposit else {
+            return false
+        }
 
-    var feeNeedsFreeBalance: Bool {
-        isBatched || isRootHoldEnabled
+        return !SubtensorAmountPolicy.paysFeeFromFreeBalance(
+            transferable: transferable,
+            networkFee: networkFee,
+            existentialDeposit: existentialDeposit
+        )
     }
 
     var sellPlanInput: SubtensorSellPlanInput? {
@@ -175,14 +182,24 @@ private extension SubtensorStakingValidationFactoryProtocol {
         for dep: SubtensorUnstakeValidatingDep,
         locale: Locale
     ) -> DataValidating? {
-        guard dep.feeNeedsFreeBalance else {
+        if dep.isBatched {
+            return notViolatingMinBalancePaying(
+                fee: dep.fee,
+                total: dep.balance?.transferable,
+                minBalance: dep.existentialDeposit,
+                asset: assetDisplayInfo,
+                locale: locale
+            )
+        }
+
+        guard dep.paysFeeFromPosition else {
             return nil
         }
 
-        return canPayBatchedNetworkFee(
-            transferable: dep.balance?.transferable,
-            networkFee: dep.fee?.amountForCurrentAccount,
-            existentialDeposit: dep.existentialDeposit,
+        return canPayFeeInPlank(
+            balance: dep.positionAlpha,
+            fee: dep.fee,
+            asset: assetDisplayInfo,
             locale: locale
         )
     }

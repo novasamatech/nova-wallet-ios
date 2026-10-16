@@ -27,4 +27,13 @@ enum SubtensorStakingPallet {
 
     // Swap.FeeRate is a ValueQuery whose unset key reads as null over RPC, so the runtime default applies here
     static let defaultFeeRate: UInt16 = 33
+
+    // RootClaimableThreshold is a ValueQuery too: DefaultMinRootClaimAmount applies while root is unset (lib.rs:728)
+    static let defaultRootClaimableThreshold = BigUInt(500_000)
+
+    static let fixedPointFractionalBits = 32
+
+    struct FixedPoint96F32: Decodable, Equatable {
+        @StringCodable var bits: Balance
+    }
 }

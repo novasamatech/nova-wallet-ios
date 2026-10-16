@@ -24,7 +24,8 @@ final class SubtensorStakeStateFetchFactory {
         coldkey: AccountId,
         stakeInfoList: [SubtensorStakingPallet.StakeInfo],
         availabilityList: [SubtensorStakingPallet.ColdkeyStakeAvailability],
-        claimPreviews: [SubtensorStakingPallet.BasketClaimPreview]?
+        claimPreviews: [SubtensorStakingPallet.BasketClaimPreview]?,
+        minimumClaim: Balance?
     ) -> Multistaking.SubtensorStakingState {
         let positions = stakeInfoList.map { stakeInfo in
             SubtensorStakingPosition(
@@ -41,19 +42,22 @@ final class SubtensorStakeStateFetchFactory {
             accum[subnet.netuid] = subnet.availability
         }
 
-        let rootClaimPreviews = (claimPreviews ?? []).map { preview in
-            SubtensorRootClaimPreview(
-                hotkey: preview.hotkey,
-                redeemable: preview.redeemableTao,
-                forfeitedEstimate: preview.forfeitedTaoEst
-            )
+        let rootClaimPreviews = minimumClaim.flatMap { minimumClaim in
+            claimPreviews?.map { preview in
+                SubtensorRootClaimPreview(
+                    hotkey: preview.hotkey,
+                    redeemable: preview.redeemableTao,
+                    forfeitedEstimate: preview.forfeitedTaoEst,
+                    minimumClaim: minimumClaim
+                )
+            }
         }
 
         return Multistaking.SubtensorStakingState(
             positions: positions,
             availability: availability,
-            rootClaimPreviews: rootClaimPreviews,
-            isRootRedeemableStale: claimPreviews == nil
+            rootClaimPreviews: rootClaimPreviews ?? [],
+            isRootRedeemableStale: rootClaimPreviews == nil
         )
     }
 
@@ -107,23 +111,29 @@ final class SubtensorStakeStateFetchFactory {
             blockHash: blockHash
         )
 
+        let thresholdWrapper = operationFactory.createRootClaimableThresholdWrapper(blockHash: blockHash)
+
         let mergeOperation = ClosureOperation<Multistaking.SubtensorStakingState> {
             try Self.createState(
                 coldkey: coldkey,
                 stakeInfoList: stakeInfoWrapper.targetOperation.extractNoCancellableResultData(),
                 availabilityList: availabilityWrapper.targetOperation.extractNoCancellableResultData(),
-                claimPreviews: try? claimPreviewsWrapper.targetOperation.extractNoCancellableResultData()
+                claimPreviews: try? claimPreviewsWrapper.targetOperation.extractNoCancellableResultData(),
+                minimumClaim: try? SubtensorRootClaimRule.minimumClaim(
+                    fromThresholdBits: thresholdWrapper.targetOperation.extractNoCancellableResultData()?.bits
+                )
             )
         }
 
         mergeOperation.addDependency(stakeInfoWrapper.targetOperation)
         mergeOperation.addDependency(availabilityWrapper.targetOperation)
         mergeOperation.addDependency(claimPreviewsWrapper.targetOperation)
+        mergeOperation.addDependency(thresholdWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: mergeOperation,
-            dependencies: stakeInfoWrapper.allOperations +
-                availabilityWrapper.allOperations + claimPreviewsWrapper.allOperations
+            dependencies: stakeInfoWrapper.allOperations + availabilityWrapper.allOperations +
+                claimPreviewsWrapper.allOperations + thresholdWrapper.allOperations
         )
     }
 }

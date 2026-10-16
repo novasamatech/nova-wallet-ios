@@ -38,4 +38,5 @@ struct SubtensorRootClaimPreview: Equatable {
     let hotkey: AccountId
     let redeemable: Balance
     let forfeitedEstimate: Balance
+    let minimumClaim: Balance
 }

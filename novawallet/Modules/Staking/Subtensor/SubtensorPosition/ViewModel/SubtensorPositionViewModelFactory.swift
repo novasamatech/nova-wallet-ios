@@ -47,8 +47,12 @@ private extension SubtensorPositionViewModelFactory {
         amount.decimal(assetInfo: chainAsset.assetDisplayInfo)
     }
 
-    func formatTao(_ amount: Balance, locale: Locale) -> String {
-        balanceViewModelFactory.amountFromValue(decimal(amount), roundingMode: .down).value(for: locale)
+    func formatTao(
+        _ amount: Balance,
+        roundingMode: NumberFormatter.RoundingMode = .down,
+        locale: Locale
+    ) -> String {
+        balanceViewModelFactory.amountFromValue(decimal(amount), roundingMode: roundingMode).value(for: locale)
     }
 
     func formatFiat(_ amount: Balance, price: PriceData?, locale: Locale) -> String? {
@@ -114,8 +118,24 @@ private extension SubtensorPositionViewModelFactory {
 
         return SubtensorPositionRowViewModel(
             title: R.string(preferredLanguages: locale.rLanguages).localizable.commonRewards(),
-            value: value
+            value: value,
+            caption: createClaimMinimumCaption(for: state, locale: locale)
         )
+    }
+
+    func createClaimMinimumCaption(for state: SubtensorPositionState, locale: Locale) -> String? {
+        guard
+            !state.isClaimableFailed,
+            let claimable = state.claimable,
+            !claimable.contains(where: SubtensorRootClaimRule.isClaimable),
+            let accrued = claimable.first(where: { $0.redeemable > 0 }) else {
+            return nil
+        }
+
+        let minimum = formatTao(accrued.minimumClaim, roundingMode: .up, locale: locale)
+
+        return R.string(preferredLanguages: locale.rLanguages).localizable
+            .stakingSubtensorUiPositionClaimMinimumFormat(minimum)
     }
 
     func createWorthRow(for state: SubtensorPositionState, locale: Locale) -> SubtensorPositionRowViewModel {
@@ -134,7 +154,11 @@ private extension SubtensorPositionViewModelFactory {
             worthValue = .loaded(value: strings.stakingSubtensorUiPriceUnavailable(), detail: nil)
         }
 
-        return SubtensorPositionRowViewModel(title: strings.stakingSubtensorUiPositionWorth(), value: worthValue)
+        return SubtensorPositionRowViewModel(
+            title: strings.stakingSubtensorUiPositionWorth(),
+            value: worthValue,
+            caption: nil
+        )
     }
 
     func createSummary(for state: SubtensorPositionState, locale: Locale) -> SubtensorPositionSummaryViewModel {

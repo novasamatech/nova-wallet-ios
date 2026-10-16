@@ -9,6 +9,8 @@ struct SubtensorQuoteValidatingContext {
 }
 
 protocol SubtensorStakingValidationFactoryProtocol: BaseDataValidatingFactoryProtocol {
+    var assetDisplayInfo: AssetBalanceDisplayInfo { get }
+
     func hasPreflight(
         _ preflight: SubtensorStakingPreflight?,
         locale: Locale,
@@ -76,13 +78,6 @@ protocol SubtensorStakingValidationFactoryProtocol: BaseDataValidatingFactoryPro
 
     func safeModeInactive(
         safeModeActive: Bool?,
-        locale: Locale
-    ) -> DataValidating
-
-    func canPayBatchedNetworkFee(
-        transferable: Balance?,
-        networkFee: Balance?,
-        existentialDeposit: Balance?,
         locale: Locale
     ) -> DataValidating
 

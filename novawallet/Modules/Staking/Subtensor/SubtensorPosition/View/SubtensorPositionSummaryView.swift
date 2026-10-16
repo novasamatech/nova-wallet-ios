@@ -178,6 +178,11 @@ private final class SubtensorPositionSummaryRowView: UIView {
         label.textAlignment = .right
     }
 
+    let captionLabel: UILabel = .create { label in
+        label.apply(style: .caption1Secondary)
+        label.numberOfLines = 0
+    }
+
     let skeletonView = SubtensorSkeletonView(cornerRadius: 6)
 
     override init(frame: CGRect) {
@@ -206,6 +211,9 @@ private final class SubtensorPositionSummaryRowView: UIView {
             detailLabel.isHidden = detail == nil
             skeletonView.setLoading(false)
         }
+
+        captionLabel.text = viewModel.caption
+        captionLabel.isHidden = viewModel.caption == nil
     }
 
     private func setupLayout() {
@@ -221,11 +229,15 @@ private final class SubtensorPositionSummaryRowView: UIView {
 
         let valueView = UIView.vStack(alignment: .trailing, spacing: 2, [valueLabel, detailLabel])
         let contentView = UIView.hStack(alignment: .center, spacing: 12, [titleLabel, UIView(), valueView])
+        let stackView = UIView.vStack(spacing: 8, [contentView, captionLabel])
 
-        addSubview(contentView)
-        contentView.snp.makeConstraints { make in
+        addSubview(stackView)
+        stackView.snp.makeConstraints { make in
             make.top.equalTo(dividerView.snp.bottom).offset(SubtensorPositionSummaryView.Constants.spacing)
             make.leading.trailing.bottom.equalToSuperview()
+        }
+
+        contentView.snp.makeConstraints { make in
             make.height.greaterThanOrEqualTo(24)
         }
 
