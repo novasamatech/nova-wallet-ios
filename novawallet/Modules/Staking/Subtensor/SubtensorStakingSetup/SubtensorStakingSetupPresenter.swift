@@ -22,6 +22,7 @@ final class SubtensorStakingSetupPresenter {
     var target: SubtensorStakeTarget?
     var validatorState: SubtensorSetupValidatorState = .pending
     var isPresetRequested = false
+    var presetError: Error?
     var inputResult: AmountInputResult?
     var balance: AssetBalance?
     var isBalanceLoaded = false
@@ -112,6 +113,7 @@ extension SubtensorStakingSetupPresenter {
         validatorState = .pending
         validatorItem = nil
         isPresetRequested = false
+        presetError = nil
         preflight = nil
         quoteFlow = SubtensorQuoteFlowModel()
         isQuoteFailed = false
@@ -134,10 +136,6 @@ extension SubtensorStakingSetupPresenter {
         } else if let picked = mode.pickedValidator {
             validatorState = .selected(SubtensorSetupValidator(hotkey: picked.hotkey, name: picked.name))
             validatorItem = picked
-        }
-
-        if quickPickVisit != nil, !mode.isRootLane, validatorState == .pending {
-            validatorState = .none
         }
 
         applyTargetIfReady()
@@ -175,6 +173,15 @@ extension SubtensorStakingSetupPresenter {
         interactor.presetValidator(on: subnetRef, existingHotkey: existingPrimaryHotkey(on: subnetRef.netuid))
     }
 
+    func retryPreset() {
+        presetError = nil
+        validatorState = .pending
+        isPresetRequested = false
+
+        requestPresetIfReady()
+        provideViewModel()
+    }
+
     func existingPrimaryHotkey(on netuid: UInt16) -> AccountId? {
         positionsState.flatMap { SubtensorPortfolioBuilder.build(state: $0).group(netuid: netuid)?.primaryHotkey }
     }
@@ -182,6 +189,7 @@ extension SubtensorStakingSetupPresenter {
     func applyValidator(_ item: SubtensorValidatorDirectoryItem) {
         validatorState = .selected(SubtensorSetupValidator(hotkey: item.hotkey, name: item.name))
         validatorItem = item
+        presetError = nil
         preflight = nil
 
         refreshPreflight()
@@ -289,6 +297,14 @@ extension SubtensorStakingSetupPresenter: SubtensorStakingSetupPresenterProtocol
         interactor.setup()
 
         startMode()
+    }
+
+    func retry() {
+        if presetError != nil {
+            retryPreset()
+        } else {
+            retryQuickPick()
+        }
     }
 
     func selectValidator() {

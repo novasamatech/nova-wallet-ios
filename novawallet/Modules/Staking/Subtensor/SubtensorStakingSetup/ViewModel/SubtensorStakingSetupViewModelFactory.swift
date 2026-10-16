@@ -35,7 +35,7 @@ final class SubtensorStakingSetupViewModelFactory {
 
         let details: SubtensorSetupDetailsViewModel
         if case let .quickPick(order) = input.mode {
-            details = .selection(createSelection(for: input, order: order, locale: locale))
+            details = .selection(createSelection(order: order, locale: locale))
         } else {
             details = input.mode.isRootLane
                 ? .root(createRootDetails(for: input, locale: locale))
@@ -57,6 +57,7 @@ final class SubtensorStakingSetupViewModelFactory {
             hasSettings: input.mode.hasSettings,
             getTao: createGetTao(for: input, locale: locale),
             reserveWarning: createReserveWarning(for: input, locale: locale),
+            failure: createFailure(for: input, locale: locale),
             details: details,
             caption: createCaption(for: input, locale: locale),
             browseTitle: input.mode.isLocked ? nil : strings.stakingSubtensorQuickSeeAll(),

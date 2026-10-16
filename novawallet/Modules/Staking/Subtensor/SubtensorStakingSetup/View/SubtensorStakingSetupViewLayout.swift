@@ -62,13 +62,19 @@ final class SubtensorStakingSetupViewLayout: SubtensorAmountSetupLayout {
 
     func setSelection(_ selection: SubtensorSetupSelectionViewModel?) {
         pickSkeletonView.setLoading(selection != nil)
-        selectionAlert.isHidden = selection?.failure == nil
 
         if let caption = selection?.caption {
             pickSkeletonView.bind(caption: caption)
         }
+    }
 
-        if let failure = selection?.failure {
+    func setFailure(_ failure: WarningView.Model?) {
+        selectionAlert.isHidden = failure == nil
+
+        if let failure {
+            selectionAlert.contentInsets.bottom = failure.learnMore != nil
+                ? Constants.selectionAlertBottomInset
+                : Constants.selectionAlertPlainBottomInset
             selectionAlert.bind(failure)
         }
     }
@@ -114,6 +120,7 @@ private extension SubtensorStakingSetupViewLayout {
         static let amountSpacing: CGFloat = 24
         static let reserveWarningSpacing: CGFloat = 8
         static let selectionAlertBottomInset: CGFloat = 4
+        static let selectionAlertPlainBottomInset: CGFloat = 10
         static let selectionAlertTitleSpacing: CGFloat = 8
         static let selectionAlertSpacing: CGFloat = 24
         static let sectionSpacing: CGFloat = 11

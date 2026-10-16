@@ -82,11 +82,7 @@ private extension SubtensorStakingSetupViewController {
         )
         rootView.pickCardView.browseView.button.addTarget(self, action: #selector(actionBrowse), for: .touchUpInside)
         rootView.browseView.button.addTarget(self, action: #selector(actionBrowse), for: .touchUpInside)
-        rootView.selectionAlert.learnMoreButton.addTarget(
-            self,
-            action: #selector(actionRetryQuickPick),
-            for: .touchUpInside
-        )
+        rootView.selectionAlert.learnMoreButton.addTarget(self, action: #selector(actionRetry), for: .touchUpInside)
         rootView.actionButton.addTarget(self, action: #selector(actionProceed), for: .touchUpInside)
     }
 
@@ -173,7 +169,7 @@ private extension SubtensorStakingSetupViewController {
 
     @objc func actionBrowse() { presenter.showAllSubnets() }
 
-    @objc func actionRetryQuickPick() { presenter.retryQuickPick() }
+    @objc func actionRetry() { presenter.retry() }
 
     @objc func actionMax() {
         presenter.selectMax()
@@ -236,6 +232,7 @@ extension SubtensorStakingSetupViewController: SubtensorStakingSetupViewProtocol
         applyGetTao(viewModel.getTao)
 
         rootView.setReserveWarning(viewModel.reserveWarning)
+        rootView.setFailure(viewModel.failure)
 
         rootView.browseView.bind(title: viewModel.browseTitle)
         if case .subnet = viewModel.details {
