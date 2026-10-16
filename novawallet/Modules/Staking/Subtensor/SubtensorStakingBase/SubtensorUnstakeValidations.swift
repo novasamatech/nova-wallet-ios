@@ -39,6 +39,21 @@ extension SubtensorUnstakeValidatingDep {
         isBatched || isRootHoldEnabled
     }
 
+    var paysFeeFromPosition: Bool {
+        guard
+            let transferable = balance?.transferable,
+            let networkFee = fee?.amountForCurrentAccount,
+            let existentialDeposit else {
+            return false
+        }
+
+        return !SubtensorAmountPolicy.paysFeeFromFreeBalance(
+            transferable: transferable,
+            networkFee: networkFee,
+            existentialDeposit: existentialDeposit
+        )
+    }
+
     var sellPlanInput: SubtensorSellPlanInput? {
         guard
             let amount,
@@ -175,14 +190,23 @@ private extension SubtensorStakingValidationFactoryProtocol {
         for dep: SubtensorUnstakeValidatingDep,
         locale: Locale
     ) -> DataValidating? {
-        guard dep.feeNeedsFreeBalance else {
+        if dep.feeNeedsFreeBalance {
+            return canPayBatchedNetworkFee(
+                transferable: dep.balance?.transferable,
+                networkFee: dep.fee?.amountForCurrentAccount,
+                existentialDeposit: dep.existentialDeposit,
+                locale: locale
+            )
+        }
+
+        guard dep.paysFeeFromPosition else {
             return nil
         }
 
-        return canPayBatchedNetworkFee(
-            transferable: dep.balance?.transferable,
-            networkFee: dep.fee?.amountForCurrentAccount,
-            existentialDeposit: dep.existentialDeposit,
+        return canPayFeeInPlank(
+            balance: dep.positionAlpha,
+            fee: dep.fee,
+            asset: dep.assetDisplayInfo,
             locale: locale
         )
     }
