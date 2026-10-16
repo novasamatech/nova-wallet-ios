@@ -28,7 +28,6 @@ extension SubtensorWhereToStakePresenter: SubtensorWhereToStakePresenterProtocol
     }
 
     func choose(_ order: SubtensorQuickPickOrder) {
-        guard order.isAvailable else { return }
         wireframe.showSetup(from: view, order: order)
     }
 }

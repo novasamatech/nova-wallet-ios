@@ -2333,6 +2333,7 @@ Do you want to continue?";
 "staking.subtensor.quick.cons" = "CONS";
 "staking.subtensor.quick.first.pool" = "FIRST BY POOL SIZE";
 "staking.subtensor.quick.first.age" = "FIRST BY AGE";
+"staking.subtensor.quick.first.apy" = "FIRST BY APY";
 "staking.subtensor.quick.root.section" = "ROOT NETWORK";
 "staking.subtensor.quick.see.all" = "See all subnets";
 "staking.subtensor.quick.all.options" = "See all options";

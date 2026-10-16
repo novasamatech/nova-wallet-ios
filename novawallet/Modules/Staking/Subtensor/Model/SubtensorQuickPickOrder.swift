@@ -6,13 +6,12 @@ enum SubtensorQuickPickOrder: CaseIterable, Equatable {
     case apy
     case root
 
-    var isAvailable: Bool { self != .apy }
-
     var subnetSort: SubtensorSubnetSort? {
         switch self {
         case .poolSize: return .poolDepth
         case .age: return .age
-        case .apy, .root: return nil
+        case .apy: return .apy
+        case .root: return nil
         }
     }
 }

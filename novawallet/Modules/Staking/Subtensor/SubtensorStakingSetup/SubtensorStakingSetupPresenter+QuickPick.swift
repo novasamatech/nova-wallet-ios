@@ -6,7 +6,7 @@ extension SubtensorStakingSetupPresenter {
         guard let quickPickVisit, !quickPickVisit.isManuallyReplaced, target == nil else { return }
         quickPickVisit.beginRequest()
         provideViewModel()
-        interactor.loadQuickPickSnapshot()
+        interactor.loadQuickPickSnapshot(for: quickPickVisit.order)
     }
 
     func retryQuickPick() {
@@ -14,7 +14,7 @@ extension SubtensorStakingSetupPresenter {
         loadQuickPick()
     }
 
-    func didReceiveQuickPickSnapshot(_ result: Result<(SubtensorSubnetCatalogue, SubtensorSubnetsInfo), Error>) {
+    func didReceiveQuickPickSnapshot(_ result: Result<SubtensorQuickPickSnapshot, Error>) {
         guard let quickPickVisit, !quickPickVisit.isManuallyReplaced, target == nil else { return }
         if let target = quickPickVisit.resolve(result) {
             mode = .subnetPick(target: target, validator: nil)

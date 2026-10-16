@@ -70,7 +70,7 @@ extension SubtensorStakingSetupViewModelFactory {
         switch order {
         case .poolSize: return strings.stakingSubtensorQuickFirstPool()
         case .age: return strings.stakingSubtensorQuickFirstAge()
-        case .apy: return strings.stakingSubtensorQuickApyUnavailable()
+        case .apy: return strings.stakingSubtensorQuickFirstApy()
         case .root: return strings.stakingSubtensorQuickRootSection()
         }
     }
