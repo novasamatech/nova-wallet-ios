@@ -48,13 +48,6 @@ protocol NominationPoolDataValidatorFactoryProtocol: StakingBaseDataValidatingFa
         locale: Locale
     ) -> DataValidating
 
-    func hasProfitAfterClaim(
-        rewards: BigUInt?,
-        fee: ExtrinsicFeeProtocol?,
-        chainAsset: ChainAsset,
-        locale: Locale
-    ) -> DataValidating
-
     func canMigrateIfNeeded(
         needsMigration: Bool?,
         stakingActivity: StakingActivityForValidating,
@@ -286,33 +279,6 @@ extension NominationPoolDataValidatorFactory: NominationPoolDataValidatorFactory
 
         }, preservesCondition: {
             inputAmountInPlank > 0 && inputAmountInPlank <= (stakedAmountInPlank ?? 0)
-        })
-    }
-
-    func hasProfitAfterClaim(
-        rewards: BigUInt?,
-        fee: ExtrinsicFeeProtocol?,
-        chainAsset _: ChainAsset,
-        locale: Locale
-    ) -> DataValidating {
-        WarningConditionViolation(onWarning: { [weak self] delegate in
-            guard let view = self?.view else {
-                return
-            }
-
-            self?.presentable.presentNoProfitAfterClaimRewards(
-                from: view,
-                action: {
-                    delegate.didCompleteWarningHandling()
-                },
-                locale: locale
-            )
-        }, preservesCondition: {
-            guard let rewards = rewards, let fee = fee?.amount else {
-                return false
-            }
-
-            return rewards > fee
         })
     }
 
