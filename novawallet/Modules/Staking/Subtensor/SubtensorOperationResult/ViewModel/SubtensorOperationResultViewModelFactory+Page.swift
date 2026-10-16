@@ -233,7 +233,7 @@ private extension SubtensorOperationResultViewModelFactory {
             swapRate: swapRate,
             costBasis: createCostBasis(for: state, context: context, amounts: amounts, locale: locale),
             slippage: slippage,
-            validator: validatorName(for: request),
+            validator: request.validator.name,
             networkFee: showsNetworkFee(in: state) ? networkFee(for: state, request: request, locale: locale) : nil,
             isExpanded: isDone
         )

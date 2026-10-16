@@ -130,7 +130,7 @@ private extension SubtensorOperationResultViewModelFactory {
         guard request.origin != .newPosition else {
             let validatorRow = SubtensorResultSheetRowViewModel(
                 title: strings.stakingCommonValidator(),
-                value: validatorName(for: request),
+                value: request.validator.name,
                 fiat: nil
             )
 
@@ -159,7 +159,7 @@ private extension SubtensorOperationResultViewModelFactory {
         } else if isUnstake {
             strings.stakingSubtensorResultRootUnstakedMessageFormat(stakeAfterString)
         } else if request.groupHotkeyCount == 1 {
-            strings.stakingSubtensorResultRootStakeNowWithFormat(stakeAfterString, validatorName(for: request))
+            strings.stakingSubtensorResultRootStakeNowWithFormat(stakeAfterString, request.validator.name)
         } else {
             strings.stakingSubtensorResultRootStakeNowFormat(stakeAfterString)
         }
@@ -248,7 +248,7 @@ private extension SubtensorOperationResultViewModelFactory {
         let shownStakeAfter = claimed == nil ? stakeAfterString.approximatelyEqual() : stakeAfterString
 
         let message = request.groupHotkeyCount == 1
-            ? strings.stakingSubtensorResultRootStakeNowWithFormat(shownStakeAfter, validatorName(for: request))
+            ? strings.stakingSubtensorResultRootStakeNowWithFormat(shownStakeAfter, request.validator.name)
             : strings.stakingSubtensorResultRootStakeNowFormat(shownStakeAfter)
 
         let stakeAfterRow = SubtensorResultSheetRowViewModel(

@@ -89,12 +89,6 @@ extension SubtensorOperationResultViewModelFactory {
         tolerance.decimalValue.flatMap { percentFormatter.value(for: locale).stringFromDecimal($0) }
     }
 
-    func validatorName(for request: SubtensorOperationResultRequest) -> String {
-        let display = request.validator.display
-
-        return display.username.isEmpty ? display.address.truncated : display.username
-    }
-
     func networkFee(
         for state: SubtensorOperationResultState,
         request: SubtensorOperationResultRequest,
