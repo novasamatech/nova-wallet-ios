@@ -107,7 +107,7 @@ extension SubtensorRecommendationService: SubtensorRecommendationServiceProtocol
                 }
 
                 return chainOperationFactory.createChainSnapshotWrapper(
-                    for: SubtensorRecommendationVerifier.chainQuery(for: validators.map(pair))
+                    for: SubtensorValidatorChainQuery(pairs: validators.map(pair))
                 )
             }
 
@@ -160,8 +160,7 @@ extension SubtensorRecommendationService: SubtensorRecommendationServiceProtocol
             OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
                 let candidates = try? candidatesOperation.extractNoCancellableResultData().get()
                 let pairs = (candidates?.recommended.validators ?? []).map { pair($0.hotkey) }
-                var query = SubtensorRecommendationVerifier.chainQuery(for: pairs)
-                query.takeHotkeys = listedHotkeys
+                let query = SubtensorValidatorChainQuery(pairs: pairs, takeHotkeys: listedHotkeys)
 
                 return chainOperationFactory.createChainSnapshotWrapper(for: query)
             }
