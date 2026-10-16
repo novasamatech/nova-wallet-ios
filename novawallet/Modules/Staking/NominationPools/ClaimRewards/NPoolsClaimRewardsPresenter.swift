@@ -163,7 +163,6 @@ extension NPoolsClaimRewardsPresenter: StakingClaimRewardsPresenterProtocol {
             dataValidatorFactory.hasProfitAfterClaim(
                 rewards: claimableRewards,
                 fee: fee,
-                chainAsset: chainAsset,
                 locale: selectedLocale
             )
         ]).runValidation { [weak self] in

@@ -9,6 +9,8 @@ struct SubtensorQuoteValidatingContext {
 }
 
 protocol SubtensorStakingValidationFactoryProtocol: BaseDataValidatingFactoryProtocol {
+    var assetDisplayInfo: AssetBalanceDisplayInfo { get }
+
     func hasPreflight(
         _ preflight: SubtensorStakingPreflight?,
         locale: Locale,
@@ -79,13 +81,6 @@ protocol SubtensorStakingValidationFactoryProtocol: BaseDataValidatingFactoryPro
         locale: Locale
     ) -> DataValidating
 
-    func canPayBatchedNetworkFee(
-        transferable: Balance?,
-        networkFee: Balance?,
-        existentialDeposit: Balance?,
-        locale: Locale
-    ) -> DataValidating
-
     func sellPlanAllows(
         _ input: SubtensorSellPlanInput?,
         assetDisplayInfo: AssetBalanceDisplayInfo?,
@@ -97,12 +92,6 @@ protocol SubtensorStakingValidationFactoryProtocol: BaseDataValidatingFactoryPro
         currentBlock: BlockNumber?,
         lastStakeBlock: UInt64?,
         unlockInterval: UInt64?,
-        locale: Locale
-    ) -> DataValidating
-
-    func hasProfitAfterClaim(
-        payout: Balance,
-        fee: ExtrinsicFeeProtocol?,
         locale: Locale
     ) -> DataValidating
 }

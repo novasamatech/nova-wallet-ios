@@ -31,12 +31,40 @@ extension SubtensorUnstakeValidatingDep {
         netuid != SubtensorStakingPallet.rootNetuid
     }
 
-    var isRootHoldEnabled: Bool {
-        (preflight?.rootStakeUnlockInterval ?? 0) > 0
+    var isRootHoldActive: Bool {
+        guard
+            let preflight,
+            preflight.rootStakeUnlockInterval > 0,
+            let lastStakeBlock = preflight.lastStakeBlock else {
+            return false
+        }
+
+        guard let currentBlock else {
+            return true
+        }
+
+        let hold = SubtensorRootHold(interval: preflight.rootStakeUnlockInterval, lastStakeBlock: lastStakeBlock)
+
+        return hold.remainingBlocks(at: UInt64(currentBlock)) > 0
     }
 
     var feeNeedsFreeBalance: Bool {
-        isBatched || isRootHoldEnabled
+        isBatched || isRootHoldActive
+    }
+
+    var paysFeeFromPosition: Bool {
+        guard
+            let transferable = balance?.transferable,
+            let networkFee = fee?.amountForCurrentAccount,
+            let existentialDeposit else {
+            return false
+        }
+
+        return !SubtensorAmountPolicy.paysFeeFromFreeBalance(
+            transferable: transferable,
+            networkFee: networkFee,
+            existentialDeposit: existentialDeposit
+        )
     }
 
     var sellPlanInput: SubtensorSellPlanInput? {
@@ -175,14 +203,24 @@ private extension SubtensorStakingValidationFactoryProtocol {
         for dep: SubtensorUnstakeValidatingDep,
         locale: Locale
     ) -> DataValidating? {
-        guard dep.feeNeedsFreeBalance else {
+        if dep.feeNeedsFreeBalance {
+            return notViolatingMinBalancePaying(
+                fee: dep.fee,
+                total: dep.balance?.transferable,
+                minBalance: dep.existentialDeposit,
+                asset: assetDisplayInfo,
+                locale: locale
+            )
+        }
+
+        guard dep.paysFeeFromPosition else {
             return nil
         }
 
-        return canPayBatchedNetworkFee(
-            transferable: dep.balance?.transferable,
-            networkFee: dep.fee?.amountForCurrentAccount,
-            existentialDeposit: dep.existentialDeposit,
+        return canPayFeeInPlank(
+            balance: dep.positionAlpha,
+            fee: dep.fee,
+            asset: assetDisplayInfo,
             locale: locale
         )
     }
