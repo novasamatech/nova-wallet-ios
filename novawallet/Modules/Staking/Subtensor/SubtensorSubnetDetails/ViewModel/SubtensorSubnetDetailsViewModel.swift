@@ -22,18 +22,23 @@ enum SubtensorSubnetValidatorState: Equatable {
 }
 
 struct SubtensorSubnetDetailsState {
-    let isFiat: Bool
-    let period: SubtensorPricePeriod
-    let history: SubtensorSubnetHistoryState
-    let parameters: SubtensorSubnetParameters?
-    let isParametersLoaded: Bool
-    let validator: SubtensorSubnetValidatorState
-    let yields: SubtensorAlphaYields?
-    let taoPrice: PriceData?
-    let isFavorite: Bool
-    let now: Date
-    let chartEndDate: Date
-    let chartSelection: SubtensorPriceChartSelection?
+    var isFiat = false
+    var period = SubtensorPriceWidgetViewModelFactory.defaultPeriod
+    var history: SubtensorSubnetHistoryState = .loading {
+        didSet {
+            chartSelection = nil
+        }
+    }
+
+    var parameters: SubtensorSubnetParameters?
+    var isParametersLoaded = false
+    var validator: SubtensorSubnetValidatorState
+    var yields: SubtensorAlphaYields?
+    var taoPrice: PriceData?
+    var isFavorite = false
+    var now = Date()
+    var chartEndDate = Date()
+    var chartSelection: SubtensorPriceChartSelection?
 }
 
 struct SubtensorSubnetDetailsTitleViewModel {

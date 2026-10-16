@@ -12,21 +12,7 @@ final class SubtensorSubnetDetailsPresenter {
     let viewModelFactory: SubnetDetailsViewModelFactoryProtocol
     let earnSettings: SubtensorEarnSettingsProtocol
 
-    private var chartEndDate: Date
-    private var isFiat = false
-    private var period = SubtensorPriceWidgetViewModelFactory.defaultPeriod
-    private var chartSelection: SubtensorPriceChartSelection?
-    private var history: SubtensorSubnetHistoryState = .loading {
-        didSet {
-            chartSelection = nil
-        }
-    }
-
-    private var parameters: SubtensorSubnetParameters?
-    private var isParametersLoaded = false
-    private var validator: SubtensorSubnetValidatorState
-    private var yields: SubtensorAlphaYields?
-    private var taoPrice: PriceData?
+    private var state: SubtensorSubnetDetailsState
     private var subnetLogos: SubtensorSubnetLogos?
     private var positions: Multistaking.SubtensorStakingState?
     private var isPositionsSyncFailed = false
@@ -43,7 +29,6 @@ final class SubtensorSubnetDetailsPresenter {
         earnSettings: SubtensorEarnSettingsProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
-        chartEndDate = Date()
         self.input = input
         self.host = host
         self.selectionDelegate = selectionDelegate
@@ -52,11 +37,9 @@ final class SubtensorSubnetDetailsPresenter {
         self.viewModelFactory = viewModelFactory
         self.earnSettings = earnSettings
 
-        if let validator = input.validator {
-            self.validator = .selected(validator)
-        } else {
-            validator = host == .picker ? .pending : .unselected
-        }
+        state = SubtensorSubnetDetailsState(
+            validator: input.validator.map { .selected($0) } ?? (host == .picker ? .pending : .unselected)
+        )
 
         self.localizationManager = localizationManager
     }
@@ -71,44 +54,20 @@ private extension SubtensorSubnetDetailsPresenter {
         earnSettings.favouriteSubnets.contains(subnetRef)
     }
 
-    var isUseEnabled: Bool {
-        validator != .pending
-    }
-
-    func createState() -> SubtensorSubnetDetailsState {
-        SubtensorSubnetDetailsState(
-            isFiat: isFiat,
-            period: period,
-            history: history,
-            parameters: parameters,
-            isParametersLoaded: isParametersLoaded,
-            validator: validator,
-            yields: yields,
-            taoPrice: taoPrice,
-            isFavorite: isFavorite,
-            now: Date(),
-            chartEndDate: chartEndDate,
-            chartSelection: chartSelection
-        )
-    }
-
     func provideTitle() {
         view?.didReceive(title: viewModelFactory.createTitle(subnetLogos: subnetLogos, locale: selectedLocale))
     }
 
     func provideViewModel() {
-        let viewModel = viewModelFactory.createViewModel(
-            for: createState(),
-            isUseEnabled: isUseEnabled,
-            locale: selectedLocale
-        )
+        state.now = Date()
+        state.isFavorite = isFavorite
 
-        view?.didReceive(viewModel: viewModel)
+        view?.didReceive(viewModel: viewModelFactory.createViewModel(for: state, locale: selectedLocale))
     }
 
     func loadHistory() {
-        history = .loading
-        interactor.loadHistory(for: period)
+        state.history = .loading
+        interactor.loadHistory(for: state.period)
     }
 
     func existingPrimaryHotkey() -> AccountId? {
@@ -117,7 +76,7 @@ private extension SubtensorSubnetDetailsPresenter {
 
     func requestPresetIfReady() {
         guard
-            validator == .pending,
+            state.validator == .pending,
             !isPresetRequested,
             positions != nil || isPositionsSyncFailed else {
             return
@@ -144,7 +103,7 @@ private extension SubtensorSubnetDetailsPresenter {
         wireframe.showValidators(
             from: view,
             target: input.target,
-            selectedHotkey: validator.item?.hotkey,
+            selectedHotkey: state.validator.item?.hotkey,
             delegate: self
         )
     }
@@ -153,38 +112,38 @@ private extension SubtensorSubnetDetailsPresenter {
 extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtocol {
     func setup() {
         if let yields = interactor.cachedYields(), yields.netuid == subnetRef.netuid {
-            self.yields = yields
+            state.yields = yields
         }
 
         provideTitle()
         provideViewModel()
 
         interactor.setup()
-        interactor.loadHistory(for: period)
+        interactor.loadHistory(for: state.period)
     }
 
     func selectCurrency(at index: Int) {
         let newIsFiat = index > 0
 
-        guard newIsFiat != isFiat, !newIsFiat || taoPrice != nil else {
+        guard newIsFiat != state.isFiat, !newIsFiat || state.taoPrice != nil else {
             provideViewModel()
             return
         }
 
-        chartSelection = nil
-        isFiat = newIsFiat
+        state.chartSelection = nil
+        state.isFiat = newIsFiat
         provideViewModel()
     }
 
     func selectPeriod(at index: Int) {
         let periods = SubtensorPricePeriod.selectable
 
-        guard periods.indices.contains(index), periods[index] != period, history != .notListed else {
+        guard periods.indices.contains(index), periods[index] != state.period, state.history != .notListed else {
             provideViewModel()
             return
         }
 
-        period = periods[index]
+        state.period = periods[index]
         loadHistory()
         provideViewModel()
     }
@@ -200,7 +159,7 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
     }
 
     func useSubnet() {
-        switch validator {
+        switch state.validator {
         case .pending:
             return
         case let .selected(item):
@@ -211,7 +170,7 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
     }
 
     func retryHistory() {
-        guard history == .failed else {
+        guard state.history == .failed else {
             return
         }
 
@@ -220,58 +179,59 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
     }
 
     func selectChart(_ selection: SubtensorPriceChartSelection?) {
-        chartSelection = selection
+        state.chartSelection = selection
+        state.now = Date()
 
-        let header = viewModelFactory.createPriceHeader(for: createState(), locale: selectedLocale)
+        let header = viewModelFactory.createPriceHeader(for: state, locale: selectedLocale)
         view?.didReceive(priceHeader: header)
     }
 }
 
 extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol {
     func didReceiveHistory(_ history: SubtensorPriceHistory?, for period: SubtensorPricePeriod) {
-        guard period == self.period else {
+        guard period == state.period else {
             return
         }
 
-        chartEndDate = Date()
-        self.history = history.map { .available($0) } ?? .notListed
+        state.chartEndDate = Date()
+        state.history = history.map { .available($0) } ?? .notListed
 
         provideViewModel()
     }
 
     func didFailHistory(for period: SubtensorPricePeriod) {
-        guard period == self.period else {
+        guard period == state.period else {
             return
         }
 
-        history = .failed
+        state.history = .failed
         provideViewModel()
     }
 
     func didReceiveParameters(_ parameters: SubtensorSubnetParameters?) {
         guard parameters == nil || parameters?.ref == subnetRef else { return }
-        self.parameters = parameters
-        isParametersLoaded = true
+        state.parameters = parameters
+        state.isParametersLoaded = true
         provideViewModel()
     }
 
     func didReceivePreset(_ validator: SubtensorValidatorDirectoryItem?) {
-        guard self.validator == .pending else {
+        guard state.validator == .pending else {
             return
         }
 
-        self.validator = validator.map { .selected($0) } ?? .unselected
+        state.validator = validator.map { .selected($0) } ?? .unselected
         provideViewModel()
     }
 
     func didReceiveYields(_ yields: SubtensorAlphaYields?) {
         guard yields == nil || yields?.netuid == subnetRef.netuid else { return }
-        self.yields = yields
+        state.yields = yields
         provideViewModel()
     }
 
     func didReceiveTaoPrice(_ price: PriceData?) {
-        taoPrice = price
+        state.taoPrice = price
         provideViewModel()
     }
 
@@ -294,7 +254,7 @@ extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol
 extension SubtensorSubnetDetailsPresenter: SubtensorValidatorSelectDelegate {
     func didSelectValidator(_ validator: SubtensorValidatorDirectoryItem, for target: SubtensorStakeTarget) {
         guard target == input.target else { return }
-        self.validator = .selected(validator)
+        state.validator = .selected(validator)
         provideViewModel()
 
         guard isUsePending else {

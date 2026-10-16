@@ -4,11 +4,7 @@ import Foundation_iOS
 protocol SubnetDetailsViewModelFactoryProtocol {
     func createTitle(subnetLogos: SubtensorSubnetLogos?, locale: Locale) -> SubtensorSubnetDetailsTitleViewModel
 
-    func createViewModel(
-        for state: SubtensorSubnetDetailsState,
-        isUseEnabled: Bool,
-        locale: Locale
-    ) -> SubtensorSubnetDetailsViewModel
+    func createViewModel(for state: SubtensorSubnetDetailsState, locale: Locale) -> SubtensorSubnetDetailsViewModel
 
     func createPriceHeader(
         for state: SubtensorSubnetDetailsState,
@@ -165,11 +161,7 @@ extension SubtensorSubnetDetailsViewModelFactory: SubnetDetailsViewModelFactoryP
         )
     }
 
-    func createViewModel(
-        for state: SubtensorSubnetDetailsState,
-        isUseEnabled: Bool,
-        locale: Locale
-    ) -> SubtensorSubnetDetailsViewModel {
+    func createViewModel(for state: SubtensorSubnetDetailsState, locale: Locale) -> SubtensorSubnetDetailsViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         return SubtensorSubnetDetailsViewModel(
@@ -185,7 +177,7 @@ extension SubtensorSubnetDetailsViewModelFactory: SubnetDetailsViewModelFactoryP
             favoriteAccessibilityLabel: state.isFavorite
                 ? strings.stakingSubtensorUiDetailFavoriteRemove()
                 : strings.dappFavoriteAddTitle(),
-            isUseEnabled: isUseEnabled
+            isUseEnabled: state.validator != .pending
         )
     }
 
