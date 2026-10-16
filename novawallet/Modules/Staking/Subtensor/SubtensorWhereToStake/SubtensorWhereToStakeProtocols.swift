@@ -9,10 +9,6 @@ protocol SubtensorWhereToStakePresenterProtocol: AnyObject {
     func choose(_ order: SubtensorQuickPickOrder)
 }
 
-protocol SubtensorWhereInteractorInputProtocol {
-    var orders: [SubtensorQuickPickOrder] { get }
-}
-
 protocol SubtensorWhereToStakeWireframeProtocol {
     func showSetup(from view: SubtensorWhereToStakeViewProtocol?, order: SubtensorQuickPickOrder)
 }
