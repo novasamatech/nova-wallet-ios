@@ -9,10 +9,6 @@ struct SubtensorSubnetMarket: Equatable {
 
 struct SubtensorSubnetMarkets: Equatable {
     let byNetuid: [UInt16: SubtensorSubnetMarket]
-
-    func market(for netuid: UInt16) -> SubtensorSubnetMarket? {
-        byNetuid[netuid]
-    }
 }
 
 extension SubtensorSubnetMarkets: Decodable {

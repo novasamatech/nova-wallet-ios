@@ -34,16 +34,4 @@ struct SubtensorPriceChartViewModel: Equatable {
     let series: Series
     let axisLabels: [String]
     let isRising: Bool
-
-    init(values: [Double], axisLabels: [String], isRising: Bool) {
-        series = .indexed(values)
-        self.axisLabels = axisLabels
-        self.isRising = isRising
-    }
-
-    init(datedSeries: DatedSeries, axisLabels: [String], isRising: Bool) {
-        series = .dated(datedSeries)
-        self.axisLabels = axisLabels
-        self.isRising = isRising
-    }
 }

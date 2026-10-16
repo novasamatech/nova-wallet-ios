@@ -1,12 +1,6 @@
 import Foundation
 
 enum SubtensorRecommendationVerifier {
-    static func chainQuery(for pairs: [SubtensorHotkeySubnet]) -> SubtensorValidatorChainQuery {
-        var seenPairs: Set<SubtensorHotkeySubnet> = []
-
-        return SubtensorValidatorChainQuery(pairs: pairs.filter { seenPairs.insert($0).inserted })
-    }
-
     static func passesGates(
         _ pair: SubtensorHotkeySubnet,
         snapshot: SubtensorValidatorChainSnapshot,

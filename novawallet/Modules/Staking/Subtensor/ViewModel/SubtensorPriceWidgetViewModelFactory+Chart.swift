@@ -77,7 +77,7 @@ extension SubtensorPriceWidgetViewModelFactory {
             }
 
             return .chart(SubtensorPriceChartViewModel(
-                datedSeries: series,
+                series: .dated(series),
                 axisLabels: [
                     formatAxis(data.yRange.upperBound, params: params, locale: locale),
                     formatAxis(data.yRange.lowerBound, params: params, locale: locale)

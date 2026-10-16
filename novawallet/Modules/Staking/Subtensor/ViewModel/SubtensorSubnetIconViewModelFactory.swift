@@ -11,7 +11,7 @@ final class SubtensorSubnetIconViewModelFactory {
 
 extension SubtensorSubnetIconViewModelFactory: SubtensorSubnetIconFactoryProtocol {
     func icon(for subnet: SubtensorCatalogueSubnet?, logos: SubtensorSubnetLogos?) -> ImageViewModelProtocol {
-        guard let subnet, let logoUrl = logos?.url(for: subnet.netuid) else {
+        guard let subnet, let logoUrl = logos?.urls[subnet.netuid] else {
             return StaticImageViewModel(image: genericMark)
         }
 

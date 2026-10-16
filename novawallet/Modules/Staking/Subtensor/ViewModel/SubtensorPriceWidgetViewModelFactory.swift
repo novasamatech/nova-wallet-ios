@@ -146,7 +146,50 @@ private extension SubtensorPriceWidgetViewModelFactory {
         )
     }
 
-    func createAnyHeader(
+    func createPeriods(
+        for params: SubtensorPriceWidgetParams,
+        locale: Locale
+    ) -> SubtensorSubnetPeriodsViewModel {
+        SubtensorSubnetPeriodsViewModel(
+            titles: SubtensorPricePeriod.selectable.map { $0.title(for: locale) },
+            selectedIndex: SubtensorPricePeriod.selectable.firstIndex(of: params.period) ?? 0,
+            isEnabled: params.history != .notListed && params.history != .loading
+        )
+    }
+}
+
+extension SubtensorPriceWidgetViewModelFactory: SubtensorPriceWidgetFactoryProtocol {
+    func createCaption(
+        subnetTitle: String,
+        stamps: [SubtensorBackendStamp],
+        now: Date,
+        locale: Locale
+    ) -> String {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+        let caption = strings.stakingSubtensorUiDetailPriceFormat(subnetTitle)
+
+        let agedHint = SubtensorFreshnessFormatter.agedHint(
+            for: SubtensorBackendStamp.aggregate(stamps),
+            now: now,
+            locale: locale
+        )
+
+        return agedHint.map { strings.stakingSubtensorUiJoinDotFormat(caption, $0) } ?? caption
+    }
+
+    func createWidget(
+        for params: SubtensorPriceWidgetParams,
+        header: SubtensorPriceHeaderParams?,
+        locale: Locale
+    ) -> SubtensorPriceWidgetViewModel {
+        SubtensorPriceWidgetViewModel(
+            header: header.map { createHeader($0, for: params, locale: locale) },
+            chart: createChart(for: params, locale: locale),
+            periods: createPeriods(for: params, locale: locale)
+        )
+    }
+
+    func createHeader(
         _ header: SubtensorPriceHeaderParams,
         for params: SubtensorPriceWidgetParams,
         locale: Locale
@@ -192,57 +235,6 @@ private extension SubtensorPriceWidgetViewModelFactory {
             change: detail,
             currency: header.currency
         )
-    }
-
-    func createPeriods(
-        for params: SubtensorPriceWidgetParams,
-        locale: Locale
-    ) -> SubtensorSubnetPeriodsViewModel {
-        SubtensorSubnetPeriodsViewModel(
-            titles: SubtensorPricePeriod.selectable.map { $0.title(for: locale) },
-            selectedIndex: SubtensorPricePeriod.selectable.firstIndex(of: params.period) ?? 0,
-            isEnabled: params.history != .notListed && params.history != .loading
-        )
-    }
-}
-
-extension SubtensorPriceWidgetViewModelFactory: SubtensorPriceWidgetFactoryProtocol {
-    func createCaption(
-        subnetTitle: String,
-        stamps: [SubtensorBackendStamp],
-        now: Date,
-        locale: Locale
-    ) -> String {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-        let caption = strings.stakingSubtensorUiDetailPriceFormat(subnetTitle)
-
-        let agedHint = SubtensorFreshnessFormatter.agedHint(
-            for: SubtensorBackendStamp.aggregate(stamps),
-            now: now,
-            locale: locale
-        )
-
-        return agedHint.map { strings.stakingSubtensorUiJoinDotFormat(caption, $0) } ?? caption
-    }
-
-    func createWidget(
-        for params: SubtensorPriceWidgetParams,
-        header: SubtensorPriceHeaderParams?,
-        locale: Locale
-    ) -> SubtensorPriceWidgetViewModel {
-        SubtensorPriceWidgetViewModel(
-            header: header.map { createAnyHeader($0, for: params, locale: locale) },
-            chart: createChart(for: params, locale: locale),
-            periods: createPeriods(for: params, locale: locale)
-        )
-    }
-
-    func createHeader(
-        _ header: SubtensorPriceHeaderParams,
-        for params: SubtensorPriceWidgetParams,
-        locale: Locale
-    ) -> SubtensorSubnetPriceHeaderViewModel {
-        createAnyHeader(header, for: params, locale: locale)
     }
 }
 

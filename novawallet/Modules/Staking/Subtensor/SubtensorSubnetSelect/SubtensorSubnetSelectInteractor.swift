@@ -37,11 +37,11 @@ final class SubtensorSubnetSelectInteractor {
 }
 
 private extension SubtensorSubnetSelectInteractor {
-    func createEntriesWrapper() -> CompoundOperationWrapper<[SubtensorSubnetListEntry]> {
+    func createEntriesWrapper() -> CompoundOperationWrapper<[SubtensorSubnetListItem]> {
         let catalogueWrapper = catalogueService.createCatalogueWrapper()
         let subnetsInfoWrapper = subnetsService.createSubnetsInfoWrapper()
 
-        let entriesOperation = ClosureOperation<[SubtensorSubnetListEntry]> {
+        let entriesOperation = ClosureOperation<[SubtensorSubnetListItem]> {
             let catalogue = try catalogueWrapper.targetOperation.extractNoCancellableResultData()
             let subnetsInfo = try subnetsInfoWrapper.targetOperation.extractNoCancellableResultData()
 
