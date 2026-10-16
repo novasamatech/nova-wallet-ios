@@ -70,7 +70,6 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
         holdsCallStore.cancel()
 
         positionsSyncService.remove(observer: self)
-        positionsSyncService.remove(failureObserver: self)
     }
 }
 
@@ -100,32 +99,13 @@ private extension SubtensorStakingBaseInteractor {
     func makePositionsSubscription() {
         positionsSyncService.add(
             observer: self,
-            sendStateOnSubscription: true,
-            queue: .main
-        ) { [weak self] _, newState in
-            self?.basePresenter?.didReceivePositions(newState)
-        }
-    }
-
-    func makePositionsFailureSubscription() {
-        positionsSyncService.add(
-            failureObserver: self,
-            sendStateOnSubscription: true,
-            queue: .main
-        ) { [weak self] _, isFailed in
-            self?.basePresenter?.didReceivePositionsSyncFailed(isFailed)
-        }
-    }
-
-    func createQuoteWrapper(
-        for request: SubtensorTradeQuoteRequest
-    ) -> CompoundOperationWrapper<SubtensorTradeQuote> {
-        switch request {
-        case let .buy(netuid, grossTao, tolerance):
-            tradeQuoteFactory.createBuyQuoteWrapper(netuid: netuid, grossTao: grossTao, tolerance: tolerance)
-        case let .sell(netuid, alpha, tolerance):
-            tradeQuoteFactory.createSellQuoteWrapper(netuid: netuid, alpha: alpha, tolerance: tolerance)
-        }
+            onState: { [weak self] newState in
+                self?.basePresenter?.didReceivePositions(newState)
+            },
+            onFailure: { [weak self] isFailed in
+                self?.basePresenter?.didReceivePositionsSyncFailed(isFailed)
+            }
+        )
     }
 
     func provideExistentialDeposit() {
@@ -150,7 +130,6 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
         makePriceSubscription()
         makeBlockNumberSubscription()
         makePositionsSubscription()
-        makePositionsFailureSubscription()
 
         provideExistentialDeposit()
     }
@@ -221,7 +200,7 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
 
             quoteCallStore.cancel()
 
-            let wrapper = createQuoteWrapper(for: request)
+            let wrapper = tradeQuoteFactory.createTradeQuoteWrapper(for: request)
 
             executeCancellable(
                 wrapper: wrapper,

@@ -234,19 +234,13 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
 }
 
 extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol {
-    func didReceiveHistory(_ result: SubtensorPriceHistoryResult, for period: SubtensorPricePeriod) {
+    func didReceiveHistory(_ history: SubtensorPriceHistory?, for period: SubtensorPricePeriod) {
         guard period == self.period else {
             return
         }
 
         chartEndDate = Date()
-
-        switch result {
-        case let .available(value):
-            history = .available(value)
-        case .notListed:
-            history = .notListed
-        }
+        self.history = history.map { .available($0) } ?? .notListed
 
         provideViewModel()
     }

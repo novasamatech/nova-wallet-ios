@@ -17,11 +17,11 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
         let factory = createFactory(apiFactory: apiFactory)
 
         let tradeQuote = try run(
-            factory.createBuyQuoteWrapper(
+            factory.createTradeQuoteWrapper(for: .buy(
                 netuid: netuid,
                 grossTao: 5_000_000_000,
                 tolerance: tolerance
-            )
+            ))
         )
 
         let expected = SubtensorTradeQuote(
@@ -67,11 +67,11 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
         let factory = createFactory(apiFactory: apiFactory)
 
         let tradeQuote = try run(
-            factory.createSellQuoteWrapper(
+            factory.createTradeQuoteWrapper(for: .sell(
                 netuid: netuid,
                 alpha: 56_200_000_000,
                 tolerance: tolerance
-            )
+            ))
         )
 
         let expected = SubtensorTradeQuote(
@@ -106,11 +106,11 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
         let factory = createFactory(apiFactory: createApiFactory(sim: sim, spot: 7_683_255))
 
         let quote = try run(
-            factory.createBuyQuoteWrapper(
+            factory.createTradeQuoteWrapper(for: .buy(
                 netuid: netuid,
                 grossTao: 1_000_000_000,
                 tolerance: tolerance
-            )
+            ))
         ).quote
 
         XCTAssertEqual(quote.expectedOut, BigUInt(130_082_405_209))
@@ -129,11 +129,11 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
         let factory = createFactory(apiFactory: createApiFactory(sim: sim, spot: 7_683_255))
 
         let quote = try run(
-            factory.createSellQuoteWrapper(
+            factory.createTradeQuoteWrapper(for: .sell(
                 netuid: netuid,
                 alpha: 130_082_405_209,
                 tolerance: tolerance
-            )
+            ))
         ).quote
 
         XCTAssertEqual(quote.expectedOut, BigUInt(998_912_946))
@@ -152,11 +152,11 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
         let factory = createFactory(apiFactory: createApiFactory(sim: sim))
 
         let tradeQuote = try run(
-            factory.createBuyQuoteWrapper(
+            factory.createTradeQuoteWrapper(for: .buy(
                 netuid: netuid,
                 grossTao: 1_200_000_000_000,
                 tolerance: tolerance
-            )
+            ))
         )
 
         XCTAssertEqual(tradeQuote.quote.priceImpact?.mul(value: 1_000_000), 11841)
@@ -168,11 +168,11 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
         let factory = createFactory(apiFactory: apiFactory)
 
         let tradeQuote = try run(
-            factory.createBuyQuoteWrapper(
+            factory.createTradeQuoteWrapper(for: .buy(
                 netuid: netuid,
                 grossTao: 5_000_000_000,
                 tolerance: tolerance
-            )
+            ))
         )
 
         XCTAssertFalse(tradeQuote.isFillable(atLimit: tradeQuote.limitPrice))
@@ -183,7 +183,7 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
         let factory = createFactory(apiFactory: createApiFactory(sim: sim))
 
         XCTAssertThrowsError(
-            try run(factory.createBuyQuoteWrapper(netuid: netuid, grossTao: 1_000_000_000, tolerance: tolerance))
+            try run(factory.createTradeQuoteWrapper(for: .buy(netuid: netuid, grossTao: 1_000_000_000, tolerance: tolerance)))
         ) { error in
             XCTAssertEqual(error as? SubtensorQuoteError, .quoteUnavailable(netuid: netuid))
         }
@@ -197,7 +197,7 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
         )
 
         XCTAssertThrowsError(
-            try run(factory.createBuyQuoteWrapper(netuid: netuid, grossTao: 5_000_000_000, tolerance: tolerance))
+            try run(factory.createTradeQuoteWrapper(for: .buy(netuid: netuid, grossTao: 5_000_000_000, tolerance: tolerance)))
         ) { error in
             XCTAssertEqual(error as? SubtensorStakingOperationError, .novaFeeUnavailable)
         }
