@@ -2,11 +2,7 @@ import BigInt
 import Foundation
 
 struct SubtensorNovaFeeCalculator {
-    let beneficiary: AccountId?
-
-    init(beneficiary: AccountId? = SubtensorNovaFeeCalculator.defaultBeneficiary) {
-        self.beneficiary = beneficiary
-    }
+    var beneficiary: AccountId? = SubtensorNovaFeeCalculator.defaultBeneficiary
 }
 
 extension SubtensorNovaFeeCalculator {

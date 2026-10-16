@@ -188,13 +188,12 @@ private struct SubtensorOutcomeTarget {
     let hotkeys: Set<AccountId>
     let netuid: UInt16
 
-    init(kind: Kind, coldkey: AccountId, hotkeys: Set<AccountId>, netuid: UInt16) {
-        self.kind = kind
-        self.coldkey = coldkey
-        self.hotkeys = hotkeys
-        self.netuid = netuid
+    func matches(coldkey eventColdkey: AccountId, hotkey eventHotkey: AccountId, netuid eventNetuid: UInt16) -> Bool {
+        coldkey == eventColdkey && hotkeys.contains(eventHotkey) && netuid == eventNetuid
     }
+}
 
+private extension SubtensorOutcomeTarget {
     init(operation: SubtensorStakingOperation, coldkey: AccountId) {
         let rootNetuid = SubtensorStakingPallet.rootNetuid
 
@@ -214,10 +213,6 @@ private struct SubtensorOutcomeTarget {
         case let .rootClaim(hotkey):
             self.init(kind: .claim, coldkey: coldkey, hotkeys: [hotkey], netuid: rootNetuid)
         }
-    }
-
-    func matches(coldkey eventColdkey: AccountId, hotkey eventHotkey: AccountId, netuid eventNetuid: UInt16) -> Bool {
-        coldkey == eventColdkey && hotkeys.contains(eventHotkey) && netuid == eventNetuid
     }
 }
 
