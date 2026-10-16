@@ -60,7 +60,7 @@ extension SubtensorSubnetMarkets: Decodable {
                 coingeckoId: coingeckoId,
                 weekChangePercent: coin.weekChangePercent,
                 weekSparkline: coin.weekSparkline,
-                lastUpdated: coin.lastUpdated.flatMap(Self.date(from:))
+                lastUpdated: coin.lastUpdated.flatMap(BittensorApi.instant(from:))
             )
 
             return (netuid, market)
@@ -73,18 +73,6 @@ extension SubtensorSubnetMarkets: Decodable {
 private extension SubtensorSubnetMarkets {
     static let symbolPrefix = "sn"
     static let coingeckoIdCharacters = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyz0123456789-")
-
-    static let fractionalDateFormatter: ISO8601DateFormatter = {
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        return formatter
-    }()
-
-    static let dateFormatter: ISO8601DateFormatter = {
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime]
-        return formatter
-    }()
 
     static func netuid(fromSymbol symbol: String) -> UInt16? {
         let normalized = symbol.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
@@ -112,9 +100,5 @@ private extension SubtensorSubnetMarkets {
         }
 
         return coingeckoId
-    }
-
-    static func date(from value: String) -> Date? {
-        fractionalDateFormatter.date(from: value) ?? dateFormatter.date(from: value)
     }
 }
