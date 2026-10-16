@@ -21,6 +21,7 @@ final class SubtensorValidatorSelectPresenter {
     private var query = ""
     private var selectedHotkey: AccountId?
     private var preselectedHotkey: AccountId?
+    private var keptHotkeys: Set<AccountId> = []
 
     init(
         target: SubtensorStakeTarget,
@@ -74,6 +75,7 @@ private extension SubtensorValidatorSelectPresenter {
             query: query,
             selectedHotkey: selectedHotkey,
             preselectedHotkey: preselectedHotkey,
+            keptHotkeys: keptHotkeys,
             recommendedHotkeys: filters.hidesUnusualApy ? recommendedHotkeys : nil
         )
 
@@ -151,6 +153,7 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectPresenterProtocol {
             .showFilters(from: view, applied: filters) { [weak self] filters in
                 guard let self else { return }
                 self.filterSession.apply(filters, isRoot: self.target.isRoot)
+                self.keptHotkeys = []
                 self.provideState()
             }
     }
@@ -158,6 +161,10 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectPresenterProtocol {
     func select(hotkey: AccountId) {
         guard selectableItem(for: hotkey) != nil else {
             return
+        }
+
+        if let selectedHotkey {
+            keptHotkeys.insert(selectedHotkey)
         }
 
         selectedHotkey = hotkey

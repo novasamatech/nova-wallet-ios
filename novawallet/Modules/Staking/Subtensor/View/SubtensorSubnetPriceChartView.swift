@@ -110,7 +110,7 @@ private extension SubtensorSubnetPriceChartView {
 
         chart.xAxis.axisMinimum = chartData.xRange.lowerBound
         chart.xAxis.axisMaximum = chartData.xRange.upperBound
-        chart.dragEnabled = isSelectable && chartData.coverage == nil
+        chart.dragEnabled = isSelectable && chartData.coverageStart == nil
         chart.highlightPerDragEnabled = chart.dragEnabled
         applyAxis(lower: chartData.yRange.lowerBound, upper: chartData.yRange.upperBound, labels: viewModel.axisLabels)
 
@@ -336,7 +336,7 @@ extension SubtensorSubnetPriceChartView {
 
 extension SubtensorSubnetPriceChartView: ChartViewDelegate {
     func chartValueSelected(_: ChartViewBase, entry: ChartDataEntry, highlight _: Highlight) {
-        guard chartData?.coverage == nil else {
+        guard chartData?.coverageStart == nil else {
             chart.highlightValues(nil)
             return
         }
