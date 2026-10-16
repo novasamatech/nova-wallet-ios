@@ -5,11 +5,6 @@ import Operation_iOS
 final class SubtensorStakeStateSubscription {
     typealias HotkeysCache = (repository: AnyDataProviderRepository<ChainStorageItem>, chainId: ChainModel.Id)
 
-    private struct PositionKey: Hashable {
-        let hotkey: AccountId
-        let netuid: UInt16
-    }
-
     let accountId: AccountId
     let stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol
     let connection: JSONRPCEngine
@@ -28,7 +23,7 @@ final class SubtensorStakeStateSubscription {
 
     private var hotkeysSubscription: CallbackStorageSubscription<[BytesCodable]>?
     private var alphaTriggerSubscription: CallbackBatchRawStorageSubscription?
-    private var subscribedPositionKeys: Set<PositionKey>?
+    private var subscribedPositionKeys: Set<SubtensorHotkeySubnet>?
     private var fetchCallStore = CancellableCallStore()
     private var saveCallStore = CancellableCallStore()
 
@@ -194,8 +189,10 @@ private extension SubtensorStakeStateSubscription {
 
     func updateAlphaTriggerSubscription(for state: Multistaking.SubtensorStakingState) {
         let newKeys = Set(
-            state.positions.map { PositionKey(hotkey: $0.hotkey, netuid: $0.netuid) } +
-                state.rootRedeemable.keys.map { PositionKey(hotkey: $0, netuid: SubtensorStakingPallet.rootNetuid) }
+            state.positions.map { SubtensorHotkeySubnet(hotkey: $0.hotkey, netuid: $0.netuid) } +
+                state.rootRedeemable.keys.map {
+                    SubtensorHotkeySubnet(hotkey: $0, netuid: SubtensorStakingPallet.rootNetuid)
+                }
         )
 
         guard newKeys != subscribedPositionKeys else {
