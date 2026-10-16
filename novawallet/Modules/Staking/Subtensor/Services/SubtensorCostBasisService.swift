@@ -28,11 +28,11 @@ final class SubtensorCostBasisService {
 
 private extension SubtensorCostBasisService {
     static func makeLedger(
-        from pages: BittensorApiPages<BittensorApi.OperationCollection>
+        from pages: [BittensorApiResult<BittensorApi.OperationCollection>]
     ) -> SubtensorCostBasisLedger {
         SubtensorCostBasisLedger(
-            operations: pages.pages.flatMap(\.value.items),
-            isHistoryComplete: pages.pages.last?.value.pageInfo.nextPage == nil
+            operations: pages.flatMap(\.value.items),
+            isHistoryComplete: pages.last?.value.pageInfo.nextPage == nil
         )
     }
 
