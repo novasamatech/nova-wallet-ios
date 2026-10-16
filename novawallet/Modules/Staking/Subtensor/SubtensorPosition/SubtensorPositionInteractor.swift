@@ -280,7 +280,7 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
             for: subnet,
             period: period,
             currency: selectedCurrency
-        ) ?? .createWithResult(.notListed)
+        ) ?? .createWithResult(nil)
 
         executeCancellable(
             wrapper: wrapper,

@@ -163,7 +163,7 @@ extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol
             for: subnet,
             period: period,
             currency: currencyManager.selectedCurrency
-        ) ?? .createWithResult(.notListed)
+        ) ?? .createWithResult(nil)
 
         executeCancellable(
             wrapper: wrapper,
