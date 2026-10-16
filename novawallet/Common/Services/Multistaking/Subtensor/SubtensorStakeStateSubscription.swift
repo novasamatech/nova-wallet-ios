@@ -190,8 +190,8 @@ private extension SubtensorStakeStateSubscription {
     func updateAlphaTriggerSubscription(for state: Multistaking.SubtensorStakingState) {
         let newKeys = Set(
             state.positions.map { SubtensorHotkeySubnet(hotkey: $0.hotkey, netuid: $0.netuid) } +
-                state.rootRedeemable.keys.map {
-                    SubtensorHotkeySubnet(hotkey: $0, netuid: SubtensorStakingPallet.rootNetuid)
+                state.rootClaimPreviews.filter { $0.redeemable > 0 }.map {
+                    SubtensorHotkeySubnet(hotkey: $0.hotkey, netuid: SubtensorStakingPallet.rootNetuid)
                 }
         )
 

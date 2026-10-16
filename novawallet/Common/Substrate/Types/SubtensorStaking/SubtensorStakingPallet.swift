@@ -31,7 +31,6 @@ enum SubtensorStakingPallet {
     // RootClaimableThreshold is a ValueQuery too: DefaultMinRootClaimAmount applies while root is unset (lib.rs:728)
     static let defaultRootClaimableThreshold = BigUInt(500_000)
 
-    // I96F32 storage values carry the integer part shifted left by the fractional bit count
     static let fixedPointFractionalBits = 32
 
     struct FixedPoint96F32: Decodable, Equatable {

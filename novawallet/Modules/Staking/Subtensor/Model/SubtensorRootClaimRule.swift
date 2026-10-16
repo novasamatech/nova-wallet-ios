@@ -17,10 +17,6 @@ enum SubtensorRootClaimRule {
         preview.redeemable > 0 && preview.redeemable >= preview.minimumClaim
     }
 
-    static func isFeeAbovePayout(fee: Balance, payout: Balance) -> Bool {
-        fee > payout
-    }
-
     static func target(
         in claimable: [SubtensorRootClaimPreview],
         excluding hotkeys: Set<AccountId>
