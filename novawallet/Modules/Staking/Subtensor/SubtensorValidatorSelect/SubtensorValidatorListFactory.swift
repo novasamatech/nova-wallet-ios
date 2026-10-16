@@ -151,6 +151,11 @@ private extension SubtensorValidatorListFactory {
     }
 
     static func isOrderedBefore(_ lhs: Entry, _ rhs: Entry, sort: SubtensorValidatorSort) -> Bool {
+        if sort == .apy, lhs.rate != rhs.rate {
+            guard let left = lhs.rate, let right = rhs.rate else { return lhs.rate != nil }
+            return left > right
+        }
+
         let stakeOrder = sort == .name ? .orderedSame : compareStakes(lhs.item.reportedStake, rhs.item.reportedStake)
 
         if stakeOrder != .orderedSame {
