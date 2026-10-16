@@ -18,37 +18,6 @@ extension SubtensorStakingValidationFactory {
         })
     }
 
-    func canPayBatchedNetworkFee(
-        transferable: Balance?,
-        networkFee: Balance?,
-        existentialDeposit: Balance?,
-        locale: Locale
-    ) -> DataValidating {
-        errorCondition(locale: locale, alert: { factory, strings in
-            let requiredAmount = (networkFee ?? 0) + (existentialDeposit ?? 0)
-            let required = factory.formatRequiredAmount(requiredAmount, locale: locale)
-
-            return (
-                strings.stakingSubtensorBatchedSellFeeTitle(),
-                strings.stakingSubtensorBatchedSellFeeMessage(required)
-            )
-        }, preservesCondition: {
-            guard let networkFee else {
-                return true
-            }
-
-            guard let transferable, let existentialDeposit else {
-                return false
-            }
-
-            return SubtensorAmountPolicy.paysFeeFromFreeBalance(
-                transferable: transferable,
-                networkFee: networkFee,
-                existentialDeposit: existentialDeposit
-            )
-        })
-    }
-
     func sellPlanAllows(
         _ input: SubtensorSellPlanInput?,
         assetDisplayInfo: AssetBalanceDisplayInfo?,

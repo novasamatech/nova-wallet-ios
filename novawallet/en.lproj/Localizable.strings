@@ -2188,8 +2188,6 @@ Do you want to continue?";
 "staking.subtensor.reserve.title" = "Keep %@ for fees";
 "staking.subtensor.reserve.message" = "Lower the amount to %1$@ or less. We hold back %2$@ so you can pay network fees later.";
 "staking.subtensor.trades.unavailable.title" = "Subnet trades unavailable";
-"staking.subtensor.batched.sell.fee.title" = "Not enough TAO for the network fee";
-"staking.subtensor.batched.sell.fee.message" = "The network takes its fee before this order runs, so you need at least %@ of free TAO. Top up TAO and try again.";
 "staking.subtensor.remainder.locked.title" = "Remaining tokens are locked";
 "staking.subtensor.remainder.locked.message" = "After this sale %1$@ would remain, below the network minimum of %2$@. The network would remove it without paying you because it is locked. Sell a smaller amount or wait for the lock to end.";
 "staking.subtensor.ui.validator.header.rates.format" = "REWARDS (APY) · BY %@";

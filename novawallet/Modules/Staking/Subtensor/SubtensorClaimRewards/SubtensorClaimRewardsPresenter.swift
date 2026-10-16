@@ -147,10 +147,6 @@ private extension SubtensorClaimRewardsPresenter {
             claimable: claimable
         ).contains(hotkey)
 
-        let feePayingBalance = existentialDeposit.flatMap { deposit in
-            balance.map { $0.transferable.subtractOrZero(deposit) }
-        }
-
         var validations: [DataValidating] = [
             dataValidationFactory.has(fee: fee, locale: locale, onError: { [weak self] in
                 self?.refreshFee()
@@ -175,12 +171,21 @@ private extension SubtensorClaimRewardsPresenter {
         }))
 
         validations.append(
-            dataValidationFactory.canPayFeeInPlank(
-                balance: feePayingBalance,
-                fee: fee,
-                asset: chainAsset.assetDisplayInfo,
-                locale: locale
-            )
+            contentsOf: [
+                dataValidationFactory.canPayFeeInPlank(
+                    balance: balance?.transferable,
+                    fee: fee,
+                    asset: chainAsset.assetDisplayInfo,
+                    locale: locale
+                ),
+                dataValidationFactory.notViolatingMinBalancePaying(
+                    fee: fee,
+                    total: balance?.transferable,
+                    minBalance: existentialDeposit,
+                    asset: chainAsset.assetDisplayInfo,
+                    locale: locale
+                )
+            ]
         )
 
         return validations

@@ -191,10 +191,11 @@ private extension SubtensorStakingValidationFactoryProtocol {
         locale: Locale
     ) -> DataValidating? {
         if dep.feeNeedsFreeBalance {
-            return canPayBatchedNetworkFee(
-                transferable: dep.balance?.transferable,
-                networkFee: dep.fee?.amountForCurrentAccount,
-                existentialDeposit: dep.existentialDeposit,
+            return notViolatingMinBalancePaying(
+                fee: dep.fee,
+                total: dep.balance?.transferable,
+                minBalance: dep.existentialDeposit,
+                asset: assetDisplayInfo,
                 locale: locale
             )
         }
@@ -206,7 +207,7 @@ private extension SubtensorStakingValidationFactoryProtocol {
         return canPayFeeInPlank(
             balance: dep.positionAlpha,
             fee: dep.fee,
-            asset: dep.assetDisplayInfo,
+            asset: assetDisplayInfo,
             locale: locale
         )
     }
