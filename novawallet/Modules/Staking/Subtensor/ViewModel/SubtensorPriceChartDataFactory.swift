@@ -10,7 +10,7 @@ struct SubtensorPriceChartData {
     let entries: [Entry]
     let xRange: ClosedRange<Double>
     let yRange: ClosedRange<Double>
-    let coverage: ClosedRange<Double>?
+    let coverageStart: Double?
 
     func selection(at coordinate: Double) -> SubtensorPriceChartSelection? {
         guard coordinate.isFinite else {
@@ -19,7 +19,7 @@ struct SubtensorPriceChartData {
 
         let position = min(max(coordinate, xRange.lowerBound), xRange.upperBound)
 
-        if let coverage, !coverage.contains(position) {
+        if let coverageStart, position < coverageStart {
             return .noData(date: Date(timeIntervalSince1970: position))
         }
 
@@ -77,7 +77,7 @@ private extension SubtensorPriceChartDataFactory {
             entries: sampled(entries, availablePoints: availablePoints),
             xRange: first.coordinate ... last.coordinate,
             yRange: bounds,
-            coverage: nil
+            coverageStart: nil
         )
     }
 
@@ -85,7 +85,7 @@ private extension SubtensorPriceChartDataFactory {
         _ series: SubtensorPriceChartViewModel.DatedSeries,
         availablePoints: Int
     ) -> SubtensorPriceChartData? {
-        guard series.points.count > 1, let first = series.points.first, let last = series.points.last else {
+        guard series.points.count > 1, let first = series.points.first else {
             return nil
         }
 
@@ -117,7 +117,7 @@ private extension SubtensorPriceChartDataFactory {
             entries: prefix + entries,
             xRange: start ... end,
             yRange: bounds,
-            coverage: coverageStart ... last.date.timeIntervalSince1970
+            coverageStart: coverageStart
         )
     }
 
