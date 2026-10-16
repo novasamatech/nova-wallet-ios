@@ -76,17 +76,20 @@ extension BittensorApi.AvailableComponent: Decodable {
 }
 
 extension BittensorApi {
-    static func instant(from value: String) -> Date? {
+    private static let instantFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime]
+        return formatter
+    }()
 
-        if let date = formatter.date(from: value) {
-            return date
-        }
-
+    private static let fractionalInstantFormatter: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return formatter
+    }()
 
-        return formatter.date(from: value)
+    static func instant(from value: String) -> Date? {
+        instantFormatter.date(from: value) ?? fractionalInstantFormatter.date(from: value)
     }
 }
 
