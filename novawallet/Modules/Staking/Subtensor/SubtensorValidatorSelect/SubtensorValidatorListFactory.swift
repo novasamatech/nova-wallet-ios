@@ -150,17 +150,10 @@ private extension SubtensorValidatorListFactory {
     }
 
     static func isOrderedBefore(_ lhs: Entry, _ rhs: Entry, sort: SubtensorValidatorSort) -> Bool {
-        let orders: [ComparisonResult]
+        let stakeOrder = sort == .name ? .orderedSame : compareStakes(lhs.item.reportedStake, rhs.item.reportedStake)
 
-        switch sort {
-        case .apy, .totalStaked:
-            orders = [compareStakes(lhs.item.reportedStake, rhs.item.reportedStake)]
-        case .name:
-            orders = []
-        }
-
-        if let order = orders.first(where: { $0 != .orderedSame }) {
-            return order == .orderedDescending
+        if stakeOrder != .orderedSame {
+            return stakeOrder == .orderedDescending
         }
 
         let nameOrder = lhs.title.localizedStandardCompare(rhs.title)
