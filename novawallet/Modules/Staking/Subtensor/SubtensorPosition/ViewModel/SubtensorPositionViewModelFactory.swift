@@ -101,12 +101,11 @@ private extension SubtensorPositionViewModelFactory {
         let value: SubtensorPositionValueViewModel
 
         if state.isClaimableFailed {
-            value = .loaded(value: .subtensorUnknown(for: locale), detail: nil, isPositive: false)
+            value = .loaded(value: .subtensorUnknown(for: locale), detail: nil)
         } else if let redeemable = state.claimable?.reduce(Balance.zero, { $0 + $1.redeemable }) {
             value = .loaded(
                 value: formatTao(redeemable, locale: locale),
-                detail: formatFiat(redeemable, price: state.price.value, locale: locale),
-                isPositive: false
+                detail: formatFiat(redeemable, price: state.price.value, locale: locale)
             )
         } else {
             value = .loading
@@ -118,7 +117,7 @@ private extension SubtensorPositionViewModelFactory {
         )
     }
 
-    func createSubnetRows(for state: SubtensorPositionState, locale: Locale) -> [SubtensorPositionRowViewModel] {
+    func createWorthRow(for state: SubtensorPositionState, locale: Locale) -> SubtensorPositionRowViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         let worthValue: SubtensorPositionValueViewModel
@@ -128,19 +127,13 @@ private extension SubtensorPositionViewModelFactory {
         } else if let taoValue = state.taoValue {
             worthValue = .loaded(
                 value: formatTao(taoValue, locale: locale).approximatelyEqual(),
-                detail: formatFiat(taoValue, price: state.price.value, locale: locale),
-                isPositive: false
+                detail: formatFiat(taoValue, price: state.price.value, locale: locale)
             )
         } else {
-            worthValue = .loaded(value: strings.stakingSubtensorUiPriceUnavailable(), detail: nil, isPositive: false)
+            worthValue = .loaded(value: strings.stakingSubtensorUiPriceUnavailable(), detail: nil)
         }
 
-        let worthRow = SubtensorPositionRowViewModel(
-            title: strings.stakingSubtensorUiPositionWorth(),
-            value: worthValue
-        )
-
-        return [worthRow]
+        return SubtensorPositionRowViewModel(title: strings.stakingSubtensorUiPositionWorth(), value: worthValue)
     }
 
     func createSummary(for state: SubtensorPositionState, locale: Locale) -> SubtensorPositionSummaryViewModel {
@@ -154,7 +147,7 @@ private extension SubtensorPositionViewModelFactory {
                 amount: state.group.map { formatTao($0.totalAlpha, locale: locale) },
                 fiat: createFiat(for: state, locale: locale),
                 isActive: state.primaryPosition.map(\.isRegistered),
-                rows: [createRewardsRow(for: state, locale: locale)]
+                row: createRewardsRow(for: state, locale: locale)
             )
         }
 
@@ -170,7 +163,7 @@ private extension SubtensorPositionViewModelFactory {
             amount: isResolved ? state.group.map { formatAlpha($0.totalAlpha, state: state, locale: locale) } : nil,
             fiat: .hidden,
             isActive: isResolved ? isActive : nil,
-            rows: createSubnetRows(for: state, locale: locale)
+            row: createWorthRow(for: state, locale: locale)
         )
     }
 

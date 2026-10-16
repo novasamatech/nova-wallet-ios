@@ -122,7 +122,7 @@ extension SubtensorPositionState {
 
 enum SubtensorPositionValueViewModel: Equatable {
     case loading
-    case loaded(value: String, detail: String?, isPositive: Bool)
+    case loaded(value: String, detail: String?)
 }
 
 struct SubtensorPositionRowViewModel: Equatable {
@@ -136,7 +136,7 @@ struct SubtensorPositionSummaryViewModel {
     let amount: String?
     let fiat: SubtensorRowState<String>
     let isActive: Bool?
-    let rows: [SubtensorPositionRowViewModel]
+    let row: SubtensorPositionRowViewModel
 }
 
 struct SubtensorPositionActionViewModel: Equatable {

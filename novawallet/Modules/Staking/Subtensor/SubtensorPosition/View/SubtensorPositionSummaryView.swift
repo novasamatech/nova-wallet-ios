@@ -25,18 +25,13 @@ final class SubtensorPositionSummaryView: UIView {
         view.isUserInteractionEnabled = false
     }
 
-    let rowsStackView: UIStackView = .create { view in
-        view.axis = .vertical
-        view.spacing = Constants.spacing
-    }
-
     private let iconSkeletonView = SubtensorSkeletonView(cornerRadius: Constants.iconSize / 2)
 
     private let captionSkeletonView = SubtensorSkeletonView(cornerRadius: 6)
     private let amountSkeletonView = SubtensorSkeletonView(cornerRadius: 6)
     private let fiatSkeletonView = SubtensorSkeletonView(cornerRadius: 6)
 
-    private var rowViews: [SubtensorPositionSummaryRowView] = []
+    private let rowView = SubtensorPositionSummaryRowView()
     private var iconViewModel: ImageViewModelProtocol?
 
     override init(frame: CGRect) {
@@ -94,7 +89,7 @@ final class SubtensorPositionSummaryView: UIView {
                 : R.color.colorChipsBackground()!
         }
 
-        bind(rows: viewModel.rows)
+        rowView.bind(viewModel: viewModel.row)
     }
 }
 
@@ -107,22 +102,6 @@ private extension SubtensorPositionSummaryView {
         static let detailLineHeight: CGFloat = 16
     }
 
-    func bind(rows: [SubtensorPositionRowViewModel]) {
-        while rowViews.count < rows.count {
-            let rowView = SubtensorPositionSummaryRowView()
-            rowsStackView.addArrangedSubview(rowView)
-            rowViews.append(rowView)
-        }
-
-        for (index, rowView) in rowViews.enumerated() {
-            rowView.isHidden = index >= rows.count
-
-            if index < rows.count {
-                rowView.bind(viewModel: rows[index])
-            }
-        }
-    }
-
     func setupLayout() {
         let textView = UIView.vStack(alignment: .leading, spacing: 2, [captionLabel, amountLabel, fiatLabel])
         let headerView = UIView.hStack(alignment: .top, spacing: 12, [iconView, textView, UIView(), statusView])
@@ -132,8 +111,8 @@ private extension SubtensorPositionSummaryView {
             make.top.leading.trailing.equalToSuperview().inset(12)
         }
 
-        addSubview(rowsStackView)
-        rowsStackView.snp.makeConstraints { make in
+        addSubview(rowView)
+        rowView.snp.makeConstraints { make in
             make.top.equalTo(headerView.snp.bottom).offset(Constants.spacing)
             make.leading.trailing.equalToSuperview().inset(12)
             make.bottom.equalToSuperview().inset(12)
@@ -221,9 +200,8 @@ private final class SubtensorPositionSummaryRowView: UIView {
             detailLabel.text = nil
             detailLabel.isHidden = true
             skeletonView.setLoading(true)
-        case let .loaded(value, detail, isPositive):
+        case let .loaded(value, detail):
             valueLabel.text = value
-            valueLabel.textColor = isPositive ? R.color.colorTextPositive() : R.color.colorTextPrimary()
             detailLabel.text = detail
             detailLabel.isHidden = detail == nil
             skeletonView.setLoading(false)

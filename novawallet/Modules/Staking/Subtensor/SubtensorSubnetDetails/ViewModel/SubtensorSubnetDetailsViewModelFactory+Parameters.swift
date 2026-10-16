@@ -66,13 +66,12 @@ extension SubtensorSubnetDetailsViewModelFactory {
 
 private extension SubtensorSubnetDetailsViewModelFactory {
     func row(
-        _ title: String, value: String?, detail: String? = nil,
-        state: SubtensorSubnetDetailsState, locale: Locale
+        _ title: String, value: String?, state: SubtensorSubnetDetailsState, locale: Locale
     ) -> SubtensorParameterRowViewModel {
         SubtensorParameterRowViewModel(
             title: title,
             value: state.isParametersLoaded ? value ?? .subtensorUnknown(for: locale) : nil,
-            detail: detail
+            detail: nil
         )
     }
 

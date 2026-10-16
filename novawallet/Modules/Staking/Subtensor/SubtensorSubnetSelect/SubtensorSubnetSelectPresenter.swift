@@ -41,7 +41,7 @@ final class SubtensorSubnetSelectPresenter {
         self.viewModelFactory = viewModelFactory
         self.delegate = delegate
         self.earnSettings = earnSettings
-        favourites = Set(earnSettings.favouriteSubnets)
+        favourites = earnSettings.favouriteSubnets
 
         self.localizationManager = localizationManager
     }
@@ -128,12 +128,6 @@ private extension SubtensorSubnetSelectPresenter {
 
         return (list.picks + list.others).first { $0.ref == subnetRef }
     }
-
-    func storeFavourites() {
-        earnSettings.favouriteSubnets = favourites.sorted { lhs, rhs in
-            lhs.netuid != rhs.netuid ? lhs.netuid < rhs.netuid : lhs.registeredAt < rhs.registeredAt
-        }
-    }
 }
 
 extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol {
@@ -144,7 +138,7 @@ extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol
     }
 
     func becomeActive() {
-        let storedFavourites = Set(earnSettings.favouriteSubnets)
+        let storedFavourites = earnSettings.favouriteSubnets
 
         guard storedFavourites != favourites else {
             return
@@ -169,13 +163,8 @@ extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol
     }
 
     func toggleFavorite(_ subnetRef: SubtensorSubnetRef) {
-        if favourites.contains(subnetRef) {
-            favourites.remove(subnetRef)
-        } else {
-            favourites.insert(subnetRef)
-        }
-
-        storeFavourites()
+        favourites.formSymmetricDifference([subnetRef])
+        earnSettings.favouriteSubnets = favourites
         provideList()
     }
 
