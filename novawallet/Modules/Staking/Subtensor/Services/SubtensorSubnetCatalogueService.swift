@@ -17,26 +17,20 @@ final class SubtensorSubnetCatalogueService {
 }
 
 private extension SubtensorSubnetCatalogueService {
-    struct Stamps {
-        let metadata: SubtensorBackendStamp
-        let prices: SubtensorBackendStamp
-    }
-
     static func makeCatalogue(
         from response: BittensorApiResult<BittensorApi.SubnetCollection>,
         logger: LoggerProtocol
     ) throws -> SubtensorSubnetCatalogue {
         let components = response.value.meta.components
 
-        let stamps = Stamps(
-            metadata: SubtensorBackendStamp(
-                component: components.subnetMetadata,
-                isFromExpiredCache: response.isFromExpiredCache
-            ),
-            prices: SubtensorBackendStamp(
-                component: components.alphaPrices,
-                isFromExpiredCache: response.isFromExpiredCache
-            )
+        let metadataStamp = SubtensorBackendStamp(
+            component: components.subnetMetadata,
+            isFromExpiredCache: response.isFromExpiredCache
+        )
+
+        let pricesStamp = SubtensorBackendStamp(
+            component: components.alphaPrices,
+            isFromExpiredCache: response.isFromExpiredCache
         )
 
         var listedNetuids: Set<UInt16> = []
@@ -50,13 +44,17 @@ private extension SubtensorSubnetCatalogueService {
 
             listedNetuids.insert(item.netuid)
 
-            try subnets.append(makeSubnet(item, stamps: stamps))
+            try subnets.append(makeSubnet(item, metadataStamp: metadataStamp, pricesStamp: pricesStamp))
         }
 
         return SubtensorSubnetCatalogue(subnets: subnets)
     }
 
-    static func makeSubnet(_ item: BittensorApi.Subnet, stamps: Stamps) throws -> SubtensorCatalogueSubnet {
+    static func makeSubnet(
+        _ item: BittensorApi.Subnet,
+        metadataStamp: SubtensorBackendStamp,
+        pricesStamp: SubtensorBackendStamp
+    ) throws -> SubtensorCatalogueSubnet {
         try SubtensorCatalogueSubnet(
             netuid: item.netuid,
             name: item.name,
@@ -66,8 +64,8 @@ private extension SubtensorSubnetCatalogueService {
             alphaReserve: BittensorApiDecimal.atomic(item.alphaReserve, scale: atomicScale),
             alphaOutstanding: BittensorApiDecimal.atomic(item.alphaOutstanding, scale: atomicScale),
             taoPerAlpha: BittensorApiDecimal.atomic(item.taoPerAlpha, scale: atomicScale),
-            metadataStamp: stamps.metadata,
-            pricesStamp: stamps.prices
+            metadataStamp: metadataStamp,
+            pricesStamp: pricesStamp
         )
     }
 }

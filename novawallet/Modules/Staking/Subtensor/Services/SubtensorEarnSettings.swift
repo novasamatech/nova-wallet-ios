@@ -34,15 +34,13 @@ extension SubtensorEarnSettings: SubtensorEarnSettingsProtocol {
         }
     }
 
-    var favouriteSubnets: [SubtensorSubnetRef] {
+    var favouriteSubnets: Set<SubtensorSubnetRef> {
         get {
-            let stored = settingsManager.value(of: [StoredSubnetRef].self, for: Key.favouriteSubnets) ?? []
-
-            return stored.map { SubtensorSubnetRef(netuid: $0.netuid, registeredAt: $0.registeredAt) }
+            Set(settingsManager.value(of: [SubtensorSubnetRef].self, for: Key.favouriteSubnets) ?? [])
         }
 
         set {
-            let stored = newValue.map { StoredSubnetRef(netuid: $0.netuid, registeredAt: $0.registeredAt) }
+            let stored = newValue.sorted { ($0.netuid, $0.registeredAt) < ($1.netuid, $1.registeredAt) }
 
             settingsManager.set(value: stored, for: Key.favouriteSubnets)
         }
@@ -58,10 +56,5 @@ private extension SubtensorEarnSettings {
     struct StoredRational: Codable {
         let numerator: String
         let denominator: String
-    }
-
-    struct StoredSubnetRef: Codable {
-        let netuid: UInt16
-        let registeredAt: UInt64
     }
 }

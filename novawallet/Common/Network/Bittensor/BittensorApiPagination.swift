@@ -1,17 +1,13 @@
 import Foundation
 import Operation_iOS
 
-struct BittensorApiPages<T> {
-    let pages: [BittensorApiResult<T>]
-}
-
 enum BittensorApiPagination {
     static func createPagesWrapper<T>(
         maxPages: Int,
         operationQueue: OperationQueue,
         nextPage: @escaping (T) -> Int?,
         pageWrapper: @escaping (Int) -> CompoundOperationWrapper<BittensorApiResult<T>>
-    ) -> CompoundOperationWrapper<BittensorApiPages<T>> {
+    ) -> CompoundOperationWrapper<[BittensorApiResult<T>]> {
         let fetch = BittensorApiPageFetch(
             maxPages: max(1, maxPages),
             operationQueue: operationQueue,
@@ -19,7 +15,7 @@ enum BittensorApiPagination {
             pageWrapper: pageWrapper
         )
 
-        let operation = AsyncClosureOperation<BittensorApiPages<T>>(
+        let operation = AsyncClosureOperation<[BittensorApiResult<T>]>(
             operationClosure: { completion in
                 fetch.start(completion: completion)
             },
@@ -35,7 +31,7 @@ enum BittensorApiPagination {
         maxPages: Int,
         nextPage: (T) -> Int?,
         peekPage: (Int) -> HTTPCachePeek<BittensorApiResult<T>>
-    ) -> HTTPCachePeek<BittensorApiPages<T>> {
+    ) -> HTTPCachePeek<[BittensorApiResult<T>]> {
         let pageLimit = max(1, maxPages)
         var pages: [BittensorApiResult<T>] = []
         var isFresh = true
@@ -58,15 +54,13 @@ enum BittensorApiPagination {
                 continue
             }
 
-            let outcome = BittensorApiPages(pages: pages)
-
-            return isFresh ? .fresh(outcome) : .expired(outcome)
+            return isFresh ? .fresh(pages) : .expired(pages)
         }
     }
 }
 
 private final class BittensorApiPageFetch<T> {
-    typealias Completion = (Result<BittensorApiPages<T>, Error>) -> Void
+    typealias Completion = (Result<[BittensorApiResult<T>], Error>) -> Void
 
     private let maxPages: Int
     private let operationQueue: OperationQueue
@@ -174,7 +168,7 @@ private final class BittensorApiPageFetch<T> {
             return
         }
 
-        let outcome = BittensorApiPages(pages: pages)
+        let outcome = pages
         self.completion = nil
 
         mutex.unlock()

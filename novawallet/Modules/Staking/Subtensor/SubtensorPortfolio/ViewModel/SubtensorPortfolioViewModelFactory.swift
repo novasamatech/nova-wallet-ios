@@ -193,7 +193,7 @@ private extension SubtensorPortfolioViewModelFactory {
         }
 
         return SubtensorPriceChartViewModel(
-            values: values,
+            series: .indexed(values),
             axisLabels: axisLabels,
             isRising: series.changeInFiat.map { $0 >= 0 } ?? (last >= first)
         )

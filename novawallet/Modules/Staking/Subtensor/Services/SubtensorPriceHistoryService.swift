@@ -108,19 +108,8 @@ private extension SubtensorPriceHistoryService {
         in markets: SubtensorSubnetMarkets
     ) -> [SubtensorSubnetRef: SubtensorSubnetMarket] {
         subnets.reduce(into: [:]) { result, subnet in
-            result[subnet] = markets.market(for: subnet.netuid)
+            result[subnet] = markets.byNetuid[subnet.netuid]
         }
-    }
-
-    var fetcher: Fetcher {
-        Fetcher(
-            seriesProvider: seriesProvider,
-            blockNumberOperationFactory: blockNumberOperationFactory,
-            chainId: chainId,
-            taoPriceId: taoPriceId,
-            timeProvider: timeProvider,
-            logger: logger
-        )
     }
 
     func createPriceDataWrapper<Value: Equatable>(
@@ -162,8 +151,7 @@ extension SubtensorPriceHistoryService: SubtensorPriceHistoryServiceProtocol {
         currency: Currency
     ) -> CompoundOperationWrapper<SubtensorPriceHistory?> {
         let marketsWrapper = marketsService.createMarketsWrapper()
-        let fetcher = fetcher
-        let headBlockWrapper = fetcher.createHeadBlockWrapper()
+        let headBlockWrapper = createHeadBlockWrapper()
         let timeProvider = timeProvider
 
         let pointsWrapper: CompoundOperationWrapper<[SubtensorPricePoint]?> = OperationCombiningService.compoundWrapper(
@@ -171,11 +159,11 @@ extension SubtensorPriceHistoryService: SubtensorPriceHistoryServiceProtocol {
         ) {
             let markets = try marketsWrapper.targetOperation.extractNoCancellableResultData()
 
-            guard let alphaPriceId = markets.market(for: subnet.netuid)?.coingeckoId else {
+            guard let alphaPriceId = markets.byNetuid[subnet.netuid]?.coingeckoId else {
                 return nil
             }
 
-            return fetcher.createPointsWrapper(alphaPriceId: alphaPriceId, currency: currency, period: period)
+            return self.createPointsWrapper(alphaPriceId: alphaPriceId, currency: currency, period: period)
         }
 
         pointsWrapper.addDependency(wrapper: marketsWrapper)
@@ -203,10 +191,8 @@ extension SubtensorPriceHistoryService: SubtensorPriceHistoryServiceProtocol {
     func createWeeklyChangesWrapper(
         for subnets: [SubtensorSubnetRef]
     ) -> CompoundOperationWrapper<[SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]> {
-        let fetcher = fetcher
-
-        return createPriceDataWrapper(for: subnets) { listed in
-            fetcher.createMarketChangesWrapper(for: listed)
+        createPriceDataWrapper(for: subnets) { listed in
+            self.createMarketChangesWrapper(for: listed)
         }
     }
 }

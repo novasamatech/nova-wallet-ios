@@ -4,11 +4,7 @@ import Foundation_iOS
 protocol SubnetDetailsViewModelFactoryProtocol {
     func createTitle(subnetLogos: SubtensorSubnetLogos?, locale: Locale) -> SubtensorSubnetDetailsTitleViewModel
 
-    func createViewModel(
-        for state: SubtensorSubnetDetailsState,
-        isUseEnabled: Bool,
-        locale: Locale
-    ) -> SubtensorSubnetDetailsViewModel
+    func createViewModel(for state: SubtensorSubnetDetailsState, locale: Locale) -> SubtensorSubnetDetailsViewModel
 
     func createPriceHeader(
         for state: SubtensorSubnetDetailsState,
@@ -26,7 +22,6 @@ final class SubtensorSubnetDetailsViewModelFactory {
 
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
 
-    let tokenFormatter: LocalizableResource<TokenFormatter>
     let alphaFormatter: LocalizableResource<TokenFormatter>
     let compactTokenFormatter: LocalizableResource<TokenFormatter>
 
@@ -57,7 +52,6 @@ final class SubtensorSubnetDetailsViewModelFactory {
         )
         let taoInfo = chainAsset.assetDisplayInfo
 
-        tokenFormatter = formatterFactory.createTokenFormatter(for: taoInfo)
         alphaFormatter = formatterFactory.createTokenFormatter(
             for: taoInfo.subtensorAlpha(symbol: SubtensorSubnetNaming.symbol(for: subnet))
         )
@@ -71,10 +65,6 @@ extension SubtensorSubnetDetailsViewModelFactory {
         let text = alphaFormatter.value(for: locale).stringFromDecimal(decimal) ?? .subtensorUnknown(for: locale)
 
         return SubtensorSubnetNaming.isolatedLeftToRight(text)
-    }
-
-    func formatTao(_ amount: Decimal, locale: Locale) -> String {
-        tokenFormatter.value(for: locale).stringFromDecimal(amount) ?? .subtensorUnknown(for: locale)
     }
 
     func formatCompactTao(_ amount: Decimal, locale: Locale) -> String {
@@ -165,11 +155,7 @@ extension SubtensorSubnetDetailsViewModelFactory: SubnetDetailsViewModelFactoryP
         )
     }
 
-    func createViewModel(
-        for state: SubtensorSubnetDetailsState,
-        isUseEnabled: Bool,
-        locale: Locale
-    ) -> SubtensorSubnetDetailsViewModel {
+    func createViewModel(for state: SubtensorSubnetDetailsState, locale: Locale) -> SubtensorSubnetDetailsViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         return SubtensorSubnetDetailsViewModel(
@@ -185,7 +171,7 @@ extension SubtensorSubnetDetailsViewModelFactory: SubnetDetailsViewModelFactoryP
             favoriteAccessibilityLabel: state.isFavorite
                 ? strings.stakingSubtensorUiDetailFavoriteRemove()
                 : strings.dappFavoriteAddTitle(),
-            isUseEnabled: isUseEnabled
+            isUseEnabled: state.validator != .pending
         )
     }
 

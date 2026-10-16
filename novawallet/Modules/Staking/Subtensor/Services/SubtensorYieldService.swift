@@ -26,10 +26,10 @@ final class SubtensorYieldService {
 extension SubtensorYieldService {
     static func makeAlphaYields(
         netuid: UInt16,
-        pages: BittensorApiPages<BittensorApi.AlphaYieldCollection>,
+        pages: [BittensorApiResult<BittensorApi.AlphaYieldCollection>],
         logger: LoggerProtocol
     ) throws -> SubtensorAlphaYields {
-        let pageStamps = pages.pages.map { page in
+        let pageStamps = pages.map { page in
             SubtensorBackendStamp(
                 component: page.value.meta.components.alphaYield,
                 isFromExpiredCache: page.isFromExpiredCache
@@ -43,7 +43,7 @@ extension SubtensorYieldService {
         var yields: [AccountId: SubtensorReportedYield] = [:]
         var skippedRows = 0
 
-        for (page, pageStamp) in zip(pages.pages, pageStamps) {
+        for (page, pageStamp) in zip(pages, pageStamps) {
             for item in page.value.items {
                 guard
                     item.netuid == netuid,
