@@ -23,7 +23,6 @@ struct SubtensorRecommendedValidator: Equatable {
 }
 
 struct SubtensorRecommendedValidators: Equatable {
-    let generation: SubtensorRecommendationGeneration
     let validators: [SubtensorRecommendedValidator]
 }
 

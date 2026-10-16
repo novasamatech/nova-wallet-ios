@@ -39,6 +39,11 @@ private extension SubtensorRecommendationService {
     ) throws -> Candidates {
         let meta = response.value.meta
         let generation = makeGeneration(meta, isFromExpiredCache: response.isFromExpiredCache)
+
+        guard generation.stamp.freshness == .fresh else {
+            throw BittensorApiError.generationStale
+        }
+
         let isSameSubnet = subnet.registeredAt <= generation.sourceBlockNumber
 
         let validators = response.value.items.compactMap { item -> SubtensorRecommendedValidator? in
@@ -61,9 +66,48 @@ private extension SubtensorRecommendationService {
         }
 
         return try Candidates(
-            recommended: SubtensorRecommendedValidators(generation: generation, validators: validators),
+            recommended: SubtensorRecommendedValidators(validators: validators),
             gates: clientGates(meta.clientGates)
         )
+    }
+
+    static func createCandidatesFetchWrapper(
+        for subnet: SubtensorSubnetRef,
+        apiOperationFactory: BittensorApiOperationFactoryProtocol,
+        logger: LoggerProtocol
+    ) -> CompoundOperationWrapper<Candidates> {
+        let responseWrapper = apiOperationFactory.createRankedValidatorsWrapper(netuid: subnet.netuid)
+
+        let candidatesOperation = ClosureOperation<Candidates> {
+            let response = try responseWrapper.targetOperation.extractNoCancellableResultData()
+
+            return try makeCandidates(from: response, subnet: subnet, logger: logger)
+        }
+
+        candidatesOperation.addDependency(responseWrapper.targetOperation)
+
+        return responseWrapper.insertingTail(operation: candidatesOperation)
+    }
+
+    func createCandidatesWrapper(for subnet: SubtensorSubnetRef) -> CompoundOperationWrapper<Candidates> {
+        let fetch = { [apiOperationFactory, logger] in
+            Self.createCandidatesFetchWrapper(for: subnet, apiOperationFactory: apiOperationFactory, logger: logger)
+        }
+
+        let firstWrapper = fetch()
+
+        let candidatesWrapper: CompoundOperationWrapper<Candidates> =
+            OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
+                do {
+                    return try .createWithResult(firstWrapper.targetOperation.extractNoCancellableResultData())
+                } catch BittensorApiError.generationStale {
+                    return fetch()
+                }
+            }
+
+        candidatesWrapper.addDependency(wrapper: firstWrapper)
+
+        return candidatesWrapper.insertingHead(operations: firstWrapper.allOperations)
     }
 
     static func makeRankedSubnets(
@@ -80,17 +124,8 @@ extension SubtensorRecommendationService: SubtensorRecommendationServiceProtocol
     func createRecommendedValidatorsWrapper(
         for subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorRecommendedValidators> {
-        let responseWrapper = apiOperationFactory.createRankedValidatorsWrapper(netuid: subnet.netuid)
+        let candidatesWrapper = createCandidatesWrapper(for: subnet)
         let chainOperationFactory = chainOperationFactory
-        let logger = logger
-
-        let candidatesOperation = ClosureOperation<Candidates> {
-            let response = try responseWrapper.targetOperation.extractNoCancellableResultData()
-
-            return try Self.makeCandidates(from: response, subnet: subnet, logger: logger)
-        }
-
-        candidatesOperation.addDependency(responseWrapper.targetOperation)
 
         let pair: (SubtensorRecommendedValidator) -> SubtensorHotkeySubnet = {
             SubtensorHotkeySubnet(hotkey: $0.hotkey, netuid: subnet.netuid)
@@ -100,7 +135,8 @@ extension SubtensorRecommendationService: SubtensorRecommendationServiceProtocol
             OperationCombiningService.compoundWrapper(
                 operationManager: OperationManager(operationQueue: operationQueue)
             ) {
-                let validators = try candidatesOperation.extractNoCancellableResultData().recommended.validators
+                let candidates = try candidatesWrapper.targetOperation.extractNoCancellableResultData()
+                let validators = candidates.recommended.validators
 
                 guard !validators.isEmpty else {
                     return nil
@@ -111,17 +147,16 @@ extension SubtensorRecommendationService: SubtensorRecommendationServiceProtocol
                 )
             }
 
-        snapshotWrapper.addDependency(operations: [candidatesOperation])
+        snapshotWrapper.addDependency(wrapper: candidatesWrapper)
 
         let verifyOperation = ClosureOperation<SubtensorRecommendedValidators> {
-            let candidates = try candidatesOperation.extractNoCancellableResultData()
+            let candidates = try candidatesWrapper.targetOperation.extractNoCancellableResultData()
 
             guard let snapshot = try snapshotWrapper.targetOperation.extractNoCancellableResultData() else {
                 return candidates.recommended
             }
 
             return SubtensorRecommendedValidators(
-                generation: candidates.recommended.generation,
                 validators: candidates.recommended.validators.filter {
                     SubtensorRecommendationVerifier.passesGates(pair($0), snapshot: snapshot, gates: candidates.gates)
                 }
@@ -132,7 +167,7 @@ extension SubtensorRecommendationService: SubtensorRecommendationServiceProtocol
 
         return CompoundOperationWrapper(
             targetOperation: verifyOperation,
-            dependencies: responseWrapper.allOperations + [candidatesOperation] + snapshotWrapper.allOperations
+            dependencies: candidatesWrapper.allOperations + snapshotWrapper.allOperations
         )
     }
 
@@ -140,19 +175,14 @@ extension SubtensorRecommendationService: SubtensorRecommendationServiceProtocol
         for subnet: SubtensorSubnetRef,
         listedHotkeys: [AccountId]
     ) -> CompoundOperationWrapper<SubtensorValidatorListVerification> {
-        let responseWrapper = apiOperationFactory.createRankedValidatorsWrapper(netuid: subnet.netuid)
+        let candidatesWrapper = createCandidatesWrapper(for: subnet)
         let chainOperationFactory = chainOperationFactory
-        let logger = logger
 
         let candidatesOperation = ClosureOperation<Result<Candidates, Error>> {
-            Result {
-                let response = try responseWrapper.targetOperation.extractNoCancellableResultData()
-
-                return try Self.makeCandidates(from: response, subnet: subnet, logger: logger)
-            }
+            Result { try candidatesWrapper.targetOperation.extractNoCancellableResultData() }
         }
 
-        candidatesOperation.addDependency(responseWrapper.targetOperation)
+        candidatesOperation.addDependency(candidatesWrapper.targetOperation)
 
         let pair: (AccountId) -> SubtensorHotkeySubnet = { SubtensorHotkeySubnet(hotkey: $0, netuid: subnet.netuid) }
 
@@ -189,7 +219,7 @@ extension SubtensorRecommendationService: SubtensorRecommendationServiceProtocol
 
         return CompoundOperationWrapper(
             targetOperation: verifyOperation,
-            dependencies: responseWrapper.allOperations + [candidatesOperation] + snapshotWrapper.allOperations
+            dependencies: candidatesWrapper.allOperations + [candidatesOperation] + snapshotWrapper.allOperations
         )
     }
 
