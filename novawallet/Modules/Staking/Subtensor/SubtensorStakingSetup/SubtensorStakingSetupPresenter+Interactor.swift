@@ -28,6 +28,16 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
         }
     }
 
+    func didFailValidator(_ error: Error, on subnet: SubtensorSubnetRef) {
+        guard subnet == subnetRef, mode.lockedHotkey == nil, case .pending = validatorState else {
+            return
+        }
+
+        presetError = error
+        validatorState = .none
+        provideViewModel()
+    }
+
     func didReceiveSubnet(_ target: SubtensorStakeTarget) {
         guard case let .buyMore(position) = mode, self.target == nil, target.netuid == position.netuid else {
             return

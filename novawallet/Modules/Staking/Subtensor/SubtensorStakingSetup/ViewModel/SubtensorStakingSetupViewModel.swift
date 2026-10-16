@@ -8,6 +8,7 @@ struct SubtensorStakingSetupViewModel {
     let hasSettings: Bool
     let getTao: SubtensorGetTaoViewModel?
     let reserveWarning: String?
+    let failure: WarningView.Model?
     let details: SubtensorSetupDetailsViewModel
     let caption: String?
     let browseTitle: String?
@@ -17,7 +18,6 @@ struct SubtensorStakingSetupViewModel {
 struct SubtensorSetupSelectionViewModel {
     let section: String
     let caption: String
-    let failure: WarningView.Model?
 }
 
 enum SubtensorSetupDetailsViewModel {
@@ -182,7 +182,7 @@ struct SubtensorStakingSetupViewModelInput {
     let positionStake: Balance?
     var quickPickOrder: SubtensorQuickPickOrder?
     var selectionFailed = false
-    var selectedRef: SubtensorSubnetRef?
+    var presetError: Error?
     var rootEntryPresentation: SubtensorRootEntryPresentation = .standard
 
     // A reused netuid can still have metadata cached for its previous registration.

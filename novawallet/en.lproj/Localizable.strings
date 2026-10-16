@@ -2337,7 +2337,7 @@ Do you want to continue?";
 "staking.subtensor.quick.see.all" = "See all subnets";
 "staking.subtensor.quick.all.options" = "See all options";
 "staking.subtensor.quick.loading" = "Finding a subnet for you…";
-"staking.subtensor.quick.unavailable" = "The subnet and its rate appear once the backend answers.";
+"staking.subtensor.quick.unavailable" = "The subnet and its rate did not load. Your stake is not affected.";
 "staking.subtensor.quick.unavailable.title" = "Couldn\'t load rates";
 "staking.subtensor.quick.count" = "%1$@ of %2$@";
 "staking.subtensor.quick.pool.title" = "Pool size";
