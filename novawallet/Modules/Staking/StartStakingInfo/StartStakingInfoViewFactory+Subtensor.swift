@@ -36,7 +36,7 @@ extension StartStakingInfoViewFactory {
 
         let startStakingViewModelFactory = StartStakingViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory,
-            estimatedEarningsFormatter: NumberFormatter.percentSingle.localizableResource()
+            estimatedEarningsFormatter: NumberFormatter.subtensorPercent
         )
 
         let presenter = StartStakingInfoSubtensorPresenter(

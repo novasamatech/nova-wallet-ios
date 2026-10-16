@@ -155,6 +155,7 @@ extension StakingSharedStateFactory {
             earnSettings: SubtensorEarnSettings(settingsManager: SettingsManager.shared),
             catalogueService: processServices.catalogueService,
             yieldService: yieldService,
+            maxApyProvider: processServices.createMaxApyProvider(operationQueue: syncOperationQueue, logger: logger),
             recommendationService: recommendationService,
             validatorDirectoryService: validatorDirectoryService,
             priceHistoryService: createSubtensorPriceHistoryService(
@@ -163,8 +164,7 @@ extension StakingSharedStateFactory {
                 seriesProvider: flowState.priceSeriesCache
             ),
             tradeQuoteFactory: SubtensorTradeQuoteFactory(
-                operationFactory: apiOperationFactory,
-                operationQueue: syncOperationQueue,
+                operationFactory: apiOperationFactory, operationQueue: syncOperationQueue,
                 feeCalculator: novaFeeCalculator
             ),
             rootHoldFactory: SubtensorRootHoldFactory(

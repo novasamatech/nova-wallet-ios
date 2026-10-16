@@ -41,28 +41,29 @@ private extension SubtensorMaxApyProvider {
 }
 
 extension SubtensorMaxApyProvider: SubtensorMaxApyProviderProtocol {
-    func createMaxApyWrapper() -> CompoundOperationWrapper<Decimal?> {
+    func createMaxApyWrapper() -> CompoundOperationWrapper<[UInt16: Decimal]> {
         let responseWrapper = apiOperationFactory.createRecommendationsWrapper()
         let yieldService = yieldService
         let logger = logger
 
-        let maxApyWrapper: CompoundOperationWrapper<Decimal?> =
+        let maxApyWrapper: CompoundOperationWrapper<[UInt16: Decimal]> =
             OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
                 let response = try responseWrapper.targetOperation.extractNoCancellableResultData()
                 let pairs = Self.makePairs(from: response, logger: logger)
                 let yieldWrappers = Set(pairs.map(\.netuid)).map { yieldService.createAlphaYieldsWrapper(for: $0) }
 
-                let maxOperation = ClosureOperation<Decimal?> {
-                    var rates: [Decimal] = []
+                let maxOperation = ClosureOperation<[UInt16: Decimal]> {
+                    var rates: [UInt16: Decimal] = [:]
                     var firstError: Error?
 
                     for wrapper in yieldWrappers {
                         do {
                             let alphaYields = try wrapper.targetOperation.extractNoCancellableResultData()
 
-                            rates += pairs
+                            rates[alphaYields.netuid] = pairs
                                 .filter { $0.netuid == alphaYields.netuid }
                                 .compactMap { alphaYields.yields[$0.hotkey]?.annualRate }
+                                .max()
                         } catch {
                             firstError = firstError ?? error
                         }
@@ -72,7 +73,7 @@ extension SubtensorMaxApyProvider: SubtensorMaxApyProviderProtocol {
                         throw firstError
                     }
 
-                    return rates.max()
+                    return rates
                 }
 
                 yieldWrappers.forEach { maxOperation.addDependency($0.targetOperation) }

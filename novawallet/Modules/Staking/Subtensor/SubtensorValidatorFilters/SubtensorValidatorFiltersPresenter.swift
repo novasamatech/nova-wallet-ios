@@ -22,7 +22,6 @@ final class SubtensorValidatorFiltersPresenter: ValidatorFiltersPresenterProtoco
     func setup() { provideViewModel() }
 
     func selectSort(_ sort: SubtensorValidatorSort) {
-        guard sort != .apy else { return }
         draft.sort = sort
         provideViewModel()
     }

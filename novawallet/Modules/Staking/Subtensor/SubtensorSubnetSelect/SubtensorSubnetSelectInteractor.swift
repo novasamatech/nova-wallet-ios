@@ -8,18 +8,21 @@ final class SubtensorSubnetSelectInteractor {
     let subnetsService: SubtensorSubnetsServiceProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
+    let maxApyProvider: SubtensorMaxApyProviderProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     private let entriesStore = CancellableCallStore()
     private let logosStore = CancellableCallStore()
     private let weeklyStore = CancellableCallStore()
+    private let apyStore = CancellableCallStore()
 
     init(
         catalogueService: SubtensorSubnetCatalogueServiceProtocol,
         subnetsService: SubtensorSubnetsServiceProtocol,
         subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
         priceHistoryService: SubtensorPriceHistoryServiceProtocol?,
+        maxApyProvider: SubtensorMaxApyProviderProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
@@ -27,12 +30,13 @@ final class SubtensorSubnetSelectInteractor {
         self.subnetsService = subnetsService
         self.subnetLogosProvider = subnetLogosProvider
         self.priceHistoryService = priceHistoryService
+        self.maxApyProvider = maxApyProvider
         self.operationQueue = operationQueue
         self.logger = logger
     }
 
     deinit {
-        [entriesStore, logosStore, weeklyStore].forEach { $0.cancel() }
+        [entriesStore, logosStore, weeklyStore, apyStore].forEach { $0.cancel() }
     }
 }
 
@@ -133,6 +137,25 @@ extension SubtensorSubnetSelectInteractor: SubnetSelectInteractorInputProtocol {
             case let .failure(error):
                 logger.warning("Subnet weekly prices unavailable: \(error)")
                 presenter?.didReceive(weeklyPrices: unavailablePrices(for: subnets))
+            }
+        }
+    }
+
+    func loadApy() {
+        apyStore.cancel()
+
+        executeCancellable(
+            wrapper: maxApyProvider.createMaxApyWrapper(),
+            inOperationQueue: operationQueue,
+            backingCallIn: apyStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(apy):
+                self?.presenter?.didReceive(apy: apy)
+            case let .failure(error):
+                self?.logger.warning("Subnet apy unavailable: \(error)")
+                self?.presenter?.didReceive(apy: nil)
             }
         }
     }
