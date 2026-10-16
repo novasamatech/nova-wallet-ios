@@ -43,7 +43,7 @@ protocol SubnetSelectInteractorInputProtocol: AnyObject {
 }
 
 protocol SubnetSelectInteractorOutputProtocol: AnyObject {
-    func didReceive(entries: [SubtensorSubnetListEntry])
+    func didReceive(entries: [SubtensorSubnetListItem])
     func didReceive(subnetLogos: SubtensorSubnetLogos?)
     func didReceive(weeklyPrices: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>])
     func didReceiveError(_ error: Error)
