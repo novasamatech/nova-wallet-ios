@@ -13,6 +13,8 @@ final class SubtensorSubnetSelectPresenter {
     private var entries: [SubtensorSubnetListItem]?
     private var entriesError: Error?
     private var weeklyPrices: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]?
+    private var apy: [UInt16: Decimal]?
+    private var isApyPending = false
     private var subnetLogos: SubtensorSubnetLogos?
     private var favourites: Set<SubtensorSubnetRef>
     private var query = ""
@@ -56,6 +58,7 @@ private extension SubtensorSubnetSelectPresenter {
         return SubtensorSubnetListBuilder(
             entries: entries,
             weekly: weeklyPrices,
+            apy: apy,
             previousOrder: browseState.orderedRefs,
             favourites: favourites,
             locale: selectedLocale
@@ -114,11 +117,21 @@ private extension SubtensorSubnetSelectPresenter {
         interactor.loadWeeklyPrices(for: subnets)
     }
 
+    func requestApyIfNeeded() {
+        guard sort == .apy, apy == nil, !isApyPending else {
+            return
+        }
+
+        isApyPending = true
+
+        interactor.loadApy()
+    }
+
     func applySort(_ newSort: SubtensorSubnetSort) {
-        guard newSort.isAvailable else { return }
         browseState.sort = newSort
 
         provideList()
+        requestApyIfNeeded()
     }
 
     func findItem(for subnetRef: SubtensorSubnetRef) -> SubtensorSubnetListItem? {
@@ -133,6 +146,7 @@ private extension SubtensorSubnetSelectPresenter {
 extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol {
     func setup() {
         provideList()
+        requestApyIfNeeded()
 
         interactor.setup()
     }
@@ -245,6 +259,13 @@ extension SubtensorSubnetSelectPresenter: SubnetSelectInteractorOutputProtocol {
 
         provideList()
         requestWeeklyPricesIfNeeded()
+    }
+
+    func didReceive(apy: [UInt16: Decimal]?) {
+        self.apy = apy
+        isApyPending = false
+
+        provideList()
     }
 
     func didReceiveError(_ error: Error) {

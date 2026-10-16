@@ -12,6 +12,7 @@ struct SubtensorValidatorListInput {
     let query: String
     let selectedHotkey: AccountId?
     let preselectedHotkey: AccountId?
+    let keptHotkeys: Set<AccountId>
     let recommendedHotkeys: Set<AccountId>?
 }
 
@@ -43,7 +44,7 @@ extension SubtensorValidatorListFactory {
         let ratesShown = Self.ratesShown(yields: input.yields)
 
         let listed = createEntries(for: input, unknown: strings.stakingSubtensorUiValueUnknown())
-        let pinned = input.selectedHotkey ?? input.preselectedHotkey
+        let pinned = input.preselectedHotkey
         let matching = listed.filter { matches($0, query: input.query) }.sorted {
             if ($0.item.hotkey == pinned) != ($1.item.hotkey == pinned) { return $0.item.hotkey == pinned }
             return Self.isOrderedBefore($0, $1, sort: sort)
@@ -150,6 +151,11 @@ private extension SubtensorValidatorListFactory {
     }
 
     static func isOrderedBefore(_ lhs: Entry, _ rhs: Entry, sort: SubtensorValidatorSort) -> Bool {
+        if sort == .apy, lhs.rate != rhs.rate {
+            guard let left = lhs.rate, let right = rhs.rate else { return lhs.rate != nil }
+            return left > right
+        }
+
         let stakeOrder = sort == .name ? .orderedSame : compareStakes(lhs.item.reportedStake, rhs.item.reportedStake)
 
         if stakeOrder != .orderedSame {
@@ -162,10 +168,10 @@ private extension SubtensorValidatorListFactory {
     }
 
     func createEntries(for input: SubtensorValidatorListInput, unknown: String) -> [Entry] {
-        let pinned = [input.selectedHotkey, input.preselectedHotkey]
+        let kept = input.keptHotkeys.union([input.selectedHotkey, input.preselectedHotkey].compactMap { $0 })
 
         return input.directory.items.filter { item in
-            input.recommendedHotkeys.map { $0.contains(item.hotkey) || pinned.contains(item.hotkey) } ?? true
+            input.recommendedHotkeys.map { $0.contains(item.hotkey) || kept.contains(item.hotkey) } ?? true
         }.map { item in
             let address = try? item.hotkey.toAddress(using: chainFormat)
 
@@ -220,7 +226,7 @@ private extension SubtensorValidatorListFactory {
         let trailing: SubtensorValidatorRowViewModel.Trailing
 
         if entry.rate != nil || (context.input.isRoot && Self.ratesShown(yields: context.input.yields)) {
-            trailing = .rate(SubtensorApyFormatter.text(for: entry.rate, style: .column, locale: context.locale))
+            trailing = .rate(SubtensorApyFormatter.text(for: entry.rate, style: .bare, locale: context.locale))
         } else {
             trailing = .none
         }

@@ -36,7 +36,7 @@ extension StartStakingInfoViewFactory {
 
         let startStakingViewModelFactory = StartStakingViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory,
-            estimatedEarningsFormatter: NumberFormatter.percentSingle.localizableResource()
+            estimatedEarningsFormatter: NumberFormatter.subtensorPercent
         )
 
         let presenter = StartStakingInfoSubtensorPresenter(
@@ -44,9 +44,7 @@ extension StartStakingInfoViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             startStakingViewModelFactory: startStakingViewModelFactory,
-            subtensorViewModelFactory: StartStakingInfoSubtensorViewModelFactory(
-                percentFormatter: NumberFormatter.percentSingle.localizableResource()
-            ),
+            subtensorViewModelFactory: StartStakingInfoSubtensorViewModelFactory(),
             balanceDerivationFactory: StakingTypeBalanceFactory(stakingType: stakingOption.type),
             localizationManager: LocalizationManager.shared,
             applicationConfig: ApplicationConfig.shared,

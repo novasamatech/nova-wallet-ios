@@ -7,6 +7,7 @@ struct SubtensorEarnServices {
     let earnSettings: SubtensorEarnSettingsProtocol
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
     let yieldService: SubtensorYieldServiceProtocol
+    let maxApyProvider: SubtensorMaxApyProviderProtocol
     let recommendationService: SubtensorRecommendationServiceProtocol
     let validatorDirectoryService: SubtensorValidatorDirectoryServiceProtocol
     let priceHistoryService: SubtensorPriceHistoryServiceProtocol?

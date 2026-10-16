@@ -34,6 +34,7 @@ extension StakingDashboardViewModelFactory {
         let estimatedEarnings = createEstimatedEarnings(
             from: hasRootStake ? details?.rootRate : nil,
             isSyncing: hasRootStake && model.isOnchainSync,
+            formatter: NumberFormatter.subtensorPercent,
             locale: locale
         )
 
@@ -57,12 +58,18 @@ extension StakingDashboardViewModelFactory {
     }
 
     func createSubtensorMaxApy(
-        from maxApy: LoadableViewModelState<String?>,
+        from maxApy: Decimal?,
+        isSyncing: Bool,
         locale: Locale
     ) -> LoadableViewModelState<String?> {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
-        return maxApy.map { $0.map { strings.stakingSubtensorUiDashboardMaxApyFormat($0) } }
+        return createEstimatedEarnings(
+            from: maxApy,
+            isSyncing: isSyncing,
+            formatter: NumberFormatter.subtensorPercent,
+            locale: locale
+        ).map { $0.map { strings.stakingSubtensorUiDashboardMaxApyFormat($0) } }
     }
 }
 

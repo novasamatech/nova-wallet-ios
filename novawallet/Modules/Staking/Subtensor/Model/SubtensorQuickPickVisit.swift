@@ -1,9 +1,14 @@
 import Foundation
 
+struct SubtensorQuickPickSnapshot {
+    let catalogue: SubtensorSubnetCatalogue
+    let info: SubtensorSubnetsInfo
+    let apy: [UInt16: Decimal]
+}
+
 /// A visit owns its draw, including across retries while the selected subnet is not yet ready to trade.
 final class SubtensorQuickPickVisit {
     enum SelectionError: Error, Equatable {
-        case unsupportedOrder
         case noCandidates
         case targetUnavailable
         case registrationChanged
@@ -30,22 +35,24 @@ final class SubtensorQuickPickVisit {
         error = nil
     }
 
-    func resolve(_ result: Result<(SubtensorSubnetCatalogue, SubtensorSubnetsInfo), Error>) -> SubtensorStakeTarget? {
+    func resolve(_ result: Result<SubtensorQuickPickSnapshot, Error>) -> SubtensorStakeTarget? {
         guard isLoading, !isManuallyReplaced else { return nil }
         isLoading = false
 
         do {
-            let (catalogue, info) = try result.get()
-            let ref = try selectedRef ?? select(from: catalogue)
+            let snapshot = try result.get()
+            let ref = try selectedRef ?? select(from: snapshot.catalogue, apy: snapshot.apy)
             selectedRef = ref
 
-            guard let subnet = info.subnets.first(where: { $0.netuid == ref.netuid }) else {
+            guard let subnet = snapshot.info.subnets.first(where: { $0.netuid == ref.netuid }) else {
                 throw SelectionError.targetUnavailable
             }
             guard subnet.networkRegisteredAt == ref.registeredAt else {
                 throw SelectionError.registrationChanged
             }
-            guard info.subtokenEnabled.contains(ref.netuid), let price = info.prices[ref.netuid], price > 0 else {
+            guard
+                snapshot.info.subtokenEnabled.contains(ref.netuid),
+                let price = snapshot.info.prices[ref.netuid], price > 0 else {
                 throw SelectionError.targetUnavailable
             }
             return .subnet(info: subnet, price: price)
@@ -57,10 +64,10 @@ final class SubtensorQuickPickVisit {
 }
 
 private extension SubtensorQuickPickVisit {
-    func select(from catalogue: SubtensorSubnetCatalogue) throws -> SubtensorSubnetRef {
-        guard order.subnetSort != nil else { throw SelectionError.unsupportedOrder }
-
-        let eligible = catalogue.subnets.filter { $0.taoReserve >= SubtensorSubnetListBuilder.thinPoolThreshold }
+    func select(from catalogue: SubtensorSubnetCatalogue, apy: [UInt16: Decimal]) throws -> SubtensorSubnetRef {
+        let eligible = catalogue.subnets.filter {
+            $0.taoReserve >= SubtensorSubnetListBuilder.thinPoolThreshold && (order != .apy || apy[$0.netuid] != nil)
+        }
 
         let candidates = eligible.sorted { lhs, rhs in
             switch order {
@@ -68,6 +75,8 @@ private extension SubtensorQuickPickVisit {
                 return lhs.taoReserve > rhs.taoReserve
             case .age where lhs.networkRegisteredAt != rhs.networkRegisteredAt:
                 return lhs.networkRegisteredAt < rhs.networkRegisteredAt
+            case .apy where apy[lhs.netuid] != apy[rhs.netuid]:
+                return (apy[lhs.netuid] ?? 0) > (apy[rhs.netuid] ?? 0)
             default:
                 return lhs.netuid < rhs.netuid
             }
