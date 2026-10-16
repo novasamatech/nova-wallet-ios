@@ -27,29 +27,6 @@ extension SubtensorOperationResultViewModelFactory {
 }
 
 private extension SubtensorOperationResultViewModelFactory {
-    func action(_ action: SubtensorResultAction, locale: Locale) -> SubtensorResultActionViewModel {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
-        let title = switch action {
-        case .done:
-            strings.commonDone()
-        case .tryAgain:
-            strings.commonTryAgain()
-        case .close:
-            strings.commonClose()
-        case .viewPosition:
-            strings.stakingSubtensorResultViewPosition()
-        case .discoverSubnets:
-            strings.stakingSubtensorResultDiscoverSubnets()
-        case .yourBittensor:
-            strings.stakingSubtensorUiPortfolioTitle()
-        case .backToPosition:
-            strings.stakingSubtensorResultBackToPosition()
-        }
-
-        return SubtensorResultActionViewModel(action: action, title: title)
-    }
-
     func landingActions(
         for request: SubtensorOperationResultRequest,
         locale: Locale
