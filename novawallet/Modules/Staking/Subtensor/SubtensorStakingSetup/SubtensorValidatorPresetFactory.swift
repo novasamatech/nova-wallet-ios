@@ -61,7 +61,8 @@ private extension SubtensorValidatorPresetFactory {
                 return self?.createBestItemWrapper(
                     among: recommended.validators,
                     yields: try? yieldsWrapper.targetOperation.extractNoCancellableResultData(),
-                    subnet: subnet
+                    subnet: subnet,
+                    allowsFallback: true
                 )
             }
 
@@ -74,7 +75,8 @@ private extension SubtensorValidatorPresetFactory {
     func createBestItemWrapper(
         among validators: [SubtensorRecommendedValidator],
         yields: SubtensorAlphaYields?,
-        subnet: SubtensorSubnetRef
+        subnet: SubtensorSubnetRef,
+        allowsFallback: Bool
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> {
         guard let winner = Self.highestYield(among: validators, yields: yields) else {
             return .createWithResult(nil)
@@ -86,12 +88,20 @@ private extension SubtensorValidatorPresetFactory {
             OperationCombiningService.compoundOptionalWrapper(
                 operationManager: OperationManager(operationQueue: operationQueue)
             ) { [weak self] in
-                guard let item = try itemWrapper.targetOperation.extractNoCancellableResultData() else {
-                    let others = validators.filter { $0.hotkey != winner.hotkey }
-                    return self?.createBestItemWrapper(among: others, yields: yields, subnet: subnet)
+                if let item = try itemWrapper.targetOperation.extractNoCancellableResultData() {
+                    return .createWithResult(item.named(item.name ?? winner.name))
                 }
 
-                return .createWithResult(item.named(item.name ?? winner.name))
+                guard allowsFallback else {
+                    return nil
+                }
+
+                return self?.createBestItemWrapper(
+                    among: validators.filter { $0.hotkey != winner.hotkey },
+                    yields: yields,
+                    subnet: subnet,
+                    allowsFallback: false
+                )
             }
 
         bestWrapper.addDependency(wrapper: itemWrapper)
