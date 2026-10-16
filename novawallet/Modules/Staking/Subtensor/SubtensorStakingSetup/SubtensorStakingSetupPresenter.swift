@@ -176,17 +176,7 @@ extension SubtensorStakingSetupPresenter {
     }
 
     func existingPrimaryHotkey(on netuid: UInt16) -> AccountId? {
-        guard let positionsState else {
-            return nil
-        }
-
-        let portfolio = SubtensorPortfolioBuilder.build(state: positionsState)
-
-        guard netuid != SubtensorStakingPallet.rootNetuid else {
-            return portfolio.stakedRoot?.primaryHotkey
-        }
-
-        return portfolio.subnets.first { $0.netuid == netuid }?.primaryHotkey
+        positionsState.flatMap { SubtensorPortfolioBuilder.build(state: $0).group(netuid: netuid)?.primaryHotkey }
     }
 
     func applyValidator(_ item: SubtensorValidatorDirectoryItem) {
@@ -285,6 +275,7 @@ extension SubtensorStakingSetupPresenter {
 }
 
 extension SubtensorStakingSetupPresenter: SubtensorQuoteHandling {
+    var isRoot: Bool { target?.isRoot == true }
     var retryView: ControllerBackedProtocol? { view }
     var retryWireframe: AlertPresentable & FeeRetryable & CommonRetryable { wireframe }
     var quoteInteractor: SubtensorStakingBaseInteractorInputProtocol { interactor }
@@ -340,10 +331,9 @@ extension SubtensorStakingSetupPresenter: SubtensorStakingSetupPresenterProtocol
             return
         }
 
-        validateStake(
+        dataValidationFactory.validateStake(
             for: createValidationDependencies(for: target),
-            dataValidationFactory: dataValidationFactory,
-            selectedLocale: selectedLocale
+            locale: selectedLocale
         ) { [weak self] in
             guard let self, let model = createConfirmModel() else {
                 return

@@ -54,7 +54,7 @@ protocol SubtensorStakingSetupWireframeProtocol: AlertPresentable, ErrorPresenta
     )
 
     func showConfirmation(
-        from view: SubtensorStakingSetupViewProtocol?,
+        from view: ControllerBackedProtocol?,
         model: SubtensorConfirmModel
     )
 

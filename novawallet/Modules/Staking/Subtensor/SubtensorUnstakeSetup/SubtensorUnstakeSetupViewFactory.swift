@@ -12,7 +12,7 @@ enum SubtensorUnstakeSetupViewFactory {
 
         let chainAsset = state.stakingOption.chainAsset
         let interactor = SubtensorUnstakeSetupInteractor(flowServices: services, state: state, logger: Logger.shared)
-        let wireframe = SubtensorUnstakeSetupWireframe(state: state)
+        let wireframe = SubtensorStakingSetupWireframe(state: state)
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: services.currencyManager)
         let localizationManager = LocalizationManager.shared
 
