@@ -27,7 +27,8 @@ enum SubtensorStakingSetupViewFactory {
         for state: SubtensorStakingSharedStateProtocol,
         order: SubtensorQuickPickOrder
     ) -> SubtensorStakingSetupViewProtocol? {
-        createView(
+        guard order != .root else { return nil }
+        return createView(
             for: state,
             mode: .quickPick(order),
             browseState: SubtensorSubnetBrowseState(order: order),
