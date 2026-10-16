@@ -10,7 +10,7 @@ final class SubtensorSubnetSelectPresenter {
     let viewModelFactory: SubtensorSubnetViewModelFactoryProtocol
     let earnSettings: SubtensorEarnSettingsProtocol
 
-    private var entries: [SubtensorSubnetListEntry]?
+    private var entries: [SubtensorSubnetListItem]?
     private var entriesError: Error?
     private var weeklyPrices: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]?
     private var subnetLogos: SubtensorSubnetLogos?
@@ -224,7 +224,7 @@ extension SubtensorSubnetSelectPresenter: SubtensorSubnetSelectPresenterProtocol
 }
 
 extension SubtensorSubnetSelectPresenter: SubnetSelectInteractorOutputProtocol {
-    func didReceive(entries: [SubtensorSubnetListEntry]) {
+    func didReceive(entries: [SubtensorSubnetListItem]) {
         self.entries = entries
         entriesError = nil
 

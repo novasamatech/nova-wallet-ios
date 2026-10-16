@@ -9,18 +9,12 @@ struct SubtensorReportedYield: Equatable {
     var annualRate: Decimal? {
         guard
             stamp.freshness == .fresh,
-            isNonNegative,
-            let reportedValue = try? BittensorApiDecimal.decimal(reportedRate) else {
+            let reportedValue = try? BittensorApiDecimal.decimal(reportedRate),
+            reportedValue >= 0 else {
             return nil
         }
 
         return reportedValue / Self.reportedRateScale
-    }
-}
-
-private extension SubtensorReportedYield {
-    var isNonNegative: Bool {
-        (try? BittensorApiDecimal.fraction(reportedRate)) != nil
     }
 }
 

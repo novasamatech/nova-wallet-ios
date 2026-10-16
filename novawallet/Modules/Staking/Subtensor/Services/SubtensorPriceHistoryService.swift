@@ -108,7 +108,7 @@ private extension SubtensorPriceHistoryService {
         in markets: SubtensorSubnetMarkets
     ) -> [SubtensorSubnetRef: SubtensorSubnetMarket] {
         subnets.reduce(into: [:]) { result, subnet in
-            result[subnet] = markets.market(for: subnet.netuid)
+            result[subnet] = markets.byNetuid[subnet.netuid]
         }
     }
 
@@ -159,7 +159,7 @@ extension SubtensorPriceHistoryService: SubtensorPriceHistoryServiceProtocol {
         ) {
             let markets = try marketsWrapper.targetOperation.extractNoCancellableResultData()
 
-            guard let alphaPriceId = markets.market(for: subnet.netuid)?.coingeckoId else {
+            guard let alphaPriceId = markets.byNetuid[subnet.netuid]?.coingeckoId else {
                 return nil
             }
 

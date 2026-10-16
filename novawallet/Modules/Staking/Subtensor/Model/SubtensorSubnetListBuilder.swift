@@ -1,15 +1,10 @@
 import BigInt
 import Foundation
 
-struct SubtensorSubnetListEntry: Equatable {
-    let subnet: SubtensorCatalogueSubnet
-    let target: SubtensorStakeTarget
-}
-
 struct SubtensorSubnetListItem: Equatable {
     let subnet: SubtensorCatalogueSubnet
     let target: SubtensorStakeTarget
-    let weekly: SubtensorPriceData<SubtensorWeeklyPriceSummary>?
+    var weekly: SubtensorPriceData<SubtensorWeeklyPriceSummary>?
 
     var ref: SubtensorSubnetRef {
         subnet.ref
@@ -35,7 +30,7 @@ struct SubtensorSubnetList: Equatable {
 struct SubtensorSubnetListBuilder {
     static let thinPoolThreshold = BigUInt(2_000_000_000_000)
 
-    let entries: [SubtensorSubnetListEntry]
+    let entries: [SubtensorSubnetListItem]
     let weekly: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]?
     var previousOrder: [SubtensorSubnetRef] = []
     let favourites: Set<SubtensorSubnetRef>
@@ -62,7 +57,11 @@ struct SubtensorSubnetListBuilder {
     }
 
     private func orderedItems(sort: SubtensorSubnetSort) -> [SubtensorSubnetListItem] {
-        let items = entries.map(createItem)
+        let items = entries.map { entry in
+            var item = entry
+            item.weekly = weekly?[entry.ref]
+            return item
+        }
         let known = Set(previousOrder)
         let missing: [SubtensorSubnetRef] = items.map(\.ref).filter { !known.contains($0) }
         let appended = missing.sorted { lhs, rhs in
@@ -85,7 +84,7 @@ struct SubtensorSubnetListBuilder {
     static func entries(
         from catalogue: SubtensorSubnetCatalogue,
         subnetsInfo: SubtensorSubnetsInfo
-    ) -> [SubtensorSubnetListEntry] {
+    ) -> [SubtensorSubnetListItem] {
         let chainSubnets = Dictionary(
             subnetsInfo.subnets.map { ($0.netuid, $0) },
             uniquingKeysWith: { first, _ in first }
@@ -100,22 +99,12 @@ struct SubtensorSubnetListBuilder {
                 return nil
             }
 
-            return SubtensorSubnetListEntry(subnet: subnet, target: .subnet(info: info, price: price))
+            return SubtensorSubnetListItem(subnet: subnet, target: .subnet(info: info, price: price))
         }
     }
 }
 
 private extension SubtensorSubnetListBuilder {
-    func createItem(from entry: SubtensorSubnetListEntry) -> SubtensorSubnetListItem {
-        let ref = entry.subnet.ref
-
-        return SubtensorSubnetListItem(
-            subnet: entry.subnet,
-            target: entry.target,
-            weekly: weekly?[ref]
-        )
-    }
-
     func matches(_ item: SubtensorSubnetListItem, query: String) -> Bool {
         guard !query.isEmpty else {
             return true
@@ -130,12 +119,7 @@ private extension SubtensorSubnetListBuilder {
     }
 
     func passes(_ item: SubtensorSubnetListItem, filters: SubtensorSubnetFilters) -> Bool {
-        if filters.hideThinPools, !favourites.contains(item.ref),
-           item.subnet.taoReserve < Self.thinPoolThreshold {
-            return false
-        }
-
-        return true
+        !filters.hideThinPools || favourites.contains(item.ref) || item.subnet.taoReserve >= Self.thinPoolThreshold
     }
 
     func isOrderedBefore(

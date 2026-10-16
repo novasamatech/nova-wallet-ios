@@ -2,10 +2,6 @@ import Foundation
 
 struct SubtensorSubnetLogos {
     let urls: [UInt16: URL]
-
-    func url(for netuid: UInt16) -> URL? {
-        urls[netuid]
-    }
 }
 
 extension SubtensorSubnetLogos: Decodable {
