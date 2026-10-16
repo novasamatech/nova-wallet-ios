@@ -6,7 +6,6 @@ struct SubtensorSubnetSelectViewModel {
         case loading
         case value(text: String, isRising: Bool, sparkline: [Double])
         case unavailable(String)
-        case notListed(String)
     }
 
     let subnetRef: SubtensorSubnetRef
@@ -117,7 +116,7 @@ private extension SubtensorSubnetViewModelFactory {
         case .none:
             return .loading
         case .notListed:
-            return .notListed(strings.stakingSubtensorUiPickerNoHistory())
+            return .unavailable(strings.stakingSubtensorUiPickerNoHistory())
         case .unavailable:
             return .unavailable(strings.stakingSubtensorUiValueUnknown())
         case let .available(summary):
