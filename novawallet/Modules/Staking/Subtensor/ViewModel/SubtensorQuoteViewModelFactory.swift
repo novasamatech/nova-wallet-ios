@@ -164,6 +164,23 @@ extension SubtensorQuoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
     }
 }
 
+extension PrimitiveBalanceViewModelFactoryProtocol {
+    func subtensorFee(
+        _ fee: ExtrinsicFeeProtocol?,
+        info: AssetBalanceDisplayInfo,
+        price: PriceData?,
+        locale: Locale
+    ) -> BalanceViewModelProtocol? {
+        fee.map { fee in
+            balanceFromPrice(
+                fee.amount.decimal(assetInfo: info),
+                priceData: price,
+                roundingMode: .up
+            ).value(for: locale)
+        }
+    }
+}
+
 extension AssetBalanceFormatterFactoryProtocol {
     func subtensorSwapRate(
         amountIn: Balance,

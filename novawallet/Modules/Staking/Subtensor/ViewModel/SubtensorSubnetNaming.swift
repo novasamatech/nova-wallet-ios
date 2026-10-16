@@ -93,23 +93,6 @@ extension AssetBalanceDisplayInfo {
     }
 }
 
-extension PrimitiveBalanceViewModelFactoryProtocol {
-    func subtensorFee(
-        _ fee: ExtrinsicFeeProtocol?,
-        info: AssetBalanceDisplayInfo,
-        price: PriceData?,
-        locale: Locale
-    ) -> BalanceViewModelProtocol? {
-        fee.map { fee in
-            balanceFromPrice(
-                fee.amount.decimal(assetInfo: info),
-                priceData: price,
-                roundingMode: .up
-            ).value(for: locale)
-        }
-    }
-}
-
 extension String {
     static func subtensorUnknown(for locale: Locale) -> String {
         R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown()
