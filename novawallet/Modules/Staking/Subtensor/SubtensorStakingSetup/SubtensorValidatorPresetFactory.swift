@@ -67,33 +67,49 @@ private extension SubtensorValidatorPresetFactory {
                     return nil
                 }
 
-                guard
-                    let self,
-                    recommended.generation.stamp.freshness == .fresh,
-                    let winner = Self.highestYield(
-                        among: recommended.validators,
-                        yields: try? yieldsWrapper.targetOperation.extractNoCancellableResultData()
-                    ) else {
+                guard let self, recommended.generation.stamp.freshness == .fresh else {
                     return nil
                 }
 
-                let itemWrapper = createItemWrapper(for: winner.hotkey, subnet: subnet)
-
-                let namingOperation = ClosureOperation<SubtensorValidatorDirectoryItem?> {
-                    try itemWrapper.targetOperation.extractNoCancellableResultData().map {
-                        $0.named($0.name ?? winner.name)
-                    }
-                }
-
-                namingOperation.addDependency(itemWrapper.targetOperation)
-
-                return itemWrapper.insertingTail(operation: namingOperation)
+                return createBestItemWrapper(
+                    among: recommended.validators,
+                    yields: try? yieldsWrapper.targetOperation.extractNoCancellableResultData(),
+                    subnet: subnet
+                )
             }
 
         presetWrapper.addDependency(wrapper: recommendedWrapper)
         presetWrapper.addDependency(wrapper: yieldsWrapper)
 
         return presetWrapper.insertingHead(operations: recommendedWrapper.allOperations + yieldsWrapper.allOperations)
+    }
+
+    func createBestItemWrapper(
+        among validators: [SubtensorRecommendedValidator],
+        yields: SubtensorAlphaYields?,
+        subnet: SubtensorSubnetRef
+    ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> {
+        guard let winner = Self.highestYield(among: validators, yields: yields) else {
+            return .createWithResult(nil)
+        }
+
+        let itemWrapper = createItemWrapper(for: winner.hotkey, subnet: subnet)
+
+        let bestWrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> =
+            OperationCombiningService.compoundOptionalWrapper(
+                operationManager: OperationManager(operationQueue: operationQueue)
+            ) { [weak self] in
+                guard let item = try itemWrapper.targetOperation.extractNoCancellableResultData() else {
+                    let others = validators.filter { $0.hotkey != winner.hotkey }
+                    return self?.createBestItemWrapper(among: others, yields: yields, subnet: subnet)
+                }
+
+                return .createWithResult(item.named(item.name ?? winner.name))
+            }
+
+        bestWrapper.addDependency(wrapper: itemWrapper)
+
+        return bestWrapper.insertingHead(operations: itemWrapper.allOperations)
     }
 
     func createItemWrapper(
