@@ -340,10 +340,9 @@ extension SubtensorStakingSetupPresenter: SubtensorStakingSetupPresenterProtocol
             return
         }
 
-        validateStake(
+        dataValidationFactory.validateStake(
             for: createValidationDependencies(for: target),
-            dataValidationFactory: dataValidationFactory,
-            selectedLocale: selectedLocale
+            locale: selectedLocale
         ) { [weak self] in
             guard let self, let model = createConfirmModel() else {
                 return

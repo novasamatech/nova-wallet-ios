@@ -42,7 +42,7 @@ extension SubtensorStakingSetupPresenter: RampFlowManaging, RampDelegate {
     }
 }
 
-extension SubtensorStakingSetupPresenter: SubtensorStakePresenterValidating {
+extension SubtensorStakingSetupPresenter {
     func createValidationDependencies(for target: SubtensorStakeTarget) -> SubtensorStakeValidatingDep {
         var dependencies = SubtensorStakeValidatingDep(
             amount: inputAmount(),

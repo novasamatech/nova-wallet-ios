@@ -90,11 +90,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
         let dependencies = createValidationDependencies(amount: amount)
         let model = createConfirmModel(for: dependencies)
 
-        validateUnstake(
-            for: dependencies,
-            dataValidationFactory: dataValidationFactory,
-            selectedLocale: selectedLocale
-        ) { [weak self] in
+        dataValidationFactory.validateUnstake(for: dependencies, locale: selectedLocale) { [weak self] in
             guard let self, let model else {
                 return
             }
@@ -104,7 +100,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
     }
 }
 
-extension SubtensorUnstakeSetupPresenter: SubtensorUnstakePresenterValidating {
+extension SubtensorUnstakeSetupPresenter {
     func createValidationDependencies(amount: Balance) -> SubtensorUnstakeValidatingDep {
         let exitHotkeys = exitHotkeys(for: amount)
         let basis = basis

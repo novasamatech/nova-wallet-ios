@@ -386,5 +386,3 @@ extension SubtensorConfirmPresenter: SubtensorConfirmPresenterProtocol {
         wireframe.showSubtensorInfo(.networkFee(model.direction), from: view)
     }
 }
-
-extension SubtensorConfirmPresenter: SubtensorStakePresenterValidating, SubtensorUnstakePresenterValidating {}

@@ -161,11 +161,7 @@ private extension SubtensorClaimRewardsPresenter {
         ]
 
         validations.append(
-            contentsOf: SubtensorCommonValidations.createNetworkStateValidations(
-                for: preflight,
-                dataValidationFactory: dataValidationFactory,
-                locale: locale
-            )
+            contentsOf: dataValidationFactory.createNetworkStateValidations(for: preflight, locale: locale)
         )
 
         validations.append(ErrorConditionViolation(onError: { [weak view, wireframe] in
