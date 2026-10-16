@@ -177,9 +177,7 @@ struct SubtensorStakingSetupViewModelInput {
 
     // A reused netuid can still have metadata cached for its previous registration.
     var matchingCatalogue: SubtensorSubnetCatalogue? {
-        guard let info = target?.subnetInfo else { return nil }
-        let ref = SubtensorSubnetRef(netuid: info.netuid, registeredAt: info.networkRegisteredAt)
-        guard let subnet = subnetData.catalogue?.subnet(for: ref) else { return nil }
+        guard let ref = target?.subnetRef, let subnet = subnetData.catalogue?.subnet(for: ref) else { return nil }
         return SubtensorSubnetCatalogue(subnets: [subnet])
     }
 
