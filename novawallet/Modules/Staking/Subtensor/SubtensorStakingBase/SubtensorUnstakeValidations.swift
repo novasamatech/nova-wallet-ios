@@ -31,12 +31,25 @@ extension SubtensorUnstakeValidatingDep {
         netuid != SubtensorStakingPallet.rootNetuid
     }
 
-    var isRootHoldEnabled: Bool {
-        (preflight?.rootStakeUnlockInterval ?? 0) > 0
+    var isRootHoldActive: Bool {
+        guard
+            let preflight,
+            preflight.rootStakeUnlockInterval > 0,
+            let lastStakeBlock = preflight.lastStakeBlock else {
+            return false
+        }
+
+        guard let currentBlock else {
+            return true
+        }
+
+        let hold = SubtensorRootHold(interval: preflight.rootStakeUnlockInterval, lastStakeBlock: lastStakeBlock)
+
+        return hold.remainingBlocks(at: UInt64(currentBlock)) > 0
     }
 
     var feeNeedsFreeBalance: Bool {
-        isBatched || isRootHoldEnabled
+        isBatched || isRootHoldActive
     }
 
     var paysFeeFromPosition: Bool {
