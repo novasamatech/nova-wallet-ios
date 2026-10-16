@@ -101,6 +101,10 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
             backingCallIn: quickPickCallStore,
             runningCallbackIn: .main
         ) { [weak self] result in
+            if case let .failure(error) = result {
+                self?.logger.warning("Subtensor quick pick snapshot unavailable for the setup: \(error)")
+            }
+
             self?.presenter?.didReceiveQuickPickSnapshot(result)
         }
     }
