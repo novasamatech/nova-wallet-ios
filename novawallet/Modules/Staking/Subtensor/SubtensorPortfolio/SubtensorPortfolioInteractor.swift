@@ -72,7 +72,6 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
         weeklyChangesStore.cancel()
         historiesStore.cancel()
         state.positionsSyncService?.remove(observer: self)
-        state.positionsSyncService?.remove(failureObserver: self)
         state.throttle()
     }
 }
@@ -223,27 +222,21 @@ private extension SubtensorPortfolioInteractor {
     func subscribePositions() {
         state.positionsSyncService?.add(
             observer: self,
-            sendStateOnSubscription: true,
-            queue: .main
-        ) { [weak self] _, newState in
-            guard let self, let newState else {
-                return
+            onState: { [weak self] newState in
+                guard let self, let newState else {
+                    return
+                }
+
+                presenter?.didReceive(state: newState)
+
+                if !catalogueStore.hasCall {
+                    provideCatalogue()
+                }
+            },
+            onFailure: { [weak self] isFailed in
+                self?.presenter?.didReceiveSyncFailure(isFailed)
             }
-
-            presenter?.didReceive(state: newState)
-
-            if !catalogueStore.hasCall {
-                provideCatalogue()
-            }
-        }
-
-        state.positionsSyncService?.add(
-            failureObserver: self,
-            sendStateOnSubscription: true,
-            queue: .main
-        ) { [weak self] _, isFailed in
-            self?.presenter?.didReceiveSyncFailure(isFailed)
-        }
+        )
     }
 
     func subscribePrice() {

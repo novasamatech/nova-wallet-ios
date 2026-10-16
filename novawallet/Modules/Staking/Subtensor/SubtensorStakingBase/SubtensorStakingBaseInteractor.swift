@@ -70,7 +70,6 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
         holdsCallStore.cancel()
 
         positionsSyncService.remove(observer: self)
-        positionsSyncService.remove(failureObserver: self)
     }
 }
 
@@ -100,21 +99,13 @@ private extension SubtensorStakingBaseInteractor {
     func makePositionsSubscription() {
         positionsSyncService.add(
             observer: self,
-            sendStateOnSubscription: true,
-            queue: .main
-        ) { [weak self] _, newState in
-            self?.basePresenter?.didReceivePositions(newState)
-        }
-    }
-
-    func makePositionsFailureSubscription() {
-        positionsSyncService.add(
-            failureObserver: self,
-            sendStateOnSubscription: true,
-            queue: .main
-        ) { [weak self] _, isFailed in
-            self?.basePresenter?.didReceivePositionsSyncFailed(isFailed)
-        }
+            onState: { [weak self] newState in
+                self?.basePresenter?.didReceivePositions(newState)
+            },
+            onFailure: { [weak self] isFailed in
+                self?.basePresenter?.didReceivePositionsSyncFailed(isFailed)
+            }
+        )
     }
 
     func provideExistentialDeposit() {
@@ -139,7 +130,6 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
         makePriceSubscription()
         makeBlockNumberSubscription()
         makePositionsSubscription()
-        makePositionsFailureSubscription()
 
         provideExistentialDeposit()
     }

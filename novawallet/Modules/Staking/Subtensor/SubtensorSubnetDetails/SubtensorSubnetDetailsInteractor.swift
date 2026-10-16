@@ -60,7 +60,6 @@ final class SubtensorSubnetDetailsInteractor {
         logosCallStore.cancel()
 
         positionsSyncService?.remove(observer: self)
-        positionsSyncService?.remove(failureObserver: self)
     }
 }
 
@@ -82,19 +81,13 @@ private extension SubtensorSubnetDetailsInteractor {
 
         positionsSyncService.add(
             observer: self,
-            sendStateOnSubscription: true,
-            queue: .main
-        ) { [weak self] _, state in
-            self?.presenter?.didReceivePositions(state)
-        }
-
-        positionsSyncService.add(
-            failureObserver: self,
-            sendStateOnSubscription: true,
-            queue: .main
-        ) { [weak self] _, isFailed in
-            self?.presenter?.didReceivePositionsSyncFailed(isFailed)
-        }
+            onState: { [weak self] state in
+                self?.presenter?.didReceivePositions(state)
+            },
+            onFailure: { [weak self] isFailed in
+                self?.presenter?.didReceivePositionsSyncFailed(isFailed)
+            }
+        )
     }
 
     func loadParameters() {
