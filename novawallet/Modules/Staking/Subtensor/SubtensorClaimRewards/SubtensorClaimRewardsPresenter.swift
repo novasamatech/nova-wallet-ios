@@ -212,7 +212,7 @@ private extension SubtensorClaimRewardsPresenter {
 
     func handOffAfterProfitCheck(with preview: SubtensorRootClaimPreview) {
         let validation = dataValidationFactory.hasProfitAfterClaim(
-            payout: preview.redeemable,
+            rewards: preview.redeemable,
             fee: fee,
             locale: selectedLocale
         )

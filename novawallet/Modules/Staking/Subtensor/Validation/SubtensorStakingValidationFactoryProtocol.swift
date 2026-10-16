@@ -99,10 +99,4 @@ protocol SubtensorStakingValidationFactoryProtocol: BaseDataValidatingFactoryPro
         unlockInterval: UInt64?,
         locale: Locale
     ) -> DataValidating
-
-    func hasProfitAfterClaim(
-        payout: Balance,
-        fee: ExtrinsicFeeProtocol?,
-        locale: Locale
-    ) -> DataValidating
 }
