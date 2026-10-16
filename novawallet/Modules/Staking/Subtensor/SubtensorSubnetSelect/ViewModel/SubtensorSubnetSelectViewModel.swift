@@ -194,23 +194,6 @@ private extension SubtensorSubnetViewModelFactory {
         )
     }
 
-    func chipTitle(for sort: SubtensorSubnetSort, locale: Locale) -> String {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
-        switch sort {
-        case .sevenDayChange:
-            return strings.stakingSubtensorUiPickerSevenDay()
-        case .poolDepth:
-            return strings.stakingSubtensorQuickPoolTitle()
-        case .age:
-            return strings.stakingSubtensorUiPickerAge()
-        case .apy:
-            return strings.stakingSubtensorUiValidatorSortApy()
-        case .name:
-            return strings.commonName()
-        }
-    }
-
     func sortOption(for sort: SubtensorSubnetSort, locale: Locale) -> SubtensorSortSheetViewModel.Option {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
@@ -278,7 +261,7 @@ extension SubtensorSubnetViewModelFactory: SubtensorSubnetViewModelFactoryProtoc
 
         return SubtensorSubnetListViewModel(
             rootIcon: rootIcon,
-            chipTitle: chipTitle(for: state.sort, locale: locale),
+            chipTitle: sortOption(for: state.sort, locale: locale).title,
             caption: caption,
             isFilterActive: state.filters.isApplied,
             areControlsEnabled: state.list != nil,
