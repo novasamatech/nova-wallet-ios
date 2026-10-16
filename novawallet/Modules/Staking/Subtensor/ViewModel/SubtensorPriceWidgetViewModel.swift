@@ -17,7 +17,7 @@ struct SubtensorSubnetPriceHeaderViewModel: Equatable {
     let caption: String
     let price: String
     let change: Change
-    let currency: SubtensorSubnetCurrencyViewModel
+    let currency: SubtensorSubnetCurrencyViewModel?
 }
 
 enum SubtensorSubnetChartViewModel: Equatable {
@@ -34,7 +34,7 @@ struct SubtensorSubnetPeriodsViewModel: Equatable {
 }
 
 struct SubtensorPriceWidgetViewModel: Equatable {
-    let header: SubtensorSubnetPriceHeaderViewModel?
+    let header: SubtensorSubnetPriceHeaderViewModel
     let chart: SubtensorSubnetChartViewModel
     let periods: SubtensorSubnetPeriodsViewModel
 }
