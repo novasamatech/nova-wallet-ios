@@ -30,7 +30,7 @@ final class SubtensorPriceWidgetView: UIView {
         view.layoutStrategy = SubtensorSpacedLayoutStrategy(margin: Constants.currencyTabInset)
     }
 
-    let chartView: SubtensorSubnetPriceChartView
+    let chartView = SubtensorSubnetPriceChartView(style: .price)
 
     let chartLoadingView: SubtensorSkeletonView = .create { view in
         view.layer.cornerRadius = Constants.chartCornerRadius
@@ -54,12 +54,10 @@ final class SubtensorPriceWidgetView: UIView {
 
     private var chartViewModel: SubtensorSubnetChartViewModel?
 
-    init(hasHeader: Bool = true) {
-        chartView = SubtensorSubnetPriceChartView(style: .price, isSelectable: hasHeader)
+    override init(frame: CGRect) {
+        super.init(frame: frame)
 
-        super.init(frame: .zero)
-
-        setupLayout(hasHeader: hasHeader)
+        setupLayout()
     }
 
     @available(*, unavailable)
@@ -68,10 +66,7 @@ final class SubtensorPriceWidgetView: UIView {
     }
 
     func bind(viewModel: SubtensorPriceWidgetViewModel) {
-        if let header = viewModel.header {
-            bind(header: header)
-        }
-
+        bind(header: viewModel.header)
         bindChartIfNeeded(viewModel.chart)
         bind(periods: viewModel.periods)
     }
@@ -97,13 +92,19 @@ final class SubtensorPriceWidgetView: UIView {
             changeSkeletonView.setLoading(false)
         }
 
-        if currencyControl.titles != viewModel.currency.titles {
-            currencyControl.titles = viewModel.currency.titles
+        currencyControl.isHidden = viewModel.currency == nil
+
+        guard let currency = viewModel.currency else {
+            return
+        }
+
+        if currencyControl.titles != currency.titles {
+            currencyControl.titles = currency.titles
             updateCurrencyWidth()
         }
 
-        currencyControl.selectedSegmentIndex = viewModel.currency.selectedIndex
-        currencyControl.isEnabled = viewModel.currency.isEnabled
+        currencyControl.selectedSegmentIndex = currency.selectedIndex
+        currencyControl.isEnabled = currency.isEnabled
     }
 }
 
@@ -181,7 +182,7 @@ private extension SubtensorPriceWidgetView {
         }
     }
 
-    func setupLayout(hasHeader: Bool) {
+    func setupLayout() {
         let periodsView = UIView()
         periodsView.addSubview(periodControl)
         periodControl.snp.makeConstraints { make in
@@ -191,11 +192,10 @@ private extension SubtensorPriceWidgetView {
             make.height.equalTo(Constants.periodSize.height)
         }
 
-        let sections = hasHeader
-            ? [setupHeader(), setupChart(), periodsView]
-            : [setupChart(), periodsView]
-
-        let contentView = UIView.vStack(spacing: Constants.sectionSpacing, sections)
+        let contentView = UIView.vStack(
+            spacing: Constants.sectionSpacing,
+            [setupHeader(), setupChart(), periodsView]
+        )
 
         addSubview(contentView)
         contentView.snp.makeConstraints { make in

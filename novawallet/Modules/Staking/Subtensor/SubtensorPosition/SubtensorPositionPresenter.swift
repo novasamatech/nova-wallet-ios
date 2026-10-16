@@ -235,6 +235,14 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
         requestHistoryIfNeeded()
         provideViewModel()
     }
+
+    func selectChart(_ selection: SubtensorPriceChartSelection?) {
+        state.chartSelection = selection
+
+        if let header = viewModelFactory.createPriceHeader(for: state, locale: selectedLocale) {
+            view?.didReceive(priceHeader: header)
+        }
+    }
 }
 
 extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
