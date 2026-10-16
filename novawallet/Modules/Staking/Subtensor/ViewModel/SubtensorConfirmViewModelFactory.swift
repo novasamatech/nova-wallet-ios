@@ -66,14 +66,6 @@ private extension SubtensorConfirmViewModelFactory {
         ).value(for: locale)
     }
 
-    func createFee(_ fee: Balance, price: PriceData?, locale: Locale) -> BalanceViewModelProtocol {
-        balanceViewModelFactory.balanceFromPrice(
-            fee.decimal(assetInfo: taoInfo),
-            priceData: price,
-            roundingMode: .up
-        ).value(for: locale)
-    }
-
     func createPayTile(
         for input: SubtensorConfirmViewModelInput,
         locale: Locale
@@ -262,7 +254,9 @@ extension SubtensorConfirmViewModelFactory {
         return SubtensorConfirmViewModel(
             title: title(for: input.model, locale: locale),
             content: content,
-            networkFee: input.fee.map { createFee($0.amount, price: input.price, locale: locale) },
+            networkFee: balanceViewModelFactory.subtensorFee(
+                input.fee, info: taoInfo, price: input.price, locale: locale
+            ),
             isPriceMoved: input.isPriceMoved,
             action: SubtensorSetupActionViewModel(
                 title: input.isPriceMoved ? strings.stakingSubtensorConfirmNewRate() : strings.commonConfirm(),

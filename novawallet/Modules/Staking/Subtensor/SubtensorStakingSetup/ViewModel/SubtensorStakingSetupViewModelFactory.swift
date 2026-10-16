@@ -76,17 +76,9 @@ extension SubtensorStakingSetupViewModelFactory {
         for input: SubtensorStakingSetupViewModelInput,
         locale: Locale
     ) -> BalanceViewModelProtocol? {
-        guard let fee = input.fee else {
-            return nil
-        }
-
-        let feeDecimal = fee.amount.decimal(assetInfo: chainAsset.assetDisplayInfo)
-
-        return balanceViewModelFactory.balanceFromPrice(
-            feeDecimal,
-            priceData: input.price,
-            roundingMode: .up
-        ).value(for: locale)
+        balanceViewModelFactory.subtensorFee(
+            input.fee, info: chainAsset.assetDisplayInfo, price: input.price, locale: locale
+        )
     }
 }
 

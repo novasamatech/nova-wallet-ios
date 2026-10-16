@@ -54,16 +54,6 @@ private extension SubtensorClaimRewardsViewModelFactory {
         return BalanceViewModel(amount: viewModel.amount.approximatelyEqual(), price: viewModel.price)
     }
 
-    func createFee(for input: SubtensorClaimRewardsViewModelInput, locale: Locale) -> BalanceViewModelProtocol? {
-        input.fee.map { fee in
-            balanceViewModelFactory.balanceFromPrice(
-                fee.amount.decimal(assetInfo: taoInfo),
-                priceData: input.price,
-                roundingMode: .up
-            ).value(for: locale)
-        }
-    }
-
     func createStakeAfter(for input: SubtensorClaimRewardsViewModelInput, locale: Locale) -> String? {
         guard
             let rootStake = input.rootStake,
@@ -117,7 +107,9 @@ extension SubtensorClaimRewardsViewModelFactory: SubtensorClaimViewModelFactoryP
 
         return SubtensorClaimRewardsViewModel(
             amount: createAmount(for: input, locale: locale),
-            networkFee: createFee(for: input, locale: locale),
+            networkFee: balanceViewModelFactory.subtensorFee(
+                input.fee, info: taoInfo, price: input.price, locale: locale
+            ),
             stakeAfter: createStakeAfter(for: input, locale: locale),
             notice: createNotice(for: input, locale: locale),
             signingHint: input.signing == .noSigning ? strings.accountManagementWatchOnlyHint() : nil,
