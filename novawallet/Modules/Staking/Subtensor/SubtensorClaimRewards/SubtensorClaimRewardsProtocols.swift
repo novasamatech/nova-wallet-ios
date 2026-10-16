@@ -8,8 +8,3 @@ protocol SubtensorClaimRewardsViewProtocol: StakingGenericRewardsViewProtocol {
 protocol SubtensorClaimRewardsPresenterProtocol: StakingGenericRewardsPresenterProtocol {
     func selectValidator()
 }
-
-protocol SubtensorClaimRewardsWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
-    CommonRetryable, MessageSheetPresentable, SubtensorStakingErrorPresentable, SubtensorClaimErrorPresentable,
-    AddressOptionsPresentable, SubtensorInfoSheetPresentable, SubtensorValidatorInfoPresentable,
-    SubtensorOperationResultPresenting {}

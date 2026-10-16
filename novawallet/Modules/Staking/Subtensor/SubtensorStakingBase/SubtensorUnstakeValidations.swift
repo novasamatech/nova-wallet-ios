@@ -104,117 +104,68 @@ private extension SubtensorUnstakeValidatingDep {
     }
 }
 
-protocol SubtensorUnstakePresenterValidating {}
-
-extension SubtensorUnstakePresenterValidating {
-    func createUnstakeValidations(
+extension SubtensorStakingValidationFactoryProtocol {
+    func validateUnstake(
         for dep: SubtensorUnstakeValidatingDep,
-        dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
-        selectedLocale: Locale
-    ) -> [DataValidating] {
-        var validations = createUnstakeInputValidations(
-            for: dep,
-            dataValidationFactory: dataValidationFactory,
-            selectedLocale: selectedLocale
-        )
+        locale: Locale,
+        onSuccess: @escaping () -> Void
+    ) {
+        var validations = createUnstakeInputValidations(for: dep, locale: locale)
 
-        if let feePayerValidation = createFeePayerValidation(
-            for: dep,
-            dataValidationFactory: dataValidationFactory,
-            selectedLocale: selectedLocale
-        ) {
+        if let feePayerValidation = createFeePayerValidation(for: dep, locale: locale) {
             validations.append(feePayerValidation)
         }
 
         validations.append(
-            dataValidationFactory.sellPlanAllows(
+            sellPlanAllows(
                 dep.sellPlanInput,
                 assetDisplayInfo: dep.assetDisplayInfo,
                 onUnstakeAll: dep.onUnstakeAll,
-                locale: selectedLocale
+                locale: locale
             )
         )
 
         if !dep.isSubnet {
-            validations.append(
-                contentsOf: createRootHoldValidations(
-                    for: dep,
-                    dataValidationFactory: dataValidationFactory,
-                    selectedLocale: selectedLocale
-                )
-            )
+            validations.append(contentsOf: createRootHoldValidations(for: dep, locale: locale))
         }
 
-        validations.append(
-            contentsOf: SubtensorCommonValidations.createNetworkStateValidations(
-                for: dep.preflight,
-                dataValidationFactory: dataValidationFactory,
-                locale: selectedLocale
-            )
-        )
+        validations.append(contentsOf: createNetworkStateValidations(for: dep.preflight, locale: locale))
 
         if dep.isSubnet {
-            validations.append(
-                dataValidationFactory.priceImpactAcceptable(
-                    quote: dep.quoteContext?.latestQuote,
-                    locale: selectedLocale
-                )
-            )
+            validations.append(priceImpactAcceptable(quote: dep.quoteContext?.latestQuote, locale: locale))
         }
-
-        return validations
-    }
-
-    func validateUnstake(
-        for dep: SubtensorUnstakeValidatingDep,
-        dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
-        selectedLocale: Locale,
-        onSuccess: @escaping () -> Void
-    ) {
-        let validations = createUnstakeValidations(
-            for: dep,
-            dataValidationFactory: dataValidationFactory,
-            selectedLocale: selectedLocale
-        )
 
         DataValidationRunner(validators: validations).runValidation(notifyingOnSuccess: onSuccess)
     }
 }
 
-private extension SubtensorUnstakePresenterValidating {
+private extension SubtensorStakingValidationFactoryProtocol {
     func createUnstakeInputValidations(
         for dep: SubtensorUnstakeValidatingDep,
-        dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
-        selectedLocale: Locale
+        locale: Locale
     ) -> [DataValidating] {
         var validations: [DataValidating] = [
-            dataValidationFactory.positionsAreFresh(
+            positionsAreFresh(
                 syncFailed: dep.syncFailed,
-                locale: selectedLocale,
+                locale: locale,
                 onRetry: { dep.onPositionsRefresh() }
             ),
 
-            dataValidationFactory.has(
+            has(
                 fee: dep.fee,
-                locale: selectedLocale,
+                locale: locale,
                 onError: { dep.onFeeRefresh() }
             ),
 
-            dataValidationFactory.hasPreflight(
+            hasPreflight(
                 dep.preflight,
-                locale: selectedLocale,
+                locale: locale,
                 onRetry: { dep.onPreflightRefresh() }
             )
         ]
 
         if dep.isSubnet {
-            validations.append(
-                contentsOf: SubtensorCommonValidations.createQuoteValidations(
-                    for: dep.quoteContext,
-                    dataValidationFactory: dataValidationFactory,
-                    locale: selectedLocale
-                )
-            )
+            validations.append(contentsOf: createQuoteValidations(for: dep.quoteContext, locale: locale))
         }
 
         return validations
@@ -222,43 +173,41 @@ private extension SubtensorUnstakePresenterValidating {
 
     func createFeePayerValidation(
         for dep: SubtensorUnstakeValidatingDep,
-        dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
-        selectedLocale: Locale
+        locale: Locale
     ) -> DataValidating? {
         guard dep.feeNeedsFreeBalance else {
             return nil
         }
 
-        return dataValidationFactory.canPayBatchedNetworkFee(
+        return canPayBatchedNetworkFee(
             transferable: dep.balance?.transferable,
             networkFee: dep.fee?.amountForCurrentAccount,
             existentialDeposit: dep.existentialDeposit,
-            locale: selectedLocale
+            locale: locale
         )
     }
 
     func createRootHoldValidations(
         for dep: SubtensorUnstakeValidatingDep,
-        dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
-        selectedLocale: Locale
+        locale: Locale
     ) -> [DataValidating] {
         guard let groupExitHolds = dep.groupExitHolds else {
             return [
-                dataValidationFactory.rootUnlockIntervalElapsed(
+                rootUnlockIntervalElapsed(
                     currentBlock: dep.currentBlock,
                     lastStakeBlock: dep.preflight?.lastStakeBlock,
                     unlockInterval: dep.preflight?.rootStakeUnlockInterval,
-                    locale: selectedLocale
+                    locale: locale
                 )
             ]
         }
 
         return groupExitHolds.map { hold in
-            dataValidationFactory.rootUnlockIntervalElapsed(
+            rootUnlockIntervalElapsed(
                 currentBlock: dep.currentBlock,
                 lastStakeBlock: hold.lastStakeBlock,
                 unlockInterval: hold.interval,
-                locale: selectedLocale
+                locale: locale
             )
         }
     }

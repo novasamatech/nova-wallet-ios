@@ -27,12 +27,3 @@ protocol SubtensorUnstakeInteractorOutputProtocol: SubtensorStakingBaseInteracto
     func didReceiveSubnetsInfoError(_ error: Error)
     func didReceiveValidator(_ validator: SubtensorValidatorDirectoryItem?, hotkey: AccountId)
 }
-
-protocol SubtensorUnstakeSetupWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
-    CommonRetryable, SubtensorStakingErrorPresentable, SubtensorInfoSheetPresentable,
-    SubtensorValidatorInfoPresentable {
-    func showConfirm(
-        from view: SubtensorUnstakeSetupViewProtocol?,
-        model: SubtensorConfirmModel
-    )
-}

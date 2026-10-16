@@ -99,7 +99,7 @@ private extension SubtensorSubnetCell {
             changeLabel.textColor = isRising ? R.color.colorTextPositive() : R.color.colorTextNegative()
             sparklineView.bind(values: sparkline, isRising: isRising)
             setChangeLoading(false)
-        case let .unavailable(text), let .notListed(text):
+        case let .unavailable(text):
             changeLabel.text = text
             changeLabel.textColor = R.color.colorTextSecondary()
             sparklineView.clear()

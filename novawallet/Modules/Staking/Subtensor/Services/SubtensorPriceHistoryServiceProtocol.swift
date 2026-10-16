@@ -6,7 +6,7 @@ protocol SubtensorPriceHistoryServiceProtocol: AnyObject {
         for subnet: SubtensorSubnetRef,
         period: SubtensorPricePeriod,
         currency: Currency
-    ) -> CompoundOperationWrapper<SubtensorPriceHistoryResult>
+    ) -> CompoundOperationWrapper<SubtensorPriceHistory?>
 
     func createWeeklyChangesWrapper(
         for subnets: [SubtensorSubnetRef]

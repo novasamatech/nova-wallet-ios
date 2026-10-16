@@ -48,27 +48,17 @@ private extension SubtensorApyFormatter {
 }
 
 extension NumberFormatter {
-    static var subtensorSignedPercentSingle: LocalizableResource<NumberFormatter> {
-        LocalizableResource { locale in
-            let formatter = NumberFormatter.signedPercentSingle
-            formatter.locale = locale
-            formatter.spacePercentSymbol()
-            return formatter
-        }
-    }
+    static var subtensorSignedPercentSingle: LocalizableResource<NumberFormatter> { spaced(.signedPercentSingle) }
 
-    static var subtensorPercentSingle: LocalizableResource<NumberFormatter> {
-        LocalizableResource { locale in
-            let formatter = NumberFormatter.percentSingle
-            formatter.locale = locale
-            formatter.spacePercentSymbol()
-            return formatter
-        }
-    }
+    static var subtensorPercentSingle: LocalizableResource<NumberFormatter> { spaced(.percentSingle) }
 
-    static var subtensorPercentSingleHalfEven: LocalizableResource<NumberFormatter> {
+    static var subtensorPercentSingleHalfEven: LocalizableResource<NumberFormatter> { spaced(.percentSingleHalfEven) }
+
+    private static func spaced(
+        _ makeFormatter: @escaping @autoclosure () -> NumberFormatter
+    ) -> LocalizableResource<NumberFormatter> {
         LocalizableResource { locale in
-            let formatter = NumberFormatter.percentSingleHalfEven
+            let formatter = makeFormatter()
             formatter.locale = locale
             formatter.spacePercentSymbol()
             return formatter

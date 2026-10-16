@@ -3,24 +3,14 @@ import Operation_iOS
 import SubstrateSdk
 
 protocol SubtensorPositionsSyncServiceProtocol: ApplicationServiceProtocol {
+    /// `BaseSyncService` only logs and reschedules a failed sync, so failures get their own observable
     func add(
         observer: AnyObject,
-        sendStateOnSubscription: Bool,
-        queue: DispatchQueue?,
-        closure: @escaping Observable<Multistaking.SubtensorStakingState?>.StateChangeClosure
+        onState: @escaping (Multistaking.SubtensorStakingState?) -> Void,
+        onFailure: @escaping (Bool) -> Void
     )
 
     func remove(observer: AnyObject)
-
-    /// `BaseSyncService` only logs and reschedules a failed sync, so failures get their own observable
-    func add(
-        failureObserver: AnyObject,
-        sendStateOnSubscription: Bool,
-        queue: DispatchQueue?,
-        closure: @escaping Observable<Bool>.StateChangeClosure
-    )
-
-    func remove(failureObserver: AnyObject)
 
     func refresh()
 }
@@ -101,9 +91,8 @@ private extension SubtensorStakingPositionsSyncService {
 extension SubtensorStakingPositionsSyncService: SubtensorPositionsSyncServiceProtocol {
     func add(
         observer: AnyObject,
-        sendStateOnSubscription: Bool,
-        queue: DispatchQueue?,
-        closure: @escaping Observable<Multistaking.SubtensorStakingState?>.StateChangeClosure
+        onState: @escaping (Multistaking.SubtensorStakingState?) -> Void,
+        onFailure: @escaping (Bool) -> Void
     ) {
         mutex.lock()
 
@@ -111,12 +100,13 @@ extension SubtensorStakingPositionsSyncService: SubtensorPositionsSyncServicePro
             mutex.unlock()
         }
 
-        stateObservable.addObserver(
-            with: observer,
-            sendStateOnSubscription: sendStateOnSubscription,
-            queue: queue,
-            closure: closure
-        )
+        stateObservable.addObserver(with: observer, sendStateOnSubscription: true, queue: .main) { _, state in
+            onState(state)
+        }
+
+        failureObservable.addObserver(with: observer, sendStateOnSubscription: true, queue: .main) { _, isFailed in
+            onFailure(isFailed)
+        }
     }
 
     func remove(observer: AnyObject) {
@@ -127,36 +117,7 @@ extension SubtensorStakingPositionsSyncService: SubtensorPositionsSyncServicePro
         }
 
         stateObservable.removeObserver(by: observer)
-    }
-
-    func add(
-        failureObserver: AnyObject,
-        sendStateOnSubscription: Bool,
-        queue: DispatchQueue?,
-        closure: @escaping Observable<Bool>.StateChangeClosure
-    ) {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        failureObservable.addObserver(
-            with: failureObserver,
-            sendStateOnSubscription: sendStateOnSubscription,
-            queue: queue,
-            closure: closure
-        )
-    }
-
-    func remove(failureObserver: AnyObject) {
-        mutex.lock()
-
-        defer {
-            mutex.unlock()
-        }
-
-        failureObservable.removeObserver(by: failureObserver)
+        failureObservable.removeObserver(by: observer)
     }
 
     func refresh() {

@@ -71,43 +71,23 @@ private extension SubtensorStakingOutcomeParser {
     func decode(event: Event, context: [CodingUserInfoKey: Any]) -> SubtensorDecodedStakingEvent? {
         let metadata = codingFactory.metadata
 
-        if metadata.eventMatches(event, path: SubtensorStakingPallet.stakeAddedEventPath) {
-            return (try? event.params.map(to: SubtensorStakingPallet.StakeAddedEvent.self, with: context))
-                .map { .stakeAdded($0) }
+        typealias Decoded = SubtensorDecodedStakingEvent
+
+        func matched<T: Decodable>(_ path: EventCodingPath, _ wrap: (T) -> Decoded) -> Decoded? {
+            guard metadata.eventMatches(event, path: path) else {
+                return nil
+            }
+
+            return (try? event.params.map(to: T.self, with: context)).map(wrap)
         }
 
-        if metadata.eventMatches(event, path: SubtensorStakingPallet.stakeRemovedEventPath) {
-            return (try? event.params.map(to: SubtensorStakingPallet.StakeRemovedEvent.self, with: context))
-                .map { .stakeRemoved($0) }
-        }
-
-        if metadata.eventMatches(event, path: SubtensorStakingPallet.basketClaimedEventPath) {
-            return (try? event.params.map(to: SubtensorStakingPallet.BasketClaimedEvent.self, with: context))
-                .map { .basketClaimed($0) }
-        }
-
-        if metadata.eventMatches(event, path: SubtensorStakingPallet.rootClaimedEventPath) {
-            return (try? event.params.map(to: SubtensorStakingPallet.RootClaimedEvent.self, with: context))
-                .map { .rootClaimed($0) }
-        }
-
-        if metadata.eventMatches(event, path: SubtensorStakingPallet.transactionFeePaidWithAlphaEventPath) {
-            let eventType = SubtensorStakingPallet.TransactionFeePaidWithAlphaEvent.self
-
-            return (try? event.params.map(to: eventType, with: context)).map { .alphaFeePaid($0) }
-        }
-
-        if metadata.eventMatches(event, path: TransactionPaymentPallet.feePaidPath) {
-            return (try? event.params.map(to: TransactionPaymentPallet.TransactionFeePaid.self, with: context))
-                .map { .transactionFeePaid($0) }
-        }
-
-        if metadata.eventMatches(event, path: BalancesPallet.balancesTransfer) {
-            return (try? event.params.map(to: BalancesPallet.TransferEvent.self, with: context))
-                .map { .transfer($0) }
-        }
-
-        return nil
+        return matched(SubtensorStakingPallet.stakeAddedEventPath, Decoded.stakeAdded) ??
+            matched(SubtensorStakingPallet.stakeRemovedEventPath, Decoded.stakeRemoved) ??
+            matched(SubtensorStakingPallet.basketClaimedEventPath, Decoded.basketClaimed) ??
+            matched(SubtensorStakingPallet.rootClaimedEventPath, Decoded.rootClaimed) ??
+            matched(SubtensorStakingPallet.transactionFeePaidWithAlphaEventPath, Decoded.alphaFeePaid) ??
+            matched(TransactionPaymentPallet.feePaidPath, Decoded.transactionFeePaid) ??
+            matched(BalancesPallet.balancesTransfer, Decoded.transfer)
     }
 
     func executedAmounts(
@@ -188,13 +168,12 @@ private struct SubtensorOutcomeTarget {
     let hotkeys: Set<AccountId>
     let netuid: UInt16
 
-    init(kind: Kind, coldkey: AccountId, hotkeys: Set<AccountId>, netuid: UInt16) {
-        self.kind = kind
-        self.coldkey = coldkey
-        self.hotkeys = hotkeys
-        self.netuid = netuid
+    func matches(coldkey eventColdkey: AccountId, hotkey eventHotkey: AccountId, netuid eventNetuid: UInt16) -> Bool {
+        coldkey == eventColdkey && hotkeys.contains(eventHotkey) && netuid == eventNetuid
     }
+}
 
+private extension SubtensorOutcomeTarget {
     init(operation: SubtensorStakingOperation, coldkey: AccountId) {
         let rootNetuid = SubtensorStakingPallet.rootNetuid
 
@@ -214,10 +193,6 @@ private struct SubtensorOutcomeTarget {
         case let .rootClaim(hotkey):
             self.init(kind: .claim, coldkey: coldkey, hotkeys: [hotkey], netuid: rootNetuid)
         }
-    }
-
-    func matches(coldkey eventColdkey: AccountId, hotkey eventHotkey: AccountId, netuid eventNetuid: UInt16) -> Bool {
-        coldkey == eventColdkey && hotkeys.contains(eventHotkey) && netuid == eventNetuid
     }
 }
 

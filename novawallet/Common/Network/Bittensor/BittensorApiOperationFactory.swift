@@ -37,7 +37,7 @@ final class BittensorApiOperationFactory {
 
 extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
     func createSubnetsWrapper() -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.SubnetCollection>> {
-        createWrapper(route: .subnets, path: "/subnets")
+        createWrapper(path: "/subnets")
     }
 
     func peekSubnets() -> HTTPCachePeek<BittensorApiResult<BittensorApi.SubnetCollection>> {
@@ -47,7 +47,7 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
     func createValidatorsWrapper(
         netuid: UInt16
     ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.ValidatorCollection>> {
-        createWrapper(route: .validators, path: "/subnets/\(netuid)/validators")
+        createWrapper(path: "/subnets/\(netuid)/validators")
     }
 
     func peekValidators(netuid: UInt16) -> HTTPCachePeek<BittensorApiResult<BittensorApi.ValidatorCollection>> {
@@ -61,7 +61,7 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
         guard netuid != 0 else {
             return .createWithError(BittensorApiError.rejected(code: nil, requestId: nil))
         }
-        return createPagedWrapper(route: .alphaYield, path: "/subnets/\(netuid)/yields/alpha", page: page)
+        return createPagedWrapper(path: "/subnets/\(netuid)/yields/alpha", page: page)
     }
 
     func peekAlphaYield(
@@ -74,7 +74,7 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
 
     func createRootValidatorsWrapper()
         -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RootValidatorCollection>> {
-        createWrapper(route: .rootValidators, path: "/root/validators")
+        createWrapper(path: "/root/validators")
     }
 
     func peekRootValidators() -> HTTPCachePeek<BittensorApiResult<BittensorApi.RootValidatorCollection>> {
@@ -82,14 +82,14 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
     }
 
     func createRootOverviewWrapper() -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RootOverview>> {
-        createWrapper(route: .rootOverview, path: "/root/overview")
+        createWrapper(path: "/root/overview")
     }
 
     func createOperationsWrapper(
         accountSubject: AccountAddress,
         page: Int?
     ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.OperationCollection>> {
-        createSearchWrapper(route: .operations, accountSubject: accountSubject, page: page)
+        createSearchWrapper(path: Self.operationsPath, accountSubject: accountSubject, page: page)
     }
 
     func peekOperations(
@@ -99,14 +99,14 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
         guard Self.isValidAccountSubject(accountSubject), Self.pageRange.contains(page) else { return .miss }
 
         return peek(
-            path: Route.operations.pathTemplate,
+            path: Self.operationsPath,
             queryItems: Self.searchQueryItems(accountSubject: accountSubject, page: page)
         )
     }
 
     func dropOperations(accountSubject: AccountAddress) {
         cache.drop(
-            BittensorApiCacheDrop(path: Route.operations.pathTemplate, queryItem: "accountSubject=\(accountSubject)")
+            BittensorApiCacheDrop(path: Self.operationsPath, queryItem: "accountSubject=\(accountSubject)")
         )
     }
 
@@ -115,7 +115,7 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
         period: BittensorApi.PortfolioHistoryPeriod
     ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.PortfolioHistoryCollection>> {
         createSearchWrapper(
-            route: .portfolioHistory,
+            path: "/portfolio/history/search",
             accountSubject: accountSubject,
             page: nil,
             queryItems: [URLQueryItem(name: "period", value: period.rawValue)]
@@ -124,12 +124,12 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
 
     func createRecommendationsWrapper()
         -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RecommendationCollection>> {
-        createWrapper(route: .recommendations, path: "/recommendations")
+        createWrapper(path: "/recommendations")
     }
 
     func createRankedSubnetsWrapper()
         -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.SubnetRankingCollection>> {
-        createWrapper(route: .rankedSubnets, path: "/recommendations/subnets")
+        createWrapper(path: "/recommendations/subnets")
     }
 
     func peekRankedSubnets() -> HTTPCachePeek<BittensorApiResult<BittensorApi.SubnetRankingCollection>> {
@@ -139,51 +139,14 @@ extension BittensorApiOperationFactory: BittensorApiOperationFactoryProtocol {
     func createRankedValidatorsWrapper(
         netuid: UInt16
     ) -> CompoundOperationWrapper<BittensorApiResult<BittensorApi.RankedValidatorCollection>> {
-        createWrapper(route: .rankedValidators, path: "/recommendations/subnets/\(netuid)/validators")
+        createWrapper(path: "/recommendations/subnets/\(netuid)/validators")
     }
 }
 
 private extension BittensorApiOperationFactory {
-    enum Route {
-        case subnets
-        case validators
-        case alphaYield
-        case rootValidators
-        case rootOverview
-        case operations
-        case portfolioHistory
-        case recommendations
-        case rankedSubnets
-        case rankedValidators
-
-        var pathTemplate: String {
-            switch self {
-            case .subnets:
-                return "/subnets"
-            case .validators:
-                return "/subnets/{netuid}/validators"
-            case .alphaYield:
-                return "/subnets/{netuid}/yields/alpha"
-            case .rootValidators:
-                return "/root/validators"
-            case .rootOverview:
-                return "/root/overview"
-            case .operations:
-                return "/operations/search"
-            case .portfolioHistory:
-                return "/portfolio/history/search"
-            case .recommendations:
-                return "/recommendations"
-            case .rankedSubnets:
-                return "/recommendations/subnets"
-            case .rankedValidators:
-                return "/recommendations/subnets/{netuid}/validators"
-            }
-        }
-    }
+    static let operationsPath = "/operations/search"
 
     func createPagedWrapper<T: Decodable & BittensorApiWireChecked>(
-        route: Route,
         path: String,
         page: Int
     ) -> CompoundOperationWrapper<BittensorApiResult<T>> {
@@ -191,7 +154,7 @@ private extension BittensorApiOperationFactory {
             return .createWithError(BittensorApiError.rejected(code: nil, requestId: nil))
         }
 
-        return createWrapper(route: route, path: path, queryItems: Self.pagedQueryItems(page: page))
+        return createWrapper(path: path, queryItems: Self.pagedQueryItems(page: page))
     }
 
     func peekPage<T>(path: String, page: Int) -> HTTPCachePeek<BittensorApiResult<T>> {
@@ -212,7 +175,7 @@ private extension BittensorApiOperationFactory {
     }
 
     func createSearchWrapper<T: Decodable & BittensorApiWireChecked>(
-        route: Route,
+        path: String,
         accountSubject: AccountAddress,
         page: Int?,
         queryItems: [URLQueryItem] = []
@@ -222,8 +185,7 @@ private extension BittensorApiOperationFactory {
         }
 
         return createWrapper(
-            route: route,
-            path: route.pathTemplate,
+            path: path,
             queryItems: Self.searchQueryItems(accountSubject: accountSubject, page: page) + queryItems
         )
     }
@@ -236,7 +198,6 @@ private extension BittensorApiOperationFactory {
     }
 
     func createWrapper<T: Decodable & BittensorApiWireChecked>(
-        route: Route,
         path: String,
         queryItems: [URLQueryItem] = []
     ) -> CompoundOperationWrapper<BittensorApiResult<T>> {
@@ -249,7 +210,7 @@ private extension BittensorApiOperationFactory {
             fetch: { [transport, logger] admission in
                 Self.createFetchWrapper(
                     T.self, responseWrapper: transport.createResponseWrapper(for: request, admission: admission),
-                    route: route, logger: logger
+                    path: path, logger: logger
                 )
             }
         )
@@ -299,14 +260,14 @@ private extension BittensorApiOperationFactory {
     static func createFetchWrapper<T: Decodable & BittensorApiWireChecked>(
         _ type: T.Type,
         responseWrapper: CompoundOperationWrapper<BittensorApiRawResponse>,
-        route: Route,
+        path: String,
         logger: LoggerProtocol
     ) -> CompoundOperationWrapper<BittensorApiFetchedValue> {
         let parseOperation = ClosureOperation<BittensorApiFetchedValue> {
             let response = try responseWrapper.targetOperation.extractNoCancellableResultData()
 
             do {
-                return try parse(type, response: response, route: route)
+                return try parse(type, response: response, path: path)
             } catch let BittensorApiError.contractViolation(detail, requestId) {
                 logger.warning("Bittensor API contract violation, request id \(requestId ?? "none"): \(detail)")
 
@@ -322,7 +283,7 @@ private extension BittensorApiOperationFactory {
     static func parse<T: Decodable & BittensorApiWireChecked>(
         _ type: T.Type,
         response: BittensorApiRawResponse,
-        route: Route
+        path: String
     ) throws -> BittensorApiFetchedValue {
         let value: T
 
@@ -331,12 +292,12 @@ private extension BittensorApiOperationFactory {
             try value.validateWire()
         } catch let violation as BittensorApiWireViolation {
             throw BittensorApiError.contractViolation(
-                detail: "GET \(route.pathTemplate): invalid \(violation.field)",
+                detail: "GET \(path): invalid \(violation.field)",
                 requestId: response.requestId
             )
         } catch {
             throw BittensorApiError.contractViolation(
-                detail: "GET \(route.pathTemplate): \(describe(error))",
+                detail: "GET \(path): \(describe(error))",
                 requestId: response.requestId
             )
         }

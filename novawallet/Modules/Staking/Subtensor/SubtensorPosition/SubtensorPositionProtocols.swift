@@ -37,7 +37,7 @@ protocol SubnetPositionInteractorOutputProtocol: AnyObject {
     func didReceive(claimable: [SubtensorRootClaimPreview], isFailed: Bool)
     func didReceive(holds: [AccountId: SubtensorRootHold])
     func didReceive(blockNumber: BlockNumber)
-    func didReceive(history: SubtensorPriceHistoryResult, for period: SubtensorPricePeriod)
+    func didReceive(history: SubtensorPriceHistory?, for period: SubtensorPricePeriod)
     func didFailHistory(for period: SubtensorPricePeriod)
 }
 

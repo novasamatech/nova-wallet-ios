@@ -2,13 +2,7 @@ import Foundation
 
 private extension SubtensorUnstakeSetupPresenter {
     func findGroup(in state: Multistaking.SubtensorStakingState?) -> SubtensorPortfolioGroup? {
-        guard let state else {
-            return nil
-        }
-
-        let portfolio = SubtensorPortfolioBuilder.build(state: state)
-
-        return isRoot ? portfolio.stakedRoot : portfolio.subnets.first { $0.netuid == netuid }
+        state.flatMap { SubtensorPortfolioBuilder.build(state: $0).group(netuid: netuid) }
     }
 
     func applyMaxChange(from previousMax: Balance?) {
