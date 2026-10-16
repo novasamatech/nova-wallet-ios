@@ -21,71 +21,29 @@ final class SubtensorValidatorDirectoryService {
 }
 
 private extension SubtensorValidatorDirectoryService {
-    func createListedRowWrapper(
+    func createListedItemWrapper(
         for hotkey: AccountId,
         subnet: SubtensorSubnetRef
-    ) -> CompoundOperationWrapper<Row?> {
-        let listingWrapper = createListingWrapper(for: subnet.netuid)
+    ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> {
+        let directoryWrapper = createDirectoryWrapper(for: subnet)
 
-        let rowOperation = ClosureOperation<Row?> {
+        let itemOperation = ClosureOperation<SubtensorValidatorDirectoryItem?> {
             guard
-                let listing = try? listingWrapper.targetOperation.extractNoCancellableResultData(),
-                let row = listing.rows.first(where: { $0.hotkey == hotkey }) else {
+                let directory = try? directoryWrapper.targetOperation.extractNoCancellableResultData(),
+                var item = directory.items.first(where: { $0.hotkey == hotkey }) else {
                 return nil
             }
 
-            return Row(
-                hotkey: row.hotkey,
-                name: row.name,
-                stake: listing.listStamp?.freshness == .fresh ? row.stake : nil
-            )
-        }
-
-        rowOperation.addDependency(listingWrapper.targetOperation)
-
-        return listingWrapper.insertingTail(operation: rowOperation)
-    }
-
-    func createListingWrapper(for netuid: UInt16) -> CompoundOperationWrapper<Listing> {
-        let logger = logger
-
-        guard netuid != SubtensorStakingPallet.rootNetuid else {
-            let rootWrapper = apiOperationFactory.createRootValidatorsWrapper()
-
-            let listingOperation = ClosureOperation<Listing> {
-                let response = try rootWrapper.targetOperation.extractNoCancellableResultData()
-
-                return Self.makeRootListing(from: response, logger: logger)
+            if directory.listStamp?.freshness != .fresh {
+                item.reportedStake = nil
             }
 
-            listingOperation.addDependency(rootWrapper.targetOperation)
-
-            return rootWrapper.insertingTail(operation: listingOperation)
+            return item
         }
 
-        let validatorsWrapper = apiOperationFactory.createValidatorsWrapper(netuid: netuid)
+        itemOperation.addDependency(directoryWrapper.targetOperation)
 
-        let listingOperation = ClosureOperation<Listing> {
-            let response = try validatorsWrapper.targetOperation.extractNoCancellableResultData()
-
-            return Self.makeListing(from: response, netuid: netuid, logger: logger)
-        }
-
-        listingOperation.addDependency(validatorsWrapper.targetOperation)
-
-        return validatorsWrapper.insertingTail(operation: listingOperation)
-    }
-
-    func cachedListing(for netuid: UInt16) -> HTTPCachePeek<Listing> {
-        let logger = logger
-
-        guard netuid != SubtensorStakingPallet.rootNetuid else {
-            return apiOperationFactory.peekRootValidators().map { Self.makeRootListing(from: $0, logger: logger) }
-        }
-
-        return apiOperationFactory.peekValidators(netuid: netuid).map {
-            Self.makeListing(from: $0, netuid: netuid, logger: logger)
-        }
+        return directoryWrapper.insertingTail(operation: itemOperation)
     }
 
     func createChainItemWrapper(
@@ -121,28 +79,54 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
     func createDirectoryWrapper(
         for subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectory> {
-        let listingWrapper = createListingWrapper(for: subnet.netuid)
+        let logger = logger
 
-        let directoryOperation = ClosureOperation<SubtensorValidatorDirectory> {
-            let listing = try listingWrapper.targetOperation.extractNoCancellableResultData()
+        guard subnet.netuid != SubtensorStakingPallet.rootNetuid else {
+            let rootWrapper = apiOperationFactory.createRootValidatorsWrapper()
 
-            return Self.makeDirectory(subnet: subnet, listing: listing)
+            let directoryOperation = ClosureOperation<SubtensorValidatorDirectory> {
+                let response = try rootWrapper.targetOperation.extractNoCancellableResultData()
+
+                return Self.makeRootListing(from: response, subnet: subnet, logger: logger)
+            }
+
+            directoryOperation.addDependency(rootWrapper.targetOperation)
+
+            return rootWrapper.insertingTail(operation: directoryOperation)
         }
 
-        directoryOperation.addDependency(listingWrapper.targetOperation)
+        let validatorsWrapper = apiOperationFactory.createValidatorsWrapper(netuid: subnet.netuid)
 
-        return listingWrapper.insertingTail(operation: directoryOperation)
+        let directoryOperation = ClosureOperation<SubtensorValidatorDirectory> {
+            let response = try validatorsWrapper.targetOperation.extractNoCancellableResultData()
+
+            return Self.makeListing(from: response, subnet: subnet, logger: logger)
+        }
+
+        directoryOperation.addDependency(validatorsWrapper.targetOperation)
+
+        return validatorsWrapper.insertingTail(operation: directoryOperation)
     }
 
     func cachedDirectory(for subnet: SubtensorSubnetRef) -> HTTPCachePeek<SubtensorValidatorDirectory> {
-        cachedListing(for: subnet.netuid).map { Self.makeDirectory(subnet: subnet, listing: $0) }
+        let logger = logger
+
+        guard subnet.netuid != SubtensorStakingPallet.rootNetuid else {
+            return apiOperationFactory.peekRootValidators().map {
+                Self.makeRootListing(from: $0, subnet: subnet, logger: logger)
+            }
+        }
+
+        return apiOperationFactory.peekValidators(netuid: subnet.netuid).map {
+            Self.makeListing(from: $0, subnet: subnet, logger: logger)
+        }
     }
 
     func createDetailWrapper(
         for hotkey: AccountId,
         subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem> {
-        let listedWrapper = createListedRowWrapper(for: hotkey, subnet: subnet)
+        let listedWrapper = createListedItemWrapper(for: hotkey, subnet: subnet)
 
         let itemWrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem> =
             OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) { [weak self] in
@@ -156,7 +140,7 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
                     for: hotkey,
                     subnet: subnet,
                     name: listed?.name,
-                    stake: listed?.stake
+                    stake: listed?.reportedStake
                 )
             }
 
