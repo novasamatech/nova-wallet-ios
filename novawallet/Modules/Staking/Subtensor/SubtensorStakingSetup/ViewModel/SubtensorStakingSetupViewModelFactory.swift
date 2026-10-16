@@ -200,20 +200,9 @@ extension SubtensorStakingSetupViewModelFactory {
         case .none:
             return .unselected(title: selectTitle)
         case let .selected(validator):
-            guard let address = try? validator.hotkey.toAddress(using: chainAsset.chain.chainFormat) else {
-                return .unselected(title: selectTitle)
-            }
-
-            let displayAddress = DisplayAddress(address: address, username: validator.name ?? "")
-            let viewModel = displayAddressFactory.createViewModel(from: displayAddress)
-
-            return .selected(
-                DisplayAddressViewModel(
-                    address: viewModel.address,
-                    name: validator.name ?? address.mediumTruncated,
-                    imageViewModel: viewModel.imageViewModel
-                )
-            )
+            return displayAddressFactory.subtensorValidator(
+                hotkey: validator.hotkey, name: validator.name, chainFormat: chainAsset.chain.chainFormat
+            ).map { .selected($0) } ?? .unselected(title: selectTitle)
         }
     }
 
@@ -264,5 +253,17 @@ extension SubtensorStakingSetupViewModelFactory {
             title: showsEnterAmount ? strings.transferSetupEnterAmount() : strings.commonContinue(),
             isEnabled: input.canProceed
         )
+    }
+}
+
+extension DisplayAddressViewModelFactoryProtocol {
+    func subtensorValidator(hotkey: AccountId, name: String?, chainFormat: ChainFormat) -> DisplayAddressViewModel? {
+        guard let address = try? hotkey.toAddress(using: chainFormat) else {
+            return nil
+        }
+
+        let image = createViewModel(from: DisplayAddress(address: address, username: name ?? "")).imageViewModel
+
+        return DisplayAddressViewModel(address: address, name: name ?? address.mediumTruncated, imageViewModel: image)
     }
 }

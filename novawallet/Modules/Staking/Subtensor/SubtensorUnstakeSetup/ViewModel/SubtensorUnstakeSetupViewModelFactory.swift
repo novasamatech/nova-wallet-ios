@@ -344,19 +344,10 @@ private extension SubtensorUnstakeSetupViewModelFactory {
     }
 
     func createValidator(for input: SubtensorUnstakeSetupViewModelInput) -> SubtensorSetupValidatorViewModel {
-        guard
-            let hotkey = input.primaryHotkey,
-            let address = try? hotkey.toAddress(using: chainAsset.chain.chainFormat) else {
-            return .loading
-        }
-
-        let name = input.validatorName ?? address.mediumTruncated
-        let viewModel = displayAddressFactory.createViewModel(
-            from: DisplayAddress(address: address, username: input.validatorName ?? "")
-        )
-
-        return .selected(
-            DisplayAddressViewModel(address: viewModel.address, name: name, imageViewModel: viewModel.imageViewModel)
-        )
+        input.primaryHotkey.flatMap { hotkey in
+            displayAddressFactory.subtensorValidator(
+                hotkey: hotkey, name: input.validatorName, chainFormat: chainAsset.chain.chainFormat
+            )
+        }.map { .selected($0) } ?? .loading
     }
 }
