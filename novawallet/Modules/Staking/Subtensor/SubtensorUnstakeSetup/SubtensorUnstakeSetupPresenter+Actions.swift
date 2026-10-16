@@ -144,23 +144,6 @@ extension SubtensorUnstakeSetupPresenter {
         }
     }
 
-    func createQuoteContext() -> SubtensorQuoteValidatingContext? {
-        guard !isRoot else {
-            return nil
-        }
-
-        let latestQuote = quoteFlow.freshQuote
-
-        return SubtensorQuoteValidatingContext(
-            latestQuote: latestQuote,
-            acknowledgedLimit: latestQuote?.limitPrice,
-            tradesUnavailable: tradesUnavailable,
-            onQuoteRefresh: { [weak self] in
-                self?.forceQuoteRefresh()
-            }
-        )
-    }
-
     func createConfirmModel(for dependencies: SubtensorUnstakeValidatingDep) -> SubtensorConfirmModel? {
         guard
             let target,

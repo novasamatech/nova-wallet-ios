@@ -44,7 +44,7 @@ extension SubtensorStakingSetupPresenter: RampFlowManaging, RampDelegate {
 
 extension SubtensorStakingSetupPresenter {
     func createValidationDependencies(for target: SubtensorStakeTarget) -> SubtensorStakeValidatingDep {
-        var dependencies = SubtensorStakeValidatingDep(
+        SubtensorStakeValidatingDep(
             amount: inputAmount(),
             balance: balance,
             fee: fee,
@@ -56,23 +56,9 @@ extension SubtensorStakingSetupPresenter {
             },
             onPreflightRefresh: { [weak self] in
                 self?.refreshPreflight()
-            }
+            },
+            quoteContext: createQuoteContext()
         )
-
-        if !target.isRoot {
-            let latestQuote = quoteFlow.freshQuote
-
-            dependencies.quoteContext = SubtensorQuoteValidatingContext(
-                latestQuote: latestQuote,
-                acknowledgedLimit: latestQuote?.limitPrice,
-                tradesUnavailable: tradesUnavailable,
-                onQuoteRefresh: { [weak self] in
-                    self?.forceQuoteRefresh()
-                }
-            )
-        }
-
-        return dependencies
     }
 
     func createConfirmModel() -> SubtensorConfirmModel? {

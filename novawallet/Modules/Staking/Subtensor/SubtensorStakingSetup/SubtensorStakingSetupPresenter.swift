@@ -285,6 +285,7 @@ extension SubtensorStakingSetupPresenter {
 }
 
 extension SubtensorStakingSetupPresenter: SubtensorQuoteHandling {
+    var isRoot: Bool { target?.isRoot == true }
     var retryView: ControllerBackedProtocol? { view }
     var retryWireframe: AlertPresentable & FeeRetryable & CommonRetryable { wireframe }
     var quoteInteractor: SubtensorStakingBaseInteractorInputProtocol { interactor }
