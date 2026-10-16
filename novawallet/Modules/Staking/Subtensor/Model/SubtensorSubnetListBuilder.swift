@@ -32,6 +32,7 @@ struct SubtensorSubnetListBuilder {
 
     let entries: [SubtensorSubnetListItem]
     let weekly: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]?
+    let apy: [UInt16: Decimal]?
     var previousOrder: [SubtensorSubnetRef] = []
     let favourites: Set<SubtensorSubnetRef>
     let locale: Locale
@@ -142,7 +143,7 @@ private extension SubtensorSubnetListBuilder {
             case .orderedSame: return nil
             }
         case .apy:
-            return nil
+            return compareOptional(apy?[lhs.subnet.netuid], apy?[rhs.subnet.netuid], ascending: false)
         }
     }
 

@@ -27,6 +27,7 @@ enum SubtensorSubnetSelectViewFactory {
             subnetsService: state.subnetsService,
             subnetLogosProvider: earnServices.subnetLogosProvider,
             priceHistoryService: earnServices.priceHistoryService,
+            maxApyProvider: earnServices.maxApyProvider,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared
         )
