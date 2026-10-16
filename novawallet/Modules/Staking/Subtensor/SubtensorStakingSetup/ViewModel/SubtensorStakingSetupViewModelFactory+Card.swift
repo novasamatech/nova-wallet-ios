@@ -32,8 +32,8 @@ extension SubtensorStakingSetupViewModelFactory {
             browseTitle: input.mode.isLocked ? nil : strings.stakingSubtensorQuickSeeAll(),
             header: createHeader(for: input, locale: locale),
             chips: input.amountState == .noTao ? [] : createChips(for: input.subnetData.rankedSubnet, locale: locale),
-            receive: createTradeRow(for: input, value: tradePanel?.receive?.amount, locale: locale),
-            swapRate: createTradeRow(for: input, value: tradePanel?.swapRate, locale: locale),
+            receive: .trade(tradePanel?.receive?.amount, isPending: isQuotePending(for: input), locale: locale),
+            swapRate: .trade(tradePanel?.swapRate, isPending: isQuotePending(for: input), locale: locale),
             networkFee: createNetworkFee(for: input, locale: locale),
             isRoot: false
         )
@@ -143,22 +143,6 @@ private extension SubtensorStakingSetupViewModelFactory {
             alphaSymbol: SubtensorSubnetNaming.symbol(for: position.netuid, in: input.matchingCatalogue),
             locale: locale
         )
-    }
-
-    func createTradeRow(
-        for input: SubtensorStakingSetupViewModelInput,
-        value: String?,
-        locale: Locale
-    ) -> SubtensorRowState<String> {
-        if let value {
-            return .value(SubtensorSubnetNaming.isolatedLeftToRight(value))
-        }
-
-        if isQuotePending(for: input) {
-            return .loading
-        }
-
-        return .value(R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown())
     }
 
     func createHeader(

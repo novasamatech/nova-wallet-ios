@@ -332,15 +332,7 @@ private extension SubtensorUnstakeSetupViewModelFactory {
             return .hidden
         }
 
-        if let swapRate, !swapRate.isEmpty {
-            return .value(SubtensorSubnetNaming.isolatedLeftToRight(swapRate))
-        }
-
-        if isQuotePending(for: input) {
-            return .loading
-        }
-
-        return .value(R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown())
+        return .trade(swapRate.flatMap { $0.isEmpty ? nil : $0 }, isPending: isQuotePending(for: input), locale: locale)
     }
 
     func createValidator(for input: SubtensorUnstakeSetupViewModelInput) -> SubtensorSetupValidatorViewModel {
