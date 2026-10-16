@@ -176,17 +176,7 @@ extension SubtensorStakingSetupPresenter {
     }
 
     func existingPrimaryHotkey(on netuid: UInt16) -> AccountId? {
-        guard let positionsState else {
-            return nil
-        }
-
-        let portfolio = SubtensorPortfolioBuilder.build(state: positionsState)
-
-        guard netuid != SubtensorStakingPallet.rootNetuid else {
-            return portfolio.stakedRoot?.primaryHotkey
-        }
-
-        return portfolio.subnets.first { $0.netuid == netuid }?.primaryHotkey
+        positionsState.flatMap { SubtensorPortfolioBuilder.build(state: $0).group(netuid: netuid)?.primaryHotkey }
     }
 
     func applyValidator(_ item: SubtensorValidatorDirectoryItem) {

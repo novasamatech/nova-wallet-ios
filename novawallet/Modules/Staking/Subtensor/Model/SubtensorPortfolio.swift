@@ -23,6 +23,10 @@ struct SubtensorPortfolio: Equatable {
     var isFullyPriced: Bool {
         !subnets.contains { $0.totalAlpha > 0 && $0.taoValue == nil }
     }
+
+    func group(netuid: UInt16) -> SubtensorPortfolioGroup? {
+        netuid == SubtensorStakingPallet.rootNetuid ? stakedRoot : subnets.first { $0.netuid == netuid }
+    }
 }
 
 struct SubtensorRootHold: Equatable {

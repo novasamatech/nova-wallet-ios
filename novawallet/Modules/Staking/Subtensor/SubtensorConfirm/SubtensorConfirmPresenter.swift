@@ -76,13 +76,7 @@ extension SubtensorConfirmPresenter {
     }
 
     func liveGroup() -> SubtensorPortfolioGroup? {
-        guard let positionsState else {
-            return nil
-        }
-
-        let portfolio = SubtensorPortfolioBuilder.build(state: positionsState)
-
-        return ([portfolio.stakedRoot].compactMap { $0 } + portfolio.subnets).first { $0.netuid == model.target.netuid }
+        positionsState.flatMap { SubtensorPortfolioBuilder.build(state: $0).group(netuid: model.target.netuid) }
     }
 
     func provideAccountViewModels() {
