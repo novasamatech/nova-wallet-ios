@@ -321,7 +321,7 @@ extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryPr
                 return true
             }
 
-            return !SubtensorRootClaimRule.isFeeAbovePayout(fee: fee, payout: payout)
+            return fee <= payout
         })
     }
 }
