@@ -182,7 +182,6 @@ struct SubtensorStakingSetupViewModelInput {
     let positionStake: Balance?
     var quickPickOrder: SubtensorQuickPickOrder?
     var selectionFailed = false
-    var selectedRef: SubtensorSubnetRef?
     var rootEntryPresentation: SubtensorRootEntryPresentation = .standard
 
     // A reused netuid can still have metadata cached for its previous registration.
