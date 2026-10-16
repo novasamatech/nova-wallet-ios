@@ -1,5 +1,4 @@
 import Foundation
-import Foundation_iOS
 import UIKit
 
 struct StartStakingInfoSubtensorViewModel {
@@ -18,8 +17,6 @@ protocol StartStakingInfoSubtensorViewModelFactoryProtocol {
 
 struct StartStakingInfoSubtensorViewModelFactory:
     StartStakingInfoSubtensorViewModelFactoryProtocol {
-    let percentFormatter: LocalizableResource<NumberFormatter>
-
     func createViewModel(
         headlineRate: Decimal?,
         symbol: String,
@@ -67,12 +64,11 @@ private extension StartStakingInfoSubtensorViewModelFactory {
     func createTitle(headlineRate: Decimal?, symbol: String, locale: Locale) -> AccentTextModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
-        guard
-            let headlineRate,
-            let rate = percentFormatter.value(for: locale).stringFromDecimal(headlineRate) else {
+        guard let headlineRate else {
             return AccentTextModel(text: strings.stakingStakeFormat(symbol), accents: [symbol])
         }
 
+        let rate = SubtensorApyFormatter.text(for: headlineRate, style: .bare, locale: locale)
         let accent = strings.stakingStartEarnUp(rate)
 
         return AccentTextModel(text: strings.stakingSubtensorUiHowTitle(accent, symbol), accents: [accent])

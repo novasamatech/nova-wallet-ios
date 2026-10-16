@@ -221,7 +221,7 @@ private extension SubtensorValidatorListFactory {
         let trailing: SubtensorValidatorRowViewModel.Trailing
 
         if entry.rate != nil || (context.input.isRoot && Self.ratesShown(yields: context.input.yields)) {
-            trailing = .rate(SubtensorApyFormatter.text(for: entry.rate, style: .column, locale: context.locale))
+            trailing = .rate(SubtensorApyFormatter.text(for: entry.rate, style: .bare, locale: context.locale))
         } else {
             trailing = .none
         }
