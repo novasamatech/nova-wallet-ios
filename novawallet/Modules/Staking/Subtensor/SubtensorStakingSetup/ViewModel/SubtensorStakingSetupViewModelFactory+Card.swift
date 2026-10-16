@@ -51,10 +51,9 @@ extension SubtensorStakingSetupViewModelFactory {
         locale: Locale
     ) -> SubtensorSetupSelectionViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-        let message = strings.stakingSubtensorQuickUnavailable()
         let failure = input.selectionFailed ? WarningView.Model(
             title: strings.stakingSubtensorQuickUnavailableTitle(),
-            message: input.selectedRef.map { "\($0.netuid) · \(message)" } ?? message,
+            message: strings.stakingSubtensorQuickUnavailable(),
             learnMore: LearnMoreViewModel(iconViewModel: nil, title: strings.commonTryAgain())
         ) : nil
 

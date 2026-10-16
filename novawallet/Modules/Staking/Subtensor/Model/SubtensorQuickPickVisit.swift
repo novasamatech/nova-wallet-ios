@@ -15,7 +15,7 @@ final class SubtensorQuickPickVisit {
     }
 
     let order: SubtensorQuickPickOrder
-    private(set) var selectedRef: SubtensorSubnetRef?
+    private var selectedRef: SubtensorSubnetRef?
     private(set) var isManuallyReplaced = false
     private(set) var isLoading = false
     private(set) var error: Error?
