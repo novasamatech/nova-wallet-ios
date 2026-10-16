@@ -174,14 +174,15 @@ private extension SubtensorClaimRewardsPresenter {
             )
         )
 
-        validations.append(
-            SubtensorClaimValidations.claimNotPending(
-                isPending: isPending,
-                wireframe: wireframe,
-                view: view,
-                locale: locale
-            )
-        )
+        validations.append(ErrorConditionViolation(onError: { [weak view, wireframe] in
+            guard let view else {
+                return
+            }
+
+            wireframe.presentClaimPending(view, locale: locale)
+        }, preservesCondition: {
+            !isPending
+        }))
 
         validations.append(
             dataValidationFactory.canPayFeeInPlank(
