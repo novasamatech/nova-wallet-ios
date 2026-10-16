@@ -38,6 +38,12 @@ protocol SubtensorStakingErrorPresentable: BaseErrorPresentable {
         unstakeAllAction: (() -> Void)?,
         locale: Locale?
     )
+
+    func presentNoProfitAfterClaim(
+        _ view: ControllerBackedProtocol,
+        action: @escaping () -> Void,
+        locale: Locale?
+    )
 }
 
 extension SubtensorStakingErrorPresentable where Self: AlertPresentable & CommonRetryable {
@@ -164,5 +170,21 @@ extension SubtensorStakingErrorPresentable where Self: AlertPresentable & ErrorP
         )
 
         present(viewModel: viewModel, style: .alert, from: view)
+    }
+
+    func presentNoProfitAfterClaim(
+        _ view: ControllerBackedProtocol,
+        action: @escaping () -> Void,
+        locale: Locale?
+    ) {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+
+        presentWarning(
+            for: strings.commonConfirmationTitle(),
+            message: strings.stakingWarningTinyPayout(),
+            action: action,
+            view: view,
+            locale: locale
+        )
     }
 }

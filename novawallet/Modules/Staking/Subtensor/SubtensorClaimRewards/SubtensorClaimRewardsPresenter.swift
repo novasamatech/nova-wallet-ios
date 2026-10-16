@@ -183,6 +183,10 @@ private extension SubtensorClaimRewardsPresenter {
             )
         )
 
+        validations.append(
+            dataValidationFactory.hasProfitAfterClaim(payout: shownPreview.redeemable, fee: fee, locale: locale)
+        )
+
         return validations
     }
 
