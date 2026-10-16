@@ -29,7 +29,7 @@ extension SubtensorConfirmPresenter {
     }
 }
 
-extension SubtensorConfirmPresenter: SubtensorConfirmInteractorOutputProtocol {
+extension SubtensorConfirmPresenter: SubtensorStakingBaseInteractorOutputProtocol {
     func didReceiveAssetBalance(_ balance: AssetBalance?) {
         self.balance = balance
 

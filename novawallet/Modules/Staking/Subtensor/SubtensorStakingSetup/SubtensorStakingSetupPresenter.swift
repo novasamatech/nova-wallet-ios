@@ -31,7 +31,6 @@ final class SubtensorStakingSetupPresenter {
     var isPositionsSyncFailed = false
     var preflight: SubtensorStakingPreflight?
     var catalogue: SubtensorSubnetCatalogue?
-    var isCatalogueLoaded = false
     var subnetLogos: SubtensorSubnetLogos?
     var rankingView: SubtensorRankedSubnets?
     var hasExpiredRankingSeed = false
@@ -95,7 +94,7 @@ extension SubtensorStakingSetupPresenter {
     }
 
     var subnetRef: SubtensorSubnetRef? {
-        target.map { SubtensorSubnetRef(netuid: $0.netuid, registeredAt: $0.subnetInfo?.networkRegisteredAt ?? 0) }
+        target?.subnetRef
     }
 
     func inputDecimal() -> Decimal? {
@@ -221,8 +220,7 @@ extension SubtensorStakingSetupPresenter {
 
         let hotkey = validatorState.validator?.hotkey ?? AccountId.zeroAccountId(of: chainAsset.chain.accountIdSize)
 
-        let placeholder = Decimal(1).toSubstrateAmount(precision: chainAsset.assetDisplayInfo.assetPrecision) ?? 1
-        let amount = inputAmount().flatMap { $0 > 0 ? $0 : nil } ?? placeholder
+        let amount = inputAmountOrPlaceholder()
 
         switch target {
         case .root:
@@ -249,10 +247,7 @@ extension SubtensorStakingSetupPresenter {
             return nil
         }
 
-        let placeholder = Decimal(1).toSubstrateAmount(precision: chainAsset.assetDisplayInfo.assetPrecision) ?? 1
-        let amount = inputAmount().flatMap { $0 > 0 ? $0 : nil } ?? placeholder
-
-        return .buy(netuid: info.netuid, grossTao: amount, tolerance: slippage)
+        return .buy(netuid: info.netuid, grossTao: inputAmountOrPlaceholder(), tolerance: slippage)
     }
 
     func applyInputChange() {
@@ -303,26 +298,6 @@ extension SubtensorStakingSetupPresenter: SubtensorStakingSetupPresenterProtocol
         interactor.setup()
 
         startMode()
-    }
-
-    func updateAmount(_ newValue: Decimal?) {
-        inputResult = newValue.map { .absolute($0) }
-
-        applyInputChange()
-    }
-
-    func selectMax() {
-        inputResult = .rate(1)
-
-        provideAmountInputViewModel()
-        applyInputChange()
-    }
-
-    func selectAmountPercentage(_ percentage: Float) {
-        inputResult = .rate(Decimal(Double(percentage)))
-
-        provideAmountInputViewModel()
-        applyInputChange()
     }
 
     func selectValidator() {

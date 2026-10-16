@@ -122,7 +122,7 @@ extension SubtensorUnstakeSetupPresenter {
     }
 
     var subnetRef: SubtensorSubnetRef? {
-        target.map { SubtensorSubnetRef(netuid: $0.netuid, registeredAt: $0.subnetInfo?.networkRegisteredAt ?? 0) }
+        target?.subnetRef
     }
 
     func inputAmount() -> Balance? {
@@ -187,16 +187,12 @@ extension SubtensorUnstakeSetupPresenter {
         target?.unstakeLimitPrice(spot: currentSpotPrice(), tolerance: slippage)
     }
 
-    func placeholderAmount() -> Balance {
-        Decimal(1).toSubstrateAmount(precision: inputDisplayInfo.assetPrecision) ?? 1
-    }
-
     func feeOperation() -> SubtensorStakingOperation? {
         guard let primary = group?.primaryHotkey else {
             return nil
         }
 
-        let amount = inputAmount().flatMap { $0 > 0 ? $0 : nil } ?? placeholderAmount()
+        let amount = inputAmountOrPlaceholder()
         let exitHotkeys = exitHotkeys(for: amount)
 
         guard !isRoot else {
@@ -252,9 +248,7 @@ extension SubtensorUnstakeSetupPresenter {
             return nil
         }
 
-        let amount = inputAmount().flatMap { $0 > 0 ? $0 : nil } ?? placeholderAmount()
-
-        return .sell(netuid: netuid, alpha: amount, tolerance: slippage)
+        return .sell(netuid: netuid, alpha: inputAmountOrPlaceholder(), tolerance: slippage)
     }
 
     func refreshPreflight() {

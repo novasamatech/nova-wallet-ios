@@ -19,18 +19,14 @@ final class SubtensorPortfolioHeaderView: UIView {
         label.minimumScaleFactor = 0.5
     }
 
-    let totalSkeletonView: SubtensorChartLoadingView = .create { view in
-        view.layer.cornerRadius = 8
-    }
+    let totalSkeletonView = SubtensorSkeletonView(cornerRadius: 8)
 
     let fiatLabel: UILabel = .create { label in
         label.font = .regularSubheadline
         label.textColor = R.color.colorTextSecondary()
     }
 
-    let fiatSkeletonView: SubtensorChartLoadingView = .create { view in
-        view.layer.cornerRadius = 7
-    }
+    let fiatSkeletonView = SubtensorSkeletonView(cornerRadius: 7)
 
     let ratesAlertView: InlineAlertView = .create { view in
         view.apply(style: .info)
@@ -43,7 +39,7 @@ final class SubtensorPortfolioHeaderView: UIView {
 
     let chartView = SubtensorSubnetPriceChartView(style: .portfolio, isSelectable: true)
 
-    let chartLoadingView: SubtensorChartLoadingView = .create { view in
+    let chartLoadingView: SubtensorSkeletonView = .create { view in
         view.skeletonCornerRadius = 12
     }
 
@@ -119,7 +115,7 @@ private extension SubtensorPortfolioHeaderView {
         static let alertBottomInset: CGFloat = 16
     }
 
-    func bind(fiat: SubtensorPortfolioLoadable<String>) {
+    func bind(fiat: SubtensorRowState<String>) {
         switch fiat {
         case .loading:
             fiatLabel.text = nil
@@ -127,17 +123,17 @@ private extension SubtensorPortfolioHeaderView {
         case .hidden:
             fiatLabel.text = nil
             fiatSkeletonView.setLoading(false)
-        case let .loaded(text):
+        case let .value(text):
             fiatLabel.text = text
             fiatSkeletonView.setLoading(false)
         }
     }
 
-    func bind(change: SubtensorPortfolioLoadable<SubtensorPortfolioChangeViewModel>) {
+    func bind(change: SubtensorRowState<SubtensorPortfolioChangeViewModel>) {
         switch change {
         case .loading, .hidden:
             changeLabel.text = nil
-        case let .loaded(viewModel):
+        case let .value(viewModel):
             changeLabel.text = viewModel.text
             changeLabel.textColor = viewModel.isRising ? R.color.colorTextPositive() : R.color.colorTextNegative()
         }

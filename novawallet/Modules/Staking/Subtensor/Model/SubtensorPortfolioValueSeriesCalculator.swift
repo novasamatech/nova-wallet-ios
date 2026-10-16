@@ -20,7 +20,7 @@ struct SubtensorPortfolioPriceHistories: Equatable {
 }
 
 extension SubtensorPricePeriod {
-    var portfolioHistoryPeriod: BittensorApi.PortfolioHistoryPeriod? {
+    var portfolioHistoryPeriod: BittensorApi.PortfolioHistoryPeriod {
         switch self {
         case .day:
             return .oneDay
@@ -30,22 +30,16 @@ extension SubtensorPricePeriod {
             return .thirtyDays
         case .quarter:
             return .ninetyDays
-        case .all:
-            return nil
         }
     }
 
-    var coingeckoPeriod: PriceHistoryPeriod {
+    var sourceCoingeckoPeriod: PriceHistoryPeriod {
         switch self {
         case .day:
             return .day
-        case .week:
-            return .week
-        case .month:
+        case .week, .month:
             return .month
         case .quarter:
-            return .year
-        case .all:
             return .allTime
         }
     }
@@ -56,7 +50,7 @@ extension SubtensorPricePeriod {
             return 5 * 60
         case .week, .month:
             return 60 * 60
-        case .quarter, .all:
+        case .quarter:
             return 24 * 60 * 60
         }
     }
@@ -65,19 +59,13 @@ extension SubtensorPricePeriod {
         2 * samplingInterval
     }
 
-    var sourcePeriod: SubtensorPricePeriod {
-        switch self {
-        case .day:
-            return .day
-        case .week, .month:
-            return .month
-        case .quarter, .all:
-            return .all
-        }
-    }
-
     var isSlicedFromLongerSeries: Bool {
-        self != sourcePeriod
+        switch self {
+        case .day, .month:
+            return false
+        case .week, .quarter:
+            return true
+        }
     }
 
     func startDate(endingAt endDate: Date) -> Date? {
@@ -93,8 +81,6 @@ extension SubtensorPricePeriod {
             return calendar.date(byAdding: .day, value: -30, to: endDate)
         case .quarter:
             return calendar.date(byAdding: .day, value: -90, to: endDate)
-        case .all:
-            return nil
         }
     }
 }

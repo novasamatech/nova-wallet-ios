@@ -4,6 +4,6 @@ struct SubtensorValidatorCardViewModel {
     let icon: ImageViewModelProtocol?
     let name: String?
     let subtitle: String
-    let rate: SubtensorPortfolioLoadable<String>
+    let rate: SubtensorRowState<String>
     let rateCaption: String
 }

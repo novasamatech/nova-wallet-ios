@@ -130,7 +130,7 @@ private extension SubtensorValidatorChainOperationFactory {
         let reads = createSnapshotReads(plan: plan, context: context)
 
         let mergeOperation = ClosureOperation<SubtensorValidatorChainSnapshot> {
-            try Self.createSnapshot(plan: plan, reads: reads, blockHash: context.blockHash)
+            try Self.createSnapshot(plan: plan, reads: reads)
         }
 
         reads.targetOperations.forEach { mergeOperation.addDependency($0) }
@@ -188,11 +188,7 @@ private extension SubtensorValidatorChainOperationFactory {
             }
     }
 
-    static func createSnapshot(
-        plan: SnapshotPlan,
-        reads: SnapshotReads,
-        blockHash: BlockHashData
-    ) throws -> SubtensorValidatorChainSnapshot {
+    static func createSnapshot(plan: SnapshotPlan, reads: SnapshotReads) throws -> SubtensorValidatorChainSnapshot {
         let blockNumberResponse = try reads.blockNumber.targetOperation.extractNoCancellableResultData()
 
         guard let blockNumber = blockNumberResponse.value?.value else {
@@ -207,7 +203,6 @@ private extension SubtensorValidatorChainOperationFactory {
             }
 
         return try SubtensorValidatorChainSnapshot(
-            blockHash: blockHash.toHex(includePrefix: true),
             blockNumber: blockNumber,
             uids: extractPairValues(pairs: plan.pairs, wrapper: reads.uids) { $0.value?.value },
             permits: vectors.permits,

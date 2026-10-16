@@ -167,17 +167,32 @@ extension SubtensorStakingSetupViewModelFactory {
         } else {
             validator = .card(SubtensorValidatorCardViewModel(
                 icon: icon, name: name, subtitle: strings.stakingCommonValidator(),
-                rate: .loaded(SubtensorApyFormatter.text(for: annualRate, style: .bare, locale: locale)),
+                rate: .value(SubtensorApyFormatter.text(for: annualRate, style: .bare, locale: locale)),
                 rateCaption: strings.stakingSubtensorV22EstApy()
             ))
         }
+        let networkFee = createNetworkFee(for: input, locale: locale)
+        let isQuickPick = input.rootEntryPresentation == .quickPickRoot || input.quickPickOrder != nil
+
         return SubtensorSetupRootViewModel(
-            icon: AssetIconViewModelFactory().createAssetIconViewModel(from: chainAsset.assetDisplayInfo),
             validator: validator,
-            compactValidator: compact,
-            compactRate: SubtensorApyFormatter.text(for: annualRate, style: .leading, locale: locale),
-            isQuickPick: input.rootEntryPresentation == .quickPickRoot || input.quickPickOrder != nil,
-            networkFee: createNetworkFee(for: input, locale: locale)
+            pickCard: isQuickPick ? SubtensorPickCardViewModel(
+                validator: compact,
+                validatorRate: SubtensorApyFormatter.text(for: annualRate, style: .leading, locale: locale),
+                isValidatorEditable: true,
+                browseTitle: strings.stakingSubtensorQuickSeeAll(),
+                header: SubtensorPickCardHeaderViewModel(
+                    icon: AssetIconViewModelFactory().createAssetIconViewModel(from: chainAsset.assetDisplayInfo),
+                    title: strings.stakingSubtensorUiStakeToRoot(),
+                    isSelectable: true
+                ),
+                chips: [],
+                receive: .hidden,
+                swapRate: .hidden,
+                networkFee: networkFee,
+                isRoot: true
+            ) : nil,
+            networkFee: networkFee
         )
     }
 

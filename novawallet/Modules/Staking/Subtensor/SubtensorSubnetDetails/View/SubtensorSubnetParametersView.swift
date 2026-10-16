@@ -72,7 +72,7 @@ final class SubtensorParameterRowView: UIView {
     let valueLabel: UILabel = .create { $0.textAlignment = .right }
     let detailLabel: UILabel = .create { $0.apply(style: .caption1Secondary); $0.textAlignment = .right }
     let dividerView: UIView = .create { $0.backgroundColor = R.color.colorDivider() }
-    let loadingView = SubtensorChartLoadingView()
+    let loadingView = SubtensorSkeletonView()
 
     init(style: Style) {
         self.style = style

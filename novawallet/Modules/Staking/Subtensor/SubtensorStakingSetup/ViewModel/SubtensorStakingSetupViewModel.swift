@@ -45,11 +45,8 @@ enum SubtensorSetupRootValidatorViewModel {
 }
 
 struct SubtensorSetupRootViewModel {
-    let icon: ImageViewModelProtocol
     let validator: SubtensorSetupRootValidatorViewModel
-    let compactValidator: SubtensorSetupValidatorViewModel
-    let compactRate: String?
-    let isQuickPick: Bool
+    let pickCard: SubtensorPickCardViewModel?
     let networkFee: BalanceViewModelProtocol?
 }
 
@@ -69,6 +66,7 @@ struct SubtensorPickCardViewModel {
     let receive: SubtensorRowState<String>
     let swapRate: SubtensorRowState<String>
     let networkFee: BalanceViewModelProtocol?
+    let isRoot: Bool
 }
 
 struct SubtensorPickCardHeaderViewModel {
@@ -153,7 +151,6 @@ enum SubtensorSetupAmountState: Equatable {
 
 struct SubtensorSetupSubnetData {
     let catalogue: SubtensorSubnetCatalogue?
-    let isCatalogueLoaded: Bool
     let subnetLogos: SubtensorSubnetLogos?
     let rankedSubnet: SubtensorRankedSubnet?
     let annualRate: Decimal?

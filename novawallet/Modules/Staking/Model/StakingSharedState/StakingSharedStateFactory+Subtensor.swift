@@ -8,6 +8,7 @@ struct SubtensorStakingProcessServices {
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let subnetMarketsService: SubtensorSubnetMarketsServiceProtocol
     let costBasisService: SubtensorCostBasisServiceProtocol
+    let catalogueService: SubtensorSubnetCatalogueServiceProtocol
 }
 
 extension SubtensorStakingProcessServices {
@@ -22,7 +23,12 @@ extension SubtensorStakingProcessServices {
             bittensorApiOperationFactory: apiOperationFactory,
             subnetLogosProvider: SubtensorConfigProvider(url: ApplicationConfig.shared.bittensorConfigURL),
             subnetMarketsService: SubtensorSubnetMarketsService(coingeckoOperationFactory: CoingeckoOperationFactory()),
-            costBasisService: createCostBasisService(apiOperationFactory: apiOperationFactory)
+            costBasisService: SubtensorCostBasisService(
+                apiOperationFactory: apiOperationFactory,
+                operationQueue: OperationManagerFacade.sharedDefaultQueue,
+                eventCenter: EventCenter.shared
+            ),
+            catalogueService: SubtensorSubnetCatalogueService(apiOperationFactory: apiOperationFactory)
         )
     }()
 
@@ -47,24 +53,9 @@ extension SubtensorStakingProcessServices {
         logger: LoggerProtocol
     ) -> SubtensorCataloguePricingTracker {
         SubtensorCataloguePricingTracker(
-            catalogueService: SubtensorSubnetCatalogueService(
-                apiOperationFactory: bittensorApiOperationFactory,
-                logger: logger
-            ),
+            catalogueService: catalogueService,
             operationQueue: operationQueue,
             logger: logger
-        )
-    }
-}
-
-private extension SubtensorStakingProcessServices {
-    static func createCostBasisService(
-        apiOperationFactory: BittensorApiOperationFactoryProtocol
-    ) -> SubtensorCostBasisServiceProtocol {
-        SubtensorCostBasisService(
-            apiOperationFactory: apiOperationFactory,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
-            eventCenter: EventCenter.shared
         )
     }
 }
@@ -162,10 +153,7 @@ extension StakingSharedStateFactory {
         return SubtensorEarnServices(
             subnetLogosProvider: processServices.subnetLogosProvider,
             earnSettings: SubtensorEarnSettings(settingsManager: SettingsManager.shared),
-            catalogueService: SubtensorSubnetCatalogueService(
-                apiOperationFactory: processServices.bittensorApiOperationFactory,
-                logger: logger
-            ),
+            catalogueService: processServices.catalogueService,
             yieldService: yieldService,
             recommendationService: recommendationService,
             validatorDirectoryService: validatorDirectoryService,
@@ -181,6 +169,13 @@ extension StakingSharedStateFactory {
             ),
             rootHoldFactory: SubtensorRootHoldFactory(
                 runtimeConnectionStore: runtimeConnectionStore, operationQueue: syncOperationQueue
+            ),
+            validatorPresetFactory: SubtensorValidatorPresetFactory(
+                directoryService: validatorDirectoryService,
+                recommendationService: recommendationService,
+                yieldService: yieldService,
+                operationQueue: syncOperationQueue,
+                logger: logger
             ),
             costBasisService: processServices.costBasisService
         )

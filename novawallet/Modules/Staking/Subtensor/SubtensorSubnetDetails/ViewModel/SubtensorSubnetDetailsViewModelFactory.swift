@@ -66,23 +66,19 @@ final class SubtensorSubnetDetailsViewModelFactory {
 }
 
 extension SubtensorSubnetDetailsViewModelFactory {
-    func unknownValue(for locale: Locale) -> String {
-        R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown()
-    }
-
     func formatAlpha(_ amount: Balance, locale: Locale) -> String {
         let decimal = amount.decimal(assetInfo: chainAsset.assetDisplayInfo)
-        let text = alphaFormatter.value(for: locale).stringFromDecimal(decimal) ?? unknownValue(for: locale)
+        let text = alphaFormatter.value(for: locale).stringFromDecimal(decimal) ?? .subtensorUnknown(for: locale)
 
         return SubtensorSubnetNaming.isolatedLeftToRight(text)
     }
 
     func formatTao(_ amount: Decimal, locale: Locale) -> String {
-        tokenFormatter.value(for: locale).stringFromDecimal(amount) ?? unknownValue(for: locale)
+        tokenFormatter.value(for: locale).stringFromDecimal(amount) ?? .subtensorUnknown(for: locale)
     }
 
     func formatCompactTao(_ amount: Decimal, locale: Locale) -> String {
-        compactTokenFormatter.value(for: locale).stringFromDecimal(amount) ?? unknownValue(for: locale)
+        compactTokenFormatter.value(for: locale).stringFromDecimal(amount) ?? .subtensorUnknown(for: locale)
     }
 
     func formatPercent(_ value: Decimal, maximumFractionDigits: Int = 2, locale: Locale) -> String {
@@ -90,14 +86,14 @@ extension SubtensorSubnetDetailsViewModelFactory {
         formatter.maximumFractionDigits = maximumFractionDigits
         formatter.roundingMode = .halfEven
 
-        return formatter.stringFromDecimal(value) ?? unknownValue(for: locale)
+        return formatter.stringFromDecimal(value) ?? .subtensorUnknown(for: locale)
     }
 
     func formatCount(_ value: Int, locale: Locale) -> String {
         let formatter = NumberFormatter.quantity
         formatter.locale = locale
 
-        return formatter.string(from: NSNumber(value: value)) ?? unknownValue(for: locale)
+        return formatter.string(from: NSNumber(value: value)) ?? .subtensorUnknown(for: locale)
     }
 }
 
@@ -155,7 +151,7 @@ private extension SubtensorSubnetDetailsViewModelFactory {
             icon: display?.imageViewModel,
             name: name,
             subtitle: strings.stakingCommonValidator(),
-            rate: item == nil ? .hidden : .loaded(SubtensorApyFormatter.text(for: rate, style: .bare, locale: locale)),
+            rate: item == nil ? .hidden : .value(SubtensorApyFormatter.text(for: rate, style: .bare, locale: locale)),
             rateCaption: strings.stakingSubtensorV22EstApy()
         )
     }

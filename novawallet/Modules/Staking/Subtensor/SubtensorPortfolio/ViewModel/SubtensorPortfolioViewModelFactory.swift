@@ -6,7 +6,6 @@ protocol SubnetPortfolioViewModelFactoryProtocol: SubnetPortfolioChartFactoryPro
 }
 
 final class SubtensorPortfolioViewModelFactory {
-    static let periods: [SubtensorPricePeriod] = [.day, .week, .month, .quarter]
     static let defaultPeriod = SubtensorPricePeriod.month
     private static let placeholderRows = 2
 
@@ -40,7 +39,7 @@ final class SubtensorPortfolioViewModelFactory {
 private extension SubtensorPortfolioViewModelFactory {
     struct ChartContent {
         let chart: SubtensorPortfolioChartViewModel
-        let change: SubtensorPortfolioLoadable<SubtensorPortfolioChangeViewModel>
+        let change: SubtensorRowState<SubtensorPortfolioChangeViewModel>
         var points: [SubtensorPortfolioValuePoint] = []
     }
 
@@ -72,7 +71,7 @@ private extension SubtensorPortfolioViewModelFactory {
 
         let text = formatterFactory.createTokenFormatter(for: alphaInfo)
             .value(for: locale)
-            .stringFromDecimal(decimal(amount)) ?? unknownValue(for: locale)
+            .stringFromDecimal(decimal(amount)) ?? .subtensorUnknown(for: locale)
 
         return SubtensorSubnetNaming.isolatedLeftToRight(text)
     }
@@ -83,14 +82,10 @@ private extension SubtensorPortfolioViewModelFactory {
         return formatter.stringFromDecimal(value)
     }
 
-    func unknownValue(for locale: Locale) -> String {
-        R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown()
-    }
-
     func createPeriods(for state: SubtensorPortfolioState, locale: Locale) -> SubtensorPortfolioPeriodsViewModel {
         SubtensorPortfolioPeriodsViewModel(
-            titles: Self.periods.map { $0.title(for: locale) },
-            selectedIndex: Self.periods.firstIndex(of: state.period) ?? 0
+            titles: SubtensorPricePeriod.selectable.map { $0.title(for: locale) },
+            selectedIndex: SubtensorPricePeriod.selectable.firstIndex(of: state.period) ?? 0
         )
     }
 
@@ -149,7 +144,7 @@ private extension SubtensorPortfolioViewModelFactory {
 
             return ChartContent(
                 chart: .chart(chart),
-                change: change.map { .loaded($0) } ?? .hidden,
+                change: change.map { .value($0) } ?? .hidden,
                 points: points
             )
         }
@@ -194,7 +189,7 @@ private extension SubtensorPortfolioViewModelFactory {
         ).value(for: locale)
 
         let axisLabels = [maximum, (maximum + minimum) / 2, minimum].map { value in
-            formatter.stringFromDecimal(Decimal(value)) ?? unknownValue(for: locale)
+            formatter.stringFromDecimal(Decimal(value)) ?? .subtensorUnknown(for: locale)
         }
 
         return SubtensorPriceChartViewModel(
@@ -352,7 +347,7 @@ extension SubtensorPortfolioViewModelFactory: SubnetPortfolioViewModelFactoryPro
 
         let total = decimal(portfolio.pricedTaoValue)
 
-        let fiat: SubtensorPortfolioLoadable<String>
+        let fiat: SubtensorRowState<String>
 
         switch state.price {
         case .loading:
@@ -360,11 +355,11 @@ extension SubtensorPortfolioViewModelFactory: SubnetPortfolioViewModelFactoryPro
         case .loaded(.none):
             fiat = .hidden
         case let .loaded(.some(price)):
-            fiat = .loaded(formatFiat(total, price: price, locale: locale))
+            fiat = .value(formatFiat(total, price: price, locale: locale))
         }
 
         let header = SubtensorPortfolioHeaderViewModel(
-            total: portfolio.isFullyPriced ? formatTao(total, locale: locale) : unknownValue(for: locale),
+            total: portfolio.isFullyPriced ? formatTao(total, locale: locale) : .subtensorUnknown(for: locale),
             fiat: portfolio.isFullyPriced ? fiat : .hidden,
             change: chart.change,
             chart: chart.chart,

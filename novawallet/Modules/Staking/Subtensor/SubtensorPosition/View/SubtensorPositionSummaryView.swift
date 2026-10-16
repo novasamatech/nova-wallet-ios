@@ -30,13 +30,11 @@ final class SubtensorPositionSummaryView: UIView {
         view.spacing = Constants.spacing
     }
 
-    private let iconSkeletonView: SubtensorChartLoadingView = .create { view in
-        view.layer.cornerRadius = Constants.iconSize / 2
-    }
+    private let iconSkeletonView = SubtensorSkeletonView(cornerRadius: Constants.iconSize / 2)
 
-    private let captionSkeletonView = SubtensorPositionSummaryView.createSkeleton()
-    private let amountSkeletonView = SubtensorPositionSummaryView.createSkeleton()
-    private let fiatSkeletonView = SubtensorPositionSummaryView.createSkeleton()
+    private let captionSkeletonView = SubtensorSkeletonView(cornerRadius: 6)
+    private let amountSkeletonView = SubtensorSkeletonView(cornerRadius: 6)
+    private let fiatSkeletonView = SubtensorSkeletonView(cornerRadius: 6)
 
     private var rowViews: [SubtensorPositionSummaryRowView] = []
     private var iconViewModel: ImageViewModelProtocol?
@@ -81,7 +79,7 @@ final class SubtensorPositionSummaryView: UIView {
             fiatLabel.text = nil
             fiatLabel.isHidden = true
             fiatSkeletonView.setLoading(false)
-        case let .loaded(text):
+        case let .value(text):
             fiatLabel.text = text
             fiatLabel.isHidden = false
             fiatSkeletonView.setLoading(false)
@@ -107,12 +105,6 @@ private extension SubtensorPositionSummaryView {
         static let spacing: CGFloat = 10
         static let valueLineHeight: CGFloat = 18
         static let detailLineHeight: CGFloat = 16
-    }
-
-    static func createSkeleton() -> SubtensorChartLoadingView {
-        .create { view in
-            view.layer.cornerRadius = 6
-        }
     }
 
     func bind(rows: [SubtensorPositionRowViewModel]) {
@@ -175,7 +167,7 @@ private extension SubtensorPositionSummaryView {
             make.edges.equalTo(iconView)
         }
 
-        let skeletons: [(SubtensorChartLoadingView, UILabel, CGFloat)] = [
+        let skeletons: [(SubtensorSkeletonView, UILabel, CGFloat)] = [
             (captionSkeletonView, captionLabel, 80),
             (amountSkeletonView, amountLabel, 140),
             (fiatSkeletonView, fiatLabel, 60)
@@ -207,9 +199,7 @@ private final class SubtensorPositionSummaryRowView: UIView {
         label.textAlignment = .right
     }
 
-    let skeletonView: SubtensorChartLoadingView = .create { view in
-        view.layer.cornerRadius = 6
-    }
+    let skeletonView = SubtensorSkeletonView(cornerRadius: 6)
 
     override init(frame: CGRect) {
         super.init(frame: frame)

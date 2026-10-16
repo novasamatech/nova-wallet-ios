@@ -5,15 +5,12 @@ import SubstrateSdk
 extension SubtensorStakingPallet {
     struct StakeInfo: Decodable, Equatable {
         @BytesCodable var hotkey: AccountId
-        @BytesCodable var coldkey: AccountId
         @StringCodable var netuid: UInt16
         @StringCodable var stake: Balance
         let isRegistered: Bool
     }
 
     struct StakeAvailability: Decodable, Equatable {
-        @StringCodable var total: Balance
-        @StringCodable var locked: Balance
         @StringCodable var available: Balance
     }
 

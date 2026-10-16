@@ -32,19 +32,15 @@ final class SubtensorStakeStateFetchFactoryTests: XCTestCase {
         ])
         XCTAssertEqual(state.rootStakeInRao, BigUInt(57_816_438))
         XCTAssertEqual(state.availability, [
-            0: SubtensorStakingPallet.StakeAvailability(total: 57_816_438, locked: 0, available: 57_816_438),
-            7: SubtensorStakingPallet.StakeAvailability(
-                total: 3_000_000_000,
-                locked: 1_000_000_000,
-                available: 2_000_000_000
-            )
+            0: SubtensorStakingPallet.StakeAvailability(available: 57_816_438),
+            7: SubtensorStakingPallet.StakeAvailability(available: 2_000_000_000)
         ])
 
         let stakeInfoHashCaptor = ArgumentCaptor<BlockHash?>()
         verify(apiFactory, times(1)).createStakeInfoWrapper(for: any(), blockHash: stakeInfoHashCaptor.capture())
         XCTAssertEqual(stakeInfoHashCaptor.value, bestBlockHash)
 
-        let netuidsCaptor = ArgumentCaptor<[UInt16]?>()
+        let netuidsCaptor = ArgumentCaptor<[UInt16]>()
         let availabilityHashCaptor = ArgumentCaptor<BlockHash?>()
         verify(apiFactory, times(1)).createStakeAvailabilityWrapper(
             for: any(),
@@ -64,7 +60,6 @@ final class SubtensorStakeStateFetchFactoryTests: XCTestCase {
     private func stakeInfo(netuid: UInt16, stake: Balance) -> SubtensorStakingPallet.StakeInfo {
         SubtensorStakingPallet.StakeInfo(
             hotkey: hotkey,
-            coldkey: coldkey,
             netuid: netuid,
             stake: stake,
             isRegistered: true

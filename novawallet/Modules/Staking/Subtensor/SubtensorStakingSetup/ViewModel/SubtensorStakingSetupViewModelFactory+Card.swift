@@ -3,6 +3,9 @@ import Foundation
 
 extension SubtensorStakingSetupViewModelFactory {
     static let secondsPerMonth: TimeInterval = 30 * 24 * 60 * 60
+    static let saferAgeBlocks: UInt64 = 6 * 30 * 24 * 60 * 60 * 1000 / SubtensorStakingFlowConstants.blockTimeMillis
+    static let deepPoolTao: Decimal = 25000
+    static let calmerVolatilityScore: Decimal = 50
 
     func createSubnetDetails(
         for input: SubtensorStakingSetupViewModelInput,
@@ -31,7 +34,8 @@ extension SubtensorStakingSetupViewModelFactory {
             chips: input.amountState == .noTao ? [] : createChips(for: input.subnetData.rankedSubnet, locale: locale),
             receive: createTradeRow(for: input, value: tradePanel?.receive?.amount, locale: locale),
             swapRate: createTradeRow(for: input, value: tradePanel?.swapRate, locale: locale),
-            networkFee: createNetworkFee(for: input, locale: locale)
+            networkFee: createNetworkFee(for: input, locale: locale),
+            isRoot: false
         )
 
         return SubtensorSetupSubnetViewModel(
@@ -73,30 +77,24 @@ extension SubtensorStakingSetupViewModelFactory {
 
     func createChips(for rankedSubnet: SubtensorRankedSubnet?, locale: Locale) -> [String] {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+        var chips: [String] = []
 
-        let evaluation = SubtensorSubnetFactorsEvaluator.evaluate(
-            SubtensorSubnetFactorsInput(rankedSubnet: rankedSubnet, listedSince: nil, isNotListed: false, now: Date())
-        )
-
-        return [SubtensorSubnetFactor.Kind.age, .pool, .steadiness].compactMap { kind -> String? in
-            let factor = evaluation.factor(kind)
-
-            guard factor.verdict == .safer else {
-                return nil
-            }
-
-            switch (kind, factor.value) {
-            case let (.age, .duration(seconds)):
-                let months = Int((seconds / Self.secondsPerMonth).rounded(.down))
-                return strings.stakingSubtensorUiChipAgeMonths(format: months)
-            case (.pool, _):
-                return strings.stakingSubtensorUiChipDeepPool()
-            case (.steadiness, _):
-                return strings.stakingSubtensorUiChipSteady()
-            default:
-                return nil
-            }
+        if let ageBlocks = rankedSubnet?.ageBlocks, ageBlocks > Self.saferAgeBlocks {
+            let ageMillis = TimeInterval(ageBlocks) * TimeInterval(SubtensorStakingFlowConstants.blockTimeMillis)
+            let months = Int((ageMillis / 1000 / Self.secondsPerMonth).rounded(.down))
+            chips.append(strings.stakingSubtensorUiChipAgeMonths(format: months))
         }
+
+        if let poolTao = rankedSubnet?.taoIn, !poolTao.isNaN, poolTao > Self.deepPoolTao {
+            chips.append(strings.stakingSubtensorUiChipDeepPool())
+        }
+
+        if let volatility = rankedSubnet?.volatility, volatility.raw != nil,
+           volatility.normalized < Self.calmerVolatilityScore {
+            chips.append(strings.stakingSubtensorUiChipSteady())
+        }
+
+        return chips
     }
 }
 
@@ -179,12 +177,7 @@ private extension SubtensorStakingSetupViewModelFactory {
         var isSelectable = false
 
         if case let .subnetPick(target, _) = input.mode {
-            let ref = SubtensorSubnetRef(
-                netuid: target.netuid,
-                registeredAt: target.subnetInfo?.networkRegisteredAt ?? 0
-            )
-
-            isSelectable = catalogue?.subnet(for: ref) != nil
+            isSelectable = catalogue?.subnet(for: target.subnetRef) != nil
         }
 
         return SubtensorPickCardHeaderViewModel(

@@ -32,6 +32,10 @@ extension SubtensorStakeTarget {
         return nil
     }
 
+    var subnetRef: SubtensorSubnetRef {
+        SubtensorSubnetRef(netuid: netuid, registeredAt: subnetInfo?.networkRegisteredAt ?? 0)
+    }
+
     var listedPrice: Balance? {
         if case let .subnet(_, price) = self {
             return price
@@ -56,18 +60,5 @@ extension SubtensorStakeTarget {
         }
 
         return try? SubtensorLimitPriceCalculator.sellLimit(spot: spot, tolerance: tolerance)
-    }
-}
-
-extension SubtensorStakeTarget {
-    func assetDisplayInfo(
-        basedOn taoDisplayInfo: AssetBalanceDisplayInfo,
-        catalogue: SubtensorSubnetCatalogue?
-    ) -> AssetBalanceDisplayInfo {
-        guard !isRoot else {
-            return taoDisplayInfo
-        }
-
-        return taoDisplayInfo.subtensorAlpha(symbol: SubtensorSubnetNaming.symbol(for: netuid, in: catalogue))
     }
 }

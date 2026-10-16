@@ -83,4 +83,18 @@ extension AssetBalanceDisplayInfo {
             icon: nil
         )
     }
+
+    func subtensorAlpha(netuid: UInt16, catalogue: SubtensorSubnetCatalogue?) -> AssetBalanceDisplayInfo {
+        guard netuid != SubtensorStakingPallet.rootNetuid else {
+            return self
+        }
+
+        return subtensorAlpha(symbol: SubtensorSubnetNaming.symbol(for: netuid, in: catalogue))
+    }
+}
+
+extension String {
+    static func subtensorUnknown(for locale: Locale) -> String {
+        R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown()
+    }
 }

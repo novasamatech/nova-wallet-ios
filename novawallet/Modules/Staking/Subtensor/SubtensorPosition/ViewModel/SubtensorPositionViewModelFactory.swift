@@ -41,12 +41,6 @@ final class SubtensorPositionViewModelFactory {
     }
 }
 
-extension SubtensorPositionViewModelFactory {
-    func unknownValue(for locale: Locale) -> String {
-        R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown()
-    }
-}
-
 private extension SubtensorPositionViewModelFactory {
     func decimal(_ amount: Balance) -> Decimal {
         amount.decimal(assetInfo: chainAsset.assetDisplayInfo)
@@ -67,7 +61,7 @@ private extension SubtensorPositionViewModelFactory {
 
         let text = formatterFactory.createTokenFormatter(for: alphaInfo)
             .value(for: locale)
-            .stringFromDecimal(decimal(amount)) ?? unknownValue(for: locale)
+            .stringFromDecimal(decimal(amount)) ?? .subtensorUnknown(for: locale)
 
         return SubtensorSubnetNaming.isolatedLeftToRight(text)
     }
@@ -90,7 +84,7 @@ private extension SubtensorPositionViewModelFactory {
         return SubtensorSubnetNaming.titleWithSymbol(for: state.netuid, in: state.catalogue, locale: locale)
     }
 
-    func createFiat(for state: SubtensorPositionState, locale: Locale) -> SubtensorPortfolioLoadable<String> {
+    func createFiat(for state: SubtensorPositionState, locale: Locale) -> SubtensorRowState<String> {
         guard state.isRoot, let group = state.group else {
             return .hidden
         }
@@ -99,7 +93,7 @@ private extension SubtensorPositionViewModelFactory {
         case .loading:
             return .loading
         case let .loaded(price):
-            return formatFiat(group.totalAlpha, price: price, locale: locale).map { .loaded($0) } ?? .hidden
+            return formatFiat(group.totalAlpha, price: price, locale: locale).map { .value($0) } ?? .hidden
         }
     }
 
@@ -107,7 +101,7 @@ private extension SubtensorPositionViewModelFactory {
         let value: SubtensorPositionValueViewModel
 
         if state.isClaimableFailed {
-            value = .loaded(value: unknownValue(for: locale), detail: nil, isPositive: false)
+            value = .loaded(value: .subtensorUnknown(for: locale), detail: nil, isPositive: false)
         } else if let redeemable = state.claimable?.reduce(Balance.zero, { $0 + $1.redeemable }) {
             value = .loaded(
                 value: formatTao(redeemable, locale: locale),
@@ -220,15 +214,15 @@ private extension SubtensorPositionViewModelFactory {
         }
 
         let name = state.isValidatorResolved
-            ? state.validator?.name ?? address?.mediumTruncated ?? unknownValue(for: locale)
+            ? state.validator?.name ?? address?.mediumTruncated ?? .subtensorUnknown(for: locale)
             : nil
 
-        let rate: SubtensorPortfolioLoadable<String>
+        let rate: SubtensorRowState<String>
 
         if !state.isRateResolved {
             rate = .loading
         } else if state.isRoot || state.annualRate != nil {
-            rate = .loaded(SubtensorApyFormatter.text(for: state.annualRate, style: .bare, locale: locale))
+            rate = .value(SubtensorApyFormatter.text(for: state.annualRate, style: .bare, locale: locale))
         } else {
             rate = .hidden
         }

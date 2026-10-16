@@ -98,22 +98,6 @@ extension Multistaking {
         let maxApy: MaxApyUpdate
         let rootRate: Decimal?
         let isFullyPriced: Bool?
-
-        init(
-            stakingOption: OptionWithWallet,
-            state: SubtensorStakingState,
-            stake: BigUInt,
-            maxApy: MaxApyUpdate = .keep,
-            rootRate: Decimal? = nil,
-            isFullyPriced: Bool? = nil
-        ) {
-            self.stakingOption = stakingOption
-            self.state = state
-            self.stake = stake
-            self.maxApy = maxApy
-            self.rootRate = rootRate
-            self.isFullyPriced = isFullyPriced
-        }
     }
 }
 
