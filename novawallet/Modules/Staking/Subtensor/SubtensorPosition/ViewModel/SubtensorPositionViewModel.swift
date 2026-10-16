@@ -26,9 +26,15 @@ struct SubtensorPositionState {
     var holds: [AccountId: SubtensorRootHold] = [:]
     var blockNumber: BlockNumber?
     var period = SubtensorPriceWidgetViewModelFactory.defaultPeriod
-    var history = SubtensorSubnetHistoryState.loading
+    var history = SubtensorSubnetHistoryState.loading {
+        didSet {
+            chartSelection = nil
+        }
+    }
+
     var hasResolvedHistory = false
     var chartEndDate = Date.distantPast
+    var chartSelection: SubtensorPriceChartSelection?
 
     init(netuid: UInt16, group: SubtensorPortfolioGroup?) {
         self.netuid = netuid

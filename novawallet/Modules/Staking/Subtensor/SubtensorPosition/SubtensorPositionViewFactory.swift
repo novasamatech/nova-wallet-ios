@@ -40,10 +40,14 @@ enum SubtensorPositionViewFactory {
             localizationManager: LocalizationManager.shared
         )
 
+        let singleTapHapticPlayer = HapticPlayerFactory.createHapticPlayer(patternConfiguration: .singleTap)
+
         let view = SubtensorPositionViewController(
             presenter: presenter,
             isRoot: group.netuid == SubtensorStakingPallet.rootNetuid,
-            periodControlHapticPlayer: HapticPlayerFactory.createHapticPlayer(patternConfiguration: .singleTap),
+            seekHapticPlayer: HapticPlayerFactory.createProgressivePlayer(patternConfiguration: .chartSeek),
+            chartLongPressHapticPlayer: singleTapHapticPlayer,
+            periodControlHapticPlayer: singleTapHapticPlayer,
             localizationManager: LocalizationManager.shared
         )
 

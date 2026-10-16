@@ -18,7 +18,6 @@ final class SubtensorSubnetPriceChartView: UIView {
 
     private let chart = LineChartView()
     private let style: Style
-    private let isSelectable: Bool
 
     private var viewModel: SubtensorPriceChartViewModel?
     private var plottedWidth: CGFloat?
@@ -28,9 +27,8 @@ final class SubtensorSubnetPriceChartView: UIView {
     private var selection: SubtensorPriceChartSelection?
     private var chartData: SubtensorPriceChartData?
 
-    init(style: Style = .price, isSelectable: Bool = false) {
+    init(style: Style = .price) {
         self.style = style
-        self.isSelectable = isSelectable
         super.init(frame: .zero)
         addSubview(chart)
         chart.snp.makeConstraints { make in make.edges.equalToSuperview() }
@@ -59,9 +57,7 @@ final class SubtensorSubnetPriceChartView: UIView {
         axis.gridLineWidth = 0.5
         axis.setLabelCount(3, force: true)
 
-        if isSelectable {
-            setupSelection()
-        }
+        setupSelection()
     }
 
     @available(*, unavailable)
@@ -110,7 +106,7 @@ private extension SubtensorSubnetPriceChartView {
 
         chart.xAxis.axisMinimum = chartData.xRange.lowerBound
         chart.xAxis.axisMaximum = chartData.xRange.upperBound
-        chart.dragEnabled = isSelectable && chartData.coverage == nil
+        chart.dragEnabled = chartData.coverageStart == nil
         chart.highlightPerDragEnabled = chart.dragEnabled
         applyAxis(lower: chartData.yRange.lowerBound, upper: chartData.yRange.upperBound, labels: viewModel.axisLabels)
 
@@ -211,9 +207,7 @@ private extension SubtensorSubnetPriceChartView {
         line.lineWidth = Constants.lineWidth
         line.drawCirclesEnabled = false
         line.drawValuesEnabled = false
-        line.highlightEnabled = isSelectable
         line.drawHorizontalHighlightIndicatorEnabled = false
-        line.drawVerticalHighlightIndicatorEnabled = isSelectable
         line.highlightColor = R.color.colorNeutralPriceChartLine()!
 
         let fill = fill(for: lineColor)
@@ -308,7 +302,7 @@ extension SubtensorSubnetPriceChartView {
     }
 
     func highlightEntry(at location: CGPoint) {
-        guard isSelectable, let chartData else {
+        guard let chartData else {
             return
         }
 
@@ -336,7 +330,7 @@ extension SubtensorSubnetPriceChartView {
 
 extension SubtensorSubnetPriceChartView: ChartViewDelegate {
     func chartValueSelected(_: ChartViewBase, entry: ChartDataEntry, highlight _: Highlight) {
-        guard chartData?.coverage == nil else {
+        guard chartData?.coverageStart == nil else {
             chart.highlightValues(nil)
             return
         }

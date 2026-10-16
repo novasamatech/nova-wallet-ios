@@ -37,7 +37,7 @@ final class SubtensorPortfolioHeaderView: UIView {
 
     let chartContainerView = UIView()
 
-    let chartView = SubtensorSubnetPriceChartView(style: .portfolio, isSelectable: true)
+    let chartView = SubtensorSubnetPriceChartView(style: .portfolio)
 
     let chartLoadingView: SubtensorSkeletonView = .create { view in
         view.skeletonCornerRadius = 12

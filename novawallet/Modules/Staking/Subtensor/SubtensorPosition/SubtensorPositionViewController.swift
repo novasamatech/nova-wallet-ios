@@ -7,16 +7,22 @@ final class SubtensorPositionViewController: UIViewController, ViewHolder {
     let presenter: SubtensorPositionPresenterProtocol
     let isRoot: Bool
 
+    private let seekHapticPlayer: ProgressiveHapticPlayer
+    private let chartLongPressHapticPlayer: HapticPlayer
     private let periodControlHapticPlayer: HapticPlayer
 
     init(
         presenter: SubtensorPositionPresenterProtocol,
         isRoot: Bool,
+        seekHapticPlayer: ProgressiveHapticPlayer,
+        chartLongPressHapticPlayer: HapticPlayer,
         periodControlHapticPlayer: HapticPlayer,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
         self.isRoot = isRoot
+        self.seekHapticPlayer = seekHapticPlayer
+        self.chartLongPressHapticPlayer = chartLongPressHapticPlayer
         self.periodControlHapticPlayer = periodControlHapticPlayer
 
         super.init(nibName: nil, bundle: nil)
@@ -53,6 +59,7 @@ private extension SubtensorPositionViewController {
         rootView.validatorView.addTarget(self, action: #selector(actionValidator), for: .touchUpInside)
         rootView.periodControl.addTarget(self, action: #selector(actionPeriod), for: .valueChanged)
         rootView.chartUnavailableView.addTarget(self, action: #selector(actionRetryHistory), for: .touchUpInside)
+        rootView.chartView.delegate = self
         rootView.syncNoticeView.addGestureRecognizer(
             UITapGestureRecognizer(target: self, action: #selector(actionRetrySync))
         )
@@ -88,6 +95,26 @@ extension SubtensorPositionViewController: SubtensorPositionViewProtocol {
     func didReceive(viewModel: SubtensorPositionViewModel) {
         title = viewModel.title
         rootView.bind(viewModel: viewModel, locale: selectedLocale)
+    }
+
+    func didReceive(priceHeader: SubtensorSubnetPriceHeaderViewModel) {
+        rootView.priceWidget.bind(header: priceHeader)
+    }
+}
+
+extension SubtensorPositionViewController: SubtensorPriceChartViewDelegate {
+    func priceChartViewDidBeginSelection(_: SubtensorSubnetPriceChartView) {
+        chartLongPressHapticPlayer.play()
+    }
+
+    func priceChartView(_: SubtensorSubnetPriceChartView, didSelect selection: SubtensorPriceChartSelection) {
+        seekHapticPlayer.play()
+        presenter.selectChart(selection)
+    }
+
+    func priceChartViewDidEndSelection(_: SubtensorSubnetPriceChartView) {
+        seekHapticPlayer.reset()
+        presenter.selectChart(nil)
     }
 }
 

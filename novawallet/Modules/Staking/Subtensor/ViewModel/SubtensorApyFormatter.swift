@@ -6,48 +6,30 @@ enum SubtensorApyStyle: Equatable {
     case trailing
     case paidInTao
     case bare
-    case column
 }
 
 enum SubtensorApyFormatter {
     static func text(for annualRate: Decimal?, style: SubtensorApyStyle, locale: Locale) -> String {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+        let rate = annualRate.flatMap { NumberFormatter.subtensorPercent.value(for: locale).stringFromDecimal($0) } ??
+            strings.stakingSubtensorUiValueUnknown()
 
         switch style {
         case .leading:
-            return strings.stakingSubtensorUiRateApyLeadingFormat(rateText(annualRate, locale: locale))
+            return strings.stakingSubtensorUiRateApyLeadingFormat(rate)
         case .trailing:
-            return strings.stakingSubtensorUiRateApyTrailingFormat(rateText(annualRate, locale: locale))
+            return strings.stakingSubtensorUiRateApyTrailingFormat(rate)
         case .paidInTao:
-            return strings.stakingSubtensorUiRatePaidInTaoFormat(rateText(annualRate, locale: locale))
+            return strings.stakingSubtensorUiRatePaidInTaoFormat(rate)
         case .bare:
-            return rateText(annualRate, locale: locale)
-        case .column:
-            let formatter = NumberFormatter()
-            formatter.numberStyle = .percent
-            formatter.roundingMode = .halfEven
-            formatter.locale = locale
-            formatter.maximumFractionDigits = 1
-            formatter.spacePercentSymbol()
-            return rateText(annualRate, formatter: formatter, locale: locale)
+            return rate
         }
     }
 }
 
-private extension SubtensorApyFormatter {
-    static func rateText(
-        _ annualRate: Decimal?,
-        formatter: NumberFormatter? = nil,
-        locale: Locale
-    ) -> String {
-        let formatter = formatter ?? NumberFormatter.subtensorPercentSingle.value(for: locale)
-
-        return annualRate.flatMap { formatter.stringFromDecimal($0) } ??
-            R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown()
-    }
-}
-
 extension NumberFormatter {
+    static var subtensorPercent: LocalizableResource<NumberFormatter> { spaced(.percent) }
+
     static var subtensorSignedPercentSingle: LocalizableResource<NumberFormatter> { spaced(.signedPercentSingle) }
 
     static var subtensorPercentSingle: LocalizableResource<NumberFormatter> { spaced(.percentSingle) }

@@ -13,7 +13,7 @@ struct SubtensorPriceWidgetParams {
 struct SubtensorPriceHeaderParams {
     let caption: String
     let spotPrice: Decimal?
-    let currency: SubtensorSubnetCurrencyViewModel
+    let currency: SubtensorSubnetCurrencyViewModel?
     let selection: SubtensorPriceChartSelection?
 }
 
@@ -27,7 +27,7 @@ protocol SubtensorPriceWidgetFactoryProtocol {
 
     func createWidget(
         for params: SubtensorPriceWidgetParams,
-        header: SubtensorPriceHeaderParams?,
+        header: SubtensorPriceHeaderParams,
         locale: Locale
     ) -> SubtensorPriceWidgetViewModel
 
@@ -179,11 +179,11 @@ extension SubtensorPriceWidgetViewModelFactory: SubtensorPriceWidgetFactoryProto
 
     func createWidget(
         for params: SubtensorPriceWidgetParams,
-        header: SubtensorPriceHeaderParams?,
+        header: SubtensorPriceHeaderParams,
         locale: Locale
     ) -> SubtensorPriceWidgetViewModel {
         SubtensorPriceWidgetViewModel(
-            header: header.map { createHeader($0, for: params, locale: locale) },
+            header: createHeader(header, for: params, locale: locale),
             chart: createChart(for: params, locale: locale),
             periods: createPeriods(for: params, locale: locale)
         )
