@@ -17,7 +17,6 @@ struct SubtensorWhereToStakeCardModel {
     let artwork: UIImage?
     let palette: Palette
     let chooseTitle: String
-    let isChoosable: Bool
 }
 
 struct SubtensorWhereToStakeViewModelFactory {
@@ -53,8 +52,7 @@ struct SubtensorWhereToStakeViewModelFactory {
             order: order, title: title, subtitle: subtitle,
             prosTitle: strings.stakingSubtensorQuickPros(), consTitle: strings.stakingSubtensorQuickCons(),
             pros: pros, cons: cons, artwork: order.artwork, palette: order.palette,
-            chooseTitle: strings.stakingSubtensorQuickChoose(),
-            isChoosable: order.isAvailable
+            chooseTitle: strings.stakingSubtensorQuickChoose()
         )
     }
 }

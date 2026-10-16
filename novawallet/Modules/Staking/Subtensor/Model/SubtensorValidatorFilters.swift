@@ -1,6 +1,6 @@
 import Foundation
 
 struct SubtensorValidatorFilters: Equatable {
-    var sort: SubtensorValidatorSort = .totalStaked
+    var sort: SubtensorValidatorSort = .apy
     var hidesUnusualApy = true
 }

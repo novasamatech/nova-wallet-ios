@@ -4,7 +4,6 @@ struct SubtensorSortSheetViewModel {
     struct Option {
         let title: String
         let subtitle: String?
-        var isEnabled = true
     }
 
     let title: String
@@ -55,8 +54,7 @@ private extension SubtensorSortSheetViewController {
     }
 
     @objc func actionSelectOption(_ sender: UIControl) {
-        guard let index = rootView.optionViews.firstIndex(where: { $0 === sender }),
-              viewModel.options[index].isEnabled else {
+        guard let index = rootView.optionViews.firstIndex(where: { $0 === sender }) else {
             return
         }
 

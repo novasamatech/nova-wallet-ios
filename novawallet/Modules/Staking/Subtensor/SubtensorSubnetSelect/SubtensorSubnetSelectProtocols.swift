@@ -6,8 +6,6 @@ enum SubtensorSubnetSort: CaseIterable, Equatable {
     case apy
     case sevenDayChange
     case name
-
-    var isAvailable: Bool { self != .apy }
 }
 
 struct SubtensorSubnetFilters: Equatable {
@@ -40,12 +38,14 @@ protocol SubnetSelectInteractorInputProtocol: AnyObject {
     func setup()
     func refresh()
     func loadWeeklyPrices(for subnets: [SubtensorSubnetRef])
+    func loadApy()
 }
 
 protocol SubnetSelectInteractorOutputProtocol: AnyObject {
     func didReceive(entries: [SubtensorSubnetListItem])
     func didReceive(subnetLogos: SubtensorSubnetLogos?)
     func didReceive(weeklyPrices: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>])
+    func didReceive(apy: [UInt16: Decimal]?)
     func didReceiveError(_ error: Error)
 }
 

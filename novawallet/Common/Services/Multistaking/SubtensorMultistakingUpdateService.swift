@@ -145,7 +145,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
             switch result {
             case let .success(maxApy):
                 self?.isMaxApyResolved = true
-                self?.updateMaxApy(.replace(maxApy))
+                self?.updateMaxApy(.replace(maxApy.values.max()))
             case let .failure(error):
                 self?.logger.warning("Max APY fetch error: \(error)")
             }

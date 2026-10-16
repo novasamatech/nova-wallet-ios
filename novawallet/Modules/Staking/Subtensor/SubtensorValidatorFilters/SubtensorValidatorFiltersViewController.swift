@@ -87,8 +87,6 @@ extension SubtensorValidatorFiltersViewController: UITableViewDataSource, UITabl
             underlyingViewModel: titles[indexPath.row],
             selectable: sorts[indexPath.row] == model?.selectedSort
         ))
-        cell.contentView.alpha = indexPath.row == 0 ? 0.4 : 1
-        cell.isUserInteractionEnabled = indexPath.row != 0
         return cell
     }
 
