@@ -94,6 +94,16 @@ enum SubtensorRowState<Value> {
 
 extension SubtensorRowState: Equatable where Value: Equatable {}
 
+extension SubtensorRowState where Value == String {
+    static func trade(_ value: String?, isPending: Bool, locale: Locale) -> SubtensorRowState<String> {
+        if let value {
+            return .value(SubtensorSubnetNaming.isolatedLeftToRight(value))
+        }
+
+        return isPending ? .loading : .value(.subtensorUnknown(for: locale))
+    }
+}
+
 enum SubtensorSetupValidatorViewModel {
     case loading
     case unselected(title: String)
@@ -177,9 +187,7 @@ struct SubtensorStakingSetupViewModelInput {
 
     // A reused netuid can still have metadata cached for its previous registration.
     var matchingCatalogue: SubtensorSubnetCatalogue? {
-        guard let info = target?.subnetInfo else { return nil }
-        let ref = SubtensorSubnetRef(netuid: info.netuid, registeredAt: info.networkRegisteredAt)
-        guard let subnet = subnetData.catalogue?.subnet(for: ref) else { return nil }
+        guard let ref = target?.subnetRef, let subnet = subnetData.catalogue?.subnet(for: ref) else { return nil }
         return SubtensorSubnetCatalogue(subnets: [subnet])
     }
 

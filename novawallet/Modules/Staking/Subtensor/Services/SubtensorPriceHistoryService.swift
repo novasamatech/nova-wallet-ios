@@ -62,32 +62,16 @@ extension SubtensorPriceHistoryService {
             .flatMap { period.startDate(endingAt: $0.date) }
             .map { registrationDate <= $0 } ?? true
 
-        guard coversPeriod else {
-            return SubtensorPriceHistory(
-                subnet: subnet,
-                period: period,
-                points: periodPoints,
-                changeInTao: nil,
-                changeInFiat: nil
-            )
-        }
-
         return SubtensorPriceHistory(
             subnet: subnet,
             period: period,
             points: periodPoints,
-            changeInTao: SubtensorPriceSeries.change(
-                of: periodPoints,
-                over: period,
-                date: \.date,
-                value: \.taoPerAlpha
-            ),
-            changeInFiat: SubtensorPriceSeries.change(
-                of: periodPoints,
-                over: period,
-                date: \.date,
-                value: \.fiatPerAlpha
-            )
+            changeInTao: coversPeriod
+                ? SubtensorPriceSeries.change(of: periodPoints, over: period, date: \.date, value: \.taoPerAlpha)
+                : nil,
+            changeInFiat: coversPeriod
+                ? SubtensorPriceSeries.change(of: periodPoints, over: period, date: \.date, value: \.fiatPerAlpha)
+                : nil
         )
     }
 
@@ -176,7 +160,7 @@ extension SubtensorPriceHistoryService: SubtensorPriceHistoryServiceProtocol {
         for subnet: SubtensorSubnetRef,
         period: SubtensorPricePeriod,
         currency: Currency
-    ) -> CompoundOperationWrapper<SubtensorPriceHistoryResult> {
+    ) -> CompoundOperationWrapper<SubtensorPriceHistory?> {
         let marketsWrapper = marketsService.createMarketsWrapper()
         let fetcher = fetcher
         let headBlockWrapper = fetcher.createHeadBlockWrapper()
@@ -196,17 +180,15 @@ extension SubtensorPriceHistoryService: SubtensorPriceHistoryServiceProtocol {
 
         pointsWrapper.addDependency(wrapper: marketsWrapper)
 
-        let resultOperation = ClosureOperation<SubtensorPriceHistoryResult> {
+        let resultOperation = ClosureOperation<SubtensorPriceHistory?> {
             guard let points = try pointsWrapper.targetOperation.extractNoCancellableResultData() else {
-                return .notListed
+                return nil
             }
 
             let headBlock = try headBlockWrapper.targetOperation.extractNoCancellableResultData()
             let registrationDate = Self.registrationDate(of: subnet, headBlock: headBlock, at: timeProvider())
 
-            return .available(
-                Self.makeHistory(subnet: subnet, period: period, points: points, registrationDate: registrationDate)
-            )
+            return Self.makeHistory(subnet: subnet, period: period, points: points, registrationDate: registrationDate)
         }
 
         resultOperation.addDependency(pointsWrapper.targetOperation)

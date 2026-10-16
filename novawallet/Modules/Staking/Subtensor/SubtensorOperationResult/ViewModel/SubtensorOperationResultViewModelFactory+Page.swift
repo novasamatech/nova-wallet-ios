@@ -212,13 +212,15 @@ private extension SubtensorOperationResultViewModelFactory {
         let direction = request.operation.tradeDirection ?? .buy
         let subnetInfo = alphaInfo(for: context)
 
-        let swapRate = formatSwapRate(
-            pay: amounts.pay,
-            receive: amounts.receive,
-            payInfo: direction == .buy ? taoInfo : subnetInfo,
-            receiveInfo: direction == .buy ? subnetInfo : taoInfo,
-            locale: locale
-        ) ?? strings.stakingSubtensorUiValueUnknown()
+        let swapRate = amounts.receive.flatMap { receive in
+            formatterFactory.subtensorSwapRate(
+                amountIn: amounts.pay,
+                amountOut: receive,
+                inInfo: direction == .buy ? taoInfo : subnetInfo,
+                outInfo: direction == .buy ? subnetInfo : taoInfo,
+                locale: locale
+            )
+        } ?? strings.stakingSubtensorUiValueUnknown()
 
         let slippage: String? = if request.origin == .newPosition {
             formatTolerance(request.slippage ?? SubtensorSlippageTolerance.defaultTolerance, locale: locale)
@@ -233,7 +235,7 @@ private extension SubtensorOperationResultViewModelFactory {
             swapRate: swapRate,
             costBasis: createCostBasis(for: state, context: context, amounts: amounts, locale: locale),
             slippage: slippage,
-            validator: validatorName(for: request),
+            validator: request.validator.name,
             networkFee: showsNetworkFee(in: state) ? networkFee(for: state, request: request, locale: locale) : nil,
             isExpanded: isDone
         )
@@ -297,49 +299,17 @@ private extension SubtensorOperationResultViewModelFactory {
         return false
     }
 
-    func formatSwapRate(
-        pay: Balance,
-        receive: Balance?,
-        payInfo: AssetBalanceDisplayInfo,
-        receiveInfo: AssetBalanceDisplayInfo,
-        locale: Locale
-    ) -> String? {
-        guard
-            let receive,
-            let rate = Decimal.rateFromSubstrate(
-                amount1: pay,
-                amount2: receive,
-                precision1: payInfo.assetPrecision,
-                precision2: receiveInfo.assetPrecision
-            ) else {
-            return nil
-        }
-
-        let payFormatter = formatterFactory.createTokenFormatter(for: payInfo).value(for: locale)
-        let receiveFormatter = formatterFactory.createTokenFormatter(for: receiveInfo).value(for: locale)
-
-        guard
-            let oneIn = payFormatter.stringFromDecimal(1),
-            let rateOut = receiveFormatter.stringFromDecimal(rate) else {
-            return nil
-        }
-
-        return SubtensorSubnetNaming.isolatedRate(oneIn, rateOut)
-    }
-
     func createPageAction(
         for state: SubtensorOperationResultState,
         locale: Locale
     ) -> SubtensorResultActionViewModel? {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
         switch state {
         case .progress:
             return nil
         case .done, .unconfirmed:
-            return SubtensorResultActionViewModel(action: .done, title: strings.commonDone())
+            return action(.done, locale: locale)
         case let .failed(failure, _, _):
-            return failureAction(for: failure, locale: locale)
+            return action(failure.isRetryable ? .tryAgain : .close, locale: locale)
         }
     }
 }

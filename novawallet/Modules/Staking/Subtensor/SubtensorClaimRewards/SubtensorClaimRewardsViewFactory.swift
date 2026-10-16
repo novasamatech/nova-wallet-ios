@@ -16,7 +16,7 @@ enum SubtensorClaimRewardsViewFactory {
 
         let interactor = SubtensorStakingBaseInteractor(flowServices: services, state: state, logger: Logger.shared)
 
-        let wireframe = SubtensorClaimRewardsWireframe(state: state)
+        let wireframe = SubtensorConfirmWireframe(state: state)
 
         let localizationManager = LocalizationManager.shared
 

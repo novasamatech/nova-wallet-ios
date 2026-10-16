@@ -89,12 +89,6 @@ extension SubtensorOperationResultViewModelFactory {
         tolerance.decimalValue.flatMap { percentFormatter.value(for: locale).stringFromDecimal($0) }
     }
 
-    func validatorName(for request: SubtensorOperationResultRequest) -> String {
-        let display = request.validator.display
-
-        return display.username.isEmpty ? display.address.truncated : display.username
-    }
-
     func networkFee(
         for state: SubtensorOperationResultState,
         request: SubtensorOperationResultRequest,
@@ -177,15 +171,27 @@ extension SubtensorOperationResultViewModelFactory {
         }
     }
 
-    func failureAction(
-        for failure: SubtensorStakingSubmissionFailure,
-        locale: Locale
-    ) -> SubtensorResultActionViewModel {
+    func action(_ action: SubtensorResultAction, locale: Locale) -> SubtensorResultActionViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
-        return failure.isRetryable
-            ? SubtensorResultActionViewModel(action: .tryAgain, title: strings.commonTryAgain())
-            : SubtensorResultActionViewModel(action: .close, title: strings.commonClose())
+        let title = switch action {
+        case .done:
+            strings.commonDone()
+        case .tryAgain:
+            strings.commonTryAgain()
+        case .close:
+            strings.commonClose()
+        case .viewPosition:
+            strings.stakingSubtensorResultViewPosition()
+        case .discoverSubnets:
+            strings.stakingSubtensorResultDiscoverSubnets()
+        case .yourBittensor:
+            strings.stakingSubtensorUiPortfolioTitle()
+        case .backToPosition:
+            strings.stakingSubtensorResultBackToPosition()
+        }
+
+        return SubtensorResultActionViewModel(action: action, title: title)
     }
 }
 

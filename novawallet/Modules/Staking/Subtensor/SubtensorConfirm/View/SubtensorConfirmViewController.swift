@@ -82,7 +82,7 @@ private extension SubtensorConfirmViewController {
         rootView.networkFeeCell.addTarget(self, action: #selector(actionNetworkFeeInfo), for: .touchUpInside)
     }
 
-    func bindTile(_ tileView: SwapElementView, state: LoadableViewModelState<SubtensorConfirmTileViewModel>) {
+    func bindTile(_ tileView: SwapElementView, state: LoadableViewModelState<BalanceViewModel>) {
         if let viewModel = state.value {
             tileView.valueLabel.text = viewModel.amount
             tileView.priceLabel.text = viewModel.price ?? " "
@@ -149,7 +149,7 @@ private extension SubtensorConfirmViewController {
         rootView.apyCell.bind(details: viewModel.apy ?? "")
     }
 
-    func bindAction(_ viewModel: SubtensorConfirmActionViewModel) {
+    func bindAction(_ viewModel: SubtensorSetupActionViewModel) {
         rootView.actionButton.imageWithTitleView?.title = viewModel.title
 
         if viewModel.isEnabled {

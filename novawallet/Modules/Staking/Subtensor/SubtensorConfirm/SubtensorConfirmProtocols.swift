@@ -22,5 +22,6 @@ protocol SubtensorConfirmPresenterProtocol: AnyObject {
 }
 
 protocol SubtensorConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
-    CommonRetryable, MessageSheetPresentable, SubtensorStakingErrorPresentable, AddressOptionsPresentable,
-    SubtensorInfoSheetPresentable, SubtensorValidatorInfoPresentable, SubtensorOperationResultPresenting {}
+    CommonRetryable, MessageSheetPresentable, SubtensorStakingErrorPresentable, SubtensorClaimErrorPresentable,
+    AddressOptionsPresentable, SubtensorInfoSheetPresentable, SubtensorValidatorInfoPresentable,
+    SubtensorOperationResultPresenting {}

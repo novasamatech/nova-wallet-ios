@@ -32,6 +32,7 @@ protocol SubtensorQuoteHandling: SubtensorBaseRetrying {
     var quoteFlow: SubtensorQuoteFlowModel { get set }
     var isQuoteFailed: Bool { get set }
     var tradesUnavailable: Bool { get set }
+    var isRoot: Bool { get }
     var logger: LoggerProtocol { get }
     var quoteInteractor: SubtensorStakingBaseInteractorInputProtocol { get }
 
@@ -83,6 +84,23 @@ extension SubtensorQuoteHandling {
         if let request {
             quoteInteractor.refreshQuote(for: request)
         }
+    }
+
+    func createQuoteContext() -> SubtensorQuoteValidatingContext? {
+        guard !isRoot else {
+            return nil
+        }
+
+        let latestQuote = quoteFlow.freshQuote
+
+        return SubtensorQuoteValidatingContext(
+            latestQuote: latestQuote,
+            acknowledgedLimit: latestQuote?.limitPrice,
+            tradesUnavailable: tradesUnavailable,
+            onQuoteRefresh: { [weak self] in
+                self?.forceQuoteRefresh()
+            }
+        )
     }
 
     func didReceiveQuote(_ quote: SubtensorTradeQuote) {

@@ -30,165 +30,57 @@ struct SubtensorStakeValidatingDep {
     }
 }
 
-protocol SubtensorStakePresenterValidating {}
-
-extension SubtensorStakePresenterValidating {
-    func createStakeValidations(
+extension SubtensorStakingValidationFactoryProtocol {
+    func validateStake(
         for dep: SubtensorStakeValidatingDep,
-        dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
-        selectedLocale: Locale
-    ) -> [DataValidating] {
+        locale: Locale,
+        onSuccess: @escaping () -> Void
+    ) {
         var validations: [DataValidating] = [
-            dataValidationFactory.has(
+            has(
                 fee: dep.fee,
-                locale: selectedLocale,
+                locale: locale,
                 onError: { dep.onFeeRefresh() }
             ),
 
-            dataValidationFactory.hasPreflight(
+            hasPreflight(
                 dep.preflight,
-                locale: selectedLocale,
+                locale: locale,
                 onRetry: { dep.onPreflightRefresh() }
             )
         ]
 
         if dep.isSubnet {
-            validations.append(
-                contentsOf: SubtensorCommonValidations.createQuoteValidations(
-                    for: dep.quoteContext,
-                    dataValidationFactory: dataValidationFactory,
-                    locale: selectedLocale
-                )
-            )
+            validations.append(contentsOf: createQuoteValidations(for: dep.quoteContext, locale: locale))
         }
 
-        validations.append(
-            contentsOf: createStakeBalanceValidations(
-                for: dep,
-                dataValidationFactory: dataValidationFactory,
-                selectedLocale: selectedLocale
-            )
-        )
-
-        validations.append(
-            contentsOf: createStakePreflightValidations(
-                for: dep,
-                dataValidationFactory: dataValidationFactory,
-                selectedLocale: selectedLocale
-            )
-        )
+        validations.append(contentsOf: createStakeBalanceValidations(for: dep, locale: locale))
+        validations.append(contentsOf: createStakePreflightValidations(for: dep, locale: locale))
 
         if dep.isSubnet {
-            validations.append(
-                dataValidationFactory.priceImpactAcceptable(
-                    quote: dep.quoteContext?.latestQuote,
-                    locale: selectedLocale
-                )
-            )
+            validations.append(priceImpactAcceptable(quote: dep.quoteContext?.latestQuote, locale: locale))
         }
-
-        return validations
-    }
-
-    func validateStake(
-        for dep: SubtensorStakeValidatingDep,
-        dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
-        selectedLocale: Locale,
-        onSuccess: @escaping () -> Void
-    ) {
-        let validations = createStakeValidations(
-            for: dep,
-            dataValidationFactory: dataValidationFactory,
-            selectedLocale: selectedLocale
-        )
 
         DataValidationRunner(validators: validations).runValidation(notifyingOnSuccess: onSuccess)
     }
-}
 
-private extension SubtensorStakePresenterValidating {
-    func createStakeBalanceValidations(
-        for dep: SubtensorStakeValidatingDep,
-        dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
-        selectedLocale: Locale
-    ) -> [DataValidating] {
-        [
-            dataValidationFactory.canSpendAmountInPlank(
-                balance: dep.balance?.transferable,
-                spendingAmount: dep.amountDecimal,
-                asset: dep.assetDisplayInfo,
-                locale: selectedLocale
-            ),
-
-            dataValidationFactory.canPayFeeSpendingAmountInPlank(
-                balance: dep.balance?.transferable,
-                fee: dep.fee,
-                spendingAmount: dep.amountDecimal,
-                asset: dep.assetDisplayInfo,
-                locale: selectedLocale
-            ),
-
-            dataValidationFactory.respectsFeeReserve(
-                amount: dep.amount,
-                transferable: dep.balance?.transferable,
-                networkFee: dep.fee?.amountForCurrentAccount,
-                locale: selectedLocale
-            ),
-
-            dataValidationFactory.hasMinStakeAmount(
-                stakedAmount: dep.stakedAmount,
-                minStake: dep.preflight?.minStake,
-                quotedSwapFee: dep.quoteContext?.latestQuote?.quote.poolFee,
-                includesNovaFee: dep.isSubnet,
-                locale: selectedLocale
-            )
-        ]
-    }
-
-    func createStakePreflightValidations(
-        for dep: SubtensorStakeValidatingDep,
-        dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
-        selectedLocale: Locale
-    ) -> [DataValidating] {
-        [
-            dataValidationFactory.hotkeyIsRegistered(
-                hotkeyExists: dep.preflight?.hotkeyExists,
-                locale: selectedLocale
-            ),
-
-            dataValidationFactory.subnetStakingEnabled(
-                netuid: dep.netuid,
-                subnetExists: dep.preflight?.subnetExists,
-                subtokenEnabled: dep.preflight?.subtokenEnabled,
-                locale: selectedLocale
-            )
-        ] + SubtensorCommonValidations.createNetworkStateValidations(
-            for: dep.preflight,
-            dataValidationFactory: dataValidationFactory,
-            locale: selectedLocale
-        )
-    }
-}
-
-enum SubtensorCommonValidations {
-    static func createQuoteValidations(
+    func createQuoteValidations(
         for context: SubtensorQuoteValidatingContext?,
-        dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
         locale: Locale
     ) -> [DataValidating] {
         [
-            dataValidationFactory.subnetTradesAvailable(
+            subnetTradesAvailable(
                 tradesUnavailable: context?.tradesUnavailable ?? false,
                 locale: locale
             ),
 
-            dataValidationFactory.hasFreshQuote(
+            hasFreshQuote(
                 context?.latestQuote,
                 locale: locale,
                 onRetry: { context?.onQuoteRefresh() }
             ),
 
-            dataValidationFactory.orderWithinSlippageTolerance(
+            orderWithinSlippageTolerance(
                 quote: context?.latestQuote,
                 limitPrice: context?.acknowledgedLimit,
                 locale: locale
@@ -196,21 +88,77 @@ enum SubtensorCommonValidations {
         ]
     }
 
-    static func createNetworkStateValidations(
+    func createNetworkStateValidations(
         for preflight: SubtensorStakingPreflight?,
-        dataValidationFactory: SubtensorStakingValidationFactoryProtocol,
         locale: Locale
     ) -> [DataValidating] {
         [
-            dataValidationFactory.noColdkeySwapInProgress(
+            noColdkeySwapInProgress(
                 hasAnnouncement: preflight?.hasColdkeySwapAnnouncement,
                 locale: locale
             ),
 
-            dataValidationFactory.safeModeInactive(
+            safeModeInactive(
                 safeModeActive: preflight?.isSafeModeActive,
                 locale: locale
             )
         ]
+    }
+}
+
+private extension SubtensorStakingValidationFactoryProtocol {
+    func createStakeBalanceValidations(
+        for dep: SubtensorStakeValidatingDep,
+        locale: Locale
+    ) -> [DataValidating] {
+        [
+            canSpendAmountInPlank(
+                balance: dep.balance?.transferable,
+                spendingAmount: dep.amountDecimal,
+                asset: dep.assetDisplayInfo,
+                locale: locale
+            ),
+
+            canPayFeeSpendingAmountInPlank(
+                balance: dep.balance?.transferable,
+                fee: dep.fee,
+                spendingAmount: dep.amountDecimal,
+                asset: dep.assetDisplayInfo,
+                locale: locale
+            ),
+
+            respectsFeeReserve(
+                amount: dep.amount,
+                transferable: dep.balance?.transferable,
+                networkFee: dep.fee?.amountForCurrentAccount,
+                locale: locale
+            ),
+
+            hasMinStakeAmount(
+                stakedAmount: dep.stakedAmount,
+                minStake: dep.preflight?.minStake,
+                quotedSwapFee: dep.quoteContext?.latestQuote?.quote.poolFee,
+                includesNovaFee: dep.isSubnet,
+                locale: locale
+            )
+        ]
+    }
+
+    func createStakePreflightValidations(
+        for dep: SubtensorStakeValidatingDep,
+        locale: Locale
+    ) -> [DataValidating] {
+        [
+            hotkeyIsRegistered(
+                hotkeyExists: dep.preflight?.hotkeyExists,
+                locale: locale
+            ),
+
+            subnetStakingEnabled(
+                subnetExists: dep.preflight?.subnetExists,
+                subtokenEnabled: dep.preflight?.subtokenEnabled,
+                locale: locale
+            )
+        ] + createNetworkStateValidations(for: dep.preflight, locale: locale)
     }
 }

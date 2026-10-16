@@ -1,36 +1,25 @@
 import Foundation
 
 extension SubtensorValidatorDirectoryService {
-    struct Row {
-        let hotkey: AccountId
-        let name: String?
-        let stake: BigRational?
-    }
-
-    struct Listing {
-        let rows: [Row]
-        let listStamp: SubtensorBackendStamp?
-        let isPartial: Bool
-    }
-
     static func makeListing(
         from response: BittensorApiResult<BittensorApi.ValidatorCollection>,
-        netuid: UInt16,
+        subnet: SubtensorSubnetRef,
         logger: LoggerProtocol
-    ) -> Listing {
+    ) -> SubtensorValidatorDirectory {
         let collection = response.value
-        let candidates = collection.items.filter { $0.netuid == netuid }
+        let candidates = collection.items.filter { $0.netuid == subnet.netuid }
 
-        let rows = candidates.compactMap { item in
-            makeRow(
+        let items = candidates.compactMap { item in
+            makeItem(
                 hotkey: item.hotkey,
+                netuid: subnet.netuid,
                 name: nonBlank(item.identitySourceName) ?? nonBlank(item.stakeSourceName),
                 stake: reportedStake(item.reportedMeasurements.validatorStake)
             )
         }
 
-        if rows.count < candidates.count {
-            logger.warning("Dropped \(candidates.count - rows.count) validator rows of netuid \(netuid)")
+        if items.count < candidates.count {
+            logger.warning("Dropped \(candidates.count - items.count) validator rows of netuid \(subnet.netuid)")
         }
 
         let components = collection.meta.components
@@ -41,8 +30,9 @@ extension SubtensorValidatorDirectoryService {
             components.validatorIdentities
         ].compactMap { SubtensorBackendStamp(metadata: $0, isFromExpiredCache: response.isFromExpiredCache) }
 
-        return Listing(
-            rows: rows,
+        return SubtensorValidatorDirectory(
+            subnet: subnet,
+            items: items,
             listStamp: SubtensorBackendStamp.aggregate(stamps),
             isPartial: collection.meta.completeness == .partial
         )
@@ -50,22 +40,29 @@ extension SubtensorValidatorDirectoryService {
 
     static func makeRootListing(
         from response: BittensorApiResult<BittensorApi.RootValidatorCollection>,
+        subnet: SubtensorSubnetRef,
         logger: LoggerProtocol
-    ) -> Listing {
+    ) -> SubtensorValidatorDirectory {
         let collection = response.value
 
         let candidates = collection.items.filter { (reportedStake($0.rootStakeTao)?.numerator ?? 0) > 0 }
 
-        let rows = candidates.compactMap { item in
-            makeRow(hotkey: item.hotkey, name: nonBlank(item.name), stake: reportedStake(item.rootStakeTao))
+        let items = candidates.compactMap { item in
+            makeItem(
+                hotkey: item.hotkey,
+                netuid: subnet.netuid,
+                name: nonBlank(item.name),
+                stake: reportedStake(item.rootStakeTao)
+            )
         }
 
-        if rows.count < candidates.count {
-            logger.warning("Dropped \(candidates.count - rows.count) root validator rows")
+        if items.count < candidates.count {
+            logger.warning("Dropped \(candidates.count - items.count) root validator rows")
         }
 
-        return Listing(
-            rows: rows,
+        return SubtensorValidatorDirectory(
+            subnet: subnet,
+            items: items,
             listStamp: SubtensorBackendStamp(
                 component: collection.meta.components.rootValidators,
                 isFromExpiredCache: response.isFromExpiredCache
@@ -74,12 +71,24 @@ extension SubtensorValidatorDirectoryService {
         )
     }
 
-    static func makeRow(hotkey: String, name: String?, stake: BigRational?) -> Row? {
+    static func makeItem(
+        hotkey: String,
+        netuid: UInt16,
+        name: String?,
+        stake: BigRational?
+    ) -> SubtensorValidatorDirectoryItem? {
         guard let accountId = try? hotkey.toAccountId(using: .substrate(SubstrateConstants.genericAddressPrefix)) else {
             return nil
         }
 
-        return Row(hotkey: accountId, name: name, stake: stake)
+        return SubtensorValidatorDirectoryItem(
+            hotkey: accountId,
+            netuid: netuid,
+            name: name,
+            take: nil,
+            reportedStake: stake,
+            status: nil
+        )
     }
 
     static func nonBlank(_ value: String?) -> String? {
@@ -92,23 +101,5 @@ extension SubtensorValidatorDirectoryService {
 
     static func reportedStake(_ value: String?) -> BigRational? {
         value.flatMap { try? BittensorApiDecimal.fraction($0) }
-    }
-
-    static func makeDirectory(subnet: SubtensorSubnetRef, listing: Listing) -> SubtensorValidatorDirectory {
-        SubtensorValidatorDirectory(
-            subnet: subnet,
-            items: listing.rows.map { row in
-                SubtensorValidatorDirectoryItem(
-                    hotkey: row.hotkey,
-                    netuid: subnet.netuid,
-                    name: row.name,
-                    take: nil,
-                    reportedStake: row.stake,
-                    status: nil
-                )
-            },
-            listStamp: listing.listStamp,
-            isPartial: listing.isPartial
-        )
     }
 }

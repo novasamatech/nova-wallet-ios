@@ -88,16 +88,6 @@ private extension SubtensorUnstakeSetupViewModelFactory {
         return formatter.stringFromDecimal(decimal) ?? ""
     }
 
-    func formatFee(_ fee: ExtrinsicFeeProtocol, price: PriceData?, locale: Locale) -> BalanceViewModelProtocol {
-        let feeDecimal = fee.amount.decimal(assetInfo: chainAsset.assetDisplayInfo)
-
-        return balanceViewModelFactory.balanceFromPrice(
-            feeDecimal,
-            priceData: price,
-            roundingMode: .up
-        ).value(for: locale)
-    }
-
     func createTitle(for input: SubtensorUnstakeSetupViewModelInput, locale: Locale) -> String {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
@@ -169,13 +159,7 @@ private extension SubtensorUnstakeSetupViewModelFactory {
             return spot
         }
 
-        guard let subnetInfo = input.target?.subnetInfo else {
-            return nil
-        }
-
-        let ref = SubtensorSubnetRef(netuid: subnetInfo.netuid, registeredAt: subnetInfo.networkRegisteredAt)
-
-        return input.catalogue?.subnet(for: ref)?.freshTaoPerAlpha
+        return input.target.flatMap { input.catalogue?.subnet(for: $0.subnetRef)?.freshTaoPerAlpha }
     }
 
     func createRootNote(for input: SubtensorUnstakeSetupViewModelInput, locale: Locale) -> String? {
@@ -248,7 +232,9 @@ private extension SubtensorUnstakeSetupViewModelFactory {
             avgBuyPrice: createAvgBuyPrice(for: input, locale: locale),
             earned: createEarned(for: input, locale: locale),
             validator: createValidator(for: input),
-            networkFee: input.fee.map { formatFee($0, price: input.price, locale: locale) }
+            networkFee: balanceViewModelFactory.subtensorFee(
+                input.fee, info: chainAsset.assetDisplayInfo, price: input.price, locale: locale
+            )
         )
     }
 
@@ -346,31 +332,14 @@ private extension SubtensorUnstakeSetupViewModelFactory {
             return .hidden
         }
 
-        if let swapRate, !swapRate.isEmpty {
-            return .value(SubtensorSubnetNaming.isolatedLeftToRight(swapRate))
-        }
-
-        if isQuotePending(for: input) {
-            return .loading
-        }
-
-        return .value(R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiValueUnknown())
+        return .trade(swapRate.flatMap { $0.isEmpty ? nil : $0 }, isPending: isQuotePending(for: input), locale: locale)
     }
 
     func createValidator(for input: SubtensorUnstakeSetupViewModelInput) -> SubtensorSetupValidatorViewModel {
-        guard
-            let hotkey = input.primaryHotkey,
-            let address = try? hotkey.toAddress(using: chainAsset.chain.chainFormat) else {
-            return .loading
-        }
-
-        let name = input.validatorName ?? address.mediumTruncated
-        let viewModel = displayAddressFactory.createViewModel(
-            from: DisplayAddress(address: address, username: input.validatorName ?? "")
-        )
-
-        return .selected(
-            DisplayAddressViewModel(address: viewModel.address, name: name, imageViewModel: viewModel.imageViewModel)
-        )
+        input.primaryHotkey.flatMap { hotkey in
+            displayAddressFactory.subtensorValidator(
+                hotkey: hotkey, name: input.validatorName, chainFormat: chainAsset.chain.chainFormat
+            )
+        }.map { .selected($0) } ?? .loading
     }
 }

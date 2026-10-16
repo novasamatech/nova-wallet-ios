@@ -22,8 +22,7 @@ extension SubtensorStakingSetupPresenter: SubtensorSubnetSelectDelegate {
 
 extension SubtensorStakingSetupPresenter: SubtensorValidatorSelectDelegate {
     func didSelectValidator(_ validator: SubtensorValidatorDirectoryItem, for target: SubtensorStakeTarget) {
-        guard !mode.isLocked, target.netuid == self.target?.netuid,
-              target.subnetInfo?.networkRegisteredAt == self.target?.subnetInfo?.networkRegisteredAt else {
+        guard !mode.isLocked, target.subnetRef == subnetRef else {
             return
         }
 
@@ -43,9 +42,9 @@ extension SubtensorStakingSetupPresenter: RampFlowManaging, RampDelegate {
     }
 }
 
-extension SubtensorStakingSetupPresenter: SubtensorStakePresenterValidating {
+extension SubtensorStakingSetupPresenter {
     func createValidationDependencies(for target: SubtensorStakeTarget) -> SubtensorStakeValidatingDep {
-        var dependencies = SubtensorStakeValidatingDep(
+        SubtensorStakeValidatingDep(
             amount: inputAmount(),
             balance: balance,
             fee: fee,
@@ -57,23 +56,9 @@ extension SubtensorStakingSetupPresenter: SubtensorStakePresenterValidating {
             },
             onPreflightRefresh: { [weak self] in
                 self?.refreshPreflight()
-            }
+            },
+            quoteContext: createQuoteContext()
         )
-
-        if !target.isRoot {
-            let latestQuote = quoteFlow.freshQuote
-
-            dependencies.quoteContext = SubtensorQuoteValidatingContext(
-                latestQuote: latestQuote,
-                acknowledgedLimit: latestQuote?.limitPrice,
-                tradesUnavailable: tradesUnavailable,
-                onQuoteRefresh: { [weak self] in
-                    self?.forceQuoteRefresh()
-                }
-            )
-        }
-
-        return dependencies
     }
 
     func createConfirmModel() -> SubtensorConfirmModel? {
