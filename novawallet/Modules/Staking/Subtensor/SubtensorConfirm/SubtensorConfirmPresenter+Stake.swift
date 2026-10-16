@@ -46,11 +46,7 @@ extension SubtensorConfirmPresenter {
 
         dependencies.quoteContext = createQuoteContext()
 
-        validateStake(
-            for: dependencies,
-            dataValidationFactory: dataValidationFactory,
-            selectedLocale: selectedLocale
-        ) { [weak self] in
+        dataValidationFactory.validateStake(for: dependencies, locale: selectedLocale) { [weak self] in
             self?.handOffAtTap()
         }
     }

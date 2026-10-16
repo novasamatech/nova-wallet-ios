@@ -3,7 +3,7 @@ import Foundation_iOS
 
 final class SubtensorClaimRewardsPresenter {
     weak var view: SubtensorClaimRewardsViewProtocol?
-    let wireframe: SubtensorClaimRewardsWireframeProtocol
+    let wireframe: SubtensorConfirmWireframeProtocol
     let interactor: SubtensorStakingBaseInteractorInputProtocol
 
     let chainAsset: ChainAsset
@@ -31,7 +31,7 @@ final class SubtensorClaimRewardsPresenter {
 
     init(
         interactor: SubtensorStakingBaseInteractorInputProtocol,
-        wireframe: SubtensorClaimRewardsWireframeProtocol,
+        wireframe: SubtensorConfirmWireframeProtocol,
         chainAsset: ChainAsset,
         model: SubtensorClaimRewardsModel,
         pendingRootClaims: SubtensorPendingRootClaimsProtocol,
@@ -161,11 +161,7 @@ private extension SubtensorClaimRewardsPresenter {
         ]
 
         validations.append(
-            contentsOf: SubtensorCommonValidations.createNetworkStateValidations(
-                for: preflight,
-                dataValidationFactory: dataValidationFactory,
-                locale: locale
-            )
+            contentsOf: dataValidationFactory.createNetworkStateValidations(for: preflight, locale: locale)
         )
 
         validations.append(ErrorConditionViolation(onError: { [weak view, wireframe] in

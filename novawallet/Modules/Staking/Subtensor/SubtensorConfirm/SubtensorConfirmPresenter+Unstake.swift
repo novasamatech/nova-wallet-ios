@@ -130,11 +130,7 @@ extension SubtensorConfirmPresenter {
 
         dependencies.quoteContext = createQuoteContext()
 
-        validateUnstake(
-            for: dependencies,
-            dataValidationFactory: dataValidationFactory,
-            selectedLocale: selectedLocale
-        ) { [weak self] in
+        dataValidationFactory.validateUnstake(for: dependencies, locale: selectedLocale) { [weak self] in
             self?.handOffAtTap()
         }
     }

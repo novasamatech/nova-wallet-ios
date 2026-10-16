@@ -37,7 +37,7 @@ enum SubtensorConfirmTapRule {
         }
 
         guard
-            let group = liveGroup(for: unstakeModel.netuid, in: state),
+            let group = SubtensorPortfolioBuilder.build(state: state).group(netuid: unstakeModel.netuid),
             !group.positions.contains(where: { $0.stakeAlpha == 0 }) else {
             return nil
         }
@@ -51,16 +51,5 @@ enum SubtensorConfirmTapRule {
         }
 
         return rebuilt
-    }
-}
-
-private extension SubtensorConfirmTapRule {
-    static func liveGroup(
-        for netuid: UInt16,
-        in state: Multistaking.SubtensorStakingState
-    ) -> SubtensorPortfolioGroup? {
-        let portfolio = SubtensorPortfolioBuilder.build(state: state)
-
-        return ([portfolio.stakedRoot].compactMap { $0 } + portfolio.subnets).first { $0.netuid == netuid }
     }
 }

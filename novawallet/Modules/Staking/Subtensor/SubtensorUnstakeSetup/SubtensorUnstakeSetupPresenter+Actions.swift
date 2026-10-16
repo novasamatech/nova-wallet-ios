@@ -90,21 +90,17 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
         let dependencies = createValidationDependencies(amount: amount)
         let model = createConfirmModel(for: dependencies)
 
-        validateUnstake(
-            for: dependencies,
-            dataValidationFactory: dataValidationFactory,
-            selectedLocale: selectedLocale
-        ) { [weak self] in
+        dataValidationFactory.validateUnstake(for: dependencies, locale: selectedLocale) { [weak self] in
             guard let self, let model else {
                 return
             }
 
-            wireframe.showConfirm(from: view, model: model)
+            wireframe.showConfirmation(from: view, model: model)
         }
     }
 }
 
-extension SubtensorUnstakeSetupPresenter: SubtensorUnstakePresenterValidating {
+extension SubtensorUnstakeSetupPresenter {
     func createValidationDependencies(amount: Balance) -> SubtensorUnstakeValidatingDep {
         let exitHotkeys = exitHotkeys(for: amount)
         let basis = basis
@@ -146,23 +142,6 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakePresenterValidating {
         return { [weak self] in
             self?.selectMax()
         }
-    }
-
-    func createQuoteContext() -> SubtensorQuoteValidatingContext? {
-        guard !isRoot else {
-            return nil
-        }
-
-        let latestQuote = quoteFlow.freshQuote
-
-        return SubtensorQuoteValidatingContext(
-            latestQuote: latestQuote,
-            acknowledgedLimit: latestQuote?.limitPrice,
-            tradesUnavailable: tradesUnavailable,
-            onQuoteRefresh: { [weak self] in
-                self?.forceQuoteRefresh()
-            }
-        )
     }
 
     func createConfirmModel(for dependencies: SubtensorUnstakeValidatingDep) -> SubtensorConfirmModel? {

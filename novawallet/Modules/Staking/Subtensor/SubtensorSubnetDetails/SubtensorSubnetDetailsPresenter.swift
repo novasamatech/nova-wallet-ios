@@ -112,13 +112,7 @@ private extension SubtensorSubnetDetailsPresenter {
     }
 
     func existingPrimaryHotkey() -> AccountId? {
-        guard let positions else {
-            return nil
-        }
-
-        let portfolio = SubtensorPortfolioBuilder.build(state: positions)
-
-        return portfolio.subnets.first { $0.netuid == subnetRef.netuid }?.primaryHotkey
+        positions.flatMap { SubtensorPortfolioBuilder.build(state: $0).group(netuid: subnetRef.netuid)?.primaryHotkey }
     }
 
     func requestPresetIfReady() {
