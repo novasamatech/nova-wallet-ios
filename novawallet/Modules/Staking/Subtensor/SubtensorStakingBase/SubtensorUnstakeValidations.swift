@@ -31,27 +31,6 @@ extension SubtensorUnstakeValidatingDep {
         netuid != SubtensorStakingPallet.rootNetuid
     }
 
-    var isRootHoldActive: Bool {
-        guard
-            let preflight,
-            preflight.rootStakeUnlockInterval > 0,
-            let lastStakeBlock = preflight.lastStakeBlock else {
-            return false
-        }
-
-        guard let currentBlock else {
-            return true
-        }
-
-        let hold = SubtensorRootHold(interval: preflight.rootStakeUnlockInterval, lastStakeBlock: lastStakeBlock)
-
-        return hold.remainingBlocks(at: UInt64(currentBlock)) > 0
-    }
-
-    var feeNeedsFreeBalance: Bool {
-        isBatched || isRootHoldActive
-    }
-
     var paysFeeFromPosition: Bool {
         guard
             let transferable = balance?.transferable,
@@ -203,7 +182,7 @@ private extension SubtensorStakingValidationFactoryProtocol {
         for dep: SubtensorUnstakeValidatingDep,
         locale: Locale
     ) -> DataValidating? {
-        if dep.feeNeedsFreeBalance {
+        if dep.isBatched {
             return notViolatingMinBalancePaying(
                 fee: dep.fee,
                 total: dep.balance?.transferable,
