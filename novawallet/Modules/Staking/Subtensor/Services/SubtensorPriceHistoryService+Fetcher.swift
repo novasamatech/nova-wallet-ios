@@ -2,15 +2,6 @@ import Foundation
 import Operation_iOS
 
 extension SubtensorPriceHistoryService {
-    struct Fetcher {
-        let seriesProvider: SubtensorPriceSeriesProviding
-        let blockNumberOperationFactory: BlockNumberOperationFactoryProtocol
-        let chainId: ChainModel.Id
-        let taoPriceId: AssetModel.PriceId
-        let timeProvider: () -> TimeInterval
-        let logger: LoggerProtocol
-    }
-
     static func marketChanges(
         of listed: [SubtensorSubnetRef: SubtensorSubnetMarket],
         taoWeekItems: [PriceHistoryItem],
@@ -99,7 +90,7 @@ private extension SubtensorPriceHistoryService {
     }
 }
 
-extension SubtensorPriceHistoryService.Fetcher {
+extension SubtensorPriceHistoryService {
     func createHeadBlockWrapper() -> CompoundOperationWrapper<BlockNumber> {
         blockNumberOperationFactory.createWrapper(for: chainId)
     }

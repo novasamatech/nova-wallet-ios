@@ -112,17 +112,6 @@ private extension SubtensorPriceHistoryService {
         }
     }
 
-    var fetcher: Fetcher {
-        Fetcher(
-            seriesProvider: seriesProvider,
-            blockNumberOperationFactory: blockNumberOperationFactory,
-            chainId: chainId,
-            taoPriceId: taoPriceId,
-            timeProvider: timeProvider,
-            logger: logger
-        )
-    }
-
     func createPriceDataWrapper<Value: Equatable>(
         for subnets: [SubtensorSubnetRef],
         listedValuesWrapper: @escaping ([SubtensorSubnetRef: SubtensorSubnetMarket])
@@ -162,8 +151,7 @@ extension SubtensorPriceHistoryService: SubtensorPriceHistoryServiceProtocol {
         currency: Currency
     ) -> CompoundOperationWrapper<SubtensorPriceHistory?> {
         let marketsWrapper = marketsService.createMarketsWrapper()
-        let fetcher = fetcher
-        let headBlockWrapper = fetcher.createHeadBlockWrapper()
+        let headBlockWrapper = createHeadBlockWrapper()
         let timeProvider = timeProvider
 
         let pointsWrapper: CompoundOperationWrapper<[SubtensorPricePoint]?> = OperationCombiningService.compoundWrapper(
@@ -175,7 +163,7 @@ extension SubtensorPriceHistoryService: SubtensorPriceHistoryServiceProtocol {
                 return nil
             }
 
-            return fetcher.createPointsWrapper(alphaPriceId: alphaPriceId, currency: currency, period: period)
+            return self.createPointsWrapper(alphaPriceId: alphaPriceId, currency: currency, period: period)
         }
 
         pointsWrapper.addDependency(wrapper: marketsWrapper)
@@ -203,10 +191,8 @@ extension SubtensorPriceHistoryService: SubtensorPriceHistoryServiceProtocol {
     func createWeeklyChangesWrapper(
         for subnets: [SubtensorSubnetRef]
     ) -> CompoundOperationWrapper<[SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]> {
-        let fetcher = fetcher
-
-        return createPriceDataWrapper(for: subnets) { listed in
-            fetcher.createMarketChangesWrapper(for: listed)
+        createPriceDataWrapper(for: subnets) { listed in
+            self.createMarketChangesWrapper(for: listed)
         }
     }
 }
