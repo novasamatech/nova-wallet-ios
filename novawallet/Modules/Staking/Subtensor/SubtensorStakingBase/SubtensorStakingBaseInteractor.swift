@@ -117,17 +117,6 @@ private extension SubtensorStakingBaseInteractor {
         }
     }
 
-    func createQuoteWrapper(
-        for request: SubtensorTradeQuoteRequest
-    ) -> CompoundOperationWrapper<SubtensorTradeQuote> {
-        switch request {
-        case let .buy(netuid, grossTao, tolerance):
-            tradeQuoteFactory.createBuyQuoteWrapper(netuid: netuid, grossTao: grossTao, tolerance: tolerance)
-        case let .sell(netuid, alpha, tolerance):
-            tradeQuoteFactory.createSellQuoteWrapper(netuid: netuid, alpha: alpha, tolerance: tolerance)
-        }
-    }
-
     func provideExistentialDeposit() {
         fetchConstant(
             for: .existentialDeposit,
@@ -221,7 +210,7 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
 
             quoteCallStore.cancel()
 
-            let wrapper = createQuoteWrapper(for: request)
+            let wrapper = tradeQuoteFactory.createTradeQuoteWrapper(for: request)
 
             executeCancellable(
                 wrapper: wrapper,
