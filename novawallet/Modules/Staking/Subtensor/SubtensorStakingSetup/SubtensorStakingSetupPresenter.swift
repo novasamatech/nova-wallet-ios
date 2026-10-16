@@ -136,10 +136,6 @@ extension SubtensorStakingSetupPresenter {
             validatorItem = picked
         }
 
-        if quickPickVisit != nil, !mode.isRootLane, validatorState == .pending {
-            validatorState = .none
-        }
-
         applyTargetIfReady()
     }
 
