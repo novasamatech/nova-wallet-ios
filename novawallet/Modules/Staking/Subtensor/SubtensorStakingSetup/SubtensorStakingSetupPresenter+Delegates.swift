@@ -22,8 +22,7 @@ extension SubtensorStakingSetupPresenter: SubtensorSubnetSelectDelegate {
 
 extension SubtensorStakingSetupPresenter: SubtensorValidatorSelectDelegate {
     func didSelectValidator(_ validator: SubtensorValidatorDirectoryItem, for target: SubtensorStakeTarget) {
-        guard !mode.isLocked, target.netuid == self.target?.netuid,
-              target.subnetInfo?.networkRegisteredAt == self.target?.subnetInfo?.networkRegisteredAt else {
+        guard !mode.isLocked, target.subnetRef == subnetRef else {
             return
         }
 

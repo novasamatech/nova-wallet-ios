@@ -169,13 +169,7 @@ private extension SubtensorUnstakeSetupViewModelFactory {
             return spot
         }
 
-        guard let subnetInfo = input.target?.subnetInfo else {
-            return nil
-        }
-
-        let ref = SubtensorSubnetRef(netuid: subnetInfo.netuid, registeredAt: subnetInfo.networkRegisteredAt)
-
-        return input.catalogue?.subnet(for: ref)?.freshTaoPerAlpha
+        return input.target.flatMap { input.catalogue?.subnet(for: $0.subnetRef)?.freshTaoPerAlpha }
     }
 
     func createRootNote(for input: SubtensorUnstakeSetupViewModelInput, locale: Locale) -> String? {

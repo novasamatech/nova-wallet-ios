@@ -64,7 +64,6 @@ protocol SubtensorStakingValidationFactoryProtocol: BaseDataValidatingFactoryPro
     ) -> DataValidating
 
     func subnetStakingEnabled(
-        netuid: UInt16,
         subnetExists: Bool?,
         subtokenEnabled: Bool?,
         locale: Locale
