@@ -68,7 +68,7 @@ private extension SubtensorStakingSetupInteractor {
                 self?.presenter?.didReceiveValidator(validator, on: subnet)
             case let .failure(error):
                 self?.logger.error("Subtensor validator preset failed: \(error)")
-                self?.presenter?.didReceiveValidator(nil, on: subnet)
+                self?.presenter?.didFailValidator(error, on: subnet)
             }
         }
     }

@@ -45,22 +45,37 @@ extension SubtensorStakingSetupViewModelFactory {
         )
     }
 
-    func createSelection(
-        for input: SubtensorStakingSetupViewModelInput,
-        order: SubtensorQuickPickOrder,
-        locale: Locale
-    ) -> SubtensorSetupSelectionViewModel {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-        let failure = input.selectionFailed ? WarningView.Model(
-            title: strings.stakingSubtensorQuickUnavailableTitle(),
-            message: strings.stakingSubtensorQuickUnavailable(),
-            learnMore: LearnMoreViewModel(iconViewModel: nil, title: strings.commonTryAgain())
-        ) : nil
-
-        return SubtensorSetupSelectionViewModel(
+    func createSelection(order: SubtensorQuickPickOrder, locale: Locale) -> SubtensorSetupSelectionViewModel {
+        SubtensorSetupSelectionViewModel(
             section: sectionTitle(order: order, locale: locale),
-            caption: strings.stakingSubtensorQuickLoading(),
-            failure: failure
+            caption: R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorQuickLoading()
+        )
+    }
+
+    func createFailure(for input: SubtensorStakingSetupViewModelInput, locale: Locale) -> WarningView.Model? {
+        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+        let tryAgain = LearnMoreViewModel(iconViewModel: nil, title: strings.commonTryAgain())
+
+        if case .quickPick = input.mode, input.selectionFailed {
+            return WarningView.Model(
+                title: strings.stakingSubtensorQuickUnavailableTitle(),
+                message: strings.stakingSubtensorQuickUnavailable(),
+                learnMore: tryAgain
+            )
+        }
+
+        guard let presetError = input.presetError else {
+            return nil
+        }
+
+        let apiError = presetError as? BittensorApiError
+
+        return WarningView.Model(
+            title: strings.stakingSubtensorUiValidatorFetchFailed(),
+            message: apiError?.isDeviceBound == true
+                ? strings.stakingSubtensorUiValidatorFetchDeviceDetail()
+                : strings.stakingSubtensorUiValidatorFetchFailedDetail(),
+            learnMore: (apiError?.allowsUserRetry ?? true) ? tryAgain : nil
         )
     }
 

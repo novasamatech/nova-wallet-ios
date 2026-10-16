@@ -23,15 +23,6 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
         verify(recommendationService, never()).createRecommendedValidatorsWrapper(for: any())
     }
 
-    func testNoPresetWhenRecommendationsAreStale() throws {
-        let preset = try run(
-            createFactory(existingTake: nil, recommendationService: createRecommendationService(freshness: .stale))
-                .createPresetWrapper(for: chutesRef, existingHotkey: nil)
-        )
-
-        XCTAssertNil(preset)
-    }
-
     func testHighestYieldRecommendedValidatorBeatsEarlierLowerYieldOne() throws {
         let factory = createFactory(
             existingTake: nil,
@@ -81,17 +72,10 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
         return directoryService
     }
 
-    private func createRecommendationService(
-        freshness: SubtensorBackendStamp.Freshness = .fresh
-    ) -> MockSubtensorRecommendationServiceProtocol {
+    private func createRecommendationService() -> MockSubtensorRecommendationServiceProtocol {
         let recommendationService = MockSubtensorRecommendationServiceProtocol()
 
         let recommended = SubtensorRecommendedValidators(
-            generation: SubtensorRecommendationGeneration(
-                sourceBlockNumber: 9_139_880,
-                carriedOverNetuids: [],
-                stamp: SubtensorBackendStamp(asOf: Date(timeIntervalSince1970: 1_790_000_000), freshness: freshness)
-            ),
             validators: [
                 SubtensorRecommendedValidator(hotkey: chutesPairHotkey, name: nil),
                 SubtensorRecommendedValidator(hotkey: topYieldHotkey, name: "Rizzo")

@@ -51,27 +51,14 @@ private extension SubtensorValidatorPresetFactory {
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> {
         let recommendedWrapper = recommendationService.createRecommendedValidatorsWrapper(for: subnet)
         let yieldsWrapper = yieldService.createAlphaYieldsWrapper(for: subnet.netuid)
-        let logger = logger
 
         let presetWrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> =
             OperationCombiningService.compoundOptionalWrapper(
                 operationManager: OperationManager(operationQueue: operationQueue)
             ) { [weak self] in
-                let recommended: SubtensorRecommendedValidators
+                let recommended = try recommendedWrapper.targetOperation.extractNoCancellableResultData()
 
-                do {
-                    recommended = try recommendedWrapper.targetOperation.extractNoCancellableResultData()
-                } catch {
-                    logger.warning("Subtensor recommended validators unavailable for the preset: \(error)")
-
-                    return nil
-                }
-
-                guard let self, recommended.generation.stamp.freshness == .fresh else {
-                    return nil
-                }
-
-                return createBestItemWrapper(
+                return self?.createBestItemWrapper(
                     among: recommended.validators,
                     yields: try? yieldsWrapper.targetOperation.extractNoCancellableResultData(),
                     subnet: subnet

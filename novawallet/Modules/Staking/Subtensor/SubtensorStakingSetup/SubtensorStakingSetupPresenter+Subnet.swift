@@ -113,6 +113,7 @@ extension SubtensorStakingSetupPresenter {
             positionStake: positionStake(),
             quickPickOrder: quickPickVisit?.order,
             selectionFailed: quickPickVisit?.error != nil,
+            presetError: presetError,
             rootEntryPresentation: rootEntryPresentation
         )
     }

@@ -8,7 +8,7 @@ protocol SubtensorStakingSetupViewProtocol: ControllerBackedProtocol {
 
 protocol SubtensorStakingSetupPresenterProtocol: AnyObject {
     func showAllSubnets()
-    func retryQuickPick()
+    func retry()
     func setup()
     func updateAmount(_ newValue: Decimal?)
     func selectMax()
@@ -38,6 +38,7 @@ protocol SubtensorSetupInteractorInputProtocol: SubtensorStakingBaseInteractorIn
 protocol SubtensorSetupInteractorOutputProtocol: SubtensorStakingBaseInteractorOutputProtocol {
     func didReceiveQuickPickSnapshot(_ result: Result<SubtensorQuickPickSnapshot, Error>)
     func didReceiveValidator(_ validator: SubtensorValidatorDirectoryItem?, on subnet: SubtensorSubnetRef)
+    func didFailValidator(_ error: Error, on subnet: SubtensorSubnetRef)
     func didReceiveSubnet(_ target: SubtensorStakeTarget)
     func didFailSubnet(_ error: Error)
     func didReceiveYields(_ yields: SubtensorAlphaYields?, netuid: UInt16)
