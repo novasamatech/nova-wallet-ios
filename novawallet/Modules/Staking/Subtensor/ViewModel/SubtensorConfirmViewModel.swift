@@ -1,18 +1,13 @@
 import Foundation
 
-struct SubtensorConfirmTileViewModel {
-    let amount: String
-    let price: String?
-}
-
 struct SubtensorConfirmTileIconsViewModel {
     let pay: ImageViewModelProtocol?
     let receive: ImageViewModelProtocol?
 }
 
 struct SubtensorConfirmSwapViewModel {
-    let pay: SubtensorConfirmTileViewModel
-    let receive: LoadableViewModelState<SubtensorConfirmTileViewModel>
+    let pay: BalanceViewModel
+    let receive: LoadableViewModelState<BalanceViewModel>
     let swapRate: LoadableViewModelState<String>
     let avgBuyPrice: SubtensorRowState<SubtensorCostBasisValueViewModel>
     let youWillEarn: SubtensorRowState<SubtensorCostBasisValueViewModel>
@@ -33,17 +28,12 @@ enum SubtensorConfirmContentViewModel {
     case root(SubtensorConfirmRootViewModel)
 }
 
-struct SubtensorConfirmActionViewModel: Equatable {
-    let title: String
-    let isEnabled: Bool
-}
-
 struct SubtensorConfirmViewModel {
     let title: String
     let content: SubtensorConfirmContentViewModel
     let networkFee: BalanceViewModelProtocol?
     let isPriceMoved: Bool
-    let action: SubtensorConfirmActionViewModel
+    let action: SubtensorSetupActionViewModel
     let signingHint: String?
 }
 

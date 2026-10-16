@@ -77,12 +77,12 @@ private extension SubtensorConfirmViewModelFactory {
     func createPayTile(
         for input: SubtensorConfirmViewModelInput,
         locale: Locale
-    ) -> SubtensorConfirmTileViewModel {
+    ) -> BalanceViewModel {
         switch input.model.direction {
         case .buy:
             let balance = createBalance(input.model.amount, price: input.price, locale: locale)
 
-            return SubtensorConfirmTileViewModel(amount: balance.amount, price: balance.price?.approximately())
+            return BalanceViewModel(amount: balance.amount, price: balance.price?.approximately())
         case .sell:
             let alphaInfo = amountDisplayInfo(for: input.model.target, catalogue: input.catalogue)
 
@@ -96,7 +96,7 @@ private extension SubtensorConfirmViewModelFactory {
                 return createBalance(taoValue, price: input.price, locale: locale).price
             }
 
-            return SubtensorConfirmTileViewModel(amount: isolatedAlpha(amount), price: fiat?.approximately())
+            return BalanceViewModel(amount: isolatedAlpha(amount), price: fiat?.approximately())
         }
     }
 
@@ -178,15 +178,15 @@ private extension SubtensorConfirmViewModelFactory {
             locale: locale
         )
 
-        let receive: LoadableViewModelState<SubtensorConfirmTileViewModel>
+        let receive: LoadableViewModelState<BalanceViewModel>
         let swapRate: LoadableViewModelState<String>
 
         if input.tradesUnavailable {
-            receive = .loaded(value: SubtensorConfirmTileViewModel(amount: unknown, price: nil))
+            receive = .loaded(value: BalanceViewModel(amount: unknown, price: nil))
             swapRate = .loaded(value: unknown)
         } else if let panel, let panelReceive = panel.receive {
             receive = .loaded(
-                value: SubtensorConfirmTileViewModel(
+                value: BalanceViewModel(
                     amount: input.model.direction == .buy ? isolatedAlpha(panelReceive.amount) : panelReceive.amount,
                     price: panelReceive.price?.approximately()
                 )
@@ -264,7 +264,7 @@ extension SubtensorConfirmViewModelFactory {
             content: content,
             networkFee: input.fee.map { createFee($0.amount, price: input.price, locale: locale) },
             isPriceMoved: input.isPriceMoved,
-            action: SubtensorConfirmActionViewModel(
+            action: SubtensorSetupActionViewModel(
                 title: input.isPriceMoved ? strings.stakingSubtensorConfirmNewRate() : strings.commonConfirm(),
                 isEnabled: input.signing == .allowed
             ),
