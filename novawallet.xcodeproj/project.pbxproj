@@ -7098,7 +7098,6 @@
 		42F97559F2696514CED78E3C /* SubtensorWhereToStakeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFFF90CD2EF24DE06286E475 /* SubtensorWhereToStakeViewModel.swift */; };
 		5E562DBBDD329ABDB94A1717 /* SubtensorWhereToStakeProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD54483337FDDA27F98A80D /* SubtensorWhereToStakeProtocols.swift */; };
 		62CE4B3B2345C69E5B8B3A62 /* SubtensorWhereToStakeViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA5BC9DCBF6C2759B573BEA5 /* SubtensorWhereToStakeViewLayout.swift */; };
-		8C8CC548179885BF6FBDB5DA /* SubtensorWhereToStakeInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EDCD063EAF7FD99766A5311 /* SubtensorWhereToStakeInteractor.swift */; };
 		92815EA491826A925817AFA8 /* SubtensorWhereToStakeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32FED442D3DF550CD8E187BA /* SubtensorWhereToStakeViewController.swift */; };
 		9A5F0C3D4DEEF627CC733F79 /* SubtensorWhereToStakeCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0629AB3512DC6D1B26C0C844 /* SubtensorWhereToStakeCardView.swift */; };
 		B4302010D224BF3ED283A539 /* SubtensorSubnetBrowseState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77B81F7923B25689AE0CE29C /* SubtensorSubnetBrowseState.swift */; };
@@ -13957,7 +13956,6 @@
 		0CD54483337FDDA27F98A80D /* SubtensorWhereToStakeProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SubtensorWhereToStakeProtocols.swift; sourceTree = "<group>"; };
 		32FED442D3DF550CD8E187BA /* SubtensorWhereToStakeViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SubtensorWhereToStakeViewController.swift; sourceTree = "<group>"; };
 		37F329C52298AE62BD00C838 /* SubtensorWhereToStakeViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SubtensorWhereToStakeViewFactory.swift; sourceTree = "<group>"; };
-		3EDCD063EAF7FD99766A5311 /* SubtensorWhereToStakeInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SubtensorWhereToStakeInteractor.swift; sourceTree = "<group>"; };
 		52F5F23B52821D0A0377A81A /* SubtensorStakingSetupPresenter+QuickPick.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "SubtensorStakingSetupPresenter+QuickPick.swift"; sourceTree = "<group>"; };
 		550037A6AA375BC64EC7B139 /* SubtensorWhereToStakePresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SubtensorWhereToStakePresenter.swift; sourceTree = "<group>"; };
 		554ECB02B545084824E51973 /* SubtensorWhereToStakeWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SubtensorWhereToStakeWireframe.swift; sourceTree = "<group>"; };
@@ -32552,7 +32550,6 @@
 			isa = PBXGroup;
 			children = (
 				0629AB3512DC6D1B26C0C844 /* SubtensorWhereToStakeCardView.swift */,
-				3EDCD063EAF7FD99766A5311 /* SubtensorWhereToStakeInteractor.swift */,
 				550037A6AA375BC64EC7B139 /* SubtensorWhereToStakePresenter.swift */,
 				0CD54483337FDDA27F98A80D /* SubtensorWhereToStakeProtocols.swift */,
 				32FED442D3DF550CD8E187BA /* SubtensorWhereToStakeViewController.swift */,
@@ -39686,7 +39683,6 @@
 				B4302010D224BF3ED283A539 /* SubtensorSubnetBrowseState.swift in Sources */,
 				BFB643FAE1DD05CEFE07B6C1 /* SubtensorStakingSetupPresenter+QuickPick.swift in Sources */,
 				9A5F0C3D4DEEF627CC733F79 /* SubtensorWhereToStakeCardView.swift in Sources */,
-				8C8CC548179885BF6FBDB5DA /* SubtensorWhereToStakeInteractor.swift in Sources */,
 				3E17A6D7590149BAD3F34D92 /* SubtensorWhereToStakePresenter.swift in Sources */,
 				5E562DBBDD329ABDB94A1717 /* SubtensorWhereToStakeProtocols.swift in Sources */,
 				92815EA491826A925817AFA8 /* SubtensorWhereToStakeViewController.swift in Sources */,
