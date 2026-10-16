@@ -262,7 +262,7 @@ extension SubtensorSubnetSelectPresenter: SubnetSelectInteractorOutputProtocol {
     }
 
     func didReceive(apy: [UInt16: Decimal]?) {
-        self.apy = apy
+        self.apy = apy?.isEmpty == false ? apy : nil
         isApyPending = false
 
         provideList()
