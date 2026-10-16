@@ -266,7 +266,6 @@ extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryPr
     }
 
     func subnetStakingEnabled(
-        netuid _: UInt16,
         subnetExists: Bool?,
         subtokenEnabled: Bool?,
         locale: Locale

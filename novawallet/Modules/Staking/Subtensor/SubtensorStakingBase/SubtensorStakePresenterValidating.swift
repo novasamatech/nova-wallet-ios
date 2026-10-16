@@ -157,7 +157,6 @@ private extension SubtensorStakePresenterValidating {
             ),
 
             dataValidationFactory.subnetStakingEnabled(
-                netuid: dep.netuid,
                 subnetExists: dep.preflight?.subnetExists,
                 subtokenEnabled: dep.preflight?.subtokenEnabled,
                 locale: selectedLocale

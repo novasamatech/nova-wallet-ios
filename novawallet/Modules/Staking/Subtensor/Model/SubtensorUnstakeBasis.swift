@@ -22,12 +22,8 @@ struct SubtensorGroupUnstakeBasis: Equatable {
         canExitAll ? total : partialCap
     }
 
-    func isExitAll(amount: Balance) -> Bool {
-        canExitAll && amount > 0 && amount == total
-    }
-
     func exitHotkeys(for amount: Balance) -> [AccountId]? {
-        isExitAll(amount: amount) ? hotkeys : nil
+        canExitAll && amount > 0 && amount == total ? hotkeys : nil
     }
 }
 
