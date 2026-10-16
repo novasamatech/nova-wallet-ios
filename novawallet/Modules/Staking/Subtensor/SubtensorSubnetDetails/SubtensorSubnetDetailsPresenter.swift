@@ -190,13 +190,7 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
     }
 
     func toggleFavorite() {
-        var favorites = Set(earnSettings.favouriteSubnets)
-
-        if !favorites.insert(subnetRef).inserted {
-            favorites.remove(subnetRef)
-        }
-
-        earnSettings.favouriteSubnets = favorites.sorted { $0.netuid < $1.netuid }
+        earnSettings.favouriteSubnets.formSymmetricDifference([subnetRef])
 
         provideViewModel()
     }
