@@ -103,21 +103,7 @@ struct SubtensorQuote: Equatable {
     let sim: SubtensorStakingPallet.SimSwapResult
     let spotPrice: Balance
     let feeRate: UInt16
-    let capturedAt: Date
-
-    init(
-        args: SubtensorQuoteArgs,
-        sim: SubtensorStakingPallet.SimSwapResult,
-        spotPrice: Balance,
-        feeRate: UInt16,
-        capturedAt: Date = Date()
-    ) {
-        self.args = args
-        self.sim = sim
-        self.spotPrice = spotPrice
-        self.feeRate = feeRate
-        self.capturedAt = capturedAt
-    }
+    var capturedAt = Date()
 }
 
 extension SubtensorQuote {

@@ -3005,7 +3005,6 @@
 		B5E362282B71E268A7B81F27 /* SubtensorClaimRewardsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BA5B4EF875F2CD8A5377B4F /* SubtensorClaimRewardsViewFactory.swift */; };
 		BEB4D775BF2CE0F00F241FB1 /* SubtensorClaimRewardsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4120C11F6DA024A96B2484C9 /* SubtensorClaimRewardsModel.swift */; };
 		052392FCEE7F383923B3B7CD /* SubtensorClaimTapRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 619929A4E5378A64E8A5A23E /* SubtensorClaimTapRule.swift */; };
-		69860698A43A4AD2E45463F9 /* SubtensorClaimValidations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EC18CD453DB8787C7EA345B /* SubtensorClaimValidations.swift */; };
 		06CBD8FAF7ECFFE103285E5E /* SubtensorClaimRewardsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C1408B90C7A74656D064CA /* SubtensorClaimRewardsViewController.swift */; };
 		42C5B52057267D8CEBC5F5D7 /* SubtensorClaimRewardsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F92E2348D797F53CCACF07B /* SubtensorClaimRewardsViewLayout.swift */; };
 		BCD39C1581FB0EA79C882177 /* SubtensorClaimRewardsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 928693589A226E3811F7689F /* SubtensorClaimRewardsViewModel.swift */; };
@@ -9911,7 +9910,6 @@
 		1BA5B4EF875F2CD8A5377B4F /* SubtensorClaimRewardsViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimRewardsViewFactory.swift; sourceTree = "<group>"; };
 		4120C11F6DA024A96B2484C9 /* SubtensorClaimRewardsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimRewardsModel.swift; sourceTree = "<group>"; };
 		619929A4E5378A64E8A5A23E /* SubtensorClaimTapRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimTapRule.swift; sourceTree = "<group>"; };
-		1EC18CD453DB8787C7EA345B /* SubtensorClaimValidations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimValidations.swift; sourceTree = "<group>"; };
 		A5C1408B90C7A74656D064CA /* SubtensorClaimRewardsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimRewardsViewController.swift; sourceTree = "<group>"; };
 		5F92E2348D797F53CCACF07B /* SubtensorClaimRewardsViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimRewardsViewLayout.swift; sourceTree = "<group>"; };
 		928693589A226E3811F7689F /* SubtensorClaimRewardsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorClaimRewardsViewModel.swift; sourceTree = "<group>"; };
@@ -21018,7 +21016,6 @@
 			children = (
 				4120C11F6DA024A96B2484C9 /* SubtensorClaimRewardsModel.swift */,
 				619929A4E5378A64E8A5A23E /* SubtensorClaimTapRule.swift */,
-				1EC18CD453DB8787C7EA345B /* SubtensorClaimValidations.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -37348,7 +37345,6 @@
 				B5E362282B71E268A7B81F27 /* SubtensorClaimRewardsViewFactory.swift in Sources */,
 				BEB4D775BF2CE0F00F241FB1 /* SubtensorClaimRewardsModel.swift in Sources */,
 				052392FCEE7F383923B3B7CD /* SubtensorClaimTapRule.swift in Sources */,
-				69860698A43A4AD2E45463F9 /* SubtensorClaimValidations.swift in Sources */,
 				06CBD8FAF7ECFFE103285E5E /* SubtensorClaimRewardsViewController.swift in Sources */,
 				42C5B52057267D8CEBC5F5D7 /* SubtensorClaimRewardsViewLayout.swift in Sources */,
 				BCD39C1581FB0EA79C882177 /* SubtensorClaimRewardsViewModel.swift in Sources */,

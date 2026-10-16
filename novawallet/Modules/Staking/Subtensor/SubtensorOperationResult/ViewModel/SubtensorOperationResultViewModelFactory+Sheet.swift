@@ -27,29 +27,6 @@ extension SubtensorOperationResultViewModelFactory {
 }
 
 private extension SubtensorOperationResultViewModelFactory {
-    func action(_ action: SubtensorResultAction, locale: Locale) -> SubtensorResultActionViewModel {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
-        let title = switch action {
-        case .done:
-            strings.commonDone()
-        case .tryAgain:
-            strings.commonTryAgain()
-        case .close:
-            strings.commonClose()
-        case .viewPosition:
-            strings.stakingSubtensorResultViewPosition()
-        case .discoverSubnets:
-            strings.stakingSubtensorResultDiscoverSubnets()
-        case .yourBittensor:
-            strings.stakingSubtensorUiPortfolioTitle()
-        case .backToPosition:
-            strings.stakingSubtensorResultBackToPosition()
-        }
-
-        return SubtensorResultActionViewModel(action: action, title: title)
-    }
-
     func landingActions(
         for request: SubtensorOperationResultRequest,
         locale: Locale
@@ -130,7 +107,7 @@ private extension SubtensorOperationResultViewModelFactory {
         guard request.origin != .newPosition else {
             let validatorRow = SubtensorResultSheetRowViewModel(
                 title: strings.stakingCommonValidator(),
-                value: validatorName(for: request),
+                value: request.validator.name,
                 fiat: nil
             )
 
@@ -159,7 +136,7 @@ private extension SubtensorOperationResultViewModelFactory {
         } else if isUnstake {
             strings.stakingSubtensorResultRootUnstakedMessageFormat(stakeAfterString)
         } else if request.groupHotkeyCount == 1 {
-            strings.stakingSubtensorResultRootStakeNowWithFormat(stakeAfterString, validatorName(for: request))
+            strings.stakingSubtensorResultRootStakeNowWithFormat(stakeAfterString, request.validator.name)
         } else {
             strings.stakingSubtensorResultRootStakeNowFormat(stakeAfterString)
         }
@@ -248,7 +225,7 @@ private extension SubtensorOperationResultViewModelFactory {
         let shownStakeAfter = claimed == nil ? stakeAfterString.approximatelyEqual() : stakeAfterString
 
         let message = request.groupHotkeyCount == 1
-            ? strings.stakingSubtensorResultRootStakeNowWithFormat(shownStakeAfter, validatorName(for: request))
+            ? strings.stakingSubtensorResultRootStakeNowWithFormat(shownStakeAfter, request.validator.name)
             : strings.stakingSubtensorResultRootStakeNowFormat(shownStakeAfter)
 
         let stakeAfterRow = SubtensorResultSheetRowViewModel(

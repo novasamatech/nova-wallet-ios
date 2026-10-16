@@ -90,24 +90,21 @@ extension SubtensorStakingValidationFactory {
         unlockInterval: UInt64?,
         locale: Locale
     ) -> DataValidating {
-        errorCondition(locale: locale, alert: { _, strings in
-            let elapsed = currentBlock.map { UInt64($0).subtractOrZero(lastStakeBlock ?? 0) } ?? 0
-            let remainingBlocks = (unlockInterval ?? 0).subtractOrZero(elapsed)
+        let hold = SubtensorRootHold(interval: unlockInterval ?? 0, lastStakeBlock: lastStakeBlock ?? 0)
+        let remainingBlocks = hold.remainingBlocks(at: currentBlock.map { UInt64($0) } ?? 0)
+
+        return errorCondition(locale: locale, alert: { _, strings in
             let blockTime = TimeInterval(SubtensorStakingFlowConstants.blockTimeMillis)
             let remainingTime = (TimeInterval(remainingBlocks) * blockTime).seconds
             let eta = remainingTime.localizedDaysHoursOrFallbackMinutes(for: locale)
 
             return (strings.stakingSubtensorUnstakeLockedTitle(), strings.stakingSubtensorUnstakeLockedMessage(eta))
         }, preservesCondition: {
-            guard let unlockInterval, unlockInterval > 0, let lastStakeBlock else {
+            guard (unlockInterval ?? 0) > 0, lastStakeBlock != nil else {
                 return true
             }
 
-            guard let currentBlock else {
-                return false
-            }
-
-            return UInt64(currentBlock).subtractOrZero(lastStakeBlock) >= unlockInterval
+            return currentBlock != nil && remainingBlocks == 0
         })
     }
 }
@@ -182,11 +179,5 @@ private extension SubtensorSellPlanInput {
         let remainder = positionAlpha > requestedAlpha ? positionAlpha - requestedAlpha : 0
 
         return remainder * sellLimitPrice / SubtensorStakingPallet.alphaPriceScale
-    }
-}
-
-private extension UInt64 {
-    func subtractOrZero(_ other: UInt64) -> UInt64 {
-        self >= other ? self - other : 0
     }
 }

@@ -78,7 +78,7 @@ extension SubtensorClaimRewardsPresenter {
     func provideViewModel() {
         let input = SubtensorClaimRewardsViewModelInput(
             preview: shownPreview,
-            validatorName: validatorName,
+            validatorName: model.validator.name,
             rootStake: isPositionsSyncFailed || positionsState == nil ? nil : rootGroup?.totalAlpha ?? 0,
             unlockInterval: preflight?.rootStakeUnlockInterval,
             otherClaimableCount: claimable.map {
@@ -118,12 +118,6 @@ extension SubtensorClaimRewardsPresenter {
 }
 
 private extension SubtensorClaimRewardsPresenter {
-    var validatorName: String {
-        let display = model.validator.display
-
-        return display.username.isEmpty ? display.address.truncated : display.username
-    }
-
     var rootGroup: SubtensorPortfolioGroup? {
         positionsState.flatMap { SubtensorPortfolioBuilder.build(state: $0).root }
     }
@@ -174,14 +168,15 @@ private extension SubtensorClaimRewardsPresenter {
             )
         )
 
-        validations.append(
-            SubtensorClaimValidations.claimNotPending(
-                isPending: isPending,
-                wireframe: wireframe,
-                view: view,
-                locale: locale
-            )
-        )
+        validations.append(ErrorConditionViolation(onError: { [weak view, wireframe] in
+            guard let view else {
+                return
+            }
+
+            wireframe.presentClaimPending(view, locale: locale)
+        }, preservesCondition: {
+            !isPending
+        }))
 
         validations.append(
             dataValidationFactory.canPayFeeInPlank(

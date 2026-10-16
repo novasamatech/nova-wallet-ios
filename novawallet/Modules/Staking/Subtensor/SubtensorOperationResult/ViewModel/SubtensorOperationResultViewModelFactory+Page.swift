@@ -233,7 +233,7 @@ private extension SubtensorOperationResultViewModelFactory {
             swapRate: swapRate,
             costBasis: createCostBasis(for: state, context: context, amounts: amounts, locale: locale),
             slippage: slippage,
-            validator: validatorName(for: request),
+            validator: request.validator.name,
             networkFee: showsNetworkFee(in: state) ? networkFee(for: state, request: request, locale: locale) : nil,
             isExpanded: isDone
         )
@@ -331,15 +331,13 @@ private extension SubtensorOperationResultViewModelFactory {
         for state: SubtensorOperationResultState,
         locale: Locale
     ) -> SubtensorResultActionViewModel? {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
         switch state {
         case .progress:
             return nil
         case .done, .unconfirmed:
-            return SubtensorResultActionViewModel(action: .done, title: strings.commonDone())
+            return action(.done, locale: locale)
         case let .failed(failure, _, _):
-            return failureAction(for: failure, locale: locale)
+            return action(failure.isRetryable ? .tryAgain : .close, locale: locale)
         }
     }
 }
