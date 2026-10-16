@@ -39,22 +39,27 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
         XCTAssertEqual(preset?.name, "Rizzo")
     }
 
-    func testNextBestYieldValidatorIsPresetWhenTheBestOneHasNoDetail() throws {
+    func testOnlyTheNextBestYieldValidatorIsTriedWhenTheBestOneHasNoDetail() throws {
+        let directoryService = createDirectoryService(
+            existingTake: nil,
+            failingDetails: [topYieldHotkey, secondYieldHotkey]
+        )
         let factory = createFactory(
             existingTake: nil,
             recommendationService: createRecommendationService(),
             yieldService: createYieldService(
                 rates: [chutesPairHotkey: "12.5", topYieldHotkey: "31.2", secondYieldHotkey: "20.4"]
             ),
-            failingDetails: [topYieldHotkey]
+            directoryService: directoryService
         )
 
         let preset = try withExtendedLifetime(factory) {
             try run(factory.createPresetWrapper(for: chutesRef, existingHotkey: nil))
         }
 
-        XCTAssertEqual(preset?.hotkey, secondYieldHotkey)
-        XCTAssertEqual(preset?.name, "Datura")
+        XCTAssertNil(preset)
+        verify(directoryService).createDetailWrapper(for: equal(to: secondYieldHotkey), subnet: any())
+        verify(directoryService, never()).createDetailWrapper(for: equal(to: chutesPairHotkey), subnet: any())
     }
 
     func testStaleRecommendationsAreRefetchedOnceThenFailThePreset() throws {
@@ -63,7 +68,7 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
             existingTake: nil,
             recommendationService: SubtensorRecommendationService(
                 apiOperationFactory: apiFactory,
-                chainOperationFactory: MockSubtensorValidatorChainOperationFactoryProtocol(),
+                chainOperationFactory: createChainFactory(),
                 operationQueue: OperationQueue()
             )
         )
@@ -97,7 +102,7 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
 
     private func createDirectoryService(
         existingTake: Decimal?,
-        failingDetails: Set<AccountId>
+        failingDetails: Set<AccountId> = []
     ) -> MockSubtensorValidatorDirectoryServiceProtocol {
         let directoryService = MockSubtensorValidatorDirectoryServiceProtocol()
 
@@ -140,6 +145,18 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
         }
 
         return recommendationService
+    }
+
+    private func createChainFactory() -> MockSubtensorValidatorChainOperationFactoryProtocol {
+        let chainFactory = MockSubtensorValidatorChainOperationFactoryProtocol()
+
+        stub(chainFactory) { stub in
+            when(stub.createChainSnapshotWrapper(for: any())).then { _ in
+                CompoundOperationWrapper.createWithError(BittensorApiError.unavailable(code: nil, requestId: nil))
+            }
+        }
+
+        return chainFactory
     }
 
     private func createStaleApiFactory() throws -> MockBittensorApiOperationFactoryProtocol {
@@ -208,10 +225,10 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
         existingTake: Decimal?,
         recommendationService: SubtensorRecommendationServiceProtocol,
         yieldService: MockSubtensorYieldServiceProtocol? = nil,
-        failingDetails: Set<AccountId> = []
+        directoryService: MockSubtensorValidatorDirectoryServiceProtocol? = nil
     ) -> SubtensorValidatorPresetFactory {
         SubtensorValidatorPresetFactory(
-            directoryService: createDirectoryService(existingTake: existingTake, failingDetails: failingDetails),
+            directoryService: directoryService ?? createDirectoryService(existingTake: existingTake),
             recommendationService: recommendationService,
             yieldService: yieldService ?? createYieldService(),
             operationQueue: OperationQueue(),
