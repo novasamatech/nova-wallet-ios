@@ -206,7 +206,19 @@ private extension SubtensorClaimRewardsPresenter {
         case let .proceed(preview):
             shownPreview = preview
             provideViewModel()
-            handOff(with: preview)
+            handOffAfterProfitCheck(with: preview)
+        }
+    }
+
+    func handOffAfterProfitCheck(with preview: SubtensorRootClaimPreview) {
+        let validation = dataValidationFactory.hasProfitAfterClaim(
+            payout: preview.redeemable,
+            fee: fee,
+            locale: selectedLocale
+        )
+
+        DataValidationRunner(validators: [validation]).runValidation { [weak self] in
+            self?.handOff(with: preview)
         }
     }
 

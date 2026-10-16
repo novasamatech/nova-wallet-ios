@@ -134,6 +134,7 @@ enum SubtensorPositionValueViewModel: Equatable {
 struct SubtensorPositionRowViewModel: Equatable {
     let title: String
     let value: SubtensorPositionValueViewModel
+    let caption: String?
 }
 
 struct SubtensorPositionSummaryViewModel {

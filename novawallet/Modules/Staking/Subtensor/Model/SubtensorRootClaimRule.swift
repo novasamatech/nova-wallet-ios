@@ -2,8 +2,19 @@ import Foundation
 import BigInt
 
 enum SubtensorRootClaimRule {
+    static func minimumClaim(fromThresholdBits bits: Balance?) -> Balance {
+        guard let bits else {
+            return SubtensorStakingPallet.defaultRootClaimableThreshold
+        }
+
+        let fractionalBits = SubtensorStakingPallet.fixedPointFractionalBits
+        let fractionalUnit = Balance(1) << fractionalBits
+
+        return (bits + fractionalUnit - 1) >> fractionalBits
+    }
+
     static func isClaimable(_ preview: SubtensorRootClaimPreview) -> Bool {
-        preview.redeemable > 0
+        preview.redeemable > 0 && preview.redeemable >= preview.minimumClaim
     }
 
     static func target(

@@ -298,4 +298,30 @@ extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryPr
             safeModeActive == false
         })
     }
+
+    func hasProfitAfterClaim(
+        payout: Balance,
+        fee: ExtrinsicFeeProtocol?,
+        locale: Locale
+    ) -> DataValidating {
+        WarningConditionViolation(onWarning: { [weak self] delegate in
+            guard let self, let view else {
+                return
+            }
+
+            presentable.presentNoProfitAfterClaim(
+                view,
+                action: {
+                    delegate.didCompleteWarningHandling()
+                },
+                locale: locale
+            )
+        }, preservesCondition: {
+            guard let fee = fee?.amount else {
+                return true
+            }
+
+            return fee <= payout
+        })
+    }
 }

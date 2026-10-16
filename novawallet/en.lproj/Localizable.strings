@@ -2273,6 +2273,7 @@ Do you want to continue?";
 "staking.subtensor.ui.position.hold.title" = "Root stake locked";
 "staking.subtensor.ui.position.hold.message.format" = "Root stake is locked for %@ after staking or claiming. Unstake becomes available when the hold ends.";
 "staking.subtensor.ui.position.locked.format" = "%@ locked";
+"staking.subtensor.ui.position.claim.minimum.format" = "Minimum claim is %@ per validator";
 "staking.subtensor.ui.how.root" = "Stake to %1$@ and keep your TAO as TAO — rewards are %2$@";
 "staking.subtensor.ui.how.root.accent" = "root";
 "staking.subtensor.ui.how.paid.in.tao.accent" = "paid in TAO";
