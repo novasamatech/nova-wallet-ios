@@ -25,7 +25,7 @@ protocol SubnetDetailsInteractorInputProtocol: AnyObject {
 }
 
 protocol SubnetDetailsInteractorOutputProtocol: AnyObject {
-    func didReceiveHistory(_ result: SubtensorPriceHistoryResult, for period: SubtensorPricePeriod)
+    func didReceiveHistory(_ history: SubtensorPriceHistory?, for period: SubtensorPricePeriod)
     func didFailHistory(for period: SubtensorPricePeriod)
     func didReceiveParameters(_ parameters: SubtensorSubnetParameters?)
     func didReceivePreset(_ validator: SubtensorValidatorDirectoryItem?)

@@ -85,7 +85,9 @@ private extension SubtensorValidatorSelectPresenter {
     }
 
     func handedOut(_ item: SubtensorValidatorDirectoryItem) -> SubtensorValidatorDirectoryItem {
-        directory?.listStamp?.freshness == .fresh ? item : item.withoutReportedStake()
+        var handedOut = item
+        handedOut.reportedStake = directory?.listStamp?.freshness == .fresh ? item.reportedStake : nil
+        return handedOut
     }
 
     func accepts(_ directory: SubtensorValidatorDirectory) -> Bool {

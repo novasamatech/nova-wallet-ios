@@ -23,11 +23,6 @@ struct SubtensorPriceHistory: Equatable {
     let changeInFiat: Decimal?
 }
 
-enum SubtensorPriceHistoryResult: Equatable {
-    case available(SubtensorPriceHistory)
-    case notListed
-}
-
 enum SubtensorPriceData<Value: Equatable>: Equatable {
     case notListed
     case unavailable

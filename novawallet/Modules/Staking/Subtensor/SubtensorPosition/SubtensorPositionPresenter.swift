@@ -330,20 +330,13 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
         provideViewModel()
     }
 
-    func didReceive(history: SubtensorPriceHistoryResult, for period: SubtensorPricePeriod) {
+    func didReceive(history: SubtensorPriceHistory?, for period: SubtensorPricePeriod) {
         guard period == state.period else {
             return
         }
 
         state.chartEndDate = now()
-
-        switch history {
-        case let .available(priceHistory):
-            state.history = .available(priceHistory)
-        case .notListed:
-            state.history = .notListed
-        }
-
+        state.history = history.map { .available($0) } ?? .notListed
         state.hasResolvedHistory = true
         provideViewModel()
     }

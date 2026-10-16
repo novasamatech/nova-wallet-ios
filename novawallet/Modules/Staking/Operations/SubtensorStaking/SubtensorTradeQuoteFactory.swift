@@ -163,7 +163,7 @@ private extension SubtensorTradeQuoteFactory {
     }
 }
 
-extension SubtensorTradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol {
+private extension SubtensorTradeQuoteFactory {
     func createBuyQuoteWrapper(
         netuid: UInt16,
         grossTao: Balance,
@@ -232,6 +232,19 @@ extension SubtensorTradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol {
             return quoteWrapper.insertingTail(operation: mappingOperation)
         } catch {
             return .createWithError(error)
+        }
+    }
+}
+
+extension SubtensorTradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol {
+    func createTradeQuoteWrapper(
+        for request: SubtensorTradeQuoteRequest
+    ) -> CompoundOperationWrapper<SubtensorTradeQuote> {
+        switch request {
+        case let .buy(netuid, grossTao, tolerance):
+            createBuyQuoteWrapper(netuid: netuid, grossTao: grossTao, tolerance: tolerance)
+        case let .sell(netuid, alpha, tolerance):
+            createSellQuoteWrapper(netuid: netuid, alpha: alpha, tolerance: tolerance)
         }
     }
 }
