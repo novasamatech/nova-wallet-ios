@@ -22,7 +22,7 @@ final class SubtensorStakingSetupWireframe: SubtensorStakingSetupWireframeProtoc
     }
 
     func showConfirmation(
-        from view: SubtensorStakingSetupViewProtocol?,
+        from view: ControllerBackedProtocol?,
         model: SubtensorConfirmModel
     ) {
         guard let confirmView = SubtensorConfirmViewFactory.createView(

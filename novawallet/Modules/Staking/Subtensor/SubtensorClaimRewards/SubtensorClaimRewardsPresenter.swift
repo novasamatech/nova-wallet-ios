@@ -3,7 +3,7 @@ import Foundation_iOS
 
 final class SubtensorClaimRewardsPresenter {
     weak var view: SubtensorClaimRewardsViewProtocol?
-    let wireframe: SubtensorClaimRewardsWireframeProtocol
+    let wireframe: SubtensorConfirmWireframeProtocol
     let interactor: SubtensorStakingBaseInteractorInputProtocol
 
     let chainAsset: ChainAsset
@@ -31,7 +31,7 @@ final class SubtensorClaimRewardsPresenter {
 
     init(
         interactor: SubtensorStakingBaseInteractorInputProtocol,
-        wireframe: SubtensorClaimRewardsWireframeProtocol,
+        wireframe: SubtensorConfirmWireframeProtocol,
         chainAsset: ChainAsset,
         model: SubtensorClaimRewardsModel,
         pendingRootClaims: SubtensorPendingRootClaimsProtocol,

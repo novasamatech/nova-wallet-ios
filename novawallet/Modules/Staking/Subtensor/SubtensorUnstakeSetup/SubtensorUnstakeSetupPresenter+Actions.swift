@@ -99,7 +99,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
                 return
             }
 
-            wireframe.showConfirm(from: view, model: model)
+            wireframe.showConfirmation(from: view, model: model)
         }
     }
 }
