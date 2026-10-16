@@ -152,9 +152,9 @@ extension SubtensorValidatorSelectPresenter: ValidatorSelectPresenterProtocol {
         wireframe
             .showFilters(from: view, applied: filters) { [weak self] filters in
                 guard let self else { return }
-                self.filterSession.apply(filters, isRoot: self.target.isRoot)
-                self.keptHotkeys = []
-                self.provideState()
+                if filters.hidesUnusualApy != self.filters.hidesUnusualApy { keptHotkeys = [] }
+                filterSession.apply(filters, isRoot: target.isRoot)
+                provideState()
             }
     }
 

@@ -48,12 +48,6 @@ final class SubtensorWhereToStakeCardView: UIView {
         subtitleLabel.apply(text: model.subtitle, lineHeight: Constants.subtitleLineHeight)
         bindLists(model: model)
         chooseButton.imageWithTitleView?.title = model.chooseTitle
-        chooseButton.isEnabled = model.isChoosable
-        if model.isChoosable {
-            chooseButton.applyEnabledStyle()
-        } else {
-            chooseButton.applyDisabledStyle()
-        }
         chooseButton.invalidateLayout()
     }
 }

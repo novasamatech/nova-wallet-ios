@@ -215,8 +215,7 @@ private extension SubtensorSubnetViewModelFactory {
         case .apy:
             return .init(
                 title: strings.stakingSubtensorUiValidatorSortApy(),
-                subtitle: strings.stakingSubtensorQuickApyUnavailable(),
-                isEnabled: false
+                subtitle: strings.stakingSubtensorUiPickerApyDetail()
             )
         case .name:
             return .init(title: strings.commonName(), subtitle: strings.stakingSubtensorUiPickerNameDetail())

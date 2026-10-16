@@ -155,13 +155,10 @@ extension StakingSharedStateFactory {
             earnSettings: SubtensorEarnSettings(settingsManager: SettingsManager.shared),
             catalogueService: processServices.catalogueService,
             yieldService: yieldService,
+            maxApyProvider: processServices.createMaxApyProvider(operationQueue: syncOperationQueue, logger: logger),
             recommendationService: recommendationService,
             validatorDirectoryService: validatorDirectoryService,
-            priceHistoryService: createSubtensorPriceHistoryService(
-                for: stakingOption,
-                marketsService: processServices.subnetMarketsService,
-                seriesProvider: flowState.priceSeriesCache
-            ),
+            priceHistoryService: createSubtensorPriceHistoryService(for: stakingOption, flowState: flowState),
             tradeQuoteFactory: SubtensorTradeQuoteFactory(
                 operationFactory: apiOperationFactory,
                 operationQueue: syncOperationQueue,
@@ -183,16 +180,15 @@ extension StakingSharedStateFactory {
 
     private func createSubtensorPriceHistoryService(
         for stakingOption: Multistaking.ChainAssetOption,
-        marketsService: SubtensorSubnetMarketsServiceProtocol,
-        seriesProvider: SubtensorPriceSeriesProviding
+        flowState: SubtensorStakingFlowStateProtocol
     ) -> SubtensorPriceHistoryServiceProtocol? {
         guard let taoPriceId = stakingOption.chainAsset.asset.priceId else {
             return nil
         }
 
         return SubtensorPriceHistoryService(
-            marketsService: marketsService,
-            seriesProvider: seriesProvider,
+            marketsService: SubtensorStakingProcessServices.shared.subnetMarketsService,
+            seriesProvider: flowState.priceSeriesCache,
             blockNumberOperationFactory: BlockNumberOperationFactory(
                 chainRegistry: chainRegistry,
                 operationQueue: syncOperationQueue

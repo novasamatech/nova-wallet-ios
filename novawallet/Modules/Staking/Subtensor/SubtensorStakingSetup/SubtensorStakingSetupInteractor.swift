@@ -16,6 +16,7 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
     let presetFactory: SubtensorValidatorPresetFactoryProtocol
     let yieldService: SubtensorYieldServiceProtocol
     let recommendationService: SubtensorRecommendationServiceProtocol
+    let maxApyProvider: SubtensorMaxApyProviderProtocol
     let subnetsService: SubtensorSubnetsServiceProtocol
     let earnSettings: SubtensorEarnSettingsProtocol
 
@@ -33,6 +34,7 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
         presetFactory = state.earnServices.validatorPresetFactory
         yieldService = state.earnServices.yieldService
         recommendationService = state.earnServices.recommendationService
+        maxApyProvider = state.earnServices.maxApyProvider
         subnetsService = state.subnetsService
         earnSettings = state.earnServices.earnSettings
 
@@ -75,22 +77,25 @@ private extension SubtensorStakingSetupInteractor {
 extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol {
     func cancelQuickPickSnapshot() { quickPickCallStore.cancel() }
 
-    func loadQuickPickSnapshot() {
+    func loadQuickPickSnapshot(for order: SubtensorQuickPickOrder) {
         quickPickCallStore.cancel()
         let catalogueWrapper = catalogueService.createCatalogueWrapper()
         let infoWrapper = subnetsService.createSubnetsInfoWrapper()
-        let mergeOperation = ClosureOperation<(SubtensorSubnetCatalogue, SubtensorSubnetsInfo)> {
-            (
-                try catalogueWrapper.targetOperation.extractNoCancellableResultData(),
-                try infoWrapper.targetOperation.extractNoCancellableResultData()
+        let apyWrapper = order == .apy ? maxApyProvider.createMaxApyWrapper() : .createWithResult([:])
+        let mergeOperation = ClosureOperation<SubtensorQuickPickSnapshot> {
+            SubtensorQuickPickSnapshot(
+                catalogue: try catalogueWrapper.targetOperation.extractNoCancellableResultData(),
+                info: try infoWrapper.targetOperation.extractNoCancellableResultData(),
+                apy: try apyWrapper.targetOperation.extractNoCancellableResultData()
             )
         }
         mergeOperation.addDependency(catalogueWrapper.targetOperation)
         mergeOperation.addDependency(infoWrapper.targetOperation)
+        mergeOperation.addDependency(apyWrapper.targetOperation)
         executeCancellable(
             wrapper: CompoundOperationWrapper(
                 targetOperation: mergeOperation,
-                dependencies: catalogueWrapper.allOperations + infoWrapper.allOperations
+                dependencies: catalogueWrapper.allOperations + infoWrapper.allOperations + apyWrapper.allOperations
             ),
             inOperationQueue: operationQueue,
             backingCallIn: quickPickCallStore,
