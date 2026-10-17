@@ -38,8 +38,10 @@ class SubtensorAmountSetupLayout: UIView {
 
     let bottomPanel = SubtensorBottomPanelView()
 
-    let actionButton: TriangularedButton = .create { button in
-        button.applyDefaultStyle()
+    let actionLoadableView = LoadableActionView()
+
+    var actionButton: TriangularedButton {
+        actionLoadableView.actionButton
     }
 
     private var bottomStackConstraint: Constraint?
@@ -110,8 +112,8 @@ class SubtensorAmountSetupLayout: UIView {
     func setupLayout() {
         addSubview(containerView)
 
-        bottomPanel.contentView.addSubview(actionButton)
-        actionButton.snp.makeConstraints { make in
+        bottomPanel.contentView.addSubview(actionLoadableView)
+        actionLoadableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
             make.height.equalTo(UIConstants.actionHeight)
         }

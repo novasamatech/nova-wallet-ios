@@ -17,14 +17,14 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
-    let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
+    let blockNumberSubscriptionFactory: BlockNumberCallbackSubscriptionFactoryProtocol
     let runtimeProvider: RuntimeCodingServiceProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: StreamableProvider<PriceData>?
-    private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
+    private var blockNumberSubscription: BlockNumberRemoteSubscriptionProtocol?
     private var feeDebouncer = Debouncer(delay: 0.25)
     private var quoteDebouncer = Debouncer(delay: 0.25)
     private let feeCallStore = CancellableCallStore()
@@ -52,7 +52,7 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
         subnetLogosProvider = state.earnServices.subnetLogosProvider
         walletLocalSubscriptionFactory = flowServices.walletLocalSubscriptionFactory
         priceLocalSubscriptionFactory = flowServices.priceLocalSubscriptionFactory
-        generalLocalSubscriptionFactory = state.generalLocalSubscriptionFactory
+        blockNumberSubscriptionFactory = flowServices.blockNumberSubscriptionFactory
         runtimeProvider = flowServices.runtimeProvider
         operationQueue = flowServices.operationQueue
         self.logger = logger
@@ -93,7 +93,24 @@ private extension SubtensorStakingBaseInteractor {
     }
 
     func makeBlockNumberSubscription() {
-        blockNumberProvider = subscribeToBlockNumber(for: chainAsset.chain.chainId)
+        do {
+            let subscription = try blockNumberSubscriptionFactory.createSubscription(for: chainAsset.chain.chainId)
+
+            try subscription.start { [weak self] result in
+                switch result {
+                case let .success(blockNumber):
+                    if let blockNumber {
+                        self?.basePresenter?.didReceiveBlockNumber(blockNumber)
+                    }
+                case let .failure(error):
+                    self?.logger.error("Block number subscription failed: \(error)")
+                }
+            }
+
+            blockNumberSubscription = subscription
+        } catch {
+            logger.error("Block number subscription failed: \(error)")
+        }
     }
 
     func makePositionsSubscription() {
@@ -218,6 +235,18 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
         }
     }
 
+    func requestValidatingQuote(
+        for request: SubtensorTradeQuoteRequest,
+        completion: @escaping (Result<SubtensorTradeQuote, Error>) -> Void
+    ) {
+        execute(
+            wrapper: tradeQuoteFactory.createTradeQuoteWrapper(for: request),
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main,
+            callbackClosure: completion
+        )
+    }
+
     func refreshPositions() {
         positionsSyncService.refresh()
     }
@@ -292,22 +321,6 @@ extension SubtensorStakingBaseInteractor: PriceLocalStorageSubscriber, PriceLoca
             basePresenter?.didReceivePrice(priceData)
         case let .failure(error):
             logger.error("Price subscription failed: \(error)")
-        }
-    }
-}
-
-extension SubtensorStakingBaseInteractor: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
-    func handleBlockNumber(
-        result: Result<BlockNumber?, Error>,
-        chainId _: ChainModel.Id
-    ) {
-        switch result {
-        case let .success(blockNumber):
-            if let blockNumber {
-                basePresenter?.didReceiveBlockNumber(blockNumber)
-            }
-        case let .failure(error):
-            logger.error("Block number subscription failed: \(error)")
         }
     }
 }

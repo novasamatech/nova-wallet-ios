@@ -2146,8 +2146,6 @@ Do you want to continue?";
 "staking.subtensor.ui.validator.sort.apy" = "APY";
 "staking.subtensor.ui.validator.fetch.failed" = "Unable to fetch validators";
 "staking.subtensor.ui.validator.fetch.failed.detail" = "The validator list did not load. Your stake is not affected.";
-"staking.subtensor.quote.missing.title" = "Quote not available";
-"staking.subtensor.quote.missing.message" = "A live pool quote is required before continuing. Check your connection and try again.";
 "staking.subtensor.self.impact.title" = "Order too large for your tolerance";
 "staking.subtensor.self.impact.message" = "Your order alone moves the price beyond your slippage tolerance. Reduce the amount or raise the tolerance.";
 "staking.subtensor.price.impact.warning.title" = "High price impact";
