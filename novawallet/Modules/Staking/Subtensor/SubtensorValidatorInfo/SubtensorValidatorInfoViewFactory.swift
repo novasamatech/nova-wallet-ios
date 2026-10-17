@@ -19,15 +19,12 @@ enum SubtensorValidatorInfoViewFactory {
         let interactor = SubtensorValidatorInfoInteractor(
             target: target,
             hotkey: hotkey,
-            chainAsset: chainAsset,
+            state: state,
             coverageFactory: SubtensorValidatorCoverageFactory(
                 apiFactory: state.apiOperationFactory,
                 catalogueService: earnServices.catalogueService,
                 operationQueue: OperationManagerFacade.sharedDefaultQueue
             ),
-            directoryService: earnServices.validatorDirectoryService,
-            yieldService: earnServices.yieldService,
-            catalogueService: earnServices.catalogueService,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,

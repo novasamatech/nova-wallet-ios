@@ -20,25 +20,19 @@ protocol SubtensorResultViewModelFactoryProtocol {
 final class SubtensorOperationResultViewModelFactory {
     let chainAsset: ChainAsset
     let balanceViewModelFacade: BalanceViewModelFactoryFacadeProtocol
-    let formatterFactory: AssetBalanceFormatterFactoryProtocol
-    let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
-    let subnetIconFactory: SubtensorSubnetIconFactoryProtocol
+    let formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory()
+    let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol = AssetIconViewModelFactory()
+    let subnetIconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory()
     let costBasisViewModelFactory: SubtensorCostBasisViewModelFactory
     let dateFormatter: LocalizableResource<DateFormatter>
     let percentFormatter: LocalizableResource<NumberFormatter>
 
     init(
         chainAsset: ChainAsset,
-        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
-        formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory(),
-        assetIconViewModelFactory: AssetIconViewModelFactoryProtocol = AssetIconViewModelFactory(),
-        subnetIconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory()
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) {
         self.chainAsset = chainAsset
         balanceViewModelFacade = BalanceViewModelFactoryFacade(priceAssetInfoFactory: priceAssetInfoFactory)
-        self.formatterFactory = formatterFactory
-        self.assetIconViewModelFactory = assetIconViewModelFactory
-        self.subnetIconFactory = subnetIconFactory
         costBasisViewModelFactory = SubtensorCostBasisViewModelFactory(
             taoInfo: chainAsset.assetDisplayInfo,
             balanceViewModelFactory: BalanceViewModelFactory(

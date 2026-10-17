@@ -192,7 +192,7 @@ extension StakingSharedStateFactory {
 
         return SubtensorPriceHistoryService(
             marketsService: SubtensorStakingProcessServices.shared.subnetMarketsService,
-            seriesProvider: flowState.priceSeriesCache,
+            coingeckoOperationFactory: flowState.coingeckoOperationFactory,
             blockNumberOperationFactory: BlockNumberOperationFactory(
                 chainRegistry: chainRegistry,
                 operationQueue: syncOperationQueue

@@ -26,16 +26,11 @@ extension SubtensorConfigProvider: SubtensorSubnetLogosProviderProtocol {
             timeout: Constants.timeout
         )
 
-        let cacheOperation = ClosureOperation<SubtensorSubnetLogos> {
-            let config = try fetchOperation.extractNoCancellableResultData()
+        return CompoundOperationWrapper(targetOperation: fetchOperation).mapped { config in
             self.config = config
             self.novaFeeRateStore.apply(config)
             return config.subnetLogos
         }
-
-        cacheOperation.addDependency(fetchOperation)
-
-        return CompoundOperationWrapper(targetOperation: cacheOperation, dependencies: [fetchOperation])
     }
 }
 

@@ -8,21 +8,12 @@ enum SubtensorPositionViewFactory {
     ) -> SubtensorPositionViewProtocol? {
         guard let currencyManager = CurrencyManager.shared else { return nil }
 
-        let operationQueue = OperationManagerFacade.sharedDefaultQueue
-        let earnServices = state.earnServices
-
         let interactor = SubtensorPositionInteractor(
             state: state,
             netuid: group.netuid,
-            catalogueService: earnServices.catalogueService,
-            yieldService: earnServices.yieldService,
-            subnetLogosProvider: earnServices.subnetLogosProvider,
-            priceHistoryService: earnServices.priceHistoryService,
-            validatorFactory: earnServices.validatorPresetFactory,
-            rootHoldFactory: earnServices.rootHoldFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
-            operationQueue: operationQueue,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared
         )
 

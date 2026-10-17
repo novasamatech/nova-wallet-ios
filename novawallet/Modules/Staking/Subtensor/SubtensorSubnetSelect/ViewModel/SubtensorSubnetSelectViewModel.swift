@@ -72,20 +72,16 @@ protocol SubtensorSubnetViewModelFactoryProtocol {
 
 final class SubtensorSubnetViewModelFactory {
     let chainAsset: ChainAsset
-    let iconFactory: SubtensorSubnetIconFactoryProtocol
+    let iconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory()
     let rootIcon: ImageViewModelProtocol
 
     private let tokenFormatter: LocalizableResource<TokenFormatter>
     private let compactTokenFormatter: LocalizableResource<TokenFormatter>
     private let changeFormatter: LocalizableResource<NumberFormatter>
 
-    init(
-        chainAsset: ChainAsset,
-        iconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory(),
-        balanceFormatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory()
-    ) {
+    init(chainAsset: ChainAsset) {
+        let balanceFormatterFactory = AssetBalanceFormatterFactory()
         self.chainAsset = chainAsset
-        self.iconFactory = iconFactory
         rootIcon = AssetIconViewModelFactory().createAssetIconViewModel(from: chainAsset.assetDisplayInfo)
 
         tokenFormatter = balanceFormatterFactory.createTokenFormatter(for: chainAsset.assetDisplayInfo)

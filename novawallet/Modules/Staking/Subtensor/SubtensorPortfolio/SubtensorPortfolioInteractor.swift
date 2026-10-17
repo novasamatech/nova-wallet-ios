@@ -2,7 +2,7 @@ import Foundation
 import Foundation_iOS
 import Operation_iOS
 
-final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
+final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning, SubtensorLoadDelivering {
     weak var presenter: SubnetPortfolioInteractorOutputProtocol?
 
     let state: SubtensorStakingSharedStateProtocol
@@ -19,7 +19,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
-    private var priceProvider: StreamableProvider<PriceData>?
+    var priceProvider: StreamableProvider<PriceData>?
     private var hasReportedAccountChange = false
     private let catalogueStore = CancellableCallStore()
     private let rootRateStore = CancellableCallStore()
@@ -28,7 +28,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
     private let weeklyChangesStore = CancellableCallStore()
     private let historiesStore = CancellableCallStore()
 
-    private var chainAsset: ChainAsset {
+    var chainAsset: ChainAsset {
         state.stakingOption.chainAsset
     }
 
@@ -38,10 +38,6 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
         selectedWalletSettings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol,
         applicationHandler: ApplicationHandlerProtocol,
-        catalogueService: SubtensorSubnetCatalogueServiceProtocol,
-        yieldService: SubtensorYieldServiceProtocol,
-        subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
-        priceHistoryService: SubtensorPriceHistoryServiceProtocol?,
         bittensorApiFactory: BittensorApiOperationFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
@@ -53,10 +49,10 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
         self.selectedWalletSettings = selectedWalletSettings
         self.eventCenter = eventCenter
         self.applicationHandler = applicationHandler
-        self.catalogueService = catalogueService
-        self.yieldService = yieldService
-        self.subnetLogosProvider = subnetLogosProvider
-        self.priceHistoryService = priceHistoryService
+        catalogueService = state.earnServices.catalogueService
+        yieldService = state.earnServices.yieldService
+        subnetLogosProvider = state.earnServices.subnetLogosProvider
+        priceHistoryService = state.earnServices.priceHistoryService
         self.bittensorApiFactory = bittensorApiFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.operationQueue = operationQueue
@@ -82,7 +78,7 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
 
         provideCatalogue()
         subscribePositions()
-        subscribePrice()
+        subscribeTaoPrice(currency: selectedCurrency)
         provideSubnetLogos()
 
         eventCenter.add(observer: self, dispatchIn: .main)
@@ -128,38 +124,24 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
     func loadRootYields() {
         rootRateStore.cancel()
 
-        executeCancellable(
-            wrapper: yieldService.createAlphaYieldsWrapper(for: SubtensorStakingPallet.rootNetuid),
-            inOperationQueue: operationQueue,
-            backingCallIn: rootRateStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(yields):
-                self?.presenter?.didReceive(rootYields: yields)
-            case let .failure(error):
-                self?.logger.warning("Bittensor portfolio root yields unavailable: \(error)")
-                self?.presenter?.didReceive(rootYields: nil)
-            }
+        load(
+            yieldService.createAlphaYieldsWrapper(for: SubtensorStakingPallet.rootNetuid),
+            in: rootRateStore,
+            label: "portfolio root yields"
+        ) { [weak self] in
+            self?.presenter?.didReceive(rootYields: $0)
         }
     }
 
     func loadNetworkRootRate() {
         networkRootRateStore.cancel()
 
-        executeCancellable(
-            wrapper: yieldService.createNetworkRootRateWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: networkRootRateStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(rate):
-                self?.presenter?.didReceive(networkRootRate: rate?.annualRate)
-            case let .failure(error):
-                self?.logger.warning("Bittensor portfolio network root rate unavailable: \(error)")
-                self?.presenter?.didReceive(networkRootRate: nil)
-            }
+        load(
+            yieldService.createNetworkRootRateWrapper(),
+            in: networkRootRateStore,
+            label: "portfolio network root rate"
+        ) { [weak self] in
+            self?.presenter?.didReceive(networkRootRate: $0??.annualRate)
         }
     }
 
@@ -171,19 +153,12 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
             return
         }
 
-        executeCancellable(
-            wrapper: priceHistoryService.createWeeklyChangesWrapper(for: subnets),
-            inOperationQueue: operationQueue,
-            backingCallIn: weeklyChangesStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(changes):
-                self?.presenter?.didReceive(weeklyChanges: changes)
-            case let .failure(error):
-                self?.logger.warning("Bittensor portfolio weekly changes unavailable: \(error)")
-                self?.presenter?.didReceive(weeklyChanges: [:])
-            }
+        load(
+            priceHistoryService.createWeeklyChangesWrapper(for: subnets),
+            in: weeklyChangesStore,
+            label: "portfolio weekly changes"
+        ) { [weak self] in
+            self?.presenter?.didReceive(weeklyChanges: $0 ?? [:])
         }
     }
 }
@@ -196,13 +171,14 @@ private extension SubtensorPortfolioInteractor {
         taoPriceId: AssetModel.PriceId
     ) -> CompoundOperationWrapper<SubtensorPortfolioPriceHistories> {
         let currency = selectedCurrency
+        let coingeckoFactory = state.flowState.coingeckoOperationFactory
 
         let historyWrapper = bittensorApiFactory.createPortfolioHistoryWrapper(
             accountSubject: accountSubject,
             period: historyPeriod
         )
 
-        let taoWrapper = currency.id == Currency.usd.id ? nil : state.flowState.priceSeriesCache.createSeriesWrapper(
+        let taoOperation = currency.id == Currency.usd.id ? nil : coingeckoFactory.fetchPriceHistory(
             for: taoPriceId,
             currency: currency,
             period: period.sourceCoingeckoPeriod
@@ -212,14 +188,14 @@ private extension SubtensorPortfolioInteractor {
             SubtensorPortfolioPriceHistories(
                 period: period,
                 portfolio: try historyWrapper.targetOperation.extractNoCancellableResultData().value,
-                taoFiat: try taoWrapper?.targetOperation.extractNoCancellableResultData()
+                taoFiat: try taoOperation?.extractNoCancellableResultData()
             )
         }
 
         historiesOperation.addDependency(historyWrapper.targetOperation)
-        taoWrapper.map { historiesOperation.addDependency($0.targetOperation) }
+        taoOperation.map { historiesOperation.addDependency($0) }
 
-        let dependencies = historyWrapper.allOperations + (taoWrapper?.allOperations ?? [])
+        let dependencies = historyWrapper.allOperations + (taoOperation.map { [$0] } ?? [])
 
         return CompoundOperationWrapper(targetOperation: historiesOperation, dependencies: dependencies)
     }
@@ -244,50 +220,21 @@ private extension SubtensorPortfolioInteractor {
         )
     }
 
-    func subscribePrice() {
-        clear(streamableProvider: &priceProvider)
-
-        guard let priceId = chainAsset.asset.priceId else {
-            presenter?.didReceive(price: nil)
-            return
-        }
-
-        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
-    }
-
     func provideCatalogue() {
         catalogueStore.cancel()
 
-        executeCancellable(
-            wrapper: catalogueService.createCatalogueWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: catalogueStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(catalogue):
-                self?.presenter?.didReceive(catalogue: catalogue)
-            case let .failure(error):
-                self?.logger.warning("Bittensor portfolio catalogue unavailable: \(error)")
-                self?.presenter?.didReceive(catalogue: nil)
-            }
+        load(
+            catalogueService.createCatalogueWrapper(),
+            in: catalogueStore,
+            label: "portfolio catalogue"
+        ) { [weak self] in
+            self?.presenter?.didReceive(catalogue: $0)
         }
     }
 
     func provideSubnetLogos() {
-        executeCancellable(
-            wrapper: subnetLogosProvider.createLogosWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: logosStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(logos):
-                self?.presenter?.didReceive(subnetLogos: logos)
-            case let .failure(error):
-                self?.logger.warning("Bittensor portfolio subnet marks unavailable: \(error)")
-                self?.presenter?.didReceive(subnetLogos: nil)
-            }
+        load(subnetLogosProvider.createLogosWrapper(), in: logosStore, label: "portfolio subnet marks") { [weak self] in
+            self?.presenter?.didReceive(subnetLogos: $0)
         }
     }
 
@@ -345,17 +292,9 @@ extension SubtensorPortfolioInteractor: ApplicationHandlerDelegate {
     }
 }
 
-extension SubtensorPortfolioInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
-    func handlePrice(result: Result<PriceData?, Error>, priceId: AssetModel.PriceId) {
-        guard chainAsset.asset.priceId == priceId else { return }
-
-        switch result {
-        case let .success(priceData):
-            presenter?.didReceive(price: priceData)
-        case let .failure(error):
-            logger.error("Bittensor portfolio price unavailable: \(error)")
-            presenter?.didReceive(price: nil)
-        }
+extension SubtensorPortfolioInteractor: SubtensorTaoPriceSubscribing {
+    func deliverTaoPrice(_ price: PriceData?) {
+        presenter?.didReceive(price: price)
     }
 }
 
@@ -364,6 +303,7 @@ extension SubtensorPortfolioInteractor: SelectedCurrencyDepending {
         guard presenter != nil else { return }
 
         presenter?.didChangeCurrency()
-        subscribePrice()
+        clear(streamableProvider: &priceProvider)
+        subscribeTaoPrice(currency: selectedCurrency)
     }
 }
