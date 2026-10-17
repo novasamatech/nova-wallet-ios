@@ -16,8 +16,8 @@ final class SubtensorSubnetDetailsViewModelFactory {
     let subnet: SubtensorCatalogueSubnet
     let chainAsset: ChainAsset
     let currency: Currency
-    let iconFactory: SubtensorSubnetIconFactoryProtocol
-    let displayAddressFactory: DisplayAddressViewModelFactoryProtocol
+    let iconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory()
+    let displayAddressFactory: DisplayAddressViewModelFactoryProtocol = DisplayAddressViewModelFactory()
     let priceWidgetFactory: SubtensorPriceWidgetFactoryProtocol
 
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
@@ -29,21 +29,16 @@ final class SubtensorSubnetDetailsViewModelFactory {
         subnet: SubtensorCatalogueSubnet,
         chainAsset: ChainAsset,
         currency: Currency,
-        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
-        iconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory(),
-        displayAddressFactory: DisplayAddressViewModelFactoryProtocol = DisplayAddressViewModelFactory(),
-        formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory()
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) {
+        let formatterFactory = AssetBalanceFormatterFactory()
         self.subnet = subnet
         self.chainAsset = chainAsset
         self.currency = currency
-        self.iconFactory = iconFactory
-        self.displayAddressFactory = displayAddressFactory
 
         priceWidgetFactory = SubtensorPriceWidgetViewModelFactory(
             chainAsset: chainAsset,
-            priceAssetInfoFactory: priceAssetInfoFactory,
-            formatterFactory: formatterFactory
+            priceAssetInfoFactory: priceAssetInfoFactory
         )
 
         balanceViewModelFactory = BalanceViewModelFactory(

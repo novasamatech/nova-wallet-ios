@@ -131,17 +131,9 @@ extension SubtensorYieldService: SubtensorYieldServiceProtocol {
         let logger = logger
 
         guard netuid != SubtensorStakingPallet.rootNetuid else {
-            let rootWrapper = apiOperationFactory.createRootValidatorsWrapper()
-
-            let mappingOperation = ClosureOperation<SubtensorAlphaYields> {
-                let result = try rootWrapper.targetOperation.extractNoCancellableResultData()
-
-                return try Self.makeRootYields(from: result, logger: logger)
+            return apiOperationFactory.createRootValidatorsWrapper().mapped { result in
+                try Self.makeRootYields(from: result, logger: logger)
             }
-
-            mappingOperation.addDependency(rootWrapper.targetOperation)
-
-            return rootWrapper.insertingTail(operation: mappingOperation)
         }
 
         let apiOperationFactory = apiOperationFactory
@@ -155,15 +147,9 @@ extension SubtensorYieldService: SubtensorYieldServiceProtocol {
             }
         )
 
-        let mappingOperation = ClosureOperation<SubtensorAlphaYields> {
-            let pages = try pagesWrapper.targetOperation.extractNoCancellableResultData()
-
-            return try Self.makeAlphaYields(netuid: netuid, pages: pages, logger: logger)
+        return pagesWrapper.mapped { pages in
+            try Self.makeAlphaYields(netuid: netuid, pages: pages, logger: logger)
         }
-
-        mappingOperation.addDependency(pagesWrapper.targetOperation)
-
-        return pagesWrapper.insertingTail(operation: mappingOperation)
     }
 
     func cachedAlphaYields(for netuid: UInt16) -> HTTPCachePeek<SubtensorAlphaYields> {
@@ -183,16 +169,6 @@ extension SubtensorYieldService: SubtensorYieldServiceProtocol {
     }
 
     func createNetworkRootRateWrapper() -> CompoundOperationWrapper<SubtensorReportedYield?> {
-        let overviewWrapper = apiOperationFactory.createRootOverviewWrapper()
-
-        let mappingOperation = ClosureOperation<SubtensorReportedYield?> {
-            let result = try overviewWrapper.targetOperation.extractNoCancellableResultData()
-
-            return Self.makeNetworkRootRate(from: result)
-        }
-
-        mappingOperation.addDependency(overviewWrapper.targetOperation)
-
-        return overviewWrapper.insertingTail(operation: mappingOperation)
+        apiOperationFactory.createRootOverviewWrapper().mapped { Self.makeNetworkRootRate(from: $0) }
     }
 }

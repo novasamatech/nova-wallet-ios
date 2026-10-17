@@ -11,23 +11,17 @@ final class SubtensorPortfolioViewModelFactory {
 
     let chainAsset: ChainAsset
     let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
-    let iconFactory: SubtensorSubnetIconFactoryProtocol
-    let assetIconFactory: AssetIconViewModelFactoryProtocol
-    let formatterFactory: AssetBalanceFormatterFactoryProtocol
+    let iconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory()
+    let assetIconFactory: AssetIconViewModelFactoryProtocol = AssetIconViewModelFactory()
+    let formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory()
     let balanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
 
     init(
         chainAsset: ChainAsset,
-        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
-        iconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory(),
-        assetIconFactory: AssetIconViewModelFactoryProtocol = AssetIconViewModelFactory(),
-        formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory()
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) {
         self.chainAsset = chainAsset
         self.priceAssetInfoFactory = priceAssetInfoFactory
-        self.iconFactory = iconFactory
-        self.assetIconFactory = assetIconFactory
-        self.formatterFactory = formatterFactory
 
         balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: chainAsset.assetDisplayInfo,

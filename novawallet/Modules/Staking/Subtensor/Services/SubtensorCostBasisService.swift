@@ -75,14 +75,7 @@ extension SubtensorCostBasisService: SubtensorCostBasisServiceProtocol {
             }
         )
 
-        let mappingOperation = ClosureOperation<SubtensorCostBasis> {
-            let pages = try pagesWrapper.targetOperation.extractNoCancellableResultData()
-            return try Self.makeLedger(from: pages).costBasis(for: netuid)
-        }
-
-        mappingOperation.addDependency(pagesWrapper.targetOperation)
-
-        return pagesWrapper.insertingTail(operation: mappingOperation)
+        return pagesWrapper.mapped { try Self.makeLedger(from: $0).costBasis(for: netuid) }
     }
 
     func cachedCostBasis(for accountId: AccountId, netuid: UInt16) -> HTTPCachePeek<SubtensorCostBasis> {

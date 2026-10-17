@@ -76,17 +76,9 @@ private extension SubtensorRecommendationService {
         apiOperationFactory: BittensorApiOperationFactoryProtocol,
         logger: LoggerProtocol
     ) -> CompoundOperationWrapper<Candidates> {
-        let responseWrapper = apiOperationFactory.createRankedValidatorsWrapper(netuid: subnet.netuid)
-
-        let candidatesOperation = ClosureOperation<Candidates> {
-            let response = try responseWrapper.targetOperation.extractNoCancellableResultData()
-
-            return try makeCandidates(from: response, subnet: subnet, logger: logger)
+        apiOperationFactory.createRankedValidatorsWrapper(netuid: subnet.netuid).mapped { response in
+            try makeCandidates(from: response, subnet: subnet, logger: logger)
         }
-
-        candidatesOperation.addDependency(responseWrapper.targetOperation)
-
-        return responseWrapper.insertingTail(operation: candidatesOperation)
     }
 
     func createCandidatesWrapper(for subnet: SubtensorSubnetRef) -> CompoundOperationWrapper<Candidates> {
@@ -224,17 +216,7 @@ extension SubtensorRecommendationService: SubtensorRecommendationServiceProtocol
     }
 
     func createRankedSubnetsWrapper() -> CompoundOperationWrapper<SubtensorRankedSubnets> {
-        let responseWrapper = apiOperationFactory.createRankedSubnetsWrapper()
-
-        let mappingOperation = ClosureOperation<SubtensorRankedSubnets> {
-            let response = try responseWrapper.targetOperation.extractNoCancellableResultData()
-
-            return try Self.makeRankedSubnets(from: response)
-        }
-
-        mappingOperation.addDependency(responseWrapper.targetOperation)
-
-        return responseWrapper.insertingTail(operation: mappingOperation)
+        apiOperationFactory.createRankedSubnetsWrapper().mapped { try Self.makeRankedSubnets(from: $0) }
     }
 
     func cachedRankedSubnets() -> HTTPCachePeek<SubtensorRankedSubnets> {

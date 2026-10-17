@@ -151,15 +151,7 @@ final class SubtensorApiOperationFactory {
 
             queryWrapper.addDependency(operations: [codingFactoryOperation])
 
-            let mappingOperation = ClosureOperation<R> {
-                try mapping(queryWrapper.targetOperation.extractNoCancellableResultData())
-            }
-
-            mappingOperation.addDependency(queryWrapper.targetOperation)
-
-            return queryWrapper
-                .insertingHead(operations: [codingFactoryOperation])
-                .insertingTail(operation: mappingOperation)
+            return queryWrapper.insertingHead(operations: [codingFactoryOperation]).mapped(mapping)
         } catch {
             return CompoundOperationWrapper.createWithError(error)
         }
@@ -197,15 +189,7 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
                 connection: connection
             )
 
-            let mappingOperation = ClosureOperation<BlockHash> {
-                try blockHashWrapper.targetOperation
-                    .extractNoCancellableResultData()
-                    .toHex(includePrefix: true)
-            }
-
-            mappingOperation.addDependency(blockHashWrapper.targetOperation)
-
-            return blockHashWrapper.insertingTail(operation: mappingOperation)
+            return blockHashWrapper.mapped { $0.toHex(includePrefix: true) }
         } catch {
             return CompoundOperationWrapper.createWithError(error)
         }
@@ -285,13 +269,7 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
             paramsClosure: createSingleParamClosure(StringScaleMapper(value: netuid))
         )
 
-        let mappingOperation = ClosureOperation<Balance> {
-            try priceWrapper.targetOperation.extractNoCancellableResultData().value
-        }
-
-        mappingOperation.addDependency(priceWrapper.targetOperation)
-
-        return priceWrapper.insertingTail(operation: mappingOperation)
+        return priceWrapper.mapped { $0.value }
     }
 
     func createSimSwapTaoForAlphaWrapper(

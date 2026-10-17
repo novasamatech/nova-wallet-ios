@@ -8,6 +8,29 @@ protocol SubtensorPriceChartViewDelegate: AnyObject {
     func priceChartViewDidEndSelection(_ chartView: SubtensorSubnetPriceChartView)
 }
 
+protocol SubtensorChartHapticsHandling: SubtensorPriceChartViewDelegate {
+    var seekHapticPlayer: ProgressiveHapticPlayer { get }
+    var chartLongPressHapticPlayer: HapticPlayer { get }
+
+    func didSelectChart(_ selection: SubtensorPriceChartSelection?)
+}
+
+extension SubtensorChartHapticsHandling {
+    func priceChartViewDidBeginSelection(_: SubtensorSubnetPriceChartView) {
+        chartLongPressHapticPlayer.play()
+    }
+
+    func priceChartView(_: SubtensorSubnetPriceChartView, didSelect selection: SubtensorPriceChartSelection) {
+        seekHapticPlayer.play()
+        didSelectChart(selection)
+    }
+
+    func priceChartViewDidEndSelection(_: SubtensorSubnetPriceChartView) {
+        seekHapticPlayer.reset()
+        didSelectChart(nil)
+    }
+}
+
 final class SubtensorSubnetPriceChartView: UIView {
     enum Style {
         case price

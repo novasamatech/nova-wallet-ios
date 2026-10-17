@@ -6,8 +6,8 @@ final class SubtensorSubnetDetailsViewController: UIViewController, ViewHolder {
 
     let presenter: SubtensorSubnetDetailsPresenterProtocol
 
-    private let seekHapticPlayer: ProgressiveHapticPlayer
-    private let chartLongPressHapticPlayer: HapticPlayer
+    let seekHapticPlayer: ProgressiveHapticPlayer
+    let chartLongPressHapticPlayer: HapticPlayer
     private let periodControlHapticPlayer: HapticPlayer
 
     private var titleImageViewModel: ImageViewModelProtocol?
@@ -154,19 +154,9 @@ extension SubtensorSubnetDetailsViewController: SubtensorSubnetDetailsViewProtoc
     }
 }
 
-extension SubtensorSubnetDetailsViewController: SubtensorPriceChartViewDelegate {
-    func priceChartViewDidBeginSelection(_: SubtensorSubnetPriceChartView) {
-        chartLongPressHapticPlayer.play()
-    }
-
-    func priceChartView(_: SubtensorSubnetPriceChartView, didSelect selection: SubtensorPriceChartSelection) {
-        seekHapticPlayer.play()
+extension SubtensorSubnetDetailsViewController: SubtensorChartHapticsHandling {
+    func didSelectChart(_ selection: SubtensorPriceChartSelection?) {
         presenter.selectChart(selection)
-    }
-
-    func priceChartViewDidEndSelection(_: SubtensorSubnetPriceChartView) {
-        seekHapticPlayer.reset()
-        presenter.selectChart(nil)
     }
 }
 

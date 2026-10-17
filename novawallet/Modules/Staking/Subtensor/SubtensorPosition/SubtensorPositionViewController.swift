@@ -7,8 +7,8 @@ final class SubtensorPositionViewController: UIViewController, ViewHolder {
     let presenter: SubtensorPositionPresenterProtocol
     let isRoot: Bool
 
-    private let seekHapticPlayer: ProgressiveHapticPlayer
-    private let chartLongPressHapticPlayer: HapticPlayer
+    let seekHapticPlayer: ProgressiveHapticPlayer
+    let chartLongPressHapticPlayer: HapticPlayer
     private let periodControlHapticPlayer: HapticPlayer
 
     init(
@@ -102,19 +102,9 @@ extension SubtensorPositionViewController: SubtensorPositionViewProtocol {
     }
 }
 
-extension SubtensorPositionViewController: SubtensorPriceChartViewDelegate {
-    func priceChartViewDidBeginSelection(_: SubtensorSubnetPriceChartView) {
-        chartLongPressHapticPlayer.play()
-    }
-
-    func priceChartView(_: SubtensorSubnetPriceChartView, didSelect selection: SubtensorPriceChartSelection) {
-        seekHapticPlayer.play()
+extension SubtensorPositionViewController: SubtensorChartHapticsHandling {
+    func didSelectChart(_ selection: SubtensorPriceChartSelection?) {
         presenter.selectChart(selection)
-    }
-
-    func priceChartViewDidEndSelection(_: SubtensorSubnetPriceChartView) {
-        seekHapticPlayer.reset()
-        presenter.selectChart(nil)
     }
 }
 

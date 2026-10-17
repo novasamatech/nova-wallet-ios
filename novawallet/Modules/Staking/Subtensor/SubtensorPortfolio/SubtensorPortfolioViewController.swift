@@ -6,8 +6,8 @@ final class SubtensorPortfolioViewController: UIViewController, ViewHolder {
 
     let presenter: SubtensorPortfolioPresenterProtocol
 
-    private let seekHapticPlayer: ProgressiveHapticPlayer
-    private let chartLongPressHapticPlayer: HapticPlayer
+    let seekHapticPlayer: ProgressiveHapticPlayer
+    let chartLongPressHapticPlayer: HapticPlayer
     private let periodControlHapticPlayer: HapticPlayer
 
     init(
@@ -108,24 +108,14 @@ extension SubtensorPortfolioViewController: SubtensorPortfolioViewProtocol {
     }
 }
 
-extension SubtensorPortfolioViewController: SubtensorPriceChartViewDelegate {
-    func priceChartViewDidBeginSelection(_: SubtensorSubnetPriceChartView) {
-        chartLongPressHapticPlayer.play()
-    }
-
-    func priceChartView(_: SubtensorSubnetPriceChartView, didSelect selection: SubtensorPriceChartSelection) {
-        seekHapticPlayer.play()
-        switch selection {
-        case let .point(sourceIndex):
-            presenter.selectChartPoint(at: sourceIndex)
-        case .noData:
+extension SubtensorPortfolioViewController: SubtensorChartHapticsHandling {
+    func didSelectChart(_ selection: SubtensorPriceChartSelection?) {
+        guard case let .point(sourceIndex) = selection else {
             presenter.selectChartPoint(at: nil)
+            return
         }
-    }
 
-    func priceChartViewDidEndSelection(_: SubtensorSubnetPriceChartView) {
-        seekHapticPlayer.reset()
-        presenter.selectChartPoint(at: nil)
+        presenter.selectChartPoint(at: sourceIndex)
     }
 }
 

@@ -215,17 +215,7 @@ private extension BittensorApiOperationFactory {
             }
         )
 
-        let entryWrapper = cache.createWrapper(for: job)
-
-        let resultOperation = ClosureOperation<BittensorApiResult<T>> {
-            let entry = try entryWrapper.targetOperation.extractNoCancellableResultData()
-
-            return try Self.makeResult(from: entry, isFromExpiredCache: false)
-        }
-
-        resultOperation.addDependency(entryWrapper.targetOperation)
-
-        return entryWrapper.insertingTail(operation: resultOperation)
+        return cache.createWrapper(for: job).mapped { try Self.makeResult(from: $0, isFromExpiredCache: false) }
     }
 
     static func pagedQueryItems(page: Int) -> [URLQueryItem] {
@@ -263,9 +253,7 @@ private extension BittensorApiOperationFactory {
         path: String,
         logger: LoggerProtocol
     ) -> CompoundOperationWrapper<BittensorApiFetchedValue> {
-        let parseOperation = ClosureOperation<BittensorApiFetchedValue> {
-            let response = try responseWrapper.targetOperation.extractNoCancellableResultData()
-
+        responseWrapper.mapped { response in
             do {
                 return try parse(type, response: response, path: path)
             } catch let BittensorApiError.contractViolation(detail, requestId) {
@@ -274,10 +262,6 @@ private extension BittensorApiOperationFactory {
                 throw BittensorApiError.contractViolation(detail: detail, requestId: requestId)
             }
         }
-
-        parseOperation.addDependency(responseWrapper.targetOperation)
-
-        return responseWrapper.insertingTail(operation: parseOperation)
     }
 
     static func parse<T: Decodable & BittensorApiWireChecked>(

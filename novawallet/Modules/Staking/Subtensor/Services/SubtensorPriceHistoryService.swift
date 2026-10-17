@@ -133,15 +133,7 @@ private extension SubtensorPriceHistoryService {
                 let valuesWrapper: CompoundOperationWrapper<[SubtensorSubnetRef: SubtensorPriceData<Value>]> =
                     listed.isEmpty ? .createWithResult([:]) : listedValuesWrapper(listed)
 
-                let resultOperation = ClosureOperation<[SubtensorSubnetRef: SubtensorPriceData<Value>]> {
-                    let values = try valuesWrapper.targetOperation.extractNoCancellableResultData()
-
-                    return Self.priceData(for: subnets, listed: listed, values: values)
-                }
-
-                resultOperation.addDependency(valuesWrapper.targetOperation)
-
-                return valuesWrapper.insertingTail(operation: resultOperation)
+                return valuesWrapper.mapped { Self.priceData(for: subnets, listed: listed, values: $0) }
             }
 
         pricesWrapper.addDependency(wrapper: marketsWrapper)
