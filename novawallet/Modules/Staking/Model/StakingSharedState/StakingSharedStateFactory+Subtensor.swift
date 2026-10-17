@@ -62,12 +62,16 @@ extension SubtensorStakingProcessServices {
     }
 
     func createCataloguePricingTracker(
-        chainOperationFactory _: SubtensorApiOperationFactoryProtocol,
+        chainOperationFactory: SubtensorApiOperationFactoryProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) -> SubtensorCataloguePricingTracker {
         SubtensorCataloguePricingTracker(
-            catalogueService: catalogueService,
+            alphaPriceProvider: createAlphaPriceProvider(
+                chainOperationFactory: chainOperationFactory,
+                operationQueue: operationQueue,
+                logger: logger
+            ),
             operationQueue: operationQueue,
             logger: logger
         )

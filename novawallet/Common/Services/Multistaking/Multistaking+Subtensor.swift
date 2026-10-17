@@ -61,8 +61,12 @@ extension Multistaking {
             }
         }
 
+        var heldSubnetNetuids: Set<UInt16> {
+            Set(positions.map(\.netuid).filter { $0 != SubtensorStakingPallet.rootNetuid })
+        }
+
         var subnetCount: Int {
-            Set(positions.map(\.netuid).filter { $0 != SubtensorStakingPallet.rootNetuid }).count
+            heldSubnetNetuids.count
         }
 
         func byKeepingRootRedeemable(of previousState: SubtensorStakingState?) -> SubtensorStakingState {
