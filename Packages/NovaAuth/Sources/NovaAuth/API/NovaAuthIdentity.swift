@@ -20,4 +20,9 @@ public struct NovaAuthAppIdentity: Equatable {
 public struct NovaAuthContext: Hashable, Codable {
     public let origin: NovaAuthOrigin
     public let generation: UInt64
+
+    public init(origin: NovaAuthOrigin, generation: UInt64) {
+        self.origin = origin
+        self.generation = generation
+    }
 }
