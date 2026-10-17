@@ -228,7 +228,12 @@ extension ApplicationConfig: ApplicationConfigProtocol {
             return nil
         }
 
-        return try? NovaAuthAppIdentity(appID: prefix + "." + bundleId, environment: novaAuthEnvironment)
+        do {
+            return try NovaAuthAppIdentity(appID: prefix + "." + bundleId, environment: novaAuthEnvironment)
+        } catch {
+            Logger.shared.error("NovaAuth app identity rejected: \(error)")
+            return nil
+        }
     }
 
     private var novaAuthEnvironment: NovaAuthEnvironment {
