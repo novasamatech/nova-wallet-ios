@@ -289,7 +289,7 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(holds):
+            case let .success((holds, _)):
                 self?.basePresenter?.didReceiveRootHolds(holds)
             case let .failure(error):
                 self?.logger.warning("Subtensor root holds unavailable: \(error)")

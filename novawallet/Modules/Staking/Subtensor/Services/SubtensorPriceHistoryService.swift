@@ -238,15 +238,25 @@ private extension SubtensorPriceHistoryService {
         return sparkline(of: points.map(\.taoPerAlpha))
     }
 
-    func createHeadBlockWrapper() -> CompoundOperationWrapper<BlockNumber> {
-        blockNumberOperationFactory.createWrapper(for: chainId)
-    }
-
-    func createBlockTimeWrapper() -> CompoundOperationWrapper<BlockTime> {
+    func createChainTimeWrapper() -> CompoundOperationWrapper<(BlockNumber, BlockTime)> {
         do {
-            let runtimeProvider = try runtimeConnectionStore.getRuntimeProvider()
+            let headBlockWrapper = blockNumberOperationFactory.createWrapper(for: chainId)
+            let blockTimeWrapper = try blockTimeOperationFactory.createExpectedBlockTimeWrapper(
+                from: runtimeConnectionStore.getRuntimeProvider()
+            )
 
-            return blockTimeOperationFactory.createExpectedBlockTimeWrapper(from: runtimeProvider)
+            let mergeOperation = ClosureOperation<(BlockNumber, BlockTime)> {
+                (
+                    try headBlockWrapper.targetOperation.extractNoCancellableResultData(),
+                    try blockTimeWrapper.targetOperation.extractNoCancellableResultData()
+                )
+            }
+
+            mergeOperation.addDependency(headBlockWrapper.targetOperation)
+            mergeOperation.addDependency(blockTimeWrapper.targetOperation)
+
+            return blockTimeWrapper.insertingHead(operations: headBlockWrapper.allOperations)
+                .insertingTail(operation: mergeOperation)
         } catch {
             return .createWithError(error)
         }
@@ -298,8 +308,7 @@ private extension SubtensorPriceHistoryService {
             period: .week
         )
 
-        let headBlockWrapper = createHeadBlockWrapper()
-        let blockTimeWrapper = createBlockTimeWrapper()
+        let chainTimeWrapper = createChainTimeWrapper()
 
         let timeProvider = timeProvider
         let logger = logger
@@ -307,8 +316,7 @@ private extension SubtensorPriceHistoryService {
         let changesOperation = ClosureOperation<[SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>]> {
             do {
                 let tao = try taoWrapper.targetOperation.extractNoCancellableResultData()
-                let headBlock = try headBlockWrapper.targetOperation.extractNoCancellableResultData()
-                let blockTime = try blockTimeWrapper.targetOperation.extractNoCancellableResultData()
+                let (headBlock, blockTime) = try chainTimeWrapper.targetOperation.extractNoCancellableResultData()
 
                 return SubtensorPriceHistoryService.marketChanges(
                     of: listed,
@@ -324,12 +332,11 @@ private extension SubtensorPriceHistoryService {
         }
 
         changesOperation.addDependency(taoWrapper.targetOperation)
-        changesOperation.addDependency(headBlockWrapper.targetOperation)
-        changesOperation.addDependency(blockTimeWrapper.targetOperation)
+        changesOperation.addDependency(chainTimeWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: changesOperation,
-            dependencies: taoWrapper.allOperations + headBlockWrapper.allOperations + blockTimeWrapper.allOperations
+            dependencies: taoWrapper.allOperations + chainTimeWrapper.allOperations
         )
     }
 }
@@ -341,8 +348,7 @@ extension SubtensorPriceHistoryService: SubtensorPriceHistoryServiceProtocol {
         currency: Currency
     ) -> CompoundOperationWrapper<SubtensorPriceHistory?> {
         let marketsWrapper = marketsService.createMarketsWrapper()
-        let headBlockWrapper = createHeadBlockWrapper()
-        let blockTimeWrapper = createBlockTimeWrapper()
+        let chainTimeWrapper = createChainTimeWrapper()
         let timeProvider = timeProvider
 
         let pointsWrapper: CompoundOperationWrapper<[SubtensorPricePoint]?> = OperationCombiningService.compoundWrapper(
@@ -364,8 +370,7 @@ extension SubtensorPriceHistoryService: SubtensorPriceHistoryServiceProtocol {
                 return nil
             }
 
-            let headBlock = try headBlockWrapper.targetOperation.extractNoCancellableResultData()
-            let blockTime = try blockTimeWrapper.targetOperation.extractNoCancellableResultData()
+            let (headBlock, blockTime) = try chainTimeWrapper.targetOperation.extractNoCancellableResultData()
             let registrationDate = Self.registrationDate(
                 of: subnet,
                 headBlock: headBlock,
@@ -377,13 +382,11 @@ extension SubtensorPriceHistoryService: SubtensorPriceHistoryServiceProtocol {
         }
 
         resultOperation.addDependency(pointsWrapper.targetOperation)
-        resultOperation.addDependency(headBlockWrapper.targetOperation)
-        resultOperation.addDependency(blockTimeWrapper.targetOperation)
+        resultOperation.addDependency(chainTimeWrapper.targetOperation)
 
         return CompoundOperationWrapper(
             targetOperation: resultOperation,
-            dependencies: marketsWrapper.allOperations + headBlockWrapper.allOperations +
-                blockTimeWrapper.allOperations + pointsWrapper.allOperations
+            dependencies: marketsWrapper.allOperations + chainTimeWrapper.allOperations + pointsWrapper.allOperations
         )
     }
 
