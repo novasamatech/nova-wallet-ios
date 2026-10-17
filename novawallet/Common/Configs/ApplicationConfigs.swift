@@ -1,6 +1,5 @@
 import Foundation
 import os
-import NovaAuth
 
 protocol ApplicationConfigProtocol {
     var termsURL: URL { get }
@@ -217,41 +216,6 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #else
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/global/config_dev.json")!
         #endif
-    }
-
-    var novaAuthAppIdentity: NovaAuthAppIdentity? {
-        let rawPrefix = Bundle.main.object(forInfoDictionaryKey: "AppIdentifierPrefix") as? String
-        let prefix = rawPrefix?.trimmingCharacters(in: CharacterSet(charactersIn: ". ")) ?? ""
-
-        guard !prefix.isEmpty, let bundleId = Bundle.main.bundleIdentifier else {
-            return nil
-        }
-
-        return try? NovaAuthAppIdentity(appID: prefix + "." + bundleId, environment: novaAuthEnvironment)
-    }
-
-    private var novaAuthEnvironment: NovaAuthEnvironment {
-        #if F_DEV
-            .development
-        #else
-                .production
-        #endif
-    }
-
-    var novaAuthSharedStore: NovaAuthSharedStoreConfiguration? {
-        guard let hostAppNamespace = Bundle.main.object(forInfoDictionaryKey: "NovaAuthHostAppNamespace") as? String else {
-            return nil
-        }
-
-        do {
-            return try NovaAuthSharedStoreConfiguration(
-                accessGroup: SharedContainerGroup.name,
-                hostAppNamespace: hostAppNamespace
-            )
-        } catch {
-            Logger.shared.error("NovaAuth shared store configuration rejected: \(error)")
-            return nil
-        }
     }
 
     var dAppsListURL: URL {

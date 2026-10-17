@@ -9,15 +9,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var urlHandlingFacade: URLHandlingServiceFacadeProtocol { URLHandlingServiceFacade.shared }
 
-    static var isUnitTesting: Bool {
-        ProcessInfo.processInfo.arguments.contains("-UNITTEST")
-    }
-
     func application(
         _: UIApplication,
         didFinishLaunchingWithOptions _: AppLaunchOptions?
     ) -> Bool {
-        guard !Self.isUnitTesting else { return true }
+        guard !EnviromentVariables.isUnitTesting else { return true }
 
         let rootWindow = NovaWindow()
         window = rootWindow

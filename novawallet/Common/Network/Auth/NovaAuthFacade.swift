@@ -173,7 +173,7 @@ private extension NovaAuthFacade {
 extension NovaAuthFacade {
     static let shared: NovaAuthFacade = {
         let client: NovaAuth?
-        if !AppDelegate.isUnitTesting,
+        if !EnviromentVariables.isUnitTesting,
            let appIdentity = ApplicationConfig.shared.novaAuthAppIdentity,
            let sharedStore = ApplicationConfig.shared.novaAuthSharedStore {
             client = NovaAuth(configuration: NovaAuthConfiguration(
