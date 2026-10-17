@@ -107,6 +107,12 @@ extension SubtensorAlphaPriceProvider: SubtensorAlphaPriceProviderProtocol {
             return nil
         }
 
-        return SubtensorAlphaPrices(catalogue: catalogue, taoPerAlpha: catalogue.freshTaoPerAlpha)
+        let taoPerAlpha = catalogue.freshTaoPerAlpha
+
+        guard !taoPerAlpha.isEmpty || catalogue.subnets.isEmpty else {
+            return nil
+        }
+
+        return SubtensorAlphaPrices(catalogue: catalogue, taoPerAlpha: taoPerAlpha)
     }
 }

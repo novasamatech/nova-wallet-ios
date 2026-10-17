@@ -32,17 +32,24 @@ extension SubtensorStakingProcessServices {
         )
     }()
 
+    func createYieldService(
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
+    ) -> SubtensorYieldServiceProtocol {
+        SubtensorYieldService(
+            apiOperationFactory: bittensorApiOperationFactory,
+            operationQueue: operationQueue,
+            logger: logger
+        )
+    }
+
     func createMaxApyProvider(
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) -> SubtensorMaxApyProviderProtocol {
         SubtensorMaxApyProvider(
             apiOperationFactory: bittensorApiOperationFactory,
-            yieldService: SubtensorYieldService(
-                apiOperationFactory: bittensorApiOperationFactory,
-                operationQueue: operationQueue,
-                logger: logger
-            ),
+            yieldService: createYieldService(operationQueue: operationQueue, logger: logger),
             operationQueue: operationQueue,
             logger: logger
         )
@@ -148,11 +155,7 @@ extension StakingSharedStateFactory {
             runtimeConnectionStore: runtimeConnectionStore, operationQueue: syncOperationQueue
         )
 
-        let yieldService = SubtensorYieldService(
-            apiOperationFactory: processServices.bittensorApiOperationFactory,
-            operationQueue: syncOperationQueue,
-            logger: logger
-        )
+        let yieldService = processServices.createYieldService(operationQueue: syncOperationQueue, logger: logger)
 
         let recommendationService = SubtensorRecommendationService(
             apiOperationFactory: processServices.bittensorApiOperationFactory,
@@ -192,8 +195,11 @@ extension StakingSharedStateFactory {
                 blockTimeOperationFactory: BlockTimeOperationFactory(chain: stakingOption.chainAsset.chain)
             ),
             validatorPresetFactory: SubtensorValidatorPresetFactory(
-                directoryService: validatorDirectoryService, recommendationService: recommendationService,
-                yieldService: yieldService, operationQueue: syncOperationQueue, logger: logger
+                directoryService: validatorDirectoryService,
+                recommendationService: recommendationService,
+                yieldService: yieldService,
+                operationQueue: syncOperationQueue,
+                logger: logger
             ),
             costBasisService: processServices.costBasisService
         )
