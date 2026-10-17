@@ -17,7 +17,7 @@ final class SubtensorSubnetDetailsInteractor: SubtensorLoadDelivering {
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
-    private var priceProvider: StreamableProvider<PriceData>?
+    var priceProvider: StreamableProvider<PriceData>?
     private let historyCallStore = CancellableCallStore()
     private let parametersCallStore = CancellableCallStore()
     private let presetCallStore = CancellableCallStore()
@@ -59,15 +59,6 @@ final class SubtensorSubnetDetailsInteractor: SubtensorLoadDelivering {
 }
 
 private extension SubtensorSubnetDetailsInteractor {
-    func subscribePrice() {
-        guard let priceId = chainAsset.asset.priceId else {
-            presenter?.didReceiveTaoPrice(nil)
-            return
-        }
-
-        priceProvider = subscribeToPrice(for: priceId, currency: currencyManager.selectedCurrency)
-    }
-
     func subscribePositions() {
         guard let positionsSyncService else {
             presenter?.didReceivePositionsSyncFailed(true)
@@ -123,7 +114,7 @@ extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol
     }
 
     func setup() {
-        subscribePrice()
+        subscribeTaoPrice(currency: currencyManager.selectedCurrency)
         subscribePositions()
 
         loadParameters()
@@ -169,14 +160,8 @@ extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol
     }
 }
 
-extension SubtensorSubnetDetailsInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
-    func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
-        switch result {
-        case let .success(price):
-            presenter?.didReceiveTaoPrice(price)
-        case let .failure(error):
-            logger.error("Subtensor subnet details price subscription failed: \(error)")
-            presenter?.didReceiveTaoPrice(nil)
-        }
+extension SubtensorSubnetDetailsInteractor: SubtensorTaoPriceSubscribing {
+    func deliverTaoPrice(_ price: PriceData?) {
+        presenter?.didReceiveTaoPrice(price)
     }
 }

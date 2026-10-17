@@ -19,7 +19,7 @@ final class SubtensorValidatorInfoInteractor: AnyCancellableCleaning, SubtensorL
     private let detailStore = CancellableCallStore()
     private let rateStore = CancellableCallStore()
     private let catalogueStore = CancellableCallStore()
-    private var priceProvider: StreamableProvider<PriceData>?
+    var priceProvider: StreamableProvider<PriceData>?
 
     init(
         target: SubtensorStakeTarget,
@@ -87,15 +87,6 @@ private extension SubtensorValidatorInfoInteractor {
             self?.presenter?.didReceive(alphaPrice: $0?.subnet(for: subnet)?.freshTaoPerAlpha)
         }
     }
-
-    func subscribePrice() {
-        guard let priceId = chainAsset.asset.priceId else {
-            presenter?.didReceive(price: nil)
-            return
-        }
-
-        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
-    }
 }
 
 extension SubtensorValidatorInfoInteractor: SubtensorValInfoInteractorInputProtocol {
@@ -123,7 +114,7 @@ extension SubtensorValidatorInfoInteractor: SubtensorValInfoInteractorInputProto
         }
         loadRate()
         loadAlphaPrice()
-        subscribePrice()
+        subscribeTaoPrice(currency: selectedCurrency)
     }
 
     func loadDetail() {
@@ -146,15 +137,9 @@ extension SubtensorValidatorInfoInteractor: SubtensorValInfoInteractorInputProto
     }
 }
 
-extension SubtensorValidatorInfoInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
-    func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
-        switch result {
-        case let .success(price):
-            presenter?.didReceive(price: price)
-        case let .failure(error):
-            logger.warning("TAO price unavailable: \(error)")
-            presenter?.didReceive(price: nil)
-        }
+extension SubtensorValidatorInfoInteractor: SubtensorTaoPriceSubscribing {
+    func deliverTaoPrice(_ price: PriceData?) {
+        presenter?.didReceive(price: price)
     }
 }
 
@@ -164,6 +149,6 @@ extension SubtensorValidatorInfoInteractor: SelectedCurrencyDepending {
             return
         }
 
-        subscribePrice()
+        subscribeTaoPrice(currency: selectedCurrency)
     }
 }

@@ -19,7 +19,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning, SubtensorLoad
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
-    private var priceProvider: StreamableProvider<PriceData>?
+    var priceProvider: StreamableProvider<PriceData>?
     private var hasReportedAccountChange = false
     private let catalogueStore = CancellableCallStore()
     private let rootRateStore = CancellableCallStore()
@@ -28,7 +28,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning, SubtensorLoad
     private let weeklyChangesStore = CancellableCallStore()
     private let historiesStore = CancellableCallStore()
 
-    private var chainAsset: ChainAsset {
+    var chainAsset: ChainAsset {
         state.stakingOption.chainAsset
     }
 
@@ -78,7 +78,7 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
 
         provideCatalogue()
         subscribePositions()
-        subscribePrice()
+        subscribeTaoPrice(currency: selectedCurrency)
         provideSubnetLogos()
 
         eventCenter.add(observer: self, dispatchIn: .main)
@@ -219,17 +219,6 @@ private extension SubtensorPortfolioInteractor {
         )
     }
 
-    func subscribePrice() {
-        clear(streamableProvider: &priceProvider)
-
-        guard let priceId = chainAsset.asset.priceId else {
-            presenter?.didReceive(price: nil)
-            return
-        }
-
-        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
-    }
-
     func provideCatalogue() {
         catalogueStore.cancel()
 
@@ -302,17 +291,9 @@ extension SubtensorPortfolioInteractor: ApplicationHandlerDelegate {
     }
 }
 
-extension SubtensorPortfolioInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
-    func handlePrice(result: Result<PriceData?, Error>, priceId: AssetModel.PriceId) {
-        guard chainAsset.asset.priceId == priceId else { return }
-
-        switch result {
-        case let .success(priceData):
-            presenter?.didReceive(price: priceData)
-        case let .failure(error):
-            logger.error("Bittensor portfolio price unavailable: \(error)")
-            presenter?.didReceive(price: nil)
-        }
+extension SubtensorPortfolioInteractor: SubtensorTaoPriceSubscribing {
+    func deliverTaoPrice(_ price: PriceData?) {
+        presenter?.didReceive(price: price)
     }
 }
 
@@ -321,6 +302,7 @@ extension SubtensorPortfolioInteractor: SelectedCurrencyDepending {
         guard presenter != nil else { return }
 
         presenter?.didChangeCurrency()
-        subscribePrice()
+        clear(streamableProvider: &priceProvider)
+        subscribeTaoPrice(currency: selectedCurrency)
     }
 }

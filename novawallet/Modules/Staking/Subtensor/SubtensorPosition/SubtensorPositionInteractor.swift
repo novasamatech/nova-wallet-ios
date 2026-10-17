@@ -16,7 +16,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
-    private var priceProvider: StreamableProvider<PriceData>?
+    var priceProvider: StreamableProvider<PriceData>?
     private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
     private var failedHoldsHotkeys: [AccountId]?
     private let catalogueStore = CancellableCallStore()
@@ -31,7 +31,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
         netuid == SubtensorStakingPallet.rootNetuid
     }
 
-    private var chainAsset: ChainAsset {
+    var chainAsset: ChainAsset {
         state.stakingOption.chainAsset
     }
 
@@ -101,17 +101,6 @@ private extension SubtensorPositionInteractor {
         )
     }
 
-    func subscribePrice() {
-        clear(streamableProvider: &priceProvider)
-
-        guard let priceId = chainAsset.asset.priceId else {
-            presenter?.didReceive(price: nil)
-            return
-        }
-
-        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
-    }
-
     func loadSubnetLogos() {
         load(subnetLogosProvider.createLogosWrapper(), in: logosStore, label: "position subnet mark") { [weak self] in
             self?.presenter?.didReceive(subnetLogos: $0)
@@ -164,7 +153,7 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
 
     func setup() {
         subscribePositions()
-        subscribePrice()
+        subscribeTaoPrice(currency: selectedCurrency)
         loadYields()
 
         if isRoot {
@@ -273,19 +262,9 @@ extension SubtensorPositionInteractor: GeneralLocalStorageSubscriber, GeneralLoc
     }
 }
 
-extension SubtensorPositionInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
-    func handlePrice(result: Result<PriceData?, Error>, priceId: AssetModel.PriceId) {
-        guard chainAsset.asset.priceId == priceId else {
-            return
-        }
-
-        switch result {
-        case let .success(priceData):
-            presenter?.didReceive(price: priceData)
-        case let .failure(error):
-            logger.error("Subtensor position price unavailable: \(error)")
-            presenter?.didReceive(price: nil)
-        }
+extension SubtensorPositionInteractor: SubtensorTaoPriceSubscribing {
+    func deliverTaoPrice(_ price: PriceData?) {
+        presenter?.didReceive(price: price)
     }
 }
 
@@ -296,6 +275,7 @@ extension SubtensorPositionInteractor: SelectedCurrencyDepending {
         }
 
         presenter?.didChangeCurrency()
-        subscribePrice()
+        clear(streamableProvider: &priceProvider)
+        subscribeTaoPrice(currency: selectedCurrency)
     }
 }
