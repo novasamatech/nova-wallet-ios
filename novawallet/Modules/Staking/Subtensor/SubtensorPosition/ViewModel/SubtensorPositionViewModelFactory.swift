@@ -237,7 +237,7 @@ private extension SubtensorPositionViewModelFactory {
 
         if !state.isRateResolved {
             rate = .loading
-        } else if state.isRoot || state.annualRate != nil {
+        } else if state.annualRate != nil || (state.isRoot && state.yields != nil) {
             rate = .value(SubtensorApyFormatter.text(for: state.annualRate, style: .bare, locale: locale))
         } else {
             rate = .hidden

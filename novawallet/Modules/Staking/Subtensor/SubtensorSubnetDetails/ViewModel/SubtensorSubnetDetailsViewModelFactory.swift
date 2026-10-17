@@ -137,11 +137,19 @@ private extension SubtensorSubnetDetailsViewModelFactory {
         let rate = item.flatMap { SubtensorAlphaApyFormatter.annualRate(for: $0.hotkey, in: state.yields) }
         let name: String? = state.validator == .pending ? nil : item?.name ?? address?.mediumTruncated ??
             strings.stakingSubtensorUiDetailChooseValidator()
+        let rateState: SubtensorRowState<String>
+        if state.validator == .pending || (item != nil && !state.isRateResolved) {
+            rateState = .loading
+        } else if item != nil {
+            rateState = .value(SubtensorApyFormatter.text(for: rate, style: .bare, locale: locale))
+        } else {
+            rateState = .hidden
+        }
         return SubtensorValidatorCardViewModel(
             icon: display?.imageViewModel,
             name: name,
             subtitle: strings.stakingCommonValidator(),
-            rate: item == nil ? .hidden : .value(SubtensorApyFormatter.text(for: rate, style: .bare, locale: locale)),
+            rate: rateState,
             rateCaption: strings.stakingSubtensorV22EstApy()
         )
     }

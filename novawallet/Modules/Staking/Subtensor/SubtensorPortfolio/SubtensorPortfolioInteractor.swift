@@ -154,6 +154,7 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
                 self?.presenter?.didReceive(networkRootRate: rate?.annualRate)
             case let .failure(error):
                 self?.logger.warning("Bittensor portfolio network root rate unavailable: \(error)")
+                self?.presenter?.didReceive(networkRootRate: nil)
             }
         }
     }
@@ -336,6 +337,7 @@ extension SubtensorPortfolioInteractor: ApplicationHandlerDelegate {
         priceProvider?.refresh()
         provideCatalogue()
         state.positionsSyncService?.refresh()
+        presenter?.didBecomeActive()
     }
 }
 
