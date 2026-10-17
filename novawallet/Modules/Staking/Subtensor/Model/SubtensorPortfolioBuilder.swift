@@ -4,7 +4,7 @@ import Foundation
 enum SubtensorPortfolioBuilder {
     static func build(
         state: Multistaking.SubtensorStakingState,
-        catalogue: SubtensorSubnetCatalogue? = nil
+        prices: SubtensorAlphaPrices? = nil
     ) -> SubtensorPortfolio {
         let positionsByNetuid = Dictionary(grouping: state.positions, by: \.netuid)
 
@@ -13,7 +13,7 @@ enum SubtensorPortfolioBuilder {
             positions: positionsByNetuid[SubtensorStakingPallet.rootNetuid] ?? [],
             redeemable: state.totalRootRedeemable,
             state: state,
-            catalogue: catalogue
+            prices: prices
         ) ?? buildRedeemableRootGroup(state: state)
 
         let subnets = positionsByNetuid
@@ -24,7 +24,7 @@ enum SubtensorPortfolioBuilder {
                     positions: item.value,
                     redeemable: .zero,
                     state: state,
-                    catalogue: catalogue
+                    prices: prices
                 )
             }
             .sorted(by: isOrderedBefore)
@@ -42,6 +42,16 @@ enum SubtensorPortfolioBuilder {
             unpricedNetuids: unpricedNetuids
         )
     }
+
+    static func build(
+        state: Multistaking.SubtensorStakingState,
+        catalogue: SubtensorSubnetCatalogue?
+    ) -> SubtensorPortfolio {
+        build(
+            state: state,
+            prices: catalogue.map { SubtensorAlphaPrices(catalogue: $0, taoPerAlpha: $0.freshTaoPerAlpha) }
+        )
+    }
 }
 
 private extension SubtensorPortfolioBuilder {
@@ -50,7 +60,7 @@ private extension SubtensorPortfolioBuilder {
         positions: [SubtensorStakingPosition],
         redeemable: Balance,
         state: Multistaking.SubtensorStakingState,
-        catalogue: SubtensorSubnetCatalogue?
+        prices: SubtensorAlphaPrices?
     ) -> SubtensorPortfolioGroup? {
         let members = positions.sorted(by: isMemberOrderedBefore)
 
@@ -62,7 +72,7 @@ private extension SubtensorPortfolioBuilder {
 
         let taoValue = netuid == SubtensorStakingPallet.rootNetuid
             ? totalAlpha
-            : catalogue?.taoValue(of: totalAlpha, netuid: netuid)
+            : prices?.taoValue(of: totalAlpha, netuid: netuid)
 
         return SubtensorPortfolioGroup(
             netuid: netuid,
