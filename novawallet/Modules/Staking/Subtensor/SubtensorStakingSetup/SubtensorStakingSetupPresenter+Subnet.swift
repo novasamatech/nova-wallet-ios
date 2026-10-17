@@ -97,7 +97,7 @@ extension SubtensorStakingSetupPresenter {
             annualRate: validatorAnnualRate(),
             isQuoteFailed: isQuoteFailed,
             costBasis: costBasis,
-            blockTime: preflight?.blockTime
+            blockTime: blockTime
         )
 
         return SubtensorStakingSetupViewModelInput(
