@@ -213,8 +213,14 @@ final class SubtensorPickCardSkeletonView: UIView, SkeletonableView {
     var hidingViews: [UIView] { [] }
 
     private var placeholders: [UIView] = []
-    private var contentView = UIView()
     private var isLoading = false
+
+    private let contentView: UIStackView = .create { view in
+        view.axis = .vertical
+        view.spacing = Constants.spacing
+        view.layoutMargins = Constants.contentInsets
+        view.isLayoutMarginsRelativeArrangement = true
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -335,13 +341,8 @@ private extension SubtensorPickCardSkeletonView {
             makeDivider(),
             makeRow(networkFeeTitleLabel)
         ])
-        let contentView = UIView.vStack(
-            spacing: Constants.spacing,
-            margins: Constants.contentInsets,
-            [headerView, chipsView, rowsView, captionLabel]
-        )
+        [headerView, chipsView, rowsView, captionLabel].forEach(contentView.addArrangedSubview)
         contentView.setCustomSpacing(Constants.captionSpacing, after: rowsView)
-        self.contentView = contentView
 
         addSubview(contentView)
         contentView.snp.makeConstraints { $0.edges.equalToSuperview() }

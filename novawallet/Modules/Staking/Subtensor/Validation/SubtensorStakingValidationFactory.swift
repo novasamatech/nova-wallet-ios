@@ -130,22 +130,19 @@ final class SubtensorStakingValidationFactory {
         }
 
         switch change {
+        case let .rateChange(_, new) where context.onPriceMoved != nil:
+            context.onPriceMoved?(new)
         case let .rateChange(old, new):
-            guard let onPriceMoved = context.onPriceMoved else {
-                presentable.presentRateUpdated(
-                    from: view,
-                    oldRate: formatRate(old, alphaDisplayInfo: context.alphaDisplayInfo, locale: locale),
-                    newRate: formatRate(new, alphaDisplayInfo: context.alphaDisplayInfo, locale: locale),
-                    onConfirm: {
-                        context.onQuoteUpdate(new)
-                        delegate.didCompleteAsyncHandling()
-                    },
-                    locale: locale
-                )
-                return
-            }
-
-            onPriceMoved(new)
+            presentable.presentRateUpdated(
+                from: view,
+                oldRate: formatRate(old, alphaDisplayInfo: context.alphaDisplayInfo, locale: locale),
+                newRate: formatRate(new, alphaDisplayInfo: context.alphaDisplayInfo, locale: locale),
+                onConfirm: {
+                    context.onQuoteUpdate(new)
+                    delegate.didCompleteAsyncHandling()
+                },
+                locale: locale
+            )
         case .unavailable:
             presentable.presentNotEnoughLiquidity(from: view, locale: locale)
         }
@@ -160,19 +157,23 @@ final class SubtensorStakingValidationFactory {
             return
         }
 
-        context.onQuoteRequest { result in
-            switch result {
-            case let .success(new):
-                guard new.isFillable(atLimit: new.tighterLimit(than: limit)) else {
-                    completion(.rateChange(old: current, new: new))
-                    return
-                }
+        context.loadingView?.didStartLoading()
 
-                context.onQuoteUpdate(new)
-                completion(nil)
+        context.onQuoteRequest { result in
+            let change: SubtensorQuoteChange? = switch result {
+            case let .success(new) where new.isFillable(atLimit: new.tighterLimit(than: limit)):
+                nil
+            case let .success(new):
+                .rateChange(old: current, new: new)
             case .failure:
-                completion(.unavailable)
+                .unavailable
             }
+
+            if change != nil {
+                context.loadingView?.didStopLoading()
+            }
+
+            completion(change)
         }
     }
 }

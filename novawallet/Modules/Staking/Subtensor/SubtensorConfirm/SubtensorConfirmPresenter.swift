@@ -180,13 +180,9 @@ extension SubtensorConfirmPresenter {
                 netuid: model.target.netuid,
                 catalogue: catalogue
             ),
+            loadingView: view,
             onQuoteRequest: { [weak self] completion in
-                self?.view?.didStartLoading()
-
-                self?.interactor.requestValidatingQuote(for: request) { result in
-                    self?.view?.didStopLoading()
-                    completion(result)
-                }
+                self?.interactor.requestValidatingQuote(for: request, completion: completion)
             },
             onQuoteUpdate: { [weak self] quote in
                 self?.didReceiveQuote(quote)
@@ -254,6 +250,7 @@ extension SubtensorConfirmPresenter {
 
     func handOffAtTap() {
         guard !isHandingOff, let fee, let preflight, let verified = createVerifiedOperation() else {
+            view?.didStopLoading()
             return
         }
 
