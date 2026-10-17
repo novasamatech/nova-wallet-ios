@@ -38,6 +38,7 @@ final class NovaAuthFacade: NovaAuthProvidingProtocol {
     private let client: NovaAuthClientProtocol?
     private let activate: (NovaAuthOrigin) throws -> NovaAuthContext
     private let contextInvalidationID: () -> UUID?
+    private let logger: LoggerProtocol
     private let mutex = NSLock()
     private var latestSnapshot: GlobalConfigSnapshot?
     private let availabilityLock = NSLock()
@@ -48,14 +49,21 @@ final class NovaAuthFacade: NovaAuthProvidingProtocol {
         configProvider: GlobalConfigProviding,
         client: NovaAuthClientProtocol?,
         contextInvalidationID: @escaping () -> UUID?,
-        activate: @escaping (NovaAuthOrigin) throws -> NovaAuthContext
+        activate: @escaping (NovaAuthOrigin) throws -> NovaAuthContext,
+        logger: LoggerProtocol = Logger.shared
     ) {
         self.configProvider = configProvider
         self.client = client
         self.contextInvalidationID = contextInvalidationID
         self.activate = activate
+        self.logger = logger
         configProvider.addSnapshotObserver(self) { [weak self] snapshot in
-            _ = try? self?.adopt(snapshot)
+            guard let self else { return }
+            do {
+                _ = try adopt(snapshot)
+            } catch {
+                logger.warning("NovaAuth config refresh not adopted: \(error)")
+            }
         }
     }
 
@@ -165,9 +173,9 @@ private extension NovaAuthFacade {
 extension NovaAuthFacade {
     static let shared: NovaAuthFacade = {
         let client: NovaAuth?
-        if !ProcessInfo.processInfo.arguments.contains("-UNITTEST"),
+        if !AppDelegate.isUnitTesting,
            let appIdentity = ApplicationConfig.shared.novaAuthAppIdentity,
-           let sharedStore = SharedContainerGroup.novaAuthStore {
+           let sharedStore = ApplicationConfig.shared.novaAuthSharedStore {
             client = NovaAuth(configuration: NovaAuthConfiguration(
                 appIdentity: appIdentity,
                 settingsManager: SettingsManager.shared,
@@ -188,16 +196,4 @@ extension NovaAuthFacade {
             }
         )
     }()
-}
-
-private extension SharedContainerGroup {
-    static var novaAuthStore: NovaAuthSharedStoreConfiguration? {
-        guard let hostAppNamespace = Bundle.main.object(forInfoDictionaryKey: "NovaAuthHostAppNamespace") as? String else {
-            return nil
-        }
-        return try? NovaAuthSharedStoreConfiguration(
-            accessGroup: name,
-            hostAppNamespace: hostAppNamespace
-        )
-    }
 }
