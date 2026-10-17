@@ -57,7 +57,7 @@ final class BittensorAuthorizedTransport: BittensorApiTransportProtocol {
     ) -> CompoundOperationWrapper<BittensorApiRawResponse> {
         do {
             guard let endpoint = admission.endpoint else { throw BittensorApiError.deviceBound(requestId: nil) }
-            let prepared = try BittensorAuthorizedRequestBuilder.prepare(request, endpoint: endpoint)
+            let prepared = try prepare(request, endpoint: endpoint)
             let response = endpoint.client.createResponseWrapper(for: prepared, beforeSend: {})
             let grade = ClosureOperation<BittensorApiRawResponse> {
                 do {
@@ -75,4 +75,17 @@ final class BittensorAuthorizedTransport: BittensorApiTransportProtocol {
         provider: NovaAuthFacade.shared,
         operationQueue: OperationManagerFacade.sharedDefaultQueue
     )
+}
+
+private extension BittensorAuthorizedTransport {
+    func prepare(_ request: BittensorApiRequest, endpoint: NovaAuthEndpoint) throws -> NovaAuthRequest {
+        try NovaAuthRequest(
+            context: endpoint.context,
+            method: .get,
+            path: "/v1/bittensor" + request.path,
+            queryItems: request.queryItems,
+            body: nil,
+            contentType: nil
+        )
+    }
 }
