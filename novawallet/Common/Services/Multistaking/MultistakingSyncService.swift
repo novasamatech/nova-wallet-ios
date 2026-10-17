@@ -430,12 +430,12 @@ final class MultistakingSyncService {
                 operationQueue: operationQueue,
                 logger: logger
             ),
-            rootYieldService: SubtensorYieldService(
-                apiOperationFactory: subtensorProcessServices.bittensorApiOperationFactory,
+            rootYieldService: subtensorProcessServices.createYieldService(
                 operationQueue: operationQueue,
                 logger: logger
             ),
             cataloguePricing: subtensorProcessServices.createCataloguePricingTracker(
+                chainOperationFactory: apiOperationFactory,
                 operationQueue: operationQueue,
                 logger: logger
             )

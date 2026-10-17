@@ -50,7 +50,7 @@ private extension SubtensorPositionViewModelFactory {
 
         return SubtensorPriceHeaderParams(
             caption: caption,
-            spotPrice: subnet?.taoPerAlpha.decimal(assetInfo: chainAsset.assetDisplayInfo),
+            spotPrice: state.prices?.taoPerAlpha[state.netuid]?.decimal(assetInfo: chainAsset.assetDisplayInfo),
             currency: nil,
             selection: state.chartSelection
         )

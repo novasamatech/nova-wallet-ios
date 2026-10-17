@@ -21,7 +21,7 @@ final class SubtensorPortfolioBuilderTests: XCTestCase {
             availability: [0: rootAvailability, 64: subnetAvailability]
         )
 
-        let portfolio = SubtensorPortfolioBuilder.build(state: state, catalogue: catalogue(prices: [64: 50_000_000]))
+        let portfolio = SubtensorPortfolioBuilder.build(state: state, prices: prices([64: 50_000_000]))
 
         let expected = SubtensorPortfolio(
             root: SubtensorPortfolioGroup(
@@ -63,7 +63,7 @@ final class SubtensorPortfolioBuilderTests: XCTestCase {
 
         let portfolio = SubtensorPortfolioBuilder.build(
             state: state,
-            catalogue: catalogue(prices: [7: 0, 19: 30_000_000, 64: 50_000_000])
+            prices: prices([7: 0, 19: 30_000_000, 64: 50_000_000])
         )
 
         XCTAssertNil(portfolio.root)
@@ -86,22 +86,7 @@ final class SubtensorPortfolioBuilderTests: XCTestCase {
         SubtensorStakingPallet.StakeAvailability(available: total - locked)
     }
 
-    private func catalogue(prices: [UInt16: Balance]) -> SubtensorSubnetCatalogue {
-        let stamp = SubtensorBackendStamp(asOf: Date(timeIntervalSince1970: 1_790_000_000), freshness: .fresh)
-
-        return SubtensorSubnetCatalogue(subnets: prices.map { netuid, price in
-            SubtensorCatalogueSubnet(
-                netuid: netuid,
-                name: "",
-                symbol: "",
-                networkRegisteredAt: 0,
-                taoReserve: 0,
-                alphaReserve: 0,
-                alphaOutstanding: 0,
-                taoPerAlpha: price,
-                metadataStamp: stamp,
-                pricesStamp: stamp
-            )
-        })
+    private func prices(_ taoPerAlpha: [UInt16: Balance]) -> SubtensorAlphaPrices {
+        SubtensorAlphaPrices(catalogue: nil, taoPerAlpha: taoPerAlpha)
     }
 }

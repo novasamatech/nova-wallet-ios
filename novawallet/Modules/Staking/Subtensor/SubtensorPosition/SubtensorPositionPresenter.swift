@@ -151,10 +151,10 @@ private extension SubtensorPositionPresenter {
 
 extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
     func setup() {
-        let catalogue = interactor.cachedCatalogue()
+        let prices = interactor.cachedPrices()
 
-        if let catalogue {
-            state.catalogue = catalogue
+        if let prices {
+            state.prices = prices
             state.isCatalogueResolved = true
         }
 
@@ -170,7 +170,7 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
             apply(group: group)
         }
 
-        if catalogue != nil {
+        if prices != nil {
             requestHistoryIfNeeded()
         }
     }
@@ -273,8 +273,8 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
         provideViewModel()
     }
 
-    func didReceive(catalogue: SubtensorSubnetCatalogue?) {
-        state.catalogue = catalogue
+    func didReceive(prices: SubtensorAlphaPrices?) {
+        state.prices = prices
         state.isCatalogueResolved = true
         loadValidatorIfNeeded()
         requestHistoryIfNeeded()

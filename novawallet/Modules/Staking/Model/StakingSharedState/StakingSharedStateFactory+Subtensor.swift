@@ -32,28 +32,53 @@ extension SubtensorStakingProcessServices {
         )
     }()
 
+    func createYieldService(
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
+    ) -> SubtensorYieldServiceProtocol {
+        SubtensorYieldService(
+            apiOperationFactory: bittensorApiOperationFactory,
+            operationQueue: operationQueue,
+            logger: logger
+        )
+    }
+
     func createMaxApyProvider(
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) -> SubtensorMaxApyProviderProtocol {
         SubtensorMaxApyProvider(
             apiOperationFactory: bittensorApiOperationFactory,
-            yieldService: SubtensorYieldService(
-                apiOperationFactory: bittensorApiOperationFactory,
-                operationQueue: operationQueue,
-                logger: logger
-            ),
+            yieldService: createYieldService(operationQueue: operationQueue, logger: logger),
+            operationQueue: operationQueue,
+            logger: logger
+        )
+    }
+
+    func createAlphaPriceProvider(
+        chainOperationFactory: SubtensorApiOperationFactoryProtocol,
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
+    ) -> SubtensorAlphaPriceProviderProtocol {
+        SubtensorAlphaPriceProvider(
+            catalogueService: catalogueService,
+            chainOperationFactory: chainOperationFactory,
             operationQueue: operationQueue,
             logger: logger
         )
     }
 
     func createCataloguePricingTracker(
+        chainOperationFactory: SubtensorApiOperationFactoryProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) -> SubtensorCataloguePricingTracker {
         SubtensorCataloguePricingTracker(
-            catalogueService: catalogueService,
+            alphaPriceProvider: createAlphaPriceProvider(
+                chainOperationFactory: chainOperationFactory,
+                operationQueue: operationQueue,
+                logger: logger
+            ),
             operationQueue: operationQueue,
             logger: logger
         )
@@ -130,11 +155,7 @@ extension StakingSharedStateFactory {
             runtimeConnectionStore: runtimeConnectionStore, operationQueue: syncOperationQueue
         )
 
-        let yieldService = SubtensorYieldService(
-            apiOperationFactory: processServices.bittensorApiOperationFactory,
-            operationQueue: syncOperationQueue,
-            logger: logger
-        )
+        let yieldService = processServices.createYieldService(operationQueue: syncOperationQueue, logger: logger)
 
         let recommendationService = SubtensorRecommendationService(
             apiOperationFactory: processServices.bittensorApiOperationFactory,
@@ -154,6 +175,9 @@ extension StakingSharedStateFactory {
             subnetLogosProvider: processServices.subnetLogosProvider,
             earnSettings: SubtensorEarnSettings(settingsManager: SettingsManager.shared),
             catalogueService: processServices.catalogueService,
+            alphaPriceProvider: processServices.createAlphaPriceProvider(
+                chainOperationFactory: apiOperationFactory, operationQueue: syncOperationQueue, logger: logger
+            ),
             yieldService: yieldService,
             maxApyProvider: processServices.createMaxApyProvider(operationQueue: syncOperationQueue, logger: logger),
             recommendationService: recommendationService,

@@ -70,6 +70,7 @@
 		6132E39298FA48B5A6EF66E8 /* SubtensorResultSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BA1A912672C45438059DD67 /* SubtensorResultSheetViewController.swift */; };
 		621A24175D8C40D3AFCA741B /* SubtensorConfirmQuoteState.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDE04B45634D49C0A8DBA92F /* SubtensorConfirmQuoteState.swift */; };
 		65C37609075B4EDF8D5CC5BE /* SubtensorMaxApyProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD60006C623841CEBDA74A51 /* SubtensorMaxApyProvider.swift */; };
+		AE0AFE6CC3685A5F7964A98F /* SubtensorAlphaPriceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B382A1007DACF937D8DCD598 /* SubtensorAlphaPriceProvider.swift */; };
 		67CE26D3C9F348709E7B36CF /* SubtensorConfirmValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95C793B6DA014A45AECB6F51 /* SubtensorConfirmValidator.swift */; };
 		6875E397E1574401AC5E4AF6 /* SubtensorValidatorInfoViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4EAD80E58BB458FA0A93E0A /* SubtensorValidatorInfoViewFactory.swift */; };
 		6E96A4B8C4B44965A271377B /* SubtensorAlphaApyFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B582BCF62BB947A692FD1C7B /* SubtensorAlphaApyFormatter.swift */; };
@@ -78,6 +79,7 @@
 		70DE23C1893A48A3AEA9852B /* SubtensorSubnetFiltersSheetViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A06C6690BA545ACB8461D66 /* SubtensorSubnetFiltersSheetViewLayout.swift */; };
 		70E195DB466646438C57904A /* SubtensorValidatorPresetFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2159F5ACF948482FA9CB1039 /* SubtensorValidatorPresetFactoryTests.swift */; };
 		1FB0299B8480450951C9709F /* SubtensorMaxApyProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E88C470800084895471E54E /* SubtensorMaxApyProviderTests.swift */; };
+		3C56008294E6EF54FC57F196 /* SubtensorAlphaPriceProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DD5D09560F44AE9E3A9495E /* SubtensorAlphaPriceProviderTests.swift */; };
 		73E64086311D42AA8CA1C1B4 /* SubtensorYourBittensorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25C60873BD49718F8F0E6D /* SubtensorYourBittensorPresentable.swift */; };
 		76C88D596AFB40619667BB77 /* SubtensorValidatorListFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1943F67610514F62A8E067C2 /* SubtensorValidatorListFactory.swift */; };
 		76E53FF488F4425D946E50E0 /* SubtensorConfirmViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A614A032BD4517AEAC84B0 /* SubtensorConfirmViewModel.swift */; };
@@ -158,6 +160,7 @@
 		F0E55C8BBB3A4EF0AC571E4D /* SwapNetworkFeeViewCell+CostBasis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59AB1C268DA543FEAA29418A /* SwapNetworkFeeViewCell+CostBasis.swift */; };
 		F13ABDF294734B089F544E49 /* SubtensorOperationStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F4838C35D0C44D98ECD3551 /* SubtensorOperationStatusView.swift */; };
 		F38E823485F940279D7949F2 /* SubtensorMaxApyProviderProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DE0BC7DBBD422DADF98FD6 /* SubtensorMaxApyProviderProtocol.swift */; };
+		D0FFF6993980FCE9F2B8D91B /* SubtensorAlphaPriceProviderProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9D8BDF9C170F748DA35075 /* SubtensorAlphaPriceProviderProtocol.swift */; };
 		F56548139AF742159077B0E1 /* SubtensorValidatorDetailsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24D6D6B54EFE47DFA0158D2F /* SubtensorValidatorDetailsCell.swift */; };
 		F7833BB193574A17AD4274C5 /* SubtensorPortfolioHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B7691B95C17473083430CAA /* SubtensorPortfolioHeaderView.swift */; };
 		F784F6D3286D4300BC355766 /* SubtensorValueTone+Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC0336AC7B14000A62FD52E /* SubtensorValueTone+Color.swift */; };
@@ -6588,6 +6591,7 @@
 		B6DB30A8D1BF84158CAC635D /* OperationDetailsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661356CFE77B978610397907 /* OperationDetailsInteractor.swift */; };
 		B776F3F1B81EBA9EED68F605 /* InAppUpdatesProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8939D2E509D6FF66B7E117 /* InAppUpdatesProtocols.swift */; };
 		B7811E9ED9714AF585BDB2DF /* SubtensorPortfolio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 762EB8B08E75446A9F9384E6 /* SubtensorPortfolio.swift */; };
+		1AEB073137E10A91EADD0831 /* SubtensorAlphaPrices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35E30C57F4B17F4AEC6E4497 /* SubtensorAlphaPrices.swift */; };
 		B7834841AABA430277895F78 /* SwapSetupPresenter+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 804F8916AA9326A19F51FC80 /* SwapSetupPresenter+Analytics.swift */; };
 		B7AA65C6A2A013A46B99B9D2 /* NetworksListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2C52E727AAEF19EFC7761 /* NetworksListViewController.swift */; };
 		B7CF31A548C02AD7AAC16A8D /* StakingRedeemWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A93673EEA8F71E8DDA84557 /* StakingRedeemWireframe.swift */; };
@@ -7184,6 +7188,7 @@
 		19E88DACCADB4E1F851D1954 /* SubtensorOperationResultPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorOperationResultPresenter.swift; sourceTree = "<group>"; };
 		2159F5ACF948482FA9CB1039 /* SubtensorValidatorPresetFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorValidatorPresetFactoryTests.swift; sourceTree = "<group>"; };
 		0E88C470800084895471E54E /* SubtensorMaxApyProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorMaxApyProviderTests.swift; sourceTree = "<group>"; };
+		7DD5D09560F44AE9E3A9495E /* SubtensorAlphaPriceProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorAlphaPriceProviderTests.swift; sourceTree = "<group>"; };
 		231389F398BB41A685F5B32D /* SubtensorValidatorInfoPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorValidatorInfoPresentable.swift; sourceTree = "<group>"; };
 		23A0DA6F4E1B4C329C8171B3 /* SubtensorStakingOperation+Extrinsic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorStakingOperation+Extrinsic.swift"; sourceTree = "<group>"; };
 		23EE450254334A6DB17422C0 /* SubtensorUnstakeSetupViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorUnstakeSetupViewModelFactory.swift; sourceTree = "<group>"; };
@@ -7291,6 +7296,7 @@
 		BA969EE741E8405DA9A7B8F4 /* SubtensorOperationResultViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorOperationResultViewModel.swift; sourceTree = "<group>"; };
 		BB579374C0C1476B8E5F2EBB /* SubtensorValidatorSelectCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorValidatorSelectCell.swift; sourceTree = "<group>"; };
 		BD60006C623841CEBDA74A51 /* SubtensorMaxApyProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorMaxApyProvider.swift; sourceTree = "<group>"; };
+		B382A1007DACF937D8DCD598 /* SubtensorAlphaPriceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorAlphaPriceProvider.swift; sourceTree = "<group>"; };
 		BD74390E9ECB4AA298EAA529 /* SubtensorPortfolioEmptyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorPortfolioEmptyView.swift; sourceTree = "<group>"; };
 		BF0AAB6FC31543B5B799ED30 /* SubtensorPositionNoticeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorPositionNoticeView.swift; sourceTree = "<group>"; };
 		C1603EC88CB64A02A582EC17 /* SubtensorSubnetLogos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSubnetLogos.swift; sourceTree = "<group>"; };
@@ -7317,6 +7323,7 @@
 		E2523D8D18B04039BF605CE3 /* SubtensorStakingValidationFactory+Unstake.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubtensorStakingValidationFactory+Unstake.swift"; sourceTree = "<group>"; };
 		E2ADB59EA1C14D3CA86D9119 /* SubtensorSubnetCatalogueServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSubnetCatalogueServiceTests.swift; sourceTree = "<group>"; };
 		E2DE0BC7DBBD422DADF98FD6 /* SubtensorMaxApyProviderProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorMaxApyProviderProtocol.swift; sourceTree = "<group>"; };
+		BB9D8BDF9C170F748DA35075 /* SubtensorAlphaPriceProviderProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorAlphaPriceProviderProtocol.swift; sourceTree = "<group>"; };
 		E3CDA101CA8868F19660FF8A /* SubtensorPortfolioProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SubtensorPortfolioProtocols.swift; sourceTree = "<group>"; };
 		E3DC7FF4678C4CE08ED082DA /* SubtensorEarnFlowRoot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorEarnFlowRoot.swift; sourceTree = "<group>"; };
 		E4F1F73F9C7B4D40BCCE7DCE /* SubtensorValidatorInfoWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorValidatorInfoWireframe.swift; sourceTree = "<group>"; };
@@ -10256,6 +10263,7 @@
 		75E39B6469E7FF5F830E6063 /* CloudBackupSettingsViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CloudBackupSettingsViewLayout.swift; sourceTree = "<group>"; };
 		761F8E10F7E6FA8ECB54861D /* HydraFeeConversionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HydraFeeConversionTests.swift; sourceTree = "<group>"; };
 		762EB8B08E75446A9F9384E6 /* SubtensorPortfolio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorPortfolio.swift; sourceTree = "<group>"; };
+		35E30C57F4B17F4AEC6E4497 /* SubtensorAlphaPrices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorAlphaPrices.swift; sourceTree = "<group>"; };
 		76AA6A6232B1CF2D5AF74D0D /* ParaStkUnstakeInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ParaStkUnstakeInteractor.swift; sourceTree = "<group>"; };
 		770898602BA23A7300FACD2B /* PushNotificationNamespace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushNotificationNamespace.swift; sourceTree = "<group>"; };
 		770955702AC722A800A2D388 /* StakingBaseDataValidatingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingBaseDataValidatingFactory.swift; sourceTree = "<group>"; };
@@ -19332,6 +19340,7 @@
 				E2ADB59EA1C14D3CA86D9119 /* SubtensorSubnetCatalogueServiceTests.swift */,
 				2159F5ACF948482FA9CB1039 /* SubtensorValidatorPresetFactoryTests.swift */,
 				0E88C470800084895471E54E /* SubtensorMaxApyProviderTests.swift */,
+				7DD5D09560F44AE9E3A9495E /* SubtensorAlphaPriceProviderTests.swift */,
 				9AE61ADBEDEF427C882F0A45 /* SubtensorCostBasisServiceTests.swift */,
 			);
 			path = SubtensorStaking;
@@ -19410,7 +19419,9 @@
 				17B566B8D23D4A77B0E45E66 /* SubtensorConfigProvider.swift */,
 				2FFA1B88A39D1918B83B1BC0 /* SubtensorNovaFeeRateStore.swift */,
 				E2DE0BC7DBBD422DADF98FD6 /* SubtensorMaxApyProviderProtocol.swift */,
+				BB9D8BDF9C170F748DA35075 /* SubtensorAlphaPriceProviderProtocol.swift */,
 				BD60006C623841CEBDA74A51 /* SubtensorMaxApyProvider.swift */,
+				B382A1007DACF937D8DCD598 /* SubtensorAlphaPriceProvider.swift */,
 				5E90D29068564E38902DA201 /* SubtensorSubnetMarketsServiceProtocol.swift */,
 				73ED9DDB42574E8BAB793B97 /* SubtensorSubnetMarketsService.swift */,
 				A4EDA26DAEE94841A959B939 /* SubtensorCostBasisService.swift */,
@@ -20919,6 +20930,7 @@
 				6C9B82DA208C4BD096892257 /* SubtensorPriceHistory.swift */,
 				162613CB7849452298689326 /* SubtensorStakingFlowState.swift */,
 				762EB8B08E75446A9F9384E6 /* SubtensorPortfolio.swift */,
+				35E30C57F4B17F4AEC6E4497 /* SubtensorAlphaPrices.swift */,
 				AA42C2FD5C2D4047A147AB46 /* SubtensorNovaFeeConstants.swift */,
 				CD6AA7EDA27C444AAA58D060 /* SubtensorStakingOperation.swift */,
 				23A0DA6F4E1B4C329C8171B3 /* SubtensorStakingOperation+Extrinsic.swift */,
@@ -39543,6 +39555,7 @@
 				028EDCBC124047DA9631D902 /* SubtensorPriceHistory.swift in Sources */,
 				8FEC35602414420B9F879C00 /* SubtensorStakingFlowState.swift in Sources */,
 				B7811E9ED9714AF585BDB2DF /* SubtensorPortfolio.swift in Sources */,
+				1AEB073137E10A91EADD0831 /* SubtensorAlphaPrices.swift in Sources */,
 				973F0A8E05E24079804ECCE2 /* SubtensorNovaFeeConstants.swift in Sources */,
 				450F60ADD21543679FE71C90 /* SubtensorStakingOperation.swift in Sources */,
 				9C3CFFB608A44887A2628CC1 /* SubtensorValidatorDirectoryServiceProtocol.swift in Sources */,
@@ -39671,7 +39684,9 @@
 				2AA92F2543E9487A9563C217 /* SubtensorConfigProvider.swift in Sources */,
 				91F43920935DC57F69FD6CAC /* SubtensorNovaFeeRateStore.swift in Sources */,
 				F38E823485F940279D7949F2 /* SubtensorMaxApyProviderProtocol.swift in Sources */,
+				D0FFF6993980FCE9F2B8D91B /* SubtensorAlphaPriceProviderProtocol.swift in Sources */,
 				65C37609075B4EDF8D5CC5BE /* SubtensorMaxApyProvider.swift in Sources */,
+				AE0AFE6CC3685A5F7964A98F /* SubtensorAlphaPriceProvider.swift in Sources */,
 				54862EE4E27E4F1BA5A92494 /* SubtensorSubnetMarkets.swift in Sources */,
 				3F7D4E4606084D05AE2F58EA /* SubtensorSubnetMarketsServiceProtocol.swift in Sources */,
 				FFBE88C9499746FDB2550804 /* SubtensorSubnetMarketsService.swift in Sources */,
@@ -39969,6 +39984,7 @@
 				09008728FBB34750884450BD /* SubtensorSubnetCatalogueServiceTests.swift in Sources */,
 				70E195DB466646438C57904A /* SubtensorValidatorPresetFactoryTests.swift in Sources */,
 				1FB0299B8480450951C9709F /* SubtensorMaxApyProviderTests.swift in Sources */,
+				3C56008294E6EF54FC57F196 /* SubtensorAlphaPriceProviderTests.swift in Sources */,
 				AFB39B6BF75041EABDF56DC7 /* SubtensorCostBasisServiceTests.swift in Sources */,
 				DB5DF5A18CE14F12AA059E4D /* ExtrinsicStatusTests.swift in Sources */,
 				46CA7E4AA88178227C6086E8 /* HostAuthURLProtocol.swift in Sources */,
