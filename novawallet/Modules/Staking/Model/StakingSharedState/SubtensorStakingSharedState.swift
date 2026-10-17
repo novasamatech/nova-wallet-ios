@@ -6,6 +6,7 @@ struct SubtensorEarnServices {
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let earnSettings: SubtensorEarnSettingsProtocol
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
+    let alphaPriceProvider: SubtensorAlphaPriceProviderProtocol
     let yieldService: SubtensorYieldServiceProtocol
     let maxApyProvider: SubtensorMaxApyProviderProtocol
     let recommendationService: SubtensorRecommendationServiceProtocol

@@ -25,7 +25,7 @@ protocol SubnetPortfolioInteractorInputProtocol: AnyObject {
 
 protocol SubnetPortfolioInteractorOutputProtocol: AnyObject {
     func didReceive(state: Multistaking.SubtensorStakingState)
-    func didReceive(catalogue: SubtensorSubnetCatalogue?)
+    func didReceive(prices: SubtensorAlphaPrices?)
     func didReceive(subnetLogos: SubtensorSubnetLogos?)
     func didReceive(rootYields: SubtensorAlphaYields?)
     func didReceive(networkRootRate: Decimal?)

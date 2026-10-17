@@ -29,6 +29,10 @@ struct SubtensorCatalogueSubnet: Equatable {
 struct SubtensorSubnetCatalogue: Equatable {
     let subnets: [SubtensorCatalogueSubnet]
 
+    var freshTaoPerAlpha: [UInt16: Balance] {
+        subnets.reduce(into: [:]) { $0[$1.netuid] = $1.freshTaoPerAlpha }
+    }
+
     func subnet(for netuid: UInt16) -> SubtensorCatalogueSubnet? {
         subnets.first { $0.netuid == netuid }
     }
@@ -39,13 +43,5 @@ struct SubtensorSubnetCatalogue: Equatable {
         }
 
         return subnet
-    }
-
-    func taoValue(of alpha: Balance, netuid: UInt16) -> Balance? {
-        guard let price = subnet(for: netuid)?.freshTaoPerAlpha, price > 0 else {
-            return nil
-        }
-
-        return alpha * price / SubtensorStakingPallet.alphaPriceScale
     }
 }
