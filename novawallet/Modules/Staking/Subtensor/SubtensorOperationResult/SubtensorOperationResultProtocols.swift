@@ -24,7 +24,6 @@ protocol SubtensorResultInteractorInputProtocol: AnyObject {
 protocol SubtensorResultInteractorOutputProtocol: AnyObject {
     func didReceiveSubmission(result: Result<SubtensorStakingOperationOutcome, SubtensorStakingSubmissionFailure>)
     func didReachConfirmationCap()
-    func didReceiveExpectedBlockTime(_ blockTime: BlockTime)
     func didReceiveBlockTimestamp(_ date: Date, at blockHash: BlockHash)
     func didReceiveRootHoldRemainingBlocks(_ blocks: UInt64)
     func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?)
@@ -42,7 +41,6 @@ protocol SubtensorResultWireframeProtocol: SubtensorInfoSheetPresentable,
 }
 
 protocol SubtensorResultChainFactoryProtocol {
-    func createExpectedBlockTimeWrapper() -> CompoundOperationWrapper<BlockTime>
     func createBlockTimestampWrapper(at blockHash: BlockHash) -> CompoundOperationWrapper<Date>
     func createRootHoldRemainingBlocksWrapper(
         coldkey: AccountId,

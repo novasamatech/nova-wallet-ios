@@ -245,7 +245,7 @@ extension SubtensorConfirmPresenter {
     }
 
     func handOffAtTap() {
-        guard !isHandingOff, let fee, let verified = createVerifiedOperation() else {
+        guard !isHandingOff, let fee, let preflight, let verified = createVerifiedOperation() else {
             return
         }
 
@@ -265,7 +265,8 @@ extension SubtensorConfirmPresenter {
             groupHotkeyCount: group?.positions.count ?? 0,
             emptiesPosition: emptiesPosition(verified.operation, group: group),
             prices: SubtensorOperationResultPrices(taoPrice: price, alphaSpot: verified.quote?.quote.spotPrice),
-            costBasis: tracksCostBasis ? costBasis : nil
+            costBasis: tracksCostBasis ? costBasis : nil,
+            blockTime: preflight.blockTime
         )
 
         isHandingOff = true

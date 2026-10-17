@@ -166,6 +166,7 @@ struct SubtensorSetupSubnetData {
     let annualRate: Decimal?
     let isQuoteFailed: Bool
     let costBasis: SubtensorCostBasisState
+    let blockTime: BlockTime?
 }
 
 struct SubtensorStakingSetupViewModelInput {

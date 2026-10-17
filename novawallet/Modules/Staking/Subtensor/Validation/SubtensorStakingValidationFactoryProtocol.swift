@@ -92,6 +92,7 @@ protocol SubtensorStakingValidationFactoryProtocol: BaseDataValidatingFactoryPro
         currentBlock: BlockNumber?,
         lastStakeBlock: UInt64?,
         unlockInterval: UInt64?,
+        blockTime: BlockTime,
         locale: Locale
     ) -> DataValidating
 }

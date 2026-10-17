@@ -57,14 +57,14 @@ extension SubtensorStakingValidationFactory {
         currentBlock: BlockNumber?,
         lastStakeBlock: UInt64?,
         unlockInterval: UInt64?,
+        blockTime: BlockTime,
         locale: Locale
     ) -> DataValidating {
         let hold = SubtensorRootHold(interval: unlockInterval ?? 0, lastStakeBlock: lastStakeBlock ?? 0)
         let remainingBlocks = hold.remainingBlocks(at: currentBlock.map { UInt64($0) } ?? 0)
 
         return errorCondition(locale: locale, alert: { _, strings in
-            let blockTime = TimeInterval(SubtensorStakingFlowConstants.blockTimeMillis)
-            let remainingTime = (TimeInterval(remainingBlocks) * blockTime).seconds
+            let remainingTime = TimeInterval(remainingBlocks) * blockTime.timeInterval
             let eta = remainingTime.localizedDaysHoursOrFallbackMinutes(for: locale)
 
             return (strings.stakingSubtensorUnstakeLockedTitle(), strings.stakingSubtensorUnstakeLockedMessage(eta))

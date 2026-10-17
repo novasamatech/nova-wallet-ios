@@ -1,6 +1,5 @@
 import Foundation
 import Foundation_iOS
-import Operation_iOS
 
 enum SubtensorSubnetDetailsViewFactory {
     static func createView(
@@ -85,33 +84,14 @@ extension SubtensorSubnetDetailsViewFactory {
         state: SubtensorStakingSharedStateProtocol,
         operationQueue: OperationQueue
     ) -> SubnetParametersFactoryProtocol {
-        let chainId = state.stakingOption.chainAsset.chain.chainId
-        let timeline = SubtensorParametersTimeline(
-            chainId: chainId, chainRegistry: state.chainRegistry
-        )
+        let chain = state.stakingOption.chainAsset.chain
         return SubtensorSubnetParametersFactory(
             apiFactory: state.apiOperationFactory,
             runtimeConnectionStore: ChainRegistryRuntimeConnectionStore(
-                chainId: chainId, chainRegistry: state.chainRegistry
+                chainId: chain.chainId, chainRegistry: state.chainRegistry
             ),
-            timeline: timeline, operationQueue: operationQueue, logger: state.logger
+            blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain),
+            operationQueue: operationQueue, logger: state.logger
         )
-    }
-}
-
-private struct SubtensorParametersTimeline: ChainTimelineFacadeProtocol {
-    let chainId: ChainModel.Id
-    let chainRegistry: ChainRegistryProtocol
-    var timelineChainId: ChainModel.Id { chainRegistry.getChain(for: chainId)?.timelineChain ?? chainId }
-
-    func createBlockTimeOperation() -> CompoundOperationWrapper<BlockTime> {
-        do {
-            let chain = try chainRegistry.getChainOrError(for: timelineChainId)
-            let runtime = try chainRegistry.getRuntimeProviderOrError(for: timelineChainId)
-
-            return BlockTimeOperationFactory(chain: chain).createExpectedBlockTimeWrapper(from: runtime)
-        } catch {
-            return .createWithError(error)
-        }
     }
 }
