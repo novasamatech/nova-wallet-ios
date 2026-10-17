@@ -257,6 +257,11 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
         failedHoldsHotkeys = nil
         holdsStore.cancel()
 
+        guard !hotkeys.isEmpty else {
+            presenter?.didReceive(holds: [:], blockTime: nil)
+            return
+        }
+
         executeCancellable(
             wrapper: rootHoldFactory.createHoldsWrapper(coldkey: coldkey, hotkeys: hotkeys),
             inOperationQueue: operationQueue,
