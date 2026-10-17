@@ -24,6 +24,7 @@ final class SubtensorUnstakeSetupPresenter {
     var price: PriceData?
     var fee: ExtrinsicFeeProtocol?
     var preflight: SubtensorStakingPreflight?
+    var blockTime: BlockTime?
     var existentialDeposit: Balance?
     var currentBlock: BlockNumber?
     var catalogue: SubtensorSubnetCatalogue?
@@ -165,18 +166,12 @@ extension SubtensorUnstakeSetupPresenter {
         return remaining > 0 ? remaining : nil
     }
 
-    func holdRemaining(for amount: Balance?) -> TimeInterval? {
+    func holdRemainingBlocks(for amount: Balance?) -> UInt64? {
         guard let primary = group?.primaryHotkey else {
             return nil
         }
 
-        let hotkeys = exitHotkeys(for: amount) ?? [primary]
-
-        guard let blocks = remainingHoldBlocks(for: hotkeys) else {
-            return nil
-        }
-
-        return (TimeInterval(blocks) * TimeInterval(SubtensorStakingFlowConstants.blockTimeMillis)).seconds
+        return remainingHoldBlocks(for: exitHotkeys(for: amount) ?? [primary])
     }
 
     func currentSpotPrice() -> Balance? {
@@ -313,7 +308,8 @@ extension SubtensorUnstakeSetupPresenter {
             price: price,
             quote: quoteFlow.freshQuote,
             isQuoteFailed: isQuoteFailed,
-            holdRemaining: holdRemaining(for: amount),
+            holdRemainingBlocks: holdRemainingBlocks(for: amount),
+            blockTime: blockTime,
             costBasis: costBasis
         )
 

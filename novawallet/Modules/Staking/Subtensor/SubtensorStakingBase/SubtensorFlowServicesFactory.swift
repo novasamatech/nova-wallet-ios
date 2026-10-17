@@ -123,13 +123,14 @@ private extension SubtensorFlowServicesFactory {
         for state: SubtensorStakingSharedStateProtocol,
         operationQueue: OperationQueue
     ) -> SubtensorPreflightFactoryProtocol {
-        let chainId = state.stakingOption.chainAsset.chain.chainId
+        let chain = state.stakingOption.chainAsset.chain
 
         return SubtensorPreflightFactory(
             runtimeConnectionStore: ChainRegistryRuntimeConnectionStore(
-                chainId: chainId,
+                chainId: chain.chainId,
                 chainRegistry: state.chainRegistry
             ),
+            blockTimeOperationFactory: BlockTimeOperationFactory(chain: chain),
             operationQueue: operationQueue
         )
     }

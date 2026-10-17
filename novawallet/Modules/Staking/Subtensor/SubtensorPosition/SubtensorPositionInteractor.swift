@@ -257,6 +257,11 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
         failedHoldsHotkeys = nil
         holdsStore.cancel()
 
+        guard !hotkeys.isEmpty else {
+            presenter?.didReceive(holds: [:], blockTime: nil)
+            return
+        }
+
         executeCancellable(
             wrapper: rootHoldFactory.createHoldsWrapper(coldkey: coldkey, hotkeys: hotkeys),
             inOperationQueue: operationQueue,
@@ -264,8 +269,8 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
             runningCallbackIn: .main
         ) { [weak self] result in
             switch result {
-            case let .success(holds):
-                self?.presenter?.didReceive(holds: holds)
+            case let .success((holds, blockTime)):
+                self?.presenter?.didReceive(holds: holds, blockTime: blockTime)
             case let .failure(error):
                 self?.logger.warning("Subtensor position root holds unavailable: \(error)")
                 self?.failedHoldsHotkeys = hotkeys

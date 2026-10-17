@@ -158,14 +158,17 @@ extension StakingSharedStateFactory {
             maxApyProvider: processServices.createMaxApyProvider(operationQueue: syncOperationQueue, logger: logger),
             recommendationService: recommendationService,
             validatorDirectoryService: validatorDirectoryService,
-            priceHistoryService: createSubtensorPriceHistoryService(for: stakingOption, flowState: flowState),
+            priceHistoryService: createSubtensorPriceHistoryService(
+                for: stakingOption, runtimeConnectionStore: runtimeConnectionStore, flowState: flowState
+            ),
             tradeQuoteFactory: SubtensorTradeQuoteFactory(
                 operationFactory: apiOperationFactory,
                 operationQueue: syncOperationQueue,
                 feeCalculator: novaFeeCalculator
             ),
             rootHoldFactory: SubtensorRootHoldFactory(
-                runtimeConnectionStore: runtimeConnectionStore, operationQueue: syncOperationQueue
+                runtimeConnectionStore: runtimeConnectionStore, operationQueue: syncOperationQueue,
+                blockTimeOperationFactory: BlockTimeOperationFactory(chain: stakingOption.chainAsset.chain)
             ),
             validatorPresetFactory: SubtensorValidatorPresetFactory(
                 directoryService: validatorDirectoryService,
@@ -180,6 +183,7 @@ extension StakingSharedStateFactory {
 
     private func createSubtensorPriceHistoryService(
         for stakingOption: Multistaking.ChainAssetOption,
+        runtimeConnectionStore: RuntimeConnectionStoring,
         flowState: SubtensorStakingFlowStateProtocol
     ) -> SubtensorPriceHistoryServiceProtocol? {
         guard let taoPriceId = stakingOption.chainAsset.asset.priceId else {
@@ -193,6 +197,8 @@ extension StakingSharedStateFactory {
                 chainRegistry: chainRegistry,
                 operationQueue: syncOperationQueue
             ),
+            blockTimeOperationFactory: BlockTimeOperationFactory(chain: stakingOption.chainAsset.chain),
+            runtimeConnectionStore: runtimeConnectionStore,
             chainId: stakingOption.chainAsset.chain.chainId,
             taoPriceId: taoPriceId,
             operationQueue: syncOperationQueue,

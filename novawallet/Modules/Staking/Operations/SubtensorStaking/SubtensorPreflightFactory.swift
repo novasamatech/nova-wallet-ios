@@ -13,6 +13,7 @@ struct SubtensorStakingPreflight: Equatable {
     let lastStakeBlock: UInt64?
     let minStake: Balance
     let effectiveNominatorMinStake: Balance
+    let blockTime: BlockTime
     var hotkeyOwner: AccountId?
 }
 
@@ -32,15 +33,18 @@ protocol SubtensorPreflightFactoryProtocol {
 
 final class SubtensorPreflightFactory {
     let runtimeConnectionStore: RuntimeConnectionStoring
+    let blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
     let operationQueue: OperationQueue
 
     private let requestFactory: StorageRequestFactoryProtocol
 
     init(
         runtimeConnectionStore: RuntimeConnectionStoring,
+        blockTimeOperationFactory: BlockTimeOperationFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.runtimeConnectionStore = runtimeConnectionStore
+        self.blockTimeOperationFactory = blockTimeOperationFactory
         self.operationQueue = operationQueue
 
         requestFactory = StorageRequestFactory.createDefault(with: operationQueue)
@@ -143,7 +147,8 @@ private extension SubtensorPreflightFactory {
 
     func createMergeOperation(
         reads: StorageReads,
-        minStakeOperation: BaseOperation<Balance>
+        minStakeOperation: BaseOperation<Balance>,
+        blockTimeOperation: BaseOperation<BlockTime>
     ) -> ClosureOperation<SubtensorStakingPreflight> {
         ClosureOperation<SubtensorStakingPreflight> {
             let ownerResponse = try reads.owner.targetOperation.extractNoCancellableResultData().first
@@ -171,6 +176,7 @@ private extension SubtensorPreflightFactory {
                 .extractNoCancellableResultData().value?.value ?? 0
 
             let minStake = try minStakeOperation.extractNoCancellableResultData()
+            let blockTime = try blockTimeOperation.extractNoCancellableResultData()
 
             return SubtensorStakingPreflight(
                 hotkeyExists: hotkeyExists,
@@ -185,6 +191,7 @@ private extension SubtensorPreflightFactory {
                     minStake: minStake,
                     perMillionFactor: factor
                 ),
+                blockTime: blockTime,
                 hotkeyOwner: hotkeyExists ? ownerResponse?.value?.wrappedValue : nil
             )
         }
@@ -231,12 +238,20 @@ extension SubtensorPreflightFactory: SubtensorPreflightFactoryProtocol {
 
             minStakeOperation.addDependency(codingFactoryOperation)
 
-            let mergeOperation = createMergeOperation(reads: reads, minStakeOperation: minStakeOperation)
+            let blockTimeWrapper = blockTimeOperationFactory.createExpectedBlockTimeWrapper(from: runtimeProvider)
+
+            let mergeOperation = createMergeOperation(
+                reads: reads,
+                minStakeOperation: minStakeOperation,
+                blockTimeOperation: blockTimeWrapper.targetOperation
+            )
 
             reads.targetOperations.forEach { mergeOperation.addDependency($0) }
             mergeOperation.addDependency(minStakeOperation)
+            mergeOperation.addDependency(blockTimeWrapper.targetOperation)
 
-            let dependencies = [codingFactoryOperation] + reads.allOperations + [minStakeOperation]
+            let dependencies = [codingFactoryOperation] + reads.allOperations + [minStakeOperation] +
+                blockTimeWrapper.allOperations
 
             return CompoundOperationWrapper(
                 targetOperation: mergeOperation,

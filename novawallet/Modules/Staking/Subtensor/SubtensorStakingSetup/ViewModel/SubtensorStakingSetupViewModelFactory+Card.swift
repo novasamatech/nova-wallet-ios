@@ -3,7 +3,7 @@ import Foundation
 
 extension SubtensorStakingSetupViewModelFactory {
     static let secondsPerMonth: TimeInterval = 30 * 24 * 60 * 60
-    static let saferAgeBlocks: UInt64 = 6 * 30 * 24 * 60 * 60 * 1000 / SubtensorStakingFlowConstants.blockTimeMillis
+    static let saferAge: TimeInterval = 6 * secondsPerMonth
     static let deepPoolTao: Decimal = 25000
     static let calmerVolatilityScore: Decimal = 50
 
@@ -31,7 +31,7 @@ extension SubtensorStakingSetupViewModelFactory {
             isValidatorEditable: !input.mode.isLocked,
             browseTitle: input.mode.isLocked ? nil : strings.stakingSubtensorQuickSeeAll(),
             header: createHeader(for: input, locale: locale),
-            chips: input.amountState == .noTao ? [] : createChips(for: input.subnetData.rankedSubnet, locale: locale),
+            chips: input.amountState == .noTao ? [] : createChips(for: input.subnetData, locale: locale),
             receive: .trade(tradePanel?.receive?.amount, isPending: isQuotePending(for: input), locale: locale),
             swapRate: .trade(tradePanel?.swapRate, isPending: isQuotePending(for: input), locale: locale),
             networkFee: createNetworkFee(for: input, locale: locale),
@@ -89,13 +89,17 @@ extension SubtensorStakingSetupViewModelFactory {
         }
     }
 
-    func createChips(for rankedSubnet: SubtensorRankedSubnet?, locale: Locale) -> [String] {
+    func createChips(for subnetData: SubtensorSetupSubnetData, locale: Locale) -> [String] {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
+        let rankedSubnet = subnetData.rankedSubnet
         var chips: [String] = []
 
-        if let ageBlocks = rankedSubnet?.ageBlocks, ageBlocks > Self.saferAgeBlocks {
-            let ageMillis = TimeInterval(ageBlocks) * TimeInterval(SubtensorStakingFlowConstants.blockTimeMillis)
-            let months = Int((ageMillis / 1000 / Self.secondsPerMonth).rounded(.down))
+        let age = subnetData.blockTime.flatMap { blockTime in
+            rankedSubnet?.ageBlocks.map { TimeInterval($0) * blockTime.timeInterval }
+        }
+
+        if let age, age > Self.saferAge {
+            let months = Int((age / Self.secondsPerMonth).rounded(.down))
             chips.append(strings.stakingSubtensorUiChipAgeMonths(format: months))
         }
 

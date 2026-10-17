@@ -169,7 +169,7 @@ private extension SubtensorUnstakeSetupViewModelFactory {
 
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
-        return input.holdRemaining == nil
+        return input.holdRemainingBlocks == nil
             ? strings.stakingSubtensorUiUnstakeRootNote()
             : strings.stakingSubtensorUiUnstakeRootNoteHold()
     }
@@ -186,10 +186,11 @@ private extension SubtensorUnstakeSetupViewModelFactory {
     }
 
     func createHoldWarning(for input: SubtensorUnstakeSetupViewModelInput, locale: Locale) -> String? {
-        guard let remaining = input.holdRemaining else {
+        guard let blocks = input.holdRemainingBlocks, let blockTime = input.blockTime else {
             return nil
         }
 
+        let remaining = TimeInterval(blocks) * blockTime.timeInterval
         let duration = remaining.localizedDaysHoursOrFallbackMinutes(for: locale)
         let unlockDate = Date().addingTimeInterval(remaining)
         let dateText = DateFormatter.shortDateHoursMinutes.value(for: locale).string(from: unlockDate)

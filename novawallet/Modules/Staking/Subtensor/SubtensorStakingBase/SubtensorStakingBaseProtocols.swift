@@ -1,8 +1,6 @@
 import Foundation
 
 enum SubtensorStakingFlowConstants {
-    static let blockTimeMillis: BlockTime = 12000
-
     static let priceImpactWarningThreshold = BigRational(numerator: 1, denominator: 100)
 
     static let quoteStalenessWindow: TimeInterval = 15

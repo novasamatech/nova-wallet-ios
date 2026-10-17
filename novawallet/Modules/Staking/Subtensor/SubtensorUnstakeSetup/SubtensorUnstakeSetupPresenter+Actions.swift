@@ -83,7 +83,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
             let amount, amount > 0,
             let basis, basis.available > 0,
             target != nil,
-            holdRemaining(for: amount) == nil else {
+            holdRemainingBlocks(for: amount) == nil else {
             return
         }
 

@@ -25,6 +25,7 @@ struct SubtensorPositionState {
     var pendingClaimHotkeys: Set<AccountId> = []
     var holds: [AccountId: SubtensorRootHold] = [:]
     var blockNumber: BlockNumber?
+    var blockTime: BlockTime?
     var period = SubtensorPriceWidgetViewModelFactory.defaultPeriod
     var history = SubtensorSubnetHistoryState.loading {
         didSet {

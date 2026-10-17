@@ -31,6 +31,7 @@ final class SubtensorStakingSetupPresenter {
     var positionsState: Multistaking.SubtensorStakingState?
     var isPositionsSyncFailed = false
     var preflight: SubtensorStakingPreflight?
+    var blockTime: BlockTime?
     var catalogue: SubtensorSubnetCatalogue?
     var subnetLogos: SubtensorSubnetLogos?
     var rankingView: SubtensorRankedSubnets?
@@ -295,6 +296,7 @@ extension SubtensorStakingSetupPresenter: SubtensorStakingSetupPresenterProtocol
         provideAssetViewModel()
 
         interactor.setup()
+        interactor.loadBlockTime()
 
         startMode()
     }

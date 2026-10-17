@@ -96,7 +96,8 @@ extension SubtensorStakingSetupPresenter {
             rankedSubnet: matchingRankedSubnet(),
             annualRate: validatorAnnualRate(),
             isQuoteFailed: isQuoteFailed,
-            costBasis: costBasis
+            costBasis: costBasis,
+            blockTime: blockTime
         )
 
         return SubtensorStakingSetupViewModelInput(

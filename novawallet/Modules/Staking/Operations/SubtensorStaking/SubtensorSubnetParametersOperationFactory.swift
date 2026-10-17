@@ -9,7 +9,7 @@ protocol SubnetParametersFactoryProtocol {
 final class SubtensorSubnetParametersFactory {
     let apiFactory: SubtensorApiOperationFactoryProtocol
     let runtimeConnectionStore: RuntimeConnectionStoring
-    let timeline: ChainTimelineFacadeProtocol
+    let blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
     private let requestFactory: StorageRequestFactoryProtocol
@@ -17,13 +17,13 @@ final class SubtensorSubnetParametersFactory {
     init(
         apiFactory: SubtensorApiOperationFactoryProtocol,
         runtimeConnectionStore: RuntimeConnectionStoring,
-        timeline: ChainTimelineFacadeProtocol,
+        blockTimeOperationFactory: BlockTimeOperationFactoryProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.apiFactory = apiFactory
         self.runtimeConnectionStore = runtimeConnectionStore
-        self.timeline = timeline
+        self.blockTimeOperationFactory = blockTimeOperationFactory
         self.operationQueue = operationQueue
         self.logger = logger
         requestFactory = StorageRequestFactory.createDefault(with: operationQueue)
@@ -57,7 +57,8 @@ private extension SubtensorSubnetParametersFactory {
         at hash: BlockHash
     ) throws -> CompoundOperationWrapper<SubtensorSubnetParameters> {
         let engine = try runtimeConnectionStore.getConnection()
-        let coder = try runtimeConnectionStore.getRuntimeProvider().fetchCoderFactoryOperation()
+        let runtime = try runtimeConnectionStore.getRuntimeProvider()
+        let coder = runtime.fetchCoderFactoryOperation()
         let factory = { try coder.extractNoCancellableResultData() }
         let blockHash = try Data(hexString: hash)
         let netuid = { [StringScaleMapper(value: ref.netuid)] }
@@ -76,7 +77,7 @@ private extension SubtensorSubnetParametersFactory {
         )
         let reads = number.allOperations + permits.allOperations + enabled.allOperations
         reads.forEach { $0.addDependency(coder) }
-        let time = timeline.createBlockTimeOperation()
+        let time = blockTimeOperationFactory.createExpectedBlockTimeWrapper(from: runtime)
         let merge = ClosureOperation<SubtensorSubnetParameters> {
             SubtensorSubnetParameters(
                 ref: ref,
