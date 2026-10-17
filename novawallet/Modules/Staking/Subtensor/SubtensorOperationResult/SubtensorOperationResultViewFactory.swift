@@ -75,9 +75,7 @@ private extension SubtensorOperationResultViewFactory {
             chainFactory: chainFactory,
             catalogueService: state.earnServices.catalogueService,
             subnetLogosProvider: state.earnServices.subnetLogosProvider,
-            positionsSyncService: services.positionsSyncService,
             osMediator: OperatingSystemMediator(),
-            applicationHandler: ApplicationHandler(),
             schedulerFactory: { Scheduler(with: $0, callbackQueue: .main) },
             operationQueue: operationQueue,
             logger: Logger.shared

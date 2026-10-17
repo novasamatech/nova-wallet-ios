@@ -162,7 +162,7 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
         }
 
         if let yields = interactor.cachedYields() {
-            state.isRateResolved = true
+            state.isRateResolved = yields.stamp.freshness == .fresh
             state.yields = yields
         }
 

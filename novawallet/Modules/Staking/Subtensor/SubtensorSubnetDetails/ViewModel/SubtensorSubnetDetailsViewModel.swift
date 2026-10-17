@@ -34,6 +34,7 @@ struct SubtensorSubnetDetailsState {
     var isParametersLoaded = false
     var validator: SubtensorSubnetValidatorState
     var yields: SubtensorAlphaYields?
+    var isRateResolved = false
     var taoPrice: PriceData?
     var isFavorite = false
     var now = Date()

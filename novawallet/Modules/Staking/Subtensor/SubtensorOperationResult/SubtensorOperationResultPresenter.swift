@@ -272,14 +272,6 @@ extension SubtensorOperationResultPresenter: SubtensorResultInteractorOutputProt
         subnetLogos = logos
         provideViewModel()
     }
-
-    func didBecomeActive() {
-        guard case .unconfirmed = state else {
-            return
-        }
-
-        interactor.refreshPositions()
-    }
 }
 
 extension SubtensorOperationResultPresenter: CountdownTimerDelegate {
