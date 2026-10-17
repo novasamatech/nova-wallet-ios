@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-final class SubtensorValidatorInfoInteractor: AnyCancellableCleaning, SubtensorLoadDelivering {
+final class SubtensorValidatorInfoInteractor: AnyProviderAutoCleaning, SubtensorLoadDelivering {
     weak var presenter: SubtensorValInfoInteractorOutputProtocol?
 
     let target: SubtensorStakeTarget
@@ -149,6 +149,7 @@ extension SubtensorValidatorInfoInteractor: SelectedCurrencyDepending {
             return
         }
 
+        clear(streamableProvider: &priceProvider)
         subscribeTaoPrice(currency: selectedCurrency)
     }
 }
