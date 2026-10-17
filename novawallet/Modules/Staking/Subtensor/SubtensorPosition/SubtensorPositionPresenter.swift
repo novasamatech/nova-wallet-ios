@@ -97,7 +97,11 @@ private extension SubtensorPositionPresenter {
         loadValidatorIfNeeded()
 
         if state.isRoot {
-            interactor.loadRootHolds(for: group.positions.map(\.hotkey))
+            if group.positions.isEmpty {
+                state.holds = [:]
+            } else {
+                interactor.loadRootHolds(for: group.positions.map(\.hotkey))
+            }
         }
     }
 

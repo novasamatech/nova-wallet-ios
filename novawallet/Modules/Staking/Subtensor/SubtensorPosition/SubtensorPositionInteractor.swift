@@ -12,7 +12,6 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning {
     let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
     let validatorFactory: SubtensorValidatorPresetFactoryProtocol
     let rootHoldFactory: SubtensorRootHoldFactoryProtocol
-    let runtimeProvider: RuntimeCodingServiceProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
@@ -49,7 +48,6 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning {
         priceHistoryService: SubtensorPriceHistoryServiceProtocol?,
         validatorFactory: SubtensorValidatorPresetFactoryProtocol,
         rootHoldFactory: SubtensorRootHoldFactoryProtocol,
-        runtimeProvider: RuntimeCodingServiceProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue,
@@ -63,7 +61,6 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning {
         self.priceHistoryService = priceHistoryService
         self.validatorFactory = validatorFactory
         self.rootHoldFactory = rootHoldFactory
-        self.runtimeProvider = runtimeProvider
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.operationQueue = operationQueue
         self.logger = logger
@@ -260,26 +257,8 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
         failedHoldsHotkeys = nil
         holdsStore.cancel()
 
-        let holdsWrapper = rootHoldFactory.createHoldsWrapper(coldkey: coldkey, hotkeys: hotkeys)
-        let blockTimeWrapper = BlockTimeOperationFactory(chain: chainAsset.chain).createExpectedBlockTimeWrapper(
-            from: runtimeProvider
-        )
-
-        let mergeOperation = ClosureOperation<([AccountId: SubtensorRootHold], BlockTime)> {
-            (
-                try holdsWrapper.targetOperation.extractNoCancellableResultData(),
-                try blockTimeWrapper.targetOperation.extractNoCancellableResultData()
-            )
-        }
-
-        mergeOperation.addDependency(holdsWrapper.targetOperation)
-        mergeOperation.addDependency(blockTimeWrapper.targetOperation)
-
         executeCancellable(
-            wrapper: CompoundOperationWrapper(
-                targetOperation: mergeOperation,
-                dependencies: holdsWrapper.allOperations + blockTimeWrapper.allOperations
-            ),
+            wrapper: rootHoldFactory.createHoldsWrapper(coldkey: coldkey, hotkeys: hotkeys),
             inOperationQueue: operationQueue,
             backingCallIn: holdsStore,
             runningCallbackIn: .main

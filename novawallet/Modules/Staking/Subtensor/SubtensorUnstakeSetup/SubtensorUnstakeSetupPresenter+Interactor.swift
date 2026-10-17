@@ -163,6 +163,8 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtoc
 
     func didReceivePreflight(_ preflight: SubtensorStakingPreflight) {
         self.preflight = preflight
+        blockTime = preflight.blockTime
+        provideViewModel()
     }
 
     func didReceiveExistentialDeposit(_ deposit: Balance) {
