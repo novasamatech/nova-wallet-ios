@@ -208,12 +208,17 @@ private extension SubtensorStakingValidationFactoryProtocol {
         for dep: SubtensorUnstakeValidatingDep,
         locale: Locale
     ) -> [DataValidating] {
+        guard let preflight = dep.preflight else {
+            return []
+        }
+
         guard let groupExitHolds = dep.groupExitHolds else {
             return [
                 rootUnlockIntervalElapsed(
                     currentBlock: dep.currentBlock,
-                    lastStakeBlock: dep.preflight?.lastStakeBlock,
-                    unlockInterval: dep.preflight?.rootStakeUnlockInterval,
+                    lastStakeBlock: preflight.lastStakeBlock,
+                    unlockInterval: preflight.rootStakeUnlockInterval,
+                    blockTime: preflight.blockTime,
                     locale: locale
                 )
             ]
@@ -224,6 +229,7 @@ private extension SubtensorStakingValidationFactoryProtocol {
                 currentBlock: dep.currentBlock,
                 lastStakeBlock: hold.lastStakeBlock,
                 unlockInterval: hold.interval,
+                blockTime: preflight.blockTime,
                 locale: locale
             )
         }

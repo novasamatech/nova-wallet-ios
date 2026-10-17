@@ -71,10 +71,8 @@ private extension SubtensorPositionViewModelFactory {
         return SubtensorSubnetNaming.isolatedLeftToRight(text)
     }
 
-    func formatDuration(blocks: UInt64, locale: Locale) -> String {
-        let time = (TimeInterval(blocks) * TimeInterval(SubtensorStakingFlowConstants.blockTimeMillis)).seconds
-
-        return time.localizedDaysHoursOrFallbackMinutes(for: locale)
+    func formatDuration(blocks: UInt64, blockTime: BlockTime, locale: Locale) -> String {
+        (TimeInterval(blocks) * blockTime.timeInterval).localizedDaysHoursOrFallbackMinutes(for: locale)
     }
 
     func createTitle(for state: SubtensorPositionState, locale: Locale) -> String? {
@@ -258,15 +256,20 @@ private extension SubtensorPositionViewModelFactory {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         if state.isRoot {
-            guard let remaining = state.holdRemainingBlocks, let hold = state.primaryHold else {
+            guard
+                let remaining = state.holdRemainingBlocks,
+                let hold = state.primaryHold,
+                let blockTime = state.blockTime else {
                 return nil
             }
 
             return SubtensorPositionNoticeViewModel(
                 title: strings.stakingSubtensorUiPositionHoldTitle(),
-                timeLeft: strings.commonTimeLeftFormat(formatDuration(blocks: remaining, locale: locale)),
+                timeLeft: strings.commonTimeLeftFormat(
+                    formatDuration(blocks: remaining, blockTime: blockTime, locale: locale)
+                ),
                 message: strings.stakingSubtensorUiPositionHoldMessageFormat(
-                    formatDuration(blocks: hold.interval, locale: locale)
+                    formatDuration(blocks: hold.interval, blockTime: blockTime, locale: locale)
                 )
             )
         }

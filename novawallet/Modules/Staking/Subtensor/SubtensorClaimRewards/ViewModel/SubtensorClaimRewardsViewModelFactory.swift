@@ -38,12 +38,6 @@ private extension SubtensorClaimRewardsViewModelFactory {
         ).value(for: locale)
     }
 
-    func formatDuration(blocks: UInt64, locale: Locale) -> String {
-        let time = (TimeInterval(blocks) * TimeInterval(SubtensorStakingFlowConstants.blockTimeMillis)).seconds
-
-        return time.localizedDaysHoursOrFallbackMinutes(for: locale)
-    }
-
     func createAmount(for input: SubtensorClaimRewardsViewModelInput, locale: Locale) -> BalanceViewModelProtocol {
         let viewModel = balanceViewModelFactory.balanceFromPrice(
             input.preview.redeemable.decimal(assetInfo: taoInfo),
@@ -75,11 +69,11 @@ private extension SubtensorClaimRewardsViewModelFactory {
 
         var sentences = [strings.stakingSubtensorClaimRestakeHintFormat(input.validatorName)]
 
-        if let unlockInterval = input.unlockInterval, unlockInterval > 0 {
+        if let unlockTime = input.unlockTime, unlockTime > 0 {
             sentences.append(
                 strings.stakingSubtensorClaimHoldHintFormat(
                     input.validatorName,
-                    formatDuration(blocks: unlockInterval, locale: locale)
+                    unlockTime.localizedDaysHoursOrFallbackMinutes(for: locale)
                 )
             )
         }

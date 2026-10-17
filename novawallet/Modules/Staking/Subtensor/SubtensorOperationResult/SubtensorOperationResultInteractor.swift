@@ -103,21 +103,6 @@ private extension SubtensorOperationResultInteractor {
         }
     }
 
-    func provideExpectedBlockTime() {
-        execute(
-            wrapper: chainFactory.createExpectedBlockTimeWrapper(),
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(blockTime):
-                self?.presenter?.didReceiveExpectedBlockTime(blockTime)
-            case let .failure(error):
-                self?.logger.warning("Expected block time unavailable: \(error)")
-            }
-        }
-    }
-
     func provideSubnetData() {
         guard loadsSubnetData else {
             return
@@ -157,7 +142,6 @@ extension SubtensorOperationResultInteractor: SubtensorResultInteractorInputProt
     func setup() {
         applicationHandler.delegate = self
 
-        provideExpectedBlockTime()
         provideSubnetData()
         submit()
     }

@@ -14,7 +14,6 @@ final class SubtensorOperationResultPresenter {
     private(set) var state: SubtensorOperationResultState = .progress
     private var catalogue: SubtensorSubnetCatalogue?
     private var subnetLogos: SubtensorSubnetLogos?
-    private var expectedBlockTime: BlockTime = SubtensorStakingFlowConstants.blockTimeMillis
     private var countdownTimer: CountdownTimer?
     private var progressStartedAt = Date()
 
@@ -41,7 +40,7 @@ final class SubtensorOperationResultPresenter {
 
 private extension SubtensorOperationResultPresenter {
     var expectedBlockDuration: TimeInterval {
-        TimeInterval(expectedBlockTime).seconds
+        request.blockTime.timeInterval
     }
 
     func provideViewModel() {
@@ -239,17 +238,6 @@ extension SubtensorOperationResultPresenter: SubtensorResultInteractorOutputProt
         }
 
         changeState(.unconfirmed(time: Date()))
-    }
-
-    func didReceiveExpectedBlockTime(_ blockTime: BlockTime) {
-        expectedBlockTime = blockTime
-
-        guard case .progress = state else {
-            return
-        }
-
-        startCountdown()
-        provideViewModel()
     }
 
     func didReceiveBlockTimestamp(_ date: Date, at blockHash: BlockHash) {
