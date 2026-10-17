@@ -152,9 +152,9 @@ extension SubtensorPortfolioPresenter: SubnetPortfolioInteractorOutputProtocol {
         provideViewModel()
     }
 
-    func didReceive(catalogue: SubtensorSubnetCatalogue?) {
+    func didReceive(prices: SubtensorAlphaPrices?) {
         state.isCatalogueResolved = true
-        state.catalogue = catalogue
+        state.prices = prices
 
         requestPriceDataIfNeeded()
         provideViewModel()
