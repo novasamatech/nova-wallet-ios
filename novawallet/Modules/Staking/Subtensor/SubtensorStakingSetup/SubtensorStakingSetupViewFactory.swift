@@ -72,7 +72,10 @@ private extension SubtensorStakingSetupViewFactory {
         }
 
         let chainAsset = state.stakingOption.chainAsset
-        let interactor = SubtensorStakingSetupInteractor(flowServices: services, state: state, logger: Logger.shared)
+        let interactor = SubtensorStakingSetupInteractor(
+            flowServices: services, state: state,
+            blockTimeOperationFactory: BlockTimeOperationFactory(chain: chainAsset.chain), logger: Logger.shared
+        )
         let wireframe = SubtensorStakingSetupWireframe(state: state)
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: services.currencyManager)
         let localizationManager = LocalizationManager.shared
@@ -114,10 +117,7 @@ private extension SubtensorStakingSetupViewFactory {
             rootEntryPresentation: rootEntryPresentation
         )
 
-        let view = SubtensorStakingSetupViewController(
-            presenter: presenter,
-            localizationManager: localizationManager
-        )
+        let view = SubtensorStakingSetupViewController(presenter: presenter, localizationManager: localizationManager)
 
         presenter.view = view
         interactor.presenter = presenter

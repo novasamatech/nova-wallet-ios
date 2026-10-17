@@ -296,6 +296,7 @@ extension SubtensorStakingSetupPresenter: SubtensorStakingSetupPresenterProtocol
         provideAssetViewModel()
 
         interactor.setup()
+        interactor.loadBlockTime()
 
         startMode()
     }
