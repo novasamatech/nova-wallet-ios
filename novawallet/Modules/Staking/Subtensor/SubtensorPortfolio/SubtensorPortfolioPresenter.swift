@@ -124,6 +124,7 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioPresenterProtocol {
         isRootYieldsRequested = false
         isNetworkRootRateRequested = false
         interactor.refresh()
+        requestRootRateIfNeeded()
     }
 
     func selectChartPoint(at index: Int?) {
