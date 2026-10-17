@@ -10,6 +10,7 @@ struct SubtensorFlowServices {
     let tradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+    let blockNumberSubscriptionFactory: BlockNumberCallbackSubscriptionFactoryProtocol
     let currencyManager: CurrencyManagerProtocol
     let operationQueue: OperationQueue
 
@@ -68,6 +69,11 @@ enum SubtensorFlowServicesFactory {
             tradeQuoteFactory: state.earnServices.tradeQuoteFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            blockNumberSubscriptionFactory: BlockNumberCallbackSubscriptionFactory(
+                chainRegistry: state.chainRegistry,
+                operationQueue: operationQueue,
+                workingQueue: .main
+            ),
             currencyManager: currencyManager,
             operationQueue: operationQueue
         )

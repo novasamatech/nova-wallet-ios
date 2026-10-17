@@ -213,6 +213,7 @@ final class SubtensorPickCardSkeletonView: UIView, SkeletonableView {
     var hidingViews: [UIView] { [] }
 
     private var placeholders: [UIView] = []
+    private var contentView = UIView()
     private var isLoading = false
 
     override init(frame: CGRect) {
@@ -235,8 +236,14 @@ final class SubtensorPickCardSkeletonView: UIView, SkeletonableView {
         super.layoutSubviews()
 
         if isLoading {
+            layoutPlaceholders(in: contentView)
             updateLoadingState()
         }
+    }
+
+    private func layoutPlaceholders(in view: UIView) {
+        view.layoutIfNeeded()
+        view.subviews.forEach(layoutPlaceholders)
     }
 
     func setLoading(_ loading: Bool) {
@@ -334,6 +341,7 @@ private extension SubtensorPickCardSkeletonView {
             [headerView, chipsView, rowsView, captionLabel]
         )
         contentView.setCustomSpacing(Constants.captionSpacing, after: rowsView)
+        self.contentView = contentView
 
         addSubview(contentView)
         contentView.snp.makeConstraints { $0.edges.equalToSuperview() }
