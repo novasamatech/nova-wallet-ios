@@ -126,6 +126,8 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
     }
 
     func loadRootYields() {
+        rootRateStore.cancel()
+
         executeCancellable(
             wrapper: yieldService.createAlphaYieldsWrapper(for: SubtensorStakingPallet.rootNetuid),
             inOperationQueue: operationQueue,
@@ -143,6 +145,8 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
     }
 
     func loadNetworkRootRate() {
+        networkRootRateStore.cancel()
+
         executeCancellable(
             wrapper: yieldService.createNetworkRootRateWrapper(),
             inOperationQueue: operationQueue,
