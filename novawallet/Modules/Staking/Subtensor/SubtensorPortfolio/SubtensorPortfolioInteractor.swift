@@ -171,13 +171,14 @@ private extension SubtensorPortfolioInteractor {
         taoPriceId: AssetModel.PriceId
     ) -> CompoundOperationWrapper<SubtensorPortfolioPriceHistories> {
         let currency = selectedCurrency
+        let coingeckoFactory = state.flowState.coingeckoOperationFactory
 
         let historyWrapper = bittensorApiFactory.createPortfolioHistoryWrapper(
             accountSubject: accountSubject,
             period: historyPeriod
         )
 
-        let taoWrapper = currency.id == Currency.usd.id ? nil : state.flowState.priceSeriesCache.createSeriesWrapper(
+        let taoOperation = currency.id == Currency.usd.id ? nil : coingeckoFactory.fetchPriceHistory(
             for: taoPriceId,
             currency: currency,
             period: period.sourceCoingeckoPeriod
@@ -187,14 +188,14 @@ private extension SubtensorPortfolioInteractor {
             SubtensorPortfolioPriceHistories(
                 period: period,
                 portfolio: try historyWrapper.targetOperation.extractNoCancellableResultData().value,
-                taoFiat: try taoWrapper?.targetOperation.extractNoCancellableResultData()
+                taoFiat: try taoOperation?.extractNoCancellableResultData()
             )
         }
 
         historiesOperation.addDependency(historyWrapper.targetOperation)
-        taoWrapper.map { historiesOperation.addDependency($0.targetOperation) }
+        taoOperation.map { historiesOperation.addDependency($0) }
 
-        let dependencies = historyWrapper.allOperations + (taoWrapper?.allOperations ?? [])
+        let dependencies = historyWrapper.allOperations + (taoOperation.map { [$0] } ?? [])
 
         return CompoundOperationWrapper(targetOperation: historiesOperation, dependencies: dependencies)
     }

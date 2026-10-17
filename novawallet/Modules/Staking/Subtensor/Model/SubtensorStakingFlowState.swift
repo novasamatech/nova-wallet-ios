@@ -1,14 +1,14 @@
 import Foundation
 
 protocol SubtensorStakingFlowStateProtocol: AnyObject {
-    var priceSeriesCache: SubtensorPriceSeriesProviding { get }
+    var coingeckoOperationFactory: CoingeckoOperationFactoryProtocol { get }
     var validatorFilterSession: SubtensorValidatorFilterSession { get }
     var pendingRootClaims: SubtensorPendingRootClaimsProtocol { get }
     var assetListObservable: AssetListModelObservable { get }
 }
 
 final class SubtensorStakingFlowState: SubtensorStakingFlowStateProtocol {
-    let priceSeriesCache: SubtensorPriceSeriesProviding
+    let coingeckoOperationFactory: CoingeckoOperationFactoryProtocol
     let validatorFilterSession = SubtensorValidatorFilterSession()
     let pendingRootClaims: SubtensorPendingRootClaimsProtocol = SubtensorPendingRootClaims()
     let assetListObservable: AssetListModelObservable
@@ -17,7 +17,7 @@ final class SubtensorStakingFlowState: SubtensorStakingFlowStateProtocol {
         coingeckoOperationFactory: CoingeckoOperationFactoryProtocol,
         assetListObservable: AssetListModelObservable
     ) {
-        priceSeriesCache = SubtensorPriceSeriesCache(coingeckoOperationFactory: coingeckoOperationFactory)
+        self.coingeckoOperationFactory = coingeckoOperationFactory
         self.assetListObservable = assetListObservable
     }
 }
