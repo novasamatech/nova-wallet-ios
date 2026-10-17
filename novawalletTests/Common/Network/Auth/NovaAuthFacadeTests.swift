@@ -1,28 +1,27 @@
 import XCTest
-import Operation_iOS
+import Cuckoo
 import NovaAuth
+import Operation_iOS
 @testable import novawallet
 
-private final class AuthConfigProvider: GlobalConfigProviding {
-    private let snapshot: GlobalConfigSnapshot = {
+final class NovaAuthFacadeTests: XCTestCase {
+    func testAvailabilityReadAndObserverRegistrationDoNotWaitForAnActivatingAdoption() {
         let url = URL(string: "https://first.test")!
         let config = GlobalConfig(multiStakingApiUrl: url, multisigsApiUrl: url, proxyApiUrl: url, infraUrl: url)
-        return GlobalConfigSnapshot(config: config, revision: 1)
-    }()
-
-    func addSnapshotObserver(_: AnyObject, closure _: @escaping (GlobalConfigSnapshot) -> Void) {}
-    func createConfigSnapshotWrapper() -> CompoundOperationWrapper<GlobalConfigSnapshot> { .createWithResult(snapshot) }
-    func createConfigWrapper() -> CompoundOperationWrapper<GlobalConfig> { .createWithResult(snapshot.config) }
-}
-
-final class NovaAuthFacadeTests: XCTestCase {
-    func testRevisionReadAndObserverRegistrationDoNotWaitForAnActivatingAdoption() throws {
-        let harness = try HostAuthHarness(protocolClass: HostAuthURLProtocol.self)
+        let configProvider = MockGlobalConfigProviding()
+        let client = MockNovaAuthClientProtocol()
+        stub(configProvider) { stub in
+            when(stub.addSnapshotObserver(any(), closure: any())).thenDoNothing()
+            when(stub.createConfigSnapshotWrapper()).thenReturn(.createWithResult(.init(config: config, revision: 1)))
+        }
+        stub(client) { stub in
+            when(stub.isSupported.get).thenReturn(true)
+        }
         let activating = DispatchSemaphore(value: 0)
         let releaseActivation = DispatchSemaphore(value: 0)
         let provider = NovaAuthFacade(
-            configProvider: AuthConfigProvider(),
-            client: harness.client,
+            configProvider: configProvider,
+            client: client,
             contextInvalidationID: { UUID() },
             activate: { _ in
                 activating.signal()
@@ -30,23 +29,21 @@ final class NovaAuthFacadeTests: XCTestCase {
                 throw NovaAuthError.unsupported
             }
         )
-        let transport = BittensorAuthorizedTransport(provider: provider, operationQueue: OperationQueue())
         let adoptionQueue = OperationQueue()
         adoptionQueue.addOperations(provider.createEndpointWrapper().allOperations, waitUntilFinished: false)
         XCTAssertEqual(activating.wait(timeout: .now() + 5), .success)
 
-        let revisionRead = DispatchSemaphore(value: 0)
-        let notified = expectation(description: "observers registered during the adoption notified")
+        let registered = DispatchSemaphore(value: 0)
+        let notified = expectation(description: "observer registered during the adoption notified")
         DispatchQueue.global().async {
-            _ = transport.invalidationRevision
-            _ = transport.addInvalidationObserver(self) { _ in notified.fulfill() }
-            revisionRead.signal()
+            _ = provider.endpointAvailability
+            _ = provider.addAvailabilityObserver(self) { _ in notified.fulfill() }
+            registered.signal()
         }
 
-        XCTAssertEqual(revisionRead.wait(timeout: .now() + 2), .success)
+        XCTAssertEqual(registered.wait(timeout: .now() + 2), .success)
         releaseActivation.signal()
-        let adopted = expectation(description: "adoption finished")
-        adoptionQueue.addBarrierBlock { adopted.fulfill() }
-        wait(for: [notified, adopted], timeout: 5)
+        wait(for: [notified], timeout: 5)
+        adoptionQueue.waitUntilAllOperationsAreFinished()
     }
 }
