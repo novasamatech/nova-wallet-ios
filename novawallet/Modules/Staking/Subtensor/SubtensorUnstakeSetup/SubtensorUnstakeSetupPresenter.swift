@@ -24,6 +24,7 @@ final class SubtensorUnstakeSetupPresenter {
     var price: PriceData?
     var fee: ExtrinsicFeeProtocol?
     var preflight: SubtensorStakingPreflight?
+    var blockTime: BlockTime?
     var existentialDeposit: Balance?
     var currentBlock: BlockNumber?
     var catalogue: SubtensorSubnetCatalogue?
@@ -308,7 +309,7 @@ extension SubtensorUnstakeSetupPresenter {
             quote: quoteFlow.freshQuote,
             isQuoteFailed: isQuoteFailed,
             holdRemainingBlocks: holdRemainingBlocks(for: amount),
-            blockTime: preflight?.blockTime,
+            blockTime: blockTime,
             costBasis: costBasis
         )
 

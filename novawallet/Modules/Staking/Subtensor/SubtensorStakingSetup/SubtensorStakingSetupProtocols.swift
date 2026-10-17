@@ -25,6 +25,7 @@ protocol SubtensorStakingSetupPresenterProtocol: AnyObject {
 protocol SubtensorSetupInteractorInputProtocol: SubtensorStakingBaseInteractorInputProtocol {
     func loadQuickPickSnapshot(for order: SubtensorQuickPickOrder)
     func cancelQuickPickSnapshot()
+    func loadBlockTime()
     func cachedRankingView() -> HTTPCachePeek<SubtensorRankedSubnets>
     func cachedYields(netuid: UInt16) -> HTTPCachePeek<SubtensorAlphaYields>
     func presetValidator(on subnet: SubtensorSubnetRef, existingHotkey: AccountId?)
@@ -43,6 +44,7 @@ protocol SubtensorSetupInteractorOutputProtocol: SubtensorStakingBaseInteractorO
     func didFailSubnet(_ error: Error)
     func didReceiveYields(_ yields: SubtensorAlphaYields?, netuid: UInt16)
     func didReceiveRankingView(_ rankingView: SubtensorRankedSubnets?)
+    func didReceiveBlockTime(_ blockTime: BlockTime)
 }
 
 protocol SubtensorStakingSetupWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,

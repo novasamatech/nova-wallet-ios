@@ -6,7 +6,7 @@ protocol SubtensorRootHoldFactoryProtocol {
     func createHoldsWrapper(
         coldkey: AccountId,
         hotkeys: [AccountId]
-    ) -> CompoundOperationWrapper<[AccountId: SubtensorRootHold]>
+    ) -> CompoundOperationWrapper<([AccountId: SubtensorRootHold], BlockTime)>
 }
 
 extension SubtensorRootHold {
@@ -20,13 +20,19 @@ extension SubtensorRootHold {
 final class SubtensorRootHoldFactory {
     let runtimeConnectionStore: RuntimeConnectionStoring
     let operationQueue: OperationQueue
+    let blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
 
     private let requestFactory: StorageRequestFactoryProtocol
     private let blockHashOperationFactory = BlockHashOperationFactory()
 
-    init(runtimeConnectionStore: RuntimeConnectionStoring, operationQueue: OperationQueue) {
+    init(
+        runtimeConnectionStore: RuntimeConnectionStoring,
+        operationQueue: OperationQueue,
+        blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
+    ) {
         self.runtimeConnectionStore = runtimeConnectionStore
         self.operationQueue = operationQueue
+        self.blockTimeOperationFactory = blockTimeOperationFactory
 
         requestFactory = StorageRequestFactory.createDefault(with: operationQueue)
     }
@@ -81,17 +87,15 @@ extension SubtensorRootHoldFactory: SubtensorRootHoldFactoryProtocol {
     func createHoldsWrapper(
         coldkey: AccountId,
         hotkeys: [AccountId]
-    ) -> CompoundOperationWrapper<[AccountId: SubtensorRootHold]> {
+    ) -> CompoundOperationWrapper<([AccountId: SubtensorRootHold], BlockTime)> {
         let distinctHotkeys = hotkeys.distinct()
-
-        guard !distinctHotkeys.isEmpty else {
-            return .createWithResult([:])
-        }
 
         do {
             let engine = try runtimeConnectionStore.getConnection()
-            let codingFactoryOperation = try runtimeConnectionStore.getRuntimeProvider().fetchCoderFactoryOperation()
+            let runtimeProvider = try runtimeConnectionStore.getRuntimeProvider()
+            let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
             let blockHashWrapper = blockHashOperationFactory.createBestBlockHashWrapper(connection: engine)
+            let blockTimeWrapper = blockTimeOperationFactory.createExpectedBlockTimeWrapper(from: runtimeProvider)
 
             let holdsWrapper = OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
                 try self.createHoldsWrapper(
@@ -106,7 +110,20 @@ extension SubtensorRootHoldFactory: SubtensorRootHoldFactoryProtocol {
             holdsWrapper.addDependency(wrapper: blockHashWrapper)
             holdsWrapper.addDependency(operations: [codingFactoryOperation])
 
-            return holdsWrapper.insertingHead(operations: [codingFactoryOperation] + blockHashWrapper.allOperations)
+            let mergeOperation = ClosureOperation<([AccountId: SubtensorRootHold], BlockTime)> {
+                (
+                    try holdsWrapper.targetOperation.extractNoCancellableResultData(),
+                    try blockTimeWrapper.targetOperation.extractNoCancellableResultData()
+                )
+            }
+
+            mergeOperation.addDependency(holdsWrapper.targetOperation)
+            mergeOperation.addDependency(blockTimeWrapper.targetOperation)
+
+            return holdsWrapper
+                .insertingHead(operations: [codingFactoryOperation] + blockHashWrapper.allOperations)
+                .insertingHead(operations: blockTimeWrapper.allOperations)
+                .insertingTail(operation: mergeOperation)
         } catch {
             return .createWithError(error)
         }

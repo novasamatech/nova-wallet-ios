@@ -328,7 +328,7 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
         provideViewModel()
     }
 
-    func didReceive(holds: [AccountId: SubtensorRootHold], blockTime: BlockTime) {
+    func didReceive(holds: [AccountId: SubtensorRootHold], blockTime: BlockTime?) {
         state.holds = holds
         state.blockTime = blockTime
         provideViewModel()

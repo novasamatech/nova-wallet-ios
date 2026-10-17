@@ -75,7 +75,7 @@ extension SubtensorResultChainFactory: SubtensorResultChainFactoryProtocol {
         let blockNumberWrapper = blockNumberOperationFactory.createWrapper(for: chain.chainId)
 
         let mapOperation = ClosureOperation<UInt64> {
-            let holds = try holdsWrapper.targetOperation.extractNoCancellableResultData()
+            let (holds, _) = try holdsWrapper.targetOperation.extractNoCancellableResultData()
             let head = try UInt64(blockNumberWrapper.targetOperation.extractNoCancellableResultData())
 
             return holds.values.map { $0.remainingBlocks(at: head) }.max() ?? 0
