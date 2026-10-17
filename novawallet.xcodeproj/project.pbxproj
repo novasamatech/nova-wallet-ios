@@ -2230,17 +2230,11 @@
 		2D7978752E81EF730049F02A /* SwipeGovBannerContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7978742E81EF730049F02A /* SwipeGovBannerContentView.swift */; };
 		2D7978792E82A00F0049F02A /* NftSecureImageFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7978782E82A00F0049F02A /* NftSecureImageFactory.swift */; };
 		2D7A55012E5D000100000002 /* SubtensorStakingPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A55012E5D000100000001 /* SubtensorStakingPallet.swift */; };
-		2D7A55012E5D000100000003 /* SubtensorStakingPallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A55012E5D000100000001 /* SubtensorStakingPallet.swift */; };
 		2D7A55022E5D000100000002 /* SubtensorStakingPallet+StoragePaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A55022E5D000100000001 /* SubtensorStakingPallet+StoragePaths.swift */; };
-		2D7A55022E5D000100000003 /* SubtensorStakingPallet+StoragePaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A55022E5D000100000001 /* SubtensorStakingPallet+StoragePaths.swift */; };
 		2D7A55032E5D000100000002 /* SubtensorStakingPallet+StakeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A55032E5D000100000001 /* SubtensorStakingPallet+StakeInfo.swift */; };
-		2D7A55032E5D000100000003 /* SubtensorStakingPallet+StakeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A55032E5D000100000001 /* SubtensorStakingPallet+StakeInfo.swift */; };
 		2D7A55042E5D000100000002 /* SubtensorStakingPallet+DynamicInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A55042E5D000100000001 /* SubtensorStakingPallet+DynamicInfo.swift */; };
-		2D7A55042E5D000100000003 /* SubtensorStakingPallet+DynamicInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A55042E5D000100000001 /* SubtensorStakingPallet+DynamicInfo.swift */; };
 		2D7A55052E5D000100000002 /* SubtensorStakingPallet+DelegateInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A55052E5D000100000001 /* SubtensorStakingPallet+DelegateInfo.swift */; };
-		2D7A55052E5D000100000003 /* SubtensorStakingPallet+DelegateInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A55052E5D000100000001 /* SubtensorStakingPallet+DelegateInfo.swift */; };
 		2D7A55062E5D000100000002 /* SubtensorStakingPallet+Swap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A55062E5D000100000001 /* SubtensorStakingPallet+Swap.swift */; };
-		2D7A55062E5D000100000003 /* SubtensorStakingPallet+Swap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A55062E5D000100000001 /* SubtensorStakingPallet+Swap.swift */; };
 		2D7A55072E5D000100000002 /* SubtensorStakingPallet+RuntimeApis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A55072E5D000100000001 /* SubtensorStakingPallet+RuntimeApis.swift */; };
 		2D7A55082E5D000100000002 /* SubtensorApiOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A55082E5D000100000001 /* SubtensorApiOperationFactory.swift */; };
 		2D7A55092E5D000100000002 /* SubtensorFixtureDecoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A55092E5D000100000001 /* SubtensorFixtureDecoding.swift */; };
@@ -32977,12 +32971,6 @@
 				2DEDEFD32E4D1594008F07B2 /* SessionPallet.swift in Sources */,
 				2DEDEFD42E4D1594008F07B2 /* SessionPallet+Path.swift in Sources */,
 				2DEDEFD52E4D1594008F07B2 /* MythosStakingPallet.swift in Sources */,
-				2D7A55012E5D000100000003 /* SubtensorStakingPallet.swift in Sources */,
-				2D7A55022E5D000100000003 /* SubtensorStakingPallet+StoragePaths.swift in Sources */,
-				2D7A55032E5D000100000003 /* SubtensorStakingPallet+StakeInfo.swift in Sources */,
-				2D7A55042E5D000100000003 /* SubtensorStakingPallet+DynamicInfo.swift in Sources */,
-				2D7A55052E5D000100000003 /* SubtensorStakingPallet+DelegateInfo.swift in Sources */,
-				2D7A55062E5D000100000003 /* SubtensorStakingPallet+Swap.swift in Sources */,
 				2DEDEFD62E4D1594008F07B2 /* MythosStaking+StoragePath.swift in Sources */,
 				2DEDEFD72E4D1594008F07B2 /* MythosStakingPallet+Freezes.swift in Sources */,
 				2DEDEFD82E4D1594008F07B2 /* MythosStakingPallet+Candidates.swift in Sources */,
