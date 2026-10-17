@@ -43,7 +43,8 @@ struct SubtensorUnstakeSetupViewModelInput {
     let price: PriceData?
     let quote: SubtensorTradeQuote?
     let isQuoteFailed: Bool
-    let holdRemaining: TimeInterval?
+    let holdRemainingBlocks: UInt64?
+    let blockTime: BlockTime?
     let costBasis: SubtensorCostBasisState
 
     var isRoot: Bool {
@@ -63,6 +64,6 @@ struct SubtensorUnstakeSetupViewModelInput {
     }
 
     var canProceed: Bool {
-        basis != nil && target != nil && hasAmount && !isFullyLocked && holdRemaining == nil
+        basis != nil && target != nil && hasAmount && !isFullyLocked && holdRemainingBlocks == nil
     }
 }
