@@ -19,18 +19,15 @@ final class SubtensorValidatorSelectInteractor: AnyCancellableCleaning, Subtenso
 
     init(
         target: SubtensorStakeTarget,
-        directoryService: SubtensorValidatorDirectoryServiceProtocol,
-        yieldService: SubtensorYieldServiceProtocol,
-        catalogueService: SubtensorSubnetCatalogueServiceProtocol,
-        recommendationService: SubtensorRecommendationServiceProtocol,
+        state: SubtensorStakingSharedStateProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.target = target
-        self.directoryService = directoryService
-        self.yieldService = yieldService
-        self.catalogueService = catalogueService
-        self.recommendationService = recommendationService
+        directoryService = state.earnServices.validatorDirectoryService
+        yieldService = state.earnServices.yieldService
+        catalogueService = state.earnServices.catalogueService
+        recommendationService = state.earnServices.recommendationService
         self.operationQueue = operationQueue
         self.logger = logger
     }

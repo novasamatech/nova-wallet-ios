@@ -26,26 +26,21 @@ final class SubtensorSubnetDetailsInteractor: SubtensorLoadDelivering {
 
     init(
         subnet: SubtensorSubnetRef,
-        chainAsset: ChainAsset,
-        priceHistoryService: SubtensorPriceHistoryServiceProtocol?,
+        state: SubtensorStakingSharedStateProtocol,
         parametersFactory: SubnetParametersFactoryProtocol,
-        presetFactory: SubtensorValidatorPresetFactoryProtocol,
-        yieldService: SubtensorYieldServiceProtocol,
-        subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
-        positionsSyncService: SubtensorPositionsSyncServiceProtocol?,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         self.subnet = subnet
-        self.chainAsset = chainAsset
-        self.priceHistoryService = priceHistoryService
+        chainAsset = state.stakingOption.chainAsset
+        priceHistoryService = state.earnServices.priceHistoryService
         self.parametersFactory = parametersFactory
-        self.presetFactory = presetFactory
-        self.yieldService = yieldService
-        self.subnetLogosProvider = subnetLogosProvider
-        self.positionsSyncService = positionsSyncService
+        presetFactory = state.earnServices.validatorPresetFactory
+        yieldService = state.earnServices.yieldService
+        subnetLogosProvider = state.earnServices.subnetLogosProvider
+        positionsSyncService = state.positionsSyncService
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.currencyManager = currencyManager
         self.operationQueue = operationQueue

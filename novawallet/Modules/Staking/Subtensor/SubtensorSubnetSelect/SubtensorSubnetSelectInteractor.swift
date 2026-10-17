@@ -17,20 +17,12 @@ final class SubtensorSubnetSelectInteractor: SubtensorLoadDelivering {
     private let weeklyStore = CancellableCallStore()
     private let apyStore = CancellableCallStore()
 
-    init(
-        catalogueService: SubtensorSubnetCatalogueServiceProtocol,
-        subnetsService: SubtensorSubnetsServiceProtocol,
-        subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
-        priceHistoryService: SubtensorPriceHistoryServiceProtocol?,
-        maxApyProvider: SubtensorMaxApyProviderProtocol,
-        operationQueue: OperationQueue,
-        logger: LoggerProtocol
-    ) {
-        self.catalogueService = catalogueService
-        self.subnetsService = subnetsService
-        self.subnetLogosProvider = subnetLogosProvider
-        self.priceHistoryService = priceHistoryService
-        self.maxApyProvider = maxApyProvider
+    init(state: SubtensorStakingSharedStateProtocol, operationQueue: OperationQueue, logger: LoggerProtocol) {
+        catalogueService = state.earnServices.catalogueService
+        subnetsService = state.subnetsService
+        subnetLogosProvider = state.earnServices.subnetLogosProvider
+        priceHistoryService = state.earnServices.priceHistoryService
+        maxApyProvider = state.earnServices.maxApyProvider
         self.operationQueue = operationQueue
         self.logger = logger
     }

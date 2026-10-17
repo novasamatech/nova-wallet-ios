@@ -42,12 +42,6 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
     init(
         state: SubtensorStakingSharedStateProtocol,
         netuid: UInt16,
-        catalogueService: SubtensorSubnetCatalogueServiceProtocol,
-        yieldService: SubtensorYieldServiceProtocol,
-        subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
-        priceHistoryService: SubtensorPriceHistoryServiceProtocol?,
-        validatorFactory: SubtensorValidatorPresetFactoryProtocol,
-        rootHoldFactory: SubtensorRootHoldFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue,
@@ -55,12 +49,12 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
     ) {
         self.state = state
         self.netuid = netuid
-        self.catalogueService = catalogueService
-        self.yieldService = yieldService
-        self.subnetLogosProvider = subnetLogosProvider
-        self.priceHistoryService = priceHistoryService
-        self.validatorFactory = validatorFactory
-        self.rootHoldFactory = rootHoldFactory
+        catalogueService = state.earnServices.catalogueService
+        yieldService = state.earnServices.yieldService
+        subnetLogosProvider = state.earnServices.subnetLogosProvider
+        priceHistoryService = state.earnServices.priceHistoryService
+        validatorFactory = state.earnServices.validatorPresetFactory
+        rootHoldFactory = state.earnServices.rootHoldFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.operationQueue = operationQueue
         self.logger = logger

@@ -24,11 +24,8 @@ final class SubtensorValidatorInfoInteractor: AnyCancellableCleaning, SubtensorL
     init(
         target: SubtensorStakeTarget,
         hotkey: AccountId,
-        chainAsset: ChainAsset,
+        state: SubtensorStakingSharedStateProtocol,
         coverageFactory: ValidatorCoverageFactoryProtocol,
-        directoryService: SubtensorValidatorDirectoryServiceProtocol,
-        yieldService: SubtensorYieldServiceProtocol,
-        catalogueService: SubtensorSubnetCatalogueServiceProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue,
@@ -36,11 +33,11 @@ final class SubtensorValidatorInfoInteractor: AnyCancellableCleaning, SubtensorL
     ) {
         self.target = target
         self.hotkey = hotkey
-        self.chainAsset = chainAsset
+        chainAsset = state.stakingOption.chainAsset
         self.coverageFactory = coverageFactory
-        self.directoryService = directoryService
-        self.yieldService = yieldService
-        self.catalogueService = catalogueService
+        directoryService = state.earnServices.validatorDirectoryService
+        yieldService = state.earnServices.yieldService
+        catalogueService = state.earnServices.catalogueService
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.operationQueue = operationQueue
         self.logger = logger

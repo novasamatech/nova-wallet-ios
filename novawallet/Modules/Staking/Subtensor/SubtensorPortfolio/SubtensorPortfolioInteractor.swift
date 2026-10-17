@@ -38,10 +38,6 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning, SubtensorLoad
         selectedWalletSettings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol,
         applicationHandler: ApplicationHandlerProtocol,
-        catalogueService: SubtensorSubnetCatalogueServiceProtocol,
-        yieldService: SubtensorYieldServiceProtocol,
-        subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
-        priceHistoryService: SubtensorPriceHistoryServiceProtocol?,
         bittensorApiFactory: BittensorApiOperationFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
@@ -53,10 +49,10 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning, SubtensorLoad
         self.selectedWalletSettings = selectedWalletSettings
         self.eventCenter = eventCenter
         self.applicationHandler = applicationHandler
-        self.catalogueService = catalogueService
-        self.yieldService = yieldService
-        self.subnetLogosProvider = subnetLogosProvider
-        self.priceHistoryService = priceHistoryService
+        catalogueService = state.earnServices.catalogueService
+        yieldService = state.earnServices.yieldService
+        subnetLogosProvider = state.earnServices.subnetLogosProvider
+        priceHistoryService = state.earnServices.priceHistoryService
         self.bittensorApiFactory = bittensorApiFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.operationQueue = operationQueue
