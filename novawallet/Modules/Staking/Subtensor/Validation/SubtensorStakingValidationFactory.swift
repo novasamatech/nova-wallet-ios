@@ -130,22 +130,19 @@ final class SubtensorStakingValidationFactory {
         }
 
         switch change {
+        case let .rateChange(_, new) where context.onPriceMoved != nil:
+            context.onPriceMoved?(new)
         case let .rateChange(old, new):
-            guard let onPriceMoved = context.onPriceMoved else {
-                presentable.presentRateUpdated(
-                    from: view,
-                    oldRate: formatRate(old, alphaDisplayInfo: context.alphaDisplayInfo, locale: locale),
-                    newRate: formatRate(new, alphaDisplayInfo: context.alphaDisplayInfo, locale: locale),
-                    onConfirm: {
-                        context.onQuoteUpdate(new)
-                        delegate.didCompleteAsyncHandling()
-                    },
-                    locale: locale
-                )
-                return
-            }
-
-            onPriceMoved(new)
+            presentable.presentRateUpdated(
+                from: view,
+                oldRate: formatRate(old, alphaDisplayInfo: context.alphaDisplayInfo, locale: locale),
+                newRate: formatRate(new, alphaDisplayInfo: context.alphaDisplayInfo, locale: locale),
+                onConfirm: {
+                    context.onQuoteUpdate(new)
+                    delegate.didCompleteAsyncHandling()
+                },
+                locale: locale
+            )
         case .unavailable:
             presentable.presentNotEnoughLiquidity(from: view, locale: locale)
         }

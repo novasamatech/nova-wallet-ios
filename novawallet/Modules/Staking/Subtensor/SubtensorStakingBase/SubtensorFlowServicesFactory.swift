@@ -72,13 +72,11 @@ enum SubtensorFlowServicesFactory {
             tradeQuoteFactory: state.earnServices.tradeQuoteFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            blockNumberSubscription: observesBlocks ? BlockNumberRemoteSubscription(
-                chainId: chain.chainId,
+            blockNumberSubscription: observesBlocks ? createBlockSubscription(
+                for: chain,
                 connection: connection,
                 runtimeProvider: runtimeProvider,
-                operationQueue: operationQueue,
-                workingQueue: .main,
-                localKeyFactory: LocalStorageKeyFactory()
+                operationQueue: operationQueue
             ) : nil,
             currencyManager: currencyManager,
             operationQueue: operationQueue
@@ -87,6 +85,22 @@ enum SubtensorFlowServicesFactory {
 }
 
 private extension SubtensorFlowServicesFactory {
+    static func createBlockSubscription(
+        for chain: ChainModel,
+        connection: ChainConnection,
+        runtimeProvider: RuntimeProviderProtocol,
+        operationQueue: OperationQueue
+    ) -> BlockNumberRemoteSubscriptionProtocol {
+        BlockNumberRemoteSubscription(
+            chainId: chain.chainId,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            operationQueue: operationQueue,
+            workingQueue: .main,
+            localKeyFactory: LocalStorageKeyFactory()
+        )
+    }
+
     static func createSigner(for account: MetaChainAccountResponse) -> SigningWrapperProtocol {
         SigningWrapperFactory().createSigningWrapper(
             for: account.metaId,
