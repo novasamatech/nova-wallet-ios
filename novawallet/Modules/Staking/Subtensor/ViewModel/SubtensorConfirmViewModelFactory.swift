@@ -4,17 +4,14 @@ final class SubtensorConfirmViewModelFactory {
     let chainAsset: ChainAsset
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let quoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
-    let formatterFactory: AssetBalanceFormatterFactoryProtocol
-    let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol
-    let subnetIconFactory: SubtensorSubnetIconFactoryProtocol
+    let formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory()
+    let assetIconViewModelFactory: AssetIconViewModelFactoryProtocol = AssetIconViewModelFactory()
+    let subnetIconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory()
     let costBasisViewModelFactory: SubtensorCostBasisViewModelFactory
 
     init(
         chainAsset: ChainAsset,
-        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
-        formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory(),
-        assetIconViewModelFactory: AssetIconViewModelFactoryProtocol = AssetIconViewModelFactory(),
-        subnetIconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory()
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) {
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: chainAsset.assetDisplayInfo,
@@ -27,9 +24,6 @@ final class SubtensorConfirmViewModelFactory {
             chainAsset: chainAsset,
             priceAssetInfoFactory: priceAssetInfoFactory
         )
-        self.formatterFactory = formatterFactory
-        self.assetIconViewModelFactory = assetIconViewModelFactory
-        self.subnetIconFactory = subnetIconFactory
         costBasisViewModelFactory = SubtensorCostBasisViewModelFactory(
             taoInfo: chainAsset.assetDisplayInfo,
             balanceViewModelFactory: balanceViewModelFactory
