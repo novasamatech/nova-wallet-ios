@@ -19,8 +19,7 @@ enum BittensorAuthorizedResponseGrader {
         case 403:
             isRejected = code == "insufficient_scope"
         case 404:
-            let isPlainText = response.value(forHTTPHeaderField: "Content-Type")?.lowercased().hasPrefix("text/plain")
-            isRejected = code == "route_not_found" && isPlainText != true
+            isRejected = code == "route_not_found"
         case 409:
             isRejected = code == "client_already_registered"
         default:
