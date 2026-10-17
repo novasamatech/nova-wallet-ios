@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-final class SubtensorValidatorInfoInteractor: AnyCancellableCleaning {
+final class SubtensorValidatorInfoInteractor: AnyProviderAutoCleaning, SubtensorLoadDelivering {
     weak var presenter: SubtensorValInfoInteractorOutputProtocol?
 
     let target: SubtensorStakeTarget
@@ -19,16 +19,13 @@ final class SubtensorValidatorInfoInteractor: AnyCancellableCleaning {
     private let detailStore = CancellableCallStore()
     private let rateStore = CancellableCallStore()
     private let catalogueStore = CancellableCallStore()
-    private var priceProvider: StreamableProvider<PriceData>?
+    var priceProvider: StreamableProvider<PriceData>?
 
     init(
         target: SubtensorStakeTarget,
         hotkey: AccountId,
-        chainAsset: ChainAsset,
+        state: SubtensorStakingSharedStateProtocol,
         coverageFactory: ValidatorCoverageFactoryProtocol,
-        directoryService: SubtensorValidatorDirectoryServiceProtocol,
-        yieldService: SubtensorYieldServiceProtocol,
-        catalogueService: SubtensorSubnetCatalogueServiceProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue,
@@ -36,11 +33,11 @@ final class SubtensorValidatorInfoInteractor: AnyCancellableCleaning {
     ) {
         self.target = target
         self.hotkey = hotkey
-        self.chainAsset = chainAsset
+        chainAsset = state.stakingOption.chainAsset
         self.coverageFactory = coverageFactory
-        self.directoryService = directoryService
-        self.yieldService = yieldService
-        self.catalogueService = catalogueService
+        directoryService = state.earnServices.validatorDirectoryService
+        yieldService = state.earnServices.yieldService
+        catalogueService = state.earnServices.catalogueService
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.operationQueue = operationQueue
         self.logger = logger
@@ -58,35 +55,17 @@ final class SubtensorValidatorInfoInteractor: AnyCancellableCleaning {
 private extension SubtensorValidatorInfoInteractor {
     func createRateWrapper() -> CompoundOperationWrapper<Decimal?> {
         let hotkey = hotkey
-        let yieldsWrapper = yieldService.createAlphaYieldsWrapper(for: target.netuid)
 
-        let mapOperation = ClosureOperation<Decimal?> {
-            let yields = try yieldsWrapper.targetOperation.extractNoCancellableResultData()
-
-            return SubtensorAlphaApyFormatter.annualRate(for: hotkey, in: yields)
+        return yieldService.createAlphaYieldsWrapper(for: target.netuid).mapped { yields in
+            SubtensorAlphaApyFormatter.annualRate(for: hotkey, in: yields)
         }
-
-        mapOperation.addDependency(yieldsWrapper.targetOperation)
-
-        return yieldsWrapper.insertingTail(operation: mapOperation)
     }
 
     func loadRate() {
         rateStore.cancel()
 
-        executeCancellable(
-            wrapper: createRateWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: rateStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(rate):
-                self?.presenter?.didReceive(annualRate: rate)
-            case let .failure(error):
-                self?.logger.warning("Validator reward rate unavailable: \(error)")
-                self?.presenter?.didReceive(annualRate: nil)
-            }
+        load(createRateWrapper(), in: rateStore, label: "validator reward rate") { [weak self] in
+            self?.presenter?.didReceive(annualRate: $0 ?? nil)
         }
     }
 
@@ -100,29 +79,13 @@ private extension SubtensorValidatorInfoInteractor {
 
         let subnet = target.subnetRef
 
-        executeCancellable(
-            wrapper: catalogueService.createCatalogueWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: catalogueStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(catalogue):
-                self?.presenter?.didReceive(alphaPrice: catalogue.subnet(for: subnet)?.freshTaoPerAlpha)
-            case let .failure(error):
-                self?.logger.warning("Subnet catalogue unavailable for the validator stake: \(error)")
-                self?.presenter?.didReceive(alphaPrice: nil)
-            }
+        load(
+            catalogueService.createCatalogueWrapper(),
+            in: catalogueStore,
+            label: "catalogue for the validator stake"
+        ) { [weak self] in
+            self?.presenter?.didReceive(alphaPrice: $0?.subnet(for: subnet)?.freshTaoPerAlpha)
         }
-    }
-
-    func subscribePrice() {
-        guard let priceId = chainAsset.asset.priceId else {
-            presenter?.didReceive(price: nil)
-            return
-        }
-
-        priceProvider = subscribeToPrice(for: priceId, currency: selectedCurrency)
     }
 }
 
@@ -142,20 +105,16 @@ extension SubtensorValidatorInfoInteractor: SubtensorValInfoInteractorInputProto
     }
 
     func setup() {
-        executeCancellable(
-            wrapper: coverageFactory.createWrapper(for: hotkey),
-            inOperationQueue: operationQueue, backingCallIn: coverageStore, runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(value): self?.presenter?.didReceive(coverage: value)
-            case let .failure(error):
-                self?.logger.warning("Validator coverage unavailable: \(error)")
-                self?.presenter?.didReceive(coverage: nil)
-            }
+        load(
+            coverageFactory.createWrapper(for: hotkey),
+            in: coverageStore,
+            label: "validator coverage"
+        ) { [weak self] in
+            self?.presenter?.didReceive(coverage: $0 ?? nil)
         }
         loadRate()
         loadAlphaPrice()
-        subscribePrice()
+        subscribeTaoPrice(currency: selectedCurrency)
     }
 
     func loadDetail() {
@@ -178,15 +137,9 @@ extension SubtensorValidatorInfoInteractor: SubtensorValInfoInteractorInputProto
     }
 }
 
-extension SubtensorValidatorInfoInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
-    func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
-        switch result {
-        case let .success(price):
-            presenter?.didReceive(price: price)
-        case let .failure(error):
-            logger.warning("TAO price unavailable: \(error)")
-            presenter?.didReceive(price: nil)
-        }
+extension SubtensorValidatorInfoInteractor: SubtensorTaoPriceSubscribing {
+    func deliverTaoPrice(_ price: PriceData?) {
+        presenter?.didReceive(price: price)
     }
 }
 
@@ -196,6 +149,7 @@ extension SubtensorValidatorInfoInteractor: SelectedCurrencyDepending {
             return
         }
 
-        subscribePrice()
+        clear(streamableProvider: &priceProvider)
+        subscribeTaoPrice(currency: selectedCurrency)
     }
 }

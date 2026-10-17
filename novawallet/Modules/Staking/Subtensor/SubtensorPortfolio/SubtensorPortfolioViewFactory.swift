@@ -73,18 +73,12 @@ private extension SubtensorPortfolioViewFactory {
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue
     ) -> SubtensorPortfolioInteractor {
-        let earnServices = state.earnServices
-
-        return SubtensorPortfolioInteractor(
+        SubtensorPortfolioInteractor(
             state: state,
             account: account,
             selectedWalletSettings: SelectedWalletSettings.shared,
             eventCenter: EventCenter.shared,
             applicationHandler: ApplicationHandler(),
-            catalogueService: earnServices.catalogueService,
-            yieldService: earnServices.yieldService,
-            subnetLogosProvider: earnServices.subnetLogosProvider,
-            priceHistoryService: earnServices.priceHistoryService,
             bittensorApiFactory: SubtensorStakingProcessServices.shared.bittensorApiOperationFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,

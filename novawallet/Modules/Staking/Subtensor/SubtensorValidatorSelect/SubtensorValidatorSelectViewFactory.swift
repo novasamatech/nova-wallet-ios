@@ -9,14 +9,10 @@ enum SubtensorValidatorSelectViewFactory {
         delegate: SubtensorValidatorSelectDelegate
     ) -> SubtensorValidatorSelectViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
-        let earnServices = state.earnServices
 
         let interactor = SubtensorValidatorSelectInteractor(
             target: target,
-            directoryService: earnServices.validatorDirectoryService,
-            yieldService: earnServices.yieldService,
-            catalogueService: earnServices.catalogueService,
-            recommendationService: earnServices.recommendationService,
+            state: state,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: Logger.shared
         )

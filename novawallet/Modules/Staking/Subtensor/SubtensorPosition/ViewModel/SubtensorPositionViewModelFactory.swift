@@ -8,26 +8,18 @@ protocol SubnetPositionViewModelFactoryProtocol {
 
 final class SubtensorPositionViewModelFactory {
     let chainAsset: ChainAsset
-    let iconFactory: SubtensorSubnetIconFactoryProtocol
-    let assetIconFactory: AssetIconViewModelFactoryProtocol
-    let displayAddressFactory: DisplayAddressViewModelFactoryProtocol
-    let formatterFactory: AssetBalanceFormatterFactoryProtocol
+    let iconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory()
+    let assetIconFactory: AssetIconViewModelFactoryProtocol = AssetIconViewModelFactory()
+    let displayAddressFactory: DisplayAddressViewModelFactoryProtocol = DisplayAddressViewModelFactory()
+    let formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory()
     let balanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
     let priceWidgetFactory: SubtensorPriceWidgetFactoryProtocol
 
     init(
         chainAsset: ChainAsset,
-        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
-        iconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory(),
-        assetIconFactory: AssetIconViewModelFactoryProtocol = AssetIconViewModelFactory(),
-        displayAddressFactory: DisplayAddressViewModelFactoryProtocol = DisplayAddressViewModelFactory(),
-        formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory()
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) {
         self.chainAsset = chainAsset
-        self.iconFactory = iconFactory
-        self.assetIconFactory = assetIconFactory
-        self.displayAddressFactory = displayAddressFactory
-        self.formatterFactory = formatterFactory
 
         balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: chainAsset.assetDisplayInfo,
@@ -36,8 +28,7 @@ final class SubtensorPositionViewModelFactory {
 
         priceWidgetFactory = SubtensorPriceWidgetViewModelFactory(
             chainAsset: chainAsset,
-            priceAssetInfoFactory: priceAssetInfoFactory,
-            formatterFactory: formatterFactory
+            priceAssetInfoFactory: priceAssetInfoFactory
         )
     }
 }

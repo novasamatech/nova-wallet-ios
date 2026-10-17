@@ -15,8 +15,7 @@ extension SubtensorSubnetMarketsService: SubtensorSubnetMarketsServiceProtocol {
     func createMarketsWrapper() -> CompoundOperationWrapper<SubtensorSubnetMarkets> {
         let fetchOperation = coingeckoOperationFactory.fetchMarkets(category: Self.category, currency: .usd)
 
-        let marketsOperation = ClosureOperation<SubtensorSubnetMarkets> {
-            let data = try fetchOperation.extractNoCancellableResultData()
+        return CompoundOperationWrapper(targetOperation: fetchOperation).mapped { data in
             let markets = try JSONDecoder().decode(SubtensorSubnetMarkets.self, from: data)
 
             guard !markets.byNetuid.isEmpty else {
@@ -25,9 +24,5 @@ extension SubtensorSubnetMarketsService: SubtensorSubnetMarketsServiceProtocol {
 
             return markets
         }
-
-        marketsOperation.addDependency(fetchOperation)
-
-        return CompoundOperationWrapper(targetOperation: marketsOperation, dependencies: [fetchOperation])
     }
 }

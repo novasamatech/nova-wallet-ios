@@ -72,18 +72,9 @@ private extension SubtensorSubnetCatalogueService {
 
 extension SubtensorSubnetCatalogueService: SubtensorSubnetCatalogueServiceProtocol {
     func createCatalogueWrapper() -> CompoundOperationWrapper<SubtensorSubnetCatalogue> {
-        let responseWrapper = apiOperationFactory.createSubnetsWrapper()
         let logger = logger
 
-        let catalogueOperation = ClosureOperation<SubtensorSubnetCatalogue> {
-            let response = try responseWrapper.targetOperation.extractNoCancellableResultData()
-
-            return try Self.makeCatalogue(from: response, logger: logger)
-        }
-
-        catalogueOperation.addDependency(responseWrapper.targetOperation)
-
-        return responseWrapper.insertingTail(operation: catalogueOperation)
+        return apiOperationFactory.createSubnetsWrapper().mapped { try Self.makeCatalogue(from: $0, logger: logger) }
     }
 
     func cachedCatalogue() -> HTTPCachePeek<SubtensorSubnetCatalogue> {

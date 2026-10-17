@@ -59,7 +59,7 @@ final class SubtensorStakingSetupPresenter {
         viewModelFactory: SubtensorStakingSetupViewModelFactory,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol,
-        browseState: SubtensorSubnetBrowseState = .init(),
+        browseState: SubtensorSubnetBrowseState,
         quickPickVisit: SubtensorQuickPickVisit? = nil,
         rootEntryPresentation: SubtensorRootEntryPresentation = .standard
     ) {

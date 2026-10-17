@@ -59,18 +59,12 @@ private extension SubtensorSubnetDetailsViewFactory {
         input: SubtensorSubnetDetailsInput,
         currencyManager: CurrencyManagerProtocol
     ) -> SubtensorSubnetDetailsInteractor {
-        let earnServices = state.earnServices
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         return SubtensorSubnetDetailsInteractor(
             subnet: input.subnet.ref,
-            chainAsset: state.stakingOption.chainAsset,
-            priceHistoryService: earnServices.priceHistoryService,
+            state: state,
             parametersFactory: createParametersFactory(state: state, operationQueue: operationQueue),
-            presetFactory: earnServices.validatorPresetFactory,
-            yieldService: earnServices.yieldService,
-            subnetLogosProvider: earnServices.subnetLogosProvider,
-            positionsSyncService: state.positionsSyncService,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
             operationQueue: operationQueue,

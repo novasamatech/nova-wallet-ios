@@ -5,22 +5,18 @@ final class SubtensorStakingSetupViewModelFactory {
     let chainAsset: ChainAsset
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let quoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
-    let displayAddressFactory: DisplayAddressViewModelFactoryProtocol
-    let iconFactory: SubtensorSubnetIconFactoryProtocol
+    let displayAddressFactory: DisplayAddressViewModelFactoryProtocol = DisplayAddressViewModelFactory()
+    let iconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory()
     let costBasisViewModelFactory: SubtensorCostBasisViewModelFactory
 
     init(
         chainAsset: ChainAsset,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        quoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol,
-        displayAddressFactory: DisplayAddressViewModelFactoryProtocol = DisplayAddressViewModelFactory(),
-        iconFactory: SubtensorSubnetIconFactoryProtocol = SubtensorSubnetIconViewModelFactory()
+        quoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
     ) {
         self.chainAsset = chainAsset
         self.balanceViewModelFactory = balanceViewModelFactory
         self.quoteViewModelFactory = quoteViewModelFactory
-        self.displayAddressFactory = displayAddressFactory
-        self.iconFactory = iconFactory
         costBasisViewModelFactory = SubtensorCostBasisViewModelFactory(
             taoInfo: chainAsset.assetDisplayInfo,
             balanceViewModelFactory: balanceViewModelFactory

@@ -24,12 +24,11 @@ final class SubtensorValidatorInfoViewModelFactory {
 
     init(
         chainAsset: ChainAsset,
-        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory()
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol
     ) {
         self.chainAsset = chainAsset
         self.balanceViewModelFactory = balanceViewModelFactory
-        stakeFormatter = formatterFactory.createCompactTokenFormatter(for: chainAsset.assetDisplayInfo)
+        stakeFormatter = AssetBalanceFormatterFactory().createCompactTokenFormatter(for: chainAsset.assetDisplayInfo)
         takeFormatter = NumberFormatter.subtensorPercentSingleHalfEven
     }
 

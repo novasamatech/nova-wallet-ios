@@ -54,12 +54,8 @@ private extension SubtensorValidatorDirectoryService {
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem> {
         let pair = SubtensorHotkeySubnet(hotkey: hotkey, netuid: subnet.netuid)
         let query = SubtensorValidatorChainQuery(pairs: [pair])
-        let snapshotWrapper = chainOperationFactory.createChainSnapshotWrapper(for: query)
-
-        let itemOperation = ClosureOperation<SubtensorValidatorDirectoryItem> {
-            let snapshot = try snapshotWrapper.targetOperation.extractNoCancellableResultData()
-
-            return SubtensorValidatorDirectoryItem(
+        return chainOperationFactory.createChainSnapshotWrapper(for: query).mapped { snapshot in
+            SubtensorValidatorDirectoryItem(
                 hotkey: hotkey,
                 netuid: subnet.netuid,
                 name: name,
@@ -68,10 +64,6 @@ private extension SubtensorValidatorDirectoryService {
                 status: SubtensorValidatorChainStatus.make(snapshot: snapshot, pair: pair)
             )
         }
-
-        itemOperation.addDependency(snapshotWrapper.targetOperation)
-
-        return snapshotWrapper.insertingTail(operation: itemOperation)
     }
 }
 
@@ -82,30 +74,14 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
         let logger = logger
 
         guard subnet.netuid != SubtensorStakingPallet.rootNetuid else {
-            let rootWrapper = apiOperationFactory.createRootValidatorsWrapper()
-
-            let directoryOperation = ClosureOperation<SubtensorValidatorDirectory> {
-                let response = try rootWrapper.targetOperation.extractNoCancellableResultData()
-
-                return Self.makeRootListing(from: response, subnet: subnet, logger: logger)
+            return apiOperationFactory.createRootValidatorsWrapper().mapped { response in
+                Self.makeRootListing(from: response, subnet: subnet, logger: logger)
             }
-
-            directoryOperation.addDependency(rootWrapper.targetOperation)
-
-            return rootWrapper.insertingTail(operation: directoryOperation)
         }
 
-        let validatorsWrapper = apiOperationFactory.createValidatorsWrapper(netuid: subnet.netuid)
-
-        let directoryOperation = ClosureOperation<SubtensorValidatorDirectory> {
-            let response = try validatorsWrapper.targetOperation.extractNoCancellableResultData()
-
-            return Self.makeListing(from: response, subnet: subnet, logger: logger)
+        return apiOperationFactory.createValidatorsWrapper(netuid: subnet.netuid).mapped { response in
+            Self.makeListing(from: response, subnet: subnet, logger: logger)
         }
-
-        directoryOperation.addDependency(validatorsWrapper.targetOperation)
-
-        return validatorsWrapper.insertingTail(operation: directoryOperation)
     }
 
     func cachedDirectory(for subnet: SubtensorSubnetRef) -> HTTPCachePeek<SubtensorValidatorDirectory> {
