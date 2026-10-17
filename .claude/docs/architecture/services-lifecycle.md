@@ -20,7 +20,7 @@ AppDelegate.didFinishLaunching
 `SelectedWalletSettings`, `EventCenter`, and the chain registry closure are all resolved there.
 Anything that must run before the first screen belongs in `RootInteractor`, not in `AppDelegate`.
 
-The app skips all of this when launched with the `-UNITTEST` argument (`AppDelegate.isUnitTesting`).
+The app skips all of this when launched with the `-UNITTEST` argument (`EnviromentVariables.isUnitTesting`).
 
 ## Service Protocols
 

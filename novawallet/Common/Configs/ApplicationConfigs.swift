@@ -1,6 +1,5 @@
 import Foundation
 import os
-import NovaAuth
 
 protocol ApplicationConfigProtocol {
     var termsURL: URL { get }
@@ -217,25 +216,6 @@ extension ApplicationConfig: ApplicationConfigProtocol {
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/global/config.json")!
         #else
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/global/config_dev.json")!
-        #endif
-    }
-
-    var novaAuthAppIdentity: NovaAuthAppIdentity? {
-        let rawPrefix = Bundle.main.object(forInfoDictionaryKey: "AppIdentifierPrefix") as? String
-        let prefix = rawPrefix?.trimmingCharacters(in: CharacterSet(charactersIn: ". ")) ?? ""
-
-        guard !prefix.isEmpty, let bundleId = Bundle.main.bundleIdentifier else {
-            return nil
-        }
-
-        return try? NovaAuthAppIdentity(appID: prefix + "." + bundleId, environment: novaAuthEnvironment)
-    }
-
-    private var novaAuthEnvironment: NovaAuthEnvironment {
-        #if F_DEV
-            .development
-        #else
-                .production
         #endif
     }
 

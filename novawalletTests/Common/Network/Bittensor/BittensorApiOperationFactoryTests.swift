@@ -1,6 +1,7 @@
 import XCTest
 @testable import novawallet
 import Cuckoo
+import NovaAuth
 import Operation_iOS
 
 final class BittensorApiOperationFactoryTests: XCTestCase {
@@ -43,7 +44,7 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
     private let bobSubject = "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty"
 
     func testSubnetsDecodeFromTheFixture() throws {
-        let transport = createTransport(replies: [createResponse(Data(subnetsJson.utf8), requestId: "req-subnets")])
+        let transport = try createTransport(replies: [createResponse(Data(subnetsJson.utf8), requestId: "req-subnets")])
         let factory = createFactory(transport: transport)
 
         let result = try run(factory.createSubnetsWrapper())
@@ -59,7 +60,7 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
             subnetsJson,
             replacing: [(#""taoPerAlpha":"0.054961234""#, #""taoPerAlpha":".054961234""#)]
         )
-        let transport = createTransport(replies: [createResponse(body, requestId: "req-decimal")])
+        let transport = try createTransport(replies: [createResponse(body, requestId: "req-decimal")])
         let factory = createFactory(transport: transport)
 
         XCTAssertThrowsError(try run(factory.createSubnetsWrapper())) { error in
@@ -82,7 +83,7 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
                 (#""id":"8ebc85abd0bbeb6f282302ac48909c3d""#, #""id":"0123456789abcdef0123456789abcdef""#)
             ]
         )
-        let transport = createTransport(replies: [
+        let transport = try createTransport(replies: [
             createResponse(newer, requestId: "req-newer", directives: .reusable(lifetime: 60)),
             createResponse(older, requestId: "req-older")
         ])
@@ -100,7 +101,7 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
     }
 
     func testFreshResponseIsReusedWithoutAdmissionOrTransport() throws {
-        let transport = createTransport(replies: createSubnetReplies(directives: .reusable(lifetime: 60)))
+        let transport = try createTransport(replies: createSubnetReplies(directives: .reusable(lifetime: 60)))
         let factory = createFactory(transport: transport)
 
         _ = try run(factory.createSubnetsWrapper())
@@ -115,7 +116,7 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
 
     func testResponseIsFetchedAgainAfterMaxAge() throws {
         var now: TimeInterval = 0
-        let transport = createTransport(replies: createSubnetReplies(directives: .reusable(lifetime: 60)))
+        let transport = try createTransport(replies: createSubnetReplies(directives: .reusable(lifetime: 60)))
         let factory = createFactory(transport: transport, timeProvider: { now })
 
         _ = try run(factory.createSubnetsWrapper())
@@ -129,7 +130,7 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
     func testAgeShortensTheLifetime() throws {
         var now: TimeInterval = 0
         let directives = HTTPCacheDirectives(cacheControl: "public, max-age=60, must-revalidate", age: "50")
-        let transport = createTransport(replies: createSubnetReplies(directives: directives))
+        let transport = try createTransport(replies: createSubnetReplies(directives: directives))
         let factory = createFactory(transport: transport, timeProvider: { now })
 
         _ = try run(factory.createSubnetsWrapper())
@@ -152,7 +153,7 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
         var now: TimeInterval = 0
         var isDropping = true
         var factory: BittensorApiOperationFactory?
-        let transport = createTransport(
+        let transport = try createTransport(
             replies: [
                 createResponse(Data(operationsJson.utf8), requestId: "req-before", directives: .reusable(lifetime: 60)),
                 createResponse(Data(operationsJson.utf8), requestId: "req-after", directives: .reusable(lifetime: 60))
@@ -175,7 +176,7 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
 
     func testPrivateResponseIsReusable() throws {
         let directives = HTTPCacheDirectives(cacheControl: "private, max-age=60, must-revalidate", age: nil)
-        let transport = createTransport(replies: [
+        let transport = try createTransport(replies: [
             createResponse(Data(operationsJson.utf8), requestId: "req-first", directives: directives),
             createResponse(Data(operationsJson.utf8), requestId: "req-second", directives: directives)
         ])
@@ -188,7 +189,7 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
     }
 
     func testDropOperationsRemovesOnlyThatSubjectsEntries() throws {
-        let transport = createTransport(replies: [
+        let transport = try createTransport(replies: [
             createResponse(Data(operationsJson.utf8), requestId: "req-alice", directives: .reusable(lifetime: 60)),
             createResponse(Data(operationsJson.utf8), requestId: "req-bob", directives: .reusable(lifetime: 60))
         ])
@@ -204,7 +205,7 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
 
     private func assertNotStored(_ directives: HTTPCacheDirectives, line: UInt = #line) throws {
         var now: TimeInterval = 0
-        let transport = createTransport(replies: [
+        let transport = try createTransport(replies: [
             createResponse(Data(subnetsJson.utf8), requestId: "req-first", directives: .reusable(lifetime: 60)),
             createResponse(Data(subnetsJson.utf8), requestId: "req-second", directives: directives),
             createResponse(Data(subnetsJson.utf8), requestId: "req-third", directives: directives)
@@ -241,13 +242,14 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
     private func createTransport(
         replies: [BittensorApiRawResponse],
         beforeReply: @escaping () -> Void = {}
-    ) -> MockBittensorApiTransportProtocol {
+    ) throws -> MockBittensorApiTransportProtocol {
         let transport = MockBittensorApiTransportProtocol()
         var remaining = replies
 
+        let context = try NovaAuthContext(origin: NovaAuthOrigin("https://bittensor.test"), generation: 0)
         let admission = BittensorApiAdmission(
             scope: BittensorApiCacheScope(origin: "test", generation: 0, invalidationRevision: 0),
-            endpoint: nil
+            endpoint: NovaAuthEndpoint(context: context, client: MockNovaAuthClientProtocol(), invalidationRevision: 0)
         )
 
         stub(transport) { stub in

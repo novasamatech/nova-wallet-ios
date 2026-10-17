@@ -9,7 +9,7 @@ struct BittensorApiCacheScope: Hashable {
 
 struct BittensorApiAdmission {
     let scope: BittensorApiCacheScope
-    let endpoint: NovaAuthEndpoint?
+    let endpoint: NovaAuthEndpoint
 }
 
 protocol BittensorApiTransportProtocol: AnyObject {

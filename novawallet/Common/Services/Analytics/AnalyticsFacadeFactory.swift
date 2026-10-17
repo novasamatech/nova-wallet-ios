@@ -2,16 +2,13 @@ import Foundation
 import Keystore_iOS
 import NovaAnalytics
 import NovaAuth
+import Operation_iOS
 
 enum AnalyticsFacadeFactory {
     /// An accessor, not a builder. The only place in the app that touches the singleton, so
     /// every call site shares one lock, one call store, one session and one queue.
-    ///
-    /// The `-UNITTEST` check mirrors `AppDelegate.isUnitTesting`. Without it, every
-    /// `xcodebuild test` run builds the real facade, which opens the developer's actual store,
-    /// records a session and POSTs to the live gateway.
     static func createDefault() -> AnalyticsServiceFacadeProtocol {
-        guard !ProcessInfo.processInfo.arguments.contains("-UNITTEST") else {
+        guard !EnviromentVariables.isUnitTesting else {
             return NoOpAnalyticsServiceFacade.shared
         }
 
@@ -35,7 +32,7 @@ enum AnalyticsFacadeFactory {
 
         return AnalyticsServiceFacade(
             configuration: AnalyticsConfiguration(
-                authProvider: AnalyticsAuthAdapter(provider: NovaAuthFacade.shared),
+                authProvider: NovaAuthFacade.shared,
                 isAuthSupported: NovaAuthFacade.shared.isSupported,
                 // `ApplicationConfig.version` appends the build number, which the
                 // gateway does not expect.
@@ -50,4 +47,16 @@ enum AnalyticsFacadeFactory {
             )
         )
     }()
+}
+
+extension NovaAuthFacade: AnalyticsAuthProvidingProtocol {
+    func createAuthWrapper() -> CompoundOperationWrapper<AnalyticsAuth> {
+        let endpoint = createEndpointWrapper()
+        let map = ClosureOperation<AnalyticsAuth> {
+            let value = try endpoint.targetOperation.extractNoCancellableResultData()
+            return AnalyticsAuth(context: value.context, client: value.client)
+        }
+        map.addDependency(endpoint.targetOperation)
+        return endpoint.insertingTail(operation: map)
+    }
 }
