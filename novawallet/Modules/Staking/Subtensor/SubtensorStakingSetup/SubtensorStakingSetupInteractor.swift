@@ -175,19 +175,12 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
     func loadYields(netuid: UInt16) {
         yieldsCallStore.cancel()
 
-        executeCancellable(
-            wrapper: yieldService.createAlphaYieldsWrapper(for: netuid),
-            inOperationQueue: operationQueue,
-            backingCallIn: yieldsCallStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(yields):
-                self?.presenter?.didReceiveYields(yields, netuid: netuid)
-            case let .failure(error):
-                self?.logger.warning("Subtensor subnet yields unavailable for the setup: \(error)")
-                self?.presenter?.didReceiveYields(nil, netuid: netuid)
-            }
+        load(
+            yieldService.createAlphaYieldsWrapper(for: netuid),
+            in: yieldsCallStore,
+            label: "setup yields on netuid \(netuid)"
+        ) { [weak self] in
+            self?.presenter?.didReceiveYields($0, netuid: netuid)
         }
     }
 
