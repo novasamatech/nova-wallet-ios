@@ -56,9 +56,8 @@ final class BittensorAuthorizedTransport: BittensorApiTransportProtocol {
         admission: BittensorApiAdmission
     ) -> CompoundOperationWrapper<BittensorApiRawResponse> {
         do {
-            guard let endpoint = admission.endpoint else { throw BittensorApiError.deviceBound(requestId: nil) }
-            let prepared = try prepare(request, endpoint: endpoint)
-            let response = endpoint.client.createResponseWrapper(for: prepared, beforeSend: {})
+            let prepared = try prepare(request, endpoint: admission.endpoint)
+            let response = admission.endpoint.client.createResponseWrapper(for: prepared, beforeSend: {})
             let grade = ClosureOperation<BittensorApiRawResponse> {
                 do {
                     return try BittensorAuthorizedResponseGrader.grade(
