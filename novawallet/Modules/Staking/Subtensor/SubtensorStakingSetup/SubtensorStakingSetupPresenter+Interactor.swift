@@ -72,6 +72,7 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
         }
 
         self.yields = yields
+        isYieldsResolved = true
 
         provideViewModel()
     }

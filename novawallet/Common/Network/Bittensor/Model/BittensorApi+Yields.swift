@@ -56,18 +56,18 @@ extension BittensorApi {
 
     struct RootOverview: Decodable, Equatable {
         struct Components: Decodable, Equatable {
-            let validatorYield: ComponentMetadata
+            let indexes: ComponentMetadata
         }
 
         struct Meta: Decodable, Equatable {
             let components: Components
         }
 
-        struct ValidatorYield: Decodable, Equatable {
-            let stakeWeightedApy24h: String?
+        struct StakeIndex: Decodable, Equatable {
+            let stakeYield: RootStakeYield
         }
 
         let meta: Meta
-        let validatorYield: ValidatorYield?
+        let stakeIndex: StakeIndex?
     }
 }

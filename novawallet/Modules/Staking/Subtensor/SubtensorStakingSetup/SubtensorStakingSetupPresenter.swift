@@ -38,6 +38,7 @@ final class SubtensorStakingSetupPresenter {
     var hasExpiredRankingSeed = false
     var yields: SubtensorAlphaYields?
     var yieldsNetuid: UInt16?
+    var isYieldsResolved = false
     var isSubnetDataRequested = false
     var validatorItem: SubtensorValidatorDirectoryItem?
     var slippage: BigRational

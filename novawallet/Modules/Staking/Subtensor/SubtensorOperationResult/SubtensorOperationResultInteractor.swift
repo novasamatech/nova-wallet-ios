@@ -12,9 +12,7 @@ final class SubtensorOperationResultInteractor {
     let chainFactory: SubtensorResultChainFactoryProtocol
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
-    let positionsSyncService: SubtensorPositionsSyncServiceProtocol?
     let osMediator: OperatingSystemMediating
-    let applicationHandler: ApplicationHandlerProtocol
     let schedulerFactory: (SchedulerDelegate) -> SchedulerProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
@@ -30,9 +28,7 @@ final class SubtensorOperationResultInteractor {
         chainFactory: SubtensorResultChainFactoryProtocol,
         catalogueService: SubtensorSubnetCatalogueServiceProtocol,
         subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
-        positionsSyncService: SubtensorPositionsSyncServiceProtocol?,
         osMediator: OperatingSystemMediating,
-        applicationHandler: ApplicationHandlerProtocol,
         schedulerFactory: @escaping (SchedulerDelegate) -> SchedulerProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
@@ -44,9 +40,7 @@ final class SubtensorOperationResultInteractor {
         self.chainFactory = chainFactory
         self.catalogueService = catalogueService
         self.subnetLogosProvider = subnetLogosProvider
-        self.positionsSyncService = positionsSyncService
         self.osMediator = osMediator
-        self.applicationHandler = applicationHandler
         self.schedulerFactory = schedulerFactory
         self.operationQueue = operationQueue
         self.logger = logger
@@ -140,8 +134,6 @@ extension SubtensorOperationResultInteractor: SubtensorResultInteractorInputProt
     }
 
     func setup() {
-        applicationHandler.delegate = self
-
         provideSubnetData()
         submit()
     }
@@ -175,10 +167,6 @@ extension SubtensorOperationResultInteractor: SubtensorResultInteractorInputProt
             }
         }
     }
-
-    func refreshPositions() {
-        positionsSyncService?.refresh()
-    }
 }
 
 extension SubtensorOperationResultInteractor: SchedulerDelegate {
@@ -191,11 +179,5 @@ extension SubtensorOperationResultInteractor: SchedulerDelegate {
             osMediator.enableScreenSleep()
             presenter?.didReachConfirmationCap()
         }
-    }
-}
-
-extension SubtensorOperationResultInteractor: ApplicationHandlerDelegate {
-    func didReceiveDidBecomeActive(notification _: Notification) {
-        presenter?.didBecomeActive()
     }
 }

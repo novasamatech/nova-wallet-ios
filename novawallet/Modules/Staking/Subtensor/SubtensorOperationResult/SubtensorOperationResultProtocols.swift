@@ -18,7 +18,6 @@ protocol SubtensorResultInteractorInputProtocol: AnyObject {
     func setup()
     func fetchBlockTimestamp(at blockHash: BlockHash)
     func fetchRootHoldRemainingBlocks(for hotkeys: [AccountId])
-    func refreshPositions()
 }
 
 protocol SubtensorResultInteractorOutputProtocol: AnyObject {
@@ -28,7 +27,6 @@ protocol SubtensorResultInteractorOutputProtocol: AnyObject {
     func didReceiveRootHoldRemainingBlocks(_ blocks: UInt64)
     func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?)
     func didReceiveSubnetLogos(_ logos: SubtensorSubnetLogos)
-    func didBecomeActive()
 }
 
 protocol SubtensorResultWireframeProtocol: SubtensorInfoSheetPresentable,
