@@ -65,7 +65,7 @@ extension SubtensorStakingSetupPresenter {
         guard
             let target,
             let validator = validatorState.validator,
-            let amount = inputAmount(),
+            let amount = dependencies.amount,
             let address = try? validator.hotkey.toAddress(using: chainAsset.chain.chainFormat) else {
             return nil
         }

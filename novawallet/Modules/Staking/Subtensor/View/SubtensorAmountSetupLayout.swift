@@ -46,6 +46,8 @@ class SubtensorAmountSetupLayout: UIView {
 
     private var bottomStackConstraint: Constraint?
     private var scrollBottomConstraint: Constraint?
+    private var isInputEnabled = true
+    private var isLoading = false
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -95,6 +97,29 @@ class SubtensorAmountSetupLayout: UIView {
         scrollBottomConstraint?.update(offset: hasBottomContent ? -Constants.scrollToStackSpacing : 0)
 
         super.layoutSubviews()
+    }
+
+    func setAmountInputEnabled(_ isEnabled: Bool) {
+        isInputEnabled = isEnabled
+        applyInputAvailability()
+    }
+
+    func startLoading() {
+        isLoading = true
+        amountInputView.textField.resignFirstResponder()
+        actionLoadableView.startLoading()
+        applyInputAvailability()
+    }
+
+    func stopLoading() {
+        isLoading = false
+        actionLoadableView.stopLoading()
+        applyInputAvailability()
+    }
+
+    private func applyInputAvailability() {
+        amountInputView.isUserInteractionEnabled = isInputEnabled && !isLoading
+        amountTitleView.button.isUserInteractionEnabled = !isLoading
     }
 
     func applyAction(_ viewModel: SubtensorSetupActionViewModel) {

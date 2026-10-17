@@ -219,7 +219,7 @@ extension SubtensorUnstakeSetupVC: SubtensorUnstakeSetupViewProtocol {
         applyHeader(viewModel.header)
 
         rootView.amountInputView.bind(priceViewModel: viewModel.inputPrice)
-        rootView.amountInputView.isUserInteractionEnabled = viewModel.isInputEnabled
+        rootView.setAmountInputEnabled(viewModel.isInputEnabled)
 
         applyDetails(viewModel.details)
         applyNotes(viewModel)
@@ -227,11 +227,11 @@ extension SubtensorUnstakeSetupVC: SubtensorUnstakeSetupViewProtocol {
     }
 
     func didStartLoading() {
-        rootView.actionLoadableView.startLoading()
+        rootView.startLoading()
     }
 
     func didStopLoading() {
-        rootView.actionLoadableView.stopLoading()
+        rootView.stopLoading()
     }
 }
 
