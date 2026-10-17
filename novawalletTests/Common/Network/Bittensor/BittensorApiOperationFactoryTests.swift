@@ -246,10 +246,7 @@ final class BittensorApiOperationFactoryTests: XCTestCase {
         let transport = MockBittensorApiTransportProtocol()
         var remaining = replies
 
-        let context = try JSONDecoder().decode(
-            NovaAuthContext.self,
-            from: Data(#"{"origin":"https://bittensor.test","generation":0}"#.utf8)
-        )
+        let context = try NovaAuthContext(origin: NovaAuthOrigin("https://bittensor.test"), generation: 0)
         let admission = BittensorApiAdmission(
             scope: BittensorApiCacheScope(origin: "test", generation: 0, invalidationRevision: 0),
             endpoint: NovaAuthEndpoint(context: context, client: MockNovaAuthClientProtocol(), invalidationRevision: 0)
