@@ -175,7 +175,9 @@ extension StakingSharedStateFactory {
             subnetLogosProvider: processServices.subnetLogosProvider,
             earnSettings: SubtensorEarnSettings(settingsManager: SettingsManager.shared),
             catalogueService: processServices.catalogueService,
-            alphaPriceProvider: createSubtensorAlphaPriceProvider(apiOperationFactory: apiOperationFactory),
+            alphaPriceProvider: processServices.createAlphaPriceProvider(
+                chainOperationFactory: apiOperationFactory, operationQueue: syncOperationQueue, logger: logger
+            ),
             yieldService: yieldService,
             maxApyProvider: processServices.createMaxApyProvider(operationQueue: syncOperationQueue, logger: logger),
             recommendationService: recommendationService,
@@ -200,16 +202,6 @@ extension StakingSharedStateFactory {
                 logger: logger
             ),
             costBasisService: processServices.costBasisService
-        )
-    }
-
-    private func createSubtensorAlphaPriceProvider(
-        apiOperationFactory: SubtensorApiOperationFactoryProtocol
-    ) -> SubtensorAlphaPriceProviderProtocol {
-        SubtensorStakingProcessServices.shared.createAlphaPriceProvider(
-            chainOperationFactory: apiOperationFactory,
-            operationQueue: syncOperationQueue,
-            logger: logger
         )
     }
 
