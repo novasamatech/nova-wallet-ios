@@ -97,11 +97,7 @@ private extension SubtensorPositionPresenter {
         loadValidatorIfNeeded()
 
         if state.isRoot {
-            if group.positions.isEmpty {
-                state.holds = [:]
-            } else {
-                interactor.loadRootHolds(for: group.positions.map(\.hotkey))
-            }
+            interactor.loadRootHolds(for: group.positions.map(\.hotkey))
         }
     }
 
@@ -332,7 +328,7 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
         provideViewModel()
     }
 
-    func didReceive(holds: [AccountId: SubtensorRootHold], blockTime: BlockTime) {
+    func didReceive(holds: [AccountId: SubtensorRootHold], blockTime: BlockTime?) {
         state.holds = holds
         state.blockTime = blockTime
         provideViewModel()
