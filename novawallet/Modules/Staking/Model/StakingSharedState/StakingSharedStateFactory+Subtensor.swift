@@ -167,7 +167,8 @@ extension StakingSharedStateFactory {
                 feeCalculator: novaFeeCalculator
             ),
             rootHoldFactory: SubtensorRootHoldFactory(
-                runtimeConnectionStore: runtimeConnectionStore, operationQueue: syncOperationQueue
+                runtimeConnectionStore: runtimeConnectionStore, operationQueue: syncOperationQueue,
+                blockTimeOperationFactory: BlockTimeOperationFactory(chain: stakingOption.chainAsset.chain)
             ),
             validatorPresetFactory: SubtensorValidatorPresetFactory(
                 directoryService: validatorDirectoryService,
