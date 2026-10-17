@@ -99,10 +99,7 @@ extension BittensorApi.RootValidatorCollection: BittensorApiWireChecked {
 
 extension BittensorApi.RootOverview: BittensorApiWireChecked {
     func validateWire() throws {
-        try BittensorApiWireCheck.decimal(
-            validatorYield?.stakeWeightedApy24h,
-            "validatorYield.stakeWeightedApy24h"
-        )
+        try BittensorApiWireCheck.decimal(stakeIndex?.stakeYield.d30?.apy, "stakeIndex.stakeYield.d30.apy")
     }
 }
 
