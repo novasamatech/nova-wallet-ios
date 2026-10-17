@@ -4,7 +4,7 @@ struct SubtensorClaimRewardsViewModelInput {
     let preview: SubtensorRootClaimPreview
     let validatorName: String
     let rootStake: Balance?
-    let unlockInterval: UInt64?
+    let unlockTime: TimeInterval?
     let otherClaimableCount: Int
     let price: PriceData?
     let fee: ExtrinsicFeeProtocol?

@@ -80,7 +80,7 @@ extension SubtensorClaimRewardsPresenter {
             preview: shownPreview,
             validatorName: model.validator.name,
             rootStake: isPositionsSyncFailed || positionsState == nil ? nil : rootGroup?.totalAlpha ?? 0,
-            unlockInterval: preflight?.rootStakeUnlockInterval,
+            unlockTime: preflight.map { TimeInterval($0.rootStakeUnlockInterval) * $0.blockTime.timeInterval },
             otherClaimableCount: claimable.map {
                 SubtensorRootClaimRule.otherClaimableCount(in: $0, target: hotkey)
             } ?? 0,
