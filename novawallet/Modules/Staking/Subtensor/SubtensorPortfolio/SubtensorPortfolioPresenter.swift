@@ -44,6 +44,10 @@ private extension SubtensorPortfolioPresenter {
     }
 
     func requestRootRateIfNeeded() {
+        guard state.positions != nil else {
+            return
+        }
+
         let groups = state.groups
 
         if groups.isEmpty, !isNetworkRootRateRequested {
@@ -117,6 +121,8 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioPresenterProtocol {
     }
 
     func retry() {
+        isRootYieldsRequested = false
+        isNetworkRootRateRequested = false
         interactor.refresh()
     }
 
@@ -161,11 +167,13 @@ extension SubtensorPortfolioPresenter: SubnetPortfolioInteractorOutputProtocol {
     func didReceive(rootYields: SubtensorAlphaYields?) {
         state.rootYields = rootYields
         state.isRootRateResolved = true
+        isRootYieldsRequested = rootYields != nil
         provideViewModel()
     }
 
     func didReceive(networkRootRate: Decimal?) {
         state.networkRootRate = networkRootRate
+        isNetworkRootRateRequested = networkRootRate != nil
         provideViewModel()
     }
 
@@ -212,6 +220,12 @@ extension SubtensorPortfolioPresenter: SubnetPortfolioInteractorOutputProtocol {
 
     func didReceiveAccountChange() {
         wireframe.close(from: view)
+    }
+
+    func didBecomeActive() {
+        isRootYieldsRequested = false
+        isNetworkRootRateRequested = false
+        requestRootRateIfNeeded()
     }
 }
 
