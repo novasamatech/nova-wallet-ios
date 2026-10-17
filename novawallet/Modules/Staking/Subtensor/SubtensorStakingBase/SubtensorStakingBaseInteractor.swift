@@ -2,7 +2,7 @@ import UIKit
 import SubstrateSdk
 import Operation_iOS
 
-class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCleaning {
+class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCleaning, SubtensorLoadDelivering {
     weak var basePresenter: SubtensorStakingBaseInteractorOutputProtocol?
 
     let chainAsset: ChainAsset
@@ -225,57 +225,28 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
     func loadCatalogue() {
         catalogueCallStore.cancel()
 
-        executeCancellable(
-            wrapper: catalogueService.createCatalogueWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: catalogueCallStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(catalogue):
-                self?.basePresenter?.didReceiveCatalogue(catalogue)
-            case let .failure(error):
-                self?.logger.warning("Subtensor catalogue unavailable: \(error)")
-                self?.basePresenter?.didReceiveCatalogue(nil)
-            }
+        load(catalogueService.createCatalogueWrapper(), in: catalogueCallStore, label: "catalogue") { [weak self] in
+            self?.basePresenter?.didReceiveCatalogue($0)
         }
     }
 
     func loadSubnetLogos() {
         logosCallStore.cancel()
 
-        executeCancellable(
-            wrapper: subnetLogosProvider.createLogosWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: logosCallStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(logos):
-                self?.basePresenter?.didReceiveSubnetLogos(logos)
-            case let .failure(error):
-                self?.logger.warning("Subtensor subnet logos unavailable: \(error)")
-                self?.basePresenter?.didReceiveSubnetLogos(nil)
-            }
+        load(subnetLogosProvider.createLogosWrapper(), in: logosCallStore, label: "subnet logos") { [weak self] in
+            self?.basePresenter?.didReceiveSubnetLogos($0)
         }
     }
 
     func loadCostBasis(for netuid: UInt16) {
         costBasisCallStore.cancel()
 
-        executeCancellable(
-            wrapper: costBasisService.createCostBasisWrapper(for: selectedAccount.accountId, netuid: netuid),
-            inOperationQueue: operationQueue,
-            backingCallIn: costBasisCallStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(costBasis):
-                self?.basePresenter?.didReceiveCostBasis(costBasis)
-            case let .failure(error):
-                self?.logger.warning("Subtensor cost basis unavailable on netuid \(netuid): \(error)")
-                self?.basePresenter?.didReceiveCostBasis(nil)
-            }
+        load(
+            costBasisService.createCostBasisWrapper(for: selectedAccount.accountId, netuid: netuid),
+            in: costBasisCallStore,
+            label: "cost basis on netuid \(netuid)"
+        ) { [weak self] in
+            self?.basePresenter?.didReceiveCostBasis($0)
         }
     }
 
