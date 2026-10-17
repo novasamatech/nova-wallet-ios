@@ -164,6 +164,7 @@ struct SubtensorSetupSubnetData {
     let subnetLogos: SubtensorSubnetLogos?
     let rankedSubnet: SubtensorRankedSubnet?
     let annualRate: Decimal?
+    let isRateResolved: Bool
     let isQuoteFailed: Bool
     let costBasis: SubtensorCostBasisState
     let blockTime: BlockTime?

@@ -158,9 +158,12 @@ extension SubtensorStakingSetupViewModelFactory {
                 apy: SubtensorApyFormatter.text(for: annualRate, style: .paidInTao, locale: locale)
             )
         } else {
+            let isRateLoading = input.validator == .pending ||
+                (input.validator != .none && !input.subnetData.isRateResolved)
+            let rate = SubtensorApyFormatter.text(for: annualRate, style: .bare, locale: locale)
             validator = .card(SubtensorValidatorCardViewModel(
                 icon: icon, name: name, subtitle: strings.stakingCommonValidator(),
-                rate: .value(SubtensorApyFormatter.text(for: annualRate, style: .bare, locale: locale)),
+                rate: isRateLoading ? .loading : .value(rate),
                 rateCaption: strings.stakingSubtensorV22EstApy()
             ))
         }

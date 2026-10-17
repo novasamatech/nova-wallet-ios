@@ -113,6 +113,7 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
     func setup() {
         if let yields = interactor.cachedYields(), yields.netuid == subnetRef.netuid {
             state.yields = yields
+            state.isRateResolved = yields.stamp.freshness == .fresh
         }
 
         provideTitle()
@@ -227,6 +228,7 @@ extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol
     func didReceiveYields(_ yields: SubtensorAlphaYields?) {
         guard yields == nil || yields?.netuid == subnetRef.netuid else { return }
         state.yields = yields
+        state.isRateResolved = true
         provideViewModel()
     }
 
