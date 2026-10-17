@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-final class SubtensorPositionInteractor: AnyProviderAutoCleaning {
+final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadDelivering {
     weak var presenter: SubnetPositionInteractorOutputProtocol?
 
     let state: SubtensorStakingSharedStateProtocol
@@ -119,55 +119,30 @@ private extension SubtensorPositionInteractor {
     }
 
     func loadSubnetLogos() {
-        executeCancellable(
-            wrapper: subnetLogosProvider.createLogosWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: logosStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(logos):
-                self?.presenter?.didReceive(subnetLogos: logos)
-            case let .failure(error):
-                self?.logger.warning("Subtensor position subnet mark unavailable: \(error)")
-                self?.presenter?.didReceive(subnetLogos: nil)
-            }
+        load(subnetLogosProvider.createLogosWrapper(), in: logosStore, label: "position subnet mark") { [weak self] in
+            self?.presenter?.didReceive(subnetLogos: $0)
         }
     }
 
     func loadYields() {
-        executeCancellable(
-            wrapper: yieldService.createAlphaYieldsWrapper(for: netuid),
-            inOperationQueue: operationQueue,
-            backingCallIn: rateStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(yields):
-                self?.presenter?.didReceive(yields: yields)
-            case let .failure(error):
-                self?.logger.warning("Subtensor position yields unavailable: \(error)")
-                self?.presenter?.didReceive(yields: nil)
-            }
+        load(
+            yieldService.createAlphaYieldsWrapper(for: netuid),
+            in: rateStore,
+            label: "position yields"
+        ) { [weak self] in
+            self?.presenter?.didReceive(yields: $0)
         }
     }
 
     func loadCatalogue() {
         catalogueStore.cancel()
 
-        executeCancellable(
-            wrapper: catalogueService.createCatalogueWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: catalogueStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(catalogue):
-                self?.presenter?.didReceive(catalogue: catalogue)
-            case let .failure(error):
-                self?.logger.warning("Subtensor position catalogue unavailable: \(error)")
-                self?.presenter?.didReceive(catalogue: nil)
-            }
+        load(
+            catalogueService.createCatalogueWrapper(),
+            in: catalogueStore,
+            label: "position catalogue"
+        ) { [weak self] in
+            self?.presenter?.didReceive(catalogue: $0)
         }
     }
 
@@ -214,38 +189,24 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
     func loadSubnetsInfo() {
         subnetsInfoStore.cancel()
 
-        executeCancellable(
-            wrapper: state.subnetsService.createSubnetsInfoWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: subnetsInfoStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(subnetsInfo):
-                self?.presenter?.didReceive(subnetsInfo: subnetsInfo)
-            case let .failure(error):
-                self?.logger.warning("Subtensor position subnets unavailable: \(error)")
-                self?.presenter?.didReceive(subnetsInfo: nil)
-            }
+        load(
+            state.subnetsService.createSubnetsInfoWrapper(),
+            in: subnetsInfoStore,
+            label: "position subnets"
+        ) { [weak self] in
+            self?.presenter?.didReceive(subnetsInfo: $0)
         }
     }
 
     func loadValidator(_ hotkey: AccountId, on subnet: SubtensorSubnetRef) {
         validatorStore.cancel()
 
-        executeCancellable(
-            wrapper: validatorFactory.createLockedWrapper(for: hotkey, subnet: subnet),
-            inOperationQueue: operationQueue,
-            backingCallIn: validatorStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(validator):
-                self?.presenter?.didReceive(validator: validator, for: hotkey)
-            case let .failure(error):
-                self?.logger.warning("Subtensor position validator unavailable: \(error)")
-                self?.presenter?.didReceive(validator: nil, for: hotkey)
-            }
+        load(
+            validatorFactory.createLockedWrapper(for: hotkey, subnet: subnet),
+            in: validatorStore,
+            label: "position validator"
+        ) { [weak self] in
+            self?.presenter?.didReceive(validator: $0 ?? nil, for: hotkey)
         }
     }
 

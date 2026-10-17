@@ -2,7 +2,7 @@ import Foundation
 import Foundation_iOS
 import Operation_iOS
 
-final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning {
+final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning, SubtensorLoadDelivering {
     weak var presenter: SubnetPortfolioInteractorOutputProtocol?
 
     let state: SubtensorStakingSharedStateProtocol
@@ -128,38 +128,24 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
     func loadRootYields() {
         rootRateStore.cancel()
 
-        executeCancellable(
-            wrapper: yieldService.createAlphaYieldsWrapper(for: SubtensorStakingPallet.rootNetuid),
-            inOperationQueue: operationQueue,
-            backingCallIn: rootRateStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(yields):
-                self?.presenter?.didReceive(rootYields: yields)
-            case let .failure(error):
-                self?.logger.warning("Bittensor portfolio root yields unavailable: \(error)")
-                self?.presenter?.didReceive(rootYields: nil)
-            }
+        load(
+            yieldService.createAlphaYieldsWrapper(for: SubtensorStakingPallet.rootNetuid),
+            in: rootRateStore,
+            label: "portfolio root yields"
+        ) { [weak self] in
+            self?.presenter?.didReceive(rootYields: $0)
         }
     }
 
     func loadNetworkRootRate() {
         networkRootRateStore.cancel()
 
-        executeCancellable(
-            wrapper: yieldService.createNetworkRootRateWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: networkRootRateStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(rate):
-                self?.presenter?.didReceive(networkRootRate: rate?.annualRate)
-            case let .failure(error):
-                self?.logger.warning("Bittensor portfolio network root rate unavailable: \(error)")
-                self?.presenter?.didReceive(networkRootRate: nil)
-            }
+        load(
+            yieldService.createNetworkRootRateWrapper(),
+            in: networkRootRateStore,
+            label: "portfolio network root rate"
+        ) { [weak self] in
+            self?.presenter?.didReceive(networkRootRate: $0??.annualRate)
         }
     }
 
@@ -171,19 +157,12 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
             return
         }
 
-        executeCancellable(
-            wrapper: priceHistoryService.createWeeklyChangesWrapper(for: subnets),
-            inOperationQueue: operationQueue,
-            backingCallIn: weeklyChangesStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(changes):
-                self?.presenter?.didReceive(weeklyChanges: changes)
-            case let .failure(error):
-                self?.logger.warning("Bittensor portfolio weekly changes unavailable: \(error)")
-                self?.presenter?.didReceive(weeklyChanges: [:])
-            }
+        load(
+            priceHistoryService.createWeeklyChangesWrapper(for: subnets),
+            in: weeklyChangesStore,
+            label: "portfolio weekly changes"
+        ) { [weak self] in
+            self?.presenter?.didReceive(weeklyChanges: $0 ?? [:])
         }
     }
 }
@@ -258,36 +237,18 @@ private extension SubtensorPortfolioInteractor {
     func provideCatalogue() {
         catalogueStore.cancel()
 
-        executeCancellable(
-            wrapper: catalogueService.createCatalogueWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: catalogueStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(catalogue):
-                self?.presenter?.didReceive(catalogue: catalogue)
-            case let .failure(error):
-                self?.logger.warning("Bittensor portfolio catalogue unavailable: \(error)")
-                self?.presenter?.didReceive(catalogue: nil)
-            }
+        load(
+            catalogueService.createCatalogueWrapper(),
+            in: catalogueStore,
+            label: "portfolio catalogue"
+        ) { [weak self] in
+            self?.presenter?.didReceive(catalogue: $0)
         }
     }
 
     func provideSubnetLogos() {
-        executeCancellable(
-            wrapper: subnetLogosProvider.createLogosWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: logosStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(logos):
-                self?.presenter?.didReceive(subnetLogos: logos)
-            case let .failure(error):
-                self?.logger.warning("Bittensor portfolio subnet marks unavailable: \(error)")
-                self?.presenter?.didReceive(subnetLogos: nil)
-            }
+        load(subnetLogosProvider.createLogosWrapper(), in: logosStore, label: "portfolio subnet marks") { [weak self] in
+            self?.presenter?.didReceive(subnetLogos: $0)
         }
     }
 

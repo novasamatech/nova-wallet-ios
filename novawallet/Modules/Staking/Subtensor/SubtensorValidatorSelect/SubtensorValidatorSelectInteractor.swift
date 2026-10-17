@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-final class SubtensorValidatorSelectInteractor: AnyCancellableCleaning {
+final class SubtensorValidatorSelectInteractor: AnyCancellableCleaning, SubtensorLoadDelivering {
     weak var presenter: ValidatorSelectInteractorOutputProtocol?
 
     let target: SubtensorStakeTarget
@@ -75,19 +75,12 @@ private extension SubtensorValidatorSelectInteractor {
     func loadYields() {
         yieldStore.cancel()
 
-        executeCancellable(
-            wrapper: yieldService.createAlphaYieldsWrapper(for: target.netuid),
-            inOperationQueue: operationQueue,
-            backingCallIn: yieldStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(yields):
-                self?.presenter?.didReceive(yields: yields)
-            case let .failure(error):
-                self?.logger.warning("Subnet validator yields unavailable: \(error)")
-                self?.presenter?.didReceive(yields: nil)
-            }
+        load(
+            yieldService.createAlphaYieldsWrapper(for: target.netuid),
+            in: yieldStore,
+            label: "validator yields"
+        ) { [weak self] in
+            self?.presenter?.didReceive(yields: $0)
         }
     }
 
@@ -118,19 +111,12 @@ private extension SubtensorValidatorSelectInteractor {
 
         let subnet = target.subnetRef
 
-        executeCancellable(
-            wrapper: catalogueService.createCatalogueWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: catalogueStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(catalogue):
-                self?.presenter?.didReceive(alphaPrice: catalogue.subnet(for: subnet)?.freshTaoPerAlpha)
-            case let .failure(error):
-                self?.logger.warning("Subnet catalogue unavailable for validator stakes: \(error)")
-                self?.presenter?.didReceive(alphaPrice: nil)
-            }
+        load(
+            catalogueService.createCatalogueWrapper(),
+            in: catalogueStore,
+            label: "catalogue for validator stakes"
+        ) { [weak self] in
+            self?.presenter?.didReceive(alphaPrice: $0?.subnet(for: subnet)?.freshTaoPerAlpha)
         }
     }
 

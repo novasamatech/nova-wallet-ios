@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-final class SubtensorValidatorInfoInteractor: AnyCancellableCleaning {
+final class SubtensorValidatorInfoInteractor: AnyCancellableCleaning, SubtensorLoadDelivering {
     weak var presenter: SubtensorValInfoInteractorOutputProtocol?
 
     let target: SubtensorStakeTarget
@@ -74,19 +74,8 @@ private extension SubtensorValidatorInfoInteractor {
     func loadRate() {
         rateStore.cancel()
 
-        executeCancellable(
-            wrapper: createRateWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: rateStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(rate):
-                self?.presenter?.didReceive(annualRate: rate)
-            case let .failure(error):
-                self?.logger.warning("Validator reward rate unavailable: \(error)")
-                self?.presenter?.didReceive(annualRate: nil)
-            }
+        load(createRateWrapper(), in: rateStore, label: "validator reward rate") { [weak self] in
+            self?.presenter?.didReceive(annualRate: $0 ?? nil)
         }
     }
 
@@ -100,19 +89,12 @@ private extension SubtensorValidatorInfoInteractor {
 
         let subnet = target.subnetRef
 
-        executeCancellable(
-            wrapper: catalogueService.createCatalogueWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: catalogueStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(catalogue):
-                self?.presenter?.didReceive(alphaPrice: catalogue.subnet(for: subnet)?.freshTaoPerAlpha)
-            case let .failure(error):
-                self?.logger.warning("Subnet catalogue unavailable for the validator stake: \(error)")
-                self?.presenter?.didReceive(alphaPrice: nil)
-            }
+        load(
+            catalogueService.createCatalogueWrapper(),
+            in: catalogueStore,
+            label: "catalogue for the validator stake"
+        ) { [weak self] in
+            self?.presenter?.didReceive(alphaPrice: $0?.subnet(for: subnet)?.freshTaoPerAlpha)
         }
     }
 
@@ -142,16 +124,12 @@ extension SubtensorValidatorInfoInteractor: SubtensorValInfoInteractorInputProto
     }
 
     func setup() {
-        executeCancellable(
-            wrapper: coverageFactory.createWrapper(for: hotkey),
-            inOperationQueue: operationQueue, backingCallIn: coverageStore, runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(value): self?.presenter?.didReceive(coverage: value)
-            case let .failure(error):
-                self?.logger.warning("Validator coverage unavailable: \(error)")
-                self?.presenter?.didReceive(coverage: nil)
-            }
+        load(
+            coverageFactory.createWrapper(for: hotkey),
+            in: coverageStore,
+            label: "validator coverage"
+        ) { [weak self] in
+            self?.presenter?.didReceive(coverage: $0 ?? nil)
         }
         loadRate()
         loadAlphaPrice()

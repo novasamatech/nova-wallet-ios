@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-final class SubtensorSubnetDetailsInteractor {
+final class SubtensorSubnetDetailsInteractor: SubtensorLoadDelivering {
     weak var presenter: SubnetDetailsInteractorOutputProtocol?
 
     let subnet: SubtensorSubnetRef
@@ -92,52 +92,32 @@ private extension SubtensorSubnetDetailsInteractor {
 
     func loadParameters() {
         parametersCallStore.cancel()
-        executeCancellable(
-            wrapper: parametersFactory.createWrapper(for: subnet),
-            inOperationQueue: operationQueue,
-            backingCallIn: parametersCallStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(parameters): self?.presenter?.didReceiveParameters(parameters)
-            case let .failure(error):
-                self?.logger.warning("Subtensor parameters unavailable: \(error)")
-                self?.presenter?.didReceiveParameters(nil)
-            }
+        load(
+            parametersFactory.createWrapper(for: subnet),
+            in: parametersCallStore,
+            label: "parameters"
+        ) { [weak self] in
+            self?.presenter?.didReceiveParameters($0)
         }
     }
 
     func loadYields() {
-        executeCancellable(
-            wrapper: yieldService.createAlphaYieldsWrapper(for: subnet.netuid),
-            inOperationQueue: operationQueue,
-            backingCallIn: yieldsCallStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(yields):
-                self?.presenter?.didReceiveYields(yields)
-            case let .failure(error):
-                self?.logger.warning("Subtensor subnet yields unavailable: \(error)")
-                self?.presenter?.didReceiveYields(nil)
-            }
+        load(
+            yieldService.createAlphaYieldsWrapper(for: subnet.netuid),
+            in: yieldsCallStore,
+            label: "subnet yields"
+        ) { [weak self] in
+            self?.presenter?.didReceiveYields($0)
         }
     }
 
     func loadSubnetLogos() {
-        executeCancellable(
-            wrapper: subnetLogosProvider.createLogosWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: logosCallStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(logos):
-                self?.presenter?.didReceiveSubnetLogos(logos)
-            case let .failure(error):
-                self?.logger.warning("Subtensor subnet logos unavailable for the subnet mark: \(error)")
-                self?.presenter?.didReceiveSubnetLogos(nil)
-            }
+        load(
+            subnetLogosProvider.createLogosWrapper(),
+            in: logosCallStore,
+            label: "subnet logos for the subnet mark"
+        ) { [weak self] in
+            self?.presenter?.didReceiveSubnetLogos($0)
         }
     }
 }
@@ -184,19 +164,12 @@ extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol
     func presetValidator(existingHotkey: AccountId?) {
         presetCallStore.cancel()
 
-        executeCancellable(
-            wrapper: presetFactory.createPresetWrapper(for: subnet, existingHotkey: existingHotkey),
-            inOperationQueue: operationQueue,
-            backingCallIn: presetCallStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(validator):
-                self?.presenter?.didReceivePreset(validator)
-            case let .failure(error):
-                self?.logger.warning("Subtensor subnet validator preset failed: \(error)")
-                self?.presenter?.didReceivePreset(nil)
-            }
+        load(
+            presetFactory.createPresetWrapper(for: subnet, existingHotkey: existingHotkey),
+            in: presetCallStore,
+            label: "subnet validator preset"
+        ) { [weak self] in
+            self?.presenter?.didReceivePreset($0 ?? nil)
         }
     }
 }
