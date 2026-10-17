@@ -59,6 +59,7 @@ extension SubtensorStakingValidationFactoryProtocol {
 
         if dep.isSubnet {
             validations.append(priceImpactAcceptable(quote: dep.quoteContext?.latestQuote, locale: locale))
+            validations.append(passesRealtimeQuote(dep.quoteContext, locale: locale))
         }
 
         DataValidationRunner(validators: validations).runValidation(notifyingOnSuccess: onSuccess)
@@ -74,15 +75,11 @@ extension SubtensorStakingValidationFactoryProtocol {
                 locale: locale
             ),
 
-            hasFreshQuote(
-                context?.latestQuote,
-                locale: locale,
-                onRetry: { context?.onQuoteRefresh() }
-            ),
+            hasQuote(context?.latestQuote, locale: locale),
 
             orderWithinSlippageTolerance(
                 quote: context?.latestQuote,
-                limitPrice: context?.acknowledgedLimit,
+                limitPrice: context?.signingLimit,
                 locale: locale
             )
         ]

@@ -103,7 +103,6 @@ struct SubtensorQuote: Equatable {
     let sim: SubtensorStakingPallet.SimSwapResult
     let spotPrice: Balance
     let feeRate: UInt16
-    var capturedAt = Date()
 }
 
 extension SubtensorQuote {

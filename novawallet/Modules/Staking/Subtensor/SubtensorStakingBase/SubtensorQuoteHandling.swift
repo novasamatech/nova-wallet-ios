@@ -35,6 +35,8 @@ protocol SubtensorQuoteHandling: SubtensorBaseRetrying {
     var isRoot: Bool { get }
     var logger: LoggerProtocol { get }
     var quoteInteractor: SubtensorStakingBaseInteractorInputProtocol { get }
+    var loadingView: LoadableViewProtocol? { get }
+    var alphaDisplayInfo: AssetBalanceDisplayInfo { get }
 
     func inputAmount() -> Balance?
     func quoteRequest() -> SubtensorTradeQuoteRequest?
@@ -87,7 +89,7 @@ extension SubtensorQuoteHandling {
     }
 
     func createQuoteContext() -> SubtensorQuoteValidatingContext? {
-        guard !isRoot else {
+        guard !isRoot, let request = quoteRequest() else {
             return nil
         }
 
@@ -97,8 +99,17 @@ extension SubtensorQuoteHandling {
             latestQuote: latestQuote,
             acknowledgedLimit: latestQuote?.limitPrice,
             tradesUnavailable: tradesUnavailable,
-            onQuoteRefresh: { [weak self] in
-                self?.forceQuoteRefresh()
+            alphaDisplayInfo: alphaDisplayInfo,
+            onQuoteRequest: { [weak self] completion in
+                self?.loadingView?.didStartLoading()
+
+                self?.quoteInteractor.requestValidatingQuote(for: request) { result in
+                    self?.loadingView?.didStopLoading()
+                    completion(result)
+                }
+            },
+            onQuoteUpdate: { [weak self] quote in
+                self?.didReceiveQuote(quote)
             }
         )
     }

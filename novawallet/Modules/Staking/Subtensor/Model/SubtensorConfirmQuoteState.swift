@@ -54,15 +54,9 @@ struct SubtensorConfirmQuoteState {
         return true
     }
 
-    mutating func acknowledgeLatest() -> Bool {
-        guard let latest else {
-            return false
-        }
-
-        acknowledged = latest
+    mutating func acknowledgeLatest() {
+        acknowledged = latest ?? acknowledged
         isPriceMoved = false
-
-        return true
     }
 
     mutating func raisePriceMovedIfCrossed() -> Bool {
