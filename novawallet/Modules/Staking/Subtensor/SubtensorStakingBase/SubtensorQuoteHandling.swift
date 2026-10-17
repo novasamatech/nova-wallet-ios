@@ -102,13 +102,9 @@ extension SubtensorQuoteHandling {
             acknowledgedLimit: latestQuote?.limitPrice,
             tradesUnavailable: tradesUnavailable,
             alphaDisplayInfo: alphaDisplayInfo,
+            loadingView: loadingView,
             onQuoteRequest: { [weak self] completion in
-                self?.loadingView?.didStartLoading()
-
-                self?.quoteInteractor.requestValidatingQuote(for: request) { result in
-                    self?.loadingView?.didStopLoading()
-                    completion(result)
-                }
+                self?.quoteInteractor.requestValidatingQuote(for: request, completion: completion)
             },
             onQuoteUpdate: { [weak self] quote in
                 self?.acceptedQuote = quote

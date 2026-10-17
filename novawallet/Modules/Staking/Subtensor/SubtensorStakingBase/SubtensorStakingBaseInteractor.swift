@@ -30,6 +30,7 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
     private let feeCallStore = CancellableCallStore()
     private let preflightCallStore = CancellableCallStore()
     private let quoteCallStore = CancellableCallStore()
+    private let validatingQuoteCallStore = CancellableCallStore()
     private let catalogueCallStore = CancellableCallStore()
     private let logosCallStore = CancellableCallStore()
     private let costBasisCallStore = CancellableCallStore()
@@ -64,6 +65,7 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
         feeCallStore.cancel()
         preflightCallStore.cancel()
         quoteCallStore.cancel()
+        validatingQuoteCallStore.cancel()
         catalogueCallStore.cancel()
         logosCallStore.cancel()
         costBasisCallStore.cancel()
@@ -239,9 +241,12 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
         for request: SubtensorTradeQuoteRequest,
         completion: @escaping (Result<SubtensorTradeQuote, Error>) -> Void
     ) {
-        execute(
+        validatingQuoteCallStore.cancel()
+
+        executeCancellable(
             wrapper: tradeQuoteFactory.createTradeQuoteWrapper(for: request),
             inOperationQueue: operationQueue,
+            backingCallIn: validatingQuoteCallStore,
             runningCallbackIn: .main,
             callbackClosure: completion
         )
