@@ -30,6 +30,7 @@ protocol SubtensorQuoteHandling: SubtensorBaseRetrying {
     var chainAsset: ChainAsset { get }
     var inputResult: AmountInputResult? { get set }
     var quoteFlow: SubtensorQuoteFlowModel { get set }
+    var acceptedQuote: SubtensorTradeQuote? { get set }
     var isQuoteFailed: Bool { get set }
     var tradesUnavailable: Bool { get set }
     var isRoot: Bool { get }
@@ -94,6 +95,7 @@ extension SubtensorQuoteHandling {
         }
 
         let latestQuote = quoteFlow.freshQuote
+        acceptedQuote = nil
 
         return SubtensorQuoteValidatingContext(
             latestQuote: latestQuote,
@@ -109,9 +111,14 @@ extension SubtensorQuoteHandling {
                 }
             },
             onQuoteUpdate: { [weak self] quote in
+                self?.acceptedQuote = quote
                 self?.didReceiveQuote(quote)
             }
         )
+    }
+
+    func acknowledgedQuote(for context: SubtensorQuoteValidatingContext?) -> SubtensorTradeQuote? {
+        acceptedQuote ?? context?.latestQuote
     }
 
     func didReceiveQuote(_ quote: SubtensorTradeQuote) {

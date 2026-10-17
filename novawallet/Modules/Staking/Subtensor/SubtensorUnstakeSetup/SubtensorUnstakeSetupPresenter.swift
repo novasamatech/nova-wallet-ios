@@ -35,6 +35,7 @@ final class SubtensorUnstakeSetupPresenter {
     var preflightRequest: AccountId?
     var holds: [AccountId: SubtensorRootHold]?
     var quoteFlow = SubtensorQuoteFlowModel()
+    var acceptedQuote: SubtensorTradeQuote?
     var isQuoteFailed = false
     var tradesUnavailable = false
     var costBasis: SubtensorCostBasisState = .loading

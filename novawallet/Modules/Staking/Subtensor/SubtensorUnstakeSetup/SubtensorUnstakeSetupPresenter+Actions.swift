@@ -168,7 +168,7 @@ extension SubtensorUnstakeSetupPresenter {
                 exitHotkeys: dependencies.exitHotkeys
             )),
             tolerance: isRoot ? nil : slippage,
-            acknowledgedQuote: isRoot ? nil : quoteFlow.freshQuote
+            acknowledgedQuote: acknowledgedQuote(for: dependencies.quoteContext)
         )
     }
 }

@@ -43,6 +43,7 @@ final class SubtensorStakingSetupPresenter {
     var validatorItem: SubtensorValidatorDirectoryItem?
     var slippage: BigRational
     var quoteFlow = SubtensorQuoteFlowModel()
+    var acceptedQuote: SubtensorTradeQuote?
     var isQuoteFailed = false
     var tradesUnavailable = false
     var costBasis: SubtensorCostBasisState = .loading
@@ -359,11 +360,10 @@ extension SubtensorStakingSetupPresenter: SubtensorStakingSetupPresenterProtocol
             return
         }
 
-        dataValidationFactory.validateStake(
-            for: createValidationDependencies(for: target),
-            locale: selectedLocale
-        ) { [weak self] in
-            guard let self, let model = createConfirmModel() else {
+        let dependencies = createValidationDependencies(for: target)
+
+        dataValidationFactory.validateStake(for: dependencies, locale: selectedLocale) { [weak self] in
+            guard let self, let model = createConfirmModel(for: dependencies) else {
                 return
             }
 

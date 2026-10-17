@@ -168,7 +168,6 @@ final class SubtensorStakingValidationFactory {
                     return
                 }
 
-                context.onQuoteUpdate(new)
                 completion(nil)
             case .failure:
                 completion(.unavailable)
