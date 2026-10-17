@@ -10,7 +10,7 @@ struct SubtensorFlowServices {
     let tradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
-    let blockNumberSubscriptionFactory: BlockNumberCallbackSubscriptionFactoryProtocol
+    let blockNumberSubscription: BlockNumberRemoteSubscriptionProtocol?
     let currencyManager: CurrencyManagerProtocol
     let operationQueue: OperationQueue
 
@@ -20,7 +20,10 @@ struct SubtensorFlowServices {
 }
 
 enum SubtensorFlowServicesFactory {
-    static func createServices(for state: SubtensorStakingSharedStateProtocol) -> SubtensorFlowServices? {
+    static func createServices(
+        for state: SubtensorStakingSharedStateProtocol,
+        observesBlocks: Bool = true
+    ) -> SubtensorFlowServices? {
         let chain = state.stakingOption.chainAsset.chain
 
         guard
@@ -69,11 +72,14 @@ enum SubtensorFlowServicesFactory {
             tradeQuoteFactory: state.earnServices.tradeQuoteFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            blockNumberSubscriptionFactory: BlockNumberCallbackSubscriptionFactory(
-                chainRegistry: state.chainRegistry,
+            blockNumberSubscription: observesBlocks ? BlockNumberRemoteSubscription(
+                chainId: chain.chainId,
+                connection: connection,
+                runtimeProvider: runtimeProvider,
                 operationQueue: operationQueue,
-                workingQueue: .main
-            ),
+                workingQueue: .main,
+                localKeyFactory: LocalStorageKeyFactory()
+            ) : nil,
             currencyManager: currencyManager,
             operationQueue: operationQueue
         )

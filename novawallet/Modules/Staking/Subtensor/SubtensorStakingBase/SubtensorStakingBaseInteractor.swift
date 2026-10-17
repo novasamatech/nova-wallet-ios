@@ -17,14 +17,13 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
-    let blockNumberSubscriptionFactory: BlockNumberCallbackSubscriptionFactoryProtocol
+    let blockNumberSubscription: BlockNumberRemoteSubscriptionProtocol?
     let runtimeProvider: RuntimeCodingServiceProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: StreamableProvider<PriceData>?
-    private var blockNumberSubscription: BlockNumberRemoteSubscriptionProtocol?
     private var feeDebouncer = Debouncer(delay: 0.25)
     private var quoteDebouncer = Debouncer(delay: 0.25)
     private let feeCallStore = CancellableCallStore()
@@ -53,7 +52,7 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
         subnetLogosProvider = state.earnServices.subnetLogosProvider
         walletLocalSubscriptionFactory = flowServices.walletLocalSubscriptionFactory
         priceLocalSubscriptionFactory = flowServices.priceLocalSubscriptionFactory
-        blockNumberSubscriptionFactory = flowServices.blockNumberSubscriptionFactory
+        blockNumberSubscription = flowServices.blockNumberSubscription
         runtimeProvider = flowServices.runtimeProvider
         operationQueue = flowServices.operationQueue
         self.logger = logger
@@ -71,6 +70,7 @@ class SubtensorStakingBaseInteractor: RuntimeConstantFetching, AnyProviderAutoCl
         costBasisCallStore.cancel()
         holdsCallStore.cancel()
 
+        blockNumberSubscription?.unsubscribe()
         positionsSyncService.remove(observer: self)
     }
 }
@@ -96,9 +96,7 @@ private extension SubtensorStakingBaseInteractor {
 
     func makeBlockNumberSubscription() {
         do {
-            let subscription = try blockNumberSubscriptionFactory.createSubscription(for: chainAsset.chain.chainId)
-
-            try subscription.start { [weak self] result in
+            try blockNumberSubscription?.start { [weak self] result in
                 switch result {
                 case let .success(blockNumber):
                     if let blockNumber {
@@ -108,8 +106,6 @@ private extension SubtensorStakingBaseInteractor {
                     self?.logger.error("Block number subscription failed: \(error)")
                 }
             }
-
-            blockNumberSubscription = subscription
         } catch {
             logger.error("Block number subscription failed: \(error)")
         }
