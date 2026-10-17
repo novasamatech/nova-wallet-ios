@@ -436,6 +436,7 @@ final class MultistakingSyncService {
                 logger: logger
             ),
             cataloguePricing: subtensorProcessServices.createCataloguePricingTracker(
+                chainOperationFactory: apiOperationFactory,
                 operationQueue: operationQueue,
                 logger: logger
             )

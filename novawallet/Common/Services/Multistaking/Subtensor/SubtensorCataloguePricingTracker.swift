@@ -7,30 +7,26 @@ final class SubtensorCataloguePricingTracker {
         let isFullyPriced: Bool?
     }
 
-    let catalogueService: SubtensorSubnetCatalogueServiceProtocol
+    let alphaPriceProvider: SubtensorAlphaPriceProviderProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
-    private var catalogue: Result<SubtensorSubnetCatalogue, Error>?
+    private var prices: Result<SubtensorAlphaPrices, Error>?
+    private var requestedNetuids: Set<UInt16> = []
     private let callStore = CancellableCallStore()
 
     init(
-        catalogueService: SubtensorSubnetCatalogueServiceProtocol,
+        alphaPriceProvider: SubtensorAlphaPriceProviderProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
-        self.catalogueService = catalogueService
+        self.alphaPriceProvider = alphaPriceProvider
         self.operationQueue = operationQueue
         self.logger = logger
     }
 
     func seed() {
-        guard case let .fresh(seed) = catalogueService.cachedCatalogue() else {
-            catalogue = nil
-            return
-        }
-
-        catalogue = .success(seed)
+        prices = alphaPriceProvider.cachedPrices().map { .success($0) }
     }
 
     func cancel() {
@@ -38,9 +34,9 @@ final class SubtensorCataloguePricingTracker {
     }
 
     func valuation(of state: Multistaking.SubtensorStakingState) -> Valuation {
-        let portfolio = SubtensorPortfolioBuilder.build(state: state, catalogue: try? catalogue?.get())
+        let portfolio = SubtensorPortfolioBuilder.build(state: state, prices: try? prices?.get())
 
-        let isFullyPriced = portfolio.isFullyPriced || catalogue != nil ? portfolio.isFullyPriced : nil
+        let isFullyPriced = portfolio.isFullyPriced || prices != nil ? portfolio.isFullyPriced : nil
 
         return Valuation(stake: portfolio.pricedTaoValue, isFullyPriced: isFullyPriced)
     }
@@ -51,12 +47,19 @@ final class SubtensorCataloguePricingTracker {
         mutex: NSLock,
         onUpdate: @escaping (Bool) -> Void
     ) {
-        guard !callStore.hasCall, (latestState()?.subnetCount ?? 0) > 0 else {
+        guard let netuids = latestState()?.heldSubnetNetuids, !netuids.isEmpty else {
             return
         }
 
+        guard !callStore.hasCall || netuids != requestedNetuids else {
+            return
+        }
+
+        requestedNetuids = netuids
+        callStore.cancel()
+
         executeCancellable(
-            wrapper: catalogueService.createCatalogueWrapper(),
+            wrapper: alphaPriceProvider.createPricesWrapper(for: netuids),
             inOperationQueue: operationQueue,
             backingCallIn: callStore,
             runningCallbackIn: callbackQueue,
@@ -69,22 +72,22 @@ final class SubtensorCataloguePricingTracker {
 
 private extension SubtensorCataloguePricingTracker {
     func apply(
-        _ result: Result<SubtensorSubnetCatalogue, Error>,
+        _ result: Result<SubtensorAlphaPrices, Error>,
         to state: Multistaking.SubtensorStakingState?,
         onUpdate: (Bool) -> Void
     ) {
         if case let .failure(error) = result {
-            logger.warning("Subnet catalogue fetch error: \(error)")
+            logger.warning("Alpha prices fetch error: \(error)")
         }
 
         guard let state else {
-            catalogue = result
+            prices = result
             return
         }
 
         let previous = valuation(of: state)
 
-        catalogue = result
+        prices = result
 
         onUpdate(valuation(of: state) != previous)
     }

@@ -24,7 +24,7 @@ struct SubtensorPortfolioState {
     var isSyncFailed = false
     var price = SubtensorPortfolioPriceState.loading
     var isCatalogueResolved = false
-    var catalogue: SubtensorSubnetCatalogue?
+    var prices: SubtensorAlphaPrices?
     var subnetLogos: SubtensorSubnetLogos?
     var rootYields: SubtensorAlphaYields?
     var isRootRateResolved = false
@@ -39,8 +39,12 @@ struct SubtensorPortfolioState {
     var period = SubtensorPortfolioViewModelFactory.defaultPeriod
     var chartPoint: Int?
 
+    var catalogue: SubtensorSubnetCatalogue? {
+        prices?.catalogue
+    }
+
     var portfolio: SubtensorPortfolio? {
-        positions.map { SubtensorPortfolioBuilder.build(state: $0, catalogue: catalogue) }
+        positions.map { SubtensorPortfolioBuilder.build(state: $0, prices: prices) }
     }
 
     var groups: [SubtensorPortfolioGroup] {

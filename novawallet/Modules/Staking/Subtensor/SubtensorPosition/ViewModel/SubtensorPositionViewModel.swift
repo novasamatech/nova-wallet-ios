@@ -14,7 +14,7 @@ struct SubtensorPositionState {
     var isSyncFailed = false
     var price = SubtensorPortfolioPriceState.loading
     var isCatalogueResolved = false
-    var catalogue: SubtensorSubnetCatalogue?
+    var prices: SubtensorAlphaPrices?
     var subnetLogos: SubtensorSubnetLogos?
     var validatorHotkey: AccountId?
     var validator: SubtensorValidatorDirectoryItem?
@@ -46,6 +46,10 @@ struct SubtensorPositionState {
         netuid == SubtensorStakingPallet.rootNetuid
     }
 
+    var catalogue: SubtensorSubnetCatalogue? {
+        prices?.catalogue
+    }
+
     var primaryPosition: SubtensorStakingPosition? {
         group.flatMap { group in
             group.positions.first { $0.hotkey == group.primaryHotkey }
@@ -65,7 +69,7 @@ struct SubtensorPositionState {
     }
 
     var taoValue: Balance? {
-        group.flatMap { catalogue?.taoValue(of: $0.totalAlpha, netuid: netuid) }
+        group.flatMap { prices?.taoValue(of: $0.totalAlpha, netuid: netuid) }
     }
 
     var primaryHold: SubtensorRootHold? {

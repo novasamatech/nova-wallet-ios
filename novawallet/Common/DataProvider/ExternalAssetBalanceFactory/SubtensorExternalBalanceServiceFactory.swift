@@ -77,6 +77,7 @@ extension SubtensorExternalBalanceServiceFactory: ExternalAssetBalanceServiceFac
             repository: AnyDataProviderRepository(repository),
             stakeStateFetchFactory: stakeStateFetchFactory,
             cataloguePricing: processServices.createCataloguePricingTracker(
+                chainOperationFactory: apiOperationFactory,
                 operationQueue: operationQueue,
                 logger: logger
             ),
