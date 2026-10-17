@@ -98,16 +98,16 @@ private extension SubtensorUnstakeValidatingDep {
 
         guard
             let latestQuote = quoteContext?.latestQuote,
-            let acknowledgedLimit = quoteContext?.acknowledgedLimit,
+            let signingLimit = quoteContext?.signingLimit,
             let minimumTaoOut = try? SubtensorTradeQuoteFactory.sellSwapMinimumOut(
                 alpha: latestQuote.amountIn,
                 feeRate: latestQuote.quote.feeRate,
-                limitPrice: acknowledgedLimit
+                limitPrice: signingLimit
             ) else {
             return nil
         }
 
-        return (minimumTaoOut, acknowledgedLimit)
+        return (minimumTaoOut, signingLimit)
     }
 }
 
@@ -140,6 +140,7 @@ extension SubtensorStakingValidationFactoryProtocol {
 
         if dep.isSubnet {
             validations.append(priceImpactAcceptable(quote: dep.quoteContext?.latestQuote, locale: locale))
+            validations.append(passesRealtimeQuote(dep.quoteContext, locale: locale))
         }
 
         DataValidationRunner(validators: validations).runValidation(notifyingOnSuccess: onSuccess)

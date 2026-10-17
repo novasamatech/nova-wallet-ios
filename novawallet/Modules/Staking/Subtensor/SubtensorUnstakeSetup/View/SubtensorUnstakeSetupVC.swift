@@ -225,6 +225,14 @@ extension SubtensorUnstakeSetupVC: SubtensorUnstakeSetupViewProtocol {
         applyNotes(viewModel)
         rootView.applyAction(viewModel.action)
     }
+
+    func didStartLoading() {
+        rootView.actionLoadableView.startLoading()
+    }
+
+    func didStopLoading() {
+        rootView.actionLoadableView.stopLoading()
+    }
 }
 
 extension SubtensorUnstakeSetupVC: AmountInputAccessoryViewDelegate {

@@ -27,8 +27,7 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
         let expected = SubtensorTradeQuote(
             quote: generateQuote(
                 direction: .stake(taoIn: 4_985_044_866),
-                sim: sim,
-                capturedAt: tradeQuote.quote.capturedAt
+                sim: sim
             ),
             amountIn: 5_000_000_000,
             novaFee: SubtensorNovaFee(amount: 14_955_134, beneficiary: beneficiary),
@@ -77,8 +76,7 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
         let expected = SubtensorTradeQuote(
             quote: generateQuote(
                 direction: .unstake(alphaIn: 56_200_000_000),
-                sim: sim,
-                capturedAt: tradeQuote.quote.capturedAt
+                sim: sim
             ),
             amountIn: 56_200_000_000,
             novaFee: SubtensorNovaFee(amount: 12_397_806, beneficiary: beneficiary),
@@ -252,15 +250,13 @@ final class SubtensorTradeQuoteFactoryTests: XCTestCase {
 
     private func generateQuote(
         direction: SubtensorQuoteArgs.Direction,
-        sim: SubtensorStakingPallet.SimSwapResult,
-        capturedAt: Date
+        sim: SubtensorStakingPallet.SimSwapResult
     ) -> SubtensorQuote {
         SubtensorQuote(
             args: SubtensorQuoteArgs(netuid: netuid, direction: direction),
             sim: sim,
             spotPrice: 73_800_000,
-            feeRate: 33,
-            capturedAt: capturedAt
+            feeRate: 33
         )
     }
 

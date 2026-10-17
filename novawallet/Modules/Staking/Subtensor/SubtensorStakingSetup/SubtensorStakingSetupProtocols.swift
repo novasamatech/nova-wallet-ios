@@ -1,6 +1,6 @@
 import Foundation
 
-protocol SubtensorStakingSetupViewProtocol: ControllerBackedProtocol {
+protocol SubtensorStakingSetupViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
     func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol)
     func didReceiveAmountAsset(viewModel: AssetBalanceViewModelProtocol)
     func didReceive(viewModel: SubtensorStakingSetupViewModel)

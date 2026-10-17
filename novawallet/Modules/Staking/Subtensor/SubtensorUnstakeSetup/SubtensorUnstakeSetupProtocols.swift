@@ -1,6 +1,6 @@
 import Foundation
 
-protocol SubtensorUnstakeSetupViewProtocol: ControllerBackedProtocol {
+protocol SubtensorUnstakeSetupViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
     func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol)
     func didReceiveAmountAsset(viewModel: AssetViewModel)
     func didReceive(viewModel: SubtensorUnstakeSetupViewModel)

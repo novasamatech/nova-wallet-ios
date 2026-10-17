@@ -1,15 +1,9 @@
 import Foundation
 
-protocol SubtensorStakingErrorPresentable: BaseErrorPresentable {
+protocol SubtensorStakingErrorPresentable: SwapErrorPresentable {
     func presentError(title: String, message: String, view: ControllerBackedProtocol, locale: Locale?)
 
     func presentPreflightNotReceived(
-        _ view: ControllerBackedProtocol,
-        onRetry: @escaping () -> Void,
-        locale: Locale?
-    )
-
-    func presentQuoteMissing(
         _ view: ControllerBackedProtocol,
         onRetry: @escaping () -> Void,
         locale: Locale?
@@ -47,22 +41,6 @@ extension SubtensorStakingErrorPresentable where Self: AlertPresentable & Common
         locale: Locale?
     ) {
         presentRequestStatus(on: view, locale: locale, retryAction: onRetry)
-    }
-
-    func presentQuoteMissing(
-        _ view: ControllerBackedProtocol,
-        onRetry: @escaping () -> Void,
-        locale: Locale?
-    ) {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
-        presentRequestStatus(
-            on: view,
-            title: strings.stakingSubtensorQuoteMissingTitle(),
-            message: strings.stakingSubtensorQuoteMissingMessage(),
-            locale: locale,
-            retryAction: onRetry
-        )
     }
 
     func presentStalePositions(
