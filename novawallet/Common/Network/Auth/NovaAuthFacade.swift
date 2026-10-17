@@ -6,17 +6,14 @@ import Operation_iOS
 struct NovaAuthEndpoint {
     let context: NovaAuthContext
     let client: NovaAuthClientProtocol
-    // Captured with the accepted context, before observer delivery.
     let invalidationRevision: UInt64
 }
 
 struct NovaAuthEndpointAvailability {
-    let revision: UInt64
     let invalidationRevision: UInt64
     let endpoint: NovaAuthEndpoint?
 
-    init(revision: UInt64 = 0, invalidationRevision: UInt64 = 0, endpoint: NovaAuthEndpoint? = nil) {
-        self.revision = revision
+    init(invalidationRevision: UInt64 = 0, endpoint: NovaAuthEndpoint? = nil) {
         self.invalidationRevision = invalidationRevision
         self.endpoint = endpoint
     }
@@ -41,7 +38,8 @@ final class NovaAuthFacade: NovaAuthProvidingProtocol {
     private let client: NovaAuthClientProtocol?
     private let activate: (NovaAuthOrigin) throws -> NovaAuthContext
     private let contextInvalidationID: () -> UUID?
-    private let mutex = NSRecursiveLock()
+    private let logger: LoggerProtocol
+    private let mutex = NSLock()
     private var latestSnapshot: GlobalConfigSnapshot?
     private let availabilityLock = NSLock()
     private var publishedAvailability = NovaAuthEndpointAvailability()
@@ -51,14 +49,21 @@ final class NovaAuthFacade: NovaAuthProvidingProtocol {
         configProvider: GlobalConfigProviding,
         client: NovaAuthClientProtocol?,
         contextInvalidationID: @escaping () -> UUID?,
-        activate: @escaping (NovaAuthOrigin) throws -> NovaAuthContext
+        activate: @escaping (NovaAuthOrigin) throws -> NovaAuthContext,
+        logger: LoggerProtocol = Logger.shared
     ) {
         self.configProvider = configProvider
         self.client = client
         self.contextInvalidationID = contextInvalidationID
         self.activate = activate
+        self.logger = logger
         configProvider.addSnapshotObserver(self) { [weak self] snapshot in
-            _ = try? self?.adopt(snapshot)
+            guard let self else { return }
+            do {
+                _ = try adopt(snapshot)
+            } catch {
+                logger.warning("NovaAuth config refresh not adopted: \(error)")
+            }
         }
     }
 
@@ -132,19 +137,16 @@ final class NovaAuthFacade: NovaAuthProvidingProtocol {
 // MARK: Private
 
 private extension NovaAuthFacade {
-    // Main-thread peeks and registrations take only this lock, never the adoption mutex held across auth I/O.
     var availability: NovaAuthEndpointAvailability {
         availabilityLock.lock()
         defer { availabilityLock.unlock() }
         return publishedAvailability
     }
 
-    // Publishing and snapshotting observers is atomic: a registration either gets this delivery or sees its result.
     func publishLocked(_ endpoint: NovaAuthEndpoint?, invalidated: Bool) -> [() -> Void] {
         availabilityLock.lock()
         defer { availabilityLock.unlock() }
         let current = NovaAuthEndpointAvailability(
-            revision: publishedAvailability.revision + 1,
             invalidationRevision: publishedAvailability.invalidationRevision + (invalidated ? 1 : 0),
             endpoint: endpoint
         )
@@ -161,7 +163,6 @@ private extension NovaAuthFacade {
             throw NovaAuthError.invalidConfiguration
         }
 
-        // Config base URLs may end at the root, but signed and stored origins must remain strict.
         let value = components.percentEncodedPath == "/"
             ? String(baseURL.absoluteString.dropLast())
             : baseURL.absoluteString
@@ -172,9 +173,9 @@ private extension NovaAuthFacade {
 extension NovaAuthFacade {
     static let shared: NovaAuthFacade = {
         let client: NovaAuth?
-        if !ProcessInfo.processInfo.arguments.contains("-UNITTEST"),
+        if !AppDelegate.isUnitTesting,
            let appIdentity = ApplicationConfig.shared.novaAuthAppIdentity,
-           let sharedStore = SharedContainerGroup.novaAuthStore {
+           let sharedStore = ApplicationConfig.shared.novaAuthSharedStore {
             client = NovaAuth(configuration: NovaAuthConfiguration(
                 appIdentity: appIdentity,
                 settingsManager: SettingsManager.shared,
@@ -195,16 +196,4 @@ extension NovaAuthFacade {
             }
         )
     }()
-}
-
-private extension SharedContainerGroup {
-    static var novaAuthStore: NovaAuthSharedStoreConfiguration? {
-        guard let hostAppNamespace = Bundle.main.object(forInfoDictionaryKey: "NovaAuthHostAppNamespace") as? String else {
-            return nil
-        }
-        return try? NovaAuthSharedStoreConfiguration(
-            accessGroup: name,
-            hostAppNamespace: hostAppNamespace
-        )
-    }
 }
