@@ -142,7 +142,10 @@ extension SubtensorStakingSetupPresenter: SubtensorSetupInteractorOutputProtocol
 
     func didReceivePreflight(_ preflight: SubtensorStakingPreflight) {
         self.preflight = preflight
-        blockTime = preflight.blockTime
+    }
+
+    func didReceiveBlockTime(_ blockTime: BlockTime) {
+        self.blockTime = blockTime
         provideViewModel()
     }
 

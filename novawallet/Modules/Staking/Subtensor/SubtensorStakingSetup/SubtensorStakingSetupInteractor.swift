@@ -19,6 +19,7 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
     let maxApyProvider: SubtensorMaxApyProviderProtocol
     let subnetsService: SubtensorSubnetsServiceProtocol
     let earnSettings: SubtensorEarnSettingsProtocol
+    let blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
 
     private let quickPickCallStore = CancellableCallStore()
     private let validatorCallStore = CancellableCallStore()
@@ -26,9 +27,10 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
     private let rankingCallStore = CancellableCallStore()
     private let subnetCallStore = CancellableCallStore()
 
-    override init(
+    init(
         flowServices: SubtensorFlowServices,
         state: SubtensorStakingSharedStateProtocol,
+        blockTimeOperationFactory: BlockTimeOperationFactoryProtocol,
         logger: LoggerProtocol
     ) {
         presetFactory = state.earnServices.validatorPresetFactory
@@ -37,6 +39,7 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
         maxApyProvider = state.earnServices.maxApyProvider
         subnetsService = state.subnetsService
         earnSettings = state.earnServices.earnSettings
+        self.blockTimeOperationFactory = blockTimeOperationFactory
 
         super.init(flowServices: flowServices, state: state, logger: logger)
     }
@@ -76,6 +79,21 @@ private extension SubtensorStakingSetupInteractor {
 
 extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol {
     func cancelQuickPickSnapshot() { quickPickCallStore.cancel() }
+
+    func loadBlockTime() {
+        execute(
+            wrapper: blockTimeOperationFactory.createExpectedBlockTimeWrapper(from: runtimeProvider),
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(blockTime):
+                self?.presenter?.didReceiveBlockTime(blockTime)
+            case let .failure(error):
+                self?.logger.error("Block time fetch failed: \(error)")
+            }
+        }
+    }
 
     func loadQuickPickSnapshot(for order: SubtensorQuickPickOrder) {
         quickPickCallStore.cancel()
