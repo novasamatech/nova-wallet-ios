@@ -2,6 +2,7 @@ import Foundation
 import Keystore_iOS
 import NovaAnalytics
 import NovaAuth
+import Operation_iOS
 
 enum AnalyticsFacadeFactory {
     /// An accessor, not a builder. The only place in the app that touches the singleton, so
@@ -35,7 +36,7 @@ enum AnalyticsFacadeFactory {
 
         return AnalyticsServiceFacade(
             configuration: AnalyticsConfiguration(
-                authProvider: AnalyticsAuthAdapter(provider: NovaAuthFacade.shared),
+                authProvider: NovaAuthFacade.shared,
                 isAuthSupported: NovaAuthFacade.shared.isSupported,
                 // `ApplicationConfig.version` appends the build number, which the
                 // gateway does not expect.
@@ -50,4 +51,16 @@ enum AnalyticsFacadeFactory {
             )
         )
     }()
+}
+
+extension NovaAuthFacade: AnalyticsAuthProvidingProtocol {
+    func createAuthWrapper() -> CompoundOperationWrapper<AnalyticsAuth> {
+        let endpoint = createEndpointWrapper()
+        let map = ClosureOperation<AnalyticsAuth> {
+            let value = try endpoint.targetOperation.extractNoCancellableResultData()
+            return AnalyticsAuth(context: value.context, client: value.client)
+        }
+        map.addDependency(endpoint.targetOperation)
+        return endpoint.insertingTail(operation: map)
+    }
 }

@@ -238,6 +238,22 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #endif
     }
 
+    var novaAuthSharedStore: NovaAuthSharedStoreConfiguration? {
+        guard let hostAppNamespace = Bundle.main.object(forInfoDictionaryKey: "NovaAuthHostAppNamespace") as? String else {
+            return nil
+        }
+
+        do {
+            return try NovaAuthSharedStoreConfiguration(
+                accessGroup: SharedContainerGroup.name,
+                hostAppNamespace: hostAppNamespace
+            )
+        } catch {
+            Logger.shared.error("NovaAuth shared store configuration rejected: \(error)")
+            return nil
+        }
+    }
+
     var dAppsListURL: URL {
         #if F_RELEASE
             URL(string: "https://raw.githubusercontent.com/novasamatech/nova-utils/master/dapps/dapps.json")!
