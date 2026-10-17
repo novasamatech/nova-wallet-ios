@@ -235,6 +235,18 @@ extension SubtensorStakingBaseInteractor: SubtensorStakingBaseInteractorInputPro
         }
     }
 
+    func requestValidatingQuote(
+        for request: SubtensorTradeQuoteRequest,
+        completion: @escaping (Result<SubtensorTradeQuote, Error>) -> Void
+    ) {
+        execute(
+            wrapper: tradeQuoteFactory.createTradeQuoteWrapper(for: request),
+            inOperationQueue: operationQueue,
+            runningCallbackIn: .main,
+            callbackClosure: completion
+        )
+    }
+
     func refreshPositions() {
         positionsSyncService.refresh()
     }

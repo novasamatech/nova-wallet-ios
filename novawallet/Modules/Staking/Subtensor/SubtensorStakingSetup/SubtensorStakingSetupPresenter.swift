@@ -289,6 +289,15 @@ extension SubtensorStakingSetupPresenter: SubtensorQuoteHandling {
     var retryView: ControllerBackedProtocol? { view }
     var retryWireframe: AlertPresentable & FeeRetryable & CommonRetryable { wireframe }
     var quoteInteractor: SubtensorStakingBaseInteractorInputProtocol { interactor }
+    var loadingView: LoadableViewProtocol? { view }
+
+    var alphaDisplayInfo: AssetBalanceDisplayInfo {
+        guard let target else {
+            return chainAsset.assetDisplayInfo
+        }
+
+        return chainAsset.assetDisplayInfo.subtensorAlpha(netuid: target.netuid, catalogue: catalogue)
+    }
 }
 
 extension SubtensorStakingSetupPresenter: SubtensorStakingSetupPresenterProtocol {

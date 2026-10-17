@@ -168,26 +168,44 @@ extension SubtensorConfirmPresenter {
     }
 
     func createQuoteContext() -> SubtensorQuoteValidatingContext? {
-        quoteState.map { quoteState in
-            SubtensorQuoteValidatingContext(
-                latestQuote: quoteState.latest,
-                acknowledgedLimit: quoteState.signingLimit,
-                tradesUnavailable: tradesUnavailable,
-                onQuoteRefresh: { [weak self] in
-                    self?.refreshQuote()
-                }
-            )
+        guard let quoteState, let request = quoteState.request else {
+            return nil
         }
+
+        return SubtensorQuoteValidatingContext(
+            latestQuote: quoteState.latest ?? quoteState.acknowledged,
+            acknowledgedLimit: quoteState.acknowledged?.limitPrice,
+            tradesUnavailable: tradesUnavailable,
+            alphaDisplayInfo: chainAsset.assetDisplayInfo.subtensorAlpha(
+                netuid: model.target.netuid,
+                catalogue: catalogue
+            ),
+            onQuoteRequest: { [weak self] completion in
+                self?.view?.didStartLoading()
+
+                self?.interactor.requestValidatingQuote(for: request) { result in
+                    self?.view?.didStopLoading()
+                    completion(result)
+                }
+            },
+            onQuoteUpdate: { [weak self] quote in
+                self?.didReceiveQuote(quote)
+            },
+            onPriceMoved: { [weak self] quote in
+                self?.applyMovedQuote(quote)
+            }
+        )
     }
 
-    func presentQuoteMissing() {
-        guard let view else {
+    func applyMovedQuote(_ quote: SubtensorTradeQuote) {
+        guard var state = quoteState, state.apply(latest: quote) else {
             return
         }
 
-        wireframe.presentQuoteMissing(view, onRetry: { [weak self] in
-            self?.refreshQuote()
-        }, locale: selectedLocale)
+        state.raisePriceMoved()
+        quoteState = state
+
+        provideViewModel()
     }
 
     func applyTapGate() -> Bool {
@@ -196,11 +214,7 @@ extension SubtensorConfirmPresenter {
         }
 
         if state.isPriceMoved {
-            guard state.acknowledgeLatest() else {
-                presentQuoteMissing()
-                return false
-            }
-
+            state.acknowledgeLatest()
             quoteState = state
 
             refreshFee()
@@ -228,20 +242,14 @@ extension SubtensorConfirmPresenter {
             return createOperation(limitPrice: nil, quotedTaoOut: nil).map { ($0, nil) }
         }
 
-        switch SubtensorConfirmTapRule.quoteVerdict(latest: state.latest, acknowledged: state.acknowledged) {
-        case let .proceed(latest, limitPrice) where !state.isPriceMoved:
-            return createOperation(
-                limitPrice: limitPrice,
-                quotedTaoOut: latest.quote.sim.taoAmount
-            ).map { ($0, latest) }
-        case .quoteMissing:
-            presentQuoteMissing()
-            return nil
-        case .proceed, .priceMoved:
-            quoteState?.raisePriceMoved()
-            provideViewModel()
+        guard let latest = state.latest, let limitPrice = state.signingLimit, !state.isPriceMoved else {
             return nil
         }
+
+        return createOperation(
+            limitPrice: limitPrice,
+            quotedTaoOut: latest.quote.sim.taoAmount
+        ).map { ($0, latest) }
     }
 
     func handOffAtTap() {

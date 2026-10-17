@@ -321,6 +321,8 @@ extension SubtensorUnstakeSetupPresenter: SubtensorQuoteHandling {
     var retryView: ControllerBackedProtocol? { view }
     var retryWireframe: AlertPresentable & FeeRetryable & CommonRetryable { wireframe }
     var quoteInteractor: SubtensorStakingBaseInteractorInputProtocol { interactor }
+    var loadingView: LoadableViewProtocol? { view }
+    var alphaDisplayInfo: AssetBalanceDisplayInfo { inputDisplayInfo }
 }
 
 extension SubtensorUnstakeSetupPresenter: Localizable {
