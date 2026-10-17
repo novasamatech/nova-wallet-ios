@@ -77,7 +77,6 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
     func setup() {
         state.setup(for: account)
 
-        providePrices(for: requestedNetuids)
         subscribePositions()
         subscribeTaoPrice(currency: selectedCurrency)
         provideSubnetLogos()
