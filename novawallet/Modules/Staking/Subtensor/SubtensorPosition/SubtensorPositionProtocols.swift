@@ -16,7 +16,7 @@ protocol SubtensorPositionPresenterProtocol: AnyObject {
 }
 
 protocol SubtensorPositionInteractorInputProtocol: AnyObject {
-    func cachedCatalogue() -> SubtensorSubnetCatalogue?
+    func cachedPrices() -> SubtensorAlphaPrices?
     func cachedYields() -> SubtensorAlphaYields?
     func setup()
     func refreshPositions()
@@ -31,7 +31,7 @@ protocol SubnetPositionInteractorOutputProtocol: AnyObject {
     func didReceiveSyncFailure(_ isFailed: Bool)
     func didReceive(price: PriceData?)
     func didChangeCurrency()
-    func didReceive(catalogue: SubtensorSubnetCatalogue?)
+    func didReceive(prices: SubtensorAlphaPrices?)
     func didReceive(subnetsInfo: SubtensorSubnetsInfo?)
     func didReceive(subnetLogos: SubtensorSubnetLogos?)
     func didReceive(validator: SubtensorValidatorDirectoryItem?, for hotkey: AccountId)

@@ -6,7 +6,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
 
     let state: SubtensorStakingSharedStateProtocol
     let netuid: UInt16
-    let catalogueService: SubtensorSubnetCatalogueServiceProtocol
+    let alphaPriceProvider: SubtensorAlphaPriceProviderProtocol
     let yieldService: SubtensorYieldServiceProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
@@ -19,7 +19,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
     var priceProvider: StreamableProvider<PriceData>?
     private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
     private var failedHoldsHotkeys: [AccountId]?
-    private let catalogueStore = CancellableCallStore()
+    private let pricesStore = CancellableCallStore()
     private let logosStore = CancellableCallStore()
     private let validatorStore = CancellableCallStore()
     private let rateStore = CancellableCallStore()
@@ -49,7 +49,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
     ) {
         self.state = state
         self.netuid = netuid
-        catalogueService = state.earnServices.catalogueService
+        alphaPriceProvider = state.earnServices.alphaPriceProvider
         yieldService = state.earnServices.yieldService
         subnetLogosProvider = state.earnServices.subnetLogosProvider
         priceHistoryService = state.earnServices.priceHistoryService
@@ -62,7 +62,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
     }
 
     deinit {
-        [catalogueStore, logosStore, validatorStore, rateStore, holdsStore, historyStore, subnetsInfoStore].forEach {
+        [pricesStore, logosStore, validatorStore, rateStore, holdsStore, historyStore, subnetsInfoStore].forEach {
             $0.cancel()
         }
 
@@ -117,15 +117,15 @@ private extension SubtensorPositionInteractor {
         }
     }
 
-    func loadCatalogue() {
-        catalogueStore.cancel()
+    func loadPrices() {
+        pricesStore.cancel()
 
         load(
-            catalogueService.createCatalogueWrapper(),
-            in: catalogueStore,
-            label: "position catalogue"
+            alphaPriceProvider.createPricesWrapper(for: [netuid]),
+            in: pricesStore,
+            label: "position alpha prices"
         ) { [weak self] in
-            self?.presenter?.didReceive(catalogue: $0)
+            self?.presenter?.didReceive(prices: $0)
         }
     }
 
@@ -139,12 +139,12 @@ private extension SubtensorPositionInteractor {
 }
 
 extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol {
-    func cachedCatalogue() -> SubtensorSubnetCatalogue? {
-        guard !isRoot, let catalogue = catalogueService.cachedCatalogue().value else {
+    func cachedPrices() -> SubtensorAlphaPrices? {
+        guard !isRoot, let prices = alphaPriceProvider.cachedPrices(), prices.taoPerAlpha[netuid] != nil else {
             return nil
         }
 
-        return catalogue.subnet(for: netuid) != nil ? catalogue : nil
+        return prices
     }
 
     func cachedYields() -> SubtensorAlphaYields? {
@@ -159,7 +159,7 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
         if isRoot {
             blockNumberProvider = subscribeToBlockNumber(for: chainAsset.chain.chainId)
         } else {
-            loadCatalogue()
+            loadPrices()
             loadSubnetLogos()
             loadSubnetsInfo()
         }

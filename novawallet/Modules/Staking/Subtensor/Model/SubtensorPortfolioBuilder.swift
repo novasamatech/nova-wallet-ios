@@ -42,16 +42,6 @@ enum SubtensorPortfolioBuilder {
             unpricedNetuids: unpricedNetuids
         )
     }
-
-    static func build(
-        state: Multistaking.SubtensorStakingState,
-        catalogue: SubtensorSubnetCatalogue?
-    ) -> SubtensorPortfolio {
-        build(
-            state: state,
-            prices: catalogue.map { SubtensorAlphaPrices(catalogue: $0, taoPerAlpha: $0.freshTaoPerAlpha) }
-        )
-    }
 }
 
 private extension SubtensorPortfolioBuilder {
