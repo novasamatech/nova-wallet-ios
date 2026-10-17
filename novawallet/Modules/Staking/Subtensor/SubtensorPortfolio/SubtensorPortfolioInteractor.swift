@@ -10,7 +10,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning, SubtensorLoad
     let selectedWalletSettings: SelectedWalletSettings
     let eventCenter: EventCenterProtocol
     let applicationHandler: ApplicationHandlerProtocol
-    let catalogueService: SubtensorSubnetCatalogueServiceProtocol
+    let alphaPriceProvider: SubtensorAlphaPriceProviderProtocol
     let yieldService: SubtensorYieldServiceProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
@@ -21,7 +21,8 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning, SubtensorLoad
 
     var priceProvider: StreamableProvider<PriceData>?
     private var hasReportedAccountChange = false
-    private let catalogueStore = CancellableCallStore()
+    private var requestedNetuids: Set<UInt16> = []
+    private let pricesStore = CancellableCallStore()
     private let rootRateStore = CancellableCallStore()
     private let networkRootRateStore = CancellableCallStore()
     private let logosStore = CancellableCallStore()
@@ -49,7 +50,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning, SubtensorLoad
         self.selectedWalletSettings = selectedWalletSettings
         self.eventCenter = eventCenter
         self.applicationHandler = applicationHandler
-        catalogueService = state.earnServices.catalogueService
+        alphaPriceProvider = state.earnServices.alphaPriceProvider
         yieldService = state.earnServices.yieldService
         subnetLogosProvider = state.earnServices.subnetLogosProvider
         priceHistoryService = state.earnServices.priceHistoryService
@@ -61,7 +62,7 @@ final class SubtensorPortfolioInteractor: AnyProviderAutoCleaning, SubtensorLoad
     }
 
     deinit {
-        catalogueStore.cancel()
+        pricesStore.cancel()
         rootRateStore.cancel()
         networkRootRateStore.cancel()
         logosStore.cancel()
@@ -76,7 +77,7 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
     func setup() {
         state.setup(for: account)
 
-        provideCatalogue()
+        providePrices(for: requestedNetuids)
         subscribePositions()
         subscribeTaoPrice(currency: selectedCurrency)
         provideSubnetLogos()
@@ -86,7 +87,7 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
     }
 
     func refresh() {
-        provideCatalogue()
+        providePrices(for: requestedNetuids)
         state.positionsSyncService?.refresh()
     }
 
@@ -210,8 +211,8 @@ private extension SubtensorPortfolioInteractor {
 
                 presenter?.didReceive(state: newState)
 
-                if !catalogueStore.hasCall {
-                    provideCatalogue()
+                if !pricesStore.hasCall || newState.heldSubnetNetuids != requestedNetuids {
+                    providePrices(for: newState.heldSubnetNetuids)
                 }
             },
             onFailure: { [weak self] isFailed in
@@ -220,15 +221,16 @@ private extension SubtensorPortfolioInteractor {
         )
     }
 
-    func provideCatalogue() {
-        catalogueStore.cancel()
+    func providePrices(for netuids: Set<UInt16>) {
+        requestedNetuids = netuids
+        pricesStore.cancel()
 
         load(
-            catalogueService.createCatalogueWrapper(),
-            in: catalogueStore,
-            label: "portfolio catalogue"
+            alphaPriceProvider.createPricesWrapper(for: netuids),
+            in: pricesStore,
+            label: "portfolio alpha prices"
         ) { [weak self] in
-            self?.presenter?.didReceive(catalogue: $0)
+            self?.presenter?.didReceive(prices: $0)
         }
     }
 
@@ -286,7 +288,7 @@ extension SubtensorPortfolioInteractor: EventVisitorProtocol {
 extension SubtensorPortfolioInteractor: ApplicationHandlerDelegate {
     func didReceiveDidBecomeActive(notification _: Notification) {
         priceProvider?.refresh()
-        provideCatalogue()
+        providePrices(for: requestedNetuids)
         state.positionsSyncService?.refresh()
         presenter?.didBecomeActive()
     }

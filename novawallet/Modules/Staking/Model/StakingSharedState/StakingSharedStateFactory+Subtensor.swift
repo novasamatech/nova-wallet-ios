@@ -48,12 +48,30 @@ extension SubtensorStakingProcessServices {
         )
     }
 
+    func createAlphaPriceProvider(
+        chainOperationFactory: SubtensorApiOperationFactoryProtocol,
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
+    ) -> SubtensorAlphaPriceProviderProtocol {
+        SubtensorAlphaPriceProvider(
+            catalogueService: catalogueService,
+            chainOperationFactory: chainOperationFactory,
+            operationQueue: operationQueue,
+            logger: logger
+        )
+    }
+
     func createCataloguePricingTracker(
+        chainOperationFactory: SubtensorApiOperationFactoryProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) -> SubtensorCataloguePricingTracker {
         SubtensorCataloguePricingTracker(
-            catalogueService: catalogueService,
+            alphaPriceProvider: createAlphaPriceProvider(
+                chainOperationFactory: chainOperationFactory,
+                operationQueue: operationQueue,
+                logger: logger
+            ),
             operationQueue: operationQueue,
             logger: logger
         )
@@ -154,6 +172,9 @@ extension StakingSharedStateFactory {
             subnetLogosProvider: processServices.subnetLogosProvider,
             earnSettings: SubtensorEarnSettings(settingsManager: SettingsManager.shared),
             catalogueService: processServices.catalogueService,
+            alphaPriceProvider: processServices.createAlphaPriceProvider(
+                chainOperationFactory: apiOperationFactory, operationQueue: syncOperationQueue, logger: logger
+            ),
             yieldService: yieldService,
             maxApyProvider: processServices.createMaxApyProvider(operationQueue: syncOperationQueue, logger: logger),
             recommendationService: recommendationService,
@@ -171,11 +192,8 @@ extension StakingSharedStateFactory {
                 blockTimeOperationFactory: BlockTimeOperationFactory(chain: stakingOption.chainAsset.chain)
             ),
             validatorPresetFactory: SubtensorValidatorPresetFactory(
-                directoryService: validatorDirectoryService,
-                recommendationService: recommendationService,
-                yieldService: yieldService,
-                operationQueue: syncOperationQueue,
-                logger: logger
+                directoryService: validatorDirectoryService, recommendationService: recommendationService,
+                yieldService: yieldService, operationQueue: syncOperationQueue, logger: logger
             ),
             costBasisService: processServices.costBasisService
         )
