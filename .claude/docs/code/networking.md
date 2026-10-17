@@ -172,7 +172,7 @@ between requests, so nothing can mask authentication recovery in the same contex
 One origin/API-major bearer serves ordinary protected GET/HEAD and POST routes. Auth has no
 business allowlist or flow/scope. Consumers own method/path/body validation and ordinary business retry policy. Bittensor uses `/v1/bittensor/...`.
 Root yields come from `GET /root/validators` (per-hotkey `stakeYield.d30.apy`, served by the
-yield service as netuid 0) and `GET /root/overview` (`validatorYield.stakeWeightedApy24h`); alpha
+yield service as netuid 0) and `GET /root/overview` (`stakeIndex.stakeYield.d30.apy`); alpha
 netuid 0 is rejected locally.
 
 Only conclusive `invalid_token` permits one replay preserving method/path/query/body: same
