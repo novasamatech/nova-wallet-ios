@@ -180,10 +180,8 @@ private extension SubtensorTradeQuoteFactory {
                 for: SubtensorQuoteArgs(netuid: netuid, direction: .stake(taoIn: stakedTao))
             )
 
-            let mappingOperation = ClosureOperation<SubtensorTradeQuote> {
-                let quote = try quoteWrapper.targetOperation.extractNoCancellableResultData()
-
-                return try Self.makeBuyQuote(
+            return quoteWrapper.mapped { quote in
+                try Self.makeBuyQuote(
                     from: quote,
                     grossTao: grossTao,
                     stakedTao: stakedTao,
@@ -191,10 +189,6 @@ private extension SubtensorTradeQuoteFactory {
                     tolerance: tolerance
                 )
             }
-
-            mappingOperation.addDependency(quoteWrapper.targetOperation)
-
-            return quoteWrapper.insertingTail(operation: mappingOperation)
         } catch {
             return .createWithError(error)
         }
@@ -216,20 +210,14 @@ private extension SubtensorTradeQuoteFactory {
                 for: SubtensorQuoteArgs(netuid: netuid, direction: .unstake(alphaIn: alpha))
             )
 
-            let mappingOperation = ClosureOperation<SubtensorTradeQuote> { [feeCalculator] in
-                let quote = try quoteWrapper.targetOperation.extractNoCancellableResultData()
-
-                return try Self.makeSellQuote(
+            return quoteWrapper.mapped { [feeCalculator] quote in
+                try Self.makeSellQuote(
                     from: quote,
                     alpha: alpha,
                     tolerance: tolerance,
                     feeCalculator: feeCalculator
                 )
             }
-
-            mappingOperation.addDependency(quoteWrapper.targetOperation)
-
-            return quoteWrapper.insertingTail(operation: mappingOperation)
         } catch {
             return .createWithError(error)
         }

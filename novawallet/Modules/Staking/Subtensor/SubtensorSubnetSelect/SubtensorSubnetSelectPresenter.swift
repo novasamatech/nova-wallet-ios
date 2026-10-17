@@ -35,7 +35,7 @@ final class SubtensorSubnetSelectPresenter {
         delegate: SubtensorSubnetSelectDelegate,
         earnSettings: SubtensorEarnSettingsProtocol,
         localizationManager: LocalizationManagerProtocol,
-        browseState: SubtensorSubnetBrowseState = .init()
+        browseState: SubtensorSubnetBrowseState
     ) {
         self.browseState = browseState
         self.interactor = interactor

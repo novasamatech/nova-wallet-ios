@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-final class SubtensorSubnetSelectInteractor {
+final class SubtensorSubnetSelectInteractor: SubtensorLoadDelivering {
     weak var presenter: SubnetSelectInteractorOutputProtocol?
 
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
@@ -17,20 +17,12 @@ final class SubtensorSubnetSelectInteractor {
     private let weeklyStore = CancellableCallStore()
     private let apyStore = CancellableCallStore()
 
-    init(
-        catalogueService: SubtensorSubnetCatalogueServiceProtocol,
-        subnetsService: SubtensorSubnetsServiceProtocol,
-        subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
-        priceHistoryService: SubtensorPriceHistoryServiceProtocol?,
-        maxApyProvider: SubtensorMaxApyProviderProtocol,
-        operationQueue: OperationQueue,
-        logger: LoggerProtocol
-    ) {
-        self.catalogueService = catalogueService
-        self.subnetsService = subnetsService
-        self.subnetLogosProvider = subnetLogosProvider
-        self.priceHistoryService = priceHistoryService
-        self.maxApyProvider = maxApyProvider
+    init(state: SubtensorStakingSharedStateProtocol, operationQueue: OperationQueue, logger: LoggerProtocol) {
+        catalogueService = state.earnServices.catalogueService
+        subnetsService = state.subnetsService
+        subnetLogosProvider = state.earnServices.subnetLogosProvider
+        priceHistoryService = state.earnServices.priceHistoryService
+        maxApyProvider = state.earnServices.maxApyProvider
         self.operationQueue = operationQueue
         self.logger = logger
     }
@@ -80,19 +72,8 @@ private extension SubtensorSubnetSelectInteractor {
     }
 
     func provideSubnetLogos() {
-        executeCancellable(
-            wrapper: subnetLogosProvider.createLogosWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: logosStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(logos):
-                self?.presenter?.didReceive(subnetLogos: logos)
-            case let .failure(error):
-                self?.logger.warning("Subnet marks unavailable: \(error)")
-                self?.presenter?.didReceive(subnetLogos: nil)
-            }
+        load(subnetLogosProvider.createLogosWrapper(), in: logosStore, label: "subnet marks") { [weak self] in
+            self?.presenter?.didReceive(subnetLogos: $0)
         }
     }
 
@@ -144,19 +125,8 @@ extension SubtensorSubnetSelectInteractor: SubnetSelectInteractorInputProtocol {
     func loadApy() {
         apyStore.cancel()
 
-        executeCancellable(
-            wrapper: maxApyProvider.createMaxApyWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: apyStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(apy):
-                self?.presenter?.didReceive(apy: apy)
-            case let .failure(error):
-                self?.logger.warning("Subnet apy unavailable: \(error)")
-                self?.presenter?.didReceive(apy: nil)
-            }
+        load(maxApyProvider.createMaxApyWrapper(), in: apyStore, label: "subnet apy") { [weak self] in
+            self?.presenter?.didReceive(apy: $0)
         }
     }
 }

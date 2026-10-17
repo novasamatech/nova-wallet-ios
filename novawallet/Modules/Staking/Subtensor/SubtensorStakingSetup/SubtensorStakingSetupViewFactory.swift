@@ -14,7 +14,7 @@ enum SubtensorStakingSetupViewFactory {
         for state: SubtensorStakingSharedStateProtocol,
         target: SubtensorStakeTarget,
         validator: SubtensorValidatorDirectoryItem?,
-        browseState: SubtensorSubnetBrowseState = .init()
+        browseState: SubtensorSubnetBrowseState
     ) -> SubtensorStakingSetupViewProtocol? {
         guard !target.isRoot else {
             return nil

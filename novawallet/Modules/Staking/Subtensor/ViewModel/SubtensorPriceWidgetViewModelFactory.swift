@@ -42,17 +42,15 @@ final class SubtensorPriceWidgetViewModelFactory {
     static let defaultPeriod = SubtensorPricePeriod.week
 
     let priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
-    let formatterFactory: AssetBalanceFormatterFactoryProtocol
+    let formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory()
     let tokenFormatter: LocalizableResource<TokenFormatter>
     let balanceViewModelFactory: PrimitiveBalanceViewModelFactoryProtocol
 
     init(
         chainAsset: ChainAsset,
-        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol,
-        formatterFactory: AssetBalanceFormatterFactoryProtocol = AssetBalanceFormatterFactory()
+        priceAssetInfoFactory: PriceAssetInfoFactoryProtocol
     ) {
         self.priceAssetInfoFactory = priceAssetInfoFactory
-        self.formatterFactory = formatterFactory
 
         let taoInfo = chainAsset.assetDisplayInfo
 
