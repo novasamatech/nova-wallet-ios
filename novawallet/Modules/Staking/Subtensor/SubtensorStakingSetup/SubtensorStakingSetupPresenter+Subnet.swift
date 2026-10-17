@@ -43,6 +43,7 @@ extension SubtensorStakingSetupPresenter {
 
         yieldsNetuid = netuid
         yields = interactor.cachedYields(netuid: netuid).value
+        isYieldsResolved = yields?.stamp.freshness == .fresh
 
         interactor.loadYields(netuid: netuid)
     }
@@ -95,6 +96,7 @@ extension SubtensorStakingSetupPresenter {
             subnetLogos: subnetLogos,
             rankedSubnet: matchingRankedSubnet(),
             annualRate: validatorAnnualRate(),
+            isRateResolved: isYieldsResolved,
             isQuoteFailed: isQuoteFailed,
             costBasis: costBasis,
             blockTime: blockTime

@@ -36,6 +36,7 @@ protocol SubnetPortfolioInteractorOutputProtocol: AnyObject {
     func didReceiveSyncFailure(_ isFailed: Bool)
     func didChangeCurrency()
     func didReceiveAccountChange()
+    func didBecomeActive()
 }
 
 protocol SubtensorPortfolioWireframeProtocol: AnyObject, MessageSheetPresentable, SubtensorEarnInfoPresentable {

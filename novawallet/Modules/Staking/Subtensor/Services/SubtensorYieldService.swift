@@ -114,9 +114,9 @@ extension SubtensorYieldService {
         from result: BittensorApiResult<BittensorApi.RootOverview>
     ) -> SubtensorReportedYield? {
         guard
-            let rate = result.value.validatorYield?.stakeWeightedApy24h,
+            let rate = result.value.stakeIndex?.stakeYield.d30?.apy,
             let stamp = SubtensorBackendStamp(
-                metadata: result.value.meta.components.validatorYield,
+                metadata: result.value.meta.components.indexes,
                 isFromExpiredCache: result.isFromExpiredCache
             ) else {
             return nil
