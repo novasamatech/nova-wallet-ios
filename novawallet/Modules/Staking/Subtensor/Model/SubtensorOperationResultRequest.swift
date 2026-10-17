@@ -20,4 +20,5 @@ struct SubtensorOperationResultRequest {
     let emptiesPosition: Bool
     let prices: SubtensorOperationResultPrices
     let costBasis: SubtensorCostBasisState?
+    let blockTime: BlockTime
 }

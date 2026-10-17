@@ -228,7 +228,7 @@ private extension SubtensorClaimRewardsPresenter {
     }
 
     func handOff(with preview: SubtensorRootClaimPreview) {
-        guard !isHandingOff, let fee else {
+        guard !isHandingOff, let fee, let preflight else {
             return
         }
 
@@ -249,7 +249,8 @@ private extension SubtensorClaimRewardsPresenter {
             groupHotkeyCount: hotkeysAfterClaim.count,
             emptiesPosition: false,
             prices: SubtensorOperationResultPrices(taoPrice: price, alphaSpot: nil),
-            costBasis: nil
+            costBasis: nil,
+            blockTime: preflight.blockTime
         )
 
         isHandingOff = true
