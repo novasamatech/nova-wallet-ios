@@ -75,10 +75,11 @@ struct SubtensorConfirmQuoteState {
 
     mutating func invalidateLatest() {
         flow.clearQuote()
+        isPriceMoved = false
     }
 
     mutating func markLatestFailed() {
-        flow.clearQuote()
+        invalidateLatest()
         isLatestFailed = true
     }
 }

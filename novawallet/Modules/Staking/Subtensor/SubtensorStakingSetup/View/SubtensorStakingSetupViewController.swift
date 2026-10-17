@@ -246,11 +246,11 @@ extension SubtensorStakingSetupViewController: SubtensorStakingSetupViewProtocol
     }
 
     func didStartLoading() {
-        rootView.actionLoadableView.startLoading()
+        rootView.startLoading()
     }
 
     func didStopLoading() {
-        rootView.actionLoadableView.stopLoading()
+        rootView.stopLoading()
     }
 }
 

@@ -8,6 +8,7 @@ struct SubtensorQuoteValidatingContext {
     let acknowledgedLimit: Balance?
     let tradesUnavailable: Bool
     let alphaDisplayInfo: AssetBalanceDisplayInfo
+    let loadingView: LoadableViewProtocol?
     let onQuoteRequest: SubtensorQuoteRequestClosure
     let onQuoteUpdate: (SubtensorTradeQuote) -> Void
     var onPriceMoved: ((SubtensorTradeQuote) -> Void)?
