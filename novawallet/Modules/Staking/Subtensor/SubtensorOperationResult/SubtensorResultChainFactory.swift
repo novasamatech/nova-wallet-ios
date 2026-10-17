@@ -28,10 +28,6 @@ final class SubtensorResultChainFactory {
 }
 
 extension SubtensorResultChainFactory: SubtensorResultChainFactoryProtocol {
-    func createExpectedBlockTimeWrapper() -> CompoundOperationWrapper<BlockTime> {
-        BlockTimeOperationFactory(chain: chain).createExpectedBlockTimeWrapper(from: runtimeProvider)
-    }
-
     func createBlockTimestampWrapper(at blockHash: BlockHash) -> CompoundOperationWrapper<Date> {
         let blockHashData: Data
 

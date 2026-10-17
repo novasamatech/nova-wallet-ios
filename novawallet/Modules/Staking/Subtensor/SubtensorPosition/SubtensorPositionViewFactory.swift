@@ -6,7 +6,13 @@ enum SubtensorPositionViewFactory {
         for state: SubtensorStakingSharedStateProtocol,
         group: SubtensorPortfolioGroup
     ) -> SubtensorPositionViewProtocol? {
-        guard let currencyManager = CurrencyManager.shared else { return nil }
+        let chainId = state.stakingOption.chainAsset.chain.chainId
+
+        guard
+            let currencyManager = CurrencyManager.shared,
+            let runtimeProvider = state.chainRegistry.getRuntimeProvider(for: chainId) else {
+            return nil
+        }
 
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let earnServices = state.earnServices
@@ -20,6 +26,7 @@ enum SubtensorPositionViewFactory {
             priceHistoryService: earnServices.priceHistoryService,
             validatorFactory: earnServices.validatorPresetFactory,
             rootHoldFactory: earnServices.rootHoldFactory,
+            runtimeProvider: runtimeProvider,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
             operationQueue: operationQueue,
