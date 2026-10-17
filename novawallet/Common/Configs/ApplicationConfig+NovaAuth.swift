@@ -27,7 +27,9 @@ extension ApplicationConfig {
     }
 
     var novaAuthSharedStore: NovaAuthSharedStoreConfiguration? {
-        guard let hostAppNamespace = Bundle.main.object(forInfoDictionaryKey: "NovaAuthHostAppNamespace") as? String else {
+        let hostAppNamespace = Bundle.main.object(forInfoDictionaryKey: "NovaAuthHostAppNamespace") as? String
+
+        guard let hostAppNamespace else {
             return nil
         }
 
