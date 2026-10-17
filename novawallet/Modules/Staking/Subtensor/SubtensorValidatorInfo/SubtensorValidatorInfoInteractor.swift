@@ -58,17 +58,10 @@ final class SubtensorValidatorInfoInteractor: AnyCancellableCleaning, SubtensorL
 private extension SubtensorValidatorInfoInteractor {
     func createRateWrapper() -> CompoundOperationWrapper<Decimal?> {
         let hotkey = hotkey
-        let yieldsWrapper = yieldService.createAlphaYieldsWrapper(for: target.netuid)
 
-        let mapOperation = ClosureOperation<Decimal?> {
-            let yields = try yieldsWrapper.targetOperation.extractNoCancellableResultData()
-
-            return SubtensorAlphaApyFormatter.annualRate(for: hotkey, in: yields)
+        return yieldService.createAlphaYieldsWrapper(for: target.netuid).mapped { yields in
+            SubtensorAlphaApyFormatter.annualRate(for: hotkey, in: yields)
         }
-
-        mapOperation.addDependency(yieldsWrapper.targetOperation)
-
-        return yieldsWrapper.insertingTail(operation: mapOperation)
     }
 
     func loadRate() {
