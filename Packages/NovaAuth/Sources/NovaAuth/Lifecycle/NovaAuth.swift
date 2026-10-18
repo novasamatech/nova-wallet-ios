@@ -96,6 +96,24 @@ public final class NovaAuth: NovaAuthClientProtocol {
         }
     }
 
+    func retryStorageWork() throws {
+        do {
+            if let pendingStateWrite {
+                try dependencies.identityStore.save(pendingStateWrite)
+                self.pendingStateWrite = nil
+            }
+            if var replacement = state, replacement.tokenRemovalOwed == true {
+                try removeAllTokens()
+                replacement.tokenRemovalOwed = nil
+                try persist(replacement)
+            }
+            storageFailed = false
+        } catch {
+            storageFailed = true
+            throw NovaAuthError.storageUnavailable
+        }
+    }
+
     func setIdentity(_ identity: NovaAuthInstallationIdentity, context: NovaAuthContext) throws {
         try validate(context: context)
         let replacement = NovaAuthInstallationState(
@@ -192,24 +210,6 @@ private extension NovaAuth {
             state = try dependencies.identityStore.load()
         } catch let error as NovaAuthIdentityStoreError {
             throw error
-        } catch {
-            storageFailed = true
-            throw NovaAuthError.storageUnavailable
-        }
-    }
-
-    func retryStorageWork() throws {
-        do {
-            if let pendingStateWrite {
-                try dependencies.identityStore.save(pendingStateWrite)
-                self.pendingStateWrite = nil
-            }
-            if var replacement = state, replacement.tokenRemovalOwed == true {
-                try removeAllTokens()
-                replacement.tokenRemovalOwed = nil
-                try persist(replacement)
-            }
-            storageFailed = false
         } catch {
             storageFailed = true
             throw NovaAuthError.storageUnavailable

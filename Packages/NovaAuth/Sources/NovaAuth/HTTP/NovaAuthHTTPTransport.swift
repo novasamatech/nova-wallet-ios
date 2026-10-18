@@ -3,8 +3,9 @@ import Operation_iOS
 
 final class NovaAuthHTTPTransport: NovaAuthHTTPProtocol {
     private let session: URLSession
+    private let watchdogTimeout: TimeInterval
 
-    init() {
+    init(protocolClasses: [AnyClass]? = nil, watchdogTimeout: TimeInterval = 110) {
         let configuration = URLSessionConfiguration.ephemeral
         configuration.httpShouldSetCookies = false
         configuration.httpCookieStorage = nil
@@ -14,6 +15,8 @@ final class NovaAuthHTTPTransport: NovaAuthHTTPProtocol {
         configuration.timeoutIntervalForRequest = 20
         configuration.timeoutIntervalForResource = 100
         configuration.waitsForConnectivity = false
+        if let protocolClasses { configuration.protocolClasses = protocolClasses }
+        self.watchdogTimeout = watchdogTimeout
         session = URLSession(configuration: configuration, delegate: NovaAuthHTTPDelegate(), delegateQueue: nil)
     }
 
@@ -34,18 +37,21 @@ final class NovaAuthHTTPTransport: NovaAuthHTTPProtocol {
         frozen.cachePolicy = .reloadIgnoringLocalCacheData
         frozen.httpShouldHandleCookies = false
         frozen.timeoutInterval = kind == .bootstrap && request.url?.path == NovaAuthPurpose.registration.path ? 100 : 20
-        let limit = kind == .bootstrap ? 16384 : 32 * 1024 * 1024
+        let watchdog = NovaAuthHTTPWatchdog<T>(timeout: watchdogTimeout)
         let operation = NetworkOperation(
             requestFactory: BlockNetworkRequestFactory {
                 try beforeSend()
+                watchdog.arm()
                 return frozen
             },
-            resultFactory: AnyNetworkResultFactory { data, response, error in
-                Result {
-                    try decode(Self.response(to: frozen, data: data, response: response, error: error, limit: limit))
+            resultFactory: AnyNetworkResultFactory<T> { data, response, error in
+                guard watchdog.settle() else { return .failure(NovaAuthError.transport(.timedOut)) }
+                return Result {
+                    try decode(Self.response(to: frozen, data: data, response: response, error: error))
                 }
             }
         )
+        watchdog.operation = operation
         operation.networkSession = session
         return CompoundOperationWrapper(targetOperation: operation)
     }
@@ -56,15 +62,12 @@ private extension NovaAuthHTTPTransport {
         to request: URLRequest,
         data: Data?,
         response: URLResponse?,
-        error: Error?,
-        limit: Int
+        error: Error?
     ) throws -> NovaAuthResponse {
         if let error { throw NovaAuthError.transport((error as? URLError)?.code ?? .unknown) }
         guard let response = response as? HTTPURLResponse, response.url == request.url,
               !(300 ..< 400).contains(response.statusCode) else { throw NovaAuthError.invalidResponse }
-        let body = data ?? Data()
-        guard body.count <= limit else { throw NovaAuthError.invalidResponse }
-        return NovaAuthResponse(response: response, body: body)
+        return NovaAuthResponse(response: response, body: data ?? Data())
     }
 
     static func validate(_ request: URLRequest, kind: NovaAuthHTTPKind) throws {

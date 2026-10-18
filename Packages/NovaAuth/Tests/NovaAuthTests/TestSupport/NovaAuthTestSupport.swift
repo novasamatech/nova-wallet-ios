@@ -20,11 +20,11 @@ final class AuthHarness {
         ownerQueue.maxConcurrentOperationCount = 1
     }
 
-    func makeAuth() -> NovaAuth {
+    func makeAuth(http: NovaAuthHTTPProtocol? = nil) -> NovaAuth {
         NovaAuth(dependencies: NovaAuthDependencies(
             appAttest: apple, identityStore: NovaAuthSettingsIdentityStore(settingsManager: settings),
             tokenStore: tokens, clock: clock, random: random,
-            http: server,
+            http: http ?? server,
             ownerQueue: ownerQueue, bootstrapQueue: OperationQueue(), requestQueue: OperationQueue(),
             appIdentity: appIdentity, logger: nil
         ))
