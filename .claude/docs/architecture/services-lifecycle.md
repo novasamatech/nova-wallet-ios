@@ -164,21 +164,21 @@ from an individual screen's Interactor without a matching `throttle()`.
 
 ## Shared backend authentication
 
-`NovaAuthFacade.shared` owns the one `NovaAuth` client. `AnalyticsAuthAdapter` receives this
-owner. Global config snapshots have monotonically
-increasing revisions; late old fetches cannot reactivate a previous origin. Origin publication
-fences prior work.
+`NovaAuthFacade.shared` owns the one `NovaAuth` client. Analytics receives it through the
+facade's own `AnalyticsAuthProvidingProtocol` conformance. Config is fetched once per process and the
+facade memoises the first adopted endpoint, so a later fetch cannot reactivate a previous origin.
+Origin adoption fences prior work.
 Analytics consent/erasure and wallet changes never reset this authentication owner. Host activation
 authorizes ordinary later demand to bootstrap after accepted origin changes and legacy-reset repair;
 activation itself creates no key and sends no auth request. This explicitly replaces the
-profile-3 protocol's user-driven re-creation wording. Requests carry no intent.
+profile-3 protocol's user-driven re-creation wording. Requests carry a demand intent that only gates re-registration after a refusal.
 Failed auth completes the caller operation; Analytics
 retains batches silently for its normal later flushes, checking consent before each send/replay.
 
-The package exposes a
-context invalidation ID so the facade also detects a cold origin replacement/repair before
-publishing its first endpoint.
-Failed adoption notifies when its memory fence changed.
+`activate(origin:)` itself replaces the context, with a new generation and owed bearer deletion,
+when the stored origin differs or the stored state is corrupt, so the facade's first endpoint
+already carries the current context. Failed adoption leaves no endpoint, and the next demand
+adopts again.
 First activation with no prior installation does not itself invalidate a context.
 
 Each issuance flight attempts at most one new key generation. An unusable identity is retired

@@ -14,8 +14,7 @@ The facade is the app’s composition boundary. It creates the package owner onc
 flowchart TB
   subgraph APP["Main iOS app"]
     ROOT["RootInteractor.setup()"] --> AF["AnalyticsServiceFacade<br/>injected via factory createDefault()"]
-    AF --> AA["AnalyticsAuthAdapter"]
-    AA --> F["NovaAuthFacade.shared<br/>one endpoint: client + context"]
+    AF -- "authProvider" --> F["NovaAuthFacade.shared<br/>one endpoint: client + context"]
     CONFIG["GlobalConfigProvider<br/>infraUrl, fetched once"] --> F
     HOST["App identity + version<br/>SettingsManager set/read-back + three queues"] --> F
   end
@@ -38,7 +37,7 @@ flowchart TB
 - `appID` is App Identifier Prefix + bundle ID. `F_DEV` selects the development App Attest environment; other builds select production. This is distinct from wallet identity.
 - Package code depends on Operation-iOS, NovaOperationSupport, Keystore-iOS and SDKLogger, with Apple platform adapters. It does not depend on app types.
 
-Sources: [facade and composition](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [configuration conversion](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [Root startup](../../../novawallet/Modules/Root/RootInteractor.swift) · [app identity](../../../novawallet/Common/Configs/ApplicationConfigs.swift) · [owner construction](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuth.swift) · [package dependencies](../../../Packages/NovaAuth/Package.swift) · [settings storage](../../../Packages/NovaAuth/Sources/NovaAuth/API/NovaAuthConfiguration.swift)
+Sources: [facade and composition](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [configuration conversion](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [Root startup](../../../novawallet/Modules/Root/RootInteractor.swift) · [app identity](../../../novawallet/Common/Configs/ApplicationConfig+NovaAuth.swift) · [owner construction](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuth.swift) · [package dependencies](../../../Packages/NovaAuth/Package.swift) · [settings storage](../../../Packages/NovaAuth/Sources/NovaAuth/API/NovaAuthConfiguration.swift)
 
 ## 2. First authentication and subsequent issuance
 
@@ -221,7 +220,7 @@ Sources: [demand and token loading](../../../Packages/NovaAuth/Sources/NovaAuth/
 flowchart TB
   D["Immutable protected request"] --> A["Demand/join credential"]
   A --> F["Context + token + origin protection; caller beforeSend"]
-  F --> S["Native HTTP cache / actual send"]
+  F --> S["Actual send"]
   S --> R{"Expected-origin 401 invalid_token?"}
   R -- "First denial only" --> N["Reject token; renew same binding with fresh proof"]
   N --> F
@@ -286,7 +285,7 @@ Sources: [owner and repair](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycl
 ```mermaid
 flowchart TB
   C["Consent enabled; normal session/track/flush"] --> Q["Persist batch under consent epoch"]
-  Q --> A["AnalyticsAuthAdapter resolves current shared endpoint"]
+  Q --> A["NovaAuthFacade resolves the shared endpoint"]
   A --> N["NovaAuth decorates immutable analytics POST"]
   N --> G{"Consent + epoch valid before actual send?"}
   G -- "No" --> X["Stop upload"]
