@@ -209,13 +209,12 @@ private extension NovaAuth {
     }
 
     func handleRegistrationFailure(_ error: Error, flight: NovaAuthIssuanceFlight) throws {
-        guard case let NovaAuthError.bootstrap(server) = error, let code = server.code,
+        guard case let NovaAuthError.bootstrap(server) = error, server.code != nil,
               (400 ... 499).contains(server.statusCode), server.statusCode != 429 else { return }
-        switch (server.statusCode, code) {
-        case (401, "attestation_failed"), (403, "app_not_allowed"), (403, "binding_not_allowed"):
-            try refuse(flight: flight)
-        default:
+        if server.statusCode == 409 {
             try retire(.registrationRefused, flight: flight)
+        } else {
+            try refuse(flight: flight)
         }
     }
 }

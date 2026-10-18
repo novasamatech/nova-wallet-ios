@@ -61,8 +61,8 @@ client binding and cannot turn the same business operation into identity replace
 
 Each request carries a `NovaAuthDemandIntent`: `.userDriven` (the default: screen loads, domain
 retries, pull to refresh; admission is always user-driven) or `.background` (analytics flushes,
-background syncs). A registration refused with `401 attestation_failed`, `403 app_not_allowed` or
-`403 binding_not_allowed` keeps the client UUID, drops only the key and saves a refusal delay.
+background syncs). A registration refused with any code-bearing 4xx other than 409 keeps the
+client UUID, drops only the key and saves a refusal delay.
 User-driven demands may re-register at once with a fresh key and challenge; background demands fail
 with `cooldown` until the delay passes: 1 hour, then 6 hours, then 24 hours per consecutive refusal.
 The delay is persisted, resets on an app version change or context replacement, and like every
@@ -75,12 +75,12 @@ other wait ends with a boot discontinuity.
 | Confirmed absence outside that window or after boot discontinuity | Retire and fail; the next independent demand may replace. Transport/503 alone never prove absence. |
 | Successful pending token challenge | Prove the same key; preserve the original pending window until a bearer is installed. |
 | Ordinary token `401 invalid_proof` or token challenge/issuance `403 binding_not_allowed` | Keep registered UUID/key/counter and fail. Later demand obtains a fresh challenge on the same binding. A contradictory `503 invalid_proof` is availability failure. |
-| Registration `401 attestation_failed`, `403 app_not_allowed` or `403 binding_not_allowed` | Keep the client UUID, drop the key, save the refusal delay and fail. A user-driven demand attests a fresh key at once; a background demand waits for the delay. |
+| Any code-bearing registration 4xx except 409 and 429 (`401 attestation_failed`, `403 app_not_allowed`, `400 invalid_request`, `401 invalid_challenge`, …) | Keep the client UUID, drop the key, save the refusal delay and fail. A user-driven demand attests a fresh key at once; a background demand waits for the delay. |
 | Codeless or non-JSON registration 4xx | Transport failure: keep pending UUID/key/start and the short cooldown; probe on a later demand. |
 | Deferred attestation past its 40-second budget | Keep the key, take a fresh challenge and attest again in the same flight. |
 | Interrupted, failed or timed-out attestation; stale or malformed attestation object | Drop the key, keep the client UUID and fail; a later demand attests a fresh key. |
 | Platform invalid key at assertion | Retire and continue the same flight with one fresh UUID/key; a key generated in that flight is not replaced again. |
-| Platform invalid key at attestation, other code-bearing registration 4xx | Retire and fail. Later demand may generate one fresh UUID/key. |
+| Platform invalid key at attestation, registration `409 client_already_registered` | Retire and fail. Later demand may generate one fresh UUID/key. |
 | Stored `retired` state of any reason | Loaded as is; the next demand replaces UUID/key. |
 
 Apple `serverUnavailable` saves `appleDeferred` for the same key/hash. Before saving

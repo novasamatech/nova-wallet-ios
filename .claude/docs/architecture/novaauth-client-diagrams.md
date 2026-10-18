@@ -136,8 +136,8 @@ flowchart TB
   A -- "Invalid key" --> X["retired; current flight fails"]
   A -- "Interrupted, failed or stale attestation" --> G["key dropped; UUID kept"]
   G --> U
-  P -- "Confirmed absence or other code-bearing 4xx" --> X
-  P -- "401 attestation_failed / 403 app_not_allowed / binding_not_allowed" --> F["key dropped; UUID kept; refusal delay saved"]
+  P -- "Confirmed absence or 409" --> X
+  P -- "Any other code-bearing 4xx verdict" --> F["key dropped; UUID kept; refusal delay saved"]
   F -- "User-driven demand, or background demand past the delay" --> U
   R -- "Invalid key or 401 unknown_client" --> X
   X -- "Invalid key at assertion: same flight" --> K["At most one fresh UUID/key in this flight"]
