@@ -1,4 +1,5 @@
 import Foundation
+import Foundation_iOS
 import Operation_iOS
 
 final class SubtensorSubnetDetailsInteractor: SubtensorLoadDelivering {
@@ -12,6 +13,7 @@ final class SubtensorSubnetDetailsInteractor: SubtensorLoadDelivering {
     let yieldService: SubtensorYieldServiceProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let positionsSyncService: SubtensorPositionsSyncServiceProtocol?
+    let applicationHandler: ApplicationHandlerProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let currencyManager: CurrencyManagerProtocol
     let operationQueue: OperationQueue
@@ -28,6 +30,7 @@ final class SubtensorSubnetDetailsInteractor: SubtensorLoadDelivering {
         subnet: SubtensorSubnetRef,
         state: SubtensorStakingSharedStateProtocol,
         parametersFactory: SubnetParametersFactoryProtocol,
+        applicationHandler: ApplicationHandlerProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue,
@@ -41,6 +44,7 @@ final class SubtensorSubnetDetailsInteractor: SubtensorLoadDelivering {
         yieldService = state.earnServices.yieldService
         subnetLogosProvider = state.earnServices.subnetLogosProvider
         positionsSyncService = state.positionsSyncService
+        self.applicationHandler = applicationHandler
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.currencyManager = currencyManager
         self.operationQueue = operationQueue
@@ -76,17 +80,6 @@ private extension SubtensorSubnetDetailsInteractor {
         )
     }
 
-    func loadParameters() {
-        parametersCallStore.cancel()
-        load(
-            parametersFactory.createWrapper(for: subnet),
-            in: parametersCallStore,
-            label: "parameters"
-        ) { [weak self] in
-            self?.presenter?.didReceiveParameters($0)
-        }
-    }
-
     func loadYields() {
         load(
             yieldService.createAlphaYieldsWrapper(for: subnet.netuid),
@@ -117,9 +110,24 @@ extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol
         subscribeTaoPrice(currency: currencyManager.selectedCurrency)
         subscribePositions()
 
-        loadParameters()
         loadYields()
         loadSubnetLogos()
+
+        applicationHandler.delegate = self
+    }
+
+    func loadParameters() {
+        parametersCallStore.cancel()
+
+        load(
+            parametersFactory.createWrapper(for: subnet),
+            in: parametersCallStore,
+            label: "parameters"
+        ) { [weak self] in
+            self?.presenter?.didReceiveParameters($0)
+        } fail: { [weak self] in
+            self?.presenter?.didFailParameters()
+        }
     }
 
     func loadHistory(for period: SubtensorPricePeriod) {
@@ -151,12 +159,20 @@ extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol
         presetCallStore.cancel()
 
         load(
-            presetFactory.createPresetWrapper(for: subnet, existingHotkey: existingHotkey),
+            presetFactory.createListedPresetWrapper(for: subnet, existingHotkey: existingHotkey),
             in: presetCallStore,
             label: "subnet validator preset"
         ) { [weak self] in
-            self?.presenter?.didReceivePreset($0 ?? nil)
+            self?.presenter?.didReceivePreset($0)
+        } fail: { [weak self] in
+            self?.presenter?.didFailPreset()
         }
+    }
+}
+
+extension SubtensorSubnetDetailsInteractor: ApplicationHandlerDelegate {
+    func didReceiveDidBecomeActive(notification _: Notification) {
+        presenter?.didBecomeActive()
     }
 }
 

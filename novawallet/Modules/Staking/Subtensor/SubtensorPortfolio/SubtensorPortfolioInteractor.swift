@@ -158,7 +158,9 @@ extension SubtensorPortfolioInteractor: SubnetPortfolioInteractorInputProtocol {
             in: weeklyChangesStore,
             label: "portfolio weekly changes"
         ) { [weak self] in
-            self?.presenter?.didReceive(weeklyChanges: $0 ?? [:])
+            self?.presenter?.didReceive(weeklyChanges: $0)
+        } fail: { [weak self] in
+            self?.presenter?.didFailWeeklyChanges()
         }
     }
 }

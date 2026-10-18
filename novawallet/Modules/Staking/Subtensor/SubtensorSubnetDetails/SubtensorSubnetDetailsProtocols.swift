@@ -20,6 +20,7 @@ protocol SubtensorSubnetDetailsPresenterProtocol: AnyObject {
 protocol SubnetDetailsInteractorInputProtocol: AnyObject {
     func cachedYields() -> SubtensorAlphaYields?
     func setup()
+    func loadParameters()
     func loadHistory(for period: SubtensorPricePeriod)
     func presetValidator(existingHotkey: AccountId?)
 }
@@ -27,13 +28,16 @@ protocol SubnetDetailsInteractorInputProtocol: AnyObject {
 protocol SubnetDetailsInteractorOutputProtocol: AnyObject {
     func didReceiveHistory(_ history: SubtensorPriceHistory?, for period: SubtensorPricePeriod)
     func didFailHistory(for period: SubtensorPricePeriod)
-    func didReceiveParameters(_ parameters: SubtensorSubnetParameters?)
+    func didReceiveParameters(_ parameters: SubtensorSubnetParameters)
+    func didFailParameters()
     func didReceivePreset(_ validator: SubtensorValidatorDirectoryItem?)
+    func didFailPreset()
     func didReceiveYields(_ yields: SubtensorAlphaYields?)
     func didReceiveTaoPrice(_ price: PriceData?)
     func didReceivePositions(_ state: Multistaking.SubtensorStakingState?)
     func didReceivePositionsSyncFailed(_ isFailed: Bool)
     func didReceiveSubnetLogos(_ logos: SubtensorSubnetLogos?)
+    func didBecomeActive()
 }
 
 protocol SubtensorSubnetDetailsWireframeProtocol: AnyObject {
