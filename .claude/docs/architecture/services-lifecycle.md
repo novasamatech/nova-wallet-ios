@@ -111,7 +111,7 @@ never reach for `.shared` inside a Presenter/Interactor method body.
 | `WalletServiceFacade.*`                       | Shared remote subscription services          |
 | `AppearanceFacade.shared`                     | Icon/appearance preferences                  |
 | `PushNotificationsServiceFacade.shared`       | Push registration and sync                   |
-| `NovaAuthFacade.shared`                       | One installation/current bearer shared by analytics |
+| `NovaAuthFacade.shared`                       | One installation/current bearer shared by analytics and Bittensor |
 | `ApplicationConfig.shared`                    | Static URLs, emails, deep-link scheme        |
 | `URLHandlingServiceFacade.shared`             | Deep link / universal link dispatch          |
 | `AnalyticsFacadeFactory.createDefault()`      | Consent-gated analytics; owned by Root       |
@@ -165,14 +165,16 @@ from an individual screen's Interactor without a matching `throttle()`.
 ## Shared backend authentication
 
 `NovaAuthFacade.shared` owns the one `NovaAuth` client. Analytics receives it through the
-facade's own `AnalyticsAuthProvidingProtocol` conformance. Config is fetched once per process and the
+facade's own `AnalyticsAuthProvidingProtocol` conformance, and `BittensorAuthorizedTransport`
+receives the same owner. Config is fetched once per process and the
 facade memoises the first adopted endpoint, so a later fetch cannot reactivate a previous origin.
-Origin adoption fences prior work.
+Origin adoption fences prior work; the Bittensor store clears its seeds once a different auth
+scope is admitted.
 Analytics consent/erasure and wallet changes never reset this authentication owner. Host activation
 authorizes ordinary later demand to bootstrap after accepted origin changes and legacy-reset repair;
 activation itself creates no key and sends no auth request. This explicitly replaces the
 profile-3 protocol's user-driven re-creation wording. Requests carry a demand intent that only gates re-registration after a refusal.
-Failed auth completes the caller operation; Analytics
+Failed auth completes the caller operation; Bittensor owns its retry/presentation and Analytics
 retains batches silently for its normal later flushes, checking consent before each send/replay.
 
 `activate(origin:)` itself replaces the context, with a new generation and owed bearer deletion,
