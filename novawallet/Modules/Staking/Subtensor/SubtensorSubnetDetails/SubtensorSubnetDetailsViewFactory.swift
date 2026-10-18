@@ -65,6 +65,7 @@ private extension SubtensorSubnetDetailsViewFactory {
             subnet: input.subnet.ref,
             state: state,
             parametersFactory: createParametersFactory(state: state, operationQueue: operationQueue),
+            applicationHandler: ApplicationHandler(),
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
             operationQueue: operationQueue,
