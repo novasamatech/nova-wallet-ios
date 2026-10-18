@@ -57,6 +57,24 @@ final class SubtensorStakingOperationCallTests: XCTestCase {
         XCTAssertEqual(calls, [expected])
     }
 
+    func testSubnetSellGroupEncodesFullExitsThenThePartialRemoveAndOneFeeTransfer() throws {
+        let operation = SubtensorStakingOperation.subnetSellGroup(
+            exits: [groupHotkey],
+            partial: SubtensorUnstakeSlice(hotkey: hotkey, alpha: 56_200_000_000),
+            netuid: 64,
+            limitPrice: 73_431_000,
+            quotedTaoOut: 4_145_000_000
+        )
+
+        let calls = try encodeCalls(operation)
+
+        let expected = "0b020c" +
+            "0767" + groupHotkey.toHex() + "4000" + "01" + "d877600400000000" +
+            "0759" + hotkey.toHex() + "4000" + "00f2c7150d000000" + "d877600400000000" + "00" +
+            "050300" + productionBeneficiaryHex + "bab3f402"
+        XCTAssertEqual(calls, [expected])
+    }
+
     func testSubnetBuyWithoutBeneficiaryFailsClosed() {
         let operation = SubtensorStakingOperation.subnetBuy(
             hotkey: hotkey,
