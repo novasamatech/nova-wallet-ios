@@ -32,6 +32,7 @@ protocol SubtensorValidatorInfoViewProtocol: ControllerBackedProtocol, LoadableV
 
 protocol SubtensorValidatorInfoPresenterProtocol: AnyObject {
     func setup()
+    func presentAccountOptions()
     func showStakeInfo()
     func showTakeInfo()
 }
@@ -52,6 +53,6 @@ protocol SubtensorValInfoInteractorOutputProtocol: AnyObject {
 }
 
 protocol SubtensorValidatorInfoWireframeProtocol: SubtensorInfoSheetPresentable, AlertPresentable,
-    CommonRetryable {
+    CommonRetryable, AddressOptionsPresentable {
     func close(view: ControllerBackedProtocol?)
 }
