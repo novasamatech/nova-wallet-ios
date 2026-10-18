@@ -103,7 +103,7 @@ extension StakingSharedStateFactory {
             recommendationOperationFactory: recommendationOperationFactory,
             validatorDirectoryOperationFactory: validatorDirectoryOperationFactory,
             priceHistoryOperationFactory: createSubtensorPriceHistoryOperationFactory(
-                for: stakingOption, runtimeConnectionStore: runtimeConnectionStore, flowState: flowState
+                for: stakingOption, flowState: flowState
             ),
             tradeQuoteOperationFactory: SubtensorTradeQuoteOperationFactory(
                 operationFactory: apiOperationFactory,
@@ -131,7 +131,6 @@ extension StakingSharedStateFactory {
 
     private func createSubtensorPriceHistoryOperationFactory(
         for stakingOption: Multistaking.ChainAssetOption,
-        runtimeConnectionStore: RuntimeConnectionStoring,
         flowState: SubtensorFlowStateProtocol
     ) -> SubtensorPriceHistoryOperationFactoryProtocol? {
         guard let taoPriceId = stakingOption.chainAsset.asset.priceId else {
@@ -144,13 +143,6 @@ extension StakingSharedStateFactory {
             marketsOperationFactory: processServices.subnetMarketsOperationFactory,
             apiOperationFactory: processServices.bittensorApiOperationFactory,
             coingeckoOperationFactory: flowState.coingeckoOperationFactory,
-            blockNumberOperationFactory: BlockNumberOperationFactory(
-                chainRegistry: chainRegistry,
-                operationQueue: syncOperationQueue
-            ),
-            blockTimeOperationFactory: BlockTimeOperationFactory(chain: stakingOption.chainAsset.chain),
-            runtimeConnectionStore: runtimeConnectionStore,
-            chainId: stakingOption.chainAsset.chain.chainId,
             taoPriceId: taoPriceId,
             operationQueue: syncOperationQueue,
             logger: logger

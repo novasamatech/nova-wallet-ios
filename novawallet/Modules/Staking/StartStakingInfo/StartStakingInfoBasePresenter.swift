@@ -107,33 +107,15 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         }
     }
 
-    // swiftlint:disable:next function_body_length
-    func provideViewModel(state: StartStakingStateProtocol) {
-        self.state = state
-
+    func createParagraphs(for state: StartStakingStateProtocol) -> [ParagraphView.Model]? {
         guard
             let rewardTime = state.rewardTime,
             let unstakingTime = state.unstakingTime,
             let rewardDelay = state.rewardDelay,
-            let minStake = state.minStake,
-            let maxApy = state.maxApy else {
-            return
+            let minStake = state.minStake else {
+            return nil
         }
 
-        let title = startStakingViewModelFactory.earnupModel(
-            earnings: maxApy,
-            chainAsset: chainAsset,
-            locale: selectedLocale
-        )
-        let wikiUrl = startStakingViewModelFactory.wikiModel(
-            url: chainAsset.chain.stakingWiki ?? applicationConfig.websiteURL,
-            chainAsset: chainAsset,
-            locale: selectedLocale
-        )
-        let termsUrl = startStakingViewModelFactory.termsModel(
-            url: applicationConfig.termsURL,
-            locale: selectedLocale
-        )
         let testnetModel = chainAsset.chain.isTestnet ? startStakingViewModelFactory.testNetworkModel(
             chain: chainAsset.chain,
             locale: selectedLocale
@@ -145,7 +127,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
             locale: selectedLocale
         ) : nil
 
-        let paragraphs = [
+        return [
             testnetModel,
             startStakingViewModelFactory.stakeModel(
                 minStake: minStake,
@@ -164,9 +146,37 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
             govModel,
             startStakingViewModelFactory.recommendationModel(locale: selectedLocale)
         ].compactMap { $0 }
+    }
+
+    func createCaption() -> String? {
+        nil
+    }
+
+    func provideViewModel(state: StartStakingStateProtocol) {
+        self.state = state
+
+        guard let maxApy = state.maxApy, let paragraphs = createParagraphs(for: state) else {
+            return
+        }
+
+        let title = startStakingViewModelFactory.earnupModel(
+            earnings: maxApy,
+            chainAsset: chainAsset,
+            locale: selectedLocale
+        )
+        let wikiUrl = startStakingViewModelFactory.wikiModel(
+            url: chainAsset.chain.stakingWiki ?? applicationConfig.websiteURL,
+            chainAsset: chainAsset,
+            locale: selectedLocale
+        )
+        let termsUrl = startStakingViewModelFactory.termsModel(
+            url: applicationConfig.termsURL,
+            locale: selectedLocale
+        )
 
         let model = StartStakingViewModel(
             title: title,
+            caption: createCaption(),
             paragraphs: paragraphs,
             wikiUrl: wikiUrl,
             termsUrl: termsUrl
@@ -261,6 +271,8 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
     func startStaking() {
         startStaking { wireframe.showSetupAmount(from: view) }
     }
+
+    func selectSecondaryAction() {}
 
     func startStaking(continuation: () -> Void) {
         guard view != nil,

@@ -2,25 +2,25 @@ import BigInt
 import Foundation
 import Foundation_iOS
 
-final class SubtensorSetupPresenter {
-    weak var view: SubtensorSetupViewProtocol?
-    let wireframe: SubtensorSetupWireframeProtocol
-    let interactor: SubtensorSetupInteractorInputProtocol
+final class SubtensorStakeSetupPresenter {
+    weak var view: SubtensorStakeSetupViewProtocol?
+    let wireframe: SubtensorStakeSetupWireframeProtocol
+    let interactor: SubtensorStakeSetupInteractorInputProtocol
     let logger: LoggerProtocol
 
     let chainAsset: ChainAsset
     let selectedAccount: MetaChainAccountResponse
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
-    let viewModelFactory: SubtensorSetupViewModelFactory
+    let viewModelFactory: SubtensorStakeSetupViewModelFactory
     let dataValidationFactory: SubtensorValidationFactoryProtocol
 
     let quickPickVisit: SubtensorQuickPickVisit?
     let rootEntryPresentation: SubtensorRootEntryPresentation
     let browseState: SubtensorSubnetBrowseState
 
-    var mode: SubtensorSetupMode
+    var mode: SubtensorStakeSetupMode
     var target: SubtensorStakeTarget?
-    var validatorState: SubtensorSetupValidatorState = .pending
+    var validatorState: SubtensorStakeSetupValidatorState = .pending
     var isPresetRequested = false
     var presetError: Error?
     var inputResult: AmountInputResult?
@@ -49,15 +49,15 @@ final class SubtensorSetupPresenter {
     var isConfirmationShown = false
 
     init(
-        interactor: SubtensorSetupInteractorInputProtocol,
-        wireframe: SubtensorSetupWireframeProtocol,
-        mode: SubtensorSetupMode,
+        interactor: SubtensorStakeSetupInteractorInputProtocol,
+        wireframe: SubtensorStakeSetupWireframeProtocol,
+        mode: SubtensorStakeSetupMode,
         chainAsset: ChainAsset,
         selectedAccount: MetaChainAccountResponse,
         slippage: BigRational,
         dataValidationFactory: SubtensorValidationFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        viewModelFactory: SubtensorSetupViewModelFactory,
+        viewModelFactory: SubtensorStakeSetupViewModelFactory,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol,
         browseState: SubtensorSubnetBrowseState,
@@ -81,7 +81,7 @@ final class SubtensorSetupPresenter {
     }
 }
 
-extension SubtensorSetupPresenter {
+extension SubtensorStakeSetupPresenter {
     var transferable: Balance? {
         isBalanceLoaded ? (balance?.transferable ?? 0) : nil
     }
@@ -135,9 +135,9 @@ extension SubtensorSetupPresenter {
         loadSubnetDataIfNeeded()
 
         if let hotkey = mode.lockedHotkey {
-            validatorState = .selected(SubtensorSetupValidator(hotkey: hotkey, name: nil))
+            validatorState = .selected(SubtensorStakeSetupValidator(hotkey: hotkey, name: nil))
         } else if let picked = mode.pickedValidator {
-            validatorState = .selected(SubtensorSetupValidator(hotkey: picked.hotkey, name: picked.name))
+            validatorState = .selected(SubtensorStakeSetupValidator(hotkey: picked.hotkey, name: picked.name))
             validatorItem = picked
         }
 
@@ -190,7 +190,7 @@ extension SubtensorSetupPresenter {
     }
 
     func applyValidator(_ item: SubtensorValidatorDirectoryItem) {
-        validatorState = .selected(SubtensorSetupValidator(hotkey: item.hotkey, name: item.name))
+        validatorState = .selected(SubtensorStakeSetupValidator(hotkey: item.hotkey, name: item.name))
         validatorItem = item
         presetError = nil
         preflight = nil
@@ -291,7 +291,7 @@ extension SubtensorSetupPresenter {
     }
 }
 
-extension SubtensorSetupPresenter: SubtensorQuoteHandling {
+extension SubtensorStakeSetupPresenter: SubtensorQuoteHandling {
     var isRoot: Bool { target?.isRoot == true }
     var retryView: ControllerBackedProtocol? { view }
     var retryWireframe: AlertPresentable & FeeRetryable & CommonRetryable { wireframe }
@@ -307,7 +307,7 @@ extension SubtensorSetupPresenter: SubtensorQuoteHandling {
     }
 }
 
-extension SubtensorSetupPresenter: SubtensorSetupPresenterProtocol {
+extension SubtensorStakeSetupPresenter: SubtensorStakeSetupPresenterProtocol {
     func setup() {
         provideAmountInputViewModel()
         provideAssetViewModel()

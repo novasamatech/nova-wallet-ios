@@ -167,27 +167,27 @@ private extension SubtensorUnstakeValidatingDependencies {
 
 extension SubtensorValidationFactoryProtocol {
     func validateUnstake(
-        for dep: SubtensorUnstakeValidatingDependencies,
+        for dependencies: SubtensorUnstakeValidatingDependencies,
         locale: Locale,
         onSuccess: @escaping () -> Void
     ) {
-        var validations = createUnstakeInputValidations(for: dep, locale: locale)
+        var validations = createUnstakeInputValidations(for: dependencies, locale: locale)
 
-        if let feePayerValidation = createFeePayerValidation(for: dep, locale: locale) {
+        if let feePayerValidation = createFeePayerValidation(for: dependencies, locale: locale) {
             validations.append(feePayerValidation)
         }
 
-        validations.append(contentsOf: createSellPlanValidations(for: dep, locale: locale))
+        validations.append(contentsOf: createSellPlanValidations(for: dependencies, locale: locale))
 
-        if !dep.isSubnet {
-            validations.append(contentsOf: createRootHoldValidations(for: dep, locale: locale))
+        if !dependencies.isSubnet {
+            validations.append(contentsOf: createRootHoldValidations(for: dependencies, locale: locale))
         }
 
-        validations.append(contentsOf: createNetworkStateValidations(for: dep.preflight, locale: locale))
+        validations.append(contentsOf: createNetworkStateValidations(for: dependencies.preflight, locale: locale))
 
-        if dep.isSubnet {
-            validations.append(priceImpactAcceptable(quote: dep.quoteContext?.latestQuote, locale: locale))
-            validations.append(passesRealtimeQuote(dep.quoteContext, locale: locale))
+        if dependencies.isSubnet {
+            validations.append(priceImpactAcceptable(quote: dependencies.quoteContext?.latestQuote, locale: locale))
+            validations.append(passesRealtimeQuote(dependencies.quoteContext, locale: locale))
         }
 
         DataValidationRunner(validators: validations).runValidation(notifyingOnSuccess: onSuccess)
@@ -196,96 +196,96 @@ extension SubtensorValidationFactoryProtocol {
 
 private extension SubtensorValidationFactoryProtocol {
     func createUnstakeInputValidations(
-        for dep: SubtensorUnstakeValidatingDependencies,
+        for dependencies: SubtensorUnstakeValidatingDependencies,
         locale: Locale
     ) -> [DataValidating] {
         var validations: [DataValidating] = [
             positionsAreFresh(
-                syncFailed: dep.syncFailed,
+                syncFailed: dependencies.syncFailed,
                 locale: locale,
-                onRetry: { dep.onPositionsRefresh() }
+                onRetry: { dependencies.onPositionsRefresh() }
             ),
 
             has(
-                fee: dep.fee,
+                fee: dependencies.fee,
                 locale: locale,
-                onError: { dep.onFeeRefresh() }
+                onError: { dependencies.onFeeRefresh() }
             ),
 
             hasPreflight(
-                dep.preflight,
+                dependencies.preflight,
                 locale: locale,
-                onRetry: { dep.onPreflightRefresh() }
+                onRetry: { dependencies.onPreflightRefresh() }
             )
         ]
 
-        if let onGroupHotkeysRefresh = dep.onGroupHotkeysRefresh {
+        if let onGroupHotkeysRefresh = dependencies.onGroupHotkeysRefresh {
             validations.append(
-                groupHotkeysLoaded(dep.groupHotkeysCoverPlan, locale: locale, onRetry: onGroupHotkeysRefresh)
+                groupHotkeysLoaded(dependencies.groupHotkeysCoverPlan, locale: locale, onRetry: onGroupHotkeysRefresh)
             )
         }
 
-        if dep.isSubnet {
-            validations.append(contentsOf: createQuoteValidations(for: dep.quoteContext, locale: locale))
+        if dependencies.isSubnet {
+            validations.append(contentsOf: createQuoteValidations(for: dependencies.quoteContext, locale: locale))
         }
 
         return validations
     }
 
     func createSellPlanValidations(
-        for dep: SubtensorUnstakeValidatingDependencies,
+        for dependencies: SubtensorUnstakeValidatingDependencies,
         locale: Locale
     ) -> [DataValidating] {
-        let inputs: [SubtensorSellPlanInput?] = dep.sellPlanInputs ?? [nil]
+        let inputs: [SubtensorSellPlanInput?] = dependencies.sellPlanInputs ?? [nil]
 
         return inputs.map { input in
             sellPlanAllows(
                 input,
-                assetDisplayInfo: dep.assetDisplayInfo,
-                onUnstakeAll: dep.onUnstakeAll,
+                assetDisplayInfo: dependencies.assetDisplayInfo,
+                onUnstakeAll: dependencies.onUnstakeAll,
                 locale: locale
             )
         }
     }
 
     func createFeePayerValidation(
-        for dep: SubtensorUnstakeValidatingDependencies,
+        for dependencies: SubtensorUnstakeValidatingDependencies,
         locale: Locale
     ) -> DataValidating? {
-        if dep.isBatched {
+        if dependencies.isBatched {
             return notViolatingMinBalancePaying(
-                fee: dep.fee,
-                total: dep.balance?.transferable,
-                minBalance: dep.existentialDeposit,
+                fee: dependencies.fee,
+                total: dependencies.balance?.transferable,
+                minBalance: dependencies.existentialDeposit,
                 asset: assetDisplayInfo,
                 locale: locale
             )
         }
 
-        guard dep.paysFeeFromPosition else {
+        guard dependencies.paysFeeFromPosition else {
             return nil
         }
 
         return canPayFeeInPlank(
-            balance: dep.feePayingPosition,
-            fee: dep.fee,
+            balance: dependencies.feePayingPosition,
+            fee: dependencies.fee,
             asset: assetDisplayInfo,
             locale: locale
         )
     }
 
     func createRootHoldValidations(
-        for dep: SubtensorUnstakeValidatingDependencies,
+        for dependencies: SubtensorUnstakeValidatingDependencies,
         locale: Locale
     ) -> [DataValidating] {
-        guard let preflight = dep.preflight else {
+        guard let preflight = dependencies.preflight else {
             return []
         }
 
-        guard let groupExitHolds = dep.groupExitHolds else {
+        guard let groupExitHolds = dependencies.groupExitHolds else {
             return [
                 rootUnlockIntervalElapsed(
-                    currentBlock: dep.currentBlock,
+                    currentBlock: dependencies.currentBlock,
                     lastStakeBlock: preflight.lastStakeBlock,
                     unlockInterval: preflight.rootStakeUnlockInterval,
                     blockTime: preflight.blockTime,
@@ -296,7 +296,7 @@ private extension SubtensorValidationFactoryProtocol {
 
         return groupExitHolds.map { hold in
             rootUnlockIntervalElapsed(
-                currentBlock: dep.currentBlock,
+                currentBlock: dependencies.currentBlock,
                 lastStakeBlock: hold.lastStakeBlock,
                 unlockInterval: hold.interval,
                 blockTime: preflight.blockTime,

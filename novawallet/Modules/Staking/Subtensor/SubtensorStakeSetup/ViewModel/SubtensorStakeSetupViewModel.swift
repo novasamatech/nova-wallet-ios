@@ -1,7 +1,7 @@
 import BigInt
 import Foundation
 
-struct SubtensorSetupViewModel {
+struct SubtensorStakeSetupViewModel {
     let title: String
     let amountTitle: String
     let maxAmount: String?
@@ -9,23 +9,23 @@ struct SubtensorSetupViewModel {
     let getTao: SubtensorGetTaoViewModel?
     let reserveWarning: String?
     let failure: WarningView.Model?
-    let details: SubtensorSetupDetailsViewModel
+    let details: SubtensorStakeSetupDetailsViewModel
     let caption: String?
     let browseTitle: String?
     let action: SubtensorSetupActionViewModel
 }
 
-struct SubtensorSetupSelectionViewModel {
+struct SubtensorStakeSetupSelectionViewModel {
     let section: String
     let caption: String
 }
 
-enum SubtensorSetupDetailsViewModel {
-    case selection(SubtensorSetupSelectionViewModel)
-    case root(SubtensorSetupRootViewModel)
-    case subnet(SubtensorSetupSubnetViewModel)
+enum SubtensorStakeSetupDetailsViewModel {
+    case selection(SubtensorStakeSetupSelectionViewModel)
+    case root(SubtensorStakeSetupRootViewModel)
+    case subnet(SubtensorStakeSetupSubnetViewModel)
 
-    var selection: SubtensorSetupSelectionViewModel? {
+    var selection: SubtensorStakeSetupSelectionViewModel? {
         if case let .selection(viewModel) = self {
             return viewModel
         }
@@ -39,18 +39,18 @@ enum SubtensorRootEntryPresentation {
     case quickPickRoot
 }
 
-enum SubtensorSetupRootValidatorViewModel {
+enum SubtensorStakeSetupRootValidatorViewModel {
     case card(SubtensorValidatorCardViewModel)
     case rows(validator: StackCellViewModel, apy: String)
 }
 
-struct SubtensorSetupRootViewModel {
-    let validator: SubtensorSetupRootValidatorViewModel
+struct SubtensorStakeSetupRootViewModel {
+    let validator: SubtensorStakeSetupRootValidatorViewModel
     let pickCard: SubtensorPickCardViewModel?
     let networkFee: BalanceViewModelProtocol?
 }
 
-struct SubtensorSetupSubnetViewModel {
+struct SubtensorStakeSetupSubnetViewModel {
     let sectionTitle: String
     let card: SubtensorPickCardViewModel
     let avgBuyPrice: SubtensorRowState<SubtensorCostBasisValueViewModel>
@@ -118,17 +118,17 @@ enum SubtensorSetupValidatorViewModel {
     }
 }
 
-struct SubtensorSetupValidator: Equatable {
+struct SubtensorStakeSetupValidator: Equatable {
     let hotkey: AccountId
     let name: String?
 }
 
-enum SubtensorSetupValidatorState: Equatable {
+enum SubtensorStakeSetupValidatorState: Equatable {
     case pending
     case none
-    case selected(SubtensorSetupValidator)
+    case selected(SubtensorStakeSetupValidator)
 
-    var validator: SubtensorSetupValidator? {
+    var validator: SubtensorStakeSetupValidator? {
         if case let .selected(validator) = self {
             return validator
         }
@@ -137,7 +137,7 @@ enum SubtensorSetupValidatorState: Equatable {
     }
 }
 
-enum SubtensorSetupAmountState: Equatable {
+enum SubtensorStakeSetupAmountState: Equatable {
     case loading
     case noTao
     case insufficient
@@ -159,7 +159,7 @@ enum SubtensorSetupAmountState: Equatable {
     }
 }
 
-struct SubtensorSetupSubnetData {
+struct SubtensorStakeSetupSubnetData {
     let catalogue: SubtensorSubnetCatalogue?
     let subnetLogos: SubtensorSubnetLogos?
     let rankedSubnet: SubtensorRankedSubnet?
@@ -170,14 +170,14 @@ struct SubtensorSetupSubnetData {
     let blockTime: BlockTime?
 }
 
-struct SubtensorSetupViewModelInput {
-    let mode: SubtensorSetupMode
+struct SubtensorStakeSetupViewModelInput {
+    let mode: SubtensorStakeSetupMode
     let target: SubtensorStakeTarget?
-    let subnetData: SubtensorSetupSubnetData
+    let subnetData: SubtensorStakeSetupSubnetData
     let transferable: Balance?
     let maxAmount: Balance?
     let amount: Balance?
-    let validator: SubtensorSetupValidatorState
+    let validator: SubtensorStakeSetupValidatorState
     let fee: ExtrinsicFeeProtocol?
     let price: PriceData?
     let quote: SubtensorTradeQuote?
@@ -193,9 +193,9 @@ struct SubtensorSetupViewModelInput {
         return SubtensorSubnetCatalogue(subnets: [subnet])
     }
 
-    var amountState: SubtensorSetupAmountState {
-        let state: SubtensorSetupAmountState = transferable == 0
-            ? .noTao : SubtensorSetupAmountState(maxAmount: maxAmount, amount: amount)
+    var amountState: SubtensorStakeSetupAmountState {
+        let state: SubtensorStakeSetupAmountState = transferable == 0
+            ? .noTao : SubtensorStakeSetupAmountState(maxAmount: maxAmount, amount: amount)
 
         guard state == .noTao, mode.isLocked else {
             return state

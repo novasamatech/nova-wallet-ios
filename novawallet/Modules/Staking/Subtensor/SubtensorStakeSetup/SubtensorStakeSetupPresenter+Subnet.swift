@@ -1,6 +1,6 @@
 import Foundation
 
-extension SubtensorSetupPresenter {
+extension SubtensorStakeSetupPresenter {
     func loadSubnetDataIfNeeded() {
         guard let netuid = mode.netuid else {
             return
@@ -63,8 +63,8 @@ extension SubtensorSetupPresenter {
         return subnet
     }
 
-    func createViewModelInput() -> SubtensorSetupViewModelInput {
-        let subnetData = SubtensorSetupSubnetData(
+    func createViewModelInput() -> SubtensorStakeSetupViewModelInput {
+        let subnetData = SubtensorStakeSetupSubnetData(
             catalogue: catalogue,
             subnetLogos: subnetLogos,
             rankedSubnet: matchingRankedSubnet(),
@@ -75,7 +75,7 @@ extension SubtensorSetupPresenter {
             blockTime: blockTime
         )
 
-        return SubtensorSetupViewModelInput(
+        return SubtensorStakeSetupViewModelInput(
             mode: mode,
             target: target,
             subnetData: subnetData,

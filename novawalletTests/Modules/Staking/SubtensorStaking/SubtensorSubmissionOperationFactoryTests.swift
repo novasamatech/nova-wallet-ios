@@ -46,7 +46,7 @@ final class SubtensorSubmissionOperationFactoryTests: XCTestCase {
         XCTAssertEqual(context.sharedOperation.status, .sent)
         let eventCaptor = ArgumentCaptor<EventProtocol>()
         verify(context.eventCenter, times(1)).notify(with: eventCaptor.capture())
-        let changed = try XCTUnwrap(eventCaptor.value as? SubtensorChanged)
+        let changed = try XCTUnwrap(eventCaptor.value as? SubtensorStakeChanged)
         XCTAssertEqual(changed.chainAssetId, context.operationFactory.chainAsset.chainAssetId)
         XCTAssertEqual(changed.accountId, coldkey)
     }

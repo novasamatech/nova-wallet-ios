@@ -1,10 +1,10 @@
 import Foundation
 
-struct SubtensorChanged: EventProtocol {
+struct SubtensorStakeChanged: EventProtocol {
     let chainAssetId: ChainAssetId
     let accountId: AccountId
 
     func accept(visitor: EventVisitorProtocol) {
-        visitor.processSubtensorChanged(event: self)
+        visitor.processSubtensorStakeChanged(event: self)
     }
 }

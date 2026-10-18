@@ -1,6 +1,6 @@
 import Foundation
 
-extension SubtensorSetupPresenter: SubtensorSetupInteractorOutputProtocol {
+extension SubtensorStakeSetupPresenter: SubtensorStakeSetupInteractorOutputProtocol {
     func didReceiveValidator(_ validator: SubtensorValidatorDirectoryItem?, on subnet: SubtensorSubnetRef) {
         guard subnet == subnetRef else {
             return
@@ -8,7 +8,7 @@ extension SubtensorSetupPresenter: SubtensorSetupInteractorOutputProtocol {
 
         if let lockedHotkey = mode.lockedHotkey {
             if let validator, validator.hotkey == lockedHotkey {
-                validatorState = .selected(SubtensorSetupValidator(hotkey: lockedHotkey, name: validator.name))
+                validatorState = .selected(SubtensorStakeSetupValidator(hotkey: lockedHotkey, name: validator.name))
                 validatorItem = validator
                 provideViewModel()
             }

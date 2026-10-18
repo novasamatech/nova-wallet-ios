@@ -1,16 +1,16 @@
 import BigInt
 import Foundation
 
-extension SubtensorSetupViewModelFactory {
+extension SubtensorStakeSetupViewModelFactory {
     static let secondsPerMonth: TimeInterval = 30 * 24 * 60 * 60
     static let saferAge: TimeInterval = 6 * secondsPerMonth
     static let deepPoolTao: Decimal = 25000
     static let calmerVolatilityScore: Decimal = 50
 
     func createSubnetDetails(
-        for input: SubtensorSetupViewModelInput,
+        for input: SubtensorStakeSetupViewModelInput,
         locale: Locale
-    ) -> SubtensorSetupSubnetViewModel {
+    ) -> SubtensorStakeSetupSubnetViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         let sectionTitle = if let order = input.quickPickOrder {
@@ -38,21 +38,21 @@ extension SubtensorSetupViewModelFactory {
             isRoot: false
         )
 
-        return SubtensorSetupSubnetViewModel(
+        return SubtensorStakeSetupSubnetViewModel(
             sectionTitle: sectionTitle,
             card: card,
             avgBuyPrice: createAvgBuyPrice(for: input, locale: locale)
         )
     }
 
-    func createSelection(order: SubtensorQuickPickOrder, locale: Locale) -> SubtensorSetupSelectionViewModel {
-        SubtensorSetupSelectionViewModel(
+    func createSelection(order: SubtensorQuickPickOrder, locale: Locale) -> SubtensorStakeSetupSelectionViewModel {
+        SubtensorStakeSetupSelectionViewModel(
             section: sectionTitle(order: order, locale: locale),
             caption: R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorQuickLoading()
         )
     }
 
-    func createFailure(for input: SubtensorSetupViewModelInput, locale: Locale) -> WarningView.Model? {
+    func createFailure(for input: SubtensorStakeSetupViewModelInput, locale: Locale) -> WarningView.Model? {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
         let tryAgain = LearnMoreViewModel(iconViewModel: nil, title: strings.commonTryAgain())
 
@@ -89,7 +89,7 @@ extension SubtensorSetupViewModelFactory {
         }
     }
 
-    func createChips(for subnetData: SubtensorSetupSubnetData, locale: Locale) -> [String] {
+    func createChips(for subnetData: SubtensorStakeSetupSubnetData, locale: Locale) -> [String] {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
         let rankedSubnet = subnetData.rankedSubnet
         var chips: [String] = []
@@ -116,9 +116,9 @@ extension SubtensorSetupViewModelFactory {
     }
 }
 
-private extension SubtensorSetupViewModelFactory {
+private extension SubtensorStakeSetupViewModelFactory {
     func createTradePanel(
-        for input: SubtensorSetupViewModelInput,
+        for input: SubtensorStakeSetupViewModelInput,
         locale: Locale
     ) -> SubtensorTradePanelViewModel? {
         guard let target = input.target else {
@@ -137,12 +137,12 @@ private extension SubtensorSetupViewModelFactory {
         )
     }
 
-    func isQuotePending(for input: SubtensorSetupViewModelInput) -> Bool {
+    func isQuotePending(for input: SubtensorStakeSetupViewModelInput) -> Bool {
         input.target == nil || (input.quote == nil && !input.subnetData.isQuoteFailed)
     }
 
     func createAvgBuyPrice(
-        for input: SubtensorSetupViewModelInput,
+        for input: SubtensorStakeSetupViewModelInput,
         locale: Locale
     ) -> SubtensorRowState<SubtensorCostBasisValueViewModel> {
         guard case let .buyMore(position) = input.mode else {
@@ -164,7 +164,7 @@ private extension SubtensorSetupViewModelFactory {
     }
 
     func createHeader(
-        for input: SubtensorSetupViewModelInput,
+        for input: SubtensorStakeSetupViewModelInput,
         locale: Locale
     ) -> SubtensorPickCardHeaderViewModel? {
         let subnetData = input.subnetData
