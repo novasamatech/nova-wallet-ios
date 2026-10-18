@@ -12,6 +12,7 @@ struct SubtensorQuoteValidatingContext {
     let onQuoteRequest: SubtensorQuoteRequestClosure
     let onQuoteUpdate: (SubtensorTradeQuote) -> Void
     var onPriceMoved: ((SubtensorTradeQuote) -> Void)?
+    var onQuoteVerified: ((SubtensorTradeQuote) -> Void)?
 
     var signingLimit: Balance? {
         guard let latestQuote, let acknowledgedLimit else {
