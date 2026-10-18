@@ -73,8 +73,7 @@ final class SubtensorStakingValidationFactory {
     }
 
     func errorCondition(
-        locale: Locale,
-        alert: @escaping (SubtensorStakingValidationFactory, _R.string.localizable) -> (title: String, message: String),
+        presenting present: @escaping (SubtensorStakingValidationFactory, ControllerBackedProtocol) -> Void,
         preservesCondition: @escaping () -> Bool
     ) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in
@@ -82,9 +81,7 @@ final class SubtensorStakingValidationFactory {
                 return
             }
 
-            let content = alert(self, R.string(preferredLanguages: locale.rLanguages).localizable)
-
-            presentable.presentError(title: content.title, message: content.message, view: view, locale: locale)
+            present(self, view)
         }, preservesCondition: preservesCondition)
     }
 
@@ -255,8 +252,8 @@ extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryPr
         limitPrice: Balance?,
         locale: Locale
     ) -> DataValidating {
-        errorCondition(locale: locale, alert: { _, strings in
-            (strings.stakingSubtensorSelfImpactTitle(), strings.stakingSubtensorSelfImpactMessage())
+        errorCondition(presenting: { factory, view in
+            factory.presentable.presentSelfImpact(view, locale: locale)
         }, preservesCondition: {
             guard let quote, let limitPrice else {
                 return true
@@ -300,17 +297,17 @@ extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryPr
         networkFee: Balance?,
         locale: Locale
     ) -> DataValidating {
-        errorCondition(locale: locale, alert: { factory, strings in
+        errorCondition(presenting: { factory, view in
             let maxAmount = SubtensorAmountPolicy.maxBuyOrStake(
                 transferable: transferable ?? 0,
                 networkFee: networkFee ?? 0
             )
 
-            let reserve = factory.formatAmount(SubtensorNovaFeeConstants.feeReserve, locale: locale)
-
-            return (
-                strings.stakingSubtensorReserveTitle(reserve),
-                strings.stakingSubtensorReserveMessage(factory.formatAmount(maxAmount, locale: locale), reserve)
+            factory.presentable.presentFeeReserveViolated(
+                view,
+                maxAmount: factory.formatAmount(maxAmount, locale: locale),
+                reserve: factory.formatAmount(SubtensorNovaFeeConstants.feeReserve, locale: locale),
+                locale: locale
             )
         }, preservesCondition: {
             guard let amount, let transferable else {
@@ -331,15 +328,17 @@ extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryPr
         includesNovaFee: Bool,
         locale: Locale
     ) -> DataValidating {
-        errorCondition(locale: locale, alert: { factory, strings in
+        errorCondition(presenting: { factory, view in
             let displayedMinimum = factory.displayedMinimumStake(
                 requiredStake: (minStake ?? 0) + (quotedSwapFee ?? 0),
                 includesNovaFee: includesNovaFee
             )
 
-            let minimum = factory.formatRequiredAmount(displayedMinimum, locale: locale)
-
-            return (strings.amountTooLow(), strings.stakingSetupAmountTooLow(minimum))
+            factory.presentable.presentStakeAmountTooLow(
+                view,
+                minimum: factory.formatRequiredAmount(displayedMinimum, locale: locale),
+                locale: locale
+            )
         }, preservesCondition: {
             guard let stakedAmount, let minStake else {
                 return false
@@ -353,8 +352,8 @@ extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryPr
         hotkeyExists: Bool?,
         locale: Locale
     ) -> DataValidating {
-        errorCondition(locale: locale, alert: { _, strings in
-            (strings.stakingSubtensorHotkeyNotFoundTitle(), strings.stakingSubtensorHotkeyNotFoundMessage())
+        errorCondition(presenting: { factory, view in
+            factory.presentable.presentHotkeyNotFound(view, locale: locale)
         }, preservesCondition: {
             hotkeyExists == true
         })
@@ -365,8 +364,8 @@ extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryPr
         subtokenEnabled: Bool?,
         locale: Locale
     ) -> DataValidating {
-        errorCondition(locale: locale, alert: { _, strings in
-            (strings.stakingSubtensorSubnetDisabledTitle(), strings.stakingSubtensorSubnetDisabledMessage())
+        errorCondition(presenting: { factory, view in
+            factory.presentable.presentSubnetDisabled(view, locale: locale)
         }, preservesCondition: {
             subnetExists == true && subtokenEnabled == true
         })
@@ -376,8 +375,8 @@ extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryPr
         hasAnnouncement: Bool?,
         locale: Locale
     ) -> DataValidating {
-        errorCondition(locale: locale, alert: { _, strings in
-            (strings.stakingSubtensorColdkeySwapTitle(), strings.stakingSubtensorColdkeySwapMessage())
+        errorCondition(presenting: { factory, view in
+            factory.presentable.presentColdkeySwapInProgress(view, locale: locale)
         }, preservesCondition: {
             hasAnnouncement == false
         })
@@ -387,8 +386,8 @@ extension SubtensorStakingValidationFactory: SubtensorStakingValidationFactoryPr
         safeModeActive: Bool?,
         locale: Locale
     ) -> DataValidating {
-        errorCondition(locale: locale, alert: { _, strings in
-            (strings.stakingSubtensorSafeModeTitle(), strings.stakingSubtensorSafeModeMessage())
+        errorCondition(presenting: { factory, view in
+            factory.presentable.presentSafeModeActive(view, locale: locale)
         }, preservesCondition: {
             safeModeActive == false
         })
