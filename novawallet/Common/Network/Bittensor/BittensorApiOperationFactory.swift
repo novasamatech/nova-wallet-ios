@@ -30,8 +30,6 @@ final class BittensorApiOperationFactory {
         self.transport = transport
         self.cache = cache
         self.logger = logger
-        let revision = transport.addInvalidationObserver(cache) { [weak cache] in cache?.invalidate(before: $0) }
-        cache.invalidate(before: revision)
     }
 }
 
@@ -166,10 +164,7 @@ private extension BittensorApiOperationFactory {
     }
 
     func peek<T>(path: String, queryItems: [URLQueryItem] = []) -> HTTPCachePeek<BittensorApiResult<T>> {
-        let cached = cache.peek(
-            Self.cacheKey(path: path, queryItems: queryItems),
-            invalidationRevision: transport.invalidationRevision
-        )
+        let cached = cache.peek(Self.cacheKey(path: path, queryItems: queryItems))
 
         return cached.map { try Self.makeResult(from: $0, isFromExpiredCache: !cached.isFresh) }
     }
@@ -205,7 +200,6 @@ private extension BittensorApiOperationFactory {
 
         let job = BittensorApiCacheJob(
             key: Self.cacheKey(path: path, queryItems: queryItems),
-            currentInvalidationRevision: { [transport] in transport.invalidationRevision },
             admit: { [transport] in transport.createAdmissionWrapper() },
             fetch: { [transport, logger] admission in
                 Self.createFetchWrapper(

@@ -40,7 +40,6 @@ struct BittensorApiCacheEntry {
 
 struct BittensorApiCacheJob {
     let key: BittensorApiCacheKey
-    let currentInvalidationRevision: () -> UInt64
     let admit: () -> CompoundOperationWrapper<BittensorApiAdmission>
     let fetch: (BittensorApiAdmission) -> CompoundOperationWrapper<BittensorApiFetchedValue>
 }
@@ -56,19 +55,12 @@ final class BittensorApiResponseCache {
     private let mutex = NSLock()
     private var entries: [ScopedKey: BittensorApiCacheEntry] = [:]
     private var activeScope: BittensorApiCacheScope?
-    private var minimumInvalidationRevision: UInt64 = 0
     private var newestGeneration: BittensorApiGenerationOrder?
     private var drops: [BittensorApiCacheDrop: TimeInterval] = [:]
 
     init(operationQueue: OperationQueue, timeProvider: @escaping () -> TimeInterval = BittensorMonotonicClock.now) {
         self.operationQueue = operationQueue
         self.timeProvider = timeProvider
-    }
-
-    func invalidate(before revision: UInt64) {
-        mutex.lock()
-        invalidateLocked(before: revision)
-        mutex.unlock()
     }
 
     func drop(_ drop: BittensorApiCacheDrop) {
@@ -78,22 +70,21 @@ final class BittensorApiResponseCache {
         mutex.unlock()
     }
 
-    func peek(_ key: BittensorApiCacheKey, invalidationRevision: UInt64) -> HTTPCachePeek<BittensorApiCacheEntry> {
+    func peek(_ key: BittensorApiCacheKey) -> HTTPCachePeek<BittensorApiCacheEntry> {
         mutex.lock()
         defer { mutex.unlock() }
-        invalidateLocked(before: invalidationRevision)
         guard let scope = activeScope, let entry = entries[ScopedKey(scope: scope, request: key)] else { return .miss }
         return timeProvider() < entry.freshUntil ? .fresh(entry) : .expired(entry)
     }
 
     func createWrapper(for job: BittensorApiCacheJob) -> CompoundOperationWrapper<BittensorApiCacheEntry> {
-        if case let .fresh(entry) = peek(job.key, invalidationRevision: job.currentInvalidationRevision()) {
+        if case let .fresh(entry) = peek(job.key) {
             return .createWithResult(entry)
         }
         let admission = job.admit()
         let start = ClosureOperation<TimeInterval> {
             let admitted = try admission.targetOperation.extractNoCancellableResultData()
-            try self.activate(admitted.scope, currentRevision: job.currentInvalidationRevision())
+            self.activate(admitted.scope)
             return self.timeProvider()
         }
         start.addDependency(admission.targetOperation)
@@ -108,7 +99,6 @@ final class BittensorApiResponseCache {
             let scope = try admission.targetOperation.extractNoCancellableResultData().scope
             return try self.store(
                 key: ScopedKey(scope: scope, request: job.key),
-                currentRevision: job.currentInvalidationRevision(),
                 startedAt: start.extractNoCancellableResultData()
             ) { try fetch.targetOperation.extractNoCancellableResultData() }
         }
@@ -118,39 +108,23 @@ final class BittensorApiResponseCache {
 }
 
 private extension BittensorApiResponseCache {
-    func invalidateLocked(before revision: UInt64) {
-        guard revision > minimumInvalidationRevision else { return }
-        minimumInvalidationRevision = revision
-        activeScope = nil
+    func activate(_ scope: BittensorApiCacheScope) {
+        mutex.lock()
+        defer { mutex.unlock() }
+        guard activeScope != scope else { return }
+        activeScope = scope
         entries.removeAll()
         newestGeneration = nil
         drops.removeAll()
     }
 
-    func activate(_ scope: BittensorApiCacheScope, currentRevision: UInt64) throws {
-        mutex.lock()
-        defer { mutex.unlock() }
-        invalidateLocked(before: max(currentRevision, scope.invalidationRevision))
-        guard scope.invalidationRevision >= minimumInvalidationRevision else {
-            throw BittensorApiError.unavailable(code: nil, requestId: nil)
-        }
-        if activeScope != scope {
-            activeScope = scope
-            entries.removeAll()
-            newestGeneration = nil
-            drops.removeAll()
-        }
-    }
-
     private func store(
         key: ScopedKey,
-        currentRevision: UInt64,
         startedAt: TimeInterval,
         fetched: () throws -> BittensorApiFetchedValue
     ) throws -> BittensorApiCacheEntry {
         mutex.lock()
         defer { mutex.unlock() }
-        invalidateLocked(before: currentRevision)
         guard activeScope == key.scope else {
             throw BittensorApiError.unavailable(code: nil, requestId: nil)
         }
