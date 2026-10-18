@@ -20,7 +20,7 @@ enum SubtensorValidatorInfoViewFactory {
             target: target,
             hotkey: hotkey,
             state: state,
-            coverageFactory: SubtensorValidatorCoverageFactory(
+            coverageOperationFactory: SubtensorValidatorCoverageOperationFactory(
                 apiFactory: state.apiOperationFactory,
                 catalogueOperationFactory: earnServices.catalogueOperationFactory,
                 operationQueue: OperationManagerFacade.sharedDefaultQueue

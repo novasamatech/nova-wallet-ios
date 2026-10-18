@@ -63,7 +63,7 @@ private extension SubtensorSubnetDetailsViewFactory {
         return SubtensorSubnetDetailsInteractor(
             subnet: input.subnet.ref,
             state: state,
-            parametersFactory: createParametersFactory(state: state, operationQueue: operationQueue),
+            parametersOperationFactory: createParametersOperationFactory(state: state, operationQueue: operationQueue),
             applicationHandler: ApplicationHandler(),
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             currencyManager: currencyManager,
@@ -74,12 +74,12 @@ private extension SubtensorSubnetDetailsViewFactory {
 }
 
 extension SubtensorSubnetDetailsViewFactory {
-    static func createParametersFactory(
+    static func createParametersOperationFactory(
         state: SubtensorStakingSharedStateProtocol,
         operationQueue: OperationQueue
-    ) -> SubtensorSubnetParametersFactoryProtocol {
+    ) -> SubtensorSubnetParametersOperationFactoryProtocol {
         let chain = state.stakingOption.chainAsset.chain
-        return SubtensorSubnetParametersFactory(
+        return SubtensorSubnetParametersOperationFactory(
             apiFactory: state.apiOperationFactory,
             runtimeConnectionStore: ChainRegistryRuntimeConnectionStore(
                 chainId: chain.chainId, chainRegistry: state.chainRegistry

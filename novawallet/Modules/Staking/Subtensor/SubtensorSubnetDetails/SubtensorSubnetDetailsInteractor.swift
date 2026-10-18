@@ -8,7 +8,7 @@ final class SubtensorSubnetDetailsInteractor: AnyProviderAutoCleaning, Subtensor
     let subnet: SubtensorSubnetRef
     let chainAsset: ChainAsset
     let priceHistoryOperationFactory: SubtensorPriceHistoryOperationFactoryProtocol?
-    let parametersFactory: SubtensorSubnetParametersFactoryProtocol
+    let parametersOperationFactory: SubtensorSubnetParametersOperationFactoryProtocol
     let presetFactory: SubtensorValidatorPresetFactoryProtocol
     let yieldOperationFactory: SubtensorYieldOperationFactoryProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
@@ -29,7 +29,7 @@ final class SubtensorSubnetDetailsInteractor: AnyProviderAutoCleaning, Subtensor
     init(
         subnet: SubtensorSubnetRef,
         state: SubtensorStakingSharedStateProtocol,
-        parametersFactory: SubtensorSubnetParametersFactoryProtocol,
+        parametersOperationFactory: SubtensorSubnetParametersOperationFactoryProtocol,
         applicationHandler: ApplicationHandlerProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
@@ -39,7 +39,7 @@ final class SubtensorSubnetDetailsInteractor: AnyProviderAutoCleaning, Subtensor
         self.subnet = subnet
         chainAsset = state.stakingOption.chainAsset
         priceHistoryOperationFactory = state.earnServices.priceHistoryOperationFactory
-        self.parametersFactory = parametersFactory
+        self.parametersOperationFactory = parametersOperationFactory
         presetFactory = state.earnServices.validatorPresetFactory
         yieldOperationFactory = state.earnServices.yieldOperationFactory
         subnetLogosProvider = state.earnServices.subnetLogosProvider
@@ -127,7 +127,7 @@ extension SubtensorSubnetDetailsInteractor: SubtensorSubnetDetailsInteractorInpu
         parametersCallStore.cancel()
 
         load(
-            parametersFactory.createWrapper(for: subnet),
+            parametersOperationFactory.createWrapper(for: subnet),
             in: parametersCallStore,
             label: "parameters"
         ) { [weak self] in

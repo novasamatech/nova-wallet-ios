@@ -2,11 +2,11 @@ import Foundation
 import Operation_iOS
 import SubstrateSdk
 
-protocol SubtensorSubnetParametersFactoryProtocol {
+protocol SubtensorSubnetParametersOperationFactoryProtocol {
     func createWrapper(for ref: SubtensorSubnetRef) -> CompoundOperationWrapper<SubtensorSubnetParameters>
 }
 
-final class SubtensorSubnetParametersFactory {
+final class SubtensorSubnetParametersOperationFactory {
     let apiFactory: SubtensorApiOperationFactoryProtocol
     let runtimeConnectionStore: RuntimeConnectionStoring
     let blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
@@ -30,7 +30,7 @@ final class SubtensorSubnetParametersFactory {
     }
 }
 
-extension SubtensorSubnetParametersFactory: SubtensorSubnetParametersFactoryProtocol {
+extension SubtensorSubnetParametersOperationFactory: SubtensorSubnetParametersOperationFactoryProtocol {
     func createWrapper(for ref: SubtensorSubnetRef) -> CompoundOperationWrapper<SubtensorSubnetParameters> {
         let hash = apiFactory.createBestBlockHashWrapper()
         let wrapper = OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
@@ -42,7 +42,7 @@ extension SubtensorSubnetParametersFactory: SubtensorSubnetParametersFactoryProt
     }
 }
 
-private extension SubtensorSubnetParametersFactory {
+private extension SubtensorSubnetParametersOperationFactory {
     func value<T>(from operation: BaseOperation<T>, field: String) -> T? {
         do {
             return try operation.extractNoCancellableResultData()
