@@ -14,9 +14,8 @@ The facade is the app’s composition boundary. It creates the package owner onc
 flowchart TB
   subgraph APP["Main iOS app"]
     ROOT["RootInteractor.setup()"] --> AF["AnalyticsServiceFacade<br/>injected via factory createDefault()"]
-    AF --> AA["AnalyticsAuthAdapter"]
     BT["BittensorApiOperationFactory"] --> TR["BittensorAuthorizedTransport.shared"]
-    AA --> F["NovaAuthFacade.shared<br/>one endpoint: client + context"]
+    AF -- "authProvider" --> F["NovaAuthFacade.shared<br/>one endpoint: client + context"]
     TR --> F
     CONFIG["GlobalConfigProvider<br/>infraUrl, fetched once"] --> F
     HOST["App identity + version<br/>SettingsManager set/read-back + three queues"] --> F
@@ -40,7 +39,7 @@ flowchart TB
 - `appID` is App Identifier Prefix + bundle ID. `F_DEV` selects the development App Attest environment; other builds select production. This is distinct from wallet identity.
 - Package code depends on Operation-iOS, NovaOperationSupport, Keystore-iOS and SDKLogger, with Apple platform adapters. It does not depend on app types.
 
-Sources: [facade and composition](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [configuration conversion](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [Root startup](../../../novawallet/Modules/Root/RootInteractor.swift) · [app identity](../../../novawallet/Common/Configs/ApplicationConfigs.swift) · [owner construction](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuth.swift) · [package dependencies](../../../Packages/NovaAuth/Package.swift) · [settings storage](../../../Packages/NovaAuth/Sources/NovaAuth/API/NovaAuthConfiguration.swift)
+Sources: [facade and composition](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [configuration conversion](../../../novawallet/Common/Network/Auth/NovaAuthFacade.swift) · [Root startup](../../../novawallet/Modules/Root/RootInteractor.swift) · [app identity](../../../novawallet/Common/Configs/ApplicationConfig+NovaAuth.swift) · [owner construction](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuth.swift) · [package dependencies](../../../Packages/NovaAuth/Package.swift) · [settings storage](../../../Packages/NovaAuth/Sources/NovaAuth/API/NovaAuthConfiguration.swift)
 
 ## 2. First authentication and subsequent issuance
 
@@ -223,7 +222,7 @@ Sources: [demand and token loading](../../../Packages/NovaAuth/Sources/NovaAuth/
 flowchart TB
   D["Immutable protected request"] --> A["Demand/join credential"]
   A --> F["Context + token + origin protection; caller beforeSend"]
-  F --> S["Native HTTP cache / actual send"]
+  F --> S["Actual send"]
   S --> R{"Expected-origin 401 invalid_token?"}
   R -- "First denial only" --> N["Reject token; renew same binding with fresh proof"]
   N --> F
@@ -288,7 +287,7 @@ Sources: [owner and repair](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycl
 
 ## 8. Bittensor: admission, two cache layers and presentation
 
-Bittensor adds domain request sharing, decoded display seeds and typed error handling around NovaAuth. Its decoded cache never substitutes for native HTTP freshness. On-chain balances and chain enrichment use the chain connection separately from NovaAuth.
+Bittensor adds a decoded max-age store with display seeds and typed error handling around NovaAuth, which itself keeps no HTTP cache. On-chain balances and chain enrichment use the chain connection separately from NovaAuth.
 
 ```mermaid
 sequenceDiagram
@@ -297,34 +296,33 @@ sequenceDiagram
   participant C as Decoded<br/>response cache
   participant T as Authorized<br/>transport
   participant N as Shared<br/>NovaAuth
-  participant H as HTTP cache /<br/>backend
+  participant H as Backend
   UI->>F: Optional synchronous peek
   F->>C: Read seed
   C-->>UI: Expired seed only, via factory
   UI->>F: Create ordinary protected request
   F->>C: Create job: admit + fetch
-  C->>T: Admit first
+  C-->>UI: Fresh entry of the active scope:<br/>returned before admission
+  C->>T: Otherwise admit first
   T->>N: Resolve context,<br/>demand credential
   N-->>T: Admission succeeds
   T-->>C: Auth scope (origin + generation)<br/>+ shared endpoint
-  C->>C: Activate scope, then<br/>check negatives / join flight
-  opt No negative result and no existing flight
+  C->>C: Activate scope<br/>(a new scope clears every seed)
     C->>T: Fetch with<br/>admitted endpoint
     T->>N: createResponseWrapper(request)
     N->>N: Demand again +<br/>pre-send fences
     N->>H: Authorized GET<br/>with bearer
-    H-->>N: Response, possibly native<br/>cache / revalidation
+    H-->>N: Response
     N-->>T: Response or<br/>typed auth error
     T-->>C: HTTP grading + factory<br/>decode / wire validation
     C->>C: Check auth scope<br/>and dataset generation
-  end
   C-->>UI: Result/error via factory and domain service
-  Note over T,UI: bindingConflict / invalidRequest: generic, no retry<br/>attestationRejected: device-bound, no retry
+  Note over T,UI: rejected: generic, no retry<br/>deviceBound: device-bound, no retry
   UI->>UI: Combine chain data,<br/>update Presenter on main
 ```
 
-- Auth admission precedes negative-cache lookup and joining a request flight. Synchronous `peek` is only a stale display seed and makes no authentication request.
-- Decoded cache keys include auth scope plus path/query. Route-unpublished negatives last 600 seconds; dataset-unavailable negatives last 60 seconds. There is no successful-response TTL shortcut here.
+- A fresh entry of the active scope returns before admission; otherwise auth admission precedes the fetch, with no request coalescing. Synchronous `peek` is only a stale display seed and makes no authentication request.
+- Decoded cache keys include auth scope plus path/query. An entry lives for its response `max-age`; `no-store` bodies are never kept, and failures are never cached.
 - Recommendation dataset ordering uses `(asOf, sourceBlockNumber)`. It is distinct from the authentication generation. An older dataset response returns `generationStale` without overwriting the newer seed.
 - Admissions carry the auth scope (origin + generation). The decoded cache keeps seeds per scope and clears all of them, including the cost-basis pages, when a different scope is admitted; the endpoint is memoised once per process, so nothing observes config or context changes.
 - Cost basis/P&L reads **`GET /v1/bittensor/operations/search`** and computes the ledger locally. It is a history read, not transaction submission.
@@ -332,24 +330,23 @@ sequenceDiagram
 
 | Response/error | Bittensor type | Device-bound | User retry |
 | --- | --- | --- | --- |
-| Bootstrap `401 attestation_failed` | `attestationRejected` | Yes | No |
-| `409 client_already_registered`, bootstrap or business | `bindingConflict` | No | No |
-| `403 insufficient_scope`, bootstrap or business | `invalidRequest` (generic presentation) | No | No |
-| Bootstrap `401 invalid_challenge` or 503 | `attestationUnavailable` | No | Yes |
+| Bootstrap `401 attestation_failed`, `403 app_not_allowed` or `403 binding_not_allowed`; final bearer denial; unsupported device | `deviceBound` | Yes | No |
+| `409 client_already_registered` or `403 insufficient_scope`, bootstrap or business | `rejected` (generic presentation) | No | No |
+| Bootstrap `401 invalid_challenge`, 503 or another server failure | `unavailable` | No | Yes |
 | Transport failure | `transport` | No | Yes |
 
 These presentation mappings and later retries belong to Bittensor; NovaAuth returns ordinary business failures.
 
 The max-APY burst has no retry, spacing or memo. A netuid whose yields fail is skipped; the burst fails with the first error only when no rate is left, and no result is kept between requests.
 
-Sources: [shared domain composition](../../../novawallet/Modules/Staking/Model/StakingSharedState/StakingSharedStateFactory+Subtensor.swift) · [transport admission and send](../../../novawallet/Common/Network/Bittensor/Transport/BittensorAuthorizedTransport.swift) · [factory and decoding](../../../novawallet/Common/Network/Bittensor/BittensorApiOperationFactory.swift) · [decoded cache](../../../novawallet/Common/Network/Bittensor/BittensorApiResponseCache.swift) · [HTTP/auth error grading](../../../novawallet/Common/Network/Bittensor/Transport/BittensorAuthorizedResponseGrader.swift) · [portfolio refresh/failure](../../../novawallet/Modules/Staking/Subtensor/SubtensorPortfolio/SubtensorPortfolioInteractor.swift) · [device/retry properties](../../../novawallet/Common/Network/Bittensor/BittensorApiError+Recovery.swift) · [bootstrap error mapping](../../../novawallet/Common/Network/Bittensor/Transport/BittensorAuthorizedResponseGrader.swift)
+Sources: [shared domain composition](../../../novawallet/Modules/Staking/Model/StakingSharedState/StakingSharedStateFactory+Subtensor.swift) · [transport admission and send](../../../novawallet/Common/Network/Bittensor/Transport/BittensorAuthorizedTransport.swift) · [factory and decoding](../../../novawallet/Common/Network/Bittensor/BittensorApiOperationFactory.swift) · [decoded cache](../../../novawallet/Common/Network/Bittensor/BittensorApiResponseCache.swift) · [HTTP/auth error grading](../../../novawallet/Common/Network/Bittensor/Transport/BittensorAuthorizedResponseGrader.swift) · [portfolio refresh/failure](../../../novawallet/Modules/Staking/Subtensor/SubtensorPortfolio/SubtensorPortfolioInteractor.swift) · [device/retry properties](../../../novawallet/Common/Network/Bittensor/BittensorApiError.swift) · [bootstrap error mapping](../../../novawallet/Common/Network/Bittensor/Transport/BittensorAuthorizedResponseGrader.swift)
 
 ## 9. Analytics: shared authentication, separate consent and data
 
 ```mermaid
 flowchart TB
   C["Consent enabled; normal session/track/flush"] --> Q["Persist batch under consent epoch"]
-  Q --> A["AnalyticsAuthAdapter resolves current shared endpoint"]
+  Q --> A["NovaAuthFacade resolves the shared endpoint"]
   A --> N["NovaAuth decorates immutable analytics POST"]
   N --> G{"Consent + epoch valid before actual send?"}
   G -- "No" --> X["Stop upload"]

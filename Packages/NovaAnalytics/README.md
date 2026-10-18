@@ -12,7 +12,8 @@ authentication. Existing fifty-event batches, scheduler and permanent payload re
 remain in force. Transient/auth failures retain events silently for a later scheduled flush. Consent enablement
 starts the normal session and tracking flow; there is no separate auth-recovery admission,
 re-arm timer, prompt or notification. Host activation authorizes later demand-driven bootstrap,
-including consented Analytics, without request-level intent. This local product lifecycle policy
+including consented Analytics; uploads carry the `.background` demand intent, so after a refused
+registration they wait for the persisted refusal delay. This local product lifecycle policy
 replaces the profile-3 protocol's user-driven re-creation wording.
 
 The backend must authorize the existing analytics POST with profile 3 before rollout; see

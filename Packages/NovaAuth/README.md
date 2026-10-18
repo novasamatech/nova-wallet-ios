@@ -7,9 +7,9 @@ and one persisted current bearer serve every protected consumer; renewal replace
 `activate(origin:)` selects the exact HTTPS backend origin. `createAdmissionWrapper` checks a
 usable bearer before a store miss is fetched, while `createResponseWrapper` checks again before
 network access. One origin/API-major bearer authorizes ordinary protected paths:
-GET and HEAD reads, account-search POSTs, and analytics POSTs. Auth validates transport syntax
+GET and HEAD reads and analytics POSTs. Auth validates transport syntax
 and the selected HTTPS origin; each consumer and the server own business route/payload validation.
-Bittensor uses `/v1/bittensor/...` for reads and searches, with immutable request bodies.
+Bittensor sends GET reads, including its operations search, under `/v1/bittensor/...`.
 Only conclusive pre-backend `invalid_token` allows a single replay: expected-origin 401 and
 exact `WWW-Authenticate: Bearer error="invalid_token"`, plus a valid `invalid_token` envelope
 for GET/POST. HEAD uses the status and header without a response body. A credential rejected by

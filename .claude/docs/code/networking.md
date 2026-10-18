@@ -143,8 +143,8 @@ Endpoint admissions carry the auth scope (origin + generation); the store keeps 
 and drops them all, including the cost-basis pages, when a different scope is admitted. Config is
 fetched once per process, so `NovaAuthFacade` maps `infraUrl` to one memoised endpoint and nothing
 observes config or context changes. Chain data is never cached client-side. Host
-activation authorizes later demand-driven bootstrap; catalogue requests carry no authentication
-intent.
+activation authorizes later demand-driven bootstrap; Bittensor requests use the default
+user-driven intent.
 
 Main-owner admission returns a usable bearer before issuance cooldown checks. Every actual
 business send checks shared-origin protection before network access. Only business
@@ -157,10 +157,10 @@ keeps the client ID and drops only its key. `NovaAuthRequest.intent` separates u
 (Bittensor, the default), which re-register at once, from `.background` ones (analytics), which wait
 for a persisted 1 h / 6 h / 24 h refusal delay that resets on an app version or context change.
 
-Bittensor bootstrap `401 attestation_failed` maps to device-bound `attestationRejected` with
-no user retry. `409 client_already_registered` maps to non-device-bound `bindingConflict`, also
-without retry. `403 insufficient_scope` maps to generic `invalidRequest` without retry before
-the generic 401/403 branch. Invalid challenge, 503 and transport errors remain retryable.
+Bittensor maps bootstrap `401 attestation_failed`, `403 app_not_allowed` and
+`403 binding_not_allowed` to `deviceBound` with no user retry. `409 client_already_registered` and
+`403 insufficient_scope` map to non-device-bound `rejected`, also without retry. Invalid challenge,
+503 and transport errors remain retryable.
 
 The dashboard max APY is one burst: `GET /recommendations` joined with the alpha yields of each
 recommended netuid and the root d30, with no spacing, retries or memo. A netuid whose yields fail
@@ -176,8 +176,8 @@ netuid 0 is rejected locally.
 Only conclusive `invalid_token` permits one replay preserving method/path/query/body: same
 expected HTTPS origin, 401 and the exact Bearer error header, plus a valid envelope for GET/POST.
 HEAD uses status/header without a body. Ingress rejects before business execution; arbitrary
-POST transport/5xx failures never replay. Native GET/HEAD caching follows server-owned public,
-max-age and must-revalidate headers, without extending credential lifetime. No refresh token
+POST transport/5xx failures never replay. The NovaAuth session has no URL cache; any response
+reuse belongs to the consumer and never extends credential lifetime. No refresh token
 exists; renewal obtains a fresh token challenge and App Attest assertion. See
 [NovaAuth](../../../Packages/NovaAuth/README.md) and the
 [client diagrams](../architecture/novaauth-client-diagrams.md).

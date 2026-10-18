@@ -112,21 +112,21 @@ and change notification.
 
 ### NovaAuth state
 
-NovaAuth stores installation/context, registration state, three recovery ladders, background
-recreation count and owed bearer deletion in its app settings record; no bearer goes into
-preferences. Non-user replacement reserves a budget slot before key generation and keeps the
-retired reason until the new client UUID/key are saved together. The count survives reboot;
-deadlines are boot-scoped. Successful bearer installation clears recovery only after the
-Keychain write. Legacy recovery cooldown keeps its deadline but starts at recreation tier zero.
+NovaAuth stores installation/context, registration state with its pending-probe cooldown, the
+refusal delay and owed bearer deletion in its app settings record; no bearer goes into
+preferences. A retired identity keeps its reason until the replacement client UUID/key are saved
+together after key generation. Deadlines are boot-scoped. Successful bearer installation saves the
+registered state, which clears the refusal delay, immediately before the Keychain write.
 
 State writes use SettingsManager set/read-back. The production manager
 internally calls `UserDefaults.synchronize()`. Matching cached read-back does not acknowledge
 durable persistence: refused disk writes may remain undetected, and no extra commit callback
 changes that. Detected validation/read-back failures close admission and retain the intended
-state for repair; `storageFailed` marks entry to this state. Reservations precede key generation,
-but survival across relaunch depends on ordinary settings persistence, not a fail-closed disk
-write guarantee. Bearer and recovery writes remain separate, with conservative old recovery
-restrictions if interruption occurs after the bearer write but before recovery clearing.
+state for repair; `storageFailed` marks entry to this state. Pending-probe reservations precede
+their send, but survival across relaunch depends on ordinary settings persistence, not a
+fail-closed disk write guarantee. Settings and bearer writes remain separate: an interruption after
+the registered state is saved but before the Keychain write leaves a registered binding without a
+bearer, and the next demand issues one on that binding.
 
 The app's default Keychain access group holds one fingerprint-tagged `current` record, cached
 by the owner under its gate; store creation deletes the record an earlier build kept under the
