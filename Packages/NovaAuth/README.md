@@ -24,8 +24,9 @@ preferences hold no bearer. Auth requires no App Group container, shared access 
 Info.plist namespace; each signed app variant owns its own record, so Release and Staging can
 never read, overwrite or delete each other's bearer. All features within one host still share
 its single current record; origin, consumer and client UUID never select separate token pools.
-The owner caches the loaded record under its gate, so the Keychain is read once per launch and
-again only after a write or removal.
+The owner caches a loaded record under its gate, so the Keychain is read again only while no
+record is cached or after a write or removal. Store creation deletes the record an earlier
+build kept under the App Group service `io.novawallet.novaauth.profile3.<bundle id>`.
 
 Host `activate(origin:)` is the lifecycle authority. Accepted origin adoption or legacy reset
 repair establishes an eligible context without creating a key or sending authentication.

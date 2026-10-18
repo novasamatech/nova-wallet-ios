@@ -8,7 +8,6 @@ public final class NovaAuth: NovaAuthClientProtocol {
     var state: NovaAuthInstallationState?
     var storageFailed = false
     var tokenCache: NovaAuthTokenRecord?
-    var tokenCached = false
 
     private var pendingStateWrite: NovaAuthInstallationState?
     var flight: NovaAuthIssuanceFlight?
