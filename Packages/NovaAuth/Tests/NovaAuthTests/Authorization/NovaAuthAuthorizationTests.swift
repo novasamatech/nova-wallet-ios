@@ -9,7 +9,7 @@ final class NovaAuthAuthorizationTests: XCTestCase {
             .init(status: 401, headers: ["WWW-Authenticate": "Bearer error=\"invalid_token\""])
         }
         let request = try NovaAuthRequest(
-            context: context, method: .head, path: "/v1/bittensor/subnets", queryItems: [],
+            context: context, method: .head, path: "/v1/example", queryItems: [],
             body: nil, contentType: nil
         )
         assertError(.authorizationDenied(requestID: nil), auth.createResponseWrapper(for: request, beforeSend: {}))
@@ -34,7 +34,7 @@ final class NovaAuthAuthorizationTests: XCTestCase {
         XCTAssertEqual(harness.server.businessRequests.count, 3)
     }
 
-    func testOriginThrottleBlocksAnalyticsAndBittensor() throws {
+    func testOriginThrottleBlocksAllServices() throws {
         let harness = try AuthHarness()
         let (auth, context) = try registered(harness)
         harness.server.business = { _ in .init(status: 429, headers: ["Retry-After": "20"]) }

@@ -45,7 +45,7 @@ final class AuthHarness {
         try NovaAuthRequest(
             context: context,
             method: analytics ? .post : .get,
-            path: analytics ? "/v1/analytics/events" : "/v1/bittensor/subnets",
+            path: analytics ? "/v1/analytics/events" : "/v1/example",
             queryItems: [],
             body: analytics ? Data("{}".utf8) : nil,
             contentType: analytics ? "application/json" : nil,
