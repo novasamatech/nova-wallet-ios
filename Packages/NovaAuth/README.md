@@ -1,7 +1,7 @@
 # NovaAuth
 
 Operation-based, app-wide profile-3 authentication for iOS 16+. The host owns one `NovaAuth`
-instance and injects its `NovaAuthClientProtocol` into analytics. One installation
+instance and injects its `NovaAuthClientProtocol` into analytics and Bittensor. One installation
 and one persisted current bearer serve every protected consumer; renewal replaces that bearer.
 
 `activate(origin:)` selects the exact HTTPS backend origin. `createAdmissionWrapper` checks a
@@ -41,7 +41,9 @@ must-revalidate`; POSTs and bootstrap use `no-store`.
 Issuance commits to the canonical origin and API major 1 without a flow or scope. Renewal
 obtains a fresh challenge and App Attest assertion; the server issues no refresh credential.
 
-The host maps `infraUrl` to one endpoint per process and memoises it.
+The host maps `infraUrl` to one endpoint per process and memoises it. The Bittensor store keys
+every seed by that endpoint's origin and generation and drops them all when a different scope is
+admitted, so a later context can never serve an older seed.
 
 ## Recovery and admission
 
@@ -122,8 +124,10 @@ record. Corrupt token reads do not delete unrelated data. Version-1 bearer recor
 issuance while preserving valid installation identity. Repeated denial suppresses rejected
 credentials and applies issuance backoff before attempting deletion.
 
-Analytics retains batches silently for its normal later-flush policy; consent is checked before
-every send and replay.
+Bittensor retains typed error grading and its own retry/presentation decisions, including
+nonretryable configuration, unsupported-device, registration-refusal and final-denial errors.
+Max-APY auth refusal terminates without caching a partial result. Analytics retains batches
+silently for its normal later-flush policy; consent is checked before every send and replay.
 
 Failure diagnostics are asynchronous and redacted: a fixed step/category, numeric status,
 allowlisted code and sanitized correlation ID. They never interpolate arbitrary Error,
@@ -148,7 +152,7 @@ substitute. This implementation retains the mandated reboot detection and existi
 See [Apple's calendar-clock implementation](https://github.com/apple-oss-distributions/xnu/blob/main/osfmk/kern/clock.c)
 and [iOS 18 release notes](https://developer.apple.com/documentation/ios-ipados-release-notes/ios-ipados-18-release-notes).
 
-## Protected requests
+## Protected requests and optional yields
 
 Ingress authenticates before protected business handlers execute. A conclusive token denial
 therefore permits one replay preserving the original method, path, query and body. Other
@@ -157,10 +161,15 @@ Consumers grade business responses through `NovaAuthResponse.serverError` and `r
 package's own envelope parser: status, lowercase code up to 64 characters, sanitized
 `X-Request-ID` and numeric Retry-After clamped to 905 seconds.
 
+The removed root-yield read returns unavailable/cache miss locally. Its optional presentation
+service returns nil without a request, keeping root staking screens usable without a rate.
+Alpha yields reject netuid 0 locally. New root staking APIs belong to their domain feature.
+
 ## Validation
 
 Run retained XCTest suites using `xcodebuild test -scheme NovaAuth` on an iOS simulator;
 `swift test` targets macOS and is inappropriate for these iOS dependencies. Existing checks
 exercise framing, operation recovery, same-binding refusal, pending registration, origin fencing,
-bounded token replay, shared throttling and exchange release. Real App Attest,
+bounded token replay, shared throttling and exchange release. App tests cover Bittensor cache
+behaviour, domain recovery/presentation and Subtensor flows. Real App Attest,
 Keychain behavior, protected data and physical reboot behavior need device validation.

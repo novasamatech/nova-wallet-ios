@@ -136,7 +136,8 @@ has no HTTP cache. App consumers inject `NovaAuthFacade.shared`; never build a p
 provider. Config is
 fetched once per process, so `NovaAuthFacade` maps `infraUrl` to one memoised endpoint and nothing
 observes config or context changes. Host
-activation authorizes later demand-driven bootstrap.
+activation authorizes later demand-driven bootstrap; Bittensor requests use the default
+user-driven intent.
 
 Main-owner admission returns a usable bearer before issuance cooldown checks. Every actual
 business send checks shared-origin protection before network access. Only business
@@ -146,11 +147,11 @@ Issuance Retry-After is memory-only; pending-probe cooldown persists. Failed aut
 the operation. A later independently created operation can retry after short auth backoff; proof
 or policy denial preserves an existing binding rather than rotating its key. A refused registration
 keeps the client ID and drops only its key. `NovaAuthRequest.intent` separates user-driven demands
-(the default), which re-register at once, from `.background` ones (analytics), which wait
+(Bittensor, the default), which re-register at once, from `.background` ones (analytics), which wait
 for a persisted 1 h / 6 h / 24 h refusal delay that resets on an app version or context change.
 
 One origin/API-major bearer serves ordinary protected GET/HEAD and POST routes. Auth has no
-business allowlist or flow/scope. Consumers own method/path/body validation and ordinary business retry policy.
+business allowlist or flow/scope. Consumers own method/path/body validation and ordinary business retry policy. Bittensor uses `/v1/bittensor/...`.
 
 Only conclusive `invalid_token` permits one replay preserving method/path/query/body: same
 expected HTTPS origin, 401 and the exact Bearer error header, plus a valid envelope for GET/POST.

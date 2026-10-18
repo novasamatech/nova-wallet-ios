@@ -4,7 +4,7 @@ These diagrams describe the Swift client. “Backend” is only the HTTPS peer t
 
 **Reading order:** ownership → first authentication → proof construction → registration recovery → token reuse/concurrency → protected requests → storage/replacement → analytics.
 
-The central invariant is **one main-app NovaAuth owner, one installation identity, and one current persisted bearer for the active backend context**. Analytics receives the same client. Requests already in flight can still hold the preceding valid bearer during refresh. Wallet accounts do not supply authentication keys.
+The central invariant is **one main-app NovaAuth owner, one installation identity, and one current persisted bearer for the active backend context**. Bittensor and analytics receive the same client. Requests already in flight can still hold the preceding valid bearer during refresh. Wallet accounts do not supply authentication keys.
 
 ## 1. Ownership and app composition
 
@@ -14,7 +14,9 @@ The facade is the app’s composition boundary. It creates the package owner onc
 flowchart TB
   subgraph APP["Main iOS app"]
     ROOT["RootInteractor.setup()"] --> AF["AnalyticsServiceFacade<br/>injected via factory createDefault()"]
+    BT["BittensorApiOperationFactory"] --> TR["BittensorAuthorizedTransport.shared"]
     AF -- "authProvider" --> F["NovaAuthFacade.shared<br/>one endpoint: client + context"]
+    TR --> F
     CONFIG["GlobalConfigProvider<br/>infraUrl, fetched once"] --> F
     HOST["App identity + version<br/>SettingsManager set/read-back + three queues"] --> F
   end
@@ -46,7 +48,7 @@ This is the successful path for a new installation. All four backend calls are P
 ```mermaid
 sequenceDiagram
   autonumber
-  participant C as Analytics
+  participant C as Bittensor or analytics
   participant N as NovaAuth owner
   participant S as Persistent stores
   participant A as Apple DeviceCheck
@@ -96,7 +98,7 @@ Sources: [registration service](../../../Packages/NovaAuth/Sources/NovaAuth/Life
 
 ## 3. What the App Attest proof binds
 
-Registration and issuance use different semantic commitments. Each commitment is hashed and included in an outer frame that binds the challenge to the exact bootstrap request. Ordinary analytics requests carry the bearer; they do not get an App Attest assertion for each business payload.
+Registration and issuance use different semantic commitments. Each commitment is hashed and included in an outer frame that binds the challenge to the exact bootstrap request. Ordinary Bittensor and analytics requests carry the bearer; they do not get an App Attest assertion for each business payload.
 
 ```mermaid
 flowchart TB
