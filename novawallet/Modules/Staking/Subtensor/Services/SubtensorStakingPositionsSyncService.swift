@@ -12,8 +12,6 @@ protocol SubtensorPositionsSyncServiceProtocol: ApplicationServiceProtocol {
 
     func remove(observer: AnyObject)
 
-    /// `BaseSyncService` only logs and reschedules on failure, so a parallel observable is the
-    /// one way a caller can tell "still loading" from "we could not read the chain" (spec §3.2)
     func add(
         failureObserver: AnyObject,
         sendStateOnSubscription: Bool,
@@ -26,7 +24,6 @@ protocol SubtensorPositionsSyncServiceProtocol: ApplicationServiceProtocol {
     func refresh()
 }
 
-/// the `TotalHotkeyAlpha` values behind the position resync trigger, keyed by mapping key
 struct SubtensorHotkeyAlphaBatch: BatchStorageSubscriptionResult {
     let amounts: [String: Balance]
 
@@ -283,8 +280,6 @@ private extension SubtensorStakingPositionsSyncService {
             return
         }
 
-        // the mapping key turns the trigger payload into the per-position TotalHotkeyAlpha values
-        // the "≈ X α/day" row needs, at no extra request cost
         let requests = newKeys.map { positionKey in
             BatchStorageSubscriptionRequest(
                 innerRequest: DoubleMapSubscriptionRequest(

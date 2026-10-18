@@ -51,7 +51,6 @@ struct BittensorApiCacheJob {
     let fetch: (BittensorApiAdmission) -> CompoundOperationWrapper<BittensorApiFetchedValue>
 }
 
-/// Decoded presentation seeds and admitted request coalescing. HTTP freshness belongs to URLCache.
 final class BittensorApiResponseCache {
     typealias Delivery = (Result<BittensorApiCacheDelivery, Error>) -> Void
 

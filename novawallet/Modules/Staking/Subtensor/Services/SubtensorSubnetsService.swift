@@ -6,7 +6,6 @@ struct SubtensorSubnetsInfo: Equatable {
     let subnets: [SubtensorStakingPallet.DynamicInfo]
     let prices: [UInt16: Balance]
     let subtokenEnabled: Set<UInt16>
-    /// chain-wide, governance-mutable; falls back to the runtime default while unset
     let ownerCut: UInt16
 }
 

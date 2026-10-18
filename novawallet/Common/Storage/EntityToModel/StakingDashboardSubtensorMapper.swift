@@ -53,7 +53,6 @@ extension StakingDashboardSubtensorMapper: CoreDataMapperProtocol {
     }
 
     func transform(entity _: CoreDataEntity) throws -> DataProviderModel {
-        // we only can write partial state but not read
         fatalError("Unsupported method")
     }
 }
