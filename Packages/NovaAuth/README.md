@@ -4,8 +4,6 @@ Operation-based, app-wide profile-3 authentication for iOS 16+. The host owns on
 instance and injects its `NovaAuthClientProtocol` into analytics. One installation
 and one persisted current bearer serve every protected consumer; renewal replaces that bearer.
 
-See the [reviewer guide](REVIEW.md) for the protocol corrections, ownership boundaries and validation limits.
-
 `activate(origin:)` selects the exact HTTPS backend origin. `createAdmissionWrapper` checks a
 usable bearer before a store miss is fetched, while `createResponseWrapper` checks again before
 network access. One origin/API-major bearer authorizes ordinary protected paths:
@@ -25,8 +23,9 @@ preferences hold no bearer. Auth requires no App Group container, shared access 
 Info.plist namespace; each signed app variant owns its own record, so Release and Staging can
 never read, overwrite or delete each other's bearer. All features within one host still share
 its single current record; origin, consumer and client UUID never select separate token pools.
-The owner caches the loaded record under its gate, so the Keychain is read once per launch and
-again only after a write or removal.
+The owner caches a loaded record under its gate, so the Keychain is read again only while no
+record is cached or after a write or removal. Store creation deletes the record an earlier
+build kept under the App Group service `io.novawallet.novaauth.profile3.<bundle id>`.
 
 Host `activate(origin:)` is the lifecycle authority. Accepted origin adoption or legacy reset
 repair establishes an eligible context without creating a key or sending authentication.
@@ -36,12 +35,12 @@ wording at lines 511–514; it is an explicit eligibility change, not behavioral
 The package has no explicit reset API. Analytics consent/erasure and wallet changes do not
 reset the shared identity. Requests carry a demand intent that only gates re-registration after a refusal.
 
-NovaAuth has no HTTP cache: every session is ephemeral, stores nothing and sends each
-authorized request to the network. Fresh, complete 200 reads carry `public, max-age=N,
+NovaAuth has no HTTP cache: its single ephemeral session stores nothing, refuses redirects and
+sends each authorized request to the network as one Operation-iOS `NetworkOperation`. Fresh, complete 200 reads carry `public, max-age=N,
 must-revalidate` (account searches `private`); POSTs and bootstrap use `no-store`. Issuance commits to the canonical origin and API major 1 without a flow or scope. Renewal
 obtains a fresh challenge and App Attest assertion; the server issues no refresh credential.
 
-The host stamps each accepted endpoint with an invalidation revision.
+The host maps `infraUrl` to one endpoint per process and memoises it.
 
 ## Recovery and admission
 
@@ -55,8 +54,8 @@ client binding and cannot turn the same business operation into identity replace
 
 Each request carries a `NovaAuthDemandIntent`: `.userDriven` (the default: screen loads, domain
 retries, pull to refresh; admission is always user-driven) or `.background` (analytics flushes,
-background syncs). A registration refused with `401 attestation_failed`, `403 app_not_allowed` or
-`403 binding_not_allowed` keeps the client UUID, drops only the key and saves a refusal delay.
+background syncs). A registration refused with any code-bearing 4xx other than 409 keeps the
+client UUID, drops only the key and saves a refusal delay.
 User-driven demands may re-register at once with a fresh key and challenge; background demands fail
 with `cooldown` until the delay passes: 1 hour, then 6 hours, then 24 hours per consecutive refusal.
 The delay is persisted, resets on an app version change or context replacement, and like every
@@ -68,14 +67,15 @@ other wait ends with a boot discontinuity.
 | Pending token-challenge/issuance `401 unknown_client` before 120 seconds on the same boot | Keep pending state and its persisted probe backoff; fail this operation. |
 | Confirmed absence outside that window or after boot discontinuity | Retire and fail; the next independent demand may replace. Transport/503 alone never prove absence. |
 | Successful pending token challenge | Prove the same key; preserve the original pending window until a bearer is installed. |
-| Ordinary token `401 invalid_proof` or token challenge/issuance `403 binding_not_allowed` | Keep registered UUID/key/counter and fail. Later demand obtains a fresh challenge on the same binding. A contradictory `503 invalid_proof` is availability failure. |
-| Registration `401 attestation_failed`, `403 app_not_allowed` or `403 binding_not_allowed` | Keep the client UUID, drop the key, save the refusal delay and fail. A user-driven demand attests a fresh key at once; a background demand waits for the delay. |
+| Ordinary token `401 invalid_proof` | Keep registered UUID/key/counter and fail. Later demand obtains a fresh challenge on the same binding. A contradictory `503 invalid_proof` is availability failure. |
+| Token challenge/issuance `403 binding_not_allowed` or `403 app_not_allowed` | Keep registered UUID/key/counter, save the refusal delay and fail. A user-driven demand obtains a fresh challenge on the same binding at once; a background demand waits for the delay. |
+| Any code-bearing registration 4xx except 409 and 429 (`401 attestation_failed`, `403 app_not_allowed`, `400 invalid_request`, `401 invalid_challenge`, …) | Keep the client UUID, drop the key, save the refusal delay and fail. A user-driven demand attests a fresh key at once; a background demand waits for the delay. |
 | Codeless or non-JSON registration 4xx | Transport failure: keep pending UUID/key/start and the short cooldown; probe on a later demand. |
 | Deferred attestation past its 40-second budget | Keep the key, take a fresh challenge and attest again in the same flight. |
 | Interrupted, failed or timed-out attestation; stale or malformed attestation object | Drop the key, keep the client UUID and fail; a later demand attests a fresh key. |
 | Platform invalid key at assertion | Retire and continue the same flight with one fresh UUID/key; a key generated in that flight is not replaced again. |
-| Platform invalid key at attestation, other code-bearing registration 4xx | Retire and fail. Later demand may generate one fresh UUID/key. |
-| Stored `retired` state of any reason | Loaded as is; the next demand replaces UUID/key. |
+| Platform invalid key at attestation, registration `409 client_already_registered` | Retire and fail. Later demand may generate one fresh UUID/key. |
+| Stored `retired` state | Loaded as is; the next demand replaces UUID/key and keeps the refusal counter. Legacy `policyRefused` keeps the client UUID and attests a fresh key under the refusal rules. |
 
 Apple `serverUnavailable` saves `appleDeferred` for the same key/hash. Before saving
 `appleInFlight`, and again after acquiring the native lease immediately before `attestKey`,
@@ -85,8 +85,8 @@ attempt past its budget keeps the key and takes a fresh challenge in the same fl
 Apple's result drops the key, keeps the client UUID and fails the current operation. The 20-second
 margin cannot guarantee native completion.
 
-Both watchdogs remain: bootstrap HTTP has total 20-second issuance / 100-second registration
-bounds; native calls have their existing local timeout. Before invocation, a failed guard
+The shared session bounds every call with a 20-second request timeout (100 seconds for
+registration) and a 100-second resource timeout; native calls have their existing local timeout. Before invocation, a failed guard
 releases the unused lease. Once called, only the actual DeviceCheck callback releases its
 per-key lease, even after local timeout/cancellation. An assertion timeout preserves the
 registered key. Busy keys fail before fetching a token challenge. If Apple never calls back,
