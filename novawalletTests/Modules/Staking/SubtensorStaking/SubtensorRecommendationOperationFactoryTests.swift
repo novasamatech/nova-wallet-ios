@@ -21,7 +21,10 @@ final class SubtensorRecommendationOperationFactoryTests: XCTestCase {
         let chainFactory = createChainFactory()
 
         let verification = try run(
-            createOperationFactory(apiFactory, chainFactory).createListVerificationWrapper(for: subnet, listedHotkeys: listed)
+            createOperationFactory(apiFactory, chainFactory).createListVerificationWrapper(
+                for: subnet,
+                listedHotkeys: listed
+            )
         )
 
         let captor = ArgumentCaptor<SubtensorValidatorChainQuery>()
@@ -42,7 +45,10 @@ final class SubtensorRecommendationOperationFactoryTests: XCTestCase {
         let chainFactory = createChainFactory()
 
         let verification = try run(
-            createOperationFactory(apiFactory, chainFactory).createListVerificationWrapper(for: subnet, listedHotkeys: [listedOnly])
+            createOperationFactory(apiFactory, chainFactory).createListVerificationWrapper(
+                for: subnet,
+                listedHotkeys: [listedOnly]
+            )
         )
 
         let captor = ArgumentCaptor<SubtensorValidatorChainQuery>()
@@ -61,7 +67,9 @@ final class SubtensorRecommendationOperationFactoryTests: XCTestCase {
         let apiFactory = try createApiFactory(hotkeys: hotkeys)
         let chainFactory = createChainFactory()
 
-        let verified = try run(createOperationFactory(apiFactory, chainFactory).createRecommendedValidatorsWrapper(for: subnet))
+        let verified = try run(
+            createOperationFactory(apiFactory, chainFactory).createRecommendedValidatorsWrapper(for: subnet)
+        )
 
         let captor = ArgumentCaptor<SubtensorValidatorChainQuery>()
         verify(chainFactory).createChainSnapshotWrapper(for: captor.capture())

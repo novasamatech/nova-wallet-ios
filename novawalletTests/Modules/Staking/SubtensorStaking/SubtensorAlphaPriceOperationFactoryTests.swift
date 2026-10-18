@@ -9,10 +9,14 @@ final class SubtensorAlphaPriceOperationFactoryTests: XCTestCase {
     private let targon: UInt16 = 4
 
     func testFreshBackendPricesEveryHeldSubnetWithoutReadingTheChain() throws {
-        let catalogueOperationFactory = createCatalogueOperationFactory(.success(catalogue([chutes: 50_000_000, targon: 40_000_000])))
+        let catalogueOperationFactory = createCatalogueOperationFactory(
+            .success(catalogue([chutes: 50_000_000, targon: 40_000_000]))
+        )
         let apiFactory = createApiFactory(chain: [chutes: 70_000_000, targon: 41_000_000])
 
-        let prices = try run(createOperationFactory(catalogueOperationFactory, apiFactory).createPricesWrapper(for: [chutes, targon]))
+        let prices = try run(
+            createOperationFactory(catalogueOperationFactory, apiFactory).createPricesWrapper(for: [chutes, targon])
+        )
 
         XCTAssertEqual(prices.taoPerAlpha, [chutes: 50_000_000, targon: 40_000_000])
         XCTAssertEqual(prices.catalogue?.subnets.map(\.netuid).sorted(), [targon, chutes])
@@ -24,7 +28,9 @@ final class SubtensorAlphaPriceOperationFactoryTests: XCTestCase {
         let catalogueOperationFactory = createCatalogueOperationFactory(.success(stale))
         let apiFactory = createApiFactory(chain: [chutes: 70_000_000, targon: 41_000_000, 7: 1_000_000])
 
-        let prices = try run(createOperationFactory(catalogueOperationFactory, apiFactory).createPricesWrapper(for: [chutes, targon]))
+        let prices = try run(
+            createOperationFactory(catalogueOperationFactory, apiFactory).createPricesWrapper(for: [chutes, targon])
+        )
 
         XCTAssertEqual(prices, SubtensorAlphaPrices(catalogue: stale, taoPerAlpha: [chutes: 70_000_000, targon: 41_000_000]))
     }
@@ -33,7 +39,9 @@ final class SubtensorAlphaPriceOperationFactoryTests: XCTestCase {
         let catalogueOperationFactory = createCatalogueOperationFactory(.success(catalogue([chutes: 50_000_000])))
         let apiFactory = createApiFactory(chain: [chutes: 70_000_000, targon: 41_000_000])
 
-        let prices = try run(createOperationFactory(catalogueOperationFactory, apiFactory).createPricesWrapper(for: [chutes, targon]))
+        let prices = try run(
+            createOperationFactory(catalogueOperationFactory, apiFactory).createPricesWrapper(for: [chutes, targon])
+        )
 
         XCTAssertEqual(prices.taoPerAlpha, [chutes: 50_000_000, targon: 41_000_000])
     }
@@ -46,7 +54,9 @@ final class SubtensorAlphaPriceOperationFactoryTests: XCTestCase {
         )
         let apiFactory = createApiFactory(chain: nil)
 
-        let prices = try run(createOperationFactory(catalogueOperationFactory, apiFactory).createPricesWrapper(for: [chutes]))
+        let prices = try run(
+            createOperationFactory(catalogueOperationFactory, apiFactory).createPricesWrapper(for: [chutes])
+        )
 
         XCTAssertEqual(prices, SubtensorAlphaPrices(catalogue: expired, taoPerAlpha: [:]))
     }
