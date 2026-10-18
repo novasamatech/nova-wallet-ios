@@ -7132,6 +7132,8 @@
 		F0E73895F7BE0ACA507850E5 /* SubtensorDividerStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF79B5ED46A7A2888E88E2CC /* SubtensorDividerStyle.swift */; };
 		E1F10D0652C63B494931DF44 /* UILabel+SubtensorCaps.swift in Sources */ = {isa = PBXBuildFile; fileRef = E18E738FB85D14DDBFDDE498 /* UILabel+SubtensorCaps.swift */; };
 		E835FDC0D7804C04D111EDA4 /* SubtensorBottomPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B0C9DA1C32F4B4DCEA4A74 /* SubtensorBottomPanelView.swift */; };
+		0B68565A4152D96598B6FCE7 /* SubtensorSlippageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7695C24250F942309A32190D /* SubtensorSlippageViewController.swift */; };
+		02FCB19B8F67B33626BD4D2D /* SubtensorSlippageViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9496A8C3397CFF912B79F9C0 /* SubtensorSlippageViewLayout.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -14005,6 +14007,8 @@
 		DFCC275D533ABB214B7B5F8E /* SubtensorValidatorFilterSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorValidatorFilterSession.swift; sourceTree = "<group>"; };
 		FF20A8498D845EA2F6B134D4 /* SubtensorValidatorFiltersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorValidatorFiltersViewController.swift; sourceTree = "<group>"; };
 		FF2C77F3BCF7012B21099072 /* SubtensorValidatorCoverage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorValidatorCoverage.swift; sourceTree = "<group>"; };
+		7695C24250F942309A32190D /* SubtensorSlippageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSlippageViewController.swift; sourceTree = "<group>"; };
+		9496A8C3397CFF912B79F9C0 /* SubtensorSlippageViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorSlippageViewLayout.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -17865,6 +17869,7 @@
 			isa = PBXGroup;
 			children = (
 				7752E16B2AD878A4006E2F92 /* Model */,
+				3FD99C9DAA9DA7ABAE717564 /* Subtensor */,
 				2AE0E677E64DAC7E93562412 /* SwapSlippageProtocols.swift */,
 				088C765E5A0F81B96ADE72D8 /* SwapSlippageWireframe.swift */,
 				0816F2A4A5CC1F111E626188 /* SwapSlippagePresenter.swift */,
@@ -32593,6 +32598,15 @@
 			path = SubtensorValidatorFilters;
 			sourceTree = "<group>";
 		};
+		3FD99C9DAA9DA7ABAE717564 /* Subtensor */ = {
+			isa = PBXGroup;
+			children = (
+				7695C24250F942309A32190D /* SubtensorSlippageViewController.swift */,
+				9496A8C3397CFF912B79F9C0 /* SubtensorSlippageViewLayout.swift */,
+			);
+			path = Subtensor;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -39732,6 +39746,8 @@
 				E835FDC0D7804C04D111EDA4 /* SubtensorBottomPanelView.swift in Sources */,
 				E824EDAC719815DB1BA3D60B /* SubtensorValidatorCardView.swift in Sources */,
 				90BFDC091007C0B39DE82F47 /* SubtensorValidatorCardViewModel.swift in Sources */,
+				0B68565A4152D96598B6FCE7 /* SubtensorSlippageViewController.swift in Sources */,
+				02FCB19B8F67B33626BD4D2D /* SubtensorSlippageViewLayout.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
