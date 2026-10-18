@@ -94,8 +94,7 @@ extension StartStakingInfoViewFactory {
             announcementsRepository: AnnouncementsRepository.shared,
             currencyManager: currencyManager,
             sharedOperation: state.startSharedOperation(),
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
-            logger: Logger.shared
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
 }
