@@ -202,7 +202,9 @@ final class SubtensorTradeQuoteOperationFactoryTests: XCTestCase {
         }
     }
 
-    private func createFactory(apiFactory: MockSubtensorApiOperationFactoryProtocol) -> SubtensorTradeQuoteOperationFactory {
+    private func createFactory(
+        apiFactory: MockSubtensorApiOperationFactoryProtocol
+    ) -> SubtensorTradeQuoteOperationFactory {
         let configProvider = MockSubtensorConfigProviding()
 
         stub(configProvider) { stub in
