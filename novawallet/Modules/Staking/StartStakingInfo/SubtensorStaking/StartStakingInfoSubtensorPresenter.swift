@@ -47,6 +47,10 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
         view?.didReceive(viewModel: .loading)
     }
 
+    override func createCaption() -> String? {
+        subtensorViewModelFactory.createCaption(locale: selectedLocale)
+    }
+
     override func createParagraphs(for _: StartStakingStateProtocol) -> [ParagraphView.Model]? {
         subtensorViewModelFactory.createParagraphs(locale: selectedLocale)
     }
