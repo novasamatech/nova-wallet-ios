@@ -145,7 +145,8 @@ business send checks shared-origin protection before network access. Only busine
 transport failures pass to domain retry handling. Success does not clear an active shared deadline.
 Issuance Retry-After is memory-only; pending-probe cooldown persists. Failed authentication fails
 the operation. A later independently created operation can retry after short auth backoff; proof
-or policy denial preserves an existing binding rather than rotating its key.
+or policy denial preserves an existing binding rather than rotating its key. A refused registration
+keeps the client ID and drops only its key.
 
 `409 client_already_registered` maps to non-device-bound `bindingConflict`, also
 without retry. `403 insufficient_scope` maps to generic `invalidRequest` without retry before

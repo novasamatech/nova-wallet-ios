@@ -90,9 +90,9 @@ The caller never gets a newly issued bearer before the Keychain write succeeds. 
 
 Apple attestation/assertion wrappers have a bounded timeout of up to 100 seconds. Once a native call begins, timeout/cancellation does not release its per-key lease: only Apple's actual callback does. A different key can proceed independently. Issuance checks `isBusy(keyID:)` before creating a token challenge, avoiding network traffic while the key is leased. The registration HTTP request allows 100 seconds; the other HTTP requests allow 20 seconds.
 
-Registration age starts before the challenge request. The early check requires the same boot and `0 <= age <= 40`, choosing a minimum 20-second margin on the 60-second challenge. Exactly 40 seconds passes; 40.001 fails this check, retires `registrationAbandoned`, and fails the current operation; a later independent demand may replace. After Apple's result, same boot and `0 <= age < 60` remain authoritative: the 100-second local timeout means the margin cannot guarantee completion in time.
+Registration age starts before the challenge request. The early check requires the same boot and `0 <= age <= 40`, choosing a minimum 20-second margin on the 60-second challenge. Exactly 40 seconds passes; at 40.001 a deferred attempt keeps its key and takes a fresh challenge in the same flight, while a fresh attempt falls back to unregistered with the same key and fails the current operation. After Apple's result, same boot and `0 <= age < 60` remain authoritative: the 100-second local timeout means the margin cannot guarantee completion in time.
 
-The early check runs before saving `appleInFlight` and building the wrapper. After acquiring the proof lease, the adapter invokes `beforeAttest` immediately before native `attestKey`; under the owner gate, this guard rechecks the current flight, context and the same inclusive 40-second budget. Queue delay therefore cannot use an earlier successful check to start an expired native attempt. Guard failure releases the **unused** lease without invoking Apple. The fenced completion retires an age-expired current attempt as `registrationAbandoned` once; a detached/stale flight cannot mutate a replacement context. After invocation the lease is **called** and only Apple's callback releases it, never a local timer.
+The early check runs before saving `appleInFlight` and building the wrapper. After acquiring the proof lease, the adapter invokes `beforeAttest` immediately before native `attestKey`; under the owner gate, this guard rechecks the current flight, context and the same inclusive 40-second budget. Queue delay therefore cannot use an earlier successful check to start an expired native attempt. Guard failure releases the **unused** lease without invoking Apple. The fenced completion drops the key of an age-expired current attempt once, keeping the client UUID; a detached/stale flight cannot mutate a replacement context. After invocation the lease is **called** and only Apple's callback releases it, never a local timer.
 
 Sources: [registration service](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthRegistrationService.swift) · [issuance and persistent installation](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthTokenProvider.swift) · [bootstrap endpoints](../../../Packages/NovaAuth/Sources/NovaAuth/HTTP/NovaAuthBootstrapOperationFactory.swift) · [response validation](../../../Packages/NovaAuth/Sources/NovaAuth/Wire/NovaAuthWire.swift) · [Apple adapter](../../../Packages/NovaAuth/Sources/NovaAuth/AppAttest/NovaAuthDeviceCheckService.swift) · [early and post-Apple age checks](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthRegistrationService.swift) · [bearer installation](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthTokenProvider.swift) · [native execution guard](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthRegistrationService.swift) · [unused lease release and native invocation](../../../Packages/NovaAuth/Sources/NovaAuth/AppAttest/NovaAuthDeviceCheckService.swift)
 
@@ -127,10 +127,15 @@ flowchart TB
   U["unregistered"] --> A["appleInFlight"]
   A -- "serverUnavailable: exact saved attempt" --> D["appleDeferred"]
   D -- "Same boot; age at most 40 s" --> A
+  D -- "Budget expired: same key, fresh challenge" --> U
   A -- "Valid attestation; persist before send" --> P["registrationPending"]
   P -- "Register 204 or successful bearer installation" --> R["registered"]
-  A -- "Interrupted, expired or unrecoverable" --> X["retired; current flight fails"]
-  P -- "Conclusive refusal or confirmed absence" --> X
+  A -- "Invalid key" --> X["retired; current flight fails"]
+  A -- "Interrupted, failed or stale attestation" --> G["key dropped; UUID kept"]
+  G --> U
+  P -- "Confirmed absence or other code-bearing 4xx" --> X
+  P -- "401 attestation_failed / 403 app_not_allowed / binding_not_allowed" --> F["key dropped; UUID kept; refusal delay saved"]
+  F -- "User-driven demand, or background demand past the delay" --> U
   R -- "Invalid key or 401 unknown_client" --> X
   X -- "Later independent demand; short backoff" --> K["At most one fresh UUID/key in this flight"]
   K --> U
@@ -140,7 +145,9 @@ flowchart TB
 
 Retirement fails the current caller operation; no recursive identity replacement or proof resend
 occurs. A later independently created demand may replace after short backoff. Concurrency joins one
-issuance flight. There is no lifetime replacement quota or human/background privilege.
+issuance flight. There is no lifetime replacement quota; the only intent privilege is that user-driven
+demands re-register at once after a refusal while background demands wait for the persisted
+1 h / 6 h / 24 h delay, which resets on an app version or context change.
 
 Pending probes preserve UUID/key/start and reserve persisted backoff before sending. A same-boot
 token-challenge/issuance `401 unknown_client` before 120 seconds keeps pending state and fails. Outside that window or after
@@ -152,8 +159,7 @@ original window until successful bearer installation. A registered binding recei
 Token `401 invalid_proof` and token challenge/issuance `403 binding_not_allowed` preserve the same
 registered UUID/key/counter. Later operations obtain a fresh challenge; no proof is reused and no
 key rotates to bypass policy. Status and code are considered together: `503 invalid_proof` is
-availability failure. Legacy `policyRefused` with a key normalizes to registered/same-binding probing;
-other unusable retired states wait for later demand replacement.
+availability failure. Stored retired states wait for later demand replacement.
 
 Host activation, including accepted origin adoption and legacy-reset repair, authorizes demand-driven
 bootstrap, including consented Analytics. It creates no key/request by itself. **This local lifecycle
@@ -253,7 +259,8 @@ flowchart TB
 Settings keeps the current installation storage key/version, context, UUID/key/registration, exact
 saved attestation attempt, pending start/cooldown and token-removal debt. Removed optional legacy
 fields are ignored even when malformed; surviving security fields remain validated. The next
-existing write encodes the reduced schema. Legacy policyRefused with a key resumes the same binding.
+existing write encodes the reduced schema. A saved refusal delay survives relaunch and resets on an app
+version or context change.
 
 State adoption happens before I/O. A failed write never rolls back the active memory fence; staged
 write and token deletion retry during activation and block admission until repaired. Reset/corrupt

@@ -18,7 +18,7 @@ another request before sending permits one separate, bounded re-admission. Neith
 changes the POST body or allows more than two actual sends. Caller `beforeSend` runs before
 each send, including an authorized retry; its errors are returned unchanged.
 
-The main host supplies AppIdentifierPrefix + bundle identifier, settings, the shared Keychain
+The main host supplies AppIdentifierPrefix + bundle identifier, the app version, settings, the shared Keychain
 access group, a required stable host-app namespace, and separate
 owner/bootstrap/business queues. Keychain holds one atomic bearer record per installed host
 app with continuous-clock/boot metadata; preferences hold no bearer. The namespace is the
@@ -35,7 +35,7 @@ A later ordinary demand, including consented Analytics, may initialize the insta
 This local product policy replaces the supplied profile-3 protocol's user-driven re-creation
 wording at lines 511–514; it is an explicit eligibility change, not behavioral equivalence.
 The package has no explicit reset API. Analytics consent/erasure and wallet changes do not
-reset the shared identity. Requests carry no human/background privilege.
+reset the shared identity. Requests carry a demand intent that only gates re-registration after a refusal.
 
 NovaAuth has no HTTP cache: every session is ephemeral, stores nothing and sends each
 authorized request to the network. Fresh, complete 200 reads carry `public, max-age=N,
@@ -53,6 +53,15 @@ one issuance flight, which attempts at most one new key generation. Retirement f
 flight; it never recursively creates another identity. Bearer replay preserves its original
 client binding and cannot turn the same business operation into identity replacement.
 
+Each request carries a `NovaAuthDemandIntent`: `.userDriven` (the default: screen loads, domain
+retries, pull to refresh; admission is always user-driven) or `.background` (analytics flushes,
+background syncs). A registration refused with `401 attestation_failed`, `403 app_not_allowed` or
+`403 binding_not_allowed` keeps the client UUID, drops only the key and saves a refusal delay.
+User-driven demands may re-register at once with a fresh key and challenge; background demands fail
+with `cooldown` until the delay passes: 1 hour, then 6 hours, then 24 hours per consecutive refusal.
+The delay is persisted, resets on an app version change or context replacement, and like every
+other wait ends with a boot discontinuity.
+
 | Situation | State retained or retired |
 | --- | --- |
 | Lost registration response, transport error or 5xx | Keep pending UUID/key/start; probe token challenge on a later demand. Never resend registration proof. |
@@ -60,14 +69,20 @@ client binding and cannot turn the same business operation into identity replace
 | Confirmed absence outside that window or after boot discontinuity | Retire and fail; the next independent demand may replace. Transport/503 alone never prove absence. |
 | Successful pending token challenge | Prove the same key; preserve the original pending window until a bearer is installed. |
 | Ordinary token `401 invalid_proof` or token challenge/issuance `403 binding_not_allowed` | Keep registered UUID/key/counter and fail. Later demand obtains a fresh challenge on the same binding. A contradictory `503 invalid_proof` is availability failure. |
-| Platform invalid key, interrupted/unrecoverable/expired attestation, conclusive registration refusal | Retire and fail. Later demand may generate one fresh UUID/key. |
-| Legacy `policyRefused` with a key | Normalize to registered and probe the same binding; policy denial does not authorize key rotation. |
+| Registration `401 attestation_failed`, `403 app_not_allowed` or `403 binding_not_allowed` | Keep the client UUID, drop the key, save the refusal delay and fail. A user-driven demand attests a fresh key at once; a background demand waits for the delay. |
+| Codeless or non-JSON registration 4xx | Transport failure: keep pending UUID/key/start and the short cooldown; probe on a later demand. |
+| Deferred attestation past its 40-second budget | Keep the key, take a fresh challenge and attest again in the same flight. |
+| Interrupted, failed or timed-out attestation; stale or malformed attestation object | Drop the key, keep the client UUID and fail; a later demand attests a fresh key. |
+| Platform invalid key, other code-bearing registration 4xx | Retire and fail. Later demand may generate one fresh UUID/key. |
+| Stored `retired` state of any reason | Loaded as is; the next demand replaces UUID/key. |
 
 Apple `serverUnavailable` saves `appleDeferred` for the same key/hash. Before saving
 `appleInFlight`, and again after acquiring the native lease immediately before `attestKey`,
 the current flight/context must match and the saved attempt must be on the same boot with
-age in `0...40` seconds. After Apple's result, age must remain below 60 seconds. Expiry
-retires and fails the current operation. The 20-second margin cannot guarantee native completion.
+age in `0...40` seconds. After Apple's result, age must remain below 60 seconds. A deferred
+attempt past its budget keeps the key and takes a fresh challenge in the same flight; expiry after
+Apple's result drops the key, keeps the client UUID and fails the current operation. The 20-second
+margin cannot guarantee native completion.
 
 Both watchdogs remain: bootstrap HTTP has total 20-second issuance / 100-second registration
 bounds; native calls have their existing local timeout. Before invocation, a failed guard
@@ -88,7 +103,7 @@ actual business send checks origin protection. No timer automatically retries a 
 
 Installation storage keeps its current key/version and validates surviving security fields.
 Removed optional legacy policy fields are ignored, even if malformed; the next existing write
-encodes only context, identity/registration and token-removal debt. Pending start/cooldown and
+encodes only context, identity/registration, refusal delay and token-removal debt. Pending start/cooldown and
 saved attestation inputs remain exact. Corrupt/reset repair replaces the context and cannot
 adopt an old bearer. The active memory fence advances before I/O and survives a failed save;
 staged writes and owed bearer deletion retry at host activation, blocking admission until repaired.
@@ -108,8 +123,8 @@ silently for its normal later-flush policy; consent is checked before every send
 Failure diagnostics are asynchronous and redacted: a fixed step/category, numeric status,
 allowlisted code and sanitized correlation ID. They never interpolate arbitrary Error,
 requests, state, tokens, UUID/key, proof or body. Successful transitions are not narrated.
-Ordinary issuance and shared-origin cooldowns remain memory-only; pending-probe cooldown is
-persisted. A restart can lose the memory-only delay. Boot-marker discontinuity ends boot-scoped waits.
+Ordinary issuance and shared-origin cooldowns remain memory-only; pending-probe cooldown and the
+refusal delay are persisted. A restart can lose the memory-only delay. Boot-marker discontinuity ends boot-scoped waits.
 
 Source walkthrough: [nine client views](../../.claude/docs/architecture/novaauth-client-diagrams.md),
 [retirement](Sources/NovaAuth/Lifecycle/NovaAuthRecoveryService.swift),
