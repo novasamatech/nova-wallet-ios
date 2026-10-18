@@ -24,6 +24,8 @@ final class SubtensorGroupHotkeyFactory {
     }
 }
 
+private typealias SubtensorCollateralResponses = [StorageResponse<SubtensorStakingPallet.MinerCollateralState>]
+
 private struct SubtensorCollateralKey: NMapKeyStorageKeyProtocol {
     let netuid: UInt16
     let hotkey: AccountId
@@ -64,8 +66,7 @@ extension SubtensorGroupHotkeyFactory: SubtensorGroupHotkeyFactoryProtocol {
                 options: StorageQueryListOptions()
             )
 
-            let collateralWrapper: CompoundOperationWrapper<[StorageResponse<SubtensorStakingPallet.MinerCollateralState>]>
-            collateralWrapper = requestFactory.queryNMapItems(
+            let collateralWrapper: CompoundOperationWrapper<SubtensorCollateralResponses> = requestFactory.queryNMapItems(
                 engine: engine,
                 nParamKeys: {
                     distinctHotkeys.map { SubtensorCollateralKey(netuid: netuid, hotkey: $0, coldkey: coldkey) }
