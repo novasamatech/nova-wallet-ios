@@ -1,28 +1,30 @@
 import Foundation
 
 enum SubtensorConfirmTapRule {
-    static func verifiedExitHotkeys(
+    static func verifiedPlan(
         for unstakeModel: SubtensorUnstakeModel,
         in state: Multistaking.SubtensorStakingState?
-    ) -> [AccountId]? {
-        guard let expected = unstakeModel.exitHotkeys, let state else {
+    ) -> SubtensorUnstakePlan? {
+        guard let state else {
             return nil
         }
 
         guard
             let group = SubtensorPortfolioBuilder.build(state: state).group(netuid: unstakeModel.netuid),
-            !group.positions.contains(where: { $0.stakeAlpha == 0 }) else {
+            !group.positions.contains(where: { $0.stakeAlpha == 0 }),
+            Set(group.positions.map(\.hotkey)) == Set(unstakeModel.groupHotkeys) else {
             return nil
         }
 
-        let basis = SubtensorGroupUnstakeBasis.make(from: group)
-
-        guard
-            !SubtensorStakingFlowConstants.exceedsFullExitDrift(live: basis.total, reviewed: unstakeModel.amount),
-            let rebuilt = basis.exitHotkeys(for: basis.total), rebuilt == expected else {
+        guard let rebuilt = unstakeModel.plan.rebuilt(from: group) else {
             return nil
         }
 
-        return rebuilt
+        let drifted = SubtensorStakingFlowConstants.exceedsFullExitDrift(
+            live: rebuilt.amount,
+            reviewed: unstakeModel.amount
+        )
+
+        return drifted ? nil : rebuilt
     }
 }

@@ -5,17 +5,7 @@ private extension SubtensorUnstakeSetupPresenter {
         state.flatMap { SubtensorPortfolioBuilder.build(state: $0).group(netuid: netuid) }
     }
 
-    func applyMaxChange(from previousMax: Balance?) {
-        guard case .rate = inputResult, maxAmount != previousMax else {
-            return
-        }
-
-        provideAmountInputViewModel()
-        refreshFee()
-        updateQuote()
-    }
-
-    func applyBasisChange(from previousMax: Balance?) {
+    func applyBasisChange(from previousAmount: Balance?) {
         if group?.primaryHotkey != preflightRequest {
             preflight = nil
             refreshPreflight()
@@ -23,11 +13,11 @@ private extension SubtensorUnstakeSetupPresenter {
 
         loadValidatorIfNeeded()
 
-        if isRoot, let basis, !basis.hotkeys.isEmpty {
-            interactor.loadRootHolds(for: basis.hotkeys)
+        if isRoot, let group, !group.positions.isEmpty {
+            interactor.loadRootHolds(for: group.positions.map(\.hotkey))
         }
 
-        if case .rate = inputResult, maxAmount != previousMax {
+        if case .rate = inputResult, inputAmount() != previousAmount {
             provideAmountInputViewModel()
         }
 
@@ -61,9 +51,16 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtoc
             return
         }
 
+        let previousAmount = inputAmount()
+
         target = .subnet(info: subnetInfo, price: subnetPrice)
 
         loadValidatorIfNeeded()
+
+        if case .rate = inputResult, inputAmount() != previousAmount {
+            provideAmountInputViewModel()
+        }
+
         refreshFee()
         updateQuote()
         provideViewModel()
@@ -99,11 +96,11 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtoc
     }
 
     func didReceiveRootHolds(_ holds: [AccountId: SubtensorRootHold]) {
-        let previousMax = maxAmount
+        let previousAmount = inputAmount()
 
         self.holds = holds
 
-        applyMaxChange(from: previousMax)
+        applyAmountChange(from: previousAmount)
         provideViewModel()
     }
 
@@ -131,13 +128,13 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtoc
 
     func didReceivePositions(_ state: Multistaking.SubtensorStakingState?) {
         let previousBasis = basis
-        let previousMax = maxAmount
+        let previousAmount = inputAmount()
 
         positionsState = state
         group = findGroup(in: state)
 
         if basis != previousBasis {
-            applyBasisChange(from: previousMax)
+            applyBasisChange(from: previousAmount)
         }
 
         provideViewModel()
@@ -148,12 +145,12 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtoc
     }
 
     func didReceiveBlockNumber(_ blockNumber: BlockNumber) {
-        let previousMax = maxAmount
+        let previousAmount = inputAmount()
 
         currentBlock = blockNumber
 
         if isRoot {
-            applyMaxChange(from: previousMax)
+            applyAmountChange(from: previousAmount)
         } else {
             forceQuoteRefresh()
         }
@@ -162,8 +159,12 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtoc
     }
 
     func didReceivePreflight(_ preflight: SubtensorStakingPreflight) {
+        let previousAmount = inputAmount()
+
         self.preflight = preflight
         blockTime = preflight.blockTime
+
+        applyAmountChange(from: previousAmount)
         provideViewModel()
     }
 
