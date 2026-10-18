@@ -16,9 +16,15 @@ protocol MultistakingSyncServiceProtocol: ApplicationServiceProtocol {
     func refreshOffchain()
 }
 
-final class MultistakingSyncService {
-    typealias OnchainSyncServiceProtocol = ObservableSyncServiceProtocol & ApplicationServiceProtocol
+protocol MultistakingOnchainSyncServiceProtocol: ObservableSyncServiceProtocol, ApplicationServiceProtocol {
+    func refreshOffchain()
+}
 
+extension MultistakingOnchainSyncServiceProtocol {
+    func refreshOffchain() {}
+}
+
+final class MultistakingSyncService {
     let chainRegistry: ChainRegistryProtocol
     let multistakingRepositoryFactory: MultistakingRepositoryFactoryProtocol
     let substrateRepositoryFactory: SubstrateRepositoryFactoryProtocol
@@ -33,7 +39,7 @@ final class MultistakingSyncService {
 
     private(set) var isActive: Bool = false
 
-    private(set) var onchainUpdaters: [Multistaking.Option: OnchainSyncServiceProtocol] = [:]
+    private(set) var onchainUpdaters: [Multistaking.Option: MultistakingOnchainSyncServiceProtocol] = [:]
     private(set) var offchainUpdater: OffchainMultistakingUpdateServiceProtocol?
     private(set) var stakableChainAssets: Set<ChainAsset> = []
 
@@ -48,7 +54,7 @@ final class MultistakingSyncService {
         multistakingRepositoryFactory: MultistakingRepositoryFactoryProtocol,
         substrateRepositoryFactory: SubstrateRepositoryFactoryProtocol,
         offchainOperationFactory: MultistakingOffchainOperationFactoryProtocol,
-        subtensorProcessServices: SubtensorStakingProcessServices = .shared,
+        subtensorProcessServices: SubtensorStakingProcessServices,
         operationQueue: OperationQueue = OperationManagerFacade.assetsRepositoryQueue,
         workingQueue: DispatchQueue = DispatchQueue(
             label: "com.nova.wallet.staking.sync",
@@ -189,7 +195,7 @@ final class MultistakingSyncService {
 
     private func makeOnchainService(
         for chainAssetOption: Multistaking.ChainAssetOption
-    ) -> OnchainSyncServiceProtocol? {
+    ) -> MultistakingOnchainSyncServiceProtocol? {
         switch chainAssetOption.type {
         case .relaychain, .azero, .auraRelaychain:
             createRelaychainStaking(
@@ -246,7 +252,7 @@ final class MultistakingSyncService {
     private func createRelaychainStaking(
         for chainAsset: ChainAsset,
         stakingType: StakingType
-    ) -> OnchainSyncServiceProtocol? {
+    ) -> MultistakingOnchainSyncServiceProtocol? {
         guard
             let account = wallet.fetch(for: chainAsset.chain.accountRequest()),
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
@@ -279,7 +285,7 @@ final class MultistakingSyncService {
     private func createPoolsStaking(
         for chainAsset: ChainAsset,
         stakingType: StakingType
-    ) -> OnchainSyncServiceProtocol? {
+    ) -> MultistakingOnchainSyncServiceProtocol? {
         guard
             let account = wallet.fetch(for: chainAsset.chain.accountRequest()),
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
@@ -306,7 +312,7 @@ final class MultistakingSyncService {
     private func createParachainStaking(
         for chainAsset: ChainAsset,
         stakingType: StakingType
-    ) -> OnchainSyncServiceProtocol? {
+    ) -> MultistakingOnchainSyncServiceProtocol? {
         guard
             let account = wallet.fetch(for: chainAsset.chain.accountRequest()),
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
@@ -357,7 +363,7 @@ final class MultistakingSyncService {
     private func createMythosStaking(
         for chainAsset: ChainAsset,
         stakingType: StakingType
-    ) -> OnchainSyncServiceProtocol? {
+    ) -> MultistakingOnchainSyncServiceProtocol? {
         guard
             let account = wallet.fetch(for: chainAsset.chain.accountRequest()),
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
@@ -390,11 +396,14 @@ final class MultistakingSyncService {
     private func createSubtensorStaking(
         for chainAsset: ChainAsset,
         stakingType: StakingType
-    ) -> OnchainSyncServiceProtocol? {
+    ) -> MultistakingOnchainSyncServiceProtocol? {
         guard
             let account = wallet.fetch(for: chainAsset.chain.accountRequest()),
-            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
+            let stakeStateSource = subtensorProcessServices.stakeStateSourceFactory.getSource(
+                for: account.accountId,
+                chainAsset: chainAsset,
+                chainRegistry: chainRegistry
+            ) else {
             return nil
         }
 
@@ -408,21 +417,12 @@ final class MultistakingSyncService {
             operationQueue: operationQueue
         )
 
-        let stakeStateFetchFactory = SubtensorStakeStateFetchFactory(
-            operationFactory: apiOperationFactory,
-            operationQueue: operationQueue
-        )
-
         return SubtensorMultistakingUpdateService(
             walletId: wallet.metaId,
-            accountId: account.accountId,
             chainAsset: chainAsset,
             stakingType: stakingType,
             dashboardRepository: multistakingRepositoryFactory.createSubtensorRepository(),
-            stakeStateFetchFactory: stakeStateFetchFactory,
-            cacheRepository: substrateRepositoryFactory.createChainStorageItemRepository(),
-            connection: connection,
-            runtimeService: runtimeService,
+            stakeStateSource: stakeStateSource,
             operationQueue: operationQueue,
             workingQueue: workingQueue,
             logger: logger,
@@ -582,12 +582,12 @@ extension MultistakingSyncService: MultistakingSyncServiceProtocol {
     func refreshOffchain() {
         mutex.lock()
 
-        let subtensorUpdaters = onchainUpdaters.values.compactMap { $0 as? SubtensorMultistakingUpdateService }
+        let updaters = Array(onchainUpdaters.values)
 
         mutex.unlock()
 
         offchainUpdater?.syncUp()
 
-        subtensorUpdaters.forEach { $0.refreshCataloguePricing() }
+        updaters.forEach { $0.refreshOffchain() }
     }
 }

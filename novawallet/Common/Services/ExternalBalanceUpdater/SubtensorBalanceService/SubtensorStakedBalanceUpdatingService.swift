@@ -5,25 +5,17 @@ import Operation_iOS
 final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
     let accountId: AccountId
     let chainAsset: ChainAsset
-    let connection: JSONRPCEngine
-    let runtimeService: RuntimeCodingServiceProtocol
     let repository: AnyDataProviderRepository<SubtensorStakedBalance>
-    let stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol
+    let stakeStateSource: SubtensorStakeStateSource
     let cataloguePricing: SubtensorCataloguePricingTracker
-    let eventCenter: EventCenterProtocol
     let workingQueue: DispatchQueue
     let operationQueue: OperationQueue
 
     private lazy var stakeStateSubscription = SubtensorStakeStateSubscription(
-        accountId: accountId,
-        stakeStateFetchFactory: stakeStateFetchFactory,
-        connection: connection,
-        runtimeService: runtimeService,
-        chainAssetId: chainAsset.chainAssetId,
+        source: stakeStateSource,
         mutex: mutex,
         operationQueue: operationQueue,
         workingQueue: workingQueue,
-        logger: logger,
         onSyncing: { [weak self] in self?.markSyncingImmediate() },
         onState: { [weak self] in self?.persistPricedState($0) },
         onFailure: { [weak self] in self?.completeImmediate($0) }
@@ -33,23 +25,17 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
         accountId: AccountId,
         chainAsset: ChainAsset,
         repository: AnyDataProviderRepository<SubtensorStakedBalance>,
-        stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol,
+        stakeStateSource: SubtensorStakeStateSource,
         cataloguePricing: SubtensorCataloguePricingTracker,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
-        logger: LoggerProtocol,
-        eventCenter: EventCenterProtocol = EventCenter.shared
+        logger: LoggerProtocol
     ) {
         self.accountId = accountId
         self.chainAsset = chainAsset
         self.repository = repository
-        self.stakeStateFetchFactory = stakeStateFetchFactory
+        self.stakeStateSource = stakeStateSource
         self.cataloguePricing = cataloguePricing
-        self.connection = connection
-        self.runtimeService = runtimeService
-        self.eventCenter = eventCenter
         self.workingQueue = workingQueue
         self.operationQueue = operationQueue
 
@@ -57,8 +43,6 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
     }
 
     override func performSyncUp() {
-        eventCenter.add(observer: stakeStateSubscription, dispatchIn: workingQueue)
-
         stakeStateSubscription.subscribe()
     }
 
@@ -70,8 +54,6 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
     // throttle() skips stopSyncUp() when a fetch already completed, so the storage
     // subscriptions must be released here as well
     override func deactivate() {
-        eventCenter.remove(observer: stakeStateSubscription)
-
         stopSyncUp()
     }
 
@@ -96,7 +78,7 @@ final class SubtensorStakedBalanceUpdatingService: BaseSyncService {
     }
 
     private func persistState(_ state: Multistaking.SubtensorStakingState) {
-        stakeStateSubscription.save(createSaveWrapper(for: state), for: state) { [weak self] in
+        stakeStateSubscription.save(createSaveWrapper(for: state)) { [weak self] in
             self?.completeImmediate($0)
         }
     }

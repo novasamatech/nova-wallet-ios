@@ -26,11 +26,20 @@ final class SubtensorCataloguePricingTracker {
     }
 
     func seed() {
+        guard prices == nil else {
+            return
+        }
+
         prices = alphaPriceProvider.cachedPrices().map { .success($0) }
     }
 
     func cancel() {
         callStore.cancel()
+    }
+
+    func reset() {
+        callStore.cancel()
+        prices = nil
     }
 
     func valuation(of state: Multistaking.SubtensorStakingState) -> Valuation {

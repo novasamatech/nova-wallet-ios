@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 import Operation_iOS
 
-final class RelaychainMultistakingUpdateService: ObservableSyncService {
+final class RelaychainMultistakingUpdateService: ObservableSyncService, MultistakingOnchainSyncServiceProtocol {
     let accountId: AccountId
     let walletId: MetaAccountModel.Id
     let chainAsset: ChainAsset
