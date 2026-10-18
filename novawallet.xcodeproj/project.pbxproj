@@ -4533,6 +4533,7 @@
 		845B822326EFDF3F00D25C72 /* SelectedAccountSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B822226EFDF3F00D25C72 /* SelectedAccountSettingsTests.swift */; };
 		845B822526EFE03E00D25C72 /* AccountGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B822426EFE03E00D25C72 /* AccountGenerator.swift */; };
 		845B822726EFFE0200D25C72 /* MetaAccountMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B822626EFFE0200D25C72 /* MetaAccountMapperTests.swift */; };
+		7042BDD74AB83F34D4B925F9 /* StakingDashboardSubtensorMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C63637ACA7F34EDA810F8D88 /* StakingDashboardSubtensorMapperTests.swift */; };
 		845B822926F0BB6700D25C72 /* CrowdloanChainSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B822826F0BB6700D25C72 /* CrowdloanChainSettings.swift */; };
 		845B823229C8FEC700D187CB /* EtherscanNativeHistoryInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B823129C8FEC700D187CB /* EtherscanNativeHistoryInfo.swift */; };
 		845B823429C8FF0700D187CB /* EtherscanNativeOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845B823329C8FF0700D187CB /* EtherscanNativeOperationFactory.swift */; };
@@ -11351,6 +11352,7 @@
 		845B822226EFDF3F00D25C72 /* SelectedAccountSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedAccountSettingsTests.swift; sourceTree = "<group>"; };
 		845B822426EFE03E00D25C72 /* AccountGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountGenerator.swift; sourceTree = "<group>"; };
 		845B822626EFFE0200D25C72 /* MetaAccountMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetaAccountMapperTests.swift; sourceTree = "<group>"; };
+		C63637ACA7F34EDA810F8D88 /* StakingDashboardSubtensorMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDashboardSubtensorMapperTests.swift; sourceTree = "<group>"; };
 		845B822826F0BB6700D25C72 /* CrowdloanChainSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanChainSettings.swift; sourceTree = "<group>"; };
 		845B823129C8FEC700D187CB /* EtherscanNativeHistoryInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EtherscanNativeHistoryInfo.swift; sourceTree = "<group>"; };
 		845B823329C8FF0700D187CB /* EtherscanNativeOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EtherscanNativeOperationFactory.swift; sourceTree = "<group>"; };
@@ -23559,6 +23561,7 @@
 				84563D0824F46B7F0055591D /* ManagedAccountItemMapperTests.swift */,
 				845B822226EFDF3F00D25C72 /* SelectedAccountSettingsTests.swift */,
 				845B822626EFFE0200D25C72 /* MetaAccountMapperTests.swift */,
+				C63637ACA7F34EDA810F8D88 /* StakingDashboardSubtensorMapperTests.swift */,
 				84F13F0D26F1D9B1006725FF /* CrowdloadSettingsTests.swift */,
 				0C90C6C32B503D990084B5C2 /* WalletUpdateMediatorTests.swift */,
 			);
@@ -39838,6 +39841,7 @@
 				0C08976D2DE0C44100F06A0E /* BranchToInternalConvertionTests.swift in Sources */,
 				84563D0924F46B7F0055591D /* ManagedAccountItemMapperTests.swift in Sources */,
 				845B822726EFFE0200D25C72 /* MetaAccountMapperTests.swift in Sources */,
+				7042BDD74AB83F34D4B925F9 /* StakingDashboardSubtensorMapperTests.swift in Sources */,
 				84B7C738289BFA79001A3566 /* StakingRebondSetupTests.swift in Sources */,
 				84B7C72B289BFA79001A3566 /* RecommendedValidatorListTests.swift in Sources */,
 				840D627129CB3FD900D5E894 /* URLBuilderTests.swift in Sources */,
