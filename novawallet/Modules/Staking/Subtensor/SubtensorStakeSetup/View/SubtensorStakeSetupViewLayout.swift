@@ -60,7 +60,7 @@ final class SubtensorStakeSetupViewLayout: SubtensorAmountSetupLayout {
         )
     }
 
-    func setSelection(_ selection: SubtensorSetupSelectionViewModel?) {
+    func setSelection(_ selection: SubtensorStakeSetupSelectionViewModel?) {
         pickSkeletonView.setLoading(selection != nil)
 
         if let caption = selection?.caption {
@@ -79,7 +79,7 @@ final class SubtensorStakeSetupViewLayout: SubtensorAmountSetupLayout {
         }
     }
 
-    func applyRootValidator(_ viewModel: SubtensorSetupRootValidatorViewModel) {
+    func applyRootValidator(_ viewModel: SubtensorStakeSetupRootValidatorViewModel) {
         switch viewModel {
         case let .card(card):
             validatorCardView.bind(viewModel: card)
