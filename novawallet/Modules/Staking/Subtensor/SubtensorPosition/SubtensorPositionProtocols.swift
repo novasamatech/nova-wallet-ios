@@ -31,16 +31,19 @@ protocol SubnetPositionInteractorOutputProtocol: AnyObject {
     func didReceiveSyncFailure(_ isFailed: Bool)
     func didReceive(price: PriceData?)
     func didChangeCurrency()
-    func didReceive(prices: SubtensorAlphaPrices?)
+    func didReceive(prices: SubtensorAlphaPrices)
+    func didFailPrices()
     func didReceive(subnetsInfo: SubtensorSubnetsInfo?)
     func didReceive(subnetLogos: SubtensorSubnetLogos?)
     func didReceive(validator: SubtensorValidatorDirectoryItem?, for hotkey: AccountId)
+    func didFailValidator(for hotkey: AccountId)
     func didReceive(yields: SubtensorAlphaYields?)
     func didReceive(claimable: [SubtensorRootClaimPreview], isFailed: Bool)
     func didReceive(holds: [AccountId: SubtensorRootHold], blockTime: BlockTime?)
     func didReceive(blockNumber: BlockNumber)
     func didReceive(history: SubtensorPriceHistory?, for period: SubtensorPricePeriod)
     func didFailHistory(for period: SubtensorPricePeriod)
+    func didBecomeActive()
 }
 
 protocol SubtensorPositionWireframeProtocol: AnyObject, MessageSheetPresentable, SubtensorValidatorInfoPresentable {

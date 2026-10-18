@@ -33,6 +33,7 @@ protocol SubnetPortfolioInteractorOutputProtocol: AnyObject {
     func didReceive(histories: SubtensorPortfolioPriceHistories)
     func didFailHistories(for period: SubtensorPricePeriod)
     func didReceive(weeklyChanges: [SubtensorSubnetRef: SubtensorPriceData<SubtensorWeeklyPriceSummary>])
+    func didFailWeeklyChanges()
     func didReceiveSyncFailure(_ isFailed: Bool)
     func didChangeCurrency()
     func didReceiveAccountChange()

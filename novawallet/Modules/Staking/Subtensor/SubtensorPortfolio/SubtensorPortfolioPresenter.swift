@@ -206,6 +206,10 @@ extension SubtensorPortfolioPresenter: SubnetPortfolioInteractorOutputProtocol {
         provideViewModel()
     }
 
+    func didFailWeeklyChanges() {
+        weeklyChangesRequest = nil
+    }
+
     func didReceiveSyncFailure(_ isFailed: Bool) {
         state.isSyncFailed = isFailed
         provideViewModel()
