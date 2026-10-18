@@ -2,10 +2,10 @@ import Operation_iOS
 import SubstrateSdk
 import UIKit
 
-final class SubtensorSetupInteractor: SubtensorBaseInteractor {
-    var presenter: SubtensorSetupInteractorOutputProtocol? {
+final class SubtensorStakeSetupInteractor: SubtensorBaseInteractor {
+    var presenter: SubtensorStakeSetupInteractorOutputProtocol? {
         get {
-            basePresenter as? SubtensorSetupInteractorOutputProtocol
+            basePresenter as? SubtensorStakeSetupInteractorOutputProtocol
         }
 
         set {
@@ -53,7 +53,7 @@ final class SubtensorSetupInteractor: SubtensorBaseInteractor {
     }
 }
 
-private extension SubtensorSetupInteractor {
+private extension SubtensorStakeSetupInteractor {
     func loadRemoteRankingView(keepingExpiredSeed: Bool) {
         let recommendationOperationFactory = recommendationOperationFactory
         let rankingWrapper = recommendationOperationFactory.createRankedSubnetsWrapper()
@@ -112,7 +112,7 @@ private extension SubtensorSetupInteractor {
     }
 }
 
-extension SubtensorSetupInteractor: SubtensorSetupInteractorInputProtocol {
+extension SubtensorStakeSetupInteractor: SubtensorStakeSetupInteractorInputProtocol {
     func cancelQuickPickSnapshot() { quickPickCallStore.cancel() }
 
     func loadBlockTime() {
@@ -189,7 +189,7 @@ extension SubtensorSetupInteractor: SubtensorSetupInteractorInputProtocol {
                 guard
                     let subnet = info.subnets.first(where: { $0.netuid == netuid }),
                     let price = info.prices[netuid] else {
-                    self?.presenter?.didFailSubnet(SubtensorSetupError.subnetUnavailable(netuid))
+                    self?.presenter?.didFailSubnet(SubtensorStakeSetupError.subnetUnavailable(netuid))
                     return
                 }
 
@@ -237,6 +237,6 @@ extension SubtensorSetupInteractor: SubtensorSetupInteractorInputProtocol {
     }
 }
 
-enum SubtensorSetupError: Error {
+enum SubtensorStakeSetupError: Error {
     case subnetUnavailable(UInt16)
 }

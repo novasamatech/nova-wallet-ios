@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-final class SubtensorSetupWireframe: SubtensorSetupWireframeProtocol {
+final class SubtensorStakeSetupWireframe: SubtensorStakeSetupWireframeProtocol {
     let state: SubtensorSharedStateProtocol
 
     var assetListObservable: AssetListModelObservable { state.flowState.assetListObservable }
@@ -11,7 +11,7 @@ final class SubtensorSetupWireframe: SubtensorSetupWireframeProtocol {
     }
 
     func showAllSubnets(
-        from view: SubtensorSetupViewProtocol?,
+        from view: SubtensorStakeSetupViewProtocol?,
         browseState: SubtensorSubnetBrowseState,
         delegate: SubtensorSubnetSelectDelegate
     ) {
@@ -36,7 +36,7 @@ final class SubtensorSetupWireframe: SubtensorSetupWireframeProtocol {
     }
 
     func showValidatorSelection(
-        from view: SubtensorSetupViewProtocol?,
+        from view: SubtensorStakeSetupViewProtocol?,
         target: SubtensorStakeTarget,
         selectedHotkey: AccountId?,
         delegate: SubtensorValidatorSelectDelegate
@@ -54,7 +54,7 @@ final class SubtensorSetupWireframe: SubtensorSetupWireframeProtocol {
     }
 
     func showSubnetDetails(
-        from view: SubtensorSetupViewProtocol?,
+        from view: SubtensorStakeSetupViewProtocol?,
         input: SubtensorSubnetDetailsInput,
         delegate: SubtensorSubnetSelectDelegate
     ) {
@@ -71,10 +71,10 @@ final class SubtensorSetupWireframe: SubtensorSetupWireframeProtocol {
     }
 
     func showRootDetails(
-        from view: SubtensorSetupViewProtocol?,
+        from view: SubtensorStakeSetupViewProtocol?,
         browseState: SubtensorSubnetBrowseState
     ) {
-        guard let detailsView = SubtensorSetupViewFactory.createRootDetailsView(
+        guard let detailsView = SubtensorStakeSetupViewFactory.createRootDetailsView(
             for: state,
             browseState: browseState
         ) else {
@@ -85,7 +85,7 @@ final class SubtensorSetupWireframe: SubtensorSetupWireframeProtocol {
     }
 
     func showSlippageSettings(
-        from view: SubtensorSetupViewProtocol?,
+        from view: SubtensorStakeSetupViewProtocol?,
         current: BigRational,
         completion: @escaping (BigRational) -> Void
     ) {
@@ -101,7 +101,7 @@ final class SubtensorSetupWireframe: SubtensorSetupWireframeProtocol {
     }
 
     func popTopControllers(
-        from view: SubtensorSetupViewProtocol?,
+        from view: SubtensorStakeSetupViewProtocol?,
         completion: @escaping () -> Void
     ) {
         guard let controller = view?.controller else {

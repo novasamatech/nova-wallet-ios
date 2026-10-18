@@ -1,6 +1,6 @@
 import UIKit
 
-final class SubtensorSetupViewLayout: SubtensorAmountSetupLayout {
+final class SubtensorStakeSetupViewLayout: SubtensorAmountSetupLayout {
     let getTaoCardView: SubtensorGetTaoCardView = .create { view in
         view.isHidden = true
     }
@@ -112,7 +112,7 @@ final class SubtensorSetupViewLayout: SubtensorAmountSetupLayout {
     }
 }
 
-private extension SubtensorSetupViewLayout {
+private extension SubtensorStakeSetupViewLayout {
     enum Constants {
         static let avgBuyPriceSpacing: CGFloat = 8
         static let detailsSpacing: CGFloat = 16

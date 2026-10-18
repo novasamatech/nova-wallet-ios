@@ -1,6 +1,6 @@
 import UIKit
 
-final class SubtensorUnstakeSetupLayout: SubtensorAmountSetupLayout {
+final class SubtensorUnstakeSetupViewLayout: SubtensorAmountSetupLayout {
     let detailsTableView = StackTableView()
 
     let receiveCell: StackTitleMultiValueCell = .create { cell in
@@ -73,7 +73,7 @@ final class SubtensorUnstakeSetupLayout: SubtensorAmountSetupLayout {
     }
 }
 
-private extension SubtensorUnstakeSetupLayout {
+private extension SubtensorUnstakeSetupViewLayout {
     func setupDetailsLayout() {
         containerView.stackView.addArrangedSubview(detailsTableView)
 
@@ -96,7 +96,7 @@ private extension SubtensorUnstakeSetupLayout {
     }
 }
 
-private extension SubtensorUnstakeSetupLayout {
+private extension SubtensorUnstakeSetupViewLayout {
     enum Constants {
         static let inputIconRadius: CGFloat = 20
     }

@@ -1,13 +1,13 @@
 import Foundation_iOS
 import UIKit
 
-final class SubtensorSetupViewController: UIViewController, ViewHolder, ImportantViewProtocol {
-    typealias RootViewType = SubtensorSetupViewLayout
+final class SubtensorStakeSetupViewController: UIViewController, ViewHolder, ImportantViewProtocol {
+    typealias RootViewType = SubtensorStakeSetupViewLayout
 
-    let presenter: SubtensorSetupPresenterProtocol
+    let presenter: SubtensorStakeSetupPresenterProtocol
 
     init(
-        presenter: SubtensorSetupPresenterProtocol,
+        presenter: SubtensorStakeSetupPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
@@ -23,7 +23,7 @@ final class SubtensorSetupViewController: UIViewController, ViewHolder, Importan
     }
 
     override func loadView() {
-        view = SubtensorSetupViewLayout()
+        view = SubtensorStakeSetupViewLayout()
     }
 
     override func viewDidLoad() {
@@ -42,7 +42,7 @@ final class SubtensorSetupViewController: UIViewController, ViewHolder, Importan
     }
 }
 
-private extension SubtensorSetupViewController {
+private extension SubtensorStakeSetupViewController {
     func setupLocalization() {
         let strings = R.string(preferredLanguages: selectedLocale.rLanguages).localizable
 
@@ -214,7 +214,7 @@ private extension SubtensorSetupViewController {
     }
 }
 
-extension SubtensorSetupViewController: SubtensorSetupViewProtocol {
+extension SubtensorStakeSetupViewController: SubtensorStakeSetupViewProtocol {
     func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol) {
         rootView.amountInputView.bind(inputViewModel: inputViewModel)
     }
@@ -228,7 +228,7 @@ extension SubtensorSetupViewController: SubtensorSetupViewProtocol {
         rootView.getTaoCardView.bind(iconViewModel: viewModel.iconViewModel)
     }
 
-    func didReceive(viewModel: SubtensorSetupViewModel) {
+    func didReceive(viewModel: SubtensorStakeSetupViewModel) {
         title = viewModel.title
 
         applySettings(viewModel.hasSettings)
@@ -260,7 +260,7 @@ extension SubtensorSetupViewController: SubtensorSetupViewProtocol {
     }
 }
 
-extension SubtensorSetupViewController: AmountInputAccessoryViewDelegate {
+extension SubtensorStakeSetupViewController: AmountInputAccessoryViewDelegate {
     func didSelect(on _: AmountInputAccessoryView, percentage: Float) {
         rootView.amountInputView.textField.resignFirstResponder()
 
@@ -272,7 +272,7 @@ extension SubtensorSetupViewController: AmountInputAccessoryViewDelegate {
     }
 }
 
-extension SubtensorSetupViewController: Localizable {
+extension SubtensorStakeSetupViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()

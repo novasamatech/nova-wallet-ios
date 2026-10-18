@@ -1,7 +1,7 @@
 import Foundation
 import Foundation_iOS
 
-extension SubtensorSetupPresenter {
+extension SubtensorStakeSetupPresenter {
     func loadQuickPick() {
         guard let quickPickVisit, !quickPickVisit.isManuallyReplaced, target == nil else { return }
         quickPickVisit.beginRequest()
@@ -30,7 +30,7 @@ extension SubtensorSetupPresenter {
     }
 }
 
-extension SubtensorSetupPresenter: Localizable {
+extension SubtensorStakeSetupPresenter: Localizable {
     func applyLocalization() {
         if let view, view.isSetup {
             provideAmountInputViewModel()
