@@ -64,7 +64,11 @@ extension SubtensorUnstakeValidatingDep {
         }
 
         let inputs = plan.partials.compactMap { slice in
-            createSellPlanInput(requestedAlpha: slice.alpha, positionAlpha: positions[slice.hotkey], hotkey: slice.hotkey)
+            createSellPlanInput(
+                requestedAlpha: slice.alpha,
+                positionAlpha: positions[slice.hotkey],
+                hotkey: slice.hotkey
+            )
         }
 
         return inputs.count == plan.partials.count ? inputs : nil

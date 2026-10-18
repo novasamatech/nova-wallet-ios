@@ -67,6 +67,36 @@ final class SubtensorUnstakePlanTests: XCTestCase {
         XCTAssertEqual(basis.plan(for: second.alpha, floor: floor), SubtensorUnstakePlan(exits: [exit(second)], partials: []))
     }
 
+    func testFloorSliceClearsTheValidatorMinimumOutWithThePoolFee() throws {
+        let limitPrice: Balance = 50_000_000
+        let feeRate: UInt16 = 33
+        let floor = SubtensorGroupUnstakeBasis.floorAlpha(minTao: 2_000_000, price: limitPrice, feeRate: feeRate)
+
+        let minimumOut = try SubtensorTradeQuoteFactory.sellSwapMinimumOut(
+            alpha: floor,
+            feeRate: feeRate,
+            limitPrice: limitPrice
+        )
+
+        XCTAssertGreaterThanOrEqual(minimumOut, 2_000_000)
+    }
+
+    func testCollateralHotkeyIsSlicedToItsFreePartInsteadOfExited() {
+        let bonded = SubtensorUnstakePosition(hotkey: second.hotkey, alpha: second.alpha, locked: 10_000_000_000)
+        let basis = SubtensorGroupUnstakeBasis(
+            total: 100_000_000_000,
+            available: 90_000_000_000,
+            positions: [primary, bonded]
+        )
+
+        let plan = basis.plan(for: 61_000_000_000, floor: floor)
+
+        XCTAssertEqual(
+            plan,
+            SubtensorUnstakePlan(exits: [], partials: [slice(bonded, 30_000_000_000), slice(primary, 31_000_000_000)])
+        )
+    }
+
     private func makeBasis(available: Balance = 130_000_000_000) -> SubtensorGroupUnstakeBasis {
         SubtensorGroupUnstakeBasis(total: 130_000_000_000, available: available, positions: [primary, second, third])
     }
