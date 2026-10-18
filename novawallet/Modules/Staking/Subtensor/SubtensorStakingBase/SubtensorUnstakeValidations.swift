@@ -3,10 +3,11 @@ import Foundation
 struct SubtensorUnstakeValidatingDep {
     let netuid: UInt16
     let accountId: AccountId
+    let hotkey: AccountId?
     let amount: Balance?
     let positionAlpha: Balance?
+    let plan: SubtensorUnstakePlan?
     let availability: SubtensorStakingPallet.StakeAvailability?
-    let exitHotkeys: [AccountId]?
     let balance: AssetBalance?
     let fee: ExtrinsicFeeProtocol?
     let existentialDeposit: Balance?
@@ -22,7 +23,7 @@ struct SubtensorUnstakeValidatingDep {
     var quoteContext: SubtensorQuoteValidatingContext?
 
     var isBatched: Bool {
-        netuid != SubtensorStakingPallet.rootNetuid || (exitHotkeys?.count ?? 0) > 1
+        netuid != SubtensorStakingPallet.rootNetuid || (plan?.isBatched ?? false)
     }
 }
 
@@ -48,27 +49,37 @@ extension SubtensorUnstakeValidatingDep {
 
     var sellPlanInput: SubtensorSellPlanInput? {
         guard
-            let amount,
+            let requestedAlpha = plan?.partial?.alpha ?? amount,
             let positionAlpha,
             let preflight,
-            let bases = sellPlanBases else {
+            let bases = sellPlanBases(for: requestedAlpha) else {
             return nil
         }
 
+        let sliceHotkey = plan?.partial?.hotkey ?? hotkey
+
         return SubtensorSellPlanInput(
-            requestedAlpha: amount,
+            requestedAlpha: requestedAlpha,
             positionAlpha: positionAlpha,
             availability: availability ?? SubtensorStakingPallet.StakeAvailability(available: positionAlpha),
             minimumTaoOut: bases.minimumTaoOut,
             sellLimitPrice: bases.sellLimitPrice,
-            isOwnHotkey: preflight.hotkeyOwner == accountId,
+            isOwnHotkey: sliceHotkey == hotkey && preflight.hotkeyOwner == accountId,
             minStake: preflight.minStake,
             nominatorMinStake: preflight.effectiveNominatorMinStake
         )
     }
 
+    var drawsBeyondPreflightHotkey: Bool {
+        guard let plan else {
+            return false
+        }
+
+        return plan.hotkeys != hotkey.map { [$0] }
+    }
+
     var groupExitHolds: [SubtensorRootHold]? {
-        guard !isSubnet, let exitHotkeys, exitHotkeys.count > 1 else {
+        guard !isSubnet, let plan, drawsBeyondPreflightHotkey else {
             return nil
         }
 
@@ -77,30 +88,28 @@ extension SubtensorUnstakeValidatingDep {
             lastStakeBlock: currentBlock.map { UInt64($0) } ?? 0
         )
 
-        return exitHotkeys.map { holds?[$0] ?? unknownHold }
+        return plan.hotkeys.map { holds?[$0] ?? unknownHold }
     }
 }
 
 private extension SubtensorUnstakeValidatingDep {
-    var sellPlanBases: (minimumTaoOut: Balance, sellLimitPrice: Balance)? {
+    func sellPlanBases(for requestedAlpha: Balance) -> (minimumTaoOut: Balance, sellLimitPrice: Balance)? {
         guard isSubnet else {
-            return amount.map { amount in
-                let minimumTaoOut = SubtensorAmountPolicy.rootUnstakeAmount(
-                    requested: amount,
-                    transferable: balance?.transferable,
-                    networkFee: fee?.amountForCurrentAccount,
-                    existentialDeposit: existentialDeposit
-                )
+            let minimumTaoOut = SubtensorAmountPolicy.rootUnstakeAmount(
+                requested: requestedAlpha,
+                transferable: balance?.transferable,
+                networkFee: fee?.amountForCurrentAccount,
+                existentialDeposit: existentialDeposit
+            )
 
-                return (minimumTaoOut, SubtensorStakingPallet.alphaPriceScale)
-            }
+            return (minimumTaoOut, SubtensorStakingPallet.alphaPriceScale)
         }
 
         guard
             let latestQuote = quoteContext?.latestQuote,
             let signingLimit = quoteContext?.signingLimit,
             let minimumTaoOut = try? SubtensorTradeQuoteFactory.sellSwapMinimumOut(
-                alpha: latestQuote.amountIn,
+                alpha: requestedAlpha,
                 feeRate: latestQuote.quote.feeRate,
                 limitPrice: signingLimit
             ) else {

@@ -80,9 +80,9 @@ extension SubtensorStakingOperation {
         switch self {
         case .subnetBuy:
             .buy
-        case .subnetSell, .subnetSellAll:
+        case .subnetSell, .subnetSellGroup:
             .sell
-        case .rootStake, .rootUnstake, .rootUnstakeAll, .rootClaim:
+        case .rootStake, .rootUnstake, .rootUnstakeGroup, .rootClaim:
             nil
         }
     }
@@ -91,9 +91,9 @@ extension SubtensorStakingOperation {
         switch self {
         case let .rootStake(hotkey, _), let .rootUnstake(hotkey, _), let .rootClaim(hotkey):
             [hotkey]
-        case let .rootUnstakeAll(hotkeys):
-            hotkeys
-        case .subnetBuy, .subnetSell, .subnetSellAll:
+        case let .rootUnstakeGroup(exits, partial):
+            exits + (partial.map { [$0.hotkey] } ?? [])
+        case .subnetBuy, .subnetSell, .subnetSellGroup:
             []
         }
     }
