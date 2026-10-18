@@ -31,6 +31,12 @@ protocol SubtensorStakingValidationFactoryProtocol: BaseDataValidatingFactoryPro
         onRetry: @escaping () -> Void
     ) -> DataValidating
 
+    func groupHotkeysLoaded(
+        _ loaded: Bool,
+        locale: Locale,
+        onRetry: @escaping () -> Void
+    ) -> DataValidating
+
     func subnetTradesAvailable(
         tradesUnavailable: Bool,
         locale: Locale

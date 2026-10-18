@@ -12,6 +12,7 @@ private extension SubtensorUnstakeSetupPresenter {
         }
 
         loadValidatorIfNeeded()
+        loadGroupHotkeys()
 
         if isRoot, let group, !group.positions.isEmpty {
             interactor.loadRootHolds(for: group.positions.map(\.hotkey))
@@ -92,6 +93,15 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtoc
 
         validatorItem = validator
 
+        provideViewModel()
+    }
+
+    func didReceiveGroupHotkeys(_ info: [AccountId: SubtensorGroupHotkeyInfo]) {
+        let previousPlan = feePlan()
+
+        groupHotkeys = info
+
+        applyPlanChange(from: previousPlan)
         provideViewModel()
     }
 

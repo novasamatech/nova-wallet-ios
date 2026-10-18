@@ -194,6 +194,9 @@ extension StakingSharedStateFactory {
                 runtimeConnectionStore: runtimeConnectionStore, operationQueue: syncOperationQueue,
                 blockTimeOperationFactory: BlockTimeOperationFactory(chain: stakingOption.chainAsset.chain)
             ),
+            groupHotkeyFactory: SubtensorGroupHotkeyFactory(
+                runtimeConnectionStore: runtimeConnectionStore, operationQueue: syncOperationQueue
+            ),
             validatorPresetFactory: SubtensorValidatorPresetFactory(
                 directoryService: validatorDirectoryService,
                 recommendationService: recommendationService,

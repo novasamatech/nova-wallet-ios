@@ -34,6 +34,7 @@ final class SubtensorUnstakeSetupPresenter {
     var validatorRequest: AccountId?
     var preflightRequest: AccountId?
     var holds: [AccountId: SubtensorRootHold]?
+    var groupHotkeys: [AccountId: SubtensorGroupHotkeyInfo]?
     var quoteFlow = SubtensorQuoteFlowModel()
     var latestQuote: SubtensorTradeQuote?
     var acceptedQuote: SubtensorTradeQuote?
@@ -76,11 +77,11 @@ final class SubtensorUnstakeSetupPresenter {
 private extension SubtensorUnstakeSetupPresenter {
     struct FeeShape: Equatable {
         let exits: [AccountId]
-        let partial: AccountId?
+        let partials: [AccountId]
 
         init(plan: SubtensorUnstakePlan) {
             exits = plan.exits.map(\.hotkey)
-            partial = plan.partial?.hotkey
+            partials = plan.partials.map(\.hotkey)
         }
     }
 
@@ -155,7 +156,11 @@ extension SubtensorUnstakeSetupPresenter {
 
     var basis: SubtensorGroupUnstakeBasis? {
         if let group {
-            return SubtensorGroupUnstakeBasis.make(from: group, excluding: excludedHotkeys)
+            return SubtensorGroupUnstakeBasis.make(
+                from: group,
+                excluding: excludedHotkeys,
+                groupHotkeys: groupHotkeys ?? [:]
+            )
         }
 
         guard positionsState != nil else {
@@ -166,7 +171,7 @@ extension SubtensorUnstakeSetupPresenter {
     }
 
     var maxAmount: Balance? {
-        basis?.max
+        basis?.max(floor: floorAlpha())
     }
 
     var inputDisplayInfo: AssetBalanceDisplayInfo {
@@ -217,18 +222,26 @@ extension SubtensorUnstakeSetupPresenter {
 
         return plan(for: amount) ?? SubtensorUnstakePlan(
             exits: [],
-            partial: SubtensorUnstakeSlice(hotkey: primary, alpha: amount)
+            partials: [SubtensorUnstakeSlice(hotkey: primary, alpha: amount)]
         )
+    }
+
+    func loadGroupHotkeys() {
+        guard let group else {
+            return
+        }
+
+        interactor.loadGroupHotkeys(group.positions.map(\.hotkey), netuid: netuid)
     }
 
     func holdRemainingBlocks(for amount: Balance?) -> UInt64? {
         let held = heldHotkeys
 
-        guard !held.isEmpty, let group, let basis, let holds, let currentBlock else {
+        guard !held.isEmpty, let group, let maxAmount, let holds, let currentBlock else {
             return nil
         }
 
-        guard held.count == group.positions.count || (amount ?? 0) > basis.max else {
+        guard held.count == group.positions.count || (amount ?? 0) > maxAmount else {
             return nil
         }
 

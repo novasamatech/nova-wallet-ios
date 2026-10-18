@@ -18,6 +18,22 @@ extension SubtensorStakingValidationFactory {
         })
     }
 
+    func groupHotkeysLoaded(
+        _ loaded: Bool,
+        locale: Locale,
+        onRetry: @escaping () -> Void
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let self, let view else {
+                return
+            }
+
+            presentable.presentPreflightNotReceived(view, onRetry: onRetry, locale: locale)
+        }, preservesCondition: {
+            loaded
+        })
+    }
+
     func sellPlanAllows(
         _ input: SubtensorSellPlanInput?,
         assetDisplayInfo: AssetBalanceDisplayInfo?,

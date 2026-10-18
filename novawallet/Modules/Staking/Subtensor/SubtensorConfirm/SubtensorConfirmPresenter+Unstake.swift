@@ -80,9 +80,9 @@ extension SubtensorConfirmPresenter {
 
     func emptiesPosition(_ operation: SubtensorStakingOperation, group: SubtensorPortfolioGroup?) -> Bool {
         switch operation {
-        case let .rootUnstakeGroup(exits, partial), let .subnetSellGroup(exits, partial, _, _, _):
+        case let .rootUnstakeGroup(exits, partials), let .subnetSellGroup(exits, partials, _, _, _):
             let groupHotkeys = Set(group?.positions.map(\.hotkey) ?? [])
-            return partial == nil && groupHotkeys.isSubset(of: Set(exits))
+            return partials.isEmpty && groupHotkeys.isSubset(of: Set(exits))
         case .rootStake, .rootUnstake, .rootClaim, .subnetBuy, .subnetSell:
             return false
         }
@@ -99,20 +99,17 @@ extension SubtensorConfirmPresenter {
         }
 
         let liveAmount = rebuilt?.amount
-
-        let positionAlpha: Balance? = if let partial = plan.partial {
-            group?.positions.first { $0.hotkey == partial.hotkey }?.stakeAlpha
-        } else {
-            liveAmount
-        }
+        let positions = Dictionary((group?.positions ?? []).map { ($0.hotkey, $0.stakeAlpha) }) { first, _ in first }
 
         var dependencies = SubtensorUnstakeValidatingDep(
             netuid: unstakeModel.netuid,
             accountId: model.account.chainAccount.accountId,
             hotkey: model.validator.hotkey,
             amount: liveAmount,
-            positionAlpha: positionAlpha,
+            positionAlpha: liveAmount,
+            positions: positions,
             plan: plan,
+            groupHotkeys: unstakeModel.groupHotkeys,
             availability: group?.availability,
             balance: balance,
             fee: fee,
