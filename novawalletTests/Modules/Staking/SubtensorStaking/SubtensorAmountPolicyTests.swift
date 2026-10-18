@@ -37,12 +37,12 @@ final class SubtensorAmountPolicyTests: XCTestCase {
         let input = SubtensorSellPlanInput(
             requestedAlpha: requestedAlpha,
             positionAlpha: positionAlpha,
-            availability: SubtensorStakingPallet.StakeAvailability(available: positionAlpha - lockedAlpha),
-            minimumTaoOut: requestedAlpha * sellLimitPrice / SubtensorStakingPallet.alphaPriceScale,
+            availability: SubtensorPallet.StakeAvailability(available: positionAlpha - lockedAlpha),
+            minimumTaoOut: requestedAlpha * sellLimitPrice / SubtensorPallet.alphaPriceScale,
             sellLimitPrice: sellLimitPrice,
             isOwnHotkey: false,
             minStake: minStake,
-            nominatorMinStake: SubtensorStakingPreflight.effectiveNominatorMinStake(
+            nominatorMinStake: SubtensorPreflight.effectiveNominatorMinStake(
                 minStake: minStake,
                 perMillionFactor: 10_000_000
             )

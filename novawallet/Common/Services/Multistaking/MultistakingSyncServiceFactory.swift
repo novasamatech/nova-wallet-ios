@@ -8,13 +8,13 @@ final class MultistakingSyncServiceFactory: MultistakingSyncServiceFactoryProtoc
     let configProvider: GlobalConfigProviding
     let storageFacade: StorageFacadeProtocol
     let chainRegistry: ChainRegistryProtocol
-    let subtensorProcessServices: SubtensorStakingProcessServices
+    let subtensorProcessServices: SubtensorProcessServices
 
     init(
         configProvider: GlobalConfigProviding,
         storageFacade: StorageFacadeProtocol,
         chainRegistry: ChainRegistryProtocol,
-        subtensorProcessServices: SubtensorStakingProcessServices
+        subtensorProcessServices: SubtensorProcessServices
     ) {
         self.configProvider = configProvider
         self.storageFacade = storageFacade

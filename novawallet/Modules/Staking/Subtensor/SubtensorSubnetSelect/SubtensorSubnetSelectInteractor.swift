@@ -18,7 +18,7 @@ final class SubtensorSubnetSelectInteractor: SubtensorLoadDelivering {
     private let weeklyStore = CancellableCallStore()
     private let apyStore = CancellableCallStore()
 
-    init(state: SubtensorStakingSharedStateProtocol, operationQueue: OperationQueue, logger: LoggerProtocol) {
+    init(state: SubtensorSharedStateProtocol, operationQueue: OperationQueue, logger: LoggerProtocol) {
         catalogueOperationFactory = state.earnServices.catalogueOperationFactory
         subnetsOperationFactory = state.subnetsOperationFactory
         subnetLogosProvider = state.earnServices.subnetLogosProvider

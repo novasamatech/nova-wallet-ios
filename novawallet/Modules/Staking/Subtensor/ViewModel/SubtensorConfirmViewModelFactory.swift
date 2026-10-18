@@ -77,7 +77,7 @@ private extension SubtensorConfirmViewModelFactory {
             ) ?? ""
 
             let fiat = input.latestQuote.flatMap { quote in
-                let taoValue = input.model.amount * quote.quote.spotPrice / SubtensorStakingPallet.alphaPriceScale
+                let taoValue = input.model.amount * quote.quote.spotPrice / SubtensorPallet.alphaPriceScale
 
                 return createBalance(taoValue, price: input.price, locale: locale).price
             }

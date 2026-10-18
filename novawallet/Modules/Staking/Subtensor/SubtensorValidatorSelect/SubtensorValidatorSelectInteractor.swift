@@ -19,7 +19,7 @@ final class SubtensorValidatorSelectInteractor: AnyCancellableCleaning, Subtenso
 
     init(
         target: SubtensorStakeTarget,
-        state: SubtensorStakingSharedStateProtocol,
+        state: SubtensorSharedStateProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {

@@ -16,7 +16,7 @@ final class SubtensorPortfolioBuilderTests: XCTestCase {
         let rootAvailability = availability(total: 7_000_000_000, locked: 0)
         let subnetAvailability = availability(total: 120_000_000_000, locked: 20_000_000_000)
 
-        let state = Multistaking.SubtensorStakingState(
+        let state = Multistaking.SubtensorState(
             positions: [rootMember, subnetMember, rootPrimary, subnetPrimary],
             availability: [0: rootAvailability, 64: subnetAvailability]
         )
@@ -52,7 +52,7 @@ final class SubtensorPortfolioBuilderTests: XCTestCase {
     }
 
     func testUnpricedSubnetsExcludedFromTotalAndOrderedLast() {
-        let state = Multistaking.SubtensorStakingState(
+        let state = Multistaking.SubtensorState(
             positions: [
                 position(hotkey: firstHotkey, netuid: 12, stake: 80_000_000_000),
                 position(hotkey: firstHotkey, netuid: 64, stake: 120_000_000_000),
@@ -73,8 +73,8 @@ final class SubtensorPortfolioBuilderTests: XCTestCase {
         XCTAssertEqual(portfolio.unpricedNetuids, [7, 12])
     }
 
-    private func position(hotkey: AccountId, netuid: UInt16, stake: Balance) -> SubtensorStakingPosition {
-        SubtensorStakingPosition(
+    private func position(hotkey: AccountId, netuid: UInt16, stake: Balance) -> SubtensorPosition {
+        SubtensorPosition(
             hotkey: hotkey,
             netuid: netuid,
             stakeAlpha: stake,
@@ -82,8 +82,8 @@ final class SubtensorPortfolioBuilderTests: XCTestCase {
         )
     }
 
-    private func availability(total: Balance, locked: Balance) -> SubtensorStakingPallet.StakeAvailability {
-        SubtensorStakingPallet.StakeAvailability(available: total - locked)
+    private func availability(total: Balance, locked: Balance) -> SubtensorPallet.StakeAvailability {
+        SubtensorPallet.StakeAvailability(available: total - locked)
     }
 
     private func prices(_ taoPerAlpha: [UInt16: Balance]) -> SubtensorAlphaPrices {

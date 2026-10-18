@@ -75,7 +75,7 @@ private extension SubtensorCostBasisLedger {
         let labelWords = words(in: operation.sourceOperationType)
 
         guard
-            operation.netuid != SubtensorStakingPallet.rootNetuid,
+            operation.netuid != SubtensorPallet.rootNetuid,
             labelWords.isDisjoint(with: nonTradeLabelWords) else {
             return .ignored
         }

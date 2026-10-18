@@ -28,8 +28,8 @@ protocol StakingSharedStateFactoryProtocol {
 
     func createSubtensorStaking(
         for stakingOption: Multistaking.ChainAssetOption,
-        flowState: SubtensorStakingFlowStateProtocol
-    ) throws -> SubtensorStakingSharedStateProtocol
+        flowState: SubtensorFlowStateProtocol
+    ) throws -> SubtensorSharedStateProtocol
 }
 
 enum StakingSharedStateFactoryError: Error {

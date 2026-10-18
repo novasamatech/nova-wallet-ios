@@ -89,7 +89,7 @@ struct SubtensorPendingRootClaimMarker {
         pendingClaims.markSigned(coldkey: coldkey, hotkey: hotkey, at: Date())
     }
 
-    func finish(failedAt stage: SubtensorStakingSubmissionFailure.Stage? = nil) {
+    func finish(failedAt stage: SubtensorSubmissionFailure.Stage? = nil) {
         if case .unconfirmed = stage {
             return
         }
@@ -100,7 +100,7 @@ struct SubtensorPendingRootClaimMarker {
 
 extension SubtensorPendingRootClaimsProtocol {
     func marker(
-        for operation: SubtensorStakingOperation,
+        for operation: SubtensorOperation,
         coldkey: AccountId
     ) -> SubtensorPendingRootClaimMarker? {
         operation.claimHotkey.map { hotkey in

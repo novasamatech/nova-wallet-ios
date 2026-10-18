@@ -4,7 +4,7 @@ import Operation_iOS
 
 enum SubtensorConfirmViewFactory {
     static func createView(
-        for state: SubtensorStakingSharedStateProtocol,
+        for state: SubtensorSharedStateProtocol,
         model: SubtensorConfirmModel
     ) -> SubtensorConfirmViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
@@ -15,7 +15,7 @@ enum SubtensorConfirmViewFactory {
             return nil
         }
 
-        let interactor = SubtensorStakingBaseInteractor(flowServices: services, state: state, logger: Logger.shared)
+        let interactor = SubtensorBaseInteractor(flowServices: services, state: state, logger: Logger.shared)
 
         let wireframe = SubtensorConfirmWireframe(state: state)
 
@@ -23,7 +23,7 @@ enum SubtensorConfirmViewFactory {
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: services.currencyManager)
 
-        let dataValidationFactory = SubtensorStakingValidationFactory(
+        let dataValidationFactory = SubtensorValidationFactory(
             presentable: wireframe,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
             priceAssetInfoFactory: priceAssetInfoFactory

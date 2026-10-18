@@ -6,7 +6,7 @@ struct SubtensorValidatorCoverage: Equatable {
 
     static func make(
         hotkey: AccountId,
-        delegates: [SubtensorStakingPallet.DelegateInfo],
+        delegates: [SubtensorPallet.DelegateInfo],
         catalogueNetuids: Set<UInt16>
     ) -> Self? {
         let matches = delegates.filter { $0.delegateSs58 == hotkey }

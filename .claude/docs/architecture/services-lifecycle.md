@@ -112,7 +112,7 @@ never reach for `.shared` inside a Presenter/Interactor method body.
 | `AppearanceFacade.shared`                     | Icon/appearance preferences                  |
 | `PushNotificationsServiceFacade.shared`       | Push registration and sync                   |
 | `NovaAuthFacade.shared`                       | One installation/current bearer shared by analytics and Bittensor |
-| `SubtensorStakingProcessServices.shared`      | Bittensor backend API + response cache, subnet config, markets, cost basis, catalogue, one TAO stake-state source per account |
+| `SubtensorProcessServices.shared`             | Bittensor backend API + response cache, subnet config, markets, cost basis, catalogue, one TAO stake-state source per account |
 | `ApplicationConfig.shared`                    | Static URLs, emails, deep-link scheme        |
 | `URLHandlingServiceFacade.shared`             | Deep link / universal link dispatch          |
 | `AnalyticsFacadeFactory.createDefault()`      | Consent-gated analytics; owned by Root       |

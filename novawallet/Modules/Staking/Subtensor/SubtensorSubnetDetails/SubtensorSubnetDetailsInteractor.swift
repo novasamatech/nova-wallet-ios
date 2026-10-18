@@ -8,8 +8,8 @@ final class SubtensorSubnetDetailsInteractor: AnyProviderAutoCleaning, Subtensor
     let subnet: SubtensorSubnetRef
     let chainAsset: ChainAsset
     let priceHistoryOperationFactory: SubtensorPriceHistoryOperationFactoryProtocol?
-    let parametersFactory: SubtensorSubnetParametersFactoryProtocol
-    let presetFactory: SubtensorValidatorPresetFactoryProtocol
+    let parametersOperationFactory: SubtensorSubnetParametersOperationFactoryProtocol
+    let presetOperationFactory: SubtensorValidatorPresetOperationFactoryProtocol
     let yieldOperationFactory: SubtensorYieldOperationFactoryProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let earnSettings: SubtensorEarnSettingsProtocol
@@ -28,8 +28,8 @@ final class SubtensorSubnetDetailsInteractor: AnyProviderAutoCleaning, Subtensor
 
     init(
         subnet: SubtensorSubnetRef,
-        state: SubtensorStakingSharedStateProtocol,
-        parametersFactory: SubtensorSubnetParametersFactoryProtocol,
+        state: SubtensorSharedStateProtocol,
+        parametersOperationFactory: SubtensorSubnetParametersOperationFactoryProtocol,
         applicationHandler: ApplicationHandlerProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
@@ -39,8 +39,8 @@ final class SubtensorSubnetDetailsInteractor: AnyProviderAutoCleaning, Subtensor
         self.subnet = subnet
         chainAsset = state.stakingOption.chainAsset
         priceHistoryOperationFactory = state.earnServices.priceHistoryOperationFactory
-        self.parametersFactory = parametersFactory
-        presetFactory = state.earnServices.validatorPresetFactory
+        self.parametersOperationFactory = parametersOperationFactory
+        presetOperationFactory = state.earnServices.validatorPresetOperationFactory
         yieldOperationFactory = state.earnServices.yieldOperationFactory
         subnetLogosProvider = state.earnServices.subnetLogosProvider
         earnSettings = state.earnServices.earnSettings
@@ -127,7 +127,7 @@ extension SubtensorSubnetDetailsInteractor: SubtensorSubnetDetailsInteractorInpu
         parametersCallStore.cancel()
 
         load(
-            parametersFactory.createWrapper(for: subnet),
+            parametersOperationFactory.createWrapper(for: subnet),
             in: parametersCallStore,
             label: "parameters"
         ) { [weak self] in
@@ -162,7 +162,7 @@ extension SubtensorSubnetDetailsInteractor: SubtensorSubnetDetailsInteractorInpu
         presetCallStore.cancel()
 
         load(
-            presetFactory.createListedPresetWrapper(for: subnet, existingHotkey: existingHotkey),
+            presetOperationFactory.createListedPresetWrapper(for: subnet, existingHotkey: existingHotkey),
             in: presetCallStore,
             label: "subnet validator preset"
         ) { [weak self] in

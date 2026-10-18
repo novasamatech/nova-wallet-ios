@@ -87,7 +87,7 @@ extension AssetBalanceDisplayInfo {
     }
 
     func subtensorAlpha(netuid: UInt16, catalogue: SubtensorSubnetCatalogue?) -> AssetBalanceDisplayInfo {
-        guard netuid != SubtensorStakingPallet.rootNetuid else {
+        guard netuid != SubtensorPallet.rootNetuid else {
             return self
         }
 

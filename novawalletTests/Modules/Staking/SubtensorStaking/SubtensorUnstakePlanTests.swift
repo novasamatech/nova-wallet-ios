@@ -72,7 +72,7 @@ final class SubtensorUnstakePlanTests: XCTestCase {
         let feeRate: UInt16 = 33
         let floor = SubtensorGroupUnstakeBasis.floorAlpha(minTao: 2_000_000, price: limitPrice, feeRate: feeRate)
 
-        let minimumOut = try SubtensorTradeQuoteFactory.sellSwapMinimumOut(
+        let minimumOut = try SubtensorTradeQuoteOperationFactory.sellSwapMinimumOut(
             alpha: floor,
             feeRate: feeRate,
             limitPrice: limitPrice
@@ -109,7 +109,7 @@ final class SubtensorUnstakePlanTests: XCTestCase {
         SubtensorUnstakeSlice(hotkey: position.hotkey, alpha: position.alpha)
     }
 
-    private func position(_ position: SubtensorUnstakePosition) -> SubtensorStakingPosition {
-        SubtensorStakingPosition(hotkey: position.hotkey, netuid: 0, stakeAlpha: position.alpha, isRegistered: true)
+    private func position(_ position: SubtensorUnstakePosition) -> SubtensorPosition {
+        SubtensorPosition(hotkey: position.hotkey, netuid: 0, stakeAlpha: position.alpha, isRegistered: true)
     }
 }

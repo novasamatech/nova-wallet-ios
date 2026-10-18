@@ -2,9 +2,9 @@ import Foundation
 import UIKit
 
 final class SubtensorPositionWireframe: SubtensorPositionWireframeProtocol {
-    let state: SubtensorStakingSharedStateProtocol
+    let state: SubtensorSharedStateProtocol
 
-    init(state: SubtensorStakingSharedStateProtocol) {
+    init(state: SubtensorSharedStateProtocol) {
         self.state = state
     }
 
@@ -16,16 +16,16 @@ final class SubtensorPositionWireframe: SubtensorPositionWireframeProtocol {
         presentFlow(claimView, from: view)
     }
 
-    func showAddStake(from view: SubtensorPositionViewProtocol?, position: SubtensorStakingPosition) {
-        guard let setupView = SubtensorStakingSetupViewFactory.createAddStakeView(for: state, position: position) else {
+    func showAddStake(from view: SubtensorPositionViewProtocol?, position: SubtensorPosition) {
+        guard let setupView = SubtensorSetupViewFactory.createAddStakeView(for: state, position: position) else {
             return
         }
 
         presentFlow(setupView, from: view)
     }
 
-    func showBuyMore(from view: SubtensorPositionViewProtocol?, position: SubtensorStakingPosition) {
-        guard let setupView = SubtensorStakingSetupViewFactory.createBuyMoreView(for: state, position: position) else {
+    func showBuyMore(from view: SubtensorPositionViewProtocol?, position: SubtensorPosition) {
+        guard let setupView = SubtensorSetupViewFactory.createBuyMoreView(for: state, position: position) else {
             return
         }
 

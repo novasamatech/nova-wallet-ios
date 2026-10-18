@@ -41,7 +41,7 @@ extension SubtensorSubnetDetailsViewModelFactory {
 
     func createMoreDetails(for state: SubtensorSubnetDetailsState, locale: Locale) -> [SubtensorParameterRowViewModel] {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-        let alphaTao = subnet.alphaReserve * subnet.taoPerAlpha / SubtensorStakingPallet.alphaPriceScale
+        let alphaTao = subnet.alphaReserve * subnet.taoPerAlpha / SubtensorPallet.alphaPriceScale
         return [
             SubtensorParameterRowViewModel(
                 title: strings.stakingSubtensorV22Uid(),

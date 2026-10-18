@@ -2,7 +2,7 @@ import Foundation
 import BigInt
 import SubstrateSdk
 
-struct SubtensorStakingPosition: Equatable {
+struct SubtensorPosition: Equatable {
     let hotkey: AccountId
     let netuid: UInt16
     let stakeAlpha: BigUInt
@@ -10,15 +10,15 @@ struct SubtensorStakingPosition: Equatable {
 }
 
 extension Multistaking {
-    struct SubtensorStakingState: Equatable {
-        let positions: [SubtensorStakingPosition]
-        let availability: [UInt16: SubtensorStakingPallet.StakeAvailability]
+    struct SubtensorState: Equatable {
+        let positions: [SubtensorPosition]
+        let availability: [UInt16: SubtensorPallet.StakeAvailability]
         let rootClaimPreviews: [SubtensorRootClaimPreview]
         let isRootRedeemableStale: Bool
 
         init(
-            positions: [SubtensorStakingPosition],
-            availability: [UInt16: SubtensorStakingPallet.StakeAvailability] = [:],
+            positions: [SubtensorPosition],
+            availability: [UInt16: SubtensorPallet.StakeAvailability] = [:],
             rootClaimPreviews: [SubtensorRootClaimPreview] = [],
             isRootRedeemableStale: Bool = false
         ) {
@@ -43,7 +43,7 @@ extension Multistaking {
         }
 
         var rootStakeInRao: BigUInt? {
-            let rootPositions = positions.filter { $0.netuid == SubtensorStakingPallet.rootNetuid }
+            let rootPositions = positions.filter { $0.netuid == SubtensorPallet.rootNetuid }
 
             guard !rootPositions.isEmpty || totalRootRedeemable > 0 else {
                 return nil
@@ -55,19 +55,19 @@ extension Multistaking {
         }
 
         var heldSubnetNetuids: Set<UInt16> {
-            Set(positions.map(\.netuid).filter { $0 != SubtensorStakingPallet.rootNetuid })
+            Set(positions.map(\.netuid).filter { $0 != SubtensorPallet.rootNetuid })
         }
 
         var subnetCount: Int {
             heldSubnetNetuids.count
         }
 
-        func byKeepingRootRedeemable(of previousState: SubtensorStakingState?) -> SubtensorStakingState {
+        func byKeepingRootRedeemable(of previousState: SubtensorState?) -> SubtensorState {
             guard isRootRedeemableStale, let previousState else {
                 return self
             }
 
-            return SubtensorStakingState(
+            return SubtensorState(
                 positions: positions,
                 availability: availability,
                 rootClaimPreviews: previousState.rootClaimPreviews,
@@ -91,7 +91,7 @@ extension Multistaking {
         }
 
         let stakingOption: OptionWithWallet
-        let state: SubtensorStakingState
+        let state: SubtensorState
         let stake: BigUInt
         let maxApy: MaxApyUpdate
         let rootRate: Decimal?
@@ -141,7 +141,7 @@ extension Multistaking.DashboardItemSubtensorDetails: Codable {
 }
 
 extension Multistaking.DashboardItemOnchainState {
-    static func from(subtensorState: Multistaking.SubtensorStakingState) -> Multistaking.DashboardItemOnchainState? {
+    static func from(subtensorState: Multistaking.SubtensorState) -> Multistaking.DashboardItemOnchainState? {
         subtensorState.hasActiveStaking ? .activeIndependent : nil
     }
 }

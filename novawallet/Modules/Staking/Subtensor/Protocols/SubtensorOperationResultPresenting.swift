@@ -5,7 +5,7 @@ protocol SubtensorOperationResultDelegate: AnyObject {
 }
 
 protocol SubtensorOperationResultPresenting {
-    var state: SubtensorStakingSharedStateProtocol { get }
+    var state: SubtensorSharedStateProtocol { get }
 
     func showOperationResult(
         from view: ControllerBackedProtocol?,

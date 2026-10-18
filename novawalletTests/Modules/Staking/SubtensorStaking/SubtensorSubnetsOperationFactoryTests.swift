@@ -13,9 +13,9 @@ final class SubtensorSubnetsOperationFactoryTests: XCTestCase {
         ]
 
         let prices = [
-            SubtensorStakingPallet.SubnetPrice(netuid: 0, price: 1_000_000_000),
-            SubtensorStakingPallet.SubnetPrice(netuid: 1, price: 7_683_255),
-            SubtensorStakingPallet.SubnetPrice(netuid: 5, price: 12_672_077)
+            SubtensorPallet.SubnetPrice(netuid: 0, price: 1_000_000_000),
+            SubtensorPallet.SubnetPrice(netuid: 1, price: 7_683_255),
+            SubtensorPallet.SubnetPrice(netuid: 5, price: 12_672_077)
         ]
 
         let operationFactory = createOperationFactory(
@@ -60,13 +60,13 @@ final class SubtensorSubnetsOperationFactoryTests: XCTestCase {
         XCTAssertEqual(info, SubtensorSubnetsInfo(subnets: [], prices: [:], subtokenEnabled: []))
     }
 
-    private func generateDynamicInfo(netuid: UInt16) -> SubtensorStakingPallet.DynamicInfo {
-        SubtensorStakingPallet.DynamicInfo(netuid: netuid, taoInEmission: 0, networkRegisteredAt: 0)
+    private func generateDynamicInfo(netuid: UInt16) -> SubtensorPallet.DynamicInfo {
+        SubtensorPallet.DynamicInfo(netuid: netuid, taoInEmission: 0, networkRegisteredAt: 0)
     }
 
     private func createApiFactory(
-        subnets: [SubtensorStakingPallet.DynamicInfo?],
-        prices: [SubtensorStakingPallet.SubnetPrice],
+        subnets: [SubtensorPallet.DynamicInfo?],
+        prices: [SubtensorPallet.SubnetPrice],
         subtokenEnabled: Set<UInt16>
     ) -> MockSubtensorApiOperationFactoryProtocol {
         let apiFactory = MockSubtensorApiOperationFactoryProtocol()

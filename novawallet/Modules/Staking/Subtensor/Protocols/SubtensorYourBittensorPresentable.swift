@@ -7,7 +7,7 @@ protocol SubtensorYourBittensorPresentable {
 extension SubtensorYourBittensorPresentable {
     func presentYourBittensor(
         stakingOption: Multistaking.ChainAssetOption,
-        flowState: SubtensorStakingFlowStateProtocol
+        flowState: SubtensorFlowStateProtocol
     ) {
         let tabBarController = UIApplication.shared.tabBarController
         let hostNavigation = tabBarController?.selectedViewController as? UINavigationController
