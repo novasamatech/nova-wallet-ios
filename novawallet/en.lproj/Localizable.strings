@@ -2277,7 +2277,7 @@ Do you want to continue?";
 "staking.subtensor.ui.how.rise.or.fall.accent" = "rise or fall";
 "staking.subtensor.ui.how.rewards" = "Rewards accrue %@. Subnet rewards compound, root rewards you claim.";
 "staking.subtensor.ui.how.every.day.accent" = "every day";
-"staking.subtensor.ui.how.unstake" = "Unstake %@, no unbonding period. Root has a short hold right after you stake or claim.";
+"staking.subtensor.ui.how.unstake" = "Unstake %@, no unbonding period.";
 "staking.subtensor.ui.how.any.time.accent" = "any time";
 "staking.subtensor.ui.avg.buy.price.from.format" = "from %1$@ per %2$@";
 "staking.subtensor.ui.you.earned" = "You earned";
