@@ -4,7 +4,7 @@ import BigInt
 struct SubtensorCostBasisLedger {
     static let atomicScale = 9
     static let priceTolerance = BigRational(numerator: 3, denominator: 2)
-    static let nonTradeLabelWords: Set<String> = ["move", "transfer"]
+    static let nonTradeLabelWords: Set<String> = ["move", "moved", "transfer", "transferred"]
     static let purchaseLabelWords: Set<String> = ["add", "added", "buy", "bought"]
     static let saleLabelWords: Set<String> = ["remove", "removed", "unstake", "sell", "sold"]
 
