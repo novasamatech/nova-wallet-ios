@@ -105,10 +105,6 @@ extension SubtensorConfirmPresenter: SubtensorStakingBaseInteractorOutputProtoco
     }
 
     func didReceiveCatalogue(_ catalogue: SubtensorSubnetCatalogue?) {
-        guard catalogue != nil || self.catalogue?.subnet(for: model.target.netuid) == nil else {
-            return
-        }
-
         self.catalogue = catalogue
 
         provideTileIcons()
