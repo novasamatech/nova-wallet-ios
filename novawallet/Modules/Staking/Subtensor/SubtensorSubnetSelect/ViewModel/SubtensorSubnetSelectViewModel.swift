@@ -62,12 +62,6 @@ protocol SubtensorSubnetViewModelFactoryProtocol {
     func createListViewModel(for state: SubtensorSubnetListState, locale: Locale) -> SubtensorSubnetListViewModel
 
     func createSortSheetViewModel(selected: SubtensorSubnetSort, locale: Locale) -> SubtensorSortSheetViewModel
-
-    func createFiltersViewModel(
-        filters: SubtensorSubnetFilters,
-        count: Int?,
-        locale: Locale
-    ) -> SubtensorSubnetFiltersViewModel
 }
 
 final class SubtensorSubnetViewModelFactory {
@@ -76,7 +70,6 @@ final class SubtensorSubnetViewModelFactory {
     let rootIcon: ImageViewModelProtocol
 
     private let tokenFormatter: LocalizableResource<TokenFormatter>
-    private let compactTokenFormatter: LocalizableResource<TokenFormatter>
     private let changeFormatter: LocalizableResource<NumberFormatter>
 
     init(chainAsset: ChainAsset) {
@@ -85,7 +78,6 @@ final class SubtensorSubnetViewModelFactory {
         rootIcon = AssetIconViewModelFactory().createAssetIconViewModel(from: chainAsset.assetDisplayInfo)
 
         tokenFormatter = balanceFormatterFactory.createTokenFormatter(for: chainAsset.assetDisplayInfo)
-        compactTokenFormatter = balanceFormatterFactory.createCompactTokenFormatter(for: chainAsset.assetDisplayInfo)
         changeFormatter = NumberFormatter.subtensorSignedPercentSingle
     }
 }
@@ -268,30 +260,6 @@ extension SubtensorSubnetViewModelFactory: SubtensorSubnetViewModelFactoryProtoc
             title: R.string(preferredLanguages: locale.rLanguages).localizable.delegationsSortTitle(),
             options: SubtensorSubnetSort.allCases.map { sortOption(for: $0, locale: locale) },
             selectedIndex: SubtensorSubnetSort.allCases.firstIndex(of: selected)
-        )
-    }
-
-    func createFiltersViewModel(
-        filters: SubtensorSubnetFilters,
-        count: Int?,
-        locale: Locale
-    ) -> SubtensorSubnetFiltersViewModel {
-        let strings = R.string(preferredLanguages: locale.rLanguages).localizable
-
-        let threshold = formatTokenAmount(
-            SubtensorSubnetListBuilder.thinPoolThreshold,
-            formatter: compactTokenFormatter,
-            locale: locale
-        )
-
-        return SubtensorSubnetFiltersViewModel(
-            title: strings.walletFiltersTitle(),
-            thinPoolsTitle: strings.stakingSubtensorUiPickerHideThin(),
-            thinPoolsDetails: strings.stakingSubtensorUiPickerHideThinFormat(threshold),
-            filters: filters,
-            actionTitle: count.map { strings.stakingSubtensorUiPickerShowCount(format: $0) } ??
-                strings.stakingSubtensorUiPickerShow(),
-            isLoading: count == nil
         )
     }
 }

@@ -18,10 +18,6 @@ protocol SubtensorSubnetSelectViewProtocol: ControllerBackedProtocol {
     func didReceive(list: SubtensorSubnetListViewModel)
 }
 
-protocol SubtensorSubnetFiltersViewProtocol: ControllerBackedProtocol {
-    func didReceive(viewModel: SubtensorSubnetFiltersViewModel)
-}
-
 protocol SubtensorSubnetSelectPresenterProtocol: AnyObject {
     func setup()
     func becomeActive()
@@ -62,8 +58,7 @@ protocol SubtensorSubnetSelectWireframeProtocol: AlertPresentable, ErrorPresenta
 
     func showFilters(
         from view: SubtensorSubnetSelectViewProtocol?,
-        viewModel: SubtensorSubnetFiltersViewModel,
-        onChange: @escaping (SubtensorSubnetFilters) -> Void,
-        onApply: @escaping (SubtensorSubnetFilters) -> Void
-    ) -> SubtensorSubnetFiltersViewProtocol?
+        filters: SubtensorSubnetFilters,
+        delegate: SubtensorSubnetFiltersDelegate
+    )
 }
