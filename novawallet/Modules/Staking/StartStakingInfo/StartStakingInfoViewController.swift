@@ -67,6 +67,7 @@ final class StartStakingInfoViewController: UIViewController, ViewHolder {
 
         rootView.updateContent(
             title: viewModel.title,
+            caption: viewModel.caption,
             paragraphs: viewModel.paragraphs,
             wikiUrl: viewModel.wikiUrl,
             termsUrl: viewModel.termsUrl
@@ -113,6 +114,7 @@ extension StartStakingInfoViewController: StartStakingInfoViewProtocol {
             rootView.secondaryButton?.isEnabled = true
             rootView.updateContent(
                 title: value.title,
+                caption: value.caption,
                 paragraphs: value.paragraphs,
                 wikiUrl: value.wikiUrl,
                 termsUrl: value.termsUrl

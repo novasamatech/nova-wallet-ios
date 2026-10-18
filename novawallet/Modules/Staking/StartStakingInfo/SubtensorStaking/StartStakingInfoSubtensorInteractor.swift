@@ -15,7 +15,6 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
     let state: SubtensorSharedStateProtocol
     let maxApyOperationFactory: SubtensorMaxApyOperationFactoryProtocol
     let eventCenter: EventCenterProtocol
-    let logger: LoggerProtocol
 
     private let maxApyCallStore = CancellableCallStore()
     private var boundWalletId: MetaAccountModel.Id?
@@ -32,13 +31,11 @@ final class StartStakingInfoSubtensorInteractor: StartStakingInfoBaseInteractor 
         announcementsRepository: AnnouncementsRepositoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         sharedOperation: SharedOperationProtocol,
-        operationQueue: OperationQueue,
-        logger: LoggerProtocol
+        operationQueue: OperationQueue
     ) {
         self.state = state
         self.maxApyOperationFactory = maxApyOperationFactory
         self.eventCenter = eventCenter
-        self.logger = logger
 
         super.init(
             selectedWalletSettings: selectedWalletSettings,
@@ -98,7 +95,6 @@ private extension StartStakingInfoSubtensorInteractor {
                     self?.presenter?.didReceive(error: .maxApy(nil))
                 }
             case let .failure(error):
-                self?.logger.warning("Max APY fetch error: \(error)")
                 self?.presenter?.didReceive(error: .maxApy(error))
             }
         }

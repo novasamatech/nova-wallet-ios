@@ -2,10 +2,15 @@ import Foundation
 import UIKit
 
 protocol StartStakingInfoSubtensorViewModelFactoryProtocol {
+    func createCaption(locale: Locale) -> String
     func createParagraphs(locale: Locale) -> [ParagraphView.Model]
 }
 
 struct StartStakingInfoSubtensorViewModelFactory: StartStakingInfoSubtensorViewModelFactoryProtocol {
+    func createCaption(locale: Locale) -> String {
+        R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiHowCaption()
+    }
+
     func createParagraphs(locale: Locale) -> [ParagraphView.Model] {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
