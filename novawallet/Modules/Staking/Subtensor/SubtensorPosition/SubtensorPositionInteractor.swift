@@ -21,6 +21,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
 
     var priceProvider: StreamableProvider<PriceData>?
     private var failedHoldsHotkeys: [AccountId]?
+    private var isBlockFeedDown = false
     private let pricesStore = CancellableCallStore()
     private let logosStore = CancellableCallStore()
     private let validatorStore = CancellableCallStore()
@@ -119,11 +120,18 @@ private extension SubtensorPositionInteractor {
                     }
                 case let .failure(error):
                     self?.logger.warning("Subtensor position block number unavailable: \(error)")
+                    self?.dropBlockFeed()
                 }
             }
         } catch {
             logger.warning("Subtensor position block number unavailable: \(error)")
+            dropBlockFeed()
         }
+    }
+
+    func dropBlockFeed() {
+        blockNumberSubscription?.unsubscribe()
+        isBlockFeedDown = true
     }
 
     func loadSubnetLogos() {
@@ -289,6 +297,9 @@ extension SubtensorPositionInteractor: ApplicationHandlerDelegate {
 
         if !isRoot {
             loadPrices()
+        } else if isBlockFeedDown {
+            isBlockFeedDown = false
+            subscribeBlockNumber()
         }
 
         presenter?.didBecomeActive()
