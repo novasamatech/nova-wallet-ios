@@ -1,7 +1,7 @@
 import BigInt
 import Foundation
 
-final class SubtensorSetupViewModelFactory {
+final class SubtensorStakeSetupViewModelFactory {
     let chainAsset: ChainAsset
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let quoteViewModelFactory: SubtensorQuoteViewModelFactoryProtocol
@@ -24,9 +24,9 @@ final class SubtensorSetupViewModelFactory {
     }
 
     func createViewModel(
-        for input: SubtensorSetupViewModelInput,
+        for input: SubtensorStakeSetupViewModelInput,
         locale: Locale
-    ) -> SubtensorSetupViewModel {
+    ) -> SubtensorStakeSetupViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         let details: SubtensorSetupDetailsViewModel
@@ -46,7 +46,7 @@ final class SubtensorSetupViewModelFactory {
             amountTitle = strings.stakingSubtensorUiYouStake()
         }
 
-        return SubtensorSetupViewModel(
+        return SubtensorStakeSetupViewModel(
             title: createTitle(for: input, locale: locale),
             amountTitle: amountTitle,
             maxAmount: input.maxAmount.map { formatAmount($0, locale: locale) },
@@ -62,7 +62,7 @@ final class SubtensorSetupViewModelFactory {
     }
 }
 
-extension SubtensorSetupViewModelFactory {
+extension SubtensorStakeSetupViewModelFactory {
     func formatAmount(_ amount: Balance, locale: Locale) -> String {
         let decimal = amount.decimal(assetInfo: chainAsset.assetDisplayInfo)
 
@@ -70,7 +70,7 @@ extension SubtensorSetupViewModelFactory {
     }
 
     func createNetworkFee(
-        for input: SubtensorSetupViewModelInput,
+        for input: SubtensorStakeSetupViewModelInput,
         locale: Locale
     ) -> BalanceViewModelProtocol? {
         balanceViewModelFactory.subtensorFee(
@@ -79,8 +79,8 @@ extension SubtensorSetupViewModelFactory {
     }
 }
 
-extension SubtensorSetupViewModelFactory {
-    func createTitle(for input: SubtensorSetupViewModelInput, locale: Locale) -> String {
+extension SubtensorStakeSetupViewModelFactory {
+    func createTitle(for input: SubtensorStakeSetupViewModelInput, locale: Locale) -> String {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         switch input.mode {
@@ -103,7 +103,7 @@ extension SubtensorSetupViewModelFactory {
     }
 
     func createGetTao(
-        for input: SubtensorSetupViewModelInput,
+        for input: SubtensorStakeSetupViewModelInput,
         locale: Locale
     ) -> SubtensorGetTaoViewModel? {
         guard input.amountState == .noTao else {
@@ -120,7 +120,7 @@ extension SubtensorSetupViewModelFactory {
         )
     }
 
-    func createReserveWarning(for input: SubtensorSetupViewModelInput, locale: Locale) -> String? {
+    func createReserveWarning(for input: SubtensorStakeSetupViewModelInput, locale: Locale) -> String? {
         guard input.amountState == .insufficient else {
             return nil
         }
@@ -134,7 +134,7 @@ extension SubtensorSetupViewModelFactory {
     }
 
     func createRootDetails(
-        for input: SubtensorSetupViewModelInput,
+        for input: SubtensorStakeSetupViewModelInput,
         locale: Locale
     ) -> SubtensorSetupRootViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
@@ -189,7 +189,7 @@ extension SubtensorSetupViewModelFactory {
     }
 
     func createValidator(
-        for input: SubtensorSetupViewModelInput,
+        for input: SubtensorStakeSetupViewModelInput,
         locale: Locale
     ) -> SubtensorSetupValidatorViewModel {
         let selectTitle = R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorSelectValidator()
@@ -206,7 +206,7 @@ extension SubtensorSetupViewModelFactory {
         }
     }
 
-    func createCaption(for input: SubtensorSetupViewModelInput, locale: Locale) -> String? {
+    func createCaption(for input: SubtensorStakeSetupViewModelInput, locale: Locale) -> String? {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         if input.amountState == .noTao {
@@ -220,7 +220,7 @@ extension SubtensorSetupViewModelFactory {
         return createAddStakeCaption(for: input, locale: locale)
     }
 
-    func createAddStakeCaption(for input: SubtensorSetupViewModelInput, locale: Locale) -> String? {
+    func createAddStakeCaption(for input: SubtensorStakeSetupViewModelInput, locale: Locale) -> String? {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         guard
@@ -237,7 +237,7 @@ extension SubtensorSetupViewModelFactory {
     }
 
     func createAction(
-        for input: SubtensorSetupViewModelInput,
+        for input: SubtensorStakeSetupViewModelInput,
         locale: Locale
     ) -> SubtensorSetupActionViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable

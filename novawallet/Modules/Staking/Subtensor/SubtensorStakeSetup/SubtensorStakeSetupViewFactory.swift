@@ -1,12 +1,12 @@
 import Foundation
 import Foundation_iOS
 
-enum SubtensorSetupViewFactory {
+enum SubtensorStakeSetupViewFactory {
     static func createRootDetailsView(
         for state: SubtensorSharedStateProtocol,
         browseState: SubtensorSubnetBrowseState = .init(),
         presentation: SubtensorRootEntryPresentation = .standard
-    ) -> SubtensorSetupViewProtocol? {
+    ) -> SubtensorStakeSetupViewProtocol? {
         createView(for: state, mode: .rootDetails, browseState: browseState, rootEntryPresentation: presentation)
     }
 
@@ -15,7 +15,7 @@ enum SubtensorSetupViewFactory {
         target: SubtensorStakeTarget,
         validator: SubtensorValidatorDirectoryItem?,
         browseState: SubtensorSubnetBrowseState
-    ) -> SubtensorSetupViewProtocol? {
+    ) -> SubtensorStakeSetupViewProtocol? {
         guard !target.isRoot else {
             return nil
         }
@@ -26,7 +26,7 @@ enum SubtensorSetupViewFactory {
     static func createQuickPickView(
         for state: SubtensorSharedStateProtocol,
         order: SubtensorQuickPickOrder
-    ) -> SubtensorSetupViewProtocol? {
+    ) -> SubtensorStakeSetupViewProtocol? {
         guard order != .root else { return nil }
         return createView(
             for: state,
@@ -39,7 +39,7 @@ enum SubtensorSetupViewFactory {
     static func createAddStakeView(
         for state: SubtensorSharedStateProtocol,
         position: SubtensorPosition
-    ) -> SubtensorSetupViewProtocol? {
+    ) -> SubtensorStakeSetupViewProtocol? {
         guard position.netuid == SubtensorPallet.rootNetuid else {
             return nil
         }
@@ -50,7 +50,7 @@ enum SubtensorSetupViewFactory {
     static func createBuyMoreView(
         for state: SubtensorSharedStateProtocol,
         position: SubtensorPosition
-    ) -> SubtensorSetupViewProtocol? {
+    ) -> SubtensorStakeSetupViewProtocol? {
         guard position.netuid != SubtensorPallet.rootNetuid else {
             return nil
         }
@@ -59,24 +59,24 @@ enum SubtensorSetupViewFactory {
     }
 }
 
-private extension SubtensorSetupViewFactory {
+private extension SubtensorStakeSetupViewFactory {
     static func createView(
         for state: SubtensorSharedStateProtocol,
-        mode: SubtensorSetupMode,
+        mode: SubtensorStakeSetupMode,
         browseState: SubtensorSubnetBrowseState = .init(),
         quickPickVisit: SubtensorQuickPickVisit? = nil,
         rootEntryPresentation: SubtensorRootEntryPresentation = .standard
-    ) -> SubtensorSetupViewProtocol? {
+    ) -> SubtensorStakeSetupViewProtocol? {
         guard let services = SubtensorFlowServicesFactory.createServices(for: state) else {
             return nil
         }
 
         let chainAsset = state.stakingOption.chainAsset
-        let interactor = SubtensorSetupInteractor(
+        let interactor = SubtensorStakeSetupInteractor(
             flowServices: services, state: state,
             blockTimeOperationFactory: BlockTimeOperationFactory(chain: chainAsset.chain), logger: Logger.shared
         )
-        let wireframe = SubtensorSetupWireframe(state: state)
+        let wireframe = SubtensorStakeSetupWireframe(state: state)
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: services.currencyManager)
         let localizationManager = LocalizationManager.shared
 
@@ -91,7 +91,7 @@ private extension SubtensorSetupViewFactory {
             priceAssetInfoFactory: priceAssetInfoFactory
         )
 
-        let viewModelFactory = SubtensorSetupViewModelFactory(
+        let viewModelFactory = SubtensorStakeSetupViewModelFactory(
             chainAsset: chainAsset,
             balanceViewModelFactory: balanceViewModelFactory,
             quoteViewModelFactory: SubtensorQuoteViewModelFactory(
@@ -100,7 +100,7 @@ private extension SubtensorSetupViewFactory {
             )
         )
 
-        let presenter = SubtensorSetupPresenter(
+        let presenter = SubtensorStakeSetupPresenter(
             interactor: interactor,
             wireframe: wireframe,
             mode: mode,
@@ -117,7 +117,7 @@ private extension SubtensorSetupViewFactory {
             rootEntryPresentation: rootEntryPresentation
         )
 
-        let view = SubtensorSetupViewController(presenter: presenter, localizationManager: localizationManager)
+        let view = SubtensorStakeSetupViewController(presenter: presenter, localizationManager: localizationManager)
 
         presenter.view = view
         interactor.presenter = presenter

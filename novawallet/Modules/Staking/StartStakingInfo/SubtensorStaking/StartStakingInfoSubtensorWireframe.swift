@@ -32,7 +32,7 @@ final class StartStakingInfoSubtensorWireframe: StartStakingInfoWireframe,
     }
 
     func showRootDetails(from view: ControllerBackedProtocol?) {
-        guard let setupView = SubtensorSetupViewFactory.createRootDetailsView(
+        guard let setupView = SubtensorStakeSetupViewFactory.createRootDetailsView(
             for: state, browseState: browseState
         ) else {
             return
@@ -49,7 +49,7 @@ final class StartStakingInfoSubtensorWireframe: StartStakingInfoWireframe,
         target: SubtensorStakeTarget,
         validator: SubtensorValidatorDirectoryItem?
     ) {
-        guard let setupView = SubtensorSetupViewFactory.createSubnetView(
+        guard let setupView = SubtensorStakeSetupViewFactory.createSubnetView(
             for: state,
             target: target,
             validator: validator,
