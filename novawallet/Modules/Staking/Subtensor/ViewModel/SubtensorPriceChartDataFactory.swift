@@ -111,7 +111,7 @@ private extension SubtensorPriceChartDataFactory {
         }
 
         let entries = sampled(series.points, availablePoints: availablePoints).map { entry(for: $0) }
-        let coverageStart = series.predecessor == nil ? first.date.timeIntervalSince1970 : start
+        let coverageStart = series.hasMissingPrefix ? first.date.timeIntervalSince1970 : start
 
         return SubtensorPriceChartData(
             entries: prefix + entries,
