@@ -20,6 +20,8 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
         $0.textContainerInset = .zero
     }
 
+    let captionLabel = UILabel(style: .footnoteSecondary, textAlignment: .center, numberOfLines: 0)
+
     lazy var termsView: UITextView = .create {
         $0.textAlignment = .center
         $0.font = .regularCallout
@@ -124,6 +126,7 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
 
     func updateContent(
         title: AccentTextModel,
+        caption: String?,
         paragraphs: [ParagraphView.Model],
         wikiUrl: StartStakingUrlModel,
         termsUrl: StartStakingUrlModel
@@ -138,6 +141,7 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
         stackView.spacing = Constants.containerSpacing
 
         set(title: title)
+        set(caption: caption)
         set(paragraphs: paragraphs)
         setWiki(urlModel: wikiUrl)
         setTerms(urlModel: termsUrl)
@@ -226,6 +230,16 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
         stackView.addArrangedSubview(header)
     }
 
+    private func set(caption: String?) {
+        guard let caption else {
+            return
+        }
+
+        captionLabel.apply(text: caption, lineHeight: Constants.captionLineHeight)
+        stackView.setCustomSpacing(Constants.captionSpacing, after: header)
+        stackView.addArrangedSubview(captionLabel)
+    }
+
     private func set(paragraphs: [ParagraphView.Model]) {
         paragraphs.forEach {
             let view = ParagraphView(frame: .zero)
@@ -276,6 +290,8 @@ extension StartStakingInfoViewLayout {
         )
         static let containerSpacing: CGFloat = 32
         static let wikiAndTermsSpacing: CGFloat = 16
+        static let captionSpacing: CGFloat = 8
+        static let captionLineHeight: CGFloat = 18
         static let actionViewHeight: CGFloat = UIConstants.actionHeight
         static let footerBorderWidth: CGFloat = 1
         static let linkChevronSize: CGFloat = 20.0

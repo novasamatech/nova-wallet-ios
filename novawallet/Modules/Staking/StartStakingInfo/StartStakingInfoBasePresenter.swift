@@ -148,6 +148,10 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
         ].compactMap { $0 }
     }
 
+    func createCaption() -> String? {
+        nil
+    }
+
     func provideViewModel(state: StartStakingStateProtocol) {
         self.state = state
 
@@ -172,6 +176,7 @@ class StartStakingInfoBasePresenter: StartStakingInfoInteractorOutputProtocol, S
 
         let model = StartStakingViewModel(
             title: title,
+            caption: createCaption(),
             paragraphs: paragraphs,
             wikiUrl: wikiUrl,
             termsUrl: termsUrl

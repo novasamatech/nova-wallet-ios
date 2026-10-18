@@ -9,6 +9,7 @@ extension StartStakingInfoViewLayout: SkeletonableView {
     var hidingViews: [UIView] {
         [
             header,
+            captionLabel,
             wikiView,
             termsView
         ] + paragraphViews

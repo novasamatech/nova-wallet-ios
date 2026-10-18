@@ -2270,6 +2270,7 @@ Do you want to continue?";
 "staking.subtensor.ui.position.hold.message.format" = "Root stake is locked for %@ after staking or claiming. Unstake becomes available when the hold ends.";
 "staking.subtensor.ui.position.locked.format" = "%@ locked";
 "staking.subtensor.ui.position.claim.minimum.format" = "Minimum claim is %@ per validator";
+"staking.subtensor.ui.how.caption" = "Estimates. Rates change daily and vary by subnet.";
 "staking.subtensor.ui.how.root" = "Stake to root, the base network, and get rewards %@.";
 "staking.subtensor.ui.how.paid.in.tao.accent" = "paid in TAO";
 "staking.subtensor.ui.how.subnet" = "Or stake to a subnet for a higher rate, paid in that subnet’s token. Its price can %@.";
