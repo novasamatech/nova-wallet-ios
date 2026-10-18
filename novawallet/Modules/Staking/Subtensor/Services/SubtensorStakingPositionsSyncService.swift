@@ -16,22 +16,15 @@ protocol SubtensorPositionsSyncServiceProtocol: ApplicationServiceProtocol {
 }
 
 final class SubtensorStakingPositionsSyncService: BaseSyncService {
-    let accountId: AccountId
-    let connection: JSONRPCEngine
-    let runtimeService: RuntimeCodingServiceProtocol
-    let stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol
+    let stakeStateSource: SubtensorStakeStateSource
     let workingQueue: DispatchQueue
     let operationQueue: OperationQueue
 
     private lazy var stakeStateSubscription = SubtensorStakeStateSubscription(
-        accountId: accountId,
-        stakeStateFetchFactory: stakeStateFetchFactory,
-        connection: connection,
-        runtimeService: runtimeService,
+        source: stakeStateSource,
         mutex: mutex,
         operationQueue: operationQueue,
         workingQueue: workingQueue,
-        logger: logger,
         onSyncing: { [weak self] in self?.markSyncingImmediate() },
         onState: { [weak self] in self?.publish(state: $0) },
         onFailure: { [weak self] in self?.markFailed($0) }
@@ -41,18 +34,12 @@ final class SubtensorStakingPositionsSyncService: BaseSyncService {
     private var failureObservable: Observable<Bool> = .init(state: false)
 
     init(
-        accountId: AccountId,
-        stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol,
+        stakeStateSource: SubtensorStakeStateSource,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
         logger: LoggerProtocol
     ) {
-        self.accountId = accountId
-        self.stakeStateFetchFactory = stakeStateFetchFactory
-        self.connection = connection
-        self.runtimeService = runtimeService
+        self.stakeStateSource = stakeStateSource
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
 
@@ -78,7 +65,7 @@ private extension SubtensorStakingPositionsSyncService {
 
         stateObservable.state = state
 
-        completeImmediate(state.rootRedeemableError)
+        completeImmediate(nil)
     }
 
     func markFailed(_ error: Error) {

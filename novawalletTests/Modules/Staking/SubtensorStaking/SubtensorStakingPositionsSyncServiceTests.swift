@@ -126,11 +126,20 @@ final class SubtensorStakingPositionsSyncServiceTests: XCTestCase {
             factory: try RuntimeCodingServiceStub.createBittensorCodingFactory()
         )
 
-        let service = SubtensorStakingPositionsSyncService(
+        let source = SubtensorStakeStateSource(
             accountId: coldkey,
+            chainAssetId: ChainAssetId(chainId: "subtensor", assetId: 0),
             stakeStateFetchFactory: fetchFactory,
             connection: TestJSONRPCEngine(),
             runtimeService: runtimeService,
+            eventCenter: EventCenter.shared,
+            operationQueue: OperationQueue(),
+            workingQueue: DispatchQueue(label: "test.stake.state"),
+            logger: Logger.shared
+        )
+
+        let service = SubtensorStakingPositionsSyncService(
+            stakeStateSource: source,
             operationQueue: OperationQueue(),
             workingQueue: DispatchQueue(label: "test.positions.sync"),
             logger: Logger.shared

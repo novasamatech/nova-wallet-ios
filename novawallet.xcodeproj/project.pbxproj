@@ -2247,6 +2247,8 @@
 		2D7A56022E5D000200000002 /* SubtensorMultistakingUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A56022E5D000200000001 /* SubtensorMultistakingUpdateService.swift */; };
 		2D7A56032E5D000200000002 /* SubtensorStakeStateFetchFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A56032E5D000200000001 /* SubtensorStakeStateFetchFactory.swift */; };
 		2D7A56032E5D000200000004 /* SubtensorStakeStateSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A56032E5D000200000003 /* SubtensorStakeStateSubscription.swift */; };
+		EB78623E9064176F1CD5C2EC /* SubtensorStakeStateSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FC6F9CF85A3E2AAC24BF9B /* SubtensorStakeStateSource.swift */; };
+		EE758627B59453AD18A20CBC /* SubtensorStakeStateSourceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C29DC32A45D9A6FF1772C140 /* SubtensorStakeStateSourceFactory.swift */; };
 		1A4166280E16505503C43C67 /* SubtensorCataloguePricingTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508396D4097363EC22A805B7 /* SubtensorCataloguePricingTracker.swift */; };
 		2D7A56042E5D000200000002 /* StakingDashboardSubtensorMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A56042E5D000200000001 /* StakingDashboardSubtensorMapper.swift */; };
 		2D7A56072E5D000200000002 /* SubtensorStakeStateFetchFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D7A56072E5D000200000001 /* SubtensorStakeStateFetchFactoryTests.swift */; };
@@ -9410,6 +9412,8 @@
 		2D7A56022E5D000200000001 /* SubtensorMultistakingUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorMultistakingUpdateService.swift; sourceTree = "<group>"; };
 		2D7A56032E5D000200000001 /* SubtensorStakeStateFetchFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakeStateFetchFactory.swift; sourceTree = "<group>"; };
 		2D7A56032E5D000200000003 /* SubtensorStakeStateSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakeStateSubscription.swift; sourceTree = "<group>"; };
+		81FC6F9CF85A3E2AAC24BF9B /* SubtensorStakeStateSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakeStateSource.swift; sourceTree = "<group>"; };
+		C29DC32A45D9A6FF1772C140 /* SubtensorStakeStateSourceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakeStateSourceFactory.swift; sourceTree = "<group>"; };
 		508396D4097363EC22A805B7 /* SubtensorCataloguePricingTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorCataloguePricingTracker.swift; sourceTree = "<group>"; };
 		2D7A56042E5D000200000001 /* StakingDashboardSubtensorMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDashboardSubtensorMapper.swift; sourceTree = "<group>"; };
 		2D7A56072E5D000200000001 /* SubtensorStakeStateFetchFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtensorStakeStateFetchFactoryTests.swift; sourceTree = "<group>"; };
@@ -19336,6 +19340,8 @@
 				508396D4097363EC22A805B7 /* SubtensorCataloguePricingTracker.swift */,
 				2D7A56032E5D000200000001 /* SubtensorStakeStateFetchFactory.swift */,
 				2D7A56032E5D000200000003 /* SubtensorStakeStateSubscription.swift */,
+				81FC6F9CF85A3E2AAC24BF9B /* SubtensorStakeStateSource.swift */,
+				C29DC32A45D9A6FF1772C140 /* SubtensorStakeStateSourceFactory.swift */,
 			);
 			path = Subtensor;
 			sourceTree = "<group>";
@@ -37471,6 +37477,8 @@
 				2D7A56022E5D000200000002 /* SubtensorMultistakingUpdateService.swift in Sources */,
 				2D7A56032E5D000200000002 /* SubtensorStakeStateFetchFactory.swift in Sources */,
 				2D7A56032E5D000200000004 /* SubtensorStakeStateSubscription.swift in Sources */,
+				EB78623E9064176F1CD5C2EC /* SubtensorStakeStateSource.swift in Sources */,
+				EE758627B59453AD18A20CBC /* SubtensorStakeStateSourceFactory.swift in Sources */,
 				1A4166280E16505503C43C67 /* SubtensorCataloguePricingTracker.swift in Sources */,
 				881CA22729E3F20B00159C5B /* ChainModel+Equilibrium.swift in Sources */,
 				F88D85C73094F6A1FC494D87 /* DAppSearchWireframe.swift in Sources */,

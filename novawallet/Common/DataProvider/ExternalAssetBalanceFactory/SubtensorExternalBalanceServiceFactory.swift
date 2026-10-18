@@ -44,11 +44,12 @@ extension SubtensorExternalBalanceServiceFactory: ExternalAssetBalanceServiceFac
             return []
         }
 
-        let chainId = chainAsset.chain.chainId
-
         guard
-            let connection = chainRegistry.getConnection(for: chainId),
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+            let stakeStateSource = processServices.stakeStateSourceFactory.getSource(
+                for: accountId,
+                chainAsset: chainAsset,
+                chainRegistry: chainRegistry
+            ) else {
             return []
         }
 
@@ -57,7 +58,7 @@ extension SubtensorExternalBalanceServiceFactory: ExternalAssetBalanceServiceFac
         let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
 
         let runtimeConnectionStore = ChainRegistryRuntimeConnectionStore(
-            chainId: chainId,
+            chainId: chainAsset.chain.chainId,
             chainRegistry: chainRegistry
         )
 
@@ -66,23 +67,16 @@ extension SubtensorExternalBalanceServiceFactory: ExternalAssetBalanceServiceFac
             operationQueue: operationQueue
         )
 
-        let stakeStateFetchFactory = SubtensorStakeStateFetchFactory(
-            operationFactory: apiOperationFactory,
-            operationQueue: operationQueue
-        )
-
         let service = SubtensorStakedBalanceUpdatingService(
             accountId: accountId,
             chainAsset: chainAsset,
             repository: AnyDataProviderRepository(repository),
-            stakeStateFetchFactory: stakeStateFetchFactory,
+            stakeStateSource: stakeStateSource,
             cataloguePricing: processServices.createCataloguePricingTracker(
                 chainOperationFactory: apiOperationFactory,
                 operationQueue: operationQueue,
                 logger: logger
             ),
-            connection: connection,
-            runtimeService: runtimeService,
             operationQueue: operationQueue,
             workingQueue: workingQueue,
             logger: logger

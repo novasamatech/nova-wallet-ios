@@ -6,6 +6,7 @@ struct SubtensorStakingProcessServices {
     let subnetMarketsService: SubtensorSubnetMarketsServiceProtocol
     let costBasisService: SubtensorCostBasisServiceProtocol
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
+    let stakeStateSourceFactory: SubtensorStakeStateSourceFactoryProtocol
 }
 
 extension SubtensorStakingProcessServices {
@@ -25,7 +26,12 @@ extension SubtensorStakingProcessServices {
                 operationQueue: OperationManagerFacade.sharedDefaultQueue,
                 eventCenter: EventCenter.shared
             ),
-            catalogueService: SubtensorSubnetCatalogueService(apiOperationFactory: apiOperationFactory)
+            catalogueService: SubtensorSubnetCatalogueService(apiOperationFactory: apiOperationFactory),
+            stakeStateSourceFactory: SubtensorStakeStateSourceFactory(
+                eventCenter: EventCenter.shared,
+                operationQueue: OperationManagerFacade.sharedDefaultQueue,
+                logger: Logger.shared
+            )
         )
     }()
 

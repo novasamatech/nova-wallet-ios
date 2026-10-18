@@ -40,10 +40,7 @@ extension StakingSharedStateFactory {
                 operationQueue: syncOperationQueue
             ),
             apiOperationFactory: apiOperationFactory,
-            stakeStateFetchFactory: SubtensorStakeStateFetchFactory(
-                operationFactory: apiOperationFactory,
-                operationQueue: syncOperationQueue
-            ),
+            stakeStateSourceFactory: SubtensorStakingProcessServices.shared.stakeStateSourceFactory,
             earnServices: createSubtensorEarnServices(
                 for: stakingOption,
                 runtimeConnectionStore: runtimeConnectionStore,

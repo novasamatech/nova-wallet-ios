@@ -399,8 +399,11 @@ final class MultistakingSyncService {
     ) -> MultistakingOnchainSyncServiceProtocol? {
         guard
             let account = wallet.fetch(for: chainAsset.chain.accountRequest()),
-            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
+            let stakeStateSource = subtensorProcessServices.stakeStateSourceFactory.getSource(
+                for: account.accountId,
+                chainAsset: chainAsset,
+                chainRegistry: chainRegistry
+            ) else {
             return nil
         }
 
@@ -414,20 +417,12 @@ final class MultistakingSyncService {
             operationQueue: operationQueue
         )
 
-        let stakeStateFetchFactory = SubtensorStakeStateFetchFactory(
-            operationFactory: apiOperationFactory,
-            operationQueue: operationQueue
-        )
-
         return SubtensorMultistakingUpdateService(
             walletId: wallet.metaId,
-            accountId: account.accountId,
             chainAsset: chainAsset,
             stakingType: stakingType,
             dashboardRepository: multistakingRepositoryFactory.createSubtensorRepository(),
-            stakeStateFetchFactory: stakeStateFetchFactory,
-            connection: connection,
-            runtimeService: runtimeService,
+            stakeStateSource: stakeStateSource,
             operationQueue: operationQueue,
             workingQueue: workingQueue,
             logger: logger,

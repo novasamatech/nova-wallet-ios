@@ -3,18 +3,14 @@ import SubstrateSdk
 import Operation_iOS
 
 final class SubtensorMultistakingUpdateService: ObservableSyncService {
-    let accountId: AccountId
     let walletId: MetaAccountModel.Id
     let chainAsset: ChainAsset
     let stakingType: StakingType
-    let connection: JSONRPCEngine
-    let runtimeService: RuntimeCodingServiceProtocol
     let dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemSubtensorPart>
-    let stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol
+    let stakeStateSource: SubtensorStakeStateSource
     let maxApyProvider: SubtensorMaxApyProviderProtocol
     let rootYieldService: SubtensorYieldServiceProtocol
     let cataloguePricing: SubtensorCataloguePricingTracker
-    let eventCenter: EventCenterProtocol
     let workingQueue: DispatchQueue
     let operationQueue: OperationQueue
 
@@ -23,15 +19,10 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     private var isSyncCompletionDeferred = false
 
     private lazy var stakeStateSubscription = SubtensorStakeStateSubscription(
-        accountId: accountId,
-        stakeStateFetchFactory: stakeStateFetchFactory,
-        connection: connection,
-        runtimeService: runtimeService,
-        chainAssetId: chainAsset.chainAssetId,
+        source: stakeStateSource,
         mutex: mutex,
         operationQueue: operationQueue,
         workingQueue: workingQueue,
-        logger: logger,
         onSyncing: { [weak self] in self?.markSyncingImmediate() },
         onState: { [weak self] in self?.handle(state: $0) },
         onFailure: { [weak self] in self?.completeImmediate($0) }
@@ -46,33 +37,25 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
 
     init(
         walletId: MetaAccountModel.Id,
-        accountId: AccountId,
         chainAsset: ChainAsset,
         stakingType: StakingType,
         dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemSubtensorPart>,
-        stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol,
-        connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol,
+        stakeStateSource: SubtensorStakeStateSource,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
         logger: LoggerProtocol,
         maxApyProvider: SubtensorMaxApyProviderProtocol,
         rootYieldService: SubtensorYieldServiceProtocol,
-        cataloguePricing: SubtensorCataloguePricingTracker,
-        eventCenter: EventCenterProtocol = EventCenter.shared
+        cataloguePricing: SubtensorCataloguePricingTracker
     ) {
         self.walletId = walletId
-        self.accountId = accountId
         self.chainAsset = chainAsset
         self.stakingType = stakingType
         self.dashboardRepository = dashboardRepository
-        self.stakeStateFetchFactory = stakeStateFetchFactory
-        self.connection = connection
-        self.runtimeService = runtimeService
+        self.stakeStateSource = stakeStateSource
         self.maxApyProvider = maxApyProvider
         self.rootYieldService = rootYieldService
         self.cataloguePricing = cataloguePricing
-        self.eventCenter = eventCenter
         self.workingQueue = workingQueue
         self.operationQueue = operationQueue
 
@@ -82,8 +65,6 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     override func performSyncUp() {
         seedRootYields()
         cataloguePricing.seed()
-
-        eventCenter.add(observer: stakeStateSubscription, dispatchIn: workingQueue)
 
         stakeStateSubscription.subscribe()
 
@@ -101,7 +82,8 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     // throttle() skips stopSyncUp() when a fetch already completed, so the storage
     // subscriptions must be released here as well
     override func deactivate() {
-        eventCenter.remove(observer: stakeStateSubscription)
+        rootYields = nil
+        cataloguePricing.reset()
 
         stopSyncUp()
     }
@@ -169,11 +151,13 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     }
 
     private func seedRootYields() {
-        if case let .fresh(yields) = rootYieldService.cachedAlphaYields(for: SubtensorStakingPallet.rootNetuid) {
-            rootYields = yields
-        } else {
-            rootYields = nil
+        guard
+            rootYields == nil,
+            case let .fresh(yields) = rootYieldService.cachedAlphaYields(for: SubtensorStakingPallet.rootNetuid) else {
+            return
         }
+
+        rootYields = yields
     }
 
     private func performRootYieldsFetch() {
@@ -256,7 +240,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
             targetOperation: dashboardRepository.saveOperation({ [dashboardItem] }, { [] })
         )
 
-        stakeStateSubscription.save(saveWrapper, for: state) { [weak self] in
+        stakeStateSubscription.save(saveWrapper) { [weak self] in
             self?.completeSync($0, for: state)
         }
     }
@@ -274,8 +258,6 @@ extension SubtensorMultistakingUpdateService: MultistakingOnchainSyncServiceProt
             return
         }
 
-        performMaxApyFetch()
-        performRootYieldsFetch()
-        performCataloguePricingRefresh()
+        stakeStateSubscription.refresh()
     }
 }
