@@ -64,7 +64,7 @@ extension SubtensorStakeSetupPresenter {
     }
 
     func createViewModelInput() -> SubtensorStakeSetupViewModelInput {
-        let subnetData = SubtensorSetupSubnetData(
+        let subnetData = SubtensorStakeSetupSubnetData(
             catalogue: catalogue,
             subnetLogos: subnetLogos,
             rankedSubnet: matchingRankedSubnet(),

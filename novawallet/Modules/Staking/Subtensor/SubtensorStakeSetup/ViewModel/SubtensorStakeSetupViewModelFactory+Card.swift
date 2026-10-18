@@ -10,7 +10,7 @@ extension SubtensorStakeSetupViewModelFactory {
     func createSubnetDetails(
         for input: SubtensorStakeSetupViewModelInput,
         locale: Locale
-    ) -> SubtensorSetupSubnetViewModel {
+    ) -> SubtensorStakeSetupSubnetViewModel {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
 
         let sectionTitle = if let order = input.quickPickOrder {
@@ -38,15 +38,15 @@ extension SubtensorStakeSetupViewModelFactory {
             isRoot: false
         )
 
-        return SubtensorSetupSubnetViewModel(
+        return SubtensorStakeSetupSubnetViewModel(
             sectionTitle: sectionTitle,
             card: card,
             avgBuyPrice: createAvgBuyPrice(for: input, locale: locale)
         )
     }
 
-    func createSelection(order: SubtensorQuickPickOrder, locale: Locale) -> SubtensorSetupSelectionViewModel {
-        SubtensorSetupSelectionViewModel(
+    func createSelection(order: SubtensorQuickPickOrder, locale: Locale) -> SubtensorStakeSetupSelectionViewModel {
+        SubtensorStakeSetupSelectionViewModel(
             section: sectionTitle(order: order, locale: locale),
             caption: R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorQuickLoading()
         )
@@ -89,7 +89,7 @@ extension SubtensorStakeSetupViewModelFactory {
         }
     }
 
-    func createChips(for subnetData: SubtensorSetupSubnetData, locale: Locale) -> [String] {
+    func createChips(for subnetData: SubtensorStakeSetupSubnetData, locale: Locale) -> [String] {
         let strings = R.string(preferredLanguages: locale.rLanguages).localizable
         let rankedSubnet = subnetData.rankedSubnet
         var chips: [String] = []
