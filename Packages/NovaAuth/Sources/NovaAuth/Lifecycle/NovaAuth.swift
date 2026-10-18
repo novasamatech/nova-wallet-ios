@@ -193,15 +193,6 @@ private extension NovaAuth {
         guard state == nil else { return }
         do {
             state = try dependencies.identityStore.load()
-            if let current = state, let identity = current.identity,
-               case .retired(.policyRefused) = identity.registration, identity.keyID != nil {
-                state = NovaAuthInstallationState(
-                    version: current.version, context: current.context,
-                    identity: NovaAuthInstallationIdentity(
-                        clientID: identity.clientID, keyID: identity.keyID, registration: .registered
-                    ), tokenRemovalOwed: current.tokenRemovalOwed
-                )
-            }
         } catch let error as NovaAuthIdentityStoreError {
             throw error
         } catch {
