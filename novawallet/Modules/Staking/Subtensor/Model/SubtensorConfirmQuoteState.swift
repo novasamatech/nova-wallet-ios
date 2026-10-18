@@ -4,6 +4,7 @@ struct SubtensorConfirmQuoteState {
     private(set) var acknowledged: SubtensorTradeQuote?
     private(set) var isPriceMoved = false
     private(set) var isLatestFailed = false
+    private(set) var verified: SubtensorTradeQuote?
     private var flow = SubtensorQuoteFlowModel()
 
     init(request: SubtensorTradeQuoteRequest, acknowledged: SubtensorTradeQuote?) {
@@ -35,11 +36,11 @@ struct SubtensorConfirmQuoteState {
     }
 
     var signingLimit: Balance? {
-        guard let displayed, let acknowledged else {
+        guard let verified, let acknowledged else {
             return nil
         }
 
-        return displayed.tighterLimit(than: acknowledged.limitPrice)
+        return verified.tighterLimit(than: acknowledged.limitPrice)
     }
 
     mutating func apply(latest quote: SubtensorTradeQuote) -> Bool {
@@ -56,6 +57,10 @@ struct SubtensorConfirmQuoteState {
         }
 
         return true
+    }
+
+    mutating func verify(_ quote: SubtensorTradeQuote) {
+        verified = apply(latest: quote) ? quote : nil
     }
 
     mutating func acknowledgeLatest() {

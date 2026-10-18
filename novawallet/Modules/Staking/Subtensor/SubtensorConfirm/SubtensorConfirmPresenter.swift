@@ -189,8 +189,17 @@ extension SubtensorConfirmPresenter {
             },
             onPriceMoved: { [weak self] quote in
                 self?.applyMovedQuote(quote)
+            },
+            onQuoteVerified: { [weak self] quote in
+                self?.applyVerifiedQuote(quote)
             }
         )
+    }
+
+    func applyVerifiedQuote(_ quote: SubtensorTradeQuote) {
+        quoteState?.verify(quote)
+
+        provideViewModel()
     }
 
     func applyMovedQuote(_ quote: SubtensorTradeQuote) {
@@ -238,14 +247,14 @@ extension SubtensorConfirmPresenter {
             return createOperation(limitPrice: nil, quotedTaoOut: nil).map { ($0, nil) }
         }
 
-        guard let displayed = state.displayed, let limitPrice = state.signingLimit, !state.isPriceMoved else {
+        guard let verified = state.verified, let limitPrice = state.signingLimit, !state.isPriceMoved else {
             return nil
         }
 
         return createOperation(
             limitPrice: limitPrice,
-            quotedTaoOut: displayed.quote.sim.taoAmount
-        ).map { ($0, displayed) }
+            quotedTaoOut: verified.quote.sim.taoAmount
+        ).map { ($0, verified) }
     }
 
     func handOffAtTap() {
@@ -294,6 +303,7 @@ extension SubtensorConfirmPresenter: SubtensorConfirmPresenterProtocol {
         provideViewModel()
 
         interactor.setup()
+        interactor.loadExistentialDeposit()
 
         refreshPreflight()
         refreshHolds()

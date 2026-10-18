@@ -4,6 +4,7 @@ import Foundation_iOS
 protocol SubtensorBaseRetrying: AnyObject, Localizable {
     var retryView: ControllerBackedProtocol? { get }
     var retryWireframe: AlertPresentable & FeeRetryable & CommonRetryable { get }
+    var retryInteractor: SubtensorStakingBaseInteractorInputProtocol { get }
 
     func refreshFee()
     func refreshPreflight()
@@ -19,6 +20,14 @@ extension SubtensorBaseRetrying {
         case .preflightFailed:
             retryWireframe.presentRequestStatus(on: retryView, locale: selectedLocale) { [weak self] in
                 self?.refreshPreflight()
+            }
+        case .rootHoldsFailed:
+            retryWireframe.presentRequestStatus(on: retryView, locale: selectedLocale) { [weak self] in
+                self?.retryInteractor.retryRootHolds()
+            }
+        case .existentialDepositFailed:
+            retryWireframe.presentRequestStatus(on: retryView, locale: selectedLocale) { [weak self] in
+                self?.retryInteractor.loadExistentialDeposit()
             }
         case .quoteFailed:
             break
@@ -47,6 +56,8 @@ protocol SubtensorQuoteHandling: SubtensorBaseRetrying {
 }
 
 extension SubtensorQuoteHandling {
+    var retryInteractor: SubtensorStakingBaseInteractorInputProtocol { quoteInteractor }
+
     func updateAmount(_ newValue: Decimal?) {
         inputResult = newValue.map { .absolute($0) }
 

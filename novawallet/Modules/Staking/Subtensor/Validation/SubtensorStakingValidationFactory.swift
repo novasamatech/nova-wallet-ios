@@ -160,20 +160,17 @@ final class SubtensorStakingValidationFactory {
         context.loadingView?.didStartLoading()
 
         context.onQuoteRequest { result in
-            let change: SubtensorQuoteChange? = switch result {
+            switch result {
             case let .success(new) where new.isFillable(atLimit: new.tighterLimit(than: limit)):
-                nil
+                context.onQuoteVerified?(new)
+                completion(nil)
             case let .success(new):
-                .rateChange(old: current, new: new)
-            case .failure:
-                .unavailable
-            }
-
-            if change != nil {
                 context.loadingView?.didStopLoading()
+                completion(.rateChange(old: current, new: new))
+            case .failure:
+                context.loadingView?.didStopLoading()
+                completion(.unavailable)
             }
-
-            completion(change)
         }
     }
 }

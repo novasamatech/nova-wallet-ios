@@ -81,6 +81,7 @@ extension SubtensorClaimRewardsPresenter: SubtensorOperationResultDelegate {
 extension SubtensorClaimRewardsPresenter: SubtensorBaseRetrying {
     var retryView: ControllerBackedProtocol? { view }
     var retryWireframe: AlertPresentable & FeeRetryable & CommonRetryable { wireframe }
+    var retryInteractor: SubtensorStakingBaseInteractorInputProtocol { interactor }
 }
 
 extension SubtensorClaimRewardsPresenter: Localizable {

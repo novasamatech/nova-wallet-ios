@@ -45,9 +45,11 @@ final class SubtensorQuickPickVisit {
             selectedRef = ref
 
             guard let subnet = snapshot.info.subnets.first(where: { $0.netuid == ref.netuid }) else {
+                selectedRef = nil
                 throw SelectionError.targetUnavailable
             }
             guard subnet.networkRegisteredAt == ref.registeredAt else {
+                selectedRef = nil
                 throw SelectionError.registrationChanged
             }
             guard
