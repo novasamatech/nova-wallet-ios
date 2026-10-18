@@ -150,27 +150,11 @@ private extension SubtensorPositionPresenter {
 
 extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
     func setup() {
-        let prices = interactor.cachedPrices()
-
-        if let prices {
-            state.prices = prices
-            state.isCatalogueResolved = true
-        }
-
-        if let yields = interactor.cachedYields() {
-            state.isRateResolved = yields.stamp.freshness == .fresh
-            state.yields = yields
-        }
-
         provideViewModel()
         interactor.setup()
 
         if let group = state.group {
             apply(group: group)
-        }
-
-        if prices != nil {
-            requestHistoryIfNeeded()
         }
     }
 

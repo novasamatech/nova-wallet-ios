@@ -20,6 +20,8 @@ protocol SubtensorApiOperationFactoryProtocol {
         at blockHash: BlockHash?
     ) -> CompoundOperationWrapper<[SubtensorStakingPallet.DynamicInfo?]>
 
+    func createDynamicInfoWrapper(for netuid: UInt16) -> CompoundOperationWrapper<SubtensorStakingPallet.DynamicInfo?>
+
     func createDelegatesWrapper(
         at blockHash: BlockHash?
     ) -> CompoundOperationWrapper<[SubtensorStakingPallet.DelegateInfo]>
@@ -242,6 +244,14 @@ extension SubtensorApiOperationFactory: SubtensorApiOperationFactoryProtocol {
             path: SubtensorStakingPallet.allDynamicInfoApi,
             blockHash: blockHash,
             paramsClosure: nil
+        )
+    }
+
+    func createDynamicInfoWrapper(for netuid: UInt16) -> CompoundOperationWrapper<SubtensorStakingPallet.DynamicInfo?> {
+        createWrapper(
+            path: SubtensorStakingPallet.dynamicInfoApi,
+            blockHash: nil,
+            paramsClosure: createSingleParamClosure(StringScaleMapper(value: netuid))
         )
     }
 

@@ -20,11 +20,21 @@ enum SubtensorPortfolioHistoriesState: Equatable {
 }
 
 struct SubtensorPortfolioState {
-    var positions: Multistaking.SubtensorStakingState?
+    var positions: Multistaking.SubtensorStakingState? {
+        didSet {
+            rebuildPortfolio()
+        }
+    }
+
     var isSyncFailed = false
     var price = SubtensorPortfolioPriceState.loading
     var isCatalogueResolved = false
-    var prices: SubtensorAlphaPrices?
+    var prices: SubtensorAlphaPrices? {
+        didSet {
+            rebuildPortfolio()
+        }
+    }
+
     var subnetLogos: SubtensorSubnetLogos?
     var rootYields: SubtensorAlphaYields?
     var isRootRateResolved = false
@@ -43,19 +53,8 @@ struct SubtensorPortfolioState {
         prices?.catalogue
     }
 
-    var portfolio: SubtensorPortfolio? {
-        positions.map { SubtensorPortfolioBuilder.build(state: $0, prices: prices) }
-    }
-
-    var groups: [SubtensorPortfolioGroup] {
-        guard let portfolio else {
-            return []
-        }
-
-        return ([portfolio.root].compactMap { $0 } + portfolio.subnets).filter { group in
-            group.totalAlpha > 0 || group.redeemable > 0
-        }
-    }
+    private(set) var portfolio: SubtensorPortfolio?
+    private(set) var groups: [SubtensorPortfolioGroup] = []
 
     var isValuationPending: Bool {
         !isCatalogueResolved && groups.contains { $0.netuid != SubtensorStakingPallet.rootNetuid }
@@ -87,6 +86,16 @@ struct SubtensorPortfolioState {
         }
 
         return heldNetuids.contains { catalogue.subnet(for: $0)?.pricesStamp.freshness == .stale }
+    }
+
+    private mutating func rebuildPortfolio() {
+        portfolio = positions.map { SubtensorPortfolioBuilder.build(state: $0, prices: prices) }
+
+        groups = portfolio.map { portfolio in
+            ([portfolio.root].compactMap { $0 } + portfolio.subnets).filter { group in
+                group.totalAlpha > 0 || group.redeemable > 0
+            }
+        } ?? []
     }
 }
 

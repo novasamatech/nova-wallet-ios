@@ -53,23 +53,6 @@ private extension SubtensorPortfolioViewModelFactory {
         balanceViewModelFactory.priceFromAmount(amount, priceData: price).value(for: locale)
     }
 
-    func formatAlpha(
-        _ amount: Balance,
-        netuid: UInt16,
-        catalogue: SubtensorSubnetCatalogue?,
-        locale: Locale
-    ) -> String {
-        let alphaInfo = chainAsset.assetDisplayInfo.subtensorAlpha(
-            symbol: SubtensorSubnetNaming.symbol(for: netuid, in: catalogue)
-        )
-
-        let text = formatterFactory.createTokenFormatter(for: alphaInfo)
-            .value(for: locale)
-            .stringFromDecimal(decimal(amount)) ?? .subtensorUnknown(for: locale)
-
-        return SubtensorSubnetNaming.isolatedLeftToRight(text)
-    }
-
     func formatSignedPercent(_ value: Decimal, locale: Locale) -> String? {
         let formatter = NumberFormatter.subtensorSignedPercentSingle.value(for: locale)
 
@@ -234,7 +217,12 @@ private extension SubtensorPortfolioViewModelFactory {
             R.string(preferredLanguages: locale.rLanguages).localizable.stakingSubtensorUiPriceUnavailable()
 
         let subtitle = state.isCatalogueResolved
-            ? formatAlpha(group.totalAlpha, netuid: group.netuid, catalogue: state.catalogue, locale: locale)
+            ? chainAsset.assetDisplayInfo.subtensorAlphaAmount(
+                group.totalAlpha,
+                netuid: group.netuid,
+                catalogue: state.catalogue,
+                locale: locale
+            )
             : nil
 
         let detail = state.isCatalogueUnavailable

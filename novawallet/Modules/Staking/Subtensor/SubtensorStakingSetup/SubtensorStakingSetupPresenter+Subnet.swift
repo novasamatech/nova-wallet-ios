@@ -9,31 +9,12 @@ extension SubtensorStakingSetupPresenter {
         if !mode.isRootLane, !isSubnetDataRequested {
             isSubnetDataRequested = true
 
-            loadCatalogue()
-            loadRankingView()
+            interactor.loadCatalogue()
+            interactor.loadRankingView()
             interactor.loadSubnetLogos()
         }
 
         loadYieldsIfNeeded(for: netuid)
-    }
-
-    func loadCatalogue() {
-        if let catalogue = interactor.cachedCatalogue().value {
-            self.catalogue = catalogue
-        }
-
-        interactor.loadCatalogue()
-    }
-
-    func loadRankingView() {
-        let cachedRankingView = interactor.cachedRankingView()
-
-        if let rankingView = cachedRankingView.value {
-            self.rankingView = rankingView
-            hasExpiredRankingSeed = !cachedRankingView.isFresh
-        }
-
-        interactor.loadRankingView()
     }
 
     func loadYieldsIfNeeded(for netuid: UInt16) {
@@ -42,18 +23,10 @@ extension SubtensorStakingSetupPresenter {
         }
 
         yieldsNetuid = netuid
-        yields = interactor.cachedYields(netuid: netuid).value
-        isYieldsResolved = yields?.stamp.freshness == .fresh
+        yields = nil
+        isYieldsResolved = false
 
         interactor.loadYields(netuid: netuid)
-    }
-
-    func loadCostBasisIfNeeded(for netuid: UInt16) {
-        if let cachedCostBasis = interactor.cachedCostBasis(netuid: netuid).value {
-            costBasis = .resolved(cachedCostBasis)
-        }
-
-        interactor.loadCostBasis(for: netuid)
     }
 
     func validatorAnnualRate() -> Decimal? {

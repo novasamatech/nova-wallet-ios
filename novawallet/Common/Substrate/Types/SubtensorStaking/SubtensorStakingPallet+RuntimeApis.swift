@@ -14,6 +14,10 @@ extension SubtensorStakingPallet {
         StateCallPath(module: subnetInfoApiName, method: "get_all_dynamic_info")
     }
 
+    static var dynamicInfoApi: StateCallPath {
+        StateCallPath(module: subnetInfoApiName, method: "get_dynamic_info")
+    }
+
     static var delegatesApi: StateCallPath {
         StateCallPath(module: delegateInfoApiName, method: "get_delegates")
     }

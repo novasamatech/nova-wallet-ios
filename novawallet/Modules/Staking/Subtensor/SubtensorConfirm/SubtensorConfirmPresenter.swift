@@ -291,7 +291,6 @@ extension SubtensorConfirmPresenter {
 
 extension SubtensorConfirmPresenter: SubtensorConfirmPresenterProtocol {
     func setup() {
-        seedSubnetData()
         provideAccountViewModels()
         provideTileIcons()
         provideViewModel()

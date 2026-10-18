@@ -35,7 +35,6 @@ final class SubtensorStakingSetupPresenter {
     var catalogue: SubtensorSubnetCatalogue?
     var subnetLogos: SubtensorSubnetLogos?
     var rankingView: SubtensorRankedSubnets?
-    var hasExpiredRankingSeed = false
     var yields: SubtensorAlphaYields?
     var yieldsNetuid: UInt16?
     var isYieldsResolved = false
@@ -130,7 +129,7 @@ extension SubtensorStakingSetupPresenter {
 
         if case let .buyMore(position) = mode {
             interactor.loadSubnet(netuid: position.netuid)
-            loadCostBasisIfNeeded(for: position.netuid)
+            interactor.loadCostBasis(for: position.netuid)
         }
 
         loadSubnetDataIfNeeded()
