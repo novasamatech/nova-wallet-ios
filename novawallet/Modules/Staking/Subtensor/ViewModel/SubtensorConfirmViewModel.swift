@@ -9,6 +9,7 @@ struct SubtensorConfirmSwapViewModel {
     let pay: BalanceViewModel
     let receive: LoadableViewModelState<BalanceViewModel>
     let swapRate: LoadableViewModelState<String>
+    let isQuoteFailed: Bool
     let avgBuyPrice: SubtensorRowState<SubtensorCostBasisValueViewModel>
     let youWillEarn: SubtensorRowState<SubtensorCostBasisValueViewModel>
     let slippage: String?
