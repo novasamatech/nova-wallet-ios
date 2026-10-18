@@ -1,7 +1,7 @@
 import UIKit
 import UIKit_iOS
 
-final class SubtensorSubnetFiltersSheetViewLayout: UIView {
+final class SubtensorSubnetFiltersViewLayout: UIView {
     static let contentHeight: CGFloat = Constants.titleTopInset + Constants.titleHeight + Constants.filtersTopSpacing +
         Constants.rowHeight + Constants.actionTopSpacing + UIConstants.actionHeight + Constants.bottomInset
 
@@ -11,7 +11,7 @@ final class SubtensorSubnetFiltersSheetViewLayout: UIView {
 
     let filtersView = StackTableView()
 
-    let thinPoolsCell = SubtensorSubnetFiltersSheetViewLayout.createFilterCell()
+    let thinPoolsCell = SubtensorSubnetFiltersViewLayout.createFilterCell()
 
     let actionButton: TriangularedButton = .create { button in
         button.applyDefaultStyle()
@@ -57,7 +57,7 @@ final class SubtensorSubnetFiltersSheetViewLayout: UIView {
     }
 }
 
-private extension SubtensorSubnetFiltersSheetViewLayout {
+private extension SubtensorSubnetFiltersViewLayout {
     static func createFilterCell() -> StackSwitchCell {
         let cell = StackSwitchCell()
         cell.titleLabel.apply(style: .regularBodyPrimary)

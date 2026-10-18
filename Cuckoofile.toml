@@ -135,7 +135,6 @@ sources = [
     "Packages/NovaAnalytics/Sources/NovaAnalytics/AnalyticsProtocols.swift",
     "novawallet/Common/Substrate/Operations/SubtensorApi/SubtensorApiOperationFactory.swift",
     "novawallet/Common/Services/Multistaking/Subtensor/SubtensorStakeStateFetchFactory.swift",
-    "novawallet/Modules/Staking/Subtensor/Services/SubtensorStakingPositionsSyncService.swift",
     "novawallet/Modules/Staking/Subtensor/Services/SubtensorSubnetLogosProviderProtocol.swift",
     "novawallet/Common/Network/Bittensor/BittensorApiTransportProtocol.swift",
     "novawallet/Common/Network/Bittensor/BittensorApiOperationFactoryProtocol.swift",

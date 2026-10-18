@@ -54,6 +54,41 @@ final class SubtensorStakingSetupInteractor: SubtensorStakingBaseInteractor {
 }
 
 private extension SubtensorStakingSetupInteractor {
+    func loadRemoteRankingView(keepingExpiredSeed: Bool) {
+        let recommendationService = recommendationService
+        let rankingWrapper = recommendationService.createRankedSubnetsWrapper()
+
+        let resolveOperation = ClosureOperation<SubtensorRankedSubnets?> {
+            do {
+                return try rankingWrapper.targetOperation.extractNoCancellableResultData()
+            } catch BittensorApiError.generationStale {
+                return recommendationService.cachedRankedSubnets().value
+            }
+        }
+
+        resolveOperation.addDependency(rankingWrapper.targetOperation)
+
+        executeCancellable(
+            wrapper: rankingWrapper.insertingTail(operation: resolveOperation),
+            inOperationQueue: operationQueue,
+            backingCallIn: rankingCallStore,
+            runningCallbackIn: .main
+        ) { [weak self] result in
+            switch result {
+            case let .success(rankingView):
+                if rankingView != nil || !keepingExpiredSeed {
+                    self?.presenter?.didReceiveRankingView(rankingView)
+                }
+            case let .failure(error):
+                self?.logger.warning("Subtensor ranking view unavailable for the setup: \(error)")
+
+                if !keepingExpiredSeed {
+                    self?.presenter?.didReceiveRankingView(nil)
+                }
+            }
+        }
+    }
+
     func provideValidator(
         using wrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem?>,
         subnet: SubtensorSubnetRef
@@ -95,25 +130,26 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
         }
     }
 
-    func loadQuickPickSnapshot(for order: SubtensorQuickPickOrder) {
+    func loadQuickPickSnapshot(for order: SubtensorQuickPickOrder, selectedRef: SubtensorSubnetRef?) {
         quickPickCallStore.cancel()
         let catalogueWrapper = catalogueService.createCatalogueWrapper()
-        let infoWrapper = subnetsService.createSubnetsInfoWrapper()
         let apyWrapper = order == .apy ? maxApyProvider.createMaxApyWrapper() : .createWithResult([:])
-        let mergeOperation = ClosureOperation<SubtensorQuickPickSnapshot> {
-            SubtensorQuickPickSnapshot(
-                catalogue: try catalogueWrapper.targetOperation.extractNoCancellableResultData(),
-                info: try infoWrapper.targetOperation.extractNoCancellableResultData(),
-                apy: try apyWrapper.targetOperation.extractNoCancellableResultData()
-            )
-        }
-        mergeOperation.addDependency(catalogueWrapper.targetOperation)
-        mergeOperation.addDependency(infoWrapper.targetOperation)
-        mergeOperation.addDependency(apyWrapper.targetOperation)
+        let subnetsService = subnetsService
+        let snapshotWrapper: CompoundOperationWrapper<SubtensorQuickPickSnapshot> =
+            OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
+                let catalogue = try catalogueWrapper.targetOperation.extractNoCancellableResultData()
+                let apy = try apyWrapper.targetOperation.extractNoCancellableResultData()
+                let ref = try selectedRef ?? SubtensorQuickPickVisit.select(order: order, from: catalogue, apy: apy)
+
+                return subnetsService.createSubnetInfoWrapper(for: ref.netuid).mapped {
+                    SubtensorQuickPickSnapshot(ref: ref, info: $0)
+                }
+            }
+        snapshotWrapper.addDependency(wrapper: catalogueWrapper)
+        snapshotWrapper.addDependency(wrapper: apyWrapper)
         executeCancellable(
-            wrapper: CompoundOperationWrapper(
-                targetOperation: mergeOperation,
-                dependencies: catalogueWrapper.allOperations + infoWrapper.allOperations + apyWrapper.allOperations
+            wrapper: snapshotWrapper.insertingHead(
+                operations: catalogueWrapper.allOperations + apyWrapper.allOperations
             ),
             inOperationQueue: operationQueue,
             backingCallIn: quickPickCallStore,
@@ -125,14 +161,6 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
 
             self?.presenter?.didReceiveQuickPickSnapshot(result)
         }
-    }
-
-    func cachedRankingView() -> HTTPCachePeek<SubtensorRankedSubnets> {
-        recommendationService.cachedRankedSubnets()
-    }
-
-    func cachedYields(netuid: UInt16) -> HTTPCachePeek<SubtensorAlphaYields> {
-        yieldService.cachedAlphaYields(for: netuid)
     }
 
     func presetValidator(on subnet: SubtensorSubnetRef, existingHotkey: AccountId?) {
@@ -151,7 +179,7 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
         subnetCallStore.cancel()
 
         executeCancellable(
-            wrapper: subnetsService.createSubnetsInfoWrapper(),
+            wrapper: subnetsService.createSubnetInfoWrapper(for: netuid),
             inOperationQueue: operationQueue,
             backingCallIn: subnetCallStore,
             runningCallbackIn: .main
@@ -175,34 +203,31 @@ extension SubtensorStakingSetupInteractor: SubtensorSetupInteractorInputProtocol
     func loadYields(netuid: UInt16) {
         yieldsCallStore.cancel()
 
+        let yieldService = yieldService
+
         load(
             yieldService.createAlphaYieldsWrapper(for: netuid),
+            cached: { yieldService.cachedFreshAlphaYields(for: netuid) },
             in: yieldsCallStore,
-            label: "setup yields on netuid \(netuid)"
-        ) { [weak self] in
-            self?.presenter?.didReceiveYields($0, netuid: netuid)
-        }
+            label: "setup yields on netuid \(netuid)",
+            deliver: { [weak self] in
+                self?.presenter?.didReceiveYields($0, netuid: netuid)
+            }
+        )
     }
 
     func loadRankingView() {
         rankingCallStore.cancel()
 
-        executeCancellable(
-            wrapper: recommendationService.createRankedSubnetsWrapper(),
-            inOperationQueue: operationQueue,
-            backingCallIn: rankingCallStore,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(rankingView):
+        let recommendationService = recommendationService
+
+        loadCached({ recommendationService.cachedRankedSubnets() }, in: rankingCallStore, then: { [weak self] cached in
+            if let rankingView = cached.value {
                 self?.presenter?.didReceiveRankingView(rankingView)
-            case .failure(BittensorApiError.generationStale):
-                self?.presenter?.didReceiveRankingView(self?.recommendationService.cachedRankedSubnets().value)
-            case let .failure(error):
-                self?.logger.warning("Subtensor ranking view unavailable for the setup: \(error)")
-                self?.presenter?.didReceiveRankingView(nil)
             }
-        }
+
+            self?.loadRemoteRankingView(keepingExpiredSeed: !cached.isFresh && cached.value != nil)
+        })
     }
 
     func saveSlippage(_ tolerance: BigRational) {

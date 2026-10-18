@@ -6,6 +6,7 @@ final class SubtensorValidatorInfoPresenter {
 
     let target: SubtensorStakeTarget
     let hotkey: AccountId
+    let chain: ChainModel
     let interactor: SubtensorValInfoInteractorInputProtocol
     let wireframe: SubtensorValidatorInfoWireframeProtocol
     let viewModelFactory: SubtensorValidatorInfoViewModelFactory
@@ -20,6 +21,7 @@ final class SubtensorValidatorInfoPresenter {
     init(
         target: SubtensorStakeTarget,
         hotkey: AccountId,
+        chain: ChainModel,
         detail: SubtensorValidatorDirectoryItem?,
         needsChainDetail: Bool,
         interactor: SubtensorValInfoInteractorInputProtocol,
@@ -29,6 +31,7 @@ final class SubtensorValidatorInfoPresenter {
     ) {
         self.target = target
         self.hotkey = hotkey
+        self.chain = chain
         self.detail = detail
         self.needsChainDetail = needsChainDetail
         self.interactor = interactor
@@ -54,16 +57,6 @@ private extension SubtensorValidatorInfoPresenter {
         view?.didReceive(viewModel: viewModelFactory.createViewModel(for: input, locale: selectedLocale))
     }
 
-    func seed(from snapshot: SubtensorValidatorInfoSnapshot) {
-        if let annualRate = snapshot.annualRate.value {
-            self.annualRate = .loaded(value: annualRate)
-        }
-
-        if let alphaPrice = snapshot.alphaPrice.value {
-            self.alphaPrice = .loaded(value: alphaPrice)
-        }
-    }
-
     func loadDetail() {
         view?.didStartLoading()
         interactor.loadDetail()
@@ -72,13 +65,25 @@ private extension SubtensorValidatorInfoPresenter {
 
 extension SubtensorValidatorInfoPresenter: SubtensorValidatorInfoPresenterProtocol {
     func setup() {
-        seed(from: interactor.cachedSnapshot())
         provideViewModel()
 
         interactor.setup()
 
         if detail == nil || needsChainDetail {
             loadDetail()
+        }
+    }
+
+    func presentAccountOptions() {
+        if
+            let view = view,
+            let address = try? hotkey.toAddress(using: chain.chainFormat) {
+            wireframe.presentAccountOptions(
+                from: view,
+                address: address,
+                chain: chain,
+                locale: selectedLocale
+            )
         }
     }
 

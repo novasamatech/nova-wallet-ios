@@ -41,11 +41,11 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
 }
 
 extension SubtensorUnstakeSetupInteractor: SubtensorUnstakeInteractorInputProtocol {
-    func loadSubnetsInfo() {
+    func loadSubnetsInfo(for netuid: UInt16) {
         subnetsInfoCallStore.cancel()
 
         executeCancellable(
-            wrapper: subnetsService.createSubnetsInfoWrapper(),
+            wrapper: subnetsService.createSubnetInfoWrapper(for: netuid),
             inOperationQueue: operationQueue,
             backingCallIn: subnetsInfoCallStore,
             runningCallbackIn: .main
