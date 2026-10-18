@@ -86,7 +86,9 @@ Apple's result drops the key, keeps the client UUID and fails the current operat
 margin cannot guarantee native completion.
 
 The shared session bounds every call with a 20-second request timeout (100 seconds for
-registration) and a 100-second resource timeout; native calls have their existing local timeout. Before invocation, a failed guard
+registration) and a 100-second resource timeout and leaves authentication challenges to default
+handling. A 110-second watchdog fails any call whose callback never arrives as a transport timeout,
+so a flight always completes; native calls have their existing local timeout. Before invocation, a failed guard
 releases the unused lease. Once called, only the actual DeviceCheck callback releases its
 per-key lease, even after local timeout/cancellation. An assertion timeout preserves the
 registered key. Busy keys fail before fetching a token challenge. If Apple never calls back,
@@ -107,7 +109,8 @@ Removed optional legacy policy fields are ignored, even if malformed; the next e
 encodes only context, identity/registration, refusal delay and token-removal debt. Pending start/cooldown and
 saved attestation inputs remain exact. Corrupt/reset repair replaces the context and cannot
 adopt an old bearer. The active memory fence advances before I/O and survives a failed save;
-staged writes and owed bearer deletion retry at host activation, blocking admission until repaired.
+staged writes and owed bearer deletion retry at host activation and on the next demand, blocking
+admission until repaired.
 Settings set/read-back checks the manager cache and cannot prove disk durability.
 
 Keychain contains one atomic version-2 bearer record with origin, client, generation and
