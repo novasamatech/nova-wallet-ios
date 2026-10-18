@@ -94,7 +94,9 @@ Apple's result drops the key, keeps the client UUID and fails the current operat
 margin cannot guarantee native completion.
 
 The shared session bounds every call with a 20-second request timeout (100 seconds for
-registration) and a 100-second resource timeout; native calls have their existing local timeout. Before invocation, a failed guard
+registration) and a 100-second resource timeout and leaves authentication challenges to default
+handling. A 110-second watchdog fails any call whose callback never arrives as a transport timeout,
+so a flight always completes; native calls have their existing local timeout. Before invocation, a failed guard
 releases the unused lease. Once called, only the actual DeviceCheck callback releases its
 per-key lease, even after local timeout/cancellation. An assertion timeout preserves the
 registered key. Busy keys fail before fetching a token challenge. If Apple never calls back,
