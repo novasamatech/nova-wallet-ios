@@ -1,8 +1,6 @@
 # NovaAuth — client architecture
 
-Implementation snapshot: **`feature/nova-auth` · 13 October 2026**.
-
-These diagrams describe the Swift client on this branch. Architecture claims come from implementation and call-site searches, not the infrastructure PR or a planned design. “Backend” is only the HTTPS peer that the client calls; its internal behavior and deployed permissions are outside this document.
+These diagrams describe the Swift client. “Backend” is only the HTTPS peer that the client calls; its internal behavior and deployed permissions are outside this document.
 
 **Reading order:** ownership → first authentication → proof construction → registration recovery → token reuse/concurrency → protected requests → storage/replacement → Bittensor → analytics.
 
@@ -170,7 +168,7 @@ availability failure. Stored retired states wait for later demand replacement an
 
 Host activation, including accepted origin adoption and legacy-reset repair, authorizes demand-driven
 bootstrap, including consented Analytics. It creates no key/request by itself. **This local lifecycle
-policy replaces the supplied profile-3 protocol's user-driven re-creation wording at lines 511–514.**
+policy replaces the profile-3 protocol's user-driven re-creation wording.**
 The package exposes no reset API. Removed optional legacy quota/gate/delay fields are ignored.
 
 Sources: [state](../../../Packages/NovaAuth/Sources/NovaAuth/Contracts/NovaAuthModels.swift) · [registration](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthRegistrationService.swift) · [pending backoff](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthPendingRecovery.swift) · [retirement](../../../Packages/NovaAuth/Sources/NovaAuth/Lifecycle/NovaAuthRecoveryService.swift)

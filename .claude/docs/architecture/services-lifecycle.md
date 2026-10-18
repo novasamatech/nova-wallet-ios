@@ -171,8 +171,8 @@ increasing revisions; late old fetches cannot reactivate a previous origin. Orig
 fences prior work and clears Bittensor presentation seeds before synchronous peeks.
 Analytics consent/erasure and wallet changes never reset this authentication owner. Host activation
 authorizes ordinary later demand to bootstrap after accepted origin changes and legacy-reset repair;
-activation itself creates no key and sends no auth request. This explicitly replaces the supplied
-profile-3 protocol's user-driven re-creation wording at lines 511–514. Requests carry no intent.
+activation itself creates no key and sends no auth request. This explicitly replaces the
+profile-3 protocol's user-driven re-creation wording. Requests carry no intent.
 Failed auth completes the caller operation; Bittensor owns its retry/presentation and Analytics
 retains batches silently for its normal later flushes, checking consent before each send/replay.
 

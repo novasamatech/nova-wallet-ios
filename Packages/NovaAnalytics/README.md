@@ -13,7 +13,7 @@ remain in force. Transient/auth failures retain events silently for a later sche
 starts the normal session and tracking flow; there is no separate auth-recovery admission,
 re-arm timer, prompt or notification. Host activation authorizes later demand-driven bootstrap,
 including consented Analytics, without request-level intent. This local product lifecycle policy
-replaces the supplied profile-3 protocol's user-driven re-creation wording at lines 511–514.
+replaces the profile-3 protocol's user-driven re-creation wording.
 
 The backend must authorize the existing analytics POST with profile 3 before rollout; see
 [the NovaAuth package](../NovaAuth/README.md). Run tests using the NovaAnalytics scheme and an

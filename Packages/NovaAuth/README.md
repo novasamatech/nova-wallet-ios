@@ -31,8 +31,8 @@ build kept under the App Group service `io.novawallet.novaauth.profile3.<bundle 
 Host `activate(origin:)` is the lifecycle authority. Accepted origin adoption or legacy reset
 repair establishes an eligible context without creating a key or sending authentication.
 A later ordinary demand, including consented Analytics, may initialize the installation.
-This local product policy replaces the supplied profile-3 protocol's user-driven re-creation
-wording at lines 511–514; it is an explicit eligibility change, not behavioral equivalence.
+This local product policy replaces the profile-3 protocol's user-driven re-creation
+wording; it is an explicit eligibility change, not behavioral equivalence.
 The package has no explicit reset API. Analytics consent/erasure and wallet changes do not
 reset the shared identity. Requests carry a demand intent that only gates re-registration after a refusal.
 
