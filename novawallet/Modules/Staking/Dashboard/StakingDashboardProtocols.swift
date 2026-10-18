@@ -14,6 +14,7 @@ protocol StakingDashboardPresenterProtocol: AnyObject {
     func selectAnnouncementLink(at index: Int)
     func switchWallet()
     func refresh()
+    func becomeActive()
 }
 
 protocol StakingDashboardInteractorInputProtocol: AnyObject {
@@ -24,6 +25,7 @@ protocol StakingDashboardInteractorInputProtocol: AnyObject {
     func retryDashboardSubscription()
 
     func refresh()
+    func becomeActive()
 }
 
 protocol StakingDashboardInteractorOutputProtocol: AnyObject {

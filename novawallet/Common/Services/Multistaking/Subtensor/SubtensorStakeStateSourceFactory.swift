@@ -44,13 +44,15 @@ extension SubtensorStakeStateSourceFactory: SubtensorStakeStateSourceFactoryProt
         let chainId = chainAsset.chain.chainId
 
         guard
-            let connection = chainRegistry.getConnection(for: chainId),
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+            chainRegistry.getConnection(for: chainId) != nil,
+            chainRegistry.getRuntimeProvider(for: chainId) != nil else {
             return nil
         }
 
+        let runtimeConnectionStore = ChainRegistryRuntimeConnectionStore(chainId: chainId, chainRegistry: chainRegistry)
+
         let apiOperationFactory = SubtensorApiOperationFactory(
-            runtimeConnectionStore: ChainRegistryRuntimeConnectionStore(chainId: chainId, chainRegistry: chainRegistry),
+            runtimeConnectionStore: runtimeConnectionStore,
             operationQueue: operationQueue
         )
 
@@ -61,8 +63,7 @@ extension SubtensorStakeStateSourceFactory: SubtensorStakeStateSourceFactoryProt
                 operationFactory: apiOperationFactory,
                 operationQueue: operationQueue
             ),
-            connection: connection,
-            runtimeService: runtimeService,
+            runtimeConnectionStore: runtimeConnectionStore,
             eventCenter: eventCenter,
             operationQueue: operationQueue,
             workingQueue: DispatchQueue(label: "io.novawallet.subtensor.stakestate.\(UUID().uuidString)"),
