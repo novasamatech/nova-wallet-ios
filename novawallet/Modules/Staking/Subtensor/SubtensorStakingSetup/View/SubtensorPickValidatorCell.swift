@@ -8,7 +8,7 @@ final class SubtensorPickValidatorCell: RowView<
     private var validatorView: SubtensorValidatorDetailsValueView { rowContentView.valueView.fView }
     private var accessoryImageView: UIImageView { rowContentView.valueView.sView }
 
-    private let loadingView = SubtensorSkeletonView()
+    private let loadingView = SubtensorSkeletonView(cornerRadius: 6)
 
     convenience init() {
         self.init(frame: .zero)
@@ -48,7 +48,7 @@ private extension SubtensorPickValidatorCell {
         static let height: CGFloat = 44
         static let accessorySize: CGFloat = 16
         static let accessorySpacing: CGFloat = 8
-        static let loadingSize = CGSize(width: 90, height: 10)
+        static let loadingSize = CGSize(width: 120, height: 12)
     }
 
     func setupLayout() {
