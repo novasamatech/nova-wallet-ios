@@ -13186,8 +13186,6 @@
 		FFB4A14C99D151B41F61F474 /* DAppTxDetailsInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppTxDetailsInteractor.swift; sourceTree = "<group>"; };
 		FFEBC03AB1841681427D38AF /* StakingRewardPayoutsViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRewardPayoutsViewController.swift; sourceTree = "<group>"; };
 		6D8C30BE40CE427750D254F9 /* NovaAuthFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAuthFacade.swift; sourceTree = "<group>"; };
-		C780CA64A504AC84162BA62F /* notification-ext.staging.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "notification-ext.staging.xcconfig"; sourceTree = "<group>"; };
-		D0FF227FCFB653F17D612C39 /* NovaPushNotificationServiceExtensionStaging.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NovaPushNotificationServiceExtensionStaging.entitlements; sourceTree = "<group>"; };
 		000000002039A870BA4A216E /* ValidatorSelectionComposer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidatorSelectionComposer.swift; sourceTree = "<group>"; };
 		000000007995CD8C7205FF32 /* ValidatorSelectionCounter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidatorSelectionCounter.swift; sourceTree = "<group>"; };
 		0000000066609881CB682044 /* AssetExchangeCommissionNetFlowTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetExchangeCommissionNetFlowTests.swift; sourceTree = "<group>"; };
@@ -16088,7 +16086,6 @@
 				0CC0F7F02BADEB1C002C49F6 /* notification-ext.debug.xcconfig */,
 				0CC0F7F12BADEB1C002C49F6 /* notification-ext.dev.xcconfig */,
 				0CC0F7EF2BADEB1C002C49F6 /* notification-ext.release.xcconfig */,
-				C780CA64A504AC84162BA62F /* notification-ext.staging.xcconfig */,
 			);
 			path = Config;
 			sourceTree = "<group>";
@@ -21034,7 +21031,6 @@
 				77AE4FB52B906B2E00426519 /* NovaPushNotificationServiceExtensionDebug.entitlements */,
 				77AE4FB42B906B2600426519 /* NovaPushNotificationServiceExtensionDev.entitlements */,
 				0CC0F7E72BAD4359002C49F6 /* NovaPushNotificationServiceExtensionRelease.entitlements */,
-				D0FF227FCFB653F17D612C39 /* NovaPushNotificationServiceExtensionStaging.entitlements */,
 				77CAF4312B8E96A400E4297C /* NotificationService.swift */,
 				849013A924A80984008F705E /* Products */,
 				77CAF4332B8E96A400E4297C /* Info.plist */,
@@ -38225,12 +38221,10 @@
 		};
 		77CAF43B2B8E96A400E4297C /* Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C780CA64A504AC84162BA62F /* notification-ext.staging.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = "$(inherited)";
-				CODE_SIGN_ENTITLEMENTS = NovaPushNotificationServiceExtension/NovaPushNotificationServiceExtensionStaging.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
