@@ -85,13 +85,21 @@ extension XCTestCase {
 
 final class TestClock: NovaAuthClockProtocol {
     private let lock = NSLock()
+    private var boot = "boot"
     private var seconds: TimeInterval = 100
     func now() throws -> NovaAuthTime {
-        lock.novaAuthLocked { NovaAuthTime(bootID: "boot", continuousSeconds: seconds) }
+        lock.novaAuthLocked { NovaAuthTime(bootID: boot, continuousSeconds: seconds) }
     }
 
     func advance(_ delta: TimeInterval) {
         lock.novaAuthLocked { seconds += delta }
+    }
+
+    func reboot() {
+        lock.novaAuthLocked {
+            boot += "+"
+            seconds = 100
+        }
     }
 }
 

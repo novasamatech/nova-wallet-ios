@@ -24,10 +24,12 @@ final class AnalyticsUploadResponseTests: XCTestCase {
         XCTAssertNil(try deliveryError(204))
     }
 
-    func testStatusDeterminesRejection() throws {
+    func testStatusAndGatewayCodeDetermineRejection() throws {
         XCTAssertEqual(try deliveryError(401, code: "unknown_client"), .proofRefused(statusCode: 401))
         XCTAssertEqual(try deliveryError(403), .proofRefused(statusCode: 403))
-        XCTAssertEqual(try deliveryError(400, code: "invalid_target"), .clientError(statusCode: 400))
+        XCTAssertEqual(try deliveryError(400, code: "invalid_target"), .proofRefused(statusCode: 400))
+        XCTAssertEqual(try deliveryError(400, code: "invalid_envelope"), .clientError(statusCode: 400))
+        XCTAssertEqual(try deliveryError(400), .clientError(statusCode: 400))
         XCTAssertEqual(try deliveryError(500), .serverError(statusCode: 500))
     }
 
