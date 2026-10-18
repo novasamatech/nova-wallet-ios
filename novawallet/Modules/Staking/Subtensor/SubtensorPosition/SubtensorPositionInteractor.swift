@@ -11,7 +11,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
     let yieldService: SubtensorYieldServiceProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
-    let validatorFactory: SubtensorValidatorPresetFactoryProtocol
+    let directoryService: SubtensorValidatorDirectoryServiceProtocol
     let rootHoldFactory: SubtensorRootHoldFactoryProtocol
     let blockNumberSubscription: BlockNumberRemoteSubscriptionProtocol?
     let applicationHandler: ApplicationHandlerProtocol
@@ -55,7 +55,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
         yieldService = state.earnServices.yieldService
         subnetLogosProvider = state.earnServices.subnetLogosProvider
         priceHistoryService = state.earnServices.priceHistoryService
-        validatorFactory = state.earnServices.validatorPresetFactory
+        directoryService = state.earnServices.validatorDirectoryService
         rootHoldFactory = state.earnServices.rootHoldFactory
         self.blockNumberSubscription = blockNumberSubscription
         self.applicationHandler = applicationHandler
@@ -119,24 +119,27 @@ private extension SubtensorPositionInteractor {
             try blockNumberSubscription?.start { [weak self] result in
                 switch result {
                 case let .success(blockNumber):
+                    self?.isBlockFeedDown = false
+
                     if let blockNumber {
                         self?.presenter?.didReceive(blockNumber: blockNumber)
                         self?.retryFailedRootHolds()
                     }
                 case let .failure(error):
                     self?.logger.warning("Subtensor position block number unavailable: \(error)")
-                    self?.dropBlockFeed()
+                    self?.isBlockFeedDown = true
                 }
             }
         } catch {
             logger.warning("Subtensor position block number unavailable: \(error)")
-            dropBlockFeed()
+            isBlockFeedDown = true
         }
     }
 
-    func dropBlockFeed() {
+    func rearmBlockFeed() {
+        isBlockFeedDown = false
         blockNumberSubscription?.unsubscribe()
-        isBlockFeedDown = true
+        subscribeBlockNumber()
     }
 
     func loadSubnetLogos() {
@@ -231,7 +234,7 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
         validatorStore.cancel()
 
         load(
-            validatorFactory.createLockedWrapper(for: hotkey, subnet: subnet),
+            directoryService.createListedDetailWrapper(for: hotkey, subnet: subnet),
             in: validatorStore,
             label: "position validator"
         ) { [weak self] in
@@ -303,8 +306,7 @@ extension SubtensorPositionInteractor: ApplicationHandlerDelegate {
         if !isRoot {
             loadPrices()
         } else if isBlockFeedDown {
-            isBlockFeedDown = false
-            subscribeBlockNumber()
+            rearmBlockFeed()
         }
 
         presenter?.didBecomeActive()

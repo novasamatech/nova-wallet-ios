@@ -23,14 +23,21 @@ final class SubtensorValidatorDirectoryService {
 private extension SubtensorValidatorDirectoryService {
     func createListedItemWrapper(
         for hotkey: AccountId,
-        subnet: SubtensorSubnetRef
+        subnet: SubtensorSubnetRef,
+        requiresListing: Bool
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> {
         let directoryWrapper = createDirectoryWrapper(for: subnet)
 
         let itemOperation = ClosureOperation<SubtensorValidatorDirectoryItem?> {
-            guard
-                let directory = try? directoryWrapper.targetOperation.extractNoCancellableResultData(),
-                var item = directory.items.first(where: { $0.hotkey == hotkey }) else {
+            let directory: SubtensorValidatorDirectory?
+
+            if requiresListing {
+                directory = try directoryWrapper.targetOperation.extractNoCancellableResultData()
+            } else {
+                directory = try? directoryWrapper.targetOperation.extractNoCancellableResultData()
+            }
+
+            guard let directory, var item = directory.items.first(where: { $0.hotkey == hotkey }) else {
                 return nil
             }
 
@@ -102,7 +109,7 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
         for hotkey: AccountId,
         subnet: SubtensorSubnetRef
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem> {
-        let listedWrapper = createListedItemWrapper(for: hotkey, subnet: subnet)
+        let listedWrapper = createListedItemWrapper(for: hotkey, subnet: subnet, requiresListing: false)
 
         let itemWrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem> =
             OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) { [weak self] in
@@ -118,6 +125,53 @@ extension SubtensorValidatorDirectoryService: SubtensorValidatorDirectoryService
                     name: listed?.name,
                     stake: listed?.reportedStake
                 )
+            }
+
+        itemWrapper.addDependency(wrapper: listedWrapper)
+
+        return itemWrapper.insertingHead(operations: listedWrapper.allOperations)
+    }
+
+    func createListedDetailWrapper(
+        for hotkey: AccountId,
+        subnet: SubtensorSubnetRef
+    ) -> CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> {
+        let listedWrapper = createListedItemWrapper(for: hotkey, subnet: subnet, requiresListing: true)
+        let logger = logger
+
+        let itemWrapper: CompoundOperationWrapper<SubtensorValidatorDirectoryItem?> =
+            OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) { [weak self] in
+                guard let self else {
+                    throw BaseOperationError.parentOperationCancelled
+                }
+
+                guard let listed = try listedWrapper.targetOperation.extractNoCancellableResultData() else {
+                    return .createWithResult(nil)
+                }
+
+                let chainWrapper = createChainItemWrapper(
+                    for: hotkey,
+                    subnet: subnet,
+                    name: listed.name,
+                    stake: listed.reportedStake
+                )
+
+                let itemOperation = ClosureOperation<SubtensorValidatorDirectoryItem?> {
+                    do {
+                        return try chainWrapper.targetOperation.extractNoCancellableResultData()
+                    } catch {
+                        logger.warning("Subtensor validator chain detail unavailable, keeping the listing: \(error)")
+
+                        var item = listed
+                        item.isChainDetailUnavailable = true
+
+                        return item
+                    }
+                }
+
+                itemOperation.addDependency(chainWrapper.targetOperation)
+
+                return chainWrapper.insertingTail(operation: itemOperation)
             }
 
         itemWrapper.addDependency(wrapper: listedWrapper)

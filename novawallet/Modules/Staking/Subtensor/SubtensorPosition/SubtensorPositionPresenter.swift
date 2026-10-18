@@ -104,7 +104,7 @@ private extension SubtensorPositionPresenter {
         }
 
         guard let subnet = state.catalogue?.subnet(for: state.netuid)?.ref else {
-            state.history = state.prices == nil ? .failed : .notListed
+            state.history = state.catalogue == nil ? .failed : .notListed
             state.hasResolvedHistory = true
             return
         }
@@ -226,8 +226,11 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
         }
 
         let detail = state.isValidatorResolved ? state.validator : nil
+        let needsChainDetail = detail?.isChainDetailUnavailable == true
 
-        wireframe.showValidatorInfo(from: view, target: target, hotkey: hotkey, detail: detail)
+        wireframe.showValidatorInfo(
+            from: view, target: target, hotkey: hotkey, detail: detail, needsChainDetail: needsChainDetail
+        )
     }
 
     func retrySync() {
@@ -238,7 +241,7 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
     func retryHistory() {
         historyRequest = nil
 
-        if state.prices == nil {
+        if state.catalogue == nil {
             state.history = .loading
             interactor.loadPrices()
         } else {
