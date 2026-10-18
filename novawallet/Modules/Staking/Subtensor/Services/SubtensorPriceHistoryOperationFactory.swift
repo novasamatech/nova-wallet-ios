@@ -45,7 +45,7 @@ extension SubtensorPriceHistoryOperationFactory {
 
         let coversPeriod = periodPoints.last
             .flatMap { period.startDate(endingAt: $0.date) }
-            .map { registrationDate <= $0 } ?? true
+            .map { registrationDate.timeIntervalSince($0) <= period.coverageTolerance } ?? true
 
         return SubtensorPriceHistory(
             subnet: subnet,

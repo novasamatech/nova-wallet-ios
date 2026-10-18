@@ -20,9 +20,14 @@ struct SubtensorPriceChartViewModel: Equatable {
         let points: [Point]
         let range: ClosedRange<Date>
         let predecessor: Point?
+        let coverageTolerance: TimeInterval
 
         var hasMissingPrefix: Bool {
-            predecessor == nil && points.first.map { $0.date > range.lowerBound } == true
+            guard predecessor == nil, let first = points.first else {
+                return false
+            }
+
+            return first.date.timeIntervalSince(range.lowerBound) > coverageTolerance
         }
     }
 

@@ -30,7 +30,8 @@ final class SubtensorPriceChartDataTests: XCTestCase {
         let series = SubtensorPriceChartViewModel.DatedSeries(
             points: points,
             range: end.addingTimeInterval(-7 * 86400) ... end,
-            predecessor: nil
+            predecessor: nil,
+            coverageTolerance: SubtensorPricePeriod.week.coverageTolerance
         )
 
         return SubtensorPriceChartDataFactory.create(series: .dated(series), availablePoints: 0)
