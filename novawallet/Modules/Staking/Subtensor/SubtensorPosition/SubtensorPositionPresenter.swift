@@ -328,12 +328,6 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
         }
 
         validatorRequest = nil
-
-        guard state.validatorHotkey != hotkey else {
-            return
-        }
-
-        didReceive(validator: nil, for: hotkey)
     }
 
     func didReceive(yields: SubtensorAlphaYields?) {

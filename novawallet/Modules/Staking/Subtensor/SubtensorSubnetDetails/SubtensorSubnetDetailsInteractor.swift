@@ -1,4 +1,5 @@
 import Foundation
+import Foundation_iOS
 import Operation_iOS
 
 final class SubtensorSubnetDetailsInteractor: SubtensorLoadDelivering {
@@ -12,6 +13,7 @@ final class SubtensorSubnetDetailsInteractor: SubtensorLoadDelivering {
     let yieldService: SubtensorYieldServiceProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let positionsSyncService: SubtensorPositionsSyncServiceProtocol?
+    let applicationHandler: ApplicationHandlerProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let currencyManager: CurrencyManagerProtocol
     let operationQueue: OperationQueue
@@ -28,6 +30,7 @@ final class SubtensorSubnetDetailsInteractor: SubtensorLoadDelivering {
         subnet: SubtensorSubnetRef,
         state: SubtensorStakingSharedStateProtocol,
         parametersFactory: SubnetParametersFactoryProtocol,
+        applicationHandler: ApplicationHandlerProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue,
@@ -41,6 +44,7 @@ final class SubtensorSubnetDetailsInteractor: SubtensorLoadDelivering {
         yieldService = state.earnServices.yieldService
         subnetLogosProvider = state.earnServices.subnetLogosProvider
         positionsSyncService = state.positionsSyncService
+        self.applicationHandler = applicationHandler
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.currencyManager = currencyManager
         self.operationQueue = operationQueue
@@ -108,6 +112,8 @@ extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol
 
         loadYields()
         loadSubnetLogos()
+
+        applicationHandler.delegate = self
     }
 
     func loadParameters() {
@@ -161,6 +167,12 @@ extension SubtensorSubnetDetailsInteractor: SubnetDetailsInteractorInputProtocol
         } fail: { [weak self] in
             self?.presenter?.didFailPreset()
         }
+    }
+}
+
+extension SubtensorSubnetDetailsInteractor: ApplicationHandlerDelegate {
+    func didReceiveDidBecomeActive(notification _: Notification) {
+        presenter?.didBecomeActive()
     }
 }
 

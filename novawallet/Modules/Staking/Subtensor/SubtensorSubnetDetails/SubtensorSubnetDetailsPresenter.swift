@@ -18,7 +18,6 @@ final class SubtensorSubnetDetailsPresenter {
     private var isPositionsSyncFailed = false
     private var isParametersRequested = false
     private var isPresetRequested = false
-    private var isPresetFailed = false
     private var isUsePending = false
 
     init(
@@ -87,7 +86,7 @@ private extension SubtensorSubnetDetailsPresenter {
 
     func requestPresetIfReady() {
         guard
-            state.validator == .pending || isPresetFailed,
+            state.validator == .pending,
             !isPresetRequested,
             positions != nil || isPositionsSyncFailed else {
             return
@@ -230,30 +229,19 @@ extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol
 
     func didFailParameters() {
         isParametersRequested = false
-        state.isParametersLoaded = true
-        provideViewModel()
     }
 
     func didReceivePreset(_ validator: SubtensorValidatorDirectoryItem?) {
-        guard state.validator == .pending || isPresetFailed else {
+        guard state.validator == .pending else {
             return
         }
 
-        isPresetFailed = false
         state.validator = validator.map { .selected($0) } ?? .unselected
         provideViewModel()
     }
 
     func didFailPreset() {
         isPresetRequested = false
-        isPresetFailed = true
-
-        guard state.validator == .pending else {
-            return
-        }
-
-        state.validator = .unselected
-        provideViewModel()
     }
 
     func didReceiveYields(_ yields: SubtensorAlphaYields?) {
@@ -280,6 +268,11 @@ extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol
         requestPresetIfReady()
     }
 
+    func didBecomeActive() {
+        requestParametersIfNeeded()
+        requestPresetIfReady()
+    }
+
     func didReceiveSubnetLogos(_ logos: SubtensorSubnetLogos?) {
         subnetLogos = logos
         provideTitle()
@@ -289,7 +282,6 @@ extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol
 extension SubtensorSubnetDetailsPresenter: SubtensorValidatorSelectDelegate {
     func didSelectValidator(_ validator: SubtensorValidatorDirectoryItem, for target: SubtensorStakeTarget) {
         guard target == input.target else { return }
-        isPresetFailed = false
         state.validator = .selected(validator)
         provideViewModel()
 
