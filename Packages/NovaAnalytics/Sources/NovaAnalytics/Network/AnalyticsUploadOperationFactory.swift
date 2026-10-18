@@ -108,7 +108,8 @@ extension AnalyticsUploadOperationFactory: AnalyticsUploadOperationFactoryProtoc
                 path: Constants.eventsPath,
                 queryItems: [],
                 body: body,
-                contentType: "application/json"
+                contentType: "application/json",
+                intent: .background
             )
             let responseWrapper = auth.client.createResponseWrapper(for: request, beforeSend: beforeSend)
             let grade = ClosureOperation<Void> { [logger] in

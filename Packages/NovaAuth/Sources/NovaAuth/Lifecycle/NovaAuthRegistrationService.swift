@@ -65,7 +65,8 @@ private extension NovaAuth {
             try setIdentity(NovaAuthInstallationIdentity(
                 clientID: clientID,
                 keyID: keyID,
-                registration: .unregistered
+                registration: .unregistered,
+                refusal: identity.refusal
             ), context: flight.context)
             try challenge(flight: flight)
         }

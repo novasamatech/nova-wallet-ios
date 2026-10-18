@@ -69,7 +69,7 @@ public final class NovaAuth: NovaAuthClientProtocol {
         in context: NovaAuthContext
     ) -> CompoundOperationWrapper<Void> {
         let operation = NovaAuthWaiterOperation<Void> { [self] cancellation, completion in
-            demand(context: context, cancellation: cancellation) { result in
+            demand(context: context, intent: .userDriven, cancellation: cancellation) { result in
                 completion(result.map { _ in () })
             }
         }
@@ -113,7 +113,8 @@ public final class NovaAuth: NovaAuthClientProtocol {
         try setIdentity(NovaAuthInstallationIdentity(
             clientID: identity.clientID,
             keyID: identity.keyID,
-            registration: registration
+            registration: registration,
+            refusal: registration == .registered ? nil : identity.refusal
         ), context: flight.context)
     }
 

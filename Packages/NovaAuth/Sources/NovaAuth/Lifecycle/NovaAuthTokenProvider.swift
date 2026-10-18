@@ -6,6 +6,7 @@ extension NovaAuth {
     func demand(
         context: NovaAuthContext,
         expectedClientID: String? = nil,
+        intent: NovaAuthDemandIntent,
         cancellation: NovaAuthCancellation,
         completion: @escaping (Result<NovaAuthTokenRecord, Error>) -> Void
     ) {
@@ -41,6 +42,9 @@ extension NovaAuth {
                         try issuanceCooldown.check(now: now)
                         if case let .registrationPending(pending) = state?.identity?.registration {
                             try pending.cooldown.check(now: now)
+                        }
+                        if intent == .background, let refusal = state?.identity?.refusal {
+                            try refusal.check(now: now, appVersion: dependencies.appIdentity.version)
                         }
                         try prepareIdentity(context: context)
                         let next = NovaAuthIssuanceFlight(context: context, sponsored: false)

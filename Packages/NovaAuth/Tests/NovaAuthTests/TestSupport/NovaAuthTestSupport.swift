@@ -15,7 +15,7 @@ final class AuthHarness {
 
     init() throws {
         origin = try NovaAuthOrigin("https://auth.example.com")
-        appIdentity = try NovaAuthAppIdentity(appID: "PREFIX.io.nova.wallet", environment: .development)
+        appIdentity = try NovaAuthAppIdentity(appID: "PREFIX.io.nova.wallet", environment: .development, version: "1")
         ownerQueue.maxConcurrentOperationCount = 1
     }
 
