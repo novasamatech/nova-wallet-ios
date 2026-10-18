@@ -16,7 +16,9 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
 
     private var maxApyUpdate: Multistaking.DashboardItemSubtensorPart.MaxApyUpdate = .keep
     private var rootYields: SubtensorAlphaYields?
+    private var requestedRootHotkeys: Set<AccountId>?
     private var subnetYields: [UInt16: SubtensorAlphaYields] = [:]
+    private var requestedSubnetNetuids: Set<UInt16>?
     private var isSyncCompletionDeferred = false
 
     private lazy var stakeStateSubscription = SubtensorStakeStateSubscription(
@@ -66,6 +68,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
 
     override func performSyncUp() {
         seedRootYields()
+        seedSubnetYields()
         cataloguePricing.seed()
 
         stakeStateSubscription.subscribe()
@@ -77,7 +80,9 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         isSyncCompletionDeferred = false
         maxApyCallStore.cancel()
         rootYieldsCallStore.cancel()
+        requestedRootHotkeys = nil
         subnetYieldsCallStore.cancel()
+        requestedSubnetNetuids = nil
         cataloguePricing.cancel()
         stakeStateSubscription.unsubscribe()
     }
@@ -93,8 +98,13 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     }
 
     private func handle(state: Multistaking.SubtensorStakingState) {
+        seedSubnetYields()
         persistState(state)
-        performMaxApyFetch()
+
+        if !state.hasActiveStaking {
+            performMaxApyFetch()
+        }
+
         performRootYieldsFetch()
         performSubnetYieldsFetch()
         performCataloguePricingRefresh()
@@ -124,8 +134,8 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
 
     private func completeSync(_ error: Error?, for state: Multistaking.SubtensorStakingState) {
         let isAwaitingMaxApy = !state.hasActiveStaking && maxApyUpdate == .keep && maxApyCallStore.hasCall
-        let isAwaitingSubnetYields = state.rootStakeInRao == nil && subnetYields.isEmpty &&
-            subnetYieldsCallStore.hasCall
+        let isAwaitingSubnetYields = state.rootStakeInRao == nil &&
+            !state.heldSubnetNetuids.isSubset(of: subnetYields.keys) && subnetYieldsCallStore.hasCall
 
         isSyncCompletionDeferred = error == nil && (isAwaitingMaxApy || isAwaitingSubnetYields)
 
@@ -169,9 +179,20 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     }
 
     private func performRootYieldsFetch() {
-        guard !rootYieldsCallStore.hasCall, lastState?.rootStakeInRao != nil else {
+        guard let lastState else {
             return
         }
+
+        let hotkeys = Set(
+            lastState.positions.filter { $0.netuid == SubtensorStakingPallet.rootNetuid }.map(\.hotkey)
+        )
+
+        guard !hotkeys.isEmpty, hotkeys != requestedRootHotkeys else {
+            return
+        }
+
+        requestedRootHotkeys = hotkeys
+        rootYieldsCallStore.cancel()
 
         executeCancellable(
             wrapper: yieldService.createAlphaYieldsWrapper(for: SubtensorStakingPallet.rootNetuid),
@@ -199,16 +220,35 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         persistLastStateIfIdle()
     }
 
-    private func performSubnetYieldsFetch() {
-        guard
-            !subnetYieldsCallStore.hasCall,
-            let lastState,
-            lastState.rootStakeInRao == nil,
-            !lastState.heldSubnetNetuids.isEmpty else {
+    private func seedSubnetYields() {
+        guard let lastState, lastState.rootStakeInRao == nil else {
             return
         }
 
-        let yieldWrappers = lastState.heldSubnetNetuids.map { yieldService.createAlphaYieldsWrapper(for: $0) }
+        for netuid in lastState.heldSubnetNetuids where subnetYields[netuid] == nil {
+            guard case let .fresh(yields) = yieldService.cachedAlphaYields(for: netuid) else {
+                continue
+            }
+
+            subnetYields[netuid] = yields
+        }
+    }
+
+    private func performSubnetYieldsFetch() {
+        guard let lastState, lastState.rootStakeInRao == nil else {
+            return
+        }
+
+        let netuids = lastState.heldSubnetNetuids
+
+        guard !netuids.isEmpty, netuids != requestedSubnetNetuids else {
+            return
+        }
+
+        requestedSubnetNetuids = netuids
+        subnetYieldsCallStore.cancel()
+
+        let yieldWrappers = netuids.map { yieldService.createAlphaYieldsWrapper(for: $0) }
 
         let mergeOperation = ClosureOperation<[UInt16: SubtensorAlphaYields]> {
             try yieldWrappers.reduce(into: [:]) { result, wrapper in
@@ -322,6 +362,24 @@ extension SubtensorMultistakingUpdateService: MultistakingOnchainSyncServiceProt
             return
         }
 
+        requestedRootHotkeys = nil
+        requestedSubnetNetuids = nil
+
+        performMaxApyFetch()
         stakeStateSubscription.refresh()
+    }
+
+    func refreshMaxApy() {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        guard isActive, lastState?.hasActiveStaking != true else {
+            return
+        }
+
+        performMaxApyFetch()
     }
 }

@@ -224,6 +224,10 @@ extension StakingDashboardInteractor: StakingDashboardInteractorInputProtocol {
         syncService?.refreshOffchain()
         provideAnnouncements()
     }
+
+    func becomeActive() {
+        syncService?.refreshMaxApy()
+    }
 }
 
 extension StakingDashboardInteractor: ChainsStoreDelegate {
@@ -298,6 +302,10 @@ extension StakingDashboardInteractor: EventVisitorProtocol {
         syncService?.update(selectedMetaAccount: wallet)
         resetDashboardItemsSubscription()
         resetBalanceSubscription()
+    }
+
+    func processSubtensorMaxApyFetched(event _: SubtensorMaxApyFetched) {
+        syncService?.refreshMaxApy()
     }
 }
 

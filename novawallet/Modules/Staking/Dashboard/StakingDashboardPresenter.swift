@@ -147,6 +147,10 @@ extension StakingDashboardPresenter: StakingDashboardPresenterProtocol {
     func refresh() {
         interactor.refresh()
     }
+
+    func becomeActive() {
+        interactor.becomeActive()
+    }
 }
 
 // MARK: - StakingDashboardInteractorOutputProtocol
