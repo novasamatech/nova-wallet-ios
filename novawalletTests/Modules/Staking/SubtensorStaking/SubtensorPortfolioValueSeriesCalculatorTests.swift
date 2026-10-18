@@ -26,9 +26,9 @@ final class SubtensorPortfolioValueSeriesCalculatorTests: XCTestCase {
             points: [
                 point(at: 1_791_378_000, taoValue: "12.5", fiatValue: "4875.25"),
                 point(at: 1_791_680_400, taoValue: "13.1", fiatValue: "5240"),
-                point(at: 1_791_980_400, taoValue: "13.6", fiatValue: "5576")
+                point(at: 1_791_980_400, taoValue: "13.6", fiatValue: "5480.8")
             ],
-            changeInFiat: XCTUnwrap(Decimal(string: "700.75")) / XCTUnwrap(Decimal(string: "4875.25"))
+            changeInFiat: XCTUnwrap(Decimal(string: "605.55")) / XCTUnwrap(Decimal(string: "4875.25"))
         )
         XCTAssertEqual(series, expected)
     }
