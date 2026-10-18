@@ -155,20 +155,6 @@ private extension SubtensorPositionInteractor {
         }
     }
 
-    func loadPrices() {
-        pricesStore.cancel()
-
-        load(
-            alphaPriceProvider.createPricesWrapper(for: [netuid]),
-            in: pricesStore,
-            label: "position alpha prices"
-        ) { [weak self] in
-            self?.presenter?.didReceive(prices: $0)
-        } fail: { [weak self] in
-            self?.presenter?.didFailPrices()
-        }
-    }
-
     func retryFailedRootHolds() {
         guard let hotkeys = failedHoldsHotkeys else {
             return
@@ -212,6 +198,20 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
 
         if !isRoot {
             loadPrices()
+        }
+    }
+
+    func loadPrices() {
+        pricesStore.cancel()
+
+        load(
+            alphaPriceProvider.createPricesWrapper(for: [netuid]),
+            in: pricesStore,
+            label: "position alpha prices"
+        ) { [weak self] in
+            self?.presenter?.didReceive(prices: $0)
+        } fail: { [weak self] in
+            self?.presenter?.didFailPrices()
         }
     }
 
