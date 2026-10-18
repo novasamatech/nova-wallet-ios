@@ -91,7 +91,7 @@ private extension SubtensorConfirmViewModelFactory {
         locale: Locale
     ) -> SubtensorSaleCostBasisViewModel {
         let proceeds = SubtensorSaleProceeds(
-            quote: input.tradesUnavailable ? nil : input.latestQuote,
+            quote: input.tradesUnavailable || input.isQuoteFailed ? nil : input.latestQuote,
             soldAlpha: input.model.amount,
             isQuotePending: !input.tradesUnavailable && !input.isQuoteFailed
         )
@@ -114,7 +114,7 @@ private extension SubtensorConfirmViewModelFactory {
         }
 
         let purchase = SubtensorPurchaseQuote(
-            quote: input.tradesUnavailable ? nil : input.latestQuote,
+            quote: input.tradesUnavailable || input.isQuoteFailed ? nil : input.latestQuote,
             paidTao: input.model.amount,
             isQuotePending: !input.tradesUnavailable && !input.isQuoteFailed
         )
@@ -187,6 +187,7 @@ private extension SubtensorConfirmViewModelFactory {
             pay: createPayTile(for: input, locale: locale),
             receive: receive,
             swapRate: swapRate,
+            isQuoteFailed: input.isQuoteFailed,
             avgBuyPrice: costBasis.avgBuyPrice,
             youWillEarn: costBasis.earned,
             slippage: input.model.tolerance.flatMap {

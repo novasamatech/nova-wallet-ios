@@ -109,7 +109,7 @@ extension SubtensorConfirmPresenter {
         let input = SubtensorConfirmViewModelInput(
             model: model,
             catalogue: catalogue,
-            latestQuote: quoteState?.latest,
+            latestQuote: quoteState?.displayed,
             tradesUnavailable: tradesUnavailable,
             isQuoteFailed: quoteState?.isLatestFailed ?? false,
             isPriceMoved: quoteState?.isPriceMoved ?? false,
