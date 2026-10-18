@@ -1,4 +1,5 @@
 import Foundation
+import Foundation_iOS
 import Operation_iOS
 
 final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadDelivering {
@@ -13,6 +14,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
     let validatorFactory: SubtensorValidatorPresetFactoryProtocol
     let rootHoldFactory: SubtensorRootHoldFactoryProtocol
     let blockNumberSubscription: BlockNumberRemoteSubscriptionProtocol?
+    let applicationHandler: ApplicationHandlerProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
@@ -39,6 +41,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
         state: SubtensorStakingSharedStateProtocol,
         netuid: UInt16,
         blockNumberSubscription: BlockNumberRemoteSubscriptionProtocol?,
+        applicationHandler: ApplicationHandlerProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,
         operationQueue: OperationQueue,
@@ -53,6 +56,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
         validatorFactory = state.earnServices.validatorPresetFactory
         rootHoldFactory = state.earnServices.rootHoldFactory
         self.blockNumberSubscription = blockNumberSubscription
+        self.applicationHandler = applicationHandler
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.operationQueue = operationQueue
         self.logger = logger
@@ -86,6 +90,10 @@ private extension SubtensorPositionInteractor {
                 }
 
                 presenter?.didReceive(group: findGroup(in: newState))
+
+                if !isRoot, !pricesStore.hasCall {
+                    loadPrices()
+                }
 
                 if isRoot {
                     presenter?.didReceive(
@@ -143,6 +151,8 @@ private extension SubtensorPositionInteractor {
             label: "position alpha prices"
         ) { [weak self] in
             self?.presenter?.didReceive(prices: $0)
+        } fail: { [weak self] in
+            self?.presenter?.didFailPrices()
         }
     }
 
@@ -169,10 +179,6 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
     }
 
     func setup() {
-        subscribePositions()
-        subscribeTaoPrice(currency: selectedCurrency)
-        loadYields()
-
         if isRoot {
             subscribeBlockNumber()
         } else {
@@ -180,10 +186,20 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
             loadSubnetLogos()
             loadSubnetsInfo()
         }
+
+        subscribePositions()
+        subscribeTaoPrice(currency: selectedCurrency)
+        loadYields()
+
+        applicationHandler.delegate = self
     }
 
     func refreshPositions() {
         state.positionsSyncService?.refresh()
+
+        if !isRoot {
+            loadPrices()
+        }
     }
 
     func loadSubnetsInfo() {
@@ -264,6 +280,18 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
                 self?.presenter?.didFailHistory(for: period)
             }
         }
+    }
+}
+
+extension SubtensorPositionInteractor: ApplicationHandlerDelegate {
+    func didReceiveDidBecomeActive(notification _: Notification) {
+        priceProvider?.refresh()
+
+        if !isRoot {
+            loadPrices()
+        }
+
+        presenter?.didBecomeActive()
     }
 }
 

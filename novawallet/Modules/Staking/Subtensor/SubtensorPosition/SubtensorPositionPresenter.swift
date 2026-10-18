@@ -139,6 +139,13 @@ private extension SubtensorPositionPresenter {
         }
     }
 
+    func resolveCatalogue() {
+        state.isCatalogueResolved = true
+        loadValidatorIfNeeded()
+        requestHistoryIfNeeded()
+        provideViewModel()
+    }
+
     func retrySubnetsInfoIfUnavailable() {
         guard isSubnetsInfoUnavailable else {
             return
@@ -274,12 +281,13 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
         provideViewModel()
     }
 
-    func didReceive(prices: SubtensorAlphaPrices?) {
+    func didReceive(prices: SubtensorAlphaPrices) {
         state.prices = prices
-        state.isCatalogueResolved = true
-        loadValidatorIfNeeded()
-        requestHistoryIfNeeded()
-        provideViewModel()
+        resolveCatalogue()
+    }
+
+    func didFailPrices() {
+        resolveCatalogue()
     }
 
     func didReceive(subnetsInfo: SubtensorSubnetsInfo?) {
@@ -370,6 +378,10 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
         state.history = .failed
         state.hasResolvedHistory = true
         provideViewModel()
+    }
+
+    func didBecomeActive() {
+        loadValidatorIfNeeded()
     }
 }
 
