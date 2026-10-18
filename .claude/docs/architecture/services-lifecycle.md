@@ -165,32 +165,29 @@ from an individual screen's Interactor without a matching `throttle()`.
 
 ## Shared backend authentication
 
-facade's own `AnalyticsAuthProvidingProtocol` conformance. Config is fetched once per process and the
-Origin adoption fences prior work.
-`NovaAuthFacade.shared` owns the one `NovaAuth` client. Both `AnalyticsAuthAdapter` and
-`BittensorAuthorizedTransport` receive this same owner. Global config snapshots have monotonically
-increasing revisions; late old fetches cannot reactivate a previous origin. Origin publication
-fences prior work and clears Bittensor presentation seeds before synchronous peeks.
+`NovaAuthFacade.shared` owns the one `NovaAuth` client. Analytics receives it through the
+facade's own `AnalyticsAuthProvidingProtocol` conformance, and `BittensorAuthorizedTransport`
+receives the same owner. Config is fetched once per process and the
+facade memoises the first adopted endpoint, so a later fetch cannot reactivate a previous origin.
+Origin adoption fences prior work; the Bittensor store clears its seeds once a different auth
+scope is admitted.
 Analytics consent/erasure and wallet changes never reset this authentication owner. Host activation
 authorizes ordinary later demand to bootstrap after accepted origin changes and legacy-reset repair;
-activation itself creates no key and sends no auth request. This explicitly replaces the supplied
-profile-3 protocol's user-driven re-creation wording at lines 511–514. Requests carry no intent.
+activation itself creates no key and sends no auth request. This explicitly replaces the
+profile-3 protocol's user-driven re-creation wording. Requests carry a demand intent that only gates re-registration after a refusal.
 Failed auth completes the caller operation; Bittensor owns its retry/presentation and Analytics
 retains batches silently for its normal later flushes, checking consent before each send/replay.
 
-`activate(origin:)` itself replaces the context, with a new generation and owed bearer deletion,
-when the stored origin differs or the stored state is corrupt, so the facade's first endpoint
-already carries the current context. Failed adoption leaves no endpoint, and the next demand
-adopts again.
 The cost basis keeps no ledger of its own: its seed is peeked from the store's `operations/search`
 pages, an own trade drops those pages and blocks the seed for 300 s, and the next open refetches.
 Max APY keeps no result of its own and relies on the store's max-age: the dashboard asks again on every
 `performSyncUp()`, `refreshOffchain()` and `refreshMaxApy()` (the dashboard appearing, or the landing posting
 `SubtensorMaxApyFetched` after its own fetch), and on a stake-state change only while the account holds no TAO stake. For an account without TAO stake the
-updater keeps its sync flag on until the first answer, so the "Earn up to" row loads instead of blanking. Local calculations do not require a separate auth request. The package exposes a
-context invalidation ID so the facade also detects a cold origin replacement/repair before
-publishing its first endpoint.
-Failed adoption notifies when its memory fence changed.
+updater keeps its sync flag on until the first answer, so the "Earn up to" row loads instead of blanking. Local calculations do not require a separate auth request.
+`activate(origin:)` itself replaces the context, with a new generation and owed bearer deletion,
+when the stored origin differs or the stored state is corrupt, so the facade's first endpoint
+already carries the current context. Failed adoption leaves no endpoint, and the next demand
+adopts again.
 First activation with no prior installation does not itself invalidate a context.
 
 Each issuance flight attempts at most one new key generation. An unusable identity is retired
