@@ -139,6 +139,13 @@ private extension SubtensorPositionPresenter {
         }
     }
 
+    func resolveCatalogue() {
+        state.isCatalogueResolved = true
+        loadValidatorIfNeeded()
+        requestHistoryIfNeeded()
+        provideViewModel()
+    }
+
     func retrySubnetsInfoIfUnavailable() {
         guard isSubnetsInfoUnavailable else {
             return
@@ -225,6 +232,7 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
 
     func retrySync() {
         interactor.refreshPositions()
+        loadValidatorIfNeeded()
     }
 
     func retryHistory() {
@@ -273,12 +281,13 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
         provideViewModel()
     }
 
-    func didReceive(prices: SubtensorAlphaPrices?) {
+    func didReceive(prices: SubtensorAlphaPrices) {
         state.prices = prices
-        state.isCatalogueResolved = true
-        loadValidatorIfNeeded()
-        requestHistoryIfNeeded()
-        provideViewModel()
+        resolveCatalogue()
+    }
+
+    func didFailPrices() {
+        resolveCatalogue()
     }
 
     func didReceive(subnetsInfo: SubtensorSubnetsInfo?) {
@@ -311,6 +320,20 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
         state.validatorHotkey = hotkey
         state.validator = validator
         provideViewModel()
+    }
+
+    func didFailValidator(for hotkey: AccountId) {
+        guard hotkey == validatorRequest?.hotkey else {
+            return
+        }
+
+        validatorRequest = nil
+
+        guard state.validatorHotkey != hotkey else {
+            return
+        }
+
+        didReceive(validator: nil, for: hotkey)
     }
 
     func didReceive(yields: SubtensorAlphaYields?) {
@@ -355,6 +378,10 @@ extension SubtensorPositionPresenter: SubnetPositionInteractorOutputProtocol {
         state.history = .failed
         state.hasResolvedHistory = true
         provideViewModel()
+    }
+
+    func didBecomeActive() {
+        loadValidatorIfNeeded()
     }
 }
 

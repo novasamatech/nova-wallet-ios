@@ -16,7 +16,9 @@ final class SubtensorSubnetDetailsPresenter {
     private var subnetLogos: SubtensorSubnetLogos?
     private var positions: Multistaking.SubtensorStakingState?
     private var isPositionsSyncFailed = false
+    private var isParametersRequested = false
     private var isPresetRequested = false
+    private var isPresetFailed = false
     private var isUsePending = false
 
     init(
@@ -74,9 +76,18 @@ private extension SubtensorSubnetDetailsPresenter {
         positions.flatMap { SubtensorPortfolioBuilder.build(state: $0).group(netuid: subnetRef.netuid)?.primaryHotkey }
     }
 
+    func requestParametersIfNeeded() {
+        guard !isParametersRequested else {
+            return
+        }
+
+        isParametersRequested = true
+        interactor.loadParameters()
+    }
+
     func requestPresetIfReady() {
         guard
-            state.validator == .pending,
+            state.validator == .pending || isPresetFailed,
             !isPresetRequested,
             positions != nil || isPositionsSyncFailed else {
             return
@@ -120,6 +131,7 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
         provideViewModel()
 
         interactor.setup()
+        requestParametersIfNeeded()
         interactor.loadHistory(for: state.period)
     }
 
@@ -209,19 +221,38 @@ extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol
         provideViewModel()
     }
 
-    func didReceiveParameters(_ parameters: SubtensorSubnetParameters?) {
-        guard parameters == nil || parameters?.ref == subnetRef else { return }
+    func didReceiveParameters(_ parameters: SubtensorSubnetParameters) {
+        guard parameters.ref == subnetRef else { return }
         state.parameters = parameters
         state.isParametersLoaded = true
         provideViewModel()
     }
 
+    func didFailParameters() {
+        isParametersRequested = false
+        state.isParametersLoaded = true
+        provideViewModel()
+    }
+
     func didReceivePreset(_ validator: SubtensorValidatorDirectoryItem?) {
+        guard state.validator == .pending || isPresetFailed else {
+            return
+        }
+
+        isPresetFailed = false
+        state.validator = validator.map { .selected($0) } ?? .unselected
+        provideViewModel()
+    }
+
+    func didFailPreset() {
+        isPresetRequested = false
+        isPresetFailed = true
+
         guard state.validator == .pending else {
             return
         }
 
-        state.validator = validator.map { .selected($0) } ?? .unselected
+        state.validator = .unselected
         provideViewModel()
     }
 
@@ -239,11 +270,13 @@ extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol
 
     func didReceivePositions(_ state: Multistaking.SubtensorStakingState?) {
         positions = state
+        requestParametersIfNeeded()
         requestPresetIfReady()
     }
 
     func didReceivePositionsSyncFailed(_ isFailed: Bool) {
         isPositionsSyncFailed = isFailed
+        requestParametersIfNeeded()
         requestPresetIfReady()
     }
 
@@ -256,6 +289,7 @@ extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol
 extension SubtensorSubnetDetailsPresenter: SubtensorValidatorSelectDelegate {
     func didSelectValidator(_ validator: SubtensorValidatorDirectoryItem, for target: SubtensorStakeTarget) {
         guard target == input.target else { return }
+        isPresetFailed = false
         state.validator = .selected(validator)
         provideViewModel()
 
