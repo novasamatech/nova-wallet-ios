@@ -45,8 +45,6 @@ final class NovaAuthFacade: NovaAuthProvidingProtocol {
     }
 }
 
-// MARK: Private
-
 private extension NovaAuthFacade {
     func adopt(_ config: GlobalConfig, client: NovaAuthClientProtocol) throws -> NovaAuthEndpoint {
         adoptionLock.lock()
