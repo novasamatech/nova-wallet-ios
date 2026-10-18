@@ -5,13 +5,13 @@ import Operation_iOS
 struct SubtensorEarnServices {
     let subnetLogosProvider: SubtensorConfigProviding
     let earnSettings: SubtensorEarnSettingsProtocol
-    let catalogueService: SubtensorSubnetCatalogueServiceProtocol
-    let alphaPriceProvider: SubtensorAlphaPriceProviderProtocol
-    let yieldService: SubtensorYieldServiceProtocol
-    let maxApyProvider: SubtensorMaxApyProviderProtocol
-    let recommendationService: SubtensorRecommendationServiceProtocol
-    let validatorDirectoryService: SubtensorValidatorDirectoryServiceProtocol
-    let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
+    let catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol
+    let alphaPriceOperationFactory: SubtensorAlphaPriceOperationFactoryProtocol
+    let yieldOperationFactory: SubtensorYieldOperationFactoryProtocol
+    let maxApyOperationFactory: SubtensorMaxApyOperationFactoryProtocol
+    let recommendationOperationFactory: SubtensorRecommendationOperationFactoryProtocol
+    let validatorDirectoryOperationFactory: SubtensorValidatorDirectoryOperationFactoryProtocol
+    let priceHistoryOperationFactory: SubtensorPriceHistoryOperationFactoryProtocol?
     let tradeQuoteFactory: SubtensorTradeQuoteFactoryProtocol
     let rootHoldFactory: SubtensorRootHoldFactoryProtocol
     let groupHotkeyFactory: SubtensorGroupHotkeyFactoryProtocol
@@ -23,7 +23,7 @@ protocol SubtensorStakingSharedStateProtocol: AnyObject {
     var stakingOption: Multistaking.ChainAssetOption { get }
     var chainRegistry: ChainRegistryProtocol { get }
     var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol { get }
-    var subnetsService: SubtensorSubnetsServiceProtocol { get }
+    var subnetsOperationFactory: SubtensorSubnetsOperationFactoryProtocol { get }
     var apiOperationFactory: SubtensorApiOperationFactoryProtocol { get }
     var earnServices: SubtensorEarnServices { get }
     var flowState: SubtensorStakingFlowStateProtocol { get }
@@ -49,7 +49,7 @@ final class SubtensorStakingSharedState {
     let stakingOption: Multistaking.ChainAssetOption
     let chainRegistry: ChainRegistryProtocol
     let generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol
-    let subnetsService: SubtensorSubnetsServiceProtocol
+    let subnetsOperationFactory: SubtensorSubnetsOperationFactoryProtocol
     let apiOperationFactory: SubtensorApiOperationFactoryProtocol
     let stakeStateSourceFactory: SubtensorStakeStateSourceFactoryProtocol
     let earnServices: SubtensorEarnServices
@@ -70,7 +70,7 @@ final class SubtensorStakingSharedState {
         stakingOption: Multistaking.ChainAssetOption,
         chainRegistry: ChainRegistryProtocol,
         generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol,
-        subnetsService: SubtensorSubnetsServiceProtocol,
+        subnetsOperationFactory: SubtensorSubnetsOperationFactoryProtocol,
         apiOperationFactory: SubtensorApiOperationFactoryProtocol,
         stakeStateSourceFactory: SubtensorStakeStateSourceFactoryProtocol,
         earnServices: SubtensorEarnServices,
@@ -84,7 +84,7 @@ final class SubtensorStakingSharedState {
         self.stakingOption = stakingOption
         self.chainRegistry = chainRegistry
         self.generalLocalSubscriptionFactory = generalLocalSubscriptionFactory
-        self.subnetsService = subnetsService
+        self.subnetsOperationFactory = subnetsOperationFactory
         self.apiOperationFactory = apiOperationFactory
         self.stakeStateSourceFactory = stakeStateSourceFactory
         self.earnServices = earnServices

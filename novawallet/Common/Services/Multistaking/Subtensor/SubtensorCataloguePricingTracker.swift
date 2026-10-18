@@ -7,7 +7,7 @@ final class SubtensorCataloguePricingTracker {
         let isFullyPriced: Bool?
     }
 
-    let alphaPriceProvider: SubtensorAlphaPriceProviderProtocol
+    let alphaPriceOperationFactory: SubtensorAlphaPriceOperationFactoryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
@@ -24,11 +24,11 @@ final class SubtensorCataloguePricingTracker {
     }
 
     init(
-        alphaPriceProvider: SubtensorAlphaPriceProviderProtocol,
+        alphaPriceOperationFactory: SubtensorAlphaPriceOperationFactoryProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
-        self.alphaPriceProvider = alphaPriceProvider
+        self.alphaPriceOperationFactory = alphaPriceOperationFactory
         self.operationQueue = operationQueue
         self.logger = logger
     }
@@ -38,7 +38,7 @@ final class SubtensorCataloguePricingTracker {
             return
         }
 
-        prices = alphaPriceProvider.cachedPrices().map { .success($0) }
+        prices = alphaPriceOperationFactory.cachedPrices().map { .success($0) }
     }
 
     func cancel() {
@@ -76,7 +76,7 @@ final class SubtensorCataloguePricingTracker {
         callStore.cancel()
 
         executeCancellable(
-            wrapper: alphaPriceProvider.createPricesWrapper(for: netuids),
+            wrapper: alphaPriceOperationFactory.createPricesWrapper(for: netuids),
             inOperationQueue: operationQueue,
             backingCallIn: callStore,
             runningCallbackIn: callbackQueue,

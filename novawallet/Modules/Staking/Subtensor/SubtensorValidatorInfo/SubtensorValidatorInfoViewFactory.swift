@@ -22,7 +22,7 @@ enum SubtensorValidatorInfoViewFactory {
             state: state,
             coverageFactory: SubtensorValidatorCoverageFactory(
                 apiFactory: state.apiOperationFactory,
-                catalogueService: earnServices.catalogueService,
+                catalogueOperationFactory: earnServices.catalogueOperationFactory,
                 operationQueue: OperationManagerFacade.sharedDefaultQueue
             ),
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,

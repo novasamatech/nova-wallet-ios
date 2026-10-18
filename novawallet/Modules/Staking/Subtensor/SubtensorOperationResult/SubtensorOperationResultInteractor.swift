@@ -2,21 +2,22 @@ import Foundation
 import Foundation_iOS
 import Operation_iOS
 
-final class SubtensorOperationResultInteractor {
-    weak var presenter: SubtensorResultInteractorOutputProtocol?
+final class SubtensorOperationResultInteractor: SubtensorLoadDelivering {
+    weak var presenter: SubtensorOperationResultInteractorOutputProtocol?
 
     let operation: SubtensorStakingOperation
     let coldkey: AccountId
     let loadsSubnetData: Bool
     let operationService: SubtensorStakingOperationServiceProtocol
     let chainFactory: SubtensorResultChainFactoryProtocol
-    let catalogueService: SubtensorSubnetCatalogueServiceProtocol
+    let catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
     let osMediator: OperatingSystemMediating
     let schedulerFactory: (SchedulerDelegate) -> SchedulerProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
+    private let catalogueStore = CancellableCallStore()
     private var confirmationScheduler: SchedulerProtocol?
     private var isSubmissionFinished = false
 
@@ -26,7 +27,7 @@ final class SubtensorOperationResultInteractor {
         loadsSubnetData: Bool,
         operationService: SubtensorStakingOperationServiceProtocol,
         chainFactory: SubtensorResultChainFactoryProtocol,
-        catalogueService: SubtensorSubnetCatalogueServiceProtocol,
+        catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol,
         subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
         osMediator: OperatingSystemMediating,
         schedulerFactory: @escaping (SchedulerDelegate) -> SchedulerProtocol,
@@ -38,7 +39,7 @@ final class SubtensorOperationResultInteractor {
         self.loadsSubnetData = loadsSubnetData
         self.operationService = operationService
         self.chainFactory = chainFactory
-        self.catalogueService = catalogueService
+        self.catalogueOperationFactory = catalogueOperationFactory
         self.subnetLogosProvider = subnetLogosProvider
         self.osMediator = osMediator
         self.schedulerFactory = schedulerFactory
@@ -47,6 +48,7 @@ final class SubtensorOperationResultInteractor {
     }
 
     deinit {
+        catalogueStore.cancel()
         confirmationScheduler?.cancel()
         osMediator.enableScreenSleep()
     }
@@ -102,19 +104,17 @@ private extension SubtensorOperationResultInteractor {
             return
         }
 
-        let catalogueService = catalogueService
+        let catalogueOperationFactory = catalogueOperationFactory
 
-        execute(
-            operation: ClosureOperation { catalogueService.cachedCatalogue().value },
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            if case let .success(catalogue?) = result {
-                self?.presenter?.didReceiveCatalogue(catalogue)
+        load(
+            catalogueOperationFactory.createCatalogueWrapper(),
+            cached: { catalogueOperationFactory.cachedCatalogue().value },
+            in: catalogueStore,
+            label: "catalogue for the result",
+            deliver: { [weak self] in
+                self?.presenter?.didReceiveCatalogue($0)
             }
-
-            self?.provideCatalogue()
-        }
+        )
 
         execute(
             wrapper: subnetLogosProvider.createLogosWrapper(),
@@ -126,25 +126,9 @@ private extension SubtensorOperationResultInteractor {
             }
         }
     }
-
-    func provideCatalogue() {
-        execute(
-            wrapper: catalogueService.createCatalogueWrapper(),
-            inOperationQueue: operationQueue,
-            runningCallbackIn: .main
-        ) { [weak self] result in
-            switch result {
-            case let .success(catalogue):
-                self?.presenter?.didReceiveCatalogue(catalogue)
-            case let .failure(error):
-                self?.logger.error("Subtensor catalogue unavailable for the result: \(error)")
-                self?.presenter?.didReceiveCatalogue(nil)
-            }
-        }
-    }
 }
 
-extension SubtensorOperationResultInteractor: SubtensorResultInteractorInputProtocol {
+extension SubtensorOperationResultInteractor: SubtensorOperationResultInteractorInputProtocol {
     func setup() {
         provideSubnetData()
         submit()

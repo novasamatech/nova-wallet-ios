@@ -7,7 +7,7 @@ final class SubtensorValidatorInfoPresenter {
     let target: SubtensorStakeTarget
     let hotkey: AccountId
     let chain: ChainModel
-    let interactor: SubtensorValInfoInteractorInputProtocol
+    let interactor: SubtensorValidatorInfoInteractorInputProtocol
     let wireframe: SubtensorValidatorInfoWireframeProtocol
     let viewModelFactory: SubtensorValidatorInfoViewModelFactory
 
@@ -24,7 +24,7 @@ final class SubtensorValidatorInfoPresenter {
         chain: ChainModel,
         detail: SubtensorValidatorDirectoryItem?,
         needsChainDetail: Bool,
-        interactor: SubtensorValInfoInteractorInputProtocol,
+        interactor: SubtensorValidatorInfoInteractorInputProtocol,
         wireframe: SubtensorValidatorInfoWireframeProtocol,
         viewModelFactory: SubtensorValidatorInfoViewModelFactory,
         localizationManager: LocalizationManagerProtocol
@@ -96,7 +96,7 @@ extension SubtensorValidatorInfoPresenter: SubtensorValidatorInfoPresenterProtoc
     }
 }
 
-extension SubtensorValidatorInfoPresenter: SubtensorValInfoInteractorOutputProtocol {
+extension SubtensorValidatorInfoPresenter: SubtensorValidatorInfoInteractorOutputProtocol {
     func didReceive(coverage: SubtensorValidatorCoverage?) {
         self.coverage = .loaded(value: coverage)
         provideViewModel()

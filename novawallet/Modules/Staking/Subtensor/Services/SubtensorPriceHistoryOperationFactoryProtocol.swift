@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-protocol SubtensorPriceHistoryServiceProtocol: AnyObject {
+protocol SubtensorPriceHistoryOperationFactoryProtocol: AnyObject {
     func createHistoryWrapper(
         for subnet: SubtensorSubnetRef,
         period: SubtensorPricePeriod,

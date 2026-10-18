@@ -73,7 +73,7 @@ private extension SubtensorOperationResultViewFactory {
             loadsSubnetData: !request.target.isRoot,
             operationService: services.operationService,
             chainFactory: chainFactory,
-            catalogueService: state.earnServices.catalogueService,
+            catalogueOperationFactory: state.earnServices.catalogueOperationFactory,
             subnetLogosProvider: state.earnServices.subnetLogosProvider,
             osMediator: OperatingSystemMediator(),
             schedulerFactory: { Scheduler(with: $0, callbackQueue: .main) },
@@ -85,7 +85,7 @@ private extension SubtensorOperationResultViewFactory {
     static func createPresentedView(
         for request: SubtensorOperationResultRequest,
         presenter: SubtensorOperationResultPresenter
-    ) -> SubtensorResultViewProtocol {
+    ) -> SubtensorOperationResultViewProtocol {
         guard request.target.isRoot else {
             let view = SubtensorOperationResultViewController(
                 presenter: presenter,

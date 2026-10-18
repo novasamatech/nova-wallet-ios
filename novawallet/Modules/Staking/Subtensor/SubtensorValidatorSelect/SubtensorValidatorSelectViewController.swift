@@ -4,11 +4,11 @@ import UIKit
 final class SubtensorValidatorSelectViewController: UIViewController, ViewHolder {
     typealias RootViewType = SubtensorValidatorSelectViewLayout
 
-    let presenter: ValidatorSelectPresenterProtocol
+    let presenter: SubtensorValidatorSelectPresenterProtocol
 
     private var state: SubtensorValidatorListState?
 
-    init(presenter: ValidatorSelectPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+    init(presenter: SubtensorValidatorSelectPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
 
         super.init(nibName: nil, bundle: nil)

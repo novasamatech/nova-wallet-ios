@@ -51,7 +51,11 @@ extension SubtensorLoadDelivering {
                 deliver(value)
             }
 
-            self?.load(wrapper, in: callStore, label: label, deliver: deliver)
+            self?.load(wrapper, in: callStore, label: label, deliver: { deliver($0) }, fail: {
+                if value == nil {
+                    deliver(nil)
+                }
+            })
         })
     }
 

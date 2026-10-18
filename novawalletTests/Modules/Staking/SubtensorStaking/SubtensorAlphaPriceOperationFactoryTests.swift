@@ -3,16 +3,16 @@ import Cuckoo
 import Operation_iOS
 import XCTest
 
-final class SubtensorAlphaPriceProviderTests: XCTestCase {
+final class SubtensorAlphaPriceOperationFactoryTests: XCTestCase {
     private let asOf = Date(timeIntervalSince1970: 1_790_000_000)
     private let chutes: UInt16 = 64
     private let targon: UInt16 = 4
 
     func testFreshBackendPricesEveryHeldSubnetWithoutReadingTheChain() throws {
-        let catalogueService = createCatalogueService(.success(catalogue([chutes: 50_000_000, targon: 40_000_000])))
+        let catalogueOperationFactory = createCatalogueOperationFactory(.success(catalogue([chutes: 50_000_000, targon: 40_000_000])))
         let apiFactory = createApiFactory(chain: [chutes: 70_000_000, targon: 41_000_000])
 
-        let prices = try run(createProvider(catalogueService, apiFactory).createPricesWrapper(for: [chutes, targon]))
+        let prices = try run(createOperationFactory(catalogueOperationFactory, apiFactory).createPricesWrapper(for: [chutes, targon]))
 
         XCTAssertEqual(prices.taoPerAlpha, [chutes: 50_000_000, targon: 40_000_000])
         XCTAssertEqual(prices.catalogue?.subnets.map(\.netuid).sorted(), [targon, chutes])
@@ -21,32 +21,32 @@ final class SubtensorAlphaPriceProviderTests: XCTestCase {
 
     func testStalePricesComponentPricesEveryHeldSubnetFromTheChain() throws {
         let stale = catalogue([chutes: 50_000_000, targon: 40_000_000], freshness: .stale)
-        let catalogueService = createCatalogueService(.success(stale))
+        let catalogueOperationFactory = createCatalogueOperationFactory(.success(stale))
         let apiFactory = createApiFactory(chain: [chutes: 70_000_000, targon: 41_000_000, 7: 1_000_000])
 
-        let prices = try run(createProvider(catalogueService, apiFactory).createPricesWrapper(for: [chutes, targon]))
+        let prices = try run(createOperationFactory(catalogueOperationFactory, apiFactory).createPricesWrapper(for: [chutes, targon]))
 
         XCTAssertEqual(prices, SubtensorAlphaPrices(catalogue: stale, taoPerAlpha: [chutes: 70_000_000, targon: 41_000_000]))
     }
 
     func testHeldSubnetMissingFromTheBackendIsFilledFromTheChain() throws {
-        let catalogueService = createCatalogueService(.success(catalogue([chutes: 50_000_000])))
+        let catalogueOperationFactory = createCatalogueOperationFactory(.success(catalogue([chutes: 50_000_000])))
         let apiFactory = createApiFactory(chain: [chutes: 70_000_000, targon: 41_000_000])
 
-        let prices = try run(createProvider(catalogueService, apiFactory).createPricesWrapper(for: [chutes, targon]))
+        let prices = try run(createOperationFactory(catalogueOperationFactory, apiFactory).createPricesWrapper(for: [chutes, targon]))
 
         XCTAssertEqual(prices.taoPerAlpha, [chutes: 50_000_000, targon: 41_000_000])
     }
 
     func testBackendAndChainFailuresKeepOnlyTheExpiredCatalogueNames() throws {
         let expired = catalogue([chutes: 50_000_000], freshness: .stale)
-        let catalogueService = createCatalogueService(
+        let catalogueOperationFactory = createCatalogueOperationFactory(
             .failure(BittensorApiError.unavailable(code: nil, requestId: nil)),
             cached: .expired(expired)
         )
         let apiFactory = createApiFactory(chain: nil)
 
-        let prices = try run(createProvider(catalogueService, apiFactory).createPricesWrapper(for: [chutes]))
+        let prices = try run(createOperationFactory(catalogueOperationFactory, apiFactory).createPricesWrapper(for: [chutes]))
 
         XCTAssertEqual(prices, SubtensorAlphaPrices(catalogue: expired, taoPerAlpha: [:]))
     }
@@ -73,13 +73,13 @@ final class SubtensorAlphaPriceProviderTests: XCTestCase {
         })
     }
 
-    private func createCatalogueService(
+    private func createCatalogueOperationFactory(
         _ result: Result<SubtensorSubnetCatalogue, Error>,
         cached: HTTPCachePeek<SubtensorSubnetCatalogue> = .miss
-    ) -> MockSubtensorSubnetCatalogueServiceProtocol {
-        let catalogueService = MockSubtensorSubnetCatalogueServiceProtocol()
+    ) -> MockSubtensorSubnetCatalogueOperationFactoryProtocol {
+        let catalogueOperationFactory = MockSubtensorSubnetCatalogueOperationFactoryProtocol()
 
-        stub(catalogueService) { stub in
+        stub(catalogueOperationFactory) { stub in
             when(stub.createCatalogueWrapper()).then {
                 switch result {
                 case let .success(catalogue):
@@ -91,7 +91,7 @@ final class SubtensorAlphaPriceProviderTests: XCTestCase {
             when(stub.cachedCatalogue()).thenReturn(cached)
         }
 
-        return catalogueService
+        return catalogueOperationFactory
     }
 
     private func createApiFactory(chain: [UInt16: Balance]?) -> MockSubtensorApiOperationFactoryProtocol {
@@ -112,12 +112,12 @@ final class SubtensorAlphaPriceProviderTests: XCTestCase {
         return apiFactory
     }
 
-    private func createProvider(
-        _ catalogueService: MockSubtensorSubnetCatalogueServiceProtocol,
+    private func createOperationFactory(
+        _ catalogueOperationFactory: MockSubtensorSubnetCatalogueOperationFactoryProtocol,
         _ apiFactory: MockSubtensorApiOperationFactoryProtocol
-    ) -> SubtensorAlphaPriceProvider {
-        SubtensorAlphaPriceProvider(
-            catalogueService: catalogueService,
+    ) -> SubtensorAlphaPriceOperationFactory {
+        SubtensorAlphaPriceOperationFactory(
+            catalogueOperationFactory: catalogueOperationFactory,
             chainOperationFactory: apiFactory,
             operationQueue: OperationQueue(),
             logger: Logger.shared

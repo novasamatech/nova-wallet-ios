@@ -77,7 +77,7 @@ extension SubtensorSubnetDetailsViewFactory {
     static func createParametersFactory(
         state: SubtensorStakingSharedStateProtocol,
         operationQueue: OperationQueue
-    ) -> SubnetParametersFactoryProtocol {
+    ) -> SubtensorSubnetParametersFactoryProtocol {
         let chain = state.stakingOption.chainAsset.chain
         return SubtensorSubnetParametersFactory(
             apiFactory: state.apiOperationFactory,

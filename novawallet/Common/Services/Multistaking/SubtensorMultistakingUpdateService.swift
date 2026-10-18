@@ -8,8 +8,8 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     let stakingType: StakingType
     let dashboardRepository: AnyDataProviderRepository<Multistaking.DashboardItemSubtensorPart>
     let stakeStateSource: SubtensorStakeStateSource
-    let maxApyProvider: SubtensorMaxApyProviderProtocol
-    let yieldService: SubtensorYieldServiceProtocol
+    let maxApyOperationFactory: SubtensorMaxApyOperationFactoryProtocol
+    let yieldOperationFactory: SubtensorYieldOperationFactoryProtocol
     let cataloguePricing: SubtensorCataloguePricingTracker
     let workingQueue: DispatchQueue
     let operationQueue: OperationQueue
@@ -48,8 +48,8 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
         logger: LoggerProtocol,
-        maxApyProvider: SubtensorMaxApyProviderProtocol,
-        yieldService: SubtensorYieldServiceProtocol,
+        maxApyOperationFactory: SubtensorMaxApyOperationFactoryProtocol,
+        yieldOperationFactory: SubtensorYieldOperationFactoryProtocol,
         cataloguePricing: SubtensorCataloguePricingTracker
     ) {
         self.walletId = walletId
@@ -57,8 +57,8 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         self.stakingType = stakingType
         self.dashboardRepository = dashboardRepository
         self.stakeStateSource = stakeStateSource
-        self.maxApyProvider = maxApyProvider
-        self.yieldService = yieldService
+        self.maxApyOperationFactory = maxApyOperationFactory
+        self.yieldOperationFactory = yieldOperationFactory
         self.cataloguePricing = cataloguePricing
         self.workingQueue = workingQueue
         self.operationQueue = operationQueue
@@ -116,7 +116,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         }
 
         executeCancellable(
-            wrapper: maxApyProvider.createMaxApyWrapper(),
+            wrapper: maxApyOperationFactory.createMaxApyWrapper(),
             inOperationQueue: operationQueue,
             backingCallIn: maxApyCallStore,
             runningCallbackIn: workingQueue,
@@ -171,7 +171,9 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
     private func seedRootYields() {
         guard
             rootYields == nil,
-            case let .fresh(yields) = yieldService.cachedAlphaYields(for: SubtensorStakingPallet.rootNetuid) else {
+            case let .fresh(yields) = yieldOperationFactory.cachedAlphaYields(
+                for: SubtensorStakingPallet.rootNetuid
+            ) else {
             return
         }
 
@@ -195,7 +197,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         rootYieldsCallStore.cancel()
 
         executeCancellable(
-            wrapper: yieldService.createAlphaYieldsWrapper(for: SubtensorStakingPallet.rootNetuid),
+            wrapper: yieldOperationFactory.createAlphaYieldsWrapper(for: SubtensorStakingPallet.rootNetuid),
             inOperationQueue: operationQueue,
             backingCallIn: rootYieldsCallStore,
             runningCallbackIn: workingQueue,
@@ -226,7 +228,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         }
 
         for netuid in lastState.heldSubnetNetuids where subnetYields[netuid] == nil {
-            guard case let .fresh(yields) = yieldService.cachedAlphaYields(for: netuid) else {
+            guard case let .fresh(yields) = yieldOperationFactory.cachedAlphaYields(for: netuid) else {
                 continue
             }
 
@@ -248,7 +250,7 @@ final class SubtensorMultistakingUpdateService: ObservableSyncService {
         requestedSubnetNetuids = netuids
         subnetYieldsCallStore.cancel()
 
-        let yieldWrappers = netuids.map { yieldService.createAlphaYieldsWrapper(for: $0) }
+        let yieldWrappers = netuids.map { yieldOperationFactory.createAlphaYieldsWrapper(for: $0) }
 
         let mergeOperation = ClosureOperation<[UInt16: SubtensorAlphaYields]> {
             try yieldWrappers.reduce(into: [:]) { result, wrapper in

@@ -3,15 +3,15 @@ import Foundation_iOS
 import Operation_iOS
 
 final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadDelivering {
-    weak var presenter: SubnetPositionInteractorOutputProtocol?
+    weak var presenter: SubtensorPositionInteractorOutputProtocol?
 
     let state: SubtensorStakingSharedStateProtocol
     let netuid: UInt16
-    let alphaPriceProvider: SubtensorAlphaPriceProviderProtocol
-    let yieldService: SubtensorYieldServiceProtocol
+    let alphaPriceOperationFactory: SubtensorAlphaPriceOperationFactoryProtocol
+    let yieldOperationFactory: SubtensorYieldOperationFactoryProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
-    let priceHistoryService: SubtensorPriceHistoryServiceProtocol?
-    let directoryService: SubtensorValidatorDirectoryServiceProtocol
+    let priceHistoryOperationFactory: SubtensorPriceHistoryOperationFactoryProtocol?
+    let directoryOperationFactory: SubtensorValidatorDirectoryOperationFactoryProtocol
     let rootHoldFactory: SubtensorRootHoldFactoryProtocol
     let blockNumberSubscription: BlockNumberRemoteSubscriptionProtocol?
     let applicationHandler: ApplicationHandlerProtocol
@@ -52,11 +52,11 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
     ) {
         self.state = state
         self.netuid = netuid
-        alphaPriceProvider = state.earnServices.alphaPriceProvider
-        yieldService = state.earnServices.yieldService
+        alphaPriceOperationFactory = state.earnServices.alphaPriceOperationFactory
+        yieldOperationFactory = state.earnServices.yieldOperationFactory
         subnetLogosProvider = state.earnServices.subnetLogosProvider
-        priceHistoryService = state.earnServices.priceHistoryService
-        directoryService = state.earnServices.validatorDirectoryService
+        priceHistoryOperationFactory = state.earnServices.priceHistoryOperationFactory
+        directoryOperationFactory = state.earnServices.validatorDirectoryOperationFactory
         rootHoldFactory = state.earnServices.rootHoldFactory
         self.blockNumberSubscription = blockNumberSubscription
         self.applicationHandler = applicationHandler
@@ -154,12 +154,12 @@ private extension SubtensorPositionInteractor {
     }
 
     func loadYields() {
-        let yieldService = yieldService
+        let yieldOperationFactory = yieldOperationFactory
         let netuid = netuid
 
         load(
-            yieldService.createAlphaYieldsWrapper(for: netuid),
-            cached: { yieldService.cachedFreshAlphaYields(for: netuid) },
+            yieldOperationFactory.createAlphaYieldsWrapper(for: netuid),
+            cached: { yieldOperationFactory.cachedFreshAlphaYields(for: netuid) },
             in: rateStore,
             label: "position yields",
             deliver: { [weak self] in
@@ -223,12 +223,12 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
     func loadPrices() {
         pricesStore.cancel()
 
-        let alphaPriceProvider = alphaPriceProvider
+        let alphaPriceOperationFactory = alphaPriceOperationFactory
         let netuid = netuid
 
         load(
-            alphaPriceProvider.createPricesWrapper(for: [netuid]),
-            cached: { alphaPriceProvider.cachedPrices().flatMap { $0.taoPerAlpha[netuid] != nil ? $0 : nil } },
+            alphaPriceOperationFactory.createPricesWrapper(for: [netuid]),
+            cached: { alphaPriceOperationFactory.cachedPrices().flatMap { $0.taoPerAlpha[netuid] != nil ? $0 : nil } },
             in: pricesStore,
             label: "position alpha prices",
             deliver: { [weak self] prices in
@@ -245,7 +245,7 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
         subnetsInfoStore.cancel()
 
         load(
-            state.subnetsService.createSubnetInfoWrapper(for: netuid),
+            state.subnetsOperationFactory.createSubnetInfoWrapper(for: netuid),
             in: subnetsInfoStore,
             label: "position subnets"
         ) { [weak self] in
@@ -257,7 +257,7 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
         validatorStore.cancel()
 
         load(
-            directoryService.createListedDetailWrapper(for: hotkey, subnet: subnet),
+            directoryOperationFactory.createListedDetailWrapper(for: hotkey, subnet: subnet),
             in: validatorStore,
             label: "position validator"
         ) { [weak self] in
@@ -299,7 +299,7 @@ extension SubtensorPositionInteractor: SubtensorPositionInteractorInputProtocol 
     func loadHistory(for subnet: SubtensorSubnetRef, period: SubtensorPricePeriod) {
         historyStore.cancel()
 
-        let wrapper = priceHistoryService?.createHistoryWrapper(
+        let wrapper = priceHistoryOperationFactory?.createHistoryWrapper(
             for: subnet,
             period: period,
             currency: selectedCurrency

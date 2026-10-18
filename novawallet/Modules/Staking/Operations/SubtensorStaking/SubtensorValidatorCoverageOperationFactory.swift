@@ -1,22 +1,22 @@
 import Foundation
 import Operation_iOS
 
-protocol ValidatorCoverageFactoryProtocol {
+protocol SubtensorValidatorCoverageFactoryProtocol {
     func createWrapper(for hotkey: AccountId) -> CompoundOperationWrapper<SubtensorValidatorCoverage?>
 }
 
-final class SubtensorValidatorCoverageFactory: ValidatorCoverageFactoryProtocol {
+final class SubtensorValidatorCoverageFactory: SubtensorValidatorCoverageFactoryProtocol {
     let apiFactory: SubtensorApiOperationFactoryProtocol
-    let catalogueService: SubtensorSubnetCatalogueServiceProtocol
+    let catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol
     let operationQueue: OperationQueue
 
     init(
         apiFactory: SubtensorApiOperationFactoryProtocol,
-        catalogueService: SubtensorSubnetCatalogueServiceProtocol,
+        catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.apiFactory = apiFactory
-        self.catalogueService = catalogueService
+        self.catalogueOperationFactory = catalogueOperationFactory
         self.operationQueue = operationQueue
     }
 
@@ -25,7 +25,7 @@ final class SubtensorValidatorCoverageFactory: ValidatorCoverageFactoryProtocol 
         let wrapper = OperationCombiningService.compoundNonOptionalWrapper(operationQueue: operationQueue) {
             let blockHash = try hash.targetOperation.extractNoCancellableResultData()
             let delegates = self.apiFactory.createDelegatesWrapper(at: blockHash)
-            let catalogue = self.catalogueService.createCatalogueWrapper()
+            let catalogue = self.catalogueOperationFactory.createCatalogueWrapper()
             let merge = ClosureOperation<SubtensorValidatorCoverage?> {
                 let netuids = try catalogue.targetOperation.extractNoCancellableResultData().subnets.map(\.netuid)
                 return try SubtensorValidatorCoverage.make(

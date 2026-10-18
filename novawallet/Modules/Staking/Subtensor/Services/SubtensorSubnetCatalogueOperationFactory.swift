@@ -1,7 +1,7 @@
 import Foundation
 import Operation_iOS
 
-final class SubtensorSubnetCatalogueService {
+final class SubtensorSubnetCatalogueOperationFactory {
     static let atomicScale = 9
 
     let apiOperationFactory: BittensorApiOperationFactoryProtocol
@@ -16,7 +16,7 @@ final class SubtensorSubnetCatalogueService {
     }
 }
 
-private extension SubtensorSubnetCatalogueService {
+private extension SubtensorSubnetCatalogueOperationFactory {
     static func makeCatalogue(
         from response: BittensorApiResult<BittensorApi.SubnetCollection>,
         logger: LoggerProtocol
@@ -70,7 +70,7 @@ private extension SubtensorSubnetCatalogueService {
     }
 }
 
-extension SubtensorSubnetCatalogueService: SubtensorSubnetCatalogueServiceProtocol {
+extension SubtensorSubnetCatalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol {
     func createCatalogueWrapper() -> CompoundOperationWrapper<SubtensorSubnetCatalogue> {
         let logger = logger
 

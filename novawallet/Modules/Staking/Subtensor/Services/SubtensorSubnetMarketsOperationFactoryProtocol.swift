@@ -1,6 +1,6 @@
 import Foundation
 import Operation_iOS
 
-protocol SubtensorSubnetMarketsServiceProtocol: AnyObject {
+protocol SubtensorSubnetMarketsOperationFactoryProtocol: AnyObject {
     func createMarketsWrapper() -> CompoundOperationWrapper<SubtensorSubnetMarkets>
 }

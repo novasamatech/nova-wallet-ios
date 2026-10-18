@@ -12,23 +12,23 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
     private let secondYieldHotkey = Data(repeating: 0x77, count: 32)
 
     func testExistingStakeValidatorIsPresetBeforeRecommendation() throws {
-        let recommendationService = createRecommendationService()
+        let recommendationOperationFactory = createRecommendationOperationFactory()
 
         let preset = try run(
-            createFactory(existingTake: Decimal(string: "0.09"), recommendationService: recommendationService)
+            createFactory(existingTake: Decimal(string: "0.09"), recommendationOperationFactory: recommendationOperationFactory)
                 .createPresetWrapper(for: rootRef, existingHotkey: existingHotkey)
         )
 
         XCTAssertEqual(preset?.hotkey, existingHotkey)
         XCTAssertEqual(preset?.name, "Existing")
-        verify(recommendationService, never()).createRecommendedValidatorsWrapper(for: any())
+        verify(recommendationOperationFactory, never()).createRecommendedValidatorsWrapper(for: any())
     }
 
     func testHighestYieldRecommendedValidatorBeatsEarlierLowerYieldOne() throws {
         let factory = createFactory(
             existingTake: nil,
-            recommendationService: createRecommendationService(),
-            yieldService: createYieldService(rates: [chutesPairHotkey: "12.5", topYieldHotkey: "31.2"])
+            recommendationOperationFactory: createRecommendationOperationFactory(),
+            yieldOperationFactory: createYieldOperationFactory(rates: [chutesPairHotkey: "12.5", topYieldHotkey: "31.2"])
         )
 
         let preset = try withExtendedLifetime(factory) {
@@ -40,17 +40,17 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
     }
 
     func testOnlyTheNextBestYieldValidatorIsTriedWhenTheBestOneHasNoDetail() throws {
-        let directoryService = createDirectoryService(
+        let directoryOperationFactory = createDirectoryOperationFactory(
             existingTake: nil,
             failingDetails: [topYieldHotkey, secondYieldHotkey]
         )
         let factory = createFactory(
             existingTake: nil,
-            recommendationService: createRecommendationService(),
-            yieldService: createYieldService(
+            recommendationOperationFactory: createRecommendationOperationFactory(),
+            yieldOperationFactory: createYieldOperationFactory(
                 rates: [chutesPairHotkey: "12.5", topYieldHotkey: "31.2", secondYieldHotkey: "20.4"]
             ),
-            directoryService: directoryService
+            directoryOperationFactory: directoryOperationFactory
         )
 
         let preset = try withExtendedLifetime(factory) {
@@ -58,15 +58,15 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
         }
 
         XCTAssertNil(preset)
-        verify(directoryService).createDetailWrapper(for: equal(to: secondYieldHotkey), subnet: any())
-        verify(directoryService, never()).createDetailWrapper(for: equal(to: chutesPairHotkey), subnet: any())
+        verify(directoryOperationFactory).createDetailWrapper(for: equal(to: secondYieldHotkey), subnet: any())
+        verify(directoryOperationFactory, never()).createDetailWrapper(for: equal(to: chutesPairHotkey), subnet: any())
     }
 
     func testStaleRecommendationsAreRefetchedOnceThenFailThePreset() throws {
         let apiFactory = try createStaleApiFactory()
         let factory = createFactory(
             existingTake: nil,
-            recommendationService: SubtensorRecommendationService(
+            recommendationOperationFactory: SubtensorRecommendationOperationFactory(
                 apiOperationFactory: apiFactory,
                 chainOperationFactory: createChainFactory(),
                 operationQueue: OperationQueue()
@@ -100,15 +100,15 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
         )
     }
 
-    private func createDirectoryService(
+    private func createDirectoryOperationFactory(
         existingTake: Decimal?,
         failingDetails: Set<AccountId> = []
-    ) -> MockSubtensorValidatorDirectoryServiceProtocol {
-        let directoryService = MockSubtensorValidatorDirectoryServiceProtocol()
+    ) -> MockSubtensorValidatorDirectoryOperationFactoryProtocol {
+        let directoryOperationFactory = MockSubtensorValidatorDirectoryOperationFactoryProtocol()
 
         let names = [existingHotkey: "Existing", chutesPairHotkey: "Cinder Node"]
 
-        stub(directoryService) { stub in
+        stub(directoryOperationFactory) { stub in
             when(stub.createDetailWrapper(for: any(), subnet: any())).then { hotkey, subnet in
                 guard !failingDetails.contains(hotkey) else {
                     return CompoundOperationWrapper.createWithError(
@@ -124,11 +124,11 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
             }
         }
 
-        return directoryService
+        return directoryOperationFactory
     }
 
-    private func createRecommendationService() -> MockSubtensorRecommendationServiceProtocol {
-        let recommendationService = MockSubtensorRecommendationServiceProtocol()
+    private func createRecommendationOperationFactory() -> MockSubtensorRecommendationOperationFactoryProtocol {
+        let recommendationOperationFactory = MockSubtensorRecommendationOperationFactoryProtocol()
 
         let recommended = SubtensorRecommendedValidators(
             validators: [
@@ -138,13 +138,13 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
             ]
         )
 
-        stub(recommendationService) { stub in
+        stub(recommendationOperationFactory) { stub in
             when(stub.createRecommendedValidatorsWrapper(for: any())).then { _ in
                 CompoundOperationWrapper.createWithResult(recommended)
             }
         }
 
-        return recommendationService
+        return recommendationOperationFactory
     }
 
     private func createChainFactory() -> MockSubtensorValidatorChainOperationFactoryProtocol {
@@ -196,11 +196,11 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
         return apiFactory
     }
 
-    private func createYieldService(rates: [AccountId: String]? = nil) -> MockSubtensorYieldServiceProtocol {
-        let yieldService = MockSubtensorYieldServiceProtocol()
+    private func createYieldOperationFactory(rates: [AccountId: String]? = nil) -> MockSubtensorYieldOperationFactoryProtocol {
+        let yieldOperationFactory = MockSubtensorYieldOperationFactoryProtocol()
         let stamp = SubtensorBackendStamp(asOf: Date(timeIntervalSince1970: 1_790_000_000), freshness: .fresh)
 
-        stub(yieldService) { stub in
+        stub(yieldOperationFactory) { stub in
             when(stub.createAlphaYieldsWrapper(for: any())).then { netuid in
                 guard let rates else {
                     return CompoundOperationWrapper.createWithError(
@@ -218,19 +218,19 @@ final class SubtensorValidatorPresetFactoryTests: XCTestCase {
             }
         }
 
-        return yieldService
+        return yieldOperationFactory
     }
 
     private func createFactory(
         existingTake: Decimal?,
-        recommendationService: SubtensorRecommendationServiceProtocol,
-        yieldService: MockSubtensorYieldServiceProtocol? = nil,
-        directoryService: MockSubtensorValidatorDirectoryServiceProtocol? = nil
+        recommendationOperationFactory: SubtensorRecommendationOperationFactoryProtocol,
+        yieldOperationFactory: MockSubtensorYieldOperationFactoryProtocol? = nil,
+        directoryOperationFactory: MockSubtensorValidatorDirectoryOperationFactoryProtocol? = nil
     ) -> SubtensorValidatorPresetFactory {
         SubtensorValidatorPresetFactory(
-            directoryService: directoryService ?? createDirectoryService(existingTake: existingTake),
-            recommendationService: recommendationService,
-            yieldService: yieldService ?? createYieldService(),
+            directoryOperationFactory: directoryOperationFactory ?? createDirectoryOperationFactory(existingTake: existingTake),
+            recommendationOperationFactory: recommendationOperationFactory,
+            yieldOperationFactory: yieldOperationFactory ?? createYieldOperationFactory(),
             operationQueue: OperationQueue(),
             logger: Logger.shared
         )

@@ -7,9 +7,9 @@ final class SubtensorSubnetDetailsPresenter {
 
     let input: SubtensorSubnetDetailsInput
     let host: SubtensorSubnetDetailsHost
-    let interactor: SubnetDetailsInteractorInputProtocol
+    let interactor: SubtensorSubnetDetailsInteractorInputProtocol
     let wireframe: SubtensorSubnetDetailsWireframeProtocol
-    let viewModelFactory: SubnetDetailsViewModelFactoryProtocol
+    let viewModelFactory: SubtensorSubnetDetailsViewModelFactoryProtocol
 
     private var state: SubtensorSubnetDetailsState
     private var subnetLogos: SubtensorSubnetLogos?
@@ -23,9 +23,9 @@ final class SubtensorSubnetDetailsPresenter {
         input: SubtensorSubnetDetailsInput,
         host: SubtensorSubnetDetailsHost,
         selectionDelegate: SubtensorSubnetSelectDelegate,
-        interactor: SubnetDetailsInteractorInputProtocol,
+        interactor: SubtensorSubnetDetailsInteractorInputProtocol,
         wireframe: SubtensorSubnetDetailsWireframeProtocol,
-        viewModelFactory: SubnetDetailsViewModelFactoryProtocol,
+        viewModelFactory: SubtensorSubnetDetailsViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.input = input
@@ -184,7 +184,7 @@ extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsPresenterProtoc
     }
 }
 
-extension SubtensorSubnetDetailsPresenter: SubnetDetailsInteractorOutputProtocol {
+extension SubtensorSubnetDetailsPresenter: SubtensorSubnetDetailsInteractorOutputProtocol {
     func didReceive(isFavorite: Bool) {
         state.isFavorite = isFavorite
         provideViewModel()

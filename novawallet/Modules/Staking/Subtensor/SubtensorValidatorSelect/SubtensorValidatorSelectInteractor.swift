@@ -2,13 +2,13 @@ import Foundation
 import Operation_iOS
 
 final class SubtensorValidatorSelectInteractor: AnyCancellableCleaning, SubtensorLoadDelivering {
-    weak var presenter: ValidatorSelectInteractorOutputProtocol?
+    weak var presenter: SubtensorValidatorSelectInteractorOutputProtocol?
 
     let target: SubtensorStakeTarget
-    let directoryService: SubtensorValidatorDirectoryServiceProtocol
-    let yieldService: SubtensorYieldServiceProtocol
-    let catalogueService: SubtensorSubnetCatalogueServiceProtocol
-    let recommendationService: SubtensorRecommendationServiceProtocol
+    let directoryOperationFactory: SubtensorValidatorDirectoryOperationFactoryProtocol
+    let yieldOperationFactory: SubtensorYieldOperationFactoryProtocol
+    let catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol
+    let recommendationOperationFactory: SubtensorRecommendationOperationFactoryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
@@ -24,10 +24,10 @@ final class SubtensorValidatorSelectInteractor: AnyCancellableCleaning, Subtenso
         logger: LoggerProtocol
     ) {
         self.target = target
-        directoryService = state.earnServices.validatorDirectoryService
-        yieldService = state.earnServices.yieldService
-        catalogueService = state.earnServices.catalogueService
-        recommendationService = state.earnServices.recommendationService
+        directoryOperationFactory = state.earnServices.validatorDirectoryOperationFactory
+        yieldOperationFactory = state.earnServices.yieldOperationFactory
+        catalogueOperationFactory = state.earnServices.catalogueOperationFactory
+        recommendationOperationFactory = state.earnServices.recommendationOperationFactory
         self.operationQueue = operationQueue
         self.logger = logger
     }
@@ -45,7 +45,7 @@ private extension SubtensorValidatorSelectInteractor {
         directoryStore.cancel()
 
         executeCancellable(
-            wrapper: directoryService.createDirectoryWrapper(for: target.subnetRef),
+            wrapper: directoryOperationFactory.createDirectoryWrapper(for: target.subnetRef),
             inOperationQueue: operationQueue,
             backingCallIn: directoryStore,
             runningCallbackIn: .main
@@ -73,7 +73,7 @@ private extension SubtensorValidatorSelectInteractor {
         yieldStore.cancel()
 
         load(
-            yieldService.createAlphaYieldsWrapper(for: target.netuid),
+            yieldOperationFactory.createAlphaYieldsWrapper(for: target.netuid),
             in: yieldStore,
             label: "validator yields"
         ) { [weak self] in
@@ -85,7 +85,7 @@ private extension SubtensorValidatorSelectInteractor {
         verificationStore.cancel()
 
         executeCancellable(
-            wrapper: recommendationService.createListVerificationWrapper(
+            wrapper: recommendationOperationFactory.createListVerificationWrapper(
                 for: target.subnetRef,
                 listedHotkeys: listedHotkeys
             ),
@@ -109,7 +109,7 @@ private extension SubtensorValidatorSelectInteractor {
         let subnet = target.subnetRef
 
         load(
-            catalogueService.createCatalogueWrapper(),
+            catalogueOperationFactory.createCatalogueWrapper(),
             in: catalogueStore,
             label: "catalogue for validator stakes"
         ) { [weak self] in
@@ -129,21 +129,21 @@ private extension SubtensorValidatorSelectInteractor {
     }
 }
 
-extension SubtensorValidatorSelectInteractor: ValidatorSelectInteractorInputProtocol {
+extension SubtensorValidatorSelectInteractor: SubtensorValidatorSelectInteractorInputProtocol {
     func setup() {
         let subnet = target.subnetRef
         let isRoot = target.isRoot
-        let directoryService = directoryService
-        let yieldService = yieldService
-        let catalogueService = catalogueService
+        let directoryOperationFactory = directoryOperationFactory
+        let yieldOperationFactory = yieldOperationFactory
+        let catalogueOperationFactory = catalogueOperationFactory
 
         loadCached({
             SubtensorValidatorSelectSnapshot(
-                directory: directoryService.cachedDirectory(for: subnet),
-                yields: yieldService.cachedAlphaYields(for: subnet.netuid),
+                directory: directoryOperationFactory.cachedDirectory(for: subnet),
+                yields: yieldOperationFactory.cachedAlphaYields(for: subnet.netuid),
                 alphaPrice: isRoot
                     ? .miss
-                    : catalogueService.cachedCatalogue().map { $0.subnet(for: subnet)?.freshTaoPerAlpha }
+                    : catalogueOperationFactory.cachedCatalogue().map { $0.subnet(for: subnet)?.freshTaoPerAlpha }
             )
         }, in: directoryStore, then: { [weak self] snapshot in
             self?.presenter?.didReceive(snapshot: snapshot)
