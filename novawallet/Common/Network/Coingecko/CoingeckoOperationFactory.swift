@@ -13,6 +13,14 @@ protocol CoingeckoOperationFactoryProtocol {
         currency: Currency,
         period: PriceHistoryPeriod
     ) -> BaseOperation<PriceHistory>
+
+    func fetchCacheablePriceHistory(
+        for tokenId: String,
+        currency: Currency,
+        period: PriceHistoryPeriod
+    ) -> BaseOperation<HTTPCacheFetchOutcome<PriceHistory>>
+
+    func fetchMarkets(category: String, currency: Currency) -> BaseOperation<Data>
 }
 
 extension CoingeckoOperationFactoryProtocol {
@@ -89,9 +97,30 @@ final class CoingeckoOperationFactory {
         )
     }
 
-    private func buildOperation<T>(for url: URL, processingBlock: @escaping (Data) throws -> T) -> BaseOperation<T> {
-        let requestFactory = BlockNetworkRequestFactory {
-            var request = URLRequest(url: url)
+    private func buildURLForMarkets(category: String, currency: String) -> URL? {
+        guard var components = URLComponents(
+            url: PriceAPI.baseURL.appendingPathComponent(PriceAPI.markets),
+            resolvingAgainstBaseURL: false
+        ) else { return nil }
+
+        components.queryItems = [
+            URLQueryItem(name: "vs_currency", value: currency),
+            URLQueryItem(name: "category", value: category),
+            URLQueryItem(name: "per_page", value: String(PriceAPI.marketsPageSize)),
+            URLQueryItem(name: "page", value: "1"),
+            URLQueryItem(name: "sparkline", value: "true"),
+            URLQueryItem(name: "price_change_percentage", value: "7d")
+        ]
+
+        return components.url
+    }
+
+    private func createRequestFactory(
+        for url: URL,
+        cachePolicy: URLRequest.CachePolicy = .useProtocolCachePolicy
+    ) -> BlockNetworkRequestFactory {
+        BlockNetworkRequestFactory {
+            var request = URLRequest(url: url, cachePolicy: cachePolicy)
 
             request.setValue(
                 HttpContentType.json.rawValue,
@@ -102,10 +131,12 @@ final class CoingeckoOperationFactory {
 
             return request
         }
+    }
 
+    private func buildOperation<T>(for url: URL, processingBlock: @escaping (Data) throws -> T) -> BaseOperation<T> {
         let resultFactory = AnyNetworkResultFactory<T>(processingBlock: processingBlock)
 
-        return NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+        return NetworkOperation(requestFactory: createRequestFactory(for: url), resultFactory: resultFactory)
     }
 
     private func decodeToPriceHistory(
@@ -223,5 +254,61 @@ extension CoingeckoOperationFactory: CoingeckoOperationFactoryProtocol {
 
             return try decodeToPriceHistory(data, currency)
         }
+    }
+
+    func fetchCacheablePriceHistory(
+        for tokenId: String,
+        currency: Currency,
+        period: PriceHistoryPeriod
+    ) -> BaseOperation<HTTPCacheFetchOutcome<PriceHistory>> {
+        guard
+            let url = buildURLForPriceHistoryPeriod(
+                tokenId: tokenId,
+                currency: currency.coingeckoId,
+                period: PriceAPI.Period(from: period)
+            ) else {
+            return BaseOperation.createWithError(NetworkBaseError.invalidUrl)
+        }
+
+        typealias Outcome = HTTPCacheFetchOutcome<PriceHistory>
+
+        let resultFactory = AnyNetworkResultFactory<Outcome> { [weak self] data, response, error in
+            if let error {
+                return .failure(error)
+            }
+
+            if let error = NetworkOperationHelper.createError(from: response) {
+                return .failure(error)
+            }
+
+            guard let data, let httpResponse = response as? HTTPURLResponse else {
+                return .failure(NetworkBaseError.unexpectedEmptyData)
+            }
+
+            guard let self else {
+                return .failure(BaseOperationError.parentOperationCancelled)
+            }
+
+            do {
+                let history = try decodeToPriceHistory(data, currency)
+
+                return .success(.response(history, HTTPCacheDirectives(response: httpResponse)))
+            } catch {
+                return .failure(error)
+            }
+        }
+
+        return NetworkOperation(
+            requestFactory: createRequestFactory(for: url, cachePolicy: .reloadIgnoringLocalCacheData),
+            resultFactory: resultFactory
+        )
+    }
+
+    func fetchMarkets(category: String, currency: Currency) -> BaseOperation<Data> {
+        guard let url = buildURLForMarkets(category: category, currency: currency.coingeckoId) else {
+            return BaseOperation.createWithError(NetworkBaseError.invalidUrl)
+        }
+
+        return buildOperation(for: url) { $0 }
     }
 }

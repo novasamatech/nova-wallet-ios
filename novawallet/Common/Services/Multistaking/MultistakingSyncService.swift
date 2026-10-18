@@ -24,6 +24,7 @@ final class MultistakingSyncService {
     let substrateRepositoryFactory: SubstrateRepositoryFactoryProtocol
     let providerFactory: MultistakingProviderFactoryProtocol
     let offchainOperationFactory: MultistakingOffchainOperationFactoryProtocol
+    let subtensorProcessServices: SubtensorStakingProcessServices
     let operationQueue: OperationQueue
     let workingQueue: DispatchQueue
     let logger: LoggerProtocol
@@ -47,6 +48,7 @@ final class MultistakingSyncService {
         multistakingRepositoryFactory: MultistakingRepositoryFactoryProtocol,
         substrateRepositoryFactory: SubstrateRepositoryFactoryProtocol,
         offchainOperationFactory: MultistakingOffchainOperationFactoryProtocol,
+        subtensorProcessServices: SubtensorStakingProcessServices = .shared,
         operationQueue: OperationQueue = OperationManagerFacade.assetsRepositoryQueue,
         workingQueue: DispatchQueue = DispatchQueue(
             label: "com.nova.wallet.staking.sync",
@@ -61,6 +63,7 @@ final class MultistakingSyncService {
         self.multistakingRepositoryFactory = multistakingRepositoryFactory
         self.substrateRepositoryFactory = substrateRepositoryFactory
         self.offchainOperationFactory = offchainOperationFactory
+        self.subtensorProcessServices = subtensorProcessServices
         self.workingQueue = workingQueue
         self.operationQueue = operationQueue
         self.logger = logger
@@ -205,6 +208,11 @@ final class MultistakingSyncService {
             )
         case .mythos:
             createMythosStaking(
+                for: chainAssetOption.chainAsset,
+                stakingType: chainAssetOption.type
+            )
+        case .subtensor:
+            createSubtensorStaking(
                 for: chainAssetOption.chainAsset,
                 stakingType: chainAssetOption.type
             )
@@ -376,6 +384,62 @@ final class MultistakingSyncService {
             operationQueue: operationQueue,
             workingQueue: workingQueue,
             logger: logger
+        )
+    }
+
+    private func createSubtensorStaking(
+        for chainAsset: ChainAsset,
+        stakingType: StakingType
+    ) -> OnchainSyncServiceProtocol? {
+        guard
+            let account = wallet.fetch(for: chainAsset.chain.accountRequest()),
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
+            return nil
+        }
+
+        let runtimeConnectionStore = ChainRegistryRuntimeConnectionStore(
+            chainId: chainAsset.chain.chainId,
+            chainRegistry: chainRegistry
+        )
+
+        let apiOperationFactory = SubtensorApiOperationFactory(
+            runtimeConnectionStore: runtimeConnectionStore,
+            operationQueue: operationQueue
+        )
+
+        let stakeStateFetchFactory = SubtensorStakeStateFetchFactory(
+            operationFactory: apiOperationFactory,
+            operationQueue: operationQueue
+        )
+
+        return SubtensorMultistakingUpdateService(
+            walletId: wallet.metaId,
+            accountId: account.accountId,
+            chainAsset: chainAsset,
+            stakingType: stakingType,
+            dashboardRepository: multistakingRepositoryFactory.createSubtensorRepository(),
+            stakeStateFetchFactory: stakeStateFetchFactory,
+            cacheRepository: substrateRepositoryFactory.createChainStorageItemRepository(),
+            connection: connection,
+            runtimeService: runtimeService,
+            operationQueue: operationQueue,
+            workingQueue: workingQueue,
+            logger: logger,
+            maxApyProvider: subtensorProcessServices.createMaxApyProvider(
+                runtimeConnectionStore: runtimeConnectionStore,
+                operationQueue: operationQueue,
+                logger: logger
+            ),
+            rootYieldService: SubtensorYieldService(
+                apiOperationFactory: subtensorProcessServices.bittensorApiOperationFactory,
+                operationQueue: operationQueue,
+                logger: logger
+            ),
+            cataloguePricing: subtensorProcessServices.createCataloguePricingTracker(
+                operationQueue: operationQueue,
+                logger: logger
+            )
         )
     }
 

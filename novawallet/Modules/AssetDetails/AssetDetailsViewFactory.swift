@@ -15,22 +15,10 @@ struct AssetDetailsViewFactory {
             return nil
         }
 
-        let ahmInfoFactory = AHMFullInfoFactory(
-            filterSetKeypath: \.ahmAssetDetailsAlertClosedChains
-        )
-
-        let interactor = AssetDetailsInteractor(
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
-            ahmInfoFactory: ahmInfoFactory,
-            settingsManager: SettingsManager.shared,
-            selectedMetaAccount: selectedAccount,
+        let interactor = createInteractor(
             chainAsset: chainAsset,
-            rampProvider: RampAggregator.defaultAggregator(),
-            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
-            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactory.shared,
+            selectedAccount: selectedAccount,
             swapState: swapState,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             currencyManager: currencyManager
         )
 
@@ -79,6 +67,32 @@ struct AssetDetailsViewFactory {
         interactor.presenter = presenter
 
         return view
+    }
+
+    private static func createInteractor(
+        chainAsset: ChainAsset,
+        selectedAccount: MetaAccountModel,
+        swapState: SwapTokensFlowStateProtocol,
+        currencyManager: CurrencyManagerProtocol
+    ) -> AssetDetailsInteractor {
+        let ahmInfoFactory = AHMFullInfoFactory(
+            filterSetKeypath: \.ahmAssetDetailsAlertClosedChains
+        )
+
+        return AssetDetailsInteractor(
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            ahmInfoFactory: ahmInfoFactory,
+            settingsManager: SettingsManager.shared,
+            selectedMetaAccount: selectedAccount,
+            chainAsset: chainAsset,
+            rampProvider: RampAggregator.defaultAggregator(),
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            externalBalancesSubscriptionFactory: ExternalBalanceLocalSubscriptionFactory.shared,
+            swapState: swapState,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            currencyManager: currencyManager
+        )
     }
 
     private static func createChartView(

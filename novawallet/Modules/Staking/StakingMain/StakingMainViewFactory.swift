@@ -7,8 +7,13 @@ import Operation_iOS
 enum StakingMainViewFactory {
     static func createView(
         for stakingOption: Multistaking.ChainAssetOption,
-        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol
-    ) -> StakingMainViewProtocol? {
+        delegatedAccountSyncService: DelegatedAccountSyncServiceProtocol,
+        subtensorFlowState: SubtensorStakingFlowStateProtocol
+    ) -> ControllerBackedProtocol? {
+        if stakingOption.type == .subtensor {
+            return SubtensorPortfolioViewFactory.createView(for: stakingOption, flowState: subtensorFlowState)
+        }
+
         let settings = SettingsManager.shared
 
         let interactor = createInteractor(

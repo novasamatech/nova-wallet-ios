@@ -660,6 +660,18 @@ private final class UnusedCoingeckoOperationFactory: CoingeckoOperationFactoryPr
     ) -> BaseOperation<PriceHistory> {
         fatalError("Unused")
     }
+
+    func fetchCacheablePriceHistory(
+        for _: String,
+        currency _: Currency,
+        period _: PriceHistoryPeriod
+    ) -> BaseOperation<HTTPCacheFetchOutcome<PriceHistory>> {
+        fatalError("Unused")
+    }
+
+    func fetchMarkets(category _: String, currency _: Currency) -> BaseOperation<Data> {
+        fatalError("Unused")
+    }
 }
 
 private final class NoCallAssetVisibilityWriter: AssetVisibilityWriting {
