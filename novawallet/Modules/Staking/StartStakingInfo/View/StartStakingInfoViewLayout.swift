@@ -94,6 +94,7 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
         super.setupLayout()
 
         stackView.layoutMargins = Constants.containerInsets
+        stackView.layoutMargins.bottom += secondaryActionHeight
 
         footer.addSubview(footerContentView)
 
@@ -112,7 +113,7 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
         addSubview(footer)
         footer.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(Constants.footerHeight + Constants.footerBorderWidth)
+            $0.height.equalTo(Constants.footerHeight + Constants.footerBorderWidth + secondaryActionHeight)
             $0.bottom.equalToSuperview().offset(Constants.footerBorderWidth)
         }
     }
@@ -184,9 +185,7 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
             )
         }
 
-        let bannerExtra = bannerHeight.map { $0 + Constants.footerSpacing } ?? 0
-        let secondaryActionExtra = secondaryButton != nil ? Constants.actionViewHeight + Constants.footerSpacing : 0
-        let extra = bannerExtra + secondaryActionExtra
+        let extra = bannerHeight.map { $0 + Constants.footerSpacing } ?? 0
 
         guard bounds.width > 0, abs(extra - appliedFooterExtra) > 0.5 else {
             return
@@ -201,10 +200,14 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
         }
 
         footer.snp.updateConstraints {
-            $0.height.equalTo(Constants.footerHeight + Constants.footerBorderWidth + extra)
+            $0.height.equalTo(Constants.footerHeight + Constants.footerBorderWidth + secondaryActionHeight + extra)
         }
 
-        stackView.layoutMargins.bottom = Constants.containerInsets.bottom + extra
+        stackView.layoutMargins.bottom = Constants.containerInsets.bottom + secondaryActionHeight + extra
+    }
+
+    private var secondaryActionHeight: CGFloat {
+        secondaryButton != nil ? Constants.actionViewHeight + Constants.footerSpacing : 0
     }
 
     private static func createSecondaryButton() -> TriangularedButton {
