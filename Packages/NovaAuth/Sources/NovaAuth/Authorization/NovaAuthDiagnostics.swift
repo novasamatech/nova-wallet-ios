@@ -29,7 +29,7 @@ enum NovaAuthDiagnostics {
         if let server, (100 ... 599).contains(server.statusCode) {
             message += " status=\(server.statusCode)"
             if let code = server.code, [
-                "unknown_client", "invalid_proof", "binding_not_allowed", "attestation_failed",
+                "unknown_client", "invalid_proof", "binding_not_allowed", "app_not_allowed", "attestation_failed",
                 "attestation_unavailable", "invalid_token", "client_conflict"
             ].contains(code) { message += " code=\(code)" }
         }

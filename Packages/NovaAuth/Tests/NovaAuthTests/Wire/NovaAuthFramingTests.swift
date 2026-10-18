@@ -11,7 +11,7 @@ final class NovaAuthFramingTests: XCTestCase {
             let origin = try NovaAuthOrigin("https://" + vector.context.authority)
             let body: Data
             if let binding = vector.binding {
-                let identity = try NovaAuthAppIdentity(appID: binding.app_id, environment: .production)
+                let identity = try NovaAuthAppIdentity(appID: binding.app_id, environment: .production, version: "1")
                 body = try NovaAuthFraming.registrationPreimage(appIdentity: identity, keyID: binding.key_reference)
                 XCTAssertEqual(hex(body), vector.registration_preimage_hex)
             } else {

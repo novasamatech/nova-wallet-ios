@@ -9,27 +9,33 @@ final class AuthHarness {
     let server = FakeAuthServer()
     let tokens = TestTokenStore()
     let settings = InMemorySettingsManager()
+    let random = TestRandom()
     let ownerQueue = OperationQueue()
     let origin: NovaAuthOrigin
-    private let appIdentity: NovaAuthAppIdentity
+    private var appIdentity: NovaAuthAppIdentity
 
     init() throws {
         origin = try NovaAuthOrigin("https://auth.example.com")
-        appIdentity = try NovaAuthAppIdentity(appID: "PREFIX.io.nova.wallet", environment: .development)
+        appIdentity = try NovaAuthAppIdentity(appID: "PREFIX.io.nova.wallet", environment: .development, version: "1")
         ownerQueue.maxConcurrentOperationCount = 1
     }
 
     func makeAuth() -> NovaAuth {
         NovaAuth(dependencies: NovaAuthDependencies(
             appAttest: apple, identityStore: NovaAuthSettingsIdentityStore(settingsManager: settings),
-            tokenStore: tokens, clock: clock, random: TestRandom(),
+            tokenStore: tokens, clock: clock, random: random,
             http: server,
             ownerQueue: ownerQueue, bootstrapQueue: OperationQueue(), requestQueue: OperationQueue(),
             appIdentity: appIdentity, logger: nil
         ))
     }
 
-    func relaunch() throws -> NovaAuth {
+    func relaunch(version: String? = nil) throws -> NovaAuth {
+        if let version {
+            appIdentity = try NovaAuthAppIdentity(
+                appID: appIdentity.appID, environment: appIdentity.environment, version: version
+            )
+        }
         let auth = makeAuth()
         _ = try auth.activate(origin: origin)
         return auth
@@ -42,7 +48,8 @@ final class AuthHarness {
             path: analytics ? "/v1/analytics/events" : "/v1/bittensor/subnets",
             queryItems: [],
             body: analytics ? Data("{}".utf8) : nil,
-            contentType: analytics ? "application/json" : nil
+            contentType: analytics ? "application/json" : nil,
+            intent: analytics ? .background : .userDriven
         )
     }
 }
@@ -88,9 +95,12 @@ final class TestClock: NovaAuthClockProtocol {
     }
 }
 
-struct TestRandom: NovaAuthRandomProtocol {
+final class TestRandom: NovaAuthRandomProtocol {
+    private(set) var clientIDs = 0
+
     func makeClientID() -> String {
-        "11111111-1111-4111-8111-111111111111"
+        clientIDs += 1
+        return "11111111-1111-4111-8111-" + String(format: "%012d", clientIDs)
     }
 
     func unitInterval() -> Double {

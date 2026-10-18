@@ -7,6 +7,7 @@ protocol NovaAuthCredentialAuthority: AnyObject {
     func demand(
         context: NovaAuthContext,
         expectedClientID: String?,
+        intent: NovaAuthDemandIntent,
         cancellation: NovaAuthCancellation,
         completion: @escaping (Result<NovaAuthTokenRecord, Error>) -> Void
     )
@@ -65,7 +66,7 @@ private final class NovaAuthBusinessExchange {
 
     func admit(repeated: Bool) {
         owner.demand(
-            context: request.context, expectedClientID: clientID, cancellation: cancellation
+            context: request.context, expectedClientID: clientID, intent: request.intent, cancellation: cancellation
         ) { [self] result in
             do {
                 try cancellation.check()

@@ -22,9 +22,14 @@ extension NovaAuth {
                     try createKey(flight: flight)
                 } else { try challenge(flight: flight) }
             case let .appleDeferred(attempt):
-                try attest(attempt: attempt, flight: flight)
+                if try hasAttestationBudget(attempt) {
+                    try attest(attempt: attempt, flight: flight)
+                } else {
+                    try setRegistration(.unregistered, flight: flight)
+                    try challenge(flight: flight)
+                }
             case .appleInFlight:
-                try retire(.interrupted, flight: flight)
+                try dropKey(flight: flight)
                 throw NovaAuthError.keyUnavailable
             case .registrationPending, .registered:
                 try issue(flight: flight)
@@ -65,7 +70,8 @@ private extension NovaAuth {
             try setIdentity(NovaAuthInstallationIdentity(
                 clientID: clientID,
                 keyID: keyID,
-                registration: .unregistered
+                registration: .unregistered,
+                refusal: identity.refusal
             ), context: flight.context)
             try challenge(flight: flight)
         }
@@ -122,16 +128,7 @@ private extension NovaAuth {
             }
         )
         run(wrapper, flight: flight) { [self] result in
-            let object: Data
-            do {
-                object = try result.get()
-            } catch NovaAuthAppAttestError.serverUnavailable {
-                try setRegistration(.appleDeferred(attempt), flight: flight)
-                throw NovaAuthAppAttestError.serverUnavailable
-            } catch {
-                try retire(.registrationAbandoned, flight: flight)
-                throw error
-            }
+            let object = try attestation(from: result, attempt: attempt, flight: flight)
             try validateAttemptAfterApple(attempt, flight: flight)
             let now = try dependencies.clock.now()
             try validateAttestationObject(object, flight: flight)
@@ -163,16 +160,35 @@ private extension NovaAuth {
         }
     }
 
+    func attestation(
+        from result: Result<Data, Error>,
+        attempt: NovaAuthRegistrationAttempt,
+        flight: NovaAuthIssuanceFlight
+    ) throws -> Data {
+        do {
+            return try result.get()
+        } catch NovaAuthAppAttestError.serverUnavailable {
+            try setRegistration(.appleDeferred(attempt), flight: flight)
+            throw NovaAuthAppAttestError.serverUnavailable
+        } catch NovaAuthAppAttestError.invalidKey {
+            try retire(.lostKey, flight: flight)
+            throw NovaAuthAppAttestError.invalidKey
+        } catch {
+            try dropKey(flight: flight)
+            throw error
+        }
+    }
+
     func validateAttestationObject(_ object: Data, flight: NovaAuthIssuanceFlight) throws {
         guard !object.isEmpty, object.count <= 49152 else {
-            try retire(.registrationAbandoned, flight: flight)
+            try dropKey(flight: flight)
             throw NovaAuthError.invalidResponse
         }
     }
 
     func validateAttemptBeforeApple(_ attempt: NovaAuthRegistrationAttempt, flight: NovaAuthIssuanceFlight) throws {
         guard try hasAttestationBudget(attempt) else {
-            try retire(.registrationAbandoned, flight: flight)
+            try setRegistration(.unregistered, flight: flight)
             throw NovaAuthError.keyUnavailable
         }
     }
@@ -187,14 +203,18 @@ private extension NovaAuth {
         let now = try dependencies.clock.now()
         let age = now.continuousSeconds - attempt.startedAt.continuousSeconds
         guard now.bootID == attempt.startedAt.bootID, age >= 0, age < 60 else {
-            try retire(.registrationAbandoned, flight: flight)
+            try dropKey(flight: flight)
             throw NovaAuthError.keyUnavailable
         }
     }
 
     func handleRegistrationFailure(_ error: Error, flight: NovaAuthIssuanceFlight) throws {
-        guard case let NovaAuthError.bootstrap(server) = error else { return }
-        if (400 ... 499).contains(server.statusCode), server.statusCode != 429 {
+        guard case let NovaAuthError.bootstrap(server) = error, let code = server.code,
+              (400 ... 499).contains(server.statusCode), server.statusCode != 429 else { return }
+        switch (server.statusCode, code) {
+        case (401, "attestation_failed"), (403, "app_not_allowed"), (403, "binding_not_allowed"):
+            try refuse(flight: flight)
+        default:
             try retire(.registrationRefused, flight: flight)
         }
     }
