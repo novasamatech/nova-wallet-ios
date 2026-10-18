@@ -133,9 +133,16 @@ module should call `EvmTransactionService`, not the RPC layer.
 
 `Packages/NovaAuth` owns profile-3 bootstrap, the single persisted bearer and bounded renewal; it
 has no HTTP cache. App consumers inject `NovaAuthFacade.shared`; never build a per-feature auth
-provider. Config is
+provider. `BittensorApiResponseCache` is the app-owned max-age store: a fresh decoded body
+short-circuits before admission, an expired one stays only as a stale display seed, `no-store`
+bodies are never kept, and own trades drop the account's `operations/search` pages (a page fetched
+before the drop is not kept). On a miss Bittensor completes auth admission, then authorizes again
+before the request. There is no request coalescing, negative availability TTL or client TTL.
+Older recommendation generations return `generationStale`, preserving a newer seed without refetch.
+Endpoint admissions carry the auth scope (origin + generation); the store keeps seeds per scope
+and drops them all, including the cost-basis pages, when a different scope is admitted. Config is
 fetched once per process, so `NovaAuthFacade` maps `infraUrl` to one memoised endpoint and nothing
-observes config or context changes. Host
+observes config or context changes. Chain data is never cached client-side. Host
 activation authorizes later demand-driven bootstrap; Bittensor requests use the default
 user-driven intent.
 
@@ -149,6 +156,16 @@ or policy denial preserves an existing binding rather than rotating its key. A r
 keeps the client ID and drops only its key. `NovaAuthRequest.intent` separates user-driven demands
 (Bittensor, the default), which re-register at once, from `.background` ones (analytics), which wait
 for a persisted 1 h / 6 h / 24 h refusal delay that resets on an app version or context change.
+
+Bittensor maps bootstrap `401 attestation_failed`, `403 app_not_allowed` and
+`403 binding_not_allowed` to `deviceBound` with no user retry. `409 client_already_registered` and
+`403 insufficient_scope` map to non-device-bound `rejected`, also without retry. Invalid challenge,
+503 and transport errors remain retryable.
+
+The dashboard max APY is one burst: `GET /recommendations` joined with the alpha yields of each
+recommended netuid and the root d30, with no spacing, retries or memo. A netuid whose yields fail
+is skipped; the burst fails with the first error only when no rate is left. No result is kept
+between requests, so nothing can mask authentication recovery in the same context.
 
 One origin/API-major bearer serves ordinary protected GET/HEAD and POST routes. Auth has no
 business allowlist or flow/scope. Consumers own method/path/body validation and ordinary business retry policy. Bittensor uses `/v1/bittensor/...`.
