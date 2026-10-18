@@ -10,7 +10,6 @@ enum StakingAlert {
     case redeemUnbonded(LocalizableResource<String>)
     case waitingNextEra
     case rebag
-    /// informational, chain-level notice with no action attached
     case chainMaintenance(title: LocalizableResource<String>, details: LocalizableResource<String>)
 }
 
