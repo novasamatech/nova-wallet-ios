@@ -91,8 +91,8 @@ extension SubtensorStakingOperation {
         switch self {
         case let .rootStake(hotkey, _), let .rootUnstake(hotkey, _), let .rootClaim(hotkey):
             [hotkey]
-        case let .rootUnstakeGroup(exits, partial):
-            exits + (partial.map { [$0.hotkey] } ?? [])
+        case let .rootUnstakeGroup(exits, partials):
+            exits + partials.map(\.hotkey)
         case .subnetBuy, .subnetSell, .subnetSellGroup:
             []
         }

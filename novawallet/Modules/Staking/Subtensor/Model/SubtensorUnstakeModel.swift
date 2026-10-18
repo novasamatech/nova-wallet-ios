@@ -5,20 +5,29 @@ struct SubtensorUnstakeSlice: Equatable {
     let alpha: Balance
 }
 
+struct SubtensorGroupHotkeyInfo: Equatable {
+    let owner: AccountId?
+    let collateral: Balance
+}
+
 struct SubtensorUnstakePlan: Equatable {
     let exits: [SubtensorUnstakeSlice]
-    let partial: SubtensorUnstakeSlice?
+    let partials: [SubtensorUnstakeSlice]
+
+    var slices: [SubtensorUnstakeSlice] {
+        exits + partials
+    }
 
     var amount: Balance {
-        exits.reduce(partial?.alpha ?? 0) { $0 + $1.alpha }
+        slices.reduce(0) { $0 + $1.alpha }
     }
 
     var hotkeys: [AccountId] {
-        exits.map(\.hotkey) + (partial.map { [$0.hotkey] } ?? [])
+        slices.map(\.hotkey)
     }
 
     var single: SubtensorUnstakeSlice? {
-        exits.isEmpty ? partial : nil
+        exits.isEmpty && partials.count == 1 ? partials.first : nil
     }
 
     var isBatched: Bool {
@@ -34,24 +43,22 @@ extension SubtensorUnstakePlan {
             alphas[exit.hotkey].map { SubtensorUnstakeSlice(hotkey: exit.hotkey, alpha: $0) }
         }
 
-        guard liveExits.count == exits.count else {
+        guard
+            liveExits.count == exits.count,
+            partials.allSatisfy({ (alphas[$0.hotkey] ?? 0) >= $0.alpha }) else {
             return nil
         }
 
-        if let partial, (alphas[partial.hotkey] ?? 0) < partial.alpha {
-            return nil
-        }
-
-        return SubtensorUnstakePlan(exits: liveExits, partial: partial)
+        return SubtensorUnstakePlan(exits: liveExits, partials: partials)
     }
 
     func emptiesGroup(_ group: SubtensorPortfolioGroup) -> Bool {
-        partial == nil && Set(group.positions.map(\.hotkey)).isSubset(of: exits.map(\.hotkey))
+        partials.isEmpty && Set(group.positions.map(\.hotkey)).isSubset(of: exits.map(\.hotkey))
     }
 
     func rootOperation(amount: Balance) -> SubtensorStakingOperation {
         guard let single else {
-            return .rootUnstakeGroup(exits: exits.map(\.hotkey), partial: partial)
+            return .rootUnstakeGroup(exits: exits.map(\.hotkey), partials: partials)
         }
 
         return .rootUnstake(hotkey: single.hotkey, amount: amount)
@@ -61,7 +68,7 @@ extension SubtensorUnstakePlan {
         guard let single else {
             return .subnetSellGroup(
                 exits: exits.map(\.hotkey),
-                partial: partial,
+                partials: partials,
                 netuid: netuid,
                 limitPrice: limitPrice,
                 quotedTaoOut: quotedTaoOut
@@ -81,7 +88,7 @@ extension SubtensorUnstakePlan {
 struct SubtensorUnstakeModel {
     let netuid: UInt16
     let plan: SubtensorUnstakePlan
-    let groupHotkeys: [AccountId]
+    let groupHotkeys: [AccountId: SubtensorGroupHotkeyInfo]
 
     var amount: Balance {
         plan.amount

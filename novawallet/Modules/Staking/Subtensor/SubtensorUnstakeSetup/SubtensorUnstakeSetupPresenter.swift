@@ -34,7 +34,9 @@ final class SubtensorUnstakeSetupPresenter {
     var validatorRequest: AccountId?
     var preflightRequest: AccountId?
     var holds: [AccountId: SubtensorRootHold]?
+    var groupHotkeys: [AccountId: SubtensorGroupHotkeyInfo]?
     var quoteFlow = SubtensorQuoteFlowModel()
+    var latestQuote: SubtensorTradeQuote?
     var acceptedQuote: SubtensorTradeQuote?
     var isQuoteFailed = false
     var tradesUnavailable = false
@@ -75,11 +77,11 @@ final class SubtensorUnstakeSetupPresenter {
 private extension SubtensorUnstakeSetupPresenter {
     struct FeeShape: Equatable {
         let exits: [AccountId]
-        let partial: AccountId?
+        let partials: [AccountId]
 
         init(plan: SubtensorUnstakePlan) {
             exits = plan.exits.map(\.hotkey)
-            partial = plan.partial?.hotkey
+            partials = plan.partials.map(\.hotkey)
         }
     }
 
@@ -108,23 +110,22 @@ private extension SubtensorUnstakeSetupPresenter {
             return 0
         }
 
-        let price = isRoot
-            ? SubtensorStakingPallet.alphaPriceScale
-            : target?.unstakeLimitPrice(spot: target?.listedPrice, tolerance: slippage)
-
-        return price.map { SubtensorGroupUnstakeBasis.floorAlpha(minTao: minStake, price: $0) } ?? 0
-    }
-
-    func feePlan() -> SubtensorUnstakePlan? {
-        guard let primary = group?.primaryHotkey else {
-            return nil
+        guard !isRoot else {
+            return SubtensorGroupUnstakeBasis.floorAlpha(
+                minTao: minStake,
+                price: SubtensorStakingPallet.alphaPriceScale,
+                feeRate: 0
+            )
         }
 
-        let amount = inputAmountOrPlaceholder()
+        guard let limitPrice = currentLimitPrice() else {
+            return 0
+        }
 
-        return plan(for: amount) ?? SubtensorUnstakePlan(
-            exits: [],
-            partial: SubtensorUnstakeSlice(hotkey: primary, alpha: amount)
+        return SubtensorGroupUnstakeBasis.floorAlpha(
+            minTao: minStake,
+            price: limitPrice,
+            feeRate: latestQuote?.quote.feeRate ?? 0
         )
     }
 
@@ -155,7 +156,11 @@ extension SubtensorUnstakeSetupPresenter {
 
     var basis: SubtensorGroupUnstakeBasis? {
         if let group {
-            return SubtensorGroupUnstakeBasis.make(from: group, excluding: excludedHotkeys)
+            return SubtensorGroupUnstakeBasis.make(
+                from: group,
+                excluding: excludedHotkeys,
+                groupHotkeys: groupHotkeys ?? [:]
+            )
         }
 
         guard positionsState != nil else {
@@ -166,7 +171,7 @@ extension SubtensorUnstakeSetupPresenter {
     }
 
     var maxAmount: Balance? {
-        basis?.max
+        basis?.max(floor: floorAlpha())
     }
 
     var inputDisplayInfo: AssetBalanceDisplayInfo {
@@ -208,14 +213,35 @@ extension SubtensorUnstakeSetupPresenter {
         basis?.plan(for: amount, floor: floorAlpha())
     }
 
-    func holdRemainingBlocks(for amount: Balance?) -> UInt64? {
-        let held = heldHotkeys
-
-        guard !held.isEmpty, let group, let basis, let holds, let currentBlock else {
+    func feePlan() -> SubtensorUnstakePlan? {
+        guard let primary = group?.primaryHotkey else {
             return nil
         }
 
-        guard held.count == group.positions.count || (amount ?? 0) > basis.max else {
+        let amount = inputAmountOrPlaceholder()
+
+        return plan(for: amount) ?? SubtensorUnstakePlan(
+            exits: [],
+            partials: [SubtensorUnstakeSlice(hotkey: primary, alpha: amount)]
+        )
+    }
+
+    func loadGroupHotkeys() {
+        guard let group else {
+            return
+        }
+
+        interactor.loadGroupHotkeys(group.positions.map(\.hotkey), netuid: netuid)
+    }
+
+    func holdRemainingBlocks(for amount: Balance?) -> UInt64? {
+        let held = heldHotkeys
+
+        guard !held.isEmpty, let group, let maxAmount, let holds, let currentBlock else {
+            return nil
+        }
+
+        guard held.count == group.positions.count || (amount ?? 0) > maxAmount else {
             return nil
         }
 
@@ -223,7 +249,7 @@ extension SubtensorUnstakeSetupPresenter {
     }
 
     func currentSpotPrice() -> Balance? {
-        quoteFlow.freshQuote?.quote.spotPrice ?? target?.listedPrice
+        latestQuote?.quote.spotPrice ?? target?.listedPrice
     }
 
     func currentLimitPrice() -> Balance? {
@@ -278,17 +304,33 @@ extension SubtensorUnstakeSetupPresenter {
         provideViewModel()
     }
 
-    func applyAmountChange(from previousAmount: Balance?) {
-        guard inputAmount() != previousAmount else {
+    func applyPlanChange(from previousPlan: SubtensorUnstakePlan?) {
+        let plan = feePlan()
+
+        guard plan != previousPlan else {
             return
         }
 
-        if case .rate = inputResult {
+        if case .rate = inputResult, plan?.amount != previousPlan?.amount {
             provideAmountInputViewModel()
         }
 
         refreshFee()
         updateQuote()
+    }
+
+    func didReceiveQuote(_ quote: SubtensorTradeQuote) {
+        let previousPlan = feePlan()
+
+        latestQuote = quote
+
+        if quoteFlow.applyQuote(quote) {
+            tradesUnavailable = false
+            isQuoteFailed = false
+        }
+
+        applyPlanChange(from: previousPlan)
+        provideViewModel()
     }
 
     func provideAmountInputViewModel() {

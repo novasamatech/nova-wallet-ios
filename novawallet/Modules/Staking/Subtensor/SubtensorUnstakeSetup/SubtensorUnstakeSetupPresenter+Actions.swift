@@ -114,19 +114,17 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeSetupPresenterProtocol
 extension SubtensorUnstakeSetupPresenter {
     func createValidationDependencies(amount: Balance) -> SubtensorUnstakeValidatingDep {
         let plan = plan(for: amount)
-        let basis = basis
-
-        let positionAlpha = plan.map { plan in
-            plan.partial.flatMap { basis?.position(of: $0.hotkey) } ?? plan.amount
-        } ?? basis?.drawable
+        let positions = Dictionary((basis?.positions ?? []).map { ($0.hotkey, $0.alpha) }) { first, _ in first }
 
         return SubtensorUnstakeValidatingDep(
             netuid: netuid,
             accountId: selectedAccount.chainAccount.accountId,
             hotkey: group?.primaryHotkey,
             amount: amount,
-            positionAlpha: positionAlpha,
+            positionAlpha: plan?.amount ?? maxAmount,
+            positions: positions,
             plan: plan,
+            groupHotkeys: groupHotkeys,
             availability: group?.availability,
             balance: balance,
             fee: fee,
@@ -144,6 +142,9 @@ extension SubtensorUnstakeSetupPresenter {
             },
             onPositionsRefresh: { [weak self] in
                 self?.interactor.refreshPositions()
+            },
+            onGroupHotkeysRefresh: { [weak self] in
+                self?.loadGroupHotkeys()
             },
             onUnstakeAll: createUnstakeAllOffer(),
             quoteContext: createQuoteContext()
@@ -165,6 +166,7 @@ extension SubtensorUnstakeSetupPresenter {
             let target,
             let group,
             let plan = dependencies.plan,
+            let groupHotkeys = dependencies.groupHotkeys,
             let address = try? group.primaryHotkey.toAddress(using: chainAsset.chain.chainFormat) else {
             return nil
         }
@@ -181,7 +183,7 @@ extension SubtensorUnstakeSetupPresenter {
             mode: .unstake(SubtensorUnstakeModel(
                 netuid: netuid,
                 plan: plan,
-                groupHotkeys: group.positions.map(\.hotkey)
+                groupHotkeys: groupHotkeys
             )),
             tolerance: isRoot ? nil : slippage,
             acknowledgedQuote: acknowledgedQuote(for: dependencies.quoteContext)
