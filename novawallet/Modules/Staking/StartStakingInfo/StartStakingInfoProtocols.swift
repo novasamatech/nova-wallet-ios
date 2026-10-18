@@ -9,6 +9,7 @@ protocol StartStakingInfoViewProtocol: AnyObject, ControllerBackedProtocol {
 protocol StartStakingInfoPresenterProtocol: AnyObject {
     func setup()
     func startStaking()
+    func selectSecondaryAction()
     func selectAnnouncementLink()
 }
 

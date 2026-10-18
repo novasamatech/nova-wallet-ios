@@ -1,16 +1,23 @@
 import Foundation
+import BigInt
 import Foundation_iOS
 
 final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
+    let interactor: StartStakingInfoSubtensorInteractorInputProtocol
     let subtensorWireframe: StartStakingInfoSubtensorWireframeProtocol
     let subtensorViewModelFactory: StartStakingInfoSubtensorViewModelFactoryProtocol
 
     private var wallet: MetaAccountModel?
-    private var headlineRate: Decimal?
+
+    private var state = State() {
+        didSet {
+            provideViewModel(state: state)
+        }
+    }
 
     init(
         chainAsset: ChainAsset,
-        interactor: StartStakingInfoInteractorInputProtocol,
+        interactor: StartStakingInfoSubtensorInteractorInputProtocol,
         wireframe: StartStakingInfoSubtensorWireframeProtocol,
         startStakingViewModelFactory: StartStakingViewModelFactoryProtocol,
         subtensorViewModelFactory: StartStakingInfoSubtensorViewModelFactoryProtocol,
@@ -19,6 +26,7 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
         applicationConfig: ApplicationConfigProtocol,
         logger: LoggerProtocol
     ) {
+        self.interactor = interactor
         subtensorWireframe = wireframe
         self.subtensorViewModelFactory = subtensorViewModelFactory
 
@@ -36,7 +44,11 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
 
     override func setup() {
         super.setup()
-        provideSubtensorViewModel()
+        view?.didReceive(viewModel: .loading)
+    }
+
+    override func createParagraphs(for _: StartStakingStateProtocol) -> [ParagraphView.Model]? {
+        subtensorViewModelFactory.createParagraphs(locale: selectedLocale)
     }
 
     override func didReceive(wallet: MetaAccountModel, chainAccountId: AccountId?) {
@@ -49,6 +61,10 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
 
     override func startStaking() {
         startStakingWithGate { [weak self] in self?.subtensorWireframe.showSetupAmount(from: self?.view) }
+    }
+
+    override func selectSecondaryAction() {
+        startStakingWithGate { [weak self] in self?.subtensorWireframe.showAllOptions(from: self?.view) }
     }
 
     func startStakingWithGate(continuation: @escaping () -> Void) {
@@ -69,34 +85,20 @@ final class StartStakingInfoSubtensorPresenter: StartStakingInfoBasePresenter {
     }
 }
 
-extension StartStakingInfoSubtensorPresenter: StartStakingInfoSubtensorPresenterProtocol {
-    func seeAllOptions() {
-        startStakingWithGate { [weak self] in self?.subtensorWireframe.showAllOptions(from: self?.view) }
-    }
-
-    func refreshContent() {
-        provideSubtensorViewModel()
-        provideBalanceModel()
-    }
-}
-
-private extension StartStakingInfoSubtensorPresenter {
-    func provideSubtensorViewModel() {
-        let viewModel = subtensorViewModelFactory.createViewModel(
-            headlineRate: headlineRate,
-            symbol: chainAsset.asset.displayInfo.symbol,
-            locale: selectedLocale
-        )
-
-        (view as? StartStakingInfoSubtensorViewProtocol)?.didReceive(subtensorViewModel: viewModel)
-    }
-}
-
 extension StartStakingInfoSubtensorPresenter: StartStakingInfoSubtensorInteractorOutputProtocol {
-    func didReceive(headlineRate: Decimal?) {
-        self.headlineRate = headlineRate
+    func didReceive(maxApy: Decimal) {
+        state.maxApy = maxApy
+    }
 
-        provideSubtensorViewModel()
+    func didReceive(error: SubtensorStartStakingInfoError) {
+        logger.error("Did receive error: \(error)")
+
+        switch error {
+        case .maxApy:
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.retryMaxApy()
+            }
+        }
     }
 
     func didReceiveAccountChange() {
@@ -111,5 +113,20 @@ extension StartStakingInfoSubtensorPresenter: SubtensorSubnetSelectDelegate {
         } else {
             subtensorWireframe.showSubnetSetup(from: view, target: target, validator: validator)
         }
+    }
+}
+
+extension StartStakingInfoSubtensorPresenter {
+    struct State: StartStakingStateProtocol {
+        var maxApy: Decimal?
+
+        var minStake: BigUInt? { nil }
+        var rewardTime: TimeInterval? { nil }
+        var unstakingTime: TimeInterval? { nil }
+        var rewardDelay: TimeInterval? { nil }
+        var rewardsAutoPayoutThresholdAmount: BigUInt? { nil }
+        var govThresholdAmount: BigUInt? { nil }
+        var shouldHaveGovInfo: Bool { false }
+        var rewardsDestination: DefaultStakingRewardDestination { .manual }
     }
 }
