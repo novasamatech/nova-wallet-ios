@@ -64,7 +64,11 @@ extension SubtensorUnstakeValidatingDep {
         }
 
         let inputs = plan.partials.compactMap { slice in
-            createSellPlanInput(requestedAlpha: slice.alpha, positionAlpha: positions[slice.hotkey], hotkey: slice.hotkey)
+            createSellPlanInput(
+                requestedAlpha: slice.alpha,
+                positionAlpha: positions[slice.hotkey],
+                hotkey: slice.hotkey
+            )
         }
 
         return inputs.count == plan.partials.count ? inputs : nil
@@ -76,6 +80,14 @@ extension SubtensorUnstakeValidatingDep {
         }
 
         return plan.hotkeys != hotkey.map { [$0] }
+    }
+
+    var groupHotkeysCoverPlan: Bool {
+        guard let groupHotkeys else {
+            return false
+        }
+
+        return (plan?.hotkeys ?? []).allSatisfy { groupHotkeys[$0] != nil }
     }
 
     var groupExitHolds: [SubtensorRootHold]? {
@@ -209,7 +221,7 @@ private extension SubtensorStakingValidationFactoryProtocol {
 
         if let onGroupHotkeysRefresh = dep.onGroupHotkeysRefresh {
             validations.append(
-                groupHotkeysLoaded(dep.groupHotkeys != nil, locale: locale, onRetry: onGroupHotkeysRefresh)
+                groupHotkeysLoaded(dep.groupHotkeysCoverPlan, locale: locale, onRetry: onGroupHotkeysRefresh)
             )
         }
 

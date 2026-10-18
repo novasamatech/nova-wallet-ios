@@ -142,6 +142,7 @@ extension StakingSharedStateFactory {
         )
     }
 
+    // swiftlint:disable:next function_body_length
     private func createSubtensorEarnServices(
         for stakingOption: Multistaking.ChainAssetOption,
         runtimeConnectionStore: RuntimeConnectionStoring,
