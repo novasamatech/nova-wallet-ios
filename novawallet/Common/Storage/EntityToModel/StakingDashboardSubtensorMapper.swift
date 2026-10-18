@@ -33,20 +33,17 @@ extension StakingDashboardSubtensorMapper: CoreDataMapperProtocol {
 
         switch state {
         case .bonded, .active, .waiting, .activeIndependent:
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = .sortedKeys
+
             entity.stake = String(model.stake)
-            entity.subtensorRootStake = model.state.rootStakeInRao.map { String($0) }
-            entity.subtensorSubnetCount = NSNumber(value: model.state.subnetCount)
-            entity.subtensorIsFullyPriced = model.isFullyPriced.map { NSNumber(value: $0) }
+            entity.typeDetails = try encoder.encode(model.details)
         case nil:
             entity.stake = nil
-            entity.subtensorRootStake = nil
-            entity.subtensorSubnetCount = nil
-            entity.subtensorIsFullyPriced = nil
+            entity.typeDetails = nil
         }
 
         entity.onchainState = state?.rawValue
-        entity.subtensorRootRate = model.rootRate.map { $0 as NSDecimalNumber }
-        entity.subtensorSubnetRate = model.subnetRate.map { $0 as NSDecimalNumber }
 
         if case let .replace(maxApy) = model.maxApy {
             entity.maxApy = maxApy.map { $0 as NSDecimalNumber }
