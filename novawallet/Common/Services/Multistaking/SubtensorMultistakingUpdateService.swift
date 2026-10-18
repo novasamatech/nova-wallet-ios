@@ -355,4 +355,18 @@ extension SubtensorMultistakingUpdateService: MultistakingOnchainSyncServiceProt
         performMaxApyFetch()
         stakeStateSubscription.refresh()
     }
+
+    func refreshMaxApy() {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        guard isActive, lastState?.hasActiveStaking != true else {
+            return
+        }
+
+        performMaxApyFetch()
+    }
 }

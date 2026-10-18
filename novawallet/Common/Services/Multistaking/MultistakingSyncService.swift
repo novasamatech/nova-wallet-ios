@@ -14,14 +14,20 @@ protocol MultistakingSyncServiceProtocol: ApplicationServiceProtocol {
     func update(selectedMetaAccount: MetaAccountModel)
 
     func refreshOffchain()
+
+    func refreshMaxApy()
 }
 
 protocol MultistakingOnchainSyncServiceProtocol: ObservableSyncServiceProtocol, ApplicationServiceProtocol {
     func refreshOffchain()
+
+    func refreshMaxApy()
 }
 
 extension MultistakingOnchainSyncServiceProtocol {
     func refreshOffchain() {}
+
+    func refreshMaxApy() {}
 }
 
 final class MultistakingSyncService {
@@ -589,5 +595,15 @@ extension MultistakingSyncService: MultistakingSyncServiceProtocol {
         offchainUpdater?.syncUp()
 
         updaters.forEach { $0.refreshOffchain() }
+    }
+
+    func refreshMaxApy() {
+        mutex.lock()
+
+        let updaters = Array(onchainUpdaters.values)
+
+        mutex.unlock()
+
+        updaters.forEach { $0.refreshMaxApy() }
     }
 }
