@@ -102,8 +102,12 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
             $0.height.equalTo(Constants.actionViewHeight)
         }
 
-        secondaryButton?.snp.makeConstraints {
-            $0.height.equalTo(Constants.actionViewHeight)
+        if let secondaryButton {
+            secondaryButton.snp.makeConstraints {
+                $0.height.equalTo(Constants.actionViewHeight)
+            }
+
+            footerContentView.setCustomSpacing(Constants.secondaryActionSpacing, after: actionView)
         }
 
         footerContentView.snp.makeConstraints {
@@ -207,7 +211,7 @@ final class StartStakingInfoViewLayout: ScrollableContainerLayoutView {
     }
 
     private var secondaryActionHeight: CGFloat {
-        secondaryButton != nil ? Constants.actionViewHeight + Constants.footerSpacing : 0
+        secondaryButton != nil ? Constants.actionViewHeight + Constants.secondaryActionSpacing : 0
     }
 
     private static func createSecondaryButton() -> TriangularedButton {
@@ -377,6 +381,7 @@ extension StartStakingInfoViewLayout {
         static let footerHeight: CGFloat = 144
         static let footerContentSpace: CGFloat = 28
         static let footerSpacing: CGFloat = 12
+        static let secondaryActionSpacing: CGFloat = 8
         static let footerInsets = UIEdgeInsets(top: 16, left: 16, bottom: 31, right: 16)
         static let containerInsets = UIEdgeInsets(
             top: 12,
