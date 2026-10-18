@@ -15,7 +15,7 @@ final class SubtensorExternalBalanceServiceFactory {
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
         logger: LoggerProtocol,
-        processServices: SubtensorStakingProcessServices = .shared
+        processServices: SubtensorStakingProcessServices
     ) {
         self.storageFacade = storageFacade
         self.chainRegistry = chainRegistry

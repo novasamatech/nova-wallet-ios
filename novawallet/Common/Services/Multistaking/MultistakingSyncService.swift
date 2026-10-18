@@ -48,7 +48,7 @@ final class MultistakingSyncService {
         multistakingRepositoryFactory: MultistakingRepositoryFactoryProtocol,
         substrateRepositoryFactory: SubstrateRepositoryFactoryProtocol,
         offchainOperationFactory: MultistakingOffchainOperationFactoryProtocol,
-        subtensorProcessServices: SubtensorStakingProcessServices = .shared,
+        subtensorProcessServices: SubtensorStakingProcessServices,
         operationQueue: OperationQueue = OperationManagerFacade.assetsRepositoryQueue,
         workingQueue: DispatchQueue = DispatchQueue(
             label: "com.nova.wallet.staking.sync",
