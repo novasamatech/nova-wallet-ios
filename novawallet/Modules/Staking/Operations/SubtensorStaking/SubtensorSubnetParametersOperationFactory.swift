@@ -69,11 +69,11 @@ private extension SubtensorSubnetParametersOperationFactory {
             )
         let permits: CompoundOperationWrapper<[StorageResponse<[Bool]>]> = requestFactory.queryItems(
             engine: engine, keyParams: netuid, factory: factory,
-            storagePath: SubtensorStakingPallet.validatorPermitPath, at: blockHash
+            storagePath: SubtensorPallet.validatorPermitPath, at: blockHash
         )
         let enabled: CompoundOperationWrapper<[StorageResponse<Bool>]> = requestFactory.queryItems(
             engine: engine, keyParams: netuid, factory: factory,
-            storagePath: SubtensorStakingPallet.subnetEmissionEnabledPath, at: blockHash
+            storagePath: SubtensorPallet.subnetEmissionEnabledPath, at: blockHash
         )
         let reads = number.allOperations + permits.allOperations + enabled.allOperations
         reads.forEach { $0.addDependency(coder) }

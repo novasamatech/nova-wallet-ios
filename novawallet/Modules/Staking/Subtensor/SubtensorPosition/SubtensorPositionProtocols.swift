@@ -49,8 +49,8 @@ protocol SubtensorPositionInteractorOutputProtocol: AnyObject {
 
 protocol SubtensorPositionWireframeProtocol: AnyObject, SubtensorOperationGating, SubtensorValidatorInfoPresentable {
     func showClaimRewards(from view: SubtensorPositionViewProtocol?, model: SubtensorClaimRewardsModel)
-    func showAddStake(from view: SubtensorPositionViewProtocol?, position: SubtensorStakingPosition)
-    func showBuyMore(from view: SubtensorPositionViewProtocol?, position: SubtensorStakingPosition)
+    func showAddStake(from view: SubtensorPositionViewProtocol?, position: SubtensorPosition)
+    func showBuyMore(from view: SubtensorPositionViewProtocol?, position: SubtensorPosition)
     func showUnstake(from view: SubtensorPositionViewProtocol?, netuid: UInt16)
     func popToPortfolio(from view: SubtensorPositionViewProtocol?)
 }

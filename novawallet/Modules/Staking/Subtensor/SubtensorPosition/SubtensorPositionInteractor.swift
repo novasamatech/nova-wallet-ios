@@ -5,7 +5,7 @@ import Operation_iOS
 final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadDelivering {
     weak var presenter: SubtensorPositionInteractorOutputProtocol?
 
-    let state: SubtensorStakingSharedStateProtocol
+    let state: SubtensorSharedStateProtocol
     let netuid: UInt16
     let alphaPriceOperationFactory: SubtensorAlphaPriceOperationFactoryProtocol
     let yieldOperationFactory: SubtensorYieldOperationFactoryProtocol
@@ -33,7 +33,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
     private let subnetsInfoStore = CancellableCallStore()
 
     private var isRoot: Bool {
-        netuid == SubtensorStakingPallet.rootNetuid
+        netuid == SubtensorPallet.rootNetuid
     }
 
     var chainAsset: ChainAsset {
@@ -41,7 +41,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
     }
 
     init(
-        state: SubtensorStakingSharedStateProtocol,
+        state: SubtensorSharedStateProtocol,
         netuid: UInt16,
         blockNumberSubscription: BlockNumberRemoteSubscriptionProtocol?,
         applicationHandler: ApplicationHandlerProtocol,
@@ -77,7 +77,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
 }
 
 private extension SubtensorPositionInteractor {
-    func findGroup(in positionsState: Multistaking.SubtensorStakingState) -> SubtensorPortfolioGroup? {
+    func findGroup(in positionsState: Multistaking.SubtensorState) -> SubtensorPortfolioGroup? {
         let portfolio = SubtensorPortfolioBuilder.build(state: positionsState)
         let group = isRoot ? portfolio.root : portfolio.subnets.first { $0.netuid == netuid }
 

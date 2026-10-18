@@ -24,7 +24,7 @@ protocol SubtensorPortfolioInteractorInputProtocol: AnyObject {
 }
 
 protocol SubtensorPortfolioInteractorOutputProtocol: AnyObject {
-    func didReceive(state: Multistaking.SubtensorStakingState)
+    func didReceive(state: Multistaking.SubtensorState)
     func didReceive(prices: SubtensorAlphaPrices?)
     func didReceive(subnetLogos: SubtensorSubnetLogos?)
     func didReceive(rootYields: SubtensorAlphaYields?)

@@ -30,7 +30,7 @@ extension SubtensorHistoryFiltersProvider: TransactionHistoryFilterProviderProto
     func createFiltersWrapper() -> CompoundOperationWrapper<[TransactionHistoryLocalFilterProtocol]> {
         guard
             chainAsset.asset.hasSubtensorStaking,
-            let accountPrefix = SubtensorStakingPallet.subnetAccountPrefix else {
+            let accountPrefix = SubtensorPallet.subnetAccountPrefix else {
             return .createWithResult([])
         }
 

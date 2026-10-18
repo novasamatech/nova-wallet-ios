@@ -3,7 +3,7 @@ import Foundation_iOS
 
 enum SubtensorSubnetDetailsViewFactory {
     static func createView(
-        for state: SubtensorStakingSharedStateProtocol,
+        for state: SubtensorSharedStateProtocol,
         input: SubtensorSubnetDetailsInput,
         host: SubtensorSubnetDetailsHost,
         delegate: SubtensorSubnetSelectDelegate
@@ -54,7 +54,7 @@ enum SubtensorSubnetDetailsViewFactory {
 
 private extension SubtensorSubnetDetailsViewFactory {
     static func createInteractor(
-        for state: SubtensorStakingSharedStateProtocol,
+        for state: SubtensorSharedStateProtocol,
         input: SubtensorSubnetDetailsInput,
         currencyManager: CurrencyManagerProtocol
     ) -> SubtensorSubnetDetailsInteractor {
@@ -75,7 +75,7 @@ private extension SubtensorSubnetDetailsViewFactory {
 
 extension SubtensorSubnetDetailsViewFactory {
     static func createParametersOperationFactory(
-        state: SubtensorStakingSharedStateProtocol,
+        state: SubtensorSharedStateProtocol,
         operationQueue: OperationQueue
     ) -> SubtensorSubnetParametersOperationFactoryProtocol {
         let chain = state.stakingOption.chainAsset.chain

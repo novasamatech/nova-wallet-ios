@@ -3,7 +3,7 @@ import Foundation_iOS
 
 enum SubtensorUnstakeSetupViewFactory {
     static func createView(
-        for state: SubtensorStakingSharedStateProtocol,
+        for state: SubtensorSharedStateProtocol,
         netuid: UInt16
     ) -> SubtensorUnstakeSetupViewProtocol? {
         guard let services = SubtensorFlowServicesFactory.createServices(for: state) else {
@@ -12,11 +12,11 @@ enum SubtensorUnstakeSetupViewFactory {
 
         let chainAsset = state.stakingOption.chainAsset
         let interactor = SubtensorUnstakeSetupInteractor(flowServices: services, state: state, logger: Logger.shared)
-        let wireframe = SubtensorStakingSetupWireframe(state: state)
+        let wireframe = SubtensorSetupWireframe(state: state)
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: services.currencyManager)
         let localizationManager = LocalizationManager.shared
 
-        let dataValidationFactory = SubtensorStakingValidationFactory(
+        let dataValidationFactory = SubtensorValidationFactory(
             presentable: wireframe,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
             priceAssetInfoFactory: priceAssetInfoFactory
@@ -49,7 +49,7 @@ enum SubtensorUnstakeSetupViewFactory {
 
         let view = SubtensorUnstakeSetupVC(
             presenter: presenter,
-            isRoot: netuid == SubtensorStakingPallet.rootNetuid,
+            isRoot: netuid == SubtensorPallet.rootNetuid,
             localizationManager: localizationManager
         )
 

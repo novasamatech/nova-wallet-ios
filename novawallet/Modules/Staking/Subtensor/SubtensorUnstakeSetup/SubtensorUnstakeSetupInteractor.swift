@@ -2,7 +2,7 @@ import Operation_iOS
 import SubstrateSdk
 import UIKit
 
-final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
+final class SubtensorUnstakeSetupInteractor: SubtensorBaseInteractor {
     var presenter: SubtensorUnstakeSetupInteractorOutputProtocol? {
         get {
             basePresenter as? SubtensorUnstakeSetupInteractorOutputProtocol
@@ -23,7 +23,7 @@ final class SubtensorUnstakeSetupInteractor: SubtensorStakingBaseInteractor {
 
     override init(
         flowServices: SubtensorFlowServices,
-        state: SubtensorStakingSharedStateProtocol,
+        state: SubtensorSharedStateProtocol,
         logger: LoggerProtocol
     ) {
         subnetsOperationFactory = state.subnetsOperationFactory

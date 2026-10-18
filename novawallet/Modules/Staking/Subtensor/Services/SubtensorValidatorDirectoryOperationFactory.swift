@@ -80,7 +80,7 @@ extension SubtensorValidatorDirectoryOperationFactory: SubtensorValidatorDirecto
     ) -> CompoundOperationWrapper<SubtensorValidatorDirectory> {
         let logger = logger
 
-        guard subnet.netuid != SubtensorStakingPallet.rootNetuid else {
+        guard subnet.netuid != SubtensorPallet.rootNetuid else {
             return apiOperationFactory.createRootValidatorsWrapper().mapped { response in
                 Self.makeRootListing(from: response, subnet: subnet, logger: logger)
             }
@@ -94,7 +94,7 @@ extension SubtensorValidatorDirectoryOperationFactory: SubtensorValidatorDirecto
     func cachedDirectory(for subnet: SubtensorSubnetRef) -> HTTPCachePeek<SubtensorValidatorDirectory> {
         let logger = logger
 
-        guard subnet.netuid != SubtensorStakingPallet.rootNetuid else {
+        guard subnet.netuid != SubtensorPallet.rootNetuid else {
             return apiOperationFactory.peekRootValidators().map {
                 Self.makeRootListing(from: $0, subnet: subnet, logger: logger)
             }

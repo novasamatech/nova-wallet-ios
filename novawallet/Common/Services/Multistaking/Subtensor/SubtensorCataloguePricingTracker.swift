@@ -50,7 +50,7 @@ final class SubtensorCataloguePricingTracker {
         prices = nil
     }
 
-    func valuation(of state: Multistaking.SubtensorStakingState) -> Valuation {
+    func valuation(of state: Multistaking.SubtensorState) -> Valuation {
         let portfolio = SubtensorPortfolioBuilder.build(state: state, prices: try? prices?.get())
 
         let isFullyPriced = portfolio.isFullyPriced || prices != nil ? portfolio.isFullyPriced : nil
@@ -59,7 +59,7 @@ final class SubtensorCataloguePricingTracker {
     }
 
     func refresh(
-        latestState: @escaping () -> Multistaking.SubtensorStakingState?,
+        latestState: @escaping () -> Multistaking.SubtensorState?,
         runningCallbackIn callbackQueue: DispatchQueue,
         mutex: NSLock,
         onUpdate: @escaping (Bool) -> Void
@@ -90,7 +90,7 @@ final class SubtensorCataloguePricingTracker {
 private extension SubtensorCataloguePricingTracker {
     func apply(
         _ result: Result<SubtensorAlphaPrices, Error>,
-        to state: Multistaking.SubtensorStakingState?,
+        to state: Multistaking.SubtensorState?,
         onUpdate: (Bool) -> Void
     ) {
         if case let .failure(error) = result {

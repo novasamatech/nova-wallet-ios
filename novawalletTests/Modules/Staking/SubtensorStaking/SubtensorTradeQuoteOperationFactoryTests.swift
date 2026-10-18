@@ -94,7 +94,7 @@ final class SubtensorTradeQuoteOperationFactoryTests: XCTestCase {
     }
 
     func testStakeQuoteTakesTheFeeFromTheTaoSide() throws {
-        let sim = SubtensorStakingPallet.SimSwapResult(
+        let sim = SubtensorPallet.SimSwapResult(
             taoAmount: 999_496_453,
             alphaAmount: 130_082_405_209,
             taoFee: 503_547,
@@ -117,7 +117,7 @@ final class SubtensorTradeQuoteOperationFactoryTests: XCTestCase {
     }
 
     func testUnstakeQuoteTakesTheFeeFromTheAlphaSide() throws {
-        let sim = SubtensorStakingPallet.SimSwapResult(
+        let sim = SubtensorPallet.SimSwapResult(
             taoAmount: 998_912_946,
             alphaAmount: 130_016_902_511,
             taoFee: 0,
@@ -140,7 +140,7 @@ final class SubtensorTradeQuoteOperationFactoryTests: XCTestCase {
     }
 
     func testLargeBuyPriceImpactIsThePoolPriceMove() throws {
-        let sim = SubtensorStakingPallet.SimSwapResult(
+        let sim = SubtensorPallet.SimSwapResult(
             taoAmount: 1_199_395_742_733,
             alphaAmount: 16_156_594_429_601,
             taoFee: 604_257_267,
@@ -177,7 +177,7 @@ final class SubtensorTradeQuoteOperationFactoryTests: XCTestCase {
     }
 
     func testZeroOutSimFailsAsQuoteUnavailable() {
-        let sim = SubtensorStakingPallet.SimSwapResult(taoAmount: 0, alphaAmount: 0, taoFee: 0, alphaFee: 0)
+        let sim = SubtensorPallet.SimSwapResult(taoAmount: 0, alphaAmount: 0, taoFee: 0, alphaFee: 0)
         let factory = createFactory(apiFactory: createApiFactory(sim: sim))
 
         XCTAssertThrowsError(
@@ -198,7 +198,7 @@ final class SubtensorTradeQuoteOperationFactoryTests: XCTestCase {
         XCTAssertThrowsError(
             try run(factory.createTradeQuoteWrapper(for: .buy(netuid: netuid, grossTao: 5_000_000_000, tolerance: tolerance)))
         ) { error in
-            XCTAssertEqual(error as? SubtensorStakingOperationError, .novaFeeUnavailable)
+            XCTAssertEqual(error as? SubtensorOperationError, .novaFeeUnavailable)
         }
     }
 
@@ -219,7 +219,7 @@ final class SubtensorTradeQuoteOperationFactoryTests: XCTestCase {
     }
 
     private func createApiFactory(
-        sim: SubtensorStakingPallet.SimSwapResult,
+        sim: SubtensorPallet.SimSwapResult,
         spot: Balance = 73_800_000
     ) -> MockSubtensorApiOperationFactoryProtocol {
         let apiFactory = MockSubtensorApiOperationFactoryProtocol()
@@ -239,8 +239,8 @@ final class SubtensorTradeQuoteOperationFactoryTests: XCTestCase {
         return apiFactory
     }
 
-    private func generateBuySim(alphaOut: Balance) -> SubtensorStakingPallet.SimSwapResult {
-        SubtensorStakingPallet.SimSwapResult(
+    private func generateBuySim(alphaOut: Balance) -> SubtensorPallet.SimSwapResult {
+        SubtensorPallet.SimSwapResult(
             taoAmount: 4_955_361_688,
             alphaAmount: alphaOut,
             taoFee: 2_496_518,
@@ -248,8 +248,8 @@ final class SubtensorTradeQuoteOperationFactoryTests: XCTestCase {
         )
     }
 
-    private func generateSellSim(taoOut: Balance) -> SubtensorStakingPallet.SimSwapResult {
-        SubtensorStakingPallet.SimSwapResult(
+    private func generateSellSim(taoOut: Balance) -> SubtensorPallet.SimSwapResult {
+        SubtensorPallet.SimSwapResult(
             taoAmount: taoOut,
             alphaAmount: 56_171_700_618,
             taoFee: 0,
@@ -259,7 +259,7 @@ final class SubtensorTradeQuoteOperationFactoryTests: XCTestCase {
 
     private func generateQuote(
         direction: SubtensorQuoteArgs.Direction,
-        sim: SubtensorStakingPallet.SimSwapResult
+        sim: SubtensorPallet.SimSwapResult
     ) -> SubtensorQuote {
         SubtensorQuote(
             args: SubtensorQuoteArgs(netuid: netuid, direction: direction),

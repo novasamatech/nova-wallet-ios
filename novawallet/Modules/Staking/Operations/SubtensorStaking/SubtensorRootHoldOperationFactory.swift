@@ -51,7 +51,7 @@ private extension SubtensorRootHoldOperationFactory {
         let intervalWrapper: CompoundOperationWrapper<StorageResponse<UInt64Value>> = requestFactory.queryItem(
             engine: engine,
             factory: factory,
-            storagePath: SubtensorStakingPallet.rootStakeUnlockIntervalPath,
+            storagePath: SubtensorPallet.rootStakeUnlockIntervalPath,
             at: blockHash
         )
 
@@ -60,7 +60,7 @@ private extension SubtensorRootHoldOperationFactory {
             keyParams1: { hotkeys.map { _ in BytesCodable(wrappedValue: coldkey) } },
             keyParams2: { hotkeys.map { BytesCodable(wrappedValue: $0) } },
             factory: factory,
-            storagePath: SubtensorStakingPallet.lastColdkeyHotkeyStakeBlockPath,
+            storagePath: SubtensorPallet.lastColdkeyHotkeyStakeBlockPath,
             at: blockHash
         )
 

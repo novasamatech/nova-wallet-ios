@@ -4,7 +4,7 @@ import Operation_iOS
 import XCTest
 
 final class SubtensorValidatorPresetOperationFactoryTests: XCTestCase {
-    private let rootRef = SubtensorSubnetRef(netuid: SubtensorStakingPallet.rootNetuid, registeredAt: 0)
+    private let rootRef = SubtensorSubnetRef(netuid: SubtensorPallet.rootNetuid, registeredAt: 0)
     private let chutesRef = SubtensorSubnetRef(netuid: 64, registeredAt: 4_531_295)
     private let existingHotkey = Data(repeating: 0x22, count: 32)
     private let chutesPairHotkey = Data(repeating: 0x55, count: 32)

@@ -3,7 +3,7 @@ import Foundation
 import Operation_iOS
 import SubstrateSdk
 
-struct SubtensorStakingPreflight: Equatable {
+struct SubtensorPreflight: Equatable {
     let hotkeyExists: Bool
     let subnetExists: Bool
     let subtokenEnabled: Bool
@@ -17,7 +17,7 @@ struct SubtensorStakingPreflight: Equatable {
     var hotkeyOwner: AccountId?
 }
 
-extension SubtensorStakingPreflight {
+extension SubtensorPreflight {
     static func effectiveNominatorMinStake(minStake: Balance, perMillionFactor: Balance) -> Balance {
         minStake * perMillionFactor / BigUInt(1_000_000)
     }
@@ -28,7 +28,7 @@ protocol SubtensorPreflightOperationFactoryProtocol {
         for coldkey: AccountId,
         hotkey: AccountId,
         netuid: UInt16
-    ) -> CompoundOperationWrapper<SubtensorStakingPreflight>
+    ) -> CompoundOperationWrapper<SubtensorPreflight>
 }
 
 final class SubtensorPreflightOperationFactory {
@@ -95,52 +95,52 @@ private extension SubtensorPreflightOperationFactory {
                 engine: engine,
                 keyParams: { [BytesCodable(wrappedValue: hotkey)] },
                 factory: codingFactoryClosure,
-                storagePath: SubtensorStakingPallet.ownerPath,
+                storagePath: SubtensorPallet.ownerPath,
                 options: StorageQueryListOptions()
             ),
             networksAdded: requestFactory.queryItems(
                 engine: engine,
                 keyParams: { [StringScaleMapper(value: netuid)] },
                 factory: codingFactoryClosure,
-                storagePath: SubtensorStakingPallet.networksAddedPath,
+                storagePath: SubtensorPallet.networksAddedPath,
                 options: StorageQueryListOptions()
             ),
             subtokenEnabled: requestFactory.queryItems(
                 engine: engine,
                 keyParams: { [StringScaleMapper(value: netuid)] },
                 factory: codingFactoryClosure,
-                storagePath: SubtensorStakingPallet.subtokenEnabledPath,
+                storagePath: SubtensorPallet.subtokenEnabledPath,
                 options: StorageQueryListOptions()
             ),
             swapAnnouncement: requestFactory.queryItems(
                 engine: engine,
                 keyParams: { [BytesCodable(wrappedValue: coldkey)] },
                 factory: codingFactoryClosure,
-                storagePath: SubtensorStakingPallet.coldkeySwapAnnouncementsPath,
+                storagePath: SubtensorPallet.coldkeySwapAnnouncementsPath,
                 options: StorageQueryListOptions()
             ),
             safeMode: requestFactory.queryItem(
                 engine: engine,
                 factory: codingFactoryClosure,
-                storagePath: SubtensorStakingPallet.safeModeEnteredUntilPath
+                storagePath: SubtensorPallet.safeModeEnteredUntilPath
             ),
             unlockInterval: requestFactory.queryItem(
                 engine: engine,
                 factory: codingFactoryClosure,
-                storagePath: SubtensorStakingPallet.rootStakeUnlockIntervalPath
+                storagePath: SubtensorPallet.rootStakeUnlockIntervalPath
             ),
             lastStakeBlock: requestFactory.queryItems(
                 engine: engine,
                 keyParams1: { [BytesCodable(wrappedValue: coldkey)] },
                 keyParams2: { [BytesCodable(wrappedValue: hotkey)] },
                 factory: codingFactoryClosure,
-                storagePath: SubtensorStakingPallet.lastColdkeyHotkeyStakeBlockPath,
+                storagePath: SubtensorPallet.lastColdkeyHotkeyStakeBlockPath,
                 options: StorageQueryListOptions()
             ),
             minNominatorFactor: requestFactory.queryItem(
                 engine: engine,
                 factory: codingFactoryClosure,
-                storagePath: SubtensorStakingPallet.nominatorMinRequiredStakePath
+                storagePath: SubtensorPallet.nominatorMinRequiredStakePath
             )
         )
     }
@@ -149,8 +149,8 @@ private extension SubtensorPreflightOperationFactory {
         reads: StorageReads,
         minStakeOperation: BaseOperation<Balance>,
         blockTimeOperation: BaseOperation<BlockTime>
-    ) -> ClosureOperation<SubtensorStakingPreflight> {
-        ClosureOperation<SubtensorStakingPreflight> {
+    ) -> ClosureOperation<SubtensorPreflight> {
+        ClosureOperation<SubtensorPreflight> {
             let ownerResponse = try reads.owner.targetOperation.extractNoCancellableResultData().first
             let hotkeyExists = ownerResponse?.data != nil
 
@@ -178,7 +178,7 @@ private extension SubtensorPreflightOperationFactory {
             let minStake = try minStakeOperation.extractNoCancellableResultData()
             let blockTime = try blockTimeOperation.extractNoCancellableResultData()
 
-            return SubtensorStakingPreflight(
+            return SubtensorPreflight(
                 hotkeyExists: hotkeyExists,
                 subnetExists: networksAddedValue,
                 subtokenEnabled: subtokenValue,
@@ -187,7 +187,7 @@ private extension SubtensorPreflightOperationFactory {
                 rootStakeUnlockInterval: unlockInterval,
                 lastStakeBlock: lastStakeBlock,
                 minStake: minStake,
-                effectiveNominatorMinStake: SubtensorStakingPreflight.effectiveNominatorMinStake(
+                effectiveNominatorMinStake: SubtensorPreflight.effectiveNominatorMinStake(
                     minStake: minStake,
                     perMillionFactor: factor
                 ),
@@ -203,7 +203,7 @@ extension SubtensorPreflightOperationFactory: SubtensorPreflightOperationFactory
         for coldkey: AccountId,
         hotkey: AccountId,
         netuid: UInt16
-    ) -> CompoundOperationWrapper<SubtensorStakingPreflight> {
+    ) -> CompoundOperationWrapper<SubtensorPreflight> {
         do {
             let runtimeProvider = try runtimeConnectionStore.getRuntimeProvider()
             let engine = try runtimeConnectionStore.getConnection()
@@ -225,7 +225,7 @@ extension SubtensorPreflightOperationFactory: SubtensorPreflightOperationFactory
             reads.allOperations.forEach { $0.addDependency(codingFactoryOperation) }
 
             let minStakeOperation = PrimitiveConstantOperation<Balance>(
-                path: SubtensorStakingPallet.initialMinStakePath
+                path: SubtensorPallet.initialMinStakePath
             )
 
             minStakeOperation.configurationBlock = {

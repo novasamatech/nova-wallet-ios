@@ -4,7 +4,7 @@ import Operation_iOS
 protocol SubtensorStakeStateFetchOperationFactoryProtocol {
     func createStateWrapper(
         for coldkey: AccountId
-    ) -> CompoundOperationWrapper<Multistaking.SubtensorStakingState>
+    ) -> CompoundOperationWrapper<Multistaking.SubtensorState>
 }
 
 final class SubtensorStakeStateFetchOperationFactory {
@@ -16,19 +16,19 @@ final class SubtensorStakeStateFetchOperationFactory {
         self.operationQueue = operationQueue
     }
 
-    private static func heldNetuids(of stakeInfoList: [SubtensorStakingPallet.StakeInfo]) -> [UInt16] {
+    private static func heldNetuids(of stakeInfoList: [SubtensorPallet.StakeInfo]) -> [UInt16] {
         Array(Set(stakeInfoList.map(\.netuid))).sorted()
     }
 
     private static func createState(
         coldkey: AccountId,
-        stakeInfoList: [SubtensorStakingPallet.StakeInfo],
-        availabilityList: [SubtensorStakingPallet.ColdkeyStakeAvailability],
-        claimPreviews: [SubtensorStakingPallet.BasketClaimPreview]?,
+        stakeInfoList: [SubtensorPallet.StakeInfo],
+        availabilityList: [SubtensorPallet.ColdkeyStakeAvailability],
+        claimPreviews: [SubtensorPallet.BasketClaimPreview]?,
         minimumClaim: Balance?
-    ) -> Multistaking.SubtensorStakingState {
+    ) -> Multistaking.SubtensorState {
         let positions = stakeInfoList.map { stakeInfo in
-            SubtensorStakingPosition(
+            SubtensorPosition(
                 hotkey: stakeInfo.hotkey,
                 netuid: stakeInfo.netuid,
                 stakeAlpha: stakeInfo.stake,
@@ -37,7 +37,7 @@ final class SubtensorStakeStateFetchOperationFactory {
         }
 
         let availability = (availabilityList.first { $0.coldkey == coldkey }?.subnets ?? []).reduce(
-            into: [UInt16: SubtensorStakingPallet.StakeAvailability]()
+            into: [UInt16: SubtensorPallet.StakeAvailability]()
         ) { accum, subnet in
             accum[subnet.netuid] = subnet.availability
         }
@@ -53,7 +53,7 @@ final class SubtensorStakeStateFetchOperationFactory {
             }
         }
 
-        return Multistaking.SubtensorStakingState(
+        return Multistaking.SubtensorState(
             positions: positions,
             availability: availability,
             rootClaimPreviews: rootClaimPreviews ?? [],
@@ -64,9 +64,9 @@ final class SubtensorStakeStateFetchOperationFactory {
     private func createAvailabilityWrapper(
         for coldkey: AccountId,
         blockHash: BlockHash,
-        stakeInfoWrapper: CompoundOperationWrapper<[SubtensorStakingPallet.StakeInfo]>
-    ) -> CompoundOperationWrapper<[SubtensorStakingPallet.ColdkeyStakeAvailability]> {
-        typealias Availability = [SubtensorStakingPallet.ColdkeyStakeAvailability]
+        stakeInfoWrapper: CompoundOperationWrapper<[SubtensorPallet.StakeInfo]>
+    ) -> CompoundOperationWrapper<[SubtensorPallet.ColdkeyStakeAvailability]> {
+        typealias Availability = [SubtensorPallet.ColdkeyStakeAvailability]
 
         let availabilityWrapper = OperationCombiningService<Availability>.compoundNonOptionalWrapper(
             operationQueue: operationQueue
@@ -97,7 +97,7 @@ final class SubtensorStakeStateFetchOperationFactory {
     private func createPinnedStateWrapper(
         for coldkey: AccountId,
         blockHash: BlockHash
-    ) -> CompoundOperationWrapper<Multistaking.SubtensorStakingState> {
+    ) -> CompoundOperationWrapper<Multistaking.SubtensorState> {
         let stakeInfoWrapper = operationFactory.createStakeInfoWrapper(for: coldkey, blockHash: blockHash)
 
         let availabilityWrapper = createAvailabilityWrapper(
@@ -113,7 +113,7 @@ final class SubtensorStakeStateFetchOperationFactory {
 
         let thresholdWrapper = operationFactory.createRootClaimableThresholdWrapper(blockHash: blockHash)
 
-        let mergeOperation = ClosureOperation<Multistaking.SubtensorStakingState> {
+        let mergeOperation = ClosureOperation<Multistaking.SubtensorState> {
             try Self.createState(
                 coldkey: coldkey,
                 stakeInfoList: stakeInfoWrapper.targetOperation.extractNoCancellableResultData(),
@@ -141,7 +141,7 @@ final class SubtensorStakeStateFetchOperationFactory {
 extension SubtensorStakeStateFetchOperationFactory: SubtensorStakeStateFetchOperationFactoryProtocol {
     func createStateWrapper(
         for coldkey: AccountId
-    ) -> CompoundOperationWrapper<Multistaking.SubtensorStakingState> {
+    ) -> CompoundOperationWrapper<Multistaking.SubtensorState> {
         let blockHashWrapper = operationFactory.createBestBlockHashWrapper()
 
         let stateWrapper = OperationCombiningService.compoundNonOptionalWrapper(

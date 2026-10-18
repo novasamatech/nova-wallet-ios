@@ -1,9 +1,9 @@
 import Foundation
 
 final class StakingMoreOptionsWireframe: StakingMoreOptionsWireframeProtocol {
-    let subtensorFlowState: SubtensorStakingFlowStateProtocol
+    let subtensorFlowState: SubtensorFlowStateProtocol
 
-    init(subtensorFlowState: SubtensorStakingFlowStateProtocol) {
+    init(subtensorFlowState: SubtensorFlowStateProtocol) {
         self.subtensorFlowState = subtensorFlowState
     }
 

@@ -25,7 +25,7 @@ struct SubtensorValidatorChainSnapshot {
     let takes: [AccountId: UInt16]
 
     var takeFractions: [AccountId: Decimal] {
-        takes.mapValues { Decimal($0) / Decimal(SubtensorStakingPallet.perU16Denominator) }
+        takes.mapValues { Decimal($0) / Decimal(SubtensorPallet.perU16Denominator) }
     }
 }
 
@@ -45,7 +45,7 @@ extension SubtensorValidatorChainStatus {
             return nil
         }
 
-        guard pair.netuid != SubtensorStakingPallet.rootNetuid else {
+        guard pair.netuid != SubtensorPallet.rootNetuid else {
             return SubtensorValidatorChainStatus(hasPermit: nil, isActive: nil)
         }
 
@@ -71,7 +71,7 @@ extension SubtensorValidatorChainStatus {
 enum SubtensorTakeGate {
     static func exceedsMax(take: UInt16, maxTake: BigRational) -> Bool {
         let takeScaled = BigUInt(take) * maxTake.denominator
-        let maxTakeScaled = BigUInt(SubtensorStakingPallet.perU16Denominator) * maxTake.numerator
+        let maxTakeScaled = BigUInt(SubtensorPallet.perU16Denominator) * maxTake.numerator
 
         return takeScaled > maxTakeScaled
     }

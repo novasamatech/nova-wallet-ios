@@ -172,7 +172,7 @@ final class SubtensorRecommendationOperationFactoryTests: XCTestCase {
     }
 
     private func takeFraction(_ take: UInt16) -> Decimal {
-        Decimal(take) / Decimal(SubtensorStakingPallet.perU16Denominator)
+        Decimal(take) / Decimal(SubtensorPallet.perU16Denominator)
     }
 
     private func run<T>(_ wrapper: CompoundOperationWrapper<T>) throws -> T {

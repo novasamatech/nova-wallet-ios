@@ -3,7 +3,7 @@ import BigInt
 import Operation_iOS
 
 struct SubtensorSubnetsInfo: Equatable {
-    let subnets: [SubtensorStakingPallet.DynamicInfo]
+    let subnets: [SubtensorPallet.DynamicInfo]
     let prices: [UInt16: Balance]
     let subtokenEnabled: Set<UInt16>
 }

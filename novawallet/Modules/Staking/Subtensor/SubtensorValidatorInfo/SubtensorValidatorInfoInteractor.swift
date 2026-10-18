@@ -24,7 +24,7 @@ final class SubtensorValidatorInfoInteractor: AnyProviderAutoCleaning, Subtensor
     init(
         target: SubtensorStakeTarget,
         hotkey: AccountId,
-        state: SubtensorStakingSharedStateProtocol,
+        state: SubtensorSharedStateProtocol,
         coverageOperationFactory: SubtensorValidatorCoverageOperationFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         currencyManager: CurrencyManagerProtocol,

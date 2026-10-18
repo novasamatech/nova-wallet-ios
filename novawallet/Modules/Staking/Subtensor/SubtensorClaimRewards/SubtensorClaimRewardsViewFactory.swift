@@ -3,7 +3,7 @@ import Foundation_iOS
 
 enum SubtensorClaimRewardsViewFactory {
     static func createView(
-        for state: SubtensorStakingSharedStateProtocol,
+        for state: SubtensorSharedStateProtocol,
         model: SubtensorClaimRewardsModel
     ) -> SubtensorClaimRewardsViewProtocol? {
         let chainAsset = state.stakingOption.chainAsset
@@ -14,7 +14,7 @@ enum SubtensorClaimRewardsViewFactory {
             return nil
         }
 
-        let interactor = SubtensorStakingBaseInteractor(flowServices: services, state: state, logger: Logger.shared)
+        let interactor = SubtensorBaseInteractor(flowServices: services, state: state, logger: Logger.shared)
 
         let wireframe = SubtensorConfirmWireframe(state: state)
 
@@ -22,7 +22,7 @@ enum SubtensorClaimRewardsViewFactory {
 
         let priceAssetInfoFactory = PriceAssetInfoFactory(currencyManager: services.currencyManager)
 
-        let dataValidationFactory = SubtensorStakingValidationFactory(
+        let dataValidationFactory = SubtensorValidationFactory(
             presentable: wireframe,
             assetDisplayInfo: chainAsset.assetDisplayInfo,
             priceAssetInfoFactory: priceAssetInfoFactory

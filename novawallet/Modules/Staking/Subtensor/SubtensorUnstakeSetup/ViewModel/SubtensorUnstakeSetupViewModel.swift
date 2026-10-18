@@ -48,7 +48,7 @@ struct SubtensorUnstakeSetupViewModelInput {
     let costBasis: SubtensorCostBasisState
 
     var isRoot: Bool {
-        netuid == SubtensorStakingPallet.rootNetuid
+        netuid == SubtensorPallet.rootNetuid
     }
 
     var isFullyLocked: Bool {

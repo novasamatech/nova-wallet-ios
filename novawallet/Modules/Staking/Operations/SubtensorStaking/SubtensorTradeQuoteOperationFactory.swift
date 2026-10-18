@@ -32,13 +32,13 @@ extension SubtensorTradeQuoteOperationFactory {
 
 private extension SubtensorTradeQuoteOperationFactory {
     static func ensureSubnet(_ netuid: UInt16) throws {
-        guard netuid != SubtensorStakingPallet.rootNetuid else {
-            throw SubtensorStakingOperationError.limitOnRootOrder
+        guard netuid != SubtensorPallet.rootNetuid else {
+            throw SubtensorOperationError.limitOnRootOrder
         }
     }
 
     static func netOfPoolFee(_ amount: Balance, feeRate: UInt16) -> Balance {
-        let poolFee = amount * BigUInt(feeRate) / BigUInt(SubtensorStakingPallet.perU16Denominator)
+        let poolFee = amount * BigUInt(feeRate) / BigUInt(SubtensorPallet.perU16Denominator)
 
         return amount - poolFee
     }
@@ -46,7 +46,7 @@ private extension SubtensorTradeQuoteOperationFactory {
     func createSimWrapper(
         for args: SubtensorQuoteArgs,
         blockHash: BlockHash
-    ) -> CompoundOperationWrapper<SubtensorStakingPallet.SimSwapResult> {
+    ) -> CompoundOperationWrapper<SubtensorPallet.SimSwapResult> {
         switch args.direction {
         case let .stake(taoIn):
             return operationFactory.createSimSwapTaoForAlphaWrapper(
@@ -128,9 +128,9 @@ private extension SubtensorTradeQuoteOperationFactory {
     ) throws -> SubtensorTradeQuote {
         let limitPrice = try SubtensorLimitPriceCalculator.buyLimit(spot: quote.spotPrice, tolerance: tolerance)
         let swappedTao = netOfPoolFee(stakedTao, feeRate: quote.feeRate)
-        let minimumAlphaOut = swappedTao * SubtensorStakingPallet.alphaPriceScale / limitPrice
+        let minimumAlphaOut = swappedTao * SubtensorPallet.alphaPriceScale / limitPrice
 
-        try SubtensorStakingPallet.ensureU64Amount(minimumAlphaOut)
+        try SubtensorPallet.ensureU64Amount(minimumAlphaOut)
 
         return SubtensorTradeQuote(
             quote: quote,
@@ -251,7 +251,7 @@ private extension SubtensorTradeQuoteOperationFactory {
 
     func ensureBeneficiary() throws {
         guard feeCalculator.beneficiary != nil else {
-            throw SubtensorStakingOperationError.novaFeeUnavailable
+            throw SubtensorOperationError.novaFeeUnavailable
         }
     }
 }

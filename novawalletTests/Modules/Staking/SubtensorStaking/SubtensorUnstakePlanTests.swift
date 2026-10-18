@@ -109,7 +109,7 @@ final class SubtensorUnstakePlanTests: XCTestCase {
         SubtensorUnstakeSlice(hotkey: position.hotkey, alpha: position.alpha)
     }
 
-    private func position(_ position: SubtensorUnstakePosition) -> SubtensorStakingPosition {
-        SubtensorStakingPosition(hotkey: position.hotkey, netuid: 0, stakeAlpha: position.alpha, isRegistered: true)
+    private func position(_ position: SubtensorUnstakePosition) -> SubtensorPosition {
+        SubtensorPosition(hotkey: position.hotkey, netuid: 0, stakeAlpha: position.alpha, isRegistered: true)
     }
 }

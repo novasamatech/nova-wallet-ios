@@ -5,7 +5,7 @@ extension SubtensorConfirmPresenter {
         amount: Balance,
         limitPrice: Balance?,
         quote: SubtensorTradeQuote?
-    ) -> SubtensorStakingOperation? {
+    ) -> SubtensorOperation? {
         guard !model.target.isRoot else {
             return .rootStake(hotkey: model.validator.hotkey, amount: amount)
         }

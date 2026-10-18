@@ -6,7 +6,7 @@ import UIKit_iOS
 
 enum SubtensorOperationResultViewFactory {
     static func createView(
-        for state: SubtensorStakingSharedStateProtocol,
+        for state: SubtensorSharedStateProtocol,
         request: SubtensorOperationResultRequest,
         delegate: SubtensorOperationResultDelegate
     ) -> ControllerBackedProtocol? {
@@ -45,7 +45,7 @@ enum SubtensorOperationResultViewFactory {
 
 private extension SubtensorOperationResultViewFactory {
     static func createInteractor(
-        for state: SubtensorStakingSharedStateProtocol,
+        for state: SubtensorSharedStateProtocol,
         request: SubtensorOperationResultRequest,
         connection: JSONRPCEngine,
         services: SubtensorFlowServices

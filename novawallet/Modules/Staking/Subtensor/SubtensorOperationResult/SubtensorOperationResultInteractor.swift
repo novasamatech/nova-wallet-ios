@@ -5,10 +5,10 @@ import Operation_iOS
 final class SubtensorOperationResultInteractor: SubtensorLoadDelivering {
     weak var presenter: SubtensorOperationResultInteractorOutputProtocol?
 
-    let operation: SubtensorStakingOperation
+    let operation: SubtensorOperation
     let coldkey: AccountId
     let loadsSubnetData: Bool
-    let submissionOperationFactory: SubtensorStakingSubmissionOperationFactoryProtocol
+    let submissionOperationFactory: SubtensorSubmissionOperationFactoryProtocol
     let chainOperationFactory: SubtensorOperationResultChainOperationFactoryProtocol
     let catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol
     let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
@@ -22,10 +22,10 @@ final class SubtensorOperationResultInteractor: SubtensorLoadDelivering {
     private var isSubmissionFinished = false
 
     init(
-        operation: SubtensorStakingOperation,
+        operation: SubtensorOperation,
         coldkey: AccountId,
         loadsSubnetData: Bool,
-        submissionOperationFactory: SubtensorStakingSubmissionOperationFactoryProtocol,
+        submissionOperationFactory: SubtensorSubmissionOperationFactoryProtocol,
         chainOperationFactory: SubtensorOperationResultChainOperationFactoryProtocol,
         catalogueOperationFactory: SubtensorSubnetCatalogueOperationFactoryProtocol,
         subnetLogosProvider: SubtensorSubnetLogosProviderProtocol,
@@ -83,7 +83,7 @@ private extension SubtensorOperationResultInteractor {
         }
     }
 
-    func finishSubmission(with result: Result<SubtensorStakingOperationOutcome, Error>) {
+    func finishSubmission(with result: Result<SubtensorOperationOutcome, Error>) {
         isSubmissionFinished = true
         confirmationScheduler?.cancel()
         osMediator.enableScreenSleep()
@@ -92,8 +92,8 @@ private extension SubtensorOperationResultInteractor {
         case let .success(outcome):
             presenter?.didReceiveSubmission(result: .success(outcome))
         case let .failure(error):
-            let failure = error as? SubtensorStakingSubmissionFailure ??
-                SubtensorStakingSubmissionFailure(stage: .unconfirmed(extrinsicHash: nil), error: error)
+            let failure = error as? SubtensorSubmissionFailure ??
+                SubtensorSubmissionFailure(stage: .unconfirmed(extrinsicHash: nil), error: error)
 
             presenter?.didReceiveSubmission(result: .failure(failure))
         }

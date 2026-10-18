@@ -107,7 +107,7 @@ extension SubtensorYieldOperationFactory {
             logger.warning("Skipped \(skippedRows) root yield rows")
         }
 
-        return SubtensorAlphaYields(netuid: SubtensorStakingPallet.rootNetuid, yields: yields, stamp: stamp)
+        return SubtensorAlphaYields(netuid: SubtensorPallet.rootNetuid, yields: yields, stamp: stamp)
     }
 
     static func makeNetworkRootRate(
@@ -130,7 +130,7 @@ extension SubtensorYieldOperationFactory: SubtensorYieldOperationFactoryProtocol
     func createAlphaYieldsWrapper(for netuid: UInt16) -> CompoundOperationWrapper<SubtensorAlphaYields> {
         let logger = logger
 
-        guard netuid != SubtensorStakingPallet.rootNetuid else {
+        guard netuid != SubtensorPallet.rootNetuid else {
             return apiOperationFactory.createRootValidatorsWrapper().mapped { result in
                 try Self.makeRootYields(from: result, logger: logger)
             }
@@ -153,7 +153,7 @@ extension SubtensorYieldOperationFactory: SubtensorYieldOperationFactoryProtocol
     }
 
     func cachedAlphaYields(for netuid: UInt16) -> HTTPCachePeek<SubtensorAlphaYields> {
-        guard netuid != SubtensorStakingPallet.rootNetuid else {
+        guard netuid != SubtensorPallet.rootNetuid else {
             return apiOperationFactory.peekRootValidators().map { try Self.makeRootYields(from: $0, logger: logger) }
         }
 

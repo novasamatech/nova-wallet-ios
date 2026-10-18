@@ -6,8 +6,8 @@ import SubstrateSdk
 extension StakingSharedStateFactory {
     func createSubtensorStaking(
         for stakingOption: Multistaking.ChainAssetOption,
-        flowState: SubtensorStakingFlowStateProtocol
-    ) throws -> SubtensorStakingSharedStateProtocol {
+        flowState: SubtensorFlowStateProtocol
+    ) throws -> SubtensorSharedStateProtocol {
         let chainId = stakingOption.chainAsset.chain.chainId
 
         guard chainRegistry.getConnection(for: chainId) != nil else {
@@ -26,7 +26,7 @@ extension StakingSharedStateFactory {
 
         let novaFeeCalculator = SubtensorNovaFeeCalculator()
 
-        return SubtensorStakingSharedState(
+        return SubtensorSharedState(
             stakingOption: stakingOption,
             chainRegistry: chainRegistry,
             generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactory(
@@ -40,7 +40,7 @@ extension StakingSharedStateFactory {
                 operationQueue: syncOperationQueue
             ),
             apiOperationFactory: apiOperationFactory,
-            stakeStateSourceFactory: SubtensorStakingProcessServices.shared.stakeStateSourceFactory,
+            stakeStateSourceFactory: SubtensorProcessServices.shared.stakeStateSourceFactory,
             earnServices: createSubtensorEarnServices(
                 for: stakingOption,
                 runtimeConnectionStore: runtimeConnectionStore,
@@ -63,9 +63,9 @@ extension StakingSharedStateFactory {
         runtimeConnectionStore: RuntimeConnectionStoring,
         apiOperationFactory: SubtensorApiOperationFactoryProtocol,
         novaFeeCalculator: SubtensorNovaFeeCalculator,
-        flowState: SubtensorStakingFlowStateProtocol
+        flowState: SubtensorFlowStateProtocol
     ) -> SubtensorEarnServices {
-        let processServices = SubtensorStakingProcessServices.shared
+        let processServices = SubtensorProcessServices.shared
 
         let validatorChainOperationFactory = SubtensorValidatorChainOperationFactory(
             runtimeConnectionStore: runtimeConnectionStore, operationQueue: syncOperationQueue
@@ -132,13 +132,13 @@ extension StakingSharedStateFactory {
     private func createSubtensorPriceHistoryOperationFactory(
         for stakingOption: Multistaking.ChainAssetOption,
         runtimeConnectionStore: RuntimeConnectionStoring,
-        flowState: SubtensorStakingFlowStateProtocol
+        flowState: SubtensorFlowStateProtocol
     ) -> SubtensorPriceHistoryOperationFactoryProtocol? {
         guard let taoPriceId = stakingOption.chainAsset.asset.priceId else {
             return nil
         }
 
-        let processServices = SubtensorStakingProcessServices.shared
+        let processServices = SubtensorProcessServices.shared
 
         return SubtensorPriceHistoryOperationFactory(
             marketsOperationFactory: processServices.subnetMarketsOperationFactory,

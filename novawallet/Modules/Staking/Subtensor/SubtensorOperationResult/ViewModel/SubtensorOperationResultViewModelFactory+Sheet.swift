@@ -94,7 +94,7 @@ private extension SubtensorOperationResultViewModelFactory {
     }
 
     func createDoneSheet(
-        for outcome: SubtensorStakingOperationOutcome,
+        for outcome: SubtensorOperationOutcome,
         state: SubtensorOperationResultState,
         request: SubtensorOperationResultRequest,
         locale: Locale
@@ -158,7 +158,7 @@ private extension SubtensorOperationResultViewModelFactory {
     }
 
     func createFailedSheet(
-        for failure: SubtensorStakingSubmissionFailure,
+        for failure: SubtensorSubmissionFailure,
         holdRemaining: TimeInterval?,
         request: SubtensorOperationResultRequest,
         locale: Locale
@@ -198,7 +198,7 @@ private extension SubtensorOperationResultViewModelFactory {
     }
 
     func createClaimDoneSheet(
-        for outcome: SubtensorStakingOperationOutcome,
+        for outcome: SubtensorOperationOutcome,
         state: SubtensorOperationResultState,
         request: SubtensorOperationResultRequest,
         locale: Locale

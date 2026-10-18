@@ -10,11 +10,11 @@ final class SubtensorStakeStateFetchOperationFactoryTests: XCTestCase {
     let bestBlockHash = "0x1122334455667788112233445566778811223344556677881122334455667788"
 
     func testStateMapsStakeInfoAndAvailabilityAtPinnedBlock() throws {
-        let availabilities: [SubtensorStakingPallet.ColdkeyStakeAvailability] =
+        let availabilities: [SubtensorPallet.ColdkeyStakeAvailability] =
             try SubtensorFixtureDecoding.decodeRuntimeApiResult(
                 from: "0x04" + String(repeating: "01", count: 32) +
                     "080000dad5c80d00dad5c80d070003005ed0b202286bee0300943577",
-                path: SubtensorStakingPallet.stakeAvailabilityForColdkeysApi
+                path: SubtensorPallet.stakeAvailabilityForColdkeysApi
             )
         let apiFactory = createApiFactory(
             stakeInfoResult: .createWithResult([
@@ -32,8 +32,8 @@ final class SubtensorStakeStateFetchOperationFactoryTests: XCTestCase {
         ])
         XCTAssertEqual(state.rootStakeInRao, BigUInt(57_816_438))
         XCTAssertEqual(state.availability, [
-            0: SubtensorStakingPallet.StakeAvailability(available: 57_816_438),
-            7: SubtensorStakingPallet.StakeAvailability(available: 2_000_000_000)
+            0: SubtensorPallet.StakeAvailability(available: 57_816_438),
+            7: SubtensorPallet.StakeAvailability(available: 2_000_000_000)
         ])
 
         let stakeInfoHashCaptor = ArgumentCaptor<BlockHash?>()
@@ -57,8 +57,8 @@ final class SubtensorStakeStateFetchOperationFactoryTests: XCTestCase {
         XCTAssertThrowsError(try fetchState(using: apiFactory))
     }
 
-    private func stakeInfo(netuid: UInt16, stake: Balance) -> SubtensorStakingPallet.StakeInfo {
-        SubtensorStakingPallet.StakeInfo(
+    private func stakeInfo(netuid: UInt16, stake: Balance) -> SubtensorPallet.StakeInfo {
+        SubtensorPallet.StakeInfo(
             hotkey: hotkey,
             netuid: netuid,
             stake: stake,
@@ -66,8 +66,8 @@ final class SubtensorStakeStateFetchOperationFactoryTests: XCTestCase {
         )
     }
 
-    private func position(netuid: UInt16, stake: Balance) -> SubtensorStakingPosition {
-        SubtensorStakingPosition(
+    private func position(netuid: UInt16, stake: Balance) -> SubtensorPosition {
+        SubtensorPosition(
             hotkey: hotkey,
             netuid: netuid,
             stakeAlpha: stake,
@@ -76,8 +76,8 @@ final class SubtensorStakeStateFetchOperationFactoryTests: XCTestCase {
     }
 
     private func createApiFactory(
-        stakeInfoResult: CompoundOperationWrapper<[SubtensorStakingPallet.StakeInfo]>,
-        availabilities: [SubtensorStakingPallet.ColdkeyStakeAvailability] = []
+        stakeInfoResult: CompoundOperationWrapper<[SubtensorPallet.StakeInfo]>,
+        availabilities: [SubtensorPallet.ColdkeyStakeAvailability] = []
     ) -> MockSubtensorApiOperationFactoryProtocol {
         let apiFactory = MockSubtensorApiOperationFactoryProtocol()
 
@@ -102,7 +102,7 @@ final class SubtensorStakeStateFetchOperationFactoryTests: XCTestCase {
 
     private func fetchState(
         using apiFactory: SubtensorApiOperationFactoryProtocol
-    ) throws -> Multistaking.SubtensorStakingState {
+    ) throws -> Multistaking.SubtensorState {
         let factory = SubtensorStakeStateFetchOperationFactory(operationFactory: apiFactory, operationQueue: OperationQueue())
         let wrapper = factory.createStateWrapper(for: coldkey)
 

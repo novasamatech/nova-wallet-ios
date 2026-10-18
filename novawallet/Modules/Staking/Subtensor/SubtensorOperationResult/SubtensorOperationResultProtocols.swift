@@ -20,7 +20,7 @@ protocol SubtensorOperationResultInteractorInputProtocol: AnyObject {
 }
 
 protocol SubtensorOperationResultInteractorOutputProtocol: AnyObject {
-    func didReceiveSubmission(result: Result<SubtensorStakingOperationOutcome, SubtensorStakingSubmissionFailure>)
+    func didReceiveSubmission(result: Result<SubtensorOperationOutcome, SubtensorSubmissionFailure>)
     func didReachConfirmationCap()
     func didReceiveBlockTimestamp(_ date: Date, at blockHash: BlockHash)
     func didReceiveRootHoldRemainingBlocks(_ blocks: UInt64)

@@ -5,9 +5,9 @@ import SubstrateSdk
 
 final class SubtensorSwapApiDecodeTests: XCTestCase {
     func testCapturedBuySimDecodesAmountsAndTaoFee() throws {
-        let simSwapResult: SubtensorStakingPallet.SimSwapResult = try SubtensorFixtureDecoding.decodeRuntimeApiResult(
+        let simSwapResult: SubtensorPallet.SimSwapResult = try SubtensorFixtureDecoding.decodeRuntimeApiResult(
             from: "0x051b933b0000000059fb83491e000000fbae0700000000000000000000000000000000000000000064bf370400000000",
-            path: SubtensorStakingPallet.simSwapTaoForAlphaApi
+            path: SubtensorPallet.simSwapTaoForAlphaApi
         )
 
         XCTAssertEqual(simSwapResult.taoAmount, BigUInt(999_496_453))
@@ -17,9 +17,9 @@ final class SubtensorSwapApiDecodeTests: XCTestCase {
     }
 
     func testCapturedSellSimDecodesAmountsAndAlphaFee() throws {
-        let simSwapResult: SubtensorStakingPallet.SimSwapResult = try SubtensorFixtureDecoding.decodeRuntimeApiResult(
+        let simSwapResult: SubtensorPallet.SimSwapResult = try SubtensorFixtureDecoding.decodeRuntimeApiResult(
             from: "0xb2338a3b000000006f7d9c451e0000000000000000000000ea7de70300000000884a0800000000000000000000000000",
-            path: SubtensorStakingPallet.simSwapAlphaForTaoApi
+            path: SubtensorPallet.simSwapAlphaForTaoApi
         )
 
         XCTAssertEqual(simSwapResult.taoAmount, BigUInt(998_912_946))
@@ -29,9 +29,9 @@ final class SubtensorSwapApiDecodeTests: XCTestCase {
     }
 
     func testStakeInfoForColdkeyDecodesRootStake() throws {
-        let stakeInfos: [SubtensorStakingPallet.StakeInfo] = try SubtensorFixtureDecoding.decodeRuntimeApiResult(
+        let stakeInfos: [SubtensorPallet.StakeInfo] = try SubtensorFixtureDecoding.decodeRuntimeApiResult(
             from: "0x04f8d0eafbd29c52d8de8454bc05cd74b9e6d3db0ce043d8e543566a7ca477084484cec003c237e96caf516d446e7ca347f1c1439539f915438a806f099e31fd1c00dad5c80d0000000000",
-            path: SubtensorStakingPallet.stakeInfoForColdkeyApi
+            path: SubtensorPallet.stakeInfoForColdkeyApi
         )
 
         let stakeInfo = try XCTUnwrap(stakeInfos.first)
@@ -41,12 +41,12 @@ final class SubtensorSwapApiDecodeTests: XCTestCase {
             stakeInfo.hotkey,
             try Data(hexString: "0xf8d0eafbd29c52d8de8454bc05cd74b9e6d3db0ce043d8e543566a7ca4770844")
         )
-        XCTAssertEqual(stakeInfo.netuid, SubtensorStakingPallet.rootNetuid)
+        XCTAssertEqual(stakeInfo.netuid, SubtensorPallet.rootNetuid)
         XCTAssertEqual(stakeInfo.stake, BigUInt(57_816_438))
     }
 
     func testClaimPreviewsDecodeRedeemableTao() throws {
-        let previews: [SubtensorStakingPallet.BasketClaimPreview] = try SubtensorFixtureDecoding.decodeRuntimeApiResult(
+        let previews: [SubtensorPallet.BasketClaimPreview] = try SubtensorFixtureDecoding.decodeRuntimeApiResult(
             from: "0x08" +
                 "bc0e6b701243978c1fe73d721c7b157943a713fca9f3c88cad7a9f7799bc6b26" +
                 "d105880600000000b3eac805000000008cc5b005000000001b25180000000000" +
@@ -54,7 +54,7 @@ final class SubtensorSwapApiDecodeTests: XCTestCase {
                 "b05b1de3868a6b49f218680ef3978d2ade38e04700a4006bd22ec529a7517045" +
                 "3c1b1600000000008a830c00000000008c14000000000000c26e0c0000000000" +
                 "7700000001000000760000000000000023000000",
-            path: SubtensorStakingPallet.rootBasketClaimPreviewsApi
+            path: SubtensorPallet.rootBasketClaimPreviewsApi
         )
 
         XCTAssertEqual(previews.map(\.redeemableTao), [BigUInt(95_470_988), BigUInt(5260)])

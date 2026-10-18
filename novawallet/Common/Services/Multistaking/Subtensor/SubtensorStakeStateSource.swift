@@ -4,7 +4,7 @@ import Operation_iOS
 
 protocol SubtensorStakeStateHandler: AnyObject {
     func handleStakeStateFetching()
-    func handleStakeState(_ state: Multistaking.SubtensorStakingState)
+    func handleStakeState(_ state: Multistaking.SubtensorState)
     func handleStakeStateFailure(_ error: Error)
 }
 
@@ -20,7 +20,7 @@ final class SubtensorStakeStateSource {
 
     private let mutex = NSLock()
     private var handlers: [WeakWrapper] = []
-    private var lastState: Multistaking.SubtensorStakingState?
+    private var lastState: Multistaking.SubtensorState?
     private var connection: JSONRPCEngine?
     private var runtimeService: RuntimeCodingServiceProtocol?
     private var hotkeysSubscription: CallbackStorageSubscription<[BytesCodable]>?
@@ -128,7 +128,7 @@ private extension SubtensorStakeStateSource {
         let accountId = accountId
 
         let request = MapSubscriptionRequest(
-            storagePath: SubtensorStakingPallet.stakingHotkeysPath,
+            storagePath: SubtensorPallet.stakingHotkeysPath,
             localKey: ""
         ) {
             BytesCodable(wrappedValue: accountId)
@@ -193,7 +193,7 @@ private extension SubtensorStakeStateSource {
         notifyHandlers { $0.handleStakeStateFetching() }
     }
 
-    func handle(fetchResult: Result<Multistaking.SubtensorStakingState, Error>) {
+    func handle(fetchResult: Result<Multistaking.SubtensorState, Error>) {
         switch fetchResult {
         case let .success(fetchedState):
             let state = fetchedState.byKeepingRootRedeemable(of: lastState)
@@ -271,11 +271,11 @@ private extension SubtensorStakeStateSource {
         }
     }
 
-    func updateAlphaTriggerSubscription(for state: Multistaking.SubtensorStakingState) {
+    func updateAlphaTriggerSubscription(for state: Multistaking.SubtensorState) {
         let newKeys = Set(
             state.positions.map { SubtensorHotkeySubnet(hotkey: $0.hotkey, netuid: $0.netuid) } +
                 state.rootClaimPreviews.filter { $0.redeemable > 0 }.map {
-                    SubtensorHotkeySubnet(hotkey: $0.hotkey, netuid: SubtensorStakingPallet.rootNetuid)
+                    SubtensorHotkeySubnet(hotkey: $0.hotkey, netuid: SubtensorPallet.rootNetuid)
                 }
         )
 
@@ -296,7 +296,7 @@ private extension SubtensorStakeStateSource {
         let requests = newKeys.map { positionKey in
             BatchStorageSubscriptionRequest(
                 innerRequest: DoubleMapSubscriptionRequest(
-                    storagePath: SubtensorStakingPallet.totalHotkeyAlphaPath,
+                    storagePath: SubtensorPallet.totalHotkeyAlphaPath,
                     localKey: "",
                     keyParamClosure: {
                         (
@@ -325,7 +325,7 @@ private extension SubtensorStakeStateSource {
 }
 
 extension SubtensorStakeStateSource: EventVisitorProtocol {
-    func processSubtensorStakingChanged(event: SubtensorStakingChanged) {
+    func processSubtensorChanged(event: SubtensorChanged) {
         guard event.accountId == accountId, event.chainAssetId == chainAssetId else {
             return
         }
