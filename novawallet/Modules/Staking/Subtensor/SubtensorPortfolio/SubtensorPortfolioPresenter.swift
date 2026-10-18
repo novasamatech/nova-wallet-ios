@@ -7,6 +7,7 @@ final class SubtensorPortfolioPresenter {
     let interactor: SubnetPortfolioInteractorInputProtocol
     let wireframe: SubtensorPortfolioWireframeProtocol
     let viewModelFactory: SubnetPortfolioViewModelFactoryProtocol
+    let wallet: MetaAccountModel
     let account: MetaChainAccountResponse
     let chainAsset: ChainAsset
     let localizationManager: LocalizationManagerProtocol
@@ -22,6 +23,7 @@ final class SubtensorPortfolioPresenter {
         interactor: SubnetPortfolioInteractorInputProtocol,
         wireframe: SubtensorPortfolioWireframeProtocol,
         viewModelFactory: SubnetPortfolioViewModelFactoryProtocol,
+        wallet: MetaAccountModel,
         account: MetaChainAccountResponse,
         chainAsset: ChainAsset,
         localizationManager: LocalizationManagerProtocol
@@ -29,6 +31,7 @@ final class SubtensorPortfolioPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
+        self.wallet = wallet
         self.account = account
         self.chainAsset = chainAsset
         self.localizationManager = localizationManager
@@ -111,12 +114,8 @@ extension SubtensorPortfolioPresenter: SubtensorPortfolioPresenterProtocol {
     }
 
     func addPosition() {
-        switch SubtensorOperationGate.verdict(for: account.chainAccount.type) {
-        case .allowed, .noSigning:
-            wireframe.showAddPosition(from: view)
-        case let .signerNotSupported(type):
-            guard let view else { return }
-            wireframe.presentSignerNotSupportedView(from: view, type: type) {}
+        wireframe.checkingSubtensorSigning(for: wallet, chain: chainAsset.chain, from: view) { [weak self] in
+            self?.wireframe.showAddPosition(from: self?.view)
         }
     }
 

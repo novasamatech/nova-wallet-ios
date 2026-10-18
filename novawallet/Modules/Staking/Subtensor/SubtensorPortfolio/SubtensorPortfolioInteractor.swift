@@ -274,16 +274,6 @@ extension SubtensorPortfolioInteractor: EventVisitorProtocol {
     func processChainAccountChanged(event _: ChainAccountChanged) {
         verifyBoundAccount()
     }
-
-    func processSubtensorStakingChanged(event: SubtensorStakingChanged) {
-        guard
-            event.chainAssetId == chainAsset.chainAssetId,
-            event.accountId == account.chainAccount.accountId else {
-            return
-        }
-
-        state.positionsSyncService?.refresh()
-    }
 }
 
 extension SubtensorPortfolioInteractor: ApplicationHandlerDelegate {

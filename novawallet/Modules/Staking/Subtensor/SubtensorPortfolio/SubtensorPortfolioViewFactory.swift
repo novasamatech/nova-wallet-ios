@@ -21,9 +21,8 @@ enum SubtensorPortfolioViewFactory {
 
         guard
             let state = try? stateFactory.createSubtensorStaking(for: stakingOption, flowState: flowState),
-            let account = SelectedWalletSettings.shared.value?.fetchMetaChainAccount(
-                for: stakingOption.chainAsset.chain.accountRequest()
-            ),
+            let wallet = SelectedWalletSettings.shared.value,
+            let account = wallet.fetchMetaChainAccount(for: stakingOption.chainAsset.chain.accountRequest()),
             let currencyManager = CurrencyManager.shared else {
             return nil
         }
@@ -42,6 +41,7 @@ enum SubtensorPortfolioViewFactory {
                 chainAsset: stakingOption.chainAsset,
                 priceAssetInfoFactory: PriceAssetInfoFactory(currencyManager: currencyManager)
             ),
+            wallet: wallet,
             account: account,
             chainAsset: stakingOption.chainAsset,
             localizationManager: LocalizationManager.shared

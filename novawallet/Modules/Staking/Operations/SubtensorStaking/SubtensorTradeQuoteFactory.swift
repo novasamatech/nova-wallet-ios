@@ -4,15 +4,18 @@ import Operation_iOS
 
 final class SubtensorTradeQuoteFactory {
     let operationFactory: SubtensorApiOperationFactoryProtocol
+    let configProvider: SubtensorConfigProviding
     let operationQueue: OperationQueue
     let feeCalculator: SubtensorNovaFeeCalculator
 
     init(
         operationFactory: SubtensorApiOperationFactoryProtocol,
+        configProvider: SubtensorConfigProviding,
         operationQueue: OperationQueue,
         feeCalculator: SubtensorNovaFeeCalculator = SubtensorNovaFeeCalculator()
     ) {
         self.operationFactory = operationFactory
+        self.configProvider = configProvider
         self.operationQueue = operationQueue
         self.feeCalculator = feeCalculator
     }
@@ -144,10 +147,9 @@ private extension SubtensorTradeQuoteFactory {
         from quote: SubtensorQuote,
         alpha: Balance,
         tolerance: BigRational,
-        feeCalculator: SubtensorNovaFeeCalculator
+        novaFee: SubtensorNovaFee?
     ) throws -> SubtensorTradeQuote {
         let limitPrice = try SubtensorLimitPriceCalculator.sellLimit(spot: quote.spotPrice, tolerance: tolerance)
-        let novaFee = try feeCalculator.fee(basis: quote.sim.taoAmount)
         let feeAmount = novaFee?.amount ?? 0
         let minimumTaoOut = try sellSwapMinimumOut(alpha: alpha, feeRate: quote.feeRate, limitPrice: limitPrice)
 
@@ -171,16 +173,28 @@ private extension SubtensorTradeQuoteFactory {
     ) -> CompoundOperationWrapper<SubtensorTradeQuote> {
         do {
             try Self.ensureSubnet(netuid)
+            try ensureBeneficiary()
+        } catch {
+            return .createWithError(error)
+        }
 
-            let novaFee = try feeCalculator.fee(basis: grossTao)
+        let rateWrapper = configProvider.createNovaFeeRateWrapper()
+
+        let quoteWrapper = OperationCombiningService.compoundNonOptionalWrapper(
+            operationQueue: operationQueue
+        ) { [weak self] in
+            guard let self else {
+                throw BaseOperationError.parentOperationCancelled
+            }
+
+            let rate = try rateWrapper.targetOperation.extractNoCancellableResultData()
+            let novaFee = try feeCalculator.fee(basis: grossTao, rate: rate)
             let feeAmount = novaFee?.amount ?? 0
             let stakedTao = grossTao > feeAmount ? grossTao - feeAmount : 0
 
-            let quoteWrapper = createQuoteWrapper(
+            return createQuoteWrapper(
                 for: SubtensorQuoteArgs(netuid: netuid, direction: .stake(taoIn: stakedTao))
-            )
-
-            return quoteWrapper.mapped { quote in
+            ).mapped { quote in
                 try Self.makeBuyQuote(
                     from: quote,
                     grossTao: grossTao,
@@ -189,9 +203,11 @@ private extension SubtensorTradeQuoteFactory {
                     tolerance: tolerance
                 )
             }
-        } catch {
-            return .createWithError(error)
         }
+
+        quoteWrapper.addDependency(wrapper: rateWrapper)
+
+        return quoteWrapper.insertingHead(operations: rateWrapper.allOperations)
     }
 
     func createSellQuoteWrapper(
@@ -201,25 +217,41 @@ private extension SubtensorTradeQuoteFactory {
     ) -> CompoundOperationWrapper<SubtensorTradeQuote> {
         do {
             try Self.ensureSubnet(netuid)
-
-            guard feeCalculator.beneficiary != nil else {
-                throw SubtensorStakingOperationError.novaFeeUnavailable
-            }
-
-            let quoteWrapper = createQuoteWrapper(
-                for: SubtensorQuoteArgs(netuid: netuid, direction: .unstake(alphaIn: alpha))
-            )
-
-            return quoteWrapper.mapped { [feeCalculator] quote in
-                try Self.makeSellQuote(
-                    from: quote,
-                    alpha: alpha,
-                    tolerance: tolerance,
-                    feeCalculator: feeCalculator
-                )
-            }
+            try ensureBeneficiary()
         } catch {
             return .createWithError(error)
+        }
+
+        let rateWrapper = configProvider.createNovaFeeRateWrapper()
+
+        let quoteWrapper = createQuoteWrapper(
+            for: SubtensorQuoteArgs(netuid: netuid, direction: .unstake(alphaIn: alpha))
+        )
+
+        let sellOperation = ClosureOperation<SubtensorTradeQuote> { [feeCalculator] in
+            let quote = try quoteWrapper.targetOperation.extractNoCancellableResultData()
+            let rate = try rateWrapper.targetOperation.extractNoCancellableResultData()
+
+            return try Self.makeSellQuote(
+                from: quote,
+                alpha: alpha,
+                tolerance: tolerance,
+                novaFee: feeCalculator.fee(basis: quote.sim.taoAmount, rate: rate)
+            )
+        }
+
+        sellOperation.addDependency(quoteWrapper.targetOperation)
+        sellOperation.addDependency(rateWrapper.targetOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: sellOperation,
+            dependencies: rateWrapper.allOperations + quoteWrapper.allOperations
+        )
+    }
+
+    func ensureBeneficiary() throws {
+        guard feeCalculator.beneficiary != nil else {
+            throw SubtensorStakingOperationError.novaFeeUnavailable
         }
     }
 }

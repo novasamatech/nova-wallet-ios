@@ -10,14 +10,28 @@ enum SubtensorStakingOperation: Equatable {
     case rootStake(hotkey: AccountId, amount: Balance)
     case rootUnstake(hotkey: AccountId, amount: Balance)
     case rootUnstakeGroup(exits: [AccountId], partials: [SubtensorUnstakeSlice])
-    case subnetBuy(hotkey: AccountId, netuid: UInt16, grossTao: Balance, limitPrice: Balance)
-    case subnetSell(hotkey: AccountId, netuid: UInt16, alpha: Balance, limitPrice: Balance, quotedTaoOut: Balance)
+    case subnetBuy(
+        hotkey: AccountId,
+        netuid: UInt16,
+        grossTao: Balance,
+        limitPrice: Balance,
+        novaFee: SubtensorNovaFee?
+    )
+    case subnetSell(
+        hotkey: AccountId,
+        netuid: UInt16,
+        alpha: Balance,
+        limitPrice: Balance,
+        quotedTaoOut: Balance,
+        novaFee: SubtensorNovaFee?
+    )
     case subnetSellGroup(
         exits: [AccountId],
         partials: [SubtensorUnstakeSlice],
         netuid: UInt16,
         limitPrice: Balance,
-        quotedTaoOut: Balance
+        quotedTaoOut: Balance,
+        novaFee: SubtensorNovaFee?
     )
     case rootClaim(hotkey: AccountId)
 }
