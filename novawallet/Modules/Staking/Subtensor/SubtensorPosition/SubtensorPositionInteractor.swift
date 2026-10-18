@@ -22,6 +22,7 @@ final class SubtensorPositionInteractor: AnyProviderAutoCleaning, SubtensorLoadD
     var priceProvider: StreamableProvider<PriceData>?
     private var failedHoldsHotkeys: [AccountId]?
     private var isBlockFeedDown = false
+    private var lastGroup: SubtensorPortfolioGroup?
     private let pricesStore = CancellableCallStore()
     private let logosStore = CancellableCallStore()
     private let validatorStore = CancellableCallStore()
@@ -90,11 +91,15 @@ private extension SubtensorPositionInteractor {
                     return
                 }
 
-                presenter?.didReceive(group: findGroup(in: newState))
+                let group = findGroup(in: newState)
 
-                if !isRoot, !pricesStore.hasCall {
+                presenter?.didReceive(group: group)
+
+                if !isRoot, group != lastGroup, !pricesStore.hasCall {
                     loadPrices()
                 }
+
+                lastGroup = group
 
                 if isRoot {
                     presenter?.didReceive(
