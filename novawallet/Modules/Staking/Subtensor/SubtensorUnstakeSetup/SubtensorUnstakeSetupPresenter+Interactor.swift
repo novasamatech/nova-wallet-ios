@@ -161,7 +161,7 @@ extension SubtensorUnstakeSetupPresenter: SubtensorUnstakeInteractorOutputProtoc
 
         if isRoot {
             applyPlanChange(from: previousPlan)
-        } else {
+        } else if !isConfirmationShown {
             forceQuoteRefresh()
         }
 

@@ -13,7 +13,8 @@ final class SubtensorStakingOperationCallTests: XCTestCase {
             hotkey: hotkey,
             netuid: 64,
             grossTao: 10_000_000_000,
-            limitPrice: 74_169_000
+            limitPrice: 74_169_000,
+            novaFee: try productionFee(29_910_269)
         )
 
         let calls = try encodeCalls(operation)
@@ -29,7 +30,8 @@ final class SubtensorStakingOperationCallTests: XCTestCase {
             netuid: 64,
             alpha: 56_200_000_000,
             limitPrice: 73_431_000,
-            quotedTaoOut: 4_145_000_000
+            quotedTaoOut: 4_145_000_000,
+            novaFee: try productionFee(12_397_806)
         )
 
         let calls = try encodeCalls(operation)
@@ -45,7 +47,8 @@ final class SubtensorStakingOperationCallTests: XCTestCase {
             partials: [],
             netuid: 64,
             limitPrice: 73_431_000,
-            quotedTaoOut: 4_145_000_000
+            quotedTaoOut: 4_145_000_000,
+            novaFee: try productionFee(12_397_806)
         )
 
         let calls = try encodeCalls(operation)
@@ -63,7 +66,8 @@ final class SubtensorStakingOperationCallTests: XCTestCase {
             partials: [SubtensorUnstakeSlice(hotkey: hotkey, alpha: 56_200_000_000)],
             netuid: 64,
             limitPrice: 73_431_000,
-            quotedTaoOut: 4_145_000_000
+            quotedTaoOut: 4_145_000_000,
+            novaFee: try productionFee(12_397_806)
         )
 
         let calls = try encodeCalls(operation)
@@ -75,24 +79,31 @@ final class SubtensorStakingOperationCallTests: XCTestCase {
         XCTAssertEqual(calls, [expected])
     }
 
-    func testSubnetBuyWithoutBeneficiaryFailsClosed() {
+    func testSubnetBuyWithoutBeneficiaryFailsClosed() throws {
         let operation = SubtensorStakingOperation.subnetBuy(
             hotkey: hotkey,
             netuid: 64,
             grossTao: 10_000_000_000,
-            limitPrice: 74_169_000
+            limitPrice: 74_169_000,
+            novaFee: try productionFee(29_910_269)
         )
 
         XCTAssertThrowsError(
-            try operation.extrinsicBuilderClosure(feeCalculator: SubtensorNovaFeeCalculator(beneficiary: nil))
+            try operation.extrinsicBuilderClosure(novaFeeBeneficiary: nil)
         ) { error in
             XCTAssertEqual(error as? SubtensorStakingOperationError, .novaFeeUnavailable)
         }
     }
 
+    private func productionFee(_ amount: Balance) throws -> SubtensorNovaFee {
+        SubtensorNovaFee(amount: amount, beneficiary: try XCTUnwrap(SubtensorNovaFeeCalculator.defaultBeneficiary))
+    }
+
     private func encodeCalls(_ operation: SubtensorStakingOperation) throws -> [String] {
         let codingFactory = try RuntimeCodingServiceStub.createBittensorCodingFactory()
-        let closure = try operation.extrinsicBuilderClosure(feeCalculator: SubtensorNovaFeeCalculator())
+        let closure = try operation.extrinsicBuilderClosure(
+            novaFeeBeneficiary: SubtensorNovaFeeCalculator.defaultBeneficiary
+        )
 
         let builder = try closure(ExtrinsicBuilder().with(runtimeJsonContext: codingFactory.createRuntimeJsonContext()))
             .batchingCalls(with: codingFactory.metadata)

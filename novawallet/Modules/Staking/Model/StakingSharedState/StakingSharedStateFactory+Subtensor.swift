@@ -5,7 +5,7 @@ import SubstrateSdk
 
 struct SubtensorStakingProcessServices {
     let bittensorApiOperationFactory: BittensorApiOperationFactoryProtocol
-    let subnetLogosProvider: SubtensorSubnetLogosProviderProtocol
+    let subnetLogosProvider: SubtensorConfigProviding
     let subnetMarketsService: SubtensorSubnetMarketsServiceProtocol
     let costBasisService: SubtensorCostBasisServiceProtocol
     let catalogueService: SubtensorSubnetCatalogueServiceProtocol
@@ -188,6 +188,7 @@ extension StakingSharedStateFactory {
             ),
             tradeQuoteFactory: SubtensorTradeQuoteFactory(
                 operationFactory: apiOperationFactory,
+                configProvider: processServices.subnetLogosProvider,
                 operationQueue: syncOperationQueue,
                 feeCalculator: novaFeeCalculator
             ),

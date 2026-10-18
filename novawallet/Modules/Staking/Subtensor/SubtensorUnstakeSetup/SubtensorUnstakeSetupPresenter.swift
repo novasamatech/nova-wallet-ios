@@ -41,6 +41,7 @@ final class SubtensorUnstakeSetupPresenter {
     var isQuoteFailed = false
     var tradesUnavailable = false
     var costBasis: SubtensorCostBasisState = .loading
+    var isConfirmationShown = false
 
     private var feeShape: FeeShape?
 
@@ -145,7 +146,7 @@ private extension SubtensorUnstakeSetupPresenter {
             return nil
         }
 
-        return plan.subnetOperation(netuid: netuid, limitPrice: limitPrice, quotedTaoOut: quotedTaoOut)
+        return plan.subnetOperation(netuid: netuid, limitPrice: limitPrice, quotedTaoOut: quotedTaoOut, novaFee: nil)
     }
 }
 

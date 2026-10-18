@@ -7,6 +7,7 @@ final class SubtensorPositionPresenter {
     let interactor: SubtensorPositionInteractorInputProtocol
     let wireframe: SubtensorPositionWireframeProtocol
     let viewModelFactory: SubnetPositionViewModelFactoryProtocol
+    let wallet: MetaAccountModel?
     let account: MetaChainAccountResponse?
     let chainAsset: ChainAsset
     let pendingRootClaims: SubtensorPendingRootClaimsProtocol
@@ -21,6 +22,7 @@ final class SubtensorPositionPresenter {
 
     init(
         group: SubtensorPortfolioGroup,
+        wallet: MetaAccountModel?,
         account: MetaChainAccountResponse?,
         chainAsset: ChainAsset,
         pendingRootClaims: SubtensorPendingRootClaimsProtocol,
@@ -30,6 +32,7 @@ final class SubtensorPositionPresenter {
         localizationManager: LocalizationManagerProtocol
     ) {
         state = SubtensorPositionState(netuid: group.netuid, group: group)
+        self.wallet = wallet
         self.account = account
         self.chainAsset = chainAsset
         self.pendingRootClaims = pendingRootClaims
@@ -199,19 +202,12 @@ extension SubtensorPositionPresenter: SubtensorPositionPresenterProtocol {
             provideViewModel()
         }
 
-        guard let account, action == .claim || state.primaryPosition != nil, state.isEnabled(action) else {
+        guard let wallet, let account, action == .claim || state.primaryPosition != nil, state.isEnabled(action) else {
             return
         }
 
-        switch SubtensorOperationGate.verdict(for: account.chainAccount.type) {
-        case .allowed, .noSigning:
-            perform(action, account: account)
-        case let .signerNotSupported(type):
-            guard let view else {
-                return
-            }
-
-            wireframe.presentSignerNotSupportedView(from: view, type: type) {}
+        wireframe.checkingSubtensorSigning(for: wallet, chain: chainAsset.chain, from: view) { [weak self] in
+            self?.perform(action, account: account)
         }
     }
 

@@ -189,11 +189,11 @@ private extension SubtensorOutcomeTarget {
                 hotkeys: Self.hotkeys(exits: exits, partials: partials),
                 netuid: rootNetuid
             )
-        case let .subnetBuy(hotkey, netuid, _, _):
+        case let .subnetBuy(hotkey, netuid, _, _, _):
             self.init(kind: .stake, coldkey: coldkey, hotkeys: [hotkey], netuid: netuid)
-        case let .subnetSell(hotkey, netuid, _, _, _):
+        case let .subnetSell(hotkey, netuid, _, _, _, _):
             self.init(kind: .unstake, coldkey: coldkey, hotkeys: [hotkey], netuid: netuid)
-        case let .subnetSellGroup(exits, partials, netuid, _, _):
+        case let .subnetSellGroup(exits, partials, netuid, _, _, _):
             self.init(
                 kind: .unstake,
                 coldkey: coldkey,

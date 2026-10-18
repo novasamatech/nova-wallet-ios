@@ -17,9 +17,11 @@ protocol SubtensorPositionsSyncServiceProtocol: ApplicationServiceProtocol {
 
 final class SubtensorStakingPositionsSyncService: BaseSyncService {
     let accountId: AccountId
+    let chainAssetId: ChainAssetId
     let connection: JSONRPCEngine
     let runtimeService: RuntimeCodingServiceProtocol
     let stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol
+    let eventCenter: EventCenterProtocol
     let workingQueue: DispatchQueue
     let operationQueue: OperationQueue
 
@@ -28,6 +30,7 @@ final class SubtensorStakingPositionsSyncService: BaseSyncService {
         stakeStateFetchFactory: stakeStateFetchFactory,
         connection: connection,
         runtimeService: runtimeService,
+        chainAssetId: chainAssetId,
         mutex: mutex,
         operationQueue: operationQueue,
         workingQueue: workingQueue,
@@ -42,17 +45,21 @@ final class SubtensorStakingPositionsSyncService: BaseSyncService {
 
     init(
         accountId: AccountId,
+        chainAssetId: ChainAssetId,
         stakeStateFetchFactory: SubtensorStakeStateFetchFactoryProtocol,
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
+        eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue,
         workingQueue: DispatchQueue,
         logger: LoggerProtocol
     ) {
         self.accountId = accountId
+        self.chainAssetId = chainAssetId
         self.stakeStateFetchFactory = stakeStateFetchFactory
         self.connection = connection
         self.runtimeService = runtimeService
+        self.eventCenter = eventCenter
         self.operationQueue = operationQueue
         self.workingQueue = workingQueue
 
@@ -60,6 +67,8 @@ final class SubtensorStakingPositionsSyncService: BaseSyncService {
     }
 
     override func performSyncUp() {
+        eventCenter.add(observer: stakeStateSubscription, dispatchIn: workingQueue)
+
         stakeStateSubscription.subscribe()
     }
 
@@ -68,6 +77,8 @@ final class SubtensorStakingPositionsSyncService: BaseSyncService {
     }
 
     override func deactivate() {
+        eventCenter.remove(observer: stakeStateSubscription)
+
         stakeStateSubscription.unsubscribe()
     }
 }

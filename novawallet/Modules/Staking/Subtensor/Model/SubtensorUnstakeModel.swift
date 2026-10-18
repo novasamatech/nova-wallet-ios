@@ -64,14 +64,20 @@ extension SubtensorUnstakePlan {
         return .rootUnstake(hotkey: single.hotkey, amount: amount)
     }
 
-    func subnetOperation(netuid: UInt16, limitPrice: Balance, quotedTaoOut: Balance) -> SubtensorStakingOperation {
+    func subnetOperation(
+        netuid: UInt16,
+        limitPrice: Balance,
+        quotedTaoOut: Balance,
+        novaFee: SubtensorNovaFee?
+    ) -> SubtensorStakingOperation {
         guard let single else {
             return .subnetSellGroup(
                 exits: exits.map(\.hotkey),
                 partials: partials,
                 netuid: netuid,
                 limitPrice: limitPrice,
-                quotedTaoOut: quotedTaoOut
+                quotedTaoOut: quotedTaoOut,
+                novaFee: novaFee
             )
         }
 
@@ -80,7 +86,8 @@ extension SubtensorUnstakePlan {
             netuid: netuid,
             alpha: single.alpha,
             limitPrice: limitPrice,
-            quotedTaoOut: quotedTaoOut
+            quotedTaoOut: quotedTaoOut,
+            novaFee: novaFee
         )
     }
 }
